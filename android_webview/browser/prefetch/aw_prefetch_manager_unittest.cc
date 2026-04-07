@@ -28,6 +28,7 @@ class AwPrefetchManagerTest : public AwMetricsTestBase {
  protected:
   void SetUp() override {
     AwMetricsTestBase::SetUp();
+    env_ = base::android::AttachCurrentThread();
     browser_context_ = std::make_unique<content::TestBrowserContext>();
   }
 
@@ -36,6 +37,7 @@ class AwPrefetchManagerTest : public AwMetricsTestBase {
     AwMetricsTestBase::TearDown();
   }
 
+  raw_ptr<JNIEnv> env_;
   std::unique_ptr<content::TestBrowserContext> browser_context_;
 };
 
@@ -49,39 +51,30 @@ TEST_F(AwPrefetchManagerTest, UpdateCacheConfig) {
   int default_ttl_in_sec = kDefaultTtlInSec;
   size_t default_max_prefetches = kDefaultMaxPrefetches;
 
-  prefetch_manager.SetTtlInSec(base::android::AttachCurrentThread(),
-                               actual_ttl_in_sec);
-  prefetch_manager.SetMaxPrefetches(base::android::AttachCurrentThread(),
-                                    actual_max_prefetches);
+  prefetch_manager.SetTtlInSec(env_, actual_ttl_in_sec);
+  prefetch_manager.SetMaxPrefetches(env_, actual_max_prefetches);
 
-  EXPECT_EQ(actual_ttl_in_sec,
-            prefetch_manager.GetTtlInSec(base::android::AttachCurrentThread()));
-  EXPECT_EQ(actual_max_prefetches, prefetch_manager.GetMaxPrefetches(
-                                       base::android::AttachCurrentThread()));
+  EXPECT_EQ(actual_ttl_in_sec, prefetch_manager.GetTtlInSec(env_));
+  EXPECT_EQ(actual_max_prefetches, prefetch_manager.GetMaxPrefetches(env_));
 
-  prefetch_manager.ClearTtl(base::android::AttachCurrentThread());
-  prefetch_manager.ClearMaxPrefetches(base::android::AttachCurrentThread());
+  prefetch_manager.ClearTtl(env_);
+  prefetch_manager.ClearMaxPrefetches(env_);
 
-  EXPECT_EQ(default_ttl_in_sec,
-            prefetch_manager.GetTtlInSec(base::android::AttachCurrentThread()));
-  EXPECT_EQ(default_max_prefetches, prefetch_manager.GetMaxPrefetches(
-                                        base::android::AttachCurrentThread()));
+  EXPECT_EQ(default_ttl_in_sec, prefetch_manager.GetTtlInSec(env_));
+  EXPECT_EQ(default_max_prefetches, prefetch_manager.GetMaxPrefetches(env_));
 }
 
 TEST_F(AwPrefetchManagerTest, MaxPrefetchReachesLimit) {
   AwPrefetchManager prefetch_manager(browser_context_.get());
 
-  prefetch_manager.SetTtlInSec(base::android::AttachCurrentThread(),
-                               /*ttl_in_sec=*/60 * 10);
+  prefetch_manager.SetTtlInSec(env_, /*ttl_in_sec=*/60 * 10);
 
-  prefetch_manager.SetMaxPrefetches(base::android::AttachCurrentThread(),
-                                    /* max_prefetches=*/3);
+  prefetch_manager.SetMaxPrefetches(env_, /* max_prefetches=*/3);
 
   // Add more prefetch requests than the limit.
   for (int i = 0; i < 5; ++i) {
     prefetch_manager.StartPrefetchRequest(
-        base::android::AttachCurrentThread(),
-        "https://example.com/" + base::NumberToString(i),
+        env_, "https://example.com/" + base::NumberToString(i),
         /*prefetch_params=*/nullptr, /*callback=*/nullptr,
         /*callback_executor=*/nullptr);
   }
@@ -91,9 +84,8 @@ TEST_F(AwPrefetchManagerTest, MaxPrefetchReachesLimit) {
 
   // Add one more to trigger a removal
   prefetch_manager.StartPrefetchRequest(
-      base::android::AttachCurrentThread(), "https://example.com/last",
-      /*prefetch_params=*/nullptr, /*callback=*/nullptr,
-      /*callback_executor=*/nullptr);
+      env_, "https://example.com/last", /*prefetch_params=*/nullptr,
+      /*callback=*/nullptr, /*callback_executor=*/nullptr);
   EXPECT_EQ(prefetch_manager.GetAllPrefetchKeysForTesting().size(),
             3u);  // Should still be at the limit
 }
@@ -101,22 +93,18 @@ TEST_F(AwPrefetchManagerTest, MaxPrefetchReachesLimit) {
 TEST_F(AwPrefetchManagerTest, RemoveOldestPrefetchHandle) {
   AwPrefetchManager prefetch_manager(browser_context_.get());
 
-  prefetch_manager.SetTtlInSec(base::android::AttachCurrentThread(),
-                               /*ttl_in_sec=*/60 * 10);
+  prefetch_manager.SetTtlInSec(env_, /*ttl_in_sec=*/60 * 10);
 
-  prefetch_manager.SetMaxPrefetches(base::android::AttachCurrentThread(),
-                                    /* max_prefetches=*/2);
+  prefetch_manager.SetMaxPrefetches(env_, /* max_prefetches=*/2);
 
   // 1. Make two requests.
   prefetch_manager.StartPrefetchRequest(
-      base::android::AttachCurrentThread(), "https://example.com/0",
-      /*prefetch_params=*/nullptr, /*callback=*/nullptr,
-      /*callback_executor=*/nullptr);
+      env_, "https://example.com/0", /*prefetch_params=*/nullptr,
+      /*callback=*/nullptr, /*callback_executor=*/nullptr);
 
   prefetch_manager.StartPrefetchRequest(
-      base::android::AttachCurrentThread(), "https://example.com/1",
-      /*prefetch_params=*/nullptr, /*callback=*/nullptr,
-      /*callback_executor=*/nullptr);
+      env_, "https://example.com/1", /*prefetch_params=*/nullptr,
+      /*callback=*/nullptr, /*callback_executor=*/nullptr);
 
   // 2. Capture the initial prefetches.
   std::vector<int32_t> initial_prefetches =
@@ -125,9 +113,8 @@ TEST_F(AwPrefetchManagerTest, RemoveOldestPrefetchHandle) {
 
   // 3. Do the third request.
   prefetch_manager.StartPrefetchRequest(
-      base::android::AttachCurrentThread(), "https://example.com/2",
-      /*prefetch_params=*/nullptr, /*callback=*/nullptr,
-      /*callback_executor=*/nullptr);
+      env_, "https://example.com/2", /*prefetch_params=*/nullptr,
+      /*callback=*/nullptr, /*callback_executor=*/nullptr);
 
   std::vector<int32_t> current_prefetches =
       prefetch_manager.GetAllPrefetchKeysForTesting();
@@ -149,32 +136,27 @@ TEST_F(AwPrefetchManagerTest, RemoveOldestPrefetchHandle) {
 TEST_F(AwPrefetchManagerTest, UpdateMaxPrefetchesIsRespected) {
   AwPrefetchManager prefetch_manager(browser_context_.get());
 
-  prefetch_manager.SetTtlInSec(base::android::AttachCurrentThread(),
-                               /*ttl_in_sec=*/60 * 10);
+  prefetch_manager.SetTtlInSec(env_, /*ttl_in_sec=*/60 * 10);
 
   // set MaxPrefetches to a big number, 5.
-  prefetch_manager.SetMaxPrefetches(base::android::AttachCurrentThread(),
-                                    /* max_prefetches=*/5);
+  prefetch_manager.SetMaxPrefetches(env_, /* max_prefetches=*/5);
 
   // Make five requests.
   for (int i = 0; i < 5; ++i) {
     prefetch_manager.StartPrefetchRequest(
-        base::android::AttachCurrentThread(),
-        "https://example.com/" + base::NumberToString(i),
+        env_, "https://example.com/" + base::NumberToString(i),
         /*prefetch_params=*/nullptr, /*callback=*/nullptr,
         /*callback_executor=*/nullptr);
   }
   EXPECT_EQ(prefetch_manager.GetAllPrefetchKeysForTesting().size(), 5u);
 
   // Now, let's lower that number with more than 1. Let's say 2.
-  prefetch_manager.SetMaxPrefetches(base::android::AttachCurrentThread(),
-                                    /* max_prefetches=*/2);
+  prefetch_manager.SetMaxPrefetches(env_, /* max_prefetches=*/2);
 
   // Adding another request.
   prefetch_manager.StartPrefetchRequest(
-      base::android::AttachCurrentThread(), "https://example.com/6",
-      /*prefetch_params=*/nullptr, /*callback=*/nullptr,
-      /*callback_executor=*/nullptr);
+      env_, "https://example.com/6", /*prefetch_params=*/nullptr,
+      /*callback=*/nullptr, /*callback_executor=*/nullptr);
 
   // Should be on the latest setting, 2.
   EXPECT_EQ(prefetch_manager.GetAllPrefetchKeysForTesting().size(), 2u);
@@ -183,10 +165,8 @@ TEST_F(AwPrefetchManagerTest, UpdateMaxPrefetchesIsRespected) {
 TEST_F(AwPrefetchManagerTest, PrefetchHandleKeysAlwaysIncrement) {
   AwPrefetchManager prefetch_manager(browser_context_.get());
 
-  prefetch_manager.SetTtlInSec(base::android::AttachCurrentThread(),
-                               /*ttl_in_sec=*/60 * 10);
-  prefetch_manager.SetMaxPrefetches(base::android::AttachCurrentThread(),
-                                    /* max_prefetches=*/5);
+  prefetch_manager.SetTtlInSec(env_, /*ttl_in_sec=*/60 * 10);
+  prefetch_manager.SetMaxPrefetches(env_, /* max_prefetches=*/5);
 
   // Confirm the initial values.
   int last_prefetch_key = prefetch_manager.GetLastPrefetchKeyForTesting();
@@ -198,8 +178,7 @@ TEST_F(AwPrefetchManagerTest, PrefetchHandleKeysAlwaysIncrement) {
   // are never reused.
   for (int i = 0; i < 10; ++i) {
     int prefetch_key = prefetch_manager.StartPrefetchRequest(
-        base::android::AttachCurrentThread(),
-        "https://example.com/" + base::NumberToString(i),
+        env_, "https://example.com/" + base::NumberToString(i),
         /*prefetch_params=*/nullptr, /*callback=*/nullptr,
         /*callback_executor=*/nullptr);
     EXPECT_EQ(prefetch_key, last_prefetch_key + 1);
@@ -238,22 +217,18 @@ TEST_F(AwPrefetchManagerNoNetworkServiceDedicatedThreadTest,
   const int ttl_in_sec = 10;
 
   AwPrefetchManager prefetch_manager(browser_context_.get());
-  prefetch_manager.SetTtlInSec(base::android::AttachCurrentThread(),
-                               ttl_in_sec);
-  prefetch_manager.SetMaxPrefetches(base::android::AttachCurrentThread(),
-                                    /*max_prefetches=*/5);
+  prefetch_manager.SetTtlInSec(env_, ttl_in_sec);
+  prefetch_manager.SetMaxPrefetches(env_, /*max_prefetches=*/5);
 
   // 1. First request should succeed.
   int key1 = prefetch_manager.StartPrefetchRequest(
-      base::android::AttachCurrentThread(), prefetch_url,
-      /*prefetch_params=*/nullptr, /*callback=*/nullptr,
+      env_, prefetch_url, /*prefetch_params=*/nullptr, /*callback=*/nullptr,
       /*callback_executor=*/nullptr);
   EXPECT_NE(key1, NO_PREFETCH_KEY);
 
   // 2. Second request for same URL should fail due to deduplication in manager.
   int key2 = prefetch_manager.StartPrefetchRequest(
-      base::android::AttachCurrentThread(), prefetch_url,
-      /*prefetch_params=*/nullptr, /*callback=*/nullptr,
+      env_, prefetch_url, /*prefetch_params=*/nullptr, /*callback=*/nullptr,
       /*callback_executor=*/nullptr);
   EXPECT_EQ(key2, NO_PREFETCH_KEY);
 
@@ -263,8 +238,7 @@ TEST_F(AwPrefetchManagerNoNetworkServiceDedicatedThreadTest,
   // 4. Third request for same URL should succeed because prefetch is expired
   // in `PrefetchService`.
   int key3 = prefetch_manager.StartPrefetchRequest(
-      base::android::AttachCurrentThread(), prefetch_url,
-      /*prefetch_params=*/nullptr, /*callback=*/nullptr,
+      env_, prefetch_url, /*prefetch_params=*/nullptr, /*callback=*/nullptr,
       /*callback_executor=*/nullptr);
   EXPECT_NE(key3, NO_PREFETCH_KEY);
 }
@@ -280,22 +254,18 @@ TEST_F(AwPrefetchManagerNoNetworkServiceDedicatedThreadTest,
   const int ttl_in_sec = 10;
 
   AwPrefetchManager prefetch_manager(browser_context_.get());
-  prefetch_manager.SetTtlInSec(base::android::AttachCurrentThread(),
-                               ttl_in_sec);
-  prefetch_manager.SetMaxPrefetches(base::android::AttachCurrentThread(),
-                                    /*max_prefetches=*/5);
+  prefetch_manager.SetTtlInSec(env_, ttl_in_sec);
+  prefetch_manager.SetMaxPrefetches(env_, /*max_prefetches=*/5);
 
   // 1. First request should succeed.
   int key1 = prefetch_manager.StartPrefetchRequest(
-      base::android::AttachCurrentThread(), prefetch_url,
-      /*prefetch_params=*/nullptr, /*callback=*/nullptr,
+      env_, prefetch_url, /*prefetch_params=*/nullptr, /*callback=*/nullptr,
       /*callback_executor=*/nullptr);
   EXPECT_NE(key1, NO_PREFETCH_KEY);
 
   // 2. Second request for same URL should fail due to deduplication in manager.
   int key2 = prefetch_manager.StartPrefetchRequest(
-      base::android::AttachCurrentThread(), prefetch_url,
-      /*prefetch_params=*/nullptr, /*callback=*/nullptr,
+      env_, prefetch_url, /*prefetch_params=*/nullptr, /*callback=*/nullptr,
       /*callback_executor=*/nullptr);
   EXPECT_EQ(key2, NO_PREFETCH_KEY);
 
@@ -305,8 +275,7 @@ TEST_F(AwPrefetchManagerNoNetworkServiceDedicatedThreadTest,
   // 4. Third request for same URL should still fail because `AwPrefetchManager`
   // doesn't track staleness.
   int key3 = prefetch_manager.StartPrefetchRequest(
-      base::android::AttachCurrentThread(), prefetch_url,
-      /*prefetch_params=*/nullptr, /*callback=*/nullptr,
+      env_, prefetch_url, /*prefetch_params=*/nullptr, /*callback=*/nullptr,
       /*callback_executor=*/nullptr);
   EXPECT_EQ(key3, NO_PREFETCH_KEY);
 }
