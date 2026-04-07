@@ -38,6 +38,8 @@ class VerticalTabStripTopContainer : public views::View,
   METADATA_HEADER(VerticalTabStripTopContainer, views::View)
 
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+      kToggleVerticalTabsExpandOnHoverElementId);
   VerticalTabStripTopContainer(
       tabs::VerticalTabStripStateController* state_controller,
       actions::ActionItem* root_action_item,
