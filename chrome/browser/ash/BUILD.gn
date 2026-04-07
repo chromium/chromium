@@ -14,7 +14,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "../download/notification/multi_profile_download_notifier_unittest.cc",
     "../extensions/api/enterprise_platform_keys/enterprise_platform_keys_api_unittest.cc",
     "../extensions/api/enterprise_platform_keys_private/enterprise_platform_keys_private_api_unittest.cc",
     "../extensions/updater/local_extension_cache_unittest.cc",

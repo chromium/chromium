@@ -7,18 +7,19 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/download/public/common/mock_download_item.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/fake_download_item.h"
 #include "content/public/test/mock_download_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
-using ::testing::AnyNumber;
 
 namespace {
 
@@ -68,8 +69,9 @@ class MockDownloadManager : public content::MockDownloadManager {
   }
 
   void Shutdown() override {
-    for (auto& observer : observers_)
+    for (auto& observer : observers_) {
       observer.ManagerGoingDown(this);
+    }
   }
 
  private:
@@ -78,19 +80,23 @@ class MockDownloadManager : public content::MockDownloadManager {
 
 }  // namespace
 
-class MultiProfileDownloadNotifierTest : public BrowserWithTestWindowTest {
+class MultiProfileDownloadNotifierBrowserTest : public InProcessBrowserTest {
  public:
-  // BrowserWithTestWindowTest:
-  void SetUp() override {
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
     notifier_ = std::make_unique<MultiProfileDownloadNotifier>(
         &client(), RequireManagerInitialization());
-    BrowserWithTestWindowTest::SetUp();
+    ConfigureMockManagerForProfile(browser()->profile());
   }
 
-  TestingProfile* CreateProfile(const std::string& profile_name) override {
-    auto* profile = BrowserWithTestWindowTest::CreateProfile(profile_name);
-    SetUpDownloadManager(profile);
-    return profile;
+  void ConfigureMockManagerForProfile(Profile* profile) {
+    auto manager = std::make_unique<testing::NiceMock<MockDownloadManager>>();
+    ON_CALL(*manager, IsManagerInitialized())
+        .WillByDefault(testing::Return(ShouldInitializeManager()));
+    ON_CALL(*manager, GetBrowserContext())
+        .WillByDefault(testing::Return(profile));
+    manager_ = manager.get();
+    profile->SetDownloadManagerForTesting(std::move(manager));
   }
 
   virtual bool ShouldInitializeManager() { return true; }
@@ -111,25 +117,18 @@ class MultiProfileDownloadNotifierTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  // Creates a `MockDownloadManager` for `profile` to use.
-  void SetUpDownloadManager(Profile* profile) {
-    auto manager = std::make_unique<testing::NiceMock<MockDownloadManager>>();
-    ON_CALL(*manager, IsManagerInitialized())
-        .WillByDefault(testing::Return(ShouldInitializeManager()));
-    manager_ = manager.get();
-    profile->SetDownloadManagerForTesting(std::move(manager));
-  }
-
   testing::NiceMock<MockNotifierClient> client_;
-  raw_ptr<testing::NiceMock<MockDownloadManager>, DanglingUntriaged> manager_;
+  raw_ptr<testing::NiceMock<MockDownloadManager>, AcrossTasksDanglingUntriaged>
+      manager_;
   testing::NiceMock<download::MockDownloadItem> item_;
   std::unique_ptr<MultiProfileDownloadNotifier> notifier_;
 };
 
-TEST_F(MultiProfileDownloadNotifierTest, ProfileObservation) {
+IN_PROC_BROWSER_TEST_F(MultiProfileDownloadNotifierBrowserTest,
+                       ProfileObservation) {
   // Make sure that profiles are not observed when they are filtered by
   // `ShouldObserveProfile()`.
-  TestingProfile* profile = GetProfile();
+  Profile* profile = browser()->profile();
   ON_CALL(client(), ShouldObserveProfile(profile))
       .WillByDefault(testing::Return(false));
   // Since `manager()`'s `IsManagerInitialized()` is mocked to return true,
@@ -147,11 +146,10 @@ TEST_F(MultiProfileDownloadNotifierTest, ProfileObservation) {
 
   // Make sure that off-the-record profiles are observed when spawned from an
   // observed profile.
-  TestingProfile::Builder incognito_profile_builder;
-  incognito_profile_builder.SetProfileName(profile->GetProfileUserName());
+  // In a browser test, we can just use the real OTR profile.
   EXPECT_CALL(client(), OnManagerInitialized(_));
   Profile* const incognito_profile =
-      incognito_profile_builder.BuildIncognito(profile);
+      profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
   // If `profile` and `incognito_profile` are being observed, `client()`'s
   // `OnManagerGoingDown()` should be called with each profile's download
@@ -161,8 +159,8 @@ TEST_F(MultiProfileDownloadNotifierTest, ProfileObservation) {
               OnManagerGoingDown(incognito_profile->GetDownloadManager()));
 }
 
-class MultiProfileDownloadNotifierManagerInitializationTest
-    : public MultiProfileDownloadNotifierTest,
+class MultiProfileDownloadNotifierManagerInitializationBrowserTest
+    : public MultiProfileDownloadNotifierBrowserTest,
       public testing::WithParamInterface<
           std::tuple<bool /* should_initialize_manager */,
                      bool /* require_manager_initialization */>> {
@@ -175,12 +173,14 @@ class MultiProfileDownloadNotifierManagerInitializationTest
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    MultiProfileDownloadNotifierManagerInitializationTest,
+    MultiProfileDownloadNotifierManagerInitializationBrowserTest,
     testing::Combine(/*should_initialize_manager=*/testing::Bool(),
                      /*require_manager_initialization=*/testing::Bool()));
 
-TEST_P(MultiProfileDownloadNotifierManagerInitializationTest, ClientCalls) {
-  TestingProfile* profile = GetProfile();
+IN_PROC_BROWSER_TEST_P(
+    MultiProfileDownloadNotifierManagerInitializationBrowserTest,
+    ClientCalls) {
+  Profile* profile = browser()->profile();
   ON_CALL(client(), ShouldObserveProfile(profile))
       .WillByDefault(testing::Return(true));
   notifier()->AddProfile(profile);
@@ -214,9 +214,10 @@ TEST_P(MultiProfileDownloadNotifierManagerInitializationTest, ClientCalls) {
       manager());
 }
 
-TEST_P(MultiProfileDownloadNotifierManagerInitializationTest,
-       DownloadRetrieval) {
-  TestingProfile* profile = GetProfile();
+IN_PROC_BROWSER_TEST_P(
+    MultiProfileDownloadNotifierManagerInitializationBrowserTest,
+    DownloadRetrieval) {
+  Profile* profile = browser()->profile();
   ON_CALL(client(), ShouldObserveProfile(profile))
       .WillByDefault(testing::Return(true));
   notifier()->AddProfile(profile);
@@ -240,8 +241,9 @@ TEST_P(MultiProfileDownloadNotifierManagerInitializationTest,
           [&downloads](
               std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>*
                   download_ptrs) {
-            for (auto& download : downloads)
+            for (auto& download : downloads) {
               download_ptrs->push_back(download.get());
+            }
           });
   auto retrieved_downloads = notifier()->GetAllDownloads();
   // `GetAllDownloads()` honors `client()`'s manager initialization requirement.
