@@ -1044,3 +1044,36 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, LockPrecedence) {
       view->GetExpandOnHoverLock(ExpandOnHoverLockType::kForceCollapse);
   EXPECT_FALSE(view->is_expanded_on_hover());
 }
+
+class VerticalTabStripRegionViewExpandOnHoverTest
+    : public VerticalTabStripRegionViewTest {
+ public:
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    return {{tabs::kVerticalTabs, {}}, {tabs::kVerticalTabsExpandOnHover, {}}};
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewExpandOnHoverTest,
+                       ExpandOnHoverEnabledChanged) {
+  // Fully collapse the tabstrip.
+  state_controller()->RequestCollapse(true);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return state_controller()->IsCollapsed(); }));
+
+  ASSERT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kVerticalTabsExpandOnHoverEnabled));
+  ASSERT_FALSE(region_view()->is_expanded_on_hover());
+
+  region_view()->GetFocusManager()->SetFocusedView(region_view());
+  EXPECT_FALSE(region_view()->is_expanded_on_hover());
+
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kVerticalTabsExpandOnHoverEnabled, true);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return region_view()->is_expanded_on_hover(); }));
+
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kVerticalTabsExpandOnHoverEnabled, false);
+  EXPECT_FALSE(region_view()->is_expanded_on_hover());
+}

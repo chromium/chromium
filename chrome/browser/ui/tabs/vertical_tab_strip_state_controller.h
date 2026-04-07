@@ -110,6 +110,9 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
   base::CallbackListSubscription RegisterOnCollapseChanged(
       CollapseChangeCallback callback);
 
+  base::CallbackListSubscription RegisterOnExpandOnHoverEnabledChanged(
+      base::RepeatingCallback<void(bool)> callback);
+
   using StateChangedCallback =
       base::RepeatingCallback<void(VerticalTabStripStateController*)>;
   base::CallbackListSubscription RegisterOnModeWillChange(
@@ -123,6 +126,7 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
 
  private:
   void NotifyCollapseChanged();
+  void NotifyExpandOnHoverEnabledChanged();
   void NotifyModeWillChange();
   void NotifyModeChanged();
 
@@ -168,6 +172,8 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
 
   base::RepeatingCallbackList<void(VerticalTabStripCollapseState)>
       on_collapse_changed_callback_list_;
+  base::RepeatingCallbackList<void(bool)>
+      on_expand_on_hover_enabled_changed_callback_list_;
   base::RepeatingCallbackList<void(VerticalTabStripStateController*)>
       on_mode_will_change_callback_list_;
   base::RepeatingCallbackList<void(VerticalTabStripStateController*)>

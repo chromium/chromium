@@ -216,6 +216,13 @@ VerticalTabStripStateController::RegisterOnCollapseChanged(
 }
 
 base::CallbackListSubscription
+VerticalTabStripStateController::RegisterOnExpandOnHoverEnabledChanged(
+    base::RepeatingCallback<void(bool)> callback) {
+  return on_expand_on_hover_enabled_changed_callback_list_.Add(
+      std::move(callback));
+}
+
+base::CallbackListSubscription
 VerticalTabStripStateController::RegisterOnModeWillChange(
     StateChangedCallback callback) {
   return on_mode_will_change_callback_list_.Add(std::move(callback));
@@ -232,6 +239,11 @@ void VerticalTabStripStateController::NotifyCollapseChanged() {
   UpdateSessionService();
   UpdatePrefService();
   on_collapse_changed_callback_list_.Notify(GetCollapseState());
+}
+
+void VerticalTabStripStateController::NotifyExpandOnHoverEnabledChanged() {
+  on_expand_on_hover_enabled_changed_callback_list_.Notify(
+      is_expand_on_hover_enabled_);
 }
 
 void VerticalTabStripStateController::NotifyModeWillChange() {
@@ -270,6 +282,7 @@ void VerticalTabStripStateController::OnExpandOnHoverEnabledChanged() {
     base::RecordAction(
         base::UserMetricsAction("VerticalTabs_ExpandOnHover_Disabled"));
   }
+  NotifyExpandOnHoverEnabledChanged();
 }
 
 void VerticalTabStripStateController::SetCollapsed(bool collapsed) {

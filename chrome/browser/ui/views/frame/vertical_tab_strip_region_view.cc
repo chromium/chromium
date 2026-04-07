@@ -873,6 +873,12 @@ views::View* VerticalTabStripRegionView::SetTabStripView(
                           &VerticalTabStripRegionView::OnAnimationProgressed,
                           base::Unretained(this)));
 
+  expand_on_hover_enabled_changed_subscription_ =
+      state_controller_->RegisterOnExpandOnHoverEnabledChanged(
+          base::BindRepeating(
+              &VerticalTabStripRegionView::OnExpandOnHoverEnabledChanged,
+              base::Unretained(this)));
+
   std::optional<size_t> separator_index = GetIndexOf(top_button_separator_);
   CHECK(separator_index.has_value());
   ReorderChildView(tab_strip_view_, separator_index.value() + 1);
@@ -885,6 +891,7 @@ views::View* VerticalTabStripRegionView::SetTabStripView(
 void VerticalTabStripRegionView::ClearTabStripView(views::View* view) {
   on_animation_update_subscription_.reset();
   on_active_tab_changed_subscription_.reset();
+  expand_on_hover_enabled_changed_subscription_.reset();
   omnibox_tab_helper_observation_.Reset();
   CHECK(tab_strip_view_);
   CHECK(tab_strip_view_ == view);
@@ -985,10 +992,11 @@ void VerticalTabStripRegionView::OnChildMoved() {
   hover_tab_selector_->CancelTabTransition();
 }
 
+void VerticalTabStripRegionView::OnExpandOnHoverEnabledChanged(bool enabled) {
+  UpdateExpandOnHoverState();
+}
+
 void VerticalTabStripRegionView::UpdateExpandOnHoverState() {
-  if (!state_controller_->IsExpandOnHoverEnabled()) {
-    return;
-  }
   // If not collapsed, then we shouldn't be in or entering the expand on hover
   // state.
   if (!state_controller_->IsCollapsed()) {
@@ -1007,8 +1015,9 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState() {
   }
 
   const bool should_expand =
-      IsMouseHovered() ||
-      (GetFocusManager() && Contains(GetFocusManager()->GetFocusedView()));
+      state_controller_->IsExpandOnHoverEnabled() &&
+      (IsMouseHovered() ||
+       (GetFocusManager() && Contains(GetFocusManager()->GetFocusedView())));
 
   if (expand_on_hover_timer_.IsRunning()) {
     if (should_expand) {
