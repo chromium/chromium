@@ -560,7 +560,7 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
 
 - (void)setEmptyState:(BOOL)empty {
   if (empty) {
-    // Show empty view illustration.
+    // Show empty view illustration and hide search bar.
     if (!self.tableView.backgroundView) {
       UIImage* emptyImage = [UIImage imageNamed:@"download_list_empty"];
       TableViewIllustratedEmptyView* emptyView = [[TableViewIllustratedEmptyView
@@ -573,9 +573,12 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
       emptyView.delegate = self;
       self.tableView.backgroundView = emptyView;
     }
+    // Hide search bar when content is empty.
+    self.navigationItem.searchController = nil;
   } else {
-    // Hide the empty view.
+    // Hide the empty view and show search bar.
     self.tableView.backgroundView = nil;
+    self.navigationItem.searchController = self.searchController;
   }
   if (self.filterHeaderView && self.filterHeaderView.isHidden == NO) {
     [self.filterHeaderView setAttributionTextShown:!empty];

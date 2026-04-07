@@ -305,6 +305,9 @@ TEST_F(DownloadListTableViewControllerTest, TestSetEmptyState) {
   // Verify background view is set.
   EXPECT_TRUE(controller_.tableView.backgroundView);
 
+  // Verify search bar is hidden when empty.
+  EXPECT_FALSE(controller_.navigationItem.searchController);
+
   // Test disabling empty state with header shown (records exist).
   [controller_ setDownloadListHeaderShown:YES];
   [controller_ setEmptyState:NO];
@@ -315,6 +318,11 @@ TEST_F(DownloadListTableViewControllerTest, TestSetEmptyState) {
 
   // Verify background view is cleared.
   EXPECT_FALSE(controller_.tableView.backgroundView);
+
+  // Verify search bar is shown when not empty.
+  EXPECT_TRUE(controller_.navigationItem.searchController);
+  EXPECT_EQ(controller_.navigationItem.searchController,
+            controller_.searchController);
 }
 
 /// Tests setLoadingState method exists and doesn't crash.
