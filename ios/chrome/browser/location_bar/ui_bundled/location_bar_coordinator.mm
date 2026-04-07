@@ -352,7 +352,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
   // Create incognito badge view controller and mediator for an incognito
   // profile.
-  if (isIncognito) {
+  if (isIncognito && !IsChromeNextIaEnabled()) {
     self.incognitoBadgeViewController = [[IncognitoBadgeViewController alloc]
         initWithButtonFactory:buttonFactory];
     if (!IsLocationBarBadgeMigrationEnabled()) {

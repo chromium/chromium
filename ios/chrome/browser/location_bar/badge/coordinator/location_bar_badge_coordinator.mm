@@ -217,9 +217,11 @@
 - (void)createContextualPanelEntryPointMediator {
   WebStateList* webStateList = self.browser->GetWebStateList();
 
-  [_dispatcher
-      startDispatchingToTarget:self
-                   forProtocol:@protocol(ContextualPanelEntrypointCommands)];
+  if (!IsChromeNextIaEnabled()) {
+    [_dispatcher
+        startDispatchingToTarget:self
+                     forProtocol:@protocol(ContextualPanelEntrypointCommands)];
+  }
 
   id<ContextualSheetCommands> contextualSheetHandler =
       HandlerForProtocol(_dispatcher, ContextualSheetCommands);
