@@ -31,8 +31,6 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.StyleRes;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.R;
@@ -92,15 +90,7 @@ class ListMenuItemWithSubmenuViewBinder {
             }
         } else if (propertyKey == ICON_TINT_COLOR_STATE_LIST_ID) {
             @ColorRes int iconTintColorId = model.get(ICON_TINT_COLOR_STATE_LIST_ID);
-            ImageView icon = view.findViewById(org.chromium.ui.R.id.menu_item_icon);
-            if (icon == null) return;
-            if (iconTintColorId != Resources.ID_NULL) {
-                ImageViewCompat.setImageTintList(
-                        icon,
-                        AppCompatResources.getColorStateList(view.getContext(), iconTintColorId));
-            } else {
-                ImageViewCompat.setImageTintList(icon, null);
-            }
+            ListMenuUtils.applyTintToAllIcons(view, iconTintColorId);
         }
     }
 }
