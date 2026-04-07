@@ -42,8 +42,8 @@ public class CachedFlagsSharedPreferences {
                                     FLAGS_CRASH_STREAK_BEFORE_CACHE,
                                     FLAGS_FEATURE_PARAM_CACHED.pattern(),
                                     FLAGS_SAFE_MODE_RUNS_LEFT),
-                            /* legacyKeys= */ Collections.EMPTY_LIST,
-                            /* legacyPrefixes= */ Collections.EMPTY_LIST)
+                            /* legacyKeys= */ Collections.emptyList(),
+                            /* legacyPrefixes= */ Collections.emptyList())
                     : null);
 
     public static SharedPreferencesManager getInstance() {

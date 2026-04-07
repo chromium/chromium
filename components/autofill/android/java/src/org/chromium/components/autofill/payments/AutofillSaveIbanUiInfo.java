@@ -125,7 +125,7 @@ public class AutofillSaveIbanUiInfo {
         private @Nullable String mDescriptionText;
         private @Nullable String mIbanValue;
         private boolean mIsServerSave;
-        private List<LegalMessageLine> mLegalMessageLines = Collections.EMPTY_LIST;
+        private List<LegalMessageLine> mLegalMessageLines = Collections.emptyList();
         @DrawableRes private int mLogoIcon;
         private @Nullable String mTitleText;
 

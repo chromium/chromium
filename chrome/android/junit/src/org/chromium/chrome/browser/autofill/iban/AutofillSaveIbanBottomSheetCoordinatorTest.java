@@ -45,7 +45,7 @@ public final class AutofillSaveIbanBottomSheetCoordinatorTest {
                     .withDescriptionText("")
                     .withIbanValue("CH5604835012345678009")
                     .withTitleText("Save IBAN?")
-                    .withLegalMessageLines(Collections.EMPTY_LIST)
+                    .withLegalMessageLines(Collections.emptyList())
                     .withLogoIcon(0)
                     .withTitleText("")
                     .build();

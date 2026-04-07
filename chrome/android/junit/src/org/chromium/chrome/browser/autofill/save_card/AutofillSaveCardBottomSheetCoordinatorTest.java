@@ -205,7 +205,7 @@ public final class AutofillSaveCardBottomSheetCoordinatorTest {
                                 .withCardDetail(
                                         new CardDetail(
                                                 TEST_DRAWABLE_RES, "Card label", "Card sub label"))
-                                .withLegalMessageLines(Collections.EMPTY_LIST)
+                                .withLegalMessageLines(Collections.emptyList())
                                 .withConfirmText("Confirm text")
                                 .withCancelText("Cancel text")
                                 .withLoadingDescription("Loading description")

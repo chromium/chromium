@@ -108,7 +108,7 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                                     /* rpIcon= */ null),
                             Arrays.asList(mReturningAna, mNewBob),
                             Arrays.asList(mIdpData),
-                            /* newAccounts= */ Collections.EMPTY_LIST);
+                            /* newAccounts= */ Collections.emptyList());
                 });
         pollUiThread(() -> getBottomSheetState() == mExpectedSheetState);
 
@@ -130,7 +130,7 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                                     /* rpIcon= */ null),
                             Arrays.asList(mReturningAna, mNewBob),
                             Arrays.asList(mIdpData),
-                            /* newAccounts= */ Collections.EMPTY_LIST);
+                            /* newAccounts= */ Collections.emptyList());
                 });
         pollUiThread(() -> getBottomSheetState() == mExpectedSheetState);
         BottomSheetTestSupport sheetSupport = new BottomSheetTestSupport(mBottomSheetController);
@@ -152,7 +152,7 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                                     /* rpIcon= */ null),
                             Arrays.asList(mNewBob),
                             Arrays.asList(mIdpData),
-                            /* newAccounts= */ Collections.EMPTY_LIST);
+                            /* newAccounts= */ Collections.emptyList());
                 });
         pollUiThread(() -> getBottomSheetState() == mExpectedSheetState);
 
@@ -227,7 +227,7 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                                     /* rpIcon= */ null),
                             Arrays.asList(mReturningAna, mNewBob),
                             Arrays.asList(mIdpData),
-                            /* newAccounts= */ Collections.EMPTY_LIST);
+                            /* newAccounts= */ Collections.emptyList());
                 });
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.OTHER);
         verify(mMockBridge, never()).onAccountSelected(any());
@@ -381,7 +381,7 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                                     /* rpIcon= */ null),
                             Arrays.asList(mNewBobWithAddAccount, mReturningAnaWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
-                            /* newAccounts= */ Collections.EMPTY_LIST);
+                            /* newAccounts= */ Collections.emptyList());
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == mExpectedSheetState);

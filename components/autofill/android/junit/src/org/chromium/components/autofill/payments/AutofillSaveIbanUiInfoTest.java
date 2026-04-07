@@ -28,7 +28,7 @@ public class AutofillSaveIbanUiInfoTest {
                 .withDescriptionText("")
                 .withIbanValue("CH5604835012345678009")
                 .withIsServerSave(false)
-                .withLegalMessageLines(Collections.EMPTY_LIST)
+                .withLegalMessageLines(Collections.emptyList())
                 .withLogoIcon(0)
                 .withTitleText("");
     }

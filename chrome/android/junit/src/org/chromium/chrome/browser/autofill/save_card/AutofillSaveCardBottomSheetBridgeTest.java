@@ -82,7 +82,7 @@ public final class AutofillSaveCardBottomSheetBridgeTest {
                         .withLogoIconDescription("")
                         .withCardDetail(new CardDetail(/* iconId= */ 0, "label", "subLabel"))
                         .withCardDescription("Card description")
-                        .withLegalMessageLines(Collections.EMPTY_LIST)
+                        .withLegalMessageLines(Collections.emptyList())
                         .withTitleText("Title")
                         .withConfirmText("Confirm")
                         .withCancelText("Cancel")

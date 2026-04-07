@@ -33,7 +33,7 @@ public class AutofillSaveCardUiInfoTest {
                 .withIsForUpload(false)
                 .withCardDetail(new CardDetail(0, "", ""))
                 .withCardDescription("")
-                .withLegalMessageLines(Collections.EMPTY_LIST)
+                .withLegalMessageLines(Collections.emptyList())
                 .withTitleText("")
                 .withConfirmText("")
                 .withCancelText("")

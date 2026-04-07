@@ -205,6 +205,6 @@ public class DeprecatedChromePreferenceKeys {
     }
 
     static List<KeyPrefix> getPrefixesForTesting() {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 }

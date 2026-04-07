@@ -164,7 +164,7 @@ public abstract class Transition {
 
     protected List<Condition> getTransitionConditions() {
         if (mOptions.mTransitionConditions == null) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         } else {
             return mOptions.mTransitionConditions;
         }

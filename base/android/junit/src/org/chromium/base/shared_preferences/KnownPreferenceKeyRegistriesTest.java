@@ -83,7 +83,7 @@ public class KnownPreferenceKeyRegistriesTest {
 
     private static PreferenceKeyRegistry createRegistryWithOneKey(String name, String key) {
         return new PreferenceKeyRegistry(
-                name, List.of(key), Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+                name, List.of(key), Collections.emptyList(), Collections.emptyList());
     }
 
     // TODO: Unify with HistogramWatcherTestBase's version.

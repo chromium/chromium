@@ -59,7 +59,7 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                             mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
                     Arrays.asList(mNewUserAccount),
                     Arrays.asList(mIdpData),
-                    /* newAccounts= */ Collections.EMPTY_LIST);
+                    /* newAccounts= */ Collections.emptyList());
             mMediator.showVerifySheet(mAnaAccount);
 
             // There is no account shown in the verify sheet on active mode.
@@ -120,7 +120,7 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                         mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
                 Arrays.asList(mAnaAccount, mBobAccount),
                 Arrays.asList(mIdpData),
-                /* newAccounts= */ Collections.EMPTY_LIST);
+                /* newAccounts= */ Collections.emptyList());
         assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
 
         // For accounts dialog, we expect dragbar handle + header + two accounts.
@@ -137,7 +137,7 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                         mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
                 Arrays.asList(mNewUserAccount),
                 Arrays.asList(mIdpData),
-                /* newAccounts= */ Collections.EMPTY_LIST);
+                /* newAccounts= */ Collections.emptyList());
         mMediator.showRequestPermissionModalSheet(mNewUserAccount);
 
         // For request permission dialog, we expect drag handlebar + header + account chip +
@@ -160,7 +160,7 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                         mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
                 Arrays.asList(mAnaAccount),
                 Arrays.asList(mIdpData),
-                /* newAccounts= */ Collections.EMPTY_LIST);
+                /* newAccounts= */ Collections.emptyList());
 
         assertNotNull(mModel.get(ItemProperties.HEADER).get(RP_BRAND_ICON));
     }
@@ -172,7 +172,7 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                         mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
                 Arrays.asList(mAnaAccountWithoutBrandIcons),
                 Arrays.asList(mIdpDataWithoutIcons),
-                /* newAccounts= */ Collections.EMPTY_LIST);
+                /* newAccounts= */ Collections.emptyList());
 
         PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
         // Unlike passive mode, brand icons should not be available because we do not show any

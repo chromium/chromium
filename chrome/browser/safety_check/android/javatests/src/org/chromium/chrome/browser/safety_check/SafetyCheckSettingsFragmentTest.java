@@ -171,7 +171,7 @@ public class SafetyCheckSettingsFragmentTest {
         selectedTypes =
                 isPasswordSyncEnabled
                         ? Set.of(UserSelectableType.PASSWORDS)
-                        : Collections.EMPTY_SET;
+                        : Collections.emptySet();
         when(mSyncService.getSelectedTypes()).thenReturn(selectedTypes);
         when(mSyncService.getAccountInfo())
                 .thenReturn(
