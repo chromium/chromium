@@ -27,6 +27,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/contextual_search/desktop_query_contextualizer_delegate.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_query_flow_router.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
@@ -141,7 +142,6 @@ class TestContextualTasksComposeboxHandler
               GetLensOverlayToken,
               (),
               (override));
-  MOCK_METHOD(bool, IsTabValid, (int32_t id), (override));
   MOCK_METHOD(void,
               OnContextUploadStatusChanged,
               (const base::UnguessableToken& context_token,
@@ -354,11 +354,8 @@ class ContextualTasksComposeboxHandlerTest
     handler_->SetMockContextualTasksService(mock_contextual_tasks_service_ptr_);
     handler_->recontextualizer_ =
         std::make_unique<contextual_tasks::QueryContextualizer>(
-            mock_contextual_tasks_service_ptr_, handler_.get());
-
-    // By default, all tabs are valid in tests.
-    EXPECT_CALL(*handler_, IsTabValid(testing::_))
-        .WillRepeatedly(testing::Return(true));
+            mock_contextual_tasks_service_ptr_,
+            handler_->desktop_delegate_.get());
 
     // Default to calling the real implementation for
     // OnContextUploadStatusChanged.

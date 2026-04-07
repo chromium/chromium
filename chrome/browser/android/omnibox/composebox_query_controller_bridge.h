@@ -118,9 +118,6 @@ class ComposeboxQueryControllerBridge
   GetTabViewportEncodingOptionsForQueryContextualizer() override;
   contextual_search::ContextualSearchSessionHandle*
   GetOrCreateSessionHandleForQueryContextualizer() override;
-  void OnPageContextIneligible() override;
-  void OnTabProcessedForQueryContextualization(
-      contextual_tasks::QueryContextualizer::TabId id) override;
 
  private:
   void OnGetPageContentFromCache(

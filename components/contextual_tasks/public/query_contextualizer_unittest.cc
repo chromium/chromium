@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
@@ -49,11 +50,7 @@ class MockQueryContextualizerDelegate : public QueryContextualizer::Delegate {
               GetTabViewportEncodingOptionsForQueryContextualizer,
               (),
               (override));
-  MOCK_METHOD(void, OnPageContextIneligible, (), (override));
-  MOCK_METHOD(void,
-              OnTabProcessedForQueryContextualization,
-              (QueryContextualizer::TabId id),
-              (override));
+
   MOCK_METHOD(contextual_search::ContextualSearchSessionHandle*,
               GetOrCreateSessionHandleForQueryContextualizer,
               (),
@@ -224,7 +221,12 @@ TEST_F(QueryContextualizerTest, Contextualize_WaitsForUploadsToFinish) {
   EXPECT_CALL(*session_handle_,
               StartTabContextUploadFlow(testing::_, testing::_, testing::_));
 
-  EXPECT_CALL(*delegate_, OnTabProcessedForQueryContextualization(tab_id));
+  base::MockCallback<QueryContextualizer::PageContextIneligibleCallback>
+      ineligible_callback;
+  base::MockCallback<QueryContextualizer::TabProcessedCallback>
+      processed_callback;
+
+  EXPECT_CALL(processed_callback, Run(tab_id));
 
   // Mock GetFileInfo to return non-terminal status initially.
   contextual_search::FileInfo mock_file_info;
@@ -240,7 +242,8 @@ TEST_F(QueryContextualizerTest, Contextualize_WaitsForUploadsToFinish) {
   EXPECT_CALL(done_callback, Run(testing::_)).Times(0);
 
   contextualizer_->Contextualize(task_id, "Check out https://example.com",
-                                 {tab_id}, {}, done_callback.Get());
+                                 {tab_id}, {}, ineligible_callback.Get(),
+                                 processed_callback.Get(), done_callback.Get());
 
   ASSERT_NE(captured_observer_, nullptr);
   ASSERT_EQ(created_tokens_.size(), 2u);
@@ -332,7 +335,8 @@ TEST_F(QueryContextualizerTest, Contextualize_ExtractsUrls) {
                                  "Check out https://example.com! Also "
                                  "http://test.org, and www.google.com. "
                                  "Duplicate: https://example.com",
-                                 {}, {}, done_callback.Get());
+                                 {}, {}, base::DoNothing(), base::DoNothing(),
+                                 done_callback.Get());
   CompleteAllUploads();
 }
 
@@ -403,7 +407,8 @@ TEST_F(QueryContextualizerTest,
                                  "Check out https://example.com! Also "
                                  "http://test.org, and www.google.com. "
                                  "Duplicate: https://example.com",
-                                 {}, {}, done_callback.Get());
+                                 {}, {}, base::DoNothing(), base::DoNothing(),
+                                 done_callback.Get());
   CompleteAllUploads();
 }
 
@@ -482,13 +487,19 @@ TEST_F(QueryContextualizerTest, Contextualize_RecontextualizeExpiredTab) {
         EXPECT_EQ(data->context_id, 12345);
       });
 
-  EXPECT_CALL(*delegate_, OnTabProcessedForQueryContextualization(tab_id));
+  base::MockCallback<QueryContextualizer::PageContextIneligibleCallback>
+      ineligible_callback;
+  base::MockCallback<QueryContextualizer::TabProcessedCallback>
+      processed_callback;
+
+  EXPECT_CALL(processed_callback, Run(tab_id));
 
   base::MockCallback<QueryContextualizer::ContextualizedCallback> done_callback;
   EXPECT_CALL(done_callback, Run(testing::_));
 
   contextualizer_->Contextualize(task_id, "test query", {tab_id}, {},
-                                 done_callback.Get());
+                                 ineligible_callback.Get(),
+                                 processed_callback.Get(), done_callback.Get());
   CompleteAllUploads();
 }
 
@@ -575,13 +586,19 @@ TEST_F(QueryContextualizerTest, Contextualize_RecontextualizeContentChanged) {
         EXPECT_EQ(data->context_id, 12345);
       });
 
-  EXPECT_CALL(*delegate_, OnTabProcessedForQueryContextualization(tab_id));
+  base::MockCallback<QueryContextualizer::PageContextIneligibleCallback>
+      ineligible_callback;
+  base::MockCallback<QueryContextualizer::TabProcessedCallback>
+      processed_callback;
+
+  EXPECT_CALL(processed_callback, Run(tab_id));
 
   base::MockCallback<QueryContextualizer::ContextualizedCallback> done_callback;
   EXPECT_CALL(done_callback, Run(testing::_));
 
   contextualizer_->Contextualize(task_id, "test query", {tab_id}, {},
-                                 done_callback.Get());
+                                 ineligible_callback.Get(),
+                                 processed_callback.Get(), done_callback.Get());
   CompleteAllUploads();
 }
 
@@ -672,13 +689,19 @@ TEST_F(QueryContextualizerTest,
               StartTabContextUploadFlow(testing::_, testing::_, testing::_))
       .Times(0);
 
-  EXPECT_CALL(*delegate_, OnTabProcessedForQueryContextualization(tab_id));
+  base::MockCallback<QueryContextualizer::PageContextIneligibleCallback>
+      ineligible_callback;
+  base::MockCallback<QueryContextualizer::TabProcessedCallback>
+      processed_callback;
+
+  EXPECT_CALL(processed_callback, Run(tab_id));
 
   base::MockCallback<QueryContextualizer::ContextualizedCallback> done_callback;
   EXPECT_CALL(done_callback, Run(testing::_));
 
   contextualizer_->Contextualize(task_id, "test query", {tab_id}, {},
-                                 done_callback.Get());
+                                 ineligible_callback.Get(),
+                                 processed_callback.Get(), done_callback.Get());
   CompleteAllUploads();
 }
 
@@ -723,6 +746,7 @@ TEST_F(QueryContextualizerTest, Contextualize_ActiveTabNotInContext) {
   EXPECT_CALL(done_callback, Run(testing::_));
 
   contextualizer_->Contextualize(task_id, "test query", {tab_id}, {},
+                                 base::DoNothing(), base::DoNothing(),
                                  done_callback.Get());
   CompleteAllUploads();
 }
@@ -774,6 +798,7 @@ TEST_F(QueryContextualizerTest, Contextualize_ActiveTabUrlMismatch) {
   EXPECT_CALL(done_callback, Run(testing::_));
 
   contextualizer_->Contextualize(task_id, "test query", {tab_id}, {},
+                                 base::DoNothing(), base::DoNothing(),
                                  done_callback.Get());
   CompleteAllUploads();
 }
@@ -866,13 +891,19 @@ TEST_F(QueryContextualizerTest,
         EXPECT_EQ(data->context_id, 12345);
       });
 
-  EXPECT_CALL(*delegate_, OnTabProcessedForQueryContextualization(tab_id));
+  base::MockCallback<QueryContextualizer::PageContextIneligibleCallback>
+      ineligible_callback;
+  base::MockCallback<QueryContextualizer::TabProcessedCallback>
+      processed_callback;
+
+  EXPECT_CALL(processed_callback, Run(tab_id));
 
   base::MockCallback<QueryContextualizer::ContextualizedCallback> done_callback;
   EXPECT_CALL(done_callback, Run(testing::_));
 
   contextualizer_->Contextualize(task_id, "test query", {tab_id}, {},
-                                 done_callback.Get());
+                                 ineligible_callback.Get(),
+                                 processed_callback.Get(), done_callback.Get());
   CompleteAllUploads();
 }
 
@@ -979,13 +1010,19 @@ TEST_F(QueryContextualizerTest,
         EXPECT_EQ(data->context_id, 12345);
       });
 
-  EXPECT_CALL(*delegate_, OnTabProcessedForQueryContextualization(tab_id));
+  base::MockCallback<QueryContextualizer::PageContextIneligibleCallback>
+      ineligible_callback;
+  base::MockCallback<QueryContextualizer::TabProcessedCallback>
+      processed_callback;
+
+  EXPECT_CALL(processed_callback, Run(tab_id));
 
   base::MockCallback<QueryContextualizer::ContextualizedCallback> done_callback;
   EXPECT_CALL(done_callback, Run(testing::_));
 
   contextualizer_->Contextualize(task_id, "", {tab_id}, {},
-                                 done_callback.Get());
+                                 ineligible_callback.Get(),
+                                 processed_callback.Get(), done_callback.Get());
   CompleteAllUploads();
 }
 
@@ -1093,13 +1130,19 @@ TEST_F(QueryContextualizerTest,
         EXPECT_EQ(data->context_id, 12345);
       });
 
-  EXPECT_CALL(*delegate_, OnTabProcessedForQueryContextualization(tab_id));
+  base::MockCallback<QueryContextualizer::PageContextIneligibleCallback>
+      ineligible_callback;
+  base::MockCallback<QueryContextualizer::TabProcessedCallback>
+      processed_callback;
+
+  EXPECT_CALL(processed_callback, Run(tab_id));
 
   base::MockCallback<QueryContextualizer::ContextualizedCallback> done_callback;
   EXPECT_CALL(done_callback, Run(testing::_));
 
   contextualizer_->Contextualize(task_id, "", {tab_id}, {},
-                                 done_callback.Get());
+                                 ineligible_callback.Get(),
+                                 processed_callback.Get(), done_callback.Get());
   CompleteAllUploads();
 }
 TEST_F(QueryContextualizerTest,
@@ -1214,13 +1257,19 @@ TEST_F(QueryContextualizerTest,
               StartTabContextUploadFlow(testing::_, testing::_, testing::_))
       .Times(0);
 
-  EXPECT_CALL(*delegate_, OnTabProcessedForQueryContextualization(tab_id));
+  base::MockCallback<QueryContextualizer::PageContextIneligibleCallback>
+      ineligible_callback;
+  base::MockCallback<QueryContextualizer::TabProcessedCallback>
+      processed_callback;
+
+  EXPECT_CALL(processed_callback, Run(tab_id));
 
   base::MockCallback<QueryContextualizer::ContextualizedCallback> done_callback;
   EXPECT_CALL(done_callback, Run(testing::_));
 
   contextualizer_->Contextualize(task_id, "test query", {tab_id}, {},
-                                 done_callback.Get());
+                                 ineligible_callback.Get(),
+                                 processed_callback.Get(), done_callback.Get());
 }
 
 }  // namespace contextual_tasks

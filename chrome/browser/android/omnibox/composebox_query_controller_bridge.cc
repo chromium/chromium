@@ -194,14 +194,6 @@ ComposeboxQueryControllerBridge::
   return session_handle_.get();
 }
 
-void ComposeboxQueryControllerBridge::OnPageContextIneligible() {
-  // No-op.
-}
-
-void ComposeboxQueryControllerBridge::OnTabProcessedForQueryContextualization(
-    contextual_tasks::QueryContextualizer::TabId id) {
-  // No-op.
-}
 
 void ComposeboxQueryControllerBridge::NotifySessionStarted(JNIEnv* env) {
   session_handle_->NotifySessionStarted();
@@ -333,6 +325,8 @@ void ComposeboxQueryControllerBridge::ContextualizeAndCreateSearchUrl(
     query_contextualizer_->Contextualize(
         /*task_id=*/std::nullopt, query_text, /*tabs_to_recontextualize=*/{},
         /*tabs_to_force_contextualize=*/{},
+        /*on_ineligible_callback=*/base::DoNothing(),
+        /*on_processed_callback=*/base::DoNothing(),
         base::BindOnce(
             [](base::OnceClosure closure,
                base::WeakPtr<contextual_search::ContextualSearchSessionHandle>

@@ -134,6 +134,8 @@ void QueryContextualizer::Contextualize(
     const std::string& query_text,
     const std::vector<TabId>& tabs_to_recontextualize,
     const std::vector<TabId>& tabs_to_force_contextualize,
+    PageContextIneligibleCallback on_ineligible_callback,
+    TabProcessedCallback on_processed_callback,
     ContextualizedCallback callback) {
   auto context_decoration_params = std::make_unique<ContextDecorationParams>();
   base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
@@ -154,7 +156,8 @@ void QueryContextualizer::Contextualize(
   if (!task_id.has_value()) {
     OnContextRetrieved(/*task_id=*/std::nullopt, query_text,
                        tabs_to_recontextualize, tabs_to_force_contextualize,
-                       session_handle, std::move(callback),
+                       session_handle, on_ineligible_callback,
+                       on_processed_callback, std::move(callback),
                        /*context=*/nullptr);
     return;
   }
@@ -166,7 +169,8 @@ void QueryContextualizer::Contextualize(
       base::BindOnce(&QueryContextualizer::OnContextRetrieved,
                      weak_factory_.GetWeakPtr(), task_id, query_text,
                      tabs_to_recontextualize, tabs_to_force_contextualize,
-                     session_handle, std::move(callback)));
+                     session_handle, on_ineligible_callback,
+                     on_processed_callback, std::move(callback)));
 }
 
 void QueryContextualizer::OnContextRetrieved(
@@ -176,6 +180,8 @@ void QueryContextualizer::OnContextRetrieved(
     const std::vector<TabId>& tabs_to_force_contextualize,
     base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
         session_handle,
+    PageContextIneligibleCallback on_ineligible_callback,
+    TabProcessedCallback on_processed_callback,
     ContextualizedCallback callback,
     std::unique_ptr<ContextualTaskContext> context) {
   // Fail early if the task id was specified but there was no context for the
@@ -280,7 +286,8 @@ void QueryContextualizer::OnContextRetrieved(
             context ? std::make_unique<ContextualTaskContext>(*context)
                     : nullptr,
             barrier_closure, update.id, update.is_recontextualization,
-            session_handle, upload_tracker));
+            session_handle, upload_tracker, on_ineligible_callback,
+            on_processed_callback));
   }
 }
 
@@ -293,9 +300,11 @@ void QueryContextualizer::OnTabContextualizationFetched(
     base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
         session_handle,
     scoped_refptr<UploadTracker> upload_tracker,
+    PageContextIneligibleCallback on_ineligible_callback,
+    TabProcessedCallback on_processed_callback,
     std::unique_ptr<lens::ContextualInputData> page_content_data) {
   if (!page_content_data) {
-    delegate_->OnTabProcessedForQueryContextualization(tab_id);
+    on_processed_callback.Run(tab_id);
     barrier_closure.Run();
     return;
   }
@@ -304,8 +313,8 @@ void QueryContextualizer::OnTabContextualizationFetched(
 
   if (GetIsProtectedPageErrorEnabled() &&
       !page_content_data->is_page_context_eligible.value_or(false)) {
-    delegate_->OnPageContextIneligible();
-    delegate_->OnTabProcessedForQueryContextualization(tab_id);
+    on_ineligible_callback.Run();
+    on_processed_callback.Run(tab_id);
     barrier_closure.Run();
     return;
   }
@@ -318,19 +327,19 @@ void QueryContextualizer::OnTabContextualizationFetched(
 
   if (CheckIfContextChangedAndPrepareUploadData(
           maybe_context_id, *page_content_data, session_handle)) {
-    delegate_->OnTabProcessedForQueryContextualization(tab_id);
+    on_processed_callback.Run(tab_id);
     barrier_closure.Run();
     return;
   }
 
   if (!session_handle) {
-    delegate_->OnTabProcessedForQueryContextualization(tab_id);
+    on_processed_callback.Run(tab_id);
     barrier_closure.Run();
     return;
   }
 
   if (!delegate_->IsTabValid(tab_id)) {
-    delegate_->OnTabProcessedForQueryContextualization(tab_id);
+    on_processed_callback.Run(tab_id);
     barrier_closure.Run();
     return;
   }
@@ -346,7 +355,7 @@ void QueryContextualizer::OnTabContextualizationFetched(
       context_token, std::move(page_content_data),
       delegate_->GetTabViewportEncodingOptionsForQueryContextualizer());
 
-  delegate_->OnTabProcessedForQueryContextualization(tab_id);
+  on_processed_callback.Run(tab_id);
   barrier_closure.Run();
 }
 
