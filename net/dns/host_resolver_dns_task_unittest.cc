@@ -142,7 +142,6 @@ TEST_F(HostResolverDnsTaskTest, PlatformAttemptSuccessIsParsedCorrectly) {
     EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
                 Result(fd.get(), _, _))
         .WillOnce([&](int, int* rcode, base::span<uint8_t> answer) {
-          *rcode = dns_protocol::kRcodeNOERROR;
           std::ranges::copy(kSuccessfulDnsResponseA, answer.begin());
           return kSuccessfulDnsResponseA.size();
         });
@@ -199,7 +198,6 @@ TEST_F(HostResolverDnsTaskTest, PlatformAttemptCorruptResponseFailsParsing) {
     EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
                 Result(fd.get(), _, _))
         .WillOnce([&](int, int* rcode, base::span<uint8_t> answer) {
-          *rcode = dns_protocol::kRcodeNOERROR;
           const std::vector<uint8_t> kCorruptDnsResponse = {0x00, 0x01};
           std::ranges::copy(kCorruptDnsResponse, answer.begin());
           return kCorruptDnsResponse.size();
@@ -265,14 +263,12 @@ TEST_F(HostResolverDnsTaskTest,
     EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
                 Result(fd_a.get(), _, _))
         .WillOnce([&](int, int* rcode, base::span<uint8_t> answer) {
-          *rcode = dns_protocol::kRcodeNOERROR;
           std::ranges::copy(kSuccessfulDnsResponseA, answer.begin());
           return kSuccessfulDnsResponseA.size();
         });
     EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
                 Result(fd_aaaa.get(), _, _))
         .WillOnce([&](int, int* rcode, base::span<uint8_t> answer) {
-          *rcode = dns_protocol::kRcodeNOERROR;
           std::ranges::copy(kSuccessfulDnsResponseAaaa, answer.begin());
           return kSuccessfulDnsResponseAaaa.size();
         });

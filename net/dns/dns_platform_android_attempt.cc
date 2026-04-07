@@ -112,18 +112,14 @@ void DnsPlatformAndroidAttempt::StartInternal() {
   int fd = delegate_->Query(MapNetworkHandle(target_network_), hostname_,
                             dns_query_type_);
   if (fd < 0) {
-    // TODO(https://crbug.com/451557941): Consider whether this should surface a
-    // lower-level system error.
-    OnLookupComplete(base::unexpected(ERR_NAME_NOT_RESOLVED));
+    OnLookupComplete(base::unexpected(MapSystemError(-fd)));
     return;
   }
 
   if (!base::CurrentIOThread::Get()->WatchFileDescriptor(
           fd, /*persistent=*/false, base::MessagePumpForIO::WATCH_READ,
           &read_fd_watcher_, this)) {
-    // TODO(https://crbug.com/451557941): Consider whether this should surface a
-    // specific error.
-    OnLookupComplete(base::unexpected(ERR_NAME_NOT_RESOLVED));
+    OnLookupComplete(base::unexpected(ERR_FAILED));
     return;
   }
 }
@@ -137,23 +133,20 @@ void DnsPlatformAndroidAttempt::OnFileCanReadWithoutBlocking(int fd) {
 }
 
 void DnsPlatformAndroidAttempt::ReadResponse(int fd) {
-  int rcode = -1;
+  // Note: we consciously do not use the rcode value from android_res_nresult.
+  // Instead, we rely on rcode within the DNS response itself. These two always
+  // match, except when android_res_nresult fails to populate the response
+  // buffer, in which case we simply do not have access to the DNS response. In
+  // this scenario, android_res_nresult will return a negative value, indicating
+  // an error, we should fail the lookup with that instead. See
+  // https://cs.android.com/android/platform/superproject/main/+/main:system/netd/client/NetdClient.cpp;l=563-579;drc=ed285b9c6b449b68321fd163d1444e62322fd9de)
+  int rcode = dns_protocol::kRcodeNOERROR;
   auto answer_buf = base::MakeRefCounted<GrowableIOBuffer>();
   answer_buf->SetCapacity(kResponseBufferSize);
   int rv = delegate_->Result(fd, &rcode, answer_buf->span());
 
   if (rv < 0) {
-    // TODO(https://crbug.com/451557941): Consider whether this should surface a
-    // lower-level system error.
-    OnLookupComplete(base::unexpected(ERR_NAME_NOT_RESOLVED));
-    return;
-  }
-
-  if (rcode != dns_protocol::kRcodeNOERROR) {
-    // TODO(https://crbug.com/451557941): Consider whether we should do this
-    // mapping here, based on `rcode`, or if we can just relying on the caller
-    // to retrieve `rcode` from the response.
-    OnLookupComplete(base::unexpected(ERR_NAME_NOT_RESOLVED));
+    OnLookupComplete(base::unexpected(MapSystemError(-rv)));
     return;
   }
 
@@ -182,7 +175,14 @@ void DnsPlatformAndroidAttempt::OnLookupComplete(
   }
 
   if (response_->flags() & dns_protocol::kFlagTC) {
-    std::move(callback_).Run(ERR_DNS_SERVER_REQUIRES_TCP);
+    // dns_protocol::kFlagTC is reported by a server when the response would
+    // have been larger than what the underlying transmission channel allows.
+    // This usually happens for DNS over UDP, where usually we fallback onto DNS
+    // over TCP. Having said that, the platform API we're using should be the
+    // one falling back onto TCP, it should never return a truncated response.
+    // Note: this is consistent with how dns_protocol::kFlagTC is handled by
+    // DnsTcpAttempt.
+    std::move(callback_).Run(ERR_UNEXPECTED);
     return;
   }
   if (response_->rcode() != dns_protocol::kRcodeNOERROR) {

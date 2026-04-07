@@ -110,7 +110,6 @@ TEST_F(DnsPlatformAndroidAttemptTest, Success) {
 
     EXPECT_CALL(delegate, Result(fd.get(), _, _))
         .WillOnce([&](int, int* rcode, base::span<uint8_t> answer) {
-          *rcode = dns_protocol::kRcodeNOERROR;
           std::ranges::copy(successful_dns_response, answer.begin());
           return successful_dns_response.size();
         });
@@ -143,9 +142,12 @@ TEST_F(DnsPlatformAndroidAttemptTest,
        FailOnAndroidResNqueryNegativeReturnValue) {
   if (__builtin_available(android 29, *)) {
     MockAndroidDnsPlatformAttemptDelegate delegate;
+    // We don't care about the exact errno value. We only want to confirm that
+    // DnsPlatformAndroidAttempt correctly reports a failure when
+    // android_res_nquery returns a negative value.
     EXPECT_CALL(delegate, Query(NETWORK_UNSPECIFIED, StrEq("www.google.com"),
                                 dns_protocol::kTypeA))
-        .WillOnce(Return(-42));
+        .WillOnce(Return(-13));
     EXPECT_CALL(delegate, Result).Times(0);
 
     DnsPlatformAndroidAttempt executor(
@@ -156,7 +158,7 @@ TEST_F(DnsPlatformAndroidAttemptTest,
     executor.Start(future.GetCallback());
     int result = future.Take();
 
-    EXPECT_THAT(result, IsError(ERR_NAME_NOT_RESOLVED));
+    EXPECT_THAT(result, IsError(ERR_ACCESS_DENIED));
   } else {
     GTEST_SKIP_(kSkipTestOnAndroidVersionBelow29);
   }
@@ -172,7 +174,10 @@ TEST_F(DnsPlatformAndroidAttemptTest,
     EXPECT_CALL(delegate, Query(NETWORK_UNSPECIFIED, StrEq("www.google.com"),
                                 dns_protocol::kTypeA))
         .WillOnce(Return(fd.get()));
-    EXPECT_CALL(delegate, Result(fd.get(), _, _)).WillOnce(Return(-42));
+    // We don't care about the exact errno value. We only want to confirm that
+    // DnsPlatformAndroidAttempt correctly reports a failure when
+    // android_res_nresult returns a negative value.
+    EXPECT_CALL(delegate, Result(fd.get(), _, _)).WillOnce(Return(-13));
 
     DnsPlatformAndroidAttempt executor(
         /*server_index=*/0, kQName, dns_protocol::kTypeA,
@@ -182,36 +187,7 @@ TEST_F(DnsPlatformAndroidAttemptTest,
     executor.Start(future.GetCallback());
     int result = future.Take();
 
-    EXPECT_THAT(result, IsError(ERR_NAME_NOT_RESOLVED));
-  } else {
-    GTEST_SKIP_(kSkipTestOnAndroidVersionBelow29);
-  }
-}
-
-TEST_F(DnsPlatformAndroidAttemptTest, FailOnAndroidResNresultErrorRcode) {
-  if (__builtin_available(android 29, *)) {
-    base::ScopedFD fd =
-        MockAndroidDnsPlatformAttemptDelegate::CreateFdWithUnreadData();
-
-    MockAndroidDnsPlatformAttemptDelegate delegate;
-    EXPECT_CALL(delegate, Query(NETWORK_UNSPECIFIED, StrEq("www.google.com"),
-                                dns_protocol::kTypeA))
-        .WillOnce(Return(fd.get()));
-    EXPECT_CALL(delegate, Result(fd.get(), _, _))
-        .WillOnce([&](int, int* rcode, base::span<uint8_t> answer) {
-          *rcode = dns_protocol::kRcodeNXDOMAIN;
-          return 5;
-        });
-
-    DnsPlatformAndroidAttempt executor(
-        /*server_index=*/0, kQName, dns_protocol::kTypeA,
-        handles::kInvalidNetworkHandle, &delegate, NetLogWithSource());
-
-    ResultsCallbackTestFuture future;
-    executor.Start(future.GetCallback());
-    int result = future.Take();
-
-    EXPECT_THAT(result, IsError(ERR_NAME_NOT_RESOLVED));
+    EXPECT_THAT(result, IsError(ERR_ACCESS_DENIED));
   } else {
     GTEST_SKIP_(kSkipTestOnAndroidVersionBelow29);
   }
@@ -228,7 +204,6 @@ TEST_F(DnsPlatformAndroidAttemptTest, FailOnMalformedDnsResponse) {
         .WillOnce(Return(fd.get()));
     EXPECT_CALL(delegate, Result(fd.get(), _, _))
         .WillOnce([&](int, int* rcode, base::span<uint8_t> answer) {
-          *rcode = dns_protocol::kRcodeNOERROR;
           std::ranges::copy(malformed_dns_response, answer.begin());
           return malformed_dns_response.size();
         });
@@ -258,7 +233,6 @@ TEST_F(DnsPlatformAndroidAttemptTest, FailOnResponseFlagsNxdomain) {
         .WillOnce(Return(fd.get()));
     EXPECT_CALL(delegate, Result(fd.get(), _, _))
         .WillOnce([&](int, int* rcode, base::span<uint8_t> answer) {
-          *rcode = dns_protocol::kRcodeNOERROR;
           std::ranges::copy(nxdomain_dns_response, answer.begin());
           return nxdomain_dns_response.size();
         });
@@ -288,7 +262,6 @@ TEST_F(DnsPlatformAndroidAttemptTest, FailOnResponseTCFlag) {
         .WillOnce(Return(fd.get()));
     EXPECT_CALL(delegate, Result(fd.get(), _, _))
         .WillOnce([&](int, int* rcode, base::span<uint8_t> answer) {
-          *rcode = dns_protocol::kRcodeNOERROR;
           std::ranges::copy(truncated_dns_response, answer.begin());
           return truncated_dns_response.size();
         });
@@ -301,7 +274,7 @@ TEST_F(DnsPlatformAndroidAttemptTest, FailOnResponseTCFlag) {
     executor.Start(future.GetCallback());
     int result = future.Take();
 
-    EXPECT_THAT(result, IsError(ERR_DNS_SERVER_REQUIRES_TCP));
+    EXPECT_THAT(result, IsError(ERR_UNEXPECTED));
   } else {
     GTEST_SKIP_(kSkipTestOnAndroidVersionBelow29);
   }

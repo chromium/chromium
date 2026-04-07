@@ -4472,7 +4472,10 @@ TEST_F(DnsTransactionTestWithMockTime, HttpsConnectionRefusedAfterFallback) {
 
 #if BUILDFLAG(IS_ANDROID)
 
-const std::vector<uint8_t> successful_dns_response = {
+namespace {
+
+// A successful DNS response for www.google.com -> 192.168.1.1
+const std::vector<uint8_t> kSuccessfulDnsResponse = {
     // Header
     0x00, 0x00, 0x81, 0x80, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00,
     // Question section
@@ -4481,6 +4484,16 @@ const std::vector<uint8_t> successful_dns_response = {
     // Answer section
     0xc0, 0x0c, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x00, 0x3c, 0x00, 0x04,
     0xc0, 0xa8, 0x01, 0x01};
+
+// A failed DNS response for www.google.com that indicates NXDOMAIN.
+const std::vector<uint8_t> kNxdomainDnsResponse = {
+    // Header
+    0xab, 0xcd, 0x81, 0x83, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    // Question section
+    0x03, 0x77, 0x77, 0x77, 0x06, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x03,
+    0x63, 0x6f, 0x6d, 0x00, 0x00, 0x01, 0x00, 0x01};
+
+}  // namespace
 
 TEST_F(DnsTransactionTest, PlatformAttemptSuccess) {
   if (__builtin_available(android 29, *)) {
@@ -4495,9 +4508,8 @@ TEST_F(DnsTransactionTest, PlatformAttemptSuccess) {
     EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
                 Result(fd.get(), _, _))
         .WillOnce([&](int, int* rcode, base::span<uint8_t> answer) {
-          *rcode = dns_protocol::kRcodeNOERROR;
-          std::ranges::copy(successful_dns_response, answer.begin());
-          return successful_dns_response.size();
+          std::ranges::copy(kSuccessfulDnsResponse, answer.begin());
+          return kSuccessfulDnsResponse.size();
         });
 
     TransactionHelper helper(/*expected_answer_count=*/1);
@@ -4550,8 +4562,8 @@ TEST_F(DnsTransactionTest, PlatformAttemptUsesSuffixSearchList) {
     EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
                 Result(first_query_fd.get(), _, _))
         .WillOnce([&](int, int* rcode, base::span<uint8_t> answer) {
-          *rcode = dns_protocol::kRcodeNXDOMAIN;
-          return 0;
+          std::ranges::copy(kNxdomainDnsResponse, answer.begin());
+          return kNxdomainDnsResponse.size();
         });
 
     base::ScopedFD second_query_fd =
@@ -4563,9 +4575,8 @@ TEST_F(DnsTransactionTest, PlatformAttemptUsesSuffixSearchList) {
     EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
                 Result(second_query_fd.get(), _, _))
         .WillOnce([&](int, int* rcode, base::span<uint8_t> answer) {
-          *rcode = dns_protocol::kRcodeNOERROR;
-          std::ranges::copy(successful_dns_response, answer.begin());
-          return successful_dns_response.size();
+          std::ranges::copy(kSuccessfulDnsResponse, answer.begin());
+          return kSuccessfulDnsResponse.size();
         });
 
     TransactionHelper helper(/*expected_answer_count=*/1);
