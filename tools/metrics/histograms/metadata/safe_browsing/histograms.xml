@@ -748,7 +748,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.ClientSafeBrowsingReport.RequestHasToken"
-    enum="BooleanSent" expires_after="2026-04-26">
+    enum="BooleanSent" expires_after="2026-10-26">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
