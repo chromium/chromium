@@ -31,6 +31,18 @@ struct CreateRemoteDisplay {
   static constexpr char kMethodName[] = "CreateRemoteDisplay";
   static constexpr gvariant::Type kInType{
       "("
+      "a{sv}"  // properties
+      ")"};
+  static constexpr gvariant::Type kOutType{"()"};
+};
+
+// method
+struct CreateRemoteDisplay_PreGnome50 {
+  static constexpr char kInterfaceName[] =
+      "org.gnome.DisplayManager.RemoteDisplayFactory";
+  static constexpr char kMethodName[] = "CreateRemoteDisplay";
+  static constexpr gvariant::Type kInType{
+      "("
       "o"  // remote_id
       ")"};
   static constexpr gvariant::Type kOutType{"()"};
