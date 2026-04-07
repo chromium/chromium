@@ -31,6 +31,10 @@ namespace blink {
 
 DEFINE_TEXT_PROTO_FUZZER(
     const wc_fuzzer::AudioDecoderApiInvocationSequence& proto) {
+  if (proto.invocations().size() > kMaxFuzzerProtoLength) {
+    return;
+  }
+
   static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
   test::TaskEnvironment task_environment;
   auto page_holder = std::make_unique<DummyPageHolder>();

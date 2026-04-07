@@ -82,6 +82,10 @@ void RunFuzzingLoop(ImageDecoderExternal* image_decoder,
 
 DEFINE_BINARY_PROTO_FUZZER(
     const wc_fuzzer::ImageDecoderApiInvocationSequence& proto) {
+  if (proto.invocations().size() > kMaxFuzzerProtoLength) {
+    return;
+  }
+
   static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
   test::TaskEnvironment task_environment;
 

@@ -36,6 +36,10 @@ class ScopedClosureRunner;
 
 namespace blink {
 
+// Maximum fuzzer proto length. Value chosen arbitrarily to avoid timeouts and
+// out of memory issues; see discussion at https://crbug.com/496070681.
+static constexpr int kMaxFuzzerProtoLength = 4096;
+
 class DOMRectInit;
 class PlaneLayout;
 
