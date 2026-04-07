@@ -10,7 +10,6 @@ bundle_data("animation_files") {
     "password_sharing_darkmode.json",
     "price_tracking.json",
     "tab_groups.json",
-    "tab_groups_darkmode.json",
   ]
   outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
 }

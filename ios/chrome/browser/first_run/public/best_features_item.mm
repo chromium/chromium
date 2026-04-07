@@ -45,6 +45,22 @@ NSDictionary<NSString*, UIColor*>* PriceTrackingColorProvider(
   };
 }
 
+// Returns the color provider for the Tab Groups animation.
+NSDictionary<NSString*, UIColor*>* TabGroupsColorProvider(
+    int grouped_quaternary_background_color,
+    int grouped_tertiary_background_color) {
+  return @{
+    @"text_primary_color" : [UIColor colorNamed:kTextPrimaryColor],
+    @"background_color" : [UIColor colorNamed:kBackgroundColor],
+    @"tertiary_background_color" :
+        [UIColor colorNamed:kTertiaryBackgroundColor],
+    @"grouped_tertiary_background_color" :
+        UIColorFromRGB(grouped_tertiary_background_color),
+    @"grouped_quaternary_background_color" :
+        UIColorFromRGB(grouped_quaternary_background_color),
+  };
+}
+
 }  // namespace
 
 @implementation BestFeaturesItem
@@ -155,7 +171,7 @@ NSDictionary<NSString*, UIColor*>* PriceTrackingColorProvider(
       };
     case BestFeaturesItemType::kTabGroups:
       return @{
-        @"Tab Groups" : l10n_util ::GetNSString(
+        @"Trip to Tokyo" : l10n_util ::GetNSString(
             IDS_IOS_BEST_FEATURES_TAB_GROUPS_ANIMATION_TEXT_1),
       };
     case BestFeaturesItemType::kPriceTrackingAndInsights:
@@ -291,6 +307,7 @@ NSDictionary<NSString*, UIColor*>* PriceTrackingColorProvider(
     case BestFeaturesItemType::kLockedIncognitoTabs:
     case BestFeaturesItemType::kSaveAndAutofillPasswords:
     case BestFeaturesItemType::kTabGroups:
+      return TabGroupsColorProvider(0xFFFFFF, 0xE8EAED);
     case BestFeaturesItemType::kPriceTrackingAndInsights:
       return PriceTrackingColorProvider(0xF1F3F480);
     case BestFeaturesItemType::kAutofillPasswordsInOtherApps:
@@ -307,6 +324,7 @@ NSDictionary<NSString*, UIColor*>* PriceTrackingColorProvider(
     case BestFeaturesItemType::kLockedIncognitoTabs:
     case BestFeaturesItemType::kSaveAndAutofillPasswords:
     case BestFeaturesItemType::kTabGroups:
+      return TabGroupsColorProvider(0x5F6368, 0x5F6368);
     case BestFeaturesItemType::kPriceTrackingAndInsights:
       return PriceTrackingColorProvider(0x20212480);
     case BestFeaturesItemType::kAutofillPasswordsInOtherApps:
