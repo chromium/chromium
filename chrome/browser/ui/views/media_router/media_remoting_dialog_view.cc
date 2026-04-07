@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/media_router/media_remoting_dialog_view.h"
 
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
 #include "chrome/browser/ui/toolbar/cast/cast_toolbar_button_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -37,7 +38,8 @@ bool MediaRemotingDialogCoordinatorViews::Show(
 
   Hide();  // Close the previous dialog if it is still showing.
 
-  Browser* const browser = chrome::FindBrowserWithTab(web_contents_);
+  BrowserWindowInterface* const browser =
+      chrome::FindBrowserWithTab(web_contents_);
   if (!browser) {
     std::move(permission_callback).Run(false);
     return false;

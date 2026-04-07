@@ -86,6 +86,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window_state.h"
 #include "chrome/browser/ui/browser_window_theme_observer.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -1168,7 +1169,7 @@ BrowserWindow* BrowserWindow::FindBrowserWindowWithWebContents(
         widget->GetNativeWindow());
   }
   const auto* browser = chrome::FindBrowserWithTab(web_contents);
-  return browser ? browser->window() : nullptr;
+  return browser ? browser->GetBrowserForMigrationOnly()->window() : nullptr;
 }
 
 // static
@@ -6072,11 +6073,11 @@ void BrowserView::ActivateAppModalDialog() const {
     return;
   }
 
-  Browser* modal_browser =
+  BrowserWindowInterface* modal_browser =
       chrome::FindBrowserWithTab(active_dialog->web_contents());
   if (modal_browser && (browser_.get() != modal_browser)) {
-    modal_browser->window()->FlashFrame(true);
-    modal_browser->window()->Activate();
+    modal_browser->GetWindow()->FlashFrame(true);
+    modal_browser->GetWindow()->Activate();
   }
 
   javascript_dialogs::AppModalDialogQueue::GetInstance()->ActivateModalDialog();

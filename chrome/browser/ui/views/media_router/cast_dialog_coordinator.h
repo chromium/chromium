@@ -10,7 +10,7 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/view_tracker.h"
 
-class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 namespace actions {
@@ -42,7 +42,7 @@ class CastDialogCoordinator {
   // BrowserActionsContainer exists for |browser|.
   void ShowDialogWithToolbarAction(
       CastDialogController* controller,
-      Browser* browser,
+      BrowserWindowInterface* browser,
       const base::Time& start_time,
       MediaRouterDialogActivationLocation activation_location);
 
@@ -50,7 +50,7 @@ class CastDialogCoordinator {
   // window.
   void ShowDialogCenteredForBrowserWindow(
       CastDialogController* controller,
-      Browser* browser,
+      BrowserWindowInterface* browser,
       const base::Time& start_time,
       MediaRouterDialogActivationLocation activation_location);
 

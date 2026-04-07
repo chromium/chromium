@@ -10,6 +10,7 @@
 #include "chrome/browser/page_info/web_view_side_panel_throttle.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "content/public/browser/browser_context.h"
@@ -164,7 +165,8 @@ bool WebViewSidePanelView::HandleKeyboardEvent(
 
 BrowserView* WebViewSidePanelView::outer_browser_view() {
   if (parent_web_contents_) {
-    auto* browser = chrome::FindBrowserWithTab(parent_web_contents_.get());
+    BrowserWindowInterface* browser =
+        chrome::FindBrowserWithTab(parent_web_contents_.get());
     return browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
   }
   return nullptr;

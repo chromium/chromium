@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -84,12 +85,12 @@ void ShowExtensionInstallDialogImpl(
   // If the dialog has to be parented to WebContents, force activate the
   // contents. See crbug.com/40059470.
   content::WebContents* web_contents = show_params->GetParentWebContents();
-  Browser* browser =
+  BrowserWindowInterface* browser =
       web_contents ? chrome::FindBrowserWithTab(web_contents) : nullptr;
 
   if (browser &&
-      browser->tab_strip_model()->GetActiveWebContents() != web_contents) {
-    browser->ActivateContents(web_contents);
+      browser->GetTabStripModel()->GetActiveWebContents() != web_contents) {
+    browser->GetBrowserForMigrationOnly()->ActivateContents(web_contents);
   }
 
   gfx::NativeWindow parent_window = show_params->GetParentWindow();

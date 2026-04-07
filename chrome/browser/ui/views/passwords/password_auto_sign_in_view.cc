@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
@@ -56,13 +57,14 @@ PasswordAutoSignInView::PasswordAutoSignInView(
   credential->SetEnabled(false);
 
   // Setup the observer and maybe start the timer.
-  Browser* browser = chrome::FindBrowserWithTab(GetWebContents());
+  BrowserWindowInterface* browser =
+      chrome::FindBrowserWithTab(GetWebContents());
   DCHECK(browser);
 
   // Sign-in dialogs opened for inactive browser windows do not auto-close on
   // MacOS. This matches existing Cocoa bubble behavior.
   // TODO(varkha): Remove the limitation as part of http://crbug/671916 .
-  if (browser->window()->IsActive()) {
+  if (browser->IsActive()) {
     timer_.Start(FROM_HERE, GetTimeout(), this,
                  &PasswordAutoSignInView::OnTimer);
   }

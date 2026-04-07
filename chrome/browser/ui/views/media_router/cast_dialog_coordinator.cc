@@ -9,9 +9,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -28,16 +27,16 @@ namespace media_router {
 
 void CastDialogCoordinator::ShowDialogWithToolbarAction(
     CastDialogController* controller,
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const base::Time& start_time,
     MediaRouterDialogActivationLocation activation_location) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   views::View* anchor_view = browser_view->toolbar()->GetCastButton();
   DCHECK(anchor_view);
   auto* action_item = actions::ActionManager::Get().FindAction(
-      kActionRouteMedia, browser->browser_actions()->root_action_item());
+      kActionRouteMedia, browser->GetActions()->root_action_item());
   Show(anchor_view, views::BubbleBorder::TOP_RIGHT, controller,
-       browser->profile(), start_time, activation_location, action_item);
+       browser->GetProfile(), start_time, activation_location, action_item);
 
   if (action_item &&
       activation_location == MediaRouterDialogActivationLocation::TOOLBAR) {
@@ -47,11 +46,11 @@ void CastDialogCoordinator::ShowDialogWithToolbarAction(
 
 void CastDialogCoordinator::ShowDialogCenteredForBrowserWindow(
     CastDialogController* controller,
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const base::Time& start_time,
     MediaRouterDialogActivationLocation activation_location) {
   Show(BrowserView::GetBrowserViewForBrowser(browser)->top_container(),
-       views::BubbleBorder::TOP_CENTER, controller, browser->profile(),
+       views::BubbleBorder::TOP_CENTER, controller, browser->GetProfile(),
        start_time, activation_location);
 }
 

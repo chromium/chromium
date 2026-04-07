@@ -23,6 +23,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/overlay/back_to_tab_button.h"
 #include "chrome/browser/ui/views/overlay/back_to_tab_label_button.h"
@@ -404,15 +405,17 @@ std::unique_ptr<VideoOverlayWindowViews> VideoOverlayWindowViews::Create(
 
 #if BUILDFLAG(IS_WIN)
   std::wstring app_user_model_id;
-  Browser* browser = chrome::FindBrowserWithTab(controller->GetWebContents());
+  BrowserWindowInterface* browser =
+      chrome::FindBrowserWithTab(controller->GetWebContents());
   if (browser) {
-    const base::FilePath& profile_path = browser->profile()->GetPath();
+    Browser* raw_browser = browser->GetBrowserForMigrationOnly();
+    const base::FilePath& profile_path = browser->GetProfile()->GetPath();
     // Set the window app id to GetAppUserModelIdForApp if the original window
     // is an app window, GetAppUserModelIdForBrowser if it's a browser window.
     app_user_model_id =
-        browser->is_type_app()
+        browser->GetType() == BrowserWindowInterface::Type::TYPE_APP
             ? shell_integration::win::GetAppUserModelIdForApp(
-                  base::UTF8ToWide(browser->app_name()), profile_path)
+                  base::UTF8ToWide(raw_browser->app_name()), profile_path)
             : shell_integration::win::GetAppUserModelIdForBrowser(profile_path);
     if (!app_user_model_id.empty()) {
       ui::win::SetAppIdForWindow(

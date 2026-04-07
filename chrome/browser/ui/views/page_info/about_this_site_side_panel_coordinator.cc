@@ -9,6 +9,7 @@
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_info/about_this_site_side_panel.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
@@ -180,12 +181,12 @@ AboutThisSideSidePanelCoordinator::CreateAboutThisSiteWebView(
 }
 
 BrowserView* AboutThisSideSidePanelCoordinator::GetBrowserView() const {
-  auto* browser = chrome::FindBrowserWithTab(web_contents());
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
   return browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
 }
 
 SidePanelUI* AboutThisSideSidePanelCoordinator::GetSidePanelUI() {
-  auto* browser = chrome::FindBrowserWithTab(web_contents());
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
   return browser ? browser->GetFeatures().side_panel_ui() : nullptr;
 }
 
