@@ -1,0 +1,38 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("optimization_guide") {
+  public = [ "optimization_guide_message_handler.h" ]
+  sources = [ "optimization_guide_message_handler.cc" ]
+
+  public_deps = [
+    "//base",
+    "//components/sharing_message",
+  ]
+  deps = [
+    "//chrome/browser/optimization_guide",
+    "//components/optimization_guide/core",
+    "//components/sharing_message/proto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+  deps = []
+
+  if (is_android) {
+    sources += [ "optimization_guide_message_handler_unittest.cc" ]
+    deps = [
+      ":optimization_guide",
+      "//base",
+      "//base/test:test_support",
+      "//components/optimization_guide/core",
+      "//components/optimization_guide/core:hints_test_support",
+      "//components/optimization_guide/proto:optimization_guide_proto",
+      "//components/sharing_message/proto",
+      "//testing/gmock",
+    ]
+  }
+}
