@@ -1846,6 +1846,44 @@ TEST_F(ComposeboxQueryControllerTest, UploadEmptyImageFileRequestFailure) {
                     ContextUploadStatus::kValidationFailed,
                     ContextUploadErrorType::kImageProcessingError);
 }
+
+// Hardening test for: https:crbug.com/497396516
+// Verifies that ComposeboxQueryController handles an empty viewport screenshot
+// gracefully. This scenario can occur if the Lens Overlay fails to capture a
+// screenshot (e.g., due to GPU context loss) while valid page contents are
+// still present.
+TEST_F(ComposeboxQueryControllerTest,
+       CreateUploadRequestBodiesAndContinue_EmptyViewportUAF) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow.
+  auto file_token = base::UnguessableToken::Create();
+  auto input_data = std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kPdf;
+  // Viewport screenshot is empty but has_value() will be true.
+  input_data->viewport_screenshot = SkBitmap();
+  input_data->context_input = std::vector<lens::ContextualInput>();
+  input_data->context_input->push_back(lens::ContextualInput(
+      std::vector<uint8_t>({1, 2, 3}), lens::MimeType::kPdf));
+
+  lens::ImageEncodingOptions image_options = {
+      .max_size = 1000,
+      .max_height = 10,
+      .max_width = 10,
+      .compression_quality = 10,
+  };
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   image_options);
+
+  // Assert: The file upload should fail with kImageProcessingError due to the
+  // empty viewport screenshot, and the file info should be removed from the
+  // controller.
+  EXPECT_FALSE(controller().GetFileInfoForTesting(file_token));
+}
 #endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccessWithFileName) {
