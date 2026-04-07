@@ -107,7 +107,7 @@ static_assert(static_cast<uint16_t>(kLastScriptWrappableTag) <
 
 constexpr v8::CppHeapPointerTagRange kScriptWrappableTagRange(
     static_cast<v8::CppHeapPointerTag>(kScriptWrappableStartTag),
-    v8::CppHeapPointerTag::kLastTag);
+    kLastScriptWrappableTag);
 
 constexpr v8::CppHeapPointerTagRange kScriptWrappableOrGinWrappableTagRange(
     static_cast<v8::CppHeapPointerTag>(kScriptWrappableStartTag),
