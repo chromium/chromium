@@ -32,6 +32,8 @@ class ContentAnnotatorInternalsPageHandler
 
   // accessibility_annotator_internals::mojom::PageHandler:
   void GetAnnotatedContent(GetAnnotatedContentCallback callback) override;
+  void ClearAnnotatedContent(
+      ClearAnnotatedContentCallback callback) override;
 
  private:
   mojo::Receiver<accessibility_annotator_internals::mojom::PageHandler>

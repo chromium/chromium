@@ -37,4 +37,16 @@ void ContentAnnotatorInternalsPageHandler::GetAnnotatedContent(
   std::move(callback).Run(backend->GetDebugUICacheData());
 }
 
+void ContentAnnotatorInternalsPageHandler::ClearAnnotatedContent(
+    ClearAnnotatedContentCallback callback) {
+  accessibility_annotator::AccessibilityAnnotatorBackend* backend =
+      AccessibilityAnnotatorBackendFactory::GetForProfile(profile_);
+  if (!backend) {
+    std::move(callback).Run(false);
+    return;
+  }
+  backend->ClearContentAnnotationsCache();
+  std::move(callback).Run(true);
+}
+
 }  // namespace content_annotator_internals

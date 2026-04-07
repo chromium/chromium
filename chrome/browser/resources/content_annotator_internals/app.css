@@ -23,6 +23,8 @@ td {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
+  min-width: 100px;
+  word-break: break-word;
 }
 
 th {
@@ -37,8 +39,20 @@ tr:hover {
   background-color: #ddd;
 }
 
-/* Ensure the long annotations don't break the table layout */
-td:nth-child(3) {
-  word-break: break-all;
-  min-width: 200px;
+.header-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+#clear-cache {
+  padding: 6px 12px;
+  cursor: pointer;
+  background-color: #f2f2f2;
+  border: 1px solid #ddd;
+  margin-left: 2rem;
+}
+
+#clear-cache:hover {
+  background-color: #ddd;
 }

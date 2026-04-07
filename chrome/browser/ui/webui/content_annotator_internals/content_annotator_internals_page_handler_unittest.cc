@@ -138,5 +138,52 @@ TEST_F(ContentAnnotatorInternalsPageHandlerTest, GetAnnotatedContentWithData) {
   run_loop.Run();
 }
 
+TEST_F(ContentAnnotatorInternalsPageHandlerTest, ClearContentAnnotationsCache) {
+  accessibility_annotator::AccessibilityAnnotatorBackend* backend =
+      AccessibilityAnnotatorBackendFactory::GetForProfile(profile());
+  ASSERT_TRUE(backend);
+
+  accessibility_annotator::AccessibilityAnnotatorBackend::ContentAnnotationsData
+      data;
+  data.page_title = "Title";
+  backend->SetContentAnnotationsCacheData(GURL("https://example.com"),
+                                          std::move(data));
+
+  // Verify data is present.
+  {
+    base::RunLoop run_loop;
+    handler()->GetAnnotatedContent(
+        base::BindLambdaForTesting([&](base::Value content) {
+          ASSERT_TRUE(content.is_list());
+          EXPECT_EQ(content.GetList().size(), 1u);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+
+  // Clear cache.
+  {
+    base::RunLoop run_loop;
+    handler()->ClearAnnotatedContent(
+        base::BindLambdaForTesting([&](bool success) {
+          EXPECT_TRUE(success);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+
+  // Verify cache is empty.
+  {
+    base::RunLoop run_loop;
+    handler()->GetAnnotatedContent(
+        base::BindLambdaForTesting([&](base::Value content) {
+          ASSERT_TRUE(content.is_list());
+          EXPECT_TRUE(content.GetList().empty());
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+}
+
 }  // namespace
 }  // namespace content_annotator_internals

@@ -11,12 +11,17 @@ export function getHtml(this: ContentAnnotatorInternalsAppElement) {
     <h1>Content Annotator Internals</h1>
     ${this.errorMessage_ ? html`
       <p class="error">${this.errorMessage_}</p>
-    ` :
-      this.logContent_.length === 0 ? html`
+    ` : ''}
+    ${this.logContent_.length === 0 ? html`
       <pre>The content annotations cache is currently empty.</pre>
     ` :
         html`
-      <h2>Cached Annotations</h2>
+      <div class="header-container">
+        <h2>Cached Annotations</h2>
+        <button id="clear-cache" @click="${this.onClearCacheClick_}">
+          Clear Cache
+        </button>
+      </div>
       <table>
         <thead>
           <tr>

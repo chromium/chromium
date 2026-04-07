@@ -58,6 +58,21 @@ export class ContentAnnotatorInternalsAppElement extends CrLitElement {
     }
   }
 
+  protected async onClearCacheClick_() {
+    this.errorMessage_ = '';
+    try {
+      const {success} =
+          await this.browserProxy_.handler.clearAnnotatedContent();
+      if (success) {
+        this.loadLogContent_();
+      } else {
+        this.errorMessage_ = 'Error: could not clear content annotations cache.';
+      }
+    } catch (e) {
+      this.errorMessage_ = 'Error: could not clear content annotations cache.';
+    }
+  }
+
   private flattenValue_(value: Value): any {
     if (!value) {
       return null;
