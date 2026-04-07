@@ -15169,6 +15169,7 @@ from previous Chrome versions.
   <int value="370926002" label="FirmwareUpdateUIV2:enabled"/>
   <int value="371060018" label="ContextualCueing:disabled"/>
   <int value="371268743" label="OmniboxUIExperimentVerticalMargin:disabled"/>
+  <int value="371281907" label="MenuSimplification:disabled"/>
   <int value="371496127" label="HoldingSpaceWallpaperNudge:enabled"/>
   <int value="372251880" label="BirchWeather:enabled"/>
   <int value="372460068" label="QuickUnlockFingerprint:disabled"/>
@@ -15325,6 +15326,7 @@ from previous Chrome versions.
   <int value="417709910"
       label="AutofillSendExperimentIdsInPaymentsRPCs:disabled"/>
   <int value="417742858" label="ImprovedSemanticsActivityIndicators:enabled"/>
+  <int value="417931522" label="MenuSimplification:enabled"/>
   <int value="418769094" label="MixedContentSiteSetting:enabled"/>
   <int value="419984818" label="ExtensionManifestV2DeprecationWarning:enabled"/>
   <int value="420160748" label="CornerShortcuts:enabled"/>

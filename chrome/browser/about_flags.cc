@@ -6461,8 +6461,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"searchbox-embedded-permission",
      flag_descriptions::kEmbeddedPermissionEnabledName,
      flag_descriptions::kEmbeddedPermissionEnabledDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         omnibox_feature_configs::kEmbeddedPermissionEnabled)},
+     FEATURE_VALUE_TYPE(omnibox_feature_configs::kEmbeddedPermissionEnabled)},
 
     {"lens-overlay-omnibox-entry-point",
      flag_descriptions::kLensOverlayOmniboxEntryPointName,
@@ -9554,6 +9553,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"toolbar-glow-up", flag_descriptions::kToolbarGlowUpName,
      flag_descriptions::kToolbarGlowUpDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kToolbarGlowUp)},
+
+    {"menu-simplification", flag_descriptions::kMenuSimplificationName,
+     flag_descriptions::kMenuSimplificationDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kMenuSimplification)},
 
     {"render-document", flag_descriptions::kRenderDocumentName,
      flag_descriptions::kRenderDocumentDescription, kOsAll,

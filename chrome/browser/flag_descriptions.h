@@ -2973,6 +2973,10 @@ inline constexpr char kMultiInstanceSharedPrefsMigrationDescription[] =
     "potential downgrade. When disabled, we perform all operations on the old "
     "file and purges the new file.";
 
+inline constexpr char kMenuSimplificationName[] = "Menu Simplification";
+inline constexpr char kMenuSimplificationDescription[] =
+    "Enables the menu simplification feature.";
+
 inline constexpr char kSourceSpecificMulticastInDirectSocketsName[] =
     "Source-Specific Multicast in Direct Sockets API";
 inline constexpr char kSourceSpecificMulticastInDirectSocketsDescription[] =
