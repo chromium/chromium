@@ -4516,6 +4516,8 @@ if (!is_android) {
         "../browser/ui/views/accessibility/dump_accessibility_events_views_browsertest.cc",
         "../browser/ui/views/controls/button/button_dump_accessibility_events_browsertest.cc",
         "../browser/ui/views/controls/button/checkbox_dump_accessibility_events_browsertest.cc",
+        "../browser/ui/views/controls/slider/slider_dump_accessibility_events_browsertest.cc",
+        "../browser/ui/views/controls/textfield/textfield_dump_accessibility_events_browsertest.cc",
         "../browser/ui/views/download/bubble/download_bubble_row_list_view_browsertest.cc",
         "../browser/ui/views/download/bubble/download_toolbar_ui_controller_browsertest.cc",
         "../browser/ui/views/profiles/signin_view_controller_delegate_views_browsertest.cc",
