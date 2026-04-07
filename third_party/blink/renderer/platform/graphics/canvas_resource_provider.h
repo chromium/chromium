@@ -223,7 +223,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   virtual void RasterRecordForCanvas2D(cc::PaintRecord) = 0;
   void UnacceleratedRasterRecordForCanvas2D(cc::PaintRecord);
 
-  CanvasImageProvider* GetOrCreateSWCanvasImageProvider();
+  CanvasImageProvider* GetOrCreateSWCanvasImageProviderForCanvas2D();
 
   ResourceProviderType type_;
   mutable sk_sp<SkSurface> surface_;  // mutable for lazy init

@@ -1151,7 +1151,7 @@ CanvasNon2DResourceProviderSharedImage::Snapshot(ImageOrientation orientation) {
 CanvasResourceProvider::CanvasImageProvider*
 Canvas2DResourceProviderSharedImage::GetOrCreateCanvasImageProvider() {
   if (!IsAccelerated()) {
-    return GetOrCreateSWCanvasImageProvider();
+    return GetOrCreateSWCanvasImageProviderForCanvas2D();
   }
 
   if (canvas_image_provider_) {
@@ -1810,7 +1810,8 @@ void CanvasResourceProvider::NotifyWillTransfer(
 }
 
 CanvasResourceProvider::CanvasImageProvider*
-CanvasResourceProvider::GetOrCreateSWCanvasImageProvider() {
+CanvasResourceProvider::GetOrCreateSWCanvasImageProviderForCanvas2D() {
+  CHECK(IsCanvas2D());
   if (canvas_image_provider_) {
     return canvas_image_provider_.get();
   }
@@ -1921,8 +1922,23 @@ void CanvasNon2DResourceProviderSharedImage::FlushCanvas(bool is_overwrite) {
   cc::PaintRecord last_recording = recorder_->ReleaseMainRecording();
   if (!is_accelerated_) {
     if (!skia_canvas_) {
+      if (!canvas_image_provider_) {
+        // Create an ImageDecodeCache for half float images only if the canvas
+        // is using half float back storage.
+        cc::ImageDecodeCache* cache_f16 = nullptr;
+        if (GetSharedImageFormat() == viz::SinglePlaneFormat::kRGBA_F16) {
+          cache_f16 = &Image::SharedCCDecodeCache(kRGBA_F16_SkColorType);
+        }
+
+        cc::ImageDecodeCache* cache_rgba8 =
+            &Image::SharedCCDecodeCache(kN32_SkColorType);
+
+        canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
+            cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
+            cc::PlaybackImageProvider::RasterMode::kSoftware);
+      }
       skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
-          GetSkSurface()->getCanvas(), GetOrCreateSWCanvasImageProvider());
+          GetSkSurface()->getCanvas(), canvas_image_provider_.get());
     }
     skia_canvas_->drawPicture(std::move(last_recording));
   } else if (!IsGpuContextLost()) {
@@ -2031,7 +2047,8 @@ void CanvasResourceProvider::UnacceleratedRasterRecordForCanvas2D(
 
   if (!skia_canvas_) {
     skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
-        GetSkSurface()->getCanvas(), GetOrCreateSWCanvasImageProvider());
+        GetSkSurface()->getCanvas(),
+        GetOrCreateSWCanvasImageProviderForCanvas2D());
   }
   skia_canvas_->drawPicture(std::move(last_recording));
 }
@@ -2160,7 +2177,8 @@ bool CanvasResourceProvider::UnacceleratedWritePixelsForCanvas2D(
 
   if (!skia_canvas_) {
     skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
-        GetSkSurface()->getCanvas(), GetOrCreateSWCanvasImageProvider());
+        GetSkSurface()->getCanvas(),
+        GetOrCreateSWCanvasImageProviderForCanvas2D());
   }
 
   bool wrote_pixels = GetSkSurface()->getCanvas()->writePixels(
