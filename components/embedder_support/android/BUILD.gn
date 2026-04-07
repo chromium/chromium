@@ -168,10 +168,7 @@ if (current_toolchain == default_toolchain) {
       "//base:base_java",
       "//build/android:build_java",
     ]
-    sources = [
-      "java/src/org/chromium/components/embedder_support/application/ClassLoaderContextWrapperFactory.java",
-      "java/src/org/chromium/components/embedder_support/application/FontPreloadingWorkaround.java",
-    ]
+    sources = [ "java/src/org/chromium/components/embedder_support/application/ClassLoaderContextWrapperFactory.java" ]
   }
 
   android_library("util_java") {

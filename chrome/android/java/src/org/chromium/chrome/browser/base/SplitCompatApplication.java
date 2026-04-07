@@ -47,7 +47,6 @@ import org.chromium.components.crash.CustomAssertionHandler;
 import org.chromium.components.crash.PureJavaExceptionHandler;
 import org.chromium.components.crash.PureJavaExceptionHandler.JavaExceptionReporter;
 import org.chromium.components.crash.PureJavaExceptionHandler.JavaExceptionReporterFactory;
-import org.chromium.components.embedder_support.application.FontPreloadingWorkaround;
 import org.chromium.components.module_installer.util.ModuleUtil;
 import org.chromium.ui.base.ResourceBundle;
 
@@ -305,7 +304,6 @@ public class SplitCompatApplication extends Application {
         super.onCreate();
         // These can't go in attachBaseContext because Context.getApplicationContext() (which
         // they use under-the-hood) does not work until after it returns.
-        FontPreloadingWorkaround.maybeInstallWorkaround(this);
         MemoryPressureMonitor.INSTANCE.registerComponentCallbacks();
         getImpl().onCreate();
     }

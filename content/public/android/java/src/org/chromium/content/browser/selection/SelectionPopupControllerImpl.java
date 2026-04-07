@@ -656,12 +656,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         destroyActionModeAndKeepSelection();
 
         assert mWebContents != null;
-        ActionMode actionMode = mView.startActionMode(mCallback, ActionMode.TYPE_FLOATING);
-        if (actionMode != null) {
-            // This is to work around an LGE email issue. See crbug.com/651706 for more details.
-            LGEmailActionModeWorkaroundImpl.runIfNecessary(assumeNonNull(mContext), actionMode);
-        }
-        setActionMode(actionMode);
+        setActionMode(mView.startActionMode(mCallback, ActionMode.TYPE_FLOATING));
         mUnselectAllOnDismiss = true;
 
         if (!isActionModeValid() && hasSelection()) clearSelection();

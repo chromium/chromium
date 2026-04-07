@@ -3,17 +3,6 @@
 
     <issue
         id="DiscouragedPrivateApi"
-        message="Reflective access to sPackageManager, which is not part of the public SDK and therefore likely to change in future Android releases"
-        errorLine1="            Field packageManagerField = activityThreadClass.getDeclaredField(&quot;sPackageManager&quot;);"
-        errorLine2="                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/embedder_support/android/java/src/org/chromium/components/embedder_support/application/FontPreloadingWorkaround.java"
-            line="72"
-            column="41"/>
-    </issue>
-
-    <issue
-        id="DiscouragedPrivateApi"
         message="Reflective access to violationsBeingTimed, which is not part of the public SDK and therefore likely to change in future Android releases"
         errorLine1="        Field violationTimingField = StrictMode.class.getDeclaredField(&quot;violationsBeingTimed&quot;);"
         errorLine2="                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">

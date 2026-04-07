@@ -29,7 +29,6 @@ import org.chromium.base.version_info.VersionConstants;
 import org.chromium.build.BuildConfig;
 import org.chromium.components.crash.CustomAssertionHandler;
 import org.chromium.components.crash.PureJavaExceptionHandler;
-import org.chromium.components.embedder_support.application.FontPreloadingWorkaround;
 import org.chromium.ui.base.ResourceBundle;
 
 /**
@@ -75,7 +74,6 @@ public class WebViewApkApplication extends Application {
     public void onCreate() {
         super.onCreate();
         checkForAppRecovery();
-        FontPreloadingWorkaround.maybeInstallWorkaround(this);
     }
 
     public static void checkForAppRecovery() {
