@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/language/core/browser/language_model.h"
@@ -27,7 +28,7 @@ class LanguageModelManager : public KeyedService {
 
   LanguageModelManager() = delete;
 
-  LanguageModelManager(PrefService* prefs, const std::string& ui_lang);
+  LanguageModelManager(PrefService* prefs, std::string_view ui_lang);
 
   LanguageModelManager(const LanguageModelManager&) = delete;
   LanguageModelManager& operator=(const LanguageModelManager&) = delete;

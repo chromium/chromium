@@ -157,7 +157,7 @@ void LanguagePrefs::SetULPLanguages(std::vector<std::string> ulp_languages) {
 }
 #endif
 
-bool LanguagePrefs::IsForcedLanguage(const std::string& language) {
+bool LanguagePrefs::IsForcedLanguage(std::string_view language) {
   return forced_languages_set_.find(language) != forced_languages_set_.end();
 }
 

@@ -9,9 +9,8 @@
 namespace language {
 
 LanguageModelManager::LanguageModelManager(PrefService* prefs,
-                                           const std::string& ui_lang)
-    : primary_model_type_(ModelType::BASELINE) {
-}
+                                           std::string_view ui_lang)
+    : primary_model_type_(ModelType::BASELINE) {}
 
 LanguageModelManager::~LanguageModelManager() = default;
 

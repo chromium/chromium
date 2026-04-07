@@ -4,11 +4,13 @@
 
 #include "components/language/core/browser/language_model.h"
 
+#include <string_view>
+
 namespace language {
 
 LanguageModel::LanguageDetails::LanguageDetails() : LanguageDetails("", 0.0f) {}
 
-LanguageModel::LanguageDetails::LanguageDetails(const std::string& in_lang_code,
+LanguageModel::LanguageDetails::LanguageDetails(std::string_view in_lang_code,
                                                 const float in_score)
     : lang_code(in_lang_code), score(in_score) {}
 

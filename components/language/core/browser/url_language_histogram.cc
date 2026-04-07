@@ -101,7 +101,7 @@ UrlLanguageHistogram::GetTopLanguages() const {
 }
 
 float UrlLanguageHistogram::GetLanguageFrequency(
-    const std::string& language_code) const {
+    std::string_view language_code) const {
   const base::DictValue& dict =
       pref_service_->GetDict(kUrlLanguageHistogramCounters);
   int counters_sum = GetCountersSum(dict);
@@ -115,7 +115,7 @@ float UrlLanguageHistogram::GetLanguageFrequency(
   return static_cast<float>(counter_value) / counters_sum;
 }
 
-void UrlLanguageHistogram::OnPageVisited(const std::string& language_code) {
+void UrlLanguageHistogram::OnPageVisited(std::string_view language_code) {
   ScopedDictPrefUpdate update(pref_service_, kUrlLanguageHistogramCounters);
   base::DictValue& dict = update.Get();
   // If the key |language_code| does not exist, |counter_value| stays 0.
