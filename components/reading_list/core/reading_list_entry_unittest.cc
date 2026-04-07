@@ -118,6 +118,24 @@ TEST(ReadingListEntry, SpecificsWithInvalidUrlShouldBeNotValid) {
   EXPECT_FALSE(ReadingListEntry::IsSpecificsValid(*specifics));
 }
 
+TEST(ReadingListEntry, SpecificsShouldOnlyBeValidForHTTPOrHTTPS) {
+  auto entry_http = base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://example.com/"), "example title", base::Time::FromTimeT(10));
+  std::unique_ptr<sync_pb::ReadingListSpecifics> specifics_http =
+      entry_http->AsReadingListSpecifics();
+  EXPECT_TRUE(ReadingListEntry::IsSpecificsValid(*specifics_http));
+  auto entry_https = base::MakeRefCounted<ReadingListEntry>(
+      GURL("https://example.com/"), "example title", base::Time::FromTimeT(10));
+  std::unique_ptr<sync_pb::ReadingListSpecifics> specifics_https =
+      entry_https->AsReadingListSpecifics();
+  EXPECT_TRUE(ReadingListEntry::IsSpecificsValid(*specifics_https));
+  auto entry_about = base::MakeRefCounted<ReadingListEntry>(
+      GURL("about://example.com/"), "example title", base::Time::FromTimeT(10));
+  std::unique_ptr<sync_pb::ReadingListSpecifics> specifics_about =
+      entry_about->AsReadingListSpecifics();
+  EXPECT_FALSE(ReadingListEntry::IsSpecificsValid(*specifics_about));
+}
+
 TEST(ReadingListEntry, SpecificsWithTilteContainsNonUTF8ShouldBeNotValid) {
   auto entry = base::MakeRefCounted<ReadingListEntry>(
       GURL("http://example.com/"), "example title", base::Time::FromTimeT(10));

@@ -224,7 +224,7 @@ bool ReadingListEntry::IsSpecificsValid(
     return false;
   }
   GURL url(pb_entry.url());
-  if (url.is_empty() || !url.is_valid()) {
+  if (url.is_empty() || !url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
     return false;
   }
   // Some crash reports indicate that some users have reading list entries with
