@@ -399,6 +399,10 @@ source_set("impl") {
     deps += [ "//chrome/browser/web_applications" ]
   }
 
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/read_anything:prefs" ]
+  }
+
   if (!is_android && !is_chromeos) {
     deps += [ "//chrome/browser/ui/startup/default_browser_prompt" ]
   }

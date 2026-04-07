@@ -9,12 +9,28 @@ import("//chrome/common/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//testing/test.gni")
 
+source_set("prefs") {
+  sources = [
+    "read_anything_prefs.cc",
+    "read_anything_prefs.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/common",
+    "//chrome/common/read_anything:mojo_bindings",
+    "//components/pref_registry",
+    "//ui/accessibility",
+  ]
+}
 source_set("read_anything") {
   sources = [
     "read_anything_controller.cc",
     "read_anything_controller.h",
     "read_anything_entry_point_controller.cc",
     "read_anything_entry_point_controller.h",
+    "read_anything_enums.h",
     "read_anything_immersive_activation_observer.h",
     "read_anything_immersive_overlay_view.cc",
     "read_anything_immersive_overlay_view.h",
@@ -23,8 +39,6 @@ source_set("read_anything") {
     "read_anything_lifecycle_observer.h",
     "read_anything_omnibox_controller.cc",
     "read_anything_omnibox_controller.h",
-    "read_anything_prefs.cc",
-    "read_anything_prefs.h",
     "read_anything_service.cc",
     "read_anything_service.h",
     "read_anything_service_factory.cc",
@@ -41,6 +55,7 @@ source_set("read_anything") {
     "read_anything_soft_navigation_observer.h",
   ]
   public_deps = [
+    ":prefs",
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:primitives",
@@ -77,16 +92,61 @@ source_set("read_anything") {
 
 source_set("browser_tests") {
   testonly = true
-
-  sources = [ "immersive_read_anything_browsertest.cc" ]
-
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
+  sources = [
+    "immersive_read_anything_browsertest.cc",
+    "read_anything_controller_browsertest.cc",
+    "read_anything_entry_point_controller_browsertest.cc",
+    "read_anything_omnibox_controller_browsertest.cc",
+  ]
+
   deps = [
+    ":read_anything",
     "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/pdf:pdf_extension_test_utils",
     "//chrome/browser/ui",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/side_panel",
+    "//chrome/browser/ui/side_panel:side_panel_views_dependent",
+    "//chrome/browser/ui/views/side_panel",
+    "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
+    "//components/optimization_guide/core",
+    "//components/page_load_metrics/browser:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/views",
+  ]
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "read_anything_omnibox_controller_interactive_uitest.cc",
+    "read_anything_service_interactive_uitest.cc",
+    "read_anything_side_panel_controller_interactive_uitest.cc",
+  ]
+
+  deps = [
+    ":read_anything",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/side_panel",
+    "//chrome/browser/ui/side_panel:side_panel_views_dependent",
+    "//chrome/browser/ui/views/side_panel",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/accessibility:reading",
+    "//components/user_education/views",
+    "//content/test:test_support",
     "//testing/gtest",
     "//ui/views",
   ]
