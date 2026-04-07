@@ -44,9 +44,6 @@ const CGFloat kBubbleViewAnimationDuration = 0.3;
 const CGFloat kButtonBottomMargin = 20.0;
 // Margin above the HUD view.
 const CGFloat kHUDViewTopMargin = 20.0;
-// Maximum content size category for the promo.
-UIContentSizeCategory const kMaxContentSizeCategory =
-    UIContentSizeCategoryExtraExtraLarge;
 }  // namespace
 
 @interface InteractiveLensOverlayPromoViewController () <
@@ -119,7 +116,6 @@ UIContentSizeCategory const kMaxContentSizeCategory =
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
-  self.view.maximumContentSizeCategory = kMaxContentSizeCategory;
 
   [self setUpViews];
   [self setUpConstraints];
@@ -260,9 +256,7 @@ UIContentSizeCategory const kMaxContentSizeCategory =
   ]];
   NSLayoutConstraint* heightConstraint = [_textScrollView.heightAnchor
       constraintEqualToAnchor:_textScrollView.contentLayoutGuide.heightAnchor];
-  // The text scroll view should take priority over the lens view's default
-  // compression resistance, so the lens view shrinks first.
-  heightConstraint.priority = UILayoutPriorityDefaultHigh + 1;
+  heightConstraint.priority = UILayoutPriorityDefaultHigh;
   heightConstraint.active = YES;
 
   AddSameConstraintsToSides(
@@ -281,13 +275,6 @@ UIContentSizeCategory const kMaxContentSizeCategory =
 
   UILayoutGuide* footerWidthLayoutGuide =
       AddButtonStackContentWidthLayoutGuide(_footerContainerView);
-
-  // The action button should be very resistant to compression, more than
-  // everything except explicit constraints.
-  [_actionButton
-      setContentCompressionResistancePriority:UILayoutPriorityRequired - 1
-                                      forAxis:UILayoutConstraintAxisVertical];
-
   [NSLayoutConstraint activateConstraints:@[
     [_actionButton.leadingAnchor
         constraintEqualToAnchor:footerWidthLayoutGuide.leadingAnchor],
@@ -444,10 +431,6 @@ UIContentSizeCategory const kMaxContentSizeCategory =
   titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
   titleLabel.adjustsFontForContentSizeCategory = YES;
   titleLabel.accessibilityTraits |= UIAccessibilityTraitHeader;
-  // Make sure the labels don't shrink.
-  [titleLabel
-      setContentCompressionResistancePriority:UILayoutPriorityRequired
-                                      forAxis:UILayoutConstraintAxisVertical];
 
   UILabel* subtitleLabel = [[UILabel alloc] init];
   subtitleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
@@ -458,10 +441,6 @@ UIContentSizeCategory const kMaxContentSizeCategory =
   subtitleLabel.textAlignment = NSTextAlignmentCenter;
   subtitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
   subtitleLabel.adjustsFontForContentSizeCategory = YES;
-  // Make sure the labels don't shrink.
-  [subtitleLabel
-      setContentCompressionResistancePriority:UILayoutPriorityRequired
-                                      forAxis:UILayoutConstraintAxisVertical];
 
   UIStackView* textStack = [[UIStackView alloc]
       initWithArrangedSubviews:@[ titleLabel, subtitleLabel ]];
@@ -499,7 +478,6 @@ UIContentSizeCategory const kMaxContentSizeCategory =
       arrowDirection:BubbleArrowDirectionDown
            alignment:BubbleAlignmentCenter];
   bubbleView.translatesAutoresizingMaskIntoConstraints = NO;
-  bubbleView.maximumContentSizeCategory = kMaxContentSizeCategory;
 
   return bubbleView;
 }
