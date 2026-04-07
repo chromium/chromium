@@ -29,6 +29,7 @@ import org.robolectric.shadows.ShadowView;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
@@ -39,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 
 /** Unit tests for {@link WindowOcclusionTracker}. */
+@DisabledTest(message = "https://crbug.com/500449836")
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
