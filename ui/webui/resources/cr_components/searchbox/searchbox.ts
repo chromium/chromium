@@ -14,8 +14,6 @@ import './searchbox_input.js';
 import type {ComposeboxState, ContextualUpload, TabUpload, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
 import {GlifAnimationState, recordContextAdditionMethod} from '//resources/cr_components/composebox/common.js';
 import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_components/search/constants.js';
-import type {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
-import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_host.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
@@ -60,7 +58,7 @@ const SearchboxElementBase =
 
 /** A real search box that behaves just like the Omnibox. */
 export class SearchboxElement extends SearchboxElementBase implements
-    DragAndDropHost, SearchboxMixinInterface {
+    SearchboxMixinInterface {
   static get is() {
     return 'cr-searchbox';
   }
@@ -185,10 +183,6 @@ export class SearchboxElement extends SearchboxElementBase implements
       },
       tabSuggestions_: {type: Array},
       inputState_: {type: Object},
-      isDraggingFile: {
-        reflect: true,
-        type: Boolean,
-      },
       animationState: {
         reflect: true,
         type: String,
@@ -210,7 +204,6 @@ export class SearchboxElement extends SearchboxElementBase implements
       GlifAnimationState.INELIGIBLE;
   accessor showThumbnail: boolean = false;
   accessor placeholderText: string = '';
-  accessor isDraggingFile: boolean = false;
   accessor animationState: GlowAnimationState = GlowAnimationState.NONE;
   protected accessor isLensSearchbox_: boolean =
       loadTimeData.getBoolean('isLensSearchbox');
@@ -230,7 +223,6 @@ export class SearchboxElement extends SearchboxElementBase implements
 
   private pageHandler_: PageHandlerInterface;
   private callbackRouter_: PageCallbackRouter;
-  protected dragAndDropHandler: DragAndDropHandler|null = null;
 
   private autocompleteResultChangedListenerId_: number|null = null;
   private thumbnailChangedListenerId_: number|null = null;
@@ -320,14 +312,6 @@ export class SearchboxElement extends SearchboxElementBase implements
     return this.pageHandler_;
   }
 
-  getDropTarget() {
-    return this;
-  }
-
-  addDroppedFiles(files: FileList) {
-    this.processFiles_(files, ComposeboxContextAddedMethod.DRAG_AND_DROP);
-  }
-
   isInputEmpty(): boolean {
     // If this is called before first render, the input element will not exist.
     if (!this.shadowRoot?.querySelector('#input') || !this.$.input ||
@@ -382,7 +366,7 @@ export class SearchboxElement extends SearchboxElementBase implements
   // Event handlers
   //============================================================================
 
-  protected onInputFocus_() {
+  protected onInputFocusin_() {
     this.pageHandler_.onFocusChanged(true);
   }
 
@@ -630,7 +614,7 @@ export class SearchboxElement extends SearchboxElementBase implements
     return this.searchboxLayoutMode === 'Compact';
   }
 
-  private processFiles_(
+  protected processFiles_(
       files: FileList|null,
       contextAdditionMethod: ComposeboxContextAddedMethod) {
     if (!files || files.length === 0) {

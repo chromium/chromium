@@ -8,6 +8,7 @@ import '//resources/cr_components/searchbox/searchbox_input.js';
 
 import type {ContextualUpload} from '//resources/cr_components/composebox/common.js';
 import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
+import {ComposeboxContextAddedMethod} from '//resources/cr_components/search/constants.js';
 import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
 import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_host.js';
 import {PlaceholderTextCycler} from '//resources/cr_components/searchbox/placeholder_text_cycler.js';
@@ -64,6 +65,11 @@ export class NtpSearchboxElement extends SearchboxElement implements
       composeButtonEnabled: {type: Boolean},
 
       cyclingPlaceholders: {type: Boolean},
+
+      isDraggingFile: {
+        reflect: true,
+        type: Boolean,
+      },
     };
   }
 
@@ -72,6 +78,8 @@ export class NtpSearchboxElement extends SearchboxElement implements
   accessor composeButtonEnabled: boolean = false;
   accessor cyclingPlaceholders: boolean = false;
   private accessor placeholderCycler_: PlaceholderTextCycler | null = null;
+  accessor isDraggingFile: boolean = false;
+  protected dragAndDropHandler: DragAndDropHandler|null = null;
   private dragAndDropEnabled_: boolean =
       loadTimeData.getBoolean('composeboxContextDragAndDropEnabled');
 
@@ -151,14 +159,22 @@ export class NtpSearchboxElement extends SearchboxElement implements
     super.handleKeyNavigation(e);
   }
 
-  protected override onInputFocus_() {
-    super.onInputFocus_();
+  protected override onInputFocusin_() {
+    super.onInputFocusin_();
     this.placeholderCycler_?.stop();
   }
 
   override onInputWrapperFocusout(e: FocusEvent) {
     super.onInputWrapperFocusout(e);
     this.placeholderCycler_?.start();
+  }
+
+  getDropTarget() {
+    return this;
+  }
+
+  addDroppedFiles(files: FileList) {
+    this.processFiles_(files, ComposeboxContextAddedMethod.DRAG_AND_DROP);
   }
 
   //============================================================================
