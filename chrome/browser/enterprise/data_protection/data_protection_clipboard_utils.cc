@@ -318,14 +318,14 @@ void ReportDragData(const content::ClipboardEndpoint& source,
   if (drop_data.text) {
     MaybeReportDataControlsCopy(
         source,
-        {.size = drop_data.text->size(),
+        {.size = drop_data.text->size() * sizeof(std::u16string::value_type),
          .format_type = ui::ClipboardFormatType::PlainTextType()},
         verdict);
   }
   if (drop_data.html) {
     MaybeReportDataControlsCopy(
         source,
-        {.size = drop_data.html->size(),
+        {.size = drop_data.html->size() * sizeof(std::u16string::value_type),
          .format_type = ui::ClipboardFormatType::HtmlType()},
         verdict);
   }
@@ -352,7 +352,8 @@ void ReportDragData(const content::ClipboardEndpoint& source,
   if (!drop_data.custom_data.empty()) {
     size_t size = 0;
     for (const auto& item : drop_data.custom_data) {
-      size += item.first.size() + item.second.size();
+      size += (item.first.size() + item.second.size()) *
+              sizeof(std::u16string::value_type);
     }
     MaybeReportDataControlsCopy(
         source,

@@ -605,7 +605,9 @@ void ClipboardHostImpl::WriteDataTransferCustomData(
 
   size_t total_size = 0;
   for (const auto& entry : clipboard_paste_data.custom_data) {
-    total_size += entry.second.size();
+    total_size +=
+        (entry.first.size() + entry.second.size()) *
+        sizeof(std::u16string::value_type);
   }
 
   ++pending_writes_;

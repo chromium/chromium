@@ -1787,7 +1787,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, DragBlocked) {
   expected_event.set_source(test_url_0());
   expected_event.set_destination("");
   expected_event.set_content_type("text/plain");
-  expected_event.set_content_size(14);
+  expected_event.set_content_size(28);
   expected_event.set_trigger(
       chrome::cros::reporting::proto::DataTransferEventTrigger::CLIPBOARD_COPY);
   expected_event.set_event_result(
@@ -1835,6 +1835,93 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, DragBlocked) {
   helper.CloseDialogWithoutBypass();
   helper.WaitForDialogToClose();
   run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       CopyAndDragConsistentSize) {
+  active_user_test_mixin_->SetFakeCookieValue();
+
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                                   "name": "report_rule",
+                                   "rule_id": "987",
+                                   "sources": {
+                                     "urls": ["google.com", "not.workspace.com"]
+                                   },
+                                   "restrictions": [
+                                     {"class": "CLIPBOARD", "level": "REPORT"}
+                                   ]
+                                 })"},
+                                 machine_scope());
+
+  chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+  if (use_workspace_urls()) {
+    expected_event.set_web_app_signed_in_account(kContentAreaUser0);
+    expected_event.set_source_web_app_signed_in_account(kContentAreaUser0);
+  }
+  expected_event.set_url(test_url_0());
+  expected_event.set_tab_url(test_url_0());
+  expected_event.set_source(test_url_0());
+  expected_event.set_destination("");
+  expected_event.set_content_type("text/html");
+  expected_event.set_content_size(26);
+  expected_event.set_trigger(
+      chrome::cros::reporting::proto::DataTransferEventTrigger::CLIPBOARD_COPY);
+  expected_event.set_event_result(
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED);
+
+  ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+  triggered_rule.set_rule_id(987);
+  triggered_rule.set_rule_name("report_rule");
+
+  *expected_event.add_triggered_rule_info() = triggered_rule;
+  expected_event.set_profile_identifier(
+      browser()->profile()->GetPath().AsUTF8Unsafe());
+  expected_event.set_profile_user_name(kUserName);
+
+  // Both Copy and Drag should emit exactly the same report (same size, same
+  // type).
+  {
+    base::RunLoop run_loop;
+    auto event_validator = event_report_validator_helper_->CreateValidator();
+    event_validator.SetDoneClosure(run_loop.QuitClosure());
+    event_validator.ExpectSensitiveDataEvent(expected_event);
+
+    content::ClipboardPasteData data;
+    data.html = u"<html></html>";
+
+    base::test::TestFuture<const ui::ClipboardFormatType&,
+                           const content::ClipboardPasteData&,
+                           std::optional<std::u16string>>
+        copy_future;
+    IsClipboardCopyAllowedByPolicy(
+        /*source=*/CreateURLClipboardEndpoint(test_url_0()),
+        /*metadata=*/
+        {
+            .size = 26,
+            .format_type = ui::ClipboardFormatType::HtmlType(),
+        },
+        /*data=*/data,
+        /*callback=*/copy_future.GetCallback());
+
+    EXPECT_TRUE(copy_future.IsReady());
+    run_loop.Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    auto event_validator = event_report_validator_helper_->CreateValidator();
+    event_validator.SetDoneClosure(run_loop.QuitClosure());
+    event_validator.ExpectSensitiveDataEvent(std::move(expected_event));
+
+    content::DropData drop_data;
+    drop_data.html = u"<html></html>";
+
+    EXPECT_TRUE(IsDragAllowedByPolicy(
+        /*source=*/CreateURLClipboardEndpoint(test_url_0()),
+        /*drop_data=*/drop_data));
+
+    run_loop.Run();
+  }
 }
 
 }  // namespace enterprise_data_protection
