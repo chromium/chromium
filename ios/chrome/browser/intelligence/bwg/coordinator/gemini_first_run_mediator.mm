@@ -197,6 +197,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
 
 // Open a new tab page given a URL.
 - (void)openNewTabWithURL:(const GURL&)URL {
+  [_delegate dismissGeminiFlow];
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
   [self.sceneHandler openURLInNewTab:command];
 }
