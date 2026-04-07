@@ -40,12 +40,7 @@ inline constexpr uint64_t kJniStackMarkerValue = 0xbdbdef1bebcade1b;
 
 // The method will initialize |atomic_class_id| to contain a global ref to the
 // class. And will return that ref on subsequent calls.
-JNI_ZERO_COMPONENT_BUILD_EXPORT jclass
-LazyGetClass(JNIEnv* env,
-             const char* class_name,
-             const char* split_name,
-             std::atomic<jclass>* atomic_class_id);
-
+// CHECKS that the class lookup succeeds.
 JNI_ZERO_COMPONENT_BUILD_EXPORT jclass
 LazyGetClass(JNIEnv* env,
              const char* class_name,

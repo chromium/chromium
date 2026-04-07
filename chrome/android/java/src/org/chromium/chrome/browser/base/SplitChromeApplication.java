@@ -13,10 +13,11 @@ import android.os.HandlerThread;
 import android.os.SystemClock;
 import android.util.ArraySet;
 
+import org.jni_zero.JniZero;
+
 import org.chromium.base.BundleUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.JNIUtils;
 import org.chromium.base.JavaUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -215,7 +216,7 @@ public class SplitChromeApplication extends SplitCompatApplication {
                             // able to access all chrome classes.
                             BundleUtils.replaceClassLoader(
                                     SplitChromeApplication.this, chromeContext.getClassLoader());
-                            JNIUtils.setDefaultClassLoader(chromeContext.getClassLoader());
+                            JniZero.setJniClassLoader(BundleUtils.getSplitCompatClassLoader());
                             // Resources holds a reference to a ClassLoader. Make our Application's
                             // getResources() return a reference to the Chrome split's resources
                             // since there are a spots where ContextUtils.getApplicationContext()

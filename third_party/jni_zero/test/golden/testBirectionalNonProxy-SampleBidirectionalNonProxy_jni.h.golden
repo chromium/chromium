@@ -23,7 +23,7 @@
 #ifndef org_jni_1zero_SampleBidirectionalNonProxy_clazz_defined
 #define org_jni_1zero_SampleBidirectionalNonProxy_clazz_defined
 inline jclass org_jni_1zero_SampleBidirectionalNonProxy_clazz(JNIEnv* env) {
-  static const char kClassName[] = "org/jni_zero/SampleBidirectionalNonProxy";
+  static const char kClassName[] = "org.jni_zero.SampleBidirectionalNonProxy";
   static std::atomic<jclass> cached_class;
   return jni_zero::internal::LazyGetClass(env, kClassName, &cached_class);
 }

@@ -9,10 +9,7 @@ config("jni_include_dir") {
 }
 
 generate_jni("generate_jni") {
-  sources = [
-    "java/src/org/jni_zero/JniInit.java",
-    "java/src/org/jni_zero/JniUtil.java",
-  ]
+  sources = [ "java/src/org/jni_zero/JniZero.java" ]
   visibility = [
     ":*",
     "//components/cronet/android/*",
@@ -26,6 +23,7 @@ generate_jar_jni("system_jni") {
   classes = [
     "android/os/Process.class",
     "java/lang/Boolean.class",
+    "java/lang/ClassLoader.class",
     "java/lang/Integer.class",
     "java/lang/Float.class",
     "java/lang/Double.class",
@@ -111,14 +109,13 @@ if (enable_java_templates && is_android) {
       "java/src/org/jni_zero/CalledByNativeForTesting.java",
       "java/src/org/jni_zero/CalledByNativeUnchecked.java",
       "java/src/org/jni_zero/JNINamespace.java",
-      "java/src/org/jni_zero/JniInit.java",
       "java/src/org/jni_zero/JniPtr.java",
       "java/src/org/jni_zero/JniPtrImpl.java",
       "java/src/org/jni_zero/JniPtrInner.java",
       "java/src/org/jni_zero/JniTestInstancesSnapshot.java",
       "java/src/org/jni_zero/JniType.java",
       "java/src/org/jni_zero/JniTypeToken.java",
-      "java/src/org/jni_zero/JniUtil.java",
+      "java/src/org/jni_zero/JniZero.java",
       "java/src/org/jni_zero/NativeClassQualifiedName.java",
       "java/src/org/jni_zero/NativeMethods.java",
       "java/src/org/jni_zero/UsedReflectively.java",
