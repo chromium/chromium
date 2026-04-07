@@ -269,6 +269,8 @@ struct WebPreferences {
 
   bool immersive_mode_enabled;
 
+  bool immersive_video_playback_enabled;
+
   bool double_tap_to_zoom_enabled;
 
   bool fullscreen_supported;

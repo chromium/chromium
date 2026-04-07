@@ -125,6 +125,7 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetPresentationRequiresUserGesture(bool) override;
   void SetEmbeddedMediaExperienceEnabled(bool) override;
   void SetImmersiveModeEnabled(bool) override;
+  void SetImmersiveVideoPlaybackEnabled(bool) override;
   void SetMinimumFontSize(int) override;
   void SetMinimumLogicalFontSize(int) override;
   void SetHideScrollbars(bool) override;

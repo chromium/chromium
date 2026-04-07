@@ -634,6 +634,10 @@ void WebSettingsImpl::SetImmersiveModeEnabled(bool enabled) {
   settings_->SetImmersiveModeEnabled(enabled);
 }
 
+void WebSettingsImpl::SetImmersiveVideoPlaybackEnabled(bool enabled) {
+  settings_->SetImmersiveVideoPlaybackEnabled(enabled);
+}
+
 void WebSettingsImpl::SetViewportEnabled(bool enabled) {
   dev_tools_emulator_->SetViewportEnabled(enabled);
 }

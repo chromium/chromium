@@ -241,6 +241,7 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   float text_track_margin_percentage = 0.0f;
 
   bool immersive_mode_enabled = false;
+  bool immersive_video_playback_enabled = false;
 
   bool double_tap_to_zoom_enabled =
       BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE);

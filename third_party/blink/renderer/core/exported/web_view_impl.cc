@@ -1836,6 +1836,10 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   settings->SetPictureInPictureEnabled(prefs.picture_in_picture_enabled &&
                                        ::features::UseSurfaceLayerForVideo());
 
+  settings->SetImmersiveVideoPlaybackEnabled(
+      prefs.immersive_video_playback_enabled &&
+      ::features::UseSurfaceLayerForVideo());
+
   settings->SetRootScrollbarThemeColor(prefs.root_scrollbar_theme_color);
   settings->SetLazyLoadEnabled(prefs.lazy_load_enabled);
   settings->SetInForcedColors(prefs.in_forced_colors);

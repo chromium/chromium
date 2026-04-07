@@ -517,6 +517,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.immersive_mode_enabled;
   }
 
+  static bool immersive_video_playback_enabled(
+      const blink::web_pref::WebPreferences& r) {
+    return r.immersive_video_playback_enabled;
+  }
+
   static bool double_tap_to_zoom_enabled(
       const blink::web_pref::WebPreferences& r) {
     return r.double_tap_to_zoom_enabled;

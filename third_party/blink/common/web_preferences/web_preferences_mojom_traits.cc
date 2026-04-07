@@ -157,6 +157,8 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->text_tracks_enabled = data.text_tracks_enabled();
   out->text_track_margin_percentage = data.text_track_margin_percentage();
   out->immersive_mode_enabled = data.immersive_mode_enabled();
+  out->immersive_video_playback_enabled =
+      data.immersive_video_playback_enabled();
   out->double_tap_to_zoom_enabled = data.double_tap_to_zoom_enabled();
   out->fullscreen_supported = data.fullscreen_supported();
   out->text_autosizing_enabled = data.text_autosizing_enabled();

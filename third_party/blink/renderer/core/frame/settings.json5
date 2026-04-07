@@ -289,6 +289,12 @@
       initial: false,
     },
 
+    // Whether immersive video playback is enabled (eg, on Android XR).
+    {
+      name: "immersiveVideoPlaybackEnabled",
+      initial: false,
+    },
+
     // Only affects main thread scrolling
     {
       name: "scrollAnimatorEnabled",
