@@ -38,11 +38,8 @@ void SendTabToSelfPageHandler::SendTabToDevice(
     const GURL& url,
     const std::string& title,
     base::OnceCallback<void(SendTabToSelfResult)> result_callback) {
-  PendingRequest request;
-  request.target_device_guid = target_device_guid;
-  request.url = url;
-  request.title = title;
-  request.result_callback = std::move(result_callback);
+  PendingRequest request(target_device_guid, url, title,
+                         std::move(result_callback));
 
   MaybeExtractFormFields(request);
   MaybeExtractNavigationHistory(request);
@@ -73,20 +70,36 @@ SendTabToSelfPageHandler::SendTabToSelfPageHandler(
       content::WebContentsUserData<SendTabToSelfPageHandler>(*web_contents) {}
 
 void SendTabToSelfPageHandler::PrimaryPageChanged(content::Page& /*page*/) {
-  for (auto& [token, request] : pending_requests_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&SendTabToSelfPageHandler::CancelPendingRequest,
-                       weak_ptr_factory_.GetWeakPtr(), token));
+  base::flat_map<base::Token, PendingRequest> requests =
+      std::move(pending_requests_);
+  pending_requests_.clear();
+  for (std::pair<base::Token, PendingRequest>& pair : requests) {
+    SendFinalizedRequest(std::move(pair.second),
+                         ScrollPositionGenerationOutcome::kMainFrameChanged);
   }
 }
 
 void SendTabToSelfPageHandler::WebContentsDestroyed() {
+  base::flat_map<base::Token, PendingRequest> requests =
+      std::move(pending_requests_);
   pending_requests_.clear();
+  for (std::pair<base::Token, PendingRequest>& pair : requests) {
+    SendFinalizedRequest(
+        std::move(pair.second),
+        ScrollPositionGenerationOutcome::kMainFrameUnavailable);
+  }
 }
 
-SendTabToSelfPageHandler::PendingRequest::PendingRequest()
-    : start_time(base::TimeTicks::Now()) {}
+SendTabToSelfPageHandler::PendingRequest::PendingRequest(
+    const std::string& target_device_guid,
+    const GURL& url,
+    const std::string& title,
+    base::OnceCallback<void(SendTabToSelfResult)> result_callback)
+    : target_device_guid(target_device_guid),
+      url(url),
+      title(title),
+      start_time(base::TimeTicks::Now()),
+      result_callback(std::move(result_callback)) {}
 
 SendTabToSelfPageHandler::PendingRequest::PendingRequest(PendingRequest&&) =
     default;
@@ -134,22 +147,11 @@ void SendTabToSelfPageHandler::SelectorGenerationTimedOutForRequest(
 
   content::RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
   ScrollPositionGenerationOutcome outcome =
-      ScrollPositionGenerationOutcome::kBrowserTimeout;
-  if (!main_frame || main_frame->GetGlobalId() != request->main_frame_id) {
-    outcome = ScrollPositionGenerationOutcome::kMainFrameChanged;
-  }
+      (!main_frame || main_frame->GetGlobalId() != request->main_frame_id)
+          ? ScrollPositionGenerationOutcome::kMainFrameChanged
+          : ScrollPositionGenerationOutcome::kBrowserTimeout;
 
   SendFinalizedRequest(std::move(*request), outcome);
-}
-
-void SendTabToSelfPageHandler::CancelPendingRequest(base::Token request_token) {
-  std::optional<PendingRequest> request = TakePendingRequest(request_token);
-  if (!request) {
-    return;
-  }
-
-  SendFinalizedRequest(std::move(*request),
-                       ScrollPositionGenerationOutcome::kMainFrameChanged);
 }
 
 void SendTabToSelfPageHandler::RequestScrollPositionSelectorAndSendRequest(
@@ -170,7 +172,7 @@ void SendTabToSelfPageHandler::RequestScrollPositionSelectorAndSendRequest(
     last_main_frame_id_ = request.main_frame_id;
   }
 
-  pending_requests_[request_token] = std::move(request);
+  pending_requests_.insert_or_assign(request_token, std::move(request));
 
   if (!text_fragment_receiver_.is_bound()) {
     main_frame->GetRemoteInterfaces()->GetInterface(
@@ -199,29 +201,25 @@ SendTabToSelfPageHandler::ProcessSelectorGenerationResult(
     shared_highlighting::LinkGenerationError error) {
   content::RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
   if (!main_frame || main_frame->GetGlobalId() != request.main_frame_id) {
-    return {ScrollPositionGenerationOutcome::kMainFrameChanged,
-            ScrollPosition()};
+    return {ScrollPositionGenerationOutcome::kMainFrameChanged, {}};
   }
 
   if (error == shared_highlighting::LinkGenerationError::kTimeout) {
-    return {ScrollPositionGenerationOutcome::kRendererTimeout,
-            ScrollPosition()};
+    return {ScrollPositionGenerationOutcome::kRendererTimeout, {}};
   }
 
   if (error != shared_highlighting::LinkGenerationError::kNone) {
-    return {ScrollPositionGenerationOutcome::kLinkGenerationError,
-            ScrollPosition()};
+    return {ScrollPositionGenerationOutcome::kLinkGenerationError, {}};
   }
 
   if (selector.empty()) {
-    return {ScrollPositionGenerationOutcome::kEmptySelector, ScrollPosition()};
+    return {ScrollPositionGenerationOutcome::kEmptySelector, {}};
   }
 
   std::optional<shared_highlighting::TextFragment> fragment =
       shared_highlighting::TextFragment::FromEscapedString(selector);
   if (!fragment) {
-    return {ScrollPositionGenerationOutcome::kInvalidSelector,
-            ScrollPosition()};
+    return {ScrollPositionGenerationOutcome::kInvalidSelector, {}};
   }
 
   RecordScrollPositionSelectorLength(selector.length());

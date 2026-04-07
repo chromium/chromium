@@ -358,7 +358,7 @@ TEST_F(SendTabToSelfPageHandlerTest,
 }
 
 TEST_F(SendTabToSelfPageHandlerTest,
-       ShouldNotAddEntryWhenWebContentsIsDestroyedDuringGeneration) {
+       ShouldAddEntryWhenWebContentsIsDestroyedDuringGeneration) {
   const GURL url(kExampleUrl);
   const std::string title = "Title";
   const std::string device_id = "device_id";
@@ -367,9 +367,16 @@ TEST_F(SendTabToSelfPageHandlerTest,
       SendTabToSelfPageHandler::GetOrCreateForWebContents(web_contents());
   handler->SetSelectorGenerationTimeoutForTesting(base::Milliseconds(200));
 
-  // We don't expect AddEntry to be called at all if the WebContents is
-  // destroyed, because the pending requests map is cleared by the observer.
-  EXPECT_CALL(model_, AddEntry(_, _, _, _, _)).Times(0);
+  // Prepare the model to capture the entry when the fallback is triggered by
+  // the tab closure.
+  TestFuture<PageContext> future;
+  EXPECT_CALL(model_, AddEntry(Eq(url), Eq(title), Eq(device_id), _, _))
+      .WillOnce([&future](const GURL&, const std::string&, const std::string&,
+                          const PageContext& context,
+                          NavigationHistory navigation_history) {
+        future.SetValue(context);
+        return nullptr;
+      });
 
   // Initiate the send to device action.
   handler->SendTabToDevice(device_id, url, title);
@@ -379,6 +386,10 @@ TEST_F(SendTabToSelfPageHandlerTest,
 
   // Destroy the WebContents while the capture request is still pending.
   DeleteContents();
+
+  // Verify the model received the entry but without the scroll position
+  // context since generation was safely aborted by the tab closure.
+  EXPECT_TRUE(future.Get().scroll_position.text_fragment.text_start.empty());
 
   // Clean up the captured callback.
   mock_receiver_.RespondToSelectorRequest("");
