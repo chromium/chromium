@@ -348,6 +348,22 @@ bool VerifyBeginNavigationCommonParams(
   return true;
 }
 
+bool VerifyCreateNewWindowParams(const RenderFrameHostImpl& current_rfh,
+                                 const mojom::CreateNewWindowParams& params) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  RenderProcessHost* process = current_rfh.GetProcess();
+
+  // Verify `form_submission_post_data`.
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  if (!policy->CanReadRequestBody(process, params.form_submission_post_data)) {
+    bad_message::ReceivedBadMessage(process,
+                                    bad_message::ILLEGAL_UPLOAD_PARAMS);
+    return false;
+  }
+
+  return true;
+}
+
 bool VerifyNavigationInitiator(
     RenderFrameHostImpl* current_rfh,
     const std::optional<blink::LocalFrameToken>& initiator_frame_token,

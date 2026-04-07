@@ -9642,6 +9642,13 @@ void RenderFrameHostImpl::CreateNewWindow(
   TRACE_EVENT2("navigation", "RenderFrameHostImpl::CreateNewWindow",
                "render_frame_host", this, "url", params->target_url);
 
+  // TODO(crbug.com/487768779): Move all `params` validation from this function
+  // into VerifyCreateNewWindowParams.
+  if (!VerifyCreateNewWindowParams(*this, *params)) {
+    std::move(callback).Run(mojom::CreateNewWindowStatus::kBlocked, nullptr);
+    return;
+  }
+
   // These checks ensure malformed partitioned popins cannot be created.
   // Most of these checks should already have been done by the renderer.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
