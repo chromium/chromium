@@ -8,24 +8,21 @@ Security Critical: no
 Shipped: no
 
 Description:
-Generate shared library substvar dependencies. This directory can be removed
-if/when the --ignore-weak-undefined option becomes available on the buildbots.
+Generate shared library substvar dependencies. Chromium vendors
+`dpkg-shlibdeps.pl`, the minimal `Dpkg::*` module subset it needs, and the
+matching `data/` tables so Linux packaging does not depend on the host
+`libdpkg-perl` installation. Chromium also relies on a local
+`--ignore-weak-undefined` option. This directory can be removed if that
+option becomes available on the buildbots.
 
 Updating:
-Copy dpkg/COPYING and dpkg/scripts/dpkg-shlibdeps.pl to
-third_party/dpkg-shlibdeps/.
+Copy `dpkg/COPYING` to `third_party/dpkg-shlibdeps/LICENSE`. Then copy
+`dpkg/scripts/dpkg-shlibdeps.pl`, the required `dpkg/scripts/Dpkg/*.pm`
+dependency closure, and the required `dpkg/data/` files into
+`third_party/dpkg-shlibdeps/`.
 
 Patches:
 - 0001-dkpg-shlibdeps-add-option-to-ignore-weak-undefined-symbols.patch
   Prevents weak undefined symbols from introducing hard dependencies. Upstream
   merge request:
-  https://salsa.debian.org/thomasanderson-guest/dpkg/merge_requests/1
-- 0002-fix-compatibility-for-chromium.patch
-  dpkg-shlibdeps.pl comes from dpkg-dev, which depends on libdpkg-perl that
-  provides perl modules for eg. locating shared libraries and getting a list of
-  symbols from them. The API of libdpkg-perl is not stable (but changes very
-  infrequently), so in some cases dpkg-shlibdeps.pl will be expecting APIs that
-  do not exist on the system. This patch is a minimal set of changes that fixes
-  compatibility for supported build environments (Ubuntu Xenial and later).
-  Specifically, provide the debug() function, and don't expect exec_abi to be a
-  member of Dpkg::Shlibs::Objdump::Object.
+  https://salsa.debian.org/thomasanderson-guest/dpkg/-/merge_requests/1

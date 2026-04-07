@@ -1,0 +1,53 @@
+# Version=1.0
+#
+# This file contains the table of known CPU names.
+#
+# Architecture names are formed as a combination of the system name
+# (from ostable) and CPU name (from this table) after mapping from
+# the Debian arch tuple (from tupletable).
+#
+# - Column 1 is the Debian name for the CPU, used to form the cpu part in
+#   the Debian arch tuple.
+# - Column 2 is the GNU name for the CPU, used to output build, host and
+#   target variables in ‘dpkg-architecture’.
+# - Column 3 is an extended regular expression used to match against the
+#   CPU part of the output of the GNU config.guess script.
+# - Column 4 is the size (in bits) of pointers.
+# - Column 5 is the endianness (byte ordering in numbers).
+#
+# <Debian name>	<GNU name>	<config.guess regex>	<Bits>	<Endianness>
+i386		i686		(i[34567]86|pentium)	32	little
+ia64		ia64		ia64			64	little
+alpha		alpha		alpha.*			64	little
+amd64		x86_64		(amd64|x86_64)		64	little
+armeb		armeb		arm.*b			32	big
+arm		arm		arm.*			32	little
+arm64		aarch64		aarch64			64	little
+avr32		avr32		avr32			32	big
+hppa		hppa		hppa.*			32	big
+m32r		m32r		m32r			32	big
+m68k		m68k		m68k			32	big
+mips		mips		mips(eb)?		32	big
+mipsel		mipsel		mipsel			32	little
+mipsr6		mipsisa32r6	mipsisa32r6		32	big
+mipsr6el	mipsisa32r6el	mipsisa32r6el		32	little
+mips64		mips64		mips64			64	big
+mips64el	mips64el	mips64el		64	little
+mips64r6	mipsisa64r6	mipsisa64r6		64	big
+mips64r6el	mipsisa64r6el	mipsisa64r6el		64	little
+nios2		nios2		nios2			32	little
+or1k		or1k		or1k			32	big
+powerpc		powerpc		(powerpc|ppc)		32	big
+powerpcel	powerpcle	powerpcle		32	little
+ppc64		powerpc64	(powerpc|ppc)64		64	big
+ppc64el		powerpc64le	powerpc64le		64	little
+riscv64		riscv64		riscv64			64	little
+s390		s390		s390			32	big
+s390x		s390x		s390x			64	big
+sh3		sh3		sh3			32	little
+sh3eb		sh3eb		sh3eb			32	big
+sh4		sh4		sh4			32	little
+sh4eb		sh4eb		sh4eb			32	big
+sparc		sparc		sparc			32	big
+sparc64		sparc64		sparc64			64	big
+tilegx		tilegx		tilegx			64	little

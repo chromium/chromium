@@ -21,10 +21,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+use strict;
 use warnings;
 use feature qw(state);
 
-use List::Util qw(reduce);
+use List::Util qw(any none);
 use Cwd qw(realpath);
 use File::Basename qw(dirname);
 
@@ -49,11 +50,6 @@ use constant {
     WARN_DEP_AVOIDABLE => 2,
     WARN_NOT_NEEDED => 4,
 };
-
-sub none (&@) { my $code=shift; reduce { $a && !$code->(local $_ = $b) } 1, @_; }
-sub any  (&@) { my $code=shift; reduce { $a ||  $code->(local $_ = $b) } 0, @_; }
-
-sub g_ { return shift; }
 
 # By increasing importance
 my @depfields = qw(Suggests Recommends Depends Pre-Depends);
@@ -157,11 +153,6 @@ sub ignore_pkgdir {
     return any { $path =~ /^\Q$_\E/ } @pkg_dir_to_ignore;
 }
 
-sub debug {
-    my $level = shift;
-    print @_ if $level <= $debug;
-}
-
 if (-d 'debian') {
     push @pkg_symbols, grep { !ignore_pkgdir($_) } glob 'debian/*/DEBIAN/symbols';
     push @pkg_shlibs, grep { !ignore_pkgdir($_) } glob 'debian/*/DEBIAN/shlibs';
@@ -207,17 +198,18 @@ foreach my $file (keys %exec) {
     my %soname_notfound;
     my %alt_soname;
     foreach my $soname (@sonames) {
-	my @libs = my_find_library($soname, $obj->{RPATH}, $obj->{exec_abi} || $obj->{format}, $file);
+	my @libs = my_find_library($soname, $obj->{RPATH}, $obj->{exec_abi}, $file);
 	unless (scalar @libs) {
 	    $soname_notfound{$soname} = 1;
 	    $global_soname_notfound{$soname} = 1;
 	    my $msg = g_('cannot find library %s needed by %s (ELF ' .
 	                 "format: '%s' abi: '%s'; RPATH: '%s')");
+	    my $exec_abi = unpack 'H*', $obj->{exec_abi};
 	    if (scalar(split_soname($soname))) {
-		errormsg($msg, $soname, $file, $obj->{format}, join(':', @{$obj->{RPATH}}));
+		errormsg($msg, $soname, $file, $obj->{format}, $exec_abi, join(':', @{$obj->{RPATH}}));
 		$error_count++;
 	    } else {
-		warning($msg, $soname, $file, $obj->{format}, join(':', @{$obj->{RPATH}}));
+		warning($msg, $soname, $file, $obj->{format}, $exec_abi, join(':', @{$obj->{RPATH}}));
 	    }
 	    next;
 	}

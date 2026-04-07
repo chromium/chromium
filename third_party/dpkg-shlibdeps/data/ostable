@@ -1,0 +1,43 @@
+# Version=2.0
+#
+# This file contains the table of known operating system names.
+#
+# Architecture names are formed as a combination of the system name
+# (from this table) and CPU name (from cputable) after mapping from
+# the Debian arch tuple (from tupletable).
+#
+# - Column 1 is the Debian name for the system, used to form the system part
+#   in the Debian arch tuple.
+# - Column 2 is the GNU name for the system, used to output build, host and
+#   target variables in ‘dpkg-architecture’.
+# - Column 3 is an extended regular expression used to match against the
+#   system part of the output of the GNU config.guess script.
+#
+# <Debian name>		<GNU name>		<config.guess regex>
+eabi-uclibc-linux	linux-uclibceabi	linux[^-]*-uclibceabi
+base-uclibc-linux	linux-uclibc		linux[^-]*-uclibc
+eabihf-musl-linux	linux-musleabihf	linux[^-]*-musleabihf
+base-musl-linux		linux-musl		linux[^-]*-musl
+eabihf-gnu-linux	linux-gnueabihf		linux[^-]*-gnueabihf
+eabi-gnu-linux		linux-gnueabi		linux[^-]*-gnueabi
+abin32-gnu-linux	linux-gnuabin32		linux[^-]*-gnuabin32
+abi64-gnu-linux		linux-gnuabi64		linux[^-]*-gnuabi64
+spe-gnu-linux		linux-gnuspe		linux[^-]*-gnuspe
+x32-gnu-linux		linux-gnux32		linux[^-]*-gnux32
+ilp32-gnu-linux		linux-gnu_ilp32		linux[^-]*-gnu_ilp32
+base-gnu-linux		linux-gnu		linux[^-]*(-gnu.*)?
+eabihf-gnu-kfreebsd	kfreebsd-gnueabihf	kfreebsd[^-]*-gnueabihf
+base-gnu-kfreebsd	kfreebsd-gnu		kfreebsd[^-]*(-gnu.*)?
+base-gnu-knetbsd	knetbsd-gnu		knetbsd[^-]*(-gnu.*)?
+base-gnu-kopensolaris	kopensolaris-gnu	kopensolaris[^-]*(-gnu.*)?
+base-gnu-hurd		gnu			gnu[^-]*
+base-bsd-darwin		darwin			darwin[^-]*
+base-bsd-dragonflybsd	dragonflybsd		dragonfly[^-]*
+base-bsd-freebsd	freebsd			freebsd[^-]*
+base-bsd-netbsd		netbsd			netbsd[^-]*
+base-bsd-openbsd	openbsd			openbsd[^-]*
+base-sysv-aix		aix			aix[^-]*
+base-sysv-solaris	solaris			solaris[^-]*
+eabi-uclibc-uclinux	uclinux-uclibceabi	uclinux[^-]*-uclibceabi
+base-uclibc-uclinux	uclinux-uclibc		uclinux[^-]*(-uclibc.*)?
+base-tos-mint		mint			mint[^-]*

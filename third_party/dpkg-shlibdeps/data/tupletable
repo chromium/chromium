@@ -1,0 +1,55 @@
+# Version=1.0
+#
+# Bidirectional mapping between a Debian arch tuple and a Debian arch name.
+#
+# Debian arch tuple names are formed as a combination of the Debian system
+# name (from the ostable) and the Debian CPU name (from the cputable) after
+# applying the variable substitutions. Debian arch names are the result of
+# historical naming conventions in Debian, where the predominant system
+# architectures have many of their parts in implicit form, by only exposing
+# the CPU with the ABI bolted on, where less common architectures have their
+# OS part spelled out, and where even less common ones, have their libc
+# spelled out. This table maps between the ideal architecture tuple, with
+# the current messy reality.
+#
+# - Column 1 is the Debian arch tuple name, as the normalized form of the
+#   architecture names, used as the internal representation.
+# - Column 2 is the Debian arch name, as the abbreviated form of the
+#   architecture names, used as the public interface.
+#
+# Supported variables: <cpu>
+#
+# <Debian arch tuple>		<Debian arch name>
+eabi-uclibc-linux-arm		uclibc-linux-armel
+base-uclibc-linux-<cpu>		uclibc-linux-<cpu>
+eabihf-musl-linux-arm		musl-linux-armhf
+base-musl-linux-<cpu>		musl-linux-<cpu>
+ilp32-gnu-linux-arm64		arm64ilp32
+eabihf-gnu-linux-arm		armhf
+eabi-gnu-linux-arm		armel
+abin32-gnu-linux-mips64r6el	mipsn32r6el
+abin32-gnu-linux-mips64r6	mipsn32r6
+abin32-gnu-linux-mips64el	mipsn32el
+abin32-gnu-linux-mips64		mipsn32
+abi64-gnu-linux-mips64r6el	mips64r6el
+abi64-gnu-linux-mips64r6	mips64r6
+abi64-gnu-linux-mips64el	mips64el
+abi64-gnu-linux-mips64		mips64
+spe-gnu-linux-powerpc		powerpcspe
+x32-gnu-linux-amd64		x32
+base-gnu-linux-<cpu>		<cpu>
+eabihf-gnu-kfreebsd-arm		kfreebsd-armhf
+base-gnu-kfreebsd-<cpu>		kfreebsd-<cpu>
+base-gnu-knetbsd-<cpu>		knetbsd-<cpu>
+base-gnu-kopensolaris-<cpu>	kopensolaris-<cpu>
+base-gnu-hurd-<cpu>		hurd-<cpu>
+base-bsd-dragonflybsd-<cpu>	dragonflybsd-<cpu>
+base-bsd-freebsd-<cpu>		freebsd-<cpu>
+base-bsd-openbsd-<cpu>		openbsd-<cpu>
+base-bsd-netbsd-<cpu>		netbsd-<cpu>
+base-bsd-darwin-<cpu>		darwin-<cpu>
+base-sysv-aix-<cpu>		aix-<cpu>
+base-sysv-solaris-<cpu>		solaris-<cpu>
+eabi-uclibc-uclinux-arm		uclinux-armel
+base-uclibc-uclinux-<cpu>	uclinux-<cpu>
+base-tos-mint-m68k		mint-m68k

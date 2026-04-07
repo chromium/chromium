@@ -32,6 +32,8 @@ distro_check = args.distro_check
 script_dir = os.path.dirname(os.path.realpath(__file__))
 dpkg_shlibdeps = os.path.join(script_dir, '..', '..', '..', '..', 'third_party',
                               'dpkg-shlibdeps', 'dpkg-shlibdeps.pl')
+dpkg_shlibdeps_root = os.path.dirname(dpkg_shlibdeps)
+dpkg_datadir = os.path.join(dpkg_shlibdeps_root, 'data')
 
 cmd = [dpkg_shlibdeps, '--ignore-weak-undefined']
 if arch == 'x64':
@@ -74,11 +76,17 @@ else:
     sys.exit(1)
 cmd.extend(['-l%s/usr/lib' % sysroot, '-O', '-e', binary])
 
+env = os.environ.copy()
+env['PERL5LIB'] = os.pathsep.join(
+    filter(None, [dpkg_shlibdeps_root, env.get('PERL5LIB')]))
+env['DPKG_DATADIR'] = dpkg_datadir
+
 proc = subprocess.Popen(
     cmd,
     stdout=subprocess.PIPE,
     stderr=subprocess.PIPE,
     cwd=sysroot,
+    env=env,
     encoding='utf-8')
 (stdout, stderr) = proc.communicate()
 exit_code = proc.wait()

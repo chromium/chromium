@@ -1,0 +1,14 @@
+# Version=2.0
+#
+# This file contains the table of arch ABI attribute overrides.
+#
+# If the ABI is not present here then the attribute information for a
+# Debian arch tuple matches the one on the cputable.
+#
+# - Column 1 is the Debian name for the ABI.
+# - Column 2 is the size (in bits) of the ABI pointers.
+#
+# <Debian name>	<Bits>
+abin32		32
+ilp32		32
+x32		32
