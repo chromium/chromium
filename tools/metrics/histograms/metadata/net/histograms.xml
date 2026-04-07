@@ -838,12 +838,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.MaxFileSizeOnInit" units="KB"
-    expires_after="2022-02-20">
+    expires_after="2027-04-07">
   <owner>shivanisha@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
+  <owner>yoichio@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
   <summary>
     Max file size allowed to be cached in the http cache. This is logged at the
-    time the backend is created.
+    time the backend is created. Warning: this histogram was expired from
+    2022-02-20 to 2026-04-07; data may be missing.
   </summary>
 </histogram>
 
