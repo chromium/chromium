@@ -163,7 +163,7 @@ PA_ALWAYS_INLINE long FutexSyscall(volatile void* ftx, int op, int value) {
                         nullptr, 0);
   if (retval == -1) {
     // These are programming errors, check them.
-    PA_DCHECK((errno != EPERM) && (errno != EACCES) && (errno != EINVAL) &&
+    PA_DCHECK((errno != EPERM) || (errno != EACCES) || (errno != EINVAL) ||
               (errno != ENOSYS))
         << "FutexSyscall(" << reinterpret_cast<uintptr_t>(ftx) << ", " << op
         << ", " << value << ")  failed with errno " << errno;
