@@ -304,6 +304,51 @@ TEST_F(LayerContextImplUpdateDisplayTilingTest, InvalidTilingUpdate) {
   EXPECT_EQ(result3.error(), "Invalid tile resource");
 }
 
+TEST_F(LayerContextImplUpdateDisplayTilingTest, DeletedTileOutsideBounds) {
+  constexpr int kLayerId = 2;
+  constexpr float kScaleKey = 1.0f;
+  const gfx::Size kTileSize(64, 64);
+  const gfx::Rect kTilingRect(0, 0, 64, 64);  // Only 1x1 tiles
+
+  // Setup: Create a TileDisplayLayer.
+  auto setup_update = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(setup_update.get(),
+                          cc::mojom::LayerType::kTileDisplay, kLayerId);
+  EXPECT_TRUE(layer_context_impl_->DoUpdateDisplayTree(std::move(setup_update))
+                  .has_value());
+
+  constexpr bool update_damages[2] = {false, true};
+  for (auto update_damage : update_damages) {
+    auto tiling = mojom::Tiling::New();
+    tiling->layer_id = kLayerId;
+    tiling->scale_key = kScaleKey;
+    tiling->raster_scale = gfx::Vector2dF(kScaleKey, kScaleKey);
+    tiling->tile_size = kTileSize;
+    tiling->tiling_rect = kTilingRect;
+
+    // A deleted tile that is out of bounds (column_index=1, row_index=1)
+    // because the tiling bounds shrank.
+    auto tile_deleted = mojom::Tile::New();
+    tile_deleted->column_index = 1;
+    tile_deleted->row_index = 1;
+    tile_deleted->update_damage = update_damage;
+    tile_deleted->contents = mojom::TileContents::NewMissingReason(
+        cc::mojom::MissingTileReason::kTileDeleted);
+    tiling->tiles.push_back(std::move(tile_deleted));
+
+    auto result = layer_context_impl_->DoUpdateDisplayTiling(std::move(tiling));
+    if (update_damage) {
+      // Should fail.
+      ASSERT_FALSE(result.has_value());
+      EXPECT_EQ(result.error(),
+                "Out-of-bounds deleted tile cannot update damage");
+    } else {
+      // Should succeed.
+      EXPECT_TRUE(result.has_value());
+    }
+  }
+}
+
 TEST_F(LayerContextImplUpdateDisplayTilingTest,
        TilingWithInvalidLayerIdIsIgnored) {
   constexpr int kInvalidLayerId = 999;  // An ID that doesn't exist.

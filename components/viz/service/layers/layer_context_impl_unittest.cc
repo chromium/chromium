@@ -181,6 +181,58 @@ INSTANTIATE_TEST_SUITE_P(
       return name.str();
     });
 
+class LayerContextImplUpdateDisplayTreeTileIndexTest
+    : public LayerContextImplTest,
+      public ::testing::WithParamInterface<
+          std::tuple<uint32_t, uint32_t, bool>> {};
+
+TEST_P(LayerContextImplUpdateDisplayTreeTileIndexTest, TileIndices) {
+  const uint32_t column_index = std::get<0>(GetParam());
+  const uint32_t row_index = std::get<1>(GetParam());
+  const bool is_valid = std::get<2>(GetParam());
+  auto update = CreateDefaultUpdate();
+  int layer_id =
+      AddDefaultLayerToUpdate(update.get(), cc::mojom::LayerType::kTileDisplay);
+
+  auto tiling = mojom::Tiling::New();
+  tiling->layer_id = layer_id;
+  tiling->scale_key = 1.0f;
+  tiling->raster_scale = gfx::Vector2dF(1.0f, 1.0f);
+  tiling->tile_size = gfx::Size(10, 10);
+  tiling->tiling_rect = gfx::Rect(10, 10);  // Exactly 1x1 tiles
+
+  auto tile = mojom::Tile::New();
+  tile->column_index = column_index;
+  tile->row_index = row_index;
+  tile->contents = mojom::TileContents::NewSolidColor(SkColors::kRed);
+  tiling->tiles.push_back(std::move(tile));
+
+  update->tilings.push_back(std::move(tiling));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+
+  if (is_valid) {
+    EXPECT_TRUE(result.has_value());
+  } else {
+    ASSERT_FALSE(result.has_value());
+    EXPECT_EQ(result.error(), "Invalid tile index in Tiling");
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    TileIndices,
+    LayerContextImplUpdateDisplayTreeTileIndexTest,
+    ::testing::Values(std::make_tuple(0, 0, true),
+                      std::make_tuple(1, 0, false),
+                      std::make_tuple(0, 1, false)),
+    [](const testing::TestParamInfo<
+        LayerContextImplUpdateDisplayTreeTileIndexTest::ParamType>& info) {
+      std::stringstream name;
+      name << (std::get<2>(info.param) ? "Valid" : "Invalid") << "_"
+           << info.index;
+      return name.str();
+    });
+
 TEST_F(LayerContextImplTest, DrawModeIsGpuForwardedViaSettings) {
   auto settings = mojom::LayerContextSettings::New();
   settings->draw_mode_is_gpu = true;

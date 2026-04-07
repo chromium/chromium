@@ -1154,6 +1154,29 @@ base::expected<void, std::string> DeserializeTiling(
   tiling.SetTileSize(wire.tile_size);
   tiling.SetTilingRect(wire.tiling_rect);
   for (auto& wire_tile : wire.tiles) {
+    const bool is_out_of_bounds =
+        wire_tile->column_index >=
+            static_cast<uint32_t>(tiling.tiling_data()->num_tiles_x()) ||
+        wire_tile->row_index >=
+            static_cast<uint32_t>(tiling.tiling_data()->num_tiles_y());
+    if (is_out_of_bounds) {
+      const bool is_deleted = wire_tile->contents->is_missing_reason() &&
+                              wire_tile->contents->get_missing_reason() ==
+                                  cc::mojom::MissingTileReason::kTileDeleted;
+
+      if (!is_deleted) {
+        return base::unexpected("Invalid tile index in Tiling");
+      }
+
+      // OOB deleted tiles are allowed for cleanup, but they cannot track damage
+      // because they have no valid bounds in the current tiling grid.
+      if (wire_tile->update_damage) {
+        return base::unexpected(
+            "Out-of-bounds deleted tile cannot update damage");
+      }
+    }
+    // TODO(zmo): Should we also reject deleted tiles with |update_damage| set
+    // to true?
     ASSIGN_OR_RETURN(auto contents,
                      DeserializeTileContents(host_impl, *wire_tile->contents));
     tiling.SetTileContents(
