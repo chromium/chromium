@@ -4,6 +4,7 @@
     "check_api_compatibility.ts"
   ],
   "compilerOptions": {
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "rootDirs": ["."]
   }

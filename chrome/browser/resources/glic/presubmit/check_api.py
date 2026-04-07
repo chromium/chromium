@@ -173,6 +173,7 @@ def CheckCompatibility(old_contents: str, new_contents: str) -> list[str]:
         tsconfigfile.write('''{
   "extends": "$ROOT/chrome/browser/resources/glic/presubmit/tsconfig.json",
     "compilerOptions": {
+      "ignoreDeprecations": "6.0",
       "baseUrl": "$ROOT",
       "paths": {
         "@tmp/*": ["$TMP/*"]
