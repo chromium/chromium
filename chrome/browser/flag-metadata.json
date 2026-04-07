@@ -9529,7 +9529,7 @@
   {
     "name": "web-app-installation-api",
     "owners": [ "liahiscock@microsoft.com", "pwa-team@google.com" ],
-    "expiry_milestone": 149
+    "expiry_milestone": 160
   },
   {
     "name": "web-app-migrate-preinstalled-chat",
