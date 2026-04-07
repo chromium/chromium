@@ -92,8 +92,9 @@ void MediaAppPageHandler::SubmitForm(const GURL& url,
   // We only intend for this API to be used with lens, so crash if used for
   // something else.
   if (url.GetHost() != lensHost) {
-    mojo::ReportBadMessage(
+    receiver_.ReportBadMessage(
         base::StrCat({"SubmitForm API only works with ", lensHost}));
+    return;
   }
   media_app_ui_->delegate()->SubmitForm(url, payload, header);
   std::move(callback).Run();
