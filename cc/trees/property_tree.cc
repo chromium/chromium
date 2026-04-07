@@ -2440,7 +2440,11 @@ bool PropertyTrees::operator==(const PropertyTrees& other) const {
          full_tree_damaged() == other.full_tree_damaged() &&
          is_main_thread() == other.is_main_thread() &&
          is_active() == other.is_active() &&
-         sequence_number() == other.sequence_number();
+         sequence_number() == other.sequence_number() &&
+         inner_viewport_container_bounds_delta() ==
+             other.inner_viewport_container_bounds_delta() &&
+         outer_viewport_container_bounds_delta() ==
+             other.outer_viewport_container_bounds_delta();
 }
 #endif
 

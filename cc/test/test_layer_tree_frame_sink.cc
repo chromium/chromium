@@ -195,6 +195,10 @@ void TestLayerTreeFrameSink::SetDisplayColorSpace(
     display_->SetDisplayColorSpaces(display_color_spaces_);
 }
 
+viz::CompositorFrameSinkSupport* TestLayerTreeFrameSink::support() const {
+  return support_.get();
+}
+
 bool TestLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
   DebugScopedSetImplThread impl(task_runner_provider_);
   if (!LayerTreeFrameSink::BindToClient(client))

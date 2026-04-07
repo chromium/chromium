@@ -276,6 +276,8 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
     return current_capture_bounds_;
   }
 
+  LayerContextImpl* layer_context_for_testing() { return layer_context_.get(); }
+
   void SetExternalReservedResourceDelegate(ReservedResourceDelegate* delegate);
 
   // Subscribes or unsubscribes `layer_context_` to subsequent BeginFrames.

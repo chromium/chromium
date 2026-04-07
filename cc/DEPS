@@ -65,6 +65,7 @@ specific_include_rules = {
   ],
   ".*_(unit|pixel|perf)test.*\.cc": [
     "+components/viz/service/display",
+    "+components/viz/service/layers",
     "+components/viz/test",
     "+gpu/command_buffer/client/gles2_interface.h",
     "+gpu/command_buffer/common/command_buffer_id.h",

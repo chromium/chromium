@@ -125,6 +125,9 @@ struct LayerTreeUpdate {
   int32 outer_clip;
   int32 outer_scroll;
 
+  gfx.mojom.Vector2dF inner_viewport_container_bounds_delta;
+  gfx.mojom.Vector2dF outer_viewport_container_bounds_delta;
+
   // The tree's viewport damage rect.
   gfx.mojom.Rect viewport_damage_rect;
 

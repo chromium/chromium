@@ -253,4 +253,23 @@ TEST_F(VizLayerContextTest, OnTilingsReadyForCleanup) {
   EXPECT_EQ(layer_ptr->picture_layer_tiling_set()->num_tilings(), 0u);
 }
 
+TEST_F(VizLayerContextTest, SyncViewportContainerBoundsDeltas) {
+  SetupRootLayer();
+  auto* active_tree = host_impl_->active_tree();
+
+  active_tree->property_trees()->SetInnerViewportContainerBoundsDelta(
+      gfx::Vector2dF(10.f, 20.f));
+  active_tree->property_trees()->SetOuterViewportContainerBoundsDelta(
+      gfx::Vector2dF(30.f, 40.f));
+
+  UpdateDisplayTreeAndWait();
+
+  const auto& update = fake_layer_context_.last_update_;
+  ASSERT_TRUE(update);
+  EXPECT_EQ(update->inner_viewport_container_bounds_delta,
+            gfx::Vector2dF(10.f, 20.f));
+  EXPECT_EQ(update->outer_viewport_container_bounds_delta,
+            gfx::Vector2dF(30.f, 40.f));
+}
+
 }  // namespace viz

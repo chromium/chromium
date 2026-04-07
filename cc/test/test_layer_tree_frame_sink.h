@@ -83,6 +83,7 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
   void SetDisplayColorSpace(const gfx::ColorSpace& output_color_space);
 
   viz::Display* display() const { return display_.get(); }
+  viz::CompositorFrameSinkSupport* support() const;
   void UnregisterBeginFrameSource();
 
   // LayerTreeFrameSink implementation.

@@ -521,8 +521,11 @@ void LayerTreeImpl::UpdateViewportContainerSizes() {
   // Adjust the outer viewport container as well, since adjusting only the
   // inner may cause its bounds to exceed those of the outer, causing scroll
   // clamping.
-  gfx::Vector2dF scaled_bounds_delta =
-      gfx::ScaleVector2d(bounds_delta, 1.f / min_page_scale_factor());
+  gfx::Vector2dF scaled_bounds_delta = bounds_delta;
+  if (min_page_scale_factor() > 0.f) {
+    scaled_bounds_delta =
+        gfx::ScaleVector2d(bounds_delta, 1.f / min_page_scale_factor());
+  }
 
   property_trees->SetOuterViewportContainerBoundsDelta(scaled_bounds_delta);
   // outer_viewport_container_bounds_delta and

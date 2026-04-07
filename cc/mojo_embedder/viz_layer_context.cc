@@ -1452,6 +1452,10 @@ base::TimeTicks VizLayerContext::UpdateDisplayTreeFrom(
   update->inner_scroll = property_ids.inner_scroll;
   update->outer_clip = property_ids.outer_clip;
   update->outer_scroll = property_ids.outer_scroll;
+  update->inner_viewport_container_bounds_delta =
+      property_trees.inner_viewport_container_bounds_delta();
+  update->outer_viewport_container_bounds_delta =
+      property_trees.outer_viewport_container_bounds_delta();
 
   update->viewport_damage_rect = viewport_damage_rect;
   if (tree.RootRenderSurface()) {
