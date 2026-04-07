@@ -189,8 +189,9 @@ void HTMLFieldSetElement::ChildrenChanged(const ChildrenChange& change) {
         focused_element = element;
     }
   }
-  if (focused_element)
+  if (!GetDocument().StatePreservingAtomicMoveInProgress() && focused_element) {
     focused_element->blur();
+  }
 }
 
 FocusableState HTMLFieldSetElement::SupportsFocus(
