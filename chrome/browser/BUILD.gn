@@ -226,8 +226,6 @@ static_library("browser") {
     "browser_process_platform_part.h",
     "browser_process_platform_part_base.cc",
     "browser_process_platform_part_base.h",
-    "browsing_data/browsing_data_file_system_util.cc",
-    "browsing_data/browsing_data_file_system_util.h",
     "browsing_data/browsing_data_history_observer_service.cc",
     "browsing_data/browsing_data_history_observer_service.h",
     "browsing_data/browsing_data_important_sites_util.cc",

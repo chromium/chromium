@@ -5,7 +5,6 @@
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 
 #include "base/feature_list.h"
-#include "chrome/browser/browsing_data/browsing_data_file_system_util.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_model_delegate.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
