@@ -68,6 +68,14 @@ std::unique_ptr<protocol::Value> ParseJSON(const String& value) {
   }
   return protocol::StringValue::create(value);
 }
+
+std::unique_ptr<protocol::WebMCP::Annotation> BuildAnnotations(
+    const mojom::blink::ScriptToolAnnotationsPtr& annotations) {
+  return protocol::WebMCP::Annotation::create()
+      .setReadOnly(annotations->read_only)
+      // TODO(crbug.com/498792473): Add missing setAutoSubmit
+      .build();
+}
 }  // namespace
 
 std::unique_ptr<protocol::WebMCP::Tool> InspectorWebMCPAgent::BuildProtocolTool(
@@ -85,6 +93,9 @@ std::unique_ptr<protocol::WebMCP::Tool> InspectorWebMCPAgent::BuildProtocolTool(
             protocol::DictionaryValue::cast(ParseJSON(input_schema))) {
       tool->setInputSchema(std::move(parsed));
     }
+  }
+  if (tool_data.ScriptTool().annotations) {
+    tool->setAnnotations(BuildAnnotations(tool_data.ScriptTool().annotations));
   }
   if (auto* node = tool_data.BackingFormElement()) {
     tool->setBackendNodeId(IdentifiersFactory::IntIdForNode(node));

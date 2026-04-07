@@ -19,6 +19,9 @@ Adding {
             name : initial_declarative_tool
         }
         [1] : {
+            annotations : {
+                readOnly : true
+            }
             description : An imperative WebMCP tool
             frameId : <string>
             name : initial_imperative_tool
@@ -27,7 +30,7 @@ Adding {
                     [0] : {
                         columnNumber : 31
                         functionName :
-                        lineNumber : 15
+                        lineNumber : 16
                         scriptId : <string>
                         url :
                     }
@@ -40,6 +43,9 @@ Registering a new imperative and a new declarative tool...
 Adding {
     tools : [
         [0] : {
+            annotations : {
+                readOnly : false
+            }
             description : Another imperative tool
             frameId : <string>
             inputSchema : {
@@ -59,7 +65,7 @@ Adding {
                     [0] : {
                         columnNumber : 35
                         functionName : window.registerNewTools
-                        lineNumber : 18
+                        lineNumber : 19
                         scriptId : <string>
                         url :
                     }
@@ -84,6 +90,9 @@ Unregistering one of each...
 Removing {
     tools : [
         [0] : {
+            annotations : {
+                readOnly : true
+            }
             description : An imperative WebMCP tool
             frameId : <string>
             name : initial_imperative_tool
@@ -92,7 +101,7 @@ Removing {
                     [0] : {
                         columnNumber : 31
                         functionName :
-                        lineNumber : 15
+                        lineNumber : 16
                         scriptId : <string>
                         url :
                     }
