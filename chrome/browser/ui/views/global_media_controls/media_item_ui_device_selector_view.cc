@@ -85,6 +85,7 @@ MediaItemUIDeviceSelectorView::MediaItemUIDeviceSelectorView(
 
   // This view will become visible when devices are discovered.
   SetVisible(false);
+  GetViewAccessibility().SetIsCollapsed();
 
   if (has_audio_output && base::FeatureList::IsEnabled(
                               media::kGlobalMediaControlsSeamlessTransfer)) {
@@ -195,7 +196,7 @@ SkColor MediaItemUIDeviceSelectorView::GetIconLabelBubbleBackgroundColor()
 void MediaItemUIDeviceSelectorView::ShowDevices() {
   CHECK(!is_expanded_);
   is_expanded_ = true;
-  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kExpandedChanged, true);
+  GetViewAccessibility().SetIsExpanded();
 
   if (!have_devices_been_shown_) {
     base::UmaHistogramExactLinear(
@@ -219,7 +220,7 @@ void MediaItemUIDeviceSelectorView::ShowDevices() {
 void MediaItemUIDeviceSelectorView::HideDevices() {
   CHECK(is_expanded_);
   is_expanded_ = false;
-  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kExpandedChanged, true);
+  GetViewAccessibility().SetIsCollapsed();
 
   device_entry_views_container_->SetVisible(false);
   PreferredSizeChanged();

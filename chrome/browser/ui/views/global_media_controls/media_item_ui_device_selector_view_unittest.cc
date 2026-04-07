@@ -28,10 +28,16 @@
 #include "media/audio/audio_device_description.h"
 #include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/test/button_test_api.h"
+
+#include "ui/views/accessibility/ax_update_notifier.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/test/ax_event_counter.h"
 
 using global_media_controls::test::MockDeviceListHost;
 using media_router::CastDialogController;
@@ -598,4 +604,52 @@ TEST_F(MediaItemUIDeviceSelectorViewTest,
   view_.reset();
 
   histogram_tester_.ExpectTotalCount(kDeviceSelectorOpenedHistogramName, 2);
+}
+
+TEST_F(MediaItemUIDeviceSelectorViewTest,
+       InitialAccessibilityStateIsCollapsed) {
+  NiceMock<MockMediaItemUIDeviceSelectorDelegate> delegate;
+  view_ = CreateDeviceSelectorView(&delegate);
+
+  ui::AXNodeData data;
+  view_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kExpanded));
+}
+
+TEST_F(MediaItemUIDeviceSelectorViewTest,
+       ShowDevicesSetsExpandedStateAndFiresEvent) {
+  NiceMock<MockMediaItemUIDeviceSelectorDelegate> delegate;
+  auto widget = CreateTestWidget(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto view = CreateDeviceSelectorView(&delegate);
+  auto* view_ptr = widget->SetContentsView(std::move(view));
+
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
+  view_ptr->ShowDevices();
+
+  ui::AXNodeData data;
+  view_ptr->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kExpandedChanged));
+}
+
+TEST_F(MediaItemUIDeviceSelectorViewTest,
+       HideDevicesSetsCollapsedStateAndFiresEvent) {
+  NiceMock<MockMediaItemUIDeviceSelectorDelegate> delegate;
+  auto widget = CreateTestWidget(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto view = CreateDeviceSelectorView(&delegate);
+  auto* view_ptr = widget->SetContentsView(std::move(view));
+  view_ptr->ShowDevices();
+
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
+  view_ptr->HideDevices();
+
+  ui::AXNodeData data;
+  view_ptr->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kExpandedChanged));
 }

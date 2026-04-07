@@ -1320,4 +1320,48 @@ TEST_F(TreeViewTest, OnFocusAccessibilityEvents) {
             std::distance(events.begin(), selection_it));
 }
 
+TEST_F(TreeViewTest, ExpandSetsAccessibilityExpandedState) {
+  tree()->SetModel(&model_);
+  ClearAccessibilityEvents();
+
+  tree()->Expand(GetNodeByTitle("b1"));
+
+  const AXVirtualView* ax_view = GetAccessibilityViewByName("b1");
+  ASSERT_TRUE(ax_view);
+  EXPECT_TRUE(ax_view->GetData().HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(ax_view->GetData().HasState(ax::mojom::State::kCollapsed));
+  EXPECT_TRUE(FiredAccessibilityEvent(
+      std::make_pair(ax_view, ax::mojom::Event::kExpandedChanged)));
+}
+
+TEST_F(TreeViewTest, CollapseSetsAccessibilityCollapsedState) {
+  tree()->SetModel(&model_);
+  tree()->Expand(GetNodeByTitle("b1"));
+  ClearAccessibilityEvents();
+
+  tree()->Collapse(GetNodeByTitle("b"));
+
+  const AXVirtualView* ax_view = GetAccessibilityViewByName("b");
+  ASSERT_TRUE(ax_view);
+  EXPECT_TRUE(ax_view->GetData().HasState(ax::mojom::State::kCollapsed));
+  EXPECT_FALSE(ax_view->GetData().HasState(ax::mojom::State::kExpanded));
+  EXPECT_TRUE(FiredAccessibilityEvent(
+      std::make_pair(ax_view, ax::mojom::Event::kExpandedChanged)));
+}
+
+TEST_F(TreeViewTest, InitialAccessibilityExpandedState) {
+  tree()->SetModel(&model_);
+  tree()->Expand(GetNodeByTitle("b1"));
+
+  const AXVirtualView* b1_ax = GetAccessibilityViewByName("b1");
+  ASSERT_TRUE(b1_ax);
+  EXPECT_TRUE(b1_ax->GetData().HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(b1_ax->GetData().HasState(ax::mojom::State::kCollapsed));
+
+  const AXVirtualView* a_ax = GetAccessibilityViewByName("a");
+  ASSERT_TRUE(a_ax);
+  EXPECT_FALSE(a_ax->GetData().HasState(ax::mojom::State::kExpanded));
+  EXPECT_TRUE(a_ax->GetData().HasState(ax::mojom::State::kCollapsed));
+}
+
 }  // namespace views

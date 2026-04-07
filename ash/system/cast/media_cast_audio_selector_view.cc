@@ -18,6 +18,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -76,6 +77,7 @@ MediaCastAudioSelectorView::MediaCastAudioSelectorView(
                       .SetID(kMediaCastListViewId)))
       .BuildChildren();
 
+  GetViewAccessibility().SetIsCollapsed();
   if (show_devices) {
     ShowDevices();
   }
@@ -105,7 +107,7 @@ void MediaCastAudioSelectorView::UpdateCurrentAudioDevice(
 void MediaCastAudioSelectorView::MediaCastAudioSelectorView::ShowDevices() {
   DCHECK(!is_expanded_);
   is_expanded_ = true;
-  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kExpandedChanged, true);
+  GetViewAccessibility().SetIsExpanded();
 
   list_view_container_->SetVisible(true);
 
@@ -122,7 +124,7 @@ void MediaCastAudioSelectorView::MediaCastAudioSelectorView::ShowDevices() {
 void MediaCastAudioSelectorView::HideDevices() {
   DCHECK(is_expanded_);
   is_expanded_ = false;
-  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kExpandedChanged, true);
+  GetViewAccessibility().SetIsCollapsed();
 
   list_view_container_->SetVisible(false);
   PreferredSizeChanged();

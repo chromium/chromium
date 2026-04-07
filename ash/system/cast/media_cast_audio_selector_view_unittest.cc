@@ -18,6 +18,11 @@
 #include "components/media_message_center/mock_media_notification_item.h"
 #include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -139,6 +144,39 @@ TEST_F(MediaCastAudioSelectorViewTest, WithTwoDeviceLists) {
   RemoveCastDevices();
   EXPECT_FALSE(GetCastDeviceBit());
   EXPECT_TRUE(GetAudioDeviceBit());
+}
+
+TEST_F(MediaCastAudioSelectorViewTest, InitialAccessibilityStateIsCollapsed) {
+  ui::AXNodeData data;
+  GetSelectorView()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kExpanded));
+}
+
+TEST_F(MediaCastAudioSelectorViewTest,
+       ShowDevicesSetsExpandedStateAndFiresEvent) {
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
+  GetSelectorView()->ShowDevices();
+
+  ui::AXNodeData data;
+  GetSelectorView()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kExpandedChanged));
+}
+
+TEST_F(MediaCastAudioSelectorViewTest,
+       HideDevicesSetsCollapsedStateAndFiresEvent) {
+  GetSelectorView()->ShowDevices();
+
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
+  GetSelectorView()->HideDevices();
+
+  ui::AXNodeData data;
+  GetSelectorView()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kExpandedChanged));
 }
 
 }  // namespace ash
