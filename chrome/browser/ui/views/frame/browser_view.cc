@@ -4437,7 +4437,7 @@ void BrowserView::UpdateTabSearchBubbleHost() {
     tab_search_bubble_host_ = std::make_unique<TabSearchBubbleHost>(
         toolbar_->tab_search_button(), browser_.get());
     auto* toolbar_button_controller =
-        browser_->GetFeatures().tab_search_toolbar_button_controller();
+        TabSearchToolbarButtonController::From(browser_.get());
     CHECK(toolbar_button_controller);
     toolbar_button_controller->UpdateBubbleHost(tab_search_bubble_host_.get());
   } else {
@@ -5387,8 +5387,7 @@ void BrowserView::MaybeInitializeWebUITabStrip() {
 
       // Do not show Tab Search toolbar button when WebUI Tab Strip is enabled.
       if (auto* tab_search_toolbar_button_controller =
-              browser_->browser_window_features()
-                  ->tab_search_toolbar_button_controller()) {
+              TabSearchToolbarButtonController::From(browser_.get())) {
         tab_search_toolbar_button_controller->UpdateBubbleHost(nullptr);
       }
     }
@@ -5403,8 +5402,7 @@ void BrowserView::MaybeInitializeWebUITabStrip() {
 
     // Show Tab Search pinned toolbar button when WebUI Tab Strip is disabled.
     if (auto* tab_search_toolbar_button_controller =
-            browser_->browser_window_features()
-                ->tab_search_toolbar_button_controller()) {
+            TabSearchToolbarButtonController::From(browser_.get())) {
       tab_search_toolbar_button_controller->UpdateBubbleHost(
           tab_search_bubble_host_.get());
     }

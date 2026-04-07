@@ -9,17 +9,24 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host_observer.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace actions {
 class ActionItem;
 }  // namespace actions
 
+class BrowserWindowInterface;
 class BrowserView;
 class TabSearchBubbleHost;
 
 class TabSearchToolbarButtonController : public TabSearchBubbleHostObserver {
  public:
-  explicit TabSearchToolbarButtonController(BrowserView* browser_view);
+  DECLARE_USER_DATA(TabSearchToolbarButtonController);
+
+  static TabSearchToolbarButtonController* From(BrowserWindowInterface* bwi);
+
+  TabSearchToolbarButtonController(BrowserWindowInterface* bwi,
+                                   BrowserView* browser_view);
   ~TabSearchToolbarButtonController() override;
 
   TabSearchToolbarButtonController(const TabSearchToolbarButtonController&) =
@@ -44,6 +51,9 @@ class TabSearchToolbarButtonController : public TabSearchBubbleHostObserver {
   // TODO(crbug.com/417823694): Pass only the specific BrowserView dependencies
   // into the controller.
   const raw_ptr<BrowserView> browser_view_;
+
+  ui::ScopedUnownedUserData<TabSearchToolbarButtonController>
+      scoped_unowned_user_data_;
 
   base::ScopedObservation<TabSearchBubbleHost, TabSearchBubbleHostObserver>
       tab_search_bubble_host_observation_{this};

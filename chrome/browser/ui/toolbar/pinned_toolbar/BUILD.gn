@@ -22,6 +22,7 @@ source_set("pinned_toolbar") {
       "//components/tabs:public",
       "//components/translate/content/browser",
       "//ui/actions:actions_headers",
+      "//ui/base/unowned_user_data",
     ]
   }
 }

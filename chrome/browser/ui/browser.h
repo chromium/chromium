@@ -1373,6 +1373,8 @@ class Browser : public TabStripModelObserver,
       base::RepeatingCallbackList<void(BrowserWindowInterface*)>;
   DidBecomeInactiveCallbackList did_become_inactive_callback_list_;
 
+  ui::UnownedUserDataHost unowned_user_data_host_;
+
   std::unique_ptr<BrowserWindowFeatures> features_;
 
 #if BUILDFLAG(IS_OZONE)
@@ -1385,8 +1387,6 @@ class Browser : public TabStripModelObserver,
 
   // Tracks whether the browser object is fully initialized.
   bool is_initialized_ = false;
-
-  ui::UnownedUserDataHost unowned_user_data_host_;
 
   // The following factory is used for chrome update coalescing.
   base::WeakPtrFactory<Browser> chrome_updater_factory_{this};

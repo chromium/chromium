@@ -359,10 +359,6 @@ class BrowserWindowFeatures {
     return shared_tab_group_feedback_controller_.get();
   }
 
-  TabSearchToolbarButtonController* tab_search_toolbar_button_controller() {
-    return tab_search_toolbar_button_controller_.get();
-  }
-
   BrowserSyncedWindowDelegate* synced_window_delegate() {
     return synced_window_delegate_.get();
   }

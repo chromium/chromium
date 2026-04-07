@@ -902,7 +902,8 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
     if (features::HasTabSearchToolbarButton() ||
         tabs::IsVerticalTabsFeatureEnabled()) {
       tab_search_toolbar_button_controller_ =
-          std::make_unique<TabSearchToolbarButtonController>(browser_view);
+          GetUserDataFactory().CreateInstance<TabSearchToolbarButtonController>(
+              *browser_, browser_.get(), browser_view);
     }
   }
 
