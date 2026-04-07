@@ -2659,6 +2659,15 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Compatibility Mode"/>
 </enum>
 
+<enum name="WebViewNavigationType">
+  <int value="0" label="Initial"/>
+  <int value="1" label="Same-document"/>
+  <int value="2" label="Browser-initiated same-origin"/>
+  <int value="3" label="Browser-initiated cross-origin"/>
+  <int value="4" label="Renderer-initiated same-origin"/>
+  <int value="5" label="Renderer-initiated cross-origin"/>
+</enum>
+
 <enum name="WebViewNightModeVsLightTheme">
   <int value="0" label="Night mode undefined, light theme undefined"/>
   <int value="1" label="Night mode undefined, light theme no"/>

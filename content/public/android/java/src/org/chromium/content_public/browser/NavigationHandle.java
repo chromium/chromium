@@ -56,6 +56,7 @@ public class NavigationHandle {
     private @Nullable String mMimeType;
     private @Nullable WebContents mWebContents;
     private @Nullable Page mCommittedPage;
+    private boolean mIsSameOrigin;
 
     private boolean mStarted;
 
@@ -197,7 +198,8 @@ public class NavigationHandle {
             boolean isExternalProtocol,
             boolean isPdf,
             String mimeType,
-            Page currentPage) {
+            Page currentPage,
+            boolean isSameOrigin) {
         mUrl = url;
         mIsErrorPage = isErrorPage;
         mHasCommitted = hasCommitted;
@@ -214,6 +216,7 @@ public class NavigationHandle {
         if (mHasCommitted && mIsInPrimaryMainFrame) {
             mCommittedPage = currentPage;
         }
+        mIsSameOrigin = isSameOrigin;
     }
 
     /** Release the C++ pointer. */
@@ -269,6 +272,15 @@ public class NavigationHandle {
      */
     public boolean isRendererInitiated() {
         return mIsRendererInitiated;
+    }
+
+    /**
+     * Whether the previous document in this frame was same-origin with the new one created by this
+     * navigation.
+     */
+    public boolean isSameOrigin() {
+        assert mHasCommitted;
+        return mIsSameOrigin;
     }
 
     /**

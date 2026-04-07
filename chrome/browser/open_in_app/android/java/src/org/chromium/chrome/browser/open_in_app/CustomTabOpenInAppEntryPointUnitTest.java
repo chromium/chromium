@@ -111,7 +111,8 @@ public class CustomTabOpenInAppEntryPointUnitTest {
                 /* isExternalProtocol= */ false,
                 /* isPdf= */ false,
                 /* mimeType= */ "",
-                Page.createForTesting());
+                Page.createForTesting(),
+                /* isSameOrigin= */ true);
 
         mEntryPoint = new CustomTabOpenInAppEntryPoint(mTabSupplier, mContext);
         mTabSupplier.set(mTab);

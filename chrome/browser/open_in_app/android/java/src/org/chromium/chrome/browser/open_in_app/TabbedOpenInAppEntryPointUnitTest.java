@@ -120,7 +120,8 @@ public class TabbedOpenInAppEntryPointUnitTest {
                 /* isExternalProtocol= */ false,
                 /* isPdf= */ false,
                 /* mimeType= */ "",
-                Page.createForTesting());
+                Page.createForTesting(),
+                /* isSameOrigin= */ true);
 
         mEntryPoint = new TabbedOpenInAppEntryPoint(mTabSupplier, mOmniboxChipManager, mContext);
         mTabSupplier.set(mTab);

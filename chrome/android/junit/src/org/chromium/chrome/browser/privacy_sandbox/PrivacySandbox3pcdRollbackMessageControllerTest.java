@@ -114,7 +114,8 @@ public class PrivacySandbox3pcdRollbackMessageControllerTest {
                 /* isExternalProtocol= */ false,
                 /* isPdf= */ false,
                 /* mimeType= */ "",
-                Page.createForTesting());
+                Page.createForTesting(),
+                /* isSameOrigin= */ true);
         ActivityTabTabObserver observer = assertNonNull(mController.getActivityTabTabObserver());
         observer.onDidFinishNavigationInPrimaryMainFrame(mTab, navigation);
     }

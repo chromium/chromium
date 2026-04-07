@@ -199,7 +199,8 @@ public class CurrentPageVerifierTest {
                 /* isExternalProtocol= */ false,
                 /* isPdf= */ false,
                 /* mimeType= */ "",
-                Page.createForTesting());
+                Page.createForTesting(),
+                /* isSameOrigin= */ true);
         for (CustomTabTabObserver tabObserver : mTabObserverCaptor.getAllValues()) {
             tabObserver.onDidFinishNavigationInPrimaryMainFrame(mTab, navigation);
         }

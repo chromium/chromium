@@ -135,7 +135,8 @@ public class MediaNotificationTestTabHolder {
                 /* isExternalProtocol= */ false,
                 /* isPdf= */ false,
                 /* mimeType= */ "",
-                Page.createForTesting());
+                Page.createForTesting(),
+                /* isSameOrigin= */ true);
         mMediaSessionTabHelper.mMediaSessionHelper.mWebContentsObserver
                 .didFinishNavigationInPrimaryMainFrame(navigation);
     }

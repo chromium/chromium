@@ -8198,6 +8198,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.Navigation.MainFrame"
+    enum="WebViewNavigationType" expires_after="2026-09-30">
+  <owner>torne@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    For each committed navigation in the main frame of a WebView, records
+    whether this was the initial navigation, a same-document navigation, or in
+    all other cases whether it is same- or cross-origin and whether it was
+    triggered by the browser or renderer.
+
+    Navigations that do not commit (interrupted, HTTP 204, etc) are not counted.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.NonAppUid" enum="AndroidUidType"
     expires_after="2025-12-31">
   <owner>torne@chromium.org</owner>

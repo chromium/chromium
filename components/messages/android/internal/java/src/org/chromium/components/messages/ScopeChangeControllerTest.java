@@ -359,7 +359,8 @@ public class ScopeChangeControllerTest {
                 /* isExternalProtocol= */ false,
                 /* isPdf= */ false,
                 /* mimeType= */ "",
-                Page.createForTesting());
+                Page.createForTesting(),
+                /* isSameOrigin= */ true);
         return handle;
     }
 }
