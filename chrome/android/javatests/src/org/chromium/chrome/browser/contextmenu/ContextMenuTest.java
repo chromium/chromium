@@ -83,6 +83,7 @@ import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabContextMenuItemDelegate;
 import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
@@ -742,6 +743,7 @@ public class ContextMenuTest {
     public void testSavePageLongPress() throws TimeoutException {
         DeviceInput.setSupportsPrecisionPointerForTesting(true);
         Tab tab = mActivityTestRule.getActivityTab();
+        switchToDesktopUserAgent(tab);
         int callCount = mDownloadTestRule.getChromeDownloadCallCount();
         ContextMenuUtils.selectContextMenuItem(
                 InstrumentationRegistry.getInstrumentation(),
@@ -1314,6 +1316,7 @@ public class ContextMenuTest {
 
         // Set share delegate before triggering context menu, so the mocked share delegate is used.
         ChromeContextMenuPopulatorFactory.setShareDelegateForTesting(mShareDelegate);
+        switchToDesktopUserAgent(tab);
 
         ContextMenuUtils.selectContextMenuItem(
                 InstrumentationRegistry.getInstrumentation(),
@@ -1391,6 +1394,7 @@ public class ContextMenuTest {
     public void testPrintPageLongPress() throws Exception {
         DeviceInput.setSupportsPrecisionPointerForTesting(true);
         Tab tab = mActivityTestRule.getActivityTab();
+        switchToDesktopUserAgent(tab);
         ThreadUtils.runOnUiThreadBlocking(
                 // Set printing controller to use the mock instance.
                 () -> {
@@ -1440,6 +1444,13 @@ public class ContextMenuTest {
         ArgumentCaptor<Printable> printableCaptor = ArgumentCaptor.forClass(Printable.class);
         verify(mPrintingController).startPrint(printableCaptor.capture(), any());
         Assert.assertEquals(tab.getTitle(), printableCaptor.getValue().getTitle());
+    }
+
+    private void switchToDesktopUserAgent(Tab tab) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> TabUtils.switchUserAgent(tab, /* switchToDesktop= */ true));
+        ChromeTabUtils.waitForTabPageLoaded(tab, mTestUrl);
+        mActivityTestRule.assertWaitForPageScaleFactorMatch(PAGE_SCALE_FACTOR);
     }
 
     // TODO(benwgold): Add more test coverage for histogram recording of other context menu types.
