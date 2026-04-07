@@ -22,7 +22,7 @@ class MessageEventTest : public testing::Test {
 };
 
 TEST_F(MessageEventTest, AccountForStringMemory) {
-  constexpr int64_t string_size = 10000;
+  constexpr wtf_size_t string_size = 10000;
   V8TestingScope scope;
 
   scope.GetIsolate()->Enter();
@@ -30,28 +30,28 @@ TEST_F(MessageEventTest, AccountForStringMemory) {
   // We are only interested in a string of size |string_size|. The content is
   // irrelevant.
   base::span<UChar> tmp;
-  String data =
-      String::CreateUninitialized(static_cast<unsigned>(string_size), tmp);
+  String data = String::CreateUninitialized(string_size, tmp);
+  constexpr int64_t string_size_in_bytes = string_size * sizeof(UChar);
 
   // We read the |AmountOfExternalAllocatedMemory| before and after allocating
-  // the |MessageEvent|. The difference has to be at least the string size.
-  // Afterwards we trigger a blocking GC to deallocated the |MessageEvent|
-  // again. After that the |AmountOfExternalAllocatedMemory| should be reduced
-  // by at least the string size again.
+  // the |MessageEvent|. The difference has to be at least the string size in
+  // bytes. Afterwards we trigger a blocking GC to deallocated the
+  // |MessageEvent| again. After that the |AmountOfExternalAllocatedMemory|
+  // should be reduced by at least the string size in bytes again.
   int64_t initial = V8ExternalMemoryAccounterBase::
       GetTotalAmountOfExternalAllocatedMemoryForTesting(scope.GetIsolate());
   MessageEvent::Create(data);
 
   int64_t size_with_event = V8ExternalMemoryAccounterBase::
       GetTotalAmountOfExternalAllocatedMemoryForTesting(scope.GetIsolate());
-  ASSERT_LE(initial + string_size, size_with_event);
+  ASSERT_LE(initial + string_size_in_bytes, size_with_event);
 
   ThreadState::Current()->CollectAllGarbageForTesting(
       ThreadState::StackState::kNoHeapPointers);
 
   int64_t size_after_gc = V8ExternalMemoryAccounterBase::
       GetTotalAmountOfExternalAllocatedMemoryForTesting(scope.GetIsolate());
-  ASSERT_LE(size_after_gc + string_size, size_with_event);
+  ASSERT_LE(size_after_gc + string_size_in_bytes, size_with_event);
 
   scope.GetIsolate()->Exit();
 }

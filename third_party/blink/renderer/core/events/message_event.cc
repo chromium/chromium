@@ -66,7 +66,7 @@ size_t MessageEvent::SizeOfExternalMemoryInBytes() {
       return result;
     }
     case kDataTypeString:
-      return data_as_string_.length();
+      return data_as_string_.CharactersSizeInBytes();
     case kDataTypeBlob:
       return static_cast<size_t>(data_as_blob_->size());
     case kDataTypeArrayBuffer:
