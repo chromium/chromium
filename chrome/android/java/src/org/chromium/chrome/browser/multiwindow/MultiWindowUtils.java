@@ -1146,7 +1146,7 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @return {@code false} when a new window should be opened in full screen, {@code true}
      *     otherwise.
      */
-    public static boolean shouldOpenInAdjacentWindow(Activity activity) {
+    /* package */ static boolean shouldOpenInAdjacentWindow(Activity activity) {
         // Always open adjacently if the current activity is in multi-windowing mode.
         if (activity.isInMultiWindowMode()) return true;
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(

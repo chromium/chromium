@@ -138,7 +138,7 @@ import java.util.Set;
             return;
         }
 
-        boolean openAdjacently = MultiWindowUtils.shouldOpenInAdjacentWindow(sourceActivity);
+        boolean openAdjacently = shouldMoveTabsInAdjacentWindow(sourceActivity, tabs.size());
         mTabReparentingDelegate.reparentTabsToNewWindow(
                 tabs, INVALID_WINDOW_ID, openAdjacently, finalizeCallback, source);
     }
@@ -180,7 +180,7 @@ import java.util.Set;
             Activity sourceActivity = TabUtils.getActivity(tabs.get(0));
             boolean openAdjacently =
                     sourceActivity != null
-                            && MultiWindowUtils.shouldOpenInAdjacentWindow(sourceActivity);
+                            && shouldMoveTabsInAdjacentWindow(sourceActivity, tabs.size());
             mTabReparentingDelegate.reparentTabsToNewWindow(
                     tabs,
                     destWindowId,
@@ -253,7 +253,9 @@ import java.util.Set;
                 multiInstanceManager.showInstanceCreationLimitMessage();
             }
         } else {
-            boolean openAdjacently = MultiWindowUtils.shouldOpenInAdjacentWindow(sourceActivity);
+            boolean openAdjacently =
+                    shouldMoveTabsInAdjacentWindow(
+                            sourceActivity, tabGroupMetadata.tabIdsToUrls.size());
             mTabReparentingDelegate.reparentTabGroupToNewWindow(
                     tabGroupMetadata, INVALID_WINDOW_ID, openAdjacently, source);
         }
@@ -278,7 +280,8 @@ import java.util.Set;
         } else {
             boolean openAdjacently =
                     sourceActivity != null
-                            && MultiWindowUtils.shouldOpenInAdjacentWindow(sourceActivity);
+                            && shouldMoveTabsInAdjacentWindow(
+                                    sourceActivity, tabGroupMetadata.tabIdsToUrls.size());
             mTabReparentingDelegate.reparentTabGroupToNewWindow(
                     tabGroupMetadata,
                     destWindowId,
@@ -531,6 +534,26 @@ import java.util.Set;
             intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, isIncognitoWindow);
         }
+    }
+
+    /**
+     * Helps determine whether FLAG_ACTIVITY_LAUNCH_ADJACENT needs to be set in the intent to create
+     * a new window when tabs are moved.
+     */
+    private static boolean shouldMoveTabsInAdjacentWindow(
+            Activity sourceActivity, int moveTabCount) {
+        if (sourceActivity.isInMultiWindowMode()) return true;
+        if (sourceActivity instanceof ChromeTabbedActivity tabbedActivity) {
+            int totalTabCount = tabbedActivity.getTabModelSelector().getTotalTabCount();
+            if (totalTabCount == moveTabCount) {
+                // It is likely that some features will finish the source window's activity when the
+                // last set of tabs from a fullscreen window are moved. To avoid unexpected system
+                // UX to launch the new window adjacently while the source window is getting closed,
+                // we will generally avoid setting the flag in this scenario.
+                return false;
+            }
+        }
+        return MultiWindowUtils.shouldOpenInAdjacentWindow(sourceActivity);
     }
 
     private void onActivityStateChange(Activity activity, @ActivityState int newState) {
