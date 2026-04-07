@@ -2148,6 +2148,7 @@ if (_is_default_toolchain) {
       "//components/viz/service:service_java",
       "//content/public/android:content_main_dex_java",
       "//media/base/android:media_java",
+      "//media/capture/video/android:capture_java",
       "//services/shape_detection:shape_detection_java",
 
       # Deps for DFMs.
