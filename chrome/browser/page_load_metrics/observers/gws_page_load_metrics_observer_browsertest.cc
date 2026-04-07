@@ -4,6 +4,7 @@
 
 #include "components/page_load_metrics/google/browser/gws_page_load_metrics_observer.h"
 
+#include "base/location.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
@@ -16,6 +17,7 @@
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/lens/lens_features.h"
+#include "components/page_load_metrics/browser/observers/core/uma_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/page_load_metrics/google/browser/google_url_util.h"
 #include "components/page_load_metrics/google/browser/gws_abandoned_page_load_metrics_observer.h"
@@ -275,6 +277,113 @@ IN_PROC_BROWSER_TEST_F(GWSPageLoadMetricsObserverBrowserTest,
   const std::string restored_lcp_histogram =
       base::StrCat({traverse_lcp_histogram, internal::kRestoreNavigation});
   histogram_tester.ExpectTotalCount(restored_lcp_histogram, 1);
+}
+
+struct GWSActualNavigationStartBasedBrowserTestParam {
+  std::string test_name;
+  bool is_srp;
+};
+
+const GWSActualNavigationStartBasedBrowserTestParam
+    kGWSActualNavigationStartBasedBrowserTestParams[]{
+        {
+            .test_name = "ForSrp",
+            .is_srp = true,
+        },
+        {
+            .test_name = "ForNonSrp",
+            .is_srp = false,
+        },
+    };
+
+class GWSActualNavigationStartBasedBrowserTest
+    : public GWSPageLoadMetricsObserverBrowserTest,
+      public testing::WithParamInterface<
+          GWSActualNavigationStartBasedBrowserTestParam> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GWSActualNavigationStartBasedBrowserTest,
+    testing::ValuesIn(kGWSActualNavigationStartBasedBrowserTestParams),
+    [](const ::testing::TestParamInfo<
+        GWSActualNavigationStartBasedBrowserTestParam>& info) {
+      return info.param.test_name;
+    });
+
+IN_PROC_BROWSER_TEST_P(GWSActualNavigationStartBasedBrowserTest, Uma) {
+  base::HistogramTester histogram_tester;
+  bool is_srp = GetParam().is_srp;
+
+  // 1. Navigate to an initial page.
+  GURL target_url =
+      is_srp ? GetSrpUrl("test")
+             : embedded_test_server()->GetURL("a.test", "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      GURL(base::StrCat({"data:text/html,<html><body><a id='link' href='",
+                         target_url.spec(), "'>Link</a></body></html>"}))));
+
+  // 2. Click the link to trigger a renderer-initiated navigation with user
+  // gesture.
+  std::unique_ptr<PageLoadMetricsTestWaiter> waiter =
+      CreatePageLoadMetricsTestWaiter();
+  waiter->AddPageExpectation(
+      PageLoadMetricsTestWaiter::TimingField::kLargestContentfulPaint);
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "link");
+  waiter->Wait();
+
+  // 3. Flush metrics by navigating away.
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GURL(url::kAboutBlankURL)));
+
+  // 4. Check that metrics are recorded and match core metrics.
+  auto check_metric = [&](const std::string& core_name,
+                          const std::string& gws_name,
+                          base::Location location = FROM_HERE) {
+    SCOPED_TRACE(location.ToString());
+    histogram_tester.ExpectTotalCount(core_name, 1);
+    histogram_tester.ExpectTotalCount(gws_name, is_srp ? 1 : 0);
+    if (is_srp) {
+      EXPECT_EQ(histogram_tester.GetTotalSum(core_name),
+                histogram_tester.GetTotalSum(gws_name))
+          << "Value mismatch between: \n - " << core_name << "\n - "
+          << gws_name;
+    }
+  };
+
+  check_metric(
+      "Navigation.Timeline.InteractionToActualNavigationStart.MainFrameOnly."
+      "Duration",
+      internal::kHistogramGWSInteractionToActualNavigationStart);
+  check_metric(internal::kHistogramInteractionToNavigationStart,
+               internal::kHistogramGWSInteractionToNavigationStart);
+  check_metric(
+      internal::kHistogramNavigationTimingNavigationStartToNavigationCommitSent,
+      internal::kHistogramGWSNavigationStartToNavigationCommitSent);
+  check_metric(internal::kHistogramNavigationCommitSentToParseStart,
+               internal::kHistogramGWSNavigationCommitSentToParseStart);
+  check_metric("PageLoad.PaintTiming.ParseStartToFirstContentfulPaint",
+               internal::kHistogramGWSParseStartToFirstContentfulPaint);
+  check_metric(internal::kHistogramParseStartToDOMContentLoaded,
+               internal::kHistogramGWSParseStartToDOMContentLoaded);
+  check_metric(internal::kHistogramParseStartToLargestContentfulPaint,
+               internal::kHistogramGWSParseStartToLargestContentfulPaint);
+
+  check_metric(internal::kHistogramActualNavigationStartToNavigationStart,
+               internal::kHistogramGWSActualNavigationStartToNavigationStart);
+  check_metric(
+      internal::kHistogramActualNavigationStartToNavigationCommitSent,
+      internal::kHistogramGWSActualNavigationStartToNavigationCommitSent);
+  check_metric(internal::kHistogramActualNavigationStartToParseStart,
+               internal::kHistogramGWSActualNavigationStartToParseStart);
+  check_metric(
+      internal::kHistogramActualNavigationStartToFirstContentfulPaint,
+      internal::kHistogramGWSActualNavigationStartToFirstContentfulPaint);
+  check_metric(internal::kHistogramActualNavigationStartToDOMContentLoaded,
+               internal::kHistogramGWSActualNavigationStartToDOMContentLoaded);
+  check_metric(
+      internal::kHistogramActualNavigationStartToLargestContentfulPaint,
+      internal::kHistogramGWSActualNavigationStartToLargestContentfulPaint);
 }
 
 class GWSPageLoadMetricsObserverContextMenuNaviBrowserTest
