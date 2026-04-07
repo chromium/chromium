@@ -14,7 +14,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "linux-chromeos-rel",
-              "project": "chromium"
+              "project": "chromium-m148"
             },
             "builder_spec": {
               "builder_group": "chromium.chromiumos",
@@ -44,7 +44,7 @@
         {
           "bucket": "ci",
           "builder": "linux-chromeos-rel",
-          "project": "chromium"
+          "project": "chromium-m148"
         }
       ],
       "targets_spec_directory": "infra/config/generated/builders/try/linux-chromeos-rel/targets"

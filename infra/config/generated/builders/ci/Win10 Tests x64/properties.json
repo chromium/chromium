@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Win x64 Builder",
-              "project": "chromium"
+              "project": "chromium-m148"
             },
             "builder_spec": {
               "builder_group": "chromium.win",
@@ -34,7 +34,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Win10 Tests x64",
-              "project": "chromium"
+              "project": "chromium-m148"
             },
             "builder_spec": {
               "builder_group": "chromium.win",
@@ -57,7 +57,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Win x64 Builder",
-                "project": "chromium"
+                "project": "chromium-m148"
               }
             }
           }
@@ -67,7 +67,7 @@
         {
           "bucket": "ci",
           "builder": "Win10 Tests x64",
-          "project": "chromium"
+          "project": "chromium-m148"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -100,10 +100,10 @@
   },
   "builder_group": "chromium.win",
   "gardener_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ],
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }

@@ -14,7 +14,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "GPU Win x64 Builder",
-              "project": "chromium"
+              "project": "chromium-m148"
             },
             "builder_spec": {
               "builder_group": "chromium.gpu",
@@ -41,7 +41,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Win x64 Builder",
-              "project": "chromium"
+              "project": "chromium-m148"
             },
             "builder_spec": {
               "builder_group": "chromium.win",
@@ -68,7 +68,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Win10 Tests x64",
-              "project": "chromium"
+              "project": "chromium-m148"
             },
             "builder_spec": {
               "builder_group": "chromium.win",
@@ -91,7 +91,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Win x64 Builder",
-                "project": "chromium"
+                "project": "chromium-m148"
               }
             }
           },
@@ -99,7 +99,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Win10 x64 Release (NVIDIA)",
-              "project": "chromium"
+              "project": "chromium-m148"
             },
             "builder_spec": {
               "builder_group": "chromium.gpu",
@@ -122,7 +122,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "GPU Win x64 Builder",
-                "project": "chromium"
+                "project": "chromium-m148"
               }
             }
           }
@@ -132,24 +132,24 @@
         {
           "bucket": "ci",
           "builder": "GPU Win x64 Builder",
-          "project": "chromium"
+          "project": "chromium-m148"
         },
         {
           "bucket": "ci",
           "builder": "Win x64 Builder",
-          "project": "chromium"
+          "project": "chromium-m148"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "Win10 Tests x64",
-          "project": "chromium"
+          "project": "chromium-m148"
         },
         {
           "bucket": "ci",
           "builder": "Win10 x64 Release (NVIDIA)",
-          "project": "chromium"
+          "project": "chromium-m148"
         }
       ],
       "targets_spec_directory": "infra/config/generated/builders/try/win-rel/targets"

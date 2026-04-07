@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "android-cronet-arm-dbg",
-              "project": "chromium"
+              "project": "chromium-m148"
             },
             "builder_spec": {
               "builder_group": "chromium.android",
@@ -43,7 +43,7 @@
         {
           "bucket": "ci",
           "builder": "android-cronet-arm-dbg",
-          "project": "chromium"
+          "project": "chromium-m148"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -77,10 +77,10 @@
   },
   "builder_group": "chromium.android",
   "gardener_rotations": [
-    "cronet"
+    "chrome_browser_release"
   ],
   "recipe": "chromium",
   "sheriff_rotations": [
-    "cronet"
+    "chrome_browser_release"
   ]
 }

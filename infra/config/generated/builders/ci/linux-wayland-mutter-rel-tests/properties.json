@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Linux Builder (Wayland)",
-              "project": "chromium"
+              "project": "chromium-m148"
             },
             "builder_spec": {
               "builder_group": "chromium.linux",
@@ -34,7 +34,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "linux-wayland-mutter-rel-tests",
-              "project": "chromium"
+              "project": "chromium-m148"
             },
             "builder_spec": {
               "builder_group": "chromium.linux",
@@ -57,7 +57,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Linux Builder (Wayland)",
-                "project": "chromium"
+                "project": "chromium-m148"
               }
             }
           }
@@ -67,7 +67,7 @@
         {
           "bucket": "ci",
           "builder": "linux-wayland-mutter-rel-tests",
-          "project": "chromium"
+          "project": "chromium-m148"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -89,10 +89,10 @@
   },
   "builder_group": "chromium.linux",
   "gardener_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ],
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }

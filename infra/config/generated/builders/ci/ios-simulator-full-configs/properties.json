@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "ios-simulator-full-configs",
-              "project": "chromium"
+              "project": "chromium-m148"
             },
             "builder_spec": {
               "builder_group": "chromium.mac",
@@ -39,7 +39,7 @@
         {
           "bucket": "ci",
           "builder": "ios-simulator-full-configs",
-          "project": "chromium"
+          "project": "chromium-m148"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -72,13 +72,11 @@
   },
   "builder_group": "chromium.mac",
   "gardener_rotations": [
-    "chromium",
-    "ios"
+    "chrome_browser_release"
   ],
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium",
-    "ios"
+    "chrome_browser_release"
   ],
   "xcode_build_version": "17a400"
 }

@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Linux x64 DEPS Builder",
-              "project": "chromium"
+              "project": "chromium-m148"
             },
             "builder_spec": {
               "builder_group": "chromium.dawn",
@@ -34,7 +34,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Linux x64 DEPS Release (Intel UHD 630)",
-              "project": "chromium"
+              "project": "chromium-m148"
             },
             "builder_spec": {
               "builder_group": "chromium.dawn",
@@ -54,7 +54,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Dawn Linux x64 DEPS Builder",
-                "project": "chromium"
+                "project": "chromium-m148"
               },
               "run_tests_serially": true
             }
@@ -63,7 +63,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Linux x64 DEPS Release (NVIDIA)",
-              "project": "chromium"
+              "project": "chromium-m148"
             },
             "builder_spec": {
               "builder_group": "chromium.dawn",
@@ -83,7 +83,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Dawn Linux x64 DEPS Builder",
-                "project": "chromium"
+                "project": "chromium-m148"
               },
               "run_tests_serially": true
             }
@@ -94,19 +94,19 @@
         {
           "bucket": "ci",
           "builder": "Dawn Linux x64 DEPS Builder",
-          "project": "chromium"
+          "project": "chromium-m148"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "Dawn Linux x64 DEPS Release (Intel UHD 630)",
-          "project": "chromium"
+          "project": "chromium-m148"
         },
         {
           "bucket": "ci",
           "builder": "Dawn Linux x64 DEPS Release (NVIDIA)",
-          "project": "chromium"
+          "project": "chromium-m148"
         }
       ],
       "targets_spec_directory": "infra/config/generated/builders/try/dawn-linux-x64-deps-rel/targets"
