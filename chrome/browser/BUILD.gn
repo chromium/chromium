@@ -1215,15 +1215,10 @@ static_library("browser") {
 
     # TODO(crbug.com/40110173): Remove this circular dependency whe the following headers get
     # componentized:
-    # - c/b/profile_manager.h
     # - c/b/media/cast_mirroring_service_host_factory.h
     # - c/b/media/cast_mirroring_service_host.h
     # - c/b/media/mirroring_service_host.h
     "//chrome/browser/media/router",
-
-    # TODO(crbug.com/419304389): Remove once c/b/profile_manager.h gets fully
-    # modularized.
-    "//chrome/browser/profiles/keep_alive:impl",
 
     # TODO(crbug.com/344921703): Remove circular dependencies.
     "//chrome/browser/sync",
