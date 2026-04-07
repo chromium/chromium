@@ -55,7 +55,8 @@ enum class PageActionIconType {
   kIndigo = 40,
   kFederation = 41,
   kGlic = 42,
-  kMaxValue = kGlic,
+  kAnchoredContextualCue = 43,
+  kMaxValue = kAnchoredContextualCue,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:PageActionIconType)
 

@@ -11,260 +11,262 @@
 #include "ui/actions/action_id.h"
 
 namespace {
-constexpr auto kPageActionProperties =
-    base::MakeFixedFlatMap<actions::ActionId,
-                           page_actions::PageActionProperties>({
+constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
+    actions::ActionId,
+    page_actions::PageActionProperties>({
+    {
+        kActionAiMode,
         {
-            kActionAiMode,
-            {
-                .histogram_name = "AiMode",
-                .exempt_from_omnibox_suppression = true,
-                .type = PageActionIconType::kAiMode,
-                .element_identifier = kAiModePageActionIconElementId,
-            },
+            .histogram_name = "AiMode",
+            .exempt_from_omnibox_suppression = true,
+            .type = PageActionIconType::kAiMode,
+            .element_identifier = kAiModePageActionIconElementId,
         },
+    },
+    {
+        kActionIndigo,
         {
-            kActionIndigo,
-            {
-                .histogram_name = "Indigo",
-                .type = PageActionIconType::kIndigo,
-                .element_identifier = kIndigoPageActionIconElementId,
-            },
+            .histogram_name = "Indigo",
+            .type = PageActionIconType::kIndigo,
+            .element_identifier = kIndigoPageActionIconElementId,
         },
+    },
 
+    {
+        kActionSidePanelShowLensOverlayResults,
         {
-            kActionSidePanelShowLensOverlayResults,
-            {
-                .histogram_name = "LensOverlay",
-                .type = PageActionIconType::kLensOverlay,
-            },
+            .histogram_name = "LensOverlay",
+            .type = PageActionIconType::kLensOverlay,
         },
+    },
+    {
+        kActionLensOverlayHomework,
         {
-            kActionLensOverlayHomework,
-            {
-                .histogram_name = "LensOverlayHomework",
-                .type = PageActionIconType::kLensOverlayHomework,
-                .element_identifier =
-                    kLensOverlayHomeworkPageActionIconElementId,
-            },
+            .histogram_name = "LensOverlayHomework",
+            .type = PageActionIconType::kLensOverlayHomework,
+            .element_identifier = kLensOverlayHomeworkPageActionIconElementId,
         },
+    },
+    {
+        kActionShowTranslate,
         {
-            kActionShowTranslate,
-            {
-                .histogram_name = "Translate",
-                .type = PageActionIconType::kTranslate,
-                .element_identifier = kTranslatePageActionElementId,
-            },
+            .histogram_name = "Translate",
+            .type = PageActionIconType::kTranslate,
+            .element_identifier = kTranslatePageActionElementId,
         },
+    },
+    {
+        kActionShowMemorySaverChip,
         {
-            kActionShowMemorySaverChip,
-            {
-                .histogram_name = "MemorySaver",
-                .type = PageActionIconType::kMemorySaver,
-                .element_identifier = kMemorySaverChipElementId,
-            },
+            .histogram_name = "MemorySaver",
+            .type = PageActionIconType::kMemorySaver,
+            .element_identifier = kMemorySaverChipElementId,
         },
+    },
+    {
+        kActionShowJsOptimizationsIcon,
         {
-            kActionShowJsOptimizationsIcon,
-            {
-                .histogram_name = "JsOptimizations",
-                .type = PageActionIconType::kJsOptimizations,
-                .element_identifier = kJsOptimizationsIconElementId,
-            },
+            .histogram_name = "JsOptimizations",
+            .type = PageActionIconType::kJsOptimizations,
+            .element_identifier = kJsOptimizationsIconElementId,
         },
+    },
+    {
+        kActionRecordReplay,
         {
-            kActionRecordReplay,
-            {
-                .histogram_name = "RecordReplay",
-                .type = PageActionIconType::kRecordReplay,
-                .element_identifier = kRecordButtonElementId,
-            },
+            .histogram_name = "RecordReplay",
+            .type = PageActionIconType::kRecordReplay,
+            .element_identifier = kRecordButtonElementId,
         },
+    },
+    {
+        kActionShowIntentPicker,
         {
-            kActionShowIntentPicker,
-            {
-                .histogram_name = "IntentPicker",
-                .type = PageActionIconType::kIntentPicker,
-                .element_identifier = kIntentPickerPageActionElementId,
-            },
+            .histogram_name = "IntentPicker",
+            .type = PageActionIconType::kIntentPicker,
+            .element_identifier = kIntentPickerPageActionElementId,
         },
+    },
+    {
+        kActionZoomNormal,
         {
-            kActionZoomNormal,
-            {
-                .histogram_name = "Zoom",
-                .type = PageActionIconType::kZoom,
-                .element_identifier = kActionItemZoomElementId,
-            },
+            .histogram_name = "Zoom",
+            .type = PageActionIconType::kZoom,
+            .element_identifier = kActionItemZoomElementId,
         },
+    },
+    {
+        kActionSidePanelShowReadAnything,
         {
-            kActionSidePanelShowReadAnything,
-            {
-                .histogram_name = "ReadingMode",
-                .type = PageActionIconType::kReadingMode,
-            },
+            .histogram_name = "ReadingMode",
+            .type = PageActionIconType::kReadingMode,
         },
+    },
+    {
+        kActionOffersAndRewardsForPage,
         {
-            kActionOffersAndRewardsForPage,
-            {
-                .histogram_name = "PaymentsOfferNotification",
-                .type = PageActionIconType::kPaymentsOfferNotification,
-                .element_identifier = kOfferNotificationChipElementId,
-            },
+            .histogram_name = "PaymentsOfferNotification",
+            .type = PageActionIconType::kPaymentsOfferNotification,
+            .element_identifier = kOfferNotificationChipElementId,
         },
+    },
+    {
+        kActionShowFileSystemAccess,
         {
-            kActionShowFileSystemAccess,
-            {
-                .histogram_name = "ShowFileSystemAccess",
-                .type = PageActionIconType::kFileSystemAccess,
-                .element_identifier = kFileSystemPageActionElementId,
-            },
+            .histogram_name = "ShowFileSystemAccess",
+            .type = PageActionIconType::kFileSystemAccess,
+            .element_identifier = kFileSystemPageActionElementId,
         },
+    },
+    {
+        kActionInstallPwa,
         {
-            kActionInstallPwa,
-            {
-                .histogram_name = "PwaInstall",
-                .type = PageActionIconType::kPwaInstall,
-                .element_identifier = kInstallPwaElementId,
-            },
+            .histogram_name = "PwaInstall",
+            .type = PageActionIconType::kPwaInstall,
+            .element_identifier = kInstallPwaElementId,
         },
+    },
+    {
+        kActionCommercePriceInsights,
         {
-            kActionCommercePriceInsights,
-            {
-                .histogram_name = "PriceInsights",
-                .type = PageActionIconType::kPriceInsights,
-                .element_identifier = kPriceInsightsChipElementId,
-            },
+            .histogram_name = "PriceInsights",
+            .type = PageActionIconType::kPriceInsights,
+            .element_identifier = kPriceInsightsChipElementId,
         },
+    },
+    {
+        kActionCommerceDiscounts,
         {
-            kActionCommerceDiscounts,
-            {
-                .histogram_name = "Discounts",
-                .type = PageActionIconType::kDiscounts,
-                .element_identifier = kDiscountsChipElementId,
-            },
+            .histogram_name = "Discounts",
+            .type = PageActionIconType::kDiscounts,
+            .element_identifier = kDiscountsChipElementId,
         },
+    },
+    {
+        kActionShowPasswordsBubbleOrPage,
         {
-            kActionShowPasswordsBubbleOrPage,
-            {
-                .histogram_name = "ManagePasswords",
-                .type = PageActionIconType::kManagePasswords,
-                .element_identifier = kPasswordsOmniboxKeyIconElementId,
-            },
+            .histogram_name = "ManagePasswords",
+            .type = PageActionIconType::kManagePasswords,
+            .element_identifier = kPasswordsOmniboxKeyIconElementId,
         },
+    },
+    {
+        kActionShowCollaborationRecentActivity,
         {
-            kActionShowCollaborationRecentActivity,
-            {
-                .histogram_name = "ShowCollaborationRecentActivity",
-                .type = PageActionIconType::kCollaborationMessaging,
-                .element_identifier =
-                    kCollaborationMessagingPageActionIconElementId,
-            },
+            .histogram_name = "ShowCollaborationRecentActivity",
+            .type = PageActionIconType::kCollaborationMessaging,
+            .element_identifier =
+                kCollaborationMessagingPageActionIconElementId,
         },
+    },
+    {
+        kActionAutofillMandatoryReauth,
         {
-            kActionAutofillMandatoryReauth,
-            {
-                .histogram_name = "MandatoryReauth",
-                .type = PageActionIconType::kMandatoryReauth,
-                .element_identifier =
-                    kAutofillMandatoryReauthPageActionElementId,
-            },
+            .histogram_name = "MandatoryReauth",
+            .type = PageActionIconType::kMandatoryReauth,
+            .element_identifier = kAutofillMandatoryReauthPageActionElementId,
         },
+    },
+    {
+        kActionFind,
         {
-            kActionFind,
-            {
-                .histogram_name = "Find",
-                .type = PageActionIconType::kFind,
-                .element_identifier = kFindPageActionElementId,
-            },
+            .histogram_name = "Find",
+            .type = PageActionIconType::kFind,
+            .element_identifier = kFindPageActionElementId,
         },
+    },
+    {
+        kActionShowCookieControls,
         {
-            kActionShowCookieControls,
-            {
-                .histogram_name = "CookieControls",
-                .type = PageActionIconType::kCookieControls,
-                .element_identifier = kCookieControlsIconElementId,
-            },
+            .histogram_name = "CookieControls",
+            .type = PageActionIconType::kCookieControls,
+            .element_identifier = kCookieControlsIconElementId,
         },
+    },
+    {
+        kActionShowAddressesBubbleOrPage,
         {
-            kActionShowAddressesBubbleOrPage,
-            {
-                .histogram_name = "AddressAutofill",
-                .type = PageActionIconType::kAutofillAddress,
-                .element_identifier = kAutofillAddressPageActionElementId,
-            },
+            .histogram_name = "AddressAutofill",
+            .type = PageActionIconType::kAutofillAddress,
+            .element_identifier = kAutofillAddressPageActionElementId,
         },
+    },
+    {
+        kActionVirtualCardEnroll,
         {
-            kActionVirtualCardEnroll,
-            {
-                .histogram_name = "VirtualCardEnroll",
-                .type = PageActionIconType::kVirtualCardEnroll,
-                .element_identifier =
-                    kAutofillVirtualCardEnrollPageActionElementId,
-            },
+            .histogram_name = "VirtualCardEnroll",
+            .type = PageActionIconType::kVirtualCardEnroll,
+            .element_identifier = kAutofillVirtualCardEnrollPageActionElementId,
         },
+    },
+    {
+        kActionFilledCardInformation,
+        {.histogram_name = "FilledCardInformation",
+         .type = PageActionIconType::kFilledCardInformation,
+         .element_identifier =
+             kAutofillFilledCardInformationPageActionElementId},
+    },
+    {
+        kActionShowPaymentsBubbleOrPage,
         {
-            kActionFilledCardInformation,
-            {
-                .histogram_name = "FilledCardInformation",
-                .type = PageActionIconType::kFilledCardInformation,
-                .element_identifier =
-                    kAutofillFilledCardInformationPageActionElementId
-            },
+            .histogram_name = "SavePayments",
+            // This action id corresponds to both `kSaveCard` and
+            // `kSaveIban` page action icon types. Since the framework only
+            // supports 1:1 mapping of `ActionId`<->`PageActionIconType`,
+            // and since `PageActionIconType` will be removed as an
+            // identifier for page actions post migration, we choose to only
+            // represent `kSaveCard` as the corresponding
+            // `PageActionIconType` for `kActionShowPaymentsBubbleOrPage`.
+            //
+            // This peculiarity is handled well in all flows that rely on
+            // `ActionId`<->`PageActionIconType` conversions, except in
+            // framework level metrics for individual page action icons.
+            // Therefore, we should rely on feature level metrics for this
+            // particular page action.
+            .type = PageActionIconType::kSaveCard,
+            .element_identifier = kAutofillSavePaymentsPageActionElementId,
         },
+    },
+    {
+        kActionSidePanelShowContextualTasks,
         {
-            kActionShowPaymentsBubbleOrPage,
-            {
-                .histogram_name = "SavePayments",
-                // This action id corresponds to both `kSaveCard` and
-                // `kSaveIban` page action icon types. Since the framework only
-                // supports 1:1 mapping of `ActionId`<->`PageActionIconType`,
-                // and since `PageActionIconType` will be removed as an
-                // identifier for page actions post migration, we choose to only
-                // represent `kSaveCard` as the corresponding
-                // `PageActionIconType` for `kActionShowPaymentsBubbleOrPage`.
-                //
-                // This peculiarity is handled well in all flows that rely on
-                // `ActionId`<->`PageActionIconType` conversions, except in
-                // framework level metrics for individual page action icons.
-                // Therefore, we should rely on feature level metrics for this
-                // particular page action.
-                .type = PageActionIconType::kSaveCard,
-                .element_identifier = kAutofillSavePaymentsPageActionElementId,
-            },
+            .histogram_name = "ContextualSidePanel",
+            .type = PageActionIconType::kContextualSidePanel,
+            .element_identifier = kContextualTasksPageActionElementId,
         },
+    },
+    {
+        kActionBookmarkThisTab,
         {
-            kActionSidePanelShowContextualTasks,
-            {
-                .histogram_name = "ContextualSidePanel",
-                .type = PageActionIconType::kContextualSidePanel,
-                .element_identifier = kContextualTasksPageActionElementId,
-            },
+            .histogram_name = "BookmarksStar",
+            .is_ephemeral = false,
+            .type = PageActionIconType::kBookmarkStar,
+            .element_identifier = kBookmarkStarViewElementId,
         },
+    },
+    {
+        kActionFederation,
         {
-            kActionBookmarkThisTab,
-            {
-                .histogram_name = "BookmarksStar",
-                .is_ephemeral = false,
-                .type = PageActionIconType::kBookmarkStar,
-                .element_identifier = kBookmarkStarViewElementId,
-            },
+            .histogram_name = "Federation",
+            .type = PageActionIconType::kFederation,
+            .element_identifier = kFederationElementId,
         },
+    },
+    {
+        kActionGlicContextualCueing,
         {
-            kActionFederation,
-            {
-                .histogram_name = "Federation",
-                .type = PageActionIconType::kFederation,
-                .element_identifier = kFederationElementId,
-            },
+            .histogram_name = "Glic",
+            .type = PageActionIconType::kGlic,
         },
+    },
+    {
+        kActionAnchoredContextualCue,
         {
-            kActionGlicContextualCueing,
-            {
-                .histogram_name = "Glic",
-                .type = PageActionIconType::kGlic,
-            },
+            .histogram_name = "ContextualCueing",
+            .type = PageActionIconType::kAnchoredContextualCue,
         },
-    });
+    },
+});
 
 constexpr bool CheckIgnoreFlagUsage() {
   for (const auto& [action_id, properties] : kPageActionProperties) {
