@@ -30,6 +30,7 @@
 // https://html.spec.whatwg.org/C/#globaleventhandlers
 interface mixin GlobalEventHandlers {
   attribute EventHandler onabort;
+  [RuntimeEnabled=FilteringPrimitives] attribute EventHandler onbeforefilter;
   attribute EventHandler onbeforeinput;
   attribute EventHandler onbeforematch;
   attribute EventHandler onbeforetoggle;

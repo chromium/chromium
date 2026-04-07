@@ -42,6 +42,7 @@
     "beforecopy",
     "beforecreatepolicy",
     "beforecut",
+    "beforefilter",
     "beforeinput",
     "beforeinstallprompt",
     "beforematch",

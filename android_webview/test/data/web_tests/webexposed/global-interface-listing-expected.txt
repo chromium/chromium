@@ -1958,6 +1958,7 @@ interface Document : Node
     getter onauxclick
     getter onbeforecopy
     getter onbeforecut
+    getter onbeforefilter
     getter onbeforeinput
     getter onbeforematch
     getter onbeforepaste
@@ -2187,6 +2188,7 @@ interface Document : Node
     setter onauxclick
     setter onbeforecopy
     setter onbeforecut
+    setter onbeforefilter
     setter onbeforeinput
     setter onbeforematch
     setter onbeforepaste
@@ -3817,6 +3819,7 @@ interface HTMLElement : Element
     getter onanimationiteration
     getter onanimationstart
     getter onauxclick
+    getter onbeforefilter
     getter onbeforeinput
     getter onbeforematch
     getter onbeforetoggle
@@ -3960,6 +3963,7 @@ interface HTMLElement : Element
     setter onanimationiteration
     setter onanimationstart
     setter onauxclick
+    setter onbeforefilter
     setter onbeforeinput
     setter onbeforematch
     setter onbeforetoggle
@@ -5857,6 +5861,7 @@ interface MathMLElement : Element
     getter onanimationiteration
     getter onanimationstart
     getter onauxclick
+    getter onbeforefilter
     getter onbeforeinput
     getter onbeforematch
     getter onbeforetoggle
@@ -5975,6 +5980,7 @@ interface MathMLElement : Element
     setter onanimationiteration
     setter onanimationstart
     setter onauxclick
+    setter onbeforefilter
     setter onbeforeinput
     setter onbeforematch
     setter onbeforetoggle
@@ -8196,6 +8202,7 @@ interface SVGElement : Element
     getter onanimationiteration
     getter onanimationstart
     getter onauxclick
+    getter onbeforefilter
     getter onbeforeinput
     getter onbeforematch
     getter onbeforetoggle
@@ -8316,6 +8323,7 @@ interface SVGElement : Element
     setter onanimationiteration
     setter onanimationstart
     setter onauxclick
+    setter onbeforefilter
     setter onbeforeinput
     setter onbeforematch
     setter onbeforetoggle
@@ -12394,6 +12402,7 @@ namespace console
     getter onanimationstart
     getter onappinstalled
     getter onauxclick
+    getter onbeforefilter
     getter onbeforeinput
     getter onbeforeinstallprompt
     getter onbeforematch
@@ -12624,6 +12633,7 @@ namespace console
     setter onanimationstart
     setter onappinstalled
     setter onauxclick
+    setter onbeforefilter
     setter onbeforeinput
     setter onbeforeinstallprompt
     setter onbeforematch

@@ -235,6 +235,7 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
   DEFINE_ATTRIBUTE_EVENT_LISTENER(animationiteration, kAnimationiteration)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(animationstart, kAnimationstart)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(auxclick, kAuxclick)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(beforefilter, kBeforefilter)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(beforeinput, kBeforeinput)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(beforematch, kBeforematch)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(beforetoggle, kBeforetoggle)

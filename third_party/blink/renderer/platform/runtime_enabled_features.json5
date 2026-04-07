@@ -2772,6 +2772,13 @@
       status: "stable"
     },
     {
+      // Enables the beforefilter event and the option.filtered IDL, which are
+      // shared primitives needed by both the FilterableSelect and
+      // CustomizableCombobox features.
+      name: "FilteringPrimitives",
+      implied_by: ["FilterableSelect", "CustomizableCombobox"],
+    },
+    {
       name: "FindFirstMisspellingEndWhenNonEditable",
       status: "stable",
     },

@@ -41,6 +41,7 @@
     "onauxclick",
     "onbeforecopy",
     "onbeforecut",
+    "onbeforefilter",
     "onbeforeinput",
     "onbeforepaste",
     "onbeforeprint",

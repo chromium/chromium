@@ -864,6 +864,26 @@ void UpdateOptionFiltered(HTMLInputElement& input, HTMLOptionElement& option) {
 }  // namespace
 
 void TextFieldInputType::FilterOptions() {
+  if (!GetElement().IsBaseAppearanceCombobox() &&
+      !GetElement().FilterTarget()) {
+    return;
+  }
+
+  Event* beforefilter =
+      Event::CreateCancelableBubble(event_type_names::kBeforefilter);
+  beforefilter->SetTarget(&GetElement());
+  if (GetElement().DispatchEvent(*beforefilter) !=
+      DispatchEventResult::kNotCanceled) {
+    return;
+  }
+
+  // Since script has run, we might not want to perform filtering anymore if it
+  // messed with the state of this input, the datalist target, or the select
+  // target.
+  // TODO(crbug.com/453705243): Add more tests for this behavior and consider
+  // checking more state here, such as whether this TextFieldInputType is still
+  // the one registered to the input element.
+
   if (GetElement().IsBaseAppearanceCombobox()) {
     for (Element* element : *GetElement().DataList()->options()) {
       HTMLOptionElement* option = To<HTMLOptionElement>(element);
