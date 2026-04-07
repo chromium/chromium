@@ -8,20 +8,21 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
+namespace accessibility_annotator {
+class AccessibilityAnnotatorFirstRunService;
+}
+
 namespace content {
 class BrowserContext;
 }
 
 class Profile;
 
-namespace accessibility_annotator {
-
-class AccessibilityAnnotatorFirstRunService;
-
 class AccessibilityAnnotatorFirstRunServiceFactory
     : public ProfileKeyedServiceFactory {
  public:
-  static AccessibilityAnnotatorFirstRunService* GetForProfile(Profile* profile);
+  static accessibility_annotator::AccessibilityAnnotatorFirstRunService*
+  GetForProfile(Profile* profile);
   static AccessibilityAnnotatorFirstRunServiceFactory* GetInstance();
 
   AccessibilityAnnotatorFirstRunServiceFactory(
@@ -38,7 +39,5 @@ class AccessibilityAnnotatorFirstRunServiceFactory
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
-
-}  // namespace accessibility_annotator
 
 #endif  // CHROME_BROWSER_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_SERVICE_FACTORY_H_

@@ -12,10 +12,8 @@ namespace content {
 class WebContents;
 }
 
-namespace accessibility_annotator {
-
 class ChromeAccessibilityAnnotatorFirstRunClient
-    : public AccessibilityAnnotatorFirstRunClient {
+    : public accessibility_annotator::AccessibilityAnnotatorFirstRunClient {
  public:
   ChromeAccessibilityAnnotatorFirstRunClient();
   ChromeAccessibilityAnnotatorFirstRunClient(
@@ -27,10 +25,9 @@ class ChromeAccessibilityAnnotatorFirstRunClient
   // AccessibilityAnnotatorFirstRunClient:
   void ShowRemoteAnnotatorInfo(
       content::WebContents* web_contents,
-      FirstRunInvocationSource invocation_source,
-      base::OnceCallback<void(InfoResult)> callback) override;
+      accessibility_annotator::FirstRunInvocationSource invocation_source,
+      base::OnceCallback<void(accessibility_annotator::InfoResult)> callback)
+      override;
 };
-
-}  // namespace accessibility_annotator
 
 #endif  // CHROME_BROWSER_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_CHROME_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_CLIENT_H_

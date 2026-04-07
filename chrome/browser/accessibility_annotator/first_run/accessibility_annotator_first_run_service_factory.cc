@@ -16,12 +16,11 @@
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/accessibility_annotator/first_run/accessibility_annotator_first_run_service_impl.h"
 
-namespace accessibility_annotator {
-
 // static
-AccessibilityAnnotatorFirstRunService*
+accessibility_annotator::AccessibilityAnnotatorFirstRunService*
 AccessibilityAnnotatorFirstRunServiceFactory::GetForProfile(Profile* profile) {
-  return static_cast<AccessibilityAnnotatorFirstRunService*>(
+  return static_cast<
+      accessibility_annotator::AccessibilityAnnotatorFirstRunService*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
@@ -50,14 +49,14 @@ std::unique_ptr<KeyedService> AccessibilityAnnotatorFirstRunServiceFactory::
     BuildServiceInstanceForBrowserContext(
         content::BrowserContext* context) const {
   if (!base::FeatureList::IsEnabled(
-          features::kAccessibilityAnnotatorFirstRun)) {
+          accessibility_annotator::features::kAccessibilityAnnotatorFirstRun)) {
     return nullptr;
   }
   Profile* profile = Profile::FromBrowserContext(context);
-  auto client = std::make_unique<ChromeAccessibilityAnnotatorFirstRunClient>();
-  return std::make_unique<AccessibilityAnnotatorFirstRunServiceImpl>(
+  std::unique_ptr<accessibility_annotator::AccessibilityAnnotatorFirstRunClient>
+      client = std::make_unique<ChromeAccessibilityAnnotatorFirstRunClient>();
+  return std::make_unique<
+      accessibility_annotator::AccessibilityAnnotatorFirstRunServiceImpl>(
       std::move(client),
       AccessibilityAnnotatorEnablementServiceFactory::GetForProfile(profile));
 }
-
-}  // namespace accessibility_annotator

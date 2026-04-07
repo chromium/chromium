@@ -11,13 +11,12 @@
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
-namespace accessibility_annotator {
-
 // static
-AccessibilityAnnotatorEnablementService*
+accessibility_annotator::AccessibilityAnnotatorEnablementService*
 AccessibilityAnnotatorEnablementServiceFactory::GetForProfile(
     Profile* profile) {
-  return static_cast<AccessibilityAnnotatorEnablementService*>(
+  return static_cast<
+      accessibility_annotator::AccessibilityAnnotatorEnablementService*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
@@ -58,8 +57,7 @@ std::unique_ptr<KeyedService> AccessibilityAnnotatorEnablementServiceFactory::
           profile->GetOriginalProfile());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile());
-  return std::make_unique<AccessibilityAnnotatorEnablementServiceImpl>(
+  return std::make_unique<
+      accessibility_annotator::AccessibilityAnnotatorEnablementServiceImpl>(
       account_settings_service, identity_manager);
 }
-
-}  // namespace accessibility_annotator

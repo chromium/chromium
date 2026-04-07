@@ -7,7 +7,6 @@
 #include "base/functional/callback.h"
 #include "components/accessibility_annotator/first_run/accessibility_annotator_first_run_types.h"
 
-namespace accessibility_annotator {
 ChromeAccessibilityAnnotatorFirstRunClient::
     ChromeAccessibilityAnnotatorFirstRunClient() = default;
 
@@ -16,10 +15,9 @@ ChromeAccessibilityAnnotatorFirstRunClient::
 
 void ChromeAccessibilityAnnotatorFirstRunClient::ShowRemoteAnnotatorInfo(
     content::WebContents* web_contents,
-    FirstRunInvocationSource invocation_source,
-    base::OnceCallback<void(InfoResult)> callback) {
+    accessibility_annotator::FirstRunInvocationSource invocation_source,
+    base::OnceCallback<void(accessibility_annotator::InfoResult)> callback) {
   // TODO(b/489414512): Implement this.
-  std::move(callback).Run(InfoResult::kNotAcknowledged);
+  std::move(callback).Run(
+      accessibility_annotator::InfoResult::kNotAcknowledged);
 }
-
-}  // namespace accessibility_annotator

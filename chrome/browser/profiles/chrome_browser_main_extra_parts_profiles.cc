@@ -676,11 +676,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   AboutThisSiteServiceFactory::GetInstance();
   AcceptLanguagesServiceFactory::GetInstance();
   AccessibilityAnnotatorBackendFactory::GetInstance();
+  AccessibilityAnnotatorEnablementServiceFactory::GetInstance();
+  AccessibilityAnnotatorFirstRunServiceFactory::GetInstance();
   AccessibilityAnnotatorServiceFactory::GetInstance();
-  accessibility_annotator::AccessibilityAnnotatorEnablementServiceFactory::
-      GetInstance();
-  accessibility_annotator::AccessibilityAnnotatorFirstRunServiceFactory::
-      GetInstance();
   AccessibilityLabelsServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   AccessibilityQueryServiceFactory::GetInstance();
