@@ -242,7 +242,6 @@ AutofillFieldRedactionReason GetRedactionReason(FieldType field_type) {
     case autofill::NOT_USERNAME:
     case autofill::IBAN_VALUE:
     case autofill::NUMERIC_QUANTITY:
-    case autofill::ONE_TIME_CODE:
     case autofill::DELIVERY_INSTRUCTIONS:
     case autofill::LOYALTY_MEMBERSHIP_ID:
     case autofill::PASSPORT_NUMBER:
@@ -279,6 +278,10 @@ AutofillFieldRedactionReason GetRedactionReason(FieldType field_type) {
     case autofill::SHIPMENT_TRACKING_NUMBER:
       return AutofillFieldRedactionReason::kNoRedactionNeeded;
 
+    // OTPs are sensitive short-lived secrets and should be redacted.
+    case autofill::ONE_TIME_CODE:
+      return AutofillFieldRedactionReason::kShouldRedactForOtp;
+
     // These cases are not produced by field classification, but have to be
     // handled so that the switch is complete.
     case autofill::EMPTY_TYPE:
@@ -287,20 +290,36 @@ AutofillFieldRedactionReason GetRedactionReason(FieldType field_type) {
   }
 }
 
-// Returns the AutofillFieldRedactionReason for a set of field types. If
-// multiple field types require redacting, one reason will be chosen at random
-// (based on set iteration order).
+// Returns the AutofillFieldRedactionReason for a set of field types.
+// Payment wins over OTP when both feature gates are enabled for the same field
+// so mixed predictions resolve deterministically.
 AutofillFieldRedactionReason GetRedactionReason(
     const FieldTypeSet& field_types) {
+  bool should_redact_for_payments = false;
+  bool should_redact_for_otp = false;
+
   for (const FieldType field_type : field_types) {
-    AutofillFieldRedactionReason redaction_reason =
-        GetRedactionReason(field_type);
-    switch (redaction_reason) {
-      case AutofillFieldRedactionReason::kShouldRedactForPayments:
-        return redaction_reason;
+    switch (GetRedactionReason(field_type)) {
       case AutofillFieldRedactionReason::kNoRedactionNeeded:
-        continue;
+        break;
+      case AutofillFieldRedactionReason::kShouldRedactForPayments:
+        should_redact_for_payments = true;
+        break;
+      case AutofillFieldRedactionReason::kShouldRedactForOtp:
+        should_redact_for_otp = true;
+        break;
     }
+  }
+
+  if (should_redact_for_payments &&
+      IsAutofillRedactionReasonEnabled(
+          AutofillFieldRedactionReason::kShouldRedactForPayments)) {
+    return AutofillFieldRedactionReason::kShouldRedactForPayments;
+  }
+  if (should_redact_for_otp &&
+      IsAutofillRedactionReasonEnabled(
+          AutofillFieldRedactionReason::kShouldRedactForOtp)) {
+    return AutofillFieldRedactionReason::kShouldRedactForOtp;
   }
 
   return AutofillFieldRedactionReason::kNoRedactionNeeded;

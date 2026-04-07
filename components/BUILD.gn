@@ -1181,6 +1181,7 @@ if (use_blink) {
       "//components/optimization_guide/content/browser",
       "//components/optimization_guide/content/browser:test_support",
       "//components/optimization_guide/content/renderer",
+      "//components/page_content_annotations/content",
       "//components/paint_preview/renderer",
       "//components/password_manager/content/browser",
       "//components/performance_manager:browser_tests",

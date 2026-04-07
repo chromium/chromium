@@ -22,10 +22,13 @@
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "components/optimization_guide/content/browser/mock_autofill_annotations_provider.h"
 #include "components/optimization_guide/content/browser/mock_media_transcript_provider.h"
 #include "components/optimization_guide/content/browser/no_response_ai_page_content_agent.h"
+#include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/render_frame_host.h"
@@ -252,6 +255,62 @@ void SimulateMouseClickAt(content::RenderWidgetHost* rwh, gfx::PointF point) {
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) &&
         // !BUILDFLAG(IS_FUCHSIA)
 
+class RecordingFetchPageProgressListener final
+    : public page_content_annotations::FetchPageProgressListener {
+ public:
+  RecordingFetchPageProgressListener() = default;
+  ~RecordingFetchPageProgressListener() override = default;
+
+  void BeginScreenshot() override { screenshot_started_ = true; }
+
+  void ScreenshotCaptured(const SkBitmap& bitmap) override {
+    // Keep the raw bitmap so the test can compare pixels before redaction.
+    captured_bitmap_ = bitmap;
+  }
+
+  void ScreenshotRedacted(const SkBitmap& bitmap) override {
+    // Keep the final bitmap so the test can verify the redaction paint.
+    redacted_bitmap_ = bitmap;
+  }
+
+  void EndScreenshot(std::optional<std::string> error) override {
+    screenshot_finished_ = true;
+    screenshot_error_ = std::move(error);
+  }
+
+  void BeginAPC() override { apc_started_ = true; }
+
+  void EndAPC(std::optional<std::string> error) override {
+    apc_finished_ = true;
+    apc_error_ = std::move(error);
+  }
+
+  bool screenshot_started() const { return screenshot_started_; }
+  bool screenshot_finished() const { return screenshot_finished_; }
+  bool apc_started() const { return apc_started_; }
+  bool apc_finished() const { return apc_finished_; }
+  const std::optional<SkBitmap>& captured_bitmap() const {
+    return captured_bitmap_;
+  }
+  const std::optional<SkBitmap>& redacted_bitmap() const {
+    return redacted_bitmap_;
+  }
+  const std::optional<std::string>& screenshot_error() const {
+    return screenshot_error_;
+  }
+  const std::optional<std::string>& apc_error() const { return apc_error_; }
+
+ private:
+  bool screenshot_started_ = false;
+  bool screenshot_finished_ = false;
+  bool apc_started_ = false;
+  bool apc_finished_ = false;
+  std::optional<SkBitmap> captured_bitmap_;
+  std::optional<SkBitmap> redacted_bitmap_;
+  std::optional<std::string> screenshot_error_;
+  std::optional<std::string> apc_error_;
+};
+
 class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
  public:
   PageContentProtoProviderBrowserTest() = default;
@@ -356,6 +415,20 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
   std::optional<AIPageContentResultOrError> page_content_;
   blink::mojom::PageMetadataPtr metadata_;
   base::flat_map<std::string, content::WeakDocumentPtr> document_identifiers_;
+};
+
+class PageContentProtoProviderBrowserTestOtpRedaction
+    : public PageContentProtoProviderBrowserTest {
+ public:
+  PageContentProtoProviderBrowserTestOtpRedaction() {
+    feature_list_.InitWithFeatures(
+        {features::kAnnotatedPageContentWithAutofillAnnotations,
+         features::kAnnotatedPageContentAutofillOtpRedactions},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, BasicDefault) {
@@ -2055,6 +2128,109 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   ASSERT_TRUE(form_node_relative.content_attributes().has_form_data());
   EXPECT_EQ(form_node_relative.content_attributes().form_data().action_url(),
             https_server()->GetURL("/relative/next").spec());
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestOtpRedaction,
+                       OtpScreenshotRedaction) {
+  LoadPage(https_server()->GetURL("/otp_redaction.html"), nullptr);
+
+  // Use a mock provider so the test stays focused on screenshot redaction.
+  auto provider =
+      std::make_unique<testing::NiceMock<MockAutofillAnnotationsProvider>>();
+  AutofillFieldMetadata otp_metadata;
+  otp_metadata.coarse_field_type =
+      proto::COARSE_AUTOFILL_FIELD_TYPE_UNSUPPORTED;
+  otp_metadata.section_id = 7u;
+  otp_metadata.redaction_reason =
+      AutofillFieldRedactionReason::kShouldRedactForOtp;
+  EXPECT_CALL(*provider, GetAutofillFieldData)
+      .WillRepeatedly(testing::Return(otp_metadata));
+  AutofillAnnotationsProvider::SetFor(web_contents(), std::move(provider));
+
+  auto progress_listener =
+      std::make_unique<RecordingFetchPageProgressListener>();
+  RecordingFetchPageProgressListener* const progress_listener_ptr =
+      progress_listener.get();
+  page_content_annotations::PageContextFetcher fetcher(
+      base::BindRepeating(
+          [](content::BrowserContext*)
+              -> page_content_annotations::PageContentScreenshotService* {
+            ADD_FAILURE()
+                << "Viewport-only screenshot fetches should not use paint "
+                   "preview.";
+            return nullptr;
+          }),
+      std::move(progress_listener));
+
+  page_content_annotations::FetchPageContextOptions options;
+  auto screenshot_options =
+      page_content_annotations::ScreenshotOptions::ViewportOnly(
+          /*paint_preview_options=*/std::nullopt,
+          /*screenshot_collection_options=*/std::nullopt);
+  screenshot_options.set_redaction_color_for_testing(SkColors::kRed);
+  options.screenshot_options = screenshot_options;
+  options.annotated_page_content_options = GetAIPageContentOptions();
+
+  base::test::TestFuture<
+      page_content_annotations::FetchPageContextResultCallbackArg>
+      future;
+  fetcher.FetchStart(*web_contents(), options, future.GetCallback());
+
+  page_content_annotations::FetchPageContextResultCallbackArg callback_result =
+      future.Take();
+  ASSERT_TRUE(callback_result.has_value()) << callback_result.error().message;
+
+  std::unique_ptr<page_content_annotations::FetchPageContextResult> result =
+      std::move(callback_result.value());
+  ASSERT_TRUE(result->screenshot_result.has_value())
+      << result->screenshot_result.error();
+  ASSERT_TRUE(result->annotated_page_content_result.has_value())
+      << result->annotated_page_content_result.error();
+
+  // The page only has one field, so there should be one clear redaction box.
+  const auto& annotated_page_content =
+      result->annotated_page_content_result.value();
+  ASSERT_EQ(annotated_page_content.visible_bounding_boxes_for_redaction.size(),
+            1u);
+  const gfx::Rect& redaction_rect =
+      annotated_page_content.visible_bounding_boxes_for_redaction.front();
+  const gfx::Point sample_point = redaction_rect.CenterPoint();
+
+  ASSERT_TRUE(progress_listener_ptr->screenshot_started());
+  ASSERT_TRUE(progress_listener_ptr->screenshot_finished());
+  ASSERT_TRUE(progress_listener_ptr->apc_started());
+  ASSERT_TRUE(progress_listener_ptr->apc_finished());
+  EXPECT_FALSE(progress_listener_ptr->screenshot_error().has_value());
+  EXPECT_FALSE(progress_listener_ptr->apc_error().has_value());
+  ASSERT_TRUE(progress_listener_ptr->captured_bitmap().has_value());
+  ASSERT_TRUE(progress_listener_ptr->redacted_bitmap().has_value());
+
+  const auto* form_control_node =
+      FindFirstNodeWithAttributeType(annotated_page_content.proto.root_node(),
+                                     proto::CONTENT_ATTRIBUTE_FORM_CONTROL);
+  ASSERT_NE(form_control_node, nullptr);
+  ASSERT_TRUE(form_control_node->content_attributes().has_form_control_data());
+  EXPECT_EQ(form_control_node->content_attributes()
+                .form_control_data()
+                .redaction_decision(),
+            proto::REDACTION_DECISION_REDACTED_IS_OTP);
+
+  const SkBitmap& captured_bitmap =
+      progress_listener_ptr->captured_bitmap().value();
+  const SkBitmap& redacted_bitmap =
+      progress_listener_ptr->redacted_bitmap().value();
+  ASSERT_GE(sample_point.x(), 0);
+  ASSERT_GE(sample_point.y(), 0);
+  ASSERT_LT(sample_point.x(), captured_bitmap.width());
+  ASSERT_LT(sample_point.y(), captured_bitmap.height());
+  ASSERT_LT(sample_point.x(), redacted_bitmap.width());
+  ASSERT_LT(sample_point.y(), redacted_bitmap.height());
+
+  // Compare the same pixel before and after painting the OTP redaction box.
+  EXPECT_NE(captured_bitmap.getColor(sample_point.x(), sample_point.y()),
+            SK_ColorRED);
+  EXPECT_EQ(redacted_bitmap.getColor(sample_point.x(), sample_point.y()),
+            SK_ColorRED);
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,

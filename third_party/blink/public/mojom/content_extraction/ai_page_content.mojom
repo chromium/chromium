@@ -705,6 +705,9 @@ struct AIPageContentOptions {
   // Optional configuration to exclude non-salient content from the extracted
   // representation.
   NonSalientContentConfig? non_salient_content_config;
+
+  // Whether to include data for detected OTP (one-time pin) fields.
+  bool include_otps_for_redaction = false;
 };
 
 // Used to obtain the AIPageContent representation for Documents. Lives in the

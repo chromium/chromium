@@ -27,10 +27,17 @@ namespace optimization_guide {
 
 inline constexpr char kHasMediaTranscripts[] = "has_media_transcripts";
 
+enum class AutofillFieldRedactionReason : int;
+
 namespace features {
 BASE_DECLARE_FEATURE(kAnnotatedPageContentWithAutofillAnnotations);
 BASE_DECLARE_FEATURE(kAnnotatedPageContentAutofillCreditCardRedactions);
+BASE_DECLARE_FEATURE(kAnnotatedPageContentAutofillOtpRedactions);
 }  // namespace features
+
+// Returns true if the given redaction reason is enabled by its feature gate.
+bool IsAutofillRedactionReasonEnabled(
+    AutofillFieldRedactionReason redaction_reason);
 
 struct RenderFrameInfo {
  public:

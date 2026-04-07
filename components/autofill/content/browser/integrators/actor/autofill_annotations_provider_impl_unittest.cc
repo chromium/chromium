@@ -5,14 +5,17 @@
 #include "components/autofill/content/browser/integrators/actor/autofill_annotations_provider_impl.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/content/browser/test_content_autofill_driver.h"
+#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -117,6 +120,14 @@ TEST_F(AutofillAnnotationsProviderImplTest,
 }
 
 TEST_F(AutofillAnnotationsProviderImplTest, GetAutofillFieldData_Redaction) {
+  // Keep this test deterministic across platforms by making feature state
+  // explicit instead of relying on defaults.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kAnnotatedPageContentAutofillCreditCardRedactions,
+       features::kAnnotatedPageContentAutofillOtpRedactions},
+      {});
+
   // Register a form to the Autofill Manager.
   FormDescription form_description = {
       .fields = {
@@ -144,6 +155,12 @@ TEST_F(AutofillAnnotationsProviderImplTest, GetAutofillFieldData_Redaction) {
            .label = u"cc-number",
            .name = u"cc-number",
            .value = u"411111111111"},
+          {.server_type = autofill::ONE_TIME_CODE,
+           .host_frame = LocalFrameToken(
+               contents()->GetPrimaryMainFrame()->GetFrameToken().value()),
+           .label = u"otp",
+           .name = u"otp",
+           .value = u"123456"},
           {.server_type = autofill::UNKNOWN_TYPE,
            .host_frame = LocalFrameToken(
                contents()->GetPrimaryMainFrame()->GetFrameToken().value()),
@@ -189,13 +206,147 @@ TEST_F(AutofillAnnotationsProviderImplTest, GetAutofillFieldData_Redaction) {
   EXPECT_EQ(cc_metadata->redaction_reason,
             AutofillFieldRedactionReason::kShouldRedactForPayments);
 
-  std::optional<AutofillFieldMetadata> unknown_metadata =
+  // OTP fields should be treated as sensitive and marked for redaction.
+  std::optional<AutofillFieldMetadata> otp_metadata =
       autofill_annotations_provider_.GetAutofillFieldData(
           *contents()->GetPrimaryMainFrame(),
           form.fields()[4].renderer_id().GetUnsafeValue(), session);
+  ASSERT_TRUE(otp_metadata);
+  EXPECT_EQ(otp_metadata->redaction_reason,
+            AutofillFieldRedactionReason::kShouldRedactForOtp);
+
+  std::optional<AutofillFieldMetadata> unknown_metadata =
+      autofill_annotations_provider_.GetAutofillFieldData(
+          *contents()->GetPrimaryMainFrame(),
+          form.fields()[5].renderer_id().GetUnsafeValue(), session);
   ASSERT_TRUE(unknown_metadata);
   EXPECT_EQ(unknown_metadata->redaction_reason,
             AutofillFieldRedactionReason::kNoRedactionNeeded);
+}
+
+TEST_F(AutofillAnnotationsProviderImplTest,
+       GetAutofillFieldData_RedactionPrefersOtpWhenMixedPredictions) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kAnnotatedPageContentAutofillOtpRedactions},
+      {features::kAnnotatedPageContentAutofillCreditCardRedactions});
+
+  FormDescription form_description = {
+      .fields = {
+          {.server_type = autofill::CREDIT_CARD_NUMBER,
+           .host_frame = LocalFrameToken(
+               contents()->GetPrimaryMainFrame()->GetFrameToken().value()),
+           .label = u"code",
+           .name = u"code",
+           .value = u"123456"},
+      }};
+  FormData form = autofill::test::GetFormData(form_description);
+  autofill_manager()->AddSeenForm(
+      form, autofill::test::GetHeuristicTypes(form_description),
+      autofill::test::GetServerTypes(form_description));
+
+  autofill::FormStructure* cached_form =
+      autofill::test_api(*autofill_manager())
+          .FindCachedFormById(form.global_id());
+  ASSERT_TRUE(cached_form);
+  ASSERT_EQ(cached_form->field_count(), 1u);
+  cached_form->field(0)->SetTypeTo(
+      autofill::AutofillType(autofill::FieldTypeSet{
+          autofill::CREDIT_CARD_NUMBER, autofill::ONE_TIME_CODE}),
+      std::nullopt);
+
+  ConvertAIPageContentToProtoSession session;
+  std::optional<AutofillFieldMetadata> metadata =
+      autofill_annotations_provider_.GetAutofillFieldData(
+          *contents()->GetPrimaryMainFrame(),
+          form.fields()[0].renderer_id().GetUnsafeValue(), session);
+  ASSERT_TRUE(metadata);
+  EXPECT_EQ(metadata->redaction_reason,
+            AutofillFieldRedactionReason::kShouldRedactForOtp);
+}
+
+TEST_F(AutofillAnnotationsProviderImplTest,
+       GetAutofillFieldData_RedactionPrefersPaymentsWhenMixedPredictions) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kAnnotatedPageContentAutofillCreditCardRedactions},
+      {features::kAnnotatedPageContentAutofillOtpRedactions});
+
+  FormDescription form_description = {
+      .fields = {
+          {.server_type = autofill::CREDIT_CARD_NUMBER,
+           .host_frame = LocalFrameToken(
+               contents()->GetPrimaryMainFrame()->GetFrameToken().value()),
+           .label = u"code",
+           .name = u"code",
+           .value = u"123456"},
+      }};
+  FormData form = autofill::test::GetFormData(form_description);
+  autofill_manager()->AddSeenForm(
+      form, autofill::test::GetHeuristicTypes(form_description),
+      autofill::test::GetServerTypes(form_description));
+
+  autofill::FormStructure* cached_form =
+      autofill::test_api(*autofill_manager())
+          .FindCachedFormById(form.global_id());
+  ASSERT_TRUE(cached_form);
+  ASSERT_EQ(cached_form->field_count(), 1u);
+  cached_form->field(0)->SetTypeTo(
+      autofill::AutofillType(autofill::FieldTypeSet{
+          autofill::CREDIT_CARD_NUMBER, autofill::ONE_TIME_CODE}),
+      std::nullopt);
+
+  ConvertAIPageContentToProtoSession session;
+  std::optional<AutofillFieldMetadata> metadata =
+      autofill_annotations_provider_.GetAutofillFieldData(
+          *contents()->GetPrimaryMainFrame(),
+          form.fields()[0].renderer_id().GetUnsafeValue(), session);
+  ASSERT_TRUE(metadata);
+  EXPECT_EQ(metadata->redaction_reason,
+            AutofillFieldRedactionReason::kShouldRedactForPayments);
+}
+
+TEST_F(
+    AutofillAnnotationsProviderImplTest,
+    GetAutofillFieldData_RedactionPrefersPaymentsWhenBothMixedPredictionsEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kAnnotatedPageContentAutofillCreditCardRedactions,
+       features::kAnnotatedPageContentAutofillOtpRedactions},
+      {});
+
+  FormDescription form_description = {
+      .fields = {
+          {.server_type = autofill::CREDIT_CARD_NUMBER,
+           .host_frame = LocalFrameToken(
+               contents()->GetPrimaryMainFrame()->GetFrameToken().value()),
+           .label = u"code",
+           .name = u"code",
+           .value = u"123456"},
+      }};
+  FormData form = autofill::test::GetFormData(form_description);
+  autofill_manager()->AddSeenForm(
+      form, autofill::test::GetHeuristicTypes(form_description),
+      autofill::test::GetServerTypes(form_description));
+
+  autofill::FormStructure* cached_form =
+      autofill::test_api(*autofill_manager())
+          .FindCachedFormById(form.global_id());
+  ASSERT_TRUE(cached_form);
+  ASSERT_EQ(cached_form->field_count(), 1u);
+  cached_form->field(0)->SetTypeTo(
+      autofill::AutofillType(autofill::FieldTypeSet{
+          autofill::CREDIT_CARD_NUMBER, autofill::ONE_TIME_CODE}),
+      std::nullopt);
+
+  ConvertAIPageContentToProtoSession session;
+  std::optional<AutofillFieldMetadata> metadata =
+      autofill_annotations_provider_.GetAutofillFieldData(
+          *contents()->GetPrimaryMainFrame(),
+          form.fields()[0].renderer_id().GetUnsafeValue(), session);
+  ASSERT_TRUE(metadata);
+  EXPECT_EQ(metadata->redaction_reason,
+            AutofillFieldRedactionReason::kShouldRedactForPayments);
 }
 
 // Ensures that GetAutofillAvailability returns no availability when there are

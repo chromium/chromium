@@ -46,6 +46,9 @@ std::ostream& operator<<(std::ostream& o, AutofillFieldRedactionReason reason) {
     case AutofillFieldRedactionReason::kShouldRedactForPayments:
       o << "kShouldRedactForPayments";
       break;
+    case AutofillFieldRedactionReason::kShouldRedactForOtp:
+      o << "kShouldRedactForOtp";
+      break;
   }
   return o;
 }

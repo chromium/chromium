@@ -36,9 +36,14 @@ namespace features {
 BASE_FEATURE(kAnnotatedPageContentWithAutofillAnnotations,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether or not Autofill-suggested redactions of credit card fields
-// are applied to the page content.
+// Controls whether or not Autofill-suggested payment redactions are applied to
+// the page content.
 BASE_FEATURE(kAnnotatedPageContentAutofillCreditCardRedactions,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether or not Autofill-suggested one-time code (OTP) redactions
+// are applied to the page content.
+BASE_FEATURE(kAnnotatedPageContentAutofillOtpRedactions,
              base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
 
@@ -76,12 +81,35 @@ proto::RedactionDecision ConvertAutofillFieldRedactionReason(
     case AutofillFieldRedactionReason::kNoRedactionNeeded:
       return proto::REDACTION_DECISION_NO_REDACTION_NECESSARY;
     case AutofillFieldRedactionReason::kShouldRedactForPayments:
+      // Payments have a dedicated empty-field enum. OTPs do not.
       return form_control_data.field_value().empty()
                  ? proto::REDACTION_DECISION_UNREDACTED_EMPTY_PAYMENT_FIELD
                  : proto::
                        REDACTION_DECISION_REDACTED_IS_SENSITIVE_PAYMENT_FIELD;
+    case AutofillFieldRedactionReason::kShouldRedactForOtp:
+      return form_control_data.field_value().empty()
+                 ? proto::REDACTION_DECISION_NO_REDACTION_NECESSARY
+                 : proto::REDACTION_DECISION_REDACTED_IS_OTP;
   }
 }
+
+}  // namespace
+
+bool IsAutofillRedactionReasonEnabled(
+    AutofillFieldRedactionReason redaction_reason) {
+  switch (redaction_reason) {
+    case AutofillFieldRedactionReason::kNoRedactionNeeded:
+      return false;
+    case AutofillFieldRedactionReason::kShouldRedactForPayments:
+      return base::FeatureList::IsEnabled(
+          features::kAnnotatedPageContentAutofillCreditCardRedactions);
+    case AutofillFieldRedactionReason::kShouldRedactForOtp:
+      return base::FeatureList::IsEnabled(
+          features::kAnnotatedPageContentAutofillOtpRedactions);
+  }
+}
+
+namespace {
 
 bool ShouldRedactContent(proto::RedactionDecision redaction_decision) {
   switch (redaction_decision) {
@@ -93,7 +121,12 @@ bool ShouldRedactContent(proto::RedactionDecision redaction_decision) {
     case proto::REDACTION_DECISION_REDACTED_HAS_BEEN_PASSWORD:
       return true;
 
+    case proto::REDACTION_DECISION_REDACTED_IS_OTP:
+      return base::FeatureList::IsEnabled(
+          features::kAnnotatedPageContentAutofillOtpRedactions);
+
     case proto::REDACTION_DECISION_REDACTED_IS_SENSITIVE_PAYMENT_FIELD:
+      // This proto enum is only for payment redaction.
       return base::FeatureList::IsEnabled(
           features::kAnnotatedPageContentAutofillCreditCardRedactions);
 
@@ -635,19 +668,18 @@ void ConvertFormControlData(
     proto_form_control_data->add_coarse_autofill_field_type(
         autofill_metadata->coarse_field_type);
 
-    // If we do not current have a redaction decision and Autofill does, use the
-    // one that Autofill suggests.
+    // If we do not currently have a redaction decision and Autofill provides
+    // one, use the Autofill decision when its feature gate is enabled.
     //
     // TODO(b/454611037): Handle <select> related data as well.
-    if (base::FeatureList::IsEnabled(
-            features::kAnnotatedPageContentAutofillCreditCardRedactions)) {
+    if (proto_form_control_data->redaction_decision() ==
+            proto::REDACTION_DECISION_NO_REDACTION_NECESSARY &&
+        IsAutofillRedactionReasonEnabled(autofill_metadata->redaction_reason)) {
       proto::RedactionDecision autofill_redaction_decision =
           ConvertAutofillFieldRedactionReason(
               *proto_form_control_data, autofill_metadata->redaction_reason);
-      if (proto_form_control_data->redaction_decision() ==
-              proto::REDACTION_DECISION_NO_REDACTION_NECESSARY &&
-          autofill_redaction_decision !=
-              proto::REDACTION_DECISION_NO_REDACTION_NECESSARY) {
+      if (autofill_redaction_decision !=
+          proto::REDACTION_DECISION_NO_REDACTION_NECESSARY) {
         proto_form_control_data->set_redaction_decision(
             autofill_redaction_decision);
 
@@ -705,10 +737,10 @@ base::expected<void, std::string> ConvertAttributes(
   proto_attributes->set_redaction_decision(
       ConvertRedactionDecision(mojom_attributes.redaction_decision));
 
-  // When sensitive payment redaction is enabled, we populate
-  // `mojom_attributes.geometry` for form controls that may contain
-  // sensitive payments to allow for client-side screenshot redaction for
-  // sensitive payment fields, but still omit it from the proto here.
+  // When sensitive payment or OTP redaction is enabled, we populate
+  // `mojom_attributes.geometry` for form controls that may contain those
+  // values so the browser can redact screenshots client-side, but still omit
+  // it from the proto here.
   if (mojom_attributes.geometry && should_populate_geometry) {
     ConvertGeometry(*mojom_attributes.geometry,
                     proto_attributes->mutable_geometry());
@@ -972,8 +1004,8 @@ class Converter {
         source_frame_token, session_, mojom_attributes,
         ShouldPopulateGeometry(mojom_attributes, accessibility_focused_node_id),
         proto_node->mutable_content_attributes()));
-    MaybeAddSensitivePaymentData(mojom_attributes,
-                                 proto_node->content_attributes());
+    MaybeAddSensitivePaymentOrOtpData(mojom_attributes,
+                                      proto_node->content_attributes());
 
     int accessibility_focused_node_id_for_children =
         accessibility_focused_node_id;
@@ -1043,7 +1075,7 @@ class Converter {
             absl::Overload{
                 [&](const blink::mojom::AIPageContentPtr& page_content) mutable
                     -> base::expected<void, std::string> {
-                  AddPasswordRedactionData(*page_content);
+                  AddRendererPasswordRedactionBoxes(*page_content);
                   auto* proto_child_frame_node =
                       proto_node->add_children_nodes();
 
@@ -1155,8 +1187,8 @@ class Converter {
             mojom_attributes,
             /*accessibility_focused_node_id=*/kInvalidDOMNodeId),
         proto_node->mutable_content_attributes()));
-    MaybeAddSensitivePaymentData(mojom_attributes,
-                                 proto_node->content_attributes());
+    MaybeAddSensitivePaymentOrOtpData(mojom_attributes,
+                                      proto_node->content_attributes());
 
     for (const auto& mojom_child : mojom_node.children_nodes) {
       auto* proto_child = proto_node->add_children_nodes();
@@ -1202,11 +1234,12 @@ class Converter {
            blink::mojom::AIPageContentMode::kActionableElements;
   }
 
-  void AddPasswordRedactionData(
+  void AddRendererPasswordRedactionBoxes(
       const blink::mojom::AIPageContent& mojom_page_content) {
-    page_content_result_->visible_bounding_boxes_for_password_redaction.insert(
-        page_content_result_->visible_bounding_boxes_for_password_redaction
-            .begin(),
+    // Password boxes are emitted by the renderer and feed the final
+    // screenshot redaction vector directly.
+    page_content_result_->visible_bounding_boxes_for_redaction.insert(
+        page_content_result_->visible_bounding_boxes_for_redaction.end(),
         mojom_page_content.visible_bounding_boxes_for_password_redaction
             .begin(),
         mojom_page_content.visible_bounding_boxes_for_password_redaction.end());
@@ -1230,23 +1263,34 @@ class Converter {
                      *frame_token_set_);
   }
 
-  void MaybeAddSensitivePaymentData(
+  // Password boxes are handled by AddRendererPasswordRedactionBoxes(). This
+  // helper only deals with browser-derived sensitive payment and OTP
+  // decisions, and folds them into the same final screenshot redaction
+  // vector.
+  void MaybeAddSensitivePaymentOrOtpData(
       const blink::mojom::AIPageContentAttributes& mojom_attributes,
       const optimization_guide::proto::ContentAttributes& proto_attributes) {
-    if (!options_->include_sensitive_payments_for_redaction) {
-      return;
-    }
-
-    if (proto_attributes.has_form_control_data() &&
-        proto_attributes.form_control_data().redaction_decision() ==
-            proto::REDACTION_DECISION_REDACTED_IS_SENSITIVE_PAYMENT_FIELD) {
-      if (mojom_attributes.geometry) {
-        page_content_result_
-            ->visible_bounding_boxes_for_sensitive_payment_redaction.push_back(
-                mojom_attributes.geometry->visible_bounding_box);
-      } else {
-        LOG(ERROR) << "Missing geometry for the sensitive payment field";
+    if (proto_attributes.has_form_control_data()) {
+      const auto redaction_decision =
+          proto_attributes.form_control_data().redaction_decision();
+      const bool should_collect_sensitive_payment =
+          options_->include_sensitive_payments_for_redaction &&
+          redaction_decision ==
+              proto::REDACTION_DECISION_REDACTED_IS_SENSITIVE_PAYMENT_FIELD;
+      const bool should_collect_otp =
+          options_->include_otps_for_redaction &&
+          redaction_decision == proto::REDACTION_DECISION_REDACTED_IS_OTP;
+      if (!should_collect_sensitive_payment && !should_collect_otp) {
+        return;
       }
+
+      if (!mojom_attributes.geometry) {
+        LOG(ERROR) << "Missing geometry for the sensitive field";
+        return;
+      }
+
+      page_content_result_->visible_bounding_boxes_for_redaction.push_back(
+          mojom_attributes.geometry->visible_bounding_box);
     }
   }
 
@@ -1358,7 +1402,7 @@ base::expected<void, std::string> ConvertAIPageContentToProto(
   Converter converter(std::move(main_frame_options), page_content_map,
                       get_render_frame_info, frame_token_set,
                       page_content_result);
-  converter.AddPasswordRedactionData(*main_frame_page_content);
+  converter.AddRendererPasswordRedactionBoxes(*main_frame_page_content);
 
   RETURN_IF_ERROR(converter.ConvertNode(
       main_frame_token, *main_frame_page_content->root_node,

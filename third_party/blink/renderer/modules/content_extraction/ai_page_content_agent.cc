@@ -1406,8 +1406,7 @@ void OffsetNodeGeometry(mojom::blink::AIPageContentNode& node,
   }
 }
 
-bool MayContainSensitvePayment(
-    mojom::blink::FormControlType form_control_type) {
+bool MayContainSensitiveData(mojom::blink::FormControlType form_control_type) {
   switch (form_control_type) {
     case mojom::blink::FormControlType::kInputEmail:
     case mojom::blink::FormControlType::kInputMonth:
@@ -2410,16 +2409,16 @@ bool AIPageContentAgent::ContentBuilder::ShouldAddNodeGeometry(
     return true;
   }
 
-  // When sensitive payment redaction is enabled,  the redaction decision is
-  // made in the browser using Autofill data. We must provide the geometry for
-  // form control elements that may contain sensitive payments here so the
-  // browser can record their bounding boxes for client-side screenshot
-  // redaction.
-  if (options_->include_sensitive_payments_for_redaction) {
+  // When sensitive payment or OTP redaction is enabled, the redaction decision
+  // is made in the browser using Autofill data. We must provide geometry for
+  // form controls that may contain sensitive values so the browser can record
+  // their bounding boxes for client-side screenshot redaction.
+  if (options_->include_sensitive_payments_for_redaction ||
+      options_->include_otps_for_redaction) {
     if (const auto* form_control_element =
             DynamicTo<HTMLFormControlElement>(object.GetNode());
         form_control_element &&
-        MayContainSensitvePayment(form_control_element->FormControlType())) {
+        MayContainSensitiveData(form_control_element->FormControlType())) {
       return true;
     }
   }
