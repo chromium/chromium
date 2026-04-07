@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sql/database.h"
 
 #include <limits.h>
@@ -1591,7 +1586,7 @@ SqliteResultCode Database::ExecuteAndReturnResultCode(
     // trailing whitespace.
     // TODO(shess): Audit to see if this can become a DCHECK.
     while (base::IsAsciiWhitespace(*sql)) {
-      sql++;
+      UNSAFE_TODO(sql++);
     }
   }
 
@@ -1690,7 +1685,8 @@ scoped_refptr<Database::StatementRef> Database::GetCachedStatement(
     // entity invalidating cached statements, and we remove them from the cache
     // when we do that.
     DCHECK(statement.is_valid());
-    DCHECK_EQ(base::cstring_view(sqlite3_sql(statement.stmt())), sql)
+    DCHECK_EQ(UNSAFE_TODO(base::cstring_view(sqlite3_sql(statement.stmt()))),
+              sql)
         << "GetCachedStatement used with same ID but different SQL";
 
     // Reset the statement so it can be reused.
@@ -1776,7 +1772,7 @@ scoped_refptr<Database::StatementRef> Database::GetStatementImpl(
   }
 
 #if DCHECK_IS_ON()
-  DCHECK_EQ(unused_sql, sql.c_str() + sql.size())
+  DCHECK_EQ(unused_sql, UNSAFE_TODO(sql.c_str() + sql.size()))
       << "Unused text: " << std::string(unused_sql) << "\n"
       << "in prepared SQL statement: " << std::string(sql);
 #endif  // DCHECK_IS_ON()
@@ -1872,7 +1868,7 @@ bool Database::IsSQLValid(base::cstring_view sql) {
   }
 
 #if DCHECK_IS_ON()
-  DCHECK_EQ(unused_sql, sql.c_str() + sql.size())
+  DCHECK_EQ(unused_sql, UNSAFE_TODO(sql.c_str() + sql.size()))
       << "Unused text: " << std::string(unused_sql) << "\n"
       << "in SQL statement: " << std::string(sql);
 #endif  // DCHECK_IS_ON()

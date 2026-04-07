@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sql/database.h"
 
 #include <stddef.h>
@@ -25,6 +20,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -696,15 +692,17 @@ int TestVfsFullPathname(sqlite3_vfs* vfs,
   }
 
   const size_t expected_result_size = result_size;
-  base::cstring_view file_path_view(file_path);
+  base::cstring_view file_path_view =
+      UNSAFE_TODO(base::cstring_view(file_path));
   if (expected_result_size < file_path_view.size() + sizeof(*file_path)) {
     return SQLITE_CANTOPEN;
   }
 
   // `copy()` returns an output iterator just past the last char copied. Write
   // the string terminator to that location.
-  *std::ranges::copy(file_path_view,
-                     base::span(result, expected_result_size).begin())
+  *std::ranges::copy(
+       file_path_view,
+       UNSAFE_TODO(base::span(result, expected_result_size)).begin())
        .out = 0;
   return SQLITE_OK;
 }
