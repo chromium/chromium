@@ -18,12 +18,12 @@ function getSlowURL(hostname) {
 }
 
 function getInitiatorURLForExtension() {
-  var url = getURL('');
+  const url = getURL('');
   return url.slice(0, -1);
 }
 
 function getInitiatorURLForHostname(hostname) {
-  var url = getServerURL('', hostname);
+  const url = getServerURL('', hostname);
   return url.slice(0, -1);
 }
 
@@ -40,7 +40,7 @@ function getPageWithFrame(frameUrl, hostname) {
 // trigger onErrorOccurred.
 function waitUntilSendHeaders(type, url, callback) {
   chrome.test.assertTrue(/^https?:.+\/slow\?/.test(url),
-      'Must be a slow URL, but was ' + url);
+      `Must be a slow URL, but was ${url}`);
 
   chrome.webRequest.onSendHeaders.addListener(function listener() {
     chrome.webRequest.onSendHeaders.removeListener(listener);
@@ -53,19 +53,19 @@ function waitUntilSendHeaders(type, url, callback) {
 
 (function() {
   // Load the actual test file.
-  var id = location.search.slice(1);
+  const id = location.search.slice(1);
   chrome.test.assertTrue(/^\d+$/.test(id),
-      'Page URL should end with digits, but got ' + id);
-  console.log('Running test_unload ' + id);
+      `Page URL should end with digits, but got ${id}`);
+  console.log(`Running test_unload ${id}`);
 
-  var s = document.createElement('script');
+  const s = document.createElement('script');
   // test_unload1.js, test_unload2.js, ..., etc.
   // These tests are in separate files to make sure that the tests are
   // independent of each other. If they were put in one file, then the tabId
   // of one test would depend on the number of tabs from the previous tests.
-  s.src = 'test_unload' + id + '.js';
+  s.src = `test_unload${id}` + '.js';
   s.onerror = function() {
-    chrome.test.fail('Failed to load test ' + s.src);
+    chrome.test.fail(`Failed to load test ${s.src}`);
   };
 
   // At the next test, a call to RunExtensionSubtest causes the extension to

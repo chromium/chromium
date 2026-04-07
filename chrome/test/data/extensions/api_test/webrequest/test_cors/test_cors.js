@@ -9,7 +9,7 @@ const BASE = 'extensions/api_test/webrequest/cors/';
 
 function setExpectationsForNonObservablePreflight() {
   // In this case the preflight request is not observable.
-  const url = getServerURL(BASE + 'accept', 'cors.example.com');
+  const url = getServerURL(`${BASE}accept`, 'cors.example.com');
   const method = 'GET';
   const initiator = getServerURL('').slice(0, -1);
   const type = 'xmlhttprequest';
@@ -73,7 +73,7 @@ function setExpectationsForNonObservablePreflight() {
 }
 
 function setExpectationsForObservablePreflight(extraInfoSpec) {
-  const url = getServerURL(BASE + 'accept', 'cors.example.com');
+  const url = getServerURL(`${BASE}accept`, 'cors.example.com');
   const initiator = getServerURL('').slice(0, -1);
   const frameUrl = 'unknown frame URL';
   const type = 'xmlhttprequest';
@@ -151,7 +151,7 @@ function setExpectationsForObservablePreflight(extraInfoSpec) {
   // preflight request is made. As there is no 'access-control-allow-headers'
   // header in the preflight response, the actual request fails whereas the
   // preflight request succeeds.
-  let events = [
+  const events = [
     { label: 'onBeforeRequest',
       event: 'onBeforeRequest',
       details: {
@@ -164,7 +164,7 @@ function setExpectationsForObservablePreflight(extraInfoSpec) {
       },
     },
   ].concat(eventsForPreflight);
-  let eventOrder = ['onBeforeRequest'].concat(eventOrderForPreflight);
+  const eventOrder = ['onBeforeRequest'].concat(eventOrderForPreflight);
 
   // We should see the cancellation of the actual request, but we cannot
   // have that expecation here because we don't have an expecation on
@@ -256,7 +256,7 @@ function registerResponseHeaderInjectionListeners(extraInfoSpec) {
 }
 
 function setExpectationsForSuccessfulPreflight() {
-  const url = getServerURL(BASE + 'accept', 'cors.example.com');
+  const url = getServerURL(`${BASE}accept`, 'cors.example.com');
   const initiator = getServerURL('').slice(0, -1);
   const frameUrl = 'unknown frame URL';
   const type = 'xmlhttprequest';
@@ -306,7 +306,7 @@ function setExpectationsForSuccessfulPreflight() {
         responseHeadersExist: true,
         documentId,
       },
-      retval_function: (name, details) => {
+      retvalFunction: (name, details) => {
         // Allow the 'x-foo' header, so that the preflight succeeds.
         details.responseHeaders.push(
             {name: 'access-control-allow-headers', value: 'x-foo'});
@@ -422,7 +422,7 @@ function setExpectationsForSuccessfulPreflight() {
       },
     },
   ];
-  let eventOrder = [
+  const eventOrder = [
     'onBeforeRequest',
     'onBeforeRequest-P',
     'onBeforeSendHeaders-P',
@@ -445,7 +445,7 @@ function setExpectationsForSuccessfulPreflight() {
 }
 
 function registerPreflightBlockingListener() {
-  const url = getServerURL(BASE + 'accept', 'cors.example.com');
+  const url = getServerURL(`${BASE}accept`, 'cors.example.com');
 
   const onHeadersReceivedCalledForPreflight = callbackPass(() => {});
   chrome.webRequest.onHeadersReceived.addListener(
@@ -478,7 +478,7 @@ function registerPreflightBlockingListener() {
 }
 
 function registerPreflightRedirectingListener() {
-  const url = getServerURL(BASE + 'accept', 'cors.example.com');
+  const url = getServerURL(`${BASE}accept`, 'cors.example.com');
 
   const onBeforeRequestCalledForPreflight = callbackPass(() => {});
   chrome.webRequest.onBeforeRequest.addListener(
@@ -489,7 +489,7 @@ function registerPreflightRedirectingListener() {
           setTimeout(() => {
             chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest)
           }, 0);
-          return {redirectUrl: url + '?redirected'};
+          return {redirectUrl: `${url}?redirected`};
         }
       }, {urls: [url]}, ['blocking', 'extraHeaders']);
 
@@ -511,7 +511,7 @@ function registerPreflightRedirectingListener() {
 }
 
 function registerOnBeforeRequestAndOnErrorOcurredListeners() {
-  const url = getServerURL(BASE + 'accept', 'cors.example.com');
+  const url = getServerURL(`${BASE}accept`, 'cors.example.com');
 
   const onBeforeRequestCalledForPreflight = callbackPass(() => {});
   // onBeforeRequest doesn't have "extraHeaders", but it sees a preflight
@@ -526,8 +526,8 @@ function registerOnBeforeRequestAndOnErrorOcurredListeners() {
   }, {urls: [url]}, ['extraHeaders']);
 }
 
-const scriptUrl = '_test_resources/api_test/webrequest/framework.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const SCRIPT_URL = '_test_resources/api_test/webrequest/framework.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
   runTests([
@@ -576,32 +576,32 @@ loadScript.then(async function() {
   function testCorsPreflightWithoutExtraHeaders() {
     setExpectationsForNonObservablePreflight();
     navigateAndWait(getServerURL(
-        BASE + 'fetch.html?path=accept&with-preflight'));
+        `${BASE}fetch.html?path=accept&with-preflight`));
   },
   function testCorsPreflightWithExtraHeaders() {
     setExpectationsForObservablePreflight(['extraHeaders']);
     navigateAndWait(getServerURL(
-        BASE + 'fetch.html?path=accept&with-preflight'));
+        `${BASE}fetch.html?path=accept&with-preflight`));
   },
   function testCorsPreflightModificationWithExtraHeaders() {
     setExpectationsForSuccessfulPreflight();
     navigateAndWait(getServerURL(
-        BASE + 'fetch.html?path=accept&with-preflight'));
+        `${BASE}fetch.html?path=accept&with-preflight`));
   },
   function testCorsPreflightBlockIsBlocked() {
     registerPreflightBlockingListener();
     navigateAndWait(getServerURL(
-        BASE + 'fetch.html?path=accept&with-preflight'));
+        `${BASE}fetch.html?path=accept&with-preflight`));
   },
   function testCorsPreflightRedirect() {
     registerPreflightRedirectingListener();
     navigateAndWait(getServerURL(
-        BASE + 'fetch.html?path=accept&with-preflight'));
+        `${BASE}fetch.html?path=accept&with-preflight`));
   },
   function testCorsPreflightIsObservableWhenAnyListenerHasExtraHeaders() {
     registerOnBeforeRequestAndOnErrorOcurredListeners();
     navigateAndWait(getServerURL(
-        BASE + 'fetch.html?path=accept&with-preflight'));
+        `${BASE}fetch.html?path=accept&with-preflight`));
   },
   function testCorsServerRedirect() {
     const url = getServerURL('server-redirect?whatever', 'cors.example.com');
@@ -611,7 +611,7 @@ loadScript.then(async function() {
       if (details.url === url && details.method === 'GET') {
         callback();
       }
-    }, {urls: ["http://*/*"]}, ['extraHeaders']);
+    }, {urls: ['http://*/*']}, ['extraHeaders']);
 
     const absPath =
           encodeURIComponent(`/server-redirect?${encodeURIComponent(url)}`);

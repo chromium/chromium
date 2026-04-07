@@ -4,98 +4,98 @@
 
 // Common definitions for test_post?.js.
 
-var dirName = "requestBody/";
+const DIR_NAME = 'requestBody/';
 
 function sendPost(formFile, parseableForm) {
-  // The following variables must be updated when files in |dirName| change.
-  var formData = {
-      "check": ["option_A"],
-      "password": ["password"],
-      "radio": ["Yes"],
-      "select": ["one"],
-      "text\"1\u011B\u0161\u00FD\u4EBA\r\n \r\n": ["TEST_TEXT_1"],
-      "text2": ["TEST_TEXT_2"],
-      "text3": ["TEST_TEXT_3"],
-      "txtarea": ["text\"1\u011B\u0161\u00FD\u4EBA\r\n \r\n"]
+  // The following variables must be updated when files in |DIR_NAME| change.
+  const formData = {
+      check: ['option_A'],
+      password: ['password'],
+      radio: ['Yes'],
+      select: ['one'],
+      'text"1\u011B\u0161\u00FD\u4EBA\r\n \r\n': ['TEST_TEXT_1'],
+      text2: ['TEST_TEXT_2'],
+      text3: ['TEST_TEXT_3'],
+      txtarea: ['text"1\u011B\u0161\u00FD\u4EBA\r\n \r\n']
   };
   return function submitForm() {
     expect(
       [  // events
-        { label: "a-onBeforeRequest",
-          event: "onBeforeRequest",
+        { label: 'a-onBeforeRequest',
+          event: 'onBeforeRequest',
           details: {
-            method: "GET",
-            type: "main_frame",
-            url: getURL(dirName + formFile),
-            frameUrl: getURL(dirName + formFile),
+            method: 'GET',
+            type: 'main_frame',
+            url: getURL(`${DIR_NAME}${formFile}`),
+            frameUrl: getURL(`${DIR_NAME}${formFile}`),
             initiator: getDomain(initiators.BROWSER_INITIATED)
           }
         },
-        { label: "a-onResponseStarted",
-          event: "onResponseStarted",
+        { label: 'a-onResponseStarted',
+          event: 'onResponseStarted',
           details: {
             fromCache: false,
-            method: "GET",
+            method: 'GET',
             statusCode: 200,
-            statusLine: "HTTP/1.1 200 OK",
-            type: "main_frame",
-            url: getURL(dirName + formFile),
+            statusLine: 'HTTP/1.1 200 OK',
+            type: 'main_frame',
+            url: getURL(`${DIR_NAME}${formFile}`),
             initiator: getDomain(initiators.BROWSER_INITIATED)
           }
         },
-        { label: "a-onCompleted",
-          event: "onCompleted",
+        { label: 'a-onCompleted',
+          event: 'onCompleted',
           details: {
             fromCache: false,
-            method: "GET",
+            method: 'GET',
             statusCode: 200,
-            statusLine: "HTTP/1.1 200 OK",
-            type: "main_frame",
-            url: getURL(dirName + formFile),
+            statusLine: 'HTTP/1.1 200 OK',
+            type: 'main_frame',
+            url: getURL(`${DIR_NAME}${formFile}`),
             initiator: getDomain(initiators.BROWSER_INITIATED)
           }
         },
-        { label: "s-onBeforeRequest",
-          event: "onBeforeRequest",
+        { label: 's-onBeforeRequest',
+          event: 'onBeforeRequest',
           details: {
-            method: "GET",
-            type: "script",
-            url: getURL("requestBody/submit.js"),
-            frameUrl: getURL(dirName + formFile),
+            method: 'GET',
+            type: 'script',
+            url: getURL('requestBody/submit.js'),
+            frameUrl: getURL(`${DIR_NAME}${formFile}`),
             initiator: getDomain(initiators.WEB_INITIATED)
           }
         },
-        { label: "s-onResponseStarted",
-          event: "onResponseStarted",
+        { label: 's-onResponseStarted',
+          event: 'onResponseStarted',
           details: {
             fromCache: false,
-            method: "GET",
+            method: 'GET',
             statusCode: 200,
-            statusLine: "HTTP/1.1 200 OK",
-            type: "script",
-            url: getURL("requestBody/submit.js"),
+            statusLine: 'HTTP/1.1 200 OK',
+            type: 'script',
+            url: getURL('requestBody/submit.js'),
             initiator: getDomain(initiators.WEB_INITIATED)
           }
         },
-        { label: "s-onCompleted",
-          event: "onCompleted",
+        { label: 's-onCompleted',
+          event: 'onCompleted',
           details: {
             fromCache: false,
-            method: "GET",
+            method: 'GET',
             statusCode: 200,
-            statusLine: "HTTP/1.1 200 OK",
-            type: "script",
-            url: getURL("requestBody/submit.js"),
+            statusLine: 'HTTP/1.1 200 OK',
+            type: 'script',
+            url: getURL('requestBody/submit.js'),
             initiator: getDomain(initiators.WEB_INITIATED)
           }
         },
-        { label: "b-onBeforeRequest",
-          event: "onBeforeRequest",
+        { label: 'b-onBeforeRequest',
+          event: 'onBeforeRequest',
           details: {
-            method: "POST",
-            type: "main_frame",
-            url: getURL("simpleLoad/a.html"),
-            frameUrl: getURL("simpleLoad/a.html"),
+            method: 'POST',
+            type: 'main_frame',
+            url: getURL('simpleLoad/a.html'),
+            frameUrl: getURL('simpleLoad/a.html'),
             requestBody: parseableForm ? {
               formData: formData
             } : {
@@ -104,38 +104,38 @@ function sendPost(formFile, parseableForm) {
             initiator: getDomain(initiators.WEB_INITIATED)
           }
         },
-        { label: "b-onResponseStarted",
-          event: "onResponseStarted",
+        { label: 'b-onResponseStarted',
+          event: 'onResponseStarted',
           details: {
             fromCache: false,
-            method: "POST",
+            method: 'POST',
             statusCode: 200,
-            statusLine: "HTTP/1.1 200 OK",
-            type: "main_frame",
-            url: getURL("simpleLoad/a.html"),
+            statusLine: 'HTTP/1.1 200 OK',
+            type: 'main_frame',
+            url: getURL('simpleLoad/a.html'),
             initiator: getDomain(initiators.WEB_INITIATED)
           }
         },
-        { label: "b-onCompleted",
-          event: "onCompleted",
+        { label: 'b-onCompleted',
+          event: 'onCompleted',
           details: {
             fromCache: false,
-            method: "POST",
+            method: 'POST',
             statusCode: 200,
-            statusLine: "HTTP/1.1 200 OK",
-            type: "main_frame",
-            url: getURL("simpleLoad/a.html"),
+            statusLine: 'HTTP/1.1 200 OK',
+            type: 'main_frame',
+            url: getURL('simpleLoad/a.html'),
             initiator: getDomain(initiators.WEB_INITIATED)
           }
         }
       ],
       [  // event order
-        ["a-onBeforeRequest", "a-onResponseStarted", "a-onCompleted",
-         "s-onBeforeRequest", "s-onResponseStarted", "s-onCompleted",
-         "b-onBeforeRequest", "b-onResponseStarted", "b-onCompleted"]
+        ['a-onBeforeRequest', 'a-onResponseStarted', 'a-onCompleted',
+         's-onBeforeRequest', 's-onResponseStarted', 's-onCompleted',
+         'b-onBeforeRequest', 'b-onResponseStarted', 'b-onCompleted']
       ],
-      {urls: ["<all_urls>"]},  // filter
-      ["requestBody"]);
-    navigateAndWait(getURL(dirName + formFile));
+      {urls: ['<all_urls>']},  // filter
+      ['requestBody']);
+    navigateAndWait(getURL(`${DIR_NAME}${formFile}`));
   }
 }

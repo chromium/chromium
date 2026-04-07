@@ -6,15 +6,15 @@
 // close was clean. If it fails, it will fail flakily, so repeat it 10 times to
 // get a deterministic answer.
 function sendDoesntError(iteration = 0, done = undefined) {
-  let ws = new WebSocket('ws://localhost:' + testWebSocketPort +
-                         '/close-immediately');
+  const ws = new WebSocket(
+      `ws://localhost:${testWebSocketPort}/close-immediately`);
 
   if (!done) {
     done = chrome.test.callbackAdded();
   }
 
   ws.onclose = event => {
-    chrome.test.log('WebSocket ' + iteration + ' closed ' +
+    chrome.test.log(`WebSocket ${iteration} closed ` +
                     (event.wasClean ? 'cleanly.' : 'uncleanly.'));
     chrome.test.assertTrue(event.wasClean);
     if (iteration < 10) {
@@ -26,7 +26,7 @@ function sendDoesntError(iteration = 0, done = undefined) {
   }
 
   ws.onopen = () => {
-    chrome.test.log('WebSocket ' + iteration + ' opened.');
+    chrome.test.log(`WebSocket ${iteration} opened.`);
     const start = performance.now();
     while (performance.now() - start < 100) {}
     ws.send('message');

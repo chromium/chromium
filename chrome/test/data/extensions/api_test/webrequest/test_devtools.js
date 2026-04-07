@@ -16,8 +16,8 @@ function getCompletionURL() {
 }
 
 function expectNormalTabNavigationEvents(url) {
-  var scriptUrl = new URL(url);
-  var frontendHost = scriptUrl.hostname;
+  let scriptUrl = new URL(url);
+  const frontendHost = scriptUrl.hostname;
   scriptUrl.search = scriptUrl.hash = '';
   scriptUrl.pathname = scriptUrl.pathname.replace(/\.html$/, '.js');
   scriptUrl = scriptUrl.href;
@@ -175,8 +175,8 @@ function expectNormalTabNavigationEvents(url) {
 // This difference is not a problem, since we are primarily interested in
 // determining whether a request was observed or not.
 function expectMockedTabNavigationEvents(url) {
-  var scriptUrl = new URL(url);
-  var frontendOrigin = scriptUrl.origin;
+  let scriptUrl = new URL(url);
+  const frontendOrigin = scriptUrl.origin;
   scriptUrl.search = scriptUrl.hash = '';
   scriptUrl.pathname = scriptUrl.pathname.replace(/\.html$/, '.js');
   scriptUrl = scriptUrl.href;
@@ -324,8 +324,8 @@ function expectMockedTabNavigationEvents(url) {
       ]]);
 }
 
-var requestsIntercepted = [];
-var onBeforeRequest = function(details) {
+let requestsIntercepted = [];
+const onBeforeRequest = function(details) {
   // Ignore favicon requests.
   if (details.url.match(/\/favicon.ico$/)) {
     return;
@@ -346,8 +346,8 @@ function removeRequestListener() {
 function verifyInterceptedRequests(expectedRequests) {
   chrome.test.assertEq(
       expectedRequests, requestsIntercepted,
-      'Expected: ' + JSON.stringify(expectedRequests) +
-          ' Actual: ' + JSON.stringify(requestsIntercepted));
+      `Expected: ${JSON.stringify(expectedRequests)}` +
+          ` Actual: ${JSON.stringify(requestsIntercepted)}`);
   requestsIntercepted = [];
 };
 
@@ -358,7 +358,7 @@ runTests([
     // resources. It should also not be able to intercept the request to the
     // completion url, since it doesn't have access to the initiator
     // devtools://devtools/.
-    var expectedRequests = [];
+    const expectedRequests = [];
 
     addRequestListener();
 
@@ -377,7 +377,7 @@ runTests([
   // Tests that the custom front-end URL is visible in non-DevTools requests.
   function testNonDevToolsCustomFrontendRequest() {
     // The URL that would be loaded by devtools://devtools/custom/...
-    var customFrontendUrl = getServerURL(
+    const customFrontendUrl = getServerURL(
         'devtoolsfrontend/fakedevtools.html', 'customfrontend.example.com');
     expectNormalTabNavigationEvents(customFrontendUrl);
     navigateAndWait(customFrontendUrl);
@@ -389,11 +389,11 @@ runTests([
     // resources. It should also not be able to intercept the request to the
     // completion url, since it doesn't have access to the initiator
     // devtools://devtools/.
-    var expectedRequests = [];
+    const expectedRequests = [];
     addRequestListener();
     navigateAndWait(
         'devtools://devtools/remote/devtoolsfrontend/fakedevtools.html' +
-            '#' + getCompletionURL(),
+            `#${getCompletionURL()}`,
         chrome.test.callbackPass(() => {
           verifyInterceptedRequests(expectedRequests);
           removeRequestListener();
@@ -403,7 +403,7 @@ runTests([
   // Tests that the custom front-end URL is visible in non-DevTools requests.
   function testNonDevToolsRemoteFrontendRequest() {
     // The URL that would be loaded by devtools://devtools/remote/...
-    var remoteFrontendUrl = 'https://chrome-devtools-frontend.appspot.com/' +
+    const remoteFrontendUrl = 'https://chrome-devtools-frontend.appspot.com/' +
         'devtoolsfrontend/fakedevtools.html';
     expectMockedTabNavigationEvents(remoteFrontendUrl);
     navigateAndWait(remoteFrontendUrl);

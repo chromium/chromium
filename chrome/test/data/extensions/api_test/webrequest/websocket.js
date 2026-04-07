@@ -3,25 +3,25 @@
 // found in the LICENSE file.
 
 function getWSTestURL(port) {
-  return 'ws://localhost:' + port + '/echo-with-no-extension';
+  return `ws://localhost:${port}/echo-with-no-extension`;
 }
 
 // Tries to: open a WebSocket, write a test message to it, close it. Verifies
 // that all the necessary events are triggered if |expectedToConnect|, otherwise
 // makes sure WebSocket terminates with an error.
 function testWebSocketConnection(url, expectedToConnect) {
-  var ws = new WebSocket(url);
-  var kMessage = 'test message';
+  const ws = new WebSocket(url);
+  const kMessage = 'test message';
 
-  var keepAlive = chrome.test.callbackAdded();
+  const keepAlive = chrome.test.callbackAdded();
 
   ws.onerror = function(error) {
-    chrome.test.log('WebSocket error: ' + error);
+    chrome.test.log(`WebSocket error: ${error}`);
     chrome.test.assertFalse(expectedToConnect);
     keepAlive();
   };
   ws.onmessage = function(messageEvent) {
-    chrome.test.log('Message received: ' + messageEvent.data);
+    chrome.test.log(`Message received: ${messageEvent.data}`);
     chrome.test.assertTrue(expectedToConnect);
     chrome.test.assertEq(kMessage, messageEvent.data);
     ws.close();

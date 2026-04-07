@@ -9,26 +9,26 @@ function assertRedirectSucceeds(url, redirectURL, callback) {
   });
 }
 
-const scriptUrl = '_test_resources/api_test/webrequest/framework.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const SCRIPT_URL = '_test_resources/api_test/webrequest/framework.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
   chrome.test.getConfig((config) => {
-  var customArg = JSON.parse(config.customArg);
-  var startingURL = customArg[0];
-  var redirectURL = customArg[1];
+  const customArg = JSON.parse(config.customArg);
+  const startingURL = customArg[0];
+  const redirectURL = customArg[1];
 
   runTests([
     function redirectToInsecure() {
-      var listener = function(details) {
-        if (details.url.endsWith("page_with_referrer.html")) {
+      const listener = function(details) {
+        if (details.url.endsWith('page_with_referrer.html')) {
           return {redirectUrl: redirectURL};
         }
       };
       chrome.webRequest.onHeadersReceived.addListener(listener,
           {urls: ['<all_urls>'] }, ['blocking']);
 
-      var errorListener = function(details) {
+      const errorListener = function(details) {
         chrome.test.fail();
       };
       chrome.webRequest.onErrorOccurred.addListener(errorListener,

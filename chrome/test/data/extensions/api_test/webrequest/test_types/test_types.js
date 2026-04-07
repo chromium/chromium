@@ -64,8 +64,8 @@ function getScriptFilter() {
   return {urls: ['<all_urls>'], types: ['script']};
 }
 
-const scriptUrl = '_test_resources/api_test/webrequest/framework.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const SCRIPT_URL = '_test_resources/api_test/webrequest/framework.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
   runTests([
@@ -148,7 +148,7 @@ loadScript.then(async function() {
 
     // Load a page to be sure webRequest listeners are set up.
     navigateAndWait(getURL('a.html'), function() {
-      var style = document.createElement('link');
+      const style = document.createElement('link');
       style.rel = 'stylesheet';
       style.type = 'text/css';
       style.href = getStyleURL();
@@ -169,10 +169,10 @@ loadScript.then(async function() {
           frameId: 1,
           parentFrameId: 0,
           tabId: -1,
-          initiator: "null",
+          initiator: 'null',
           documentId: 2,
           parentDocumentId: 1,
-          frameType: "sub_frame",
+          frameType: 'sub_frame',
         }
       },
       { label: 'onBeforeSendHeaders',
@@ -183,10 +183,10 @@ loadScript.then(async function() {
           frameId: 1,
           parentFrameId: 0,
           tabId: -1,
-          initiator: "null",
+          initiator: 'null',
           documentId: 2,
           parentDocumentId: 1,
-          frameType: "sub_frame",
+          frameType: 'sub_frame',
         },
       },
       { label: 'onSendHeaders',
@@ -197,10 +197,10 @@ loadScript.then(async function() {
           frameId: 1,
           parentFrameId: 0,
           tabId: -1,
-          initiator: "null",
+          initiator: 'null',
           documentId: 2,
           parentDocumentId: 1,
-          frameType: "sub_frame",
+          frameType: 'sub_frame',
         },
       },
       { label: 'onHeadersReceived',
@@ -213,10 +213,10 @@ loadScript.then(async function() {
           tabId: -1,
           statusLine: 'HTTP/1.1 200 OK',
           statusCode: 200,
-          initiator: "null",
+          initiator: 'null',
           documentId: 2,
           parentDocumentId: 1,
-          frameType: "sub_frame",
+          frameType: 'sub_frame',
         },
       },
       { label: 'onResponseStarted',
@@ -231,10 +231,10 @@ loadScript.then(async function() {
           fromCache: false,
           statusLine: 'HTTP/1.1 200 OK',
           statusCode: 200,
-          initiator: "null",
+          initiator: 'null',
           documentId: 2,
           parentDocumentId: 1,
-          frameType: "sub_frame",
+          frameType: 'sub_frame',
         },
       },
       { label: 'onCompleted',
@@ -249,18 +249,18 @@ loadScript.then(async function() {
           fromCache: false,
           statusLine: 'HTTP/1.1 200 OK',
           statusCode: 200,
-          initiator: "null",
+          initiator: 'null',
           documentId: 2,
           parentDocumentId: 1,
-          frameType: "sub_frame",
+          frameType: 'sub_frame',
         },
       }],
       [['onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
         'onHeadersReceived', 'onResponseStarted', 'onCompleted']],
       getScriptFilter());
 
-    var frame = document.createElement('iframe');
-    frame.src = 'data:text/html,<script src="' + getScriptURL() + '"></script>';
+    const frame = document.createElement('iframe');
+    frame.src = `data:text/html,<script src='${getScriptURL()}'></script>`;
     document.body.appendChild(frame);
   },
 
@@ -386,7 +386,7 @@ loadScript.then(async function() {
     // Load a page to be sure webRequest listeners are set up.
     navigateAndWait(getURL('a.html'), function() {
       new FontFace('allegedly-a-font-family',
-          'url(' + getFontURL() + ')').load();
+          `url(${getFontURL()})`).load();
     });
   },
   */
@@ -653,7 +653,7 @@ loadScript.then(async function() {
 
     // Load a page to be sure webRequest listeners are set up.
     navigateAndWait(getURL('a.html'), function() {
-      var a = document.createElement('a');
+      const a = document.createElement('a');
       a.ping = getPingURL();
       a.href = 'javascript:';
       a.click();
@@ -854,11 +854,12 @@ loadScript.then(async function() {
 
     // Load a page to be sure webRequest listeners are set up.
     navigateAndWait(getURL('a.html'), function() {
-      var frame = document.createElement('iframe');
+      let frame = document.createElement('iframe');
       document.body.appendChild(frame);
       frame.contentWindow.onunload = function() {
         console.log('Going to send beacon...');
-        var sentBeacon = frame.contentWindow.navigator.sendBeacon(getSlowURL());
+        const sentBeacon =
+            frame.contentWindow.navigator.sendBeacon(getSlowURL());
         chrome.test.assertTrue(sentBeacon);
       };
       frame.remove();
@@ -880,7 +881,7 @@ loadScript.then(async function() {
           initiator: getServerDomain(initiators.WEB_INITIATED),
           documentId: 2,
           parentDocumentId: 1,
-          frameType: "sub_frame",
+          frameType: 'sub_frame',
         }
       },
       { label: 'onBeforeSendHeaders',
@@ -895,7 +896,7 @@ loadScript.then(async function() {
           initiator: getServerDomain(initiators.WEB_INITIATED),
           documentId: 2,
           parentDocumentId: 1,
-          frameType: "sub_frame",
+          frameType: 'sub_frame',
         },
       },
       { label: 'onSendHeaders',
@@ -910,7 +911,7 @@ loadScript.then(async function() {
           initiator: getServerDomain(initiators.WEB_INITIATED),
           documentId: 2,
           parentDocumentId: 1,
-          frameType: "sub_frame",
+          frameType: 'sub_frame',
         },
       },
       { label: 'onHeadersReceived',
@@ -927,7 +928,7 @@ loadScript.then(async function() {
           initiator: getServerDomain(initiators.WEB_INITIATED),
           documentId: 2,
           parentDocumentId: 1,
-          frameType: "sub_frame",
+          frameType: 'sub_frame',
         },
       },
       { label: 'onResponseStarted',
@@ -946,7 +947,7 @@ loadScript.then(async function() {
           initiator: getServerDomain(initiators.WEB_INITIATED),
           documentId: 2,
           parentDocumentId: 1,
-          frameType: "sub_frame",
+          frameType: 'sub_frame',
         },
       },
       { label: 'onCompleted',
@@ -965,7 +966,7 @@ loadScript.then(async function() {
           initiator: getServerDomain(initiators.WEB_INITIATED),
           documentId: 2,
           parentDocumentId: 1,
-          frameType: "sub_frame",
+          frameType: 'sub_frame',
         },
       }],
       [['onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
@@ -973,7 +974,7 @@ loadScript.then(async function() {
         urls: ['<all_urls>'], types: ['csp_report']
       });
 
-    var frame = document.createElement('iframe');
+    const frame = document.createElement('iframe');
     frame.src =
       getServerURL('extensions/api_test/webrequest/csp/violation.html');
     document.body.appendChild(frame);

@@ -15,12 +15,12 @@ function getOSDDURL() {
   return getServerURL('opensearch-dont-ignore-me.xml');
 }
 
-const scriptUrl = '_test_resources/api_test/webrequest/framework.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const SCRIPT_URL = '_test_resources/api_test/webrequest/framework.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
   runTests([
-  function test_linked_open_search_description() {
+  function testLinkedOpenSearchDescription() {
     expect([
       { label: 'onBeforeRequest',
         event: 'onBeforeRequest',
@@ -102,7 +102,7 @@ loadScript.then(async function() {
     // This page must be opened in the main frame, because OSDD requests are
     // only generated for main frame documents.
     navigateAndWait(getPageWithOSDDURL(), function() {
-      console.log('Navigated to ' + getPageWithOSDDURL());
+      console.log(`Navigated to ${getPageWithOSDDURL()}`);
     });
   },
 ])});

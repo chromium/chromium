@@ -7,11 +7,11 @@
 // must use a unique realm, however.
 function getURLAuthRequired(realm, subpath = 'subpath') {
   return getServerURL(
-      'auth-basic/' + realm + '/' + subpath + '?realm=' + realm);
+      `auth-basic/${realm}` + `/${subpath}` + `?realm=${realm}`);
 }
 
-const scriptUrl = '_test_resources/api_test/webrequest/framework.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const SCRIPT_URL = '_test_resources/api_test/webrequest/framework.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
   runTests([
@@ -24,8 +24,9 @@ loadScript.then(async function() {
     const imgUrl2 = getURLAuthRequired(realm, '2');
     const initiator = getServerDomain(initiators.WEB_INITIATED);
     const parallelAuthRequestsUrl = getServerURL(
-        'extensions/api_test/webrequest/auth_parallel?img1=' +
-        encodeURIComponent(imgUrl1) + '&img2=' + encodeURIComponent(imgUrl2));
+        'extensions/api_test/webrequest/auth_parallel?' +
+        `img1=${encodeURIComponent(imgUrl1)}&` +
+        `img2=${encodeURIComponent(imgUrl2)}`);
 
     function createExternallyResolvablePromise() {
       let _resolve;
@@ -95,12 +96,12 @@ loadScript.then(async function() {
             isProxy: false,
             scheme: 'basic',
             realm: realm,
-            challenger: {host: testServer, port: testServerPort},
+            challenger: {host: TEST_SERVER, port: testServerPort},
             responseHeadersExist: true,
             statusLine: 'HTTP/1.1 401 Unauthorized',
             statusCode: 401,
           },
-          retval_function:
+          retvalFunction:
               (name, details, callback) => authRequired1.resolve(callback),
         },
         { label: 'onResponseStarted-1',
@@ -128,7 +129,7 @@ loadScript.then(async function() {
             responseHeadersExist: true,
             statusLine: 'HTTP/1.1 200 OK',
           },
-          retval_function: (name, details) => completed1.resolve(),
+          retvalFunction: (name, details) => completed1.resolve(),
         },
         { label: 'onBeforeRequest-2',
           event: 'onBeforeRequest',
@@ -179,12 +180,12 @@ loadScript.then(async function() {
             isProxy: false,
             scheme: 'basic',
             realm: realm,
-            challenger: {host: testServer, port: testServerPort},
+            challenger: {host: TEST_SERVER, port: testServerPort},
             responseHeadersExist: true,
             statusLine: 'HTTP/1.1 401 Unauthorized',
             statusCode: 401,
           },
-          retval_function:
+          retvalFunction:
               (name, details, callback) => authRequired2.resolve(callback),
         },
         { label: 'onResponseStarted-2',
@@ -199,7 +200,7 @@ loadScript.then(async function() {
             responseHeadersExist: true,
             statusLine: 'HTTP/1.1 401 Unauthorized',
           },
-          retval_function: (name, details) => responseStarted2 = true,
+          retvalFunction: (name, details) => responseStarted2 = true,
         },
         { label: 'onCompleted-2',
           event: 'onCompleted',

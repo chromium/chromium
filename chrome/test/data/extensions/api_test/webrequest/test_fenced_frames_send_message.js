@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var EVENT_MESSAGE_EXTENSION_STRING = 'Extension';
+const EVENT_MESSAGE_EXTENSION_STRING = 'Extension';
 
 const kExtensionPath = 'extensions/api_test/webrequest/fencedFrames';
 
 // Constants as functions, not to be called until after runTests.
 function getURLHttpSimpleLoad() {
-  return getServerURL(`${kExtensionPath}/main.html`, "a.test", "https");
+  return getServerURL(`${kExtensionPath}/main.html`, 'a.test', 'https');
 }
 
 function getURLFencedFrame() {
-  return getServerURL(`${kExtensionPath}/frame.html`, "a.test", "https");
+  return getServerURL(`${kExtensionPath}/frame.html`, 'a.test', 'https');
 }
 
 runTests([
   function testSendMessage() {
-    var expectedEvents = [
+    const expectedEvents = [
       'onBeforeRequest',
       'onBeforeSendHeaders',
       'onHeadersReceived'
@@ -41,7 +41,7 @@ runTests([
 
     chrome.declarativeWebRequest.onMessage.addListener((details) => {
       if (EVENT_MESSAGE_EXTENSION_STRING != details.message) {
-        chrome.test.fail('Invalid message: ' + details.message);
+        chrome.test.fail(`Invalid message: ${details.message}`);
       }
 
       // Ensure that we have captured the frame IDs before asserting.
@@ -71,7 +71,7 @@ runTests([
       }
     });
 
-    var rule = {
+    const rule = {
       conditions: [
         new chrome.declarativeWebRequest.RequestMatcher(
             {url: {urlEquals: getURLFencedFrame()}}),

@@ -10,7 +10,7 @@ if ('DedicatedWorkerGlobalScope' in self &&
     self instanceof SharedWorkerGlobalScope) {
   // self is SharedWorkerGlobalScope.
   self.onconnect = (e) => {
-    var port = e.ports[0];
+    const port = e.ports[0];
     registerOnMessage(port);
     port.start();
   };

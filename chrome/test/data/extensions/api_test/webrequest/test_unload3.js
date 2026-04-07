@@ -71,7 +71,7 @@ runTests([
     waitUntilSendHeaders('sub_frame', url, function() {
       // Cancels load and triggers onErrorOccurred.
       chrome.tabs.executeScript(tabId, {
-        code: 'document.querySelector("iframe").remove();',
+        code: `document.querySelector('iframe').remove();`,
       });
     });
     chrome.tabs.update(tabId, {url: mainUrl});
@@ -143,7 +143,7 @@ runTests([
         types: ['sub_frame'],
       });
 
-    var callbackDone = chrome.test.callbackAdded();
+    const callbackDone = chrome.test.callbackAdded();
 
     waitUntilSendHeaders('sub_frame', url, function() {
       // Cancels load and triggers onErrorOccurred.

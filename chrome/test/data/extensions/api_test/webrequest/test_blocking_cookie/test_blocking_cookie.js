@@ -11,8 +11,8 @@ function getURLNonUTF8SetCookie() {
   return getServerURL('set-header?Set-Cookie%3A%20Foo%3D%FE%D1');
 }
 
-const scriptUrl = '_test_resources/api_test/webrequest/framework.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const SCRIPT_URL = '_test_resources/api_test/webrequest/framework.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
   runTests([
@@ -55,10 +55,10 @@ loadScript.then(async function() {
             responseHeadersExist: true,
             initiator: getServerDomain(initiators.BROWSER_INITIATED)
           },
-          retval_function: function(name, details) {
+          retvalFunction: function(name, details) {
             responseHeaders = details.responseHeaders;
-            var found = false;
-            for (var i = 0; i < responseHeaders.length; ++i) {
+            let found = false;
+            for (let i = 0; i < responseHeaders.length; ++i) {
               if (responseHeaders[i].name === 'Set-Cookie' &&
                   responseHeaders[i].value.indexOf('Foo') != -1) {
                 found = true;
@@ -107,7 +107,7 @@ loadScript.then(async function() {
       });
       chrome.tabs.executeScript(tabId,
       { code: 'chrome.runtime.sendMessage(' +
-            '{pass: document.cookie.indexOf("Foo") == -1});'
+              `{pass: document.cookie.indexOf('Foo') == -1});`
         });
     });
   },
@@ -152,17 +152,17 @@ loadScript.then(async function() {
             responseHeadersExist: true,
             initiator: getServerDomain(initiators.BROWSER_INITIATED)
           },
-          retval_function: function(name, details) {
+          retvalFunction: function(name, details) {
             responseHeaders = details.responseHeaders;
-            var found = false;
-            var expectedValue = [
+            let found = false;
+            const expectedValue = [
               'F'.charCodeAt(0),
               'o'.charCodeAt(0),
               'o'.charCodeAt(0),
               0x3D, 0xFE, 0xD1
               ];
 
-            for (var i = 0; i < responseHeaders.length; ++i) {
+            for (let i = 0; i < responseHeaders.length; ++i) {
               if (responseHeaders[i].name === 'Set-Cookie' &&
                   deepEq(responseHeaders[i].binaryValue, expectedValue)) {
                 found = true;
@@ -211,7 +211,7 @@ loadScript.then(async function() {
       });
       chrome.tabs.executeScript(tabId,
       { code: 'chrome.runtime.sendMessage(' +
-            '{pass: document.cookie.indexOf("Foo") == -1});'
+              `{pass: document.cookie.indexOf('Foo') == -1});`
         });
     });
   },

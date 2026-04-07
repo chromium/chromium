@@ -13,7 +13,7 @@ runTests([async function testRequestInterceptionCoverage() {
 
   await new Promise((resolve, reject) => {
     const script = document.createElement('script');
-    script.src = baseUrl + 'webview/request_interception_coverage.js';
+    script.src = `${baseUrl}webview/request_interception_coverage.js`;
     script.onload = resolve;
     script.onerror = reject;
     document.head.appendChild(script);

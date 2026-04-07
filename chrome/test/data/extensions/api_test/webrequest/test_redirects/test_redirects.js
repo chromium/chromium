@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var dataURL = 'data:text/plain,redirected1';
-var aboutURL = 'about:blank';
+const dataURL = 'data:text/plain,redirected1';
+const aboutURL = 'about:blank';
 
 function getURLNonWebAccessible() {
   return getURL('manifest.json');
@@ -27,14 +27,14 @@ function assertRedirectFails(url) {
   });
 }
 
-const scriptUrl = '_test_resources/api_test/webrequest/framework.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const SCRIPT_URL = '_test_resources/api_test/webrequest/framework.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
   chrome.test.getConfig(function(config) {
-  var onHeadersReceivedExtraInfoSpec = ['blocking'];
+  const onHeadersReceivedExtraInfoSpec = ['blocking'];
   if (config.customArg) {
-    let args = JSON.parse(config.customArg);
+    const args = JSON.parse(config.customArg);
     if (args.useExtraHeaders) {
       onHeadersReceivedExtraInfoSpec.push('extraHeaders');
     }
@@ -42,8 +42,8 @@ loadScript.then(async function() {
 
   runTests([
     function redirectToDataUrlOnHeadersReceived() {
-      var url = getServerURL('echo');
-      var listener = function(details) {
+      const url = getServerURL('echo');
+      const listener = function(details) {
         return {redirectUrl: dataURL};
       };
       chrome.webRequest.onHeadersReceived.addListener(listener,
@@ -55,8 +55,8 @@ loadScript.then(async function() {
     },
 
     function redirectToAboutUrlOnHeadersReceived() {
-      var url = getServerURL('echo');
-      var listener = function(details) {
+      const url = getServerURL('echo');
+      const listener = function(details) {
         return {redirectUrl: aboutURL};
       };
       chrome.webRequest.onHeadersReceived.addListener(listener,
@@ -68,8 +68,8 @@ loadScript.then(async function() {
     },
 
     function redirectToNonWebAccessibleUrlOnHeadersReceived() {
-      var url = getServerURL('echo');
-      var listener = function(details) {
+      const url = getServerURL('echo');
+      const listener = function(details) {
         return {redirectUrl: getURLNonWebAccessible()};
       };
       chrome.webRequest.onHeadersReceived.addListener(listener,
@@ -81,10 +81,10 @@ loadScript.then(async function() {
     },
 
     function redirectToServerRedirectOnHeadersReceived() {
-      var url = getServerURL('echo');
-      var redirectURL = getServerURL('server-redirect?' +
+      const url = getServerURL('echo');
+      const redirectURL = getServerURL('server-redirect?' +
           getURLWebAccessible());
-      var listener = function(details) {
+      const listener = function(details) {
         return {redirectUrl: redirectURL};
       };
       chrome.webRequest.onHeadersReceived.addListener(listener,
@@ -96,28 +96,28 @@ loadScript.then(async function() {
     },
 
     function serverRedirectThenExtensionRedirectOnHeadersReceived() {
-      var url_1 = getServerURL('echo');
-      var url_2 = getURLWebAccessible();
-      var serverRedirect = getServerURL('server-redirect?' + url_1);
-      var listener = function(details) {
-        return {redirectUrl: url_2};
+      const url1 = getServerURL('echo');
+      const url2 = getURLWebAccessible();
+      const serverRedirect = getServerURL(`server-redirect?${url1}`);
+      const listener = function(details) {
+        return {redirectUrl: url2};
       };
       chrome.webRequest.onHeadersReceived.addListener(
         listener,
-        { urls: [url_1] },
-        ["blocking"]
+        { urls: [url1] },
+        ['blocking']
       );
 
-      assertRedirectSucceeds(serverRedirect, url_2, function() {
+      assertRedirectSucceeds(serverRedirect, url2, function() {
         chrome.webRequest.onHeadersReceived.removeListener(listener);
       });
     },
 
     function redirectToUnallowedServerRedirectOnHeadersReceived() {
-      var url = getServerURL('echo');
-      var redirectURL = getServerURL('server-redirect?' +
+      const url = getServerURL('echo');
+      const redirectURL = getServerURL('server-redirect?' +
           getURLNonWebAccessible());
-      var listener = function(details) {
+      const listener = function(details) {
         return {redirectUrl: redirectURL};
       };
       chrome.webRequest.onHeadersReceived.addListener(listener,
@@ -131,8 +131,8 @@ loadScript.then(async function() {
     },
 
     function redirectToDataUrlOnBeforeRequest() {
-      var url = getServerURL('echo');
-      var listener = function(details) {
+      const url = getServerURL('echo');
+      const listener = function(details) {
         return {redirectUrl: dataURL};
       };
       chrome.webRequest.onBeforeRequest.addListener(listener,
@@ -144,8 +144,8 @@ loadScript.then(async function() {
     },
 
     function redirectToAboutUrlOnBeforeRequest() {
-      var url = getServerURL('echo');
-      var listener = function(details) {
+      const url = getServerURL('echo');
+      const listener = function(details) {
         return {redirectUrl: aboutURL};
       };
       chrome.webRequest.onBeforeRequest.addListener(listener,
@@ -157,8 +157,8 @@ loadScript.then(async function() {
     },
 
     function redirectToNonWebAccessibleUrlOnBeforeRequest() {
-      var url = getServerURL('echo');
-      var listener = function(details) {
+      const url = getServerURL('echo');
+      const listener = function(details) {
         return {redirectUrl: getURLNonWebAccessible()};
       };
       chrome.webRequest.onBeforeRequest.addListener(listener,
@@ -170,10 +170,10 @@ loadScript.then(async function() {
     },
 
     function redirectToServerRedirectOnBeforeRequest() {
-      var url = getServerURL('echo');
-      var redirectURL = getServerURL('server-redirect?' +
+      const url = getServerURL('echo');
+      const redirectURL = getServerURL('server-redirect?' +
           getURLWebAccessible());
-      var listener = function(details) {
+      const listener = function(details) {
         return {redirectUrl: redirectURL};
       };
       chrome.webRequest.onBeforeRequest.addListener(listener,
@@ -189,28 +189,28 @@ loadScript.then(async function() {
     // - https://crbug.com/882661
     // - https://crbug.com/880741
     function serverRedirectThenExtensionRedirectOnBeforeRequest() {
-      var url_1 = getServerURL('echo');
-      var url_2 = getURLWebAccessible();
-      var serverRedirect = getServerURL('server-redirect?' + url_1);
-      var listener = function(details) {
-        return {redirectUrl: url_2};
+      const url1 = getServerURL('echo');
+      const url2 = getURLWebAccessible();
+      const serverRedirect = getServerURL(`server-redirect?${url1}`);
+      const listener = function(details) {
+        return {redirectUrl: url2};
       };
       chrome.webRequest.onBeforeRequest.addListener(
         listener,
-        { urls: [url_1] },
-        ["blocking"]
+        { urls: [url1] },
+        ['blocking']
       );
 
-      assertRedirectSucceeds(serverRedirect, url_2, function() {
+      assertRedirectSucceeds(serverRedirect, url2, function() {
         chrome.webRequest.onBeforeRequest.removeListener(listener);
       });
     },
 
     function redirectToUnallowedServerRedirectOnBeforeRequest() {
-      var url = getServerURL('echo');
-      var redirectURL = getServerURL('server-redirect?' +
+      const url = getServerURL('echo');
+      const redirectURL = getServerURL('server-redirect?' +
           getURLNonWebAccessible());
-      var listener = function(details) {
+      const listener = function(details) {
         return {redirectUrl: redirectURL};
       };
       chrome.webRequest.onBeforeRequest.addListener(listener,
@@ -224,31 +224,31 @@ loadScript.then(async function() {
     },
 
     function redirectToAboutUrlWithServerRedirect() {
-      assertRedirectFails(getServerURL('server-redirect?' + aboutURL));
+      assertRedirectFails(getServerURL(`server-redirect?${aboutURL}`));
     },
 
     function redirectToDataUrlWithServerRedirect() {
-      assertRedirectFails(getServerURL('server-redirect?' + dataURL));
+      assertRedirectFails(getServerURL(`server-redirect?${dataURL}`));
     },
 
     function redirectToNonWebAccessibleUrlWithServerRedirect() {
       assertRedirectSucceeds(
-          getServerURL('server-redirect?' + getURLNonWebAccessible()),
+          getServerURL(`server-redirect?${getURLNonWebAccessible()}`),
           getURLNonWebAccessible());
     },
 
     function redirectToWebAccessibleUrlWithServerRedirect() {
       assertRedirectSucceeds(
-          getServerURL('server-redirect?' + getURLWebAccessible()),
+          getServerURL(`server-redirect?${getURLWebAccessible()}`),
           getURLWebAccessible());
     },
 
     function beforeRequestRedirectAfterServerRedirect() {
-      var finalURL = getServerURL('echo?foo');
-      var intermediateURL = getServerURL('echo?bar');
-      var redirectURL = getServerURL('server-redirect?' + intermediateURL);
+      const finalURL = getServerURL('echo?foo');
+      const intermediateURL = getServerURL('echo?bar');
+      const redirectURL = getServerURL(`server-redirect?${intermediateURL}`);
 
-      var onBeforeSendHeadersListener = function(details) {
+      const onBeforeSendHeadersListener = function(details) {
         chrome.test.assertFalse(details.url == intermediateURL,
             'intermediateURL should be redirected before the request starts.');
       };
@@ -258,7 +258,7 @@ loadScript.then(async function() {
           onBeforeSendHeadersListener,
           {urls: ['<all_urls>']}, ['blocking', 'extraHeaders']);
 
-      var onBeforeRequestListener = function(details) {
+      const onBeforeRequestListener = function(details) {
         return {redirectUrl: finalURL};
       };
       chrome.webRequest.onBeforeRequest.addListener(onBeforeRequestListener,
@@ -273,10 +273,10 @@ loadScript.then(async function() {
     },
 
     function serverRedirectChain() {
-      var url = getServerURL('echo');
-      var redirectURL = getServerURL('server-redirect?' +
-          getServerURL('server-redirect?' + url));
-      var listener = function(details) {};
+      const url = getServerURL('echo');
+      const redirectURL = getServerURL('server-redirect?' +
+          getServerURL(`server-redirect?${url}`));
+      const listener = function(details) {};
       chrome.webRequest.onHeadersReceived.addListener(listener,
           {urls: ['<all_urls>']}, onHeadersReceivedExtraInfoSpec);
 
@@ -286,18 +286,19 @@ loadScript.then(async function() {
     },
 
     function redirectHasSameRequestIdOnHeadersReceived() {
-      var url = getServerURL('echo');
-      var requestId;
-      var onHeadersReceivedListener = function(details) {
+      const url = getServerURL('echo');
+      let requestId;
+      const onHeadersReceivedListener = function(details) {
         requestId = details.requestId;
         return {redirectUrl: getURLWebAccessible()};
       };
       chrome.webRequest.onHeadersReceived.addListener(onHeadersReceivedListener,
           {urls: [url]}, onHeadersReceivedExtraInfoSpec);
 
-      var onBeforeRequestListener = chrome.test.callbackPass(function(details) {
-        chrome.test.assertEq(details.requestId, requestId);
-      });
+      const onBeforeRequestListener =
+          chrome.test.callbackPass(function(details) {
+            chrome.test.assertEq(details.requestId, requestId);
+          });
       chrome.webRequest.onBeforeRequest.addListener(onBeforeRequestListener,
           {urls: [getURLWebAccessible()]});
 
@@ -310,18 +311,19 @@ loadScript.then(async function() {
     },
 
     function redirectHasSameRequestIdOnBeforeRequest() {
-      var url = getServerURL('echo');
-      var requestId;
-      var onBeforeRequestRedirectListener = function(details) {
+      const url = getServerURL('echo');
+      let requestId;
+      const onBeforeRequestRedirectListener = function(details) {
         requestId = details.requestId;
         return {redirectUrl: getURLWebAccessible()};
       };
       chrome.webRequest.onBeforeRequest.addListener(
           onBeforeRequestRedirectListener, {urls: [url]}, ['blocking']);
 
-      var onBeforeRequestListener = chrome.test.callbackPass(function(details) {
-        chrome.test.assertEq(details.requestId, requestId);
-      });
+      const onBeforeRequestListener =
+          chrome.test.callbackPass(function(details) {
+            chrome.test.assertEq(details.requestId, requestId);
+          });
       chrome.webRequest.onBeforeRequest.addListener(onBeforeRequestListener,
           {urls: [getURLWebAccessible()]});
 

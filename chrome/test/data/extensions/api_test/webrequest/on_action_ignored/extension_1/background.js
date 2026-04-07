@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var redirectIgnored = false;
-var redirectedRequestId = null;
+let redirectIgnored = false;
+let redirectedRequestId = null;
 
 chrome.webRequest.onBeforeRequest.addListener(function(details) {
   if (details.url.includes('google.com') && details.type === 'main_frame') {
     redirectedRequestId = details.requestId;
-    return {'redirectUrl': details.url.replace('google.com', 'example.com')};
+    return {redirectUrl: details.url.replace('google.com', 'example.com')};
   }
 }, {urls: ['<all_urls>']}, ['blocking']);
 
@@ -24,7 +24,8 @@ chrome.webRequest.onCompleted.addListener(function(details) {
   // received for the request. Notify the browser whether the redirect was
   // successful.
   if (details.requestId === redirectedRequestId) {
-    var message = redirectIgnored ? 'redirect_ignored' : 'redirect_successful';
+    const message = redirectIgnored ? 'redirect_ignored' :
+                                      'redirect_successful';
     chrome.test.sendMessage(message);
     redirectIgnored = false;
     redirectedRequestId = null;

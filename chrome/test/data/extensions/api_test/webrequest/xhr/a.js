@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 function sendXHR() {
-  var req = new XMLHttpRequest();
-  req.open("GET", "data.json", true);
+  const req = new XMLHttpRequest();
+  req.open('GET', 'data.json', true);
   req.send(null);
 }
 

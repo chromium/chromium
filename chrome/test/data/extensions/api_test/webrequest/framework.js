@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+const TEST_SERVER = 'www.a.com';
+const DEFAULT_SCHEME = 'http';
+
 if ('ServiceWorkerGlobalScope' in self) {
   self.selfFrameId = -1;
 } else {
@@ -9,33 +12,31 @@ if ('ServiceWorkerGlobalScope' in self) {
   self.selfFrameId = 0;
 }
 
-var getURL = chrome.runtime.getURL;
-var deepEq = chrome.test.checkDeepEq;
-var expectedEventData;
-var capturedEventData;
-var capturedUnexpectedData;
-var expectedEventOrder;
-var mparchEnabled;
-var tabId;
-var tabIdMap;
-var documentIdMap;
-var frameIdMap;
-var testWebSocketPort;
-var testWebTransportPort;
-var testServerPort;
-var testServer = "www.a.com";
-var defaultScheme = "http";
-var eventsCaptured;
-var listeners = {
-  'onBeforeRequest': [],
-  'onBeforeSendHeaders': [],
-  'onAuthRequired': [],
-  'onSendHeaders': [],
-  'onHeadersReceived': [],
-  'onResponseStarted': [],
-  'onBeforeRedirect': [],
-  'onCompleted': [],
-  'onErrorOccurred': []
+const getURL = chrome.runtime.getURL;
+const deepEq = chrome.test.checkDeepEq;
+let expectedEventData;
+let capturedEventData;
+let capturedUnexpectedData;
+let expectedEventOrder;
+let mparchEnabled;
+let tabId;
+let tabIdMap;
+let documentIdMap;
+let frameIdMap;
+let testWebSocketPort;
+let testWebTransportPort;
+let testServerPort;
+let eventsCaptured;
+const listeners = {
+  onBeforeRequest: [],
+  onBeforeSendHeaders: [],
+  onAuthRequired: [],
+  onSendHeaders: [],
+  onHeadersReceived: [],
+  onResponseStarted: [],
+  onBeforeRedirect: [],
+  onCompleted: [],
+  onErrorOccurred: []
 };
 // Requests initiated by a user interaction with the browser is a
 // BROWSER_INITIATED action. If the request was instead initiated by the tabs
@@ -49,16 +50,16 @@ const initiators = {
 // If true, don't bark on events that were not registered via expect().
 // These events are recorded in capturedUnexpectedData instead of
 // capturedEventData.
-var ignoreUnexpected = false;
+let ignoreUnexpected = false;
 
 // This is a debugging aid to print all received events as well as the
 // information whether they were expected.
-var debug = false;
+let debug = false;
 
 // Runs the |tests| using the |tab| as a default tab.
 function runTestsForTab(tests, tab) {
   tabId = tab.id;
-  tabIdMap = {"-1": -1};
+  tabIdMap = {'-1': -1};
   tabIdMap[tabId] = 0;
   chrome.test.getConfig(function(config) {
     testServerPort = config.testServer.port;
@@ -72,7 +73,7 @@ function runTestsForTab(tests, tab) {
 function runTests(tests) {
   chrome.test.getConfig(function(config) {
     if (config.customArg) {
-      let args = JSON.parse(config.customArg);
+      const args = JSON.parse(config.customArg);
       debug = args.debug;
       mparchEnabled = args.mparch;
       // Because the extension runs in split mode, only the incognito context
@@ -82,41 +83,41 @@ function runTests(tests) {
       }
     }
 
-    var waitForAboutBlank = function(_, info, tab) {
+    const waitForAboutBlank = function(_, info, tab) {
       if (debug) {
-        console.log("tabs.OnUpdated received in waitForAboutBlank: " +
-          JSON.stringify(info) + " " + JSON.stringify(tab));
+        console.log(`tabs.OnUpdated received in waitForAboutBlank: ${
+          JSON.stringify(info)} ${JSON.stringify(tab)}`);
       }
-      if (info.status == "complete" && tab.url == "about:blank") {
+      if (info.status == 'complete' && tab.url == 'about:blank') {
         chrome.tabs.onUpdated.removeListener(waitForAboutBlank);
         runTestsForTab(tests, tab);
       }
     };
 
     chrome.tabs.onUpdated.addListener(waitForAboutBlank);
-    chrome.tabs.create({url: "about:blank"});
+    chrome.tabs.create({url: 'about:blank'});
   });
 }
 
 // Returns an URL from the test server, fixing up the port. Must be called
 // from within a test case passed to runTests.
-function getServerURL(opt_path, opt_host, opt_scheme) {
+function getServerURL(optPath, optHost, optScheme) {
   if (!testServerPort) {
-    throw new Error("Called getServerURL outside of runTests.");
+    throw new Error('Called getServerURL outside of runTests.');
   }
-  var host = opt_host || testServer;
-  var scheme = opt_scheme || defaultScheme;
-  var path = opt_path || '';
-  return scheme + "://" + host + ":" + testServerPort + "/" + path;
+  const host = optHost || TEST_SERVER;
+  const scheme = optScheme || DEFAULT_SCHEME;
+  const path = optPath || '';
+  return `${scheme}://${host}:${testServerPort}/${path}`;
 }
 
 // Throws error if an invalid navigation type was presented.
 function validateNavigationType(navigationType) {
   if (navigationType == undefined) {
-    throw new Error("A navigation type must be defined.");
+    throw new Error('A navigation type must be defined.');
   }
   if(Object.values(initiators).indexOf(navigationType) === -1) {
-    throw new Error("Unknown navigation type.");
+    throw new Error('Unknown navigation type.');
   }
 }
 
@@ -135,25 +136,25 @@ function getDomain(navigationType) {
 // Similar to getServerURL without the path. The |navigationType| specifies if
 // the navigation was performed by the browser or the renderer. A browser
 // initiated navigation doesn't have an initiator.
-function getServerDomain(navigationType, opt_host, opt_scheme) {
+function getServerDomain(navigationType, optHost, optScheme) {
   validateNavigationType(navigationType);
   if (navigationType == initiators.BROWSER_INITIATED) {
     return undefined;
   }
-  return getServerURL(undefined, opt_host, opt_scheme).slice(0, -1);
+  return getServerURL(undefined, optHost, optScheme).slice(0, -1);
 }
 
 // Helper to advance to the next test only when the tab has finished loading.
 // This is because tabs.update can sometimes fail if the tab is in the middle
 // of a navigation (from the previous test), resulting in flakiness.
 function navigateAndWait(url, callback) {
-  var done = chrome.test.listenForever(chrome.tabs.onUpdated,
+  const done = chrome.test.listenForever(chrome.tabs.onUpdated,
       function (_, info, tab) {
     if (debug) {
-      console.log("tabs.OnUpdated received in navigateAndWait: " +
-        JSON.stringify(info) + " " + JSON.stringify(tab));
+      console.log(`tabs.OnUpdated received in navigateAndWait: ${
+        JSON.stringify(info)} ${JSON.stringify(tab)}`);
     }
-    if (tab.id == tabId && info.status == "complete") {
+    if (tab.id == tabId && info.status == 'complete') {
       if (callback) callback(tab);
       done();
     }
@@ -169,34 +170,34 @@ function deepCopy(obj) {
     return obj;
   }
   if (Array.isArray(obj)) {
-    var tmp_array = new Array;
-    for (var i = 0; i < obj.length; i++) {
-      tmp_array.push(deepCopy(obj[i]));
+    const tmpArray = new Array;
+    for (let i = 0; i < obj.length; i++) {
+      tmpArray.push(deepCopy(obj[i]));
     }
-    return tmp_array;
+    return tmpArray;
   }
 
-  var tmp_object = {}
-  for (var p in obj) {
-    tmp_object[p] = deepCopy(obj[p]);
+  const tmpObject = {}
+  for (const p in obj) {
+    tmpObject[p] = deepCopy(obj[p]);
   }
-  return tmp_object;
+  return tmpObject;
 }
 
 // data: array of expected events, each one is a dictionary:
-//     { label: "<unique identifier>",
-//       event: "<webrequest event type>",
+//     { label: '<unique identifier>',
+//       event: '<webrequest event type>',
 //       details: { <expected details of the webrequest event> },
 //       retval: { <dictionary that the event handler shall return> } (optional)
-//       retval_function: <function to run when the event occurs, this overrides
+//       retvalFunction: <function to run when the event occurs, this overrides
 //                         any retval handling. The function takes
 //                         (name, details, optional callback). The value it
 //                         returns is returned out of the event
 //                         handler> (optional)
 //     }
-// order: an array of sequences, e.g. [ ["a", "b", "c"], ["d", "e"] ] means that
-//     event with label "a" needs to occur before event with label "b". The
-//     relative order of "a" and "d" does not matter.
+// order: an array of sequences, e.g. [ ['a', 'b', 'c'], ['d', 'e'] ] means that
+//     event with label 'a' needs to occur before event with label 'b'. The
+//     relative order of 'a' and 'd' does not matter.
 // filter: filter dictionary passed on to the event subscription of the
 //     webRequest API.
 // extraInfoSpec: the union of all desired extraInfoSpecs for the events.
@@ -209,16 +210,16 @@ function expect(data, order, filter, extraInfoSpec) {
   if (expectedEventData.length > 0) {
     eventsCaptured = chrome.test.callbackAdded();
   }
-  tabAndFrameUrls = {};  // Maps "{tabId}-{frameId}" to the URL of the frame.
-  frameIdMap = {"-1": -1, "0": 0};
+  tabAndFrameUrls = {};  // Maps '{tabId}-{frameId}' to the URL of the frame.
+  frameIdMap = {'-1': -1, 0: 0};
   documentIdMap = [];
   removeListeners();
   resetDeclarativeRules();
-  initListeners(filter || {urls: ["<all_urls>"]}, extraInfoSpec || []);
+  initListeners(filter || {urls: ['<all_urls>']}, extraInfoSpec || []);
   // Fill in default values.
-  for (var i = 0; i < expectedEventData.length; ++i) {
+  for (let i = 0; i < expectedEventData.length; ++i) {
     if (!('method' in expectedEventData[i].details)) {
-      expectedEventData[i].details.method = "GET";
+      expectedEventData[i].details.method = 'GET';
     }
     if (!('tabId' in expectedEventData[i].details)) {
       expectedEventData[i].details.tabId = tabIdMap[tabId];
@@ -230,7 +231,7 @@ function expect(data, order, filter, extraInfoSpec) {
       expectedEventData[i].details.parentFrameId = -1;
     }
     if (!('type' in expectedEventData[i].details)) {
-      expectedEventData[i].details.type = "main_frame";
+      expectedEventData[i].details.type = 'main_frame';
     }
     if ('initiator' in expectedEventData[i].details &&
         expectedEventData[i].details.initiator == undefined) {
@@ -238,10 +239,10 @@ function expect(data, order, filter, extraInfoSpec) {
     }
     if (expectedEventData[i].details.frameId >= 0) {
       if (!('documentLifecycle' in expectedEventData[i].details)) {
-        expectedEventData[i].details.documentLifecycle = "active";
+        expectedEventData[i].details.documentLifecycle = 'active';
       }
       if (!('frameType' in expectedEventData[i].details)) {
-        expectedEventData[i].details.frameType = "outermost_frame";
+        expectedEventData[i].details.frameType = 'outermost_frame';
       }
     }
     if ('documentId' in expectedEventData[i].details &&
@@ -256,32 +257,31 @@ function checkExpectations() {
     return;
   }
   if (capturedEventData.length > expectedEventData.length) {
-    chrome.test.fail("Recorded too many events. " +
-        JSON.stringify(capturedEventData));
+    chrome.test.fail(`Recorded too many events. ${
+        JSON.stringify(capturedEventData)}`);
     return;
   }
   // We have ensured that capturedEventData contains exactly the same elements
   // as expectedEventData. Now we need to verify the ordering.
   // Step 1: build positions such that
   //     positions[<event-label>]=<position of this event in capturedEventData>
-  var curPos = 0;
-  var positions = {}
+  let curPos = 0;
+  const positions = {}
   capturedEventData.forEach(function (event) {
-    chrome.test.assertTrue(event.hasOwnProperty("label"));
+    chrome.test.assertTrue(event.hasOwnProperty('label'));
     positions[event.label] = curPos;
     curPos++;
   });
   // Step 2: check that elements arrived in correct order
   expectedEventOrder.forEach(function (order) {
-    var previousLabel = undefined;
+    let previousLabel = undefined;
     order.forEach(function(label) {
       if (previousLabel === undefined) {
         previousLabel = label;
         return;
       }
       chrome.test.assertTrue(positions[previousLabel] < positions[label],
-          "Event " + previousLabel + " is supposed to arrive before " +
-          label + ".");
+          `Event ${previousLabel} is supposed to arrive before ${label}.`);
       previousLabel = label;
     });
   });
@@ -293,9 +293,9 @@ function checkExpectations() {
 // Simple check to see that we have a User-Agent header, and that it contains
 // an expected value. This is a basic check that the request headers are valid.
 function checkUserAgent(headers) {
-  for (var i in headers) {
-    if (headers[i].name.toLowerCase() == "user-agent") {
-      return headers[i].value.toLowerCase().indexOf("chrome") != -1;
+  for (const i in headers) {
+    if (headers[i].name.toLowerCase() == 'user-agent') {
+      return headers[i].value.toLowerCase().indexOf('chrome') != -1;
     }
   }
   return false;
@@ -313,7 +313,7 @@ function isUnexpectedDetachedRequest(name, details) {
 
   // Only return true if there is no matching expectation for the given details.
   return !expectedEventData.some(function(exp) {
-    var didMatchTabAndFrameId =
+    let didMatchTabAndFrameId =
       exp.details.tabId === -1 &&
       exp.details.frameId === -1;
 
@@ -336,28 +336,28 @@ function isUnexpectedDetachedRequest(name, details) {
 function captureEvent(name, details, callback) {
   // Ignore system-level requests like safebrowsing updates and favicon fetches
   // since they are unpredictable.
-  if ((details.type == "other" && !details.url.includes('dont-ignore-me')) ||
+  if ((details.type == 'other' && !details.url.includes('dont-ignore-me')) ||
       isUnexpectedDetachedRequest(name, details) ||
       details.url.match(/\/favicon.ico$/) ||
       details.url.match(/https:\/\/dl.google.com/)) {
     return;
   }
 
-  var originalDetails = deepCopy(details);
+  const originalDetails = deepCopy(details);
 
   // Check that the frameId can be used to reliably determine the URL of the
   // frame that caused requests.
-  if (name == "onBeforeRequest") {
+  if (name == 'onBeforeRequest') {
     chrome.test.assertTrue('frameId' in details &&
                            typeof details.frameId === 'number');
     chrome.test.assertTrue('tabId' in details &&
                             typeof details.tabId === 'number');
-    var key = details.tabId + "-" + details.frameId;
+    const key = `${details.tabId}-${details.frameId}`;
     if (details.type == 'main_frame' || details.type == 'sub_frame' ||
         details.type == 'webtransport') {
       tabAndFrameUrls[key] = details.url;
     }
-    details.frameUrl = tabAndFrameUrls[key] || "unknown frame URL";
+    details.frameUrl = tabAndFrameUrls[key] || 'unknown frame URL';
   }
 
   // This assigns unique IDs to frames. The new IDs are only deterministic, if
@@ -419,7 +419,7 @@ function captureEvent(name, details, callback) {
 
   // Check if the equivalent event is already captured, and issue a unique
   // |eventCount| to identify each.
-  var eventCount = 0;
+  let eventCount = 0;
   capturedEventData.forEach(function (event) {
     if (deepEq(event.event, name) && deepEq(event.details, details)) {
       eventCount++;
@@ -429,30 +429,31 @@ function captureEvent(name, details, callback) {
   });
 
   // find |details| in matchingExpectedEventData
-  var matchingExpectedEvent = undefined;
+  let matchingExpectedEvent = undefined;
   expectedEventData.forEach(function (exp) {
     if (deepEq(exp.event, name) && deepEq(exp.details, details)) {
       if (matchingExpectedEvent) {
-        chrome.test.fail("Duplicated expectation entry '" + exp.label +
-        "' should be identified by |eventCount|: " + JSON.stringify(details));
+        chrome.test.fail(
+            `Duplicated expectation entry '${exp.label}' should be ` +
+            `identified by |eventCount|: ${JSON.stringify(details)}`);
       } else {
         matchingExpectedEvent = exp;
       }
     }
   });
   if (!matchingExpectedEvent && !ignoreUnexpected) {
-    console.log("Expected events: " +
-        JSON.stringify(expectedEventData, null, 2));
-    chrome.test.fail("Received unexpected event '" + name + "':" +
-        JSON.stringify(details, null, 2));
+    console.log(`Expected events: ${
+        JSON.stringify(expectedEventData, null, 2)}`);
+    chrome.test.fail(`Received unexpected event '${name}':\n${
+        JSON.stringify(details, null, 2)}`);
   }
 
-  var retval;
-  var retval_function;
+  let retval;
+  let retvalFunction;
   if (matchingExpectedEvent) {
     if (debug) {
-      console.log("Expected event received: " + name + ": " +
-        JSON.stringify(details));
+      console.log(`Expected event received: ${name}: ${
+        JSON.stringify(details)}`);
     }
     capturedEventData.push(
         {label: matchingExpectedEvent.label, event: name, details: details});
@@ -464,17 +465,17 @@ function captureEvent(name, details, callback) {
     // Pull the extra per-event options out of the expected data. These let us
     // specify special return values per event.
     retval = matchingExpectedEvent.retval;
-    retval_function = matchingExpectedEvent.retval_function;
+    retvalFunction = matchingExpectedEvent.retvalFunction;
   } else {
     if (debug) {
-      console.log('NOT Expected event received: ' + name + ': ' +
-        JSON.stringify(details));
+      console.log(`NOT Expected event received: ${name}: ${
+        JSON.stringify(details)}`);
     }
     capturedUnexpectedData.push({event: name, details: details});
   }
 
-  if (retval_function) {
-    return retval_function(name, originalDetails, callback);
+  if (retvalFunction) {
+    return retvalFunction(name, originalDetails, callback);
   }
 
   if (callback) {
@@ -491,48 +492,48 @@ function intersect(array1, array2) {
 }
 
 function initListeners(filter, extraInfoSpec) {
-  var onBeforeRequest = function(details) {
-    return captureEvent("onBeforeRequest", details);
+  const onBeforeRequest = function(details) {
+    return captureEvent('onBeforeRequest', details);
   };
   listeners['onBeforeRequest'].push(onBeforeRequest);
 
-  var onBeforeSendHeaders = function(details) {
-    return captureEvent("onBeforeSendHeaders", details);
+  const onBeforeSendHeaders = function(details) {
+    return captureEvent('onBeforeSendHeaders', details);
   };
   listeners['onBeforeSendHeaders'].push(onBeforeSendHeaders);
 
-  var onSendHeaders = function(details) {
-    return captureEvent("onSendHeaders", details);
+  const onSendHeaders = function(details) {
+    return captureEvent('onSendHeaders', details);
   };
   listeners['onSendHeaders'].push(onSendHeaders);
 
-  var onHeadersReceived = function(details) {
-    return captureEvent("onHeadersReceived", details);
+  const onHeadersReceived = function(details) {
+    return captureEvent('onHeadersReceived', details);
   };
   listeners['onHeadersReceived'].push(onHeadersReceived);
 
-  var onAuthRequired = function(details, callback) {
-    return captureEvent("onAuthRequired", details, callback);
+  const onAuthRequired = function(details, callback) {
+    return captureEvent('onAuthRequired', details, callback);
   };
   listeners['onAuthRequired'].push(onAuthRequired);
 
-  var onResponseStarted = function(details) {
-    return captureEvent("onResponseStarted", details);
+  const onResponseStarted = function(details) {
+    return captureEvent('onResponseStarted', details);
   };
   listeners['onResponseStarted'].push(onResponseStarted);
 
-  var onBeforeRedirect = function(details) {
-    return captureEvent("onBeforeRedirect", details);
+  const onBeforeRedirect = function(details) {
+    return captureEvent('onBeforeRedirect', details);
   };
   listeners['onBeforeRedirect'].push(onBeforeRedirect);
 
-  var onCompleted = function(details) {
-    return captureEvent("onCompleted", details);
+  const onCompleted = function(details) {
+    return captureEvent('onCompleted', details);
   };
   listeners['onCompleted'].push(onCompleted);
 
-  var onErrorOccurred = function(details) {
-    return captureEvent("onErrorOccurred", details);
+  const onErrorOccurred = function(details) {
+    return captureEvent('onErrorOccurred', details);
   };
   listeners['onErrorOccurred'].push(onErrorOccurred);
 
@@ -575,7 +576,7 @@ function initListeners(filter, extraInfoSpec) {
 
 function removeListeners() {
   function helper(eventName) {
-    for (var i in listeners[eventName]) {
+    for (const i in listeners[eventName]) {
       chrome.webRequest[eventName].removeListener(listeners[eventName][i]);
     }
     listeners[eventName].length = 0;
@@ -597,22 +598,22 @@ function resetDeclarativeRules() {
 }
 
 function checkHeaders(headers, requiredNames, disallowedNames) {
-  var headerMap = {};
-  for (var i = 0; i < headers.length; i++)
+  const headerMap = {};
+  for (let i = 0; i < headers.length; i++)
     headerMap[headers[i].name.toLowerCase()] = headers[i].value;
 
-  for (var i = 0; i < requiredNames.length; i++) {
+  for (let i = 0; i < requiredNames.length; i++) {
     chrome.test.assertTrue(!!headerMap[requiredNames[i]],
-        'Missing header: ' + requiredNames[i]);
+        `Missing header: ${requiredNames[i]}`);
   }
-  for (var i = 0; i < disallowedNames.length; i++) {
+  for (let i = 0; i < disallowedNames.length; i++) {
     chrome.test.assertFalse(!!headerMap[disallowedNames[i]],
-        'Header should not be present: ' + disallowedNames[i]);
+        `Header should not be present: ${disallowedNames[i]}`);
   }
 }
 
 function removeHeader(headers, name) {
-  for (var i = 0; i < headers.length; i++) {
+  for (let i = 0; i < headers.length; i++) {
     if (headers[i].name.toLowerCase() == name) {
       headers.splice(i, 1);
       break;
@@ -634,6 +635,6 @@ function getPemEncodedFromDer(arrayBuffer) {
   // 3. Format as PEM (Wrap at 64 chars and add headers).
   const formattedBase64 = base64.match(/.{1,64}/g).join('\n');
 
-  return '-----BEGIN CERTIFICATE-----\n' + formattedBase64 +
-      '\n-----END CERTIFICATE-----\n';
+  return '-----BEGIN CERTIFICATE-----\n' +
+      `${formattedBase64}\n-----END CERTIFICATE-----\n`;
 }

@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var callbackPass = chrome.test.callbackPass;
+const callbackPass = chrome.test.callbackPass;
 
-const scriptUrl = '_test_resources/api_test/webrequest/framework.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const SCRIPT_URL = '_test_resources/api_test/webrequest/framework.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
   runTests([
   function testSpecialResponseHeadersVisibleForAuth() {
-    var url = getServerURL('auth-basic?set-cookie-if-challenged');
-    var extraHeadersListener = callbackPass(function(details) {
+    const url = getServerURL('auth-basic?set-cookie-if-challenged');
+    const extraHeadersListener = callbackPass(function(details) {
       checkHeaders(details.responseHeaders, ['set-cookie'], []);
     });
     chrome.webRequest.onAuthRequired.addListener(extraHeadersListener,
         {urls: [url]}, ['responseHeaders', 'extraHeaders']);
 
-    var standardListener = callbackPass(function(details) {
+    const standardListener = callbackPass(function(details) {
       checkHeaders(details.responseHeaders, [], ['set-cookie']);
     });
     chrome.webRequest.onAuthRequired.addListener(standardListener,

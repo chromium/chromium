@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var callbackPass = chrome.test.callbackPass;
+const callbackPass = chrome.test.callbackPass;
 
 (async () => {
   const config = await new Promise(resolve => chrome.test.getConfig(resolve));
   const args = JSON.parse(config.customArg);
-  const request_url = args.request_url;
-  const use_web_socket = Boolean(args.use_web_socket);
+  const requestUrl = args.request_url;
+  const useWebSocket = Boolean(args.use_web_socket);
 
   // The filter is used to prevent flakiness which results in
   // catching web requests that we are not interested with.
   let filter;
-  if (use_web_socket) {
-    const urlObj = new URL(request_url);
+  if (useWebSocket) {
+    const urlObj = new URL(requestUrl);
     filter = [
       // Scheme wildcard (*) does not include ws(s).
       `*://${urlObj.hostname}${urlObj.pathname}`,
@@ -22,7 +22,7 @@ var callbackPass = chrome.test.callbackPass;
       `wss://${urlObj.hostname}${urlObj.pathname}`
     ];
   } else {
-    filter = [request_url];
+    filter = [requestUrl];
   }
 
   const scriptUrl = '_test_resources/api_test/webrequest/framework.js';
@@ -30,7 +30,7 @@ var callbackPass = chrome.test.callbackPass;
 
   async function openWebSocket() {
     return new Promise((resolve) => {
-      const socket = new WebSocket(request_url);
+      const socket = new WebSocket(requestUrl);
 
       socket.onopen = (_event) => {
         socket.close();
@@ -41,10 +41,10 @@ var callbackPass = chrome.test.callbackPass;
 
   async function makeRequest() {
     try {
-      if (use_web_socket) {
+      if (useWebSocket) {
         await openWebSocket();
       } else {
-        await fetch(request_url);
+        await fetch(requestUrl);
       }
     } catch (e) {
       chrome.test.fail(`Fetch failed: ${e.message}`);

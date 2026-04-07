@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 function getWSTestURL(port) {
-  return 'ws://localhost:' + port + '/echo-with-no-extension';
+  return `ws://localhost:${port}/echo-with-no-extension`;
 }
 
 // Creates a dedicated worker which makes a WebSocket request.

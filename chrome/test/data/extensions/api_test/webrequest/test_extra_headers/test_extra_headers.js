@@ -2,33 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var callbackPass = chrome.test.callbackPass;
+const callbackPass = chrome.test.callbackPass;
 
 function getSetCookieUrl(name, value) {
-  return getServerURL('set-cookie?' + name + '=' + value);
+  return getServerURL(`set-cookie?${name}` + `=${value}`);
 }
 
 function testModifyHeadersOnRedirect(useExtraHeaders) {
   // Use /echoheader instead of observing headers in onSendHeaders to
   // ensure we're looking at what the server receives. This avoids bugs in the
   // webRequest implementation from being masked.
-  var finalURL = getServerURL('echoheader?User-Agent&Accept&X-New-Header');
-  var url = getServerURL('server-redirect?' + finalURL);
-  var listener = callbackPass(function(details) {
-    var headers = details.requestHeaders;
+  const finalURL = getServerURL('echoheader?User-Agent&Accept&X-New-Header');
+  const url = getServerURL(`server-redirect?${finalURL}`);
+  const listener = callbackPass(function(details) {
+    const headers = details.requestHeaders;
 
     // Test modification.
-    var accept_value;
-    for (var i = 0; i < headers.length; i++) {
+    let acceptValue;
+    for (let i = 0; i < headers.length; i++) {
       if (headers[i].name.toLowerCase() === 'user-agent') {
         headers[i].value = 'foo';
       } else if (headers[i].name.toLowerCase() === 'accept') {
-        accept_value = headers[i].value;
+        acceptValue = headers[i].value;
       }
     }
 
     // Test removal.
-    chrome.test.assertTrue(accept_value.indexOf('image/webp') >= 0);
+    chrome.test.assertTrue(acceptValue.indexOf('image/webp') >= 0);
     removeHeader(headers, 'accept');
 
     // Test addition.
@@ -37,7 +37,7 @@ function testModifyHeadersOnRedirect(useExtraHeaders) {
     return {requestHeaders: headers};
   });
 
-  var extraInfo = ['requestHeaders', 'blocking'];
+  const extraInfo = ['requestHeaders', 'blocking'];
   if (useExtraHeaders) {
     extraInfo.push('extraHeaders');
   }
@@ -59,22 +59,22 @@ function testModifyHeadersOnRedirect(useExtraHeaders) {
   });
 }
 
-const scriptUrl = '_test_resources/api_test/webrequest/framework.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const SCRIPT_URL = '_test_resources/api_test/webrequest/framework.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
   runTests([
   function testSpecialRequestHeadersVisible() {
     // Set a cookie so the cookie request header is set.
     navigateAndWait(getSetCookieUrl('foo', 'bar'), function() {
-      var url = getServerURL('echo');
-      var extraHeadersListener = callbackPass(function(details) {
+      const url = getServerURL('echo');
+      const extraHeadersListener = callbackPass(function(details) {
         checkHeaders(details.requestHeaders, ['user-agent', 'cookie'], []);
       });
       chrome.webRequest.onBeforeSendHeaders.addListener(extraHeadersListener,
           {urls: [url]}, ['requestHeaders', 'extraHeaders']);
 
-      var standardListener = callbackPass(function(details) {
+      const standardListener = callbackPass(function(details) {
         checkHeaders(details.requestHeaders, ['user-agent'], ['cookie']);
       });
       chrome.webRequest.onBeforeSendHeaders.addListener(standardListener,
@@ -89,8 +89,8 @@ loadScript.then(async function() {
   },
 
   function testSpecialResponseHeadersVisible() {
-    var url = getSetCookieUrl('foo', 'bar');
-    var extraHeadersListenerCalledCount = 0;
+    const url = getSetCookieUrl('foo', 'bar');
+    let extraHeadersListenerCalledCount = 0;
     function extraHeadersListener(details) {
       extraHeadersListenerCalledCount++;
       checkHeaders(details.responseHeaders, ['set-cookie'], []);
@@ -102,7 +102,7 @@ loadScript.then(async function() {
     chrome.webRequest.onCompleted.addListener(extraHeadersListener,
         {urls: [url]}, ['responseHeaders', 'extraHeaders']);
 
-    var standardListenerCalledCount = 0;
+    let standardListenerCalledCount = 0;
     function standardListener(details) {
       standardListenerCalledCount++;
       checkHeaders(details.responseHeaders, [], ['set-cookie']);
@@ -129,8 +129,8 @@ loadScript.then(async function() {
   function testModifySpecialRequestHeaders() {
     // Set a cookie so the cookie request header is set.
     navigateAndWait(getSetCookieUrl('foo', 'bar'), function() {
-      var url = getServerURL('echoheader?Cookie');
-      var listener = callbackPass(function(details) {
+      const url = getServerURL('echoheader?Cookie');
+      const listener = callbackPass(function(details) {
         removeHeader(details.requestHeaders, 'cookie');
         return {requestHeaders: details.requestHeaders};
       });
@@ -150,8 +150,8 @@ loadScript.then(async function() {
   },
 
   function testModifySpecialResponseHeaders() {
-    var url = getSetCookieUrl('foo', 'bar');
-    var headersListener = callbackPass(function(details) {
+    const url = getSetCookieUrl('foo', 'bar');
+    const headersListener = callbackPass(function(details) {
       checkHeaders(details.responseHeaders, ['set-cookie'], []);
       details.responseHeaders.push({name: 'X-New-Header',
                                     value: 'Foo'});
@@ -160,13 +160,13 @@ loadScript.then(async function() {
     chrome.webRequest.onHeadersReceived.addListener(headersListener,
         {urls: [url]}, ['responseHeaders', 'blocking', 'extraHeaders']);
 
-    var responseListener = callbackPass(function(details) {
+    const responseListener = callbackPass(function(details) {
       checkHeaders(details.responseHeaders, ['set-cookie', 'x-new-header'], []);
     });
     chrome.webRequest.onResponseStarted.addListener(responseListener,
         {urls: [url]}, ['responseHeaders', 'extraHeaders']);
 
-    var completedListener = callbackPass(function(details) {
+    const completedListener = callbackPass(function(details) {
       checkHeaders(details.responseHeaders, ['set-cookie', 'x-new-header'], []);
     });
     chrome.webRequest.onCompleted.addListener(completedListener,
@@ -182,8 +182,8 @@ loadScript.then(async function() {
   function testCannotModifySpecialRequestHeadersWithoutExtraHeaders() {
     // Set a cookie so the cookie request header is set.
     navigateAndWait(getSetCookieUrl('foo', 'bar'), function() {
-      var url = getServerURL('echoheader?Cookie');
-      var listener = callbackPass(function(details) {
+      const url = getServerURL('echoheader?Cookie');
+      const listener = callbackPass(function(details) {
         removeHeader(details.requestHeaders, 'cookie');
         return {requestHeaders: details.requestHeaders};
       });
@@ -192,7 +192,7 @@ loadScript.then(async function() {
 
       // Add a no-op listener with extraHeaders to make sure it does not affect
       // the other listener.
-      var noop = function() {};
+      const noop = function() {};
       chrome.webRequest.onBeforeSendHeaders.addListener(noop,
           {urls: [url]}, ['requestHeaders', 'blocking', 'extraHeaders']);
 
@@ -210,10 +210,10 @@ loadScript.then(async function() {
   },
 
   function testModifyUserAgentWithoutExtraHeaders() {
-    var url = getServerURL('echoheader?User-Agent');
-    var listener = callbackPass(function(details) {
-      var headers = details.requestHeaders;
-      for (var i = 0; i < headers.length; i++) {
+    const url = getServerURL('echoheader?User-Agent');
+    const listener = callbackPass(function(details) {
+      const headers = details.requestHeaders;
+      for (let i = 0; i < headers.length; i++) {
         if (headers[i].name.toLowerCase() === 'user-agent') {
           headers[i].value = 'foo';
           break;
@@ -246,8 +246,8 @@ loadScript.then(async function() {
   // Successful Set-Cookie modification is tested in test_blocking_cookie.js.
   function testCannotModifySpecialResponseHeadersWithoutExtraHeaders() {
     // Use unique name and value so other tests don't interfere.
-    var url = getSetCookieUrl('theName', 'theValue');
-    var listener = callbackPass(function(details) {
+    const url = getSetCookieUrl('theName', 'theValue');
+    const listener = callbackPass(function(details) {
       removeHeader(details.responseHeaders, 'set-cookie');
       return {responseHeaders: details.responseHeaders};
     });
@@ -256,7 +256,7 @@ loadScript.then(async function() {
 
     // Add a no-op listener with extraHeaders to make sure it does not affect
     // the other listener.
-    var noop = function() {};
+    const noop = function() {};
     chrome.webRequest.onHeadersReceived.addListener(noop,
         {urls: [url]}, ['responseHeaders', 'blocking', 'extraHeaders']);
 
@@ -275,9 +275,9 @@ loadScript.then(async function() {
   function testRedirectToUrlWithExtraHeadersListener() {
     // Set a cookie so the cookie request header is set.
     navigateAndWait(getSetCookieUrl('foo', 'bar'), function() {
-      var finalURL = getServerURL('echoheader?Cookie');
-      var url = getServerURL('server-redirect?' + finalURL);
-      var listener = callbackPass(function(details) {
+      const finalURL = getServerURL('echoheader?Cookie');
+      const url = getServerURL(`server-redirect?${finalURL}`);
+      const listener = callbackPass(function(details) {
         removeHeader(details.requestHeaders, 'cookie');
         return {requestHeaders: details.requestHeaders};
       });

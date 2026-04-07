@@ -21,9 +21,9 @@ runTests([
           initiator: getInitiatorURLForHostname(hostname),
           parentDocumentId: 1,
           documentId: 2,
-          documentLifecycle: "active",
+          documentLifecycle: 'active',
           tabId: 0,
-          frameType: "sub_frame",
+          frameType: 'sub_frame',
          }
       },
       { label: 'onBeforeSendHeaders',
@@ -36,9 +36,9 @@ runTests([
           initiator: getInitiatorURLForHostname(hostname),
           parentDocumentId: 1,
           documentId: 2,
-          documentLifecycle: "active",
+          documentLifecycle: 'active',
           tabId: 0,
-          frameType: "sub_frame",
+          frameType: 'sub_frame',
         },
       },
       { label: 'onSendHeaders',
@@ -51,9 +51,9 @@ runTests([
           initiator: getInitiatorURLForHostname(hostname),
           parentDocumentId: 1,
           documentId: 2,
-          documentLifecycle: "active",
+          documentLifecycle: 'active',
           tabId: 0,
-          frameType: "sub_frame",
+          frameType: 'sub_frame',
         },
       },
       { label: 'onErrorOccurred',
@@ -66,9 +66,9 @@ runTests([
           initiator: getInitiatorURLForHostname(hostname),
           parentDocumentId: 1,
           documentId: 2,
-          documentLifecycle: "active",
+          documentLifecycle: 'active',
           tabId: 0,
-          frameType: "sub_frame",
+          frameType: 'sub_frame',
           fromCache: false,
           error: 'net::ERR_ABORTED',
         },
@@ -83,7 +83,7 @@ runTests([
     waitUntilSendHeaders('image', url, function() {
       // Cancels load and triggers onErrorOccurred.
       chrome.tabs.executeScript(tabId, {
-        code: 'document.querySelector("iframe").remove();',
+        code: `document.querySelector('iframe').remove();`,
       });
     });
 
@@ -91,7 +91,7 @@ runTests([
       chrome.tabs.executeScript(tabId, {
         allFrames: true,
         code: `if (top !== window) {
-          var img = new Image();
+          let img = new Image();
           img.src = '${url}';
         }`
       });
@@ -116,8 +116,8 @@ runTests([
           tabId: 0,
           frameId: 0,
           parentFrameId: -1,
-          documentLifecycle: "active",
-          frameType: "outermost_frame"
+          documentLifecycle: 'active',
+          frameType: 'outermost_frame'
         }
       },
       { label: 'onBeforeSendHeaders',
@@ -130,8 +130,8 @@ runTests([
           tabId: 0,
           frameId: 0,
           parentFrameId: -1,
-          documentLifecycle: "active",
-          frameType: "outermost_frame"
+          documentLifecycle: 'active',
+          frameType: 'outermost_frame'
         },
       },
       { label: 'onSendHeaders',
@@ -144,8 +144,8 @@ runTests([
           tabId: 0,
           frameId: 0,
           parentFrameId: -1,
-          documentLifecycle: "active",
-          frameType: "outermost_frame",
+          documentLifecycle: 'active',
+          frameType: 'outermost_frame',
         },
       },
       { label: 'onErrorOccurred',
@@ -158,8 +158,8 @@ runTests([
           tabId: 0,
           frameId: 0,
           parentFrameId: -1,
-          documentLifecycle: "active",
-          frameType: "outermost_frame",
+          documentLifecycle: 'active',
+          frameType: 'outermost_frame',
           fromCache: false,
           error: 'net::ERR_ABORTED',
         },
@@ -171,7 +171,7 @@ runTests([
         types: ['image'],
       });
 
-    var callbackDone = chrome.test.callbackAdded();
+    const callbackDone = chrome.test.callbackAdded();
 
     waitUntilSendHeaders('image', url, function() {
       // Cancels load and triggers onErrorOccurred.
@@ -180,7 +180,7 @@ runTests([
 
     navigateAndWait(mainUrl, function() {
       chrome.tabs.executeScript(tabId, {
-        code: `var img = new Image(); img.src = '${url}';`
+        code: `let img = new Image(); img.src = '${url}';`
       });
     });
   },

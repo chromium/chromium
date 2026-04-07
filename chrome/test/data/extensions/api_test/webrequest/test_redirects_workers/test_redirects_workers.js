@@ -9,21 +9,21 @@
   const config = await new Promise(resolve => chrome.test.getConfig(resolve));
   const args = JSON.parse(config.customArg);
 
-  const base_url = args.base_url;
-  const workerUrl = base_url + 'worker.js';
-  const dataWorkerUrl = 'data:text/javascript,' + workerJsContent;
-  const redirectWorkerUrl = base_url + 'redirect_worker.js';
-  const redirectDataWorkerUrl = base_url + 'redirect_data_worker.js';
-  const importRedirectWorkerUrl = base_url + 'import_redirect_worker.js';
+  const baseUrl = args.base_url;
+  const workerUrl = `${baseUrl}worker.js`;
+  const dataWorkerUrl = `data:text/javascript,${workerJsContent}`;
+  const redirectWorkerUrl = `${baseUrl}redirect_worker.js`;
+  const redirectDataWorkerUrl = `${baseUrl}redirect_data_worker.js`;
+  const importRedirectWorkerUrl = `${baseUrl}import_redirect_worker.js`;
   const importRedirectDataWorkerUrl =
-      base_url + 'import_redirect_data_worker.js';
+      `${baseUrl}import_redirect_data_worker.js`;
 
   const registerErrorMessage = (url, message) =>
     `Error: Failed to register a ServiceWorker for scope ` +
-    `('${base_url}') with script ('${url}'): ${message}`;
+    `('${baseUrl}') with script ('${url}'): ${message}`;
 
   const runSubTest = (workerClass, url, subresourceUrl, expected) => {
-    const testDocumentUrl = new URL(base_url + 'test.html');
+    const testDocumentUrl = new URL(`${baseUrl}test.html`);
     testDocumentUrl.searchParams.set('workerClass', workerClass);
     testDocumentUrl.searchParams.set('workerUrl', url);
     if (subresourceUrl) {

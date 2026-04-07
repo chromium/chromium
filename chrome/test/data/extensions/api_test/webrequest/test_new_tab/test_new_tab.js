@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const scriptUrl = '_test_resources/api_test/webrequest/framework.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const SCRIPT_URL = '_test_resources/api_test/webrequest/framework.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
   runTests([
@@ -12,64 +12,64 @@ loadScript.then(async function() {
   function setup () {
     expect(
       [  // events
-        { label: "a-onBeforeRequest",
-          event: "onBeforeRequest",
+        { label: 'a-onBeforeRequest',
+          event: 'onBeforeRequest',
           details: {
-            url: getURL("newTab/a.html"),
-            frameUrl: getURL("newTab/a.html"),
+            url: getURL('newTab/a.html'),
+            frameUrl: getURL('newTab/a.html'),
             initiator: getDomain(initiators.BROWSER_INITIATED)
           }
         },
-        { label: "a-onResponseStarted",
-          event: "onResponseStarted",
+        { label: 'a-onResponseStarted',
+          event: 'onResponseStarted',
           details: {
-            url: getURL("newTab/a.html"),
+            url: getURL('newTab/a.html'),
             statusCode: 200,
             fromCache: false,
-            statusLine: "HTTP/1.1 200 OK",
+            statusLine: 'HTTP/1.1 200 OK',
             initiator: getDomain(initiators.BROWSER_INITIATED)
             // Request to chrome-extension:// url has no IP.
           }
         },
-        { label: "a-onCompleted",
-          event: "onCompleted",
+        { label: 'a-onCompleted',
+          event: 'onCompleted',
           details: {
-            url: getURL("newTab/a.html"),
+            url: getURL('newTab/a.html'),
             statusCode: 200,
             fromCache: false,
-            statusLine: "HTTP/1.1 200 OK",
+            statusLine: 'HTTP/1.1 200 OK',
             initiator: getDomain(initiators.BROWSER_INITIATED)
            // Request to chrome-extension:// url has no IP.
           }
         },
-        { label: "b-onBeforeRequest",
-          event: "onBeforeRequest",
+        { label: 'b-onBeforeRequest',
+          event: 'onBeforeRequest',
           details: {
-            url: getURL("newTab/b.html"),
-            frameUrl: getURL("newTab/b.html"),
+            url: getURL('newTab/b.html'),
+            frameUrl: getURL('newTab/b.html'),
             tabId: 1,
             initiator: getDomain(initiators.WEB_INITIATED)
           }
         },
-        { label: "b-onResponseStarted",
-          event: "onResponseStarted",
+        { label: 'b-onResponseStarted',
+          event: 'onResponseStarted',
           details: {
-            url: getURL("newTab/b.html"),
+            url: getURL('newTab/b.html'),
             statusCode: 200,
             fromCache: false,
-            statusLine: "HTTP/1.1 200 OK",
+            statusLine: 'HTTP/1.1 200 OK',
             // Request to chrome-extension:// url has no IP.
             tabId: 1,
             initiator: getDomain(initiators.WEB_INITIATED)
           }
         },
-        { label: "b-onCompleted",
-          event: "onCompleted",
+        { label: 'b-onCompleted',
+          event: 'onCompleted',
           details: {
-            url: getURL("newTab/b.html"),
+            url: getURL('newTab/b.html'),
             statusCode: 200,
             fromCache: false,
-            statusLine: "HTTP/1.1 200 OK",
+            statusLine: 'HTTP/1.1 200 OK',
             // Request to chrome-extension:// url has no IP.
             tabId: 1,
             initiator: getDomain(initiators.WEB_INITIATED)
@@ -77,8 +77,8 @@ loadScript.then(async function() {
         },
       ],
       [  // event order
-      ["a-onBeforeRequest", "a-onResponseStarted", "a-onCompleted",
-       "b-onBeforeRequest", "b-onResponseStarted", "b-onCompleted"] ]);
+      ['a-onBeforeRequest', 'a-onResponseStarted', 'a-onCompleted',
+       'b-onBeforeRequest', 'b-onResponseStarted', 'b-onCompleted'] ]);
     // Notify the api test that we're waiting for the user.
     chrome.test.notifyPass();
   },
