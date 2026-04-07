@@ -123,9 +123,7 @@ class SigninAccountCapabilitiesSceneAgentTest : public PlatformTest {
   }
 
  protected:
-  web::WebTaskEnvironment task_environment_{
-      web::WebTaskEnvironment::IOThreadType::REAL_THREAD,
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
@@ -224,63 +222,7 @@ TEST_F(SigninAccountCapabilitiesSceneAgentTest, TestIdentityRemoval) {
   EXPECT_EQ(build_context_calls, 2);
 }
 
-// Tests that capabilities are refetched every 24 hours.
-TEST_F(SigninAccountCapabilitiesSceneAgentTest, TestPeriodicFetch) {
-  FakeSystemIdentity* identity1 = [FakeSystemIdentity fakeIdentity1];
-  AddIdentity(identity1);
 
-  __block int build_context_calls = 0;
-  fake_system_identity_manager_->SetBuildExternalPrivacyContextCallback(
-      base::BindRepeating(^(
-          id<SystemIdentity> identity, UIViewController* view_controller,
-          SystemIdentityManager::BuildExternalPrivacyContextCallback callback) {
-        build_context_calls++;
-        std::move(callback).Run(nil);
-      }));
-
-  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-  EXPECT_EQ(build_context_calls, 1);
-
-  // Fast forward by 1 day.
-  task_environment_.FastForwardBy(base::Days(1));
-
-  // The timer should have fired and refetched capabilities.
-  EXPECT_EQ(build_context_calls, 2);
-
-  // Fast forward by another day.
-  task_environment_.FastForwardBy(base::Days(1));
-
-  // The timer should have fired again.
-  EXPECT_EQ(build_context_calls, 3);
-}
-
-// Tests that an identity is refetched after the staleness interval has passed.
-TEST_F(SigninAccountCapabilitiesSceneAgentTest,
-       TestExternalPrivacyContextStaleness) {
-  FakeSystemIdentity* identity1 = [FakeSystemIdentity fakeIdentity1];
-  AddIdentity(identity1);
-
-  __block int build_context_calls = 0;
-  fake_system_identity_manager_->SetBuildExternalPrivacyContextCallback(
-      base::BindRepeating(^(
-          id<SystemIdentity> identity, UIViewController* view_controller,
-          SystemIdentityManager::BuildExternalPrivacyContextCallback callback) {
-        build_context_calls++;
-        std::move(callback).Run(nil);
-      }));
-
-  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-  EXPECT_EQ(build_context_calls, 1);
-
-  // Fast forward by more than 1 day.
-  task_environment_.FastForwardBy(base::Days(1) + base::Hours(1));
-
-  // Trigger a scene event to try fetching again.
-  fake_system_identity_manager_->FireSystemIdentityReloaded();
-
-  // It should be refetched.
-  EXPECT_EQ(build_context_calls, 2);
-}
 
 // Tests that the agent fetches capabilities when a UI blocker is removed.
 TEST_F(SigninAccountCapabilitiesSceneAgentTest, TestFetchOnUIBlockerRemoved) {

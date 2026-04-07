@@ -42,16 +42,7 @@
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/signin/ui/age_mismatch_prompt_mode.h"
-#import "third_party/abseil-cpp/absl/container/flat_hash_map.h"
-
-namespace {
-
-// The interval after which the External Privacy Context becomes stale and needs
-// to be built again.
-constexpr base::TimeDelta kExternalPrivacyContextStalenessInterval =
-    base::Days(1);
-
-}  // namespace
+#import "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 @interface SigninAccountCapabilitiesSceneAgent () <
     AgeMismatchSignoutCoordinatorDelegate,
@@ -66,7 +57,7 @@ constexpr base::TimeDelta kExternalPrivacyContextStalenessInterval =
   __weak id<SceneUIProvider> _sceneUIProvider;
 
   // The set of Gaia IDs for which the external privacy context has been built.
-  absl::flat_hash_map<GaiaId, base::Time, GaiaId::Hash> _handledIdentities;
+  absl::flat_hash_set<GaiaId, GaiaId::Hash> _handledIdentities;
 
   std::unique_ptr<SystemIdentityManagerObserverBridge>
       _systemIdentityManagerObserver;
@@ -76,9 +67,6 @@ constexpr base::TimeDelta kExternalPrivacyContextStalenessInterval =
 
   // Coordinator for the Age Mismatch prompt.
   AgeMismatchSignoutCoordinator* _ageMismatchSignoutCoordinator;
-
-  // Timer to periodically rebuild the External Privacy Contexts
-  base::RepeatingTimer _refreshTimer;
 
   // Tracks if a sign-out from an age mismatch is currently in progress.
   BOOL _isAgeMismatchSignoutInProgress;
@@ -117,12 +105,6 @@ constexpr base::TimeDelta kExternalPrivacyContextStalenessInterval =
         std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
                                                                 self);
   }
-
-  __weak __typeof(self) weakSelf = self;
-  _refreshTimer.Start(FROM_HERE, kExternalPrivacyContextStalenessInterval,
-                      base::BindRepeating(^{
-                        [weakSelf fetchCapabilitiesForUnhandledIdentities];
-                      }));
 }
 
 #pragma mark - SceneStateObserver
@@ -138,7 +120,6 @@ constexpr base::TimeDelta kExternalPrivacyContextStalenessInterval =
   [self.sceneState removeObserver:self];
   _systemIdentityManagerObserver.reset();
   _identityManagerObserver.reset();
-  _refreshTimer.Stop();
   _ageMismatchSignoutCoordinator.delegate = nil;
   [_ageMismatchSignoutCoordinator stop];
   _ageMismatchSignoutCoordinator = nil;
@@ -215,13 +196,14 @@ constexpr base::TimeDelta kExternalPrivacyContextStalenessInterval =
 // Fetches capabilities for unhandled identities after building the External
 // Privacy Context, which communicates device signals to the capabilities
 // service.
+// TODO(crbug.com/484261211): Migrate these functionalities to the
+// SystemIdentityManager.
 - (void)fetchCapabilitiesForUnhandledIdentities {
   if (![self isUIAvailableToShowIOSPrompt]) {
     return;
   }
 
   NSArray<id<SystemIdentity>>* identities = [self unhandledIdentities];
-
   if (!identities.count) {
     return;
   }
@@ -237,42 +219,55 @@ constexpr base::TimeDelta kExternalPrivacyContextStalenessInterval =
   // Closure to be executed after all External Privacy Contexts have been built.
   base::OnceClosure finalClosure = base::BindOnce(
       [](std::unique_ptr<ScopedUIBlocker> blocker,
-         NSArray<id<SystemIdentity>>* unhandled_identities,
          __weak __typeof(self) weak_self) {
-        [weak_self onAllExternalPrivacyContextsBuilt:unhandled_identities];
+        [weak_self onAllExternalPrivacyContextsBuilt];
       },
-      std::move(applicationUIBlocker), identities, weakSelf);
+      std::move(applicationUIBlocker), weakSelf);
 
-  base::RepeatingClosure barrierClosure =
-      base::BarrierClosure(identities.count, std::move(finalClosure));
+  [self buildExternalPrivacyContextForIdentities:identities
+                                           index:0
+                                    finalClosure:std::move(finalClosure)];
+}
 
-  for (id<SystemIdentity> identity in identities) {
-    // Record the time at which the External Privacy Context is built.
-    _handledIdentities[identity.gaiaId] = base::Time::Now();
-
-    SystemIdentityManager::BuildExternalPrivacyContextCallback callback =
-        base::BindOnce(
-            [](base::RepeatingClosure closure, NSError* error) {
-              // TODO(crbug.com/481654850): Add metrics.
-              closure.Run();
-            },
-            barrierClosure);
-
-    // Build the External Privacy Context for the given identity.
-    GetApplicationContext()
-        ->GetSystemIdentityManager()
-        ->BuildExternalPrivacyContext(identity,
-                                      [_sceneUIProvider activeViewController],
-                                      std::move(callback));
+// Builds External Privacy Context for the given list of identities
+// sequentially. This is done recursively by iterating over the list using the
+// `index` argument, ensuring only one EPC is built at a time.
+- (void)buildExternalPrivacyContextForIdentities:
+            (NSArray<id<SystemIdentity>>*)identities
+                                           index:(NSUInteger)index
+                                    finalClosure:
+                                        (base::OnceClosure)finalClosure {
+  if (index >= identities.count) {
+    std::move(finalClosure).Run();
+    return;
   }
+
+  id<SystemIdentity> identity = identities[index];
+  _handledIdentities.insert(identity.gaiaId);
+
+  __weak __typeof(self) weakSelf = self;
+  SystemIdentityManager::BuildExternalPrivacyContextCallback callback =
+      base::BindOnce(
+          [](id weakSelf, NSArray<id<SystemIdentity>>* identities,
+             NSUInteger index, base::OnceClosure fc, NSError* error) {
+            // TODO(crbug.com/481654850): Add metrics.
+            [weakSelf buildExternalPrivacyContextForIdentities:identities
+                                                         index:index + 1
+                                                  finalClosure:std::move(fc)];
+          },
+          weakSelf, identities, index, std::move(finalClosure));
+
+  // Build the External Privacy Context for the given identity.
+  GetApplicationContext()
+      ->GetSystemIdentityManager()
+      ->BuildExternalPrivacyContext(identity,
+                                    [_sceneUIProvider activeViewController],
+                                    std::move(callback));
 }
 
 // Called after all External Privacy Contexts have been built.
-- (void)onAllExternalPrivacyContextsBuilt:
-    (NSArray<id<SystemIdentity>>*)identities {
+- (void)onAllExternalPrivacyContextsBuilt {
   _areExternalPrivacyContextsBeingBuilt = NO;
-
-  RunSystemCapabilitiesPrefetch(identities);
 
   // Read capability value and signout if needed.
   signin::IdentityManager* identityManager =
@@ -333,14 +328,11 @@ constexpr base::TimeDelta kExternalPrivacyContextStalenessInterval =
     currentGaiaIDs.insert(identity.gaiaId);
   }
 
-  // Remove any stale identities from _handledIdentities, or those fetched
-  // more than the staleness interval ago.
+  // Remove any stale identities from _handledIdentities.
   std::vector<GaiaId> keys_to_remove;
-  for (const auto& pair : _handledIdentities) {
-    if (!currentGaiaIDs.contains(pair.first) ||
-        base::Time::Now() - pair.second >=
-            kExternalPrivacyContextStalenessInterval) {
-      keys_to_remove.push_back(pair.first);
+  for (const auto& key : _handledIdentities) {
+    if (!currentGaiaIDs.contains(key)) {
+      keys_to_remove.push_back(key);
     }
   }
 
