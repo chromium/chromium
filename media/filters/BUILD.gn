@@ -58,6 +58,8 @@ source_set("filters") {
     "file_data_source.h",
     "frame_processor.cc",
     "frame_processor.h",
+    "h26x_annex_b_bitstream_builder.cc",
+    "h26x_annex_b_bitstream_builder.h",
     "memory_data_source.cc",
     "memory_data_source.h",
     "offloading_video_decoder.cc",
@@ -247,13 +249,6 @@ source_set("filters") {
         "/DELAYLOAD:packages/Microsoft.VCRTForwarders.140.1.0.6/runtimes/win10-x64/native/release/vcruntime140_app.dll",
       ]
     }
-  }
-
-  if (is_win || use_vaapi || enable_hevc_parser_and_hw_decoder) {
-    sources += [
-      "h26x_annex_b_bitstream_builder.cc",
-      "h26x_annex_b_bitstream_builder.h",
-    ]
   }
 
   if (enable_hls_demuxer) {

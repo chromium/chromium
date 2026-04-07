@@ -172,11 +172,12 @@ void H264Decoder::Reset() {
   decoder_buffer_.reset();
   secure_handle_ = 0;
 
-  // If we are in kDecoding, we can resume without processing an SPS.
-  // The state becomes kDecoding again, (1) at the first IDR slice or (2) at
-  // the first slice after the recovery point SEI.
-  if (state_ == State::kDecoding)
+  // If we have already parsed stream metadata, we can resume without processing
+  // an SPS. The state becomes kDecoding again, (1) at the first IDR slice or
+  // (2) at the first slice after the recovery point SEI.
+  if (state_ != State::kNeedStreamMetadata && state_ != State::kError) {
     state_ = State::kAfterReset;
+  }
 }
 
 void H264Decoder::PrepareRefPicLists() {
@@ -1619,6 +1620,29 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
             // |curr_pic_| already exists, so skip to ProcessCurrentSlice().
             state_ = State::kTryCurrentSlice;
           } else {
+            const H264PPS* pps =
+                parser_.GetPPS(curr_slice_hdr_->pic_parameter_set_id);
+            if (!pps) {
+              SET_ERROR_AND_RETURN();
+            }
+
+            bool need_new_buffers = false;
+            if (!ProcessSPS(pps->seq_parameter_set_id, &need_new_buffers)) {
+              SET_ERROR_AND_RETURN();
+            }
+
+            if (need_new_buffers) {
+              // Yield `kConfigChange` to the client so they can allocate new
+              // surfaces. We do not advance `state_` or clear `curr_nalu_`.
+              // When Decode() resumes, it will re-enter this block, but
+              // ProcessSPS will evaluate `need_new_buffers = false` and
+              // proceed.
+              ref_pic_list_p0_.clear();
+              ref_pic_list_b0_.clear();
+              ref_pic_list_b1_.clear();
+              return kConfigChange;
+            }
+
             // New picture/finished previous one, try to start a new one
             // or tell the client we need more surfaces.
             if (secure_handle_) {
@@ -1657,26 +1681,11 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
         if (par_res != H264Parser::kOk)
           SET_ERROR_AND_RETURN();
 
-        bool need_new_buffers = false;
-        if (!ProcessSPS(sps_id, &need_new_buffers)) {
-          SET_ERROR_AND_RETURN();
-        }
         accelerator_->ProcessSPS(parser_.GetSPS(sps_id), curr_nalu_->data);
 
         if (state_ == State::kNeedStreamMetadata)
           state_ = State::kAfterReset;
 
-        if (need_new_buffers) {
-          curr_pic_ = nullptr;
-          curr_nalu_ = nullptr;
-          ref_pic_list_p0_.clear();
-          ref_pic_list_b0_.clear();
-          ref_pic_list_b1_.clear();
-        }
-        // Prefer config changes over color space changes.
-        if (need_new_buffers) {
-          return kConfigChange;
-        }
         break;
       }
 

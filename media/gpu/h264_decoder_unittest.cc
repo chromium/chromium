@@ -19,6 +19,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/base/test_data_util.h"
+#include "media/filters/h26x_annex_b_bitstream_builder.h"
+#include "media/gpu/h264_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -309,6 +311,17 @@ TEST_F(H264DecoderTest, DecodeSingleFrame) {
 // This is for CENCv1 full sample encryption.
 TEST_F(H264DecoderTest, DecodeSingleEncryptedFrame) {
   SetInputFrameFiles({kBaselineFrame0});
+
+  EXPECT_CALL(*accelerator_, ParseEncryptedSliceHeader(_, _, _, _))
+      .WillOnce([this](const std::vector<base::span<const uint8_t>>& data,
+                       const std::vector<SubsampleEntry>& subsamples,
+                       uint64_t /*secure_handle*/,
+                       H264SliceHeader* slice_hdr_out) {
+        return ParseSliceHeader(
+            data, subsamples, accelerator_->last_sps_nalu_data,
+            accelerator_->last_pps_nalu_data, slice_hdr_out);
+      });
+
   ASSERT_EQ(AcceleratedVideoDecoder::kConfigChange, Decode(true));
   EXPECT_EQ(gfx::Size(320, 192), decoder_->GetPicSize());
   EXPECT_EQ(H264PROFILE_BASELINE, decoder_->GetProfile());
@@ -316,15 +329,6 @@ TEST_F(H264DecoderTest, DecodeSingleEncryptedFrame) {
 
   {
     InSequence sequence;
-    EXPECT_CALL(*accelerator_, ParseEncryptedSliceHeader(_, _, _, _))
-        .WillOnce([this](const std::vector<base::span<const uint8_t>>& data,
-                         const std::vector<SubsampleEntry>& subsamples,
-                         uint64_t /*secure_handle*/,
-                         H264SliceHeader* slice_hdr_out) {
-          return ParseSliceHeader(
-              data, subsamples, accelerator_->last_sps_nalu_data,
-              accelerator_->last_pps_nalu_data, slice_hdr_out);
-        });
     EXPECT_CALL(*accelerator_, CreateH264Picture());
     EXPECT_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _));
     EXPECT_CALL(*accelerator_, SubmitSlice(_, _, _, _, _, _, _, _));
@@ -629,10 +633,6 @@ TEST_F(H264DecoderTest, SetEncryptedStream) {
 
 TEST_F(H264DecoderTest, ParseEncryptedSliceHeaderRetry) {
   SetInputFrameFiles({kBaselineFrame0});
-  ASSERT_EQ(AcceleratedVideoDecoder::kConfigChange, Decode(true));
-  EXPECT_EQ(gfx::Size(320, 192), decoder_->GetPicSize());
-  EXPECT_EQ(H264PROFILE_BASELINE, decoder_->GetProfile());
-  EXPECT_LE(9u, decoder_->GetRequiredNumOfPictures());
 
   EXPECT_CALL(*accelerator_, ParseEncryptedSliceHeader(_, _, _, _))
       .WillOnce(Return(H264Decoder::H264Accelerator::Status::kTryAgain));
@@ -645,17 +645,23 @@ TEST_F(H264DecoderTest, ParseEncryptedSliceHeaderRetry) {
   ASSERT_EQ(AcceleratedVideoDecoder::kTryAgain, Decode(true));
 
   // Assume key has been provided now, next call to Decode() should proceed.
+  EXPECT_CALL(*accelerator_, ParseEncryptedSliceHeader(_, _, _, _))
+      .WillOnce([this](const std::vector<base::span<const uint8_t>>& data,
+                       const std::vector<SubsampleEntry>& subsamples,
+                       uint64_t /*secure_handle*/,
+                       H264SliceHeader* slice_hdr_out) {
+        return ParseSliceHeader(
+            data, subsamples, accelerator_->last_sps_nalu_data,
+            accelerator_->last_pps_nalu_data, slice_hdr_out);
+      });
+
+  ASSERT_EQ(AcceleratedVideoDecoder::kConfigChange, Decode(true));
+  EXPECT_EQ(gfx::Size(320, 192), decoder_->GetPicSize());
+  EXPECT_EQ(H264PROFILE_BASELINE, decoder_->GetProfile());
+  EXPECT_LE(9u, decoder_->GetRequiredNumOfPictures());
+
   {
     InSequence sequence;
-    EXPECT_CALL(*accelerator_, ParseEncryptedSliceHeader(_, _, _, _))
-        .WillOnce([this](const std::vector<base::span<const uint8_t>>& data,
-                         const std::vector<SubsampleEntry>& subsamples,
-                         uint64_t /*secure_handle*/,
-                         H264SliceHeader* slice_hdr_out) {
-          return ParseSliceHeader(
-              data, subsamples, accelerator_->last_sps_nalu_data,
-              accelerator_->last_pps_nalu_data, slice_hdr_out);
-        });
     EXPECT_CALL(*accelerator_, CreateH264Picture());
     EXPECT_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _));
     EXPECT_CALL(*accelerator_, SubmitSlice(_, _, _, _, _, _, _, _));
@@ -972,4 +978,102 @@ TEST_F(H264DecoderTest,
 }
 
 }  // namespace
+TEST_F(H264DecoderTest, IgnoreUnreferencedSPS) {
+  H26xAnnexBBitstreamBuilder builder;
+
+  // SPS 0 (4K - The actual config)
+  H264SPS sps0 = {};
+  sps0.seq_parameter_set_id = 0;
+  sps0.profile_idc = H264SPS::kProfileIDCMain;
+  sps0.level_idc = H264SPS::kLevelIDC5p1;
+  sps0.log2_max_frame_num_minus4 = 4;
+  sps0.log2_max_pic_order_cnt_lsb_minus4 = 4;
+  sps0.pic_width_in_mbs_minus1 = 3840 / 16 - 1;         // 239
+  sps0.pic_height_in_map_units_minus1 = 2160 / 16 - 1;  // 134
+  sps0.frame_mbs_only_flag = true;
+  sps0.max_num_ref_frames = 1;
+  BuildPackedH264SPS(builder, sps0);
+
+  // SPS 1 (480p - The trap)
+  H264SPS sps1 = {};
+  sps1.seq_parameter_set_id = 1;
+  sps1.profile_idc = H264SPS::kProfileIDCMain;
+  sps1.level_idc = H264SPS::kLevelIDC5p1;
+  sps1.log2_max_frame_num_minus4 = 4;
+  sps1.log2_max_pic_order_cnt_lsb_minus4 = 4;
+  sps1.pic_width_in_mbs_minus1 = 640 / 16 - 1;         // 39
+  sps1.pic_height_in_map_units_minus1 = 480 / 16 - 1;  // 29
+  sps1.frame_mbs_only_flag = true;
+  sps1.max_num_ref_frames = 1;
+  BuildPackedH264SPS(builder, sps1);
+
+  // PPS 1 (References SPS 1 - The trap)
+  H264PPS pps1 = {};
+  pps1.pic_parameter_set_id = 1;
+  pps1.seq_parameter_set_id = 1;
+  BuildPackedH264PPS(builder, sps1, pps1);
+
+  // PPS 0 (References SPS 0)
+  H264PPS pps = {};
+  pps.pic_parameter_set_id = 0;
+  pps.seq_parameter_set_id = 0;
+  BuildPackedH264PPS(builder, sps0, pps);
+
+  // IDR Slice (References PPS 0)
+  builder.AppendBits(32, 0x00000001);  // start code
+  builder.Flush();
+  builder.AppendBits(1, 0);                    // forbidden_zero_bit
+  builder.AppendBits(2, 3);                    // nal_ref_idc
+  builder.AppendBits(5, H264NALU::kIDRSlice);  // nal_unit_type
+
+  builder.AppendUE(0);  // first_mb_in_slice
+  builder.AppendUE(7);  // slice_type = I (7)
+  builder.AppendUE(0);  // pic_parameter_set_id (PPS 0)
+  builder.AppendBits(sps0.log2_max_frame_num_minus4 + 4, 0);  // frame_num
+  builder.AppendUE(0);                                        // idr_pic_id
+  builder.AppendBits(sps0.log2_max_pic_order_cnt_lsb_minus4 + 4,
+                     0);  // pic_order_cnt_lsb
+
+  builder.AppendBool(false);  // no_output_of_prior_pics_flag
+  builder.AppendBool(false);  // long_term_reference_flag
+
+  builder.AppendSE(0);       // slice_qp_delta
+  builder.AppendBool(true);  // byte alignment bit
+  builder.Flush();
+
+  auto buffer = DecoderBuffer::CopyFrom(builder.data());
+
+  EXPECT_CALL(*accelerator_, SetStream(_, _))
+      .WillRepeatedly(Return(H264Decoder::H264Accelerator::Status::kOk));
+  EXPECT_CALL(*accelerator_, CreateH264Picture()).WillRepeatedly([]() {
+    return base::MakeRefCounted<H264Picture>();
+  });
+  EXPECT_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _))
+      .WillRepeatedly(Return(H264Decoder::H264Accelerator::Status::kOk));
+  EXPECT_CALL(*accelerator_, SubmitSlice(_, _, _, _, _, _, _, _))
+      .WillRepeatedly(Return(H264Decoder::H264Accelerator::Status::kOk));
+  EXPECT_CALL(*accelerator_, SubmitDecode(_))
+      .WillRepeatedly(Return(H264Decoder::H264Accelerator::Status::kOk));
+  EXPECT_CALL(*accelerator_, OutputPicture(_)).WillRepeatedly(Return(true));
+
+  decoder_->SetStream(1, buffer);
+
+  // Decode until config change. It should lazily evaluate the 4K SPS when
+  // processing the slice.
+  auto res1 = decoder_->Decode();
+  EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, res1);
+
+  // The decoder should have evaluated SPS 0 (4K), not the later unreferenced
+  // SPS 1 (480p).
+  EXPECT_EQ(gfx::Size(3840, 2160), decoder_->GetPicSize());
+
+  // Decode the rest of the stream: it should process the slice using the 4K
+  // global state.
+  auto res2 = decoder_->Decode();
+  EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, res2);
+
+  // The global state should remain uncorrupted (4K).
+  EXPECT_EQ(gfx::Size(3840, 2160), decoder_->GetPicSize());
+}
+
 }  // namespace media
