@@ -211,8 +211,13 @@ class PrerenderTestHelper {
       std::optional<bool> form_submission = std::nullopt);
   void AddPrerenderUntilScriptAsync(
       const GURL& url,
-      blink::mojom::SpeculationEagerness eagerness =
-          blink::mojom::SpeculationEagerness::kImmediate);
+      std::optional<blink::mojom::SpeculationEagerness> eagerness =
+          std::nullopt,
+      std::optional<std::string> no_vary_search_hint = std::nullopt,
+      const std::string& target_hint = "",
+      std::optional<std::string> ruleset_tag = std::nullopt,
+      int32_t world_id = ISOLATED_WORLD_ID_GLOBAL,
+      std::optional<bool> form_submission = std::nullopt);
 
   void AddPrefetchAsync(const GURL& prefetch_url);
 
@@ -322,6 +327,16 @@ class PrerenderTestHelper {
 
  private:
   void MonitorResourceRequest(const net::test_server::HttpRequest& request);
+
+  void AddPrerenderOrPUSAsync(
+      const std::string& action,
+      const std::vector<GURL>& prerendering_urls,
+      std::optional<blink::mojom::SpeculationEagerness> eagerness,
+      std::optional<std::string> no_vary_search_hint,
+      const std::string& target_hint,
+      std::optional<std::string> ruleset_tag,
+      int32_t world_id,
+      std::optional<bool> form_submission);
 
   WebContents* GetWebContents();
 

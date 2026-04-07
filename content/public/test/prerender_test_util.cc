@@ -38,7 +38,7 @@ constexpr char kAddSpeculationRuleScript[] = R"({
     const script = document.createElement('script');
     script.type = 'speculationrules';
     script.text = `{
-      "prerender": [{ $1 }]
+      "$1": [{ $2 }]
     }`;
     document.head.appendChild(script);
   })";
@@ -48,7 +48,7 @@ constexpr char kAddSpeculationRuleWithRulesetTagScript[] = R"({
     script.type = 'speculationrules';
     script.text = `{
       "tag": "$1",
-      "prerender": [{ $2 }]
+      "$2": [{ $3 }]
     }`;
     document.head.appendChild(script);
   })";
@@ -67,8 +67,10 @@ std::string ConvertEagernessToString(
   }
 }
 
-// Builds <script type="speculationrules"> element for prerendering.
+// Builds <script type="speculationrules"> element for prerendering/prerendering
+// until script.
 std::string BuildScriptElementSpeculationRules(
+    const std::string action,
     const std::vector<GURL>& prerendering_urls,
     std::optional<blink::mojom::SpeculationEagerness> eagerness,
     std::optional<std::string> no_vary_search_hint,
@@ -120,26 +122,13 @@ std::string BuildScriptElementSpeculationRules(
   return ruleset_tag.has_value()
              ? base::ReplaceStringPlaceholders(
                    kAddSpeculationRuleWithRulesetTagScript,
-                   {ruleset_tag.value(), ss.str()}, nullptr)
+                   {ruleset_tag.value(), action, ss.str()}, nullptr)
              : base::ReplaceStringPlaceholders(kAddSpeculationRuleScript,
-                                               {ss.str()}, nullptr);
+                                               {action, ss.str()}, nullptr);
 }
 
 // TODO(crbug.com/428500219): Move these patterns to preloading_test_util.cc,
 // and merge them to BuildScriptElementSpeculationRules.
-constexpr char kAddSpeculationRulePrerenderUntilScriptScript[] = R"({
-    const script = document.createElement('script');
-    script.type = 'speculationrules';
-    script.text = `{
-      "prerender_until_script": [{
-        "source": "list",
-        "urls": [$1],
-        "eagerness": $2
-      }]
-    }`;
-    document.head.appendChild(script);
-  })";
-
 constexpr char kAddSpeculationRulePrefetchScript[] = R"({
     const script = document.createElement('script');
     script.type = 'speculationrules';
@@ -639,6 +628,31 @@ void PrerenderTestHelper::AddPrerendersAsync(
                      /*form_submission=*/std::nullopt);
 }
 
+void PrerenderTestHelper::AddPrerenderOrPUSAsync(
+    const std::string& action,
+    const std::vector<GURL>& prerendering_urls,
+    std::optional<blink::mojom::SpeculationEagerness> eagerness,
+    std::optional<std::string> no_vary_search_hint,
+    const std::string& target_hint,
+    std::optional<std::string> ruleset_tag,
+    int32_t world_id,
+    std::optional<bool> form_submission) {
+  std::string script = BuildScriptElementSpeculationRules(
+      action, prerendering_urls, eagerness, no_vary_search_hint, target_hint,
+      ruleset_tag, form_submission);
+
+  if (world_id == ISOLATED_WORLD_ID_GLOBAL) {
+    // Have to use ExecuteJavaScriptForTests instead of ExecJs/EvalJs here,
+    // because some test pages have ContentSecurityPolicy and EvalJs cannot work
+    // with it. See the quick migration guide for EvalJs for more information.
+    GetWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+        base::UTF8ToUTF16(script), base::NullCallback(), world_id);
+  } else {
+    GetWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptInIsolatedWorld(
+        base::UTF8ToUTF16(script), base::NullCallback(), world_id);
+  }
+}
+
 void PrerenderTestHelper::AddPrerendersAsync(
     const std::vector<GURL>& prerendering_urls,
     std::optional<blink::mojom::SpeculationEagerness> eagerness,
@@ -656,35 +670,24 @@ void PrerenderTestHelper::AddPrerendersAsync(
       no_vary_search_hint.has_value() ? no_vary_search_hint.value() : "(empty)",
       "target_hint", target_hint.empty() ? "(empty)" : target_hint);
   EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
-  std::string script = BuildScriptElementSpeculationRules(
-      prerendering_urls, eagerness, no_vary_search_hint, target_hint,
-      ruleset_tag, form_submission);
 
-  if (world_id == ISOLATED_WORLD_ID_GLOBAL) {
-    // Have to use ExecuteJavaScriptForTests instead of ExecJs/EvalJs here,
-    // because some test pages have ContentSecurityPolicy and EvalJs cannot work
-    // with it. See the quick migration guide for EvalJs for more information.
-    GetWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        base::UTF8ToUTF16(script), base::NullCallback(), world_id);
-  } else {
-    GetWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptInIsolatedWorld(
-        base::UTF8ToUTF16(script), base::NullCallback(), world_id);
-  }
+  AddPrerenderOrPUSAsync("prerender", prerendering_urls, eagerness,
+                         no_vary_search_hint, target_hint, ruleset_tag,
+                         world_id, form_submission);
 }
 
 void PrerenderTestHelper::AddPrerenderUntilScriptAsync(
     const GURL& url,
-    blink::mojom::SpeculationEagerness eagerness) {
+    std::optional<blink::mojom::SpeculationEagerness> eagerness,
+    std::optional<std::string> no_vary_search_hint,
+    const std::string& target_hint,
+    std::optional<std::string> ruleset_tag,
+    int32_t world_id,
+    std::optional<bool> form_submission) {
   EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
-  std::string script = JsReplace(kAddSpeculationRulePrerenderUntilScriptScript,
-                                 url, ConvertEagernessToString(eagerness));
-
-  // Have to use ExecuteJavaScriptForTests instead of ExecJs/EvalJs here,
-  // because some test pages have ContentSecurityPolicy and EvalJs cannot work
-  // with it. See the quick migration guide for EvalJs for more information.
-  GetWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      base::UTF8ToUTF16(script), base::NullCallback(),
-      ISOLATED_WORLD_ID_GLOBAL);
+  AddPrerenderOrPUSAsync("prerender_until_script", {url}, eagerness,
+                         no_vary_search_hint, target_hint, ruleset_tag,
+                         world_id, form_submission);
 }
 
 void PrerenderTestHelper::AddPrefetchAsync(const GURL& prefetch_url) {
