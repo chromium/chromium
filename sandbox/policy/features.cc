@@ -90,6 +90,11 @@ BASE_FEATURE(kEnableCsrssLockdown, base::FEATURE_DISABLED_BY_DEFAULT);
 // https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-process_mitigation_strict_handle_check_policy.
 BASE_FEATURE(kWinSboxStrictHandleChecks, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Raise the job memory limit for the GPU process sandbox to 1TB. When disabled,
+// the GPU process will use a physical-memory-based scaling heuristic with a
+// maximum of 64GB.
+BASE_FEATURE(kWinSboxHighGPUJobMemoryLimits, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)

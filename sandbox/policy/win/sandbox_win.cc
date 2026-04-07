@@ -1105,31 +1105,42 @@ std::string SandboxWin::GetSandboxTagForDelegate(
 std::optional<size_t> SandboxWin::GetJobMemoryLimit(Sandbox sandbox_type) {
 #if defined(ARCH_CPU_64_BITS)
   constexpr uint64_t GB = 1024 * 1024 * 1024;
-  size_t memory_limit = static_cast<size_t>(kDataSizeLimit);
 
-  if (sandbox_type == Sandbox::kGpu ||
-      sandbox_type == Sandbox::kOnDeviceModelExecution) {
-    // Allow the GPU and ODML process sandboxes to access more physical memory
-    // if it's available on the system, up to 64GB.
+  // Returns a memory limit scaled to the available physical memory, up to
+  // 64 GB. Used by GPU and ODML process sandboxes.
+  auto get_scaled_physical_memory_based_limit = []() -> size_t {
     const base::ByteCount physical_memory =
         base::SysInfo::AmountOfPhysicalMemory();
     if (physical_memory > base::GiB(64)) {
-      memory_limit = 64 * GB;
+      return 64 * GB;
     } else if (physical_memory > base::GiB(32)) {
-      memory_limit = 32 * GB;
+      return 32 * GB;
     } else if (physical_memory > base::GiB(16)) {
-      memory_limit = 16 * GB;
-    } else {
-      memory_limit = 8 * GB;
+      return 16 * GB;
     }
-  }
+    return 8 * GB;
+  };
 
-  if (sandbox_type == Sandbox::kRenderer) {
-    // Allow up to 1 TB for the renderer.
-    memory_limit = 1024 * GB;
+  switch (sandbox_type) {
+    case Sandbox::kGpu:
+      // Allow up to 1 TB for the GPU process when the feature
+      // `kWinSboxHighGPUJobMemoryLimits` is enabled.
+      if (base::FeatureList::IsEnabled(
+              features::kWinSboxHighGPUJobMemoryLimits)) {
+        return 1024 * GB;
+      }
+      // Otherwise, scale based on physical memory, up to 64 GB.
+      return get_scaled_physical_memory_based_limit();
+    case Sandbox::kOnDeviceModelExecution:
+      // Scale based on available physical memory, up to 64 GB.
+      return get_scaled_physical_memory_based_limit();
+    case Sandbox::kRenderer:
+      // Allow up to 1 TB for the renderer process.
+      return 1024 * GB;
+    default:
+      // All other sandbox types use the default data size limit.
+      return static_cast<size_t>(kDataSizeLimit);
   }
-
-  return memory_limit;
 #else
   return std::nullopt;
 #endif
