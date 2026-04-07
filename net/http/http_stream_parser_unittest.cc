@@ -282,6 +282,39 @@ TEST(HttpStreamParser, InitAsynchronousUploadDataStream) {
   EXPECT_EQ(0u, progress.position());
 }
 
+class BufferSizeCheckingUploadDataStream : public UploadDataStream {
+ public:
+  explicit BufferSizeCheckingUploadDataStream(std::string_view data)
+      : UploadDataStream(false, 0), data_(data) {}
+
+  BufferSizeCheckingUploadDataStream(
+      const BufferSizeCheckingUploadDataStream&) = delete;
+  BufferSizeCheckingUploadDataStream& operator=(
+      const BufferSizeCheckingUploadDataStream&) = delete;
+
+  bool IsInMemory() const override { return true; }
+
+ private:
+  int InitInternal(const NetLogWithSource& net_log) override {
+    SetSize(data_.size());
+    return OK;
+  }
+  int ReadInternal(IOBuffer* buf, int buf_len) override {
+    EXPECT_GT(buf_len, 1);
+    EXPECT_EQ(buf_len, static_cast<int>(data_.size() - offset_));
+    int bytes_to_copy =
+        std::min(buf_len, static_cast<int>(data_.size() - offset_));
+    std::copy(data_.begin() + offset_, data_.begin() + offset_ + bytes_to_copy,
+              buf->data());
+    offset_ += bytes_to_copy;
+    return bytes_to_copy;
+  }
+  void ResetInternal() override { offset_ = 0; }
+
+  const std::string data_;
+  int offset_ = 0;
+};
+
 // The empty payload is how the last chunk is encoded.
 TEST(HttpStreamParser, EncodeChunk_EmptyPayload) {
   char output[kOutputSize];
@@ -588,6 +621,38 @@ TEST(HttpStreamParser, SentBytesPost) {
   UploadProgress progress = upload_data_stream.GetUploadProgress();
   EXPECT_EQ(12u, progress.size());
   EXPECT_EQ(12u, progress.position());
+}
+
+TEST(HttpStreamParser, MergedUploadDataStreamNotReadOneByteAtATime) {
+  MockWrite writes[] = {
+      MockWrite(SYNCHRONOUS, 0,
+                "POST / HTTP/1.1\r\n"
+                "Content-Length: 12\r\n\r\n"
+                "hello world!"),
+  };
+
+  SequencedSocketData data(base::span<MockRead>(), writes);
+  std::unique_ptr<StreamSocket> stream_socket = CreateConnectedSocket(&data);
+
+  BufferSizeCheckingUploadDataStream upload_data_stream("hello world!");
+  ASSERT_THAT(upload_data_stream.Init(TestCompletionCallback().callback(),
+                                      NetLogWithSource()),
+              IsOk());
+
+  scoped_refptr<GrowableIOBuffer> read_buffer =
+      base::MakeRefCounted<GrowableIOBuffer>();
+  HttpStreamParser parser(stream_socket.get(), false /* is_reused */,
+                          GURL("http://localhost"), "POST", &upload_data_stream,
+                          read_buffer.get(), NetLogWithSource());
+
+  HttpRequestHeaders headers;
+  headers.SetHeader("Content-Length", "12");
+
+  HttpResponseInfo response;
+  TestCompletionCallback callback;
+  EXPECT_EQ(OK, parser.SendRequest("POST / HTTP/1.1\r\n", headers,
+                                   TRAFFIC_ANNOTATION_FOR_TESTS, &response,
+                                   callback.callback()));
 }
 
 TEST(HttpStreamParser, SentBytesChunkedPostError) {

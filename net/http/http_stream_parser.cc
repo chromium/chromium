@@ -269,14 +269,16 @@ int HttpStreamParser::SendRequest(
     // within an int, the above copy_prefix_from() would have triggered a CHECK.
     request_headers_->DidConsume(static_cast<int>(request.size()));
 
-    while (int remaining = request_headers_->BytesRemaining() > 0) {
+    while (!upload_data_stream_->IsEOF()) {
+      int remaining = request_headers_->BytesRemaining();
+      CHECK_GT(remaining, 0);
       int consumed = upload_data_stream_->Read(
           request_headers_.get(), remaining, CompletionOnceCallback());
       // Read() must succeed synchronously if not chunked and in memory.
       CHECK_GT(consumed, 0);
       request_headers_->DidConsume(consumed);
     }
-    DCHECK(upload_data_stream_->IsEOF());
+    CHECK_EQ(request_headers_->BytesRemaining(), 0);
     // Reset the offset, so the buffer can be read from the beginning.
     request_headers_->SetOffset(0);
     did_merge = true;
