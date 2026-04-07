@@ -80,7 +80,8 @@ class TabHandleLayer : public Layer {
                      float pinned_icon_offset_x,
                      bool is_underlined,
                      SkColor underline_start_color,
-                     SkColor underline_end_color);
+                     SkColor underline_end_color,
+                     int underline_width_threshold);
   bool foreground();
   bool is_pinned();
   scoped_refptr<cc::slim::Layer> layer() override;

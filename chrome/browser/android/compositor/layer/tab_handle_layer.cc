@@ -80,7 +80,8 @@ void TabHandleLayer::SetProperties(
     float pinned_icon_offset_x,
     bool is_underlined,
     SkColor underline_start_color,
-    SkColor underline_end_color) {
+    SkColor underline_end_color,
+    int underline_width_threshold) {
   if (foreground != foreground_ || opacity != opacity_ ||
       is_pinned != is_pinned_) {
     foreground_ = foreground;
@@ -357,35 +358,40 @@ void TabHandleLayer::SetProperties(
   }
 
   if (is_underlined) {
-    underline_end_layer_->SetIsDrawable(true);
-    underline_end_layer_->SetBackgroundColor(
-        SkColor4f::FromColor(underline_end_color));
-    underline_end_layer_->SetBounds(
-        gfx::Size(std::round(width - padding_left - padding_right),
-                  std::round(tab_underline_thickness_)));
-    underline_end_layer_->SetPosition(gfx::PointF(
-        padding_left,
-        height - tab_underline_thickness_ - tab_underline_bottom_margin_));
-    underline_end_layer_->SetRoundedCorner(
-        gfx::RoundedCornersF(tab_underline_corner_radius_));
+    float underline_width = width - padding_left - padding_right;
 
     underline_start_layer_->SetIsDrawable(true);
     underline_start_layer_->SetBackgroundColor(
         SkColor4f::FromColor(underline_start_color));
-    underline_start_layer_->SetBounds(
-        gfx::Size(std::round(width - padding_left - padding_right),
-                  std::round(tab_underline_thickness_)));
+    underline_start_layer_->SetBounds(gfx::Size(
+        std::round(underline_width), std::round(tab_underline_thickness_)));
     underline_start_layer_->SetPosition(gfx::PointF(
         padding_left,
         height - tab_underline_thickness_ - tab_underline_bottom_margin_));
     underline_start_layer_->SetRoundedCorner(
         gfx::RoundedCornersF(tab_underline_corner_radius_));
 
-    gfx::LinearGradient gradient;
-    gradient.AddStep(0.f, 255);  // Opaque left (shows start_color: 50)
-    gradient.AddStep(1.f, 0);    // Transparent right (shows end_color: 70)
-    gradient.set_angle(0);
-    underline_start_layer_->SetGradientMask(gradient);
+    if (underline_width < underline_width_threshold) {
+      underline_end_layer_->SetIsDrawable(false);
+      underline_start_layer_->SetGradientMask(gfx::LinearGradient());
+    } else {
+      underline_end_layer_->SetIsDrawable(true);
+      underline_end_layer_->SetBackgroundColor(
+          SkColor4f::FromColor(underline_end_color));
+      underline_end_layer_->SetBounds(gfx::Size(
+          std::round(underline_width), std::round(tab_underline_thickness_)));
+      underline_end_layer_->SetPosition(gfx::PointF(
+          padding_left,
+          height - tab_underline_thickness_ - tab_underline_bottom_margin_));
+      underline_end_layer_->SetRoundedCorner(
+          gfx::RoundedCornersF(tab_underline_corner_radius_));
+
+      gfx::LinearGradient gradient;
+      gradient.AddStep(0.f, 255);  // Opaque left (shows start_color: 50)
+      gradient.AddStep(1.f, 0);    // Transparent right (shows end_color: 70)
+      gradient.set_angle(0);
+      underline_start_layer_->SetGradientMask(gradient);
+    }
   } else {
     underline_end_layer_->SetIsDrawable(false);
     underline_start_layer_->SetIsDrawable(false);

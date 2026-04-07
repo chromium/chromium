@@ -137,7 +137,7 @@ public class StripLayoutTab extends StripLayoutView {
     private static final int TAB_TOUCH_TARGET_END_OFFSET_X_DP = 12;
 
     // Visibility Constants.
-    private static final float FAVICON_WIDTH = 16.f;
+    public static final float FAVICON_WIDTH = 16.f;
     private static final float FAVICON_PADDING = 26.f;
     protected static final float MIN_WIDTH = FAVICON_WIDTH + (FOLIO_FOOT_LENGTH_DP * 2);
     private static final float WIDTH_TO_HIDE_ICON = 86.f;

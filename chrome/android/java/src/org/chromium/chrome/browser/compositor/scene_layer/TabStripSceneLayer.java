@@ -347,7 +347,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             Math.round(st.getPinnedTabFaviconOffsetX() * mDpToPx),
                             st.isUnderlined(),
                             underlineStartColor,
-                            underlineEndColor);
+                            underlineEndColor,
+                            Math.round(StripLayoutTab.FAVICON_WIDTH * 2 * mDpToPx));
         }
     }
 
@@ -549,7 +550,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 float pinnedIconOffsetX,
                 boolean isUnderlined,
                 @ColorInt int underlineStartColor,
-                @ColorInt int underlineEndColor);
+                @ColorInt int underlineEndColor,
+                int underlineWidthThreshold);
 
         void putGroupIndicatorLayer(
                 long nativeTabStripSceneLayer,

@@ -186,7 +186,8 @@ class TabStripSceneLayer : public SceneLayer {
                         float pinned_icon_offset_x,
                         bool is_underlined,
                         int32_t underline_start_color,
-                        int32_t underline_end_color);
+                        int32_t underline_end_color,
+                        int32_t underline_width_threshold);
 
   void PutGroupIndicatorLayer(
       JNIEnv* env,
