@@ -4207,15 +4207,25 @@ bool IsBaselineKeyword(CSSValueID id) {
                       CSSValueID::kBaseline>(id);
 }
 
-bool IsSelfPositionKeyword(CSSValueID id) {
+bool IsSelfAlignmentKeyword(CSSValueID id) {
   return IdentMatches<CSSValueID::kStart, CSSValueID::kEnd, CSSValueID::kCenter,
                       CSSValueID::kSelfStart, CSSValueID::kSelfEnd,
                       CSSValueID::kFlexStart, CSSValueID::kFlexEnd,
                       CSSValueID::kAnchorCenter>(id);
 }
 
-bool IsSelfPositionOrLeftOrRightKeyword(CSSValueID id) {
-  return IsSelfPositionKeyword(id) || IsLeftOrRightKeyword(id);
+bool IsSelfAlignmentOrLeftOrRightKeyword(CSSValueID id) {
+  return IsSelfAlignmentKeyword(id) || IsLeftOrRightKeyword(id);
+}
+
+bool IsDefaultAlignmentKeyword(CSSValueID id) {
+  return IdentMatches<CSSValueID::kStart, CSSValueID::kEnd, CSSValueID::kCenter,
+                      CSSValueID::kSelfStart, CSSValueID::kSelfEnd,
+                      CSSValueID::kFlexStart, CSSValueID::kFlexEnd>(id);
+}
+
+bool IsDefaultAlignmentOrLeftOrRightKeyword(CSSValueID id) {
+  return IsDefaultAlignmentKeyword(id) || IsLeftOrRightKeyword(id);
 }
 
 bool IsContentPositionKeyword(CSSValueID id) {

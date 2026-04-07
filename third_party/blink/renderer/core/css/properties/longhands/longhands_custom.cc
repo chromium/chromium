@@ -175,7 +175,10 @@ const CSSValue* AlignItems::ParseSingleValue(CSSParserTokenStream& stream,
     return nullptr;
   }
   return css_parsing_utils::ConsumeSelfPositionOverflowPosition(
-      stream, css_parsing_utils::IsSelfPositionKeyword);
+      stream,
+      RuntimeEnabledFeatures::DisableAnchorCenterOnAlignJustifyItemsEnabled()
+          ? css_parsing_utils::IsDefaultAlignmentKeyword
+          : css_parsing_utils::IsSelfAlignmentKeyword);
 }
 
 const CSSValue* AlignItems::CSSValueFromComputedStyleInternal(
@@ -191,7 +194,7 @@ const CSSValue* AlignSelf::ParseSingleValue(CSSParserTokenStream& stream,
                                             const CSSParserContext& context,
                                             CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeSelfPositionOverflowPosition(
-      stream, css_parsing_utils::IsSelfPositionKeyword);
+      stream, css_parsing_utils::IsSelfAlignmentKeyword);
 }
 
 const CSSValue* AlignSelf::CSSValueFromComputedStyleInternal(
@@ -6860,7 +6863,10 @@ const CSSValue* JustifyItems::ParseSingleValue(
   }
 
   return css_parsing_utils::ConsumeSelfPositionOverflowPosition(
-      stream, css_parsing_utils::IsSelfPositionOrLeftOrRightKeyword);
+      stream,
+      RuntimeEnabledFeatures::DisableAnchorCenterOnAlignJustifyItemsEnabled()
+          ? css_parsing_utils::IsDefaultAlignmentOrLeftOrRightKeyword
+          : css_parsing_utils::IsSelfAlignmentOrLeftOrRightKeyword);
 }
 
 const CSSValue* JustifyItems::CSSValueFromComputedStyleInternal(
@@ -6879,7 +6885,7 @@ const CSSValue* JustifySelf::ParseSingleValue(
     const CSSParserContext& context,
     CSSParserLocalContext& local_context) const {
   return css_parsing_utils::ConsumeSelfPositionOverflowPosition(
-      stream, css_parsing_utils::IsSelfPositionOrLeftOrRightKeyword);
+      stream, css_parsing_utils::IsSelfAlignmentOrLeftOrRightKeyword);
 }
 
 const CSSValue* JustifySelf::CSSValueFromComputedStyleInternal(
