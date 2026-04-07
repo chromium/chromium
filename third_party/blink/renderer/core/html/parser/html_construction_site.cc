@@ -295,21 +295,6 @@ static inline void ExecuteTakeAllChildrenTask(HTMLConstructionSiteTask& task) {
   task.parent->ParserTakeAllChildrenFrom(*task.OldParent());
 }
 
-static inline void ExecuteRemoveChildrenTask(HTMLConstructionSiteTask& task) {
-  DCHECK_EQ(task.operation, HTMLConstructionSiteTask::kRemoveChildren);
-
-  // Note that there is currently no special "ParserRemoveChildren" method, as
-  // removing children by patch templates has the same effect as removing them
-  // with a JS call.
-  task.parent->RemoveChildren();
-}
-
-static inline void ExecuteReplaceChildTask(HTMLConstructionSiteTask& task) {
-  DCHECK_EQ(task.operation, HTMLConstructionSiteTask::kReplaceChild);
-
-  task.parent->ParserReplaceChild(*task.child, *task.next_child);
-}
-
 void HTMLConstructionSite::ExecuteTask(HTMLConstructionSiteTask& task) {
   DCHECK(task_queue_.empty());
   if (task.operation == HTMLConstructionSiteTask::kInsert) {
@@ -334,14 +319,6 @@ void HTMLConstructionSite::ExecuteTask(HTMLConstructionSiteTask& task) {
 
   if (task.operation == HTMLConstructionSiteTask::kTakeAllChildren) {
     return ExecuteTakeAllChildrenTask(task);
-  }
-
-  if (task.operation == HTMLConstructionSiteTask::kRemoveChildren) {
-    return ExecuteRemoveChildrenTask(task);
-  }
-
-  if (task.operation == HTMLConstructionSiteTask::kReplaceChild) {
-    return ExecuteReplaceChildTask(task);
   }
 
   NOTREACHED();
@@ -439,37 +416,20 @@ void HTMLConstructionSite::QueueTask(HTMLConstructionSiteTask& task,
                                      bool flush_pending_text) {
   if (flush_pending_text)
     FlushPendingText();
-  if (SanitizeIfNeeded(task)) {
-    task_queue_.push_back(task);
-  }
-}
 
-bool HTMLConstructionSite::SanitizeIfNeeded(HTMLConstructionSiteTask& task) {
-  if (!RuntimeEnabledFeatures::NewHTMLSettingMethodsEnabled() || !task.child ||
-      !sanitizer_) {
-    return true;
+  if (sanitizer_ && task.child &&
+      task.operation !=
+          HTMLConstructionSiteTask::Operation::kInsertAlreadyParsedChild &&
+      task.operation != HTMLConstructionSiteTask::Operation::kTakeAllChildren) {
+    CHECK(RuntimeEnabledFeatures::StreamingSanitizerEnabled());
+    task.child = sanitizer_->Sanitize(task.child);
   }
 
-  // Sanitize the node itself, e.g. to remove forbidden attributes or to reject
-  // it if it is a forbidden element.
-  if (!sanitizer_->Sanitize(task.child)) {
-    return false;
+  if (!task.child) {
+    return;
   }
-
-  HTMLStackItem* next = open_elements_.TopStackItem();
-
-  // Find the next item in stack that should not be replaced with children
-  // according to the sanitizer.
-  while (next && next->IsElementNode() &&
-         sanitizer_->ShouldReplaceWithChildren(next->GetNode())) {
-    next = next->NextItemInStack();
-    AdjustInsertionLocation(task, next);
-    if (!task.parent) {
-      return false;
-    }
-  }
-
-  return true;
+  AdjustInsertionLocation(task);
+  task_queue_.push_back(task);
 }
 
 void HTMLConstructionSite::AttachLater(InsertionLocation location,
@@ -872,14 +832,37 @@ HTMLConstructionSite::CurrentInsertionLocation() {
 }
 
 void HTMLConstructionSite::AdjustInsertionLocation(
-    HTMLConstructionSiteTask& task,
-    HTMLStackItem* stack_item) {
-  if (!stack_item->IsElementNode() && root_insertion_point_) {
-    task.parent = root_insertion_point_->target.Get();
-    task.next_child = root_insertion_point_->ref_node.Get();
-  } else {
-    task.parent = stack_item->GetNode();
+    HTMLConstructionSiteTask& task) {
+  if (!RuntimeEnabledFeatures::StreamingSanitizerEnabled()) {
+    return;
   }
+  if (IsEmpty()) {
+    return;
+  }
+  if (sanitizer_) {
+    // Find the first inclusive ancestor of task.parent that is not replaced
+    // with its children by the sanitizer.
+    // Using Find here as it might not be the topmost item due to foster
+    // parenting.
+    // TODO(nrosenthal): See if we can refactor this to be more efficient by
+    // doing this at the same time as foster parenting.
+    for (HTMLStackItem* parent_item =
+             open_elements_.Find(DynamicTo<Element>(task.parent.Get()));
+         parent_item && sanitizer_->ShouldReplaceWithChildren(task.parent);
+         parent_item = parent_item->NextItemInStack()) {
+      task.parent = parent_item->GetNode();
+    }
+
+    CHECK(!task.next_child || task.next_child->parentNode() == task.parent);
+  }
+
+  if (task.parent != open_elements_.RootNode() || !root_insertion_point_) {
+    return;
+  }
+
+  CHECK(RuntimeEnabledFeatures::NewHTMLSettingMethodsEnabled());
+  task.parent = root_insertion_point_->target.Get();
+  task.next_child = root_insertion_point_->ref_node.Get();
 }
 
 void HTMLConstructionSite::InsertProcessingInstruction(AtomicHTMLToken* token) {
@@ -1127,11 +1110,12 @@ void HTMLConstructionSite::InsertForeignElement(
 void HTMLConstructionSite::InsertTextNode(const StringView& string,
                                           WhitespaceMode whitespace_mode) {
   HTMLConstructionSiteTask dummy_task(HTMLConstructionSiteTask::kInsert);
-  AdjustInsertionLocation(dummy_task, CurrentStackItem());
+  dummy_task.parent = CurrentNode();
 
   if (ShouldFosterParent())
     FindFosterSite(dummy_task);
 
+  AdjustInsertionLocation(dummy_task);
   if (auto* template_element =
           DynamicTo<HTMLTemplateElement>(*dummy_task.parent)) {
     // If the Document was detached in the middle of parsing, the template

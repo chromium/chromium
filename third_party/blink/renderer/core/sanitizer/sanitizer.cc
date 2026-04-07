@@ -13,10 +13,12 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_sanitizerconfig_sanitizerpresets.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_sanitizerelementnamespace_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_sanitizerelementnamespacewithattributes_string.h"
+#include "third_party/blink/renderer/core/dom/comment.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
+#include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
@@ -909,6 +911,16 @@ void Sanitizer::ProcessElement(Element* element, Mode safe) const {
   SanitizeJavascriptNavigationAttributes(element, safe);
 }
 
+namespace {
+void ReplaceWithChildren(Node& node) {
+  ContainerNode* parent = node.parentNode();
+  while (Node* child = node.firstChild()) {
+    parent->InsertBefore(child, &node);
+  }
+  node.remove();
+}
+}  // namespace
+
 void Sanitizer::Sanitize(Node* root, Mode safe) const {
   // https://wicg.github.io/sanitizer-api/#sanitize-core
   // This is structured a little differently than the spec, for better
@@ -938,11 +950,7 @@ void Sanitizer::Sanitize(Node* root, Mode safe) const {
         if (!next_node) {
           next_node = NodeTraversal::Next(*node);
         }
-        ContainerNode* parent = node->parentNode();
-        while (Node* child = node->firstChild()) {
-          parent->InsertBefore(child, node);
-        }
-        node->remove();
+        ReplaceWithChildren(*node);
         node = next_node;
         break;
       }
@@ -956,14 +964,14 @@ void Sanitizer::Sanitize(Node* root, Mode safe) const {
   }
 }
 
-bool Sanitizer::SanitizeSingleNode(Node* node, Mode safe) const {
+Sanitizer::Action Sanitizer::SanitizeSingleNode(Node* node, Mode safe) const {
   Action action = ActionForNode(node, node);
   if (action == Action::kKeepElement) {
     ProcessElement(To<Element>(node), safe);
-    return true;
+    return Action::kKeep;
   }
 
-  return action == Action::kKeep;
+  return action;
 }
 
 bool Sanitizer::ShouldReplaceNodeWithChildren(Node* node) const {
@@ -1287,6 +1295,44 @@ bool Sanitizer::isValid() const {
   }
 
   return true;
+}
+
+Node* StreamingSanitizer::Sanitize(Node* node) {
+  Sanitizer::Action result = sanitizer_->SanitizeSingleNode(node, mode_);
+
+  if (result == Sanitizer::Action::kKeep ||
+      result == Sanitizer::Action::kKeepElement) {
+    return node;
+  }
+
+  if (text_node_merge_mode_ == TextNodeMergeMode::kMerge) {
+    return nullptr;
+  }
+
+  // This is a workaround to make the streaming sanitizer behave like the
+  // post-processing sanitize in terms of merging text nodes. We add fake
+  // comment nodes when a node is to be dropped, and remove them at the end.
+  // This prevents from text nodes from merging while we parse.
+  if (result == Sanitizer::Action::kReplaceWithChildren) {
+    temp_replaced_elements_.push_back(node);
+    return node;
+  }
+
+  CHECK_EQ(result, Sanitizer::Action::kDrop);
+  Node* text_node_separator = node->ownerDocument()->createComment("separator");
+  temp_text_node_separators_.push_back(text_node_separator);
+  return text_node_separator;
+}
+
+void StreamingSanitizer::Finalize() {
+  for (auto& node : temp_text_node_separators_) {
+    node->remove();
+  }
+  for (auto& node : temp_replaced_elements_) {
+    ReplaceWithChildren(*node);
+  }
+  temp_text_node_separators_.clear();
+  temp_replaced_elements_.clear();
 }
 
 }  // namespace blink

@@ -122,7 +122,8 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
       DocumentFragment*,
       Element* context_element,
       CustomElementRegistry*,
-      ParserContentPolicy = kAllowScriptingContent);
+      ParserContentPolicy = kAllowScriptingContent,
+      StreamingSanitizer* sanitizer = nullptr);
 
   // Exposed for testing.
   HTMLParserScriptRunnerHost* AsHTMLParserScriptRunnerHostForTesting() {

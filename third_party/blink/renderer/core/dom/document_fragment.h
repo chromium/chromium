@@ -33,6 +33,7 @@
 namespace blink {
 
 class DocumentPartRoot;
+class StreamingSanitizer;
 
 class CORE_EXPORT DocumentFragment : public ContainerNode {
   DEFINE_WRAPPERTYPEINFO();
@@ -45,11 +46,13 @@ class CORE_EXPORT DocumentFragment : public ContainerNode {
   void ParseHTML(const String&,
                  Element* context_element,
                  CustomElementRegistry*,
-                 ParserContentPolicy = kAllowScriptingContent);
+                 ParserContentPolicy = kAllowScriptingContent,
+                 StreamingSanitizer* = nullptr);
   bool ParseXML(const String&,
                 Element* context_element,
                 ExceptionState& exception_state,
-                ParserContentPolicy = kAllowScriptingContent);
+                ParserContentPolicy = kAllowScriptingContent,
+                StreamingSanitizer* = nullptr);
 
   bool CanContainRangeEndPoint() const final { return true; }
   virtual bool IsTemplateContent() const { return false; }

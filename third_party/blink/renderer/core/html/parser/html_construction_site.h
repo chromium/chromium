@@ -49,8 +49,6 @@ struct HTMLConstructionSiteTask {
     kInsertAlreadyParsedChild,  // Insert w/o calling begin/end parsing.
     kReparent,
     kTakeAllChildren,
-    kRemoveChildren,
-    kReplaceChild,
   };
 
   explicit HTMLConstructionSiteTask(Operation op)
@@ -285,8 +283,7 @@ class HTMLConstructionSite final {
   }
 
   InsertionLocation CurrentInsertionLocation();
-  void AdjustInsertionLocation(HTMLConstructionSiteTask& task,
-                               HTMLStackItem* stack_item);
+  void AdjustInsertionLocation(HTMLConstructionSiteTask& task);
 
   void FindFosterSite(HTMLConstructionSiteTask&);
 
@@ -297,8 +294,6 @@ class HTMLConstructionSite final {
 
   void ExecuteTask(HTMLConstructionSiteTask&);
   void QueueTask(HTMLConstructionSiteTask&, bool flush_pending_text);
-  bool SanitizeIfNeeded(HTMLConstructionSiteTask&);
-
   void SetAttributes(Element* element, AtomicHTMLToken* token);
 
   Member<HTMLParserReentryPermit> reentry_permit_;

@@ -3921,7 +3921,7 @@
       // streamHTML, appendHTML, etc.
       name: "NewHTMLSettingMethods",
       status: "experimental",
-      depends_on: ["SetHTMLCanRunScripts", "TrustedTypesCreateParserOptions"]
+      depends_on: ["SetHTMLCanRunScripts", "StreamingSanitizer", "TrustedTypesCreateParserOptions"]
     },
     // This is a killswitch flag, shipped in M144. It can be removed in M146.
     {
@@ -5501,6 +5501,12 @@
     {
       // Gates the `locks()` method on a storage bucket.
       name: "StorageBucketsLocks",
+      status: "experimental",
+    },
+    {
+      // Performs sanitization while parsing instead of post-processing a parsed
+      // fragment. https://crbug.com/498272014
+      name: "StreamingSanitizer",
       status: "experimental",
     },
     {

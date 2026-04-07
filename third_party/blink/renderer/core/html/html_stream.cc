@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/parser/fragment_parser.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
+#include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer_api.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
@@ -34,9 +35,11 @@ class HTMLSink : public UnderlyingSinkBase {
                     ExceptionState& exception_state)
       : root_insertion_point(
             MakeGarbageCollected<ParserRootInsertionPoint>(target, ref_node)),
-        sanitizer(SanitizerAPI::CreateStreamingSanitizer(sanitizer_mode,
-                                                         new_options,
-                                                         exception_state)),
+        sanitizer(SanitizerAPI::CreateStreamingSanitizer(
+            sanitizer_mode,
+            StreamingSanitizer::TextNodeMergeMode::kMerge,
+            new_options,
+            exception_state)),
         parser_content_policy(
             new_options.run_scripts() ==
                     FragmentParserOptions::RunScripts::kRunScripts

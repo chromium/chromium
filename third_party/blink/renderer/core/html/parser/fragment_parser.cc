@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser_fastpath.h"
+#include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer_api.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -50,7 +51,8 @@ DocumentFragment* ParseHTMLFragmentInternal(
     FragmentParserConfig::ForceHtml force_html,
     ForceInertTemplate force_inert,
     CustomElementRegistry* registry,
-    ExceptionState& exception_state) {
+    ExceptionState& exception_state,
+    StreamingSanitizer* sanitizer) {
   DCHECK(context_element);
   const HTMLTemplateElement* template_element =
       DynamicTo<HTMLTemplateElement>(*context_element);
@@ -84,9 +86,11 @@ DocumentFragment* ParseHTMLFragmentInternal(
         FragmentParserConfig::ParseDeclarativeShadowRoots::kParse) {
       parser_behavior.Put(HTMLFragmentParsingBehavior::kIncludeShadowRoots);
     }
-    const bool parsed_fast_path = TryParsingHTMLFragment(
-        markup, document, *fragment, *context_element, parser_content_policy,
-        parser_behavior, &log_tag_stats);
+    const bool parsed_fast_path =
+        !sanitizer &&
+        TryParsingHTMLFragment(markup, document, *fragment, *context_element,
+                               parser_content_policy, parser_behavior,
+                               &log_tag_stats);
     if (parsed_fast_path) {
       fragment->SetHoldsUnnotifiedChildren(true);
       fragment->ParserFinishedBuildingDocumentFragment(
@@ -111,7 +115,7 @@ DocumentFragment* ParseHTMLFragmentInternal(
       // for details.
       DocumentFragment* fragment2 = DocumentFragment::Create(document);
       fragment2->ParseHTML(markup, context_element, registry,
-                           parser_content_policy);
+                           parser_content_policy, sanitizer);
       DCHECK_EQ(CreateMarkup(fragment), CreateMarkup(fragment2))
           << " supplied value " << markup;
       DCHECK(fragment->isEqualNode(fragment2));
@@ -120,7 +124,7 @@ DocumentFragment* ParseHTMLFragmentInternal(
     }
     fragment = DocumentFragment::Create(document);
     fragment->ParseHTML(markup, context_element, registry,
-                        parser_content_policy);
+                        parser_content_policy, sanitizer);
     LogFastPathParserTotalTime(parse_timer.Elapsed());
     if (log_tag_stats &&
         RuntimeEnabledFeatures::InnerHTMLParserFastpathLogFailureEnabled()) {
@@ -239,15 +243,36 @@ DocumentFragment* ParseHTMLFragment(const String& markup,
       options.sanitizer_init() ||
       (config.sanitizer_mode == Sanitizer::Mode::kSafe);
 
-  CHECK(!should_sanitize || RuntimeEnabledFeatures::SanitizerAPIEnabled());
+  StreamingSanitizer* streaming_sanitizer = nullptr;
+  if (should_sanitize && RuntimeEnabledFeatures::StreamingSanitizerEnabled()) {
+    streaming_sanitizer = SanitizerAPI::CreateStreamingSanitizer(
+        config.sanitizer_mode,
+        // By using "keepSeparate" here we mimic the behavior of the
+        // post-processing sanitizer, where elements are added when parsing and
+        // removed at the end.
+        StreamingSanitizer::TextNodeMergeMode::kKeepSeparate, options,
+        exception_state);
+  }
+
+  if (streaming_sanitizer &&
+      !SanitizerAPI::AllowMutatingRootElement(config.sanitizer_mode,
+                                              config.context_element)) {
+    return nullptr;
+  }
+
   DocumentFragment* fragment = ParseHTMLFragmentInternal(
       markup, config.context_element, content_policy,
       config.parse_declarative_shadows, config.force_html,
       should_sanitize ? ForceInertTemplate::kForce
                       : ForceInertTemplate::kDontForce,
-      config.registry, exception_state);
+      config.registry, exception_state, streaming_sanitizer);
 
-  if (fragment && should_sanitize) {
+  if (streaming_sanitizer) {
+    streaming_sanitizer->Finalize();
+  }
+
+  if (fragment && should_sanitize &&
+      (!streaming_sanitizer || !fragment->GetDocument().IsHTMLDocument())) {
     SanitizerAPI::SanitizeInternal(config.sanitizer_mode,
                                    config.context_element, fragment, options,
                                    exception_state);
