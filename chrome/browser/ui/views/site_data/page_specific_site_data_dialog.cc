@@ -313,7 +313,8 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
   }
 
   void OnManageOnDeviceSiteDataClicked() {
-    Browser* browser = chrome::FindBrowserWithTab(web_contents_.get());
+    BrowserWindowInterface* browser =
+        chrome::FindBrowserWithTab(web_contents_.get());
     chrome::ShowSettingsSubPage(browser, chrome::kOnDeviceSiteDataSubpage);
   }
 

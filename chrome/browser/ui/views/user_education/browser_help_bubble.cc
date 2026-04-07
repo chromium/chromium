@@ -111,8 +111,9 @@ TabWebUIHelpBubbleFactoryBrowser::CreateBubble(
     // ensure the contents pane is focused.
     if (const auto* const contents =
             result->AsA<user_education::HelpBubbleWebUI>()->GetWebContents()) {
-      if (const auto* browser = chrome::FindBrowserWithTab(contents)) {
-        if (browser->tab_strip_model()->GetActiveWebContents() == contents) {
+      if (const BrowserWindowInterface* browser =
+              chrome::FindBrowserWithTab(contents)) {
+        if (browser->GetTabStripModel()->GetActiveWebContents() == contents) {
           BrowserView::GetBrowserViewForBrowser(browser)
               ->FocusWebContentsPane();
         }

@@ -73,7 +73,7 @@ void ShowInstallNotSupportedDialog(content::WebContents* web_contents,
                                    Profile* profile,
                                    NotSupportedReason reason,
                                    base::OnceClosure callback) {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
     std::move(callback).Run();
     return;

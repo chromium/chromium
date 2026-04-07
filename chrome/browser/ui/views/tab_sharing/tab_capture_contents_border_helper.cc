@@ -104,7 +104,8 @@ void TabCaptureContentsBorderHelper::Update() {
 
   content::WebContents* const web_contents = &GetWebContents();
 
-  Browser* const browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* const browser =
+      chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
     return;
   }

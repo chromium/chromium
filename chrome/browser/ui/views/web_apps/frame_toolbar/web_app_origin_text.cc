@@ -153,11 +153,12 @@ void WebAppOriginText::DidFinishNavigation(content::NavigationHandle* handle) {
   if (!web_contents) {
     return;
   }
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
     return;
   }
-  web_app::AppBrowserController* app_controller = browser->app_controller();
+  web_app::AppBrowserController* app_controller =
+      web_app::AppBrowserController::From(browser);
   if (!app_controller) {
     return;
   }

@@ -186,9 +186,10 @@ void ScreenshotCapturedBubble::DownloadButtonPressed() {
     return;
   }
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents_.get());
+  BrowserWindowInterface* browser =
+      chrome::FindBrowserWithTab(web_contents_.get());
   content::DownloadManager* download_manager =
-      browser->profile()->GetDownloadManager();
+      browser->GetProfile()->GetDownloadManager();
   // TODO(crbug.com/40753957): Update the annotation's |setting| and
   // |chrome_policy| fields once the Sharing Hub is landed.
   net::NetworkTrafficAnnotationTag traffic_annotation =

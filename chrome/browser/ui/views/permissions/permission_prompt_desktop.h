@@ -13,6 +13,7 @@
 #include "components/permissions/permission_prompt.h"
 
 class Browser;
+class BrowserWindowInterface;
 class LocationBar;
 
 namespace content {
@@ -51,7 +52,10 @@ class PermissionPromptDesktop : public permissions::PermissionPrompt {
  protected:
   LocationBar* GetLocationBar();
 
-  Browser* browser() const { return browser_; }
+  Browser* browser() const {
+    return browser_ ? browser_->GetBrowserForMigrationOnly() : nullptr;
+  }
+
   bool UpdateBrowser();
 
   permissions::PermissionPrompt::Delegate* delegate() const {
@@ -67,7 +71,7 @@ class PermissionPromptDesktop : public permissions::PermissionPrompt {
   // Delegate representing a permission request.
   const raw_ptr<permissions::PermissionPrompt::Delegate> delegate_;
 
-  raw_ptr<Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_DESKTOP_H_

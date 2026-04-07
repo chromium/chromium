@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view.h"
@@ -78,31 +79,34 @@ void SendTabToSelfBubbleController::HideBubble() {
 void SendTabToSelfBubbleController::ShowBubble(bool show_back_button) {
   show_back_button_ = show_back_button;
   bubble_shown_ = true;
-  Browser* browser = chrome::FindBrowserWithTab(&GetWebContents());
+  BrowserWindowInterface* browser =
+      chrome::FindBrowserWithTab(&GetWebContents());
   std::optional<send_tab_to_self::EntryPointDisplayReason> reason =
       GetEntryPointDisplayReason();
   DCHECK(reason);
+  BrowserWindow* browser_window =
+      browser->GetBrowserForMigrationOnly()->window();
   switch (*reason) {
     case send_tab_to_self::EntryPointDisplayReason::kOfferFeature:
       send_tab_to_self_bubble_view_ =
-          browser->window()->ShowSendTabToSelfDevicePickerBubble(
+          browser_window->ShowSendTabToSelfDevicePickerBubble(
               &GetWebContents());
       break;
     case send_tab_to_self::EntryPointDisplayReason::kOfferSignIn:
       send_tab_to_self_bubble_view_ =
-          browser->window()->ShowSendTabToSelfPromoBubble(
+          browser_window->ShowSendTabToSelfPromoBubble(
               &GetWebContents(), /*show_signin_button=*/true);
       break;
     case send_tab_to_self::EntryPointDisplayReason::kInformNoTargetDevice:
       send_tab_to_self_bubble_view_ =
-          browser->window()->ShowSendTabToSelfPromoBubble(
+          browser_window->ShowSendTabToSelfPromoBubble(
               &GetWebContents(), /*show_signin_button=*/false);
       break;
   }
 
   if (browser) {
     send_tab_to_self_action_item_ = actions::ActionManager::Get().FindAction(
-        kActionSendTabToSelf, browser->browser_actions()->root_action_item());
+        kActionSendTabToSelf, browser->GetActions()->root_action_item());
     // The toolbar might not have this action button.
     // See SendTabToSelfToolbarIconController::CanShowOnBrowser().
     if (send_tab_to_self_action_item_) {
@@ -239,9 +243,11 @@ void SendTabToSelfBubbleController::SetShowConfirmationMessage(
     // Because the actual entry creation may occur asynchronously (e.g. after
     // scroll position capture), we need to ensure the page action icon is
     // updated when the confirmation state is finalized.
-    Browser* browser = chrome::FindBrowserWithTab(&GetWebContents());
-    if (browser && browser->window()) {
-      browser->window()->UpdatePageActionIcon(PageActionIconType::kSharingHub);
+    BrowserWindowInterface* browser =
+        chrome::FindBrowserWithTab(&GetWebContents());
+    if (browser && browser->GetWindow()) {
+      browser->GetBrowserForMigrationOnly()->window()->UpdatePageActionIcon(
+          PageActionIconType::kSharingHub);
     }
   }
 }

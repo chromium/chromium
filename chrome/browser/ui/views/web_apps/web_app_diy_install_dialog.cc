@@ -72,7 +72,7 @@ void ShowDiyAppInstallDialog(
     AppInstallationAcceptanceCallback callback,
     PwaInProductHelpState iph_state) {
   CHECK(web_app_info->is_diy_app);
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
     std::move(callback).Run(false, nullptr);
     return;

@@ -213,8 +213,10 @@ void PaymentRequestDialogView::ShowPaymentHandlerScreen(
 
   // Calculate |payment_handler_window_height_|
   auto* browser = chrome::FindBrowserWithTab(request_->web_contents());
-  int browser_window_content_height =
-      browser->window()->GetContentsSize().height();
+  int browser_window_content_height = browser->GetBrowserForMigrationOnly()
+                                          ->window()
+                                          ->GetContentsSize()
+                                          .height();
   payment_handler_window_height_ =
       std::max(kDialogHeight, std::min(kPreferredPaymentHandlerDialogHeight,
                                        browser_window_content_height));

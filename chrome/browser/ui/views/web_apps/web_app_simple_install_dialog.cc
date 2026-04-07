@@ -66,7 +66,7 @@ void ShowSimpleInstallDialogForWebApps(
     AppInstallationAcceptanceCallback callback,
     PwaInProductHelpState iph_state,
     bool show_initiating_origin) {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
     std::move(callback).Run(false, nullptr);
     return;

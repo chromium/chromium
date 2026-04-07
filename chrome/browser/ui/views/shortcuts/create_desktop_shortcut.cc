@@ -51,7 +51,7 @@ void ShowCreateDesktopShortcutDialog(
     const gfx::ImageSkia& icon,
     std::u16string title,
     CreateShortcutDialogCallback dialog_action_and_text_callback) {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
     std::move(dialog_action_and_text_callback).Run(std::nullopt);
     return;

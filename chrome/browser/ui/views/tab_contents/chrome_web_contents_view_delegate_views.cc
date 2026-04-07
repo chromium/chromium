@@ -38,8 +38,8 @@ ChromeWebContentsViewDelegateViews::~ChromeWebContentsViewDelegateViews() =
     default;
 
 gfx::NativeWindow ChromeWebContentsViewDelegateViews::GetNativeWindow() {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
-  return browser ? browser->window()->GetNativeWindow() : nullptr;
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents_);
+  return browser ? browser->GetWindow()->GetNativeWindow() : nullptr;
 }
 
 content::WebDragDestDelegate*

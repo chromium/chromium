@@ -441,9 +441,10 @@ void QRCodeGeneratorBubble::DownloadButtonPressed() {
 
   CHECK(web_contents_);
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents_.get());
+  BrowserWindowInterface* browser =
+      chrome::FindBrowserWithTab(web_contents_.get());
   content::DownloadManager* download_manager =
-      browser->profile()->GetDownloadManager();
+      browser->GetProfile()->GetDownloadManager();
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("qr_code_save", R"(
       semantics {

@@ -623,6 +623,7 @@ static_library("ui") {
     "//components/sync_preferences",
     "//components/sync_sessions",
     "//components/tab_groups",
+    "//components/tabs:public",
     "//components/tracing:tracing_config",
     "//components/translate/translate_internals",
     "//components/ui_devtools",

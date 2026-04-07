@@ -107,7 +107,7 @@ void ShowWebInstallAppLaunchDialog(
     std::string app_name,
     const SkBitmap& icon,
     WebAppBackgroundAppLaunchAcceptanceCallback callback) {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
     std::move(callback).Run(/*accepted=*/false);
     return;
