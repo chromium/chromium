@@ -53,13 +53,13 @@ bool ShouldSaveWindowPlacement(const Browser* browser);
 // bounds of the content area, not the whole window.
 bool SavedBoundsAreContentBounds(const Browser* browser);
 
-void SaveWindowPlacement(const Browser* browser,
+void SaveWindowPlacement(Browser* browser,
                          const gfx::Rect& bounds,
                          ui::mojom::WindowShowState show_state);
 
-void SaveWindowWorkspace(const Browser* browser, const std::string& workspace);
+void SaveWindowWorkspace(Browser* browser, const std::string& workspace);
 
-void SaveWindowVisibleOnAllWorkspaces(const Browser* browser,
+void SaveWindowVisibleOnAllWorkspaces(Browser* browser,
                                       bool visible_on_all_workspaces);
 
 // Return the |bounds| for the browser window to be used upon creation.

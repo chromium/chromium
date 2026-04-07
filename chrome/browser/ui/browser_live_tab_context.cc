@@ -367,7 +367,7 @@ sessions::LiveTab* BrowserLiveTabContext::ReplaceRestoredTab(
 }
 
 void BrowserLiveTabContext::CloseTab() {
-  chrome::CloseTab(browser_->GetBrowserForMigrationOnly());
+  chrome::CloseTab(&*browser_);
 }
 
 // static

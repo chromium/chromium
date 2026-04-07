@@ -238,8 +238,7 @@ void ChromeNewWindowClient::NewTab() {
   BrowserWindowInterface* browser = chrome::FindBrowserWithActiveWindow();
   if (browser &&
       browser->GetType() == BrowserWindowInterface::TYPE_NORMAL) {
-    chrome::NewTab(browser->GetBrowserForMigrationOnly(),
-                   NewTabTypes::kNewTabCommand);
+    chrome::NewTab(browser, NewTabTypes::kNewTabCommand);
     return;
   }
 
@@ -255,8 +254,7 @@ void ChromeNewWindowClient::NewTab() {
     }
     chrome::ScopedTabbedBrowserDisplayer displayer(profile);
     browser = displayer.browser();
-    chrome::NewTab(browser->GetBrowserForMigrationOnly(),
-                   NewTabTypes::kNewTabCommand);
+    chrome::NewTab(browser, NewTabTypes::kNewTabCommand);
   }
 
   browser->GetBrowserForMigrationOnly()->SetFocusToLocationBar();

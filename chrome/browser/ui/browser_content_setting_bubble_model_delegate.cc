@@ -41,13 +41,12 @@ void BrowserContentSettingBubbleModelDelegate::ShowCollectedCookiesDialog(
 void BrowserContentSettingBubbleModelDelegate::ShowMediaSettingsPage() {
   // Microphone and camera settings appear in the content settings menu right
   // next to each other, the microphone section is first.
-  chrome::ShowContentSettings(browser_->GetBrowserForMigrationOnly(),
-                              ContentSettingsType::MEDIASTREAM_MIC);
+  chrome::ShowContentSettings(&*browser_, ContentSettingsType::MEDIASTREAM_MIC);
 }
 
 void BrowserContentSettingBubbleModelDelegate::ShowContentSettingsPage(
     ContentSettingsType type) {
-  Browser* const browser = browser_->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* const browser = &*browser_;
   if (type == ContentSettingsType::PROTOCOL_HANDLERS) {
     chrome::ShowSettingsSubPage(browser, chrome::kHandlerSettingsSubPage);
   } else if (type == ContentSettingsType::COOKIES) {

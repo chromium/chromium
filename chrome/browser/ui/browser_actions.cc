@@ -848,7 +848,7 @@ void BrowserActions::InitializeChromeMenuActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                chrome::NewTab(bwi->GetBrowserForMigrationOnly());
+                chrome::NewTab(bwi);
               },
               bwi))
           .SetActionId(kActionNewTab)

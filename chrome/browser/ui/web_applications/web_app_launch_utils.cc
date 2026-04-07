@@ -293,7 +293,7 @@ void RecordDiyOrCraftedAppLaunch(const WebApp& web_app) {
 
 }  // namespace
 
-void ReparentWebContentsIntoBrowserImpl(Browser* source_browser,
+void ReparentWebContentsIntoBrowserImpl(BrowserWindowInterface* source_browser,
                                         content::WebContents* web_contents,
                                         BrowserWindowInterface* target_browser,
                                         bool insert_as_pinned_home_tab) {
@@ -301,8 +301,8 @@ void ReparentWebContentsIntoBrowserImpl(Browser* source_browser,
   CHECK(web_contents);
   CHECK(target_browser);
   CHECK(AreWebAppsEnabled(target_browser->GetProfile()));
-  CHECK(AreWebAppsEnabled(source_browser->profile()));
-  CHECK_EQ(source_browser->profile(), target_browser->GetProfile());
+  CHECK(AreWebAppsEnabled(source_browser->GetProfile()));
+  CHECK_EQ(source_browser->GetProfile(), target_browser->GetProfile());
 
   // In a reparent, the owning session service needs to be told it's tab
   // has been removed, otherwise it will reopen the tab on restoration.
@@ -312,8 +312,8 @@ void ReparentWebContentsIntoBrowserImpl(Browser* source_browser,
 
   // Check-fail if the web contents given is not part of the source browser.
   std::optional<int> found_tab_index;
-  for (int i = 0; i < source_browser->tab_strip_model()->count(); ++i) {
-    if (source_browser->tab_strip_model()->GetWebContentsAt(i) ==
+  for (int i = 0; i < source_browser->GetTabStripModel()->count(); ++i) {
+    if (source_browser->GetTabStripModel()->GetWebContentsAt(i) ==
         web_contents) {
       found_tab_index = i;
       break;
@@ -321,10 +321,10 @@ void ReparentWebContentsIntoBrowserImpl(Browser* source_browser,
   }
   CHECK(found_tab_index);
 
-  TabStripModel* const source_tabstrip = source_browser->tab_strip_model();
+  TabStripModel* const source_tabstrip = source_browser->GetTabStripModel();
   const std::optional<webapps::AppId> source_app_id =
       AppBrowserController::IsWebApp(source_browser)
-          ? source_browser->app_controller()->app_id()
+          ? AppBrowserController::From(source_browser)->app_id()
           : std::optional<webapps::AppId>(std::nullopt);
   const std::optional<webapps::AppId> target_app_id =
       AppBrowserController::IsWebApp(target_browser)
@@ -386,8 +386,8 @@ void ReparentWebContentsIntoBrowserImpl(Browser* source_browser,
   // The window will be registered correctly, however the tab will not be
   // correctly tracked. We need to do a reset to get the tab correctly tracked
   // by either the app service or the regular service
-  SessionServiceBase* target_service = GetAppropriateSessionServiceForProfile(
-      target_browser->GetBrowserForMigrationOnly());
+  SessionServiceBase* target_service =
+      GetAppropriateSessionServiceForProfile(target_browser);
   target_service->ResetFromCurrentBrowsers();
 }
 

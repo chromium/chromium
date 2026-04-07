@@ -367,8 +367,8 @@ content::WebContents* DuplicateTabAt(BrowserWindowInterface* browser,
     CreateAndShowNewWindowWithContents(std::move(contents_dupe), browser);
   }
 
-  SessionServiceBase* session_service = GetAppropriateSessionServiceIfExisting(
-      browser->GetBrowserForMigrationOnly());
+  SessionServiceBase* session_service =
+      GetAppropriateSessionServiceIfExisting(browser);
   if (session_service) {
     session_service->TabRestored(raw_contents_dupe, pinned);
   }
@@ -1507,7 +1507,7 @@ void AddNewTabToGroup(BrowserWindowInterface* browser) {
     return;
   }
 
-  AddTabAt(browser->GetBrowserForMigrationOnly(), GURL(), -1, true, group_id);
+  AddTabAt(browser, GURL(), -1, true, group_id);
 }
 
 void CreateNewTabGroup(BrowserWindowInterface* browser) {
@@ -1640,7 +1640,7 @@ void AddNewTabToRecentGroup(BrowserWindowInterface* browser) {
     return;
   }
 
-  AddTabAt(browser->GetBrowserForMigrationOnly(), GURL(), -1, true, group_id);
+  AddTabAt(browser, GURL(), -1, true, group_id);
 }
 
 void UnfocusTabGroup(BrowserWindowInterface* browser) {
@@ -2553,7 +2553,7 @@ BrowserWindowInterface* OpenInChrome(
   }
 
   web_app::ReparentWebContentsIntoBrowserImpl(
-      hosted_app_browser->GetBrowserForMigrationOnly(),
+      hosted_app_browser,
       hosted_app_browser->GetTabStripModel()->GetActiveWebContents(),
       target_browser);
   return target_browser;

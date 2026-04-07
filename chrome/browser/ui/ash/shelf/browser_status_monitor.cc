@@ -141,8 +141,7 @@ void BrowserStatusMonitor::ActiveUserChanged(const std::string& user_email) {
             browser_type == BrowserWindowInterface::TYPE_APP_POPUP) {
           // Add windowed apps owned by the current profile, and remove the one
           // owned by other profiles.
-          Browser* const browser_ptr = browser->GetBrowserForMigrationOnly();
-          const bool app_in_shelf = IsAppBrowserInShelf(browser_ptr);
+          const bool app_in_shelf = IsAppBrowserInShelf(browser);
           content::WebContents* const active_web_contents =
               tab_strip_model->GetActiveWebContents();
 
@@ -150,7 +149,7 @@ void BrowserStatusMonitor::ActiveUserChanged(const std::string& user_email) {
             // Adding an app to the shelf consists of two actions: add the
             // browser (shelf item) and add the content (shelf item status).
             ash::BrowserDelegate* browser_delegate =
-                ash::BrowserController::GetInstance()->GetDelegate(browser_ptr);
+                ash::BrowserController::GetInstance()->GetDelegate(browser);
             AddAppBrowserToShelf(browser_delegate);
             if (active_web_contents) {
               shelf_controller_->UpdateAppState(active_web_contents,
@@ -164,7 +163,7 @@ void BrowserStatusMonitor::ActiveUserChanged(const std::string& user_email) {
                                                 true /*remove*/);
             }
             ash::BrowserDelegate* browser_delegate =
-                ash::BrowserController::GetInstance()->GetDelegate(browser_ptr);
+                ash::BrowserController::GetInstance()->GetDelegate(browser);
             RemoveAppBrowserFromShelf(browser_delegate);
           }
 

@@ -9,9 +9,9 @@
 #include "chrome/browser/sessions/session_service_base.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 
-bool IsRelevantToAppSessionService(Browser::Type type) {
-  return (type == Browser::Type::TYPE_APP ||
-          type == Browser::Type::TYPE_APP_POPUP);
+bool IsRelevantToAppSessionService(BrowserWindowInterface::Type type) {
+  return (type == BrowserWindowInterface::Type::TYPE_APP ||
+          type == BrowserWindowInterface::Type::TYPE_APP_POPUP);
 }
 
 bool IsRelevantToAppSessionService(content::WebContents* web_contents) {
@@ -19,33 +19,36 @@ bool IsRelevantToAppSessionService(content::WebContents* web_contents) {
       SessionServiceBase::GetBrowserTypeFromWebContents(web_contents));
 }
 
-bool IsRelevantToAppSessionService(Browser* browser) {
-  return IsRelevantToAppSessionService(browser->type());
+bool IsRelevantToAppSessionService(BrowserWindowInterface* browser) {
+  return IsRelevantToAppSessionService(browser->GetType());
 }
 
 SessionServiceBase* GetAppropriateSessionServiceForProfile(
-    const Browser* browser) {
-  if (IsRelevantToAppSessionService(browser->type()))
-    return AppSessionServiceFactory::GetForProfile(browser->profile());
+    BrowserWindowInterface* browser) {
+  if (IsRelevantToAppSessionService(browser->GetType())) {
+    return AppSessionServiceFactory::GetForProfile(browser->GetProfile());
+  }
 
-  return SessionServiceFactory::GetForProfile(browser->profile());
+  return SessionServiceFactory::GetForProfile(browser->GetProfile());
 }
 
 SessionServiceBase* GetAppropriateSessionServiceForSessionRestore(
-    const Browser* browser) {
-  if (IsRelevantToAppSessionService(browser->type()))
+    BrowserWindowInterface* browser) {
+  if (IsRelevantToAppSessionService(browser->GetType())) {
     return AppSessionServiceFactory::GetForProfileForSessionRestore(
-        browser->profile());
+        browser->GetProfile());
+  }
 
   return SessionServiceFactory::GetForProfileForSessionRestore(
-      browser->profile());
+      browser->GetProfile());
 }
 
 SessionServiceBase* GetAppropriateSessionServiceIfExisting(
-    const Browser* browser) {
-  if (IsRelevantToAppSessionService(browser->type()))
+    BrowserWindowInterface* browser) {
+  if (IsRelevantToAppSessionService(browser->GetType())) {
     return AppSessionServiceFactory::GetForProfileIfExisting(
-        browser->profile());
+        browser->GetProfile());
+  }
 
-  return SessionServiceFactory::GetForProfileIfExisting(browser->profile());
+  return SessionServiceFactory::GetForProfileIfExisting(browser->GetProfile());
 }
