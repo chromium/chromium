@@ -110,6 +110,7 @@ which _are_ valid. As a rule:
     * Start a thread in the Shepherding chat immediately
 * Is the bug eligible for [delegated triage](delegated-triage.md)?:
     * If it's a GPU bug, put it in [hotlist 8198490](https://b.corp.google.com/hotlists/8198490)
+    * If it's a BoringSSL bug, put it in [component 1590116](https://b.corp.google.com/components/1590116)
     * TODO: add more here :)
     * You are now done triaging this bug, congratulations!
 * If the bug is a v8 bug (including wasm):
