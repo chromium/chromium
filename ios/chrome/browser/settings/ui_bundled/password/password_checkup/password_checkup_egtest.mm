@@ -251,8 +251,14 @@ void EditPassword(NSString* new_password) {
       selectElementWithMatcher:password_manager_test_utils::EditDoneButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:password_manager_test_utils::
-                                          EditPasswordConfirmationButton()]
+  id<GREYMatcher> edit_password_confirmation_button =
+      password_manager_test_utils::EditPasswordConfirmationButton();
+
+  // Wait for Edit Password Confirmation Button.
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      edit_password_confirmation_button];
+
+  [[EarlGrey selectElementWithMatcher:edit_password_confirmation_button]
       performAction:grey_tap()];
 
   // Wait until the confirmation dialog is dimsissed.
