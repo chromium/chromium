@@ -23,7 +23,7 @@ BASE_FEATURE(kBrowserSignalsReportingEnabled,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the collection of policies in a Chrome Profile signals report.
-BASE_FEATURE(kPolicyDataCollectionEnabled, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPolicyDataCollectionEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether a signals-only profile report will be triggered when a valid
 // cookie change is observed.
