@@ -643,7 +643,7 @@ bool WebContentsViewMac::DragPromisedFileTo(
 
   SetReadWritePermissionsForFile(file);
 
-  if (web_contents_) {
+  if (drop_data.download_metadata && web_contents_) {
     auto drag_file_downloader = std::make_unique<DragDownloadFile>(
         source_rfh->GetWeakDocumentPtr(), *out_file_path, std::move(file),
         drop_data.download_metadata->url,
