@@ -35,10 +35,6 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 
-#if !BUILDFLAG(IS_ANDROID)  // Single instance only
-#include "chrome/browser/actor/actor_task_delegate.h"
-#endif
-
 class BrowserWindowInterface;
 class Profile;
 class ProfileManager;
@@ -74,10 +70,6 @@ class GlicWebContentsWarmingPool;
 
 enum class GlicPrewarmingChecksResult;
 
-#if !BUILDFLAG(IS_ANDROID)  // Single instance only
-class GlicActorTaskManager;
-#endif
-
 // The GlicKeyedService is created for each eligible (i.e. non-incognito,
 // non-system, etc.) browser profile if Glic flags are enabled, regardless
 // of whether the profile is enabled or disabled at runtime (currently
@@ -87,12 +79,7 @@ class GlicActorTaskManager;
 class GlicKeyedService : public KeyedService,
                          public GlicSharingManagerProvider,
                          public base::SupportsUserData,
-                         public base::MemoryPressureListener
-#if !BUILDFLAG(IS_ANDROID)  // Single instance only
-    ,
-                         public actor::ActorTaskDelegate
-#endif
-{
+                         public base::MemoryPressureListener {
  public:
   explicit GlicKeyedService(Profile* profile,
                             signin::IdentityManager* identity_manager,
@@ -310,33 +297,6 @@ class GlicKeyedService : public KeyedService,
     return *tab_favicon_observer_;
   }
 
-#if !BUILDFLAG(IS_ANDROID)  // Single instance only
-  // ActorTaskDelegate:
-  void OnTabAddedToTask(actor::TaskId task_id,
-                        const tabs::TabInterface::Handle& tab_handle) override;
-  void RequestToShowCredentialSelectionDialog(
-      actor::TaskId task_id,
-      const base::flat_map<std::string, gfx::Image>& icons,
-      const std::vector<actor_login::Credential>& credentials,
-      actor::ActorTaskDelegate::CredentialSelectedCallback callback) override;
-  void RequestToShowUserConfirmationDialog(
-      actor::TaskId task_id,
-      const url::Origin& navigation_origin,
-      bool for_blocklisted_origin,
-      actor::ActorTaskDelegate::UserConfirmationDialogCallback callback)
-      override;
-  void RequestToConfirmNavigation(
-      actor::TaskId task_id,
-      const url::Origin& navigation_origin,
-      actor::ActorTaskDelegate::NavigationConfirmationCallback callback)
-      override;
-  void RequestToShowAutofillSuggestionsDialog(
-      actor::TaskId task_id,
-      std::vector<autofill::ActorFormFillingRequest> requests,
-      base::WeakPtr<actor::AutofillSelectionDialogEventHandler> event_handler,
-      AutofillSuggestionSelectedCallback callback) override;
-#endif
-
   using ActOnWebCapabilityChangedCallback = base::RepeatingCallback<void(bool)>;
   base::CallbackListSubscription AddActOnWebCapabilityChangedCallback(
       ActOnWebCapabilityChangedCallback callback);
@@ -407,9 +367,7 @@ class GlicKeyedService : public KeyedService,
       zero_state_suggestions_manager_;
 #endif
   base::OnceCallback<void()> preload_callback_;
-#if !BUILDFLAG(IS_ANDROID)  // Single instance only
-  std::unique_ptr<GlicActorTaskManager> actor_task_manager_;
-#endif
+
   std::unique_ptr<GlicTabDataObserver> tab_data_observer_;
   std::unique_ptr<GlicTabFaviconObserver> tab_favicon_observer_;
   std::unique_ptr<GlicWebContentsWarmingPool> web_contents_warming_pool_;
