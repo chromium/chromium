@@ -9,7 +9,6 @@
 
 #include "base/callback_list.h"
 #include "base/run_loop.h"
-#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "ui/base/test/ui_controls.h"
@@ -60,8 +59,6 @@ class BrowserActivationWaiter : public views::WidgetObserver {
  private:
   bool observed_ = false;
   base::RunLoop run_loop_;
-  base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
-      this};
 };
 
 

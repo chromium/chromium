@@ -31,7 +31,7 @@ class SendTabToSelfToolbarIconControllerTest : public InProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    ui_test_utils::WaitForBrowserSetLastActive(browser());
+    ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   }
 
   void WaitUntilBrowserBecomeActiveOrLastActive(Browser* browser) {
@@ -49,7 +49,9 @@ class SendTabToSelfToolbarIconControllerTest : public InProcessBrowserTest {
   }
 
   SendTabToSelfToolbarBubbleController* bubble_controller() {
-    return SendTabToSelfToolbarBubbleController::From(browser());
+    return browser()
+        ->browser_window_features()
+        ->send_tab_to_self_toolbar_bubble_controller();
   }
 
  private:
