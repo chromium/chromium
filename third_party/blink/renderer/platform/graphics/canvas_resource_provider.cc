@@ -1856,11 +1856,6 @@ CanvasResourceProvider::GetCanvasForCanvas2DForTesting() {
   return recorder_for_canvas_2d_->getRecordingCanvas();
 }
 
-void CanvasResourceProvider::ReleaseLockedImages() {
-  if (canvas_image_provider_)
-    canvas_image_provider_->ReleaseLockedImages();
-}
-
 scoped_refptr<UnacceleratedStaticBitmapImage>
 CanvasResourceProvider::UnacceleratedSnapshotForCanvas2D(
     ImageOrientation orientation) {
@@ -2009,7 +2004,9 @@ void CanvasNon2DResourceProviderSharedImage::FlushCanvas(bool is_overwrite) {
 
   // Images are locked for the duration of the rasterization, in case they get
   // used multiple times. We can unlock them once the rasterization is complete.
-  ReleaseLockedImages();
+  if (canvas_image_provider_) {
+    canvas_image_provider_->ReleaseLockedImages();
+  }
 }
 
 std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas2D(
@@ -2032,7 +2029,9 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas2D(
   RasterRecordForCanvas2D(recording);
   // Images are locked for the duration of the rasterization, in case they get
   // used multiple times. We can unlock them once the rasterization is complete.
-  ReleaseLockedImages();
+  if (canvas_image_provider_) {
+    canvas_image_provider_->ReleaseLockedImages();
+  }
 
   last_recording_for_canvas2d_ =
       preserve_recording ? std::optional(recording) : std::nullopt;

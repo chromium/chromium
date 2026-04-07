@@ -235,8 +235,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   void OnMemoryDump(base::trace_event::ProcessMemoryDump*) override;
 
-  void ReleaseLockedImages();
-
   template <class T>
   static std::unique_ptr<T> CreateSharedImageProviderBase(
       gfx::Size size,
