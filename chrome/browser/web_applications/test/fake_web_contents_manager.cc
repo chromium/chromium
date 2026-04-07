@@ -361,6 +361,7 @@ class FakeWebContentsManager::FakeWebAppDataRetriever
                       blink::mojom::ManifestRequestResult::
                           kManifestFailedToFetch,
                       std::vector<blink::mojom::ManifestErrorPtr>()))));
+      return;
     }
     FakeWebContentsManager::FakePageState& page = page_it->second;
     // The on_manifest_fetch callback below may end up destroying `this` as well

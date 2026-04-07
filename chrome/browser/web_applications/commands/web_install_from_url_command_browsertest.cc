@@ -97,7 +97,6 @@ namespace web_app {
 // where this command is essentially being used to reinstall an app that doesn't
 // meet the launch criteria specified via the filter.
 enum class NotLaunchableFromInstallApi {
-  // By default,
   kNoOSIntegration,
   kDisplayModeBrowser,
 };
@@ -425,14 +424,13 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
   histograms.ExpectBucketCount("WebApp.LaunchSource",
                                apps::LaunchSource::kFromReparenting, 1);
 
-  // app to install with `navigator.install()`.
+  // App to install with `navigator.install()`.
   const GURL install_url = embedded_https_test_server().GetURL(
       "/banners/manifest_with_id_test_page.html");
   const GURL manifest_id = embedded_https_test_server().GetURL("/some_id");
 
   base::AutoReset<bool> auto_accept =
       SetAutoAcceptPWAInstallConfirmationForTesting();
-  // NavigateToValidUrl(app_browser);
   SetPermissionResponse(/*permission_granted=*/true, app_web_contents);
   // !Important! Because the 2 apps share a scope, we need to pass manifest_id
   // here to ensure an accurate app lookup. If we don't, we'll end up matching
@@ -1551,7 +1549,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest, NoManifest) {
   NavigateToValidUrl();
 
-  // If the site does not have a manifest, the manifest_id will default to the
+  // The site has no manifest, so the install should fail.
   std::string install_url = embedded_https_test_server()
                                 .GetURL("/banners/no_manifest_test_page.html")
                                 .spec();
@@ -1618,7 +1616,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest, NoManifest) {
 IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest, InvalidManifest) {
   NavigateToValidUrl();
 
-  // If the site has an invalid manifest, the manifest_id defaults to the
+  // The site has an invalid manifest, so the install should fail.
   std::string install_url =
       embedded_https_test_server()
           .GetURL("/banners/invalid_manifest_test_page.html")
@@ -1687,7 +1685,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
                        ManifestIdMismatch) {
   NavigateToValidUrl();
 
-  // The computed manifest id of this app is the same as the install_url.
+  // Pass a manifest_id that doesn't match the app's actual manifest id.
   std::string install_url = GetInstallableAppURL().spec();
   std::string manifest_id =
       embedded_https_test_server().GetURL("/incorrect_id").spec();
@@ -1882,8 +1880,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest, InvalidInstallUrl) {
   NavigateToValidUrl();
 
-  // If the site does not have a manifest, the manifest_id will default to the
-  // current document.
+  // The install URL is unreachable, so the install should fail.
   std::string install_url = "https://invalid.url";
   std::string manifest_id = install_url;
   base::HistogramTester histograms;

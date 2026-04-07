@@ -1066,6 +1066,7 @@ source_set("web_applications_unit_tests") {
     "web_app_utils_unittest.cc",
     "web_contents/web_app_data_retriever_unittest.cc",
     "web_contents/web_app_icon_downloader_unittest.cc",
+    "web_install_service_impl_unittest.cc",
   ]
 
   if (is_win) {
