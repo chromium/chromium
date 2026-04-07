@@ -782,6 +782,41 @@ network::mojom::CookieManager* PrefetchingMetricsTestBase::cookie_manager() {
       ->GetCookieManagerForBrowserProcess();
 }
 
+bool PrefetchingMetricsTestBase::SetCookie(const GURL& url,
+                                           const std::string& value) {
+  std::unique_ptr<net::CanonicalCookie> cookie(
+      net::CanonicalCookie::CreateForTesting(url, value, base::Time::Now(),
+                                             net::CookieSourceType::kOther));
+
+  EXPECT_TRUE(cookie.get());
+
+  bool result = false;
+  base::RunLoop run_loop;
+
+  net::CookieOptions options;
+  options.set_include_httponly();
+  options.set_same_site_cookie_context(
+      net::CookieOptions::SameSiteCookieContext::MakeInclusive());
+
+  cookie_manager()->SetCanonicalCookie(
+      *cookie, url, options,
+      base::BindOnce(
+          [](bool* result, base::RunLoop* run_loop,
+             net::CookieAccessResult set_cookie_access_result) {
+            *result = set_cookie_access_result.status.IsInclude();
+            run_loop->Quit();
+          },
+          &result, &run_loop));
+
+  // This will run until the cookie is set.
+  run_loop.Run();
+
+  // This will run until the cookie listener is updated.
+  task_environment()->RunUntilIdle();
+
+  return result;
+}
+
 WithPrefetchRearchParam::WithPrefetchRearchParam(PrefetchRearchParam param)
     : param_(param) {}
 WithPrefetchRearchParam::~WithPrefetchRearchParam() = default;

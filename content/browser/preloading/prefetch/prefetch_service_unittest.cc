@@ -402,11 +402,6 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
   void SetUp() override {
     PrefetchingMetricsTestBase::SetUp();
 
-    browser_context()
-        ->GetDefaultStoragePartition()
-        ->GetNetworkContext()
-        ->GetCookieManager(cookie_manager_.BindNewPipeAndPassReceiver());
-
     InitScopedFeatureList();
 
     PrefetchService::SetURLLoaderFactoryForTesting(
@@ -815,34 +810,6 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
     CompleteResponseAndWait(net_error, expected_total_body_size, request);
   }
 
-  bool SetCookie(const GURL& url, const std::string& value) {
-    std::unique_ptr<net::CanonicalCookie> cookie(
-        net::CanonicalCookie::CreateForTesting(url, value, base::Time::Now(),
-                                               net::CookieSourceType::kOther));
-
-    EXPECT_TRUE(cookie.get());
-
-    bool result = false;
-    base::RunLoop run_loop;
-
-    net::CookieOptions options;
-    options.set_include_httponly();
-    options.set_same_site_cookie_context(
-        net::CookieOptions::SameSiteCookieContext::MakeInclusive());
-
-    cookie_manager_->SetCanonicalCookie(
-        *cookie.get(), url, options,
-        base::BindOnce(
-            [](bool* result, base::RunLoop* run_loop,
-               net::CookieAccessResult set_cookie_access_result) {
-              *result = set_cookie_access_result.status.IsInclude();
-              run_loop->Quit();
-            },
-            &result, &run_loop));
-    run_loop.Run();
-    return result;
-  }
-
   void Navigate(
       const GURL& url,
       int initiator_process_id,
@@ -1239,7 +1206,6 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
   base::ScopedMockElapsedTimersForTest scoped_test_timer_;
 
   std::unique_ptr<PrefetchFakeServiceWorkerContext> service_worker_context_;
-  mojo::Remote<network::mojom::CookieManager> cookie_manager_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory>

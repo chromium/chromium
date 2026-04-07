@@ -7,18 +7,23 @@
 
 #include <string>
 
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/test_content_browser_client.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
+#include "net/cookies/canonical_cookie.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -310,6 +315,8 @@ class PrefetchingMetricsTestBase : public RenderViewHostTestHarness {
   // The cookie manager used in non-test code, i.e. in
   // `PrefetchContainer::RegisterCookieListener()`.
   network::mojom::CookieManager* cookie_manager();
+
+  bool SetCookie(const GURL& url, const std::string& value);
 
  private:
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;

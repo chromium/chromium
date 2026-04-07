@@ -288,39 +288,7 @@ class PrefetchURLLoaderInterceptorTestBase : public PrefetchingMetricsTestBase {
         ->navigation_request();
   }
 
-  bool SetCookie(const GURL& url, const std::string& value) {
-    bool result = false;
-    base::RunLoop run_loop;
 
-    std::unique_ptr<net::CanonicalCookie> cookie(
-        net::CanonicalCookie::CreateForTesting(url, value, base::Time::Now(),
-                                               net::CookieSourceType::kOther));
-    EXPECT_TRUE(cookie.get());
-    EXPECT_TRUE(cookie->IsHostCookie());
-
-    net::CookieOptions options;
-    options.set_include_httponly();
-    options.set_same_site_cookie_context(
-        net::CookieOptions::SameSiteCookieContext::MakeInclusive());
-
-    cookie_manager()->SetCanonicalCookie(
-        *cookie.get(), url, options,
-        base::BindOnce(
-            [](bool* result, base::RunLoop* run_loop,
-               net::CookieAccessResult set_cookie_access_result) {
-              *result = set_cookie_access_result.status.IsInclude();
-              run_loop->Quit();
-            },
-            &result, &run_loop));
-
-    // This will run until the cookie is set.
-    run_loop.Run();
-
-    // This will run until the cookie listener gets the cookie change.
-    task_environment()->RunUntilIdle();
-
-    return result;
-  }
 
   void SetOnIsolatedCookieCopyStartForTesting(const GURL& prefetch_url,
                                               const GURL& redirect_url,
