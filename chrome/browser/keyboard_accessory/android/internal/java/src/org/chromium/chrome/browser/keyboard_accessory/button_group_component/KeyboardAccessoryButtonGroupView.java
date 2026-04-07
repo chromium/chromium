@@ -42,8 +42,16 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
         this.setGravity(Gravity.CENTER);
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        for (int i = 0; i < getChildCount(); i++) {
+            getChildAt(i).setEnabled(enabled);
+        }
+    }
+
     /**
-     * Creates a new button and appends it to the end of the button group at the end of the bar.
+     * Creates a new button and appends it to the end of the button group at the end of the bar. ...
      *
      * @param iconId Id of the icon to be displayed in the button.
      * @param contentDescription The contentDescription to be used for the button.
@@ -55,6 +63,7 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
                         inflater.inflate(R.layout.keyboard_accessory_image_button, this, false);
         button.setImageResource(iconId);
         button.setContentDescription(contentDescription);
+        button.setEnabled(isEnabled());
         button.setOnClickListener(
                 view -> {
                     if (mListener == null) return;
