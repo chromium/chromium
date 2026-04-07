@@ -186,9 +186,12 @@ void TestManifestAssetManagerComponentState::RunPendingRegistrations(
           (it->second.target.version == registration.target.version);
     }
     if (registration.manager) {
-      registration.manager->InstallerRegistered(
-          registration.target.public_key_hex,
-          registration.target.version->GetString(), is_already_installed);
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&ManifestAssetManager::InstallerRegistered,
+                                    registration.manager,
+                                    registration.target.public_key_hex,
+                                    registration.target.version->GetString(),
+                                    is_already_installed));
     }
     MaybeCompleteDownload(registration.target.public_key_hex);
   }
@@ -196,8 +199,10 @@ void TestManifestAssetManagerComponentState::RunPendingRegistrations(
     registration.pending_uninstall = false;
     installed_components_.erase(registration.target.public_key_hex);
     if (registration.manager) {
-      registration.manager->OnAssetUninstalled(
-          registration.target.public_key_hex);
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&ManifestAssetManager::OnAssetUninstalled,
+                                    registration.manager,
+                                    registration.target.public_key_hex));
     }
   }
 }
@@ -220,6 +225,7 @@ void TestManifestAssetManagerComponentState::SetDownloadScenario(
 
 void TestManifestAssetManagerComponentState::MaybeCompleteDownload(
     const std::string& public_key) {
+  VLOG(2) << "MaybeCompleteDownload: " << public_key;
   if (download_scenario_ == DownloadScenario::kOffline) {
     return;
   }
@@ -247,9 +253,13 @@ void TestManifestAssetManagerComponentState::MaybeCompleteDownload(
   registration.has_foreground_update_requested = false;
   registration.has_background_update_requested = false;
 
-  registration.manager->OnAssetReady(inst_it->second.target.public_key_hex,
-                                     *inst_it->second.target.version,
-                                     inst_it->second.install_dir);
+  VLOG(2) << "Posted OnAssetReady: " << public_key;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ManifestAssetManager::OnAssetReady, registration.manager,
+                     inst_it->second.target.public_key_hex,
+                     *inst_it->second.target.version,
+                     inst_it->second.install_dir));
 }
 
 void TestManifestAssetManagerComponentState::UpdateManifest(

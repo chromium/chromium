@@ -152,12 +152,13 @@ class TestManifestAssetManagerComponentState final {
   bool WasBackgroundUpdateRequested(const std::string& public_key) const;
 
   bool WaitForRegistration(const InstallTarget& target) const {
-    VLOG(1) << "WaitForRegistration";
+    VLOG(1) << "WaitForRegistration PK:" << target.public_key_hex
+            << " V:" << target.version->GetString();
     return base::test::RunUntil([&] { return IsRegistered(target); });
   }
 
   bool WaitForUninstall(const std::string& public_key) const {
-    VLOG(1) << "WaitForUninstall";
+    VLOG(1) << "WaitForUninstall PK:" << public_key;
     return base::test::RunUntil(
         [&]() { return WasUninstallRequested(public_key); });
   }
@@ -183,7 +184,7 @@ class TestManifestAssetManagerComponentState final {
       installable_components_;
 
   // The amount of free disk space we are pretending is available.
-  base::ByteCount free_disk_space_ = base::GiB(100);
+  base::ByteCount free_disk_space_ = base::GiB(30);
   // The directories that we are pretending that the component updater has
   // installed, keyed by public key.
   absl::flat_hash_map<std::string, InstallableComponent> installed_components_;

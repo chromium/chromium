@@ -27,6 +27,7 @@
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_solution_factory.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/proto/manifest.pb.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefService;
@@ -82,10 +83,6 @@ class ManifestAssetManager : public UsageTracker::Observer {
   //     via UpdateAssetState.
   void UpdateSolutionFactory(std::unique_ptr<ManifestSolutionFactory> factory);
 
-  // Returns the installation directory for `asset_id` if it is currently ready.
-  std::optional<base::FilePath> GetInstallDirectory(
-      const std::string& asset_id) const;
-
   // Returns whether the component installation is valid.
   static bool VerifyInstallation(const base::FilePath& install_dir,
                                  const base::DictValue& manifest);
@@ -119,77 +116,6 @@ class ManifestAssetManager : public UsageTracker::Observer {
     kUninstalling,
   };
 
-  enum class InstallMode {
-    // Install the model with on-demand install (foreground download).
-    kOnDemand = 0,
-    // Install the model by registering the component and wait for regular
-    // schedule.
-    kRegisterOnly = 1,
-    kMaxValue = kRegisterOnly,
-  };
-
-  // Requirements that apply to all components for installation.
-  struct GlobalRegistrationCriteria {
-    bool enabled_by_feature = false;
-    bool enabled_by_enterprise_policy = false;
-    bool enabled_by_user_setting = false;
-    // A recent enough disk space evaluation.
-    base::ByteCount disk_space_free;
-
-    bool IsDiskSpaceAvailable() const {
-      return features::IsFreeDiskSpaceSufficientForOnDeviceModelInstall(
-          disk_space_free);
-    }
-
-    // TODO(crbug.com/489511499): Migrate this check to ManifestMonitor.
-    bool IsRunningOutOfDiskSpace() const {
-      return features::IsFreeDiskSpaceTooLowForOnDeviceModelInstall(
-          disk_space_free);
-    }
-
-    bool IsModelAllowed() const {
-      return enabled_by_feature && enabled_by_enterprise_policy &&
-             enabled_by_user_setting;
-    }
-  };
-
-  // Component-specific criteria for installation.
-  struct ComponentRegistrationCriteria {
-    // True if the asset is part of the recipe for a requested use case.
-    bool required_by_active_use_case = false;
-    // True if the asset is already installing or registered with the component
-    // updater previously, and the installation may or may not be complete.
-    bool is_already_installing = false;
-    // True if the asset is not in the current manifest.
-    bool is_obsolete = false;
-    // True if the asset's last registration timestamp is no longer within the
-    // retention period.
-    bool out_of_retention = false;
-
-    bool ShouldUninstall(
-        const GlobalRegistrationCriteria& global_criteria) const {
-      return is_already_installing &&
-             (is_obsolete || out_of_retention ||
-              global_criteria.IsRunningOutOfDiskSpace() ||
-              !global_criteria.IsModelAllowed());
-    }
-
-    std::optional<InstallMode> GetInstallMode(
-        const GlobalRegistrationCriteria& global_criteria) const {
-      if (ShouldUninstall(global_criteria) ||
-          !global_criteria.IsDiskSpaceAvailable() ||
-          !global_criteria.IsModelAllowed()) {
-        return std::nullopt;
-      }
-      if (required_by_active_use_case) {
-        return InstallMode::kOnDemand;
-      }
-      // TODO(crbug.com/489511499): Support registerOnly (proactive download)
-      // for some solutions.
-      return std::nullopt;
-    }
-  };
-
   // Current state of a component.
   struct ComponentContext {
     ComponentContext();
@@ -197,15 +123,43 @@ class ManifestAssetManager : public UsageTracker::Observer {
     ComponentContext(const ComponentContext&);
     ComponentContext& operator=(const ComponentContext&);
 
+    // Prefs deserialization
+    static ComponentContext FromValue(const base::DictValue& value);
+    base::DictValue ToValue() const;
+
+    // Whether there is data on disk to uninstall.
+    bool NeedsCleanup() const;
+    // Returns an AssetState for whether we have the target_version.
+    ManifestSolutionFactory::AssetState AsAssetState(
+        const std::string& target_version) const;
+
+    std::string asset_id() const { return asset_id_; }
+    std::string requested_version() const { return requested_version_; }
+    ComponentState state() const { return state_; }
+    std::optional<base::FilePath> install_dir() const { return install_dir_; }
+
+    // Sets the ID used in the current manifest for this asset.
+    void SetAssetId(const std::string& asset_id);
+
+    // ComponentState transitions methods:
+    void SetUninstallComplete();
+    void SetRegistering(const std::string& target_version);
+    void SetRegistered();
+    void SetOnDemandDownloading();
+    void SetReadySoon();
+    void SetReady(const base::FilePath& install_dir,
+                  const base::Version& version);
+    void SetUninstalling();
+
+   private:
     // Persistent state (saved to prefs)
-    std::string asset_id;  // Associated asset ID from manifest.
-    std::string requested_version;
-    base::Time last_eligible_time = base::Time::Min();
+    std::string asset_id_;  // Associated asset ID from manifest.
+    std::string requested_version_;
 
     // Transient state (in memory)
-    ComponentState state = ComponentState::kNotRegistered;
-    std::optional<base::FilePath> install_dir;
-    std::optional<base::Version> version;
+    ComponentState state_ = ComponentState::kNotRegistered;
+    std::optional<base::FilePath> install_dir_;
+    std::optional<base::Version> version_;
   };
 
   // A ledger that handles saving and loading persistent component contexts to
@@ -221,6 +175,7 @@ class ManifestAssetManager : public UsageTracker::Observer {
     const base::flat_map<std::string, ComponentContext>& contexts() const {
       return component_contexts_;
     }
+
     base::flat_map<std::string, ComponentContext>& GetMutableContexts() {
       return component_contexts_;
     }
@@ -247,27 +202,22 @@ class ManifestAssetManager : public UsageTracker::Observer {
   void OnDeviceEligibleUseCaseUsed(const std::string& use_case_name,
                                    bool is_first_usage) override;
 
-  // Observes pref changes in policy and settings.
-  void OnGenAILocalFoundationalModelEnterprisePolicyChanged();
-  void OnGenAILocalFoundationalModelUserSettingChanged();
+  // Updates the set of assets required by the active use cases.
+  void UpdateActiveAssets();
 
   // Get disk space, and call `UpdateRegistration` when done.
   void OnDiskSpaceEvaluated(std::optional<base::ByteCount> free_space);
 
-  // Evaluates registration criteria and updates component states, possibly
-  // deferring until disk space evaluation finishes.
-  void UpdateRegistration();
-  absl::flat_hash_set<Manifest::AssetId> GetActiveAssets() const;
+  // Returns whether the asset should be installed.
+  bool ShouldInstall(const ComponentContext& context,
+                     const proto::OnDemandComponent* component) const;
 
-  // Computes and updates the records for components in the union of the
-  // manifest and persisted contexts.
-  // `active_assets` are the assets required by the active use cases.
-  void ComputeAndUpdateComponentContexts(
-      const absl::flat_hash_set<Manifest::AssetId>& active_assets);
+  // Updates each component to move towards it's intended state.
+  // May defer actions due to pending operations, like disk space evaluation
+  // or outstanding registration requests.
+  void UpdateRegistrations();
 
-  // Enforces the computed registration criteria by updating component states.
-  void EnforceRegistration();
-
+  // Begins the process of uninstalling the component with the given public key.
   void UninstallComponent(const std::string& public_key);
 
   // Notifies the factory about the current state of the component with the
@@ -275,45 +225,41 @@ class ManifestAssetManager : public UsageTracker::Observer {
   void NotifyFactory(const std::string& public_key,
                      const ComponentContext& context);
 
-  GlobalRegistrationCriteria ComputeGlobalRegistrationCriteria(
-      std::optional<base::ByteCount> disk_space_free) const;
-  ComponentRegistrationCriteria ComputeComponentRegistrationCriteria(
-      const ComponentContext& context,
-      bool required_by_active_use_case,
-      bool is_obsolete) const;
-
-  const raw_ref<PrefService> local_state_;
   const raw_ref<UsageTracker> usage_tracker_;
   const raw_ref<Delegate> delegate_;
-  std::unique_ptr<ManifestSolutionFactory> factory_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  PrefChangeRegistrar pref_change_registrar_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-  base::ScopedObservation<UsageTracker, UsageTracker::Observer>
-      usage_tracker_observation_{this};
 
   // Tracks the state of all components known to the manager. Keyed by the
   // component public key hex and computed for the union of components in the
   // manifest and persisted contexts.
   AssetLedger ledger_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Tracks the registration criteria for all components. Keyed by the
-  // component public key hex and computed for the union of components in the
-  // manifest and persisted contexts.
-  base::flat_map<std::string, ComponentRegistrationCriteria>
-      component_registration_criteria_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Unset until first registration attempt.
-  std::optional<GlobalRegistrationCriteria> global_criteria_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
+  // Tracks the free disk space and the last time it was evaluated.
   struct DiskSpaceStatus {
-    std::optional<base::ByteCount> free_space;
-    base::TimeTicks last_evaluated;
+    DiskSpaceStatus();
+    ~DiskSpaceStatus();
+
+    void Update(std::optional<base::ByteCount> free_space);
+
+    bool IsFresh() const;
+    bool CanSupportOnDemandInstall() const;
+    bool CanSupportProactiveDownload() const;
+
+   private:
+    std::optional<base::ByteCount> free_space_;
+    base::Time last_evaluated_;
   };
   DiskSpaceStatus disk_space_status_ GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // The solution factory to provide assets to. This provides the manifest.
+  std::unique_ptr<ManifestSolutionFactory> factory_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Tracks the manifest assets required by the active use cases.
+  absl::flat_hash_set<Manifest::AssetId> active_assets_by_id_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::ScopedObservation<UsageTracker, UsageTracker::Observer>
+      usage_tracker_observation_{this};
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<ManifestAssetManager> weak_ptr_factory_{this};
 };

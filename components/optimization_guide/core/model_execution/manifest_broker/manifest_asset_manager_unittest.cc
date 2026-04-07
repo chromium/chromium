@@ -306,21 +306,6 @@ TEST_F(ManifestAssetManagerTest, ResumesInstallationOnStartup) {
   EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
 }
 
-TEST_F(ManifestAssetManagerTest, UninstallOutOfRetentionOnStartup) {
-  DummyAsset compose_asset = DummyAsset::For("compose");
-  DummyAsset test_asset = DummyAsset::For("test");
-  usage_tracker_.OnDeviceEligibleUseCaseUsed(compose_asset.use_case);
-  SetupReadyComponents(DummyManifest().Add(compose_asset));
-  SimulateShutdown();
-
-  task_environment_.FastForwardBy(features::GetOnDeviceModelRetentionTime() +
-                                  base::Days(1));
-  usage_tracker_.OnDeviceEligibleUseCaseUsed(test_asset.use_case);
-  StartupWithManifest(DummyManifest().Add(compose_asset).Add(test_asset));
-
-  EXPECT_TRUE(component_state_.WaitForUninstall(compose_asset.public_key));
-}
-
 TEST_F(ManifestAssetManagerTest, ObsoleteVersionOnStartup) {
   DummyAsset asset_v1 = DummyAsset::For("compose").WithVersion("1.0.0.0");
   DummyAsset asset_v2 = DummyAsset::For("compose").WithVersion("2.0.0.0");
@@ -418,24 +403,16 @@ TEST_F(ManifestAssetManagerTest, UninstallsWhenPublicKeyChanged) {
   EXPECT_TRUE(component_state_.WaitForUninstall(asset_v1.public_key));
 }
 
-TEST_F(ManifestAssetManagerTest, UninstallsWhenOutOfRetention) {
-  DummyAsset asset = DummyAsset::For("compose");
-  usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
-  SetupReadyComponents(DummyManifest().Add(asset));
-  task_environment_.FastForwardBy(features::GetOnDeviceModelRetentionTime() +
-                                  base::Days(1));
-  UpdateManifest(DummyManifest().Add(asset));
-  EXPECT_TRUE(component_state_.WaitForUninstall(asset.public_key));
-}
-
 TEST_F(ManifestAssetManagerTest, UninstallsWhenRunningOutOfDiskSpace) {
   DummyAsset asset = DummyAsset::For("compose");
   usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
   SetupReadyComponents(DummyManifest().Add(asset));
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
+  SimulateShutdown();
   // 5gb is the default in `IsFreeDiskSpaceTooLowForOnDeviceModelInstall`.
   component_state_.SetFreeDiskSpace(base::GiB(5) - base::ByteCount(1));
   task_environment_.FastForwardBy(base::Seconds(11));
-  UpdateManifest(DummyManifest().Add(asset));
+  StartupWithManifest(DummyManifest().Add(asset));
   EXPECT_TRUE(component_state_.WaitForUninstall(asset.public_key));
 }
 
