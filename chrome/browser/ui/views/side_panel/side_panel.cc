@@ -720,7 +720,13 @@ void SidePanel::OnBoundsChanged(const gfx::Rect& previous_bounds) {
 }
 
 double SidePanel::GetAnimationValue() const {
-  return GetAnimationValueFor(SidePanelAnimations::kPanelWidth);
+  double result = GetAnimationValueFor(SidePanelAnimations::kPanelWidth);
+  if (BrowserAnimationController::From(browser_view_->browser())
+          ->GetCurrentMotion(animation_group_) == SidePanelAnimations::kOpen) {
+    // Use the open starting point for open animations instead of zero.
+    result = open_starting_point_ + (1.0 - open_starting_point_) * result;
+  }
+  return result;
 }
 
 void SidePanel::OnAnimationProgressed(
@@ -742,6 +748,10 @@ void SidePanel::OnAnimationProgressed(
         if (last_animation_values_[SidePanelAnimations::kPanelWidth] !=
             *width) {
           last_animation_values_[SidePanelAnimations::kPanelWidth] = *width;
+          if (controller->GetCurrentMotion(animation_group_) !=
+              SidePanelAnimations::kOpen) {
+            open_starting_point_ = *width;
+          }
           InvalidateLayout();
         }
       }
@@ -759,11 +769,13 @@ void SidePanel::OnAnimationProgressed(
       animation_perf_reporter_.reset();
       const auto motion = controller->GetCurrentMotion(animation_group_);
       if (motion == SidePanelAnimations::kClose) {
+        open_starting_point_ = 0.0;
         state_ = State::kClosed;
         views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
             kCloseAnimationCompletedEvent, this);
         SetVisible(false);
       } else if (motion) {
+        open_starting_point_ = 1.0;
         if (motion == SidePanelAnimations::kOpenWithContentTransition) {
           if (browser_view_->GetSidePanelAnimationContent()) {
             content_parent_view_->AddChildView(
