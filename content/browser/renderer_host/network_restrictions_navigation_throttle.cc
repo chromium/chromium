@@ -79,12 +79,24 @@ NetworkRestrictionsNavigationThrottle::MaybeApplyNetworkRestrictions(
   }
 
   // Defer the commit until the network restrictions have been applied.
-  navigation_request.frame_tree_node()
-      ->current_frame_host()
+  network::ConnectionAllowlists allowlists =
+      policy_container_policies.connection_allowlists;
+  // Here, we're using the reporting source of the document we're committing,
+  // not the initiator's reporting source.
+  //
+  // TODO(482728970): We shouldn't modify a copy of the policy container here.
+  // Instead, we should modify the content of the policy container itself so
+  // that other future callers will have a consistent view of the policy state.
+  // That's difficult at the moment, as we calculate the policy container prior
+  // to choosing an RFH for the document (because of sandboxing flags, etc),
+  // but can't populate the reporting source until after we've chosen an RFH
+  // and obtained a document token.
+  allowlists.reporting_source =
+      navigation_request.GetRenderFrameHost()->GetReportingSource();
+  navigation_request.GetRenderFrameHost()
       ->GetStoragePartition()
       ->RevokeNetworkForNoncesInNetworkContext(
-          {{*network_restrictions_id,
-            policy_container_policies.connection_allowlists}},
+          {{*network_restrictions_id, std::move(allowlists)}},
           std::move(on_complete));
 
   return NetworkRestrictionsResult::kDefer;

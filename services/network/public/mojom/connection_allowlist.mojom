@@ -4,6 +4,7 @@
 
 module network.mojom;
 
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "url/mojom/url.mojom";
 
 // `Connection-Allowlist` headers govern the set of connections which can be
@@ -60,5 +61,12 @@ struct ConnectionAllowlists {
   url.mojom.Url response_url;
   ConnectionAllowlist? enforced;
   ConnectionAllowlist? report_only;
+
+  // We should always have a reporting_source token when Connection Allowlists
+  // are applied to a document. We do not, however, have access to that token
+  // when we're originally parsing the headers, as the source isn't created
+  // until the document commits. This will therefore be empty until it's
+  // populated lower in the stack.
+  mojo_base.mojom.UnguessableToken? reporting_source;
 };
 
