@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/global_routing_id.h"
@@ -45,6 +46,11 @@ class SearchAiModePromoTabHelper
       delete;
   ~SearchAiModePromoTabHelper() override;
 
+  void SetSigninPromoControllerFactoryForTesting(
+      base::RepeatingCallback<
+          std::unique_ptr<SearchAIModeSignInPromoController>(
+              content::WebContents*)> factory_callback);
+
  private:
   friend class content::WebContentsUserData<SearchAiModePromoTabHelper>;
   explicit SearchAiModePromoTabHelper(content::WebContents* web_contents);
@@ -80,10 +86,14 @@ class SearchAiModePromoTabHelper
 
   bool has_checked_initial_navigation_ = false;
   bool should_show_promo_ = false;
+  bool has_triggered_cobrowse_flow_ = false;
   base::OneShotTimer promo_timer_;
   content::GlobalRenderFrameHostId primary_main_frame_id_;
   base::WeakPtr<content::WebContents> aim_search_web_contents_;
   std::unique_ptr<SearchAIModeSignInPromoController> signin_promo_controller_;
+  base::RepeatingCallback<std::unique_ptr<SearchAIModeSignInPromoController>(
+      content::WebContents*)>
+      signin_promo_controller_factory_for_testing_;
   GURL target_url_;
   std::unique_ptr<ContextualTaskNavigationObserver> contextual_task_observer_;
 

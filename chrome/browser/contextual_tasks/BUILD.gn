@@ -355,9 +355,14 @@ if (!is_android) {
       "contextual_tasks_url_loader_factory_interceptor_browsertest.cc",
     ]
 
+    if (enable_dice_support) {
+      sources += [ "search_ai_mode_promo_tab_helper_browsertest.cc" ]
+    }
+
     deps = [
       ":contextual_tasks",
       ":impl",
+      ":test_support",
       ":ui",
       ":ui_impl",
       "//base",

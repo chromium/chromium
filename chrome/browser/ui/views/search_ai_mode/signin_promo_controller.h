@@ -16,14 +16,14 @@ class SearchAIModeSignInPromoController {
  public:
   explicit SearchAIModeSignInPromoController(
       content::WebContents* web_contents);
-  ~SearchAIModeSignInPromoController();
+  virtual ~SearchAIModeSignInPromoController();
   SearchAIModeSignInPromoController(const SearchAIModeSignInPromoController&) =
       delete;
   SearchAIModeSignInPromoController& operator=(
       const SearchAIModeSignInPromoController&) = delete;
 
   // Triggers the promo.
-  void ShowPromo(BrowserView* browser_view);
+  virtual void ShowPromo(BrowserView* browser_view);
 
   // Called when the bubble is closed.
   void OnBubbleClosed();

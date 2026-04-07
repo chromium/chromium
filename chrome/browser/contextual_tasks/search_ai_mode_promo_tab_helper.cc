@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -18,8 +19,11 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/search_ai_mode/signin_promo_controller.h"
 #include "chrome/common/webui_url_constants.h"
@@ -173,6 +177,12 @@ SearchAiModePromoTabHelper::SearchAiModePromoTabHelper(
 
 SearchAiModePromoTabHelper::~SearchAiModePromoTabHelper() = default;
 
+void SearchAiModePromoTabHelper::SetSigninPromoControllerFactoryForTesting(
+    base::RepeatingCallback<std::unique_ptr<SearchAIModeSignInPromoController>(
+        content::WebContents* web_contents)> factory_callback) {
+  signin_promo_controller_factory_for_testing_ = std::move(factory_callback);
+}
+
 void SearchAiModePromoTabHelper::TriggerCoBrowsePostSignIn() {
   if (!aim_search_web_contents_ || aim_search_web_contents_.WasInvalidated() ||
       !IsAIModeSearch(aim_search_web_contents_.get())) {
@@ -209,7 +219,7 @@ void SearchAiModePromoTabHelper::TriggerCoBrowsePostSignIn() {
                                         original_entry->GetReferrer().policy);
     params.extra_headers = original_entry->GetExtraHeaders();
   }
-
+  has_triggered_cobrowse_flow_ = true;
   web_contents()->GetController().LoadURLWithParams(params);
 
   // Wait for the contextual task to be ready, then trigger the navigation to
@@ -225,6 +235,12 @@ void SearchAiModePromoTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   // We only care about the first navigation in this tab.
   if (has_checked_initial_navigation_) {
+    // Handle navigations that happen after the initial one that opened this tab.
+    if (navigation_handle->IsInPrimaryMainFrame() &&
+        navigation_handle->HasCommitted() &&
+        !navigation_handle->IsSameDocument() && !has_triggered_cobrowse_flow_) {
+      SelfDestruct();
+    }
     return;
   }
   if (!navigation_handle->IsInPrimaryMainFrame() ||
@@ -277,8 +293,13 @@ void SearchAiModePromoTabHelper::MaybeShowPromo() {
     return;
   }
 
-  signin_promo_controller_ =
-      std::make_unique<SearchAIModeSignInPromoController>(web_contents());
+  if (signin_promo_controller_factory_for_testing_) {
+    signin_promo_controller_ =
+        signin_promo_controller_factory_for_testing_.Run(web_contents());
+  } else {
+    signin_promo_controller_ =
+        std::make_unique<SearchAIModeSignInPromoController>(web_contents());
+  }
 
   tabs::TabInterface* tab =
       tabs::TabInterface::MaybeGetFromContents(web_contents());
