@@ -25,7 +25,7 @@ class GlicActorAutofillDisabledUiTest : public GlicActorUiTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Tests that that actions are rejected when the kGlicActorAutofill feature is
+// Tests that actions are rejected when the kGlicActorAutofill feature is
 // disabled and a form filling action was included.
 IN_PROC_BROWSER_TEST_F(GlicActorAutofillDisabledUiTest,
                        AttemptFormFillingActionDisabledByFlag) {
