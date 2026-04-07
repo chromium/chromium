@@ -123,6 +123,8 @@ proto_library("amount_extraction_heuristic_regexes_proto") {
 
 static_library("browser") {
   sources = [
+    "at_memory/at_memory_controller.cc",
+    "at_memory/at_memory_controller.h",
     "at_memory/at_memory_data_type.cc",
     "at_memory/at_memory_data_type.h",
     "at_memory/at_memory_funnel_metrics.cc",

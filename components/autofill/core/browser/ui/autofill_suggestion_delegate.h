@@ -42,6 +42,15 @@ class AutofillSuggestionDelegate {
 
   virtual ~AutofillSuggestionDelegate() = default;
 
+  // Called when the user has typed in the search bar.
+  // Returns true if the delegate handles the filter change.
+  virtual bool OnFilterChanged(const std::u16string& filter) = 0;
+
+  // Called when the user has explicitly submitted the search (e.g. by hitting
+  // Enter).
+  // Returns true if the delegate handles the search submission.
+  virtual bool OnSearchSubmitted(const std::u16string& filter) = 0;
+
   virtual std::variant<AutofillDriver*,
                        password_manager::PasswordManagerDriver*>
   GetDriver() = 0;
