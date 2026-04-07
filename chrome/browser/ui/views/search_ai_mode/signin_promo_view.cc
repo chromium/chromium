@@ -6,6 +6,9 @@
 
 #include <optional>
 
+#include "base/check_is_test.h"
+#include "base/functional/bind.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_delegate.h"
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -21,7 +24,12 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
 
+namespace {
+constexpr base::TimeDelta kPromoSelfDismissalTimeout = base::Seconds(15);
+}  // namespace
+
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kSearchAIModeSignInPromoFrameViewId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kSearchAIModeSignInPromoViewId);
 
 SearchAIModeSignInPromoView::SearchAIModeSignInPromoView(
     views::View* anchor_view,
@@ -32,6 +40,7 @@ SearchAIModeSignInPromoView::SearchAIModeSignInPromoView(
   CHECK(web_contents);
   CHECK(base::FeatureList::IsEnabled(switches::kEnableSearchAIModeSigninPromo));
 
+  SetProperty(views::kElementIdentifierKey, kSearchAIModeSignInPromoViewId);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetTitle(IDS_AI_SIGNIN_PROMO_TITLE);
   SetShowCloseButton(true);
@@ -56,6 +65,11 @@ SearchAIModeSignInPromoView::~SearchAIModeSignInPromoView() {
   }
 }
 
+void SearchAIModeSignInPromoView::FireTimerForTesting() {
+  CHECK_IS_TEST();
+  self_dismissal_timer_.FireNow();
+}
+
 void SearchAIModeSignInPromoView::AddedToWidget() {
   GetBubbleFrameView()->SetProperty(views::kElementIdentifierKey,
                                     kSearchAIModeSignInPromoFrameViewId);
@@ -66,9 +80,19 @@ void SearchAIModeSignInPromoView::AddedToWidget() {
   image_view->GetViewAccessibility().SetIsInvisible(true);
 
   GetBubbleFrameView()->SetHeaderView(std::move(image_view));
+
+  self_dismissal_timer_.Start(
+      FROM_HERE, kPromoSelfDismissalTimeout,
+      base::BindOnce(&SearchAIModeSignInPromoView::Close,
+                     // Unretained is fine because the timer is owned by this object.
+                     base::Unretained(this)));
 }
 
-// TODO(crbug.com/486858498): Implement self-dismissal logic after X seconds.
+void SearchAIModeSignInPromoView::Close() {
+  if (GetWidget()) {
+    GetWidget()->Close();
+  }
+}
 
 BEGIN_METADATA(SearchAIModeSignInPromoView)
 END_METADATA

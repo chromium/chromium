@@ -46,6 +46,7 @@ class SearchAiModePromoTabHelper
       delete;
   ~SearchAiModePromoTabHelper() override;
 
+  void FireTimeoutReachedForTesting();
   void SetSigninPromoControllerFactoryForTesting(
       base::RepeatingCallback<
           std::unique_ptr<SearchAIModeSignInPromoController>(

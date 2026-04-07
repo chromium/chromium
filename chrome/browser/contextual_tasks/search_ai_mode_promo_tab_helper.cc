@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -176,6 +177,12 @@ SearchAiModePromoTabHelper::SearchAiModePromoTabHelper(
 }
 
 SearchAiModePromoTabHelper::~SearchAiModePromoTabHelper() = default;
+
+void SearchAiModePromoTabHelper::FireTimeoutReachedForTesting() {
+  CHECK_IS_TEST();
+  CHECK(promo_timer_.IsRunning());
+  promo_timer_.FireNow();
+}
 
 void SearchAiModePromoTabHelper::SetSigninPromoControllerFactoryForTesting(
     base::RepeatingCallback<std::unique_ptr<SearchAIModeSignInPromoController>(
