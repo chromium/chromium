@@ -130,6 +130,7 @@ import java.util.List;
 public class StripLayoutHelperManagerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TabStripSceneLayer.Natives mTabStripSceneMock;
+    @Mock private StripTabUnderlineManager.Natives mStripTabUnderlineManagerNatives;
     @Mock private TabStripSceneLayer mTabStripTreeProvider;
     @Mock private LayerTitleCache mLayerTitleCache;
     @Mock private LayoutManagerHost mManagerHost;
@@ -188,6 +189,7 @@ public class StripLayoutHelperManagerTest {
     @Before
     public void beforeTest() {
         TabStripSceneLayerJni.setInstanceForTesting(mTabStripSceneMock);
+        StripTabUnderlineManagerJni.setInstanceForTesting(mStripTabUnderlineManagerNatives);
         MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);

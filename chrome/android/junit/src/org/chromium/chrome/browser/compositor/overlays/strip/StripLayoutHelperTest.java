@@ -235,6 +235,7 @@ public class StripLayoutHelperTest {
     @Mock private Bitmap mAvatarBitmap;
     @Mock TabStripIphController mController;
     @Mock private TabStripContextMenuCoordinator mTabStripContextMenuCoordinator;
+    @Mock private StripTabUnderlineManager.Natives mStripTabUnderlineMock;
 
     @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
     @Captor private ArgumentCaptor<TabModelActionListener> mTabModelActionListenerCaptor;
@@ -317,6 +318,8 @@ public class StripLayoutHelperTest {
         when(mServiceStatus.isAllowedToJoin()).thenReturn(false);
         when(mDataSharingService.getUiDelegate()).thenReturn(mDataSharingUiDelegate);
         mSharedGroupTestHelper = new SharedGroupTestHelper(mCollaborationService);
+
+        StripTabUnderlineManagerJni.setInstanceForTesting(mStripTabUnderlineMock);
     }
 
     @After
@@ -7292,6 +7295,27 @@ public class StripLayoutHelperTest {
                 DragDropGlobalState.store(
                         /* dragSourceInstanceId= */ 1, dropData, /* dragShadowBuilder= */ null);
         TabDragHandlerBase.setDragTokenForTesting(dragToken);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    public void testSetTabUnderline() {
+        initializeTest(false, false, 0);
+        int tabId = mModel.getTabAt(0).getId();
+
+        // Test underline addition.
+        mStripLayoutHelper.setTabUnderline(tabId, true);
+        assertTrue(
+                "Tab should be underlined",
+                mStripLayoutHelper.getStripLayoutTabsForTesting()[0].isUnderlined());
+        verify(mUpdateHost, times(3)).requestUpdate();
+
+        // Test underline removal.
+        mStripLayoutHelper.setTabUnderline(tabId, false);
+        assertFalse(
+                "Tab should not be underlined",
+                mStripLayoutHelper.getStripLayoutTabsForTesting()[0].isUnderlined());
+        verify(mUpdateHost, times(4)).requestUpdate();
     }
 
     private class TestTabRemover implements TabRemover {

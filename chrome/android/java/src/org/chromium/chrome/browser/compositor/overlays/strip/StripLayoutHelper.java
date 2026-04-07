@@ -672,6 +672,7 @@ public class StripLayoutHelper
     private final List<QueuedIph> mQueuedIphList = new ArrayList<>();
 
     private final StripLayoutTabDelegate mTabDelegate;
+    private @Nullable StripTabUnderlineManager mStripTabUnderlineManager;
 
     // Pinned tabs.
     private boolean mIsPinnedOnlyStripRecorded;
@@ -873,6 +874,10 @@ public class StripLayoutHelper
             mGlicButtonContextMenuCoordinator = new GlicButtonContextMenuCoordinator(mContext);
         }
 
+        if (!mIncognito && ChromeFeatureList.sGlic.isEnabled()) {
+            mStripTabUnderlineManager = new StripTabUnderlineManager(this);
+        }
+
         mIsFirstLayoutPass = true;
 
         mTabDelegate = new StripLayoutTabDelegate(mUpdateHost);
@@ -922,6 +927,10 @@ public class StripLayoutHelper
         if (mGlicButtonContextMenuCoordinator != null) {
             mGlicButtonContextMenuCoordinator.dismiss();
             mGlicButtonContextMenuCoordinator = null;
+        }
+        if (mStripTabUnderlineManager != null) {
+            mStripTabUnderlineManager.destroy();
+            mStripTabUnderlineManager = null;
         }
     }
 
@@ -1297,13 +1306,13 @@ public class StripLayoutHelper
     /** Called to notify that the tab state has been initialized. */
     protected void onTabStateInitialized() {
         mTabStateInitialized = true;
+        assumeNonNull(mModel);
 
         if (mPlaceholderStripReady) {
             int numLeftoverPlaceholders = 0;
             for (int i = 0; i < mStripTabs.length; i++) {
                 StripLayoutTab stripTab = mStripTabs[i];
                 if (stripTab.getIsPlaceholder()) numLeftoverPlaceholders++;
-                assumeNonNull(mModel);
                 Tab tab = mModel.getTabById(stripTab.getTabId());
                 if (tab != null) {
                     boolean isPinned = tab.getIsPinned();
@@ -1332,6 +1341,15 @@ public class StripLayoutHelper
         // Recreate the StripLayoutTabs from the TabModel, now that all of the real Tabs have been
         // restored. This will reuse valid tabs, discard invalid tabs, and correct tab orders.
         rebuildStripTabs(/* deferAnimations= */ false);
+        // Backfill existing tabs to StripTabUnderlineManager
+        if (mStripTabUnderlineManager != null) {
+            for (int i = 0; i < mModel.getCount(); i++) {
+                Tab tab = mModel.getTabAt(i);
+                if (tab != null) {
+                    mStripTabUnderlineManager.registerTab(tab);
+                }
+            }
+        }
         if (getSelectedTabId() != Tab.INVALID_TAB_ID) {
             tabSelected(LayoutManagerImpl.time(), getSelectedTabId(), Tab.INVALID_TAB_ID);
         }
@@ -1753,6 +1771,9 @@ public class StripLayoutHelper
                 mClosingTabs.add(stripTab);
                 stripTab.setSkipAsyncClosure(/* skipAsyncClosure= */ true);
             }
+            if (mStripTabUnderlineManager != null) {
+                mStripTabUnderlineManager.unregisterTab(tab.getId());
+            }
         }
         if (!mClosingTabs.isEmpty()) {
             requestCloseAnimations();
@@ -1810,6 +1831,9 @@ public class StripLayoutHelper
         Tab tab = getTabById(id);
         boolean collapsed = false;
         if (tab != null) {
+            if (mStripTabUnderlineManager != null) {
+                mStripTabUnderlineManager.registerTab(tab);
+            }
             Token tabGroupId = tab.getTabGroupId();
             updateGroupTextAndSharedState(tabGroupId);
             if (tabGroupId != null
@@ -2475,6 +2499,7 @@ public class StripLayoutHelper
 
     /**
      * Opens the context menu for the keyboard-focused view, if applicable.
+     *
      * @return Whether the context menu was successfully opened.
      */
     public boolean openKeyboardFocusedContextMenu() {
@@ -4593,6 +4618,15 @@ public class StripLayoutHelper
     @VisibleForTesting
     public @Nullable StripLayoutTab findTabById(int id) {
         return StripLayoutUtils.findTabById(mStripTabs, id);
+    }
+
+    /** Set the underline state for a tab. */
+    void setTabUnderline(int tabId, boolean isUnderlined) {
+        StripLayoutTab stripTab = findTabById(tabId);
+        if (stripTab != null) {
+            stripTab.setIsUnderlined(isUnderlined);
+            mUpdateHost.requestUpdate();
+        }
     }
 
     private int findIndexForTab(int id) {
