@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/path_service.h"
+#include "build/build_config.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -31,7 +32,13 @@ class RustMojoTestBrowserTest : public ContentBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(RustMojoTestBrowserTest, LoadRustMojoService) {
+// TODO(crbug.com/444509367): Failing on Fushia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_LoadRustMojoService DISABLED_LoadRustMojoService
+#else
+#define MAYBE_LoadRustMojoService LoadRustMojoService
+#endif
+IN_PROC_BROWSER_TEST_F(RustMojoTestBrowserTest, MAYBE_LoadRustMojoService) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("/rust_mojo_test.html")));
   EXPECT_EQ("Rust says hi.", EvalJs(shell(), "getRustMessage(1)"));
