@@ -72,8 +72,9 @@ export class PeerConnectionUpdateTable {
    *
    * @param {!Element} peerConnectionElement The root element.
    * @param {!PeerConnectionUpdateEntry} update The update to add.
+   * @param timedelta time in milliseconds since the last event.
    */
-  addPeerConnectionUpdate(peerConnectionElement, update) {
+  addPeerConnectionUpdate(peerConnectionElement, update, timedelta) {
     const tableElement = this.ensureUpdateContainer_(peerConnectionElement);
 
     const row = document.createElement('tr');
@@ -82,6 +83,11 @@ export class PeerConnectionUpdateTable {
     const time = new Date(parseFloat(update.timestamp));
     const timeItem = document.createElement('td');
     timeItem.textContent = time.toLocaleString();
+    // Display the timestamp and time since last event on hover.
+    timeItem.title = 'Timestamp: ' + update.timestamp;
+    if (timedelta) {
+      timeItem.title += ' delta: ' + timedelta + 'ms';
+    }
     row.appendChild(timeItem);
 
     // `type` is a display variant of update.type which does not get serialized

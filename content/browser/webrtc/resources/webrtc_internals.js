@@ -88,6 +88,8 @@ class PeerConnectionRecord {
   /**
    * @param {!Object} update The object contains keys "timestamp", "type", and
    *   "value".
+   * @return time delta in milliseconds since last update or undefined for the
+   *   first item.
    */
   addUpdate(update) {
     const time = new Date(parseFloat(update.time));
@@ -96,6 +98,11 @@ class PeerConnectionRecord {
       value: update.value,
       timestamp: update.timestamp,
     });
+    if (this.record_.updateLog.length > 1) {
+      return
+          this.record_.updateLog[this.record_.updateLog.length - 1].timestamp -
+          this.record_.updateLog[this.record_.updateLog.length - 2].timestamp;
+    }
   }
 }
 
@@ -283,9 +290,10 @@ function appendChildWithText(parent, tag, text) {
  * @param {!PeerConnectionUpdateEntry} update The peer connection update data.
  */
 function addPeerConnectionUpdate(peerConnectionElement, update) {
+  const timedelta = peerConnectionDataStore[peerConnectionElement.id]
+    .addUpdate(update);
   peerConnectionUpdateTable.addPeerConnectionUpdate(
-      peerConnectionElement, update);
-  peerConnectionDataStore[peerConnectionElement.id].addUpdate(update);
+      peerConnectionElement, update, timedelta);
   let value = undefined;
   if (update.value.length) {
     if (update.value[0] === '{') {
