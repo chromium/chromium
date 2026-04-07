@@ -78,9 +78,6 @@ class TabStripServiceMojoHandler
   // TabStripExperimentalService is intended for quick prototyping for
   // experimental apis that may not necessarily fit in the standard
   // TabStripService.
-  void UpdateTabGroupVisual(const tabs_api::NodeId& id,
-                            const tab_groups::TabGroupVisualData& visual_data,
-                            UpdateTabGroupVisualCallback) override;
   void ShowTabContextMenu(const tabs_api::NodeId& tab_id,
                           const gfx::Point& location,
                           ShowTabContextMenuCallback callback) override;

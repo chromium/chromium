@@ -13,12 +13,6 @@
 
 class GURL;
 
-namespace tab_groups {
-
-class TabGroupVisualData;
-
-}  // namespace tab_groups
-
 namespace tabs_api {
 
 class NodeId;
@@ -59,9 +53,6 @@ class TabStripService {
   // TabStripExperimentalService is intended for quick prototyping for
   // experimental apis that may not necessarily fit in the standard
   // TabStripService.
-  virtual mojom::TabStripExperimentService::UpdateTabGroupVisualResult
-  UpdateTabGroupVisual(const tabs_api::NodeId& id,
-                       const tab_groups::TabGroupVisualData& visual_data) = 0;
   virtual mojom::TabStripExperimentService::ReplaceTabInSplitResult
   ReplaceTabInSplit(const tabs_api::NodeId& tab_to_replace,
                     const tabs_api::NodeId& tab_to_insert) = 0;

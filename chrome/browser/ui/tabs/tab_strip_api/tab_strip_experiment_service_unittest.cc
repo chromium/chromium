@@ -38,58 +38,6 @@ class TabStripExperimentServiceImplTest : public ::testing::Test {
   std::unique_ptr<TabStripServiceImpl> service_;
 };
 
-TEST_F(TabStripExperimentServiceImplTest, UpdateTabGroupVisual) {
-  const tab_groups::TabGroupVisualData initial_visuals(
-      u"old title", tab_groups::TabGroupColorId::kGrey);
-  const tabs::TabCollectionHandle group_handle =
-      tab_strip_->AddGroup(initial_visuals);
-
-  ASSERT_EQ(u"old title",
-            tab_strip_->GetGroupVisualData(group_handle)->title());
-  ASSERT_EQ(tab_groups::TabGroupColorId::kGrey,
-            tab_strip_->GetGroupVisualData(group_handle)->color());
-
-  std::u16string expected = u"new title";
-  tabs_api::NodeId group_node_id(
-      NodeId::Type::kCollection,
-      base::NumberToString(group_handle.raw_value()));
-  tab_groups::TabGroupVisualData new_visuals(
-      expected, tab_groups::TabGroupColorId::kBlue);
-
-  CHECK(service_);
-  auto result = service_->UpdateTabGroupVisual(group_node_id, new_visuals);
-
-  ASSERT_TRUE(result.has_value());
-
-  const tab_groups::TabGroupVisualData* updated_visuals =
-      tab_strip_->GetGroupVisualData(group_handle);
-  ASSERT_EQ(expected, updated_visuals->title());
-  ASSERT_EQ(tab_groups::TabGroupColorId::kBlue, updated_visuals->color());
-}
-
-TEST_F(TabStripExperimentServiceImplTest,
-       UpdateTabGroupVisual_InvalidNodeType) {
-  tabs_api::NodeId tab_node_id(NodeId::Type::kContent, "123");
-  tab_groups::TabGroupVisualData new_visuals(
-      u"title", tab_groups::TabGroupColorId::kBlue);
-
-  auto result = service_->UpdateTabGroupVisual(tab_node_id, new_visuals);
-
-  ASSERT_FALSE(result.has_value());
-  ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kInvalidArgument);
-}
-
-TEST_F(TabStripExperimentServiceImplTest, UpdateTabGroupVisual_NotFound) {
-  NodeId group_node_id(NodeId::Type::kCollection, "123");
-  tab_groups::TabGroupVisualData new_visuals(
-      u"title", tab_groups::TabGroupColorId::kBlue);
-
-  auto result = service_->UpdateTabGroupVisual(group_node_id, new_visuals);
-
-  ASSERT_FALSE(result.has_value());
-  ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kNotFound);
-}
-
 TEST_F(TabStripExperimentServiceImplTest, ReplaceTabInSplit_InvalidTabs) {
   tabs_api::NodeId split_id(NodeId::Type::kContent, "999");
   tabs_api::NodeId insert_id(NodeId::Type::kContent, "888");

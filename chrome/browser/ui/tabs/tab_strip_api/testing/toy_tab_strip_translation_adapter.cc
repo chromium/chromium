@@ -40,7 +40,7 @@ ToyTabStripTranslationAdapter::ToMojoData(tabs::TabCollectionHandle handle) {
   }
 
   return base::unexpected(mojo_base::mojom::Error::New(
-      mojo_base::mojom::Code::kNotFound, "Not found"));
+      mojo_base::mojom::Code::kInternal, "failed to find visual data"));
 }
 
 }  // namespace tabs_api::testing

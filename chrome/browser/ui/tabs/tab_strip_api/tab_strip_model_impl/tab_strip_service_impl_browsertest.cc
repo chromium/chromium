@@ -855,8 +855,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ReplaceTabInSplit) {
   EXPECT_TRUE(replacement_tab_handle.Get()->IsActivated());
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest,
-                       UpdateTabGroupVisualData) {
+IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, UpdateTabGroupData) {
   mojo::Remote<TabStripService> remote;
   mojo::Remote<TabStripExperimentService> experiment_remote;
   tab_strip_service_mojo_handler_->Accept(remote.BindNewPipeAndPassReceiver());
@@ -879,12 +878,14 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest,
   tab_groups::TabGroupVisualData new_visuals(
       expected_title, tab_groups::TabGroupColorId::kRed, false);
   base::RunLoop run_loop;
-  experiment_remote->UpdateTabGroupVisual(
-      group_node_id, new_visuals,
+  auto tab_group = tabs_api::mojom::TabGroup::New(group_node_id, new_visuals);
+  auto data = tabs_api::mojom::Data::NewTabGroup(std::move(tab_group));
+  remote->Update(
+      std::move(data),
       base::BindLambdaForTesting(
-          [&](TabStripExperimentService::UpdateTabGroupVisualResult result) {
+          [&](tabs_api::mojom::TabStripService::UpdateResult result) {
             ASSERT_TRUE(result.has_value())
-                << "UpdateTabGroupVisual failed: " << result.error()->message;
+                << "Update failed: " << result.error()->message;
             run_loop.Quit();
           }));
   run_loop.Run();

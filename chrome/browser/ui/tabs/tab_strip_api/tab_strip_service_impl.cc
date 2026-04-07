@@ -358,28 +358,6 @@ mojom::TabStripService::UpdateResult TabStripServiceImpl::Update(
 // TabStripExperimentalService is intended for quick prototyping for
 // experimental apis that may not necessarily fit in the standard
 // TabStripService.
-mojom::TabStripExperimentService::UpdateTabGroupVisualResult
-TabStripServiceImpl::UpdateTabGroupVisual(
-    const tabs_api::NodeId& id,
-    const tab_groups::TabGroupVisualData& visual_data) {
-  auto session = session_controller_->CreateSession();
-
-  ASSIGN_OR_RETURN(auto collection_id, utils::GetCollectionNativeId(id));
-  tabs::TabCollectionHandle collection_handle(collection_id);
-
-  const std::optional<const tab_groups::TabGroupId> group_id =
-      tab_strip_model_adapter().FindGroupIdFor(collection_handle);
-  if (!group_id.has_value()) {
-    return base::unexpected(
-        mojo_base::mojom::Error::New(mojo_base::mojom::Code::kNotFound,
-                                     "group with the specified ID not found."));
-  }
-
-  tab_strip_model_adapter().UpdateTabGroupVisuals(group_id.value(),
-                                                  visual_data);
-  return std::monostate();
-}
-
 mojom::TabStripExperimentService::ShowTabContextMenuResult
 TabStripServiceImpl::ShowTabContextMenu(const tabs_api::NodeId& tab_id,
                                         const gfx::Point& location) {

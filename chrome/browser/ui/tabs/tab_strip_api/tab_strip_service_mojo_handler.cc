@@ -87,14 +87,6 @@ void TabStripServiceMojoHandler::Update(tabs_api::mojom::DataPtr data,
   std::move(callback).Run(tab_strip_service_->Update(std::move(data)));
 }
 
-void TabStripServiceMojoHandler::UpdateTabGroupVisual(
-    const tabs_api::NodeId& id,
-    const tab_groups::TabGroupVisualData& visual_data,
-    UpdateTabGroupVisualCallback callback) {
-  std::move(callback).Run(
-      tab_strip_service_->UpdateTabGroupVisual(id, visual_data));
-}
-
 void TabStripServiceMojoHandler::ShowTabContextMenu(
     const tabs_api::NodeId& tab_id,
     const gfx::Point& location,

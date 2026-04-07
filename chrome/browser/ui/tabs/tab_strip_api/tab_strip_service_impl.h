@@ -60,10 +60,6 @@ class TabStripServiceImpl : public TabStripService {
   // TabStripExperimentalService is intended for quick prototyping for
   // experimental apis that may not necessarily fit in the standard
   // TabStripService.
-  mojom::TabStripExperimentService::UpdateTabGroupVisualResult
-  UpdateTabGroupVisual(
-      const tabs_api::NodeId& id,
-      const tab_groups::TabGroupVisualData& visual_data) override;
   mojom::TabStripExperimentService::ReplaceTabInSplitResult ReplaceTabInSplit(
       const tabs_api::NodeId& tab_to_replace,
       const tabs_api::NodeId& tab_to_insert) override;
