@@ -335,15 +335,6 @@ std::string CookieInclusionStatus::GetDebugString() const {
     case ExemptionReason::k3PCDMetadata:
       reason = "Exemption3PCDMetadata";
       break;
-    case ExemptionReason::k3PCDDeprecationTrial:
-      reason = "Exemption3PCDDeprecationTrial";
-      break;
-    case ExemptionReason::kTopLevel3PCDDeprecationTrial:
-      reason = "ExemptionTopLevel3PCDDeprecationTrial";
-      break;
-    case ExemptionReason::k3PCDHeuristics:
-      reason = "Exemption3PCDHeuristics";
-      break;
     case ExemptionReason::kEnterprisePolicy:
       reason = "ExemptionEnterprisePolicy";
       break;

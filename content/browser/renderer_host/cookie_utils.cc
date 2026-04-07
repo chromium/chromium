@@ -270,9 +270,7 @@ bool ShouldReportDevToolsIssueForStatus(
          status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
                                        EXCLUDE_THIRD_PARTY_PHASEOUT) ||
          status.exemption_reason() ==
-             net::CookieInclusionStatus::ExemptionReason::k3PCDMetadata ||
-         status.exemption_reason() ==
-             net::CookieInclusionStatus::ExemptionReason::k3PCDHeuristics;
+             net::CookieInclusionStatus::ExemptionReason::k3PCDMetadata;
 }
 
 }  // namespace

@@ -84,10 +84,6 @@ net::CookieInclusionStatus::ExemptionReason GetExemptionReason(
     case AllowMechanism::kAllowBy3PCDMetadataSourceCuj:
     case AllowMechanism::kAllowBy3PCDMetadataSourceGovEduTld:
       return ExemptionReason::k3PCDMetadata;
-    case AllowMechanism::kAllowBy3PCD:
-      return ExemptionReason::k3PCDDeprecationTrial;
-    case AllowMechanism::kAllowByTopLevel3PCD:
-      return ExemptionReason::kTopLevel3PCDDeprecationTrial;
     case AllowMechanism::kAllowByGlobalSetting:
     case AllowMechanism::kAllowByEnterprisePolicyCookieAllowedForUrls:
       return ExemptionReason::kEnterprisePolicy;

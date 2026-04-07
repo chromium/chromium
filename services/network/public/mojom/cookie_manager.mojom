@@ -99,9 +99,9 @@ enum CookieExemptionReason {
     kNone = 0,
     kUserSetting = 1,
     k3PCDMetadata = 2,
-    k3PCDDeprecationTrial = 3,
-    kTopLevel3PCDDeprecationTrial = 4,
-    k3PCDHeuristics = 5,
+    // k3PCDDeprecationTrial = 3,  // Deprecated
+    // kTopLevel3PCDDeprecationTrial = 4,  // Deprecated
+    // k3PCDHeuristics = 5,  // Deprecated
     kEnterprisePolicy = 6,
     kStorageAccess = 7,
     kTopLevelStorageAccess = 8,

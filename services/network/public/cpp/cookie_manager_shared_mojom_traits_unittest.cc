@@ -94,7 +94,7 @@ TEST(CookieManagerSharedMojomTraitsTest,
           {},
           {net::CookieInclusionStatus::WarningReason::
                WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT},
-          net::CookieInclusionStatus::ExemptionReason::k3PCDDeprecationTrial);
+          net::CookieInclusionStatus::ExemptionReason::kUserSetting);
 
   net::CookieInclusionStatus copied;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
@@ -104,7 +104,7 @@ TEST(CookieManagerSharedMojomTraitsTest,
       {net::CookieInclusionStatus::WarningReason::
            WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT}));
   EXPECT_EQ(copied.exemption_reason(),
-            net::CookieInclusionStatus::ExemptionReason::k3PCDDeprecationTrial);
+            net::CookieInclusionStatus::ExemptionReason::kUserSetting);
 }
 
 TEST(CookieManagerSharedMojomTraitsTest, Roundtrips_CookieExemptionReason) {
@@ -112,10 +112,6 @@ TEST(CookieManagerSharedMojomTraitsTest, Roundtrips_CookieExemptionReason) {
            net::CookieInclusionStatus::ExemptionReason::kNone,
            net::CookieInclusionStatus::ExemptionReason::kUserSetting,
            net::CookieInclusionStatus::ExemptionReason::k3PCDMetadata,
-           net::CookieInclusionStatus::ExemptionReason::k3PCDDeprecationTrial,
-           net::CookieInclusionStatus::ExemptionReason::
-               kTopLevel3PCDDeprecationTrial,
-           net::CookieInclusionStatus::ExemptionReason::k3PCDHeuristics,
            net::CookieInclusionStatus::ExemptionReason::kEnterprisePolicy,
            net::CookieInclusionStatus::ExemptionReason::kStorageAccess,
            net::CookieInclusionStatus::ExemptionReason::kTopLevelStorageAccess,

@@ -1979,10 +1979,6 @@ std::unique_ptr<protocol::Array<protocol::String>> BuildWarningReasons(
       net::CookieInclusionStatus::ExemptionReason::k3PCDMetadata) {
     warning_reasons->push_back(protocol::Audits::CookieWarningReasonEnum::
                                    WarnDeprecationTrialMetadata);
-  } else if (status.exemption_reason() ==
-             net::CookieInclusionStatus::ExemptionReason::k3PCDHeuristics) {
-    warning_reasons->push_back(protocol::Audits::CookieWarningReasonEnum::
-                                   WarnThirdPartyCookieHeuristic);
   }
 
   // This warning only affects cookies when the corresponding feature is

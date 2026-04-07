@@ -94,15 +94,12 @@ class CookieSettingsBase {
     // (DEPRECATED) Allow by 3PCD metadata grants content settings. This was
     // replaced by the `kAllowBy3PCDMetadata.+` enums below.
     // kAllowBy3PCDMetadata = 3,
-    // Allow by third-party cookies deprecation trial.
-    kAllowBy3PCD = 4,
+    // kAllowBy3PCD = 4,  // Deprecated
     // kAllowBy3PCDHeuristics = 5,  // Deprecated
     kAllowByStorageAccess = 6,
     kAllowByTopLevelStorageAccess = 7,
     // kAllowByCORSException = 8,  // Deprecated
-    // Allow by 1P (AKA First Party, Top-level) DT (Deprecation Trial) token
-    // being deployed.
-    kAllowByTopLevel3PCD = 9,
+    // kAllowByTopLevel3PCD = 9,  // Deprecated
     // Allow by Enterprise Policy (SettingSource::kPolicy):
     // CookiesAllowedForUrls.
     kAllowByEnterprisePolicyCookieAllowedForUrls = 10,

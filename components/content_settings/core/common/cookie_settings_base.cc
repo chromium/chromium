@@ -64,10 +64,6 @@ constexpr StorageAccessResult GetStorageAccessResult(
     case AllowMechanism::kAllowBy3PCDMetadataSourceCuj:
     case AllowMechanism::kAllowBy3PCDMetadataSourceGovEduTld:
       return StorageAccessResult::ACCESS_ALLOWED_3PCD_METADATA_GRANT;
-    case AllowMechanism::kAllowBy3PCD:
-      return StorageAccessResult::ACCESS_ALLOWED_3PCD_TRIAL;
-    case AllowMechanism::kAllowByTopLevel3PCD:
-      return StorageAccessResult::ACCESS_ALLOWED_TOP_LEVEL_3PCD_TRIAL;
     case AllowMechanism::kAllowByStorageAccess:
       return StorageAccessResult::ACCESS_ALLOWED_STORAGE_ACCESS_GRANT;
     case AllowMechanism::kAllowByTopLevelStorageAccess:
@@ -92,8 +88,6 @@ constexpr std::optional<SettingSource> GetSettingSource(
     case AllowMechanism::kAllowBy3PCDMetadataSourceCriticalSector:
     case AllowMechanism::kAllowBy3PCDMetadataSourceCuj:
     case AllowMechanism::kAllowBy3PCDMetadataSourceGovEduTld:
-    case AllowMechanism::kAllowBy3PCD:
-    case AllowMechanism::kAllowByTopLevel3PCD:
       return SettingSource::kTpcdGrant;
     // Other mechanisms do not map to a `SettingSource`.
     case AllowMechanism::kNone:
@@ -207,10 +201,8 @@ bool CookieSettingsBase::IsAnyTpcdMetadataAllowMechanism(
     case AllowMechanism::kNone:
     case AllowMechanism::kAllowByExplicitSetting:
     case AllowMechanism::kAllowByGlobalSetting:
-    case AllowMechanism::kAllowBy3PCD:
     case AllowMechanism::kAllowByStorageAccess:
     case AllowMechanism::kAllowByTopLevelStorageAccess:
-    case AllowMechanism::kAllowByTopLevel3PCD:
     case AllowMechanism::kAllowByEnterprisePolicyCookieAllowedForUrls:
     case AllowMechanism::kAllowByScheme:
     case AllowMechanism::kAllowBySandboxValue:
@@ -232,13 +224,11 @@ bool CookieSettingsBase::Is1PDtRelatedAllowMechanism(
     const ThirdPartyCookieAllowMechanism& mechanism) {
   using AllowMechanism = ThirdPartyCookieAllowMechanism;
   switch (mechanism) {
-    case AllowMechanism::kAllowByTopLevel3PCD:
     case AllowMechanism::kAllowBy3PCDMetadataSource1pDt:
       return true;
     case AllowMechanism::kNone:
     case AllowMechanism::kAllowByExplicitSetting:
     case AllowMechanism::kAllowByGlobalSetting:
-    case AllowMechanism::kAllowBy3PCD:
     case AllowMechanism::kAllowByStorageAccess:
     case AllowMechanism::kAllowByTopLevelStorageAccess:
     case AllowMechanism::kAllowByEnterprisePolicyCookieAllowedForUrls:
@@ -261,10 +251,8 @@ CookieSettingsBase::AllowMechanismToMetadataSourceType(
     const ThirdPartyCookieAllowMechanism& allow_mechanism) {
   using AllowMechanism = ThirdPartyCookieAllowMechanism;
   switch (allow_mechanism) {
-    case AllowMechanism::kAllowByTopLevel3PCD:
     case AllowMechanism::kAllowBy3PCDMetadataSource1pDt:
       return MetadataSourceType::FirstPartyDt;
-    case AllowMechanism::kAllowBy3PCD:
     case AllowMechanism::kAllowBy3PCDMetadataSource3pDt:
       return MetadataSourceType::ThirdPartyDt;
     case AllowMechanism::kAllowBy3PCDMetadataSourceCriticalSector:

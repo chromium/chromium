@@ -271,11 +271,9 @@ class NET_EXPORT CookieInclusionStatus {
     kUserSetting = 1,
     // For 3PCD metadata .
     k3PCDMetadata = 2,
-    // For 3PCD 1P and 3P deprecation trial.
-    k3PCDDeprecationTrial = 3,
-    kTopLevel3PCDDeprecationTrial = 4,
-    // For 3PCD heuristics.
-    k3PCDHeuristics = 5,
+    // k3PCDDeprecationTrial = 3,  // Deprecated
+    // kTopLevel3PCDDeprecationTrial = 4,  // Deprecated
+    // k3PCDHeuristics = 5,  // Deprecated
     // For Enterprise Policy : CookieAllowedForUrls and BlockThirdPartyCookies.
     kEnterprisePolicy = 6,
     kStorageAccess = 7,
