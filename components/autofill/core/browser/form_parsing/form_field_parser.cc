@@ -323,26 +323,23 @@ void FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
   size_t fillable_distinct_field_types = heuristic_types.size();
 
   // Do not autofill a form if there aren't enough fields. Otherwise, it is
-  // very easy to have false positives. See http://crbug.com/447332
-  // For <form> tags, make an exception for email fields, which are commonly
-  // the only recognized field on account registration sites. Also make an
-  // exception for single-field Autofillable types, even when the form contains
-  // less than kMinRequiredFieldsForHeuristics fields in its form signature.
+  // very easy to have false positives (see http://crbug.com/447332 for more
+  // details) (see `permitted_single_field_types` for the exceptions).
   if (!ignore_small_forms ||
       fillable_distinct_field_types >= kMinRequiredFieldsForHeuristics) {
     return;
   }
 
   FieldTypeSet permitted_single_field_types{
-      MERCHANT_PROMO_CODE, IBAN_VALUE, CREDIT_CARD_STANDALONE_VERIFICATION_CODE,
-      EMAIL_ADDRESS};
+      CREDIT_CARD_STANDALONE_VERIFICATION_CODE,
+      EMAIL_ADDRESS,
+      EMAIL_OR_LOYALTY_MEMBERSHIP_ID,
+      IBAN_VALUE,
+      LOYALTY_MEMBERSHIP_ID,
+      MERCHANT_PROMO_CODE};
   if (AddressFieldParser::IsStandaloneZipSupported(client_country)) {
     permitted_single_field_types.insert(ADDRESS_HOME_ZIP);
   }
-
-  permitted_single_field_types.insert(LOYALTY_MEMBERSHIP_ID);
-
-  permitted_single_field_types.insert(EMAIL_OR_LOYALTY_MEMBERSHIP_ID);
 
   struct WipedField {
     FieldGlobalId field_id;
