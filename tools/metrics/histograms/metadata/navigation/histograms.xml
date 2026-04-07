@@ -909,15 +909,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.BeforeUnloadExecutionMode.IsInOutermostMainFrame"
+<histogram
+    name="Navigation.BeforeUnloadExecutionMode.IsInOutermostMainFrame{SameOrCrossOrigin}"
     enum="BeforeUnloadExecutionMode" expires_after="2027-02-04">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     Records the execution mode of beforeunload handlers for a navigation.
-    Recorded at the time of navigation commit for cross-document outermost main
-    frame navigations. Only recorded for HTTP or HTTPS schemes.
+    Recorded at the time of navigation commit for cross-document
+    {SameOrCrossOrigin} outermost main frame navigations. Only recorded for HTTP
+    or HTTPS schemes.
   </summary>
+  <token key="SameOrCrossOrigin">
+    <variant name="" summary=""/>
+    <variant name=".CrossOrigin" summary="cross-origin"/>
+    <variant name=".SameOrigin" summary="same-origin"/>
+  </token>
 </histogram>
 
 <histogram name="Navigation.BlurTransitionAnimation.ExitReason"

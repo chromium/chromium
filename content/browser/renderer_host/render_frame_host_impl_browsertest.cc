@@ -8226,6 +8226,7 @@ class RenderFrameHostImplAsyncBeforeUnloadBrowserTest
           RenderFrameHostImplAsyncBeforeUnloadBrowserTestParam> {
  public:
   using BeforeUnloadExecutionMode = NavigationHandle::BeforeUnloadExecutionMode;
+  enum class OriginType { kSameOrigin, kCrossOrigin };
   class AsyncBeforeUnloadObserver : public WebContentsObserver {
    public:
     AsyncBeforeUnloadObserver(WebContents* contents, const GURL& target_url)
@@ -8252,20 +8253,30 @@ class RenderFrameHostImplAsyncBeforeUnloadBrowserTest
 
   class BeforeUnloadExecutionModeMetricsObserver {
    public:
-    explicit BeforeUnloadExecutionModeMetricsObserver(
-        BeforeUnloadExecutionMode expected_mode)
-        : expected_mode_(expected_mode) {}
+    BeforeUnloadExecutionModeMetricsObserver(
+        BeforeUnloadExecutionMode expected_mode,
+        OriginType expected_origin_type)
+        : expected_mode_(expected_mode),
+          expected_origin_type_(expected_origin_type) {}
     void Wait(const base::Location& location = FROM_HERE) {
-      const char name[] =
+      const char kBaseName[] =
           "Navigation.BeforeUnloadExecutionMode.IsInOutermostMainFrame";
+      const std::string name = base::StrCat(
+          {kBaseName, expected_origin_type_ == OriginType::kSameOrigin
+                          ? ".SameOrigin"
+                          : ".CrossOrigin"});
       EXPECT_TRUE(base::test::RunUntil([&]() {
-        return histogram_tester_.GetTotalCountForPrefix(name) >= 1;
+        return histogram_tester_.GetTotalCountForPrefix(kBaseName) >= 1 &&
+               histogram_tester_.GetTotalCountForPrefix(name) >= 1;
       })) << location.ToString();
+      histogram_tester_.ExpectUniqueSample(kBaseName, expected_mode_, 1,
+                                           location);
       histogram_tester_.ExpectUniqueSample(name, expected_mode_, 1, location);
     }
 
    private:
     BeforeUnloadExecutionMode expected_mode_;
+    OriginType expected_origin_type_;
     base::HistogramTester histogram_tester_;
   };
 
@@ -8338,7 +8349,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostImplAsyncBeforeUnloadBrowserTest,
                                                          target_url);
   BeforeUnloadExecutionModeMetricsObserver before_unload_mode_observer(
       IsAsyncBeforeUnloadEnabled() ? BeforeUnloadExecutionMode::kAsync
-                                   : BeforeUnloadExecutionMode::kSync);
+                                   : BeforeUnloadExecutionMode::kSync,
+      OriginType::kCrossOrigin);
   DOMMessageQueue msg_queue(web_contents());
   shell()->LoadURL(target_url);
 
@@ -8350,6 +8362,48 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostImplAsyncBeforeUnloadBrowserTest,
   // Verify that both beforeunload handlers from b and c were executed.
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return RetrievePingsFromMessageQueue(&msg_queue) == 2; }));
+}
+
+// Tests that beforeunload handlers are executed asynchronously for same-origin
+// navigations and recorded correctly in metrics.
+IN_PROC_BROWSER_TEST_P(RenderFrameHostImplAsyncBeforeUnloadBrowserTest,
+                       SameOriginAsyncExecution) {
+  // Load a page with structure a(b).
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(
+                   "a.com", "/cross_site_iframe_factory.html?a(b)")));
+  FrameTreeNode* ftn_a = web_contents()->GetPrimaryFrameTree().root();
+  FrameTreeNode* ftn_b = ftn_a->child_at(0);
+
+  // Install a beforeunload handler in frame b without user activation.
+  InstallBeforeUnloadHandler(ftn_b, SEND_PING | SHOW_DIALOG,
+                             EXECUTE_SCRIPT_NO_USER_GESTURE,
+                             /*delay=*/base::Milliseconds(150));
+
+  // Disable beforeunload timer to prevent flakiness.
+  PrepContentsForBeforeUnloadTest(web_contents(),
+                                  /*trigger_user_activation=*/false);
+
+  // Start a same-origin navigation in the main frame.
+  const GURL target_url =
+      embedded_test_server()->GetURL("a.com", "/title1.html");
+  AsyncBeforeUnloadObserver async_before_unload_observer(web_contents(),
+                                                         target_url);
+  BeforeUnloadExecutionModeMetricsObserver before_unload_mode_observer(
+      IsAsyncBeforeUnloadEnabled() ? BeforeUnloadExecutionMode::kAsync
+                                   : BeforeUnloadExecutionMode::kSync,
+      OriginType::kSameOrigin);
+  DOMMessageQueue msg_queue(web_contents());
+  shell()->LoadURL(target_url);
+
+  before_unload_mode_observer.Wait();
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  EXPECT_EQ(0, dialog_manager()->num_beforeunload_dialogs_seen());
+  EXPECT_EQ(IsAsyncBeforeUnloadEnabled(),
+            async_before_unload_observer.is_async_before_unload_detected());
+  // Verify that beforeunload handler from b was executed.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return RetrievePingsFromMessageQueue(&msg_queue) == 1; }));
 }
 
 // Tests that the AsyncBeforeUnload optimization is not triggered and falls back
@@ -8389,7 +8443,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostImplAsyncBeforeUnloadBrowserTest,
   AsyncBeforeUnloadObserver async_before_unload_observer(web_contents(),
                                                          target_url);
   BeforeUnloadExecutionModeMetricsObserver before_unload_mode_observer(
-      BeforeUnloadExecutionMode::kSync);
+      BeforeUnloadExecutionMode::kSync, OriginType::kCrossOrigin);
   DOMMessageQueue msg_queue(web_contents());
   shell()->LoadURL(target_url);
 
@@ -8447,7 +8501,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostImplAsyncBeforeUnloadBrowserTest,
   AsyncBeforeUnloadObserver async_before_unload_observer(web_contents(),
                                                          target_url);
   BeforeUnloadExecutionModeMetricsObserver before_unload_mode_observer(
-      BeforeUnloadExecutionMode::kAsync);
+      BeforeUnloadExecutionMode::kAsync, OriginType::kCrossOrigin);
   DOMMessageQueue msg_queue(web_contents());
   shell()->LoadURL(target_url);
 
@@ -8485,7 +8539,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostImplAsyncBeforeUnloadBrowserTest,
   AsyncBeforeUnloadObserver async_before_unload_observer(web_contents(),
                                                          target_url);
   BeforeUnloadExecutionModeMetricsObserver before_unload_mode_observer(
-      BeforeUnloadExecutionMode::kNotBlocked);
+      BeforeUnloadExecutionMode::kNotBlocked, OriginType::kCrossOrigin);
   DOMMessageQueue msg_queue(web_contents());
   EXPECT_TRUE(ExecJs(ftn, JsReplace("location.href = $1", target_url),
                      EXECUTE_SCRIPT_NO_USER_GESTURE));
@@ -8540,7 +8594,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostImplAsyncBeforeUnloadBrowserTest,
                                                          target_url);
   BeforeUnloadExecutionModeMetricsObserver before_unload_mode_observer(
       IsAsyncBeforeUnloadEnabled() ? BeforeUnloadExecutionMode::kAsync
-                                   : BeforeUnloadExecutionMode::kSync);
+                                   : BeforeUnloadExecutionMode::kSync,
+      OriginType::kCrossOrigin);
   DOMMessageQueue msg_queue(web_contents());
 
   // Navigate A(B) -> C.
@@ -8600,7 +8655,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostImplAsyncBeforeUnloadBrowserTest,
   DOMMessageQueue msg_queue(web_contents());
   GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
   BeforeUnloadExecutionModeMetricsObserver before_unload_mode_observer(
-      BeforeUnloadExecutionMode::kAsync);
+      BeforeUnloadExecutionMode::kAsync, OriginType::kCrossOrigin);
   shell()->LoadURL(url_c);
 
   // Wait until B's async beforeunload is kicked off.

@@ -8844,9 +8844,14 @@ void NavigationRequest::DidCommitNavigation(
 
   if (!IsSameDocument() && IsInOutermostMainFrame() &&
       params.url.SchemeIsHTTPOrHTTPS()) {
+    const auto mode = GetBeforeUnloadExecutionMode();
+    const char kBaseName[] =
+        "Navigation.BeforeUnloadExecutionMode.IsInOutermostMainFrame";
+    base::UmaHistogramEnumeration(kBaseName, mode);
     base::UmaHistogramEnumeration(
-        "Navigation.BeforeUnloadExecutionMode.IsInOutermostMainFrame",
-        GetBeforeUnloadExecutionMode());
+        base::StrCat(
+            {kBaseName, IsSameOrigin() ? ".SameOrigin" : ".CrossOrigin"}),
+        mode);
   }
   TRACE_EVENT_INSTANT(
       "navigation", "BeforeUnloadExecutionMode", "BeforeUnloadExecutionMode",
