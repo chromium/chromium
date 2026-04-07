@@ -612,7 +612,7 @@ TEST_F(PreloadingDeciderTest,
   const auto& prefetches = GetPrefetchService()->prefetches_;
   preloading_decider->OnPointerDown(url);
 
-  EXPECT_TRUE(prefetches[0]->request().speculation_rules_tags());
+  ASSERT_TRUE(prefetches[0]->request().speculation_rules_tags());
   EXPECT_EQ(prefetches[0]
                 ->request()
                 .speculation_rules_tags()
@@ -657,7 +657,7 @@ TEST_F(PreloadingDeciderTest,
           /*mouse_acceleration=*/0.0),
       blink::mojom::SpeculationEagerness::kModerate);
 
-  EXPECT_TRUE(prefetches[0]->request().speculation_rules_tags());
+  ASSERT_TRUE(prefetches[0]->request().speculation_rules_tags());
   EXPECT_EQ(prefetches[0]
                 ->request()
                 .speculation_rules_tags()
@@ -691,7 +691,7 @@ TEST_F(PreloadingDeciderTest, SpeculationRulesTagsMergingForImmediatePrefetch) {
   preloading_decider->UpdateSpeculationCandidates(candidates);
   const auto& prefetches = GetPrefetchService()->prefetches_;
 
-  EXPECT_TRUE(prefetches[0]->request().speculation_rules_tags());
+  ASSERT_TRUE(prefetches[0]->request().speculation_rules_tags());
   EXPECT_EQ(prefetches[0]
                 ->request()
                 .speculation_rules_tags()

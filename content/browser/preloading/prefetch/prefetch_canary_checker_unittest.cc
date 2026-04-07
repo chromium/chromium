@@ -64,7 +64,7 @@ class FakeNetworkContext : public network::TestNetworkContext {
         net::IPEndPoint(net::IPAddress::IPv4Localhost(), /*port=*/1234)};
     auto it = pending_requests_.find(net::HostPortPair::FromURL(url));
     // Make sure a request has actually been made.
-    EXPECT_TRUE(it != pending_requests_.end());
+    ASSERT_TRUE(it != pending_requests_.end());
     it->second->OnComplete(net::OK, net::AddressList(kFakeIPAddress),
                            /*alternative_endpoints=*/{});
     pending_requests_.erase(it);
@@ -77,7 +77,7 @@ class FakeNetworkContext : public network::TestNetworkContext {
   void MakeDNSResolveError(const net::HostPortPair& host, net::Error err) {
     auto it = pending_requests_.find(host);
     // Make sure a request has actually been made.
-    EXPECT_TRUE(it != pending_requests_.end());
+    ASSERT_TRUE(it != pending_requests_.end());
 
     it->second->OnComplete(err, /*resolved_addresses=*/{},
                            /*alternative_endpoints=*/{});
