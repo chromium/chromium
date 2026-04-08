@@ -98,6 +98,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
        */
       searchOptions_: {type: Object},
       recentlyClosedDefaultItemDisplayCount_: {type: Number},
+      activeSelectionId_: {type: String},
     };
   }
 
@@ -135,7 +136,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
   private accessor recentlyClosedDefaultItemDisplayCount_: number =
       loadTimeData.getValue('recentlyClosedDefaultItemDisplayCount');
   protected accessor searchResultText_: string = '';
-  protected activeSelectionId_?: string;
+  protected accessor activeSelectionId_: string|undefined;
   protected accessor shortcut_: string = loadTimeData.getString('shortcutText');
   override autofocus: boolean = false;
 

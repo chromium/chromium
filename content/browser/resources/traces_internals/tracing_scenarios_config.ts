@@ -47,6 +47,7 @@ export class TracingScenariosConfigElement extends CrLitElement {
       privacyFilterEnabled_: {type: Boolean},
       toastMessage_: {type: String},
       // <if expr="is_win">
+      securityShieldIconUrl_: {type: String},
       tracingServiceSupported_: {type: Boolean},
       tracingServiceRegistered_: {type: Boolean},
       // </if>
@@ -67,7 +68,7 @@ export class TracingScenariosConfigElement extends CrLitElement {
   // <if expr="is_win">
   protected accessor tracingServiceSupported_: boolean = false;
   protected accessor tracingServiceRegistered_: boolean = false;
-  protected securityShieldIconUrl_: string = '';
+  protected accessor securityShieldIconUrl_: string = '';
   // </if>
 
   override connectedCallback(): void {

@@ -164,19 +164,15 @@ export class TraceRecorderElement extends CrLitElement {
     }
   }
 
-  protected get isStartTracingEnabled(): boolean {
+  protected isStartTracingEnabled(): boolean {
     return this.tracingState === TracingState.IDLE && !!this.traceConfig;
   }
 
-  protected get isRecording(): boolean {
+  protected isRecording(): boolean {
     return this.tracingState === TracingState.RECORDING;
   }
 
-  protected get fillPolicyEnum() {
-    return TraceConfig_BufferConfig_FillPolicy;
-  }
-
-  protected get statusClass(): string {
+  protected getStatusClass(): string {
     switch (this.tracingState) {
       case TracingState.IDLE:
         return 'status-idle';

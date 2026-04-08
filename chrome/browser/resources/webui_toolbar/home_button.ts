@@ -43,8 +43,12 @@ export class HomeButtonElement extends CrLitElement {
   protected pressHandler_: PressHandler = new PressHandler(
       this.onLongPress_.bind(this), this.onShortPress_.bind(this));
 
-  protected readonly label_: string = loadTimeData.getString('homeButtonAccName');
-  protected readonly tooltip_: string = loadTimeData.getString('homeButtonTooltip');
+  protected getLabel_(): string {
+    return loadTimeData.getString('homeButtonAccName');
+  }
+  protected getTooltip_(): string {
+    return loadTimeData.getString('homeButtonTooltip');
+  }
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 

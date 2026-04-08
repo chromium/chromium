@@ -12,8 +12,8 @@ export function getHtml(this: BackForwardButtonElement) {
     iron-icon="${
       this.direction === 'back' ? 'cr:arrow-back' : 'cr:arrow-forward'}"
     ?disabled="${!this.state.enabled}"
-    aria-label="${this.ariaLabel_}"
-    title="${this.tooltip_}"
+    aria-label="${this.getAriaLabel_()}"
+    title="${this.getTooltip_()}"
     style="margin-inline-start: ${this.leadingMargin}px"
     ?is-menu-open="${this.state.isContextMenuVisible}"
     @pointerdown="${this.pressHandler_.onPointerdown}"

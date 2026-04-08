@@ -97,6 +97,12 @@ export class UserEducationInternalsElement extends
       whatsNewVersionToRequest_: {
         type: Number,
       },
+      whatsNewModules_: {type: Array},
+      whatsNewEditions_: {type: Array},
+      ntpPromos_: {type: Array},
+      ntpPromoPreferences_: {type: Array},
+      sessionData_: {type: Array},
+      currentChromeVersion_: {type: Number},
     };
   }
 
@@ -104,18 +110,18 @@ export class UserEducationInternalsElement extends
   protected accessor tutorials_: FeaturePromoDemoPageInfo[] = [];
   protected accessor featurePromos_: FeaturePromoDemoPageInfo[] = [];
   protected accessor newBadges_: FeaturePromoDemoPageInfo[] = [];
-  protected whatsNewModules_: WhatsNewModuleDemoPageInfo[] = [];
-  protected whatsNewEditions_: WhatsNewEditionDemoPageInfo[] = [];
-  protected ntpPromos_: FeaturePromoDemoPageInfo[] = [];
-  protected ntpPromoPreferences_: FeaturePromoDemoPageData[] = [];
+  protected accessor whatsNewModules_: WhatsNewModuleDemoPageInfo[] = [];
+  protected accessor whatsNewEditions_: WhatsNewEditionDemoPageInfo[] = [];
+  protected accessor ntpPromos_: FeaturePromoDemoPageInfo[] = [];
+  protected accessor ntpPromoPreferences_: FeaturePromoDemoPageData[] = [];
   protected accessor ntpPromoPreferencesExpanded_: boolean = false;
   protected accessor featurePromoErrorMessage_: string = '';
   protected accessor narrow_: boolean = false;
   protected accessor sessionExpanded_: boolean = false;
-  protected sessionData_: FeaturePromoDemoPageData[] = [];
+  protected accessor sessionData_: FeaturePromoDemoPageData[] = [];
   protected accessor whatsNewVersionToRequest_: number =
       loadTimeData.getInteger('whatsNewVersionToRequest');
-  protected currentChromeVersion_: number =
+  protected accessor currentChromeVersion_: number =
       loadTimeData.getInteger('currentChromeVersion');
 
   private handler_: UserEducationInternalsPageHandlerInterface;

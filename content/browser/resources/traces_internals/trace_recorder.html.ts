@@ -4,6 +4,7 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {TraceConfig_BufferConfig_FillPolicy} from './perfetto_config.js';
 import type {TraceRecorderElement} from './trace_recorder.js';
 
 export function getHtml(this: TraceRecorderElement) {
@@ -11,12 +12,12 @@ export function getHtml(this: TraceRecorderElement) {
   return html`
     <h1>Record Trace</h1>
     <div id="control-container">
-      <div id="status-container" class="${this.statusClass}">
+      <div id="status-container" class="${this.getStatusClass()}">
         <div class="status-circle"></div>
         <h3>Status: ${this.tracingState}</h3>
       </div>
       <div id="progress-container"
-          ?hidden="${!this.isRecording}">
+          ?hidden="${!this.isRecording()}">
         <label for="buffer-progress">Buffer Usage:
             ${Math.round(this.bufferUsage * 100)}%
         </label>
@@ -27,17 +28,17 @@ export function getHtml(this: TraceRecorderElement) {
       <div id="action-panel">
         <cr-button
             @click="${this.onStartTracingClick_}"
-            ?disabled="${!this.isStartTracingEnabled}">
+            ?disabled="${!this.isStartTracingEnabled()}">
           Start Tracing
         </cr-button>
         <cr-button
             @click="${this.onStopTracingClick_}"
-            ?disabled="${!this.isRecording}">
+            ?disabled="${!this.isRecording()}">
           Stop Tracing
         </cr-button>
         <cr-button
             @click="${this.onCloneTraceSessionClick_}"
-            ?disabled="${!this.isRecording}">
+            ?disabled="${!this.isRecording()}">
           Snapshot Trace
         </cr-button>
       </div>
@@ -76,10 +77,11 @@ export function getHtml(this: TraceRecorderElement) {
             <h3>Recording mode</h3>
             <select class="md-select" value="${this.bufferFillPolicy}"
                 @change="${this.onBufferFillPolicyChange_}">
-              <option value="${this.fillPolicyEnum.RING_BUFFER}">
+              <option
+                  value="${TraceConfig_BufferConfig_FillPolicy.RING_BUFFER}">
                 RING BUFFER
               </option>
-              <option value="${this.fillPolicyEnum.DISCARD}">
+              <option value="${TraceConfig_BufferConfig_FillPolicy.DISCARD}">
                 DISCARD
               </option>
             </select>

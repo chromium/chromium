@@ -67,13 +67,13 @@ export class BackForwardButtonElement extends CrLitElement {
     }
   }
 
-  protected get ariaLabel_(): string {
+  protected getAriaLabel_(): string {
     return this.direction === 'back' ?
         loadTimeData.getString('backButtonAccName') :
         loadTimeData.getString('forwardButtonAccName');
   }
 
-  protected get tooltip_(): string {
+  protected getTooltip_(): string {
     return this.direction === 'back' ?
         loadTimeData.getString('backButtonTooltip') :
         loadTimeData.getString('forwardButtonTooltip');

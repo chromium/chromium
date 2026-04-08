@@ -43,6 +43,7 @@ export class ReloadButtonElement extends CrLitElement {
 
   static override get properties() {
     return {
+      accName_: {type: String},
       state: {type: Object},
       tooltip: {type: String, reflect: true},
     };
@@ -55,7 +56,7 @@ export class ReloadButtonElement extends CrLitElement {
   };
   protected accessor tooltip: string =
       loadTimeData.getString(RELOAD_BUTTON_TOOLTIP_RELOAD);
-  protected accName_: string =
+  protected accessor accName_: string =
       loadTimeData.getString(RELOAD_BUTTON_ACC_NAME_RELOAD);
   protected pressHandler_: PressHandler;
 
