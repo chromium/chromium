@@ -56,6 +56,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Feature;
@@ -237,7 +238,9 @@ public class TabContextMenuCoordinatorUnitTest {
     @Mock private Tab mChromeNativeSchemeTabWithWebContents;
     @Mock private Tab mChromeNativeSchemeTabWithoutWebContents;
     @Mock private BiConsumer<AnchorInfo, Boolean> mReorderFunction;
+
     private Activity mActivity;
+    private SettableNonNullObservableSupplier<Integer> mTotalTabCountSupplier;
 
     @Before
     public void setUp() {
@@ -298,6 +301,8 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mTabModel.getTabGroupColorWithFallback(TAB_GROUP_ID))
                 .thenReturn(TAB_GROUP_INDICATOR_COLOR_ID);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(Collections.singletonList(mTab1));
+        mTotalTabCountSupplier = ObservableSuppliers.createNonNull(3);
+        when(mTabModel.getTabCountSupplier()).thenReturn(mTotalTabCountSupplier);
         when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(INSTANCE_ID_1);
         when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
                 .thenReturn(Collections.singletonList(INSTANCE_INFO_1));
@@ -715,6 +720,45 @@ public class TabContextMenuCoordinatorUnitTest {
         assertEquals(R.string.close, modelList.get(6).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
                 R.id.close_tab, modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testListMenuItems_tabOutsideOfGroup_multipleWindows_preventMoveToNewWindow() {
+        int instanceType = ACTIVE;
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            instanceType |= REGULAR;
+        }
+        MultiWindowUtils.setInstanceCountForTesting(2);
+        when(mMultiInstanceManager.getInstanceInfo(instanceType))
+                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2));
+
+        // Set total tab count to be equal to the move tab count (1).
+        mTotalTabCountSupplier.set(1);
+
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
+
+        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
+
+        // List item 1
+        verifyAddToGroupSubmenuForTabOutsideOfGroup(
+                modelList, TAB_GROUP_TITLE, 1, /* isIncognito= */ false);
+
+        // List item 2
+        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
+                modelList,
+                1,
+                R.plurals.move_tab_to_another_window,
+                Collections.singletonList(WINDOW_TITLE_2),
+                mActivity,
+                /* isIncognito= */ false,
+                /* expectNewWindow= */ false);
     }
 
     @Test
@@ -1762,6 +1806,9 @@ public class TabContextMenuCoordinatorUnitTest {
                 TabCreationState.LIVE_IN_FOREGROUND);
         assertEquals("Tab model should have one tab.", 1, mTabModel.getCount());
 
+        // Set total tab count to be equal to move tab count (1).
+        mTotalTabCountSupplier.set(1);
+
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList,
@@ -1791,6 +1838,9 @@ public class TabContextMenuCoordinatorUnitTest {
         mTabModel.addTab(
                 mTab2, -1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
         assertEquals("Tab model should have two tabs.", 2, mTabModel.getCount());
+
+        // Set total tab count to be equal to move tab count (2).
+        mTotalTabCountSupplier.set(2);
 
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(

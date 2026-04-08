@@ -130,9 +130,6 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         }
     }
 
-    @SuppressWarnings("HidingField")
-    private final Supplier<TabModel> mTabModelSupplier;
-
     private final TabGroupModelFilter mTabGroupModelFilter;
     private final TabGroupCreationCallback mTabGroupCreationCallback;
     private final WindowAndroid mWindowAndroid;
@@ -166,7 +163,6 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 collaborationService,
                 activity,
                 reorderFunction);
-        mTabModelSupplier = tabModelSupplier;
         mTabGroupModelFilter = tabGroupModelFilter;
         mTabGroupCreationCallback = tabGroupCreationCallback;
         mWindowAndroid = windowAndroid;
@@ -305,7 +301,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
 
     @VisibleForTesting
     boolean areAllTabsMuted(List<Tab> tabs) {
-        TabModel tabModel = mTabModelSupplier.get();
+        TabModel tabModel = getTabModel();
         for (Tab tab : tabs) {
             GURL url = tab.getUrl();
             if (url.isEmpty()) continue;
@@ -347,7 +343,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
     protected void buildMenuActionItems(ModelList itemList, AnchorInfo anchorInfo) {
         List<Integer> ids = anchorInfo.getAllTabIds();
         assert !ids.isEmpty() : "Empty tab id list provided";
-        TabModel tabModel = mTabModelSupplier.get();
+        TabModel tabModel = getTabModel();
         List<Tab> tabs = TabModelUtils.getTabsById(ids, tabModel, /* allowClosing= */ false);
         assert !tabs.isEmpty() : "Empty tab list provided";
         boolean isIncognito = tabModel.isIncognitoBranded();
@@ -360,7 +356,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
 
     @Override
     protected boolean canItemMoveTowardStart(AnchorInfo anchorInfo) {
-        TabModel tabModel = mTabModelSupplier.get();
+        TabModel tabModel = getTabModel();
         @Nullable Tab tab = tabModel.getTabById(anchorInfo.getAllTabIds().get(0));
         if (tab == null) return false;
         int idx = tabModel.indexOf(tab);
@@ -370,7 +366,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
     @Override
     protected boolean canItemMoveTowardEnd(AnchorInfo anchorInfo) {
         List<Integer> tabs = anchorInfo.getAllTabIds();
-        TabModel tabModel = mTabModelSupplier.get();
+        TabModel tabModel = getTabModel();
         @Nullable Tab tab = tabModel.getTabById(tabs.get(tabs.size() - 1));
         if (tab == null) return false;
         int idx = tabModel.indexOf(tab);
@@ -493,8 +489,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
 
     private boolean shouldShowMoveToWindowItem(List<Tab> tabs, AnchorInfo anchorInfo) {
         if (TabGroupUtils.isAnyTabInGroup(tabs)) return false;
-        if (MultiWindowUtils.getInstanceCount(PersistedInstanceType.ACTIVE) == 1
-                && (mTabModelSupplier.get().getTabCountSupplier().get()
+        if (getActiveInstanceCount(tabs.get(0).isIncognitoBranded()) == 1
+                && (getTabModel().getTabCountSupplier().get()
                         == anchorInfo.getAllTabIds().size())) {
             return false;
         }
@@ -515,13 +511,17 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
 
     private ListItem createMoveToWindowItem(AnchorInfo anchorInfo, boolean isIncognito) {
         assumeNonNull(mMultiInstanceManager);
+        int totalTabCount = getTabModel().getTabCountSupplier().get();
+        int moveTabCount = anchorInfo.getAllTabIds().size();
+        boolean allowMoveToNewWindow = totalTabCount > moveTabCount;
         return createMoveToWindowItem(
                 anchorInfo,
                 isIncognito,
-                anchorInfo.getAllTabIds().size() > 1
+                moveTabCount > 1
                         ? R.plurals.move_tabs_to_another_window
                         : R.plurals.move_tab_to_another_window,
-                R.id.move_to_other_window_menu_id);
+                R.id.move_to_other_window_menu_id,
+                allowMoveToNewWindow);
     }
 
     private ListItem createShareItem(boolean isIncognito) {
@@ -767,8 +767,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
     @Override
     protected @Nullable String getCollaborationIdOrNull(AnchorInfo anchorInfo) {
         List<Integer> tabIds = anchorInfo.getAllTabIds();
-        if (tabIds.isEmpty() || tabIds.size() > 1) return null;
-        var tab = mTabModelSupplier.get().getTabById(tabIds.get(0));
+        if (tabIds.size() != 1) return null;
+        var tab = getTabModel().getTabById(tabIds.get(0));
         if (tab == null) return null;
         return TabShareUtils.getCollaborationIdOrNull(tab.getTabGroupId(), mTabGroupSyncService);
     }
@@ -778,7 +778,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
     protected void moveToNewWindow(AnchorInfo anchorInfo) {
         List<Integer> tabIds = anchorInfo.getAllTabIds();
         if (tabIds.isEmpty()) return;
-        TabModel tabModel = mTabModelSupplier.get();
+        TabModel tabModel = getTabModel();
         List<Tab> tabs = TabModelUtils.getTabsById(tabIds, tabModel, /* allowClosing= */ false);
         if (tabs.isEmpty()) return;
         ungroupTabs(tabs);
@@ -795,7 +795,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
     protected void moveToWindow(InstanceInfo instanceInfo, AnchorInfo anchorInfo) {
         List<Integer> tabIds = anchorInfo.getAllTabIds();
         if (tabIds.isEmpty()) return;
-        TabModel tabModel = mTabModelSupplier.get();
+        TabModel tabModel = getTabModel();
         List<Tab> tabs = TabModelUtils.getTabsById(tabIds, tabModel, /* allowClosing= */ false);
         if (tabs.isEmpty()) return;
         ungroupTabs(tabs);

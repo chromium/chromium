@@ -386,12 +386,22 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
                         .build());
 
         if (MultiWindowUtils.isMultiInstanceApi31Enabled() && mMultiInstanceManager != null) {
-            itemList.add(
-                    createMoveToWindowItem(
-                            id,
-                            isIncognito,
-                            R.plurals.move_group_to_another_window_context_menu_item,
-                            R.id.move_to_other_window_menu_id));
+            int totalTabCount = getTabModel().getTabCountSupplier().get();
+            TabGroupMetadata tabGroupMetadata = assertNonNull(getTabGroupMetadata(id));
+            int groupTabCount = tabGroupMetadata.tabIdsToUrls.size();
+            int activeInstanceCount = getActiveInstanceCount(isIncognito);
+            boolean currentWindowHasOtherTabs = totalTabCount > groupTabCount;
+            // Support moving the tab group to another window only if there are tabs other than the
+            // group tabs, or if there are other active instances to move the tab group to.
+            if (currentWindowHasOtherTabs || activeInstanceCount > 1) {
+                itemList.add(
+                        createMoveToWindowItem(
+                                id,
+                                isIncognito,
+                                R.plurals.move_group_to_another_window_context_menu_item,
+                                R.id.move_to_other_window_menu_id,
+                                currentWindowHasOtherTabs));
+            }
         }
         List<MVCListAdapter.ListItem> reorderItems =
                 createReorderItems(

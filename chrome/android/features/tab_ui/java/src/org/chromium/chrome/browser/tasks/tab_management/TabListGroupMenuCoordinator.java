@@ -70,8 +70,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
         return new TabActionListener() {
             @Override
             public void run(View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
-                @Nullable TabModel tabModel = getTabModel();
-                if (tabModel == null) return;
+                TabModel tabModel = getTabModel();
 
                 @Nullable Tab tab = tabModel.getTabById(tabId);
                 if (tab == null) return;

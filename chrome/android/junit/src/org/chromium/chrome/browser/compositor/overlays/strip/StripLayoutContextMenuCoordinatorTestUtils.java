@@ -124,7 +124,41 @@ public class StripLayoutContextMenuCoordinatorTestUtils {
             List<String> otherWindowTitles,
             Activity activity,
             boolean isIncognito) {
-        if (otherWindowTitles.size() == 0) {
+        verifyAddToWindowSubmenu(
+                modelList,
+                indexOfAddToWindow,
+                label,
+                otherWindowTitles,
+                activity,
+                isIncognito,
+                /* expectNewWindow= */ true);
+    }
+
+    /**
+     * Verifies the state and contents of the "Move to another window" submenu. This method also
+     * simulates interactions (opening the submenu and navigating back) to verify the full flow.
+     *
+     * @param modelList The model list containing the menu items.
+     * @param indexOfAddToWindow The index of the "Move to another window" item in the model list.
+     * @param label The plural resource ID for the item label (e.g., to move one or more tabs).
+     * @param otherWindowTitles The list of titles for other available windows.
+     * @param activity The current activity.
+     * @param isIncognito Whether the current menu is for incognito mode.
+     * @param expectNewWindow Whether the "New window" option is expected to be present in the
+     *     submenu. For example, this should be hidden if the last set of tabs in a window are
+     *     attempted to be moved.
+     */
+    public static void verifyAddToWindowSubmenu(
+            ModelList modelList,
+            int indexOfAddToWindow,
+            @PluralsRes int label,
+            List<String> otherWindowTitles,
+            Activity activity,
+            boolean isIncognito,
+            boolean expectNewWindow) {
+        if (otherWindowTitles.isEmpty()) {
+            assertTrue(
+                    "Expected to move to new window when no other windows exist", expectNewWindow);
             MVCListAdapter.ListItem moveToOtherWindowItem = modelList.get(indexOfAddToWindow);
             assertEquals(
                     "Expected title to be 'Move to new window'",
@@ -147,7 +181,7 @@ public class StripLayoutContextMenuCoordinatorTestUtils {
                     moveToOtherWindowItem.model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
         }
         var subMenu = moveToOtherWindowItem.model.get(SUBMENU_ITEMS);
-        int expectedNumberOfItems = 1 + otherWindowTitles.size();
+        int expectedNumberOfItems = (expectNewWindow ? 1 : 0) + otherWindowTitles.size();
         assertEquals(
                 "Submenu should have "
                         + expectedNumberOfItems
@@ -184,44 +218,54 @@ public class StripLayoutContextMenuCoordinatorTestUtils {
                 activity.getResources().getQuantityString(label, 2),
                 headerItem.model.get(TITLE));
         assertTrue("Expected submenu header to be enabled", headerItem.model.get(ENABLED));
-        assertEquals("Expected 2nd item to have MENU_ITEM type", MENU_ITEM, modelList.get(1).type);
-        assertEquals(
-                "Expected 2nd item to be 'New window' row",
-                R.string.menu_new_window,
-                modelList.get(1).model.get(TITLE_ID));
-        if (isIncognito) {
+
+        int nextIndex = 1;
+        if (expectNewWindow) {
             assertEquals(
-                    "Expected incognito text appearance for header item",
-                    R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
-                    headerItem.model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
+                    "Expected item to have MENU_ITEM type",
+                    MENU_ITEM,
+                    modelList.get(nextIndex).type);
             assertEquals(
-                    "Expected incognito text appearance for 'New window' item",
-                    R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
-                    modelList.get(1).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
+                    "Expected item to be 'New window' row",
+                    R.string.menu_new_window,
+                    modelList.get(nextIndex).model.get(TITLE_ID));
+            if (isIncognito) {
+                assertEquals(
+                        "Expected incognito text appearance for 'New window' item",
+                        R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
+                        modelList
+                                .get(nextIndex)
+                                .model
+                                .get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
+            }
+            nextIndex++;
         }
 
         if (!otherWindowTitles.isEmpty()) {
             for (int i = 0; i < otherWindowTitles.size(); i++) {
-                assertEquals(
-                        "Expected window row at position " + (i + 2) + " to have MENU_ITEM type",
-                        MENU_ITEM,
-                        modelList.get(i + 2).type);
+                int currentIndex = nextIndex + i;
                 assertEquals(
                         "Expected window row at position "
-                                + (i + 2)
+                                + currentIndex
+                                + " to have MENU_ITEM type",
+                        MENU_ITEM,
+                        modelList.get(currentIndex).type);
+                assertEquals(
+                        "Expected window row at position "
+                                + currentIndex
                                 + " to have text "
                                 + otherWindowTitles.get(i),
                         otherWindowTitles.get(i),
-                        modelList.get(i + 2).model.get(TITLE));
+                        modelList.get(currentIndex).model.get(TITLE));
                 assertTrue(
-                        "Expected window row at position " + (i + 2) + " to be enabled",
-                        modelList.get(i + 2).model.get(ENABLED));
+                        "Expected window row at position " + currentIndex + " to be enabled",
+                        modelList.get(currentIndex).model.get(ENABLED));
                 if (isIncognito) {
                     assertEquals(
                             "Expected incognito text appearance for window row " + i,
                             R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
                             modelList
-                                    .get(i + 2)
+                                    .get(currentIndex)
                                     .model
                                     .get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
                 }
