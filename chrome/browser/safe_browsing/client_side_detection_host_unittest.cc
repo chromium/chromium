@@ -2908,7 +2908,9 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   csd_host_->RegisterAutofillManager();
 
   // Record one visit in history for this URL.
-  history_service_->AddPage(url, base::Time::Now(), history::SOURCE_BROWSED);
+  auto visit_time = base::Time::Now() -
+                    base::Minutes(kCsdCreditCardFormUserVisitLookback.Get());
+  history_service_->AddPage(url, visit_time, history::SOURCE_BROWSED);
 
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
                                 nullptr);
@@ -2955,8 +2957,10 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   csd_host_->RegisterAutofillManager();
 
   // Record three visits in history for this URL (one more than the max).
+  auto visit_time = base::Time::Now() -
+                    base::Minutes(kCsdCreditCardFormUserVisitLookback.Get());
   for (int i = 0; i < 3; i++) {
-    history_service_->AddPage(url, base::Time::Now(), history::SOURCE_BROWSED);
+    history_service_->AddPage(url, visit_time, history::SOURCE_BROWSED);
   }
 
   TestFuture<ClientSideDetectionType> future;
@@ -2977,6 +2981,102 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
       "SBClientPhishing.CreditCardFormEvent",
       credit_card_form::kRepeatSiteVisitNoReferringAppAutofillServerHeuristic,
       1);
+}
+
+TEST_F(ClientSideDetectionHostCreditCardFormTest,
+       IgnoresVisitsInLookbackPeriod) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  feature_list_.InitAndEnableFeatureWithParameters(
+      kClientSideDetectionCreditCardForm,
+      {
+          {kCsdCreditCardFormSampleRate.name, "1.0"},
+          {kCsdCreditCardFormEnableNewSiteFilter.name, "true"},
+          {kCsdCreditCardFormMaxUserVisit.name, "1"},
+      });
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+
+  GURL url("http://host.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false);
+  NavigateAndWaitOnPreclassificationChecks(url);
+
+  auto form_data = CreateCreditCardForm();
+
+  csd_host_->RegisterAutofillManager();
+
+  // Record two visits in history: one that should be counted and another that
+  // should be ignored because it is too recent.
+  auto counted_visit_time =
+      base::Time::Now() -
+      base::Minutes(kCsdCreditCardFormUserVisitLookback.Get());
+  auto ignored_visit_time =
+      base::Time::Now() -
+      base::Minutes(kCsdCreditCardFormUserVisitLookback.Get()) +
+      base::Seconds(1);
+  history_service_->AddPage(url, counted_visit_time, history::SOURCE_BROWSED);
+  history_service_->AddPage(url, ignored_visit_time, history::SOURCE_BROWSED);
+
+  TestFuture<ClientSideDetectionType> future;
+  csd_host_->set_preclassification_started_callback_for_testing(
+      future.GetRepeatingCallback());
+
+  // First check: One visit counted. 1 > 1 is false, so it's a NewSiteVisit.
+  // Preclassification SHOULD start.
+  {
+    ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
+                                  nullptr);
+    base::StatisticsRecorder::HistogramWaiter event_waiter(
+        "SBClientPhishing.CreditCardFormEvent");
+    autofill_manager()->OnFocusOnFormField(
+        form_data, form_data.fields().begin()->global_id());
+    event_waiter.Wait();
+    WaitAndCheckPreClassificationChecks();
+
+    EXPECT_EQ(future.Take(), ClientSideDetectionType::CREDIT_CARD_FORM);
+
+    histogram_tester_.ExpectBucketCount(
+        "SBClientPhishing.CreditCardFormEvent",
+        credit_card_form::kNewSiteVisitNoReferringAppAutofillServerHeuristic,
+        1);
+  }
+
+  // Now record two visits to a new host in history that should be counted.
+  // Total counted visits = 2. 2 > 1 is true, so it should be a RepeatSiteVisit.
+  // We navigate to a different URL to clear the host-level cache.
+  GURL url2("http://host2.com/");
+  for (int i = 0; i < 2; i++) {
+    history_service_->AddPage(url2, counted_visit_time, history::SOURCE_BROWSED);
+  }
+
+  database_manager_->SetAllowlistLookupDetailsForUrl(url2, /*match=*/false);
+
+  // This navigation will trigger a preclassification check (TRIGGER_MODELS).
+  NavigateAndWaitOnPreclassificationChecks(url2);
+  EXPECT_EQ(future.Take(), ClientSideDetectionType::TRIGGER_MODELS);
+
+  auto form_data2 = CreateCreditCardForm();
+
+  // Second check: 2 visits counted. 2 > 1 is true. RepeatSiteVisit.
+  // Preclassification SHOULD NOT start.
+  {
+    base::StatisticsRecorder::HistogramWaiter event_waiter(
+        "SBClientPhishing.CreditCardFormEvent");
+    autofill_manager()->OnFocusOnFormField(
+        form_data2, form_data2.fields().begin()->global_id());
+    event_waiter.Wait();
+
+    EXPECT_FALSE(future.IsReady());
+
+    histogram_tester_.ExpectBucketCount(
+        "SBClientPhishing.CreditCardFormEvent",
+        credit_card_form::kRepeatSiteVisitNoReferringAppAutofillServerHeuristic,
+        1);
+  }
+
+  // Total samples in the histogram should be 2.
+  histogram_tester_.ExpectTotalCount("SBClientPhishing.CreditCardFormEvent", 2);
 }
 
 TEST_F(ClientSideDetectionHostCreditCardFormTest,
@@ -3092,7 +3192,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   histogram_tester_.ExpectTotalCount(
       "SBClientPhishing.CreditCardFormDedupedEvent", 0);
   histogram_tester_.ExpectTotalCount(
-      "SBClientPhishing.HistoryServiceDuration.GetVisibleVisitCountToHost", 0);
+      "SBClientPhishing.HistoryServiceDuration.GetDailyVisitsToOrigin", 0);
 
   csd_host_->RegisterAutofillManager();
 
@@ -3129,7 +3229,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   // Note also that HistoryService was not called a second time either.
   histogram_tester_.ExpectTotalCount(
-      "SBClientPhishing.HistoryServiceDuration.GetVisibleVisitCountToHost", 1);
+      "SBClientPhishing.HistoryServiceDuration.GetDailyVisitsToOrigin", 1);
 }
 
 struct CreditCardFormReferringAppTestCase {

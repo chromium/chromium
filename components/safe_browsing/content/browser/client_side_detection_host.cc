@@ -1112,22 +1112,24 @@ void ClientSideDetectionHost::OnAfterFocusOnFormField(
   // a CSD ping, so look that up via HistoryService and delegate
   // handling the result to OnCreditCardFormVisitCount.
   GURL url = tab_->GetPrimaryMainFrame()->GetLastCommittedURL();
-  std::optional<history::VisibleVisitCountToHostResult> cached_history_result;
+  std::optional<history::DailyVisitsResult> cached_history_result;
   if (url == last_history_url_) {
     cached_history_result = last_history_result_;
   }
   if (history_service_ && !cached_history_result) {
     last_history_url_ = url;
-    history_service_->GetVisibleVisitCountToHost(
-        url,
+    history_service_->GetDailyVisitsToOrigin(
+        url::Origin::Create(url), base::Time(),
+        base::Time::Now() -
+            base::Minutes(kCsdCreditCardFormUserVisitLookback.Get()),
+        history::VisitQuery404sPolicy::kExclude404s,
         base::BindOnce(&ClientSideDetectionHost::OnCreditCardFormVisitCount,
                        weak_factory_.GetWeakPtr(), base::TimeTicks::Now(),
                        field_heuristic),
         &task_tracker_);
   } else {
-    history::VisibleVisitCountToHostResult history_result =
-        cached_history_result.value_or(
-            history::VisibleVisitCountToHostResult{/*success=*/false});
+    history::DailyVisitsResult history_result = cached_history_result.value_or(
+        history::DailyVisitsResult{/*success=*/false});
     OnCreditCardFormVisitCount(std::nullopt, field_heuristic, history_result);
   }
 }
@@ -1135,17 +1137,17 @@ void ClientSideDetectionHost::OnAfterFocusOnFormField(
 void ClientSideDetectionHost::OnCreditCardFormVisitCount(
     std::optional<base::TimeTicks> start_time,
     credit_card_form::FieldDetectionHeuristic field_heuristic,
-    history::VisibleVisitCountToHostResult history_result) {
+    history::DailyVisitsResult history_result) {
   last_history_result_ = history_result;
   if (start_time.has_value()) {
     UmaHistogramTimes(
-        "SBClientPhishing.HistoryServiceDuration.GetVisibleVisitCountToHost",
+        "SBClientPhishing.HistoryServiceDuration.GetDailyVisitsToOrigin",
         base::TimeTicks::Now() - start_time.value());
   }
 
   credit_card_form::SiteVisit site_visit = credit_card_form::kUnknownSiteVisit;
   if (history_result.success) {
-    site_visit = history_result.count >
+    site_visit = history_result.total_visits >
                          static_cast<int>(kCsdCreditCardFormMaxUserVisit.Get())
                      ? credit_card_form::kRepeatSiteVisit
                      : credit_card_form::kNewSiteVisit;

@@ -767,15 +767,15 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram
-    name="SBClientPhishing.HistoryServiceDuration.GetVisibleVisitCountToHost"
+    name="SBClientPhishing.HistoryServiceDuration.GetDailyVisitsToOrigin"
     units="ms" expires_after="2026-10-21">
   <owner>andysjlim@chromium.org</owner>
   <owner>bcb@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the duration it takes for calling
-    HistoryService.GetVisibleVisitCountToHost. This occurs for some ping types
-    when determining whether to proceed to preclassification.
+    HistoryService.GetDailyVisitsToOrigin. This occurs for some ping types when
+    determining whether to proceed to preclassification.
   </summary>
 </histogram>
 

@@ -40,6 +40,7 @@
 #include "net/http/http_status_code.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/safe_browsing/core/browser/referring_app_info.h"  // nogncheck
@@ -327,6 +328,8 @@ class ClientSideDetectionHost
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostCreditCardFormTest,
                            DoesNotStartPreclassificationOnRepeatSiteVisit);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostCreditCardFormTest,
+                           IgnoresVisitsInPastTenMinutes);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostCreditCardFormTest,
                            DoesNotStartPreclassificationOnServerHeuristic);
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostCreditCardFormReferringAppTest,
@@ -553,7 +556,7 @@ class ClientSideDetectionHost
   void OnCreditCardFormVisitCount(
       std::optional<base::TimeTicks> start_time,
       credit_card_form::FieldDetectionHeuristic field_heuristic,
-      history::VisibleVisitCountToHostResult history_result);
+      history::DailyVisitsResult history_result);
 
   // Fills in the screenshot data for the given `request`. Only fill if the
   // report type is USER_REPORT.
@@ -615,7 +618,7 @@ class ClientSideDetectionHost
   // Cached result of calling HistoryService.GetVisibleVisitCountToHost
   // for some URL.
   std::optional<GURL> last_history_url_;
-  std::optional<history::VisibleVisitCountToHostResult> last_history_result_;
+  std::optional<history::DailyVisitsResult> last_history_result_;
 
   // The token fetcher used for getting access token.
   std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher_;

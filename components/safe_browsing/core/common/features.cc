@@ -105,6 +105,9 @@ const base::FeatureParam<double> kCsdCreditCardFormSampleRate{
 const base::FeatureParam<int> kCsdCreditCardFormMaxUserVisit{
     &kClientSideDetectionCreditCardForm, "MaxUserVisit",
     /*default_value=*/1};
+const base::FeatureParam<int> kCsdCreditCardFormUserVisitLookback{
+    &kClientSideDetectionCreditCardForm, "UserVisitLookback",
+    /*default_value=*/10};
 const base::FeatureParam<bool> kCsdCreditCardFormEnableNewSiteFilter{
     &kClientSideDetectionCreditCardForm, "EnableNewSiteFilter",
     /*default_value=*/false};

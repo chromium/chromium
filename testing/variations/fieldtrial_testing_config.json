@@ -5835,7 +5835,8 @@
                         "EnableReferringAppFilter": "true",
                         "HCAcceptanceRate": "1.0",
                         "MaxUserVisit": "1",
-                        "SampleRate": "1.0"
+                        "SampleRate": "1.0",
+                        "UserVisitLookback": "10"
                     },
                     "enable_features": [
                         "ClientSideDetectionCreditCardForm"
