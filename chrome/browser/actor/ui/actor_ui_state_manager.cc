@@ -42,56 +42,49 @@ using enum HandoffButtonState::ControlOwnership;
 
 // TODO(crbug.com/424495020): Hardcoded states; Move this out to it's own file
 // to be shared with tab controller.
-const UiTabState& GetActorControlledUiTabState(
-    ActorTask::TaskDuration duration) {
-  static const UiTabState kDefaultActorState = {
-      .actor_overlay = {.is_active = true, .border_glow_visible = true},
-      .handoff_button = {.is_active = true, .controller = kActor},
-      .tab_indicator = TabIndicatorStatus::kDynamic,
-      .border_glow_visible = true,
-  };
-  static const UiTabState kTransientActorState = {
-      .actor_overlay = {.is_active = false, .border_glow_visible = false},
-      .handoff_button = {.is_active = false, .controller = kActor},
-      .tab_indicator = TabIndicatorStatus::kDynamic,
-      .border_glow_visible = false,
-  };
+constexpr UiTabState kDefaultActorState = {
+    .actor_overlay = {.is_active = true, .border_glow_visible = true},
+    .handoff_button = {.is_active = true, .controller = kActor},
+    .tab_indicator = TabIndicatorStatus::kDynamic,
+    .border_glow_visible = true,
+};
+
+constexpr UiTabState kTransientActorState = {
+    .actor_overlay = {.is_active = false, .border_glow_visible = false},
+    .handoff_button = {.is_active = false, .controller = kActor},
+    .tab_indicator = TabIndicatorStatus::kDynamic,
+    .border_glow_visible = false,
+};
+
+constexpr UiTabState kWaitingOnUserUiTabState = {
+    .actor_overlay = {.is_active = true, .border_glow_visible = true},
+    .handoff_button = {.is_active = true, .controller = kActor},
+    .tab_indicator = TabIndicatorStatus::kStatic,
+    .border_glow_visible = true,
+};
+
+constexpr UiTabState kPausedUiTabState = {
+    .actor_overlay = {.is_active = false, .border_glow_visible = false},
+    .handoff_button = {.is_active = false, .controller = kClient},
+    .tab_indicator = TabIndicatorStatus::kNone,
+    .border_glow_visible = false,
+};
+
+constexpr UiTabState kCompletedUiTabState = {
+    .actor_overlay = {.is_active = false, .border_glow_visible = false},
+    .handoff_button = {.is_active = false, .controller = kClient},
+    .tab_indicator = TabIndicatorStatus::kNone,
+    .border_glow_visible = false,
+};
+
+UiTabState GetActorControlledUiTabState(ActorTask::TaskDuration duration) {
   switch (duration) {
     case ActorTask::TaskDuration::kDefault:
       return kDefaultActorState;
     case ActorTask::TaskDuration::kTransient:
       return kTransientActorState;
   }
-}
-
-const UiTabState& GetWaitingOnUserUiTabState() {
-  static const UiTabState kActorState = {
-      .actor_overlay = {.is_active = true, .border_glow_visible = true},
-      .handoff_button = {.is_active = true, .controller = kActor},
-      .tab_indicator = TabIndicatorStatus::kStatic,
-      .border_glow_visible = true,
-  };
-  return kActorState;
-}
-
-const UiTabState& GetPausedUiTabState() {
-  static const UiTabState kPausedState = {
-      .actor_overlay = {.is_active = false, .border_glow_visible = false},
-      .handoff_button = {.is_active = false, .controller = kClient},
-      .tab_indicator = TabIndicatorStatus::kNone,
-      .border_glow_visible = false,
-  };
-  return kPausedState;
-}
-
-const UiTabState& GetCompletedUiTabState() {
-  static const UiTabState kCompletedState = {
-      .actor_overlay = {.is_active = false, .border_glow_visible = false},
-      .handoff_button = {.is_active = false, .controller = kClient},
-      .tab_indicator = TabIndicatorStatus::kNone,
-      .border_glow_visible = false,
-  };
-  return kCompletedState;
+  NOTREACHED();
 }
 
 struct TabUiUpdate {
@@ -168,11 +161,11 @@ void ActorUiStateManager::OnActorTaskStateChange(
       ui_tab_state = GetActorControlledUiTabState(GetDuration(task_id));
       break;
     case ActorTask::State::kWaitingOnUser:
-      ui_tab_state = GetWaitingOnUserUiTabState();
+      ui_tab_state = kWaitingOnUserUiTabState;
       break;
     case ActorTask::State::kPausedByUser:
     case ActorTask::State::kPausedByActor:
-      ui_tab_state = GetPausedUiTabState();
+      ui_tab_state = kPausedUiTabState;
       break;
     case ActorTask::State::kFailed:
     case ActorTask::State::kCancelled:
@@ -300,7 +293,7 @@ void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
             if (auto* tab_controller =
                     ActorUiTabControllerInterface::From(tab)) {
               tab_controller->OnUiTabStateChange(
-                  GetCompletedUiTabState(), base::BindOnce(&LogUiChangeError));
+                  kCompletedUiTabState, base::BindOnce(&LogUiChangeError));
             }
           }},
       event);
