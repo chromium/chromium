@@ -136,6 +136,7 @@ class GdmRemoteDisplayManager {
       base::expected<std::tuple<gvariant::GVariantRef<"a{oa{sa{sv}}}">>,
                      Loggable> result);
   void OnCreateRemoteDisplayResult(
+      gvariant::ObjectPath remote_id,
       Callback callback,
       base::expected<std::tuple<>, Loggable> result);
   void OnInterfacesAddedInternal(
