@@ -85,7 +85,7 @@ TEST_F(AppActivityTest, SendAppMessageToReceiver) {
           [](const openscreen::cast::proto::CastMessage& cast_message) {
             EXPECT_EQ("theClientId", cast_message.source_id());
             EXPECT_EQ("theTransportId", cast_message.destination_id());
-            EXPECT_EQ("urn:x-cast:com.google.foo", cast_message.namespace_());
+            EXPECT_EQ(kFakeCastNamespace, cast_message.namespace_());
             EXPECT_TRUE(cast_message.has_payload_utf8());
             EXPECT_THAT(cast_message.payload_utf8(),
                         IsJson(R"({"foo": "bar"})"));

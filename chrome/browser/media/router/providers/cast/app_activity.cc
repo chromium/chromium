@@ -74,12 +74,12 @@ cast_channel::Result AppActivity::SendAppMessageToReceiver(
           CastInternalMessage::ErrorCode::kSessionError,
           "Invalid session ID: " + session_id_.value_or("<missing>"));
     }
-
     return cast_channel::Result::kFailed;
   }
+
   const std::string& message_namespace = cast_message.app_message_namespace();
   if (!session->message_namespaces().contains(message_namespace)) {
-    DLOG(ERROR) << "Disallowed message namespace: " << message_namespace;
+    DVLOG(1) << "Disallowed message namespace: " << message_namespace;
     if (client && cast_message.sequence_number()) {
       client->SendErrorCodeToClient(
           *cast_message.sequence_number(),
@@ -88,6 +88,7 @@ cast_channel::Result AppActivity::SendAppMessageToReceiver(
     }
     return cast_channel::Result::kFailed;
   }
+
   return message_handler_->SendAppMessage(
       cast_channel_id(),
       cast_channel::CreateCastMessage(

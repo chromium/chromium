@@ -13,6 +13,8 @@
 
 namespace media_router {
 
+inline constexpr char kFakeCastNamespace[] = "urn:x-cast:com.google.foo";
+
 std::ostream& operator<<(std::ostream&, CastInternalMessage::Type);
 std::ostream& operator<<(std::ostream&, const CastInternalMessage&);
 

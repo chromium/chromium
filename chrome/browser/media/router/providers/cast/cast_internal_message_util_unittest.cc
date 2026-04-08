@@ -7,6 +7,7 @@
 #include "base/json/json_reader.h"
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
+#include "chrome/browser/media/router/providers/cast/test_util.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "components/media_router/common/providers/cast/channel/cast_test_util.h"
 #include "components/media_router/common/test/test_helper.h"
@@ -23,7 +24,7 @@ namespace {
 static constexpr char kReceiverIdToken[] = "token";
 
 base::DictValue ReceiverStatus() {
-  std::string receiver_status_str = R"({
+  constexpr char receiver_status_str[] = R"({
       "applications": [{
         "appId": "ABCDEFGH",
         "displayName": "App display name",
@@ -43,7 +44,7 @@ base::DictValue ReceiverStatus() {
 // universalAppId: web receiver app ID, which is appId in ReceiverStatus without
 // universalAppId or appType
 base::DictValue ReceiverStatusWithUniversalAppId() {
-  std::string receiver_status_str = R"({
+  constexpr char receiver_status_str[] = R"({
       "applications": [{
         "appId": "AD9AF8E0",
         "displayName": "App display name",
@@ -62,15 +63,15 @@ base::DictValue ReceiverStatusWithUniversalAppId() {
 }
 
 void ExpectNoCastSession(const MediaSinkInternal& sink,
-                         const std::string& receiver_status_str,
-                         const std::string& reason) {
+                         std::string_view receiver_status_str,
+                         std::string_view reason) {
   auto session = CastSession::From(sink, ParseJsonDict(receiver_status_str));
   EXPECT_FALSE(session) << "Shouldn't have created session because of "
                         << reason;
 }
 
-void ExpectInvalidCastInternalMessage(const std::string& message_str,
-                                      const std::string& invalid_reason) {
+void ExpectInvalidCastInternalMessage(std::string_view message_str,
+                                      std::string_view invalid_reason) {
   EXPECT_FALSE(CastInternalMessage::From(ParseJsonDict(message_str)))
       << "message expected to be invlaid: " << invalid_reason;
 }
@@ -92,7 +93,7 @@ class CastInternalMessageUtilDeathTest : public testing::Test {
 #endif
 TEST_F(CastInternalMessageUtilDeathTest,
        MAYBE_CastInternalMessageFromAppMessageString) {
-  std::string message_str = R"({
+  constexpr char message_str[] = R"({
     "type": "app_message",
     "clientId": "12345",
     "sequenceNumber": 999,
@@ -108,7 +109,7 @@ TEST_F(CastInternalMessageUtilDeathTest,
   EXPECT_EQ(CastInternalMessage::Type::kAppMessage, message->type());
   EXPECT_EQ("12345", message->client_id());
   EXPECT_EQ(999, message->sequence_number());
-  EXPECT_EQ("urn:x-cast:com.google.foo", message->app_message_namespace());
+  EXPECT_EQ(kFakeCastNamespace, message->app_message_namespace());
   EXPECT_EQ("sessionId", message->session_id());
   base::DictValue message_body;
   message_body.Set("foo", base::Value("bar"));
@@ -120,7 +121,7 @@ TEST_F(CastInternalMessageUtilDeathTest,
 
 TEST_F(CastInternalMessageUtilDeathTest,
        CastInternalMessageFromV2MessageString) {
-  std::string message_str = R"({
+  constexpr char message_str[] = R"({
     "type": "v2_message",
     "clientId": "12345",
     "sequenceNumber": 999,
@@ -159,7 +160,7 @@ TEST_F(CastInternalMessageUtilDeathTest,
 #endif
 TEST_F(CastInternalMessageUtilDeathTest,
        MAYBE_CastInternalMessageFromClientConnectString) {
-  std::string message_str = R"({
+  constexpr char message_str[] = R"({
       "type": "client_connect",
       "clientId": "12345",
       "message": {}
@@ -179,26 +180,26 @@ TEST_F(CastInternalMessageUtilDeathTest,
 }
 
 TEST(CastInternalMessageUtilTest, CastInternalMessageFromInvalidStrings) {
-  std::string unknown_type = R"({
+  constexpr char unknown_type[] = R"({
       "type": "some_unknown_type",
       "clientId": "12345",
       "message": {}
     })";
   ExpectInvalidCastInternalMessage(unknown_type, "unknown_type");
 
-  std::string missing_client_id = R"({
+  constexpr char missing_client_id[] = R"({
       "type": "client_connect",
       "message": {}
     })";
   ExpectInvalidCastInternalMessage(missing_client_id, "missing client ID");
 
-  std::string missing_message = R"({
+  constexpr char missing_message[] = R"({
       "type": "client_connect",
       "clientId": "12345"
     })";
   ExpectInvalidCastInternalMessage(missing_message, "missing message");
 
-  std::string app_message_missing_namespace = R"({
+  constexpr char app_message_missing_namespace[] = R"({
     "type": "app_message",
     "clientId": "12345",
     "sequenceNumber": 999,
@@ -210,7 +211,7 @@ TEST(CastInternalMessageUtilTest, CastInternalMessageFromInvalidStrings) {
   ExpectInvalidCastInternalMessage(app_message_missing_namespace,
                                    "missing namespace");
 
-  std::string app_message_missing_session_id = R"({
+  constexpr char app_message_missing_session_id[] = R"({
     "type": "app_message",
     "clientId": "12345",
     "sequenceNumber": 999,
@@ -222,7 +223,7 @@ TEST(CastInternalMessageUtilTest, CastInternalMessageFromInvalidStrings) {
   ExpectInvalidCastInternalMessage(app_message_missing_session_id,
                                    "missing session ID");
 
-  std::string app_message_missing_message = R"({
+  constexpr char app_message_missing_message[] = R"({
     "type": "app_message",
     "clientId": "12345",
     "sequenceNumber": 999,
@@ -237,7 +238,7 @@ TEST(CastInternalMessageUtilTest, CastInternalMessageFromInvalidStrings) {
 
 TEST(CastInternalMessageUtilTest, CastSessionFromReceiverStatusNoStatusText) {
   MediaSinkInternal sink = CreateCastSink(1);
-  std::string receiver_status_str = R"({
+  constexpr char receiver_status_str[] = R"({
       "applications": [{
         "appId": "ABCDEFGH",
         "displayName": "App display name",
@@ -255,14 +256,14 @@ TEST(CastInternalMessageUtilTest, CastSessionFromReceiverStatusNoStatusText) {
   EXPECT_EQ("ABCDEFGH", session->app_id());
   EXPECT_EQ("transportId", session->destination_id());
   base::flat_set<std::string> message_namespaces = {
-      "urn:x-cast:com.google.cast.media", "urn:x-cast:com.google.foo"};
+      "urn:x-cast:com.google.cast.media", kFakeCastNamespace};
   EXPECT_EQ(message_namespaces, session->message_namespaces());
   EXPECT_EQ("App display name", session->GetRouteDescription());
 }
 
 TEST(CastInternalMessageUtilTest, CastSessionFromInvalidReceiverStatuses) {
   MediaSinkInternal sink = CreateCastSink(1);
-  std::string missing_app_id = R"({
+  constexpr char missing_app_id[] = R"({
       "applications": [{
         "displayName": "App display name",
         "namespaces": [
@@ -276,7 +277,7 @@ TEST(CastInternalMessageUtilTest, CastSessionFromInvalidReceiverStatuses) {
   })";
   ExpectNoCastSession(sink, missing_app_id, "missing app id");
 
-  std::string missing_display_name = R"({
+  constexpr char missing_display_name[] = R"({
       "applications": [{
         "appId": "ABCDEFGH",
         "namespaces": [
@@ -290,7 +291,7 @@ TEST(CastInternalMessageUtilTest, CastSessionFromInvalidReceiverStatuses) {
   })";
   ExpectNoCastSession(sink, missing_display_name, "missing display name");
 
-  std::string missing_namespaces = R"({
+  constexpr char missing_namespaces[] = R"({
       "applications": [{
         "appId": "ABCDEFGH",
         "displayName": "App display name",
@@ -302,7 +303,7 @@ TEST(CastInternalMessageUtilTest, CastSessionFromInvalidReceiverStatuses) {
   })";
   ExpectNoCastSession(sink, missing_namespaces, "missing namespaces");
 
-  std::string missing_session_id = R"({
+  constexpr char missing_session_id[] = R"({
       "applications": [{
         "appId": "ABCDEFGH",
         "displayName": "App display name",
@@ -316,7 +317,7 @@ TEST(CastInternalMessageUtilTest, CastSessionFromInvalidReceiverStatuses) {
   })";
   ExpectNoCastSession(sink, missing_session_id, "missing session id");
 
-  std::string missing_transport_id = R"({
+  constexpr char missing_transport_id[] = R"({
       "applications": [{
         "appId": "ABCDEFGH",
         "displayName": "App display name",
@@ -329,6 +330,49 @@ TEST(CastInternalMessageUtilTest, CastSessionFromInvalidReceiverStatuses) {
       }]
   })";
   ExpectNoCastSession(sink, missing_transport_id, "missing transport id");
+}
+
+TEST(CastInternalMessageUtilTest,
+     CastSessionFromReceiverStatusInvalidTransportId) {
+  MediaSinkInternal sink = CreateCastSink(1);
+  constexpr char invalid_transport_id[] = R"({
+      "applications": [{
+        "appId": "ABCDEFGH",
+        "displayName": "App display name",
+        "namespaces": [
+          {"name": "urn:x-cast:com.google.foo"}
+        ],
+        "sessionId": "sessionId",
+        "statusText":"App status",
+        "transportId":"receiver-0"
+      }]
+  })";
+  ExpectNoCastSession(sink, invalid_transport_id, "invalid transport id");
+}
+
+TEST(CastInternalMessageUtilTest,
+     CastSessionFromReceiverStatusFiltersReservedNamespaces) {
+  MediaSinkInternal sink = CreateCastSink(1);
+  constexpr char receiver_status_str[] = R"({
+      "applications": [{
+        "appId": "ABCDEFGH",
+        "displayName": "App display name",
+        "namespaces": [
+          {"name": "urn:x-cast:com.google.foo"},
+          {"name": "urn:x-cast:com.google.cast.receiver"}
+        ],
+        "sessionId": "sessionId",
+        "statusText":"App status",
+        "transportId":"transportId"
+      }]
+  })";
+  auto session = CastSession::From(sink, ParseJsonDict(receiver_status_str));
+  ASSERT_TRUE(session);
+
+  // "urn:x-cast:com.google.cast.receiver" should be filtered out.
+  base::flat_set<std::string> expected_namespaces = {
+      "urn:x-cast:com.google.foo"};
+  EXPECT_EQ(expected_namespaces, session->message_namespaces());
 }
 
 TEST(CastInternalMessageUtilTest, CreateReceiverActionCastMessage) {
@@ -517,7 +561,7 @@ TEST(CastInternalMessageUtilTest, CreateAppMessage) {
   base::DictValue message_body;
   message_body.Set("foo", base::Value("bar"));
   openscreen::cast::proto::CastMessage cast_message =
-      cast_channel::CreateCastMessage("urn:x-cast:com.google.foo",
+      cast_channel::CreateCastMessage(kFakeCastNamespace,
                                       base::Value(std::move(message_body)),
                                       "sourceId", "transportId");
 

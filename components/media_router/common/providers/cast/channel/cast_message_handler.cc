@@ -278,8 +278,10 @@ Result CastMessageHandler::SendCastMessage(int channel_id,
 
 Result CastMessageHandler::SendAppMessage(int channel_id,
                                           const CastMessage& message) {
-  DCHECK(!IsCastReservedNamespace(message.namespace_()))
-      << ": unexpected app message namespace: " << message.namespace_();
+  if (IsCastReservedNamespace(message.namespace_()) &&
+      message.namespace_() != cast_channel::kMediaNamespace) {
+    return Result::kFailed;
+  }
   if (message.ByteSizeLong() > kMaxCastMessagePayload) {
     return Result::kFailed;
   }

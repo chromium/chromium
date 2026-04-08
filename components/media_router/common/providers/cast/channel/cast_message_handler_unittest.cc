@@ -334,7 +334,7 @@ TEST_F(CastMessageHandlerTest, RequestAppAvailability) {
   EXPECT_GT(request_id, 0);
 
   CastMessage response;
-  response.set_namespace_("urn:x-cast:com.google.cast.receiver");
+  response.set_namespace_(kReceiverNamespace);
   response.set_source_id("receiver-0");
   response.set_destination_id(handler_.source_id());
   response.set_payload_type(
@@ -469,7 +469,7 @@ TEST_F(CastMessageHandlerTest, LaunchSession) {
   EXPECT_EQ(*json, *app_params);
 
   CastMessage response;
-  response.set_namespace_("urn:x-cast:com.google.cast.receiver");
+  response.set_namespace_(kReceiverNamespace);
   response.set_source_id("receiver-0");
   response.set_destination_id(handler_.source_id());
   response.set_payload_type(
@@ -535,6 +535,19 @@ TEST_F(CastMessageHandlerTest, SendAppMessage) {
   }
 
   EXPECT_EQ(Result::kOk, handler_.SendAppMessage(channel_id_, message));
+}
+
+TEST_F(CastMessageHandlerTest, SendAppMessageWithReservedNamespace) {
+  base::DictValue body;
+  body.Set("foo", "bar");
+  CastMessage message =
+      CreateCastMessage(kReceiverNamespace, base::Value(std::move(body)),
+                        kSourceId, kDestinationId);
+
+  // Expect no message to be sent.
+  EXPECT_CALL(*transport_, SendMessage_(_, _)).Times(0);
+
+  EXPECT_EQ(Result::kFailed, handler_.SendAppMessage(channel_id_, message));
 }
 
 TEST_F(CastMessageHandlerTest, SendMessageOnInvisibleConnection) {

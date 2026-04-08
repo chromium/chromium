@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/values_test_util.h"
+#include "chrome/browser/media/router/providers/cast/test_util.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_util.h"
 #include "components/media_router/common/providers/cast/channel/cast_test_util.h"
@@ -416,6 +417,12 @@ TEST_F(CastSessionTrackerTest, DoNotCopySavedMediaFieldsWhenFieldPresent) {
     "supportedMediaCommands": [],
     "xyzzy": "xyzzy2",
   }])"));
+}
+
+TEST_F(CastSessionTrackerTest, MediaNamespaceNotFiltered) {
+  AddSinkAndSendReceiverStatusResponse();
+  EXPECT_TRUE(session_->message_namespaces().contains(kMediaNamespace));
+  EXPECT_TRUE(session_->message_namespaces().contains(kFakeCastNamespace));
 }
 
 }  // namespace media_router

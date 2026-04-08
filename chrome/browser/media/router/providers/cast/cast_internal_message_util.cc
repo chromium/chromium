@@ -17,6 +17,7 @@
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
 #include "components/media_router/common/providers/cast/channel/cast_device_capability.h"
+#include "components/media_router/common/providers/cast/channel/cast_message_util.h"
 #include "components/media_router/common/providers/cast/channel/enum_table.h"
 #include "crypto/hash.h"
 
@@ -370,6 +371,11 @@ std::unique_ptr<CastSession> CastSession::From(
     return nullptr;
   }
 
+  if (session->destination_id_ == cast_channel::kPlatformReceiverId) {
+    DVLOG(2) << "transportId cannot be " << cast_channel::kPlatformReceiverId;
+    return nullptr;
+  }
+
   if (session->app_id_ == kBackdropAppId) {
     DVLOG(2) << sink.sink().id() << " is running the backdrop app";
     return nullptr;
@@ -411,19 +417,27 @@ std::unique_ptr<CastSession> CastSession::From(
       return nullptr;
     }
   } else {
+    base::ListValue filtered_namespaces_value;
     for (const auto& namespace_value : *namespaces_value) {
       std::string message_namespace;
       if (!namespace_value.is_dict() ||
           !GetString(namespace_value.GetDict(), "name", &message_namespace)) {
         DVLOG(2) << "Missing namespace name.";
-        return nullptr;
+        continue;
+      }
+
+      if (cast_channel::IsCastReservedNamespace(message_namespace) &&
+          message_namespace != cast_channel::kMediaNamespace) {
+        DVLOG(2) << "Ignoring reserved namespace: " << message_namespace;
+        continue;
       }
 
       session->message_namespaces_.insert(std::move(message_namespace));
+      filtered_namespaces_value.Append(namespace_value.Clone());
     }
+
+    session->value_.Set("namespaces", std::move(filtered_namespaces_value));
   }
-  session->value_.Set("namespaces", namespaces_value ? namespaces_value->Clone()
-                                                     : base::ListValue());
   return session;
 }
 
