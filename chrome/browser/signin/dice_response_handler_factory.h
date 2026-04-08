@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SIGNIN_DICE_RESPONSE_HANDLER_FACTORY_H_
 #define CHROME_BROWSER_SIGNIN_DICE_RESPONSE_HANDLER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class DiceResponseHandler;
@@ -24,7 +24,7 @@ class DiceResponseHandlerFactory : public ProfileKeyedServiceFactory {
       delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<DiceResponseHandlerFactory>;
+  friend base::NoDestructor<DiceResponseHandlerFactory>;
 
   DiceResponseHandlerFactory();
   ~DiceResponseHandlerFactory() override;

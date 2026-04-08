@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_mounter.h"
 
 #include "base/files/file_path.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_url_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
@@ -27,11 +27,12 @@ class ArcFileSystemMounterFactory
   static constexpr const char* kName = "ArcFileSystemMounterFactory";
 
   static ArcFileSystemMounterFactory* GetInstance() {
-    return base::Singleton<ArcFileSystemMounterFactory>::get();
+    static base::NoDestructor<ArcFileSystemMounterFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcFileSystemMounterFactory>;
+  friend base::NoDestructor<ArcFileSystemMounterFactory>;
   ArcFileSystemMounterFactory() = default;
   ~ArcFileSystemMounterFactory() override = default;
 };

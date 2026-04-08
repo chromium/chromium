@@ -14,7 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/persisted_tab_data/sensitivity_persisted_tab_data_android.h"
 #include "chrome/browser/android/tab_android.h"
@@ -59,7 +59,8 @@ class AuxiliarySearchProviderFactory : public ProfileKeyedServiceFactory {
   }
 
   static AuxiliarySearchProviderFactory* GetInstance() {
-    return base::Singleton<AuxiliarySearchProviderFactory>::get();
+    static base::NoDestructor<AuxiliarySearchProviderFactory> instance;
+    return instance.get();
   }
 
   AuxiliarySearchProviderFactory()
@@ -76,6 +77,8 @@ class AuxiliarySearchProviderFactory : public ProfileKeyedServiceFactory {
   }
 
  private:
+  friend base::NoDestructor<AuxiliarySearchProviderFactory>;
+
   // ProfileKeyedServiceFactory overrides
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override {

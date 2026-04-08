@@ -4,6 +4,7 @@
 
 #include "components/download/content/factory/navigation_monitor_factory.h"
 
+#include "base/no_destructor.h"
 #include "components/download/internal/background_service/navigation_monitor_impl.h"
 #include "components/keyed_service/core/simple_dependency_manager.h"
 
@@ -11,7 +12,8 @@ namespace download {
 
 // static
 NavigationMonitorFactory* NavigationMonitorFactory::GetInstance() {
-  return base::Singleton<NavigationMonitorFactory>::get();
+  static base::NoDestructor<NavigationMonitorFactory> instance;
+  return instance.get();
 }
 
 // static

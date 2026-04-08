@@ -21,7 +21,8 @@ ShortcutsAppManager* ShortcutsAppManagerFactory::GetForBrowserContext(
 
 // static
 ShortcutsAppManagerFactory* ShortcutsAppManagerFactory::GetInstance() {
-  return base::Singleton<ShortcutsAppManagerFactory>::get();
+  static base::NoDestructor<ShortcutsAppManagerFactory> instance;
+  return instance.get();
 }
 
 ShortcutsAppManagerFactory::ShortcutsAppManagerFactory()

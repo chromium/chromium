@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -222,7 +223,8 @@ AppWindowRegistry* AppWindowRegistry::Factory::GetForBrowserContext(
 }
 
 AppWindowRegistry::Factory* AppWindowRegistry::Factory::GetInstance() {
-  return base::Singleton<AppWindowRegistry::Factory>::get();
+  static base::NoDestructor<AppWindowRegistry::Factory> instance;
+  return instance.get();
 }
 
 AppWindowRegistry::Factory::Factory()

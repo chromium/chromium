@@ -26,7 +26,8 @@ ExtensionRegistrar* ExtensionRegistrarFactory::GetForBrowserContext(
 
 // static
 ExtensionRegistrarFactory* ExtensionRegistrarFactory::GetInstance() {
-  return base::Singleton<ExtensionRegistrarFactory>::get();
+  static base::NoDestructor<ExtensionRegistrarFactory> instance;
+  return instance.get();
 }
 
 ExtensionRegistrarFactory::ExtensionRegistrarFactory()

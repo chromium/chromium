@@ -13,6 +13,7 @@
 #include "base/android/path_utils.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/singleton.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"

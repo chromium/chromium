@@ -8,7 +8,7 @@
 
 #include "ash/public/cpp/system_tray.h"
 #include "base/logging.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
@@ -29,11 +29,12 @@ class ArcAudioBridgeFactory
   static constexpr const char* kName = "ArcAudioBridgeFactory";
 
   static ArcAudioBridgeFactory* GetInstance() {
-    return base::Singleton<ArcAudioBridgeFactory>::get();
+    static base::NoDestructor<ArcAudioBridgeFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcAudioBridgeFactory>;
+  friend base::NoDestructor<ArcAudioBridgeFactory>;
   ArcAudioBridgeFactory() = default;
   ~ArcAudioBridgeFactory() override = default;
 };

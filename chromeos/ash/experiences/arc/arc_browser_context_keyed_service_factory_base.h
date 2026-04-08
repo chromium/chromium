@@ -52,11 +52,12 @@ namespace internal {
 //   static constexpr const char* kName = "ArcFooServiceFactory";
 //
 //   static ArcFooServiceFactory* GetInstance() {
-//     return base::Singleton<ArcFooServiceFactory>::get();
+//     static base::NoDestructor<ArcFooServiceFactory> instance;
+//     return instance.get();
 //   }
 //
 //  private:
-//   friend struct base::DefaultSingletonTraits<ArcFooServiceFactory>;
+//   friend base::NoDestructor<ArcFooServiceFactory>;
 //   ArcFooServiceFactory() = default;
 //   ~ArcFooServiceFactory() override = default;
 // };

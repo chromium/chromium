@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chromeos/ash/components/dbus/arc/arc_midis_client.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
@@ -29,11 +29,12 @@ class ArcMidisBridgeFactory
   static constexpr const char* kName = "ArcMidisBridgeFactory";
 
   static ArcMidisBridgeFactory* GetInstance() {
-    return base::Singleton<ArcMidisBridgeFactory>::get();
+    static base::NoDestructor<ArcMidisBridgeFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcMidisBridgeFactory>;
+  friend base::NoDestructor<ArcMidisBridgeFactory>;
   ArcMidisBridgeFactory() = default;
   ~ArcMidisBridgeFactory() override = default;
 };

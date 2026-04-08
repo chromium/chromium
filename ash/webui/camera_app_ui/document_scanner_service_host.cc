@@ -4,6 +4,7 @@
 
 #include "ash/webui/camera_app_ui/document_scanner_service_host.h"
 
+#include "base/memory/singleton.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "third_party/cros_system_api/mojo/service_constants.h"
 

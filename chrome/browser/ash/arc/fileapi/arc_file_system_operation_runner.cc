@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
@@ -36,11 +36,12 @@ class ArcFileSystemOperationRunnerFactory
   static constexpr const char* kName = "ArcFileSystemOperationRunnerFactory";
 
   static ArcFileSystemOperationRunnerFactory* GetInstance() {
-    return base::Singleton<ArcFileSystemOperationRunnerFactory>::get();
+    static base::NoDestructor<ArcFileSystemOperationRunnerFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcFileSystemOperationRunnerFactory>;
+  friend base::NoDestructor<ArcFileSystemOperationRunnerFactory>;
   ArcFileSystemOperationRunnerFactory() {
     DependsOn(ArcFileSystemBridge::GetFactory());
   }

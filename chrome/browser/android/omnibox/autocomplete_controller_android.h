@@ -10,6 +10,7 @@
 #include "base/android/jni_android.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/android/omnibox/composebox_query_controller_bridge.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -22,10 +23,6 @@ class AutocompleteResult;
 class ChromeAutocompleteProviderClient;
 class Profile;
 
-namespace base {
-template <typename Type>
-struct DefaultSingletonTraits;
-}  // namespace base
 
 // The native part of the Java AutocompleteController class.
 class AutocompleteControllerAndroid : public AutocompleteController::Observer,
@@ -155,7 +152,7 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
     static Factory* GetInstance();
 
    private:
-    friend struct base::DefaultSingletonTraits<Factory>;
+    friend base::NoDestructor<Factory>;
 
     Factory();
     ~Factory() override;

@@ -15,7 +15,8 @@
 // static
 LockedSessionWindowTrackerFactory*
 LockedSessionWindowTrackerFactory::GetInstance() {
-  return base::Singleton<LockedSessionWindowTrackerFactory>::get();
+  static base::NoDestructor<LockedSessionWindowTrackerFactory> instance;
+  return instance.get();
 }
 
 // static

@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/experiences/arc/net/arc_wifi_host_impl.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -41,11 +41,12 @@ class ArcWifiHostImplFactory
   static constexpr const char* kName = "ArcWifiHostImplFactory";
 
   static ArcWifiHostImplFactory* GetInstance() {
-    return base::Singleton<ArcWifiHostImplFactory>::get();
+    static base::NoDestructor<ArcWifiHostImplFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcWifiHostImplFactory>;
+  friend base::NoDestructor<ArcWifiHostImplFactory>;
   ArcWifiHostImplFactory() = default;
   ~ArcWifiHostImplFactory() override = default;
 };

@@ -5,7 +5,9 @@
 #include "chrome/browser/extensions/api/input_ime/input_ime_api.h"
 
 #include <utility>
+
 #include "base/lazy_instance.h"
+#include "base/memory/singleton.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/common/extensions/api/input_method_private.h"

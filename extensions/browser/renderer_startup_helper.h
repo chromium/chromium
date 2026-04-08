@@ -11,7 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
@@ -199,7 +199,7 @@ class RendererStartupHelperFactory : public BrowserContextKeyedServiceFactory {
   static RendererStartupHelperFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<RendererStartupHelperFactory>;
+  friend base::NoDestructor<RendererStartupHelperFactory>;
 
   RendererStartupHelperFactory();
   ~RendererStartupHelperFactory() override;

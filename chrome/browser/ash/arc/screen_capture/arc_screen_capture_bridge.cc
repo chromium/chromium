@@ -10,7 +10,7 @@
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/types/expected.h"
@@ -40,11 +40,12 @@ class ArcScreenCaptureBridgeFactory
   static constexpr const char* kName = "ArcScreenCaptureBridgeFactory";
 
   static ArcScreenCaptureBridgeFactory* GetInstance() {
-    return base::Singleton<ArcScreenCaptureBridgeFactory>::get();
+    static base::NoDestructor<ArcScreenCaptureBridgeFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcScreenCaptureBridgeFactory>;
+  friend base::NoDestructor<ArcScreenCaptureBridgeFactory>;
   ArcScreenCaptureBridgeFactory() = default;
   ~ArcScreenCaptureBridgeFactory() override = default;
 };

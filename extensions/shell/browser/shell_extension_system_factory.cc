@@ -22,7 +22,8 @@ ExtensionSystem* ShellExtensionSystemFactory::GetForBrowserContext(
 
 // static
 ShellExtensionSystemFactory* ShellExtensionSystemFactory::GetInstance() {
-  return base::Singleton<ShellExtensionSystemFactory>::get();
+  static base::NoDestructor<ShellExtensionSystemFactory> instance;
+  return instance.get();
 }
 
 ShellExtensionSystemFactory::ShellExtensionSystemFactory()
@@ -33,8 +34,7 @@ ShellExtensionSystemFactory::ShellExtensionSystemFactory()
   DependsOn(apps::AppLifetimeMonitorFactory::GetInstance());
 }
 
-ShellExtensionSystemFactory::~ShellExtensionSystemFactory() {
-}
+ShellExtensionSystemFactory::~ShellExtensionSystemFactory() = default;
 
 std::unique_ptr<KeyedService>
 ShellExtensionSystemFactory::BuildServiceInstanceForBrowserContext(

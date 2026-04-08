@@ -24,7 +24,8 @@ PendingExtensionManager* PendingExtensionManagerFactory::GetForBrowserContext(
 
 // static
 PendingExtensionManagerFactory* PendingExtensionManagerFactory::GetInstance() {
-  return base::Singleton<PendingExtensionManagerFactory>::get();
+  static base::NoDestructor<PendingExtensionManagerFactory> instance;
+  return instance.get();
 }
 
 PendingExtensionManagerFactory::PendingExtensionManagerFactory()

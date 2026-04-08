@@ -11,8 +11,8 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/event_router.h"
@@ -112,8 +112,7 @@ class ServiceWorkerLifetimeManagerFactory : public ProfileKeyedServiceFactory {
   static ServiceWorkerLifetimeManagerFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      ServiceWorkerLifetimeManagerFactory>;
+  friend base::NoDestructor<ServiceWorkerLifetimeManagerFactory>;
 
   ServiceWorkerLifetimeManagerFactory();
   ~ServiceWorkerLifetimeManagerFactory() override;

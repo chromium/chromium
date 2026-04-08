@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/mojom/memory.mojom-forward.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
@@ -28,14 +28,15 @@ class ArcMemoryBridgeFactory
   static ArcMemoryBridgeFactory* GetInstance();
 
  private:
-  friend base::DefaultSingletonTraits<ArcMemoryBridgeFactory>;
+  friend base::NoDestructor<ArcMemoryBridgeFactory>;
   ArcMemoryBridgeFactory() = default;
   ~ArcMemoryBridgeFactory() override = default;
 };
 
 // static
 ArcMemoryBridgeFactory* ArcMemoryBridgeFactory::GetInstance() {
-  return base::Singleton<ArcMemoryBridgeFactory>::get();
+  static base::NoDestructor<ArcMemoryBridgeFactory> instance;
+  return instance.get();
 }
 
 // static

@@ -19,7 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -73,7 +73,8 @@ bool BrowserIdFromString(const std::string& browser_id_str,
 
 // static
 DevToolsAndroidBridge::Factory* DevToolsAndroidBridge::Factory::GetInstance() {
-  return base::Singleton<DevToolsAndroidBridge::Factory>::get();
+  static base::NoDestructor<DevToolsAndroidBridge::Factory> instance;
+  return instance.get();
 }
 
 // static

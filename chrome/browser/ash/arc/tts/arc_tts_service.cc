@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/speech/tts_chromeos.h"
@@ -19,7 +19,7 @@
 namespace arc {
 namespace {
 
-// Singleton factory for ArcTtsService.
+// Factory for ArcTtsService.
 class ArcTtsServiceFactory
     : public internal::ArcBrowserContextKeyedServiceFactoryBase<
           ArcTtsService,
@@ -29,11 +29,12 @@ class ArcTtsServiceFactory
   static constexpr const char* kName = "ArcTtsServiceFactory";
 
   static ArcTtsServiceFactory* GetInstance() {
-    return base::Singleton<ArcTtsServiceFactory>::get();
+    static base::NoDestructor<ArcTtsServiceFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcTtsServiceFactory>;
+  friend base::NoDestructor<ArcTtsServiceFactory>;
   ArcTtsServiceFactory() = default;
   ~ArcTtsServiceFactory() override = default;
 };
@@ -86,7 +87,7 @@ void ArcTtsService::OnTtsEvent(uint32_t id,
                                uint32_t length,
                                const std::string& error_msg) {
   if (!tts_controller_) {
-    // GetInstance() returns a base::Singleton<> object which always outlives
+    // GetInstance() returns a base::NoDestructor<> object which always outlives
     // |this| object.
     tts_controller_ = content::TtsController::GetInstance();
     if (!tts_controller_) {

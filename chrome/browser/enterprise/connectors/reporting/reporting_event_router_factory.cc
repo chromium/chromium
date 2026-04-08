@@ -4,7 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "components/enterprise/connectors/core/reporting_event_router.h"
@@ -14,7 +14,8 @@ namespace enterprise_connectors {
 
 // static
 ReportingEventRouterFactory* ReportingEventRouterFactory::GetInstance() {
-  return base::Singleton<ReportingEventRouterFactory>::get();
+  static base::NoDestructor<ReportingEventRouterFactory> instance;
+  return instance.get();
 }
 
 ReportingEventRouter* ReportingEventRouterFactory::GetForBrowserContext(

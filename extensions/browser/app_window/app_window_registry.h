@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -110,7 +110,7 @@ class AppWindowRegistry : public KeyedService,
     static Factory* GetInstance();
 
    private:
-    friend struct base::DefaultSingletonTraits<Factory>;
+    friend base::NoDestructor<Factory>;
 
     Factory();
     ~Factory() override;

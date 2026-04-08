@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/scoped_observation.h"
 #include "base/task/task_traits.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
@@ -159,7 +159,7 @@ class HttpsFirstModeServiceFactory : public ProfileKeyedServiceFactory {
   static base::Clock* SetClockForTesting(base::Clock* clock);
 
  private:
-  friend struct base::DefaultSingletonTraits<HttpsFirstModeServiceFactory>;
+  friend base::NoDestructor<HttpsFirstModeServiceFactory>;
 
   HttpsFirstModeServiceFactory();
   ~HttpsFirstModeServiceFactory() override;

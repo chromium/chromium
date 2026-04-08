@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SPEECH_EXTENSION_API_TTS_ENGINE_EXTENSION_OBSERVER_CHROMEOS_FACTORY_H_
 #define CHROME_BROWSER_SPEECH_EXTENSION_API_TTS_ENGINE_EXTENSION_OBSERVER_CHROMEOS_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class TtsEngineExtensionObserverChromeOS;
@@ -24,8 +24,7 @@ class TtsEngineExtensionObserverChromeOSFactory
       const TtsEngineExtensionObserverChromeOSFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      TtsEngineExtensionObserverChromeOSFactory>;
+  friend base::NoDestructor<TtsEngineExtensionObserverChromeOSFactory>;
 
   TtsEngineExtensionObserverChromeOSFactory();
   ~TtsEngineExtensionObserverChromeOSFactory() override;

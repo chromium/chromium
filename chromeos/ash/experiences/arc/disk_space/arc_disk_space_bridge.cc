@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
@@ -33,11 +33,12 @@ class ArcDiskSpaceBridgeFactory
   static constexpr const char* kName = "ArcDiskSpaceBridgeFactory";
 
   static ArcDiskSpaceBridgeFactory* GetInstance() {
-    return base::Singleton<ArcDiskSpaceBridgeFactory>::get();
+    static base::NoDestructor<ArcDiskSpaceBridgeFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcDiskSpaceBridgeFactory>;
+  friend base::NoDestructor<ArcDiskSpaceBridgeFactory>;
   ArcDiskSpaceBridgeFactory() = default;
   ~ArcDiskSpaceBridgeFactory() override = default;
 };

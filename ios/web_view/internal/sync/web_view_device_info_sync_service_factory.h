@@ -7,12 +7,8 @@
 
 #include <memory>
 
+#include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-namespace base {
-template <typename T>
-struct DefaultSingletonTraits;
-}  // namespace base
 
 namespace syncer {
 class DeviceInfoSyncService;
@@ -37,8 +33,7 @@ class WebViewDeviceInfoSyncServiceFactory
       const WebViewDeviceInfoSyncServiceFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      WebViewDeviceInfoSyncServiceFactory>;
+  friend base::NoDestructor<WebViewDeviceInfoSyncServiceFactory>;
 
   WebViewDeviceInfoSyncServiceFactory();
   ~WebViewDeviceInfoSyncServiceFactory() override;

@@ -20,7 +20,8 @@ HelpAppManager* HelpAppManagerFactory::GetForBrowserContext(
 
 // static
 HelpAppManagerFactory* HelpAppManagerFactory::GetInstance() {
-  return base::Singleton<HelpAppManagerFactory>::get();
+  static base::NoDestructor<HelpAppManagerFactory> instance;
+  return instance.get();
 }
 
 HelpAppManagerFactory::HelpAppManagerFactory()

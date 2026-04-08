@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/singleton.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/javascript_dialogs/app_modal_dialog_manager_delegate.h"

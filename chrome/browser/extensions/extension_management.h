@@ -13,7 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/managed_installation_mode.h"
@@ -365,7 +365,7 @@ class ExtensionManagementFactory : public ProfileKeyedServiceFactory {
   static ExtensionManagementFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<ExtensionManagementFactory>;
+  friend base::NoDestructor<ExtensionManagementFactory>;
 
   ExtensionManagementFactory();
   ~ExtensionManagementFactory() override;

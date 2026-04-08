@@ -4,6 +4,7 @@
 
 #include "components/enterprise/content/clipboard_restriction_service.h"
 
+#include "base/no_destructor.h"
 #include "components/enterprise/content/pref_names.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -107,7 +108,8 @@ void ClipboardRestrictionService::UpdateSettings() {
 // static
 ClipboardRestrictionServiceFactory*
 ClipboardRestrictionServiceFactory::GetInstance() {
-  return base::Singleton<ClipboardRestrictionServiceFactory>::get();
+  static base::NoDestructor<ClipboardRestrictionServiceFactory> instance;
+  return instance.get();
 }
 
 // static

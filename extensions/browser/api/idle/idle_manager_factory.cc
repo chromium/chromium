@@ -20,7 +20,8 @@ IdleManager* IdleManagerFactory::GetForBrowserContext(
 
 // static
 IdleManagerFactory* IdleManagerFactory::GetInstance() {
-  return base::Singleton<IdleManagerFactory>::get();
+  static base::NoDestructor<IdleManagerFactory> instance;
+  return instance.get();
 }
 
 IdleManagerFactory::IdleManagerFactory()
@@ -30,8 +31,7 @@ IdleManagerFactory::IdleManagerFactory()
   DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
 }
 
-IdleManagerFactory::~IdleManagerFactory() {
-}
+IdleManagerFactory::~IdleManagerFactory() = default;
 
 std::unique_ptr<KeyedService>
 IdleManagerFactory::BuildServiceInstanceForBrowserContext(

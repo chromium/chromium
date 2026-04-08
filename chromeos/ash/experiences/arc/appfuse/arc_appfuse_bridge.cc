@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chromeos/ash/components/dbus/arc/arc_appfuse_provider_client.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
@@ -29,11 +29,12 @@ class ArcAppfuseBridgeFactory
   static constexpr const char* kName = "ArcAppfuseBridgeFactory";
 
   static ArcAppfuseBridgeFactory* GetInstance() {
-    return base::Singleton<ArcAppfuseBridgeFactory>::get();
+    static base::NoDestructor<ArcAppfuseBridgeFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcAppfuseBridgeFactory>;
+  friend base::NoDestructor<ArcAppfuseBridgeFactory>;
   ArcAppfuseBridgeFactory() = default;
   ~ArcAppfuseBridgeFactory() override = default;
 };

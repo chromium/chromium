@@ -14,9 +14,9 @@
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
@@ -198,7 +198,8 @@ const char* ArcKeyMintLoggedOperationToString(
 
 // static
 ArcMetricsServiceFactory* ArcMetricsServiceFactory::GetInstance() {
-  return base::Singleton<ArcMetricsServiceFactory>::get();
+  static base::NoDestructor<ArcMetricsServiceFactory> instance;
+  return instance.get();
 }
 
 // static

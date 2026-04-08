@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/singleton.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"

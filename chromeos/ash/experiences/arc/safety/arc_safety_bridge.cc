@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 
@@ -25,11 +25,12 @@ class ArcSafetyBridgeFactory
   static constexpr const char* kName = "ArcSafetyBridgeFactory";
 
   static ArcSafetyBridgeFactory* GetInstance() {
-    return base::Singleton<ArcSafetyBridgeFactory>::get();
+    static base::NoDestructor<ArcSafetyBridgeFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcSafetyBridgeFactory>;
+  friend base::NoDestructor<ArcSafetyBridgeFactory>;
   ArcSafetyBridgeFactory() = default;
   ~ArcSafetyBridgeFactory() override = default;
 };

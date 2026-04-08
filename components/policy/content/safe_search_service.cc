@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/safe_search_api/safe_search/safe_search_url_checker_client.h"
 #include "components/safe_search_api/url_checker.h"
@@ -81,7 +82,8 @@ void SafeSearchService::SetSafeSearchURLCheckerForTest(
 
 // static
 SafeSearchFactory* SafeSearchFactory::GetInstance() {
-  return base::Singleton<SafeSearchFactory>::get();
+  static base::NoDestructor<SafeSearchFactory> instance;
+  return instance.get();
 }
 
 // static

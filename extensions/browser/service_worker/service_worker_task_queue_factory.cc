@@ -26,7 +26,8 @@ ServiceWorkerTaskQueue* ServiceWorkerTaskQueueFactory::GetForBrowserContext(
 
 // static
 ServiceWorkerTaskQueueFactory* ServiceWorkerTaskQueueFactory::GetInstance() {
-  return base::Singleton<ServiceWorkerTaskQueueFactory>::get();
+  static base::NoDestructor<ServiceWorkerTaskQueueFactory> instance;
+  return instance.get();
 }
 
 ServiceWorkerTaskQueueFactory::ServiceWorkerTaskQueueFactory()

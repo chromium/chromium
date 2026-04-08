@@ -18,7 +18,8 @@ OmniboxSuggestionsWatcherFactory::GetForBrowserContext(
 // static
 OmniboxSuggestionsWatcherFactory*
 OmniboxSuggestionsWatcherFactory::GetInstance() {
-  return base::Singleton<OmniboxSuggestionsWatcherFactory>::get();
+  static base::NoDestructor<OmniboxSuggestionsWatcherFactory> instance;
+  return instance.get();
 }
 
 OmniboxSuggestionsWatcherFactory::OmniboxSuggestionsWatcherFactory()

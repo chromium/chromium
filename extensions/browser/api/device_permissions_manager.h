@@ -16,6 +16,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/no_destructor.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -24,11 +25,6 @@
 #include "extensions/common/extension_id.h"
 #include "services/device/public/mojom/hid.mojom.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
-
-namespace base {
-template <typename T>
-struct DefaultSingletonTraits;
-}
 
 namespace content {
 class BrowserContext;
@@ -212,7 +208,7 @@ class DevicePermissionsManagerFactory
   static DevicePermissionsManagerFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<DevicePermissionsManagerFactory>;
+  friend base::NoDestructor<DevicePermissionsManagerFactory>;
 
   DevicePermissionsManagerFactory();
   ~DevicePermissionsManagerFactory() override;

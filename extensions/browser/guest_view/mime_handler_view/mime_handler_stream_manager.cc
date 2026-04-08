@@ -6,7 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/browser/global_routing_id.h"
@@ -29,6 +29,8 @@ class MimeHandlerStreamManagerFactory
   MimeHandlerStreamManager* Get(content::BrowserContext* context);
 
  private:
+  friend base::NoDestructor<MimeHandlerStreamManagerFactory>;
+
   // BrowserContextKeyedServiceFactory overrides.
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
@@ -45,7 +47,8 @@ MimeHandlerStreamManagerFactory::MimeHandlerStreamManagerFactory()
 // static
 MimeHandlerStreamManagerFactory*
 MimeHandlerStreamManagerFactory::GetInstance() {
-  return base::Singleton<MimeHandlerStreamManagerFactory>::get();
+  static base::NoDestructor<MimeHandlerStreamManagerFactory> instance;
+  return instance.get();
 }
 
 MimeHandlerStreamManager* MimeHandlerStreamManagerFactory::Get(

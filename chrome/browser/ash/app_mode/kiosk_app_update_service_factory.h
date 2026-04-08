@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
@@ -28,7 +28,7 @@ class KioskAppUpdateServiceFactory : public ProfileKeyedServiceFactory {
   static KioskAppUpdateServiceFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<KioskAppUpdateServiceFactory>;
+  friend base::NoDestructor<KioskAppUpdateServiceFactory>;
 
   KioskAppUpdateServiceFactory();
   ~KioskAppUpdateServiceFactory() override;

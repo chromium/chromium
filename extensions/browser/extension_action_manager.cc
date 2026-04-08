@@ -4,7 +4,7 @@
 
 #include "extensions/browser/extension_action_manager.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
@@ -32,7 +32,7 @@ class ExtensionActionManagerFactory : public BrowserContextKeyedServiceFactory {
   static ExtensionActionManagerFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<ExtensionActionManagerFactory>;
+  friend base::NoDestructor<ExtensionActionManagerFactory>;
 
   ExtensionActionManagerFactory()
       : BrowserContextKeyedServiceFactory(
@@ -52,7 +52,8 @@ class ExtensionActionManagerFactory : public BrowserContextKeyedServiceFactory {
 };
 
 ExtensionActionManagerFactory* ExtensionActionManagerFactory::GetInstance() {
-  return base::Singleton<ExtensionActionManagerFactory>::get();
+  static base::NoDestructor<ExtensionActionManagerFactory> instance;
+  return instance.get();
 }
 
 }  // namespace

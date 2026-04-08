@@ -11,7 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/ash/nearby/bluetooth_adapter_manager.h"
 #include "chrome/browser/ash/nearby/nearby_dependencies_provider_factory.h"
@@ -77,8 +77,9 @@ class NearbyDependenciesProviderShutdownNotifierFactory
     : public BrowserContextKeyedServiceShutdownNotifierFactory {
  public:
   static NearbyDependenciesProviderShutdownNotifierFactory* GetInstance() {
-    return base::Singleton<
-        NearbyDependenciesProviderShutdownNotifierFactory>::get();
+    static base::NoDestructor<NearbyDependenciesProviderShutdownNotifierFactory>
+        instance;
+    return instance.get();
   }
 
   NearbyDependenciesProviderShutdownNotifierFactory(
@@ -87,8 +88,7 @@ class NearbyDependenciesProviderShutdownNotifierFactory
       const NearbyDependenciesProviderShutdownNotifierFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      NearbyDependenciesProviderShutdownNotifierFactory>;
+  friend base::NoDestructor<NearbyDependenciesProviderShutdownNotifierFactory>;
 
   NearbyDependenciesProviderShutdownNotifierFactory()
       : BrowserContextKeyedServiceShutdownNotifierFactory(

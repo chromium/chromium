@@ -5,7 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_API_NETWORKING_PRIVATE_NETWORKING_PRIVATE_EVENT_ROUTER_FACTORY_H_
 #define EXTENSIONS_BROWSER_API_NETWORKING_PRIVATE_NETWORKING_PRIVATE_EVENT_ROUTER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace extensions {
@@ -39,8 +39,7 @@ class NetworkingPrivateEventRouterFactory
   bool ServiceIsNULLWhileTesting() const override;
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      NetworkingPrivateEventRouterFactory>;
+  friend base::NoDestructor<NetworkingPrivateEventRouterFactory>;
 
   NetworkingPrivateEventRouterFactory();
   ~NetworkingPrivateEventRouterFactory() override = default;

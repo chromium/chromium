@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/arc/sharesheet/arc_sharesheet_bridge.h"
 
 #include "base/logging.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
@@ -29,11 +29,12 @@ class ArcSharesheetBridgeFactory
   static constexpr const char* kName = "ArcSharesheetBridgeFactory";
 
   static ArcSharesheetBridgeFactory* GetInstance() {
-    return base::Singleton<ArcSharesheetBridgeFactory>::get();
+    static base::NoDestructor<ArcSharesheetBridgeFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcSharesheetBridgeFactory>;
+  friend base::NoDestructor<ArcSharesheetBridgeFactory>;
   ArcSharesheetBridgeFactory() = default;
   ~ArcSharesheetBridgeFactory() override = default;
 };

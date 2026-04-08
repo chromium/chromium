@@ -27,7 +27,8 @@ LogRouter* PasswordManagerLogRouterFactory::GetForBrowserContext(
 // static
 PasswordManagerLogRouterFactory*
 PasswordManagerLogRouterFactory::GetInstance() {
-  return base::Singleton<PasswordManagerLogRouterFactory>::get();
+  static base::NoDestructor<PasswordManagerLogRouterFactory> instance;
+  return instance.get();
 }
 
 PasswordManagerLogRouterFactory::PasswordManagerLogRouterFactory()

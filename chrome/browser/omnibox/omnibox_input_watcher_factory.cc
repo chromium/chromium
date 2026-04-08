@@ -16,7 +16,8 @@ OmniboxInputWatcher* OmniboxInputWatcherFactory::GetForBrowserContext(
 
 // static
 OmniboxInputWatcherFactory* OmniboxInputWatcherFactory::GetInstance() {
-  return base::Singleton<OmniboxInputWatcherFactory>::get();
+  static base::NoDestructor<OmniboxInputWatcherFactory> instance;
+  return instance.get();
 }
 
 OmniboxInputWatcherFactory::OmniboxInputWatcherFactory()

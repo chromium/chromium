@@ -20,7 +20,8 @@ Resolver* ResolverFactory::GetForProfile(Profile* profile) {
 
 // static
 ResolverFactory* ResolverFactory::GetInstance() {
-  return base::Singleton<ResolverFactory>::get();
+  static base::NoDestructor<ResolverFactory> instance;
+  return instance.get();
 }
 
 ResolverFactory::ResolverFactory()

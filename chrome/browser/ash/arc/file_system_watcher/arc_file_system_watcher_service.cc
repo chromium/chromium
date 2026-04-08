@@ -15,7 +15,7 @@
 #include "base/files/file_path_watcher.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -168,11 +168,12 @@ class ArcFileSystemWatcherServiceFactory
   }
 
   static ArcFileSystemWatcherServiceFactory* GetInstance() {
-    return base::Singleton<ArcFileSystemWatcherServiceFactory>::get();
+    static base::NoDestructor<ArcFileSystemWatcherServiceFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcFileSystemWatcherServiceFactory>;
+  friend base::NoDestructor<ArcFileSystemWatcherServiceFactory>;
   ~ArcFileSystemWatcherServiceFactory() override = default;
 };
 

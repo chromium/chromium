@@ -5,7 +5,7 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 
 #include "base/functional/bind.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/stub_notification_display_service.h"
@@ -28,13 +28,13 @@ class NotificationDisplayServiceShutdownNotifierFactory
   NotificationDisplayServiceShutdownNotifierFactory& operator=(
       const NotificationDisplayServiceShutdownNotifierFactory&) = delete;
   static NotificationDisplayServiceShutdownNotifierFactory* GetInstance() {
-    return base::Singleton<
-        NotificationDisplayServiceShutdownNotifierFactory>::get();
+    static base::NoDestructor<NotificationDisplayServiceShutdownNotifierFactory>
+        instance;
+    return instance.get();
   }
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      NotificationDisplayServiceShutdownNotifierFactory>;
+  friend base::NoDestructor<NotificationDisplayServiceShutdownNotifierFactory>;
 
   NotificationDisplayServiceShutdownNotifierFactory()
       : BrowserContextKeyedServiceShutdownNotifierFactory(

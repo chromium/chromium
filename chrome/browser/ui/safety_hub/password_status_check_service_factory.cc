@@ -14,7 +14,8 @@
 // static
 PasswordStatusCheckServiceFactory*
 PasswordStatusCheckServiceFactory::GetInstance() {
-  return base::Singleton<PasswordStatusCheckServiceFactory>::get();
+  static base::NoDestructor<PasswordStatusCheckServiceFactory> instance;
+  return instance.get();
 }
 
 // static

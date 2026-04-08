@@ -9,7 +9,6 @@
 #include "ash/shell.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
-#include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -64,11 +63,12 @@ class ArcAppPerformanceTracingFactory
   static constexpr const char* kName = "ArcAppPerformanceTracingFactory";
 
   static ArcAppPerformanceTracingFactory* GetInstance() {
-    return base::Singleton<ArcAppPerformanceTracingFactory>::get();
+    static base::NoDestructor<ArcAppPerformanceTracingFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcAppPerformanceTracingFactory>;
+  friend base::NoDestructor<ArcAppPerformanceTracingFactory>;
   ArcAppPerformanceTracingFactory() {
     DependsOn(ArcAppListPrefsFactory::GetInstance());
     // TODO(crbug.com/40227318): This should probably depend on SyncService.
@@ -121,6 +121,8 @@ class AppToCategoryMapper {
   }
 
  private:
+  friend base::NoDestructor<AppToCategoryMapper>;
+
   ~AppToCategoryMapper() = default;
 
   std::map<std::string, std::string> app_id_to_category_;

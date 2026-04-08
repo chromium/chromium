@@ -19,7 +19,8 @@ CertStoreService* CertStoreServiceFactory::GetForBrowserContext(
 
 // static
 CertStoreServiceFactory* CertStoreServiceFactory::GetInstance() {
-  return base::Singleton<CertStoreServiceFactory>::get();
+  static base::NoDestructor<CertStoreServiceFactory> instance;
+  return instance.get();
 }
 
 CertStoreServiceFactory::CertStoreServiceFactory()

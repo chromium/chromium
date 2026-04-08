@@ -10,7 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -52,7 +52,8 @@ DriveIntegrationService* DriveIntegrationServiceFactory::FindForProfile(
 
 // static
 DriveIntegrationServiceFactory* DriveIntegrationServiceFactory::GetInstance() {
-  return base::Singleton<DriveIntegrationServiceFactory>::get();
+  static base::NoDestructor<DriveIntegrationServiceFactory> instance;
+  return instance.get();
 }
 
 DriveIntegrationServiceFactory::DriveIntegrationServiceFactory()

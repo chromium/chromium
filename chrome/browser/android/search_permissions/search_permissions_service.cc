@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -64,7 +65,8 @@ SearchPermissionsService::Factory::GetForBrowserContext(
 // static
 SearchPermissionsService::Factory*
 SearchPermissionsService::Factory::GetInstance() {
-  return base::Singleton<SearchPermissionsService::Factory>::get();
+  static base::NoDestructor<SearchPermissionsService::Factory> instance;
+  return instance.get();
 }
 
 SearchPermissionsService::Factory::Factory()

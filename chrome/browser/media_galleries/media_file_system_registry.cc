@@ -16,8 +16,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"
 #include "chrome/browser/media_galleries/fileapi/mtp_device_map_service.h"
@@ -55,8 +55,9 @@ class MediaFileSystemRegistryShutdownNotifierFactory
     : public BrowserContextKeyedServiceShutdownNotifierFactory {
  public:
   static MediaFileSystemRegistryShutdownNotifierFactory* GetInstance() {
-    return base::Singleton<
-        MediaFileSystemRegistryShutdownNotifierFactory>::get();
+    static base::NoDestructor<MediaFileSystemRegistryShutdownNotifierFactory>
+        instance;
+    return instance.get();
   }
 
   MediaFileSystemRegistryShutdownNotifierFactory(
@@ -65,8 +66,7 @@ class MediaFileSystemRegistryShutdownNotifierFactory
       const MediaFileSystemRegistryShutdownNotifierFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      MediaFileSystemRegistryShutdownNotifierFactory>;
+  friend base::NoDestructor<MediaFileSystemRegistryShutdownNotifierFactory>;
 
   MediaFileSystemRegistryShutdownNotifierFactory()
       : BrowserContextKeyedServiceShutdownNotifierFactory(

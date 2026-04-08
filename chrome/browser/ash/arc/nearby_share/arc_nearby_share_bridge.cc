@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "ash/public/cpp/app_types_util.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/nearby_share/arc_nearby_share_uma.h"
@@ -38,11 +38,12 @@ class ArcNearbyShareBridgeFactory
   static constexpr const char* kName = "ArcNearbyShareBridgeFactory";
 
   static ArcNearbyShareBridgeFactory* GetInstance() {
-    return base::Singleton<ArcNearbyShareBridgeFactory>::get();
+    static base::NoDestructor<ArcNearbyShareBridgeFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcNearbyShareBridgeFactory>;
+  friend base::NoDestructor<ArcNearbyShareBridgeFactory>;
   ArcNearbyShareBridgeFactory() = default;
   ~ArcNearbyShareBridgeFactory() override = default;
 };

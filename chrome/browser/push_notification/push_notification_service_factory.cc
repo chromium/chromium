@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/logging.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
@@ -36,7 +36,8 @@ namespace push_notification {
 
 // static
 PushNotificationServiceFactory* PushNotificationServiceFactory::GetInstance() {
-  return base::Singleton<PushNotificationServiceFactory>::get();
+  static base::NoDestructor<PushNotificationServiceFactory> instance;
+  return instance.get();
 }
 
 // static

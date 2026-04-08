@@ -9,7 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/process/process_handle.h"
 #include "chromeos/ash/components/dbus/arc/arc_keymaster_client.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
@@ -33,11 +33,12 @@ class ArcKeymasterBridgeFactory
   static constexpr const char* kName = "ArcKeymasterBridgeFactory";
 
   static ArcKeymasterBridgeFactory* GetInstance() {
-    return base::Singleton<ArcKeymasterBridgeFactory>::get();
+    static base::NoDestructor<ArcKeymasterBridgeFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcKeymasterBridgeFactory>;
+  friend base::NoDestructor<ArcKeymasterBridgeFactory>;
   ArcKeymasterBridgeFactory() = default;
   ~ArcKeymasterBridgeFactory() override = default;
 };

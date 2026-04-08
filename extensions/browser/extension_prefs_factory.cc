@@ -27,7 +27,8 @@ ExtensionPrefs* ExtensionPrefsFactory::GetForBrowserContext(
 
 // static
 ExtensionPrefsFactory* ExtensionPrefsFactory::GetInstance() {
-  return base::Singleton<ExtensionPrefsFactory>::get();
+  static base::NoDestructor<ExtensionPrefsFactory> instance;
+  return instance.get();
 }
 
 void ExtensionPrefsFactory::SetInstanceForTesting(
@@ -47,8 +48,7 @@ ExtensionPrefsFactory::ExtensionPrefsFactory()
           BrowserContextDependencyManager::GetInstance()) {
 }
 
-ExtensionPrefsFactory::~ExtensionPrefsFactory() {
-}
+ExtensionPrefsFactory::~ExtensionPrefsFactory() = default;
 
 std::unique_ptr<KeyedService>
 ExtensionPrefsFactory::BuildServiceInstanceForBrowserContext(

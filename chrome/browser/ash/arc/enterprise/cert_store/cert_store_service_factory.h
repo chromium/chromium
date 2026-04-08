@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_ENTERPRISE_CERT_STORE_CERT_STORE_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_ASH_ARC_ENTERPRISE_CERT_STORE_CERT_STORE_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace arc {
@@ -24,7 +24,7 @@ class CertStoreServiceFactory : public ProfileKeyedServiceFactory {
   CertStoreServiceFactory& operator=(const CertStoreServiceFactory&) = delete;
 
  private:
-  friend base::DefaultSingletonTraits<CertStoreServiceFactory>;
+  friend base::NoDestructor<CertStoreServiceFactory>;
 
   CertStoreServiceFactory();
   ~CertStoreServiceFactory() override;

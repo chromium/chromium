@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
@@ -625,7 +626,8 @@ HttpsFirstModeService* HttpsFirstModeServiceFactory::GetForProfile(
 
 // static
 HttpsFirstModeServiceFactory* HttpsFirstModeServiceFactory::GetInstance() {
-  return base::Singleton<HttpsFirstModeServiceFactory>::get();
+  static base::NoDestructor<HttpsFirstModeServiceFactory> instance;
+  return instance.get();
 }
 
 // static

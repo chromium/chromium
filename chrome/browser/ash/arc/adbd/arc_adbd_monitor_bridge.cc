@@ -15,7 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -59,11 +59,12 @@ class ArcAdbdMonitorBridgeFactory
   static constexpr const char* kName = "ArcAdbdMonitorBridgeFactory";
 
   static ArcAdbdMonitorBridgeFactory* GetInstance() {
-    return base::Singleton<ArcAdbdMonitorBridgeFactory>::get();
+    static base::NoDestructor<ArcAdbdMonitorBridgeFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcAdbdMonitorBridgeFactory>;
+  friend base::NoDestructor<ArcAdbdMonitorBridgeFactory>;
   ArcAdbdMonitorBridgeFactory() = default;
   ~ArcAdbdMonitorBridgeFactory() override = default;
 };

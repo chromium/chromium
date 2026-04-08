@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_OMNIBOX_AUTOCOMPLETE_CONTROLLER_EMITTER_FACTORY_H_
 #define CHROME_BROWSER_OMNIBOX_AUTOCOMPLETE_CONTROLLER_EMITTER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 class AutocompleteControllerEmitter;
@@ -24,7 +24,7 @@ class AutocompleteControllerEmitterFactory
       const AutocompleteControllerEmitterFactory&) = delete;
 
  private:
-  friend base::DefaultSingletonTraits<AutocompleteControllerEmitterFactory>;
+  friend base::NoDestructor<AutocompleteControllerEmitterFactory>;
 
   AutocompleteControllerEmitterFactory();
   ~AutocompleteControllerEmitterFactory() override;

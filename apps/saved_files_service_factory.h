@@ -5,7 +5,7 @@
 #ifndef APPS_SAVED_FILES_SERVICE_FACTORY_H_
 #define APPS_SAVED_FILES_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace content {
@@ -33,7 +33,7 @@ class SavedFilesServiceFactory : public BrowserContextKeyedServiceFactory {
  private:
   SavedFilesServiceFactory();
   ~SavedFilesServiceFactory() override;
-  friend struct base::DefaultSingletonTraits<SavedFilesServiceFactory>;
+  friend base::NoDestructor<SavedFilesServiceFactory>;
 
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;

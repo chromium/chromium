@@ -9,7 +9,7 @@
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/arc/pip/arc_picture_in_picture_window_controller_impl.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
@@ -31,11 +31,12 @@ class ArcPipBridgeFactory
   static constexpr const char* kName = "ArcPipBridgeFactory";
 
   static ArcPipBridgeFactory* GetInstance() {
-    return base::Singleton<ArcPipBridgeFactory>::get();
+    static base::NoDestructor<ArcPipBridgeFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcPipBridgeFactory>;
+  friend base::NoDestructor<ArcPipBridgeFactory>;
 
   ArcPipBridgeFactory() = default;
   ~ArcPipBridgeFactory() override = default;

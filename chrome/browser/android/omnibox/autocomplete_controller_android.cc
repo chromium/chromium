@@ -19,10 +19,10 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/memory/singleton.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -617,7 +617,8 @@ AutocompleteControllerAndroid::Factory::GetForProfile(Profile* profile) {
 
 AutocompleteControllerAndroid::Factory*
 AutocompleteControllerAndroid::Factory::GetInstance() {
-  return base::Singleton<AutocompleteControllerAndroid::Factory>::get();
+  static base::NoDestructor<AutocompleteControllerAndroid::Factory> instance;
+  return instance.get();
 }
 
 AutocompleteControllerAndroid::Factory::Factory()

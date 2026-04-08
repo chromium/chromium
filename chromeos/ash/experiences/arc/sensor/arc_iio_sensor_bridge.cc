@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
@@ -25,11 +25,12 @@ class ArcIioSensorBridgeFactory
   static constexpr const char* kName = "ArcIioSensorBridgeFactory";
 
   static ArcIioSensorBridgeFactory* GetInstance() {
-    return base::Singleton<ArcIioSensorBridgeFactory>::get();
+    static base::NoDestructor<ArcIioSensorBridgeFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcIioSensorBridgeFactory>;
+  friend base::NoDestructor<ArcIioSensorBridgeFactory>;
   ArcIioSensorBridgeFactory() = default;
   ~ArcIioSensorBridgeFactory() override = default;
 };

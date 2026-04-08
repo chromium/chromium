@@ -13,7 +13,7 @@
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/process/launch.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
@@ -101,11 +101,12 @@ class ArcCrashCollectorBridgeFactory
   static constexpr const char* kName = "ArcCrashCollectorBridgeFactory";
 
   static ArcCrashCollectorBridgeFactory* GetInstance() {
-    return base::Singleton<ArcCrashCollectorBridgeFactory>::get();
+    static base::NoDestructor<ArcCrashCollectorBridgeFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcCrashCollectorBridgeFactory>;
+  friend base::NoDestructor<ArcCrashCollectorBridgeFactory>;
   ArcCrashCollectorBridgeFactory() = default;
   ~ArcCrashCollectorBridgeFactory() override = default;
 };

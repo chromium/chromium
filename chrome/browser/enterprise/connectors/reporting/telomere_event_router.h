@@ -6,14 +6,10 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_REPORTING_TELOMERE_EVENT_ROUTER_H_
 
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
-
-namespace base {
-template <typename T>
-struct DefaultSingletonTraits;
-}
 
 namespace enterprise_connectors {
 
@@ -45,7 +41,7 @@ class TelomereEventRouterFactory : public ProfileKeyedServiceFactory {
  private:
   TelomereEventRouterFactory();
   ~TelomereEventRouterFactory() override;
-  friend struct base::DefaultSingletonTraits<TelomereEventRouterFactory>;
+  friend base::NoDestructor<TelomereEventRouterFactory>;
 
   // BrowserContextKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(

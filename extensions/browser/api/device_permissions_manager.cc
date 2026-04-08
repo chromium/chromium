@@ -11,7 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -666,7 +666,8 @@ DevicePermissionsManager* DevicePermissionsManagerFactory::GetForBrowserContext(
 // static
 DevicePermissionsManagerFactory*
 DevicePermissionsManagerFactory::GetInstance() {
-  return base::Singleton<DevicePermissionsManagerFactory>::get();
+  static base::NoDestructor<DevicePermissionsManagerFactory> instance;
+  return instance.get();
 }
 
 DevicePermissionsManagerFactory::DevicePermissionsManagerFactory()
@@ -675,8 +676,7 @@ DevicePermissionsManagerFactory::DevicePermissionsManagerFactory()
           BrowserContextDependencyManager::GetInstance()) {
 }
 
-DevicePermissionsManagerFactory::~DevicePermissionsManagerFactory() {
-}
+DevicePermissionsManagerFactory::~DevicePermissionsManagerFactory() = default;
 
 std::unique_ptr<KeyedService>
 DevicePermissionsManagerFactory::BuildServiceInstanceForBrowserContext(

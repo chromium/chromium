@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -1122,7 +1123,8 @@ ExtensionManagement* ExtensionManagementFactory::GetForBrowserContext(
 
 // static
 ExtensionManagementFactory* ExtensionManagementFactory::GetInstance() {
-  return base::Singleton<ExtensionManagementFactory>::get();
+  static base::NoDestructor<ExtensionManagementFactory> instance;
+  return instance.get();
 }
 
 ExtensionManagementFactory::ExtensionManagementFactory()

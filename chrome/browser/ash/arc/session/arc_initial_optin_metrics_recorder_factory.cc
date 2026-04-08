@@ -20,7 +20,8 @@ ArcInitialOptInMetricsRecorderFactory::GetForBrowserContext(
 // static
 ArcInitialOptInMetricsRecorderFactory*
 ArcInitialOptInMetricsRecorderFactory::GetInstance() {
-  return base::Singleton<ArcInitialOptInMetricsRecorderFactory>::get();
+  static base::NoDestructor<ArcInitialOptInMetricsRecorderFactory> instance;
+  return instance.get();
 }
 
 ArcInitialOptInMetricsRecorderFactory::ArcInitialOptInMetricsRecorderFactory()

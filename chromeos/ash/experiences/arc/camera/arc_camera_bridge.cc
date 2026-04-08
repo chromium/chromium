@@ -9,8 +9,8 @@
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/components/dbus/arc/arc_camera_client.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
@@ -37,11 +37,12 @@ class ArcCameraBridgeFactory
   static constexpr const char* kName = "ArcCameraBridgeFactory";
 
   static ArcCameraBridgeFactory* GetInstance() {
-    return base::Singleton<ArcCameraBridgeFactory>::get();
+    static base::NoDestructor<ArcCameraBridgeFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcCameraBridgeFactory>;
+  friend base::NoDestructor<ArcCameraBridgeFactory>;
   ArcCameraBridgeFactory() = default;
   ~ArcCameraBridgeFactory() override = default;
 };

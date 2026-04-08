@@ -5,7 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_LAZY_BACKGROUND_TASK_QUEUE_FACTORY_H_
 #define EXTENSIONS_BROWSER_LAZY_BACKGROUND_TASK_QUEUE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace extensions {
@@ -25,7 +25,7 @@ class LazyBackgroundTaskQueueFactory
   static LazyBackgroundTaskQueueFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<LazyBackgroundTaskQueueFactory>;
+  friend base::NoDestructor<LazyBackgroundTaskQueueFactory>;
 
   LazyBackgroundTaskQueueFactory();
   ~LazyBackgroundTaskQueueFactory() override;

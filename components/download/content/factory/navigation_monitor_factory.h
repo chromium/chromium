@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/core/simple_keyed_service_factory.h"
 
 namespace download {
@@ -24,7 +24,7 @@ class NavigationMonitorFactory : public SimpleKeyedServiceFactory {
   NavigationMonitorFactory& operator=(const NavigationMonitorFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<NavigationMonitorFactory>;
+  friend base::NoDestructor<NavigationMonitorFactory>;
 
   NavigationMonitorFactory();
   ~NavigationMonitorFactory() override;

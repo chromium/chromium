@@ -23,7 +23,8 @@ LazyBackgroundTaskQueue* LazyBackgroundTaskQueueFactory::GetForBrowserContext(
 
 // static
 LazyBackgroundTaskQueueFactory* LazyBackgroundTaskQueueFactory::GetInstance() {
-  return base::Singleton<LazyBackgroundTaskQueueFactory>::get();
+  static base::NoDestructor<LazyBackgroundTaskQueueFactory> instance;
+  return instance.get();
 }
 
 LazyBackgroundTaskQueueFactory::LazyBackgroundTaskQueueFactory()
@@ -34,8 +35,7 @@ LazyBackgroundTaskQueueFactory::LazyBackgroundTaskQueueFactory()
   DependsOn(ExtensionHostRegistry::GetFactory());
 }
 
-LazyBackgroundTaskQueueFactory::~LazyBackgroundTaskQueueFactory() {
-}
+LazyBackgroundTaskQueueFactory::~LazyBackgroundTaskQueueFactory() = default;
 
 std::unique_ptr<KeyedService>
 LazyBackgroundTaskQueueFactory::BuildServiceInstanceForBrowserContext(

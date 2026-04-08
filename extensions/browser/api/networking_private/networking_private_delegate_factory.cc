@@ -40,7 +40,8 @@ NetworkingPrivateDelegateFactory::GetForBrowserContext(
 // static
 NetworkingPrivateDelegateFactory*
 NetworkingPrivateDelegateFactory::GetInstance() {
-  return base::Singleton<NetworkingPrivateDelegateFactory>::get();
+  static base::NoDestructor<NetworkingPrivateDelegateFactory> instance;
+  return instance.get();
 }
 
 NetworkingPrivateDelegateFactory::NetworkingPrivateDelegateFactory()

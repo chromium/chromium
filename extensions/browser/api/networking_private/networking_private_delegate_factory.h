@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "extensions/browser/api/networking_private/networking_private_delegate.h"
 
@@ -52,7 +52,7 @@ class NetworkingPrivateDelegateFactory
   static NetworkingPrivateDelegateFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<NetworkingPrivateDelegateFactory>;
+  friend base::NoDestructor<NetworkingPrivateDelegateFactory>;
 
   NetworkingPrivateDelegateFactory();
   ~NetworkingPrivateDelegateFactory() override;

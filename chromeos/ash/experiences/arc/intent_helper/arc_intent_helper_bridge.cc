@@ -12,8 +12,8 @@
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
@@ -50,7 +50,8 @@ class ArcIntentHelperBridgeFactory
   static constexpr const char* kName = "ArcIntentHelperBridgeFactory";
 
   static ArcIntentHelperBridgeFactory* GetInstance() {
-    return base::Singleton<ArcIntentHelperBridgeFactory>::get();
+    static base::NoDestructor<ArcIntentHelperBridgeFactory> instance;
+    return instance.get();
   }
 
   static void ShutDownForTesting(content::BrowserContext* context) {
@@ -60,7 +61,7 @@ class ArcIntentHelperBridgeFactory
   }
 
  private:
-  friend struct base::DefaultSingletonTraits<ArcIntentHelperBridgeFactory>;
+  friend base::NoDestructor<ArcIntentHelperBridgeFactory>;
 
   ArcIntentHelperBridgeFactory() = default;
   ~ArcIntentHelperBridgeFactory() override = default;

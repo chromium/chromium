@@ -18,7 +18,8 @@ AutocompleteControllerEmitterFactory::GetForBrowserContext(
 // static
 AutocompleteControllerEmitterFactory*
 AutocompleteControllerEmitterFactory::GetInstance() {
-  return base::Singleton<AutocompleteControllerEmitterFactory>::get();
+  static base::NoDestructor<AutocompleteControllerEmitterFactory> instance;
+  return instance.get();
 }
 
 AutocompleteControllerEmitterFactory::AutocompleteControllerEmitterFactory()

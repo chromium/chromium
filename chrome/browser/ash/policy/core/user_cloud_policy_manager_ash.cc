@@ -15,9 +15,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/syslog_logging.h"
@@ -110,7 +110,9 @@ class UserCloudPolicyManagerAshNotifierFactory
     : public BrowserContextKeyedServiceShutdownNotifierFactory {
  public:
   static UserCloudPolicyManagerAshNotifierFactory* GetInstance() {
-    return base::Singleton<UserCloudPolicyManagerAshNotifierFactory>::get();
+    static base::NoDestructor<UserCloudPolicyManagerAshNotifierFactory>
+        instance;
+    return instance.get();
   }
 
   UserCloudPolicyManagerAshNotifierFactory(
@@ -119,8 +121,7 @@ class UserCloudPolicyManagerAshNotifierFactory
       const UserCloudPolicyManagerAshNotifierFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      UserCloudPolicyManagerAshNotifierFactory>;
+  friend base::NoDestructor<UserCloudPolicyManagerAshNotifierFactory>;
 
   UserCloudPolicyManagerAshNotifierFactory()
       : BrowserContextKeyedServiceShutdownNotifierFactory(

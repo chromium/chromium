@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "base/unguessable_token.h"
@@ -776,7 +777,8 @@ RendererStartupHelper* RendererStartupHelperFactory::GetForBrowserContext(
 
 // static
 RendererStartupHelperFactory* RendererStartupHelperFactory::GetInstance() {
-  return base::Singleton<RendererStartupHelperFactory>::get();
+  static base::NoDestructor<RendererStartupHelperFactory> instance;
+  return instance.get();
 }
 
 RendererStartupHelperFactory::RendererStartupHelperFactory()

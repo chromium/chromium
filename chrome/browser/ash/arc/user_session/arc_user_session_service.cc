@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/arc/user_session/arc_user_session_service.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
@@ -25,11 +25,12 @@ class ArcUserSessionServiceFactory
   static constexpr const char* kName = "ArcUserSessionServiceFactory";
 
   static ArcUserSessionServiceFactory* GetInstance() {
-    return base::Singleton<ArcUserSessionServiceFactory>::get();
+    static base::NoDestructor<ArcUserSessionServiceFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcUserSessionServiceFactory>;
+  friend base::NoDestructor<ArcUserSessionServiceFactory>;
   ArcUserSessionServiceFactory() = default;
   ~ArcUserSessionServiceFactory() override = default;
 };

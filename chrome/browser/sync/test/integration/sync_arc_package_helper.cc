@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/singleton.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"

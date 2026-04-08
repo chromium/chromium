@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -93,7 +94,8 @@ void PrefMetricsService::RecordLaunchPrefs() {
 
 // static
 PrefMetricsService::Factory* PrefMetricsService::Factory::GetInstance() {
-  return base::Singleton<PrefMetricsService::Factory>::get();
+  static base::NoDestructor<PrefMetricsService::Factory> instance;
+  return instance.get();
 }
 
 // static

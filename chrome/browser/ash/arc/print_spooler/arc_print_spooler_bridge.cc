@@ -9,7 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -36,11 +36,12 @@ class ArcPrintSpoolerBridgeFactory
   static constexpr const char* kName = "ArcPrintSpoolerBridgeFactory";
 
   static ArcPrintSpoolerBridgeFactory* GetInstance() {
-    return base::Singleton<ArcPrintSpoolerBridgeFactory>::get();
+    static base::NoDestructor<ArcPrintSpoolerBridgeFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcPrintSpoolerBridgeFactory>;
+  friend base::NoDestructor<ArcPrintSpoolerBridgeFactory>;
   ArcPrintSpoolerBridgeFactory() = default;
   ~ArcPrintSpoolerBridgeFactory() override = default;
 };

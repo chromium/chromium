@@ -19,7 +19,8 @@ LookalikeUrlService* LookalikeUrlServiceFactory::GetForProfile(
 
 // static
 LookalikeUrlServiceFactory* LookalikeUrlServiceFactory::GetInstance() {
-  return base::Singleton<LookalikeUrlServiceFactory>::get();
+  static base::NoDestructor<LookalikeUrlServiceFactory> instance;
+  return instance.get();
 }
 
 LookalikeUrlServiceFactory::LookalikeUrlServiceFactory()

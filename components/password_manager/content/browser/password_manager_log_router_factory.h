@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CONTENT_BROWSER_PASSWORD_MANAGER_LOG_ROUTER_FACTORY_H_
 #define COMPONENTS_PASSWORD_MANAGER_CONTENT_BROWSER_PASSWORD_MANAGER_LOG_ROUTER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace autofill {
@@ -36,7 +36,7 @@ class PasswordManagerLogRouterFactory
       const PasswordManagerLogRouterFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<PasswordManagerLogRouterFactory>;
+  friend base::NoDestructor<PasswordManagerLogRouterFactory>;
 
   PasswordManagerLogRouterFactory();
   ~PasswordManagerLogRouterFactory() override;

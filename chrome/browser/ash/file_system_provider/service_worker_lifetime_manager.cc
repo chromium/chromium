@@ -7,6 +7,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/common/child_process_id.h"
 #include "extensions/browser/process_manager.h"
@@ -122,7 +123,8 @@ ServiceWorkerLifetimeManagerFactory::GetForBrowserContext(
 // static
 ServiceWorkerLifetimeManagerFactory*
 ServiceWorkerLifetimeManagerFactory::GetInstance() {
-  return base::Singleton<ServiceWorkerLifetimeManagerFactory>::get();
+  static base::NoDestructor<ServiceWorkerLifetimeManagerFactory> instance;
+  return instance.get();
 }
 
 ServiceWorkerLifetimeManagerFactory::ServiceWorkerLifetimeManagerFactory()

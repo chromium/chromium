@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace extensions {
@@ -25,7 +25,7 @@ class UpdateServiceFactory : public BrowserContextKeyedServiceFactory {
   static UpdateServiceFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<UpdateServiceFactory>;
+  friend base::NoDestructor<UpdateServiceFactory>;
 
   UpdateServiceFactory();
   ~UpdateServiceFactory() override;

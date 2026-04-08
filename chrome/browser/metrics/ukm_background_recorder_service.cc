@@ -6,6 +6,7 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/history/core/browser/history_service.h"
@@ -59,7 +60,8 @@ void UkmBackgroundRecorderService::DidGetVisibleVisitCount(
 
 // static
 UkmBackgroundRecorderFactory* UkmBackgroundRecorderFactory::GetInstance() {
-  return base::Singleton<UkmBackgroundRecorderFactory>::get();
+  static base::NoDestructor<UkmBackgroundRecorderFactory> instance;
+  return instance.get();
 }
 
 // static

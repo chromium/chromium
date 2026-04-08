@@ -11,8 +11,8 @@
 #include "ash/public/cpp/app_types_util.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -160,11 +160,12 @@ class ArcImeServiceFactory
   static constexpr const char* kName = "ArcImeServiceFactory";
 
   static ArcImeServiceFactory* GetInstance() {
-    return base::Singleton<ArcImeServiceFactory>::get();
+    static base::NoDestructor<ArcImeServiceFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcImeServiceFactory>;
+  friend base::NoDestructor<ArcImeServiceFactory>;
   ArcImeServiceFactory() = default;
   ~ArcImeServiceFactory() override = default;
 };

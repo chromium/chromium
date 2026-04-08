@@ -4,7 +4,7 @@
 
 #include "chrome/browser/on_device_translation/service_controller_manager_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,7 +27,8 @@ ServiceControllerManagerFactory::ServiceControllerManagerFactory()
 // static
 ServiceControllerManagerFactory*
 ServiceControllerManagerFactory::GetInstance() {
-  return base::Singleton<ServiceControllerManagerFactory>::get();
+  static base::NoDestructor<ServiceControllerManagerFactory> instance;
+  return instance.get();
 }
 
 ServiceControllerManager* ServiceControllerManagerFactory::Get(

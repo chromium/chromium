@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -74,8 +74,7 @@ class ClipboardRestrictionServiceFactory : BrowserContextKeyedServiceFactory {
  private:
   ClipboardRestrictionServiceFactory();
   ~ClipboardRestrictionServiceFactory() override;
-  friend struct base::DefaultSingletonTraits<
-      ClipboardRestrictionServiceFactory>;
+  friend base::NoDestructor<ClipboardRestrictionServiceFactory>;
 
   // BrowserContextKeyedServiceFactory:
   content::BrowserContext* GetBrowserContextToUse(

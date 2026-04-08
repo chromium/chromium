@@ -4,7 +4,7 @@
 
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/feedback/feedback_uploader_chrome.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
@@ -14,7 +14,8 @@ namespace feedback {
 
 // static
 FeedbackUploaderFactoryChrome* FeedbackUploaderFactoryChrome::GetInstance() {
-  return base::Singleton<FeedbackUploaderFactoryChrome>::get();
+  static base::NoDestructor<FeedbackUploaderFactoryChrome> instance;
+  return instance.get();
 }
 
 // static

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_PREFS_PREF_WATCHER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -74,7 +74,7 @@ class PrefWatcherFactory : public ProfileKeyedServiceFactory {
   static PrefWatcherFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<PrefWatcherFactory>;
+  friend base::NoDestructor<PrefWatcherFactory>;
 
   PrefWatcherFactory();
   ~PrefWatcherFactory() override;

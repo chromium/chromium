@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/api/bookmarks/bookmarks_api_watcher.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "extensions/buildflags/buildflags.h"
@@ -23,7 +23,8 @@ class BookmarksApiWatcherFactory : public ProfileKeyedServiceFactory {
   }
 
   static BookmarksApiWatcherFactory* GetInstance() {
-    return base::Singleton<BookmarksApiWatcherFactory>::get();
+    static base::NoDestructor<BookmarksApiWatcherFactory> instance;
+    return instance.get();
   }
 
   BookmarksApiWatcherFactory()
@@ -38,6 +39,8 @@ class BookmarksApiWatcherFactory : public ProfileKeyedServiceFactory {
                 .Build()) {}
 
  private:
+  friend base::NoDestructor<BookmarksApiWatcherFactory>;
+
   // BrowserContextKeyedServiceFactory overrides
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override {

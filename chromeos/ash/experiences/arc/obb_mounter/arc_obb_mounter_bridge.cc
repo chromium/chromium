@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chromeos/ash/components/dbus/arc/arc_obb_mounter_client.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
@@ -26,11 +26,12 @@ class ArcObbMounterBridgeFactory
   static constexpr const char* kName = "ArcObbMounterBridgeFactory";
 
   static ArcObbMounterBridgeFactory* GetInstance() {
-    return base::Singleton<ArcObbMounterBridgeFactory>::get();
+    static base::NoDestructor<ArcObbMounterBridgeFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcObbMounterBridgeFactory>;
+  friend base::NoDestructor<ArcObbMounterBridgeFactory>;
   ArcObbMounterBridgeFactory() = default;
   ~ArcObbMounterBridgeFactory() override = default;
 };

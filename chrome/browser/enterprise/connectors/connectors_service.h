@@ -9,6 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -18,11 +19,6 @@
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
-
-namespace base {
-template <typename T>
-struct DefaultSingletonTraits;
-}
 
 namespace storage {
 class FileSystemURL;
@@ -97,7 +93,7 @@ class ConnectorsServiceFactory : public BrowserContextKeyedServiceFactory {
  private:
   ConnectorsServiceFactory();
   ~ConnectorsServiceFactory() override;
-  friend struct base::DefaultSingletonTraits<ConnectorsServiceFactory>;
+  friend base::NoDestructor<ConnectorsServiceFactory>;
 
   // BrowserContextKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(

@@ -11,7 +11,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
 #include "base/no_destructor.h"
 #include "base/posix/unix_domain_socket.h"
 #include "base/task/sequenced_task_runner.h"
@@ -49,11 +48,12 @@ class ArcTracingBridgeFactory
   static constexpr const char* kName = "ArcTracingBridgeFactory";
 
   static ArcTracingBridgeFactory* GetInstance() {
-    return base::Singleton<ArcTracingBridgeFactory>::get();
+    static base::NoDestructor<ArcTracingBridgeFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcTracingBridgeFactory>;
+  friend base::NoDestructor<ArcTracingBridgeFactory>;
   ArcTracingBridgeFactory() = default;
   ~ArcTracingBridgeFactory() override = default;
 };

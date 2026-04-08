@@ -25,7 +25,8 @@ EventRouter* EventRouterFactory::GetForBrowserContext(BrowserContext* context) {
 
 // static
 EventRouterFactory* EventRouterFactory::GetInstance() {
-  return base::Singleton<EventRouterFactory>::get();
+  static base::NoDestructor<EventRouterFactory> instance;
+  return instance.get();
 }
 
 EventRouterFactory::EventRouterFactory()
@@ -37,8 +38,7 @@ EventRouterFactory::EventRouterFactory()
   DependsOn(ProcessManagerFactory::GetInstance());
 }
 
-EventRouterFactory::~EventRouterFactory() {
-}
+EventRouterFactory::~EventRouterFactory() = default;
 
 std::unique_ptr<KeyedService>
 EventRouterFactory::BuildServiceInstanceForBrowserContext(

@@ -7,6 +7,7 @@
 #include "ash/webui/camera_app_ui/document_scanner_service_client.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/singleton.h"
 #include "base/task/single_thread_task_runner.h"
 
 namespace ash {

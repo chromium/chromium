@@ -6,7 +6,8 @@
 
 #include <tuple>
 
-#include "base/memory/singleton.h"
+#include "base/functional/callback_helpers.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/browsing_data/navigation_entry_remover.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -171,7 +172,9 @@ void BrowsingDataHistoryObserverService::OnHistoryDeletions(
 // static
 BrowsingDataHistoryObserverService::Factory*
 BrowsingDataHistoryObserverService::Factory::GetInstance() {
-  return base::Singleton<BrowsingDataHistoryObserverService::Factory>::get();
+  static base::NoDestructor<BrowsingDataHistoryObserverService::Factory>
+      instance;
+  return instance.get();
 }
 
 BrowsingDataHistoryObserverService::Factory::Factory()

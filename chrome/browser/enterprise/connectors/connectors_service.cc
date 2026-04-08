@@ -8,7 +8,6 @@
 #include <variant>
 
 #include "base/check_op.h"
-#include "base/memory/singleton.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -396,7 +395,8 @@ bool ConnectorsService::IsURLExemptFromAnalysis(const GURL& url,
 
 // static
 ConnectorsServiceFactory* ConnectorsServiceFactory::GetInstance() {
-  return base::Singleton<ConnectorsServiceFactory>::get();
+  static base::NoDestructor<ConnectorsServiceFactory> instance;
+  return instance.get();
 }
 
 ConnectorsService* ConnectorsServiceFactory::GetForBrowserContext(

@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/mojom/protected_buffer_manager.mojom.h"
@@ -29,11 +29,12 @@ class ArcOemCryptoBridgeFactory
   static constexpr const char* kName = "ArcOemCryptoBridgeFactory";
 
   static ArcOemCryptoBridgeFactory* GetInstance() {
-    return base::Singleton<ArcOemCryptoBridgeFactory>::get();
+    static base::NoDestructor<ArcOemCryptoBridgeFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcOemCryptoBridgeFactory>;
+  friend base::NoDestructor<ArcOemCryptoBridgeFactory>;
   ArcOemCryptoBridgeFactory() = default;
   ~ArcOemCryptoBridgeFactory() override = default;
 };

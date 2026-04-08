@@ -22,7 +22,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/process/process.h"
 #include "base/process/process_iterator.h"
 #include "base/task/task_traits.h"
@@ -272,11 +272,12 @@ class ArcProcessServiceFactory
   static constexpr const char* kName = "ArcProcessServiceFactory";
 
   static ArcProcessServiceFactory* GetInstance() {
-    return base::Singleton<ArcProcessServiceFactory>::get();
+    static base::NoDestructor<ArcProcessServiceFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcProcessServiceFactory>;
+  friend base::NoDestructor<ArcProcessServiceFactory>;
   ArcProcessServiceFactory() = default;
   ~ArcProcessServiceFactory() override = default;
 };

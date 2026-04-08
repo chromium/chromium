@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/experiences/arc/keymint/arc_keymint_bridge.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chromeos/ash/components/dbus/arc/arc_keymint_client.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/keymint/cert_store_bridge_keymint.h"
@@ -27,11 +27,12 @@ class ArcKeyMintBridgeFactory
   static constexpr const char* kName = "ArcKeyMintBridgeFactory";
 
   static ArcKeyMintBridgeFactory* GetInstance() {
-    return base::Singleton<ArcKeyMintBridgeFactory>::get();
+    static base::NoDestructor<ArcKeyMintBridgeFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcKeyMintBridgeFactory>;
+  friend base::NoDestructor<ArcKeyMintBridgeFactory>;
   ArcKeyMintBridgeFactory() = default;
   ~ArcKeyMintBridgeFactory() override = default;
 };

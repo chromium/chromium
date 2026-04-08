@@ -9,8 +9,8 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -87,7 +87,7 @@ class UkmBackgroundRecorderFactory : public ProfileKeyedServiceFactory {
   static UkmBackgroundRecorderService* GetForProfile(Profile* profile);
 
  private:
-  friend struct base::DefaultSingletonTraits<UkmBackgroundRecorderFactory>;
+  friend base::NoDestructor<UkmBackgroundRecorderFactory>;
 
   UkmBackgroundRecorderFactory();
   ~UkmBackgroundRecorderFactory() override;

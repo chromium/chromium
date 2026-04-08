@@ -5,7 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_PENDING_EXTENSION_MANAGER_FACTORY_H_
 #define EXTENSIONS_BROWSER_PENDING_EXTENSION_MANAGER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace extensions {
@@ -29,7 +29,7 @@ class PendingExtensionManagerFactory
   static PendingExtensionManagerFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<PendingExtensionManagerFactory>;
+  friend base::NoDestructor<PendingExtensionManagerFactory>;
 
   PendingExtensionManagerFactory();
   ~PendingExtensionManagerFactory() override;

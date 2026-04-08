@@ -19,7 +19,8 @@ TtsEngineExtensionObserverChromeOSFactory::GetForProfile(Profile* profile) {
 // static
 TtsEngineExtensionObserverChromeOSFactory*
 TtsEngineExtensionObserverChromeOSFactory::GetInstance() {
-  return base::Singleton<TtsEngineExtensionObserverChromeOSFactory>::get();
+  static base::NoDestructor<TtsEngineExtensionObserverChromeOSFactory> instance;
+  return instance.get();
 }
 
 TtsEngineExtensionObserverChromeOSFactory::

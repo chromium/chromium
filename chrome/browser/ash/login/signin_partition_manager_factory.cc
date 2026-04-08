@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -41,7 +41,8 @@ SigninPartitionManager* SigninPartitionManagerFactory::GetForBrowserContext(
 
 // static
 SigninPartitionManagerFactory* SigninPartitionManagerFactory::GetInstance() {
-  return base::Singleton<SigninPartitionManagerFactory>::get();
+  static base::NoDestructor<SigninPartitionManagerFactory> instance;
+  return instance.get();
 }
 
 std::unique_ptr<KeyedService>

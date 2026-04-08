@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/origin.h"
@@ -55,7 +55,7 @@ class SearchPermissionsService : public KeyedService {
     static Factory* GetInstance();
 
    private:
-    friend struct base::DefaultSingletonTraits<Factory>;
+    friend base::NoDestructor<Factory>;
 
     Factory();
     ~Factory() override;

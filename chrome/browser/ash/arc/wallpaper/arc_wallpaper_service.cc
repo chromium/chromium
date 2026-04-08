@@ -13,7 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
@@ -55,11 +55,12 @@ class ArcWallpaperServiceFactory
   static constexpr const char* kName = "ArcWallpaperServiceFactory";
 
   static ArcWallpaperServiceFactory* GetInstance() {
-    return base::Singleton<ArcWallpaperServiceFactory>::get();
+    static base::NoDestructor<ArcWallpaperServiceFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcWallpaperServiceFactory>;
+  friend base::NoDestructor<ArcWallpaperServiceFactory>;
   ArcWallpaperServiceFactory() = default;
   ~ArcWallpaperServiceFactory() override = default;
 };

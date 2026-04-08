@@ -21,7 +21,8 @@ AppLifetimeMonitor* AppLifetimeMonitorFactory::GetForBrowserContext(
 }
 
 AppLifetimeMonitorFactory* AppLifetimeMonitorFactory::GetInstance() {
-  return base::Singleton<AppLifetimeMonitorFactory>::get();
+  static base::NoDestructor<AppLifetimeMonitorFactory> instance;
+  return instance.get();
 }
 
 AppLifetimeMonitorFactory::AppLifetimeMonitorFactory()

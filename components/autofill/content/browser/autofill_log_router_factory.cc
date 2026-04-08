@@ -24,7 +24,8 @@ LogRouter* AutofillLogRouterFactory::GetForBrowserContext(
 
 // static
 AutofillLogRouterFactory* AutofillLogRouterFactory::GetInstance() {
-  return base::Singleton<AutofillLogRouterFactory>::get();
+  static base::NoDestructor<AutofillLogRouterFactory> instance;
+  return instance.get();
 }
 
 AutofillLogRouterFactory::AutofillLogRouterFactory()

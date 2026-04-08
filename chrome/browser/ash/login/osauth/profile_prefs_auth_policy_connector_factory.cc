@@ -21,7 +21,8 @@ namespace ash {
 // static
 ProfilePrefsAuthPolicyConnectorFactory*
 ProfilePrefsAuthPolicyConnectorFactory::GetInstance() {
-  return base::Singleton<ProfilePrefsAuthPolicyConnectorFactory>::get();
+  static base::NoDestructor<ProfilePrefsAuthPolicyConnectorFactory> instance;
+  return instance.get();
 }
 
 // static

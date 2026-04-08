@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/arc/metrics/arc_metrics_service_proxy.h"
 
-#include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
@@ -31,11 +31,12 @@ class ArcMetricsServiceProxyFactory
   static constexpr const char* kName = "ArcMetricsServiceProxyFactory";
 
   static ArcMetricsServiceProxyFactory* GetInstance() {
-    return base::Singleton<ArcMetricsServiceProxyFactory>::get();
+    static base::NoDestructor<ArcMetricsServiceProxyFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcMetricsServiceProxyFactory>;
+  friend base::NoDestructor<ArcMetricsServiceProxyFactory>;
 
   ArcMetricsServiceProxyFactory() {
     DependsOn(ArcAppListPrefsFactory::GetInstance());

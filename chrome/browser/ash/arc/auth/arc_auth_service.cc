@@ -14,8 +14,8 @@
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
-#include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
@@ -73,11 +73,12 @@ class ArcAuthServiceFactory
   static constexpr const char* kName = "ArcAuthServiceFactory";
 
   static ArcAuthServiceFactory* GetInstance() {
-    return base::Singleton<ArcAuthServiceFactory>::get();
+    static base::NoDestructor<ArcAuthServiceFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend struct base::DefaultSingletonTraits<ArcAuthServiceFactory>;
+  friend base::NoDestructor<ArcAuthServiceFactory>;
 
   ArcAuthServiceFactory() {
     DependsOn(IdentityManagerFactory::GetInstance());

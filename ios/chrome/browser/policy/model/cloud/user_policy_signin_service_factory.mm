@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service_factory.h"
 
 #import "base/memory/ref_counted.h"
+#import "base/no_destructor.h"
 #import "components/policy/core/browser/browser_policy_connector.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/pref_registry/pref_registry_syncable.h"
@@ -39,7 +40,8 @@ UserPolicySigninService* UserPolicySigninServiceFactory::GetForProfile(
 
 // static
 UserPolicySigninServiceFactory* UserPolicySigninServiceFactory::GetInstance() {
-  return base::Singleton<UserPolicySigninServiceFactory>::get();
+  static base::NoDestructor<UserPolicySigninServiceFactory> instance;
+  return instance.get();
 }
 
 std::unique_ptr<KeyedService>

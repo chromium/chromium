@@ -4,7 +4,7 @@
 
 #include "components/feedback/content/feedback_uploader_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "components/feedback/feedback_uploader.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -49,7 +49,8 @@ class FeedbackUploaderImpl final : public FeedbackUploader {
 
 // static
 FeedbackUploaderFactory* FeedbackUploaderFactory::GetInstance() {
-  return base::Singleton<FeedbackUploaderFactory>::get();
+  static base::NoDestructor<FeedbackUploaderFactory> instance;
+  return instance.get();
 }
 
 // static

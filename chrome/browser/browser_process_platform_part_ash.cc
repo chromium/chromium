@@ -11,7 +11,7 @@
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
@@ -88,8 +88,9 @@ class PrimaryProfileServicesShutdownNotifierFactory
     : public BrowserContextKeyedServiceShutdownNotifierFactory {
  public:
   static PrimaryProfileServicesShutdownNotifierFactory* GetInstance() {
-    return base::Singleton<
-        PrimaryProfileServicesShutdownNotifierFactory>::get();
+    static base::NoDestructor<PrimaryProfileServicesShutdownNotifierFactory>
+        instance;
+    return instance.get();
   }
 
   PrimaryProfileServicesShutdownNotifierFactory(
@@ -98,8 +99,7 @@ class PrimaryProfileServicesShutdownNotifierFactory
       const PrimaryProfileServicesShutdownNotifierFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      PrimaryProfileServicesShutdownNotifierFactory>;
+  friend base::NoDestructor<PrimaryProfileServicesShutdownNotifierFactory>;
 
   PrimaryProfileServicesShutdownNotifierFactory()
       : BrowserContextKeyedServiceShutdownNotifierFactory(

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/reporting/browser_crash_event_router.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/enterprise/connectors/reporting/crash_reporting_context.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
@@ -32,7 +32,8 @@ BrowserCrashEventRouter::~BrowserCrashEventRouter() {
 
 // static
 BrowserCrashEventRouterFactory* BrowserCrashEventRouterFactory::GetInstance() {
-  return base::Singleton<BrowserCrashEventRouterFactory>::get();
+  static base::NoDestructor<BrowserCrashEventRouterFactory> instance;
+  return instance.get();
 }
 
 // static

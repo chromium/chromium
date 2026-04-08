@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/singleton.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

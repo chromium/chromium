@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/arc/privacy_items/arc_privacy_items_bridge.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 
@@ -22,7 +22,8 @@ class ArcPrivacyItemsBridgeFactory
   static constexpr const char* kName = "ArcPrivacyItemsBridgeFactory";
 
   static ArcPrivacyItemsBridgeFactory* GetInstance() {
-    return base::Singleton<ArcPrivacyItemsBridgeFactory>::get();
+    static base::NoDestructor<ArcPrivacyItemsBridgeFactory> instance;
+    return instance.get();
   }
 
   static void ShutdownForTesting(content::BrowserContext* context) {
@@ -32,7 +33,7 @@ class ArcPrivacyItemsBridgeFactory
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcPrivacyItemsBridgeFactory>;
+  friend base::NoDestructor<ArcPrivacyItemsBridgeFactory>;
 
   ArcPrivacyItemsBridgeFactory() = default;
   ~ArcPrivacyItemsBridgeFactory() override = default;

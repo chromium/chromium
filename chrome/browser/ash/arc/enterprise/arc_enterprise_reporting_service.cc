@@ -8,8 +8,8 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
@@ -34,11 +34,12 @@ class ArcEnterpriseReportingServiceFactory
   static constexpr const char* kName = "ArcEnterpriseReportingServiceFactory";
 
   static ArcEnterpriseReportingServiceFactory* GetInstance() {
-    return base::Singleton<ArcEnterpriseReportingServiceFactory>::get();
+    static base::NoDestructor<ArcEnterpriseReportingServiceFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcEnterpriseReportingServiceFactory>;
+  friend base::NoDestructor<ArcEnterpriseReportingServiceFactory>;
   ArcEnterpriseReportingServiceFactory() = default;
   ~ArcEnterpriseReportingServiceFactory() override = default;
 };

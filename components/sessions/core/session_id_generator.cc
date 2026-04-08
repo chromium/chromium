@@ -7,6 +7,7 @@
 #include <ostream>
 
 #include "base/functional/bind.h"
+#include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "components/prefs/pref_registry_simple.h"

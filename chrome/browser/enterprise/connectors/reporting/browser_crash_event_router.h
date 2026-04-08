@@ -5,14 +5,10 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_REPORTING_BROWSER_CRASH_EVENT_ROUTER_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_REPORTING_BROWSER_CRASH_EVENT_ROUTER_H_
 
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
-
-namespace base {
-template <typename T>
-struct DefaultSingletonTraits;
-}
 
 namespace enterprise_connectors {
 
@@ -42,7 +38,7 @@ class BrowserCrashEventRouterFactory : public ProfileKeyedServiceFactory {
  private:
   BrowserCrashEventRouterFactory();
   ~BrowserCrashEventRouterFactory() override;
-  friend struct base::DefaultSingletonTraits<BrowserCrashEventRouterFactory>;
+  friend base::NoDestructor<BrowserCrashEventRouterFactory>;
 
   // BrowserContextKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(

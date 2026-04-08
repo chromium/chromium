@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_SAFETY_HUB_PASSWORD_STATUS_CHECK_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_UI_SAFETY_HUB_PASSWORD_STATUS_CHECK_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
@@ -28,7 +28,7 @@ class PasswordStatusCheckServiceFactory : public ProfileKeyedServiceFactory {
       const PasswordStatusCheckServiceFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<PasswordStatusCheckServiceFactory>;
+  friend base::NoDestructor<PasswordStatusCheckServiceFactory>;
 
   PasswordStatusCheckServiceFactory();
   ~PasswordStatusCheckServiceFactory() override;

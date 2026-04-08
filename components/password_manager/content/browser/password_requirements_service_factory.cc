@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/password_requirements_service.h"
@@ -20,7 +20,8 @@ namespace password_manager {
 // static
 PasswordRequirementsServiceFactory*
 PasswordRequirementsServiceFactory::GetInstance() {
-  return base::Singleton<PasswordRequirementsServiceFactory>::get();
+  static base::NoDestructor<PasswordRequirementsServiceFactory> instance;
+  return instance.get();
 }
 
 // static

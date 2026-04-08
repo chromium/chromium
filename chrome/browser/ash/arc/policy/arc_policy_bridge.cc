@@ -18,7 +18,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
@@ -532,11 +532,12 @@ class ArcPolicyBridgeFactory
   static constexpr const char* kName = "ArcPolicyBridgeFactory";
 
   static ArcPolicyBridgeFactory* GetInstance() {
-    return base::Singleton<ArcPolicyBridgeFactory>::get();
+    static base::NoDestructor<ArcPolicyBridgeFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcPolicyBridgeFactory>;
+  friend base::NoDestructor<ArcPolicyBridgeFactory>;
 
   ArcPolicyBridgeFactory() = default;
   ~ArcPolicyBridgeFactory() override = default;

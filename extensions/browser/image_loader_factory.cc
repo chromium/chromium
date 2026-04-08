@@ -18,7 +18,8 @@ ImageLoader* ImageLoaderFactory::GetForBrowserContext(
 }
 
 ImageLoaderFactory* ImageLoaderFactory::GetInstance() {
-  return base::Singleton<ImageLoaderFactory>::get();
+  static base::NoDestructor<ImageLoaderFactory> instance;
+  return instance.get();
 }
 
 ImageLoaderFactory::ImageLoaderFactory()
@@ -27,8 +28,7 @@ ImageLoaderFactory::ImageLoaderFactory()
         BrowserContextDependencyManager::GetInstance()) {
 }
 
-ImageLoaderFactory::~ImageLoaderFactory() {
-}
+ImageLoaderFactory::~ImageLoaderFactory() = default;
 
 std::unique_ptr<KeyedService>
 ImageLoaderFactory::BuildServiceInstanceForBrowserContext(

@@ -24,7 +24,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -304,11 +304,12 @@ class ArcBluezBridgeFactory
   static constexpr const char* kName = "ArcBluezBridgeFactory";
 
   static ArcBluezBridgeFactory* GetInstance() {
-    return base::Singleton<ArcBluezBridgeFactory>::get();
+    static base::NoDestructor<ArcBluezBridgeFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcBluezBridgeFactory>;
+  friend base::NoDestructor<ArcBluezBridgeFactory>;
   ArcBluezBridgeFactory() = default;
   ~ArcBluezBridgeFactory() override = default;
 };
@@ -323,11 +324,12 @@ class ArcFlossBridgeFactory
   static constexpr const char* kName = "ArcFlossBridgeFactory";
 
   static ArcFlossBridgeFactory* GetInstance() {
-    return base::Singleton<ArcFlossBridgeFactory>::get();
+    static base::NoDestructor<ArcFlossBridgeFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcFlossBridgeFactory>;
+  friend base::NoDestructor<ArcFlossBridgeFactory>;
   ArcFlossBridgeFactory() = default;
   ~ArcFlossBridgeFactory() override = default;
 };

@@ -14,7 +14,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/escape.h"
 #include "base/system/sys_info.h"
@@ -150,11 +150,12 @@ class ArcFileSystemBridgeFactory
   static constexpr const char* kName = "ArcFileSystemBridgeFactory";
 
   static ArcFileSystemBridgeFactory* GetInstance() {
-    return base::Singleton<ArcFileSystemBridgeFactory>::get();
+    static base::NoDestructor<ArcFileSystemBridgeFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcFileSystemBridgeFactory>;
+  friend base::NoDestructor<ArcFileSystemBridgeFactory>;
   ArcFileSystemBridgeFactory() = default;
   ~ArcFileSystemBridgeFactory() override = default;
 };

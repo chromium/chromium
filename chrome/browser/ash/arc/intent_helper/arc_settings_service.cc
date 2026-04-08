@@ -17,7 +17,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -219,11 +219,12 @@ class ArcSettingsServiceFactory
   static constexpr const char* kName = "ArcSettingsServiceFactory";
 
   static ArcSettingsServiceFactory* GetInstance() {
-    return base::Singleton<ArcSettingsServiceFactory>::get();
+    static base::NoDestructor<ArcSettingsServiceFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcSettingsServiceFactory>;
+  friend base::NoDestructor<ArcSettingsServiceFactory>;
   ArcSettingsServiceFactory() = default;
   ~ArcSettingsServiceFactory() override = default;
 };

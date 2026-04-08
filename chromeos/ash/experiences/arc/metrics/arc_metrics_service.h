@@ -13,8 +13,8 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/threading/thread_checker.h"
@@ -414,7 +414,7 @@ class ArcMetricsServiceFactory
   static ArcMetricsServiceFactory* GetInstance();
 
  private:
-  friend base::DefaultSingletonTraits<ArcMetricsServiceFactory>;
+  friend base::NoDestructor<ArcMetricsServiceFactory>;
   ArcMetricsServiceFactory() = default;
   ~ArcMetricsServiceFactory() override = default;
 };

@@ -5,7 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_EXTENSION_REGISTRAR_FACTORY_H_
 #define EXTENSIONS_BROWSER_EXTENSION_REGISTRAR_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace extensions {
@@ -26,7 +26,7 @@ class ExtensionRegistrarFactory : public BrowserContextKeyedServiceFactory {
   static ExtensionRegistrarFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<ExtensionRegistrarFactory>;
+  friend base::NoDestructor<ExtensionRegistrarFactory>;
 
   ExtensionRegistrarFactory();
   ~ExtensionRegistrarFactory() override;

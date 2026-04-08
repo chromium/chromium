@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/singleton.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/sync/extension_sync_util.h"

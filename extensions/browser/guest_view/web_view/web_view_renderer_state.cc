@@ -4,6 +4,7 @@
 
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 
+#include "base/memory/singleton.h"
 #include "content/public/browser/browser_thread.h"
 
 using content::BrowserThread;

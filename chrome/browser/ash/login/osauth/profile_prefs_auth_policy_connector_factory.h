@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_OSAUTH_PROFILE_PREFS_AUTH_POLICY_CONNECTOR_FACTORY_H_
 #define CHROME_BROWSER_ASH_LOGIN_OSAUTH_PROFILE_PREFS_AUTH_POLICY_CONNECTOR_FACTORY_H_
 
-#include "base/memory/singleton.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/login/osauth/profile_prefs_auth_policy_connector.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+
+class Profile;
 
 namespace ash {
 
@@ -25,8 +26,7 @@ class ProfilePrefsAuthPolicyConnectorFactory
       const ProfilePrefsAuthPolicyConnectorFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      ProfilePrefsAuthPolicyConnectorFactory>;
+  friend base::NoDestructor<ProfilePrefsAuthPolicyConnectorFactory>;
 
   ~ProfilePrefsAuthPolicyConnectorFactory() override;
 

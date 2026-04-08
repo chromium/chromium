@@ -10,7 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -39,7 +39,9 @@ class GalleryWatchManagerShutdownNotifierFactory
     : public BrowserContextKeyedServiceShutdownNotifierFactory {
  public:
   static GalleryWatchManagerShutdownNotifierFactory* GetInstance() {
-    return base::Singleton<GalleryWatchManagerShutdownNotifierFactory>::get();
+    static base::NoDestructor<GalleryWatchManagerShutdownNotifierFactory>
+        instance;
+    return instance.get();
   }
 
   GalleryWatchManagerShutdownNotifierFactory(
@@ -48,8 +50,7 @@ class GalleryWatchManagerShutdownNotifierFactory
       const GalleryWatchManagerShutdownNotifierFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      GalleryWatchManagerShutdownNotifierFactory>;
+  friend base::NoDestructor<GalleryWatchManagerShutdownNotifierFactory>;
 
   GalleryWatchManagerShutdownNotifierFactory()
       : BrowserContextKeyedServiceShutdownNotifierFactory(

@@ -30,7 +30,8 @@ ProcessManager* ProcessManagerFactory::GetForBrowserContextIfExists(
 
 // static
 ProcessManagerFactory* ProcessManagerFactory::GetInstance() {
-  return base::Singleton<ProcessManagerFactory>::get();
+  static base::NoDestructor<ProcessManagerFactory> instance;
+  return instance.get();
 }
 
 ProcessManagerFactory::ProcessManagerFactory()
@@ -41,8 +42,7 @@ ProcessManagerFactory::ProcessManagerFactory()
   DependsOn(extensions::LazyBackgroundTaskQueueFactory::GetInstance());
 }
 
-ProcessManagerFactory::~ProcessManagerFactory() {
-}
+ProcessManagerFactory::~ProcessManagerFactory() = default;
 
 std::unique_ptr<KeyedService>
 ProcessManagerFactory::BuildServiceInstanceForBrowserContext(

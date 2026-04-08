@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_BOCA_ON_TASK_LOCKED_SESSION_WINDOW_TRACKER_FACTORY_H_
 #define CHROME_BROWSER_ASH_BOCA_ON_TASK_LOCKED_SESSION_WINDOW_TRACKER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 class LockedSessionWindowTracker;
@@ -24,7 +24,7 @@ class LockedSessionWindowTrackerFactory
       content::BrowserContext* context);
 
  private:
-  friend struct base::DefaultSingletonTraits<LockedSessionWindowTrackerFactory>;
+  friend base::NoDestructor<LockedSessionWindowTrackerFactory>;
 
   LockedSessionWindowTrackerFactory();
   ~LockedSessionWindowTrackerFactory() override;

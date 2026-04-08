@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/user_prefs/user_prefs.h"
@@ -28,7 +29,8 @@ PasswordManagerBlocklistPolicy::GetURLBlocklistState(const GURL& url) const {
 // static
 PasswordManagerBlocklistPolicyFactory*
 PasswordManagerBlocklistPolicyFactory::GetInstance() {
-  return base::Singleton<PasswordManagerBlocklistPolicyFactory>::get();
+  static base::NoDestructor<PasswordManagerBlocklistPolicyFactory> instance;
+  return instance.get();
 }
 
 // static

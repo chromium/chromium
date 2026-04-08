@@ -30,7 +30,8 @@ WebRequestEventRouter* WebRequestEventRouterFactory::GetForBrowserContext(
 
 // static
 WebRequestEventRouterFactory* WebRequestEventRouterFactory::GetInstance() {
-  return base::Singleton<WebRequestEventRouterFactory>::get();
+  static base::NoDestructor<WebRequestEventRouterFactory> instance;
+  return instance.get();
 }
 
 WebRequestEventRouterFactory::WebRequestEventRouterFactory()

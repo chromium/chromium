@@ -9,7 +9,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
@@ -70,11 +70,12 @@ class ArcTimerBridgeFactory
   static constexpr const char* kName = "ArcTimerBridgeFactory";
 
   static ArcTimerBridgeFactory* GetInstance() {
-    return base::Singleton<ArcTimerBridgeFactory>::get();
+    static base::NoDestructor<ArcTimerBridgeFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcTimerBridgeFactory>;
+  friend base::NoDestructor<ArcTimerBridgeFactory>;
   ArcTimerBridgeFactory() = default;
   ~ArcTimerBridgeFactory() override = default;
 };

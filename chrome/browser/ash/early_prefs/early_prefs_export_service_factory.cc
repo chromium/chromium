@@ -22,7 +22,8 @@ namespace ash {
 
 // static
 EarlyPrefsExportServiceFactory* EarlyPrefsExportServiceFactory::GetInstance() {
-  return base::Singleton<EarlyPrefsExportServiceFactory>::get();
+  static base::NoDestructor<EarlyPrefsExportServiceFactory> instance;
+  return instance.get();
 }
 
 EarlyPrefsExportServiceFactory::EarlyPrefsExportServiceFactory()

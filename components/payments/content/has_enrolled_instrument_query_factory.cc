@@ -4,7 +4,7 @@
 
 #include "components/payments/content/has_enrolled_instrument_query_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/payments/core/has_enrolled_instrument_query.h"
 
@@ -13,7 +13,8 @@ namespace payments {
 // static
 HasEnrolledInstrumentQueryFactory*
 HasEnrolledInstrumentQueryFactory::GetInstance() {
-  return base::Singleton<HasEnrolledInstrumentQueryFactory>::get();
+  static base::NoDestructor<HasEnrolledInstrumentQueryFactory> instance;
+  return instance.get();
 }
 
 HasEnrolledInstrumentQuery* HasEnrolledInstrumentQueryFactory::GetForContext(

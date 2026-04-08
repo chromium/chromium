@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_update_service.h"
 #include "chrome/browser/browser_process.h"
@@ -52,7 +52,8 @@ KioskAppUpdateService* KioskAppUpdateServiceFactory::GetForProfile(
 
 // static
 KioskAppUpdateServiceFactory* KioskAppUpdateServiceFactory::GetInstance() {
-  return base::Singleton<KioskAppUpdateServiceFactory>::get();
+  static base::NoDestructor<KioskAppUpdateServiceFactory> instance;
+  return instance.get();
 }
 
 std::unique_ptr<KeyedService>

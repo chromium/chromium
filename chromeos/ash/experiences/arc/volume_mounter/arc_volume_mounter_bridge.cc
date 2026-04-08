@@ -11,8 +11,8 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -94,11 +94,12 @@ class ArcVolumeMounterBridgeFactory
   static constexpr const char* kName = "ArcVolumeMounterBridgeFactory";
 
   static ArcVolumeMounterBridgeFactory* GetInstance() {
-    return base::Singleton<ArcVolumeMounterBridgeFactory>::get();
+    static base::NoDestructor<ArcVolumeMounterBridgeFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcVolumeMounterBridgeFactory>;
+  friend base::NoDestructor<ArcVolumeMounterBridgeFactory>;
   ArcVolumeMounterBridgeFactory() = default;
   ~ArcVolumeMounterBridgeFactory() override = default;
 };

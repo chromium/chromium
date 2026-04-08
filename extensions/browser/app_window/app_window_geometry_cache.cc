@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -272,7 +273,8 @@ AppWindowGeometryCache* AppWindowGeometryCache::Factory::GetForContext(
 
 AppWindowGeometryCache::Factory*
 AppWindowGeometryCache::Factory::GetInstance() {
-  return base::Singleton<AppWindowGeometryCache::Factory>::get();
+  static base::NoDestructor<AppWindowGeometryCache::Factory> instance;
+  return instance.get();
 }
 
 AppWindowGeometryCache::Factory::Factory()

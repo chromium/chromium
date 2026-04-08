@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
@@ -35,11 +35,12 @@ class ArcWakeLockBridgeFactory
   static constexpr const char* kName = "ArcWakeLockBridgeFactory";
 
   static ArcWakeLockBridgeFactory* GetInstance() {
-    return base::Singleton<ArcWakeLockBridgeFactory>::get();
+    static base::NoDestructor<ArcWakeLockBridgeFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcWakeLockBridgeFactory>;
+  friend base::NoDestructor<ArcWakeLockBridgeFactory>;
   ArcWakeLockBridgeFactory() = default;
   ~ArcWakeLockBridgeFactory() override = default;
 };

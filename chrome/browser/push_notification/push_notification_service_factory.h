@@ -5,12 +5,8 @@
 #ifndef CHROME_BROWSER_PUSH_NOTIFICATION_PUSH_NOTIFICATION_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_PUSH_NOTIFICATION_PUSH_NOTIFICATION_SERVICE_FACTORY_H_
 
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
-
-namespace base {
-template <typename T>
-struct DefaultSingletonTraits;
-}  // namespace base
 
 namespace content {
 class BrowserContext;
@@ -33,7 +29,7 @@ class PushNotificationServiceFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* context);
 
  private:
-  friend struct base::DefaultSingletonTraits<PushNotificationServiceFactory>;
+  friend base::NoDestructor<PushNotificationServiceFactory>;
 
   PushNotificationServiceFactory();
   ~PushNotificationServiceFactory() override;

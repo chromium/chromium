@@ -28,7 +28,8 @@ SavedFilesService* SavedFilesServiceFactory::GetForBrowserContextIfExists(
 
 // static
 SavedFilesServiceFactory* SavedFilesServiceFactory::GetInstance() {
-  return base::Singleton<SavedFilesServiceFactory>::get();
+  static base::NoDestructor<SavedFilesServiceFactory> instance;
+  return instance.get();
 }
 
 SavedFilesServiceFactory::SavedFilesServiceFactory()

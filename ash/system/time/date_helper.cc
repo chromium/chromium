@@ -11,6 +11,7 @@
 #include "ash/system/time/calendar_utils.h"
 #include "base/i18n/unicodestring.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/singleton.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "third_party/icu/source/common/unicode/dtintrv.h"

@@ -14,8 +14,7 @@ ExtensionPrefValueMapFactory::ExtensionPrefValueMapFactory()
         BrowserContextDependencyManager::GetInstance()) {
 }
 
-ExtensionPrefValueMapFactory::~ExtensionPrefValueMapFactory() {
-}
+ExtensionPrefValueMapFactory::~ExtensionPrefValueMapFactory() = default;
 
 // static
 ExtensionPrefValueMap* ExtensionPrefValueMapFactory::GetForBrowserContext(
@@ -26,7 +25,8 @@ ExtensionPrefValueMap* ExtensionPrefValueMapFactory::GetForBrowserContext(
 
 // static
 ExtensionPrefValueMapFactory* ExtensionPrefValueMapFactory::GetInstance() {
-  return base::Singleton<ExtensionPrefValueMapFactory>::get();
+  static base::NoDestructor<ExtensionPrefValueMapFactory> instance;
+  return instance.get();
 }
 
 std::unique_ptr<KeyedService>

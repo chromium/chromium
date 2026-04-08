@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_SESSION_ARC_INITIAL_OPTIN_METRICS_RECORDER_FACTORY_H_
 #define CHROME_BROWSER_ASH_ARC_SESSION_ARC_INITIAL_OPTIN_METRICS_RECORDER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace arc {
@@ -26,7 +26,7 @@ class ArcInitialOptInMetricsRecorderFactory
       const ArcInitialOptInMetricsRecorderFactory&) = delete;
 
  private:
-  friend base::DefaultSingletonTraits<ArcInitialOptInMetricsRecorderFactory>;
+  friend base::NoDestructor<ArcInitialOptInMetricsRecorderFactory>;
 
   ArcInitialOptInMetricsRecorderFactory();
 

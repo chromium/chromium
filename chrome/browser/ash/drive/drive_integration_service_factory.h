@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
@@ -45,7 +45,7 @@ class DriveIntegrationServiceFactory : public ProfileKeyedServiceFactory {
   static DriveIntegrationServiceFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<DriveIntegrationServiceFactory>;
+  friend base::NoDestructor<DriveIntegrationServiceFactory>;
 
   DriveIntegrationServiceFactory();
   ~DriveIntegrationServiceFactory() override;

@@ -9,7 +9,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -39,11 +39,12 @@ class ArcSurveyServiceFactory
   static constexpr const char* kName = "ArcSurveyServiceFactory";
 
   static ArcSurveyServiceFactory* GetInstance() {
-    return base::Singleton<ArcSurveyServiceFactory>::get();
+    static base::NoDestructor<ArcSurveyServiceFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend struct base::DefaultSingletonTraits<ArcSurveyServiceFactory>;
+  friend base::NoDestructor<ArcSurveyServiceFactory>;
   ArcSurveyServiceFactory() = default;
   ~ArcSurveyServiceFactory() override = default;
 };

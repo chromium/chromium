@@ -8,7 +8,7 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -48,11 +48,12 @@ class ArcProvisionNotificationServiceFactory
   static constexpr const char* kName = "ArcProvisionNotificationServiceFactory";
 
   static ArcProvisionNotificationServiceFactory* GetInstance() {
-    return base::Singleton<ArcProvisionNotificationServiceFactory>::get();
+    static base::NoDestructor<ArcProvisionNotificationServiceFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcProvisionNotificationServiceFactory>;
+  friend base::NoDestructor<ArcProvisionNotificationServiceFactory>;
   ArcProvisionNotificationServiceFactory() = default;
   ~ArcProvisionNotificationServiceFactory() override = default;
 };

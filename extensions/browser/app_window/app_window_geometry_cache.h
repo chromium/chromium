@@ -13,7 +13,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -45,7 +45,7 @@ class AppWindowGeometryCache : public KeyedService,
     static Factory* GetInstance();
 
    private:
-    friend struct base::DefaultSingletonTraits<Factory>;
+    friend base::NoDestructor<Factory>;
 
     Factory();
     ~Factory() override;

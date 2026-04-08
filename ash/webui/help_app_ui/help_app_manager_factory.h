@@ -5,7 +5,7 @@
 #ifndef ASH_WEBUI_HELP_APP_UI_HELP_APP_MANAGER_FACTORY_H_
 #define ASH_WEBUI_HELP_APP_UI_HELP_APP_MANAGER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace ash {
@@ -19,7 +19,7 @@ class HelpAppManagerFactory : public BrowserContextKeyedServiceFactory {
   static HelpAppManagerFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<HelpAppManagerFactory>;
+  friend base::NoDestructor<HelpAppManagerFactory>;
 
   HelpAppManagerFactory();
   ~HelpAppManagerFactory() override;

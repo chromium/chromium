@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_OMNIBOX_OMNIBOX_INPUT_WATCHER_FACTORY_H_
 #define CHROME_BROWSER_OMNIBOX_OMNIBOX_INPUT_WATCHER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 class OmniboxInputWatcher;
@@ -22,7 +22,7 @@ class OmniboxInputWatcherFactory : public BrowserContextKeyedServiceFactory {
       delete;
 
  private:
-  friend base::DefaultSingletonTraits<OmniboxInputWatcherFactory>;
+  friend base::NoDestructor<OmniboxInputWatcherFactory>;
 
   OmniboxInputWatcherFactory();
   ~OmniboxInputWatcherFactory() override;

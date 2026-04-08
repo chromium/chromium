@@ -13,7 +13,7 @@
 
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -62,7 +62,9 @@ class PluginInfoHostImplShutdownNotifierFactory
     : public BrowserContextKeyedServiceShutdownNotifierFactory {
  public:
   static PluginInfoHostImplShutdownNotifierFactory* GetInstance() {
-    return base::Singleton<PluginInfoHostImplShutdownNotifierFactory>::get();
+    static base::NoDestructor<PluginInfoHostImplShutdownNotifierFactory>
+        instance;
+    return instance.get();
   }
 
   PluginInfoHostImplShutdownNotifierFactory(
@@ -71,8 +73,7 @@ class PluginInfoHostImplShutdownNotifierFactory
       const PluginInfoHostImplShutdownNotifierFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      PluginInfoHostImplShutdownNotifierFactory>;
+  friend base::NoDestructor<PluginInfoHostImplShutdownNotifierFactory>;
 
   PluginInfoHostImplShutdownNotifierFactory()
       : BrowserContextKeyedServiceShutdownNotifierFactory(

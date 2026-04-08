@@ -57,7 +57,8 @@ DiceResponseHandler* DiceResponseHandlerFactory::GetForProfile(
 
 // static
 DiceResponseHandlerFactory* DiceResponseHandlerFactory::GetInstance() {
-  return base::Singleton<DiceResponseHandlerFactory>::get();
+  static base::NoDestructor<DiceResponseHandlerFactory> instance;
+  return instance.get();
 }
 
 DiceResponseHandlerFactory::DiceResponseHandlerFactory()

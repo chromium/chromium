@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/singleton.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/early_prefs/early_prefs_export_service.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -29,7 +28,7 @@ class EarlyPrefsExportServiceFactory
       const EarlyPrefsExportServiceFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<EarlyPrefsExportServiceFactory>;
+  friend base::NoDestructor<EarlyPrefsExportServiceFactory>;
 
   EarlyPrefsExportServiceFactory();
   ~EarlyPrefsExportServiceFactory() override;

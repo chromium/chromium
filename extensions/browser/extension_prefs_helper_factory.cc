@@ -21,7 +21,8 @@ ExtensionPrefsHelper* ExtensionPrefsHelperFactory::GetForBrowserContext(
 
 // static
 ExtensionPrefsHelperFactory* ExtensionPrefsHelperFactory::GetInstance() {
-  return base::Singleton<ExtensionPrefsHelperFactory>::get();
+  static base::NoDestructor<ExtensionPrefsHelperFactory> instance;
+  return instance.get();
 }
 
 ExtensionPrefsHelperFactory::ExtensionPrefsHelperFactory()

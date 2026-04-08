@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SEARCH_ENGINES_TEMPLATE_URL_PREPOPULATE_DATA_RESOLVER_FACTORY_H_
 #define CHROME_BROWSER_SEARCH_ENGINES_TEMPLATE_URL_PREPOPULATE_DATA_RESOLVER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
@@ -21,7 +21,7 @@ class ResolverFactory : public ProfileKeyedServiceFactory {
   static ResolverFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<ResolverFactory>;
+  friend base::NoDestructor<ResolverFactory>;
 
   ResolverFactory();
   ~ResolverFactory() override;

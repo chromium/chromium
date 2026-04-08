@@ -10,7 +10,7 @@
 #include "ash/style/mojom/color_scheme.mojom-shared.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
@@ -32,11 +32,12 @@ class ArcSystemUIBridgeFactory
   static constexpr const char* kName = "ArcSystemUIBridgeFactory";
 
   static ArcSystemUIBridgeFactory* GetInstance() {
-    return base::Singleton<ArcSystemUIBridgeFactory>::get();
+    static base::NoDestructor<ArcSystemUIBridgeFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcSystemUIBridgeFactory>;
+  friend base::NoDestructor<ArcSystemUIBridgeFactory>;
   ArcSystemUIBridgeFactory() = default;
   ~ArcSystemUIBridgeFactory() override = default;
 };

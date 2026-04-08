@@ -10,7 +10,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -226,7 +226,8 @@ PrefWatcher* PrefWatcherFactory::GetForProfile(Profile* profile) {
 
 // static
 PrefWatcherFactory* PrefWatcherFactory::GetInstance() {
-  return base::Singleton<PrefWatcherFactory>::get();
+  static base::NoDestructor<PrefWatcherFactory> instance;
+  return instance.get();
 }
 
 PrefWatcherFactory::PrefWatcherFactory()

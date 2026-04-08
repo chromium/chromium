@@ -5,7 +5,7 @@
 #ifndef ASH_WEBUI_SHORTCUT_CUSTOMIZATION_UI_SHORTCUTS_APP_MANAGER_FACTORY_H_
 #define ASH_WEBUI_SHORTCUT_CUSTOMIZATION_UI_SHORTCUTS_APP_MANAGER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace ash::shortcut_ui {
@@ -24,7 +24,7 @@ class ShortcutsAppManagerFactory : public BrowserContextKeyedServiceFactory {
       delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<ShortcutsAppManagerFactory>;
+  friend base::NoDestructor<ShortcutsAppManagerFactory>;
 
   ShortcutsAppManagerFactory();
   ~ShortcutsAppManagerFactory() override;

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_OMNIBOX_OMNIBOX_SUGGESTIONS_WATCHER_FACTORY_H_
 #define CHROME_BROWSER_OMNIBOX_OMNIBOX_SUGGESTIONS_WATCHER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 class OmniboxSuggestionsWatcher;
@@ -24,7 +24,7 @@ class OmniboxSuggestionsWatcherFactory
       const OmniboxSuggestionsWatcherFactory&) = delete;
 
  private:
-  friend base::DefaultSingletonTraits<OmniboxSuggestionsWatcherFactory>;
+  friend base::NoDestructor<OmniboxSuggestionsWatcherFactory>;
 
   OmniboxSuggestionsWatcherFactory();
   ~OmniboxSuggestionsWatcherFactory() override;

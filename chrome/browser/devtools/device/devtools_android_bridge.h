@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/devtools/device/android_device_manager.h"
 #include "chrome/browser/devtools/device/devtools_device_discovery.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
@@ -25,9 +26,6 @@
 #include "content/public/browser/devtools_agent_host.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-namespace base {
-template<typename T> struct DefaultSingletonTraits;
-}  // namespace base
 
 namespace content {
 class BrowserContext;
@@ -51,7 +49,7 @@ class DevToolsAndroidBridge : public KeyedService {
     Factory& operator=(const Factory&) = delete;
 
    private:
-    friend struct base::DefaultSingletonTraits<Factory>;
+    friend base::NoDestructor<Factory>;
 
     Factory();
     ~Factory() override;

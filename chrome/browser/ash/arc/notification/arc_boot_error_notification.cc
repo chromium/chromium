@@ -14,7 +14,7 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -108,11 +108,12 @@ class ArcBootErrorNotificationFactory
   static constexpr const char* kName = "ArcBootErrorNotificationFactory";
 
   static ArcBootErrorNotificationFactory* GetInstance() {
-    return base::Singleton<ArcBootErrorNotificationFactory>::get();
+    static base::NoDestructor<ArcBootErrorNotificationFactory> instance;
+    return instance.get();
   }
 
  private:
-  friend base::DefaultSingletonTraits<ArcBootErrorNotificationFactory>;
+  friend base::NoDestructor<ArcBootErrorNotificationFactory>;
   ArcBootErrorNotificationFactory() = default;
   ~ArcBootErrorNotificationFactory() override = default;
 };

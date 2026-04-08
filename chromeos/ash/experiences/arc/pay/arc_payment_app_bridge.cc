@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/memory/singleton.h"
 #include "base/no_destructor.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
@@ -35,7 +34,7 @@ class ArcPaymentAppBridgeFactory
   ~ArcPaymentAppBridgeFactory() override = default;
 
  private:
-  friend base::DefaultSingletonTraits<ArcPaymentAppBridgeFactory>;
+  friend base::NoDestructor<ArcPaymentAppBridgeFactory>;
 };
 
 }  // namespace

@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_POLICY_MODEL_CLOUD_USER_POLICY_SIGNIN_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_POLICY_MODEL_CLOUD_USER_POLICY_SIGNIN_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ProfileIOS;
@@ -40,7 +40,7 @@ class UserPolicySigninServiceFactory : public ProfileKeyedServiceFactoryIOS {
       user_prefs::PrefRegistrySyncable* registry) override;
 
  private:
-  friend struct base::DefaultSingletonTraits<UserPolicySigninServiceFactory>;
+  friend base::NoDestructor<UserPolicySigninServiceFactory>;
 
   UserPolicySigninServiceFactory();
   ~UserPolicySigninServiceFactory() override;

@@ -20,7 +20,8 @@ AppRestoreService* AppRestoreServiceFactory::GetForBrowserContext(
 }
 
 AppRestoreServiceFactory* AppRestoreServiceFactory::GetInstance() {
-  return base::Singleton<AppRestoreServiceFactory>::get();
+  static base::NoDestructor<AppRestoreServiceFactory> instance;
+  return instance.get();
 }
 
 AppRestoreServiceFactory::AppRestoreServiceFactory()

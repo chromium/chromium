@@ -22,7 +22,8 @@ WarningService* WarningServiceFactory::GetForBrowserContext(
 
 // static
 WarningServiceFactory* WarningServiceFactory::GetInstance() {
-  return base::Singleton<WarningServiceFactory>::get();
+  static base::NoDestructor<WarningServiceFactory> instance;
+  return instance.get();
 }
 
 WarningServiceFactory::WarningServiceFactory()
@@ -32,8 +33,7 @@ WarningServiceFactory::WarningServiceFactory()
   DependsOn(ExtensionRegistryFactory::GetInstance());
 }
 
-WarningServiceFactory::~WarningServiceFactory() {
-}
+WarningServiceFactory::~WarningServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 WarningServiceFactory::BuildServiceInstanceForBrowserContext(

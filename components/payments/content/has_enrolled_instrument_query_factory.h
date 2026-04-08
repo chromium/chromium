@@ -5,12 +5,8 @@
 #ifndef COMPONENTS_PAYMENTS_CONTENT_HAS_ENROLLED_INSTRUMENT_QUERY_FACTORY_H_
 #define COMPONENTS_PAYMENTS_CONTENT_HAS_ENROLLED_INSTRUMENT_QUERY_FACTORY_H_
 
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
-
-namespace base {
-template <typename T>
-struct DefaultSingletonTraits;
-}
 
 namespace content {
 class BrowserContext;
@@ -34,7 +30,7 @@ class HasEnrolledInstrumentQueryFactory
       const HasEnrolledInstrumentQueryFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<HasEnrolledInstrumentQueryFactory>;
+  friend base::NoDestructor<HasEnrolledInstrumentQueryFactory>;
 
   HasEnrolledInstrumentQueryFactory();
   ~HasEnrolledInstrumentQueryFactory() override;

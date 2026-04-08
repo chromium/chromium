@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -28,7 +29,8 @@ class AppFirewallHoleManagerFactory : public BrowserContextKeyedServiceFactory {
   }
 
   static AppFirewallHoleManagerFactory* GetInstance() {
-    return base::Singleton<AppFirewallHoleManagerFactory>::get();
+    static base::NoDestructor<AppFirewallHoleManagerFactory> instance;
+    return instance.get();
   }
 
   AppFirewallHoleManagerFactory()
@@ -41,6 +43,8 @@ class AppFirewallHoleManagerFactory : public BrowserContextKeyedServiceFactory {
   ~AppFirewallHoleManagerFactory() override = default;
 
  private:
+  friend base::NoDestructor<AppFirewallHoleManagerFactory>;
+
   // BrowserContextKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       BrowserContext* context) const override {
