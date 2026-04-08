@@ -72,6 +72,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature.mojom.h"
 #include "ui/base/page_transition_types.h"
+#include "url/origin.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 
@@ -5630,6 +5631,215 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
       contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   EXPECT_EQ(data_tentative_origin_to_commit.value(), data_committed_origin);
   EXPECT_EQ(url_info_origin.value(), data_committed_origin);
+}
+
+// Tests that on reload of a POST request, the HTTP `Origin` header is set
+// properly.
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, OriginHeaderOnPostReload) {
+  GURL start_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+
+  GURL url = embedded_test_server()->GetURL("/echoheader?Origin");
+
+  // Do an initial POST navigation.
+  std::string script = JsReplace(
+      "var f = document.createElement('form');"
+      "f.method = 'POST';"
+      "f.action = $1;"
+      "document.body.appendChild(f);"
+      "f.submit();",
+      url);
+
+  {
+    TestNavigationObserver observer(shell()->web_contents());
+    EXPECT_TRUE(ExecJs(shell(), script));
+    observer.Wait();
+  }
+
+  EXPECT_EQ(url::Origin::Create(start_url).Serialize(),
+            EvalJs(shell(), "document.body.textContent"));
+
+  // Reload and check that the Origin header is the same as on the original POST
+  // navigation.
+  {
+    TestNavigationObserver reload_observer(shell()->web_contents());
+    shell()->web_contents()->GetController().Reload(ReloadType::NORMAL,
+                                                    /*check_for_repost=*/false);
+    reload_observer.Wait();
+  }
+
+  EXPECT_EQ(url::Origin::Create(start_url).Serialize(),
+            EvalJs(shell(), "document.body.textContent"));
+}
+
+// Tests that on reload of a POST request that was initiated by an opaque
+// origin, the HTTP `Origin` header is set properly.
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       OriginHeaderOpaqueOnPostReload) {
+  GURL data_url("data:text/html,<html><body></body></html>");
+  ASSERT_TRUE(NavigateToURL(shell(), data_url));
+
+  GURL url = embedded_test_server()->GetURL("/echoheader?Origin");
+
+  // Do an initial POST navigation.
+  std::string script = JsReplace(
+      "var f = document.createElement('form');"
+      "f.method = 'POST';"
+      "f.action = $1;"
+      "document.body.appendChild(f);"
+      "f.submit();",
+      url);
+
+  {
+    TestNavigationObserver observer(shell()->web_contents());
+    EXPECT_TRUE(ExecJs(shell(), script));
+    observer.Wait();
+  }
+
+  EXPECT_EQ("null", EvalJs(shell(), "document.body.textContent"));
+
+  // Reload and check that the Origin header is the same as on the original POST
+  // navigation.
+  {
+    TestNavigationObserver reload_observer(shell()->web_contents());
+    shell()->web_contents()->GetController().Reload(ReloadType::NORMAL,
+                                                    /*check_for_repost=*/false);
+    reload_observer.Wait();
+  }
+
+  EXPECT_EQ("null", EvalJs(shell(), "document.body.textContent"));
+}
+
+// Tests that a POST request from an opaque origin uses an HTTP `Origin` header
+// of "null".
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       OriginHeaderOnPostFromOpaque) {
+  GURL data_url("data:text/html,<html><body></body></html>");
+  ASSERT_TRUE(NavigateToURL(shell(), data_url));
+
+  GURL url = embedded_test_server()->GetURL("a.com", "/echoheader?Origin");
+
+  std::string script = JsReplace(
+      "var f = document.createElement('form');"
+      "f.method = 'POST';"
+      "f.action = $1;"
+      "document.body.appendChild(f);"
+      "f.submit();",
+      url);
+
+  {
+    TestNavigationObserver observer(shell()->web_contents());
+    EXPECT_TRUE(ExecJs(shell(), script));
+    observer.Wait();
+  }
+
+  EXPECT_EQ("null", EvalJs(shell(), "document.body.textContent"));
+}
+
+// Tests that on a "client-initiated" reload (e.g., `location.reload()`) of a
+// POST navigation, the HTTP `Origin` header is set properly to the current
+// document's origin.
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       OriginHeaderOnPostReloadClientInitiated) {
+  GURL start_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+
+  GURL url = embedded_test_server()->GetURL("b.com", "/echoheader?Origin");
+
+  std::string script = JsReplace(
+      "var f = document.createElement('form');"
+      "f.method = 'POST';"
+      "f.action = $1;"
+      "document.body.appendChild(f);"
+      "f.submit();",
+      url);
+
+  {
+    TestNavigationObserver observer(shell()->web_contents());
+    EXPECT_TRUE(ExecJs(shell(), script));
+    observer.Wait();
+  }
+
+  EXPECT_EQ(url::Origin::Create(start_url).Serialize(),
+            EvalJs(shell(), "document.body.textContent"));
+
+  // Do a client-initiated reload and check that the Origin header matches the
+  // document that initiated the reload, not `start_url`.
+  {
+    TestNavigationObserver reload_observer(shell()->web_contents());
+    EXPECT_TRUE(ExecJs(shell(), "location.reload()"));
+    reload_observer.Wait();
+  }
+
+  EXPECT_EQ(url::Origin::Create(url).Serialize(),
+            EvalJs(shell(), "document.body.textContent"));
+}
+
+// Tests that a POST navigation from about:blank has the correct Origin header.
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       OriginHeaderOnPostAboutBlank) {
+  GURL start_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+
+  // Open about:blank popup from `start_url` so that it has `start_url`'s
+  // origin.
+  ShellAddedObserver shell_observer;
+  EXPECT_TRUE(ExecJs(shell(), "window.open('about:blank', 'popup')"));
+  Shell* popup_shell = shell_observer.GetShell();
+  EXPECT_TRUE(WaitForLoadStop(popup_shell->web_contents()));
+
+  GURL url = embedded_test_server()->GetURL("b.com", "/echoheader?Origin");
+  std::string script = JsReplace(
+      "var f = document.createElement('form');"
+      "f.method = 'POST';"
+      "f.action = $1;"
+      "document.body.appendChild(f);"
+      "f.submit();",
+      url);
+
+  TestNavigationObserver observer(popup_shell->web_contents());
+  EXPECT_TRUE(ExecJs(popup_shell->web_contents(), script));
+  observer.Wait();
+
+  EXPECT_EQ(url::Origin::Create(start_url).Serialize(),
+            EvalJs(popup_shell->web_contents(), "document.body.textContent"));
+}
+
+// Tests that a POST navigation from about:blank (with referrer policy of
+// `no-referrer`) has the correct Origin header of "null".
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       OriginHeaderOnPostAboutBlankNoReferrer) {
+  GURL start_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+
+  // Open about:blank popup with no-referrer.
+  ShellAddedObserver shell_observer;
+  EXPECT_TRUE(ExecJs(shell(),
+                     "var w = window.open('about:blank', 'popup');"
+                     "var d = w.document;"
+                     "var m = d.createElement('meta');"
+                     "m.name = 'referrer';"
+                     "m.content = 'no-referrer';"
+                     "d.head.appendChild(m);"));
+  Shell* popup_shell = shell_observer.GetShell();
+  EXPECT_TRUE(WaitForLoadStop(popup_shell->web_contents()));
+
+  GURL url = embedded_test_server()->GetURL("a.com", "/echoheader?Origin");
+  std::string script = JsReplace(
+      "var f = document.createElement('form');"
+      "f.method = 'POST';"
+      "f.action = $1;"
+      "document.body.appendChild(f);"
+      "f.submit();",
+      url);
+
+  TestNavigationObserver observer(popup_shell->web_contents());
+  EXPECT_TRUE(ExecJs(popup_shell->web_contents(), script));
+  observer.Wait();
+
+  // Origin should be "null" because of the no-referrer policy.
+  EXPECT_EQ("null",
+            EvalJs(popup_shell->web_contents(), "document.body.textContent"));
 }
 
 }  // namespace content
