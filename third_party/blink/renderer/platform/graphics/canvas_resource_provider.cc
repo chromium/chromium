@@ -878,8 +878,8 @@ base::ByteSize CanvasResourceProviderSharedImage::EstimatedSizeInBytes() const {
 }
 
 void Canvas2DResourceProviderSharedImage::OnContextDestroyed() {
-  if (skia_canvas_) {
-    skia_canvas_->reset_image_provider();
+  if (skia_canvas_for_canvas_2d_) {
+    skia_canvas_for_canvas_2d_->reset_image_provider();
   }
   canvas_image_provider_.reset();
   if (image_pool_) {
@@ -2054,12 +2054,12 @@ void CanvasResourceProvider::UnacceleratedRasterRecordForCanvas2D(
   CHECK(!IsAccelerated());
   CHECK(IsCanvas2D());
 
-  if (!skia_canvas_) {
-    skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
+  if (!skia_canvas_for_canvas_2d_) {
+    skia_canvas_for_canvas_2d_ = std::make_unique<cc::SkiaPaintCanvas>(
         GetSkSurface()->getCanvas(),
         GetOrCreateSWCanvasImageProviderForCanvas2D());
   }
-  skia_canvas_->drawPicture(std::move(last_recording));
+  skia_canvas_for_canvas_2d_->drawPicture(std::move(last_recording));
 }
 
 bool CanvasResourceProviderSharedImage::IsGpuContextLost() const {
@@ -2171,6 +2171,9 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
                                         delegate),
       recorder_(std::make_unique<MemoryManagedPaintRecorder>(Size(), this)) {}
 
+CanvasNon2DResourceProviderSharedImage::
+    ~CanvasNon2DResourceProviderSharedImage() = default;
+
 bool CanvasResourceProvider::UnacceleratedWritePixelsForCanvas2D(
     const SkImageInfo& orig_info,
     const void* pixels,
@@ -2184,8 +2187,8 @@ bool CanvasResourceProvider::UnacceleratedWritePixelsForCanvas2D(
   DCHECK(IsValid());
   DCHECK(!recorder_for_canvas_2d_->HasRecordedDrawOps());
 
-  if (!skia_canvas_) {
-    skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
+  if (!skia_canvas_for_canvas_2d_) {
+    skia_canvas_for_canvas_2d_ = std::make_unique<cc::SkiaPaintCanvas>(
         GetSkSurface()->getCanvas(),
         GetOrCreateSWCanvasImageProviderForCanvas2D());
   }

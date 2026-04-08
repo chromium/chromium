@@ -290,7 +290,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
 
-  std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
+  std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_for_canvas_2d_;
   raw_ptr<Delegate> delegate_ = nullptr;
 
   // Recording accumulating draw ops. This pointer is always valid and safe to
@@ -665,7 +665,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
       const gfx::ColorSpace&,
       WebGraphicsSharedImageInterfaceProvider*,
       Delegate*);
-  ~CanvasNon2DResourceProviderSharedImage() override = default;
+  ~CanvasNon2DResourceProviderSharedImage() override;
 
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;
@@ -743,6 +743,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
 
   std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal(bool is_overwrite);
 
+  std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
 };
 
