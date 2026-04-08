@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/tabs/public/tab_collection.h"
+#include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_strip_collection.h"
 
 namespace tabs_api {
@@ -50,7 +51,17 @@ void AndroidTabStripModelAdapter::CloseTab(size_t tab_index) {
 
 void AndroidTabStripModelAdapter::CloseTabGroup(
     const tab_groups::TabGroupId& group_id) {
-  NOTREACHED() << "not implemented";
+  auto tabs_to_close = model_->GetTabGroupTabIndices(group_id).ToIntVector();
+
+  std::reverse(tabs_to_close.begin(), tabs_to_close.end());
+  auto& reversed_to_avoid_iterator_invalidation = tabs_to_close;
+  for (const auto& tab_idx : reversed_to_avoid_iterator_invalidation) {
+    CloseTab(tab_idx);
+  }
+
+  CHECK(!model_->ContainsTabGroup(group_id))
+      << "expected group to be deleted after all tabs have clsoed, but it is "
+         "not";
 }
 
 std::optional<int> AndroidTabStripModelAdapter::GetIndexForHandle(
@@ -107,7 +118,18 @@ mojom::ContainerPtr AndroidTabStripModelAdapter::GetTabStripTopology(
 std::optional<const tab_groups::TabGroupId>
 AndroidTabStripModelAdapter::FindGroupIdFor(
     const tabs::TabCollection::Handle& collection_handle) const {
-  NOTREACHED() << "not implemented";
+  auto* tab_strip = model_->GetTabStripCollection(GetPassKey());
+
+  for (auto& group_id : tab_strip->GetAllTabGroupIds()) {
+    auto* maybe_collection = tab_strip->GetTabGroupCollection(group_id);
+    if (maybe_collection != nullptr) {
+      if (maybe_collection->GetHandle() == collection_handle) {
+        return group_id;
+      }
+    }
+  }
+
+  return std::nullopt;
 }
 
 void AndroidTabStripModelAdapter::UpdateTabGroupVisuals(
