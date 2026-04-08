@@ -1,11 +1,1 @@
-
-# For desks UIs, desk bars, tests, and utilities.
-per-file *button*=yongshun@google.com
-per-file *menu*=yongshun@google.com
-per-file *textfield*=yongshun@google.com
-per-file *view*=yongshun@google.com
-per-file *desk_bar*=yongshun@google.com
-per-file *test*=yongshun@google.com
-per-file *util*=yongshun@google.com
-
 afakhry@chromium.org  #{LAST_RESORT_SUGGESTION}
