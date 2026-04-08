@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_debug_features.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -19,14 +20,13 @@ namespace accessibility_annotator {
 class AccessibilityAnnotatorEnablementServiceImplTest : public testing::Test {
  public:
   AccessibilityAnnotatorEnablementServiceImplTest() {
-    CreateService("us");
-
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kAccessibilityAnnotator,
                               features::kAccessibilityAnnotatorFirstRun,
                               features::kAccessibilityAnnotatorDatabaseStorage},
         /*disabled_features=*/{});
 
+    CreateService("us");
     SignIn("test@gmail.com");
   }
   ~AccessibilityAnnotatorEnablementServiceImplTest() override = default;
@@ -42,7 +42,7 @@ class AccessibilityAnnotatorEnablementServiceImplTest : public testing::Test {
 
   void CreateService(const std::string& country_code) {
     service_ = std::make_unique<AccessibilityAnnotatorEnablementServiceImpl>(
-        nullptr, identity_test_env_.identity_manager(),
+        nullptr, identity_test_env_.identity_manager(), &pref_service_,
         GeoIpCountryCode(base::ToUpperASCII(country_code)));
   }
 
@@ -51,6 +51,7 @@ class AccessibilityAnnotatorEnablementServiceImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  TestingPrefServiceSimple pref_service_;
   std::unique_ptr<AccessibilityAnnotatorEnablementServiceImpl> service_;
 };
 

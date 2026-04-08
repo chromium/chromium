@@ -77,6 +77,6 @@ std::unique_ptr<KeyedService> AccessibilityAnnotatorEnablementServiceFactory::
       IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile());
   return std::make_unique<
       accessibility_annotator::AccessibilityAnnotatorEnablementServiceImpl>(
-      account_settings_service, identity_manager,
+      account_settings_service, identity_manager, profile->GetPrefs(),
       GetCountryCodeFromVariations());
 }

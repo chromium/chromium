@@ -63,6 +63,7 @@ source_set("unit_tests") {
     "//components/accessibility_annotator/core/data_models:unit_tests",
     "//components/accessibility_annotator/core/storage:test_support",
     "//components/accessibility_annotator/core/storage:unit_tests",
+    "//components/prefs:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
     "//testing/gmock",
