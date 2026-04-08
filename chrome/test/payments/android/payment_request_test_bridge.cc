@@ -151,28 +151,19 @@ static void JNI_PaymentRequestTestBridge_ResolvePaymentRequestObserverCallback(
 static void JNI_PaymentRequestTestBridge_SetAppDescriptions(
     JNIEnv* env,
     int64_t callback_ptr,
-    const base::android::JavaRef<jobjectArray>& japp_labels,
-    const base::android::JavaRef<jobjectArray>& japp_sublabels,
-    const base::android::JavaRef<jobjectArray>& japp_totals) {
-  std::vector<std::string> app_labels;
-  base::android::AppendJavaStringArrayToStringVector(env, japp_labels,
-                                                     &app_labels);
+    const base::android::JavaRef<JArray<jstring>>& japp_labels,
+    const base::android::JavaRef<JArray<jstring>>& japp_sublabels,
+    const base::android::JavaRef<JArray<jstring>>& japp_totals) {
+  int32_t app_labels_length = japp_labels.GetLength(env);
+  DCHECK_EQ(app_labels_length, japp_sublabels.GetLength(env));
+  DCHECK_EQ(app_labels_length, japp_totals.GetLength(env));
 
-  std::vector<std::string> app_sublabels;
-  base::android::AppendJavaStringArrayToStringVector(env, japp_sublabels,
-                                                     &app_sublabels);
-  DCHECK_EQ(app_labels.size(), app_sublabels.size());
-
-  std::vector<std::string> app_totals;
-  base::android::AppendJavaStringArrayToStringVector(env, japp_totals,
-                                                     &app_totals);
-  DCHECK_EQ(app_labels.size(), app_totals.size());
-
-  std::vector<AppDescription> descriptions(app_labels.size());
-  for (size_t i = 0; i < app_labels.size(); ++i) {
-    descriptions[i].label = app_labels[i];
-    descriptions[i].sublabel = app_sublabels[i];
-    descriptions[i].total = app_totals[i];
+  std::vector<AppDescription> descriptions(app_labels_length);
+  for (int i = 0; i < app_labels_length; ++i) {
+    descriptions[i].label = japp_labels.Get(env, i).ConvertTo<std::string>(env);
+    descriptions[i].sublabel =
+        japp_sublabels.Get(env, i).ConvertTo<std::string>(env);
+    descriptions[i].total = japp_totals.Get(env, i).ConvertTo<std::string>(env);
   }
 
   auto* callback = reinterpret_cast<SetAppDescriptionsCallback*>(callback_ptr);
