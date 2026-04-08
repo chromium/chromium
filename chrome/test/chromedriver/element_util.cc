@@ -473,6 +473,21 @@ Status IsElementFocused(
   return Status(kOk);
 }
 
+Status IsElementActive(Session* session,
+                       WebView* web_view,
+                       const std::string& element_id,
+                       bool* is_active) {
+  std::unique_ptr<base::Value> active;
+  Status status = GetActiveElement(session, web_view, &active);
+  if (status.IsError()) {
+    *is_active = false;
+    return status;
+  }
+  base::Value element_dict = CreateElement(element_id, session->w3c_compliant);
+  *is_active = *active == element_dict;
+  return status;
+}
+
 Status IsDocumentTypeXml(
     Session* session,
     WebView* web_view,

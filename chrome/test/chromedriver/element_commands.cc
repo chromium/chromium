@@ -107,8 +107,19 @@ Status FocusToElement(
         session, web_view, element_id, true, &is_displayed);
     if (status.IsError())
       return status;
-    if (is_displayed)
+    if (is_displayed) {
+      // Check if the element is already the active element so we can
+      // skip the unnecessary kFocusScript call below, which disrupts
+      // selection state in contenteditable elements.
+      // We compare against document.activeElement directly rather than
+      // using IsElementFocused(), because the latter gates on
+      // document.hasFocus() which returns false in headless mode.
+      status = IsElementActive(session, web_view, element_id, &is_focused);
+      if (status.IsError()) {
+        return status;
+      }
       break;
+    }
     status = IsElementFocused(session, web_view, element_id, &is_focused);
     if (status.IsError())
       return status;
@@ -674,13 +685,14 @@ Status ExecuteSendKeysToElement(Session* session,
   bool is_text = is_text_control_type || is_textarea;
 
   if (get_content_editable->is_bool() && get_content_editable->GetBool()) {
-    // If element is contentEditable
-    // check if element is focused
+    // If element is contentEditable check if element is focused.
+    // We check against the active element directly rather than using
+    // IsElementFocused(), because the latter gates on document.hasFocus() which
+    // returns false in headless mode.
     bool is_focused = false;
-    status = IsElementFocused(session, web_view, element_id, &is_focused);
+    status = IsElementActive(session, web_view, element_id, &is_focused);
     if (status.IsError())
       return status;
-
     // Get top level contentEditable element
     std::unique_ptr<base::Value> result;
     status = web_view->CallFunction(session->GetCurrentFrameId(),
@@ -705,7 +717,7 @@ Status ExecuteSendKeysToElement(Session* session,
     // check if top level contentEditable element is focused
     bool is_top_focused = false;
     status =
-        IsElementFocused(session, web_view, *top_element_id, &is_top_focused);
+        IsElementActive(session, web_view, *top_element_id, &is_top_focused);
     if (status.IsError())
       return status;
     // If is_text we want to send keys to the element
