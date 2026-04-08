@@ -33,11 +33,6 @@ namespace favicon {
 // alphabetical order.
 BASE_DECLARE_FEATURE(kUseLastVisitedFallbackURLFavicon);
 
-// The favicon sizes that will be tracked in the histograms. This should be kept
-// in sync with the variants here:
-// tools/metrics/histograms/metadata/favicons/histograms.xml.
-static const std::array<int, 3> icon_sizes = {16, 24, 48};
-
 // The maximum number of bitmaps for a single icon URL which can be stored in
 // the favicon database.
 static const size_t kMaxFaviconBitmapsPerIconURL = 8;

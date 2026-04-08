@@ -195,24 +195,6 @@ FaviconBackend::GetFaviconsForUrl(const GURL& page_url,
                                  desired_sizes[0], bitmap_results));
   }
 
-  for (auto size : desired_sizes) {
-    // Only record histograms for sizes that are on the |icon_sizes| allowlist.
-    if (std::find(icon_sizes.begin(), icon_sizes.end(), size) ==
-        icon_sizes.end()) {
-      continue;
-    }
-    bool size_found = false;
-    for (auto result : bitmap_results) {
-      if (result.pixel_size.width() == size &&
-          result.pixel_size.height() == size) {
-        size_found = true;
-        break;
-      }
-    }
-    base::UmaHistogramBoolean(
-        "Favicons.IconSuccess." + base::NumberToString(size) + "px",
-        size_found);
-  }
   return bitmap_results;
 }
 

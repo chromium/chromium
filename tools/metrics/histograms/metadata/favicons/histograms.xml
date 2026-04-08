@@ -45,25 +45,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Favicons.IconSuccess.{IconSizes}" enum="BooleanSuccess"
-    expires_after="2026-04-26">
-  <owner>mastiz@chromium.org</owner>
-  <owner>pkotwicz@chromium.org</owner>
-  <summary>
-    Records whether for a given size the favicon service successfully returned a
-    favicon or not. The favicon service is called when a favicon is requested
-    through a navigation to chrome://favicon2. A request for &quot;largest
-    available size&quot; doesn't cause an emit to this histogram. If a request
-    indicates multiple sizes of favicons are appropriate, this histogram is
-    emitted multiple times (even though only one favicon is returned).
-  </summary>
-  <token key="IconSizes">
-    <variant name="16px"/>
-    <variant name="24px"/>
-    <variant name="48px"/>
-  </token>
-</histogram>
-
 <histogram name="Favicons.LargeIconService.DownloadedSize" units="pixels"
     expires_after="never">
 <!-- expires-never: This metric is needed for informing future UX decisions on
