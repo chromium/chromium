@@ -24,6 +24,16 @@ This file defines enums used in Critical User Journey histograms.
 
 <!-- Define the steps for your journeys below! -->
 
+<!-- LINT.IfChange(PinExtensionJourneySteps) -->
+
+<enum name="PinExtensionJourneySteps">
+  <int value="1" label="Clicked the extensions toolbar button"/>
+  <int value="2" label="Pin extension via menu item"/>
+  <int value="3" label="Pin the extension via the side panel pin button"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h:PinExtensionJourneySteps) -->
+
 <!-- LINT.IfChange(ViewDownloadedFileFromAppMenuJourneySteps) -->
 
 <enum name="ViewDownloadedFileFromAppMenuJourneySteps">

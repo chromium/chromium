@@ -61,10 +61,15 @@ CriticalUserJourney::Builder& CriticalUserJourney::Builder::AddAnyOf(
   step->type = ui::InteractionSequence::StepType::kSubsequence;
   step->mode = ui::InteractionSequence::SubsequenceMode::kAtLeastOne;
   for (const auto& branch : branches) {
-    auto branch_journey = CriticalUserJourney::Builder(nullptr)
-                              .AddStep(branch.id, branch.type, branch.metric_id)
-                              .Build();
-    step->branches.push_back(std::move(branch_journey));
+    CriticalUserJourney::Builder cuj_builder =
+        CriticalUserJourney::Builder(nullptr);
+    if (branch.id) {
+      cuj_builder.AddStep(branch.id, branch.type, branch.metric_id);
+    } else {
+      cuj_builder.AddStep(branch.custom_event_type, branch.type,
+                          branch.metric_id);
+    }
+    step->branches.push_back(cuj_builder.Build());
   }
   steps_.push_back(std::move(step));
   return *this;

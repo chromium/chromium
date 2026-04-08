@@ -21,6 +21,10 @@ void CriticalUserJourneyRegistry::AddJourneys() {
   HatsParams download_hats_params;
   download_hats_params.trigger = metrics::kHatsSurveyTriggerDownloadJourney;
 
+  HatsParams pin_extension_hats_params;
+  pin_extension_hats_params.trigger =
+      metrics::kHatsSurveyTriggerPinExtensionJourney;
+
   AddJourney(
       CriticalUserJourney::Builder(&kViewDownloadedFileJourney)
           .AddStep(kDownloadEndedCustomEventId,
@@ -58,6 +62,20 @@ void CriticalUserJourneyRegistry::AddJourneys() {
               ui::InteractionSequence::StepType::kCustomEvent,
               ViewDownloadedFileFromAppMenuJourneySteps::kDownloadedFileClicked)
           .LaunchHatsSurveyOnCompletion(download_hats_params)
+          .Build());
+
+  AddJourney(
+      metrics::CriticalUserJourney::Builder(&kPinExtensionJourney)
+          .AddStep(kExtensionsMenuButtonElementId,
+                   ui::InteractionSequence::StepType::kActivated,
+                   PinExtensionJourneySteps::kExtensionsMenuButtonClicked)
+          .AddAnyOf(
+              {Branch(kExtensionsMenuPinExtensionsEventId,
+                      PinExtensionJourneySteps::kPinExtensionsViaMenuItem),
+               Branch(kExtensionsSidePanelPinExtensionsEventId,
+                      PinExtensionJourneySteps::
+                          kPinExtensionsViaSidePanelPinButton)})
+          .LaunchHatsSurveyOnCompletion(pin_extension_hats_params)
           .Build());
 }
 

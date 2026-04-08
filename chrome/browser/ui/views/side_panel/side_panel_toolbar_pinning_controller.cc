@@ -7,6 +7,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_metrics.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_helper.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "ui/views/interaction/element_tracker_views.h"
 
 SidePanelToolbarPinningController::SidePanelToolbarPinningController(
     BrowserView* browser_view)
@@ -93,6 +95,10 @@ void SidePanelToolbarPinningController::UpdatePinState(
 
     updated_pin_state = !actions_model->IsActionPinned(*extension_id);
     actions_model->SetActionVisibility(*extension_id, updated_pin_state);
+    if (updated_pin_state) {
+      views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+          kExtensionsSidePanelPinExtensionsEventId, browser_view_);
+    }
   } else {
     PinnedToolbarActionsModel* const actions_model =
         PinnedToolbarActionsModel::Get(profile);
