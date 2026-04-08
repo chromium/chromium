@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -76,6 +77,11 @@ std::unique_ptr<NativePixmapGLBinding> NativePixmapEGLBinding::Create(
     return nullptr;
   }
   return binding;
+}
+
+template <typename T>
+void PushEGLintOrDie(T value, std::vector<EGLint>& attrs) {
+  attrs.push_back(base::checked_cast<EGLint>(value));
 }
 
 bool NativePixmapEGLBinding::InitializeFromNativePixmap(
@@ -185,7 +191,7 @@ bool NativePixmapEGLBinding::InitializeFromNativePixmap(
       attrs.push_back(kPlaneFDAttrs[attrs_plane]);
       attrs.push_back(pixmap->GetDmaBufFd(attrs_plane));
       attrs.push_back(kPlaneOffsetAttrs[attrs_plane]);
-      attrs.push_back(pixmap->GetDmaBufOffset(attrs_plane));
+      PushEGLintOrDie(pixmap->GetDmaBufOffset(attrs_plane), attrs);
       attrs.push_back(kPlanePitchAttrs[attrs_plane]);
       attrs.push_back(pixmap->GetDmaBufPitch(attrs_plane));
 
@@ -195,9 +201,9 @@ bool NativePixmapEGLBinding::InitializeFromNativePixmap(
         DCHECK(attrs_plane < std::size(kPlaneLoModifierAttrs));
         DCHECK(attrs_plane < std::size(kPlaneHiModifierAttrs));
         attrs.push_back(kPlaneLoModifierAttrs[attrs_plane]);
-        attrs.push_back(modifier & 0xffffffff);
+        PushEGLintOrDie(modifier & 0xffffffff, attrs);
         attrs.push_back(kPlaneHiModifierAttrs[attrs_plane]);
-        attrs.push_back(static_cast<uint32_t>(modifier >> 32));
+        PushEGLintOrDie(static_cast<uint32_t>(modifier >> 32), attrs);
       }
     }
     attrs.push_back(EGL_NONE);
@@ -207,7 +213,7 @@ bool NativePixmapEGLBinding::InitializeFromNativePixmap(
     attrs.push_back(EGL_DMA_BUF_PLANE0_FD_EXT);
     attrs.push_back(pixmap->GetDmaBufFd(pixmap_plane));
     attrs.push_back(EGL_DMA_BUF_PLANE0_OFFSET_EXT);
-    attrs.push_back(pixmap->GetDmaBufOffset(pixmap_plane));
+    PushEGLintOrDie(pixmap->GetDmaBufOffset(pixmap_plane), attrs);
     attrs.push_back(EGL_DMA_BUF_PLANE0_PITCH_EXT);
     attrs.push_back(pixmap->GetDmaBufPitch(pixmap_plane));
     attrs.push_back(EGL_NONE);
