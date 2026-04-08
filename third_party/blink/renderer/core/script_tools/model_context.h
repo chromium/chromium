@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_model_context.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_tool_execute_callback.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/script_tools/script_tool_types.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
@@ -53,10 +54,12 @@ class CORE_EXPORT ToolData : public GarbageCollected<ToolData> {
   ToolData(base::PassKey<ModelContext>,
            mojo::StructPtr<mojom::blink::ScriptTool> script_tool,
            V8ToolExecuteCallback* v8_tool_function,
-           SourceLocation* source_location)
+           SourceLocation* source_location,
+           AbortSignal::AlgorithmHandle* abort_handle)
       : script_tool_(std::move(script_tool)),
         v8_tool_function_(v8_tool_function),
-        source_location_(source_location) {}
+        source_location_(source_location),
+        abort_algorithm_handle_(abort_handle) {}
 
   // Creates a declarative (<form>-backed) tool.
   ToolData(base::PassKey<ModelContext>,
@@ -96,6 +99,8 @@ class CORE_EXPORT ToolData : public GarbageCollected<ToolData> {
   Member<DeclarativeWebMCPTool> declarative_tool_;
   // For JS-provided MCP tools, the location of the registerTool() call.
   Member<SourceLocation> source_location_;
+  // Keeps the abort algorithm handle alive as long as the tool is registered.
+  Member<AbortSignal::AlgorithmHandle> abort_algorithm_handle_ = nullptr;
 };
 
 class CORE_EXPORT ModelContext : public ScriptWrappable {

@@ -259,6 +259,7 @@ void ModelContext::registerTool(ScriptState* script_state,
     }
   }
 
+  AbortSignal::AlgorithmHandle* abort_handle = nullptr;
   if (options && options->hasSignal()) {
     AbortSignal* signal = options->signal();
     if (signal->aborted()) {
@@ -272,14 +273,9 @@ void ModelContext::registerTool(ScriptState* script_state,
       return;
     }
 
-    // We intentionally do not use `ScopedAbortState` or otherwise explicitly
-    // manage this algorithm handle. For imperative tools, the tool's
-    // registration lifecycle is exactly bound to the given abort signal. Since
-    // the signal automatically clears its internal algorithm list upon
-    // aborting, no explicit cleanup is required here. If there were a way to
-    // unregister an imperative tools otherwise, then during that process we
-    // would remove the unregistration algorithm from the given signal.
-    std::ignore = signal->AddAlgorithm(
+    // Grab the `AlgorithmHandle` and tie its lifetime to `ToolData` farther
+    // below.
+    abort_handle = signal->AddAlgorithm(
         MakeGarbageCollected<ToolUnregisterAbortAlgorithm>(this, tool->name()));
   }
 
@@ -297,7 +293,8 @@ void ModelContext::registerTool(ScriptState* script_state,
   auto* tool_data = MakeGarbageCollected<ToolData>(
       base::PassKey<ModelContext>(), std::move(script_tool),
       /*v8_tool_function=*/tool->execute(),
-      CaptureSourceLocation(ExecutionContext::From(script_state)));
+      CaptureSourceLocation(ExecutionContext::From(script_state)),
+      abort_handle);
 
   tool_map_.insert(tool->name(), tool_data);
   probe::WebMCPToolAdded(document_, *tool_data);
@@ -670,6 +667,7 @@ void ToolData::Trace(Visitor* visitor) const {
   visitor->Trace(v8_tool_function_);
   visitor->Trace(declarative_tool_);
   visitor->Trace(source_location_);
+  visitor->Trace(abort_algorithm_handle_);
 }
 
 void ToolData::RefreshDeclarativeInputSchema() {
