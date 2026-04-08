@@ -341,11 +341,6 @@ class TestBluetoothDelegate : public BluetoothDelegate {
   TestBluetoothDelegate& operator=(const TestBluetoothDelegate&) = delete;
 
   // BluetoothDelegate:
-  std::unique_ptr<BluetoothChooser> RunBluetoothChooser(
-      RenderFrameHost* frame,
-      const BluetoothChooser::EventHandler& event_handler) override {
-    return nullptr;
-  }
   std::unique_ptr<BluetoothScanningPrompt> ShowBluetoothScanningPrompt(
       RenderFrameHost* frame,
       const BluetoothScanningPrompt::EventHandler& event_handler) override {
@@ -363,57 +358,14 @@ class TestBluetoothDelegate : public BluetoothDelegate {
     std::move(callback).Run(PairPromptResult(PairPromptStatus::kCancelled));
   }
 
-  blink::WebBluetoothDeviceId GetWebBluetoothDeviceId(
-      RenderFrameHost* frame,
-      const std::string& device_address) override {
-    return blink::WebBluetoothDeviceId();
-  }
-  std::string GetDeviceAddress(RenderFrameHost* frame,
-                               const blink::WebBluetoothDeviceId&) override {
-    return std::string();
-  }
-  blink::WebBluetoothDeviceId AddScannedDevice(
-      RenderFrameHost* frame,
-      const std::string& device_address) override {
-    return blink::WebBluetoothDeviceId();
-  }
-  blink::WebBluetoothDeviceId GrantServiceAccessPermission(
-      RenderFrameHost* frame,
-      const device::BluetoothDevice* device,
-      const blink::mojom::WebBluetoothRequestDeviceOptions* options) override {
-    return blink::WebBluetoothDeviceId();
-  }
   bool HasDevicePermission(
       RenderFrameHost* frame,
       const blink::WebBluetoothDeviceId& device_id) override {
     return has_device_permission_;
   }
+
   void set_has_device_permission(bool value) {
     has_device_permission_ = value;
-  }
-  void RevokeDevicePermissionWebInitiated(
-      RenderFrameHost* frame,
-      const blink::WebBluetoothDeviceId& device_id) override {}
-  bool MayUseBluetooth(RenderFrameHost* rfh) override { return true; }
-  bool IsAllowedToAccessService(RenderFrameHost* frame,
-                                const blink::WebBluetoothDeviceId& device_id,
-                                const device::BluetoothUUID& service) override {
-    return false;
-  }
-  bool IsAllowedToAccessAtLeastOneService(
-      RenderFrameHost* frame,
-      const blink::WebBluetoothDeviceId& device_id) override {
-    return false;
-  }
-  bool IsAllowedToAccessManufacturerData(
-      RenderFrameHost* frame,
-      const blink::WebBluetoothDeviceId& device_id,
-      const uint16_t manufacturer_code) override {
-    return false;
-  }
-  std::vector<blink::mojom::WebBluetoothDevicePtr> GetPermittedDevices(
-      RenderFrameHost* frame) override {
-    return {};
   }
 
   void RunBluetoothScanningPromptEventCallback(
@@ -424,10 +376,6 @@ class TestBluetoothDelegate : public BluetoothDelegate {
     }
     prompt_->RunPromptEventCallback(event);
   }
-
-  void AddFramePermissionObserver(FramePermissionObserver* observer) override {}
-  void RemoveFramePermissionObserver(
-      FramePermissionObserver* observer) override {}
 
  private:
   bool has_device_permission_ = false;

@@ -113,10 +113,6 @@ void FakeBluetoothDelegate::RevokeDevicePermissionWebInitiated(
                 [device_id](auto& entry) { return entry.second == device_id; });
 }
 
-bool FakeBluetoothDelegate::MayUseBluetooth(RenderFrameHost* rfh) {
-  return true;
-}
-
 bool FakeBluetoothDelegate::IsAllowedToAccessService(
     RenderFrameHost* frame,
     const WebBluetoothDeviceId& device_id,
@@ -149,12 +145,6 @@ bool FakeBluetoothDelegate::IsAllowedToAccessManufacturerData(
 
   return id_to_manufacturer_data_it->second.contains(manufacturer_code);
 }
-
-void FakeBluetoothDelegate::AddFramePermissionObserver(
-    FramePermissionObserver* observer) {}
-
-void FakeBluetoothDelegate::RemoveFramePermissionObserver(
-    FramePermissionObserver* observer) {}
 
 std::vector<blink::mojom::WebBluetoothDevicePtr>
 FakeBluetoothDelegate::GetPermittedDevices(RenderFrameHost* frame) {

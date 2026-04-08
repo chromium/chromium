@@ -94,13 +94,13 @@ class CONTENT_EXPORT BluetoothDelegate {
   // EventHandler should live at least as long as the returned chooser object.
   virtual std::unique_ptr<BluetoothChooser> RunBluetoothChooser(
       RenderFrameHost* frame,
-      const BluetoothChooser::EventHandler& event_handler) = 0;
+      const BluetoothChooser::EventHandler& event_handler);
 
   // Shows a prompt for the user to allow/block Bluetooth scanning. The
   // EventHandler should live at least as long as the returned prompt object.
   virtual std::unique_ptr<BluetoothScanningPrompt> ShowBluetoothScanningPrompt(
       RenderFrameHost* frame,
-      const BluetoothScanningPrompt::EventHandler& event_handler) = 0;
+      const BluetoothScanningPrompt::EventHandler& event_handler);
 
   // Prompt the user (via dialog, etc.) for pairing Bluetooth device
   // |device_identifier| is any string the caller wants to display
@@ -109,26 +109,25 @@ class CONTENT_EXPORT BluetoothDelegate {
   // from this function, for example, if a credential prompt for the given
   // |frame| is already displayed.
   // |pairing_kind| is to determine which pairing kind of prompt to be created
-  virtual void ShowDevicePairPrompt(
-      RenderFrameHost* frame,
-      const std::u16string& device_identifier,
-      PairPromptCallback callback,
-      PairingKind pairing_kind,
-      const std::optional<std::u16string>& pin) = 0;
+  virtual void ShowDevicePairPrompt(RenderFrameHost* frame,
+                                    const std::u16string& device_identifier,
+                                    PairPromptCallback callback,
+                                    PairingKind pairing_kind,
+                                    const std::optional<std::u16string>& pin) {}
 
   // This should return the WebBluetoothDeviceId that corresponds to the device
   // with |device_address| in the current |frame|. If there is not a
   // corresponding ID, then an invalid WebBluetoothDeviceId should be returned.
   virtual blink::WebBluetoothDeviceId GetWebBluetoothDeviceId(
       RenderFrameHost* frame,
-      const std::string& device_address) = 0;
+      const std::string& device_address);
 
   // This should return the device address corresponding to a device with
   // |device_id| in the current |frame|. If there is not a corresponding
   // address, then an empty string should be returned.
   virtual std::string GetDeviceAddress(
       RenderFrameHost* frame,
-      const blink::WebBluetoothDeviceId& device_id) = 0;
+      const blink::WebBluetoothDeviceId& device_id);
 
   // This should return the WebBluetoothDeviceId for |device_address| if the
   // device has been assigned an ID previously through AddScannedDevice() or
@@ -137,7 +136,7 @@ class CONTENT_EXPORT BluetoothDelegate {
   // access should not be granted to these devices.
   virtual blink::WebBluetoothDeviceId AddScannedDevice(
       RenderFrameHost* frame,
-      const std::string& device_address) = 0;
+      const std::string& device_address);
 
   // This should grant permission to the requesting and embedding origins
   // represented by |frame| to connect to the device with |device_address| and
@@ -146,35 +145,35 @@ class CONTENT_EXPORT BluetoothDelegate {
   virtual blink::WebBluetoothDeviceId GrantServiceAccessPermission(
       RenderFrameHost* frame,
       const device::BluetoothDevice* device,
-      const blink::mojom::WebBluetoothRequestDeviceOptions* options) = 0;
+      const blink::mojom::WebBluetoothRequestDeviceOptions* options);
 
   // This should return true if |frame| has been granted permission to access
   // the device with |device_id| through GrantServiceAccessPermission().
   // |device_id|s generated with AddScannedDevices() should return false.
   virtual bool HasDevicePermission(
       RenderFrameHost* frame,
-      const blink::WebBluetoothDeviceId& device_id) = 0;
+      const blink::WebBluetoothDeviceId& device_id);
 
   // Revokes |frame| access to the Bluetooth device ordered by website.
   virtual void RevokeDevicePermissionWebInitiated(
       RenderFrameHost* frame,
-      const blink::WebBluetoothDeviceId& device_id) = 0;
+      const blink::WebBluetoothDeviceId& device_id) {}
 
   // This should return true if |frame| is allowed to use bluetooth.
-  virtual bool MayUseBluetooth(RenderFrameHost* frame) = 0;
+  virtual bool MayUseBluetooth(RenderFrameHost* frame);
 
   // This should return true if |frame| has permission to access |service| from
   // the device with |device_id|.
   virtual bool IsAllowedToAccessService(
       RenderFrameHost* frame,
       const blink::WebBluetoothDeviceId& device_id,
-      const device::BluetoothUUID& service) = 0;
+      const device::BluetoothUUID& service);
 
   // This should return true if |frame| can access at least one service from the
   // device with |device_id|.
   virtual bool IsAllowedToAccessAtLeastOneService(
       RenderFrameHost* frame,
-      const blink::WebBluetoothDeviceId& device_id) = 0;
+      const blink::WebBluetoothDeviceId& device_id);
 
   // This should return true if |frame| has permission to access data associated
   // with |manufacturer_code| from advertisement packets from the device with
@@ -182,7 +181,7 @@ class CONTENT_EXPORT BluetoothDelegate {
   virtual bool IsAllowedToAccessManufacturerData(
       RenderFrameHost* frame,
       const blink::WebBluetoothDeviceId& device_id,
-      uint16_t manufacturer_code) = 0;
+      uint16_t manufacturer_code);
 
   // This should return a list of devices that the origin in |frame| has been
   // allowed to access. Access permission is granted with
@@ -191,16 +190,15 @@ class CONTENT_EXPORT BluetoothDelegate {
   // objects, which contain the necessary fields to create the BluetoothDevice
   // JavaScript objects.
   virtual std::vector<blink::mojom::WebBluetoothDevicePtr> GetPermittedDevices(
-      RenderFrameHost* frame) = 0;
+      RenderFrameHost* frame);
 
   // Add a permission observer to allow observing permission revocation effects
   // for a particular frame.
-  virtual void AddFramePermissionObserver(
-      FramePermissionObserver* observer) = 0;
+  virtual void AddFramePermissionObserver(FramePermissionObserver* observer) {}
 
   // Remove a previously added permission observer.
   virtual void RemoveFramePermissionObserver(
-      FramePermissionObserver* observer) = 0;
+      FramePermissionObserver* observer) {}
 
   // Allow the embedder to control whether we can use Web Bluetooth.
   // TODO(crbug.com/40458188): Replace this with a use of the permission system.

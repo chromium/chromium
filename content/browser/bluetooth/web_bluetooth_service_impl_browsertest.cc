@@ -180,56 +180,6 @@ class TestBluetoothDelegate : public BluetoothDelegate {
     NOTREACHED();
   }
 
-  blink::WebBluetoothDeviceId GetWebBluetoothDeviceId(
-      RenderFrameHost* frame,
-      const std::string& device_address) override {
-    return blink::WebBluetoothDeviceId();
-  }
-  std::string GetDeviceAddress(RenderFrameHost* frame,
-                               const blink::WebBluetoothDeviceId&) override {
-    return std::string();
-  }
-  blink::WebBluetoothDeviceId AddScannedDevice(
-      RenderFrameHost* frame,
-      const std::string& device_address) override {
-    return blink::WebBluetoothDeviceId();
-  }
-  blink::WebBluetoothDeviceId GrantServiceAccessPermission(
-      RenderFrameHost* frame,
-      const device::BluetoothDevice* device,
-      const blink::mojom::WebBluetoothRequestDeviceOptions* options) override {
-    return blink::WebBluetoothDeviceId();
-  }
-  bool HasDevicePermission(
-      RenderFrameHost* frame,
-      const blink::WebBluetoothDeviceId& device_id) override {
-    return false;
-  }
-  void RevokeDevicePermissionWebInitiated(
-      RenderFrameHost* frame,
-      const blink::WebBluetoothDeviceId& device_id) override {}
-  bool IsAllowedToAccessService(RenderFrameHost* frame,
-                                const blink::WebBluetoothDeviceId& device_id,
-                                const device::BluetoothUUID& service) override {
-    return false;
-  }
-  bool MayUseBluetooth(RenderFrameHost* rfh) override { return true; }
-  bool IsAllowedToAccessAtLeastOneService(
-      RenderFrameHost* frame,
-      const blink::WebBluetoothDeviceId& device_id) override {
-    return false;
-  }
-  bool IsAllowedToAccessManufacturerData(
-      RenderFrameHost* frame,
-      const blink::WebBluetoothDeviceId& device_id,
-      const uint16_t manufacturer_code) override {
-    return false;
-  }
-  std::vector<blink::mojom::WebBluetoothDevicePtr> GetPermittedDevices(
-      RenderFrameHost* frame) override {
-    return {};
-  }
-
   AllowWebBluetoothResult AllowWebBluetooth(
       content::BrowserContext* browser_context,
       const url::Origin& requesting_origin,
@@ -240,10 +190,6 @@ class TestBluetoothDelegate : public BluetoothDelegate {
     }
     return AllowWebBluetoothResult::kAllow;
   }
-
-  void AddFramePermissionObserver(FramePermissionObserver* observer) override {}
-  void RemoveFramePermissionObserver(
-      FramePermissionObserver* observer) override {}
 
   void WaitForShowBluetoothScanningPrompt() {
     if (showed_bluetooth_scanning_prompt_)
