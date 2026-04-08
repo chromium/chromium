@@ -231,20 +231,21 @@ bool ReadPixmap(PaintOpReader& reader, SkPixmap& pixmap) {
   }
 
   reader.AlignMemory(alignment);
-  const volatile void* data = reader.ExtractReadableMemory(data_size);
+  auto data = reader.ExtractReadableMemory(data_size);
   if (!reader.valid()) {
     DLOG(ERROR) << "Failed to read pixels";
     return false;
   }
-  if (reinterpret_cast<uintptr_t>(data) % alignment) {
+  if (reinterpret_cast<uintptr_t>(data.data()) % alignment) {
     DLOG(ERROR) << "Pixel pointer not aligned";
     return false;
   }
 
-  // Const-cast away the "volatile" on |pixel_data|. We specifically understand
+  // Const-cast away the "volatile" on `data`. We specifically understand
   // that a malicious caller may change our pixels under us, and are OK with
   // this as the worst case scenario is visual corruption.
-  pixmap = SkPixmap(image_info, const_cast<const void*>(data), row_bytes);
+  pixmap =
+      SkPixmap(image_info, const_cast<const uint8_t*>(data.data()), row_bytes);
   return true;
 }
 

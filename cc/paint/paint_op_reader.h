@@ -68,7 +68,7 @@ class CC_PAINT_EXPORT PaintOpReader {
   }
 
   bool valid() const { return valid_; }
-  size_t remaining_bytes() const { return remaining_bytes_; }
+  size_t remaining_bytes() const { return remaining_.size(); }
 
   void ReadData(base::span<uint8_t> data);
   void ReadSize(size_t* size);
@@ -159,7 +159,7 @@ class CC_PAINT_EXPORT PaintOpReader {
   // there is not enough data, the PaintOpReader is marked invalid.
   template <typename T>
   bool CanReadVector(size_t size, const std::vector<T>& vec) {
-    if (size > vec.max_size() || remaining_bytes_ < size * sizeof(T))
+    if (size > vec.max_size() || remaining_.size() < size * sizeof(T))
         [[unlikely]] {
       SetInvalid(DeserializationError::kInsufficientRemainingBytes_ReadData);
       return false;
@@ -177,10 +177,10 @@ class CC_PAINT_EXPORT PaintOpReader {
     }
   }
 
-  // Returns a pointer to the next block of memory of size |bytes|, and treats
-  // this memory as read (advancing the reader). Returns nullptr if |bytes|
-  // would exceed the available budfer.
-  const volatile void* ExtractReadableMemory(size_t bytes);
+  // Returns a span over the next block of memory of size `bytes`, and treats
+  // this memory as read (advancing the reader). Returns an empty span if
+  // `bytes` would exceed the available buffer.
+  base::span<const volatile uint8_t> ExtractReadableMemory(size_t bytes);
 
   // Aligns the memory to the given `alignment` which must be within the range
   // of [PaintOpWriter::kDefaultAlignment, BufferAlignment()].
@@ -188,7 +188,8 @@ class CC_PAINT_EXPORT PaintOpReader {
 
   void AssertFieldAlignment() {
 #if DCHECK_IS_ON()
-    PaintOpWriter::AssertAlignment(memory_, PaintOpWriter::kDefaultAlignment);
+    PaintOpWriter::AssertAlignment(remaining_.data(),
+                                   PaintOpWriter::kDefaultAlignment);
 #endif
   }
 
@@ -376,8 +377,7 @@ class CC_PAINT_EXPORT PaintOpReader {
     }
   }
 
-  const volatile uint8_t* memory_ = nullptr;
-  size_t remaining_bytes_ = 0u;
+  base::span<const volatile uint8_t> remaining_;
   bool valid_ = true;
   const PaintOp::DeserializeOptions& options_;
 
