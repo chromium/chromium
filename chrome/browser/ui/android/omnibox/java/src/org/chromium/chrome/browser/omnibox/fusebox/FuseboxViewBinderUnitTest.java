@@ -77,6 +77,7 @@ public class FuseboxViewBinderUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private AnchoredPopupWindow mPopupWindow;
+    @Mock private DynamicRectProvider mDynamicRectProvider;
 
     private final PropertyModel mModel = new PropertyModel(FuseboxProperties.ALL_KEYS);
 
@@ -99,7 +100,7 @@ public class FuseboxViewBinderUnitTest {
                                 .inflate(R.layout.fusebox_context_popup, /* root= */ null);
         doReturn(popupView).when(mPopupWindow).getContentView();
 
-        mPopup = new FuseboxPopup(activity, mPopupWindow, popupView);
+        mPopup = new FuseboxPopup(activity, mPopupWindow, popupView, mDynamicRectProvider);
         mViewHolder = new FuseboxViewHolder(parent, mPopup);
 
         // Initialize workable defaults.

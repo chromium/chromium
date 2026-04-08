@@ -15,6 +15,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupState;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 
 import java.util.ArrayList;
@@ -49,8 +50,15 @@ class FuseboxPopup {
     /* package */ final List<View> mDividers;
     /* package */ final List<TextView> mHeaders;
 
-    FuseboxPopup(Context context, AnchoredPopupWindow popupWindow, View contentView) {
+    private final DynamicRectProvider mDynamicRectProvider;
+
+    FuseboxPopup(
+            Context context,
+            AnchoredPopupWindow popupWindow,
+            View contentView,
+            DynamicRectProvider dynamicRectProvider) {
         mPopupWindow = popupWindow;
+        mDynamicRectProvider = dynamicRectProvider;
         mViewGroup = contentView.findViewById(R.id.fusebox_view_group);
 
         mAddCurrentTab = contentView.findViewById(R.id.fusebox_add_current_tab);
@@ -87,6 +95,7 @@ class FuseboxPopup {
         mHeaders = List.of(mToolsHeader, mModelsHeader);
     }
 
+    /** Show the popup window. */
     void show() {
         mPopupWindow.show();
         // TODO(crbug.com/470324794): This isn't right. Figure out why AnchoredPopupWindow won't
@@ -95,6 +104,26 @@ class FuseboxPopup {
                 TaskTraits.UI_DEFAULT,
                 this::focusFirstViewForAccessibility,
                 ACCESSIBILITY_VIEW_FOCUS_DELAY_MS);
+    }
+
+    /**
+     * Apply the requested PopupState to the popup. This may involve switching the anchor and
+     * updating the content size.
+     *
+     * @param state The target state of the popup.
+     */
+    void setPopupState(@PopupState int state) {
+        if (state == PopupState.HIDDEN) {
+            dismiss();
+            return;
+        }
+
+        mDynamicRectProvider.setPopupState(state);
+        int width =
+                mDynamicRectProvider.getPopupWidth(state, mViewGroup.getContext().getResources());
+
+        mPopupWindow.updateDesiredContentSize(width, /* height= */ 0, /* updateLayout= */ true);
+        show();
     }
 
     /**
@@ -124,10 +153,12 @@ class FuseboxPopup {
         viewForAccessibility.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
     }
 
+    /** Dismiss the popup window. */
     void dismiss() {
         mPopupWindow.dismiss();
     }
 
+    /** Returns whether the popup window is currently showing. */
     boolean isShowing() {
         return mPopupWindow.isShowing();
     }

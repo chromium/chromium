@@ -19,8 +19,10 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /** The properties associated with the Fusebox bar. */
 @NullMarked
@@ -31,6 +33,21 @@ class FuseboxProperties {
         int ATTACHMENT = 0;
         int TOOL = 1;
         int MODEL = 2;
+    }
+
+    /** The possible states of the Fusebox popup. */
+    @IntDef({PopupState.HIDDEN, PopupState.FLOATING, PopupState.BOTTOM})
+    @Retention(RetentionPolicy.SOURCE)
+    @Target({ElementType.TYPE_USE})
+    public @interface PopupState {
+        /** The popup is hidden. */
+        int HIDDEN = 0;
+
+        /** The popup is floating near the anchor. */
+        int FLOATING = 1;
+
+        /** The popup is anchored at the bottom of the screen. */
+        int BOTTOM = 2;
     }
 
     /** Encapsulates the state for a button in the Fusebox popup. */
@@ -187,6 +204,10 @@ class FuseboxProperties {
     public static final WritableBooleanPropertyKey POPUP_MODEL_HEADER_VISIBLE =
             new WritableBooleanPropertyKey();
 
+    /** The state of the popup. */
+    public static final WritableObjectPropertyKey<@PopupState Integer> POPUP_STATE =
+            new WritableObjectPropertyKey<>();
+
     /** Action to perform when the user clicks the AI Mode button in the popup. */
     public static final WritableObjectPropertyKey<Runnable> POPUP_TOOL_AI_MODE_CLICKED =
             new WritableObjectPropertyKey<>();
@@ -279,6 +300,7 @@ class FuseboxProperties {
         POPUP_MODEL_BUTTON_DATA_LIST,
         POPUP_MODEL_DIVIDER_VISIBLE,
         POPUP_MODEL_HEADER_VISIBLE,
+        POPUP_STATE,
         POPUP_TOOL_AI_MODE_CLICKED,
         POPUP_TOOL_AI_MODE_ENABLED,
         POPUP_TOOL_AI_MODE_VISIBLE,

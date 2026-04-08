@@ -181,6 +181,8 @@ class FuseboxViewBinder {
                     model.get(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE)
                             ? View.VISIBLE
                             : View.GONE);
+        } else if (propertyKey == FuseboxProperties.POPUP_STATE) {
+            view.popup.setPopupState(model.get(FuseboxProperties.POPUP_STATE));
         } else if (propertyKey == FuseboxProperties.POPUP_TOOL_AI_MODE_CLICKED) {
             view.popup.mAiModeButton.setOnClickListener(
                     v -> model.get(FuseboxProperties.POPUP_TOOL_AI_MODE_CLICKED).run());
