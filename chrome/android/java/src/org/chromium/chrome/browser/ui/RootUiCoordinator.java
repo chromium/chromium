@@ -707,8 +707,13 @@ public class RootUiCoordinator
                             public void enterImmersiveMode() {
                                 DisplayAndroid display =
                                         DisplayAndroid.getNonMultiDisplay(mActivity);
+                                Tab tab = mActivityTabProvider.get();
+                                if (tab == null) {
+                                    return;
+                                }
+
                                 mFullscreenManager.onEnterFullscreen(
-                                        mActivityTabProvider.get(),
+                                        tab,
                                         new FullscreenOptions(
                                                 /* showNavigationBar= */ false,
                                                 /* showStatusBar= */ false,
@@ -1094,6 +1099,7 @@ public class RootUiCoordinator
                     if (TextUtils.isEmpty(query)) return;
 
                     Tab tab = mActivityTabProvider.get();
+                    assumeNonNull(tab);
                     TrackerFactory.getTrackerForProfile(tab.getProfile())
                             .notifyEvent(EventConstants.WEB_SEARCH_PERFORMED);
 
@@ -1322,6 +1328,9 @@ public class RootUiCoordinator
                 controlContainerHeightId == ActivityUtils.NO_RESOURCE_ID
                         ? 0f
                         : mActivity.getResources().getDimension(controlContainerHeightId);
+
+        assert mLayoutManager != null;
+
         manager.initialize(
                 mActivity.findViewById(android.R.id.content),
                 mLayoutManager,
@@ -1644,10 +1653,12 @@ public class RootUiCoordinator
         } else if (id == R.id.find_in_page_id) {
             Tab tab = mActivityTabProvider.get();
             // PDF pages require Android pdf viewer API to "find in page".
-            if (tab != null && tab.isNativePage() && tab.getNativePage().isPdf()) {
-                NativePage pdfPage = tab.getNativePage();
-                assert pdfPage instanceof PdfPage;
-                return ((PdfPage) pdfPage).findInPage();
+            if (tab != null) {
+                NativePage nativePage = tab.getNativePage();
+                if (nativePage != null && nativePage.isPdf()) {
+                    assert nativePage instanceof PdfPage;
+                    return ((PdfPage) nativePage).findInPage();
+                }
             }
 
             if (mFindToolbarManager == null) return false;
@@ -1656,6 +1667,9 @@ public class RootUiCoordinator
 
             if (fromMenu) {
                 RecordUserAction.record("MobileMenuFindInPage");
+                if (tab == null) {
+                    return true;
+                }
                 WebContents webContents = tab.getWebContents();
                 assert webContents != null;
                 new UkmRecorder(webContents, "MobileMenu.FindInPage")
@@ -1672,14 +1686,18 @@ public class RootUiCoordinator
             DemoPaintPreview.showForTab(mActivityTabProvider.get());
             return true;
         } else if (id == R.id.get_image_descriptions_id) {
-            WebContents webContents = mActivityTabProvider.get().getWebContents();
-            assert webContents != null;
-            ImageDescriptionsController.getInstance()
-                    .onImageDescriptionsMenuItemSelected(
-                            mActivity, mModalDialogManagerSupplier.get(), webContents);
+            Tab tab = mActivityTabProvider.get();
+            if (tab != null) {
+                WebContents webContents = tab.getWebContents();
+                assert webContents != null;
+                ImageDescriptionsController.getInstance()
+                        .onImageDescriptionsMenuItemSelected(
+                                mActivity, mModalDialogManagerSupplier.get(), webContents);
+            }
             return true;
         } else if (id == R.id.page_zoom_id) {
             Tab tab = mActivityTabProvider.get();
+            assumeNonNull(tab);
             TrackerFactory.getTrackerForProfile(tab.getProfile())
                     .notifyEvent(EventConstants.PAGE_ZOOM_OPENED);
             mPageZoomBarCoordinator.show(tab.getWebContents());

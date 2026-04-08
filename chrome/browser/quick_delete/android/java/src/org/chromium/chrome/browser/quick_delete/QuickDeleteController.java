@@ -49,7 +49,7 @@ public class QuickDeleteController {
     // Null when declutter is disabled.
     private final @Nullable QuickDeleteTabsFilter mDeleteArchivedTabsFilter;
     private final SnackbarManager mSnackbarManager;
-    private final LayoutManager mLayoutManager;
+    private final @Nullable LayoutManager mLayoutManager;
     private final Profile mProfile;
     private final TabModel mTabModel;
     private final QuickDeleteMediator mQuickDeleteMediator;
@@ -73,7 +73,7 @@ public class QuickDeleteController {
             QuickDeleteDelegate delegate,
             ModalDialogManager modalDialogManager,
             SnackbarManager snackbarManager,
-            LayoutManager layoutManager,
+            @Nullable LayoutManager layoutManager,
             TabModelSelector tabModelSelector,
             @Nullable TabModelSelector archivedTabModelSelector) {
         mContext = context;

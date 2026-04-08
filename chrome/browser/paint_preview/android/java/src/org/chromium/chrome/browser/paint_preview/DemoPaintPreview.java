@@ -29,7 +29,7 @@ public class DemoPaintPreview implements PlayerManager.Listener {
     private @Nullable Tab mTab;
     private @Nullable TabbedPaintPreview mTabbedPaintPreview;
 
-    public static void showForTab(Tab tab) {
+    public static void showForTab(@Nullable Tab tab) {
         if (tab == null) return;
 
         new DemoPaintPreview(tab).show();

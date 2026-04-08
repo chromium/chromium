@@ -56,7 +56,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
     private final Context mContext;
     private final ActivityWindowAndroid mWindow;
     private final View mLayoutView;
-    private final Supplier<Tab> mTabProvider;
+    private final Supplier<@Nullable Tab> mTabProvider;
     private final Supplier<TabCreator> mTabCreator;
     private final BottomSheetController mBottomSheetController;
     private final EphemeralTabMediator mMediator;
@@ -89,7 +89,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
             Context context,
             ActivityWindowAndroid window,
             View layoutView,
-            Supplier<Tab> tabProvider,
+            Supplier<@Nullable Tab> tabProvider,
             Supplier<TabCreator> tabCreator,
             BottomSheetController bottomSheetController,
             ContextMenuPopulatorFactory contextMenuPopulatorFactory) {

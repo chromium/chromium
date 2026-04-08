@@ -237,7 +237,7 @@ public class ContextualSearchManager
     private final Supplier<@Nullable Tab> mTabSupplier;
 
     /** A means of observing scene changes and attaching overlays. */
-    private @Nullable LayoutManagerImpl mLayoutManager;
+    private LayoutManagerImpl mLayoutManager;
 
     /** The pixel density. */
     private final float mDpToPx;
