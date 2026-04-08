@@ -47,8 +47,9 @@ snippet showing how you could override the accessible name property (PROPID_ACC_
 text "Accessible Name":
 
 ```C++
-CComPtr<IAccPropServices> pAccPropSrv;
-pAccPropSrv.CoCreateInstance(CLSID_AccPropServices);
+Microsoft::WRL::ComPtr<IAccPropServices> pAccPropSrv;
+CoCreateInstance(CLSID_AccPropServices, nullptr, CLSCTX_ALL,
+                 IID_PPV_ARGS(&pAccPropSrv).CoCreateInstance());
 COleVariant varName("Accessible Name");
 pAccPropSrv->SetHwndProp(hwnd, OBJID_CLIENT, 0, PROPID_ACC_NAME, varName);
 ```

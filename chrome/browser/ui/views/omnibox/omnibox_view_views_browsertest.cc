@@ -1114,7 +1114,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsUIATest, GetSelectionAndBounds) {
   ASSERT_HRESULT_SUCCEEDED(
       root_node_raw->GetPatternProvider(UIA_TextPatternId, &document_provider));
 
-  CComPtr<ITextRangeProvider> selected_text_range_provider;
+  ComPtr<ITextRangeProvider> selected_text_range_provider;
   base::win::ScopedSafearray selection;
   LONG index = 0;
 
@@ -1122,8 +1122,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsUIATest, GetSelectionAndBounds) {
   // 1. Call ITextProvider::GetSelection to get the selected text range.
   document_provider->GetSelection(selection.Receive());
   ASSERT_NE(nullptr, selection.Get());
-  ASSERT_HRESULT_SUCCEEDED(SafeArrayGetElement(selection.Get(), &index,
-                                               &selected_text_range_provider));
+  ASSERT_HRESULT_SUCCEEDED(
+      SafeArrayGetElement(selection.Get(), &index,
+                          static_cast<void**>(&selected_text_range_provider)));
 
   // 2. Call ITextRangeProvider::GetText to get the selected text.
   base::win::ScopedBstr text_content;
