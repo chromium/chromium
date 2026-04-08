@@ -579,8 +579,7 @@ Value FunSubstring::Evaluate(EvaluationContext& context) const {
       ComputeSubstringStartEnd(pos, len, source_string.length());
   if (bounds.second <= bounds.first)
     return "";
-  return source_string.Substring(bounds.first - 1,
-                                 bounds.second - bounds.first);
+  return source_string.substr(bounds.first - 1, bounds.second - bounds.first);
 }
 
 Value FunStringLength::Evaluate(EvaluationContext& context) const {

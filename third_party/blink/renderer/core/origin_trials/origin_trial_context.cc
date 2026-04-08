@@ -87,7 +87,7 @@ String ExtractTokenOrQuotedString(const String& header_value, unsigned& pos) {
     while (pos < len && !IsWhitespace(header_value[pos]) &&
            header_value[pos] != ',')
       pos++;
-    result = header_value.Substring(start_pos, pos - start_pos);
+    result = header_value.substr(start_pos, pos - start_pos);
   }
   SkipWhiteSpace(header_value, pos);
   return result;

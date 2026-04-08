@@ -207,7 +207,7 @@ Token Parser::LexString() {
 }
 
 Token Parser::LexNumber() {
-  int start_pos = next_pos_;
+  string_size_t start_pos = next_pos_;
   bool seen_dot = false;
 
   // Go until end or a non-digits character.
@@ -225,7 +225,7 @@ Token Parser::LexNumber() {
   }
 
   return Token(TokenType::kNumber,
-               data_.Substring(start_pos, next_pos_ - start_pos));
+               data_.substr(start_pos, next_pos_ - start_pos));
 }
 
 bool Parser::LexNCName(String& name) {
