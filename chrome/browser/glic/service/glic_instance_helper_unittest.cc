@@ -268,4 +268,15 @@ TEST_F(GlicInstanceHelperTest, LogsDaisyChainOutcomeNoActionOnDestruction) {
       DaisyChainFirstAction::kNoAction, 1);
 }
 
+TEST_F(GlicInstanceHelperTest, LogsLastActiveInstanceOutcome) {
+  {
+    GlicInstanceHelper helper(&mock_tab_);
+    helper.SetIsDaisyChained(DaisyChainSource::kLastActiveInstance);
+    helper.OnDaisyChainAction(DaisyChainFirstAction::kInputSubmitted);
+  }
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.AutoOpenedPanel.FirstAction.LastActiveInstance",
+      DaisyChainFirstAction::kInputSubmitted, 1);
+}
+
 }  // namespace glic

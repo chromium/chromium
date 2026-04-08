@@ -834,12 +834,12 @@ chromium-metrics-reviews@google.com.
   <owner>birnie@google.com</owner>
   <owner>basiaz@google.com</owner>
   <summary>
-    Records the first action that occurs on a tab that had side panel
-    auto-opened through daisy chaining or features like web handoff and
-    auto-open pdf. Recorded when a significant action occurs (tab closed, side
-    panel closed, input submitted, conversation switched, daisy chain another
-    tab) or records &quot;No Action&quot; when tab helper is destroyed before
-    any action occurs. Only recorded for the source that triggered the opening.
+    Records the first action that occurs on a tab that had side panel opened
+    from various `Source`s. Recorded when a significant action occurs (tab
+    closed, side panel closed, input submitted, conversation switched, daisy
+    chain another tab) or records &quot;No Action&quot; when tab helper is
+    destroyed before any action occurs. Only recorded for the source that
+    triggered the opening.
 
     Tab switching and side panel closure are treated as ambiguous actions that
     trigger a 5-second timer before logging. This is to catch cases where a user
@@ -853,6 +853,9 @@ chromium-metrics-reviews@google.com.
     <variant name="ActorAddTab" summary="actor adding a new tab"/>
     <variant name="AutoOpenPdf" summary="auto-opened for a PDF"/>
     <variant name="GlicContents" summary="clicking a link in the Glic panel"/>
+    <variant name="LastActiveInstance"
+        summary="last active instance was used when user triggered glic on an
+                 unbound tab"/>
     <variant name="NewTab" summary="clicking a link that opens a new tab"/>
     <variant name="TabContents" summary="clicking a link in the main tab"/>
     <variant name="WebHandoff"

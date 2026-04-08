@@ -132,7 +132,8 @@ enum class DaisyChainSource {
   kNewTab = 4,
   kWebHandoff = 5,
   kAutoOpenPdf = 6,
-  kMaxValue = kAutoOpenPdf,
+  kLastActiveInstance = 7,
+  kMaxValue = kLastActiveInstance,
 };
 
 std::string GetDaisyChainSourceString(DaisyChainSource source);

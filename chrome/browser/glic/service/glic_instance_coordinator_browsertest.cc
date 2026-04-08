@@ -8,6 +8,7 @@
 // sufficient and simpler than a full `RunTestSequence`.
 
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -23,7 +24,9 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
+#include "chrome/browser/glic/service/metrics/glic_instance_helper_metrics.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
+#include "chrome/browser/glic/test_support/glic_histogram_tester.h"
 #include "chrome/browser/glic/widget/glic_floating_ui.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -1392,6 +1395,9 @@ class GlicInstanceCoordinatorDefaultToLastActiveBrowserTest
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorDefaultToLastActiveBrowserTest,
                        NewTabDefaultsToLastActiveIfEnabled) {
+  base::UserActionTester user_action_tester;
+  GlicHistogramTester histogram_tester;
+
   auto* instance1 = OpenGlicForActiveTab();
   ASSERT_TRUE(instance1);
 
@@ -1410,6 +1416,18 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorDefaultToLastActiveBrowserTest,
   // With the feature enabled, the same instance should be reused since it was
   // the last active and the recency limit was less than 20 minutes (default).
   EXPECT_EQ(instance1, instance2);
+
+  // Verify the metric was logged.
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Glic.Instance.DaisyChain.LastActiveInstance.Success"),
+            1);
+
+  // Simulate user input to trigger first action metric.
+  instance2->metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText);
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Instance.AutoOpenedPanel.FirstAction.LastActiveInstance",
+      DaisyChainFirstAction::kInputSubmitted, 1);
 }
 
 class GlicInstanceCoordinatorDefaultToLastActiveActuatingBrowserTest
@@ -1428,6 +1446,7 @@ class GlicInstanceCoordinatorDefaultToLastActiveActuatingBrowserTest
 IN_PROC_BROWSER_TEST_F(
     GlicInstanceCoordinatorDefaultToLastActiveActuatingBrowserTest,
     NewTabDoesNotDefaultToLastActiveIfActuating) {
+  GlicHistogramTester histogram_tester;
   auto* instance1 = OpenGlicForActiveTab();
   ASSERT_TRUE(instance1);
 
@@ -1461,6 +1480,10 @@ IN_PROC_BROWSER_TEST_F(
 
   // Since instance1 was actuating, it should NOT be reused.
   EXPECT_NE(instance1, instance2);
+
+  // Verify that no metric was logged since we did not default to last active.
+  histogram_tester.ExpectTotalCount(
+      "Glic.Instance.AutoOpenedPanel.FirstAction.LastActiveInstance", 0);
 }
 
 class GlicInstanceCoordinatorDefaultToLastActiveExpiredBrowserTest
@@ -1480,6 +1503,7 @@ class GlicInstanceCoordinatorDefaultToLastActiveExpiredBrowserTest
 IN_PROC_BROWSER_TEST_F(
     GlicInstanceCoordinatorDefaultToLastActiveExpiredBrowserTest,
     NewTabDoesNotDefaultToLastActiveIfExpired) {
+  GlicHistogramTester histogram_tester;
   auto* instance1 = OpenGlicForActiveTab();
   ASSERT_TRUE(instance1);
 
@@ -1498,6 +1522,10 @@ IN_PROC_BROWSER_TEST_F(
   // With the parameter set to 0m, the recency limit should be hit immediately,
   // causing a new instance to be created instead of reusing the old one.
   EXPECT_NE(instance1, instance2);
+
+  // Verify that no metric was logged since we did not default to last active.
+  histogram_tester.ExpectTotalCount(
+      "Glic.Instance.AutoOpenedPanel.FirstAction.LastActiveInstance", 0);
 }
 
 class GlicInstanceCoordinatorNoWarmingTest

@@ -20,6 +20,8 @@ std::string GetDaisyChainSourceString(DaisyChainSource source) {
       return "WebHandoff";
     case DaisyChainSource::kAutoOpenPdf:
       return "AutoOpenPdf";
+    case DaisyChainSource::kLastActiveInstance:
+      return "LastActiveInstance";
     case DaisyChainSource::kUnknown:
       return "Unknown";
   }

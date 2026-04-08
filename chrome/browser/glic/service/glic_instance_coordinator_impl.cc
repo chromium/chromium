@@ -575,6 +575,10 @@ GlicInstanceCoordinatorImpl::GetOrCreateGlicInstanceImplForTab(
       last_active_instance_->GetTimeSinceLastActive() <
           features::kGlicDefaultToLastActiveConversationMaxRecency.Get() &&
       !last_active_instance_->IsActuating()) {
+    last_active_instance_->metrics()->OnDaisyChain(
+        DaisyChainSource::kLastActiveInstance,
+        /*success=*/true, tab,
+        /*source_tab=*/nullptr);
     return last_active_instance_;
   }
 
@@ -742,6 +746,7 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
   }
 
   GlicInstanceImpl* instance = nullptr;
+
   if (base::FeatureList::IsEnabled(features::kGlicWebContinuity) &&
       conversation_id && !conversation_id->empty()) {
     instance = GetInstanceImplForConversationId(*conversation_id);
