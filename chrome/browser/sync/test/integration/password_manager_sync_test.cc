@@ -712,8 +712,16 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   EXPECT_FALSE(bubble_observer.IsSavePromptAvailable());
 }
 
+// TODO(crbug.com/500585809): Enable the test.
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_OfferToSaveNonPrimaryAccountCredential \
+  DISABLED_OfferToSaveNonPrimaryAccountCredential
+#else
+#define MAYBE_OfferToSaveNonPrimaryAccountCredential \
+  OfferToSaveNonPrimaryAccountCredential
+#endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
-                       OfferToSaveNonPrimaryAccountCredential) {
+                       MAYBE_OfferToSaveNonPrimaryAccountCredential) {
   // Disable signin interception, because it suppresses the password bubble.
   // See PasswordManagerBrowserTestWithSigninInterception for tests with
   // interception enabled.
