@@ -576,6 +576,7 @@ class ContentSettingStorageAccessBubbleModel
                         bool is_allowed) override;
 
  private:
+  GURL page_url_;
   std::map<net::SchemefulSite, /*is_allowed*/ bool> changed_permissions_;
 };
 

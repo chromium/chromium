@@ -1507,6 +1507,49 @@ TEST_F(ContentSettingBubbleModelTest, StorageAccess) {
                                    ContentSettingsType::STORAGE_ACCESS));
 }
 
+TEST_F(ContentSettingBubbleModelTest,
+       StorageAccessCommittedWhenNavigatingAway) {
+  const GURL page_url("https://not-example.test");
+  WebContentsTester::For(web_contents())->NavigateAndCommit(page_url);
+  auto* content_settings = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+
+  net::SchemefulSite site(GURL("https://example.com"));
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  map->SetContentSettingDefaultScope(site.GetURL(), page_url,
+                                     ContentSettingsType::STORAGE_ACCESS,
+                                     CONTENT_SETTING_BLOCK);
+
+  content_settings->OnTwoSitePermissionChanged(
+      ContentSettingsType::STORAGE_ACCESS, site, CONTENT_SETTING_BLOCK);
+
+  std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
+      ContentSettingBubbleModel::CreateContentSettingBubbleModel(
+          nullptr, web_contents(), ContentSettingsType::STORAGE_ACCESS));
+  const ContentSettingBubbleModel::BubbleContent& bubble_content =
+      content_setting_bubble_model->bubble_content();
+
+  EXPECT_EQ(bubble_content.subtitle,
+            url_formatter::FormatUrlForSecurityDisplay(
+                page_url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+  EXPECT_EQ(0U, bubble_content.radio_group.radio_items.size());
+  EXPECT_THAT(bubble_content.site_list,
+              UnorderedElementsAre(Pair(site, false)));
+
+  content_setting_bubble_model->OnSiteRowClicked(site, true);
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            map->GetContentSetting(site.GetURL(), page_url,
+                                   ContentSettingsType::STORAGE_ACCESS));
+  WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://another-example.test"));
+  // Simulate a CommitChanges call, which in the real implementation is called
+  // during the widget's WindowClosing as a result of PrimaryPageChanged().
+  content_setting_bubble_model->CommitChanges();
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            map->GetContentSetting(site.GetURL(), page_url,
+                                   ContentSettingsType::STORAGE_ACCESS));
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ContentSettingBubbleModelTest, SmartCard) {
   const GURL page_url("https://toplevel.example/");
