@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
@@ -19,9 +18,6 @@
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "ui/gfx/image/image.h"
-#include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/paint_vector_icon.h"
 
 namespace ash::phonehub {
 
