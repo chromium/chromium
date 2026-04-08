@@ -27,7 +27,8 @@ class PredictionMetricsHandlerTest;
 // few metrics.
 class COMPONENT_EXPORT(UI_BASE_PREDICTION) PredictionMetricsHandler {
  public:
-  explicit PredictionMetricsHandler(std::string histogram_name);
+  explicit PredictionMetricsHandler(std::string histogram_name,
+                                    bool report_score_metrics = true);
   ~PredictionMetricsHandler();
 
   // Struct used to store predicted and real event information.
@@ -113,6 +114,9 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) PredictionMetricsHandler {
   // names (.OverPrediction, .UnderPrediction, .PredictionJitter, .VisualJitter)
   // appended to it when counting the metric in a histogram.
   const std::string histogram_name_;
+
+  // Whether to compute and report the scoring metrics (Over/Under Prediction)
+  const bool report_score_metrics_;
 
   // Histograms are never deleted we leak them at shutdown so it is fine to keep
   // a reference here.

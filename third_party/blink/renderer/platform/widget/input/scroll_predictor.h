@@ -81,6 +81,9 @@ class PLATFORM_EXPORT ScrollPredictor {
   // in |PredictionMetricsHandler|
   void EvaluatePrediction();
 
+  ui::PredictionMetricsHandler& GetMetricsHandler(
+      WebGestureEvent::InertialPhaseState phase);
+
   std::unique_ptr<ui::InputPredictor> predictor_;
   // Predictor used specifically for generating synthetic scroll events to fill
   // gaps between real input events (e.g., at VSync). This allows using a
@@ -124,8 +127,14 @@ class PLATFORM_EXPORT ScrollPredictor {
   // Whether current scroll event should be resampled.
   bool should_resample_scroll_events_ = false;
 
-  // Handler used for evaluating the prediction
+  // Handlers used for evaluating the prediction
   ui::PredictionMetricsHandler metrics_handler_;
+  ui::PredictionMetricsHandler fling_metrics_handler_;
+
+  // Track the inertial phase of the last scroll update for synthetic
+  // generation.
+  WebGestureEvent::InertialPhaseState last_inertial_phase_ =
+      WebGestureEvent::InertialPhaseState::kUnknownMomentum;
 };
 
 }  // namespace blink

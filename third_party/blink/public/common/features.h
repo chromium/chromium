@@ -1628,6 +1628,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kResamplingScrollEvents);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                                                kScrollPredictorMaxResampleTime);
 
+// Enables predicting momentum phase events (flings) in ScrollPredictor.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kResampleScrollEventsForFling);
+
 // This bypasses restrictions on selection sources and allows the spelling and
 // grammar checks to proceed for testing purposes.
 // https://explainers-by-googlers.github.io/user-dictionary-leaks/

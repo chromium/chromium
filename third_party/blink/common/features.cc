@@ -2172,6 +2172,8 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "max_resample_time",
                    base::Milliseconds(20));
 
+BASE_FEATURE(kResampleScrollEventsForFling, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kRestrictLinkHeaderOnSubresource,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,
