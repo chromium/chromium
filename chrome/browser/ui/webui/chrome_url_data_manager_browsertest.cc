@@ -247,5 +247,5 @@ IN_PROC_BROWSER_TEST_P(ChromeURLDataManagerWebUITrustedTypesTest,
 
 INSTANTIATE_TEST_SUITE_P(,
                          ChromeURLDataManagerWebUITrustedTypesTest,
-                         ::testing::ValuesIn(kChromeUrls),
+                         testing::ValuesIn(GetChromeUrlsForTest()),
                          WebUIAllUrlsBrowserTest::ParamInfoToString);

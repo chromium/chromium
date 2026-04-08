@@ -4539,6 +4539,7 @@ if (!is_android) {
         "../browser/ui/webui/web_ui_all_urls_browser_test.cc",
         "../browser/ui/webui/web_ui_all_urls_browser_test.h",
         "../browser/ui/webui/webui_url_browsertest.cc",
+        "../browser/ui/webui/webui_urls_for_test.cc",
         "../browser/ui/webui/webui_urls_for_test.h",
       ]
       deps += [ "//chrome/test/data/webui:browser_tests" ]

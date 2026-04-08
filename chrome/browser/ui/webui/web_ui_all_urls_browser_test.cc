@@ -123,7 +123,7 @@ void WebUIAllUrlsBrowserTest::WaitBeforeNavigation() {
 }
 
 std::string WebUIAllUrlsBrowserTest::ParamInfoToString(
-    const ::testing::TestParamInfo<const char*>& info) {
+    const testing::TestParamInfo<std::string_view>& info) {
   std::string name(info.param);
   std::replace_if(
       name.begin(), name.end(),

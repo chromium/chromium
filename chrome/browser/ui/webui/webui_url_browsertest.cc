@@ -24,12 +24,12 @@ IN_PROC_BROWSER_TEST_F(WebUIUrlBrowserTest, UrlsInTestList) {
     missing_entries.insert(url);
   }
 
-  for (const char* url : kChromeUrls) {
-    missing_entries.erase(url);
+  for (std::string_view url : GetChromeUrlsForTest()) {
+    missing_entries.erase(std::string(url));
   }
 
-  for (const char* url : kChromeUntestedUrls) {
-    missing_entries.erase(url);
+  for (std::string_view url : GetUntestedChromeUrlsForTest()) {
+    missing_entries.erase(std::string(url));
   }
 
   EXPECT_TRUE(missing_entries.empty())
@@ -101,5 +101,5 @@ IN_PROC_BROWSER_TEST_P(WebUIUrlNoConsoleErrorsTest, NoConsoleErrors) {
 
 INSTANTIATE_TEST_SUITE_P(,
                          WebUIUrlNoConsoleErrorsTest,
-                         ::testing::ValuesIn(kChromeUrls),
+                         testing::ValuesIn(GetChromeUrlsForTest()),
                          WebUIAllUrlsBrowserTest::ParamInfoToString);
