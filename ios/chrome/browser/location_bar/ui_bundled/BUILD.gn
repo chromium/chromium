@@ -144,6 +144,7 @@ source_set("badges") {
   deps = [
     ":constants",
     ":metrics",
+    ":utils",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/badges/ui_bundled",
     "//ios/chrome/browser/contextual_panel/entrypoint/ui",
@@ -157,6 +158,18 @@ source_set("badges") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
+  ]
+}
+
+source_set("utils") {
+  sources = [
+    "highlight_utils.h",
+    "highlight_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/ui/elements/gradient",
+    "//ios/chrome/common/ui/colors",
   ]
 }
 

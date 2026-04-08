@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button.h"
 
-#import "ios/chrome/browser/toolbar/ui/buttons/highlight_button_util.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/highlight_utils.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_constants.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_buttons_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -12,10 +12,17 @@
 #import "ios/chrome/common/ui/util/ui_util.h"
 
 namespace {
+
 constexpr CGFloat kDisabledOpacity = 0.4;
 constexpr CGFloat kBlueDotRadius = 3;
 constexpr CGFloat kBlueDotMargin = 1;
 constexpr CGFloat kBlueDotWhiteBorderThickness = 2;
+
+// Returns the tint color to be used in the normal mode.
+UIColor* NormalTintColor() {
+  return [UIColor colorNamed:kSolidBlackColor];
+}
+
 }  // namespace
 
 @interface ToolbarButton ()
@@ -57,7 +64,7 @@ constexpr CGFloat kBlueDotWhiteBorderThickness = 2;
 
     ConfigureShadowForToolbarButton(self);
 
-    self.tintColor = [UIColor colorNamed:kSolidBlackColor];
+    self.tintColor = NormalTintColor();
 
     [self registerForTraitChanges:@[
       UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class
@@ -89,10 +96,10 @@ constexpr CGFloat kBlueDotWhiteBorderThickness = 2;
 - (void)setEnabled:(BOOL)enabled {
   [super setEnabled:enabled];
   if (enabled) {
-    self.tintColor = [UIColor colorNamed:kSolidBlackColor];
+    self.tintColor = NormalTintColor();
   } else {
-    self.tintColor = [[UIColor colorNamed:kSolidBlackColor]
-        colorWithAlphaComponent:kDisabledOpacity];
+    self.tintColor =
+        [NormalTintColor() colorWithAlphaComponent:kDisabledOpacity];
   }
   [self updateAppearance];
 }
@@ -154,6 +161,7 @@ constexpr CGFloat kBlueDotWhiteBorderThickness = 2;
   } else {
     _gradientView.hidden = YES;
     RemoveIPHImageStyleFromImageView(self.imageView);
+    self.imageView.tintColor = NormalTintColor();
   }
 }
 

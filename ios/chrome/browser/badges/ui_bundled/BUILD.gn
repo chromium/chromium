@@ -75,6 +75,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/location_bar/badge/model",
     "//ios/chrome/browser/location_bar/ui_bundled:constants",
+    "//ios/chrome/browser/location_bar/ui_bundled:utils",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/common/infobars",
     "//ios/chrome/browser/reader_mode/model",

@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/highlight_utils.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_metrics.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_placeholder_type.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
@@ -51,6 +52,7 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
   UIStackView* _containerStackView;
   UIButton* _tapOverlayButton;
   UIView* _badgeBackgroundView;
+  UIView* _availableStateOverlay;
   UIView* _separatorView;
   BOOL _disableProactiveOverlay;
 
@@ -188,22 +190,15 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
 
 - (void)setContextualPanelEntrypointState:
     (ContextualPanelEntrypointState)state {
-  UIColor* color;
-  switch (state) {
-    case ContextualPanelEntrypointState::kAvailable:
-      color = [UIColor colorNamed:kBackgroundColor];
-      break;
-    case ContextualPanelEntrypointState::kActive:
-      color = [UIColor colorNamed:kBlue600Color];
-      break;
-  }
-  _badgeBackgroundView.backgroundColor = color;
+  _availableStateOverlay.hidden =
+      (state != ContextualPanelEntrypointState::kAvailable);
 }
 
 - (void)setIncognitoBadgeView:(UIView*)incognitoBadgeView {
   if (_incognitoBadgeView) {
     return;
   }
+  CHECK(!IsChromeNextIaEnabled());
   _incognitoBadgeView = incognitoBadgeView;
   _incognitoBadgeView.translatesAutoresizingMaskIntoConstraints = NO;
   _incognitoBadgeView.isAccessibilityElement = NO;
@@ -482,11 +477,24 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
 
 // Creates blue background container for unified badge state.
 - (void)setupUnifiedBadgeBackground {
-  _badgeBackgroundView = [[UIView alloc] init];
-  _badgeBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-  _badgeBackgroundView.backgroundColor = [UIColor colorNamed:kBlue600Color];
+  if (IsChromeNextIaEnabled()) {
+    _badgeBackgroundView = CreateIPHGradientView();
+  } else {
+    _badgeBackgroundView = [[UIView alloc] init];
+    _badgeBackgroundView.backgroundColor = [UIColor colorNamed:kBlue600Color];
+    _badgeBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+  }
+  _badgeBackgroundView.clipsToBounds = YES;
   _badgeBackgroundView.userInteractionEnabled = NO;
   _badgeBackgroundView.hidden = YES;
+
+  _availableStateOverlay = [[UIView alloc] init];
+  _availableStateOverlay.translatesAutoresizingMaskIntoConstraints = NO;
+  _availableStateOverlay.backgroundColor =
+      [UIColor colorNamed:kBackgroundColor];
+  _availableStateOverlay.hidden = YES;
+  [_badgeBackgroundView addSubview:_availableStateOverlay];
+  AddSameConstraints(_availableStateOverlay, _badgeBackgroundView);
 
   [self insertSubview:_badgeBackgroundView atIndex:0];
 
@@ -516,13 +524,20 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
 
   _badgeBackgroundView.hidden = !hasVisibleBadges;
 
-  if (hasVisibleBadges) {
-    self.tintColor = [UIColor colorNamed:kSolidWhiteColor];
-
-    _badgeBackgroundView.layer.cornerRadius =
-        _badgeBackgroundView.bounds.size.height / 2.0;
+  if (IsChromeNextIaEnabled()) {
+    if (hasVisibleBadges) {
+      _badgeBackgroundView.layer.cornerRadius =
+          _badgeBackgroundView.bounds.size.height / 2.0;
+    }
   } else {
-    self.tintColor = nil;
+    if (hasVisibleBadges) {
+      self.tintColor = [UIColor colorNamed:kSolidWhiteColor];
+
+      _badgeBackgroundView.layer.cornerRadius =
+          _badgeBackgroundView.bounds.size.height / 2.0;
+    } else {
+      self.tintColor = nil;
+    }
   }
 }
 

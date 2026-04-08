@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/location_bar/badge/model/location_bar_badge_configuration.h"
 #import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_constants.h"
 #import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_mutator.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/highlight_utils.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_metrics.h"
 #import "ios/chrome/browser/price_insights/model/price_insights_model.h"
@@ -940,12 +941,17 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
          !_badgeConfig.isActive;
 }
 
+// Returns whether the badge style should be the active one.
+- (BOOL)isBadgeStyleActive {
+  return ![self isAvailablePriceInsights];
+}
+
 // Returns the foreground color for the unified container elements (icon and
 // text).
 - (UIColor*)foregroundColorForUnifiedContainer {
-  return [self isAvailablePriceInsights]
-             ? [UIColor colorNamed:kBlue600Color]
-             : [UIColor colorNamed:kSolidWhiteColor];
+  CHECK(!IsChromeNextIaEnabled());
+  return [self isBadgeStyleActive] ? [UIColor colorNamed:kSolidWhiteColor]
+                                   : [UIColor colorNamed:kBlue600Color];
 }
 
 // Helper to refresh entrypoint visual elements for the unified container.
@@ -956,9 +962,20 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
           : ContextualPanelEntrypointState::kActive;
   [self.visibilityDelegate setContextualPanelEntrypointState:state];
 
-  UIColor* foregroundColor = [self foregroundColorForUnifiedContainer];
-  _badgeIcon.tintColor = foregroundColor;
-  _label.textColor = foregroundColor;
+  if (IsChromeNextIaEnabled()) {
+    if ([self isBadgeStyleActive]) {
+      _label.textColor = [UIColor colorNamed:kSolidWhiteColor];
+      ConfigureIPHImageStyleForImageView(_badgeIcon);
+
+    } else {
+      _label.textColor = [UIColor colorNamed:kBlue600Color];
+      RemoveIPHImageStyleFromImageView(_badgeIcon);
+    }
+  } else {
+    UIColor* foregroundColor = [self foregroundColorForUnifiedContainer];
+    _badgeIcon.tintColor = foregroundColor;
+    _label.textColor = foregroundColor;
+  }
 
   _buttonContainer.layer.shadowOpacity = 0;
   [self updateButtonContainerBackgroundColor:[UIColor clearColor]];
@@ -990,9 +1007,19 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
 
 // Helper to update badge highlight for the unified container.
 - (void)updateBadgeHighlightForUnifiedContainer:(BOOL)highlighted {
-  _badgeIcon.tintColor = highlighted
-                             ? [UIColor colorNamed:kBackgroundColor]
-                             : [self foregroundColorForUnifiedContainer];
+  if (IsChromeNextIaEnabled()) {
+    if (highlighted) {
+      _badgeIcon.tintColor = [UIColor colorNamed:kBackgroundColor];
+    } else if ([self isBadgeStyleActive]) {
+      ConfigureIPHImageStyleForImageView(_badgeIcon);
+    } else {
+      RemoveIPHImageStyleFromImageView(_badgeIcon);
+    }
+  } else {
+    _badgeIcon.tintColor = highlighted
+                               ? [UIColor colorNamed:kBackgroundColor]
+                               : [self foregroundColorForUnifiedContainer];
+  }
 
   // Update entrypoint container background.
   UIColor* buttonContainerBackgroundColor =

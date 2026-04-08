@@ -8,6 +8,8 @@
 
 #import "base/notreached.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_constants.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/highlight_utils.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
@@ -44,10 +46,24 @@ const CGFloat kButtonCircularCornerRadiusDivisor = 2.0;
       self.bounds.size.height / kButtonCircularCornerRadiusDivisor;
 }
 
+- (void)setTintColor:(UIColor*)tintColor {
+  [super setTintColor:tintColor];
+}
+
 - (void)setAccepted:(BOOL)accepted animated:(BOOL)animated {
   self.accepted = accepted;
   void (^changeTintColor)() = ^{
-    self.tintColor = accepted ? nil : [UIColor colorNamed:kToolbarButtonColor];
+    if (IsChromeNextIaEnabled()) {
+      if (accepted) {
+        ConfigureIPHImageStyleForButton(self);
+      } else {
+        RemoveIPHImageStyleFromButton(self);
+        self.tintColor = [UIColor colorNamed:kToolbarButtonColor];
+      }
+    } else {
+      self.tintColor =
+          accepted ? nil : [UIColor colorNamed:kToolbarButtonColor];
+    }
     self.accessibilityIdentifier =
         [self accessibilityIdentifierForAcceptedState:accepted];
   };

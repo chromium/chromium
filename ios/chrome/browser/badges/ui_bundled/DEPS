@@ -5,6 +5,7 @@ include_rules = [
   "+ios/chrome/browser/infobars/model",
   "+ios/chrome/browser/intelligence/features",
   "+ios/chrome/browser/location_bar/badge/model",
+  "+ios/chrome/browser/location_bar/ui_bundled/highlight_utils.h",
   "+ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h",
   "+ios/chrome/browser/overlays/model/public",
   "+ios/chrome/browser/reader_mode/model/constants.h",
