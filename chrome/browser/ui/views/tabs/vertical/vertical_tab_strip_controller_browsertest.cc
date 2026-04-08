@@ -400,4 +400,82 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerBrowserTest,
   EXPECT_EQ(tab_model->GetTabAtIndex(2), tab2);
 }
 
+IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerBrowserTest,
+                       ShiftTabIntoGroup) {
+  AppendTab();
+  AppendTab();
+
+  auto* tab_model = browser()->tab_strip_model();
+  ASSERT_EQ(3, tab_model->count());
+
+  // Create a group containing the last tab.
+  tab_groups::TabGroupId group_id = tab_model->AddToNewGroup({2});
+
+  // Tab 1 is ungrouped and adjacent to Tab 2 (which is in the group).
+  auto* tab1 = tab_model->GetTabAtIndex(1);
+  EXPECT_FALSE(tab1->GetGroup().has_value());
+
+  // Shift tab 1 next.
+  vertical_tab_strip_controller()->ShiftTabNext(tab1);
+
+  // Verify that tab 1 is now in the group.
+  EXPECT_EQ(group_id, tab1->GetGroup());
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerBrowserTest,
+                       ShiftTabOutOfGroup) {
+  AppendTab();
+
+  auto* tab_model = browser()->tab_strip_model();
+  ASSERT_EQ(2, tab_model->count());
+
+  // Create a group containing the first tab.
+  tab_groups::TabGroupId group_id = tab_model->AddToNewGroup({0});
+
+  // Tab 0 is in the group. Tab 1 is ungrouped.
+  auto* tab0 = tab_model->GetTabAtIndex(0);
+  EXPECT_EQ(group_id, tab0->GetGroup());
+
+  // Shift tab 0 next.
+  vertical_tab_strip_controller()->ShiftTabNext(tab0);
+
+  // Verify that tab 0 is no longer in the group.
+  EXPECT_FALSE(tab0->GetGroup().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerBrowserTest,
+                       ShiftTabPastCollapsedGroup) {
+  AppendTab();
+  AppendTab();
+  AppendTab();
+
+  auto* tab_model = browser()->tab_strip_model();
+  ASSERT_EQ(4, tab_model->count());
+
+  // Ungrouped (Tab 0), Grouped (Tab 1, Tab 2), Ungrouped (Tab 3)
+  tab_groups::TabGroupId group_id = tab_model->AddToNewGroup({1, 2});
+  TabGroup* group = tab_model->group_model()->GetTabGroup(group_id);
+
+  // Collapse the group.
+  vertical_tab_strip_controller()->ToggleTabGroupCollapsedState(
+      group, ToggleTabGroupCollapsedStateOrigin::kMouse);
+
+  auto* tab0 = tab_model->GetTabAtIndex(0);
+  auto* tab1 = tab_model->GetTabAtIndex(1);
+  auto* tab2 = tab_model->GetTabAtIndex(2);
+  auto* tab3 = tab_model->GetTabAtIndex(3);
+
+  // Shift Tab 0 next.
+  vertical_tab_strip_controller()->ShiftTabNext(tab0);
+
+  // Verify the order.
+  EXPECT_EQ(tab_model->GetTabAtIndex(0), tab1);
+  EXPECT_EQ(tab_model->GetTabAtIndex(1), tab2);
+  EXPECT_EQ(tab_model->GetTabAtIndex(2), tab0);
+  EXPECT_EQ(tab_model->GetTabAtIndex(3), tab3);
+
+  // Verify that tab 0 is not in any group.
+  EXPECT_FALSE(tab0->GetGroup().has_value());
+}
+
 }  // namespace
