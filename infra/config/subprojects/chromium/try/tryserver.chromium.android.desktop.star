@@ -103,15 +103,17 @@ try_.orchestrator_builder(
     ),
     compilator = "android-desktop-x64-rel-compilator",
     coverage_test_types = ["unit", "overall"],
+    # TODO(crbug.com/40241638): Use orchestrator pool once overloaded test pools
+    # are addressed
+    # use_orchestrator_pool = True,
+    cq_settings = try_.cq_settings(
+        on_default_cq = True,
+    ),
     experiments = {
         # crbug.com/40617829
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
-    # TODO(crbug.com/40241638): Use orchestrator pool once overloaded test pools
-    # are addressed
-    # use_orchestrator_pool = True,
-    tryjob = try_.job(),
     use_clang_coverage = True,
     use_java_coverage = True,
 )

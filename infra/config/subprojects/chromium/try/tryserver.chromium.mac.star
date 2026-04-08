@@ -183,6 +183,9 @@ try_.orchestrator_builder(
     ),
     compilator = "mac-rel-compilator",
     coverage_test_types = ["overall", "unit"],
+    cq_settings = try_.cq_settings(
+        on_default_cq = True,
+    ),
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
@@ -190,7 +193,6 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
-    tryjob = try_.job(),
     use_clang_coverage = True,
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
@@ -464,13 +466,15 @@ try_.builder(
     ),
     cores = None,
     cpu = cpu.ARM64,
+    cq_settings = try_.cq_settings(
+        on_default_cq = True,
+    ),
     experiments = {
         # crbug.com/940930
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-    tryjob = try_.job(),
 )
 
 try_.builder(
@@ -654,12 +658,14 @@ try_.orchestrator_builder(
     compilator = "ios-simulator-compilator",
     coverage_exclude_sources = "ios_test_files_and_test_utils",
     coverage_test_types = ["overall", "unit"],
+    cq_settings = try_.cq_settings(
+        on_default_cq = True,
+    ),
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
-    tryjob = try_.job(),
     use_clang_coverage = True,
     xcode = xcode.xcode_default,
 )
@@ -686,6 +692,11 @@ ios_builder(
     contact_team_email = "chrome-build-team@google.com",
     coverage_exclude_sources = "ios_test_files_and_test_utils",
     coverage_test_types = ["overall", "unit"],
+    # TODO: crbug.com/336382863 - Comment out 'cq_settings' to not keep this bot running.
+    cq_settings = try_.cq_settings(
+        experiment_percentage = 5,
+        on_default_cq = True,
+    ),
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
@@ -693,10 +704,6 @@ ios_builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
-    # TODO: crbug.com/336382863 - Comment out 'tryjob' to not keep this bot running.
-    tryjob = try_.job(
-        experiment_percentage = 5,
-    ),
     use_clang_coverage = True,
 )
 
@@ -716,13 +723,13 @@ ios_builder(
     cpu = cpu.ARM64,
     coverage_exclude_sources = "ios_test_files_and_test_utils",
     coverage_test_types = ["overall", "unit"],
-    main_list_view = "try",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = [
             "ios/.+",
         ],
     ),
+    main_list_view = "try",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
     use_clang_coverage = True,
 )
 
@@ -737,12 +744,12 @@ ios_builder(
         ],
     ),
     cpu = cpu.ARM64,
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = [
             "third_party/crashpad/crashpad/.+",
         ],
     ),
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
 ios_builder(
@@ -891,11 +898,11 @@ gpu.try_.optional_tests_builder(
     free_space = None,
     alerts_enabled = False,
     contact_team_email = "chrome-gpu-infra@google.com",
-    main_list_view = "try",
-    max_concurrent_builds = 7,
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = gpu.try_.optional_trybot_location_filters.MAC,
     ),
+    main_list_view = "try",
+    max_concurrent_builds = 7,
 )
 
 gpu.try_.optional_tests_builder(
@@ -918,9 +925,9 @@ gpu.try_.optional_tests_builder(
     free_space = None,
     alerts_enabled = False,
     contact_team_email = "chrome-gpu-infra@google.com",
-    main_list_view = "try",
-    max_concurrent_builds = 7,
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = gpu.try_.optional_trybot_location_filters.MAC,
     ),
+    main_list_view = "try",
+    max_concurrent_builds = 7,
 )

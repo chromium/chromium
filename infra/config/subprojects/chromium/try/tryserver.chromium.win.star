@@ -134,13 +134,15 @@ try_.builder(
     ),
     builderless = False,
     os = os.WINDOWS_ANY,
+    cq_settings = try_.cq_settings(
+        on_default_cq = True,
+    ),
     experiments = {
         # crbug/940930
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
-    tryjob = try_.job(),
 )
 
 try_.builder(
@@ -178,6 +180,12 @@ try_.orchestrator_builder(
     ),
     compilator = "win-rel-compilator",
     coverage_test_types = ["unit", "overall"],
+    # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
+    # are addressed
+    #use_orchestrator_pool = True,
+    cq_settings = try_.cq_settings(
+        on_default_cq = True,
+    ),
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 5,
@@ -185,10 +193,6 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
-    # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
-    # are addressed
-    #use_orchestrator_pool = True,
-    tryjob = try_.job(),
     use_clang_coverage = True,
 )
 
@@ -233,13 +237,14 @@ try_.builder(
     builderless = False,
     cores = 16,
     ssd = True,
-    main_list_view = "try",
-    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         # TODO(crbug.com/40847153) Remove once cancelling doesn't wipe
         # out builder cache
         cancel_stale = False,
+        on_default_cq = True,
     ),
+    main_list_view = "try",
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -327,14 +332,14 @@ try_.builder(
     os = os.WINDOWS_10,
     contact_team_email = "chrome-desktop-engprod@google.com",
     coverage_test_types = ["unit", "overall"],
-    # The size of the testing pool is limited.
-    max_concurrent_builds = 3,
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = [
             "sandbox/win/.+",
             "sandbox/policy/win/.+",
         ],
     ),
+    # The size of the testing pool is limited.
+    max_concurrent_builds = 3,
     use_clang_coverage = True,
 )
 
@@ -359,19 +364,19 @@ try_.builder(
     builderless = True,
     os = os.WINDOWS_10,
     contact_team_email = "chrome-desktop-engprod@google.com",
-    main_list_view = "try",
-    # The size of the testing pool is limited.
-    max_concurrent_builds = 4,
-    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     #use_orchestrator_pool = True,
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = [
             "sandbox/win/.+",
             "sandbox/policy/win/.+",
         ],
     ),
+    main_list_view = "try",
+    # The size of the testing pool is limited.
+    max_concurrent_builds = 4,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -395,13 +400,14 @@ try_.builder(
     cores = None,
     os = os.WINDOWS_10,
     contact_team_email = "chrome-desktop-engprod@google.com",
-    main_list_view = "try",
-    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         # TODO(crbug.com/40847153) Remove once cancelling doesn't wipe
         # out builder cache
         cancel_stale = False,
+        on_default_cq = True,
     ),
+    main_list_view = "try",
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -563,6 +569,9 @@ gpu.try_.optional_tests_builder(
     free_space = None,
     alerts_enabled = False,
     contact_team_email = "chrome-gpu-infra@google.com",
+    cq_settings = try_.cq_settings(
+        location_filters = gpu.try_.optional_trybot_location_filters.WINDOWS,
+    ),
     # default is 6 in _gpu_optional_tests_builder()
     execution_timeout = 5 * time.hour,
     main_list_view = "try",
@@ -573,7 +582,4 @@ gpu.try_.optional_tests_builder(
     # overloading the testing hardware.
     max_concurrent_builds = 9,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
-    tryjob = try_.job(
-        location_filters = gpu.try_.optional_trybot_location_filters.WINDOWS,
-    ),
 )

@@ -68,13 +68,13 @@ try_.builder(
             "ci/chromeos-amd64-generic-dbg",
         ],
     ),
-    main_list_view = "try",
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = [
             "content/gpu/.+",
             "media/.+",
         ],
     ),
+    main_list_view = "try",
 )
 
 try_.builder(
@@ -113,12 +113,13 @@ try_.orchestrator_builder(
     ),
     compilator = "chromeos-amd64-generic-rel-gtest-compilator",
     contact_team_email = "chromeos-chrome-build@google.com",
-    main_list_view = "try",
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         equivalent_builder = "try/chromeos-amd64-generic-rel-gtest-and-tast",
         equivalent_builder_percentage = 100,
         equivalent_builder_whitelist = "google/chromeos-pa@google.com",
+        on_default_cq = True,
     ),
+    main_list_view = "try",
 )
 
 try_.orchestrator_builder(
@@ -149,10 +150,11 @@ try_.orchestrator_builder(
     ),
     compilator = "chromeos-amd64-generic-rel-gtest-and-tast-compilator",
     contact_team_email = "chromeos-chrome-build@google.com",
-    main_list_view = "try",
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         omit_from_luci_cv = True,
+        on_default_cq = True,
     ),
+    main_list_view = "try",
 )
 
 CHROMEOS_SHARED_CACHE = "shared_chromeos_amd64_generic_rel_cache_{}".format(settings.project.replace("-", "_"))
@@ -254,13 +256,15 @@ try_.builder(
         ],
     ),
     builderless = not settings.is_main,
+    cq_settings = try_.cq_settings(
+        on_default_cq = True,
+    ),
     experiments = {
         # crbug/940930
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
-    tryjob = try_.job(),
 )
 
 try_.builder(
@@ -297,13 +301,15 @@ try_.builder(
         ],
     ),
     builderless = not settings.is_main,
+    cq_settings = try_.cq_settings(
+        on_default_cq = True,
+    ),
     experiments = {
         # crbug/940930
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
-    tryjob = try_.job(),
 )
 
 try_.orchestrator_builder(
@@ -326,6 +332,12 @@ try_.orchestrator_builder(
     ),
     compilator = "linux-chromeos-rel-compilator",
     coverage_test_types = ["unit", "overall"],
+    # TODO(crbug.com/40241638): Use orchestrator pool once overloaded test pools
+    # are addressed
+    # use_orchestrator_pool = True,
+    cq_settings = try_.cq_settings(
+        on_default_cq = True,
+    ),
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
@@ -333,10 +345,6 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
-    # TODO(crbug.com/40241638): Use orchestrator pool once overloaded test pools
-    # are addressed
-    # use_orchestrator_pool = True,
-    tryjob = try_.job(),
     use_clang_coverage = True,
 )
 
@@ -390,8 +398,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
-    siso_project = siso.project.DEFAULT_UNTRUSTED,
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = [
             "chromeos/ash/components/chromebox_for_meetings/.+",
             "chromeos/ash/components/dbus/chromebox_for_meetings/.+",
@@ -399,6 +406,7 @@ try_.builder(
             "chrome/browser/ash/chromebox_for_meetings/.+",
         ],
     ),
+    siso_project = siso.project.DEFAULT_UNTRUSTED,
 )
 
 try_.builder(

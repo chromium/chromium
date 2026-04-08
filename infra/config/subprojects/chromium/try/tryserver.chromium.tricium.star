@@ -54,7 +54,7 @@ try_.builder(
     alerts_enabled = False,
     # src checkouts are only required by bots spawned by this builder.
     caches = [SOURCELESS_BUILDER_CACHE],
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         custom_cq_run_modes = [cq.MODE_NEW_PATCHSET_RUN],
         disable_reuse = True,
         experiment_percentage = 100,

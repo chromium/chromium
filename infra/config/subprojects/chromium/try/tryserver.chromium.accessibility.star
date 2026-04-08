@@ -39,7 +39,7 @@ try_.builder(
             "ci/fuchsia-x64-accessibility-rel",
         ],
     ),
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = [
             "third_party/blink/renderer/modules/accessibility/.+",
             "content/renderer/accessibility/.+",
@@ -59,7 +59,7 @@ try_.builder(
     ),
     check_for_flakiness = False,
     check_for_flakiness_with_resultdb = False,
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = [
             "third_party/blink/renderer/modules/accessibility/.+",
             "content/renderer/accessibility/.+",

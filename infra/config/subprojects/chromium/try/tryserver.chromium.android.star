@@ -64,8 +64,7 @@ try_.builder(
     builderless = False,
     cores = 16,
     contact_team_email = "clank-engprod@google.com",
-    main_list_view = "try",
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = [
             "chrome/android/features/vr/.+",
             "chrome/android/java/src/org/chromium/chrome/browser/vr/.+",
@@ -82,6 +81,7 @@ try_.builder(
             "third_party/arcore-android-sdk-client/.+",
         ],
     ),
+    main_list_view = "try",
 )
 
 try_.builder(
@@ -454,6 +454,9 @@ try_.orchestrator_builder(
     ),
     compilator = "android-arm64-rel-compilator",
     coverage_test_types = ["unit", "overall"],
+    cq_settings = try_.cq_settings(
+        on_default_cq = True,
+    ),
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
@@ -461,7 +464,6 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
-    tryjob = try_.job(),
     # TODO(crbug.com/40241638): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
@@ -528,6 +530,9 @@ try_.builder(
     builderless = not settings.is_main,
     cores = 32,
     ssd = True,
+    cq_settings = try_.cq_settings(
+        on_default_cq = True,
+    ),
     main_list_view = "try",
     properties = {
         "$build/binary_size": {
@@ -552,7 +557,6 @@ try_.builder(
     # TODO: crbug.com/376354860 - Enable remote linking with an appropriate
     # download strategy so that we can downgrade the machine spec.
     siso_remote_linking = False,
-    tryjob = try_.job(),
 )
 
 try_.builder(
@@ -602,9 +606,7 @@ try_.builder(
         ],
     ),
     contact_team_email = "cronet-team@google.com",
-    main_list_view = "try",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = [
             "components/cronet/.+",
             "components/grpc_support/.+",
@@ -613,6 +615,8 @@ try_.builder(
             "third_party/jni_zero/.+",
         ],
     ),
+    main_list_view = "try",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -637,12 +641,14 @@ try_.builder(
     ),
     builderless = not settings.is_main,
     contact_team_email = "cronet-team@google.com",
+    cq_settings = try_.cq_settings(
+        on_default_cq = True,
+    ),
     experiments = {
         # crbug/940930
         "chromium.enable_cleandead": 50,
     },
     main_list_view = "try",
-    tryjob = try_.job(),
 )
 
 try_.builder(
@@ -684,8 +690,7 @@ try_.builder(
     mirrors = ["ci/android-cronet-x64-rel"],
     gn_args = "ci/android-cronet-x64-rel",
     contact_team_email = "cronet-team@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = [
             "components/cronet/.+",
             "components/grpc_support/.+",
@@ -694,6 +699,7 @@ try_.builder(
             "third_party/jni_zero/.+",
         ],
     ),
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -768,9 +774,7 @@ try_.builder(
     ),
     contact_team_email = "cronet-team@google.com",
     coverage_test_types = ["unit", "overall"],
-    main_list_view = "try",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = [
             "components/cronet/.+",
             "components/grpc_support/.+",
@@ -778,6 +782,8 @@ try_.builder(
             "build/config/android/.+",
         ],
     ),
+    main_list_view = "try",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
     use_clang_coverage = True,
     use_java_coverage = True,
 )
@@ -890,9 +896,7 @@ try_.builder(
     ),
     contact_team_email = "cronet-team@google.com",
     coverage_test_types = ["unit", "overall"],
-    main_list_view = "try",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = [
             "components/cronet/.+",
             "components/grpc_support/.+",
@@ -900,6 +904,8 @@ try_.builder(
             "build/config/android/.+",
         ],
     ),
+    main_list_view = "try",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
     use_clang_coverage = True,
     use_java_coverage = True,
 )
@@ -1084,6 +1090,9 @@ try_.orchestrator_builder(
     compilator = "android-x64-rel-compilator",
     contact_team_email = "clank-engprod@google.com",
     coverage_test_types = ["unit", "overall"],
+    cq_settings = try_.cq_settings(
+        on_default_cq = True,
+    ),
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
@@ -1091,7 +1100,6 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
-    tryjob = try_.job(),
     # TODO(crbug.com/40241638): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
@@ -1125,13 +1133,15 @@ try_.orchestrator_builder(
     compilator = "android-x86-rel-compilator",
     contact_team_email = "clank-engprod@google.com",
     coverage_test_types = ["unit", "overall"],
+    cq_settings = try_.cq_settings(
+        on_default_cq = True,
+    ),
     experiments = {
         "chromium.add_one_test_shard": 10,
         # crbug/940930
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
-    tryjob = try_.job(),
     # TODO(crbug.com/40241638): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
@@ -1204,7 +1214,7 @@ try_.builder(
     ],
     gn_args = "ci/android-cast-arm-dbg",
     contact_team_email = "cast-eng@google.com",
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = [
             "build/android/.+",
             "build/config/android/.+",
@@ -1227,7 +1237,7 @@ try_.builder(
     ],
     gn_args = "ci/android-cast-arm-rel",
     contact_team_email = "cast-eng@google.com",
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = [
             "build/android/.+",
             "build/config/android/.+",
@@ -1250,7 +1260,7 @@ try_.builder(
     ],
     gn_args = "ci/android-cast-arm64-dbg",
     contact_team_email = "cast-eng@google.com",
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = [
             "build/android/.+",
             "build/config/android/.+",
@@ -1274,7 +1284,7 @@ try_.builder(
     ],
     gn_args = "ci/android-cast-arm64-rel",
     contact_team_email = "cast-eng@google.com",
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = [
             "build/android/.+",
             "build/config/android/.+",
@@ -1314,13 +1324,15 @@ try_.builder(
     builderless = not settings.is_main,
     cores = 32 if settings.is_main else 16,
     ssd = True,
+    cq_settings = try_.cq_settings(
+        on_default_cq = True,
+    ),
     experiments = {
         # crbug/940930
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
-    tryjob = try_.job(),
 )
 
 try_.builder(
@@ -1348,8 +1360,7 @@ try_.builder(
     ),
     cores = 16,
     ssd = True,
-    main_list_view = "try",
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = [
             "chrome/android/java/src/org/chromium/chrome/browser/vr/.+",
             "chrome/browser/vr/.+",
@@ -1374,6 +1385,7 @@ try_.builder(
             "third_party/xnnpack/.+",
         ],
     ),
+    main_list_view = "try",
 )
 
 try_.builder(
@@ -1398,8 +1410,7 @@ try_.builder(
     ),
     cores = 16,
     ssd = True,
-    main_list_view = "try",
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = [
             "chrome/android/java/src/org/chromium/chrome/browser/vr/.+",
             "chrome/browser/vr/.+",
@@ -1411,6 +1422,7 @@ try_.builder(
             "third_party/gvr-android-sdk/.+",
         ],
     ),
+    main_list_view = "try",
 )
 
 try_.builder(
@@ -1519,11 +1531,11 @@ gpu.try_.optional_tests_builder(
     free_space = None,
     alerts_enabled = False,
     contact_team_email = "chrome-gpu-infra@google.com",
-    main_list_view = "try",
-    max_concurrent_builds = 10,
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = gpu.try_.optional_trybot_location_filters.ANDROID,
     ),
+    main_list_view = "try",
+    max_concurrent_builds = 10,
 )
 
 gpu.try_.optional_tests_builder(
@@ -1545,11 +1557,11 @@ gpu.try_.optional_tests_builder(
     # Exclude gpu fyi builders.
     alerts_enabled = False,
     contact_team_email = "chrome-gpu-infra@google.com",
-    main_list_view = "try",
-    max_concurrent_builds = 10,
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = gpu.try_.optional_trybot_location_filters.ANDROID,
     ),
+    main_list_view = "try",
+    max_concurrent_builds = 10,
 )
 
 try_.builder(

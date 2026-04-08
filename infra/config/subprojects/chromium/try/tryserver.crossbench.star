@@ -42,12 +42,12 @@ try_.builder(
         ],
     ),
     contact_team_email = "crossbench-infra-vteam@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = [
             # Inclusion filters.
             cq.location_filter(path_regexp = "third_party/crossbench/.+"),
             cq.location_filter(path_regexp = "third_party/speedometer/.+"),
         ],
     ),
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )

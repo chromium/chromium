@@ -60,10 +60,10 @@ updater_linux_builder(
         ],
     ),
     contact_team_email = "omaha-core@google.com",
-    main_list_view = "try",
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = _LOCATION_FILTER,
     ),
+    main_list_view = "try",
 )
 
 updater_linux_builder(
@@ -80,10 +80,10 @@ updater_linux_builder(
         ],
     ),
     contact_team_email = "omaha-core@google.com",
-    main_list_view = "try",
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = _LOCATION_FILTER,
     ),
+    main_list_view = "try",
 )
 
 updater_mac_builder(
@@ -101,10 +101,10 @@ updater_mac_builder(
     cores = None,
     cpu = cpu.ARM64,
     contact_team_email = "omaha-core@google.com",
-    main_list_view = "try",
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = _LOCATION_FILTER,
     ),
+    main_list_view = "try",
 )
 
 updater_mac_builder(
@@ -122,10 +122,10 @@ updater_mac_builder(
     ),
     cpu = cpu.ARM64,
     contact_team_email = "omaha-core@google.com",
-    main_list_view = "try",
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = _LOCATION_FILTER,
     ),
+    main_list_view = "try",
 )
 
 updater_windows_builder(
@@ -142,10 +142,10 @@ updater_windows_builder(
         ],
     ),
     contact_team_email = "omaha-core@google.com",
-    main_list_view = "try",
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = _LOCATION_FILTER,
     ),
+    main_list_view = "try",
 )
 
 updater_windows_builder(
@@ -161,10 +161,10 @@ updater_windows_builder(
         ],
     ),
     contact_team_email = "omaha-core@google.com",
-    main_list_view = "try",
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = _LOCATION_FILTER,
     ),
+    main_list_view = "try",
 )
 
 updater_windows_builder(
@@ -181,8 +181,8 @@ updater_windows_builder(
         ],
     ),
     contact_team_email = "omaha-core@google.com",
-    main_list_view = "try",
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = _LOCATION_FILTER,
     ),
+    main_list_view = "try",
 )

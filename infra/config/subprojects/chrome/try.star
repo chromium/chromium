@@ -14,28 +14,28 @@ load("//project.star", "settings")
 def chrome_internal_verifier(
         *,
         builder,
-        tryjob = None,
+        cq_settings = None,
         **kwargs):
     """Registers an internal Chrome trybot in Chromium's CQ config
 
     Args:
       builder: Name of builder in the internal chrome project.
-      tryjob - A struct containing the details of the tryjob verifier for the
-        builder, obtained by calling the `try.tryjob()` function.
+      cq_settings - A struct containing the details of the tryjob verifier for the
+        builder, obtained by calling the `try.cq_settings()` function.
     """
-    if tryjob != None:
-        location_filters = tryjob.location_filters
-        if tryjob.add_default_filters:
+    if cq_settings != None:
+        location_filters = cq_settings.location_filters
+        if cq_settings.add_default_filters:
             location_filters = (location_filters or []) + default_location_filters()
 
         branches.cq_tryjob_verifier(
             builder = "{}:try/{}".format(settings.chrome_project, builder),
-            cancel_stale = tryjob.cancel_stale,
+            cancel_stale = cq_settings.cancel_stale,
             cq_group = "cq",
-            disable_reuse = tryjob.disable_reuse,
-            experiment_percentage = tryjob.experiment_percentage,
+            disable_reuse = cq_settings.disable_reuse,
+            experiment_percentage = cq_settings.experiment_percentage,
             location_filters = location_filters,
-            mode_allowlist = tryjob.custom_cq_run_modes,
+            mode_allowlist = cq_settings.custom_cq_run_modes,
             result_visibility = cq.COMMENT_LEVEL_RESTRICTED,
             **kwargs
         )
@@ -53,7 +53,7 @@ def chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "internal-cq-builder-verifier",
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         add_default_filters = False,
         location_filters = ["infra/config/generated/cq-usage/full.cfg"],
     ),
@@ -61,25 +61,31 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "android-internal-desktop-x64-rel",
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         experiment_percentage = 5,
+        on_default_cq = True,
     ),
 )
 
 chrome_internal_verifier(
     builder = "linux-chromeos-compile-chrome",
-    tryjob = try_.job(),
+    cq_settings = try_.cq_settings(
+        on_default_cq = True,
+    ),
 )
 
 chrome_internal_verifier(
     builder = "win-branded-compile-rel",
-    tryjob = try_.job(),
+    cq_settings = try_.cq_settings(
+        on_default_cq = True,
+    ),
 )
 
 chrome_internal_verifier(
     builder = "mega-cq-launcher",
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         custom_cq_run_modes = [try_.MEGA_CQ_DRY_RUN_NAME, try_.MEGA_CQ_FULL_RUN_NAME],
+        on_default_cq = True,
     ),
 )
 
@@ -216,15 +222,15 @@ chrome_internal_verifier(
 chrome_internal_verifier(
     branch_selector = branches.selector.ANDROID_BRANCHES,
     builder = "cronet-arm64-gn2bp-debug",
-    # The limited traffic to the location_filters specified below makes this
-    # use of owner_whitelist acceptable (see
-    # https://crrev.com/c/6429907/4..6/infra/config/subprojects/chrome/try.star#b182).
-    owner_whitelist = ["googlers"],
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = [
             "components/cronet/gn2bp/.+",
         ],
     ),
+    # The limited traffic to the location_filters specified below makes this
+    # use of owner_whitelist acceptable (see
+    # https://crrev.com/c/6429907/4..6/infra/config/subprojects/chrome/try.star#b182).
+    owner_whitelist = ["googlers"],
 )
 
 chrome_internal_verifier(
@@ -339,6 +345,13 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "linux-perf-trigger",
+    cq_settings = try_.cq_settings(
+        # TODO(b/457822464) Keep it running for now and with new devices in Q1
+        # 2026. By the end of Q1, we will decide whether remove it or promote
+        # it to CQ.
+        experiment_percentage = 100,
+        on_default_cq = True,
+    ),
     # The current whitelist includes:
     #  Googlers: internal users are always welcome
     #  project-chromium-robot-committers: this list includes autoroll bots,
@@ -347,12 +360,6 @@ chrome_internal_verifier(
     #       Perf tests on those sub repos, and we want to catch the regressions
     #       during rollout.
     owner_whitelist = ["googlers", "project-chromium-robot-committers"],
-    tryjob = try_.job(
-        # TODO(b/457822464) Keep it running for now and with new devices in Q1
-        # 2026. By the end of Q1, we will decide whether remove it or promote
-        # it to CQ.
-        experiment_percentage = 100,
-    ),
 )
 
 chrome_internal_verifier(
@@ -403,30 +410,30 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "optimization_guide-linux",
-    owner_whitelist = [
-        "google/optimization-guide-try-opt-in@google.com",
-    ],
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = [
             "chrome/browser/ai/.+",
             "components/optimization_guide/.+",
             "services/on_device_model/.+",
         ],
     ),
+    owner_whitelist = [
+        "google/optimization-guide-try-opt-in@google.com",
+    ],
 )
 
 chrome_internal_verifier(
     builder = "optimization_guide-mac-arm64",
-    owner_whitelist = [
-        "google/optimization-guide-try-opt-in@google.com",
-    ],
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = [
             "chrome/browser/ai/.+",
             "components/optimization_guide/.+",
             "services/on_device_model/.+",
         ],
     ),
+    owner_whitelist = [
+        "google/optimization-guide-try-opt-in@google.com",
+    ],
 )
 
 chrome_internal_verifier(
@@ -439,16 +446,16 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "optimization_guide-win64",
-    owner_whitelist = [
-        "google/optimization-guide-try-opt-in@google.com",
-    ],
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = [
             "chrome/browser/ai/.+",
             "components/optimization_guide/.+",
             "services/on_device_model/.+",
         ],
     ),
+    owner_whitelist = [
+        "google/optimization-guide-try-opt-in@google.com",
+    ],
 )
 
 chrome_internal_verifier(
@@ -488,6 +495,10 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "win-perf-trigger",
+    cq_settings = try_.cq_settings(
+        experiment_percentage = 100,
+        on_default_cq = True,
+    ),
     # The current whitelist includes:
     #  Googlers: internal users are always welcome
     #  project-chromium-robot-committers: this list includes autoroll bots,
@@ -497,9 +508,6 @@ chrome_internal_verifier(
     #       during rollout.
     # setting to 50 on new builder for win-11.
     owner_whitelist = ["googlers", "project-chromium-robot-committers"],
-    tryjob = try_.job(
-        experiment_percentage = 100,
-    ),
 )
 
 chrome_internal_verifier(

@@ -69,12 +69,12 @@ enterprise_companion_linux_builder(
             "ci/linux-enterprise-companion-builder-dbg",
         ],
     ),
-    main_list_view = "try",
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = [
             "chrome/enterprise_companion/.+",
         ],
     ),
+    main_list_view = "try",
 )
 
 enterprise_companion_linux_builder(
@@ -90,12 +90,12 @@ enterprise_companion_linux_builder(
             "release_try_builder",
         ],
     ),
-    main_list_view = "try",
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = [
             "chrome/enterprise_companion/.+",
         ],
     ),
+    main_list_view = "try",
 )
 
 enterprise_companion_mac_builder(
@@ -111,12 +111,12 @@ enterprise_companion_mac_builder(
         ],
     ),
     cpu = cpu.ARM64,
-    main_list_view = "try",
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = [
             "chrome/enterprise_companion/.+",
         ],
     ),
+    main_list_view = "try",
 )
 
 enterprise_companion_mac_builder(
@@ -133,12 +133,12 @@ enterprise_companion_mac_builder(
         ],
     ),
     cpu = cpu.ARM64,
-    main_list_view = "try",
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = [
             "chrome/enterprise_companion/.+",
         ],
     ),
+    main_list_view = "try",
 )
 
 enterprise_companion_windows_builder(
@@ -153,12 +153,12 @@ enterprise_companion_windows_builder(
             "ci/win-enterprise-companion-builder-dbg",
         ],
     ),
-    main_list_view = "try",
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = [
             "chrome/enterprise_companion/.+",
         ],
     ),
+    main_list_view = "try",
 )
 
 enterprise_companion_windows_builder(
@@ -174,10 +174,10 @@ enterprise_companion_windows_builder(
             "release_try_builder",
         ],
     ),
-    main_list_view = "try",
-    tryjob = try_.job(
+    cq_settings = try_.cq_settings(
         location_filters = [
             "chrome/enterprise_companion/.+",
         ],
     ),
+    main_list_view = "try",
 )
