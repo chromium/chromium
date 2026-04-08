@@ -288,7 +288,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   SkAlphaType alpha_type_;
   gfx::ColorSpace color_space_;
 
-  std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
+  std::unique_ptr<CanvasImageProvider> canvas_2d_image_provider_;
 
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_for_canvas_2d_;
   raw_ptr<Delegate> delegate_ = nullptr;
@@ -743,6 +743,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
 
   std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal(bool is_overwrite);
 
+  std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
 };

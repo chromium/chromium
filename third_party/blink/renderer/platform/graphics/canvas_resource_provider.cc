@@ -881,7 +881,7 @@ void Canvas2DResourceProviderSharedImage::OnContextDestroyed() {
   if (skia_canvas_for_canvas_2d_) {
     skia_canvas_for_canvas_2d_->reset_image_provider();
   }
-  canvas_image_provider_.reset();
+  canvas_2d_image_provider_.reset();
   if (image_pool_) {
     image_pool_->Clear();
   }
@@ -1164,8 +1164,8 @@ Canvas2DResourceProviderSharedImage::GetOrCreateCanvasImageProvider() {
     return GetOrCreateSWCanvasImageProviderForCanvas2D();
   }
 
-  if (canvas_image_provider_) {
-    return canvas_image_provider_.get();
+  if (canvas_2d_image_provider_) {
+    return canvas_2d_image_provider_.get();
   }
 
   // Callsites are responsible for checking this before invoking this
@@ -1184,11 +1184,11 @@ Canvas2DResourceProviderSharedImage::GetOrCreateCanvasImageProvider() {
       context_provider_wrapper_->ContextProvider().ImageDecodeCache(
           kN32_SkColorType);
 
-  canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
+  canvas_2d_image_provider_ = std::make_unique<CanvasImageProvider>(
       cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
       cc::PlaybackImageProvider::RasterMode::kGpu);
 
-  return canvas_image_provider_.get();
+  return canvas_2d_image_provider_.get();
 }
 
 void Canvas2DResourceProviderSharedImage::RasterRecordForCanvas2D(
@@ -1822,8 +1822,8 @@ void CanvasResourceProvider::NotifyWillTransfer(
 CanvasResourceProvider::CanvasImageProvider*
 CanvasResourceProvider::GetOrCreateSWCanvasImageProviderForCanvas2D() {
   CHECK(IsCanvas2D());
-  if (canvas_image_provider_) {
-    return canvas_image_provider_.get();
+  if (canvas_2d_image_provider_) {
+    return canvas_2d_image_provider_.get();
   }
 
   // Create an ImageDecodeCache for half float images only if the canvas is
@@ -1836,11 +1836,11 @@ CanvasResourceProvider::GetOrCreateSWCanvasImageProviderForCanvas2D() {
   cc::ImageDecodeCache* cache_rgba8 =
       &Image::SharedCCDecodeCache(kN32_SkColorType);
 
-  canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
+  canvas_2d_image_provider_ = std::make_unique<CanvasImageProvider>(
       cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
       cc::PlaybackImageProvider::RasterMode::kSoftware);
 
-  return canvas_image_provider_.get();
+  return canvas_2d_image_provider_.get();
 }
 
 void CanvasResourceProvider::InitializeForRecording(
@@ -2039,8 +2039,8 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas2D(
   RasterRecordForCanvas2D(recording);
   // Images are locked for the duration of the rasterization, in case they get
   // used multiple times. We can unlock them once the rasterization is complete.
-  if (canvas_image_provider_) {
-    canvas_image_provider_->ReleaseLockedImages();
+  if (canvas_2d_image_provider_) {
+    canvas_2d_image_provider_->ReleaseLockedImages();
   }
 
   last_recording_for_canvas2d_ =
