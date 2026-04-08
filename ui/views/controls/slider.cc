@@ -432,29 +432,23 @@ void Slider::VisibilityChanged(View* starting_from, bool is_visible) {
 }
 
 void Slider::OnWidgetVisibilityChanged(views::Widget* widget, bool visible) {
-  if (widget == attached_widget_) {
-    if (visible && GetVisible()) {
-      ApplyPendingAccessibleValueUpdate();
-    }
+  CHECK_EQ(widget_observation_.GetSource(), widget);
+  if (visible && GetVisible()) {
+    ApplyPendingAccessibleValueUpdate();
   }
 }
 
 void Slider::AddedToWidget() {
-  if (attached_widget_) {
-    attached_widget_->RemoveObserver(this);
-  }
-  attached_widget_ = GetWidget();
-  attached_widget_->AddObserver(this);
+  CHECK(!widget_observation_.IsObserving());
+  widget_observation_.Observe(GetWidget());
+
   if (GetWidget()->IsVisible() && GetVisible()) {
     ApplyPendingAccessibleValueUpdate();
   }
 }
 
 void Slider::RemovedFromWidget() {
-  if (attached_widget_) {
-    attached_widget_->RemoveObserver(this);
-    attached_widget_ = nullptr;
-  }
+  widget_observation_.Reset();
 }
 
 void Slider::ApplyPendingAccessibleValueUpdate() {

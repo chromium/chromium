@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -170,7 +171,9 @@ class VIEWS_EXPORT Slider : public View,
   float initial_animating_value_ = 0.f;
   bool value_is_valid_ = false;
   bool accessibility_events_enabled_ = true;
-  raw_ptr<views::Widget> attached_widget_ = nullptr;
+
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
 
   // Relative position of the mouse cursor (or the touch point) on the slider's
   // button.
