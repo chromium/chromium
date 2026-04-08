@@ -3743,7 +3743,8 @@ TEST_F(AIPageContentAgentTest, InteractiveElementsButton) {
   EXPECT_EQ(button.content_attributes->redaction_decision,
             mojom::AIPageContentRedactionDecision::kNoRedactionNecessary);
   CheckHitTestableAndInteractive(button,
-                                 {ClickabilityReason::kClickableControl});
+                                 {ClickabilityReason::kClickableControl,
+                                  ClickabilityReason::kHoverPseudoClass});
   EXPECT_TRUE(button.content_attributes->node_interaction_info->is_focusable);
 
   ASSERT_EQ(button.children_nodes.size(), 1u);
@@ -6007,6 +6008,7 @@ TEST_F(AIPageContentAgentTest, ClickabilityReasonMultipleReasons) {
           mojom::blink::AIPageContentClickabilityReason::kKeyEvents,
           mojom::blink::AIPageContentClickabilityReason::kEditable,
           mojom::blink::AIPageContentClickabilityReason::kCursorPointer,
+          mojom::blink::AIPageContentClickabilityReason::kHoverPseudoClass,
           mojom::blink::AIPageContentClickabilityReason::kAriaRole));
 }
 
@@ -7486,7 +7488,8 @@ TEST_F(AIPageContentAgentTest, CursorNotAllowedButton) {
   ASSERT_EQ(root.children_nodes.size(), 1u);
   const auto& button = *root.children_nodes.at(0);
   CheckHitTestableAndInteractive(button,
-                                 {ClickabilityReason::kClickableControl});
+                                 {ClickabilityReason::kClickableControl,
+                                  ClickabilityReason::kHoverPseudoClass});
   EXPECT_FALSE(button.content_attributes->node_interaction_info->is_disabled);
   EXPECT_THAT(button.content_attributes->node_interaction_info
                   ->interaction_disabled_reasons,

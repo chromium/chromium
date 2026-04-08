@@ -372,4 +372,10 @@ HTMLSelectElement* HTMLButtonElement::OwnerSelect() const {
   return nullptr;
 }
 
+bool HTMLButtonElement::SupportsBaseAppearanceInternal(
+    Element::BaseAppearanceValue value) const {
+  return RuntimeEnabledFeatures::AppearanceBaseEnabled() &&
+         value == Element::BaseAppearanceValue::kBase;
+}
+
 }  // namespace blink

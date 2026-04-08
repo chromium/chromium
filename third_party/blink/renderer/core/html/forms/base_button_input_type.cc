@@ -107,4 +107,10 @@ bool BaseButtonInputType::MatchesDefaultPseudoClass() {
          GetElement().Form()->FindDefaultButton() == &GetElement();
 }
 
+bool BaseButtonInputType::SupportsBaseAppearance(
+    Element::BaseAppearanceValue value) const {
+  return RuntimeEnabledFeatures::AppearanceBaseEnabled() &&
+         value == Element::BaseAppearanceValue::kBase;
+}
+
 }  // namespace blink

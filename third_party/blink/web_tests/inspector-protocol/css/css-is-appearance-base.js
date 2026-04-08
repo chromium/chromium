@@ -33,12 +33,10 @@
 
   const selectors = [
     '.base',
-    '.base button',
     '.base option',
     '.base optgroup',
     '.base legend',
     '.auto',
-    '.auto button',
     '.auto option',
     '.auto optgroup',
     '.auto legend',

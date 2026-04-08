@@ -50,6 +50,8 @@ class BaseButtonInputType : public InputType,
   HTMLFormControlElement::PopoverTriggerSupport SupportsPopoverTriggering()
       const override;
 
+  bool SupportsBaseAppearance(Element::BaseAppearanceValue) const override;
+
  private:
   InputTypeView* CreateView() override;
   bool ShouldSaveAndRestoreFormControlState() const override;

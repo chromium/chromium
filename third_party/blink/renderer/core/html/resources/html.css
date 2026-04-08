@@ -486,10 +486,9 @@ input, textarea, select, button {
      * don't need to use -internal-auto-base() on them. */
   }
 
-  input, textarea {
+  input, textarea, button {
     color: -internal-auto-base(FieldText, inherit);
     font: -internal-auto-base(-webkit-small-control, inherit);
-    box-sizing: -internal-auto-base(content-box, border-box);
   }
 }
 
@@ -514,6 +513,7 @@ textarea {
         background-color: -internal-auto-base(Field, transparent);
         resize: -internal-auto-base(-internal-textarea-auto, none);
         padding: -internal-auto-base(2px, unset);
+        box-sizing: -internal-auto-base(content-box, border-box);
     }
 }
 
@@ -525,6 +525,7 @@ input {
         border: -internal-auto-base(2px inset light-dark(#767676, #858585), 1px solid);
         -webkit-rtl-ordering: -internal-auto-base(logical, unset);
         background-color: -internal-auto-base(Field, transparent);
+        box-sizing: -internal-auto-base(content-box, border-box);
     }
     @supports not blink-feature(AppearanceBase) {
         padding: 1px 0;
@@ -829,14 +830,37 @@ input[type="submit" i],
 input[type="reset" i],
 input[type="file" i]::-webkit-file-upload-button,
 button {
-    text-align: center;
     cursor: default;
-    padding-block: 1px;
-    padding-inline: 6px;
-    border: 2px outset ButtonBorder;
     box-sizing: border-box;
-    background-color: ButtonFace;
-    color: ButtonText;
+
+    @supports not blink-feature(AppearanceBase) {
+        text-align: center;
+        cursor: default;
+        padding-block: 1px;
+        padding-inline: 6px;
+        border: 2px outset ButtonBorder;
+        background-color: ButtonFace;
+        color: ButtonText;
+    }
+
+    @supports blink-feature(AppearanceBase) {
+        color: -internal-auto-base(ButtonText, inherit);
+        background-color: -internal-auto-base(ButtonFace, transparent);
+        border: -internal-auto-base(2px outset ButtonBorder, 1px solid currentColor);
+
+        padding-block: -internal-auto-base(1px, 0.25em);
+        padding-inline: -internal-auto-base(6px, 0.5em);
+        border-radius: -internal-auto-base(unset, 0.5em);
+        min-block-size: -internal-auto-base(unset, calc-size(auto, max(size, 24px, 1lh)));
+        max-inline-size: -internal-auto-base(unset, calc-size(auto, max(size, 24px)));
+
+        display: -internal-auto-base(revert-rule, inline-flex);
+        gap: -internal-auto-base(unset, 0.5em);
+
+        user-select: -internal-auto-base(revert-rule, none);
+
+        text-align: -internal-auto-base(center, initial);
+    }
 }
 
 input[type="checkbox" i]:disabled,
@@ -902,9 +926,17 @@ input[type="submit" i]:disabled,
 input[type="reset" i]:disabled,
 input[type="file" i]:disabled::-webkit-file-upload-button,
 button:disabled {
-  background-color: light-dark(rgba(239, 239, 239, 0.3), rgba(19, 1, 1, 0.3));
-  border-color: light-dark(rgba(118, 118, 118, 0.3), rgba(195, 195, 195, 0.3));
-  color: light-dark(rgba(16, 16, 16, 0.3), rgba(255, 255, 255, 0.3));
+    @supports not blink-feature(AppearanceBase) {
+        background-color: light-dark(rgba(239, 239, 239, 0.3), rgba(19, 1, 1, 0.3));
+        border-color: light-dark(rgba(118, 118, 118, 0.3), rgba(195, 195, 195, 0.3));
+        color: light-dark(rgba(16, 16, 16, 0.3), rgba(255, 255, 255, 0.3));
+    }
+
+    @supports blink-feature(AppearanceBase) {
+        background-color: -internal-auto-base(light-dark(rgba(239, 239, 239, 0.3), rgba(19, 1, 1, 0.3)), revert-rule);
+        border-color: -internal-auto-base(light-dark(rgba(118, 118, 118, 0.3), rgba(195, 195, 195, 0.3)), revert-rule);
+        color: -internal-auto-base(light-dark(rgba(16, 16, 16, 0.3), rgba(255, 255, 255, 0.3)), color-mix(currentColor 50%, transparent));
+    }
 }
 
 input[type="color" i]:disabled {
@@ -921,11 +953,21 @@ input[type="color" i]:disabled {
 }
 
 input[type="button" i]:active, input[type="submit" i]:active, input[type="reset" i]:active, input[type="file" i]:active::-webkit-file-upload-button, button:active {
-    border-style: inset
+    @supports not blink-feature(AppearanceBase) {
+        border-style: inset;
+    }
+    @supports blink-feature(AppearanceBase) {
+        border-style: -internal-auto-base(inset, revert-rule);
+    }
 }
 
 input[type="button" i]:active:disabled, input[type="submit" i]:active:disabled, input[type="reset" i]:active:disabled, input[type="file" i]:active:disabled::-webkit-file-upload-button, button:active:disabled {
-    border-style: outset
+    @supports not blink-feature(AppearanceBase) {
+        border-style: outset;
+    }
+    @supports blink-feature(AppearanceBase) {
+        border-style: -internal-auto-base(outset, revert-rule);
+    }
 }
 
 input:disabled, textarea:disabled {
@@ -1014,12 +1056,22 @@ input[type="color" i] {
 }
 
 @supports blink-feature(AppearanceBase) {
-    input[type="color" i]:enabled:hover {
-        background-color: -internal-auto-base(ButtonFace, color-mix(currentColor 10%, transparent));
+    input[type="button" i]:enabled:hover,
+    input[type="reset" i]:enabled:hover,
+    input[type="submit" i]:enabled:hover,
+    input[type="file" i]:enabled::-webkit-file-upload-button:hover,
+    input[type="color" i]:enabled:hover,
+    button:enabled:hover {
+        background-color: -internal-auto-base(revert-rule, color-mix(currentColor 10%, transparent));
     }
 
-    input[type="color" i]:enabled:active {
-        background-color: -internal-auto-base(ButtonFace, color-mix(currentColor 20%, transparent));
+    input[type="button" i]:enabled:active,
+    input[type="reset" i]:enabled:active,
+    input[type="submit" i]:enabled:active,
+    input[type="file" i]:enabled::-webkit-file-upload-button:active,
+    input[type="color" i]:enabled:active,
+    button:enabled:active {
+        background-color: -internal-auto-base(revert-rule, color-mix(currentColor 20%, transparent));
     }
 }
 
