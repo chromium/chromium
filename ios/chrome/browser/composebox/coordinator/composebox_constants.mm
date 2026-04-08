@@ -6,4 +6,4 @@
 
 const NSUInteger kAttachmentLimit = 10;
 const NSUInteger kAttachmentLimitForImageGeneration = 1;
-const NSUInteger kMaxFileAttachmentSize = 200 * 1024 * 1024;
+const NSUInteger kMaxFileAttachmentSize = 100 * 1024 * 1024;
