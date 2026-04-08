@@ -1452,8 +1452,6 @@ static_library("ui") {
       "webui/webui_gallery/webui_gallery_ui.h",
       "webui/webui_js_error/webui_js_error_ui.cc",
       "webui/webui_js_error/webui_js_error_ui.h",
-      "webui/webui_util_desktop.cc",
-      "webui/webui_util_desktop.h",
     ]
 
     if (is_chrome_branded) {
@@ -1572,6 +1570,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/feedback/report_unsafe_site:mojo_bindings",
       "//chrome/browser/ui/webui/omnibox_popup/mojom",
       "//chrome/browser/ui/webui/sanitized_image:sanitized_image_source",
+      "//chrome/browser/ui/webui/util:impl",
       "//chrome/browser/usb",
       "//chrome/browser/webauthn:local_credential_management",
       "//components/password_manager/core/browser/actor_login:permissions_manager_impl",
@@ -1826,6 +1825,7 @@ static_library("ui") {
       "//chrome/browser/ui/waap:manager",
       "//chrome/browser/ui/webui/feedback/report_unsafe_site",
       "//chrome/browser/ui/webui/on_device_internals",
+      "//chrome/browser/ui/webui/util",
       "//chrome/browser/ui/webui/webnn_internals",
       "//components/page_image_service/mojom:mojo_bindings",
     ]
@@ -1840,6 +1840,10 @@ static_library("ui") {
     # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
     # Non-android circular dependencies
     allow_circular_includes_from += [
+      # //chrome/browser/ui/webui/util/webui_util_desktop.h is included by
+      # :ui and its implementation is in //chrome/browser/ui/webui/util:impl.
+      "//chrome/browser/ui/webui/util:impl",
+
       # TODO(crbug.com/40110173): Resolve circular dependencies.
       "//chrome/browser/media/router",
       "//chrome/browser/ui/desktop_to_mobile_promos:service",
@@ -5592,13 +5596,6 @@ static_library("ui") {
       "//chrome/common/compose:mojo_bindings",
       "//components/compose/core/browser",
       "//components/compose/core/browser:mojo_bindings",
-    ]
-  }
-
-  if (enable_webui_generate_code_cache) {
-    deps += [
-      "//chrome/browser/resources:code_cache_resources",
-      "//ui/webui/resources:code_cache_resources",
     ]
   }
 

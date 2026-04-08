@@ -50,6 +50,7 @@ source_set("impl") {
     "//chrome/browser/ui/views/side_panel",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/customize_buttons",
+    "//chrome/browser/ui/webui/util",
     "//chrome/common",
     "//components/search",
     "//content/public/browser",

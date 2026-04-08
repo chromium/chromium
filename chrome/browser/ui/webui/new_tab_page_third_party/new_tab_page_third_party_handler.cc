@@ -11,7 +11,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache.h"
-#include "chrome/browser/ui/webui/webui_util_desktop.h"
+#include "chrome/browser/ui/webui/util/webui_util_desktop.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/prefs/pref_service.h"

@@ -26,7 +26,7 @@
 #if BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE)
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/webui/webui_util_desktop.h"
+#include "chrome/browser/ui/webui/util/webui_util_desktop.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/variations/variations_test_utils.h"
 #include "content/public/common/content_features.h"

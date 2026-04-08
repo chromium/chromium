@@ -20,7 +20,7 @@
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_embedder.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_layout.h"
-#include "chrome/browser/ui/webui/webui_util_desktop.h"
+#include "chrome/browser/ui/webui/util/webui_util_desktop.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"

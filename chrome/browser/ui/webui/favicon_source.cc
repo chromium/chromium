@@ -37,7 +37,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/search/instant_service.h"
-#include "chrome/browser/ui/webui/webui_util_desktop.h"
+#include "chrome/browser/ui/webui/util/webui_util_desktop.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {

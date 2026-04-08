@@ -2,14 +2,55 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ui/webui/webui_features.gni")
+
 assert(is_win || is_mac || is_linux || is_chromeos)
 
 source_set("util") {
-  public = [ "image_util.h" ]
+  public = [
+    "image_util.h",
+    "webui_util_desktop.h",
+  ]
   sources = [ "image_util.cc" ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//ui/base",
+  ]
   deps = [
     "//skia",
     "//ui/gfx",
   ]
+}
+
+source_set("impl") {
+  # This target is used to isolate heavy build dependencies (e.g.
+  # code_cache_resources) from the main :ui target. We set public = [] to
+  # prevent these dependencies from propagating to its users.
+  public = []
+  sources = [ "webui_util_desktop.cc" ]
+  deps = [
+    ":util",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views/side_panel",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/common",
+    "//content/public/browser",
+    "//skia",
+    "//ui/base",
+    "//ui/native_theme",
+    "//ui/views",
+    "//ui/webui:buildflags",
+  ]
+
+  if (enable_webui_generate_code_cache) {
+    deps += [
+      "//chrome/browser/resources:code_cache_resources",
+      "//ui/webui/resources:code_cache_resources",
+    ]
+  }
 }

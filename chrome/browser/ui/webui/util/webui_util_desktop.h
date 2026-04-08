@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_WEBUI_UTIL_DESKTOP_H_
-#define CHROME_BROWSER_UI_WEBUI_WEBUI_UTIL_DESKTOP_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_UTIL_WEBUI_UTIL_DESKTOP_H_
+#define CHROME_BROWSER_UI_WEBUI_UTIL_WEBUI_UTIL_DESKTOP_H_
 
 #include <string>
 
@@ -57,4 +57,4 @@ base::flat_map<GURL, int> GetWebUIResourceUrlToCodeCacheMap();
 
 }  // namespace webui
 
-#endif  // CHROME_BROWSER_UI_WEBUI_WEBUI_UTIL_DESKTOP_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_UTIL_WEBUI_UTIL_DESKTOP_H_

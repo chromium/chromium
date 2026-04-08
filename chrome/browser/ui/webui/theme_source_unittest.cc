@@ -14,7 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/webui_util_desktop.h"
+#include "chrome/browser/ui/webui/util/webui_util_desktop.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/theme_resources.h"
 #include "chrome/test/base/test_theme_provider.h"
