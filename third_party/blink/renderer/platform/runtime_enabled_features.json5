@@ -3233,13 +3233,6 @@
       name: "HTMLElementScrollParent",
       status: "experimental",
     },
-    {
-      // Don't require a LayoutObject when the 'src' of an <embed> with 'type'
-      // unset changes from empty ("represents nothing") to something
-      // ("potentially active"). https://crbug.com/479233864
-      name: "HTMLEmbedElementRepresentsNothingToActive",
-      status: "stable",
-    },
     // Return a natural width/height of zero from
     // HTMLImageElement.naturalWidth/Height for SVG images that don't have a
     // natural width/height set.
