@@ -83,7 +83,7 @@ OnDeviceModelDownloadProgressManager::OnDeviceModelDownloadProgressManager(
     component_updater::ComponentUpdateService* component_update_service,
     base::flat_set<std::string> component_ids,
     bool enable_unloadable_progress)
-    : component_update_service_(*component_update_service) {
+    : component_update_service_(component_update_service) {
   for (const auto& component_id : component_ids) {
     components_progress_.emplace(component_id, DownloadProgressInfo());
   }
@@ -153,6 +153,9 @@ int OnDeviceModelDownloadProgressManager::GetNumberOfReporters() const {
 }
 
 void OnDeviceModelDownloadProgressManager::StartObserver() {
+  if (!component_update_service_) {
+    return;
+  }
   size_t already_installed_count = 0;
   for (auto& [component_id, progress] : components_progress_) {
     component_updater::CrxUpdateItem item;
@@ -167,7 +170,7 @@ void OnDeviceModelDownloadProgressManager::StartObserver() {
   if (already_installed_count == components_progress_.size()) {
     return;
   }
-  component_updater_observation_.Observe(&component_update_service_.get());
+  component_updater_observation_.Observe(component_update_service_);
 }
 
 void OnDeviceModelDownloadProgressManager::OnEvent(

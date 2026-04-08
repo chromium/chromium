@@ -5,8 +5,9 @@
 #include "chrome/browser/safe_browsing/client_side_detection_service_factory.h"
 
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
+#include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_client_side_detection_service_delegate.h"
@@ -42,7 +43,10 @@ ClientSideDetectionServiceFactory::ClientSideDetectionServiceFactory()
               // do not display web content and thus do not need the
               // client side phishing detection
               .WithAshInternals(ProfileSelection::kNone)
-              .Build()) {}
+              .Build()) {
+  DependsOn(
+      OptimizationGuideGlobalStateHolderKeyedServiceFactory::GetInstance());
+}
 
 std::unique_ptr<KeyedService>
 ClientSideDetectionServiceFactory::BuildServiceInstanceForBrowserContext(
@@ -53,16 +57,17 @@ ClientSideDetectionServiceFactory::BuildServiceInstanceForBrowserContext(
 
   Profile* profile = Profile::FromBrowserContext(context);
 
-  auto* opt_guide = OptimizationGuideKeyedServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(context));
-
-  if (!opt_guide) {
+  auto* holder_service =
+      OptimizationGuideGlobalStateHolderKeyedServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(context));
+  if (!holder_service) {
     return nullptr;
   }
+  auto& opt_guide = holder_service->GetGlobalState().prediction_manager();
 
   return std::make_unique<ClientSideDetectionService>(
       std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile),
-      opt_guide);
+      &opt_guide);
 }
 
 bool ClientSideDetectionServiceFactory::ServiceIsCreatedWithBrowserContext()

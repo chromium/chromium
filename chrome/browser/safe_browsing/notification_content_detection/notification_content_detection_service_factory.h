@@ -8,7 +8,9 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
-class OptimizationGuideKeyedService;
+namespace optimization_guide {
+class OptimizationGuideModelProvider;
+}  // namespace optimization_guide
 
 namespace safe_browsing {
 class NotificationContentDetectionService;
@@ -45,7 +47,7 @@ class NotificationContentDetectionServiceFactory
   // Helper for creating a NotificationContentDetectionService.
   std::unique_ptr<NotificationContentDetectionService>
   CreateNotificationContentDetectionService(
-      OptimizationGuideKeyedService* opt_guide,
+      optimization_guide::OptimizationGuideModelProvider* model_provider,
       content::BrowserContext* context) const;
 };
 

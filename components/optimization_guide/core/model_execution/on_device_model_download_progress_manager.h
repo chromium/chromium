@@ -131,7 +131,7 @@ class OnDeviceModelDownloadProgressManager
   std::optional<int64_t> components_total_bytes_;
   int64_t never_load_component_bytes_ = 0;
 
-  raw_ref<component_updater::ComponentUpdateService> component_update_service_;
+  raw_ptr<component_updater::ComponentUpdateService> component_update_service_;
   base::flat_set<std::unique_ptr<Reporter>, base::UniquePtrComparator>
       reporters_;
   std::unordered_map<std::string, DownloadProgressInfo> components_progress_;

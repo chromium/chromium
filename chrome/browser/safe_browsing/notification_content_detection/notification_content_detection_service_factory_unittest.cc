@@ -6,8 +6,8 @@
 
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
-#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service_factory.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -19,10 +19,10 @@
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildTestOptimizationGuideKeyedService(
+std::unique_ptr<KeyedService>
+BuildTestOptimizationGuideGlobalStateHolderKeyedService(
     content::BrowserContext* browser_context) {
-  return std::make_unique<
-      testing::NiceMock<MockOptimizationGuideKeyedService>>();
+  return std::make_unique<OptimizationGuideGlobalStateHolderKeyedService>();
 }
 
 }  // namespace
@@ -64,8 +64,10 @@ TEST_F(NotificationContentDetectionServiceFactoryTest,
       "profile",
       {
           TestingProfile::TestingFactory{
-              OptimizationGuideKeyedServiceFactory::GetInstance(),
-              base::BindRepeating(&BuildTestOptimizationGuideKeyedService)},
+              OptimizationGuideGlobalStateHolderKeyedServiceFactory::
+                  GetInstance(),
+              base::BindRepeating(
+                  &BuildTestOptimizationGuideGlobalStateHolderKeyedService)},
       });
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
   EXPECT_EQ(nullptr,
