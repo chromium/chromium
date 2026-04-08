@@ -409,6 +409,7 @@ enum ActionType {
   "internalInvalidateTree",
   "loadInlineTextBoxes",
   "longClick",
+  "replaceRanges",
   "replaceSelectedText",
   "requestLayoutBasedAction",
   "resumeMedia",

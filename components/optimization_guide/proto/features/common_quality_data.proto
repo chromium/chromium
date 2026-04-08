@@ -2085,7 +2085,7 @@ enum AXIntListAttribute {
 }
 
 // AX StringList attribute enum.
-// Next ID: 4
+// Next ID: 5
 enum AXStringListAttribute {
   AX_SLA_NONE = 0;
 
@@ -2094,6 +2094,8 @@ enum AXStringListAttribute {
   AX_SLA_ARIANOTIFICATIONANNOUNCEMENTS = 2;
 
   AX_SLA_ARIANOTIFICATIONTYPES = 3;
+
+  AX_SLA_TEXTOPERATIONREPLACEMENTSTRINGS = 4;
 }
 
 // This will be updated when there is a significant change in the parsing logic.

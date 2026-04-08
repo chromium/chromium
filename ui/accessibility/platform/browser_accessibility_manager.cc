@@ -1267,6 +1267,68 @@ void BrowserAccessibilityManager::SetSelection(
   AXPlatform::GetInstance().OnActionFromAssistiveTech();
 }
 
+void BrowserAccessibilityManager::ReplaceRanges(
+    const BrowserAccessibility& node,
+    const std::vector<BrowserAccessibility::AXRange>& ranges,
+    const std::vector<std::string>& replacement_strings) {
+  if (!delegate_) {
+    return;
+  }
+
+  size_t size = ranges.size();
+  if (!size || size != replacement_strings.size()) {
+    return;
+  }
+
+  std::vector<std::string> filtered_replacement_strings;
+  std::vector<int32_t> start_anchor_ids;
+  std::vector<int32_t> start_offsets;
+  std::vector<int32_t> end_anchor_ids;
+  std::vector<int32_t> end_offsets;
+
+  filtered_replacement_strings.reserve(size);
+  start_anchor_ids.reserve(size);
+  start_offsets.reserve(size);
+  end_anchor_ids.reserve(size);
+  end_offsets.reserve(size);
+
+  for (size_t i = 0; i < ranges.size(); ++i) {
+    if (!ranges[i].anchor() || !ranges[i].focus()) {
+      continue;
+    }
+
+    auto anchor = ranges[i].anchor()->AsLeafTextPosition();
+    auto focus = ranges[i].focus()->AsLeafTextPosition();
+    if (!anchor->IsValid() || !focus->IsValid()) {
+      continue;
+    }
+
+    filtered_replacement_strings.push_back(replacement_strings[i]);
+    start_anchor_ids.push_back(anchor->anchor_id());
+    start_offsets.push_back(anchor->text_offset());
+    end_anchor_ids.push_back(focus->anchor_id());
+    end_offsets.push_back(focus->text_offset());
+  }
+
+  AXActionData action_data;
+  action_data.target_node_id = node.GetId();
+  action_data.AddStringListAttribute(
+      ax::mojom::StringListAttribute::kTextOperationReplacementStrings,
+      filtered_replacement_strings);
+  action_data.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationStartAnchorIds,
+      start_anchor_ids);
+  action_data.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationStartOffsets, start_offsets);
+  action_data.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationEndAnchorIds, end_anchor_ids);
+  action_data.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kTextOperationEndOffsets, end_offsets);
+  action_data.action = ax::mojom::Action::kReplaceRanges;
+  delegate_->AccessibilityPerformAction(action_data);
+  AXPlatform::GetInstance().OnActionFromAssistiveTech();
+}
+
 void BrowserAccessibilityManager::StitchChildTree(
     const BrowserAccessibility& node,
     const AXTreeID& child_tree_id) {

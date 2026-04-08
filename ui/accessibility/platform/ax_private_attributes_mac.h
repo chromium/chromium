@@ -292,8 +292,9 @@ COMPONENT_EXPORT(AX_PLATFORM)
 constexpr NSString* const
     NSAccessibilityTextMarkerRangeForUnorderedTextMarkersParameterizedAttribute =
         @"AXTextMarkerRangeForUnorderedTextMarkers";
-// COMPONENT_EXPORT(AX_PLATFORM) constexpr NSString* const
-// NSAccessibilityTextOperationMarkerRanges = @"AXTextOperationMarkerRanges";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityTextOperationParameterizedAttribute =
+    @"AXTextOperation";
 COMPONENT_EXPORT(AX_PLATFORM)
 constexpr NSString* const
     NSAccessibilityUIElementForTextMarkerParameterizedAttribute =

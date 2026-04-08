@@ -2902,6 +2902,12 @@ inline constexpr char kLogJsConsoleMessagesDescription[] =
     "Enable logging JS console messages in system logs, please note that they "
     "may contain PII.";
 
+inline constexpr char kMacAccessibilityTextOperationName[] =
+    "Enable text editing through accessibility APIs";
+inline constexpr char kMacAccessibilityTextOperationDescription[] =
+    "Enables support for performing text editing operations through "
+    "the AXTextOperation accessibility API.";
+
 inline constexpr char kMediaRouterCastAllowAllIPsName[] =
     "Connect to Cast devices on all IP addresses";
 inline constexpr char kMediaRouterCastAllowAllIPsDescription[] =

@@ -413,7 +413,7 @@ DispatchEventResult DispatchBeforeInputDataTransfer(Node*,
 
 // Helper function to dispatch beforeinput and input events whose inputType is
 // insertReplacementText.
-void InsertTextAndSendInputEventsOfTypeInsertReplacementText(
+CORE_EXPORT void InsertTextAndSendInputEventsOfTypeInsertReplacementText(
     LocalFrame&,
     const String&,
     bool allow_edit_context = false);

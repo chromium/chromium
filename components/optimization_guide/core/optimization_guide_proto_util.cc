@@ -492,6 +492,9 @@ optimization_guide::proto::AXStringListAttribute StringListAttributeToProto(
     case ax::mojom::StringListAttribute::kCustomActionDescriptions:
       return optimization_guide::proto::AXStringListAttribute::
           AX_SLA_CUSTOMACTIONDESCRIPTIONS;
+    case ax::mojom::StringListAttribute::kTextOperationReplacementStrings:
+      return optimization_guide::proto::AXStringListAttribute::
+          AX_SLA_TEXTOPERATIONREPLACEMENTSTRINGS;
   }
 }
 

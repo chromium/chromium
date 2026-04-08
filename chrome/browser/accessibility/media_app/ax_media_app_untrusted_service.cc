@@ -480,6 +480,7 @@ void AXMediaAppUntrustedService::PerformAction(
 #endif  // defined(USE_AURA)
       return;
     }
+    case ax::mojom::Action::kReplaceRanges:
     case ax::mojom::Action::kReplaceSelectedText:
     case ax::mojom::Action::kNone:
     case ax::mojom::Action::kGetTextLocation:

@@ -39,6 +39,7 @@ constexpr const char kMacTextMarker[]{"mac/textmarker"};
 constexpr const char kMacMethods[]{"mac/methods"};
 constexpr const char kMacParameterizedAttributes[]{
     "mac/parameterized-attributes"};
+constexpr const char kMacTextOperation[]{"mac/text-operation"};
 
 #endif
 
@@ -80,6 +81,14 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
   void Migration_RunTypedTest(const base::FilePath::CharType* file_path) {
     if (features::IsMacAccessibilityAPIMigrationEnabled()) {
       RunTypedTest<type>(file_path);
+    } else {
+      GTEST_SKIP();
+    }
+  }
+
+  void AXTextOperation_RunTest(const base::FilePath::CharType* file_path) {
+    if (features::IsMacAccessibilityTextOperationEnabled()) {
+      RunTypedTest<kMacTextOperation>(file_path);
     } else {
       GTEST_SKIP();
     }
@@ -726,6 +735,33 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXStringForRange) {
   RunTypedTest<kMacParameterizedAttributes>("ax-string-for-range.html");
+}
+
+// Text Operation
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXTextOperationSelect) {
+  AXTextOperation_RunTest("ax-text-operation-select.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXTextOperationCapitalize) {
+  AXTextOperation_RunTest("ax-text-operation-capitalize.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXTextOperationLowercase) {
+  AXTextOperation_RunTest("ax-text-operation-lowercase.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXTextOperationUppercase) {
+  AXTextOperation_RunTest("ax-text-operation-uppercase.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXTextOperationReplace) {
+  AXTextOperation_RunTest("ax-text-operation-replace.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AXTextOperationReplacePreserveCase) {
+  AXTextOperation_RunTest("ax-text-operation-replace-preserve-case.html");
 }
 
 #endif

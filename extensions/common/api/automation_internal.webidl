@@ -64,6 +64,15 @@ dictionary SetSelectionParams {
   required long focusOffset;
 };
 
+// Arguments for the replaceRanges action supplied to performAction.
+dictionary ReplaceRangesParams {
+  required sequence<DOMString> replacementStrings;
+  required sequence<long> startAnchorIds;
+  required sequence<long> startOffsets;
+  required sequence<long> endAnchorIds;
+  required sequence<long> endOffsets;
+};
+
 // Arguments for the replaceSelectedText action supplied to performAction.
 dictionary ReplaceSelectedTextParams {
   required DOMString value;

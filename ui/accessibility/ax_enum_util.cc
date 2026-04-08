@@ -1125,6 +1125,8 @@ const char* ToString(ax::mojom::Action action) {
       return "increment";
     case ax::mojom::Action::kLoadInlineTextBoxes:
       return "loadInlineTextBoxes";
+    case ax::mojom::Action::kReplaceRanges:
+      return "replaceRanges";
     case ax::mojom::Action::kReplaceSelectedText:
       return "replaceSelectedText";
     case ax::mojom::Action::kResumeMedia:
@@ -1958,6 +1960,8 @@ const char* ToString(ax::mojom::StringListAttribute string_list_attribute) {
       return "ariaNotificationTypes";
     case ax::mojom::StringListAttribute::kCustomActionDescriptions:
       return "customActionDescriptions";
+    case ax::mojom::StringListAttribute::kTextOperationReplacementStrings:
+      return "textOperationReplacementStrings";
   }
 
   return "";

@@ -1,0 +1,84 @@
+<!--
+@SCRIPT:
+  //
+  // Test: Replaces text in a contenteditable element with individual replacement strings.
+  //
+  // Note the order of the ranges is reversed, which is required for non-selection operations, like replace.
+  // Ensures that following replacement string transformations are correctly applied:
+  //   range_2: "Sleeping" is converted to lowercase to match the case of the replaced text "lazy".
+  //   range_1: "HOPS" is assumed to be an acronym and is NOT converted to lowercase to match the case of the replaced text "jumps".
+  //
+  ce1.accessibilityParameterizedAttributeNames.has(AXTextOperation)
+  ce1.AXValue
+  range_1:= span1.AXTextMarkerRangeForUIElement(span1)
+  range_2:= span2.AXTextMarkerRangeForUIElement(span2)
+  ce1.accessibilityAttributeValue(AXTextOperation, {type: TextOperationReplace, ranges: [range_2, range_1], strings: [Sleeping, HOPS]})
+  wait for AXSelectedTextChanged on AXTextArea
+  ce1.AXSelectedTextMarkerRange
+  ce1.AXValue
+
+@SCRIPT:
+  //
+  // Test: Replaces text in a contenteditable element with a single replacement string.
+  //
+  // Note the order of the ranges is reversed, which is required for non-selection operations, like replace.
+  // Ensures that following replacement string transformations are correctly applied:
+  //   range_2: "replaced" is applied as is, since it is already lowercase matching the case of the replaced text "lazy".
+  //   range_1: "replaced" is capitalized to match the case of the replaced text "The".
+  //
+  ce2.accessibilityParameterizedAttributeNames.has(AXTextOperation)
+  ce2.AXValue
+  range_1:= span1.AXTextMarkerRangeForUIElement(span3)
+  range_2:= span2.AXTextMarkerRangeForUIElement(span4)
+  ce2.accessibilityAttributeValue(AXTextOperation, {type: TextOperationReplace, ranges: [range_2, range_1], string: replaced})
+  wait for AXSelectedTextChanged on AXTextArea
+  ce2.AXSelectedTextMarkerRange
+  ce2.AXValue
+
+@SCRIPT:
+  //
+  // Test: Replaces text in a textarea.
+  //
+  // Ensures that following replacement string transformations are correctly applied:
+  //   range: "Hey" is applied as is, since it is already capitalized matching the case of the replaced text "Hello".
+  //
+  textarea.accessibilityParameterizedAttributeNames.has(AXTextOperation)
+  textarea.AXValue
+  start:= textarea.AXTextMarkerRangeForUIElement(textarea).anchor
+  end:= textarea.AXNextWordEndTextMarkerForTextMarker(start)
+  range:= textarea.AXTextMarkerRangeForUnorderedTextMarkers([start, end])
+  textarea.accessibilityAttributeValue(AXTextOperation, {type: TextOperationReplace, ranges: [range], string: Hey})
+  wait for AXSelectedTextChanged on AXTextArea
+  textarea.AXSelectedTextMarkerRange
+  textarea.AXValue
+
+@SCRIPT:
+  //
+  // Test: Replaces text in an input field.
+  //
+  // Ensures that following replacement string transformations are correctly applied:
+  //   range: "GHI" is assumed to be an acronym and is NOT converted to lowercase to match the case of the replaced text "def".
+  //
+  input.accessibilityParameterizedAttributeNames.has(AXTextOperation)
+  input.AXValue
+  end:= input.AXTextMarkerRangeForUIElement(input).focus
+  start:= input.AXPreviousWordStartTextMarkerForTextMarker(end)
+  range:= input.AXTextMarkerRangeForUnorderedTextMarkers([start, end])
+  input.accessibilityAttributeValue(AXTextOperation, {type: TextOperationReplace, ranges: [range], strings: [GHI]})
+  wait for AXSelectedTextChanged on AXTextField
+  input.AXSelectedTextMarkerRange
+  input.AXValue
+-->
+<!DOCTYPE html>
+<html>
+<body>
+  <div id="ce1" contenteditable="true">
+    <p>The quick brown fox <span id="span1">jumps</span> over the <span id="span2">lazy</span> dog</p>
+  </div>
+  <div id="ce2" contenteditable="true">
+    <p><span id="span3">The</span> quick brown <span id="span4">fox</span> jumps over the lazy dog</p>
+  </div>
+  <textarea id="textarea">Hello, World!</textarea>
+  <input id="input" type="text" value="abc def">
+</body>
+</html>

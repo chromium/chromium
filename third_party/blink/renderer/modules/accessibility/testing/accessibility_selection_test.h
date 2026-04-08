@@ -7,8 +7,10 @@
 
 #include <string>
 
+#include "third_party/blink/renderer/modules/accessibility/ax_selection.h"
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_test.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -52,6 +54,17 @@ class AccessibilitySelectionTest : public AccessibilityTest {
   // first selection.
   AXSelection SetSelectionText(const std::string& selection_text,
                                HTMLElement& element) const;
+
+  // Sets |selection_text| as inner HTML of the document body and returns the
+  // resulting vector of |AXSelection|.
+  Vector<AXSelection> SetMultipleSelectionText(
+      const std::string& selection_text) const;
+
+  // Sets |selection_text| as inner HTML of |element| and returns the resulting
+  // vector of |AXSelection|.
+  Vector<AXSelection> SetMultipleSelectionText(
+      const std::string& selection_text,
+      HTMLElement& element) const;
 
   // Compares two HTML files containing a DOM selection and the equivalent
   // accessibility selection.

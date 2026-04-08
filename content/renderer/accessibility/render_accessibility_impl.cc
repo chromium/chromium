@@ -377,6 +377,7 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
     case ax::mojom::Action::kDoDefault:
     case ax::mojom::Action::kExpand:
     case ax::mojom::Action::kIncrement:
+    case ax::mojom::Action::kReplaceRanges:
     case ax::mojom::Action::kRequestLayoutBasedAction:
     case ax::mojom::Action::kScrollToPoint:
     case ax::mojom::Action::kScrollToPositionAtRowColumn:

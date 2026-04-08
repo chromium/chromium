@@ -196,6 +196,41 @@ AutomationInternalPerformActionFunction::Result ConvertToAXActionData(
       action->custom_action_id = perform_custom_action_params->custom_action_id;
       break;
     }
+    case api::automation::ActionType::kReplaceRanges: {
+      auto replace_ranges_params =
+          api::automation_internal::ReplaceRangesParams::FromValue(
+              additional_properties);
+      if (!replace_ranges_params) {
+        return validation_error_result;
+      }
+
+      size_t size = replace_ranges_params->replacement_strings.size();
+      if (replace_ranges_params->start_anchor_ids.size() != size ||
+          replace_ranges_params->start_offsets.size() != size ||
+          replace_ranges_params->end_anchor_ids.size() != size ||
+          replace_ranges_params->end_offsets.size() != size) {
+        return validation_error_result;
+      }
+
+      action->action = ax::mojom::Action::kReplaceRanges;
+      action->AddStringListAttribute(
+          ax::mojom::StringListAttribute::kTextOperationReplacementStrings,
+          replace_ranges_params->replacement_strings);
+      action->AddIntListAttribute(
+          ax::mojom::IntListAttribute::kTextOperationStartAnchorIds,
+          replace_ranges_params->start_anchor_ids);
+      action->AddIntListAttribute(
+          ax::mojom::IntListAttribute::kTextOperationStartOffsets,
+          replace_ranges_params->start_offsets);
+      action->AddIntListAttribute(
+          ax::mojom::IntListAttribute::kTextOperationEndAnchorIds,
+          replace_ranges_params->end_anchor_ids);
+      action->AddIntListAttribute(
+          ax::mojom::IntListAttribute::kTextOperationEndOffsets,
+          replace_ranges_params->end_offsets);
+
+      break;
+    }
     case api::automation::ActionType::kReplaceSelectedText: {
       auto replace_selected_text_params =
           api::automation_internal::ReplaceSelectedTextParams::FromValue(

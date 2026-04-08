@@ -400,8 +400,8 @@ enum State {
 // An action to be taken on an accessibility node.
 // In contrast to |AXDefaultActionVerb|, these describe what happens to the
 // object, e.g. "FOCUS".
-// Next version: 6
-// Next value: 42
+// Next version: 7
+// Next value: 43
 [Extensible, Stable, Uuid="ed8e4466-0522-4f98-ac28-59a523b70232"]
 enum Action {
   [Default]kNone = 0,
@@ -460,6 +460,11 @@ enum Action {
   kLoadInlineTextBoxes = 16,
 
   [MinVersion=2] kLongClick = 38,
+
+  // Replace ranges provided via the kTextOperationStart*/kTextOperationEnd*
+  // int list attributes with the corresponding replacements strings provided
+  // in the kTextOperationReplacementStrings string list attribute.
+  [MinVersion=6] kReplaceRanges = 42,
 
   // Delete any selected text in the control's text value and
   // insert |AXActionData::value| in its place, like when typing or pasting.
@@ -1034,8 +1039,8 @@ enum IntListAttribute {
   [MinVersion=6] kAriaNotificationPriorityProperties = 28,
 };
 
-// Next version: 2
-// Next value: 4
+// Next version: 3
+// Next value: 5
 [Extensible, Stable, Uuid="b3b576a7-9335-4f79-bc8c-595fd9346d81"]
 enum StringListAttribute {
   [Default]kNone = 0,
@@ -1044,6 +1049,7 @@ enum StringListAttribute {
   // Descriptions for custom actions. This must be aligned with
   // custom_action_ids.
   kCustomActionDescriptions = 1,
+  [MinVersion=2] kTextOperationReplacementStrings = 4,
 };
 
 enum ListStyle {

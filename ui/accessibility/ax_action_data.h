@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ui/accessibility/ax_attributes.h"
 #include "ui/accessibility/ax_base_export.h"
 #include "ui/accessibility/ax_constants.mojom.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -108,6 +109,46 @@ struct AX_BASE_EXPORT AXActionData {
   // The child tree that needs to be stitched at `target_node_id`. Only used by
   // `ax::mojom::Action::kStitchChildTree`.
   AXTreeID child_tree_id = AXTreeIDUnknown();
+
+  // Int list attributes.
+  AXIntListAttributes intlist_attributes;
+  bool HasIntListAttribute(ax::mojom::IntListAttribute attribute) const {
+    return intlist_attributes.Has(attribute);
+  }
+
+  const std::vector<int32_t>& GetIntListAttribute(
+      ax::mojom::IntListAttribute attribute) const {
+    return intlist_attributes.Get(attribute);
+  }
+
+  void AddIntListAttribute(ax::mojom::IntListAttribute attribute,
+                           const std::vector<int32_t>& val) {
+    intlist_attributes.Set(attribute, val);
+  }
+
+  void RemoveIntListAttribute(ax::mojom::IntListAttribute attribute) {
+    intlist_attributes.Remove(attribute);
+  }
+
+  // String list attributes.
+  AXStringListAttributes stringlist_attributes;
+  bool HasStringListAttribute(ax::mojom::StringListAttribute attribute) const {
+    return stringlist_attributes.Has(attribute);
+  }
+
+  const std::vector<std::string>& GetStringListAttribute(
+      ax::mojom::StringListAttribute attribute) const {
+    return stringlist_attributes.Get(attribute);
+  }
+
+  void AddStringListAttribute(ax::mojom::StringListAttribute attribute,
+                              const std::vector<std::string>& val) {
+    stringlist_attributes.Set(attribute, val);
+  }
+
+  void RemoveStringListAttribute(ax::mojom::StringListAttribute attribute) {
+    stringlist_attributes.Remove(attribute);
+  }
 };
 
 }  // namespace ui

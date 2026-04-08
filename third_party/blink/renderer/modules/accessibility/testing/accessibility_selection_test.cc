@@ -18,7 +18,10 @@
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
+#include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object-inl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
@@ -30,7 +33,6 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 namespace {
@@ -190,8 +192,9 @@ class AXSelectionSerializer final {
 // '^' marker, the second '|' with the second '^', and so on. If there are more
 // '|'s than '^'s or vice versa, the deserializer will DCHECK. If there are no
 // markers, no |AXSelection| objects will be returned. We don't allow '^' and
-// '|' markers to appear in anything other than the contents of an HTML node,
-// e.g. they are not permitted in aria-labels.
+// '|' markers to appear in anything other than the contents of an HTML node or
+// text controls like <textarea> and some <input> types, e.g. they are not
+// permitted in aria-labels.
 class AXSelectionDeserializer final {
   STACK_ALLOCATED();
 
@@ -242,38 +245,40 @@ class AXSelectionDeserializer final {
 
     for (wtf_size_t i = 0; i < foci()->size(); ++i) {
       DCHECK(anchors()->at(i).first);
-      const Position base(*anchors()->at(i).first, anchors()->at(i).second);
-      const auto ax_base = AXPosition::FromPosition(base, GetAXObjectCache());
+      const Position anchor(*anchors()->at(i).first, anchors()->at(i).second);
+      const auto ax_anchor =
+          AXPosition::FromPosition(anchor, GetAXObjectCache());
 
       DCHECK(foci()->at(i).first);
-      const Position extent(*foci()->at(i).first, foci()->at(i).second);
-      const auto ax_extent =
-          AXPosition::FromPosition(extent, GetAXObjectCache());
+      const Position focus(*foci()->at(i).first, foci()->at(i).second);
+      const auto ax_focus = AXPosition::FromPosition(focus, GetAXObjectCache());
       AXSelection::Builder builder(GetAXObjectCache());
       ax_selections.push_back(
-          builder.SetAnchor(ax_base).SetFocus(ax_extent).Build());
+          builder.SetAnchor(ax_anchor).SetFocus(ax_focus).Build());
     }
 
     return ax_selections;
   }
 
  private:
-  void HandleCharacterData(const AXObject& text_object) {
-    auto* const node = To<CharacterData>(text_object.GetNode());
-    Vector<int> base_offsets;
-    Vector<int> extent_offsets;
-    unsigned number_of_markers = 0;
+  // Extracts the '^' and '|' selection marker offsets from the provided text,
+  // and inserts them into anchor_offsets/focus_offsets. Returns a string
+  // containing the |text| without the the selection markers.
+  String ExtractSelectionMarkers(const String& text,
+                                 Vector<int>& anchor_offsets,
+                                 Vector<int>& focus_offsets) {
     StringBuilder builder;
-    for (unsigned i = 0; i < node->length(); ++i) {
-      const UChar character = node->data()[i];
+    unsigned number_of_markers = 0;
+    for (unsigned i = 0; i < text.length(); ++i) {
+      const UChar character = text[i];
       if (character == '^') {
-        base_offsets.push_back(static_cast<int>(i - number_of_markers));
+        anchor_offsets.push_back(static_cast<int>(i - number_of_markers));
         ++number_of_markers;
         continue;
       }
 
       if (character == '|') {
-        extent_offsets.push_back(static_cast<int>(i - number_of_markers));
+        focus_offsets.push_back(static_cast<int>(i - number_of_markers));
         ++number_of_markers;
         continue;
       }
@@ -281,12 +286,63 @@ class AXSelectionDeserializer final {
       builder.Append(character);
     }
 
-    if (base_offsets.empty() && extent_offsets.empty())
+    return builder.ToString();
+  }
+
+  // Extracts selection markers offsets from text control elements.
+  // The default value of the text control is updated to not include the
+  // selection markers.
+  void HandleTextControlElement(const AXObject& text_control_object) {
+    auto* const field = To<TextControlElement>(text_control_object.GetNode());
+    Vector<int> anchor_offsets;
+    Vector<int> focus_offsets;
+    const String extracted_text =
+        ExtractSelectionMarkers(field->Value(), anchor_offsets, focus_offsets);
+
+    if (anchor_offsets.empty() && focus_offsets.empty()) {
       return;
+    }
+
+    // Remove the markers from the HTML of the text control, instead of just
+    // updating the current value of the control.
+    if (auto* input = DynamicTo<HTMLInputElement>(field)) {
+      input->setAttribute(html_names::kValueAttr, AtomicString(extracted_text));
+    } else if (auto* textarea = DynamicTo<HTMLTextAreaElement>(field)) {
+      textarea->setTextContent(extracted_text);
+    }
+
+    field->GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+    for (int anchor_offset : anchor_offsets) {
+      const Position anchor =
+          field->VisiblePositionForIndex(anchor_offset).DeepEquivalent();
+      anchors()->emplace_back(anchor.AnchorNode(),
+                              anchor.OffsetInContainerNode());
+    }
+
+    for (int focus_offset : focus_offsets) {
+      const Position focus =
+          field->VisiblePositionForIndex(focus_offset).DeepEquivalent();
+      foci()->emplace_back(focus.AnchorNode(), focus.OffsetInContainerNode());
+    }
+  }
+
+  // Extracts selection markers offsets from a character data node.
+  // The text of the node is updated to not include the selection markers.
+  void HandleCharacterData(const AXObject& text_object) {
+    auto* const node = To<CharacterData>(text_object.GetNode());
+    Vector<int> anchor_offsets;
+    Vector<int> focus_offsets;
+    const String extracted_text =
+        ExtractSelectionMarkers(node->data(), anchor_offsets, focus_offsets);
+
+    if (anchor_offsets.empty() && focus_offsets.empty()) {
+      return;
+    }
 
     // Remove the markers, otherwise they would be duplicated if the AXSelection
     // is re-serialized.
-    node->setData(builder.ToString());
+    node->setData(extracted_text);
     node->GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
     //
@@ -299,11 +355,13 @@ class AXSelectionDeserializer final {
       Node* const parent = node->ParentOrShadowHostNode();
       int index_in_parent = static_cast<int>(node->NodeIndex());
 
-      for (size_t i = 0; i < base_offsets.size(); ++i)
+      for (size_t i = 0; i < anchor_offsets.size(); ++i) {
         anchors()->emplace_back(parent, index_in_parent);
+      }
 
-      for (size_t i = 0; i < extent_offsets.size(); ++i)
+      for (size_t i = 0; i < focus_offsets.size(); ++i) {
         foci()->emplace_back(parent, index_in_parent);
+      }
 
       return;
     }
@@ -312,10 +370,12 @@ class AXSelectionDeserializer final {
     // Text selection.
     //
 
-    for (int base_offset : base_offsets)
-      anchors()->emplace_back(node, base_offset);
-    for (int extent_offset : extent_offsets)
-      foci()->emplace_back(node, extent_offset);
+    for (int anchor_offset : anchor_offsets) {
+      anchors()->emplace_back(node, anchor_offset);
+    }
+    for (int focus_offset : focus_offsets) {
+      foci()->emplace_back(node, focus_offset);
+    }
   }
 
   void HandleObject(const AXObject& object) {
@@ -331,6 +391,10 @@ class AXSelectionDeserializer final {
 
   void FindSelectionMarkers(const AXObject& root) {
     const Node* node = root.GetNode();
+    if (node && IsTextControl(node)) {
+      HandleTextControlElement(root);
+      return;
+    }
     if (node && node->IsCharacterDataNode()) {
       HandleCharacterData(root);
       // |root| will need to be detached and replaced with an updated AXObject.
@@ -393,23 +457,35 @@ AXSelection AccessibilitySelectionTest::SetSelectionText(
   HTMLElement* body = GetDocument().body();
   if (!body)
     return AXSelection::Builder(GetAXObjectCache()).Build();
-  const Vector<AXSelection> ax_selections =
-      AXSelectionDeserializer(GetAXObjectCache())
-          .Deserialize(selection_text, *body);
-  if (ax_selections.empty())
-    return AXSelection::Builder(GetAXObjectCache()).Build();
-  return ax_selections.front();
+
+  return SetSelectionText(selection_text, *body);
 }
 
 AXSelection AccessibilitySelectionTest::SetSelectionText(
     const std::string& selection_text,
     HTMLElement& element) const {
   const Vector<AXSelection> ax_selections =
-      AXSelectionDeserializer(GetAXObjectCache())
-          .Deserialize(selection_text, element);
+      SetMultipleSelectionText(selection_text, element);
   if (ax_selections.empty())
     return AXSelection::Builder(GetAXObjectCache()).Build();
   return ax_selections.front();
+}
+
+Vector<AXSelection> AccessibilitySelectionTest::SetMultipleSelectionText(
+    const std::string& selection_text) const {
+  HTMLElement* body = GetDocument().body();
+  if (!body) {
+    return Vector<AXSelection>();
+  }
+
+  return SetMultipleSelectionText(selection_text, *body);
+}
+
+Vector<AXSelection> AccessibilitySelectionTest::SetMultipleSelectionText(
+    const std::string& selection_text,
+    HTMLElement& element) const {
+  return AXSelectionDeserializer(GetAXObjectCache())
+      .Deserialize(selection_text, element);
 }
 
 void AccessibilitySelectionTest::RunSelectionTest(

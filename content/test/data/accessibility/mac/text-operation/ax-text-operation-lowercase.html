@@ -1,0 +1,54 @@
+<!--
+@SCRIPT:
+  //
+  // Test: Lowercases the text in a contenteditable element.
+  //
+  // Note the order of the ranges is reversed, which is required for non-selection operations, like lowercase.
+  //
+  contenteditable.accessibilityParameterizedAttributeNames.has(AXTextOperation)
+  contenteditable.AXValue
+  range_1:= span1.AXTextMarkerRangeForUIElement(span1)
+  range_2:= span2.AXTextMarkerRangeForUIElement(span2)
+  contenteditable.accessibilityAttributeValue(AXTextOperation, {type: Lowercase, ranges: [range_2, range_1]})
+  wait for AXSelectedTextChanged on AXTextArea
+  contenteditable.AXSelectedTextMarkerRange
+  contenteditable.AXValue
+
+@SCRIPT:
+  //
+  // Test: Lowercases the text in a textarea.
+  //
+  textarea.accessibilityParameterizedAttributeNames.has(AXTextOperation)
+  textarea.AXValue
+  start:= textarea.AXTextMarkerRangeForUIElement(textarea).anchor
+  end:= textarea.AXNextWordEndTextMarkerForTextMarker(start)
+  range:= textarea.AXTextMarkerRangeForUnorderedTextMarkers([start, end])
+  textarea.accessibilityAttributeValue(AXTextOperation, {type: Lowercase, ranges: [range]})
+  wait for AXSelectedTextChanged on AXTextArea
+  textarea.AXSelectedTextMarkerRange
+  textarea.AXValue
+
+@SCRIPT:
+  //
+  // Test: Lowercases the text in an input field.
+  //
+  input.accessibilityParameterizedAttributeNames.has(AXTextOperation)
+  input.AXValue
+  end:= input.AXTextMarkerRangeForUIElement(input).focus
+  start:= input.AXPreviousWordStartTextMarkerForTextMarker(end)
+  range:= input.AXTextMarkerRangeForUnorderedTextMarkers([start, end])
+  input.accessibilityAttributeValue(AXTextOperation, {type: Lowercase, ranges: [range]})
+  wait for AXSelectedTextChanged on AXTextField
+  input.AXSelectedTextMarkerRange
+  input.AXValue
+-->
+<!DOCTYPE html>
+<html>
+<body>
+  <div id="contenteditable" contenteditable="true">
+    <p>The quick brown fox <span id="span1">Jumps</span> over the <span id="span2">Lazy</span> dog</p>
+  </div>
+  <textarea id="textarea">Hello, World!</textarea>
+  <input id="input" type="text" value="abc dEf">
+</body>
+</html>

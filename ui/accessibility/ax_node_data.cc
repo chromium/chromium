@@ -467,6 +467,7 @@ void AXNodeData::AddAction(ax::mojom::Action action_enum) {
     case ax::mojom::Action::kIncrement:
     case ax::mojom::Action::kInternalInvalidateTree:
     case ax::mojom::Action::kLoadInlineTextBoxes:
+    case ax::mojom::Action::kReplaceRanges:
     case ax::mojom::Action::kReplaceSelectedText:
     case ax::mojom::Action::kScrollToMakeVisible:
     case ax::mojom::Action::kScrollToPoint:
@@ -1816,6 +1817,10 @@ std::string AXNodeData::ToString(bool verbose) const {
       case ax::mojom::StringListAttribute::kCustomActionDescriptions:
         base::StrAppend(&result, {" custom_action_descriptions=",
                                   base::JoinString(values, ",")});
+        break;
+      case ax::mojom::StringListAttribute::kTextOperationReplacementStrings:
+        result += " text_operation_replacement_strings=" +
+                  base::JoinString(values, ",");
         break;
       case ax::mojom::StringListAttribute::kNone:
         break;

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/adapters.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
@@ -15,7 +16,7 @@
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object-inl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
-#include "third_party/blink/renderer/modules/accessibility/testing/accessibility_test.h"
+#include "third_party/blink/renderer/modules/accessibility/testing/accessibility_selection_test.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_mode.h"
@@ -2070,6 +2071,369 @@ TEST_F(AccessibilityTest, UpdateTreeUpdatesInheritedDisabledProperty) {
   ASSERT_NE(nullptr, mark);
   // Ensure that "ancestor is disabled" has propagated to a deep descendant.
   ASSERT_TRUE(mark->IsDescendantOfDisabledNode());
+}
+
+class AccessibilityReplaceRangesTest : public AccessibilitySelectionTest {
+ protected:
+  ui::AXActionData SetSelectionTextAndCreateReplaceAction(
+      const std::string& selection_text,
+      const Vector<std::string>& replacement_strings) const {
+    const Vector<AXSelection> selections =
+        SetMultipleSelectionText(selection_text);
+    EXPECT_EQ(selections.size(), replacement_strings.size())
+        << "Number of selections in text (" << selections.size()
+        << ") must match the number of replacement strings ("
+        << replacement_strings.size() << ").";
+
+    std::vector<int> start_anchor_ids;
+    std::vector<int> start_offsets;
+    std::vector<int> end_anchor_ids;
+    std::vector<int> end_offsets;
+
+    // Traversing the selections in reverse order so that we can safely apply
+    // the replacement strings without interfering with replacements that appear
+    // later in document.
+    for (const AXSelection& selection : base::Reversed(selections)) {
+      const AXPosition anchor = selection.Anchor();
+      EXPECT_TRUE(anchor.IsValid());
+      EXPECT_TRUE(anchor.IsTextPosition());
+      EXPECT_TRUE(anchor.ContainerObject());
+      start_anchor_ids.push_back(anchor.ContainerObject()->AXObjectID());
+      start_offsets.push_back(anchor.TextOffset());
+      const AXPosition focus = selection.Focus();
+      EXPECT_TRUE(focus.IsValid());
+      EXPECT_TRUE(focus.IsTextPosition());
+      EXPECT_TRUE(focus.ContainerObject());
+      end_anchor_ids.push_back(focus.ContainerObject()->AXObjectID());
+      end_offsets.push_back(focus.TextOffset());
+    }
+
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::blink::Action::kReplaceRanges;
+    action_data.AddIntListAttribute(
+        ax::mojom::blink::IntListAttribute::kTextOperationStartAnchorIds,
+        start_anchor_ids);
+    action_data.AddIntListAttribute(
+        ax::mojom::blink::IntListAttribute::kTextOperationStartOffsets,
+        start_offsets);
+    action_data.AddIntListAttribute(
+        ax::mojom::blink::IntListAttribute::kTextOperationEndAnchorIds,
+        end_anchor_ids);
+    action_data.AddIntListAttribute(
+        ax::mojom::blink::IntListAttribute::kTextOperationEndOffsets,
+        end_offsets);
+    action_data.AddStringListAttribute(
+        ax::mojom::blink::StringListAttribute::kTextOperationReplacementStrings,
+        std::vector<std::string>(replacement_strings.rbegin(),
+                                 replacement_strings.rend()));
+
+    return action_data;
+  }
+};
+
+TEST_F(AccessibilityReplaceRangesTest, NoReplacement) {
+  const ui::AXActionData action_data = SetSelectionTextAndCreateReplaceAction(
+      R"HTML(<div contenteditable="true">Hello, World!</div>)HTML", {});
+
+  GetAXRootObject()->PerformAction(action_data);
+
+  EXPECT_EQ(R"HTML(<div contenteditable="true">Hello, World!</div>)HTML",
+            GetDocument().body()->GetInnerHTMLString());
+}
+
+TEST_F(AccessibilityReplaceRangesTest, DeleteRange) {
+  const ui::AXActionData action_data = SetSelectionTextAndCreateReplaceAction(
+      R"HTML(<div contenteditable="true">Hello^, World|!</div>)HTML", {""});
+
+  GetAXRootObject()->PerformAction(action_data);
+
+  EXPECT_EQ(R"HTML(<div contenteditable="true">Hello!</div>)HTML",
+            GetDocument().body()->GetInnerHTMLString());
+}
+
+TEST_F(AccessibilityReplaceRangesTest, InsertTextInMiddleOfNode) {
+  const ui::AXActionData action_data = SetSelectionTextAndCreateReplaceAction(
+      R"HTML(
+        <div contenteditable="true">Hello^|, World!</div>
+      )HTML",
+      {"oooo"});
+
+  GetAXRootObject()->PerformAction(action_data);
+
+  EXPECT_EQ(
+      R"HTML(
+        <div contenteditable="true">Hellooooo, World!</div>
+      )HTML",
+      GetDocument().body()->GetInnerHTMLString());
+}
+
+TEST_F(AccessibilityReplaceRangesTest, InsertTextBeforeNode) {
+  const ui::AXActionData action_data = SetSelectionTextAndCreateReplaceAction(
+      R"HTML(
+        <div contenteditable="true">Hello, ^|<b>World</b>!</div>
+      )HTML",
+      {"crazy "});
+
+  GetAXRootObject()->PerformAction(action_data);
+
+  EXPECT_EQ(
+      R"HTML(
+        <div contenteditable="true">Hello, crazy&nbsp;<b>World</b>!</div>
+      )HTML",
+      GetDocument().body()->GetInnerHTMLString());
+}
+
+TEST_F(AccessibilityReplaceRangesTest, InsertTextFirstPositionInNode) {
+  const ui::AXActionData action_data = SetSelectionTextAndCreateReplaceAction(
+      R"HTML(
+        <div contenteditable="true">Hello, <b>^|World</b>!</div>
+      )HTML",
+      {"crazy "});
+
+  GetAXRootObject()->PerformAction(action_data);
+
+  // Insertions have upstream affinity and therefore the inserted text must be
+  // placed before the <b>.
+  EXPECT_EQ(
+      R"HTML(
+        <div contenteditable="true">Hello, crazy&nbsp;<b>World</b>!</div>
+      )HTML",
+      GetDocument().body()->GetInnerHTMLString());
+}
+
+TEST_F(AccessibilityReplaceRangesTest, InsertTextAfterNode) {
+  const ui::AXActionData action_data = SetSelectionTextAndCreateReplaceAction(
+      R"HTML(
+        <div contenteditable="true"><b>Hello</b>^|, World!</div>
+      )HTML",
+      {"oooo"});
+
+  GetAXRootObject()->PerformAction(action_data);
+
+  // Insertions have upstream affinity and therefore the inserted text must be
+  // contained in <b>.
+  EXPECT_EQ(
+      R"HTML(
+        <div contenteditable="true"><b>Hellooooo</b>, World!</div>
+      )HTML",
+      GetDocument().body()->GetInnerHTMLString());
+}
+
+TEST_F(AccessibilityReplaceRangesTest, InsertTextLastPositionInNode) {
+  const ui::AXActionData action_data = SetSelectionTextAndCreateReplaceAction(
+      R"HTML(
+        <div contenteditable="true"><b>Hello^|</b>, World!</div>
+      )HTML",
+      {"oooo"});
+
+  GetAXRootObject()->PerformAction(action_data);
+
+  EXPECT_EQ(
+      R"HTML(
+        <div contenteditable="true"><b>Hellooooo</b>, World!</div>
+      )HTML",
+      GetDocument().body()->GetInnerHTMLString());
+}
+
+TEST_F(AccessibilityReplaceRangesTest, SingleReplacementInContentEditable) {
+  const ui::AXActionData action_data = SetSelectionTextAndCreateReplaceAction(
+      R"HTML(<div contenteditable="true">^Hello|, World!</div>)HTML", {"Hey"});
+
+  GetAXRootObject()->PerformAction(action_data);
+
+  EXPECT_EQ(R"HTML(<div contenteditable="true">Hey, World!</div>)HTML",
+            GetDocument().body()->GetInnerHTMLString());
+}
+
+TEST_F(AccessibilityReplaceRangesTest, MultipleReplacementsInContentEditable) {
+  const ui::AXActionData action_data = SetSelectionTextAndCreateReplaceAction(
+      R"HTML(<div contenteditable="true">^Hello|, ^World|!</div>)HTML",
+      {"Hey", "Foo"});
+
+  GetAXRootObject()->PerformAction(action_data);
+
+  EXPECT_EQ(R"HTML(<div contenteditable="true">Hey, Foo!</div>)HTML",
+            GetDocument().body()->GetInnerHTMLString());
+}
+
+TEST_F(AccessibilityReplaceRangesTest, SingleReplacementInTextArea) {
+  const ui::AXActionData action_data = SetSelectionTextAndCreateReplaceAction(
+      R"HTML(<textarea>^Hello|, World!</textarea>)HTML", {"Hey"});
+
+  GetAXRootObject()->PerformAction(action_data);
+
+  TextControlElement* textarea = To<TextControlElement>(
+      GetDocument().QuerySelector(AtomicString("textarea")));
+  EXPECT_EQ("Hey, World!", textarea->Value());
+  // The HTML remains unchanged.
+  EXPECT_EQ(R"HTML(<textarea>Hello, World!</textarea>)HTML",
+            GetDocument().body()->GetInnerHTMLString());
+}
+
+TEST_F(AccessibilityReplaceRangesTest, MultipleReplacementsInTextArea) {
+  const ui::AXActionData action_data = SetSelectionTextAndCreateReplaceAction(
+      R"HTML(<textarea>^Hello|, ^World|!</textarea>)HTML", {"Hey", "Foo"});
+
+  GetAXRootObject()->PerformAction(action_data);
+
+  TextControlElement* textarea = To<TextControlElement>(
+      GetDocument().QuerySelector(AtomicString("textarea")));
+  EXPECT_EQ("Hey, Foo!", textarea->Value());
+  // The HTML remains unchanged.
+  EXPECT_EQ(R"HTML(<textarea>Hello, World!</textarea>)HTML",
+            GetDocument().body()->GetInnerHTMLString());
+}
+
+TEST_F(AccessibilityReplaceRangesTest,
+       MultipleReplacementsInTextAreaWithMultilineText) {
+  const ui::AXActionData action_data = SetSelectionTextAndCreateReplaceAction(
+      "<textarea>^Hello|,\n^World|!</textarea>", {"Hey", "FooBar"});
+
+  GetAXRootObject()->PerformAction(action_data);
+
+  TextControlElement* textarea = To<TextControlElement>(
+      GetDocument().QuerySelector(AtomicString("textarea")));
+  EXPECT_EQ("Hey,\nFooBar!", textarea->Value());
+  // The HTML remains unchanged.
+  EXPECT_EQ("<textarea>Hello,\nWorld!</textarea>",
+            GetDocument().body()->GetInnerHTMLString());
+}
+
+TEST_F(AccessibilityReplaceRangesTest, SingleReplacementInInputField) {
+  const ui::AXActionData action_data = SetSelectionTextAndCreateReplaceAction(
+      R"HTML(<input value="^Hello|, World!">)HTML", {"Hey"});
+
+  GetAXRootObject()->PerformAction(action_data);
+
+  TextControlElement* input = To<TextControlElement>(
+      GetDocument().QuerySelector(AtomicString("input")));
+  EXPECT_EQ("Hey, World!", input->Value());
+  // The HTML remains unchanged.
+  EXPECT_EQ(R"HTML(<input value="Hello, World!">)HTML",
+            GetDocument().body()->GetInnerHTMLString());
+}
+
+TEST_F(AccessibilityReplaceRangesTest, MultipleReplacementsInInputField) {
+  const ui::AXActionData action_data = SetSelectionTextAndCreateReplaceAction(
+      R"HTML(<input value="^Hello|, ^World|!">)HTML", {"Hey", "Foo"});
+
+  GetAXRootObject()->PerformAction(action_data);
+
+  TextControlElement* input = To<TextControlElement>(
+      GetDocument().QuerySelector(AtomicString("input")));
+  EXPECT_EQ("Hey, Foo!", input->Value());
+  // The HTML remains unchanged.
+  EXPECT_EQ(R"HTML(<input value="Hello, World!">)HTML",
+            GetDocument().body()->GetInnerHTMLString());
+}
+
+TEST_F(AccessibilityReplaceRangesTest, MultipleReplacementsInMultipleElements) {
+  const ui::AXActionData action_data = SetSelectionTextAndCreateReplaceAction(
+      R"HTML(
+        <div contenteditable="true">^Hello|, ^World|!</div>
+        <div contenteditable="true">ab^c<b>d|e^f</b>g|hi</div>
+        <input value="^Hello|, World!">
+        <textarea>Hello, ^World|!</textarea>
+      )HTML",
+      {"Hey", "Foo", "CD", "FG", "Hi", "Bar"});
+
+  GetAXRootObject()->PerformAction(action_data);
+
+  TextControlElement* input = To<TextControlElement>(
+      GetDocument().QuerySelector(AtomicString("input")));
+  EXPECT_EQ("Hi, World!", input->Value());
+
+  TextControlElement* textarea = To<TextControlElement>(
+      GetDocument().QuerySelector(AtomicString("textarea")));
+  EXPECT_EQ("Hello, Bar!", textarea->Value());
+
+  EXPECT_EQ(
+      R"HTML(
+        <div contenteditable="true">Hey, Foo!</div>
+        <div contenteditable="true">abCD<b>eFG</b>hi</div>
+        <input value="Hello, World!">
+        <textarea>Hello, World!</textarea>
+      )HTML",
+      GetDocument().body()->GetInnerHTMLString());
+}
+
+TEST_F(AccessibilityReplaceRangesTest, ReplacementRangeMatchesNode) {
+  const ui::AXActionData action_data = SetSelectionTextAndCreateReplaceAction(
+      R"HTML(<div contenteditable="true">Hello, ^<b>World</b>|!</div>)HTML",
+      {"Foo"});
+
+  GetAXRootObject()->PerformAction(action_data);
+
+  // Replacement start position has downstream affinity and the end position
+  // has upstream affinity therefore, the replaced text is placed inside <b>.
+  EXPECT_EQ(R"HTML(<div contenteditable="true">Hello, <b>Foo</b>!</div>)HTML",
+            GetDocument().body()->GetInnerHTMLString());
+}
+
+TEST_F(AccessibilityReplaceRangesTest, ReplacementInShadowDOM) {
+  const ui::AXActionData action_data = SetSelectionTextAndCreateReplaceAction(
+      R"HTML(
+        <div>
+          <template shadowrootmode="open">
+            <slot name="slot"></slot>
+          </template>
+          <div slot="slot" contenteditable="true">Hello, ^<b>World</b>|!</div>
+        </div>
+      )HTML",
+      {"Foo"});
+
+  GetAXRootObject()->PerformAction(action_data);
+
+  EXPECT_EQ(
+      R"HTML(
+        <div>
+          <template shadowrootmode="open">
+            <slot name="slot"></slot>
+          </template>
+          <div slot="slot" contenteditable="true">Hello, <b>Foo</b>!</div>
+        </div>
+      )HTML",
+      GetDocument().body()->GetInnerHTMLString());
+}
+
+TEST_F(AccessibilityReplaceRangesTest, MultipleReplacementsInShadowDOM) {
+  const ui::AXActionData action_data = SetSelectionTextAndCreateReplaceAction(
+      R"HTML(
+        <div>
+          <template shadowrootmode="open">
+            <slot name="slot1"></slot>
+            <slot name="slot2"></slot>
+          </template>
+          <div slot="slot2" contenteditable="true">^Hello|, <b>World</b>!</div>
+          <div slot="slot1" contenteditable="true">Hello, ^<b>World</b>|!</div>
+        </div>
+      )HTML",
+      {"Hey", "Foo"});
+
+  GetAXRootObject()->PerformAction(action_data);
+
+  EXPECT_EQ(
+      R"HTML(
+        <div>
+          <template shadowrootmode="open">
+            <slot name="slot1"></slot>
+            <slot name="slot2"></slot>
+          </template>
+          <div slot="slot2" contenteditable="true">Hey, <b>World</b>!</div>
+          <div slot="slot1" contenteditable="true">Hello, <b>Foo</b>!</div>
+        </div>
+      )HTML",
+      GetDocument().body()->GetInnerHTMLString());
+}
+
+TEST_F(AccessibilityReplaceRangesTest, NonEditableTextRemainsUnchanged) {
+  const ui::AXActionData action_data = SetSelectionTextAndCreateReplaceAction(
+      R"HTML(<div>^Hello|, World!</div>)HTML", {"Hey"});
+
+  GetAXRootObject()->PerformAction(action_data);
+
+  EXPECT_EQ(R"HTML(<div>Hello, World!</div>)HTML",
+            GetDocument().body()->GetInnerHTMLString());
 }
 
 }  // namespace test

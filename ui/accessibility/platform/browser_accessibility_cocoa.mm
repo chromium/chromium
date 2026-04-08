@@ -30,6 +30,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_range.h"
@@ -2293,7 +2294,225 @@ bool ui::IsNSRange(id value) {
     return @(child->GetIndexInParent().value());
   }
 
+  if (features::IsMacAccessibilityTextOperationEnabled()) {
+    if ([attribute isEqualToString:
+                       NSAccessibilityTextOperationParameterizedAttribute]) {
+      return [self handleTextOperation:parameter];
+    }
+  }
+
   return [super accessibilityAttributeValue:attribute forParameter:parameter];
+}
+
+- (NSArray<NSString*>*)handleTextOperation:(id)parameter {
+  if (![parameter isKindOfClass:[NSDictionary class]]) {
+    return nil;
+  }
+
+  NSDictionary* dict = parameter;
+  NSString* operationType = dict[@"AXTextOperationType"];
+  if (![operationType isKindOfClass:[NSString class]]) {
+    return nil;
+  }
+
+  NSArray* ranges = dict[@"AXTextOperationMarkerRanges"];
+  if (![ranges isKindOfClass:[NSArray class]] || !ranges.count) {
+    return nil;
+  }
+
+  NSUInteger count = ranges.count;
+  NSArray<NSString*>* replacementStrings;
+
+  if ([operationType isEqualToString:@"TextOperationReplace"] ||
+      [operationType isEqualToString:@"TextOperationReplacePreserveCase"]) {
+    replacementStrings = dict[@"AXTextOperationIndividualReplacementStrings"];
+    if ([replacementStrings isKindOfClass:[NSArray class]]) {
+      // The count of individual replacement strings must match the count of the
+      // provided ranges for a valid text operation request.
+      if (replacementStrings.count != count) {
+        return nil;
+      }
+
+      for (id item in replacementStrings) {
+        if (![item isKindOfClass:[NSString class]]) {
+          return nil;
+        }
+      }
+    } else {
+      // When individual replacement strings aren't provided, we check for a
+      // single replacement string that is applied to all of the ranges. This
+      // matches WebKit's behavior at the time of writing.
+      NSString* replacementString = dict[@"AXTextOperationReplacementString"];
+      if (![replacementString isKindOfClass:[NSString class]]) {
+        return nil;
+      }
+
+      NSMutableArray<NSString*>* strings = [[NSMutableArray alloc] init];
+      for (NSUInteger i = 0; i < count; ++i) {
+        [strings addObject:replacementString];
+      }
+      replacementStrings = strings;
+    }
+  }
+
+  // Selects the text at the provided ranges. Unlike other operations it does
+  // not perform a text replacement.
+  if ([operationType isEqualToString:@"TextOperationSelect"]) {
+    NSMutableArray<NSString*>* resultStrings =
+        [[NSMutableArray alloc] initWithCapacity:count];
+    for (NSUInteger i = 0; i < count; ++i) {
+      NSString* text = GetTextForTextMarkerRange(ranges[i]);
+      if (text) {
+        // Based on WebKit's behavior at the time of writing; when multiple
+        // ranges are provided, we return the associated text for each of the
+        // ranges.
+        [resultStrings addObject:text];
+      }
+    }
+
+    // Only the last range is visually selected.
+    AXRange range = AXTextMarkerRangeToAXRange(ranges.lastObject);
+    if (range.IsNull()) {
+      return nil;
+    }
+
+    _owner->manager()->SetSelection(range);
+    return resultStrings;
+  }
+
+  // Replaces the text at the provided ranges, without modifying the provided
+  // replacement text (unlike TextOperationReplace below which attempts to
+  // match the case of the replaced string).
+  if ([operationType isEqualToString:@"TextOperationReplacePreserveCase"]) {
+    return [self applyTextOperationReplacementToRanges:ranges
+                                    computeReplacement:^(NSUInteger i) {
+      return replacementStrings[i];
+    }];
+  }
+
+  // Replaces the text at the provided ranges, while modifying the replacement
+  // text to match the case of the text being replaced.
+  if ([operationType isEqualToString:@"TextOperationReplace"]) {
+    return [self
+        applyTextOperationReplacementToRanges:ranges
+                           computeReplacement:^NSString*(NSUInteger i) {
+      NSString* text =
+         GetTextForTextMarkerRange(ranges[i]);
+      if (!text) {
+       return nil;
+      }
+
+      // Like in WebKit, we adjust the replacement string's case to match that
+      // of the text being replaced, unless the replacement string is all caps
+      // (assumed to be an acronym).
+      //
+      // This is useful for a find-and-replace style operation, where you have
+      // multiple case-insensitive occurrences of a string and want to replace
+      // them a new string.
+      //
+      // For example:
+      //   Original text -> Replacement String == Actual text after replacement
+      //   Hello         -> hey                == Hey           (capitalized)
+      //   Hello         -> hey there          == Hey there     (capitalized)
+      //   hello         -> Hey                == hey           (lowercased)
+      //   hello         -> HEY                == HEY           (unmodified)
+      //   hello         -> hey                == hey           (unmodified)
+      NSString* replacement = replacementStrings[i];
+      if (text.length && replacement.length > 2 &&
+          ![replacement isEqualTo:replacement.localizedUppercaseString]) {
+        NSString* firstChar = [text substringToIndex:1];
+        if ([firstChar isEqualTo:firstChar.localizedUppercaseString]) {
+          // Capitalize the first word when the first char of the existing
+          // text is uppercase.
+          // To correctly handle locale-aware capitalization, we should operate
+          // on grapheme clusters rather than raw UTF-16 code units.
+          // For simplicity, we capitalize the entire first word, which safely
+          // includes the first grapheme cluster.
+          NSRange firstSpace = [replacement
+              rangeOfCharacterFromSet:NSCharacterSet
+                                          .whitespaceAndNewlineCharacterSet];
+          NSUInteger wordEndIndex = (firstSpace.location != NSNotFound)
+                                        ? firstSpace.location
+                                        : replacement.length;
+          NSString* firstWord = [replacement substringToIndex:wordEndIndex];
+          NSString* capitalizedFirstWord = firstWord.localizedCapitalizedString;
+          NSString* rest = (wordEndIndex < replacement.length)
+                               ? [replacement substringFromIndex:wordEndIndex]
+                               : @"";
+          replacement = [capitalizedFirstWord stringByAppendingString:rest];
+        } else {
+          // Lowercase the entire string when the first letter is lowercase.
+          replacement = replacement.localizedLowercaseString;
+        }
+      }
+      return replacement;
+    }];
+  }
+
+  // Capitalizes the text at the provided ranges.
+  if ([operationType isEqualToString:@"Capitalize"]) {
+    return [self applyTextOperationReplacementToRanges:ranges
+                                    computeReplacement:^(NSUInteger i) {
+      return [GetTextForTextMarkerRange(ranges[i]) localizedCapitalizedString];
+    }];
+  }
+
+  // Lowercases the text at the provided ranges.
+  if ([operationType isEqualToString:@"Lowercase"]) {
+    return [self applyTextOperationReplacementToRanges:ranges
+                                    computeReplacement:^(NSUInteger i) {
+      return [GetTextForTextMarkerRange(ranges[i]) localizedLowercaseString];
+    }];
+  }
+
+  // Uppercases the text at the provided ranges.
+  if ([operationType isEqualToString:@"Uppercase"]) {
+    return [self applyTextOperationReplacementToRanges:ranges
+                                    computeReplacement:^(NSUInteger i) {
+      return [GetTextForTextMarkerRange(ranges[i]) localizedUppercaseString];
+    }];
+  }
+
+  return nil;
+}
+
+- (NSArray<NSString*>*)applyTextOperationReplacementToRanges:(NSArray*)ranges
+                                          computeReplacement:
+                                              (NSString* (^)(NSUInteger))
+                                                  computeReplacement {
+  NSUInteger count = ranges.count;
+
+  std::vector<AXRange> ranges_vector;
+  std::vector<std::string> replacement_strings_vector;
+  ranges_vector.reserve(count);
+  replacement_strings_vector.reserve(count);
+  NSMutableArray<NSString*>* resultStrings =
+      [[NSMutableArray alloc] initWithCapacity:count];
+
+  for (NSUInteger i = 0; i < count; ++i) {
+    AXRange range = AXTextMarkerRangeToAXRange(ranges[i]);
+    if (range.IsNull()) {
+      continue;
+    }
+
+    NSString* transformedText = computeReplacement(i);
+    if (!transformedText) {
+      continue;
+    }
+
+    ranges_vector.push_back(std::move(range));
+    [resultStrings addObject:transformedText];
+    replacement_strings_vector.push_back(
+        base::SysNSStringToUTF8(transformedText));
+  }
+
+  if (!ranges_vector.size() || !replacement_strings_vector.size()) {
+    return nil;
+  }
+
+  _owner->manager()->ReplaceRanges(*_owner, ranges_vector,
+                                   replacement_strings_vector);
+  return resultStrings;
 }
 
 // Returns an array of parameterized attributes names that this object will
@@ -2370,6 +2589,11 @@ bool ui::IsNSRange(id value) {
       NSAccessibilityIndexForTextMarkerParameterizedAttribute,
       NSAccessibilityTextMarkerForIndexParameterizedAttribute
     ]];
+  }
+
+  if (features::IsMacAccessibilityTextOperationEnabled()) {
+    [attributeNames
+        addObject:NSAccessibilityTextOperationParameterizedAttribute];
   }
 
   NSArray* superclassAttributeNames =

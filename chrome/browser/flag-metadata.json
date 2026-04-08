@@ -2690,6 +2690,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "enable-accessibility-text-operation",
+    "owners": [ "samar.sunkaria@grammarly.com", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "enable-accessibility-unified-snapshots",
     "owners": [ "mschillaci@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 140

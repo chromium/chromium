@@ -488,6 +488,12 @@ bool IsBlockRootWindowAccessibleNameChangeEventEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kBlockRootWindowAccessibleNameChangeEvent);
 }
+
+BASE_FEATURE(kMacAccessibilityTextOperation, base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsMacAccessibilityTextOperationEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kMacAccessibilityTextOperation);
+}
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

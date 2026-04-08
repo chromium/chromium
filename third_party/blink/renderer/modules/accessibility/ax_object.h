@@ -1744,6 +1744,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool RequestShowContextMenuAction();
   bool RequestExpandAction();
   bool RequestCollapseAction();
+  bool RequestReplaceRangesAction(const ui::AXActionData&);
 
   // Returns an updated layout object to be used in a native scroll action. Note
   // that this updates style for `GetNode()` as well as layout for any layout

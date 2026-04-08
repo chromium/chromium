@@ -35,4 +35,6 @@ struct AXActionData {
   // Note that `target_role` should not be set if `target_node_id` is set, or
   // vice versa.
   ax.mojom.Role target_role = ax.mojom.Role.kUnknown;
+  map<ax.mojom.IntListAttribute, array<int32>> intlist_attributes;
+  map<ax.mojom.StringListAttribute, array<string>> stringlist_attributes;
 };

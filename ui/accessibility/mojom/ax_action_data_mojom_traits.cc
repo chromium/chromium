@@ -51,7 +51,9 @@ bool StructTraits<ax::mojom::AXActionDataDataView, ui::AXActionData>::Read(
          data.ReadTargetRect(&out->target_rect) &&
          data.ReadTargetPoint(&out->target_point) &&
          data.ReadValue(&out->value) &&
-         data.ReadHitTestEventToFire(&out->hit_test_event_to_fire);
+         data.ReadHitTestEventToFire(&out->hit_test_event_to_fire) &&
+         data.ReadIntlistAttributes(&out->intlist_attributes.container()) &&
+         data.ReadStringlistAttributes(&out->stringlist_attributes.container());
 }
 
 }  // namespace mojo
