@@ -23,9 +23,7 @@ namespace features {
 
 // If enabled, generates an empty GestureScrollUpdate if the preceding TouchMove
 // event had no gestures and sends both events together.
-BASE_FEATURE(kSendEmptyGestureScrollUpdate,
-             base::FEATURE_DISABLED_BY_DEFAULT
-);
+BASE_FEATURE(kSendEmptyGestureScrollUpdate, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(bool,
                    kSendEmptyGestureScrollUpdateFilterOutEmptyUpdates,
