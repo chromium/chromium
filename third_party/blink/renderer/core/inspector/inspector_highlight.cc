@@ -360,7 +360,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildElementInfo(Element* element) {
   Element* real_element = element;
   auto* pseudo_element = DynamicTo<PseudoElement>(element);
   if (pseudo_element) {
-    real_element = element->ParentOrShadowHostElement();
+    real_element = &pseudo_element->UltimateOriginatingElement();
   }
   bool is_xhtml = real_element->GetDocument().IsXHTMLDocument();
   element_info->setString(
@@ -381,36 +381,12 @@ std::unique_ptr<protocol::DictionaryValue> BuildElementInfo(Element* element) {
     }
   }
   if (pseudo_element) {
-    if (pseudo_element->GetPseudoId() == kPseudoIdCheckMark) {
-      class_names.Append("::checkmark");
-    } else if (pseudo_element->GetPseudoId() == kPseudoIdBefore) {
-      class_names.Append("::before");
-    } else if (pseudo_element->GetPseudoId() == kPseudoIdAfter) {
-      class_names.Append("::after");
-    } else if (pseudo_element->GetPseudoId() == kPseudoIdExpandIcon) {
-      class_names.Append("::expand-icon");
-    } else if (pseudo_element->GetPseudoId() == kPseudoIdPickerIcon) {
-      class_names.Append("::picker-icon");
-    } else if (pseudo_element->GetPseudoId() == kPseudoIdInterestHint) {
-      class_names.Append("::interest-hint");
-    } else if (pseudo_element->GetPseudoId() == kPseudoIdMarker) {
-      class_names.Append("::marker");
-    } else if (pseudo_element->GetPseudoIdForStyling() ==
-               kPseudoIdScrollMarkerGroup) {
-      class_names.Append("::scroll-marker-group");
-    } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollMarker) {
-      class_names.Append("::scroll-marker");
-    } else if (pseudo_element->GetPseudoId() ==
-               kPseudoIdScrollButtonBlockStart) {
-      class_names.Append("::scroll-button(block-start)");
-    } else if (pseudo_element->GetPseudoId() ==
-               kPseudoIdScrollButtonInlineStart) {
-      class_names.Append("::scroll-button(inline-start)");
-    } else if (pseudo_element->GetPseudoId() ==
-               kPseudoIdScrollButtonInlineEnd) {
-      class_names.Append("::scroll-button(inline-end)");
-    } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollButtonBlockEnd) {
-      class_names.Append("::scroll-button(block-end)");
+    class_names.Append(pseudo_element->nodeName());
+    const AtomicString& pseudo_argument = pseudo_element->GetPseudoArgument();
+    if (!pseudo_argument.IsNull()) {
+      class_names.Append('(');
+      class_names.Append(pseudo_argument);
+      class_names.Append(')');
     }
   }
   if (!class_names.empty())
