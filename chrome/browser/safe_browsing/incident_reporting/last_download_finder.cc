@@ -72,7 +72,7 @@ bool IsBinaryDownloadForCurrentOS(
 #endif
 
 // Extensions are supported where enabled.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (download_type == ClientDownloadRequest::CHROME_EXTENSION)
     return true;
 #endif
