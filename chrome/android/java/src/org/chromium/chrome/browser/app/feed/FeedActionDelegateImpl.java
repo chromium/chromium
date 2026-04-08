@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.app.feed;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Intent;
 
@@ -300,46 +303,55 @@ public class FeedActionDelegateImpl
     private static class FeedTabNavigationObserver extends EmptyTabObserver {
         private final boolean mInNewTab;
         private final int mPageId;
-        private final PageLoadObserver mPageLoadObserver;
+        private @Nullable PageLoadObserver mPageLoadObserver;
 
         FeedTabNavigationObserver(boolean inNewTab, int pageId, PageLoadObserver pageLoadObserver) {
             mInNewTab = inNewTab;
             mPageId = pageId;
             mPageLoadObserver = pageLoadObserver;
+
+            assertNonNull(mPageLoadObserver);
         }
 
         @Override
         public void onPageLoadStarted(Tab tab, GURL url) {
-            mPageLoadObserver.onPageLoadStarted(mPageId);
+            assumeNonNull(mPageLoadObserver).onPageLoadStarted(mPageId);
         }
 
         @Override
         public void onPageLoadFinished(Tab tab, GURL url) {
             // TODO(jianli): onPageLoadFinished is called on successful load, and if a user manually
             // stops the page load. We should only capture successful page loads.
-            mPageLoadObserver.onPageLoadFinished(mPageId, mInNewTab);
-            tab.removeObserver(this);
+            assumeNonNull(mPageLoadObserver).onPageLoadFinished(mPageId, mInNewTab);
+            destroy(tab);
         }
 
         @Override
         public void onPageLoadFailed(Tab tab, @NetError int errorCode) {
-            mPageLoadObserver.onPageLoadFailed(mPageId, errorCode);
-            tab.removeObserver(this);
+            assumeNonNull(mPageLoadObserver).onPageLoadFailed(mPageId, errorCode);
+            destroy(tab);
         }
 
         @Override
         public void onCrash(Tab tab) {
-            tab.removeObserver(this);
+            destroy(tab);
         }
 
         @Override
         public void onDestroyed(Tab tab) {
-            tab.removeObserver(this);
+            destroy(tab);
         }
 
         @Override
         public void didFirstVisuallyNonEmptyPaint(Tab tab) {
-            mPageLoadObserver.onPageFirstContentfulPaint(mPageId);
+            assumeNonNull(mPageLoadObserver).onPageFirstContentfulPaint(mPageId);
+        }
+
+        private void destroy(Tab tab) {
+            if (mPageLoadObserver == null) return;
+
+            tab.removeObserver(this);
+            mPageLoadObserver = null;
         }
     }
 }
