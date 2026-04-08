@@ -85,8 +85,8 @@ void ResourceRequestBody::SetToChunkedDataPipe(
 std::vector<base::FilePath> ResourceRequestBody::GetReferencedFiles() const {
   std::vector<base::FilePath> result;
   for (const auto& element : *elements()) {
-    if (element.type() == mojom::DataElementDataView::Tag::kFile) {
-      result.push_back(element.As<DataElementFile>().path());
+    if (const auto* file = element.TryAs<DataElementFile>()) {
+      result.push_back(file->path());
     }
   }
   return result;

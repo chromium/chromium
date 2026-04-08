@@ -296,9 +296,8 @@ bool HasFetchStreamingUploadBody(const ResourceRequest& request) {
   if (elements->size() != 1u) {
     return false;
   }
-  const auto& element = elements->front();
-  return element.type() == mojom::DataElementDataView::Tag::kChunkedDataPipe &&
-         element.As<network::DataElementChunkedDataPipe>().read_only_once();
+  const auto* element = elements->front().TryAs<DataElementChunkedDataPipe>();
+  return element && element->read_only_once();
 }
 
 std::unique_ptr<net::UploadDataStream> CreateUploadDataStream(
@@ -307,15 +306,14 @@ std::unique_ptr<net::UploadDataStream> CreateUploadDataStream(
     base::SequencedTaskRunner* file_task_runner) {
   // In the case of a chunked upload, there will just be one element.
   if (body->elements()->size() == 1) {
-    if (body->elements()->begin()->type() ==
-        network::mojom::DataElementDataView::Tag::kChunkedDataPipe) {
-      auto& element =
-          body->elements_mutable()->at(0).As<DataElementChunkedDataPipe>();
-      const bool has_null_source = element.read_only_once().value();
+    if (auto* element = body->elements_mutable()
+                            ->front()
+                            .TryAs<DataElementChunkedDataPipe>()) {
+      const bool has_null_source = element->read_only_once().value();
       auto upload_data_stream =
           std::make_unique<ChunkedDataPipeUploadDataStream>(
-              body, element.ReleaseChunkedDataPipeGetter(), has_null_source);
-      if (element.read_only_once()) {
+              body, element->ReleaseChunkedDataPipeGetter(), has_null_source);
+      if (element->read_only_once()) {
         upload_data_stream->EnableCache();
       }
       return upload_data_stream;

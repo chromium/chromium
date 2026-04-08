@@ -16,6 +16,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
@@ -190,13 +191,23 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElement {
   }
 
   template <typename T>
-  const T& As() const {
+  const T& As() const LIFETIME_BOUND {
     return std::get<T>(variant_);
   }
 
   template <typename T>
-  T& As() {
+  T& As() LIFETIME_BOUND {
     return std::get<T>(variant_);
+  }
+
+  template <typename T>
+  const T* TryAs() const LIFETIME_BOUND {
+    return std::get_if<T>(&variant_);
+  }
+
+  template <typename T>
+  T* TryAs() LIFETIME_BOUND {
+    return std::get_if<T>(&variant_);
   }
 
  private:
