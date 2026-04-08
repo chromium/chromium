@@ -102,6 +102,10 @@ class WEBVIEW_EXPORT WebView : public View,
   // those it implicitly creates via GetWebContents() above.
   virtual void SetWebContents(content::WebContents* web_contents);
 
+  // Similar to `SetWebContents()` but this method takes the ownership of the
+  // `web_contents`.
+  void SetOwnedWebContents(std::unique_ptr<content::WebContents> web_contents);
+
   content::BrowserContext* GetBrowserContext();
   void SetBrowserContext(content::BrowserContext* browser_context);
 

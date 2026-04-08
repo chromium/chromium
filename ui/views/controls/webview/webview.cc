@@ -149,6 +149,18 @@ void WebView::SetWebContents(content::WebContents* replacement) {
   }
 }
 
+void WebView::SetOwnedWebContents(
+    std::unique_ptr<content::WebContents> replacement) {
+  if (!replacement) {
+    SetWebContents(nullptr);
+    return;
+  }
+
+  wc_owner_ = std::move(replacement);
+  wc_owner_->SetDelegate(this);
+  SetWebContents(wc_owner_.get());
+}
+
 content::BrowserContext* WebView::GetBrowserContext() {
   return browser_context_;
 }
