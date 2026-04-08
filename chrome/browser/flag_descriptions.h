@@ -281,6 +281,14 @@ inline constexpr char kBlockV8OptimizerOnUnfamiliarSitesSettingDescription[] =
     "Adds an option to the V8 optimizer content setting that disables the "
     "JavaScript optimizer on sites that are unfamiliar to the user.";
 
+inline constexpr char kBlockingFocusWithoutUserActivationName[] =
+    "Blocking Focus Without User Activation";
+inline constexpr char kBlockingFocusWithoutUserActivationDescription[] =
+    "When enabled, the focus-without-user-activation permissions policy can "
+    "be used by embedders to block programmatic focus calls "
+    "(element.focus(), window.focus(), autofocus) from iframes unless "
+    "triggered by a user gesture.";
+
 inline constexpr char kBookmarksTreeViewName[] =
     "Top Chrome Bookmarks Tree View";
 inline constexpr char kBookmarksTreeViewDescription[] =

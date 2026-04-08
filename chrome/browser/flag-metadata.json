@@ -1143,6 +1143,11 @@
     "expiry_milestone": 148
   },
   {
+    "name": "blocking-focus-without-user-activation",
+    "owners": [ "ffiori@microsoft.com" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "bluetooth-audio-le-audio-only",
     "owners": ["jrwu@chromium.org", "chromeos-audio@google.com" ],
     "expiry_milestone": 170

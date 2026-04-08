@@ -9244,6 +9244,7 @@ from previous Chrome versions.
   <int value="-1611357520" label="MediaAppPdfInInk:enabled"/>
   <int value="-1611305202" label="KeepPrefetchedContentSuggestions:disabled"/>
   <int value="-1610215431" label="UnexportableKeyDeletion:enabled"/>
+  <int value="-1609538295" label="BlockingFocusWithoutUserActivation:disabled"/>
   <int value="-1609065859" label="ClipboardCustomFormats:enabled"/>
   <int value="-1608869911" label="RobustAudioDeviceSelectLogic:enabled"/>
   <int value="-1608717313" label="TabStripCollectionStorage:enabled"/>
@@ -12696,6 +12697,7 @@ from previous Chrome versions.
   <int value="-461568027" label="EcheSWADebugMode:disabled"/>
   <int value="-461519957" label="AutofillAiWithDataSchema:enabled"/>
   <int value="-461292699" label="ContentSuggestionsCategoryOrder:enabled"/>
+  <int value="-460798247" label="BlockingFocusWithoutUserActivation:enabled"/>
   <int value="-460702745" label="ExportTaggedPDF:disabled"/>
   <int value="-460486807" label="ConsolidatedSiteStorageControls:enabled"/>
   <int value="-460313418" label="ProgressBarThrottle:enabled"/>
