@@ -42,6 +42,7 @@ import android.app.PendingIntent.CanceledException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Network;
 import android.net.Uri;
@@ -77,6 +78,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
+import org.chromium.base.MathUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -439,13 +441,14 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         int initialActivityWidth =
                 getInitialActivityWidth(
                         isTrustedCustomTab, getInitialActivityWidthFromIntent(intent), packageName);
-        if (initialActivityHeight <= 0 && initialActivityWidth <= 0) {
-            // fallback to normal Custom Tab.
-            return;
+
+        // When scrolling up the web content, we don't want to hide the URL bar in pCCT.
+        if (initialActivityHeight > 0 || initialActivityWidth > 0) {
+            intent.putExtra(CustomTabsIntent.EXTRA_ENABLE_URLBAR_HIDING, false);
         }
-        intent.setClassName(context, TranslucentCustomTabActivity.class.getName());
-        // When scrolling up the web content, we don't want to hide the URL bar.
-        intent.putExtra(CustomTabsIntent.EXTRA_ENABLE_URLBAR_HIDING, false);
+        if (hasTranslucentBackgroundColor(intent)) {
+            intent.setClassName(context, TranslucentCustomTabActivity.class.getName());
+        }
     }
 
     private static @Px int getInitialActivityHeight(
@@ -505,11 +508,24 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 : roundedCornersPosition;
     }
 
+    private static boolean hasTranslucentBackgroundColor(Intent intent) {
+        try {
+            return intent.hasExtra(EXTRA_TRANSLUCENT_BACKGROUND);
+        } catch (Throwable t) {
+            // Catches un-parceling exceptions.
+            return false;
+        }
+    }
+
     @Override
     public @ColorInt int getTranslucentBackgroundColor(Context context) {
         int defValue = SemanticColorUtils.getDefaultBgColor(context);
-        // TODO(crbug.com/493918709): Limit the minimum alpha to 50% to avoid too much transparency.
-        return IntentUtils.safeGetIntExtra(mIntent, EXTRA_TRANSLUCENT_BACKGROUND, defValue);
+        int bg = IntentUtils.safeGetIntExtra(mIntent, EXTRA_TRANSLUCENT_BACKGROUND, defValue);
+        if (bg == defValue) return defValue;
+
+        // We limit the transparency to 30%-50% == 50%-70% (128-180) alpha
+        int alpha = MathUtils.clamp(Color.alpha(bg), 128, 180);
+        return Color.argb(alpha, Color.red(bg), Color.green(bg), Color.blue(bg));
     }
 
     private static boolean getIsCloseButtonEnabled(Intent intent, int uiType) {
