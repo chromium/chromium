@@ -922,6 +922,8 @@ void PasswordsPrivateDelegateImpl::StartPasswordCheck(
 void PasswordsPrivateDelegateImpl::StartPasswordChange(
     int credential_id,
     content::WebContents* web_contents) {
+  CHECK(base::FeatureList::IsEnabled(
+      password_manager::features::kPasswordCheckupPrototype));
   CHECK(web_contents);
   const CredentialUIEntry* credential =
       credential_id_generator_.TryGetKey(credential_id);
