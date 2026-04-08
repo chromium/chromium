@@ -30,6 +30,8 @@
 #include "chrome/browser/ui/views/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_coordinator.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_ui.h"
+#include "chrome/browser/ui/webui/accessibility_annotator/accessibility_annotator_info.mojom.h"
+#include "chrome/browser/ui/webui/accessibility_annotator/accessibility_annotator_info_ui.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog.mojom.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog_untrusted_ui.h"
 #include "chrome/browser/ui/webui/app_service_internals/app_service_internals.mojom.h"
@@ -506,6 +508,10 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
   RegisterWebUIControllerInterfaceBinder<
       accessibility_annotator_internals::mojom::PageHandlerFactory,
       content_annotator_internals::ContentAnnotatorInternalsUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
+      accessibility_annotator::info::mojom::PageHandler,
+      accessibility_annotator::info::AccessibilityAnnotatorInfoUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       ::mojom::app_service_internals::AppServiceInternalsPageHandler,

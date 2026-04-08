@@ -1,0 +1,27 @@
+import("//build/config/ui.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("accessibility_annotator") {
+  sources = [
+    "accessibility_annotator_info_dialog.cc",
+    "accessibility_annotator_info_dialog.h",
+    "accessibility_annotator_info_dialog_controller.cc",
+    "accessibility_annotator_info_dialog_controller.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views/bubble",
+    "//chrome/browser/ui/webui/accessibility_annotator",
+    "//chrome/browser/ui/webui/top_chrome",
+    "//components/constrained_window",
+    "//components/web_modal",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/views",
+    "//ui/views/controls/webview",
+  ]
+}

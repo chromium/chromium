@@ -1,0 +1,27 @@
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(!is_android)
+
+mojom("mojo_bindings") {
+  sources = [ "accessibility_annotator_info.mojom" ]
+  webui_module_path = "/"
+}
+
+source_set("accessibility_annotator") {
+  sources = [
+    "accessibility_annotator_info_page_handler.cc",
+    "accessibility_annotator_info_page_handler.h",
+    "accessibility_annotator_info_ui.cc",
+    "accessibility_annotator_info_ui.h",
+  ]
+
+  public_deps = [ ":mojo_bindings" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/top_chrome",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+  ]
+}

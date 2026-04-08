@@ -17,5 +17,13 @@ source_set("first_run") {
     "//components/accessibility_annotator/core:features",
     "//components/accessibility_annotator/first_run",
     "//components/keyed_service/content",
+    "//content/public/browser",
   ]
+
+  if (!is_android) {
+    deps += [
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/views/accessibility_annotator",
+    ]
+  }
 }
