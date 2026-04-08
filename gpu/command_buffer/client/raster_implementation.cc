@@ -23,6 +23,7 @@
 #include "base/bits.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/stack_allocated.h"

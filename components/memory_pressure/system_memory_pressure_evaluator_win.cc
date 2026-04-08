@@ -13,6 +13,7 @@
 #include <memory>
 
 #include "base/byte_count.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
@@ -148,7 +149,6 @@ SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
 SystemMemoryPressureEvaluator::~SystemMemoryPressureEvaluator() {
   StopObserving();
 }
-
 
 void SystemMemoryPressureEvaluator::StartObserving() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
