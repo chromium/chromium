@@ -215,6 +215,8 @@ source_set("platform_impls") {
     "scoped_portal_request.h",
     "scoped_portal_session.cc",
     "scoped_portal_session.h",
+    "screen_saver_inhibitor.cc",
+    "screen_saver_inhibitor.h",
     "systemd_user_env_setter.cc",
     "systemd_user_env_setter.h",
   ]

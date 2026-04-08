@@ -28,6 +28,7 @@
 #include "remoting/host/linux/ei_input_injector.h"
 #include "remoting/host/linux/ei_keyboard_layout_monitor.h"
 #include "remoting/host/linux/gnome_desktop_display_info_monitor.h"
+#include "remoting/host/linux/screen_saver_inhibitor.h"
 #include "remoting/proto/control.pb.h"
 
 namespace remoting {
@@ -385,6 +386,12 @@ void GnomeRemoteDesktopSession::OnDisplayConfigReceived(
                        desktop_resizer_.GetWeakPtr()),
         base::Seconds(3));
     persistent_display_layout_manager_.Start();
+  }
+  if (is_headless_) {
+    // If the session is headless, inhibit screen saver all the time so that
+    // users do not need to unlock when they reconnect CRD.
+    screen_saver_inhibitor_ = std::make_unique<ScreenSaverInhibitor>(
+        connection_, /*reason_for_inhibit=*/"Headless remote desktop session");
   }
   initialization_state_ = InitializationState::kInitialized;
   init_callbacks_.Notify(base::ok());

@@ -24,6 +24,7 @@
 #include "remoting/host/linux/gnome_headless_detector.h"
 #include "remoting/host/linux/gvariant_ref.h"
 #include "remoting/host/linux/pipewire_mouse_cursor_capturer.h"
+#include "remoting/host/linux/screen_saver_inhibitor.h"
 #include "remoting/host/persistent_display_layout_manager.h"
 
 namespace remoting {
@@ -172,6 +173,8 @@ class GnomeRemoteDesktopSession {
       capture_stream_manager_.GetWeakPtr(), display_config_client_.GetWeakPtr(),
       display_config_monitor_.GetWeakPtr()};
   PersistentDisplayLayoutManager persistent_display_layout_manager_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<ScreenSaverInhibitor> screen_saver_inhibitor_
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<GnomeDisplayConfigMonitor::Subscription>
       display_config_subscription_ GUARDED_BY_CONTEXT(sequence_checker_);
