@@ -26,6 +26,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/app/chrome_main_mac.h"
+#include "chrome/common/mac/detect_inappropriate_exit.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
@@ -127,8 +128,9 @@ int ChromeMain(int argc, const char** argv) {
   base::debug::SetDumpWithoutCrashingFunction(&DumpProcessWithoutCrash);
 
   // Verify that chrome_elf and this module (chrome.dll) have the same version.
-  if (install_static::InstallDetails::Get().VersionMismatch())
+  if (install_static::InstallDetails::Get().VersionMismatch()) {
     base::debug::DumpWithoutCrashing();
+  }
 #else
   params.argc = argc;
   params.argv = argv;
@@ -147,6 +149,7 @@ int ChromeMain(int argc, const char** argv) {
 #endif
 
 #if BUILDFLAG(IS_MAC)
+  chrome::InitializeExitSixtyNineDetector();
   SetUpBundleOverrides();
 #endif
 

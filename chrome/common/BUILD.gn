@@ -322,6 +322,8 @@ static_library("common_lib") {
     sources += [
       "extensions/image_writer/image_writer_util_mac.cc",
       "extensions/image_writer/image_writer_util_mac.h",
+      "mac/detect_inappropriate_exit.cc",
+      "mac/detect_inappropriate_exit.h",
     ]
     public_deps += [ ":app_mode_app_support" ]
   }
