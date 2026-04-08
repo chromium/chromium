@@ -1472,20 +1472,6 @@ bool PaintCanvasVideoRenderer::
   return true;
 }
 
-VideoFrameSharedImageCache* PaintCanvasVideoRenderer::GetRGBSharedImageCache() {
-  if (!rgb_shared_image_cache_) {
-    rgb_shared_image_cache_ = std::make_unique<VideoFrameSharedImageCache>();
-  }
-  return rgb_shared_image_cache_.get();
-}
-
-VideoFrameSharedImageCache* PaintCanvasVideoRenderer::GetYUVSharedImageCache() {
-  if (!yuv_shared_image_cache_) {
-    yuv_shared_image_cache_ = std::make_unique<VideoFrameSharedImageCache>();
-  }
-  return yuv_shared_image_cache_.get();
-}
-
 bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     viz::RasterContextProvider* raster_context_provider,
     gpu::gles2::GLES2Interface* destination_gl,
@@ -1662,8 +1648,6 @@ bool PaintCanvasVideoRenderer::TexSubImage2D(unsigned target,
 void PaintCanvasVideoRenderer::ResetCache() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   cache_.reset();
-  rgb_shared_image_cache_.reset();
-  yuv_shared_image_cache_.reset();
   // ClientSharedImage destructor calls DestroySharedImage which in turn ensures
   // that the deferred destroy request is flushed. Thus, clients don't need to
   // call SharedImageInterface::Flush explicitly.

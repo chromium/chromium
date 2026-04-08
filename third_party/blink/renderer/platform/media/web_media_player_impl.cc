@@ -1610,6 +1610,26 @@ WebMediaPlayerImpl::GetPaintCanvasVideoRenderer() {
   return &video_renderer_;
 }
 
+media::VideoFrameSharedImageCache*
+WebMediaPlayerImpl::GetRGBSharedImageCache() {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  if (!rgb_shared_image_cache_) {
+    rgb_shared_image_cache_ =
+        std::make_unique<media::VideoFrameSharedImageCache>();
+  }
+  return rgb_shared_image_cache_.get();
+}
+
+media::VideoFrameSharedImageCache*
+WebMediaPlayerImpl::GetYUVSharedImageCache() {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  if (!yuv_shared_image_cache_) {
+    yuv_shared_image_cache_ =
+        std::make_unique<media::VideoFrameSharedImageCache>();
+  }
+  return yuv_shared_image_cache_.get();
+}
+
 bool WebMediaPlayerImpl::WouldTaintOrigin() const {
   return is_origin_tainted_ || demuxer_manager_->WouldTaintOrigin();
 }

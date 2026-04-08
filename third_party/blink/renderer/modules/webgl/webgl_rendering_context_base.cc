@@ -6268,10 +6268,14 @@ void WebGLRenderingContextBase::TexImageHelperHTMLVideoElement(
   }
 
   media::PaintCanvasVideoRenderer* video_renderer = nullptr;
+  media::VideoFrameSharedImageCache* rgb_si_cache = nullptr;
+  media::VideoFrameSharedImageCache* yuv_si_cache = nullptr;
   scoped_refptr<media::VideoFrame> media_video_frame;
   if (auto* wmp = video->GetWebMediaPlayer()) {
     media_video_frame = wmp->GetCurrentFrameThenUpdate();
     video_renderer = wmp->GetPaintCanvasVideoRenderer();
+    rgb_si_cache = wmp->GetRGBSharedImageCache();
+    yuv_si_cache = wmp->GetYUVSharedImageCache();
   }
 
   if (!media_video_frame || !video_renderer)
@@ -6280,7 +6284,7 @@ void WebGLRenderingContextBase::TexImageHelperHTMLVideoElement(
   // This is enforced by ValidateHTMLVideoElement(), but DCHECK to be sure.
   DCHECK(!WouldTaintCanvasOrigin(video));
   TexImageHelperMediaVideoFrame(params, texture, std::move(media_video_frame),
-                                video_renderer);
+                                video_renderer, rgb_si_cache, yuv_si_cache);
 }
 
 void WebGLRenderingContextBase::TexImageHelperVideoFrame(
@@ -6322,8 +6326,8 @@ void WebGLRenderingContextBase::TexImageHelperVideoFrame(
     return;
   }
 
-  TexImageHelperMediaVideoFrame(params, texture, local_handle->frame(),
-                                nullptr);
+  TexImageHelperMediaVideoFrame(params, texture, local_handle->frame(), nullptr,
+                                nullptr, nullptr);
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -6341,7 +6345,9 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
     TexImageParams params,
     WebGLTexture* texture,
     scoped_refptr<media::VideoFrame> media_video_frame,
-    media::PaintCanvasVideoRenderer* video_renderer) {
+    media::PaintCanvasVideoRenderer* video_renderer,
+    media::VideoFrameSharedImageCache* rgb_si_cache,
+    media::VideoFrameSharedImageCache* yuv_si_cache) {
   DCHECK(!isContextLost());
   DCHECK(texture);
   DCHECK(media_video_frame);
@@ -6383,10 +6389,16 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
     video_renderer = local_video_renderer.get();
   }
 
-  media::VideoFrameSharedImageCache* rgb_si_cache =
-      video_renderer->GetRGBSharedImageCache();
-  media::VideoFrameSharedImageCache* yuv_si_cache =
-      video_renderer->GetYUVSharedImageCache();
+  std::unique_ptr<media::VideoFrameSharedImageCache> local_rgb_si_cache;
+  if (!rgb_si_cache) {
+    local_rgb_si_cache = std::make_unique<media::VideoFrameSharedImageCache>();
+    rgb_si_cache = local_rgb_si_cache.get();
+  }
+  std::unique_ptr<media::VideoFrameSharedImageCache> local_yuv_si_cache;
+  if (!yuv_si_cache) {
+    local_yuv_si_cache = std::make_unique<media::VideoFrameSharedImageCache>();
+    yuv_si_cache = local_yuv_si_cache.get();
+  }
 
   if (source_image_rect_is_default && media_video_frame->HasDirectCpuAccess() &&
       media_video_frame->format() == media::PIXEL_FORMAT_Y16 &&

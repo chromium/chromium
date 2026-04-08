@@ -56,6 +56,7 @@ class PaintFlags;
 
 namespace media {
 class PaintCanvasVideoRenderer;
+class VideoFrameSharedImageCache;
 }
 
 namespace viz {
@@ -353,6 +354,14 @@ class WebMediaPlayer {
   // the underlying frame is unchanged). May only be used on the main thread and
   // should not be held outside the scope of a single call site.
   virtual media::PaintCanvasVideoRenderer* GetPaintCanvasVideoRenderer() {
+    return nullptr;
+  }
+
+  virtual media::VideoFrameSharedImageCache* GetRGBSharedImageCache() {
+    return nullptr;
+  }
+
+  virtual media::VideoFrameSharedImageCache* GetYUVSharedImageCache() {
     return nullptr;
   }
 

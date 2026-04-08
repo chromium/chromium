@@ -69,6 +69,7 @@ class Layer;
 
 namespace media {
 class PaintCanvasVideoRenderer;
+class VideoFrameSharedImageCache;
 }
 
 namespace blink {
@@ -1997,7 +1998,9 @@ class MODULES_EXPORT WebGLRenderingContextBase
       TexImageParams,
       WebGLTexture*,
       scoped_refptr<media::VideoFrame> media_video_frame,
-      media::PaintCanvasVideoRenderer* video_renderer);
+      media::PaintCanvasVideoRenderer* video_renderer,
+      media::VideoFrameSharedImageCache* rgb_si_cache,
+      media::VideoFrameSharedImageCache* yuv_si_cache);
 
   // Copy from the source directly to texture target specified by `params` via
   // the gpu, without a read-back to system memory. Source can be an

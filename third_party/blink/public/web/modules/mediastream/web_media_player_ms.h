@@ -137,6 +137,8 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   scoped_refptr<media::VideoFrame> GetCurrentFrameThenUpdate() override;
   std::optional<media::VideoFrame::ID> CurrentFrameId() const override;
   media::PaintCanvasVideoRenderer* GetPaintCanvasVideoRenderer() override;
+  media::VideoFrameSharedImageCache* GetRGBSharedImageCache() override;
+  media::VideoFrameSharedImageCache* GetYUVSharedImageCache() override;
   void ResetCanvasCache();
 
   // Methods to trigger resize event.
@@ -313,6 +315,8 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
 
   scoped_refptr<MediaStreamAudioRenderer> audio_renderer_;  // Weak
   media::PaintCanvasVideoRenderer video_renderer_;
+  std::unique_ptr<media::VideoFrameSharedImageCache> rgb_shared_image_cache_;
+  std::unique_ptr<media::VideoFrameSharedImageCache> yuv_shared_image_cache_;
 
   // Indicated whether an outstanding VideoFrameCallback request needs to be
   // forwarded to |compositor_|. Set when RequestVideoFrameCallback() is called

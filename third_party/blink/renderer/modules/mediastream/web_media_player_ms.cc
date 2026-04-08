@@ -1400,9 +1400,29 @@ WebMediaPlayerMS::GetPaintCanvasVideoRenderer() {
   return &video_renderer_;
 }
 
+media::VideoFrameSharedImageCache* WebMediaPlayerMS::GetRGBSharedImageCache() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (!rgb_shared_image_cache_) {
+    rgb_shared_image_cache_ =
+        std::make_unique<media::VideoFrameSharedImageCache>();
+  }
+  return rgb_shared_image_cache_.get();
+}
+
+media::VideoFrameSharedImageCache* WebMediaPlayerMS::GetYUVSharedImageCache() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (!yuv_shared_image_cache_) {
+    yuv_shared_image_cache_ =
+        std::make_unique<media::VideoFrameSharedImageCache>();
+  }
+  return yuv_shared_image_cache_.get();
+}
+
 void WebMediaPlayerMS::ResetCanvasCache() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   video_renderer_.ResetCache();
+  rgb_shared_image_cache_.reset();
+  yuv_shared_image_cache_.reset();
 }
 
 void WebMediaPlayerMS::TriggerResize() {

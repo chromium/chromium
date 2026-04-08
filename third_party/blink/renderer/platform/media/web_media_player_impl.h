@@ -209,6 +209,8 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   scoped_refptr<media::VideoFrame> GetCurrentFrameThenUpdate() override;
   std::optional<media::VideoFrame::ID> CurrentFrameId() const override;
   media::PaintCanvasVideoRenderer* GetPaintCanvasVideoRenderer() override;
+  media::VideoFrameSharedImageCache* GetRGBSharedImageCache() override;
+  media::VideoFrameSharedImageCache* GetYUVSharedImageCache() override;
 
   // True if the loaded media has a playable video/audio track.
   bool HasVideo() const override;
@@ -893,6 +895,8 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   std::unique_ptr<VideoFrameCompositor>
       compositor_;  // Deleted on |vfc_task_runner_|.
   media::PaintCanvasVideoRenderer video_renderer_;
+  std::unique_ptr<media::VideoFrameSharedImageCache> rgb_shared_image_cache_;
+  std::unique_ptr<media::VideoFrameSharedImageCache> yuv_shared_image_cache_;
 
   // The compositor layer for displaying the video content when using composited
   // playback.
