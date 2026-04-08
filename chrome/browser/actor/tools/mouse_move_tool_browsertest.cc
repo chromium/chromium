@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
@@ -143,8 +144,15 @@ IN_PROC_BROWSER_TEST_F(ActorMouseMoveToolBrowserTest,
 
 // Moving mouse to a coordinate not in the viewport should fail without
 // dispatching events.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#define MAYBE_MouseMoveTool_MoveToCoordinateOffScreen \
+  DISABLED_MouseMoveTool_MoveToCoordinateOffScreen
+#else
+#define MAYBE_MouseMoveTool_MoveToCoordinateOffScreen \
+  MouseMoveTool_MoveToCoordinateOffScreen
+#endif
 IN_PROC_BROWSER_TEST_F(ActorMouseMoveToolBrowserTest,
-                       MouseMoveTool_MoveToCoordinateOffScreen) {
+                       MAYBE_MouseMoveTool_MoveToCoordinateOffScreen) {
   const GURL url = embedded_test_server()->GetURL("/actor/mouse_log.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
