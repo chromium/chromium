@@ -169,8 +169,7 @@ LayoutTheme& LayoutTheme::GetTheme() {
   return NativeTheme();
 }
 
-LayoutTheme::LayoutTheme() : has_custom_focus_ring_color_(false) {
-}
+LayoutTheme::LayoutTheme() : has_custom_focus_ring_color_(false) {}
 
 AppearanceValue LayoutTheme::AdjustAppearanceWithAuthorStyle(
     AppearanceValue appearance,
@@ -184,13 +183,9 @@ AppearanceValue LayoutTheme::AdjustAppearanceWithAuthorStyle(
 }
 
 AppearanceValue LayoutTheme::AdjustAppearanceWithElementType(
-    const ComputedStyleBuilder& builder,
-    const Element* element) {
-  AppearanceValue appearance = builder.EffectiveAppearance();
-  if (!element)
-    return AppearanceValue::kNone;
-
-  AppearanceValue auto_appearance = AutoAppearanceFor(*element);
+    AppearanceValue appearance,
+    const Element& element) {
+  AppearanceValue auto_appearance = AutoAppearanceFor(element);
   if (appearance == auto_appearance) {
     return appearance;
   }
@@ -206,8 +201,8 @@ AppearanceValue LayoutTheme::AdjustAppearanceWithElementType(
       return appearance;
     case AppearanceValue::kBaseSelect:
     case AppearanceValue::kBase:
-      return element->SupportsBaseAppearance(appearance) ? appearance
-                                                         : auto_appearance;
+      return element.SupportsBaseAppearance(appearance) ? appearance
+                                                        : auto_appearance;
 
     // Aliases of 'auto'.
     // https://drafts.csswg.org/css-ui-4/#typedef-appearance-compat-auto
@@ -252,7 +247,7 @@ AppearanceValue LayoutTheme::AdjustAppearanceWithElementType(
                  : auto_appearance;
 
     case AppearanceValue::kTextField:
-      if (const auto* input_element = DynamicTo<HTMLInputElement>(*element);
+      if (const auto* input_element = DynamicTo<HTMLInputElement>(element);
           input_element &&
           input_element->FormControlType() == FormControlType::kInputSearch) {
         return appearance;
@@ -263,16 +258,12 @@ AppearanceValue LayoutTheme::AdjustAppearanceWithElementType(
   return appearance;
 }
 
-void LayoutTheme::AdjustStyle(const Element* element,
+void LayoutTheme::AdjustStyle(const Element& element,
                               ComputedStyleBuilder& builder) {
   AppearanceValue original_appearance = builder.Appearance();
-  builder.SetEffectiveAppearance(original_appearance);
-  if (original_appearance == AppearanceValue::kNone) {
-    return;
-  }
-
+  DCHECK_NE(original_appearance, AppearanceValue::kNone);
   AppearanceValue appearance = AdjustAppearanceWithAuthorStyle(
-      AdjustAppearanceWithElementType(builder, element), builder);
+      AdjustAppearanceWithElementType(original_appearance, element), builder);
   builder.SetEffectiveAppearance(appearance);
   DCHECK_NE(appearance, AppearanceValue::kAuto);
 
@@ -303,7 +294,6 @@ void LayoutTheme::AdjustStyle(const Element* element,
   if (appearance == AppearanceValue::kNone) {
     return;
   }
-  DCHECK(element);
   // After this point, a Node must be non-null Element if
   // EffectiveAppearance() != AppearanceValue::kNone.
 
@@ -325,8 +315,9 @@ void LayoutTheme::AdjustStyle(const Element* element,
       break;
   }
 
-  if (IsSliderContainer(*element))
-    AdjustSliderContainerStyle(*element, builder);
+  if (IsSliderContainer(element)) {
+    AdjustSliderContainerStyle(element, builder);
+  }
 }
 
 String LayoutTheme::ExtraDefaultStyleSheet() {
@@ -690,8 +681,8 @@ Color LayoutTheme::DefaultSystemColor(CSSValueID css_value_id,
                  : Color::FromRGBA32(0xFF000000);
     case CSSValueID::kVisitedtext:
       return color_scheme == mojom::blink::ColorScheme::kDark
-                  ? Color::FromRGBA32(0xFFD0ADF0)
-                  : Color::FromRGBA32(0xFF551A8B);
+                 ? Color::FromRGBA32(0xFFD0ADF0)
+                 : Color::FromRGBA32(0xFF551A8B);
     case CSSValueID::kSelecteditem:
     case CSSValueID::kInternalActiveListBoxSelection:
       return ActiveListBoxSelectionBackgroundColor(color_scheme);

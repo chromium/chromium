@@ -69,7 +69,7 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   // selection of control size based off the font, the disabling of appearance
   // when certain other properties like "border" are set, or if the appearance
   // is not supported by the theme.
-  void AdjustStyle(const Element*, ComputedStyleBuilder&);
+  void AdjustStyle(const Element&, ComputedStyleBuilder&);
 
   // The remaining methods should be implemented by the platform-specific
   // portion of the theme, e.g., layout_theme_mac.mm for macOS.
@@ -263,8 +263,8 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
       AppearanceValue appearance,
       const ComputedStyleBuilder& style);
 
-  AppearanceValue AdjustAppearanceWithElementType(const ComputedStyleBuilder&,
-                                                  const Element*);
+  AppearanceValue AdjustAppearanceWithElementType(AppearanceValue appearance,
+                                                  const Element&);
 
   void UpdateForcedColorsState();
 

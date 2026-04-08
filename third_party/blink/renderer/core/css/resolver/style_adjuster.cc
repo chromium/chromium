@@ -1299,9 +1299,16 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   // https://drafts.csswg.org/css-color-adjust-1/#forced-colors-properties.
   AdjustForForcedColorsMode(builder, state.GetDocument());
 
-  // Let the theme also have a crack at adjusting the style.
-  LayoutTheme::GetTheme().AdjustStyle(
-      element ? element : state.GetPseudoElement(), builder);
+  // The layout theme has its own style adjustment, mostly related to
+  // the appearance property (although it can also modify display,
+  // seemingly for historical reasons).
+  if (builder.Appearance() == AppearanceValue::kNone ||
+      (!element && !state.GetPseudoElement())) {
+    builder.SetEffectiveAppearance(AppearanceValue::kNone);
+  } else {
+    LayoutTheme::GetTheme().AdjustStyle(
+        element ? *element : *state.GetPseudoElement(), builder);
+  }
 
   AdjustStyleForEditing(builder, element);
 
