@@ -397,6 +397,9 @@ void ManifestAssetManager::UpdateRegistrations() {
                            weak_ptr_factory_.GetWeakPtr(), public_key),
             kUninstallDelay);
       }
+      if (component) {
+        NotifyFactory(public_key, context);
+      }
       continue;
     }
 
