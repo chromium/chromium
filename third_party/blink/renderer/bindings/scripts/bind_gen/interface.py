@@ -1945,7 +1945,14 @@ def _make_empty_callback_def(cg_context, function_name):
         body.add_template_var(arg_name, arg_name)
 
     bind_callback_local_vars(body, cg_context)
+
     if cg_context.attribute or cg_context.function_like:
+        body.register_code_symbol(
+            SymbolNode(
+                "kPerformDetachCheckFlag",
+                "constexpr auto kPerformDetachCheckFlag = PassAsSpanMarkerBase::Flags::kPerformDetachCheck;"
+            ))
+
         bind_blink_api_arguments(body, cg_context)
         bind_return_value(body, cg_context)
 
@@ -2596,6 +2603,14 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
                           "${v8_arg0_receiver};")),
         S("handle_scope", "v8::HandleScope handle_scope(${isolate});")
     ])
+    # NADC stubs won't have any JS re-entry during argument conversion, so
+    # skip detach check for PassAsSpan arguments.
+    body.register_code_symbol(
+        S(
+            "kPerformDetachCheckFlag",
+            "constexpr auto kPerformDetachCheckFlag = PassAsSpanMarkerBase::Flags::kNone;"
+        ))
+
     bind_callback_local_vars(body, cg_context)
 
     if cg_context.may_throw_exception:

@@ -1768,15 +1768,16 @@ struct NativeValueTraits<T> : public NativeValueTraitsBase<T> {
                           v8::Local<v8::Value> value,
                           ExceptionState& exception_state) = delete;
 
-  static bindings::internal::ByteSpanWithInlineStorage<T::support_reentry>
+  static bindings::internal::ByteSpanWithInlineStorage<T::perform_detach_check>
   ArgumentValue(v8::Isolate* isolate,
                 int argument_index,
                 v8::Local<v8::Value> value,
                 ExceptionState& exception_state) {
-    bindings::internal::ByteSpanWithInlineStorage<T::support_reentry> result;
+    bindings::internal::ByteSpanWithInlineStorage<T::perform_detach_check>
+        result;
     if (value->IsArrayBuffer()) {
       v8::Local<v8::ArrayBuffer> array_buffer = value.As<v8::ArrayBuffer>();
-      result.MaybeSetBackingStore(array_buffer);
+      result.MaybeSetArrayBuffer(array_buffer);
       result.Assign(bindings::internal::GetArrayData(array_buffer));
       return result;
     }
@@ -1794,7 +1795,7 @@ struct NativeValueTraits<T> : public NativeValueTraitsBase<T> {
               "The provided ArrayBufferView value must not be shared.");
           return result;
         }
-        result.MaybeSetBackingStore(view->Buffer());
+        result.MaybeSetArrayBuffer(view->Buffer());
       }
       result.Assign(view->GetContents(result.GetInlineStorage()));
       return result;
@@ -1829,7 +1830,7 @@ struct NativeValueTraits<T> : public NativeValueTraitsBase<T> {
               "The provided ArrayBufferView value must not be shared.");
           return result;
         }
-        result.MaybeSetBackingStore(view->Buffer());
+        result.MaybeSetArrayBuffer(view->Buffer());
       }
       result.Assign(view->GetContents(result.GetInlineStorage()));
       return result;

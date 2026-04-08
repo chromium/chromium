@@ -60,6 +60,6 @@ test(t => {
     }
   };
   assert_equals(
-    decoder.decode(arr, options), Array(10000 + 1).join('*'),
-    'Decoding should work with underlying array buffer detached during options conversion');
+    decoder.decode(arr, options), '',
+    'Decoding should return an empty string with underlying array buffer detached during options conversion');
 }, 'TextDecoder decode() with array buffer detached during arg conversion');
