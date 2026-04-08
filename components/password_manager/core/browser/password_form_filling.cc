@@ -235,8 +235,8 @@ LikelyFormFilling SendFillInformationToRenderer(
   } else if (preferred_match &&
              GetMatchType(*preferred_match) == GetLoginMatchType::kGrouped) {
     wait_for_username_reason = WaitForUsernameReason::kGroupedMatch;
-  } else if (!IsSameOrigin(client->GetLastCommittedOrigin(),
-                           GURL(observed_form.signon_realm))) {
+  } else if (!client->GetLastCommittedOrigin().IsSameOriginWith(
+                 driver->GetLastCommittedOrigin())) {
     wait_for_username_reason = WaitForUsernameReason::kCrossOriginIframe;
   } else if (not_sign_in_form) {
     // If the parser did not find a current password element, don't fill.

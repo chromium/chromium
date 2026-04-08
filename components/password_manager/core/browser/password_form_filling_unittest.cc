@@ -39,6 +39,7 @@ using autofill::FormRendererId;
 using autofill::PasswordFormFillData;
 using testing::_;
 using testing::Return;
+using testing::ReturnRef;
 using testing::SaveArg;
 using url::Origin;
 using Store = password_manager::PasswordForm::Store;
@@ -57,6 +58,10 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
               (const PasswordFormFillData&),
               (override));
   MOCK_METHOD(void, InformNoSavedCredentials, (bool), (override));
+  MOCK_METHOD(const url::Origin&,
+              GetLastCommittedOrigin,
+              (),
+              (const, override));
 };
 
 class MockPasswordManagerClient : public StubPasswordManagerClient {
@@ -121,6 +126,9 @@ class PasswordFormFillingTest : public testing::Test {
     ON_CALL(client_, GetLastCommittedOrigin())
         .WillByDefault(
             Return(Origin::Create(GURL("https://accounts.google.com"))));
+    driver_origin_ = Origin::Create(GURL("https://accounts.google.com"));
+    ON_CALL(driver_, GetLastCommittedOrigin())
+        .WillByDefault(ReturnRef(driver_origin_));
 
     observed_form_.url = GURL("https://accounts.google.com/a/LoginAuth");
     observed_form_.action = GURL("https://accounts.google.com/a/Login");
@@ -172,6 +180,7 @@ class PasswordFormFillingTest : public testing::Test {
   const std::vector<PasswordForm> federated_matches_;
   MockWebAuthnCredentialsDelegate webauthn_credentials_delegate_;
   testing::NiceMock<MockPasswordFeatureManager> feature_manager_;
+  url::Origin driver_origin_;
 };
 
 TEST_F(PasswordFormFillingTest, NoSavedCredentials) {
@@ -406,6 +415,7 @@ TEST_F(PasswordFormFillingTest, NoAutofillOnHttp) {
   ON_CALL(client_, GetLastCommittedOrigin)
       .WillByDefault(
           Return(Origin::Create(GURL(observed_http_form.signon_realm))));
+  driver_origin_ = Origin::Create(GURL(observed_http_form.signon_realm));
 
   ASSERT_FALSE(GURL(saved_http_match.signon_realm).SchemeIsCryptographic());
   std::vector<PasswordForm> best_matches = {saved_http_match};
@@ -485,6 +495,32 @@ TEST_F(PasswordFormFillingTest, NoFillOnPageloadInCrossOriginIframe) {
   ON_CALL(client_, GetLastCommittedOrigin)
       .WillByDefault(
           Return(Origin::Create(GURL("https://another_website.com"))));
+  driver_origin_ = Origin::Create(GURL("https://some_website.com"));
+
+  std::vector<PasswordForm> best_matches = {saved_match_};
+  const std::vector<PasswordForm> federated_matches = {};
+
+  LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
+      &client_, &driver_, observed_form_, best_matches, federated_matches,
+      &saved_match_, metrics_recorder_.get(),
+      /*webauthn_suggestions_available=*/false,
+      /*suggestion_banned_fields=*/{});
+  EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.FirstWaitForUsernameReason",
+      PasswordFormMetricsRecorder::WaitForUsernameReason::kCrossOriginIframe,
+      1);
+}
+
+TEST_F(PasswordFormFillingTest, NoFillOnPageloadForOpaqueOrigin) {
+  base::HistogramTester histogram_tester;
+
+  observed_form_.url = GURL("https://some_website.com");
+  saved_match_.url = GURL("https://some_website.com");
+
+  url::Origin opaque_origin;
+  ON_CALL(driver_, GetLastCommittedOrigin)
+      .WillByDefault(ReturnRef(opaque_origin));
 
   std::vector<PasswordForm> best_matches = {saved_match_};
   const std::vector<PasswordForm> federated_matches = {};

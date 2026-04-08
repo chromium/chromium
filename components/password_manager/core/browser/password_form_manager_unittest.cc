@@ -204,6 +204,10 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
               (const autofill::PasswordFormGenerationData&),
               (override));
   MOCK_METHOD(bool, IsInPrimaryMainFrame, (), (const, override));
+  MOCK_METHOD(const url::Origin&,
+              GetLastCommittedOrigin,
+              (),
+              (const, override));
 };
 
 class MockPasswordManagerClient : public StubPasswordManagerClient {
@@ -432,6 +436,7 @@ class PasswordFormManagerTest : public testing::Test,
     GURL psl_action = GURL("https://myaccounts.google.com/a/ServiceLogin");
 
     observed_form_.set_url(origin);
+    observed_origin_ = url::Origin::Create(origin);
     observed_form_.set_action(action);
     observed_form_.set_name(u"sign-in");
     observed_form_.set_renderer_id(FormRendererId(1));
@@ -523,6 +528,8 @@ class PasswordFormManagerTest : public testing::Test,
         .WillByDefault(ReturnRef(observed_form_.url()));
     ON_CALL(client_, GetLastCommittedOrigin)
         .WillByDefault(Return(url::Origin::Create(observed_form_.url())));
+    ON_CALL(driver_, GetLastCommittedOrigin)
+        .WillByDefault(ReturnRef(observed_origin_));
     ON_CALL(client_, GetWebAuthnCredentialsDelegateForDriver)
         .WillByDefault(Return(&webauthn_credentials_delegate_));
     ON_CALL(webauthn_credentials_delegate_, GetPasskeys)
@@ -658,6 +665,7 @@ class PasswordFormManagerTest : public testing::Test,
   }
 
   FormData observed_form_;
+  url::Origin observed_origin_;
   FormData submitted_form_;
   FormData observed_form_only_password_fields_;
   FormData non_password_form_;

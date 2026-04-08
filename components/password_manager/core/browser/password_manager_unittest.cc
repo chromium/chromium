@@ -378,6 +378,10 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
               (override));
   MOCK_METHOD(bool, IsInPrimaryMainFrame, (), (const, override));
   MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const, override));
+  MOCK_METHOD(const url::Origin&,
+              GetLastCommittedOrigin,
+              (),
+              (const, override));
   MOCK_METHOD(void,
               GeneratedPasswordAccepted,
               (const std::u16string& password),
@@ -483,6 +487,8 @@ class PasswordManagerTestBase : public testing::Test {
         .WillByDefault(ReturnRef(test_form_url_));
     ON_CALL(client_, GetLastCommittedOrigin)
         .WillByDefault(Return(url::Origin::Create(test_form_url_)));
+    ON_CALL(driver_, GetLastCommittedOrigin)
+        .WillByDefault(ReturnRef(test_form_origin_));
     ON_CALL(client_, IsCommittedMainFrameSecure()).WillByDefault(Return(true));
     ON_CALL(client_, IsFillingEnabled).WillByDefault(Return(true));
     ON_CALL(client_, GetMetricsRecorder()).WillByDefault(Return(nullptr));
@@ -837,6 +843,7 @@ class PasswordManagerTestBase : public testing::Test {
   }
 
   const GURL test_form_url_{"https://www.google.com/a/LoginAuth"};
+  const url::Origin test_form_origin_{url::Origin::Create(test_form_url_)};
   const GURL test_form_action_{"https://www.google.com/a/Login"};
   const std::string test_signon_realm_ = "https://www.google.com/";
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -2865,6 +2872,10 @@ TEST_P(PasswordManagerTest, FillPasswordOnManyFrames_SameId) {
 
   // Observe the form in the second frame.
   MockPasswordManagerDriver driver_b;
+  url::Origin test_origin =
+      url::Origin::Create(GURL("http://www.example.com/"));
+  ON_CALL(driver_b, GetLastCommittedOrigin)
+      .WillByDefault(ReturnRef(test_origin));
   EXPECT_CALL(driver_b, PropagateFillDataOnParsingCompletion);
   manager()->OnPasswordFormsParsed(&driver_b, {form_data2});
   task_environment_.RunUntilIdle();

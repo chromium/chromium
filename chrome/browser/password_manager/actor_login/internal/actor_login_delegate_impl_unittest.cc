@@ -194,6 +194,9 @@ class ActorLoginDelegateImplTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
+    ON_CALL(mock_driver_, GetLastCommittedOrigin())
+        .WillByDefault(ReturnRef(test_origin_));
+
     ActorLoginPermissionServiceFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindRepeating([](content::BrowserContext* context)
                                            -> std::unique_ptr<KeyedService> {
@@ -315,6 +318,7 @@ class ActorLoginDelegateImplTest : public ChromeRenderViewHostTestHarness {
   FakeFormFetcher form_fetcher_;
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers_;
   NiceMock<MockPasswordManagerDriver> mock_driver_;
+  url::Origin test_origin_ = url::Origin::Create(GURL(kTestUrl));
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_{
       {.disable_server_communication = true}};
   NiceMock<MockActorLoginQualityLogger> mock_mqls_logger;
