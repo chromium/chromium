@@ -44,6 +44,7 @@ The current status of existing standards and Abseil features is:
       * absl::linked_hash_set & map: Initially added to third_party Dec 30, 2025
       * absl::optional_ref: Initially added to third_party Feb 25, 2026
       * absl::SourceLocation: Initially added to third_party Mar 11, 2026
+      * absl::AnySpan: Initially added to third_party Apr 7, 2026
 
 ## Banned features and third-party code
 
@@ -2789,6 +2790,28 @@ These are just aliases to the std counterparts these days. Use std instead.
 The following Abseil library features are not allowed in the Chromium codebase.
 See the top of this page on how to propose moving a feature from this list into
 the allowed or banned sections.
+
+### absl::AnySpan <sup>[tbd]</sup>
+
+```c++
+void MyFunction(AnySpan<const MyMessage> messages);
+
+// Invoke with container of smart pointers.
+std::deque<std::unique_ptr<MyMessage>> message_ptrs = ...;
+MyFunction(AnySpan<const MyMessage>(message_ptrs, any_span_transform::Deref()));
+
+// Invoke with a repeated proto field of type MyMessage.
+OtherMessage proto_message = ...;
+MyFunction(proto_message.repeated_field());
+```
+
+**Description:** Provides a view of a random access container, much like
+absl::Span, except it can handle more container types and perform a variety of
+useful transformations.
+
+**Documentation:**
+*  [any_span.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/types/any_span.h)
+
 
 ### absl::linked_hash_set, absl::linked_hash_map <sup>[tbd]</sup>
 
