@@ -12,6 +12,7 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -459,6 +460,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, FocusWindowDoesNotUnmaximize) {
 // Maximizing/fullscreen popup window doesn't work on aura's managed mode.
 // See bug crbug.com/40162971.
 // Mac: http://crbug.com/40113467
+// On desktop Android, throws Java exception during minimize().
 #define MAYBE_UpdateWindowShowState DISABLED_UpdateWindowShowState
 #else
 #define MAYBE_UpdateWindowShowState UpdateWindowShowState
@@ -466,6 +468,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, FocusWindowDoesNotUnmaximize) {
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MAYBE_UpdateWindowShowState) {
   ASSERT_TRUE(RunExtensionTest("window_update/show_state")) << message_;
 }
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, IncognitoDisabledByPref) {
   IncognitoModePrefs::SetAvailability(
@@ -476,13 +480,18 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, IncognitoDisabledByPref) {
   ASSERT_TRUE(RunExtensionTest("tabs/incognito_disabled")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, GetViewsOfCreatedPopup) {
+// TODO(crbug.com/500790726): Flaky on desktop Android. Crashes during test
+// shutdown with a Java exception in ChromeAndroidTaskTrackerImpl.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_GetViewsOfCreatedPopup DISABLED_GetViewsOfCreatedPopup
+#else
+#define MAYBE_GetViewsOfCreatedPopup GetViewsOfCreatedPopup
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MAYBE_GetViewsOfCreatedPopup) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics",
                                {.extension_url = "get_views_popup.html"}))
       << message_;
 }
-
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, GetViewsOfCreatedWindow) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics",
@@ -493,15 +502,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, GetViewsOfCreatedWindow) {
 // TODO(https://crbug.com/371432155): Enable these tests.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
+// The discarded property is not yet supported on desktop Android.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, OnUpdatedDiscardedState) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/discarded")) << message_;
 }
 
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, OpenerCraziness) {
   ASSERT_TRUE(RunExtensionTest("tabs/tab_opener_id")) << message_;
 }
-
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests sending messages from an extension's service worker using
 // chrome.tabs.sendMessage to a webpage in the extension listening for them
@@ -579,9 +589,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabsPermissionDoesNotLeakTabInfo) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-// TODO(https://crbug.com/371432155): Enable these tests.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
 class IncognitoExtensionApiTabTest : public ExtensionApiTabTest,
                                      public testing::WithParamInterface<bool> {
  public:
@@ -592,10 +599,22 @@ class IncognitoExtensionApiTabTest : public ExtensionApiTabTest,
   ~IncognitoExtensionApiTabTest() override = default;
 };
 
-IN_PROC_BROWSER_TEST_P(IncognitoExtensionApiTabTest, Tabs) {
+// TODO(crbug.com/500790726): Flaky on desktop Android. Crashes during test
+// shutdown with a Java exception in ChromeAndroidTaskTrackerImpl.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_IncognitoTabs DISABLED_IncognitoTabs
+#else
+#define MAYBE_IncognitoTabs IncognitoTabs
+#endif
+IN_PROC_BROWSER_TEST_P(IncognitoExtensionApiTabTest, MAYBE_IncognitoTabs) {
   bool is_incognito_enabled = GetParam();
-  Browser* incognito_browser =
-      OpenURLOffTheRecord(profile(), GURL("about:blank"));
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowserWindow();
+  TabListInterface* incognito_tab_list =
+      TabListInterface::From(incognito_browser);
+  // Some platforms do not open a tab by default. Ensure one exists.
+  if (incognito_tab_list->GetTabCount() == 0) {
+    incognito_tab_list->OpenTab(GURL("about:blank"), /*index=*/-1);
+  }
   std::string args = base::StringPrintf(
       R"({"isIncognito": %s, "windowId": %d})",
       base::ToString(is_incognito_enabled),
@@ -618,7 +637,9 @@ class ExtensionApiTabPrerenderingTest : public ExtensionApiTabTest {
   ~ExtensionApiTabPrerenderingTest() override = default;
 
   content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetWebContentsAt(0);
+    TabListInterface* tab_list = GetTabListInterface();
+    CHECK(tab_list);
+    return tab_list->GetTab(0)->GetContents();
   }
 
  private:
@@ -634,5 +655,3 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabPrerenderingTest,
                        PrerenderingIntoANewTab) {
   ASSERT_TRUE(RunExtensionTest("tabs/prerendering_into_new_tab")) << message_;
 }
-
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
