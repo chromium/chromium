@@ -9982,6 +9982,14 @@ TEST_F(NetworkContextTest, RevokeNetworkForNoncesTest) {
     EXPECT_FALSE(network_context->IsNetworkForNonceAndUrlAllowed(
         nonce2, kFooHttpsUrl, kNak_));
   }
+
+  // Local-scheme URLs, however, succeed (as they don't create network requests)
+  EXPECT_TRUE(network_context->IsNetworkForNonceAndUrlAllowed(
+      nonce1, GURL("data:text/html,Hello world!"), kNak_));
+  EXPECT_TRUE(network_context->IsNetworkForNonceAndUrlAllowed(
+      nonce1, GURL("blob:https://example.com/"), kNak_));
+  EXPECT_TRUE(network_context->IsNetworkForNonceAndUrlAllowed(
+      nonce1, GURL("filesystem:https://example.com/"), kNak_));
 }
 
 TEST_F(NetworkContextTest, RevokeNetworkForNoncesResponseUrlTest) {

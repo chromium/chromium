@@ -26,6 +26,10 @@ bool ConnectionAllowlist::operator==(const ConnectionAllowlist& other) const =
 bool ConnectionAllowlistMatchesUrl(
     const ConnectionAllowlist& connection_allowlist,
     const GURL& url) {
+  // Local schemes don't touch the network, so they bypass the allowlist.
+  if (url.SchemeIsLocal()) {
+    return true;
+  }
   for (const auto& url_string : connection_allowlist.allowlist) {
     auto matcher = url_pattern::SimpleUrlPatternMatcher::Create(
         url_string, /*base_url=*/nullptr);

@@ -3765,9 +3765,11 @@ bool NetworkContext::IsNetworkForNonceAndUrlAllowed(
     const GURL& url,
     const net::NetworkAnonymizationKey& network_anonymization_key,
     bool is_redirect) {
-  // If network hasn't been revoked for the nonce, it's allowed.
+  // If network hasn't been revoked for the nonce, it's allowed. Likewise, local
+  // schemes that reach this point should be excluded as they don't generate
+  // network requests.
   auto it = network_revocation_nonces_.find(nonce);
-  if (it == network_revocation_nonces_.end()) {
+  if (it == network_revocation_nonces_.end() || url.SchemeIsLocal()) {
     return true;
   }
 

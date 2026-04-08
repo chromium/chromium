@@ -354,6 +354,14 @@ TEST_F(ConnectionAllowlistParserTest, IsAllowlisted) {
                                              GURL("https://c.example/")));
   EXPECT_FALSE(ConnectionAllowlistMatchesUrl(connection_allowlist,
                                              GURL("http://a.example/")));
+
+  // Local schemes are allowed, even if they're not explicitly listed:
+  EXPECT_TRUE(ConnectionAllowlistMatchesUrl(
+      connection_allowlist, GURL("data:text/html,Hello world!")));
+  EXPECT_TRUE(ConnectionAllowlistMatchesUrl(
+      connection_allowlist, GURL("filesystem:https://example.site/")));
+  EXPECT_TRUE(ConnectionAllowlistMatchesUrl(
+      connection_allowlist, GURL("blob:https://example.site/")));
 }
 
 }  // namespace network
