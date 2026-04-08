@@ -225,7 +225,7 @@ TEST_F(AndroidSmsOtpBackendTest, OtpValueFetchTimesOut) {
       base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
       future;
   backend.RetrieveSmsOtp(future.GetCallback());
-  backend.OnOtpValueRetrievalError(SmsOtpRetrievalApiErrorCode::kTimeout);
+  backend.OnOtpValueRetrievalError(SmsOtpRetrievalApiError::kTimeout);
   const base::expected<OneTimeToken, OneTimeTokenRetrievalError>&
       actual_result = future.Get();
   ASSERT_FALSE(actual_result.has_value());
@@ -260,8 +260,7 @@ TEST_F(AndroidSmsOtpBackendTest, OtpValueFetchFails) {
       base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
       future;
   backend.RetrieveSmsOtp(future.GetCallback());
-  backend.OnOtpValueRetrievalError(
-      SmsOtpRetrievalApiErrorCode::kApiNotAvailable);
+  backend.OnOtpValueRetrievalError(SmsOtpRetrievalApiError::kApiNotAvailable);
   const base::expected<OneTimeToken, OneTimeTokenRetrievalError>&
       actual_result = future.Get();
   ASSERT_FALSE(actual_result.has_value());

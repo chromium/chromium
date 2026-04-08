@@ -11,24 +11,24 @@
 namespace one_time_tokens {
 
 TEST(SmsOtpToOnetimeTokenRetrievalErrorConverterTest, Smoke) {
-  EXPECT_EQ(
-      ConvertSmsOtpRetrievalApiErrorCode(SmsOtpRetrievalApiErrorCode::kError),
-      OneTimeTokenRetrievalError::kSmsOtpBackendError);
-  EXPECT_EQ(
-      ConvertSmsOtpRetrievalApiErrorCode(SmsOtpRetrievalApiErrorCode::kTimeout),
-      OneTimeTokenRetrievalError::kSmsOtpBackendTimeout);
-  EXPECT_EQ(ConvertSmsOtpRetrievalApiErrorCode(
-                SmsOtpRetrievalApiErrorCode::kPlatformNotSupported),
+  EXPECT_EQ(ConvertSmsOtpRetrievalApiError(SmsOtpRetrievalApiError::kError),
+            OneTimeTokenRetrievalError::kSmsOtpBackendError);
+  EXPECT_EQ(ConvertSmsOtpRetrievalApiError(SmsOtpRetrievalApiError::kTimeout),
+            OneTimeTokenRetrievalError::kSmsOtpBackendTimeout);
+  EXPECT_EQ(ConvertSmsOtpRetrievalApiError(
+                SmsOtpRetrievalApiError::kPlatformNotSupported),
             OneTimeTokenRetrievalError::kSmsOtpBackendPlatformNotSupported);
-  EXPECT_EQ(ConvertSmsOtpRetrievalApiErrorCode(
-                SmsOtpRetrievalApiErrorCode::kApiNotAvailable),
-            OneTimeTokenRetrievalError::kSmsOtpBackendApiNotAvailable);
-  EXPECT_EQ(ConvertSmsOtpRetrievalApiErrorCode(
-                SmsOtpRetrievalApiErrorCode::kUserPermissionRequired),
+  EXPECT_EQ(
+      ConvertSmsOtpRetrievalApiError(SmsOtpRetrievalApiError::kApiNotAvailable),
+      OneTimeTokenRetrievalError::kSmsOtpBackendApiNotAvailable);
+  EXPECT_EQ(ConvertSmsOtpRetrievalApiError(
+                SmsOtpRetrievalApiError::kUserPermissionRequired),
             OneTimeTokenRetrievalError::kSmsOtpBackendUserPermissionRequired);
-  EXPECT_EQ(ConvertSmsOtpRetrievalApiErrorCode(
-                SmsOtpRetrievalApiErrorCode::kGmscoreVersionNotSupported),
+  EXPECT_EQ(ConvertSmsOtpRetrievalApiError(
+                SmsOtpRetrievalApiError::kGmscoreVersionNotSupported),
             OneTimeTokenRetrievalError::kSmsOtpGmscoreVersionNotSupported);
+  EXPECT_EQ(ConvertSmsOtpRetrievalApiError(SmsOtpRetrievalApiError::kUnknown),
+            OneTimeTokenRetrievalError::kUnknown);
 }
 
 }  // namespace one_time_tokens

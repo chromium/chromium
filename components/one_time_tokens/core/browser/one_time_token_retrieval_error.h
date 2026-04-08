@@ -11,7 +11,7 @@ namespace one_time_tokens {
 // numeric values should never be reused.
 enum class OneTimeTokenRetrievalError {
   kUnknown = 0,
-  // The following map to SmsOtpRetrievalApiErrorCode.
+  // The following map to SmsOtpRetrievalApiError.
   kSmsOtpBackendError = 1,
   kSmsOtpBackendTimeout = 2,
   kSmsOtpBackendPlatformNotSupported = 3,

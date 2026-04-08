@@ -49,8 +49,7 @@ class AndroidSmsOtpBackend
 
   // AndroidSmsOtpFetchReceiverBridge::Consumer
   void OnOtpValueRetrieved(std::string value) override;
-  void OnOtpValueRetrievalError(
-      SmsOtpRetrievalApiErrorCode error_code) override;
+  void OnOtpValueRetrievalError(SmsOtpRetrievalApiError error) override;
 
   // Getter for tests to check the initialization state.
   std::optional<bool> GetInitializationResultForTesting() const;

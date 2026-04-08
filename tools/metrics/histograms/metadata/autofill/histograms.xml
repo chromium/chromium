@@ -5567,7 +5567,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <summary>
     Records the error encountered while attempting to retrieve sms one time
     token from the GMSCore backend. This is recorded after the asynchronous call
-    comes back with an error. This is currently only recorded on Android.
+    comes back with an error. This uses raw GMSCore error codes. This is
+    currently only recorded on Android.
   </summary>
 </histogram>
 
@@ -7812,6 +7813,19 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     Records whether an autofill operation was skipped because the number of
     fields to be filled is different than that number of fields registered in
     the form cache.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.SmsOtp.UnrecognizedGmsCoreErrorCode"
+    units="error code" expires_after="2026-10-31">
+  <owner>koerber@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the raw, unrecognized error code returned from the Android SMS
+    Retriever API when a retrieval error occurs. This is used to track and
+    discover new error codes that might be introduced in future GMSCore updates.
+    Recorded when an unrecognized API error code is encountered during OTP
+    retrieval.
   </summary>
 </histogram>
 

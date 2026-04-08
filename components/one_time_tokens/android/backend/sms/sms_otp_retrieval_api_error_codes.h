@@ -11,22 +11,23 @@ namespace one_time_tokens {
 // This list might be extended in the future if there are other commonly
 // returned error codes worth labeling nicely in metrics enums.
 //
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
 // LINT.IfChange
-enum class SmsOtpRetrievalApiErrorCode {
+enum class SmsOtpRetrievalApiError {
+  // Unrecognized GMS Core error code.
+  kUnknown,
   // Mapped from OneTimeTokensBackendErrorCode.GMSCORE_VERSION_NOT_SUPPORTED
-  kGmscoreVersionNotSupported = 0,
+  kGmscoreVersionNotSupported,
   // CommonStatusCodes.ERROR
-  kError = 13,
+  kError,
   // timeout
-  kTimeout = 15,
+  kTimeout,
   // SmsCodeAutofillClient not supported for platforms before Android P
-  kPlatformNotSupported = 36500,
+  kPlatformNotSupported,
   // calling application is not eligible to use SmsCodeAutofillClient
-  kApiNotAvailable = 36501,
+  kApiNotAvailable,
   // permission denied by the user.
-  kUserPermissionRequired = 36502
+  kUserPermissionRequired,
+  kMaxValue = kUserPermissionRequired,
 };
 // LINT.ThenChange(
 //   //components/one_time_tokens/android/backend/sms/sms_otp_to_one_time_token_retrieval_error_converter.cc,

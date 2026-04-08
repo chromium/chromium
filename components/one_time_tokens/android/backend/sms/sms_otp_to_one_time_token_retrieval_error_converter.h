@@ -8,10 +8,10 @@
 namespace one_time_tokens {
 
 enum class OneTimeTokenRetrievalError;
-enum class SmsOtpRetrievalApiErrorCode;
+enum class SmsOtpRetrievalApiError;
 
-OneTimeTokenRetrievalError ConvertSmsOtpRetrievalApiErrorCode(
-    SmsOtpRetrievalApiErrorCode error_code);
+OneTimeTokenRetrievalError ConvertSmsOtpRetrievalApiError(
+    SmsOtpRetrievalApiError error);
 
 }  // namespace one_time_tokens
 

@@ -25,8 +25,7 @@ class AndroidSmsOtpFetchReceiverBridgeInterface {
 
     // Asynchronous response called if there was an error while fetching an OTP
     // value.
-    virtual void OnOtpValueRetrievalError(
-        SmsOtpRetrievalApiErrorCode error_code) = 0;
+    virtual void OnOtpValueRetrievalError(SmsOtpRetrievalApiError error) = 0;
   };
 
   virtual ~AndroidSmsOtpFetchReceiverBridgeInterface() = default;

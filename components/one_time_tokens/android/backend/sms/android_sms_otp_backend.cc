@@ -78,13 +78,13 @@ void AndroidSmsOtpBackend::OnOtpValueRetrieved(std::string value) {
 }
 
 void AndroidSmsOtpBackend::OnOtpValueRetrievalError(
-    SmsOtpRetrievalApiErrorCode error_code) {
+    SmsOtpRetrievalApiError error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   // TODO(crbug.com/415272524): Record metrics on the API error codes.
 
   if (!pending_callbacks_.empty()) {
     std::move(pending_callbacks_.front())
-        .Run(base::unexpected(ConvertSmsOtpRetrievalApiErrorCode(error_code)));
+        .Run(base::unexpected(ConvertSmsOtpRetrievalApiError(error)));
     pending_callbacks_.pop();
   }
 }
