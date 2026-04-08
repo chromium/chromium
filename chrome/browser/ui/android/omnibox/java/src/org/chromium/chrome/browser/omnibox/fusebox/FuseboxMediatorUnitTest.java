@@ -531,12 +531,27 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void activateAiMode_fromToolMenu_recordsMetrics() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Omnibox.MobileFusebox.ToolButtonSelected",
+                        ToolMode.TOOL_MODE_UNSPECIFIED_VALUE);
+        mMediator.activateAiMode(AiModeActivationSource.TOOL_MENU);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
     public void activateImageGeneration_startsSession() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Omnibox.MobileFusebox.ToolButtonSelected",
+                        ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
         mMediator.activateImageGeneration();
         verify(mComposeboxQueryControllerBridge, never()).notifySessionStarted();
         assertEquals(
                 AutocompleteRequestType.IMAGE_GENERATION,
                 (int) mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE));
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -701,10 +716,16 @@ public class FuseboxMediatorUnitTest {
         OmniboxFeatures.sShowModelPicker.setForTesting(true);
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
 
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Omnibox.MobileFusebox.ToolButtonSelected",
+                        ToolMode.TOOL_MODE_CANVAS_VALUE);
+
         mModel.get(FuseboxProperties.POPUP_TOOL_CANVAS_CLICKED).run();
 
         verify(mPopup).dismiss();
         assertEquals(AutocompleteRequestType.CANVAS, mInput.getRequestType());
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -712,10 +733,16 @@ public class FuseboxMediatorUnitTest {
         OmniboxFeatures.sShowModelPicker.setForTesting(true);
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
 
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Omnibox.MobileFusebox.ToolButtonSelected",
+                        ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE);
+
         mModel.get(FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_CLICKED).run();
 
         verify(mPopup).dismiss();
         assertEquals(AutocompleteRequestType.DEEP_SEARCH, mInput.getRequestType());
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -786,7 +813,7 @@ public class FuseboxMediatorUnitTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
-                                "Omnibox.MobileFusebox.ModelButtonUsed",
+                                "Omnibox.MobileFusebox.ModelButtonSelected",
                                 ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
                         .build();
 
