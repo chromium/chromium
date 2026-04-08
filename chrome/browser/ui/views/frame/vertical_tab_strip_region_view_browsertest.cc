@@ -1077,3 +1077,18 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewExpandOnHoverTest,
       prefs::kVerticalTabsExpandOnHoverEnabled, false);
   EXPECT_FALSE(region_view()->is_expanded_on_hover());
 }
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewExpandOnHoverTest,
+                       ResizeAreaNotVisibleInExpandOnHoverState) {
+  // Fully collapse the tabstrip.
+  state_controller()->RequestCollapse(true);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return state_controller()->IsCollapsed(); }));
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kVerticalTabsExpandOnHoverEnabled, true);
+
+  region_view()->GetFocusManager()->SetFocusedView(region_view());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return region_view()->is_expanded_on_hover(); }));
+  ASSERT_FALSE(region_view()->resize_area_for_testing()->GetVisible());
+}

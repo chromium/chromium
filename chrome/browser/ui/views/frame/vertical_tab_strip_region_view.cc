@@ -1000,6 +1000,7 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState(
     expand_on_hover_timer_.Stop();
     hover_card_animation_lock_.reset();
     is_expanded_on_hover_ = false;
+    resize_area_->SetVisible(true);
     return;
   }
   // If expand on hover is locked (e.g. omnibox popup is open), then we
@@ -1030,6 +1031,7 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState(
       expand_on_hover_timer_.Stop();
       hover_card_animation_lock_.reset();
       is_expanded_on_hover_ = false;
+      resize_area_->SetVisible(true);
     }
   }
 
@@ -1048,6 +1050,8 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState(
 
 void VerticalTabStripRegionView::AnimateExpandOnHover(bool expand) {
   is_expanded_on_hover_ = expand;
+  // The resize area should not be visible when in the expand on hover state.
+  resize_area_->SetVisible(!expand);
 
   if (expand) {
     base::RecordAction(
