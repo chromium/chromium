@@ -13991,33 +13991,6 @@
             ]
         }
     ],
-    "KeepDefaultSearchEngineAlive": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledDSEKeepAliveWithProcessSharing",
-                    "params": {
-                        "ProcessPerSiteMainFrameThreshold": "15"
-                    },
-                    "enable_features": [
-                        "KeepDefaultSearchEngineRendererAlive",
-                        "ProcessPerSiteForDSE",
-                        "ProcessPerSiteUpToMainFrameThreshold",
-                        "TrackEmptyRendererProcessesForReuse"
-                    ],
-                    "disable_features": [
-                        "ProcessPerSiteSkipDevtoolsUsers"
-                    ]
-                }
-            ]
-        }
-    ],
     "KeyboardAccessoryAddressIPH": [
         {
             "platforms": [
