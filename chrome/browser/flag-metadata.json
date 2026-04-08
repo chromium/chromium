@@ -1743,11 +1743,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "composebox-menu-title",
-    "owners": [ "christianxu@chromium.org", "bling-search@google.com" ],
-    "expiry_milestone": 149
-  },
-  {
     "name": "composebox-server-side-state",
     "owners": [ "radunitescu@google.com", "bling-search@google.com" ],
     "expiry_milestone": 150

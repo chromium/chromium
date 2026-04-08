@@ -1816,11 +1816,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     [sections addObject:modelPickerMenu];
   }
 
-  _plusButton.menu = [UIMenu
-      menuWithTitle:IsComposeboxMenuTitleEnabled()
-                        ? l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_MENU_TITLE)
-                        : @""
-           children:sections];
+  _plusButton.menu = [UIMenu menuWithTitle:@"" children:sections];
   _plusButton.preferredMenuElementOrder =
       UIContextMenuConfigurationElementOrderFixed;
 }

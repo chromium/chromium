@@ -375,10 +375,6 @@ const char kComposeboxImmersiveSRPDescription[] =
 const char kComposeboxIpadName[] = "ComposeboxIpad";
 const char kComposeboxIpadDescription[] = "Enables the composeboxIpad feature.";
 
-const char kComposeboxMenuTitleName[] = "ComposeboxMenuTitle";
-const char kComposeboxMenuTitleDescription[] =
-    "Enables the ComposeboxMenuTitle feature.";
-
 const char kComposeboxServerSideStateName[] =
     "Enable server side state in Composebox";
 extern const char kComposeboxServerSideStateDescription[] =

@@ -238,9 +238,6 @@ extern const char kComposeboxImmersiveSRPDescription[];
 extern const char kComposeboxIpadName[];
 extern const char kComposeboxIpadDescription[];
 
-extern const char kComposeboxMenuTitleName[];
-extern const char kComposeboxMenuTitleDescription[];
-
 extern const char kComposeboxServerSideStateName[];
 extern const char kComposeboxServerSideStateDescription[];
 
