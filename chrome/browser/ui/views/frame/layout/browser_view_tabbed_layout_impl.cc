@@ -1247,7 +1247,12 @@ void BrowserViewTabbedLayoutImpl::ConfigureTopContainerBackground(
   // The top container always draws an opaque background in tabbed browser mode
   // to avoid cracking between visual elements.
   background->SetVisible(true);
-  background->SetPrimaryColor(CustomCornersBackground::ToolbarTheme());
+  if (delegate().GetBrowserWindowState() == WindowState::kFullscreen &&
+      GetTabStripType() == TabStripType::kHorizontal) {
+    background->SetPrimaryColor(ui::kColorFrameActive);
+  } else {
+    background->SetPrimaryColor(CustomCornersBackground::ToolbarTheme());
+  }
 
   // By default, this is just a flat background.
   CustomCornersBackground::Corners corners;
