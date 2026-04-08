@@ -664,6 +664,24 @@ TEST_F(MappableSharedImageVideoFramePoolTest, CreateOneHardwareXR30Frame) {
   EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
 }
 
+TEST_F(MappableSharedImageVideoFramePoolTest,
+       CreateOneHardwareXR30FrameWithOddSize) {
+  scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(9, 10);
+  scoped_refptr<VideoFrame> frame;
+  mock_gpu_factories_->SetVideoFrameOutputFormat(
+      media::GpuVideoAcceleratorFactories::OutputFormat::XR30);
+  mappable_shared_image_pool_->MaybeCreateHardwareFrame(
+      software_frame, base::BindOnce(MaybeCreateHardwareFrameCallback, &frame));
+
+  RunUntilIdle();
+
+  EXPECT_NE(software_frame.get(), frame.get());
+  EXPECT_EQ(PIXEL_FORMAT_XR30, frame->format());
+  EXPECT_TRUE(frame->HasSharedImage());
+  EXPECT_EQ(1u, sii_->shared_image_count());
+  EXPECT_EQ(gfx::Size(9, 9), frame->coded_size());
+}
+
 TEST_F(MappableSharedImageVideoFramePoolTest, CreateOneHardwareP010Frame) {
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10, 10);
   scoped_refptr<VideoFrame> frame;
@@ -826,6 +844,24 @@ TEST_F(MappableSharedImageVideoFramePoolTest, CreateOneHardwareXB30Frame) {
   auto mapping = client_si->Map();
   void* memory = static_cast<void*>(mapping->GetMemoryForPlane(0).data());
   EXPECT_EQ(as_xr30(0, 543, 0), *static_cast<uint32_t*>(memory));
+}
+
+TEST_F(MappableSharedImageVideoFramePoolTest,
+       CreateOneHardwareXB30FrameWithOddSize) {
+  scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(9, 10);
+  scoped_refptr<VideoFrame> frame;
+  mock_gpu_factories_->SetVideoFrameOutputFormat(
+      media::GpuVideoAcceleratorFactories::OutputFormat::XB30);
+  mappable_shared_image_pool_->MaybeCreateHardwareFrame(
+      software_frame, base::BindOnce(MaybeCreateHardwareFrameCallback, &frame));
+
+  RunUntilIdle();
+
+  EXPECT_NE(software_frame.get(), frame.get());
+  EXPECT_EQ(PIXEL_FORMAT_XB30, frame->format());
+  EXPECT_TRUE(frame->HasSharedImage());
+  EXPECT_EQ(1u, sii_->shared_image_count());
+  EXPECT_EQ(gfx::Size(9, 9), frame->coded_size());
 }
 
 TEST_F(MappableSharedImageVideoFramePoolTest, CreateOneHardwareRGBAFrame) {

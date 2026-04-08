@@ -601,33 +601,25 @@ void CopyRowsToRGB10Buffer(bool is_rgba,
 
 gfx::Size CodedSize(const VideoFrame* video_frame,
                     GpuVideoAcceleratorFactories::OutputFormat output_format) {
-  DCHECK(gfx::Rect(video_frame->coded_size())
-             .Contains(video_frame->visible_rect()));
-
-  size_t width = video_frame->visible_rect().width();
-  size_t height = video_frame->visible_rect().height();
-  gfx::Size output;
   switch (output_format) {
     case GpuVideoAcceleratorFactories::OutputFormat::YV12:
     case GpuVideoAcceleratorFactories::OutputFormat::P010:
-    case GpuVideoAcceleratorFactories::OutputFormat::NV12:
+    case GpuVideoAcceleratorFactories::OutputFormat::NV12: {
       DCHECK_EQ(video_frame->visible_rect().x() % 2, 0);
       DCHECK_EQ(video_frame->visible_rect().y() % 2, 0);
-      if (!viz::IsOddSizeMultiPlanarBuffersAllowed()) {
-        width = base::bits::AlignUp(width, size_t{2});
-        height = base::bits::AlignUp(height, size_t{2});
+      if (viz::IsOddSizeMultiPlanarBuffersAllowed()) {
+        return video_frame->visible_rect().size();
       }
-      output = gfx::Size(width, height);
-      break;
+      auto even_size = video_frame->visible_rect().size();
+      even_size.Enlarge(even_size.width() % 2, even_size.height() % 2);
+      return even_size;
+    }
     case GpuVideoAcceleratorFactories::OutputFormat::XR30:
     case GpuVideoAcceleratorFactories::OutputFormat::XB30:
-      output = gfx::Size(base::bits::AlignUp(width, size_t{2}), height);
-      break;
+      return video_frame->visible_rect().size();
     case GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED:
       NOTREACHED();
   }
-  DCHECK(gfx::Rect(video_frame->coded_size()).Contains(gfx::Rect(output)));
-  return output;
 }
 
 void SetPrefersExternalSampler(viz::SharedImageFormat& format) {
@@ -777,13 +769,15 @@ void MappableSharedImageVideoFramePool::PoolImpl::CreateHardwareFrame(
 
   // TODO(https://crbug.com/webrtc/9033): Eliminate odd size video frame input
   // cases as they are not valid.
-  if (video_frame->coded_size().width() % 2 &&
-      !viz::IsOddSizeMultiPlanarBuffersAllowed()) {
-    passthrough = true;
-  }
-  if (video_frame->coded_size().height() % 2 &&
-      !viz::IsOddSizeMultiPlanarBuffersAllowed()) {
-    passthrough = true;
+  const bool is_multiplanar =
+      output_format_ == GpuVideoAcceleratorFactories::OutputFormat::YV12 ||
+      output_format_ == GpuVideoAcceleratorFactories::OutputFormat::NV12 ||
+      output_format_ == GpuVideoAcceleratorFactories::OutputFormat::P010;
+  if (is_multiplanar && !viz::IsOddSizeMultiPlanarBuffersAllowed()) {
+    if (video_frame->coded_size().width() % 2 ||
+        video_frame->coded_size().height() % 2) {
+      passthrough = true;
+    }
   }
 
   frame_copy_requests_.emplace_back(std::move(video_frame),
