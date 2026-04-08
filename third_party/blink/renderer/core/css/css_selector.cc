@@ -503,7 +503,6 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoRoot:
     case kPseudoScope:
     case kPseudoSelectHasSlottedButton:
-    case kPseudoSelectorFragmentAnchor:
     case kPseudoSingleButton:
     case kPseudoSlotted:
     case kPseudoSpatialNavigationFocus:
@@ -590,8 +589,6 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"-internal-relative-anchor", CSSSelector::kPseudoRelativeAnchor},
     {"-internal-select-has-slotted-button",
      CSSSelector::kPseudoSelectHasSlottedButton},
-    {"-internal-selector-fragment-anchor",
-     CSSSelector::kPseudoSelectorFragmentAnchor},
     {"-internal-shadow-host-has-non-auto-appearance",
      CSSSelector::kPseudoHostHasNonAutoAppearance},
     {"-internal-spatial-navigation-focus",
@@ -1107,7 +1104,6 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoRoot:
     case kPseudoScope:
     case kPseudoSelectHasSlottedButton:
-    case kPseudoSelectorFragmentAnchor:
     case kPseudoSingleButton:
     case kPseudoStart:
     case kPseudoState:
@@ -1857,7 +1853,6 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoReadWrite:
     case kPseudoRequired:
     case kPseudoSelectHasSlottedButton:
-    case kPseudoSelectorFragmentAnchor:
     case kPseudoState:
     case kPseudoTarget:
     case kPseudoUserInvalid:
@@ -2237,7 +2232,6 @@ bool CSSSelector::SupportsPseudoStateChange(PseudoType type) {
     case CSSSelector::kPseudoRequired:
     case CSSSelector::kPseudoSelectHasSlottedButton:
     case CSSSelector::kPseudoSelection:
-    case CSSSelector::kPseudoSelectorFragmentAnchor:
     case CSSSelector::kPseudoState:
     case CSSSelector::kPseudoTarget:
     case CSSSelector::kPseudoTargetAfter:

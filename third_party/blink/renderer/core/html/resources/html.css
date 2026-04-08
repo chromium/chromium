@@ -1561,10 +1561,6 @@ nobr {
 
 /* states */
 
-:-internal-selector-fragment-anchor {
-    outline: Highlight 3px solid;
-}
-
 :focus-visible {
     outline: auto 1px -webkit-focus-ring-color
 }

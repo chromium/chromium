@@ -323,7 +323,6 @@ class CORE_EXPORT CSSSelector {
     kPseudoPicker,
     kPseudoSelectHasSlottedButton,
     kPseudoSelection,
-    kPseudoSelectorFragmentAnchor,
     kPseudoSingleButton,
     kPseudoStart,
     kPseudoState,

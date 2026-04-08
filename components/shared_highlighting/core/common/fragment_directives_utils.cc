@@ -91,7 +91,7 @@ std::vector<std::string> ExtractTextFragments(std::string ref_string) {
 
 GURL RemoveFragmentSelectorDirectives(const GURL& url) {
   const std::vector<std::string_view> directive_parameter_names{
-      kTextDirectiveParameterName, kSelectorDirectiveParameterName};
+      kTextDirectiveParameterName};
   size_t start_pos = url.GetRef().find(kFragmentsUrlDelimiter);
   if (start_pos == std::string::npos)
     return url;

@@ -15,25 +15,8 @@ const char kTextDirectiveParameterName[] = "text=";
 const size_t kTextDirectiveParameterNameLength =
     strlen(kTextDirectiveParameterName);
 
-const char kSelectorDirectiveParameterName[] = "selector(";
-const int kSelectorDirectiveParameterNameLength =
-    strlen(kSelectorDirectiveParameterName);
-
-const char kSelectorDirectiveSuffix[] = ")";
-const int kSelectorDirectiveSuffixLength = strlen(kSelectorDirectiveSuffix);
-
-const char kSelectorDirectiveValuePrefix[] = "value=";
-const int kSelectorDirectiveValuePrefixLength =
-    strlen(kSelectorDirectiveValuePrefix);
-
-const char kSelectorDirectiveTypePrefix[] = "type=";
-const int kSelectorDirectiveTypePrefixLength =
-    strlen(kSelectorDirectiveTypePrefix);
-
 const char kSelectorJoinDelimeter[] = "&";
 const int kSelectorJoinDelimeterLength = strlen(kSelectorJoinDelimeter);
-
-const char kTypeCssSelector[] = "CssSelector";
 
 const char kFragmentPrefixKey[] = "prefix";
 const char kFragmentTextStartKey[] = "textStart";

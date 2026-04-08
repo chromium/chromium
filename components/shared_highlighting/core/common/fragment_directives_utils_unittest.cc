@@ -97,18 +97,12 @@ TEST(TextFragmentsUtilsTest, RemoveTextFragments) {
   EXPECT_EQ("https://www.example.com/#idFrag", result.spec());
 }
 
-TEST(TextFragmentsUtilsTest,
-     RemoveTextFragmentsAndSelectorFragmentsAndKeepOtherSelectors) {
+TEST(TextFragmentsUtilsTest, RemoveTextFragmentsAndKeepOtherDirectives) {
   GURL url_with_fragment(R"(
-      https://www.example.org#:~:text=foo&lorem_directive_string&selector(type=CssSelector,value=img[src$="example.org"]))");
+      https://www.example.org#:~:text=foo&lorem_directive_string)");
   GURL url_with_fragment_removed(R"(
       https://www.example.org#:~:lorem_directive_string)");
   GURL result = RemoveFragmentSelectorDirectives(url_with_fragment);
-  EXPECT_EQ(url_with_fragment_removed.spec(), result.spec());
-
-  url_with_fragment = GURL{
-      R"(https://www.example.org#:~:lorem_directive_string&selector(type=CssSelector,value=img[src$="example.org"]))"};
-  result = RemoveFragmentSelectorDirectives(url_with_fragment);
   EXPECT_EQ(url_with_fragment_removed.spec(), result.spec());
 }
 

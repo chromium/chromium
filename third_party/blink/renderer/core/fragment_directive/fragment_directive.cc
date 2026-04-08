@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/editing/dom_selection.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/fragment_directive/css_selector_directive.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_directive.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_selector_generator.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -184,9 +183,6 @@ void FragmentDirective::ParseDirectives(const StringView& fragment_directive) {
       if (TextDirective* text_directive = TextDirective::Create(value)) {
         new_directives.push_back(text_directive);
       }
-    } else if (auto* selector_directive =
-                   CssSelectorDirective::TryParse(directive_string)) {
-      new_directives.push_back(selector_directive);
     }
   }
 

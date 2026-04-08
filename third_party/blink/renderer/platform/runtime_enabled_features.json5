@@ -1899,11 +1899,6 @@
       status: "experimental",
     },
     {
-      name: "CSSSelectorFragmentAnchor",
-      status: "experimental",
-      base_feature: "CssSelectorFragmentAnchor",
-    },
-    {
       // rect() and xywh() basic shapes for shape-outside.
       // https://drafts.csswg.org/css-shapes-1/#basic-shape-functions
       // https://drafts.csswg.org/css-shapes/#shape-outside-property

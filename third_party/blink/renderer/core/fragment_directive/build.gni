@@ -3,10 +3,6 @@
 # found in the LICENSE file.
 
 blink_core_sources_fragment_directive = [
-  "css_selector_directive.cc",
-  "css_selector_directive.h",
-  "css_selector_fragment_anchor.cc",
-  "css_selector_fragment_anchor.h",
   "same_block_word_iterator.cc",
   "same_block_word_iterator.h",
   "fragment_directive.cc",
@@ -32,7 +28,6 @@ blink_core_sources_fragment_directive = [
 ]
 
 blink_core_tests_fragment_directive = [
-  "css_selector_fragment_anchor_test.cc",
   "fragment_directive_test.cc",
   "same_block_word_iterator_test.cc",
   "text_fragment_anchor_metrics_test.cc",

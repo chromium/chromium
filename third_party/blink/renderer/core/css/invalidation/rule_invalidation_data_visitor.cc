@@ -100,7 +100,6 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoPickerIcon:
     case CSSSelector::kPseudoMarker:
     case CSSSelector::kPseudoModal:
-    case CSSSelector::kPseudoSelectorFragmentAnchor:
     case CSSSelector::kPseudoBackdrop:
     case CSSSelector::kPseudoLang:
     case CSSSelector::kPseudoDir:

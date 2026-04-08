@@ -388,7 +388,6 @@ static bool ExtractBucketingValues(const CSSSelector* selector,
         case CSSSelector::kPseudoHost:
         case CSSSelector::kPseudoHostContext:
         case CSSSelector::kPseudoSlotted:
-        case CSSSelector::kPseudoSelectorFragmentAnchor:
         case CSSSelector::kPseudoRoot:
         case CSSSelector::kPseudoActiveViewTransition:
         case CSSSelector::kPseudoOverscrollTarget:
@@ -771,9 +770,6 @@ void RuleSet::FindBestBucketAndAdd(CSSSelector& component,
     case CSSSelector::kPseudoFocusVisible:
       // Was handled above.
       NOTREACHED();
-      return;
-    case CSSSelector::kPseudoSelectorFragmentAnchor:
-      AddToBucket(selector_fragment_anchor_rules_, rule_data);
       return;
     case CSSSelector::kPseudoHost:
     case CSSSelector::kPseudoHostContext:
@@ -1426,9 +1422,6 @@ void RuleSet::AddFilteredRulesFromOtherSet(
     AddFilteredRulesFromOtherBucket(other, other.slotted_pseudo_element_rules_,
                                     only_include,
                                     &slotted_pseudo_element_rules_);
-    AddFilteredRulesFromOtherBucket(
-        other, other.selector_fragment_anchor_rules_, only_include,
-        &selector_fragment_anchor_rules_);
     AddFilteredRulesFromOtherBucket(other, other.active_view_transition_rules_,
                                     only_include,
                                     &active_view_transition_rules_);
@@ -1768,7 +1761,6 @@ void RuleSet::CompactRules() {
   link_pseudo_class_rules_.shrink_to_fit();
   cue_pseudo_rules_.shrink_to_fit();
   focus_pseudo_class_rules_.shrink_to_fit();
-  selector_fragment_anchor_rules_.shrink_to_fit();
   focus_visible_pseudo_class_rules_.shrink_to_fit();
   scrollbar_rules_.shrink_to_fit();
   universal_rules_.shrink_to_fit();
@@ -1846,7 +1838,6 @@ void RuleSet::AssertRuleListsSorted() const {
   DCHECK(IsRuleListSorted(link_pseudo_class_rules_));
   DCHECK(IsRuleListSorted(cue_pseudo_rules_));
   DCHECK(IsRuleListSorted(focus_pseudo_class_rules_));
-  DCHECK(IsRuleListSorted(selector_fragment_anchor_rules_));
   DCHECK(IsRuleListSorted(focus_visible_pseudo_class_rules_));
   DCHECK(IsRuleListSorted(scrollbar_rules_));
   DCHECK(IsRuleListSorted(universal_rules_));
@@ -1904,7 +1895,6 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(link_pseudo_class_rules_);
   visitor->Trace(cue_pseudo_rules_);
   visitor->Trace(focus_pseudo_class_rules_);
-  visitor->Trace(selector_fragment_anchor_rules_);
   visitor->Trace(focus_visible_pseudo_class_rules_);
   visitor->Trace(scrollbar_rules_);
   visitor->Trace(universal_rules_);

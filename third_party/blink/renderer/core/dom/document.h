@@ -1185,7 +1185,6 @@ class CORE_EXPORT Document : public ContainerNode,
   // Updates for :target (CSS3 selector).
   void SetCSSTarget(Element*);
   Element* CssTarget() const { return css_target_.Get(); }
-  void SetSelectorFragmentAnchorCSSTarget(Element*);
 
   void ScheduleLayoutTreeUpdateIfNeeded();
   bool HasPendingForcedStyleRecalc() const;
@@ -2856,7 +2855,6 @@ class CORE_EXPORT Document : public ContainerNode,
   bool should_update_selection_after_layout_ = false;
 
   WeakMember<Element> css_target_;
-  bool css_target_is_selector_fragment_ = false;
 
   bool was_discarded_ = false;
 

@@ -57,8 +57,6 @@ class CORE_EXPORT FragmentAnchor : public GarbageCollected<FragmentAnchor> {
 
   virtual bool IsTextFragmentAnchor() { return false; }
 
-  virtual bool IsSelectorFragmentAnchor() { return false; }
-
   virtual void ScrollElementIntoViewWithOptions(Element* element_to_scroll,
                                                 ScrollIntoViewOptions* options);
 

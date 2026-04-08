@@ -20,23 +20,8 @@ extern const int kFragmentsUrlDelimiterLength;
 extern const char kTextDirectiveParameterName[];
 extern const size_t kTextDirectiveParameterNameLength;
 
-// Parameter name for a single selector fragment directive in a URL.
-extern const char kSelectorDirectiveParameterName[];
-extern const int kSelectorDirectiveParameterNameLength;
-
-extern const char kSelectorDirectiveSuffix[];
-extern const int kSelectorDirectiveSuffixLength;
-
-extern const char kSelectorDirectiveValuePrefix[];
-extern const int kSelectorDirectiveValuePrefixLength;
-
-extern const char kSelectorDirectiveTypePrefix[];
-extern const int kSelectorDirectiveTypePrefixLength;
-
 extern const char kSelectorJoinDelimeter[];
 extern const int kSelectorJoinDelimeterLength;
-
-extern const char kTypeCssSelector[];
 
 // These values correspond to the keys used to store text fragment's values
 // in a dictionary Value.

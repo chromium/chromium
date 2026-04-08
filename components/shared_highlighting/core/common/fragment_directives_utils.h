@@ -61,7 +61,7 @@ GURL AppendFragmentDirectives(const GURL& base_url,
 //
 // Example input:
 // std::string test_selector("only%2C%2D%20start%20%232");
-// AppendFragmentDirectives(url, {test_selector});
+// AppendSelectors(url, {test_selector});
 GURL AppendSelectors(const GURL& base_url, std::vector<std::string> selectors);
 
 }  // namespace shared_highlighting

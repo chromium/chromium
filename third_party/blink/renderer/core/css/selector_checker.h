@@ -393,7 +393,6 @@ class CORE_EXPORT SelectorChecker {
   static bool MatchesFocusPseudoClass(const Element&,
                                       PseudoId matching_for_pseudo_element);
   static bool MatchesFocusVisiblePseudoClass(const Element&);
-  static bool MatchesSelectorFragmentAnchorPseudoClass(const Element&);
   static bool MatchesActiveViewTransitionPseudoClass(const Element&);
   static bool MatchesOverscrollTarget(const Element&);
 

@@ -773,7 +773,6 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
     case CSSSelector::kPseudoPickerIcon:
     case CSSSelector::kPseudoPicker:
     case CSSSelector::kPseudoSelection:
-    case CSSSelector::kPseudoSelectorFragmentAnchor:
     case CSSSelector::kPseudoSingleButton:
     case CSSSelector::kPseudoStart:
     case CSSSelector::kPseudoState:
@@ -2455,8 +2454,6 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         return select->SlottedButton();
       }
       return false;
-    case CSSSelector::kPseudoSelectorFragmentAnchor:
-      return MatchesSelectorFragmentAnchorPseudoClass(element);
     case CSSSelector::kPseudoTarget:
       probe::ForcePseudoState(&element, CSSSelector::kPseudoTarget,
                               &force_pseudo_state);
@@ -3683,16 +3680,6 @@ bool SelectorChecker::CheckVirtualPseudo(const SelectorCheckingContext& context,
     default:
       return false;
   }
-}
-
-bool SelectorChecker::MatchesSelectorFragmentAnchorPseudoClass(
-    const Element& element) {
-  return element == element.GetDocument().CssTarget() &&
-         element.GetDocument().View()->GetFragmentAnchor() &&
-         element.GetDocument()
-             .View()
-             ->GetFragmentAnchor()
-             ->IsSelectorFragmentAnchor();
 }
 
 bool SelectorChecker::MatchesActiveViewTransitionPseudoClass(
