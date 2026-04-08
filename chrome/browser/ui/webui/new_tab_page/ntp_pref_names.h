@@ -21,6 +21,8 @@ extern const char kNtpModuleStalenessCountDict[];
 extern const char kNtpModulesAutoRemovalDisabledDict[];
 extern const char kNtpAnimatedDoodlesEnabled[];
 extern const char kNtpDoodleMuralsEnabled[];
+extern const char kNtpMostVisitedTileHoverCount[];
+extern const char kNtpMostVisitedTileNavigationCount[];
 }  // namespace ntp_prefs
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_NTP_PREF_NAMES_H_

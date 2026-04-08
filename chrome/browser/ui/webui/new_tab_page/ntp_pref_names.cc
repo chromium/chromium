@@ -48,4 +48,10 @@ const char kNtpModulesAutoRemovalDisabledDict[] =
 const char kNtpAnimatedDoodlesEnabled[] = "ntp.animated_doodles_enabled";
 // Tracks whether the user has enabled doodle murals on the NTP.
 const char kNtpDoodleMuralsEnabled[] = "ntp.doodle_murals_enabled";
+// Tracks how many times a user hovers on a NewTabPage tile link.
+const char kNtpMostVisitedTileHoverCount[] =
+    "ntp.most_visited_tile_hover_count";
+// Tracks how many times a user navigates to a NewTabPage tile link.
+const char kNtpMostVisitedTileNavigationCount[] =
+    "ntp.most_visited_tile_navigation_count";
 }  // namespace ntp_prefs

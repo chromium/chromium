@@ -254,6 +254,17 @@ void MostVisitedHandler::OnMostVisitedTileNavigation(
   WindowOpenDisposition disposition = ui::DispositionFromClick(
       /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
       shift_key);
+
+  if (tile->url.is_valid() &&
+      disposition != WindowOpenDisposition::SAVE_TO_DISK &&
+      disposition != WindowOpenDisposition::IGNORE_ACTION) {
+    if (PrefService* prefs = profile_->GetPrefs()) {
+      prefs->SetInt64(
+          ntp_prefs::kNtpMostVisitedTileNavigationCount,
+          prefs->GetInt64(ntp_prefs::kNtpMostVisitedTileNavigationCount) + 1);
+    }
+  }
+
   // Clicks on the MV tiles should be treated as if the user clicked on a
   // bookmark. This is consistent with Android's native implementation and
   // ensures the visit count for the MV entry is updated.
@@ -336,6 +347,12 @@ void MostVisitedHandler::PreconnectMostVisitedTile(
         "PreconnectMostVisitedTile is only expected to be called "
         "when kNewTabPageTriggerForPrerender2 is true.");
     return;
+  }
+
+  if (PrefService* prefs = profile_->GetPrefs()) {
+    prefs->SetInt64(
+        ntp_prefs::kNtpMostVisitedTileHoverCount,
+        prefs->GetInt64(ntp_prefs::kNtpMostVisitedTileHoverCount) + 1);
   }
 
   auto* loading_predictor =

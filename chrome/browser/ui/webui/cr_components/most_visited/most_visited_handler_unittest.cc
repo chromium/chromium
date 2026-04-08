@@ -115,6 +115,54 @@ TEST_P(MostVisitedAutoRemovalTest, AddMostVisitedTile) {
       ntp_prefs::kNtpShortcutsAutoRemovalDisabled));
 }
 
+TEST_P(MostVisitedAutoRemovalTest, OnMostVisitedTileHoverMetrics) {
+  auto tile = most_visited::mojom::MostVisitedTile::New();
+  tile->url = GURL("https://foo.com");
+
+  EXPECT_EQ(0, profile_.GetPrefs()->GetInt64(
+                   ntp_prefs::kNtpMostVisitedTileHoverCount));
+
+  handler_->PreconnectMostVisitedTile(std::move(tile));
+
+  EXPECT_EQ(1, profile_.GetPrefs()->GetInt64(
+                   ntp_prefs::kNtpMostVisitedTileHoverCount));
+}
+
+TEST_P(MostVisitedAutoRemovalTest, OnMostVisitedTileNavigationMetrics) {
+  auto tile = most_visited::mojom::MostVisitedTile::New();
+  tile->url = GURL("https://foo.com");
+
+  EXPECT_EQ(0, profile_.GetPrefs()->GetInt64(
+                   ntp_prefs::kNtpMostVisitedTileNavigationCount));
+
+  // Valid navigation (left click).
+  handler_->OnMostVisitedTileNavigation(
+      std::move(tile), /*index=*/0, /*mouse_button=*/0, /*alt_key=*/false,
+      /*ctrl_key=*/false, /*meta_key=*/false, /*shift_key=*/false);
+
+  EXPECT_EQ(1, profile_.GetPrefs()->GetInt64(
+                   ntp_prefs::kNtpMostVisitedTileNavigationCount));
+
+  // Invalid URL should not increment.
+  auto invalid_tile = most_visited::mojom::MostVisitedTile::New();
+  invalid_tile->url = GURL();
+  handler_->OnMostVisitedTileNavigation(std::move(invalid_tile), /*index=*/0,
+                                        /*mouse_button=*/0, /*alt_key=*/false,
+                                        /*ctrl_key=*/false, /*meta_key=*/false,
+                                        /*shift_key=*/false);
+  EXPECT_EQ(1, profile_.GetPrefs()->GetInt64(
+                   ntp_prefs::kNtpMostVisitedTileNavigationCount));
+
+  // SAVE_TO_DISK (alt+click) should not increment.
+  auto alt_tile = most_visited::mojom::MostVisitedTile::New();
+  alt_tile->url = GURL("https://foo.com");
+  handler_->OnMostVisitedTileNavigation(
+      std::move(alt_tile), /*index=*/0, /*mouse_button=*/0, /*alt_key=*/true,
+      /*ctrl_key=*/false, /*meta_key=*/false, /*shift_key=*/false);
+  EXPECT_EQ(1, profile_.GetPrefs()->GetInt64(
+                   ntp_prefs::kNtpMostVisitedTileNavigationCount));
+}
+
 TEST_P(MostVisitedAutoRemovalTest, DeleteMostVisitedTile) {
   auto tile = most_visited::mojom::MostVisitedTile::New();
   tile->url = GURL("https://foo.com");
