@@ -40,7 +40,12 @@ source_set("age_mismatch_signout_coordinator") {
   deps = [
     "//base",
     "//components/signin/public/base",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/age_mismatch_learn_more/coordinator",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
+    "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
@@ -57,6 +62,8 @@ source_set("age_mismatch_signout_coordinator") {
     "//ios/chrome/browser/signin/ui:prompt_mode",
     "//ios/chrome/browser/signin/ui/resources",
     "//ios/chrome/common/ui/promo_style",
+    "//ios/web/common:web_view_creation_util",
+    "//ios/web/web_state:web_view_internal_creation_util",
   ]
 }
 
@@ -64,6 +71,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "signin_account_capabilities_scene_agent_unittest.mm" ]
   deps = [
+    ":age_mismatch_signout_coordinator",
     ":signin_account_capabilities_scene_agent",
     "//base",
     "//base/test:test_support",

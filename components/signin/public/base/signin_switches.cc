@@ -93,6 +93,11 @@ BASE_FEATURE(kBoundSessionCredentialsKillSwitch,
 
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kBuildExternalPrivacyContext, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<std::string>
+    kBuildExternalPrivacyContextAgeMismatchLearnMoreUrl{
+        &kBuildExternalPrivacyContext, "AgeMismatchLearnMoreUrl",
+        "https://support.google.com/families/answer/"
+        "7087030#zippy=%2Ciphone-and-ipad"};
 #endif
 
 #if BUILDFLAG(IS_IOS)

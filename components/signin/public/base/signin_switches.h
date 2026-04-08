@@ -82,6 +82,9 @@ BASE_DECLARE_FEATURE(kBoundSessionCredentialsKillSwitch);
 // the capability service with device signals.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kBuildExternalPrivacyContext);
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const base::FeatureParam<std::string>
+    kBuildExternalPrivacyContextAgeMismatchLearnMoreUrl;
 #endif
 
 #if BUILDFLAG(IS_IOS)

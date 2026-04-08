@@ -332,6 +332,9 @@
       <message name="IDS_IOS_AGE_MISMATCH_HEADER_IPHONE" desc="Heading on a full-screen notice on iPhone. This string explains that age-related safety measures are active. Align ‘set up for a child’ phrasing with TC ID 8512022958027641166. The tone should be informative and reassuring.">
         This iPhone is set up for a child
       </message>
+      <message name="IDS_IOS_AGE_MISMATCH_LEARN_MORE" desc="The title of the 'Learn more' modal WebView presented during age mismatch sign-out. [iOS only]">
+        Learn more
+      </message>
       <message name="IDS_IOS_AGE_MISMATCH_PRIMARY_BUTTON" desc="Found on a primary button that users see on a full-screen notice. Tapping the button opens an account picker, allowing the user to sign in to Chrome with a different Google Account. ‘Use’ functions as an imperative verb. The tone is informative.">
         Use another account
       </message>

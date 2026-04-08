@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/signin/coordinator/age_mismatch_signout_coordinator.h"
 
 #import "base/not_fatal_until.h"
+#import "ios/chrome/browser/authentication/age_mismatch_learn_more/coordinator/age_mismatch_learn_more_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -20,7 +22,9 @@
 #import "ios/chrome/browser/signin/ui/age_mismatch_signout_view_controller.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 
-@interface AgeMismatchSignoutCoordinator () <PromoStyleViewControllerDelegate>
+@interface AgeMismatchSignoutCoordinator () <
+    AgeMismatchLearnMoreCoordinatorDelegate,
+    PromoStyleViewControllerDelegate>
 @end
 
 @implementation AgeMismatchSignoutCoordinator {
@@ -118,6 +122,26 @@
 
 - (void)didTapSecondaryActionButton {
   [self notifyDelegateToDismiss];
+}
+
+- (void)didTapURLInDisclaimer:(NSURL*)URL {
+  CHECK([URL isEqual:[NSURL URLWithString:kAgeMismatchSignoutLearnMoreURL]],
+        base::NotFatalUntil::M153);
+  AgeMismatchLearnMoreCoordinator* coordinator =
+      [[AgeMismatchLearnMoreCoordinator alloc]
+          initWithBaseViewController:_viewController
+                             browser:self.browser];
+  coordinator.delegate = self;
+  [self.childCoordinators addObject:coordinator];
+  [coordinator start];
+}
+
+#pragma mark - AgeMismatchLearnMoreCoordinatorDelegate
+
+- (void)ageMismatchLearnMoreCoordinatorWantsToBeStopped:
+    (AgeMismatchLearnMoreCoordinator*)coordinator {
+  [coordinator stop];
+  [self.childCoordinators removeObject:coordinator];
 }
 
 #pragma mark - Private

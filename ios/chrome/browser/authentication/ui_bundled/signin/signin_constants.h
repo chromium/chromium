@@ -179,4 +179,7 @@ inline constexpr base::TimeDelta kMinorModeRestrictionsFetchDeadline =
 // URL to the learn more screen about managed profiles.
 extern NSString* const kManagedProfileLearnMoreURL;
 
+// URL to the learn more screen about age mismatch signout.
+extern NSString* const kAgeMismatchSignoutLearnMoreURL;
+
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_SIGNIN_CONSTANTS_H_

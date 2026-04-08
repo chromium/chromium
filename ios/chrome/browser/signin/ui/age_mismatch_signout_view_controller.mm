@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/signin/ui/age_mismatch_signout_view_controller.h"
 
+#import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/views/identity_view.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
@@ -20,9 +22,6 @@ constexpr CGFloat kIdentityViewCornerRadius = 8.0;
 
 // Default margin between subtitle and specific content.
 constexpr CGFloat kDefaultSubtitleBottomMargin = 22.0;
-
-NSString* const kLearnMoreUrl = @"https://support.google.com/families/answer/"
-                                @"7087030#zippy=%2Ciphone-and-ipad";
 
 }  // namespace
 
@@ -183,7 +182,8 @@ NSString* const kLearnMoreUrl = @"https://support.google.com/families/answer/"
     };
     NSDictionary* linkAttributes = @{
       NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
-      NSLinkAttributeName : [NSURL URLWithString:kLearnMoreUrl]
+      NSLinkAttributeName :
+          [NSURL URLWithString:kAgeMismatchSignoutLearnMoreURL]
     };
 
     _subtitleTextView.attributedText = AttributedStringFromStringWithLink(
