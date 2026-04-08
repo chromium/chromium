@@ -69,7 +69,7 @@ class MockAutofillPopupController : public AutofillPopupController {
   const std::vector<Suggestion>& GetSuggestions() const override {
     return suggestions_;
   }
-  MOCK_METHOD(const std::vector<SuggestionFilterMatch>&,
+  MOCK_METHOD((const std::vector<std::optional<SuggestionFilterMatch>>&),
               GetSuggestionFilterMatches,
               (),
               (const override));
@@ -151,7 +151,7 @@ class MockAutofillPopupController : public AutofillPopupController {
 
  private:
   std::vector<autofill::Suggestion> suggestions_;
-  std::vector<SuggestionFilterMatch> filter_matches_;
+  std::vector<std::optional<SuggestionFilterMatch>> filter_matches_;
   gfx::ScopedDefaultFontDescription default_font_desc_setter_{
       "Arial, Times New Roman, 15px"};
   gfx::RectF element_bounds_ = {100, 100, 250, 50};

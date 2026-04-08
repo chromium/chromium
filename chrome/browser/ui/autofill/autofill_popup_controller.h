@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_CONTROLLER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_CONTROLLER_H_
 
+#include <optional>
+#include <vector>
+
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
@@ -84,11 +87,13 @@ class AutofillPopupController : public AutofillSuggestionController {
 
   // If the filter is set, returns the same number of items as returned by
   // `AutofillSuggestionController::GetSuggestions()`, indicating how each
-  // suggestion meets the filter criteria. Otherwise, if the filter is
-  // `std::nullopt` (its default value), returns an empty vector.
+  // suggestion meets the filter criteria. A `std::nullopt` element means the
+  // corresponding suggestion matched without a text range to highlight.
+  // If the filter itself is `std::nullopt` (its default value), returns an
+  // empty vector.
   // `SetFilter()` calls invalidate previously returned data.
-  virtual const std::vector<SuggestionFilterMatch>& GetSuggestionFilterMatches()
-      const = 0;
+  virtual const std::vector<std::optional<SuggestionFilterMatch>>&
+  GetSuggestionFilterMatches() const = 0;
 
   // Sets the suggestion filter or removes it with `std::nullopt`. The filter
   // determines which suggestions are returned by GetSuggestions() and other

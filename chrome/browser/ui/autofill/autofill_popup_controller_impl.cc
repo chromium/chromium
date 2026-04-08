@@ -85,21 +85,36 @@ constexpr DenseSet<AutofillSuggestionTriggerSource>
     kTriggerSourcesExemptFromTimeReset = {
         AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess};
 
-// TODO(crbug.com/491834951) Replace `SuggestionFiltrationResult` pair with
-// struct.
-using SuggestionFiltrationResult =
-    std::pair<std::vector<Suggestion>,
-              std::vector<AutofillPopupController::SuggestionFilterMatch>>;
+struct SuggestionFiltrationResult {
+  void AddSuggestion(
+      const Suggestion& suggestion,
+      std::optional<AutofillPopupController::SuggestionFilterMatch>
+          filter_match) {
+    suggestions.push_back(suggestion);
+    filter_matches.push_back(std::move(filter_match));
+  }
+
+  // Filtered suggestions, in display order.
+  std::vector<Suggestion> suggestions;
+  // Per-suggestion filter metadata aligned with `suggestions` by index.
+  // `std::nullopt` means the suggestion matched but has no text range to
+  // highlight.
+  std::vector<std::optional<AutofillPopupController::SuggestionFilterMatch>>
+      filter_matches;
+};
+
 SuggestionFiltrationResult FilterSuggestions(
     const std::vector<Suggestion>& suggestions,
     const AutofillPopupController::SuggestionFilter& filter) {
   SuggestionFiltrationResult result;
+  result.suggestions.reserve(suggestions.size());
+  result.filter_matches.reserve(suggestions.size());
 
   auto add_suggestion_filtration_result =
       [&result](const Suggestion& suggestion,
-                gfx::Range main_text_match = gfx::Range()) {
-        result.first.push_back(suggestion);
-        result.second.emplace_back(main_text_match);
+                std::optional<AutofillPopupController::SuggestionFilterMatch>
+                    filter_match = std::nullopt) {
+        result.AddSuggestion(suggestion, std::move(filter_match));
       };
 
   std::optional<std::u16string> lower_string_filter =
@@ -120,7 +135,9 @@ SuggestionFiltrationResult FilterSuggestions(
           pos != std::u16string::npos) {
         add_suggestion_filtration_result(
             suggestion,
-            gfx::Range(pos, pos + lower_string_filter.value().size()));
+            AutofillPopupController::SuggestionFilterMatch{
+                .main_text_match =
+                    gfx::Range(pos, pos + lower_string_filter.value().size())});
       }
     } else if (std::holds_alternative<SuggestionTabIndex>(filter) &&
                std::get<SuggestionTabIndex>(filter) == suggestion.tab_index) {
@@ -549,8 +566,8 @@ void AutofillPopupControllerImpl::UpdateFilteredSuggestions() {
   if (filter_) {
     SuggestionFiltrationResult filtration_result =
         FilterSuggestions(non_filtered_suggestions_, *filter_);
-    filtered_suggestions_ = std::move(filtration_result.first);
-    suggestion_filter_matches_ = std::move(filtration_result.second);
+    filtered_suggestions_ = std::move(filtration_result.suggestions);
+    suggestion_filter_matches_ = std::move(filtration_result.filter_matches);
   } else {
     filtered_suggestions_.clear();
     suggestion_filter_matches_.clear();
@@ -909,7 +926,8 @@ void AutofillPopupControllerImpl::PerformButtonActionForSuggestion(
                                                  button_action);
 }
 
-const std::vector<AutofillPopupController::SuggestionFilterMatch>&
+const std::vector<
+    std::optional<AutofillPopupController::SuggestionFilterMatch>>&
 AutofillPopupControllerImpl::GetSuggestionFilterMatches() const {
   return suggestion_filter_matches_;
 }

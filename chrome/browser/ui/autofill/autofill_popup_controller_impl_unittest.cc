@@ -625,12 +625,14 @@ TEST_F(AutofillPopupControllerImplTest, SuggestionFiltering_MatchingMainText) {
   EXPECT_EQ(controller.GetSuggestionFilterMatches().size(), 2u);
   EXPECT_THAT(controller.GetSuggestionFilterMatches(),
               ::testing::ElementsAre(
-                  AutofillPopupController::SuggestionFilterMatch{
-                      .main_text_match = gfx::Range(0, 2),
-                  },
-                  AutofillPopupController::SuggestionFilterMatch{
-                      .main_text_match = gfx::Range(0, 2),
-                  }));
+                  std::optional<AutofillPopupController::SuggestionFilterMatch>(
+                      AutofillPopupController::SuggestionFilterMatch{
+                          .main_text_match = gfx::Range(0, 2),
+                      }),
+                  std::optional<AutofillPopupController::SuggestionFilterMatch>(
+                      AutofillPopupController::SuggestionFilterMatch{
+                          .main_text_match = gfx::Range(0, 2),
+                      })));
 
   controller.SetFilter(AutofillPopupController::StringFilter(u"abcdefg"),
                        AutofillPopupController::FilterSource::kInputChanged);
@@ -697,6 +699,17 @@ TEST_F(AutofillPopupControllerImplTest,
                           Field(&Suggestion::type, kAddressEntry),
                           Field(&Suggestion::type, kSeparator),
                           Field(&Suggestion::type, kUndoOrClear)));
+  EXPECT_THAT(
+      controller.GetSuggestionFilterMatches(),
+      ElementsAre(std::optional<AutofillPopupController::SuggestionFilterMatch>(
+                      AutofillPopupController::SuggestionFilterMatch{
+                          .main_text_match = gfx::Range(0, 2),
+                      }),
+                  std::optional<AutofillPopupController::SuggestionFilterMatch>(
+                      AutofillPopupController::SuggestionFilterMatch{
+                          .main_text_match = gfx::Range(0, 2),
+                      }),
+                  std::nullopt, std::nullopt));
 
   controller.SetFilter(AutofillPopupController::StringFilter(u"abc"),
                        AutofillPopupController::FilterSource::kInputChanged);
@@ -705,6 +718,13 @@ TEST_F(AutofillPopupControllerImplTest,
               ElementsAre(Field(&Suggestion::type, kAddressEntry),
                           Field(&Suggestion::type, kSeparator),
                           Field(&Suggestion::type, kUndoOrClear)));
+  EXPECT_THAT(
+      controller.GetSuggestionFilterMatches(),
+      ElementsAre(std::optional<AutofillPopupController::SuggestionFilterMatch>(
+                      AutofillPopupController::SuggestionFilterMatch{
+                          .main_text_match = gfx::Range(0, 3),
+                      }),
+                  std::nullopt, std::nullopt));
 
   controller.SetFilter(AutofillPopupController::StringFilter(u"abcdef"),
                        AutofillPopupController::FilterSource::kInputChanged);
@@ -712,6 +732,8 @@ TEST_F(AutofillPopupControllerImplTest,
   EXPECT_THAT(controller.GetSuggestions(),
               ElementsAre(Field(&Suggestion::type, kSeparator),
                           Field(&Suggestion::type, kUndoOrClear)));
+  EXPECT_THAT(controller.GetSuggestionFilterMatches(),
+              ElementsAre(std::nullopt, std::nullopt));
 }
 
 TEST_F(AutofillPopupControllerImplTest,
@@ -737,6 +759,8 @@ TEST_F(AutofillPopupControllerImplTest,
   EXPECT_THAT(
       controller.GetSuggestions(),
       ElementsAre(Field(&Suggestion::type, SuggestionType::kCreditCardEntry)));
+  EXPECT_THAT(controller.GetSuggestionFilterMatches(),
+              ElementsAre(std::nullopt));
 
   controller.SetFilter(kPayLaterSuggestionTabIndex,
                        AutofillPopupController::FilterSource::kTabSelected);
@@ -745,6 +769,8 @@ TEST_F(AutofillPopupControllerImplTest,
       controller.GetSuggestions(),
       ElementsAre(Field(&Suggestion::type, SuggestionType::kBnplEntry),
                   Field(&Suggestion::type, SuggestionType::kBnplFootnote)));
+  EXPECT_THAT(controller.GetSuggestionFilterMatches(),
+              ElementsAre(std::nullopt, std::nullopt));
 }
 
 TEST_F(AutofillPopupControllerImplTest,
