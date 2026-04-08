@@ -16,7 +16,7 @@
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #endif
 
 FamilyLinkUserMetricsProvider::~FamilyLinkUserMetricsProvider() = default;
@@ -28,9 +28,11 @@ bool FamilyLinkUserMetricsProvider::ProvideHistograms() {
   for (Profile* const profile :
        g_browser_process->profile_manager()->GetLoadedProfiles()) {
 #if !BUILDFLAG(IS_ANDROID)
+    auto* profile_browser_collection =
+      ProfileBrowserCollection::GetForProfile(profile);
     if (!FamilyLinkUserMetricsProvider::
             skip_active_browser_count_for_unittesting_ &&
-        chrome::GetBrowserCount(profile) == 0) {
+        (!profile_browser_collection || profile_browser_collection->IsEmpty())) {
       // The profile is loaded, but there's no opened browser for this
       // profile.
       continue;

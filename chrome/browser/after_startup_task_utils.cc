@@ -13,7 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/performance_manager.h"
@@ -106,7 +106,7 @@ void SetBrowserStartupIsComplete() {
 
   size_t browser_count = 0;
 #if !BUILDFLAG(IS_ANDROID)
-  browser_count = chrome::GetTotalBrowserCount();
+  browser_count = GlobalBrowserCollection::GetInstance()->GetSize();
 #endif  // !BUILDFLAG(IS_ANDROID)
   TRACE_EVENT_INSTANT1("startup", "Startup.StartupComplete",
                        TRACE_EVENT_SCOPE_GLOBAL, "BrowserCount", browser_count);

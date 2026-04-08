@@ -14,9 +14,9 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/incognito_allowed_url.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -71,10 +71,16 @@ bool HasUnconstentedProfile(Profile* profile) {
 }
 
 int CountBrowsersFor(Profile* profile) {
-  int browser_count = chrome::GetBrowserCount(profile);
+  if (!profile || !ProfileBrowserCollection::GetForProfile(profile)) {
+    return 0;
+  }
+  int browser_count =
+      ProfileBrowserCollection::GetForProfile(profile)->GetSize();
   if (!profile->IsOffTheRecord() && profile->HasPrimaryOTRProfile()) {
-    browser_count += chrome::GetBrowserCount(
-        profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+    browser_count +=
+        ProfileBrowserCollection::GetForProfile(
+            profile->GetPrimaryOTRProfile(/*create_if_needed=*/true))
+            ->GetSize();
   }
   return browser_count;
 }
