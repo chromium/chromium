@@ -27,6 +27,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
@@ -37,6 +38,8 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/features.h"
+#include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
@@ -738,6 +741,85 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
       ui::mojom::MenuSourceType::kTouch);
 
   EXPECT_TRUE(menu3->IsCommandIdVisible(IDC_CONTENT_CONTEXT_COPYLINKTEXT));
+}
+
+class GlicContextMenuMetricsBrowserTest : public ContextMenuBrowserTestBase {
+ protected:
+  GlicContextMenuMetricsBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kGlic, features::kGlicContextMenu,
+         features::kGlicTrustFirstOnboarding},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicContextMenuMetricsBrowserTest,
+                       GlicContextMenuMetrics) {
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+
+  base::HistogramTester histogram_tester;
+
+  // 1. Test Page level menu (Ignored)
+  {
+    std::unique_ptr<TestRenderViewContextMenu> menu_page =
+        CreateContextMenuMediaTypeNone(GURL(), GURL());
+    menu_page->OnMenuWillShow(
+        const_cast<ui::SimpleMenuModel*>(&menu_page->menu_model()));
+    menu_page->MenuClosed(
+        const_cast<ui::SimpleMenuModel*>(&menu_page->menu_model()));
+  }
+  histogram_tester.ExpectUniqueSample("Glic.WebContentsContextMenu.Page", 0, 1);
+
+  // 2. Test Text selection without link (Ignored)
+  {
+    std::unique_ptr<TestRenderViewContextMenu> menu_text =
+        CreateContextMenuForTextInWebContents(u"some text");
+    menu_text->OnMenuWillShow(
+        const_cast<ui::SimpleMenuModel*>(&menu_text->menu_model()));
+    menu_text->MenuClosed(
+        const_cast<ui::SimpleMenuModel*>(&menu_text->menu_model()));
+  }
+  histogram_tester.ExpectUniqueSample(
+      "Glic.WebContentsContextMenu.TextSelection", 0, 1);
+
+  // 3. Test Text selection with link (Ignored)
+  {
+    content::ContextMenuParams params;
+    params.media_type = blink::mojom::ContextMenuDataMediaType::kNone;
+    params.selection_text = u"some text";
+    params.link_url = GURL("http://example.com/");
+    params.unfiltered_link_url = GURL("http://example.com/");
+    params.page_url = GURL("http://www.google.com/");
+
+    std::unique_ptr<TestRenderViewContextMenu> menu_link =
+        CreateContextMenuFromParams(params);
+    menu_link->OnMenuWillShow(
+        const_cast<ui::SimpleMenuModel*>(&menu_link->menu_model()));
+    menu_link->MenuClosed(
+        const_cast<ui::SimpleMenuModel*>(&menu_link->menu_model()));
+  }
+  histogram_tester.ExpectUniqueSample(
+      "Glic.WebContentsContextMenu.TextSelectionWithLink", 0, 1);
+
+  // 4. Test Executed metric (Should NOT log ShownAndIgnored)
+  {
+    std::unique_ptr<TestRenderViewContextMenu> menu_page2 =
+        CreateContextMenuMediaTypeNone(GURL(), GURL());
+    menu_page2->OnMenuWillShow(
+        const_cast<ui::SimpleMenuModel*>(&menu_page2->menu_model()));
+    menu_page2->ExecuteCommand(IDC_CONTENT_CONTEXT_GLIC, 0);
+    menu_page2->SetGlicItemExecutedForTesting(true);
+    menu_page2->MenuClosed(
+        const_cast<ui::SimpleMenuModel*>(&menu_page2->menu_model()));
+  }
+  // Expect kExecuted (1) in the Page histogram.
+  histogram_tester.ExpectBucketCount("Glic.WebContentsContextMenu.Page", 1, 1);
+  // Expect kShownAndIgnored (0) to still be 1 (from case 1, not incremented by
+  // case 4).
+  histogram_tester.ExpectBucketCount("Glic.WebContentsContextMenu.Page", 0, 1);
 }
 
 // TODO(crbug.com/455524503): De-flake and re-enable on ChromeOS.

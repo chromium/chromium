@@ -2630,6 +2630,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.WebContentsContextMenu.{GlicContextType}"
+    enum="GlicWebContentsContextMenuResult" expires_after="2026-09-01">
+  <owner>basiaz@google.com</owner>
+  <owner>birnie@chromium.org</owner>
+  <summary>
+    Logs when the Glic context menu item was shown and ignored, or executed when
+    the user opened the context menu on a {GlicContextType}.
+  </summary>
+  <token key="GlicContextType">
+    <variant name="Page" summary="page with no selection"/>
+    <variant name="TextSelection" summary="text selection"/>
+    <variant name="TextSelectionWithLink"
+        summary="text selection with click target that is a link"/>
+  </token>
+</histogram>
+
 <histogram name="Glic.YoutubeSummarizeVideoZSS.Events"
     enum="GlicYoutubeSummarizeVideoZSSResult" expires_after="2026-09-20">
   <owner>basiaz@google.com</owner>

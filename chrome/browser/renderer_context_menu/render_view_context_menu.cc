@@ -27,6 +27,7 @@
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
@@ -379,6 +380,25 @@ base::OnceCallback<void(RenderViewContextMenu*)>* GetMenuShownCallback() {
   static base::NoDestructor<base::OnceCallback<void(RenderViewContextMenu*)>>
       callback;
   return callback.get();
+}
+
+// LINT.IfChange(GlicWebContentsContextMenuResult)
+enum class GlicWebContentsContextMenuResult {
+  kShownAndIgnored = 0,
+  kExecuted = 1,
+  kMaxValue = kExecuted,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicWebContentsContextMenuResult)
+
+std::string GetGlicWebContentsContextToken(
+    const content::ContextMenuParams& params) {
+  if (params.selection_text.empty() && params.link_url.is_empty()) {
+    return "Page";
+  }
+  if (!params.selection_text.empty() && !params.link_url.is_empty()) {
+    return "TextSelectionWithLink";
+  }
+  return "TextSelection";
 }
 
 enum class UmaEnumIdLookupType {
@@ -942,6 +962,26 @@ RenderViewContextMenu::RenderViewContextMenu(
 }
 
 RenderViewContextMenu::~RenderViewContextMenu() = default;
+
+void RenderViewContextMenu::MenuClosed(ui::SimpleMenuModel* source) {
+  if (source == &menu_model_) {
+    if (glic_item_shown_) {
+      std::string token = GetGlicWebContentsContextToken(params_);
+      if (glic_item_executed_) {
+        base::UmaHistogramEnumeration(
+            base::StrCat({"Glic.WebContentsContextMenu.", token}),
+            GlicWebContentsContextMenuResult::kExecuted);
+      } else {
+        base::UmaHistogramEnumeration(
+            base::StrCat({"Glic.WebContentsContextMenu.", token}),
+            GlicWebContentsContextMenuResult::kShownAndIgnored);
+      }
+    }
+    glic_item_shown_ = false;
+    glic_item_executed_ = false;
+  }
+  RenderViewContextMenuBase::MenuClosed(source);
+}
 
 // Menu construction functions -------------------------------------------------
 
@@ -4410,6 +4450,7 @@ void RenderViewContextMenu::ExecGlic() {
       tabs::TabInterface* tab =
           tabs::TabInterface::MaybeGetFromContents(source_web_contents_);
       if (tab) {
+        glic_item_executed_ = true;
         glic::GlicInvokeOptions options(
             glic::mojom::InvocationSource::kWebContentsContextMenu);
         options.fre_override = glic::mojom::FreOverride::kTrustFirstInline;
@@ -4838,6 +4879,7 @@ void RenderViewContextMenu::MaybeAppendOpenGlicItem() {
         UserEducationService::MaybeShowNewBadge(GetBrowserContext(),
                                                 features::kGlicContextMenu));
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
+    glic_item_shown_ = true;
   }
 }
 

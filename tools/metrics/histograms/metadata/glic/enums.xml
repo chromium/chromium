@@ -856,6 +856,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:WebClientMode) -->
 
+<!-- LINT.IfChange(GlicWebContentsContextMenuResult) -->
+
+<enum name="GlicWebContentsContextMenuResult">
+  <int value="0" label="ShownAndIgnored"/>
+  <int value="1" label="Executed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/renderer_context_menu/render_view_context_menu.cc:GlicWebContentsContextMenuResult) -->
+
 <!-- LINT.IfChange(GlicWebUseCounter) -->
 
 <enum name="GlicWebUseCounter">
