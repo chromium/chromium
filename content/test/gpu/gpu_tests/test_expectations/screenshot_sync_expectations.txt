@@ -121,24 +121,11 @@ crbug.com/330130724 [ fuchsia fuchsia-board-qemu-x64 ] ScreenshotSync_SWRasterWi
 # Gardener 2024-04-30 - timeouts
 crbug.com/324934210 [ mac angle-metal intel-0x3e9b passthrough asan ] ScreenshotSync_SWRasterWithCanvas [ Failure ]
 
-# Win11 / NVIDIA RTX 4070 Super
-crbug.com/450325666 [ win11 nvidia-0x2783 ] ScreenshotSync_GPURasterWithDivs [ RetryOnFailure ]
 
-# Win11 / Qualcomm Snapdragon X Elite
-crbug.com/458607668 [ win qualcomm-0x36334330 ] ScreenshotSync_SWRasterWithDivs [ Failure ]
-crbug.com/458607668 [ win qualcomm-0x36334330 ] ScreenshotSync_SWRasterWithCanvas [ Failure ]
-crbug.com/458607668 [ win qualcomm-0x36334330 ] ScreenshotSync_GPURasterWithDivs [ Failure ]
-crbug.com/458607668 [ win qualcomm-0x36334330 ] ScreenshotSync_GPURasterWithCanvas [ Failure ]
 
 # Win 11 AMD RX 5500XT
-crbug.com/458607668 [ win amd-0x7340 ] ScreenshotSync_SWRasterWithDivs [ Failure ]
 crbug.com/458607668 [ win amd-0x7340 ] ScreenshotSync_SWRasterWithCanvas [ Failure ]
-crbug.com/458607668 [ win amd-0x7340 ] ScreenshotSync_GPURasterWithCanvas [ Failure ]
-crbug.com/458607668 [ win amd-0x7340 ] ScreenshotSync_GPURasterWithDivs [ Failure ]
 
-# Win 11 / GTX 1660 timeouts
-crbug.com/465497423 [ win11 nvidia-0x2184 ] ScreenshotSync_GPURasterWithDivs [ Failure ]
-crbug.com/465497423 [ win11 nvidia-0x2184 ] ScreenshotSync_SWRasterWithDivs [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
