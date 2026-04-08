@@ -20,14 +20,16 @@ namespace vr {
 class MyXRMock : public MockXRDeviceHookBase {
  public:
   void ProcessSubmittedFrameUnlocked(
-      const std::vector<device::ViewData>& views) final;
+      const std::vector<device::ViewData>& views,
+      const std::vector<device::LayerData>& layers) final;
 
   base::Lock color_lock;
   device::Color last_submitted_color_ GUARDED_BY(color_lock);
 };
 
 void MyXRMock::ProcessSubmittedFrameUnlocked(
-    const std::vector<device::ViewData>& views) {
+    const std::vector<device::ViewData>& views,
+    const std::vector<device::LayerData>& layers) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
   base::AutoLock lock(color_lock);
   // Since we clear the entire context to a single color (see onXRFrame() in

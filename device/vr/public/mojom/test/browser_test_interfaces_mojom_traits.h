@@ -9,6 +9,7 @@
 #include "device/vr/public/mojom/test/color.h"
 #include "device/vr/public/mojom/test/controller_frame_data.h"
 #include "device/vr/public/mojom/test/device_config.h"
+#include "device/vr/public/mojom/test/layer_data.h"
 #include "device/vr/public/mojom/test/view_data.h"
 #include "device/vr/public/mojom/test/visibility_mask.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
@@ -63,6 +64,42 @@ struct EnumTraits<device_test::mojom::Eye, device::XrEye> {
 };
 
 template <>
+struct EnumTraits<device_test::mojom::LayerType, device::LayerType> {
+  static device_test::mojom::LayerType ToMojom(device::LayerType input) {
+    switch (input) {
+      case device::LayerType::kQuad:
+        return device_test::mojom::LayerType::QUAD;
+      case device::LayerType::kCylinder:
+        return device_test::mojom::LayerType::CYLINDER;
+      case device::LayerType::kEquirect:
+        return device_test::mojom::LayerType::EQUIRECT;
+      case device::LayerType::kCube:
+        return device_test::mojom::LayerType::CUBE;
+      case device::LayerType::kNone:
+        return device_test::mojom::LayerType::NONE;
+    }
+    NOTREACHED();
+    return device_test::mojom::LayerType::NONE;
+  }
+
+  static device::LayerType FromMojom(device_test::mojom::LayerType input) {
+    switch (input) {
+      case device_test::mojom::LayerType::QUAD:
+        return device::LayerType::kQuad;
+      case device_test::mojom::LayerType::CYLINDER:
+        return device::LayerType::kCylinder;
+      case device_test::mojom::LayerType::EQUIRECT:
+        return device::LayerType::kEquirect;
+      case device_test::mojom::LayerType::CUBE:
+        return device::LayerType::kCube;
+      case device_test::mojom::LayerType::NONE:
+        return device::LayerType::kNone;
+    }
+    NOTREACHED();
+  }
+};
+
+template <>
 struct EnumTraits<device_test::mojom::ControllerRole, device::ControllerRole> {
   static device_test::mojom::ControllerRole ToMojom(
       device::ControllerRole input) {
@@ -93,6 +130,28 @@ struct EnumTraits<device_test::mojom::ControllerRole, device::ControllerRole> {
         return device::ControllerRole::kControllerRoleVoice;
     }
     NOTREACHED();
+  }
+};
+
+template <>
+struct StructTraits<device_test::mojom::LayerDataDataView, device::LayerData> {
+  static device::LayerType type(const device::LayerData& layer_data) {
+    return layer_data.type;
+  }
+  static const std::vector<device::Color>& face_colors(
+      const device::LayerData& layer_data) {
+    return layer_data.face_colors;
+  }
+
+  static bool Read(device_test::mojom::LayerDataDataView data,
+                   device::LayerData* out) {
+    if (!data.ReadType(&out->type)) {
+      return false;
+    }
+    if (!data.ReadFaceColors(&out->face_colors)) {
+      return false;
+    }
+    return true;
   }
 };
 

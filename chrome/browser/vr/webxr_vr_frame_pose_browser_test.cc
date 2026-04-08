@@ -27,7 +27,8 @@ struct Frame {
 class MyXRMock : public MockXRDeviceHookBase {
  public:
   void ProcessSubmittedFrameUnlocked(
-      const std::vector<device::ViewData>& views) final;
+      const std::vector<device::ViewData>& views,
+      const std::vector<device::LayerData>& layers) final;
   void WaitGetDeviceConfig(
       device_test::mojom::XRTestHook::WaitGetDeviceConfigCallback callback)
       final {
@@ -62,7 +63,8 @@ uint32_t ParseColorFrameId(const device::Color& color) {
 }
 
 void MyXRMock::ProcessSubmittedFrameUnlocked(
-    const std::vector<device::ViewData>& views) {
+    const std::vector<device::ViewData>& views,
+    const std::vector<device::LayerData>& layers) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
   base::AutoLock lock(frame_data_lock);
   // Since we clear the entire context to a single color, every view in the

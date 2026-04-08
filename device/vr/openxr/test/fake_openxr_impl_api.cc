@@ -41,7 +41,7 @@ XrResult xrAcquireSwapchainImage(
 
   RETURN_IF(index == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "xrAcquireSwapchainImage index is nullptr");
-  *index = g_test_helper.NextSwapchainImageIndex();
+  *index = g_test_helper.NextSwapchainImageIndex(swapchain);
 
   return XR_SUCCESS;
 }
@@ -348,7 +348,7 @@ XrResult xrCreateSwapchain(XrSession session,
 
   RETURN_IF(swapchain == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrSwapchain is nullptr");
-  *swapchain = g_test_helper.CreateSwapchain();
+  *swapchain = g_test_helper.CreateSwapchain(*create_info);
 
   return XR_SUCCESS;
 }
@@ -417,6 +417,26 @@ XrResult xrEndFrame(XrSession session, const XrFrameEndInfo* frame_end_info) {
             reinterpret_cast<const XrCompositionLayerProjection*>(layer);
         RETURN_IF_XR_FAILED(g_test_helper.ValidateXrCompositionLayerProjection(
             g_test_helper.PrimaryViewConfig(), *primary_layer_ptr));
+      } else if (layer->type == XR_TYPE_COMPOSITION_LAYER_QUAD) {
+        const auto* quad_layer_ptr =
+            reinterpret_cast<const XrCompositionLayerQuad*>(layer);
+        RETURN_IF_XR_FAILED(
+            g_test_helper.ValidateXrCompositionLayerQuad(*quad_layer_ptr));
+      } else if (layer->type == XR_TYPE_COMPOSITION_LAYER_CYLINDER_KHR) {
+        const auto* cylinder_layer_ptr =
+            reinterpret_cast<const XrCompositionLayerCylinderKHR*>(layer);
+        RETURN_IF_XR_FAILED(g_test_helper.ValidateXrCompositionLayerCylinder(
+            *cylinder_layer_ptr));
+      } else if (layer->type == XR_TYPE_COMPOSITION_LAYER_EQUIRECT2_KHR) {
+        const auto* equirect_layer_ptr =
+            reinterpret_cast<const XrCompositionLayerEquirect2KHR*>(layer);
+        RETURN_IF_XR_FAILED(g_test_helper.ValidateXrCompositionLayerEquirect2(
+            *equirect_layer_ptr));
+      } else if (layer->type == XR_TYPE_COMPOSITION_LAYER_CUBE_KHR) {
+        const auto* cube_layer_ptr =
+            reinterpret_cast<const XrCompositionLayerCubeKHR*>(layer);
+        RETURN_IF_XR_FAILED(
+            g_test_helper.ValidateXrCompositionLayerCube(*cube_layer_ptr));
       }
     }
   }
@@ -482,7 +502,7 @@ XrResult xrEndFrame(XrSession session, const XrFrameEndInfo* frame_end_info) {
   }
 
   RETURN_IF_XR_FAILED(g_test_helper.EndFrame());
-  g_test_helper.OnPresentedFrame();
+  g_test_helper.OnPresentedFrame(frame_end_info);
   return XR_SUCCESS;
 }
 
@@ -726,7 +746,7 @@ XrResult xrEnumerateSwapchainImages(XrSwapchain swapchain,
   }
 #elif BUILDFLAG(IS_ANDROID)
   const std::vector<uint32_t>& texture_ids =
-      g_test_helper.GetSwapchainTextureIDs();
+      g_test_helper.GetSwapchainTextureIDs(swapchain);
   DCHECK_EQ(texture_ids.size(), image_capacity_input);
 
   // SAFETY: Test-only implementation of a C-Style API that thus has to provide

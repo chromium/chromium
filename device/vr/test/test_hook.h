@@ -28,7 +28,8 @@ namespace device {
 // appropriate types unless only references or raw pointers are returned.
 class VRTestHook {
  public:
-  virtual void OnFrameSubmitted(const std::vector<ViewData>& frame_data) = 0;
+  virtual void OnFrameSubmitted(const std::vector<ViewData>& frame_data,
+                                const std::vector<LayerData>& layers) = 0;
   virtual DeviceConfig WaitGetDeviceConfig() = 0;
   virtual std::optional<gfx::Transform> WaitGetPresentingPose() = 0;
   virtual std::optional<gfx::Transform> WaitGetMagicWindowPose() = 0;

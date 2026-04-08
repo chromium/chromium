@@ -13,10 +13,11 @@ XRTestHookWrapper::XRTestHookWrapper(
     : pending_hook_(std::move(pending_hook)) {}
 
 void XRTestHookWrapper::OnFrameSubmitted(
-    const std::vector<device::ViewData>& views) {
+    const std::vector<device::ViewData>& views,
+    const std::vector<device::LayerData>& layers) {
   if (hook_) {
     mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
-    hook_->OnFrameSubmitted(views);
+    hook_->OnFrameSubmitted(views, layers);
   }
 }
 
