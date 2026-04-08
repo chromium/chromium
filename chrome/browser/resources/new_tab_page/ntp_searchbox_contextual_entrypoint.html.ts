@@ -4,9 +4,9 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {SearchboxElement} from './searchbox.js';
+import type {NtpSearchboxElement} from './ntp_searchbox.js';
 
-export function getHtml(this: SearchboxElement) {
+export function getHtml(this: NtpSearchboxElement) {
   // clang-format off
   return html`
 <cr-composebox-file-inputs @file-change="${this.onFileChange_}">
@@ -34,4 +34,3 @@ export function getHtml(this: SearchboxElement) {
 `;
   // clang-format on
 }
-

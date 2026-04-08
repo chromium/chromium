@@ -18,7 +18,6 @@ build_webui("build") {
     "searchbox_browser_proxy.ts",
     "searchbox_compose_button.html.ts",
     "searchbox_compose_button.ts",
-    "searchbox_contextual_entrypoint.html.ts",
     "searchbox_dropdown.html.ts",
     "searchbox_dropdown.ts",
     "searchbox_icon.html.ts",
