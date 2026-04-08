@@ -119,6 +119,15 @@ TEST_F(SaveCardBottomSheetViewControllerTest, ShowsGPayPillIcon) {
       (TableViewCellContentConfiguration*)cell.contentConfiguration;
 
   EXPECT_NE(config.trailingConfiguration, nil);
+  ImageContentConfiguration* trailingConfig =
+      (ImageContentConfiguration*)config.trailingConfiguration;
+  EXPECT_NE(trailingConfig.image, nil);
+  EXPECT_NSEQ(
+      config.customAccessibilityLabel,
+      ([NSString stringWithFormat:
+                     @"%@, %@", @"Visa",
+                     l10n_util::GetNSString(
+                         IDS_AUTOFILL_GOOGLE_WALLET_LOGO_ACCESSIBLE_NAME)]));
 #else
   // If not a branded build, the trailing configuration should remain nil.
   TableViewCellContentConfiguration* config =
