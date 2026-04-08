@@ -96,7 +96,7 @@ public class ApplicationStatus {
      * A map of which observers listen to state changes from which {@link Activity}.
      *
      * <p>Access to the cached state should be synchronized by this map.
-     **/
+     */
     @GuardedBy("sActivityInfo")
     private static final Map<Activity, ActivityInfo> sActivityInfo =
             new HashMap<Activity, ActivityInfo>();

@@ -37,7 +37,7 @@ public class ViewRectProviderTest {
     private static final int WIDTH = 600;
     private static final int HEIGHT = 800;
 
-    /** Custom ShadowView which includes setter for {@link View#isShown}. **/
+    /** Custom ShadowView which includes setter for {@link View#isShown}. */
     @Implements(View.class)
     public static class MyShadowView extends ShadowView {
         boolean mIsShown;
