@@ -84,7 +84,7 @@ namespace {
 AtomicString ConsumeVariableName(CSSParserTokenStream& stream) {
   stream.ConsumeWhitespace();
   CSSParserToken ident_token = stream.ConsumeIncludingWhitespaceRaw();
-  DCHECK_EQ(ident_token.GetType(), kIdentToken);
+  CHECK_EQ(ident_token.GetType(), kIdentToken);
   return ident_token.Value().ToAtomicString();
 }
 
