@@ -5,12 +5,17 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_BACKGROUND_IMAGE_GEOMETRY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_BACKGROUND_IMAGE_GEOMETRY_H_
 
+#include <optional>
+
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/core/paint/border_shape_painter.h"
 #include "third_party/blink/renderer/core/paint/box_background_paint_context.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
+class ComputedStyle;
 class FillLayer;
 class SVGBackgroundPaintContext;
 struct PaintInfo;
@@ -24,6 +29,7 @@ class BackgroundImageGeometry {
   // PrePaintClean.
   void Calculate(const FillLayer&,
                  const BoxBackgroundPaintContext&,
+                 const PhysicalRect& border_rect,
                  const PhysicalRect& paint_rect,
                  const PaintInfo& paint_info);
   void Calculate(const FillLayer&, const SVGBackgroundPaintContext&);
@@ -60,6 +66,15 @@ class BackgroundImageGeometry {
   // SpaceSize() represents extra width and height that may be added to
   // the image if used as a pattern with background-repeat: space.
   const PhysicalSize& SpaceSize() const { return repeat_spacing_; }
+
+  const std::optional<BorderShapeReferenceRects>& BorderShapeRects() const {
+    return border_shape_rects_;
+  }
+  const std::optional<gfx::RectF>& BorderShapeOuterBounds() const {
+    return border_shape_outer_bounds_;
+  }
+  void SetBorderShapeState(const ComputedStyle& style,
+                           const BorderShapeReferenceRects& rects);
 
  private:
   void SetSpaceSize(const PhysicalSize& repeat_spacing) {
@@ -129,6 +144,8 @@ class BackgroundImageGeometry {
   PhysicalOffset phase_;
   PhysicalSize tile_size_;
   PhysicalSize repeat_spacing_;
+  std::optional<BorderShapeReferenceRects> border_shape_rects_;
+  std::optional<gfx::RectF> border_shape_outer_bounds_;
 };
 
 }  // namespace blink

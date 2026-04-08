@@ -32,6 +32,13 @@ class BorderShapePainter {
                     const PhysicalRect& outer_reference_rect,
                     const PhysicalRect& inner_reference_rect);
 
+  // Paints the border-shape area as an opaque black mask, suitable for use
+  // as a DstIn compositing mask in background-clip: border-area.
+  static void PaintBorderArea(GraphicsContext&,
+                              const ComputedStyle&,
+                              const PhysicalRect& outer_reference_rect,
+                              const PhysicalRect& inner_reference_rect);
+
   // Paints an outline that follows the border-shape path.
   // Returns true if an outline was painted.
   static bool PaintOutline(GraphicsContext&,

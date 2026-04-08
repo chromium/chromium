@@ -4,8 +4,11 @@
 
 #include "third_party/blink/renderer/core/paint/background_image_geometry.h"
 
+#include "third_party/blink/renderer/core/paint/border_shape_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/svg_background_paint_context.h"
+#include "third_party/blink/renderer/core/style/style_border_shape.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -638,9 +641,18 @@ void BackgroundImageGeometry::CalculateRepeatAndPosition(
   }
 }
 
+void BackgroundImageGeometry::SetBorderShapeState(
+    const ComputedStyle& style,
+    const BorderShapeReferenceRects& rects) {
+  border_shape_rects_ = rects;
+  border_shape_outer_bounds_ =
+      BorderShapePainter::OuterPath(style, rects.outer).BoundingRect();
+}
+
 void BackgroundImageGeometry::Calculate(
     const FillLayer& fill_layer,
     const BoxBackgroundPaintContext& paint_context,
+    const PhysicalRect& border_rect,
     const PhysicalRect& paint_rect,
     const PaintInfo& paint_info) {
   // Unsnapped positioning area is used to derive quantities
@@ -693,12 +705,38 @@ void BackgroundImageGeometry::Calculate(
     phase_ += fixed_adjustment;
   }
 
+  // Compute border-shape state and expand dest rects if needed.
+  const ComputedStyle& style = paint_context.Style();
+  if (const StyleBorderShape* border_shape = style.BorderShape()) {
+    BorderShapeReferenceRects rects =
+        paint_context.ComputeBorderShapeReferenceRects(border_rect,
+                                                       *border_shape);
+    const EFillBox effective_clip = paint_context.EffectiveClip(fill_layer);
+    if ((effective_clip == EFillBox::kBorderArea ||
+         effective_clip == EFillBox::kBorderAreaText) &&
+        RuntimeEnabledFeatures::CSSBackgroundClipBorderAreaEnabled()) {
+      SetBorderShapeState(style, rects);
+      PhysicalRect outer =
+          PhysicalRect::EnclosingRect(*border_shape_outer_bounds_);
+      unsnapped_dest_rect_.Unite(outer);
+      snapped_dest_rect_.Unite(outer);
+    } else {
+      border_shape_rects_ = rects;
+    }
+  }
+
   // The actual painting area can be bigger than the provided background
   // geometry (`paint_rect`) for `mask-clip: no-clip`, so avoid clipping.
   if (fill_layer.Clip() != EFillBox::kNoClip) {
-    // Clip the final output rect to the paint rect.
-    unsnapped_dest_rect_.Intersect(paint_rect);
-    snapped_dest_rect_.Intersect(paint_rect);
+    // Clip the final output rect to the paint rect. For border-area clips
+    // with border-shape, include the outer bounds in the clipping rect.
+    PhysicalRect clipping_rect = paint_rect;
+    if (border_shape_outer_bounds_) {
+      clipping_rect.Unite(
+          PhysicalRect::EnclosingRect(*border_shape_outer_bounds_));
+    }
+    unsnapped_dest_rect_.Intersect(clipping_rect);
+    snapped_dest_rect_.Intersect(clipping_rect);
   }
   // Re-snap the dest rect as we may have adjusted it with unsnapped values.
   snapped_dest_rect_ = PhysicalRect(ToPixelSnappedRect(snapped_dest_rect_));

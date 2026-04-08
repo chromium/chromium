@@ -139,6 +139,51 @@ Path BorderShapePainter::OuterPathWithOffset(
   return builder.resolve(&result) ? Path(result) : outer_path;
 }
 
+// Shared implementation for Paint() and PaintBorderArea().
+static void PaintBorderShape(GraphicsContext& context,
+                             const ComputedStyle& style,
+                             const StyleBorderShape& border_shape,
+                             const PhysicalRect& outer_reference_rect,
+                             const PhysicalRect& inner_reference_rect,
+                             const Color& color,
+                             float stroke_thickness) {
+  const Path outer_path = OuterPathWithoutStroke(style, outer_reference_rect);
+
+  const AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBorder));
+  context.SetShouldAntialias(true);
+
+  // When two <basic-shape> values are given, the border is rendered as the
+  // shape between the two paths.
+  if (border_shape.HasSeparateInnerShape()) {
+    SkOpBuilder builder;
+    builder.add(outer_path.GetSkPath(), SkPathOp::kUnion_SkPathOp);
+    const Path inner_path =
+        BorderShapePainter::InnerPath(style, inner_reference_rect);
+    builder.add(inner_path.GetSkPath(), SkPathOp::kDifference_SkPathOp);
+    SkPath result;
+    builder.resolve(&result);
+    Path fill_path(result);
+    context.SetFillColor(color);
+    context.FillPath(fill_path, auto_dark_mode);
+    return;
+  }
+
+  // A stroke thickness of 0 renders a hairline path, but we want to render
+  // nothing.
+  if (!stroke_thickness) {
+    return;
+  }
+
+  // When only a single <basic-shape> is given, the border is rendered as a
+  // stroke with the relevant side’s computed border width as the stroke width.
+  StrokeData stroke_data;
+  stroke_data.SetThickness(stroke_thickness);
+  context.SetStrokeColor(color);
+  context.SetStroke(stroke_data);
+  context.StrokePath(outer_path, auto_dark_mode);
+}
+
 bool BorderShapePainter::Paint(GraphicsContext& context,
                                const ComputedStyle& style,
                                const PhysicalRect& outer_reference_rect,
@@ -148,42 +193,29 @@ bool BorderShapePainter::Paint(GraphicsContext& context,
     return false;
   }
 
-  const Path outer_path = OuterPathWithoutStroke(style, outer_reference_rect);
-
   DerivedStroke derived_stroke = RelevantSideForBorderShape(style);
-  const AutoDarkMode auto_dark_mode(
-      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBorder));
-  context.SetShouldAntialias(true);
-
-  // When two <basic-shape> values are given, the border is rendered as the
-  // shape between the two paths.
-  if (border_shape->HasSeparateInnerShape()) {
-    SkOpBuilder builder;
-    builder.add(outer_path.GetSkPath(), SkPathOp::kUnion_SkPathOp);
-    const Path inner_path = InnerPath(style, inner_reference_rect);
-    builder.add(inner_path.GetSkPath(), SkPathOp::kDifference_SkPathOp);
-    SkPath result;
-    builder.resolve(&result);
-    Path fill_path(result);
-    context.SetFillColor(derived_stroke.color);
-    context.FillPath(fill_path, auto_dark_mode);
-    return true;
-  }
-
-  // A stroke thickness of 0 renders a hairline path, but we want to render
-  // nothing.
-  if (!derived_stroke.thickness) {
-    return true;
-  }
-
-  // When only a single <basic-shape> is given, the border is rendered as a
-  // stroke with the relevant side’s computed border width as the stroke width.
-  StrokeData stroke_data;
-  stroke_data.SetThickness(derived_stroke.thickness);
-  context.SetStrokeColor(derived_stroke.color);
-  context.SetStroke(stroke_data);
-  context.StrokePath(outer_path, auto_dark_mode);
+  PaintBorderShape(context, style, *border_shape, outer_reference_rect,
+                   inner_reference_rect, derived_stroke.color,
+                   derived_stroke.thickness);
   return true;
+}
+
+// static
+void BorderShapePainter::PaintBorderArea(
+    GraphicsContext& context,
+    const ComputedStyle& style,
+    const PhysicalRect& outer_reference_rect,
+    const PhysicalRect& inner_reference_rect) {
+  const StyleBorderShape* border_shape = style.BorderShape();
+  CHECK(border_shape);
+
+  // Dark mode color inversion is harmless here because the result is used as
+  // a DstIn mask where only the alpha channel matters, not the RGB values.
+  float thickness = border_shape->HasSeparateInnerShape()
+                        ? 0
+                        : RelevantSideForBorderShape(style).thickness;
+  PaintBorderShape(context, style, *border_shape, outer_reference_rect,
+                   inner_reference_rect, Color::kBlack, thickness);
 }
 
 bool BorderShapePainter::PaintOutline(GraphicsContext& context,

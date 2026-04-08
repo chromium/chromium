@@ -14,6 +14,7 @@
 
 namespace blink {
 
+struct BorderShapeReferenceRects;
 class ComputedStyle;
 class FillLayer;
 class ImageResourceObserver;
@@ -22,6 +23,7 @@ class LayoutBoxModelObject;
 class LayoutTableCell;
 class LayoutView;
 class PhysicalBoxFragment;
+class StyleBorderShape;
 struct PaintInfo;
 
 struct SnappedAndUnsnappedOutsets {
@@ -75,6 +77,9 @@ class BoxBackgroundPaintContext {
   PhysicalBoxStrut BorderOutsets() const;
   PhysicalBoxStrut PaddingOutsets() const;
   PhysicalBoxStrut VisualOverflowOutsets() const;
+  BorderShapeReferenceRects ComputeBorderShapeReferenceRects(
+      const PhysicalRect& rect,
+      const StyleBorderShape& border_shape) const;
 
   PhysicalBoxStrut InnerBorderOutsets(
       const PhysicalRect& dest_rect,

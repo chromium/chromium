@@ -13,11 +13,13 @@
 #include "third_party/blink/renderer/core/layout/pagination_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
+#include "third_party/blink/renderer/core/paint/border_shape_painter.h"
 #include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/style/border_edge.h"
+#include "third_party/blink/renderer/core/style/style_border_shape.h"
 #include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
@@ -59,6 +61,30 @@ PhysicalOffset OffsetInStitchedTableGrid(const PhysicalBoxFragment& fragment,
   WritingModeConverter converter(writing_direction, table_grid_rect.size);
   *stitched_grid_size = converter.ToPhysical(table_grid_rect.size);
   return converter.ToPhysical(fragment_local_grid_rect).offset;
+}
+
+PhysicalBoxStrut ReferenceBoxBorderBoxOutsets(
+    GeometryBox geometry_box,
+    const PhysicalBoxStrut& border_outsets,
+    const PhysicalBoxStrut& padding_outsets,
+    const PhysicalBoxStrut& margin_outsets) {
+  switch (geometry_box) {
+    case GeometryBox::kPaddingBox:
+      return -border_outsets;
+    case GeometryBox::kContentBox:
+    case GeometryBox::kFillBox:
+      return -(border_outsets + padding_outsets);
+    case GeometryBox::kMarginBox:
+      return margin_outsets;
+    case GeometryBox::kHalfBorderBox:
+      return PhysicalBoxStrut(
+          -border_outsets.top / 2, -border_outsets.right / 2,
+          -border_outsets.bottom / 2, -border_outsets.left / 2);
+    case GeometryBox::kBorderBox:
+    case GeometryBox::kStrokeBox:
+    case GeometryBox::kViewBox:
+      return PhysicalBoxStrut();
+  }
 }
 
 }  // Anonymous namespace
@@ -172,6 +198,35 @@ PhysicalBoxStrut BoxBackgroundPaintContext::PaddingOutsets() const {
     return box_fragment_->Padding();
   }
   return positioning_box_->PaddingOutsets();
+}
+
+BorderShapeReferenceRects
+BoxBackgroundPaintContext::ComputeBorderShapeReferenceRects(
+    const PhysicalRect& rect,
+    const StyleBorderShape& border_shape) const {
+  PhysicalBoxStrut border_outsets, padding_outsets, margin_outsets;
+  if (box_fragment_) {
+    border_outsets = box_fragment_->Borders();
+    padding_outsets = box_fragment_->Padding();
+    margin_outsets = box_fragment_->Margins();
+  } else {
+    const LayoutBoxModelObject& obj =
+        painting_view_ ? *positioning_box_ : *box_;
+    border_outsets = obj.BorderOutsets();
+    padding_outsets = obj.PaddingOutsets();
+    margin_outsets = obj.MarginOutsets();
+  }
+  auto make_rect = [&](GeometryBox geometry_box) {
+    PhysicalRect expanded = rect;
+    expanded.Expand(ReferenceBoxBorderBoxOutsets(
+        geometry_box, border_outsets, padding_outsets, margin_outsets));
+    return expanded;
+  };
+
+  BorderShapeReferenceRects reference_rects;
+  reference_rects.outer = make_rect(border_shape.OuterBox());
+  reference_rects.inner = make_rect(border_shape.InnerBox());
+  return reference_rects;
 }
 
 PhysicalBoxStrut BoxBackgroundPaintContext::VisualOverflowOutsets() const {
