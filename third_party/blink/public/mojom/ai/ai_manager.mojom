@@ -11,6 +11,7 @@ import "third_party/blink/public/mojom/ai/ai_proofreader.mojom";
 import "third_party/blink/public/mojom/ai/ai_rewriter.mojom";
 import "third_party/blink/public/mojom/ai/ai_summarizer.mojom";
 import "third_party/blink/public/mojom/ai/ai_writer.mojom";
+import "third_party/blink/public/mojom/ai/ai_classifier.mojom";
 
 // LINT.IfChange(ModelAvailabilityCheckResult)
 enum ModelAvailabilityCheckResult {
@@ -121,6 +122,17 @@ interface AIManagerCreateProofreaderClient {
   OnError(AIManagerCreateClientError error, QuotaErrorInfo? quota_error_info);
 };
 
+// The client interface that receives an AIClassifier from an AIManager.
+interface AIManagerCreateClassifierClient {
+  // Called with a created classifier's mojo interface as a result for the
+  // CreateClassifier() method of the AIManager.
+  OnResult(pending_remote<blink.mojom.AIClassifier> classifier);
+
+  // Called when the manager cannot create an AIClassifier.
+  // `quota_error_info` may provide additional info for kInitialInputTooLarge.
+  OnError(AIManagerCreateClientError error, QuotaErrorInfo? quota_error_info);
+};
+
 // The manager that could create a new session for the model.
 interface AIManager {
   // Returns language model availability info from the underlying service.
@@ -172,6 +184,13 @@ interface AIManager {
   // Creation will be aborted if the client is disconnected.
   CreateProofreader(pending_remote<AIManagerCreateProofreaderClient> client,
                     AIProofreaderCreateOptions options);
+  // Returns classifier model availability info from the underlying service.
+  CanCreateClassifier(AIClassifierCreateOptions options) =>
+      (ModelAvailabilityCheckResult result);
+  // Creates a new classifier, passing the result or error to the client.
+  // Creation will be aborted if the client is disconnected.
+  CreateClassifier(pending_remote<AIManagerCreateClassifierClient> client,
+                   AIClassifierCreateOptions options);
   // Registers the observer that will be notified when the on device model
   // download progress is updated. The registration of the observer won't
   // trigger the model download and the completion of the model download

@@ -23,6 +23,7 @@
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/ai/ai_classifier.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_context_bound_object_set.h"
 #include "chrome/browser/ai/ai_language_model.h"
@@ -57,6 +58,7 @@
 #include "services/on_device_model/public/mojom/download_observer.mojom.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/mojom/ai/ai_classifier.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
@@ -937,6 +939,47 @@ void AIManager::CreateRewriter(
       optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi);
   model_broker_client_->CreateSession(
       optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi,
+      ::optimization_guide::SessionConfigParams{}, std::move(callback));
+}
+
+void AIManager::CanCreateClassifier(
+    blink::mojom::AIClassifierCreateOptionsPtr options,
+    CanCreateClassifierCallback callback) {
+  // TODO(crbug.com/499365168): Enforce permissions policy and
+  // CheckAndFixLanguages.
+  if (!IsBuiltInAIAPIsEnabledByPolicy()) {
+    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableEnterprisePolicyDisabled);
+    return;
+  }
+  CanCreateSession(optimization_guide::mojom::OnDeviceFeature::kClassifier,
+                   on_device_model::Capabilities(), std::move(callback));
+}
+
+void AIManager::CreateClassifier(
+    mojo::PendingRemote<blink::mojom::AIManagerCreateClassifierClient> client,
+    blink::mojom::AIClassifierCreateOptionsPtr options) {
+  // TODO(crbug.com/499365168): Enforce permissions policy and
+  // CheckAndFixLanguages.
+  if (!model_broker_client_) {
+    mojo::Remote<blink::mojom::AIManagerCreateClassifierClient> client_remote(
+        std::move(client));
+    on_device_ai::SendClientRemoteError(
+        client_remote,
+        blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+    return;
+  }
+
+  auto callback =
+      base::BindOnce(&AIManager::OnSessionCreated<
+                         AIClassifier, blink::mojom::AIClassifier,
+                         blink::mojom::AIManagerCreateClassifierClient,
+                         blink::mojom::AIClassifierCreateOptionsPtr>,
+                     weak_factory_.GetWeakPtr(), std::move(options),
+                     /*initial_request=*/std::nullopt, std::move(client));
+  tried_init_.insert(optimization_guide::mojom::OnDeviceFeature::kClassifier);
+  model_broker_client_->CreateSession(
+      optimization_guide::mojom::OnDeviceFeature::kClassifier,
       ::optimization_guide::SessionConfigParams{}, std::move(callback));
 }
 

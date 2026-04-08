@@ -21,12 +21,16 @@
 #include "components/optimization_guide/core/model_execution/test/mock_on_device_capability.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/proto/features/classify_api.pb.h"
+#include "components/optimization_guide/proto/string_value.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/mojom/base/work_in_progress.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/mojom/ai/ai_classifier.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
@@ -35,6 +39,7 @@
 #include "third_party/blink/public/mojom/ai/ai_writer.mojom.h"
 
 using optimization_guide::MockSession;
+
 using testing::_;
 using testing::AtMost;
 using testing::NiceMock;
@@ -114,6 +119,12 @@ TEST_F(AIManagerTest, CanCreate) {
     EXPECT_EQ(future.Get(),
               blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
   }
+  {
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    ai_manager_->CanCreateClassifier(/*options=*/{}, future.GetCallback());
+    EXPECT_EQ(future.Get(),
+              blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
+  }
 }
 
 TEST_F(AIManagerTest, CanCreateNotEnabled) {
@@ -144,6 +155,12 @@ TEST_F(AIManagerTest, CanCreateNotEnabled) {
     EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
                                 kUnavailableFeatureNotEnabled);
   }
+  {
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    ai_manager_->CanCreateClassifier(/*options=*/{}, future.GetCallback());
+    EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableFeatureNotEnabled);
+  }
 }
 
 TEST_F(AIManagerTest, CanCreateEnterprisePolicyDisabled) {
@@ -153,12 +170,13 @@ TEST_F(AIManagerTest, CanCreateEnterprisePolicyDisabled) {
       callback;
   EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
                                 kUnavailableEnterprisePolicyDisabled))
-      .Times(4);
+      .Times(5);
 
   ai_manager_->CanCreateLanguageModel(/*options=*/{}, callback.Get());
   ai_manager_->CanCreateWriter(/*options=*/{}, callback.Get());
   ai_manager_->CanCreateSummarizer(/*options=*/{}, callback.Get());
   ai_manager_->CanCreateRewriter(/*options=*/{}, callback.Get());
+  ai_manager_->CanCreateClassifier(/*options=*/{}, callback.Get());
   SetBuildInAIAPIsEnterprisePolicy(true);
 }
 

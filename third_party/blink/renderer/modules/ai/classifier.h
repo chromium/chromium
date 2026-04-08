@@ -24,15 +24,14 @@ class Classifier;
 // The Classifier class provides the JavaScript API for categorizing text.
 // It inherits from AIWritingAssistanceBase to manage the Mojo connection
 // lifecycle and route requests to the browser-process AI model.
-using ClassifierBase =
-    AIWritingAssistanceBase<Classifier,
-                            mojom::blink::AIClassifier,
-                            mojom::blink::AIManagerCreateClassifierClient,
-                            ClassifierCreateCoreOptionsStub,
-                            ClassifierCreateOptions,
-                            ClassifierClassifyOptions>;
-
-class Classifier final : public ScriptWrappable, public ClassifierBase {
+class Classifier final : public ScriptWrappable,
+                         public AIWritingAssistanceBase<
+                             Classifier,
+                             mojom::blink::AIClassifier,
+                             mojom::blink::AIManagerCreateClassifierClient,
+                             ClassifierCreateCoreOptionsStub,
+                             ClassifierCreateOptions,
+                             ClassifierClassifyOptions> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

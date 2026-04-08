@@ -93,6 +93,11 @@ class AIManager : public base::SupportsUserData::Data,
       mojo::PendingRemote<blink::mojom::AIManagerCreateProofreaderClient>
           client,
       blink::mojom::AIProofreaderCreateOptionsPtr options) override;
+  void CanCreateClassifier(blink::mojom::AIClassifierCreateOptionsPtr options,
+                           CanCreateClassifierCallback callback) override;
+  void CreateClassifier(
+      mojo::PendingRemote<blink::mojom::AIManagerCreateClassifierClient> client,
+      blink::mojom::AIClassifierCreateOptionsPtr options) override;
   void AddModelDownloadProgressObserver(
       mojo::PendingRemote<on_device_model::mojom::DownloadObserver>
           observer_remote) override;

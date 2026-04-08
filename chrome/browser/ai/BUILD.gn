@@ -11,6 +11,7 @@ assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 source_set("ai") {
   sources = [
+    "ai_classifier.h",
     "ai_context_bound_object.h",
     "ai_context_bound_object_set.h",
     "ai_data_keyed_service.h",
@@ -45,6 +46,7 @@ source_set("ai") {
 
 source_set("impl") {
   sources = [
+    "ai_classifier.cc",
     "ai_context_bound_object.cc",
     "ai_context_bound_object_set.cc",
     "ai_data_keyed_service.cc",
@@ -118,6 +120,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "ai_classifier_unittest.cc",
     "ai_language_model_unittest.cc",
     "ai_manager_unittest.cc",
     "ai_proofreader_unittest.cc",

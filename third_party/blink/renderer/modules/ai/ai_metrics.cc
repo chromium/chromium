@@ -28,6 +28,8 @@ std::string_view GetAISessionTypeName(AIMetrics::AISessionType session_type) {
       return "LanguageDetector";
     case AIMetrics::AISessionType::kProofreader:
       return "Proofreader";
+    case AIMetrics::AISessionType::kClassifier:
+      return "Classifier";
   }
   NOTREACHED();
 }

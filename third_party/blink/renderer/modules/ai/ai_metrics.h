@@ -25,7 +25,8 @@ class AIMetrics {
     kTranslator = 4,
     kLanguageDetector = 5,
     kProofreader = 6,
-    kMaxValue = kProofreader,
+    kClassifier = 7,
+    kMaxValue = kClassifier,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/histograms.xml:SessionType)
 

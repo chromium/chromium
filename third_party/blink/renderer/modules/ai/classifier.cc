@@ -10,6 +10,14 @@
 
 namespace blink {
 
+using ClassifierBase =
+    AIWritingAssistanceBase<Classifier,
+                            mojom::blink::AIClassifier,
+                            mojom::blink::AIManagerCreateClassifierClient,
+                            ClassifierCreateCoreOptionsStub,
+                            ClassifierCreateOptions,
+                            ClassifierClassifyOptions>;
+
 template <>
 void AIWritingAssistanceCreateClient<
     mojom::blink::AIClassifier,
@@ -19,27 +27,28 @@ void AIWritingAssistanceCreateClient<
     RemoteCreate(
         mojo::PendingRemote<mojom::blink::AIManagerCreateClassifierClient>
             client_remote) {
-  // TODO(crbug.com/483707607): This is currently a stub. In the future,
-  // this will call the AIManager in the browser process to create the model.
-  // Classifier API.
+  HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
+      AIInterfaceProxy::GetAIManagerRemote(GetExecutionContext());
+  ai_manager_remote->CreateClassifier(
+      std::move(client_remote), mojom::blink::AIClassifierCreateOptions::New());
 }
 
-// TODO(crbug.com/485366700): Build available check functionality out.
 template <>
 void AIWritingAssistanceCreateClient<
     mojom::blink::AIClassifier,
     mojom::blink::AIManagerCreateClassifierClient,
     ClassifierCreateOptions,
     Classifier>::RemoteCanCreate(CanCreateCallback callback) {
-  std::move(callback).Run(mojom::blink::ModelAvailabilityCheckResult::
-                              kUnavailableFeatureNotEnabled);
+  HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
+      AIInterfaceProxy::GetAIManagerRemote(GetExecutionContext());
+  ai_manager_remote->CanCreateClassifier(
+      mojom::blink::AIClassifierCreateOptions::New(), std::move(callback));
 }
 
-// Return kWriter to avoid modifying ai_metrics.h (renderer-only hack).
 // static
 template <>
 AIMetrics::AISessionType ClassifierBase::GetSessionType() {
-  return AIMetrics::AISessionType::kWriter;
+  return AIMetrics::AISessionType::kClassifier;
 }
 
 // TODO(crbug.com/485366700): Create taxonomy permissions feature.
@@ -66,8 +75,8 @@ void ClassifierBase::RemoteCanCreate(
     HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote,
     ClassifierCreateCoreOptionsStub* options,
     CanCreateCallback callback) {
-  std::move(callback).Run(mojom::blink::ModelAvailabilityCheckResult::
-                              kUnavailableFeatureNotEnabled);
+  ai_manager_remote->CanCreateClassifier(
+      mojom::blink::AIClassifierCreateOptions::New(), std::move(callback));
 }
 
 // static
@@ -94,6 +103,11 @@ ScriptPromise<V8Availability> ClassifierBase::availability(
 
   HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
       AIInterfaceProxy::GetAIManagerRemote(execution_context);
+
+  if (!ai_manager_remote.is_connected()) {
+    RejectPromiseWithInternalError(resolver);
+    return promise;
+  }
 
   RecordCreateOptionMetrics({}, "availability");
 
@@ -141,6 +155,14 @@ ScriptPromise<Classifier> ClassifierBase::create(
     return promise;
   }
 
+  HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
+      AIInterfaceProxy::GetAIManagerRemote(execution_context);
+
+  if (!ai_manager_remote.is_connected()) {
+    RejectPromiseWithInternalError(resolver);
+    return promise;
+  }
+
   RecordCreateOptionMetrics({}, "create");
 
   MakeGarbageCollected<AIWritingAssistanceCreateClient<
@@ -170,7 +192,7 @@ void Classifier::remoteExecute(
     const String& context,
     mojo::PendingRemote<blink::mojom::blink::ModelStreamingResponder>
         responder) {
-  // TODO(crbug.com/483707607): To be implemented after model is ready.
+  remote_->Classify(input, context, std::move(responder));
 }
 
 ScriptPromise<IDLString> Classifier::classify(

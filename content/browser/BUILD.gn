@@ -479,6 +479,8 @@ source_set("browser") {
     "aggregation_service/public_key_parsing_utils.h",
     "aggregation_service/report_scheduler_timer.cc",
     "aggregation_service/report_scheduler_timer.h",
+    "ai/echo_ai_classifier.cc",
+    "ai/echo_ai_classifier.h",
     "ai/echo_ai_language_model.cc",
     "ai/echo_ai_language_model.h",
     "ai/echo_ai_manager_impl.cc",

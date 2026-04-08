@@ -39,6 +39,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(SessionType) -->
 
 <variants name="SessionType">
+  <variant name="Classifier" summary="AI classifier session"/>
   <variant name="LanguageDetector" summary="AI language detector session"/>
   <variant name="LanguageModel" summary="AI language model session"/>
   <variant name="Proofreader" summary="AI proofreader session"/>
