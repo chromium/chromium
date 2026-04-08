@@ -1124,9 +1124,7 @@ LocalizedError::PageState LocalizedError::GetPageState(
   } else if (error_domain == Error::kDnsProbeErrorDomain) {
     error_code_string =
         base::ASCIIToUTF16(error_page::DnsProbeStatusToString(error_code));
-  } else if (error_domain == Error::kLinkPreviewErrorDomain) {
-    // NOP. Link Preview doesn't show error code and describes an error with
-    // text only.
+
   } else {
     NOTREACHED();
   }
