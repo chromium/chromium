@@ -364,37 +364,39 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   // Fake location bar.
   [self.fakeToolbar addSubview:self.fakeLocationBar];
 
-  // Omnibox, used for animations.
-  // TODO(crbug.com/40615993): See if it is possible to share some
-  // initialization code with the real Omnibox.
-  UIColor* color = [UIColor colorNamed:kTextfieldPlaceholderColor];
-  OmniboxContainerView* omnibox = [[OmniboxContainerView alloc]
-            initWithFrame:CGRectZero
-                textColor:color
-            textInputTint:color
-                 iconTint:color
-      presentationContext:OmniboxPresentationContext::kNTPHeader];
-  [omnibox.textInput setDefaultPlaceholderText:self.placeholderText];
-  [omnibox.textInput setText:@""];
-  omnibox.translatesAutoresizingMaskIntoConstraints = NO;
-  [searchField addSubview:omnibox];
-  AddSameConstraints(omnibox, self.fakeLocationBar);
-  omnibox.textInput.view.userInteractionEnabled = NO;
-  omnibox.hidden = YES;
-  self.omnibox = omnibox;
+  if (!IsComposeboxIOSEnabled()) {
+    // Omnibox, used for animations.
+    // TODO(crbug.com/40615993): See if it is possible to share some
+    // initialization code with the real Omnibox.
+    UIColor* color = [UIColor colorNamed:kTextfieldPlaceholderColor];
+    OmniboxContainerView* omnibox = [[OmniboxContainerView alloc]
+              initWithFrame:CGRectZero
+                  textColor:color
+              textInputTint:color
+                   iconTint:color
+        presentationContext:OmniboxPresentationContext::kNTPHeader];
+    [omnibox.textInput setDefaultPlaceholderText:self.placeholderText];
+    [omnibox.textInput setText:@""];
+    omnibox.translatesAutoresizingMaskIntoConstraints = NO;
+    [searchField addSubview:omnibox];
+    AddSameConstraints(omnibox, self.fakeLocationBar);
+    omnibox.textInput.view.userInteractionEnabled = NO;
+    omnibox.hidden = YES;
+    self.omnibox = omnibox;
 
-  // Cancel button, used in animation.
-  LegacyToolbarButtonFactory* factory =
-      [[LegacyToolbarButtonFactory alloc] initWithStyle:ToolbarStyle::kNormal];
-  self.cancelButton = [factory cancelButton];
-  [searchField addSubview:self.cancelButton];
-  self.cancelButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [NSLayoutConstraint activateConstraints:@[
-    [self.cancelButton.centerYAnchor
-        constraintEqualToAnchor:self.fakeLocationBar.centerYAnchor],
-    [self.cancelButton.leadingAnchor
-        constraintEqualToAnchor:self.fakeLocationBar.trailingAnchor],
-  ]];
+    // Cancel button, used in animation.
+    LegacyToolbarButtonFactory* factory = [[LegacyToolbarButtonFactory alloc]
+        initWithStyle:ToolbarStyle::kNormal];
+    self.cancelButton = [factory cancelButton];
+    [searchField addSubview:self.cancelButton];
+    self.cancelButton.translatesAutoresizingMaskIntoConstraints = NO;
+    [NSLayoutConstraint activateConstraints:@[
+      [self.cancelButton.centerYAnchor
+          constraintEqualToAnchor:self.fakeLocationBar.centerYAnchor],
+      [self.cancelButton.leadingAnchor
+          constraintEqualToAnchor:self.fakeLocationBar.trailingAnchor],
+    ]];
+  }
 
   // Hint label.
   self.searchHintLabel = [[UILabel alloc] init];

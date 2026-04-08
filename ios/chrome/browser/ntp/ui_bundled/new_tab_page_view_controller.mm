@@ -979,6 +979,9 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 #pragma mark - Scrolling Animations
 
 - (void)shiftTilesUpToFocusOmnibox {
+  if (IsComposeboxIOSEnabled()) {
+    return;
+  }
   // Add gesture recognizer to collection view when the omnibox is focused.
   [self.view addGestureRecognizer:self.tapGestureRecognizer];
 
@@ -1229,6 +1232,9 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 
 // Shifts tiles down when defocusing the omnibox.
 - (void)shiftTilesDownForOmniboxDefocus {
+  if (IsComposeboxIOSEnabled()) {
+    return;
+  }
   if (self.shiftDownInProgress) {
     return;
   }
