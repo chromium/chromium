@@ -630,6 +630,61 @@ TEST_P(PageContextExtractorJavaScriptFeatureTest,
             "Nested Text");
 }
 
+// Verifies that SVG anchors are correctly extracted.
+TEST_P(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_RichExtraction_Svg_Anchor) {
+  const std::string html =
+      "<html><body>"
+      "<svg width=\"200\" height=\"40\" xmlns=\"http://www.w3.org/2000/svg\">"
+      "  <a href=\"relative_page.html\">"
+      "    <text>SVG Text</text>"
+      "  </a>"
+      "</svg>"
+      "</body></html>";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/false,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value);
+  ASSERT_TRUE(result_value->is_dict());
+
+  const base::DictValue& dict = result_value->GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+
+  const base::ListValue* children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(children);
+  ASSERT_EQ(children->size(), 1u);
+
+  // Check SVG
+  const base::DictValue& svg_node = (*children)[0].GetDict();
+
+  const base::ListValue* svg_children = svg_node.FindList("childrenNodes");
+  ASSERT_TRUE(svg_children);
+  ASSERT_EQ(svg_children->size(), 1u);
+
+  // Check Anchor
+  const base::DictValue& anchor_node = (*svg_children)[0].GetDict();
+  std::optional<double> attribute_type =
+      anchor_node.FindDoubleByDottedPath("contentAttributes.attributeType");
+  ASSERT_TRUE(attribute_type.has_value());
+  EXPECT_EQ(
+      static_cast<int>(attribute_type.value()),
+      static_cast<int>(optimization_guide::proto::CONTENT_ATTRIBUTE_ANCHOR));
+
+  const std::string* url =
+      anchor_node.FindStringByDottedPath("contentAttributes.anchorData.url");
+  ASSERT_TRUE(url);
+  EXPECT_EQ(*url, "relative_page.html");
+}
+
 // Verifies that SVG elements rendered invisible via CSS (display/visibility)
 // are excluded.
 TEST_P(PageContextExtractorJavaScriptFeatureTest,

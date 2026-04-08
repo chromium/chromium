@@ -552,7 +552,7 @@ function getFormControlType(element: HTMLElement): FormControlType|undefined {
  * @return An array of PageContentAnchorRel, defaulting to [RELATION_UNKNOWN] if
  *     none found.
  */
-function getAnchorRel(anchorElement: HTMLAnchorElement):
+function getAnchorRel(anchorElement: HTMLAnchorElement|SVGAElement):
     PageContentAnchorRel[] {
   const rels = anchorElement.relList;
   if (!rels) {
@@ -1880,8 +1880,10 @@ function getBasicContentForNonGenericElement(
           ...BASIC_CONTENT_ATTRIBUTES,
           attributeType: PageContentAttributeType.ANCHOR,
           anchorData: {
-            url: (domNode as HTMLAnchorElement).href,
-            rel: getAnchorRel(domNode as HTMLAnchorElement),
+            url: (domNode instanceof SVGAElement) ?
+                (domNode as SVGAElement).href.baseVal :
+                (domNode as HTMLAnchorElement).href,
+            rel: getAnchorRel(domNode as HTMLAnchorElement | SVGAElement),
           },
         },
       };
