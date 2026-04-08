@@ -49,6 +49,7 @@ android_library("java") {
 
 android_library("impl_java") {
   sources = [ "java/src/org/chromium/chrome/browser/ui/app_rating/AppRatingManagerImpl.java" ]
+  proguard_configs = [ "proguard.flags" ]
   deps = [
     ":java",
     "$google_play_services_package:google_play_services_tasks_java",
