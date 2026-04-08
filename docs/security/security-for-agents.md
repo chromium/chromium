@@ -174,12 +174,10 @@ be able to interact.
 
 A proof of concept of a cross-site bug must show that:
 
-* evil.com can figure out whether the user has visited a specific URL on
-  good.com
 * evil.com can learn some text from the body of good.com that would only be
   visible with the user's cookies
 * evil.com can cause a script of its choice to run in good.com's renderer
-* evil.com can get the value of a cookie set for good.com
+* evil.com can get the value of a cookie or HTML5 storage scoped to good.com
 
 ### Extension Bugs
 
@@ -210,7 +208,8 @@ Chromium:
 * Null pointer reads and writes with small offsets (<= 32 KiB)
 * MiraclePtr-protected use-after-frees (those with "MiraclePtr Status:
   PROTECTED")
-* Denial-of-service bugs, including resource exhaustion and browser/GPU hangs
+* Denial-of-service bugs, including resource exhaustion, browser/GPU hangs, or
+  even outright crashes
 * Stack overflows
 * Bypasses of enterprise policies
 * Downloads not being classified as dangerous
@@ -226,6 +225,13 @@ Chromium:
     * `--single-process`
     * any flag whose name contains `unsafe`
     * SwiftShader
+* Bugs that require an attacker to have created or dropped files onto the system
+  in advance
+* Bugs that require physical access of any kind
+* Architectural weaknesses or missing layers of hardening / mitigation
+
+These are not security bugs, regardless of how easy they are to trigger. Under
+no circumstances is something matching an entry in this list a security bug.
 
 ## Reporting Bugs
 
@@ -242,7 +248,7 @@ When reporting a bug:
   from reporters.
 * Do include these sections:
     * Written description of attack steps
-    * ASAN stack trace or debug crash report, if relevant
+    * Symbolized ASAN stack trace or debug crash report, if relevant
     * A short description of the security consequences of the attack, using the
       terms given above
     * Which revision, build arguments (args.gn), and command-line flags you
