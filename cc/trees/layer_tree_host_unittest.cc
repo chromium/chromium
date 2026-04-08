@@ -1087,7 +1087,7 @@ class LayerTreeHostTestNumLayersInCommitState : public LayerTreeHostTest {
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
-  void WillCommit(const CommitState&) override {
+  void DidUpdateLayers() override {
     EXPECT_EQ(2u, layer_tree_host()->GetUnsafeStateForCommit().num_layers());
   }
 
@@ -10564,17 +10564,6 @@ class LayerTreeHostTestOccludedTileReleased
 
 SINGLE_THREAD_TEST_F(LayerTreeHostTestOccludedTileReleased);
 
-class LayerTreeHostTestNoCommitDeadlock : public LayerTreeHostTest {
-  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
-  void WillCommit(const CommitState& commit_state) override {
-    // Test passes if this doesn't deadlock.
-    layer_tree_host()->root_layer()->update_rect();
-  }
-  void DidCommit() override { EndTest(); }
-};
-
-SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestNoCommitDeadlock);
-
 // In real site, problem happened like this
 // 1. commit
 // 2. tiling is delayed, so NotifyReadyToActivate is not triggered
@@ -11441,7 +11430,7 @@ class LayerTreeHostTestFarAwayQuadsDontNeedAA : public LayerTreeHostTest {
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
-  void WillCommit(const CommitState& commit_state) override {
+  void DidUpdateLayers() override {
     scroll_layer_->SetScrollOffset(gfx::PointF(100000, 0));
   }
 

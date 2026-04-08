@@ -178,7 +178,6 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
       cc::PaintHoldingReason reason,
       std::optional<cc::PaintHoldingCommitTrigger> trigger) override;
   void OnCommitRequested() override;
-  void WillBeginImplCommit() override;
   void DidBeginMainFrame() override;
   void RequestNewLayerTreeFrameSink(
       LayerTreeFrameSinkCallback callback) override;

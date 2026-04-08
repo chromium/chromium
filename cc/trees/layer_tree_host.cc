@@ -369,14 +369,6 @@ void LayerTreeHost::WillBeginMainFrame() {
   client_->WillBeginMainFrame();
 }
 
-void LayerTreeHost::WillBeginImplCommit() {
-  if (client_) {
-    base::AutoReset<bool> in_will_begin_impl_commit(
-        &inside_will_begin_impl_commit_, true);
-    client_->WillBeginImplCommit();
-  }
-}
-
 void LayerTreeHost::DidBeginMainFrame() {
   DCHECK(IsMainThread());
   inside_main_frame_ = false;
@@ -429,33 +421,6 @@ std::unique_ptr<CommitState> LayerTreeHost::WillCommit(
     bool has_updates) {
   DCHECK(IsMainThread());
   DCHECK(!commit_completion_event_);
-  std::unique_ptr<CommitState> result;
-  if (has_updates)
-    result = ActivateCommitState();
-  swap_promise_manager_.WillCommit();
-  mutator_host()->RemoveStaleTimelines();
-  mutator_host()->RemoveStaleTriggers();
-  client_->WillCommit(has_updates ? *result : *pending_commit_state());
-  pending_commit_state()->source_frame_number++;
-  commit_completion_event_ = std::move(completion);
-  return result;
-}
-
-std::unique_ptr<CommitState> LayerTreeHost::ActivateCommitState() {
-  DCHECK(IsMainThread());
-  DCHECK(pending_commit_state());
-
-  // Pull state not stored directly on LayerTreeHost
-  pending_commit_state()->event_metrics =
-      events_metrics_manager_.TakeSavedEventsMetrics();
-  pending_commit_state()->swap_promises =
-      GetSwapPromiseManager()->TakeSwapPromises();
-  pending_commit_state()->ui_resource_request_queue =
-      ui_resource_manager_->TakeUIResourcesRequests();
-  pending_commit_state()->ui_resource_sizes =
-      ui_resource_manager_->GetUIResourceSizes();
-  pending_commit_state()->benchmarks =
-      micro_benchmark_controller_.CreateImplBenchmarks();
 
   std::vector<std::pair<int, gfx::Rect>> layer_update_rects;
   for (auto* layer : *this) {
@@ -469,15 +434,85 @@ std::unique_ptr<CommitState> LayerTreeHost::ActivateCommitState() {
   pending_commit_state()->layer_update_rects = base::flat_map<int, gfx::Rect>(
       base::sorted_unique_t(), std::move(layer_update_rects));
 
-  // Snapshot PropertyTrees change tracking state prior to resetting it.
+  swap_promise_manager_.WillCommit();
+  mutator_host()->RemoveStaleTimelines();
+  mutator_host()->RemoveStaleTriggers();
+
+  // TODO(paint-dev): We can avoid the churn of this call when (!has_updates) if
+  // we know there are no paint event handlers registered.
+  std::unique_ptr<CommitState> activated_commit_state = ActivateCommitState();
+
+  {
+    base::AutoReset<bool> in_will_commit(&inside_will_commit_, true);
+    client_->WillCommit(*activated_commit_state.get());
+  }
+
+  // We need activated_commit_state to absorb any effects of
+  // UpdateAfterPaintEvent() and applying layer invalidation rects, so we swap
+  // it into pending_commit_state_ for this sequence.
+  std::swap(pending_commit_state_, activated_commit_state);
+  for (auto* layer : *this) {
+    if (layer->MayUpdateAfterPaintEvent()) {
+      has_updates |= layer->UpdateAfterPaintEvent();
+      if (!layer->update_rect().IsEmpty()) {
+        DCHECK(has_updates);
+        layer->SetNeedsPushProperties();
+        pending_commit_state()->layer_update_rects[layer->id()].Union(
+            layer->update_rect());
+        layer->ResetUpdateRect();
+      }
+    }
+  }
+  std::swap(pending_commit_state_, activated_commit_state);
+
+  if (!has_updates) {
+    // Even after paint event handlers there is no update. Unwind the effects of
+    // ActiveCommitState() and return.
+    pending_commit_state_ = std::move(activated_commit_state);
+    pending_commit_state()->source_frame_number++;
+    pending_commit_state()->property_trees.clear();
+    property_trees()->ApplyChangeState(
+        pending_commit_state()->property_trees_change_state);
+    pending_commit_state()->property_trees_change_state =
+        PropertyTreesChangeState();
+    // The completion event will be handled appropriately by the caller that
+    // provided it.
+    commit_completion_event_ = std::move(completion);
+    return nullptr;
+  }
+
+  pending_commit_state()->source_frame_number++;
+
+  // Pull state not stored directly on LayerTreeHost
+  activated_commit_state->event_metrics =
+      events_metrics_manager_.TakeSavedEventsMetrics();
+  activated_commit_state->swap_promises =
+      GetSwapPromiseManager()->TakeSwapPromises();
+  activated_commit_state->ui_resource_request_queue =
+      ui_resource_manager_->TakeUIResourcesRequests();
+  activated_commit_state->ui_resource_sizes =
+      ui_resource_manager_->GetUIResourceSizes();
+  activated_commit_state->benchmarks =
+      micro_benchmark_controller_.CreateImplBenchmarks();
+
+  commit_completion_event_ = std::move(completion);
+  return activated_commit_state;
+}
+
+std::unique_ptr<CommitState> LayerTreeHost::ActivateCommitState() {
+  DCHECK(IsMainThread());
+  DCHECK(pending_commit_state());
+
+  // Snapshot property trees now to lock in the commit state while paint event
+  // handlers run.
   property_trees()->GetChangeState(
       pending_commit_state()->property_trees_change_state);
   pending_commit_state()->property_trees = *property_trees();
   property_trees()->ResetAllChangeTracking();
 
-  auto active_commit_state = std::move(pending_commit_state_);
-  pending_commit_state_ = std::make_unique<CommitState>(*active_commit_state);
-  return active_commit_state;
+  std::unique_ptr<CommitState> result = std::move(pending_commit_state_);
+  pending_commit_state_ = std::make_unique<CommitState>(*result.get());
+  return result;
 }
 
 void LayerTreeHost::WaitForProtectedSequenceCompletion() const {
@@ -490,7 +525,7 @@ void LayerTreeHost::WaitForCommitCompletion(bool for_protected_sequence) const {
   DCHECK(IsMainThread());
   // We should not be running code that modifies commit state just prior to the
   // impl commit.
-  CHECK(!inside_will_begin_impl_commit_);
+  CHECK(!inside_will_commit_);
   if (commit_completion_event_) {
     TRACE_EVENT0("cc", "LayerTreeHost::WaitForCommitCompletion");
     commit_completion_event_->Wait();
@@ -1088,8 +1123,7 @@ bool LayerTreeHost::DoUpdateLayers() {
 
   LayerList update_layer_list;
   draw_property_utils::FindLayersThatNeedUpdates(this, &update_layer_list);
-  bool did_paint_content = PaintContent(update_layer_list);
-  return did_paint_content;
+  return PaintContent(update_layer_list);
 }
 
 void LayerTreeHost::ApplyViewportChanges(
@@ -1781,12 +1815,12 @@ Layer* LayerTreeHost::LayerById(int id) {
 
 bool LayerTreeHost::PaintContent(const LayerList& update_layer_list) {
   DCHECK(IsMainThread());
+  bool result = false;
   base::AutoReset<bool> painting(&in_paint_layer_contents_, true);
-  bool did_paint_content = false;
   for (const auto& layer : update_layer_list) {
-    did_paint_content |= layer->Update();
+    result |= layer->Update();
   }
-  return did_paint_content;
+  return result;
 }
 
 void LayerTreeHost::AddSurfaceRange(const viz::SurfaceRange& surface_range) {

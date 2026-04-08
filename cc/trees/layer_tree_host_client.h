@@ -117,10 +117,6 @@ class CC_EXPORT LayerTreeHostClient {
 
   virtual void BeginMainFrameNotExpectedSoon() = 0;
   virtual void BeginMainFrameNotExpectedUntil(base::TimeTicks time) = 0;
-  // This is called just prior to notifying the impl thread that main is ready
-  // do commit. This gives the client a chance to do any final work that needs
-  // to happen before the commit starts.
-  virtual void WillBeginImplCommit() = 0;
   // This is called immediately after notifying the impl thread that it should
   // do a commit, possibly before the commit has finished. It is meant for work
   // that must happen prior to returning control to the main thread event loop.

@@ -113,7 +113,6 @@ class TestHooks : public AnimationDelegate {
   virtual void BeginMainFrame(const viz::BeginFrameArgs& args) {}
   virtual void WillBeginMainFrame() {}
   virtual void DidUpdateLayers() {}
-  virtual void WillBeginImplCommit() {}
   virtual void DidBeginMainFrame() {}
   virtual void UpdateLayerTreeHost() {}
   virtual void DidInitializeLayerTreeFrameSink() {}

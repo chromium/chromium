@@ -22,7 +22,6 @@ class StubLayerTreeHostClient : public LayerTreeHostClient {
 
   // LayerTreeHostClient implementation.
   void WillBeginMainFrame() override {}
-  void WillBeginImplCommit() override {}
   void DidBeginMainFrame() override {}
   void WillUpdateLayers() override {}
   void DidUpdateLayers() override {}

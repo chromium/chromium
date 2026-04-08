@@ -224,13 +224,6 @@ void LayerTreeView::WillBeginMainFrame() {
   delegate_->WillBeginMainFrame();
 }
 
-void LayerTreeView::WillBeginImplCommit() {
-  if (!delegate_) {
-    return;
-  }
-  delegate_->WillBeginImplCommit();
-}
-
 void LayerTreeView::DidBeginMainFrame() {
   if (!delegate_)
     return;

@@ -97,8 +97,13 @@ void LayoutHTMLCanvas::InvalidatePaint(
     const PaintInvalidatorContext& context) const {
   NOT_DESTROYED();
   auto* element = To<HTMLCanvasElement>(GetNode());
-  if (element->IsDirty())
-    element->DoDeferredPaintInvalidation();
+  if (element->IsDirty()) {
+    if (element->DoDeferredPaintInvalidation() &&
+        !element->ShouldBeDirectComposited()) {
+      GetMutableForPainting().SetShouldDoFullPaintInvalidation(
+          PaintInvalidationReason::kLayout);
+    }
+  }
 
   LayoutReplaced::InvalidatePaint(context);
 }

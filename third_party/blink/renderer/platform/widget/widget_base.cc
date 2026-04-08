@@ -677,10 +677,6 @@ void WidgetBase::OnCommitRequested() {
   client_->OnCommitRequested();
 }
 
-void WidgetBase::WillBeginImplCommit() {
-  client_->WillBeginImplCommit();
-}
-
 void WidgetBase::DidBeginMainFrame() {
   UpdateTextInputState();
   client_->DidBeginMainFrame();

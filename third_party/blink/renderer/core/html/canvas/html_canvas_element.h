@@ -211,7 +211,10 @@ class CORE_EXPORT HTMLCanvasElement final
 
   bool IsDirty() { return !dirty_rect_.IsEmpty(); }
 
-  void DoDeferredPaintInvalidation();
+  // Pushes dirty rects onto the backing cc::TextureLayer for a composited
+  // canvas. Returns `true` if any invalidations were actually applied,
+  // indicating that layer state must be pushed during commit.
+  bool DoDeferredPaintInvalidation();
 
   void InitializeLayerWithCSSProperties(cc::Layer* layer) override;
   void PostFinalizeFrame(FlushReason) override;

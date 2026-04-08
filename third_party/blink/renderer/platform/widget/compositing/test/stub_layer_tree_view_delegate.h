@@ -33,7 +33,6 @@ class StubLayerTreeViewDelegate : public LayerTreeViewDelegate {
       cc::PaintHoldingReason reason,
       std::optional<cc::PaintHoldingCommitTrigger> trigger) override {}
   void OnCommitRequested() override {}
-  void WillBeginImplCommit() override {}
   void DidBeginMainFrame() override {}
   void DidCommitAndDrawCompositorFrame() override {}
   void WillCommitCompositorFrame() override {}

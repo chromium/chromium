@@ -998,34 +998,34 @@ bool LocalFrameView::InvalidationDisallowed() const {
   return GetFrame().LocalFrameRoot().View()->invalidation_disallowed_;
 }
 
-void LocalFrameView::WillBeginImplCommit() {
-  bool needs_post_lifecycle_steps_before_impl_commit = false;
+void LocalFrameView::WillCommit() {
+  bool needs_post_lifecycle_steps_before_commit = false;
   if (RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
     ForAllNonThrottledLocalFrameViews(
-        [&needs_post_lifecycle_steps_before_impl_commit](
+        [&needs_post_lifecycle_steps_before_commit](
             LocalFrameView& frame_view) -> bool {
-          if (!needs_post_lifecycle_steps_before_impl_commit &&
+          if (!needs_post_lifecycle_steps_before_commit &&
               frame_view.canvas_elements_needing_onpaint_.empty()) {
             // Keep traversing
             return true;
           }
-          needs_post_lifecycle_steps_before_impl_commit = true;
+          needs_post_lifecycle_steps_before_commit = true;
           // Stop traversing
           return false;
         });
   }
 
-  if (needs_post_lifecycle_steps_before_impl_commit) {
+  if (needs_post_lifecycle_steps_before_commit) {
     RunPostLifecycleSteps();
-    did_run_post_lifecycle_steps_before_impl_commit_ = true;
+    did_run_post_lifecycle_steps_before_commit_ = true;
   }
 }
 
 void LocalFrameView::DidBeginMainFrame() {
-  if (!did_run_post_lifecycle_steps_before_impl_commit_) {
+  if (!did_run_post_lifecycle_steps_before_commit_) {
     RunPostLifecycleSteps();
   }
-  did_run_post_lifecycle_steps_before_impl_commit_ = false;
+  did_run_post_lifecycle_steps_before_commit_ = false;
 }
 
 void LocalFrameView::RunPostLifecycleSteps() {

@@ -81,7 +81,12 @@ class CC_EXPORT TextureLayer : public Layer {
     bool is_lost_ = false;
   };
 
-  static scoped_refptr<TextureLayer> Create(TextureLayerClient* client);
+  enum class PrepareResourceBehavior { kDuringLayerUpdate, kAfterPaintEvent };
+
+  static scoped_refptr<TextureLayer> Create(
+      TextureLayerClient* client,
+      PrepareResourceBehavior prepare_resource_behavior =
+          PrepareResourceBehavior::kDuringLayerUpdate);
 
   TextureLayer(const TextureLayer&) = delete;
   TextureLayer& operator=(const TextureLayer&) = delete;
@@ -114,6 +119,8 @@ class CC_EXPORT TextureLayer : public Layer {
   void SetLayerTreeHost(LayerTreeHost* layer_tree_host) override;
   bool RequiresSetNeedsDisplayOnHdrHeadroomChange() const override;
   bool Update() override;
+  bool MayUpdateAfterPaintEvent() const override;
+  bool UpdateAfterPaintEvent() override;
   bool IsSnappedToPixelGridInTarget() const override;
 
   const viz::TransferableResource current_transferable_resource() const {
@@ -127,7 +134,8 @@ class CC_EXPORT TextureLayer : public Layer {
   }
 
  protected:
-  explicit TextureLayer(TextureLayerClient* client);
+  explicit TextureLayer(TextureLayerClient* client,
+                        PrepareResourceBehavior prepare_resource_behavior);
   ~TextureLayer() override;
   void PushDirtyPropertiesTo(LayerImpl* layer,
                              uint8_t dirty_flag,
@@ -150,6 +158,8 @@ class CC_EXPORT TextureLayer : public Layer {
   // [bottom left, top left, top right, bottom right]
   ProtectedSequenceReadable<bool> blend_background_color_;
   ProtectedSequenceReadable<bool> force_texture_to_opaque_;
+
+  const PrepareResourceBehavior prepare_resource_behavior_;
 
   ProtectedSequenceWritable<scoped_refptr<TransferableResourceHolder>>
       resource_holder_;

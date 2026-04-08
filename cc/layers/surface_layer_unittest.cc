@@ -48,8 +48,8 @@ class SurfaceLayerTest : public testing::Test {
 
   // Synchronizes |layer_tree_host_| and |host_impl_| and pushes surface ids.
   void SynchronizeTrees() {
-    std::unique_ptr<CommitState> commit_state =
-        layer_tree_host_->ActivateCommitState();
+    std::unique_ptr<CommitState> commit_state = layer_tree_host_->WillCommit(
+        /*completion_event*/ nullptr, /*has_updates*/ true);
     TreeSynchronizer::PushLayerProperties(
         *commit_state,
         const_cast<const FakeLayerTreeHost*>(layer_tree_host_.get())
