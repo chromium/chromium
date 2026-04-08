@@ -641,8 +641,11 @@ bool ExtensionTabUtil::GetTabById(int tab_id,
           : nullptr;
 
   for (WindowController* window : *WindowControllerList::GetInstance()) {
-    if (window->profile() != profile &&
-        window->profile() != incognito_profile) {
+    bool is_alive = window->GetBrowserWindowInterface() &&
+                    !window->GetBrowserWindowInterface()->IsDeleteScheduled();
+    bool profile_matches =
+        window->profile() == profile || window->profile() == incognito_profile;
+    if (!is_alive || !profile_matches) {
       continue;
     }
     for (int i = 0; i < window->GetTabCount(); ++i) {

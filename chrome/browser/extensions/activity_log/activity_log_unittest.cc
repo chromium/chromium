@@ -24,6 +24,7 @@
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -461,9 +462,13 @@ class MockWindowController : public WindowController {
                        bool open_in_tab) override {
     return false;
   }
+  BrowserWindowInterface* GetBrowserWindowInterface() override {
+    return &browser_window_interface_;
+  }
 
  private:
   raw_ptr<content::WebContents> contents_;
+  testing::NiceMock<MockBrowserWindowInterface> browser_window_interface_;
 };
 
 TEST_F(ActivityLogTest, ExtractUrls_ScriptingExecuteScript) {
