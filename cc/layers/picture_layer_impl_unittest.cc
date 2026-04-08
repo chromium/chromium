@@ -1073,17 +1073,9 @@ TEST_F(LegacySWPictureLayerImplTest, ScaledBackdropFilterMaskLayer) {
   EXPECT_EQ(gfx::SizeF(1.0f, 1.0f), mask_uv_size);
 }
 
-// TODO(crbug.com/450651370): Fix flakiness on Linux UBSan and CFI builder.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_GetContentsResourceIdComputesUVMaskSizeCorrectlyWhenTilingRectIsSmallerThanResourceSize \
-  DISABLED_GetContentsResourceIdComputesUVMaskSizeCorrectlyWhenTilingRectIsSmallerThanResourceSize
-#else
-#define MAYBE_GetContentsResourceIdComputesUVMaskSizeCorrectlyWhenTilingRectIsSmallerThanResourceSize \
-  GetContentsResourceIdComputesUVMaskSizeCorrectlyWhenTilingRectIsSmallerThanResourceSize
-#endif
 TEST_F(
     PictureLayerImplTest,
-    MAYBE_GetContentsResourceIdComputesUVMaskSizeCorrectlyWhenTilingRectIsSmallerThanResourceSize) {
+    GetContentsResourceIdComputesUVMaskSizeCorrectlyWhenTilingRectIsSmallerThanResourceSize) {
   gfx::Size layer_bounds(100, 200);
   scoped_refptr<FakeRasterSource> valid_raster_source =
       FakeRasterSource::CreateFilled(layer_bounds);
