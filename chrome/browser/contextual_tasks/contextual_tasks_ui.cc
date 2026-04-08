@@ -986,7 +986,8 @@ bool ContextualTasksUI::CanUpdateSuggestedTabContext(
   }
 
   if (!last_committed_url.is_valid() ||
-      !last_committed_url.SchemeIsHTTPOrHTTPS()) {
+      !(last_committed_url.SchemeIsHTTPOrHTTPS() ||
+        last_committed_url.SchemeIsFile())) {
     return false;
   }
 
