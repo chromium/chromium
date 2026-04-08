@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
@@ -56,9 +57,11 @@ Matcher<EntryMetadata> IsMetadata(EntryType type, const std::u16string& value) {
 Matcher<MemorySearchResult> IsMemorySearchResult(
     const std::u16string& value,
     const std::u16string& type_name,
-    Matcher<std::vector<EntryMetadata>> metadata_matcher) {
+    Matcher<std::vector<EntryMetadata>> metadata_matcher,
+    bool is_obfuscated = false) {
   return AllOf(Field(&MemorySearchResult::value, Eq(value)),
                Field(&MemorySearchResult::type_name, Eq(type_name)),
+               Field(&MemorySearchResult::is_obfuscated, Eq(is_obfuscated)),
                Field(&MemorySearchResult::metadata_list, metadata_matcher));
 }
 
@@ -228,9 +231,12 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_IbanData) {
   std::vector<MemorySearchResult> results =
       RetrieveAllHelper(retriever(), accessibility_annotator::EntryType::kIban);
   EXPECT_THAT(results, UnorderedElementsAre(IsMemorySearchResult(
-                           iban.value(), u"IBAN",
+                           GetObfuscatedIban(iban.value()), u"IBAN",
                            UnorderedElementsAre(IsMetadata(
-                               EntryType::kIbanNickname, u"My IBAN")))));
+                               EntryType::kIbanNickname, u"My IBAN")),
+                           /*is_obfuscated=*/true)));
+  ASSERT_FALSE(results[0].reveal_callback.is_null());
+  EXPECT_EQ(results[0].reveal_callback.Run(), iban.value());
 }
 
 // Tests that RetrieveAll correctly fetches and formats data from

@@ -69,7 +69,13 @@ namespace autofill {
 namespace {
 
 constexpr int64_t kCentsPerDollar = 100;
+// Unicode characters used in IBAN value obfuscation:
+//  - \u2022 - Bullet.
+//  - \u2006 - SIX-PER-EM SPACE (small space between bullets).
 constexpr char16_t kEllipsisDotSeparator[] = u"\u2022";
+constexpr char16_t kEllipsisOneSpace[] = u"\u2006";
+static constexpr int kPrefixLength = 2;
+static constexpr int kSuffixLength = 4;
 
 Suggestion CreateUndoOrClearFormSuggestion() {
 #if BUILDFLAG(IS_IOS)
@@ -1594,6 +1600,26 @@ bool ShouldShowScanCreditCard(const FormStructure& form,
 
   static const int kShowScanCreditCardMaxValueLength = 6;
   return trigger_field.value().size() <= kShowScanCreditCardMaxValueLength;
+}
+
+std::u16string GetObfuscatedIban(std::u16string_view prefix,
+                                 std::u16string_view suffix) {
+  if (prefix.empty() && suffix.empty()) {
+    return std::u16string();
+  }
+
+  return base::StrCat({prefix, kEllipsisOneSpace,
+                       kEllipsisDotSeparator, kEllipsisDotSeparator, suffix});
+}
+
+std::u16string GetObfuscatedIban(std::u16string_view iban_value) {
+  if (iban_value.length() < kPrefixLength + kSuffixLength) {
+    return std::u16string(iban_value);
+  }
+
+  return GetObfuscatedIban(
+      iban_value.substr(0, kPrefixLength),
+      iban_value.substr(iban_value.length() - kSuffixLength));
 }
 
 }  // namespace autofill

@@ -3326,7 +3326,8 @@ TEST_F(AutofillExternalDelegateTest, ShouldDiscardOutdatedSuggestions) {
 TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_UsesSpecialAction) {
   IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemory);
   Suggestion suggestion(u"some result", SuggestionType::kAtMemorySearchResult);
-  suggestion.payload = Suggestion::AtMemoryPayload{u"pasted text"};
+  suggestion.payload =
+      Suggestion::AtMemoryPayload{u"pasted text", base::NullCallback()};
 
   // 1. Test Preview
   EXPECT_CALL(

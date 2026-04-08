@@ -41,6 +41,9 @@ class AutofillDataProviderImpl
       accessibility_annotator::EntryType entry_type,
       AtMemoryDataType autofill_type);
 
+  // Fetches IBAN data from `personal_data_manager_`.
+  std::vector<accessibility_annotator::MemorySearchResult> FetchIbanData();
+
   raw_ptr<const PersonalDataManager> personal_data_manager_;
   raw_ptr<const EntityDataManager> entity_data_manager_;
 };

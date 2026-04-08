@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/data_model/usage_history_information.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 #include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -256,27 +257,6 @@ std::vector<MemorySearchResult> FetchAutofillAiAttributeData(
   return entries;
 }
 
-// Fetches IBAN data from PersonalDataManager.
-std::vector<MemorySearchResult> FetchIbanData(
-    const PersonalDataManager& personal_data_manager) {
-  std::vector<MemorySearchResult> entries;
-  for (const Iban* iban :
-       personal_data_manager.payments_data_manager().GetIbans()) {
-    MemorySearchResult entry(
-        EntryType::kIban, GetEntryTypeNameForI18n(EntryType::kIban),
-        iban->value(),
-        iban->usage_history().GetRankingScore(base::Time::Now()));
-    if (!iban->nickname().empty()) {
-      entry.metadata_list.emplace_back(
-          EntryType::kIbanNickname,
-          GetEntryTypeNameForI18n(EntryType::kIbanNickname),
-          std::u16string(iban->nickname()));
-    }
-    entries.push_back(std::move(entry));
-  }
-  return entries;
-}
-
 }  // namespace
 
 AutofillDataProviderImpl::AutofillDataProviderImpl(
@@ -317,7 +297,7 @@ std::vector<MemorySearchResult> AutofillDataProviderImpl::GetAutofillData(
           [this, entry_type](
               FieldType field_type) -> std::vector<MemorySearchResult> {
             if (field_type == IBAN_VALUE) {
-              return FetchIbanData(*personal_data_manager_);
+              return FetchIbanData();
             }
             if (field_type == ADDRESS_HOME_ADDRESS) {
               return FetchFullAddressData(*personal_data_manager_);
@@ -347,6 +327,29 @@ std::vector<MemorySearchResult> AutofillDataProviderImpl::GetAutofillData(
 
   for (MemorySearchResult& entry : entries) {
     entry.sources.emplace_back(MemoryEntrySourceType::kAutofill);
+  }
+  return entries;
+}
+
+// Fetches IBAN data from PersonalDataManager.
+std::vector<MemorySearchResult> AutofillDataProviderImpl::FetchIbanData() {
+  std::vector<MemorySearchResult> entries;
+  for (const Iban* iban :
+       personal_data_manager_->payments_data_manager().GetIbans()) {
+    MemorySearchResult entry(
+        EntryType::kIban, GetEntryTypeNameForI18n(EntryType::kIban),
+        GetObfuscatedIban(iban->value()),
+        iban->usage_history().GetRankingScore(base::Time::Now()));
+    entry.is_obfuscated = true;
+    entry.reveal_callback = base::BindRepeating(
+        [](std::u16string value) { return value; }, iban->value());
+    if (!iban->nickname().empty()) {
+      entry.metadata_list.emplace_back(
+          EntryType::kIbanNickname,
+          GetEntryTypeNameForI18n(EntryType::kIbanNickname),
+          std::u16string(iban->nickname()));
+    }
+    entries.push_back(std::move(entry));
   }
   return entries;
 }

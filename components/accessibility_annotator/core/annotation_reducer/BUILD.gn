@@ -60,6 +60,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "entry_type_util_unittest.cc",
+    "memory_search_result_unittest.cc",
     "query_classifier_unittest.cc",
     "sync_bridge_data_provider_unittest.cc",
     "util_unittest.cc",

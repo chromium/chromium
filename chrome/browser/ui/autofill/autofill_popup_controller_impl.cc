@@ -470,6 +470,11 @@ void AutofillPopupControllerImpl::AcceptSuggestion(
   if (!suggestion.IsAcceptable()) {
     return;
   }
+  if (Suggestion::AtMemoryPayload* payload =
+          std::get_if<Suggestion::AtMemoryPayload>(&suggestion.payload);
+      payload && payload->reveal_callback) {
+    payload->value = payload->reveal_callback.Run();
+  }
   NotifyUserEducationAboutAcceptedSuggestion(web_contents_.get(), suggestion);
   if (suggestion.acceptance_a11y_announcement && view_) {
     view_->AxAnnounce(*suggestion.acceptance_a11y_announcement);
@@ -991,7 +996,9 @@ bool AutofillPopupControllerImpl::TryStartSearch(FilterSource source) {
           label_row.emplace_back(metadata.value);
         }
         suggestion.labels.emplace_back(std::move(label_row));
-        suggestion.payload = Suggestion::AtMemoryPayload(entry.value);
+        suggestion.payload = Suggestion::AtMemoryPayload(
+            entry.value,
+            entry.is_obfuscated ? entry.reveal_callback : base::NullCallback());
         suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
         return suggestion;
       };

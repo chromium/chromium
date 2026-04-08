@@ -208,7 +208,13 @@ struct Suggestion {
 
   struct AtMemoryPayload final {
     AtMemoryPayload();
-    explicit AtMemoryPayload(std::u16string value);
+    // `value` is the value to be shown in the suggestion UI and the preview,
+    // whereas `reveal_callback` is used to reveal the actual value to be
+    // filled. They may be different if the entry is obfuscated (e.g. IBAN).
+    // TODO(crbug.com/497794390): Pass the `EntryType` to the payload, and
+    // trigger the authentication before revealing the value.
+    AtMemoryPayload(std::u16string value,
+                    base::RepeatingCallback<std::u16string()> reveal_callback);
     AtMemoryPayload(const AtMemoryPayload&);
     AtMemoryPayload(AtMemoryPayload&&);
     AtMemoryPayload& operator=(const AtMemoryPayload&);
@@ -220,6 +226,10 @@ struct Suggestion {
 
     // Text to fill in the trigger field upon accepting the suggestion.
     std::u16string value;
+
+    // Callback to reveal the actual value to be filled if the entry is
+    // obfuscated.
+    base::RepeatingCallback<std::u16string()> reveal_callback;
   };
 
   using IsLoading = base::StrongAlias<class IsLoadingTag, bool>;

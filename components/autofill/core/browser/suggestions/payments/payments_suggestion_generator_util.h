@@ -320,6 +320,15 @@ bool ShouldShowScanCreditCard(const FormStructure& form,
                               const AutofillField& trigger_field,
                               const AutofillClient& client);
 
+// Returns an obfuscated IBAN string using the provided prefix and suffix.
+// Format: "Prefix \u2006 \u2022\u2022 Suffix"
+std::u16string GetObfuscatedIban(std::u16string_view prefix,
+                                 std::u16string_view suffix);
+
+// Returns an obfuscated IBAN string by extracting the prefix (first 2 chars)
+// and suffix (last 4 chars) from the full `iban_value`.
+std::u16string GetObfuscatedIban(std::u16string_view iban_value);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_PAYMENTS_PAYMENTS_SUGGESTION_GENERATOR_UTIL_H_

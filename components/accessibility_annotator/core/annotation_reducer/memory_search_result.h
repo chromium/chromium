@@ -10,6 +10,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "components/accessibility_annotator/core/annotation_reducer/entry_type.h"
 
 namespace accessibility_annotator {
@@ -74,7 +75,6 @@ struct MemorySearchResult {
   MemorySearchResult(MemorySearchResult&&);
   MemorySearchResult& operator=(MemorySearchResult&&);
   ~MemorySearchResult();
-  bool operator==(const MemorySearchResult& other) const = default;
 
   // Type of value to be filled. One of the known types or kUnknown.
   EntryType type;
@@ -96,6 +96,12 @@ struct MemorySearchResult {
 
   // Relevance affecting ordering, the higher the better.
   double confidence_score = 0.0;
+
+  // Whether the value is obfuscated.
+  bool is_obfuscated = false;
+
+  // Callback to reveal the real, unobfuscated, value.
+  base::RepeatingCallback<std::u16string()> reveal_callback;
 };
 
 enum class MemorySearchStatus {
@@ -123,7 +129,6 @@ struct MemorySearchResults {
   MemorySearchResults(MemorySearchResults&&);
   MemorySearchResults& operator=(MemorySearchResults&&);
   ~MemorySearchResults();
-  bool operator==(const MemorySearchResults& other) const = default;
 
   // The status of the search.
   MemorySearchStatus status;
