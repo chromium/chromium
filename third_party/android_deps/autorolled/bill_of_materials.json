@@ -1207,7 +1207,7 @@
     {
         "name": "webkit",
         "group": "androidx.webkit",
-        "version": "1.16.0-SNAPSHOT"
+        "version": "1.17.0-SNAPSHOT"
     },
     {
         "name": "core",
@@ -1902,12 +1902,12 @@
     {
         "name": "checker-qual",
         "group": "org.checkerframework",
-        "version": "3.54.1"
+        "version": "3.55.1"
     },
     {
         "name": "checker-util",
         "group": "org.checkerframework",
-        "version": "3.54.1"
+        "version": "3.55.1"
     },
     {
         "name": "animal-sniffer-annotations",
