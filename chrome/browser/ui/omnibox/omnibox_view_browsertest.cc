@@ -64,6 +64,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/search_engines/enterprise/search_aggregator_policy_handler.h"
 #include "components/search_engines/enterprise/site_search_policy_handler.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -1405,7 +1406,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, EditSearchEngines) {
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_EDIT_SEARCH_ENGINES));
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
   const std::string target_url =
-      std::string(chrome::kChromeUISettingsURL) + chrome::kSearchEnginesSubPage;
+      std::string(chrome::kChromeUISettingsURL) +
+      (base::FeatureList::IsEnabled(switches::kSearchSettingsUpdate)
+           ? chrome::kSearchSubPage
+           : chrome::kSearchEnginesSubPage);
   EXPECT_EQ(ASCIIToUTF16(target_url), omnibox_view->GetText());
   EXPECT_FALSE(GetOmniboxController()->IsPopupOpen());
 }

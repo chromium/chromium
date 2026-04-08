@@ -25,7 +25,7 @@ suite('SettingsViewMixin', function() {
     // Override SettingsViewMixin
     override getFocusConfig() {
       return new Map([
-        [routes.SEARCH_ENGINES.path, '#subpageTrigger1'],
+        [routes.SECURITY.path, '#subpageTrigger1'],
         [routes.FONTS.path, '#subpageTrigger2'],
 
       ]);
@@ -83,7 +83,7 @@ suite('SettingsViewMixin', function() {
     // Simulate navigating to the first child route and back to the parent.
     // Manually fire the 'view-enter-start' event, normally fired by the
     // cr-view-manager that hosts all parent and child views.
-    simulateNavigateToRouteAndBack(routes.SEARCH_ENGINES);
+    simulateNavigateToRouteAndBack(routes.SECURITY);
     parentView.dispatchEvent(new Event('view-enter-start'));
     assertFocused('subpageTrigger1');
 
@@ -103,7 +103,7 @@ suite('SettingsViewMixin', function() {
     // Simulate navigating to the first child route. Manually fire
     // the 'view-enter-start' event, normally fired by the cr-view-manager that
     // hosts all parent and child views.
-    Router.getInstance().navigateTo(routes.SEARCH_ENGINES);
+    Router.getInstance().navigateTo(routes.SECURITY);
     assertFalse(Router.getInstance().lastRouteChangeWasPopstate());
     childView.dispatchEvent(new Event('view-enter-start'));
     assertEquals(

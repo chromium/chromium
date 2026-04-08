@@ -6,7 +6,7 @@ import 'chrome://settings/settings.js';
 import 'chrome://settings/lazy_load.js';
 
 import type {SettingsSearchPageIndexElement} from 'chrome://settings/settings.js';
-import {loadTimeData, Router, routes, SearchEnginesBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {loadTimeData, resetRouterForTesting, Router, routes, SearchEnginesBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -21,6 +21,7 @@ suite('SearchPageIndex', function() {
     loadTimeData.overrideValues({
       searchSettingsUpdate: false,
     });
+    resetRouterForTesting();
 
     const browserProxy = new TestSearchEnginesBrowserProxy();
     SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
@@ -81,6 +82,7 @@ suite('SearchPageIndexWithSearchSettingsUpdate', function() {
     loadTimeData.overrideValues({
       searchSettingsUpdate: true,
     });
+    resetRouterForTesting();
 
     index = document.createElement('settings-search-page-index');
     document.body.appendChild(index);

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {Router, routes, SearchableViewContainerMixin, SettingsViewMixin} from 'chrome://settings/settings.js';
+import {loadTimeData, Router, routes, SearchableViewContainerMixin, SettingsViewMixin} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -95,8 +95,10 @@ suite('SearchableViewContainerMixin', function() {
     testElement.inSearchMode = true;
     assertShowAll(true);
 
-    Router.getInstance().navigateTo(routes.SEARCH_ENGINES);
-    assertShowAll(false);
+    if (!loadTimeData.getBoolean('searchSettingsUpdate')) {
+      Router.getInstance().navigateTo(routes.SEARCH_ENGINES);
+      assertShowAll(false);
+    }
 
     Router.getInstance().navigateTo(routes.BASIC);
     assertShowAll(true);

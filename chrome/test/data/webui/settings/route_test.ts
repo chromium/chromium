@@ -201,7 +201,7 @@ suite('Basic', function() {
         Router.getInstance().getQueryParameters().toString());
 
     Router.getInstance().navigateTo(
-        routes.SEARCH_ENGINES, undefined,
+        routes.SEARCH, undefined,
         /* removeSearch */ true);
     assertEquals('', Router.getInstance().getQueryParameters().toString());
   });
@@ -479,8 +479,8 @@ suite('DynamicParameters', function() {
     const params = new URLSearchParams();
     params.set('bar', 'b=z');
     params.set('biz', '3');
-    Router.getInstance().navigateTo(routes.SEARCH_ENGINES, params);
-    assertEquals(routes.SEARCH_ENGINES, Router.getInstance().getCurrentRoute());
+    Router.getInstance().navigateTo(routes.BASIC, params);
+    assertEquals(routes.BASIC, Router.getInstance().getCurrentRoute());
     assertEquals('b=z', Router.getInstance().getQueryParameters().get('bar'));
     assertEquals('3', Router.getInstance().getQueryParameters().get('biz'));
     assertEquals('?bar=b%3Dz&biz=3', window.location.search);
