@@ -1396,8 +1396,10 @@ const CGFloat kTopDynamicIslandInset = 24;
     NewTabPageCoordinator* NTPCoordinator = self.ntpCoordinator;
     if (NTPCoordinator.isNTPActiveForCurrentWebState) {
       UIViewController* viewController = NTPCoordinator.viewController;
-      viewController.view.frame = [self ntpFrameForCurrentWebState];
-      [viewController.view layoutIfNeeded];
+      if (!IsFullscreenRefactoringEnabled()) {
+        viewController.view.frame = [self ntpFrameForCurrentWebState];
+        [viewController.view layoutIfNeeded];
+      }
       // TODO(crbug.com/41407753): For a newly created WebState, the session
       // will not be restored until LoadIfNecessary call. Remove when fixed.
       self.currentWebState->GetNavigationManager()->LoadIfNecessary();
