@@ -20,9 +20,9 @@ final class SigninButtonViewBinder {
         if (SigninButtonProperties.BUTTON_AVATAR.equals(propertyKey)) {
             ChromeImageButton avatarButton = view.getAvatarButton();
             avatarButton.setImageDrawable(model.get(SigninButtonProperties.BUTTON_AVATAR));
-        } else if (SigninButtonProperties.SHOW_BUTTON.equals(propertyKey)) {
+        } else if (SigninButtonProperties.IS_VISIBLE.equals(propertyKey)) {
             view.setVisibility(
-                    model.get(SigninButtonProperties.SHOW_BUTTON) ? View.VISIBLE : View.GONE);
+                    model.get(SigninButtonProperties.IS_VISIBLE) ? View.VISIBLE : View.GONE);
         } else if (SigninButtonProperties.USE_SIGNIN_TEXT_BUTTON.equals(propertyKey)) {
             boolean useSigninText = model.get(SigninButtonProperties.USE_SIGNIN_TEXT_BUTTON);
             view.getSigninTextButton().setVisibility(useSigninText ? View.VISIBLE : View.GONE);

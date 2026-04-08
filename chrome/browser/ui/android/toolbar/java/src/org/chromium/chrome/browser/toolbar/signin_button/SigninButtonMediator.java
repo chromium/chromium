@@ -95,6 +95,10 @@ final class SigninButtonMediator
 
     private @UserActionableError int mIdentityError = UserActionableError.NONE;
 
+    private boolean mHasSpaceToShow = true;
+
+    private boolean mShouldShowOnPage;
+
     private final SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
 
     /**
@@ -186,13 +190,25 @@ final class SigninButtonMediator
         }
     }
 
-    void updateButtonVisibility(Boolean showButton) {
-        mModel.set(SigninButtonProperties.SHOW_BUTTON, showButton);
+    void setHasSpaceToShow(boolean hasSpaceToShow) {
+        if (mHasSpaceToShow == hasSpaceToShow) return;
+        mHasSpaceToShow = hasSpaceToShow;
+        updateButtonVisibility(mShouldShowOnPage);
+    }
+
+    void updateButtonVisibility(boolean shouldShowOnPage) {
+        mShouldShowOnPage = shouldShowOnPage;
+
+        // INFLATE_BUTTON is true as long as the button should exist on the current page.
+        mModel.set(SigninButtonProperties.SHOULD_SHOW_ON_PAGE, mShouldShowOnPage);
+
+        // SHOW_BUTTON depends on both page state and available space.
+        mModel.set(SigninButtonProperties.IS_VISIBLE, mShouldShowOnPage && mHasSpaceToShow);
     }
 
     private void updateButtonState() {
         if (mProfile == null || mProfile.isOffTheRecord()) {
-            assert !mModel.get(SigninButtonProperties.SHOW_BUTTON);
+            assert !mModel.get(SigninButtonProperties.IS_VISIBLE);
             return;
         }
 

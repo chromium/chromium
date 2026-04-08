@@ -94,6 +94,7 @@ import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordin
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator.TransitionType;
 import org.chromium.chrome.browser.toolbar.reload_button.ReloadButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
+import org.chromium.chrome.browser.toolbar.signin_button.SigninButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColorObserver;
@@ -408,6 +409,7 @@ public class ToolbarPhone extends ToolbarLayout
             @Nullable BackButtonCoordinator backButtonCoordinator,
             @Nullable ForwardButtonCoordinator forwardButtonCoordinator,
             HomeButtonCoordinator homeButtonCoordinator,
+            @Nullable SigninButtonCoordinator signinButtonCoordinator,
             ThemeColorProvider themeColorProvider,
             IncognitoStateProvider incognitoStateProvider,
             @Nullable Supplier<Integer> incognitoWindowCountSupplier) {
@@ -425,6 +427,7 @@ public class ToolbarPhone extends ToolbarLayout
                 backButtonCoordinator,
                 forwardButtonCoordinator,
                 homeButtonCoordinator,
+                signinButtonCoordinator,
                 themeColorProvider,
                 incognitoStateProvider,
                 /* incognitoWindowCountSupplier= */ null);
