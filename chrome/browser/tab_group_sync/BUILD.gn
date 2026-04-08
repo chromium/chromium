@@ -8,6 +8,57 @@ if (is_android) {
   import("//third_party/jni_zero/jni_zero.gni")
 }
 
+source_set("tab_group_sync") {
+  public = [
+    "tab_group_sync_tab_state.h",
+    "tab_group_sync_utils.h",
+    "tab_group_trial.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/saved_tab_groups/public",
+    "//content/public/browser",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "tab_group_sync_tab_state.cc",
+    "tab_group_sync_utils.cc",
+    "tab_group_trial.cc",
+  ]
+
+  public_deps = [
+    ":tab_group_sync",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    "//chrome/common:mojo_bindings",
+    "//components/saved_tab_groups/public:features",
+    "//components/variations",
+    "//content/public/browser",
+    "//net",
+    "//third_party/blink/public/common",
+  ]
+
+  if (is_android) {
+    sources += [
+      "android/tab_group_sync_service_factory_android.cc",
+      "android/tab_group_sync_utils_android.cc",
+    ]
+    deps += [
+      ":factories",
+      ":factory_jni_headers",
+      ":jni_headers",
+      "//chrome/browser/profiles",
+      "//components/saved_tab_groups/public:conversion_utils",
+      "//url",
+    ]
+  }
+}
+
 source_set("factories") {
   sources = [ "tab_group_sync_service_factory.h" ]
   deps = [
@@ -21,6 +72,7 @@ source_set("factories_impl") {
   sources = [ "tab_group_sync_service_factory.cc" ]
   deps = [
     ":factories",
+    ":tab_group_sync",
     "//base",
     "//chrome/browser/data_sharing",
     "//chrome/browser/optimization_guide",

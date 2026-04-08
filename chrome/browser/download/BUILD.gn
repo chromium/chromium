@@ -172,6 +172,7 @@ source_set("impl") {
     "//chrome/browser/safe_browsing",
     "//chrome/browser/safe_browsing:metrics_collector",
     "//chrome/browser/signin",
+    "//chrome/browser/tab_group_sync",
     "//chrome/browser/thumbnail/generator",
     "//chrome/browser/transition_manager",
     "//chrome/browser/ui/browser_window",
