@@ -5,15 +5,20 @@
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/thread_annotations.h"
 #include "base/timer/elapsed_timer.h"
 #include "content/browser/back_forward_cache_test_util.h"
+#include "content/browser/preloading/prefetch/pre_prefetch_service_impl.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
+#include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/pre_prefetch_handle.h"
+#include "content/public/browser/pre_prefetch_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_features.h"
@@ -90,6 +95,7 @@ class NavPrefetchBrowserTest : public ContentBrowserTest,
         ->GetPrimaryPage()
         .GetMainDocument();
   }
+
   void MonitorResourceRequest(const net::test_server::HttpRequest& request) {
     // This should be called on `EmbeddedTestServer::io_thread_`.
     EXPECT_FALSE(BrowserThread::CurrentlyOn(content::BrowserThread::UI));
@@ -100,6 +106,24 @@ class NavPrefetchBrowserTest : public ContentBrowserTest,
         ua_it != request.headers.end()) {
       request_user_agent_by_path_[path] = ua_it->second;
     }
+    if (request_quit_closures_.contains(path)) {
+      std::move(request_quit_closures_[path]).Run();
+      request_quit_closures_.erase(path);
+    }
+  }
+
+  void WaitForRequest(const GURL& url) {
+    EXPECT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
+    std::string path = url.PathForRequest();
+    base::RunLoop loop;
+    {
+      base::AutoLock auto_lock(lock_);
+      if (request_count_by_path_[path] > 0) {
+        return;
+      }
+      request_quit_closures_[path] = loop.QuitClosure();
+    }
+    loop.Run();
   }
 
   int GetRequestCount(const GURL& url) {
@@ -142,6 +166,8 @@ class NavPrefetchBrowserTest : public ContentBrowserTest,
 
   std::map<std::string, int> request_count_by_path_ GUARDED_BY(lock_);
   std::map<std::string, std::string> request_user_agent_by_path_
+      GUARDED_BY(lock_);
+  std::map<std::string, base::OnceClosure> request_quit_closures_
       GUARDED_BY(lock_);
 
   base::HistogramTester histogram_tester_;
@@ -670,6 +696,79 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest,
     EXPECT_EQ(GetRequestCount(destination_url_2), 1);
     ASSERT_EQ(GetLastReceivedUserAgent(destination_url_2), default_ua);
   }
+}
+
+class PrePrefetchBrowserTest : public NavPrefetchBrowserTest {
+ public:
+  PrePrefetchBrowserTest() {
+    feature_list_.InitAndEnableFeature(features::kPrefetchOffTheMainThread);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that PrePrefetch is consumed and served successfully.
+IN_PROC_BROWSER_TEST_F(PrePrefetchBrowserTest, PrePrefetchConsumption) {
+  const std::string prefetch_path = "/title1.html";
+  GURL initiator_url = GetUrl("a.test", "/empty.html");
+  GURL prefetch_url = GetUrl("a.test", prefetch_path);
+
+  ASSERT_TRUE(NavigateToURL(shell(), initiator_url));
+
+  test::TestPrefetchWatcher test_prefetch_watcher;
+
+  // Create `PrePrefetchServiceImpl`.
+  auto pre_prefetch_service =
+      PrePrefetchService::Create(shell()->web_contents()->GetBrowserContext());
+  ASSERT_NE(pre_prefetch_service, nullptr);
+
+  // Create `PrePrefetchContainer` on non UI, creating PrePrefetch network
+  // request.
+  base::test::TestFuture<std::unique_ptr<PrePrefetchHandle>> handle_future;
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(
+          [](PrePrefetchService* service_ptr, const GURL& url) {
+            base::ScopedAllowBaseSyncPrimitivesForTesting allow_blocking;
+            return service_ptr->StartPrePrefetchRequest(
+                url, test::kPreloadingEmbedderHistgramSuffixForTesting,
+                /*javascript_enabled=*/true,
+                /*no_vary_search_hint=*/std::nullopt,
+                /*priority=*/content::PrefetchPriority::kHighest,
+                /*additional_headers=*/{},
+                /*request_status_listener=*/nullptr,
+                base::TimeDelta(base::Seconds(60)),
+                /*should_append_variations_header=*/false,
+                /*should_disable_block_until_head_timeout=*/false,
+                /*should_bypass_http_cache=*/false);
+          },
+          pre_prefetch_service.get(), prefetch_url),
+      handle_future.GetCallback());
+
+  std::unique_ptr<PrePrefetchHandle> handle = handle_future.Take();
+  EXPECT_NE(handle, nullptr);
+
+  // Wait for PrePrefetch network request.
+  WaitForRequest(prefetch_url);
+  EXPECT_EQ(GetRequestCount(prefetch_url), 1);
+
+  // `PrePrefetchContainer` consumption.
+  auto* prefetch_service = PrefetchService::GetFromFrameTreeNodeId(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId());
+  ASSERT_NE(prefetch_service, nullptr);
+
+  std::unique_ptr<PrefetchHandle> prefetch_handle =
+      prefetch_service->AddPrefetchRequestFromPrePrefetch(std::move(handle));
+  ASSERT_NE(prefetch_handle, nullptr);
+
+  // Start a navigation and wait its completion.
+  ASSERT_TRUE(NavigateToURL(shell(), prefetch_url));
+
+  // After the navigation ended, check `EmbeddedTestServer`'s observed request
+  // is still equal to 1, which means that the PrePrefetch request was served.
+  EXPECT_TRUE(test_prefetch_watcher.PrefetchUsedInLastNavigation());
+  EXPECT_EQ(GetRequestCount(prefetch_url), 1);
 }
 
 }  // namespace
