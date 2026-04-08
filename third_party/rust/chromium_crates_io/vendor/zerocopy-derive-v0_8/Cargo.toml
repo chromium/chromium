@@ -6,13 +6,13 @@
 # by `tools/crates/run_gnrt.py vendor`. Do not edit!
 #
 # This is an empty placeholder that has replaced the
-# `zerocopy-derive-0.8.47` crate.
+# `zerocopy-derive-0.8.48` crate.
 #
 # See `//tools/crates/gnrt/removed_crate.md` to learn more.
 
 [package]
 name = "zerocopy-derive"
-version = "0.8.47"
+version = "0.8.48"
 
 [package.metadata.gnrt]
 is_placeholder = true

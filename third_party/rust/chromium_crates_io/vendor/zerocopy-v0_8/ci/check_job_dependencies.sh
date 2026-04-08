@@ -10,26 +10,27 @@
 
 set -eo pipefail
 which yq > /dev/null
-jobs=$(for i in $(find .github -iname '*.yaml' -or -iname '*.yml')
-  do
-    # Select jobs that are triggered by pull request.
-    if yq -e '.on | has("pull_request")' "$i" 2>/dev/null >/dev/null
-    then
-      # This gets the list of jobs that all-jobs-succeed does not depend on.
-      comm -23 \
-        <(yq -r '.jobs | keys | .[]' "$i" | sort | uniq) \
-        <(yq -r '.jobs["all-jobs-succeed"].needs[]' "$i" | sort | uniq)
+failed=0
+
+for i in $(find .github -iname '*.yaml' -or -iname '*.yml'); do
+  # Select jobs that are triggered by pull request.
+  if yq -e '.on | has("pull_request")' "$i" 2>/dev/null >/dev/null; then
+    # Check if the file has an `all-jobs-succeed` job.
+    if yq -e '.jobs | has("all-jobs-succeed")' "$i" 2>/dev/null >/dev/null; then
+      # This gets the list of jobs that `all-jobs-succeed` does not depend on.
+      missing=$(comm -23 \
+        <(yq -r '.jobs | keys | .[]' "$i" | grep -v '^all-jobs-succeed$' | sort | uniq) \
+        <(yq -r '.jobs["all-jobs-succeed"].needs[]?' "$i" | sort | uniq))
+
+      if [ -n "$missing" ]; then
+        missing_jobs="$(echo "$missing" | tr '\n' ' ')"
+        echo "$i: all-jobs-succeed missing dependencies on some jobs: $missing_jobs" | tee -a $GITHUB_STEP_SUMMARY >&2
+        failed=1
+      fi
     fi
+  fi
+done
 
-  # The grep call here excludes all-jobs-succeed from the list of jobs that
-  # all-jobs-succeed does not depend on.  If all-jobs-succeed does
-  # not depend on itself, we do not care about it.
-  done | sort | uniq | (grep -v '^all-jobs-succeed$' || true)
-)
-
-if [ -n "$jobs" ]
-then
-  missing_jobs="$(echo "$jobs" | tr ' ' '\n')"
-  echo "all-jobs-succeed missing dependencies on some jobs: $missing_jobs" | tee -a $GITHUB_STEP_SUMMARY >&2
+if [ "$failed" -eq 1 ]; then
   exit 1
 fi

@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.56.0"
 name = "zerocopy"
-version = "0.8.47"
+version = "0.8.48"
 authors = [
     "Joshua Liebow-Feeser <joshlf@google.com>",
     "Jack Wrenn <jswrenn@amazon.com>",
@@ -51,6 +51,7 @@ no-zerocopy-diagnostic-on-unimplemented-1-78-0 = "1.78.0"
 no-zerocopy-generic-bounds-in-const-fn-1-61-0 = "1.61.0"
 no-zerocopy-target-has-atomics-1-60-0 = "1.60.0"
 no-zerocopy-aarch64-simd-1-59-0 = "1.59.0"
+no-zerocopy-aarch64-simd-be-1-87-0 = "1.87.0"
 no-zerocopy-panic-in-const-and-vec-try-reserve-1-57-0 = "1.57.0"
 
 [package.metadata.ci]
@@ -107,6 +108,34 @@ path = "benches/as_bytes_dynamic_size.rs"
 [[bench]]
 name = "as_bytes_static_size"
 path = "benches/as_bytes_static_size.rs"
+
+[[bench]]
+name = "extend_vec_zeroed"
+path = "benches/extend_vec_zeroed.rs"
+
+[[bench]]
+name = "insert_vec_zeroed"
+path = "benches/insert_vec_zeroed.rs"
+
+[[bench]]
+name = "new_box_zeroed"
+path = "benches/new_box_zeroed.rs"
+
+[[bench]]
+name = "new_box_zeroed_with_elems_dynamic_padding"
+path = "benches/new_box_zeroed_with_elems_dynamic_padding.rs"
+
+[[bench]]
+name = "new_box_zeroed_with_elems_dynamic_size"
+path = "benches/new_box_zeroed_with_elems_dynamic_size.rs"
+
+[[bench]]
+name = "new_vec_zeroed"
+path = "benches/new_vec_zeroed.rs"
+
+[[bench]]
+name = "new_zeroed"
+path = "benches/new_zeroed.rs"
 
 [[bench]]
 name = "read_from_bytes"
@@ -340,8 +369,20 @@ path = "benches/write_to_suffix_dynamic_size.rs"
 name = "write_to_suffix_static_size"
 path = "benches/write_to_suffix_static_size.rs"
 
+[[bench]]
+name = "zero_dynamic_padding"
+path = "benches/zero_dynamic_padding.rs"
+
+[[bench]]
+name = "zero_dynamic_size"
+path = "benches/zero_dynamic_size.rs"
+
+[[bench]]
+name = "zero_static_size"
+path = "benches/zero_static_size.rs"
+
 [dependencies.zerocopy-derive]
-version = "=0.8.47"
+version = "=0.8.48"
 optional = true
 
 [dev-dependencies.elain]
@@ -355,6 +396,9 @@ version = "0.8.5"
 features = ["small_rng"]
 default-features = false
 
+[dev-dependencies.regex]
+version = "1.0"
+
 [dev-dependencies.rustversion]
 version = "1.0"
 
@@ -362,7 +406,7 @@ version = "1.0"
 version = "1.1"
 
 [dev-dependencies.zerocopy-derive]
-version = "=0.8.47"
+version = "=0.8.48"
 
 [target."cfg(any())".dependencies.zerocopy-derive]
-version = "=0.8.47"
+version = "=0.8.48"

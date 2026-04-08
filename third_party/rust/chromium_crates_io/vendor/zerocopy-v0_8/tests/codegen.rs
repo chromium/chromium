@@ -10,6 +10,8 @@
 
 use std::{panic, path::PathBuf, process::Command, thread};
 
+use regex::Regex;
+
 enum Directive {
     Asm,
     Mca,
@@ -49,6 +51,7 @@ fn run_codegen_test(bench_name: &str, target_cpu: &str, bless: bool) {
                 manifest_path,
                 "--target-dir",
                 target_dir,
+                "--all-features",
                 "--bench",
                 bench_name,
                 "--target-cpu",
@@ -61,16 +64,15 @@ fn run_codegen_test(bench_name: &str, target_cpu: &str, bless: bool) {
             .expect("failed to execute process")
     };
 
+    let re = Regex::new(r"(\.Lanon\.)[0-z]+(\.\d+)").unwrap();
+
     let test_directive = |directive: Directive| {
         let output = cargo_asm(&directive);
-        let actual_result = output.stdout;
+        let actual_result = String::from_utf8_lossy(&output.stdout);
+        let actual_result = re.replace_all(&actual_result, "${1}HASH${2}");
 
         if !(output.status.success()) {
-            panic!(
-                "{}\n{}",
-                String::from_utf8_lossy(&actual_result),
-                String::from_utf8_lossy(&output.stderr)
-            );
+            panic!("{}\n{}", &actual_result, String::from_utf8_lossy(&output.stderr));
         }
 
         let expected_file_path = {
@@ -83,10 +85,10 @@ fn run_codegen_test(bench_name: &str, target_cpu: &str, bless: bool) {
         };
 
         if bless {
-            std::fs::write(expected_file_path, &actual_result).unwrap();
+            std::fs::write(expected_file_path, actual_result.as_bytes()).unwrap();
         } else {
             let expected_result = std::fs::read(expected_file_path).unwrap_or_default();
-            if actual_result != expected_result {
+            if actual_result.as_bytes() != expected_result {
                 let expected = String::from_utf8_lossy(&expected_result[..]);
                 panic!("Bless codegen tests with BLESS=1\nGot unexpected output:\n{}", expected);
             }

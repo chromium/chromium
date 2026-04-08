@@ -12,7 +12,6 @@ SUCCESS = 0
 NOT_APPROVED = 1
 TECHNICAL_ERROR = 255
 
-
 def main():
     parser = argparse.ArgumentParser(
         description="Validate PR changes against auto-approver rules."
@@ -39,7 +38,7 @@ def main():
     args = parser.parse_args()
 
     # REGEX: Strict path structure, prevents absolute paths and weird characters
-    VALID_PATH = re.compile(r"^([a-zA-Z0-9_.-]+/)+$")
+    VALID_PATH = re.compile(r"^([a-zA-Z0-9_.-]+/)*[a-zA-Z0-9_.-]+/?$")
 
     # Load and validate config
     try:
@@ -53,18 +52,18 @@ def main():
         sys.exit(TECHNICAL_ERROR)
 
     safe_rules = {}
-    for directory, users in rules.items():
+    for rule_path, users in rules.items():
         if not isinstance(users, list):
             print(
-                f"::error::❌ Users for '{directory}' must be a JSON array (list), not a string."
+                f"::error::❌ Users for '{rule_path}' must be a JSON array (list), not a string."
             )
             sys.exit(TECHNICAL_ERROR)
 
-        if not VALID_PATH.match(directory) or ".." in directory.split("/"):
-            print(f"::error::❌ Invalid config path: {directory}")
+        if not VALID_PATH.match(rule_path) or ".." in rule_path.split("/"):
+            print(f"::error::❌ Invalid config path: {rule_path}")
             sys.exit(TECHNICAL_ERROR)
 
-        safe_rules[directory] = [str(u).lower() for u in users]
+        safe_rules[rule_path] = [str(u).lower() for u in users]
 
     if not args.check_config:
         # Validate that required arguments are present if not in --check-config mode
@@ -106,25 +105,28 @@ def main():
         for raw_file_path in changed_files:
             file_path = posixpath.normpath(raw_file_path)
 
-            # Find the most specific (longest) matching directory rule.
-            longest_match_dir = None
-            for directory in safe_rules.keys():
-                if file_path.startswith(directory):
-                    if longest_match_dir is None or len(directory) > len(
-                        longest_match_dir
-                    ):
-                        longest_match_dir = directory
+            # Find the most specific (longest) matching rule.
+            longest_match_rule = None
+            for rule_path in safe_rules.keys():
+                if rule_path.endswith('/'):
+                    if file_path.startswith(rule_path):
+                        if longest_match_rule is None or len(rule_path) > len(longest_match_rule):
+                            longest_match_rule = rule_path
+                else:
+                    if file_path == rule_path:
+                        if longest_match_rule is None or len(rule_path) > len(longest_match_rule):
+                            longest_match_rule = rule_path
 
             # First, explicitly fail if the file isn't covered by ANY rule.
-            if not longest_match_dir:
+            if not longest_match_rule:
                 print(
-                    f"::error::❌ File '{file_path}' does not fall under any configured auto-approve directory."
+                    f"::error::❌ File '{file_path}' does not fall under any configured auto-approve rule."
                 )
                 sys.exit(NOT_APPROVED)
 
             # Then, verify every contributor has access to that specific rule.
             for user in contributors:
-                if user not in safe_rules[longest_match_dir]:
+                if user not in safe_rules[longest_match_rule]:
                     print(
                         f"::error::❌ Contributor @{user} not authorized for '{file_path}'."
                     )

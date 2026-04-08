@@ -93,6 +93,7 @@ fn main() {
         );
         println!("cargo:rustc-check-cfg=cfg(__ZEROCOPY_INTERNAL_USE_ONLY_DEV_MODE)");
         println!("cargo:rustc-check-cfg=cfg(coverage_nightly)");
+        println!("cargo:rustc-check-cfg=cfg(zerocopy_inline_always)");
     }
 
     for version_cfg in version_cfgs {

@@ -15,7 +15,7 @@
 [package]
 edition = "2021"
 name = "zerocopy"
-version = "0.8.47"
+version = "0.8.48"
 authors = [
     "Joshua Liebow-Feeser <joshlf@google.com>",
     "Jack Wrenn <jswrenn@amazon.com>",
@@ -79,6 +79,11 @@ no-zerocopy-target-has-atomics-1-60-0 = "1.60.0"
 # versions, these types require the "simd-nightly" feature.
 no-zerocopy-aarch64-simd-1-59-0 = "1.59.0"
 
+# Include SIMD types from `core::arch::aarch64` on big endian targets. Prior to
+# 1.87.0 (https://github.com/rust-lang/rust/pull/136831) the types were only
+# correct on little endian and backed off from stable in a breaking change.
+no-zerocopy-aarch64-simd-be-1-87-0 = "1.87.0"
+
 # Permit panicking in `const fn`s and calling `Vec::try_reserve`.
 no-zerocopy-panic-in-const-and-vec-try-reserve-1-57-0 = "1.57.0"
 
@@ -112,21 +117,22 @@ __internal_use_only_features_that_work_on_stable = [
 ]
 
 [dependencies]
-zerocopy-derive = { version = "=0.8.47", path = "zerocopy-derive", optional = true }
+zerocopy-derive = { version = "=0.8.48", path = "zerocopy-derive", optional = true }
 
 # The "associated proc macro pattern" ensures that the versions of zerocopy and
 # zerocopy-derive remain equal, even if the 'derive' feature isn't used.
 # See: https://github.com/matklad/macro-dep-test
 [target.'cfg(any())'.dependencies]
-zerocopy-derive = { version = "=0.8.47", path = "zerocopy-derive" }
+zerocopy-derive = { version = "=0.8.48", path = "zerocopy-derive" }
 
 [dev-dependencies]
 # FIXME(#381) Remove this dependency once we have our own layout gadgets.
 elain = "0.3.0"
 itertools = "0.11"
 rand = { version = "0.8.5", default-features = false, features = ["small_rng"] }
+regex = "1.0"
 rustversion = "1.0"
 static_assertions = "1.1"
 testutil = { path = "testutil" }
 # In tests, unlike in production, zerocopy-derive is not optional
-zerocopy-derive = { version = "=0.8.47", path = "zerocopy-derive" }
+zerocopy-derive = { version = "=0.8.48", path = "zerocopy-derive" }

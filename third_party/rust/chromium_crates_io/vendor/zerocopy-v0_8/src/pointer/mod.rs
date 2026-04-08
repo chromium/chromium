@@ -38,7 +38,10 @@ where
     I: invariant::Invariants<Validity = invariant::Initialized>,
     I::Aliasing: invariant::Reference,
 {
-    ptr.as_bytes().as_ref().iter().all(|&byte| byte == 0)
+    ptr.as_bytes().as_ref().iter().all(
+        #[inline(always)]
+        |&byte| byte == 0,
+    )
 }
 
 #[doc(hidden)]

@@ -657,14 +657,20 @@ mod tests {
                 let l_sum: usize = l
                     .trailing_slice()
                     .iter()
-                    .map(|ptr| unsafe { core::ptr::read_unaligned(ptr.as_ptr()) } as usize)
+                    .map(
+                        #[inline(always)]
+                        |ptr| unsafe { core::ptr::read_unaligned(ptr.as_ptr()) } as usize,
+                    )
                     .sum();
                 // SAFETY: Points to a valid value by construction.
                 #[allow(clippy::undocumented_unsafe_blocks, clippy::as_conversions)]
                 // Clippy false positive
                 let r_sum: usize = r
                     .iter()
-                    .map(|ptr| unsafe { core::ptr::read_unaligned(ptr.as_ptr()) } as usize)
+                    .map(
+                        #[inline(always)]
+                        |ptr| unsafe { core::ptr::read_unaligned(ptr.as_ptr()) } as usize,
+                    )
                     .sum();
                 assert_eq!(l_sum, i.get());
                 assert_eq!(r_sum, n - i.get());

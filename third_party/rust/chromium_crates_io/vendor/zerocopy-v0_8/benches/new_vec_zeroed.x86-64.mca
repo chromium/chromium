@@ -1,0 +1,115 @@
+Iterations:        100
+Instructions:      3800
+Total Cycles:      5277
+Total uOps:        5000
+
+Dispatch Width:    4
+uOps Per Cycle:    0.95
+IPC:               0.72
+Block RThroughput: 12.5
+
+
+Instruction Info:
+[1]: #uOps
+[2]: Latency
+[3]: RThroughput
+[4]: MayLoad
+[5]: MayStore
+[6]: HasSideEffects (U)
+
+[1]    [2]    [3]    [4]    [5]    [6]    Instructions:
+ 2      5     1.00           *            push	r15
+ 2      5     1.00           *            push	r14
+ 2      5     1.00           *            push	r12
+ 2      5     1.00           *            push	rbx
+ 2      5     1.00           *            push	rax
+ 1      1     0.33                        mov	rbx, rdi
+ 1      1     0.33                        movabs	r12, 9223372036854775805
+ 1      1     0.33                        mov	ecx, 6
+ 1      1     0.33                        mov	rax, rsi
+ 2      4     1.00                        mul	rcx
+ 1      1     1.00                        jo	.LBB5_6
+ 1      1     0.33                        cmp	rax, r12
+ 1      1     1.00                        jbe	.LBB5_2
+ 1      1     0.33                        add	r12, 3
+ 1      1     1.00           *            mov	qword ptr [rbx], r12
+ 1      1     1.00                        jmp	.LBB5_7
+ 1      1     0.33                        mov	r14, rsi
+ 1      1     0.33                        test	rax, rax
+ 1      1     1.00                        je	.LBB5_3
+ 1      1     0.33                        mov	r15, rax
+ 4      7     1.00    *                   call	qword ptr [rip + __rustc::__rust_no_alloc_shim_is_unstable_v2@GOTPCREL]
+ 1      1     0.33                        mov	esi, 2
+ 1      1     0.33                        mov	rdi, r15
+ 4      7     1.00    *                   call	qword ptr [rip + __rustc::__rust_alloc_zeroed@GOTPCREL]
+ 1      1     0.33                        test	rax, rax
+ 1      1     1.00                        jne	.LBB5_5
+ 1      1     1.00                        jmp	.LBB5_6
+ 1      1     0.33                        mov	eax, 2
+ 1      1     1.00           *            mov	qword ptr [rbx], r14
+ 1      1     1.00           *            mov	qword ptr [rbx + 8], rax
+ 1      1     1.00           *            mov	qword ptr [rbx + 16], r14
+ 1      1     0.33                        mov	rax, rbx
+ 1      1     0.33                        add	rsp, 8
+ 1      6     0.50    *                   pop	rbx
+ 1      6     0.50    *                   pop	r12
+ 1      6     0.50    *                   pop	r14
+ 1      6     0.50    *                   pop	r15
+ 1      1     1.00                  U     ret
+
+
+Resources:
+[0]   - SBDivider
+[1]   - SBFPDivider
+[2]   - SBPort0
+[3]   - SBPort1
+[4]   - SBPort4
+[5]   - SBPort5
+[6.0] - SBPort23
+[6.1] - SBPort23
+
+
+Resource pressure per iteration:
+[0]    [1]    [2]    [3]    [4]    [5]    [6.0]  [6.1]  
+ -      -     7.01   7.98   11.00  11.01  8.50   8.50   
+
+Resource pressure by instruction:
+[0]    [1]    [2]    [3]    [4]    [5]    [6.0]  [6.1]  Instructions:
+ -      -      -      -     1.00    -     0.50   0.50   push	r15
+ -      -      -      -     1.00    -     0.50   0.50   push	r14
+ -      -      -      -     1.00    -     0.50   0.50   push	r12
+ -      -      -      -     1.00    -     0.50   0.50   push	rbx
+ -      -      -      -     1.00    -     0.50   0.50   push	rax
+ -      -     0.98   0.01    -     0.01    -      -     mov	rbx, rdi
+ -      -     0.01   0.99    -      -      -      -     movabs	r12, 9223372036854775805
+ -      -     0.02    -      -     0.98    -      -     mov	ecx, 6
+ -      -      -     0.98    -     0.02    -      -     mov	rax, rsi
+ -      -     1.00   1.00    -      -      -      -     mul	rcx
+ -      -      -      -      -     1.00    -      -     jo	.LBB5_6
+ -      -     0.99   0.01    -      -      -      -     cmp	rax, r12
+ -      -      -      -      -     1.00    -      -     jbe	.LBB5_2
+ -      -      -      -      -     1.00    -      -     add	r12, 3
+ -      -      -      -     1.00    -     0.50   0.50   mov	qword ptr [rbx], r12
+ -      -      -      -      -     1.00    -      -     jmp	.LBB5_7
+ -      -     0.98   0.02    -      -      -      -     mov	r14, rsi
+ -      -     0.01   0.99    -      -      -      -     test	rax, rax
+ -      -      -      -      -     1.00    -      -     je	.LBB5_3
+ -      -     0.99   0.01    -      -      -      -     mov	r15, rax
+ -      -      -      -     1.00   1.00   1.00   1.00   call	qword ptr [rip + __rustc::__rust_no_alloc_shim_is_unstable_v2@GOTPCREL]
+ -      -     0.01   0.99    -      -      -      -     mov	esi, 2
+ -      -     0.99   0.01    -      -      -      -     mov	rdi, r15
+ -      -      -      -     1.00   1.00   1.00   1.00   call	qword ptr [rip + __rustc::__rust_alloc_zeroed@GOTPCREL]
+ -      -     0.01   0.99    -      -      -      -     test	rax, rax
+ -      -      -      -      -     1.00    -      -     jne	.LBB5_5
+ -      -      -      -      -     1.00    -      -     jmp	.LBB5_6
+ -      -     0.02   0.98    -      -      -      -     mov	eax, 2
+ -      -      -      -     1.00    -     0.50   0.50   mov	qword ptr [rbx], r14
+ -      -      -      -     1.00    -     0.50   0.50   mov	qword ptr [rbx + 8], rax
+ -      -      -      -     1.00    -     0.50   0.50   mov	qword ptr [rbx + 16], r14
+ -      -     0.97   0.03    -      -      -      -     mov	rax, rbx
+ -      -     0.03   0.97    -      -      -      -     add	rsp, 8
+ -      -      -      -      -      -     0.50   0.50   pop	rbx
+ -      -      -      -      -      -     0.50   0.50   pop	r12
+ -      -      -      -      -      -     0.50   0.50   pop	r14
+ -      -      -      -      -      -     0.50   0.50   pop	r15
+ -      -      -      -      -     1.00    -      -     ret

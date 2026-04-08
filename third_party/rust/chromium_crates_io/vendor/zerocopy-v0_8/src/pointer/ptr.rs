@@ -971,6 +971,7 @@ mod _casts {
 
         /// Attempts to transform the pointer, restoring the original on
         /// failure.
+        #[inline(always)]
         pub(crate) fn try_with<U, J, E, F>(self, f: F) -> Result<Ptr<'a, U, J>, E::Mapped>
         where
             U: 'a + ?Sized,
@@ -1098,15 +1099,20 @@ mod _casts {
             I::Aliasing: Reference,
             U: 'a + ?Sized + KnownLayout + Read<I::Aliasing, R>,
         {
-            let (inner, remainder) =
-                self.as_inner().try_cast_into(cast_type, meta).map_err(|err| {
-                    err.map_src(|inner|
+            let (inner, remainder) = self.as_inner().try_cast_into(cast_type, meta).map_err(
+                #[inline(always)]
+                |err| {
+                    err.map_src(
+                        #[inline(always)]
+                        |inner|
                     // SAFETY: `PtrInner::try_cast_into` promises to return its
                     // original argument on error, which was originally produced
                     // by `self.as_inner()`, which is guaranteed to satisfy
                     // `Ptr`'s invariants.
-                    unsafe { Ptr::from_inner(inner) })
-                })?;
+                    unsafe { Ptr::from_inner(inner) },
+                    )
+                },
+            )?;
 
             // SAFETY:
             // 0. Since `U: Read<I::Aliasing, _>`, either:
@@ -1164,16 +1170,22 @@ mod _casts {
         {
             // SAFETY: The provided closure returns the only copy of `slf`.
             unsafe {
-                self.try_with_unchecked(|slf| match slf.try_cast_into(CastType::Prefix, meta) {
-                    Ok((slf, remainder)) => {
-                        if remainder.len() == 0 {
-                            Ok(slf)
-                        } else {
-                            Err(CastError::Size(SizeError::<_, U>::new(())))
+                self.try_with_unchecked(
+                    #[inline(always)]
+                    |slf| match slf.try_cast_into(CastType::Prefix, meta) {
+                        Ok((slf, remainder)) => {
+                            if remainder.len() == 0 {
+                                Ok(slf)
+                            } else {
+                                Err(CastError::Size(SizeError::<_, U>::new(())))
+                            }
                         }
-                    }
-                    Err(err) => Err(err.map_src(|_slf| ())),
-                })
+                        Err(err) => Err(err.map_src(
+                            #[inline(always)]
+                            |_slf| (),
+                        )),
+                    },
+                )
             }
         }
     }
@@ -1266,7 +1278,10 @@ mod _project {
             //    size_of::<T>()` bytes. Thus, `elem` addresses a valid `T`
             //    within the slice. Since `self` satisfies `I::Validity`, `elem`
             //    also satisfies `I::Validity`.
-            self.as_inner().iter().map(|elem| unsafe { Ptr::from_inner(elem) })
+            self.as_inner().iter().map(
+                #[inline(always)]
+                |elem| unsafe { Ptr::from_inner(elem) },
+            )
         }
     }
 

@@ -21,12 +21,12 @@ help: the trait `TryFromBytes` is not implemented for `NotZerocopy`
               (A, B, C, D, E, F, G, H)
             and 156 others
 note: required by a bound in `zerocopy::util::macro_util::Wrap::<&'a mut Src, &'a mut Dst>::try_transmute_mut`
-   --> src/util/macro_util.rs:829:14
+   --> src/util/macro_util.rs:835:14
     |
-826 |     pub fn try_transmute_mut(self) -> Result<&'a mut Dst, ValidityError<&'a mut Src, Dst>>
+832 |     pub fn try_transmute_mut(self) -> Result<&'a mut Dst, ValidityError<&'a mut Src, Dst>>
     |            ----------------- required by a bound in this associated function
 ...
-829 |         Dst: TryFromBytes + IntoBytes,
+835 |         Dst: TryFromBytes + IntoBytes,
     |              ^^^^^^^^^^^^ required by this bound in `Wrap::<&mut Src, &mut Dst>::try_transmute_mut`
     = note: this error originates in the macro `try_transmute_mut` (in Nightly builds, run with -Z macro-backtrace for more info)
 
@@ -53,12 +53,12 @@ help: the trait `IntoBytes` is not implemented for `NotZerocopy`
               AtomicIsize
             and 69 others
 note: required by a bound in `zerocopy::util::macro_util::Wrap::<&'a mut Src, &'a mut Dst>::try_transmute_mut`
-   --> src/util/macro_util.rs:829:29
+   --> src/util/macro_util.rs:835:29
     |
-826 |     pub fn try_transmute_mut(self) -> Result<&'a mut Dst, ValidityError<&'a mut Src, Dst>>
+832 |     pub fn try_transmute_mut(self) -> Result<&'a mut Dst, ValidityError<&'a mut Src, Dst>>
     |            ----------------- required by a bound in this associated function
 ...
-829 |         Dst: TryFromBytes + IntoBytes,
+835 |         Dst: TryFromBytes + IntoBytes,
     |                             ^^^^^^^^^ required by this bound in `Wrap::<&mut Src, &mut Dst>::try_transmute_mut`
     = note: this error originates in the macro `try_transmute_mut` (in Nightly builds, run with -Z macro-backtrace for more info)
 
@@ -142,12 +142,12 @@ help: the trait `FromBytes` is not implemented for `SrcA`
               (A, B, C, D, E, F, G, H)
             and 80 others
 note: required by a bound in `zerocopy::util::macro_util::Wrap::<&'a mut Src, &'a mut Dst>::try_transmute_mut`
-   --> src/util/macro_util.rs:828:14
+   --> src/util/macro_util.rs:834:14
     |
-826 |     pub fn try_transmute_mut(self) -> Result<&'a mut Dst, ValidityError<&'a mut Src, Dst>>
+832 |     pub fn try_transmute_mut(self) -> Result<&'a mut Dst, ValidityError<&'a mut Src, Dst>>
     |            ----------------- required by a bound in this associated function
-827 |     where
-828 |         Src: FromBytes + IntoBytes,
+833 |     where
+834 |         Src: FromBytes + IntoBytes,
     |              ^^^^^^^^^ required by this bound in `Wrap::<&mut Src, &mut Dst>::try_transmute_mut`
     = note: this error originates in the macro `try_transmute_mut` (in Nightly builds, run with -Z macro-backtrace for more info)
 
@@ -174,12 +174,12 @@ help: the trait `IntoBytes` is not implemented for `DstA`
               AtomicIsize
             and 69 others
 note: required by a bound in `zerocopy::util::macro_util::Wrap::<&'a mut Src, &'a mut Dst>::try_transmute_mut`
-   --> src/util/macro_util.rs:829:29
+   --> src/util/macro_util.rs:835:29
     |
-826 |     pub fn try_transmute_mut(self) -> Result<&'a mut Dst, ValidityError<&'a mut Src, Dst>>
+832 |     pub fn try_transmute_mut(self) -> Result<&'a mut Dst, ValidityError<&'a mut Src, Dst>>
     |            ----------------- required by a bound in this associated function
 ...
-829 |         Dst: TryFromBytes + IntoBytes,
+835 |         Dst: TryFromBytes + IntoBytes,
     |                             ^^^^^^^^^ required by this bound in `Wrap::<&mut Src, &mut Dst>::try_transmute_mut`
     = note: this error originates in the macro `try_transmute_mut` (in Nightly builds, run with -Z macro-backtrace for more info)
 
@@ -206,12 +206,12 @@ help: the trait `IntoBytes` is not implemented for `SrcB`
               AtomicIsize
             and 69 others
 note: required by a bound in `zerocopy::util::macro_util::Wrap::<&'a mut Src, &'a mut Dst>::try_transmute_mut`
-   --> src/util/macro_util.rs:828:26
+   --> src/util/macro_util.rs:834:26
     |
-826 |     pub fn try_transmute_mut(self) -> Result<&'a mut Dst, ValidityError<&'a mut Src, Dst>>
+832 |     pub fn try_transmute_mut(self) -> Result<&'a mut Dst, ValidityError<&'a mut Src, Dst>>
     |            ----------------- required by a bound in this associated function
-827 |     where
-828 |         Src: FromBytes + IntoBytes,
+833 |     where
+834 |         Src: FromBytes + IntoBytes,
     |                          ^^^^^^^^^ required by this bound in `Wrap::<&mut Src, &mut Dst>::try_transmute_mut`
     = note: this error originates in the macro `try_transmute_mut` (in Nightly builds, run with -Z macro-backtrace for more info)
 
@@ -238,12 +238,12 @@ help: the trait `IntoBytes` is not implemented for `DstB`
               AtomicIsize
             and 69 others
 note: required by a bound in `zerocopy::util::macro_util::Wrap::<&'a mut Src, &'a mut Dst>::try_transmute_mut`
-   --> src/util/macro_util.rs:829:29
+   --> src/util/macro_util.rs:835:29
     |
-826 |     pub fn try_transmute_mut(self) -> Result<&'a mut Dst, ValidityError<&'a mut Src, Dst>>
+832 |     pub fn try_transmute_mut(self) -> Result<&'a mut Dst, ValidityError<&'a mut Src, Dst>>
     |            ----------------- required by a bound in this associated function
 ...
-829 |         Dst: TryFromBytes + IntoBytes,
+835 |         Dst: TryFromBytes + IntoBytes,
     |                             ^^^^^^^^^ required by this bound in `Wrap::<&mut Src, &mut Dst>::try_transmute_mut`
     = note: this error originates in the macro `try_transmute_mut` (in Nightly builds, run with -Z macro-backtrace for more info)
 
