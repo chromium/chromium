@@ -1806,6 +1806,7 @@ source_set("platform_browser_tests") {
         "//chrome/browser/ash/boca/on_task",
         "//chrome/browser/ash/net",
         "//chrome/browser/ash/test:test_support",
+        "//chrome/browser/chromeos/policy/dlp/test:test_support",
         "//chrome/browser/ui/webui/ash/parent_access:test_support",
         "//chromeos/ash/components/browser_context_helper",
         "//chromeos/services/tts",

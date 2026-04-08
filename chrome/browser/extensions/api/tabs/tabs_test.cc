@@ -135,12 +135,34 @@
 #include "extensions/browser/app_window/app_window_registry.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/wm/window_pin_util.h"
+#include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_content_manager.h"
+#include "chrome/common/pref_names.h"
+#endif
+
 namespace extensions {
 
 namespace keys = tabs_constants;
 namespace utils = api_test_utils;
 
 namespace {
+
+// Creates a WebContents, attaches it to the tab list, and navigates so we
+// have `urls` as history.
+tabs::TabInterface* OpenTabWithHistory(TabListInterface* tab_list,
+                                       const std::vector<GURL>& urls) {
+  tabs::TabInterface* tab = tab_list->OpenTab(urls[0], -1);
+  content::WebContents* web_contents = tab->GetContents();
+  content::WaitForLoadStop(web_contents);
+  for (size_t i = 1; i < urls.size(); ++i) {
+    content::TestNavigationObserver observer(web_contents);
+    content::NavigationController::LoadURLParams params(urls[i]);
+    web_contents->GetController().LoadURLWithParams(params);
+    observer.Wait();
+  }
+  return tab;
+}
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -1990,6 +2012,52 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MAYBE_DiscardWithoutId) {
   EXPECT_TRUE(api_test_utils::GetBoolean(result, "discarded"));
   // The result should be scrubbed.
   EXPECT_FALSE(result.contains("url"));
+}
+
+// Tests that calling chrome.tabs.discard on a saved tab does discard.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardSavedTabGroupTabAllowed) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("DiscardTest").Build();
+  const GURL kExampleCom("http://example.com");
+
+  TabListInterface* tab_list = GetTabListInterface();
+  tabs::TabInterface* tab = tab_list->OpenTab(kExampleCom, -1);
+  content::WebContents* web_contents = tab->GetContents();
+
+  int index = tab_list->GetIndexOfTab(tab->GetHandle());
+  int tab_id = ExtensionTabUtil::GetTabId(web_contents);
+
+  tab_groups::TabGroupSyncService* saved_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(saved_service);
+
+#if !BUILDFLAG(IS_ANDROID)
+  tab_groups::TabGroupSyncServiceInitializedObserver sync_observer(
+      saved_service);
+  sync_observer.Wait();
+#endif
+
+  // Activate the first tab since the second one will be discarded and active
+  // tabs cannot be discarded on Android.
+  GetTabListInterface()->ActivateTab(
+      GetTabListInterface()->GetTab(0)->GetHandle());
+
+  // Group the tab and save it.
+  std::optional<tab_groups::TabGroupId> group =
+      tab_list->CreateTabGroup({tab->GetHandle()});
+  ASSERT_TRUE(group.has_value());
+  tab_groups::TabGroupVisualData visual_data(
+      u"Initial title", tab_groups::TabGroupColorId::kBlue);
+  tab_list->SetTabGroupVisualData(*group, visual_data);
+
+  auto function = base::MakeRefCounted<TabsDiscardFunction>();
+  function->set_extension(extension);
+  EXPECT_TRUE(utils::RunFunction(function.get(),
+                                 base::StringPrintf("[%d]", tab_id), profile(),
+                                 utils::FunctionMode::kNone));
+
+  // Check that the tab was discarded
+  EXPECT_TRUE(tab_list->GetTab(index)->GetContents()->WasDiscarded());
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -4330,5 +4398,332 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsUngroupFromMultipleGroups) {
   EXPECT_TRUE(tab_list->ContainsTabGroup(*group1));
   EXPECT_FALSE(tab_list->ContainsTabGroup(*group2));
 }
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsGoForwardNoSelectedTabError) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("Test").AddAPIPermission("tabs").Build();
+  auto function = base::MakeRefCounted<TabsGoForwardFunction>();
+  function->set_extension(extension);
+
+  // Create a new profile without any browser windows to ensure no tab is
+  // selected.
+  Profile* new_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+
+  // No active tab in this profile results in an error.
+  // Note: On some platforms/configurations, this might return "No current
+  // window" if no browser exists for the profile.
+  std::string error = utils::RunFunctionAndReturnError(
+      function.get(), "[]", new_profile, utils::FunctionMode::kNone);
+  EXPECT_TRUE(error == keys::kNoSelectedTabError ||
+              error == ExtensionTabUtil::kNoCurrentWindowError);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsGoForwardAndBack) {
+  scoped_refptr<const Extension> extension_with_tabs_permission =
+      ExtensionBuilder("Test").AddAPIPermission("tabs").Build();
+
+  TabListInterface* tab_list = GetTabListInterface();
+  const std::vector<GURL> urls = {GURL("http://foo.com"),
+                                  GURL("http://bar.com")};
+  tabs::TabInterface* tab = OpenTabWithHistory(tab_list, urls);
+  ASSERT_TRUE(tab);
+  content::WebContents* web_contents = tab->GetContents();
+
+  const int tab_id = ExtensionTabUtil::GetTabId(web_contents);
+
+  // Go back with chrome.tabs.goBack.
+  {
+    auto goback_function = base::MakeRefCounted<TabsGoBackFunction>();
+    goback_function->set_extension(extension_with_tabs_permission.get());
+    content::TestNavigationObserver observer(web_contents);
+    ASSERT_TRUE(utils::RunFunction(goback_function.get(),
+                                   base::StringPrintf("[%d]", tab_id),
+                                   profile(), utils::FunctionMode::kNone));
+    observer.Wait();
+    EXPECT_EQ(urls[0], web_contents->GetLastCommittedURL());
+    EXPECT_TRUE(ui::PAGE_TRANSITION_FORWARD_BACK & web_contents->GetController()
+                                                       .GetLastCommittedEntry()
+                                                       ->GetTransitionType());
+  }
+
+  // Go forward with chrome.tabs.goForward.
+  {
+    auto goforward_function = base::MakeRefCounted<TabsGoForwardFunction>();
+    goforward_function->set_extension(extension_with_tabs_permission.get());
+    content::TestNavigationObserver observer(web_contents);
+    ASSERT_TRUE(utils::RunFunction(goforward_function.get(),
+                                   base::StringPrintf("[%d]", tab_id),
+                                   profile(), utils::FunctionMode::kNone));
+    observer.Wait();
+    EXPECT_EQ(urls[1], web_contents->GetLastCommittedURL());
+    EXPECT_TRUE(ui::PAGE_TRANSITION_FORWARD_BACK & web_contents->GetController()
+                                                       .GetLastCommittedEntry()
+                                                       ->GetTransitionType());
+  }
+
+  // If there's no next page, chrome.tabs.goForward should return an error.
+  {
+    auto goforward_function = base::MakeRefCounted<TabsGoForwardFunction>();
+    goforward_function->set_extension(extension_with_tabs_permission.get());
+    std::string error = utils::RunFunctionAndReturnError(
+        goforward_function.get(), base::StringPrintf("[%d]", tab_id), profile(),
+        utils::FunctionMode::kNone);
+    EXPECT_EQ(keys::kNotFoundNextPageError, error);
+    EXPECT_EQ(urls[1], web_contents->GetLastCommittedURL());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       TabsGoForwardAndBackSavedTabGroupTab) {
+  scoped_refptr<const Extension> extension_with_tabs_permission =
+      ExtensionBuilder("Test").AddAPIPermission("tabs").Build();
+
+  TabListInterface* tab_list = GetTabListInterface();
+  const std::vector<GURL> urls = {
+      GURL("http://foo.com"), GURL("http://bar.com"), GURL("http://baz.com")};
+  tabs::TabInterface* tab = OpenTabWithHistory(tab_list, urls);
+  ASSERT_TRUE(tab);
+  content::WebContents* web_contents = tab->GetContents();
+
+  const int tab_id = ExtensionTabUtil::GetTabId(web_contents);
+
+  {
+    // Go back with chrome.tabs.goBack.
+    auto goback_function = base::MakeRefCounted<TabsGoBackFunction>();
+    goback_function->set_extension(extension_with_tabs_permission.get());
+    content::TestNavigationObserver observer(web_contents);
+    ASSERT_TRUE(utils::RunFunction(goback_function.get(),
+                                   base::StringPrintf("[%d]", tab_id),
+                                   profile(), utils::FunctionMode::kNone));
+    observer.Wait();
+  }
+
+  EXPECT_EQ(urls[1], web_contents->GetLastCommittedURL());
+
+  tab_groups::TabGroupSyncService* saved_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(saved_service);
+
+#if !BUILDFLAG(IS_ANDROID)
+  tab_groups::TabGroupSyncServiceInitializedObserver sync_observer(
+      saved_service);
+  sync_observer.Wait();
+#endif
+
+  // Save the tab and expect that it cannot be navigated forwards or backwards.
+  std::optional<tab_groups::TabGroupId> group =
+      tab_list->CreateTabGroup({tab->GetHandle()});
+  ASSERT_TRUE(group.has_value());
+  tab_groups::TabGroupVisualData visual_data(
+      u"Initial title", tab_groups::TabGroupColorId::kBlue);
+  tab_list->SetTabGroupVisualData(*group, visual_data);
+
+  {
+    auto goback_function = base::MakeRefCounted<TabsGoBackFunction>();
+    goback_function->set_extension(extension_with_tabs_permission.get());
+    EXPECT_TRUE(utils::RunFunction(goback_function.get(),
+                                   base::StringPrintf("[%d]", tab_id),
+                                   profile(), utils::FunctionMode::kNone));
+  }
+  EXPECT_EQ(urls[1], web_contents->GetLastCommittedURL());
+
+  {
+    auto goforward_function = base::MakeRefCounted<TabsGoForwardFunction>();
+    goforward_function->set_extension(extension_with_tabs_permission.get());
+    EXPECT_TRUE(utils::RunFunction(goforward_function.get(),
+                                   base::StringPrintf("[%d]", tab_id),
+                                   profile(), utils::FunctionMode::kNone));
+  }
+
+  EXPECT_EQ(urls[1], web_contents->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsGoForwardAndBackWithoutTabId) {
+  scoped_refptr<const Extension> extension_with_tabs_permission =
+      ExtensionBuilder("Test").AddAPIPermission("tabs").Build();
+  TabListInterface* tab_list = GetTabListInterface();
+
+  // Create first tab with history.
+  const std::vector<GURL> tab1_urls = {GURL("http://a.com"),
+                                       GURL("http://b.com")};
+  tabs::TabInterface* tab1 = OpenTabWithHistory(tab_list, tab1_urls);
+  ASSERT_TRUE(tab1);
+  content::WebContents* tab1_webcontents = tab1->GetContents();
+  EXPECT_EQ(tab1_urls[1], tab1_webcontents->GetLastCommittedURL());
+
+  // Create second tab with history.
+  const std::vector<GURL> tab2_urls = {GURL("http://c.com"),
+                                       GURL("http://d.com")};
+  tabs::TabInterface* tab2 = OpenTabWithHistory(tab_list, tab2_urls);
+  ASSERT_TRUE(tab2);
+  content::WebContents* tab2_webcontents = tab2->GetContents();
+  EXPECT_EQ(tab2_urls[1], tab2_webcontents->GetLastCommittedURL());
+
+  // Activate first tab.
+  tab_list->ActivateTab(tab1->GetHandle());
+
+  // Go back without tab_id. But first tab should be navigated since it's
+  // activated.
+  {
+    auto goback_function = base::MakeRefCounted<TabsGoBackFunction>();
+    goback_function->set_extension(extension_with_tabs_permission.get());
+    content::TestNavigationObserver observer(tab1_webcontents);
+    ASSERT_TRUE(utils::RunFunction(goback_function.get(), "[]", profile(),
+                                   utils::FunctionMode::kNone));
+    observer.Wait();
+    EXPECT_EQ(tab1_urls[0], tab1_webcontents->GetLastCommittedURL());
+    EXPECT_TRUE(ui::PAGE_TRANSITION_FORWARD_BACK &
+                tab1_webcontents->GetController()
+                    .GetLastCommittedEntry()
+                    ->GetTransitionType());
+  }
+
+  // Go forward without tab_id.
+  {
+    auto goforward_function = base::MakeRefCounted<TabsGoForwardFunction>();
+    goforward_function->set_extension(extension_with_tabs_permission.get());
+    content::TestNavigationObserver observer(tab1_webcontents);
+    ASSERT_TRUE(utils::RunFunction(goforward_function.get(), "[]", profile(),
+                                   utils::FunctionMode::kNone));
+    observer.Wait();
+    EXPECT_EQ(tab1_urls[1], tab1_webcontents->GetLastCommittedURL());
+    EXPECT_TRUE(ui::PAGE_TRANSITION_FORWARD_BACK &
+                tab1_webcontents->GetController()
+                    .GetLastCommittedEntry()
+                    ->GetTransitionType());
+  }
+
+  // Activate second tab.
+  tab_list->ActivateTab(tab2->GetHandle());
+
+  {
+    auto goback_function2 = base::MakeRefCounted<TabsGoBackFunction>();
+    goback_function2->set_extension(extension_with_tabs_permission.get());
+    content::TestNavigationObserver observer(tab2_webcontents);
+    ASSERT_TRUE(utils::RunFunction(goback_function2.get(), "[]", profile(),
+                                   utils::FunctionMode::kNone));
+    observer.Wait();
+    EXPECT_EQ(tab2_urls[0], tab2_webcontents->GetLastCommittedURL());
+    EXPECT_TRUE(ui::PAGE_TRANSITION_FORWARD_BACK &
+                tab2_webcontents->GetController()
+                    .GetLastCommittedEntry()
+                    ->GetTransitionType());
+  }
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Ensure tabs.captureVisibleTab respects any Data Leak Prevention restrictions.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, ScreenshotsRestricted) {
+  // Setup the function and extension.
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("Screenshot")
+          .AddAPIPermission("tabs")
+          .AddHostPermission("<all_urls>")
+          .Build();
+  auto function = base::MakeRefCounted<TabsCaptureVisibleTabFunction>();
+  function->set_extension(extension.get());
+
+  // Add a visible tab.
+  TabListInterface* tab_list = GetTabListInterface();
+  const GURL kGoogle("http://www.google.com");
+  tabs::TabInterface* tab = tab_list->OpenTab(kGoogle, -1);
+  content::WebContents* web_contents = tab->GetContents();
+  content::WaitForLoadStop(web_contents);
+
+  // Setup Data Leak Prevention restriction.
+  policy::MockDlpContentManager mock_dlp_content_manager;
+  policy::ScopedDlpContentObserverForTesting scoped_dlp_content_observer_(
+      &mock_dlp_content_manager);
+  EXPECT_CALL(mock_dlp_content_manager, IsScreenshotApiRestricted(testing::_))
+      .Times(1)
+      .WillOnce(testing::Return(true));
+
+  // Run the function and check result.
+  std::string error = utils::RunFunctionAndReturnError(
+      function.get(), "[{}]", profile(), utils::FunctionMode::kNone);
+  EXPECT_EQ(keys::kScreenshotsDisabledByDlp, error);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       DontCreateTabsInLockedFullscreenMode) {
+  scoped_refptr<const Extension> extension_with_tabs_permission =
+      ExtensionBuilder("Test").AddAPIPermission("tabs").Build();
+
+  // In locked fullscreen mode we should not be able to create any tabs.
+  ash::PinWindow(browser_window_interface()->GetWindow()->GetNativeWindow(),
+                 /*trusted=*/true);
+
+  auto function = base::MakeRefCounted<TabsCreateFunction>();
+  function->set_extension(extension_with_tabs_permission.get());
+
+  EXPECT_EQ(ExtensionTabUtil::kLockedFullscreenModeNewTabError,
+            utils::RunFunctionAndReturnError(function.get(), "[{}]", profile(),
+                                             utils::FunctionMode::kNone));
+
+  // Unpin for cleanup.
+  ash::UnpinWindow(browser_window_interface()->GetWindow()->GetNativeWindow());
+}
+
+// Screenshot should return an error when disabled in user profile preferences.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       ScreenshotDisabledInProfilePreferences) {
+  // Setup the function and extension.
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("Screenshot")
+          .AddAPIPermission("tabs")
+          .AddHostPermission("<all_urls>")
+          .Build();
+  auto function = base::MakeRefCounted<TabsCaptureVisibleTabFunction>();
+  function->set_extension(extension.get());
+
+  // Add a visible tab.
+  TabListInterface* tab_list = GetTabListInterface();
+  const GURL kGoogle("http://www.google.com");
+  tabs::TabInterface* tab = tab_list->OpenTab(kGoogle, -1);
+  content::WebContents* web_contents = tab->GetContents();
+  content::WaitForLoadStop(web_contents);
+
+  // Disable screenshot.
+  profile()->GetPrefs()->SetBoolean(prefs::kDisableScreenshots, true);
+
+  // Run the function and check result.
+  std::string error = utils::RunFunctionAndReturnError(
+      function.get(), "[{}]", profile(), utils::FunctionMode::kNone);
+  EXPECT_EQ(keys::kScreenshotsDisabled, error);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_ANDROID)
+// Picture in picture is not supported for Android.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       CannotDuplicatePictureInPictureWindows) {
+  // Create picture-in-picture browser.
+  BrowserWindowInterface* pip_browser = CreateBrowserWindowWithType(
+      BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
+  TabListInterface* pip_tab_list = TabListInterface::From(pip_browser);
+
+  // Ensure we have a tab.
+  if (pip_tab_list->GetTabCount() == 0) {
+    pip_tab_list->OpenTab(GURL(url::kAboutBlankURL), -1);
+  }
+  content::WebContents* web_contents = pip_tab_list->GetTab(0)->GetContents();
+  int pip_tab_id = ExtensionTabUtil::GetTabId(web_contents);
+
+  // Attempt to duplicate the picture-in-picture tab. This should fail as
+  // picture-in-picture tabs are not allowed to be duplicated.
+  auto function = base::MakeRefCounted<TabsDuplicateFunction>();
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("Test").AddAPIPermission("tabs").Build();
+  function->set_extension(extension);
+  std::string args = base::StringPrintf("[%d]", pip_tab_id);
+  std::string error = utils::RunFunctionAndReturnError(
+      function.get(), args, pip_browser->GetProfile(),
+      utils::FunctionMode::kNone);
+  EXPECT_EQ(ErrorUtils::FormatErrorMessage(keys::kCannotDuplicateTab,
+                                           base::NumberToString(pip_tab_id)),
+            error);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions
