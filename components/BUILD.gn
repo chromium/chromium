@@ -418,7 +418,7 @@ test("components_unittests") {
     ]
   }
 
-  if (is_linux) {
+  if (is_linux || is_mac) {
     deps += [ "//components/gapis:unit_tests" ]
   }
 
