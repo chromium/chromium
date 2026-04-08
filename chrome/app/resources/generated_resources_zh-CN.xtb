@@ -325,6 +325,7 @@
 <translation id="1210678701920254279">查看或添加打印机，并查看正在执行的打印任务</translation>
 <translation id="1211769675100312947">您自己选择要显示哪些快捷方式</translation>
 <translation id="1215411991991485844">已添加新的后台应用</translation>
+<translation id="121586831132481915">关闭自动展开标签页功能</translation>
 <translation id="1216542092748365687">移除指纹</translation>
 <translation id="1216628023580643945">为技能命名</translation>
 <translation id="1216891999012841486">详细了解如何修正更新错误</translation>
@@ -545,6 +546,7 @@
 <translation id="1365650529628379165">挑眉</translation>
 <translation id="1367817137674340530">生成了 <ph name="COUNT" /> 张图片</translation>
 <translation id="1368603372088757436">您的 <ph name="DEVICE_TYPE" /> 不支持 Linux。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
+<translation id="1369687552722438128">不显示此促销内容</translation>
 <translation id="1370249617397887619">若要在其他设备上使用这些密码，请将它们保存到您的 Google 账号</translation>
 <translation id="1370384480654163477">查看和修改您上次访问此网站时的文件：</translation>
 <translation id="1371253136879578532">可以使用键盘快捷键在 Gemini 中选择屏幕上的部分内容。</translation>
@@ -1953,6 +1955,7 @@
 <translation id="2328137272841210255">重置 PIN 码</translation>
 <translation id="2328474416100889417">所有人将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且所有邀请链接都将失效</translation>
 <translation id="2328561734797404498">请重启您的设备，即可使用 <ph name="APP_NAME" />。</translation>
+<translation id="2328773543844041445">悬停时自动展开标签页</translation>
 <translation id="2329597144923131178">登录后可获取您所有设备上保存的书签、历史记录、密码和其他设置。</translation>
 <translation id="2330182457402792918">选择允许此网站读取的文件</translation>
 <translation id="2332115969598251205">无法加载已保存到 <ph name="PRIMARY_EMAIL" /> 的设备。请检查互联网连接情况，然后再试一次。</translation>
@@ -2743,6 +2746,7 @@
 <translation id="2869511363030898130">在<ph name="APP_NAME" />应用内打开</translation>
 <translation id="2870560284913253234">网站</translation>
 <translation id="2870909136778269686">正在更新…</translation>
+<translation id="2871029453856004998">此应用可能存在危险，已被 Google 屏蔽</translation>
 <translation id="2871733351037274014">预加载网页</translation>
 <translation id="2871813825302180988">已有人在此设备上使用该账号。</translation>
 <translation id="287205682142673348">端口转发</translation>
@@ -3891,7 +3895,7 @@
 <translation id="3686108296937784939">我所属组织的快捷方式</translation>
 <translation id="3687598459967813435">始终允许接收来自 <ph name="WEBSITE" /> 的通知</translation>
 <translation id="3688507211863392146">写入您在此应用中打开的文件和文件夹</translation>
-<translation id="3688526734140524629">变更版本</translation>
+<translation id="3688526734140524629">变更渠道</translation>
 <translation id="3688578402379768763">已是最新</translation>
 <translation id="3688794912214798596">更改语言…</translation>
 <translation id="3690369331356918524">密码遭遇数据泄露时向您发出警告</translation>
@@ -4837,6 +4841,7 @@
 <translation id="4327380114687339519">扩展程序菜单</translation>
 <translation id="4330191372652740264">冰水</translation>
 <translation id="4330387663455830245">一律不翻译<ph name="LANGUAGE" />内容</translation>
+<translation id="4330963457501417204">将光标悬停在已收起的标签页上即可展开标签页</translation>
 <translation id="4332976768901252016">设置“家长控制”功能</translation>
 <translation id="4334768748331667190">系统不会再向您显示<ph name="MODULE_NAME" /></translation>
 <translation id="4335835283689002019">“安全浏览”功能已关闭</translation>
@@ -6224,6 +6229,7 @@
 <translation id="5302048478445481009">语言</translation>
 <translation id="5302435492906794790">正在查找附近可发现的设备…</translation>
 <translation id="5302932258331363306">显示替换</translation>
+<translation id="5304952564528359007">关闭自动展开标签页功能</translation>
 <translation id="5305145881844743843">此账号由 <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> 管理</translation>
 <translation id="5307030433605830021">来源不受支持</translation>
 <translation id="5307386115243749078">为蓝牙开关配对</translation>
@@ -7736,6 +7742,7 @@
 <translation id="6400360390396538896">在 <ph name="ORIGIN" /> 上始终允许</translation>
 <translation id="6401118106417399952">您的设备 EID 为 <ph name="EID_NUMBER" />，设备序列号为 <ph name="SERIAL_NUMBER" />。这些号码可用于帮助激活服务。</translation>
 <translation id="6401458660421980302">若要将此标签页发送到另一设备，请在该设备上登录 Chrome</translation>
+<translation id="6402042774506839496">如需了解原因，请与应用开发者联系</translation>
 <translation id="6402921224457714577">网站可以请求控制您的 MIDI 设备以及为其重新编程</translation>
 <translation id="6404511346730675251">修改书签</translation>
 <translation id="640457954117263537">让 ChromeOS 和 Android 应用和服务使用位置信息。</translation>
@@ -8020,6 +8027,7 @@
 <translation id="6599829027342135752">插入并轻触安全密钥，即可使用它登录 <ph name="APP_NAME" /></translation>
 <translation id="6601262427770154296">管理用户字典</translation>
 <translation id="6602173570135186741">自动填充和密码</translation>
+<translation id="6602173667290651224">未找到任何网站快捷方式</translation>
 <translation id="6602336931411102724">在书签栏中显示标签页分组</translation>
 <translation id="6602937173026466876">访问您的打印机</translation>
 <translation id="6602956230557165253">使用左右箭头键进行导航。</translation>
@@ -8585,6 +8593,7 @@
 <translation id="6988572888918530647">管理 Google 账号</translation>
 <translation id="6989274756151920076">保持现状</translation>
 <translation id="6991665348624301627">选择目标打印机</translation>
+<translation id="6992078676798011826">无法撤销权限，请稍后重试。</translation>
 <translation id="6992554835374084304">开启增强的“拼写检查”功能</translation>
 <translation id="6993000214273684335">此标签页已从未命名的组中移除 - 该组包含<ph name="GROUP_CONTENTS" /></translation>
 <translation id="6995984090981858039">读取 ChromeOS 设备的相关信息和数据</translation>
@@ -9279,6 +9288,7 @@
 <translation id="7478658909253570368">不允许网站连接到串行端口</translation>
 <translation id="7479221278376295180">存储空间使用情况概览</translation>
 <translation id="747981547666531654">已连接到名为“<ph name="FIRST_DEVICE" />”和“<ph name="SECOND_DEVICE" />”的蓝牙设备</translation>
+<translation id="7480076846077373008">可对促销内容执行的更多操作</translation>
 <translation id="7481213027396403996">获享 Chrome 最强大的安全保护</translation>
 <translation id="7481312909269577407">前进</translation>
 <translation id="7481358317100446445">准备就绪</translation>
@@ -9711,6 +9721,7 @@
 <translation id="7774581652827321413">获取此网页的摘要、进行相关搜索以及查询关于此网页的其他实用信息</translation>
 <translation id="7774792847912242537">请求次数过多。</translation>
 <translation id="7775694664330414886">此标签页已移至未命名的组中 - 该组包含<ph name="GROUP_CONTENTS" /></translation>
+<translation id="7776106026456236463">将光标悬停在已收起的标签页上即可展开标签页</translation>
 <translation id="777637629667389858">当您登录后，在各种 Google 服务中保护您。</translation>
 <translation id="7776701556330691704">未找到任何语音</translation>
 <translation id="7776950606649732730">请在文件同步完毕后重试。</translation>
@@ -11165,6 +11176,7 @@
 <translation id="8767069439158587614">显示“<ph name="QUERY_CLUSTER_NAME" />”的所有搜索结果</translation>
 <translation id="8767621466733104912">自动为所有用户更新 Chrome</translation>
 <translation id="8768049274922835860">所有人</translation>
+<translation id="8768559850883798245">开启自动展开标签页功能</translation>
 <translation id="8769047324653576116">若要通过您的组织资料使用设备，需要向您的组织提供该设备的相关信息。
 
 这可能包括与已安装的软件、文件、浏览器、设备的操作系统和 IP 地址相关的信息。</translation>
@@ -11504,6 +11516,7 @@
 <translation id="8993853206419610596">展开所有请求</translation>
 <translation id="8993945059918628059">用手指轻触指纹传感器。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="899403249577094719">Netscape 证书基本网址</translation>
+<translation id="8996080012222587839">开启自动展开标签页功能</translation>
 <translation id="8996978916555523196">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{此扩展程序已保存在您的 Google 账号中，但它仅保存在此设备上的所有数据可能会被删除}other{这些扩展程序已保存在您的 Google 账号中，但它们仅保存在此设备上的所有数据可能会被删除}}</translation>
 <translation id="8999027165951679951">闲置标签页：已释放 <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8999560016882908256">区段语法错误：<ph name="ERROR_LINE" /></translation>

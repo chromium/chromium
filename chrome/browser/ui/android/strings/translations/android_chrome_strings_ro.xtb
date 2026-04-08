@@ -684,6 +684,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">din ultimele 4 săptămâni</translation>
 <translation id="393697183122708255">Nu există căutare vocală activată</translation>
+<translation id="3941718885865495207">Opțiunea de activare pentru Chrome Finds este în foaia din partea de jos</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, filă picture-in-picture fixată</translation>
 <translation id="3950820424414687140">Conectează-te</translation>
 <translation id="395377504920307820">Folosește fără un cont</translation>
@@ -1189,6 +1190,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="6011308810877101166">Îmbunătățește sugestiile de căutare</translation>
 <translation id="6013305291643746595">Se sortează după cele mai vechi</translation>
 <translation id="6022659036123304283">Personalizează Chrome</translation>
+<translation id="6023820583797130428">Deschide meniul pentru a reveni</translation>
 <translation id="6026538407078977628">Extinde pe ecran complet</translation>
 <translation id="6030719887161080597">Gestionează informațiile folosite de site-uri pentru a măsura performanța anunțurilor</translation>
 <translation id="6039379616847168523">Accesează fila următoare</translation>
@@ -1633,6 +1635,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> filă standard}few{<ph name="TABS_COUNT_MANY" /> file standard}other{<ph name="TABS_COUNT_MANY" /> de file standard}}</translation>
 <translation id="7603168929588204083">Dată nevalidă</translation>
 <translation id="7605594153474022051">Sincronizarea nu funcționează</translation>
+<translation id="7608245556672190037">Opțiunea de activare pentru Chrome Finds este deschisă la înălțime completă</translation>
 <translation id="7612619742409846846">Conectat(ă) la Google ca</translation>
 <translation id="7612989789287281429">Se conectează…</translation>
 <translation id="7619072057915878432">Descărcarea fișierului <ph name="FILE_NAME" /> nu a reușit din cauza erorilor de rețea.</translation>
@@ -1640,6 +1643,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="7628417132421583481">Accesează Managerul de parole</translation>
 <translation id="7630202231528827509">Adresa URL a furnizorului</translation>
 <translation id="7638584964844754484">Expresie de acces incorectă</translation>
+<translation id="764047009170754705">Opțiunea de activare pentru Chrome Finds este închisă</translation>
 <translation id="7646499124171960488">Te avertizează cu privire la site-urile publice nesigure</translation>
 <translation id="7646772052135772216">Sincronizarea parolelor nu funcționează</translation>
 <translation id="7655240423373329753">ultimele 7 zile</translation>
@@ -1864,6 +1868,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="8473863474539038330">Adrese și altele</translation>
 <translation id="847433688444405067">Navighează pe mai multe dispozitive</translation>
 <translation id="8477178913400731244">Șterge datele</translation>
+<translation id="8481771036036087705">Opțiunea de activare pentru Chrome Finds este deschisă la jumătate din înălțime</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">Nu există ferestre inactive</translation>
 <translation id="8493948351860045254">Eliberează spațiu</translation>

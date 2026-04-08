@@ -684,6 +684,7 @@
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">过去 4 周</translation>
 <translation id="393697183122708255">无法启用语音搜索功能</translation>
+<translation id="3941718885865495207">Chrome 查找功能选择启用底部动作条</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />，固定的画中画标签页</translation>
 <translation id="3950820424414687140">登录</translation>
 <translation id="395377504920307820">在不登录账号的情况下使用</translation>
@@ -1189,6 +1190,7 @@
 <translation id="6011308810877101166">改进搜索建议</translation>
 <translation id="6013305291643746595">按从旧到新排序</translation>
 <translation id="6022659036123304283">定制您的专属 Chrome</translation>
+<translation id="6023820583797130428">打开菜单即可返回</translation>
 <translation id="6026538407078977628">展开为全屏</translation>
 <translation id="6030719887161080597">管理网站用于衡量广告效果的信息</translation>
 <translation id="6039379616847168523">跳转到下一个标签页</translation>
@@ -1631,6 +1633,7 @@
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> 个标准标签页}other{<ph name="TABS_COUNT_MANY" /> 个标准标签页}}</translation>
 <translation id="7603168929588204083">日期无效</translation>
 <translation id="7605594153474022051">同步功能无法正常运行</translation>
+<translation id="7608245556672190037">已以最大高度打开 Chrome 查找功能选择启用底部动作条</translation>
 <translation id="7612619742409846846">已使用以下账号登录 Google：</translation>
 <translation id="7612989789287281429">正在登录…</translation>
 <translation id="7619072057915878432">未能成功下载 <ph name="FILE_NAME" />，因为出现了网络故障。</translation>
@@ -1638,6 +1641,7 @@
 <translation id="7628417132421583481">前往密码管理工具</translation>
 <translation id="7630202231528827509">提供商网址</translation>
 <translation id="7638584964844754484">密码不正确</translation>
+<translation id="764047009170754705">已关闭 Chrome 查找功能选择启用底部动作条</translation>
 <translation id="7646499124171960488">在您访问不安全的公共网站时发出警告</translation>
 <translation id="7646772052135772216">无法同步密码</translation>
 <translation id="7655240423373329753">过去 7 天</translation>
@@ -1862,6 +1866,7 @@
 <translation id="8473863474539038330">地址和其他信息</translation>
 <translation id="847433688444405067">跨设备浏览</translation>
 <translation id="8477178913400731244">删除数据</translation>
+<translation id="8481771036036087705">已以一半高度打开 Chrome 查找功能选择启用底部动作条</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">没有闲置窗口</translation>
 <translation id="8493948351860045254">释放空间</translation>

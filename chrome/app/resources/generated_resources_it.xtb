@@ -91,6 +91,7 @@
 <translation id="1056898198331236512">Avviso</translation>
 <translation id="1056980582064308040">Se modifichi le impostazioni, l'hotspot verrà riavviato. I dispositivi che usano l'hotspot verranno disconnessi.</translation>
 <translation id="1058262162121953039">PUK</translation>
+<translation id="1058848978232174442">Attività interrotta</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Inserisci il nuovo PIN. Il PIN deve contenere almeno un carattere e può includere lettere, numeri e altri caratteri.}other{Inserisci il nuovo PIN. Il PIN deve contenere almeno # caratteri e può includere lettere, numeri e altri caratteri.}}</translation>
 <translation id="1059484610606223931">HyperText Transfer Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">Sono state trovate <ph name="NUM" /> schede per "<ph name="SEARCH_TEXT" />"</translation>
@@ -1721,6 +1722,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2175384018164129879">Gestisci motori di ricerca e ricerca nei siti</translation>
 <translation id="2175526076681939329">Utilizza tasti principali</translation>
 <translation id="217576141146192373">Impossibile aggiungere la stampante. Controlla la configurazione della stampante e riprova.</translation>
+<translation id="2175773164573457310">Seleziona un testo o un'immagine per chiedere a Gemini</translation>
 <translation id="2175927920773552910">Codice QR</translation>
 <translation id="2177950615300672361">Scheda Incognito: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -6404,6 +6406,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5436211819997237281">Estensione corrente che gestisce la pagina Nuova scheda</translation>
 <translation id="5436492226391861498">In attesa del tunnel proxy...</translation>
 <translation id="5436510242972373446">Cerca su <ph name="SITE_NAME" />:</translation>
+<translation id="5437863035930787580"><ph name="TASK_TITLE" />\nGemini ha interrotto l'attività. Torna a Chrome per rivederla.</translation>
 <translation id="5438014818441491616">Larghezza della finestra di <ph name="WINDOW_SIDE" />: <ph name="WINDOW_SIZE_PERCENT" />, larghezza del riquadro di <ph name="PANE_SIDE" />: <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5438060324827306856">Trova &amp;estensioni</translation>
 <translation id="5440425659852470030">Chiudi riquadro laterale</translation>
@@ -7598,6 +7601,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="628705218210359422">Monitora le tue password e gestiscile in un unico posto.</translation>
 <translation id="628726841779494414">Gestisci le stampanti nelle impostazioni delle stampanti</translation>
 <translation id="6287288864483377583">L'importazione è supportata solo per un singolo certificato</translation>
+<translation id="6287713404380454515">Per motivi di sicurezza, l'amministratore ha disattivato il PIN e la password del dispositivo. D'ora in poi, usa la password di <ph name="MANAGER" />.</translation>
 <translation id="6287828400772161253">Smartphone Android (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Non sono disponibili dispositivi per condividere contenuti nelle vicinanze. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Impossibile eseguire il ripristino a causa di spazio di archiviazione insufficiente.</translation>
@@ -8854,6 +8858,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7188508872042490670">Dati dei siti sul dispositivo</translation>
 <translation id="7189234443051076392">Assicurati di avere spazio sufficiente sul dispositivo</translation>
 <translation id="7189451821249468368">Non disponi di licenze Upgrade sufficienti per registrare questo dispositivo. Contatta l'ufficio vendite per acquistarne altre. Se ritieni che questo messaggio sia stato visualizzato per sbaglio, contatta l'assistenza.</translation>
+<translation id="7189558282078169397">Schede di altri dispositivi</translation>
 <translation id="7189965711416741966">Impronta digitale aggiunta.</translation>
 <translation id="7190921792980745354">Bloccare <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Alcuni link supportati saranno comunque aperti in <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> e altre <ph name="NUMBER_OF_OTHER_APPS" /> app.</translation>
@@ -9668,6 +9673,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation>
 <translation id="7745554356330788383">Ricarica la pagina per applicare le impostazioni aggiornate per "<ph name="EXTENSION_NAME" />" su questo sito</translation>
 <translation id="7745677556280361868">Vuoi rimuovere questa rete nella pagina dell'abbonamento Passpoint?</translation>
+<translation id="7745849183714722618">Per supportare funzionalità come la protezione antifrode, Chrome può utilizzare modelli di AI che vengono eseguiti direttamente sul tuo dispositivo. Se questa opzione è disattivata, queste funzionalità potrebbero non funzionare. <ph name="BEGIN_LINK" />Scopri di più sull'AI on-device<ph name="END_LINK" /></translation>
 <translation id="7746045113967198252">Ingrandisci o riduci gli elementi sullo schermo, incluso il testo. Puoi anche trovare questa opzione in un secondo momento in Impostazioni &gt; Dispositivo &gt; Display.</translation>
 <translation id="7750228210027921155">Picture in picture</translation>
 <translation id="7751260505918304024">Mostra tutto</translation>
@@ -9948,6 +9954,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="794250392403348719">Esempio: semplifica questo concetto per un bambino di 8 anni. Usa un linguaggio semplice e un'analogia che possa capire. Mantieni l'intera spiegazione concisa, sotto le 150 parole.</translation>
 <translation id="7942846369224063421">Renderer precaricato per le UI</translation>
 <translation id="7943271960579497371">Applicazioni installate</translation>
+<translation id="7943311690198910993">Metodo di accesso aggiornato</translation>
 <translation id="7943368935008348579">Scarica PDF</translation>
 <translation id="7943837619101191061">Aggiungi posizione...</translation>
 <translation id="7944173382284143968">Il sito web richiede la conferma dell'OTP prima di salvare la nuova password. Intervieni manualmente per completare la modifica.</translation>

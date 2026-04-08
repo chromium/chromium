@@ -2719,6 +2719,7 @@
 <translation id="5255833070095767006">350 x 460 公釐</translation>
 <translation id="5257739419779698609">{0,plural, =1{根據管理員政策，建議你不要將這個檔案複製到「<ph name="DESTINATION_NAME" />」}other{根據管理員政策，建議你不要將這些檔案複製到「<ph name="DESTINATION_NAME" />」}}</translation>
 <translation id="5258473597674772367">「<ph name="GROUP_NAME" />」分頁群組已無法使用</translation>
+<translation id="5262342527470539728">這項資訊會儲存在 <ph name="ACCOUNT" /> 的 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /></translation>
 <translation id="5263867360296733198">上傳檔案前請務必確認</translation>
 <translation id="5266128565379329178">裝訂 (頂端)</translation>
 <translation id="5269225904387178860">四孔 (底部)</translation>
@@ -4769,6 +4770,7 @@
 其他詳細資料：
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">這次允許使用麥克風</translation>
+<translation id="8421746712901926961">將資訊儲存在 <ph name="GOOGLE_WALLET_TITLE_1" />，處理事務更有效率，例如在 Google 產品中輕鬆填寫表單。你可以在 <ph name="GOOGLE_WALLET_TITLE_2" />中為 <ph name="ACCOUNT" /> <ph name="MANAGE_INFO_LINK" />。</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">變更</translation>
 <translation id="8426945547715537628">要允許覆寫鍵盤嗎？</translation>
@@ -4825,6 +4827,7 @@
 <translation id="8521812709849134608">廚房流理台</translation>
 <translation id="8522180136695974431">信用報告與監控</translation>
 <translation id="8522552481199248698">Chrome 可協助你保護 Google 帳戶並變更密碼。</translation>
+<translation id="852450791482410042">立即付款</translation>
 <translation id="8527228059738193856">揚聲器</translation>
 <translation id="8527681393107582734">農林業</translation>
 <translation id="8528149813106025610">童裝</translation>

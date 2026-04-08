@@ -2721,6 +2721,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Nid yw'r polisi gweinyddwr yn argymell copïo'r ffeil hon i <ph name="DESTINATION_NAME" />}zero{Nid yw'r polisi gweinyddwr yn argymell copïo'r ffeiliau hyn i <ph name="DESTINATION_NAME" />}two{Nid yw'r polisi gweinyddwr yn argymell copïo'r ffeiliau hyn i <ph name="DESTINATION_NAME" />}few{Nid yw'r polisi gweinyddwr yn argymell copïo'r ffeiliau hyn i <ph name="DESTINATION_NAME" />}many{Nid yw'r polisi gweinyddwr yn argymell copïo'r ffeiliau hyn i <ph name="DESTINATION_NAME" />}other{Nid yw'r polisi gweinyddwr yn argymell copïo'r ffeiliau hyn i <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">Nid yw'r grŵp tab "<ph name="GROUP_NAME" />" ar gael mwyach</translation>
+<translation id="5262342527470539728">Mae eich gwybodaeth yn cael ei chadw yn <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> ar gyfer <ph name="ACCOUNT" /></translation>
 <translation id="5263867360296733198">Mae angen adolygiad cyn uwchlwytho</translation>
 <translation id="5266128565379329178">Rhwymo i'r brig</translation>
 <translation id="5269225904387178860">Pedwar twll ar y gwaelod</translation>
@@ -4770,6 +4771,7 @@ Manylion ychwanegol:
 Manylion ychwanegol:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Caniateir y meicroffon y tro hwn</translation>
+<translation id="8421746712901926961">Cadwch eich gwybodaeth yn <ph name="GOOGLE_WALLET_TITLE_1" /> a chael pethau wedi'u gwneud yn gyflymach, megis llenwi ffurflenni ar draws cynhyrchion Google. Gallwch <ph name="MANAGE_INFO_LINK" /> yn <ph name="GOOGLE_WALLET_TITLE_2" /> ar gyfer <ph name="ACCOUNT" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Newid</translation>
 <translation id="8426945547715537628">Caniatáu diystyru bysellfwrdd?</translation>

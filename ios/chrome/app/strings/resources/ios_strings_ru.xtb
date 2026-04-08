@@ -255,6 +255,7 @@
 <translation id="1861067954551502701">{count,plural, =1{Пароль {position} из {count}}one{Пароль {position} из {count}}few{Пароль {position} из {count}}many{Пароль {position} из {count}}other{Пароль {position} из {count}}}</translation>
 <translation id="1861262398884155592">Папка пуста</translation>
 <translation id="1864266050569350424">На сайте, где вы сохранили пароль, нажмите на поле пароля для входа.</translation>
+<translation id="1866700949421703765">Скрыть кнопку "Включить режим чтения"</translation>
 <translation id="1872096359983322073">Вспышка</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Пригласите участников в семейную группу</translation>
@@ -353,6 +354,7 @@
 <translation id="2214453882118345682">Покупайте товары, переводите тексты и выполняйте поиск с помощью камеры.</translation>
 <translation id="2215819824168709130">Скрыть карточку с отслеживанием цен</translation>
 <translation id="2216366330550244277">Перейдите на страницу товара.</translation>
+<translation id="2219935992754556187">Chrome защищает ваши конфиденциальные данные с помощью Face ID.</translation>
 <translation id="2220529011494928058">Сообщить о проблеме</translation>
 <translation id="2223461067862937305">Создать QR-код</translation>
 <translation id="2225701818156393674">Товар добавлен в список отслеживаемых.</translation>
@@ -459,6 +461,7 @@
 <translation id="2583688836549072561">Группа вкладок, <ph name="GROUP_TITLE" />, вкладок: <ph name="TABS_NUMBER" />, новые действия.</translation>
 <translation id="2593272815202181319">Моноширинный</translation>
 <translation id="2601778637777010194">Отслеживайте скидки на товары.</translation>
+<translation id="2602372807870028932">Будут удалены выбранные данные, сохраненные на этом устройстве.</translation>
 <translation id="260378315836159338">В верхней части экрана нажмите на значок "+".</translation>
 <translation id="2612676031748830579">Номер карты</translation>
 <translation id="261305050785128654">Укажите, какими языками вы владеете. Тогда контент на сайтах будет по возможности показываться на выбранных языках.</translation>
@@ -960,6 +963,7 @@
 <translation id="4469324811108161144">Максимальное количество символов в примечании: <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4471472356135655769">Не удалось экспортировать пароли</translation>
 <translation id="4472575034687746823">Начать</translation>
+<translation id="4473565697543262065">Будут удалены выбранные данные, сохраненные на этом устройстве и в вашем аккаунте Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="4473608001744970767">Скрыть раздел "Отслеживание цен"</translation>
 <translation id="4474142134969976028">Ничего не найдено</translation>
 <translation id="4474494258097106883">Создан специально для iPhone</translation>
@@ -1577,6 +1581,7 @@
 <translation id="6532106788206463496">Сохранить</translation>
 <translation id="6536759809440150308">Открыть группу "<ph name="GROUP_TITLE" />", <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6538776393003671043">Chrome предложит сохранить их в Google Кошельке при следующем использовании.</translation>
 <translation id="6543899060872618437">Оплачивайте покупки быстрее благодаря автозаполнению на всех устройствах</translation>
 <translation id="6550675742724504774">Параметры</translation>
 <translation id="6550891580932862748">Не защищает вас от опасных сайтов, расширений и скачиваемых файлов. Этот вариант не повлияет на настройки Безопасного просмотра в других продуктах Google.</translation>
@@ -1977,6 +1982,7 @@
 <translation id="7952670906562503188">Вы собираетесь удалить ключи доступа ({passkey_count}), а также список сайтов и приложений, данные для входа в которые не сохраняются. Аккаунты, созданные для сайтов и приложений, не будут удалены.</translation>
 <translation id="7958575506592576831">Сведения о надежности страницы</translation>
 <translation id="7961015016161918242">Никогда</translation>
+<translation id="7971651328518569075">Скрыть кнопку "Выключить режим чтения"</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Запуск</translation>
 <translation id="797588153137233716">Меню → История → Удалить данные о работе в браузере</translation>
@@ -1993,6 +1999,7 @@
 <translation id="8005666035647241369">В Google Менеджере паролей на этом устройстве</translation>
 <translation id="8010488806779226127">Попробуйте функции, которые расширяют ваши возможности в интернете.</translation>
 <translation id="8011489434346330032">Веб-инспектор</translation>
+<translation id="8014007212279733632">Подтверждать личность при автозаполнении конфиденциальной информации</translation>
 <translation id="8015826420689927262">Удалить прикрепленный файл</translation>
 <translation id="8017015647846870183">Из Google Менеджера паролей, в том числе пароли и ключи доступа</translation>
 <translation id="802154636333426148">Ошибка скачивания</translation>
@@ -2379,6 +2386,7 @@
 <translation id="984275831282074731">Способы оплаты</translation>
 <translation id="985379595344853742">Закрыть все вкладки инкогнито</translation>
 <translation id="988141524645182168">Другие устройства</translation>
+<translation id="994184244350700431">Данные будут добавлены в Google Кошелек пользователя <ph name="USER_EMAIL" />.</translation>
 <translation id="995174784802614337">{count,plural, =1{Импортирован {count} ключ доступа}one{Импортирован {count} ключ доступа}few{Импортировано {count} ключа доступа}many{Импортировано {count} ключей доступа}other{Импортировано {count} ключа доступа}}</translation>
 <translation id="999768147936949692">Сейчас вы можете делиться паролями только с участниками семейной группы. <ph name="BEGIN_LINK" />Пригласите в нее пользователей<ph name="END_LINK" /> и предоставьте им доступ к продуктам и подпискам Google.</translation>
 </translationbundle>

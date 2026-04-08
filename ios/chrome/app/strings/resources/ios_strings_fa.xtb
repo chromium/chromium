@@ -255,6 +255,7 @@
 <translation id="1861067954551502701">{count,plural, =1{‫{position} از {count} گذرواژه}one{‫{position} از {count} گذرواژه}other{‫{position} از {count} گذرواژه}}</translation>
 <translation id="1861262398884155592">این پوشه خالی است</translation>
 <translation id="1864266050569350424">در سایتی که گذرواژه را ذخیره کرده‌اید، روی فیلد گذرواژه ورود به سیستم تک‌ضرب بزنید.</translation>
+<translation id="1866700949421703765">پنهان کردن «روشن کردن حالت خواندن»</translation>
 <translation id="1872096359983322073">چراغ‌قوه</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">دعوت از اعضای خانواده</translation>
@@ -353,6 +354,7 @@
 <translation id="2214453882118345682">آنچه را می‌بینید با دوربینتان بخرید، ترجمه کنید، و شناسایی کنید.</translation>
 <translation id="2215819824168709130">پنهان کردن کارت «ردگیری قیمت»</translation>
 <translation id="2216366330550244277">رفتن به صفحه محصول</translation>
+<translation id="2219935992754556187">‏Chrome بااستفاده از Face ID امنیت داده‌های حساس شما را حفظ می‌کند.</translation>
 <translation id="2220529011494928058">گزارش یک مشکل</translation>
 <translation id="2223461067862937305">ایجاد رمزینه پاسخ‌سریع</translation>
 <translation id="2225701818156393674">محصول به فهرست محصولات ردیابی‌شده‌تان افزوده شد.</translation>
@@ -459,6 +461,7 @@
 <translation id="2583688836549072561">گروه زبانه‌ها، <ph name="GROUP_TITLE" />،‏ <ph name="TABS_NUMBER" /> زبانه، فعالیت جدید.</translation>
 <translation id="2593272815202181319">قلم‌های با عرض ثابت</translation>
 <translation id="2601778637777010194">کاهش قیمت محصولات را پیگیری کنید</translation>
+<translation id="2602372807870028932">این کار، اطلاعات انتخابی ذخیره‌شده در این دستگاه را حذف می‌کند</translation>
 <translation id="260378315836159338">در بالای صفحه، روی + تک‌ضرب بزنید</translation>
 <translation id="2612676031748830579">شماره کارت</translation>
 <translation id="261305050785128654">به وب‌سایت‌ها اجازه دهید زبان‌هایی را که صحبت می‌کنید بدانند. این وب‌سایت‌ها درصورت امکان محتوا را به آن زبان‌ها نشان می‌دهند.</translation>
@@ -960,6 +963,7 @@
 <translation id="4469324811108161144">یادداشت باید حداکثر <ph name="CHARACTER_LIMIT" /> نویسه داشته باشد.</translation>
 <translation id="4471472356135655769">گذرواژه‌ها صادر نشد</translation>
 <translation id="4472575034687746823">شروع کنید</translation>
+<translation id="4473565697543262065">‏این کار اطلاعات انتخابی ذخیره‌شده در این دستگاه و در «حساب Google» شما <ph name="USER_EMAIL" /> را حذف می‌کند</translation>
 <translation id="4473608001744970767">پنهان کردن پیگیری قیمت</translation>
 <translation id="4474142134969976028">نتیجه منطبقی پیدا نشد</translation>
 <translation id="4474494258097106883">‏ساخته‌شده برای iPhone شما</translation>
@@ -1577,6 +1581,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6532106788206463496">ذخیره تغییرات</translation>
 <translation id="6536759809440150308">باز کردن «<ph name="GROUP_TITLE" />»، گروه <ph name="NUMBER_OF_TABS" />، <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6538776393003671043">‏دفعه بعدی که از آن استفاده کنید، Chrome پیشنهاد می‌دهد آن را در «کیف پول Google» ذخیره کنید</translation>
 <translation id="6543899060872618437">با تکمیل خودکار در دستگاه‌های خود، سریع‌تر تسویه‌حساب کنید</translation>
 <translation id="6550675742724504774">گزینه‌ها</translation>
 <translation id="6550891580932862748">‏دربرابر وب‌سایت‌ها، بارگیری‌ها، و افزونه‌های خطرناک از شما محافظت نمی‌کند. تنظیمات «مرور ایمن» شما در دیگر محصولات Google تحت‌تأثیر قرار نخواهد گرفت.</translation>
@@ -1977,6 +1982,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7952670906562503188">‏شما درآستانه حذف {passkey_count} گذرکلید و فهرست سایت‌ها و برنامه‌هایی هستید که انتخاب کرده‌اید هرگز اطلاعات ورود به سیستم را ذخیره نکنند. هیچ‌کدام از حساب‌هایی که برای سایت‌ها یا برنامه‌ها ایجاد کرده‌اید حذف نخواهد شد.</translation>
 <translation id="7958575506592576831">اطلاعات امنیتی صفحه</translation>
 <translation id="7961015016161918242">هرگز</translation>
+<translation id="7971651328518569075">پنهان کردن «خاموش کردن حالت خواندن»</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">امتحان کنید</translation>
 <translation id="797588153137233716">منو ← سابقه ← حذف داده‌های مرور</translation>
@@ -1993,6 +1999,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8005666035647241369">‏در «مدیر گذرواژه Google» در این دستگاه</translation>
 <translation id="8010488806779226127">ویژگی‌هایی را کاوش کنید که می‌تواند به شما در انجام کارهای بیشتر درحین مرور کمک کند</translation>
 <translation id="8011489434346330032">بازرس وب</translation>
+<translation id="8014007212279733632">برای تکمیل خودکار اطلاعات حساس، هویتتان را درستی‌سنجی کنید</translation>
 <translation id="8015826420689927262">حذف پیوست</translation>
 <translation id="8017015647846870183">‏از «مدیر گذرواژه Google»، ازجمله گذرواژه‌ها و گذرکلیدها</translation>
 <translation id="802154636333426148">بارگیری نشد</translation>
@@ -2379,6 +2386,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="984275831282074731">روش‌های پرداخت</translation>
 <translation id="985379595344853742">بستن همه برگه‌های «ناشناس»</translation>
 <translation id="988141524645182168">دستگاه‌های دیگر</translation>
+<translation id="994184244350700431">‏در «کیف پول Google» مربوط به <ph name="USER_EMAIL" /></translation>
 <translation id="995174784802614337">{count,plural, =1{‫{count} گذرکلید وارد شد}one{‫{count} گذرکلید وارد شد}other{‫{count} گذرکلید وارد شد}}</translation>
 <translation id="999768147936949692">‏درحال‌حاضر، می‌توانید گذرواژه‌ها را فقط با اعضای خانواده هم‌رسانی کنید. <ph name="BEGIN_LINK" />از اعضای خانواده دعوت کنید<ph name="END_LINK" /> به گروهتان بپیوندند تا از محصولات و اشتراک‌ها در سراسر Google بهره بیشتری ببرید.</translation>
 </translationbundle>

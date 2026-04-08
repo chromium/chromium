@@ -325,6 +325,7 @@
 <translation id="1210678701920254279">プリンタを表示または追加して、アクティブな印刷ジョブを確認する</translation>
 <translation id="1211769675100312947">ユーザーが選択したショートカットが表示されます</translation>
 <translation id="1215411991991485844">新しいバックグラウンド アプリが追加されました</translation>
+<translation id="121586831132481915">タブの自動展開をオフにする</translation>
 <translation id="1216542092748365687">指紋の削除</translation>
 <translation id="1216628023580643945">スキルの名前を入力</translation>
 <translation id="1216891999012841486">更新エラー修正の詳細</translation>
@@ -545,6 +546,7 @@
 <translation id="1365650529628379165">両眉を上げる</translation>
 <translation id="1367817137674340530">画像を <ph name="COUNT" /> 枚生成しました</translation>
 <translation id="1368603372088757436">Linux はお使いの <ph name="DEVICE_TYPE" /> ではサポートされていません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
+<translation id="1369687552722438128">このメッセージを表示しない</translation>
 <translation id="1370249617397887619">他のデバイスで使用するには、Google アカウントに保存してください</translation>
 <translation id="1370384480654163477">前回このサイトにアクセスしたときのファイルを表示、編集する。</translation>
 <translation id="1371253136879578532">Gemini でキーボード ショートカットを使用して画面の一部を選択できます。</translation>
@@ -1955,6 +1957,7 @@
 <translation id="2328137272841210255">PIN をリセット</translation>
 <translation id="2328474416100889417">全員が「<ph name="GROUP_NAME" />」タブグループに直ちにアクセスできなくなり、招待リンクはすべて無効になります</translation>
 <translation id="2328561734797404498"><ph name="APP_NAME" /> を使用するには、デバイスを再起動してください。</translation>
+<translation id="2328773543844041445">カーソルを合わせたときにタブを自動的に展開する</translation>
 <translation id="2329597144923131178">ログインすると、お使いのどのデバイスでも同じブックマーク、履歴、パスワード、その他の設定を利用できるようになります。</translation>
 <translation id="2330182457402792918">このサイトに読み取りを許可するファイルを選択してください</translation>
 <translation id="2332115969598251205"><ph name="PRIMARY_EMAIL" /> に保存されているデバイスを読み込めません。インターネット接続を確認してから、もう一度お試しください。</translation>
@@ -2745,6 +2748,7 @@
 <translation id="2869511363030898130"><ph name="APP_NAME" /> アプリで開く</translation>
 <translation id="2870560284913253234">ウェブサイト</translation>
 <translation id="2870909136778269686">更新しています...</translation>
+<translation id="2871029453856004998">このアプリは危険な可能性があるため、Google によってブロックされました</translation>
 <translation id="2871733351037274014">ページをプリロードする</translation>
 <translation id="2871813825302180988">このアカウントは既にこのデバイスで使用されています。</translation>
 <translation id="287205682142673348">ポート転送</translation>
@@ -4838,6 +4842,7 @@
 <translation id="4327380114687339519">拡張機能メニュー</translation>
 <translation id="4330191372652740264">氷水</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" />を翻訳しない</translation>
+<translation id="4330963457501417204">折りたたまれたタブにカーソルを合わせて展開する</translation>
 <translation id="4332976768901252016">保護者による使用制限を設定する</translation>
 <translation id="4334768748331667190"><ph name="MODULE_NAME" /> は今後表示されません</translation>
 <translation id="4335835283689002019">セーフ ブラウジングはオフになっています</translation>
@@ -6222,6 +6227,7 @@
 <translation id="5302048478445481009">言語</translation>
 <translation id="5302435492906794790">近くの検出可能なデバイスを探しています...</translation>
 <translation id="5302932258331363306">置換するテキストを表示</translation>
+<translation id="5304952564528359007">タブの自動展開をオフにする</translation>
 <translation id="5305145881844743843">このアカウントは <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> によって管理されています</translation>
 <translation id="5307030433605830021">サポートされていないソースです</translation>
 <translation id="5307386115243749078">Bluetooth スイッチのペア設定</translation>
@@ -7736,6 +7742,7 @@
 <translation id="6400360390396538896"><ph name="ORIGIN" /> では常に許可</translation>
 <translation id="6401118106417399952">デバイスの EID は <ph name="EID_NUMBER" />、デバイスのシリアル番号は <ph name="SERIAL_NUMBER" /> です。これらの番号を使用して、サービスを有効にできます。</translation>
 <translation id="6401458660421980302">このタブを別のデバイスに送信するには、送信先のデバイスで Chrome にログインしてください</translation>
+<translation id="6402042774506839496">理由については、アプリ デベロッパーにお問い合わせください</translation>
 <translation id="6402921224457714577">サイトによる MIDI デバイスの操作と再プログラムを許可する</translation>
 <translation id="6404511346730675251">ブックマークを編集</translation>
 <translation id="640457954117263537">ChromeOS と Android のアプリやサービスで位置情報を使用する。</translation>
@@ -8019,6 +8026,7 @@
 <translation id="6599829027342135752"><ph name="APP_NAME" /> でセキュリティ キーを使用するには、セキュリティ キーを差し込んでタッチしてください</translation>
 <translation id="6601262427770154296">単語リストの管理</translation>
 <translation id="6602173570135186741">自動入力とパスワード</translation>
+<translation id="6602173667290651224">サイトのショートカットは見つかりませんでした</translation>
 <translation id="6602336931411102724">ブックマーク バーにタブグループを表示する</translation>
 <translation id="6602937173026466876">プリンタへのアクセス</translation>
 <translation id="6602956230557165253">ナビゲートするには左右の矢印キーを使用します。</translation>
@@ -8583,6 +8591,7 @@
 <translation id="6988572888918530647">Google アカウントを管理する</translation>
 <translation id="6989274756151920076">このまま続行</translation>
 <translation id="6991665348624301627">送信先の選択</translation>
+<translation id="6992078676798011826">権限を削除できませんでした。しばらくしてからもう一度お試しください。</translation>
 <translation id="6992554835374084304">拡張スペルチェックの有効化</translation>
 <translation id="6993000214273684335">タブを名前のないグループから移動しました - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6995984090981858039">ChromeOS のデバイス情報とデータを読み取る</translation>
@@ -9277,6 +9286,7 @@
 <translation id="7478658909253570368">サイトにシリアルポートへの接続を許可しない</translation>
 <translation id="7479221278376295180">ストレージ使用状況</translation>
 <translation id="747981547666531654"><ph name="FIRST_DEVICE" /> および <ph name="SECOND_DEVICE" /> という名前の Bluetooth デバイスに接続しました</translation>
+<translation id="7480076846077373008">メッセージのその他の操作</translation>
 <translation id="7481213027396403996">Chrome の最高水準のセキュリティで保護</translation>
 <translation id="7481312909269577407">進む</translation>
 <translation id="7481358317100446445">準備完了</translation>
@@ -9708,6 +9718,7 @@
 <translation id="7774581652827321413">このページに関して、概要、関連する検索、その他の有益な情報を確認できます</translation>
 <translation id="7774792847912242537">リクエストが多すぎます。</translation>
 <translation id="7775694664330414886">タブを名前のないグループに移動しました - <ph name="GROUP_CONTENTS" /></translation>
+<translation id="7776106026456236463">折りたたまれたタブにカーソルを合わせて展開する</translation>
 <translation id="777637629667389858">ログイン中、すべての Google サービスで保護します。</translation>
 <translation id="7776701556330691704">音声が見つかりません</translation>
 <translation id="7776950606649732730">ファイルの同期が完了してから、もう一度お試しください。</translation>
@@ -11162,6 +11173,7 @@
 <translation id="8767069439158587614"><ph name="QUERY_CLUSTER_NAME" /> のすべての検索を表示</translation>
 <translation id="8767621466733104912">すべてのユーザーに対して Chrome を自動的に更新</translation>
 <translation id="8768049274922835860">全員</translation>
+<translation id="8768559850883798245">タブの自動展開をオンにする</translation>
 <translation id="8769047324653576116">組織のプロフィールでデバイスを使用するには、デバイスに関する情報を組織に提供する必要があります。
 
 これには、インストールしたソフトウェア、ファイル、ブラウザ、デバイスのオペレーティング システム、IP アドレスに関する情報が含まれます。</translation>
@@ -11501,6 +11513,7 @@
 <translation id="8993853206419610596">すべてのリクエストを開く</translation>
 <translation id="8993945059918628059">指紋認証センサーに指を置いてください。指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="899403249577094719">Netscape 証明書基本 URL</translation>
+<translation id="8996080012222587839">タブの自動展開をオンにする</translation>
 <translation id="8996978916555523196">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{この拡張機能は Google アカウントに保存されていますが、このデバイスにのみ保存されているデータは削除される可能性があります}other{これらの拡張機能は Google アカウントに保存されていますが、このデバイスにのみ保存されているデータは削除される可能性があります}}</translation>
 <translation id="8999027165951679951">非アクティブなタブ: <ph name="MEMORY_SAVINGS" /> を解放しました</translation>
 <translation id="8999560016882908256">セクションの構文エラーです: <ph name="ERROR_LINE" /></translation>

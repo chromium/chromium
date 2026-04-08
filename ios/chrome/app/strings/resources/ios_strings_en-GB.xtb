@@ -255,6 +255,7 @@
 <translation id="1861067954551502701">{count,plural, =1{{position} of {count} password}other{{position} of {count} passwords}}</translation>
 <translation id="1861262398884155592">This folder is empty</translation>
 <translation id="1864266050569350424">On a site where you've saved a password, tap the sign-in password field.</translation>
+<translation id="1866700949421703765">Hide Turn on reading mode</translation>
 <translation id="1872096359983322073">Torch</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Invite family members</translation>
@@ -353,6 +354,7 @@
 <translation id="2214453882118345682">Shop, translate and identify what you see with your camera.</translation>
 <translation id="2215819824168709130">Hide track price card</translation>
 <translation id="2216366330550244277">Go to the page of a product</translation>
+<translation id="2219935992754556187">Chrome keeps your sensitive data secure with Face ID</translation>
 <translation id="2220529011494928058">Report an issue</translation>
 <translation id="2223461067862937305">Create a QR code</translation>
 <translation id="2225701818156393674">Product added to your list of tracked products.</translation>
@@ -459,6 +461,7 @@
 <translation id="2583688836549072561">Tab group, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> tabs, new activity.</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Track price drops of products</translation>
+<translation id="2602372807870028932">This deletes selected info saved on this device</translation>
 <translation id="260378315836159338">At the top of the screen, tap +</translation>
 <translation id="2612676031748830579">Card number</translation>
 <translation id="261305050785128654">Let websites know the languages that you speak. They'll show content in those languages, when possible.</translation>
@@ -960,6 +963,7 @@
 <translation id="4469324811108161144">Notes can save up to <ph name="CHARACTER_LIMIT" /> characters.</translation>
 <translation id="4471472356135655769">Can't export passwords</translation>
 <translation id="4472575034687746823">Get started</translation>
+<translation id="4473565697543262065">This deletes selected info saved on this device and in your Google Account <ph name="USER_EMAIL" /></translation>
 <translation id="4473608001744970767">Hide Track price</translation>
 <translation id="4474142134969976028">No matching results</translation>
 <translation id="4474494258097106883">Built for your iPhone</translation>
@@ -1577,6 +1581,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6532106788206463496">Save changes</translation>
 <translation id="6536759809440150308">Open <ph name="GROUP_TITLE" />, group of <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6538776393003671043">Chrome will offer to save it in Google Wallet next time you use it</translation>
 <translation id="6543899060872618437">Check out faster with autofill across your devices</translation>
 <translation id="6550675742724504774">Options</translation>
 <translation id="6550891580932862748">Does not protect you against dangerous websites, downloads and extensions. Your Safe Browsing settings in other Google products won't be affected.</translation>
@@ -1977,6 +1982,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7952670906562503188">You are about to delete {passkey_count} passkeys and the list of sites and apps for which you chose to never save sign-in info. Any account that you created for sites and apps won't be deleted.</translation>
 <translation id="7958575506592576831">Page security info</translation>
 <translation id="7961015016161918242">Never</translation>
+<translation id="7971651328518569075">Hide Turn off reading mode</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Try</translation>
 <translation id="797588153137233716">Menu → History → Delete browsing data</translation>
@@ -1993,6 +1999,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8005666035647241369">To Google Password Manager on this device</translation>
 <translation id="8010488806779226127">Explore features that can help you do more as you browse</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
+<translation id="8014007212279733632">Verify that it's you to autofill sensitive info</translation>
 <translation id="8015826420689927262">Delete attachment</translation>
 <translation id="8017015647846870183">From Google Password Manager, including passwords and passkeys</translation>
 <translation id="802154636333426148">Download failed</translation>
@@ -2379,6 +2386,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="984275831282074731">Payment methods</translation>
 <translation id="985379595344853742">Close all Incognito tabs</translation>
 <translation id="988141524645182168">Other devices</translation>
+<translation id="994184244350700431">In Google Wallet for <ph name="USER_EMAIL" /></translation>
 <translation id="995174784802614337">{count,plural, =1{Imported {count} passkey}other{Imported {count} passkeys}}</translation>
 <translation id="999768147936949692">For now, you can only share passwords with family members. <ph name="BEGIN_LINK" />Invite family members<ph name="END_LINK" /> to join your group and get more from your products and subscriptions across Google.</translation>
 </translationbundle>

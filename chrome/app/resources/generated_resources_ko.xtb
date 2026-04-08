@@ -325,6 +325,7 @@
 <translation id="1210678701920254279">프린터를 확인 또는 추가하고 활성화된 인쇄 작업 보기</translation>
 <translation id="1211769675100312947">내가 선별한 바로가기입니다.</translation>
 <translation id="1215411991991485844">새 백그라운드 앱을 추가함</translation>
+<translation id="121586831132481915">탭 자동 펼치기 사용 중지</translation>
 <translation id="1216542092748365687">지문 삭제</translation>
 <translation id="1216628023580643945">기능 이름 지정</translation>
 <translation id="1216891999012841486">업데이트 오류 수정에 관해 자세히 알아보기</translation>
@@ -545,6 +546,7 @@
 <translation id="1365650529628379165">눈썹 올리기</translation>
 <translation id="1367817137674340530">이미지 <ph name="COUNT" />개가 생성되었습니다</translation>
 <translation id="1368603372088757436">사용 중인 <ph name="DEVICE_TYPE" />에서 Linux가 지원되지 않습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
+<translation id="1369687552722438128">이 프로모션 표시 안 함</translation>
 <translation id="1370249617397887619">다른 기기에서 이 비밀번호를 사용하려면 Google 계정에 저장하세요.</translation>
 <translation id="1370384480654163477">이 사이트를 마지막으로 방문했을 때의 파일을 보고 수정합니다.</translation>
 <translation id="1371253136879578532">Gemini에서 화면의 일부를 선택하려면 단축키를 사용하세요.</translation>
@@ -1975,6 +1977,7 @@
 <translation id="2328137272841210255">PIN 재설정</translation>
 <translation id="2328474416100889417">모든 사용자가 '<ph name="GROUP_NAME" />' 탭 그룹에 대한 액세스 권한을 즉시 잃게 되며, 모든 초대 링크가 사용 중지됩니다.</translation>
 <translation id="2328561734797404498"><ph name="APP_NAME" /> 앱을 사용하려면 기기를 다시 시작해 주세요.</translation>
+<translation id="2328773543844041445">마우스를 가져가면 탭 자동 펼치기</translation>
 <translation id="2329597144923131178">로그인하면 모든 기기에서 북마크, 방문 기록, 비밀번호, 기타 설정을 사용할 수 있습니다.</translation>
 <translation id="2330182457402792918">이 사이트에서 읽을 수 있는 파일을 선택하세요</translation>
 <translation id="2332115969598251205"><ph name="PRIMARY_EMAIL" />에 저장된 기기를 로드할 수 없습니다. 인터넷 연결을 확인하고 다시 시도해 보세요.</translation>
@@ -2766,6 +2769,7 @@
 <translation id="2869511363030898130"><ph name="APP_NAME" /> 앱에서 열기</translation>
 <translation id="2870560284913253234">사이트</translation>
 <translation id="2870909136778269686">업데이트 중...</translation>
+<translation id="2871029453856004998">위험할 수 있는 앱이므로 Google에서 차단했습니다.</translation>
 <translation id="2871733351037274014">페이지 미리 로드</translation>
 <translation id="2871813825302180988">이 기기에서 이미 사용하고 있는 계정입니다.</translation>
 <translation id="287205682142673348">포트 전달</translation>
@@ -4861,6 +4865,7 @@
 <translation id="4327380114687339519">확장 프로그램 메뉴</translation>
 <translation id="4330191372652740264">얼음물</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> 번역 안함</translation>
+<translation id="4330963457501417204">마우스를 가져가면 접힌 탭이 펼쳐집니다</translation>
 <translation id="4332976768901252016">자녀 보호 기능 설정하기</translation>
 <translation id="4334768748331667190"><ph name="MODULE_NAME" />가 다시 표시되지 않습니다.</translation>
 <translation id="4335835283689002019">세이프 브라우징 사용 안함</translation>
@@ -6250,6 +6255,7 @@
 <translation id="5302048478445481009">언어</translation>
 <translation id="5302435492906794790">근처의 검색 가능한 기기를 찾는 중…</translation>
 <translation id="5302932258331363306">텍스트 대치</translation>
+<translation id="5304952564528359007">탭 자동 펼치기 사용 중지</translation>
 <translation id="5305145881844743843"><ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" />에서 관리하는 계정입니다.</translation>
 <translation id="5307030433605830021">지원되지 않는 소스</translation>
 <translation id="5307386115243749078">블루투스 스위치 페어링</translation>
@@ -7765,6 +7771,7 @@
 <translation id="6400360390396538896"><ph name="ORIGIN" />에서 항상 사용</translation>
 <translation id="6401118106417399952">기기 EID는 <ph name="EID_NUMBER" />이며 기기 일련번호는 <ph name="SERIAL_NUMBER" />입니다. 이 번호를 사용하여 서비스를 활성화할 수 있습니다.</translation>
 <translation id="6401458660421980302">이 탭을 다른 기기로 보내려면 해당 기기에서 Chrome에 로그인하세요.</translation>
+<translation id="6402042774506839496">이유를 알아보려면 앱 개발자에게 문의하세요.</translation>
 <translation id="6402921224457714577">사이트에서 MIDI 기기를 제어하고 다시 프로그래밍하도록 요청할 수 있음</translation>
 <translation id="6404511346730675251">북마크 수정</translation>
 <translation id="640457954117263537">ChromeOS 및 Android의 앱과 서비스에 위치를 사용합니다.</translation>
@@ -8049,6 +8056,7 @@
 <translation id="6599829027342135752"><ph name="APP_NAME" />에서 사용하려면 보안 키를 삽입하고 터치하세요</translation>
 <translation id="6601262427770154296">사용자 사전 관리</translation>
 <translation id="6602173570135186741">자동 완성 및 비밀번호</translation>
+<translation id="6602173667290651224">사이트 바로가기를 찾을 수 없음</translation>
 <translation id="6602336931411102724">북마크바에 탭 그룹 표시</translation>
 <translation id="6602937173026466876">프린터에 액세스</translation>
 <translation id="6602956230557165253">오른쪽/왼쪽 화살표 키를 사용하여 탐색합니다.</translation>
@@ -8614,6 +8622,7 @@
 <translation id="6988572888918530647">Google 계정 관리</translation>
 <translation id="6989274756151920076">계속하기</translation>
 <translation id="6991665348624301627">대상 선택</translation>
+<translation id="6992078676798011826">권한을 삭제할 수 없습니다. 나중에 다시 시도하세요.</translation>
 <translation id="6992554835374084304">향상된 맞춤법 검사 기능 사용 설정</translation>
 <translation id="6993000214273684335">이름이 지정되지 않은 그룹에서 탭이 제거됨 - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6995984090981858039">ChromeOS 기기 정보와 데이터를 읽습니다.</translation>
@@ -9307,6 +9316,7 @@
 <translation id="7478658909253570368">사이트에서 직렬 포트에 연결하도록 허용하지 않음</translation>
 <translation id="7479221278376295180">저장용량 사용량 개요</translation>
 <translation id="747981547666531654"><ph name="FIRST_DEVICE" /> 및 <ph name="SECOND_DEVICE" /> 블루투스 기기에 연결되었습니다</translation>
+<translation id="7480076846077373008">프로모션 관련 작업 더보기</translation>
 <translation id="7481213027396403996">Chrome의 가장 강력한 보안 기능을 이용하세요</translation>
 <translation id="7481312909269577407">앞으로</translation>
 <translation id="7481358317100446445">준비</translation>
@@ -9739,6 +9749,7 @@
 <translation id="7774581652827321413">이 페이지에 관한 페이지 요약, 관련 검색어, 기타 유용한 정보를 받습니다.</translation>
 <translation id="7774792847912242537">요청 횟수가 너무 많습니다.</translation>
 <translation id="7775694664330414886">이름이 지정되지 않은 그룹으로 탭을 이동함 - <ph name="GROUP_CONTENTS" /></translation>
+<translation id="7776106026456236463">마우스를 가져가면 접힌 탭이 펼쳐집니다</translation>
 <translation id="777637629667389858">로그인하면 Google 서비스 전반에서 사용자를 보호합니다.</translation>
 <translation id="7776701556330691704">음성을 찾을 수 없음</translation>
 <translation id="7776950606649732730">파일 동기화가 완료된 후 다시 시도해 보세요.</translation>
@@ -11193,6 +11204,7 @@
 <translation id="8767069439158587614"><ph name="QUERY_CLUSTER_NAME" />에 관한 모든 검색어 표시</translation>
 <translation id="8767621466733104912">모든 사용자의 Chrome 자동 업데이트</translation>
 <translation id="8768049274922835860">모든 사용자</translation>
+<translation id="8768559850883798245">탭 자동 펼치기 사용 설정</translation>
 <translation id="8769047324653576116">조직 프로필을 통해 기기를 사용하려면 조직에 이 기기와 관련된 정보가 필요합니다.
 
 이러한 정보에는 설치된 소프트웨어, 파일, 브라우저, 기기 운영체제, IP 주소에 관한 정보 등이 포함될 수 있습니다.</translation>
@@ -11532,6 +11544,7 @@
 <translation id="8993853206419610596">모든 요청 펼치기</translation>
 <translation id="8993945059918628059">손가락으로 지문 센서를 터치하세요. 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
 <translation id="899403249577094719">Netscape Certificate Base URL</translation>
+<translation id="8996080012222587839">탭 자동 펼치기 사용 설정</translation>
 <translation id="8996978916555523196">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{이 확장 프로그램은 Google 계정에 저장되지만, 이 기기에만 저장된 데이터는 삭제될 수도 있습니다.}other{이 확장 프로그램은 Google 계정에 저장되지만, 이 기기에만 저장된 데이터는 삭제될 수도 있습니다.}}</translation>
 <translation id="8999027165951679951">비활성 탭: <ph name="MEMORY_SAVINGS" /> 확보됨</translation>
 <translation id="8999560016882908256">섹션 구문 오류: <ph name="ERROR_LINE" /></translation>

@@ -255,6 +255,7 @@
 <translation id="1861067954551502701">{count,plural, =1{{count} 件中 {position} 件目のパスワード}other{{count} 件中 {position} 件目のパスワード}}</translation>
 <translation id="1861262398884155592">このフォルダは空です</translation>
 <translation id="1864266050569350424">パスワードを保存したサイトで、ログイン用パスワードの欄をタップします。</translation>
+<translation id="1866700949421703765">[リーディング モードをオンにする] を非表示にする</translation>
 <translation id="1872096359983322073">照明</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />。</translation>
 <translation id="1881621406744213161">ファミリー メンバーの招待</translation>
@@ -353,6 +354,7 @@
 <translation id="2214453882118345682">カメラを使って、見たものを購入、翻訳、特定できます。</translation>
 <translation id="2215819824168709130">価格のトラッキング カードを非表示にする</translation>
 <translation id="2216366330550244277">商品のページに移動します</translation>
+<translation id="2219935992754556187">Chrome で Face ID を使用してセンシティブ データを保護します</translation>
 <translation id="2220529011494928058">問題を報告</translation>
 <translation id="2223461067862937305">QR コードを作成</translation>
 <translation id="2225701818156393674">トラッキングしている商品のリストに商品が追加されました。</translation>
@@ -459,6 +461,7 @@
 <translation id="2583688836549072561">タブグループ、<ph name="GROUP_TITLE" />、<ph name="TABS_NUMBER" /> 個のタブ、新しいアクティビティ。</translation>
 <translation id="2593272815202181319">等幅</translation>
 <translation id="2601778637777010194">商品の値下げを追跡</translation>
+<translation id="2602372807870028932">このデバイスに保存されている情報から選択した情報を削除します</translation>
 <translation id="260378315836159338">画面上部の [+] をタップ</translation>
 <translation id="2612676031748830579">カード番号</translation>
 <translation id="261305050785128654">お使いの言語を指定すると、可能な場合はウェブサイトのコンテンツが指定した言語で表示されます。</translation>
@@ -960,6 +963,7 @@
 <translation id="4469324811108161144">メモは <ph name="CHARACTER_LIMIT" /> 文字以下で入力してください。</translation>
 <translation id="4471472356135655769">パスワードをエクスポートできません</translation>
 <translation id="4472575034687746823">始める</translation>
+<translation id="4473565697543262065">このデバイスと Google アカウント（<ph name="USER_EMAIL" />）に保存されている情報から選択した情報を削除します</translation>
 <translation id="4473608001744970767">[価格を追跡] を非表示</translation>
 <translation id="4474142134969976028">一致する結果がありません</translation>
 <translation id="4474494258097106883">iPhone 向けの設計</translation>
@@ -1577,6 +1581,7 @@
 <translation id="6532106788206463496">変更を保存</translation>
 <translation id="6536759809440150308"><ph name="GROUP_TITLE" /> を開く、<ph name="NUMBER_OF_TABS" /> のグループ、<ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6538776393003671043">次回この情報を使用するときに、Google ウォレットに保存するかどうかを確認するメッセージが表示されます</translation>
 <translation id="6543899060872618437">お使いのどのデバイスでも自動入力ですばやく決済</translation>
 <translation id="6550675742724504774">オプション</translation>
 <translation id="6550891580932862748">危険なウェブサイト、ダウンロード、拡張機能から保護しません。他の Google サービスのセーフ ブラウジング設定には影響しません。</translation>
@@ -1977,6 +1982,7 @@
 <translation id="7952670906562503188">{passkey_count} 件のパスキーと、ログイン情報を保存しない設定にしたサイトとアプリの一覧を削除しようとしています。サイトやアプリで作成したアカウントは削除されません。</translation>
 <translation id="7958575506592576831">ページのセキュリティ情報</translation>
 <translation id="7961015016161918242">使用しない</translation>
+<translation id="7971651328518569075">[リーディング モードをオフにする] を非表示にする</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">試す</translation>
 <translation id="797588153137233716">[メニュー] → [履歴] → [閲覧履歴データを削除]</translation>
@@ -1993,6 +1999,7 @@
 <translation id="8005666035647241369">保存先: このデバイスの Google パスワード マネージャー</translation>
 <translation id="8010488806779226127">ブラウジングに役立つさまざまな機能を使用できます</translation>
 <translation id="8011489434346330032">ウェブ インスペクタ</translation>
+<translation id="8014007212279733632">機密情報を自動入力する際に本人確認を行う</translation>
 <translation id="8015826420689927262">添付ファイルを削除</translation>
 <translation id="8017015647846870183">対象: Google パスワード マネージャー（パスワードとパスキーを含む）</translation>
 <translation id="802154636333426148">ダウンロード エラー</translation>
@@ -2379,6 +2386,7 @@
 <translation id="984275831282074731">お支払い方法</translation>
 <translation id="985379595344853742">すべてのシークレット タブを閉じる</translation>
 <translation id="988141524645182168">他のデバイス</translation>
+<translation id="994184244350700431">保存先: <ph name="USER_EMAIL" /> の Google ウォレット</translation>
 <translation id="995174784802614337">{count,plural, =1{{count} 件のパスキーをインポートしました}other{{count} 件のパスキーをインポートしました}}</translation>
 <translation id="999768147936949692">現在のところ、パスワードはファミリー メンバーとのみ共有できます。グループに<ph name="BEGIN_LINK" />ファミリー メンバーを招待<ph name="END_LINK" />すると、Google の各種サービスや定期購入をお得に利用できます。</translation>
 </translationbundle>

@@ -116,6 +116,7 @@
 <translation id="138692594145659985">付款卡儲存選項</translation>
 <translation id="1396260204083880024">已使用 <ph name="USER_NAME" /> 的身分登入。<ph name="USER_EMAIL" />。開啟帳戶選單。</translation>
 <translation id="1397144142234474689">隱藏記錄</translation>
+<translation id="1399268420835656394">如果你不是兒童，建議檢查這部裝置上的 Apple 帳戶年齡設定。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="1407135791313364759">全部開啟</translation>
 <translation id="1408847409015257906">輕按 [私隱權和安全性]。</translation>
 <translation id="1411386976162024013">「智能鏡頭」視像搜尋</translation>
@@ -255,6 +256,7 @@
 <translation id="1861067954551502701">{count,plural, =1{第 {position} 個密碼，總共有 {count} 個}other{第 {position} 個密碼，總共有 {count} 個}}</translation>
 <translation id="1861262398884155592">此資料夾中沒有內容</translation>
 <translation id="1864266050569350424">在已儲存密碼的網站上，輕按「登入密碼」欄位。</translation>
+<translation id="1866700949421703765">隱藏「開啟閱讀模式」</translation>
 <translation id="1872096359983322073">閃光燈</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />。</translation>
 <translation id="1881621406744213161">邀請家庭成員</translation>
@@ -353,6 +355,7 @@
 <translation id="2214453882118345682">使用相機購物、翻譯及識別所見內容。</translation>
 <translation id="2215819824168709130">隱藏「追蹤價格」資訊卡</translation>
 <translation id="2216366330550244277">前往產品頁面</translation>
+<translation id="2219935992754556187">Chrome 會使用 Face ID 保護你的私密資料</translation>
 <translation id="2220529011494928058">報告問題</translation>
 <translation id="2223461067862937305">建立 QR 碼</translation>
 <translation id="2225701818156393674">產品已加至你的追蹤產品清單。</translation>
@@ -459,6 +462,7 @@
 <translation id="2583688836549072561">分頁群組，<ph name="GROUP_TITLE" />，<ph name="TABS_NUMBER" /> 個分頁，新活動。</translation>
 <translation id="2593272815202181319">等寬</translation>
 <translation id="2601778637777010194">追蹤產品的減價資訊</translation>
+<translation id="2602372807870028932">這樣會刪除儲存在這部裝置的所選資訊</translation>
 <translation id="260378315836159338">輕按畫面頂部的「+」圖示</translation>
 <translation id="2612676031748830579">信用卡號碼</translation>
 <translation id="261305050785128654">如果網站知道你使用哪些語言，就會盡可能以這些語言顯示內容。</translation>
@@ -552,6 +556,7 @@
 <translation id="2922210239002704889">開啟首頁或鍵盤</translation>
 <translation id="2924940770243654951">在新無痕式分頁中開啟</translation>
 <translation id="2952278131021475699">智能鏡頭相機搜尋功能</translation>
+<translation id="2953821385349876107">選擇其他 Google 帳戶</translation>
 <translation id="2962516096219646456">睇下所有自動填入資料</translation>
 <translation id="2965594942405840553">這項操作無法復原</translation>
 <translation id="2969979262385602596">無法登入，請稍後再試。</translation>
@@ -960,6 +965,7 @@
 <translation id="4469324811108161144">筆記可以儲存最多 <ph name="CHARACTER_LIMIT" /> 個字元。</translation>
 <translation id="4471472356135655769">無法匯出密碼</translation>
 <translation id="4472575034687746823">開始使用</translation>
+<translation id="4473565697543262065">這樣會刪除儲存在這部裝置和 Google 帳戶 (<ph name="USER_EMAIL" />) 的所選資訊</translation>
 <translation id="4473608001744970767">隱藏「追蹤價格」</translation>
 <translation id="4474142134969976028">找不到相符的結果</translation>
 <translation id="4474494258097106883">專為 iPhone 而設</translation>
@@ -1435,6 +1441,7 @@
 <translation id="6090760257419195752">已關閉的警告</translation>
 <translation id="6094325891006032858">開啟「強化安全瀏覽」功能</translation>
 <translation id="6096965253650248286">找到 <ph name="COUNT" /> 個</translation>
+<translation id="6099466082815574659">這部 iPad 已設為供兒童使用</translation>
 <translation id="6100617279104942061">已使用 <ph name="USER_EMAIL" /> 的身分登入。開啟設定。</translation>
 <translation id="6100676328067737810">你的資料會儲存到 Google 帳戶 <ph name="USER_EMAIL" /></translation>
 <translation id="610083648014322104">根據當前頁面內容取得相關答案</translation>
@@ -1577,6 +1584,7 @@
 <translation id="6532106788206463496">儲存變更</translation>
 <translation id="6536759809440150308">開啟<ph name="GROUP_TITLE" />，一組 <ph name="NUMBER_OF_TABS" />，<ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6538776393003671043">下次使用時，Chrome 會詢問你是否要儲存到 Google 錢包</translation>
 <translation id="6543899060872618437">在不同裝置上使用自動填入功能，結帳更快速</translation>
 <translation id="6550675742724504774">選項</translation>
 <translation id="6550891580932862748">無法防範危險網站、下載檔案和擴充程式。其他 Google 產品的「安全瀏覽」設定不會受影響。</translation>
@@ -1960,6 +1968,7 @@
 <translation id="7888562068293422208">全部關閉？</translation>
 <translation id="7889910613639381518">「Google 密碼管理工具」小工具，資料存取輕鬆又安全。</translation>
 <translation id="7899199123054742721">全部標示為未讀</translation>
+<translation id="7909005666376403847">這部 iPhone 已設為供兒童使用</translation>
 <translation id="7911190106180361398">您的機構不允許同步處理所有資料。</translation>
 <translation id="7918999344502274923">隱藏 <ph name="SEARCH_ENGINE_NAME" /> 詳情</translation>
 <translation id="7921559948846049514">選擇背景主題、顏色或其他設定</translation>
@@ -1977,6 +1986,7 @@
 <translation id="7952670906562503188">你將會刪除 {passkey_count} 個密鑰，以及你選擇一律不儲存登入資料的網站和應用程式清單。系統不會刪除任何你為網站和應用程式建立的帳戶。</translation>
 <translation id="7958575506592576831">網頁安全性資料</translation>
 <translation id="7961015016161918242">從來沒有</translation>
+<translation id="7971651328518569075">隱藏「關閉閱讀模式」</translation>
 <translation id="7972837668077967426">畫布</translation>
 <translation id="7975036700432177008">試用</translation>
 <translation id="797588153137233716">選單 → 記錄 → 刪除瀏覽資料</translation>
@@ -1993,6 +2003,7 @@
 <translation id="8005666035647241369">儲存至此裝置的「Google 密碼管理工具」</translation>
 <translation id="8010488806779226127">探索能提升瀏覽體驗的功能</translation>
 <translation id="8011489434346330032">網絡檢查工具</translation>
+<translation id="8014007212279733632">通過身分驗證才能自動填入私密資訊</translation>
 <translation id="8015826420689927262">刪除附件</translation>
 <translation id="8017015647846870183">「Google 密碼管理工具」上的資料，包括密碼和密鑰</translation>
 <translation id="802154636333426148">下載失敗</translation>
@@ -2379,6 +2390,7 @@
 <translation id="984275831282074731">付款方法</translation>
 <translation id="985379595344853742">關閉所有無痕式分頁</translation>
 <translation id="988141524645182168">其他裝置</translation>
+<translation id="994184244350700431"><ph name="USER_EMAIL" /> 的 Google 錢包</translation>
 <translation id="995174784802614337">{count,plural, =1{已匯入 {count} 個密鑰}other{已匯入 {count} 個密鑰}}</translation>
 <translation id="999768147936949692">目前只能與家庭成員分享密碼。你可<ph name="BEGIN_LINK" />邀請家庭成員<ph name="END_LINK" />加入群組，充分發揮 Google 的產品和訂閱服務的功用。</translation>
 </translationbundle>

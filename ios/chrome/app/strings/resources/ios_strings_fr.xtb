@@ -61,7 +61,7 @@
 <translation id="1217294226280635614">Vue fractionnée</translation>
 <translation id="1218730690561976633">Activez/Désactivez la validation de l'utilisateur pour la saisie automatique améliorée</translation>
 <translation id="1219674500290482172">Impossible de se connecter à Internet.</translation>
-<translation id="1223498995510244364">Obtenez un résumé</translation>
+<translation id="1223498995510244364">Résumer</translation>
 <translation id="1227113644794103810">Onglets inactifs</translation>
 <translation id="1231733316453485619">Activer la synchronisation ?</translation>
 <translation id="1238794841176717085">Partager cette page</translation>
@@ -255,6 +255,7 @@
 <translation id="1861067954551502701">{count,plural, =1{{position} mot de passe sur {count}}one{{position} mot de passe sur {count}}other{{position} mots de passe sur {count}}}</translation>
 <translation id="1861262398884155592">Ce dossier est vide</translation>
 <translation id="1864266050569350424">Sur un site où vous avez enregistré un mot de passe, appuyez sur le champ de connexion correspondant au mot de passe.</translation>
+<translation id="1866700949421703765">Masquer "Activer le mode Lecture"</translation>
 <translation id="1872096359983322073">Lampe torche</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Inviter des membres de la famille</translation>
@@ -353,6 +354,7 @@
 <translation id="2214453882118345682">Achetez, traduisez et identifiez ce que vous voyez avec votre appareil photo.</translation>
 <translation id="2215819824168709130">Masquer la carte de suivi du prix</translation>
 <translation id="2216366330550244277">Accédez à la page d'un produit</translation>
+<translation id="2219935992754556187">Chrome protège vos données sensibles avec Face ID</translation>
 <translation id="2220529011494928058">Signaler un problème</translation>
 <translation id="2223461067862937305">Créer un QR code</translation>
 <translation id="2225701818156393674">Produit ajouté à votre liste de produits suivis.</translation>
@@ -459,6 +461,7 @@
 <translation id="2583688836549072561">Groupe d'onglets <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> onglets, nouvelle activité.</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Suivez les baisses de prix de produits</translation>
+<translation id="2602372807870028932">Les informations sélectionnées qui sont enregistrées sur cet appareil seront supprimées</translation>
 <translation id="260378315836159338">En haut de l'écran, appuyez sur "+"</translation>
 <translation id="2612676031748830579">Numéro de carte</translation>
 <translation id="261305050785128654">Indiquez aux sites Web les langues que vous parlez. Ils afficheront du contenu dans ces langues, si possible.</translation>
@@ -960,6 +963,7 @@
 <translation id="4469324811108161144">Les notes peuvent contenir jusqu'à <ph name="CHARACTER_LIMIT" /> caractères.</translation>
 <translation id="4471472356135655769">Impossible d'exporter les mots de passe</translation>
 <translation id="4472575034687746823">Commencer</translation>
+<translation id="4473565697543262065">Les informations sélectionnées qui sont enregistrées sur cet appareil et dans votre compte Google <ph name="USER_EMAIL" /> seront supprimées</translation>
 <translation id="4473608001744970767">Masquer "Suivre le prix"</translation>
 <translation id="4474142134969976028">Aucun résultat</translation>
 <translation id="4474494258097106883">Conçu pour votre iPhone</translation>
@@ -1577,6 +1581,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6532106788206463496">Enregistrer les modifications</translation>
 <translation id="6536759809440150308">Ouvrir <ph name="GROUP_TITLE" />, groupe de <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6538776393003671043">Chrome vous proposera de l'enregistrer dans Google Wallet la prochaine fois que vous l'utiliserez</translation>
 <translation id="6543899060872618437">Payez plus rapidement grâce à la saisie automatique sur tous vos appareils</translation>
 <translation id="6550675742724504774">Options</translation>
 <translation id="6550891580932862748">Ce mode ne vous protège pas contre les téléchargements, les extensions et les sites Web dangereux. Vos paramètres de navigation sécurisée dans les autres produits Google ne seront pas affectés.</translation>
@@ -1977,6 +1982,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="7952670906562503188">Vous êtes sur le point de supprimer {passkey_count} clés d'accès et la liste des sites et applis pour lesquels vous avez choisi de ne jamais enregistrer d'informations de connexion. Les comptes que vous avez créés pour des sites et des applis ne seront pas supprimés.</translation>
 <translation id="7958575506592576831">Informations sur la sécurité de cette page</translation>
 <translation id="7961015016161918242">Jamais</translation>
+<translation id="7971651328518569075">Masquer "Désactiver le mode Lecture"</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">OK</translation>
 <translation id="797588153137233716">Menu → Historique → Supprimer les données de navigation</translation>
@@ -1993,6 +1999,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8005666035647241369">Dans le Gestionnaire de mots de passe de Google sur cet appareil</translation>
 <translation id="8010488806779226127">Découvrez des fonctionnalités qui vous aideront à en faire plus en naviguant</translation>
 <translation id="8011489434346330032">Inspecteur Web</translation>
+<translation id="8014007212279733632">Confirmer votre identité pour saisir automatiquement des informations sensibles</translation>
 <translation id="8015826420689927262">Supprimer la pièce jointe</translation>
 <translation id="8017015647846870183">Données du Gestionnaire de mots de passe de Google, y compris les mots de passe et les clés d'accès</translation>
 <translation id="802154636333426148">Échec du téléchargement</translation>
@@ -2379,6 +2386,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="984275831282074731">Modes de paiement</translation>
 <translation id="985379595344853742">Fermer tous les onglets de navigation privée</translation>
 <translation id="988141524645182168">Autres appareils</translation>
+<translation id="994184244350700431">Dans Google Wallet pour <ph name="USER_EMAIL" /></translation>
 <translation id="995174784802614337">{count,plural, =1{{count} clé d'accès importée}one{{count} clé d'accès importée}other{{count} clés d'accès importées}}</translation>
 <translation id="999768147936949692">Pour le moment, vous ne pouvez partager des mots de passe qu'avec des membres de votre famille. <ph name="BEGIN_LINK" />Invitez des membres de votre famille<ph name="END_LINK" /> à rejoindre votre groupe, et profitez pleinement de vos produits et abonnements sur Google.</translation>
 </translationbundle>

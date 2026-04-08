@@ -255,6 +255,7 @@
 <translation id="1861067954551502701">{count,plural, =1{{position} av {count} lösenord}other{{position} av {count} lösenord}}</translation>
 <translation id="1861262398884155592">Mappen är tom</translation>
 <translation id="1864266050569350424">Tryck på fältet för inloggningslösenord på en webbplats där du har sparat ett lösenord.</translation>
+<translation id="1866700949421703765">Dölj Aktivera läsläget</translation>
 <translation id="1872096359983322073">Ficklampa</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Bjud in familjemedlemmar</translation>
@@ -353,6 +354,7 @@
 <translation id="2214453882118345682">Köp, översätt och identifiera det du ser med kameran.</translation>
 <translation id="2215819824168709130">Dölj kortet Bevaka pris</translation>
 <translation id="2216366330550244277">Öppna sidan för en produkt</translation>
+<translation id="2219935992754556187">Chrome skyddar dina känsliga uppgifter med Face ID</translation>
 <translation id="2220529011494928058">Rapportera ett problem</translation>
 <translation id="2223461067862937305">Skapa en QR-kod</translation>
 <translation id="2225701818156393674">Produkten har lagts till i listan med bevakade produkter.</translation>
@@ -459,6 +461,7 @@
 <translation id="2583688836549072561">Flikgrupp <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> flikar, ny aktivitet.</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Bevaka prissänkningar på produkter</translation>
+<translation id="2602372807870028932">Detta raderar vald information som har sparats på den här enheten</translation>
 <translation id="260378315836159338">Tryck på + högst upp på skärmen</translation>
 <translation id="2612676031748830579">Kortnummer</translation>
 <translation id="261305050785128654">Visa webbplatser vilka språk du talar. Om möjligt visas innehåll på de språken.</translation>
@@ -960,6 +963,7 @@
 <translation id="4469324811108161144">Ledtrådar kan innehålla upp till <ph name="CHARACTER_LIMIT" /> tecken.</translation>
 <translation id="4471472356135655769">Det gick inte att exportera lösenord</translation>
 <translation id="4472575034687746823">Kom igång</translation>
+<translation id="4473565697543262065">Detta raderar vald information som har sparats på den här enheten och i Google-kontot <ph name="USER_EMAIL" /></translation>
 <translation id="4473608001744970767">Dölj Bevaka pris</translation>
 <translation id="4474142134969976028">Det finns inga matchande resultat</translation>
 <translation id="4474494258097106883">Byggd för iPhone</translation>
@@ -1577,6 +1581,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6532106788206463496">Spara ändringarna</translation>
 <translation id="6536759809440150308">Öppna <ph name="GROUP_TITLE" />, en grupp på <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6538776393003671043">Chrome frågar om du vill spara detta i Google Wallet nästa gång du använder det</translation>
 <translation id="6543899060872618437">Betala snabbare med autofyll på alla dina enheter</translation>
 <translation id="6550675742724504774">Alternativ</translation>
 <translation id="6550891580932862748">Skyddar inte mot farliga webbplatser, nedladdningar och tillägg. Inställningarna för Säker webbsökning i andra produkter från Google påverkas inte.</translation>
@@ -1977,6 +1982,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="7952670906562503188">Du håller på att radera {passkey_count} nycklar och listan över webbplatser och appar där du valt att aldrig spara inloggningsuppgifter. Konton som du har skapat för webbplatser och appar raderas inte.</translation>
 <translation id="7958575506592576831">Sidans säkerhetsinfo</translation>
 <translation id="7961015016161918242">Aldrig</translation>
+<translation id="7971651328518569075">Dölj Inaktivera läsläget</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Testa</translation>
 <translation id="797588153137233716">Meny → Historik → Radera webbinformation</translation>
@@ -1993,6 +1999,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="8005666035647241369">I Google Lösenordshantering på den här enheten</translation>
 <translation id="8010488806779226127">Utforska funktioner som kan hjälpa dig att göra mer när du surfar</translation>
 <translation id="8011489434346330032">Webbinspektör</translation>
+<translation id="8014007212279733632">Verifiera din identitet för att autofylla känsliga uppgifter</translation>
 <translation id="8015826420689927262">Radera bilaga</translation>
 <translation id="8017015647846870183">Från Google Lösenordshantering, inklusive lösenord och nycklar</translation>
 <translation id="802154636333426148">Nedladdningen misslyckades</translation>
@@ -2379,6 +2386,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="984275831282074731">Betalningsmetoder</translation>
 <translation id="985379595344853742">Stäng alla inkognitoflikar</translation>
 <translation id="988141524645182168">Övriga enheter</translation>
+<translation id="994184244350700431">I Google Wallet för <ph name="USER_EMAIL" /></translation>
 <translation id="995174784802614337">{count,plural, =1{{count} nyckel har importerats}other{{count} nycklar har importerats}}</translation>
 <translation id="999768147936949692">För närvarande kan du bara dela lösenord med familjemedlemmar. <ph name="BEGIN_LINK" />Bjud in familjemedlemmar<ph name="END_LINK" /> att gå med i gruppen så att du får ut mer av dina produkter och prenumerationer på Google.</translation>
 </translationbundle>

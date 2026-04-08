@@ -684,6 +684,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">zadnjih 4 tednov</translation>
 <translation id="393697183122708255">Glasovno iskanje ni na voljo</translation>
+<translation id="3941718885865495207">Razdelek na dnu zaslona za omogočanje funkcije Chrome Finds</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, pripeti zavihek s sliko v sliki</translation>
 <translation id="3950820424414687140">Prijava</translation>
 <translation id="395377504920307820">Uporabi brez računa</translation>
@@ -1189,6 +1190,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="6011308810877101166">Izboljšanje predlogov za iskanje</translation>
 <translation id="6013305291643746595">Razvrščanje po najstarejših</translation>
 <translation id="6022659036123304283">Prilagodite si Chrome</translation>
+<translation id="6023820583797130428">Odprite meni, če se želite vrniti</translation>
 <translation id="6026538407078977628">Razširitev na celozaslonski prikaz</translation>
 <translation id="6030719887161080597">Upravljanje podatkov, ki jih spletna mesta uporabljajo za merjenje uspešnosti oglasov</translation>
 <translation id="6039379616847168523">Premik na naslednji zavihek</translation>
@@ -1633,6 +1635,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standardni zavihek}one{<ph name="TABS_COUNT_MANY" /> standardni zavihek}two{<ph name="TABS_COUNT_MANY" /> standardna zavihka}few{<ph name="TABS_COUNT_MANY" /> standardni zavihki}other{<ph name="TABS_COUNT_MANY" /> standardnih zavihkov}}</translation>
 <translation id="7603168929588204083">Neveljaven datum</translation>
 <translation id="7605594153474022051">Sync isn't working</translation>
+<translation id="7608245556672190037">Možnost omogočanja funkcije Chrome Finds je odprta pri polni višini</translation>
 <translation id="7612619742409846846">V Google ste prijavljeni kot</translation>
 <translation id="7612989789287281429">Prijavljamo vas …</translation>
 <translation id="7619072057915878432">Prenos datoteke <ph name="FILE_NAME" /> ni uspel zaradi napak v omrežju.</translation>
@@ -1640,6 +1643,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7628417132421583481">Odpri Upravitelja gesel</translation>
 <translation id="7630202231528827509">URL ponudnika</translation>
 <translation id="7638584964844754484">Napačno geslo</translation>
+<translation id="764047009170754705">Možnost omogočanja funkcije Chrome Finds je zaprta</translation>
 <translation id="7646499124171960488">Prikaz opozorila za javna spletna mesta, ki niso varna</translation>
 <translation id="7646772052135772216">Sinhronizacija gesel ne deluje</translation>
 <translation id="7655240423373329753">zadnjih 7 dni</translation>
@@ -1864,6 +1868,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8473863474539038330">Naslovi in drugo</translation>
 <translation id="847433688444405067">Brskanje po vseh napravah</translation>
 <translation id="8477178913400731244">Izbriši podatke</translation>
+<translation id="8481771036036087705">Možnost omogočanja funkcije Chrome Finds je odprta pri polovični višini</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /><ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">Ni neaktivnih oken</translation>
 <translation id="8493948351860045254">Sprosti prostor</translation>

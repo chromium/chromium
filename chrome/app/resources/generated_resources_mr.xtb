@@ -5995,6 +5995,7 @@
 <translation id="5130080518784460891">इटेन</translation>
 <translation id="5130675701626084557">प्रोफाइल डाउनलोड करता आली नाही. कृपया नंतर पुन्हा प्रयत्न करा किंवा मदतीसाठी वाहकाशी संपर्क साधा.</translation>
 <translation id="5131591206283983824">टचपॅड टॅप ड्रॅगिंग</translation>
+<translation id="5132606575454082197">फक्त या फाइलचे शोध वैशिष्ट्य पुरवण्यासाठी तुमचा Google Drive आशय अ‍ॅक्सेस केला जातो. तो Google Search मध्ये सुधारणा करण्यासाठी वापरला जात नाही. तुम्ही स्पष्टपणे फाइल अपलोड करत नाही, तोपर्यंत Google तुमच्या Google Drive मधील आशय अ‍ॅक्सेस करणार नाही.</translation>
 <translation id="5133035646508467110">तुम्ही हे डिव्हाइस इतरांसोबत शेअर करत असल्यास, तुम्ही सेव्ह केलेले पासवर्ड वापरता, तेव्हा ते तुम्हीच असल्याची पडताळणी करण्यासाठी तुमचे फिंगरप्रिंट वापरू शकता</translation>
 <translation id="5135533361271311778">बुकमार्क आयटम तयार करणे शक्य नाही.</translation>
 <translation id="513555878193063507">नवीन APN जोडा</translation>
@@ -6763,6 +6764,7 @@
 <translation id="5678955352098267522"><ph name="WEBSITE_1" /> वर तुमचा डेटा वाचा</translation>
 <translation id="5680050361008726776">"<ph name="ESIM_PROFILE_NAME" />" काढून टाकायची आहे का?</translation>
 <translation id="5681586175480958839">फाइल आधीच उघडली जात आहे</translation>
+<translation id="5684110242705861346">"<ph name="NAME" />" एक्स्टेंशन हे तुमच्या संस्थेच्या धोरणाद्वारे जोडले गेले होते आणि ते हे सेटिंग नियंत्रित करत आहे. <ph name="BEGIN_LINK" />तपशील पहा<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">वाय-फायचे तपशील</translation>
 <translation id="5684661240348539843">मालमत्ता अभिज्ञापक</translation>
 <translation id="5684950556880280580">तुमचा पासवर्ड अपडेट केला गेला आहे</translation>
@@ -9292,6 +9294,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7465778193084373987">Netscape सर्टिफिकेट रिव्होकीकरण URL</translation>
 <translation id="7466431077154602932">संक्षिप्त दृश्य</translation>
 <translation id="7466861475611330213">विरामचिन्ह शैली</translation>
+<translation id="7467547999067230412">टॅब, फाइल किंवा AI टूल वापरून तुमचा शोध वर्धित करा</translation>
 <translation id="746861123368584540">एक्स्टेंशन लोड केले</translation>
 <translation id="7470131554696493512">थंडरबोल्ट किंवा USB4 अ‍ॅक्सेसरीना मेमरी (RAM) अ‍ॅक्सेस आणि शेअर करण्यापासून ब्लॉक करा</translation>
 <translation id="7470274830728993952">टॅब गटावर जा</translation>
@@ -11778,6 +11781,7 @@ I feel - विटांची इमारत</translation>
 <translation id="914031120300235526">प्रोफाइल अनलॉक करू शकत नाही</translation>
 <translation id="9143298529634201539">सूचना काढून टाकायची का?</translation>
 <translation id="9143922477019434797">तुमचे पासवर्ड संरक्षित करा</translation>
+<translation id="914621365454686586">Drive मधील आशय अ‍ॅक्सेस करण्यासाठी शोधा ला अनुमती द्यायची आहे का?</translation>
 <translation id="9147392381910171771">&amp;पर्याय</translation>
 <translation id="9148058034647219655">निर्गमन</translation>
 <translation id="9148126808321036104">पुन्हा साइन इन करा </translation>

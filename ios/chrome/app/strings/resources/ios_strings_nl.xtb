@@ -255,6 +255,7 @@
 <translation id="1861067954551502701">{count,plural, =1{{position} van {count} wachtwoord}other{{position} van {count} wachtwoorden}}</translation>
 <translation id="1861262398884155592">Deze map is leeg</translation>
 <translation id="1864266050569350424">Tik op een site waar je een wachtwoord hebt opgeslagen op het veld voor het inlogwachtwoord.</translation>
+<translation id="1866700949421703765">Aanzetten van Leesmodus verbergen</translation>
 <translation id="1872096359983322073">Zaklamp</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Gezinsleden uitnodigen</translation>
@@ -353,6 +354,7 @@
 <translation id="2214453882118345682">Winkel, vertaal en identificeer wat je ziet met je camera.</translation>
 <translation id="2215819824168709130">Kaart Prijs volgen verbergen</translation>
 <translation id="2216366330550244277">Ga naar de pagina van een product</translation>
+<translation id="2219935992754556187">Chrome beveiligt je gevoelige gegevens met Face ID</translation>
 <translation id="2220529011494928058">Een probleem melden</translation>
 <translation id="2223461067862937305">Een QR-code maken</translation>
 <translation id="2225701818156393674">Product toegevoegd aan je lijst met gevolgde producten.</translation>
@@ -459,6 +461,7 @@
 <translation id="2583688836549072561">Tabbladgroep, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> tabbladen, nieuwe activiteit.</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Volg prijsdalingen van producten</translation>
+<translation id="2602372807870028932">Hiermee verwijder je geselecteerde informatie die is opgeslagen op dit apparaat</translation>
 <translation id="260378315836159338">Tik bovenaan het scherm op +</translation>
 <translation id="2612676031748830579">Kaartnummer</translation>
 <translation id="261305050785128654">Laat websites weten welke talen je spreekt. Waar mogelijk tonen ze content in die talen.</translation>
@@ -960,6 +963,7 @@
 <translation id="4469324811108161144">Notities mogen maximaal <ph name="CHARACTER_LIMIT" /> tekens bevatten.</translation>
 <translation id="4471472356135655769">Kan wachtwoorden niet exporteren</translation>
 <translation id="4472575034687746823">Aan de slag</translation>
+<translation id="4473565697543262065">Hiermee verwijder je geselecteerde informatie die is opgeslagen op dit apparaat en in je Google-account <ph name="USER_EMAIL" /></translation>
 <translation id="4473608001744970767">Prijs volgen verbergen</translation>
 <translation id="4474142134969976028">Geen overeenkomende resultaten</translation>
 <translation id="4474494258097106883">Ontworpen voor je iPhone</translation>
@@ -1577,6 +1581,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6532106788206463496">Wijzigingen opslaan</translation>
 <translation id="6536759809440150308"><ph name="GROUP_TITLE" /> openen, groep van <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">voorbeeld.com</translation>
+<translation id="6538776393003671043">Chrome biedt je aan de informatie op te slaan in Google Wallet als je het de volgende keer gebruikt</translation>
 <translation id="6543899060872618437">Betaal sneller met automatisch invullen op al je apparaten</translation>
 <translation id="6550675742724504774">Opties</translation>
 <translation id="6550891580932862748">Beschermt je niet tegen gevaarlijke websites, downloads en extensies. Dit heeft geen invloed op je Safe Browsing-instellingen in andere Google-producten.</translation>
@@ -1977,6 +1982,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="7952670906562503188">Je staat op het punt om {passkey_count} toegangssleutels en de lijst met sites en apps waarvoor je hebt gekozen om nooit inloggegevens op te slaan, te verwijderen. Accounts die je voor sites en apps hebt gemaakt, worden niet verwijderd.</translation>
 <translation id="7958575506592576831">Paginabeveiligingsinfo</translation>
 <translation id="7961015016161918242">Nooit</translation>
+<translation id="7971651328518569075">Leesmodus uitzetten verbergen</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Proberen</translation>
 <translation id="797588153137233716">Menu → Geschiedenis → Browsegegevens verwijderen</translation>
@@ -1993,6 +1999,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="8005666035647241369">In Google Wachtwoordmanager op dit apparaat</translation>
 <translation id="8010488806779226127">Ontdek functies waarmee je meer kunt doen terwijl je browst</translation>
 <translation id="8011489434346330032">Webcontrole</translation>
+<translation id="8014007212279733632">Laten verifiëren dat jij het bent om gevoelige informatie automatisch in te vullen</translation>
 <translation id="8015826420689927262">Bijlage verwijderen</translation>
 <translation id="8017015647846870183">Uit Google Wachtwoordmanager, inclusief wachtwoorden en toegangssleutels</translation>
 <translation id="802154636333426148">Downloaden mislukt</translation>
@@ -2379,6 +2386,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="984275831282074731">Betaalmethoden</translation>
 <translation id="985379595344853742">Alle incognitotabbladen sluiten</translation>
 <translation id="988141524645182168">Andere apparaten</translation>
+<translation id="994184244350700431">In Google Wallet voor <ph name="USER_EMAIL" />.</translation>
 <translation id="995174784802614337">{count,plural, =1{{count} toegangssleutel geïmporteerd}other{{count} toegangssleutels geïmporteerd}}</translation>
 <translation id="999768147936949692">Voorlopig kun je alleen wachtwoorden delen met gezinsleden. <ph name="BEGIN_LINK" />Nodig gezinsleden uit<ph name="END_LINK" /> om lid te worden van je groep en haal meer uit je producten en abonnementen op Google.</translation>
 </translationbundle>

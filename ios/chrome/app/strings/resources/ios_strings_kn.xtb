@@ -116,6 +116,7 @@
 <translation id="138692594145659985">ಕಾರ್ಡ್‌ ಅನ್ನು ಉಳಿಸಲು ಆಯ್ಕೆಗಳು</translation>
 <translation id="1396260204083880024"><ph name="USER_NAME" /> ಆಗಿ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ. <ph name="USER_EMAIL" />. ಖಾತೆಯ ಮೆನುವನ್ನು ತೆರೆಯಿರಿ.</translation>
 <translation id="1397144142234474689">ಇತಿಹಾಸವನ್ನು ಮರೆಮಾಡಿ</translation>
+<translation id="1399268420835656394">ನೀವು ಮಗುವಲ್ಲದಿದ್ದರೆ, ಈ ಸಾಧನದಲ್ಲಿನ Apple ಖಾತೆಯಲ್ಲಿನ ವಯಸ್ಸನ್ನು ನೀವು ಪರಿಶೀಲಿಸಬಹುದು. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="1407135791313364759">ಎಲ್ಲವನ್ನೂ ತೆರೆಯಿರಿ</translation>
 <translation id="1408847409015257906">“ಗೌಪ್ಯತೆ ಮತ್ತು ಭದ್ರತೆಯನ್ನು” ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="1411386976162024013">Lens ವಿಶುವಲ್‌ ಸರ್ಚ್‌</translation>
@@ -555,6 +556,7 @@
 <translation id="2922210239002704889">ನಿಮ್ಮ ಹೋಮ್ ಪೇಜ್ ಅಥವಾ ಕೀಬೋರ್ಡ್‌ಗೆ ಹೋಗಿ</translation>
 <translation id="2924940770243654951">ಹೊಸ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="2952278131021475699">Lens ಕ್ಯಾಮರಾ ಹುಡುಕಾಟ</translation>
+<translation id="2953821385349876107">ಬೇರೊಂದು Google ಖಾತೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="2962516096219646456">ಎಲ್ಲಾ ಆಟೋಫಿಲ್‌ ಡೇಟಾವನ್ನು ನೋಡಿ</translation>
 <translation id="2965594942405840553">ಈ ಕ್ರಿಯೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="2969979262385602596">ಸೈನ್ ಇನ್ ವಿಫಲವಾಗಿದೆ. ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -1439,6 +1441,7 @@
 <translation id="6090760257419195752">ವಜಾಗೊಳಿಸಿದ ಎಚ್ಚರಿಕೆಗಳು</translation>
 <translation id="6094325891006032858">ವರ್ಧಿತ ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್‌ ಆನ್ ಮಾಡಿ</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> ಕಂಡುಬಂದಿದೆ</translation>
+<translation id="6099466082815574659">ಈ iPad ಅನ್ನು ಮಗುವಿಗಾಗಿ ಸೆಟಪ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6100617279104942061"><ph name="USER_EMAIL" /> ಆಗಿ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ. ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯುತ್ತದೆ.</translation>
 <translation id="6100676328067737810">ನಿಮ್ಮ ಡೇಟಾವನ್ನು ನಿಮ್ಮ Google ಖಾತೆಗೆ ಸೇವ್ ಮಾಡಲಾಗುತ್ತದೆ, <ph name="USER_EMAIL" /></translation>
 <translation id="610083648014322104">ನೀವು ಇರುವ ಪುಟದ ವಿಷಯದ ಆಧಾರದ ಮೇಲೆ ಸಂಬಂಧಿತ ಉತ್ತರಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
@@ -1965,6 +1968,7 @@
 <translation id="7888562068293422208">ಎಲ್ಲವನ್ನೂ ಮುಚ್ಚಬೇಕೇ?</translation>
 <translation id="7889910613639381518">Google Password Manager ವಿಜೆಟ್ ಮೂಲಕ ಸುಲಭ ಮತ್ತು ಸುರಕ್ಷಿತ ಆ್ಯಕ್ಸೆಸ್.</translation>
 <translation id="7899199123054742721">ಎಲ್ಲಾ ಓದದೇ ಇರುವವುಗಳನ್ನು ಗುರುತಿಸಿ</translation>
+<translation id="7909005666376403847">ಈ iPhone ಅನ್ನು ಮಗುವಿಗಾಗಿ ಸೆಟಪ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7911190106180361398">ಎಲ್ಲವನ್ನೂ ಸಿಂಕ್ ಮಾಡಲು ನಿಮ್ಮ ಸಂಸ್ಥೆ ನಿಮಗೆ ಅನುಮತಿಸುವುದಿಲ್ಲ.</translation>
 <translation id="7918999344502274923"><ph name="SEARCH_ENGINE_NAME" /> ವಿವರಗಳನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="7921559948846049514">ನಿಮ್ಮ ಹಿನ್ನೆಲೆಗಾಗಿ ಥೀಮ್, ಬಣ್ಣ ಅಥವಾ ಇತ್ಯಾದಿಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>

@@ -116,6 +116,7 @@
 <translation id="138692594145659985">Opcje zapisania karty</translation>
 <translation id="1396260204083880024">Zalogowano jako <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Otwórz menu konta.</translation>
 <translation id="1397144142234474689">Ukryj opcję Historia</translation>
+<translation id="1399268420835656394">Jeśli nie jesteś dzieckiem, warto sprawdzić ustawienia wieku na koncie Apple na tym urządzeniu. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="1407135791313364759">Otwórz wszystkie</translation>
 <translation id="1408847409015257906">Kliknij „Prywatność i bezpieczeństwo”.</translation>
 <translation id="1411386976162024013">Wyszukiwanie wizualne za pomocą Obiektywu</translation>
@@ -255,6 +256,7 @@
 <translation id="1861067954551502701">{count,plural, =1{{position} z {count} hasła}few{{position} z {count} haseł}many{{position} z {count} haseł}other{{position} z {count} hasła}}</translation>
 <translation id="1861262398884155592">Ten folder jest pusty</translation>
 <translation id="1864266050569350424">Na stronie, na której zapisano hasło, kliknij pole hasła do logowania.</translation>
+<translation id="1866700949421703765">Ukryj opcję Włącz Tryb czytania</translation>
 <translation id="1872096359983322073">Latarka</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Zaproś osoby do grupy rodzinnej</translation>
@@ -353,6 +355,7 @@
 <translation id="2214453882118345682">Kupuj, tłumacz i rozpoznawaj to, co widzisz, za pomocą aparatu.</translation>
 <translation id="2215819824168709130">Ukryj kartę śledzenia cen</translation>
 <translation id="2216366330550244277">Otwórz stronę produktu</translation>
+<translation id="2219935992754556187">Chrome dba o bezpieczeństwo Twoich danych wrażliwych za pomocą Face ID</translation>
 <translation id="2220529011494928058">Zgłoś problem</translation>
 <translation id="2223461067862937305">Utwórz kod QR</translation>
 <translation id="2225701818156393674">Produkt został dodany do listy śledzonych produktów.</translation>
@@ -459,6 +462,7 @@
 <translation id="2583688836549072561">Grupa kart, <ph name="GROUP_TITLE" />, liczba kart: <ph name="TABS_NUMBER" />, nowa aktywność.</translation>
 <translation id="2593272815202181319">Stała szerokość znaków</translation>
 <translation id="2601778637777010194">Śledź obniżki cen produktów</translation>
+<translation id="2602372807870028932">Spowoduje to usunięcie wybranych informacji zapisanych na tym urządzeniu</translation>
 <translation id="260378315836159338">U góry ekranu kliknij +</translation>
 <translation id="2612676031748830579">Numer karty</translation>
 <translation id="261305050785128654">Informuj witryny o językach, którymi się posługujesz. Witryny w miarę możliwości będą wyświetlać treści w tych językach.</translation>
@@ -552,6 +556,7 @@
 <translation id="2922210239002704889">Otwórz stronę główną lub klawiaturę</translation>
 <translation id="2924940770243654951">Otwórz w nowej karcie incognito</translation>
 <translation id="2952278131021475699">Wyszukiwanie za pomocą aparatu i Obiektywu</translation>
+<translation id="2953821385349876107">Wybierz inne konto Google</translation>
 <translation id="2962516096219646456">Zobacz wszystkie dane autouzupełniania</translation>
 <translation id="2965594942405840553">Nie można tego cofnąć</translation>
 <translation id="2969979262385602596">Nie udało się zalogować. Spróbuj ponownie później.</translation>
@@ -960,6 +965,7 @@
 <translation id="4469324811108161144">Limit znaków w notatce wynosi <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4471472356135655769">Nie można wyeksportować haseł</translation>
 <translation id="4472575034687746823">Rozpocznij</translation>
+<translation id="4473565697543262065">Spowoduje to usunięcie wybranych informacji zapisanych na tym urządzeniu i na koncie Google <ph name="USER_EMAIL" /></translation>
 <translation id="4473608001744970767">Ukryj opcję Śledzenie cen</translation>
 <translation id="4474142134969976028">Brak pasujących wyników</translation>
 <translation id="4474494258097106883">Dla Twojego iPhone'a</translation>
@@ -1435,6 +1441,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6090760257419195752">Zamknięte ostrzeżenia</translation>
 <translation id="6094325891006032858">Włącz Ulepszone Bezpieczne przeglądanie</translation>
 <translation id="6096965253650248286">Znaleziono <ph name="COUNT" /></translation>
+<translation id="6099466082815574659">Ten iPad jest skonfigurowany dla dziecka</translation>
 <translation id="6100617279104942061">Zalogowano jako <ph name="USER_EMAIL" />. Otwiera ustawienia.</translation>
 <translation id="6100676328067737810">Twoje dane zostaną zapisane na koncie Google <ph name="USER_EMAIL" /></translation>
 <translation id="610083648014322104">Otrzymuj trafne odpowiedzi na podstawie treści strony, którą przeglądasz</translation>
@@ -1577,6 +1584,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6532106788206463496">Zapisz zmiany</translation>
 <translation id="6536759809440150308">Otwórz grupę <ph name="GROUP_TITLE" />, zawartość: <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6538776393003671043">Chrome zaproponuje zapisanie ich w Portfelu Google przy następnym użyciu</translation>
 <translation id="6543899060872618437">Płać szybciej dzięki autouzupełnianiu na wszystkich swoich urządzeniach</translation>
 <translation id="6550675742724504774">Opcje</translation>
 <translation id="6550891580932862748">Nie chroni przed niebezpiecznymi stronami, pobieranymi plikami ani rozszerzeniami. Nie wpływa na ustawienia Bezpiecznego przeglądania dostępne w innych usługach Google.</translation>
@@ -1960,6 +1968,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="7888562068293422208">Zamknąć wszystkie?</translation>
 <translation id="7889910613639381518">Łatwy i bezpieczny dostęp dzięki widżetowi Menedżera haseł Google.</translation>
 <translation id="7899199123054742721">Oznacz wszystkie jako nieprzeczytane</translation>
+<translation id="7909005666376403847">Ten iPhone jest skonfigurowany dla dziecka</translation>
 <translation id="7911190106180361398">Twoja organizacja nie pozwala Ci synchronizować wszystkich danych.</translation>
 <translation id="7918999344502274923">Ukryj szczegóły wyszukiwarki <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="7921559948846049514">Wybierz motyw, kolor lub inne ustawienia tła</translation>
@@ -1977,6 +1986,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="7952670906562503188">Nastąpi usunięcie {passkey_count} kluczy dostępu oraz listy witryn i aplikacji, w przypadku których nie chcesz zapisywać danych logowania. Konta utworzone przez Ciebie w witrynach i aplikacjach nie zostaną usunięte.</translation>
 <translation id="7958575506592576831">Informacje o bezpieczeństwie strony</translation>
 <translation id="7961015016161918242">Nigdy</translation>
+<translation id="7971651328518569075">Ukryj opcję Wyłącz Tryb czytania</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Wypróbuj</translation>
 <translation id="797588153137233716">Menu → Historia → Usuń dane przeglądania</translation>
@@ -1993,6 +2003,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="8005666035647241369">W menedżerze haseł Google w przypadku tego urządzenia</translation>
 <translation id="8010488806779226127">Poznaj funkcje, które ułatwią Ci korzystanie z przeglądarki</translation>
 <translation id="8011489434346330032">Inspektor sieci</translation>
+<translation id="8014007212279733632">Potwierdzaj tożsamość w celu autouzupełniania informacji poufnych</translation>
 <translation id="8015826420689927262">Usuń załącznik</translation>
 <translation id="8017015647846870183">Usuwa dane z Menedżera haseł Google, w tym hasła i klucze dostępu</translation>
 <translation id="802154636333426148">Nie udało się pobrać</translation>
@@ -2379,6 +2390,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="984275831282074731">Formy płatności</translation>
 <translation id="985379595344853742">Zamknij wszystkie karty incognito</translation>
 <translation id="988141524645182168">Inne urządzenia</translation>
+<translation id="994184244350700431">W Portfelu Google na koncie <ph name="USER_EMAIL" /></translation>
 <translation id="995174784802614337">{count,plural, =1{Zaimportowano {count} klucz dostępu}few{Zaimportowano {count} klucze dostępu}many{Zaimportowano {count} kluczy dostępu}other{Zaimportowano {count} klucza dostępu}}</translation>
 <translation id="999768147936949692">Obecnie hasła możesz udostępniać tylko członkom grupy rodzinnej. <ph name="BEGIN_LINK" />Zaproś osoby do grupy rodzinnej<ph name="END_LINK" /> i w pełni wykorzystaj potencjał usług oraz subskrypcji Google.</translation>
 </translationbundle>

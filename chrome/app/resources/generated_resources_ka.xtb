@@ -5984,6 +5984,7 @@
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">პროფილი ვერ ჩამოიტვირთა. ცადეთ მოგვიანებით, ან დაუკავშირდით ოპერატორს დახმარებისთვის.</translation>
 <translation id="5131591206283983824">სენსორული პანელზე შეხებით გადატანა</translation>
+<translation id="5132606575454082197">თქვენს Google Drive-ის კონტენტზე წვდომა ხორციელდება მხოლოდ ამ ფაილის ძიების ფუნქციის უზრუნველყოფის მიზნით. ის არ გამოიყენება Google Search-ის გასაუმჯობესებლად. Google არ მიიღებს წვდომას თქვენს Google Drive-ის კონტენტზე, თუ ფაილს პირდაპირ არ ატვირთავთ.</translation>
 <translation id="5133035646508467110">თუ ეს მოწყობილობა სხვებთან საზიაროა, შენახული პაროლის გამოყენებისას თქვენი ვინაობის დასადასტურებლად შეგიძლიათ გამოიყენოთ თქვენი თითის ანაბეჭდი</translation>
 <translation id="5135533361271311778">სანიშნის ელემენტი ვერ შეიქმნა.</translation>
 <translation id="513555878193063507">ახალი APN-ის დამატება</translation>
@@ -6752,6 +6753,7 @@
 <translation id="5678955352098267522">წაიკითხეთ თქვენი მონაცემები ვებსაიტზე <ph name="WEBSITE_1" /></translation>
 <translation id="5680050361008726776">გსურთ, ამოშალოთ „<ph name="ESIM_PROFILE_NAME" />“?</translation>
 <translation id="5681586175480958839">ფაილი უკვე იხსნება</translation>
+<translation id="5684110242705861346">გაფართოება „<ph name="NAME" />“ დაემატა თქვენი ორგანიზაციის წესების მიხედვით და მართავს ამ პარამეტრს. <ph name="BEGIN_LINK" />დეტალების ნახვა<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">Wi‑Fi ქსელის დეტალები</translation>
 <translation id="5684661240348539843">საინვენტარო იდენტიფიკატორი</translation>
 <translation id="5684950556880280580">თქვენი პაროლი განახლდა</translation>
@@ -9276,6 +9278,7 @@
 <translation id="7465778193084373987">Netscape სერტიფიკატის გაუქმების URL</translation>
 <translation id="7466431077154602932">კომპაქტური ხედი</translation>
 <translation id="7466861475611330213">პუნქტუაციის სტილი</translation>
+<translation id="7467547999067230412">გააუმჯობესეთ ძიება ჩანართების, ფაილების ან ხელოვნური ინტელექტის ხელსაწყოს მეშვეობით</translation>
 <translation id="746861123368584540">გაფართოება ჩაიტვირთა</translation>
 <translation id="7470131554696493512">Thunderbolt ან USB4 აქსესუარებისთვის დაიბლოკოს მეხსიერებაზე (RAM) წვდომისა და მისი გაზიარების შესაძლებლობა</translation>
 <translation id="7470274830728993952">ჩანართების ჯგუფში შეერთება</translation>
@@ -11761,6 +11764,7 @@
 <translation id="914031120300235526">პროფილის განბლოკვა ვერ მოხერხდა</translation>
 <translation id="9143298529634201539">გსურთ შემოთავაზების ამოშლა?</translation>
 <translation id="9143922477019434797">დაიცავით თქვენი პაროლები</translation>
+<translation id="914621365454686586">გსურთ Search-ისთვის Drive-ის კონტენტზე წვდომის დაშვება?</translation>
 <translation id="9147392381910171771">&amp;პარამეტრები</translation>
 <translation id="9148058034647219655">გასვლა</translation>
 <translation id="9148126808321036104">ხელახლა შედით</translation>

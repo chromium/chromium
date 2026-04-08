@@ -1055,6 +1055,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2627847595568876492">Estrazione del testo dal PDF in corso…</translation>
 <translation id="2628025184666666186">Questo server non è riuscito a dimostrare che si tratta di <ph name="DOMAIN" /> perché utilizza un certificato di sicurezza non considerato attendibile da Chrome o dalla configurazione di sistema per la crittografia del traffico web. Il problema potrebbe essere dovuto a un'errata configurazione o a un attaccante che intercetta la connessione.</translation>
 <translation id="2628224721443278970">Accedi a Microsoft OneDrive</translation>
+<translation id="2631059741268498165">L'amministratore ha localizzato questo dispositivo mentre era disattivato. È stato riattivato ed è pronto all'uso.</translation>
 <translation id="2631387782019878060">Codice di verifica: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Impossibile trovare l'indirizzo IP del server di <ph name="HOST_NAME" />.</translation>
 <translation id="2638567100095052009">Digita @ per cercare in <ph name="FEATURED_SEARCH_LIST" /></translation>
@@ -2913,6 +2914,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5543564889050342791">Zoo, acquari e riserve</translation>
 <translation id="5543722831081909240">180 gradi</translation>
 <translation id="5544836308113951378">Crociere e noleggio imbarcazioni</translation>
+<translation id="5546252337258681768">Dispositivo sbloccato</translation>
 <translation id="5547939254150808298">Stampa e DTP</translation>
 <translation id="554815783948612276">Provider di forum e chat</translation>
 <translation id="5548606607480005320">Controllo di sicurezza</translation>

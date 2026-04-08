@@ -5993,6 +5993,7 @@
 <translation id="5130080518784460891">倚天</translation>
 <translation id="5130675701626084557">無法下載設定檔。請稍候再試，或向流動網絡供應商尋求協助。</translation>
 <translation id="5131591206283983824">觸控板輕按拖曳</translation>
+<translation id="5132606575454082197">你的 Google 雲端硬碟內容只會用於這項檔案搜尋功能，不會用來提升 Google 搜尋品質。除非你主動上傳檔案，否則 Google 不會存取你的 Google 雲端硬碟內容。</translation>
 <translation id="5133035646508467110">如與他人共用裝置，你可在使用已儲存的密碼時使用指紋驗證身分</translation>
 <translation id="5135533361271311778">無法建立書籤項目。</translation>
 <translation id="513555878193063507">新增 APN</translation>
@@ -6758,6 +6759,7 @@
 <translation id="5678955352098267522">讀取您在 <ph name="WEBSITE_1" /> 上的資料</translation>
 <translation id="5680050361008726776">要移除「<ph name="ESIM_PROFILE_NAME" />」嗎？</translation>
 <translation id="5681586175480958839">檔案已開啟</translation>
+<translation id="5684110242705861346">「<ph name="NAME" />」擴充功能是根據貴機構的政策新增，目前正在控制這項設定。<ph name="BEGIN_LINK" />查看詳細資料<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">Wi-Fi 詳情</translation>
 <translation id="5684661240348539843">資產識別碼</translation>
 <translation id="5684950556880280580">您的密碼已更新</translation>
@@ -9282,6 +9284,7 @@
 <translation id="7465778193084373987">Netscape 憑證撤銷網址</translation>
 <translation id="7466431077154602932">密集檢視</translation>
 <translation id="7466861475611330213">標點符號樣式</translation>
+<translation id="7467547999067230412">透過分頁、檔案或 AI 工具提升搜尋體驗</translation>
 <translation id="746861123368584540">已載入擴充程式</translation>
 <translation id="7470131554696493512">禁止 Thunderbolt 或 USB4 配件存取並分享記憶體 (RAM)</translation>
 <translation id="7470274830728993952">加入分頁群組</translation>
@@ -11761,6 +11764,7 @@
 <translation id="914031120300235526">無法解鎖個人檔案</translation>
 <translation id="9143298529634201539">要移除建議嗎？</translation>
 <translation id="9143922477019434797">保護您的密碼</translation>
+<translation id="914621365454686586">要允許 Google 搜尋存取雲端硬碟內容嗎？</translation>
 <translation id="9147392381910171771">選項(&amp;O)</translation>
 <translation id="9148058034647219655">結束</translation>
 <translation id="9148126808321036104">重新登入</translation>
