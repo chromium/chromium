@@ -3,50 +3,50 @@
 // found in the LICENSE file.
 
 // Test for brailleDisplayPrivate.onKeyEvent.
-// browser_tests.exe --gtest_filter="BrailleDisplayPrivateApiTest.*"
+// browser_tests.exe --gtest_filter='BrailleDisplayPrivateApiTest.*'
 
-var pass = chrome.test.callbackPass;
+const pass = chrome.test.callbackPass;
 
-var EXPECTED_EVENTS = [
-  { command: "line_up" },
-  { command: "line_down" },
-  { command: "pan_left" },
-  { command: "pan_right" },
-  { command: "top" },
-  { command: "bottom" },
-  { command: "routing", "displayPosition": 5 },
-  { command: "standard_key", standardKeyChar: "A" },
-  { command: "standard_key", standardKeyChar: "\u00E5" },
-  { command: "standard_key", standardKeyChar: "\u0100" },
+const EXPECTED_EVENTS = [
+  { command: 'line_up' },
+  { command: 'line_down' },
+  { command: 'pan_left' },
+  { command: 'pan_right' },
+  { command: 'top' },
+  { command: 'bottom' },
+  { command: 'routing', displayPosition: 5 },
+  { command: 'standard_key', standardKeyChar: 'A' },
+  { command: 'standard_key', standardKeyChar: '\u00E5' },
+  { command: 'standard_key', standardKeyChar: '\u0100' },
   // UTF-16 of U+1F639.
-  { command: "standard_key", standardKeyChar: "\uD83D\uDE39" },
-  { command: "standard_key", standardKeyCode: "Backspace" },
-  { command: "standard_key", standardKeyCode: "Tab", shiftKey: true },
-  { command: "standard_key", standardKeyCode: "F3", altKey: true },
-  { command: "dots", ctrlKey: true, brailleDots: 0x1 | 0x2}
-]
-for (var i = 0; i < 256; ++i) {
-  EXPECTED_EVENTS.push({ command: "dots", "brailleDots": i });
+  { command: 'standard_key', standardKeyChar: '\uD83D\uDE39' },
+  { command: 'standard_key', standardKeyCode: 'Backspace' },
+  { command: 'standard_key', standardKeyCode: 'Tab', shiftKey: true },
+  { command: 'standard_key', standardKeyCode: 'F3', altKey: true },
+  { command: 'dots', ctrlKey: true, brailleDots: 0x1 | 0x2}
+];
+for (let i = 0; i < 256; ++i) {
+  EXPECTED_EVENTS.push({ command: 'dots', brailleDots: i });
 }
 
-var event_number = 0;
-var allEventsReceived;
+let eventNumber = 0;
+let allEventsReceived;
 
 function eventListener(event) {
-  chrome.test.assertTrue(event_number< EXPECTED_EVENTS.length);
-  chrome.test.assertEq(EXPECTED_EVENTS[event_number], event);
-  if (++event_number == EXPECTED_EVENTS.length) {
+  chrome.test.assertTrue(eventNumber < EXPECTED_EVENTS.length);
+  chrome.test.assertEq(EXPECTED_EVENTS[eventNumber], event);
+  if (++eventNumber == EXPECTED_EVENTS.length) {
     allEventsReceived();
   }
 }
 
 function waitForDisplay(callback) {
-  var callbackCompleted = chrome.test.callbackAdded();
-  var displayStateHandler = function(state) {
+  let callbackCompleted = chrome.test.callbackAdded();
+  const displayStateHandler = function(state) {
     if (!callbackCompleted) {
       return;
     }
-    chrome.test.assertTrue(state.available, "Display not available");
+    chrome.test.assertTrue(state.available, 'Display not available');
     chrome.test.assertEq(11, state.textColumnCount);
     callback(state);
     callbackCompleted();
@@ -62,7 +62,7 @@ function waitForDisplay(callback) {
     if (state.available) {
       displayStateHandler(state);
     } else {
-      console.log("Display not ready yet");
+      console.log('Display not ready yet');
     }
   }));
 }

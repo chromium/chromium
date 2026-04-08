@@ -3,25 +3,25 @@
 // found in the LICENSE file.
 
 // Test for brailleDisplayPrivate.writeDots.
-// browser_tests.exe --gtest_filter="BrailleDisplayPrivateApiTest.*"
+// browser_tests.exe --gtest_filter='BrailleDisplayPrivateApiTest.*'
 
-var pass = chrome.test.callbackPass;
+const pass = chrome.test.callbackPass;
 
 function createBuffer(size, element) {
-  var buf = new Uint8Array(size);
-  for (var i = 0; i < size; ++i) {
+  const buf = new Uint8Array(size);
+  for (let i = 0; i < size; ++i) {
     buf[i] = element;
   }
   return buf.buffer;
 }
 
 function waitForDisplay(callback) {
-  var callbackCompleted = chrome.test.callbackAdded();
-  var displayStateHandler = function(state) {
+  let callbackCompleted = chrome.test.callbackAdded();
+  const displayStateHandler = function(state) {
     if (!callbackCompleted) {
       return;
     }
-    chrome.test.assertTrue(state.available, "Display not available");
+    chrome.test.assertTrue(state.available, 'Display not available');
     chrome.test.assertEq(11, state.textColumnCount);
     callback(state);
     callbackCompleted();
@@ -37,7 +37,7 @@ function waitForDisplay(callback) {
     if (state.available) {
       displayStateHandler(state);
     } else {
-      console.log("Display not ready yet");
+      console.log('Display not ready yet');
     }
   }));
 }
