@@ -1852,4 +1852,38 @@ TEST_F(SyntheticResponseContentSecurityPolicyTest,
                 kSyntheticResponseBlockedResourceCountHistogramName),
             2);
 }
+
+TEST_F(ContentSecurityPolicyTest, IsNonceableElement) {
+  auto dummy = std::make_unique<DummyPageHolder>();
+  auto* window = dummy->GetFrame().DomWindow();
+
+  struct TestCase {
+    const char* tag;
+    const char* attr_name;
+    const char* attr_value;
+    bool expected_nonceable;
+  } cases[] = {
+      {"script", "src", "https://example.com/js", true},
+      {"script", "data-foo", "<script", false},
+      {"script", "<script", "foo", false},
+      {"script", "data-foo", "<style", false},
+      {"script", "<style", "foo", false},
+      {"script", "<link", "foo", false},
+      {"script", "data-foo", "<link", false},
+  };
+
+  for (const auto& test : cases) {
+    auto* element = window->document()->CreateRawElement(QualifiedName(
+        AtomicString(), AtomicString(test.tag), html_names::xhtmlNamespaceURI));
+    element->setAttribute(AtomicString(test.attr_name),
+                          AtomicString(test.attr_value));
+    element->setNonce(AtomicString("abc"));
+
+    EXPECT_EQ(test.expected_nonceable,
+              ContentSecurityPolicy::IsNonceableElement(element))
+        << "Tag: " << test.tag << ", Attr: " << test.attr_name << "=\""
+        << test.attr_value << "\"";
+  }
+}
+
 }  // namespace blink
