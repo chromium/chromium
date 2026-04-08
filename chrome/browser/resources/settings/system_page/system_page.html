@@ -29,6 +29,7 @@
     </settings-toggle-button>
     <!-- <if expr="is_win"> -->
     <template is="dom-if" if="[[showProcessIsolationSetting_]]" restamp>
+      <div class="hr"></div>
       <settings-toggle-button id="isolationState"
           pref="{{prefs.isolation_state.enabled}}"
           label="$i18n{isolationStateLabel}"
