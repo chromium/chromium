@@ -13,6 +13,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/debug/asan_service.h"
 #include "base/no_destructor.h"
 #include "base/test/allow_check_is_test_for_testing.h"
 #include "base/test/bind.h"
@@ -765,6 +766,10 @@ void WebNNGraphImplFuzzerBase::SetUp() {
                  << base::mac::MacOSVersion();
   }
 #endif  // BUILDFLAG(IS_MAC)
+
+#if defined(ADDRESS_SANITIZER)
+  base::debug::AsanService::GetInstance()->Initialize();
+#endif
 
   GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().BindWebNNContextProvider(
       provider_remote_.BindNewPipeAndPassReceiver(), /*is_incognito=*/false);
