@@ -2984,8 +2984,7 @@ export enum HostCapability {
   PDF_ZERO_STATE = 7,
   // Indicates that the host supports the invoke mechanism.
   INVOKE = 8,
-  // Indicates that the host does not support Live Mode or the floating
-  // detached mode.
+  // Indicates that the host does not support Live Mode.
   NO_LIVE_MODE = 9,
   // Indicates that the host supports auto browse attempting login using Sign in
   // with Google.
