@@ -1129,13 +1129,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         mImageDataRequestedNodes.remove(virtualViewId);
     }
 
-    // TODO(crbug.com/485227837): Remove experiment's methods
-    @CalledByNative
-    private void validateAccessibilityFakeCacheForExperiment() {
-        assert mFakeAndroidCache != null : "FakeAndroidCache is null";
-        mFakeAndroidCache.validateAccessibility();
-    }
-
     /**
      * Builds a fresh node for comparison with a cached node.
      *

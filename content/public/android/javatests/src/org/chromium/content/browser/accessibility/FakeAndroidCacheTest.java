@@ -63,7 +63,7 @@ public class FakeAndroidCacheTest {
                         "testNodeUpdated", String.valueOf(mFirstNodeId));
         Mockito.when(mWebContentsAccessibility.buildFreshAccessibilityNodeInfo(mFirstNodeId))
                 .thenReturn(testNodeUpdated);
-        mFakeAndroidCache.validateAccessibility();
+        mFakeAndroidCache.validateAccessibilityForExperiment();
         Assert.assertEquals(0, mFakeAndroidCache.getStaleNodeCountForTesting());
     }
 
@@ -81,7 +81,7 @@ public class FakeAndroidCacheTest {
                         "testNodeUpdated", String.valueOf(mFirstNodeId));
         Mockito.when(mWebContentsAccessibility.buildFreshAccessibilityNodeInfo(mFirstNodeId))
                 .thenReturn(testNodeUpdated);
-        mFakeAndroidCache.validateAccessibility();
+        mFakeAndroidCache.validateAccessibilityForExperiment();
         Assert.assertEquals(1, mFakeAndroidCache.getStaleNodeCountForTesting());
     }
 
@@ -108,7 +108,7 @@ public class FakeAndroidCacheTest {
         Mockito.when(mWebContentsAccessibility.buildFreshAccessibilityNodeInfo(mSecondNodeId))
                 .thenReturn(testNodeUpdated2);
 
-        mFakeAndroidCache.validateAccessibility();
+        mFakeAndroidCache.validateAccessibilityForExperiment();
         Assert.assertEquals(0, mFakeAndroidCache.getStaleNodeCountForTesting());
     }
 
@@ -135,7 +135,7 @@ public class FakeAndroidCacheTest {
         Mockito.when(mWebContentsAccessibility.buildFreshAccessibilityNodeInfo(mSecondNodeId))
                 .thenReturn(testNodeUpdated2);
 
-        mFakeAndroidCache.validateAccessibility();
+        mFakeAndroidCache.validateAccessibilityForExperiment();
         Assert.assertEquals(1, mFakeAndroidCache.getStaleNodeCountForTesting());
     }
 
@@ -165,7 +165,7 @@ public class FakeAndroidCacheTest {
 
         mFakeAndroidCache.clearNode(mSecondNodeId, /* recursive= */ false);
 
-        mFakeAndroidCache.validateAccessibility();
+        mFakeAndroidCache.validateAccessibilityForExperiment();
         Assert.assertEquals(0, mFakeAndroidCache.getStaleNodeCountForTesting());
 
         // We then recursive clear node1, and expect for grand children to be cleared too.
@@ -185,7 +185,7 @@ public class FakeAndroidCacheTest {
                 .thenReturn(testNodeUpdated4);
 
         // There should be no stale nodes, we cleared all the cache.
-        mFakeAndroidCache.validateAccessibility();
+        mFakeAndroidCache.validateAccessibilityForExperiment();
         Assert.assertEquals(0, mFakeAndroidCache.getStaleNodeCountForTesting());
     }
 

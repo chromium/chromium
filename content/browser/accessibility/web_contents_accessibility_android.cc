@@ -1256,13 +1256,17 @@ void WebContentsAccessibilityAndroid::ClearNodeInfoCacheForGivenId(
 // TODO(crbug.com/485227837): Remove experiment's methods
 void WebContentsAccessibilityAndroid::ValidateA11yCacheForExperiment() {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = GetJavaObject(env);
+  ScopedJavaLocalRef<jobject> wcai_obj = GetJavaObject(env);
+  if (wcai_obj.is_null()) {
+    return;
+  }
+  ScopedJavaLocalRef<jobject> obj =
+      Java_WebContentsAccessibilityImpl_getFakeAndroidCache(env, wcai_obj);
   if (obj.is_null()) {
     return;
   }
 
-  Java_WebContentsAccessibilityImpl_validateAccessibilityFakeCacheForExperiment(
-      env, obj);
+  Java_FakeAndroidCache_validateAccessibilityForExperiment(env, obj);
 }
 
 std::u16string
