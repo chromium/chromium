@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "ui/gfx/native_ui_types.h"
 
 // Enum specifying possible states of biometric authentication availability on
 // Windows. These values are persisted to logs. Entries should not be renumbered
@@ -60,7 +61,7 @@ class AuthenticatorWinInterface {
 // Implementation of the interface that handles communication with the OS.
 class AuthenticatorWin : public AuthenticatorWinInterface {
  public:
-  AuthenticatorWin();
+  explicit AuthenticatorWin(gfx::NativeWindow window);
   ~AuthenticatorWin() override;
 
   AuthenticatorWin(const AuthenticatorWin&) = delete;
@@ -77,6 +78,9 @@ class AuthenticatorWin : public AuthenticatorWinInterface {
   // Returns true if there is screen lock present on the machine, false
   // otherwise.
   bool CanAuthenticateWithScreenLock() override;
+
+ private:
+  gfx::NativeWindow window_;
 };
 
 #endif  // CHROME_BROWSER_DEVICE_REAUTH_WIN_AUTHENTICATOR_WIN_H_

@@ -1346,6 +1346,7 @@ static_library("browser") {
     "//chrome/browser/data_sharing",
     "//chrome/browser/data_sharing:impl",
     "//chrome/browser/desktop_to_mobile_promos:utils",
+    "//chrome/browser/device_reauth",
     "//chrome/browser/devtools",
     "//chrome/browser/diagnostics",
     "//chrome/browser/diagnostics:impl",
@@ -2579,13 +2580,6 @@ static_library("browser") {
       "commerce/price_tracking/android/price_tracking_notification_bridge.cc",
       "commerce/price_tracking/android/price_tracking_notification_bridge.h",
       "composeplate/android/composeplate_utils.cc",
-      "device_reauth/android/device_authenticator_android.cc",
-      "device_reauth/android/device_authenticator_android.h",
-      "device_reauth/android/device_authenticator_bridge.h",
-      "device_reauth/android/device_authenticator_bridge_impl.cc",
-      "device_reauth/android/device_authenticator_bridge_impl.h",
-      "device_reauth/android/reauthenticator_bridge.cc",
-      "device_reauth/android/reauthenticator_bridge.h",
       "download/android/dangerous_download_dialog_bridge.cc",
       "download/android/dangerous_download_dialog_bridge.h",
       "download/android/download_callback_validator.cc",
@@ -2886,7 +2880,6 @@ static_library("browser") {
       "//chrome/browser/companion/text_finder",
       "//chrome/browser/composeplate/android:jni_headers",
       "//chrome/browser/contextual_search",
-      "//chrome/browser/device_reauth/android:jni_headers",
       "//chrome/browser/devtools/android",
       "//chrome/browser/download/internal/android",
       "//chrome/browser/facilitated_payments",
@@ -4178,10 +4171,6 @@ static_library("browser") {
       "browser_process_platform_part_ash.cc",
       "browser_process_platform_part_ash.h",
       "chrome_browser_interface_binders_webui_parts_chromeos.cc",
-      "device_reauth/chromeos/authenticator_chromeos.cc",
-      "device_reauth/chromeos/authenticator_chromeos.h",
-      "device_reauth/chromeos/device_authenticator_chromeos.cc",
-      "device_reauth/chromeos/device_authenticator_chromeos.h",
       "enterprise/connectors/analysis/file_transfer_analysis_delegate.cc",
       "enterprise/connectors/analysis/file_transfer_analysis_delegate.h",
       "enterprise/connectors/analysis/source_destination_matcher_ash.cc",
@@ -5576,10 +5565,6 @@ static_library("browser") {
       "accessibility/live_caption/live_caption_unavailability_notifier.h",
       "chrome_browser_main_win.cc",
       "chrome_browser_main_win.h",
-      "device_reauth/win/authenticator_win.cc",
-      "device_reauth/win/authenticator_win.h",
-      "device_reauth/win/device_authenticator_win.cc",
-      "device_reauth/win/device_authenticator_win.h",
       "enterprise/platform_auth/cloud_ap_provider_win.cc",
       "enterprise/platform_auth/cloud_ap_provider_win.h",
       "enterprise/platform_auth/cloud_ap_utils_win.cc",
@@ -5733,10 +5718,6 @@ static_library("browser") {
       "chrome_browser_application_mac.mm",
       "chrome_browser_main_mac.h",
       "chrome_browser_main_mac.mm",
-      "device_reauth/mac/authenticator_mac.h",
-      "device_reauth/mac/authenticator_mac.mm",
-      "device_reauth/mac/device_authenticator_mac.h",
-      "device_reauth/mac/device_authenticator_mac.mm",
       "enterprise/platform_auth/extensible_enterprise_sso_entra.h",
       "enterprise/platform_auth/extensible_enterprise_sso_entra.mm",
       "enterprise/platform_auth/extensible_enterprise_sso_policy_handler.cc",
@@ -5852,10 +5833,7 @@ static_library("browser") {
   }
 
   if (is_android || is_mac || is_win || is_chromeos) {
-    sources += [
-      "device_reauth/chrome_device_authenticator_factory.cc",
-      "device_reauth/chrome_device_authenticator_factory.h",
-    ]
+    deps += [ "//chrome/browser/device_reauth:impl" ]
   }
 
   if (enterprise_watermark) {

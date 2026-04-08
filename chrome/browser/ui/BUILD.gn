@@ -300,6 +300,7 @@ static_library("ui") {
     "//chrome/browser/contextual_tasks:ui",
     "//chrome/browser/crash_upload_list",
     "//chrome/browser/data_sharing",
+    "//chrome/browser/device_reauth",
     "//chrome/browser/devtools",
     "//chrome/browser/engagement",
     "//chrome/browser/enterprise/browser_management:management_identity",
