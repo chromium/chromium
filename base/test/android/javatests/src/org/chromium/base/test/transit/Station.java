@@ -84,6 +84,7 @@ public abstract class Station<HostActivityT extends Activity> extends Conditiona
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     <T extends Activity> void onDeclaredActivityElement(ActivityElement<T> element) {
         assert mActivityElement == null
                 : String.format(

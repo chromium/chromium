@@ -72,6 +72,7 @@ public class BatchedPublicTransitRule<T extends Station<?>> implements TestRule 
      * @return the home station
      * @throws AssertionError if the current station is not of the expected home station type
      */
+    @SuppressWarnings("unchecked")
     public @Nullable T getHomeStation() {
         TransitAsserts.assertCurrentStationType(
                 mHomeStationType, "getting base station", /* allowNull= */ true);

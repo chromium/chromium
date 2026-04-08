@@ -202,7 +202,7 @@ public final class UnownedUserDataHost {
      * @param key the key to use for the object.
      * @return the stored version or {@code null} if it is not stored or has been garbage collected.
      */
-    @SuppressWarnings("Unchecked")
+    @SuppressWarnings("unchecked")
     /* package */ <T> @Nullable T get(UnownedUserDataKey<T> key) {
         if (mUnownedUserDataMap == null) {
             // After being destroyed, many things still query for their value, so just return null
@@ -227,7 +227,7 @@ public final class UnownedUserDataHost {
      *
      * @param key the key to use for the object.
      */
-    @SuppressWarnings("Unchecked")
+    @SuppressWarnings("unchecked")
     /* package */ <T> void remove(UnownedUserDataKey<T> key) {
         if (mUnownedUserDataMap == null) {
             // Ensure it is safe for detach listeners to call remove() after onDestroy().

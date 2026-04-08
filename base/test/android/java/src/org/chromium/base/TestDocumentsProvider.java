@@ -64,7 +64,7 @@ public class TestDocumentsProvider extends DocumentsProvider {
     // own onCreate() is called to safely get a context.
     private String mAuthority;
 
-    private final PipeDataWriter mPipeDataWriter =
+    private final PipeDataWriter<byte[]> mPipeDataWriter =
             new ContentProvider.PipeDataWriter<byte[]>() {
                 @Override
                 public void writeDataToPipe(

@@ -148,6 +148,7 @@ public class ApplicationTestUtils {
      * @param backgroundThreadTrigger The Runnable that will trigger the state change to wait for,
      *     which will be run on the UI thread.
      */
+    @SuppressWarnings("unchecked")
     public static <T extends Activity> T waitForActivityWithClass(
             Class<? extends Activity> activityClass,
             EnumSet<Stage> stages,

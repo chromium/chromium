@@ -250,6 +250,7 @@ public class TransitiveObservableSupplierTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testNonNull_withObservers() {
         NonNullObservableSupplier<String> nonNullSupplier =
                 ObservableSuppliers.createNonNull("nonNull");
@@ -307,12 +308,13 @@ public class TransitiveObservableSupplierTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testNullableDefaultValue() {
         SettableNullableObservableSupplier<String> nullableSupplier1 =
                 ObservableSuppliers.createNullable();
         SettableNullableObservableSupplier<String> nullableSupplier2 =
                 ObservableSuppliers.createNullable();
-        AtomicReference<NullableObservableSupplier> secondSupplier =
+        AtomicReference<NullableObservableSupplier<String>> secondSupplier =
                 new AtomicReference<>(nullableSupplier2);
 
         NullableObservableSupplier<String> transitive =
@@ -347,6 +349,7 @@ public class TransitiveObservableSupplierTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testNonNullDefaultValue_withObservers() {
         NonNullObservableSupplier<String> nonNullSupplier =
                 ObservableSuppliers.createNonNull("nonNull");
@@ -395,6 +398,7 @@ public class TransitiveObservableSupplierTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testGetAfterDestroy() {
         SettableNullableObservableSupplier<String> nullableSupplier1 =
                 ObservableSuppliers.createNullable();

@@ -150,7 +150,7 @@ public class Elements extends BaseElements {
         }
 
         /** See {@link ConditionalState#declareNoView(ViewSpec)}. */
-        public void declareNoView(ViewSpec viewSpec) {
+        public void declareNoView(ViewSpec<?> viewSpec) {
             declareNoView(viewSpec.getViewMatcher());
         }
 

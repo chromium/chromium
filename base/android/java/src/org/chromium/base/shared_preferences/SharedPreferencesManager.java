@@ -746,6 +746,7 @@ public class SharedPreferencesManager {
         return keysWithPrefix;
     }
 
+    @SuppressWarnings("unchecked")
     private <T> Map<String, T> readAllWithPrefix(KeyPrefix prefix) {
         checkIsPrefixInUse(prefix);
         Map<String, ?> allPrefs = ContextUtils.getAppSharedPreferences().getAll();

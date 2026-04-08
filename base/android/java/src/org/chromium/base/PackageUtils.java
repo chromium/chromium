@@ -105,7 +105,7 @@ public class PackageUtils {
         }
 
         try {
-            Class wvus = Class.forName("android.webkit.WebViewUpdateService");
+            Class<?> wvus = Class.forName("android.webkit.WebViewUpdateService");
             Method getWebViewPackageName = wvus.getDeclaredMethod("getCurrentWebViewPackageName");
             // Calling this for the side effect of granting implicit visibility..
             getWebViewPackageName.invoke(null);

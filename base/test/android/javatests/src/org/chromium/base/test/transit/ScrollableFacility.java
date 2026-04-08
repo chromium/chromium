@@ -386,6 +386,7 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
             return mPresence;
         }
 
+        @SuppressWarnings("unchecked")
         public ViewSpec<View> getViewSpec() {
             assert mViewSpec != null : "Trying to get a ViewSpec for an item not present.";
             return (ViewSpec<View>) mViewSpec;

@@ -53,7 +53,7 @@ public interface MonotonicObservableSupplier<T> extends NullableObservableSuppli
     /**
      * @return A {@link NonNullObservableSupplier} if the supplied value is not null.
      */
-    @SuppressWarnings("Unchecked")
+    @SuppressWarnings("unchecked")
     default NonNullObservableSupplier<T> asNonNull() {
         // Cast from monotonic non-null -> non-null.
         assert !Boolean.TRUE.equals(BaseObservableSupplierImpl.allowsSetToNull(this))
@@ -65,7 +65,7 @@ public interface MonotonicObservableSupplier<T> extends NullableObservableSuppli
     /**
      * Creates an ObservableSupplier that tracks an ObservableSupplier of this ObservableSupplier.
      */
-    @SuppressWarnings("Unchecked")
+    @SuppressWarnings("unchecked")
     default <ChildT, FuncT extends MonotonicObservableSupplier<ChildT>>
             SettableMonotonicObservableSupplier<ChildT> createTransitiveMonotonic(
                     Function<T, FuncT> unwrapFunction) {
@@ -80,7 +80,7 @@ public interface MonotonicObservableSupplier<T> extends NullableObservableSuppli
      * Creates an ObservableSupplier that tracks an ObservableSupplier of this ObservableSupplier.
      * The current and transitive suppliers must both be non-null or monotonic.
      */
-    @SuppressWarnings("Unchecked")
+    @SuppressWarnings("unchecked")
     default <ChildT> SettableNonNullObservableSupplier<ChildT> createTransitiveNonNull(
             Function<T, NonNullObservableSupplier<ChildT>> unwrapFunction) {
         // asNonNull() will call get(), which will update the initial value to be non-null.

@@ -79,7 +79,7 @@ public interface NullableObservableSupplier<T> extends Supplier<@Nullable T> {
     /**
      * Creates an ObservableSupplier that tracks an ObservableSupplier of this ObservableSupplier.
      */
-    @SuppressWarnings("Unchecked")
+    @SuppressWarnings("unchecked")
     default <
                     ChildT,
                     FuncT extends @Nullable T,
@@ -98,7 +98,7 @@ public interface NullableObservableSupplier<T> extends Supplier<@Nullable T> {
      * If either supplier has not yet been initialized, uses the given default value. The current
      * and transitive suppliers must both be non-null or monotonic.
      */
-    @SuppressWarnings("Unchecked")
+    @SuppressWarnings("unchecked")
     default <ChildT> SettableNonNullObservableSupplier<ChildT> createTransitiveNonNull(
             ChildT defaultValue, Function<T, NonNullObservableSupplier<ChildT>> unwrapFunction) {
         return new TransitiveObservableSupplier<>(
@@ -109,7 +109,7 @@ public interface NullableObservableSupplier<T> extends Supplier<@Nullable T> {
     }
 
     /** Creates an ObservableSupplier that tracks a value derived from this ObservableSupplier. */
-    @SuppressWarnings("Unchecked")
+    @SuppressWarnings("unchecked")
     default <ChildT, FuncT extends @Nullable T>
             SettableNullableObservableSupplier<ChildT> createDerivedNullable(
                     Function<FuncT, @Nullable ChildT> unwrapFunction) {
@@ -118,7 +118,7 @@ public interface NullableObservableSupplier<T> extends Supplier<@Nullable T> {
     }
 
     /** Creates an ObservableSupplier that tracks a value derived from this ObservableSupplier. */
-    @SuppressWarnings("Unchecked")
+    @SuppressWarnings("unchecked")
     default <ChildT, FuncT extends @Nullable T>
             SettableNonNullObservableSupplier<ChildT> createDerivedNonNull(
                     Function<FuncT, ChildT> unwrapFunction) {

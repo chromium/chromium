@@ -29,6 +29,7 @@ public class SupplierUtils {
         private int mWaitingCount;
         private @Nullable Runnable mCallback;
 
+        @SuppressWarnings("unchecked")
         void waitForAll(Runnable callback, Supplier<?>... suppliers) {
             ThreadUtils.assertOnUiThread();
             assert mCallback == null;

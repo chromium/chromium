@@ -62,6 +62,7 @@ public class ObservableSuppliers {
         return createNonNull(0);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> MonotonicObservableSupplier<T> alwaysNull() {
         return (MonotonicObservableSupplier<T>) ALWAYS_NULL;
     }

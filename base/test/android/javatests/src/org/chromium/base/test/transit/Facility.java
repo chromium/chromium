@@ -66,6 +66,7 @@ public class Facility<HostStationT extends Station<?>> extends ConditionalState 
         mCustomName = name;
     }
 
+    @SuppressWarnings("unchecked")
     void setHostStation(Station station) {
         assert mHostStation == null
                 : "Facility " + this + " already added to a station. Tried to add it to " + station;

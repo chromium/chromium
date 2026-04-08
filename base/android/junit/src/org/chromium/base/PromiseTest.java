@@ -217,6 +217,7 @@ public class PromiseTest {
 
     /** Tests that Promises get rejected if a Function throws. */
     @Test
+    @SuppressWarnings("unchecked")
     public void rejectOnThrow() {
         Value value = new Value();
         Promise<Integer> promise = new Promise<>();
@@ -235,6 +236,7 @@ public class PromiseTest {
 
     /** Tests that Promises get rejected if an AsyncFunction throws. */
     @Test
+    @SuppressWarnings("unchecked")
     public void rejectOnAsyncThrow() {
         Value value = new Value();
         Promise<Integer> promise = new Promise<>();

@@ -163,7 +163,7 @@ public class ElementFactoryUnitTest {
                                     .withContext(sourceStation)
                                     .arriveAt(destinationStation);
                         });
-        final AtomicReference<Throwable> maybeException = new AtomicReference();
+        final AtomicReference<Throwable> maybeException = new AtomicReference<>();
 
         // Exceptions in background threads are ignored by default, must set
         // UnCaughtExceptionHandler.

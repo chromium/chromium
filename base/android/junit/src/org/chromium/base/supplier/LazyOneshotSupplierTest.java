@@ -33,7 +33,7 @@ public class LazyOneshotSupplierTest {
     @Test
     public void testFromValueObject() {
         Object foo = new Object();
-        LazyOneshotSupplier lazyOneshotSupplier = LazyOneshotSupplier.fromValue(foo);
+        LazyOneshotSupplier<Object> lazyOneshotSupplier = LazyOneshotSupplier.fromValue(foo);
         lazyOneshotSupplier.onAvailable(mOnAvailable);
         assertFalse(lazyOneshotSupplier.hasValue());
 
@@ -46,7 +46,7 @@ public class LazyOneshotSupplierTest {
 
     @Test
     public void testFromValueNull() {
-        LazyOneshotSupplier lazyOneshotSupplier = LazyOneshotSupplier.fromValue(null);
+        LazyOneshotSupplier<Object> lazyOneshotSupplier = LazyOneshotSupplier.fromValue(null);
         lazyOneshotSupplier.onAvailable(mOnAvailable);
         assertFalse(lazyOneshotSupplier.hasValue());
 
@@ -60,7 +60,8 @@ public class LazyOneshotSupplierTest {
     @Test
     public void testFromSupplierObject() {
         Object foo = new Object();
-        LazyOneshotSupplier lazyOneshotSupplier = LazyOneshotSupplier.fromSupplier(() -> foo);
+        LazyOneshotSupplier<Object> lazyOneshotSupplier =
+                LazyOneshotSupplier.fromSupplier(() -> foo);
         lazyOneshotSupplier.onAvailable(mOnAvailable);
         assertFalse(lazyOneshotSupplier.hasValue());
 
@@ -73,7 +74,8 @@ public class LazyOneshotSupplierTest {
 
     @Test
     public void testFromSupplierNull() {
-        LazyOneshotSupplier lazyOneshotSupplier = LazyOneshotSupplier.fromSupplier(() -> null);
+        LazyOneshotSupplier<Object> lazyOneshotSupplier =
+                LazyOneshotSupplier.fromSupplier(() -> null);
         lazyOneshotSupplier.onAvailable(mOnAvailable);
         assertFalse(lazyOneshotSupplier.hasValue());
 
