@@ -2238,6 +2238,11 @@ public class LocationBarMediatorTest {
         mMediator.onSearchBoxHintTextChanged();
 
         verify(mUrlCoordinator).setUrlBarHintText(eq("search engine hint text"));
+
+        mMediator.onUrlFocusChange(false);
+        doReturn("search engine hint text unfocused")
+                .when(mSearchEngineUtils)
+                .getOmniboxHintText(anyInt(), any());
     }
 
     @Test
