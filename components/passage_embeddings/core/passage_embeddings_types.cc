@@ -6,10 +6,15 @@
 
 #include <algorithm>
 
+#include "base/check.h"
+#include "base/not_fatal_until.h"
+
 namespace passage_embeddings {
 
-Embedding::Embedding(std::vector<float> data) : data_(std::move(data)) {}
-Embedding::Embedding() = default;
+Embedding::Embedding(std::vector<float> data) : data_(std::move(data)) {
+  CHECK(!data_.empty(), base::NotFatalUntil::M152);
+}
+
 Embedding::~Embedding() = default;
 Embedding::Embedding(const Embedding&) = default;
 Embedding& Embedding::operator=(const Embedding&) = default;

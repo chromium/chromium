@@ -118,7 +118,6 @@ class EmbedderMetadataProvider {
 class Embedding {
  public:
   explicit Embedding(std::vector<float> data);
-  Embedding();
   ~Embedding();
   Embedding(const Embedding&);
   Embedding& operator=(const Embedding&);

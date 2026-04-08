@@ -181,17 +181,6 @@ TEST_F(ContentAnnotatorSemanticMatchClassifierTest, ClassifyWithNoMatch) {
 }
 
 TEST_F(ContentAnnotatorSemanticMatchClassifierTest,
-       ClassifyWithEmptyEmbedding) {
-  const char kRules[] = R"JSON({ "category1": ["keyword1"] })JSON";
-  MockEmbedderResponse({{"keyword1", {1.0f, 0.0f, 0.0f}}});
-  auto classifier = CreateClassifier(kRules);
-  ASSERT_TRUE(classifier);
-
-  Embedding empty_embedding;
-  EXPECT_FALSE(classifier->Classify(empty_embedding).has_value());
-}
-
-TEST_F(ContentAnnotatorSemanticMatchClassifierTest,
        ClassifyWithMismatchedDimensions) {
   const char kRules[] = R"JSON({ "category1": ["keyword1"] })JSON";
   // Rule embedding has 3 dimensions.
@@ -202,6 +191,18 @@ TEST_F(ContentAnnotatorSemanticMatchClassifierTest,
   // Input embedding has 2 dimensions.
   Embedding mismatched_embedding(std::vector<float>{1.0f, 0.0f});
   EXPECT_FALSE(classifier->Classify(mismatched_embedding).has_value());
+}
+
+TEST_F(ContentAnnotatorSemanticMatchClassifierTest, ClassifyWithZeroMagnitude) {
+  const char kRules[] = R"JSON({ "category1": ["keyword1"] })JSON";
+  // Rule embedding has 3 dimensions.
+  MockEmbedderResponse({{"keyword1", {1.0f, 0.0f, 0.0f}}});
+  auto classifier = CreateClassifier(kRules);
+  ASSERT_TRUE(classifier);
+
+  // Input embedding has 3 dimensions but zero magnitude.
+  Embedding zero_magnitude_embedding(std::vector<float>{0.0f, 0.0f, 0.0f});
+  EXPECT_FALSE(classifier->Classify(zero_magnitude_embedding).has_value());
 }
 
 }  // namespace accessibility_annotator

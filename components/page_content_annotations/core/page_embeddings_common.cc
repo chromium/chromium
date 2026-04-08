@@ -6,7 +6,6 @@
 
 namespace page_content_annotations {
 
-PassageEmbedding::PassageEmbedding() = default;
 PassageEmbedding::~PassageEmbedding() = default;
 PassageEmbedding::PassageEmbedding(const PassageEmbedding& other) = default;
 PassageEmbedding::PassageEmbedding(

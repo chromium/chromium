@@ -59,7 +59,7 @@ class OnDeviceCategoryClassifier
   void OnPageEmbeddingAvailable(
       const GURL& url,
       ukm::SourceId source_id,
-      passage_embeddings::Embedding title_url_embedding,
+      std::optional<passage_embeddings::Embedding> title_url_embedding,
       std::vector<passage_embeddings::Embedding> passage_embeddings);
 
   // passage_embeddings::EmbedderMetadataObserver:

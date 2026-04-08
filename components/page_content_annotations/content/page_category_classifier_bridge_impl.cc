@@ -43,9 +43,9 @@ void PageCategoryClassifierBridgeImpl::OnPageEmbeddingsAvailable(
   std::vector<PassageEmbedding> embeddings =
       page_embeddings_service_->GetEmbeddings(page);
 
-  passage_embeddings::Embedding title_url_embedding;
+  std::optional<passage_embeddings::Embedding> title_url_embedding;
   std::vector<passage_embeddings::Embedding> passage_embeddings;
-  for (PassageEmbedding embedding : embeddings) {
+  for (PassageEmbedding& embedding : embeddings) {
     if (embedding.passage.second == EmbeddingPassageType::kTitleAndUrl) {
       title_url_embedding = std::move(embedding.embedding);
     } else if (embedding.passage.second == EmbeddingPassageType::kPageContent) {

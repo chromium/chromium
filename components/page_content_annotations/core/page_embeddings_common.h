@@ -21,7 +21,6 @@ enum EmbeddingPassageType {
 
 // A passage from a page along with its computed embedding.
 struct PassageEmbedding {
-  PassageEmbedding();
   PassageEmbedding(std::pair<std::string, EmbeddingPassageType> passage,
                    passage_embeddings::Embedding embedding);
   PassageEmbedding(const PassageEmbedding&);

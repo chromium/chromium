@@ -53,7 +53,10 @@ std::vector<size_t> ScoredUrlRow::GetBestScoreIndices(
     // The word count could be calculated from the passage directly, but
     // since it has already been calculated before, use the value stored
     // with the embedding for efficiency.
-    data.emplace_back(scores[i], url_data.passage_embeddings[i].word_count, i);
+    if (url_data.passage_embeddings[i].has_value()) {
+      data.emplace_back(scores[i], url_data.passage_embeddings[i]->word_count,
+                        i);
+    }
   }
 
   // Sort tuples naturally, descending, so that highest scores come first.

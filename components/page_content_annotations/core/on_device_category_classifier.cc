@@ -68,9 +68,9 @@ void OnDeviceCategoryClassifier::RemoveObserver(Observer* observer) {
 void OnDeviceCategoryClassifier::OnPageEmbeddingAvailable(
     const GURL& url,
     ukm::SourceId source_id,
-    passage_embeddings::Embedding title_url_embedding,
+    std::optional<passage_embeddings::Embedding> title_url_embedding,
     std::vector<passage_embeddings::Embedding> passage_embeddings) {
-  if (title_url_embedding.GetData().empty()) {
+  if (!title_url_embedding.has_value()) {
     // Skip if the title-URL embedding is empty.
     OnCategoryClassifiersCompleted(url, source_id, {});
     return;
@@ -100,7 +100,7 @@ void OnDeviceCategoryClassifier::OnPageEmbeddingAvailable(
 
     // Execute the model with the input vector.
     std::vector<float> input_vector = model_handler->ConstructInputVector(
-        title_url_embedding, passage_embeddings);
+        *title_url_embedding, passage_embeddings);
     model_handler->ExecuteModelWithInput(
         base::BindOnce(&OnSingleCategoryClassifierComplete, category_type,
                        barrier_callback),

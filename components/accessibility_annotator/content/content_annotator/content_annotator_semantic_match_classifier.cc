@@ -103,8 +103,7 @@ ContentAnnotatorSemanticMatchClassifier::Classify(
 
   // Ensure the input embedding has the same dimensions as the classifier's
   // rules and has a non-zero magnitude.
-  if (expected_dimensions == 0 ||
-      embedding.Dimensions() != expected_dimensions ||
+  if (embedding.Dimensions() != expected_dimensions ||
       embedding.Magnitude() < std::numeric_limits<float>::epsilon()) {
     return std::nullopt;
   }

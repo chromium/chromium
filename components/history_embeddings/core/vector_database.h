@@ -170,7 +170,7 @@ struct UrlData {
   history::VisitID visit_id;
   base::Time visit_time;
   proto::PassagesValue passages;
-  std::vector<PassageEmbedding> passage_embeddings;
+  std::vector<std::optional<PassageEmbedding>> passage_embeddings;
 };
 
 // This base class decouples storage classes and inverts the dependency so that

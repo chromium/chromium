@@ -390,6 +390,7 @@ void PageEmbeddingsService::OnEmbeddingsComputed(
   CHECK_EQ(passage_strings.size(), embeddings.size());
 
   std::vector<PassageEmbedding> passage_embeddings;
+  passage_embeddings.reserve(passage_types.size());
   for (size_t i = 0; i < passage_types.size(); ++i) {
     passage_embeddings.emplace_back(
         std::make_pair(std::move(passage_strings[i]),

@@ -117,7 +117,9 @@ class ContextualTasksContextService
 
  private:
   struct QueryState {
-    QueryState();
+    QueryState(std::string query,
+               passage_embeddings::Embedding query_embedding,
+               int query_word_count);
     ~QueryState();
     QueryState(const QueryState&);
     QueryState& operator=(const QueryState&);

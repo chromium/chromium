@@ -310,11 +310,11 @@ std::optional<UrlData> SqlDatabase::GetUrlData(history::URLID url_id) {
         return url_data;
       }
       for (const proto::EmbeddingVector& vector : value.vectors()) {
-        url_data.passage_embeddings.emplace_back(
+        url_data.passage_embeddings.emplace_back(PassageEmbedding(
             passage_embeddings::Embedding(
                 std::vector(vector.floats().cbegin(), vector.floats().cend())),
-            vector.passage_word_count());
-        if (url_data.passage_embeddings.back().embedding.Dimensions() !=
+            vector.passage_word_count()));
+        if (url_data.passage_embeddings.back()->embedding.Dimensions() !=
             GetEmbeddingDimensions()) {
           url_data.passage_embeddings.clear();
           loaded_missized_embedding = true;
@@ -370,10 +370,10 @@ std::vector<UrlData> SqlDatabase::GetUrlDataInTimeRange(base::Time from_time,
     base::span<const uint8_t> embeddings_blob = statement.ColumnBlob(4);
     if (value.ParseFromArray(embeddings_blob.data(), embeddings_blob.size())) {
       for (const proto::EmbeddingVector& vector : value.vectors()) {
-        url_data.passage_embeddings.emplace_back(
+        url_data.passage_embeddings.emplace_back(PassageEmbedding(
             passage_embeddings::Embedding(
                 std::vector(vector.floats().cbegin(), vector.floats().cend())),
-            vector.passage_word_count());
+            vector.passage_word_count()));
       }
     }
   }
@@ -523,18 +523,19 @@ SqlDatabase::MakeUrlDataIterator(std::optional<base::Time> time_range_start) {
           continue;
         }
         for (const proto::EmbeddingVector& vector : value.vectors()) {
-          data.passage_embeddings.emplace_back(
+          data.passage_embeddings.emplace_back(PassageEmbedding(
               passage_embeddings::Embedding(std::vector(
                   vector.floats().cbegin(), vector.floats().cend())),
-              vector.passage_word_count());
+              vector.passage_word_count()));
         }
         const size_t expected_dimensions =
             sql_database->GetEmbeddingDimensions();
         if (std::ranges::any_of(
                 data.passage_embeddings,
-                [=](const PassageEmbedding& passage_embedding) {
-                  return passage_embedding.embedding.Dimensions() !=
-                         expected_dimensions;
+                [=](const std::optional<PassageEmbedding>& passage_embedding) {
+                  return !passage_embedding.has_value() ||
+                         passage_embedding->embedding.Dimensions() !=
+                             expected_dimensions;
                 })) {
           skipped_missized++;
           continue;
@@ -775,15 +776,16 @@ bool SqlDatabase::InsertOrReplaceEmbeddings(const UrlData& url_embeddings) {
   statement.BindTime(2, url_embeddings.visit_time);
 
   proto::EmbeddingsValue value;
-  for (const PassageEmbedding& passage_embedding :
+  for (const std::optional<PassageEmbedding>& passage_embedding :
        url_embeddings.passage_embeddings) {
+    CHECK(passage_embedding.has_value());
     CHECK_EQ(GetEmbeddingDimensions(),
-             passage_embedding.embedding.Dimensions());
+             passage_embedding->embedding.Dimensions());
     proto::EmbeddingVector* vector = value.add_vectors();
-    for (float f : passage_embedding.embedding.GetData()) {
+    for (float f : passage_embedding->embedding.GetData()) {
       vector->add_floats(f);
     }
-    vector->set_passage_word_count(passage_embedding.word_count);
+    vector->set_passage_word_count(passage_embedding->word_count);
   }
   statement.BindBlob(3, value.SerializeAsString());
 

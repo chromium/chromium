@@ -40,7 +40,13 @@
 
 namespace contextual_tasks {
 
-ContextualTasksContextService::QueryState::QueryState() = default;
+ContextualTasksContextService::QueryState::QueryState(
+    std::string query,
+    passage_embeddings::Embedding query_embedding,
+    int query_word_count)
+    : query(std::move(query)),
+      query_embedding(std::move(query_embedding)),
+      query_word_count(query_word_count) {}
 ContextualTasksContextService::QueryState::~QueryState() = default;
 ContextualTasksContextService::QueryState::QueryState(const QueryState&) =
     default;
@@ -515,10 +521,7 @@ ContextualTasksContextService::QueryState
 ContextualTasksContextService::CreateQueryState(
     const std::string& query,
     const passage_embeddings::Embedding& query_embedding) {
-  QueryState query_state;
-  query_state.query = query;
-  query_state.query_embedding = query_embedding;
-  query_state.query_word_count = GetWordCount(query);
+  QueryState query_state(query, query_embedding, GetWordCount(query));
 
   content::WebContents* active_tab_contents = GetActiveTabWebContents();
   SiteExclusionDetail site_exclusion_detail;

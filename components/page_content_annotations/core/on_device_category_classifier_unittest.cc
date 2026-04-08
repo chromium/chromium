@@ -208,7 +208,7 @@ TEST_F(OnDeviceCategoryClassifierTest, NoTitleUrlEmbedding) {
   classifier_->AddObserver(&observer);
 
   classifier_->OnPageEmbeddingAvailable(GURL("https://example.com"),
-                                        /*source_id=*/0, {}, {});
+                                        /*source_id=*/0, std::nullopt, {});
 
   observer.Wait();
 
