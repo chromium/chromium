@@ -1116,12 +1116,12 @@ TEST_F(IdentityManagerTest,
   SetRefreshTokenForAccount(identity_manager(), account_id2);
 
   GoogleServiceAuthError account_not_found_error =
-      GoogleServiceAuthError(GoogleServiceAuthError::State::ACCOUNT_NOT_FOUND);
+      GoogleServiceAuthError::CreateAccountNotFound();
   GoogleServiceAuthError invalid_gaia_credentials_error =
-      GoogleServiceAuthError(
-          GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS);
-  GoogleServiceAuthError transient_error = GoogleServiceAuthError(
-      GoogleServiceAuthError::State::SERVICE_UNAVAILABLE);
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN);
+  GoogleServiceAuthError transient_error =
+      GoogleServiceAuthError::FromServiceUnavailable("");
 
   // Set a persistent error for |account_id2| and check that it's reflected.
   token_service()->UpdateAuthErrorForTesting(account_id2,
@@ -1268,12 +1268,12 @@ TEST_F(IdentityManagerTest, GetErrorStateOfRefreshTokenForAccount) {
           account_id2));
 
   GoogleServiceAuthError account_not_found_error =
-      GoogleServiceAuthError(GoogleServiceAuthError::State::ACCOUNT_NOT_FOUND);
+      GoogleServiceAuthError::CreateAccountNotFound();
   GoogleServiceAuthError invalid_gaia_credentials_error =
-      GoogleServiceAuthError(
-          GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS);
-  GoogleServiceAuthError transient_error = GoogleServiceAuthError(
-      GoogleServiceAuthError::State::SERVICE_UNAVAILABLE);
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN);
+  GoogleServiceAuthError transient_error =
+      GoogleServiceAuthError::FromServiceUnavailable("");
 
   // Set a persistent error for |account_id2| and check that it's reflected.
   token_service()->UpdateAuthErrorForTesting(account_id2,
@@ -1426,8 +1426,7 @@ TEST_F(IdentityManagerTest,
   // Cancel the pending request in preparation to check that creating an
   // AccessTokenFetcher without a custom factory works as expected as well.
   token_service()->IssueErrorForAllPendingRequestsForAccount(
-      primary_account_id(),
-      GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
+      primary_account_id(), GoogleServiceAuthError::CreateRequestCanceled());
 
   // Now add a second account and request an access token for it to test
   // that the default URLLoaderFactory is used if none is specified.
@@ -1521,7 +1520,7 @@ TEST_F(IdentityManagerTest,
   run_loop.Run();
 
   EXPECT_TRUE(token_fetcher);
-  EXPECT_EQ(GoogleServiceAuthError(GoogleServiceAuthError::ACCOUNT_NOT_FOUND),
+  EXPECT_EQ(GoogleServiceAuthError::CreateAccountNotFound(),
             identity_manager_diagnostics_observer()
                 ->on_access_token_request_completed_error());
 }
@@ -1562,7 +1561,7 @@ TEST_F(IdentityManagerTest,
   EXPECT_EQ(ScopeSet({GaiaConstants::kChromeSyncOAuth2Scope}),
             identity_manager_diagnostics_observer()
                 ->on_access_token_request_completed_scopes());
-  EXPECT_EQ(GoogleServiceAuthError(GoogleServiceAuthError::NONE),
+  EXPECT_EQ(GoogleServiceAuthError::AuthErrorNone(),
             identity_manager_diagnostics_observer()
                 ->on_access_token_request_completed_error());
   histogram_tester.ExpectUniqueSample("Signin.AccessTokenFetch.Success", 0, 1);
@@ -1594,7 +1593,7 @@ TEST_F(IdentityManagerTest,
   run_loop.Run();
 
   EXPECT_TRUE(token_fetcher);
-  EXPECT_EQ(GoogleServiceAuthError(GoogleServiceAuthError::ACCOUNT_NOT_FOUND),
+  EXPECT_EQ(GoogleServiceAuthError::CreateAccountNotFound(),
             identity_manager_diagnostics_observer()
                 ->on_access_token_request_completed_error());
   histogram_tester.ExpectUniqueSample(

@@ -28,6 +28,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -238,10 +239,8 @@ TEST_F(AccessTokenFetcherTest, EmptyAccountFailsButDoesNotCrash) {
 
   // Fetching access tokens for an empty account id should respond with
   // ACCOUNT_NOT_FOUND error.
-  EXPECT_CALL(callback,
-              Run(GoogleServiceAuthError(
-                      GoogleServiceAuthError::State::ACCOUNT_NOT_FOUND),
-                  AccessTokenInfo()))
+  EXPECT_CALL(callback, Run(GoogleServiceAuthError::CreateAccountNotFound(),
+                            AccessTokenInfo()))
       .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
 
   run_loop.Run();
@@ -416,10 +415,8 @@ TEST_F(AccessTokenFetcherTest, ReturnsErrorWhenAccountHasNoRefreshToken) {
   auto fetcher = CreateFetcher(account_id, callback.Get(),
                                AccessTokenFetcher::Mode::kImmediate);
 
-  EXPECT_CALL(callback,
-              Run(GoogleServiceAuthError(
-                      GoogleServiceAuthError::State::ACCOUNT_NOT_FOUND),
-                  AccessTokenInfo()))
+  EXPECT_CALL(callback, Run(GoogleServiceAuthError::CreateAccountNotFound(),
+                            AccessTokenInfo()))
       .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
 
   run_loop.Run();
@@ -441,16 +438,12 @@ TEST_F(AccessTokenFetcherTest, CanceledAccessTokenRequest) {
   run_loop.Run();
 
   base::RunLoop run_loop2;
-  EXPECT_CALL(
-      callback,
-      Run(GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED),
-          AccessTokenInfo()))
+  auto error = GoogleServiceAuthError::CreateRequestCanceled();
+  EXPECT_CALL(callback, Run(error, AccessTokenInfo()))
       .WillOnce(testing::InvokeWithoutArgs(&run_loop2, &base::RunLoop::Quit));
 
   // A canceled access token request should result in a callback.
-  token_service()->IssueErrorForAllPendingRequestsForAccount(
-      account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
+  token_service()->IssueErrorForAllPendingRequestsForAccount(account_id, error);
 
   run_loop2.Run();
 }
@@ -472,10 +465,8 @@ TEST_F(AccessTokenFetcherTest, RefreshTokenRevoked) {
 
   // Revoke the refresh token, which should cancel all pending requests. The
   // fetcher should *not* retry.
-  EXPECT_CALL(
-      callback,
-      Run(GoogleServiceAuthError(GoogleServiceAuthError::ACCOUNT_NOT_FOUND),
-          AccessTokenInfo()));
+  EXPECT_CALL(callback, Run(GoogleServiceAuthError::CreateAccountNotFound(),
+                            AccessTokenInfo()));
   token_service()->RevokeCredentials(account_id);
 }
 
@@ -496,13 +487,9 @@ TEST_F(AccessTokenFetcherTest, FailedAccessTokenRequest) {
   run_loop.Run();
 
   // We should immediately get called back with an empty access token.
-  EXPECT_CALL(
-      callback,
-      Run(GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE),
-          AccessTokenInfo()));
-  token_service()->IssueErrorForAllPendingRequestsForAccount(
-      account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
+  auto error = GoogleServiceAuthError::FromServiceUnavailable("");
+  EXPECT_CALL(callback, Run(error, AccessTokenInfo()));
+  token_service()->IssueErrorForAllPendingRequestsForAccount(account_id, error);
 }
 
 TEST_F(AccessTokenFetcherTest, MultipleRequestsForSameAccountFulfilled) {
@@ -625,15 +612,11 @@ TEST_F(AccessTokenFetcherTest,
   // Cancel the first access token request: This should result in a callback
   // for the first fetcher.
   base::RunLoop run_loop3;
-  EXPECT_CALL(
-      callback,
-      Run(GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED),
-          AccessTokenInfo()))
+  auto error = GoogleServiceAuthError::CreateRequestCanceled();
+  EXPECT_CALL(callback, Run(error, AccessTokenInfo()))
       .WillOnce(testing::InvokeWithoutArgs(&run_loop3, &base::RunLoop::Quit));
 
-  token_service()->IssueErrorForAllPendingRequestsForAccount(
-      account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
+  token_service()->IssueErrorForAllPendingRequestsForAccount(account_id, error);
 
   run_loop3.Run();
 

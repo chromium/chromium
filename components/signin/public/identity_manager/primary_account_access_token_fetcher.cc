@@ -112,9 +112,8 @@ void PrimaryAccountAccessTokenFetcher::OnIdentityManagerShutdown(
   identity_manager_observation_.Reset();
   access_token_fetcher_.reset();
   if (callback_) {
-    std::move(callback_).Run(
-        GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED),
-        AccessTokenInfo());
+    std::move(callback_).Run(GoogleServiceAuthError::CreateRequestCanceled(),
+                             AccessTokenInfo());
   }
 }
 

@@ -230,8 +230,7 @@ TEST_P(PrimaryAccountAccessTokenFetcherTest, OneShotCallsBackWhenSignedOut) {
   // Signed out -> we should get called back.
   auto fetcher = CreateFetcher(
       base::BindOnce(&OnAccessTokenFetchComplete, run_loop.QuitClosure(),
-                     GoogleServiceAuthError(
-                         GoogleServiceAuthError::State::ACCOUNT_NOT_FOUND),
+                     GoogleServiceAuthError::CreateAccountNotFound(),
                      AccessTokenInfo()),
       PrimaryAccountAccessTokenFetcher::Mode::kImmediate);
 
@@ -248,8 +247,7 @@ TEST_P(PrimaryAccountAccessTokenFetcherTest,
   // Signed in, but there is no refresh token -> we should get called back.
   auto fetcher = CreateFetcher(
       base::BindOnce(&OnAccessTokenFetchComplete, run_loop.QuitClosure(),
-                     GoogleServiceAuthError(
-                         GoogleServiceAuthError::State::ACCOUNT_NOT_FOUND),
+                     GoogleServiceAuthError::CreateAccountNotFound(),
                      AccessTokenInfo()),
       PrimaryAccountAccessTokenFetcher::Mode::kImmediate);
 
@@ -349,16 +347,15 @@ TEST_P(PrimaryAccountAccessTokenFetcherTest,
 
   // Signed in and refresh token already exists, so this should result in a
   // request for an access token.
+  auto error = GoogleServiceAuthError::CreateRequestCanceled();
   auto fetcher = CreateFetcher(
-      base::BindOnce(
-          &OnAccessTokenFetchComplete, run_loop.QuitClosure(),
-          GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED),
-          AccessTokenInfo()),
+      base::BindOnce(&OnAccessTokenFetchComplete, run_loop.QuitClosure(), error,
+                     AccessTokenInfo()),
       PrimaryAccountAccessTokenFetcher::Mode::kImmediate);
 
   // A canceled access token request should result in a callback.
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
+      error);
 }
 
 TEST_P(PrimaryAccountAccessTokenFetcherTest,
@@ -375,7 +372,7 @@ TEST_P(PrimaryAccountAccessTokenFetcherTest,
 
   // A canceled access token request should get retried once.
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
+      GoogleServiceAuthError::CreateRequestCanceled());
 
   // Once the access token request is fulfilled, we should get called back with
   // the access token.
@@ -399,17 +396,15 @@ TEST_P(PrimaryAccountAccessTokenFetcherTest,
       PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable);
 
   // A canceled access token request should get retried once.
+  auto error = GoogleServiceAuthError::CreateRequestCanceled();
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
+      error);
 
   // On the second failure, we should get called back with an empty access
   // token.
-  EXPECT_CALL(
-      callback,
-      Run(GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED),
-          AccessTokenInfo()));
+  EXPECT_CALL(callback, Run(error, AccessTokenInfo()));
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
+      error);
 }
 
 // Shutting down the identity manager while a fetch is in progress should not
@@ -425,10 +420,8 @@ TEST_P(PrimaryAccountAccessTokenFetcherTest, IdentityManagerShutdown) {
       callback.Get(),
       PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable);
 
-  EXPECT_CALL(
-      callback,
-      Run(GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED),
-          AccessTokenInfo()));
+  EXPECT_CALL(callback, Run(GoogleServiceAuthError::CreateRequestCanceled(),
+                            AccessTokenInfo()));
   ShutdownIdentityManager();
 }
 
@@ -442,10 +435,8 @@ TEST_P(PrimaryAccountAccessTokenFetcherTest, IdentityManagerShutdownNoAccount) {
       callback.Get(),
       PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable);
 
-  EXPECT_CALL(
-      callback,
-      Run(GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED),
-          AccessTokenInfo()));
+  EXPECT_CALL(callback, Run(GoogleServiceAuthError::CreateRequestCanceled(),
+                            AccessTokenInfo()));
   ShutdownIdentityManager();
 }
 
@@ -466,10 +457,8 @@ TEST_P(PrimaryAccountAccessTokenFetcherTest,
   // Simulate the user signing out while the access token request is pending.
   // In this case, the pending request gets canceled, and the fetcher should
   // *not* retry.
-  EXPECT_CALL(
-      callback,
-      Run(GoogleServiceAuthError(GoogleServiceAuthError::ACCOUNT_NOT_FOUND),
-          AccessTokenInfo()));
+  EXPECT_CALL(callback, Run(GoogleServiceAuthError::CreateAccountNotFound(),
+                            AccessTokenInfo()));
 
   identity_test_env()->ClearPrimaryAccount();
 }
@@ -490,10 +479,8 @@ TEST_P(PrimaryAccountAccessTokenFetcherTest,
 
   // Simulate the refresh token getting removed. In this case, pending
   // access token requests get canceled, and the fetcher should *not* retry.
-  EXPECT_CALL(
-      callback,
-      Run(GoogleServiceAuthError(GoogleServiceAuthError::ACCOUNT_NOT_FOUND),
-          AccessTokenInfo()));
+  EXPECT_CALL(callback, Run(GoogleServiceAuthError::CreateAccountNotFound(),
+                            AccessTokenInfo()));
   identity_test_env()->RemoveRefreshTokenForPrimaryAccount();
 }
 
@@ -511,12 +498,10 @@ TEST_P(PrimaryAccountAccessTokenFetcherTest,
 
   // An access token failure other than "canceled" should not be retried; we
   // should immediately get called back with an empty access token.
-  EXPECT_CALL(
-      callback,
-      Run(GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE),
-          AccessTokenInfo()));
+  auto error = GoogleServiceAuthError::FromServiceUnavailable("");
+  EXPECT_CALL(callback, Run(error, AccessTokenInfo()));
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
+      error);
 }
 
 // The above tests all use a consented primary account, so they should all work
