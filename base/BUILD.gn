@@ -1092,7 +1092,7 @@ component("base") {
   deps += [ "//third_party/zlib" ]
 
   deps += [
-    "logging:rust_logger",
+    "logging/rust_logger",
     "//third_party/rust/serde_json_lenient/v0_2/wrapper",
   ]
 
@@ -1625,8 +1625,8 @@ component("base") {
     "files/scoped_temp_file.h",
     "json/json_file_value_serializer.cc",
     "json/json_file_value_serializer.h",
-    "logging/rust_log_integration.cc",
-    "logging/rust_log_integration.h",
+    "logging/rust_logger/print_rust_log_ffi.cc",
+    "logging/rust_logger/print_rust_log_ffi.h",
     "memory/discardable_memory.cc",
     "memory/discardable_memory.h",
     "memory/discardable_memory_allocator.cc",
@@ -3626,7 +3626,6 @@ test("base_unittests") {
     "json/string_escape_unittest.cc",
     "json/values_util_unittest.cc",
     "lazy_instance_unittest.cc",
-    "logging/rust_log_integration_unittest.cc",
     "logging_unittest.cc",
     "macros/is_empty_unittest.cc",
     "memory/aligned_memory_unittest.cc",
@@ -3949,6 +3948,7 @@ test("base_unittests") {
     ":rust_sequences_unittests",
     ":sanitizer_buildflags",
     "//base/allocator:buildflags",
+    "//base/logging/rust_logger:unittests",
     "//base/numerics:unittests",
     "//base/test:proto_test_support",
     "//base/test:run_all_unittests",

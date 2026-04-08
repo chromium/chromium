@@ -36,17 +36,6 @@ static_library("test_config") {
   ]
 }
 
-rust_static_library("test_rust_logger_consumer") {
-  allow_unsafe = true  # Unsafe needed for FFI
-  testonly = true
-  deps = [ "//third_party/rust/log/v0_4:lib" ]
-  sources = [ "logging/test_rust_logger_consumer.rs" ]
-
-  crate_root = "logging/test_rust_logger_consumer.rs"
-
-  cxx_bindings = [ "logging/test_rust_logger_consumer.rs" ]
-}
-
 rust_static_library("task_environment") {
   testonly = true
   sources = [ "task_environment.rs" ]
@@ -229,7 +218,6 @@ static_library("test_support") {
 
   public_deps = [
     ":test_config",
-    ":test_rust_logger_consumer",
     "//base",
     "//base:base_static",
     "//base:i18n",

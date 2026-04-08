@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/logging/rust_log_integration.h"
+#include "base/logging/rust_logger/print_rust_log_ffi.h"
 
 #include <stdint.h>
 
 #include "base/logging.h"
 #include "base/logging/log_severity.h"
-#include "base/logging/logger.rs.h"
+#include "base/logging/rust_logger/print_rust_log.rs.h"
 #include "third_party/rust/cxx/v1/cxx.h"
 
 namespace logging::internal {
@@ -18,7 +18,7 @@ LogMessageRustWrapper::LogMessageRustWrapper(const char* file,
                                              ::logging::LogSeverity severity)
     : log_message(file, line, severity) {}
 
-void LogMessageRustWrapper::write_to_stream(rust::Str str) {
+void LogMessageRustWrapper::write_str(rust::Str str) {
   log_message.stream().write(str.data(),
                              static_cast<std::streamsize>(str.size()));
 }

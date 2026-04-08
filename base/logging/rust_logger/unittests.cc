@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+
 #include "base/logging.h"
+#include "base/logging/log_severity.h"
+#include "base/logging/rust_logger/test_support.rs.h"
 #include "base/test/gtest_util.h"
-#include "base/test/logging/test_rust_logger_consumer.rs.h"
 #include "base/test/mock_log.h"
-#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
 
-namespace logging {
+namespace base::test {
 namespace {
 
 class RustLogIntegrationTest : public testing::Test {
@@ -33,32 +35,32 @@ TEST_F(RustLogIntegrationTest, MAYBE_CheckAllSeverity) {
 #if DCHECK_IS_ON()
   // Debug and Trace logs from Rust are discarded when DCHECK_IS_ON() is false;
   // otherwise, they are logged as info.
-  EXPECT_CALL(log_,
-              Log(LOGGING_INFO, _, _, _, testing::HasSubstr("test trace log")))
+  EXPECT_CALL(log_, Log(logging::LOGGING_INFO, _, _, _,
+                        testing::HasSubstr("test trace log")))
       .WillOnce(testing::Return(true));
 
-  EXPECT_CALL(log_,
-              Log(LOGGING_INFO, _, _, _, testing::HasSubstr("test debug log")))
+  EXPECT_CALL(log_, Log(logging::LOGGING_INFO, _, _, _,
+                        testing::HasSubstr("test debug log")))
       .WillOnce(testing::Return(true));
 #endif
 
-  EXPECT_CALL(log_,
-              Log(LOGGING_INFO, _, _, _, testing::HasSubstr("test info log")))
+  EXPECT_CALL(log_, Log(logging::LOGGING_INFO, _, _, _,
+                        testing::HasSubstr("test info log")))
       .WillOnce(testing::Return(true));
 
-  EXPECT_CALL(log_, Log(LOGGING_WARNING, _, _, _,
+  EXPECT_CALL(log_, Log(logging::LOGGING_WARNING, _, _, _,
                         testing::HasSubstr("test warning log")))
       .WillOnce(testing::Return(true));
 
-  EXPECT_CALL(log_,
-              Log(LOGGING_ERROR, _, _, _, testing::HasSubstr("test error log")))
+  EXPECT_CALL(log_, Log(logging::LOGGING_ERROR, _, _, _,
+                        testing::HasSubstr("test error log")))
       .WillOnce(testing::Return(true));
 
-  base::test::print_test_trace_log();
-  base::test::print_test_debug_log();
-  base::test::print_test_info_log();
-  base::test::print_test_warning_log();
-  base::test::print_test_error_log();
+  log_trace_from_rust();
+  log_debug_from_rust();
+  log_info_from_rust();
+  log_warning_from_rust();
+  log_error_from_rust();
 }
 
 // TODO(crbug.com/374023535): Logging does not work in component builds.
@@ -68,11 +70,11 @@ TEST_F(RustLogIntegrationTest, MAYBE_CheckAllSeverity) {
 #define MAYBE_Placeholders Placeholders
 #endif
 TEST_F(RustLogIntegrationTest, MAYBE_Placeholders) {
-  EXPECT_CALL(log_, Log(LOGGING_ERROR, _, _, _,
+  EXPECT_CALL(log_, Log(logging::LOGGING_ERROR, _, _, _,
                         testing::HasSubstr("test log with placeholder 2")))
       .WillOnce(testing::Return(true));
 
-  base::test::print_test_error_log_with_placeholder(2);
+  log_error_with_placeholder_from_rust(2);
 }
 
 // TODO(crbug.com/374023535): Logging does not work in component builds.
@@ -81,11 +83,11 @@ TEST(RustLogIntegrationTestWithoutMocking, DISABLED_Panic) {
   std::string expected_msg;
 
   // Verify presence of `LOG(FATAL)`-specific prefix in the message.
-  expected_msg += "\\bFATAL\\b.*base.test.logging.test_rust_logger_consumer.rs";
+  expected_msg += "\\bFATAL\\b.*base.logging.rust_logger.test_support.rs";
   expected_msg += "[\\s\\S]*";  // Skip over a newline
 
   // Verify presence of Rust-provided, generic panicking message
-  expected_msg += "panicked at.*base.test.logging.test_rust_logger_consumer.rs";
+  expected_msg += "panicked at.*base.logging.rust_logger.test_support.rs";
   expected_msg += "[\\s\\S]*";  // Skip over a newline
 
   // Verify presence of the custom message passed to `panic!` (including the
@@ -93,9 +95,8 @@ TEST(RustLogIntegrationTestWithoutMocking, DISABLED_Panic) {
   expected_msg += "panic with placeholder 123";
 
   BASE_EXPECT_DEATH(
-      { base::test::panic_from_rust_with_placeholder(123); },
-      expected_msg);
+      { base::test::panic_with_placeholder_from_rust(123); }, expected_msg);
 }
 
 }  // namespace
-}  // namespace logging
+}  // namespace base::test

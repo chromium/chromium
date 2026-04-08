@@ -4,6 +4,7 @@
 //base/allocator/partition_allocator/src/partition_alloc
 //base/android/linker
 //base/logging
+//base/logging/rust_logger
 //base/numerics
 //base/third_party/cityhash
 //base/third_party/cityhash_v103

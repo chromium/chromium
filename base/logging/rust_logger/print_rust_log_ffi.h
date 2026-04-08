@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_LOGGING_RUST_LOG_INTEGRATION_H_
-#define BASE_LOGGING_RUST_LOG_INTEGRATION_H_
+#ifndef BASE_LOGGING_RUST_LOGGER_PRINT_RUST_LOG_FFI_H_
+#define BASE_LOGGING_RUST_LOGGER_PRINT_RUST_LOG_FFI_H_
 
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/base_export.h"
 #include "base/logging.h"
 #include "base/logging/log_severity.h"
 #include "third_party/rust/cxx/v1/cxx.h"
@@ -40,7 +39,8 @@ class LogMessageRustWrapper {
                         int line,
                         ::logging::LogSeverity severity);
 
-  void write_to_stream(rust::Str str);
+  /// Writes `s` to the wrapped `::logging::LogMessage`.
+  void write_str(rust::Str s);
 
  private:
   ::logging::LogMessage log_message;
@@ -49,4 +49,4 @@ class LogMessageRustWrapper {
 }  // namespace internal
 }  // namespace logging
 
-#endif  // BASE_LOGGING_RUST_LOG_INTEGRATION_H_
+#endif  // BASE_LOGGING_RUST_LOGGER_PRINT_RUST_LOG_FFI_H_

@@ -1278,37 +1278,28 @@ def create_rust_cxx_modules(blueprint, gn, target, is_test_target):
     cxx_bridge_module_name = create_modules_from_target(
         blueprint, gn, _find_cxx_bridge_binary(target.deps), target.type,
         is_test_target)[0].name
-    header_genrule = Module("cc_genrule",
-                            label_to_module_name(target.name) + "_header",
+    modules = []
+    for (i, src) in enumerate(target.sources):
+        header_genrule = Module(
+            "cc_genrule", f"{label_to_module_name(target.name)}_header_{i}",
+            target.name)
+        header_genrule.tools = {cxx_bridge_module_name}
+        header_genrule.cmd = f"$(location {cxx_bridge_module_name}) $(in) --header > $(out)"
+        header_genrule.srcs = {gn_utils.label_to_path(src)}
+        header_genrule.out = {f"{gn_utils.label_to_path(src)}.h"}
+
+        cc_genrule = Module("cc_genrule",
+                            f"{label_to_module_name(target.name)}_{i}",
                             target.name)
-    header_genrule.tools = {cxx_bridge_module_name}
-    header_genrule.cmd = f"$(location {cxx_bridge_module_name}) $(in) --header > $(out)"
-    header_genrule.srcs = {
-        gn_utils.label_to_path(src)
-        for src in target.sources
-    }
-    # The output of the cc_genrule is the input + ".h" suffix, this is because
-    # the input to a CXX genrule is just one source file.
-    header_genrule.out = {
-        f"{gn_utils.label_to_path(out)}.h"
-        for out in target.sources
-    }
+        cc_genrule.tools = {cxx_bridge_module_name}
+        cc_genrule.cmd = f"$(location {cxx_bridge_module_name}) $(in) > $(out)"
+        cc_genrule.srcs = {gn_utils.label_to_path(src)}
+        cc_genrule.genrule_srcs = {f":{cc_genrule.name}"}
+        cc_genrule.out = {f"{gn_utils.label_to_path(src)}.cc"}
 
-    cc_genrule = Module("cc_genrule", label_to_module_name(target.name),
-                        target.name)
-    cc_genrule.tools = {cxx_bridge_module_name}
-    cc_genrule.cmd = f"$(location {cxx_bridge_module_name}) $(in) > $(out)"
-    cc_genrule.srcs = {gn_utils.label_to_path(src) for src in target.sources}
-    cc_genrule.genrule_srcs = {f":{cc_genrule.name}"}
-    # The output of the cc_genrule is the input + ".cc" suffix, this is because
-    # the input to a CXX genrule is just one source file.
-    cc_genrule.out = {
-        f"{gn_utils.label_to_path(out)}.cc"
-        for out in target.sources
-    }
-
-    cc_genrule.genrule_headers.add(header_genrule.name)
-    return (header_genrule, cc_genrule)
+        cc_genrule.genrule_headers.add(header_genrule.name)
+        modules.extend([cc_genrule, header_genrule])
+    return modules
 
 
 def create_proto_modules(blueprint, gn, target, is_test_target):
