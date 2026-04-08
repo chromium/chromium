@@ -38,6 +38,8 @@ source_set("core") {
 
 source_set("features") {
   sources = [
+    "accessibility_annotator_debug_features.cc",
+    "accessibility_annotator_debug_features.h",
     "accessibility_annotator_features.cc",
     "accessibility_annotator_features.h",
   ]

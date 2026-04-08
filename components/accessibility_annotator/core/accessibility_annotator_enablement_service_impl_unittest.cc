@@ -7,6 +7,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/accessibility_annotator/core/accessibility_annotator_debug_features.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -52,6 +53,44 @@ class AccessibilityAnnotatorEnablementServiceImplTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<AccessibilityAnnotatorEnablementServiceImpl> service_;
 };
+
+TEST_F(AccessibilityAnnotatorEnablementServiceImplTest, ForcedEnablementState) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        features::debug::kAccessibilityAnnotatorForceEnablementState,
+        {{"remote_annotator_enablement_state", "0"}});
+    EXPECT_EQ(service().GetEnablementState(),
+              RemoteAnnotatorEnablementState::kDisabledNotEligible);
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        features::debug::kAccessibilityAnnotatorForceEnablementState,
+        {{"remote_annotator_enablement_state", "1"}});
+    EXPECT_EQ(service().GetEnablementState(),
+              RemoteAnnotatorEnablementState::kDisabledPendingInfo);
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        features::debug::kAccessibilityAnnotatorForceEnablementState,
+        {{"remote_annotator_enablement_state", "2"}});
+    EXPECT_EQ(service().GetEnablementState(),
+              RemoteAnnotatorEnablementState::kDisabledPendingSetup);
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        features::debug::kAccessibilityAnnotatorForceEnablementState,
+        {{"remote_annotator_enablement_state", "3"}});
+    EXPECT_EQ(service().GetEnablementState(),
+              RemoteAnnotatorEnablementState::kEnabled);
+  }
+}
 
 TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
        DisabledWhenFeaturesAreOff) {

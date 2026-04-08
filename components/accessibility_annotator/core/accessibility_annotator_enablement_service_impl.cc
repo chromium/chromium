@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "components/accessibility_annotator/core/accessibility_annotator_debug_features.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/accessibility_annotator/core/country_type.h"
 #include "components/account_settings/account_setting_service.h"
@@ -124,6 +125,13 @@ void AccessibilityAnnotatorEnablementServiceImpl::RemoveObserver(
 RemoteAnnotatorEnablementState
 AccessibilityAnnotatorEnablementServiceImpl::GetEnablementState() {
   using enum RemoteAnnotatorEnablementState;
+  if (base::FeatureList::IsEnabled(
+          features::debug::kAccessibilityAnnotatorForceEnablementState)) {
+    return static_cast<RemoteAnnotatorEnablementState>(
+        features::debug::kAccessibilityAnnotatorForceEnablementStateParam
+            .Get());
+  }
+
   if (!SatisfiesFeatureRequirements()) {
     return kDisabledNotEligible;
   }
