@@ -58,10 +58,16 @@ const int32_t kCoseAlgorithmEs256 =
 const int32_t kCoseAlgorithmRs256 =
     base::strict_cast<int32_t>(device::CoseAlgorithmIdentifier::kRs256);
 
-static blink::V8UnionArrayBufferOrArrayBufferView* arrayBufferOrView(
-    const uint8_t* data,
-    size_t size);
-static Vector<uint8_t> vectorOf(const uint8_t* data, size_t size);
+static blink::V8UnionArrayBufferOrArrayBufferView* ArrayBufferOrView(
+    base::span<const uint8_t> data) {
+  return blink::MakeGarbageCollected<
+      blink::V8UnionArrayBufferOrArrayBufferView>(
+      blink::DOMArrayBuffer::Create(data));
+}
+
+static Vector<uint8_t> VectorOf(base::span<const uint8_t> data) {
+  return Vector<uint8_t>(data);
+}
 
 TEST(CredentialManagerTypeConvertersTest, RpContextTest) {
   blink::test::TaskEnvironment task_environment;
@@ -132,9 +138,7 @@ MATCHER_P(DOMArrayBufferEqualTo, vector, "") {
   if (arg->ByteLength() != std::size(vector)) {
     return false;
   }
-  uint8_t* data = (uint8_t*)arg->Data();
-  return std::equal(data, UNSAFE_TODO(data + arg->ByteLength()),
-                    std::begin(vector));
+  return arg->ByteSpan() == vector;
 }
 
 MATCHER_P(UnionDOMArrayBufferOrViewEqualTo, vector, "") {
@@ -144,9 +148,7 @@ MATCHER_P(UnionDOMArrayBufferOrViewEqualTo, vector, "") {
   if (buffer->ByteLength() != std::size(vector)) {
     return false;
   }
-  uint8_t* data = (uint8_t*)buffer->Data();
-  return std::equal(data, UNSAFE_TODO(data + buffer->ByteLength()),
-                    std::begin(vector));
+  return buffer->ByteSpan() == vector;
 }
 
 TEST(CredentialManagerTypeConvertersTest,
@@ -295,13 +297,13 @@ TEST(CredentialManagerTypeConvertersTest,
   blink_type->setExtensions(
       blink::AuthenticationExtensionsClientInputs::Create());
   blink_type->extensions()->setAppid("app-id");
-  blink_type->setChallenge(arrayBufferOrView(kSample, std::size(kSample)));
+  blink_type->setChallenge(ArrayBufferOrView(kSample));
 
   blink::mojom::blink::PublicKeyCredentialRequestOptionsPtr mojo_type =
       ConvertTo<blink::mojom::blink::PublicKeyCredentialRequestOptionsPtr>(
           *blink_type);
 
-  auto sample_vector = vectorOf(kSample, std::size(kSample));
+  auto sample_vector = VectorOf(kSample);
   ASSERT_EQ(mojo_type->extensions->appid, "app-id");
   ASSERT_EQ(mojo_type->challenge, sample_vector);
 }
@@ -340,14 +342,14 @@ TEST(CredentialManagerTypeConvertersTest,
       blink::AuthenticationExtensionsClientInputs::Create();
   blink::AuthenticationExtensionsLargeBlobInputs* large_blob =
       blink::AuthenticationExtensionsLargeBlobInputs::Create();
-  large_blob->setWrite(arrayBufferOrView(kSample, std::size(kSample)));
+  large_blob->setWrite(ArrayBufferOrView(kSample));
   blink_type->setLargeBlob(large_blob);
 
   blink::mojom::blink::AuthenticationExtensionsClientInputsPtr mojo_type =
       ConvertTo<blink::mojom::blink::AuthenticationExtensionsClientInputsPtr>(
           *blink_type);
 
-  auto sample_vector = vectorOf(kSample, std::size(kSample));
+  auto sample_vector = VectorOf(kSample);
   ASSERT_EQ(mojo_type->large_blob_write, sample_vector);
 }
 
@@ -495,10 +497,9 @@ TEST(CredentialManagerTypeConvertersTest,
   blink_creation_options->setRp(blink_rp_entity);
   blink::PublicKeyCredentialUserEntity* blink_user =
       blink::PublicKeyCredentialUserEntity::Create();
-  blink_user->setId(arrayBufferOrView(kSample, std::size(kSample)));
+  blink_user->setId(ArrayBufferOrView(kSample));
   blink_creation_options->setUser(blink_user);
-  blink_creation_options->setChallenge(
-      arrayBufferOrView(kSample, std::size(kSample)));
+  blink_creation_options->setChallenge(ArrayBufferOrView(kSample));
 
   blink::AuthenticationExtensionsClientInputs* blink_extensions =
       blink::AuthenticationExtensionsClientInputs::Create();
@@ -586,7 +587,7 @@ TEST(CredentialManagerTypeConvertersTest,
       blink::AuthenticationExtensionsPRFInputs::Create();
   blink::AuthenticationExtensionsPRFValues* prf_values =
       blink::AuthenticationExtensionsPRFValues::Create();
-  prf_values->setFirst(arrayBufferOrView(kSample, std::size(kSample)));
+  prf_values->setFirst(ArrayBufferOrView(kSample));
   prf_inputs->setEval(prf_values);
   blink_type->setPrf(prf_inputs);
 
@@ -594,26 +595,12 @@ TEST(CredentialManagerTypeConvertersTest,
       ConvertTo<blink::mojom::blink::AuthenticationExtensionsClientInputsPtr>(
           *blink_type);
 
-  auto sample_vector = vectorOf(kSample, std::size(kSample));
+  auto sample_vector = VectorOf(kSample);
   Vector<blink::mojom::blink::PRFValuesPtr> expected_prf_values;
   expected_prf_values.emplace_back(blink::mojom::blink::PRFValues::New(
       std::optional<Vector<uint8_t>>(), sample_vector,
       std::optional<Vector<uint8_t>>()));
   ASSERT_EQ(mojo_type->prf_inputs[0]->first, expected_prf_values[0]->first);
-}
-
-static blink::V8UnionArrayBufferOrArrayBufferView* arrayBufferOrView(
-    const uint8_t* data,
-    size_t size) {
-  return blink::MakeGarbageCollected<
-      blink::V8UnionArrayBufferOrArrayBufferView>(
-      blink::DOMArrayBuffer::Create(UNSAFE_TODO(base::span(data, size))));
-}
-
-static Vector<uint8_t> vectorOf(const uint8_t* data, size_t size) {
-  Vector<uint8_t> vector;
-  std::copy(data, UNSAFE_TODO(data + size), std::back_insert_iterator(vector));
-  return vector;
 }
 
 // Crash test for crbug.com/347715555.
