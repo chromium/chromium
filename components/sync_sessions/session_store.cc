@@ -238,34 +238,32 @@ void SessionStore::WriteBatch::Commit(std::unique_ptr<WriteBatch> batch) {
 }
 
 // static
-std::optional<SessionStore::SpecificsInvalidReason>
-SessionStore::GetSpecificsInvalidReason(
-    const sync_pb::SessionSpecifics& specifics) {
+bool SessionStore::AreValidSpecifics(const SessionSpecifics& specifics) {
   // A session tag is always required.
   if (specifics.session_tag().empty()) {
-    return SpecificsInvalidReason::kMissingSessionTag;
+    return false;
   }
 
   // Only one of header or tab may be set.
   if (specifics.has_header() && specifics.has_tab()) {
-    return SpecificsInvalidReason::kBothHeaderAndTab;
+    return false;
   }
 
   // Tabs must have both a valid tab ID and tab node ID.
   if (specifics.has_tab()) {
     if (specifics.tab_node_id() < 0) {
-      return SpecificsInvalidReason::kTabBadTabNodeId;
+      return false;
     }
     if (specifics.tab().tab_id() <= 0) {
-      return SpecificsInvalidReason::kTabBadTabId;
+      return false;
     }
-    return std::nullopt;
+    return true;
   }
 
   if (specifics.has_header()) {
     // A header entity must not have a tab node ID.
     if (specifics.tab_node_id() != TabNodePool::kInvalidTabNodeID) {
-      return SpecificsInvalidReason::kHeaderWithTabNodeId;
+      return false;
     }
     // Verify that tab IDs appear only once within a header. Intended to prevent
     // http://crbug.com/360822.
@@ -274,20 +272,15 @@ SessionStore::GetSpecificsInvalidReason(
       for (int tab_id : window.tab()) {
         bool success = session_tab_ids.insert(tab_id).second;
         if (!success) {
-          return SpecificsInvalidReason::kHeaderWithDuplicateTabIds;
+          return false;
         }
       }
     }
-    return std::nullopt;
+    return true;
   }
 
   // Neither header nor tab is set.
-  return SpecificsInvalidReason::kNeitherHeaderNorTab;
-}
-
-// static
-bool SessionStore::AreValidSpecifics(const SessionSpecifics& specifics) {
-  return !GetSpecificsInvalidReason(specifics).has_value();
+  return false;
 }
 
 // static

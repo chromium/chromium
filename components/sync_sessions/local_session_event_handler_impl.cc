@@ -299,16 +299,8 @@ void LocalSessionEventHandlerImpl::AssociateWindows(ReloadTabsOption option,
   specifics->set_session_tag(current_session_tag_);
   current_session->ToSessionHeaderProto().Swap(specifics->mutable_header());
 
-  // TODO(crbug.com/408182457): Some reports indicate that `specifics` is
-  // occasionally invalid here. In that case, avoid sending it to the sync
-  // machinery to avoid CHECK failures.
-  std::optional<SessionStore::SpecificsInvalidReason> invalid_reason =
-      SessionStore::GetSpecificsInvalidReason(*specifics);
-  if (!invalid_reason.has_value()) {
+  if (SessionStore::AreValidSpecifics(*specifics)) {
     batch->Put(std::move(specifics));
-  } else {
-    base::UmaHistogramEnumeration("Sync.InvalidSessionHeader.AssociateWindows",
-                                  *invalid_reason);
   }
 
   RecordAssociateWindowsTime(timer, is_session_restore);

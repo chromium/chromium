@@ -1496,8 +1496,6 @@ bool ClientTagBasedDataTypeProcessor::ShouldClearPersistedMetadata(
   // Check that there are no empty/missing storage keys.
   for (const auto& [storage_key, _] : metadata_map) {
     if (storage_key.empty()) {
-      base::UmaHistogramEnumeration("Sync.ClearMetadataDueToEmptyStorageKey",
-                                    DataTypeHistogramValue(type_));
       return true;
     }
   }

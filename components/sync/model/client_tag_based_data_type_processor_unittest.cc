@@ -3235,11 +3235,6 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldResetForMissingStorageKey) {
   EXPECT_EQ(0U, ProcessorEntityCount());
   EXPECT_FALSE(type_processor()->IsTrackingMetadata());
 
-  histogram_tester.ExpectUniqueSample(
-      "Sync.ClearMetadataDueToEmptyStorageKey",
-      /*sample=*/DataTypeHistogramValue(GetDataType()),
-      /*expected_bucket_count=*/1);
-
   // Initial update.
   worker()->UpdateFromServer();
   EXPECT_TRUE(type_processor()->IsTrackingMetadata());

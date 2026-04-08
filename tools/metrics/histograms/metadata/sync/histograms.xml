@@ -219,17 +219,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.AndroidExplicitPassphrasePlatformApiResponse"
-    enum="AndroidExplicitPassphrasePlatformApiResponse"
-    expires_after="2026-03-30">
-  <owner>mastiz@chromium.org</owner>
-  <owner>src/components/sync/OWNERS</owner>
-  <summary>
-    The response returned by the API internally called by
-    ExplicitPassphrasePlatformClient (see class docs). Recorded only on Android.
-  </summary>
-</histogram>
-
 <histogram name="Sync.AssociateWindowsTime.On{Type}" units="ms"
     expires_after="2026-10-04">
   <owner>skym@chromium.org</owner>
@@ -576,17 +565,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the success or failure of encrypting the sync bootstrap token. This
     token is used to decrypt sync data when a custom passphrase is set.
-  </summary>
-</histogram>
-
-<histogram name="Sync.ClearMetadataDueToEmptyStorageKey" enum="SyncDataTypes"
-    expires_after="2026-03-30">
-  <owner>treib@chromium.org</owner>
-  <owner>src/components/sync/OWNERS</owner>
-  <summary>
-    Records when a data type's metadata is cleared due to empty/missing storage
-    keys in the persisted metadata. This will result in a re-download of all
-    data of this type.
   </summary>
 </histogram>
 
@@ -1650,17 +1628,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records different causes for BookmarkSpecifics to be deemed invalid. Issues
     are recorded upon verifying validity of specifics received from the server.
-  </summary>
-</histogram>
-
-<histogram name="Sync.InvalidSessionHeader.AssociateWindows"
-    enum="SessionSpecificsInvalidReason" expires_after="2026-03-30">
-  <owner>treib@chromium.org</owner>
-  <owner>src/components/sync/OWNERS</owner>
-  <summary>
-    Recorded if the SessionHeader specifics produced at the end of an
-    AssociateWindows() call was invalid (and thus not actually sent to the sync
-    machinery).
   </summary>
 </histogram>
 
