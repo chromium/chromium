@@ -3265,11 +3265,6 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
     }
     MarkEffectiveAllowedTouchActionChanged();
   }
-  if (IsDocumentElement() && style_ && style_->Opacity() == 0.0f &&
-      new_style.Opacity() != 0.0f) {
-    if (LocalFrameView* frame_view = GetFrameView())
-      frame_view->GetPaintTimingDetector().ReportIgnoredContent();
-  }
 }
 
 static inline bool AreCursorsEqual(const ComputedStyle* a,
@@ -3419,6 +3414,13 @@ void LayoutObject::StyleDidChange(
 
   if (diff.disable_scroll_anchoring) {
     SetScrollAnchorDisablingStyleChanged(true);
+  }
+
+  if (diff.opacity_changed && IsDocumentElement() &&
+      old_style->Opacity() == 0.f && style_->Opacity() != 0.f) {
+    if (const LocalFrameView* frame_view = GetFrameView()) {
+      frame_view->GetPaintTimingDetector().ReportIgnoredContent();
+    }
   }
 
   // Don't check for paint invalidation here; we need to wait until the layer
