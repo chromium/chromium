@@ -92,9 +92,6 @@ class MockNavigationHandle : public NavigationHandle {
   bool IsInOutermostMainFrame() const override {
     return !GetConstParentFrameOrOuterDocument();
   }
-  size_t GetIgnoredDuplicateNavigationCount() const override {
-    return ignored_duplicate_navigation_count_;
-  }
   content::FrameTreeNodeId GetFrameTreeNodeId() override {
     if (IsInPrimaryMainFrame()) {
       CHECK(web_contents_);
@@ -416,7 +413,6 @@ class MockNavigationHandle : public NavigationHandle {
   bool is_in_fenced_frame_tree_ = false;
   bool is_renderer_initiated_ = true;
   bool is_in_primary_main_frame_ = true;
-  size_t ignored_duplicate_navigation_count_ = 0;
   std::vector<GURL> redirect_chain_;
   bool has_committed_ = false;
   bool is_error_page_ = false;

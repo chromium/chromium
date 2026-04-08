@@ -489,10 +489,6 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // initiated redirect causes such replacement.
   virtual bool DidReplaceEntry() = 0;
 
-  // Returns the number of subsequent duplicate navigations that were ignored in
-  // favor of this navigation. This will be used for metrics.
-  virtual size_t GetIgnoredDuplicateNavigationCount() const = 0;
-
   // Returns true if the browser history should be updated. Otherwise only
   // the session history will be updated. E.g., on unreachable urls or other
   // navigations that the users may not think of as navigations (such as

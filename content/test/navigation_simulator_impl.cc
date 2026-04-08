@@ -1422,7 +1422,7 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
   render_frame_host_->frame_host_receiver_for_testing().impl()->BeginNavigation(
       std::move(common_params), std::move(begin_params), mojo::NullRemote(),
       std::move(navigation_client_remote), mojo::NullRemote(),
-      mojo::NullReceiver(), mojo::NullReceiver(), mojo::NullReceiver());
+      mojo::NullReceiver(), mojo::NullReceiver());
 
   NavigationRequest* request =
       render_frame_host_->frame_tree_node()->navigation_request();

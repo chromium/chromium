@@ -86,10 +86,7 @@ class NavigationClient : mojom::NavigationClient {
   // notification to the browser.
   void SetUpRendererInitiatedNavigation(
       mojo::PendingRemote<mojom::NavigationRendererCancellationListener>
-          renderer_cancellation_listener_remote,
-      mojo::PendingRemote<
-          mojom::NavigationRendererIgnoreDuplicateNavigationListener>
-          renderer_ignore_duplicate_navigation_listener_remote);
+          renderer_cancellation_listener_remote);
 
   void ResetWithoutCancelling();
 
@@ -98,8 +95,6 @@ class NavigationClient : mojom::NavigationClient {
   void ResetForAbort();
 
   bool HasBeginNavigationParams() const { return !!begin_params_; }
-
-  void DidIgnoreDuplicateNavigation();
 
   const blink::mojom::BeginNavigationParams& begin_params() const {
     return *begin_params_;
@@ -134,8 +129,6 @@ class NavigationClient : mojom::NavigationClient {
       this};
   mojo::Remote<mojom::NavigationRendererCancellationListener>
       renderer_cancellation_listener_remote_;
-  mojo::Remote<mojom::NavigationRendererIgnoreDuplicateNavigationListener>
-      renderer_ignore_duplicate_navigation_listener_remote_;
 
   // Note that this might change due to `MoveOwnershipToCommitTargetIfNeeded()`.
   raw_ptr<RenderFrameImpl, DanglingUntriaged> render_frame_;

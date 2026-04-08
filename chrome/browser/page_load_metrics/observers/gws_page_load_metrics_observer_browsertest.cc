@@ -27,7 +27,6 @@
 #include "components/sessions/core/tab_restore_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -51,7 +50,6 @@ std::unique_ptr<net::test_server::HttpResponse> SRPHandler(
     <html>
       <body>
         SRP Content
-        <a id="thelink" href="/search?q=duplicate">Next SRP Link</a>
       </body>
     </html>
   )");
@@ -457,119 +455,6 @@ IN_PROC_BROWSER_TEST_F(GWSPageLoadMetricsObserverContextMenuNaviBrowserTest,
   histogram_tester.ExpectTotalCount(
       base::StrCat({internal::kHistogramGWSLargestContentfulPaint,
                     internal::kStartedFromContextMenu}),
-      1);
-}
-
-class GWSPageLoadMetricsObserverIgnoreDuplicateNavsBrowserTest
-    : public GWSPageLoadMetricsObserverBrowserTest {
- public:
-  void SetUp() override {
-    GWSPageLoadMetricsObserverBrowserTest::SetUp();
-    feature_list_.InitAndEnableFeature(features::kIgnoreDuplicateNavs);
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    GWSPageLoadMetricsObserverBrowserTest::SetUpInProcessBrowserTestFixture();
-    // By default, IgnoreDuplicateNavs is disabled in tests to prevent
-    // navigations from being unintentionally ignored. This test requires the
-    // feature, so remove the switch.
-    base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-        switches::kDisableIgnoreDuplicateNavsForTesting);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Tests that a link click navigation that's a duplicate of an ongoing link
-// click navigation gets ignored.
-IN_PROC_BROWSER_TEST_F(GWSPageLoadMetricsObserverIgnoreDuplicateNavsBrowserTest,
-                       DuplicateLinkClickIsIgnored) {
-  auto waiter = CreatePageLoadMetricsTestWaiter();
-  waiter->AddPageExpectation(
-      PageLoadMetricsTestWaiter::TimingField::kLargestContentfulPaint);
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetSrpUrl("initial")));
-  waiter->Wait();
-
-  GURL srp_link_url = GetSrpUrl("duplicate");
-
-  base::HistogramTester histogram_tester;
-  auto srp_waiter = CreatePageLoadMetricsTestWaiter();
-  srp_waiter->AddPageExpectation(
-      PageLoadMetricsTestWaiter::TimingField::kFirstContentfulPaint);
-  // 1. Navigate to an SRP page.
-  content::TestNavigationManager nav_manager(web_contents(), srp_link_url);
-  std::string click_script = "document.getElementById('thelink').click()";
-  ASSERT_TRUE(content::ExecJs(web_contents(), click_script));
-
-  // Pause the navigation at request start.
-  ASSERT_TRUE(nav_manager.WaitForRequestStart());
-
-  // 2. Click the link again.
-  ASSERT_TRUE(content::ExecJs(web_contents(), click_script));
-  EXPECT_TRUE(ExecJs(web_contents(), "console.log('Success');"));
-
-  // Wait for the first navigation to finish.
-  EXPECT_TRUE(nav_manager.WaitForNavigationFinished());
-  srp_waiter->Wait();
-
-  // Flush metrics by navigating away again.
-  ASSERT_TRUE(
-      content::NavigateToURL(web_contents(), GURL(url::kAboutBlankURL)));
-
-  // Check that the FCP metrics are recorded only for the first navigation.
-  histogram_tester.ExpectTotalCount(internal::kHistogramGWSFirstContentfulPaint,
-                                    1);
-  // Check that the FCP metrics for duplicate navigations are also recorded.
-  histogram_tester.ExpectTotalCount(
-      base::StrCat({internal::kHistogramGWSFirstContentfulPaint,
-                    internal::kHistogramDuplicateIgnoredSuffix}),
-      1);
-}
-
-// Tests that a browser-initiated navigation that's a duplicate of an ongoing
-// browser-initiated navigation gets ignored.
-IN_PROC_BROWSER_TEST_F(GWSPageLoadMetricsObserverIgnoreDuplicateNavsBrowserTest,
-                       DuplicateLoadURLIsIgnored) {
-  auto waiter = CreatePageLoadMetricsTestWaiter();
-  waiter->AddPageExpectation(
-      PageLoadMetricsTestWaiter::TimingField::kLargestContentfulPaint);
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetSrpUrl("initial")));
-  waiter->Wait();
-
-  GURL srp_url = GetSrpUrl("duplicate");
-
-  base::HistogramTester histogram_tester;
-  auto srp_waiter = CreatePageLoadMetricsTestWaiter();
-  srp_waiter->AddPageExpectation(
-      PageLoadMetricsTestWaiter::TimingField::kFirstContentfulPaint);
-  // 1. Navigate to an SRP page.
-  content::TestNavigationManager nav_manager(web_contents(), srp_url);
-  web_contents()->GetController().LoadURL(srp_url, content::Referrer(),
-                                          ui::PAGE_TRANSITION_TYPED,
-                                          std::string());
-  // Pause the navigation at request start.
-  ASSERT_TRUE(nav_manager.WaitForRequestStart());
-
-  // 2. Load the same URL again.
-  web_contents()->GetController().LoadURL(srp_url, content::Referrer(),
-                                          ui::PAGE_TRANSITION_TYPED,
-                                          std::string());
-  // Wait for the first navigation to finish.
-  EXPECT_TRUE(nav_manager.WaitForNavigationFinished());
-  srp_waiter->Wait();
-
-  // Flush metrics by navigating away again.
-  ASSERT_TRUE(
-      content::NavigateToURL(web_contents(), GURL(url::kAboutBlankURL)));
-
-  // Check that the FCP metrics are recorded only for the first navigation.
-  histogram_tester.ExpectTotalCount(internal::kHistogramGWSFirstContentfulPaint,
-                                    1);
-  // Check that the FCP metrics for duplicate navigations are also recorded.
-  histogram_tester.ExpectTotalCount(
-      base::StrCat({internal::kHistogramGWSFirstContentfulPaint,
-                    internal::kHistogramDuplicateIgnoredSuffix}),
       1);
 }
 

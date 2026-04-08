@@ -1396,7 +1396,6 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
       initiator_process_id, was_opener_suppressed, is_pdf,
       is_embedder_initiated_fenced_frame_navigation,
       mojo::NullReceiver() /* renderer_cancellation_listener */,
-      mojo::NullReceiver() /* renderer_ignore_duplicate_navigation_listener */,
       mojo::NullReceiver() /* deferred_commit_resume_listener */,
       embedder_shared_storage_context));
 
@@ -1418,9 +1417,6 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
         prefetched_signed_exchange_cache,
     mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
         renderer_cancellation_listener,
-    mojo::PendingReceiver<
-        mojom::NavigationRendererIgnoreDuplicateNavigationListener>
-        renderer_ignore_duplicate_navigation_listener,
     mojo::PendingReceiver<blink::mojom::NavigationResumeDeferredCommitListener>
         deferred_commit_resume_listener) {
   TRACE_EVENT("navigation", "NavigationRequest::CreateRendererInitiated");
@@ -1540,7 +1536,6 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
       /*was_opener_suppressed=*/false, /*is_pdf=*/false,
       /*is_embedder_initiated_fenced_frame_navigation=*/false,
       std::move(renderer_cancellation_listener),
-      std::move(renderer_ignore_duplicate_navigation_listener),
       std::move(deferred_commit_resume_listener)));
 
   return navigation_request;
@@ -1749,9 +1744,6 @@ NavigationRequest::NavigationRequest(
     bool is_embedder_initiated_fenced_frame_navigation,
     mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
         renderer_cancellation_listener,
-    mojo::PendingReceiver<
-        mojom::NavigationRendererIgnoreDuplicateNavigationListener>
-        renderer_ignore_duplicate_navigation_listener,
     mojo::PendingReceiver<blink::mojom::NavigationResumeDeferredCommitListener>
         deferred_commit_resume_listener,
     std::optional<std::u16string> embedder_shared_storage_context)
@@ -1986,11 +1978,6 @@ NavigationRequest::NavigationRequest(
       renderer_cancellation_listener_.Bind(
           std::move(renderer_cancellation_listener),
           GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
-    }
-    if (renderer_ignore_duplicate_navigation_listener.is_valid()) {
-      renderer_ignore_duplicate_navigation_listener_.Bind(
-          std::move(renderer_ignore_duplicate_navigation_listener),
-          GetUIThreadTaskRunner({BrowserTaskType::kDefault}));
     }
   } else if (entry) {
     CHECK(!navigation_client.is_valid());
@@ -8857,11 +8844,6 @@ void NavigationRequest::DidCommitNavigation(
           pending_commit_metrics_.blocked_commit_count);
     }
   }
-  if (ignored_duplicate_navigation_count_ > 0) {
-    base::UmaHistogramCounts100(
-        "Navigation.DuplicateNavigationsIgnoredCountPerNavigation",
-        ignored_duplicate_navigation_count_);
-  }
 
   if (!IsSameDocument() && IsInOutermostMainFrame() &&
       params.url.SchemeIsHTTPOrHTTPS()) {
@@ -9449,14 +9431,6 @@ void NavigationRequest::CancelNavigationTimeout() {
 void NavigationRequest::SetAllowCookiesFromBrowser(
     bool allow_cookies_from_browser) {
   allow_cookies_from_browser_ = allow_cookies_from_browser;
-}
-
-void NavigationRequest::DidIgnoreDuplicateNavigation() {
-  ignored_duplicate_navigation_count_++;
-}
-
-size_t NavigationRequest::GetIgnoredDuplicateNavigationCount() const {
-  return ignored_duplicate_navigation_count_;
 }
 
 void NavigationRequest::GetResponseBody(ResponseBodyCallback callback) {

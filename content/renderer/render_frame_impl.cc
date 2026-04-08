@@ -6344,7 +6344,6 @@ void RenderFrameImpl::BeginNavigationInternal(
         DVLOG(0) << "Ignoring duplicate navigation to " << common_params->url
                  << " due to the short interval of " << nav_start_diff
                  << " since the previous one.";
-        navigation_client_impl_->DidIgnoreDuplicateNavigation();
         return;
       }
     }
@@ -6357,20 +6356,14 @@ void RenderFrameImpl::BeginNavigationInternal(
       begin_params.Clone(), common_params.Clone(), is_duplicate_navigation);
   mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
       renderer_cancellation_listener_receiver;
-  mojo::PendingReceiver<
-      mojom::NavigationRendererIgnoreDuplicateNavigationListener>
-      renderer_ignore_duplicate_navigation_listener_receiver;
   navigation_client_impl_->SetUpRendererInitiatedNavigation(
-      renderer_cancellation_listener_receiver.InitWithNewPipeAndPassRemote(),
-      renderer_ignore_duplicate_navigation_listener_receiver
-          .InitWithNewPipeAndPassRemote());
+      renderer_cancellation_listener_receiver.InitWithNewPipeAndPassRemote());
 
   GetFrameHost()->BeginNavigation(
       std::move(common_params), std::move(begin_params),
       std::move(blob_url_token), std::move(navigation_client_remote),
       std::move(initiator_navigation_state_keep_alive_handle),
       std::move(renderer_cancellation_listener_receiver),
-      std::move(renderer_ignore_duplicate_navigation_listener_receiver),
       std::move(resume_defer_commit_listener));
 }
 
