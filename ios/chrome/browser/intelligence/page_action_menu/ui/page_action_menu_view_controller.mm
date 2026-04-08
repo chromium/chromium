@@ -587,6 +587,14 @@ const CGFloat kDividerWidth = 1.0;
 
 // Dismisses this view controller and starts the BWG overlay.
 - (void)handleBWGTapped:(UIButton*)button {
+  // Signed-out: notify delegate to handle the sign-in flow.
+  if (IsPageActionMenuAuthFlowEnabled() && ![self.mutator isUserSignedIn]) {
+    RecordAIHubAction(IOSAIHubAction::kGeminiSignedOut);
+    [self.delegate viewControllerDidTapSignedOutGemini:self];
+    return;
+  }
+
+  // Signed-in and eligible: start Gemini.
   RecordAIHubAction(IOSAIHubAction::kGemini);
   PageActionMenuViewController* __weak weakSelf = self;
   [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:^{
