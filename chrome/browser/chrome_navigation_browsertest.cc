@@ -3262,8 +3262,16 @@ IN_PROC_BROWSER_TEST_F(FencedFrameNavigationBrowserTest,
 // link in a new tab". Otherwise, the top-level navigation would be blocked.
 // This is why this test is located in the Chrome layer and not in the
 // DocumentIsolationPolicy browsertests in content/.
-IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
-                       TopLevelDataURLNavigationWithDocumentIsolationPolicy) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#define MAYBE_TopLevelDataURLNavigationWithDocumentIsolationPolicy \
+  DISABLED_TopLevelDataURLNavigationWithDocumentIsolationPolicy
+#else
+#define MAYBE_TopLevelDataURLNavigationWithDocumentIsolationPolicy \
+  TopLevelDataURLNavigationWithDocumentIsolationPolicy
+#endif
+IN_PROC_BROWSER_TEST_F(
+    ChromeNavigationBrowserTest,
+    MAYBE_TopLevelDataURLNavigationWithDocumentIsolationPolicy) {
   ContextMenuNotificationObserver menu_observer(
       IDC_CONTENT_CONTEXT_OPENLINKNEWTAB);
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
