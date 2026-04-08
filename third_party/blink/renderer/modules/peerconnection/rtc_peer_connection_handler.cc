@@ -338,7 +338,7 @@ class RTCPeerConnectionHandler::WebRtcSetDescriptionObserverImpl
       bool is_rollback)
       : handler_(handler),
         main_thread_(task_runner),
-        web_request_(web_request),
+        web_request_handle_(MakeUnwrappingCrossThreadHandle(web_request)),
         tracker_(tracker),
         action_(action),
         is_rollback_(is_rollback) {}
@@ -353,8 +353,8 @@ class RTCPeerConnectionHandler::WebRtcSetDescriptionObserverImpl
             handler_.get(), action_, "OnFailure",
             String::FromUtf8(error.message()));
       }
-      web_request_->RequestFailed(error);
-      web_request_ = nullptr;
+      web_request_handle_.GetOnCreationThread()->RequestFailed(error);
+      web_request_handle_.Clear();
       return;
     }
 
@@ -422,8 +422,8 @@ class RTCPeerConnectionHandler::WebRtcSetDescriptionObserverImpl
   ~WebRtcSetDescriptionObserverImpl() override {}
 
   void ResolvePromise() {
-    web_request_->RequestSucceeded();
-    web_request_ = nullptr;
+    web_request_handle_.GetOnCreationThread()->RequestSucceeded();
+    web_request_handle_.Clear();
   }
 
   void ProcessStateChanges(WebRtcSetDescriptionObserver::States states) {
@@ -442,7 +442,7 @@ class RTCPeerConnectionHandler::WebRtcSetDescriptionObserverImpl
 
   base::WeakPtr<RTCPeerConnectionHandler> handler_;
   scoped_refptr<base::SequencedTaskRunner> main_thread_;
-  Persistent<blink::RTCVoidRequest> web_request_;
+  UnwrappingCrossThreadHandle<blink::RTCVoidRequest> web_request_handle_;
   CrossThreadWeakPersistent<PeerConnectionTracker> tracker_;
   PeerConnectionTracker::Action action_;
   bool is_rollback_;
