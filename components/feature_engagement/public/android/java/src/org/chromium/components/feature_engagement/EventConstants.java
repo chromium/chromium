@@ -110,6 +110,10 @@ public final class EventConstants {
     /** The user clicked on the extensions menu button in the toolbar. */
     public static final String EXTENSIONS_MENU_BUTTON_CLICKED = "extensions_menu_button_clicked";
 
+    /** The user clicked on the extensions row in the Chrome main menu button. */
+    public static final String EXTENSIONS_ROW_IN_MAIN_MENU_CLICKED =
+            "extensions_row_in_main_menu_clicked";
+
     /** The feed swipe refresh event. */
     public static final String FEED_SWIPE_REFRESHED = "feed_swipe_refresh_shown";
 

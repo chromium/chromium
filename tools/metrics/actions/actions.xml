@@ -362,6 +362,8 @@ should be able to be added at any place in this file.
   <variant name="_ExploreSitesTile" summary="For Explore Sites feature."/>
   <variant name="_ExtensionsManageFeature"
       summary="For managaging your extension feature."/>
+  <variant name="_ExtensionsManageMainMenuFeature"
+      summary="For managing your extensions from the main menu feature."/>
   <variant name="_ExtensionsMenu" summary="For Extensions menu opening."/>
   <variant name="_ExtensionsRequestAccessButton"
       summary="For Extensions request access button feature."/>

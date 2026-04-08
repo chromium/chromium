@@ -414,6 +414,9 @@ BASE_FEATURE(kIPHDownloadInfoBarDownloadsAreFasterFeature,
 BASE_FEATURE(kIPHExtensionsManageFeature,
              "IPH_ExtensionsManage",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHExtensionsManageMainMenuFeature,
+             "IPH_ExtensionsManageMainMenu",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHReadAloudAppMenuFeature,
              "IPH_ReadAloudAppMenuFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
