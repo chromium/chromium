@@ -16,7 +16,7 @@ export function getHtml(this: ContextualActionMenuElement) {
        asynchronously from the browser process. -->
   <cr-action-menu id="menu" role-description="${this.i18n('menu')}"
       @close="${this.onMenuClose_}" auto-reposition>
-    ${this.tabSuggestions?.length > 0 && this.browserTabAllowed_ ? html`
+    ${this.tabSuggestions?.length > 0 && this.isBrowserTabAllowed_() ? html`
       ${this.showContextMenuHeaders_ ? html`<h4 id="tabHeader">${
           this.getInputTypeLabel_(InputType.kBrowserTab)}</h4>` : ''}
       ${this.tabSuggestions.map((tab, index) => html`
@@ -50,29 +50,29 @@ export function getHtml(this: ContextualActionMenuElement) {
       `)}
       <hr/>
     `: ''}
-    ${this.imageUploadAllowed_ ? html`
+    ${this.isImageUploadAllowed_() ? html`
       <button id="imageUpload" class="dropdown-item" role="menuitem"
           @click="${this.onImageUploadClick_}"
-          ?disabled="${this.imageUploadDisabled_}">
+          ?disabled="${this.isImageUploadDisabled_()}">
         <cr-icon icon="composebox:imageUpload"></cr-icon>
         ${this.getInputTypeLabel_(InputType.kLensImage)}
       </button>` : ''}
-    ${this.fileUploadAllowed_ ? html`<button id="fileUpload" class="dropdown-item"
+    ${this.isFileUploadAllowed_() ? html`<button id="fileUpload" class="dropdown-item"
         role="menuitem"
         @click="${this.onFileUploadClick_}"
-        ?disabled="${this.fileUploadDisabled_}">
+        ?disabled="${this.isFileUploadDisabled_()}">
       <cr-icon icon="composebox:fileUpload"></cr-icon>
       ${this.getInputTypeLabel_(InputType.kLensFile)}
     </button>`: ''}
 
     <!-- Show a separator if there are tools AND (something above is visible) -->
     ${(this.inputState?.allowedTools.length ?? 0) > 0 &&
-        (this.imageUploadAllowed_ || this.fileUploadAllowed_) ?
+        (this.isImageUploadAllowed_() || this.isFileUploadAllowed_()) ?
         html`<hr/>` : ''}
 
     ${(this.inputState?.allowedTools.length ?? 0) > 0 ? html`
-        ${this.showContextMenuHeaders_ && this.toolHeader_ ? html`
-        <h4 id="toolHeader">${this.toolHeader_}</h4>` : ''}` : ''}
+        ${this.showContextMenuHeaders_ && this.getToolHeader_() ? html`
+        <h4 id="toolHeader">${this.getToolHeader_()}</h4>` : ''}` : ''}
 
     ${this.inputState?.allowedTools.map(mode => {
       return html`
@@ -90,11 +90,11 @@ export function getHtml(this: ContextualActionMenuElement) {
     <!-- Show a separator if there are models AND (something above is visible) -->
     ${(this.inputState?.allowedModels.length ?? 0) > 0 &&
       ((this.inputState?.allowedTools.length ?? 0) > 0 ||
-       this.imageUploadAllowed_ || this.fileUploadAllowed_) ? html`<hr/>` : ''}
+       this.isImageUploadAllowed_() || this.isFileUploadAllowed_()) ? html`<hr/>` : ''}
 
     ${(this.inputState?.allowedModels.length ?? 0) > 0 ? html`
-        ${this.showContextMenuHeaders_ && this.modelHeader_ ? html`
-        <h4 id="modelHeader">${this.modelHeader_}</h4>` : ''}` : ''}
+        ${this.showContextMenuHeaders_ && this.getModelHeader_() ? html`
+        <h4 id="modelHeader">${this.getModelHeader_()}</h4>` : ''}` : ''}
 
     ${this.inputState?.allowedModels.map(mode => {
       return html`

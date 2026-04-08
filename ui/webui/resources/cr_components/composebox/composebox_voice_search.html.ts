@@ -9,7 +9,7 @@ import type {ComposeboxVoiceSearchElement} from './composebox_voice_search.js';
 export function getHtml(this: ComposeboxVoiceSearchElement) {
   return html`
     <div id="container">
-      <div id="error-container" ?hidden="${!this.showErrorScrim_}">
+      <div id="error-container" ?hidden="${!this.shouldShowErrorScrim_()}">
         <span id="error-message">${this.errorMessage_}</span>
         <a id="details" target="_blank" href="${this.detailsUrl_}"
             @click="${this.onLinkClick_}">
@@ -19,7 +19,7 @@ export function getHtml(this: ComposeboxVoiceSearchElement) {
       <textarea id="input"
           .value="${this.finalResult_ + (this.interimResult_ || '')}"
           placeholder="${this.listeningPlaceholder_}"
-          ?hidden="${this.showErrorScrim_}" disabled>
+          ?hidden="${this.shouldShowErrorScrim_()}" disabled>
       </textarea>
       <cr-icon-button id="closeButton" class="icon-clear"
           part="voice-close-button"

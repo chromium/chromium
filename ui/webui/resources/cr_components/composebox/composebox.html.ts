@@ -86,7 +86,7 @@ export function getHtml(this: ComposeboxElement) {
                 </div>
                 ` : ''}
             </div>
-            ${this.shouldShowSubmitButton_ && this.searchboxLayoutMode === 'Compact' ? html`
+            ${this.shouldShowSubmitButton_() && this.searchboxLayoutMode === 'Compact' ? html`
               <cr-composebox-submit
                 exportparts="action-icon, submit, submit-icon, submit-overlay"
                 ?disabled="${!this.canSubmitFilesAndInput}"
@@ -97,7 +97,7 @@ export function getHtml(this: ComposeboxElement) {
               </cr-composebox-submit>
             ` : ''}
           </div>
-          ${this.shouldShowDivider_ ? html`
+          ${this.shouldShowDivider_() ? html`
             <div class="carousel-divider" part="carousel-divider"></div>
           ` : ''}
           <cr-composebox-dropdown
@@ -124,7 +124,7 @@ export function getHtml(this: ComposeboxElement) {
                 title="${this.i18n('voiceSearchButtonLabel')}">
             </cr-icon-button>
           ` : ''}
-          ${this.shouldShowSubmitButton_ && this.searchboxLayoutMode === 'TallBottomContext' ? html`
+          ${this.shouldShowSubmitButton_() && this.searchboxLayoutMode === 'TallBottomContext' ? html`
               <cr-composebox-submit
                 exportparts="action-icon, submit, submit-icon, submit-overlay"
                 ?disabled="${!this.canSubmitFilesAndInput}"

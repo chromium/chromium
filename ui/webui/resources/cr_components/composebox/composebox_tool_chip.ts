@@ -63,7 +63,7 @@ export class ComposeboxToolChipElement extends I18nMixinLit
     }
   }
 
-  protected get isCanvasActive_(): boolean {
+  protected isCanvasActive_(): boolean {
     return this.inputState?.activeTool === ToolMode.kCanvas &&
         this.isCanvasQuerySubmitted;
   }
@@ -91,7 +91,7 @@ export class ComposeboxToolChipElement extends I18nMixinLit
       // active, as per launch requirements (see crbug.com/491479366). A future
       // proper fix might involve server-side config or handling
       // TOOL_SUBSTATE_CANVAS_FOLLOWUP (see crbug.com/491591419).
-      if (this.isCanvasActive_) {
+      if (this.isCanvasActive_()) {
         return;
       }
       this.fire('tool-click', {toolMode: this.inputState.activeTool});
