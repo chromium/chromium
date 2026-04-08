@@ -1527,7 +1527,7 @@
     {
         "name": "error_prone_annotations",
         "group": "com.google.errorprone",
-        "version": "2.48.0"
+        "version": "2.49.0"
     },
     {
         "name": "firebase-annotations",
@@ -1902,12 +1902,12 @@
     {
         "name": "checker-qual",
         "group": "org.checkerframework",
-        "version": "3.55.1"
+        "version": "4.0.0"
     },
     {
         "name": "checker-util",
         "group": "org.checkerframework",
-        "version": "3.55.1"
+        "version": "4.0.0"
     },
     {
         "name": "animal-sniffer-annotations",
