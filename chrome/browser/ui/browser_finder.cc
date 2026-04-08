@@ -326,13 +326,6 @@ Browser* FindTabbedBrowser(const Profile* profile,
   return browser ? browser->GetBrowserForMigrationOnly() : nullptr;
 }
 
-Browser* FindAnyBrowser(const Profile* profile, bool match_original_profiles) {
-  BrowserWindowInterface* browser =
-      FindBrowserWithTabbedOrAnyType(profile, false, match_original_profiles,
-                                     /*match_current_workspace=*/false);
-  return browser ? browser->GetBrowserForMigrationOnly() : nullptr;
-}
-
 Browser* FindBrowserWithProfile(const Profile* profile) {
   BrowserWindowInterface* browser =
       FindBrowserWithTabbedOrAnyType(profile, false, false,
