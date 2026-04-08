@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/after_startup_task_utils.h"
@@ -20,6 +21,7 @@
 #include "components/page_load_metrics/google/browser/histogram_suffixes.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "net/dns/public/resolution_details.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -217,7 +219,11 @@ TEST_F(GWSPageLoadMetricsObserverTest, DNSResolutionSegmentation) {
   content::NavigationHandleTiming timing;
   timing.session_details = {
       .session_source = net::SessionSource::kNew,
-      .resolution_source = net::ResolutionSource::kSecure,
+      .resolution_details =
+          net::ResolutionDetails{
+              .source = net::ResolutionSource::kSecure,
+              .task_completion_delay = base::Milliseconds(5),
+          },
   };
   timing.first_request_domain_lookup_delay = base::Milliseconds(10);
 
@@ -264,10 +270,84 @@ TEST_F(GWSPageLoadMetricsObserverTest, DNSResolutionSegmentation) {
       internal::
           kHistogramGWSConnectTimingFirstRequestDomainLookupDelaySecureDns,
       10, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      base::StrCat(
+          {internal::
+               kHistogramGWSConnectTimingFirstRequestResolutionDetailsTaskCompletionDelay,
+           ".SecureDns"}),
+      5, 1);
   tester()->histogram_tester().ExpectTotalCount(
       internal::
           kHistogramGWSConnectTimingFirstRequestDomainLookupDelayInsecureDns,
       0);
+}
+
+TEST_F(GWSPageLoadMetricsObserverTest, DNSResolutionSegmentationFallback) {
+  content::NavigationHandleTiming timing;
+  timing.session_details = {
+      .session_source = net::SessionSource::kNew,
+      .resolution_details =
+          net::ResolutionDetails{
+              .source = net::ResolutionSource::kInsecure,
+              .task_completion_delay = base::Milliseconds(8),
+              .secure_dns_attempted = true,
+          },
+  };
+  timing.first_request_domain_lookup_delay = base::Milliseconds(15);
+
+  base::TimeTicks now = base::TimeTicks::Now();
+  timing.first_request_start_time = now;
+  timing.first_response_start_time = now + base::Milliseconds(10);
+  timing.first_loader_callback_time = now + base::Milliseconds(20);
+  timing.final_request_start_time = now + base::Milliseconds(30);
+  timing.final_response_start_time = now + base::Milliseconds(40);
+  timing.final_loader_callback_time = now + base::Milliseconds(50);
+  timing.navigation_commit_sent_time = now + base::Milliseconds(60);
+
+  content::MockNavigationHandle handle(GURL(kGoogleSearchResultsUrl),
+                                       main_rfh());
+  EXPECT_CALL(handle, GetNavigationHandleTiming())
+      .WillRepeatedly(testing::ReturnRef(timing));
+  handle.set_was_response_cached(false);
+
+  NavigateAndCommit(GURL(kGoogleSearchResultsUrl));
+
+  page_load_metrics::mojom::PageLoadTiming page_load_timing;
+  page_load_metrics::InitPageLoadTimingForTest(&page_load_timing);
+  page_load_timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
+  page_load_timing.parse_timing->parse_start = base::Milliseconds(1);
+  page_load_timing.paint_timing->first_contentful_paint =
+      base::Milliseconds(10);
+  page_load_timing.paint_timing->largest_contentful_paint->largest_text_paint =
+      base::Milliseconds(100);
+  page_load_timing.paint_timing->largest_contentful_paint
+      ->largest_text_paint_size = 20u;
+  PopulateRequiredTimingFields(&page_load_timing);
+
+  tester()->SimulateTimingUpdate(page_load_timing);
+
+  observer_->OnCommit(&handle);
+
+  tester()->NavigateToUntrackedUrl();
+  tester()->histogram_tester().ExpectTotalCount(
+      "PageLoad.Clients.GoogleSearch.WarmUpType", 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramGWSConnectTimingFirstRequestDomainLookupDelay, 15, 1);
+
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::
+          kHistogramGWSConnectTimingFirstRequestDomainLookupDelaySecureDns,
+      0);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::
+          kHistogramGWSConnectTimingFirstRequestDomainLookupDelayInsecureDns,
+      15, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      base::StrCat(
+          {internal::
+               kHistogramGWSConnectTimingFirstRequestResolutionDetailsTaskCompletionDelay,
+           ".InsecureDns"}),
+      8, 1);
 }
 
 TEST_F(GWSPageLoadMetricsObserverTest, NonSearch) {

@@ -33,8 +33,8 @@ struct CONTENT_EXPORT NavigationHandleTiming {
     // The time taken for a SPDY/QUIC session to create an active stream due to
     // max stream limits.
     std::optional<base::TimeDelta> max_stream_limit_pending_delay;
-    // The source of the host resolution result.
-    std::optional<net::ResolutionSource> resolution_source;
+    // The details of the host resolution result.
+    std::optional<net::ResolutionDetails> resolution_details;
   };
 
   NavigationHandleTiming();

@@ -35,6 +35,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
+#include "net/dns/public/resolution_details.h"
 #include "net/http/http_connection_info.h"
 #include "net/http/http_response_headers.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -122,6 +123,10 @@ const char
     kHistogramGWSConnectTimingFirstRequestDomainLookupDelayInsecureDns[] =
         HISTOGRAM_PREFIX
     "ConnectTiming.FirstRequestDomainLookupDelay.InsecureDns";
+const char
+    kHistogramGWSConnectTimingFirstRequestResolutionDetailsTaskCompletionDelay
+        [] = HISTOGRAM_PREFIX
+    "ConnectTiming.FirstRequestResolutionDetails.TaskCompletionDelay";
 const char kHistogramGWSConnectTimingFirstRequestConnectDelay[] =
     HISTOGRAM_PREFIX "ConnectTiming.FirstRequestConnectDelay";
 const char kHistogramGWSConnectTimingFirstRequestSslDelay[] =
@@ -1168,19 +1173,43 @@ void GWSPageLoadMetricsObserver::RecordNavigationTimingHistograms() {
       timing.first_request_domain_lookup_delay);
 
   if (timing.session_details.has_value() &&
-      timing.session_details->session_source == net::SessionSource::kNew) {
-    if (timing.session_details->resolution_source ==
-        net::ResolutionSource::kSecure) {
+      timing.session_details->session_source == net::SessionSource::kNew &&
+      timing.session_details->resolution_details.has_value()) {
+    const auto& details = *timing.session_details->resolution_details;
+    if (details.source == net::ResolutionSource::kSecure) {
       PAGE_LOAD_SHORT_HISTOGRAM(
           internal::
               kHistogramGWSConnectTimingFirstRequestDomainLookupDelaySecureDns,
           timing.first_request_domain_lookup_delay);
-    } else if (timing.session_details->resolution_source ==
-               net::ResolutionSource::kInsecure) {
+    } else if (details.source == net::ResolutionSource::kInsecure) {
       PAGE_LOAD_SHORT_HISTOGRAM(
           internal::
               kHistogramGWSConnectTimingFirstRequestDomainLookupDelayInsecureDns,
           timing.first_request_domain_lookup_delay);
+    }
+
+    if (details.task_completion_delay.has_value()) {
+      std::optional<std::string_view> suffix =
+          [&]() -> std::optional<std::string_view> {
+        switch (details.source) {
+          case net::ResolutionSource::kSecure:
+            return ".SecureDns";
+          case net::ResolutionSource::kInsecure:
+            return ".InsecureDns";
+          case net::ResolutionSource::kSystem:
+            return ".System";
+          default:
+            return std::nullopt;
+        }
+      }();
+      if (suffix) {
+        PAGE_LOAD_SHORT_HISTOGRAM(
+            base::StrCat(
+                {internal::
+                     kHistogramGWSConnectTimingFirstRequestResolutionDetailsTaskCompletionDelay,
+                 *suffix}),
+            *details.task_completion_delay);
+      }
     }
   }
 

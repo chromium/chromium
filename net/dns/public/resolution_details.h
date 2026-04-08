@@ -38,6 +38,7 @@ enum class ResolutionSource {
 // for logging and recording histograms.
 // TODO(crbug.com/485672648): This struct exposes internal implementation
 // details so it should be removed in the future.
+// LINT.IfChange(ResolutionDetails)
 struct NET_EXPORT ResolutionDetails {
   ResolutionSource source = ResolutionSource::kUnknown;
 
@@ -56,6 +57,7 @@ struct NET_EXPORT ResolutionDetails {
 
   bool operator==(const ResolutionDetails& other) const = default;
 };
+// LINT.ThenChange(//services/network/public/mojom/load_timing_internal_info.mojom:ResolutionDetails)
 
 }  // namespace net
 

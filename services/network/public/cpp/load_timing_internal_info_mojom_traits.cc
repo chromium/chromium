@@ -169,14 +169,26 @@ bool StructTraits<network::mojom::LoadTimingInternalInfoDataView,
 }
 
 // static
-std::optional<net::ResolutionSource>
+bool StructTraits<network::mojom::ResolutionDetailsDataView,
+                  net::ResolutionDetails>::
+    Read(network::mojom::ResolutionDetailsDataView data,
+         net::ResolutionDetails* details) {
+  if (!data.ReadSource(&details->source)) {
+    return false;
+  }
+  if (!data.ReadTaskCompletionDelay(&details->task_completion_delay)) {
+    return false;
+  }
+  details->secure_dns_attempted = data.secure_dns_attempted();
+  return true;
+}
+
+// static
+const std::optional<net::ResolutionDetails>&
 StructTraits<network::mojom::LoadTimingInternalInfoDataView,
              net::LoadTimingInternalInfo>::
-    resolution_source(const net::LoadTimingInternalInfo& info) {
-  if (!info.resolution_details.has_value()) {
-    return std::nullopt;
-  }
-  return info.resolution_details->source;
+    resolution_details(const net::LoadTimingInternalInfo& info) {
+  return info.resolution_details;
 }
 
 // static
@@ -207,13 +219,8 @@ bool StructTraits<network::mojom::LoadTimingInternalInfoDataView,
   info->http_network_session_quic_enabled =
       data.http_network_session_quic_enabled();
 
-  std::optional<net::ResolutionSource> resolution_source;
-  if (!data.ReadResolutionSource(&resolution_source)) {
+  if (!data.ReadResolutionDetails(&info->resolution_details)) {
     return false;
-  }
-  if (resolution_source.has_value()) {
-    info->resolution_details =
-        net::ResolutionDetails{.source = *resolution_source};
   }
   return true;
 }

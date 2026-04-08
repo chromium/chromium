@@ -37,6 +37,9 @@ extern const char
     kHistogramGWSConnectTimingFirstRequestDomainLookupDelaySecureDns[];
 extern const char
     kHistogramGWSConnectTimingFirstRequestDomainLookupDelayInsecureDns[];
+extern const char
+    kHistogramGWSConnectTimingFirstRequestResolutionDetailsTaskCompletionDelay
+        [];
 extern const char kHistogramGWSConnectTimingFirstRequestConnectDelay[];
 extern const char kHistogramGWSConnectTimingFirstRequestSslDelay[];
 extern const char kHistogramGWSConnectTimingFinalRequestDomainLookupDelay[];

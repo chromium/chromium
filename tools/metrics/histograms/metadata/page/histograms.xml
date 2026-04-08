@@ -1737,6 +1737,25 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.GoogleSearch.ConnectTiming.FirstRequestResolutionDetails.TaskCompletionDelay.{ResolutionSource}"
+    units="ms" expires_after="2026-09-06">
+  <owner>bashi@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The delay caused by non-caching asynchronous task completion for domain
+    lookup in the first HTTP request sent for the main resource of a main frame
+    navigation, for Google Search page loads, when {ResolutionSource} was used.
+    Only recorded for Search navigations that happen entirely in the foreground.
+  </summary>
+  <token key="ResolutionSource">
+    <variant name="InsecureDns" summary="Insecure DNS"/>
+    <variant name="SecureDns" summary="Secure DNS (DoH)"/>
+    <variant name="System" summary="System DNS"/>
+  </token>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.GoogleSearch.ConnectTiming.FirstRequestSslDelay{ConnectionProtocolType}"
     units="ms" expires_after="2026-09-06">
   <owner>horo@chromium.org</owner>
