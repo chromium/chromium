@@ -70,6 +70,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSString* displayName =
       autofill::DisplayNameForAutofillAiAttributeType(attributeType);
   NSString* value = [self valueFromAttributeInstance:attribute];
+  // If the value isn't a country ("_" is returned), prefer it to be an empty
+  // string.
+  if (value.length <= 1) {
+    value = @"";
+  }
 
   AutofillAIEntityCountryItem* countryItem =
       [[AutofillAIEntityCountryItem alloc] initWithType:ItemTypeAttribute];
@@ -113,7 +118,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   AutofillAIEntityEditItem* item =
       [[AutofillAIEntityEditItem alloc] initWithType:ItemTypeAttribute];
   item.fieldNameLabelText = displayName;
-  item.textFieldPlaceholder = displayName;
+  item.textFieldPlaceholder = @"";
   item.textFieldValue = value;
   item.attributeType = attributeType.name();
   item.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -127,7 +132,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (NSString*)valueFromAttributeInstance:(const AttributeInstance&)attribute {
   std::u16string value_u16 =
       attribute.GetInfo(attribute.type().field_type(), _locale, std::nullopt);
-  if ([self shouldObfuscateAttribute:attribute]) {
+  if ([self shouldObfuscateAttribute:attribute] && !value_u16.empty()) {
     return base::SysUTF16ToNSString(
         GetObfuscatedValue(value_u16, /*visible_suffix_length=*/4));
   } else {

@@ -6,6 +6,9 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/public/autofill_ai_settings_constants.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_country_item.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_date_item.h"
@@ -20,6 +23,7 @@
 #import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 namespace {
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
@@ -109,9 +113,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
 
   if (_isServerWalletItem && _userEmail.length > 0) {
-    footer.text =
-        l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_AI_SAVED_TO_WALLET_FOOTER,
-                                base::SysNSStringToUTF16(_userEmail));
+    footer.text = autofill::GetSaveEntityToWalletFooterText(_userEmail);
+    footer.urls =
+        @[ [[CrURL alloc] initWithGURL:autofill::GetManageYourInfoURL()] ];
   } else {
     footer.text =
         l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_SAVED_LOCALLY_FOOTER);
@@ -359,6 +363,19 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 }
 
+- (UIView*)tableView:(UITableView*)tableView
+    viewForFooterInSection:(NSInteger)section {
+  UIView* view = [super tableView:tableView viewForFooterInSection:section];
+  NSInteger sectionIdentifier =
+      [self.tableViewModel sectionIdentifierForSectionIndex:section];
+  if (sectionIdentifier == SectionIdentifierAttributes) {
+    TableViewLinkHeaderFooterView* linkView =
+        base::apple::ObjCCast<TableViewLinkHeaderFooterView>(view);
+    linkView.delegate = self;
+  }
+  return view;
+}
+
 - (NSIndexPath*)tableView:(UITableView*)tableView
     willSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   if (self.tableView.editing) {
@@ -414,6 +431,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self reconfigureCellsForItems:@[ editItem ]];
     }
   }
+}
+
+#pragma mark - TableViewLinkHeaderFooterItemDelegate
+
+- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
+  [self.delegate didTapLinkWithURL:URL];
 }
 
 #pragma mark - Private

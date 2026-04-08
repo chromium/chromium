@@ -49,7 +49,7 @@ ui::ImageModel AutofillAiSaveEntityInfoBarDelegateIOS::GetIcon() const {
       EntityInstance::RecordType::kServerWallet) {
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
     return ui::ImageModel::FromImage(gfx::Image(CustomSymbolWithPointSize(
-        kGoogleWalletSymbol, kInfobarSymbolPointSize)));
+        kGoogleWalletIconSymbol, kInfobarSymbolPointSize)));
 #endif
   }
 

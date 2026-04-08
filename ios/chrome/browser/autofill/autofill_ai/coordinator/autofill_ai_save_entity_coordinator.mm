@@ -8,11 +8,15 @@
 #import "ios/chrome/browser/autofill/autofill_ai/coordinator/autofill_ai_save_entity_mediator.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/save_entity_params.h"
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_container_view_controller.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 
 @interface AutofillAISaveEntityCoordinator () <
+    AutofillAISaveEntityContainerViewControllerDelegate,
     UIAdaptivePresentationControllerDelegate>
 @end
 
@@ -54,6 +58,7 @@
       [[AutofillAISaveEntityContainerViewController alloc] init];
   saveViewController.mutator = _mediator;
   saveViewController.autofillHandler = _autofillHandler;
+  saveViewController.delegate = self;
   _mediator.consumer = saveViewController;
 
   _navigationController = [[UINavigationController alloc]
@@ -82,6 +87,21 @@
     (UIPresentationController*)presentationController {
   [_mediator dismissSaving];
   [_autofillHandler dismissSaveEntityDialog];
+}
+
+#pragma mark - AutofillAISaveEntityContainerViewControllerDelegate
+
+- (void)didTapLinkWithURL:(CrURL*)url {
+  // Dismiss the save entity UI before opening the new tab.
+  // Since it is not possible to display a web page over the save entity UI yet,
+  // we need to dismiss the save entity UI before opening the new tab.
+  [_mediator dismissSaving];
+  [_autofillHandler dismissSaveEntityDialog];
+
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  [sceneHandler
+      openURLInNewTab:[OpenNewTabCommand commandWithURLFromChrome:url.gurl]];
 }
 
 @end

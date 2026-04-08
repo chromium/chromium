@@ -9,6 +9,7 @@
 
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
+#import "url/gurl.h"
 
 namespace autofill {
 
@@ -36,6 +37,20 @@ NSString* GetDialogTitleForViewEntity(EntityTypeName entity_type_name);
 
 // Returns the title for a dialog to edit an entity.
 NSString* GetDialogTitleForEditEntity(EntityTypeName entity_type_name);
+
+// Returns the footer text for saving an entity to Wallet, formatted with the
+// user's email.
+NSString* GetSaveEntityToWalletFooterText(NSString* user_email);
+
+// Returns the footer text for updating an entity saved in Wallet, formatted
+// with the user's email.
+NSString* GetUpdateEntitySavedInWalletFooterText(NSString* user_email);
+
+// Returns the URL for "manage your info" link for save to wallet footer.
+GURL GetManageYourInfoURL();
+
+// Returns the URL for Google Wallet passes.
+GURL GetGoogleWalletPassesURL();
 
 }  // namespace autofill
 

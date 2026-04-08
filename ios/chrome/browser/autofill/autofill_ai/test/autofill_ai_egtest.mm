@@ -255,7 +255,7 @@ void VerifySaveNewEntityFlow() {
   // Verify it is a passport infobar.
   [[EarlGrey selectElementWithMatcher:
                  grey_text(l10n_util::GetNSString(
-                     IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE))]
+                     IDS_IOS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE))]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the infobar save button to open the detailed UI.
@@ -267,9 +267,9 @@ void VerifySaveNewEntityFlow() {
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:saveButton];
 
   // Verify it is a passport sheet.
-  [[EarlGrey
-      selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                   IDS_AUTOFILL_AI_PASSPORT_ENTITY_NAME))]
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE))]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   [[EarlGrey selectElementWithMatcher:saveButton] performAction:grey_tap()];
