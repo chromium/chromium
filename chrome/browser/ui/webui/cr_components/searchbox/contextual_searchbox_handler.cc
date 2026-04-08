@@ -836,11 +836,20 @@ void ContextualSearchboxHandler::ContextualizeQueryAndOpenUrl(
       }
       contextual_tasks_context_service_->GetRelevantTabsForQuery(
           tab_selection_options, query_text, explicit_urls,
-          base::BindOnce(&ContextualSearchboxHandler::
-                             ContextualizeQueryWithRelevantTabsAndOpenUrl,
-                         weak_ptr_factory_.GetWeakPtr(), query_text,
-                         disposition, aim_entry_point,
-                         std::move(additional_params)));
+          base::BindOnce(
+              [](base::WeakPtr<ContextualSearchboxHandler> self,
+                 const std::string& query, WindowOpenDisposition disp,
+                 omnibox::ChromeAimEntryPoint entry_point,
+                 std::map<std::string, std::string> params,
+                 std::vector<content::WebContents*> relevant_tabs) {
+                if (self) {
+                  self->ContextualizeQueryWithRelevantTabsAndOpenUrl(
+                      query, disp, entry_point, std::move(params),
+                      relevant_tabs);
+                }
+              },
+              weak_ptr_factory_.GetWeakPtr(), query_text, disposition,
+              aim_entry_point, std::move(additional_params)));
       return;
     } else {
       // Run dark experiment if smart tab sharing is not enabled and do not
@@ -866,18 +875,16 @@ void ContextualSearchboxHandler::ContextualizeQueryWithRelevantTabsAndOpenUrl(
     WindowOpenDisposition disposition,
     omnibox::ChromeAimEntryPoint aim_entry_point,
     std::map<std::string, std::string> additional_params,
-    std::vector<base::WeakPtr<content::WebContents>> relevant_tabs) {
+    std::vector<content::WebContents*> relevant_tabs) {
   if (query_contextualizer_) {
     std::vector<int32_t> tabs_to_recontextualize;
     std::vector<int32_t> tabs_to_force_contextualize;
     tabs_to_force_contextualize.reserve(relevant_tabs.size());
-    for (const auto& relevant_tab : relevant_tabs) {
-      if (relevant_tab) {
-        tabs::TabInterface* tab =
-            tabs::TabInterface::MaybeGetFromContents(relevant_tab.get());
-        if (tab) {
-          tabs_to_force_contextualize.push_back(tab->GetHandle().raw_value());
-        }
+    for (content::WebContents* relevant_tab : relevant_tabs) {
+      tabs::TabInterface* tab =
+          tabs::TabInterface::MaybeGetFromContents(relevant_tab);
+      if (tab) {
+        tabs_to_force_contextualize.push_back(tab->GetHandle().raw_value());
       }
     }
       // It is safe to use base::Unretained(this) here because

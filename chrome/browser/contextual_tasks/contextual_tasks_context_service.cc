@@ -260,8 +260,7 @@ void ContextualTasksContextService::GetRelevantTabsForQuery(
     const TabSelectionOptions& options,
     const std::string& query,
     const std::vector<GURL>& explicit_urls,
-    base::OnceCallback<void(std::vector<base::WeakPtr<content::WebContents>>)>
-        callback) {
+    base::OnceCallback<void(std::vector<content::WebContents*>)> callback) {
   base::TimeTicks now = tick_clock_->NowTicks();
 
   AUTO_CONTEXT_LOG(base::StringPrintf("Processing query %s in mode %d", query,
@@ -272,9 +271,8 @@ void ContextualTasksContextService::GetRelevantTabsForQuery(
     RecordContextDeterminationStatus(
         ContextDeterminationStatus::kEmbedderNotAvailable);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       std::vector<base::WeakPtr<content::WebContents>>()));
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  std::vector<content::WebContents*>({})));
     return;
   }
 
@@ -336,8 +334,8 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
     return;
   }
 
-  base::OnceCallback<void(std::vector<base::WeakPtr<content::WebContents>>)>
-      callback = std::move(request_it->second->callback);
+  base::OnceCallback<void(std::vector<content::WebContents*>)> callback =
+      std::move(request_it->second->callback);
   pending_requests_.erase(request_id);
 
   // Query embedding was not successfully generated.
@@ -362,7 +360,7 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
   AUTO_CONTEXT_LOG(
       base::StringPrintf("Processing query embedding for %s", query));
 
-  std::vector<base::WeakPtr<content::WebContents>> all_tabs =
+  std::vector<content::WebContents*> all_tabs =
       GetAllEligibleTabs(options.browser_window_interface);
   if (all_tabs.empty()) {
     AUTO_CONTEXT_LOG("No eligible tabs");
@@ -384,9 +382,8 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
                           ->mutable_quality();
   quality_log->set_embedding_model_version(
       embedder_model_version_.value_or(-1));
-  std::vector<base::WeakPtr<content::WebContents>> relevant_tabs =
-      SelectRelevantTabs(query, options, query_embedding, all_tabs,
-                         explicit_urls, quality_log);
+  std::vector<content::WebContents*> relevant_tabs = SelectRelevantTabs(
+      query, options, query_embedding, all_tabs, explicit_urls, quality_log);
 
   AUTO_CONTEXT_LOG(base::StringPrintf(
       "Number of eligible open tabs for query %s: %d", query, all_tabs.size()));
@@ -400,10 +397,8 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
 
   if (!explicit_urls.empty()) {
     std::set<GURL> relevant_tab_url_set;
-    for (const auto& web_contents : relevant_tabs) {
-      if (web_contents) {
-        relevant_tab_url_set.insert(web_contents->GetLastCommittedURL());
-      }
+    for (auto* web_contents : relevant_tabs) {
+      relevant_tab_url_set.insert(web_contents->GetLastCommittedURL());
     }
     RecordTabSelectionMetrics(
         relevant_tab_url_set,
@@ -430,17 +425,17 @@ void ContextualTasksContextService::OnRequestTimedOut(int64_t request_id) {
 
   passage_embeddings::Embedder::TaskId task_id = request_it->second->task_id;
   embedder_->TryCancel(task_id);
-  base::OnceCallback<void(std::vector<base::WeakPtr<content::WebContents>>)>
-      callback = std::move(request_it->second->callback);
+  base::OnceCallback<void(std::vector<content::WebContents*>)> callback =
+      std::move(request_it->second->callback);
   pending_requests_.erase(request_id);
   RecordContextDeterminationStatus(ContextDeterminationStatus::kTimedOut);
   std::move(callback).Run({});
 }
 
-std::vector<base::WeakPtr<content::WebContents>>
+std::vector<content::WebContents*>
 ContextualTasksContextService::GetAllEligibleTabs(
     base::WeakPtr<BrowserWindowInterface> browser_window_interface) {
-  std::vector<base::WeakPtr<content::WebContents>> all_tabs;
+  std::vector<content::WebContents*> all_tabs;
   SiteExclusionDetail site_exclusion_detail;
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [this, &all_tabs, browser_window_interface,
@@ -472,7 +467,7 @@ ContextualTasksContextService::GetAllEligibleTabs(
                                    web_contents->GetLastCommittedURL().spec()));
             continue;
           }
-          all_tabs.push_back(web_contents->GetWeakPtr());
+          all_tabs.push_back(web_contents);
         }
         // Stop iterating if the browser window interface is specified.
         return !browser_window_interface;
@@ -592,15 +587,15 @@ TabSignals ContextualTasksContextService::ComputeTabSignals(
   return tab_signals;
 }
 
-std::vector<base::WeakPtr<content::WebContents>>
+std::vector<content::WebContents*>
 ContextualTasksContextService::SelectRelevantTabs(
     const std::string& query,
     const TabSelectionOptions& options,
     const passage_embeddings::Embedding& query_embedding,
-    const std::vector<base::WeakPtr<content::WebContents>>& all_tabs,
+    const std::vector<content::WebContents*>& all_tabs,
     const std::vector<GURL>& explicit_urls,
     optimization_guide::proto::ContextualTasksContextQuality* quality_log) {
-  std::vector<base::WeakPtr<content::WebContents>> relevant_tabs;
+  std::vector<content::WebContents*> relevant_tabs;
 
   QueryState query_state = CreateQueryState(query, query_embedding);
   PopulateQueryContext(query_state, quality_log);
@@ -612,21 +607,18 @@ ContextualTasksContextService::SelectRelevantTabs(
   query_signals.query_active_tab_passage_similarities =
       query_state.active_tab_passage_similarities;
 
-  for (const auto& web_contents : all_tabs) {
-    if (!web_contents) {
-      continue;
-    }
+  for (auto* web_contents : all_tabs) {
     optimization_guide::proto::ContextualTasksTabContext* tab_context =
         quality_log->add_eligible_tabs();
 
-    TabSignals tab_signals = ComputeTabSignals(web_contents.get(), query_state);
+    TabSignals tab_signals = ComputeTabSignals(web_contents, query_state);
 
     // Score and select qualifying tabs.
     double score = GetTabScore(options, tab_signals);
     if (score >=
         options.min_model_score.value_or(kTabSelectionScoreThreshold.Get())) {
       if (tab_signals.web_contents) {
-        relevant_tabs.push_back(tab_signals.web_contents);
+        relevant_tabs.push_back(tab_signals.web_contents.get());
       }
     }
 
@@ -788,8 +780,7 @@ void ContextualTasksContextService::SiteExclusionDetail::
 
 ContextualTasksContextService::PendingRequest::PendingRequest(
     passage_embeddings::Embedder::TaskId task_id,
-    base::OnceCallback<void(std::vector<base::WeakPtr<content::WebContents>>)>
-        callback)
+    base::OnceCallback<void(std::vector<content::WebContents*>)> callback)
     : task_id(task_id), callback(std::move(callback)) {}
 ContextualTasksContextService::PendingRequest::~PendingRequest() = default;
 

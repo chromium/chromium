@@ -71,16 +71,14 @@ void ContextualTasksInternalsPageHandler::GetRelevantContext(
       /*explicit_urls=*/{},
       base::BindOnce(
           [](GetRelevantContextCallback callback,
-             std::vector<base::WeakPtr<content::WebContents>> relevant_tabs) {
+             std::vector<content::WebContents*> relevant_tabs) {
             auto result = contextual_tasks_internals::mojom::
                 GetRelevantContextResponse::New();
-            for (const auto& web_contents : relevant_tabs) {
-              if (web_contents) {
-                auto tab = contextual_tasks_internals::mojom::Tab::New();
-                tab->title = base::UTF16ToUTF8(web_contents->GetTitle());
-                tab->url = web_contents->GetLastCommittedURL();
-                result->relevant_tabs.push_back(std::move(tab));
-              }
+            for (content::WebContents* web_contents : relevant_tabs) {
+              auto tab = contextual_tasks_internals::mojom::Tab::New();
+              tab->title = base::UTF16ToUTF8(web_contents->GetTitle());
+              tab->url = web_contents->GetLastCommittedURL();
+              result->relevant_tabs.push_back(std::move(tab));
             }
             std::move(callback).Run(std::move(result));
           },
