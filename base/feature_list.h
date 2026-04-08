@@ -22,6 +22,7 @@
 #include "base/feature.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
 
@@ -125,7 +126,7 @@ class BASE_EXPORT FeatureList {
     // Look up the feature, and, if present, populate |params|.
     // See GetFieldTrialParams in field_trial_params.h for more documentation.
     bool GetParamsByFeatureName(std::string_view feature_name,
-                                std::map<std::string, std::string>* params);
+                                FieldTrialParams* params);
 
    private:
     // Allow FeatureList to construct this class.

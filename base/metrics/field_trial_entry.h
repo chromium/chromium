@@ -16,6 +16,7 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
@@ -78,7 +79,7 @@ struct BASE_EXPORT FieldTrialEntry {
   // Calling this is only valid when the entry is initialized as well. Reads
   // the parameters following the trial and group name and stores them as
   // key-value mappings in |params|.
-  bool GetParams(std::map<std::string, std::string>* params) const;
+  bool GetParams(FieldTrialParams* params) const;
 
  private:
   // Returns an iterator over the data containing names and params.

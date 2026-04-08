@@ -229,7 +229,7 @@ class V8FeatureVisitor : public base::FeatureVisitor {
  public:
   void Visit(const std::string& feature_name,
              base::FeatureList::OverrideState override_state,
-             const std::map<std::string, std::string>& params,
+             const base::FieldTrialParams& params,
              const std::string& trial_name,
              const std::string& group_name) override {
     std::string_view feature_name_view(feature_name);

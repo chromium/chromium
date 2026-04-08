@@ -99,7 +99,7 @@ void PickleFieldTrial(const FieldTrial::PickleState& trial_state,
   pickle->WriteBool(trial_state.is_overridden);
 
   // Get field trial params.
-  std::map<std::string, std::string> params;
+  FieldTrialParams params;
   FieldTrialParamAssociator::GetInstance()->GetFieldTrialParamsWithoutFallback(
       *trial_state.trial_name, *trial_state.group_name, &params);
 
@@ -551,7 +551,7 @@ std::string FieldTrialList::AllParamsToString(EscapeDataFunc encode_data_func) {
               trial.trial_name->find(kPersistentStringSeparator));
     DCHECK_EQ(std::string::npos,
               trial.group_name->find(kPersistentStringSeparator));
-    std::map<std::string, std::string> params;
+    FieldTrialParams params;
     if (params_associator->GetFieldTrialParamsWithoutFallback(
             *trial.trial_name, *trial.group_name, &params)) {
       if (params.size() > 0) {
@@ -827,9 +827,8 @@ size_t FieldTrialList::GetRandomizedFieldTrialCount() {
 }
 
 // static
-bool FieldTrialList::GetParamsFromSharedMemory(
-    FieldTrial* field_trial,
-    std::map<std::string, std::string>* params) {
+bool FieldTrialList::GetParamsFromSharedMemory(FieldTrial* field_trial,
+                                               FieldTrialParams* params) {
   DCHECK(global_);
   // If the field trial allocator is not set up yet, then there are several
   // cases:
@@ -910,7 +909,7 @@ void FieldTrialList::ClearParamsFromSharedMemoryForTesting() {
       // If the new entry is going to be the exact same as the existing one,
       // then simply keep the existing one to avoid taking extra space in the
       // allocator. This should mean that this trial has no params.
-      std::map<std::string, std::string> params;
+      FieldTrialParams params;
       CHECK(prev_entry->GetParams(&params));
       CHECK(params.empty());
       continue;

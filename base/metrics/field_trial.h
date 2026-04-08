@@ -86,6 +86,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/synchronization/lock.h"
 #include "base/types/pass_key.h"
@@ -602,9 +603,8 @@ class BASE_EXPORT FieldTrialList {
   // Gets the parameters for |field_trial| from shared memory and stores them in
   // |params|. This is only exposed for use by FieldTrialParamAssociator and
   // shouldn't be used by anything else.
-  static bool GetParamsFromSharedMemory(
-      FieldTrial* field_trial,
-      std::map<std::string, std::string>* params);
+  static bool GetParamsFromSharedMemory(FieldTrial* field_trial,
+                                        FieldTrialParams* params);
 
   // Clears all the params in the allocator.
   static void ClearParamsFromSharedMemoryForTesting();

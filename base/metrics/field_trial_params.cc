@@ -149,7 +149,7 @@ bool AssociateFieldTrialParamsFromString(
           trial.c_str(), group.c_str());
       return false;
     }
-    std::map<std::string, std::string> params;
+    FieldTrialParams params;
     for (size_t i = 0; i < key_values.size(); i += 2) {
       params[decode_data_func(key_values[i])] =
           decode_data_func(key_values[i + 1]);

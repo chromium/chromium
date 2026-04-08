@@ -1010,7 +1010,7 @@ TEST_F(FieldTrialListTest, AssociateFieldTrialParams) {
 
   // Create a field trial with some params.
   FieldTrialList::CreateFieldTrial(trial_name, group_name);
-  std::map<std::string, std::string> params;
+  FieldTrialParams params;
   params["key1"] = "value1";
   params["key2"] = "value2";
   FieldTrialParamAssociator::GetInstance()->AssociateFieldTrialParams(
@@ -1020,13 +1020,13 @@ TEST_F(FieldTrialListTest, AssociateFieldTrialParams) {
   // Clear all cached params from the associator.
   FieldTrialParamAssociator::GetInstance()->ClearAllCachedParamsForTesting();
   // Check that the params have been cleared from the cache.
-  std::map<std::string, std::string> cached_params;
+  FieldTrialParams cached_params;
   FieldTrialParamAssociator::GetInstance()->GetFieldTrialParamsWithoutFallback(
       trial_name, group_name, &cached_params);
   EXPECT_EQ(0U, cached_params.size());
 
   // Check that we fetch the param from shared memory properly.
-  std::map<std::string, std::string> new_params;
+  FieldTrialParams new_params;
   GetFieldTrialParams(trial_name, &new_params);
   EXPECT_EQ("value1", new_params["key1"]);
   EXPECT_EQ("value2", new_params["key2"]);
@@ -1045,7 +1045,7 @@ TEST_F(FieldTrialListTest, ClearParamsFromSharedMemory) {
     // Create a field trial with some params.
     FieldTrial* trial =
         FieldTrialList::CreateFieldTrial(trial_name, group_name);
-    std::map<std::string, std::string> params;
+    FieldTrialParams params;
     params["key1"] = "value1";
     params["key2"] = "value2";
     FieldTrialParamAssociator::GetInstance()->AssociateFieldTrialParams(
@@ -1060,7 +1060,7 @@ TEST_F(FieldTrialListTest, ClearParamsFromSharedMemory) {
     EXPECT_NE(old_ref, new_ref);
 
     // Check that there are no params associated with the field trial anymore.
-    std::map<std::string, std::string> new_params;
+    FieldTrialParams new_params;
     GetFieldTrialParams(trial_name, &new_params);
     EXPECT_EQ(0U, new_params.size());
 
@@ -1093,7 +1093,7 @@ TEST_F(FieldTrialListTest, DumpAndFetchFromSharedMemory) {
   FieldTrialList::CreateFieldTrial(trial_name, group_name);
   FieldTrialList::CreateFieldTrial("Trial2", "Group2", false,
                                    /*is_overridden=*/true);
-  std::map<std::string, std::string> params;
+  FieldTrialParams params;
   params["key1"] = "value1";
   params["key2"] = "value2";
   FieldTrialParamAssociator::GetInstance()->AssociateFieldTrialParams(
@@ -1128,7 +1128,7 @@ TEST_F(FieldTrialListTest, DumpAndFetchFromSharedMemory) {
   EXPECT_FALSE(overridden);
 
   // Check that the params match.
-  std::map<std::string, std::string> shm_params;
+  FieldTrialParams shm_params;
   entry1->GetParams(&shm_params);
   EXPECT_EQ(2u, shm_params.size());
   EXPECT_EQ("value1", shm_params["key1"]);
@@ -1294,7 +1294,7 @@ TEST_F(FieldTrialTest, TestAllParamsToString) {
   std::string exptected_output = "t1.g1:p1/v1/p2/v2";
 
   // Create study with one group and two params.
-  std::map<std::string, std::string> params;
+  FieldTrialParams params;
   params["p1"] = "v1";
   params["p2"] = "v2";
   FieldTrialParamAssociator::GetInstance()->AssociateFieldTrialParams(

@@ -29,8 +29,7 @@ bool FieldTrialEntry::GetState(std::string_view& trial_name,
   return ReadHeader(iter, trial_name, group_name, overridden);
 }
 
-bool FieldTrialEntry::GetParams(
-    std::map<std::string, std::string>* params) const {
+bool FieldTrialEntry::GetParams(FieldTrialParams* params) const {
   PickleIterator iter = GetPickleIterator();
   std::string_view tmp_string;
   bool tmp_bool;
