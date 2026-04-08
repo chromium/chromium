@@ -8,7 +8,7 @@
 #include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
@@ -32,7 +32,7 @@ TEST_F(ChromeSafeBrowsingUIManagerDelegateTest, IsHostingExtension) {
   // extensions.
   EXPECT_FALSE(delegate.IsHostingExtension(web_contents()));
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Create a WebContents instance that *is* hosting an extension.
   base::DictValue manifest;
   manifest.Set(extensions::manifest_keys::kName, "TestComponentApp");

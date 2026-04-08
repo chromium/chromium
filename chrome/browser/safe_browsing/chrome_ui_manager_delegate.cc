@@ -16,7 +16,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/process_manager.h"  // nogncheck
 #endif
 
@@ -70,7 +70,7 @@ ChromeSafeBrowsingUIManagerDelegate::GetNoStatePrefetchContentsIfExists(
 
 bool ChromeSafeBrowsingUIManagerDelegate::IsHostingExtension(
     content::WebContents* web_contents) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   extensions::ProcessManager* extension_manager =
       extensions::ProcessManager::Get(web_contents->GetBrowserContext());
   if (!extension_manager)
