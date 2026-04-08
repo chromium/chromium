@@ -25,7 +25,7 @@ public class DomDistillerServiceFactory {
     private static final ProfileKeyedMap<DomDistillerService> sServiceMap =
             new ProfileKeyedMap<>(
                     ProfileKeyedMap.ProfileSelection.REDIRECTED_TO_ORIGINAL,
-                    ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
+                    ProfileKeyedMap.noRequiredCleanupAction());
 
     /** Returns Java DomDistillerService for given Profile. */
     public static DomDistillerService getForProfile(Profile profile) {

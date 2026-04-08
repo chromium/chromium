@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.profiles;
 
-import static org.chromium.chrome.browser.profiles.ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION;
+import static org.chromium.chrome.browser.profiles.ProfileKeyedMap.noRequiredCleanupAction;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -44,7 +44,7 @@ public class ProfileKeyedMapTest {
 
     @Test
     public void testReusesObjects() {
-        ProfileKeyedMap<Object> map = new ProfileKeyedMap<>(NO_REQUIRED_CLEANUP_ACTION);
+        ProfileKeyedMap<Object> map = new ProfileKeyedMap<>(noRequiredCleanupAction());
 
         Object obj1 = new Object();
         Assert.assertEquals(obj1, map.getForProfile(mProfile1, (profile) -> obj1));
@@ -120,7 +120,7 @@ public class ProfileKeyedMapTest {
     public void testProfileSelection_OWN_INSTANCE() {
         ProfileKeyedMap<Object> map =
                 new ProfileKeyedMap<>(
-                        ProfileKeyedMap.ProfileSelection.OWN_INSTANCE, NO_REQUIRED_CLEANUP_ACTION);
+                        ProfileKeyedMap.ProfileSelection.OWN_INSTANCE, noRequiredCleanupAction());
         Object originalObj1 = new Object();
         Object incognitoObj1 = new Object();
         Assert.assertEquals(originalObj1, map.getForProfile(mProfile1, (profile) -> originalObj1));
@@ -133,7 +133,7 @@ public class ProfileKeyedMapTest {
         ProfileKeyedMap<Object> map =
                 new ProfileKeyedMap<>(
                         ProfileKeyedMap.ProfileSelection.REDIRECTED_TO_ORIGINAL,
-                        NO_REQUIRED_CLEANUP_ACTION);
+                        noRequiredCleanupAction());
         Object originalObj1 = new Object();
         Object incognitoObj1 = new Object();
         Assert.assertEquals(originalObj1, map.getForProfile(mProfile1, (profile) -> originalObj1));

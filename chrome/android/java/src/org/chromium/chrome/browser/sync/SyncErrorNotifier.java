@@ -61,7 +61,7 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
     private static final String TAG = "SyncUI";
 
     private static final ProfileKeyedMap<SyncErrorNotifier> sProfileMap =
-            new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
+            new ProfileKeyedMap<>(ProfileKeyedMap.noRequiredCleanupAction());
 
     private final BaseNotificationManagerProxy mNotificationManager;
     private final SyncService mSyncService;

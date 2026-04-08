@@ -27,7 +27,7 @@ class MagicStackBridge {
 
     static MagicStackBridge getForProfile(Profile profile) {
         if (sProfileMap == null) {
-            sProfileMap = new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
+            sProfileMap = new ProfileKeyedMap<>(ProfileKeyedMap.noRequiredCleanupAction());
         }
         return sProfileMap.getForProfile(profile, MagicStackBridge::new);
     }

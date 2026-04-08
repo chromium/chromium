@@ -30,8 +30,13 @@ import java.util.function.Function;
  */
 @NullMarked
 public class ProfileKeyedMap<T> {
-    /** Indicates no cleanup action is required when destroying an object in the map. */
-    public static final @Nullable Callback NO_REQUIRED_CLEANUP_ACTION = null;
+    /**
+     * Indicates no cleanup action is required when destroying an object in the map.
+     *
+     * @deprecated Use {@link #noRequiredCleanupAction()} instead, which is properly typed and
+     *     avoids unchecked warnings.
+     */
+    @Deprecated public static final @Nullable Callback NO_REQUIRED_CLEANUP_ACTION = null;
 
     /** Uses to determine what Profile reference should be used and stored in the map. */
     @IntDef({ProfileSelection.OWN_INSTANCE, ProfileSelection.REDIRECTED_TO_ORIGINAL})
@@ -93,6 +98,11 @@ public class ProfileKeyedMap<T> {
     public static <T extends Destroyable> ProfileKeyedMap<T> createMapOfDestroyables(
             @ProfileSelection int profileSelection) {
         return new ProfileKeyedMap<>(profileSelection, (e) -> e.destroy());
+    }
+
+    /** Returns null, indicating no cleanup action is required when destroying an object. */
+    public static <T> @Nullable Callback<T> noRequiredCleanupAction() {
+        return null;
     }
 
     private static Profile getProfileToUse(
