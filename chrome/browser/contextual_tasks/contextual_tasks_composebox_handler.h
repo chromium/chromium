@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler_interface.h"
 #include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
 #include "components/contextual_tasks/public/query_contextualizer.h"
 #include "components/lens/contextual_input.h"
@@ -40,8 +41,10 @@ struct FileData {
 };
 
 // ComposeboxHandler for the Contextual Tasks UI.
-class ContextualTasksComposeboxHandler : public ComposeboxHandler,
-                                         public ui::SelectFileDialog::Listener {
+class ContextualTasksComposeboxHandler
+    : public ComposeboxHandler,
+      public ui::SelectFileDialog::Listener,
+      public contextual_tasks::ContextualTasksComposeboxHandlerInterface {
  public:
   friend class ContextualTasksComposeboxHandlerTest;
   using TakeInputStateModelCallback =
@@ -77,8 +80,6 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
                      bool delay_upload,
                      AddTabContextCallback callback) override;
 
-  void OnTaskChanged();
-
   // We override this method to inject an existing `InputStateModel` if one is
   // provided by the ContextualTasksUI via the `take_input_model_callback_`.
   void InitializeInputStateModel() override;
@@ -98,20 +99,13 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
 
   void CreateAndSendQueryMessage(const std::string& query);
 
-  // Called to update the suggested tab context chip in the compose box based on
-  // the given candidate tab. The chip will only be shown if the candidate tab
-  // is eligible for suggestion and is not blocklisted by the user.
-  virtual void UpdateSuggestedTabContext(
-      searchbox::mojom::TabInfoPtr candidate_tab_info);
-
-  // Returns true if there is a suggested tab context chip in the compose box.
-  bool has_suggested_tab_context() const {
-    return current_suggestion_.has_value();
-  }
-
-  // Called to clear the blocklist of auto-suggested tabs. This is used when
-  // switching to a new thread.
-  void ResetBlocklistedSuggestions() { blocklisted_suggestions_.clear(); }
+  void ResetInputStateModel() override;
+  void UpdateSuggestedTabContext(
+      std::unique_ptr<contextual_tasks::SuggestedTabInfo> suggested_tab)
+      override;
+  bool has_suggested_tab_context() const override;
+  void ResetBlocklistedSuggestions() override;
+  void OnTaskChanged() override;
 
   void ClearFiles(bool should_block_auto_suggested_tabs) override;
   void HandleLensButtonClick() override;

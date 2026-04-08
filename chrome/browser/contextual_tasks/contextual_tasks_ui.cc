@@ -19,7 +19,7 @@
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_search_session_finder.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler_interface.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_internals_page_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_page_handler.h"
@@ -678,7 +678,7 @@ void ContextualTasksUI::CreatePageHandler(
     mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
         pending_searchbox_handler) {
-  composebox_handler_ = std::make_unique<ContextualTasksComposeboxHandler>(
+  auto handler = std::make_unique<ContextualTasksComposeboxHandler>(
       this, Profile::FromWebUI(web_ui()), web_ui()->GetWebContents(),
       std::move(pending_page_handler), std::move(pending_page),
       std::move(pending_searchbox_handler),
@@ -689,7 +689,8 @@ void ContextualTasksUI::CreatePageHandler(
                           base::Unretained(this)),
       base::BindRepeating(&ContextualTasksUI::TakeInputStateModel,
                           base::Unretained(this)));
-  composebox_handler_->SetPage(std::move(pending_searchbox_page));
+  handler->SetPage(std::move(pending_searchbox_page));
+  composebox_handler_ = std::move(handler);
 }
 
 contextual_search::ContextualSearchSessionHandle*
@@ -840,7 +841,9 @@ void ContextualTasksUI::OnContextRetrievedForActiveTab(
           contextual_tasks::CreateURLDeduplicationHelperForContextualTask();
   if (context &&
       context->ContainsURL(last_committed_url, url_duplication_helper.get())) {
-    composebox_handler_->UpdateSuggestedTabContext(nullptr);
+    if (composebox_handler_) {
+      composebox_handler_->UpdateSuggestedTabContext(nullptr);
+    }
     return;
   }
 
@@ -848,14 +851,18 @@ void ContextualTasksUI::OnContextRetrievedForActiveTab(
 }
 
 void ContextualTasksUI::UpdateSuggestedTabContext(tabs::TabInterface* tab) {
+  if (!composebox_handler_) {
+    return;
+  }
   content::WebContents* web_contents = tab->GetContents();
-  auto tab_data = searchbox::mojom::TabInfo::New();
-  tab_data->tab_id = tab->GetHandle().raw_value();
-  tab_data->title = base::UTF16ToUTF8(web_contents->GetTitle());
-  tab_data->url = web_contents->GetLastCommittedURL();
-  tab_data->last_active = std::max(web_contents->GetLastActiveTimeTicks(),
-                                   web_contents->GetLastInteractionTimeTicks());
-  composebox_handler_->UpdateSuggestedTabContext(std::move(tab_data));
+  auto suggested_tab = std::make_unique<contextual_tasks::SuggestedTabInfo>();
+  suggested_tab->tab_id = tab->GetHandle().raw_value();
+  suggested_tab->title = web_contents->GetTitle();
+  suggested_tab->url = web_contents->GetLastCommittedURL();
+  suggested_tab->last_active =
+      std::max(web_contents->GetLastActiveTimeTicks(),
+               web_contents->GetLastInteractionTimeTicks());
+  composebox_handler_->UpdateSuggestedTabContext(std::move(suggested_tab));
 }
 
 void ContextualTasksUI::OnSidePanelStateChanged() {
@@ -1320,13 +1327,17 @@ void ContextualTasksUI::CreatePageHandler(
 }
 
 void ContextualTasksUI::PrepareForTaskChange() {
-  composebox_handler_->ResetInputStateModel();
-  composebox_handler_->ResetBlocklistedSuggestions();
-  composebox_handler_->UpdateSuggestedTabContext(nullptr);
+  if (composebox_handler_) {
+    composebox_handler_->ResetInputStateModel();
+    composebox_handler_->ResetBlocklistedSuggestions();
+    composebox_handler_->UpdateSuggestedTabContext(nullptr);
+  }
 }
 
 void ContextualTasksUI::OnTaskChanged() {
-  composebox_handler_->OnTaskChanged();
+  if (composebox_handler_) {
+    composebox_handler_->OnTaskChanged();
+  }
   if (!IsShownInTab()) {
     // Update the suggested tab chip.
     OnActiveTabContextStatusChanged();

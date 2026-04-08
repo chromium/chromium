@@ -32,6 +32,7 @@
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
+#include "contextual_tasks_composebox_handler_interface.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/backoff_entry.h"
@@ -49,6 +50,7 @@ class WebContentsObserver;
 }  // namespace content
 
 namespace contextual_tasks {
+class ContextualTasksComposeboxHandlerInterface;
 class ContextualTasksPanelController;
 class ContextualTasksUiService;
 }  // namespace contextual_tasks
@@ -57,7 +59,6 @@ namespace tabs {
 class TabInterface;
 }  // namespace tabs
 
-class ContextualTasksComposeboxHandler;
 class ContextualTasksInternalsPageHandler;
 
 class ContextualTasksPageHandler;
@@ -220,7 +221,9 @@ class ContextualTasksUI
       const CoreAccountInfo& account_info) override;
 
   void SetComposeboxHandlerForTesting(
-      std::unique_ptr<ContextualTasksComposeboxHandler> handler) {
+      std::unique_ptr<
+          contextual_tasks::ContextualTasksComposeboxHandlerInterface>
+          handler) {
     composebox_handler_ = std::move(handler);
   }
 
@@ -282,7 +285,8 @@ class ContextualTasksUI
 
   contextual_tasks::ContextualTasksPanelController* GetPanelController();
 
-  std::unique_ptr<ContextualTasksComposeboxHandler> composebox_handler_;
+  std::unique_ptr<contextual_tasks::ContextualTasksComposeboxHandlerInterface>
+      composebox_handler_;
   std::unique_ptr<contextual_tasks::ContextualTasksCookieSynchronizer>
       cookie_synchronizer_;
   raw_ptr<contextual_tasks::ContextualTasksUiService> ui_service_;
