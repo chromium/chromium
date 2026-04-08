@@ -1966,7 +1966,9 @@ void LocationBarView::ValidatePopupState(OmniboxPopupState state) {
   // popup state manager is updated. This leads to a race condition where
   // popup_state=kClassic but the popup widget is already destroyed.
   // Note: GetWidget() returns the BrowserView's widget, not the popup widget.
-  if (views::Widget* widget = GetWidget(); !widget || !widget->IsVisible()) {
+  if (views::Widget* widget = GetWidget();
+      !widget || !widget->IsVisible() ||
+      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
     return;
   }
 
