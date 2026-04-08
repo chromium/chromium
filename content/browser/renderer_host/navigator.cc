@@ -991,7 +991,7 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
       DVLOG(0) << "Ignoring duplicate navigation to "
                << request->common_params().url
                << " due to the short interval since the previous one.";
-
+      ongoing_navigation_request->DidIgnoreDuplicateNavigation();
       return;
     } else {
       ongoing_navigation_request->set_navigation_discard_reason(
@@ -1307,6 +1307,9 @@ void Navigator::OnBeginNavigation(
     int initiator_process_id,
     mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
         renderer_cancellation_listener,
+    mojo::PendingReceiver<
+        mojom::NavigationRendererIgnoreDuplicateNavigationListener>
+        renderer_ignore_duplicate_navigation_listener,
     mojo::PendingReceiver<blink::mojom::NavigationResumeDeferredCommitListener>
         deferred_commit_resume_listener) {
   TRACE_EVENT0("navigation", "Navigator::OnBeginNavigation");
@@ -1370,6 +1373,7 @@ void Navigator::OnBeginNavigation(
           std::move(blob_url_loader_factory), std::move(navigation_client),
           std::move(prefetched_signed_exchange_cache),
           std::move(renderer_cancellation_listener),
+          std::move(renderer_ignore_duplicate_navigation_listener),
           std::move(deferred_commit_resume_listener)));
   NavigationRequest* navigation_request = frame_tree_node->navigation_request();
 

@@ -2322,6 +2322,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.GoogleSearch.PaintTiming.NavigationToFirstContentfulPaint.IgnoredDuplicateNavigation"
+    units="ms" expires_after="2027-01-10">
+  <owner>annasato@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Recorded when the first contentful paint (FCP) occurs on a Google Search
+    page load.
+
+    Measures the time in milliseconds from navigation timing's navigation start
+    to the time when the page first paints content, for Google Search page loads
+    where subsequent duplicate navigation requests were ignored. Only recorded
+    for Search navigations that start in the foreground and stay in the
+    foreground until the first contentful paint.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.GoogleSearch.PaintTiming.NavigationToFirstContentfulPaint{SyntheticResponseSuffix}"
     units="ms" expires_after="2026-08-23">
   <owner>spelchat@chromium.org</owner>

@@ -705,6 +705,16 @@ interface NavigationRendererCancellationListener {
   RendererCancellationWindowEnded();
 };
 
+// A per-navigation interface used to track duplicate navigation attempts.
+// This is bound to a specific NavigationRequest in the browser process.
+interface NavigationRendererIgnoreDuplicateNavigationListener {
+  // Notifies the browser that a subsequent navigation attempt was treated
+  // as a duplicate and was ignored because this navigation was already
+  // in progress. This signal is used to flag the original navigation for
+  // performance metrics.
+  DidIgnoreDuplicateNavigation();
+};
+
 // Implemented by the frame server (i.e. the browser process). For messages that
 // must be associated with the IPC channel.
 interface FrameHost {
@@ -810,6 +820,8 @@ interface FrameHost {
           initiator_navigation_state_keep_alive_handle,
       pending_receiver<NavigationRendererCancellationListener>
           renderer_cancellation_listener,
+      pending_receiver<NavigationRendererIgnoreDuplicateNavigationListener>
+          renderer_ignore_duplicate_navigation_listener,
       pending_receiver<blink.mojom.NavigationResumeDeferredCommitListener>?
           resume_deferred_commit_listener);
 

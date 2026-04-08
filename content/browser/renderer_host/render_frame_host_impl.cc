@@ -2226,6 +2226,9 @@ class PendingNavigation {
   mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client_;
   mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
       renderer_cancellation_listener_;
+  mojo::PendingReceiver<
+      mojom::NavigationRendererIgnoreDuplicateNavigationListener>
+      renderer_ignore_duplicate_navigation_listener_;
   mojo::PendingReceiver<blink::mojom::NavigationResumeDeferredCommitListener>
       deferred_commit_resume_listener_;
 
@@ -2238,6 +2241,9 @@ class PendingNavigation {
           initiator_navigation_state_keep_alive_handle,
       mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
           renderer_cancellation_listener,
+      mojo::PendingReceiver<
+          mojom::NavigationRendererIgnoreDuplicateNavigationListener>
+          renderer_ignore_duplicate_navigation_listener,
       mojo::PendingReceiver<
           blink::mojom::NavigationResumeDeferredCommitListener>
           deferred_commit_resume_listener,
@@ -2253,6 +2259,8 @@ PendingNavigation::PendingNavigation(
         initiator_navigation_state_keep_alive_handle,
     mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
         renderer_cancellation_listener,
+    mojo::PendingReceiver<mojom::NavigationRendererIgnoreDuplicateNavigationListener>
+        renderer_ignore_duplicate_navigation_listener,
     mojo::PendingReceiver<blink::mojom::NavigationResumeDeferredCommitListener>
         deferred_commit_resume_listener,
     RenderFrameHostImpl* initiator_frame)
@@ -2262,6 +2270,8 @@ PendingNavigation::PendingNavigation(
       navigation_client_(std::move(navigation_client)),
       renderer_cancellation_listener_(
           std::move(renderer_cancellation_listener)),
+      renderer_ignore_duplicate_navigation_listener_(
+          std::move(renderer_ignore_duplicate_navigation_listener)),
       deferred_commit_resume_listener_(
           std::move(deferred_commit_resume_listener)) {
   if (initiator_navigation_state_keep_alive_handle) {
@@ -4915,6 +4925,7 @@ void RenderFrameHostImpl::Init() {
         std::move(pending_navigation->navigation_client_),
         EnsurePrefetchedSignedExchangeCache(), initiator_process_id,
         std::move(pending_navigation->renderer_cancellation_listener_),
+        std::move(pending_navigation->renderer_ignore_duplicate_navigation_listener_),
         std::move(pending_navigation->deferred_commit_resume_listener_));
     // DO NOT ADD CODE after this, as `this` might be deleted if an early
     // RenderFrameHost swap was performed when starting the navigation above.
@@ -11517,6 +11528,9 @@ void RenderFrameHostImpl::BeginNavigation(
         initiator_navigation_state_keep_alive_handle,
     mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
         renderer_cancellation_listener,
+    mojo::PendingReceiver<
+        mojom::NavigationRendererIgnoreDuplicateNavigationListener>
+        renderer_ignore_duplicate_navigation_listener,
     mojo::PendingReceiver<blink::mojom::NavigationResumeDeferredCommitListener>
         deferred_commit_resume_listener) {
   TRACE_EVENT("navigation", "RenderFrameHostImpl::BeginNavigation",
@@ -11678,6 +11692,7 @@ void RenderFrameHostImpl::BeginNavigation(
         std::move(blob_url_loader_factory), std::move(navigation_client),
         std::move(initiator_navigation_state_keep_alive_handle),
         std::move(renderer_cancellation_listener),
+        std::move(renderer_ignore_duplicate_navigation_listener),
         std::move(deferred_commit_resume_listener), initiator_frame);
     return;
   }
@@ -11703,6 +11718,7 @@ void RenderFrameHostImpl::BeginNavigation(
       std::move(begin_params), std::move(blob_url_loader_factory),
       std::move(navigation_client), EnsurePrefetchedSignedExchangeCache(),
       initiator_process_id, std::move(renderer_cancellation_listener),
+      std::move(renderer_ignore_duplicate_navigation_listener),
       std::move(deferred_commit_resume_listener));
 }
 

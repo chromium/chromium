@@ -189,6 +189,8 @@ class MockFrameHost : public mojom::FrameHost {
       mojo::PendingRemote<blink::mojom::NavigationStateKeepAliveHandle>,
       mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>,
       mojo::PendingReceiver<
+          mojom::NavigationRendererIgnoreDuplicateNavigationListener>,
+      mojo::PendingReceiver<
           blink::mojom::NavigationResumeDeferredCommitListener>) override {}
 
   void SubresourceResponseStarted(const url::SchemeHostPort& final_response_url,
