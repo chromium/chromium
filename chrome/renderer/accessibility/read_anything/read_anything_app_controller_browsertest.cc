@@ -228,6 +228,7 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   }
 
   void Distill() { controller_->Distill(); }
+  void ProcessModelUpdates() { controller_->ProcessModelUpdates(); }
 
   void SendBatchUpdates() {
     std::vector<ui::AXTreeUpdate> batch_updates;
@@ -5199,4 +5200,61 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
   ui::AXNode* applied_node = model().GetAXNode(kTargetNodeId);
   ASSERT_NE(applied_node, nullptr);
   EXPECT_EQ(controller().GetTextContent(kTargetNodeId), u"Child Node");
+}
+
+TEST_F(ReadAnythingAppControllerTest, Draw_DebouncesForPdf) {
+  static constexpr ui::AXNodeID kId = 4;
+  ui::AXNodeData node;
+  node.id = kId;
+  SendUpdateWithNodes({std::move(node)});
+  model().Reset({kId});
+
+  // Change to a PDF to start the debouncer.
+  controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/true);
+
+  // Calling Draw while the debouncer is running should do nothing.
+  controller().Draw(/* recompute_display_nodes= */ true);
+  EXPECT_FALSE(model().display_node_ids().contains(kId));
+
+  // Fast forward to let the debouncer finish.
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+
+  // Now calling Draw should succeed.
+  controller().Draw(/* recompute_display_nodes= */ true);
+  EXPECT_TRUE(model().display_node_ids().contains(kId));
+}
+
+TEST_F(ReadAnythingAppControllerTest, ProcessModelUpdates_ResetsPdfDebouncer) {
+  static constexpr ui::AXNodeID kId = 4;
+  ui::AXNodeData node;
+  node.id = kId;
+  SendUpdateWithNodes({std::move(node)});
+  model().Reset({kId});
+
+  // Change to a PDF to start the debouncer.
+  controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/true);
+
+  // Advance time by less than the debounce time.
+  task_environment_.FastForwardBy(base::Milliseconds(250));
+
+  model().set_reset_distillation_delay_timer(true);
+  ProcessModelUpdates();
+
+  // Advance time past the debounce. If the timer wasn't reset, it would have
+  // fired now and be stopped. Since we reset it, it should still be running.
+  task_environment_.FastForwardBy(base::Milliseconds(250));
+
+  // We can verify it's still running by checking if Draw(true) is still
+  // debounced.
+  controller().Draw(/* recompute_display_nodes= */ true);
+  EXPECT_FALSE(model().display_node_ids().contains(kId));
+
+  // Advance by another 250ms to finish the reset timer (500ms total from reset)
+  task_environment_.FastForwardBy(base::Milliseconds(250));
+
+  // Now it should be done
+  controller().Draw(/* recompute_display_nodes= */ true);
+  EXPECT_TRUE(model().display_node_ids().contains(kId));
 }

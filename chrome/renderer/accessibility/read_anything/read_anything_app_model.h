@@ -185,6 +185,13 @@ class ReadAnythingAppModel {
   bool redraw_required() const { return redraw_required_; }
   void reset_redraw_required() { redraw_required_ = false; }
 
+  bool reset_distillation_delay_timer() const {
+    return reset_distillation_delay_timer_;
+  }
+  void set_reset_distillation_delay_timer(bool reset) {
+    reset_distillation_delay_timer_ = reset;
+  }
+
   int unprocessed_selections_from_reading_mode() {
     return selections_from_reading_mode_;
   }
@@ -745,6 +752,9 @@ class ReadAnythingAppModel {
   bool requires_tree_lang_ = false;
 
   bool will_hide_ = false;
+
+  // Whether the distillation delay timer should be reset.
+  bool reset_distillation_delay_timer_ = false;
 
   // Whether we should traverse the tree to find all the anchors on it.
   bool should_extract_anchors_from_tree_for_readability_;

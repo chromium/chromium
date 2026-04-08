@@ -1094,6 +1094,7 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
         // capture the complete PDF load mentioned earlier).
         if (is_pdf_ && prev_tree_size < tree_size) {
           requires_distillation_ = true;
+          reset_distillation_delay_timer_ = true;
         }
         break;
       case ui::AXEventGenerator::Event::COLLAPSED:

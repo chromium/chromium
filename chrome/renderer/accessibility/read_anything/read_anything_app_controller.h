@@ -580,6 +580,12 @@ class ReadAnythingAppController
   // number of seconds.
   std::unique_ptr<base::RetainingOneShotTimer> post_user_entry_draw_timer_;
 
+  // A timer for debouncing draws for a PDF. Since most of the content updates
+  // occur via SUBTREE_CREATED a11y events, PDFs end up redrawing several
+  // times in a row which can be jarring. Wait for all the updates before
+  // drawing instead.
+  std::unique_ptr<base::RetainingOneShotTimer> pdf_draw_debouncer_;
+
   base::OneShotTimer timer_;
 
   // The number of times distillation completes successfully after a page
