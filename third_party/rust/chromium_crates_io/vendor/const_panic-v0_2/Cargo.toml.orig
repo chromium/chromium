@@ -1,0 +1,60 @@
+[package]
+name = "const_panic"
+version = "0.2.15"
+authors = ["rodrimati1992 <rodrimatt1985@gmail.com>"]
+edition = "2021"
+license = "Zlib"
+description = "const panic with formatting"
+rust-version = "1.57"
+readme="./README.md"
+keywords = ["no-std", "format", "const", "panic"]
+categories = ["no-std"]
+repository = "https://github.com/rodrimati1992/const_panic/"
+include = [
+    "Cargo.toml", 
+    "src/**/*.rs", 
+    "./README.md",
+    "LICENSE-ZLIB.md", 
+]
+
+[workspace]
+
+[dependencies.typewit]
+version = "1.9.0"
+default-features = false
+
+[dependencies.const_panic_proc_macros]
+version = "=0.2.15"
+path = "./const_panic_proc_macros/"
+optional = true
+
+[dev-dependencies.arrayvec]
+version = "0.7"
+
+[dev-dependencies.rand]
+version = "0.8.4"
+default-features = false
+features = ["small_rng"]
+
+# no such thing as optional dev-dependencies, aaaaaaah
+[dependencies.trybuild]
+version = "1.0"
+optional = true
+
+[features]
+default = ["non_basic"]
+
+rust_1_64 = []
+rust_1_82 = ["rust_1_64"]
+rust_1_88 = ["rust_1_82"]
+rust_latest_stable = ["rust_1_88"]
+non_basic = []
+docsrs = []
+derive = ["const_panic_proc_macros", "non_basic"]
+
+# private feature
+test = []
+__ui_tests = ["trybuild", "test"]
+
+[package.metadata.docs.rs]
+features = ["derive", "rust_latest_stable", "docsrs"]

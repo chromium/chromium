@@ -233,6 +233,7 @@ dependencies = [
  "bytes",
  "chrono",
  "const_format",
+ "const_panic",
  "crc32fast",
  "cxx",
  "cxxbridge-cmd",
@@ -343,6 +344,14 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-xid",
+]
+
+[[package]]
+name = "const_panic"
+version = "0.2.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "typewit",
 ]
 
 [[package]]
@@ -1655,6 +1664,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "typed-path"
 version = "0.12.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "typewit"
+version = "1.14.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]

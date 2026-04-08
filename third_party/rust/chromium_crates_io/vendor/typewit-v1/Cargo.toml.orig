@@ -1,0 +1,56 @@
+[package]
+name = "typewit"
+version = "1.14.2"
+authors = ["rodrimati1992 <rodrimatt1985@gmail.com>"]
+rust-version = "1.57.0"
+edition = "2021"
+license = "Zlib"
+description = "type-witness-based abstractions, mostly for emulating polymorphism in const fns"
+documentation = "https://docs.rs/typewit/"
+readme="./README.md"
+keywords = ["const_fn", "GADT", "type_witness", "type-equality", "refl"]
+categories = ["no-std", "rust-patterns"]
+repository = "https://github.com/rodrimati1992/typewit/"
+include = [
+    "Cargo.toml", 
+    "src/**/*.rs", 
+    "./README.md",
+    "LICENSE-ZLIB.md", 
+]
+
+[workspace]
+
+[dependencies.typewit_proc_macros]
+version = "=1.8.1"
+path = "./typewit_proc_macros"
+optional = true
+
+[dev-dependencies.arrayvec]
+version = "0.7"
+default-features = false
+
+# no such thing as optional dev-dependencies, aaaaaaah
+[dependencies.trybuild]
+version = "1.0"
+optional = true
+
+[features]
+default = ["proc_macros"]
+rust_1_61 = []
+rust_1_65 = ["rust_1_61"]
+rust_1_83 = ["rust_1_65"]
+rust_stable = ["rust_1_83"]
+proc_macros = ["typewit_proc_macros"]
+const_marker = []
+adt_const_marker = ["rust_stable"]
+generic_const_exprs = ["rust_stable"]
+alloc = []
+mut_refs = ["rust_stable"]
+nightly_mut_refs = ["mut_refs"]
+docsrs = []
+__test_doc_lints = []
+__ui_tests = ["trybuild"]
+
+[package.metadata.docs.rs]
+features = ["alloc", "rust_stable", "adt_const_marker", "generic_const_exprs", "docsrs"]
+
