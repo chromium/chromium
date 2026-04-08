@@ -284,7 +284,7 @@
             pref="{{prefs.generated.safe_browsing}}"
             selectable-elements="controlled-radio-button"
             on-change="onSafeBrowsingRadioChange_">
-          <controlled-radio-button
+          <controlled-radio-button id="standardProtectionButton"
               label="$i18n{securitySafeBrowsingStandardTitle}"
               name="[[safeBrowsingSettingEnum_.STANDARD]]"
               pref="[[prefs.generated.safe_browsing]]"
@@ -514,4 +514,12 @@
       <div slot="label">$i18nRaw{securityAdvancedProtectionProgramLabel}</div>
     </cr-link-row>
   </settings-section>
+  <template is="dom-if" if="[[showDisableSafebrowsingDialog_]]" restamp>
+    <settings-simple-confirmation-dialog
+        title-text="$i18n{safeBrowsingDisableDialog}"
+        body-text="$i18n{safeBrowsingDisableDialogDesc}"
+        confirm-text="$i18n{safeBrowsingDisableDialogConfirm}"
+        on-close="onDisableSafebrowsingDialogClose_">
+    </settings-simple-confirmation-dialog>
+  </template>
 </settings-subpage>
