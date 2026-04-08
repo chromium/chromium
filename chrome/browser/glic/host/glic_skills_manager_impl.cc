@@ -37,7 +37,7 @@ GlicSkillsManagerImpl::~GlicSkillsManagerImpl() = default;
 
 void GlicSkillsManagerImpl::UpdateSkillPreviews(
     std::optional<tabs::TabInterface*> updated_tab) {
-  if (!host_->IsReady()) {
+  if (!host_->IsWebClientConnected()) {
     return;
   }
   auto* focused_tab = host_->sharing_manager().GetFocusedTabData().focus();

@@ -224,7 +224,7 @@ class InteractiveGlicTestMixin : public T {
                   if (!instance->IsShowing()) {
                     return "Glic not showing";
                   }
-                  if (!instance->host().IsReady()) {
+                  if (!instance->host().IsWebClientConnected()) {
                     return "Glic host not ready";
                   }
                   return "showing and ready";

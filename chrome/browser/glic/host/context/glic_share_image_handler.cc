@@ -319,6 +319,7 @@ void GlicShareImageHandler::PerformPastePolicyCheckWhenReady() {
              kShareTimeoutSeconds) {
     ShareComplete(ShareImageResult::kFailedTimedOut);
   } else if (!glic_panel_ready_timer_.IsRunning()) {
+    // TODO(b/483387751): refactor to use invoke API.
     glic_panel_ready_timer_.Start(
         FROM_HERE, kGlicPanelPollIntervalMilliseconds,
         base::BindRepeating(
@@ -414,7 +415,7 @@ void GlicShareImageHandler::OnPastePolicyCheckComplete(
 
 bool GlicShareImageHandler::IsClientReady(tabs::TabInterface& tab) {
   if (GlicInstance* instance = service_->GetInstanceForTab(&tab)) {
-    return instance->host().IsReady();
+    return instance->host().IsWebClientConnected();
   }
   return false;
 }
