@@ -3694,6 +3694,136 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_EQ(old_file2_read_grant->GetStatus(), PermissionStatus::ASK);
   EXPECT_EQ(old_file2_write_grant->GetStatus(), PermissionStatus::ASK);
 }
+
+// Regression test for crbug.com/499078161.
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       RevokeActiveGrants_ClearsDowngradedReadPaths) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kFileSystemAccessRevokeReadOnRemove);
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
+      ->set_auto_response_for_test(PermissionAction::GRANTED);
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
+
+  // Sets up a file path to be the test target.
+  const auto file_path_info =
+      PathInfo(kTestPathInfo.path.AppendASCII("test_file.txt"));
+
+  // Grant read and write permission to the file path.
+  EXPECT_EQ(permission_context()
+                ->GetReadPermissionGrant(kTestOrigin, file_path_info,
+                                         HandleType::kFile, UserAction::kSave)
+                ->GetStatus(),
+            PermissionStatus::GRANTED);
+  EXPECT_EQ(permission_context()
+                ->GetWritePermissionGrant(kTestOrigin, file_path_info,
+                                          HandleType::kFile, UserAction::kSave)
+                ->GetStatus(),
+            PermissionStatus::GRANTED);
+
+  // 1. Revoke the read permission for the file path by calling NotifyEntryRemoved.
+  // This adds the path to downgraded_read_paths.
+  permission_context()->NotifyEntryRemoved(kTestOrigin, file_path_info);
+
+  // Verify the path is added to downgraded_read_paths.
+  EXPECT_TRUE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, file_path_info.path));
+
+  // 2. Revoke all active grants for the origin. This should clear downgraded_read_paths.
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin);
+
+  // Verify the path is removed from downgraded_read_paths.
+  EXPECT_FALSE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, file_path_info.path));
+}
+
+// Regression test for crbug.com/499078161.
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       RevokeActiveGrants_SpecificPath_ClearsDowngradedReadPaths) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kFileSystemAccessRevokeReadOnRemove);
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
+      ->set_auto_response_for_test(PermissionAction::GRANTED);
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
+
+  // Sets up file paths to be the test targets.
+  const auto file_path_info1 =
+      PathInfo(kTestPathInfo.path.AppendASCII("test_file1.txt"));
+  const auto file_path_info2 =
+      PathInfo(kTestPathInfo.path.AppendASCII("test_file2.txt"));
+
+  // Grant read and write permission to the file paths.
+  EXPECT_EQ(permission_context()
+                ->GetReadPermissionGrant(kTestOrigin, file_path_info1,
+                                         HandleType::kFile, UserAction::kSave)
+                ->GetStatus(),
+            PermissionStatus::GRANTED);
+  EXPECT_EQ(permission_context()
+                ->GetReadPermissionGrant(kTestOrigin, file_path_info2,
+                                         HandleType::kFile, UserAction::kSave)
+                ->GetStatus(),
+            PermissionStatus::GRANTED);
+
+  // 1. Revoke the read permission for the file paths by calling NotifyEntryRemoved.
+  // This adds the paths to downgraded_read_paths.
+  permission_context()->NotifyEntryRemoved(kTestOrigin, file_path_info1);
+  permission_context()->NotifyEntryRemoved(kTestOrigin, file_path_info2);
+
+  // Verify the paths are added to downgraded_read_paths.
+  EXPECT_TRUE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, file_path_info1.path));
+  EXPECT_TRUE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, file_path_info2.path));
+
+  // 2. Revoke active grant for a specific path.
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin,
+                                                     file_path_info1.path);
+
+  // Verify file_path_info1 is removed from downgraded_read_paths.
+  EXPECT_FALSE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, file_path_info1.path));
+  // Verify file_path_info2 is STILL in downgraded_read_paths.
+  EXPECT_TRUE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, file_path_info2.path));
+}
+
+// Regression test for crbug.com/499078161.
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       RevokeAllActiveGrants_ClearsDowngradedReadPaths) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kFileSystemAccessRevokeReadOnRemove);
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
+      ->set_auto_response_for_test(PermissionAction::GRANTED);
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
+
+  // Sets up a file path to be the test target.
+  const auto file_path_info =
+      PathInfo(kTestPathInfo.path.AppendASCII("test_file.txt"));
+
+  // Grant read and write permission to the file path.
+  EXPECT_EQ(permission_context()
+                ->GetReadPermissionGrant(kTestOrigin, file_path_info,
+                                         HandleType::kFile, UserAction::kSave)
+                ->GetStatus(),
+            PermissionStatus::GRANTED);
+
+  // 1. Revoke the read permission for the file path by calling NotifyEntryRemoved.
+  // This adds the path to downgraded_read_paths.
+  permission_context()->NotifyEntryRemoved(kTestOrigin, file_path_info);
+
+  // Verify the path is added to downgraded_read_paths.
+  EXPECT_TRUE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, file_path_info.path));
+
+  // 2. Revoke all active grants. This should clear downgraded_read_paths for all origins.
+  permission_context()->RevokeAllActiveGrants();
+
+  // Verify the path is removed from downgraded_read_paths.
+  EXPECT_FALSE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, file_path_info.path));
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,

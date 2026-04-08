@@ -1571,6 +1571,18 @@ bool ChromeFileSystemAccessPermissionContext::RevokeActiveGrants(
   auto origin_it = active_permissions_map_.find(origin);
   if (origin_it != active_permissions_map_.end()) {
     OriginState& origin_state = origin_it->second;
+
+    if (file_path.empty()) {
+      if (!origin_state.downgraded_read_paths.empty()) {
+        origin_state.downgraded_read_paths.clear();
+        grant_revoked = true;
+      }
+    } else {
+      if (origin_state.downgraded_read_paths.erase(file_path)) {
+        grant_revoked = true;
+      }
+    }
+
     for (auto grant_iter = origin_state.read_grants.begin(),
               grant_end = origin_state.read_grants.end();
          grant_iter != grant_end;) {
@@ -1615,6 +1627,8 @@ void ChromeFileSystemAccessPermissionContext::RevokeAllActiveGrants() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   for (auto& [origin, origin_state] : active_permissions_map_) {
+    origin_state.downgraded_read_paths.clear();
+
     // Only update `persisted_grant_status` if the state has not already been
     // set via tab backgrounding. We do this before iterating over grants so
     // `FileSystemAccessPermissionGrant::Observer`s can update their state
