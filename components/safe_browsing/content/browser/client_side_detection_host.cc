@@ -1778,9 +1778,7 @@ void ClientSideDetectionHost::MaybeStartIntelligentScanForScamDetection(
                     perfetto::Track::FromPointer(verdict.get()));
 
   if (verdict->client_side_detection_type() ==
-          ClientSideDetectionType::FORCE_REQUEST &&
-      base::FeatureList::IsEnabled(
-          kClientSideDetectionSendLlamaForcedTriggerInfo)) {
+      ClientSideDetectionType::FORCE_REQUEST) {
     CheckRedirectChainForLlamaForcedTriggerInfo(verdict.get());
     base::UmaHistogramBoolean(
         "SBClientPhishing.RTLookupForceRequest.HasLlamaForcedTriggerInfo",

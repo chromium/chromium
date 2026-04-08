@@ -247,12 +247,7 @@ ClientSideDetectionIntelligentScanDelegateAndroid::
       model_broker_client_(std::move(model_broker_client)),
       remote_model_executor_(remote_model_executor),
       is_feature_enabled_(
-          !base::FeatureList::IsEnabled(kClientSideDetectionKillswitch) &&
-          (base::FeatureList::IsEnabled(
-               kClientSideDetectionSendIntelligentScanInfoAndroid) ||
-           kCsdImageEmbeddingMatchWithIntelligentScan.Get() ||
-           base::FeatureList::IsEnabled(
-               kClientSideDetectionServerModelForScamDetectionAndroid))),
+          !base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)),
       is_server_model_enabled_(base::FeatureList::IsEnabled(
           kClientSideDetectionServerModelForScamDetectionAndroid)) {
   if (!is_feature_enabled_) {
@@ -393,13 +388,6 @@ bool ClientSideDetectionIntelligentScanDelegateAndroid::ShouldShowScamWarning(
       *verdict ==
           IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_UNSPECIFIED ||
       *verdict == IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE) {
-    return false;
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          kClientSideDetectionShowScamVerdictWarningAndroid) &&
-      !base::FeatureList::IsEnabled(
-          kClientSideDetectionServerModelForScamDetectionAndroid)) {
     return false;
   }
 

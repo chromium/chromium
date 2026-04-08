@@ -5468,28 +5468,12 @@ inline constexpr char kClankDefaultBrowserPromoRoleManagerDescription[] =
     "Sets the Role Manager Default Browser Promo for testing the new "
     "Default Browser Promo Feature";
 
-inline constexpr char kClientSideDetectionSendIntelligentScanInfoAndroidName[] =
-    "Client Side Detection Send Brand and Intent on Android";
-inline constexpr char
-    kClientSideDetectionSendIntelligentScanInfoAndroidDescription[] =
-        "Enables on device LLM output on pages to inquire for brand and intent "
-        "of "
-        "the page on Android.";
-
 inline constexpr char
     kClientSideDetectionServerModelForScamDetectionAndroidName[] =
         "Client Side Detection Server Model for Scam Detection on Android";
 inline constexpr char
     kClientSideDetectionServerModelForScamDetectionAndroidDescription[] =
         "Enables server model for scam detection on Android.";
-
-inline constexpr char kClientSideDetectionShowScamVerdictWarningAndroidName[] =
-    "Client Side Detection Show Scam Verdict Warning on Android";
-inline constexpr char
-    kClientSideDetectionShowScamVerdictWarningAndroidDescription[] =
-        "Show warnings based on the scam verdict field in Client Side "
-        "Detection "
-        "response on Android.";
 
 inline constexpr char kCompositorViewRemeasureFixName[] =
     "compositor-view-remeasure-fix";

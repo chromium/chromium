@@ -129,9 +129,7 @@ class ClientSideDetectionIntelligentScanDelegateAndroidTest
  protected:
   ClientSideDetectionIntelligentScanDelegateAndroidTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{kClientSideDetectionSendIntelligentScanInfoAndroid, {}},
-         {kClientSideDetectionShowScamVerdictWarningAndroid, {}},
-         {kClientSideDetectionImageEmbeddingMatch,
+        {{kClientSideDetectionImageEmbeddingMatch,
           {{"CsdImageEmbeddingMatchWithIntelligentScan", "true"}}},
          {kClientSideDetectionServerModelForScamDetectionAndroid,
           {{"MaxIntelligentScansPerDay", "3"}}}},
@@ -573,9 +571,7 @@ class
  protected:
   ClientSideDetectionIntelligentScanDelegateAndroidTestWithServerModelDisabled() {
     feature_list_.InitWithFeatures(
-        {kClientSideDetectionSendIntelligentScanInfoAndroid,
-         kClientSideDetectionShowScamVerdictWarningAndroid,
-         kClientSideDetectionOnDeviceModelLazyDownloadAndroid},
+        {kClientSideDetectionOnDeviceModelLazyDownloadAndroid},
         {kClientSideDetectionKillswitch,
          kClientSideDetectionServerModelForScamDetectionAndroid});
   }
@@ -811,11 +807,9 @@ class
  protected:
   ClientSideDetectionIntelligentScanDelegateAndroidTestWithOnDeviceModelLazyDownloadDisabled() {
     feature_list_.InitWithFeatures(
-        {kClientSideDetectionSendIntelligentScanInfoAndroid,
-         kClientSideDetectionShowScamVerdictWarningAndroid},
-        {kClientSideDetectionKillswitch,
-         kClientSideDetectionServerModelForScamDetectionAndroid,
-         kClientSideDetectionOnDeviceModelLazyDownloadAndroid});
+        {}, {kClientSideDetectionKillswitch,
+             kClientSideDetectionServerModelForScamDetectionAndroid,
+             kClientSideDetectionOnDeviceModelLazyDownloadAndroid});
   }
 };
 
@@ -903,132 +897,6 @@ TEST_F(
             IntelligentScanInfo::ON_DEVICE_MODEL_UNAVAILABLE);
 }
 
-class
-    ClientSideDetectionIntelligentScanDelegateAndroidTestWithSendScanInfoDisabled
-    : public ClientSideDetectionIntelligentScanDelegateAndroidTestBase {
- protected:
-  ClientSideDetectionIntelligentScanDelegateAndroidTestWithSendScanInfoDisabled() {
-    feature_list_.InitWithFeatures(
-        {kClientSideDetectionServerModelForScamDetectionAndroid},
-        {kClientSideDetectionSendIntelligentScanInfoAndroid});
-  }
-};
-
-TEST_F(
-    ClientSideDetectionIntelligentScanDelegateAndroidTestWithSendScanInfoDisabled,
-    ShouldRequestIntelligentScan) {
-  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
-  ClientPhishingRequest verdict;
-  verdict.set_client_side_detection_type(
-      ClientSideDetectionType::FORCE_REQUEST);
-  verdict.mutable_llama_forced_trigger_info()->set_intelligent_scan(true);
-  // Enabling the server model flag should be sufficient to request intelligent
-  // scan.
-  EXPECT_TRUE(delegate_->ShouldRequestIntelligentScan(&verdict));
-}
-
-TEST_F(
-    ClientSideDetectionIntelligentScanDelegateAndroidTestWithSendScanInfoDisabled,
-    GetIntelligentScanModelType) {
-  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
-  task_environment_.RunUntilIdle();
-  // Enabling the server model flag should be sufficient to request intelligent
-  // scan.
-  EXPECT_EQ(delegate_->GetIntelligentScanModelType(
-                /*log_failed_eligibility_reason=*/false),
-            ModelType::kServerSide);
-}
-
-class
-    ClientSideDetectionIntelligentScanDelegateAndroidTestWithSendScanInfoAndServerModelDisabled
-    : public ClientSideDetectionIntelligentScanDelegateAndroidTestBase {
- protected:
-  ClientSideDetectionIntelligentScanDelegateAndroidTestWithSendScanInfoAndServerModelDisabled() {
-    feature_list_.InitWithFeatures(
-        {}, {kClientSideDetectionSendIntelligentScanInfoAndroid,
-             kClientSideDetectionServerModelForScamDetectionAndroid,
-             kClientSideDetectionImageEmbeddingMatch});
-  }
-};
-
-TEST_F(
-    ClientSideDetectionIntelligentScanDelegateAndroidTestWithSendScanInfoAndServerModelDisabled,
-    ShouldNotRequestIntelligentScan) {
-  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
-  ClientPhishingRequest verdict;
-  verdict.set_client_side_detection_type(
-      ClientSideDetectionType::FORCE_REQUEST);
-  verdict.mutable_llama_forced_trigger_info()->set_intelligent_scan(true);
-  EXPECT_FALSE(delegate_->ShouldRequestIntelligentScan(&verdict));
-}
-
-TEST_F(
-    ClientSideDetectionIntelligentScanDelegateAndroidTestWithSendScanInfoAndServerModelDisabled,
-    GetIntelligentScanModelType) {
-  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(delegate_->GetIntelligentScanModelType(
-                /*log_failed_eligibility_reason=*/false),
-            ModelType::kNotSupportedOnDevice);
-}
-
-class ClientSideDetectionIntelligentScanDelegateAndroidTestWithWarningDisabled
-    : public ClientSideDetectionIntelligentScanDelegateAndroidTestBase {
- protected:
-  ClientSideDetectionIntelligentScanDelegateAndroidTestWithWarningDisabled() {
-    feature_list_.InitWithFeatures(
-        {kClientSideDetectionSendIntelligentScanInfoAndroid,
-         kClientSideDetectionServerModelForScamDetectionAndroid},
-        {kClientSideDetectionKillswitch,
-         kClientSideDetectionShowScamVerdictWarningAndroid});
-  }
-};
-
-TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTestWithWarningDisabled,
-       ShouldShowScamWarning) {
-  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
-  // Enabling the server model flag should be sufficient to show scam warning.
-  EXPECT_TRUE(delegate_->ShouldShowScamWarning(
-      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1));
-  EXPECT_TRUE(delegate_->ShouldShowScamWarning(
-      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2));
-  EXPECT_TRUE(delegate_->ShouldShowScamWarning(
-      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_3));
-  EXPECT_TRUE(delegate_->ShouldShowScamWarning(
-      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_4));
-  EXPECT_TRUE(delegate_->ShouldShowScamWarning(
-      IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT));
-}
-
-class
-    ClientSideDetectionIntelligentScanDelegateAndroidTestWithWarningAndServerModelDisabled
-    : public ClientSideDetectionIntelligentScanDelegateAndroidTestBase {
- protected:
-  ClientSideDetectionIntelligentScanDelegateAndroidTestWithWarningAndServerModelDisabled() {
-    feature_list_.InitWithFeatures(
-        {kClientSideDetectionSendIntelligentScanInfoAndroid},
-        {kClientSideDetectionKillswitch,
-         kClientSideDetectionShowScamVerdictWarningAndroid,
-         kClientSideDetectionServerModelForScamDetectionAndroid});
-  }
-};
-
-TEST_F(
-    ClientSideDetectionIntelligentScanDelegateAndroidTestWithWarningAndServerModelDisabled,
-    ShouldNotShowScamWarning) {
-  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
-  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
-      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1));
-  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
-      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2));
-  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
-      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_3));
-  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
-      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_4));
-  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
-      IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT));
-}
-
 class ClientSideDetectionIntelligentScanDelegateAndroidTestWithKillSwitchEnabled
     : public ClientSideDetectionIntelligentScanDelegateAndroidTestBase {
  protected:
@@ -1055,8 +923,7 @@ class
  protected:
   ClientSideDetectionIntelligentScanDelegateAndroidTestWithImageEmbeddingDisabled() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{kClientSideDetectionSendIntelligentScanInfoAndroid, {}},
-         {kClientSideDetectionImageEmbeddingMatch,
+        {{kClientSideDetectionImageEmbeddingMatch,
           {{"CsdImageEmbeddingMatchWithIntelligentScan", "false"}}}},
         /*disabled_features=*/{kClientSideDetectionKillswitch});
   }

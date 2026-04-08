@@ -211,8 +211,6 @@ bool ClientSideDetectionIntelligentScanDelegateDesktop::
       ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED;
 
   bool is_intelligent_scan_requested =
-      base::FeatureList::IsEnabled(
-          kClientSideDetectionLlamaForcedTriggerInfoForScamDetection) &&
       verdict->has_llama_forced_trigger_info() &&
       verdict->llama_forced_trigger_info().intelligent_scan();
 
@@ -239,9 +237,7 @@ bool ClientSideDetectionIntelligentScanDelegateDesktop::ShouldShowScamWarning(
   }
 
   return *verdict == IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1 ||
-         (base::FeatureList::IsEnabled(
-              kClientSideDetectionShowLlamaScamVerdictWarning) &&
-          *verdict == IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2) ||
+         *verdict == IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2 ||
          *verdict == IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_3 ||
          *verdict == IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_4 ||
          *verdict ==

@@ -1866,7 +1866,7 @@ TEST_F(ClientSideDetectionHostTest,
 
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
 
-  SetFeatures({kClientSideDetectionSendLlamaForcedTriggerInfo}, {});
+  SetFeatures({}, {});
   GURL example_url("http://suspiciousurl.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(example_url, false);
   ExpectPreClassificationChecks(
@@ -2391,7 +2391,7 @@ TEST_F(ClientSideDetectionHostTest, NoImageEmbeddingMatchWithForcedRequest) {
   base::HistogramTester histogram_tester;
 
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
-  SetFeatures({kClientSideDetectionSendLlamaForcedTriggerInfo}, {});
+  SetFeatures({}, {});
   GURL example_url("http://example.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(example_url, false);
   ExpectPreClassificationChecks(example_url);
@@ -2444,7 +2444,7 @@ TEST_F(ClientSideDetectionHostTest, NoImageEmbeddingMatchWithTfliteMatch) {
   base::HistogramTester histogram_tester;
 
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
-  SetFeatures({kClientSideDetectionSendLlamaForcedTriggerInfo}, {});
+  SetFeatures({}, {});
   GURL example_url("http://example.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(example_url, false);
   ExpectPreClassificationChecks(example_url);
@@ -2495,7 +2495,7 @@ TEST_F(ClientSideDetectionHostTest, ImageEmbeddingMatch) {
   base::HistogramTester histogram_tester;
 
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
-  SetFeatures({kClientSideDetectionSendLlamaForcedTriggerInfo}, {});
+  SetFeatures({}, {});
   GURL example_url("http://example.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(example_url, false);
   ExpectPreClassificationChecks(example_url);
@@ -2547,7 +2547,7 @@ TEST_F(ClientSideDetectionHostTest,
   base::HistogramTester histogram_tester;
 
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
-  SetFeatures({kClientSideDetectionSendLlamaForcedTriggerInfo}, {});
+  SetFeatures({}, {});
   GURL example_url("http://example.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(example_url, false);
   ExpectPreClassificationChecks(example_url);
@@ -4527,9 +4527,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
     GTEST_SKIP();
   }
 
-  SetFeatures({kClientSideDetectionSendLlamaForcedTriggerInfo,
-               kClientSideDetectionLlamaForcedTriggerInfoForScamDetection},
-              {});
+  SetFeatures({}, {});
   CacheForcedTriggerInfo(
       /*has_llama_forced_trigger_info=*/true,
       /*intelligent_scan=*/true,
@@ -4575,9 +4573,7 @@ TEST_F(
     GTEST_SKIP();
   }
 
-  SetFeatures({kClientSideDetectionSendLlamaForcedTriggerInfo,
-               kClientSideDetectionLlamaForcedTriggerInfoForScamDetection},
-              {});
+  SetFeatures({}, {});
 
   GURL first_url_redirect("http://firsturlsuspicious.com/");
   GURL second_url_redirect("http://secondurlnotsuspicious.com/");
@@ -4649,9 +4645,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
     GTEST_SKIP();
   }
 
-  SetFeatures({kClientSideDetectionSendLlamaForcedTriggerInfo,
-               kClientSideDetectionLlamaForcedTriggerInfoForScamDetection},
-              {});
+  SetFeatures({}, {});
 
   GURL first_url_redirect("http://firsturlnotsuspicious.com/");
   GURL second_url_redirect("http://secondurlnotsuspicious.com/");
@@ -4726,10 +4720,7 @@ TEST_F(
     GTEST_SKIP();
   }
 
-  SetFeatures({kClientSideDetectionForcedLlamaRedirectChainKillswitch,
-               kClientSideDetectionSendLlamaForcedTriggerInfo,
-               kClientSideDetectionLlamaForcedTriggerInfoForScamDetection},
-              {});
+  SetFeatures({kClientSideDetectionForcedLlamaRedirectChainKillswitch}, {});
 
   GURL first_url_redirect("http://firsturlnotsuspicious.com/");
   GURL second_url_redirect("http://secondurlnotsuspicious.com/");
@@ -4807,10 +4798,7 @@ TEST_F(
     GTEST_SKIP();
   }
 
-  SetFeatures({kClientSideDetectionSendLlamaForcedTriggerInfo,
-               kClientSideDetectionLlamaForcedTriggerInfoForScamDetection,
-               kClientSideDetectionShowLlamaScamVerdictWarning},
-              {});
+  SetFeatures({}, {});
   CacheForcedTriggerInfo(
       /*has_llama_forced_trigger_info=*/true,
       /*intelligent_scan=*/true,
@@ -4832,9 +4820,7 @@ TEST_F(
   UnsafeResource resource;
   resource.threat_subtype = ThreatSubtype::SCAM_EXPERIMENT_VERDICT_2;
   // We do expect the blocking page to pop up on a non-phishy response with the
-  // scam experiment verdict because
-  // kClientSideDetectionShowLlamaScamVerdictWarning is now enabled despite the
-  // is_phishy field is false.
+  // scam experiment verdict.
   EXPECT_CALL(*ui_manager_.get(),
               DisplayBlockingPage(HasScamThreatSubtype(resource)))
       .Times(1);
@@ -4865,10 +4851,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
     GTEST_SKIP();
   }
 
-  SetFeatures({kClientSideDetectionSendLlamaForcedTriggerInfo,
-               kClientSideDetectionLlamaForcedTriggerInfoForScamDetection,
-               kClientSideDetectionShowLlamaScamVerdictWarning},
-              {});
+  SetFeatures({}, {});
 
   SetIntelligentScanCallback(/*should_return_response=*/true);
   SetSendClientReportPhishingRequestCallback(
@@ -4911,10 +4894,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
     GTEST_SKIP();
   }
 
-  SetFeatures({kClientSideDetectionSendLlamaForcedTriggerInfo,
-               kClientSideDetectionLlamaForcedTriggerInfoForScamDetection,
-               kClientSideDetectionShowLlamaScamVerdictWarning},
-              {});
+  SetFeatures({}, {});
   SetIntelligentScanCallback(/*should_return_response=*/true);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/true,
