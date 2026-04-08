@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@android:color/transparent" >
+
+    <!-- AI INNOVATION-->
+    <org.chromium.components.browser_ui.widget.containment.ContainedLinearLayout
+        android:id="@+id/preview_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:backgroundStyle="card"
+        app:backgroundColor="@macro/default_card_bg_color">
+
+        <TextView
+            android:id="@+id/ai_info_title"
+            style="@style/TextAppearance.Headline2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/settings_ai_page_main_title" />
+
+        <TextView
+            android:id="@+id/ai_info_subtitle"
+            style="@style/TextAppearance.TextMediumThick.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/settings_heading_consider" />
+
+        <!-- Item 1 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            android:gravity="top"
+            tools:ignore="UseCompoundDrawables">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_psychiatry_24dp"
+                app:tint="@macro/default_icon_color_accent1" />
+
+            <TextView
+                style="@style/TextAppearance.TextMedium.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:text="@string/settings_ai_page_main_sublabel_1" />
+        </LinearLayout>
+
+        <!-- Item 2 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            android:gravity="top"
+            tools:ignore="UseCompoundDrawables">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_google_services_24dp"
+                app:tint="@macro/default_icon_color_accent1" />
+
+            <TextView
+                style="@style/TextAppearance.TextMedium.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:text="@string/settings_ai_page_main_sublabel_2" />
+        </LinearLayout>
+
+        <!-- Item 3 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            android:gravity="top"
+            tools:ignore="UseCompoundDrawables">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_domain"
+                app:tint="@macro/default_icon_color_accent1" />
+
+            <TextView
+                android:id="@+id/ai_info_managed_sublabel_3"
+                style="@style/TextAppearance.TextMedium.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:focusable="true"
+                android:text="@string/settings_ai_page_main_managed_sublabel_3" />
+        </LinearLayout>
+    </org.chromium.components.browser_ui.widget.containment.ContainedLinearLayout>
+
+</LinearLayout>

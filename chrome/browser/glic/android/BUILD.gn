@@ -16,6 +16,7 @@ android_resources("java_resources") {
   sources = [
     "java/res/layout/glic_auto_browse.xml",
     "java/res/layout/glic_default_tab_access.xml",
+    "java/res/layout/glic_settings_extra_info.xml",
     "java/res/raw/glic_spinner.json",
     "java/res/values/dimens.xml",
     "java/res/xml/glic_settings.xml",
@@ -28,6 +29,7 @@ android_resources("java_resources") {
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/glic/GlicExtraInfoPreference.java",
     "java/src/org/chromium/chrome/browser/glic/GlicHelper.java",
     "java/src/org/chromium/chrome/browser/glic/GlicKeyedServiceImpl.java",
     "java/src/org/chromium/chrome/browser/glic/GlicSettings.java",

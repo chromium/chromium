@@ -46,7 +46,10 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
     private static final String PERMISSION_DEFAULT_TAB_ACCESS =
             "glic_permissions_default_tab_access";
     private static final String PERMISSION_AUTO_BROWSE = "glic_permissions_auto_browse";
+    // TODO(b/498717684): Replace answer number urls with a p= identifier instead.
     private static final String LEARN_MORE_AI_URL = "https://support.google.com/a/answer/15706919";
+    private static final String LEARN_MORE_MANAGED_AI_URL =
+            "https://support.google.com/chrome/a/answer/14443058";
     private static final String AUTO_BROWSE_LEARN_MORE_URL =
             "https://support.google.com/gemini/answer/16821166";
     private static final String AUTO_BROWSE_CONSIDER_SAFELY_URL =
@@ -143,6 +146,12 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                                 getString(R.string.settings_glic_extensions_button_url));
                         return true;
                     });
+        }
+
+        GlicExtraInfoPreference aiInfoPref = findPreference("glic_custom_box_preference");
+        if (aiInfoPref != null) {
+            aiInfoPref.setOnLearnMoreClicked(
+                    () -> customTabLauncher.openUrlInCct(getActivity(), LEARN_MORE_MANAGED_AI_URL));
         }
     }
 

@@ -317,8 +317,8 @@ are declared in tools/grit/grit_args.gni.
       </if>
 
       <!-- Settings specific strings -->
+      <part file="settings_strings.grdp" />
       <if expr="not is_android">
-        <part file="settings_strings.grdp" />
         <part file="shared_settings_strings.grdp"/>
       </if>
 

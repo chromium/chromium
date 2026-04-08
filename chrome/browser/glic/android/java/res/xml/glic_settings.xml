@@ -7,6 +7,10 @@ found in the LICENSE file.
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    <org.chromium.chrome.browser.glic.GlicExtraInfoPreference
+        android:key="glic_custom_box_preference"
+        android:layout="@layout/glic_settings_extra_info"
+        app:backgroundStyle="none" />
 
     <PreferenceCategory
         android:key="glic_preference_section"
