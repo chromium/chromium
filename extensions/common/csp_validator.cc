@@ -69,9 +69,8 @@ const char* const kHashSourcePrefixes[] = {
   "'sha512-"
 };
 
-// TODO(karandeepb): This is not the same list as used by the CSP spec. See
 // https://infra.spec.whatwg.org/#ascii-whitespace.
-const char kWhitespaceDelimiters[] = " \t\r\n";
+const char kWhitespaceDelimiters[] = " \t\r\n\f";
 
 constexpr char kChromeResourcesUrl[] = "chrome://resources";
 
