@@ -3,9 +3,12 @@ desc: |-
   Setting the policy specifies for which origins to allow all the HTTP authentication schemes <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> supports regardless of the <ph name="AUTH_SCHEMES_POLICY_NAME">AuthSchemes</ph> policy.
 
         Format the origin pattern according to this format (<ph name="URL_SCHEME_FORMAT_LINK">https://support.google.com/chrome/a?p=url_blocklist_filter_format</ph>). Up to 1,000 exceptions can be defined in <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME">AllHttpAuthSchemesAllowedForOrigins</ph>.
-        Wildcards are allowed for the whole origin or parts of the origin, either the scheme, host, port.
+        Wildcards are allowed for the host component (e.g., '*:8000' matches all hosts on port 8000). To match all schemes or all ports, omit the component entirely (e.g., 'example.com' matches any scheme and any port). A hostname (e.g., 'example.com') also matches its subdomains. To match a host exactly and exclude its subdomains, prepend it with a dot (e.g., '.example.com'). To match all origins, use a single asterisk ('*').
 example_value:
-- '*.example.com'
+- 'https://example.com'
+- 'example.com'
+- '*:8000'
+- '*'
 features:
   dynamic_refresh: true
   per_profile: false

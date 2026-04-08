@@ -9909,6 +9909,54 @@ TEST_F(NetworkContextTest, HttpAuthUrlFilter) {
   EXPECT_TRUE(is_url_allowed_to_use_auth_schemes(kBlocked));
 }
 
+TEST_F(NetworkContextTest, HttpAuthUrlFilterWithPort) {
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+  auto is_url_allowed_to_use_auth_schemes =
+      [&network_context](const GURL& url) {
+        return network_context->GetHttpAuthPreferences()
+            ->IsAllowedToUseAllHttpAuthSchemes(url::SchemeHostPort(url));
+      };
+
+  network::mojom::HttpAuthDynamicParamsPtr auth_dynamic_params =
+      network::mojom::HttpAuthDynamicParams::New();
+  const GURL kHttpGoogle("http://google.com");
+  const GURL kGoogle("https://google.com");
+  const GURL kGoogle8000("https://google.com:8000");
+
+  // Scheme is specified in origin and should be matched in the filter.
+  auth_dynamic_params->patterns_allowed_to_use_all_schemes =
+      std::vector<std::string>{"https://google.com"};
+  network_context->OnHttpAuthDynamicParamsChanged(auth_dynamic_params.get());
+  EXPECT_FALSE(is_url_allowed_to_use_auth_schemes(kHttpGoogle));
+  EXPECT_TRUE(is_url_allowed_to_use_auth_schemes(kGoogle));
+  EXPECT_TRUE(is_url_allowed_to_use_auth_schemes(kGoogle8000));
+
+  // Port is not specified in origin and should be ignored.
+  auth_dynamic_params->patterns_allowed_to_use_all_schemes =
+      std::vector<std::string>{"google.com"};
+  network_context->OnHttpAuthDynamicParamsChanged(auth_dynamic_params.get());
+  EXPECT_TRUE(is_url_allowed_to_use_auth_schemes(kHttpGoogle));
+  EXPECT_TRUE(is_url_allowed_to_use_auth_schemes(kGoogle));
+  EXPECT_TRUE(is_url_allowed_to_use_auth_schemes(kGoogle8000));
+
+  // Port is specified in origin and should be matched in the filter.
+  auth_dynamic_params->patterns_allowed_to_use_all_schemes =
+      std::vector<std::string>{"google.com:8000"};
+  network_context->OnHttpAuthDynamicParamsChanged(auth_dynamic_params.get());
+  EXPECT_FALSE(is_url_allowed_to_use_auth_schemes(kHttpGoogle));
+  EXPECT_FALSE(is_url_allowed_to_use_auth_schemes(kGoogle));
+  EXPECT_TRUE(is_url_allowed_to_use_auth_schemes(kGoogle8000));
+
+  // Wildcard for the host should match all hosts with the specified port.
+  auth_dynamic_params->patterns_allowed_to_use_all_schemes =
+      std::vector<std::string>{"*:8000"};
+  network_context->OnHttpAuthDynamicParamsChanged(auth_dynamic_params.get());
+  EXPECT_FALSE(is_url_allowed_to_use_auth_schemes(kHttpGoogle));
+  EXPECT_FALSE(is_url_allowed_to_use_auth_schemes(kGoogle));
+  EXPECT_TRUE(is_url_allowed_to_use_auth_schemes(kGoogle8000));
+}
+
 TEST_F(NetworkContextExpectBadMessageTest, DataUrl) {
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
