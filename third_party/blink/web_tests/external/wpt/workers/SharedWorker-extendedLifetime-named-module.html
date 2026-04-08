@@ -8,7 +8,7 @@
 
 const connectToSharedWorker = async (options) => {
   window.worker = new SharedWorker(
-    '/workers/tentative/resources/shared-worker-memory.js', options);
+    '/workers/resources/shared-worker-memory.js', options);
   worker.port.start();
 };
 

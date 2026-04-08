@@ -10,7 +10,7 @@ let request_id = 0;
 
 const connectToSharedWorker = async () => {
   window.worker = new SharedWorker(
-    '/workers/tentative/resources/shared-worker-memory.js',
+    '/workers/resources/shared-worker-memory.js',
     {extendedLifetime: true});
   worker.port.start();
 };
