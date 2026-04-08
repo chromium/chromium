@@ -499,3 +499,52 @@ if ((is_apple || is_win) && (is_asan || is_ubsan_any)) {
 
   clang_rt_dso = get_path_info(clang_rt_dso_path, "file")
 }
+
+# Adds hardening by way of UBSan instrumentation. No handling is
+# provided: your target will crash when the undefined behavior is
+# detected.
+#
+# The target sanitizer is built when
+# *   the build is not already UBSan, which should be a superset of
+#     any single sanitizer we could use here, and
+# *   the build is Clang, which provides the UBSan instrumentation.
+#
+# It is a Chromium convention that GN target names use underscores. This
+# template should be instantiated with a `foo_bar`, and the hyphenated
+# `foo-bar` should be passed via the `sanitizer` argument.
+#
+# This takes three arguments:
+# *   [required] `sanitizer`, which corresponds to the hyphenated
+#     sanitizer name passed to `-fsanitize=`.
+# *   [optional] `condition`, which gates the sanitizer in addition to
+#     the two built-in conditions above.
+# *   [optional] `cflags`, should you want any extra ones.
+template("ubsan_hardening") {
+  config("sanitize_${target_name}") {
+    if (defined(invoker.condition)) {
+      _condition = invoker.condition
+    } else {
+      _condition = true
+    }
+    if (defined(invoker.cflags)) {
+      _cflags = invoker.cflags
+    } else {
+      _cflags = []
+    }
+
+    if (!is_ubsan && is_clang && _condition) {
+      cflags = [
+        "-fsanitize=${invoker.sanitizer}",
+        "-fsanitize-trap=${invoker.sanitizer}",
+
+        # Prevents `__has_feature(undefined_behavior_sanitizer)`
+        # from evaluating true. Configs defined here are intended to
+        # be usable even in release builds, i.e. as widely as possible.
+        # It's important not to have full-on UBSan workarounds activate
+        # just because we built support for a specific sanitizer.
+        "-fsanitize-ignore-for-ubsan-feature=${invoker.sanitizer}",
+      ]
+      cflags += _cflags
+    }
+  }
+}
