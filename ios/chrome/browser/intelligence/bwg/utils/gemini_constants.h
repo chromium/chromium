@@ -90,6 +90,22 @@ enum class InputPlateAttachmentOption {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiInputPlateAttachmentOption)
 
+// The type of regenerate option for a Gemini query retry.
+// Logged as IOSGeminiRegenerateOptionType enum for the
+// IOS.Gemini.RegenerateButton.Tapped histogram.
+// LINT.IfChange(RegenerateOptionType)
+enum class RegenerateOptionType {
+  kUnspecified = 0,
+  kNoChanges = 1,
+  kWithoutPersonalization = 2,
+  kWithPersonalization = 3,
+  kWithNanoBananaPro = 4,
+  kElaborate = 5,
+  kShorten = 6,
+  kMaxValue = kShorten,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiRegenerateOptionType)
+
 // Settings for Gemini integration.
 enum class SettingsPolicy {
   kAllowed = 0,

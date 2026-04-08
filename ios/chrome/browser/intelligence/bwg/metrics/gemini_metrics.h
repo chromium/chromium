@@ -20,6 +20,7 @@ enum class FloatyUpdateSource;
 enum class ImageActionButtonType;
 enum class InputPlateAttachmentOption;
 enum class FREState;
+enum class RegenerateOptionType;
 // Encapsulates a set of ineligibility reasons computed during a single Gemini
 // eligibility check.
 struct IneligibilityReasons {
@@ -513,6 +514,9 @@ void RecordGeminiEntryPointClick(gemini::EntryPoint entry_point,
 
 // Records that the user tapped the new chat button in a Gemini session.
 void RecordGeminiNewChatButtonTapped();
+
+// Records that the user tapped the regenerate button in the Gemini floaty.
+void RecordGeminiRegenerateButtonTapped(gemini::RegenerateOptionType option);
 
 // Records that the AI Hub new badge was tapped.
 void RecordAIHubNewBadgeTapped();

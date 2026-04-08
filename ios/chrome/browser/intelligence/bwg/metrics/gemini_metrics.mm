@@ -139,6 +139,9 @@ const char kPromptContextAttachmentHistogram[] =
 const char kResponseGeneratedImageIncluded[] =
     "IOS.Gemini.Response.GeneratedImage.Included";
 
+const char kRegenerateButtonTappedHistogram[] =
+    "IOS.Gemini.RegenerateButton.Tapped";
+
 const char kResponseLatencyWithContextHistogram[] =
     "IOS.Gemini.Response.Latency.WithContext";
 
@@ -476,6 +479,12 @@ void RecordGeminiEntryPointClick(gemini::EntryPoint entry_point,
 
 void RecordGeminiNewChatButtonTapped() {
   base::RecordAction(base::UserMetricsAction("MobileGeminiNewChatTapped"));
+}
+
+void RecordGeminiRegenerateButtonTapped(gemini::RegenerateOptionType option) {
+  base::RecordAction(
+      base::UserMetricsAction("MobileGeminiRegenerateButtonTapped"));
+  base::UmaHistogramEnumeration(kRegenerateButtonTappedHistogram, option);
 }
 
 void RecordAIHubNewBadgeTapped() {

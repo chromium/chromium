@@ -2729,6 +2729,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Gemini.RegenerateButton.Tapped"
+    enum="IOSGeminiRegenerateOptionType" expires_after="2027-04-01">
+  <owner>fbeauchamp@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records that the user tapped the regenerate button in the Gemini floaty,
+    along with the option type selected.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Gemini.Response.GeneratedImage.Included" enum="Boolean"
     expires_after="2027-01-22">
   <owner>joepeplowski@google.com</owner>

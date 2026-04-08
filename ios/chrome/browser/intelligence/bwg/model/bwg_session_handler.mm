@@ -321,6 +321,13 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
   RecordGeminiImageActionButtonTapped(actionButtonType);
 }
 
+- (void)didRetryLastRequestWithRegenerateOptionType:
+            (gemini::RegenerateOptionType)optionType
+                                          sessionID:(NSString*)sessionID
+                                     conversationID:(NSString*)conversationID {
+  RecordGeminiRegenerateButtonTapped(optionType);
+}
+
 #pragma mark - Private
 
 // Finds the web state with the given client ID as unique identifier.

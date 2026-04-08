@@ -27675,6 +27675,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileGeminiRegenerateButtonTapped">
+  <owner>fbeauchamp@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when the user selects a regenerate option in the Gemini floaty for
+    their query. iOS only.
+  </description>
+</action>
+
 <action name="MobileGeminiResponseReceived">
   <owner>kanouche@google.com</owner>
   <owner>bling-alchemy@google.com</owner>
