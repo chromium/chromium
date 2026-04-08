@@ -4,7 +4,7 @@
 
 import {SubmitButtonIconType} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
-import {ContextualSearchInputStateDeletionType} from 'chrome://resources/cr_components/composebox/common.js';
+import {ContextType, ContextualSearchInputStateDeletionType} from 'chrome://resources/cr_components/composebox/common.js';
 import {ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -1052,6 +1052,125 @@ suite('NewTabPageComposeboxTest', () => {
     entrypoint = $$(testProxy.element, '#contextEntrypoint');
     assertTrue(!!entrypoint);
     assertTrue(entrypoint.hasAttribute('show-context-menu-description'));
+  });
+
+  test('metrics are recorded for ToolMode clicks', async () => {
+    loadTimeData.overrideValues({composeboxSource: 'NewTabPage'});
+    createComposeboxElement(testProxy);
+    await microtasksFinished();
+
+    const composebox = testProxy.element;
+    const entrypointAndMenu = $$(composebox, '#contextEntrypoint');
+    assertTrue(!!entrypointAndMenu);
+
+    const metricName =
+        'NewTabPage.AimEntrypoint.AimPopup.ContextualElement.Clicked';
+
+    // Act: DeepSearch
+    entrypointAndMenu.dispatchEvent(new CustomEvent('tool-click', {
+      detail: {toolMode: ToolMode.kDeepSearch},
+    }));
+    assertEquals(
+        1, testProxy.metrics.count(metricName, ContextType.DEEP_RESEARCH));
+
+    // Act: ImageGen
+    entrypointAndMenu.dispatchEvent(new CustomEvent('tool-click', {
+      detail: {toolMode: ToolMode.kImageGen},
+    }));
+    assertEquals(1, testProxy.metrics.count(metricName, ContextType.IMAGE_GEN));
+
+    // Act: Canvas
+    entrypointAndMenu.dispatchEvent(new CustomEvent('tool-click', {
+      detail: {toolMode: ToolMode.kCanvas},
+    }));
+    assertEquals(1, testProxy.metrics.count(metricName, ContextType.CANVAS));
+  });
+
+  test('metrics are recorded for ModelMode clicks', async () => {
+    loadTimeData.overrideValues({composeboxSource: 'NewTabPage'});
+    createComposeboxElement(testProxy);
+    await microtasksFinished();
+
+    const composebox = testProxy.element;
+    const entrypointAndMenu = $$(composebox, '#contextEntrypoint');
+    assertTrue(!!entrypointAndMenu);
+
+    const metricName =
+        'NewTabPage.AimEntrypoint.AimPopup.ContextualElement.Clicked';
+
+    // Act: Auto
+    entrypointAndMenu.dispatchEvent(new CustomEvent('model-click', {
+      detail: {model: ModelMode.kGeminiProAutoroute},
+    }));
+    assertEquals(
+        1, testProxy.metrics.count(metricName, ContextType.AUTO_MODEL));
+
+    // Act: Thinking
+    entrypointAndMenu.dispatchEvent(new CustomEvent('model-click', {
+      detail: {model: ModelMode.kGeminiPro},
+    }));
+    assertEquals(
+        1, testProxy.metrics.count(metricName, ContextType.THINKING_MODEL));
+
+    // Act: Regular
+    entrypointAndMenu.dispatchEvent(new CustomEvent('model-click', {
+      detail: {model: ModelMode.kGeminiRegular},
+    }));
+    assertEquals(
+        1, testProxy.metrics.count(metricName, ContextType.REGULAR_MODEL));
+
+    // Act: ProNoGenUi
+    entrypointAndMenu.dispatchEvent(new CustomEvent('model-click', {
+      detail: {model: ModelMode.kGeminiProNoGenUi},
+    }));
+    assertEquals(
+        1,
+        testProxy.metrics.count(metricName, ContextType.PRO_NO_GEN_UI_MODEL));
+  });
+
+  test('metrics are recorded for file uploads', async () => {
+    loadTimeData.overrideValues({composeboxSource: 'NewTabPage'});
+    createComposeboxElement(testProxy);
+    await microtasksFinished();
+
+    const composebox = testProxy.element;
+    const entrypointAndMenu = $$(composebox, '#contextEntrypoint');
+    assertTrue(!!entrypointAndMenu);
+
+    const metricName =
+        'NewTabPage.AimEntrypoint.AimPopup.ContextualElement.Clicked';
+
+    // Act: Upload an image file from the context menu
+    entrypointAndMenu.dispatchEvent(new CustomEvent('open-image-upload'));
+    assertEquals(1, testProxy.metrics.count(metricName, ContextType.IMAGE));
+
+    // Act: Upload a regular file
+    entrypointAndMenu.dispatchEvent(new CustomEvent('open-file-upload'));
+    assertEquals(1, testProxy.metrics.count(metricName, ContextType.FILE));
+  });
+
+  test('metrics are recorded for tab additions', async () => {
+    loadTimeData.overrideValues({composeboxSource: 'NewTabPage'});
+    createComposeboxElement(testProxy);
+    await microtasksFinished();
+
+    const composebox = testProxy.element;
+    const entrypointAndMenu = $$(composebox, '#contextEntrypoint');
+    assertTrue(!!entrypointAndMenu);
+
+    const metricName =
+        'NewTabPage.AimEntrypoint.AimPopup.ContextualElement.Clicked';
+
+    entrypointAndMenu.dispatchEvent(new CustomEvent('add-tab-context', {
+      detail: {
+        id: 1,
+        title: 'Title',
+        url: {url: 'http://test.com'},
+        delayUpload: false,
+        origin: 0,
+      },
+    }));
+    assertEquals(1, testProxy.metrics.count(metricName, ContextType.TAB));
   });
 });
 
