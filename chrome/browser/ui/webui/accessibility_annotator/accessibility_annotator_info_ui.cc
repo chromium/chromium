@@ -8,11 +8,30 @@
 #include <utility>
 
 #include "chrome/browser/ui/webui/accessibility_annotator/accessibility_annotator_info_page_handler.h"
+#include "chrome/grit/accessibility_annotator_info_resources.h"
+#include "chrome/grit/accessibility_annotator_info_resources_map.h"
+#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/url_constants.h"
+#include "ui/base/webui/web_ui_util.h"
+#include "ui/webui/webui_util.h"
 
 namespace accessibility_annotator::info {
+
+AccessibilityAnnotatorInfoUIConfig::AccessibilityAnnotatorInfoUIConfig()
+    : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
+                                  "accessibility-annotator-info") {}
+
+bool AccessibilityAnnotatorInfoUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return true;
+}
+
+bool AccessibilityAnnotatorInfoUIConfig::ShouldAutoResizeHost() {
+  return true;
+}
 
 AccessibilityAnnotatorInfoUI::AccessibilityAnnotatorInfoUI(
     content::WebUI* web_ui)
@@ -20,7 +39,10 @@ AccessibilityAnnotatorInfoUI::AccessibilityAnnotatorInfoUI(
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       "accessibility-annotator-info");
-  (void)source;
+
+  webui::SetupWebUIDataSource(
+      source, kAccessibilityAnnotatorInfoResources,
+      IDR_ACCESSIBILITY_ANNOTATOR_INFO_ACCESSIBILITY_ANNOTATOR_INFO_HTML);
 }
 
 AccessibilityAnnotatorInfoUI::~AccessibilityAnnotatorInfoUI() = default;

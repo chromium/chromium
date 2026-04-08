@@ -22,7 +22,6 @@ source_set("first_run") {
 
   if (!is_android) {
     deps += [
-      "//chrome/browser/ui",
       "//chrome/browser/ui/views/accessibility_annotator",
     ]
   }

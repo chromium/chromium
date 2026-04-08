@@ -178,6 +178,10 @@
     "META": {"sizes": {"includes": [10],}},
     "includes": [2740],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/accessibility_annotator_info/resources.grd": {
+    "META": {"sizes": {"includes": [10],}},
+    "includes": [2745],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/actor_internals/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [2750],

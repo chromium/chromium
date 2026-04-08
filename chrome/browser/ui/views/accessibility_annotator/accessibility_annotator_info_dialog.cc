@@ -16,21 +16,22 @@ namespace accessibility_annotator::info {
 
 namespace {
 constexpr int kBubbleWidth = 448;
-constexpr int kBubbleMaxHeight = 500;
 }  // namespace
 
 AccessibilityAnnotatorInfoDialog::AccessibilityAnnotatorInfoDialog(
     views::View* anchor_view,
-    std::unique_ptr<WebUIContentsWrapper> contents_wrapper)
-    : WebUIBubbleDialogView(anchor_view, contents_wrapper->GetWeakPtr()),
+    std::unique_ptr<WebUIContentsWrapperT<AccessibilityAnnotatorInfoUI>>
+        contents_wrapper)
+    : WebUIBubbleDialogView(anchor_view,
+                            contents_wrapper->GetWeakPtr(),
+                            std::nullopt,
+                            views::BubbleBorder::NONE,
+                            /*autosize=*/true),
       contents_wrapper_(std::move(contents_wrapper)) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  SetModalType(ui::mojom::ModalType::kChild);
   set_fixed_width(kBubbleWidth);
   set_margins(gfx::Insets());
-
-  if (web_view()) {
-    web_view()->SetPreferredSize(gfx::Size(kBubbleWidth, kBubbleMaxHeight));
-  }
 }
 
 AccessibilityAnnotatorInfoDialog::~AccessibilityAnnotatorInfoDialog() = default;

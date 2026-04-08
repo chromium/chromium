@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
+#include "chrome/browser/ui/webui/accessibility_annotator/accessibility_annotator_info_ui.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-
-class WebUIContentsWrapper;
 
 namespace accessibility_annotator::info {
 
@@ -20,7 +20,8 @@ class AccessibilityAnnotatorInfoDialog : public WebUIBubbleDialogView {
  public:
   AccessibilityAnnotatorInfoDialog(
       views::View* anchor_view,
-      std::unique_ptr<WebUIContentsWrapper> contents_wrapper);
+      std::unique_ptr<WebUIContentsWrapperT<AccessibilityAnnotatorInfoUI>>
+          contents_wrapper);
   AccessibilityAnnotatorInfoDialog(const AccessibilityAnnotatorInfoDialog&) =
       delete;
   AccessibilityAnnotatorInfoDialog& operator=(
@@ -28,7 +29,8 @@ class AccessibilityAnnotatorInfoDialog : public WebUIBubbleDialogView {
   ~AccessibilityAnnotatorInfoDialog() override;
 
  private:
-  std::unique_ptr<WebUIContentsWrapper> contents_wrapper_;
+  std::unique_ptr<WebUIContentsWrapperT<AccessibilityAnnotatorInfoUI>>
+      contents_wrapper_;
 };
 
 }  // namespace accessibility_annotator::info

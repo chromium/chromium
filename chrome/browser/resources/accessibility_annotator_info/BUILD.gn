@@ -1,0 +1,25 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/build_webui.gni")
+
+build_webui("resources") {
+  grd_prefix = "accessibility_annotator_info"
+
+  static_files = [ "accessibility_annotator_info.html" ]
+
+  css_files = [ "accessibility_annotator_info.css" ]
+
+  ts_files = [
+    "accessibility_annotator_info.ts",
+    "accessibility_annotator_info.html.ts",
+  ]
+
+  ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
+    "//ui/webui/resources/js:build_ts",
+  ]
+
+  webui_context_type = "trusted"
+}

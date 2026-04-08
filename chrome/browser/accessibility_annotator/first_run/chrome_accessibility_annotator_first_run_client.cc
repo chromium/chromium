@@ -8,10 +8,7 @@
 #include "build/build_config.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/accessibility_annotator/accessibility_annotator_info_dialog_controller.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #include "components/accessibility_annotator/first_run/accessibility_annotator_first_run_types.h"

@@ -303,6 +303,7 @@ chromium-metrics-reviews@google.com.
   <variant name=""/>
   <variant name=".access-code-cast"/>
   <variant name=".accessibility"/>
+  <variant name=".accessibility-annotator-info"/>
   <variant name=".accessory-update"/>
   <variant name=".account-manager-error"/>
   <variant name=".account-migration-welcome"/>

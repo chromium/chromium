@@ -25,3 +25,24 @@ source_set("accessibility_annotator") {
     "//ui/views/controls/webview",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "accessibility_annotator_info_dialog_browsertest.cc" ]
+
+  deps = [
+    ":accessibility_annotator",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/webui/accessibility_annotator",
+    "//chrome/test:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//ui/views",
+  ]
+}

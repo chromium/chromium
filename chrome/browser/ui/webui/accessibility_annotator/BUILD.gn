@@ -19,9 +19,12 @@ source_set("accessibility_annotator") {
 
   deps = [
     "//base",
+    "//chrome/app:generated_resources",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/accessibility_annotator_info:resources",
     "//chrome/browser/ui/webui/top_chrome",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
+    "//ui/webui",
   ]
 }

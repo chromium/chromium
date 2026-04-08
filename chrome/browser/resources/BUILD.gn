@@ -296,6 +296,7 @@ if (!is_android) {
 group("dev_ui_resources") {
   public_deps = [
     "accessibility:resources",
+    "accessibility_annotator_info:resources",
     "actor_internals:resources",
     "bluetooth_internals:resources",
     "browsing_topics:resources",
@@ -371,6 +372,7 @@ repack("dev_ui_paks") {
   output = "$root_gen_dir/chrome/dev_ui_resources.pak"
 
   sources = [
+    "$root_gen_dir/chrome/accessibility_annotator_info_resources.pak",
     "$root_gen_dir/chrome/accessibility_resources.pak",
     "$root_gen_dir/chrome/actor_internals_resources.pak",
     "$root_gen_dir/chrome/bluetooth_internals_resources.pak",
