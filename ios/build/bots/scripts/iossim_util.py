@@ -31,7 +31,7 @@ MAX_WAIT_TIME_TO_DELETE_RUNTIME = 60  # 60 seconds
 
 SIMULATOR_DEFAULT_PATH = os.path.expanduser(
     '~/Library/Developer/CoreSimulator/Devices')
-SIMULATOR_CACHE_PATH = os.path.expanduser(' ~/Library/Developer/SimulatorCache')
+SIMULATOR_CACHE_PATH = os.path.expanduser('~/Library/Developer/SimulatorCache')
 
 # TODO(crbug.com/40910268): remove Legacy Download once iOS 15.5 is deprecated
 IOS_SIM_RUNTIME_BUILTIN_STATE = ['Legacy Download', 'Bundled with Xcode']
