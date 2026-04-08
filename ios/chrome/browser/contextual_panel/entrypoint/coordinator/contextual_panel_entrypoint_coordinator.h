@@ -7,12 +7,14 @@
 
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
 
 @protocol ContextualPanelEntrypointCoordinatorDelegate;
 @protocol ContextualPanelEntrypointVisibilityDelegate;
 
 // Coordinator for the Contextual Panel Entrypoint.
-@interface ContextualPanelEntrypointCoordinator : ChromeCoordinator
+@interface ContextualPanelEntrypointCoordinator
+    : ChromeCoordinator <ContextualPanelEntrypointCommands>
 
 // The delegate for this coordinator.
 @property(nonatomic, weak) id<ContextualPanelEntrypointCoordinatorDelegate>

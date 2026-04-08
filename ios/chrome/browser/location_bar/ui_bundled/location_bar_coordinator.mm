@@ -747,10 +747,14 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 - (void)notifyContextualPanelEntrypointIPHDismissed {
   [self.locationBarBadgeCoordinator
           notifyContextualPanelEntrypointIPHDismissed];
+  [self.contextualPanelEntrypointCoordinator
+          notifyContextualPanelEntrypointIPHDismissed];
 }
 
 - (void)cancelContextualPanelEntrypointLoudMoment {
   [self.locationBarBadgeCoordinator cancelContextualPanelEntrypointLoudMoment];
+  [self.contextualPanelEntrypointCoordinator
+          cancelContextualPanelEntrypointLoudMoment];
 }
 
 #pragma mark - ContextualPanelEntrypointCoordinatorDelegate

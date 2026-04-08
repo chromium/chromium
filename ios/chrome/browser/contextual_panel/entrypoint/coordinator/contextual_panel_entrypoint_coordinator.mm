@@ -57,9 +57,14 @@
   WebStateList* webStateList = self.browser->GetWebStateList();
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
 
-  [dispatcher
-      startDispatchingToTarget:self
-                   forProtocol:@protocol(ContextualPanelEntrypointCommands)];
+  // Skip registration if Next is enabled to avoid a duplicate registration
+  // crash. In that mode, MainToolbarCoordinator takes over command handling
+  // and forwards them to LocationBarCoordinator.
+  if (!IsChromeNextIaEnabled()) {
+    [dispatcher
+        startDispatchingToTarget:self
+                     forProtocol:@protocol(ContextualPanelEntrypointCommands)];
+  }
 
   id<ContextualSheetCommands> contextualSheetHandler =
       HandlerForProtocol(dispatcher, ContextualSheetCommands);
