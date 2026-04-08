@@ -1013,6 +1013,23 @@ function extractMediaData(document: Document): PageContentMediaData|undefined {
 }
 
 /**
+ * Gets the DOM node ID of the currently focused element in the document.
+ *
+ * @param document The document to extract data from.
+ * @return The DOM node ID of the focused element, or undefined if none.
+ */
+function getFocusedNodeId(document: Document): number|undefined {
+  const activeElement = document.activeElement;
+  if (activeElement) {
+    const id = getOrCreateNodeId(activeElement);
+    if (id !== null) {
+      return id;
+    }
+  }
+  return undefined;
+}
+
+/**
  * Extracts the frame interaction info (selection).
  *
  * @param document The document to extract data from.
@@ -1021,6 +1038,12 @@ function extractMediaData(document: Document): PageContentMediaData|undefined {
 function extractFrameInteractionInfo(document: Document):
     PageContentFrameInteractionInfo {
   const frameInteractionInfo: PageContentFrameInteractionInfo = {};
+
+  const focusedId = getFocusedNodeId(document);
+  if (focusedId !== undefined) {
+    frameInteractionInfo.focusedDomNodeId = focusedId;
+  }
+
   const selection = document.getSelection();
   if (selection && selection.rangeCount > 0 && !selection.isCollapsed) {
     const range = selection.getRangeAt(0);
@@ -2342,13 +2365,12 @@ function generateAndPushContentNode(
 function extractPageInteractionInfo(document: Document):
     PageContentPageInteractionInfo {
   const pageInteractionInfo: PageContentPageInteractionInfo = {};
-  const activeElement = document.activeElement;
-  if (activeElement) {
-    const focusedId = getOrCreateNodeId(activeElement);
-    if (focusedId !== null) {
-      pageInteractionInfo.focusedDomNodeId = focusedId;
-    }
+
+  const focusedId = getFocusedNodeId(document);
+  if (focusedId !== undefined) {
+    pageInteractionInfo.focusedDomNodeId = focusedId;
   }
+
   return pageInteractionInfo;
 }
 
@@ -2361,13 +2383,12 @@ function extractPageInteractionInfo(document: Document):
  */
 function getInteractiveNodeIds(document: Document): InteractiveNodeIds {
   const interactiveNodeIds: InteractiveNodeIds = new Set();
-  const focusedElement = document.activeElement;
-  if (focusedElement) {
-    const id = getOrCreateNodeId(focusedElement);
-    if (id !== null) {
-      interactiveNodeIds.add(id);
-    }
+
+  const focusedId = getFocusedNodeId(document);
+  if (focusedId !== undefined) {
+    interactiveNodeIds.add(focusedId);
   }
+
   const selection = document.getSelection();
   if (selection && selection.rangeCount > 0 && !selection.isCollapsed) {
     const range = selection.getRangeAt(0);

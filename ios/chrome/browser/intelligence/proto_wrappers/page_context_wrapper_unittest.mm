@@ -3165,7 +3165,7 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_ApcV2_FrameInteractionInfo) {
                .size() == 3;
   }));
 
-  // Helper to select text in a frame
+  // Helper to select and focus text in a frame
   auto select_text = [](web::WebFrame* frame, const std::string& text) {
     NSString* script =
         [NSString stringWithFormat:
@@ -3173,6 +3173,8 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_ApcV2_FrameInteractionInfo) {
                       @"  const p = Array.from(document.querySelectorAll('p'))"
                       @"    .find(p => p.innerText.includes('%s'));"
                       @"  if (!p) return;"
+                      @"  p.tabIndex = 0;"
+                      @"  p.focus();"
                       @"  const range = document.createRange();"
                       @"  const node = p.firstChild;"
                       @"  range.selectNode(node);"
@@ -3222,6 +3224,7 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_ApcV2_FrameInteractionInfo) {
   EXPECT_EQ(
       main_frame_data.frame_interaction_info().selection().selected_text(),
       "Main frame text");
+  EXPECT_TRUE(main_frame_data.frame_interaction_info().has_focused_node_id());
 
   const optimization_guide::proto::ContentNode* same_origin_iframe_node =
       &root_node.children_nodes(1);
@@ -3241,6 +3244,11 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_ApcV2_FrameInteractionInfo) {
                 .selection()
                 .selected_text(),
             "Cross origin text");
+  EXPECT_TRUE(cross_iframe_node->content_attributes()
+                  .iframe_data()
+                  .frame_data()
+                  .frame_interaction_info()
+                  .has_focused_node_id());
 
   ASSERT_TRUE(same_origin_iframe_node);
   EXPECT_TRUE(same_origin_iframe_node->content_attributes()
@@ -3255,6 +3263,106 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_ApcV2_FrameInteractionInfo) {
                 .selection()
                 .selected_text(),
             "Same origin text");
+  EXPECT_TRUE(same_origin_iframe_node->content_attributes()
+                  .iframe_data()
+                  .frame_data()
+                  .frame_interaction_info()
+                  .has_focused_node_id());
+}
+
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_ApcV2_FrameData_FocusedNodeIdsMultipleFrames) {
+  if (!IsRefactored()) {
+    GTEST_SKIP() << "ApcV2 not supported for the non-refactored APC wrapper";
+  }
+
+  // Create a page where focusing an element in an iframe should also make
+  // that iframe the focused element in the main frame.
+  auto page_structure = HtmlPage(
+      "Main", Paragraph("Main frame text"),
+      Iframe(TestOrigin::kCrossA,
+             HtmlPage("Child Cross Origin",
+                      RawHtml("<p id='cross_p'>Cross origin text</p>")),
+             "iframe_cross"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(10), ^{
+    return web_state()
+               ->GetWebFramesManager(web::ContentWorld::kIsolatedWorld)
+               ->GetAllWebFrames()
+               .size() == 2;
+  }));
+
+  web::WebFramesManager* frames_manager =
+      web_state()->GetWebFramesManager(web::ContentWorld::kIsolatedWorld);
+
+  GURL iframe_cross_url = page_helper_->GetUrlForId("iframe_cross");
+
+  web::WebFrame* main_frame = frames_manager->GetMainWebFrame();
+  web::WebFrame* cross_frame = nullptr;
+
+  for (web::WebFrame* frame : frames_manager->GetAllWebFrames()) {
+    if (frame->GetUrl() == iframe_cross_url) {
+      cross_frame = frame;
+    }
+  }
+
+  ASSERT_TRUE(main_frame);
+  ASSERT_TRUE(cross_frame);
+
+  // Focus the paragraph inside the cross-origin iframe.
+  // This should:
+  // 1. Set cross_frame.activeElement = paragraph
+  // 2. Set main_frame.activeElement = <iframe>
+  NSString* script = @"(() => {"
+                     @"  const p = document.getElementById('cross_p');"
+                     @"  if (!p) return;"
+                     @"  p.tabIndex = 0;"
+                     @"  p.focus();"
+                     @"})()";
+  cross_frame->ExecuteJavaScript(base::SysNSStringToUTF16(script));
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+
+  const auto& annotated_page_content = page_context->annotated_page_content();
+  const auto& root_node = annotated_page_content.root_node();
+  const auto& main_frame_data = annotated_page_content.main_frame_data();
+
+  // 1. Verify Main Frame Focus (should be the iframe node)
+  EXPECT_TRUE(main_frame_data.frame_interaction_info().has_focused_node_id());
+  const optimization_guide::proto::ContentNode* iframe_node =
+      &root_node.children_nodes(1);
+  EXPECT_EQ(main_frame_data.frame_interaction_info().focused_node_id(),
+            iframe_node->content_attributes().common_ancestor_dom_node_id());
+
+  // 2. Verify Cross Origin Iframe Focus (should be the paragraph)
+  EXPECT_TRUE(iframe_node->content_attributes()
+                  .iframe_data()
+                  .frame_data()
+                  .frame_interaction_info()
+                  .has_focused_node_id());
+  const auto& cross_origin_root = iframe_node->children_nodes(0);
+  const auto& cross_origin_p_node = cross_origin_root.children_nodes(0);
+  EXPECT_EQ(
+      iframe_node->content_attributes()
+          .iframe_data()
+          .frame_data()
+          .frame_interaction_info()
+          .focused_node_id(),
+      cross_origin_p_node.content_attributes().common_ancestor_dom_node_id());
 }
 
 // Tests that the page interaction info is correctly populated for the main

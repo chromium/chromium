@@ -288,6 +288,12 @@ void PopulateFrameData(
   const base::DictValue* interaction_info_dict =
       local_frame_data.FindDict(kFrameInteractionInfoKey);
   if (interaction_info_dict) {
+    if (std::optional<int> focused_dom_node_id =
+            ReadJsNumber(*interaction_info_dict, kFocusedDomNodeIdKey)) {
+      destination_frame_data->mutable_frame_interaction_info()
+          ->set_focused_node_id(*focused_dom_node_id);
+    }
+
     const base::DictValue* selection_dict =
         interaction_info_dict->FindDict(kSelectionKey);
     if (selection_dict) {

@@ -157,6 +157,7 @@ export interface PageContentPageInteractionInfo {
 }
 
 export interface PageContentFrameInteractionInfo {
+  focusedDomNodeId?: number;
   selection?: PageContentSelection;
 }
 
