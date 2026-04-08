@@ -447,6 +447,13 @@ public class AwPrerenderTest extends AwParameterizedTest {
                 });
     }
 
+    private void clearMaxPrerenders() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.getAwBrowserContext().clearMaxPrerenders();
+                });
+    }
+
     private void testPrerenderingWithInvalidAdditionalHeaders(
             Map<String, String> invalidAdditionalHeaders) {
         AwPrefetchParameters prefetchParameters =
@@ -2498,6 +2505,20 @@ public class AwPrerenderTest extends AwParameterizedTest {
             var histogramWatcher =
                     HistogramWatcher.newBuilder().expectNoRecords(FINAL_STATUS_UMA).build();
             setMaxPrerenders(2);
+            histogramWatcher.assertExpected();
+        }
+
+        {
+            // Set max prerenders to 2 by calling clearMaxPrerenders. This is smaller than the
+            // number of ongoing prerendering (3),
+            // but it doesn't cancel them now and instead defers it until startPrerendering() is
+            // called.
+            var histogramWatcher =
+                    HistogramWatcher.newBuilder().expectNoRecords(FINAL_STATUS_UMA).build();
+
+            // Call clearMaxPrerenders to make sure it's not crashing.
+            clearMaxPrerenders();
+
             histogramWatcher.assertExpected();
         }
 

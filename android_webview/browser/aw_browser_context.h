@@ -126,8 +126,9 @@ class AwBrowserContext : public content::BrowserContext,
       const base::android::JavaRef<jobject>& io_thread_client);
 
   int AllowedPrerenderingCount() const;
-  void SetAllowedPrerenderingCount(JNIEnv* const env,
-                                   std::optional<int> allowed_count);
+  void SetAllowedPrerenderingCount(JNIEnv* const env, int allowed_count);
+  void ClearAllowedPrerenderingCount(JNIEnv* const env);
+
   void WarmUpSpareRenderer(JNIEnv* const env);
 
   // content::BrowserContext implementation.

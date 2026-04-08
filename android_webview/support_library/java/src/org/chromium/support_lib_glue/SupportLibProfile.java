@@ -173,9 +173,21 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
     }
 
     @Override
+    public void setMaxPrerenders(int maxPrerenders) {
+        recordApiCall(ApiCall.SET_MAX_PRERENDERS);
+        mProfileImpl.setMaxPrerenders(maxPrerenders);
+    }
+
+    @Override
     public void setMaxPrerenders(@Nullable Integer maxPrerenders) {
         recordApiCall(ApiCall.SET_MAX_PRERENDERS);
         mProfileImpl.setMaxPrerenders(maxPrerenders);
+    }
+
+    @Override
+    public void clearMaxPrerenders() {
+        recordApiCall(ApiCall.CLEAR_MAX_PRERENDERS);
+        mProfileImpl.clearMaxPrerenders();
     }
 
     @Override

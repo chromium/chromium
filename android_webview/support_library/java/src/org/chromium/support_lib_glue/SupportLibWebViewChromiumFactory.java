@@ -539,8 +539,9 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int GET_PREFETCH_TTL_SECONDS = 190;
         int CLEAR_MAX_PREFETCHES = 191;
         int CLEAR_PREFETCH_TTL = 192;
+        int CLEAR_MAX_PRERENDERS = 193;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 193;
+        int COUNT = 194;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)

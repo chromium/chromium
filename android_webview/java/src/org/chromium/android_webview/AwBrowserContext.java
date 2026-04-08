@@ -428,15 +428,18 @@ public class AwBrowserContext implements BrowserContextHandle {
     }
 
     @UiThread
-    public void setMaxPrerenders(@Nullable Integer maxPrerenders) {
-        assert ThreadUtils.runningOnUiThread();
+    public void setMaxPrerenders(int maxPrerenders) {
         AwBrowserContextJni.get()
                 .setAllowedPrerenderingCount(mNativeAwBrowserContext, maxPrerenders);
     }
 
     @UiThread
+    public void clearMaxPrerenders() {
+        AwBrowserContextJni.get().clearAllowedPrerenderingCount(mNativeAwBrowserContext);
+    }
+
+    @UiThread
     public int getAllowedPrerenderingCount() {
-        assert ThreadUtils.runningOnUiThread();
         return AwBrowserContextJni.get().allowedPrerenderingCount(mNativeAwBrowserContext);
     }
 
@@ -535,9 +538,9 @@ public class AwBrowserContext implements BrowserContextHandle {
         void setServiceWorkerIoThreadClient(
                 long nativeAwBrowserContext, AwContentsIoThreadClient ioThreadClient);
 
-        void setAllowedPrerenderingCount(
-                long nativeAwBrowserContext,
-                @JniType("std::optional<int>") @Nullable Integer maxPrerenders);
+        void setAllowedPrerenderingCount(long nativeAwBrowserContext, int maxPrerenders);
+
+        void clearAllowedPrerenderingCount(long nativeAwBrowserContext);
 
         int allowedPrerenderingCount(long nativeAwBrowserContext);
 
