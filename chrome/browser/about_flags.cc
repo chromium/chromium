@@ -12980,6 +12980,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kEnforceIncognitoIsolation)},
 #endif
 
+    {"migrate-enhanced-sb-user-to-enhanced-bundle",
+     flag_descriptions::kMigrateEnhancedSbUserToEnhancedBundleName,
+     flag_descriptions::kMigrateEnhancedSbUserToEnhancedBundleDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(safe_browsing::kMigrateEnhancedSbUserToEnhancedBundle)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
