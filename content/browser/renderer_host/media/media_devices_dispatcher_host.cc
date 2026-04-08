@@ -507,8 +507,15 @@ void MediaDevicesDispatcherHost::OnAudioGotSaltAndOrigin(
   pending_audio_input_capabilities_requests_.push_back(
       AudioInputCapabilitiesRequest{salt_and_origin,
                                     std::move(client_callback)});
-  if (pending_audio_input_capabilities_requests_.size() > 1U)
+
+  MediaStreamManager::SendMessageToNativeLog(
+      base::StringPrintf("MDDH::OnAudioGotSaltAndOrigin: "
+                         "pending_audio_input_capabilities_requests_.size()=%d",
+                         pending_audio_input_capabilities_requests_.size()));
+
+  if (pending_audio_input_capabilities_requests_.size() > 1U) {
     return;
+  }
 
   DCHECK_GT(pending_audio_input_capabilities_requests_.size(), 0U);
   DCHECK(current_audio_input_capabilities_.empty());
@@ -766,6 +773,9 @@ void MediaDevicesDispatcherHost::GotAudioInputEnumeration(
   if (current_audio_input_capabilities_.empty() ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseFakeDeviceForMediaStream)) {
+    MediaStreamManager::SendMessageToNativeLog(base::StringPrintf(
+        "MDDH::%s: no devices found or fake device command flag is passed,",
+        __func__));
     FinalizeGetAudioInputCapabilities();
     return;
   }
@@ -791,14 +801,25 @@ void MediaDevicesDispatcherHost::GotAudioInputParameters(
   if (parameters)
     current_audio_input_capabilities_[index].parameters = *parameters;
   DCHECK(current_audio_input_capabilities_[index].parameters.IsValid());
-  if (--num_pending_audio_input_parameters_ == 0U)
+
+  num_pending_audio_input_parameters_ -= 1;
+  MediaStreamManager::SendMessageToNativeLog(base::StringPrintf(
+      "MDDH::%s: num_pending_audio_input_parameters_.size()= %d,", __func__,
+      num_pending_audio_input_parameters_));
+
+  if (num_pending_audio_input_parameters_ == 0U) {
     FinalizeGetAudioInputCapabilities();
+  }
 }
 
 void MediaDevicesDispatcherHost::FinalizeGetAudioInputCapabilities() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK_GT(pending_audio_input_capabilities_requests_.size(), 0U);
   DCHECK_EQ(num_pending_audio_input_parameters_, 0U);
+
+  MediaStreamManager::SendMessageToNativeLog(base::StringPrintf(
+      "MDDH::%s: pending_audio_input_capabilities_requests_.size()= %d,",
+      __func__, pending_audio_input_capabilities_requests_.size()));
 
   for (auto& request : pending_audio_input_capabilities_requests_) {
     std::move(request.client_callback)
