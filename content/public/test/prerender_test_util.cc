@@ -26,6 +26,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/preloading_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
@@ -33,113 +34,6 @@
 namespace content {
 namespace test {
 namespace {
-
-constexpr char kAddSpeculationRuleScript[] = R"({
-    const script = document.createElement('script');
-    script.type = 'speculationrules';
-    script.text = `{
-      "$1": [{ $2 }]
-    }`;
-    document.head.appendChild(script);
-  })";
-
-constexpr char kAddSpeculationRuleWithRulesetTagScript[] = R"({
-    const script = document.createElement('script');
-    script.type = 'speculationrules';
-    script.text = `{
-      "tag": "$1",
-      "$2": [{ $3 }]
-    }`;
-    document.head.appendChild(script);
-  })";
-
-std::string ConvertEagernessToString(
-    blink::mojom::SpeculationEagerness eagerness) {
-  switch (eagerness) {
-    case blink::mojom::SpeculationEagerness::kImmediate:
-      return "immediate";
-    case blink::mojom::SpeculationEagerness::kEager:
-      return "eager";
-    case blink::mojom::SpeculationEagerness::kModerate:
-      return "moderate";
-    case blink::mojom::SpeculationEagerness::kConservative:
-      return "conservative";
-  }
-}
-
-// Builds <script type="speculationrules"> element for prerendering/prerendering
-// until script.
-std::string BuildScriptElementSpeculationRules(
-    const std::string action,
-    const std::vector<GURL>& prerendering_urls,
-    std::optional<blink::mojom::SpeculationEagerness> eagerness,
-    std::optional<std::string> no_vary_search_hint,
-    const std::string& target_hint,
-    std::optional<std::string> ruleset_tag,
-    std::optional<bool> form_submission) {
-  std::stringstream ss;
-
-  // Add source filed.
-  ss << R"("source": "list", )";
-
-  // Concatenate the given URLs with a comma separator.
-  std::stringstream urls_ss;
-  for (size_t i = 0; i < prerendering_urls.size(); i++) {
-    // Wrap the url with double quotes.
-    urls_ss << base::StringPrintf(R"("%s")",
-                                  prerendering_urls[i].spec().c_str());
-    if (i + 1 < prerendering_urls.size()) {
-      urls_ss << ", ";
-    }
-  }
-  // Add urls fields.
-  ss << base::StringPrintf(R"("urls": [ %s ])", urls_ss.str().c_str());
-
-  // Add eagerness field.
-  if (eagerness.has_value()) {
-    ss << base::StringPrintf(
-        R"(, "eagerness": "%s")",
-        ConvertEagernessToString(eagerness.value()).c_str());
-  }
-  if (no_vary_search_hint.has_value()) {
-    ss << base::StringPrintf(R"(, "expects_no_vary_search": "%s")",
-                             no_vary_search_hint.value().c_str());
-  }
-
-  // Add target_hint field.
-  if (!target_hint.empty()) {
-    ss << base::StringPrintf(R"(, "target_hint": "%s")", target_hint.c_str());
-  }
-
-  if (form_submission.has_value()) {
-    if (form_submission.value()) {
-      ss << R"(, "form_submission": true)";
-    } else {
-      ss << R"(, "form_submission": false)";
-    }
-  }
-
-  return ruleset_tag.has_value()
-             ? base::ReplaceStringPlaceholders(
-                   kAddSpeculationRuleWithRulesetTagScript,
-                   {ruleset_tag.value(), action, ss.str()}, nullptr)
-             : base::ReplaceStringPlaceholders(kAddSpeculationRuleScript,
-                                               {action, ss.str()}, nullptr);
-}
-
-// TODO(crbug.com/428500219): Move these patterns to preloading_test_util.cc,
-// and merge them to BuildScriptElementSpeculationRules.
-constexpr char kAddSpeculationRulePrefetchScript[] = R"({
-    const script = document.createElement('script');
-    script.type = 'speculationrules';
-    script.text = `{
-      "prefetch": [{
-        "source": "list",
-        "urls": [$1]
-      }]
-    }`;
-    document.head.appendChild(script);
-  })";
 
 PrerenderHostRegistry& GetPrerenderHostRegistry(WebContents* web_contents) {
   EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
@@ -692,8 +586,8 @@ void PrerenderTestHelper::AddPrerenderUntilScriptAsync(
 
 void PrerenderTestHelper::AddPrefetchAsync(const GURL& prefetch_url) {
   EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
-  std::string script =
-      JsReplace(kAddSpeculationRulePrefetchScript, prefetch_url);
+  std::string script = BuildScriptElementSpeculationRules(
+      /*action=*/"prefetch", {prefetch_url});
 
   // Have to use ExecuteJavaScriptForTests instead of ExecJs/EvalJs here,
   // because some test pages have ContentSecurityPolicy and EvalJs cannot work

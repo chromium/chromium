@@ -4,6 +4,7 @@
 
 #include "content/public/test/preloading_test_util.h"
 
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/preloading_config.h"
@@ -15,6 +16,42 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content::test {
+namespace {
+
+constexpr char kAddSpeculationRuleScript[] = R"({
+    const script = document.createElement('script');
+    script.type = 'speculationrules';
+    script.text = `{
+      "$1": [{ $2 }]
+    }`;
+    document.head.appendChild(script);
+  })";
+
+constexpr char kAddSpeculationRuleWithRulesetTagScript[] = R"({
+    const script = document.createElement('script');
+    script.type = 'speculationrules';
+    script.text = `{
+      "tag": "$1",
+      "$2": [{ $3 }]
+    }`;
+    document.head.appendChild(script);
+  })";
+
+}  // namespace
+
+std::string ConvertEagernessToString(
+    blink::mojom::SpeculationEagerness eagerness) {
+  switch (eagerness) {
+    case blink::mojom::SpeculationEagerness::kImmediate:
+      return "immediate";
+    case blink::mojom::SpeculationEagerness::kEager:
+      return "eager";
+    case blink::mojom::SpeculationEagerness::kModerate:
+      return "moderate";
+    case blink::mojom::SpeculationEagerness::kConservative:
+      return "conservative";
+  }
+}
 
 using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
 using Preloading_Attempt = ukm::builders::Preloading_Attempt;
@@ -208,6 +245,69 @@ void PreloadingConfigOverride::SetHoldback(std::string_view preloading_type,
 void SetHasSpeculationRulesPrerender(PreloadingData* preloading_data) {
   static_cast<PreloadingDataImpl*>(preloading_data)
       ->SetHasSpeculationRulesPrerender();
+}
+
+std::string BuildScriptElementSpeculationRules(
+    const std::string& action,
+    const std::vector<GURL>& urls,
+    std::optional<blink::mojom::SpeculationEagerness> eagerness,
+    std::optional<std::string> no_vary_search_hint,
+    const std::string& target_hint,
+    std::optional<std::string> ruleset_tag,
+    std::optional<bool> form_submission) {
+  if (action == "prefetch") {
+    CHECK(target_hint.empty()) << "prefetch rules should not have target_hint";
+    CHECK(!form_submission.has_value())
+        << "prefetch rules should not have form_submission";
+  }
+
+  std::stringstream ss;
+
+  // Add source field.
+  ss << R"("source": "list", )";
+
+  // Concatenate the given URLs with a comma separator.
+  std::stringstream urls_ss;
+  for (size_t i = 0; i < urls.size(); i++) {
+    // Wrap the url with double quotes.
+    urls_ss << base::StringPrintf(R"("%s")", urls[i].spec().c_str());
+    if (i + 1 < urls.size()) {
+      urls_ss << ", ";
+    }
+  }
+  // Add urls fields.
+  ss << base::StringPrintf(R"("urls": [ %s ])", urls_ss.str().c_str());
+
+  // Add eagerness field.
+  if (eagerness.has_value()) {
+    ss << base::StringPrintf(
+        R"(, "eagerness": "%s")",
+        ConvertEagernessToString(eagerness.value()).c_str());
+  }
+  if (no_vary_search_hint.has_value()) {
+    ss << base::StringPrintf(R"(, "expects_no_vary_search": "%s")",
+                             no_vary_search_hint.value().c_str());
+  }
+
+  // Add target_hint field.
+  if (!target_hint.empty() && action != "prefetch") {
+    ss << base::StringPrintf(R"(, "target_hint": "%s")", target_hint.c_str());
+  }
+
+  if (form_submission.has_value() && action != "prefetch") {
+    if (form_submission.value()) {
+      ss << R"(, "form_submission": true)";
+    } else {
+      ss << R"(, "form_submission": false)";
+    }
+  }
+
+  return ruleset_tag.has_value()
+             ? base::ReplaceStringPlaceholders(
+                   kAddSpeculationRuleWithRulesetTagScript,
+                   {ruleset_tag.value(), action, ss.str()}, nullptr)
+             : base::ReplaceStringPlaceholders(kAddSpeculationRuleScript,
+                                               {action, ss.str()}, nullptr);
 }
 
 }  // namespace content::test
