@@ -2805,7 +2805,6 @@ test("content_unittests") {
     "../browser/permissions/permission_controller_impl_unittest.cc",
     "../browser/permissions/permission_overrides_unittest.cc",
     "../browser/permissions/permission_service_context_unittest.cc",
-    "../browser/permissions/permission_service_impl_unittest.cc",
     "../browser/permissions/permission_util_unittest.cc",
     "../browser/picture_in_picture/picture_in_picture_service_impl_unittest.cc",
     "../browser/preloading/anchor_element_interaction_host_impl_unittest.cc",
@@ -3268,6 +3267,14 @@ test("content_unittests") {
       ":content_test_perfetto_chrome_bundle_data",
       "//media/test:media_bundle_data",
       "//testing/buildbot/filters:content_unittests_filters_bundle_data",
+    ]
+  }
+
+  if (!is_ios) {
+    sources += [
+      # Most ContentSettingsTypes are not registered on iOS so these
+      # tests cannot run.
+      "../browser/permissions/permission_service_impl_unittest.cc",
     ]
   }
 
