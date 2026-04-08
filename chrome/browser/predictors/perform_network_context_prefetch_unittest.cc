@@ -232,7 +232,13 @@ TEST_P(PerformNetworkContextPrefetchRecorderTest, MAYBE_Script) {
   EXPECT_TRUE(request.content.empty());
 }
 
-TEST_P(PerformNetworkContextPrefetchRecorderTest, Style) {
+// TODO(crbug.com/500215556): Re-enable this test on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_Style DISABLED_Style
+#else
+#define MAYBE_Style Style
+#endif
+TEST_P(PerformNetworkContextPrefetchRecorderTest, MAYBE_Style) {
   DoPrefetch(RequestDestination::kStyle);
   const auto request = GetRequest();
 
