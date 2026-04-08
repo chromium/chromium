@@ -1571,6 +1571,10 @@ void InputMethodController::DeleteSurroundingText(int before, int after) {
     selection_end = selection_end - (selection_start - start);
     selection_start = start;
 
+    // Required to prevent crashes during asynchronous Autofill filling flows
+    // where the keyboard remains active.
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+
     // The deletion above leaves the caret at [`start`, `start`], so to check if
     // a listener changed the selection range we need to compare the start and
     // end of the range against that value.
@@ -1639,6 +1643,11 @@ void InputMethodController::DeleteSurroundingTextInCodePoints(int before,
   DCHECK_GE(after, 0);
   if (!GetEditor().CanEdit())
     return;
+
+  // Required to prevent crashes during asynchronous Autofill filling flows
+  // where the keyboard remains active.
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+
   const PlainTextRange selection_offsets(GetSelectionOffsets());
   if (selection_offsets.IsNull())
     return;

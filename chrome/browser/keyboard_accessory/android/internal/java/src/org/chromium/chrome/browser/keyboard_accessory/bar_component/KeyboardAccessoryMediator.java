@@ -337,7 +337,7 @@ class KeyboardAccessoryMediator
                     if (suggestion.showLoadingOnAcceptance()) {
                         showLoadingUIOnSuggestion(suggestion);
                     }
-                    delegate.suggestionSelected(pos);
+                    delegate.suggestionSelected(pos, suggestion.showLoadingOnAcceptance());
                 },
                 result -> delegate.deleteSuggestion(pos));
     }

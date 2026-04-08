@@ -21,6 +21,17 @@ public interface AutofillDelegate {
     void suggestionSelected(int listIndex);
 
     /**
+     * Handles the selection of an Autofill suggestion, with metadata about whether the suggestion
+     * triggers a loading state.
+     *
+     * @param listIndex The index of the selected Autofill suggestion.
+     * @param showLoadingOnAcceptance True if the suggestion shows a loading UI on acceptance.
+     */
+    default void suggestionSelected(int listIndex, boolean showLoadingOnAcceptance) {
+        suggestionSelected(listIndex);
+    }
+
+    /**
      * Initiates the deletion process for an item. (A confirm dialog should be shown.)
      *
      * @param listIndex The index of the suggestion to delete.

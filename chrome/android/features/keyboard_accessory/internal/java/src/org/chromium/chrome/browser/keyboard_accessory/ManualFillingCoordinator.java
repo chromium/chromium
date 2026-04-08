@@ -269,4 +269,14 @@ class ManualFillingCoordinator implements ManualFillingComponent {
         mMediator.show(
                 /* waitForKeyboard= */ true, /* isCredentialFieldOrHasAutofillSuggestions= */ true);
     }
+
+    @Override
+    public void setWaitingForFetch(boolean waiting) {
+        mMediator.setWaitingForFetch(waiting);
+    }
+
+    @Override
+    public void dismissIfWaitingForFetch() {
+        mMediator.dismissIfWaitingForFetch();
+    }
 }
