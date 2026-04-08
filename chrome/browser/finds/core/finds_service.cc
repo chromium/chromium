@@ -470,6 +470,10 @@ bool FindsService::ScheduleNotificationWithModelResult(
       std::make_unique<notifications::NotificationParams>(
           notifications::SchedulerClientType::kChromeFinds, std::move(data),
           std::move(scheduler_params)));
+  // Track model execution timestamp to properly cooldown the model from being
+  // rerun during the window between scheduling and notification being shown.
+  finds::MarkModelExecutionLastTimestamp(pref_service_);
+
   return true;
 }
 

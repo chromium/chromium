@@ -90,10 +90,8 @@ class FindsServiceTest : public testing::Test {
 
 TEST_F(FindsServiceTest, VerifyNotificationCooldownPref) {
   EXPECT_EQ(0, prefs_.GetInt64(prefs::kFindsModelExecutionLastTimestamp));
-  finds::MarkNotificationShown(&prefs_);
+  finds::MarkModelExecutionLastTimestamp(&prefs_);
   EXPECT_NE(0, prefs_.GetInt64(prefs::kFindsModelExecutionLastTimestamp));
-  histogram_tester_.ExpectUniqueSample(
-      "Notifications.ChromeFinds.NotificationShown", true, 1);
 }
 
 TEST_F(FindsServiceTest, VerifyThemeNotInterestedCooldownPref) {
@@ -290,13 +288,14 @@ TEST_F(FindsServiceTest, Success) {
         callback_called = true;
       }));
   EXPECT_TRUE(callback_called);
+  EXPECT_NE(0, prefs_.GetInt64(prefs::kFindsModelExecutionLastTimestamp));
   histogram_tester_.ExpectUniqueSample(
       "Finds.Result", FindsService::Result::Status::kSuccess, 1);
 }
 
 TEST_F(FindsServiceTest, ExecutionCooldownNotPassed) {
   // Set the last execution timestamp to now.
-  finds::MarkNotificationShown(&prefs_);
+  finds::MarkModelExecutionLastTimestamp(&prefs_);
 
   // Fast forward time just before the cooldown is set to expire.
   task_environment_.FastForwardBy(base::Days(
@@ -316,7 +315,7 @@ TEST_F(FindsServiceTest, ExecutionCooldownNotPassed) {
 
 TEST_F(FindsServiceTest, ExecutionCooldownPassed) {
   // Set the last execution timestamp to now.
-  finds::MarkNotificationShown(&prefs_);
+  finds::MarkModelExecutionLastTimestamp(&prefs_);
 
   // Fast forward enough to pass the cooldown.
   task_environment_.FastForwardBy(
@@ -926,6 +925,7 @@ TEST_F(FindsServiceTest, ScheduleNotificationForInternalsPage) {
   EXPECT_EQ("https://www.google.com",
             scheduled_params->notification_data
                 .custom_data[notifications::kChromeFindsNotificationsUrl]);
+  EXPECT_NE(0, prefs_.GetInt64(prefs::kFindsModelExecutionLastTimestamp));
 }
 
 TEST_F(FindsServiceTest, MaybeRescheduleNotifications_Empty_NoOp) {

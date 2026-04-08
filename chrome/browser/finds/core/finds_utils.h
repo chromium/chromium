@@ -20,9 +20,9 @@ std::string ThemeTypeEnumToString(
     optimization_guide::proto::FindsSuggestionResponse::SuggestionTheme::
         ThemeType theme_type);
 
-// Record metric that notification has been shown, also save in the pref service
-// the timestamp to mark the last model execution time for cooldown tracking.
-void MarkNotificationShown(PrefService* pref_service);
+// Update the PrefService with the timestamp of the last model execution for
+// cooldown tracking.
+void MarkModelExecutionLastTimestamp(PrefService* pref_service);
 
 // Mark theme as not interested in the PrefService. This is called when the user
 // clicks the finds notification unhelpful button.

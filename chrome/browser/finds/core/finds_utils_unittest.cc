@@ -52,15 +52,12 @@ TEST_F(FindsUtilsTest, MarkThemeAsNotInterested) {
   EXPECT_TRUE(updated_themes.contains("Shopping"));
 }
 
-TEST_F(FindsUtilsTest, MarkNotificationShown) {
-  base::HistogramTester histogram_tester;
+TEST_F(FindsUtilsTest, MarkModelExecutionLastTimestamp) {
   EXPECT_EQ(0, prefs()->GetInt64(prefs::kFindsModelExecutionLastTimestamp));
 
-  MarkNotificationShown(prefs());
+  MarkModelExecutionLastTimestamp(prefs());
 
   EXPECT_GT(prefs()->GetInt64(prefs::kFindsModelExecutionLastTimestamp), 0);
-  histogram_tester.ExpectUniqueSample(
-      "Notifications.ChromeFinds.NotificationShown", true, 1);
 }
 
 }  // namespace finds

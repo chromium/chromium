@@ -35,7 +35,9 @@ void FindsClient::BeforeShowNotification(
 
 void FindsClient::OnShowNotification(
     std::unique_ptr<NotificationData> notification_data) {
-  finds::MarkNotificationShown(pref_service_);
+  finds::RecordNotificationShown();
+  // This is a failsafe in case cooldown timestamp is not set during scheduling.
+  finds::MarkModelExecutionLastTimestamp(pref_service_);
 }
 
 void FindsClient::OnSchedulerInitialized(bool success,
