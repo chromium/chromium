@@ -20,10 +20,28 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <!-- Content area (empty for now) -->
-    <FrameLayout
-        android:id="@+id/extensions_menu_site_permissions_page_content"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+    <View
+        style="@style/ExtensionsMenuDivider" />
+
+    <LinearLayout
+        android:id="@+id/extensions_menu_show_requests_toggle_container"
+        style="@style/ExtensionsMenuControlRow">
+
+        <TextView
+            android:id="@+id/extensions_menu_show_requests_toggle_text"
+            style="@style/ExtensionsMenuControlText"
+            android:text="Allowed to show requests in the toolbar"
+            tools:ignore="HardcodedText" />
+            <!-- TODO(crbug.com/471016912): Use string from view model -->
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/extensions_menu_show_requests_toggle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:focusable="false"
+            android:clickable="false" />
+    </LinearLayout>
 
 </LinearLayout>

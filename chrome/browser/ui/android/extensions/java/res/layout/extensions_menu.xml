@@ -56,14 +56,10 @@ found in the LICENSE file.
 
             <View
                 android:id="@+id/extensions_menu_header_divider"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
+                style="@style/ExtensionsMenuDivider"
                 app:layout_constraintTop_toBottomOf="@+id/extensions_menu_site_settings_toggle"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:background="?android:attr/listDivider"
-                android:layout_marginTop="@dimen/extensions_menu_divider_vertical_margin"
-                android:layout_marginBottom="@dimen/extensions_menu_divider_vertical_margin" />
+                app:layout_constraintEnd_toEndOf="parent" />
 
             <!-- State Container: Wraps both Active and Zero states to mutually exclude them -->
             <FrameLayout
@@ -192,15 +188,11 @@ found in the LICENSE file.
 
             <View
                 android:id="@+id/extensions_menu_footer_divider"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
+                style="@style/ExtensionsMenuDivider"
                 app:layout_constraintTop_toBottomOf="@+id/extensions_menu_state_container"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toTopOf="@+id/extensions_menu_footer"
-                android:background="?android:attr/listDivider"
-                android:layout_marginTop="@dimen/extensions_menu_divider_vertical_margin"
-                android:layout_marginBottom="@dimen/extensions_menu_divider_vertical_margin" />
+                app:layout_constraintBottom_toTopOf="@+id/extensions_menu_footer" />
 
             <include
                 android:id="@+id/extensions_menu_footer"
@@ -211,7 +203,6 @@ found in the LICENSE file.
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginTop="@dimen/extensions_menu_divider_vertical_margin"
                 android:paddingBottom="8dp"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 

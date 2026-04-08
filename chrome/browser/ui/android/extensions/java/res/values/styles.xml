@@ -6,7 +6,7 @@ found in the LICENSE file.
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Styles for the extensions menu -->
-    <style name="ExtensionsMenuFooterRow">
+    <style name="ExtensionsMenuControlRow">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">horizontal</item>
@@ -19,13 +19,15 @@ found in the LICENSE file.
         <item name="android:focusable">true</item>
         <item name="android:clickable">true</item>
     </style>
-    <style name="ExtensionsMenuFooterIcon">
+
+    <style name="ExtensionsMenuControlIcon">
         <item name="android:layout_width">@dimen/extensions_menu_footer_icon_size</item>
         <item name="android:layout_height">@dimen/extensions_menu_footer_icon_size</item>
         <item name="tint">?android:attr/textColorPrimary</item>
         <item name="android:importantForAccessibility">no</item>
     </style>
-    <style name="ExtensionsMenuFooterText">
+
+    <style name="ExtensionsMenuControlText">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
@@ -33,6 +35,14 @@ found in the LICENSE file.
         <item name="android:textAppearance">@style/TextAppearance.TextMedium.Primary.Baseline</item>
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="ExtensionsMenuDivider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/divider_height</item>
+        <item name="android:background">?android:attr/listDivider</item>
+        <item name="android:layout_marginTop">@dimen/extensions_menu_divider_vertical_margin</item>
+        <item name="android:layout_marginBottom">@dimen/extensions_menu_divider_vertical_margin</item>
     </style>
 
     <style name="TextAppearance.ExtensionsRequestAccessButton" parent="TextAppearance.TextAccentLarge">

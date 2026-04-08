@@ -14,16 +14,16 @@ found in the LICENSE file.
 
     <LinearLayout
         android:id="@+id/extensions_menu_pin_menu_icon_button"
-        style="@style/ExtensionsMenuFooterRow" >
+        style="@style/ExtensionsMenuControlRow" >
 
         <ImageView
             android:id="@+id/extensions_menu_button_pinning_icon"
-            style="@style/ExtensionsMenuFooterIcon"
+            style="@style/ExtensionsMenuControlIcon"
             android:src="@drawable/ic_keep_24dp"
             android:importantForAccessibility="no" />
 
         <TextView
-            style="@style/ExtensionsMenuFooterText"
+            style="@style/ExtensionsMenuControlText"
             android:text="@string/extensions_pin_to_toolbar_setting" />
 
         <com.google.android.material.materialswitch.MaterialSwitch
@@ -36,36 +36,36 @@ found in the LICENSE file.
 
     <LinearLayout
         android:id="@+id/extensions_menu_discover_extensions_button"
-        style="@style/ExtensionsMenuFooterRow"
+        style="@style/ExtensionsMenuControlRow"
         tools:ignore="UseCompoundDrawables" >
 
         <ImageView
             android:id="@+id/discover_extensions_icon"
-            style="@style/ExtensionsMenuFooterIcon"
+            style="@style/ExtensionsMenuControlIcon"
             android:src="@drawable/ic_webstore"
             android:importantForAccessibility="no" />
 
         <TextView
             android:id="@+id/discover_extensions_text"
-            style="@style/ExtensionsMenuFooterText"
+            style="@style/ExtensionsMenuControlText"
             android:text="@string/extensions_menu_main_page_discover_extensions" />
 
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/extensions_menu_manage_extensions_button"
-        style="@style/ExtensionsMenuFooterRow"
+        style="@style/ExtensionsMenuControlRow"
         tools:ignore="UseCompoundDrawables" >
 
         <ImageView
             android:id="@+id/manage_extensions_icon"
-            style="@style/ExtensionsMenuFooterIcon"
+            style="@style/ExtensionsMenuControlIcon"
             android:src="@drawable/ic_settings"
             android:importantForAccessibility="no" />
 
         <TextView
             android:id="@+id/manage_extensions_text"
-            style="@style/ExtensionsMenuFooterText"
+            style="@style/ExtensionsMenuControlText"
             android:text="@string/manage_extensions" />
 
     </LinearLayout>
