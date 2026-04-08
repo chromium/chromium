@@ -18,10 +18,10 @@ String OverscrollBehaviorTypeToString(cc::OverscrollBehavior::Type value) {
       return "none";
     case cc::OverscrollBehavior::Type::kAuto:
       return "auto";
+    case cc::OverscrollBehavior::Type::kChain:
+      return "chain";
     case cc::OverscrollBehavior::Type::kContain:
       return "contain";
-    default:
-      NOTREACHED();
   }
 }
 

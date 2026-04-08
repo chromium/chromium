@@ -19,12 +19,28 @@ struct CC_EXPORT OverscrollBehavior {
     // Hint to disable scroll chaining. The user agent may show an appropriate
     // overscroll affordance.
     kContain,
-    kMax = kContain
+    // Disables the overscroll affordance but allows scroll chaining.
+    kChain,
+    kMax = kChain
   };
 
   OverscrollBehavior() : x(Type::kAuto), y(Type::kAuto) {}
   explicit OverscrollBehavior(Type type) : x(type), y(type) {}
   OverscrollBehavior(Type x_type, Type y_type) : x(x_type), y(y_type) {}
+
+  // Helpers for common functionality. Prefer these over direct x/y access.
+  bool HasXLocalBorderEffects() const {
+    return x == Type::kAuto || x == Type::kContain;
+  }
+  bool HasYLocalBorderEffects() const {
+    return y == Type::kAuto || y == Type::kContain;
+  }
+  bool PropagatesXScroll() const {
+    return x == Type::kAuto || x == Type::kChain;
+  }
+  bool PropagatesYScroll() const {
+    return y == Type::kAuto || y == Type::kChain;
+  }
 
   Type x;
   Type y;

@@ -2582,6 +2582,58 @@ TEST_P(LayerTreeHostImplTest, OverscrollBehaviorPreventsPropagation) {
   EXPECT_POINTF_EQ(gfx::PointF(10, 10), CurrentScrollOffset(overflow));
 }
 
+TEST_P(LayerTreeHostImplTest, OverscrollBehaviorChainPropagatesScroll) {
+  const gfx::Size kViewportSize(100, 100);
+  const gfx::Size kContentSize(200, 200);
+  SetupViewportLayersOuterScrolls(kViewportSize, kContentSize);
+
+  LayerImpl* scroll_layer = OuterViewportScrollLayer();
+
+  gfx::Size overflow_size(400, 400);
+  LayerImpl* overflow = AddScrollableLayer(OuterViewportScrollLayer(),
+                                           gfx::Size(100, 100), overflow_size);
+  SetScrollOffset(scroll_layer, gfx::PointF(30, 30));
+
+  DrawFrame();
+  gfx::Point pointer_position(50, 50);
+  gfx::Vector2dF x_delta(-10, 0);
+  gfx::Vector2dF y_delta(0, -10);
+
+  // OverscrollBehaviorChain should allow scroll propagation.
+  GetScrollNode(overflow)->overscroll_behavior =
+      OverscrollBehavior(OverscrollBehavior::Type::kChain);
+
+  DrawFrame();
+
+  // Propagation on x.
+  EXPECT_EQ(ScrollThread::kScrollOnImplThread,
+            GetInputHandler()
+                .ScrollBegin(BeginState(pointer_position, x_delta,
+                                        ui::ScrollInputType::kWheel)
+                                 .get(),
+                             ui::ScrollInputType::kWheel)
+                .thread);
+  GetInputHandler().ScrollUpdate(
+      UpdateState(pointer_position, x_delta, ui::ScrollInputType::kWheel));
+  GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
+  EXPECT_POINTF_EQ(gfx::PointF(20, 30), CurrentScrollOffset(scroll_layer));
+  EXPECT_POINTF_EQ(gfx::PointF(0, 0), CurrentScrollOffset(overflow));
+
+  // Propagation on y.
+  EXPECT_EQ(ScrollThread::kScrollOnImplThread,
+            GetInputHandler()
+                .ScrollBegin(BeginState(pointer_position, y_delta,
+                                        ui::ScrollInputType::kWheel)
+                                 .get(),
+                             ui::ScrollInputType::kWheel)
+                .thread);
+  GetInputHandler().ScrollUpdate(
+      UpdateState(pointer_position, y_delta, ui::ScrollInputType::kWheel));
+  GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
+  EXPECT_POINTF_EQ(gfx::PointF(20, 20), CurrentScrollOffset(scroll_layer));
+  EXPECT_POINTF_EQ(gfx::PointF(0, 0), CurrentScrollOffset(overflow));
+}
+
 TEST_P(LayerTreeHostImplTest, ScrollWithUserUnscrollableLayers) {
   const gfx::Size kViewportSize(100, 100);
   const gfx::Size kContentSize(200, 200);
@@ -19079,6 +19131,15 @@ class OverscrollEffectTest : public LayerTreeHostImplTest {
     EXPECT_VECTOR2DF_EQ(expected_mixed, run_scroll(OverscrollBehavior(
                                             OverscrollBehavior::Type::kNone,
                                             OverscrollBehavior::Type::kAuto)));
+
+    // Case 4: Chain
+    // Expectation: Unused delta is clamped to zero (no local border effects)
+    // but bubbling is allowed (tested separately).
+    gfx::Vector2dF expected_chain =
+        is_root_scroller ? delta : gfx::Vector2dF(0, 0);
+    EXPECT_VECTOR2DF_EQ(
+        expected_chain,
+        run_scroll(OverscrollBehavior(OverscrollBehavior::Type::kChain)));
   }
 
  private:

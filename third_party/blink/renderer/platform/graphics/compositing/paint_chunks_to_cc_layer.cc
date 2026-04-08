@@ -1284,8 +1284,7 @@ TouchAction LayerPropertiesUpdater::ShouldDisableCursorControl() {
       break;
     }
     // If it is not kAuto, scroll can't propagate, so break here.
-    if (scroll_node->OverscrollBehaviorX() !=
-        cc::OverscrollBehavior::Type::kAuto) {
+    if (!scroll_node->OverscrollBehavior().PropagatesXScroll()) {
       break;
     }
   }

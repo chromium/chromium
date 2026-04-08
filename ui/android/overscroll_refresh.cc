@@ -93,7 +93,7 @@ void OverscrollRefresh::OnOverscrolled(const cc::OverscrollBehavior& behavior,
     // Check overscroll-behavior-y and source device: pull-to-refresh should
     // only work on touchscreen overscrolls, in particular, not by touchpad or
     // mousewheel scrolls.
-    if (behavior.y != cc::OverscrollBehavior::Type::kAuto ||
+    if (!behavior.PropagatesYScroll() ||
         source_device != blink::WebGestureDevice::kTouchscreen) {
       Reset();
       return;
@@ -118,7 +118,7 @@ void OverscrollRefresh::OnOverscrolled(const cc::OverscrollBehavior& behavior,
     //   - it is always activated near the horizontal edges
     //   - if the swipe-to-navigate feature is enabled, it is activated
     //     everywhere on touchpad (possibly converted from mousewheel)
-    if (!(behavior.x == cc::OverscrollBehavior::Type::kAuto &&
+    if (!(behavior.PropagatesXScroll() &&
           (scroll_from_edge || touchpad_swipe_to_navigate))) {
       Reset();
       return;

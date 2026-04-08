@@ -451,10 +451,10 @@ InputHandlerScrollResult InputHandler::ScrollUpdate(
   if (base::FeatureList::IsEnabled(
           ::features::kOverscrollEffectOnNonRootScrollers) &&
       !is_root_scroller) {
-    if (scroll_node.overscroll_behavior.x == OverscrollBehavior::Type::kNone) {
+    if (!scroll_node.overscroll_behavior.HasXLocalBorderEffects()) {
       unused_scroll_delta.set_x(0.f);
     }
-    if (scroll_node.overscroll_behavior.y == OverscrollBehavior::Type::kNone) {
+    if (!scroll_node.overscroll_behavior.HasYLocalBorderEffects()) {
       unused_scroll_delta.set_y(0.f);
     }
   }
@@ -2233,10 +2233,8 @@ void InputHandler::ScrollLatchedScroller(ScrollState& scroll_state,
 }
 
 bool InputHandler::CanPropagate(ScrollNode* scroll_node, float x, float y) {
-  return (x == 0 || scroll_node->overscroll_behavior.x ==
-                        OverscrollBehavior::Type::kAuto) &&
-         (y == 0 || scroll_node->overscroll_behavior.y ==
-                        OverscrollBehavior::Type::kAuto);
+  return (x == 0 || scroll_node->overscroll_behavior.PropagatesXScroll()) &&
+         (y == 0 || scroll_node->overscroll_behavior.PropagatesYScroll());
 }
 
 ScrollNode* InputHandler::FindNodeToLatch(ScrollState* scroll_state,
@@ -2260,8 +2258,8 @@ ScrollNode* InputHandler::FindNodeToLatch(ScrollState* scroll_state,
     // scroll container does not allow chaining, we should not skip it, as we
     // may need to latch to it.
     bool scroll_container_allows_chaining =
-        cur_node->overscroll_behavior.x == OverscrollBehavior::Type::kAuto &&
-        cur_node->overscroll_behavior.y == OverscrollBehavior::Type::kAuto;
+        cur_node->overscroll_behavior.PropagatesXScroll() &&
+        cur_node->overscroll_behavior.PropagatesYScroll();
 
     if (!cur_node->user_scrollable_horizontal &&
         !cur_node->user_scrollable_vertical &&

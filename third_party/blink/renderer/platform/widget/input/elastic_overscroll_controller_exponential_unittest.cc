@@ -577,6 +577,18 @@ TEST_F(ElasticOverscrollControllerExponentialTest, OverscrollBehavior) {
   EXPECT_EQ(6, helper_.set_stretch_amount_count());
   SendGestureScrollEnd();
   EXPECT_EQ(0, helper_.request_begin_frame_count());
+
+  // If we set OverscrollBehaviorTypeChain on both axes, we should not see a
+  // stretch in either direction.
+  SendGestureScrollBegin(NonMomentumPhase);
+  SendGestureScrollUpdate(
+      NonMomentumPhase, Vector2dF(10, 10), Vector2dF(10, 10),
+      cc::OverscrollBehavior(cc::OverscrollBehavior::Type::kChain));
+  EXPECT_EQ(6, helper_.set_stretch_amount_count());
+  EXPECT_EQ(0.f, helper_.StretchAmount(cc::ElementId()).x());
+  EXPECT_EQ(0.f, helper_.StretchAmount(cc::ElementId()).y());
+  SendGestureScrollEnd();
+  EXPECT_EQ(0, helper_.request_begin_frame_count());
 }
 
 // Test overscroll in non-scrollable direction.

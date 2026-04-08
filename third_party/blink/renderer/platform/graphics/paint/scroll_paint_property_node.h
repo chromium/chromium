@@ -122,12 +122,8 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode final
   // See PaintPropertyNode::ChangedSequenceNumber().
   void ClearChangedToRoot(int sequence_number) const;
 
-  cc::OverscrollBehavior::Type OverscrollBehaviorX() const {
-    return state_.overscroll_behavior.x;
-  }
-
-  cc::OverscrollBehavior::Type OverscrollBehaviorY() const {
-    return state_.overscroll_behavior.y;
+  const cc::OverscrollBehavior& OverscrollBehavior() const {
+    return state_.overscroll_behavior;
   }
 
   std::optional<cc::SnapContainerData> GetSnapContainerData() const {

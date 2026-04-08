@@ -269,10 +269,10 @@ void ElasticOverscrollController::Overscroll(
 
   // Don't allow overscrolling in a direction that has
   // OverscrollBehaviorTypeNone.
-  if (entry.overscroll_behavior.x == cc::OverscrollBehavior::Type::kNone) {
+  if (!entry.overscroll_behavior.HasXLocalBorderEffects()) {
     adjusted_overscroll_delta.set_x(0);
   }
-  if (entry.overscroll_behavior.y == cc::OverscrollBehavior::Type::kNone) {
+  if (!entry.overscroll_behavior.HasYLocalBorderEffects()) {
     adjusted_overscroll_delta.set_y(0);
   }
 

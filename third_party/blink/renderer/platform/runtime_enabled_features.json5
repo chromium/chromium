@@ -1739,6 +1739,9 @@
       status: "experimental",
     },
     {
+      name: "CSSOverscrollBehaviorChain",
+    },
+    {
       name: "CSSPaintAPIArguments",
       status: "experimental",
     },

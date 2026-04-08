@@ -206,7 +206,7 @@ constexpr CGFloat kCancelEventVerticalLowerThreshold = 0.01;
 
 - (void)onOverscrolled:(const ui::DidOverscrollParams&)params {
   _overscrollTriggeredByRenderer =
-      params.overscroll_behavior.x == cc::OverscrollBehavior::Type::kAuto;
+      params.overscroll_behavior.PropagatesXScroll();
 }
 
 - (NSPoint)averagePositionInTouchEvent:(NSEvent*)event {
