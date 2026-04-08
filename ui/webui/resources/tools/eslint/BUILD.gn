@@ -9,7 +9,7 @@ ts_library("build_ts") {
   in_files = [
     "eslint_ts.config_base.js",
     "inline_event_handler.ts",
-    "lit_element_bindings.js",
+    "lit_element_bindings.ts",
     "lit_element_invalid_interface.ts",
     "lit_element_structure.ts",
     "lit_element_template_structure.ts",
@@ -19,7 +19,7 @@ ts_library("build_ts") {
     "polymer_property_declare.ts",
     "query_utils.ts",
     "web_component_missing_deps.ts",
-    "webui_eslint_plugin.js",
+    "webui_eslint_plugin.ts",
   ]
 
   path_mappings = [

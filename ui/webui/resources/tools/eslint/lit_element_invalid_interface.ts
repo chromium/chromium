@@ -8,7 +8,7 @@ import esquery from '/third_party/node/node_modules/esquery/dist/esquery.esm.min
 import assert from 'node:assert';
 import path from 'node:path';
 
-import {dashCaseToCamelCase, isCrLitElementSubclass, isIdentifier} from './query_utils.js';
+import {dashCaseToCamelCase, isCrLitElementSubclass, isIdentifier, isLiteral} from './query_utils.js';
 
 type Options = [];
 type MessageIds =
@@ -95,7 +95,7 @@ export const litElementInvalidInterface = ESLintUtils.RuleCreator.withoutDocs<
 
         for (const member of interfaceMembers) {
           assert.ok(member.type === AST_NODE_TYPES.TSPropertySignature);
-          if (member.key.type === AST_NODE_TYPES.Literal) {
+          if (isLiteral(member.key)) {
             context.report({
               node: member,
               messageId: 'incorrectDollarSignNotation',

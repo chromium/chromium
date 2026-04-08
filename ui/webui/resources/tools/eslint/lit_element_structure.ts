@@ -7,11 +7,7 @@ import type {TSESLint, TSESTree} from '/third_party/node/node_modules/@typescrip
 import assert from 'node:assert';
 import path from 'node:path';
 
-import {dashCaseToCamelCase, isCrLitElementSubclass, isIdentifier, LIT_IMPORT_REGEX} from './query_utils.js';
-
-function isLiteral(node: TSESTree.Node): node is TSESTree.Literal {
-  return node.type === AST_NODE_TYPES.Literal;
-}
+import {dashCaseToCamelCase, isCrLitElementSubclass, isIdentifier, isLiteral, LIT_IMPORT_REGEX} from './query_utils.js';
 
 // The order in which boilerplate and lifecycle CrLitElement methods should
 // be defined.

@@ -2,22 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ESLintUtils} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
+import {AST_NODE_TYPES, ESLintUtils} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
+import type {TSESLint, TSESTree} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 import esquery from '/third_party/node/node_modules/esquery/dist/esquery.esm.min.js';
 import ts from '/third_party/node/node_modules/typescript/lib/typescript.js';
 import assert from 'node:assert';
 import path from 'node:path';
 
-import {dashCaseToCamelCase, extractClassImport, getLitPropertyType, LIT_IMPORT_REGEX} from './query_utils.js';
+import {dashCaseToCamelCase, extractClassImport, getLitPropertyType, isIdentifier, isLiteral, LIT_IMPORT_REGEX} from './query_utils.js';
 
-export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs({
-  name: 'lit-element-expressions',
+type Options = [];
+type MessageIds = 'incorrectAttributeBinding'|'incorrectBooleanBinding'|
+    'noTrueBinding'|'noFalseBinding'|'propertyTypeMismatch'|
+    'bindingTypeMismatch'|'propertyNotFound';
+
+export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
+    Options, MessageIds>({
   meta: {
     type: 'problem',
     docs: {
       description:
           'Ensures that expressions in a Lit element\'s template are not used with incompatible properties',
-      recommended: 'error',
     },
     messages: {
       incorrectAttributeBinding:
@@ -35,16 +40,20 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs({
       propertyNotFound:
           'Property \'{{propertyName}}\' was not found on element \'{{tagName}}\'.',
     },
+    schema: [],
   },
   defaultOptions: [],
   create(context) {
-    function extractPropertiesFromClass(file, className) {
-      const parser = context.languageOptions.parser;
+    function extractPropertiesFromClass(
+        file: ts.SourceFile, className: string) {
+      const parser =
+          context.languageOptions.parser as TSESLint.Parser.ParserModule;
       const parserOptions = context.languageOptions.parserOptions;
+      assert.ok(parser && 'parse' in parser);
       const ast = parser.parse(file.text, {
         ...parserOptions,
         filePath: file.fileName,
-      });
+      }) as TSESTree.Program;
       // Match on class name suffix as well because some UIs use aliasing.
       const propertiesQuery = esquery.parse(`ClassDeclaration[id.name=/${
           className}/] > ClassBody > MethodDefinition[key.name="properties"] > FunctionExpression > BlockStatement > ReturnStatement > ObjectExpression > Property`);
@@ -54,15 +63,18 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs({
     // Property binding validation: check that the bound property's type
     // is compatible with |expressionType|.
     function checkPropertyBinding(
-        currentTagName, propBinding, expression, tsNode, expressionType,
-        expressionTypeStr, checker) {
+        currentTagName: string, propBinding: string,
+        expression: TSESTree.Expression, tsNode: ts.Node,
+        expressionType: ts.Type, expressionTypeStr: string,
+        checker: ts.TypeChecker) {
       // Use the HTMLElementTagNameMap to get the class name from the
       // tag name.
       const mapSymbol = checker.resolveName(
           'HTMLElementTagNameMap', tsNode, ts.SymbolFlags.Interface,
           /* escapeGlobals= */ false);
       assert.ok(mapSymbol && mapSymbol.members);
-      const elSymbol = mapSymbol.members.get(currentTagName);
+      const elSymbol =
+          mapSymbol.members.get(currentTagName as ts.InternalSymbolName);
       assert.ok(elSymbol);
       const elementType = checker.getTypeOfSymbolAtLocation(elSymbol, tsNode);
       const apparentType = checker.getApparentType(elementType);
@@ -132,9 +144,10 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs({
     }
 
     function checkBooleanAttributeBinding(
-        boolName, expression, expressionTypeStr, propName) {
+        boolName: string, expression: TSESTree.Expression,
+        expressionTypeStr: string, propName: string) {
       // Check 1: Should not bind to "true" or "false" literal values.
-      if (expression.type === 'Literal' &&
+      if (isLiteral(expression) &&
           (expression.value === true || expression.value === false)) {
         context.report({
           node: expression,
@@ -165,7 +178,8 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs({
 
     // Ensure attribute bindings are never used to bind to objects/arrays.
     function checkAttributeBindingForObjectsAndArrays(
-        attrName, expression, isTsObjectOrArray, propName) {
+        attrName: string, expression: TSESTree.Expression,
+        isTsObjectOrArray: boolean, propName: string) {
       if (!isTsObjectOrArray) {
         return;
       }
@@ -192,13 +206,15 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs({
 
     let hasLitImport = false;
     let className = '';
-    let classDefinitionFile = null;
+    let classDefinitionFile: ts.SourceFile|null = null;
 
     return {
-      [`ImportDeclaration[source.value=/${LIT_IMPORT_REGEX}/]`](node) {
+      [`ImportDeclaration[source.value=/${LIT_IMPORT_REGEX}/]`](
+          _node: TSESTree.ImportDeclaration) {
         hasLitImport = true;
       },
-      ['FunctionDeclaration[id.name="getHtml"]'](node) {
+      ['FunctionDeclaration[id.name="getHtml"]'](
+          node: TSESTree.FunctionDeclarationWithName) {
         if (!hasLitImport) {
           return;
         }
@@ -216,13 +232,13 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs({
             null;
         className = classImport.type;
       },
-      ['FunctionDeclaration[id.name="getHtml"] TemplateLiteral'](node) {
+      ['FunctionDeclaration[id.name="getHtml"] TemplateLiteral'](
+          node: TSESTree.TemplateLiteral) {
         if (className === '' || classDefinitionFile === null) {
           return;
         }
 
-        const declaredProps =
-            extractPropertiesFromClass(classDefinitionFile, className);
+        extractPropertiesFromClass(classDefinitionFile, className);
 
         const bindingRegex =
             /(\s+(?<attrName>[a-z0-9\-]+)|\?(?<boolName>[a-z0-9-]+)|\.(?<propName>[a-zA-Z0-9-]+))="$/;
@@ -232,12 +248,12 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs({
           // Extract the last tag name that was seen before an expression
           // started. This is necessary because quasis and tags are not 1 to 1.
           const tagMatch =
-              /<([a-zA-Z0-9-]+)[^>]*$/.exec(node.quasis[i].value.raw);
+              /<([a-zA-Z0-9-]+)[^>]*$/.exec(node.quasis[i]!.value.raw);
           if (tagMatch) {
-            currentTagName = tagMatch[1];
+            currentTagName = tagMatch[1]!;
           }
 
-          const match = bindingRegex.exec(node.quasis[i].value.raw);
+          const match = bindingRegex.exec(node.quasis[i]!.value.raw);
           if (!match) {
             continue;
           }
@@ -255,13 +271,21 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs({
           const expressionTypeStr = checker.typeToString(expressionType);
 
           // Determine if binding is to a reactive property.
-          const isBindingToProperty = expression.type === 'MemberExpression' &&
-              expression.object.type === 'ThisExpression';
-          const propName = isBindingToProperty ?
-              expression.property.name :
-              context.sourceCode.getText(expression);
+          const isBindingToProperty =
+              expression.type === AST_NODE_TYPES.MemberExpression &&
+              expression.object.type === AST_NODE_TYPES.ThisExpression;
+
+          let propName: string;
+          if (isBindingToProperty) {
+            const memberExpression = expression as TSESTree.MemberExpression;
+            assert.ok(isIdentifier(memberExpression.property));
+            propName = memberExpression.property.name;
+          } else {
+            propName = context.sourceCode.getText(expression);
+          }
 
           // Validate property bindings
+          assert.ok(match.groups);
           const propBinding = match.groups['propName'];
           if (propBinding && currentTagName) {
             checkPropertyBinding(
