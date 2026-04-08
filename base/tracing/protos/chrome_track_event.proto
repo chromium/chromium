@@ -1030,6 +1030,10 @@ message EventLatency {
         // Trace IDs of the first synthetic scroll update included in this
         // frame. Can be joined with EventLatency.event_latency_id.
         optional int64 first_event_latency_id = 1;
+
+        // True if the synthetic scroll update was generated from an inertial
+        // input (e.g. a fling).
+        optional bool has_inertial_input = 2;
       }
       optional Synthetic synthetic = 2;
 

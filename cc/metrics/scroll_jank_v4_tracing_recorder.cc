@@ -71,6 +71,7 @@ void PopulateScrollUpdatesSyntheticProto(
   if (synthetic.first_input_trace_id.has_value()) {
     out.set_first_event_latency_id(synthetic.first_input_trace_id->value());
   }
+  out.set_has_inertial_input(synthetic.has_inertial_input);
 }
 
 void PopulateScrollUpdatesProto(

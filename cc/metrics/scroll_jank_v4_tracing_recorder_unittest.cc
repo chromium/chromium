@@ -580,6 +580,7 @@ TEST_F(ScrollJankV4RecorderTest,
           {"scroll_jank_v4.updates.first_scroll_update_type",
            "SYNTHETIC_WITH_EXTRAPOLATED_INPUT_GENERATION_TIMESTAMP"},
           {"scroll_jank_v4.updates.synthetic.first_event_latency_id", "99"},
+          {"scroll_jank_v4.updates.synthetic.has_inertial_input", "false"},
           {"scroll_jank_v4.vsync_interval_us", "16000000"},
           {"scroll_jank_v4.vsyncs_since_previous_frame", "9"},
       }));
@@ -684,18 +685,19 @@ TEST_F(ScrollJankV4RecorderTest,
                    "20000000", "0", "123"},
                   {kSliceIdMatcher, "Begin frame", "30000000", "0", "123"},
               }));
-  EXPECT_THAT(QueryTraceProcessor(kScrollJankV4ArgsQuery),
-              QueryResultIs({
-                  {"key", "display_value"},
-                  {"scroll_jank_v4.damage_type",
-                   "NON_DAMAGING_WITHOUT_EXTRAPOLATED_PRESENTATION_TIMESTAMP"},
-                  {"scroll_jank_v4.is_janky", "false"},
-                  {"scroll_jank_v4.result_id", "123"},
-                  {"scroll_jank_v4.updates.first_scroll_update_type",
-                   "SYNTHETIC_WITHOUT_EXTRAPOLATED_INPUT_GENERATION_TIMESTAMP"},
-                  {"scroll_jank_v4.updates.synthetic", "[NULL]"},
-                  {"scroll_jank_v4.vsync_interval_us", "16000000"},
-              }));
+  EXPECT_THAT(
+      QueryTraceProcessor(kScrollJankV4ArgsQuery),
+      QueryResultIs({
+          {"key", "display_value"},
+          {"scroll_jank_v4.damage_type",
+           "NON_DAMAGING_WITHOUT_EXTRAPOLATED_PRESENTATION_TIMESTAMP"},
+          {"scroll_jank_v4.is_janky", "false"},
+          {"scroll_jank_v4.result_id", "123"},
+          {"scroll_jank_v4.updates.first_scroll_update_type",
+           "SYNTHETIC_WITHOUT_EXTRAPOLATED_INPUT_GENERATION_TIMESTAMP"},
+          {"scroll_jank_v4.updates.synthetic.has_inertial_input", "false"},
+          {"scroll_jank_v4.vsync_interval_us", "16000000"},
+      }));
   EXPECT_THAT(QueryTraceProcessor(kScrollJankV4ResultsQuery),
               QueryResultIs(
                   {{"id",
