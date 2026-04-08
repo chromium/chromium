@@ -12,6 +12,7 @@
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom-forward.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
 namespace views {
@@ -52,6 +53,7 @@ class WebUIBackForwardControl {
   const raw_ptr<WebUIToolbarWebView> webui_toolbar_web_view_;
   const BackForwardButton::Direction direction_;
   BackForwardMenuModel menu_model_;
+  std::unique_ptr<views::MenuModelAdapter> menu_model_adapter_;
   std::unique_ptr<views::MenuRunner> menu_runner_;
   bool enabled_ = true;
   bool visible_ = true;

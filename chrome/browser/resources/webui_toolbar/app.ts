@@ -204,20 +204,13 @@ export class ToolbarAppElement extends CrLitElement {
           Math.round(performance.now() - entry.domInteractive));
     }
 
-    const promises = [];
-    const reload = this.shadowRoot.querySelector<CrLitElement>('#reload');
-    if (reload) {
-      promises.push(reload.updateComplete);
-    }
-    const splitTabs =
-        this.shadowRoot.querySelector<CrLitElement>('#split-tabs');
-    if (splitTabs) {
-      promises.push(splitTabs.updateComplete);
-    }
-    const home = this.shadowRoot.querySelector<CrLitElement>('#home');
-    if (home) {
-      promises.push(home.updateComplete);
-    }
+    const waitSelectors =
+        ['#back', '#forward', '#reload', '#split-tabs', '#home'];
+    const promises =
+        waitSelectors.map(s => this.shadowRoot.querySelector<CrLitElement>(s))
+            .filter(el => !!el)
+            .map(el => el.updateComplete);
+
     Promise.all(promises).then(() => {
       this.browserProxy_.toolbarUIHandler.onPageInitialized();
     });

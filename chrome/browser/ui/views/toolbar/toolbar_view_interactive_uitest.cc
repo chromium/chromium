@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_accessibility_test.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
@@ -178,8 +179,7 @@ int GetIDForFocusedViewElement(const views::View* view) {
 
 }  // namespace
 
-class ToolbarViewTest : public InteractiveBrowserTest,
-                        public ::testing::WithParamInterface<bool> {
+class ToolbarViewTest : public ToolbarAccessibilityTest {
  public:
   ToolbarViewTest() {
     if (GetParam()) {
@@ -197,20 +197,10 @@ class ToolbarViewTest : public InteractiveBrowserTest,
   ToolbarViewTest& operator=(const ToolbarViewTest&) = delete;
 
   void SetUpOnMainThread() override {
-    InteractiveBrowserTest::SetUpOnMainThread();
+    ToolbarAccessibilityTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
 
-    WaitForInitialWebUICanShow(browser());
-  }
-
-  void WaitForInitialWebUICanShow(Browser* browser) {
-    // Wait for the toolbar to load. Note that we can't wait for the widget to
-    // become visible instead because the Widget will always be visible on Mac
-    // OS.
-    ASSERT_TRUE(base::test::RunUntil([browser]() {
-      InitialWebUIManager* manager = InitialWebUIManager::From(browser);
-      return !manager || !manager->RequestDeferShow(base::DoNothing());
-    }));
+    WaitForInitialWebUI();
   }
 
   auto ExpectBackForwardButtonEnabled(ui::ElementIdentifier id, bool enabled) {
@@ -224,12 +214,6 @@ class ToolbarViewTest : public InteractiveBrowserTest,
     } else {
       return Steps(CheckViewProperty(id, &views::View::GetEnabled, enabled));
     }
-  }
-
-  auto MoveMouseToElement(ui::ElementIdentifier id) {
-    return MoveMouseTo(id, base::BindOnce([](ui::TrackedElement* el) {
-                         return el->GetScreenBounds().CenterPoint();
-                       }));
   }
 
   void RunToolbarCycleFocusTest(Browser* browser);
@@ -386,7 +370,7 @@ IN_PROC_BROWSER_TEST_P(ToolbarViewTest, ToolbarCycleFocusWithBookmarkBar) {
   // already showing when a window opens, so create a second browser
   // window with the same profile.
   Browser* second_browser = CreateBrowser(browser()->profile());
-  WaitForInitialWebUICanShow(second_browser);
+  WaitForInitialWebUI(second_browser);
   RunToolbarCycleFocusTest(second_browser);
 }
 

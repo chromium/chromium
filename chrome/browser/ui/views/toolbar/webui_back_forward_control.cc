@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/toolbar/webui_back_forward_control.h"
 
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toolbar/back_forward_menu_model.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
@@ -30,10 +31,16 @@ void WebUIBackForwardControl::HandleContextMenu(
     views::Widget* widget,
     const gfx::Rect& screen_rect,
     ui::mojom::MenuSourceType source) {
-  menu_runner_ = std::make_unique<views::MenuRunner>(
-      &menu_model_, views::MenuRunner::HAS_MNEMONICS,
+  menu_model_adapter_ = std::make_unique<views::MenuModelAdapter>(
+      &menu_model_,
       base::BindRepeating(&WebUIToolbarWebView::OnBackForwardStateChanged,
                           base::Unretained(webui_toolbar_web_view_)));
+  std::unique_ptr<views::MenuItemView> root = menu_model_adapter_->CreateMenu();
+  root->SetSubmenuId(direction_ == BackForwardButton::Direction::kBack
+                         ? kToolbarBackButtonMenuElementId
+                         : kToolbarForwardButtonMenuElementId);
+  menu_runner_ = std::make_unique<views::MenuRunner>(
+      std::move(root), views::MenuRunner::HAS_MNEMONICS);
   menu_runner_->RunMenuAt(webui_toolbar_web_view_->GetWidget(), nullptr,
                           screen_rect, views::MenuAnchorPosition::kTopLeft,
                           source);

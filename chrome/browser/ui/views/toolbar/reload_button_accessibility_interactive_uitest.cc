@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_accessibility_test.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
@@ -66,8 +67,7 @@ class ReloadTypeObserver : public content::WebContentsObserver {
 };
 }  // namespace
 
-class ReloadButtonAccessibilityTest : public InteractiveBrowserTest,
-                                      public testing::WithParamInterface<bool> {
+class ReloadButtonAccessibilityTest : public ToolbarAccessibilityTest {
  public:
   ReloadButtonAccessibilityTest() {
     if (GetParam()) {
@@ -80,102 +80,17 @@ class ReloadButtonAccessibilityTest : public InteractiveBrowserTest,
   }
 
   void SetUpOnMainThread() override {
-    InteractiveBrowserTest::SetUpOnMainThread();
-
-    // Wait for the toolbar to load if WebUI is enabled.
-    ASSERT_TRUE(base::test::RunUntil([browser = browser()]() {
-      InitialWebUIManager* manager = InitialWebUIManager::From(browser);
-      return !manager || !manager->RequestDeferShow(base::DoNothing());
-    }));
-
-    // Enable accessibility for this process. For WebUI we also need to wait for
-    // the accessibility information to be passed from the WebUI renderer.
-    std::optional<content::AccessibilityNotificationWaiter> load_waiter;
-    if (GetParam()) {
-      content::WebContents* toolbar_webcontents =
-          browser()
-              ->GetBrowserView()
-              .toolbar_button_provider()
-              ->GetWebUIToolbarViewForTesting()
-              ->GetWebViewForTesting()
-              ->GetWebContents();
-      ASSERT_TRUE(toolbar_webcontents);
-
-      // Enable accessibility mode for this toolbar and wait for it to populate.
-      load_waiter.emplace(toolbar_webcontents, ax::mojom::Event::kLoadComplete);
-    }
-
-    bool accessibility_initially_disabled =
-        content::BrowserAccessibilityState::GetInstance()
-            ->GetAccessibilityMode()
-            .is_mode_off();
-    scoped_accessibility_mode_ =
-        content::BrowserAccessibilityState::GetInstance()
-            ->CreateScopedModeForProcess(ui::kAXModeComplete);
-    if (load_waiter) {
-      // The linux-blink-web-tests-force-accessibility-rel try bot already has
-      // accessibility turned on. If we try to wait for a notification when it
-      // is already on, then we will likely wait forever (since we already
-      // missed the notification). We still need to wait long enough to get the
-      // accessibility info.
-      if (accessibility_initially_disabled) {
-        ASSERT_TRUE(load_waiter->WaitForNotification());
-      } else {
-        ASSERT_TRUE(base::test::RunUntil([browser = browser()]() {
-          BrowserView* const browser_view =
-              BrowserView::GetBrowserViewForBrowser(browser);
-          ToolbarButtonProvider* provider =
-              browser_view->toolbar_button_provider();
-          if (WebUIToolbarWebView* toolbar_web_view =
-                  provider->GetWebUIToolbarViewForTesting()) {
-            return toolbar_web_view->GetWebViewForTesting()
-                       ->web_contents()
-                       ->GetAccessibilityRootNode() != nullptr;
-          }
-          return true;
-        }));
-      }
-    }
-  }
-
-  static ui::AXNode* FindReloadButtonNode(ui::AXNode* node) {
-    if (node->data().role == ax::mojom::Role::kButton &&
-        node->data().GetString16Attribute(ax::mojom::StringAttribute::kName) ==
-            l10n_util::GetStringUTF16(IDS_ACCNAME_RELOAD)) {
-      return node;
-    }
-    for (ui::AXNode* child : node->children()) {
-      if (ui::AXNode* found = FindReloadButtonNode(child)) {
-        return found;
-      }
-    }
-    return nullptr;
+    ToolbarAccessibilityTest::SetUpOnMainThread();
+    WaitForInitialWebUI();
+    ConfigureAccessibilityForWebUITest(GetParam());
   }
 
   static ui::AXNodeData GetReloadAXNodeData(const ui::TrackedElement* el,
                                             const char* file,
                                             int line) {
-    if (auto* const view_el = el->AsA<views::TrackedElementViews>()) {
-      ui::AXNodeData node_data;
-      view_el->view()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
-      return node_data;
-    } else if (auto* const webui_el = el->AsA<ui::TrackedElementWebUI>()) {
-      ui::AXNode* root =
-          webui_el->handler()->web_contents()->GetAccessibilityRootNode();
-      if (!root) {
-        ADD_FAILURE_AT(file, line) << "Could not get AXNode root";
-        return {};
-      }
-      ui::AXNode* reload_button = FindReloadButtonNode(root);
-      if (!reload_button) {
-        ADD_FAILURE_AT(file, line) << "Could not find AXNode reload_button";
-        return {};
-      }
-      return reload_button->data();
-    } else {
-      ADD_FAILURE_AT(file, line) << "Unsupported element type";
-      return {};
-    }
+    return GetAXNodeData(el, ax::mojom::Role::kButton,
+                         l10n_util::GetStringUTF16(IDS_ACCNAME_RELOAD), file,
+                         line);
   }
 
   // Helper to check tooltip/accessible name.
@@ -196,13 +111,6 @@ class ReloadButtonAccessibilityTest : public InteractiveBrowserTest,
         StopObservingState(kReloadButtonHasPopupState));
   }
 
-  // Safe MoveMouseTo that works for both Views and WebUI.
-  auto MoveMouseToElement(ui::ElementIdentifier id) {
-    return MoveMouseTo(id, base::BindOnce([](ui::TrackedElement* el) {
-                         return el->GetScreenBounds().CenterPoint();
-                       }));
-  }
-
   static std::u16string GetReloadButtonTooltip(const ui::TrackedElement* el) {
     return GetReloadAXNodeData(el, __FILE__, __LINE__)
         .GetString16Attribute(ax::mojom::StringAttribute::kDescription);
@@ -217,7 +125,6 @@ class ReloadButtonAccessibilityTest : public InteractiveBrowserTest,
  protected:
   std::unique_ptr<ReloadTypeObserver> reload_observer_;
   ui::AXNodeData node_data_;
-  std::unique_ptr<content::ScopedAccessibilityMode> scoped_accessibility_mode_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
