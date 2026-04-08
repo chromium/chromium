@@ -282,6 +282,7 @@ public class UrlBarCoordinator
 
     /* package */ void clearFocus() {
         mUrlBar.clearFocus();
+        restartImfInput();
     }
 
     /* package */ void requestAccessibilityFocus() {
@@ -397,5 +398,18 @@ public class UrlBarCoordinator
      */
     public void setUrlBarHintText(String hintTextRes) {
         mMediator.setUrlBarHintText(hintTextRes);
+    }
+
+    /**
+     * Restarts Android input method framework on the UrlBar, resetting any existing input
+     * connection.
+     */
+    void restartImfInput() {
+        InputMethodManager imm =
+                (InputMethodManager)
+                        mUrlBar.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.restartInput(mUrlBar);
+        }
     }
 }
