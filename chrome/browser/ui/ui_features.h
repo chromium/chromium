@@ -314,8 +314,6 @@ BASE_DECLARE_FEATURE(kByDateHistoryInSidePanel);
 // If enabled, the "Tabs from other devices" side panel will be available.
 BASE_DECLARE_FEATURE(kTabsFromOtherDevicesSidePanel);
 
-// Controls whether to use the TabStrip browser api's controller.
-BASE_DECLARE_FEATURE(kTabStripBrowserApi);
 
 #if !BUILDFLAG(IS_ANDROID)
 // Controls whether to add new tabs to active tab group or to the end of the

@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_page_handler.h"
@@ -20,7 +19,6 @@
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_layout.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/grit/tab_strip_api_resources_map.h"
 #include "chrome/grit/tab_strip_resources.h"
 #include "chrome/grit/tab_strip_resources_map.h"
 #include "components/favicon_base/favicon_url_parser.h"
@@ -47,15 +45,8 @@ TabStripUI::TabStripUI(content::WebUI* web_ui)
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(profile,
                                              chrome::kChromeUITabStripHost);
-  if (base::FeatureList::IsEnabled(features::kTabStripBrowserApi)) {
-    webui::SetupWebUIDataSource(
-        html_source, kTabStripResources,
-        IDR_TAB_STRIP_PLAYGROUND_TAB_STRIP_PLAYGROUND_HTML);
-    html_source->AddResourcePaths(kTabStripApiResources);
-  } else {
-    webui::SetupWebUIDataSource(html_source, kTabStripResources,
-                                IDR_TAB_STRIP_TAB_STRIP_HTML);
-  }
+  webui::SetupWebUIDataSource(html_source, kTabStripResources,
+                              IDR_TAB_STRIP_TAB_STRIP_HTML);
 
   html_source->AddString("tabIdDataType", kWebUITabIdDataType);
   html_source->AddString("tabGroupIdDataType", kWebUITabGroupIdDataType);

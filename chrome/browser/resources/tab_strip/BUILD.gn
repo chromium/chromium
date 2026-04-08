@@ -22,7 +22,6 @@ build_webui("build") {
     "alert_indicators/tab_media_recording.svg",
     "alert_indicators/tab_usb_connected.svg",
     "alert_indicators/vr_headset.svg",
-    "playground/tab_strip_playground.html",
     "tab_strip.html",
   ]
 
@@ -30,7 +29,6 @@ build_webui("build") {
   web_component_files = [
     "alert_indicator.ts",
     "alert_indicators.ts",
-    "playground/split_tab_playground.ts",
     "tab.ts",
     "tab_group.ts",
     "tab_list.ts",
@@ -38,9 +36,6 @@ build_webui("build") {
 
   ts_files = [
     "drag_manager.ts",
-    "playground/tab_group_playground.ts",
-    "playground/tab_list_playground.ts",
-    "playground/tab_playground.ts",
     "tab_swiper.ts",
     "tabs_api_proxy.ts",
   ]

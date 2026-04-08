@@ -10,7 +10,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -25,7 +24,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/tab_strip_model_injector.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_impl.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
@@ -139,9 +137,7 @@ class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
   using TabStripService = tabs_api::mojom::TabStripService;
   using TabStripExperimentService = tabs_api::mojom::TabStripExperimentService;
 
-  TabStripServiceImplBrowserTest() {
-    feature_list_.InitWithFeatures({features::kTabStripBrowserApi}, {});
-  }
+  TabStripServiceImplBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -293,7 +289,6 @@ class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
     }
   }
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<tabs_api::TabStripServiceImpl> tab_strip_service_;
 };
 

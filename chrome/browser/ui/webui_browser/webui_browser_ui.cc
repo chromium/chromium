@@ -192,9 +192,7 @@ void WebUIBrowserUI::BindInterface(
     mojo::PendingReceiver<tabs_api::mojom::TabStripService> receiver) {
   auto* tab_strip_service_feature =
       browser_->browser_window_features()->tab_strip_service_feature();
-  CHECK(tab_strip_service_feature)
-      << "Browser missing TabStripService, did you enable "
-         "TabStripBrowserApi feature flag?";
+  CHECK(tab_strip_service_feature) << "Browser missing TabStripService";
   tab_strip_service_feature->Accept(std::move(receiver));
 }
 
