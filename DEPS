@@ -2943,10 +2943,10 @@ deps = {
       'bucket': 'chromium-fonts',
       'objects': [
           {
-              'object_name': '6d9e23dd7a3485066f41662d7b1e08886e2006c3',
-              'sha256sum': '846f4484ba6796c9362732c5adb7325291f6c6337dee7852a14a567b43773041',
-              'size_bytes': 51752960,
-              'generation': 1774254437377550
+              'object_name': 'a28b222b79851716f8358d2800157d9ffe117b3545031ae51f69b7e1e1b9a969',
+              'sha256sum': 'a28b222b79851716f8358d2800157d9ffe117b3545031ae51f69b7e1e1b9a969',
+              'size_bytes': 33233004,
+              'generation': 1746454415712520
           },
       ],
   },

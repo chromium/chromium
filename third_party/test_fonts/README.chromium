@@ -15,27 +15,22 @@ distributions.
 
 How to update or add fonts:
 
-1.  If updating fonts or adding new ones, ensure that you have run gclient sync
-    beforehand so unaffected existing fonts are preserved in the upload.
-2.  Download fonts from their source repositories, see "Font Origins" below,
+1.  Download fonts from their source repositories, see "Font Origins" below,
     build them if necessary.
-3.  Copy the necessary files to ./test_fonts/test_fonts/
-4.  Verify that the licenses are correctly referenced in LICENSE (See the
+2.  Copy the necessary files to ./test_fonts
+3.  Verify that the licenses are correctly referenced in LICENSE (See the
     section headers in the LICENSE file: When adding a new license, add a dashed
     line, list the new font files that it applies to, and copy and paste the
     additional license below.)
-5.  Update the '//third_party/test_fonts/' BUILD.gn target to include all the
+4   Update the '//third_party/test_fonts/' BUILD.gn target to include all the
     current fonts and their license files.
-6.  Run the 'upload_to_google_storage_first_class.py' (from depot_tools) script
-    to upload the files. You must do this in the
-    //third_party/test_fonts/test_fonts directory.
-    To do this, execute:
+5.  Run the 'upload_to_google_storage_first_class.py' (from depot_tools) script to upload
+    the files. You must do this in the //third_party/test_fonts/test_fonts directory.  To
+    do this, execute:
         $ upload_to_google_storage_first_class.py --bucket=chromium-fonts ./
-    The script automatically creates a tar archive, uploads it, and prints a
-    JSON blob with object_name, sha256sum, size_bytes, and generation fields.
-7.  Update the 'objects' dict in DEPS at 'src/third_party/test_fonts/test_fonts'
-    with the values from the JSON output of step 6.
-8.  (optional) Update FONT_FILES in
+6.  Update the entries in DEPS/test_fonts/test_fonts for object_name, sha256sum, size_bytes,
+        and generation.
+7.  (optional) Update FONT_FILES in
     third_party/blink/tools/blinkpy/web_tests/port/base.py .
 
 If you need access to the chromium-fonts bucket, contact Chrome infra.% For
@@ -68,7 +63,7 @@ MuktiNarrow.ttf              http://www.nongnu.org/freebangfont/downloads.html#m
 NotoColorEmoji.ttf           https://github.com/googlefonts/noto-emoji
 NotoSansCJK-VF.otf.ttc       https://github.com/googlefonts/noto-cjk/tree/main/Sans/Variable/OTC
 NotoSansKhmer-Regular.ttf    https://www.google.com/get/noto/#sans-khmr
-NotoSansSymbols2-Regular.ttf https://github.com/notofonts/symbols/releases/tag/NotoSansSymbols2-v2.008 (hinted/ttf/NotoSansSymbols2-Regular.ttf)
+NotoSansSymbols2-Regular.ttf https://github.com/googlefonts/noto-fonts/tree/master/hinted/NotoSansSymbols2
 NotoSansTibetan-Regular.ttf  https://github.com/googlefonts/noto-fonts/tree/master/hinted/NotoSansTibetan
 Tinos-Bold.ttf               https://github.com/google/fonts/tree/master/apache/tinos
 Tinos-BoldItalic.ttf         https://github.com/google/fonts/tree/master/apache/tinos
