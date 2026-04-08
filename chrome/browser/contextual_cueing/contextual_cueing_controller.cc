@@ -65,6 +65,24 @@ std::optional<CueTargetType> GetTargetType(
   }
 }
 
+optimization_guide::proto::Tab GetTabProtoFromWebContents(
+    content::WebContents* web_contents) {
+  optimization_guide::proto::Tab tab;
+  tab.set_url(web_contents->GetLastCommittedURL().spec());
+  tab.set_title(base::UTF16ToUTF8(web_contents->GetTitle()));
+  SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents);
+  if (tab_id.is_valid()) {
+    tab.set_tab_id(tab_id.id());
+  }
+  return tab;
+}
+
+bool AreTabsEqual(optimization_guide::proto::Tab tab1,
+                  optimization_guide::proto::Tab tab2) {
+  return tab1.tab_id() == tab2.tab_id() && tab1.url() == tab2.url() &&
+         tab1.title() == tab2.title();
+}
+
 }  // namespace
 
 ContextualCueingController::ContextualCueingController(
@@ -178,14 +196,7 @@ void ContextualCueingController::InitiateModelExecutionRequest() {
     if (!tab_contents->GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
       continue;
     }
-    SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab_contents);
-    if (!tab_id.is_valid()) {
-      continue;
-    }
-    auto* background_tab = request.add_background_tabs();
-    background_tab->set_url(tab_contents->GetURL().spec());
-    background_tab->set_title(base::UTF16ToUTF8(tab_contents->GetTitle()));
-    background_tab->set_tab_id(tab_id.id());
+    *request.add_background_tabs() = GetTabProtoFromWebContents(tab_contents);
   }
   LOCAL_HISTOGRAM_COUNTS_100("ContextualCueing.V2.NumRequestedBackgroundTabs",
                              request.background_tabs_size());
@@ -194,14 +205,25 @@ void ContextualCueingController::InitiateModelExecutionRequest() {
       /*options=*/{},
       base::BindOnce(
           &ContextualCueingController::OnModelExecutionResponseReceived,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr(),
+          GetTabProtoFromWebContents(active_web_contents)));
 }
 
 void ContextualCueingController::OnModelExecutionResponseReceived(
+    optimization_guide::proto::Tab active_tab,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
-  // TODO: b/496000131 - Ensure we are still on the same tab that we requested
-  // for.
+  tabs::TabInterface* current_active_tab = tab_list_interface_->GetActiveTab();
+  if (!current_active_tab || !current_active_tab->GetContents() ||
+      !AreTabsEqual(active_tab, GetTabProtoFromWebContents(
+                                    current_active_tab->GetContents()))) {
+    MODEL_EXECUTION_LOG(
+        "Model execution returned but tab for generated cue is no longer "
+        "active.");
+    RecordContextualCueingDecision(
+        ContextualCueingDecision::kNoLongerActiveTabAfterModelExecution);
+    return;
+  }
 
   if (!result.response.has_value()) {
     MODEL_EXECUTION_LOG("Model execution to generate cue failed.");

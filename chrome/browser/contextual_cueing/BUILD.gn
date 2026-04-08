@@ -65,6 +65,7 @@ if (!is_android) {
     deps = [
       ":contextual_cueing",
       "//base/test:test_support",
+      "//chrome/browser/optimization_guide:test_support",
       "//chrome/browser/ui/browser_window",
       "//chrome/test:test_support",
       "//content/public/browser",

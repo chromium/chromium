@@ -60,7 +60,9 @@ enum class ContextualCueingDecision {
   // The cue couldn't be shown because the page actions framework wasn't
   // available.
   kNoPageActions = 12,
-  kMaxValue = kNoPageActions,
+  // The cue couldn't be shown because the tab for the cue was no longer active.
+  kNoLongerActiveTabAfterModelExecution = 13,
+  kMaxValue = kNoLongerActiveTabAfterModelExecution,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_cueing/enums.xml:ContextualCueingDecision)
 
@@ -89,6 +91,7 @@ class ContextualCueingController
 
   // Callback for when the model execution response is received.
   void OnModelExecutionResponseReceived(
+      optimization_guide::proto::Tab active_tab,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 

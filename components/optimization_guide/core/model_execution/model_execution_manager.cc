@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
@@ -163,8 +164,10 @@ void ModelExecutionManager::ExecuteModel(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (test_execution_results_.find(feature) != test_execution_results_.end()) {
-    std::move(callback).Run(std::move(test_execution_results_[feature]),
-                            nullptr);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       std::move(test_execution_results_[feature]), nullptr));
     test_execution_results_.erase(feature);
     return;
   }
