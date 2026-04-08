@@ -249,6 +249,7 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   bool fullscreen_supported = true;
 
   bool text_autosizing_enabled = BUILDFLAG(IS_ANDROID);
+  bool text_size_adjust_enabled = BUILDFLAG(IS_ANDROID);
 
   // Representation of the Web App Manifest scope if any.
   GURL web_app_scope;

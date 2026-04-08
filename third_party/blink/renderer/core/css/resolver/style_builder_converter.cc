@@ -2186,7 +2186,7 @@ static CSSToLengthConversionData AdjustedZoomConversionData(
 
   if (!state.StyleBuilder().GetTextSizeAdjust().IsAuto()) {
     Settings* settings = state.GetDocument().GetSettings();
-    if (settings && settings->GetTextAutosizingEnabled()) {
+    if (settings && settings->GetTextSizeAdjustEnabled()) {
       multiplier *= state.StyleBuilder().GetTextSizeAdjust().Multiplier();
     }
   }

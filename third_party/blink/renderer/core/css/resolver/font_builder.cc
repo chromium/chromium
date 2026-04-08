@@ -311,7 +311,7 @@ float FontBuilder::GetComputedSizeFromSpecifiedSize(
 
   if (!builder.GetTextSizeAdjust().IsAuto()) {
     Settings* settings = document_->GetSettings();
-    if (settings && settings->GetTextAutosizingEnabled()) {
+    if (settings && settings->GetTextSizeAdjustEnabled()) {
       zoom_factor *= builder.GetTextSizeAdjust().Multiplier();
     }
   }

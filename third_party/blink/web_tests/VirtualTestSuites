@@ -4640,7 +4640,7 @@
     "args": [
       "--enable-threaded-compositing",
       "--enable-viewport",
-      "--blink-settings=textAutosizingEnabled=true,viewportMetaEnabled=true"
+      "--blink-settings=textAutosizingEnabled=true,textSizeAdjustEnabled=true,viewportMetaEnabled=true"
     ],
     "expires": "never"
   },
@@ -4660,7 +4660,7 @@
     "args": [
       "--enable-threaded-compositing",
       "--enable-viewport",
-      "--blink-settings=textAutosizingEnabled=true,accessibilityFontScaleFactor=2,deviceScaleAdjustment=3,viewportMetaEnabled=true"
+      "--blink-settings=textAutosizingEnabled=true,textSizeAdjustEnabled=true,accessibilityFontScaleFactor=2,deviceScaleAdjustment=3,viewportMetaEnabled=true"
     ],
     "expires": "never"
   },

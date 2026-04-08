@@ -536,6 +536,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.text_autosizing_enabled;
   }
 
+  static bool text_size_adjust_enabled(
+      const blink::web_pref::WebPreferences& r) {
+    return r.text_size_adjust_enabled;
+  }
+
   static const GURL& web_app_scope(const ::blink::web_pref::WebPreferences& r) {
     return r.web_app_scope;
   }

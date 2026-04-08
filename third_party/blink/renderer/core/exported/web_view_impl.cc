@@ -3851,6 +3851,7 @@ void WebViewImpl::UpdateWebPreferences(
     web_preferences_.shrinks_viewport_contents_to_fit = false;
     web_preferences_.main_frame_resizes_are_orientation_changes = false;
     web_preferences_.text_autosizing_enabled = false;
+    web_preferences_.text_size_adjust_enabled = false;
 
     // Insecure content should not be allowed in a fenced frame.
     web_preferences_.allow_running_insecure_content = false;

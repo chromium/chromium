@@ -1258,6 +1258,12 @@
       initial: false,
       invalidate: ["TextAutosizing"],
     },
+    // Enables the text-size-adjust CSS property.
+    {
+      name: "textSizeAdjustEnabled",
+      initial: false,
+      invalidate: ["Style"],
+    },
     // Only set by web tests, and only used if textAutosizingEnabled is true.
     {
       name: "textAutosizingWindowSizeOverride",

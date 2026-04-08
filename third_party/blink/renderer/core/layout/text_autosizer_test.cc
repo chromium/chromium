@@ -65,6 +65,7 @@ class TextAutosizerTest : public RenderingTest {
     GetTextAutosizerClient().set_device_scale_factor(1.f);
     RenderingTest::SetUp();
     GetDocument().GetSettings()->SetTextAutosizingEnabled(true);
+    GetDocument().GetSettings()->SetTextSizeAdjustEnabled(true);
     GetDocument().GetSettings()->SetTextAutosizingWindowSizeOverride(
         gfx::Size(320, 480));
   }
@@ -1134,6 +1135,7 @@ class TextAutosizerSimTest : public SimTest {
 
     Settings& settings = WebView().GetPage()->GetSettings();
     settings.SetTextAutosizingEnabled(true);
+    settings.SetTextSizeAdjustEnabled(true);
     settings.SetTextAutosizingWindowSizeOverride(gfx::Size(400, 400));
     settings.SetDeviceScaleAdjustment(1.5f);
   }

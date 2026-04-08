@@ -276,6 +276,7 @@ struct WebPreferences {
   bool fullscreen_supported;
 
   bool text_autosizing_enabled;
+  bool text_size_adjust_enabled;
 
   // Representation of the Web App Manifest scope if any.
   url.mojom.Url web_app_scope;
