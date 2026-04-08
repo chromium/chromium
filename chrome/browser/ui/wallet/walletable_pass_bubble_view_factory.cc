@@ -19,7 +19,7 @@ namespace wallet {
 namespace {
 
 static views::View* FindAnchorView(content::WebContents* web_contents) {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
     return nullptr;
   }

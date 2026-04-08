@@ -11,6 +11,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "components/signin/public/base/consent_level.h"
@@ -79,11 +80,12 @@ extensions::WebViewGuest* GetAuthWebViewGuest(
 }
 
 Browser* GetDesktopBrowser(content::WebUI* web_ui) {
-  Browser* browser = chrome::FindBrowserWithTab(web_ui->GetWebContents());
+  BrowserWindowInterface* browser =
+      chrome::FindBrowserWithTab(web_ui->GetWebContents());
   if (!browser) {
-    browser = chrome::FindLastActiveWithProfile(Profile::FromWebUI(web_ui));
+    return chrome::FindLastActiveWithProfile(Profile::FromWebUI(web_ui));
   }
-  return browser;
+  return browser->GetBrowserForMigrationOnly();
 }
 
 base::TimeDelta GetMinorModeRestrictionsDeadline() {

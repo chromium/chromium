@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/webui/settings/password_manager_handler.h"
 
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 
 namespace settings {
@@ -38,7 +38,7 @@ void PasswordManagerHandler::HandleShowPasswordManager(
   CHECK_EQ(1U, args.size());
   int page = args[0].GetInt();
 
-  Browser* const current_browser =
+  BrowserWindowInterface* const current_browser =
       chrome::FindBrowserWithTab(web_ui()->GetWebContents());
   CHECK(current_browser);
 

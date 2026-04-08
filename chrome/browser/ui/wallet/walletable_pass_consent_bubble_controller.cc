@@ -62,7 +62,7 @@ WalletablePassConsentBubbleController::GetWeakPtr() {
 }
 
 void WalletablePassConsentBubbleController::OnLearnMoreClicked() {
-  if (Browser* browser = chrome::FindBrowserWithTab(web_contents())) {
+  if (BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents())) {
     SetReshowOnActivation(true);
     chrome::ShowSettingsSubPage(browser, chrome::kAutofillAiSubPage);
   }

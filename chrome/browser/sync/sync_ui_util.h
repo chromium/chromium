@@ -15,6 +15,7 @@ class Profile;
 
 #if !BUILDFLAG(IS_ANDROID)
 class Browser;
+class BrowserWindowInterface;
 #endif
 
 namespace syncer {
@@ -105,19 +106,19 @@ void ShowSyncPassphraseDialogAndDecryptData(Browser& browser);
 // Opens a tab for the purpose of retrieving the trusted vault keys, which
 // usually requires a reauth.
 void OpenTabForSyncKeyRetrieval(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     trusted_vault::TrustedVaultUserActionTriggerForUMA trigger);
 
 // Opens a tab for the purpose of improving the recoverability of the trusted
 // vault keys, which usually requires a reauth.
 void OpenTabForSyncKeyRecoverabilityDegraded(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     trusted_vault::TrustedVaultUserActionTriggerForUMA trigger);
 
 // Opens a new tab with the help page for bookmarks count limit exceeded error
 // and acknowledges the error.
 void ShowBookmarksLimitExceededHelp(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     syncer::SyncService* sync_service,
     syncer::SyncService::BookmarksLimitExceededHelpClickedSource source);
 #endif  // !BUILDFLAG(IS_ANDROID)

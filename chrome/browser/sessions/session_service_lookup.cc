@@ -8,6 +8,7 @@
 #include "chrome/browser/sessions/app_session_service_factory.h"
 #include "chrome/browser/sessions/session_service_base.h"
 #include "chrome/browser/sessions/session_service_factory.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 
 bool IsRelevantToAppSessionService(BrowserWindowInterface::Type type) {
   return (type == BrowserWindowInterface::Type::TYPE_APP ||

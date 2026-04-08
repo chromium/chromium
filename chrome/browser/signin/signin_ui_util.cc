@@ -643,7 +643,7 @@ void RecordProfileMenuClick(const Profile& profile) {
   }
 }
 
-void SignInAndEnableHistorySync(Browser* browser,
+void SignInAndEnableHistorySync(BrowserWindowInterface* browser,
                                 Profile* profile,
                                 signin_metrics::AccessPoint access_point) {
 #if !BUILDFLAG(IS_CHROMEOS)

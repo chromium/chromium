@@ -417,9 +417,11 @@ void BookmarksMessageHandler::HandleOnBatchUploadPromoClicked(
   BatchUploadService* service =
       BatchUploadServiceFactory::GetForProfile(profile);
   CHECK(service);
-  Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
+  BrowserWindowInterface* browser =
+      chrome::FindBrowserWithTab(web_ui()->GetWebContents());
   service->OpenBatchUpload(
-      browser, BatchUploadService::EntryPoint::kBookmarksManagerPromoCard);
+      browser->GetBrowserForMigrationOnly(),
+      BatchUploadService::EntryPoint::kBookmarksManagerPromoCard);
 #endif
 }
 

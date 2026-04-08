@@ -35,6 +35,7 @@
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -540,16 +541,17 @@ void BrowsingHistoryHandler::RemoveVisits(
 void BrowsingHistoryHandler::OpenClearBrowsingDataDialog() {
   // TODO(beng): This is an improper direct dependency on Browser. Route this
   // through some sort of delegate.
-  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents_);
   chrome::ShowClearBrowsingDataDialog(browser);
 }
 
 void BrowsingHistoryHandler::TurnOnHistorySync() {
 #if !BUILDFLAG(IS_CHROMEOS)
-  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents_);
   if (browser) {
     signin_ui_util::SignInAndEnableHistorySync(
-        browser, profile_, signin_metrics::AccessPoint::kRecentTabs);
+        browser, profile_,
+        signin_metrics::AccessPoint::kRecentTabs);
   }
 #else
   // This is not expected to be called on ChromeOS as the screen that uses this

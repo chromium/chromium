@@ -36,6 +36,7 @@
 #include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "content/public/browser/navigation_handle.h"
 #endif
@@ -45,7 +46,7 @@ namespace {
 #if !BUILDFLAG(IS_ANDROID)
 
 void OpenTabForSyncTrustedVaultUserAction(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const GURL& url,
     std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger) {
   DCHECK(browser);
@@ -330,7 +331,7 @@ void ShowSyncPassphraseDialogAndDecryptData(Browser& browser) {
 
 #if !BUILDFLAG(IS_ANDROID)
 void OpenTabForSyncKeyRetrieval(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     trusted_vault::TrustedVaultUserActionTriggerForUMA trigger) {
   syncer::RecordKeyRetrievalTrigger(trigger);
   const GURL continue_url =
@@ -345,7 +346,7 @@ void OpenTabForSyncKeyRetrieval(
 }
 
 void OpenTabForSyncKeyRecoverabilityDegraded(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     trusted_vault::TrustedVaultUserActionTriggerForUMA trigger) {
   syncer::RecordRecoverabilityDegradedFixTrigger(trigger);
   const GURL continue_url =
@@ -359,7 +360,7 @@ void OpenTabForSyncKeyRecoverabilityDegraded(
 }
 
 void ShowBookmarksLimitExceededHelp(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     syncer::SyncService* sync_service,
     syncer::SyncService::BookmarksLimitExceededHelpClickedSource source) {
   CHECK(browser);

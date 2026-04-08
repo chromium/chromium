@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 
 OmniboxPopupWebContentsHelper::OmniboxPopupWebContentsHelper(
@@ -14,9 +15,12 @@ OmniboxPopupWebContentsHelper::OmniboxPopupWebContentsHelper(
           *web_contents) {
   // If the WebUI Omnibox popup is hosted in a tab, find the OmniboxController
   // on the current browser window, and make it available to the OmniboxPopupUI.
-  if (auto* browser = chrome::FindBrowserWithTab(web_contents)) {
-    set_omnibox_controller(
-        browser->window()->GetLocationBar()->GetOmniboxController());
+  if (BrowserWindowInterface* browser =
+          chrome::FindBrowserWithTab(web_contents)) {
+    set_omnibox_controller(browser->GetBrowserForMigrationOnly()
+                               ->window()
+                               ->GetLocationBar()
+                               ->GetOmniboxController());
   }
 }
 

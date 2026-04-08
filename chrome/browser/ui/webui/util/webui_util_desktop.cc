@@ -76,11 +76,12 @@ ui::NativeTheme* GetNativeThemeDeprecated(content::WebContents* web_contents) {
   ui::NativeTheme* native_theme = nullptr;
 
   if (web_contents) {
-    Browser* browser = chrome::FindBrowserWithTab(web_contents);
+    BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
 
     if (browser) {
       // Find for WebContents hosted in a tab.
-      native_theme = browser->window()->GetNativeTheme();
+      native_theme =
+          browser->GetBrowserForMigrationOnly()->window()->GetNativeTheme();
     }
 
     if (!native_theme) {

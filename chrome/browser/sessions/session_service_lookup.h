@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SESSIONS_SESSION_SERVICE_LOOKUP_H_
 #define CHROME_BROWSER_SESSIONS_SESSION_SERVICE_LOOKUP_H_
 
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 
 namespace content {

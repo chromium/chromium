@@ -128,7 +128,8 @@ BrowserWindowInterface* ReparentWebContentsIntoAppBrowser(
     const webapps::AppId& app_id,
     bool insert_as_pinned_home_tab) {
   DCHECK(target_browser->GetType() == BrowserWindowInterface::TYPE_APP);
-  Browser* source_browser = chrome::FindBrowserWithTab(contents);
+  BrowserWindowInterface* source_browser =
+      chrome::FindBrowserWithTab(contents);
   CHECK(contents);
 
   if (!insert_as_pinned_home_tab) {
@@ -137,8 +138,9 @@ BrowserWindowInterface* ReparentWebContentsIntoAppBrowser(
 
   // Avoid causing an existing non-app browser window to close if this is the
   // last tab remaining.
-  if (source_browser->tab_strip_model()->count() == 1) {
-    chrome::NewTab(source_browser, NewTabTypes::kNoUserAction);
+  if (source_browser->GetTabStripModel()->count() == 1) {
+    chrome::NewTab(source_browser->GetBrowserForMigrationOnly(),
+                   NewTabTypes::kNoUserAction);
   }
 
   ReparentWebContentsIntoBrowserImpl(
@@ -469,9 +471,11 @@ bool MaybeHandleIntentPickerFocusExistingOrNavigateExisting(
   // We've found a browser in the background. We need to focus it and enqueue
   // launch params. But first we ensure that the contents (for which the Intent
   // Picker was clicked) goes away without its containing browser closing.
-  Browser* foreground_browser = chrome::FindBrowserWithTab(contents);
-  if (foreground_browser->tab_strip_model()->count() == 1) {
-    chrome::NewTab(foreground_browser, NewTabTypes::kNewTabCommand);
+  BrowserWindowInterface* foreground_browser =
+      chrome::FindBrowserWithTab(contents);
+  if (foreground_browser->GetTabStripModel()->count() == 1) {
+    chrome::NewTab(foreground_browser->GetBrowserForMigrationOnly(),
+                   NewTabTypes::kNewTabCommand);
   }
 
   contents->Close();

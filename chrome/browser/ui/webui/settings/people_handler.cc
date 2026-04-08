@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/singleton_tabs.h"
@@ -862,7 +863,8 @@ void PeopleHandler::HandleSignout(const base::ListValue& args) {
            "allowed.";
   }
 
-  Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
+  BrowserWindowInterface* browser =
+      chrome::FindBrowserWithTab(web_ui()->GetWebContents());
   if (!browser) {
     return;
   }
@@ -885,7 +887,8 @@ void PeopleHandler::HandleTurnOffSync(bool delete_profile,
     identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
         signin_metrics::ProfileSignout::kRevokeSyncFromSettings);
   } else {
-    Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
+    BrowserWindowInterface* browser =
+        chrome::FindBrowserWithTab(web_ui()->GetWebContents());
     if (browser) {
       // Clearing the primary account isn't sufficient to signout SAML accounts,
       // see http://crbug.com/1114646.
@@ -924,18 +927,21 @@ void PeopleHandler::HandlePauseSync(const base::ListValue& args) {
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 void PeopleHandler::HandleStartKeyRetrieval(const base::ListValue& args) {
-  Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
+  BrowserWindowInterface* browser =
+      chrome::FindBrowserWithTab(web_ui()->GetWebContents());
   if (!browser) {
     return;
   }
 
   OpenTabForSyncKeyRetrieval(
-      browser, trusted_vault::TrustedVaultUserActionTriggerForUMA::kSettings);
+      browser,
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::kSettings);
 }
 
 void PeopleHandler::HandleSyncShowBookmarkLimitExceededHelp(
     const base::ListValue& args) {
-  Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
+  BrowserWindowInterface* browser =
+      chrome::FindBrowserWithTab(web_ui()->GetWebContents());
   if (!browser) {
     return;
   }
@@ -947,12 +953,14 @@ void PeopleHandler::HandleSyncShowBookmarkLimitExceededHelp(
 #if !BUILDFLAG(IS_CHROMEOS)
 void PeopleHandler::HandleShowSyncPassphraseDialog(
     const base::ListValue& args) {
-  Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
+  BrowserWindowInterface* browser =
+      chrome::FindBrowserWithTab(web_ui()->GetWebContents());
   if (!browser) {
     return;
   }
 
-  ShowSyncPassphraseDialogAndDecryptData(*browser);
+  ShowSyncPassphraseDialogAndDecryptData(
+      *browser->GetBrowserForMigrationOnly());
 }
 
 void PeopleHandler::HandleShowAccountSettingsUI(const base::ListValue& args) {

@@ -12,7 +12,9 @@
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 
@@ -102,13 +104,14 @@ void BatchUploadPromoHandler::GetBatchUploadPromoLocalDataCount(
 }
 
 void BatchUploadPromoHandler::OnBatchUploadPromoClicked() {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents_);
   if (!browser) {
     return;
   }
 
   batch_upload_service_->OpenBatchUpload(
-      browser, BatchUploadService::EntryPoint::kAccountSettingsPage,
+      browser->GetBrowserForMigrationOnly(),
+      BatchUploadService::EntryPoint::kAccountSettingsPage,
       /*dialog_shown_callback=*/base::DoNothing(),
       /*dialog_closed_callback=*/
       base::BindOnce(&BatchUploadPromoHandler::OnBatchUploadDialogClosed,

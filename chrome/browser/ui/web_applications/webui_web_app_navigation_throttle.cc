@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/web_applications/webui_web_app_navigation_throttle.h"
 
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "content/public/browser/navigation_handle.h"
@@ -41,20 +41,22 @@ void WebUIWebAppNavigationThrottle::MaybeCreateAndAdd(
 
   content::WebContents* web_contents = handle.GetWebContents();
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  if (!browser || !browser->app_controller()) {
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
+  auto* app_controller =
+      browser ? web_app::AppBrowserController::From(browser) : nullptr;
+  if (!browser || !app_controller) {
     return;
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Exclude system web apps.
-  if (browser->app_controller()->system_app()) {
+  if (app_controller->system_app()) {
     return;
   }
 #endif
 
   // Proceed only if the app is coming from Chrome WebUI.
-  GURL start_url = browser->app_controller()->GetAppStartUrl();
+  GURL start_url = app_controller->GetAppStartUrl();
   if (!content::HasWebUIScheme(start_url)) {
     return;
   }
@@ -68,11 +70,12 @@ WebUIWebAppNavigationThrottle::WillStartRequest() {
   GURL navigation_url = navigation_handle()->GetURL();
 
   content::WebContents* web_contents = navigation_handle()->GetWebContents();
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
   DCHECK(browser);
-  web_app::AppBrowserController* app_controller = browser->app_controller();
+  web_app::AppBrowserController* app_controller =
+      web_app::AppBrowserController::From(browser);
   DCHECK(app_controller);
-  GURL start_url = browser->app_controller()->GetAppStartUrl();
+  GURL start_url = app_controller->GetAppStartUrl();
 
   if (content::HasWebUIScheme(navigation_url) &&
       !url::IsSameOriginWith(navigation_url, start_url)) {
@@ -85,7 +88,7 @@ WebUIWebAppNavigationThrottle::WillStartRequest() {
     navigation_handle()->GetWebContents()->OpenURL(
         std::move(params), /*navigation_handle_callback=*/{});
     // Deactivate app window to foreground the browser with new tab.
-    browser->window()->Deactivate();
+    browser->GetWindow()->Deactivate();
     return content::NavigationThrottle::CANCEL_AND_IGNORE;
   } else {
     return content::NavigationThrottle::PROCEED;

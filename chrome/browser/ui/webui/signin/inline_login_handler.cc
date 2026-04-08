@@ -20,9 +20,11 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_promo.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -209,7 +211,8 @@ void InlineLoginHandler::HandleCompleteLoginMessageWithCookies(
 
 void InlineLoginHandler::HandleSwitchToFullTabMessage(
     const base::ListValue& args) {
-  Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
+  BrowserWindowInterface* browser =
+      chrome::FindBrowserWithTab(web_ui()->GetWebContents());
   if (browser) {
     // |web_ui| is already presented in a full tab. Ignore this call.
     return;

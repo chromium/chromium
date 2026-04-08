@@ -9,8 +9,8 @@
 #include "base/memory/weak_ptr.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -35,7 +35,7 @@ namespace {
 
 std::optional<webapps::AppId> GetAppIdForManagementLinkInWebContents(
     content::WebContents* web_contents) {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
     return std::nullopt;
   }
@@ -46,7 +46,7 @@ std::optional<webapps::AppId> GetAppIdForManagementLinkInWebContents(
     return std::nullopt;
   }
 
-  if (!WebAppProvider::GetForWebApps(browser->profile())
+  if (!WebAppProvider::GetForWebApps(browser->GetProfile())
            ->registrar_unsafe()
            .AppMatches(*app_id, WebAppFilter::InstalledInChrome())) {
     return std::nullopt;

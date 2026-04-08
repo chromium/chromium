@@ -36,7 +36,7 @@ namespace signin_ui_util {
 // Chrome. If the user needs to reauth, history sync is enabled immediately, and
 // a reauth tab is opened. If the user is not signed in to Web, a sign in tab is
 // opened, and history sync is enabled once the sign in was completed.
-void SignInAndEnableHistorySync(Browser* browser,
+void SignInAndEnableHistorySync(BrowserWindowInterface* browser,
                                 Profile* profile,
                                 signin_metrics::AccessPoint access_point);
 

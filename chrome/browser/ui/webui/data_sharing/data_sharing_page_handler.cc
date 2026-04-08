@@ -106,7 +106,7 @@ void DataSharingPageHandler::GetTabGroupPreview(
 }
 
 void DataSharingPageHandler::OpenTabGroup(const std::string& group_id) {
-  Browser* browser =
+  BrowserWindowInterface* browser =
       chrome::FindBrowserWithTab(webui_controller_->web_ui()->GetWebContents());
   if (!browser) {
     return;

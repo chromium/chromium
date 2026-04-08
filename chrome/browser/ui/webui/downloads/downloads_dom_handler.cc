@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
@@ -133,11 +134,12 @@ void PromptForScanningInBubble(content::WebContents* web_contents,
   // ChromeOS does not have the download bubble and does not support local
   // password prompts for deep scans.
 #if !BUILDFLAG(IS_CHROMEOS)
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
     return;
   }
-  browser->window()
+  browser->GetBrowserForMigrationOnly()
+      ->window()
       ->GetDownloadBubbleUIController()
       ->GetDownloadDisplayController()
       ->OpenSecuritySubpage(
@@ -692,7 +694,8 @@ void DownloadsDOMHandler::ReviewDangerousRequiringGesture(
 // the feature engagement backend to record the event that the
 // promo was clicked.
 void DownloadsDOMHandler::OpenEsbSettings() {
-  Browser* browser = chrome::FindBrowserWithTab(GetWebUIWebContents());
+  BrowserWindowInterface* browser =
+      chrome::FindBrowserWithTab(GetWebUIWebContents());
   if (!browser) {
     return;
   }
@@ -702,7 +705,7 @@ void DownloadsDOMHandler::OpenEsbSettings() {
 
   feature_engagement::Tracker* tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(
-          browser->profile());
+          browser->GetProfile());
   tracker->NotifyEvent("esb_download_promo_row_clicked");
   base::RecordAction(
       base::UserMetricsAction("SafeBrowsing.EsbDownloadRowPromo.Click"));
