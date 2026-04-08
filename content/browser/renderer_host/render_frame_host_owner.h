@@ -38,10 +38,10 @@ class RenderFrameHostImpl;
 // it (e.g. to initiate or cancel a navigation in the frame).
 //
 // As main RenderFrameHostImpl can be moved between different FrameTreeNodes
-// (i.e.during prerender activations), RenderFrameHostImpl should not reference
-// FrameTreeNode directly to prevent accident violation of implicit "associated
-// FTN stays the same" assumptions. Instead, a targeted interface is exposed
-// instead.
+// (i.e. during prerender activations), RenderFrameHostImpl should not reference
+// FrameTreeNode directly to prevent accidental violation of implicit
+// "associated FTN stays the same" assumptions. Instead, a targeted interface is
+// exposed.
 //
 // If you need to store information which should persist during prerender
 // activations and same-BrowsingContext navigations, consider using
@@ -89,7 +89,7 @@ class RenderFrameHostOwner {
   // an initial empty document state.
   virtual void DidOpenDocumentInputStream() = 0;
 
-  // Creates a NavigationRequest  for a synchronous navigation that has
+  // Creates a NavigationRequest for a synchronous navigation that has
   // committed in the renderer process. Those are:
   // - same-document renderer-initiated navigations.
   // - synchronous about:blank navigations.
