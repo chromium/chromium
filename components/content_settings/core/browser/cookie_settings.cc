@@ -102,8 +102,9 @@ void CookieSettings::SetCookieSettingForUserBypass(
   ContentSettingConstraints constraints;
 
   // Only apply a lifetime outside incognito. In incognito, the duration is
-  // inherintly limited.
-  if (!is_incognito_) {
+  // inherently limited.
+  if (!is_incognito_ &&
+      !base::FeatureList::IsEnabled(features::kUserBypassUxSimplification)) {
     constraints.set_lifetime(
         content_settings::features::kUserBypassUIExceptionExpiration.Get());
   }

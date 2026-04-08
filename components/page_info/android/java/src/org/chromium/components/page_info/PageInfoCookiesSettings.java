@@ -228,7 +228,11 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private void setBlocked3pcTitleAndSummary() {
         mThirdPartyCookiesTitle.setTitle(
                 getString(R.string.page_info_cookies_site_not_working_title));
-        int resId = R.string.page_info_cookies_site_not_working_description_tracking_protection;
+        int resId =
+                PageInfoFeatures.USER_BYPASS_UX_SIMPLIFICATION.isEnabled()
+                        ? R.string.page_info_cookies_site_not_working_description
+                        : R.string
+                                .page_info_cookies_site_not_working_description_tracking_protection;
         mThirdPartyCookiesSummary.setSummary(getString(resId));
     }
 

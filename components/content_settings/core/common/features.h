@@ -67,6 +67,10 @@ BASE_DECLARE_FEATURE(kUserBypassFeedback);
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 BASE_DECLARE_FEATURE(kUserBypassUI);
 
+// Feature to enable User Bypass UX Simplification.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+BASE_DECLARE_FEATURE(kUserBypassUxSimplification);
+
 // Determines the time interval after which a user bypass exception expires.
 // Note that it affects only new exceptions, previously created exceptions won't
 // be updated to use a new expiration.

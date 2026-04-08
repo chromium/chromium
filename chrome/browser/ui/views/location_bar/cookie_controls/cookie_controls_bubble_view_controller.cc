@@ -143,7 +143,10 @@ void CookieControlsBubbleViewController::ApplyThirdPartyCookiesBlockedState() {
       l10n_util::GetStringUTF16(
           IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_TITLE),
       l10n_util::GetStringUTF16(
-          IDS_TRACKING_PROTECTION_BUBBLE_SITE_NOT_WORKING_DESCRIPTION));
+          base::FeatureList::IsEnabled(
+              content_settings::features::kUserBypassUxSimplification)
+              ? IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION
+              : IDS_TRACKING_PROTECTION_BUBBLE_SITE_NOT_WORKING_DESCRIPTION));
   bubble_view_->GetContentView()->SetCookiesLabel(l10n_util::GetStringUTF16(
       IDS_TRACKING_PROTECTION_BUBBLE_3PC_BLOCKED_SUBTITLE));
 }

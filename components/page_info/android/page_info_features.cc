@@ -20,6 +20,7 @@ namespace {
 // replicated in the same order in PageInfoFeatures.java.
 const base::Feature* const kFeaturesExposedToJava[] = {
     &content_settings::features::kUserBypassUI,
+    &content_settings::features::kUserBypassUxSimplification,
 };
 
 }  // namespace

@@ -24,6 +24,11 @@ public class PageInfoFeatures extends Features {
     public static final PageInfoFeatures USER_BYPASS_UI =
             new PageInfoFeatures(0, USER_BYPASS_UI_NAME);
 
+    public static final String USER_BYPASS_UX_SIMPLIFICATION_NAME = "UserBypassUxSimplification";
+
+    public static final PageInfoFeatures USER_BYPASS_UX_SIMPLIFICATION =
+            new PageInfoFeatures(1, USER_BYPASS_UX_SIMPLIFICATION_NAME);
+
     private final int mOrdinal;
 
     private static final String PARAM_EXPIRATION = "expiration";

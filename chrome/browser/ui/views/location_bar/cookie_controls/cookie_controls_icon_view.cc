@@ -25,6 +25,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/core/common/cookie_controls_state.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -238,7 +239,9 @@ void CookieControlsIconView::UpdateIcon() {
   UpdateTooltipText();
 
   if (controls_state_ == CookieControlsState::kBlocked3pc &&
-      should_highlight_) {
+      should_highlight_ &&
+      !base::FeatureList::IsEnabled(
+          content_settings::features::kUserBypassUxSimplification)) {
     MaybeShowIPH();
   } else {
     base::RecordAction(
