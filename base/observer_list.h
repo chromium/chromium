@@ -371,6 +371,9 @@ class ObserverList {
       DUMP_WILL_BE_NOTREACHED() << "Observers can only be added once!";
       return;
     }
+    if (!live_iterators_.empty()) {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(iteration_sequence_checker_);
+    }
     ++observers_count_;
     observers_.emplace_back(ObserverStorageType(observer));
   }
