@@ -124,10 +124,9 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
-  if ([self isRunningTest:@selector(DISABLED_testHomeAndWorkProfileEditPage)] ||
-      [self isRunningTest:@selector
-            (DISABLED_testHomeAndWorkProfileDeleteOnEdit)] ||
-      [self isRunningTest:@selector(DISABLED_testHomeAndWorkProfileRemove)] ||
+  if ([self isRunningTest:@selector(testHomeAndWorkProfileEditPage)] ||
+      [self isRunningTest:@selector(testHomeAndWorkProfileDeleteOnEdit)] ||
+      [self isRunningTest:@selector(testHomeAndWorkProfileRemove)] ||
       [self isRunningTest:@selector(testConfirmationShownOnDeletion)] ||
       [self isRunningTest:@selector(testConfirmationShownOnSwipeToDelete)]) {
     config.features_enabled.push_back(
@@ -177,6 +176,11 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
 // Helper to open the settings page for the Autofill profile with `label`.
 - (void)openEditProfile:(NSString*)label {
   [self openAutofillProfilesSettings];
+
+  // Scroll to the bottom to ensure the profile cell is not obscured by Autofill
+  // AI sections.
+  [self
+      scrollDownWithMatcher:grey_accessibilityID(kAutofillProfileTableViewID)];
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(label)]
       performAction:grey_tap()];
@@ -286,8 +290,7 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
 }
 
 // Test that the edit mode for Home and Work profiles is not accessible.
-// TODO(crbug.com/498593923): Fix this test.
-- (void)DISABLED_testHomeAndWorkProfileEditPage {
+- (void)testHomeAndWorkProfileEditPage {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleHomeAndWorkAccountProfile];
   [self openEditProfile:kHomeProfileLabel];
@@ -571,8 +574,7 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
 // Checks when the country field is changed to Germany in the edit mode, the
 // city is added to the required fields. When it is emptied, the save button in
 // displayed. The profile is an account profile.
-// TODO(crbug.com/498593923): Fix this test.
-- (void)DISABLED_testRequiredFields {
+- (void)testRequiredFields {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleAccountProfile];
   [self openEditProfile:kProfileLabel];
@@ -646,8 +648,7 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
 
 // Tests that when the state data is removed, the "Done" button is enabled for
 // "Germany" but not for "India". Similarly, the "Done" is disabled for "US".
-// TODO(crbug.com/498593923): Fix this test.
-- (void)DISABLED_testDoneButtonByRequirementsOfCountries {
+- (void)testDoneButtonByRequirementsOfCountries {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleAccountProfile];
   [self openEditProfile:kProfileLabel];
@@ -714,8 +715,7 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
 
 // Tests that the footer text is correctly displayed when there are multiple
 // required empty fields.
-// TODO(crbug.com/498593923): Fix this test.
-- (void)DISABLED_testFooterWithMultipleErrors {
+- (void)testFooterWithMultipleErrors {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleAccountProfile];
   [self openEditProfile:kProfileLabel];
@@ -788,8 +788,7 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
 
 // Tests that a local incomplete profile can be migrated to account after
 // editing the profile.
-// TODO(crbug.com/498593923): Fix this test.
-- (void)DISABLED_testIncompleteProfileMigrateToAccount {
+- (void)testIncompleteProfileMigrateToAccount {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleProfile];
 
@@ -844,6 +843,8 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
   // Go back to the list view page.
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
       performAction:grey_tap()];
+  [self
+      scrollDownWithMatcher:grey_accessibilityID(kAutofillProfileTableViewID)];
   // Open the profile view.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(kProfileLabel)]
       performAction:grey_tap()];
@@ -864,12 +865,14 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
 
 // Tests that the home/work address delete results in showing a confirmation
 // sheet that contains an option to remove the profile from Chrome.
-// TODO(crbug.com/498593923): Fix this test.
-- (void)DISABLED_testHomeAndWorkProfileRemove {
+- (void)testHomeAndWorkProfileRemove {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleHomeAndWorkAccountProfile];
 
   [self openProfileListInEditMode];
+  [self
+      scrollDownWithMatcher:grey_accessibilityID(kAutofillProfileTableViewID)];
+
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityLabel(
                                    [AutofillAppInterface exampleProfileName])]
@@ -895,12 +898,13 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
 
 // Tests that the home/work address delete results in showing a confirmation
 // sheet that contains an option to edit the profile in the Google Account.
-// TODO(crbug.com/498593923): Fix this test.
-- (void)DISABLED_testHomeAndWorkProfileDeleteOnEdit {
+- (void)testHomeAndWorkProfileDeleteOnEdit {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleHomeAndWorkAccountProfile];
 
   [self openProfileListInEditMode];
+  [self
+      scrollDownWithMatcher:grey_accessibilityID(kAutofillProfileTableViewID)];
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityLabel(
                                    [AutofillAppInterface exampleProfileName])]
