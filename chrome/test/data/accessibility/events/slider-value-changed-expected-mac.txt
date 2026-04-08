@@ -1,1 +1,0 @@
-AXValueChanged on AXSlider AXDescription='Test Slider' AXValue='50%'

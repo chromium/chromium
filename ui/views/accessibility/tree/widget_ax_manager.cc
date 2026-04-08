@@ -55,7 +55,6 @@ bool ShouldSerializeEvent(Event event_type) {
     case Event::kCheckedStateChanged:
     case Event::kChildrenChanged:
     case Event::kLiveRegionChanged:
-    case Event::kValueChanged:
       return false;
     default:
       break;
@@ -93,6 +92,7 @@ bool ShouldSerializeEvent(Event event_type) {
     case Event::kStateChanged:
     case Event::kTextChanged:
     case Event::kTextSelectionChanged:
+    case Event::kValueChanged:
       return false;
     default:
       break;

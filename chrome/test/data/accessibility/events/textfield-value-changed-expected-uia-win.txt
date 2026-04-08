@@ -1,2 +1,0 @@
-Text_TextChanged on role=textbox, name=Test Textfield
-ValueValue changed on role=textbox, name=Test Textfield

@@ -1,1 +1,0 @@
-RangeValueValue changed on role=slider, name=Test Slider
