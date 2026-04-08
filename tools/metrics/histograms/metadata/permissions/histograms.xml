@@ -2029,7 +2029,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Revocation.ElapsedTimeSinceGrant{PermissionTypes}"
-    units="seconds" expires_after="2026-04-20">
+    units="seconds" expires_after="2026-10-07">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
