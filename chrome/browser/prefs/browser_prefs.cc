@@ -557,10 +557,6 @@
 #include "components/safe_browsing/content/common/file_type_policies_prefs.h"
 #endif
 
-#if BUILDFLAG(CHROME_FOR_TESTING)
-#include "chrome/browser/chrome_for_testing/prefs.h"
-#endif
-
 namespace {
 
 // Please keep the list of deprecated prefs in chronological order. i.e. Add to
@@ -1374,9 +1370,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   browser_shutdown::RegisterPrefs(registry);
   BrowserProcessImpl::RegisterPrefs(registry);
   ChromeContentBrowserClient::RegisterLocalStatePrefs(registry);
-#if BUILDFLAG(CHROME_FOR_TESTING)
-  chrome_for_testing::RegisterPrefs(registry);
-#endif
   chrome_labs_prefs::RegisterLocalStatePrefs(registry);
   chrome_urls::RegisterPrefs(registry);
   ChromeMetricsServiceClient::RegisterPrefs(registry);

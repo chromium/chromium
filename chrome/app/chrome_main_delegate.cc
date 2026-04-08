@@ -217,10 +217,6 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif  // BUILDFLAG(IS_OZONE)
 
-#if BUILDFLAG(CHROME_FOR_TESTING)
-#include "chrome/browser/chrome_for_testing/config.h"
-#endif
-
 base::LazyInstance<ChromeContentGpuClient>::DestructorAtExit
     g_chrome_content_gpu_client = LAZY_INSTANCE_INITIALIZER;
 base::LazyInstance<ChromeContentRendererClient>::DestructorAtExit
@@ -862,15 +858,6 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
   std::string actual_locale = LoadLocalState(
       chrome_feature_list_creator, invoked_in_browser->is_running_test);
   chrome_feature_list_creator->SetApplicationLocale(actual_locale);
-
-#if BUILDFLAG(CHROME_FOR_TESTING)
-  // Exit early if Chrome for Testing configuration is specified but cannot be
-  // loaded. The error info will be sent to stderr.
-  if (!chrome_for_testing::LoadConfig(
-          chrome_feature_list_creator->local_state())) {
-    return CHROME_RESULT_CODE_UNSUPPORTED_PARAM;
-  }
-#endif
 
   // On Chrome OS, initialize D-Bus clients that depend on feature list.
 #if BUILDFLAG(IS_CHROMEOS)

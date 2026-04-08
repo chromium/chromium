@@ -7324,10 +7324,7 @@ static_library("browser") {
   }
 
   if (is_chrome_for_testing) {
-    deps += [
-      "//chrome/browser/chrome_for_testing",
-      "//chrome/browser/chrome_for_testing:browser",
-    ]
+    deps += [ "//chrome/browser/chrome_for_testing" ]
   }
 
   if (enable_builtin_search_provider_assets) {

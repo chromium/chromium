@@ -389,10 +389,6 @@ if (!is_android && !is_mac) {
         "app/chrome_main_linux.h",
       ]
     }
-
-    if (is_chrome_for_testing) {
-      deps += [ "//chrome/browser/chrome_for_testing:browser" ]
-    }
   }
 
   # TODO(crbug.com/40204298): Make this work on other platforms.
