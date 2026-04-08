@@ -14,7 +14,6 @@
 #include "base/check_deref.h"
 #include "base/containers/heap_array.h"
 #include "base/debug/crash_logging.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -34,12 +33,6 @@
 namespace content {
 
 namespace {
-
-// Killswitch to turn off this feature remotely in case it affects ATs in a way
-// we didn't expect. This is temporary.
-// TODO(crbug.com/407891291): Remove this feature flag in Chrome 139.
-BASE_FEATURE(kDisableUiaProviderWhenJawsIsRunning,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const wchar_t kNarratorRegistryKey[] = L"Software\\Microsoft\\Narrator\\NoRoam";
 const wchar_t kWinMagnifierRegistryKey[] =
@@ -404,8 +397,7 @@ void BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech(
   //   * 2023.2402.1+
   //   * 2024.2312.99+
   //   * 2025+
-  if (base::FeatureList::IsEnabled(kDisableUiaProviderWhenJawsIsRunning) &&
-      ui::AXPlatform::GetInstance().IsUiaProviderEnabled()) {
+  if (ui::AXPlatform::GetInstance().IsUiaProviderEnabled()) {
     for (const auto& info : at_infos) {
       if (info.tech == AccessibilityTarget::kJaws && info.version.has_value()) {
         if (!IsJawsCompatibleWithUIA(*info.version)) {
