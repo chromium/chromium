@@ -96,7 +96,7 @@ IIRFilterNode* IIRFilterNode::Create(BaseAudioContext& context,
     return nullptr;
   }
 
-  if (feedback_coef.size() == 0 ||
+  if (feedback_coef.empty() ||
       (feedback_coef.size() > IIRFilter::kMaxOrder + 1)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
@@ -107,7 +107,7 @@ IIRFilterNode* IIRFilterNode::Create(BaseAudioContext& context,
     return nullptr;
   }
 
-  if (feedforward_coef.size() == 0 ||
+  if (feedforward_coef.empty() ||
       (feedforward_coef.size() > IIRFilter::kMaxOrder + 1)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,

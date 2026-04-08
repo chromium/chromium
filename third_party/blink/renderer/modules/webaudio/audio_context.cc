@@ -1523,8 +1523,7 @@ void AudioContext::ResolvePromisesForUnpause() {
   // Resolve any pending promises created by resume(). Only do this if we
   // haven't already started resolving these promises. This gets called very
   // often and it takes some time to resolve the promises in the main thread.
-  if (!is_resolving_resume_promises_ &&
-      pending_promises_resolvers_.size() > 0) {
+  if (!is_resolving_resume_promises_ && !pending_promises_resolvers_.empty()) {
     is_resolving_resume_promises_ = true;
     ScheduleMainThreadCleanup();
   }

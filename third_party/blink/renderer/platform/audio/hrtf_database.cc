@@ -121,7 +121,7 @@ void HRTFDatabase::GetKernelsFromAzimuthElevation(double azimuth_blend,
                                                   double& frame_delay_r) const {
   unsigned elevation_index = IndexFromElevationAngle(elevation_angle);
   SECURITY_DCHECK(elevation_index < elevations_.size());
-  SECURITY_DCHECK(elevations_.size() > 0);
+  SECURITY_DCHECK(!elevations_.empty());
 
   if (elevation_index > elevations_.size() - 1) {
     elevation_index = elevations_.size() - 1;

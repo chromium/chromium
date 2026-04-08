@@ -162,7 +162,10 @@ bool DeferredTaskHandler::HasAutomaticPullNodes() {
 
   // This assumes there is one or more automatic pull nodes when the mutex
   // is held by AddAutomaticPullNode() or RemoveAutomaticPullNode() method.
-  return try_locker.is_acquired() ? automatic_pull_handlers_.size() > 0 : true;
+  if (try_locker.is_acquired()) {
+    return !automatic_pull_handlers_.empty();
+  }
+  return true;
 }
 
 void DeferredTaskHandler::UpdateAutomaticPullNodes() {
@@ -503,8 +506,8 @@ void DeferredTaskHandler::FinishTailProcessing() {
       }
     }
     DisableOutputsForTailProcessing();
-  } while (tail_processing_handlers_.size() > 0 ||
-           finished_tail_processing_handlers_.size() > 0);
+  } while (!tail_processing_handlers_.empty() ||
+           !finished_tail_processing_handlers_.empty());
 }
 
 }  // namespace blink
