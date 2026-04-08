@@ -116,8 +116,8 @@ cppgc::WeakPersistent<JsBinding> JsBinding::Install(
     context_scope.emplace(context);
   }
   JsBinding* js_binding = cppgc::MakeGarbageCollected<JsBinding>(
-      isolate->GetCppHeap()->GetAllocationHandle(), render_frame,
-      js_object_name, js_communication, world_id);
+      isolate->GetCppHeap()->GetAllocationHandle(), js_object_name,
+      js_communication, world_id);
   v8::Local<v8::Object> wrapper;
   if (!js_binding->GetWrapper(isolate).ToLocal(&wrapper)) {
     return nullptr;
@@ -132,12 +132,10 @@ cppgc::WeakPersistent<JsBinding> JsBinding::Install(
   return js_binding;
 }
 
-JsBinding::JsBinding(content::RenderFrame* render_frame,
-                     const std::u16string& js_object_name,
+JsBinding::JsBinding(const std::u16string& js_object_name,
                      base::WeakPtr<JsCommunication> js_communication,
                      int32_t world_id)
-    : render_frame_(render_frame),
-      js_object_name_(js_object_name),
+    : js_object_name_(js_object_name),
       world_id_(world_id),
       js_communication_(js_communication) {}
 
@@ -148,7 +146,11 @@ void JsBinding::OnPostMessage(blink::WebMessagePayload message) {
   if (!js_communication_)
     return;
 
-  blink::WebLocalFrame* web_frame = render_frame_->GetWebFrame();
+  content::RenderFrame* render_frame = js_communication_->render_frame();
+  if (!render_frame) {
+    return;
+  }
+  blink::WebLocalFrame* web_frame = render_frame->GetWebFrame();
   if (!web_frame)
     return;
   v8::Isolate* isolate = web_frame->GetAgentGroupScheduler()->Isolate();
@@ -221,7 +223,15 @@ void JsBinding::OnExecuteJavaScript(const std::u16string& javascript,
     return;
   }
 
-  blink::WebLocalFrame* web_frame = render_frame_->GetWebFrame();
+  content::RenderFrame* render_frame = js_communication_->render_frame();
+  if (!render_frame) {
+    if (wants_result) {
+      std::move(callback).Run(
+          base::unexpected(mojom::JavaScriptExecutionError::kFrameDestroyed));
+    }
+    return;
+  }
+  blink::WebLocalFrame* web_frame = render_frame->GetWebFrame();
   if (!web_frame) {
     if (wants_result) {
       std::move(callback).Run(
