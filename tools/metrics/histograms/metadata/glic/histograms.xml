@@ -971,6 +971,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Instance.InputSubmitted.SelectionCount" units="areas"
+    expires_after="2026-08-30">
+  <owner>dtapuska@google.com</owner>
+  <owner>liuwilliam@google.com</owner>
+  <owner>naai-xfn@google.com</owner>
+  <summary>
+    Recorded when user input is submitted. The value is the number of active
+    selection areas at the time of submission. The maximum recorded is 10.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Instance.LifetimeDuration" units="ms"
     expires_after="2026-10-04">
   <owner>birnie@google.com</owner>

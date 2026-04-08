@@ -306,7 +306,17 @@ GURL SelectionOverlayController::GetInitialURL() {
   return GURL(chrome::kChromeUIGlicSelectionOverlayURL);
 }
 
-void SelectionOverlayController::NotifyIsOverlayShowing(bool is_showing) {}
+void SelectionOverlayController::NotifyIsOverlayShowing(bool is_showing) {
+  if (!is_showing) {
+    GlicKeyedService* service =
+        GlicKeyedService::Get(tab_->GetBrowserWindowInterface()->GetProfile());
+    if (service) {
+      if (GlicInstance* instance = service->GetInstanceForTab(tab_)) {
+        instance->OnSelectionAreasChanged(0);
+      }
+    }
+  }
+}
 
 int SelectionOverlayController::GetToolResourceId() {
   return IDS_GLIC_SELECTION_OVERLAY_RENDERER_LABEL;
@@ -435,11 +445,13 @@ void SelectionOverlayController::RenderRegions() {
       GlicKeyedService::Get(tab_->GetBrowserWindowInterface()->GetProfile());
   service->SendAdditionalContext(tab_->GetHandle(),
                                  std::move(additional_context));
-  if (GlicInstance* instance = service->GetInstanceForTab(tab_);
-      instance && instance->IsActive()) {
-    if (content::WebContents* web_contents =
-            instance->host().webui_contents()) {
-      web_contents->Focus();
+  if (GlicInstance* instance = service->GetInstanceForTab(tab_)) {
+    instance->OnSelectionAreasChanged(selected_regions_.size());
+    if (instance->IsActive()) {
+      if (content::WebContents* web_contents =
+              instance->host().webui_contents()) {
+        web_contents->Focus();
+      }
     }
   }
 

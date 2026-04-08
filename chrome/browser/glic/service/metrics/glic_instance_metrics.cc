@@ -21,6 +21,7 @@
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/service/glic_state_tracker.h"
 #include "chrome/browser/glic/service/metrics/glic_metrics_session_manager.h"
@@ -128,6 +129,10 @@ void GlicInstanceMetrics::OnGlicScrollComplete(bool success) {
   } else if (turn_.pending_scroll_complete_) {
     record_scroll_metric(turn_);
   }
+}
+
+void GlicInstanceMetrics::OnSelectionAreasChanged(int count) {
+  selection_areas_count_ = count;
 }
 
 void GlicInstanceMetrics::OnPinnedTabsChanged(
@@ -771,6 +776,10 @@ void GlicInstanceMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
   session_manager_.OnUserInputSubmitted(mode);
   LogEvent(GlicInstanceEvent::kUserInputSubmitted);
   base::RecordAction(base::UserMetricsAction("GlicResponseInputSubmit"));
+  if (base::FeatureList::IsEnabled(features::kGlicCaptureRegion)) {
+    base::UmaHistogramExactLinear("Glic.Instance.InputSubmitted.SelectionCount",
+                                  selection_areas_count_, 10);
+  }
   // Reset turn data and start populating it for the new turn being started.
   turn_ = {};
   turn_.input_submitted_time_ = base::TimeTicks::Now();

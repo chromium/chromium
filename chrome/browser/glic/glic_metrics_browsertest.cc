@@ -6,7 +6,9 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -16,6 +18,7 @@
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -27,6 +30,10 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/ozone/public/ozone_platform.h"
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #endif
 
 namespace glic {
@@ -270,6 +277,76 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, PercentOverlapRounding) {
   histogram_tester.ExpectUniqueSample("Glic.PercentOverlapWithBrowser.OnClose",
                                       PercentOverlap::k50, 1);
 }
+
+class GlicMetricsBrowserTestWithCaptureRegion : public GlicMetricsBrowserTest {
+ public:
+  GlicMetricsBrowserTestWithCaptureRegion()
+      : GlicMetricsBrowserTest(
+            /*extra_enabled_features=*/{features::kGlicCaptureRegion},
+            /*extra_disabled_features=*/
+            {}) {}
+};
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTestWithCaptureRegion,
+                       SelectionUsedFromController) {
+  // The feature is enabled in constructor of
+  // GlicMetricsBrowserTestWithCaptureRegion but let's double check.
+  ASSERT_TRUE(base::FeatureList::IsEnabled(features::kGlicCaptureRegion));
+
+  base::HistogramTester histogram_tester;
+  // Open the side panel
+  GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile())
+      ->ToggleUI(browser(), /*prevent_close=*/false,
+                 mojom::InvocationSource::kOsButton);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  // Simulate showing the overlay.
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  controller->Show();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return controller->state() == SelectionOverlayController::State::kOverlay;
+  }));
+  static_cast<selection::SelectionOverlayPageHandler*>(controller)
+      ->AdjustRegion(selection::SelectedRegion::New(
+          base::UnguessableToken::Create(), gfx::RectF(10, 10, 10, 10)));
+
+  auto* tab_interface = tabs::TabInterface::GetFromContents(web_contents);
+  auto* instance = GetInstanceForTab(browser()->profile(), tab_interface);
+
+  instance->host()
+      .instance_metrics_backwards_compatibility()
+      .OnUserInputSubmitted(mojom::WebClientMode::kText);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Instance.InputSubmitted.SelectionCount", 1, 1);
+
+  // Submit another input, should still log 1.
+  instance->host()
+      .instance_metrics_backwards_compatibility()
+      .OnUserInputSubmitted(mojom::WebClientMode::kText);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Instance.InputSubmitted.SelectionCount", 1, 2);
+
+  // Close the overlay.
+  SelectionOverlayController::FromTabWebContents(web_contents)->Close();
+
+  // Submit another input, should log 0.
+  instance->host()
+      .instance_metrics_backwards_compatibility()
+      .OnUserInputSubmitted(mojom::WebClientMode::kText);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Instance.InputSubmitted.SelectionCount", 0, 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Instance.InputSubmitted.SelectionCount", 3);
+
+  // Close the side panel
+  GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile())
+      ->ToggleUI(browser(), /*prevent_close=*/false,
+                 mojom::InvocationSource::kOsButton);
+}
+#endif
 
 }  // namespace
 }  // namespace glic

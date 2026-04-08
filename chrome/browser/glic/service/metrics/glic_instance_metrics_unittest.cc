@@ -9,10 +9,12 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
+#include "chrome/common/chrome_features.h"
 #include "components/skills/public/skills_metrics.h"
 #include "components/split_tabs/split_tab_id.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -41,6 +43,8 @@ class GlicInstanceMetricsTest : public testing::Test {
   tabs::MockTabInterface mock_tab_;
   ui::UnownedUserDataHost unowned_user_data_host_;
   base::UserActionTester user_action_tester_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kGlicCaptureRegion};
 };
 
 TEST_F(GlicInstanceMetricsTest, OnActivationChanged_LogsTimeSinceLastActive) {
@@ -526,6 +530,27 @@ TEST_F(GlicInstanceMetricsTest, OnReaction_LogsUserActions) {
 
   metrics_.OnReaction(mojom::MetricUserInputReactionType::kModel);
   EXPECT_EQ(1, user_action_tester_.GetActionCount("GlicReactionModelled"));
+}
+
+TEST_F(GlicInstanceMetricsTest, SelectionUsed) {
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnSelectionAreasChanged(2);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Instance.InputSubmitted.SelectionCount", 2, 1);
+
+  // Check that it's NOT reset after submission.
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Instance.InputSubmitted.SelectionCount", 2, 2);
+
+  // Check that it can be cleared.
+  metrics_.OnSelectionAreasChanged(0);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Instance.InputSubmitted.SelectionCount", 0, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Instance.InputSubmitted.SelectionCount", 2, 2);
 }
 
 TEST_F(GlicInstanceMetricsTest, Floaty_OpenCloseClose_LogsError) {

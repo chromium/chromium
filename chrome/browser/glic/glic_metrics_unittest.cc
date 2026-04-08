@@ -217,8 +217,9 @@ class GlicMetricsTestBase : public testing::Test {
 class GlicMetricsTest : public GlicMetricsTestBase {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kGlicFixTimeToFirstQueryKillSwitch);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlicCaptureRegion},
+        /*disabled_features=*/{features::kGlicFixTimeToFirstQueryKillSwitch});
     GlicMetricsTestBase::SetUp();
 
     enabling_ = std::make_unique<GlicEnabling>(

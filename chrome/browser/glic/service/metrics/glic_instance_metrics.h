@@ -273,6 +273,8 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   void OnUserResizeStarted(const gfx::Size& start_size);
   void OnUserResizeEnded(const gfx::Size& end_size);
 
+  void OnSelectionAreasChanged(int count);
+
   // Records the number of tabs attached as context for a Glic response.
   void RecordAttachedContextTabCount(int tab_count);
 
@@ -396,6 +398,9 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // The number of scroll attempts (tracked per session and reset when the
   // session ends).
   int scroll_attempt_count_ = 0;
+
+  // Whether region selection is active.
+  int selection_areas_count_ = 0;
 };
 
 }  // namespace glic
