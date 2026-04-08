@@ -792,9 +792,9 @@ bool CompositorAnimations::ConvertTimingForCompositor(
   // The result of either of these edge cases is undefined.
   if (scaled_delay.is_max() || scaled_delay.is_min())
     return false;
+  out.start_delay = scaled_delay;
 
-  out.scaled_time_offset = -scaled_delay + time_offset;
-  // Delay is effectively +/- infinity.
+  out.scaled_time_offset = time_offset;
   if (out.scaled_time_offset.is_max() || out.scaled_time_offset.is_min())
     return false;
 
@@ -1144,6 +1144,7 @@ void CompositorAnimations::GetAnimationOnCompositor(
     keyframe_model->set_iterations(compositor_timing.adjusted_iteration_count);
     keyframe_model->set_iteration_start(compositor_timing.iteration_start);
     keyframe_model->set_time_offset(compositor_timing.scaled_time_offset);
+    keyframe_model->set_start_delay(compositor_timing.start_delay);
     keyframe_model->set_direction(compositor_timing.direction);
     keyframe_model->set_playback_rate(compositor_timing.playback_rate);
     keyframe_model->set_fill_mode(compositor_timing.fill_mode);

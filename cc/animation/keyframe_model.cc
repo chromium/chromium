@@ -100,6 +100,7 @@ std::unique_ptr<KeyframeModel> KeyframeModel::CreateImplInstance(
   to_return->set_pause_time(pause_time());
   to_return->set_total_paused_duration(total_paused_duration());
   to_return->set_time_offset(time_offset());
+  to_return->set_start_delay(start_delay());
   to_return->set_direction(direction());
   to_return->set_playback_rate(playback_rate());
   to_return->set_fill_mode(fill_mode());

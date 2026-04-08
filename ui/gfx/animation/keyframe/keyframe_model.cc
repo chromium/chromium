@@ -83,9 +83,10 @@ KeyframeModel::Phase KeyframeModel::CalculatePhaseForTesting(
 
 KeyframeModel::Phase KeyframeModel::CalculatePhase(
     base::TimeDelta local_time) const {
+  // TODO(crbug.com/497867796): Delete time_offset.
   base::TimeDelta opposite_time_offset = time_offset_ == base::TimeDelta::Min()
                                              ? base::TimeDelta::Max()
-                                             : -time_offset_;
+                                             : -time_offset_ + start_delay_;
   base::TimeDelta before_active_boundary_time =
       std::max(opposite_time_offset, base::TimeDelta());
   if ((local_time < before_active_boundary_time) ||
@@ -128,18 +129,24 @@ std::optional<base::TimeDelta> KeyframeModel::CalculateActiveTime(
   DCHECK(playback_rate_);
   switch (phase) {
     case KeyframeModel::Phase::BEFORE:
-      if (fill_mode_ == FillMode::BACKWARDS || fill_mode_ == FillMode::BOTH)
-        return std::max(local_time + time_offset_, base::TimeDelta());
+      if (fill_mode_ == FillMode::BACKWARDS || fill_mode_ == FillMode::BOTH) {
+        // TODO(crbug.com/497867796): Delete time_offset.
+        return std::max(local_time + time_offset_ - start_delay_,
+                        base::TimeDelta());
+      }
       return std::nullopt;
     case KeyframeModel::Phase::ACTIVE:
-      return local_time + time_offset_;
+      // TODO(crbug.com/497867796): Delete time_offset.
+      return local_time + time_offset_ - start_delay_;
     case KeyframeModel::Phase::AFTER:
       if (fill_mode_ == FillMode::FORWARDS || fill_mode_ == FillMode::BOTH) {
         DCHECK_NE(iterations_, std::numeric_limits<double>::infinity());
         base::TimeDelta active_duration =
             curve_->Duration() * iterations_ / std::abs(playback_rate_);
-        return std::max(std::min(local_time + time_offset_, active_duration),
-                        base::TimeDelta());
+        // TODO(crbug.com/497867796): Delete time_offset.
+        return std::max(
+            std::min(local_time + time_offset_ - start_delay_, active_duration),
+            base::TimeDelta());
       }
       return std::nullopt;
     default:
@@ -157,9 +164,11 @@ bool KeyframeModel::IsFinishedAt(base::TimeTicks monotonic_time) const {
   if (playback_rate_ == 0)
     return false;
 
+  // TODO(crbug.com/497867796): Delete time_offset.
   return run_state_ == RUNNING && std::isfinite(iterations_) &&
          (curve_->Duration() * (iterations_ / std::abs(playback_rate_))) <=
-             (ConvertMonotonicTimeToLocalTime(monotonic_time) + time_offset_);
+             (ConvertMonotonicTimeToLocalTime(monotonic_time) + time_offset_ -
+              start_delay_);
 }
 
 bool KeyframeModel::HasActiveTime(base::TimeTicks monotonic_time) const {

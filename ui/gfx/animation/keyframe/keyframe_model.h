@@ -83,6 +83,11 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
     time_offset_ = monotonic_time;
   }
 
+  base::TimeDelta start_delay() const { return start_delay_; }
+  void set_start_delay(base::TimeDelta start_delay) {
+    start_delay_ = start_delay;
+  }
+
   Direction direction() const { return direction_; }
   void set_direction(Direction direction) { direction_ = direction; }
 
@@ -220,6 +225,9 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
   // added with a non-zero time offset, causing the keyframe model to skip ahead
   // to the desired point in time.
   base::TimeDelta time_offset_;
+
+  // https://www.w3.org/TR/web-animations-1/#start-delay
+  base::TimeDelta start_delay_;
 
   // These are used when converting monotonic to local time to account for time
   // spent while paused. This is not included in AnimationState since it

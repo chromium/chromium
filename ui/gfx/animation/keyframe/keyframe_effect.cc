@@ -57,8 +57,10 @@ void ReverseKeyframeModel(base::TimeTicks monotonic_time,
   //
   // Now if there was a previous offset, we must adjust d by that offset before
   // performing this computation, so it becomes d - o_old - 2t:
+  // TODO(crbug.com/497867796): Delete time_offset.
   keyframe_model->set_time_offset(
-      keyframe_model->curve()->Duration() - keyframe_model->time_offset() -
+      keyframe_model->curve()->Duration() + keyframe_model->start_delay() -
+      keyframe_model->time_offset() -
       (2 * (monotonic_time - keyframe_model->start_time())));
 }
 

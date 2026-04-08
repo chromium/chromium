@@ -186,6 +186,7 @@ class CORE_EXPORT CompositorAnimations {
     double playback_rate;
     Timing::FillMode fill_mode;
     double iteration_start;
+    base::TimeDelta start_delay;
   };
 
   static bool ConvertTimingForCompositor(const Timing&,
