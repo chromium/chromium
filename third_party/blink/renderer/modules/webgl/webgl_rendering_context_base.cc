@@ -2018,7 +2018,9 @@ WebGLRenderingContextBase::GetSharedImageResourceProvider() {
     return nullptr;
   }
 
-  if (!Host()->IsValidImageSize()) {
+  if (!base::FeatureList::IsEnabled(
+          kWebGLCanvasResourceProviderDrawingBufferSize) &&
+      !Host()->IsValidImageSize()) {
     did_fail_to_create_resource_provider_ = true;
     return nullptr;
   }
