@@ -216,10 +216,10 @@ SyncTest::SyncTest(TestType test_type)
                        : IN_PROCESS_FAKE_SERVER),
       test_construction_time_(base::Time::Now()),
       num_clients_(GetNumClients(test_type_)),
-      sync_run_loop_timeout(FROM_HERE, TestTimeouts::action_max_timeout()),
+      sync_run_loop_timeout_(FROM_HERE, TestTimeouts::action_max_timeout()),
       previous_profile_(nullptr) {
   // Any RunLoop timeout will by default result in test failure.
-  sync_run_loop_timeout.SetAddGTestFailureOnTimeout();
+  sync_run_loop_timeout_.SetAddGTestFailureOnTimeout();
 
   sync_datatype_helper::AssociateWithTest(this);
 }
@@ -424,7 +424,7 @@ bool SyncTest::CreateProfile(int index) {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  DCHECK_EQ(index, 0);
+  CHECK_EQ(index, 0);
   Profile* profile = ProfileManager::GetLastUsedProfile();
 #else  // BUILDFLAG(IS_ANDROID)
   Profile* profile = nullptr;
@@ -466,12 +466,12 @@ bool SyncTest::CreateProfile(int index) {
 }
 
 Profile* SyncTest::GetProfile(int index) const {
-  DCHECK(!profiles_.empty()) << "SetupClients() has not yet been called.";
-  DCHECK(index >= 0 && index < static_cast<int>(profiles_.size()))
+  CHECK(!profiles_.empty()) << "SetupClients() has not yet been called.";
+  CHECK(index >= 0 && index < static_cast<int>(profiles_.size()))
       << "GetProfile(): Index is out of bounds: " << index;
 
   Profile* profile = profiles_[index];
-  DCHECK(profile) << "No profile found at index: " << index;
+  CHECK(profile) << "No profile found at index: " << index;
 
   return profile;
 }
@@ -497,12 +497,12 @@ void SyncTest::SetUsePrimaryUserProfile(bool value) {
 
 #if !BUILDFLAG(IS_ANDROID)
 Browser* SyncTest::GetBrowser(int index) {
-  DCHECK(!browsers_.empty()) << "SetupClients() has not yet been called.";
-  DCHECK(index >= 0 && index < static_cast<int>(browsers_.size()))
+  CHECK(!browsers_.empty()) << "SetupClients() has not yet been called.";
+  CHECK(index >= 0 && index < static_cast<int>(browsers_.size()))
       << "GetBrowser(): Index is out of bounds: " << index;
 
   Browser* browser = browsers_[index];
-  DCHECK(browser);
+  CHECK(browser);
 
   return browser;
 }
@@ -511,7 +511,7 @@ Browser* SyncTest::AddBrowser(int profile_index) {
   Profile* profile = GetProfile(profile_index);
   browsers_.push_back(Browser::Create(Browser::CreateParams(profile, true)));
   profiles_.push_back(profile);
-  DCHECK_EQ(browsers_.size(), profiles_.size());
+  CHECK_EQ(browsers_.size(), profiles_.size());
 
   Browser* browser = browsers_.back();
   chrome::AddSelectedTabWithURL(browser, GetInitialURL(),
@@ -539,12 +539,9 @@ SyncServiceImplHarness* SyncTest::GetClient(int index) {
 }
 
 const SyncServiceImplHarness* SyncTest::GetClient(int index) const {
-  if (clients_.empty()) {
-    LOG(FATAL) << "SetupClients() has not yet been called.";
-  }
-  if (index < 0 || index >= static_cast<int>(clients_.size())) {
-    LOG(FATAL) << "GetClient(): Index is out of bounds.";
-  }
+  CHECK(!clients_.empty()) << "SetupClients() has not yet been called.";
+  CHECK(index >= 0 && index < static_cast<int>(clients_.size()))
+      << "GetClient(): Index is out of bounds.";
   return clients_[index].get();
 }
 
@@ -583,12 +580,8 @@ SyncTest::GetSyncServices() {
 }
 
 Profile* SyncTest::verifier() {
-  if (!UseVerifier()) {
-    LOG(FATAL) << "Verifier account is disabled.";
-  }
-  if (verifier_ == nullptr) {
-    LOG(FATAL) << "SetupClients() has not yet been called.";
-  }
+  CHECK(UseVerifier()) << "Verifier account is disabled.";
+  CHECK(verifier_ != nullptr) << "SetupClients() has not yet been called.";
   return verifier_;
 }
 
@@ -597,15 +590,16 @@ bool SyncTest::UseVerifier() {
 }
 
 bool SyncTest::SetupClients() {
+  CHECK(profiles_.empty());
+  CHECK(clients_.empty());
+  CHECK_GT(num_clients_, 0) << "num_clients_ incorrectly initialized.";
+
   previous_profile_ =
       g_browser_process->profile_manager()->GetLastUsedProfile();
 
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  if (num_clients_ <= 0) {
-    LOG(FATAL) << "num_clients_ incorrectly initialized.";
-  }
-  bool has_any_browser = false;
 #if !BUILDFLAG(IS_ANDROID)
+  CHECK(browsers_.empty());
+
   // Create the browser observer now that GlobalBrowserCollection is available.
   // This cannot be done in the constructor because it runs before browser
   // process initialization.
@@ -614,11 +608,7 @@ bool SyncTest::SetupClients() {
         std::make_unique<ClosedBrowserObserver>(base::BindRepeating(
             &SyncTest::OnBrowserRemoved, base::Unretained(this)));
   }
-  has_any_browser = !browsers_.empty();
 #endif
-  if (!profiles_.empty() || has_any_browser || !clients_.empty()) {
-    LOG(FATAL) << "SetupClients() has already been called.";
-  }
 
   // Create the required number of sync profiles, browsers and clients.
   profiles_.resize(num_clients_);
@@ -644,6 +634,8 @@ bool SyncTest::SetupClients() {
               }));
 #endif
 
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
   for (int i = 0; i < num_clients_; ++i) {
     if (!CreateProfile(i)) {
       return false;
@@ -655,12 +647,12 @@ bool SyncTest::SetupClients() {
   }
 
   // Verifier account is not useful when running against external servers.
-  DCHECK(server_type_ != EXTERNAL_LIVE_SERVER || !UseVerifier());
+  CHECK(server_type_ != EXTERNAL_LIVE_SERVER || !UseVerifier());
 
 // Verifier needs to create a test profile. But Clank doesn't support multiple
 // profiles.
 #if BUILDFLAG(IS_ANDROID)
-  DCHECK(!UseVerifier());
+  CHECK(!UseVerifier());
 #endif
 
   // Create the verifier profile.
@@ -698,7 +690,7 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
 
 #if !BUILDFLAG(IS_ANDROID)
   browsers_.push_back(Browser::Create(Browser::CreateParams(profile, true)));
-  DCHECK_EQ(static_cast<size_t>(index), browsers_.size() - 1);
+  CHECK_EQ(static_cast<size_t>(index), browsers_.size() - 1);
 
   Browser* browser = browsers_.back();
   chrome::AddSelectedTabWithURL(browser, GetInitialURL(),
@@ -714,7 +706,7 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
     // Make sure that an instance of GCMProfileService has been created. This is
     // required for some tests which only call SetupClients().
     gcm::GCMProfileServiceFactory::GetForProfile(profile);
-    DCHECK(profile_to_fake_gcm_driver_.contains(profile));
+    CHECK(profile_to_fake_gcm_driver_.contains(profile));
     fake_server_sync_invalidation_sender_->AddFakeGCMDriver(
         profile_to_fake_gcm_driver_[profile]);
   }
@@ -724,7 +716,7 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
           ? SyncServiceImplHarness::SigninType::UI_SIGNIN
           : SyncServiceImplHarness::SigninType::FAKE_SIGNIN;
 
-  DCHECK(!clients_[index]);
+  CHECK(!clients_[index]);
   clients_[index] =
       SyncServiceImplHarness::Create(GetProfile(index), signin_type);
   EXPECT_NE(nullptr, GetClient(index)) << "Could not create Client " << index;
@@ -779,7 +771,7 @@ bool SyncTest::SetupSyncInternal(SetupSyncMode setup_mode,
       // forever.
       // TODO(crbug.com/40173160): remove this workaround once SetupSync doesn't
       // rely on self-notifications.
-      DCHECK(GetSyncService(client_index)->IsEngineInitialized());
+      CHECK(GetSyncService(client_index)->IsEngineInitialized());
       GetSyncService(client_index)->SetInvalidationsForSessionsEnabled(true);
     }
 
@@ -1018,7 +1010,7 @@ void SyncTest::OnProfileWillBeDestroyed(Profile* profile) {
     profiles_[index] = nullptr;
     clients_[index].reset();
 #if !BUILDFLAG(IS_ANDROID)
-    DCHECK(!browsers_[index]);
+    CHECK(!browsers_[index]);
 #endif  // !BUILDFLAG(IS_ANDROID)
   }
 }
@@ -1258,7 +1250,7 @@ bool SyncTest::WaitForAsyncChangesToBeCommitted(size_t profile_index) const {
 }
 
 void SyncTest::CheckForDataTypeFailures(size_t client_index) const {
-  DCHECK(GetClient(client_index));
+  CHECK(GetClient(client_index));
 
   auto* service = GetClient(client_index)->service();
   syncer::DataTypeSet types_to_check = service->GetRegisteredDataTypesForTest();

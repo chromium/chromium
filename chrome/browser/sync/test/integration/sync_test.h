@@ -400,7 +400,7 @@ class SyncTest : public PlatformBrowserTest,
   const int num_clients_;
 
   // Used to catch any timeout within RunLoop and cause test error.
-  base::test::ScopedRunLoopTimeout sync_run_loop_timeout;
+  base::test::ScopedRunLoopTimeout sync_run_loop_timeout_;
 
   // The default profile, created before our actual testing |profiles_|. This is
   // needed in a workaround for https://crbug.com/41364511, see comments in the
