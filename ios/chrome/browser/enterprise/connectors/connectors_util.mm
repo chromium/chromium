@@ -183,6 +183,7 @@ bool IncludeDeviceInfo(ProfileIOS* profile, bool per_profile) {
 }
 
 bool IsDownloadConnectorEnabled(ConnectorsServiceBase* service) {
+  CHECK(service);
   return base::FeatureList::IsEnabled(kEnableFileDownloadConnectorIOS) &&
          service->IsConnectorEnabled(AnalysisConnector::FILE_DOWNLOADED);
 }
