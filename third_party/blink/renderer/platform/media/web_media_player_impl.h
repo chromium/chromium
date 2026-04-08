@@ -895,8 +895,8 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   std::unique_ptr<VideoFrameCompositor>
       compositor_;  // Deleted on |vfc_task_runner_|.
   media::PaintCanvasVideoRenderer video_renderer_;
-  std::unique_ptr<media::VideoFrameSharedImageCache> rgb_shared_image_cache_;
-  std::unique_ptr<media::VideoFrameSharedImageCache> yuv_shared_image_cache_;
+  media::VideoFrameSharedImageCache rgb_shared_image_cache_;
+  media::VideoFrameSharedImageCache yuv_shared_image_cache_;
 
   // The compositor layer for displaying the video content when using composited
   // playback.
