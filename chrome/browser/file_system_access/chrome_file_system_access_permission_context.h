@@ -433,8 +433,8 @@ class ChromeFileSystemAccessPermissionContext
 
   bool RevokeActiveGrantsForTesting(
       const url::Origin& origin,
-      base::FilePath file_path = base::FilePath()) {
-    return RevokeActiveGrants(origin, std::move(file_path));
+      const base::FilePath& file_path = base::FilePath()) {
+    return RevokeActiveGrants(origin, file_path);
   }
 
   scoped_refptr<content::FileSystemAccessPermissionGrant>
@@ -469,7 +469,7 @@ class ChromeFileSystemAccessPermissionContext
   }
 
   bool IsPathInDowngradedReadPathsForTesting(const url::Origin& origin,
-                                             const base::FilePath& path);
+                                             const base::FilePath& path) const;
 
  protected:
   SEQUENCE_CHECKER(sequence_checker_);
@@ -531,7 +531,7 @@ class ChromeFileSystemAccessPermissionContext
   // An origin can only specify up to `max_ids_per_origin_` custom IDs per
   // origin (not including the default ID). If this limit is exceeded, evict
   // using LRU.
-  void MaybeEvictEntries(base::DictValue& dict);
+  void MaybeEvictEntries(base::DictValue& dict) const;
 
   // Schedules triggering all open windows to update their File System Access
   // usage indicator icon. Multiple calls to this method can result in only a
@@ -553,7 +553,7 @@ class ChromeFileSystemAccessPermissionContext
                                    GrantType grant_type) const;
 
   // Returns whether the grant has a `GRANTED` permission status.
-  bool HasGrantedActivePermissionStatus(PermissionGrantImpl* grant) const;
+  bool HasGrantedActivePermissionStatus(const PermissionGrantImpl* grant) const;
 
   // Given the current state of the origin, returns whether it is eligible to
   // trigger the restore permission prompt instead of the permission request
@@ -657,7 +657,7 @@ class ChromeFileSystemAccessPermissionContext
   // revoked. If the `file_path` is provided, then only the grant matching
   // the file path is revoked.
   bool RevokeActiveGrants(const url::Origin& origin,
-                          base::FilePath file_path = base::FilePath());
+                          const base::FilePath& file_path = base::FilePath());
 
   void InitializeBlockPaths();
   void InitializeBlockPathsInternal();
