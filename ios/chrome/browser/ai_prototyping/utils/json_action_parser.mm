@@ -21,6 +21,7 @@ enum class ActionType {
   kHistoryBack,
   kHistoryForward,
   kType,
+  kWait,
 };
 
 // Based on the field names in
@@ -40,6 +41,9 @@ ActionType GetActionType(const std::string& key) {
   }
   if (key == "type") {
     return ActionType::kType;
+  }
+  if (key == "wait") {
+    return ActionType::kWait;
   }
   return ActionType::kUnknown;
 }
@@ -155,6 +159,18 @@ bool MapTypeAction(const base::DictValue& dict,
   return type->ByteSizeLong() > 0;
 }
 
+bool MapWaitAction(const base::DictValue& dict,
+                   optimization_guide::proto::Action* action) {
+  auto* wait = action->mutable_wait();
+  if (std::optional<int> wait_time_ms = dict.FindInt("wait_time_ms")) {
+    wait->set_wait_time_ms(*wait_time_ms);
+  }
+  if (std::optional<int> observe_tab_id = dict.FindInt("observe_tab_id")) {
+    wait->set_observe_tab_id(*observe_tab_id);
+  }
+  return wait->ByteSizeLong() > 0;
+}
+
 }  // namespace
 
 bool ParseActionFromDict(const base::DictValue& dict,
@@ -183,6 +199,8 @@ bool ParseActionFromDict(const base::DictValue& dict,
       return MapHistoryForwardAction(value.GetDict(), action);
     case ActionType::kType:
       return MapTypeAction(value.GetDict(), action);
+    case ActionType::kWait:
+      return MapWaitAction(value.GetDict(), action);
     case ActionType::kUnknown:
       return false;
   }

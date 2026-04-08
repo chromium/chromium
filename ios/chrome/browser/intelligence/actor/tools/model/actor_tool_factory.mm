@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/history_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/navigate_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/type_tool.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/wait_tool.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 
 namespace actor {
@@ -33,6 +34,8 @@ ActorToolFactory::CreateTool(const optimization_guide::proto::Action& action,
       return HistoryTool::Create(action.forward(), profile);
     case optimization_guide::proto::Action::kType:
       return TypeTool::Create(action.type(), profile);
+    case optimization_guide::proto::Action::kWait:
+      return WaitTool::Create(action.wait(), profile);
     default:
       return base::unexpected(
           ActorToolError{ActorToolErrorCode::kUnsupportedAction});
@@ -49,6 +52,7 @@ ActorToolFactory::GetSupportedCapabilities() const {
       optimization_guide::proto::Action::kBack,
       optimization_guide::proto::Action::kForward,
       optimization_guide::proto::Action::kType,
+      optimization_guide::proto::Action::kWait,
   };
   // LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.mm:CreateTool)
 

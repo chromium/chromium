@@ -25,6 +25,7 @@ source_set("actor_tool_factory") {
     ":history_tool",
     ":navigate_tool",
     ":type_tool",
+    ":wait_tool",
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/features",
@@ -80,6 +81,21 @@ source_set("navigate_tool") {
     "//ios/chrome/browser/url_loading/model",
     "//ios/web/public",
     "//url",
+  ]
+}
+
+source_set("wait_tool") {
+  sources = [
+    "wait_tool.h",
+    "wait_tool.mm",
+  ]
+
+  deps = [
+    ":actor_interface",
+    ":actor_tool_error",
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/web/public",
   ]
 }
 
@@ -250,6 +266,7 @@ source_set("unit_tests") {
     "type_tool_java_script_feature_unittest.mm",
     "type_tool_js_unittest.mm",
     "type_tool_unittest.mm",
+    "wait_tool_unittest.mm",
   ]
   deps = [
     ":action_target_ts",
@@ -265,6 +282,7 @@ source_set("unit_tests") {
     ":scroll_tool_ts",
     ":type_tool",
     ":type_tool_ts",
+    ":wait_tool",
     "//base/test:test_support",
     "//components/autofill/ios/browser:util",
     "//components/autofill/ios/common",

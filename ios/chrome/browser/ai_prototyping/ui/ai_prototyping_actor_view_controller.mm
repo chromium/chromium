@@ -16,6 +16,7 @@ NSString* const kToolClick = @"Click";
 NSString* const kToolHistoryBack = @"History Back";
 NSString* const kToolHistoryForward = @"History Forward";
 NSString* const kToolType = @"Type";
+NSString* const kToolWait = @"Wait";
 
 bool IsWebActuationTool(NSString* tool) {
   return [tool isEqualToString:kToolClick] || [tool isEqualToString:kToolType];
@@ -423,6 +424,11 @@ bool IsWebActuationTool(NSString* tool) {
         }
       }
     },
+    kToolWait : @{
+      @"ui" : @[ _tabIdContainer, _jsonContainer ],
+      @"template" :
+          @{@"wait" : @{@"wait_time_ms" : @(3000), @"observe_tab_id" : @(0)}}
+    },
   };
 
   _toolPickerButton.menu = [self createToolPickerMenu];
@@ -458,6 +464,8 @@ bool IsWebActuationTool(NSString* tool) {
  * @param tabId The tab ID to set in the JSON (can be nil).
  * @param frameId The frame ID to set in the JSON (can be nil).
  */
+// TODO(crbug.com/500760986): Not working for tools that doesn't use a `tab_id`
+// or is named differently under different scenarios.
 - (void)updateJsonInputForTool:(NSString*)toolName
                      withTabId:(NSString*)tabId
                        frameId:(NSString*)frameId {
