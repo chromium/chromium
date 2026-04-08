@@ -444,6 +444,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                             LayoutSides::kTop | LayoutSides::kBottom);
 
   [self.mutator requestUIRefresh];
+  [self updatePlaceholderText];
 }
 
 #pragma mark - ComposeboxInputItemCellDelegate

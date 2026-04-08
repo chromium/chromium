@@ -470,6 +470,10 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
     [self extractFaviconForCurrentTab];
   }
 
+  if (self.isCobrowse) {
+    _modeHolder.mode = ComposeboxMode::kAIM;
+  }
+
   [self commitUIUpdates];
 }
 
@@ -865,6 +869,12 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
 
 - (void)composeboxModeDidChange:(ComposeboxMode)mode {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+
+  if (_entrypoint == ComposeboxEntrypoint::kCobrowse &&
+      mode == ComposeboxMode::kRegularSearch) {
+    _modeHolder.mode = ComposeboxMode::kAIM;
+    return;
+  }
 
   BOOL transitionedToAIMode = mode != ComposeboxMode::kRegularSearch &&
                               _previousMode == ComposeboxMode::kRegularSearch;
@@ -1270,6 +1280,11 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
 }
 
 #pragma mark - Private
+
+// Whether the current instance is associated with cobrowse.
+- (BOOL)isCobrowse {
+  return _entrypoint == ComposeboxEntrypoint::kCobrowse;
+}
 
 // Sends a Cobrowse text followup.
 - (void)sendAIMFollowup:(NSString*)text {
@@ -2236,14 +2251,23 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
     return NO;
   }
 
-  BOOL forceExpansionOnFocus =
-      _entrypoint == ComposeboxEntrypoint::kCobrowse && _omniboxFocused;
+  BOOL forceExpansionOnFocus = self.isCobrowse && _omniboxFocused;
   if (forceExpansionOnFocus) {
     return NO;
   }
 
-  BOOL requiresExpansion =
-      _isMultiline || _modeHolder.mode != ComposeboxMode::kRegularSearch;
+  std::set<ComposeboxMode> modesAllowingCompact;
+  if (self.isCobrowse) {
+    modesAllowingCompact = {ComposeboxMode::kAIM,
+                            ComposeboxMode::kRegularSearch};
+  } else {
+    modesAllowingCompact = {ComposeboxMode::kRegularSearch};
+  }
+
+  BOOL alwaysExpandedForCurrentMode =
+      !modesAllowingCompact.contains(_modeHolder.mode);
+
+  BOOL requiresExpansion = _isMultiline || alwaysExpandedForCurrentMode;
   return !requiresExpansion;
 }
 
@@ -2401,8 +2425,7 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
   BOOL eligibleToAIM = [self isEligibleToAIM];
   BOOL lensAvailable = lens_availability::CheckAvailabilityForLensEntryPoint(
       LensEntrypoint::Composebox, [self isDSEGoogle]);
-  BOOL isCobrowse = _entrypoint == ComposeboxEntrypoint::kCobrowse;
-  BOOL compactInCobrowse = compactMode && isCobrowse;
+  BOOL compactInCobrowse = compactMode && self.isCobrowse;
   BOOL allowsMultimodalActions =
       dseGoogle && eligibleToAIM && !compactInCobrowse;
   BOOL canSend = hasContent && !compactMode && allowsMultimodalActions;
@@ -2413,7 +2436,7 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
   // plus button is hidden, the user can still use multimodal actions from other
   // sources such as drag and drop.
   BOOL hidePlusButton = NO;
-  if (IsComposeboxConditionalPlusButtonEnabled() && !isCobrowse &&
+  if (IsComposeboxConditionalPlusButtonEnabled() && !self.isCobrowse &&
       _modeHolder.isRegularSearch && compactMode) {
     BOOL isPreEditURL = !_userInputInProgress && _hasText;
     BOOL isURLQuery = _userInputInProgress && _hasText && !_isSearchQuery;
@@ -2426,10 +2449,12 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
   }
 
   BOOL showLeadingImage =
-      !isCobrowse &&
+      !self.isCobrowse &&
       (!compactMode || !allowsMultimodalActions || hidePlusButton);
-  BOOL shouldPersistAIMButton =
-      IsComposeboxAIMNudgeEnabled() && !compactMode && allowsMultimodalActions;
+  BOOL allowsAIMControl = _entrypoint != ComposeboxEntrypoint::kCobrowse;
+  BOOL shouldPersistAIMButton = allowsAIMControl &&
+                                IsComposeboxAIMNudgeEnabled() && !compactMode &&
+                                allowsMultimodalActions;
 
   ComposeboxInputPlateControls leadingAction =
       (allowsMultimodalActions && !hidePlusButton) ? kPlus : kNone;
@@ -2440,7 +2465,7 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
   ComposeboxInputPlateControls modeSwitchButton;
   switch (_modeHolder.mode) {
     case ComposeboxMode::kAIM:
-      modeSwitchButton = kAIM;
+      modeSwitchButton = allowsAIMControl ? kAIM : kNone;
       break;
     case ComposeboxMode::kImageGeneration:
       modeSwitchButton = kCreateImage;
