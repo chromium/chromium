@@ -733,6 +733,11 @@ bool ServiceWorkerTaskQueue::IsRegistrationFailureRetryable(
     case blink::ServiceWorkerStatusCode::kErrorFailed:
       return true;
 
+    // Registration or version was not found. This can happen if the worker
+    // is not yet ready or registration is still pending.
+    case blink::ServiceWorkerStatusCode::kErrorNotFound:
+      return true;
+
     // The registration took too long.
     case blink::ServiceWorkerStatusCode::kErrorTimeout:
       return true;
@@ -748,7 +753,6 @@ bool ServiceWorkerTaskQueue::IsRegistrationFailureRetryable(
     case blink::ServiceWorkerStatusCode::kErrorInvalidArguments:
     case blink::ServiceWorkerStatusCode::kErrorIpcFailed:
     case blink::ServiceWorkerStatusCode::kErrorNetwork:
-    case blink::ServiceWorkerStatusCode::kErrorNotFound:
     case blink::ServiceWorkerStatusCode::kErrorProcessNotFound:
     case blink::ServiceWorkerStatusCode::kErrorRedundant:
     case blink::ServiceWorkerStatusCode::kErrorScriptEvaluateFailed:
