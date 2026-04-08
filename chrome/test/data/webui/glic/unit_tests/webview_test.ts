@@ -5,7 +5,14 @@
 import {ZoomAction} from 'chrome://glic/glic.mojom-webui.js';
 import {matcherForOrigin, urlMatchesAllowedOrigin, WebviewController, WebviewPersistentState} from 'chrome://glic/webview.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
+// Mock the `zoomchange` event defined in the chrome webviewTag API.
+interface WebViewZoomChangeEvent extends Event {
+  newZoomFactor: number;
+  oldZoomFactor?: number;
+}
 
 import {configureLoadTimeData, FakeApiHostEmbedder, FakeBrowserProxy, FakeWebviewDelegate} from './test_helpers.js';
 
@@ -172,5 +179,18 @@ suite('WebviewZoomTest', () => {
     setZoomCalled = false;
     controller.zoom(ZoomAction.kZoomOut);
     assertFalse(setZoomCalled);
+  });
+
+  test('ZoomAnnouncementMade', async () => {
+    const announcementPromise =
+        eventToPromise('cr-a11y-announcer-messages-sent', document.body);
+
+    // Simulate a zoom change to 125%
+    const zoomEvent = new Event('zoomchange') as WebViewZoomChangeEvent;
+    zoomEvent.newZoomFactor = 1.25;
+    controller.webview.dispatchEvent(zoomEvent);
+
+    const event = await announcementPromise;
+    assertDeepEquals(event.detail.messages, ['Zoom: 125%']);
   });
 });

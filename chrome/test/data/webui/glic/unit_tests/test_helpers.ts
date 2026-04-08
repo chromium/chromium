@@ -21,6 +21,7 @@ export function configureLoadTimeData(overrides: Record<string, any> = {}) {
         chromeVersion: '123.0.0.0',
         chromeChannel: 'stable',
         glicHeaderRequestTypes: '',
+        zoomLabel: 'Zoom: $1',
       },
       overrides));
 }
