@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -58,6 +59,108 @@ NSString* DisplayNameForAutofillAiAttributeType(AttributeType attribute_type) {
     return l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_VEHICLE_VIN_NAME);
   }
   return base::SysUTF16ToNSString(attribute_type.GetNameForI18n());
+}
+
+NSString* GetDialogTitleForSaveEntity(EntityTypeName entity_type_name) {
+  switch (entity_type_name) {
+    case EntityTypeName::kPassport:
+      return l10n_util::GetNSString(
+          IDS_IOS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE);
+    case EntityTypeName::kDriversLicense:
+      return l10n_util::GetNSString(
+          IDS_IOS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE);
+    case EntityTypeName::kNationalIdCard:
+      return l10n_util::GetNSString(
+          IDS_IOS_AUTOFILL_AI_SAVE_NATIONAL_ID_CARD_ENTITY_DIALOG_TITLE);
+    case EntityTypeName::kVehicle:
+      return l10n_util::GetNSString(
+          IDS_IOS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE);
+    case EntityTypeName::kKnownTravelerNumber:
+      return l10n_util::GetNSString(
+          IDS_IOS_AUTOFILL_AI_SAVE_KNOWN_TRAVELER_NUMBER_ENTITY_DIALOG_TITLE);
+    case EntityTypeName::kRedressNumber:
+      return l10n_util::GetNSString(
+          IDS_IOS_AUTOFILL_AI_SAVE_REDRESS_NUMBER_ENTITY_DIALOG_TITLE);
+    default:
+      return base::SysUTF16ToNSString(
+          EntityType(entity_type_name).GetNameForI18n());
+  }
+}
+
+NSString* GetDialogTitleForUpdateEntity(EntityTypeName entity_type_name) {
+  switch (entity_type_name) {
+    case EntityTypeName::kPassport:
+      return l10n_util::GetNSString(
+          IDS_IOS_AUTOFILL_AI_UPDATE_PASSPORT_ENTITY_DIALOG_TITLE);
+    case EntityTypeName::kDriversLicense:
+      return l10n_util::GetNSString(
+          IDS_IOS_AUTOFILL_AI_UPDATE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE);
+    case EntityTypeName::kNationalIdCard:
+      return l10n_util::GetNSString(
+          IDS_IOS_AUTOFILL_AI_UPDATE_NATIONAL_ID_CARD_ENTITY_DIALOG_TITLE);
+    case EntityTypeName::kVehicle:
+      return l10n_util::GetNSString(
+          IDS_IOS_AUTOFILL_AI_UPDATE_VEHICLE_ENTITY_DIALOG_TITLE);
+    case EntityTypeName::kKnownTravelerNumber:
+      return l10n_util::GetNSString(
+          IDS_IOS_AUTOFILL_AI_UPDATE_KNOWN_TRAVELER_NUMBER_ENTITY_DIALOG_TITLE);
+    case EntityTypeName::kRedressNumber:
+      return l10n_util::GetNSString(
+          IDS_IOS_AUTOFILL_AI_UPDATE_REDRESS_NUMBER_ENTITY_DIALOG_TITLE);
+    default:
+      return base::SysUTF16ToNSString(
+          EntityType(entity_type_name).GetNameForI18n());
+  }
+}
+
+NSString* GetDialogTitleForAddEntity(EntityTypeName entity_type_name) {
+  switch (entity_type_name) {
+    case EntityTypeName::kPassport:
+      return l10n_util::GetNSString(IDS_AUTOFILL_AI_ADD_PASSPORT_ENTITY);
+    case EntityTypeName::kDriversLicense:
+      return l10n_util::GetNSString(IDS_AUTOFILL_AI_ADD_DRIVERS_LICENSE_ENTITY);
+    case EntityTypeName::kNationalIdCard:
+      return l10n_util::GetNSString(
+          IDS_AUTOFILL_AI_ADD_NATIONAL_ID_CARD_ENTITY);
+    case EntityTypeName::kVehicle:
+      return l10n_util::GetNSString(IDS_AUTOFILL_AI_ADD_VEHICLE_ENTITY);
+    case EntityTypeName::kKnownTravelerNumber:
+      return l10n_util::GetNSString(
+          IDS_AUTOFILL_AI_ADD_KNOWN_TRAVELER_NUMBER_ENTITY);
+    case EntityTypeName::kRedressNumber:
+      return l10n_util::GetNSString(IDS_AUTOFILL_AI_ADD_REDRESS_NUMBER_ENTITY);
+    default:
+      return base::SysUTF16ToNSString(
+          EntityType(entity_type_name).GetNameForI18n());
+  }
+}
+
+NSString* GetDialogTitleForViewEntity(EntityTypeName entity_type_name) {
+  return base::SysUTF16ToNSString(
+      EntityType(entity_type_name).GetNameForI18n());
+}
+
+NSString* GetDialogTitleForEditEntity(EntityTypeName entity_type_name) {
+  switch (entity_type_name) {
+    case EntityTypeName::kPassport:
+      return l10n_util::GetNSString(IDS_AUTOFILL_AI_EDIT_PASSPORT_ENTITY);
+    case EntityTypeName::kDriversLicense:
+      return l10n_util::GetNSString(
+          IDS_AUTOFILL_AI_EDIT_DRIVERS_LICENSE_ENTITY);
+    case EntityTypeName::kNationalIdCard:
+      return l10n_util::GetNSString(
+          IDS_AUTOFILL_AI_EDIT_NATIONAL_ID_CARD_ENTITY);
+    case EntityTypeName::kVehicle:
+      return l10n_util::GetNSString(IDS_AUTOFILL_AI_EDIT_VEHICLE_ENTITY);
+    case EntityTypeName::kKnownTravelerNumber:
+      return l10n_util::GetNSString(
+          IDS_AUTOFILL_AI_EDIT_KNOWN_TRAVELER_NUMBER_ENTITY);
+    case EntityTypeName::kRedressNumber:
+      return l10n_util::GetNSString(IDS_AUTOFILL_AI_EDIT_REDRESS_NUMBER_ENTITY);
+    default:
+      return base::SysUTF16ToNSString(
+          EntityType(entity_type_name).GetNameForI18n());
+  }
 }
 
 }  // namespace autofill

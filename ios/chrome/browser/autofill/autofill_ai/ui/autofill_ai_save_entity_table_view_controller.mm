@@ -125,7 +125,11 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
     return;
   }
 
-  [self setTitle:base::SysUTF16ToNSString(_newEntity->type().GetNameForI18n())];
+  autofill::EntityTypeName typeName = _newEntity->type().name();
+  NSString* title = _oldEntity.has_value()
+                        ? autofill::GetDialogTitleForUpdateEntity(typeName)
+                        : autofill::GetDialogTitleForSaveEntity(typeName);
+  [self setTitle:title];
 
   _dataSource = [[UITableViewDiffableDataSource alloc]
       initWithTableView:self.tableView

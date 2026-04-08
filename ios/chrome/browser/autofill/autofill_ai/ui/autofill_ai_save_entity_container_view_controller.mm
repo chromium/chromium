@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_constants.h"
+#import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_mutator.h"
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_table_view_controller.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
@@ -126,7 +127,11 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
                            oldEntity:oldEntity
                            userEmail:userEmail];
 
-  self.title = base::SysUTF16ToNSString(newEntity.type().GetNameForI18n());
+  autofill::EntityTypeName typeName = newEntity.type().name();
+  self.title = oldEntity.has_value()
+                   ? autofill::GetDialogTitleForUpdateEntity(typeName)
+                   : autofill::GetDialogTitleForSaveEntity(typeName);
+
   _saveIsSynchronous = saveIsSynchronous;
 
   // Update the button title based on whether it's an update or save.

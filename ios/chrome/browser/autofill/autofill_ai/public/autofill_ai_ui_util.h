@@ -22,6 +22,21 @@ UIImage* DefaultIconForAutofillAiEntityType(EntityTypeName entity_type_name,
 // shorter name.
 NSString* DisplayNameForAutofillAiAttributeType(AttributeType attribute_type);
 
+// Returns the title for a dialog asking to save an entity.
+NSString* GetDialogTitleForSaveEntity(EntityTypeName entity_type_name);
+
+// Returns the title for a dialog asking to update an entity.
+NSString* GetDialogTitleForUpdateEntity(EntityTypeName entity_type_name);
+
+// Returns the title for a dialog asking to add an entity.
+NSString* GetDialogTitleForAddEntity(EntityTypeName entity_type_name);
+
+// Returns the title for a dialog to view an entity.
+NSString* GetDialogTitleForViewEntity(EntityTypeName entity_type_name);
+
+// Returns the title for a dialog to edit an entity.
+NSString* GetDialogTitleForEditEntity(EntityTypeName entity_type_name);
+
 }  // namespace autofill
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_AUTOFILL_AI_PUBLIC_AUTOFILL_AI_UI_UTIL_H_

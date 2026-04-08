@@ -9,8 +9,19 @@
 
 @class TableViewItem;
 
+// Defines the presentation and behavioral mode of the view controller.
+enum class AutofillAIEntityEditMode {
+  // Used when viewing an existing entity.
+  kViewAndEdit,
+  // Used when creating a new entity from scratch.
+  kCreate,
+};
+
 // The consumer of the Autofill AI entity view and edit mediator.
 @protocol AutofillAIEntityEditConsumer <NSObject>
+
+// The mode in which this consumer operates.
+@property(nonatomic, assign) AutofillAIEntityEditMode mode;
 
 // Sets the title of the view.
 - (void)setTitle:(NSString*)title;
