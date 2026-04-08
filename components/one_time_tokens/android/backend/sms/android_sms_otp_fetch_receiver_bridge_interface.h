@@ -7,7 +7,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "components/one_time_tokens/android/backend/sms/sms_otp_retrieval_api_error_codes.h"
+#include "components/one_time_tokens/android/backend/sms/sms_otp_retrieval_api_errors.h"
 
 namespace one_time_tokens {
 

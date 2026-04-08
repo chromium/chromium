@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/one_time_tokens/android/backend/sms/android_sms_otp_fetch_receiver_bridge_interface.h"
-#include "components/one_time_tokens/android/backend/sms/sms_otp_retrieval_api_error_codes.h"
+#include "components/one_time_tokens/android/backend/sms/sms_otp_retrieval_api_errors.h"
 
 namespace one_time_tokens {
 

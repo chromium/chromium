@@ -15,7 +15,7 @@ source_set("backend") {
     "android_sms_otp_fetch_receiver_bridge.cc",
     "android_sms_otp_fetch_receiver_bridge.h",
     "android_sms_otp_fetch_receiver_bridge_interface.h",
-    "sms_otp_retrieval_api_error_codes.h",
+    "sms_otp_retrieval_api_errors.h",
     "sms_otp_to_one_time_token_retrieval_error_converter.cc",
     "sms_otp_to_one_time_token_retrieval_error_converter.h",
   ]

@@ -6,7 +6,7 @@
 
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "components/one_time_tokens/android/backend/sms/sms_otp_retrieval_api_error_codes.h"
+#include "components/one_time_tokens/android/backend/sms/sms_otp_retrieval_api_errors.h"
 #include "components/one_time_tokens/android/backend/sms/sms_otp_to_one_time_token_retrieval_error_converter.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 
