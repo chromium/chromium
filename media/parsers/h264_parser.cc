@@ -1414,9 +1414,27 @@ H264Parser::Result H264Parser::ParseSliceHeader(const H264NALU& nalu,
   if (!sps->frame_mbs_only_flag) {
     READ_BOOL_OR_RETURN(&shdr->field_pic_flag);
     if (shdr->field_pic_flag) {
+      // Note that per-spec, the field_pic_flag should be used as a denominator
+      // when calculating frame_height while checking pic_size_in_mbs below.
+      // If interlaced streams ever become supported, additional arithmetic will
+      // need to be added to the calculation of `frame_height_in_mbs`.
       DVLOG(1) << "Interlaced streams not supported";
       return kUnsupportedStream;
     }
+  }
+
+  // H.264 spec 7.4.3: first_mb_in_slice shall be in [0, PicSizeInMbs - 1].
+  // Without this check the value flows unvalidated into
+  // VASliceParameterBufferH264.first_mb_in_slice and is used by the VA-API
+  // driver as a write offset into the decode surface.
+  {
+    const int frame_height_in_mbs = (2 - sps->frame_mbs_only_flag) *
+                                    (sps->pic_height_in_map_units_minus1 + 1);
+    base::CheckedNumeric<int> pic_size = sps->pic_width_in_mbs_minus1 + 1;
+    pic_size *= frame_height_in_mbs;
+    TRUE_OR_RETURN(pic_size.IsValid());
+    const int pic_size_in_mbs = pic_size.ValueOrDie();
+    IN_RANGE_OR_RETURN(shdr->first_mb_in_slice, 0, pic_size_in_mbs - 1);
   }
 
   if (shdr->idr_pic_flag) {

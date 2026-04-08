@@ -815,6 +815,43 @@ TEST_F(H264DecoderTest, SetStreamRetry) {
   ASSERT_TRUE(decoder_->Flush());
 }
 
+// POC: Unvalidated first_mb_in_slice in subsequent slices reaches the
+// accelerator.
+//
+// H264Decoder::PreprocessCurrentSlice() only validates first_mb_in_slice==0
+// when IsNewPrimaryCodedPicture() returns true. For the second (and later)
+// slice of a multi-slice picture, IsNewPrimaryCodedPicture() returns false
+// and the value is forwarded to accelerator_->SubmitSlice() with no upper
+// bound check. The H.264 spec (7.4.3) requires first_mb_in_slice <
+// PicSizeInMbs; the H.265 parser enforces the equivalent condition.
+//
+// This test feeds a hand-crafted Annex-B stream:
+//   SPS  : 320x240 (PicSizeInMbs = 20*15 = 300)
+//   PPS
+//   IDR slice 0 : first_mb_in_slice = 0      (passes the new-picture check)
+//   IDR slice 1 : first_mb_in_slice = 65535  (same frame_num/idr_pic_id ->
+//                                             IsNewPrimaryCodedPicture()=false)
+TEST_F(H264DecoderTest, UnvalidatedFirstMbInSliceReachesAccelerator) {
+  static constexpr uint8_t kStream[] = {
+      0x00, 0x00, 0x00, 0x01, 0x67, 0x42, 0x00, 0x1e, 0xda, 0x05, 0x07,
+      0xe4, 0x00, 0x00, 0x00, 0x01, 0x68, 0xce, 0x38, 0x80, 0x00, 0x00,
+      0x00, 0x01, 0x65, 0x88, 0x84, 0xd5, 0x55, 0x40, 0x00, 0x00, 0x00,
+      0x01, 0x65, 0x00, 0x00, 0x80, 0x00, 0x08, 0x84, 0xd5, 0x55, 0x40,
+  };
+
+  decoder_->SetStream(0, DecoderBuffer::CopyFrom(base::span(kStream)));
+
+  // First Decode() processes the SPS and reports a config change.
+  ASSERT_EQ(AcceleratedVideoDecoder::kConfigChange, decoder_->Decode());
+  EXPECT_EQ(gfx::Size(320, 240), decoder_->GetPicSize());
+
+  EXPECT_CALL(*accelerator_, SubmitSlice(_, _, _, _, _, _, _, _))
+      .WillRepeatedly(Return(H264Decoder::H264Accelerator::Status::kOk));
+
+  // Second Decode() processes PPS + both IDR slices of the same picture.
+  ASSERT_EQ(AcceleratedVideoDecoder::kDecodeError, decoder_->Decode());
+}
+
 TEST_F(H264DecoderTest, ModifyReferencePicList_CompactionTime) {
   // Seed the decoder DPB and `curr_pic_` with a long term ref pic.
   scoped_refptr<H264Picture> ref_pic = base::MakeRefCounted<H264Picture>();
