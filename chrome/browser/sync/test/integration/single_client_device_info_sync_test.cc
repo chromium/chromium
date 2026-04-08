@@ -851,7 +851,9 @@ IN_PROC_BROWSER_TEST_P(
 
 // TODO(crbug.com/465716865): Figure out why this test sometimes times out on
 // ASan, and consistently times out on Win Arm64 Debug.
-#if defined(ADDRESS_SANITIZER) || \
+// TODO(crbug.com/500624161): Enable the test.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    defined(ADDRESS_SANITIZER) ||                    \
     (BUILDFLAG(IS_WIN) && !defined(NDEBUG) && defined(ARCH_CPU_ARM64))
 #define MAYBE_ShouldRecordDeviceStatisticsMetricsWithPrimaryAccount \
   DISABLED_ShouldRecordDeviceStatisticsMetricsWithPrimaryAccount
