@@ -346,7 +346,6 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       /*product_specific_string_data_fields=*/
       std::vector<std::string>{"Experiment ID",
                                "ContextualTasksExpandButtonOptions",
-                               "ContextualTasksOpenSidePanelOnLinkClicked",
                                "ContextualTasksEnableLensInContextualTasks",
                                "ContextualTasksTabAutoSuggestionChipEnabled"});
 

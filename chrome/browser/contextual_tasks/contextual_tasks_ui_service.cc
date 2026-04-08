@@ -459,7 +459,7 @@ void ContextualTasksUiService::OnThreadLinkClicked(
 
   // Copy navigation entries from the current tab to the new tab to support back
   // button navigation. See crbug.com/467042329 for detail.
-  if (tab && kOpenSidePanelOnLinkClicked.Get()) {
+  if (tab) {
     OMNIBOX_LOG("nav_trace")
         << "ContextualTasks navigation trace: OnThreadLinkClicked "
            "copying navigation entries from tab";
@@ -557,14 +557,6 @@ void ContextualTasksUiService::OnThreadLinkClicked(
   DCHECK(new_tab);
   tab_list->ActivateTab(new_tab->GetHandle());
   CHECK(new_contents_ptr == tab_list->GetActiveTab()->GetContents());
-
-  // Do not open side panel if kOpenSidePanelOnLinkClicked is not set.
-  if (!kOpenSidePanelOnLinkClicked.Get()) {
-    OMNIBOX_LOG("nav_trace")
-        << "ContextualTasks navigation trace: OnThreadLinkClicked "
-           "returning, side panel not set to open";
-    return;
-  }
 
   // Detach the WebContents from tab.
   std::unique_ptr<content::WebContents> contextual_task_contents =

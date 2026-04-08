@@ -295,32 +295,6 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
 }
 
 TEST_F(ContextualTasksSidePanelCoordinatorTest,
-       ShowSidePanelLaunchesSurveyArm2) {
-  feature_list_.InitAndEnableFeatureWithParameters(
-      kContextualTasks,
-      {{"ContextualTasksExpandButtonOptions", "side-panel-expand-button"},
-       {"ContextualTasksOpenSidePanelOnLinkClicked", "false"}});
-  base::test::ScopedFeatureList survey_feature_list;
-  survey_feature_list.InitAndEnableFeature(
-      features::kHappinessTrackingSurveysForDesktopNextPanel);
-  profile_->GetPrefs()->SetInteger(prefs::kContextualTasksNextPanelOpenCount,
-                                   1);
-
-  auto* mock_hats_service = static_cast<MockHatsService*>(
-      HatsServiceFactory::GetForProfile(profile_.get(), true));
-
-  EXPECT_CALL(*mock_hats_service,
-              LaunchDelayedSurvey(
-                  kHatsSurveyTriggerNextPanel, 90000, testing::_,
-                  testing::Contains(testing::Pair("Experiment ID", "Arm 2"))))
-      .Times(1);
-
-  coordinator_->Show(
-      false,
-      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
-}
-
-TEST_F(ContextualTasksSidePanelCoordinatorTest,
        ShowSidePanelLaunchesSurveyArm5) {
   feature_list_.InitAndEnableFeatureWithParameters(
       kContextualTasks,

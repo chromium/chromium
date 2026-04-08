@@ -4392,10 +4392,6 @@ const FeatureEntry::FeatureVariation kAndroidDesktopZoomScalingVariations[] = {
 const FeatureEntry::FeatureParam kArm1FullBundleWithExpandoButton[] = {
     {"ContextualTasksExpandButtonOptions", "side-panel-expand-button"}};
 const FeatureEntry::FeatureParam
-    kArm2FullBundleNoAutoSidePanelOpenWithExpandoButton[] = {
-        {"ContextualTasksExpandButtonOptions", "side-panel-expand-button"},
-        {"ContextualTasksOpenSidePanelOnLinkClicked", "false"}};
-const FeatureEntry::FeatureParam
     kArm3FullBundleWithoutLensMigrationWithExpandoButton[] = {
         {"ContextualTasksExpandButtonOptions", "side-panel-expand-button"},
         {"ContextualTasksEnableLensInContextualTasks", "false"}};
@@ -4421,8 +4417,6 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureVariation kContextualTasksVariations[] = {
     {"Arm 1: Full bundle with expando button", kArm1FullBundleWithExpandoButton,
      nullptr},
-    {"Arm 2: Full bundle, no auto side panel open, expando button",
-     kArm2FullBundleNoAutoSidePanelOpenWithExpandoButton, nullptr},
     {"Arm 3: Full bundle, without Lens migration, expando button",
      kArm3FullBundleWithoutLensMigrationWithExpandoButton, nullptr},
     {"Arm 4: Full bundle, No auto added context in side panel, expando button",
@@ -4437,7 +4431,7 @@ const FeatureEntry::FeatureVariation kContextualTasksVariations[] = {
      nullptr},
     {"Arm 8: Full bundle, Ephemeral logo entrypoint, close to expand",
      kArm8FullBundleEphemeralLogoEntrypointCloseToExpandButton, nullptr}};
-// LINT.ThenChange(chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.cc)
+// LINT.ThenChange(//chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.cc)
 
 const FeatureEntry::FeatureParam kSmartTabSharingEnabled[] = {
     {"ContextualTasksContextSmartTabSharing", "true"}};

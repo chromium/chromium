@@ -104,10 +104,6 @@ extern const base::FeatureParam<EntryPointOption, true> kShowEntryPoint;
 // UI Options to expand the contextual tasks side panel to tab.
 extern const base::FeatureParam<ExpandButtonOption, true> kExpandButtonOptions;
 
-// Whether to open side panel when an external link is clicked on the contextual
-// task page.
-extern const base::FeatureParam<bool> kOpenSidePanelOnLinkClicked;
-
 // Whether the context menu is enabled for Nextbox.
 extern bool GetIsContextualTasksNextboxContextMenuEnabled();
 
