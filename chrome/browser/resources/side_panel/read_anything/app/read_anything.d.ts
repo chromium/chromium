@@ -379,6 +379,9 @@ declare namespace chrome {
     // Called by the Read Anything app to close the Read Anything UI.
     function close(): void;
 
+    // Called when the speech engine stalls for 10 seconds.
+    function onSpeechEngineFirstStall(): void;
+
     // Called when the speech engine stalls.
     function onSpeechEngineStalled(): void;
 

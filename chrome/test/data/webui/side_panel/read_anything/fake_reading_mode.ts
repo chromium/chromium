@@ -575,4 +575,5 @@ export class FakeReadingMode {
   // There has been a long delay between starting speech and speech
   // playing.
   onSpeechEngineStalled() {}
+  onSpeechEngineFirstStall() {}
 }

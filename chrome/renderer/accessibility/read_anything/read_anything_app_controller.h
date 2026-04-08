@@ -350,6 +350,7 @@ class ReadAnythingAppController
   void TogglePresentation();
   void TogglePinState();
   void OnPinStatusReceived(bool pin_state) override;
+  void OnSpeechEngineFirstStall();
   void OnSpeechEngineStalled();
 
   // Returns the current active distillation method state as an integer.

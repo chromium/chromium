@@ -1031,6 +1031,9 @@ export class SpeechController {
     this.engineTimeoutId_ = setTimeout(() => {
       if (this.model_.getEngineState() === SpeechEngineState.LOADING) {
         this.logger_.logSpeechError('timeout-engine-stalled');
+        // This triggers a non-fatal C++ DUMP_WILL_BE_CHECK in
+        // ReadAnythingAppController.
+        chrome.readingMode.onSpeechEngineFirstStall();
       }
     }, ENGINE_TIMEOUT_THRESHOLD_MS);
 
@@ -1042,6 +1045,8 @@ export class SpeechController {
     this.engineRecoveryTimeoutId_ = setTimeout(() => {
       if (this.model_.getEngineState() === SpeechEngineState.LOADING) {
         this.logger_.logSpeechError('timeout-stalled-after-recovery');
+        // This triggers a non-fatal C++ DUMP_WILL_BE_CHECK in
+        // ReadAnythingAppController.
         chrome.readingMode.onSpeechEngineStalled();
         this.voiceLanguageController_.onVoicesChanged();
       }

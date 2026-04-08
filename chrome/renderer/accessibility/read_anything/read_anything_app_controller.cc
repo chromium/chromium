@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
@@ -1453,6 +1454,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("togglePinState", &ReadAnythingAppController::TogglePinState)
       .SetMethod("sendPinStateRequest",
                  &ReadAnythingAppController::SendPinStateRequest)
+      .SetMethod("onSpeechEngineFirstStall",
+                 &ReadAnythingAppController::OnSpeechEngineFirstStall)
       .SetMethod("onSpeechEngineStalled",
                  &ReadAnythingAppController::OnSpeechEngineStalled);
 }
@@ -2474,7 +2477,12 @@ void ReadAnythingAppController::OnReadingModeHidden(bool tab_active) {
   RecordEstimatedWordsHeard();
 }
 
+void ReadAnythingAppController::OnSpeechEngineFirstStall() {
+  DUMP_WILL_BE_CHECK(false) << "Speech engine stalled after 10 seconds";
+}
+
 void ReadAnythingAppController::OnSpeechEngineStalled() {
+  DUMP_WILL_BE_CHECK(false) << "Speech engine stalled after recovery timeout";
   page_handler_->OnSpeechEngineStalled();
 }
 
