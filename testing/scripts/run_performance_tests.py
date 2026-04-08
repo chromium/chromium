@@ -971,7 +971,8 @@ class CrossbenchTest(object):
 
   def _generate_command_list(self, benchmark, benchmark_args, working_dir):
     if self._is_alum():
-      return ['vpython3', '-Xutf8'] + [ALUM_RUNNER]
+      return (['vpython3', '-Xutf8'] + [ALUM_RUNNER] +
+              [f'--out-dir={working_dir}'] + [f'--adb-bin={ADB_TOOL}'])
     extra_browser_args = []
     if self.cb_options.extra_browser_args:
       extra_browser_args = ['--']
