@@ -58,3 +58,20 @@ IN_PROC_BROWSER_TEST_F(TabsFromOtherDevicesSidePanelBrowserTest,
   EXPECT_EQ(action_item->GetProperty(actions::kActionItemPinnableKey),
             static_cast<int>(actions::ActionPinnableState::kPinnable));
 }
+
+IN_PROC_BROWSER_TEST_F(TabsFromOtherDevicesSidePanelBrowserTest, ShowFromMenu) {
+  coordinator()->SetNoDelaysForTesting(true);
+  chrome::ExecuteCommand(browser(),
+                         IDC_SHOW_TABS_FROM_OTHER_DEVICES_SIDE_PANEL);
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return browser()
+        ->GetBrowserView()
+        .contents_height_side_panel()
+        ->GetVisible();
+  }));
+
+  EXPECT_EQ(
+      coordinator()->GetCurrentEntryId(SidePanelEntry::PanelType::kContent),
+      SidePanelEntryId::kTabsFromOtherDevices);
+}

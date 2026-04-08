@@ -574,7 +574,8 @@
   E(kActionSidePanelShowShoppingInsights) \
   E(kActionSidePanelShowSideSearch) \
   E(kActionSidePanelShowMerchantTrust) \
-  E(kActionSidePanelShowTabsFromOtherDevices)
+  E(kActionSidePanelShowTabsFromOtherDevices, \
+    IDC_SHOW_TABS_FROM_OTHER_DEVICES_SIDE_PANEL)
 
 #define TOOLBAR_PINNABLE_ACTION_IDS \
   E(kActionHome, IDC_HOME) \

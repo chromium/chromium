@@ -306,6 +306,7 @@
 #define IDC_CONTENT_CONTEXT_INSPECTELEMENT_WITH_DEVTOOLS 40301
 #define IDC_REPORT_UNSAFE_SITE 40302
 #define IDC_SHOW_READING_MODE_KEYBOARD 40303
+#define IDC_SHOW_TABS_FROM_OTHER_DEVICES_SIDE_PANEL 40304
 
 // Spell-check
 // Insert any additional suggestions before _LAST; these have to be consecutive.

@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_coordinator.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/favicon/core/history_ui_favicon_request_handler.h"
 #include "components/favicon_base/favicon_types.h"
@@ -252,6 +253,7 @@ bool RecentTabsSubMenuModel::ExecuteCustomCommand(int command_id,
   // Supported custom commands.
   static constexpr auto custom_commands = base::MakeFixedFlatSet<int>(
       {IDC_SHOW_HISTORY, IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
+       IDC_SHOW_TABS_FROM_OTHER_DEVICES_SIDE_PANEL,
        IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS, IDC_RECENT_TABS_SEE_DEVICE_TABS});
 
   if (!custom_commands.contains(command_id)) {
@@ -259,6 +261,11 @@ bool RecentTabsSubMenuModel::ExecuteCustomCommand(int command_id,
   }
   if (command_id == IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL &&
       !HistoryClustersSidePanelCoordinator::IsSupported(browser_->profile())) {
+    return false;
+  }
+  if (command_id == IDC_SHOW_TABS_FROM_OTHER_DEVICES_SIDE_PANEL &&
+      !TabsFromOtherDevicesSidePanelCoordinator::IsSupported(
+          browser_->profile())) {
     return false;
   }
   if (log_menu_metrics_callback_) {
@@ -355,21 +362,34 @@ void RecentTabsSubMenuModel::Build() {
   // The menu contains:
   // - History to open the full history tab.
   // - History to open in side panel.
+  // - Tabs from other devices to open in side panel.
   // - Separator
   // - Recent tabs header
   // - A list of local recently closed tabs, groups, and/or windows.
   // - Separator
   // - Your devices header
   // - A list of remote devices.
-  InsertItemWithStringIdAt(0, IDC_SHOW_HISTORY, IDS_HISTORY_SHOW_HISTORY);
+  int next_command_id = 0;
+  InsertItemWithStringIdAt(next_command_id++, IDC_SHOW_HISTORY,
+                           IDS_HISTORY_SHOW_HISTORY);
   SetCommandIcon(this, IDC_SHOW_HISTORY,
                  vector_icons::kHistoryChromeRefreshIcon);
-  if (browser_->GetFeatures().side_panel_ui() &&
-      HistoryClustersSidePanelCoordinator::IsSupported(browser_->profile())) {
-    InsertItemWithStringIdAt(1, IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
-                             IDS_HISTORY_CLUSTERS_SHOW_SIDE_PANEL);
-    SetCommandIcon(this, IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
-                   vector_icons::kHistoryChromeRefreshIcon);
+  if (browser_->GetFeatures().side_panel_ui()) {
+    if (HistoryClustersSidePanelCoordinator::IsSupported(browser_->profile())) {
+      InsertItemWithStringIdAt(next_command_id++,
+                               IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
+                               IDS_HISTORY_CLUSTERS_SHOW_SIDE_PANEL);
+      SetCommandIcon(this, IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
+                     vector_icons::kHistoryChromeRefreshIcon);
+    }
+    if (TabsFromOtherDevicesSidePanelCoordinator::IsSupported(
+            browser_->profile())) {
+      InsertItemWithStringIdAt(next_command_id++,
+                               IDC_SHOW_TABS_FROM_OTHER_DEVICES_SIDE_PANEL,
+                               IDS_SIDE_PANEL_SHOW_TABS_FROM_OTHER_DEVICES);
+      SetCommandIcon(this, IDC_SHOW_TABS_FROM_OTHER_DEVICES_SIDE_PANEL,
+                     kDevicesChromeRefreshIcon);
+    }
   }
 
   AddSeparator(ui::NORMAL_SEPARATOR);

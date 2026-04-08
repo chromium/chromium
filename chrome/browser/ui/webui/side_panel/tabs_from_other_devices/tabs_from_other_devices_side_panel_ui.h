@@ -24,6 +24,7 @@ class TabsFromOtherDevicesUIConfig
 
   // DefaultTopChromeWebUIConfig:
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+  std::optional<int> GetCommandIdForTesting() override;
 };
 
 class TabsFromOtherDevicesSidePanelUI : public TopChromeWebUIController {

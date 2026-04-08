@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/views/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_coordinator.h"
@@ -31,6 +32,10 @@ bool TabsFromOtherDevicesUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   return TabsFromOtherDevicesSidePanelCoordinator::IsSupported(
       Profile::FromBrowserContext(browser_context));
+}
+
+std::optional<int> TabsFromOtherDevicesUIConfig::GetCommandIdForTesting() {
+  return IDC_SHOW_TABS_FROM_OTHER_DEVICES_SIDE_PANEL;
 }
 
 TabsFromOtherDevicesSidePanelUI::TabsFromOtherDevicesSidePanelUI(
