@@ -220,6 +220,15 @@ const passage_embeddings::Embedding* GetTitleEmbedding(
 
 }  // namespace
 
+ContextualTasksContextService::ContextualTasksContextService(Profile* profile)
+    : profile_(profile),
+      page_embeddings_service_(nullptr),
+      embedder_metadata_provider_(nullptr),
+      embedder_(nullptr),
+      optimization_guide_keyed_service_(nullptr),
+      page_content_extraction_service_(nullptr),
+      tick_clock_(base::DefaultTickClock::GetInstance()) {}
+
 ContextualTasksContextService::ContextualTasksContextService(
     Profile* profile,
     page_content_annotations::PageEmbeddingsService* page_embeddings_service,

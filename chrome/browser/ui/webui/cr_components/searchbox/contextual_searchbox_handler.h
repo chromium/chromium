@@ -203,6 +203,9 @@ class ContextualSearchboxHandler
   // SearchboxHandler:
   omnibox::InputState GetInputState() const override;
 
+  // Returns true if smart tab sharing is active for the current query.
+  virtual bool IsSmartTabSharingActive() const;
+
   virtual void OpenUrl(GURL url, const WindowOpenDisposition disposition);
 
   void ContextualizeQueryAndOpenUrl(

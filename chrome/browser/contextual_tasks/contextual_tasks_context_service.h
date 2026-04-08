@@ -102,13 +102,17 @@ class ContextualTasksContextService
   ~ContextualTasksContextService() override;
 
   // Returns the relevant tabs for `query`. Will invoke `callback` when done.
-  void GetRelevantTabsForQuery(
+  virtual void GetRelevantTabsForQuery(
       const TabSelectionOptions& options,
       const std::string& query,
       const std::vector<GURL>& explicit_urls,
       base::OnceCallback<void(std::vector<content::WebContents*>)> callback);
 
   void SetClockForTesting(const base::TickClock* tick_clock);
+
+ protected:
+  // Constructor for testing that avoids initializing other dependencies.
+  explicit ContextualTasksContextService(Profile* profile);
 
  private:
   struct QueryState {
