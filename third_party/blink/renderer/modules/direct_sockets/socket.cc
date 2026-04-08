@@ -91,18 +91,15 @@ bool Socket::CheckContextAndPermissions(ScriptState* script_state,
   }
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
-  if (execution_context->IsWindow()) {
-    // TODO(crbug.com/407883159): Replace IsFeatureEnabled() with
-    // CrossOriginIsolatedCapability() once Chrome Apps are deprecated.
-    if (!execution_context->IsIsolatedContext() ||
-        !execution_context->IsFeatureEnabled(
-            network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated)) {
+  if (execution_context->IsIsolatedContext()) {
+    if (!execution_context->CrossOriginIsolatedCapability()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotAllowedError,
           "Frame is not sufficiently isolated to use Direct Sockets.");
       return false;
     }
-    if (!execution_context->IsFeatureEnabled(
+    if (execution_context->IsWindow() &&
+        !execution_context->IsFeatureEnabled(
             network::mojom::PermissionsPolicyFeature::kDirectSockets)) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotAllowedError,
@@ -110,20 +107,10 @@ bool Socket::CheckContextAndPermissions(ScriptState* script_state,
       return false;
     }
     return true;
-  } else if (execution_context->IsWorkerGlobalScope()) {
-    // TODO(crbug.com/407883159): Replace IsFeatureEnabled() with
-    // CrossOriginIsolatedCapability() once Chrome Apps are deprecated.
-    if (!execution_context->IsIsolatedContext() ||
-        !execution_context->IsFeatureEnabled(
-            network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated)) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kNotAllowedError,
-          "Frame is not sufficiently isolated to use Direct Sockets.");
-      return false;
-    }
-    return true;
   } else {
-    NOTREACHED();
+    // Embedder-enabled Direct Sockets run in custom contexts and do not rely on
+    // permissions policies.
+    return true;
   }
 }
 

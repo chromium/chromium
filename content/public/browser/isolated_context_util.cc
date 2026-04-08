@@ -4,36 +4,20 @@
 
 #include "content/public/browser/isolated_context_util.h"
 
-#include "content/browser/process_lock.h"
-#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
-#include "content/public/common/content_client.h"
 
 namespace content {
 
-namespace {
-
-bool IsIsolatedContextAllowedByEmbedder(RenderProcessHost* process) {
-  const ProcessLock& process_lock = process->GetProcessLock();
-  return !process_lock.is_sandboxed() &&
-         GetContentClient()->browser()->IsIsolatedContextAllowedForUrl(
-             process->GetBrowserContext(), process_lock.GetProcessLockURL());
-}
-
-}  // namespace
-
 bool HasIsolatedContextCapability(RenderFrameHost* frame) {
-  return (frame->GetWebExposedIsolationLevel() ==
-          WebExposedIsolationLevel::kIsolatedApplication) ||
-         IsIsolatedContextAllowedByEmbedder(frame->GetProcess());
+  return frame->GetWebExposedIsolationLevel() ==
+         WebExposedIsolationLevel::kIsolatedApplication;
 }
 
 bool IsIsolatedContext(RenderProcessHost* process) {
-  return (process->GetWebExposedIsolationLevel() ==
-          WebExposedIsolationLevel::kIsolatedApplication) ||
-         IsIsolatedContextAllowedByEmbedder(process);
+  return process->GetWebExposedIsolationLevel() ==
+         WebExposedIsolationLevel::kIsolatedApplication;
 }
 
 }  // namespace content

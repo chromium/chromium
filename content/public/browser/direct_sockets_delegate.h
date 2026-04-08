@@ -33,6 +33,13 @@ class CONTENT_EXPORT DirectSocketsDelegate {
 
   virtual ~DirectSocketsDelegate() = default;
 
+  // Allows the embedder to expose the API symbols in arbitrary contexts.
+  // Note that in this case direct-sockets, direct-sockets-private and
+  // direct-sockets-multicast permissions policies will be ignored; providing a
+  // Permissions-Policy: direct-sockets=() header won't take effect.
+  virtual bool AreDirectSocketsAllowed(BrowserContext* browser_context,
+                                       const url::Origin& origin) = 0;
+
   // Allows embedders to introduce additional rules for specific
   // addresses/ports.
   virtual bool ValidateRequest(RenderFrameHost& rfh, const RequestDetails&) = 0;
@@ -51,10 +58,6 @@ class CONTENT_EXPORT DirectSocketsDelegate {
   virtual bool ServiceWorkerHasDirectSocketsPNAContentSetting(
       BrowserContext* browser_context,
       const url::Origin& origin) = 0;
-
-  // Allows embedders to introduce additional rules for private network access.
-  virtual bool ShouldAllowPrivateNetworkAccessUnconditionally(
-      RenderFrameHost& rfh) = 0;
 };
 
 }  // namespace content

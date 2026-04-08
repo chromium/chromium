@@ -53,6 +53,13 @@ bool ValidateMulticastOptions(ExecutionContext* execution_context,
     return true;
   }
 
+  if (!execution_context->IsIsolatedContext()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "Multicast options can only be used in Isolated Web Apps.");
+    return false;
+  }
+
   if (execution_context->IsWindow() ||
       execution_context->IsDedicatedWorkerGlobalScope()) {
     if (!execution_context->IsFeatureEnabled(
@@ -75,6 +82,10 @@ bool ValidateMulticastOptions(ExecutionContext* execution_context,
 }
 
 bool IsMulticastAllowed(ExecutionContext* execution_context) {
+  if (!execution_context->IsIsolatedContext()) {
+    return false;
+  }
+
   if (execution_context->IsWindow() ||
       execution_context->IsDedicatedWorkerGlobalScope()) {
     if (!execution_context->IsFeatureEnabled(

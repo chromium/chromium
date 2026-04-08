@@ -550,13 +550,11 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpApiTest,
 
   static constexpr std::string_view kScript = R"(
     (async () => {
-      const socket = new TCPSocket($1, $2);
-      await socket.opened;
+      return typeof TCPSocket === 'undefined';
     })();
   )";
 
-  EXPECT_THAT(EvalJs(app_frame, content::JsReplace(kScript, kHostname, 0)),
-              ErrorIs(AccessBlocked()));
+  EXPECT_EQ(true, EvalJs(app_frame, kScript));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpApiTest,
@@ -612,13 +610,11 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest,
 
   static constexpr std::string_view kScript = R"(
     (async () => {
-      const socket = new UDPSocket({ remoteAddress: $1, remotePort: $2 });
-      await socket.opened;
+      return typeof UDPSocket === 'undefined';
     })();
   )";
 
-  EXPECT_THAT(EvalJs(app_frame, content::JsReplace(kScript, kHostname, 0)),
-              ErrorIs(AccessBlocked()));
+  EXPECT_EQ(true, EvalJs(app_frame, kScript));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest,
@@ -698,12 +694,11 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerApiTest,
 
   static constexpr std::string_view kScript = R"(
     (async () => {
-      const socket = new TCPServerSocket("::");
-      await socket.opened;
+      return typeof TCPServerSocket === 'undefined';
     })();
   )";
 
-  EXPECT_THAT(EvalJs(app_frame, kScript), ErrorIs(AccessBlocked()));
+  EXPECT_EQ(true, EvalJs(app_frame, kScript));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerApiTest,

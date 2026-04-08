@@ -304,8 +304,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool IsInitialWebUIURL(const GURL& url) override;
 #endif  // !BUILDFLAG(IS_ANDROID)
   bool IsTopChromeWebUIURL(const GURL& url) override;
-  bool IsIsolatedContextAllowedForUrl(content::BrowserContext* browser_context,
-                                      const GURL& lock_url) override;
   bool IsMultiCaptureAllowed(
       content::RenderFrameHost* render_frame_host) override;
   bool IsFileAccessAllowed(const base::FilePath& path,

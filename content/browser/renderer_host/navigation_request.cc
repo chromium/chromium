@@ -127,6 +127,7 @@
 #include "content/public/browser/commit_deferring_condition.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/cookie_access_details.h"
+#include "content/public/browser/direct_sockets_delegate.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/isolated_context_util.h"
 #include "content/public/browser/navigation_controller.h"
@@ -9138,7 +9139,14 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (IsIsolatedContext(GetRenderFrameHost()->GetProcess())) {
+  if (IsIsolatedContext(GetRenderFrameHost()->GetProcess()) ||
+      (origin_to_commit &&
+       GetContentClient()->browser()->GetDirectSocketsDelegate() &&
+       GetContentClient()
+           ->browser()
+           ->GetDirectSocketsDelegate()
+           ->AreDirectSocketsAllowed(GetRenderFrameHost()->GetBrowserContext(),
+                                     *origin_to_commit))) {
     GetMutableRuntimeFeatureStateContext().SetDirectSocketsEnabled(
         base::FeatureList::IsEnabled(blink::features::kDirectSockets));
   }

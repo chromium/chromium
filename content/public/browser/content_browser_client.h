@@ -827,12 +827,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // false on platforms that do not support Top Chrome WebUIs, e.g., Android.
   virtual bool IsTopChromeWebUIURL(const GURL& url);
 
-  // Allows the embedder to enable access to Isolated Context Web APIs for the
-  // given |lock_url| -- the URL to which the renderer process is locked.
-  // See [IsolatedContext] IDL attribute for more details.
-  virtual bool IsIsolatedContextAllowedForUrl(BrowserContext* browser_context,
-                                              const GURL& lock_url);
-
   // Returns whether the application running in the |render_frame_host| is
   // allowed to automatically capture all screens by using the
   // getAllScreensMedia API.

@@ -10,6 +10,8 @@
 class ChromeDirectSocketsDelegate : public content::DirectSocketsDelegate {
  public:
   // content::DirectSocketsDelegate:
+  bool AreDirectSocketsAllowed(content::BrowserContext* browser_context,
+                               const url::Origin& origin) override;
   bool ValidateRequest(content::RenderFrameHost& rfh,
                        const RequestDetails&) override;
   bool ValidateRequestForSharedWorker(content::BrowserContext* browser_context,
@@ -26,8 +28,6 @@ class ChromeDirectSocketsDelegate : public content::DirectSocketsDelegate {
   bool ServiceWorkerHasDirectSocketsPNAContentSetting(
       content::BrowserContext* browser_context,
       const url::Origin& origin) override;
-  bool ShouldAllowPrivateNetworkAccessUnconditionally(
-      content::RenderFrameHost& rfh) override;
 };
 
 #endif  // CHROME_BROWSER_DIRECT_SOCKETS_CHROME_DIRECT_SOCKETS_DELEGATE_H_

@@ -1049,22 +1049,6 @@ bool URLHasExtensionPermission(extensions::ProcessMap* process_map,
          extension->permissions_data()->HasAPIPermission(permission) &&
          process_map->Contains(extension->id(), render_process_id);
 }
-
-// Returns true if |extension_id| is allowed to run as an Isolated Context,
-// giving it access to additional APIs.
-bool IsExtensionIdAllowedToUseIsolatedContext(std::string_view extension_id) {
-  constexpr auto kAllowedIsolatedContextExtensionIds =
-      base::MakeFixedFlatSet<std::string_view>({
-          "algkcnfjnajfhgimadimbjhmpaeohhln",  // Secure Shell Extension (dev)
-          "iodihamcpbpeioajjeobimgagajmlibd",  // Secure Shell Extension
-                                               // (stable)
-          // Extension IDs used in tests.
-          "bbobefdodiifgmhhdijgpelmkdaebfpn",  // Controlled Frame Service
-                                               // Worker Test
-      });
-  return kAllowedIsolatedContextExtensionIds.contains(extension_id);
-}
-
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 mojo::PendingRemote<prerender::mojom::NoStatePrefetchCanceler>
@@ -2693,27 +2677,6 @@ bool ChromeContentBrowserClient::IsInitialWebUIURL(const GURL& url) {
 
 bool ChromeContentBrowserClient::IsTopChromeWebUIURL(const GURL& url) {
   return ::IsTopChromeWebUIURL(url);
-}
-
-bool ChromeContentBrowserClient::IsIsolatedContextAllowedForUrl(
-    content::BrowserContext* browser_context,
-    const GURL& lock_url) {
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  if (ChromeContentBrowserClientExtensionsPart::AreExtensionsDisabledForProfile(
-          browser_context)) {
-    return false;
-  }
-
-  // Allow restricted context APIs in Chrome Apps.
-  auto* extension = extensions::ExtensionRegistry::Get(browser_context)
-                        ->enabled_extensions()
-                        .GetExtensionOrAppByURL(lock_url);
-  return extension &&
-         (extension->is_platform_app() ||
-          IsExtensionIdAllowedToUseIsolatedContext(extension->id()));
-#else
-  return false;
-#endif
 }
 
 bool ChromeContentBrowserClient::IsMultiCaptureAllowed(
@@ -4459,10 +4422,10 @@ bool ChromeContentBrowserClient::CanCreateWindow(
         web_contents->GetResponsibleWebContents();
     bool is_from_embedded_page = web_contents != responsible_web_contents;
     if (contextual_tasks_ui_service &&
-        contextual_tasks_ui_service->HandleNavigation(
-            std::move(url_params), responsible_web_contents,
-            is_from_embedded_page,
-            /*is_to_new_tab=*/true)) {
+        contextual_tasks_ui_service->HandleNavigation(std::move(url_params),
+                                                      responsible_web_contents,
+                                                      is_from_embedded_page,
+                                                      /*is_to_new_tab=*/true)) {
       return false;
     }
   }
