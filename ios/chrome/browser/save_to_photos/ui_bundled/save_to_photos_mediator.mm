@@ -287,10 +287,15 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
   [self.delegate hideSaveToPhotos];
 }
 
+- (void)userIsReauth {
+  [self tryUploadImage];
+}
+
 #pragma mark - Private
 
 // Resume the process of saving the image once the data has been fetched.
 - (void)continueSaveImageWithData:(NSData*)imageData {
+  CHECK(_imageName, base::NotFatalUntil::M156);
   _imageData = imageData;
 
   // Although it is unlikely, the user could sign-out while the image data is
@@ -354,6 +359,14 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
 // Once the destination account is known, tries to upload the image using the
 // Photos service.
 - (void)tryUploadImage {
+  CHECK(_imageName, base::NotFatalUntil::M156);
+  CHECK(_identity, base::NotFatalUntil::M156);
+  if (!_identity.hasValidAuth) {
+    // The account is on the device, but the user is not identified anymore.
+    // Let’s offer them to reauthentify first.
+    [self.delegate showReauthForIdentity:_identity];
+    return;
+  }
   __weak __typeof(self) weakSelf = self;
 
   // Reset part of the state in case this is not the first attempt.

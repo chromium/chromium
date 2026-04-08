@@ -105,6 +105,9 @@ extern NSString* const kGooglePhotosAppURLScheme;
 // Called when the user taps "Cancel" in the "Manage Storage" alert.
 - (void)manageStorageAlertDidCancel;
 
+// Informs the mediator that the user reauth is done.
+- (void)userIsReauth;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SAVE_TO_PHOTOS_UI_BUNDLED_SAVE_TO_PHOTOS_MEDIATOR_H_

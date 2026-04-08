@@ -716,3 +716,31 @@ TEST_F(SaveToPhotosMediatorTest, HidesSaveToPhotosOnSignOut) {
       IdentityManagerFactory::GetForProfile(profile_.get()));
   EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
 }
+
+// Tests that the mediator shows reauth if preferences contain a default account
+// choice, but it has invalid auth.
+TEST_F(SaveToPhotosMediatorTest, ReauthIfInvalidAuth) {
+  profile_->GetPrefs()->SetString(prefs::kIosSaveToPhotosDefaultGaiaId,
+                                  fake_identity_.gaiaId.ToString());
+  profile_->GetPrefs()->SetBoolean(prefs::kIosSaveToPhotosSkipAccountPicker,
+                                   true);
+
+  [(FakeSystemIdentity*)fake_identity_ setHasValidAuth:NO];
+
+  SaveToPhotosMediator* mediator = CreateSaveToPhotosMediator();
+  id mock_save_to_photos_mediator_delegate =
+      OCMProtocolMock(@protocol(SaveToPhotosMediatorDelegate));
+  mediator.delegate = static_cast<id<SaveToPhotosMediatorDelegate>>(
+      mock_save_to_photos_mediator_delegate);
+
+  OCMExpect([mock_save_to_photos_mediator_delegate
+      showReauthForIdentity:fake_identity_]);
+
+  SetUpImageFetchTabHelperQuitClosure();
+  [mediator startWithImageURL:GURL(kFakeImageUrl)
+                     referrer:web::Referrer()
+                     webState:web_state_.get()];
+  task_environment_.RunUntilQuit();
+
+  EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
+}
