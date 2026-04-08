@@ -47,12 +47,6 @@ constexpr char kUserActionGetStarted[] = "get-started";
 constexpr char kUserActionSetA11yNavigationButtonsEnabled[] =
     "set-a11y-button-enable";
 
-void RecordShowShelfNavigationButtonsValueChange(bool enabled) {
-  base::UmaHistogramBoolean(
-      "Accessibility.CrosShelfNavigationButtonsInTabletModeChanged.OOBE",
-      enabled);
-}
-
 // Records the opt-in and opt-out rates for Chromebook emails. Differentiates
 // between users who have a default opt-in vs. a default opt-out option.
 void RecordOptInAndOptOutRates(const bool user_opted_in,
@@ -105,11 +99,7 @@ MarketingOptInScreen::MarketingOptInScreen(
   DCHECK(view_);
 }
 
-MarketingOptInScreen::~MarketingOptInScreen() {
-  if (a11y_nav_buttons_toggle_metrics_reporter_timer_.IsRunning()) {
-    a11y_nav_buttons_toggle_metrics_reporter_timer_.FireNow();
-  }
-}
+MarketingOptInScreen::~MarketingOptInScreen() = default;
 
 bool MarketingOptInScreen::MaybeSkip(WizardContext& context) {
   if (context.skip_post_login_screens_for_tests) {
@@ -280,9 +270,6 @@ void MarketingOptInScreen::SetCountryFromTimezoneIfAvailable(
 void MarketingOptInScreen::SetA11yNavigationButtonsEnabled(bool enabled) {
   ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled, enabled);
-  a11y_nav_buttons_toggle_metrics_reporter_timer_.Start(
-      FROM_HERE, base::Seconds(10),
-      base::BindOnce(&RecordShowShelfNavigationButtonsValueChange, enabled));
 }
 
 bool MarketingOptInScreen::ShouldShowOptionToSubscribe() {

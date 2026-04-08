@@ -1356,20 +1356,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Accessibility.CrosShelfNavigationButtonsInTabletModeChanged.OOBE"
-    enum="BooleanEnabled" expires_after="2021-07-27">
-  <owner>gzadina@google.com</owner>
-  <owner>tbarzic@chromium.org</owner>
-  <summary>
-    The value for shelf navigation buttons setting set by the user during OOBE.
-    The metric will be reported after the setting has been stable for 10
-    seconds, or the OOBE screen in which the value can be set is closed (if the
-    setting changes multiple times in quick succession, only the final value
-    will be reported).
-  </summary>
-</histogram>
-
-<histogram
     name="Accessibility.CrosShelfNavigationButtonsInTabletModeChanged.OsSettings"
     enum="BooleanEnabled" expires_after="2021-10-25">
   <owner>gzadina@google.com</owner>
