@@ -196,6 +196,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   NativeWidgetMacNSWindow* ns_window();
 
   remote_cocoa::DragDropClient* drag_drop_client();
+  ui::mojom::ModalType modal_type() const { return modal_type_; }
   bool is_translucent_window() const { return is_translucent_window_; }
 
   // The parent widget specified in Widget::InitParams::parent. If non-null, the
