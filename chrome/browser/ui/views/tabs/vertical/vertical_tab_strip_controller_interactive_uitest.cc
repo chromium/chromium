@@ -73,7 +73,7 @@ class VerticalTabStripControllerInteractiveUiTest
                                        gfx::Point(), gfx::Point(),
                                        base::TimeTicks::Now(), flags,
                                        ui::EF_LEFT_MOUSE_BUTTON);
-          view->OnMouseReleased(event);
+          view->OnMouseReleased(release_event);
         },
         flags);
   }
@@ -172,14 +172,8 @@ IN_PROC_BROWSER_TEST_F(
                   2));
 }
 
-// TODO(crbug.com/469912247): Fails on mac-rel-ready bot.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ShiftMultiTabSelection DISABLED_ShiftMultiTabSelection
-#else
-#define MAYBE_ShiftMultiTabSelection ShiftMultiTabSelection
-#endif
 IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
-                       MAYBE_ShiftMultiTabSelection) {
+                       ShiftMultiTabSelection) {
   RunTestSequence(
       // Verify Vertical Tabs is showing.
       WaitForShow(kVerticalTabStripBottomContainerElementId),
@@ -200,8 +194,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
       NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
                                                 kThirdTabName, 2),
       // Set Tab 2 to be active.
-      WaitForShow(kSecondTabName), MoveMouseTo(kSecondTabName),
-      ClickMouse(ui_controls::LEFT),
+      WaitForShow(kSecondTabName),
+      WithView(kSecondTabName, ClickWithFlags(ui::EF_LEFT_MOUSE_BUTTON)),
       CheckResult(
           [this]() { return browser()->tab_strip_model()->active_index(); }, 1),
       // Shift + Click Tab 3.
