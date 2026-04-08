@@ -16,7 +16,6 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
@@ -253,9 +252,6 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
      */
     @Override
     public boolean isSigninSupported(boolean requireUpdatedPlayServices) {
-        if (DeviceInfo.isRetailDemoMode()) {
-            return false;
-        }
         if (requireUpdatedPlayServices) {
             return ExternalAuthUtils.getInstance().canUseGooglePlayServices();
         }
