@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_AUTOFILL_AUTOFILL_SETTINGS_UTIL_H_
-#define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_AUTOFILL_AUTOFILL_SETTINGS_UTIL_H_
+#ifndef IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_UTIL_AUTOFILL_SETTINGS_UTIL_H_
+#define IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_UTIL_AUTOFILL_SETTINGS_UTIL_H_
 
 #import <Foundation/Foundation.h>
 
@@ -11,7 +11,7 @@
 
 @class TableViewTextEditItem;
 
-// Utility class for Autofill Settings UI.
+// Utility class for Autofill UI.
 @interface AutofillSettingsUtil : NSObject
 
 // Updates the `cellAccessibilityLabel` of the given `item` to include:
@@ -28,4 +28,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_AUTOFILL_AUTOFILL_SETTINGS_UTIL_H_
+#endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_UTIL_AUTOFILL_SETTINGS_UTIL_H_

@@ -126,23 +126,6 @@ source_set("ui") {
   frameworks = [ "UIKit.framework" ]
 }
 
-source_set("util") {
-  sources = [
-    "autofill_credit_card_util.h",
-    "autofill_credit_card_util.mm",
-  ]
-  deps = [
-    ":ui_type",
-    "//base",
-    "//components/autofill/core/browser",
-    "//ios/chrome/browser/autofill/model/message",
-    "//ios/chrome/browser/net/model:crurl",
-    "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/util",
-  ]
-}
-
 source_set("ui_type") {
   sources = [
     "autofill_credit_card_ui_type.h",
@@ -273,6 +256,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/autofill/ui_bundled/address_editor:autofill_shared_ui",
     "//ios/chrome/browser/autofill/ui_bundled/address_editor:constants",
     "//ios/chrome/browser/autofill/ui_bundled/cells",
+    "//ios/chrome/browser/autofill/ui_bundled/util:unit_tests",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/test",
