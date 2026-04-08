@@ -5360,6 +5360,8 @@ Called by update_autofill_enums.py.-->
       label="Suggestions shown on a BNPL-eligible page, regardless of whether
              a pay later tab suggestion was shown (once)"/>
   <int value="1" label="Suggestions shown with Pay Now Pay Later tabs (once)"/>
+  <int value="2" label="Switched from Pay Now to Pay Later (once)"/>
+  <int value="3" label="Switched from Pay Later to Pay Now (once)"/>
   <int value="8" label="Form filled with Affirm VCN (once)"/>
   <int value="9" label="Form filled with Zip VCN (once)"/>
   <int value="10" label="Form filled with Klarna VCN (once)"/>

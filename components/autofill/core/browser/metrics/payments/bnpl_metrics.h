@@ -134,9 +134,13 @@ enum class PayLaterTabsFormEvent {
   // Payments autofill suggestions were shown in Pay Now / Pay Later tabs.
   kSuggestionsShownWithPayLaterTab = 1,
 
+  // Users switched from the Pay Now tab to the Pay Later tab.
+  kSwitchedToPayLaterTab = 2,
+
+  // Users switched from the Pay Later tab to the Pay Now tab.
+  kSwitchedToPayNowTab = 3,
+
   // Expected remaining buckets:
-  //  kSwitchedToPayLaterTab = 2,
-  //  kSwitchedToPayNowTab = 3,
   //  kAffirmAccepted = 4,
   //  kZipAccepted = 5,
   //  kKlarnaAccepted = 6,

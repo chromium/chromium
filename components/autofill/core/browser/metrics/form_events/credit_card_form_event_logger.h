@@ -143,6 +143,10 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // suggestion chip if present).
   void OnUserDecisionToUseBnpl();
 
+  // Logging when the user decided to switch from the Pay Later tab to the Pay
+  // Now tab.
+  void OnUserDecisionToUsePayNowTab();
+
   // Called by BrowserAutofillManager after the Save and Fill suggestion is
   // shown.
   void OnSaveAndFillSuggestionShown();
@@ -236,9 +240,12 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // If true, the BNPL suggestion being shown was already logged and should not
   // be logged again.
   bool has_logged_bnpl_suggestion_shown_ = false;
-  // If true, the metrics for a BNPL suggestion being accepted were already
-  // logged and should not log again.
-  bool has_logged_bnpl_suggestion_accepted_ = false;
+  // If true, the metrics for users decided to use BNPL was already logged and
+  // should not be logged again.
+  bool has_logged_user_decision_to_use_bnpl_ = false;
+  // If true, the metrics for users switch from the Pay Later tab to the Pay
+  // Now tab was already logged and should not be logged again.
+  bool has_logged_user_decision_to_use_pay_now_tab_ = false;
   // If true, the metrics for a form filled with a BNPL issuer VCN were already
   // logged and should not log again.
   bool has_logged_form_filled_with_bnpl_vcn_ = false;
