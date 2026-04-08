@@ -219,22 +219,18 @@ struct MaxThreadType {
 // Describes metadata for a single task or a group of tasks.
 class BASE_EXPORT TaskTraits {
  public:
-  // ValidTrait ensures TaskTraits' constructor only accepts appropriate types.
-  struct ValidTrait {
-    ValidTrait(TaskPriority);
-    ValidTrait(TaskShutdownBehavior);
-    ValidTrait(ThreadPolicy);
-    ValidTrait(MayBlock);
-    ValidTrait(WithBaseSyncPrimitives);
-  };
+  // ValidTraits ensures TaskTraits' constructor only accepts appropriate types.
+  using ValidTraits = ParameterPack<TaskPriority,
+                                    TaskShutdownBehavior,
+                                    ThreadPolicy,
+                                    MayBlock,
+                                    WithBaseSyncPrimitives>;
 
-  struct ValidTraitInheritThreadType {
-    ValidTraitInheritThreadType(TaskShutdownBehavior);
-    ValidTraitInheritThreadType(MayBlock);
-    ValidTraitInheritThreadType(WithBaseSyncPrimitives);
-    ValidTraitInheritThreadType(InheritThreadType);
-    ValidTraitInheritThreadType(MaxThreadType);
-  };
+  using ValidTraitsInheritThreadType = ParameterPack<TaskShutdownBehavior,
+                                                     MayBlock,
+                                                     WithBaseSyncPrimitives,
+                                                     InheritThreadType,
+                                                     MaxThreadType>;
 
   // Invoking this constructor without arguments produces default TaskTraits
   // that are appropriate for tasks that
@@ -246,7 +242,7 @@ class BASE_EXPORT TaskTraits {
   //         (the task recipient is free to choose a fitting default).
   //
   // To get TaskTraits for tasks that have more precise traits: provide any
-  // combination of ValidTrait's as arguments to this constructor.
+  // combination of ValidTraits as arguments to this constructor.
   //
   // Note: When posting to well-known threads (e.g. UI/IO), default traits are
   // almost always what you want unless you know for sure the task being posted
@@ -264,7 +260,7 @@ class BASE_EXPORT TaskTraits {
   //     base::MayBlock(), base::TaskPriority::USER_VISIBLE
   // };
   template <class... ArgTypes>
-    requires trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>
+    requires trait_helpers::AreValidTraits<ValidTraits, ArgTypes...>
   // TaskTraits are intended to be implicitly-constructable (eg {}).
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr TaskTraits(ArgTypes... args)
@@ -296,7 +292,7 @@ class BASE_EXPORT TaskTraits {
             trait_helpers::HasTrait<WithBaseSyncPrimitives, ArgTypes...>()) {}
 
   template <class... ArgTypes>
-    requires(trait_helpers::AreValidTraits<ValidTraitInheritThreadType,
+    requires(trait_helpers::AreValidTraits<ValidTraitsInheritThreadType,
                                            ArgTypes...> &&
              trait_helpers::HasTrait<InheritThreadType, ArgTypes...>())
   // TaskTraits are intended to be implicitly-constructable (eg {}).

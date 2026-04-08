@@ -53,16 +53,15 @@ enum class BrowserTaskType {
 
 class CONTENT_EXPORT BrowserTaskTraits {
  public:
-  struct ValidTrait {
-    ValidTrait(BrowserTaskType);
-
-    // TODO(crbug.com/40108370): Reconsider whether BrowserTaskTraits should
-    // really be supporting base::TaskPriority.
-    ValidTrait(base::TaskPriority);
-  };
+  using ValidTraits =
+      base::ParameterPack<BrowserTaskType,
+                          // TODO(crbug.com/40108370): Reconsider whether
+                          // BrowserTaskTraits should really be supporting
+                          // base::TaskPriority.
+                          base::TaskPriority>;
 
   template <class... ArgTypes>
-    requires base::trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>
+    requires base::trait_helpers::AreValidTraits<ValidTraits, ArgTypes...>
   // TaskTraits are intended to be implicitly-constructable (eg {}).
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr BrowserTaskTraits(ArgTypes... args)

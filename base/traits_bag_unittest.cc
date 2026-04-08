@@ -21,14 +21,10 @@ enum class EnumTraitB { ONE, TWO };
 
 struct TestTraits {
   // List of traits that are valid inputs for the constructor below.
-  struct ValidTrait {
-    explicit ValidTrait(ExampleTrait);
-    explicit ValidTrait(EnumTraitA);
-    explicit ValidTrait(EnumTraitB);
-  };
+  using ValidTraits = ParameterPack<ExampleTrait, EnumTraitA, EnumTraitB>;
 
   template <class... ArgTypes>
-    requires trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>
+    requires trait_helpers::AreValidTraits<ValidTraits, ArgTypes...>
   constexpr explicit TestTraits(ArgTypes... args)
       : has_example_trait(trait_helpers::HasTrait<ExampleTrait, ArgTypes...>()),
         enum_trait_a(
@@ -44,20 +40,18 @@ struct TestTraits {
 // Like TestTraits, except ExampleTrait is filtered away.
 struct FilteredTestTraits : public TestTraits {
   template <class... ArgTypes>
-    requires trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>
+    requires trait_helpers::AreValidTraits<ValidTraits, ArgTypes...>
   constexpr explicit FilteredTestTraits(ArgTypes... args)
       : TestTraits(Exclude<ExampleTrait>::Filter(args)...) {}
 };
 
 struct RequiredEnumTestTraits {
   // List of traits that are required inputs for the constructor below.
-  struct ValidTrait {
-    explicit ValidTrait(EnumTraitA);
-  };
+  using ValidTraits = ParameterPack<EnumTraitA>;
 
   // We require EnumTraitA to be specified.
   template <class... ArgTypes>
-    requires trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>
+    requires trait_helpers::AreValidTraits<ValidTraits, ArgTypes...>
   constexpr explicit RequiredEnumTestTraits(ArgTypes... args)
       : enum_trait_a(trait_helpers::GetEnum<EnumTraitA>(args...)) {}
 
@@ -66,13 +60,11 @@ struct RequiredEnumTestTraits {
 
 struct OptionalEnumTestTraits {
   // List of traits that are optional inputs for the constructor below.
-  struct ValidTrait {
-    explicit ValidTrait(EnumTraitA);
-  };
+  using ValidTraits = ParameterPack<EnumTraitA>;
 
   // EnumTraitA can optionally be specified.
   template <class... ArgTypes>
-    requires trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>
+    requires trait_helpers::AreValidTraits<ValidTraits, ArgTypes...>
   constexpr explicit OptionalEnumTestTraits(ArgTypes... args)
       : enum_trait_a(trait_helpers::GetOptionalEnum<EnumTraitA>(args...)) {}
 
@@ -160,17 +152,10 @@ TEST(TraitsBagTest, OptionalEnum) {
   EXPECT_EQ(*set.enum_trait_a, EnumTraitA::B);
 }
 
-TEST(TraitsBagTest, ValidTraitInheritance) {
-  struct ValidTraitsA {
-    // For inheritance to work transparently, all constructors but the last in
-    // the chain must be implicit.
-    ValidTraitsA(EnumTraitA);  // NOLINT(google-explicit-constructor)
-  };
-
-  struct ValidTraitsB {
-    explicit ValidTraitsB(ValidTraitsA);
-    explicit ValidTraitsB(EnumTraitB);
-  };
+TEST(TraitsBagTest, ValidTraitsInheritance) {
+  using ValidTraitsA = ParameterPack<EnumTraitA>;
+  using ValidTraitsB =
+      ConcatParameterPacks<ValidTraitsA, ParameterPack<EnumTraitB>>;
 
   static_assert(AreValidTraits<ValidTraitsA, EnumTraitA>, "");
   static_assert(AreValidTraits<ValidTraitsB, EnumTraitA, EnumTraitB>, "");
@@ -211,7 +196,7 @@ TEST(TraitsBagTest, FilteredTestTraits) {
 }
 
 TEST(TraitsBagTest, EmptyTraitIsValid) {
-  static_assert(IsValidTrait<TestTraits::ValidTrait, EmptyTrait>, "");
+  static_assert(IsValidTrait<TestTraits::ValidTraits, EmptyTrait>, "");
 }
 
 }  // namespace base::trait_helpers

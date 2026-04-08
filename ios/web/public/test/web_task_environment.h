@@ -61,11 +61,8 @@ class WebTaskEnvironment : public base::test::TaskEnvironment {
   };
 
   // List of traits that are valid inputs for the constructor below.
-  struct ValidTraits {
-    ValidTraits(TimeSource);
-    ValidTraits(IOThreadType);
-    ValidTraits(MainThreadType);
-  };
+  using ValidTraits =
+      base::ParameterPack<TimeSource, IOThreadType, MainThreadType>;
 
   // Constructor accepts zero or more traits which customize the environment.
   template <typename... WebTaskEnvironmentTraits>

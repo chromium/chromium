@@ -55,11 +55,8 @@ class RefcountedProfileKeyedServiceFactoryIOS
     : public RefcountedKeyedServiceFactory {
  public:
   // List of traits that are valid for the constructor.
-  struct ValidTraits {
-    ValidTraits(ProfileSelection);
-    ValidTraits(ServiceCreation);
-    ValidTraits(TestingCreation);
-  };
+  using ValidTraits =
+      base::ParameterPack<ProfileSelection, ServiceCreation, TestingCreation>;
 
   // For SetTestingFactory(...).
   using PassKey = base::PassKey<TestProfileIOS>;

@@ -349,10 +349,7 @@ class BundledIsolatedWebApp {
         BundledIsolatedWebApp::ValidTraits, TraitNames...>
   struct DoNotFakeInstallPage {};
   struct DoNotTrustKey {};
-  struct ValidTraits {
-    explicit ValidTraits(DoNotFakeInstallPage);
-    explicit ValidTraits(DoNotTrustKey);
-  };
+  using ValidTraits = base::ParameterPack<DoNotFakeInstallPage, DoNotTrustKey>;
 
   BundledIsolatedWebApp(const web_package::SignedWebBundleId& web_bundle_id,
                         const std::vector<uint8_t> serialized_bundle,

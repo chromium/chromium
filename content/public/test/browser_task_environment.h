@@ -139,10 +139,9 @@ class BrowserTaskEnvironment : public base::test::TaskEnvironment {
   // remove this.
   static constexpr MainThreadType IO_MAINLOOP = MainThreadType::IO;
 
-  struct ValidTraits {
-    ValidTraits(TaskEnvironment::ValidTraits);
-    ValidTraits(Options);
-  };
+  using ValidTraits =
+      base::ConcatParameterPacks<base::test::TaskEnvironment::ValidTraits,
+                                 base::ParameterPack<Options>>;
 
   // Constructor which accepts zero or more traits to configure the
   // TaskEnvironment and optionally request a real IO thread. Unlike

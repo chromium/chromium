@@ -76,6 +76,25 @@ struct ParameterPack {
       std::bool_constant<all_of({std::is_same_v<NthType<0>, Ts>...})>;
 };
 
+template <typename... Packs>
+struct ConcatParameterPacksImpl;
+
+template <typename... Ts1, typename... Ts2, typename... RemainingPacks>
+struct ConcatParameterPacksImpl<ParameterPack<Ts1...>,
+                                ParameterPack<Ts2...>,
+                                RemainingPacks...> {
+  using type = typename ConcatParameterPacksImpl<ParameterPack<Ts1..., Ts2...>,
+                                                 RemainingPacks...>::type;
+};
+
+template <typename... Ts>
+struct ConcatParameterPacksImpl<ParameterPack<Ts...>> {
+  using type = ParameterPack<Ts...>;
+};
+
+template <typename... Packs>
+using ConcatParameterPacks = typename ConcatParameterPacksImpl<Packs...>::type;
+
 }  // namespace base
 
 #endif  // BASE_PARAMETER_PACK_H_

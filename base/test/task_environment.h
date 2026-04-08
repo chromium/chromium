@@ -202,15 +202,13 @@ class TaskEnvironment {
   };
 
   // List of traits that are valid inputs for the constructor below.
-  struct ValidTraits {
-    ValidTraits(TimeSource);
-    ValidTraits(MainThreadType);
-    ValidTraits(ThreadPoolExecutionMode);
-    ValidTraits(SubclassCreatesDefaultTaskRunner);
-    ValidTraits(ThreadingMode);
-    ValidTraits(ThreadPoolCOMEnvironment);
-    ValidTraits(ScopedExecutionFenceBehaviour);
-  };
+  using ValidTraits = ParameterPack<TimeSource,
+                                    MainThreadType,
+                                    ThreadPoolExecutionMode,
+                                    SubclassCreatesDefaultTaskRunner,
+                                    ThreadingMode,
+                                    ThreadPoolCOMEnvironment,
+                                    ScopedExecutionFenceBehaviour>;
 
   // Constructor accepts zero or more traits which customize the testing
   // environment.
@@ -499,8 +497,9 @@ class TaskEnvironment {
   const MainThreadType main_thread_type_;
   const ThreadPoolExecutionMode thread_pool_execution_mode_;
   const ThreadingMode threading_mode_;
-  const ThreadPoolCOMEnvironment thread_pool_com_environment_;
-  const ScopedExecutionFenceBehaviour scoped_execution_fence_behaviour_;
+  [[maybe_unused]] const ThreadPoolCOMEnvironment thread_pool_com_environment_;
+  [[maybe_unused]] const ScopedExecutionFenceBehaviour
+      scoped_execution_fence_behaviour_;
   const bool subclass_creates_default_taskrunner_;
 
   std::unique_ptr<sequence_manager::SequenceManager> sequence_manager_;

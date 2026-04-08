@@ -107,15 +107,10 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
   // Trait which requests construction of a hosted app.
   struct HostedApp {};
 
-  struct ValidTraits {
-    explicit ValidTraits(content::BrowserTaskEnvironment::ValidTraits);
-    explicit ValidTraits(HostedApp);
-    explicit ValidTraits(Browser::Type);
-
-    // TODO(alexclarke): Make content::BrowserTaskEnvironment::ValidTraits
-    // imply this.
-    explicit ValidTraits(base::test::TaskEnvironment::ValidTraits);
-  };
+  // List of traits that are valid inputs for the constructor below.
+  using ValidTraits =
+      base::ConcatParameterPacks<content::BrowserTaskEnvironment::ValidTraits,
+                                 base::ParameterPack<HostedApp, Browser::Type>>;
 
   // Creates a BrowserWithTestWindowTest with zero or more traits. By default
   // the initial window will be a tabbed browser created on the native desktop,

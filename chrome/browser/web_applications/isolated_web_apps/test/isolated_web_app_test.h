@@ -25,10 +25,9 @@ namespace web_app {
 class IsolatedWebAppTest : public ::testing::Test {
  public:
   struct WithDevMode {};
-  struct ValidTraits {
-    ValidTraits(base::test::TaskEnvironment::ValidTraits);
-    ValidTraits(WithDevMode);
-  };
+  using ValidTraits =
+      base::ConcatParameterPacks<base::test::TaskEnvironment::ValidTraits,
+                                 base::ParameterPack<WithDevMode>>;
 
   template <typename... IsolatedWebAppTestTraits>
     requires base::trait_helpers::AreValidTraits<ValidTraits,

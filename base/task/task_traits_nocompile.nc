@@ -34,18 +34,13 @@ constexpr TaskTraits traits5 = {TaskShutdownBehavior::BLOCK_SHUTDOWN,
                                 MayBlock(),
                                 TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};
 
-// expected-error@+3 {{no matching constructor for initialization of 'const TaskTraits'}}
-// expected-error@*:* {{no matching constructor for initialization of 'base::TaskTraits::ValidTrait'}}
-// expected-error@*:* {{no matching constructor for initialization of 'base::TaskTraits::ValidTraitInheritThreadType'}}
+// expected-error@+1 {{no matching constructor for initialization of 'const TaskTraits'}}
 constexpr TaskTraits traits6 = {TaskShutdownBehavior::BLOCK_SHUTDOWN, true};
 
-// expected-error@+2 {{no matching constructor for initialization of 'const TaskTraits'}}
-// expected-error@*:* {{no matching constructor for initialization of 'base::TaskTraits::ValidTrait'}}
+// expected-error@+1 {{no matching constructor for initialization of 'const TaskTraits'}}
 constexpr TaskTraits traits7 = {MaxThreadType(ThreadType::kDefault)};
 
-// expected-error@+3 {{no matching constructor for initialization of 'const TaskTraits'}}
-// expected-error@*:* {{no matching constructor for initialization of 'base::TaskTraits::ValidTrait'}}
-// expected-error@*:* {{no matching constructor for initialization of 'base::TaskTraits::ValidTraitInheritThreadType'}}
+// expected-error@+1 {{no matching constructor for initialization of 'const TaskTraits'}}
 constexpr TaskTraits traits8 = {InheritThreadType(), TaskPriority::USER_BLOCKING};
 
 }  // namespace base

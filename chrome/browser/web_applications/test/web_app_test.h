@@ -32,10 +32,9 @@ class FakeWebContentsManager;
 class WebAppTest : public content::RenderViewHostTestHarness {
  public:
   struct WithTestUrlLoaderFactory {};
-  struct ValidTraits {
-    explicit ValidTraits(base::test::TaskEnvironment::ValidTraits);
-    explicit ValidTraits(WithTestUrlLoaderFactory);
-  };
+  using ValidTraits =
+      base::ConcatParameterPacks<base::test::TaskEnvironment::ValidTraits,
+                                 base::ParameterPack<WithTestUrlLoaderFactory>>;
 
   template <typename... WebAppTestTraits>
     requires base::trait_helpers::AreValidTraits<ValidTraits,

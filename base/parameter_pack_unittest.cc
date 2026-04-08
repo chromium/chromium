@@ -70,4 +70,18 @@ TEST(ParameterPack, IsAllSameType) {
   static_assert(!ParameterPack<int, int, int, int, bool>::IsAllSameType(), "");
 }
 
+TEST(ParameterPack, ConcatParameterPacks) {
+  using Pack1 = ParameterPack<int, float>;
+  using Pack2 = ParameterPack<bool, char>;
+  using Pack3 = ParameterPack<double>;
+
+  using Combined = ConcatParameterPacks<Pack1, Pack2, Pack3>;
+  static_assert(
+      std::is_same_v<Combined, ParameterPack<int, float, bool, char, double>>,
+      "");
+
+  using CombinedSingle = ConcatParameterPacks<Pack1>;
+  static_assert(std::is_same_v<CombinedSingle, Pack1>, "");
+}
+
 }  // namespace base

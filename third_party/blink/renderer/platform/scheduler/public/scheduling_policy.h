@@ -22,11 +22,9 @@ struct PLATFORM_EXPORT SchedulingPolicy {
   struct DisableBackForwardCache {};
   struct DisableAlignWakeUps {};
 
-  struct ValidPolicies {
-    ValidPolicies(DisableAggressiveThrottling);
-    ValidPolicies(DisableBackForwardCache);
-    ValidPolicies(DisableAlignWakeUps);
-  };
+  using ValidPolicies = base::ParameterPack<DisableAggressiveThrottling,
+                                            DisableBackForwardCache,
+                                            DisableAlignWakeUps>;
 
   template <class... ArgTypes>
     requires base::trait_helpers::AreValidTraits<ValidPolicies, ArgTypes...>

@@ -29,10 +29,7 @@
 //   struct UnusedTrait {};
 //   enum Color { RED, BLUE };
 //
-//   struct ValidTraits {
-//      ValidTraits(EnableFeatureX);
-//      ValidTraits(Color);
-//   };
+//   using ValidTraits = ParameterPack<EnableFeatureX, Color>;
 //   ...
 //   DoSomethingAwesome();                 // Use defaults (Color::BLUE &
 //                                         // feature X not enabled)
@@ -48,10 +45,15 @@
 //   constexpr void DoSomethingAwesome(ArgTypes... args)
 //      : enable_feature_x(
 //            trait_helpers::HasTrait<EnableFeatureX, ArgTypes...>()),
-//        color(trait_helpers::GetEnum<Color, EnumTraitA::BLUE>(args...)) {}
+//        color(trait_helpers::GetEnum<Color, Color::BLUE>(args...)) {}
 
 namespace base {
 namespace trait_helpers {
+
+// Return true if `Type` in present in `Args...`.
+template <typename Type, typename... Args>
+inline constexpr bool HasTypeInVariadicPack =
+    ParameterPack<Args...>::template HasType<Type>::value;
 
 // Represents a trait that has been removed by a predicate.
 struct EmptyTrait {};
@@ -73,8 +75,7 @@ template <typename... TraitsToExclude>
 struct Exclude {
   template <typename T>
   static constexpr auto Filter(T t) {
-    if constexpr (ParameterPack<TraitsToExclude...>::template HasType<
-                      T>::value) {
+    if constexpr (HasTypeInVariadicPack<T, TraitsToExclude...>) {
       return EmptyTrait();
     } else {
       return t;
@@ -204,24 +205,19 @@ struct RequiredEnumTraitFilter : public BasicTraitFilter<ArgType> {
 // Note EmptyTrait is always regarded as valid to support filtering.
 template <class ValidTraits, class T>
 concept IsValidTrait =
-    std::constructible_from<ValidTraits, T> || std::same_as<T, EmptyTrait>;
+    ValidTraits::template HasType<std::remove_cvref_t<T>>::value ||
+    std::same_as<T, EmptyTrait>;
 
 // Tests whether a given trait type is valid or invalid by testing whether it is
-// convertible to the provided ValidTraits type. To use, define a ValidTraits
-// type like this:
+// present in the provided ValidTraits ParameterPack. To use, define a
+// ValidTraits type like this:
 //
-// struct ValidTraits {
-//   ValidTraits(MyTrait);
-//   ...
-// };
+// using ValidTraits = ParameterPack<MyTrait, ...>;
 //
 // You can 'inherit' valid traits like so:
 //
-// struct MoreValidTraits {
-//   MoreValidTraits(ValidTraits);  // Pull in traits from ValidTraits.
-//   MoreValidTraits(MyOtherTrait);
-//   ...
-// };
+// using MoreValidTraits = ConcatParameterPacks<ValidTraits,
+//                                               ParameterPack<MyOtherTrait>>;
 template <class ValidTraits, class... ArgTypes>
 concept AreValidTraits = (IsValidTrait<ValidTraits, ArgTypes> && ...);
 
@@ -265,7 +261,7 @@ static constexpr std::optional<Enum> GetOptionalEnum(Args... args) {
 template <typename Trait, typename... Args>
   requires IsUniqueTrait<Trait, Args...>
 constexpr bool HasTrait() {
-  return ParameterPack<Args...>::template HasType<Trait>::value;
+  return HasTypeInVariadicPack<Trait, Args...>;
 }
 
 // Generates nicer errors for `HasTrait`.
