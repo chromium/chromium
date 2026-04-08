@@ -144,7 +144,7 @@ BaseInterpolableColor* CSSColorInterpolationType::CreateBaseInterpolableColor(
   return CreateInterpolableColor(color, color_scheme, color_provider);
 }
 
-InterpolableColor* CSSColorInterpolationType::MaybeCreateInterpolableColor(
+BaseInterpolableColor* CSSColorInterpolationType::MaybeCreateInterpolableColor(
     const CSSValue& value,
     const StyleResolverState* state) {
   if (auto* color_value = DynamicTo<cssvalue::CSSColor>(value)) {
@@ -174,12 +174,8 @@ InterpolableColor* CSSColorInterpolationType::MaybeCreateInterpolableColor(
         .used_color_scheme = color_scheme,
         .color_provider = color_provider};
     StyleColor style_color = ResolveColorValue(value, context);
-    if (!style_color.IsUnresolvedColorFunction()) {
-      return CreateInterpolableColor(style_color.GetColor());
-    }
-    // TODO(crbug.com/40940960): Handle unresolved-color-mix and unresolved
-    // relative colors. CSS-animations go through this code path. Unresolved
-    // color-mix and unresolved relative colors result in a discrete animation.
+    return CreateBaseInterpolableColor(style_color, color_scheme,
+                                       color_provider);
   }
 
   return nullptr;
@@ -310,7 +306,7 @@ InterpolationValue CSSColorInterpolationType::MaybeConvertValue(
     }
   }
 
-  InterpolableColor* interpolable_color =
+  BaseInterpolableColor* interpolable_color =
       MaybeCreateInterpolableColor(value, &state);
   if (!interpolable_color) {
     return nullptr;
@@ -393,7 +389,7 @@ CSSColorInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
 InterpolationValue
 CSSColorInterpolationType::MaybeConvertCustomPropertyUnderlyingValue(
     const CSSValue& value) const {
-  InterpolableColor* interpolable_color =
+  BaseInterpolableColor* interpolable_color =
       MaybeCreateInterpolableColor(value, /*state=*/nullptr);
   if (!interpolable_color) {
     return nullptr;

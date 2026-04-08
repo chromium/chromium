@@ -26,8 +26,10 @@ InterpolableLength* MaybeConvertLength(const CSSPrimitiveValue* value) {
 InterpolableColor* MaybeConvertColor(const CSSValue* value,
                                      const StyleResolverState* state) {
   if (value) {
-    return CSSColorInterpolationType::MaybeCreateInterpolableColor(*value,
-                                                                   state);
+    // TODO(crbug.com/498954025): Support unresolved color-mix in shadow
+    // animations.
+    return DynamicTo<InterpolableColor>(
+        CSSColorInterpolationType::MaybeCreateInterpolableColor(*value, state));
   }
   mojom::blink::ColorScheme color_scheme =
       state ? state->StyleBuilder().UsedColorScheme()
