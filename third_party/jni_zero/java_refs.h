@@ -45,6 +45,54 @@ concept IsConvertableJObject =
     std::is_convertible_v<U, T> || std::same_as<U, jobject>;
 
 template <typename T>
+struct _JArrayElementType;
+
+template <>
+struct _JArrayElementType<jbooleanArray> {
+  using type = bool;
+};
+
+template <>
+struct _JArrayElementType<jbyteArray> {
+  using type = int8_t;
+};
+
+template <>
+struct _JArrayElementType<jcharArray> {
+  using type = uint16_t;
+};
+
+template <>
+struct _JArrayElementType<jshortArray> {
+  using type = int16_t;
+};
+
+template <>
+struct _JArrayElementType<jintArray> {
+  using type = int32_t;
+};
+
+template <>
+struct _JArrayElementType<jlongArray> {
+  using type = int64_t;
+};
+
+template <>
+struct _JArrayElementType<jfloatArray> {
+  using type = float;
+};
+
+template <>
+struct _JArrayElementType<jdoubleArray> {
+  using type = double;
+};
+
+template <>
+struct _JArrayElementType<jobjectArray> {
+  using type = jobject;
+};
+
+template <typename T>
   requires internal::IsJobject<T>
 class _JObjectArray : public _jobjectArray {};
 
@@ -141,6 +189,10 @@ class JavaRef;
 template <typename T>
 concept IsJavaRef =
     std::is_base_of_v<jni_zero::JavaRef<jobject>, std::remove_cvref_t<T>>;
+
+// Forward declaration of the JArrayView class.
+template <typename T>
+class JArrayView;
 
 namespace internal {
 
@@ -308,6 +360,17 @@ class JavaRef : public JavaRef<jobject> {
   void CopyTo(JNIEnv* env, std::vector<ScopedJavaLocalRef<U>>* buf) const
     requires std::is_convertible_v<T, jobjectArray>;
 
+  // The auto return type makes this a template function.
+  // The [[clang::lifetimebound]] is required because the lifetime of the
+  // JArrayView cannot safely outlast the lifetime of |this|.
+  auto CreateView(JNIEnv* env) const [[clang::lifetimebound]]
+    requires std::is_convertible_v<T, jarray>
+  {
+    using ElementType = typename internal::_JArrayElementType<T>::type;
+    return JArrayView<ElementType>(
+        env, static_cast<JArray<ElementType>>(this->obj()));
+  }
+
 #if !JNI_ZERO_ENABLE_COMPAT_API
  protected:
 #endif
@@ -334,6 +397,10 @@ class JavaRef<internal::_JObjectArray<T>*> : public JavaRef<jobjectArray> {
   }
 
   ScopedJavaLocalRef<T> Get(JNIEnv* env, int32_t index) const;
+
+  JArrayView<T> CreateView(JNIEnv* env) const [[clang::lifetimebound]] {
+    return JArrayView<T>(env, obj());
+  }
 
  protected:
   JavaRef(JNIEnv* env, jobject obj) : JavaRef<jobjectArray>(env, obj) {}
@@ -469,6 +536,8 @@ class ScopedJavaLocalRef : public JavaRef<T> {
 
   // Alias for Release(). For use in templates when global refs are invalid.
   T ReleaseLocal() { return static_cast<T>(JavaRef<T>::ReleaseInternal()); }
+
+  using JavaRef<T>::As;
 
   // Enables casting while assigning. E.g.:
   // ScopedJavaLocalRef<JFoo> foo = FuncThatReturnsJobject(env).As<JFoo>();
@@ -620,6 +689,8 @@ class ScopedJavaGlobalRef : public JavaRef<T> {
     return ScopedJavaLocalRef<T>::Adopt(
         env, static_cast<T>(env->NewLocalRef(j_obj)));
   }
+
+  using JavaRef<T>::As;
 
   // Enables casting while assigning. E.g.:
   // ScopedJavaGlobalRef<JFoo> foo = FuncThatReturnsJobject(env).As<JFoo>();

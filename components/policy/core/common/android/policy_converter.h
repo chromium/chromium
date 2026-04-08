@@ -54,9 +54,10 @@ class POLICY_EXPORT PolicyConverter {
   void SetPolicyString(JNIEnv* env,
                        const base::android::JavaRef<jstring>& policyKey,
                        const base::android::JavaRef<jstring>& value);
-  void SetPolicyStringArray(JNIEnv* env,
-                            const base::android::JavaRef<jstring>& policyKey,
-                            const base::android::JavaRef<jobjectArray>& value);
+  void SetPolicyStringArray(
+      JNIEnv* env,
+      const base::android::JavaRef<jstring>& policyKey,
+      const base::android::JavaRef<JArray<jstring>>& value);
 
   // Converts the passed in value to the type desired by the schema. If the
   // value is not convertible, it is returned unchanged, so the policy system
@@ -71,7 +72,7 @@ class POLICY_EXPORT PolicyConverter {
   // Public for testing.
   static base::ListValue ConvertJavaStringArrayToListValue(
       JNIEnv* env,
-      const base::android::JavaRef<jobjectArray>& array);
+      const base::android::JavaRef<JArray<jstring>>& array);
 
   // Exposes `SetPolicyValue` for testing purposes.
   void SetPolicyValueForTesting(const std::string& key, base::Value raw_value);

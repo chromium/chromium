@@ -61,7 +61,7 @@ class PolicyConverterTest : public testing::Test {
   // to compare with `EXPECT_EQ`.
   std::string ConvertJavaStringArrayToListValue(
       JNIEnv* env,
-      const JavaRef<jobjectArray>& java_array) {
+      const JavaRef<JArray<jstring>>& java_array) {
     base::ListValue list =
         PolicyConverter::ConvertJavaStringArrayToListValue(env, java_array);
 
@@ -72,18 +72,10 @@ class PolicyConverterTest : public testing::Test {
   }
 
   // Converts the passed in values to a java string array
-  ScopedJavaLocalRef<jobjectArray> MakeJavaStringArray(
+  ScopedJavaLocalRef<JArray<jstring>> MakeJavaStringArray(
       JNIEnv* env,
       std::vector<std::string> values) {
-    jobjectArray java_array = (jobjectArray)env->NewObjectArray(
-        values.size(), jni_zero::g_string_class, nullptr);
-    for (size_t i = 0; i < values.size(); i++) {
-      env->SetObjectArrayElement(
-          java_array, i,
-          base::android::ConvertUTF8ToJavaString(env, values[i]).obj());
-    }
-
-    return ScopedJavaLocalRef<jobjectArray>::Adopt(env, java_array);
+    return jni_zero::NewStringArray(env, values);
   }
 
   Schema schema_;

@@ -98,9 +98,10 @@ void PolicyConverter::SetPolicyString(JNIEnv* env,
                  base::Value(ConvertJavaStringToUTF8(env, value)));
 }
 
-void PolicyConverter::SetPolicyStringArray(JNIEnv* env,
-                                           const JavaRef<jstring>& policyKey,
-                                           const JavaRef<jobjectArray>& array) {
+void PolicyConverter::SetPolicyStringArray(
+    JNIEnv* env,
+    const JavaRef<jstring>& policyKey,
+    const JavaRef<JArray<jstring>>& array) {
   SetPolicyValue(ConvertJavaStringToUTF8(env, policyKey),
                  base::Value(ConvertJavaStringArrayToListValue(env, array)));
 }
@@ -108,15 +109,14 @@ void PolicyConverter::SetPolicyStringArray(JNIEnv* env,
 // static
 base::ListValue PolicyConverter::ConvertJavaStringArrayToListValue(
     JNIEnv* env,
-    const JavaRef<jobjectArray>& array) {
+    const JavaRef<JArray<jstring>>& array) {
   DCHECK(!array.is_null());
-  base::android::JavaObjectArrayReader<jstring> array_reader(array);
-  DCHECK_GE(array_reader.size(), 0)
-      << "Invalid array length: " << array_reader.size();
+  auto array_reader = array.CreateView(env);
 
   base::ListValue list_value;
-  for (auto j_str : array_reader)
-    list_value.Append(ConvertJavaStringToUTF8(env, j_str));
+  for (int i = 0; i < array_reader.GetLength(); i++) {
+    list_value.Append(array_reader.Get(i).ConvertTo<std::string>(env));
+  }
 
   return list_value;
 }

@@ -10,8 +10,11 @@
 #include <jni.h>
 
 #include <cstdint>
+#include <initializer_list>
 #include <iterator>
+#include <span>
 #include <string_view>
+#include <vector>
 
 #include "third_party/jni_zero/java_refs.h"
 #include "third_party/jni_zero/logging.h"
@@ -239,6 +242,444 @@ class ByteArrayView {
   jsize length_;
   jbyte* bytes_;
 };
+
+// Base class for both primitive and object array views.
+template <typename T>
+class JArrayViewBase {
+ public:
+  JArrayViewBase(JNIEnv* env, JArray<T> array)
+      : env_(env), array_(array), length_(env->GetArrayLength(array)) {}
+
+  ~JArrayViewBase() = default;
+
+  // Get the number of elements in this JArray.
+  int32_t GetLength() const noexcept { return length_; }
+
+  // Get the number of elements in this JArray.
+  size_t size() const noexcept { return static_cast<size_t>(length_); }
+
+ protected:
+  JNIEnv* env_;
+  JArray<T> array_;
+  int32_t length_;
+};
+
+template <typename T>
+class JArrayView;
+
+template <typename T>
+  requires internal::IsJobject<T>
+class JArrayView<T> : public JArrayViewBase<T> {
+  using JArrayViewBase<T>::env_;
+  using JArrayViewBase<T>::array_;
+  using JArrayViewBase<T>::length_;
+
+ public:
+  JArrayView<T>(JNIEnv* env, JArray<T> array) : JArrayViewBase<T>(env, array) {}
+
+  ~JArrayView<T>() = default;
+
+  JArrayView(const JArrayView&) = delete;
+  JArrayView(JArrayView&&) = delete;
+
+  ScopedJavaLocalRef<T> Get(int32_t index) const {
+    jobject obj = env_->GetObjectArrayElement(array_, index);
+    return ScopedJavaLocalRef<T>::Adopt(env_, static_cast<T>(obj));
+  }
+
+  void CopyTo(std::vector<ScopedJavaLocalRef<T>>* buf) const {
+    for (int32_t i = 0; i < length_; i++) {
+      jobject obj = env_->GetObjectArrayElement(array_, i);
+      buf->push_back(ScopedJavaLocalRef<T>::Adopt(env_, static_cast<T>(obj)));
+    }
+  }
+};
+
+namespace internal {
+
+template <typename T>
+struct is_scoped_java_local_ref : std::false_type {};
+
+template <typename T>
+struct is_scoped_java_local_ref<ScopedJavaLocalRef<T>> : std::true_type {};
+
+template <typename T>
+concept IsScopedJavaLocalRef = is_scoped_java_local_ref<T>::value;
+
+template <typename T>
+concept IsPrimitiveType = std::is_arithmetic<T>::value;
+
+template <typename T>
+struct _JniFuncMappings;
+
+template <>
+struct _JniFuncMappings<bool> {
+  static JArray<bool> NewArray(JNIEnv* env, int32_t size) {
+    return static_cast<JArray<bool>>(env->NewBooleanArray(size));
+  }
+  static void SetArrayRegion(JNIEnv* env,
+                             JArray<bool> arr,
+                             int32_t start,
+                             int32_t len,
+                             const bool* buf) {
+    env->SetBooleanArrayRegion(arr, start, len,
+                               reinterpret_cast<const uint8_t*>(buf));
+  }
+  static bool* GetArrayElements(JNIEnv* env, JArray<bool> arr) {
+    return reinterpret_cast<bool*>(env->GetBooleanArrayElements(arr, nullptr));
+  }
+  static void ReleaseArrayElements(JNIEnv* env, JArray<bool> arr, bool* buf) {
+    env->ReleaseBooleanArrayElements(arr, reinterpret_cast<uint8_t*>(buf),
+                                     JNI_ABORT);
+  }
+};
+
+template <>
+struct _JniFuncMappings<int8_t> {
+  static JArray<int8_t> NewArray(JNIEnv* env, int32_t size) {
+    return static_cast<JArray<int8_t>>(env->NewByteArray(size));
+  }
+  static void SetArrayRegion(JNIEnv* env,
+                             JArray<int8_t> arr,
+                             int32_t start,
+                             int32_t len,
+                             const int8_t* buf) {
+    env->SetByteArrayRegion(arr, start, len, buf);
+  }
+  static int8_t* GetArrayElements(JNIEnv* env, JArray<int8_t> arr) {
+    return env->GetByteArrayElements(arr, nullptr);
+  }
+  static void ReleaseArrayElements(JNIEnv* env,
+                                   JArray<int8_t> arr,
+                                   int8_t* buf) {
+    env->ReleaseByteArrayElements(arr, buf, JNI_ABORT);
+  }
+};
+
+template <>
+struct _JniFuncMappings<uint16_t> {
+  static JArray<uint16_t> NewArray(JNIEnv* env, int32_t size) {
+    return static_cast<JArray<uint16_t>>(env->NewCharArray(size));
+  }
+  static void SetArrayRegion(JNIEnv* env,
+                             JArray<uint16_t> arr,
+                             int32_t start,
+                             int32_t len,
+                             const uint16_t* buf) {
+    env->SetCharArrayRegion(arr, start, len, buf);
+  }
+  static uint16_t* GetArrayElements(JNIEnv* env, JArray<uint16_t> arr) {
+    return env->GetCharArrayElements(arr, nullptr);
+  }
+  static void ReleaseArrayElements(JNIEnv* env,
+                                   JArray<uint16_t> arr,
+                                   uint16_t* buf) {
+    env->ReleaseCharArrayElements(arr, buf, JNI_ABORT);
+  }
+};
+
+template <>
+struct _JniFuncMappings<int16_t> {
+  static JArray<int16_t> NewArray(JNIEnv* env, int32_t size) {
+    return static_cast<JArray<int16_t>>(env->NewShortArray(size));
+  }
+  static void SetArrayRegion(JNIEnv* env,
+                             JArray<int16_t> arr,
+                             int32_t start,
+                             int32_t len,
+                             const int16_t* buf) {
+    env->SetShortArrayRegion(arr, start, len, buf);
+  }
+  static int16_t* GetArrayElements(JNIEnv* env, JArray<int16_t> arr) {
+    return env->GetShortArrayElements(arr, nullptr);
+  }
+  static void ReleaseArrayElements(JNIEnv* env,
+                                   JArray<int16_t> arr,
+                                   int16_t* buf) {
+    env->ReleaseShortArrayElements(arr, buf, JNI_ABORT);
+  }
+};
+
+template <>
+struct _JniFuncMappings<int32_t> {
+  static JArray<int32_t> NewArray(JNIEnv* env, int32_t size) {
+    return static_cast<JArray<int32_t>>(env->NewIntArray(size));
+  }
+  static void SetArrayRegion(JNIEnv* env,
+                             JArray<int32_t> arr,
+                             int32_t start,
+                             int32_t len,
+                             const int32_t* buf) {
+    env->SetIntArrayRegion(arr, start, len, buf);
+  }
+  static int32_t* GetArrayElements(JNIEnv* env, JArray<int32_t> arr) {
+    return env->GetIntArrayElements(arr, nullptr);
+  }
+  static void ReleaseArrayElements(JNIEnv* env,
+                                   JArray<int32_t> arr,
+                                   int32_t* buf) {
+    env->ReleaseIntArrayElements(arr, buf, JNI_ABORT);
+  }
+};
+
+template <>
+struct _JniFuncMappings<int64_t> {
+  static JArray<int64_t> NewArray(JNIEnv* env, int32_t size) {
+    return static_cast<JArray<int64_t>>(env->NewLongArray(size));
+  }
+  static void SetArrayRegion(JNIEnv* env,
+                             JArray<int64_t> arr,
+                             int32_t start,
+                             int32_t len,
+                             const int64_t* buf) {
+    env->SetLongArrayRegion(arr, start, len, buf);
+  }
+  static int64_t* GetArrayElements(JNIEnv* env, JArray<int64_t> arr) {
+    return env->GetLongArrayElements(arr, nullptr);
+  }
+  static void ReleaseArrayElements(JNIEnv* env,
+                                   JArray<int64_t> arr,
+                                   int64_t* buf) {
+    env->ReleaseLongArrayElements(arr, buf, JNI_ABORT);
+  }
+};
+
+template <>
+struct _JniFuncMappings<float> {
+  static JArray<float> NewArray(JNIEnv* env, int32_t size) {
+    return static_cast<JArray<float>>(env->NewFloatArray(size));
+  }
+  static void SetArrayRegion(JNIEnv* env,
+                             JArray<float> arr,
+                             int32_t start,
+                             int32_t len,
+                             const float* buf) {
+    env->SetFloatArrayRegion(arr, start, len, buf);
+  }
+  static float* GetArrayElements(JNIEnv* env, JArray<float> arr) {
+    return env->GetFloatArrayElements(arr, nullptr);
+  }
+  static void ReleaseArrayElements(JNIEnv* env, JArray<float> arr, float* buf) {
+    env->ReleaseFloatArrayElements(arr, buf, JNI_ABORT);
+  }
+};
+
+template <>
+struct _JniFuncMappings<double> {
+  static JArray<double> NewArray(JNIEnv* env, int32_t size) {
+    return static_cast<JArray<double>>(env->NewDoubleArray(size));
+  }
+  static void SetArrayRegion(JNIEnv* env,
+                             JArray<double> arr,
+                             int32_t start,
+                             int32_t len,
+                             const double* buf) {
+    env->SetDoubleArrayRegion(arr, start, len, buf);
+  }
+  static double* GetArrayElements(JNIEnv* env, JArray<double> arr) {
+    return env->GetDoubleArrayElements(arr, nullptr);
+  }
+  static void ReleaseArrayElements(JNIEnv* env,
+                                   JArray<double> arr,
+                                   double* buf) {
+    env->ReleaseDoubleArrayElements(arr, buf, JNI_ABORT);
+  }
+};
+
+}  // namespace internal
+
+template <typename T>
+  requires internal::IsPrimitiveType<T>
+class JArrayView<T> : public JArrayViewBase<T> {
+  using JArrayViewBase<T>::env_;
+  using JArrayViewBase<T>::array_;
+  using JArrayViewBase<T>::length_;
+
+ public:
+  JArrayView<T>(JNIEnv* env, JArray<T> array)
+      : JArrayViewBase<T>(env, array),
+        data_(internal::_JniFuncMappings<T>::GetArrayElements(env, array)) {}
+
+  ~JArrayView<T>() {
+    internal::_JniFuncMappings<T>::ReleaseArrayElements(env_, array_, data_);
+  }
+
+  JArrayView(const JArrayView&) = delete;
+  JArrayView(JArrayView&&) = delete;
+
+  T Get(int32_t index) const {
+    JNI_ZERO_CHECK(index >= 0 && index < length_);
+#pragma clang unsafe_buffer_usage begin
+    return data_[index];
+#pragma clang unsafe_buffer_usage end
+  }
+
+  const T* data() const noexcept [[clang::lifetimebound]] { return data_; }
+
+  const T* begin() const noexcept [[clang::lifetimebound]] { return data_; }
+
+  const T* end() const noexcept [[clang::lifetimebound]] {
+#pragma clang unsafe_buffer_usage begin
+    return data_ + length_;
+#pragma clang unsafe_buffer_usage end
+  }
+
+ private:
+  T* data_;
+};
+
+template <typename T>
+  requires internal::IsJobject<T>
+static ScopedJavaLocalRef<JArray<T>>
+NewArray(JNIEnv* env, std::span<const ScopedJavaLocalRef<T>> buf, jclass cls) {
+  int32_t length = static_cast<int32_t>(buf.size());
+  JArray<T> ret =
+      static_cast<JArray<T>>(env->NewObjectArray(length, cls, nullptr));
+  for (int32_t i = 0; i < length; i++) {
+    env->SetObjectArrayElement(ret, i, buf[i].obj());
+  }
+  return ScopedJavaLocalRef<JArray<T>>::Adopt(env, ret);
+}
+
+template <typename T, typename U>
+  requires(!internal::IsScopedJavaLocalRef<U>)
+static ScopedJavaLocalRef<JArray<T>> NewArray(JNIEnv* env,
+                                              std::span<const U> buf,
+                                              jclass cls) {
+  int32_t length = static_cast<int32_t>(buf.size());
+  JArray<T> ret =
+      static_cast<JArray<T>>(env->NewObjectArray(length, cls, nullptr));
+  for (int32_t i = 0; i < length; i++) {
+    env->SetObjectArrayElement(ret, i, ToJniType(env, buf[i]).obj());
+  }
+  return ScopedJavaLocalRef<JArray<T>>::Adopt(env, ret);
+}
+
+template <typename T>
+  requires internal::IsPrimitiveType<T>
+static ScopedJavaLocalRef<JArray<T>> NewArray(JNIEnv* env,
+                                              std::span<const T> buf) {
+  int32_t length = static_cast<int32_t>(buf.size());
+  JArray<T> ret = static_cast<JArray<T>>(
+      internal::_JniFuncMappings<T>::NewArray(env, length));
+  internal::_JniFuncMappings<T>::SetArrayRegion(env, ret, 0, length,
+                                                buf.data());
+  return ScopedJavaLocalRef<JArray<T>>::Adopt(env, ret);
+}
+
+extern jclass g_object_class;
+
+template <typename T>
+static ScopedJavaLocalRef<JArray<jobject>> NewObjectArray(
+    JNIEnv* env,
+    std::span<const T> buf) {
+  return NewArray<jobject>(env, buf, g_object_class);
+}
+
+extern jclass g_string_class;
+
+template <typename T>
+static ScopedJavaLocalRef<JArray<jstring>> NewStringArray(
+    JNIEnv* env,
+    std::span<const T> buf) {
+  return NewArray<jstring>(env, buf, g_string_class);
+}
+
+// Below are overloads that take a std::vector instead of std::span.
+// These overloads are needed because template deduction happens before implicit
+// conversions, so the compiler cannot match std::vector<T> to std::span<T>.
+template <typename T>
+  requires internal::IsJobject<T>
+static ScopedJavaLocalRef<JArray<T>> NewArray(
+    JNIEnv* env,
+    const std::vector<ScopedJavaLocalRef<T>>& buf,
+    jclass cls) {
+  return NewArray<T>(env, std::span<const ScopedJavaLocalRef<T>>(buf), cls);
+}
+
+template <typename T, typename U>
+  requires(!internal::IsScopedJavaLocalRef<U>)
+static ScopedJavaLocalRef<JArray<T>> NewArray(JNIEnv* env,
+                                              const std::vector<U>& buf,
+                                              jclass cls) {
+  return NewArray<T, U>(env, std::span<const U>(buf), cls);
+}
+
+template <typename T>
+  requires internal::IsPrimitiveType<T>
+static ScopedJavaLocalRef<JArray<T>> NewArray(JNIEnv* env,
+                                              const std::vector<T>& buf) {
+  if constexpr (std::is_same_v<T, bool>) {
+    // A std::vector<bool> stores each bool using 1 bit rather than 1 byte,
+    // and thus we are not allowed to directly convert std::vector<bool> to
+    // std::span<bool>.
+    std::vector<uint8_t> bool_vec;
+    for (bool b : buf) {
+      bool_vec.push_back(static_cast<uint8_t>(b));
+    }
+    std::span<const bool> bool_span(
+        reinterpret_cast<const bool*>(bool_vec.data()), bool_vec.size());
+    return NewArray<bool>(env, bool_span);
+  } else {
+    return NewArray<T>(env, std::span<const T>(buf));
+  }
+}
+
+template <typename T>
+static ScopedJavaLocalRef<JArray<jobject>> NewObjectArray(
+    JNIEnv* env,
+    const std::vector<T>& buf) {
+  return NewObjectArray<T>(env, std::span<const T>(buf));
+}
+
+template <typename T>
+static ScopedJavaLocalRef<JArray<jstring>> NewStringArray(
+    JNIEnv* env,
+    const std::vector<T>& buf) {
+  return NewStringArray<T>(env, std::span<const T>(buf));
+}
+
+// Below are overloads that take std::initializer_list instead of std::span.
+// These overloads are needed because template deduction happens before implicit
+// conversions, so the compiler cannot match std::initializer_list<T> to
+// std::span<T>.
+template <typename T>
+  requires internal::IsJobject<T>
+static ScopedJavaLocalRef<JArray<T>> NewArray(
+    JNIEnv* env,
+    std::initializer_list<ScopedJavaLocalRef<T>> buf,
+    jclass cls) {
+  return NewArray<T>(env, std::span<const ScopedJavaLocalRef<T>>(buf), cls);
+}
+
+template <typename T, typename U>
+  requires(!internal::IsScopedJavaLocalRef<U>)
+static ScopedJavaLocalRef<JArray<T>> NewArray(JNIEnv* env,
+                                              std::initializer_list<U> buf,
+                                              jclass cls) {
+  return NewArray<T, U>(env, std::span<const U>(buf), cls);
+}
+
+template <typename T>
+  requires internal::IsPrimitiveType<T>
+static ScopedJavaLocalRef<JArray<T>> NewArray(JNIEnv* env,
+                                              std::initializer_list<T> buf) {
+  return NewArray<T>(env, std::span<const T>(buf));
+}
+
+template <typename T>
+static ScopedJavaLocalRef<JArray<jobject>> NewObjectArray(
+    JNIEnv* env,
+    std::initializer_list<T> buf) {
+  return NewObjectArray<T>(env, std::span<const T>(buf));
+}
+
+template <typename T>
+static ScopedJavaLocalRef<JArray<jstring>> NewStringArray(
+    JNIEnv* env,
+    std::initializer_list<T> buf) {
+  return NewStringArray<T>(env, std::span<const T>(buf));
+}
 
 }  // namespace jni_zero
 
