@@ -62,6 +62,10 @@ class SpellingOptionsSubMenuObserver;
 class TemplateURL;
 class ToastController;
 
+namespace send_tab_to_self {
+class SendTabToSelfContextMenuDelegate;
+}
+
 namespace content {
 class RenderFrameHost;
 class WebContents;
@@ -578,6 +582,10 @@ class RenderViewContextMenu
 
   // Whether the "Paste and Match Style" menu item should be enabled.
   const bool is_paste_and_match_style_enabled_;
+
+  std::unique_ptr<ui::SimpleMenuModel> send_tab_to_self_submenu_;
+  std::unique_ptr<send_tab_to_self::SendTabToSelfContextMenuDelegate>
+      send_tab_to_self_submenu_delegate_;
 
   // Fenced frame can disable its untrusted network in exchange for access to
   // unpartitioned cross-site data. To prevent cross-site data from leaking out

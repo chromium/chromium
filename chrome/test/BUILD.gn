@@ -8541,6 +8541,7 @@ test("unit_tests") {
       "//chrome/browser/ui/search:test_support_ui",
       "//chrome/browser/ui/search:unit_tests",
       "//chrome/browser/ui/select_file_policy",
+      "//chrome/browser/ui/send_tab_to_self:unit_tests",
       "//chrome/browser/ui/startup:startup_tab",
       "//chrome/browser/ui/sync",
       "//chrome/browser/ui/tab_sharing",

@@ -36,6 +36,10 @@ BASE_DECLARE_FEATURE(kSendTabToSelfImprovedLastActiveLabels);
 // be captured and propagated to the target device.
 BASE_DECLARE_FEATURE(kSendTabToSelfPropagateNavigationHistory);
 
+// If this feature is enabled, the STTS entry point in context menus will show a
+// list of devices directly.
+BASE_DECLARE_FEATURE(kSendTabToSelfShowTargetsInContextMenus);
+
 #if BUILDFLAG(IS_IOS)
 // If this feature is enabled, users can schedule tab reminder iOS push
 // notifications.

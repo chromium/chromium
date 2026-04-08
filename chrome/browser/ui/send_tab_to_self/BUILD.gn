@@ -10,6 +10,7 @@ assert(toolkit_views)
 source_set("send_tab_to_self") {
   sources = [
     "send_tab_to_self_bubble.h",
+    "send_tab_to_self_context_menu_delegate.h",
     "send_tab_to_self_toolbar_icon_controller.h",
   ]
 
@@ -17,12 +18,16 @@ source_set("send_tab_to_self") {
     "//base",
     "//chrome/browser/send_tab_to_self",
     "//components/send_tab_to_self",
+    "//ui/menus",
   ]
   deps = [ "//chrome/browser/ui/browser_window" ]
 }
 
 source_set("impl") {
-  sources = [ "send_tab_to_self_toolbar_icon_controller.cc" ]
+  sources = [
+    "send_tab_to_self_context_menu_delegate.cc",
+    "send_tab_to_self_toolbar_icon_controller.cc",
+  ]
   deps = [
     ":send_tab_to_self",
     "//chrome/browser:primitives",
@@ -56,4 +61,24 @@ if (!is_android) {
       "//ui/base:ozone_buildflags",
     ]
   }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "send_tab_to_self_context_menu_delegate_unittest.cc" ]
+  deps = [
+    ":send_tab_to_self",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/app:command_ids",
+    "//chrome/browser/send_tab_to_self",
+    "//chrome/browser/sync",
+    "//chrome/test:test_support",
+    "//components/send_tab_to_self",
+    "//components/send_tab_to_self:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
 }

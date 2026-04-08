@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_context_menu_delegate.h"
 #include "chrome/browser/ui/tabs/existing_tab_group_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/existing_window_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -41,11 +42,13 @@
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/feed/feed_feature_list.h"
+#include "components/send_tab_to_self/features.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -113,6 +116,41 @@ void TabMenuModel::BuildForWebApp(TabStripModel* tab_strip, int index) {
     AddItemWithStringId(TabStripModel::CommandCloseAllTabs,
                         IDS_TAB_CXMENU_CLOSEALLTABS);
   }
+}
+
+void TabMenuModel::BuildSendTabToSelfSubmenu(TabStripModel* tab_strip,
+                                             int index) {
+  send_tab_to_self_submenu_delegate_ =
+      std::make_unique<send_tab_to_self::SendTabToSelfContextMenuDelegate>(
+          tab_strip->GetWebContentsAt(index));
+  send_tab_to_self_submenu_ = std::make_unique<ui::SimpleMenuModel>(
+      send_tab_to_self_submenu_delegate_.get());
+
+  send_tab_to_self_submenu_delegate_->PopulateSubmenu(
+      send_tab_to_self_submenu_.get());
+
+#if BUILDFLAG(IS_MAC)
+  AddSubMenuWithStringId(TabStripModel::CommandSendTabToSelf,
+                         IDS_MENU_SEND_TAB_TO_SELF,
+                         send_tab_to_self_submenu_.get());
+#else
+  AddSubMenuWithStringIdAndIcon(
+      TabStripModel::CommandSendTabToSelf, IDS_MENU_SEND_TAB_TO_SELF,
+      send_tab_to_self_submenu_.get(),
+      ui::ImageModel::FromVectorIcon(kDevicesIcon, ui::kColorMenuIcon,
+                                     kTabMenuIconSize));
+#endif
+}
+
+void TabMenuModel::BuildLegacySendTabToSelfItem() {
+#if BUILDFLAG(IS_MAC)
+  AddItem(TabStripModel::CommandSendTabToSelf,
+          l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF));
+#else
+  AddItemWithIcon(TabStripModel::CommandSendTabToSelf,
+                  l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF),
+                  ui::ImageModel::FromVectorIcon(kDevicesIcon));
+#endif
 }
 
 void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
@@ -274,14 +312,12 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
   }
 
   if (display_send_to_self) {
-#if BUILDFLAG(IS_MAC)
-    AddItem(TabStripModel::CommandSendTabToSelf,
-            l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF));
-#else
-    AddItemWithIcon(TabStripModel::CommandSendTabToSelf,
-                    l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF),
-                    ui::ImageModel::FromVectorIcon(kDevicesIcon));
-#endif
+    if (base::FeatureList::IsEnabled(
+            send_tab_to_self::kSendTabToSelfShowTargetsInContextMenus)) {
+      BuildSendTabToSelfSubmenu(tab_strip, index);
+    } else {
+      BuildLegacySendTabToSelfItem();
+    }
   }
 
   if (tabs::kVerticalTabsToggleInTabContextMenu.Get() && controller) {

@@ -109,6 +109,7 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/send_tab_to_self",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/send_tab_to_self",
       "//chrome/browser/ui/views/frame:immersive_mode_controller",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/user_education",
