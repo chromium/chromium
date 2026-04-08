@@ -63,18 +63,35 @@ class TaskRunnerAdapter : public openscreen::TaskRunner {
 
 class MockReceiver : public openscreen::cast::Receiver {
  public:
-  MockReceiver(openscreen::cast::Environment& environment,
-               openscreen::cast::ReceiverPacketRouter& packet_router,
-               openscreen::cast::SessionConfig config)
-      : openscreen::cast::Receiver(environment, packet_router, config) {}
+  explicit MockReceiver(openscreen::cast::SessionConfig config)
+      : config_(std::move(config)) {
+    ON_CALL(*this, config).WillByDefault(testing::ReturnRef(config_));
+  }
 
-  MOCK_METHOD(int, AdvanceToNextFrame, (), (override));
+  MOCK_METHOD(const openscreen::cast::SessionConfig&,
+              config,
+              (),
+              (const, override));
+  MOCK_METHOD(void, SetConsumer, (Consumer*), (override));
+  MOCK_METHOD(void,
+              SetPlayerProcessingTime,
+              (openscreen::Clock::duration),
+              (override));
+  MOCK_METHOD(openscreen::Error,
+              ReportPlayoutEvent,
+              (openscreen::cast::FrameId,
+               openscreen::cast::RtpTimeTicks,
+               openscreen::Clock::time_point),
+              (override));
+  MOCK_METHOD(void, RequestKeyFrame, (), (override));
+  MOCK_METHOD(std::optional<size_t>, AdvanceToNextFrame, (), (override));
   MOCK_METHOD(openscreen::cast::EncodedFrame,
               ConsumeNextFrame,
               (openscreen::ByteBuffer),
               (override));
-  MOCK_METHOD(void, SetConsumer, (Consumer*), (override));
-  MOCK_METHOD(openscreen::cast::Ssrc, ssrc, (), (const, override));
+
+ private:
+  openscreen::cast::SessionConfig config_;
 };
 
 class MockDecoderBufferFactory : public DecoderBufferFactory {
@@ -92,25 +109,21 @@ class StreamConsumerTest : public testing::Test {
       : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
         environment_(&FakeNow, task_runner_, openscreen::IPEndpoint::kAnyV4()),
         packet_router_(environment_),
-        receiver_(
-            environment_,
-            packet_router_,
-            openscreen::cast::SessionConfig(
-                1 /* sender_ssrc */,
-                2 /* receiver_ssrc */,
-                90000 /* rtp_timebase */,
-                2 /* channels */,
-                std::chrono::milliseconds(100) /* target_playout_delay */,
-                std::array<uint8_t, 16>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-                                        13, 14, 15, 16} /* aes_secret_key */,
-                std::array<uint8_t, 16>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-                                        13, 14, 15, 16} /* aes_iv_mask */)) {
+        receiver_(openscreen::cast::SessionConfig(
+            1 /* sender_ssrc */,
+            2 /* receiver_ssrc */,
+            90000 /* rtp_timebase */,
+            2 /* channels */,
+            std::chrono::milliseconds(100) /* target_playout_delay */,
+            std::array<uint8_t, 16>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
+                                    14, 15, 16} /* aes_secret_key */,
+            std::array<uint8_t, 16>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
+                                    14, 15, 16} /* aes_iv_mask */)) {
     mojo::CreateDataPipe(1024 * 1024, producer_handle_, consumer_handle_);
   }
 
   void SetUp() override {
     EXPECT_CALL(receiver_, SetConsumer(_));
-    EXPECT_CALL(receiver_, ssrc()).WillRepeatedly(Return(2));
 
     auto decoder_buffer_factory = std::make_unique<MockDecoderBufferFactory>();
     decoder_buffer_factory_ = decoder_buffer_factory.get();
@@ -141,11 +154,11 @@ class StreamConsumerTest : public testing::Test {
 TEST_F(StreamConsumerTest, LargeFrame) {
   // Current limit is 10 * 1024 * 1024.
   // We simulate a frame size of 530000 (which previously failed).
-  int frame_size = 530000;
+  size_t frame_size = 530000;
 
   EXPECT_CALL(receiver_, AdvanceToNextFrame())
       .WillOnce(Return(frame_size))
-      .WillRepeatedly(Return(-1));
+      .WillRepeatedly(Return(std::nullopt));
 
   openscreen::cast::EncodedFrame frame;
   frame.frame_id = openscreen::cast::FrameId::first() + 1;
@@ -172,7 +185,7 @@ TEST_F(StreamConsumerTest, ReceiverFrameContentsCoverage) {
 
   EXPECT_CALL(receiver_, AdvanceToNextFrame())
       .WillOnce(Return(frame_size))
-      .WillRepeatedly(Return(-1));
+      .WillRepeatedly(Return(std::nullopt));
 
   openscreen::cast::EncodedFrame frame;
   frame.frame_id = openscreen::cast::FrameId::first() + 1;
@@ -197,7 +210,7 @@ TEST_F(StreamConsumerTest, ReceiverFrameContentsCoverage) {
 
 TEST_F(StreamConsumerTest, FrameReallyTooBig) {
   // Limit is 10MB. Simulate 11MB.
-  int frame_size = 11 * 1024 * 1024;
+  size_t frame_size = 11 * 1024 * 1024;
 
   EXPECT_CALL(receiver_, AdvanceToNextFrame()).WillOnce(Return(frame_size));
   EXPECT_CALL(receiver_, ConsumeNextFrame(_)).Times(0);

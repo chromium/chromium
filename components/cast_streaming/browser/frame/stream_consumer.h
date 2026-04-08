@@ -99,7 +99,7 @@ class StreamConsumer final : public openscreen::cast::Receiver::Consumer {
   void MaybeSendNextFrame();
 
   // openscreen::cast::Receiver::Consumer implementation.
-  void OnFramesReady(int next_frame_buffer_size) override;
+  void OnFramesReady(size_t next_frame_buffer_size) override;
 
   // This receiver should skip all frames with id less than this value. Set by a
   // call to FlushUntil() and 0 when no flush is ongoing.

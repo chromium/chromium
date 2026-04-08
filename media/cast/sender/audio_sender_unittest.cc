@@ -88,17 +88,17 @@ TEST_F(AudioSenderTest, Encode20ms) {
   base::test::TestFuture<void> packets_future;
   int packets_sent = 0;
   EXPECT_CALL(*test_senders_->environment, SendPacket(_, _))
-      .Times(3)
+      .Times(2)
       .WillRepeatedly([&](openscreen::ByteView packet,
                           openscreen::cast::PacketMetadata metadata) {
-        if (++packets_sent == 3) {
+        if (++packets_sent == 2) {
           packets_future.SetValue();
         }
       });
 
   audio_sender_->InsertAudio(std::move(bus), NowTicks());
   ASSERT_TRUE(packets_future.Wait());
-  EXPECT_EQ(2, openscreen_audio_sender_->GetInFlightFrameCount());
+  EXPECT_EQ(2u, openscreen_audio_sender_->GetInFlightFrameCount());
 }
 
 TEST_F(AudioSenderTest, GettersReturnValidValues) {
@@ -115,10 +115,10 @@ TEST_F(AudioSenderTest, GettersReturnValidValues) {
   base::test::TestFuture<void> packet_future;
   int packets_sent = 0;
   EXPECT_CALL(*test_senders_->environment, SendPacket(_, _))
-      .Times(3)
+      .Times(2)
       .WillRepeatedly([&](openscreen::ByteView packet,
                           openscreen::cast::PacketMetadata metadata) {
-        if (++packets_sent == 3) {
+        if (++packets_sent == 2) {
           packet_future.SetValue();
         }
       });

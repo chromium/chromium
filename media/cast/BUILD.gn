@@ -203,6 +203,7 @@ static_library("test_support") {
     "//testing/gtest",
     "//third_party/libvpx",
     "//third_party/libyuv",
+    "//third_party/openscreen/src/cast/streaming:receiver",
     "//third_party/openscreen/src/platform:api",
     "//ui/gfx:test_support",
   ]

@@ -75,7 +75,7 @@ class CastStreamingTestSender::SenderObserver final
     openscreen::cast::Sender::EnqueueFrameResult result =
         sender_->EnqueueFrame(DecoderBufferToEncodedFrame(
             buffer.get(), frame_id, &last_reference_frame_id_,
-            sender_->rtp_timebase()));
+            sender_->config().rtp_timebase));
 
     if (result != openscreen::cast::Sender::EnqueueFrameResult::OK) {
       LOG(ERROR) << "Failed to enqueue buffer " << result;

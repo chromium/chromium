@@ -235,7 +235,7 @@ CastStreamingSession::ReceiverSessionClient::InitializeAudioConsumer(
     // The duration is set to kNoTimestamp so the audio renderer does not block.
     // Audio frames duration is not known ahead of time in mirroring.
     decoder_buffer_factory = std::make_unique<MirroringDecoderBufferFactory>(
-        initialization_info.audio_stream_info->receiver->rtp_timebase(),
+        initialization_info.audio_stream_info->receiver->config().rtp_timebase,
         media::kNoTimestamp);
   }
 
@@ -276,7 +276,7 @@ CastStreamingSession::ReceiverSessionClient::InitializeVideoConsumer(
     // overlapping video frames but this is fine since the media pipeline mostly
     // considers the playout time when deciding which frame to present or play
     decoder_buffer_factory = std::make_unique<MirroringDecoderBufferFactory>(
-        initialization_info.video_stream_info->receiver->rtp_timebase(),
+        initialization_info.video_stream_info->receiver->config().rtp_timebase,
         base::Minutes(10));
   }
 

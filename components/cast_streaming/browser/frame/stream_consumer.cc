@@ -60,7 +60,8 @@ void StreamConsumer::ReadFrame(base::OnceClosure no_frames_available_cb) {
 }
 
 void StreamConsumer::CloseDataPipeOnError() {
-  DLOG(WARNING) << "[ssrc:" << receiver_->ssrc() << "] Data pipe closed.";
+  DLOG(WARNING) << "[ssrc:" << receiver_->config().receiver_ssrc
+                << "] Data pipe closed.";
   pipe_watcher_.Cancel();
   data_pipe_.reset();
 }
@@ -97,7 +98,7 @@ void StreamConsumer::OnPipeWritable(MojoResult result) {
   MaybeSendNextFrame();
 }
 
-void StreamConsumer::OnFramesReady(int next_frame_buffer_size) {
+void StreamConsumer::OnFramesReady(size_t next_frame_buffer_size) {
   on_new_frame_.Run();
   MaybeSendNextFrame();
 }
@@ -151,8 +152,9 @@ void StreamConsumer::MaybeSendNextFrame() {
     return;
   }
 
-  const int current_frame_buffer_size = receiver_->AdvanceToNextFrame();
-  if (current_frame_buffer_size == openscreen::cast::Receiver::kNoFramesReady) {
+  const std::optional<size_t> current_frame_buffer_size =
+      receiver_->AdvanceToNextFrame();
+  if (!current_frame_buffer_size.has_value()) {
     if (no_frames_available_cb_) {
       std::move(no_frames_available_cb_).Run();
     }
@@ -161,9 +163,9 @@ void StreamConsumer::MaybeSendNextFrame() {
 
   on_new_frame_.Run();
 
-  if (!frame_buffer_.Resize(current_frame_buffer_size)) {
-    LOG(ERROR) << "[ssrc:" << receiver_->ssrc() << "] "
-               << "Frame size too big: " << current_frame_buffer_size
+  if (!frame_buffer_.Resize(current_frame_buffer_size.value())) {
+    LOG(ERROR) << "[ssrc:" << receiver_->config().receiver_ssrc << "] "
+               << "Frame size too big: " << current_frame_buffer_size.value()
                << " (implies corrupt or malicious stream)";
     CloseDataPipeOnError();
     return;
