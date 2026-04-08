@@ -17224,6 +17224,85 @@ IN_PROC_BROWSER_TEST_F(PrerenderProcessReuseBrowserTest,
   EXPECT_NE(new_window_process, prerender_process);
 }
 
+class PrerenderProcessReuseWithoutStrictSiteIsolationBrowserTest
+    : public PrerenderProcessReuseBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  PrerenderProcessReuseWithoutStrictSiteIsolationBrowserTest() {
+    if (PreferWarmProcess()) {
+      feature_list_.InitAndEnableFeature(features::kPreferWarmRendererProcess);
+    } else {
+      feature_list_.InitAndDisableFeature(features::kPreferWarmRendererProcess);
+    }
+  }
+
+  bool PreferWarmProcess() const { return GetParam(); }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PrerenderProcessReuseBrowserTest::SetUpCommandLine(command_line);
+    command_line->RemoveSwitch(switches::kSitePerProcess);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PrerenderProcessReuseWithoutStrictSiteIsolationBrowserTest,
+    ::testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "PreferWarmProcess" : "DefaultReuse";
+    });
+
+IN_PROC_BROWSER_TEST_P(
+    PrerenderProcessReuseWithoutStrictSiteIsolationBrowserTest,
+    PreferWarmProcessOverUnlockedProcess) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1. Navigate to an initial empty page.
+  const GURL initial_url("about:blank");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  RenderProcessHost* initial_process = current_frame_host()->GetProcess();
+
+  // 2. Prerender a cross-site page on a.test (which is isolated, hence locked
+  // process).
+  const GURL prerender_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  // The cross-site prerender page must be triggered by the browser.
+  std::unique_ptr<PrerenderHandle> prerender_handle1 =
+      AddEmbedderTriggeredPrerenderAsync(prerender_url);
+  prerender_helper()->WaitForPrerenderLoadCompletion(prerender_url);
+  PrerenderHostId prerender_host_id =
+      prerender_helper()->GetHostForUrl(prerender_url);
+  ASSERT_TRUE(prerender_host_id);
+  RenderProcessHostImpl* prerender_process =
+      static_cast<RenderProcessHostImpl*>(
+          GetProcessForPrerenderHost(prerender_host_id));
+  ASSERT_TRUE(prerender_process);
+  ASSERT_TRUE(prerender_process->IsOnlyHostingPrerenderedFramesOrEmpty());
+
+  // 3. Navigate to a page same site as the prerender page.
+  const GURL navigation_url =
+      embedded_test_server()->GetURL("a.test", "/title2.html");
+  EXPECT_TRUE(NavigateToURL(shell(), navigation_url));
+  RenderProcessHost* navigation_process = current_frame_host()->GetProcess();
+
+  if (PreferWarmProcess()) {
+    EXPECT_NE(navigation_process, initial_process);
+    EXPECT_EQ(navigation_process, prerender_process);
+    histogram_tester.ExpectUniqueSample(
+        "BrowserRenderProcessHost.ReuseExistingProcess.ReusePolicy",
+        ProcessReusePolicy::kReusePrerenderingProcessForMainFrame, 1);
+  } else {
+    // Under partial site isolation, since b.test's process is unlocked,
+    // navigating to a.test normally would just reuse the unlocked process.
+    EXPECT_EQ(navigation_process, initial_process);
+    EXPECT_NE(navigation_process, prerender_process);
+  }
+}
+
 class PrerenderUntilScriptBaseBrowserTest
     : public PrerenderTargetHintBrowserTest {
  public:

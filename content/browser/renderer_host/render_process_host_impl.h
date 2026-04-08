@@ -529,6 +529,14 @@ class CONTENT_EXPORT RenderProcessHostImpl
   static bool MayReuseAndIsSuitable(RenderProcessHost* host,
                                     SiteInstanceImpl* site_instance);
 
+  // Returns true if there is at least one "warm" (pending, committed, or
+  // delayed shutdown) process that is locked to `site_info` and suitable
+  // for reuse in `isolation_context`.
+  static bool HasWarmLockedProcess(BrowserContext* browser_context,
+                                   const IsolationContext& isolation_context,
+                                   const SiteInfo& site_info,
+                                   ProcessReusePolicy process_reuse_policy);
+
   // Returns true if RenderProcessHost shutdown should be delayed by a few
   // seconds to allow the subframe's process to be potentially reused. This aims
   // to reduce process churn in navigations where the source and destination

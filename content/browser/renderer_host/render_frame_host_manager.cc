@@ -465,16 +465,20 @@ void RecordMainFrameProcessReuseBlockReason(
       "SiteIsolation.MainFrameProcessReuse.BlockReason", reason);
 }
 
-// If `site_instance` is for a main frame, try to reuse an existing process
-// when an experimental process-per-site-up-to-main-frame-threshold or
-// ProcessReusePrerender feature is enabled. The
-// process-per-site-up-to-main-frame-threshold feature reuses any same-site
-// process subject to a threshold for the maximum number of main frames that the
-// process can host. The ProcessReusePrerender feature reuses any same-site
-// process that is hosting only prerendered frames.
-void UpdateProcessReusePolicyForMainFrame(SiteInstanceImpl* site_instance,
-                                          FrameTreeNode* frame_tree_node,
-                                          bool is_new_site_instance) {
+// Helper to compute the ProcessReusePolicy for a main frame navigation.
+// Returns the policy if reuse should be attempted, or a block reason if reuse
+// was considered but disqualified. Returns base::unexpected(std::nullopt) if
+// the feature flags aren't enabled.
+base::expected<ProcessReusePolicy,
+               std::optional<MainFrameProcessReuseBlockReason>>
+GetProcessReusePolicyForMainFrame(BrowserContext* browser_context,
+                                  const IsolationContext& isolation_context,
+                                  const SiteInfo& site_info,
+                                  const GURL& original_url) {
+  // TODO(crbug.com/495640925): Shall we consider
+  // ShouldAllowProcessPerSiteForMultipleMainFrames for the prerender process
+  // reuse feature? This will cause the feature to be disabled for enterprise
+  // users.
   if (!base::FeatureList::IsEnabled(
           features::kReusePrerenderingProcessForMainFrames)) {
     if (!base::FeatureList::IsEnabled(
@@ -482,35 +486,29 @@ void UpdateProcessReusePolicyForMainFrame(SiteInstanceImpl* site_instance,
         !GetContentClient()
              ->browser()
              ->ShouldAllowProcessPerSiteForMultipleMainFrames(
-                 site_instance->GetBrowserContext())) {
-      return;
+                 browser_context)) {
+      // TODO(crbug.com/495640925): MainFrameProcessReuseBlockReason is not
+      // returned here to keep the same behavior before the refactor. Consider
+      // extending the MainFrameProcessReuseBlockReason.
+      return base::unexpected(std::nullopt);
     }
   }
-  if (!frame_tree_node->IsOutermostMainFrame()) {
-    return;
+
+  if (!site_info.RequiresDedicatedProcess(isolation_context)) {
+    return base::unexpected(
+        MainFrameProcessReuseBlockReason::kDoesNotRequireDedicatedProcess);
   }
-  // This policy applies only to new main frame SiteInstances. This ensures
-  // contextual checks (like embedder preference via original_url) are reliable
-  // and avoids conflicts with existing SiteInstance process logic (e.g., DSE).
-  if (!is_new_site_instance) {
-    return;
-  }
+
   if (base::FeatureList::IsEnabled(features::kDisableProcessReuse)) {
-    RecordMainFrameProcessReuseBlockReason(
+    return base::unexpected(
         MainFrameProcessReuseBlockReason::kDisableProcessResuse);
-    return;
   }
+
   if (!base::FeatureList::IsEnabled(
           features::kMainFrameProcessReuseAllowDevToolsAttached) &&
       RenderFrameDevToolsAgentHost::WasEverAttachedToAnyFrame()) {
-    RecordMainFrameProcessReuseBlockReason(
+    return base::unexpected(
         MainFrameProcessReuseBlockReason::kDevToolsWasEverAttached);
-    return;
-  }
-  if (!site_instance->RequiresDedicatedProcess()) {
-    RecordMainFrameProcessReuseBlockReason(
-        MainFrameProcessReuseBlockReason::kDoesNotRequireDedicatedProcess);
-    return;
   }
 
   // ProcessPerSite doesn't work well when DevTools is attached because DevTools
@@ -519,21 +517,19 @@ void UpdateProcessReusePolicyForMainFrame(SiteInstanceImpl* site_instance,
   // target for DevTools to attach to. Exclude localhost and IP based host name
   // for process reuse to work around the problem, unless a field parameter
   // explicitly allows it.
-  const GURL& site_url = site_instance->GetSiteURL();
+  const GURL& site_url = site_info.site_url();
   if (!base::FeatureList::IsEnabled(
           features::kMainFrameProcessReuseAllowIPAndLocalhost) &&
       (site_url.HostIsIPAddress() ||
        net::IsLocalHostname(site_url.GetHost()))) {
-    RecordMainFrameProcessReuseBlockReason(
+    return base::unexpected(
         MainFrameProcessReuseBlockReason::kIsIpAddressOrLocalHost);
-    return;
   }
 
   // Disallow process reuse when scheme is not HTTP(S).
   if (!site_url.SchemeIsHTTPOrHTTPS()) {
-    RecordMainFrameProcessReuseBlockReason(
+    return base::unexpected(
         MainFrameProcessReuseBlockReason::kSchemeIsNotHttpOrHttps);
-    return;
   }
 
   // Check embedder preference for reusing the process for this main frame
@@ -546,21 +542,59 @@ void UpdateProcessReusePolicyForMainFrame(SiteInstanceImpl* site_instance,
       GetContentClient()
           ->browser()
           ->ShouldReuseAnyExistingProcessForNewMainFrameSiteInstance(
-              site_instance->GetBrowserContext(),
-              site_instance->original_url())) {
+              browser_context, original_url)) {
+    return ProcessReusePolicy::
+        kReusePendingOrCommittedSiteWithMainFrameThreshold;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kReusePrerenderingProcessForMainFrames)) {
+    return ProcessReusePolicy::kReusePrerenderingProcessForMainFrame;
+  }
+
+  return base::unexpected(
+      MainFrameProcessReuseBlockReason::kEmbedderDisallowedReuseForUrl);
+}
+
+// If `site_instance` is for a main frame, try to reuse an existing process
+// when an experimental process-per-site-up-to-main-frame-threshold or
+// ProcessReusePrerender feature is enabled. The
+// process-per-site-up-to-main-frame-threshold feature reuses any same-site
+// process subject to a threshold for the maximum number of main frames that the
+// process can host. The ProcessReusePrerender feature reuses any same-site
+// process that is hosting only prerendered frames.
+void UpdateProcessReusePolicyForMainFrame(SiteInstanceImpl* site_instance,
+                                          FrameTreeNode* frame_tree_node,
+                                          bool is_new_site_instance) {
+  if (!frame_tree_node->IsOutermostMainFrame()) {
+    return;
+  }
+
+  // This policy applies only to new main frame SiteInstances. This ensures
+  // contextual checks (like embedder preference via original_url) are reliable
+  // and avoids conflicts with existing SiteInstance process logic (e.g., DSE).
+  if (!is_new_site_instance) {
+    return;
+  }
+
+  // SiteInstance::OriginalURL can only be called if the site instance is not
+  // the default site instance. Use a empty url as a placeholder since process
+  // allocation is not required for the default site instance.
+  // GetProcessReusePolicyForMainFrame will return
+  // kDoesNotRequireDedicatedProcess.
+  GURL original_url = site_instance->IsDefaultSiteInstance()
+                          ? GURL()
+                          : site_instance->original_url();
+  auto expected_policy = GetProcessReusePolicyForMainFrame(
+      site_instance->GetBrowserContext(), site_instance->GetIsolationContext(),
+      site_instance->GetSiteInfo(), original_url);
+
+  if (expected_policy.has_value()) {
     RecordMainFrameProcessReuseBlockReason(
         MainFrameProcessReuseBlockReason::kNotBlocked);
-    site_instance->set_process_reuse_policy(
-        ProcessReusePolicy::kReusePendingOrCommittedSiteWithMainFrameThreshold);
-  } else if (base::FeatureList::IsEnabled(
-                 features::kReusePrerenderingProcessForMainFrames)) {
-    RecordMainFrameProcessReuseBlockReason(
-        MainFrameProcessReuseBlockReason::kNotBlocked);
-    site_instance->set_process_reuse_policy(
-        ProcessReusePolicy::kReusePrerenderingProcessForMainFrame);
-  } else {
-    RecordMainFrameProcessReuseBlockReason(
-        MainFrameProcessReuseBlockReason::kEmbedderDisallowedReuseForUrl);
+    site_instance->set_process_reuse_policy(expected_policy.value());
+  } else if (expected_policy.error().has_value()) {
+    RecordMainFrameProcessReuseBlockReason(expected_policy.error().value());
   }
 }
 
@@ -3690,6 +3724,33 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
                    "!current_instance->IsSuitable");
       return SiteInstanceDescriptor(dest_url_info,
                                     SiteInstanceRelation::RELATED);
+    }
+
+    // If we are currently in an empty process, we might want to swap to a new
+    // SiteInstance if there's a "warm" locked process available for the
+    // destination. This is specifically useful on Android where NTP reuses its
+    // unlocked process for navigations.
+    if (base::FeatureList::IsEnabled(features::kPreferWarmRendererProcess) &&
+        frame_tree_node_->IsOutermostMainFrame() &&
+        dest_site_info.RequiresDedicatedProcess(
+            current_instance->GetIsolationContext())) {
+      auto expected_policy = GetProcessReusePolicyForMainFrame(
+          current_instance->GetBrowserContext(),
+          current_instance->GetIsolationContext(), dest_site_info,
+          dest_url_info.url);
+
+      if (expected_policy.has_value() &&
+          expected_policy.value() != ProcessReusePolicy::kDefault &&
+          RenderProcessHostImpl::HasWarmLockedProcess(
+              current_instance->GetBrowserContext(),
+              current_instance->GetIsolationContext(), dest_site_info,
+              expected_policy.value())) {
+        AppendReason(reason,
+                     "DetermineSiteInstanceForURL / !current->HasSite / "
+                     "warm-process-available");
+        return SiteInstanceDescriptor(dest_url_info,
+                                      SiteInstanceRelation::RELATED);
+      }
     }
 
     AppendReason(reason, "DetermineSiteInstanceForURL => current_instance");

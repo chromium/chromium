@@ -1233,12 +1233,20 @@ class AdditionalSchemesWebUINavigationBrowserTest : public ContentBrowserTest {
   }
 
   void SetUpOnMainThread() override {
+    // Since this test injects a custom WebUI scheme below, ensure that the
+    // list of WebUI schemes isn't cached. Otherwise, early initialization
+    // of WebContents (like the initial empty document) may trigger caching
+    // before the custom WebUI scheme is registered, causing the custom WebUI
+    // scheme to never be seen and process locks not to be correctly applied.
+    URLDataManagerBackend::SetDisallowWebUISchemeCachingForTesting(true);
     test_content_browser_client_ = std::make_unique<TestContentBrowserClient>();
     factory_.SetSupportedScheme(kAdditionalScheme);
   }
 
-  void TearDownOnMainThread() override { test_content_browser_client_.reset(); }
-
+  void TearDownOnMainThread() override {
+    test_content_browser_client_.reset();
+    URLDataManagerBackend::SetDisallowWebUISchemeCachingForTesting(false);
+  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(switches::kTestRegisterStandardScheme,

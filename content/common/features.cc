@@ -629,6 +629,13 @@ BASE_FEATURE(kRendererCancellationThrottleImprovements,
 BASE_FEATURE(kResumeNavigationWithSpeculativeRFHProcessGone,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the browser will try to swap to a new SiteInstance if there is
+// an existing warm (pending, committed, or delayed shutdown) renderer process
+// locked to the destination site and when the current process is an empty
+// one (like the NTP) and would normally be reused for same-site navigations
+// under partial site isolation.
+BASE_FEATURE(kPreferWarmRendererProcess, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, try to reuse any same-site process that is hosting
 // only prerendered frames for main-frame navigations.
 BASE_FEATURE(kReusePrerenderingProcessForMainFrames,
