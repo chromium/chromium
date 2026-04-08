@@ -1691,6 +1691,21 @@ IN_PROC_BROWSER_TEST_F(
 
   observer.Reset();
 
+  base::test::TestFuture<std::optional<ExtractedPageContentResult>>
+      content_future;
+  service->GetExtractedPageContentAndEligibilityForPageAsync(
+      web_contents->GetPrimaryPage(), content_future.GetCallback());
+  ASSERT_TRUE(content_future.Get().has_value());
+
+  base::test::TestFuture<std::optional<bool>> eligibility_future;
+  service->GetServerUploadEligibilityForPageAsync(
+      web_contents->GetPrimaryPage(), eligibility_future.GetCallback());
+  ASSERT_TRUE(eligibility_future.Get().has_value());
+
+  // Confirm that removing the observer prevents future navigations from
+  // triggering an extraction, but does not prevent the cache from being reset.
+  service->RemoveObserver(&observer);
+
   GURL new_url(embedded_test_server()->GetURL(
       "a.test", "/optimization_guide/newurl.html"));
   content::NavigateToURLBlockUntilNavigationsComplete(web_contents, new_url, 1);
@@ -1700,6 +1715,68 @@ IN_PROC_BROWSER_TEST_F(
       web_contents->GetPrimaryPage()));
   ASSERT_FALSE(service->GetServerUploadEligibilityForPage(
       web_contents->GetPrimaryPage()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PageContentAnnotationsServiceContentExtractionTestNoFeatureFlag,
+    AsyncGettersWaitUntilExtracted) {
+  FakeExtractionServiceObserver observer;
+  auto* service =
+      PageContentExtractionServiceFactory::GetForProfile(browser()->profile());
+  service->AddObserver(&observer);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL url(embedded_test_server()->GetURL("a.test",
+                                          "/optimization_guide/hello.html"));
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
+
+  base::test::TestFuture<std::optional<ExtractedPageContentResult>>
+      content_future;
+  service->GetExtractedPageContentAndEligibilityForPageAsync(
+      web_contents->GetPrimaryPage(), content_future.GetCallback());
+
+  base::test::TestFuture<std::optional<bool>> eligibility_future;
+  service->GetServerUploadEligibilityForPageAsync(
+      web_contents->GetPrimaryPage(), eligibility_future.GetCallback());
+
+  EXPECT_FALSE(content_future.IsReady());
+  EXPECT_FALSE(eligibility_future.IsReady());
+
+  observer.Wait();
+
+  EXPECT_TRUE(content_future.Get().has_value());
+  EXPECT_TRUE(eligibility_future.Get().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PageContentAnnotationsServiceContentExtractionTestNoFeatureFlag,
+    AsyncGettersInvalidateOnNavigation) {
+  FakeExtractionServiceObserver observer;
+  auto* service =
+      PageContentExtractionServiceFactory::GetForProfile(browser()->profile());
+  service->AddObserver(&observer);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL url(embedded_test_server()->GetURL("a.test",
+                                          "/optimization_guide/hello.html"));
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
+
+  base::test::TestFuture<std::optional<ExtractedPageContentResult>>
+      content_future;
+  service->GetExtractedPageContentAndEligibilityForPageAsync(
+      web_contents->GetPrimaryPage(), content_future.GetCallback());
+
+  EXPECT_FALSE(content_future.IsReady());
+
+  // Navigate to a new URL before extraction finishes.
+  GURL url2(embedded_test_server()->GetURL("b.test",
+                                           "/optimization_guide/hello.html"));
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url2, 1);
+
+  ASSERT_TRUE(content_future.Wait());
+  EXPECT_FALSE(content_future.Get().has_value());
 }
 
 class PageContentAnnotationsServiceContentExtractionTestActionable
@@ -1998,6 +2075,52 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTestHidden,
   EXPECT_TRUE(result.has_value());
   EXPECT_TRUE(result->page_content->data.has_main_frame_data());
   EXPECT_EQ("Test Page", result->page_content->data.main_frame_data().title());
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTestHidden,
+                       AsyncGettersReturnNulloptWhenVisibleInOnHiddenMode) {
+  FakeExtractionServiceObserver observer;
+  auto* service =
+      PageContentExtractionServiceFactory::GetForProfile(browser()->profile());
+  observer.Observe(service);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL url(embedded_test_server()->GetURL("a.test",
+                                          "/optimization_guide/simple.html"));
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
+
+  base::test::TestFuture<std::optional<ExtractedPageContentResult>>
+      content_future;
+  service->GetExtractedPageContentAndEligibilityForPageAsync(
+      web_contents->GetPrimaryPage(), content_future.GetCallback());
+
+  // Return nullopt as no extraction is scheduled (so the wait is indefinite)
+  EXPECT_TRUE(content_future.IsReady());
+  EXPECT_FALSE(content_future.Get().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
+                       AsyncGettersOnPdfPages) {
+  FakeExtractionServiceObserver observer;
+  auto* service =
+      PageContentExtractionServiceFactory::GetForProfile(browser()->profile());
+  observer.Observe(service);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL url(embedded_test_server()->GetURL("a.test", "/pdf/test.pdf"));
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
+
+  base::test::TestFuture<
+      std::optional<page_content_annotations::ExtractedPageContentResult>>
+      async_future;
+  service->GetExtractedPageContentAndEligibilityForPageAsync(
+      web_contents->GetPrimaryPage(), async_future.GetCallback());
+
+  std::optional<page_content_annotations::ExtractedPageContentResult> result =
+      async_future.Get();
+  EXPECT_FALSE(result.has_value());
 }
 
 }  // namespace page_content_annotations
