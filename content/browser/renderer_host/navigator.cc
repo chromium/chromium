@@ -1498,23 +1498,23 @@ void Navigator::LogRendererInitiatedBeforeUnloadTime(
 
   if (!base::TimeTicks::IsConsistentAcrossProcesses()) {
     // These timestamps come directly from the renderer so they might need to be
-    // converted to local time stamps.
-    blink::InterProcessTimeTicksConverter converter(
-        blink::LocalTimeTicks::FromTimeTicks(base::TimeTicks()),
-        blink::LocalTimeTicks::FromTimeTicks(base::TimeTicks::Now()),
-        blink::RemoteTimeTicks::FromTimeTicks(
-            renderer_before_unload_start_time),
-        blink::RemoteTimeTicks::FromTimeTicks(renderer_before_unload_end_time));
-    blink::LocalTimeTicks converted_renderer_before_unload_start =
-        converter.ToLocalTimeTicks(blink::RemoteTimeTicks::FromTimeTicks(
-            renderer_before_unload_start_time));
-    blink::LocalTimeTicks converted_renderer_before_unload_end =
-        converter.ToLocalTimeTicks(blink::RemoteTimeTicks::FromTimeTicks(
-            renderer_before_unload_end_time));
+    // converted to local time stamps. However, since this is
+    // renderer-initiated, we don't have a browser-side `local_lower_bound`
+    // anchor for the start of the event.
+    //
+    // `InterProcessTimeTicksConverter` is not applicable here because it
+    // requires a two-point anchor (both start and end points on both local and
+    // remote processes) to decouple clock skew from communication latency.
+    // Without a start anchor (`local_lower_bound`), we cannot calculate the
+    // round-trip time or the scaling factor.
+    //
+    // We instead assume the event finished just before it was received and use
+    // the renderer's duration to establish the local timestamps.
+    base::TimeTicks now = base::TimeTicks::Now();
     metrics_data_->renderer_before_unload_start_ =
-        converted_renderer_before_unload_start.ToTimeTicks();
-    metrics_data_->renderer_before_unload_end_ =
-        converted_renderer_before_unload_end.ToTimeTicks();
+        now -
+        (renderer_before_unload_end_time - renderer_before_unload_start_time);
+    metrics_data_->renderer_before_unload_end_ = now;
   } else {
     metrics_data_->renderer_before_unload_start_ =
         renderer_before_unload_start_time;
