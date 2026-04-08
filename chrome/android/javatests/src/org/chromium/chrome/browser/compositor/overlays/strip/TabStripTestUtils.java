@@ -10,7 +10,7 @@ import static org.junit.Assert.assertTrue;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.util.TabStripUtils;
 
@@ -58,11 +58,10 @@ public class TabStripTestUtils {
     /**
      * @param activity The hosting ChromeTabbedActivity.
      * @param isIncognito Whether the tab is in incognito.
-     * @return The {@link TabGroupModelFilter} to act on.
+     * @return The {@link TabModel} to act on.
      */
-    public static TabGroupModelFilter getTabGroupModelFilter(
-            ChromeTabbedActivity activity, boolean isIncognito) {
-        return activity.getTabModelSelector().getTabGroupModelFilter(isIncognito);
+    public static TabModel getTabModel(ChromeTabbedActivity activity, boolean isIncognito) {
+        return activity.getTabModelSelector().getModel(isIncognito);
     }
 
     /**

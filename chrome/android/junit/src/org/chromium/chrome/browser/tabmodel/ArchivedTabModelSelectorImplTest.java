@@ -90,11 +90,11 @@ public class ArchivedTabModelSelectorImplTest {
 
         mTabCreatorManager.initialize(mTabModelSelector);
         TabRemover regularTabRemover =
-                new PassthroughTabRemover(() -> mTabModelSelector.getTabGroupModelFilter(false));
+                new PassthroughTabRemover(() -> mTabModelSelector.getModel(false));
         MockTabModel regularTabModel = new MockTabModel(mProfile, null);
         regularTabModel.setTabRemoverForTesting(regularTabRemover);
         TabRemover incognitoTabRemover =
-                new PassthroughTabRemover(() -> mTabModelSelector.getTabGroupModelFilter(true));
+                new PassthroughTabRemover(() -> mTabModelSelector.getModel(true));
         MockTabModel incognitoTabModel = new MockTabModel(mIncognitoProfile, null);
         incognitoTabModel.setTabRemoverForTesting(incognitoTabRemover);
         mTabModelSelector.onNativeLibraryReadyInternal(

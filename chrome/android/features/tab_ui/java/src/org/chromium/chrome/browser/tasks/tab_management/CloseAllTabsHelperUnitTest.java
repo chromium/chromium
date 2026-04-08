@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabArchiver;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
@@ -39,8 +38,6 @@ public class CloseAllTabsHelperUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabGroupModelFilter mRegularTabGroupModelFilter;
-    @Mock private TabGroupModelFilter mIncognitoTabGroupModelFilter;
     @Mock private TabModel mRegularTabModel;
     @Mock private TabModel mIncognitoTabModel;
     @Mock private TabModel mArchivedTabModel;
@@ -52,10 +49,6 @@ public class CloseAllTabsHelperUnitTest {
 
     @Before
     public void setUp() {
-        when(mTabModelSelector.getTabGroupModelFilter(false))
-                .thenReturn(mRegularTabGroupModelFilter);
-        when(mTabModelSelector.getTabGroupModelFilter(true))
-                .thenReturn(mIncognitoTabGroupModelFilter);
         when(mTabModelSelector.getModel(false)).thenReturn(mRegularTabModel);
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
         when(mRegularTabModel.getTabRemover()).thenReturn(mRegularTabRemover);

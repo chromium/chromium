@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabWebContentsObserver;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -799,9 +798,9 @@ public class ChromeTabUtils {
         // Verify that the two tabs do not belong with different models.
         Assert.assertEquals(tab1.isIncognito(), tab2.isIncognito());
         final TabModelSelector selector = getTabModelSelector(tab1.getWindowAndroid());
-        final TabGroupModelFilter filter = selector.getTabGroupModelFilter(tab1.isIncognito());
+        final TabModel tabModel = selector.getModel(tab1.isIncognito());
 
-        filter.mergeTabsToGroup(tab1.getId(), tab2.getId());
+        tabModel.mergeTabsToGroup(tab1.getId(), tab2.getId());
         Assert.assertEquals(tab1.getTabGroupId(), tab2.getTabGroupId());
     }
 

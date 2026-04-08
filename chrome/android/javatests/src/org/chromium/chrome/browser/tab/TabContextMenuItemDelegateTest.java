@@ -108,9 +108,9 @@ public class TabContextMenuItemDelegateTest {
                 () -> {
                     ChromeTabbedActivity cta = mActivityTestRule.getActivity();
                     var tabModelSelector = cta.getTabModelSelectorSupplier().get();
-                    var filter = tabModelSelector.getTabGroupModelFilter(false);
+                    var tabModel = tabModelSelector.getModel(false);
                     var tab = cta.getActivityTab();
-                    filter.createSingleTabGroup(tab);
+                    tabModel.createSingleTabGroup(tab);
                 });
 
         openNewTabUsingContextMenu();

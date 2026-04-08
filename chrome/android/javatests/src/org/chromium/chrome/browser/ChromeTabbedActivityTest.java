@@ -66,7 +66,6 @@ import org.chromium.chrome.browser.tabmodel.MultiTabMetadata;
 import org.chromium.chrome.browser.tabmodel.RedirectTabCreator;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabstrip.StripVisibilityState;
@@ -679,9 +678,8 @@ public class ChromeTabbedActivityTest {
                                                             .getURL(FILE_PATH)),
                                             TabLaunchType.FROM_LINK,
                                             null);
-                            TabGroupModelFilter filter =
-                                    mActivity.getTabModelSelector().getTabGroupModelFilter(false);
-                            filter.createSingleTabGroup(newTab);
+                            TabModel tabModel = mActivity.getTabModelSelector().getModel(false);
+                            tabModel.createSingleTabGroup(newTab);
                             return newTab;
                         });
 
@@ -766,14 +764,12 @@ public class ChromeTabbedActivityTest {
                     }
 
                     // Verify other tab group properties.
-                    TabGroupModelFilter filter =
-                            mActivity.getTabModelSelector().getTabGroupModelFilter(false);
-                    Assert.assertEquals(TAB_GROUP_TITLE, filter.getTabGroupTitle(TAB_GROUP_ID));
-                    Assert.assertEquals(0, filter.getTabGroupColor(TAB_GROUP_ID));
+                    Assert.assertEquals(TAB_GROUP_TITLE, tabModel.getTabGroupTitle(TAB_GROUP_ID));
+                    Assert.assertEquals(0, tabModel.getTabGroupColor(TAB_GROUP_ID));
                     if (shouldApplyCollapse) {
-                        Assert.assertTrue(filter.getTabGroupCollapsed(TAB_GROUP_ID));
+                        Assert.assertTrue(tabModel.getTabGroupCollapsed(TAB_GROUP_ID));
                     } else {
-                        Assert.assertFalse(filter.getTabGroupCollapsed(TAB_GROUP_ID));
+                        Assert.assertFalse(tabModel.getTabGroupCollapsed(TAB_GROUP_ID));
                     }
 
                     // Verify histograms.
@@ -1204,10 +1200,7 @@ public class ChromeTabbedActivityTest {
                     Tab movedTab2 = tabModel2.getTabById(tab2.getId());
                     Criteria.checkThat(movedTab2, Matchers.notNullValue());
 
-                    TabGroupModelFilter filter2 =
-                            (TabGroupModelFilter)
-                                    activity2.getTabModelSelector().getTabGroupModelFilter(false);
-                    List<Tab> relatedTabs = filter2.getRelatedTabList(tab1.getId());
+                    List<Tab> relatedTabs = tabModel2.getRelatedTabList(tab1.getId());
                     Criteria.checkThat(relatedTabs.size(), Matchers.is(2));
                     Criteria.checkThat(
                             relatedTabs,

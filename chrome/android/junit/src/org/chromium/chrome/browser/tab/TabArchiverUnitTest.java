@@ -169,8 +169,7 @@ public class TabArchiverUnitTest {
         when(mArchivedTabModel.getTabById(tab.getId())).thenReturn(archivedTab);
 
         mTabArchiver.archiveAndRemoveTabs(
-                mTabModelSelector.getTabGroupModelFilter(/* isIncognito= */ false),
-                Collections.singletonList(tab));
+                mTabModelSelector.getModel(/* incognito= */ false), Collections.singletonList(tab));
 
         verify(mArchivedTabCreator, never()).createFrozenTab(any(), anyInt(), anyInt());
     }
@@ -185,8 +184,7 @@ public class TabArchiverUnitTest {
         when(mArchivedTabModel.getTabById(tab.getId())).thenReturn(archivedTab);
 
         mTabArchiver.archiveAndRemoveTabs(
-                mTabModelSelector.getTabGroupModelFilter(/* isIncognito= */ false),
-                Collections.singletonList(tab));
+                mTabModelSelector.getModel(/* incognito= */ false), Collections.singletonList(tab));
 
         verify(mArchivedTabCreator, times(1))
                 .createFrozenTab(any(), not(eq(tab.getId())), anyInt());

@@ -139,7 +139,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -1626,11 +1625,11 @@ public class TabGridDialogTest {
         // Set title programmatically as doing this through the UI is flaky due to the keyboard
         // state not being particularly reliable.
         TabModelSelector selector = cta.getTabModelSelector();
-        TabGroupModelFilter filter = selector.getTabGroupModelFilter(false);
+        TabModel tabModel = selector.getModel(false);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Token tabGroupId = filter.getTabModel().getTabAt(0).getTabGroupId();
-                    filter.setTabGroupTitle(tabGroupId, CUSTOMIZED_TITLE1);
+                    Token tabGroupId = tabModel.getTabModel().getTabAt(0).getTabGroupId();
+                    tabModel.setTabGroupTitle(tabGroupId, CUSTOMIZED_TITLE1);
                 });
         collapseTargetString = "Collapse " + CUSTOMIZED_TITLE1 + " tab group with 3 tabs.";
         verifyDialogBackButtonContentDescription(cta, collapseTargetString);
@@ -1668,8 +1667,8 @@ public class TabGridDialogTest {
         openDialogFromTabSwitcherAndVerify(cta, 2, CUSTOMIZED_TITLE1);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Token tabGroupId = filter.getTabModel().getTabAt(0).getTabGroupId();
-                    filter.deleteTabGroupTitle(tabGroupId);
+                    Token tabGroupId = tabModel.getTabModel().getTabAt(0).getTabGroupId();
+                    tabModel.deleteTabGroupTitle(tabGroupId);
                 });
         verifyShowingDialog(cta, 2, null);
         collapseTargetString = "Collapse tab group with 2 tabs.";
@@ -1689,8 +1688,8 @@ public class TabGridDialogTest {
         // Programmatically ungroup.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Tab tab = filter.getTabModel().getTabAt(0);
-                    filter.getTabUngrouper()
+                    Tab tab = tabModel.getTabModel().getTabAt(0);
+                    tabModel.getTabUngrouper()
                             .ungroupTabs(
                                     List.of(tab), /* trailing= */ true, /* allowDialog= */ false);
                 });
@@ -1819,8 +1818,7 @@ public class TabGridDialogTest {
                             mActivityTestRule.getActivity().getTabModelSelector();
                     TabModel model = selector.getCurrentModel();
                     Tab tab = model.getTabAt(0);
-                    TabGroupModelFilter filter = selector.getTabGroupModelFilter(false);
-                    filter.createSingleTabGroup(tab);
+                    model.createSingleTabGroup(tab);
                 });
 
         // Create a tab group with 2 tabs.

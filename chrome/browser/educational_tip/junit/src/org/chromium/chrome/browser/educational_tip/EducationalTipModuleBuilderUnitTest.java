@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.setup_list.SetupListManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
@@ -71,8 +70,6 @@ public class EducationalTipModuleBuilderUnitTest {
     @Mock private Tracker mTracker;
     @Mock private DefaultBrowserPromoUtils mMockDefaultBrowserPromoUtils;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabGroupModelFilter mNormalFilter;
-    @Mock private TabGroupModelFilter mIncognitoFilter;
     @Mock private TabModel mNormalModel;
     @Mock private TabModel mIncognitoModel;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
@@ -97,14 +94,10 @@ public class EducationalTipModuleBuilderUnitTest {
         when(mTracker.wouldTriggerHelpUi(FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK))
                 .thenReturn(true);
         when(mActionDelegate.getTabModelSelector()).thenReturn(mTabModelSelector);
-        when(mTabModelSelector.getTabGroupModelFilter(/* isIncognito= */ false))
-                .thenReturn(mNormalFilter);
-        when(mTabModelSelector.getTabGroupModelFilter(/* isIncognito= */ true))
-                .thenReturn(mIncognitoFilter);
-        when(mNormalFilter.getTabGroupCount()).thenReturn(0);
-        when(mIncognitoFilter.getTabGroupCount()).thenReturn(0);
         when(mTabModelSelector.getModel(/* incognito= */ false)).thenReturn(mNormalModel);
         when(mTabModelSelector.getModel(/* incognito= */ true)).thenReturn(mIncognitoModel);
+        when(mNormalModel.getTabGroupCount()).thenReturn(0);
+        when(mIncognitoModel.getTabGroupCount()).thenReturn(0);
         when(mNormalModel.getCount()).thenReturn(0);
         when(mIncognitoModel.getCount()).thenReturn(0);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);

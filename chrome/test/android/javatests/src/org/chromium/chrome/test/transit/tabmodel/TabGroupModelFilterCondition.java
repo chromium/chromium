@@ -7,6 +7,7 @@ package org.chromium.chrome.test.transit.tabmodel;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 import java.util.function.Supplier;
@@ -26,8 +27,7 @@ public class TabGroupModelFilterCondition extends ConditionWithResult<TabGroupMo
     @Override
     protected ConditionStatusWithResult<TabGroupModelFilter> resolveWithSuppliers()
             throws Exception {
-        TabGroupModelFilter model =
-                mTabModelSelectorSupplier.get().getTabGroupModelFilter(mIncognito);
+        TabModel model = mTabModelSelectorSupplier.get().getModel(mIncognito);
         if (model == null) {
             return notFulfilled("TabGroupModelFilter is null").withoutResult();
         }

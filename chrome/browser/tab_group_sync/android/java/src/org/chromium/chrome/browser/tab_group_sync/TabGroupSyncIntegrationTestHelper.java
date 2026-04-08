@@ -20,7 +20,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.sync.DataType;
@@ -279,12 +278,6 @@ public class TabGroupSyncIntegrationTestHelper {
         return mSyncTestRule.getActivity().getTabModelSelector().getModel(false);
     }
 
-    /** Returns the regular tab model filter. */
-    public TabGroupModelFilter getTabGroupFilter() {
-        return assertNonNull(
-                mSyncTestRule.getActivity().getTabModelSelector().getTabGroupModelFilter(false));
-    }
-
     /** Gets the {@link SyncEntity} for a particular sync GUID. */
     public @Nullable SyncEntity getSyncEntityWithUuid(String guid) {
         List<SyncEntity> entities = getSyncEntities();
@@ -376,12 +369,12 @@ public class TabGroupSyncIntegrationTestHelper {
      * @param expectedGroup The expected tab group.
      */
     public void verifyGroupInfoMatchesLocalData(int index, GroupInfo expectedGroup) {
-        TabGroupModelFilter filter = getTabGroupFilter();
+        TabModel tabModel = getTabModel();
         Token tabGroupId = getTabGroupIdAt(index);
-        String actualTitle = runOnUiThreadBlocking(() -> filter.getTabGroupTitle(tabGroupId));
+        String actualTitle = runOnUiThreadBlocking(() -> tabModel.getTabGroupTitle(tabGroupId));
         int actualColor =
-                runOnUiThreadBlocking(() -> filter.getTabGroupColorWithFallback(tabGroupId));
-        List<Tab> tabs = runOnUiThreadBlocking(() -> filter.getTabsInGroup(tabGroupId));
+                runOnUiThreadBlocking(() -> tabModel.getTabGroupColorWithFallback(tabGroupId));
+        List<Tab> tabs = runOnUiThreadBlocking(() -> tabModel.getTabsInGroup(tabGroupId));
 
         // group details
         assertEquals(

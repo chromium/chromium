@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -136,13 +135,11 @@ public class BlankCTATabInitialStateRule implements TestRule {
                             getActivity().getTabModelSelector().getModel(/* incognito= */ false);
                     closeAllButOneTab(regularTabModel);
 
-                    TabGroupModelFilter filter =
-                            getActivity()
-                                    .getTabModelSelector()
-                                    .getTabGroupModelFilter(/* isIncognito= */ false);
+                    TabModel tabModel =
+                            getActivity().getTabModelSelector().getModel(/* incognito= */ false);
                     Tab activityTab = getActivity().getActivityTab();
-                    if (filter.isTabInTabGroup(activityTab)) {
-                        filter.getTabUngrouper()
+                    if (tabModel.isTabInTabGroup(activityTab)) {
+                        tabModel.getTabUngrouper()
                                 .ungroupTabs(
                                         Collections.singletonList(activityTab),
                                         /* trailing= */ false,

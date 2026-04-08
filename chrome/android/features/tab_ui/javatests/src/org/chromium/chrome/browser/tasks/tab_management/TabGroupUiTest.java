@@ -61,7 +61,6 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -316,11 +315,10 @@ public class TabGroupUiTest {
                                             TabLaunchType.FROM_SYNC_BACKGROUND,
                                             null,
                                             TabModel.INVALID_TAB_INDEX);
-                    TabGroupModelFilter filter =
-                            cta.getTabModelSelector().getTabGroupModelFilter(false);
-                    filter.mergeListOfTabsToGroup(
+                    TabModel tabModel = cta.getTabModelSelector().getModel(false);
+                    tabModel.mergeListOfTabsToGroup(
                             List.of(tab),
-                            filter.getRepresentativeTabAt(0),
+                            tabModel.getRepresentativeTabAt(0),
                             /* notify= */ MergeNotificationType.DONT_NOTIFY);
                 });
         ViewUtils.waitForVisibleView(
@@ -365,11 +363,10 @@ public class TabGroupUiTest {
                                             TabLaunchType.FROM_SYNC_BACKGROUND,
                                             null,
                                             TabModel.INVALID_TAB_INDEX);
-                    TabGroupModelFilter filter =
-                            cta.getTabModelSelector().getTabGroupModelFilter(false);
-                    filter.mergeListOfTabsToGroup(
+                    TabModel tabModel = cta.getTabModelSelector().getModel(false);
+                    tabModel.mergeListOfTabsToGroup(
                             List.of(tab),
-                            filter.getRepresentativeTabAt(0),
+                            tabModel.getRepresentativeTabAt(0),
                             /* notify= */ MergeNotificationType.DONT_NOTIFY);
                 });
         ViewUtils.waitForVisibleView(
@@ -407,8 +404,7 @@ public class TabGroupUiTest {
                             mActivityTestRule.getActivity().getTabModelSelector();
                     TabModel model = selector.getCurrentModel();
                     Tab tab = model.getTabAt(0);
-                    TabGroupModelFilter filter = selector.getTabGroupModelFilter(false);
-                    filter.createSingleTabGroup(tab);
+                    model.createSingleTabGroup(tab);
                 });
 
         finishActivity(mActivityTestRule.getActivity());
@@ -451,8 +447,7 @@ public class TabGroupUiTest {
                             mActivityTestRule.getActivity().getTabModelSelector();
                     TabModel model = selector.getCurrentModel();
                     Tab tab = model.getTabAt(0);
-                    TabGroupModelFilter filter = selector.getTabGroupModelFilter(false);
-                    filter.createSingleTabGroup(tab);
+                    model.createSingleTabGroup(tab);
                 });
 
         finishActivity(mActivityTestRule.getActivity());

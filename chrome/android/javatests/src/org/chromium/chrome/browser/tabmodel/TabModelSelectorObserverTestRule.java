@@ -129,7 +129,7 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
 
                     @Override
                     public TabGroupModelFilter getFilter(boolean incognito) {
-                        return mSelector.getTabGroupModelFilter(incognito);
+                        return mSelector.getModel(incognito);
                     }
 
                     @Override
@@ -145,11 +145,9 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
 
         Profile regularProfile = ProfileManager.getLastUsedRegularProfile();
         TabRemover normalTabRemover =
-                new PassthroughTabRemover(
-                        () -> mSelector.getTabGroupModelFilter(/* isIncognito= */ false));
+                new PassthroughTabRemover(() -> mSelector.getModel(/* incognito= */ false));
         TabUngrouper normalTabUngrouper =
-                new PassthroughTabUngrouper(
-                        () -> mSelector.getTabGroupModelFilter(/* isIncognito= */ false));
+                new PassthroughTabUngrouper(() -> mSelector.getModel(/* incognito= */ false));
         Supplier<ScopedStorageBatch> batchFactory = () -> createBatch(regularProfile);
         mNormalTabModel =
                 new TabModelSelectorTestTabModel(
@@ -165,11 +163,9 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
                         batchFactory);
 
         TabRemover incognitoTabRemover =
-                new PassthroughTabRemover(
-                        () -> mSelector.getTabGroupModelFilter(/* isIncognito= */ true));
+                new PassthroughTabRemover(() -> mSelector.getModel(/* incognito= */ true));
         TabUngrouper incognitoTabUngrouper =
-                new PassthroughTabUngrouper(
-                        () -> mSelector.getTabGroupModelFilter(/* isIncognito= */ true));
+                new PassthroughTabUngrouper(() -> mSelector.getModel(/* incognito= */ true));
         mIncognitoTabModel =
                 new TabModelSelectorTestIncognitoTabModel(
                         regularProfile.getPrimaryOtrProfile(/* createIfNeeded= */ true),

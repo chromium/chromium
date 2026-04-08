@@ -426,8 +426,7 @@ public class HistoricalTabSaverImplTest {
                     archivedTabModelOrchestrator
                             .getTabArchiver()
                             .archiveAndRemoveTabs(
-                                    mTabModelSelector.getTabGroupModelFilter(false),
-                                    Arrays.asList(newTab));
+                                    mTabModelSelector.getModel(false), Arrays.asList(newTab));
                 });
         List<List<HistoricalEntry>> empty = new ArrayList<>();
         assertEntriesAre(empty);

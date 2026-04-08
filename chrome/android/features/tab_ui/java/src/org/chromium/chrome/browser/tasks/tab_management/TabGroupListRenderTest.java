@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -96,16 +95,15 @@ public class TabGroupListRenderTest {
                 () -> {
                     ChromeTabbedActivity cta = mCtaTestRule.getActivity();
                     TabModelSelector selector = cta.getTabModelSelector();
-                    TabGroupModelFilter filter = selector.getTabGroupModelFilter(false);
-                    TabModel model = cta.getTabModelSelector().getModel(false);
+                    TabModel model = selector.getModel(false);
                     Tab tab =
                             model.getTabCreator()
                                     .createNewTab(
                                             new LoadUrlParams("about:blank"),
                                             TabLaunchType.FROM_LONGPRESS_BACKGROUND,
                                             null);
-                    filter.createSingleTabGroup(tab);
-                    filter.setTabGroupTitle(tab.getTabGroupId(), title);
+                    model.createSingleTabGroup(tab);
+                    model.setTabGroupTitle(tab.getTabGroupId(), title);
                 });
         if (wait) {
             onViewWaiting(withText(title)).check(matches(isDisplayed()));

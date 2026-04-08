@@ -484,7 +484,7 @@ public class DragAndDropLauncherActivityTest {
                                     mActivityTestRule
                                             .getActivity()
                                             .getTabModelSelector()
-                                            .getTabGroupModelFilter(false),
+                                            .getModel(false),
                                     draggedTabGroup,
                                     sourceWindowId,
                                     draggedTabGroup.get(0).getId(),

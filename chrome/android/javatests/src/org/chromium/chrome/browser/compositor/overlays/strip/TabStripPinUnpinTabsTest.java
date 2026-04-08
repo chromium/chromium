@@ -35,7 +35,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
@@ -216,13 +215,13 @@ public class TabStripPinUnpinTabsTest {
                 TabStripTestUtils.getActiveStripLayoutHelper(mActivityTestRule.getActivity());
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         StripLayoutTab tabToPin = tabs[firstGroupedIndex];
-        TabGroupModelFilter groupModelFilter =
-                TabStripTestUtils.getTabGroupModelFilter(
+        TabModel regularTabModel =
+                TabStripTestUtils.getTabModel(
                         mActivityTestRule.getActivity(), /* isIncognito= */ false);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var tab = mTabModel.getTabById(tabToPin.getTabId());
-                    assertEquals(firstGroupedIndex, groupModelFilter.getTabModel().indexOf(tab));
+                    assertEquals(firstGroupedIndex, regularTabModel.getTabModel().indexOf(tab));
                     assertFalse(tabToPin.getIsPinned());
                     assertNotNull(tab.getTabGroupId());
                 });
@@ -238,10 +237,9 @@ public class TabStripPinUnpinTabsTest {
                 () -> {
                     assertFalse(
                             "Tab should be ungrouped.",
-                            groupModelFilter.isTabInTabGroup(
-                                    mTabModel.getTabAt(firstGroupedIndex)));
+                            regularTabModel.isTabInTabGroup(mTabModel.getTabAt(firstGroupedIndex)));
                     var tab = mTabModel.getTabById(tabToPin.getTabId());
-                    assertEquals(0, groupModelFilter.getTabModel().indexOf(tab));
+                    assertEquals(0, regularTabModel.getTabModel().indexOf(tab));
                     assertTrue(tabToPin.getIsPinned());
                 });
 

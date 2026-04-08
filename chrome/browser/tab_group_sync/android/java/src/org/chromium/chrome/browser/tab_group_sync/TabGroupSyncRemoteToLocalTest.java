@@ -220,7 +220,7 @@ public class TabGroupSyncRemoteToLocalTest {
                                 Matchers.equalTo(tabGroupCount + tabCount));
                         int actualTabGroupCount =
                                 ThreadUtils.runOnUiThreadBlocking(
-                                        () -> mHelper.getTabGroupFilter().getTabGroupCount());
+                                        () -> mHelper.getTabModel().getTabGroupCount());
                         checkThat(
                                 "Tab group count does not match",
                                 actualTabGroupCount,
