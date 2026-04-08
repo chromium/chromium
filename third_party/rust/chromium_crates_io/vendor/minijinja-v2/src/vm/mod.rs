@@ -280,6 +280,8 @@ impl<'env> Vm<'env> {
                 ($op:tt) => {{
                     b = stack.pop();
                     a = stack.pop();
+                    ctx_ok!(undefined_behavior.assert_value_not_undefined(&a));
+                    ctx_ok!(undefined_behavior.assert_value_not_undefined(&b));
                     stack.push(Value::from(a $op b));
                 }};
             }
@@ -464,14 +466,17 @@ impl<'env> Vm<'env> {
                 Instruction::StringConcat => {
                     a = stack.pop();
                     b = stack.pop();
+                    ctx_ok!(undefined_behavior.assert_value_not_undefined(&b));
+                    ctx_ok!(undefined_behavior.assert_value_not_undefined(&a));
                     stack.push(ops::string_concat(b, &a));
                 }
                 Instruction::In => {
                     a = stack.pop();
                     b = stack.pop();
-                    // the in-operator can fail if the value is undefined and
+                    // the in-operator can fail if either side is undefined and
                     // we are in strict mode.
                     ctx_ok!(state.undefined_behavior().assert_iterable(&a));
+                    ctx_ok!(state.undefined_behavior().assert_value_not_undefined(&b));
                     stack.push(ctx_ok!(ops::contains(&a, &b)));
                 }
                 Instruction::Neg => {

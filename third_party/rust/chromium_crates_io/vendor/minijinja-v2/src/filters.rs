@@ -525,13 +525,22 @@ mod builtins {
     /// <p>{{ ""|default("string was empty", true) }}</p>
     /// ```
     #[cfg_attr(docsrs, doc(cfg(feature = "builtins")))]
-    pub fn default(value: &Value, other: Option<Value>, lax: Option<bool>) -> Value {
-        if value.is_undefined() {
-            other.unwrap_or_else(|| Value::from(""))
-        } else if lax.unwrap_or(false) && !value.is_true() {
-            other.unwrap_or_else(|| Value::from(""))
+    pub fn default(state: &State, value: &Value, args: Rest<Value>) -> Result<Value, Error> {
+        if args.len() > 2 {
+            return Err(Error::from(ErrorKind::TooManyArguments));
+        }
+
+        let other = args.first().cloned().unwrap_or_else(|| Value::from(""));
+        let lax = if let Some(lax) = args.get(1) {
+            ok!(state.undefined_behavior().is_true(lax))
         } else {
-            value.clone()
+            false
+        };
+
+        if value.is_undefined() || (lax && !value.is_true()) {
+            Ok(other)
+        } else {
+            Ok(value.clone())
         }
     }
 
