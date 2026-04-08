@@ -1951,7 +1951,7 @@ fyi_ios_builder(
         ),
     ],
     contact_team_email = "bling-engprod@google.com",
-    xcode = xcode.x26betabots,
+    xcode = xcode.xcode_beta,
 )
 
 fyi_ios_builder(
@@ -2007,7 +2007,7 @@ fyi_ios_builder(
             short_name = "sdk26",
         ),
     ],
-    xcode = xcode.x26betabots,
+    xcode = xcode.xcode_beta,
 )
 
 fyi_ios_builder(
@@ -2183,7 +2183,7 @@ fyi_ios_builder(
         category = "iOS|iOS18",
         short_name = "sdk18",
     ),
-    xcode = xcode.x26betabots,
+    xcode = xcode.xcode_beta,
 )
 
 fyi_mac_builder(

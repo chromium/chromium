@@ -819,7 +819,7 @@ ios_builder(
     ],
     gn_args = "ci/ios18-sdk-simulator",
     cpu = cpu.ARM64,
-    xcode = xcode.x26betabots,
+    xcode = xcode.xcode_beta,
 )
 
 ios_builder(
@@ -827,7 +827,7 @@ ios_builder(
     mirrors = ["ci/ios26-sdk-simulator"],
     gn_args = "ci/ios26-sdk-simulator",
     cpu = cpu.ARM64,
-    xcode = xcode.x26betabots,
+    xcode = xcode.xcode_beta,
 )
 
 ios_builder(

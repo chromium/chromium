@@ -9,10 +9,8 @@ xcode = struct(
     # Default Xcode Version (Xcode 26.0.1 Release)
     xcode_default = _xcode.for_ios("17a400"),
 
-    # Xcode 16 beta version used on beta bots.
-    x16betabots = _xcode.for_ios("16f6"),
-    # Xcode 26 beta version used on beta bots.
-    x26betabots = _xcode.for_ios("17e192"),
+    # Xcode beta version used on beta bots.
+    xcode_beta = _xcode.for_ios("17e192"),
     # in use by ios-webkit-tot
     x14wk = _xcode.for_ios("14c18wk"),
 )
