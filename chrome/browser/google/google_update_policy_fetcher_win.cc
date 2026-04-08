@@ -4,7 +4,9 @@
 
 #include "chrome/browser/google/google_update_policy_fetcher_win.h"
 
-#include <ATLComTime.h>
+#include <windows.h>
+
+#include <oleauto.h>
 #include <wrl/client.h>
 
 #include <tuple>
@@ -63,14 +65,14 @@ void AddPolicy(const char* policy_name,
   }
 }
 
+// Converts an OLE Automation DATE to base::Time.
 base::Time DateToTime(DATE date) {
-  ::COleDateTime date_time(date);
+  SYSTEMTIME st = {};
   base::Time time;
-  if (date_time.m_status == ::COleDateTime::valid) {
+  if (::VariantTimeToSystemTime(date, &st)) {
     std::ignore = base::Time::FromLocalExploded(
-        {date_time.GetYear(), date_time.GetMonth(), date_time.GetDayOfWeek(),
-         date_time.GetDay(), date_time.GetHour(), date_time.GetMinute(),
-         date_time.GetSecond(), 0},
+        {st.wYear, st.wMonth, st.wDayOfWeek, st.wDay, st.wHour, st.wMinute,
+         st.wSecond, st.wMilliseconds},
         &time);
   }
   return time;
