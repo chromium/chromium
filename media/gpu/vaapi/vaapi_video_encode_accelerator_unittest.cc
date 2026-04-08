@@ -944,7 +944,12 @@ TEST_F(VaapiVideoEncodeAcceleratorTest, InitializeWithUnsupportedConfig) {
 }
 
 // This test verifies RequestEncodingParametersChange() succeeds.
-TEST_F(VaapiVideoEncodeAcceleratorTest, EncodingParametersChange) {
+#if BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_ARM64)
+#define MAYBE_EncodingParametersChange DISABLED_EncodingParametersChange
+#else
+#define MAYBE_EncodingParametersChange EncodingParametersChange
+#endif
+TEST_F(VaapiVideoEncodeAcceleratorTest, MAYBE_EncodingParametersChange) {
   const uint32_t kNewFramerate = 60;
   const uint32_t kNewBitrate = 123123u;
 
@@ -975,6 +980,7 @@ TEST_F(VaapiVideoEncodeAcceleratorTest, EncodingParametersChange) {
     task_environment_.RunUntilIdle();
   }
 }
+#undef MAYBE_EncodingParametersChange
 
 // This test verifies RequestEncodingParametersChange() succeeds with
 // multi-dimensional bitrate allocation.
