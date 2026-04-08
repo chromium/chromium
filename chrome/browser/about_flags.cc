@@ -3293,20 +3293,6 @@ const FeatureEntry::Choice
          kReplaceSyncPromosWithSigninPromosNewSigninFeatures}};
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
-#if !BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kLinkPreviewTriggerTypeAltClick[] = {
-    {"trigger_type", "alt_click"}};
-const FeatureEntry::FeatureParam kLinkPreviewTriggerTypeAltHover[] = {
-    {"trigger_type", "alt_hover"}};
-const FeatureEntry::FeatureParam kLinkPreviewTriggerTypeLongPress[] = {
-    {"trigger_type", "long_press"}};
-
-const FeatureEntry::FeatureVariation kLinkPreviewTriggerTypeVariations[] = {
-    {"Alt + Click", kLinkPreviewTriggerTypeAltClick, nullptr},
-    {"Alt + Hover", kLinkPreviewTriggerTypeAltHover, nullptr},
-    {"Long Press", kLinkPreviewTriggerTypeLongPress, nullptr}};
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 const FeatureEntry::FeatureParam kGroupSuggestionEnableRecentlyOpenedOnly[] = {
     {"group_suggestion_enable_recently_opened", "true"},
     {"group_suggestion_enable_switch_between", "false"},
@@ -9877,14 +9863,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLockedModeDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(blink::features::kLockedMode)},
 #endif  // BUILDFLAG_(IS_CHROMEOS)
-
-#if !BUILDFLAG(IS_ANDROID)
-    {"link-preview", flag_descriptions::kLinkPreviewName,
-     flag_descriptions::kLinkPreviewDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kLinkPreview,
-                                    kLinkPreviewTriggerTypeVariations,
-                                    "LinkPreview")},
-#endif  // !BUILDFLAG_(IS_ANDROID)
 
     {"send-tab-to-self-enhanced-handoff",
      flag_descriptions::kSendTabToSelfEnhancedHandoffName,

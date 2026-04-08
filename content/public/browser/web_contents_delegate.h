@@ -25,7 +25,6 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_trigger_type.h"
-#include "content/public/browser/preview_cancel_reason.h"
 #include "content/public/browser/select_audio_output_request.h"
 #include "content/public/browser/serial_chooser.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -843,8 +842,6 @@ class CONTENT_EXPORT WebContentsDelegate {
   // WebContents.
   virtual bool IsPrivileged();
 
-  // Initiates previewing the given `url` within the given `web_contents`.
-  virtual void InitiatePreview(WebContents& web_contents, const GURL& url) {}
 
   // CloseWatcher web API support. If the currently focused frame has a
   // CloseWatcher registered in JavaScript, the CloseWatcher should receive the
@@ -854,11 +851,7 @@ class CONTENT_EXPORT WebContentsDelegate {
   // intercept.
   virtual void DidChangeCloseSignalInterceptStatus() {}
 
-  // Reports that cancellation occurred in preview navigation.
-  virtual void CancelPreview(PreviewCancelReason reason) {}
 
-  // Notifies the previewed page is activated.
-  virtual void DidActivatePreviewedPage() {}
 
   // Updates the draggable regions defined by the app-region CSS property.
   virtual void DraggableRegionsChanged(

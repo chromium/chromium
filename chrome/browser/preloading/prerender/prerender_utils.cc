@@ -15,7 +15,6 @@ const char kPrewarmDefaultSearchEngineMetricSuffix[] =
 // TODO(crbug.com/394213503): Move this to `preloading_utils`.
 const char kDefaultSearchEngineMetricSuffix[] = "DefaultSearchEngine";
 const char kDirectUrlInputMetricSuffix[] = "DirectURLInput";
-const char kLinkPreviewMetricsSuffix[] = "LinkPreview";
 // LINT.ThenChange()
 
 }  // namespace prerender_utils

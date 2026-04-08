@@ -694,31 +694,7 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_CONTENT_CONTEXT_OPENLINKWEBAPP_NEWTAB" desc="The name of the command to open a link in a new tab of the same app the user is currently in">
             Open link in new <ph name="APP">$1<ex>Gmail App</ex></ph> tab
           </message>
-          <message name="IDS_CONTENT_CONTEXT_OPENLINKPREVIEW" desc="The name of the Preview link command in the content area context menu">
-            Preview link
-          </message>
-          <if expr="is_macosx">
-            <message name="IDS_CONTENT_CONTEXT_OPENLINKPREVIEW_TRIGGER_ALTCLICK" desc="The minor text of the Preview link command in the content area context menu, alt+click trigger">
-              ⌥+Click
-            </message>
-            <message name="IDS_CONTENT_CONTEXT_OPENLINKPREVIEW_TRIGGER_ALTHOVER" desc="The minor text of the Preview link command in the content area context menu, alt+hover trigger">
-              ⌥+Hover
-            </message>
-            <message name="IDS_CONTENT_CONTEXT_OPENLINKPREVIEW_TRIGGER_LONGPRESS" desc="The minor text of the Preview link command in the content area context menu, long press trigger">
-              Long press
-            </message>
-          </if>
-          <if expr="not is_macosx">
-            <message name="IDS_CONTENT_CONTEXT_OPENLINKPREVIEW_TRIGGER_ALTCLICK" desc="The minor text of the Preview link command in the content area context menu, alt+click trigger">
-              Alt+Click
-            </message>
-            <message name="IDS_CONTENT_CONTEXT_OPENLINKPREVIEW_TRIGGER_ALTHOVER" desc="The minor text of the Preview link command in the content area context menu, alt+hover trigger">
-              Alt+Hover
-            </message>
-            <message name="IDS_CONTENT_CONTEXT_OPENLINKPREVIEW_TRIGGER_LONGPRESS" desc="The minor text of the Preview link command in the content area context menu, long press trigger">
-              Long press
-            </message>
-          </if>
+
 
           <message name="IDS_CONTENT_CONTEXT_SAVELINKAS" desc="The name of the Save Link As command in the content area context menu">
             Save lin&amp;k as...
@@ -1019,31 +995,7 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_CONTENT_CONTEXT_OPENLINKWEBAPP_NEWTAB" desc="In Title Case: The name of the command to open a link in a new tab of the same app the user is currently in">
             Open Link in new <ph name="APP">$1<ex>Gmail App</ex></ph> Tab
           </message>
-          <message name="IDS_CONTENT_CONTEXT_OPENLINKPREVIEW" desc="In Title Case: The name of the Preview link command in the content area context menu">
-            Preview Link
-          </message>
-          <if expr="is_macosx">
-            <message name="IDS_CONTENT_CONTEXT_OPENLINKPREVIEW_TRIGGER_ALTCLICK" desc="In Title Case: The minor text of the Preview link command in the content area context menu, alt+click trigger">
-              ⌥+Click
-            </message>
-            <message name="IDS_CONTENT_CONTEXT_OPENLINKPREVIEW_TRIGGER_ALTHOVER" desc="In Title Case: The minor text of the Preview link command in the content area context menu, alt+hover trigger">
-              ⌥+Hover
-            </message>
-            <message name="IDS_CONTENT_CONTEXT_OPENLINKPREVIEW_TRIGGER_LONGPRESS" desc="In Title Case: The minor text of the Preview link command in the content area context menu, long press trigger">
-              Long Press
-            </message>
-          </if>
-          <if expr="not is_macosx">
-            <message name="IDS_CONTENT_CONTEXT_OPENLINKPREVIEW_TRIGGER_ALTCLICK" desc="In Title Case: The minor text of the Preview link command in the content area context menu, alt+click trigger">
-              Alt+Click
-            </message>
-            <message name="IDS_CONTENT_CONTEXT_OPENLINKPREVIEW_TRIGGER_ALTHOVER" desc="In Title Case: The minor text of the Preview link command in the content area context menu, alt+hover trigger">
-              Alt+Hover
-            </message>
-            <message name="IDS_CONTENT_CONTEXT_OPENLINKPREVIEW_TRIGGER_LONGPRESS" desc="In Title Case: The minor text of the Preview link command in the content area context menu, long press trigger">
-              Long Press
-            </message>
-          </if>
+
 
           <message name="IDS_CONTENT_CONTEXT_SAVELINKAS" desc="In Title Case: The name of the Save Link As command in the content area context menu">
             Save Lin&amp;k As...

@@ -35,6 +35,4 @@ void StubSpeculationHost::UpdateSpeculationCandidates(
     std::move(done_closure_).Run();
 }
 
-void StubSpeculationHost::InitiatePreview(const KURL& url) {}
-
 }  // namespace blink

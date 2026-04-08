@@ -333,7 +333,6 @@ source_set("blink_headers") {
     "web/web_label_element.h",
     "web/web_language_detection_details.h",
     "web/web_lifecycle_update.h",
-    "web/web_link_preview_triggerer.h",
     "web/web_local_frame.h",
     "web/web_local_frame_client.h",
     "web/web_local_frame_observer.h",

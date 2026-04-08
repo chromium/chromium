@@ -239,9 +239,7 @@ internal::PageLoadTrackerPageType CalculatePageType(
              content::FrameType::kFencedFrameRoot) {
     return internal::PageLoadTrackerPageType::kFencedFramesPage;
   }
-  return navigation_handle->GetWebContents()->IsInPreviewMode()
-             ? internal::PageLoadTrackerPageType::kPreviewPrimaryPage
-             : internal::PageLoadTrackerPageType::kPrimaryPage;
+  return internal::PageLoadTrackerPageType::kPrimaryPage;
 }
 
 bool CalculateIsOriginVisit(bool is_first_navigation,
@@ -264,9 +262,7 @@ void RegisterObservers(PageLoadTracker* tracker,
   // orders fail.
   //
   // TODO(b:302999778): Reenable it.
-  if (!tracker->GetWebContents()->IsInPreviewMode()) {
-    tracker->AddObserver(std::make_unique<AssertPageLoadMetricsObserver>());
-  }
+  tracker->AddObserver(std::make_unique<AssertPageLoadMetricsObserver>());
 #endif
   embedder->RegisterObservers(tracker, navigation_handle);
 }

@@ -1682,24 +1682,6 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   virtual void SetTabSwitchStartTime(base::TimeTicks start_time,
                                      bool destination_is_loaded) = 0;
 
-  // Checks if the WebContents host pages in preview mode.
-  virtual bool IsInPreviewMode() const = 0;
-
-  // Called before ActivatePreviewPage() to prepare the activation. This will
-  // end the preview mode and IsInPreviewMode() will start returning false after
-  // the call. This allows embedders to run preparation steps on the activating
-  // WebContents (e.g. attach TabHelpers) before activating the page shown by
-  // the WebContents through ActivatePreviewPage().
-  virtual void WillActivatePreviewPage() = 0;
-
-  // Activates the primary page that is shown in preview mode. This will relax
-  // capability restriction in the browser process, and notify the renderer to
-  // process the prerendering activation algorithm.
-  // This all processes happens asynchronously, and
-  // `WebContentsDelegate::DidActivatePreviewedPage` will be called once it's
-  // done.
-  virtual void ActivatePreviewPage() = 0;
-
   // Starts browser-initiated prefetch, triggered by embedder.
   // - `prefetch_url` is the url the prefetch will be performed.
   // - If `use_prefetch_proxy` is set to true, private prefetch proxy is used in

@@ -151,7 +151,6 @@ class LocalWindowProxy;
 class Node;
 class NodeTraversal;
 class PerformanceMonitor;
-class WebLinkPreviewTriggerer;
 class PluginData;
 class PolicyContainer;
 class PostLayoutSnapshotClient;
@@ -957,9 +956,6 @@ class CORE_EXPORT LocalFrame final
   mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>
   IssueKeepAliveHandle();
 
-  WebLinkPreviewTriggerer* GetOrCreateLinkPreviewTriggerer();
-  void SetLinkPreviewTriggererForTesting(
-      std::unique_ptr<WebLinkPreviewTriggerer> trigger);
 
   void AllowStorageAccessAndNotify(
       blink::WebContentSettingsClient::StorageType storage_type,
@@ -1256,11 +1252,6 @@ class CORE_EXPORT LocalFrame final
 
   BrowserInterfaceBrokerProxyImpl browser_interface_broker_proxy_;
 
-  // Holds WebLinkPreviewTriggerer instance if content renderer client wants to
-  // inject it. Note that `link_preview_triggerer_` may be nullptr after
-  // initialization.
-  bool is_link_preivew_triggerer_initialized_ = false;
-  std::unique_ptr<WebLinkPreviewTriggerer> link_preview_triggerer_;
 
   HeapHashSet<WeakMember<FrameVisibilityObserver>> frame_visibility_observers_;
 

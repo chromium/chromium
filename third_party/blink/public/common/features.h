@@ -1225,21 +1225,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLegacyParsingOfXContentTypeOptions);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLightweightNoStatePrefetch);
 
-// Enables the Link Preview.
-// Tracking bug: go/launch/4269184
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLinkPreview);
-
-enum class LinkPreviewTriggerType {
-  // Alt + left click
-  kAltClick,
-  // Alt + mousehover
-  kAltHover,
-  // Long left click down
-  kLongPress,
-};
-
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(LinkPreviewTriggerType,
-                                               kLinkPreviewTriggerType);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLoadingTasksUnfreezable);
 
@@ -2036,9 +2021,6 @@ BLINK_COMMON_EXPORT bool ParkableStringsUseSnappy();
 // specific to one of them should not rely on this function.
 BLINK_COMMON_EXPORT bool IsKeepAliveURLLoaderServiceEnabled();
 
-// Returns true if Link Preview and the given trigger type is enabled.
-BLINK_COMMON_EXPORT bool IsLinkPreviewTriggerTypeEnabled(
-    LinkPreviewTriggerType type);
 
 BLINK_COMMON_EXPORT bool IsUpdateComplexSafaAreaConstraintsEnabled();
 

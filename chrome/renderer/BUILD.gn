@@ -117,8 +117,6 @@ static_library("renderer") {
     "url_loader_throttle_provider_impl.h",
     "v8_unwinder.cc",
     "v8_unwinder.h",
-    "web_link_preview_triggerer_impl.cc",
-    "web_link_preview_triggerer_impl.h",
     "websocket_handshake_throttle_provider_impl.cc",
     "websocket_handshake_throttle_provider_impl.h",
     "worker_content_settings_client.cc",

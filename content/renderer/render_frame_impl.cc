@@ -220,7 +220,6 @@
 #include "third_party/blink/public/web/web_frame_serializer.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_input_method_controller.h"
-#include "third_party/blink/public/web/web_link_preview_triggerer.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_navigation_control.h"
 #include "third_party/blink/public/web/web_navigation_policy.h"
@@ -7012,11 +7011,6 @@ WebView* RenderFrameImpl::CreateNewWindow(
   }
 
   return web_view;
-}
-
-std::unique_ptr<blink::WebLinkPreviewTriggerer>
-RenderFrameImpl::CreateLinkPreviewTriggerer() {
-  return GetContentClient()->renderer()->CreateLinkPreviewTriggerer();
 }
 
 base::ScopedClosureRunner

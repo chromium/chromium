@@ -38,7 +38,6 @@
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_test_utils.h"
-#include "chrome/browser/preloading/preview/preview_test_util.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -3920,25 +3919,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   histogram_tester_->ExpectTotalCount(
       internal::kBackgroundHistogramFirstContentfulPaint, 0);
 }
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
-// The LinkPreview feature is implemented only on desktops, and window
-// implementation assumes the Aura for now.
-// TODO(crbug.com/305004651): Implement the feature for other platforms and
-// enable the following tests on the remaining platforms.
-class PageLoadMetricsPreviewBrowserTest : public PageLoadMetricsBrowserTest {
- public:
-  PageLoadMetricsPreviewBrowserTest() {
-    helper_ = std::make_unique<test::PreviewTestHelper>(
-        base::BindRepeating(&PageLoadMetricsPreviewBrowserTest::web_contents,
-                            base::Unretained(this)));
-  }
-
- protected:
-  std::unique_ptr<test::PreviewTestHelper> helper_;
-};
-
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
 
 class PageLoadMetricsBrowserTestTerminatedPage
     : public PageLoadMetricsBrowserTest {

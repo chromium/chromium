@@ -123,7 +123,6 @@ void AddSecPurposeHeader(net::HttpRequestHeaders& request_headers,
       case PreloadingType::kUnspecified:
       case PreloadingType::kPreconnect:
       case PreloadingType::kNoStatePrefetch:
-      case PreloadingType::kLinkPreview:
         NOTREACHED();
     }
   }();

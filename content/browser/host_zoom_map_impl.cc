@@ -185,10 +185,6 @@ void HostZoomMapImpl::CopyFrom(HostZoomMap* copy_interface) {
     scheme_host_zoom_levels_[host].insert(it.second.begin(), it.second.end());
   }
   default_zoom_level_ = copy->default_zoom_level_;
-
-  host_zoom_levels_for_preview_.insert(
-      copy->host_zoom_levels_for_preview_.begin(),
-      copy->host_zoom_levels_for_preview_.end());
 }
 
 double HostZoomMapImpl::GetZoomLevelForHost(const std::string& host) const {
@@ -812,22 +808,7 @@ void HostZoomMapImpl::RemoveJniZoomLevelObserver(int64_t subscription_key) {
 }
 #endif
 
-double HostZoomMapImpl::GetZoomLevelForPreviewAndHost(const std::string& host) {
-  const auto it = host_zoom_levels_for_preview_.find(host);
-  return it != host_zoom_levels_for_preview_.end() ? it->second.level
-                                                   : default_zoom_level_;
-}
 
-void HostZoomMapImpl::SetZoomLevelForPreviewAndHost(const std::string& host,
-                                                    double level) {
-  if (blink::ZoomValuesEqual(level, default_zoom_level_)) {
-    host_zoom_levels_for_preview_.erase(host);
-  } else {
-    ZoomLevel& zoomLevel = host_zoom_levels_for_preview_[host];
-    zoomLevel.level = level;
-    zoomLevel.last_modified = clock_->Now();
-  }
-}
 
 void HostZoomMapImpl::SetIndependentZoomForFrameTreeNode(
     WebContents* web_contents,

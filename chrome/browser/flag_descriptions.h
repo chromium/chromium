@@ -6264,16 +6264,6 @@ inline constexpr char kReadAnythingWithReadabilityDescription[] =
     "Enables the experimental text webpage distillation using readability.js "
     "method for reading mode.";
 
-inline constexpr char kLinkPreviewName[] = "Link Preview";
-inline constexpr char kLinkPreviewDescription[] =
-    "When enabled, Link Preview feature gets to be available to preview a "
-    "linked page in a dedicated small window before navigating to the linked "
-    "page. The feature can be triggered from a context menu item, or users' "
-    "actions. We are evaluating multiple actions in our experiment to "
-    "understand what's to be the best for users from the viewpoint of "
-    "security, privacy, and usability. The feature might be unstable and "
-    "unusable on some platforms, e.g. macOS or touch devices.";
-
 inline constexpr char kMarkAllCredentialsAsLeakedName[] =
     "Mark all credential as leaked";
 inline constexpr char kMarkAllCredentialsAsLeakedDescription[] =

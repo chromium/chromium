@@ -49,8 +49,6 @@ namespace blink {
 class NavigationPolicyTest : public testing::Test {
  protected:
   void SetUp() override {
-    // Default
-    scoped_feature_list_.InitAndDisableFeature(features::kLinkPreview);
   }
 
   NavigationPolicy GetPolicyForCreateWindow(int modifiers,
@@ -102,19 +100,10 @@ class NavigationPolicyTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class NavigationPolicyWithLinkPreviewEnabledTest : public NavigationPolicyTest {
- protected:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kLinkPreview, {{"trigger_type", "alt_click"}});
-  }
-};
-
 class NavigationPolicyWithSplitViewEnabledTest : public NavigationPolicyTest {
  protected:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({::features::kSplitViewLinkOpen},
-                                          {features::kLinkPreview});
+    scoped_feature_list_.InitWithFeatures({::features::kSplitViewLinkOpen}, {});
   }
 };
 
@@ -446,19 +435,6 @@ TEST_F(NavigationPolicyTest, EventAltClickWithDifferentUserEvent) {
             GetPolicyFromEvent(modifiers, button, 0, button));
 }
 
-TEST_F(NavigationPolicyWithLinkPreviewEnabledTest, EventAltClick) {
-  int modifiers = WebInputEvent::kAltKey;
-  WebMouseEvent::Button button = WebMouseEvent::Button::kLeft;
-  EXPECT_EQ(kNavigationPolicyCurrentTab,
-            NavigationPolicyFromEvent(GetEvent(modifiers, button)));
-}
-
-TEST_F(NavigationPolicyWithLinkPreviewEnabledTest, EventAltClickWithUserEvent) {
-  int modifiers = WebInputEvent::kAltKey;
-  WebMouseEvent::Button button = WebMouseEvent::Button::kLeft;
-  EXPECT_EQ(kNavigationPolicyLinkPreview,
-            GetPolicyFromEvent(modifiers, button, modifiers, button));
-}
 
 TEST_F(NavigationPolicyWithSplitViewEnabledTest,
        EventAltControlOrMetaLeftClick) {

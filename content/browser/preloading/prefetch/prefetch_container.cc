@@ -224,7 +224,6 @@ bool CalculateIsLikelyAheadOfPrerender(
     case PreloadingType::kUnspecified:
     case PreloadingType::kPreconnect:
     case PreloadingType::kNoStatePrefetch:
-    case PreloadingType::kLinkPreview:
       NOTREACHED();
   }
 }

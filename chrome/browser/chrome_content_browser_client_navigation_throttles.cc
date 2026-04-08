@@ -94,7 +94,6 @@
 #include "chrome/browser/apps/link_capturing/web_app_link_capturing_delegate.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/page_info/web_view_side_panel_throttle.h"
-#include "chrome/browser/preloading/preview/preview_navigation_throttle.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_navigation_throttle.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_navigation_throttle.h"
@@ -600,9 +599,6 @@ void CreateAndAddChromeThrottlesForNavigation(
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
-#if !BUILDFLAG(IS_ANDROID)
-  PreviewNavigationThrottle::MaybeCreateAndAdd(registry);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   MaybeCreateAndAddVisitedLinkNavigationThrottle(registry);
 

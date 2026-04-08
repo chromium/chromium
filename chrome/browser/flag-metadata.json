@@ -6159,11 +6159,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "link-preview",
-    "owners": [ "//chrome/browser/preloading/preview/OWNERS" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "load-all-tabs-at-startup",
     "owners": [
       "ckitagawa@chromium.org",

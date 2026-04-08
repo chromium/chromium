@@ -13953,12 +13953,6 @@ void RenderFrameHostImpl::CreateBrokerHolder() {
             base::Unretained(this)));
     broker_holder_->broker().ApplyMojoBinderPolicies(
         mojo_binder_policy_applier_.get());
-  } else if (frame_tree_->page_delegate()->IsPageInPreviewMode()) {
-    mojo_binder_policy_applier_ = MojoBinderPolicyApplier::CreateForPreview(
-        base::BindOnce(&RenderFrameHostImpl::CancelPreviewByMojoBinderPolicy,
-                       base::Unretained(this)));
-    broker_holder_->broker().ApplyMojoBinderPolicies(
-        mojo_binder_policy_applier_.get());
   }
 }
 
@@ -14775,11 +14769,6 @@ void RenderFrameHostImpl::CancelPrerenderingByMojoBinderPolicy(
   // prerendering, as it could mean an interface request is never resolved for
   // an active page.
   CHECK(canceled);
-}
-
-void RenderFrameHostImpl::CancelPreviewByMojoBinderPolicy(
-    const std::string& interface_name) {
-  frame_tree_->page_delegate()->CancelPreviewByMojoBinderPolicy(interface_name);
 }
 
 void RenderFrameHostImpl::RendererWillActivateForPrerenderingOrPreview() {

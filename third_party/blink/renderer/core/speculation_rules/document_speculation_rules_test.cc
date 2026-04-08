@@ -33,7 +33,6 @@ class MockSpeculationHost : public mojom::blink::SpeculationHost {
     last_candidates_ = std::move(candidates);
   }
   void OnLCPPredicted() override {}
-  void InitiatePreview(const KURL& url) override {}
 
   void BindNewEndpointAndPassReceiver(mojo::ScopedMessagePipeHandle receiver) {
     receiver_.Bind(mojo::PendingReceiver<mojom::blink::SpeculationHost>(

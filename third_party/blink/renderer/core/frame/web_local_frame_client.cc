@@ -6,7 +6,6 @@
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/blink/public/web/web_link_preview_triggerer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader.h"
 
 namespace blink {
@@ -25,12 +24,5 @@ std::unique_ptr<URLLoader> WebLocalFrameClient::CreateURLLoaderForTesting() {
   return nullptr;
 }
 
-std::unique_ptr<WebLinkPreviewTriggerer>
-WebLocalFrameClient::CreateLinkPreviewTriggerer() {
-  return nullptr;
-}
-
-void WebLocalFrameClient::SetLinkPreviewTriggererForTesting(
-    std::unique_ptr<WebLinkPreviewTriggerer> trigger) {}
 
 }  // namespace blink

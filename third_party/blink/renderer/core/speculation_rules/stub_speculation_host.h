@@ -13,8 +13,6 @@
 
 namespace blink {
 
-class KURL;
-
 class StubSpeculationHost : public mojom::blink::SpeculationHost {
  public:
   using Candidates = Vector<mojom::blink::SpeculationCandidatePtr>;
@@ -45,7 +43,6 @@ class StubSpeculationHost : public mojom::blink::SpeculationHost {
       Candidates candidates,
       bool enable_cross_origin_prerender_iframes) override;
   void OnLCPPredicted() override {}
-  void InitiatePreview(const KURL& url) override;
 
  private:
   mojo::Receiver<SpeculationHost> receiver_{this};

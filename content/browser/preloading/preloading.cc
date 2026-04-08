@@ -24,8 +24,6 @@ std::string_view PreloadingTypeToString(PreloadingType type) {
       return "Prerender";
     case PreloadingType::kNoStatePrefetch:
       return "NoStatePrefetch";
-    case PreloadingType::kLinkPreview:
-      return "LinkPreview";
     case PreloadingType::kPrerenderUntilScript:
       return "PrerenderUntilScript";
   }

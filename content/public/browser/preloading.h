@@ -52,17 +52,11 @@ enum class PreloadingType {
   // resources with the no-store cache-control header.
   kNoStatePrefetch = 5,
 
-  // Link-Preview loads a page with prerendering infrastructures in a dedicated
-  // mini tab so that users can take a look at the content before visiting it.
-  // TODO(b:291867362): This is not used by the current implementation,
-  // but might be reused in the future.
-  kLinkPreview = 6,
-
   // Like prerendering, it fetches resources in advance; but unlike prerendering
   // it does not execute JavaScript. It is designed to replace kNoStatePrefetch.
   kPrerenderUntilScript = 7,
 };
-// LINT.ThenChange()
+// LINT.ThenChange(//tools/metrics/histograms/metadata/preloading/histograms.xml:PreloadingType)
 
 // Defines various triggering mechanisms which triggers different preloading
 // operations mentioned in preloading.h. The integer portion is used for UKM
@@ -159,7 +153,7 @@ inline constexpr PreloadingPredictor kEagerViewportHeuristic(
     7,
     "EagerViewportHeuristic");
 }  // namespace preloading_predictor
-// LINT.ThenChange()
+// LINT.ThenChange(//tools/metrics/histograms/metadata/preloading/histograms.xml:PreloadingPredictor)
 
 // Defines if a preloading operation is eligible for a given preloading
 // trigger.

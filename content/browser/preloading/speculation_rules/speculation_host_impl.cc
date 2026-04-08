@@ -138,32 +138,6 @@ void SpeculationHostImpl::OnLCPPredicted() {
   preloading_decider->OnLCPPredicted();
 }
 
-void SpeculationHostImpl::InitiatePreview(const GURL& url) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!ValidateFrameState()) {
-    return;
-  }
-  if (!base::FeatureList::IsEnabled(blink::features::kLinkPreview)) {
-    mojo::ReportBadMessage("SH_PREVIEW");
-    return;
-  }
 
-  // Link Preview is not allowed in a frame with untrusted network disabled.
-  if (render_frame_host().IsUntrustedNetworkDisabled()) {
-    return;
-  }
-
-  if (!url.SchemeIsHTTPOrHTTPS()) {
-    mojo::ReportBadMessage("SH_NON_HTTP");
-    return;
-  }
-
-  WebContents* web_contents =
-      WebContents::FromRenderFrameHost(&render_frame_host());
-  CHECK(web_contents);
-  WebContentsDelegate* delegate = web_contents->GetDelegate();
-  CHECK(delegate);
-  delegate->InitiatePreview(*web_contents, url);
-}
 
 }  // namespace content

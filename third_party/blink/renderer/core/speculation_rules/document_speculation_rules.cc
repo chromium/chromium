@@ -573,15 +573,6 @@ void DocumentSpeculationRules::DocumentRestoredFromBFCache() {
   QueueUpdateSpeculationCandidates();
 }
 
-void DocumentSpeculationRules::InitiatePreview(const KURL& url) {
-  CHECK(base::FeatureList::IsEnabled(features::kLinkPreview));
-
-  auto* host = GetHost();
-  if (host) {
-    host->InitiatePreview(url);
-  }
-}
-
 void DocumentSpeculationRules::QueueUpdateSpeculationCandidates(
     bool force_style_update) {
   const bool microtask_already_queued = IsMicrotaskQueued();

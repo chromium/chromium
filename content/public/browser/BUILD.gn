@@ -341,8 +341,6 @@ source_set("browser_sources") {
     "presentation_request.h",
     "presentation_screen_availability_listener.h",
     "presentation_service_delegate.h",
-    "preview_cancel_reason.cc",
-    "preview_cancel_reason.h",
     "privacy_sandbox_invoking_api.h",
     "private_aggregation_data_model.cc",
     "private_aggregation_data_model.h",

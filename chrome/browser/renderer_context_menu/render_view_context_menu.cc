@@ -550,7 +550,6 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS, 141},
        {IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME, 142},
        {IDC_CONTENT_CONTEXT_SEARCHWEBFORVIDEOFRAME, 143},
-       {IDC_CONTENT_CONTEXT_OPENLINKPREVIEW, 144},
        {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS, 145},
        // Removed: {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS, 146},
        {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD, 147},
@@ -615,7 +614,6 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        // Removed: {IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB, 27},
        // Removed: {IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS, 28},
        {IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB, 29},
-       {IDC_CONTENT_CONTEXT_OPENLINKPREVIEW, 30},
        {IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW, 31},
        {IDC_CONTENT_CONTEXT_GLICSHAREIMAGE, 32},
        // To add new items:
@@ -1824,36 +1822,6 @@ void RenderViewContextMenu::AppendLinkItems() {
                  : IDS_CONTENT_CONTEXT_OPENLINKOFFTHERECORD);
     }
 
-#if !BUILDFLAG(IS_ANDROID)
-    if (base::FeatureList::IsEnabled(blink::features::kLinkPreview) &&
-        params_.link_url.SchemeIsHTTPOrHTTPS() && !is_link_to_iwa &&
-        !extensions::WebViewGuest::FromRenderFrameHost(GetRenderFrameHost())) {
-      menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENLINKPREVIEW,
-                                      IDS_CONTENT_CONTEXT_OPENLINKPREVIEW);
-      // We don't show in-production-help for ChromeOS for now because we should
-      // use a different trigger.
-      //
-      // TODO(b:325390312): Update trigger for ChromeOS and show
-      // in-production-help.
-#if !BUILDFLAG(IS_CHROMEOS)
-      int string_id;
-      switch (blink::features::kLinkPreviewTriggerType.Get()) {
-        case blink::features::LinkPreviewTriggerType::kAltClick:
-          string_id = IDS_CONTENT_CONTEXT_OPENLINKPREVIEW_TRIGGER_ALTCLICK;
-          break;
-        case blink::features::LinkPreviewTriggerType::kAltHover:
-          string_id = IDS_CONTENT_CONTEXT_OPENLINKPREVIEW_TRIGGER_ALTHOVER;
-          break;
-        case blink::features::LinkPreviewTriggerType::kLongPress:
-          string_id = IDS_CONTENT_CONTEXT_OPENLINKPREVIEW_TRIGGER_LONGPRESS;
-          break;
-      }
-      menu_model_.SetMinorText(menu_model_.GetItemCount() - 1,
-                               l10n_util::GetStringUTF16(string_id));
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-    }
-#endif  // !BUILDFLAG(IS_ANDROID)
-
     AppendOpenInWebAppLinkItems();
     AppendOpenWithLinkItems();
 
@@ -2979,7 +2947,6 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     case IDC_CONTENT_CONTEXT_OPENLINKINPROFILE:
     case IDC_CONTENT_CONTEXT_OPENLINKNEWTAB:
     case IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW:
-    case IDC_CONTENT_CONTEXT_OPENLINKPREVIEW:
       return navigation_allowed && params_.link_url.is_valid() &&
              IsOpenLinkAllowedByDlp(params_.link_url);
 
@@ -3336,10 +3303,6 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
     case IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP:
       ExecOpenWebApp();
-      break;
-
-    case IDC_CONTENT_CONTEXT_OPENLINKPREVIEW:
-      ExecOpenLinkPreview();
       break;
 
     case IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW:
@@ -4196,14 +4159,6 @@ void RenderViewContextMenu::ExecOpenWebApp() {
   launch_params.override_url = params_.link_url;
   apps::AppServiceProxyFactory::GetForProfile(GetProfile())
       ->LaunchAppWithParams(std::move(launch_params));
-}
-
-void RenderViewContextMenu::ExecOpenLinkPreview() {
-  CHECK(embedder_web_contents_);
-  CHECK(embedder_web_contents_->GetDelegate());
-
-  embedder_web_contents_->GetDelegate()->InitiatePreview(
-      *embedder_web_contents_, params_.link_url);
 }
 
 void RenderViewContextMenu::ExecProtocolHandler(int event_flags,

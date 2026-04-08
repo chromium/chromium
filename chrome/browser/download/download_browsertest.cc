@@ -577,8 +577,6 @@ class DownloadReferrerPolicyTest
       public ::testing::WithParamInterface<network::mojom::ReferrerPolicy> {
  public:
   DownloadReferrerPolicyTest() {
-    // Link Preview hides alt+click. Disables it not to do so.
-    feature_list_.InitAndDisableFeature(blink::features::kLinkPreview);
   }
 
   void SetUpOnMainThread() override {

@@ -613,8 +613,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::WebUIBrowserInterfaceBrokerRegistry& registry) override;
   void RegisterMojoBinderPoliciesForSameOriginPrerendering(
       content::MojoBinderPolicyMap& policy_map) override;
-  void RegisterMojoBinderPoliciesForPreview(
-      content::MojoBinderPolicyMap& policy_map) override;
+
   void RegisterBrowserInterfaceBindersForServiceWorker(
       content::BrowserContext* browser_context,
       const content::ServiceWorkerVersionBaseInfo& service_worker_version_info,

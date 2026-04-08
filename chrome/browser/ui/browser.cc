@@ -287,10 +287,6 @@
 #include "ui/display/types/display_constants.h"
 #endif  // BUILDFLAG(IS_MAC)
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/preloading/preview/preview_manager.h"
-#endif
-
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/platform_session_manager.h"
 #endif
@@ -2425,16 +2421,6 @@ std::unique_ptr<content::EyeDropper> Browser::OpenEyeDropper(
     content::RenderFrameHost* frame,
     content::EyeDropperListener* listener) {
   return window()->OpenEyeDropper(frame, listener);
-}
-
-void Browser::InitiatePreview(content::WebContents& web_contents,
-                              const GURL& url) {
-#if !BUILDFLAG(IS_ANDROID)
-  PreviewManager::CreateForWebContents(&web_contents);
-  PreviewManager* manager = PreviewManager::FromWebContents(&web_contents);
-  CHECK(manager);
-  manager->InitiatePreview(url);
-#endif
 }
 
 bool Browser::ShouldUseInstancedSystemMediaControls() const {

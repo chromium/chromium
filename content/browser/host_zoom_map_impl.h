@@ -110,10 +110,6 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
   void RemoveJniZoomLevelObserver(int64_t subscription_key);
 #endif
 
-  double GetZoomLevelForPreviewAndHost(const std::string& host) override;
-  void SetZoomLevelForPreviewAndHost(const std::string& host,
-                                     double level) override;
-
   void SetIndependentZoomForFrameTreeNode(WebContents* web_contents,
                                           FrameTreeNodeId ftn_id) override;
   void ClearIndependentZoomForFrameTreeNode(FrameTreeNodeId ftn_id) override;
@@ -181,8 +177,6 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
   // not enabled it means that GuestViews will have their own WebContents, and
   // so the use of a single zoom level for an entire WebContents suffices.
   IndependentZoomFrameTreeNodes independent_zoom_frame_tree_nodes_;
-
-  HostZoomLevels host_zoom_levels_for_preview_;
 
   raw_ptr<base::Clock> clock_;
 };

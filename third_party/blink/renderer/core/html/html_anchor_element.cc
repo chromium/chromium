@@ -37,7 +37,6 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/web/web_link_preview_triggerer.h"
 #include "third_party/blink/renderer/core/ad_tracker/ad_tracker.h"
 #include "third_party/blink/renderer/core/css/scroll_target_group_scope.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -85,34 +84,6 @@
 namespace blink {
 
 namespace {
-
-void EmitDidAnchorElementReceiveMouseEvent(
-    HTMLAnchorElementBase& anchor_element,
-    Event& event) {
-  if (!event.IsMouseEvent()) {
-    return;
-  }
-  auto* mev = To<MouseEvent>(&event);
-  LocalFrame* local_frame = anchor_element.GetDocument().GetFrame();
-  if (!local_frame) {
-    return;
-  }
-
-  WebLinkPreviewTriggerer* triggerer =
-      local_frame->GetOrCreateLinkPreviewTriggerer();
-  if (!triggerer) {
-    return;
-  }
-
-  auto button = WebMouseEvent::Button(mev->button());
-  if (event.type() == event_type_names::kMousedown) {
-    triggerer->DidAnchorElementReceiveMouseDownEvent(
-        WebElement(&anchor_element), button, mev->ClickCount());
-  } else if (event.type() == event_type_names::kMouseup) {
-    triggerer->DidAnchorElementReceiveMouseUpEvent(WebElement(&anchor_element),
-                                                   button, mev->ClickCount());
-  }
-}
 
 }  // namespace
 
@@ -219,8 +190,6 @@ static void AppendServerMapMousePosition(StringBuilder& url, Event* event) {
 
 void HTMLAnchorElementBase::DefaultEventHandler(Event& event) {
   if (IsLink()) {
-    EmitDidAnchorElementReceiveMouseEvent(*this, event);
-
     if (IsFocused() && IsEnterKeyKeydownEvent(event) && IsLiveLink()) {
       event.SetDefaultHandled();
       DispatchSimulatedClick(&event);
@@ -439,16 +408,6 @@ void HTMLAnchorElementBase::NavigateToHyperlink(
     return;
   }
 
-  if (navigation_policy == kNavigationPolicyLinkPreview) {
-    // Ensured by third_party/blink/renderer/core/loader/navigation_policy.cc.
-    CHECK(base::FeatureList::IsEnabled(features::kLinkPreview));
-
-    if (Url().ProtocolIsInHttpFamily()) {
-      DocumentSpeculationRules::From(GetDocument()).InitiatePreview(Url());
-    }
-    return;
-  }
-
   request.SetRequestContext(mojom::blink::RequestContextType::HYPERLINK);
   FrameLoadRequest frame_request(window, request);
   frame_request.SetNavigationPolicy(navigation_policy);
@@ -626,8 +585,7 @@ void HTMLAnchorElementBase::HandleClick(MouseEvent& event) {
       std::move(request), navigation_policy, event.isTrusted(),
       event.PlatformTimeStamp(), std::move(completed_url));
 
-  if (navigation_policy == kNavigationPolicyDownload ||
-      navigation_policy == kNavigationPolicyLinkPreview) {
+  if (navigation_policy == kNavigationPolicyDownload) {
     // We distinguish single/double click with some modifiers.
     // See the comment of `EventHandler.delayed_navigation_task_handle_`.
     auto task_handle = PostDelayedCancellableTask(

@@ -161,7 +161,6 @@
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/browser/preload_pipeline_info.h"
-#include "content/public/browser/preview_cancel_reason.h"
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/restore_type.h"
@@ -3727,15 +3726,6 @@ void WebContentsImpl::ReattachToOuterWebContentsFrame() {
   GetPrimaryMainFrame()->UpdateAXTreeData();
 }
 
-void WebContentsImpl::DidActivatePreviewedPage(
-    base::TimeTicks activation_time) {
-  TRACE_EVENT1("content", "WebContentsImpl::DidActivatePreviewedPage",
-               "activation_time", activation_time);
-  observers_.NotifyObservers(&WebContentsObserver::DidActivatePreviewedPage,
-                             activation_time);
-  GetDelegate()->DidActivatePreviewedPage();
-}
-
 void WebContentsImpl::DidChangeVisibleSecurityState() {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::DidChangeVisibleSecurityState");
@@ -4252,7 +4242,7 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
       params.initially_use_platform_autofill;
 
   is_never_composited_ = params.is_never_composited;
-  is_in_preview_mode_ = params.preview_mode;
+
   creator_location_ = params.creator_location;
 #if BUILDFLAG(IS_ANDROID)
   java_creator_location_ = params.java_creator_location;
@@ -12132,17 +12122,7 @@ void WebContentsImpl::NotifyPageBecamePrimary(PageImpl& page) {
   observers_.NotifyObservers(&WebContentsObserver::PrimaryPageChanged, page);
 }
 
-bool WebContentsImpl::IsPageInPreviewMode() const {
-  return IsInPreviewMode();
-}
 
-void WebContentsImpl::CancelPreviewByMojoBinderPolicy(
-    const std::string& interface_name) {
-  if (delegate_) {
-    delegate_->CancelPreview(
-        PreviewCancelReason::BlockedByMojoBinderPolicy(interface_name));
-  }
-}
 
 FrameTreeNodeId WebContentsImpl::GetOuterDelegateFrameTreeNodeId() {
   return node_.outer_contents_frame_tree_node_id();
@@ -12279,33 +12259,7 @@ void WebContentsImpl::SetTabSwitchStartTime(base::TimeTicks start_time,
           blink::VisibleTimeEvent::TabSwitchReason(destination_is_loaded)});
 }
 
-bool WebContentsImpl::IsInPreviewMode() const {
-  return is_in_preview_mode_;
-}
 
-void WebContentsImpl::WillActivatePreviewPage() {
-  CHECK(is_in_preview_mode_);
-  is_in_preview_mode_ = false;
-}
-
-void WebContentsImpl::ActivatePreviewPage() {
-  TRACE_EVENT0("content", "WebContentsImpl::ActivatePreviewPage");
-
-  // WillActivatePreviewPage() should be called to reset it beforehand.
-  CHECK(!is_in_preview_mode_);
-
-  PageImpl& preview_page = GetPrimaryPage();
-  preview_page.SetActivationStartTime(base::TimeTicks::Now());
-
-  // TODO(b:299240273): Gather all relevant RVHs.
-  StoredPage::RenderViewHostImplSafeRefSet render_view_hosts;
-  render_view_hosts.insert(GetRenderViewHost()->GetSafeRef());
-
-  preview_page.Activate(
-      PageImpl::ActivationType::kPreview, render_view_hosts, std::nullopt,
-      base::BindOnce(&WebContentsImpl::DidActivatePreviewedPage,
-                     weak_factory_.GetWeakPtr()));
-}
 
 VisibleTimeRequestTrigger& WebContentsImpl::GetVisibleTimeRequestTrigger() {
   return visible_time_request_trigger_;

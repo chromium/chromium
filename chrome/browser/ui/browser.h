@@ -726,8 +726,6 @@ class Browser : public TabStripModelObserver,
   std::unique_ptr<content::EyeDropper> OpenEyeDropper(
       content::RenderFrameHost* frame,
       content::EyeDropperListener* listener) override;
-  void InitiatePreview(content::WebContents& web_contents,
-                       const GURL& url) override;
   bool ShouldUseInstancedSystemMediaControls() const override;
   void DraggableRegionsChanged(
       const std::vector<blink::mojom::DraggableRegionPtr>& regions,

@@ -158,10 +158,6 @@ void SVGAElement::DefaultEventHandler(Event& event) {
       }
 
       NavigationPolicy navigation_policy = NavigationPolicyFromEvent(&event);
-      if (navigation_policy == kNavigationPolicyLinkPreview) {
-        // TODO(b:302649777): Support LinkPreview for SVG <a> element.
-        return;
-      }
 
       const KURL& resolved_url = GetDocument().CompleteURL(url);
       ResourceRequest request(resolved_url);

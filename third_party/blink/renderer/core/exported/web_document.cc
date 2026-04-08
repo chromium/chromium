@@ -401,19 +401,6 @@ WebString WebDocument::OutgoingReferrer() const {
 }
 
 void WebDocument::InitiatePreview(const WebURL& url) {
-  if (!url.IsValid()) {
-    return;
-  }
-
-  Document* document = blink::To<Document>(private_.Get());
-  if (!document) {
-    return;
-  }
-
-  KURL kurl(url);
-  if (kurl.ProtocolIsInHttpFamily()) {
-    DocumentSpeculationRules::From(*document).InitiatePreview(kurl);
-  }
 }
 
 void WebDocument::SnapshotAccessibilityTree(

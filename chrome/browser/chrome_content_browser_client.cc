@@ -5464,14 +5464,6 @@ void ChromeContentBrowserClient::
   RegisterChromeMojoBinderPoliciesForSameOriginPrerendering(policy_map);
 }
 
-void ChromeContentBrowserClient::RegisterMojoBinderPoliciesForPreview(
-    content::MojoBinderPolicyMap& policy_map) {
-  // Changes to `policy_map` should be made in
-  // RegisterChromeMojoBinderPoliciesForPreview() which requires security
-  // review.
-  RegisterChromeMojoBinderPoliciesForPreview(policy_map);
-}
-
 void ChromeContentBrowserClient::OpenURL(
     content::SiteInstance* site_instance,
     const content::OpenURLParams& params,

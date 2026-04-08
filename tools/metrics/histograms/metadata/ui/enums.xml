@@ -76,7 +76,6 @@ chromium-metrics-reviews@google.com.
       label="Translate text in image with non-Google visual search provider"/>
   <int value="28" label="Translate text in image with Google Lens"/>
   <int value="29" label="Search web for... in new tab"/>
-  <int value="30" label="Open link in preview"/>
   <int value="31" label="Open link in split view"/>
   <int value="32" label="Create image with Gemini in Chrome"/>
 </enum>
@@ -336,7 +335,6 @@ chromium-metrics-reviews@google.com.
   <int value="141" label="IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS"/>
   <int value="142" label="IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME"/>
   <int value="143" label="IDC_CONTENT_CONTEXT_SEARCHWEBFORVIDEOFRAME"/>
-  <int value="144" label="IDC_CONTENT_CONTEXT_OPENLINKPREVIEW"/>
   <int value="145" label="IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS"/>
   <int value="146"
       label="(Obsolete) IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS"/>

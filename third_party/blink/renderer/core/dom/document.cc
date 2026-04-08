@@ -78,7 +78,6 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
-#include "third_party/blink/public/web/web_link_preview_triggerer.h"
 #include "third_party/blink/public/web/web_print_page_description.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
@@ -5690,25 +5689,7 @@ void Document::DynamicViewportUnitsChanged() {
 using InclusiveAncestorsForActiveOrHover =
     TraversalRange<TraversalIterator<UserActionElementTraversal>>;
 
-void EmitDidChangeHoverElement(Document& document, Element* new_hover_element) {
-  LocalFrame* local_frame = document.GetFrame();
-  if (!local_frame) {
-    return;
-  }
-
-  WebLinkPreviewTriggerer* triggerer =
-      local_frame->GetOrCreateLinkPreviewTriggerer();
-  if (!triggerer) {
-    return;
-  }
-
-  WebElement web_element = WebElement(DynamicTo<Element>(new_hover_element));
-  triggerer->DidChangeHoverElement(web_element);
-}
-
 void Document::SetHoverElement(Element* new_hover_element) {
-  EmitDidChangeHoverElement(*this, new_hover_element);
-
   hover_element_ = new_hover_element;
 }
 

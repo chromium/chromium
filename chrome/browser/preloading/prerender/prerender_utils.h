@@ -15,7 +15,6 @@ namespace prerender_utils {
 extern const char kPrewarmDefaultSearchEngineMetricSuffix[];
 extern const char kDefaultSearchEngineMetricSuffix[];
 extern const char kDirectUrlInputMetricSuffix[];
-extern const char kLinkPreviewMetricsSuffix[];
 // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/histograms.xml:PagePreloadingTriggerType, //tools/metrics/histograms/metadata/page/histograms.xml:PagePreloadingTriggerType)
 
 }  // namespace prerender_utils

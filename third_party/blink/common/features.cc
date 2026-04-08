@@ -1570,19 +1570,6 @@ BASE_FEATURE(kLightweightNoStatePrefetch,
 #endif
 );
 
-BASE_FEATURE(kLinkPreview, base::FEATURE_DISABLED_BY_DEFAULT);
-
-constexpr base::FeatureParam<LinkPreviewTriggerType>::Option
-    link_preview_trigger_type_options[] = {
-        {LinkPreviewTriggerType::kAltClick, "alt_click"},
-        {LinkPreviewTriggerType::kAltHover, "alt_hover"},
-        {LinkPreviewTriggerType::kLongPress, "long_press"}};
-BASE_FEATURE_ENUM_PARAM(LinkPreviewTriggerType,
-                        kLinkPreviewTriggerType,
-                        &kLinkPreview,
-                        "trigger_type",
-                        LinkPreviewTriggerType::kAltHover,
-                        &link_preview_trigger_type_options);
 
 // Makes network loading tasks unfreezable so that they can be processed while
 // the page is frozen.
@@ -2781,11 +2768,6 @@ bool ParkableStringsUseSnappy() {
 bool IsKeepAliveURLLoaderServiceEnabled() {
   return base::FeatureList::IsEnabled(kKeepAliveInBrowserMigration) ||
          base::FeatureList::IsEnabled(kFetchLaterAPI);
-}
-
-bool IsLinkPreviewTriggerTypeEnabled(LinkPreviewTriggerType type) {
-  return base::FeatureList::IsEnabled(blink::features::kLinkPreview) &&
-         type == blink::features::kLinkPreviewTriggerType.Get();
 }
 
 bool IsXrDevice() {

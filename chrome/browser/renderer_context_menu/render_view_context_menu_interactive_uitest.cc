@@ -1010,41 +1010,6 @@ IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameProtocolHandlerTest,
   RunTest(test_case);
 }
 
-class ContextMenuLinkPreviewFencedFrameTest
-    : public ContextMenuFencedFrameTest {
- public:
-  ContextMenuLinkPreviewFencedFrameTest() {
-    scoped_feature_list_.InitAndEnableFeature(blink::features::kLinkPreview);
-  }
-
-  ~ContextMenuLinkPreviewFencedFrameTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ContextMenuLinkPreviewFencedFrameTest,
-                       LinkPreviewDisabledInFencedFrameAfterNetworkCutoff) {
-  FencedFrameContextMenuTestCase test_case = {
-      .command_ids = {IDC_CONTENT_CONTEXT_OPENLINKPREVIEW},
-      .relative_url = "/download-anchor-same-origin.html",
-      .click_target = "anchor",
-      .is_in_nested_iframe = false};
-
-  RunTest(test_case);
-}
-
-IN_PROC_BROWSER_TEST_F(ContextMenuLinkPreviewFencedFrameTest,
-                       LinkPreviewDisabledInNestedIframeAfterNetworkCutoff) {
-  FencedFrameContextMenuTestCase test_case = {
-      .command_ids = {IDC_CONTENT_CONTEXT_OPENLINKPREVIEW},
-      .relative_url = "/download-anchor-same-origin.html",
-      .click_target = "anchor",
-      .is_in_nested_iframe = true};
-
-  RunTest(test_case);
-}
-
 class InterestGroupContentBrowserClient : public ChromeContentBrowserClient {
  public:
   InterestGroupContentBrowserClient() = default;

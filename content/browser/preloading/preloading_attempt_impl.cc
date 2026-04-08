@@ -83,7 +83,6 @@ void CheckReadyOutcomePreloadingType(PreloadingType type) {
     case PreloadingType::kPrefetch:
     case PreloadingType::kPrerender:
     case PreloadingType::kNoStatePrefetch:
-    case PreloadingType::kLinkPreview:
     case PreloadingType::kPrerenderUntilScript:
       return;
     default:

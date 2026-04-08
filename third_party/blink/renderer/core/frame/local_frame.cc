@@ -89,7 +89,6 @@
 #include "third_party/blink/public/web/web_autofill_client.h"
 #include "third_party/blink/public/web/web_content_capture_client.h"
 #include "third_party/blink/public/web/web_frame.h"
-#include "third_party/blink/public/web/web_link_preview_triggerer.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -812,7 +811,6 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
 
   not_restored_reasons_.reset();
   prescient_networking_.reset();
-  link_preview_triggerer_.reset();
 
   DCHECK(!view_->IsAttached());
   Client()->WillBeDetached();
@@ -1129,11 +1127,6 @@ Document* LocalFrame::GetDocument() const {
 }
 
 void LocalFrame::DocumentDetached() {
-  // Resets WebLinkPreviewTrigerer when the document detached as
-  // WebLinkPreviewInitiator depends on document.
-  is_link_preivew_triggerer_initialized_ = false;
-  link_preview_triggerer_.reset();
-
   if (LocalFrameView* view = View()) {
     // Pagination layout may hold on to layout objects that are not part of the
     // Document's DOM. Destroy them now.
@@ -4185,34 +4178,6 @@ LocalFrame::IssueKeepAliveHandle() {
   GetLocalFrameHostRemote().IssueKeepAliveHandle(
       keep_alive_remote.InitWithNewPipeAndPassReceiver());
   return keep_alive_remote;
-}
-
-WebLinkPreviewTriggerer* LocalFrame::GetOrCreateLinkPreviewTriggerer() {
-  EnsureLinkPreviewTriggererInitialized();
-  return link_preview_triggerer_.get();
-}
-
-void LocalFrame::EnsureLinkPreviewTriggererInitialized() {
-  if (is_link_preivew_triggerer_initialized_) {
-    return;
-  }
-
-  CHECK(!link_preview_triggerer_);
-
-  WebLocalFrameImpl* web_local_frame = WebLocalFrameImpl::FromFrame(this);
-  if (!web_local_frame) {
-    return;
-  }
-
-  link_preview_triggerer_ =
-      web_local_frame->Client()->CreateLinkPreviewTriggerer();
-  is_link_preivew_triggerer_initialized_ = true;
-}
-
-void LocalFrame::SetLinkPreviewTriggererForTesting(
-    std::unique_ptr<WebLinkPreviewTriggerer> trigger) {
-  link_preview_triggerer_ = std::move(trigger);
-  is_link_preivew_triggerer_initialized_ = true;
 }
 
 void LocalFrame::AllowStorageAccessAndNotify(

@@ -50,13 +50,11 @@ namespace blink {
 
 namespace {
 
-NavigationPolicy NavigationPolicyFromEventModifiers(
-    int16_t button,
-    bool ctrl,
-    bool shift,
-    bool alt,
-    bool meta,
-    bool is_link_preview_enabled) {
+NavigationPolicy NavigationPolicyFromEventModifiers(int16_t button,
+                                                    bool ctrl,
+                                                    bool shift,
+                                                    bool alt,
+                                                    bool meta) {
 #if BUILDFLAG(IS_MAC)
   const bool new_tab_modifier = (button == 1) || meta;
 #else
@@ -68,8 +66,6 @@ NavigationPolicy NavigationPolicyFromEventModifiers(
   }
   if (!new_tab_modifier && !shift && !alt) {
     return kNavigationPolicyCurrentTab;
-  } else if (is_link_preview_enabled && !new_tab_modifier && !shift && alt) {
-    return kNavigationPolicyLinkPreview;
   } else if (new_tab_modifier) {
     return shift ? kNavigationPolicyNewForegroundTab
                  : kNavigationPolicyNewBackgroundTab;
@@ -77,33 +73,29 @@ NavigationPolicy NavigationPolicyFromEventModifiers(
   return shift ? kNavigationPolicyNewWindow : kNavigationPolicyDownload;
 }
 
-NavigationPolicy NavigationPolicyFromEventInternal(
-    const Event* event,
-    bool is_link_preview_enabled) {
+NavigationPolicy NavigationPolicyFromEventInternal(const Event* event) {
   if (!event)
     return kNavigationPolicyCurrentTab;
 
   if (const auto* mouse_event = DynamicTo<MouseEvent>(event)) {
     return NavigationPolicyFromEventModifiers(
         mouse_event->button(), mouse_event->ctrlKey(), mouse_event->shiftKey(),
-        mouse_event->altKey(), mouse_event->metaKey(), is_link_preview_enabled);
+        mouse_event->altKey(), mouse_event->metaKey());
   } else if (const KeyboardEvent* key_event = DynamicTo<KeyboardEvent>(event)) {
     // The click is simulated when triggering the keypress event.
     return NavigationPolicyFromEventModifiers(
         0, key_event->ctrlKey(), key_event->shiftKey(), key_event->altKey(),
-        key_event->metaKey(), is_link_preview_enabled);
+        key_event->metaKey());
   } else if (const auto* gesture_event = DynamicTo<GestureEvent>(event)) {
     // The click is simulated when triggering the gesture-tap event
     return NavigationPolicyFromEventModifiers(
         0, gesture_event->ctrlKey(), gesture_event->shiftKey(),
-        gesture_event->altKey(), gesture_event->metaKey(),
-        is_link_preview_enabled);
+        gesture_event->altKey(), gesture_event->metaKey());
   }
   return kNavigationPolicyCurrentTab;
 }
 
-NavigationPolicy NavigationPolicyFromCurrentEvent(
-    bool is_link_preview_enabled) {
+NavigationPolicy NavigationPolicyFromCurrentEvent() {
   const WebInputEvent* event = CurrentInputEvent::Get();
   if (!event)
     return kNavigationPolicyCurrentTab;
@@ -139,30 +131,18 @@ NavigationPolicy NavigationPolicyFromCurrentEvent(
       button, event->GetModifiers() & WebInputEvent::kControlKey,
       event->GetModifiers() & WebInputEvent::kShiftKey,
       event->GetModifiers() & WebInputEvent::kAltKey,
-      event->GetModifiers() & WebInputEvent::kMetaKey, is_link_preview_enabled);
+      event->GetModifiers() & WebInputEvent::kMetaKey);
 }
 
 }  // namespace
 
 NavigationPolicy NavigationPolicyFromEvent(const Event* event) {
-  // TODO(b:298160400): Add a setting to disable Link Preview.
-  bool is_link_preview_enabled = IsLinkPreviewTriggerTypeEnabled(
-      features::LinkPreviewTriggerType::kAltClick);
-
-  NavigationPolicy event_policy =
-      NavigationPolicyFromEventInternal(event, is_link_preview_enabled);
-  NavigationPolicy input_policy =
-      NavigationPolicyFromCurrentEvent(is_link_preview_enabled);
+  NavigationPolicy event_policy = NavigationPolicyFromEventInternal(event);
+  NavigationPolicy input_policy = NavigationPolicyFromCurrentEvent();
 
   if (event_policy == kNavigationPolicyDownload &&
       input_policy != kNavigationPolicyDownload) {
     // No downloads from synthesized events without user intention.
-    return kNavigationPolicyCurrentTab;
-  }
-
-  if (event_policy == kNavigationPolicyLinkPreview &&
-      input_policy != kNavigationPolicyLinkPreview) {
-    // No Link Preview from synthesized events without user intention.
     return kNavigationPolicyCurrentTab;
   }
 
@@ -191,8 +171,7 @@ NavigationPolicy NavigationPolicyForCreateWindow(
   bool as_popup = features.is_popup || !features.resizable;
   NavigationPolicy app_policy =
       as_popup ? kNavigationPolicyNewPopup : kNavigationPolicyNewForegroundTab;
-  NavigationPolicy user_policy =
-      NavigationPolicyFromCurrentEvent(/*is_link_preview_enabled=*/false);
+  NavigationPolicy user_policy = NavigationPolicyFromCurrentEvent();
 
   if (user_policy == kNavigationPolicyNewWindow &&
       app_policy == kNavigationPolicyNewPopup) {

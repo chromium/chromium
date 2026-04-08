@@ -972,8 +972,6 @@ class DownloadContentTest : public ContentBrowserTest {
         {blink::features::kSvgAnchorElementDownloadAttribute},
         {
             download::features::kAllowDownloadResumptionWithoutStrongValidators,
-            // Link Preview hides alt+click. Disables it not to do so.
-            blink::features::kLinkPreview,
         });
   }
 

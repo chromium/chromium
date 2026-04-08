@@ -41,7 +41,6 @@
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/public/web/web_link_preview_triggerer.h"
 #include "third_party/blink/renderer/core/clipboard/data_transfer.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -1035,12 +1034,6 @@ void EventHandler::HandleMouseLeaveEvent(const WebMouseEvent& event) {
   Page* page = frame_->GetPage();
   if (page)
     page->GetChromeClient().ClearToolTip(*frame_);
-
-  WebLinkPreviewTriggerer* triggerer =
-      frame_->GetOrCreateLinkPreviewTriggerer();
-  if (triggerer) {
-    triggerer->MaybeChangedKeyEventModifier(WebInputEvent::kNoModifiers);
-  }
 
   HandleMouseMoveOrLeaveEvent(event, Vector<WebMouseEvent>(),
                               Vector<WebMouseEvent>());

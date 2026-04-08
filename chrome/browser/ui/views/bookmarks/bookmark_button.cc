@@ -332,7 +332,6 @@ void BookmarkButton::StartPreloading(const GURL& url,
     case content::PreloadingType::kUnspecified:
     case content::PreloadingType::kPreconnect:
     case content::PreloadingType::kNoStatePrefetch:
-    case content::PreloadingType::kLinkPreview:
     case content::PreloadingType::kPrerenderUntilScript:
       NOTREACHED();
   }

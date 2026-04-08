@@ -376,7 +376,6 @@ class RenderViewContextMenu
 
   // Command execution functions.
   void ExecOpenWebApp();
-  void ExecOpenLinkPreview();
   void ExecProtocolHandler(int event_flags, int handler_index);
   void ExecOpenLinkInProfile(int profile_index);
   void ExecInspectElement();
@@ -611,9 +610,6 @@ class RenderViewContextMenu
            IDC_CONTENT_CONTEXT_OPENLINKINPROFILE, IDC_CONTENT_CONTEXT_GOTOURL,
            IDC_CONTENT_CONTEXT_OPENLINKWITH, IDC_CONTENT_CONTEXT_OPENAVNEWTAB,
            IDC_CONTENT_CONTEXT_OPENIMAGENEWTAB,
-
-           // Link preview feature.
-           IDC_CONTENT_CONTEXT_OPENLINKPREVIEW,
 
            // Image loading commands.
            IDC_CONTENT_CONTEXT_LOAD_IMAGE,
