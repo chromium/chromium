@@ -37,6 +37,10 @@ dashboard](https://goto.google.com/chrome-security-bugs).  You do that by
 filling in missing fields on the bugs and assigning them to engineers who will
 fix them.
 
+If you are `chrome-security-shepherds-1`: you are responsible for all the
+bugs in the `Shepherd 1` tab. If you are `chrome-security-shepherds-2`, you are
+responsible for the `Shepherd 2` tab.
+
 To actually triage a report, you go through several steps. On a _new_ bug
 report:
 
