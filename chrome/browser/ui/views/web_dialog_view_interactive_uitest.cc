@@ -320,6 +320,12 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, CloseDialogOnEscapeDisabled) {
 }
 
 // Test that key event is translated to a text input properly.
-IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, TextInputViaKeyEvent) {
+// TODO(crbug.com/500602996): Enable the test.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TextInputViaKeyEvent DISABLED_TextInputViaKeyEvent
+#else
+#define MAYBE_TextInputViaKeyEvent TextInputViaKeyEvent
+#endif
+IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, MAYBE_TextInputViaKeyEvent) {
   TestTextInputViaKeyEvent(view_->web_contents());
 }
