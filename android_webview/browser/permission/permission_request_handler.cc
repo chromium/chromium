@@ -111,10 +111,16 @@ PermissionRequestHandler::RequestIterator PermissionRequestHandler::FindRequest(
 }
 
 void PermissionRequestHandler::CancelRequestInternal(RequestIterator i) {
-  AwPermissionRequest* request = i->get();
+  // Use a WeakPtr to check if the request is still alive after the synchronous
+  // JNI call to OnPermissionRequestCanceled. The embedder might synchronously
+  // delete the request (e.g., by calling grant() or deny()) inside the
+  // cancellation callback.
+  base::WeakPtr<AwPermissionRequest> request = *i;
   if (request) {
-    client_->OnPermissionRequestCanceled(request);
-    request->CancelAndDelete();
+    client_->OnPermissionRequestCanceled(request.get());
+    if (request) {
+      request->CancelAndDelete();
+    }
   }
 }
 

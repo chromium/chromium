@@ -66,6 +66,9 @@ class TestPermissionRequestHandlerClient
   void OnPermissionRequestCanceled(AwPermissionRequest* request) override {
     canceled_permission_ =
         Permission(request->GetOrigin(), request->GetResources());
+    if (grant_on_cancel_) {
+      Grant();
+    }
   }
 
   AwPermissionRequest* request() { return request_; }
@@ -90,6 +93,11 @@ class TestPermissionRequestHandlerClient
     request_ = nullptr;
     requested_permission_ = Permission();
     canceled_permission_ = Permission();
+    grant_on_cancel_ = false;
+  }
+
+  void SetGrantOnCancel(bool grant_on_cancel) {
+    grant_on_cancel_ = grant_on_cancel;
   }
 
  private:
@@ -97,6 +105,7 @@ class TestPermissionRequestHandlerClient
   raw_ptr<AwPermissionRequest> request_;
   Permission requested_permission_;
   Permission canceled_permission_;
+  bool grant_on_cancel_ = false;
 };
 
 class TestPermissionRequestHandler : public PermissionRequestHandler {
@@ -244,7 +253,7 @@ TEST_F(PermissionRequestHandlerTest, TestMultiplePermissionRequest) {
 
   // Cancel the request.
   handler()->CancelRequest(origin(), resources());
-  // Verify client's OnPermissionRequestCancled() was called.
+  // Verify client's OnPermissionRequestCanceled() was called.
   EXPECT_EQ(origin(), client()->canceled_permission().origin);
   EXPECT_EQ(resources(), client()->canceled_permission().resources);
   // Verify Handler store the request correctly, the 1st and 3rd were removed.
@@ -326,6 +335,31 @@ TEST_F(PermissionRequestHandlerTest, TestPreauthorizeMultiplePermission) {
   handler()->SendRequest(std::move(delegate));
   EXPECT_TRUE(allowed());
   EXPECT_EQ(nullptr, client()->request());
+}
+
+// Regression test for crbug.com/500032538.
+TEST_F(PermissionRequestHandlerTest, TestCancelRequestDuringCallback) {
+  handler()->SendRequest(delegate());
+  // Verify Handler store the request correctly.
+  ASSERT_EQ(1u, handler()->requests().size());
+
+  // Set the client to grant the request when it is canceled.
+  client()->SetGrantOnCancel(true);
+
+  // Cancel the request. This will trigger OnPermissionRequestCanceled,
+  // which will call client()->Grant(), which synchronously deletes the request.
+  // The fix ensures we don't use the deleted request after the callback.
+  handler()->CancelRequest(origin(), resources());
+
+  // Verify client's OnPermissionRequestCanceled() was called.
+  EXPECT_EQ(origin(), client()->canceled_permission().origin);
+  EXPECT_EQ(resources(), client()->canceled_permission().resources);
+
+  // Verify the request was granted.
+  EXPECT_TRUE(allowed());
+
+  handler()->PruneRequests();
+  EXPECT_TRUE(handler()->requests().empty());
 }
 
 }  // namespace android_webview
