@@ -35,6 +35,13 @@ constexpr std::string_view kRedressNumberOverrideParam =
     "17560148746471652940_2743594224_195-"
     "17560148746471652940_1667168476_7";
 
+constexpr std::string_view kPassportOverrideParam =
+    "4641858130178050027_57480302_169-"
+    "4641858130178050027_1260605411_7-"
+    "4641858130178050027_2806930637_170-"
+    "4641858130178050027_1520818241_172-"
+    "4641858130178050027_2813548763_171";
+
 // Save button on the infobar.
 id<GREYMatcher> infoBarSaveButton() {
   return chrome_test_util::ButtonWithAccessibilityLabel(
@@ -116,12 +123,20 @@ void VerifySaveNewEntityFlow() {
   config.features_enabled.push_back(
       autofill::features::kAutofillAiReauthRequired);
 
-  if ([self isRunningTest:@selector(testSubmitRedressForm)]) {
+  if ([self isRunningTest:@selector(testSubmitRedressForm)] ||
+      [self isRunningTest:@selector(testSavePassportForm)]) {
     config.features_enabled.push_back(
         autofill::features::debug::kAutofillAiForceOptIn);
+
+    std::string overrideParam =
+        std::string([self isRunningTest:@selector(testSubmitRedressForm)]
+                        ? kRedressNumberOverrideParam
+                        : kPassportOverrideParam);
+
     config.features_enabled_and_params.push_back(
         {autofill::features::debug::kAutofillOverridePredictions,
-         {{"spec", std::string(kRedressNumberOverrideParam)}}});
+         {{"spec", overrideParam}}});
+
     config.features_enabled.push_back(
         autofill::features::kAutofillAiAlwaysTriggerServerModel);
   }
@@ -152,6 +167,12 @@ void VerifySaveNewEntityFlow() {
   // Loads redress number page.
   [ChromeEarlGrey loadURL:[self redressNumberPageURL]];
   [ChromeEarlGrey waitForWebStateContainingText:"Redress Number"];
+}
+
+// Loads simple passport page on localhost.
+- (void)loadPassportPage {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/passport_form.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Passport"];
 }
 
 #pragma mark - Tests
@@ -215,6 +236,83 @@ void VerifySaveNewEntityFlow() {
 
   // Wait for the infobar banner to appear.
   [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
+}
+
+// Tests saving a new passport from a web form, verifying that it appears in
+// Settings and then deleting it.
+- (void)testSavePassportForm {
+  [self loadPassportPage];
+
+  // Tap on fill button.
+  [ChromeEarlGrey tapWebStateElementWithID:@"fill_passport_form"];
+
+  // Tap submit button.
+  [ChromeEarlGrey tapWebStateElementWithID:@"submit-button"];
+
+  // Wait for the infobar banner to appear.
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
+
+  // Verify it is a passport infobar.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the infobar save button to open the detailed UI.
+  TapInfoBarSaveButton();
+
+  // Save new passport. (Wait for and tap the save button).
+  id<GREYMatcher> saveButton =
+      grey_accessibilityID(kAutofillAISaveEntitySaveButtonId);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:saveButton];
+
+  // Verify it is a passport sheet.
+  [[EarlGrey
+      selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                   IDS_AUTOFILL_AI_PASSPORT_ENTITY_NAME))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey selectElementWithMatcher:saveButton] performAction:grey_tap()];
+
+  // Navigate to Settings -> "Addresses and more" menu.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:chrome_test_util::AddressesAndMoreButton()];
+
+  // Verify cell visibility of owner name.
+  VerifyCellVisibility(kOwnerName, true);
+
+  // Verify it is displayed as a passport.
+  id<GREYMatcher> passportCell = grey_allOf(
+      grey_kindOfClassName(@"UITableViewCell"),
+      grey_descendant(grey_text(kOwnerName)),
+      grey_descendant(grey_text(
+          l10n_util::GetNSString(IDS_AUTOFILL_AI_PASSPORT_ENTITY_NAME))),
+      nil);
+  [[EarlGrey selectElementWithMatcher:passportCell]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the Toolbar Edit button to enter edit mode.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsToolbarEditButton()]
+      performAction:grey_tap()];
+
+  // Select the cell containing the entity.
+  [[EarlGrey selectElementWithMatcher:GetMatcherForLabel(kOwnerName)]
+      performAction:grey_tap()];
+
+  // Tap the delete button in the bottom toolbar.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          SettingsBottomToolbarDeleteButton()]
+      performAction:grey_tap()];
+
+  // Tap the delete action sheet button to confirm deletion.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_IOS_DELETE_ACTION_TITLE)] performAction:grey_tap()];
+
+  // Ensure it's deleted.
+  VerifyCellVisibility(kOwnerName, false);
 }
 
 @end
