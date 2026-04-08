@@ -61,7 +61,7 @@ class ContentRecordReplayDriver : public RecordReplayDriver,
   void DoSelect(DomNodeId dom_node_id,
                 FieldValue value,
                 base::OnceCallback<void(bool)> cb) override;
-  void set_record_replay_agent_for_test(TestRecordReplayAgent* agent) override;
+  void SetRecordReplayAgentForTesting(mojom::RecordReplayAgent* agent) override;
 
   // mojom::RecordReplayDriver:
   void OnClick(DomNodeId dom_node_id, Selector element_selector) override;
@@ -73,11 +73,11 @@ class ContentRecordReplayDriver : public RecordReplayDriver,
                     FieldValue text) override;
 
  private:
-  const mojo::AssociatedRemote<mojom::RecordReplayAgent>& GetAgent();
+  mojom::RecordReplayAgent* GetRecordReplayAgent();
 
   const raw_ref<RecordReplayClient> client_;
   const raw_ref<content::RenderFrameHost> rfh_;
-  raw_ptr<TestRecordReplayAgent> test_autofill_agent_ = nullptr;
+  raw_ptr<mojom::RecordReplayAgent> test_record_replay_agent_ = nullptr;
   mojo::AssociatedReceiver<mojom::RecordReplayDriver> receiver_{this};
   mojo::AssociatedRemote<mojom::RecordReplayAgent> agent_;
 };

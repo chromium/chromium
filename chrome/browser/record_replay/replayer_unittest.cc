@@ -13,6 +13,7 @@
 #include "chrome/browser/record_replay/record_replay_manager.h"
 #include "chrome/browser/record_replay/recording_data_manager.h"
 #include "chrome/common/record_replay/aliases.h"
+#include "chrome/common/record_replay/record_replay.mojom.h"
 #include "chrome/common/record_replay/record_replay_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -31,8 +32,7 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ReturnRef;
 
-// TODO(b/476101114): Replace with mojom::RecordReplayAgent.
-class MockRecordReplayAgent : public RecordReplayDriver::TestRecordReplayAgent {
+class MockRecordReplayAgent : public mojom::RecordReplayAgent {
  public:
   MOCK_METHOD(void, StartRecording, (), (override));
   MOCK_METHOD(void, StopRecording, (), (override));
@@ -91,7 +91,7 @@ class MockRecordReplayClient : public RecordReplayClient,
  private:
   void RenderFrameCreated(content::RenderFrameHost* rfh) override {
     if (RecordReplayDriver* driver = driver_factory_.GetOrCreateDriver(rfh)) {
-      driver->set_record_replay_agent_for_test(&agent_);
+      driver->SetRecordReplayAgentForTesting(&agent_);
     }
   }
 

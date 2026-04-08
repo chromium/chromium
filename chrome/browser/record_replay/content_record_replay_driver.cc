@@ -28,12 +28,14 @@ void ContentRecordReplayDriver::BindPendingReceiver(
   receiver_.Bind(std::move(pending_receiver));
 }
 
-const mojo::AssociatedRemote<mojom::RecordReplayAgent>&
-ContentRecordReplayDriver::GetAgent() {
+mojom::RecordReplayAgent* ContentRecordReplayDriver::GetRecordReplayAgent() {
+  if (test_record_replay_agent_) {
+    return test_record_replay_agent_;
+  }
   if (!agent_) {
     rfh_->GetRemoteAssociatedInterfaces()->GetInterface(&agent_);
   }
-  return agent_;
+  return agent_.get();
 }
 
 bool ContentRecordReplayDriver::IsActive() const {
@@ -45,75 +47,47 @@ const blink::LocalFrameToken& ContentRecordReplayDriver::GetFrameToken() const {
 }
 
 void ContentRecordReplayDriver::StartRecording() {
-  if (test_autofill_agent_) {
-    test_autofill_agent_->StartRecording();
-    return;
-  }
-  GetAgent()->StartRecording();
+  GetRecordReplayAgent()->StartRecording();
 }
 
 void ContentRecordReplayDriver::StopRecording() {
-  if (test_autofill_agent_) {
-    test_autofill_agent_->StopRecording();
-    return;
-  }
-  GetAgent()->StopRecording();
+  GetRecordReplayAgent()->StopRecording();
 }
 
 void ContentRecordReplayDriver::GetElementSelector(
     DomNodeId dom_node_id,
     base::OnceCallback<void(Selector)> cb) {
-  if (test_autofill_agent_) {
-    test_autofill_agent_->GetElementSelector(dom_node_id, std::move(cb));
-    return;
-  }
-  GetAgent()->GetElementSelector(dom_node_id, std::move(cb));
+  GetRecordReplayAgent()->GetElementSelector(dom_node_id, std::move(cb));
 }
 
 void ContentRecordReplayDriver::GetMatchingElements(
     Selector element_selector,
     base::OnceCallback<void(const std::vector<DomNodeId>&)> cb) {
-  if (test_autofill_agent_) {
-    test_autofill_agent_->GetMatchingElements(std::move(element_selector),
+  GetRecordReplayAgent()->GetMatchingElements(std::move(element_selector),
                                               std::move(cb));
-    return;
-  }
-  GetAgent()->GetMatchingElements(std::move(element_selector), std::move(cb));
 }
 
 void ContentRecordReplayDriver::DoClick(DomNodeId dom_node_id,
                                         base::OnceCallback<void(bool)> cb) {
-  if (test_autofill_agent_) {
-    test_autofill_agent_->DoClick(dom_node_id, std::move(cb));
-    return;
-  }
-  GetAgent()->DoClick(dom_node_id, std::move(cb));
+  GetRecordReplayAgent()->DoClick(dom_node_id, std::move(cb));
 }
 
 void ContentRecordReplayDriver::DoPaste(DomNodeId dom_node_id,
                                         FieldValue text,
                                         base::OnceCallback<void(bool)> cb) {
-  if (test_autofill_agent_) {
-    test_autofill_agent_->DoPaste(dom_node_id, std::move(text), std::move(cb));
-    return;
-  }
-  GetAgent()->DoPaste(dom_node_id, text, std::move(cb));
+  GetRecordReplayAgent()->DoPaste(dom_node_id, std::move(text), std::move(cb));
 }
 
 void ContentRecordReplayDriver::DoSelect(DomNodeId dom_node_id,
                                          FieldValue value,
                                          base::OnceCallback<void(bool)> cb) {
-  if (test_autofill_agent_) {
-    test_autofill_agent_->DoSelect(dom_node_id, std::move(value),
+  GetRecordReplayAgent()->DoSelect(dom_node_id, std::move(value),
                                    std::move(cb));
-    return;
-  }
-  GetAgent()->DoSelect(dom_node_id, value, std::move(cb));
 }
 
-void ContentRecordReplayDriver::set_record_replay_agent_for_test(
-    TestRecordReplayAgent* agent) {
-  test_autofill_agent_ = agent;
+void ContentRecordReplayDriver::SetRecordReplayAgentForTesting(
+    mojom::RecordReplayAgent* agent) {
+  test_record_replay_agent_ = agent;
 }
 
 void ContentRecordReplayDriver::OnClick(DomNodeId dom_node_id,
