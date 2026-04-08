@@ -5007,11 +5007,11 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction_Text_Color) {
             "Green Text");
 
   // Check Color
-  // Green: (0, 255, 0) -> (0 << 24) | (255 << 16) | (0 << 8) | 255
-  // = 0 | 16711680 | 0 | 255 = 16711935
+  // Green: (0, 255, 0) -> (255 << 24) | (0 << 16) | (255 << 8) | 0
+  // = 4278190080 | 0 | 65280 | 0 = 4278255360
   ASSERT_TRUE(p_text_node.content_attributes().text_data().has_text_style());
   EXPECT_EQ(p_text_node.content_attributes().text_data().text_style().color(),
-            16711935u);
+            4278255360u);
 }
 
 // Tests the extraction of paid content metadata based on ld+json.

@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/functional/callback.h"
+#import "base/strings/string_number_conversions.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/common/unique_ids.h"
@@ -148,11 +149,14 @@ void PopulateTextData(
               static_cast<optimization_guide::proto::TextSize>(*text_size));
     }
 
-    if (std::optional<int> color = ReadJsNumber(*text_style, kColorKey)) {
-      destination_node->mutable_content_attributes()
-          ->mutable_text_data()
-          ->mutable_text_style()
-          ->set_color(static_cast<uint32_t>(*color));
+    if (const std::string* color_str = text_style->FindString(kColorKey)) {
+      uint32_t color_val = 0;
+      if (base::StringToUint(*color_str, &color_val)) {
+        destination_node->mutable_content_attributes()
+            ->mutable_text_data()
+            ->mutable_text_style()
+            ->set_color(color_val);
+      }
     }
   }
 }

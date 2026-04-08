@@ -465,12 +465,12 @@ TEST_P(PageContextExtractorJavaScriptFeatureTest,
   EXPECT_EQ(*p_text, "Green Text");
 
   // Check Color
-  // Green: (0, 255, 0) -> (0 << 24) | (255 << 16) | (0 << 8) | 255
-  // = 0 | 16711680 | 0 | 255 = 16711935
-  std::optional<double> color = p_text_node.FindDoubleByDottedPath(
+  // Green: (0, 255, 0) -> (255 << 24) | (0 << 16) | (255 << 8) | 0
+  // = 4278190080 | 0 | 65280 | 0 = 4278255360
+  const std::string* color_str = p_text_node.FindStringByDottedPath(
       "contentAttributes.textInfo.textStyle.color");
-  ASSERT_TRUE(color.has_value());
-  EXPECT_EQ(static_cast<uint32_t>(*color), 16711935u);
+  ASSERT_TRUE(color_str);
+  EXPECT_EQ(*color_str, "4278255360");
 }
 
 // Test the extraction of the table caption.
