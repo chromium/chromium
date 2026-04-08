@@ -57,6 +57,8 @@ class ActorLoginCredentialFiller {
   void AttemptLogin(
       password_manager::PasswordManagerInterface* password_manager);
 
+  bool should_store_permission() const { return should_store_permission_; }
+
  private:
   enum class FieldType { kUsername, kPassword };
 

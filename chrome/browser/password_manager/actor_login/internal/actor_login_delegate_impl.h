@@ -102,6 +102,11 @@ class ActorLoginDelegateImpl
   void ProcessFederatedResult(
       base::expected<LoginStatusResult, ActorLoginError> result);
 
+  // Called when `OnAttemptLoginCompleted` is invoked with a filling
+  // result for a password credential login.
+  void ProcessPasswordResult(
+      base::expected<LoginStatusResult, ActorLoginError> result);
+
   void OnActorTaskStateChanged(actor::ActorTask& task);
 
   void OnActionSequenceEnded(bool success);
@@ -114,6 +119,13 @@ class ActorLoginDelegateImpl
   // `signon_realm`, is used to identify it, so that we don't clean the
   // permission granted after disambiguation.
   void ClearConflictingPermissions(std::optional<std::string> signon_realm);
+
+  // Reset any pending state from a previous invocation. Most fields are reset
+  // when the corresponding request finishes, or the login succeeds or failed.
+  // However, the password manager cannot be fully relied upon to call the
+  // delegate back with the login result, so just in case, reset the fields
+  // which depend on it when a new `GetCredentials` request comes in.
+  void ResetState();
 
   // Helper methods for recording metrics.
   void RecordGetCredentialsMetricsAndResetHelper(
@@ -173,7 +185,7 @@ class ActorLoginDelegateImpl
   // Used to listen to whether the password login was successful.
   base::ScopedObservation<password_manager::PasswordManagerInterface,
                           password_manager::PasswordManagerInterface::Observer>
-      observation_{this};
+      password_manager_observation_{this};
 
   base::WeakPtrFactory<ActorLoginDelegateImpl> weak_ptr_factory_{this};
 

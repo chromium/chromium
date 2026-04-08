@@ -401,7 +401,6 @@ void ActorLoginFormFinder::OnAllEligibleChecksCompleted(
     EligibleManagersCallback callback,
     std::vector<std::pair<DriverFormKey, bool>> results) {
   std::vector<password_manager::PasswordFormManager*> eligible_managers;
-
   password_manager::PasswordFormCache* form_cache =
       client_->GetPasswordManager()->GetPasswordFormCache();
   CHECK(form_cache);

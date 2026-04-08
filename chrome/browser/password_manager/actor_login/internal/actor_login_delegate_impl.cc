@@ -122,6 +122,10 @@ void ActorLoginDelegateImpl::GetCredentials(
     return;
   }
 
+  // A new login attempt will be made. Reset the state from the previous
+  // attempt.
+  ResetState();
+
   metrics_helper_ = std::make_unique<ActorLoginMetricsHelper>(
       GetWebContents().GetPrimaryMainFrame()->GetPageUkmSourceId());
   metrics_helper_->OnGetCredentialsStarted();
@@ -178,7 +182,6 @@ void ActorLoginDelegateImpl::AttemptLogin(
     LoginStatusResultOrErrorReply done_callback,
     base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate) {
   CHECK(done_callback);
-
   // One request at a time mechanism using pending callbacks.
   // Check if either callback is currently active.
   if (get_credentials_helper_ || pending_attempt_login_done_callback_) {
@@ -257,22 +260,13 @@ void ActorLoginDelegateImpl::AttemptLogin(
       base::BindPostTaskToCurrentDefault(
           base::BindOnce(&ActorLoginDelegateImpl::OnAttemptLoginCompleted,
                          weak_ptr_factory_.GetWeakPtr())));
-  // If cleaning duplicate permissions is required, the user granted a new one
-  // and the login is being performed with a password, listen for the login
-  // success status to trigger the cleanup.
-  if (credential.type == CredentialType::kPassword && should_store_permission &&
-      found_conflicting_permissions_) {
-    observation_.Reset();
-    observation_.Observe(password_manager);
-  }
-
   credential_filler_->AttemptLogin(password_manager);
 }
 
 void ActorLoginDelegateImpl::OnLoginSuccessful(const PasswordForm& form) {
-  observation_.Reset();
-  if (!last_attempted_credential_ ||
-      last_attempted_credential_->type != CredentialType::kPassword) {
+  // TODO(crbug.com/486089293): Double check that it's impossible to reach
+  // this point if the credential is not a password and turn this into a CHECK.
+  if (last_attempted_credential_->type != CredentialType::kPassword) {
     return;
   }
 
@@ -280,14 +274,13 @@ void ActorLoginDelegateImpl::OnLoginSuccessful(const PasswordForm& form) {
     ClearConflictingPermissions(form.signon_realm);
   }
 
-  last_attempted_credential_.reset();
-  found_conflicting_permissions_ = false;
+  ResetState();
 }
 
 void ActorLoginDelegateImpl::WebContentsDestroyed() {
   get_credentials_helper_.reset();
   credential_filler_.reset();
-  observation_.Reset();
+  password_manager_observation_.Reset();
   client_ = nullptr;
 }
 
@@ -330,7 +323,11 @@ void ActorLoginDelegateImpl::OnGetCredentialsCompleted(
     CredentialsOrError result,
     bool conflicting_permissions) {
   get_credentials_helper_.reset();
-  found_conflicting_permissions_ = conflicting_permissions;
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kActorLoginConflictingPermissionCleanup)) {
+    found_conflicting_permissions_ = conflicting_permissions;
+  }
 
   RecordGetCredentialsMetricsAndResetHelper(result);
 
@@ -341,10 +338,13 @@ void ActorLoginDelegateImpl::OnAttemptLoginCompleted(
     base::expected<LoginStatusResult, ActorLoginError> result) {
   // There shouldn't be a pending request without a pending callback.
   CHECK(pending_attempt_login_done_callback_);
-  credential_filler_.reset();
 
+  // If this is the end of the login flow, the `last_attempted_credential_`
+  // will be reset.
   if (last_attempted_credential_->type == CredentialType::kFederated) {
     ProcessFederatedResult(result);
+  } else if (last_attempted_credential_->type == CredentialType::kPassword) {
+    ProcessPasswordResult(result);
   }
 
   // Record metrics by resetting the metrics helper.
@@ -375,15 +375,40 @@ void ActorLoginDelegateImpl::ProcessFederatedResult(
   if (result.has_value() &&
       result.value() == LoginStatusResult::kSuccessFederated &&
       found_conflicting_permissions_ &&
-      siwg_controller_->should_store_permission() &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::
-              kActorLoginConflictingPermissionCleanup)) {
+      siwg_controller_->should_store_permission()) {
     ClearConflictingPermissions(std::nullopt);
-    found_conflicting_permissions_ = false;
   }
-  last_attempted_credential_.reset();
+  // This is the end of the federated login flow, so reset the state.
+  ResetState();
   siwg_controller_.reset();
+}
+
+void ActorLoginDelegateImpl::ProcessPasswordResult(
+    base::expected<LoginStatusResult, ActorLoginError> result) {
+  bool should_store_permission = credential_filler_->should_store_permission();
+  credential_filler_.reset();
+
+  // Only listen for successful login if:
+  // - a new permission has been granted
+  // - conflicting permissions existed prior to that
+  // - filling succeeded (otherwise there can be no successful password login)
+  // This ensures that we only try to clear conflicting permissions if
+  // the conflict was resolved by the newly granted one.
+  if (!should_store_permission || !found_conflicting_permissions_) {
+    return;
+  }
+
+  if (!result.has_value() ||
+      (result.value() != LoginStatusResult::kSuccessPasswordFilled &&
+       result.value() != LoginStatusResult::kSuccessUsernameFilled &&
+       result.value() !=
+           LoginStatusResult::kSuccessUsernameAndPasswordFilled)) {
+    return;
+  }
+  // Don't reset state here. The password login flow ends when
+  // `OnLoginSucceeded` is called or if that doesn't happen, at the latest
+  // when a new request comes in.
+  password_manager_observation_.Observe(client_->GetPasswordManager());
 }
 
 void ActorLoginDelegateImpl::OnActionSequenceEnded(bool success) {
@@ -395,10 +420,7 @@ void ActorLoginDelegateImpl::OnActionSequenceEnded(bool success) {
     // doesn't correspond to the `last_attempted_credential_`.
     return;
   }
-  if (success && found_conflicting_permissions_ && should_store_permission &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::
-              kActorLoginConflictingPermissionCleanup)) {
+  if (success && found_conflicting_permissions_ && should_store_permission) {
     ClearConflictingPermissions(std::nullopt);
   }
   found_conflicting_permissions_ = false;
@@ -419,12 +441,6 @@ void ActorLoginDelegateImpl::OnActorTaskStateChanged(actor::ActorTask& task) {
 
 bool ActorLoginDelegateImpl::ShouldCleanUpConflictingPermissions(
     const PasswordForm& form) const {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::
-              kActorLoginConflictingPermissionCleanup)) {
-    return false;
-  }
-
   // If the latest request didn't find conflicting permissions, there is
   // nothing to clean up for the current credential configuration.
   if (!found_conflicting_permissions_) {
@@ -452,6 +468,13 @@ void ActorLoginDelegateImpl::ClearConflictingPermissions(
           Profile::FromBrowserContext(GetWebContents().GetBrowserContext()));
   cleaning_service->ClearConflictingPermissions(
       *last_attempted_credential_, signon_realm, base::DoNothing());
+}
+
+void ActorLoginDelegateImpl::ResetState() {
+  // TODO(crbug.com/500388451): Extract the fields and the logic in a
+  // permissions cleaner tracker to make the lifetime clearer.
+  password_manager_observation_.Reset();
+  found_conflicting_permissions_ = false;
 }
 
 void ActorLoginDelegateImpl::RecordGetCredentialsMetricsAndResetHelper(
