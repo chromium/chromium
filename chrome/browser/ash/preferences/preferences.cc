@@ -586,8 +586,8 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(prefs::kRecordArcAppSyncMetrics, false);
 
-  registry->RegisterBooleanPref(::prefs::kTPMFirmwareUpdateCleanupDismissed,
-                                false);
+  registry->RegisterBooleanPref(
+      ::ash::prefs::kTPMFirmwareUpdateCleanupDismissed, false);
 
   registry->RegisterBooleanPref(::prefs::kStartupBrowserWindowLaunchSuppressed,
                                 false);

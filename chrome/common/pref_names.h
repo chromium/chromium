@@ -643,24 +643,6 @@ inline constexpr char kTextToSpeechVolume[] = "settings.tts.speech_volume";
 inline constexpr char kManagedSessionUseFullLoginWarning[] =
     "managed_session.use_full_warning";
 
-// Boolean pref indicating whether the user has previously dismissed the
-// one-time notification indicating the need for a cleanup powerwash after TPM
-// firmware update that didn't flush the TPM SRK.
-inline constexpr char kTPMFirmwareUpdateCleanupDismissed[] =
-    "tpm_firmware_update.cleanup_dismissed";
-
-// Int64 pref indicating the time in microseconds since Windows epoch
-// (1601-01-01 00:00:00 UTC) when the notification informing the user about a
-// planned TPM update that will clear all user data was shown. If the
-// notification was not yet shown the pref holds the value Time::Min().
-inline constexpr char kTPMUpdatePlannedNotificationShownTime[] =
-    "tpm_auto_update.planned_notification_shown_time";
-
-// Boolean pref indicating whether the notification informing the user that an
-// auto-update that will clear all the user data at next reboot was shown.
-inline constexpr char kTPMUpdateOnNextRebootNotificationShown[] =
-    "tpm_auto_update.update_on_reboot_notification_shown";
-
 // Boolean pref indicating whether the NetBios Name Query Request Protocol is
 // used for discovering shares on the user's network by the Network File
 // Shares for Chrome OS feature.

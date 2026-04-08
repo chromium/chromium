@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/ash/tpm/tpm_firmware_update.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -201,7 +201,7 @@ TEST_F(TPMAutoUpdateModePolicyHandlerTest,
   // First notification was shown more than 24 hours ago.
   base::Time yesterday = base::Time::Now() - base::Hours(25);
   TestingBrowserProcess::GetGlobal()->local_state()->SetTime(
-      prefs::kTPMUpdatePlannedNotificationShownTime, yesterday);
+      ash::prefs::kTPMUpdatePlannedNotificationShownTime, yesterday);
 
   SetAutoUpdateMode(AutoUpdateMode::kUserAcknowledgment);
   base::RunLoop().RunUntilIdle();
@@ -274,7 +274,7 @@ TEST_F(TPMAutoUpdateModePolicyHandlerTest, UpdateWithUserAcknowlegment) {
 
   // Update at next reboot notification already shown.
   TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
-      prefs::kTPMUpdateOnNextRebootNotificationShown, true);
+      ash::prefs::kTPMUpdateOnNextRebootNotificationShown, true);
   SetAutoUpdateMode(AutoUpdateMode::kUserAcknowledgment);
   base::RunLoop().RunUntilIdle();
 

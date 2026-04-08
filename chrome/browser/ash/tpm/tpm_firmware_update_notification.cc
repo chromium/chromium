@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
@@ -51,7 +51,7 @@ class TPMFirmwareUpdateNotificationDelegate
   void Close(bool by_user) override {
     if (by_user) {
       profile_->GetPrefs()->SetBoolean(
-          prefs::kTPMFirmwareUpdateCleanupDismissed, true);
+          ash::prefs::kTPMFirmwareUpdateCleanupDismissed, true);
     }
   }
   void Click(const std::optional<int>& button_index,
@@ -68,8 +68,8 @@ class TPMFirmwareUpdateNotificationDelegate
           {.sub_page = chromeos::settings::mojom::kAboutChromeOsSectionPath});
     }
 
-    profile_->GetPrefs()->SetBoolean(prefs::kTPMFirmwareUpdateCleanupDismissed,
-                                     true);
+    profile_->GetPrefs()->SetBoolean(
+        ash::prefs::kTPMFirmwareUpdateCleanupDismissed, true);
     NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
         NotificationHandler::Type::TRANSIENT, kTPMFirmwareUpdateNotificationId);
   }
@@ -107,7 +107,7 @@ void OnAvailableUpdateModes(Profile* profile,
 
 void ShowNotificationIfNeeded(Profile* profile) {
   bool cleanup_dismissed = profile->GetPrefs()->GetBoolean(
-      prefs::kTPMFirmwareUpdateCleanupDismissed);
+      ash::prefs::kTPMFirmwareUpdateCleanupDismissed);
   if (cleanup_dismissed) {
     return;
   }

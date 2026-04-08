@@ -6,12 +6,12 @@
 
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/browser/ash/tpm/tpm_firmware_update.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -192,11 +192,11 @@ void TPMAutoUpdateModePolicyHandler::ShowTPMAutoUpdateNotification(
   }
 
   base::Time notification_shown =
-      local_state_->GetTime(prefs::kTPMUpdatePlannedNotificationShownTime);
+      local_state_->GetTime(ash::prefs::kTPMUpdatePlannedNotificationShownTime);
 
   if (notification_shown == base::Time::Min()) {
     notification_shown = base::Time::Now();
-    local_state_->SetTime(prefs::kTPMUpdatePlannedNotificationShownTime,
+    local_state_->SetTime(ash::prefs::kTPMUpdatePlannedNotificationShownTime,
                           notification_shown);
     show_notification_callback_.Run(
         ash::TpmAutoUpdateUserNotification::kPlanned);
@@ -226,20 +226,20 @@ void TPMAutoUpdateModePolicyHandler::ShowTPMAutoUpdateNotification(
 bool TPMAutoUpdateModePolicyHandler::
     WasTPMUpdateOnNextRebootNotificationShown() {
   return local_state_->GetBoolean(
-      prefs::kTPMUpdateOnNextRebootNotificationShown);
+      ash::prefs::kTPMUpdateOnNextRebootNotificationShown);
 }
 
 // static
 void TPMAutoUpdateModePolicyHandler::RegisterPrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterTimePref(prefs::kTPMUpdatePlannedNotificationShownTime,
+  registry->RegisterTimePref(ash::prefs::kTPMUpdatePlannedNotificationShownTime,
                              base::Time::Min());
-  registry->RegisterBooleanPref(prefs::kTPMUpdateOnNextRebootNotificationShown,
-                                false);
+  registry->RegisterBooleanPref(
+      ash::prefs::kTPMUpdateOnNextRebootNotificationShown, false);
 }
 
 void TPMAutoUpdateModePolicyHandler::ShowTPMUpdateOnNextRebootNotification() {
-  local_state_->SetBoolean(prefs::kTPMUpdateOnNextRebootNotificationShown,
+  local_state_->SetBoolean(ash::prefs::kTPMUpdateOnNextRebootNotificationShown,
                            true);
 
   show_notification_callback_.Run(
