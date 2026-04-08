@@ -7983,6 +7983,24 @@
             ]
         }
     ],
+    "DesktopAppOriginMigration": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebAppMigrationApi"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopCapturePermissionCheckerPreMacos14_4": [
         {
             "platforms": [
