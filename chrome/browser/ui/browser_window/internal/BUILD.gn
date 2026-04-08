@@ -51,7 +51,10 @@ source_set("internal") {
       "embedder_browser_window_features.cc",
       "global_browser_collection_platform_delegate_non_android.cc",
     ]
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+    public_deps = [
+      "//chrome/browser:browser_public_dependencies",
+      "//chrome/browser/ui/zoom:browser_window_zoom_observer",
+    ]
 
     deps += [
       "//chrome/browser:global_features",

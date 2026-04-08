@@ -542,7 +542,6 @@ class BrowserView : public BrowserWindow,
                           int index,
                           int reason) override;
   void OnTabDetached(content::WebContents* contents, bool was_active) override;
-  void ZoomChangedForActiveTab(bool can_show_bubble) override;
   gfx::Rect GetRestoredBounds() const override;
   ui::mojom::WindowShowState GetRestoredState() const override;
   gfx::Rect GetBounds() const override;
@@ -1127,6 +1126,9 @@ class BrowserView : public BrowserWindow,
   // Called by BrowserWindowThemeObserver when the theme changes.
   void UserChangedTheme(BrowserThemeChangeType theme_change_type);
 
+  // Called by BrowserWindowZoomObserver when zoom changes on the active tab.
+  void ZoomChangedForActiveTab(bool can_show_bubble);
+
   void UpdateAccessibleNameForRootView();
   void UpdateAccessibleURLForRootView(const GURL& url);
 
@@ -1450,6 +1452,8 @@ class BrowserView : public BrowserWindow,
   base::CallbackListSubscription on_locked_task_subscription_;
 
   base::CallbackListSubscription theme_changed_subscription_;
+
+  base::CallbackListSubscription zoom_changed_subscription_;
 
   // Bitmask of current combination of reparenting states, e.g. immersive and
   // ChromeOS tablet modes.

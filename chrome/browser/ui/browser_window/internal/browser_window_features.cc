@@ -153,6 +153,7 @@
 #include "chrome/browser/ui/webui_browser/webui_browser_exclusive_access_context.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_side_panel_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
+#include "chrome/browser/ui/zoom/browser_window_zoom_observer.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/breadcrumbs/core/breadcrumbs_status.h"
@@ -496,6 +497,10 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   browser_window_theme_observer_ =
       GetUserDataFactory().CreateInstance<BrowserWindowThemeObserver>(*browser,
                                                                       browser);
+
+  browser_window_zoom_observer_ =
+      GetUserDataFactory().CreateInstance<BrowserWindowZoomObserver>(*browser,
+                                                                     browser);
 
   call_to_action_lock_ =
       GetUserDataFactory().CreateInstance<CallToActionLock>(*browser, browser);

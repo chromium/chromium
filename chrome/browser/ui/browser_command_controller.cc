@@ -1939,7 +1939,6 @@ void BrowserCommandController::UpdateCommandsForTabState() {
   // Page-related commands
   window()->SetStarredState(
       BookmarkTabHelper::FromWebContents(current_web_contents)->is_starred());
-  window()->ZoomChangedForActiveTab(false);
   command_updater_.UpdateCommandEnabled(IDC_VIEW_SOURCE,
                                         CanViewSource(browser_));
 

@@ -90,7 +90,6 @@ class WebUIBrowserWindow : public BrowserWindow,
                           int index,
                           int reason) override;
   void OnTabDetached(content::WebContents* contents, bool was_active) override;
-  void ZoomChangedForActiveTab(bool can_show_bubble) override;
   bool ShouldHideUIForFullscreen() const override;
   bool IsFullscreenBubbleVisible() const override;
   bool IsForceFullscreen() const override;

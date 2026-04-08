@@ -110,6 +110,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/user_manager/user_manager_pref_names.h"
+#include "components/zoom/zoom_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"

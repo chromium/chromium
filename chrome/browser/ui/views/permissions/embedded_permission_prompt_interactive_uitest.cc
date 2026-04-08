@@ -38,6 +38,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "components/zoom/zoom_controller.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_devtools_protocol_client.h"

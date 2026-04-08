@@ -25,6 +25,25 @@ source_set("zoom") {
 }
 
 if (!is_android) {
+  source_set("browser_window_zoom_observer") {
+    sources = [
+      "browser_window_zoom_observer.cc",
+      "browser_window_zoom_observer.h",
+    ]
+
+    public_deps = [
+      "//base",
+      "//chrome/browser/ui/tabs:tab_strip_model_observer",
+      "//components/zoom",
+      "//ui/base/unowned_user_data",
+    ]
+
+    deps = [
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip",
+    ]
+  }
+
   source_set("unit_tests") {
     testonly = true
     sources = [ "zoom_controller_unittest.cc" ]

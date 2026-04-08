@@ -43,6 +43,7 @@ class BrowserUserEducationInterface;
 class BrowserView;
 class BrowserWindowInterface;
 class BrowserWindowThemeObserver;
+class BrowserWindowZoomObserver;
 class CallToActionLock;
 class ChromeLabsCoordinator;
 class ColorProviderBrowserHelper;
@@ -797,6 +798,8 @@ class BrowserWindowFeatures {
       contextual_cueing_controller_;
 
   std::unique_ptr<BrowserWindowThemeObserver> browser_window_theme_observer_;
+
+  std::unique_ptr<BrowserWindowZoomObserver> browser_window_zoom_observer_;
 
   // Keep this member last to ensure embedder features are torn down first, in
   // reverse order of initialization.

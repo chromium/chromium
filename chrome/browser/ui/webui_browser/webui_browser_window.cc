@@ -701,10 +701,6 @@ void WebUIBrowserWindow::OnTabDetached(content::WebContents* contents,
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-void WebUIBrowserWindow::ZoomChangedForActiveTab(bool can_show_bubble) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
 bool WebUIBrowserWindow::ShouldHideUIForFullscreen() const {
   NOTIMPLEMENTED_LOG_ONCE();
   return false;

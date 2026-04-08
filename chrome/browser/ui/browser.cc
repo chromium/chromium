@@ -202,7 +202,6 @@
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
-#include "components/zoom/zoom_controller.h"
 #include "content/public/browser/color_chooser.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/file_select_listener.h"
@@ -2955,22 +2954,6 @@ void Browser::URLStarredChanged(content::WebContents* web_contents,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Browser, ZoomObserver implementation:
-
-void Browser::OnZoomControllerDestroyed(zoom::ZoomController* zoom_controller) {
-  // SetAsDelegate() takes care of removing the observers.
-}
-
-void Browser::OnZoomChanged(
-    const zoom::ZoomController::ZoomChangedEventData& data) {
-  if (data.web_contents == tab_strip_model_->GetActiveWebContents()) {
-    window_->ZoomChangedForActiveTab(data.can_show_bubble);
-    // Change the zoom commands state based on the zoom state
-    GetCommandController()->ZoomStateChanged();
-  }
-}
-
-///////////////////////////////////////////////////////////////////////////////
 // Browser, Command and state updating (private):
 
 void Browser::OnTabInsertedAt(WebContents* contents, int index) {
@@ -3553,14 +3536,10 @@ void Browser::SetAsDelegate(WebContents* web_contents, bool set_delegate) {
   // ...and all the helpers.
   WebContentsModalDialogManager::FromWebContents(web_contents)
       ->SetDelegate(delegate);
-  zoom::ZoomController* zoom_controller =
-      zoom::ZoomController::FromWebContents(web_contents);
   if (delegate) {
-    zoom_controller->AddObserver(this);
     BookmarkTabHelper::FromWebContents(web_contents)->AddObserver(this);
     web_contents_collection_.StartObserving(web_contents);
   } else {
-    zoom_controller->RemoveObserver(this);
     BookmarkTabHelper::FromWebContents(web_contents)->RemoveObserver(this);
     web_contents_collection_.StopObserving(web_contents);
   }

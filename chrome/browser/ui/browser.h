@@ -39,7 +39,6 @@
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/core/session_id.h"
-#include "components/zoom/zoom_observer.h"
 #include "content/public/browser/fullscreen_types.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
@@ -123,7 +122,6 @@ class Browser : public TabStripModelObserver,
                 public content::WebContentsDelegate,
                 public ChromeWebModalDialogManagerDelegate,
                 public BookmarkTabHelperObserver,
-                public zoom::ZoomObserver,
                 public BrowserWindowInterface,
                 public DesktopBrowserWindowCapabilitiesDelegate {
  public:
@@ -1041,12 +1039,6 @@ class Browser : public TabStripModelObserver,
   // Overridden from BookmarkTabHelperObserver:
   void URLStarredChanged(content::WebContents* web_contents,
                          bool starred) override;
-
-  // Overridden from ZoomObserver:
-  void OnZoomControllerDestroyed(
-      zoom::ZoomController* zoom_controller) override;
-  void OnZoomChanged(
-      const zoom::ZoomController::ZoomChangedEventData& data) override;
 
   // Command and state updating ///////////////////////////////////////////////
 
