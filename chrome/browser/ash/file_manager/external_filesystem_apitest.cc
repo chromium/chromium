@@ -768,9 +768,7 @@ IN_PROC_BROWSER_TEST_F(LocalFileSystemExtensionApiTest, DefaultFileHandler) {
 //
 // DriveFileSystemExtensionApiTests.
 //
-// This test is flaky. See https://crbug.com/1008880.
-IN_PROC_BROWSER_TEST_F(DriveFileSystemExtensionApiTest,
-                       DISABLED_FileSystemOperations) {
+IN_PROC_BROWSER_TEST_F(DriveFileSystemExtensionApiTest, FileSystemOperations) {
   EXPECT_TRUE(RunFileSystemExtensionApiTest(
       "file_browser/filesystem_operations_test",
       FILE_PATH_LITERAL("manifest.json"), "", FLAGS_NONE))
