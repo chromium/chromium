@@ -630,7 +630,6 @@ UpdateEndEvent& UpdateEndEvent::AddUpdateState(
     UpdateService::UpdateState::State state) {
   update_states_.push_back(
       State{.deviceUptime = base::SysInfo::Uptime(), .state = state});
-  outcome_ = state;
   return *this;
 }
 
@@ -643,11 +642,6 @@ std::optional<base::DictValue> UpdateEndEvent::BuildInternal(
     base::DictValue event) const {
   event.Set("eventType", "UPDATE");
   event.Set("bound", "END");
-  if (outcome_) {
-    // TODO(crbug.com/489810753): Stop recording `outcome` once Chrome no longer
-    // reads it.
-    event.Set("outcome", UpdateStateToString(*outcome_));
-  }
   if (next_version_) {
     event.Set("nextVersion", *next_version_);
   }

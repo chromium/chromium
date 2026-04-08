@@ -121,10 +121,6 @@ The schema defines the following event types:
     * `appId` (string): The ID of the application being checked.
     * `priority` (string): Enum: `"BACKGROUND"`, `"FOREGROUND"`.
   * `END`:
-    * ~~`outcome`~~ (string): The result of the update operation. Enum: possible
-      values are the upper snake case UpdaterState::State enum labels defined in
-      UpdateService. Includes `"UPDATED"`, `"NO_UPDATE"`, and `"UPDATE_ERROR"`.
-      **Deprecated:** superseded by `updateStates` and `result`.
     * `nextVersion` (string): The version of the application which the updater
       tried to update to.
     * `updateStates` (array): A sequence of details on the state of an update.

@@ -460,7 +460,6 @@ class UpdateEndEvent : public HistoryEventBuilder<UpdateEndEvent> {
   std::optional<base::DictValue> BuildInternal(
       base::DictValue event) const override;
 
-  std::optional<UpdateService::UpdateState::State> outcome_;
   std::optional<std::string> next_version_;
   std::vector<State> update_states_;
   std::optional<UpdateService::Result> result_;

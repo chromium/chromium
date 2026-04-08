@@ -601,7 +601,6 @@ TEST_F(EventHistoryTest, UpdateEndEventToDict) {
                   {"eventType", ValueIs("UPDATE")},
                   {"bound", ValueIs("END")},
                   {"eventId", ValueIs("test-event-id")},
-                  {"outcome", ValueIs("UPDATE_ERROR")},
                   {"nextVersion", ValueIs("1.2.3.4")},
                   {"updateStates",
                    ListValueElementsAre(ExpectedListElements(
