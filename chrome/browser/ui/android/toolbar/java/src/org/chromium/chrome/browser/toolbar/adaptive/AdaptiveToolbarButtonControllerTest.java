@@ -360,6 +360,72 @@ public class AdaptiveToolbarButtonControllerTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
+    public void testShowDynamicAction_suppressedByCurrentButton() {
+        Activity activity = Robolectric.setupActivity(Activity.class);
+
+        AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(
+                new Pair<>(true, List.of(AdaptiveToolbarButtonVariant.NEW_TAB)));
+
+        AdaptiveButtonActionMenuCoordinator menuCoordinator =
+                mock(AdaptiveButtonActionMenuCoordinator.class);
+
+        AdaptiveToolbarButtonController adaptiveToolbarButtonController =
+                new AdaptiveToolbarButtonController(
+                        activity,
+                        mActivityLifecycleDispatcher,
+                        mProfileSupplier,
+                        menuCoordinator,
+                        mToolbarBehavior,
+                        mAndroidPermissionDelegate);
+
+        // Register a mock provider with shouldSuppressCpa = true
+        ButtonDataProvider mockGlicProvider = mock(ButtonDataProvider.class);
+        adaptiveToolbarButtonController.addButtonVariant(
+                AdaptiveToolbarButtonVariant.GLIC, mockGlicProvider);
+
+        ButtonDataImpl glicButtonData = new ButtonDataImpl();
+        glicButtonData.setCanShow(true);
+        glicButtonData.setEnabled(true);
+        ButtonSpec glicSpec =
+                new ButtonSpec.Builder(null, "description", false)
+                        .setButtonVariant(AdaptiveToolbarButtonVariant.GLIC)
+                        .setShouldSuppressCpa(true)
+                        .build();
+        glicButtonData.setButtonSpec(glicSpec);
+
+        when(mockGlicProvider.get(any())).thenReturn(glicButtonData);
+
+        // Also register a CPA provider (e.g. price tracking)
+        adaptiveToolbarButtonController.addButtonVariant(
+                AdaptiveToolbarButtonVariant.PRICE_TRACKING, mPriceTrackingButtonController);
+
+        // Initialize tab supplier to avoid null check bailing
+        var tabSupplier = ObservableSuppliers.<Tab>createNullable();
+        tabSupplier.set(mTab);
+        adaptiveToolbarButtonController.initializePageLoadMetricsRecorder(tabSupplier);
+
+        mProfileSupplier.set(mProfile);
+
+        // Force the controller to use Glic as the single provider first.
+        adaptiveToolbarButtonController.showDynamicAction(AdaptiveToolbarButtonVariant.GLIC);
+
+        Assert.assertEquals(
+                mockGlicProvider, adaptiveToolbarButtonController.getSingleProviderForTesting());
+
+        // Now try to show a CPA action (PRICE_TRACKING).
+        adaptiveToolbarButtonController.showDynamicAction(
+                AdaptiveToolbarButtonVariant.PRICE_TRACKING);
+
+        // It should STILL be Glic provider because it suppressed CPA!
+        Assert.assertEquals(
+                mockGlicProvider, adaptiveToolbarButtonController.getSingleProviderForTesting());
+        activity.finish();
+        adaptiveToolbarButtonController.destroy();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
     public void testButtonOnLargeScreens() {
         // Screen is wide enough to fit the button, it should appear.
         mConfiguration.screenWidthDp = 450;

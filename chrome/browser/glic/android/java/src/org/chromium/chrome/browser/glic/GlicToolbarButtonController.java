@@ -103,12 +103,14 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
     private ButtonSpec createReviewSpec() {
         return new ButtonSpec.Builder(mDefaultSpec)
                 .setActionChipLabelResId(R.string.glic_button_status_review)
+                .setShouldSuppressCpa(true)
                 .build();
     }
 
     private ButtonSpec createDoneSpec() {
         return new ButtonSpec.Builder(mDefaultSpec)
                 .setActionChipLabelResId(R.string.glic_button_status_done)
+                .setShouldSuppressCpa(true)
                 .build();
     }
 
@@ -170,7 +172,10 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
         int spinnerInset = Math.round(-10 * density);
         layerDrawable.setLayerInset(0, spinnerInset, spinnerInset, spinnerInset, spinnerInset);
         layerDrawable.setLayerInset(1, sparkInset, sparkInset, sparkInset, sparkInset);
-        return new ButtonSpec.Builder(mDefaultSpec).setDrawable(layerDrawable).build();
+        return new ButtonSpec.Builder(mDefaultSpec)
+                .setDrawable(layerDrawable)
+                .setShouldSuppressCpa(true)
+                .build();
     }
 
     @Override

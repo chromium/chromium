@@ -60,6 +60,7 @@ public interface ButtonData {
         private final @StringRes int mTooltipTextResId;
         private final boolean mHasErrorBadge;
         private final boolean mIsChecked;
+        private final boolean mShouldSuppressCpa;
 
         private ButtonSpec(
                 @Nullable Drawable drawable,
@@ -72,7 +73,8 @@ public interface ButtonData {
                 int actionChipLabelResId,
                 int tooltipTextResId,
                 boolean hasErrorBadge,
-                boolean isChecked) {
+                boolean isChecked,
+                boolean shouldSuppressCpa) {
             mDrawable = drawable;
             mOnClickListener = onClickListener;
             mOnLongClickListener = onLongClickListener;
@@ -85,6 +87,7 @@ public interface ButtonData {
             mTooltipTextResId = tooltipTextResId;
             mHasErrorBadge = hasErrorBadge;
             mIsChecked = isChecked;
+            mShouldSuppressCpa = shouldSuppressCpa;
         }
 
         /** Builder for {@link ButtonSpec}. */
@@ -101,6 +104,7 @@ public interface ButtonData {
             private @StringRes int mTooltipTextResId = INVALID_TOOLTIP_TEXT_ID;
             private boolean mHasErrorBadge;
             private boolean mIsChecked;
+            private boolean mShouldSuppressCpa;
 
             /**
              * Creates a new {@link Builder} with the required properties.
@@ -135,6 +139,7 @@ public interface ButtonData {
                 mTooltipTextResId = buttonSpec.mTooltipTextResId;
                 mHasErrorBadge = buttonSpec.mHasErrorBadge;
                 mIsChecked = buttonSpec.mIsChecked;
+                mShouldSuppressCpa = buttonSpec.mShouldSuppressCpa;
             }
 
             public Builder setDrawable(@Nullable Drawable drawable) {
@@ -193,6 +198,11 @@ public interface ButtonData {
                 return this;
             }
 
+            public Builder setShouldSuppressCpa(boolean shouldSuppressCpa) {
+                mShouldSuppressCpa = shouldSuppressCpa;
+                return this;
+            }
+
             public ButtonSpec build() {
                 return new ButtonSpec(
                         mDrawable,
@@ -205,7 +215,8 @@ public interface ButtonData {
                         mActionChipLabelResId,
                         mTooltipTextResId,
                         mHasErrorBadge,
-                        mIsChecked);
+                        mIsChecked,
+                        mShouldSuppressCpa);
             }
         }
 
@@ -283,6 +294,11 @@ public interface ButtonData {
             return mIsChecked;
         }
 
+        /** Returns {@code true} if the button should suppress Contextual Page Actions. */
+        public boolean shouldSuppressCpa() {
+            return mShouldSuppressCpa;
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) {
@@ -297,6 +313,7 @@ public interface ButtonData {
                     && mIsDynamicAction == that.mIsDynamicAction
                     && mActionChipLabelResId == that.mActionChipLabelResId
                     && mIsChecked == that.mIsChecked
+                    && mShouldSuppressCpa == that.mShouldSuppressCpa
                     && Objects.equals(mDrawable, that.mDrawable)
                     && Objects.equals(mOnClickListener, that.mOnClickListener)
                     && Objects.equals(mOnLongClickListener, that.mOnLongClickListener)
@@ -315,7 +332,9 @@ public interface ButtonData {
                     mIphCommandBuilder,
                     mButtonVariant,
                     mIsDynamicAction,
-                    mActionChipLabelResId);
+                    mActionChipLabelResId,
+                    mIsChecked,
+                    mShouldSuppressCpa);
         }
     }
 }

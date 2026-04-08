@@ -100,6 +100,7 @@ public class AdaptiveToolbarButtonController
     private @AdaptiveToolbarButtonVariant int mSessionButtonVariant =
             AdaptiveToolbarButtonVariant.UNKNOWN;
     private @Nullable CurrentTabObserver mPageLoadMetricsRecorder;
+    private @Nullable NullableObservableSupplier<Tab> mTabSupplier;
 
     /**
      * Constructs the {@link AdaptiveToolbarButtonController}.
@@ -376,6 +377,15 @@ public class AdaptiveToolbarButtonController
 
     /** Called to notify the controller that a dynamic action is available and should be shown. */
     public void showDynamicAction(@AdaptiveToolbarButtonVariant int action) {
+        if (mSingleProvider != null && mTabSupplier != null) {
+            Tab currentTab = mTabSupplier.get();
+            if (currentTab != null) {
+                ButtonData currentData = mSingleProvider.get(currentTab);
+                if (currentData != null && currentData.getButtonSpec().shouldSuppressCpa()) {
+                    return;
+                }
+            }
+        }
         int actionToShow =
                 action != AdaptiveToolbarButtonVariant.UNKNOWN ? action : mSessionButtonVariant;
         RecordHistogram.recordEnumeratedHistogram(
@@ -396,6 +406,7 @@ public class AdaptiveToolbarButtonController
      * @param tabSupplier Supplier of current tab.
      */
     public void initializePageLoadMetricsRecorder(NullableObservableSupplier<Tab> tabSupplier) {
+        mTabSupplier = tabSupplier;
         if (mPageLoadMetricsRecorder != null) return;
         mPageLoadMetricsRecorder =
                 new CurrentTabObserver(
