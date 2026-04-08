@@ -54,8 +54,8 @@ bool LanguageDetectionModel::IsAvailable() const {
 }
 
 std::string LanguageDetectionModel::DeterminePageLanguage(
-    const std::string& code,
-    const std::string& html_lang,
+    std::string_view code,
+    std::string_view html_lang,
     const std::u16string& contents,
     std::string* predicted_language,
     bool* is_prediction_reliable,

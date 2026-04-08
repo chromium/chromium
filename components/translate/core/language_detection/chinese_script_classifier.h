@@ -7,6 +7,8 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
+
 #include "third_party/icu/source/common/unicode/uniset.h"
 
 namespace translate {
@@ -24,7 +26,7 @@ class ChineseScriptClassifier {
   // matching the input.
   //
   // Behavior is undefined for non-Chinese input.
-  std::string Classify(const std::string& input) const;
+  std::string Classify(std::string_view input) const;
 
   // Returns true if the underlying transliterators were properly initialized
   // by the constructor.
