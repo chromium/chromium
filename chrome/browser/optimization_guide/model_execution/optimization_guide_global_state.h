@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -14,11 +15,10 @@
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/delivery/prediction_manager.h"
 #include "components/optimization_guide/core/delivery/prediction_model_store.h"
-#include "components/optimization_guide/core/model_execution/model_broker_state.h"
-#include "components/optimization_guide/core/model_execution/on_device_asset_manager.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "services/on_device_model/public/cpp/buildflags.h"
+#include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/optimization_guide/core/model_execution/android/model_broker_android.h"
@@ -26,7 +26,10 @@
 
 namespace optimization_guide {
 
+BASE_DECLARE_FEATURE(kOptimizationGuideManifestBroker);
+
 class ChromeModelComponentStateManagerObserver;
+class ModelBrokerState;
 class OptimizationGuideGlobalFeature;
 class OptimizationGuideGlobalStateTest;
 
@@ -62,10 +65,10 @@ class OptimizationGuideGlobalState final
 #if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
   // This accessor is mainly for the chrome://on-device-internals page and
   // tests.
-  ModelBrokerState* model_broker_state() { return &on_device_capability_; }
+  ModelBrokerState* model_broker_state();
 #endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 
-  OnDeviceCapability& on_device_capability() { return on_device_capability_; }
+  OnDeviceCapability& on_device_capability() { return *on_device_capability_; }
 
   PredictionModelStore& prediction_model_store() {
     return prediction_manager_.prediction_model_store();
@@ -94,14 +97,10 @@ class OptimizationGuideGlobalState final
 #endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 
   ChromePredictionManager prediction_manager_;
+  std::unique_ptr<OnDeviceCapability> on_device_capability_;
 #if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-  ModelBrokerState on_device_capability_;
   std::unique_ptr<ChromeModelComponentStateManagerObserver>
       component_state_manager_observer_;
-#elif BUILDFLAG(IS_ANDROID)
-  ModelBrokerAndroid on_device_capability_;
-#else
-  OnDeviceCapability on_device_capability_;
 #endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 
   base::WeakPtrFactory<OptimizationGuideGlobalState> weak_ptr_factory_{this};

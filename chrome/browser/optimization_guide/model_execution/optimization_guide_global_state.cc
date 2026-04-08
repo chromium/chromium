@@ -20,6 +20,8 @@
 #include "chrome/common/chrome_paths.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/delivery/prediction_manager.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/manifest_broker_state.h"
+#include "components/optimization_guide/core/model_execution/model_broker_state.h"
 #include "components/optimization_guide/core/model_execution/on_device_asset_manager.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
@@ -32,6 +34,9 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace optimization_guide {
+
+BASE_FEATURE(kOptimizationGuideManifestBroker,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
@@ -140,42 +145,62 @@ ChromePredictionManager::~ChromePredictionManager() = default;
 
 #if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 OptimizationGuideGlobalState::OptimizationGuideGlobalState(
-    LaunchServiceCallback launch_service_callback)
-    : on_device_capability_(
-          *g_browser_process->local_state(),
-          prediction_manager_.prediction_manager(),
-          component_updater::
-              CreateOptimizationGuideOnDeviceModelComponentDelegate(
-                  component_updater::OnDeviceModelType::kBaseModel),
-          component_updater::
-              CreateOptimizationGuideOnDeviceModelComponentDelegate(
-                  component_updater::OnDeviceModelType::kClassifierModel),
-          launch_service_callback,
-          g_browser_process->component_updater()) {
+    LaunchServiceCallback launch_service_callback) {
+  if (base::FeatureList::IsEnabled(kOptimizationGuideManifestBroker)) {
+    on_device_capability_ = std::make_unique<ManifestBrokerState>(
+        *g_browser_process->local_state(),
+        component_updater::CreateManifestAssetManagerDelegate(),
+        launch_service_callback);
+    // TODO(b/489510258): ScheduleEvaluation and record metrics / trials
+    return;
+  }
+
+  auto model_broker_state = std::make_unique<ModelBrokerState>(
+      *g_browser_process->local_state(),
+      prediction_manager_.prediction_manager(),
+      component_updater::CreateOptimizationGuideOnDeviceModelComponentDelegate(
+          component_updater::OnDeviceModelType::kBaseModel),
+      component_updater::CreateOptimizationGuideOnDeviceModelComponentDelegate(
+          component_updater::OnDeviceModelType::kClassifierModel),
+      launch_service_callback, g_browser_process->component_updater());
+
   component_state_manager_observer_ =
       std::make_unique<ChromeModelComponentStateManagerObserver>(
-          on_device_capability_.component_state_manager().GetWeakPtr());
+          model_broker_state->component_state_manager().GetWeakPtr());
 
-  on_device_capability_.performance_classifier()
+  model_broker_state->performance_classifier()
       .ListenForPerformanceClassAvailable(
           base::BindOnce(&ChromeOnDeviceModelServiceController::
                              RegisterPerformanceClassSyntheticTrial));
-  on_device_capability_.performance_classifier()
+  model_broker_state->performance_classifier()
       .ListenForPerformanceClassAvailable(base::BindOnce(
           &OnDeviceModelComponentStateManager::GetFreeDiskSpaceForLogging,
-          on_device_capability_.component_state_manager().GetWeakPtr(),
+          model_broker_state->component_state_manager().GetWeakPtr(),
           base::BindOnce(&LogFreeDiskSpace)));
-  on_device_capability_.performance_classifier().ScheduleEvaluation();
+  model_broker_state->performance_classifier().ScheduleEvaluation();
+
+  on_device_capability_ = std::move(model_broker_state);
 }
-#else
-OptimizationGuideGlobalState::OptimizationGuideGlobalState()
-    : on_device_capability_(
+
+ModelBrokerState* OptimizationGuideGlobalState::model_broker_state() {
+  if (base::FeatureList::IsEnabled(kOptimizationGuideManifestBroker)) {
+    return nullptr;
+  }
+  return static_cast<ModelBrokerState*>(on_device_capability_.get());
+}
+#else  // !BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 #if BUILDFLAG(IS_ANDROID)
-          *g_browser_process->local_state(),
-          prediction_manager_.prediction_manager()
-#endif  // BUILDFLAG(IS_ANDROID)
-      ) {
+OptimizationGuideGlobalState::OptimizationGuideGlobalState() {
+  on_device_capability_ = std::make_unique<ModelBrokerAndroid>(
+      *g_browser_process->local_state(),
+      prediction_manager_.prediction_manager());
 }
+#else   // !BUILDFLAG(IS_ANDROID)
+OptimizationGuideGlobalState::OptimizationGuideGlobalState() {
+  // Create a stub capability that can't do anything.
+  on_device_capability_ = std::make_unique<OnDeviceCapability>();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 
 OptimizationGuideGlobalState::~OptimizationGuideGlobalState() = default;
