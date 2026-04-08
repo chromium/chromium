@@ -6,6 +6,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
+#include "base/test/values_test_util.h"
 #include "base/types/optional_ref.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend_impl.h"
 #include "components/optimization_guide/proto/features/content_annotation.pb.h"
@@ -17,8 +18,7 @@
 namespace accessibility_annotator {
 namespace {
 
-using ::testing::Eq;
-using ::testing::Pointee;
+using ::base::test::DictionaryHasValues;
 
 class AccessibilityAnnotatorBackendTest : public testing::Test {
  public:
@@ -96,20 +96,57 @@ TEST_F(AccessibilityAnnotatorBackendTest, GetDebugUICacheDataWithEntries) {
   ASSERT_EQ(list.size(), 1u);
 
   const base::DictValue& entry = list[0].GetDict();
-  EXPECT_THAT(entry.FindString("url"), Pointee(Eq(url.spec())));
-  EXPECT_THAT(entry.FindString("title"), Pointee(Eq(page_title)));
-  EXPECT_THAT(entry.FindInt("tab_id"), 123);
+  EXPECT_THAT(entry,
+              DictionaryHasValues(
+                  base::DictValue()
+                      .Set("url", url.spec())
+                      .Set("title", page_title)
+                      .Set("tab_id", 123)
+                      .Set("annotations", annotations.Clone())
+                      .Set("classifier_results", classifier_results.Clone())));
+}
 
-  const base::DictValue* annotations_dict = entry.FindDict("annotations");
-  ASSERT_TRUE(annotations_dict);
-  EXPECT_THAT(annotations_dict->FindString("1"), Pointee(Eq("value1")));
-  EXPECT_THAT(annotations_dict->FindString("2"), Pointee(Eq("value2")));
+TEST_F(AccessibilityAnnotatorBackendTest, GetDebugUICacheDataWithProtoEntries) {
+  GURL url("https://example.com/path?query=1&other=2");
+  std::string page_title = "Test Page Title";
+  optimization_guide::proto::ContentAnnotation content_annotation;
+  content_annotation.set_description("Test annotation description");
+  content_annotation.set_status(
+      optimization_guide::proto::ContentAnnotation::CONFIRMED);
+  auto* order = content_annotation.mutable_structured_data()->add_orders();
+  order->set_id("order_123");
 
-  const base::DictValue* classifier_results_dict =
-      entry.FindDict("classifier_results");
-  ASSERT_TRUE(classifier_results_dict);
-  EXPECT_THAT(classifier_results_dict->FindString("url_match_result"),
-              Pointee(Eq("test category")));
+  base::DictValue classifier_results;
+  classifier_results.Set("url_match_result", "test category");
+
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data;
+  data.page_title = page_title;
+  data.classifier_results = classifier_results.Clone();
+  data.content_annotation = content_annotation;
+  backend_->SetContentAnnotationsCacheData(url, std::move(data));
+
+  base::Value result = backend_->GetDebugUICacheData();
+  ASSERT_TRUE(result.is_list());
+  const base::ListValue& list = result.GetList();
+  ASSERT_EQ(list.size(), 1u);
+
+  const base::DictValue& entry = list[0].GetDict();
+  EXPECT_THAT(
+      entry,
+      DictionaryHasValues(
+          base::DictValue()
+              .Set("url", url.spec())
+              .Set("title", page_title)
+              .Set("classifier_results", classifier_results.Clone())
+              .Set("content_annotation",
+                   base::DictValue()
+                       .Set("description", "Test annotation description")
+                       .Set("status", "CONFIRMED")
+                       .Set("structured_data",
+                            base::DictValue().Set(
+                                "orders",
+                                base::ListValue().Append(base::DictValue().Set(
+                                    "id", "order_123")))))));
 }
 
 TEST_F(AccessibilityAnnotatorBackendTest,

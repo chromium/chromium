@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/proto_extras/proto_extras.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 if (is_android) {
@@ -58,4 +59,16 @@ if (is_android) {
     proto_path = "."
     sources = _proto_files
   }
+}
+
+proto_extras("metrics_proto_with_extension_and_system_extras") {
+  sources = [
+    "extension_install.proto",
+    "system_profile.proto",
+  ]
+  proto_in_dir = "."
+  deps = [ ":metrics_proto" ]
+
+  # Ensure the plugin can resolve its own imports.
+  import_dirs = [ "//third_party/metrics_proto/" ]
 }

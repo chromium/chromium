@@ -51,6 +51,7 @@
 # - extras_deps: These are the proto_extras targets for any proto dependencies.
 # - defines: This is forwarded to all generated targets.
 # - visibility: This is forwarded to all generated targets.
+# - import_dirs: These include paths are passed down to the proto_library targets.
 #
 # The functionality is split up per-file (instead of everything in a 'utils' or
 # 'extras' file) as per go/no-utils guidance. This:
@@ -145,6 +146,7 @@ template("proto_extras") {
                              [
                                "deps",
                                "defines",
+                               "import_dirs",
                                "sources",
                                "visibility",
                              ])
@@ -182,6 +184,7 @@ template("proto_extras") {
       forward_variables_from(invoker,
                              [
                                "defines",
+                               "import_dirs",
                                "sources",
                                "visibility",
                              ])
@@ -209,6 +212,7 @@ template("proto_extras") {
                              [
                                "deps",
                                "defines",
+                               "import_dirs",
                                "sources",
                                "visibility",
                              ])
@@ -316,6 +320,7 @@ template("proto_test_extras") {
                              "defines",
                              "visibility",
                              "deps",
+                             "import_dirs",
                              "sources",
                            ])
     generator_plugin_label =

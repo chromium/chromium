@@ -41,6 +41,13 @@ class MetricsProtoCheckerTest(unittest.TestCase):
     ]
     self.assertEqual(0, len(PRESUBMIT.CheckChange(input_api, MockOutputApi())))
 
+  def testModifiedBuildGn(self):
+    input_api = MockInputApi()
+    input_api.files = [
+      MockAffectedFile(FullPath(PRESUBMIT.BUILD_GN), 'some diff'),
+    ]
+    self.assertEqual(0, len(PRESUBMIT.CheckChange(input_api, MockOutputApi())))
+
   def testExcludedPaths(self):
     input_api = MockInputApi()
     input_api.files = [
@@ -49,6 +56,7 @@ class MetricsProtoCheckerTest(unittest.TestCase):
       MockAffectedFile(FullPath('PRESUBMIT_test.py'), 'some diff'),
       MockAffectedFile(FullPath('OWNERS'), 'some diff'),
       MockAffectedFile(FullPath('DIR_METADATA'), 'some diff'),
+      MockAffectedFile(FullPath('BUILD.gn'), 'some diff'),
     ]
     self.assertEqual(0, len(PRESUBMIT.CheckChange(input_api, MockOutputApi())))
 

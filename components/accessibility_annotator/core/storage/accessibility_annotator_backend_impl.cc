@@ -17,6 +17,7 @@
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_database.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/optimization_guide/proto/features/content_annotation.to_value.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 
@@ -144,7 +145,10 @@ base::Value AccessibilityAnnotatorBackendImpl::GetDebugUICacheData() const {
     if (item.second.annotations) {
       entry.Set("annotations", item.second.annotations->Clone());
     }
-    // TODO(crbug.com/497903571): Add content annotation to entry.
+    if (item.second.content_annotation) {
+      entry.Set("content_annotation", optimization_guide::proto::ToValue(
+                                          *item.second.content_annotation));
+    }
     result.Append(std::move(entry));
   }
   return base::Value(std::move(result));

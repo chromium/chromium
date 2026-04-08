@@ -23,6 +23,7 @@ source_set("storage") {
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/optimization_guide/proto:optimization_guide_proto_extras",
     "//components/sync/base",
     "//components/sync/model",
     "//sql",
