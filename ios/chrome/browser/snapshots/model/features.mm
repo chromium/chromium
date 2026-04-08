@@ -12,3 +12,9 @@ BASE_FEATURE(kSnapshotCompressedJPEGQuality,
 bool IsSnapshotCompressedJPEGQualityEnabled() {
   return base::FeatureList::IsEnabled(kSnapshotCompressedJPEGQuality);
 }
+
+BASE_FEATURE(kSnapshotDownsampleImage, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsSnapshotDownsampleImageEnabled() {
+  return base::FeatureList::IsEnabled(kSnapshotDownsampleImage);
+}

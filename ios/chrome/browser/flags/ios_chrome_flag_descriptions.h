@@ -974,6 +974,9 @@ extern const char kSmoothScrollingUseDelegateDescription[];
 extern const char kSnapshotCompressedJPEGQualityName[];
 extern const char kSnapshotCompressedJPEGQualityDescription[];
 
+extern const char kSnapshotDownsampleImageName[];
+extern const char kSnapshotDownsampleImageDescription[];
+
 extern const char kStrokesAPIEnabledName[];
 extern const char kStrokesAPIEnabledDescription[];
 

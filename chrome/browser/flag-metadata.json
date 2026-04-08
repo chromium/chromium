@@ -8603,6 +8603,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "snapshot-downsample-image",
+    "owners": [ "asamidoi@chromium.org", "justincohen@chromium.org" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "soft-navigation-heuristics",
     "owners": [ "speed-metrics-dev@chromium.org", "johannes@chromium.org", "shaseley@chromium.org" ],
     "expiry_milestone": 160

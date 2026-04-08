@@ -95,14 +95,19 @@ let kLRUCacheAdditionalCapacityForPinnedTabsEnabled = 4
     }
   }
 
-  // Sets the image in both the LRU cache and the disk.
+  // Sets the image in both the LRU cache and the disk. The full-resolution
+  // image is kept in the LRU cache for sharp in-session display and zoom
+  // transitions. A downsampled copy is written to disk to reduce storage and
+  // I/O.
   public func setImage(_ image: UIImage?, withSnapshotID snapshotID: SnapshotIDWrapper) {
     guard let image = image, snapshotID.valid() else {
       return
     }
 
     lruCache.setObject(value: image, forKey: snapshotID)
-    fileManager.write(image: image, snapshotID: snapshotID)
+    let imageToWrite = IsSnapshotDownsampleImageEnabled()
+      ? Self.downsampledForStorage(image) : image
+    fileManager.write(image: imageToWrite, snapshotID: snapshotID)
 
     for observer in observers {
       observer.value?.didUpdateSnapshotStorage?(snapshotID: snapshotID)
@@ -231,5 +236,19 @@ let kLRUCacheAdditionalCapacityForPinnedTabsEnabled = 4
   // Removes all UIImages from the cache.
   @objc fileprivate func handleEnterBackground() {
     lruCache.removeAllObjects()
+  }
+
+  // Halves the image dimensions for disk storage. This reduces file size and
+  // I/O while the tab grid displays thumbnails at a fraction of the original
+  // resolution anyway.
+  private static func downsampledForStorage(_ image: UIImage) -> UIImage {
+    let targetSize = CGSize(
+      width: image.size.width / 2.0, height: image.size.height / 2.0)
+    let format = UIGraphicsImageRendererFormat()
+    format.scale = 1.0
+    let renderer = UIGraphicsImageRenderer(size: targetSize, format: format)
+    return renderer.image { _ in
+      image.draw(in: CGRect(origin: .zero, size: targetSize))
+    }
   }
 }

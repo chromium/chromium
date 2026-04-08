@@ -61,6 +61,22 @@ LegacySnapshotLRUCache<UIImage*>* CreateDefaultSnapshotLRUCache() {
 
 }  // namespace
 
+// Halves the image dimensions for disk storage. This reduces file size and
+// I/O while the tab grid displays thumbnails at a fraction of the original
+// resolution anyway.
+UIImage* DownsampledForStorage(UIImage* image) {
+  CGSize target_size =
+      CGSizeMake(image.size.width / 2.0, image.size.height / 2.0);
+  UIGraphicsImageRendererFormat* format =
+      [[UIGraphicsImageRendererFormat alloc] init];
+  format.scale = 1.0;
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:target_size format:format];
+  return [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
+    [image drawInRect:CGRectMake(0, 0, target_size.width, target_size.height)];
+  }];
+}
+
 // Protocol observers subclass that explicitly implements
 // <SnapshotStorageObserver>.
 @interface SnapshotStorageObservers
@@ -157,8 +173,14 @@ LegacySnapshotLRUCache<UIImage*>* CreateDefaultSnapshotLRUCache() {
 
   [self.observers didUpdateSnapshotStorageWithSnapshotID:snapshotIDWrapper];
 
-  // Save the image to disk.
-  [_fileManager writeImage:image withSnapshotID:snapshotID];
+  // Downsample to half dimensions before writing to disk when the feature flag
+  // is enabled. The full-resolution image remains in the LRU cache for sharp
+  // in-session display.
+  UIImage* imageToWrite =
+      base::FeatureList::IsEnabled(kSnapshotDownsampleImage)
+          ? DownsampledForStorage(image)
+          : image;
+  [_fileManager writeImage:imageToWrite withSnapshotID:snapshotID];
 }
 
 - (void)removeImageWithSnapshotID:(SnapshotIDWrapper*)snapshotIDWrapper {

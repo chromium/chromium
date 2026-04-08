@@ -1597,6 +1597,12 @@ const char kSnapshotCompressedJPEGQualityDescription[] =
     "Reduces snapshot JPEG quality from 1.0 to 0.97 for visually lossless "
     "compression, reducing file size by ~3-5x.";
 
+const char kSnapshotDownsampleImageName[] =
+    "Snapshot Downsample Image";
+const char kSnapshotDownsampleImageDescription[] =
+    "Downsamples tab snapshots to half resolution before writing to disk, "
+    "reducing storage and I/O while keeping full resolution in memory.";
+
 const char kStrokesAPIEnabledName[] = "Enable Strokes API for Lens";
 const char kStrokesAPIEnabledDescription[] =
     "When enabled, Lens will use the Strokes API.";
