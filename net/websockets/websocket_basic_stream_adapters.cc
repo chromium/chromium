@@ -165,8 +165,12 @@ void WebSocketSpdyStreamAdapter::OnDataReceived(
   }
 
   read_data_.Enqueue(std::move(buffer));
-  if (read_callback_)
-    std::move(read_callback_).Run(CopySavedReadDataIntoBuffer());
+  if (read_callback_) {
+    // Avoid UAF due to C++17 sequencing rules. See crbug.com/499194333.
+    auto callback = std::move(read_callback_);
+    int rv = CopySavedReadDataIntoBuffer();
+    std::move(callback).Run(rv);
+  }
 }
 
 void WebSocketSpdyStreamAdapter::OnDataSent() {
