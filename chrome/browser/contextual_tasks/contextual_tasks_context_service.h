@@ -106,7 +106,8 @@ class ContextualTasksContextService
       const TabSelectionOptions& options,
       const std::string& query,
       const std::vector<GURL>& explicit_urls,
-      base::OnceCallback<void(std::vector<content::WebContents*>)> callback);
+      base::OnceCallback<void(std::vector<base::WeakPtr<content::WebContents>>)>
+          callback);
 
   void SetClockForTesting(const base::TickClock* tick_clock);
 
@@ -170,7 +171,7 @@ class ContextualTasksContextService
   //
   // This function will scope the eligible tabs to what's in
   // `browser_window_interface` if it is not null.
-  std::vector<content::WebContents*> GetAllEligibleTabs(
+  std::vector<base::WeakPtr<content::WebContents>> GetAllEligibleTabs(
       base::WeakPtr<BrowserWindowInterface> browser_window_interface);
 
   // Creates the QueryState including active tab context.
@@ -185,11 +186,11 @@ class ContextualTasksContextService
 
   // Returns the relevant tabs for `query`. Collects and logs all the signals
   // irrespective of chosen `tab_selection_mode`.
-  std::vector<content::WebContents*> SelectRelevantTabs(
+  std::vector<base::WeakPtr<content::WebContents>> SelectRelevantTabs(
       const std::string& query,
       const TabSelectionOptions& options,
       const passage_embeddings::Embedding& query_embedding,
-      const std::vector<content::WebContents*>& all_tabs,
+      const std::vector<base::WeakPtr<content::WebContents>>& all_tabs,
       const std::vector<GURL>& explicit_urls,
       optimization_guide::proto::ContextualTasksContextQuality* quality_log);
 
@@ -238,11 +239,13 @@ class ContextualTasksContextService
   struct PendingRequest {
     PendingRequest(
         passage_embeddings::Embedder::TaskId task_id,
-        base::OnceCallback<void(std::vector<content::WebContents*>)> callback);
+        base::OnceCallback<
+            void(std::vector<base::WeakPtr<content::WebContents>>)> callback);
     ~PendingRequest();
 
     passage_embeddings::Embedder::TaskId task_id;
-    base::OnceCallback<void(std::vector<content::WebContents*>)> callback;
+    base::OnceCallback<void(std::vector<base::WeakPtr<content::WebContents>>)>
+        callback;
   };
   absl::flat_hash_map<int64_t, std::unique_ptr<PendingRequest>>
       pending_requests_;
