@@ -253,6 +253,7 @@ source_set("impl") {
   if (enable_extensions_core) {
     deps += [
       "//chrome/browser/extensions",
+      "//chrome/browser/ui:browser_navigator_params_headers",
       "//chrome/browser/ui/browser_window",
       "//extensions:extensions_browser_resources",
       "//extensions:extensions_browser_resources_grit",

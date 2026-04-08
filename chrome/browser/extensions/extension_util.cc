@@ -18,6 +18,7 @@
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"
 #include "chrome/common/extensions/sync_helper.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/variations_associated_data.h"
@@ -336,6 +337,18 @@ bool AreExtensionsDisabled(const base::CommandLine& command_line,
   Profile* profile = Profile::FromBrowserContext(context);
   return ExtensionsDisabledViaCommandLine(command_line) ||
          profile->GetPrefs()->GetBoolean(prefs::kDisableExtensions);
+}
+
+GURL GetExtensionsPageUrl(const ExtensionId& extension_id) {
+  GURL url(chrome::kChromeUIExtensionsURL);
+  if (!extension_id.empty()) {
+    GURL::Replacements replacements;
+    std::string query("id=");
+    query += extension_id;
+    replacements.SetQueryStr(query);
+    url = url.ReplaceComponents(replacements);
+  }
+  return url;
 }
 
 } // namespace extensions::util

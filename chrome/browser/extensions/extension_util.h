@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_id.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -31,6 +32,7 @@ class PrefRegistrySyncable;
 }
 
 class Profile;
+class GURL;
 
 namespace extensions {
 
@@ -88,6 +90,11 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 // or preference).
 bool AreExtensionsDisabled(const base::CommandLine& command_line,
                            content::BrowserContext* context);
+
+// Returns the URL for the chrome://extensions page and highlights the
+// extension with `extension_id`. If `extension_id` is empty, just shows the
+// main extensions page.
+GURL GetExtensionsPageUrl(const ExtensionId& extension_id);
 
 }  // namespace util
 }  // namespace extensions

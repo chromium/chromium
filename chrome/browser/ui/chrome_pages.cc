@@ -24,6 +24,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -384,14 +385,7 @@ void ShowDownloads(BrowserWindowInterface* browser) {
 void ShowExtensions(BrowserWindowInterface* browser,
                     const std::string& extension_to_highlight) {
   base::RecordAction(UserMetricsAction("ShowExtensions"));
-  GURL url(kChromeUIExtensionsURL);
-  if (!extension_to_highlight.empty()) {
-    GURL::Replacements replacements;
-    std::string query("id=");
-    query += extension_to_highlight;
-    replacements.SetQueryStr(query);
-    url = url.ReplaceComponents(replacements);
-  }
+  GURL url = extensions::util::GetExtensionsPageUrl(extension_to_highlight);
   ShowSingletonTabIgnorePathOverwriteNTP(browser, url);
 }
 

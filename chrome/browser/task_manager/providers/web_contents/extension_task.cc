@@ -17,9 +17,11 @@
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/grit/extensions_browser_resources.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/browser_window_util.h"
+#include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #endif
@@ -51,7 +53,7 @@ void ExtensionTask::UpdateFavicon() {
 }
 
 void ExtensionTask::Activate() {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // This task represents the extension view of (for example) a background page
   // or browser action button, so there is no top-level window to bring to the
   // front. Instead, when this task is double-clicked, we bring up the
@@ -68,19 +70,28 @@ void ExtensionTask::Activate() {
   if (!extension)
     return;
 
-  BrowserWindowInterface* browser = chrome::FindTabbedBrowser(
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext()), true);
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  CHECK(profile);
+  BrowserWindowInterface* browser =
+      extensions::browser_window_util::GetLastActiveNormalBrowserWithProfile(
+          *profile, /*include_incognito_or_parent=*/true);
 
   // If an existing browser isn't found, don't create a new one.
   if (!browser)
     return;
 
-  chrome::ShowExtensions(browser->GetBrowserForMigrationOnly(),
-                         extension->id());
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/417512763): Consolidate this with chrome::ShowExtensions()
+  // when it works on Android.
+  GURL url = extensions::util::GetExtensionsPageUrl(extension->id());
+  NavigateParams params(browser, url, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&params);
 #else
-  // TODO(crbug.com/417512763): Support activation on desktop Android.
-  NOTIMPLEMENTED();
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  chrome::ShowExtensions(browser, extension->id());
+#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 
 Task::Type ExtensionTask::GetType() const {

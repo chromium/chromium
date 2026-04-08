@@ -15,11 +15,6 @@
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/process_type.h"
-#include "extensions/buildflags/buildflags.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/browser/process_map.h"  // nogncheck
-#endif
 
 using content::BrowserThread;
 using content::ChildProcessData;
