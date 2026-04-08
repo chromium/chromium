@@ -400,6 +400,10 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         LayerDrawable backgroundDrawable =
                 new LayerDrawable(new Drawable[] {backgroundColor, backgroundTabImage});
 
+        final int backgroundColorIndex = 0;
+        // Set background color size to avoid showing behind the toolbar. See crbug.com/479898010.
+        backgroundDrawable.setLayerHeight(backgroundColorIndex, mToolbar.getTabStripHeight());
+
         final int backgroundTabImageIndex = 1;
         // Set image size to match tab size.
         backgroundDrawable.setPadding(0, 0, 0, 0);
