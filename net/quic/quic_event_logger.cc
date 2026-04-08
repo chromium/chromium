@@ -278,15 +278,18 @@ base::DictValue NetLogQuicOnConnectionClosedParams(
 base::DictValue NetLogQuicCertificateVerifiedParams(
     scoped_refptr<X509Certificate> cert,
     const std::vector<std::vector<uint8_t>>& server_tais) {
-  // Only the subjects are logged so that we can investigate connection pooling.
-  // More fields could be logged in the future.
-  std::vector<std::string> dns_names;
-  cert->GetSubjectAltName(&dns_names, nullptr);
-  base::ListValue subjects;
-  for (auto& dns_name : dns_names) {
-    subjects.Append(std::move(dns_name));
+  auto dict = base::DictValue();
+  if (cert != nullptr) {
+    // Only the subjects are logged so that we can investigate connection
+    // pooling. More fields could be logged in the future.
+    std::vector<std::string> dns_names;
+    cert->GetSubjectAltName(&dns_names, nullptr);
+    base::ListValue subjects;
+    for (auto& dns_name : dns_names) {
+      subjects.Append(std::move(dns_name));
+    }
+    dict.Set("subjects", std::move(subjects));
   }
-  auto dict = base::DictValue().Set("subjects", std::move(subjects));
   if (!server_tais.empty()) {
     dict.Set("server_available_trust_anchor_ids",
              x509_util::TrustAnchorIDsToString(server_tais));
@@ -770,26 +773,18 @@ void QuicEventLogger::OnSuccessfulVersionNegotiation(
 void QuicEventLogger::OnCertificateVerified(
     const CertVerifyResult& result,
     const std::vector<std::vector<uint8_t>>& server_tais) {
-  // TODO(crbug.com/478893333): improve this logging to not be misleading. This
-  // is not checking whether verification succeeded. Instead it's checking
-  // whether the cert was parseable (if we couldn't parse it, we skip attempting
-  // to log its SAN list).
-  if (result.cert_status == CERT_STATUS_INVALID) {
-    net_log_.AddEvent(
-        NetLogEventType::QUIC_SESSION_CERTIFICATE_VERIFY_FAILED, [&] {
-          auto result = base::DictValue();
-          if (!server_tais.empty()) {
-            result.Set("server_available_trust_anchor_ids",
-                       x509_util::TrustAnchorIDsToString(server_tais));
-          }
-          return result;
-        });
-    return;
+  if (IsCertStatusError(result.cert_status)) {
+    net_log_.AddEvent(NetLogEventType::QUIC_SESSION_CERTIFICATE_VERIFY_FAILED,
+                      [&] {
+                        return NetLogQuicCertificateVerifiedParams(
+                            result.verified_cert, server_tais);
+                      });
+  } else {
+    net_log_.AddEvent(NetLogEventType::QUIC_SESSION_CERTIFICATE_VERIFIED, [&] {
+      return NetLogQuicCertificateVerifiedParams(result.verified_cert,
+                                                 server_tais);
+    });
   }
-  net_log_.AddEvent(NetLogEventType::QUIC_SESSION_CERTIFICATE_VERIFIED, [&] {
-    return NetLogQuicCertificateVerifiedParams(result.verified_cert,
-                                               server_tais);
-  });
 }
 
 void QuicEventLogger::OnTransportParametersSent(

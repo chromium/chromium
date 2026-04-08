@@ -2505,6 +2505,8 @@ EVENT_TYPE(QUIC_SESSION_CLOSE_ON_ERROR)
 
 // Session verification of a certificate from the server failed.
 //   {
+//     "subjects": <list of DNS names that the certificate is valid for, not
+//                  present if cert could not be parsed>,
 //     "server_available_trust_anchors_ids":
 //         <Optional: trust anchor IDs sent by the server in the handshake,
 //          converted to strings and joined with commas>,
