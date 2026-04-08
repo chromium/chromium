@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ScrollGranularity} from '../tools.mojom-webui.js';
 import type {AiOverlayToolsRemote} from '../tools.mojom-webui.js';
 
 import {kBuiltInToolDefinitions} from './../generated_tool_definitions.js';
@@ -51,7 +52,7 @@ export class ToolExecutor {
           await this.toolsRemote.findAndHighlight(args.query);
           break;
         case 'scroll':
-          await this.toolsRemote.scroll(args.direction, args.magnitude);
+          await this.execScroll(args);
           break;
         case 'play_video':
           await this.toolsRemote.playVideo();
@@ -71,5 +72,32 @@ export class ToolExecutor {
       console.error(`Error executing tool ${name}:`, e);
       return {success: false, error: String(e)};
     }
+  }
+
+  private async execScroll(args: any): Promise<void> {
+    let granularity: ScrollGranularity;
+    let magnitude: number;
+
+    switch (args.direction) {
+      case 'up':
+        granularity = ScrollGranularity.kPage;
+        magnitude = -1;
+        break;
+      case 'down':
+        granularity = ScrollGranularity.kPage;
+        magnitude = 1;
+        break;
+      case 'top':
+        granularity = ScrollGranularity.kDocument;
+        magnitude = -1;
+        break;
+      case 'bottom':
+        granularity = ScrollGranularity.kDocument;
+        magnitude = 1;
+        break;
+      default:
+        throw new Error(`Unknown scroll direction: ${args.direction}`);
+    }
+    await this.toolsRemote.scroll(granularity, magnitude);
   }
 }

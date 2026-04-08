@@ -12,12 +12,22 @@ struct SwitchTabResult {
   int32 tab_id;
 };
 
+// NOTE: There's an existing equivalent ScrollGranularity in ui/events/mojom but
+// it's generated using the [native] attribute which cannot generate values into
+// TS bindings. For now, use our own enum. Longer term maybe find a way to share
+// that.
+enum ScrollGranularity {
+  kDocument,
+  kPage,
+};
+
 // Interface for AI tools available to the web UI.
 // NOTE: This interface is parsed by `generate_tool_definitions.py` during the
-// build process to generate the tool manifest provided to the Gemini Live agent.
-// Because of this, only tools intended to be exposed to the agent should be
-// added here. The interface serves a dual purpose: defining the Mojo IPC
-// contract and acting as the source of truth for the agent's tool definitions.
+// build process to generate the tool manifest provided to the Gemini Live
+// agent.  Because of this, only tools intended to be exposed to the agent
+// should be added here. The interface serves a dual purpose: defining the Mojo
+// IPC contract and acting as the source of truth for the agent's tool
+// definitions.
 interface AiOverlayTools {
   // Browser tools
 
@@ -48,7 +58,8 @@ interface AiOverlayTools {
   FindAndHighlight(string query) => result<bool, string>;
 
   // Scroll the viewport in a specific direction.
-  Scroll(string direction, double magnitude) => result<bool, string>;
+  Scroll(ScrollGranularity granularity, double magnitude)
+      => result<bool, string>;
 
   // Media tools
 

@@ -42,7 +42,7 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools {
   void ReloadPage(ReloadPageCallback callback) override;
   void FindAndHighlight(const std::string& query,
                         FindAndHighlightCallback callback) override;
-  void Scroll(const std::string& direction,
+  void Scroll(ai_overlay_dialog::mojom::ScrollGranularity granularity,
               double magnitude,
               ScrollCallback callback) override;
   void PlayVideo(PlayVideoCallback callback) override;

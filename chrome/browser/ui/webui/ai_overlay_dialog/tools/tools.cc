@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -33,10 +34,11 @@
 #include "content/public/browser/web_contents.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/events/types/scroll_types.h"
 #include "url/url_util.h"
 
 namespace {
@@ -250,9 +252,10 @@ void AiOverlayTools::FindAndHighlight(const std::string& query,
       /*search_range_start_node_id=*/std::nullopt);
 }
 
-void AiOverlayTools::Scroll(const std::string& direction,
-                            double magnitude,
-                            ScrollCallback callback) {
+void AiOverlayTools::Scroll(
+    ai_overlay_dialog::mojom::ScrollGranularity granularity,
+    double magnitude,
+    ScrollCallback callback) {
   content::WebContents* contents =
       browser_->GetTabStripModel()->GetActiveWebContents();
   if (!contents || !contents->GetRenderWidgetHostView()) {
@@ -260,38 +263,31 @@ void AiOverlayTools::Scroll(const std::string& direction,
     return;
   }
 
-  blink::WebMouseWheelEvent wheel_event;
-  wheel_event.SetType(blink::WebInputEvent::Type::kMouseWheel);
-  wheel_event.delta_units = ui::ScrollGranularity::kScrollByPrecisePixel;
-  wheel_event.phase = blink::WebMouseWheelEvent::kPhaseBegan;
-
-  if (direction == "kTop" || direction == "kBottom") {
-    wheel_event.delta_units = ui::ScrollGranularity::kScrollByDocument;
-    double sign = (direction == "kTop") ? 1.0 : -1.0;
-    wheel_event.delta_y = sign;
-    wheel_event.wheel_ticks_y = sign;
-  } else {
-    double sign = (direction == "kUp") ? -1.0 : 1.0;
-    float scale_factor =
-        contents->GetRenderWidgetHostView()->GetDeviceScaleFactor();
-    int scroll_amount = static_cast<int>(
-        sign * magnitude * contents->GetContainerBounds().height() *
-        scale_factor);
-
-    wheel_event.delta_y = -scroll_amount;
-    wheel_event.wheel_ticks_y = static_cast<float>(-scroll_amount) / 120.0f;
-  }
-
   content::RenderWidgetHost* widget_host =
       contents->GetRenderWidgetHostView()->GetRenderWidgetHost();
-  widget_host->ForwardWheelEvent(wheel_event);
 
-  wheel_event.delta_y = 0;
-  wheel_event.wheel_ticks_y = 0;
-  wheel_event.phase = blink::WebMouseWheelEvent::kPhaseEnded;
-  wheel_event.dispatch_type =
-      blink::WebInputEvent::DispatchType::kEventNonBlocking;
-  widget_host->ForwardWheelEvent(wheel_event);
+  auto get_key_code =
+      [](ai_overlay_dialog::mojom::ScrollGranularity granularity,
+         double magnitude) {
+        switch (granularity) {
+          case ai_overlay_dialog::mojom::ScrollGranularity::kPage:
+            return (magnitude > 0) ? ui::VKEY_NEXT : ui::VKEY_PRIOR;
+          case ai_overlay_dialog::mojom::ScrollGranularity::kDocument:
+            return (magnitude > 0) ? ui::VKEY_END : ui::VKEY_HOME;
+        }
+      };
+
+  ui::KeyboardCode key_code = get_key_code(granularity, magnitude);
+
+  // For Document granularity, we only need to send the key once to reach the
+  // end or start. For Page granularity, we send it for each page requested.
+  ui::KeyEvent pressed_event(ui::EventType::kKeyPressed, key_code, ui::EF_NONE);
+  ui::KeyEvent released_event(ui::EventType::kKeyReleased, key_code,
+                              ui::EF_NONE);
+  widget_host->ForwardKeyboardEvent(
+      input::NativeWebKeyboardEvent(pressed_event));
+  widget_host->ForwardKeyboardEvent(
+      input::NativeWebKeyboardEvent(released_event));
 
   std::move(callback).Run(true);
 }
