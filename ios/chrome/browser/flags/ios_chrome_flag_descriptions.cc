@@ -292,6 +292,14 @@ const char kBreakpadNoDelayInitialUploadDescription[] =
     "disabled, initial upload is delayed until deferred initialization. This "
     "does not affect recovery mode.";
 
+const char kBuildExternalPrivacyContextName[] =
+    "Build external privacy context";
+const char kBuildExternalPrivacyContextDescription[] =
+    "When enabled, checks if the account can be signed in on the device "
+    "according to the capabilities. This needs `can_sign_in_to_chrome` "
+    "capability to be fetched (controlled by "
+    "kEnforceCanSignInToChromeCapability flag).";
+
 const char kCacheIdentityListInChromeName[] = "Cache identity list in chrome.";
 const char kCacheIdentityListInChromeDescription[] =
     "Changes the implementation of the cache of the list of identities on "

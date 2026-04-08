@@ -185,6 +185,9 @@ extern const char kBlueDotOnToolsMenuButtonDescription[];
 extern const char kBreakpadNoDelayInitialUploadName[];
 extern const char kBreakpadNoDelayInitialUploadDescription[];
 
+extern const char kBuildExternalPrivacyContextName[];
+extern const char kBuildExternalPrivacyContextDescription[];
+
 extern const char kCacheIdentityListInChromeName[];
 extern const char kCacheIdentityListInChromeDescription[];
 

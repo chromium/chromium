@@ -1317,6 +1317,16 @@
     "expiry_milestone": 152
   },
   {
+    "name": "build-external-privacy-context",
+    "owners": [
+      "ddac@google.com",
+      "jlebel@google.com",
+      "ljjlee@google.com",
+      "chrome-regionalcapabilities@google.com"
+    ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "bundled-security-settings",
     "owners": [
       "awado@google.com",
