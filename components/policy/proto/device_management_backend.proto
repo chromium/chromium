@@ -990,6 +990,9 @@ message PolicyData {
   // Populated from `ChromeOsDeviceInfo.unified_device_id` and should only be
   // set for device policy.
   optional string unified_device_id = 41;
+
+  // List of group ids of active experiments for this device or user.
+  repeated string available_group_ids = 42;
 }
 
 message ClientActionRequired {
