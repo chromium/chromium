@@ -114,8 +114,8 @@ class BASE_EXPORT GSL_OWNER ListValue {
 
   // Returns a reference to the value at `index` in this list. Fails with a
   // `CHECK()` if `index >= size()`.
-  const Value& operator[](size_t index) const;
-  Value& operator[](size_t index);
+  const Value& operator[](size_t index) const LIFETIME_BOUND;
+  Value& operator[](size_t index) LIFETIME_BOUND;
 
   // Returns true if the specified `val` is present in the list.
   bool contains(bool val) const;
@@ -309,8 +309,8 @@ class BASE_EXPORT GSL_OWNER DictValue {
 
   // Finds the entry corresponding to `key` in this dictionary. Returns
   // nullptr if there is no such entry.
-  const Value* Find(std::string_view key) const;
-  Value* Find(std::string_view key);
+  const Value* Find(std::string_view key) const LIFETIME_BOUND;
+  Value* Find(std::string_view key) LIFETIME_BOUND;
 
   // Similar to `Find()` above, but returns `std::nullopt`/`nullptr` if the type
   // of the entry does not match. `bool`, `int`, and `double` are returned in a
@@ -321,42 +321,42 @@ class BASE_EXPORT GSL_OWNER DictValue {
   // Returns a non-null value for both `Value::Type::DOUBLE` and
   // `Value::Type::INT`, converting the latter to a double.
   std::optional<double> FindDouble(std::string_view key) const;
-  const std::string* FindString(std::string_view key) const;
-  std::string* FindString(std::string_view key);
-  const BlobStorage* FindBlob(std::string_view key) const;
-  BlobStorage* FindBlob(std::string_view key);
-  const DictValue* FindDict(std::string_view key) const;
-  DictValue* FindDict(std::string_view key);
-  const ListValue* FindList(std::string_view key) const;
-  ListValue* FindList(std::string_view key);
+  const std::string* FindString(std::string_view key) const LIFETIME_BOUND;
+  std::string* FindString(std::string_view key) LIFETIME_BOUND;
+  const BlobStorage* FindBlob(std::string_view key) const LIFETIME_BOUND;
+  BlobStorage* FindBlob(std::string_view key) LIFETIME_BOUND;
+  const DictValue* FindDict(std::string_view key) const LIFETIME_BOUND;
+  DictValue* FindDict(std::string_view key) LIFETIME_BOUND;
+  const ListValue* FindList(std::string_view key) const LIFETIME_BOUND;
+  ListValue* FindList(std::string_view key) LIFETIME_BOUND;
 
   // If there's a value of the specified type at `key` in this dictionary,
   // returns it. Otherwise, creates an empty container of the specified type,
   // inserts it at `key`, and returns it. If there's a value of some other
   // type at `key`, will overwrite that entry.
-  DictValue* EnsureDict(std::string_view key);
-  ListValue* EnsureList(std::string_view key);
+  DictValue* EnsureDict(std::string_view key) LIFETIME_BOUND;
+  ListValue* EnsureList(std::string_view key) LIFETIME_BOUND;
 
   // Sets an entry with `key` and `value` in this dictionary, overwriting any
   // existing entry with the same `key`. Returns a pointer to the set `value`.
-  Value* Set(std::string_view key, Value&& value) &;
-  Value* Set(std::string_view key, bool value) &;
+  Value* Set(std::string_view key, Value&& value) & LIFETIME_BOUND;
+  Value* Set(std::string_view key, bool value) & LIFETIME_BOUND;
   template <typename T>
   Value* Set(std::string_view, const T*) & = delete;
-  Value* Set(std::string_view key, int value) &;
-  Value* Set(std::string_view key, double value) &;
-  Value* Set(std::string_view key, std::string_view value) &;
-  Value* Set(std::string_view key, std::u16string_view value) &;
-  Value* Set(std::string_view key, const char* value) &;
-  Value* Set(std::string_view key, const char16_t* value) &;
-  Value* Set(std::string_view key, std::string&& value) &;
-  Value* Set(std::string_view key, BlobStorage&& value) &;
-  Value* Set(std::string_view key, DictValue&& value) &;
-  Value* Set(std::string_view key, ListValue&& value) &;
+  Value* Set(std::string_view key, int value) & LIFETIME_BOUND;
+  Value* Set(std::string_view key, double value) & LIFETIME_BOUND;
+  Value* Set(std::string_view key, std::string_view value) & LIFETIME_BOUND;
+  Value* Set(std::string_view key, std::u16string_view value) & LIFETIME_BOUND;
+  Value* Set(std::string_view key, const char* value) & LIFETIME_BOUND;
+  Value* Set(std::string_view key, const char16_t* value) & LIFETIME_BOUND;
+  Value* Set(std::string_view key, std::string&& value) & LIFETIME_BOUND;
+  Value* Set(std::string_view key, BlobStorage&& value) & LIFETIME_BOUND;
+  Value* Set(std::string_view key, DictValue&& value) & LIFETIME_BOUND;
+  Value* Set(std::string_view key, ListValue&& value) & LIFETIME_BOUND;
 
   // Same as above, but more efficient if the new key is greater than all
   // pre-existing keys in the dictionary.
-  Value* Set_HintAtEnd(std::string_view key, Value&& value) &;
+  Value* Set_HintAtEnd(std::string_view key, Value&& value) & LIFETIME_BOUND;
 
   // Rvalue overrides of the `Set` methods, which allow you to construct
   // a `DictValue` builder-style:
@@ -443,22 +443,26 @@ class BASE_EXPORT GSL_OWNER DictValue {
   // Originally, the path-based APIs were the only way of specifying a key, so
   // there are likely to be many legacy (and unnecessary) uses of the path
   // APIs that do not actually require traversing nested dictionaries.
-  const Value* FindByDottedPath(std::string_view path) const;
-  Value* FindByDottedPath(std::string_view path);
+  const Value* FindByDottedPath(std::string_view path) const LIFETIME_BOUND;
+  Value* FindByDottedPath(std::string_view path) LIFETIME_BOUND;
 
   std::optional<bool> FindBoolByDottedPath(std::string_view path) const;
   std::optional<int> FindIntByDottedPath(std::string_view path) const;
   // Returns a non-null value for both `Value::Type::DOUBLE` and
   // `Value::Type::INT`, converting the latter to a double.
   std::optional<double> FindDoubleByDottedPath(std::string_view path) const;
-  const std::string* FindStringByDottedPath(std::string_view path) const;
-  std::string* FindStringByDottedPath(std::string_view path);
-  const BlobStorage* FindBlobByDottedPath(std::string_view path) const;
-  BlobStorage* FindBlobByDottedPath(std::string_view path);
-  const DictValue* FindDictByDottedPath(std::string_view path) const;
-  DictValue* FindDictByDottedPath(std::string_view path);
-  const ListValue* FindListByDottedPath(std::string_view path) const;
-  ListValue* FindListByDottedPath(std::string_view path);
+  const std::string* FindStringByDottedPath(std::string_view path) const
+      LIFETIME_BOUND;
+  std::string* FindStringByDottedPath(std::string_view path) LIFETIME_BOUND;
+  const BlobStorage* FindBlobByDottedPath(std::string_view path) const
+      LIFETIME_BOUND;
+  BlobStorage* FindBlobByDottedPath(std::string_view path) LIFETIME_BOUND;
+  const DictValue* FindDictByDottedPath(std::string_view path) const
+      LIFETIME_BOUND;
+  DictValue* FindDictByDottedPath(std::string_view path) LIFETIME_BOUND;
+  const ListValue* FindListByDottedPath(std::string_view path) const
+      LIFETIME_BOUND;
+  ListValue* FindListByDottedPath(std::string_view path) LIFETIME_BOUND;
 
   // Creates a new entry with a dictionary for any non-last component that is
   // missing an entry while performing the path traversal. Will fail if any
@@ -472,20 +476,28 @@ class BASE_EXPORT GSL_OWNER DictValue {
   // bad_example.SetByDottedPath("a.nested.dictionary.field_2", "value");
   // bad_example.SetByDottedPath("a.nested.dictionary.field_3", 1);
   //
-  Value* SetByDottedPath(std::string_view path, Value&& value) &;
-  Value* SetByDottedPath(std::string_view path, bool value) &;
+  Value* SetByDottedPath(std::string_view path, Value&& value) & LIFETIME_BOUND;
+  Value* SetByDottedPath(std::string_view path, bool value) & LIFETIME_BOUND;
   template <typename T>
   Value* SetByDottedPath(std::string_view, const T*) & = delete;
-  Value* SetByDottedPath(std::string_view path, int value) &;
-  Value* SetByDottedPath(std::string_view path, double value) &;
-  Value* SetByDottedPath(std::string_view path, std::string_view value) &;
-  Value* SetByDottedPath(std::string_view path, std::u16string_view value) &;
-  Value* SetByDottedPath(std::string_view path, const char* value) &;
-  Value* SetByDottedPath(std::string_view path, const char16_t* value) &;
-  Value* SetByDottedPath(std::string_view path, std::string&& value) &;
-  Value* SetByDottedPath(std::string_view path, BlobStorage&& value) &;
-  Value* SetByDottedPath(std::string_view path, DictValue&& value) &;
-  Value* SetByDottedPath(std::string_view path, ListValue&& value) &;
+  Value* SetByDottedPath(std::string_view path, int value) & LIFETIME_BOUND;
+  Value* SetByDottedPath(std::string_view path, double value) & LIFETIME_BOUND;
+  Value* SetByDottedPath(std::string_view path, std::string_view value) &
+      LIFETIME_BOUND;
+  Value* SetByDottedPath(std::string_view path, std::u16string_view value) &
+      LIFETIME_BOUND;
+  Value* SetByDottedPath(std::string_view path, const char* value) &
+      LIFETIME_BOUND;
+  Value* SetByDottedPath(std::string_view path, const char16_t* value) &
+      LIFETIME_BOUND;
+  Value* SetByDottedPath(std::string_view path, std::string&& value) &
+      LIFETIME_BOUND;
+  Value* SetByDottedPath(std::string_view path, BlobStorage&& value) &
+      LIFETIME_BOUND;
+  Value* SetByDottedPath(std::string_view path, DictValue&& value) &
+      LIFETIME_BOUND;
+  Value* SetByDottedPath(std::string_view path, ListValue&& value) &
+      LIFETIME_BOUND;
 
   // Rvalue overrides of the `SetByDottedPath` methods, which allow you to
   // construct a `DictValue` builder-style:
@@ -779,14 +791,14 @@ class BASE_EXPORT GSL_OWNER Value {
   // Returns a non-null value for both `Value::Type::DOUBLE` and
   // `Value::Type::INT`, converting the latter to a double.
   std::optional<double> GetIfDouble() const;
-  const std::string* GetIfString() const;
-  std::string* GetIfString();
-  const BlobStorage* GetIfBlob() const;
-  BlobStorage* GetIfBlob();
-  const DictValue* GetIfDict() const;
-  DictValue* GetIfDict();
-  const ListValue* GetIfList() const;
-  ListValue* GetIfList();
+  const std::string* GetIfString() const LIFETIME_BOUND;
+  std::string* GetIfString() LIFETIME_BOUND;
+  const BlobStorage* GetIfBlob() const LIFETIME_BOUND;
+  BlobStorage* GetIfBlob() LIFETIME_BOUND;
+  const DictValue* GetIfDict() const LIFETIME_BOUND;
+  DictValue* GetIfDict() LIFETIME_BOUND;
+  const ListValue* GetIfList() const LIFETIME_BOUND;
+  ListValue* GetIfList() LIFETIME_BOUND;
 
   // Similar to the `GetIf...()` variants above, but fails with a `CHECK()` on a
   // type mismatch. `bool`, `int`, and `double` are returned by value; blobs,
