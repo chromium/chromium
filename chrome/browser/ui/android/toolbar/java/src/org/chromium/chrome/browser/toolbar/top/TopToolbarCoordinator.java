@@ -78,7 +78,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.ui.base.ActivityResultTracker;
@@ -257,6 +256,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                                 toolbarLayout.getContext(),
                                 windowAndroid,
                                 signinButtonStub,
+                                mToolbarLayout::beginButtonTransition,
                                 profileSupplier,
                                 signinAndHistorySyncActivityLauncher,
                                 activityResultTracker,
@@ -645,14 +645,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
             mOptionalButtonController.updateButtonVisibility();
         }
         if (mSigninButtonCoordinator != null && mTabSupplier != null) {
-            @Nullable Tab tab = mTabSupplier.get();
-
-            // Should only show the signin button when on the NTP and not incognito.
-            if (tab != null && UrlUtilities.isNtpUrl(tab.getUrl()) && !tab.isOffTheRecord()) {
-                mSigninButtonCoordinator.updateButtonVisibility(true);
-            } else {
-                mSigninButtonCoordinator.updateButtonVisibility(false);
-            }
+            mSigninButtonCoordinator.updateButtonVisibility(mTabSupplier.get());
         }
     }
 

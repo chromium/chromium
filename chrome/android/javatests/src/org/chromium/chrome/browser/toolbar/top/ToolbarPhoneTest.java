@@ -63,6 +63,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
@@ -85,6 +86,7 @@ import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.signin_button.SigninButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.VisualState;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -96,9 +98,11 @@ import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.ViewUtils;
+import org.chromium.url.GURL;
 
 /** Instrumentation tests for {@link ToolbarPhone}. */
 @RunWith(ParameterizedRunner.class)
@@ -120,7 +124,9 @@ public class ToolbarPhoneTest {
     @Mock IncognitoStateProvider mIncognitoStateProvider;
     @Mock LocationBarBackgroundDrawable mLocationbarBackgroundDrawable;
     @Mock OptionalButtonCoordinator mOptionalButtonCoordinator;
+    @Mock SigninButtonCoordinator mSigninButtonCoordinator;
     @Mock private SearchEngineUtils mSearchEngineUtils;
+    @Mock private Tab mTab;
 
     private final Canvas mCanvas = new Canvas();
     private ToolbarPhone mToolbar;
@@ -470,6 +476,54 @@ public class ToolbarPhoneTest {
                     mToolbar.drawWithoutBackground(mCanvas);
                     // Optional button should be drawn.
                     verify(mOptionalButtonCoordinator, atLeastOnce()).getViewForDrawing();
+                });
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.SIGNIN_LEVEL_UP_BUTTON)
+    public void testSigninButton_DrawnWhenVisible() {
+        // Inflate the real view using the real coordinator.
+        doReturn(new GURL("chrome://newtab/")).when(mTab).getUrl();
+        doReturn(false).when(mTab).isOffTheRecord();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mToolbar.getSigninButtonCoordinatorForTesting().updateButtonVisibility(mTab);
+                });
+
+        mToolbar.setSigninButtonCoordinatorForTesting(mSigninButtonCoordinator);
+        View signinButtonView = mToolbar.findViewById(R.id.signin_button);
+        when(mSigninButtonCoordinator.getViewForDrawing()).thenReturn(signinButtonView);
+        when(mSigninButtonCoordinator.isVisible()).thenReturn(true);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mToolbar.drawWithoutBackground(mCanvas);
+                    // Signin button should be drawn if coordinator says it is visible.
+                    verify(mSigninButtonCoordinator, atLeastOnce()).getViewForDrawing();
+                });
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.SIGNIN_LEVEL_UP_BUTTON)
+    public void testSigninButton_NotDrawnWhenNotVisible() {
+        // Inflate the real view using the real coordinator.
+        doReturn(new GURL("chrome://newtab/")).when(mTab).getUrl();
+        doReturn(false).when(mTab).isOffTheRecord();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mToolbar.getSigninButtonCoordinatorForTesting().updateButtonVisibility(mTab);
+                });
+
+        mToolbar.setSigninButtonCoordinatorForTesting(mSigninButtonCoordinator);
+        when(mSigninButtonCoordinator.isVisible()).thenReturn(false);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mToolbar.drawWithoutBackground(mCanvas);
+                    // Signin button shouldn't be drawn if coordinator says it is not visible.
+                    verify(mSigninButtonCoordinator, never()).getViewForDrawing();
                 });
     }
 
