@@ -52,6 +52,29 @@ const CGFloat kContainerCornerRadius = 13.0;
                                               action:@selector(endEditing:)];
   tap.cancelsTouchesInView = NO;
   [self.containerView addGestureRecognizer:tap];
+
+  // Animate the scrim background alongside the presentation transition.
+  self.containerView.backgroundColor = [UIColor clearColor];
+  id<UIViewControllerTransitionCoordinator> coordinator =
+      self.presentedViewController.transitionCoordinator;
+  [coordinator
+      animateAlongsideTransition:^(
+          id<UIViewControllerTransitionCoordinatorContext> context) {
+        self.containerView.backgroundColor =
+            [UIColor colorNamed:kScrimBackgroundColor];
+      }
+                      completion:nil];
+}
+
+- (void)dismissalTransitionWillBegin {
+  id<UIViewControllerTransitionCoordinator> coordinator =
+      self.presentedViewController.transitionCoordinator;
+  [coordinator
+      animateAlongsideTransition:^(
+          id<UIViewControllerTransitionCoordinatorContext> context) {
+        self.containerView.backgroundColor = [UIColor clearColor];
+      }
+                      completion:nil];
 }
 
 - (void)containerViewWillLayoutSubviews {
@@ -62,9 +85,6 @@ const CGFloat kContainerCornerRadius = 13.0;
   self.presentedView.layer.cornerRadius = kContainerCornerRadius;
   self.presentedView.layer.masksToBounds = YES;
   self.presentedView.clipsToBounds = YES;
-  self.containerView.backgroundColor =
-      [UIColor colorNamed:kScrimBackgroundColor];
-
   [super containerViewWillLayoutSubviews];
 }
 
