@@ -367,7 +367,7 @@ public class PdfUtils {
      */
     public static boolean isInlinePdfV2Enabled() {
         // TODO(crbug.com/484388543): Add a check for minimum SDK version.
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.INLINE_PDF_V2);
+        return ChromeFeatureList.sInlinePdfV2.isEnabled();
     }
 
     static void recordPdfLoad() {
