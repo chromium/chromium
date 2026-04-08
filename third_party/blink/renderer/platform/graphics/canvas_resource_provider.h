@@ -144,7 +144,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   MemoryManagedPaintCanvas& GetCanvasForCanvas2DForTesting();
   std::optional<cc::PaintRecord> FlushCanvas2D(
       FlushReason = FlushReason::kOther);
-  virtual ScopedRasterTimer CreateScopedRasterTimer();
+  virtual ScopedRasterTimer CreateScopedRasterTimerForCanvas2D();
 
   virtual bool IsAccelerated() const = 0;
   SkSurfaceProps GetSkSurfaceProps() const;
@@ -445,7 +445,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   bool ShouldReplaceTargetBuffer(
       PaintImage::ContentId content_id = PaintImage::kInvalidContentId);
 
-  ScopedRasterTimer CreateScopedRasterTimer() override;
+  ScopedRasterTimer CreateScopedRasterTimerForCanvas2D() override;
 
   cc::PaintImage::ContentId cached_content_id_ =
       cc::PaintImage::kInvalidContentId;
