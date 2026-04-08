@@ -963,8 +963,6 @@ void ThrottlingURLLoader::InterceptResponse(
     mojo::PendingReceiver<network::mojom::URLLoaderClient>*
         original_client_receiver,
     mojo::ScopedDataPipeConsumerHandle* body) {
-  response_intercepted_ = true;
-
   body->swap(body_);
   if (original_loader) {
     *original_loader = url_loader_.Unbind();

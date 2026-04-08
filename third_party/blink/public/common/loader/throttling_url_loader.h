@@ -175,8 +175,6 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
                                int extended_reason_code,
                                std::string_view custom_reason);
 
-  bool response_intercepted() const { return response_intercepted_; }
-
   // Indicates a restart did occur due to a Critical-CH HTTP Header.
   void DidRestartForCriticalClientHint() {
     critical_ch_restart_time_ = base::TimeTicks::Now();
@@ -365,8 +363,6 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
 
   // The latest request URL from where we expect a response
   GURL response_url_;
-
-  bool response_intercepted_ = false;
 
   // Whether URLLoaderClient's OnReceiveResponse() has been called. It must be
   // called at most once. It is added to debug crbug.com/463388771.
