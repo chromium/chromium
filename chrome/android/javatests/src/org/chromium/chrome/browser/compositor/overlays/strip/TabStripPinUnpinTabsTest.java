@@ -41,6 +41,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.HashSet;
@@ -61,6 +62,7 @@ public class TabStripPinUnpinTabsTest {
     private static final float PINNED_TAB_WIDTH_WITHOUT_OVERLAP =
             PINNED_TAB_WIDTH_WITH_OVERLAP - TAB_OVERLAP_WIDTH;
 
+    private CtaPageStation mPage;
     private StripLayoutHelper mStripLayoutHelper;
     private TabModel mTabModel;
     private String mPinTabMenuLabel;
@@ -70,6 +72,7 @@ public class TabStripPinUnpinTabsTest {
 
     @Before
     public void setUp() throws Exception {
+        mPage = mActivityTestRule.startOnBlankPage();
         mStripLayoutHelper =
                 TabStripTestUtils.getActiveStripLayoutHelper(mActivityTestRule.getActivity());
         mTabModel = mActivityTestRule.getActivity().getCurrentTabModel();
@@ -104,8 +107,7 @@ public class TabStripPinUnpinTabsTest {
     @Test
     @SmallTest
     public void testPinAndUnpin_OneByOne() {
-        TabStripTestUtils.createTabs(
-                mActivityTestRule.getActivity(), /* isIncognito= */ false, /* numOfTabs= */ 5);
+        createTabs(5);
 
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         int lastPinnedIndex = 0;
@@ -145,8 +147,7 @@ public class TabStripPinUnpinTabsTest {
     @Test
     @SmallTest
     public void testCloseAndRestorePinnedTab() {
-        TabStripTestUtils.createTabs(
-                mActivityTestRule.getActivity(), /* isIncognito= */ false, /* numOfTabs= */ 5);
+        createTabs(5);
 
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         int lastPinnedIndex = 0;
@@ -199,8 +200,7 @@ public class TabStripPinUnpinTabsTest {
     @Test
     @SmallTest
     public void testPinGroupedTab() {
-        TabStripTestUtils.createTabs(
-                mActivityTestRule.getActivity(), /* isIncognito= */ false, /* numOfTabs= */ 5);
+        createTabs(5);
 
         // Group the last two tabs.
         int firstGroupedIndex = 3;
@@ -256,8 +256,7 @@ public class TabStripPinUnpinTabsTest {
     @Test
     @SmallTest
     public void testPinAndUnpin_AllTabs() {
-        TabStripTestUtils.createTabs(
-                mActivityTestRule.getActivity(), /* isIncognito= */ false, /* numOfTabs= */ 5);
+        createTabs(5);
 
         // Multi-select all tabs.
         final StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
@@ -296,8 +295,7 @@ public class TabStripPinUnpinTabsTest {
     @Test
     @SmallTest
     public void testPinAndUnpin_MultipleTabs() {
-        TabStripTestUtils.createTabs(
-                mActivityTestRule.getActivity(), /* isIncognito= */ false, /* numOfTabs= */ 5);
+        createTabs(5);
 
         // Multi-select last two tabs.
         final StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
@@ -342,8 +340,7 @@ public class TabStripPinUnpinTabsTest {
     @Test
     @SmallTest
     public void testPinAndUnpin_MultipleTabs_MixedPinnedUnPinned_PinTabs() {
-        TabStripTestUtils.createTabs(
-                mActivityTestRule.getActivity(), /* isIncognito= */ false, /* numOfTabs= */ 5);
+        createTabs(5);
         final StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
 
         // Pin first tab.
@@ -410,6 +407,13 @@ public class TabStripPinUnpinTabsTest {
                             }
                         });
         onViewWaiting(allOf(withId(R.id.tab_group_action_menu_list), isDisplayed()));
+    }
+
+    private void createTabs(int numTabs) {
+        // One tab is already created by startOnBlankPage().
+        for (int i = 0; i < numTabs - 1; i++) {
+            mPage = mPage.openNewTabFast().loadAboutBlank();
+        }
     }
 
     private void verifyTabIsPinned(

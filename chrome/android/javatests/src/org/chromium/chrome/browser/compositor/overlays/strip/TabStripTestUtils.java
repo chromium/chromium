@@ -22,20 +22,6 @@ import java.util.List;
 public class TabStripTestUtils {
 
     /**
-     * Creates tabs to reach the target count in the selected model.Regular mode already has one
-     * default tab, so this creates (numOfTabs - 1); incognito creates numOfTabs. Note: repeated
-     * calls in regular mode accumulate (e.g., N then M results in N+M-1).
-     *
-     * @param activity The hosting ChromeTabbedActivity.
-     * @param isIncognito Whether the tab is in incognito.
-     * @param numOfTabs Total number of tabs desired after creation.
-     */
-    public static void createTabs(
-            ChromeTabbedActivity activity, boolean isIncognito, int numOfTabs) {
-        TabUiTestHelper.createTabs(activity, isIncognito, numOfTabs);
-    }
-
-    /**
      * Creates a tab group from two tabs (by index) in the selected model. Note: with multiple
      * groups, the title may not appear at firstIndex, the assert needs to be updated accordingly.
      *
