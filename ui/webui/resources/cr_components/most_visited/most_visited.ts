@@ -34,10 +34,6 @@ import {getHtml} from './most_visited.html.js';
 import type {MostVisitedInfo, MostVisitedPageCallbackRouter, MostVisitedPageHandlerRemote, MostVisitedTheme, MostVisitedTile} from './most_visited.mojom-webui.js';
 import {MostVisitedWindowProxy} from './window_proxy.js';
 
-export const MAX_TILES_DEFAULT = 8;
-export const MAX_TILES_FOR_CUSTOM_LINKS = 10;
-const MAX_TILES_FOR_ENTERPRISE_SHORTCUTS = 10;
-
 function resetTilePosition(tile: HTMLElement) {
   tile.style.position = '';
   tile.style.left = '';
@@ -167,7 +163,10 @@ export class MostVisitedElement extends MostVisitedElementBase {
       toastSource_: {type: Number, state: true},
 
       expandableTilesEnabled: {type: Boolean, reflect: true},
-      maxTilesBeforeShowMore: {type: Number, reflect: true},
+      maxTilesInCollapsedState: {type: Number, reflect: true},
+      maxShortcutsInExpandedState: {type: Number, reflect: true},
+      maxMostVisitedTilesInExpandedState: {type: Number, reflect: true},
+      maxEnterpriseShortcuts: {type: Number, reflect: true},
       showAll_: {type: Boolean, state: true},
       showShowMore_: {type: Boolean, state: true},
       showShowLess_: {type: Boolean, state: true},
@@ -183,7 +182,10 @@ export class MostVisitedElement extends MostVisitedElementBase {
   accessor reflowOnOverflow: boolean = false;
   accessor singleRow: boolean = false;
   accessor expandableTilesEnabled: boolean = false;
-  accessor maxTilesBeforeShowMore: number = 0;
+  accessor maxTilesInCollapsedState: number = 6;
+  accessor maxShortcutsInExpandedState: number = 10;
+  accessor maxMostVisitedTilesInExpandedState: number = 8;
+  accessor maxEnterpriseShortcuts: number = 10;
   private accessor showAll_: boolean = false;
   protected accessor showShowMore_: boolean = false;
   protected accessor showShowLess_: boolean = false;
@@ -315,11 +317,10 @@ export class MostVisitedElement extends MostVisitedElementBase {
       this.visible_ = this.info_.visible;
       this.customLinksEnabled_ = this.info_.customLinksEnabled;
       this.enterpriseShortcutsEnabled_ = this.info_.enterpriseShortcutsEnabled;
-      this.maxTiles_ = (this.customLinksEnabled_ ? MAX_TILES_FOR_CUSTOM_LINKS :
-                                                   MAX_TILES_DEFAULT) +
-          (this.enterpriseShortcutsEnabled_ ?
-               MAX_TILES_FOR_ENTERPRISE_SHORTCUTS :
-               0);
+      this.maxTiles_ =
+          (this.customLinksEnabled_ ? this.maxShortcutsInExpandedState :
+                                      this.maxMostVisitedTilesInExpandedState) +
+          (this.enterpriseShortcutsEnabled_ ? this.maxEnterpriseShortcuts : 0);
       this.tiles_ = this.info_.tiles.slice(0, this.maxTiles_);
     }
 
@@ -397,7 +398,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     const canShowShowMore = this.expandableTilesEnabled && this.showShowMore_;
     const canShowShowLess = this.expandableTilesEnabled && this.showShowLess_;
     const visibleShortcutCount =
-        canShowShowMore ? this.maxTilesBeforeShowMore + 1 : shortcutCount;
+        canShowShowMore ? this.maxTilesInCollapsedState : shortcutCount;
     const totalTileCount = visibleShortcutCount + (canShowAdd ? 1 : 0) +
         (canShowShowMore || canShowShowLess ? 1 : 0);
     const columnCount = totalTileCount <= this.maxVisibleColumnCount_ ?
@@ -416,7 +417,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     if (this.reflowOnOverflow && this.tiles_) {
       const visibleShortcutCount =
           this.expandableTilesEnabled && this.showShowMore_ ?
-          this.maxTilesBeforeShowMore + 1 :
+          this.maxTilesInCollapsedState :
           this.tiles_.length;
       return Math.ceil(
           (visibleShortcutCount + (this.showAdd_ ? 1 : 0) +
@@ -434,7 +435,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
 
   private computeMaxVisibleTiles_(): number {
     if (this.expandableTilesEnabled && this.showShowMore_) {
-      return this.maxTilesBeforeShowMore + 1;
+      return this.maxTilesInCollapsedState;
     }
 
     if (this.reflowOnOverflow) {
@@ -459,24 +460,24 @@ export class MostVisitedElement extends MostVisitedElementBase {
     return this.tiles_.length < (this.expandableTilesEnabled && this.showAll_ ?
                                      this.maxTiles_ :
                                      this.maxVisibleTiles_) &&
-        customLinkTilesCount < MAX_TILES_FOR_CUSTOM_LINKS;
+        customLinkTilesCount < this.maxShortcutsInExpandedState;
   }
 
   private computeShowShowMore_(): boolean {
     return this.expandableTilesEnabled && !this.showAll_ && this.tiles_ &&
-        this.tiles_.length > this.maxTilesBeforeShowMore;
+        this.tiles_.length >= this.maxTilesInCollapsedState;
   }
 
   private computeShowShowLess_(): boolean {
     return this.expandableTilesEnabled && this.showAll_ && this.tiles_ &&
-        this.tiles_.length > this.maxTilesBeforeShowMore;
+        this.tiles_.length >= this.maxTilesInCollapsedState;
   }
 
   protected async onShowMoreClick_() {
     this.showAll_ = true;
     this.pageHandler_.setMostVisitedExpandedState(this.showAll_);
     await this.updateComplete;
-    this.tileFocus_(this.maxTilesBeforeShowMore + 1);
+    this.tileFocus_(this.maxTilesInCollapsedState);
   }
 
   protected async onShowLessClick_() {
@@ -808,7 +809,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
 
     const backKey = this.isRtl_ ? 'ArrowRight' : 'ArrowLeft';
     if (e.key === backKey || e.key === 'ArrowUp') {
-      this.tileFocus_(this.maxTilesBeforeShowMore);
+      this.tileFocus_(this.maxTilesInCollapsedState - 1);
     }
   }
 
@@ -1030,7 +1031,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     const advanceKey = this.isRtl_ ? 'ArrowLeft' : 'ArrowRight';
     const delta = (e.key === advanceKey || e.key === 'ArrowDown') ? 1 : -1;
     const newIndex = Math.max(0, index + delta);
-    if (this.showShowMore_ && newIndex === this.maxTilesBeforeShowMore + 1) {
+    if (this.showShowMore_ && newIndex === this.maxTilesInCollapsedState) {
       this.$.showMore.focus();
     } else {
       this.tileFocus_(newIndex);

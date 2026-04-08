@@ -318,8 +318,7 @@ const base::FeatureParam<bool> kNtpNextDisablementContextMenuParam(
     &ntp_features::kNtpNextFeatures,
     "NtpNextDisablementContextMenuParam",
     false);
-const base::FeatureParam<int> kMaxTilesBeforeShowMore{
-    &ntp_features::kNtpNextFeatures, "max_tiles_before_show_more", 5};
+
 const base::FeatureParam<bool> kAddTabUploadDelayOnActionChipClick(
     &ntp_features::kNtpNextFeatures,
     "AddTabUploadDelayOnActionChipClick",
@@ -446,6 +445,17 @@ const base::FeatureParam<int> kStaleModulesCountThreshold(
     "StaleModulesCountThreshold",
     14);
 
+const base::FeatureParam<int> kMaxTilesInCollapsedState{
+    &ntp_features::kNtpShortcutsRedesign, "max_tiles_in_collapsed_state", 6};
+const base::FeatureParam<int> kMaxShortcutsInExpandedState{
+    &ntp_features::kNtpShortcutsRedesign, "max_shortcuts_in_expanded_state",
+    10};
+const base::FeatureParam<int> kMaxMostVisitedTilesInExpandedState{
+    &ntp_features::kNtpShortcutsRedesign,
+    "max_most_visited_tiles_in_expanded_state", 8};
+const base::FeatureParam<int> kMaxEnterpriseShortcuts{
+    &ntp_features::kNtpShortcutsRedesign, "max_enterprise_shortcuts", 10};
+
 base::TimeDelta GetModulesLoadTimeout() {
   std::string param_value = base::GetFieldTrialParamValueByFeature(
       kNtpModulesLoadTimeoutMilliseconds,
@@ -489,8 +499,20 @@ int GetWallpaperSearchButtonHideCondition() {
       kNtpWallpaperSearchButtonHideConditionParam, 2);
 }
 
-int GetMaxTilesBeforeShowMore() {
-  return kMaxTilesBeforeShowMore.Get();
+int GetMaxTilesInCollapsedState() {
+  return kMaxTilesInCollapsedState.Get();
+}
+
+int GetMaxShortcutsInExpandedState() {
+  return kMaxShortcutsInExpandedState.Get();
+}
+
+int GetMaxMostVisitedTilesInExpandedState() {
+  return kMaxMostVisitedTilesInExpandedState.Get();
+}
+
+int GetMaxEnterpriseShortcuts() {
+  return kMaxEnterpriseShortcuts.Get();
 }
 
 }  // namespace ntp_features

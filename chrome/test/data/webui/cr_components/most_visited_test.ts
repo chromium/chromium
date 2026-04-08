@@ -4,7 +4,7 @@
 
 import {TileSource} from '//resources/mojo/components/ntp_tiles/tile_source.mojom-webui.js';
 import {MostVisitedBrowserProxy} from 'chrome://resources/cr_components/most_visited/browser_proxy.js';
-import {MAX_TILES_FOR_CUSTOM_LINKS, MostVisitedElement} from 'chrome://resources/cr_components/most_visited/most_visited.js';
+import {MostVisitedElement} from 'chrome://resources/cr_components/most_visited/most_visited.js';
 import type {MostVisitedPageRemote, MostVisitedTile} from 'chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js';
 import {MostVisitedPageCallbackRouter, MostVisitedPageHandlerRemote} from 'chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js';
 import {MostVisitedWindowProxy} from 'chrome://resources/cr_components/most_visited/window_proxy.js';
@@ -20,7 +20,6 @@ import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {$$, assertStyle, keydown} from './most_visited_test_support.js';
 
-const MAX_TILES_BEFORE_SHOW_MORE = 5;
 
 let mostVisited: MostVisitedElement;
 let windowProxy: TestMock<MostVisitedWindowProxy>&MostVisitedWindowProxy;
@@ -168,7 +167,10 @@ interface SetUpTestOptions {
   singleRow: boolean;
   reflowOnOverflow: boolean;
   expandableTilesEnabled: boolean;
-  maxTilesBeforeShowMore: number;
+  maxTilesInCollapsedState: number;
+  maxShortcutsInExpandedState: number;
+  maxMostVisitedTilesInExpandedState: number;
+  maxEnterpriseShortcuts: number;
 }
 
 function setUpTest(providedOptions: Partial<SetUpTestOptions> = {}) {
@@ -176,7 +178,10 @@ function setUpTest(providedOptions: Partial<SetUpTestOptions> = {}) {
     singleRow: false,
     reflowOnOverflow: false,
     expandableTilesEnabled: false,
-    maxTilesBeforeShowMore: MAX_TILES_BEFORE_SHOW_MORE,
+    maxTilesInCollapsedState: 6,
+    maxShortcutsInExpandedState: 10,
+    maxMostVisitedTilesInExpandedState: 8,
+    maxEnterpriseShortcuts: 10,
   };
   const options = {...defaultOptions, ...providedOptions};
   document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -189,10 +194,18 @@ function setUpTest(providedOptions: Partial<SetUpTestOptions> = {}) {
   mostVisited.reflowOnOverflow = options.reflowOnOverflow;
   if (options.expandableTilesEnabled) {
     mostVisited.setAttribute('expandable-tiles-enabled', '');
-    mostVisited.setAttribute(
-        'max-tiles-before-show-more',
-        options.maxTilesBeforeShowMore.toString());
   }
+  mostVisited.setAttribute(
+      'max-tiles-in-collapsed-state',
+      options.maxTilesInCollapsedState.toString());
+  mostVisited.setAttribute(
+      'max-shortcuts-in-expanded-state',
+      options.maxShortcutsInExpandedState.toString());
+  mostVisited.setAttribute(
+      'max-most-visited-tiles-in-expanded-state',
+      options.maxMostVisitedTilesInExpandedState.toString());
+  mostVisited.setAttribute(
+      'max-enterprise-shortcuts', options.maxEnterpriseShortcuts.toString());
   document.body.appendChild(mostVisited);
   assertEquals(1, handler.getCallCount('updateMostVisitedInfo'));
   return wide();
@@ -252,20 +265,22 @@ suite('ShowAddButton', () => {
   test(
       'add shortcut button hidden when custom links disabled and max tiles',
       async () => {
-        const tiles = Array(MAX_TILES_FOR_CUSTOM_LINKS).fill(0).map((_x, i) => {
-          const char = String.fromCharCode(i + /* 'a' */ 97);
-          return {
-            title: char,
-            titleDirection: TextDirection.LEFT_TO_RIGHT,
-            url: `https://${char}/`,
-            source: i % 2 === 0 ? TileSource.TOP_SITES :
-                                  TileSource.CUSTOM_LINKS,
-            titleSource: i,
-            isQueryTile: false,
-            allowUserEdit: true,
-            allowUserDelete: true,
-          };
-        });
+        const tiles = Array(mostVisited.maxShortcutsInExpandedState)
+                          .fill(0)
+                          .map((_x, i) => {
+                            const char = String.fromCharCode(i + /* 'a' */ 97);
+                            return {
+                              title: char,
+                              titleDirection: TextDirection.LEFT_TO_RIGHT,
+                              url: `https://${char}/`,
+                              source: i % 2 === 0 ? TileSource.TOP_SITES :
+                                                    TileSource.CUSTOM_LINKS,
+                              titleSource: i,
+                              isQueryTile: false,
+                              allowUserEdit: true,
+                              allowUserDelete: true,
+                            };
+                          });
         await addTiles(tiles, /*customLinksEnabled=*/ true);
         assertAddShortcutHidden();
       });
@@ -273,19 +288,21 @@ suite('ShowAddButton', () => {
   test(
       'add shortcut button shown when custom links disabled and max enterprise tiles',
       async () => {
-        const tiles = Array(MAX_TILES_FOR_CUSTOM_LINKS).fill(0).map((_x, i) => {
-          const char = String.fromCharCode(i + /* 'a' */ 97);
-          return {
-            title: char,
-            titleDirection: TextDirection.LEFT_TO_RIGHT,
-            url: `https://${char}/`,
-            source: TileSource.ENTERPRISE_SHORTCUTS,
-            titleSource: i,
-            isQueryTile: false,
-            allowUserEdit: true,
-            allowUserDelete: true,
-          };
-        });
+        const tiles = Array(mostVisited.maxShortcutsInExpandedState)
+                          .fill(0)
+                          .map((_x, i) => {
+                            const char = String.fromCharCode(i + /* 'a' */ 97);
+                            return {
+                              title: char,
+                              titleDirection: TextDirection.LEFT_TO_RIGHT,
+                              url: `https://${char}/`,
+                              source: TileSource.ENTERPRISE_SHORTCUTS,
+                              titleSource: i,
+                              isQueryTile: false,
+                              allowUserEdit: true,
+                              allowUserDelete: true,
+                            };
+                          });
         await addTiles(
             tiles, /*customLinksEnabled=*/ true, /*visible=*/ true,
             /*enterpriseShortcutsEnabled=*/ true);
@@ -307,7 +324,7 @@ suite('ExpandableTiles', () => {
 
     await handler.whenCalled('getMostVisitedExpandedState');
     await microtasksFinished();
-    await addTiles(MAX_TILES_BEFORE_SHOW_MORE + 1);
+    await addTiles(mostVisited.maxTilesInCollapsedState);
     assertTrue(mostVisited['showAll_']);
     assertTrue(isVisible(getShowLessButton()));
     assertFalse(isVisible(getShowMoreButton()));
@@ -315,7 +332,7 @@ suite('ExpandableTiles', () => {
 
   test('Show more button is shown with 6 or more tiles', async () => {
     await setUpTest({reflowOnOverflow: true, expandableTilesEnabled: true});
-    await addTiles(MAX_TILES_BEFORE_SHOW_MORE + 1);
+    await addTiles(mostVisited.maxTilesInCollapsedState);
     assertTrue(isVisible(getShowMoreButton()));
     assertAddShortcutHidden();
     assertHiddenTileLength(0);
@@ -325,7 +342,7 @@ suite('ExpandableTiles', () => {
       'Show more and show less buttons are hidden with 5 or fewer tiles',
       async () => {
         await setUpTest({reflowOnOverflow: true, expandableTilesEnabled: true});
-        await addTiles(MAX_TILES_BEFORE_SHOW_MORE);
+        await addTiles(mostVisited.maxTilesInCollapsedState - 1);
         assertFalse(isVisible(getShowMoreButton()));
         assertFalse(isVisible(getShowLessButton()));
         assertAddShortcutShown();
@@ -335,7 +352,7 @@ suite('ExpandableTiles', () => {
       'When the number of tiles is 6, toggle between show more and show less',
       async () => {
         await setUpTest({reflowOnOverflow: true, expandableTilesEnabled: true});
-        await addTiles(MAX_TILES_BEFORE_SHOW_MORE + 1);
+        await addTiles(mostVisited.maxTilesInCollapsedState);
         const showMoreButton = getShowMoreButton();
         assertTrue(isVisible(showMoreButton));
         assertAddShortcutHidden();
@@ -369,8 +386,8 @@ suite('ExpandableTiles', () => {
       });
 
   test('clicking show more shows all tiles and show less button', async () => {
-    await setUpTest({reflowOnOverflow: true, expandableTilesEnabled: true});
-    await addTiles(MAX_TILES_BEFORE_SHOW_MORE + 2);  // 7 tiles.
+    await setUpTest({expandableTilesEnabled: true});
+    await addTiles(mostVisited.maxTilesInCollapsedState + 1);  // 7 tiles.
     const showMoreButton = getShowMoreButton();
     assertTrue(isVisible(showMoreButton));
     assertAddShortcutHidden();
@@ -386,8 +403,8 @@ suite('ExpandableTiles', () => {
   });
 
   test('clicking show less hides tiles and show more button', async () => {
-    await setUpTest({reflowOnOverflow: true, expandableTilesEnabled: true});
-    await addTiles(MAX_TILES_BEFORE_SHOW_MORE + 2);  // 7 tiles.
+    await setUpTest({expandableTilesEnabled: true});
+    await addTiles(mostVisited.maxTilesInCollapsedState + 1);  // 7 tiles.
     const showMoreButton = getShowMoreButton();
     const showLessButton = getShowLessButton();
 
@@ -420,7 +437,7 @@ suite('ExpandableTiles', () => {
     // "Show less" button to appear on a new row, and clicking it would fail
     // to collapse the layout correctly, leaving a blank second row.
     await setUpTest({reflowOnOverflow: true, expandableTilesEnabled: true});
-    await addTiles(MAX_TILES_FOR_CUSTOM_LINKS);  // 10 tiles.
+    await addTiles(mostVisited.maxShortcutsInExpandedState);
 
     const showMoreButton = getShowMoreButton();
     assertTrue(isVisible(showMoreButton));
@@ -436,7 +453,8 @@ suite('ExpandableTiles', () => {
     assertHiddenTileLength(0);
     const expandedItems =
         queryAll<HTMLElement>('.tile:not([hidden]), #showLess');
-    assertEquals(MAX_TILES_FOR_CUSTOM_LINKS + 1, expandedItems.length);
+    assertEquals(
+        mostVisited.maxShortcutsInExpandedState + 1, expandedItems.length);
     const firstRowTop = expandedItems[0]!.offsetTop;
     const secondRowTop = expandedItems[5]!.offsetTop;
     const thirdRowTop = expandedItems[10]!.offsetTop;
@@ -455,7 +473,8 @@ suite('ExpandableTiles', () => {
     assertHiddenTileLength(4);
     const collapsedItems =
         queryAll<HTMLElement>('.tile:not([hidden]), #showMore');
-    assertEquals(MAX_TILES_BEFORE_SHOW_MORE + 1 + 1, collapsedItems.length);
+    assertEquals(
+        mostVisited.maxTilesInCollapsedState + 1, collapsedItems.length);
     const collapsedHeight = mostVisited.$.container.offsetHeight;
     assertNotEquals(
         expandedHeight, collapsedHeight,
@@ -497,7 +516,7 @@ suite('ExpandableTiles', () => {
       'show more and show less buttons do not move during drag and drop',
       async () => {
         await setUpTest({reflowOnOverflow: true, expandableTilesEnabled: true});
-        await addTiles(MAX_TILES_BEFORE_SHOW_MORE + 2);  // 7 tiles.
+        await addTiles(mostVisited.maxTilesInCollapsedState + 1);  // 7 tiles.
 
         const showMoreButton = getShowMoreButton()!;
         assertTrue(isVisible(showMoreButton));

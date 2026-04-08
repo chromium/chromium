@@ -228,10 +228,6 @@ extern const base::FeatureParam<base::TimeDelta>
 // Parameter determing the max number of tab groups to show in the module.
 extern const base::FeatureParam<size_t> kNtpTabGroupsModuleMaxGroupCountParam;
 
-// Parameter determining the max number of MV tiles before the "Show more"
-// button is shown.
-extern const base::FeatureParam<int> kNtpNextMaxMVTilesBeforeShowMoreParam;
-
 // Parameter determining if the Action Chips on the NTP should display static
 // text instead of real suggestions.
 extern const base::FeatureParam<bool> kNtpNextShowStaticTextParam;
@@ -300,9 +296,31 @@ int GetWallpaperSearchButtonAnimationShownThreshold();
 // Returns the condition to use to hide the wallpaper search button.
 int GetWallpaperSearchButtonHideCondition();
 
-// Returns the max number of tiles to show before the "show more" button is
-// shown.
-int GetMaxTilesBeforeShowMore();
+// Parameter determining the max number of tiles to show in the collapsed state.
+extern const base::FeatureParam<int> kMaxTilesInCollapsedState;
+
+// Parameter determining the max number of shortcuts to show in the expanded
+// state.
+extern const base::FeatureParam<int> kMaxShortcutsInExpandedState;
+
+// Parameter determining the max number of MV tiles to show in the expanded
+// state.
+extern const base::FeatureParam<int> kMaxMostVisitedTilesInExpandedState;
+
+// Parameter determining the max number of enterprise shortcuts allowed.
+extern const base::FeatureParam<int> kMaxEnterpriseShortcuts;
+
+// Returns the max number of tiles to show in the collapsed state.
+int GetMaxTilesInCollapsedState();
+
+// Returns the max number of shortcuts to show in the expanded state.
+int GetMaxShortcutsInExpandedState();
+
+// Returns the max number of MV tiles to show in the expanded state.
+int GetMaxMostVisitedTilesInExpandedState();
+
+// Returns the max number of enterprise shortcuts allowed.
+int GetMaxEnterpriseShortcuts();
 
 }  // namespace ntp_features
 
