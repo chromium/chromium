@@ -87,8 +87,7 @@ UpdateQueryParamsDelegate* g_delegate = nullptr;
 // static
 std::string UpdateQueryParams::Get(ProdId prod) {
   return base::StringPrintf(
-      "os=%s&arch=%s&os_arch=%s&prod=%s%s&acceptformat=crx3,puff", kOs, kArch,
-      base::SysInfo().OperatingSystemArchitecture().c_str(),
+      "os=%s&arch=%s&prod=%s%s&acceptformat=crx3,puff", kOs, kArch,
       GetProdIdString(prod),
       g_delegate ? g_delegate->GetExtraParams().c_str() : "");
 }

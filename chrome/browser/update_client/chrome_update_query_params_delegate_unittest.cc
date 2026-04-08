@@ -30,9 +30,6 @@ void TestParams(update_client::UpdateQueryParams::ProdId prod_id) {
       params,
       base::StrCat({"arch=", update_client::UpdateQueryParams::GetArch()})));
   EXPECT_TRUE(Contains(
-      params, base::StrCat({"os_arch=",
-                            base::SysInfo().OperatingSystemArchitecture()})));
-  EXPECT_TRUE(Contains(
       params,
       base::StrCat({"prod=", update_client::UpdateQueryParams::GetProdIdString(
                                  prod_id)})));
@@ -46,6 +43,7 @@ void TestParams(update_client::UpdateQueryParams::ProdId prod_id) {
   EXPECT_TRUE(Contains(
       params,
       base::StrCat({"lang=", ChromeUpdateQueryParamsDelegate::GetLang()})));
+  EXPECT_FALSE(Contains(params, "os_arch="));
 }
 
 TEST(ChromeUpdateQueryParamsDelegateTest, GetParams) {

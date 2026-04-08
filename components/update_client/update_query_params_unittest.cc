@@ -39,14 +39,11 @@ void TestParams(UpdateQueryParams::ProdId prod_id, bool extra_params) {
       Contains(params, StringPrintf("arch=%s", UpdateQueryParams::GetArch())));
   EXPECT_TRUE(Contains(
       params,
-      StringPrintf("os_arch=%s",
-                   base::SysInfo().OperatingSystemArchitecture().c_str())));
-  EXPECT_TRUE(Contains(
-      params,
       StringPrintf("prod=%s", UpdateQueryParams::GetProdIdString(prod_id))));
   if (extra_params) {
     EXPECT_TRUE(Contains(params, "cat=dog"));
   }
+  EXPECT_FALSE(Contains(params, "os_arch="));
 }
 
 void TestProdVersion() {

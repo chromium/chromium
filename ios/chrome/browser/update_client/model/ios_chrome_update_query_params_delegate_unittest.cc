@@ -29,6 +29,7 @@ void TestParams(update_client::UpdateQueryParams::ProdId prod_id) {
       base::StrCat({"prodversion=", version_info::GetVersionNumber()})));
   EXPECT_TRUE(params.contains(
       base::StrCat({"lang=", IOSChromeUpdateQueryParamsDelegate::GetLang()})));
+  EXPECT_FALSE(params.contains("os_arch="));
 }
 
 using IOSChromeUpdateQueryParamsDelegateTest = PlatformTest;
