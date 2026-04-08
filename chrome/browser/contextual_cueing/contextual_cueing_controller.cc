@@ -9,8 +9,11 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros_local.h"
+#include "base/notimplemented.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -18,12 +21,18 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/optimization_guide/core/optimization_guide_common.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "ui/actions/actions.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
+#endif
 
 namespace contextual_cueing {
 
@@ -43,6 +52,19 @@ void RecordContextualCueingDecision(
                                 contextual_cueing_decision);
 }
 
+std::optional<CueTargetType> GetTargetType(
+    optimization_guide::proto::ContextualCueingResponse::FulfillmentSurfaceCase
+        fulfillment_surface_case) {
+  using enum optimization_guide::proto::ContextualCueingResponse::
+      FulfillmentSurfaceCase;
+  switch (fulfillment_surface_case) {
+    case kGeminiInChromeSurface:
+      return CueTargetType::kGlic;
+    default:
+      return std::nullopt;
+  }
+}
+
 }  // namespace
 
 ContextualCueingController::ContextualCueingController(
@@ -50,6 +72,8 @@ ContextualCueingController::ContextualCueingController(
     TabListInterface* tab_list_interface)
     : browser_window_interface_(browser_window_interface),
       tab_list_interface_(tab_list_interface),
+      contextual_cueing_service_(ContextualCueingServiceFactory::GetForProfile(
+          browser_window_interface_->GetProfile())),
       page_content_annotations_service_(
           PageContentAnnotationsServiceFactory::GetForProfile(
               browser_window_interface_->GetProfile())),
@@ -180,8 +204,7 @@ void ContextualCueingController::OnModelExecutionResponseReceived(
   // for.
 
   if (!result.response.has_value()) {
-    MODEL_EXECUTION_LOG(
-        base::StringPrintf("Model execution to generate cue failed."));
+    MODEL_EXECUTION_LOG("Model execution to generate cue failed.");
     RecordContextualCueingDecision(
         ContextualCueingDecision::kModelExecutionFailed);
     return;
@@ -193,25 +216,109 @@ void ContextualCueingController::OnModelExecutionResponseReceived(
           *result.response);
   if (!response) {
     MODEL_EXECUTION_LOG(
-        base::StringPrintf("Model execution to generate cue failed."));
+        "Model execution to generate cue failed: couldn't parse proto.");
     RecordContextualCueingDecision(
         ContextualCueingDecision::kModelExecutionResponseFailedToParse);
     return;
   }
 
-  if (response->has_anchored_message_cue()) {
-    MODEL_EXECUTION_LOG(base::StringPrintf(
-        "Showing cue for CUJ %s: %s [%s]", response->suggested_cuj(),
-        response->anchored_message_cue().anchored_message_text(),
-        response->anchored_message_cue().action_text()));
-  }
-  if (response->has_gemini_in_chrome_surface() &&
-      !response->gemini_in_chrome_surface().prompt().empty()) {
+  if (!response->has_anchored_message_cue() ||
+      response->anchored_message_cue().anchored_message_text().empty() ||
+      response->anchored_message_cue().action_text().empty()) {
     MODEL_EXECUTION_LOG(
-        base::StringPrintf("Prompt for Gemini in Chrome surface: %s",
-                           response->gemini_in_chrome_surface().prompt()));
+        "Model execution to generate cue failed: missing anchored message "
+        "text.");
+    RecordContextualCueingDecision(
+        ContextualCueingDecision::kMissingAnchoredMessageText);
+    return;
   }
+
+  std::optional<CueTargetType> target_type =
+      GetTargetType(response->fulfillment_surface_case());
+  if (!target_type) {
+    MODEL_EXECUTION_LOG("Unknown fulfillment surface");
+    RecordContextualCueingDecision(
+        ContextualCueingDecision::kUnknownFulfillmentSurface);
+    return;
+  }
+
+  CueTarget* target = contextual_cueing_service_->GetTarget(*target_type);
+  if (!target) {
+    MODEL_EXECUTION_LOG(base::StringPrintf("No CueTarget registered for '%s'",
+                                           GetName(*target_type)));
+    RecordContextualCueingDecision(
+        ContextualCueingDecision::kTargetFeatureNotRegistered);
+    return;
+  }
+
+  if (!target->IsEligible()) {
+    MODEL_EXECUTION_LOG(base::StringPrintf("Not eligible for '%s' cues",
+                                           GetName(*target_type)));
+    RecordContextualCueingDecision(
+        ContextualCueingDecision::kTargetFeatureNotEligible);
+    return;
+  }
+
+  ShowCue(*target_type, *target, std::move(*response));
+}
+
+void ContextualCueingController::ShowCue(
+    CueTargetType cue_type,
+    const CueTarget& target,
+    optimization_guide::proto::ContextualCueingResponse response) {
+#if BUILDFLAG(IS_ANDROID)
+  NOTIMPLEMENTED()
+      << "Contextual cueing anchored message UI is not implemented for Android";
+#else
+  // TODO: b/496000131 - Ensure we are still on the same tab that we requested
+  // for.
+
+  tabs::TabInterface* tab = tab_list_interface_->GetActiveTab();
+  if (!tab || !tab->GetTabFeatures()) {
+    RecordContextualCueingDecision(ContextualCueingDecision::kNoActiveTab);
+    return;
+  }
+
+  auto* action =
+      actions::ActionManager::Get().FindAction(kActionAnchoredContextualCue);
+  CHECK(action);
+  action->SetInvokeActionCallback(base::BindRepeating(
+      &ContextualCueingController::OnCueClicked, weak_ptr_factory_.GetWeakPtr(),
+      cue_type, target.CueActionDataFromResponse(response)));
+
+  page_actions::PageActionController* page_action_controller =
+      tab->GetTabFeatures()->page_action_controller();
+  if (!page_action_controller) {
+    RecordContextualCueingDecision(ContextualCueingDecision::kNoActiveTab);
+    return;
+  }
+
+  page_action_controller->Show(kActionAnchoredContextualCue);
+  const auto& strings = response.anchored_message_cue();
+  page_action_controller->SetAnchoredMessageText(
+      kActionAnchoredContextualCue,
+      base::UTF8ToUTF16(strings.anchored_message_text()));
+  page_action_controller->OverrideText(
+      kActionAnchoredContextualCue, base::UTF8ToUTF16(strings.action_text()));
+  page_action_controller->OverrideImage(kActionAnchoredContextualCue,
+                                        target.GetIcon());
+  page_action_controller->ShowAnchoredMessage(kActionAnchoredContextualCue);
+
+  MODEL_EXECUTION_LOG(base::StringPrintf(
+      "Showing cue for CUJ %s: %s [%s]", response.suggested_cuj(),
+      strings.anchored_message_text(), strings.action_text()));
+#endif
   RecordContextualCueingDecision(ContextualCueingDecision::kSuccess);
+}
+
+void ContextualCueingController::OnCueClicked(
+    CueTargetType cue_type,
+    CueActionData data,
+    actions::ActionItem*,
+    actions::ActionInvocationContext) {
+  MODEL_EXECUTION_LOG(
+      base::StringPrintf("Cue type '%s' was clicked", GetName(cue_type)));
+  contextual_cueing_service_->OnClick(cue_type, std::move(data));
 }
 
 }  // namespace contextual_cueing

@@ -55,6 +55,27 @@ chromium-metrics-reviews@google.com.
     Tab was active and the page was classified as a category we support, and the
     model execution succeeded and the cue was successfully generated.
   </int>
+  <int value="7" label="Cue not shown: missing anchored message text">
+    Model response was missing fields needed to show an anchored message.
+  </int>
+  <int value="8" label="Cue not shown: unknown target surface">
+    Model response was for an unknown cue type.
+  </int>
+  <int value="9" label="Cue not shown: target surface not registered">
+    Model response was for a known cue type, but the surface was not registered
+    with ContextualCueingService.
+  </int>
+  <int value="10" label="Cue not shown: ineligible">
+    Model response was for a registered cue type, but that feature reported
+    IsEligible()=false.
+  </int>
+  <int value="11" label="Cue not shown: no active tab">
+    Cue could not be shown because the browser window had no active tab.
+  </int>
+  <int value="12" label="Cue not shown: page actions not enabled">
+    Cue could not be shown because the page actions framework was not enabled
+    (feature flag PageActionsMigration).
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_controller.h:ContextualCueingDecision) -->

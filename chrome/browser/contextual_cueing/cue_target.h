@@ -8,19 +8,33 @@
 #include <string>
 #include <variant>
 
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "components/tabs/public/tab_interface.h"
+#include "ui/base/models/image_model.h"
+
+namespace optimization_guide::proto {
+class ContextualCueingResponse;
+}  // namespace optimization_guide::proto
+
 namespace contextual_cueing {
 
 // Identifier for features that show cues. Each feature that implements
 // CueTarget should have a value in this enum.
 enum class CueTargetType { kGlic = 0, kMaxValue = kGlic };
+const char* GetName(CueTargetType type);
 
 // Glic-specific click data.
 struct GlicCueActionData {
   // Optional prompt to be filled in to glic upon opening.
   std::string prompt;
-  // Whether to automatically send the prompt upon opening.
-  bool auto_submit = false;
-  // TODO(crbug.com/498987803): Possibly include tab sharing data
+  // Tabs that should be used as context ("pinned") by glic.
+  std::vector<tabs::TabHandle> tabs_to_share;
+
+  GlicCueActionData();
+  ~GlicCueActionData();
+  GlicCueActionData(const GlicCueActionData&);
+  GlicCueActionData(GlicCueActionData&&);
+  GlicCueActionData& operator=(const GlicCueActionData&);
 };
 
 using CueActionData = std::variant<std::monostate, GlicCueActionData>;
@@ -35,6 +49,14 @@ class CueTarget {
 
   // Called when the user clicks the cue's action button.
   virtual void OnClick(CueActionData data) = 0;
+
+  // Icon to be shown in the anchored message.
+  virtual ui::ImageModel GetIcon() const = 0;
+
+  // Extract this feature's click data from a contextual cueing response.
+  virtual CueActionData CueActionDataFromResponse(
+      const optimization_guide::proto::ContextualCueingResponse& response)
+      const = 0;
 };
 
 }  // namespace contextual_cueing

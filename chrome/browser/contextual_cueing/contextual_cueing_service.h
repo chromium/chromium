@@ -33,9 +33,10 @@ class ContextualCueingService : public KeyedService {
   // registered target features.
   void OnDismiss(CueTargetType type);
 
- private:
+  // Look up a registered CueTarget.
   CueTarget* GetTarget(CueTargetType type);
 
+ private:
   absl::flat_hash_map<CueTargetType, std::unique_ptr<CueTarget>> cue_targets_;
 };
 
