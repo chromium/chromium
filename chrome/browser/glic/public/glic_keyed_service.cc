@@ -717,7 +717,7 @@ GlicInstance* GlicKeyedService::GetInstanceForActiveTab(
 bool GlicKeyedService::IsMediaRequestFromGlic(
     const std::string& request_id) const {
   for (GlicInstance* instance : instance_coordinator().GetInstances()) {
-    if (!instance->host().webui_contents()) {
+    if (!instance->host().web_client_contents()) {
       continue;
     }
 
