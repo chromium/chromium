@@ -67,7 +67,9 @@ RTCStatsCollectorCallbackImpl::RTCStatsCollectorCallbackImpl(
     : main_thread_(std::move(main_thread)), callback_(std::move(callback)) {}
 
 RTCStatsCollectorCallbackImpl::~RTCStatsCollectorCallbackImpl() {
-  DCHECK(!callback_);
+  if (callback_) {
+    OnStatsDelivered(webrtc::RTCStatsReport::Create(webrtc::Timestamp::Zero()));
+  }
 }
 
 void RTCStatsCollectorCallbackImpl::OnStatsDelivered(
@@ -75,18 +77,12 @@ void RTCStatsCollectorCallbackImpl::OnStatsDelivered(
   PostCrossThreadTask(
       *main_thread_.get(), FROM_HERE,
       CrossThreadBindOnce(
-          &RTCStatsCollectorCallbackImpl::OnStatsDeliveredOnMainThread,
-          webrtc::scoped_refptr<RTCStatsCollectorCallbackImpl>(this), report));
-}
-
-void RTCStatsCollectorCallbackImpl::OnStatsDeliveredOnMainThread(
-    webrtc::scoped_refptr<const webrtc::RTCStatsReport> report) {
-  DCHECK(main_thread_->BelongsToCurrentThread());
-  DCHECK(report);
-  DCHECK(callback_);
-  // Make sure the callback is destroyed in the main thread as well.
-  std::move(callback_).Run(std::make_unique<RTCStatsReportPlatform>(
-      base::WrapRefCounted(report.get())));
+          [](RTCStatsReportCallback callback,
+             webrtc::scoped_refptr<const webrtc::RTCStatsReport> report) {
+            std::move(callback).Run(std::make_unique<RTCStatsReportPlatform>(
+                base::WrapRefCounted(report.get())));
+          },
+          std::move(callback_), report));
 }
 
 }  // namespace blink

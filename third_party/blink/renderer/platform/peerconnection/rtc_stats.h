@@ -81,9 +81,6 @@ class PLATFORM_EXPORT RTCStatsCollectorCallbackImpl
       RTCStatsReportCallback callback);
   ~RTCStatsCollectorCallbackImpl() override;
 
-  void OnStatsDeliveredOnMainThread(
-      webrtc::scoped_refptr<const webrtc::RTCStatsReport> report);
-
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
   RTCStatsReportCallback callback_;
 };
