@@ -77,8 +77,8 @@ int GetModifiersForKeyLocationCode(KeyboardEvent::KeyLocationCode location) {
 void RegisterMockedURL(const std::string& base_url,
                        const std::string& file_name) {
   url_test_helpers::RegisterMockedURLLoadFromBase(
-      WebString::FromUTF8(base_url), test::CoreTestDataPath(),
-      WebString::FromUTF8(file_name));
+      WebString::FromUtf8(base_url), test::CoreTestDataPath(),
+      WebString::FromUtf8(file_name));
 }
 
 class WebInputEventConversionTest : public testing::Test {

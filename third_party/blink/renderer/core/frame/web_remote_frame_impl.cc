@@ -49,8 +49,8 @@ mojom::blink::FrameReplicationStatePtr ToBlinkFrameReplicationState(
   mojom::blink::FrameReplicationStatePtr result =
       mojom::blink::FrameReplicationState::New();
   result->origin = SecurityOrigin::CreateFromUrlOrigin(to_convert->origin);
-  result->name = WebString::FromUTF8(to_convert->name);
-  result->unique_name = WebString::FromUTF8(to_convert->unique_name);
+  result->name = WebString::FromUtf8(to_convert->name);
+  result->unique_name = WebString::FromUtf8(to_convert->unique_name);
 
   for (const auto& header : to_convert->permissions_policy_header)
     result->permissions_policy_header.push_back(header);

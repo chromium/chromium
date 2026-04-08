@@ -847,8 +847,8 @@ class WebMediaPlayerImplTest
     // streaming responses, we'll pretend we don't know the content length.
     WebURLResponse response(kTestURL);
     response.SetHttpHeaderField(
-        WebString::FromUTF8("Content-Length"),
-        WebString::FromUTF8(is_streaming ? "-1"
+        WebString("Content-Length"),
+        WebString::FromUtf8(is_streaming ? "-1"
                                          : base::NumberToString(data->size())));
     response.SetExpectedContentLength(is_streaming ? -1 : data->size());
     response.SetHttpStatusCode(200);
@@ -936,8 +936,8 @@ class WebMediaPlayerImplTest
     // Must use a supported key system on a secure context.
     media::CdmConfig cdm_config = {media::kClearKeyKeySystem, false, false,
                                    false};
-    auto test_origin = WebSecurityOrigin::CreateFromString(
-        WebString::FromUTF8("https://test.origin"));
+    auto test_origin =
+        WebSecurityOrigin::CreateFromString(WebString("https://test.origin"));
 
     if (!key_systems_) {
       key_systems_ =

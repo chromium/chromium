@@ -163,7 +163,7 @@ class WebAssociatedURLLoaderTest : public testing::Test,
     WebURLRequest request(ToKURL("http://www.test.com/success.html"));
     request.SetMode(network::mojom::RequestMode::kSameOrigin);
     request.SetCredentialsMode(network::mojom::CredentialsMode::kOmit);
-    request.SetHttpMethod(WebString::FromUTF8(unsafe_method));
+    request.SetHttpMethod(WebString::FromUtf8(unsafe_method));
     WebAssociatedURLLoaderOptions options;
     options.untrusted_http = true;
     CheckFails(request, options);
@@ -177,12 +177,12 @@ class WebAssociatedURLLoaderTest : public testing::Test,
     WebURLRequest request(ToKURL("http://www.test.com/success.html"));
     request.SetMode(network::mojom::RequestMode::kSameOrigin);
     request.SetCredentialsMode(network::mojom::CredentialsMode::kOmit);
-    if (EqualIgnoringAsciiCase(WebString::FromUTF8(header_field), "referer")) {
-      request.SetReferrerString(WebString::FromUTF8(header_value));
+    if (EqualIgnoringAsciiCase(WebString::FromUtf8(header_field), "referer")) {
+      request.SetReferrerString(WebString::FromUtf8(header_value));
       request.SetReferrerPolicy(network::mojom::ReferrerPolicy::kDefault);
     } else {
-      request.SetHttpHeaderField(WebString::FromUTF8(header_field),
-                                 WebString::FromUTF8(header_value));
+      request.SetHttpHeaderField(WebString::FromUtf8(header_field),
+                                 WebString::FromUtf8(header_value));
     }
 
     WebAssociatedURLLoaderOptions options;
@@ -217,7 +217,7 @@ class WebAssociatedURLLoaderTest : public testing::Test,
     request.SetMode(network::mojom::RequestMode::kCors);
     request.SetCredentialsMode(network::mojom::CredentialsMode::kOmit);
 
-    WebString header_name_string(WebString::FromUTF8(header_name));
+    WebString header_name_string(WebString::FromUtf8(header_name));
     expected_response_ = WebURLResponse();
     expected_response_.SetMimeType("text/html");
     expected_response_.SetHttpStatusCode(200);
@@ -532,7 +532,7 @@ TEST_F(WebAssociatedURLLoaderTest, CrossOriginHeaderAllowResponseHeaders) {
   request.SetMode(network::mojom::RequestMode::kCors);
   request.SetCredentialsMode(network::mojom::CredentialsMode::kOmit);
 
-  WebString header_name_string(WebString::FromUTF8("non-safelisted"));
+  WebString header_name_string(WebString("non-safelisted"));
   expected_response_ = WebURLResponse();
   expected_response_.SetMimeType("text/html");
   expected_response_.SetHttpStatusCode(200);

@@ -81,7 +81,7 @@ WebString WebString::Substring(size_t pos, size_t len) const {
                                  base::checked_cast<wtf_size_t>(len)));
 }
 
-WebString WebString::FromUTF8(std::string_view s) {
+WebString WebString::FromUtf8(std::string_view s) {
   return String::FromUtf8(s);
 }
 

@@ -136,8 +136,7 @@ class AudioDestinationTest
       std::optional<float> context_sample_rate,
       WebAudioLatencyHint latency_hint) {
     // Assume the default audio device. (i.e. the empty string)
-    WebAudioSinkDescriptor sink_descriptor(WebString::FromUTF8(""),
-                                           kFrameToken);
+    WebAudioSinkDescriptor sink_descriptor(WebString(""), kFrameToken);
     const int channel_count =
         Platform::Current()->AudioHardwareOutputChannels();
 

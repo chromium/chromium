@@ -668,7 +668,7 @@ void WebNavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
     // WebString treats default and empty strings differently while std::string
     // does not. A default value is expected for new_referrer rather than empty.
     if (!redirect_info.new_referrer.empty())
-      redirect.new_referrer = WebString::FromUTF8(redirect_info.new_referrer);
+      redirect.new_referrer = WebString::FromUtf8(redirect_info.new_referrer);
     redirect.new_referrer_policy = ReferrerUtils::NetToMojoReferrerPolicy(
         redirect_info.new_referrer_policy);
     redirect.new_http_method = WebString::FromLatin1(redirect_info.new_method);

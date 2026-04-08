@@ -17,7 +17,7 @@ TEST(PushMessageDataTest, ValidPayload) {
   test::TaskEnvironment task_environment;
   // Create a WebString with the test message, then create a
   // PushMessageData from that.
-  WebString s(blink::WebString::FromUTF8(kPushMessageData));
+  WebString s(blink::WebString::FromUtf8(kPushMessageData));
   PushMessageData* data = PushMessageData::Create(s);
 
   ASSERT_NE(data, nullptr);

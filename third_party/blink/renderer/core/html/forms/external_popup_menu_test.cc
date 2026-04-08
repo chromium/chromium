@@ -275,8 +275,8 @@ class ExternalPopupMenuTest : public PageTestBase {
     // TODO(crbug.com/751425): We should use the mock functionality
     // via |helper_|.
     url_test_helpers::RegisterMockedURLLoadFromBase(
-        WebString::FromUTF8(base_url_), test::CoreTestDataPath("popup"),
-        WebString::FromUTF8(file_name), WebString::FromUTF8("text/html"));
+        WebString::FromUtf8(base_url_), test::CoreTestDataPath("popup"),
+        WebString::FromUtf8(file_name), WebString("text/html"));
   }
 
   void LoadFrame(const std::string& file_name) {

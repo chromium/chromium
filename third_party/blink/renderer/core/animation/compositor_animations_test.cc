@@ -628,8 +628,8 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
     String testing_path =
         test::BlinkRootDir() + "/renderer/core/animation/test_data/";
     WebURL url = url_test_helpers::RegisterMockedURLLoadFromBase(
-        WebString::FromUTF8(base_url_), testing_path,
-        WebString::FromUTF8(file_name));
+        WebString::FromUtf8(base_url_), testing_path,
+        WebString::FromUtf8(file_name));
     frame_test_helpers::LoadFrame(helper_.GetWebView()->MainFrameImpl(),
                                   base_url_ + file_name);
     ForceFullCompositingUpdate();

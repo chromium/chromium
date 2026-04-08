@@ -64,7 +64,7 @@ class ModelContextTest : public SimTest {
   bool EvalJsBoolean(const char* script) {
     return MainFrame()
         .ExecuteScriptAndReturnValue(
-            WebScriptSource(WebString::FromUTF8(script)))
+            WebScriptSource(WebString::FromUtf8(script)))
         .As<v8::Boolean>()
         ->Value();
   }
@@ -73,7 +73,7 @@ class ModelContextTest : public SimTest {
     return ToCoreStringWithUndefinedOrNullCheck(
         Window().GetIsolate(),
         MainFrame().ExecuteScriptAndReturnValue(
-            WebScriptSource(WebString::FromUTF8(script))));
+            WebScriptSource(WebString::FromUtf8(script))));
   }
 
  private:
@@ -621,7 +621,7 @@ class ModelContextOriginTrialTest : public SimTest {
   bool EvalJsBoolean(const char* script) {
     return MainFrame()
         .ExecuteScriptAndReturnValue(
-            WebScriptSource(WebString::FromUTF8(script)))
+            WebScriptSource(WebString::FromUtf8(script)))
         .As<v8::Boolean>()
         ->Value();
   }
@@ -630,7 +630,7 @@ class ModelContextOriginTrialTest : public SimTest {
     return ToCoreStringWithUndefinedOrNullCheck(
         Window().GetIsolate(),
         MainFrame().ExecuteScriptAndReturnValue(
-            WebScriptSource(WebString::FromUTF8(script))));
+            WebScriptSource(WebString::FromUtf8(script))));
   }
 
  private:
@@ -1369,7 +1369,7 @@ class ModelContextMetricsTest : public SimTest {
 
  protected:
   void EvalJsString(std::string_view script) {
-    MainFrame().ExecuteScript(WebScriptSource(WebString::FromUTF8(script)));
+    MainFrame().ExecuteScript(WebScriptSource(WebString::FromUtf8(script)));
   }
 
  private:

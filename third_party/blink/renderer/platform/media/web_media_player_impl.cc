@@ -1475,7 +1475,7 @@ WebMediaPlayer::ReadyState WebMediaPlayerImpl::GetReadyState() const {
 
 WebString WebMediaPlayerImpl::GetErrorMessage() const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  return WebString::FromUTF8(media_log_->GetErrorMessage());
+  return WebString::FromUtf8(media_log_->GetErrorMessage());
 }
 
 WebTimeRanges WebMediaPlayerImpl::Buffered() const {
@@ -3928,7 +3928,7 @@ void WebMediaPlayerImpl::SwitchToRemoteRenderer(
   ScheduleRestart();
   if (client_) {
     client_->MediaRemotingStarted(
-        WebString::FromUTF8(remote_device_friendly_name));
+        WebString::FromUtf8(remote_device_friendly_name));
   }
 }
 

@@ -52,8 +52,8 @@ void RegisterMockedURLLoadFromBaseURL(const std::string& base_url,
   // TODO(crbug.com/751425): We should use the mock functionality
   // via |WebSearchableFormDataTest::web_view_helper_|.
   url_test_helpers::RegisterMockedURLLoadFromBase(
-      WebString::FromUTF8(base_url), test::CoreTestDataPath(),
-      WebString::FromUTF8(file_name));
+      WebString::FromUtf8(base_url), test::CoreTestDataPath(),
+      WebString::FromUtf8(file_name));
 }
 
 class WebSearchableFormDataTest : public testing::Test {

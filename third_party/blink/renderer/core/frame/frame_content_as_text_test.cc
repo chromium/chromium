@@ -25,8 +25,8 @@ class FrameContentAsTextTest : public testing::Test {
 
   void RegisterMockedHttpURLLoad(const std::string& file_path) {
     url_test_helpers::RegisterMockedURLLoadFromBase(
-        WebString::FromUTF8(base_url_), test::CoreTestDataPath(),
-        WebString::FromUTF8(file_path));
+        WebString::FromUtf8(base_url_), test::CoreTestDataPath(),
+        WebString::FromUtf8(file_path));
   }
 
  protected:

@@ -58,7 +58,7 @@ class AnimationFrameTimingMonitorTest : public SimTest {
       test::RunPendingTasks();
     }
 
-    WebScriptSource source = WebScriptSource(WebString::FromUTF8(kPollScript));
+    WebScriptSource source = WebScriptSource(WebString::FromUtf8(kPollScript));
     v8::Isolate* isolate = Window().GetIsolate();
 
     auto get_result = [&]() -> String {

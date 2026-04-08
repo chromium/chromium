@@ -129,8 +129,8 @@ class VisualViewportTest : public testing::Test,
     // TODO(crbug.com/751425): We should use the mock functionality
     // via |helper_|.
     url_test_helpers::RegisterMockedURLLoadFromBase(
-        WebString::FromUTF8(base_url_), blink::test::CoreTestDataPath(),
-        WebString::FromUTF8(fileName));
+        WebString::FromUtf8(base_url_), blink::test::CoreTestDataPath(),
+        WebString::FromUtf8(fileName));
   }
 
   void RegisterMockedHttpURLLoad(const std::string& url,
@@ -139,7 +139,7 @@ class VisualViewportTest : public testing::Test,
     // via |helper_|.
     url_test_helpers::RegisterMockedURLLoad(
         ToKURL(url),
-        blink::test::CoreTestDataPath(WebString::FromUTF8(fileName)));
+        blink::test::CoreTestDataPath(WebString::FromUtf8(fileName)));
   }
 
   WebViewImpl* WebView() const { return helper_.GetWebView(); }

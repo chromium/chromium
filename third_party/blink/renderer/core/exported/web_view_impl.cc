@@ -362,7 +362,7 @@ void ApplyCommandLineToSettings(WebSettings* settings) {
         WebSettings::SelectionStrategyType::kDirection);
   }
 
-  WebString network_quiet_timeout = WebString::FromUTF8(
+  WebString network_quiet_timeout = WebString::FromUtf8(
       command_line.GetSwitchValueASCII(switches::kNetworkQuietTimeout));
   if (!network_quiet_timeout.IsEmpty()) {
     auto network_quiet_timeout_seconds =
@@ -3621,7 +3621,7 @@ void WebViewImpl::UpdateFontRenderingFromRendererPrefs() {
       renderer_preferences_.use_subpixel_positioning);
 #if BUILDFLAG(IS_LINUX)
   if (!renderer_preferences_.system_font_family_name.empty()) {
-    WebFontRenderStyle::SetSystemFontFamily(blink::WebString::FromUTF8(
+    WebFontRenderStyle::SetSystemFontFamily(blink::WebString::FromUtf8(
         renderer_preferences_.system_font_family_name));
   }
 #endif  // BUILDFLAG(IS_LINUX)

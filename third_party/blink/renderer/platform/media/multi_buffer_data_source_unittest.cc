@@ -575,8 +575,7 @@ TEST_F(MultiBufferDataSourceTest, Range_SupportedButReturned200) {
   Initialize(kHttpUrl, true);
   EXPECT_CALL(host_, SetTotalBytes(response_generator_->content_length()));
   WebURLResponse response = response_generator_->Generate200();
-  response.SetHttpHeaderField(WebString::FromUTF8("Accept-Ranges"),
-                              WebString::FromUTF8("bytes"));
+  response.SetHttpHeaderField(WebString("Accept-Ranges"), WebString("bytes"));
   Respond(response);
 
   EXPECT_CALL(host_, AddBufferedByteRange(0, kDataSize));
@@ -1641,8 +1640,8 @@ TEST_F(MultiBufferDataSourceTest, PreserveCachingModeAfterRedirect) {
   WebURLResponse data_response(redir);
   data_response.SetHttpStatusCode(200);
   data_response.SetExpectedContentLength(kDataSize);
-  data_response.SetHttpHeaderField(WebString::FromUTF8("Accept-Ranges"),
-                                   WebString::FromUTF8("bytes"));
+  data_response.SetHttpHeaderField(WebString("Accept-Ranges"),
+                                   WebString("bytes"));
 
   // Create a data source for a url which redirects. This will create a new
   // UrlData that bypasses any cache lookups (but can still be added to the
@@ -1741,7 +1740,7 @@ TEST_F(MultiBufferDataSourceTest, LengthKnownAtEOF) {
   Initialize(kHttpUrl, true);
   // Server responds without content-length.
   WebURLResponse response = response_generator_->Generate200();
-  response.ClearHttpHeaderField(WebString::FromUTF8("Content-Length"));
+  response.ClearHttpHeaderField(WebString("Content-Length"));
   response.SetExpectedContentLength(kPositionNotSpecified);
   Respond(response);
   EXPECT_CALL(host_, AddBufferedByteRange(0, kDataSize));
@@ -1770,8 +1769,8 @@ TEST_F(MultiBufferDataSourceTest, FileSizeLessThanBlockSize) {
   WebURLResponse response(url);
   response.SetHttpStatusCode(200);
   response.SetHttpHeaderField(
-      WebString::FromUTF8("Content-Length"),
-      WebString::FromUTF8(base::NumberToString(kDataSize / 2)));
+      WebString("Content-Length"),
+      WebString::FromUtf8(base::NumberToString(kDataSize / 2)));
   response.SetExpectedContentLength(kDataSize / 2);
   Respond(response);
   EXPECT_CALL(host_, AddBufferedByteRange(0, kDataSize / 2));
@@ -1887,8 +1886,7 @@ TEST_F(MultiBufferDataSourceTest, EtagTest) {
   EXPECT_CALL(host_, SetTotalBytes(response_generator_->content_length()));
   WebURLResponse response = response_generator_->Generate206(0);
   const std::string etag("\"arglebargle glop-glyf?\"");
-  response.SetHttpHeaderField(WebString::FromUTF8("Etag"),
-                              WebString::FromUTF8(etag));
+  response.SetHttpHeaderField(WebString("Etag"), WebString::FromUtf8(etag));
   Respond(response);
   EXPECT_CALL(host_, AddBufferedByteRange(0, kDataSize));
   ReceiveData(kDataSize);

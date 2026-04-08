@@ -267,12 +267,12 @@ void WebSourceBufferImpl::InitSegmentReceived(
   for (const auto& track : tracks->tracks()) {
     WebSourceBufferClient::MediaTrackInfo trackInfo;
     trackInfo.track_type = mediaTrackTypeToBlink(track->type());
-    trackInfo.id = WebString::FromUTF8(track->track_id().value());
+    trackInfo.id = WebString::FromUtf8(track->track_id().value());
     trackInfo.byte_stream_track_id =
-        WebString::FromUTF8(base::NumberToString(track->stream_id()));
-    trackInfo.kind = WebString::FromUTF8(track->kind().value());
-    trackInfo.label = WebString::FromUTF8(track->label().value());
-    trackInfo.language = WebString::FromUTF8(track->language().value());
+        WebString::FromUtf8(base::NumberToString(track->stream_id()));
+    trackInfo.kind = WebString::FromUtf8(track->kind().value());
+    trackInfo.label = WebString::FromUtf8(track->label().value());
+    trackInfo.language = WebString::FromUtf8(track->language().value());
     trackInfoVector.push_back(trackInfo);
   }
 

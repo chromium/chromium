@@ -120,8 +120,8 @@ class BrowserControlsTest : public testing::Test,
 
   void RegisterMockedHttpURLLoad(const std::string& file_name) {
     url_test_helpers::RegisterMockedURLLoadFromBase(
-        WebString::FromUTF8(base_url_), test::CoreTestDataPath(),
-        WebString::FromUTF8(file_name));
+        WebString::FromUtf8(base_url_), test::CoreTestDataPath(),
+        WebString::FromUtf8(file_name));
   }
 
   WebGestureEvent GenerateEvent(WebInputEvent::Type type,
@@ -1208,8 +1208,8 @@ TEST_F(BrowserControlsTest, MAYBE(DontAffectLayoutHeight)) {
   // so
   // 50% should result in both the position:fixed and position: absolute divs
   // having 150px of height.
-  Element* abs_pos = GetElementById(WebString::FromUTF8("abs"));
-  Element* fixed_pos = GetElementById(WebString::FromUTF8("fixed"));
+  Element* abs_pos = GetElementById(WebString("abs"));
+  Element* fixed_pos = GetElementById(WebString("fixed"));
   EXPECT_FLOAT_EQ(150.f, abs_pos->GetBoundingClientRect()->height());
   EXPECT_FLOAT_EQ(150.f, fixed_pos->GetBoundingClientRect()->height());
 
@@ -1274,9 +1274,8 @@ TEST_F(BrowserControlsSimTest, MAYBE(AffectLayoutHeightWhenConstrained)) {
       std::nullopt);
   Compositor().BeginFrame();
 
-  Element* abs_pos = GetDocument().getElementById(WebString::FromUTF8("abs"));
-  Element* fixed_pos =
-      GetDocument().getElementById(WebString::FromUTF8("fixed"));
+  Element* abs_pos = GetDocument().getElementById(WebString("abs"));
+  Element* fixed_pos = GetDocument().getElementById(WebString("fixed"));
 
   ASSERT_EQ(100.f, WebView().GetBrowserControls().ContentOffset());
 
@@ -1383,8 +1382,7 @@ TEST_F(BrowserControlsSimTest, MAYBE(AffectViewportConstrainedSticky)) {
       std::nullopt);
   Compositor().BeginFrame();
 
-  Element* sticky_pos =
-      GetDocument().getElementById(WebString::FromUTF8("sticky"));
+  Element* sticky_pos = GetDocument().getElementById(WebString("sticky"));
   ASSERT_EQ(100.f, WebView().GetBrowserControls().ContentOffset());
   ASSERT_EQ(300, GetDocument().GetFrame()->View()->GetLayoutSize().height());
   EXPECT_FLOAT_EQ(300.f, sticky_pos->GetBoundingClientRect()->bottom());
@@ -1443,8 +1441,8 @@ TEST_P(BrowserControlsViewportUnitTest, MAYBE(DontAffectStaticUnits)) {
 
   // Static '*vh' units should be based on the viewport when the browser
   // controls are hidden.
-  Element* abs_pos = GetElementById(WebString::FromUTF8("abs"));
-  Element* fixed_pos = GetElementById(WebString::FromUTF8("fixed"));
+  Element* abs_pos = GetElementById(WebString("abs"));
+  Element* fixed_pos = GetElementById(WebString("fixed"));
   EXPECT_FLOAT_EQ(param.height, abs_pos->GetBoundingClientRect()->height());
   EXPECT_FLOAT_EQ(param.height, fixed_pos->GetBoundingClientRect()->height());
 
@@ -1475,7 +1473,7 @@ TEST_P(BrowserControlsViewportUnitTest, MAYBE(DontAffectStaticUnits)) {
   // Static *vw units should not change when scrollbar disappears.
   EXPECT_FLOAT_EQ(param.width, abs_pos->GetBoundingClientRect()->width());
   EXPECT_FLOAT_EQ(param.width, fixed_pos->GetBoundingClientRect()->width());
-  Element* spacer = GetElementById(WebString::FromUTF8("spacer"));
+  Element* spacer = GetElementById(WebString("spacer"));
   ASSERT_TRUE(spacer);
   spacer->remove();
   UpdateAllLifecyclePhases();
@@ -1507,8 +1505,8 @@ TEST_F(BrowserControlsTest, MAYBE(DoAffectDVHUnits)) {
   ASSERT_EQ(100.f, web_view->GetBrowserControls().ContentOffset());
 
   // 'dvh' units should respond according to the current state of the controls.
-  Element* abs_pos = GetElementById(WebString::FromUTF8("abs"));
-  Element* fixed_pos = GetElementById(WebString::FromUTF8("fixed"));
+  Element* abs_pos = GetElementById(WebString("abs"));
+  Element* fixed_pos = GetElementById(WebString("fixed"));
   EXPECT_FLOAT_EQ(150.f, abs_pos->GetBoundingClientRect()->height());
   EXPECT_FLOAT_EQ(150.f, fixed_pos->GetBoundingClientRect()->height());
 
@@ -1552,7 +1550,7 @@ TEST_F(BrowserControlsTest, MAYBE(DoAffectDVHUnits)) {
   // dvw units should not change when scrollbar disappears.
   EXPECT_FLOAT_EQ(200.f, abs_pos->GetBoundingClientRect()->width());
   EXPECT_FLOAT_EQ(200.f, fixed_pos->GetBoundingClientRect()->width());
-  Element* spacer = GetElementById(WebString::FromUTF8("spacer"));
+  Element* spacer = GetElementById(WebString("spacer"));
   ASSERT_TRUE(spacer);
   spacer->remove();
   UpdateAllLifecyclePhases();
@@ -1583,8 +1581,8 @@ TEST_F(BrowserControlsTest, MAYBE(DontAffectVHUnitsWithScale)) {
   // we have to account for the minimum page scale factor. Since both boxes
   // are 50vh, and layout scale = 0.5, we have a vh viewport of 400 / 0.5 = 800
   // so we expect 50vh to be 400px.
-  Element* abs_pos = GetElementById(WebString::FromUTF8("abs"));
-  Element* fixed_pos = GetElementById(WebString::FromUTF8("fixed"));
+  Element* abs_pos = GetElementById(WebString("abs"));
+  Element* fixed_pos = GetElementById(WebString("fixed"));
   EXPECT_FLOAT_EQ(400.f, abs_pos->GetBoundingClientRect()->height());
   EXPECT_FLOAT_EQ(400.f, fixed_pos->GetBoundingClientRect()->height());
 
@@ -1655,8 +1653,8 @@ TEST_F(BrowserControlsTest, MAYBE(VHUnitsWithTopMinHeight)) {
   // 'vh' units should be based on the viewport when the browser controls are
   // hidden. However, the viewport height will be limited by the min-height
   // since the top controls can't completely hide.
-  Element* abs_pos = GetElementById(WebString::FromUTF8("abs"));
-  Element* fixed_pos = GetElementById(WebString::FromUTF8("fixed"));
+  Element* abs_pos = GetElementById(WebString("abs"));
+  Element* fixed_pos = GetElementById(WebString("fixed"));
   float div_height = 0.5f * (300 + (100 - 20));
   EXPECT_FLOAT_EQ(div_height, abs_pos->GetBoundingClientRect()->height());
   EXPECT_FLOAT_EQ(div_height, fixed_pos->GetBoundingClientRect()->height());
@@ -1704,8 +1702,8 @@ TEST_F(BrowserControlsTest, MAYBE(VHUnitsWithBottomMinHeight)) {
   // 'vh' units should be based on the viewport when the browser controls are
   // hidden. However, the viewport height will be limited by the min-height
   // since the top and bottom controls can't completely hide.
-  Element* abs_pos = GetElementById(WebString::FromUTF8("abs"));
-  Element* fixed_pos = GetElementById(WebString::FromUTF8("fixed"));
+  Element* abs_pos = GetElementById(WebString("abs"));
+  Element* fixed_pos = GetElementById(WebString("fixed"));
   float div_height = 0.5f * (250 + (100 - 20) + (50 - 10));
   EXPECT_FLOAT_EQ(div_height, abs_pos->GetBoundingClientRect()->height());
   EXPECT_FLOAT_EQ(div_height, fixed_pos->GetBoundingClientRect()->height());
@@ -1753,8 +1751,8 @@ TEST_F(BrowserControlsTest, MAYBE(VHUnitsWithMinHeightsChanging)) {
   // 'vh' units should be based on the viewport when the browser controls are
   // hidden. However, the viewport height will be limited by the min-height
   // since the top and bottom controls can't completely hide.
-  Element* abs_pos = GetElementById(WebString::FromUTF8("abs"));
-  Element* fixed_pos = GetElementById(WebString::FromUTF8("fixed"));
+  Element* abs_pos = GetElementById(WebString("abs"));
+  Element* fixed_pos = GetElementById(WebString("fixed"));
   float div_height = 0.5f * (250 + (100 - 20) + (50 - 10));
   EXPECT_FLOAT_EQ(div_height, abs_pos->GetBoundingClientRect()->height());
   EXPECT_FLOAT_EQ(div_height, fixed_pos->GetBoundingClientRect()->height());

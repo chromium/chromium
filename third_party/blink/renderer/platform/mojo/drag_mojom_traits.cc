@@ -329,7 +329,7 @@ bool StructTraits<blink::mojom::DragDataDataView, blink::WebDragData>::Read(
   drag_data.SetFilesystemId(file_system_id);
   drag_data.SetForceDefaultAction(data.force_default_action());
   if (source_effect_allowed.has_value()) {
-    drag_data.SetSourceEffectAllowed(blink::WebString::FromUTF8(
+    drag_data.SetSourceEffectAllowed(blink::WebString::FromUtf8(
         blink::SourceEffectAllowedToString(*source_effect_allowed)));
   }
   drag_data.SetReferrerPolicy(referrer_policy);

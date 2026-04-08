@@ -224,11 +224,11 @@ TEST_F(ScreenOrientationControllerTest, PageVisibilityCrash) {
   std::string base_url("http://internal.test/");
   std::string test_url("single_iframe.html");
   url_test_helpers::RegisterMockedURLLoadFromBase(
-      WebString::FromUTF8(base_url), test::CoreTestDataPath(),
-      WebString::FromUTF8(test_url));
+      WebString::FromUtf8(base_url), test::CoreTestDataPath(),
+      WebString::FromUtf8(test_url));
   url_test_helpers::RegisterMockedURLLoadFromBase(
-      WebString::FromUTF8(base_url), test::CoreTestDataPath(),
-      WebString::FromUTF8("visible_iframe.html"));
+      WebString::FromUtf8(base_url), test::CoreTestDataPath(),
+      WebString("visible_iframe.html"));
 
   frame_test_helpers::CreateTestWebFrameWidgetCallback create_widget_callback =
       blink::BindRepeating(
@@ -264,14 +264,14 @@ TEST_F(ScreenOrientationControllerTest,
   std::string base_url("http://internal.test/");
   std::string test_url("page_with_grandchild.html");
   url_test_helpers::RegisterMockedURLLoadFromBase(
-      WebString::FromUTF8(base_url), test::CoreTestDataPath(),
-      WebString::FromUTF8(test_url));
+      WebString::FromUtf8(base_url), test::CoreTestDataPath(),
+      WebString::FromUtf8(test_url));
   url_test_helpers::RegisterMockedURLLoadFromBase(
-      WebString::FromUTF8(base_url), test::CoreTestDataPath(),
-      WebString::FromUTF8("single_iframe.html"));
+      WebString::FromUtf8(base_url), test::CoreTestDataPath(),
+      WebString("single_iframe.html"));
   url_test_helpers::RegisterMockedURLLoadFromBase(
-      WebString::FromUTF8(base_url), test::CoreTestDataPath(),
-      WebString::FromUTF8("visible_iframe.html"));
+      WebString::FromUtf8(base_url), test::CoreTestDataPath(),
+      WebString("visible_iframe.html"));
 
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.InitializeAndLoad(base_url + test_url, nullptr, nullptr);

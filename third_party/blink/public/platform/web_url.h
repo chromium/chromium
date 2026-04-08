@@ -71,12 +71,12 @@ class BLINK_PLATFORM_EXPORT WebURL {
   operator KURL() const;
 #else
   WebURL(const GURL& url)
-      : string_(WebString::FromUTF8(url.possibly_invalid_spec())),
+      : string_(WebString::FromUtf8(url.possibly_invalid_spec())),
         parsed_(url.parsed_for_possibly_invalid_spec()),
         is_valid_(url.is_valid()) {}
 
   WebURL& operator=(const GURL& url) {
-    string_ = WebString::FromUTF8(url.possibly_invalid_spec());
+    string_ = WebString::FromUtf8(url.possibly_invalid_spec());
     parsed_ = url.parsed_for_possibly_invalid_spec();
     is_valid_ = url.is_valid();
     return *this;

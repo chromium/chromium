@@ -1295,13 +1295,13 @@ TEST_F(AIPageContentAgentTest, CrossSiteIframeIncluded) {
 
   // Mock the cross origin, same-site iframe's content.
   url_test_helpers::RegisterMockedURLLoadFromBase(
-      WebString::FromUTF8("http://www.example.com/"), test::CoreTestDataPath(),
-      WebString::FromUTF8("frame.html"));
+      WebString("http://www.example.com/"), test::CoreTestDataPath(),
+      WebString("frame.html"));
 
   // Mock the cross-site iframe's content.
   url_test_helpers::RegisterMockedURLLoadFromBase(
-      WebString::FromUTF8("http://altostrat.com/"), test::CoreTestDataPath(),
-      WebString::FromUTF8("frame_another.html"));
+      WebString("http://altostrat.com/"), test::CoreTestDataPath(),
+      WebString("frame_another.html"));
 
   // Load the main page which contains the same-site iframe and the cross-origin
   // iframe.
@@ -1357,13 +1357,13 @@ TEST_F(AIPageContentAgentTest, CrossSiteIframeExcluded) {
 
   // Mock the cross origin, same-site iframe's content.
   url_test_helpers::RegisterMockedURLLoadFromBase(
-      WebString::FromUTF8("http://www.example.com/"), test::CoreTestDataPath(),
-      WebString::FromUTF8("frame.html"));
+      WebString("http://www.example.com/"), test::CoreTestDataPath(),
+      WebString("frame.html"));
 
   // Mock the cross-site iframe's content.
   url_test_helpers::RegisterMockedURLLoadFromBase(
-      WebString::FromUTF8("http://altostrat.com/"), test::CoreTestDataPath(),
-      WebString::FromUTF8("frame_another.html"));
+      WebString("http://altostrat.com/"), test::CoreTestDataPath(),
+      WebString("frame_another.html"));
 
   // Load the main page which contains the same-site iframe and the cross-origin
   // iframe.

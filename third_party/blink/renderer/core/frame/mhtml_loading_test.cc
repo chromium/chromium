@@ -80,7 +80,7 @@ class MHTMLLoadingTest : public testing::Test {
 
   void LoadURLInTopFrame(const WebURL& url, const std::string& file_name) {
     std::optional<Vector<char>> data = test::ReadFromFile(
-        test::CoreTestDataPath(WebString::FromUTF8("mhtml/" + file_name)));
+        test::CoreTestDataPath(WebString::FromUtf8("mhtml/" + file_name)));
     ASSERT_TRUE(data);
     scoped_refptr<SharedBuffer> buffer = SharedBuffer::Create(std::move(*data));
     WebLocalFrameImpl* frame = helper_.GetWebView()->MainFrameImpl();

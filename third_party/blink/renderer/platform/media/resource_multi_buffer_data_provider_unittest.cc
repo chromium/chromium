@@ -60,7 +60,7 @@ enum NetworkState { kNone, kLoaded, kLoading };
 // Predicate that checks the Accept-Encoding request header.
 static bool CorrectAcceptEncoding(const WebURLRequest& request) {
   std::string value = request
-                          .HttpHeaderField(WebString::FromUTF8(
+                          .HttpHeaderField(WebString::FromUtf8(
                               net::HttpRequestHeaders::kAcceptEncoding))
                           .Utf8();
   return (value.contains("identity;q=1")) && (value.contains("*;q=0"));
@@ -111,8 +111,8 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
   void FullResponse(int64_t instance_size, bool ok = true) {
     WebURLResponse response(url_);
     response.SetHttpHeaderField(
-        WebString::FromUTF8("Content-Length"),
-        WebString::FromUTF8(base::StringPrintf("%" PRId64, instance_size)));
+        WebString("Content-Length"),
+        WebString::FromUtf8(base::StringPrintf("%" PRId64, instance_size)));
     response.SetExpectedContentLength(instance_size);
     response.SetHttpStatusCode(kHttpOK);
     loader_->DidReceiveResponse(response);
@@ -137,8 +137,8 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
                        bool accept_ranges) {
     WebURLResponse response(url_);
     response.SetHttpHeaderField(
-        WebString::FromUTF8("Content-Range"),
-        WebString::FromUTF8(
+        WebString("Content-Range"),
+        WebString::FromUtf8(
             base::StringPrintf("bytes "
                                "%" PRId64 "-%" PRId64 "/%" PRId64,
                                first_position, last_position, instance_size)));
@@ -146,8 +146,8 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
     // HTTP 1.1 doesn't permit Content-Length with Transfer-Encoding: chunked.
     int64_t content_length = -1;
     if (chunked) {
-      response.SetHttpHeaderField(WebString::FromUTF8("Transfer-Encoding"),
-                                  WebString::FromUTF8("chunked"));
+      response.SetHttpHeaderField(WebString("Transfer-Encoding"),
+                                  WebString("chunked"));
     } else {
       content_length = last_position - first_position + 1;
     }
@@ -155,8 +155,8 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
 
     // A server isn't required to return Accept-Ranges even though it might.
     if (accept_ranges) {
-      response.SetHttpHeaderField(WebString::FromUTF8("Accept-Ranges"),
-                                  WebString::FromUTF8("bytes"));
+      response.SetHttpHeaderField(WebString("Accept-Ranges"),
+                                  WebString("bytes"));
     }
 
     response.SetHttpStatusCode(kHttpPartialContent);
@@ -330,8 +330,8 @@ TEST_F(ResourceMultiBufferDataProviderTest, InvalidPartialResponse) {
 
   WebURLResponse response(url_);
   response.SetHttpHeaderField(
-      WebString::FromUTF8("Content-Range"),
-      WebString::FromUTF8(base::StringPrintf("bytes "
+      WebString("Content-Range"),
+      WebString::FromUtf8(base::StringPrintf("bytes "
                                              "%d-%d/%d",
                                              1, 10, 1024)));
   response.SetExpectedContentLength(10);

@@ -138,7 +138,7 @@ TEST_F(DragControllerSimTest, DropURLOnNonNavigatingClearsState) {
   WebDragData drag_data;
   WebDragData::StringItem item;
   item.type = "text/uri-list";
-  item.data = WebString::FromUTF8("https://www.example.com/index.html");
+  item.data = WebString("https://www.example.com/index.html");
   drag_data.AddItem(item);
 
   const gfx::PointF client_point(10, 10);
@@ -549,7 +549,7 @@ TEST_F(DragControllerTest, DragAndDropUrlFromTextareaToTextarea) {
   WebDragData web_drag_data;
   WebDragData::StringItem item1;
   item1.type = "text/uri-list";
-  item1.data = WebString::FromUTF8("https://www.example.com/index.html");
+  item1.data = WebString("https://www.example.com/index.html");
   item1.title = "index.html";
   WebDragData::StringItem item2;
   item2.type = "text/plain";
@@ -588,7 +588,7 @@ TEST_F(DragControllerTest, DragAndDropUrlFromTextareaToRichlyEditableDiv) {
   WebDragData web_drag_data;
   WebDragData::StringItem item1;
   item1.type = "text/uri-list";
-  item1.data = WebString::FromUTF8("https://www.example.com/index.html");
+  item1.data = WebString("https://www.example.com/index.html");
   item1.title = "index.html";
   WebDragData::StringItem item2;
   item2.type = "text/plain";
@@ -629,7 +629,7 @@ TEST_F(DragControllerTest,
   WebDragData web_drag_data;
   WebDragData::StringItem item1;
   item1.type = "text/uri-list";
-  item1.data = WebString::FromUTF8("https://www.example.com/index.html");
+  item1.data = WebString("https://www.example.com/index.html");
   item1.title = "index.html";
   WebDragData::StringItem item2;
   item2.type = "text/plain";
@@ -669,7 +669,7 @@ TEST_F(DragControllerTest,
   WebDragData web_drag_data;
   WebDragData::StringItem item1;
   item1.type = "text/uri-list";
-  item1.data = WebString::FromUTF8("https://www.example.com/index.html");
+  item1.data = WebString("https://www.example.com/index.html");
   item1.title = "index.html";
   WebDragData::StringItem item2;
   item2.type = "text/plain";
@@ -709,7 +709,7 @@ TEST_F(DragControllerTest,
   WebDragData web_drag_data;
   WebDragData::StringItem item1;
   item1.type = "text/uri-list";
-  item1.data = WebString::FromUTF8("https://www.example.com/index.html");
+  item1.data = WebString("https://www.example.com/index.html");
   item1.title = "index.html";
   WebDragData::StringItem item2;
   item2.type = "text/plain";
@@ -747,7 +747,7 @@ TEST_F(DragControllerTest, ResumeCaretBlinkingAfterDrag) {
   WebDragData web_drag_data;
   WebDragData::StringItem item;
   item.type = "text/plain";
-  item.data = WebString::FromUTF8("hello");
+  item.data = WebString("hello");
   item.title = "index.html";
   web_drag_data.AddItem(item);
 

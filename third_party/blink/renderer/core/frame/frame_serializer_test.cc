@@ -95,8 +95,8 @@ class FrameSerializerTest
 
   void RegisterURL(const KURL& url, const char* file, const char* mime_type) {
     url_test_helpers::RegisterMockedURLLoad(
-        url, test::CoreTestDataPath(WebString::FromUTF8(folder_ + file)),
-        WebString::FromUTF8(mime_type));
+        url, test::CoreTestDataPath(WebString::FromUtf8(folder_ + file)),
+        WebString::FromUtf8(mime_type));
   }
 
   void RegisterURL(const char* url, const char* file, const char* mime_type) {

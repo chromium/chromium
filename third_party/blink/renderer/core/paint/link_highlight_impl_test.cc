@@ -78,8 +78,8 @@ class LinkHighlightImplTest : public testing::Test,
     // TODO(crbug.com/751425): We should use the mock functionality
     // via |web_view_helper_|.
     WebURL url = url_test_helpers::RegisterMockedURLLoadFromBase(
-        WebString::FromUTF8("http://www.test.com/"), test::CoreTestDataPath(),
-        WebString::FromUTF8("test_touch_link_highlight.html"));
+        WebString("http://www.test.com/"), test::CoreTestDataPath(),
+        WebString("test_touch_link_highlight.html"));
     web_view_helper_.InitializeAndLoad(url.GetString().Utf8());
 
     int page_width = 640;

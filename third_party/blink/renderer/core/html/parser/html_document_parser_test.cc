@@ -439,11 +439,11 @@ class HTMLDocumentParserProcessImmediatelyTest : public PageTestBase {
       frame_test_helpers::WebViewHelper& web_view_helper) {
     std::string base_url = "http://internal.test/";
     url_test_helpers::RegisterMockedURLLoadFromBase(
-        WebString::FromUTF8(base_url), test::CoreTestDataPath(),
-        WebString::FromUTF8("visible_iframe.html"));
+        WebString::FromUtf8(base_url), test::CoreTestDataPath(),
+        WebString("visible_iframe.html"));
     url_test_helpers::RegisterMockedURLLoadFromBase(
-        WebString::FromUTF8(base_url), test::CoreTestDataPath(),
-        WebString::FromUTF8("single_iframe.html"));
+        WebString::FromUtf8(base_url), test::CoreTestDataPath(),
+        WebString("single_iframe.html"));
 
     WebViewImpl* web_view_impl =
         web_view_helper.InitializeAndLoad(base_url + "single_iframe.html");

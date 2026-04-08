@@ -73,7 +73,7 @@ WebString WebContentDecryptionModuleAccessImpl::GetRequestedKeySystem() {
 WebString WebContentDecryptionModuleAccessImpl::GetInternalKeySystem() {
   // crbug.com/421223928: Returns the internal key system (base key system if
   // exists)
-  return WebString::FromUTF8(cdm_config_.key_system);
+  return WebString::FromUtf8(cdm_config_.key_system);
 }
 
 WebMediaKeySystemConfiguration

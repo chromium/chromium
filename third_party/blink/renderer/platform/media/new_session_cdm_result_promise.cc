@@ -106,7 +106,7 @@ void NewSessionCdmResultPromise::reject(CdmPromise::Exception exception_code,
 
   web_cdm_result_.CompleteWithError(ConvertCdmException(exception_code),
                                     system_code,
-                                    WebString::FromUTF8(error_message));
+                                    WebString::FromUtf8(error_message));
 }
 
 }  // namespace blink

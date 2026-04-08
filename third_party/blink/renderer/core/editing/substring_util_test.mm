@@ -33,8 +33,8 @@ class SubStringUtilTest : public testing::Test {
     // TODO(crbug.com/751425): We should use the mock functionality
     // via |web_view_helper_|.
     return url_test_helpers::RegisterMockedURLLoadFromBase(
-               WebString::FromUTF8(base_url_), test::CoreTestDataPath(),
-               WebString::FromUTF8(file_name))
+               WebString::FromUtf8(base_url_), test::CoreTestDataPath(),
+               WebString::FromUtf8(file_name))
         .GetString()
         .Utf8();
   }

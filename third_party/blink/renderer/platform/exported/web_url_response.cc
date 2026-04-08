@@ -137,8 +137,8 @@ WebURLResponse WebURLResponse::Create(
   response.SetCurrentRequestUrl(url);
   response.SetResponseTime(head.response_time);
   response.SetOriginalResponseTime(head.original_response_time);
-  response.SetMimeType(WebString::FromUTF8(head.mime_type));
-  response.SetTextEncodingName(WebString::FromUTF8(head.charset));
+  response.SetMimeType(WebString::FromUtf8(head.mime_type));
+  response.SetTextEncodingName(WebString::FromUtf8(head.charset));
   response.SetExpectedContentLength(head.content_length);
   response.SetHasMajorCertificateErrors(
       net::IsCertStatusError(head.cert_status));
@@ -165,7 +165,7 @@ WebURLResponse WebURLResponse::Create(
   response.SetCacheStorageCacheName(
       head.service_worker_response_source ==
               network::mojom::FetchResponseSource::kCacheStorage
-          ? WebString::FromUTF8(head.cache_storage_cache_name)
+          ? WebString::FromUtf8(head.cache_storage_cache_name)
           : WebString());
 
   response.SetDnsAliases(
@@ -184,7 +184,7 @@ WebURLResponse WebURLResponse::Create(
       head.encoded_body_length ? head.encoded_body_length->value : 0);
   response.SetWasAlpnNegotiated(head.was_alpn_negotiated);
   response.SetAlpnNegotiatedProtocol(
-      WebString::FromUTF8(head.alpn_negotiated_protocol));
+      WebString::FromUtf8(head.alpn_negotiated_protocol));
   response.SetAlternateProtocolUsage(head.alternate_protocol_usage);
   response.SetHasAuthorizationCoveredByWildcardOnPreflight(
       head.has_authorization_covered_by_wildcard_on_preflight);

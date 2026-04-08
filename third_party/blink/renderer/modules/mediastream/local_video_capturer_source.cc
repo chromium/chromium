@@ -98,7 +98,7 @@ void LocalVideoCapturerSource::StopCapture() {
 
 void LocalVideoCapturerSource::OnLog(const std::string& message) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  manager_->OnLog(session_id_, WebString::FromUTF8(message));
+  manager_->OnLog(session_id_, WebString::FromUtf8(message));
 }
 
 void LocalVideoCapturerSource::OnStateUpdate(blink::VideoCaptureState state) {

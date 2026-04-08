@@ -117,7 +117,7 @@ TEST_F(SpellCheckCustomDictionaryTest, AddRemoveWords) {
   size_t misspelling_start = 0;
   size_t misspelling_end = 0;
 
-  const WebString& text = WebString::FromUTF8("zzzz");
+  const WebString& text = WebString("zzzz");
   Client()->CheckSpelling(text, misspelling_start, misspelling_end, nullptr);
 
   EXPECT_EQ(misspelling_start, 0u);

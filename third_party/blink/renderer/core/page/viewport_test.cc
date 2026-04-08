@@ -75,16 +75,16 @@ class ViewportTest : public testing::Test {
     // TODO(crbug.com/751425): We should use the mock functionality
     // via the WebViewHelper instance in each test case.
     url_test_helpers::RegisterMockedURLLoadFromBase(
-        WebString::FromUTF8(base_url_), test::CoreTestDataPath(),
-        WebString::FromUTF8(file_name));
+        WebString::FromUtf8(base_url_), test::CoreTestDataPath(),
+        WebString::FromUtf8(file_name));
   }
 
   void RegisterMockedChromeURLLoad(const std::string& file_name) {
     // TODO(crbug.com/751425): We should use the mock functionality
     // via the WebViewHelper instance in each test case.
     url_test_helpers::RegisterMockedURLLoadFromBase(
-        WebString::FromUTF8(chrome_url_), test::CoreTestDataPath(),
-        WebString::FromUTF8(file_name));
+        WebString::FromUtf8(chrome_url_), test::CoreTestDataPath(),
+        WebString::FromUtf8(file_name));
   }
 
   void ExecuteScript(WebLocalFrame* frame, const WebString& code) {

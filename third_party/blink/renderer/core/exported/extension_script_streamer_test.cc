@@ -66,7 +66,7 @@ class ExtensionScriptStreamerTest : public testing::Test {
 };
 
 TEST_F(ExtensionScriptStreamerTest, BasicLifecycle) {
-  WebString content = WebString::FromUTF8(kComplexScript);
+  WebString content = WebString::FromUtf8(kComplexScript);
   ExtensionScriptStreamer streamer =
       ExtensionScriptStreamer::PostStreamingTaskToBackgroundThread(
           GetWebFrame(), content, "lifecycle_test.js", 1u,
@@ -85,7 +85,7 @@ TEST_F(ExtensionScriptStreamerTest, BasicLifecycle) {
 TEST_F(ExtensionScriptStreamerTest, CancellationBehavior) {
   // Test cancellation before background task starts by using a very long
   // timeout to ensure compilation hasn't started yet
-  WebString content = WebString::FromUTF8(kFunctionScript);
+  WebString content = WebString::FromUtf8(kFunctionScript);
   ExtensionScriptStreamer streamer =
       ExtensionScriptStreamer::PostStreamingTaskToBackgroundThread(
           GetWebFrame(), content, "cancel_test.js", 1u,
@@ -114,7 +114,7 @@ TEST_F(ExtensionScriptStreamerTest, CancellationBehavior) {
 
 TEST_F(ExtensionScriptStreamerTest, CancellationAfterStart) {
   // Test cancellation after compilation has started
-  WebString content = WebString::FromUTF8(kComplexScript);
+  WebString content = WebString::FromUtf8(kComplexScript);
   ExtensionScriptStreamer streamer =
       ExtensionScriptStreamer::PostStreamingTaskToBackgroundThread(
           GetWebFrame(), content, "started_test.js", 1u, base::Milliseconds(0));
@@ -139,7 +139,7 @@ TEST_F(ExtensionScriptStreamerTest, ConcurrentStreaming) {
   for (int i = 0; i < kNumScripts; ++i) {
     std::string script = "function func" + base::NumberToString(i) +
                          "() { return " + base::NumberToString(i * 10) + "; }";
-    WebString content = WebString::FromUTF8(script);
+    WebString content = WebString::FromUtf8(script);
 
     streamers.push_back(
         ExtensionScriptStreamer::PostStreamingTaskToBackgroundThread(
@@ -160,7 +160,7 @@ TEST_F(ExtensionScriptStreamerTest, ConcurrentStreaming) {
 TEST_F(ExtensionScriptStreamerTest, EdgeCases) {
   // Empty script - should handle gracefully
   {
-    WebString empty_content = WebString::FromUTF8("");
+    WebString empty_content = WebString("");
     ExtensionScriptStreamer empty_streamer =
         ExtensionScriptStreamer::PostStreamingTaskToBackgroundThread(
             GetWebFrame(), empty_content, "empty.js", 1u,
@@ -171,7 +171,7 @@ TEST_F(ExtensionScriptStreamerTest, EdgeCases) {
   // Script with syntax error - should not crash the streamer
   {
     WebString invalid_content =
-        WebString::FromUTF8("function broken() { syntax error here }");
+        WebString("function broken() { syntax error here }");
     ExtensionScriptStreamer error_streamer =
         ExtensionScriptStreamer::PostStreamingTaskToBackgroundThread(
             GetWebFrame(), invalid_content, "syntax_error.js", 2u,
@@ -190,7 +190,7 @@ TEST_F(ExtensionScriptStreamerTest, EdgeCases) {
                       base::NumberToString(i) + ";\n";
     }
 
-    WebString large_content = WebString::FromUTF8(large_script);
+    WebString large_content = WebString::FromUtf8(large_script);
     ExtensionScriptStreamer large_streamer =
         ExtensionScriptStreamer::PostStreamingTaskToBackgroundThread(
             GetWebFrame(), large_content, "very_large.js", 3u,
@@ -223,7 +223,7 @@ TEST_F(ExtensionScriptStreamerTest, UTF16Content) {
 }
 
 TEST_F(ExtensionScriptStreamerTest, V8CompilationIntegration) {
-  WebString content = WebString::FromUTF8(kComplexScript);
+  WebString content = WebString::FromUtf8(kComplexScript);
   ExtensionScriptStreamer streamer =
       ExtensionScriptStreamer::PostStreamingTaskToBackgroundThread(
           GetWebFrame(), content, "v8_compile_test.js", 1u,
@@ -249,7 +249,7 @@ TEST_F(ExtensionScriptStreamerTest, V8CompilationIntegration) {
 
 TEST_F(ExtensionScriptStreamerTest, TimeoutHandling) {
   // Very short timeout - likely to timeout but should not crash
-  WebString content = WebString::FromUTF8(kComplexScript);
+  WebString content = WebString::FromUtf8(kComplexScript);
   ExtensionScriptStreamer short_timeout =
       ExtensionScriptStreamer::PostStreamingTaskToBackgroundThread(
           GetWebFrame(), content, "short_timeout.js", 1u,

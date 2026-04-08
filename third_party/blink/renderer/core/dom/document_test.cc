@@ -142,8 +142,7 @@ class DocumentTest : public PageTestBase {
       const UseCountedExpectation use_counted_expectation) {
     WebURL mocked_mainframe_url =
         url_test_helpers::RegisterMockedURLLoadFromBase(
-            base_url, test::CoreTestDataPath(),
-            WebString::FromUTF8("foo.html"));
+            base_url, test::CoreTestDataPath(), WebString("foo.html"));
 
     frame_test_helpers::WebViewHelper web_view_helper;
     // Load a non-about:blank simple mainframe page.
@@ -828,11 +827,11 @@ TEST_F(DocumentTest, FindInPageUkmInFrame) {
   std::string base_url = "http://internal.test/";
 
   url_test_helpers::RegisterMockedURLLoadFromBase(
-      WebString::FromUTF8(base_url), test::CoreTestDataPath(),
-      WebString::FromUTF8("visible_iframe.html"));
+      WebString::FromUtf8(base_url), test::CoreTestDataPath(),
+      WebString("visible_iframe.html"));
   url_test_helpers::RegisterMockedURLLoadFromBase(
-      WebString::FromUTF8(base_url), test::CoreTestDataPath(),
-      WebString::FromUTF8("single_iframe.html"));
+      WebString::FromUtf8(base_url), test::CoreTestDataPath(),
+      WebString("single_iframe.html"));
 
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view_impl =

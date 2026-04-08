@@ -1082,7 +1082,7 @@ WebMediaPlayer::ReadyState WebMediaPlayerMS::GetReadyState() const {
 }
 
 WebString WebMediaPlayerMS::GetErrorMessage() const {
-  return WebString::FromUTF8(media_log_->GetErrorMessage());
+  return WebString::FromUtf8(media_log_->GetErrorMessage());
 }
 
 WebTimeRanges WebMediaPlayerMS::Buffered() const {

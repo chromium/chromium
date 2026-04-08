@@ -200,10 +200,10 @@ TEST_F(OomInterventionImplTest, V1DetectionAdsNavigation) {
           "<iframe name='ad' src='data:text/html,'></iframe><iframe "
           "name='non-ad' src='data:text/html,'>");
 
-  WebFrame* ad_iframe = web_view_helper_.LocalMainFrame()->FindFrameByName(
-      WebString::FromUTF8("ad"));
-  WebFrame* non_ad_iframe = web_view_helper_.LocalMainFrame()->FindFrameByName(
-      WebString::FromUTF8("non-ad"));
+  WebFrame* ad_iframe =
+      web_view_helper_.LocalMainFrame()->FindFrameByName(WebString("ad"));
+  WebFrame* non_ad_iframe =
+      web_view_helper_.LocalMainFrame()->FindFrameByName(WebString("non-ad"));
 
   frame_test_helpers::PumpPendingRequestsForFrameToLoad(
       ad_iframe->ToWebLocalFrame());

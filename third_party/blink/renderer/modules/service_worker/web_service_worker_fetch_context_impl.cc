@@ -148,7 +148,7 @@ URLLoaderFactory* WebServiceWorkerFetchContextImpl::GetScriptLoaderFactory() {
 
 void WebServiceWorkerFetchContextImpl::FinalizeRequest(WebURLRequest& request) {
   if (renderer_preferences_.enable_do_not_track) {
-    request.SetHttpHeaderField(WebString::FromUTF8(kDoNotTrackHeader), "1");
+    request.SetHttpHeaderField(WebString::FromUtf8(kDoNotTrackHeader), "1");
   }
   auto url_request_extra_data = base::MakeRefCounted<WebURLRequestExtraData>();
   url_request_extra_data->set_originated_from_service_worker(true);
@@ -232,7 +232,7 @@ void WebServiceWorkerFetchContextImpl::NotifyUpdate(
 }
 
 WebString WebServiceWorkerFetchContextImpl::GetAcceptLanguages() const {
-  return WebString::FromUTF8(renderer_preferences_.accept_languages);
+  return WebString::FromUtf8(renderer_preferences_.accept_languages);
 }
 
 }  // namespace blink

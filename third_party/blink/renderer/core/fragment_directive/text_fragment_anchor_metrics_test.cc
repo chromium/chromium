@@ -100,8 +100,8 @@ TEST_F(TextFragmentAnchorMetricsTest, UMAMetricsCollectedSearchEngineReferrer) {
   // Set the referrer to a known search engine URL. This should cause metrics
   // to be reported for the SearchEngine variant of histograms.
   SimRequest::Params params;
-  params.requestor_origin = WebSecurityOrigin::CreateFromString(
-      WebString::FromUTF8("https://www.bing.com"));
+  params.requestor_origin =
+      WebSecurityOrigin::CreateFromString(WebString("https://www.bing.com"));
   SimRequest request("https://example.com/test.html#:~:text=test&text=cat",
                      "text/html", params);
   LoadURL("https://example.com/test.html#:~:text=test&text=cat");
@@ -182,8 +182,8 @@ TEST_F(TextFragmentAnchorMetricsTest, NoMatchFoundWithSearchEngineSource) {
   // Set the referrer to a known search engine URL. This should cause metrics
   // to be reported for the SearchEngine variant of histograms.
   SimRequest::Params params;
-  params.requestor_origin = WebSecurityOrigin::CreateFromString(
-      WebString::FromUTF8("https://www.bing.com"));
+  params.requestor_origin =
+      WebSecurityOrigin::CreateFromString(WebString("https://www.bing.com"));
   SimRequest request("https://example.com/test.html#:~:text=cat", "text/html",
                      params);
   LoadURL("https://example.com/test.html#:~:text=cat");
@@ -625,7 +625,7 @@ TEST_F(TextFragmentAnchorMetricsTest, TextFragmentLinkOpenSource_GoogleDomain) {
   // Set the referrer to a google domain page.
   SimRequest::Params params;
   params.requestor_origin = WebSecurityOrigin::CreateFromString(
-      WebString::FromUTF8("https://www.mail.google.com"));
+      WebString("https://www.mail.google.com"));
   SimRequest request("https://example.com/test.html#:~:text=test&text=cat",
                      "text/html", params);
   LoadURL("https://example.com/test.html#:~:text=test&text=cat");

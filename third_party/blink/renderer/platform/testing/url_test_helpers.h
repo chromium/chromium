@@ -67,17 +67,16 @@ WebURL RegisterMockedURLLoadFromBase(
     const WebString& base_url,
     const WebString& base_path,
     const WebString& file_name,
-    const WebString& mime_type = WebString::FromUTF8("text/html"));
+    const WebString& mime_type = WebString("text/html"));
 
 // Registers from a full URL and a full file path.
-void RegisterMockedURLLoad(
-    const WebURL& full_url,
-    const WebString& file_path,
-    const WebString& mime_type = WebString::FromUTF8("text/html"),
-    URLLoaderMockFactory* mock_factory =
-        URLLoaderMockFactory::GetSingletonInstance(),
-    network::mojom::IPAddressSpace address_space =
-        network::mojom::IPAddressSpace::kPublic);
+void RegisterMockedURLLoad(const WebURL& full_url,
+                           const WebString& file_path,
+                           const WebString& mime_type = WebString("text/html"),
+                           URLLoaderMockFactory* mock_factory =
+                               URLLoaderMockFactory::GetSingletonInstance(),
+                           network::mojom::IPAddressSpace address_space =
+                               network::mojom::IPAddressSpace::kPublic);
 
 // Unregisters a URL that has been registered, so that the same URL can be
 // registered again from the another test.

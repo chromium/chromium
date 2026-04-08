@@ -95,8 +95,8 @@ class MobileFriendlinessCheckerTest : public testing::Test,
     return EvalMobileFriendlinessUKM(
         [&](frame_test_helpers::WebViewHelper& helper) {
           url_test_helpers::RegisterMockedURLLoadFromBase(
-              WebString::FromUTF8(kBaseUrl), blink::test::CoreTestDataPath(),
-              WebString::FromUTF8(path));
+              WebString::FromUtf8(kBaseUrl), blink::test::CoreTestDataPath(),
+              WebString::FromUtf8(path));
           frame_test_helpers::LoadFrame(helper.GetWebView()->MainFrameImpl(),
                                         kBaseUrl + path);
         },
@@ -1454,8 +1454,8 @@ TEST_F(MobileFriendlinessCheckerTest, ScrollableLayoutView) {
 
 TEST_F(MobileFriendlinessCheckerTest, IFrame) {
   url_test_helpers::RegisterMockedURLLoadFromBase(
-      WebString::FromUTF8(kBaseUrl), blink::test::CoreTestDataPath(),
-      WebString::FromUTF8("visible_iframe.html"));
+      WebString::FromUtf8(kBaseUrl), blink::test::CoreTestDataPath(),
+      WebString("visible_iframe.html"));
   const ukm::mojom::UkmEntry ukm =
       CalculateMetricsForFile("single_iframe.html");
   ExpectUkm(ukm,
@@ -1467,8 +1467,8 @@ TEST_F(MobileFriendlinessCheckerTest, IFrame) {
 
 TEST_F(MobileFriendlinessCheckerTest, IFrameVieportDeviceWidth) {
   url_test_helpers::RegisterMockedURLLoadFromBase(
-      WebString::FromUTF8(kBaseUrl), blink::test::CoreTestDataPath(),
-      WebString::FromUTF8("viewport/viewport-1.html"));
+      WebString::FromUtf8(kBaseUrl), blink::test::CoreTestDataPath(),
+      WebString("viewport/viewport-1.html"));
   const ukm::mojom::UkmEntry ukm =
       CalculateMetricsForFile("page_contains_viewport_iframe.html");
   ExpectUkm(ukm,
@@ -1481,8 +1481,8 @@ TEST_F(MobileFriendlinessCheckerTest, IFrameVieportDeviceWidth) {
 
 TEST_F(MobileFriendlinessCheckerTest, IFrameSmallTextRatio) {
   url_test_helpers::RegisterMockedURLLoadFromBase(
-      WebString::FromUTF8(kBaseUrl), blink::test::CoreTestDataPath(),
-      WebString::FromUTF8("small_text_iframe.html"));
+      WebString::FromUtf8(kBaseUrl), blink::test::CoreTestDataPath(),
+      WebString("small_text_iframe.html"));
   const ukm::mojom::UkmEntry ukm =
       CalculateMetricsForFile("page_contains_small_text_iframe.html");
   ExpectUkm(ukm,

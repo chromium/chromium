@@ -64,16 +64,16 @@ TEST(InnerTextBuilderTest, MultiFrames) {
   test::TaskEnvironment task_environment;
   frame_test_helpers::WebViewHelper helper;
   std::string base_url("http://internal.test/");
-  url_test_helpers::RegisterMockedURLLoadFromBase(WebString::FromUTF8(base_url),
+  url_test_helpers::RegisterMockedURLLoadFromBase(WebString::FromUtf8(base_url),
                                                   test::CoreTestDataPath(),
                                                   "inner_text_test1.html");
-  url_test_helpers::RegisterMockedURLLoadFromBase(WebString::FromUTF8(base_url),
+  url_test_helpers::RegisterMockedURLLoadFromBase(WebString::FromUtf8(base_url),
                                                   test::CoreTestDataPath(),
                                                   "subframe-a.html");
-  url_test_helpers::RegisterMockedURLLoadFromBase(WebString::FromUTF8(base_url),
+  url_test_helpers::RegisterMockedURLLoadFromBase(WebString::FromUtf8(base_url),
                                                   test::CoreTestDataPath(),
                                                   "subframe-b.html");
-  url_test_helpers::RegisterMockedURLLoadFromBase(WebString::FromUTF8(base_url),
+  url_test_helpers::RegisterMockedURLLoadFromBase(WebString::FromUtf8(base_url),
                                                   test::CoreTestDataPath(),
                                                   "subframe-d.html");
   helper.InitializeAndLoad(base_url + "inner_text_test1.html");
@@ -144,12 +144,12 @@ TEST(InnerTextBuilderTest, DifferentOrigin) {
   test::TaskEnvironment task_environment;
   frame_test_helpers::WebViewHelper helper;
   std::string base_url("http://internal.test/");
-  url_test_helpers::RegisterMockedURLLoadFromBase(WebString::FromUTF8(base_url),
+  url_test_helpers::RegisterMockedURLLoadFromBase(WebString::FromUtf8(base_url),
                                                   test::CoreTestDataPath(),
                                                   "inner_text_test2.html");
   url_test_helpers::RegisterMockedURLLoadFromBase(
-      WebString::FromUTF8("http://different-host.com/"),
-      test::CoreTestDataPath(), "subframe-a.html");
+      WebString("http://different-host.com/"), test::CoreTestDataPath(),
+      "subframe-a.html");
   helper.InitializeAndLoad(base_url + "inner_text_test2.html");
 
   auto frame =

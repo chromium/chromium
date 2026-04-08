@@ -94,8 +94,8 @@ void ResourceMultiBufferDataProvider::Start() {
           ? network::mojom::blink::RequestDestination::kAudio
           : network::mojom::blink::RequestDestination::kVideo);
   request.SetHttpHeaderField(
-      WebString::FromUTF8(net::HttpRequestHeaders::kRange),
-      WebString::FromUTF8(
+      WebString::FromUtf8(net::HttpRequestHeaders::kRange),
+      WebString::FromUtf8(
           net::HttpByteRange::RightUnbounded(byte_pos()).GetHeaderValue()));
 
   // We would like to send an if-match header with the request to
@@ -107,8 +107,8 @@ void ResourceMultiBufferDataProvider::Start() {
 
   // Disable compression, compression for audio/video doesn't make sense...
   request.SetHttpHeaderField(
-      WebString::FromUTF8(net::HttpRequestHeaders::kAcceptEncoding),
-      WebString::FromUTF8("identity;q=1, *;q=0"));
+      WebString::FromUtf8(net::HttpRequestHeaders::kAcceptEncoding),
+      WebString("identity;q=1, *;q=0"));
 
   // Start resource loading.
   WebAssociatedURLLoaderOptions options;

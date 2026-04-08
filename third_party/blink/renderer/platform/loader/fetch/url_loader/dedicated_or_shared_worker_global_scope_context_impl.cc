@@ -375,7 +375,7 @@ DedicatedOrSharedWorkerGlobalScopeContextImpl::WillSendRequest(
 void DedicatedOrSharedWorkerGlobalScopeContextImpl::FinalizeRequest(
     WebURLRequest& request) {
   if (renderer_preferences_.enable_do_not_track) {
-    request.SetHttpHeaderField(WebString::FromUTF8(kDoNotTrackHeader), "1");
+    request.SetHttpHeaderField(WebString::FromUtf8(kDoNotTrackHeader), "1");
   }
 
   auto url_request_extra_data = base::MakeRefCounted<WebURLRequestExtraData>();
@@ -472,7 +472,7 @@ void DedicatedOrSharedWorkerGlobalScopeContextImpl::set_client_id(
 
 WebString DedicatedOrSharedWorkerGlobalScopeContextImpl::GetAcceptLanguages()
     const {
-  return WebString::FromUTF8(renderer_preferences_.accept_languages);
+  return WebString::FromUtf8(renderer_preferences_.accept_languages);
 }
 
 std::unique_ptr<ResourceLoadInfoNotifierWrapper>

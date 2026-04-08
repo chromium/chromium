@@ -137,16 +137,16 @@ class ScrollingTest : public testing::Test, public PaintTestConfigurations {
     // TODO(crbug.com/751425): We should use the mock functionality
     // via |helper_|.
     url_test_helpers::RegisterMockedURLLoadFromBase(
-        WebString::FromUTF8(kHttpBaseUrl), test::CoreTestDataPath(),
-        WebString::FromUTF8(file_name));
+        WebString::FromUtf8(kHttpBaseUrl), test::CoreTestDataPath(),
+        WebString::FromUtf8(file_name));
   }
 
   void RegisterMockedHttpsURLLoad(const std::string& file_name) {
     // TODO(crbug.com/751425): We should use the mock functionality
     // via |helper_|.
     url_test_helpers::RegisterMockedURLLoadFromBase(
-        WebString::FromUTF8(kHttpsBaseUrl), test::CoreTestDataPath(),
-        WebString::FromUTF8(file_name));
+        WebString::FromUtf8(kHttpsBaseUrl), test::CoreTestDataPath(),
+        WebString::FromUtf8(file_name));
   }
 
   void SetupHttpTestURL(const std::string& url_fragment) {

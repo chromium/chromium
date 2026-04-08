@@ -292,17 +292,17 @@ class DocumentLoaderTest : public testing::Test,
         test::CoreTestDataPath("foo.html"));
     url_test_helpers::RegisterMockedURLLoad(
         url_test_helpers::ToKURL("http://192.168.1.1/foo.html"),
-        test::CoreTestDataPath("foo.html"), WebString::FromUTF8("text/html"),
+        test::CoreTestDataPath("foo.html"), WebString("text/html"),
         URLLoaderMockFactory::GetSingletonInstance(),
         network::mojom::IPAddressSpace::kLocal);
     url_test_helpers::RegisterMockedURLLoad(
         url_test_helpers::ToKURL("https://192.168.1.1/foo.html"),
-        test::CoreTestDataPath("foo.html"), WebString::FromUTF8("text/html"),
+        test::CoreTestDataPath("foo.html"), WebString("text/html"),
         URLLoaderMockFactory::GetSingletonInstance(),
         network::mojom::IPAddressSpace::kLocal);
     url_test_helpers::RegisterMockedURLLoad(
         url_test_helpers::ToKURL("http://somethinglocal/foo.html"),
-        test::CoreTestDataPath("foo.html"), WebString::FromUTF8("text/html"),
+        test::CoreTestDataPath("foo.html"), WebString("text/html"),
         URLLoaderMockFactory::GetSingletonInstance(),
         network::mojom::IPAddressSpace::kLoopback);
   }

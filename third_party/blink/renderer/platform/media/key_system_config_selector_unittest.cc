@@ -112,7 +112,7 @@ media::EncryptionScheme ConvertEncryptionScheme(
 }
 
 WebString MakeCodecs(const std::string& a, const std::string& b) {
-  return WebString::FromUTF8(a + "," + b);
+  return WebString::FromUtf8(a + "," + b);
 }
 
 WebString GetSupportedVideoCodecs() {
@@ -530,7 +530,7 @@ class KeySystemConfigSelectorTest : public testing::Test {
   std::unique_ptr<FakeWebLocalFrameDelegate> web_frame_delegate_;
 
   // Held values for the call to SelectConfig().
-  WebString key_system_ = WebString::FromUTF8(kSupportedKeySystem);
+  WebString key_system_ = WebString::FromUtf8(kSupportedKeySystem);
   std::vector<WebMediaKeySystemConfiguration> configs_;
 
   // Holds the selected key system, configuration and CdmConfig.

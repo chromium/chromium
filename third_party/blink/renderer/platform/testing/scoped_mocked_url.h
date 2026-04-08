@@ -30,10 +30,9 @@ class ScopedMockedURL {
 
 class ScopedMockedURLLoad : ScopedMockedURL {
  public:
-  ScopedMockedURLLoad(
-      const WebURL& full_url,
-      const WebString& file_path,
-      const WebString& mime_type = WebString::FromUTF8("text/html"));
+  ScopedMockedURLLoad(const WebURL& full_url,
+                      const WebString& file_path,
+                      const WebString& mime_type = WebString("text/html"));
   ~ScopedMockedURLLoad() override = default;
 };
 

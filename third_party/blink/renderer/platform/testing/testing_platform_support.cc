@@ -112,7 +112,7 @@ TestingPlatformSupport::~TestingPlatformSupport() {
 }
 
 WebString TestingPlatformSupport::DefaultLocale() {
-  return WebString::FromUTF8("en-US");
+  return WebString("en-US");
 }
 
 WebData TestingPlatformSupport::GetDataResource(

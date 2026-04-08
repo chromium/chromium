@@ -643,8 +643,8 @@ TEST_F(ScrollIntoViewTest, FindDoesNotScrollOverflowHidden) {
   const int kFindIdentifier = 12345;
   auto options = mojom::blink::FindOptions::New();
   options->run_synchronously_for_testing = true;
-  MainFrame().GetFindInPage()->FindInternal(
-      kFindIdentifier, WebString::FromUTF8("hello"), *options, false);
+  MainFrame().GetFindInPage()->FindInternal(kFindIdentifier, WebString("hello"),
+                                            *options, false);
   ASSERT_EQ(container->scrollTop(), 0);
 }
 

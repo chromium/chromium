@@ -16,7 +16,7 @@ namespace blink {
 int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
   test::TaskEnvironment task_environment;
-  WebString string = WebString::FromUTF8(
+  WebString string = WebString::FromUtf8(
       std::string_view(reinterpret_cast<const char*>(data), size));
   WebIconSizesParser::ParseIconSizes(string);
   return 0;

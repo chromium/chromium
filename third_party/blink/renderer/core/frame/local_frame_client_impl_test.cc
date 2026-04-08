@@ -80,7 +80,7 @@ class LocalFrameClientImplTest : public testing::Test {
   WebString UserAgent() {
     // The test always returns the same user agent .
     std::string user_agent = GetLocalFrameClient().UserAgent().Utf8();
-    return WebString::FromUTF8(user_agent);
+    return WebString::FromUtf8(user_agent);
   }
 
   WebLocalFrameImpl* MainFrame() { return helper_.LocalMainFrame(); }
@@ -100,7 +100,7 @@ class LocalFrameClientImplTest : public testing::Test {
 
 TEST_F(LocalFrameClientImplTest, UserAgentOverride) {
   const WebString default_user_agent = UserAgent();
-  const WebString override_user_agent = WebString::FromUTF8("dummy override");
+  const WebString override_user_agent = WebString("dummy override");
 
   // Override the user agent and make sure we get it back.
   EXPECT_CALL(WebLocalFrameClient(), UserAgentOverride())

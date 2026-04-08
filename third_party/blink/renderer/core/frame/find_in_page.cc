@@ -190,7 +190,7 @@ void FindInPage::StopFinding(mojom::StopFindAction action) {
   const bool clear_selection =
       action == mojom::StopFindAction::kStopFindActionClearSelection;
   if (clear_selection)
-    frame_->ExecuteCommand(WebString::FromUTF8("Unselect"));
+    frame_->ExecuteCommand(WebString("Unselect"));
 
   if (GetTextFinder()) {
     if (!clear_selection)
@@ -266,7 +266,7 @@ void FindInPage::FindMatchRects(int current_version,
 
 void FindInPage::ClearActiveFindMatch() {
   // TODO(rakina): Do collapse selection as this currently does nothing.
-  frame_->ExecuteCommand(WebString::FromUTF8("CollapseSelection"));
+  frame_->ExecuteCommand(WebString("CollapseSelection"));
   EnsureTextFinder().ClearActiveFindMatch();
 }
 

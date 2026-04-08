@@ -2084,7 +2084,7 @@ class FrameFetchContextNetworkGuardrailsTest
     custom_response.SetExpectedContentLength(image_size);
 
     url_test_helpers::RegisterMockedURLLoadWithCustomResponse(
-        kImageUrl, WebString::FromUTF8(temp_file_path.AsUTF8Unsafe()),
+        kImageUrl, WebString::FromUtf8(temp_file_path.AsUTF8Unsafe()),
         custom_response, chunk_size);
 
     ResourceFetcher* fetcher = document->Fetcher();
@@ -2210,7 +2210,7 @@ TEST_F(FrameFetchContextNetworkGuardrailsTest, ChunkedLoading) {
   response.SetMimeType("text/plain");
   response.SetExpectedContentLength(kTotalSize);
   url_test_helpers::RegisterMockedURLLoadWithCustomResponse(
-      test_url, WebString::FromUTF8(temp_file.AsUTF8Unsafe()), response,
+      test_url, WebString::FromUtf8(temp_file.AsUTF8Unsafe()), response,
       kChunkSize);
 
   auto* mock_client = MakeGarbageCollected<MockRawResourceClient>();
