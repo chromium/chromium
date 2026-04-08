@@ -32,7 +32,7 @@ export class PlaceholderTextCycler {
       animatedPlaceholderContainer: HTMLInputElement|HTMLTextAreaElement,
       placeholderTexts: string[], changeTextAnimationIntervalMs: number,
       fadeTextAnimationDurationMs: number) {
-    assert(placeholderTexts.length > 0);
+    assert(placeholderTexts.length > 1);
 
     this.input_ = animatedPlaceholderContainer;
     this.placeholderTexts_ = placeholderTexts;

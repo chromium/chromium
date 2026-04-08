@@ -307,7 +307,7 @@ TEST_F(SearchboxHandlerPecApiTest, GetPlaceholderConfig_WithToolConfigs) {
 }
 
 TEST_F(SearchboxHandlerPecApiTest,
-       GetPlaceholderConfig_EmptySearchboxConfigReturnsAskGoogleOnly) {
+       GetPlaceholderConfig_NoToolConfigsReturnsEmpty) {
   omnibox::SearchboxConfig& config = mock_aim_eligibility_service_->config();
 
   ON_CALL(*mock_aim_eligibility_service_, GetSearchboxConfig())
@@ -317,8 +317,8 @@ TEST_F(SearchboxHandlerPecApiTest,
   handler_->GetPlaceholderConfig(future.GetCallback());
   auto result = future.Take();
 
-  ASSERT_EQ(result->texts.size(), 1u);
-  EXPECT_EQ(result->texts[0], u"Ask Google");
+  // Not eligible tools -> cycling disabled -> empty placeholder list.
+  ASSERT_EQ(result->texts.size(), 0u);
 }
 
 TEST_F(SearchboxHandlerPecApiTest,
