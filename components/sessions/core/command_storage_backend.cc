@@ -145,11 +145,10 @@ class SessionFileReader {
   }
 
   struct MarkerStatus {
-    // True if the file was written with a version that supports the marker.
-    bool supports_marker = false;
+    // True if the file has a valid header.
+    bool is_header_valid = false;
 
-    // If true, the file was written with a version that supports the marker
-    // *and* the file has a marker. If `supports_marker` is true and this is
+    // If true, the file has a marker. If `is_header_valid` is true and this is
     // false, it means the initial state was not correctly written, and this
     // file should not be used.
     bool has_marker = false;
@@ -158,8 +157,8 @@ class SessionFileReader {
   static MarkerStatus GetMarkerStatus(const base::FilePath& path) {
     SessionFileReader reader(path);
     MarkerStatus status;
-    status.supports_marker = reader.SupportsMarker();
-    if (status.supports_marker) {
+    status.is_header_valid = reader.IsHeaderValid();
+    if (status.is_header_valid) {
       status.has_marker = reader.ReadToMarker();
     }
     return status;
@@ -188,15 +187,14 @@ class SessionFileReader {
     DCHECK_NE(read_status_, ReadStatus::kUnknown);
   }
 
-  // Returns true if the file has a valid header.
-  bool IsHeaderValid() const { return read_status_ == ReadStatus::kSuccess; }
+  // Returns true if the file has a valid header and a supported version.
+  bool IsHeaderValid() const {
+    return read_status_ == ReadStatus::kSuccess &&
+           version_ == kFileVersionWithMarker;
+  }
 
   // Reads the contents of the file specified in the constructor.
   ReadResult Read();
-
-  bool SupportsMarker() const {
-    return IsHeaderValid() && (version_ == kFileVersionWithMarker);
-  }
 
   // Parses the header.
   ReadStatus ReadHeader();
@@ -321,7 +319,7 @@ CommandStorageBackend::ReadStatus SessionFileReader::ReadHeader() {
 
 bool SessionFileReader::ReadToMarker() {
   // It's expected this is only called if the marker is supported.
-  DCHECK(IsHeaderValid() && SupportsMarker());
+  DCHECK(IsHeaderValid());
   for (ReadResult result = ReadCommand(); !result.commands.empty();
        result = ReadCommand()) {
     if (result.commands.front()->id() == kInitialStateMarkerCommandId) {
@@ -799,7 +797,7 @@ bool CommandStorageBackend::CanUseFileForLastSession(
     const base::FilePath& path) const {
   const SessionFileReader::MarkerStatus status =
       SessionFileReader::GetMarkerStatus(path);
-  return !status.supports_marker || status.has_marker;
+  return !status.is_header_valid || status.has_marker;
 }
 
 std::string CommandStorageBackend::GetHistogramNameForTesting(
