@@ -34,6 +34,7 @@ android_library("java") {
     "//build/android:build_java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
+    "//components/cached_flags:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",

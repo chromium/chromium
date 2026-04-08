@@ -18,6 +18,7 @@ import static com.google.common.truth.Truth.assertThat;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.os.SystemClock;
+import android.view.InputDevice;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -43,6 +44,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.ui.listmenu.BasicListMenu;
@@ -192,6 +194,54 @@ public class MessageBannerViewTest {
                 "Close button should be visible when hovered",
                 View.VISIBLE,
                 mMessageBannerView.findViewById(R.id.message_close_button).getVisibility());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({"BlockMouseEventsOnView"})
+    public void testOnGenericMotionEvent_BlocksPointerEvents() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PropertyModel propertyModel =
+                            new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                                    .with(
+                                            MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                            MessageIdentifier.TEST_MESSAGE)
+                                    .with(MessageBannerProperties.TITLE, "test")
+                                    .build();
+                    PropertyModelChangeProcessor.create(
+                            propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
+                });
+
+        MotionEvent.PointerProperties properties = new MotionEvent.PointerProperties();
+        properties.toolType = MotionEvent.TOOL_TYPE_MOUSE;
+        properties.id = 0;
+
+        MotionEvent.PointerCoords pointerCoords = new MotionEvent.PointerCoords();
+        pointerCoords.x = 0;
+        pointerCoords.y = 0;
+
+        MotionEvent mouseEvent =
+                MotionEvent.obtain(
+                        SystemClock.uptimeMillis(),
+                        SystemClock.uptimeMillis(),
+                        MotionEvent.ACTION_SCROLL,
+                        1,
+                        new MotionEvent.PointerProperties[] {properties},
+                        new MotionEvent.PointerCoords[] {pointerCoords},
+                        0,
+                        0,
+                        0f,
+                        0f,
+                        0,
+                        0,
+                        InputDevice.SOURCE_CLASS_POINTER,
+                        0);
+
+        final boolean handled =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mMessageBannerView.onGenericMotionEvent(mouseEvent));
+        Assert.assertTrue("Pointer events should be consumed to block pass-through", handled);
     }
 
     /**
