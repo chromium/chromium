@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -47,7 +48,6 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridgeJni;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
-import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -307,18 +307,18 @@ public class ExtensionsMenuCoordinatorTest {
         mCurrentTabSupplier.set(mTab);
         mExtensionsMenuButton.performClick();
 
-        MaterialSwitchWithText toggle =
+        View container =
                 mExtensionsMenuCoordinator
                         .getContentView()
-                        .findViewById(R.id.extensions_menu_site_settings_toggle);
+                        .findViewById(R.id.extensions_menu_site_settings_toggle_container);
 
         // Click to toggle from checked (default) to unchecked.
-        toggle.performClick();
+        container.performClick();
         verify(mExtensionsMenuBridgeJniMock, Mockito.times(1))
                 .onSiteSettingsToggleChanged(Mockito.anyLong(), Mockito.eq(false));
 
         // Click again to toggle back to checked.
-        toggle.performClick();
+        container.performClick();
         verify(mExtensionsMenuBridgeJniMock, Mockito.times(1))
                 .onSiteSettingsToggleChanged(Mockito.anyLong(), Mockito.eq(true));
     }

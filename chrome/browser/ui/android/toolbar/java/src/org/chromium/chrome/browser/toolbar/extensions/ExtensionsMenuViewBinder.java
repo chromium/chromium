@@ -9,6 +9,7 @@ import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -22,7 +23,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes.OptionalSectionType;
 import org.chromium.chrome.browser.ui.extensions.R;
-import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -92,20 +92,26 @@ public class ExtensionsMenuViewBinder {
                     .setOnClickListener(
                             model.get(ExtensionsMenuProperties.MANAGE_EXTENSIONS_CLICK_LISTENER));
         } else if (key == ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_VISIBLE) {
-            view.findViewById(R.id.extensions_menu_site_settings_toggle)
+            getSiteSettingsToggleContainer(view)
                     .setVisibility(
                             model.get(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_VISIBLE)
                                     ? View.VISIBLE
                                     : View.GONE);
         } else if (key == ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_CHECKED) {
-            MaterialSwitchWithText toggle =
-                    view.findViewById(R.id.extensions_menu_site_settings_toggle);
+            MaterialSwitch toggle = view.findViewById(R.id.extensions_menu_site_settings_toggle);
             toggle.setChecked(model.get(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_CHECKED));
         } else if (key == ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_CLICK_LISTENER) {
-            MaterialSwitchWithText toggle =
-                    view.findViewById(R.id.extensions_menu_site_settings_toggle);
-            toggle.setOnCheckedChangeListener(
-                    model.get(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_CLICK_LISTENER));
+            View toggleContainer = getSiteSettingsToggleContainer(view);
+            MaterialSwitch toggle = view.findViewById(R.id.extensions_menu_site_settings_toggle);
+            OnCheckedChangeListener listener =
+                    model.get(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_CLICK_LISTENER);
+            toggleContainer.setOnClickListener(
+                    v -> {
+                        toggle.toggle();
+                        if (listener != null) {
+                            listener.onCheckedChanged(toggle, toggle.isChecked());
+                        }
+                    });
         } else if (key == ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE) {
             List<ExtensionsMenuTypes.HostAccessRequest> requests =
                     model.get(ExtensionsMenuProperties.HOST_ACCESS_REQUESTS);
@@ -136,9 +142,8 @@ public class ExtensionsMenuViewBinder {
             reloadButton.setOnClickListener(
                     model.get(ExtensionsMenuProperties.RELOAD_CLICK_LISTENER));
         } else if (key == ExtensionsMenuProperties.SITE_SETTINGS_LABEL) {
-            MaterialSwitchWithText toggle =
-                    view.findViewById(R.id.extensions_menu_site_settings_toggle);
-            toggle.setText(model.get(ExtensionsMenuProperties.SITE_SETTINGS_LABEL));
+            TextView label = view.findViewById(R.id.extensions_menu_site_settings_toggle_text);
+            label.setText(model.get(ExtensionsMenuProperties.SITE_SETTINGS_LABEL));
         } else if (key == ExtensionsMenuProperties.MENU_BUTTON_PINNING_CLICK_LISTENER) {
             View.OnClickListener listener =
                     model.get(ExtensionsMenuProperties.MENU_BUTTON_PINNING_CLICK_LISTENER);
@@ -153,6 +158,10 @@ public class ExtensionsMenuViewBinder {
             MaterialSwitch toggle = view.findViewById(R.id.extensions_menu_button_pinning_toggle);
             toggle.setChecked(model.get(ExtensionsMenuProperties.MENU_BUTTON_PINNED));
         }
+    }
+
+    private static View getSiteSettingsToggleContainer(View view) {
+        return view.findViewById(R.id.extensions_menu_site_settings_toggle_container);
     }
 
     private static void updateSectionVisibilities(
