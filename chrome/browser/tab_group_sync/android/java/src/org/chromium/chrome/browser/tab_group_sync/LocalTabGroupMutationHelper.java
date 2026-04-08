@@ -306,7 +306,9 @@ public class LocalTabGroupMutationHelper {
             return;
         }
 
-        if (TabGroupSyncUtils.isUrlInTabRedirectChain(tab, url)) {
+        // Don't apply redirect chain URLs or non-savable URLs.
+        if (TabGroupSyncUtils.isUrlInTabRedirectChain(tab, syncUrl)
+                || !TabGroupSyncUtils.isSavableUrl(syncUrl)) {
             return;
         }
 

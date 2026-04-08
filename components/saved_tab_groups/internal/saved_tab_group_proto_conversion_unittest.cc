@@ -139,7 +139,7 @@ TEST_F(SavedTabGroupConversionTest, GroupToDataRetainsData) {
 }
 
 TEST_F(SavedTabGroupConversionTest, TabToDataRetainsData) {
-  SavedTabGroupTab tab(GURL("chrome://hidden_link"), u"Hidden Title",
+  SavedTabGroupTab tab(GURL("https://www.google.com"), u"Google",
                        base::Uuid::GenerateRandomV4(), /*position=*/0,
                        base::Uuid::GenerateRandomV4(), std::nullopt,
                        std::nullopt, std::nullopt, time_, time_);
@@ -176,6 +176,28 @@ TEST_F(SavedTabGroupConversionTest, DataToGroupRetainsData) {
       SavedTabGroupSyncBridge::SavedTabGroupToDataForTest(
           SavedTabGroupSyncBridge::DataToSavedTabGroupForTest(pb_data))
           .specifics());
+}
+
+TEST_F(SavedTabGroupConversionTest, DataToTabWithInvalidURLFallback) {
+  proto::SavedTabGroupData pb_data;
+  sync_pb::SavedTabGroupSpecifics* pb_specific = pb_data.mutable_specifics();
+  pb_specific->set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
+
+  int64_t time_in_micros = time_.ToDeltaSinceWindowsEpoch().InMicroseconds();
+  pb_specific->set_creation_time_windows_epoch_micros(time_in_micros);
+  pb_specific->set_update_time_windows_epoch_micros(time_in_micros);
+
+  sync_pb::SavedTabGroupTab* pb_tab = pb_specific->mutable_tab();
+  pb_tab->set_url("invalid_url");
+  pb_tab->set_group_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
+  pb_tab->set_title("Invalid URL Title");
+
+  SavedTabGroupTab tab =
+      SavedTabGroupSyncBridge::DataToSavedTabGroupTabForTest(pb_data);
+
+  auto [default_url, default_title] = GetDefaultUrlAndTitle();
+  EXPECT_EQ(tab.url(), default_url);
+  EXPECT_EQ(tab.title(), default_title);
 }
 
 TEST_F(SavedTabGroupConversionTest, DataToTabRetainsData) {

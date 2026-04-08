@@ -349,9 +349,14 @@ SavedTabGroupTab DataToSavedTabGroupTab(const proto::SavedTabGroupData& data) {
   std::optional<std::string> last_updater_cache_guid =
       GetLastUpdaterCacheGuidFromSpecifics(specific);
 
+  GURL url(specific.tab().url());
+  std::u16string title = base::UTF8ToUTF16(specific.tab().title());
+  if (!IsURLValidForSavedTabGroups(url)) {
+    std::tie(url, title) = GetDefaultUrlAndTitle();
+  }
+
   SavedTabGroupTab tab(
-      GURL(specific.tab().url()), base::UTF8ToUTF16(specific.tab().title()),
-      base::Uuid::ParseLowercase(specific.tab().group_guid()),
+      url, title, base::Uuid::ParseLowercase(specific.tab().group_guid()),
       specific.tab().position(), base::Uuid::ParseLowercase(specific.guid()),
       std::nullopt, std::move(creator_cache_guid),
       std::move(last_updater_cache_guid), creation_time, update_time,

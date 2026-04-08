@@ -303,6 +303,23 @@ public class LocalTabGroupMutationHelperUnitTest {
     }
 
     @Test
+    public void testUpdateTabGroup_UpdateExistingTab_NonSavableUrlIsIgnored() {
+        // One local group with one tab syncing.
+        addOneTab();
+
+        // One saved group with one tabs mapped to the local tab.
+        SavedTabGroup savedTabGroup =
+                createOneSavedTabGroup(LOCAL_TAB_GROUP_ID_1, new Integer[] {TAB_ID_1});
+        SavedTabGroupTab savedTab = savedTabGroup.savedTabs.get(0);
+        savedTab.url = UNSYNCABLE_URL_1;
+
+        mLocalMutationHelper.updateTabGroup(savedTabGroup);
+
+        verify(mTabCreationDelegate, never())
+                .navigateToUrl(any(), any(), anyString(), anyBoolean());
+    }
+
+    @Test
     public void testUpdateTabGroup_UpdateExistingTab_UnsyncableUrlAreNotClobberedWithNTPUrl() {
         // One local group with one tab syncing.
         addOneTab();
