@@ -111,7 +111,7 @@ PartitionAllocator::~PartitionAllocator() {
 void PartitionAllocator::init(PartitionOptions opts) {
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   PA_CHECK(opts.thread_cache == PartitionOptions::kDisabled ||
-           opts.thread_cache_index >= kNumDefaultPartitions)
+           opts.thread_cache_index >= kNumPartitions)
       << "Cannot use a thread cache at indices used by default partitions when "
          "PartitionAlloc is malloc().";
 #endif

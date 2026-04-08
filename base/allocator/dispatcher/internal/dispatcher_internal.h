@@ -125,7 +125,9 @@ struct DispatcherImpl {
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
-  static void* AllocFn(size_t size, AllocToken alloc_token, void* context) {
+  static void* AllocFn(size_t size,
+                       allocator_shim::AllocToken alloc_token,
+                       void* context) {
     void* const address =
         allocator_dispatch_.next->alloc_function(size, alloc_token, context);
 
@@ -135,7 +137,7 @@ struct DispatcherImpl {
   }
 
   static void* AllocUncheckedFn(size_t size,
-                                AllocToken alloc_token,
+                                allocator_shim::AllocToken alloc_token,
                                 void* context) {
     void* const address = allocator_dispatch_.next->alloc_unchecked_function(
         size, alloc_token, context);
@@ -147,7 +149,7 @@ struct DispatcherImpl {
 
   static void* AllocZeroInitializedFn(size_t n,
                                       size_t size,
-                                      AllocToken alloc_token,
+                                      allocator_shim::AllocToken alloc_token,
                                       void* context) {
     void* const address =
         allocator_dispatch_.next->alloc_zero_initialized_function(
@@ -158,10 +160,11 @@ struct DispatcherImpl {
     return address;
   }
 
-  static void* AllocZeroInitializedUncheckedFn(size_t n,
-                                               size_t size,
-                                               AllocToken alloc_token,
-                                               void* context) {
+  static void* AllocZeroInitializedUncheckedFn(
+      size_t n,
+      size_t size,
+      allocator_shim::AllocToken alloc_token,
+      void* context) {
     void* const address =
         allocator_dispatch_.next->alloc_zero_initialized_unchecked_function(
             n, size, alloc_token, context);
@@ -173,7 +176,7 @@ struct DispatcherImpl {
 
   static void* AllocAlignedFn(size_t alignment,
                               size_t size,
-                              AllocToken alloc_token,
+                              allocator_shim::AllocToken alloc_token,
                               void* context) {
     void* const address = allocator_dispatch_.next->alloc_aligned_function(
         alignment, size, alloc_token, context);
@@ -185,7 +188,7 @@ struct DispatcherImpl {
 
   static void* ReallocFn(void* address,
                          size_t size,
-                         AllocToken alloc_token,
+                         allocator_shim::AllocToken alloc_token,
                          void* context) {
     // Note: size == 0 actually performs free.
     DoNotifyFreeForShim(address);
@@ -200,7 +203,7 @@ struct DispatcherImpl {
 
   static void* ReallocUncheckedFn(void* address,
                                   size_t size,
-                                  AllocToken alloc_token,
+                                  allocator_shim::AllocToken alloc_token,
                                   void* context) {
     // Note: size == 0 actually performs free.
     DoNotifyFreeForShim(address);
@@ -279,7 +282,7 @@ struct DispatcherImpl {
 
   static void* AlignedMallocFn(size_t size,
                                size_t alignment,
-                               AllocToken alloc_token,
+                               allocator_shim::AllocToken alloc_token,
                                void* context) {
     void* const address = allocator_dispatch_.next->aligned_malloc_function(
         size, alignment, alloc_token, context);
@@ -291,7 +294,7 @@ struct DispatcherImpl {
 
   static void* AlignedMallocUncheckedFn(size_t size,
                                         size_t alignment,
-                                        AllocToken alloc_token,
+                                        allocator_shim::AllocToken alloc_token,
                                         void* context) {
     void* const address =
         allocator_dispatch_.next->aligned_malloc_unchecked_function(
@@ -305,7 +308,7 @@ struct DispatcherImpl {
   static void* AlignedReallocFn(void* address,
                                 size_t size,
                                 size_t alignment,
-                                AllocToken alloc_token,
+                                allocator_shim::AllocToken alloc_token,
                                 void* context) {
     // Note: size == 0 actually performs free.
     DoNotifyFreeForShim(address);
@@ -320,7 +323,7 @@ struct DispatcherImpl {
   static void* AlignedReallocUncheckedFn(void* address,
                                          size_t size,
                                          size_t alignment,
-                                         AllocToken alloc_token,
+                                         allocator_shim::AllocToken alloc_token,
                                          void* context) {
     // Note: size == 0 actually performs free.
     DoNotifyFreeForShim(address);

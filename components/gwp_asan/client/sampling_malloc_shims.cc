@@ -46,7 +46,9 @@ GuardedPageAllocator* gpa = nullptr;
 
 extern AllocatorDispatch g_allocator_dispatch;
 
-void* AllocFn(size_t size, AllocToken alloc_token, void* context) {
+void* AllocFn(size_t size,
+              allocator_shim::AllocToken alloc_token,
+              void* context) {
   if (sampling_state.Sample(size)) [[unlikely]] {
     if (void* allocation = gpa->Allocate(size))
       return allocation;
@@ -55,7 +57,9 @@ void* AllocFn(size_t size, AllocToken alloc_token, void* context) {
   return g_allocator_dispatch.next->alloc_function(size, alloc_token, context);
 }
 
-void* AllocUncheckedFn(size_t size, AllocToken alloc_token, void* context) {
+void* AllocUncheckedFn(size_t size,
+                       allocator_shim::AllocToken alloc_token,
+                       void* context) {
   if (sampling_state.Sample(size)) [[unlikely]] {
     if (void* allocation = gpa->Allocate(size))
       return allocation;
@@ -67,7 +71,7 @@ void* AllocUncheckedFn(size_t size, AllocToken alloc_token, void* context) {
 
 void* AllocZeroInitializedFn(size_t n,
                              size_t size,
-                             AllocToken alloc_token,
+                             allocator_shim::AllocToken alloc_token,
                              void* context) {
   if (sampling_state.Sample(size)) [[unlikely]] {
     base::CheckedNumeric<size_t> checked_total = size;
@@ -89,7 +93,7 @@ void* AllocZeroInitializedFn(size_t n,
 
 void* AllocZeroInitializedUncheckedFn(size_t n,
                                       size_t size,
-                                      AllocToken alloc_token,
+                                      allocator_shim::AllocToken alloc_token,
                                       void* context) {
   if (sampling_state.Sample(size)) [[unlikely]] {
     base::CheckedNumeric<size_t> checked_total = size;
@@ -113,7 +117,7 @@ void* AllocZeroInitializedUncheckedFn(size_t n,
 
 void* AllocAlignedFn(size_t alignment,
                      size_t size,
-                     AllocToken alloc_token,
+                     allocator_shim::AllocToken alloc_token,
                      void* context) {
   if (sampling_state.Sample(size)) [[unlikely]] {
     if (void* allocation = gpa->Allocate(size, alignment))
@@ -126,7 +130,7 @@ void* AllocAlignedFn(size_t alignment,
 
 void* ReallocFn(void* address,
                 size_t size,
-                AllocToken alloc_token,
+                allocator_shim::AllocToken alloc_token,
                 void* context) {
   if (!address) [[unlikely]] {
     return AllocFn(size, alloc_token, context);
@@ -157,7 +161,7 @@ void* ReallocFn(void* address,
 
 void* ReallocUncheckedFn(void* address,
                          size_t size,
-                         AllocToken alloc_token,
+                         allocator_shim::AllocToken alloc_token,
                          void* context) {
   if (!address) [[unlikely]] {
     return AllocFn(size, alloc_token, context);
@@ -297,7 +301,7 @@ void TryFreeDefaultFn(void* address, void* context) {
 
 static void* AlignedMallocFn(size_t size,
                              size_t alignment,
-                             AllocToken alloc_token,
+                             allocator_shim::AllocToken alloc_token,
                              void* context) {
   if (sampling_state.Sample(size)) [[unlikely]] {
     if (void* allocation = gpa->Allocate(size, alignment))
@@ -310,7 +314,7 @@ static void* AlignedMallocFn(size_t size,
 
 static void* AlignedMallocUncheckedFn(size_t size,
                                       size_t alignment,
-                                      AllocToken alloc_token,
+                                      allocator_shim::AllocToken alloc_token,
                                       void* context) {
   if (sampling_state.Sample(size)) [[unlikely]] {
     if (void* allocation = gpa->Allocate(size, alignment)) {
@@ -325,7 +329,7 @@ static void* AlignedMallocUncheckedFn(size_t size,
 static void* AlignedReallocFn(void* address,
                               size_t size,
                               size_t alignment,
-                              AllocToken alloc_token,
+                              allocator_shim::AllocToken alloc_token,
                               void* context) {
   if (!address) [[unlikely]] {
     return AlignedMallocFn(size, alignment, alloc_token, context);
@@ -357,7 +361,7 @@ static void* AlignedReallocFn(void* address,
 static void* AlignedReallocUncheckedFn(void* address,
                                        size_t size,
                                        size_t alignment,
-                                       AllocToken alloc_token,
+                                       allocator_shim::AllocToken alloc_token,
                                        void* context) {
   if (!address) [[unlikely]] {
     return AlignedMallocFn(size, alignment, alloc_token, context);

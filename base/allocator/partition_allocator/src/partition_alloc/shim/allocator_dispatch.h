@@ -10,16 +10,10 @@
 #include "partition_alloc/partition_alloc_base/types/strong_alias.h"
 #include "partition_alloc/partition_alloc_check.h"
 
+namespace allocator_shim {
+
 using AllocToken =
     partition_alloc::internal::base::StrongAlias<class AllocTokenTag, size_t>;
-#if PA_BUILDFLAG(SHIM_SUPPORTS_ALLOC_TOKEN)
-inline static constexpr AllocToken kMaxAllocToken = AllocToken(1);
-#else
-inline static constexpr AllocToken kMaxAllocToken = AllocToken(0);
-#endif
-inline static constexpr AllocToken kDefaultAllocToken = AllocToken(0);
-
-namespace allocator_shim {
 
 struct AllocatorDispatch {
   using AllocFn = void*(size_t size, AllocToken alloc_token, void* context);

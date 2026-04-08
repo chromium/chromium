@@ -461,10 +461,10 @@ using ::partition_alloc::internal::kSuperPageSize;
 using ::partition_alloc::internal::MaxDirectMapped;
 using ::partition_alloc::internal::PartitionPageSize;
 
-#if PA_BUILDFLAG(SHIM_SUPPORTS_ALLOC_TOKEN)
-inline constexpr size_t kNumDefaultPartitions = 2;
+#if PA_BUILDFLAG(ENABLE_AUTO_PARTITIONING)
+inline constexpr size_t kNumPartitions = 2;
 #else
-inline constexpr size_t kNumDefaultPartitions = 1;
+inline constexpr size_t kNumPartitions = 1;
 #endif
 
 }  // namespace partition_alloc

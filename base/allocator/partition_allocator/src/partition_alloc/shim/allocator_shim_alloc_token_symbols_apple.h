@@ -77,41 +77,41 @@ DEFINE_ALLOC_TOKEN_STDLIB(1)
 
 #define DEFINE_ALLOC_TOKEN_NEW(id)                                          \
   SHIM_NO_INLINE_APPLE void* __alloc_token_##id##__Znwm(size_t size) {      \
-    return ShimCppNew(size, AllocToken(id));                                \
+    return ShimCppNew(size, allocator_shim::AllocToken(id));                \
   }                                                                         \
   SHIM_NO_INLINE_APPLE void* __alloc_token_##id##__Znam(size_t size) {      \
-    return ShimCppNew(size, AllocToken(id));                                \
+    return ShimCppNew(size, allocator_shim::AllocToken(id));                \
   }                                                                         \
   SHIM_NO_INLINE_APPLE void* __alloc_token_##id##__ZnwmRKSt9nothrow_t(      \
       size_t size, const std::nothrow_t&) noexcept {                        \
-    return ShimCppNewNoThrow(size, AllocToken(id));                         \
+    return ShimCppNewNoThrow(size, allocator_shim::AllocToken(id));         \
   }                                                                         \
   SHIM_NO_INLINE_APPLE void* __alloc_token_##id##__ZnamRKSt9nothrow_t(      \
       size_t size, const std::nothrow_t&) {                                 \
-    return ShimCppNewNoThrow(size, AllocToken(id));                         \
+    return ShimCppNewNoThrow(size, allocator_shim::AllocToken(id));         \
   }                                                                         \
   SHIM_NO_INLINE_APPLE void* __alloc_token_##id##__ZnwmSt11align_val_t(     \
       size_t size, std::align_val_t alignment) {                            \
     return ShimCppAlignedNew(size, static_cast<size_t>(alignment),          \
-                             AllocToken(id));                               \
+                             allocator_shim::AllocToken(id));               \
   }                                                                         \
   SHIM_NO_INLINE_APPLE void* __alloc_token_##id##__ZnamSt11align_val_t(     \
       size_t size, std::align_val_t alignment) {                            \
     return ShimCppAlignedNew(size, static_cast<size_t>(alignment),          \
-                             AllocToken(id));                               \
+                             allocator_shim::AllocToken(id));               \
   }                                                                         \
   SHIM_NO_INLINE_APPLE void*                                                \
       __alloc_token_##id##__ZnwmSt11align_val_tRKSt9nothrow_t(              \
           size_t size, std::align_val_t alignment,                          \
           const std::nothrow_t& t) noexcept {                               \
     return ShimCppAlignedNew(size, static_cast<size_t>(alignment),          \
-                             AllocToken(id));                               \
+                             allocator_shim::AllocToken(id));               \
   }                                                                         \
   SHIM_NO_INLINE_APPLE void*                                                \
       __alloc_token_##id##__ZnamSt11align_val_tRKSt9nothrow_t(              \
           size_t size, std::align_val_t alignment, const std::nothrow_t&) { \
     return ShimCppAlignedNew(size, static_cast<size_t>(alignment),          \
-                             AllocToken(id));                               \
+                             allocator_shim::AllocToken(id));               \
   }
 
 extern "C" {

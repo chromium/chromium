@@ -15,6 +15,13 @@
 
 namespace allocator_shim {
 
+#if PA_BUILDFLAG(ENABLE_AUTO_PARTITIONING)
+inline constexpr size_t kNumPartitions = 2;
+#else
+inline constexpr size_t kNumPartitions = 1;
+#endif
+inline constexpr size_t kDefaultPartitionIndex = 0;
+
 namespace internal {
 
 class PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) PartitionAllocMalloc {
@@ -26,10 +33,10 @@ class PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) PartitionAllocMalloc {
   // TODO(crbug.com/477186304): Remove default value for `alloc_token`, once all
   // callers are updated and verified to make configuration for all roots.
   static partition_alloc::PartitionRoot* Allocator(
-      AllocToken alloc_token = kDefaultAllocToken);
+      AllocToken alloc_token = AllocToken(kDefaultPartitionIndex));
   // May return |nullptr|, will never return the same pointer as  |Allocator()|.
   static partition_alloc::PartitionRoot* OriginalAllocator(
-      AllocToken alloc_token = kDefaultAllocToken);
+      AllocToken alloc_token = AllocToken(kDefaultPartitionIndex));
 };
 
 template <partition_alloc::AllocFlags base_alloc_flags,

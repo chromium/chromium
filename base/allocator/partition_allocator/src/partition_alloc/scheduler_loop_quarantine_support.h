@@ -34,7 +34,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
  private:
   std::optional<internal::ThreadBoundSchedulerLoopQuarantineBranch::
                     ScopedQuarantineExclusion>
-      instances_[kNumDefaultPartitions];
+      instances_[kNumPartitions];
 };
 
 // An utility class to update Scheduler-Loop Quarantine's purging strategy for

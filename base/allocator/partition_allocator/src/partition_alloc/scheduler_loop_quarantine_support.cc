@@ -9,7 +9,7 @@
 namespace partition_alloc {
 ScopedSchedulerLoopQuarantineExclusion::
     ScopedSchedulerLoopQuarantineExclusion() {
-  for (size_t index = 0; index < kNumDefaultPartitions; ++index) {
+  for (size_t index = 0; index < kNumPartitions; ++index) {
     ThreadCache* tcache = ThreadCache::Get(index);
     if (!ThreadCache::IsValid(tcache)) {
       return;

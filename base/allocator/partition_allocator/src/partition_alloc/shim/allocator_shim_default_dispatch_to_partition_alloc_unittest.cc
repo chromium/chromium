@@ -24,6 +24,7 @@
 
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) && \
     PA_BUILDFLAG(USE_PARTITION_ALLOC)
+
 namespace allocator_shim::internal {
 
 namespace {

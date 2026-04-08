@@ -159,20 +159,20 @@ class MainPartitionConstructor {
 };
 
 LeakySingleton<partition_alloc::PartitionRoot, MainPartitionConstructor>
-    g_roots[kMaxAllocToken.value() + 1] = {};
+    g_roots[kNumPartitions] = {};
 
 partition_alloc::PartitionRoot* Allocator(AllocToken alloc_token) {
-  PA_DCHECK(alloc_token <= kMaxAllocToken);
-#if PA_BUILDFLAG(SHIM_SUPPORTS_ALLOC_TOKEN)
+#if PA_BUILDFLAG(ENABLE_AUTO_PARTITIONING)
+  PA_DCHECK(alloc_token.value() < kNumPartitions);
   return PA_UNSAFE_TODO(g_roots[alloc_token.value()]).Get();
 #else
-  return g_roots[0].Get();
+  return g_roots[kDefaultPartitionIndex].Get();
 #endif
 }
 
 // Original g_root_ if it was replaced by ConfigurePartitions().
-std::atomic<partition_alloc::PartitionRoot*>
-    g_original_roots[kMaxAllocToken.value() + 1] = {};
+std::atomic<partition_alloc::PartitionRoot*> g_original_roots[kNumPartitions] =
+    {};
 
 std::atomic<bool> g_roots_finalized = false;
 
@@ -620,7 +620,7 @@ size_t
 PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::GoodSize(
     size_t size,
     void* context) {
-  return Allocator(kDefaultAllocToken)
+  return Allocator(AllocToken(kDefaultPartitionIndex))
       ->AllocationCapacityFromRequestedSize(size);
 }
 
@@ -647,7 +647,8 @@ PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::BatchMalloc(
   // simple for now.
   for (unsigned i = 0; i < num_requested; i++) {
     // No need to check the results, we crash if it fails.
-    PA_UNSAFE_TODO(results[i]) = Malloc(size, kDefaultAllocToken, nullptr);
+    PA_UNSAFE_TODO(results[i]) =
+        Malloc(size, AllocToken(kDefaultPartitionIndex), nullptr);
   }
 
   // Either all succeeded, or we crashed.
@@ -958,8 +959,7 @@ void UninstallCustomDispatch() {
 }
 
 void EnablePartitionAllocMemoryReclaimer() {
-  for (size_t alloc_token = 0; alloc_token <= kMaxAllocToken.value();
-       alloc_token++) {
+  for (size_t alloc_token = 0; alloc_token < kNumPartitions; alloc_token++) {
     // Unlike other partitions, Allocator() does not register its PartitionRoot
     // to the memory reclaimer, because doing so may allocate memory. Thus, the
     // registration to the memory reclaimer has to be done some time later, when
@@ -1025,20 +1025,23 @@ void ConfigurePartitions(
 
   static partition_alloc::internal::base::NoDestructor<
       partition_alloc::PartitionAllocator>
-      new_main_allocators[2] = {
+      new_main_allocators[kNumPartitions] = {
           partition_alloc::internal::base::NoDestructor<
               partition_alloc::PartitionAllocator>([&opts] {
             opts.thread_cache_index = 0;
             return opts;
-          }()),
+          }())
+#if PA_BUILDFLAG(ENABLE_AUTO_PARTITIONING)
+              ,
           partition_alloc::internal::base::NoDestructor<
               partition_alloc::PartitionAllocator>([&opts] {
             opts.thread_cache_index = 1;
             return opts;
-          }())};
+          }())
+#endif
+      };
 
-  for (size_t alloc_token = 0; alloc_token <= kMaxAllocToken.value();
-       alloc_token++) {
+  for (size_t alloc_token = 0; alloc_token < kNumPartitions; alloc_token++) {
     // Calling Get() is actually important, even if the return value isn't
     // used, because it has a side effect of initializing the variable, if it
     // wasn't already.
@@ -1139,7 +1142,8 @@ SHIM_ALWAYS_EXPORT struct mallinfo mallinfo(void) __THROW {
   partition_alloc::SimplePartitionStatsDumper allocator_dumper;
   // TODO(crbug.com/477186304): Dump stats for all alloc tokens, by accumulating
   // the stats or separating reporting stats.
-  allocator_shim::Allocator(kDefaultAllocToken)
+  allocator_shim::Allocator(
+      allocator_shim::AllocToken(allocator_shim::kDefaultPartitionIndex))
       ->DumpStats("malloc", /*is_light_dump=*/true,
                   /*populate_discardable_bytes=*/false, &allocator_dumper);
 
@@ -1174,8 +1178,7 @@ void InitializeDefaultAllocatorPartitionRoot() {
   // internally, e.g. __builtin_available, and it's not easy to avoid it.
   // Thus, we initialize the PartitionRoot with using the system default
   // allocator before we intercept the system default allocator.
-  for (size_t alloc_token = 0; alloc_token <= kMaxAllocToken.value();
-       alloc_token++) {
+  for (size_t alloc_token = 0; alloc_token < kNumPartitions; alloc_token++) {
     std::ignore = Allocator(AllocToken(alloc_token));
   }
 }

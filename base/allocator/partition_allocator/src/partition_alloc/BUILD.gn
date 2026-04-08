@@ -147,6 +147,7 @@ pa_buildflag_header("buildflags") {
     "CHECKED_SPAN=$use_checked_span",
     "DCHECKS_ARE_ON=$partition_alloc_dchecks_are_on",
     "DCHECK_IS_CONFIGURABLE=$dcheck_is_configurable",
+    "ENABLE_AUTO_PARTITIONING=$enable_auto_partitioning",
     "ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=$enable_backup_ref_ptr_feature_flag",
     "ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=$enable_backup_ref_ptr_instance_tracer",
     "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$enable_backup_ref_ptr_slow_checks",
@@ -180,6 +181,7 @@ pa_buildflag_header("buildflags") {
     "RAW_PTR_ZERO_ON_MOVE=$raw_ptr_zero_on_move",
     "REALLOC_GROWTH_FACTOR_MITIGATION=$partition_alloc_realloc_growth_factor_mitigation",
     "RECORD_ALLOC_INFO=$record_alloc_info",
+    "SHIM_SUPPORTS_ALLOC_TOKEN=$shim_supports_alloc_token",
     "SHIM_SUPPORTS_SIZED_DEALLOC=$shim_supports_sized_dealloc",
     "SMALLER_PARTITION_COOKIE=$smaller_partition_cookie",
     "STACK_SCAN_SUPPORTED=$stack_scan_supported",
@@ -194,7 +196,6 @@ pa_buildflag_header("buildflags") {
     "USE_RAW_PTR_ASAN_UNOWNED_IMPL=$use_raw_ptr_asan_unowned_impl",
     "USE_RAW_PTR_BACKUP_REF_IMPL=$use_raw_ptr_backup_ref_impl",
     "USE_RAW_PTR_HOOKABLE_IMPL=$use_raw_ptr_hookable_impl",
-    "SHIM_SUPPORTS_ALLOC_TOKEN=$shim_supports_alloc_token",
   ]
 }
 

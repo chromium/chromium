@@ -27,35 +27,35 @@
 
 #define DEFINE_ALLOC_TOKEN_STDLIB(id)                                          \
   SHIM_ALWAYS_EXPORT void* __alloc_token_##id##_malloc(size_t size) noexcept { \
-    return ShimMalloc(size, nullptr, AllocToken(id));                          \
+    return ShimMalloc(size, nullptr, allocator_shim::AllocToken(id));          \
   }                                                                            \
   SHIM_ALWAYS_EXPORT void* __alloc_token_##id##_realloc(                       \
       void* ptr, size_t size) noexcept {                                       \
-    return ShimRealloc(ptr, size, nullptr, AllocToken(id));                    \
+    return ShimRealloc(ptr, size, nullptr, allocator_shim::AllocToken(id));    \
   }                                                                            \
   SHIM_ALWAYS_EXPORT void* __alloc_token_##id##_calloc(size_t n,               \
                                                        size_t size) noexcept { \
-    return ShimCalloc(n, size, nullptr, AllocToken(id));                       \
+    return ShimCalloc(n, size, nullptr, allocator_shim::AllocToken(id));       \
   }                                                                            \
   SHIM_ALWAYS_EXPORT void* __alloc_token_##id##_memalign(                      \
       size_t align, size_t size) noexcept {                                    \
-    return ShimMemalign(align, size, nullptr, AllocToken(id));                 \
+    return ShimMemalign(align, size, nullptr, allocator_shim::AllocToken(id)); \
   }                                                                            \
   SHIM_ALWAYS_EXPORT void* __alloc_token_##id##_aligned_alloc(                 \
       size_t align, size_t size) noexcept {                                    \
-    return ShimMemalign(align, size, nullptr, AllocToken(id));                 \
+    return ShimMemalign(align, size, nullptr, allocator_shim::AllocToken(id)); \
   }                                                                            \
   SHIM_ALWAYS_EXPORT void* __alloc_token_##id##_valloc(size_t size) noexcept { \
-    return ShimValloc(size, nullptr, AllocToken(id));                          \
+    return ShimValloc(size, nullptr, allocator_shim::AllocToken(id));          \
   }                                                                            \
   SHIM_ALWAYS_EXPORT void* __alloc_token_##id##_pvalloc(                       \
       size_t size) noexcept {                                                  \
-    return ShimPvalloc(size, AllocToken(id));                                  \
+    return ShimPvalloc(size, allocator_shim::AllocToken(id));                  \
     ;                                                                          \
   }                                                                            \
   SHIM_ALWAYS_EXPORT int __alloc_token_##id##_posix_memalign(                  \
       void** r, size_t a, size_t s) noexcept {                                 \
-    return ShimPosixMemalign(r, a, s, AllocToken(id));                         \
+    return ShimPosixMemalign(r, a, s, allocator_shim::AllocToken(id));         \
   }
 
 extern "C" {
@@ -70,82 +70,82 @@ DEFINE_ALLOC_TOKEN_STDLIB(1)
 
 #define DEFINE_ALLOC_TOKEN_NEW(id)                                          \
   SHIM_ALWAYS_EXPORT void* __alloc_token_##id##__Znwm(size_t size) {        \
-    return ShimCppNew(size, AllocToken(id));                                \
+    return ShimCppNew(size, allocator_shim::AllocToken(id));                \
   }                                                                         \
   SHIM_ALWAYS_EXPORT void* __alloc_token_##id##__Znam(size_t size) {        \
-    return ShimCppNew(size, AllocToken(id));                                \
+    return ShimCppNew(size, allocator_shim::AllocToken(id));                \
   }                                                                         \
   SHIM_ALWAYS_EXPORT void* __alloc_token_##id##__ZnwmRKSt9nothrow_t(        \
       size_t size, const std::nothrow_t&) noexcept {                        \
-    return ShimCppNewNoThrow(size, AllocToken(id));                         \
+    return ShimCppNewNoThrow(size, allocator_shim::AllocToken(id));         \
   }                                                                         \
   SHIM_ALWAYS_EXPORT void* __alloc_token_##id##__ZnamRKSt9nothrow_t(        \
       size_t size, const std::nothrow_t&) {                                 \
-    return ShimCppNewNoThrow(size, AllocToken(id));                         \
+    return ShimCppNewNoThrow(size, allocator_shim::AllocToken(id));         \
   }                                                                         \
   SHIM_ALWAYS_EXPORT void* __alloc_token_##id##__ZnwmSt11align_val_t(       \
       size_t size, std::align_val_t alignment) {                            \
     return ShimCppAlignedNew(size, static_cast<size_t>(alignment),          \
-                             AllocToken(id));                               \
+                             allocator_shim::AllocToken(id));               \
   }                                                                         \
   SHIM_ALWAYS_EXPORT void* __alloc_token_##id##__ZnamSt11align_val_t(       \
       size_t size, std::align_val_t alignment) {                            \
     return ShimCppAlignedNew(size, static_cast<size_t>(alignment),          \
-                             AllocToken(id));                               \
+                             allocator_shim::AllocToken(id));               \
   }                                                                         \
   SHIM_ALWAYS_EXPORT void*                                                  \
       __alloc_token_##id##__ZnwmSt11align_val_tRKSt9nothrow_t(              \
           size_t size, std::align_val_t alignment,                          \
           const std::nothrow_t& t) noexcept {                               \
     return ShimCppAlignedNew(size, static_cast<size_t>(alignment),          \
-                             AllocToken(id));                               \
+                             allocator_shim::AllocToken(id));               \
   }                                                                         \
   SHIM_ALWAYS_EXPORT void*                                                  \
       __alloc_token_##id##__ZnamSt11align_val_tRKSt9nothrow_t(              \
           size_t size, std::align_val_t alignment, const std::nothrow_t&) { \
     return ShimCppAlignedNew(size, static_cast<size_t>(alignment),          \
-                             AllocToken(id));                               \
+                             allocator_shim::AllocToken(id));               \
   }
 
 #else
 
 #define DEFINE_ALLOC_TOKEN_NEW(id)                                          \
   SHIM_ALWAYS_EXPORT void* __alloc_token_##id##__Znwj(size_t size) {        \
-    return ShimCppNew(size, AllocToken(id));                                \
+    return ShimCppNew(size, allocator_shim::AllocToken(id));                \
   }                                                                         \
   SHIM_ALWAYS_EXPORT void* __alloc_token_##id##__Znaj(size_t size) {        \
-    return ShimCppNew(size, AllocToken(id));                                \
+    return ShimCppNew(size, allocator_shim::AllocToken(id));                \
   }                                                                         \
   SHIM_ALWAYS_EXPORT void* __alloc_token_##id##__ZnwjRKSt9nothrow_t(        \
       size_t size, const std::nothrow_t&) noexcept {                        \
-    return ShimCppNewNoThrow(size, AllocToken(id));                         \
+    return ShimCppNewNoThrow(size, allocator_shim::AllocToken(id));         \
   }                                                                         \
   SHIM_ALWAYS_EXPORT void* __alloc_token_##id##__ZnajRKSt9nothrow_t(        \
       size_t size, const std::nothrow_t&) {                                 \
-    return ShimCppNewNoThrow(size, AllocToken(id));                         \
+    return ShimCppNewNoThrow(size, allocator_shim::AllocToken(id));         \
   }                                                                         \
   SHIM_ALWAYS_EXPORT void* __alloc_token_##id##__ZnwjSt11align_val_t(       \
       size_t size, std::align_val_t alignment) {                            \
     return ShimCppAlignedNew(size, static_cast<size_t>(alignment),          \
-                             AllocToken(id));                               \
+                             allocator_shim::AllocToken(id));               \
   }                                                                         \
   SHIM_ALWAYS_EXPORT void* __alloc_token_##id##__ZnajSt11align_val_t(       \
       size_t size, std::align_val_t alignment) {                            \
     return ShimCppAlignedNew(size, static_cast<size_t>(alignment),          \
-                             AllocToken(id));                               \
+                             allocator_shim::AllocToken(id));               \
   }                                                                         \
   SHIM_ALWAYS_EXPORT void*                                                  \
       __alloc_token_##id##__ZnwjSt11align_val_tRKSt9nothrow_t(              \
           size_t size, std::align_val_t alignment,                          \
           const std::nothrow_t& t) noexcept {                               \
     return ShimCppAlignedNew(size, static_cast<size_t>(alignment),          \
-                             AllocToken(id));                               \
+                             allocator_shim::AllocToken(id));               \
   }                                                                         \
   SHIM_ALWAYS_EXPORT void*                                                  \
       __alloc_token_##id##__ZnajSt11align_val_tRKSt9nothrow_t(              \
           size_t size, std::align_val_t alignment, const std::nothrow_t&) { \
     return ShimCppAlignedNew(size, static_cast<size_t>(alignment),          \
-                             AllocToken(id));                               \
+                             allocator_shim::AllocToken(id));               \
   }
 
 #endif  // !PA_BUILDFLAG(IS_ANDROID)

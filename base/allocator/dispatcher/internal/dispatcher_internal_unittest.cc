@@ -94,31 +94,43 @@ struct AllocationEventDispatcherInternalTest : public DispatcherTest {
 
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   AllocatorDispatch* GetNextAllocatorDispatch() { return &allocator_dispatch_; }
-  static void* alloc_function(size_t, AllocToken, void*) {
+  static void* alloc_function(size_t, allocator_shim::AllocToken, void*) {
     return GetAllocatedAddress();
   }
-  static void* alloc_unchecked_function(size_t, AllocToken, void*) {
+  static void* alloc_unchecked_function(size_t,
+                                        allocator_shim::AllocToken,
+                                        void*) {
     return GetAllocatedAddress();
   }
   static void* alloc_zero_initialized_function(size_t,
                                                size_t,
-                                               AllocToken,
+                                               allocator_shim::AllocToken,
                                                void*) {
     return GetAllocatedAddress();
   }
-  static void* alloc_zero_initialized_unchecked_function(size_t,
-                                                         size_t,
-                                                         AllocToken,
-                                                         void*) {
+  static void* alloc_zero_initialized_unchecked_function(
+      size_t,
+      size_t,
+      allocator_shim::AllocToken,
+      void*) {
     return GetAllocatedAddress();
   }
-  static void* alloc_aligned_function(size_t, size_t, AllocToken, void*) {
+  static void* alloc_aligned_function(size_t,
+                                      size_t,
+                                      allocator_shim::AllocToken,
+                                      void*) {
     return GetAllocatedAddress();
   }
-  static void* realloc_function(void*, size_t, AllocToken, void*) {
+  static void* realloc_function(void*,
+                                size_t,
+                                allocator_shim::AllocToken,
+                                void*) {
     return GetAllocatedAddress();
   }
-  static void* realloc_unchecked_function(void*, size_t, AllocToken, void*) {
+  static void* realloc_unchecked_function(void*,
+                                          size_t,
+                                          allocator_shim::AllocToken,
+                                          void*) {
     return GetAllocatedAddress();
   }
   static size_t get_size_estimate_function(void*, void*) {
@@ -134,26 +146,29 @@ struct AllocationEventDispatcherInternalTest : public DispatcherTest {
                                         void*) {
     return num_requested;
   }
-  static void* aligned_malloc_function(size_t, size_t, AllocToken, void*) {
+  static void* aligned_malloc_function(size_t,
+                                       size_t,
+                                       allocator_shim::AllocToken,
+                                       void*) {
     return GetAllocatedAddress();
   }
   static void* aligned_malloc_unchecked_function(size_t,
                                                  size_t,
-                                                 AllocToken,
+                                                 allocator_shim::AllocToken,
                                                  void*) {
     return GetAllocatedAddress();
   }
   static void* aligned_realloc_function(void*,
                                         size_t,
                                         size_t,
-                                        AllocToken,
+                                        allocator_shim::AllocToken,
                                         void*) {
     return GetAllocatedAddress();
   }
   static void* aligned_realloc_unchecked_function(void*,
                                                   size_t,
                                                   size_t,
-                                                  AllocToken,
+                                                  allocator_shim::AllocToken,
                                                   void*) {
     return GetAllocatedAddress();
   }
@@ -269,7 +284,8 @@ TEST_F(AllocationEventDispatcherInternalTest,
 
 namespace {
 // TODO(crbug.com/477186304): Support tests with multiple alloc tokens.
-inline static constexpr AllocToken kAllocTokenForTesting = AllocToken(0);
+inline constexpr allocator_shim::AllocToken kAllocTokenForTesting =
+    allocator_shim::AllocToken(0);
 }  // namespace
 
 TEST_F(AllocationEventDispatcherInternalTest, VerifyAllocatorShimDataIsSet) {

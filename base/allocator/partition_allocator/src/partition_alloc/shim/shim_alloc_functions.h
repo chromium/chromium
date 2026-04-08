@@ -57,8 +57,10 @@ extern "C" {
 //       just suicide printing a message).
 //     - Assume it did succeed if it returns, in which case reattempt the alloc.
 
-PA_ALWAYS_INLINE void* ShimCppNew(size_t size,
-                                  AllocToken alloc_token = kDefaultAllocToken) {
+PA_ALWAYS_INLINE void* ShimCppNew(
+    size_t size,
+    allocator_shim::AllocToken alloc_token =
+        allocator_shim::AllocToken(allocator_shim::kDefaultPartitionIndex)) {
   const allocator_shim::AllocatorDispatch* const chain_head =
       allocator_shim::internal::GetChainHead();
   void* context = nullptr;
@@ -79,7 +81,8 @@ PA_ALWAYS_INLINE void* ShimCppNew(size_t size,
 
 PA_ALWAYS_INLINE void* ShimCppNewNoThrow(
     size_t size,
-    AllocToken alloc_token = kDefaultAllocToken) {
+    allocator_shim::AllocToken alloc_token =
+        allocator_shim::AllocToken(allocator_shim::kDefaultPartitionIndex)) {
   const allocator_shim::AllocatorDispatch* const chain_head =
       allocator_shim::internal::GetChainHead();
   void* context = nullptr;
@@ -92,7 +95,8 @@ PA_ALWAYS_INLINE void* ShimCppNewNoThrow(
 PA_ALWAYS_INLINE void* ShimCppAlignedNew(
     size_t size,
     size_t alignment,
-    AllocToken alloc_token = kDefaultAllocToken) {
+    allocator_shim::AllocToken alloc_token =
+        allocator_shim::AllocToken(allocator_shim::kDefaultPartitionIndex)) {
   const allocator_shim::AllocatorDispatch* const chain_head =
       allocator_shim::internal::GetChainHead();
   void* context = nullptr;
@@ -156,9 +160,11 @@ PA_ALWAYS_INLINE void ShimCppDeleteWithSizeAndAlignment(void* address,
 }
 #endif  // PA_BUILDFLAG(SHIM_SUPPORTS_SIZED_DEALLOC)
 
-PA_ALWAYS_INLINE void* ShimMalloc(size_t size,
-                                  void* context,
-                                  AllocToken alloc_token = kDefaultAllocToken) {
+PA_ALWAYS_INLINE void* ShimMalloc(
+    size_t size,
+    void* context,
+    allocator_shim::AllocToken alloc_token =
+        allocator_shim::AllocToken(allocator_shim::kDefaultPartitionIndex)) {
   const allocator_shim::AllocatorDispatch* const chain_head =
       allocator_shim::internal::GetChainHead();
   void* ptr = chain_head->alloc_function(size, alloc_token, context);
@@ -172,10 +178,12 @@ PA_ALWAYS_INLINE void* ShimMalloc(size_t size,
   return ptr;
 }
 
-PA_ALWAYS_INLINE void* ShimCalloc(size_t n,
-                                  size_t size,
-                                  void* context,
-                                  AllocToken alloc_token = kDefaultAllocToken) {
+PA_ALWAYS_INLINE void* ShimCalloc(
+    size_t n,
+    size_t size,
+    void* context,
+    allocator_shim::AllocToken alloc_token =
+        allocator_shim::AllocToken(allocator_shim::kDefaultPartitionIndex)) {
   const allocator_shim::AllocatorDispatch* const chain_head =
       allocator_shim::internal::GetChainHead();
   void* ptr = chain_head->alloc_zero_initialized_function(n, size, alloc_token,
@@ -195,7 +203,8 @@ PA_ALWAYS_INLINE void* ShimRealloc(
     void* address,
     size_t size,
     void* context,
-    AllocToken alloc_token = kDefaultAllocToken) {
+    allocator_shim::AllocToken alloc_token =
+        allocator_shim::AllocToken(allocator_shim::kDefaultPartitionIndex)) {
   const allocator_shim::AllocatorDispatch* const chain_head =
       allocator_shim::internal::GetChainHead();
   void* ptr = chain_head->realloc_function(address, size, alloc_token, context);
@@ -215,7 +224,8 @@ PA_ALWAYS_INLINE void* ShimMemalign(
     size_t alignment,
     size_t size,
     void* context,
-    AllocToken alloc_token = kDefaultAllocToken) {
+    allocator_shim::AllocToken alloc_token =
+        allocator_shim::AllocToken(allocator_shim::kDefaultPartitionIndex)) {
   const allocator_shim::AllocatorDispatch* const chain_head =
       allocator_shim::internal::GetChainHead();
   void* ptr =
@@ -235,7 +245,8 @@ PA_ALWAYS_INLINE int ShimPosixMemalign(
     void** res,
     size_t alignment,
     size_t size,
-    AllocToken alloc_token = kDefaultAllocToken) {
+    allocator_shim::AllocToken alloc_token =
+        allocator_shim::AllocToken(allocator_shim::kDefaultPartitionIndex)) {
   // posix_memalign is supposed to check the arguments. See tc_posix_memalign()
   // in tc_malloc.cc.
   if (((alignment % sizeof(void*)) != 0) ||
@@ -251,15 +262,18 @@ PA_ALWAYS_INLINE int ShimPosixMemalign(
   return ENOMEM;
 }
 
-PA_ALWAYS_INLINE void* ShimValloc(size_t size,
-                                  void* context,
-                                  AllocToken alloc_token = kDefaultAllocToken) {
+PA_ALWAYS_INLINE void* ShimValloc(
+    size_t size,
+    void* context,
+    allocator_shim::AllocToken alloc_token =
+        allocator_shim::AllocToken(allocator_shim::kDefaultPartitionIndex)) {
   return ShimMemalign(GetCachedPageSize(), size, context, alloc_token);
 }
 
 PA_ALWAYS_INLINE void* ShimPvalloc(
     size_t size,
-    AllocToken alloc_token = kDefaultAllocToken) {
+    allocator_shim::AllocToken alloc_token =
+        allocator_shim::AllocToken(allocator_shim::kDefaultPartitionIndex)) {
   // pvalloc(0) should allocate one page, according to its man page.
   size_t page_size = GetCachedPageSize();
   if (size == 0) [[unlikely]] {
@@ -332,7 +346,8 @@ PA_ALWAYS_INLINE void* ShimAlignedMalloc(
     size_t size,
     size_t alignment,
     void* context,
-    AllocToken alloc_token = kDefaultAllocToken) {
+    allocator_shim::AllocToken alloc_token =
+        allocator_shim::AllocToken(allocator_shim::kDefaultPartitionIndex)) {
   const allocator_shim::AllocatorDispatch* const chain_head =
       allocator_shim::internal::GetChainHead();
   void* ptr = chain_head->aligned_malloc_function(size, alignment, alloc_token,
@@ -353,7 +368,8 @@ PA_ALWAYS_INLINE void* ShimAlignedRealloc(
     size_t size,
     size_t alignment,
     void* context,
-    AllocToken alloc_token = kDefaultAllocToken) {
+    allocator_shim::AllocToken alloc_token =
+        allocator_shim::AllocToken(allocator_shim::kDefaultPartitionIndex)) {
   const allocator_shim::AllocatorDispatch* const chain_head =
       allocator_shim::internal::GetChainHead();
   void* ptr = chain_head->aligned_realloc_function(address, size, alignment,

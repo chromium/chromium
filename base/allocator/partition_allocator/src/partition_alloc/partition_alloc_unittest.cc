@@ -6496,8 +6496,8 @@ TEST_P(PartitionAllocTest, SwitchBucketDistributionAfterAlloc) {
 
 TEST_P(PartitionAllocTest, MultipleThreadCachePerThread) {
   // Use thread cache indices which are not used by default partitions.
-  constexpr size_t index1 = kNumDefaultPartitions;
-  constexpr size_t index2 = kNumDefaultPartitions + 1;
+  constexpr size_t index1 = kNumPartitions;
+  constexpr size_t index2 = kNumPartitions + 1;
   static_assert(index1 < internal::kMaxThreadCacheIndex);
   static_assert(index2 < internal::kMaxThreadCacheIndex);
   ASSERT_FALSE(ThreadCache::IsValid(ThreadCache::Get(index1)));
