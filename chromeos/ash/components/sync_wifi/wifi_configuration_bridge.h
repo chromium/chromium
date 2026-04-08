@@ -70,8 +70,6 @@ class WifiConfigurationBridge : public syncer::DataTypeSyncBridge,
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // syncer::DataTypeSyncBridge:
-  std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
-      override;
   std::optional<syncer::ModelError> MergeFullSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data) override;

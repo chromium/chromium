@@ -153,11 +153,6 @@ SavedTabGroupSyncBridge::~SavedTabGroupSyncBridge() = default;
 void SavedTabGroupSyncBridge::OnSyncStarting(
     const syncer::DataTypeActivationRequest& request) {}
 
-std::unique_ptr<syncer::MetadataChangeList>
-SavedTabGroupSyncBridge::CreateMetadataChangeList() {
-  return syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
-}
-
 std::optional<syncer::ModelError> SavedTabGroupSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {

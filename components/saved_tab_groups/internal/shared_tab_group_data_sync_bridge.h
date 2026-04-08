@@ -66,8 +66,6 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
   ~SharedTabGroupDataSyncBridge() override;
 
   // DataTypeSyncBridge implementation.
-  std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
-      override;
   std::optional<syncer::ModelError> MergeFullSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data) override;

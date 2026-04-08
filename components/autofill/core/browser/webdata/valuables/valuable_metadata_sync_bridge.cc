@@ -21,7 +21,6 @@
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/features.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
-#include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
 #include "components/sync/protocol/autofill_valuable_metadata_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
@@ -89,11 +88,6 @@ AutofillSyncMetadataTable* ValuableMetadataSyncBridge::GetSyncMetadataStore() {
       web_data_backend_->GetDatabase());
 }
 
-std::unique_ptr<syncer::MetadataChangeList>
-ValuableMetadataSyncBridge::CreateMetadataChangeList() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return std::make_unique<syncer::InMemoryMetadataChangeList>();
-}
 
 void ValuableMetadataSyncBridge::UploadInitialLocalEntityMetadata(
     syncer::MetadataChangeList* metadata_change_list,

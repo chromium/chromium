@@ -52,8 +52,6 @@ class GeminiThreadSyncBridge : public syncer::DataTypeSyncBridge {
   ~GeminiThreadSyncBridge() override;
 
   // DataTypeSyncBridge implementation.
-  std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
-      override;
   std::optional<syncer::ModelError> MergeFullSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_change_list) override;

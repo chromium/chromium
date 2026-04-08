@@ -11,7 +11,6 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/model/data_type_local_change_processor.h"
-#include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/mutable_data_batch.h"
@@ -52,11 +51,6 @@ void IncomingPasswordSharingInvitationSyncBridge::OnSyncStarting(
   CHECK(password_receiver_service_);
 }
 
-std::unique_ptr<syncer::MetadataChangeList>
-IncomingPasswordSharingInvitationSyncBridge::CreateMetadataChangeList() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return std::make_unique<syncer::InMemoryMetadataChangeList>();
-}
 
 std::optional<syncer::ModelError>
 IncomingPasswordSharingInvitationSyncBridge::MergeFullSyncData(

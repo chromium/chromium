@@ -54,8 +54,6 @@ class SavedTabGroupSyncBridge : public syncer::DataTypeSyncBridge {
   // syncer::DataTypeSyncBridge:
   void OnSyncStarting(
       const syncer::DataTypeActivationRequest& request) override;
-  std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
-      override;
   std::optional<syncer::ModelError> MergeFullSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;

@@ -79,11 +79,6 @@ ConsentSyncBridgeImpl::~ConsentSyncBridgeImpl() {
   }
 }
 
-std::unique_ptr<MetadataChangeList>
-ConsentSyncBridgeImpl::CreateMetadataChangeList() {
-  return DataTypeStore::WriteBatch::CreateMetadataChangeList();
-}
-
 std::optional<ModelError> ConsentSyncBridgeImpl::MergeFullSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_data) {

@@ -57,8 +57,6 @@ class WebApkSyncBridge : public syncer::DataTypeSyncBridge {
   using CommitCallback = base::OnceCallback<void(bool success)>;
 
   // syncer::DataTypeSyncBridge:
-  std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
-      override;
   std::optional<syncer::ModelError> MergeFullSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;

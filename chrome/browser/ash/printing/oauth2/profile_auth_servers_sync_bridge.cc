@@ -173,11 +173,6 @@ void ProfileAuthServersSyncBridge::OnReadAllMetadata(
   observer_->OnProfileAuthorizationServersInitialized();
 }
 
-std::unique_ptr<syncer::MetadataChangeList>
-ProfileAuthServersSyncBridge::CreateMetadataChangeList() {
-  return syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
-}
-
 std::optional<syncer::ModelError>
 ProfileAuthServersSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,

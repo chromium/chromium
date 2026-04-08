@@ -7,7 +7,6 @@
 #include "base/functional/callback_helpers.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/model/data_batch.h"
-#include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/mutable_data_batch.h"
 
 namespace contextual_tasks {
@@ -53,11 +52,6 @@ AiThreadSyncBridge::AiThreadSyncBridge(
 }
 
 AiThreadSyncBridge::~AiThreadSyncBridge() = default;
-
-std::unique_ptr<syncer::MetadataChangeList>
-AiThreadSyncBridge::CreateMetadataChangeList() {
-  return std::make_unique<syncer::InMemoryMetadataChangeList>();
-}
 
 std::optional<syncer::ModelError> AiThreadSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,

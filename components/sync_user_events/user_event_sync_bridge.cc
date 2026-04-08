@@ -79,10 +79,6 @@ UserEventSyncBridge::~UserEventSyncBridge() {
   }
 }
 
-std::unique_ptr<MetadataChangeList>
-UserEventSyncBridge::CreateMetadataChangeList() {
-  return DataTypeStore::WriteBatch::CreateMetadataChangeList();
-}
 
 std::optional<ModelError> UserEventSyncBridge::MergeFullSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,

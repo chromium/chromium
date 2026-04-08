@@ -19,7 +19,6 @@
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/entity_change.h"
-#include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/data_type_state.pb.h"
@@ -109,10 +108,6 @@ syncer::StorageType ReadingListSyncBridge::GetStorageTypeForUma() const {
   return storage_type_for_uma_;
 }
 
-std::unique_ptr<syncer::MetadataChangeList>
-ReadingListSyncBridge::CreateMetadataChangeList() {
-  return std::make_unique<syncer::InMemoryMetadataChangeList>();
-}
 
 // Perform the initial merge between local and sync data. This should only be
 // called when a data type is first enabled to start syncing, and there is no

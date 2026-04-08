@@ -55,8 +55,6 @@ class FloatingSsoSyncBridge : public syncer::DataTypeSyncBridge {
   ~FloatingSsoSyncBridge() override;
 
   // syncer::DataTypeSyncBridge:
-  std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
-      override;
   std::optional<syncer::ModelError> MergeFullSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList remote_entities) override;

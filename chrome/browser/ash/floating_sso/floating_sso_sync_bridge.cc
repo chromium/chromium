@@ -56,11 +56,6 @@ FloatingSsoSyncBridge::~FloatingSsoSyncBridge() {
   }
 }
 
-std::unique_ptr<syncer::MetadataChangeList>
-FloatingSsoSyncBridge::CreateMetadataChangeList() {
-  return syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
-}
-
 std::optional<syncer::ModelError> FloatingSsoSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList remote_entities) {

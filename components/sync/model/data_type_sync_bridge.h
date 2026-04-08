@@ -67,8 +67,9 @@ class DataTypeSyncBridge {
   virtual void OnSyncStarting(const DataTypeActivationRequest& request);
 
   // Creates an object used to communicate changes in the sync metadata to the
-  // data type store.
-  virtual std::unique_ptr<MetadataChangeList> CreateMetadataChangeList() = 0;
+  // data type store. By default, an in-memory change list is created which
+  // should be persisted explicitly by the bridge.
+  virtual std::unique_ptr<MetadataChangeList> CreateMetadataChangeList();
 
   // Perform the initial merge between local and sync data.
   //

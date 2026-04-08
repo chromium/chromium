@@ -28,7 +28,6 @@
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/model/data_type_local_change_processor.h"
-#include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
@@ -414,13 +413,6 @@ void PasswordSyncBridge::ActOnPasswordStoreChanges(
   }
 }
 
-std::unique_ptr<syncer::MetadataChangeList>
-PasswordSyncBridge::CreateMetadataChangeList() {
-  // Note: This creates an InMemoryMetadataChangeList (rather than
-  // SyncMetadataStoreChangeList) to ensure that metadata changes are always
-  // persisted as part of a transaction.
-  return std::make_unique<syncer::InMemoryMetadataChangeList>();
-}
 
 std::optional<syncer::ModelError> PasswordSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,

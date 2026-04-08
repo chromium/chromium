@@ -194,10 +194,6 @@ PrintersSyncBridge::PrintersSyncBridge(
 
 PrintersSyncBridge::~PrintersSyncBridge() = default;
 
-std::unique_ptr<MetadataChangeList>
-PrintersSyncBridge::CreateMetadataChangeList() {
-  return DataTypeStore::WriteBatch::CreateMetadataChangeList();
-}
 
 std::optional<syncer::ModelError> PrintersSyncBridge::MergeFullSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,

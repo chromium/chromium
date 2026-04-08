@@ -20,7 +20,6 @@
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/accessibility_annotator/core/data_models/entity_converter.h"
 #include "components/sync/model/entity_change.h"
-#include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/accessibility_annotation_specifics.pb.h"
@@ -42,11 +41,6 @@ AccessibilityAnnotationSyncBridge::AccessibilityAnnotationSyncBridge(
 
 AccessibilityAnnotationSyncBridge::~AccessibilityAnnotationSyncBridge() =
     default;
-
-std::unique_ptr<syncer::MetadataChangeList>
-AccessibilityAnnotationSyncBridge::CreateMetadataChangeList() {
-  return std::make_unique<syncer::InMemoryMetadataChangeList>();
-}
 
 std::optional<syncer::ModelError>
 AccessibilityAnnotationSyncBridge::MergeFullSyncData(

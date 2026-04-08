@@ -248,11 +248,6 @@ SyncableServiceBasedBridge::~SyncableServiceBasedBridge() {
   }
 }
 
-std::unique_ptr<MetadataChangeList>
-SyncableServiceBasedBridge::CreateMetadataChangeList() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return DataTypeStore::WriteBatch::CreateMetadataChangeList();
-}
 
 std::optional<ModelError> SyncableServiceBasedBridge::MergeFullSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,

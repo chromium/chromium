@@ -105,11 +105,6 @@ void WifiConfigurationBridge::OnShuttingDown() {
   }
 }
 
-std::unique_ptr<syncer::MetadataChangeList>
-WifiConfigurationBridge::CreateMetadataChangeList() {
-  return syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
-}
-
 std::optional<syncer::ModelError> WifiConfigurationBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList change_list) {

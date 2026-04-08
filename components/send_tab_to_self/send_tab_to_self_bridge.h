@@ -65,8 +65,6 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
   ~SendTabToSelfBridge() override;
 
   // syncer::DataTypeSyncBridge overrides.
-  std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
-      override;
   std::optional<syncer::ModelError> MergeFullSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data) override;

@@ -463,10 +463,6 @@ void DeviceInfoSyncBridge::OnSyncStarting(
   ReconcileLocalAndStored();
 }
 
-std::unique_ptr<MetadataChangeList>
-DeviceInfoSyncBridge::CreateMetadataChangeList() {
-  return WriteBatch::CreateMetadataChangeList();
-}
 
 std::optional<ModelError> DeviceInfoSyncBridge::MergeFullSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,

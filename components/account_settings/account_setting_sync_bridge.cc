@@ -15,7 +15,6 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_type_store.h"
-#include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/account_setting_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
@@ -96,11 +95,6 @@ std::optional<std::string> AccountSettingSyncBridge::GetStringSetting(
     return std::nullopt;
   }
   return value.GetString();
-}
-
-std::unique_ptr<syncer::MetadataChangeList>
-AccountSettingSyncBridge::CreateMetadataChangeList() {
-  return std::make_unique<syncer::InMemoryMetadataChangeList>();
 }
 
 std::optional<syncer::ModelError> AccountSettingSyncBridge::MergeFullSyncData(

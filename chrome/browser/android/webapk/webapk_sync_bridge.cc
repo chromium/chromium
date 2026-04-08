@@ -217,11 +217,6 @@ void WebApkSyncBridge::OnDatabaseOpened(
   }
 }
 
-std::unique_ptr<syncer::MetadataChangeList>
-WebApkSyncBridge::CreateMetadataChangeList() {
-  return syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
-}
-
 bool WebApkSyncBridge::AppWasUsedRecently(
     const sync_pb::WebApkSpecifics* specifics) const {
   return AppWasUsedRecentlyComparedTo(specifics, clock_->Now());

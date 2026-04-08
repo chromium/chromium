@@ -51,7 +51,6 @@ class SyncableServiceBasedBridge : public DataTypeSyncBridge {
   ~SyncableServiceBasedBridge() override;
 
   // DataTypeSyncBridge implementation.
-  std::unique_ptr<MetadataChangeList> CreateMetadataChangeList() override;
   std::optional<ModelError> MergeFullSyncData(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList entity_change_list) override;

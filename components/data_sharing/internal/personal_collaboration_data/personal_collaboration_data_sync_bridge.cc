@@ -17,7 +17,6 @@
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/entity_change.h"
-#include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
@@ -161,11 +160,6 @@ void PersonalCollaborationDataSyncBridge::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-std::unique_ptr<syncer::MetadataChangeList>
-PersonalCollaborationDataSyncBridge::CreateMetadataChangeList() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return std::make_unique<syncer::InMemoryMetadataChangeList>();
-}
 
 std::optional<syncer::ModelError>
 PersonalCollaborationDataSyncBridge::MergeFullSyncData(

@@ -132,10 +132,6 @@ bool SessionSyncBridge::IsLocalDataOutOfSyncForTest() const {
          sessions_client_->GetSessionSyncPrefs()->GetLocalDataOutOfSync();
 }
 
-std::unique_ptr<MetadataChangeList>
-SessionSyncBridge::CreateMetadataChangeList() {
-  return std::make_unique<syncer::InMemoryMetadataChangeList>();
-}
 
 std::optional<syncer::ModelError> SessionSyncBridge::MergeFullSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,

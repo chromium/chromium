@@ -148,10 +148,6 @@ DeskSyncBridge::DeskSyncBridge(
 
 DeskSyncBridge::~DeskSyncBridge() = default;
 
-std::unique_ptr<syncer::MetadataChangeList>
-DeskSyncBridge::CreateMetadataChangeList() {
-  return DataTypeStore::WriteBatch::CreateMetadataChangeList();
-}
 
 std::optional<syncer::ModelError> DeskSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,

@@ -166,10 +166,6 @@ SendTabToSelfBridge::~SendTabToSelfBridge() {
   }
 }
 
-std::unique_ptr<syncer::MetadataChangeList>
-SendTabToSelfBridge::CreateMetadataChangeList() {
-  return DataTypeStore::WriteBatch::CreateMetadataChangeList();
-}
 
 std::optional<syncer::ModelError> SendTabToSelfBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,

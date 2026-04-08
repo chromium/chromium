@@ -17,7 +17,6 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/entity_change.h"
-#include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
 #include "components/sync/protocol/entity_data.h"
@@ -54,11 +53,6 @@ PlusAddressSyncBridge::PlusAddressSyncBridge(
 }
 
 PlusAddressSyncBridge::~PlusAddressSyncBridge() = default;
-
-std::unique_ptr<syncer::MetadataChangeList>
-PlusAddressSyncBridge::CreateMetadataChangeList() {
-  return std::make_unique<syncer::InMemoryMetadataChangeList>();
-}
 
 std::optional<syncer::ModelError> PlusAddressSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,

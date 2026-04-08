@@ -14,7 +14,6 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_type_store.h"
-#include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/plus_address_setting_specifics.pb.h"
@@ -99,11 +98,6 @@ void PlusAddressSettingSyncBridge::WriteSetting(
       std::move(batch),
       base::BindOnce(&PlusAddressSettingSyncBridge::ReportErrorIfSet,
                      weak_factory_.GetWeakPtr()));
-}
-
-std::unique_ptr<syncer::MetadataChangeList>
-PlusAddressSettingSyncBridge::CreateMetadataChangeList() {
-  return std::make_unique<syncer::InMemoryMetadataChangeList>();
 }
 
 std::optional<syncer::ModelError>
