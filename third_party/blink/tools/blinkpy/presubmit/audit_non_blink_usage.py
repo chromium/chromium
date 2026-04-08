@@ -1826,6 +1826,7 @@ _CONFIG = [
             'media::PaintCanvasVideoRenderer',
             'media::PIXEL_FORMAT_Y16',
             'media::VideoFrame',
+            'media::VideoFrameSharedImageCache',
             'viz::RasterContextProvider',
             'viz::ReleaseCallback',
             'viz::SinglePlaneFormat',

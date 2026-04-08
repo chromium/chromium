@@ -6383,6 +6383,11 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
     video_renderer = local_video_renderer.get();
   }
 
+  media::VideoFrameSharedImageCache* rgb_si_cache =
+      video_renderer->GetRGBSharedImageCache();
+  media::VideoFrameSharedImageCache* yuv_si_cache =
+      video_renderer->GetYUVSharedImageCache();
+
   if (source_image_rect_is_default && media_video_frame->HasDirectCpuAccess() &&
       media_video_frame->format() == media::PIXEL_FORMAT_Y16 &&
       unpack_color_space_is_srgb) {
@@ -6435,11 +6440,9 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
     if (!media_video_frame->HasSharedImage() &&
         media::PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
             raster_context_provider, ContextGL(), media_video_frame,
-            video_renderer->GetRGBSharedImageCache(),
-            video_renderer->GetYUVSharedImageCache(), params.target,
-            texture->Object(), adjusted_internalformat, params.format,
-            params.type, params.level, params.GetDestinationAlphaType(),
-            params.GetDestinationOrigin())) {
+            rgb_si_cache, yuv_si_cache, params.target, texture->Object(),
+            adjusted_internalformat, params.format, params.type, params.level,
+            params.GetDestinationAlphaType(), params.GetDestinationOrigin())) {
       return;
     }
 
@@ -6472,10 +6475,9 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
 
       if (media::PaintCanvasVideoRenderer::
               CopyVideoFrameTexturesToGLTextureViaIntermediateSI(
-                  raster_context_provider, gl, media_video_frame,
-                  video_renderer->GetRGBSharedImageCache(), params.target,
-                  texture->Object(), adjusted_internalformat, params.format,
-                  params.type, params.level, dst_alpha_type,
+                  raster_context_provider, gl, media_video_frame, rgb_si_cache,
+                  params.target, texture->Object(), adjusted_internalformat,
+                  params.format, params.type, params.level, dst_alpha_type,
                   params.GetDestinationOrigin())) {
         return;
       }
