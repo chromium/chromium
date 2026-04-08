@@ -122,7 +122,7 @@ CGFloat const kTitleLogoHeight = 32;
 
   [super viewDidLoad];
 
-  [self adjustTransactionsPrimaryActionButtonHorizontalConstraints];
+  [self adjustTransactionsButtonHorizontalConstraints];
 
   [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
                      withAction:@selector(resizeLogoOnTraitChange)];

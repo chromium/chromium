@@ -82,20 +82,16 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
              : UITableViewCellAccessoryNone;
 }
 
-- (void)adjustTransactionsPrimaryActionButtonHorizontalConstraints {
+- (void)adjustTransactionsButtonHorizontalConstraints {
   CGFloat buttonHorizontalMargin =
       ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad
            ? 64.0
            : 24.0);
 
-  [self.primaryActionButton.leadingAnchor
-      constraintEqualToAnchor:(self.view.leadingAnchor)
-                     constant:buttonHorizontalMargin]
-      .active = YES;
-  [self.primaryActionButton.trailingAnchor
-      constraintEqualToAnchor:(self.view.trailingAnchor)
-                     constant:-buttonHorizontalMargin]
-      .active = YES;
+  [self applyHorizontalConstraints:buttonHorizontalMargin
+                         forButton:self.primaryActionButton];
+  [self applyHorizontalConstraints:buttonHorizontalMargin
+                         forButton:self.secondaryActionButton];
 }
 
 #pragma mark - Subclassing
@@ -171,6 +167,9 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   [_tableView.widthAnchor
       constraintEqualToAnchor:self.primaryActionButton.widthAnchor]
       .active = YES;
+  [_tableView.widthAnchor
+      constraintEqualToAnchor:self.secondaryActionButton.widthAnchor]
+      .active = YES;
 
   [self setUpBottomSheetDetents];
 
@@ -211,6 +210,18 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 }
 
 #pragma mark - Private
+
+// Applies horizontal constraints to a button.
+- (void)applyHorizontalConstraints:(CGFloat)buttonHorizontalMargin
+                         forButton:(UIView*)button {
+  [button.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor
+                                       constant:buttonHorizontalMargin]
+      .active = YES;
+
+  [button.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor
+                                        constant:-buttonHorizontalMargin]
+      .active = YES;
+}
 
 // Maximum initial number of visible cells.
 - (CGFloat)initialNumberOfVisibleCells {

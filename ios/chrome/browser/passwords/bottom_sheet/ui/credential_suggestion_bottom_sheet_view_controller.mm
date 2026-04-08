@@ -152,7 +152,7 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
   buttonConfiguration.imagePadding = kSecondaryActionButtonIconSpacing;
   self.secondaryActionButton.configuration = buttonConfiguration;
 
-  [self adjustTransactionsPrimaryActionButtonHorizontalConstraints];
+  [self adjustTransactionsButtonHorizontalConstraints];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
