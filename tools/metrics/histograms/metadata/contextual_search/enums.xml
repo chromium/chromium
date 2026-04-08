@@ -37,24 +37,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ui/webui/resources/cr_components/search/constants.ts:ComposeboxContextAddedMethod) -->
 
-<!-- LINT.IfChange(ContextualSearchAimTool) -->
-
-<enum name="ContextualSearchAimTool">
-  <int value="0" label="Unspecified"/>
-  <int value="1" label="DeepSearch"/>
-  <int value="2" label="Canvas"/>
-  <int value="3" label="GeminiPro"/>
-  <int value="4" label="ImageGen"/>
-  <int value="5" label="DeepBrowse"/>
-  <int value="6" label="ImageGenSelfie"/>
-  <int value="7" label="ImageGenUpload"/>
-  <int value="8" label="DisableSuggest"/>
-  <int value="9" label="Aim"/>
-  <int value="10" label="AimGenPrompt"/>
-</enum>
-
-<!-- LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:ToolMode) -->
-
 <!-- LINT.IfChange(ContextualSearchErrorPage) -->
 
 <enum name="ContextualSearchErrorPage">

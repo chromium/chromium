@@ -13,6 +13,8 @@ source_set("common") {
     "omnibox_features.cc",
     "omnibox_features.h",
     "omnibox_focus_state.h",
+    "omnibox_metrics_utils.cc",
+    "omnibox_metrics_utils.h",
     "string_cleaning.cc",
     "string_cleaning.h",
     "zero_suggest_cache_service_interface.cc",

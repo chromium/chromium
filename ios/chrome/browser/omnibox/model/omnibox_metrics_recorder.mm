@@ -172,6 +172,7 @@ constexpr base::TimeDelta kDefaultTimeDelta = base::Milliseconds(-1);
   log.elapsed_time_since_user_focused_omnibox =
       elapsedTimeSinceUserFocusedOmnibox;
   log.ukm_source_id = _omniboxClient->GetUKMSourceId();
+  log.input_state = _omniboxTextModel->input.input_state();
 
   if ((disposition == WindowOpenDisposition::CURRENT_TAB) &&
       _omniboxClient->CurrentPageExists()) {

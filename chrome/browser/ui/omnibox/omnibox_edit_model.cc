@@ -2780,6 +2780,7 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   log.elapsed_time_since_user_focused_omnibox =
       elapsed_time_since_user_focused_omnibox;
   log.ukm_source_id = controller_->client()->GetUKMSourceId();
+  log.input_state = autocomplete_controller()->input().input_state();
 
   if ((disposition == WindowOpenDisposition::CURRENT_TAB) &&
       controller_->client()->CurrentPageExists()) {

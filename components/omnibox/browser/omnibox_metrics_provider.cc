@@ -22,6 +22,7 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/omnibox/common/logger.h"
+#include "components/omnibox/common/omnibox_metrics_utils.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -413,6 +414,69 @@ void OmniboxMetricsProvider::RecordMetrics(const OmniboxLog& log) {
   base::UmaHistogramEnumeration(
       "Omnibox.SuggestionUsed.ClientSummarizedResultType",
       client_summarized_result_type);
+
+  // Only log when an active tool or model is specified to avoid logging regular
+  // searches.
+  if (log.input_state.active_tool != omnibox::TOOL_MODE_UNSPECIFIED ||
+      log.input_state.active_model != omnibox::MODEL_MODE_UNSPECIFIED) {
+    bool has_non_trivial_match = false;
+    for (const auto& match : *log.result) {
+      if (!match.IsVerbatimType()) {
+        has_non_trivial_match = true;
+        break;
+      }
+    }
+
+    std::string tool_str = GetToolModeString(log.input_state.active_tool);
+    std::string model_str = GetModelModeString(log.input_state.active_model);
+
+    bool tool_specified =
+        log.input_state.active_tool != omnibox::TOOL_MODE_UNSPECIFIED;
+    bool model_specified =
+        log.input_state.active_model != omnibox::MODEL_MODE_UNSPECIFIED;
+
+    if (tool_specified) {
+      base::UmaHistogramBoolean(
+          base::StrCat(
+              {"Omnibox.NonTrivialSuggestions.Recall.ByToolType.", tool_str}),
+          has_non_trivial_match);
+    }
+    if (model_specified) {
+      base::UmaHistogramBoolean(
+          base::StrCat(
+              {"Omnibox.NonTrivialSuggestions.Recall.ByModel.", model_str}),
+          has_non_trivial_match);
+    }
+    if (tool_specified && model_specified) {
+      base::UmaHistogramBoolean(
+          base::StrCat({"Omnibox.NonTrivialSuggestions.Recall.ByToolType.",
+                        tool_str, ".ByModel.", model_str}),
+          has_non_trivial_match);
+    }
+
+    if (has_non_trivial_match) {
+      bool selected_non_trivial = !autocomplete_match.IsVerbatimType();
+
+      if (tool_specified) {
+        base::UmaHistogramBoolean(
+            base::StrCat({"Omnibox.NonTrivialSuggestions.Precision.ByToolType.",
+                          tool_str}),
+            selected_non_trivial);
+      }
+      if (model_specified) {
+        base::UmaHistogramBoolean(
+            base::StrCat({"Omnibox.NonTrivialSuggestions.Precision.ByModel.",
+                          model_str}),
+            selected_non_trivial);
+      }
+      if (tool_specified && model_specified) {
+        base::UmaHistogramBoolean(
+            base::StrCat({"Omnibox.NonTrivialSuggestions.Precision.ByToolType.",
+                          tool_str, ".ByModel.", model_str}),
+            selected_non_trivial);
+      }
+    }
+  }
 
   if (log.session->zero_prefix_search_suggestions_shown_in_session ||
       log.session->typed_search_suggestions_shown_in_session) {

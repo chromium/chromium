@@ -207,6 +207,18 @@ chromium-metrics-reviews@google.com.
                input."/>
 </variants>
 
+<!-- LINT.IfChange(OmniboxModelMode) -->
+
+<variants name="OmniboxModelMode">
+  <variant name="GeminiPro" summary="Gemini Pro model"/>
+  <variant name="GeminiProAutoroute" summary="Gemini Pro Autoroute model"/>
+  <variant name="GeminiProNoGenUi" summary="Gemini Pro No-Gen-UI model"/>
+  <variant name="GeminiRegular" summary="Gemini Regular model"/>
+  <variant name="Unspecified" summary="Unspecified model"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/omnibox/common/omnibox_metrics_utils.cc:ModelMode, //third_party/omnibox_proto/model_mode.proto:ModelMode) -->
+
 <!--
   IMPORTANT
   This list MUST be kept consistent with the list of active page classifications in OmniboxEventProto.
@@ -309,6 +321,24 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <variant name="SEARCH" summary="search result type"/>
   <variant name="URL" summary="URL result type"/>
 </variants>
+
+<!-- LINT.IfChange(OmniboxToolMode) -->
+
+<variants name="OmniboxToolMode">
+  <variant name="Aim" summary="AIM tool"/>
+  <variant name="AimGenPrompt" summary="AIM Generated Prompt tool"/>
+  <variant name="Canvas" summary="Canvas tool"/>
+  <variant name="DeepBrowse" summary="Deep Browse tool"/>
+  <variant name="DeepSearch" summary="Deep Search tool"/>
+  <variant name="DisableSuggest" summary="Disable Suggest tool"/>
+  <variant name="GeminiPro" summary="Gemini Pro tool"/>
+  <variant name="ImageGen" summary="Image Generation tool"/>
+  <variant name="ImageGenSelfie" summary="Image Generation Selfie tool"/>
+  <variant name="ImageGenUpload" summary="Image Generation Upload tool"/>
+  <variant name="Unspecified" summary="Unspecified tool"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/omnibox/common/omnibox_metrics_utils.cc:ToolMode, //third_party/omnibox_proto/tool_mode.proto:ToolMode) -->
 
 <variants name="OmniboxZeroPrefixState">
   <variant name="TypedSuggest" summary="typed suggest"/>
@@ -2834,6 +2864,97 @@ Keep consistent with active providers. Doesn't need to include every provider in
     different page types.
   </summary>
   <token key="OmniboxPageContext" variants="OmniboxPageContext"/>
+</histogram>
+
+<histogram name="Omnibox.NonTrivialSuggestions.Precision.ByModel.{ModelMode}"
+    enum="Boolean" expires_after="2026-11-12">
+  <owner>christianxu@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Logged only when non-trivial suggestions were shown. Logs whether a
+    non-trivial suggestion was selected (True) or a verbatim suggestion was
+    selected (False), sliced by the active AIM model mode at submission time.
+    This metric is only recorded when the active AIM model is explicitly
+    specified (i.e., not Unspecified).
+  </summary>
+  <token key="ModelMode" variants="OmniboxModelMode"/>
+</histogram>
+
+<histogram name="Omnibox.NonTrivialSuggestions.Precision.ByToolType.{ToolMode}"
+    enum="Boolean" expires_after="2026-11-12">
+  <owner>christianxu@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Logged only when non-trivial suggestions were shown. Logs whether a
+    non-trivial suggestion was selected (True) or a verbatim suggestion was
+    selected (False), sliced by the active AIM tool mode at submission time.
+    This metric is only recorded when the active AIM tool is explicitly
+    specified (i.e., not Unspecified).
+  </summary>
+  <token key="ToolMode" variants="OmniboxToolMode"/>
+</histogram>
+
+<histogram
+    name="Omnibox.NonTrivialSuggestions.Precision.ByToolType.{ToolMode}.ByModel.{ModelMode}"
+    enum="Boolean" expires_after="2026-11-12">
+  <owner>christianxu@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Logged only when non-trivial suggestions were shown. Logs whether a
+    non-trivial suggestion was selected (True) or a verbatim suggestion was
+    selected (False), sliced by the combination of active AIM tool mode and
+    model mode. This metric is only recorded when the active AIM tool and model
+    is explicitly specified (i.e., not Unspecified).
+  </summary>
+  <token key="ToolMode" variants="OmniboxToolMode"/>
+  <token key="ModelMode" variants="OmniboxModelMode"/>
+</histogram>
+
+<histogram name="Omnibox.NonTrivialSuggestions.Recall.ByModel.{ModelMode}"
+    enum="Boolean" expires_after="2026-11-12">
+  <owner>christianxu@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Logs whether non-trivial (non-verbatim) suggestions were shown (True) or not
+    (False) for a submitted query, sliced by the AIM model mode that was active.
+    This metric is only recorded when the active AIM model is explicitly
+    specified (i.e., not Unspecified).
+  </summary>
+  <token key="ModelMode" variants="OmniboxModelMode"/>
+</histogram>
+
+<histogram name="Omnibox.NonTrivialSuggestions.Recall.ByToolType.{ToolMode}"
+    enum="Boolean" expires_after="2026-11-12">
+  <owner>christianxu@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Logs whether non-trivial (non-verbatim) suggestions were shown (True) or not
+    (False) for a submitted query, sliced by the AIM tool mode that was active.
+    This metric is only recorded when the active AIM tool is explicitly
+    specified (i.e., not Unspecified).
+  </summary>
+  <token key="ToolMode" variants="OmniboxToolMode"/>
+</histogram>
+
+<histogram
+    name="Omnibox.NonTrivialSuggestions.Recall.ByToolType.{ToolMode}.ByModel.{ModelMode}"
+    enum="Boolean" expires_after="2026-11-12">
+  <owner>christianxu@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Logs whether non-trivial (non-verbatim) suggestions were shown (True) or not
+    (False) for a submitted query, sliced by the combination of AIM tool mode
+    and model mode that were active. This metric is only recorded when the
+    active AIM tool and model is explicitly specified (i.e., not Unspecified).
+  </summary>
+  <token key="ToolMode" variants="OmniboxToolMode"/>
+  <token key="ModelMode" variants="OmniboxModelMode"/>
 </histogram>
 
 <histogram name="Omnibox.NumberOfVisibleCharacters" units="characters"
