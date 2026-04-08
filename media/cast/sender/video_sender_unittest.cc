@@ -24,6 +24,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/base/fake_single_thread_task_runner.h"
 #include "media/base/media_switches.h"
@@ -272,7 +273,13 @@ TEST_P(VideoSenderTest, BuiltInEncoder) {
   RunUntilQuit();
 }
 
-TEST_P(VideoSenderTest, MockEncoderGoldenCase) {
+// TODO(crbug.com/500613219): Enable the test.
+#if defined(MEMORY_SANITIZER) && BUILDFLAG(IS_LINUX)
+#define MAYBE_MockEncoderGoldenCase DISABLED_MockEncoderGoldenCase
+#else
+#define MAYBE_MockEncoderGoldenCase MockEncoderGoldenCase
+#endif
+TEST_P(VideoSenderTest, MAYBE_MockEncoderGoldenCase) {
   CreateSender(EncoderType::kMock);
 
   VideoEncoder::FrameEncodedCallback callback;
