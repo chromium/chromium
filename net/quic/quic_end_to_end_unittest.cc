@@ -369,6 +369,28 @@ TEST_F(QuicEndToEndTest, CryptoHandshakeCompleteMetrics) {
       "Net.QuicSession.TLSHandshakeBytes.MTC2.Resumption", 0);
 }
 
+TEST_F(QuicEndToEndTest, ProofVerifyDetailsMetrics) {
+  AddToCache(request_.url.PathForRequest(), 200, "OK", kResponseBody);
+
+  base::HistogramTester histograms;
+  TestTransactionConsumer consumer(DEFAULT_PRIORITY,
+                                   transaction_factory_.get());
+  consumer.Start(&request_, NetLogWithSource());
+  ASSERT_NO_FATAL_FAILURE(
+      CheckResponse(consumer, "HTTP/1.1 200", kResponseBody));
+
+  // Check that MTC-related metrics that are conditionally logged in
+  // OnProofVerifyDetailsAvailable don't get logged when the server doesn't
+  // support MTCs.
+  histograms.ExpectTotalCount("Net.QuicSession.MTCMetadataAge2", 0);
+  histograms.ExpectTotalCount("Net.QuicSession.HasMTCMetadata2", 0);
+  histograms.ExpectTotalCount(
+      "Net.QuicSession.CertVerificationResult.MTCAdvertised2", 0);
+  histograms.ExpectTotalCount(
+      "Net.QuicSession.CertVerificationResult.MTCReceived2", 0);
+  histograms.ExpectTotalCount("Net.QuicSession.MTCResult2", 0);
+}
+
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 class QuicEndToEndMTCTest : public QuicEndToEndTest {
  public:
