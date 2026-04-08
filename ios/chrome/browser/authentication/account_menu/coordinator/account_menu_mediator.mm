@@ -337,6 +337,7 @@
       } else {
         base::RecordAction(
             base::UserMetricsAction("Signin_AccountMenu_ErrorButton_Reauth"));
+        self.userInteractionsBlocked = YES;
         [self.syncErrorSettingsCommandHandler openPrimaryAccountReauthDialog];
       }
       break;

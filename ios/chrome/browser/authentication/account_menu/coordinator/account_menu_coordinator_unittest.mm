@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/account_menu/ui/account_menu_view_controller.h"
 #import "ios/chrome/browser/authentication/add_account_signin/coordinator/add_account_signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/reauth/signin_reauth_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h"
@@ -61,6 +62,7 @@ const FakeSystemIdentity* kManagedIdentity =
 
 @interface AccountMenuCoordinator (Testing) <
     AccountMenuMediatorDelegate,
+    SigninReauthCoordinatorDelegate,
     SignoutActionSheetCoordinatorDelegate,
     SyncErrorSettingsCommandHandler,
     UIAdaptivePresentationControllerDelegate,
@@ -256,6 +258,30 @@ TEST_F(AccountMenuCoordinatorTest, testManageYourGoogleAccount) {
                                          completion:nil]);
   [coordinator_ didTapManageYourGoogleAccount];
   OCMExpect([mediator_ accountMenuIsUsable]);
+  AssertOpenAndStop();
+}
+
+// Tests that `didTapManageYourGoogleAccount` opens a reauth dialog when the
+// primary identity does not have valid auth, and continues the flow after
+// successful reauth.
+TEST_F(AccountMenuCoordinatorTest, testManageYourGoogleAccountInvalidAuth) {
+  FakeSystemIdentityManager::FromSystemIdentityManager(
+      GetApplicationContext()->GetSystemIdentityManager())
+      ->SetPersistentAuthErrorForAccount(
+          CoreAccountId::FromGaiaId(kPrimaryIdentity.gaiaId));
+
+  id reauthMock = OCMClassMock([SigninReauthCoordinator class]);
+  OCMExpect([reauthMock alloc]).andReturn(reauthMock);
+  //  We can ignore calls to `reauthMock`. If it’s allocated, we can safely
+  // assume it’s initialized and started.
+
+  OCMReject([view_controller_ presentViewController:[OCMArg any]
+                                           animated:YES
+                                         completion:nil]);
+
+  [coordinator_ didTapManageYourGoogleAccount];
+
+  EXPECT_OCMOCK_VERIFY(reauthMock);
   AssertOpenAndStop();
 }
 

@@ -7,6 +7,8 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/feature_list.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
@@ -106,6 +108,16 @@ void maybeShowSettingsIPH(Browser* browser) {
 
 @end
 
+// Enum defining the possible actions to execute after a successful
+// reauthentication.
+typedef NS_ENUM(NSUInteger, AccountMenuReauthAction) {
+  // No action needs to be taken after reauthentication.
+  AccountMenuReauthActionNone,
+  // Continue opening the "Manage your Google Account" view after
+  // reauthentication.
+  AccountMenuReauthActionManageYourGoogleAccount,
+};
+
 @implementation AccountMenuCoordinator {
   UINavigationController* _navigationController;
   raw_ptr<AuthenticationService> _authenticationService;
@@ -142,6 +154,9 @@ void maybeShowSettingsIPH(Browser* browser) {
   // While this value is set, the scene state considers the sign-in to be in
   // progress.
   std::unique_ptr<SigninInProgress> _signinInProgress;
+  // The action to execute upon successful completion of the reauthentication
+  // flow.
+  AccountMenuReauthAction _reauthAction;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -286,6 +301,13 @@ void maybeShowSettingsIPH(Browser* browser) {
 #pragma mark - AccountMenuMediatorDelegate
 
 - (void)didTapManageYourGoogleAccount {
+  id<SystemIdentity> identity =
+      _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  if (!identity.hasValidAuth) {
+    [self openReauthCoordinatorWithAction:
+              AccountMenuReauthActionManageYourGoogleAccount];
+    return;
+  }
   [self stopAddAccountCoordinator];
   __weak __typeof(self) weakSelf = self;
   _accountDetailsControllerDismissCallback =
@@ -518,15 +540,16 @@ void maybeShowSettingsIPH(Browser* browser) {
 
 - (void)openPrimaryAccountReauthDialog {
   [self stopChildrenCoordinators];
-  [self openReauthCoordinator];
+  [self openReauthCoordinatorWithAction:AccountMenuReauthActionNone];
 }
 
-- (void)openReauthCoordinator {
+- (void)openReauthCoordinatorWithAction:(AccountMenuReauthAction)action {
   if (_reauthCoordinator.viewWillPersist) {
     return;
   }
   [self stopChildrenCoordinators];
   [_reauthCoordinator stop];
+  _reauthAction = action;
 
   CoreAccountInfo account =
       _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
@@ -659,9 +682,14 @@ void maybeShowSettingsIPH(Browser* browser) {
 
 - (void)reauthFinishedWithResult:(ReauthResult)result
                           gaiaID:(const GaiaId*)gaiaID {
-  // We expect the user reauthentified in the current account, so there is
-  // nothing to do in this callback.
   [self stopReauthCoordinator];
+
+  if (result == ReauthResult::kSuccess &&
+      _reauthAction == AccountMenuReauthActionManageYourGoogleAccount) {
+    [self didTapManageYourGoogleAccount];
+    return;
+  }
+  [_mediator accountMenuIsUsable];
 }
 
 #pragma mark - SyncEncryptionPassphraseTableViewControllerPresentationDelegate

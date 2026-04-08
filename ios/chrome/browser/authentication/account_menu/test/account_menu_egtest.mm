@@ -214,6 +214,40 @@ id<GREYMatcher> identityDiscMatcher() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// Test the manage account menu entry opens the manage account view if the user
+// needs to reauth.
+- (void)testManageAccountReauth {
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
+  [SigninEarlGrey
+      setPersistentAuthErrorForAccount:CoreAccountId::FromGaiaId(
+                                           kPrimaryIdentity.gaiaId)];
+  [self selectIdentityDisc];
+  // Tap on the Ellipsis button.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kAccountMenuSecondaryActionMenuButtonId)]
+      performAction:grey_tap()];
+  // Tap on Manage your account.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(
+              grey_text(l10n_util::GetNSString(
+                  IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_GOOGLE_ACCOUNT_ITEM)),
+              grey_interactable(), nil)] performAction:grey_tap()];
+
+  // Confirm the fake reauthentication dialog.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kFakeAuthAddAccountButtonIdentifier),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  // Checks the Fake Account Detail View Controller is shown
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kFakeAccountDetailsViewIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 // Tests the edit accounts menu entry opens the edit account list view.
 - (void)testEditAccountsList {
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
@@ -223,7 +257,7 @@ id<GREYMatcher> identityDiscMatcher() {
       selectElementWithMatcher:grey_accessibilityID(
                                    kAccountMenuSecondaryActionMenuButtonId)]
       performAction:grey_tap()];
-  // Tap on Manage your account.
+  // Tap on "Manage accounts on this device".
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_text(l10n_util::GetNSString(
@@ -440,7 +474,7 @@ id<GREYMatcher> identityDiscMatcher() {
       selectElementWithMatcher:grey_accessibilityID(
                                    kAccountMenuSecondaryActionMenuButtonId)]
       performAction:grey_tap()];
-  // Tap on Manage your account.
+  // Tap on "Manage accounts on this device".
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_text(l10n_util::GetNSString(
