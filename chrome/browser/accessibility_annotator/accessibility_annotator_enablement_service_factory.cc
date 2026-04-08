@@ -4,12 +4,30 @@
 
 #include "chrome/browser/accessibility_annotator/accessibility_annotator_enablement_service_factory.h"
 
+#include "base/strings/string_util.h"
 #include "chrome/browser/account_settings/account_setting_service_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_enablement_service_impl.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
+#include "components/accessibility_annotator/core/country_type.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/variations/service/variations_service.h"
+#include "components/variations/service/variations_service_utils.h"
+
+namespace {
+// Return the latest country code from the chrome variation service.
+// If the variation service is not available, an empty string is returned.
+accessibility_annotator::GeoIpCountryCode GetCountryCodeFromVariations() {
+  variations::VariationsService* variation_service =
+      g_browser_process->variations_service();
+  return accessibility_annotator::GeoIpCountryCode(
+      variation_service
+          ? base::ToUpperASCII(variation_service->GetLatestCountry())
+          : std::string());
+}
+}  // namespace
 
 // static
 accessibility_annotator::AccessibilityAnnotatorEnablementService*
@@ -59,5 +77,6 @@ std::unique_ptr<KeyedService> AccessibilityAnnotatorEnablementServiceFactory::
       IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile());
   return std::make_unique<
       accessibility_annotator::AccessibilityAnnotatorEnablementServiceImpl>(
-      account_settings_service, identity_manager);
+      account_settings_service, identity_manager,
+      GetCountryCodeFromVariations());
 }

@@ -4,6 +4,7 @@
 
 #include "components/accessibility_annotator/core/accessibility_annotator_enablement_service_impl.h"
 
+#include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
@@ -16,8 +17,9 @@ namespace accessibility_annotator {
 
 class AccessibilityAnnotatorEnablementServiceImplTest : public testing::Test {
  public:
-  AccessibilityAnnotatorEnablementServiceImplTest()
-      : service_(nullptr, identity_test_env_.identity_manager()) {
+  AccessibilityAnnotatorEnablementServiceImplTest() {
+    CreateService("us");
+
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kAccessibilityAnnotator,
                               features::kAccessibilityAnnotatorFirstRun,
@@ -37,10 +39,18 @@ class AccessibilityAnnotatorEnablementServiceImplTest : public testing::Test {
     identity_test_env_.UpdateAccountInfoForAccount(account_info);
   }
 
+  void CreateService(const std::string& country_code) {
+    service_ = std::make_unique<AccessibilityAnnotatorEnablementServiceImpl>(
+        nullptr, identity_test_env_.identity_manager(),
+        GeoIpCountryCode(base::ToUpperASCII(country_code)));
+  }
+
+  AccessibilityAnnotatorEnablementServiceImpl& service() { return *service_; }
+
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  AccessibilityAnnotatorEnablementServiceImpl service_;
+  std::unique_ptr<AccessibilityAnnotatorEnablementServiceImpl> service_;
 };
 
 TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
@@ -52,7 +62,7 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
                              features::kAccessibilityAnnotatorFirstRun,
                              features::kAccessibilityAnnotatorDatabaseStorage});
 
-  EXPECT_EQ(service_.GetEnablementState(),
+  EXPECT_EQ(service().GetEnablementState(),
             RemoteAnnotatorEnablementState::kDisabledNotEligible);
 }
 
@@ -64,20 +74,20 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
                             features::kAccessibilityAnnotatorDatabaseStorage},
       /*disabled_features=*/{features::kAccessibilityAnnotator});
 
-  EXPECT_EQ(service_.GetEnablementState(),
+  EXPECT_EQ(service().GetEnablementState(),
             RemoteAnnotatorEnablementState::kDisabledNotEligible);
 }
 
 TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
        EnabledWhenAllFeaturesAreOn) {
-  EXPECT_EQ(service_.GetEnablementState(),
+  EXPECT_EQ(service().GetEnablementState(),
             RemoteAnnotatorEnablementState::kEnabled);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)  // Signing out does not work on ChromeOS.
 TEST_F(AccessibilityAnnotatorEnablementServiceImplTest, DisabledWhenSignedOut) {
   identity_test_env_.ClearPrimaryAccount();
-  EXPECT_EQ(service_.GetEnablementState(),
+  EXPECT_EQ(service().GetEnablementState(),
             RemoteAnnotatorEnablementState::kDisabledNotEligible);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
@@ -85,8 +95,30 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest, DisabledWhenSignedOut) {
 TEST_F(AccessibilityAnnotatorEnablementServiceImplTest, DisabledWhenUnderaged) {
   SignIn("under@gmail.com", /*is_underaged=*/true);
 
-  EXPECT_EQ(service_.GetEnablementState(),
+  EXPECT_EQ(service().GetEnablementState(),
             RemoteAnnotatorEnablementState::kDisabledNotEligible);
+}
+
+class AccessibilityAnnotatorEnablementServiceImplGeolocationTest
+    : public AccessibilityAnnotatorEnablementServiceImplTest,
+      public testing::WithParamInterface<
+          std::tuple<std::string, RemoteAnnotatorEnablementState>> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AccessibilityAnnotatorEnablementServiceImplGeolocationTest,
+    testing::Values(
+        std::make_tuple(/*country_code=*/"au",
+                        RemoteAnnotatorEnablementState::kDisabledNotEligible),
+        std::make_tuple(/*country_code=*/"fr",
+                        RemoteAnnotatorEnablementState::kDisabledNotEligible),
+        std::make_tuple(/*country_code=*/"us",
+                        RemoteAnnotatorEnablementState::kEnabled)));
+
+TEST_P(AccessibilityAnnotatorEnablementServiceImplGeolocationTest,
+       CheckCountryEnablement) {
+  CreateService(std::get<0>(GetParam()));
+  EXPECT_EQ(service().GetEnablementState(), std::get<1>(GetParam()));
 }
 
 }  // namespace accessibility_annotator

@@ -8,7 +8,9 @@
 
 #include "base/feature_list.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
+#include "components/accessibility_annotator/core/country_type.h"
 #include "components/account_settings/account_setting_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -82,14 +84,29 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
   // TODO(crbug.com/494149753) Implement
   return true;
 }
+
+// Checks whether miscellaneous "other" requirements (e.g. Geo-IP)
+// are satisfied.
+[[nodiscard]] bool SatisfiesMiscellaneousRequirements(
+    GeoIpCountryCode country_code,
+    std::string* debug_message = nullptr) {
+  if (country_code != GeoIpCountryCode("US")) {
+    MaybeOutputReason(debug_message, "Unsupported GeoIp.");
+    return false;
+  }
+
+  return true;
+}
 }  // namespace
 
 AccessibilityAnnotatorEnablementServiceImpl::
     AccessibilityAnnotatorEnablementServiceImpl(
         account_settings::AccountSettingService* account_settings_service,
-        signin::IdentityManager* identity_manager)
+        signin::IdentityManager* identity_manager,
+        GeoIpCountryCode country_code)
     : account_settings_service_(account_settings_service),
-      identity_manager_(identity_manager) {}
+      identity_manager_(identity_manager),
+      country_code_(std::move(country_code)) {}
 
 AccessibilityAnnotatorEnablementServiceImpl::
     ~AccessibilityAnnotatorEnablementServiceImpl() = default;
@@ -116,6 +133,10 @@ AccessibilityAnnotatorEnablementServiceImpl::GetEnablementState() {
   }
 
   if (!SatisfiesOptInRequirements(account_settings_service_.get())) {
+    return kDisabledNotEligible;
+  }
+
+  if (!SatisfiesMiscellaneousRequirements(country_code_)) {
     return kDisabledNotEligible;
   }
 

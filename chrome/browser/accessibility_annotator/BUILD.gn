@@ -34,6 +34,7 @@ source_set("impl") {
   ]
   deps = [
     ":accessibility_annotator",
+    "//chrome/browser:browser_process",
     "//chrome/browser/account_settings",
     "//chrome/browser/autofill",
     "//chrome/browser/history",
@@ -48,6 +49,7 @@ source_set("impl") {
     "//components/accessibility_annotator/core/storage",
     "//components/autofill/core/browser",
     "//components/keyed_service/core",
+    "//components/variations/service",
     "//content/public/browser",
   ]
 }
