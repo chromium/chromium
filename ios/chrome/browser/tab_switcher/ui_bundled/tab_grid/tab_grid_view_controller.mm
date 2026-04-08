@@ -1097,7 +1097,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.scrimView.alpha = 0.0f;
   self.scrimView.hidden = NO;
   if (!self.scrimView.superview) {
-    [self.view addSubview:self.scrimView];
+    [self.view insertSubview:self.scrimView aboveSubview:self.scrollView];
     AddSameConstraints(self.scrimView, self.view);
     [self.view layoutIfNeeded];
   }
