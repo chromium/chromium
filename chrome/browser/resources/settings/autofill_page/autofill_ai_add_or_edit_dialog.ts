@@ -21,6 +21,7 @@ import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_element
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -38,6 +39,7 @@ type AttributeTypeDataType = chrome.autofillPrivate.AttributeTypeDataType;
 type CountryEntry = chrome.autofillPrivate.CountryEntry;
 type DateValue = chrome.autofillPrivate.DateValue;
 type EntityInstance = chrome.autofillPrivate.EntityInstance;
+type EntityType = chrome.autofillPrivate.EntityType;
 
 export interface SettingsAutofillAiAddOrEditDialogElement {
   $: {
@@ -116,10 +118,12 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
       },
 
       /**
-       * Footer text shown in the view. If empty, no footer text is shown.
+       * Footer text shown in the view, represented as a TrustedHTML object,
+       * since the footer text can contain a link. If the object represents an
+       * empty TrustedHTML, no footer text is shown.
        */
       footerText_: {
-        type: String,
+        type: Object,
         computed: 'computeFooterText_(entityInstance.*, userEmail_)',
       },
 
@@ -225,7 +229,7 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
   declare private days_: string[];
   declare private years_: string[];
   declare private userEmail_: string;
-  declare private footerText_: string;
+  declare private footerText_: TrustedHTML;
   declare private saveToWalletFromSettingsEnabled_: boolean;
   declare private enableSavePrivatePassesToWallet_: boolean;
   declare private saveInProgress_: boolean;
@@ -452,31 +456,52 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
         this.getRequiredIndicator_(attributeInstance);
   }
 
+  private walletManageYourInfoUrl_(entityType: EntityType): string {
+    // Distinguish between public and private passes. Unfortunately, the C++
+    // EntityTypeName enum is not available in TypeScript. 2 corresponds to
+    // kVehicle and 6 to kFlightReservation, the only two Wallet public passes.
+    // TODO(crbug.com/477845712): Find a cleaner way to make this distinction.
+    if (entityType.typeName === 2 || entityType.typeName === 6) {
+      return loadTimeData.getString('managePublicPassesUrl');
+    }
+    return loadTimeData.getString('managePrivatePassesUrl');
+  }
+
+  private shouldHideFooterText_(footer: TrustedHTML): boolean {
+    return footer.toString() === '';
+  }
+
   // When saving a Wallet private pass a consent is recorded that includes the
   // notice string. Ensure that the correct string ID is referenced in the
   // backend code.
   // LINT.IfChange
-  private computeFooterText_(): string {
+  private computeFooterText_(): TrustedHTML {
     if (!this.entityInstance || this.entityInstance.guid || !this.userEmail_ ||
         !this.entityInstance?.type.supportsWalletStorage) {
-      return '';
+      return sanitizeInnerHtml('');
     }
 
+    const walletTitle = this.i18n('googleWalletTitle');
     if (loadTimeData.getBoolean('enableAutofillAiWalletPrivatePasses')) {
       // Show footer only when it is a new entity and type supports Wallet
       // storage. This is sufficient because the entities stored in Wallet are
       // not editable from the settings.
-      return this.i18n(
-          'saveInfoToWalletSettingsAccountNotice',
-          this.i18n('googleWalletTitle'), this.userEmail_);
+      const manageYourInfoLink = `<a target=_blank href=${
+          this.walletManageYourInfoUrl_(this.entityInstance.type)}>${
+          this.i18n('autofillAiManageYourInfo')}</a>`;
+      return this.i18nAdvanced('saveInfoToWalletSettingsAccountNotice', {
+        substitutions:
+            [walletTitle, manageYourInfoLink, walletTitle, this.userEmail_],
+        tags: ['a'],
+        attrs: ['href', 'target'],
+      });
     }
 
     // Show footer only when it is a new entity and type supports Wallet
     // storage. This is sufficient because the entities stored in Wallet are not
     // editable from the settings.
-    return this.i18n(
-        'saveInfoToWalletAccountNotice', this.i18n('googleWalletTitle'),
-        this.userEmail_);
+    return sanitizeInnerHtml(this.i18n(
+        'saveInfoToWalletAccountNotice', walletTitle, this.userEmail_));
   }
   // LINT.ThenChange(//chrome/browser/extensions/api/autofill_private/autofill_private_api.cc)
 

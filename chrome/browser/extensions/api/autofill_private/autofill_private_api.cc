@@ -1206,7 +1206,7 @@ bool AutofillPrivateAddOrUpdateEntityInstanceFunction::
       // only has access to the strings themselves, not their IDs.
       session_id = RecordWalletPrivatePassConsent(
           /*consent_string_id=*/
-          IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_SETTINGS_SUBTITLE,
+          IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW,
           /*clicked_button_string_id=*/IDS_SAVE, *autofill_client());
     }
     pass_manager->SaveWalletEntityInstance(
