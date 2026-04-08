@@ -716,7 +716,7 @@ public class FullscreenSigninMediator
         if (mProfileDataCache != null && mSelectedAccount != null) {
             mModel.set(
                     FullscreenSigninProperties.SELECTED_ACCOUNT_DATA,
-                    mProfileDataCache.getProfileDataOrDefault(mSelectedAccount.getEmail()));
+                    mProfileDataCache.getById(mSelectedAccount.getId()));
             mModel.set(FullscreenSigninProperties.ENABLE_ACCOUNT_SELECTION, !mIsChild);
         }
     }
