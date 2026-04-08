@@ -16,7 +16,7 @@ export function getHtml(this: EventDialogElement) {
 <filter-dialog .anchorElement="${this.anchorElement}"
     @close="${this.onClose}">
   <div class="filter-menu-section-header">$i18n{common}</div>
-  ${this.commonEventTypes.map(item => html`
+  ${this.getCommonEventTypes().map(item => html`
     <cr-checkbox class="filter-menu-item"
         ?checked="${this.pendingSelections.has(item)}"
         data-event-type="${item}" @checked-changed="${this.onCheckedChanged}"
@@ -25,7 +25,7 @@ export function getHtml(this: EventDialogElement) {
     </cr-checkbox>
   `)}
   <div class="filter-menu-section-header">$i18n{other}</div>
-  ${this.otherEventTypes.map((item: EventType) => html`
+  ${this.getOtherEventTypes().map((item: EventType) => html`
     <cr-checkbox class="filter-menu-item"
         ?checked="${this.pendingSelections.has(item)}"
         data-event-type="${item}" @checked-changed="${this.onCheckedChanged}"

@@ -59,11 +59,11 @@ export class DateDialogElement extends CrLitElement {
         ?.focus();
   }
 
-  protected get pendingStartTime(): number {
+  protected getPendingStartTime(): number {
     return this.pendingStartDate?.getTime() || NaN;
   }
 
-  protected get pendingEndTime(): number {
+  protected getPendingEndTime(): number {
     return this.pendingEndDate?.getTime() || NaN;
   }
 

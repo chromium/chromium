@@ -26,13 +26,15 @@ export class ScopeIconElement extends CrLitElement {
   static override get properties() {
     return {
       scope: {type: String},
+      icon: {type: String},
+      label: {type: String},
     };
   }
 
   accessor scope: Scope|undefined = undefined;
 
-  protected icon: string|undefined = undefined;
-  protected label: string|undefined = undefined;
+  protected accessor icon: string|undefined = undefined;
+  protected accessor label: string|undefined = undefined;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

@@ -55,6 +55,18 @@ export class EventListItemElement extends CrLitElement {
       expanded: {type: Boolean, notify: true},
       status: {type: String, reflect: true},
       scope: {type: String, reflect: true},
+      appId: {type: String},
+      appLabel: {type: String},
+      formattedDate: {type: String},
+      formattedDuration: {type: String},
+      errors: {type: Array},
+      omahaRequest: {type: Object},
+      omahaResponse: {type: Object},
+      nextVersion: {type: String},
+      updaterVersion: {type: String},
+      commandLine: {type: String},
+      eventSummaryIcon: {type: String},
+      eventSummary: {type: String},
     };
   }
 
@@ -66,18 +78,20 @@ export class EventListItemElement extends CrLitElement {
   accessor status: 'success'|'error'|'' = '';
   accessor scope: Scope|undefined = undefined;
 
-  protected appId: string|undefined = undefined;
-  protected appLabel: string|undefined = undefined;
-  protected formattedDate: string|undefined = undefined;
-  protected formattedDuration: string|undefined = undefined;
-  protected errors: string[] = [];
-  protected omahaRequest: Record<string, unknown>|undefined = undefined;
-  protected omahaResponse: Record<string, unknown>|undefined = undefined;
-  protected nextVersion: string|undefined = undefined;
-  protected updaterVersion: string|undefined = undefined;
-  protected commandLine: string|undefined = undefined;
-  protected eventSummaryIcon: string|undefined = undefined;
-  protected eventSummary: string|undefined = undefined;
+  protected accessor appId: string|undefined = undefined;
+  protected accessor appLabel: string|undefined = undefined;
+  protected accessor formattedDate: string|undefined = undefined;
+  protected accessor formattedDuration: string|undefined = undefined;
+  protected accessor errors: string[] = [];
+  protected accessor omahaRequest: Record<string, unknown>|undefined =
+      undefined;
+  protected accessor omahaResponse: Record<string, unknown>|undefined =
+      undefined;
+  protected accessor nextVersion: string|undefined = undefined;
+  protected accessor updaterVersion: string|undefined = undefined;
+  protected accessor commandLine: string|undefined = undefined;
+  protected accessor eventSummaryIcon: string|undefined = undefined;
+  protected accessor eventSummary: string|undefined = undefined;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

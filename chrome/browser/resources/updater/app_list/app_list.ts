@@ -40,11 +40,11 @@ export class AppListElement extends CrLitElement {
   accessor apps: AppStateDisplay[] = [];
   accessor error: boolean = false;
 
-  protected get shouldShowNoAppsMessage(): boolean {
+  protected shouldShowNoAppsMessage(): boolean {
     return !this.error && this.apps.length === 0;
   }
 
-  protected get shouldShowTable(): boolean {
+  protected shouldShowTable(): boolean {
     return !this.error && this.apps.length !== 0;
   }
 }

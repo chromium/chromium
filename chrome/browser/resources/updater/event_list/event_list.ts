@@ -93,6 +93,7 @@ export class EventListElement extends CrLitElement {
       expandAllButtonLabel: {type: String},
       events: {type: Array},
       scrollTarget: {type: Object},
+      processMap: {type: Object},
     };
   }
 
@@ -104,8 +105,7 @@ export class EventListElement extends CrLitElement {
       loadTimeData.getString('expandAll');
   protected accessor events: EventEntry[] = [];
   protected accessor scrollTarget: HTMLElement = document.documentElement;
-
-  protected processMap: UpdaterProcessMap|undefined = undefined;
+  protected accessor processMap: UpdaterProcessMap|undefined = undefined;
   protected sortedEventsWithDates: Array<HistoryEvent|MergedHistoryEvent> = [];
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -157,7 +157,7 @@ export class EventListElement extends CrLitElement {
     });
   }
 
-  protected get anyExpanded(): boolean {
+  protected isAnyExpanded(): boolean {
     return this.eventListItems.some(item => item.expanded);
   }
 
@@ -207,7 +207,7 @@ export class EventListElement extends CrLitElement {
   }
 
   protected onExpandCollapseAllClick() {
-    if (this.anyExpanded) {
+    if (this.isAnyExpanded()) {
       this.collapseAll();
     } else {
       this.expandAll();
@@ -215,11 +215,11 @@ export class EventListElement extends CrLitElement {
   }
 
   protected onEventItemExpandedChanged() {
-    this.expandAllButtonLabel =
-        loadTimeData.getString(this.anyExpanded ? 'collapseAll' : 'expandAll');
+    this.expandAllButtonLabel = loadTimeData.getString(
+        this.isAnyExpanded() ? 'collapseAll' : 'expandAll');
   }
 
-  protected get numDisplayedEventsLabel(): string {
+  protected getNumDisplayedEventsLabel(): string {
     return loadTimeData.getStringF(
         'displayedEventsCount', this.events.length,
         this.sortedEventsWithDates.length);

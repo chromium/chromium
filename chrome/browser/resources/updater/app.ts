@@ -67,6 +67,7 @@ export class UpdaterAppElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
+      policies: {type: Object},
     };
   }
 
@@ -81,7 +82,7 @@ export class UpdaterAppElement extends CrLitElement {
   accessor fileSelectionBannerLabel: string = '';
   accessor historyLoadError = false;
 
-  protected policies: PolicySet|undefined = undefined;
+  protected accessor policies: PolicySet|undefined = undefined;
 
 
   override connectedCallback() {

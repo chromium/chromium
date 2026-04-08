@@ -42,6 +42,11 @@ export class UpdaterStateCardElement extends CrLitElement {
       lastChecked: {type: Object},
       lastStarted: {type: Object},
       installPath: {type: String},
+      headingLabel: {type: String},
+      formattedLastChecked: {type: String},
+      formattedLastCheckedRelative: {type: String},
+      formattedLastStarted: {type: String},
+      formattedLastStartedRelative: {type: String},
     };
   }
 
@@ -52,11 +57,11 @@ export class UpdaterStateCardElement extends CrLitElement {
   accessor lastStarted: Date|null = null;
   accessor installPath: string|undefined = undefined;
 
-  protected headingLabel: string = '';
-  protected formattedLastChecked: string = '';
-  protected formattedLastCheckedRelative: string = '';
-  protected formattedLastStarted: string = '';
-  protected formattedLastStartedRelative: string = '';
+  protected accessor headingLabel: string = '';
+  protected accessor formattedLastChecked: string = '';
+  protected accessor formattedLastCheckedRelative: string = '';
+  protected accessor formattedLastStarted: string = '';
+  protected accessor formattedLastStartedRelative: string = '';
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

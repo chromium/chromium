@@ -71,7 +71,7 @@ export class UpdaterStateElement extends CrLitElement {
     return !this.error && this.enterpriseCompanionState !== null;
   }
 
-  protected get shouldShowNoUpdatersFound(): boolean {
+  protected shouldShowNoUpdatersFound(): boolean {
     return !this.error && this.systemUpdaterState === null &&
         this.userUpdaterState === null &&
         this.enterpriseCompanionState === null;

@@ -15,11 +15,11 @@ export function getHtml(this: DateDialogElement) {
   <div class="filter-menu-date-inputs">
     <label for="start-date">$i18n{startDate}</label>
     <input type="datetime-local" id="start-date"
-        .valueAsNumber="${this.pendingStartTime}"
+        .valueAsNumber="${this.getPendingStartTime()}"
         @input="${this.onStartTimeInput}">
     <label for="end-date">$i18n{endDate}</label>
     <input type="datetime-local" id="end-date"
-        .valueAsNumber="${this.pendingEndTime}"
+        .valueAsNumber="${this.getPendingEndTime()}"
         @input="${this.onEndTimeInput}">
   </div>
   <filter-dialog-footer

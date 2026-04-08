@@ -31,12 +31,13 @@ export class TypeDialogElement extends CrLitElement {
   static override get properties() {
     return {
       anchorElement: {type: Object},
+      filterMenuItems: {type: Array},
     };
   }
 
   accessor anchorElement: HTMLElement|null = null;
 
-  protected readonly filterMenuItems:
+  protected accessor filterMenuItems:
       Array<{filterCategory: FilterCategory, label: string}> = [
         {
           filterCategory: FilterCategory.APP,

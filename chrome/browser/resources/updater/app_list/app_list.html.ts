@@ -16,10 +16,10 @@ ${this.error ? html`
     <div id="error-message">$i18n{appStatesQueryFailed}</div>
   </div>
 ` : ''}
-${this.shouldShowNoAppsMessage ? html`
+${this.shouldShowNoAppsMessage() ? html`
   <div id="no-apps-message">$i18n{noAppsFound}</div>
 ` : ''}
-${this.shouldShowTable ? html`
+${this.shouldShowTable() ? html`
   <div class="card">
     <table>
       <thead>

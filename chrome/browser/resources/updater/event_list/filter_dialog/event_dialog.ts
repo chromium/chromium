@@ -61,12 +61,12 @@ export class EventDialogElement extends CrLitElement {
         e, this.shadowRoot.querySelectorAll<HTMLElement>('.filter-menu-item'));
   }
 
-  get commonEventTypes(): EventType[] {
+  getCommonEventTypes(): EventType[] {
     return ['UPDATE', 'INSTALL', 'UNINSTALL'] as EventType[];
   }
 
-  get otherEventTypes(): EventType[] {
-    const common = this.commonEventTypes;
+  getOtherEventTypes(): EventType[] {
+    const common = this.getCommonEventTypes();
     return Object.values(EVENT_TYPES).filter(et => !common.includes(et));
   }
 

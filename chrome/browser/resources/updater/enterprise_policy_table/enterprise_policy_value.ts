@@ -30,13 +30,14 @@ export class EnterprisePolicyValueElement extends CrLitElement {
     return {
       policyName: {type: String},
       value: {type: Object},
+      formattedValue: {type: String},
     };
   }
 
   accessor policyName: string = '';
   accessor value: string|number|Record<string, unknown> = '';
 
-  protected formattedValue: string = '';
+  protected accessor formattedValue: string = '';
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

@@ -43,7 +43,7 @@ ${this.shouldShowEnterpriseCompanionState() ? html`
           this.enterpriseCompanionState.installationDirectory)}">
   </enterprise-companion-state-card>
 ` : ''}
-${this.shouldShowNoUpdatersFound ? html`
+${this.shouldShowNoUpdatersFound() ? html`
   <div id="no-updater-message">$i18n{noUpdaterFound}</div>
 ` : ''}
 <!--_html_template_end_-->`;

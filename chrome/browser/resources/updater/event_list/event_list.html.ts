@@ -17,12 +17,12 @@ export function getHtml(this: EventListElement) {
   <div class="separator"></div>
   <div class="expand-collapse-controls">
     <cr-button id="expand-all" @click="${this.onExpandCollapseAllClick}">
-      ${this.anyExpanded ? '$i18n{collapseAll}' : '$i18n{expandAll}'}
+      ${this.isAnyExpanded() ? '$i18n{collapseAll}' : '$i18n{expandAll}'}
     </cr-button>
   </div>
 </div>
 <div class="event-count">
-  <span>${this.numDisplayedEventsLabel}</span>
+  <span>${this.getNumDisplayedEventsLabel()}</span>
   ${this.eventsWithoutDatesLabel ? html`
     <span>&bull;</span>
     <span class="events-without-dates-label">

@@ -35,6 +35,7 @@ export class AppDialogElement extends CrLitElement {
       search: {type: String},
       pendingSelections: {type: Object},
       initialSelections: {type: Object},
+      displayedApps: {type: Array},
     };
   }
 
@@ -42,7 +43,7 @@ export class AppDialogElement extends CrLitElement {
   accessor search = '';
   accessor pendingSelections = new Set<string>();
   accessor initialSelections = new Set<string>();
-  protected displayedApps: string[] = [];
+  protected accessor displayedApps: string[] = [];
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
