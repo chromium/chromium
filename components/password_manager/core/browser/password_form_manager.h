@@ -200,6 +200,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   base::span<const InteractionsStats> GetInteractionsStats() const override;
   base::span<const PasswordForm> GetInsecureCredentials() const override;
   bool IsBlocklisted() const override;
+  bool IsFetchCompleted() const override;
   bool IsMovableToAccountStore() const override;
 
   void Save() override;

@@ -62,6 +62,7 @@ class PasswordDataForUI : public PasswordFormManagerForUI {
   base::span<const InteractionsStats> GetInteractionsStats() const override;
   base::span<const PasswordForm> GetInsecureCredentials() const override;
   bool IsBlocklisted() const override;
+  bool IsFetchCompleted() const override;
   bool IsMovableToAccountStore() const override;
   void Save() override;
   bool IsUpdateAffectingPasswordsStoredInTheGoogleAccount() const override;
@@ -146,6 +147,10 @@ base::span<const PasswordForm> PasswordDataForUI::GetInsecureCredentials()
 bool PasswordDataForUI::IsBlocklisted() const {
   // 'true' would suppress the bubble.
   return false;
+}
+
+bool PasswordDataForUI::IsFetchCompleted() const {
+  return true;
 }
 
 bool PasswordDataForUI::IsMovableToAccountStore() const {

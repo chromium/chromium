@@ -1535,6 +1535,26 @@ TEST_P(PasswordManagerTest, DontSaveAlreadySavedCredential) {
             user_action_tester.GetActionCount("PasswordManager_LoginPassed"));
 }
 
+TEST_P(PasswordManagerTest, NoManualFallbackWhenFetchIsPending) {
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+
+  FormData form_data = MakeSimpleFormData();
+  std::vector<FormData> observed = {form_data};
+
+  // Register found form in PasswordManager. This starts the fetch.
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+
+  // Do NOT call task_environment_.RunUntilIdle() here to keep fetch pending.
+
+  // The user types a password. Fallback should NOT be shown because fetch is
+  // pending.
+  EXPECT_CALL(client_, ShowManualFallbackForSaving).Times(0);
+
+  FormData user_input_form = form_data;
+  test_api(user_input_form).field(1).set_value(u"password");
+  manager()->OnInformAboutUserInput(&driver_, user_input_form);
+}
+
 TEST_P(PasswordManagerTest, DoNotSaveWhenUserDeletesPassword) {
   PasswordForm form(MakeSimpleForm());
   PasswordForm stored_form = form;
