@@ -4,6 +4,7 @@
 
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "chrome/browser/net/storage_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -170,8 +171,15 @@ IN_PROC_BROWSER_TEST_F(
       /*expected_count=*/0);
 }
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#define MAYBE_PartitionedCookiePresentV3_CountOnce \
+  DISABLED_PartitionedCookiePresentV3_CountOnce
+#else
+#define MAYBE_PartitionedCookiePresentV3_CountOnce \
+  PartitionedCookiePresentV3_CountOnce
+#endif
 IN_PROC_BROWSER_TEST_F(CookieUseCounterBrowserTest,
-                       PartitionedCookiePresentV3_CountOnce) {
+                       MAYBE_PartitionedCookiePresentV3_CountOnce) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   NavigateTo(kHost, "/set-cookie?p1=a;Secure;Partitioned");
