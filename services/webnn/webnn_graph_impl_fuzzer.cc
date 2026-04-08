@@ -401,6 +401,18 @@ std::optional<Conv2dDescriptors> SetUpConv2dDescriptors(
     Conv2dParams& params) {
   InputOperandLayout input_layout = context_properties.input_operand_layout;
 
+#if BUILDFLAG(IS_LINUX)
+  if (params.conv2d_kind == mojom::Conv2d::Kind::kTransposed) {
+    // ConvTranspose2d does not support dilation and groups for TFLite backend:
+    // https://source.chromium.org/chromium/chromium/src/+/db6bda50f023057ffa82845f232852dea0f271e1:services/webnn/tflite/graph_builder_tflite.cc;l=4125
+    // TODO(crbug.com/498987226): Remove this restriction to increase test
+    // coverage.
+    params.dilation_height = 1;
+    params.dilation_width = 1;
+    params.groups = 1;
+  }
+#endif  // BUILDFLAG(IS_LINUX)
+
   if (params.output_channels % params.groups != 0 ||
       (params.conv2d_kind == mojom::Conv2d::Kind::kDirect &&
        params.input_channels % params.groups != 0)) {
