@@ -1,0 +1,81 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+source_set("fileapi") {
+  sources = [
+    "device_media_async_file_util.h",
+    "media_file_system_backend.h",
+    "mtp_device_async_delegate.h",
+    "mtp_device_map_service.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/file_access",
+    "//storage/browser",
+    "//url",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "device_media_async_file_util.cc",
+    "media_file_system_backend.cc",
+    "media_file_validator_factory.cc",
+    "media_file_validator_factory.h",
+    "media_path_filter.cc",
+    "media_path_filter.h",
+    "mtp_device_async_delegate.cc",
+    "mtp_device_map_service.cc",
+    "mtp_file_stream_reader.cc",
+    "mtp_file_stream_reader.h",
+    "native_media_file_util.cc",
+    "native_media_file_util.h",
+    "readahead_file_stream_reader.cc",
+    "readahead_file_stream_reader.h",
+    "supported_audio_video_checker.cc",
+    "supported_audio_video_checker.h",
+    "supported_image_type_validator.cc",
+    "supported_image_type_validator.h",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  deps = [
+    ":fileapi",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/image_decoder",
+    "//chrome/services/media_gallery_util/public/cpp",
+    "//content/public/browser",
+    "//storage/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "native_media_file_util_unittest.cc" ]
+  deps = [
+    ":fileapi",
+    ":impl",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//storage/browser:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "media_file_validator_browsertest.cc" ]
+  deps = [
+    ":fileapi",
+    ":impl",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//storage/browser:test_support",
+    "//testing/gtest",
+  ]
+}

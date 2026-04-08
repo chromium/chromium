@@ -158,6 +158,7 @@ static_library("file_manager") {
     "//chrome/browser/chromeos/policy/dlp",
     "//chrome/browser/chromeos/upload_office_to_cloud",
     "//chrome/browser/download",
+    "//chrome/browser/media_galleries/fileapi",
     "//chrome/browser/profiles",
     "//chrome/browser/sync:factories",
     "//chrome/browser/ui/webui/ash/cloud_upload:mojo_bindings_shared",

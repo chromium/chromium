@@ -14,11 +14,12 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
-#include "chrome/browser/media_galleries/media_galleries_preferences.h"
 #include "components/file_access/scoped_file_access_delegate.h"
 #include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_request_info.h"
 #include "storage/browser/file_system/task_runner_bound_observer_list.h"
+
+using MediaGalleryPrefId = uint64_t;
 
 namespace base {
 class SequencedTaskRunner;
