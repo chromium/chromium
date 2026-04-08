@@ -1336,16 +1336,6 @@ tools/metrics/histograms/metadata/stability/enums.xml
   </token>
 </histogram>
 
-<histogram name="Power.FirmwareResumeTimeOnAC" units="ms"
-    expires_after="2022-03-31">
-  <owner>puthik@chromium.org</owner>
-  <owner>chromeos-platform-power@google.com</owner>
-  <summary>
-    The time that the firmware took to resume the Chrome OS device from
-    suspend-to-RAM state when running on AC at pre-suspend time.
-  </summary>
-</histogram>
-
 <histogram name="Power.FirmwareResumeTimeOnBattery" units="ms"
     expires_after="2022-03-31">
   <owner>puthik@chromium.org</owner>
