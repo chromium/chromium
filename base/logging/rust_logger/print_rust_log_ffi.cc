@@ -26,9 +26,7 @@ void LogMessageRustWrapper::write_str(rust::Str str) {
 void print_rust_log(const RustFmtArguments& msg,
                     const char* file,
                     int32_t line,
-                    int32_t severity,
-                    bool verbose) {
-  // TODO(danakj): If `verbose` make the log equivalent to VLOG instead of LOG.
+                    int32_t severity) {
   LogMessageRustWrapper wrapper(file, line, severity);
   msg.format(wrapper);
 }

@@ -6,6 +6,9 @@ chromium::import! {
     "//base/logging:log_severity_bindgen" as log_severity_bindgen;
 }
 
+use log_severity_bindgen::root::logging::{
+    LOGGING_ERROR, LOGGING_FATAL, LOGGING_INFO, LOGGING_WARNING,
+};
 use std::ffi::CStr;
 use std::pin::Pin;
 
@@ -29,8 +32,6 @@ pub(crate) fn print_rust_log(
     severity: LogSeverity,
 ) {
     let wrapped_args = RustFmtArguments(*args);
-    let verbose = severity.is_verbose();
-    let severity = severity.to_i32();
 
     // SAFETY: Safety requirements of the C++ function are met as follows:
     //
@@ -42,45 +43,21 @@ pub(crate) fn print_rust_log(
             &wrapped_args,
             filename.as_ptr(),
             line.unwrap_or(0) as i32,
-            severity,
-            verbose,
+            severity as i32,
         )
     }
 }
 
 /// Strongly-typed Rust equivalent of `base::LogSeverity`.
 ///
-/// (`bindgen`-generated `LogSeverity` is just a type alias for `u32`).
+/// (`bindgen`-generated `LogSeverity` is just a type alias for `u32`.)
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(crate) enum LogSeverity {
-    /// Corresponds to `LOG(FATAL)`.
-    Fatal,
-    /// Corresponds to `LOG(ERROR)`.
-    Error,
-    /// Corresponds to `LOG(WARNING)`.
-    Warning,
-    /// Corresponds to `LOG(INFO)`.
-    Info,
-    /// Corresponds to `LOG(INFO)`, but is only logged in "verbose" mode.
-    Verbose,
-}
-
-impl LogSeverity {
-    fn to_i32(self) -> i32 {
-        use log_severity_bindgen::root::logging::{
-            LOGGING_ERROR, LOGGING_FATAL, LOGGING_INFO, LOGGING_WARNING,
-        };
-        match self {
-            Self::Fatal => LOGGING_FATAL,
-            Self::Error => LOGGING_ERROR,
-            Self::Warning => LOGGING_WARNING,
-            Self::Verbose | Self::Info => LOGGING_INFO,
-        }
-    }
-
-    fn is_verbose(self) -> bool {
-        self == Self::Verbose
-    }
+#[repr(i32)]
+pub enum LogSeverity {
+    Fatal = LOGGING_FATAL,
+    Error = LOGGING_ERROR,
+    Warning = LOGGING_WARNING,
+    Info = LOGGING_INFO,
 }
 
 /// Wrap a `std::fmt::Arguments` to pass to C++ code.
@@ -126,7 +103,6 @@ mod ffi {
             file: *const c_char,
             line: i32,
             severity: i32,
-            verbose: bool,
         );
     }
 }

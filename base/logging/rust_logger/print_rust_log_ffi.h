@@ -29,8 +29,7 @@ struct RustFmtArguments;
 void print_rust_log(const RustFmtArguments& msg,
                     const char* file,
                     int32_t line,
-                    int32_t severity,
-                    bool verbose);
+                    int32_t severity);
 
 // Wraps a LogMessage object so that Rust code can write to its ostream.
 class LogMessageRustWrapper {

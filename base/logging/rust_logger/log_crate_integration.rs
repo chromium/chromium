@@ -33,12 +33,15 @@ impl log::Log for RustLogger {
         // Note that Debug and Trace level logs are dropped at
         // compile time at the macro call-site when DCHECK_IS_ON()
         // is false. This is done through a Cargo feature.
+        //
+        // TODO(danakj, lukasza): Consider mapping some of these levels to `VLOG(INFO)`
+        // instead of `LOG(INFO)`.
         let severity = match record.metadata().level() {
             log::Level::Error => print_rust_log::LogSeverity::Error,
             log::Level::Warn => print_rust_log::LogSeverity::Warning,
-            log::Level::Info => print_rust_log::LogSeverity::Info,
-            log::Level::Debug => print_rust_log::LogSeverity::Info,
-            log::Level::Trace => print_rust_log::LogSeverity::Verbose,
+            log::Level::Info | log::Level::Debug | log::Level::Trace => {
+                print_rust_log::LogSeverity::Info
+            }
         };
 
         print_rust_log::print_rust_log(record.args(), &file, record.line(), severity)
