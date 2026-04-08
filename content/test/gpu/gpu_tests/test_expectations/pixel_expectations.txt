@@ -396,7 +396,7 @@ crbug.com/447600149 [ win11 qualcomm-0x41333430 ] Pixel_Video_Context_Loss_MP4 [
 # Mac Asan timeouts
 crbug.com/338200323 [ mac angle-opengl asan graphite-disabled intel-0x3e9b passthrough ] Pixel_WebGPUToDataURL [ Slow ]
 crbug.com/338200323 crbug.com/479387364 [ mac angle-metal asan intel-0x3e9b passthrough ] Pixel_WebGLSadCanvas [ Failure ]
-crbug.com/338200323 crbug.com/479387364 [ mac angle-metal asan intel-0x3e9b passthrough ] Pixel_WebGLFloat [ Failure ]
+crbug.com/338200323 crbug.com/479387364 [ angle-metal asan graphite-disabled intel-0x3e9b mac passthrough ] Pixel_WebGLFloat [ Failure ]
 crbug.com/338200323 [ sonoma angle-metal asan intel-0x3e9b passthrough ] Pixel_OffscreenCanvasWebGLSoftwareCompositing [ Slow ]
 crbug.com/338200323 [ sonoma angle-metal asan intel-0x3e9b passthrough ] Pixel_OffscreenCanvasWebGLSoftwareCompositingWorker [ Slow ]
 crbug.com/338200323 [ mac angle-metal asan intel-0x3e9b passthrough ] Pixel_OffscreenCanvasTransferToImageBitmapSoftwareCompositing [ Slow ]
@@ -443,8 +443,6 @@ crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pi
 crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pixel_CanvasLowLatency2DDrawImage [ Failure ]
 crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pixel_CanvasLowLatency2DImageData [ Failure ]
 
-# Likely due to some race condition in the test on the emulator.
-[ fuchsia fuchsia-board-qemu-x64 ] Pixel_OffscreenCanvasWebGLDefault [ RetryOnFailure ]
 
 crbug.com/1477318 [ mac ] Pixel_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
 
@@ -480,16 +478,11 @@ crbug.com/40935289 [ angle-vulkan arm fuchsia no-clang-coverage web-engine-shell
 
 # Flaky on Mac ASAN and AMD Radeon Pro 555X
 crbug.com/372055518 [ angle-metal asan intel-0x3e9b mac ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Failure ]
-[ angle-opengl asan intel mac release ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositing [ RetryOnFailure ]
 
 # Flaky hang on Mac GL ASAN
 crbug.com/40277254 [ mac angle-opengl asan ] Pixel_WebGPUDisplayP3 [ Failure ]
 
 
-# Win/AMD RX 5500 failures
-crbug.com/479032532 [ win11 amd-0x7340 passthrough ] Pixel_WebGPUDestroyed_OffscreenCanvas_DrawImage [ RetryOnFailure ]
-crbug.com/479032532 [ win11 amd-0x7340 passthrough ] Pixel_WebGPUDestroyed_OffscreenCanvas_CopyExternalImageToTexture [ RetryOnFailure ]
-crbug.com/479032532 [ win11 amd-0x7340 passthrough ] Pixel_WebGPUDestroyed_OffscreenCanvas_GlTexImage2D [ RetryOnFailure ]
 
 # Win/AMD RX 7600 failures
 crbug.com/402171652 [ win11 amd-0x7480 ] Pixel_DirectComposition_Video_VP9_YUY2 [ Failure ]
@@ -523,47 +516,17 @@ crbug.com/370694819 [ angle-opengl asan graphite-disabled mac ] Pixel_WebGPUDest
 # Should be re-added when the conflicting Failure expectation is removed.
 # crbug.com/419469465 [ win intel-0x9bc5 ] Pixel_MeetEffects* [ RetryOnFailure ]
 
-# Video tests flakily cause Android Pixel 6 Ganesh to crash.
-crbug.com/421412516 [ android-chromium android-pixel-6 android-14 angle-vulkan graphite-disabled passthrough ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
 
 
 # Flaky on Mac Intel
-crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan no-clang-coverage release sequoia ] Pixel_VideoStreamFrom2DAlphaCanvas_DisableReadbackFromTexture [ Failure ]
-crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan no-clang-coverage release sequoia ] Pixel_VideoStreamFrom2DCanvas [ Failure ]
-crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan no-clang-coverage release sequoia ] Pixel_VideoStreamFromWebGLCanvas [ Failure ]
-crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan no-clang-coverage release sequoia ] Pixel_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
-crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan no-clang-coverage release sequoia ] Pixel_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Failure ]
 crbug.com/425671158 [ angle-metal graphite-enabled intel-0x3e9b no-asan no-clang-coverage release sequoia ] Pixel_WebGPUCopyExternalImageImageBitmap [ Failure ]
-crbug.com/425671158 [ angle-metal graphite-disabled intel-0x3e9b no-asan no-clang-coverage release sequoia ] Pixel_WebGPUCopyExternalImageWebGPUCanvas [ Failure ]
-crbug.com/425671158 [ angle-metal graphite-disabled intel-0x3e9b no-asan no-clang-coverage release sequoia ] Pixel_WebGLCopyImage [ Failure ]
-crbug.com/425671158 [ angle-metal graphite-disabled intel-0x3e9b no-asan no-clang-coverage release sequoia ] Pixel_WebGPUImportVideoFrameOffscreenCanvas [ Failure ]
-crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] Pixel_CSSFilterEffects [ Failure ]
-crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] Pixel_OffscreenCanvasTransferToImageBitmap [ Failure ]
-crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] Pixel_OffscreenCanvasWebGLDefault [ Failure ]
-crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] Pixel_OffscreenCanvasWebGLDefaultWorker [ Failure ]
-crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] Pixel_OffscreenCanvasWebGLSoftwareCompositing [ Failure ]
-crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] Pixel_OffscreenCanvasWebGLSoftwareCompositingWorker [ Failure ]
-crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] Pixel_OffscreenCanvasWebglResizeOnWorker [ Failure ]
-crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] Pixel_ScissorTestWithPreserveDrawingBuffer [ Failure ]
-crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] Pixel_VideoStreamFrom2DAlphaCanvas [ Failure ]
-crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] Pixel_VideoStreamFromWebGLAlphaCanvas [ Failure ]
-crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] Pixel_WebGLGreenTriangle_AA_Alpha_TreesInViz [ Failure ]
-crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] Pixel_WebGLGreenTriangle_AA_NoAlpha [ Failure ]
-crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] Pixel_WebGLWebCodecsBreakoutBoxDisplaysFrame [ Failure ]
-crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] Pixel_WebGPUCanvasOneCopyCapture_Hidden [ Failure ]
-crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] Pixel_WebGPUCopyExternalImage2DCanvas [ Failure ]
-crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] Pixel_WebGPUCopyExternalImageWebGLCanvas [ Failure ]
-crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] Pixel_WebGPUImportVideoFrameHDR [ Failure ]
-crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] Pixel_WebGPUImportVideoFrameOffscreenCanvas [ Failure ]
 
 # Flaky Timeout on Mac ARM
 crbug.com/425739516 [ mac arch-arm64 angle-metal graphite-enabled ] Pixel_ReflectedDiv [ Slow ]
 
 # Tests either fail consistently or flakily on Android in TreesInViz mode.
 crbug.com/415830130 [ android-16 android-chromium android-pixel-10 angle-opengles graphite-enabled imagination-technologies mobile no-clang-coverage passthrough renderer-skia-gl target-cpu-64 ] Pixel_Video_MP4_TreesInViz [ Failure ]
-crbug.com/415830130 [ android-chromium android-pixel-2 android-q angle-disabled graphite-disabled mobile no-clang-coverage no-passthrough qualcomm renderer-skia-gl target-cpu-32 ] Pixel_Video_MP4_TreesInViz [ Failure ]
 crbug.com/415830130 [ fuchsia ] Pixel_Video_MP4_TreesInViz [ Failure ]
-crbug.com/415830130 [ android-chromium android-pixel-2 android-q angle-disabled graphite-disabled mobile no-clang-coverage no-passthrough qualcomm renderer-skia-gl target-cpu-32 ] Pixel_ViewTransitionsCapture_TreesInViz [ RetryOnFailure ]
 crbug.com/415830130 [ android android-chromium ] Pixel_SolidColorBackground_TreesInViz [ Failure ]
 crbug.com/415830130 [ angle-swiftshader fuchsia fuchsia-board-qemu-x64 google-0xc0de ] Pixel_SolidColorBackground_TreesInViz [ Failure ]
 crbug.com/415830130 [ angle-vulkan arm fuchsia fuchsia-board-sherlock no-asan no-clang-coverage ] Pixel_SolidColorBackground_TreesInViz [ Failure ]
@@ -580,8 +543,6 @@ crbug.com/415830130 [ angle-vulkan arm fuchsia fuchsia-board-sherlock no-asan no
 # Commented out until full procurement is ready since UAT is done.
 # crbug.com/445727123 [ linux amd-0x1900 ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
 
-# Win11 Canvas Timeout
-crbug.com/446719056 [ win11 angle-d3d11 qualcomm-0x41333430 graphite-disabled ] Pixel_OffscreenCanvas2DResizeOnWorker [ Failure ]
 
 
 # Pixel 10 failures
@@ -590,7 +551,6 @@ crbug.com/446181110 [ android android-pixel-10 android-webview-instrumentation ]
 crbug.com/446181110 [ android android-pixel-10 android-webview-instrumentation ] Pixel_CanvasLowLatency2DImageData [ Failure ]
 crbug.com/446861923 [ android android-pixel-10 ] Pixel_Video_Context_Loss_VP9 [ Failure ]
 crbug.com/446861923 [ android android-chromium android-pixel-10 graphite-enabled passthrough ] Pixel_Video_HEVC [ Failure ]
-crbug.com/446861923 [ android android-pixel-10 android-chromium ] Pixel_OffscreenCanvasAccelerated2D [ Failure ]
 crbug.com/446861923 [ android android-pixel-10 android-chromium ] Pixel_OffscreenCanvasAccelerated2DWorker [ Failure ]
 crbug.com/446861923 [ android android-pixel-10 android-chromium ] Pixel_Video_AV1 [ Failure ]
 crbug.com/446861923 [ android android-pixel-10 android-chromium ] Pixel_Video_BackdropFilter [ Failure ]
@@ -605,8 +565,6 @@ crbug.com/446861923 [ android android-pixel-10 android-chromium ] Pixel_Video_VP
 
 
 
-# Flakily runs into OOM issues in 32-bit browsers.
-crbug.com/466113477 [ win nvidia target-cpu-32 ] Pixel_MeetEffects_rainbow_wig_and_eyelashes [ Failure ]
 
 # MeetEffects failures
 crbug.com/286989320 [ linux nvidia ] Pixel_MeetEffects_rainbow_wig_and_eyelashes [ Failure Slow ]
