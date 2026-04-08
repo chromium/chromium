@@ -22,8 +22,8 @@ void TapSuppressionController::GestureFlingCancelStoppedFling() {
   base::TimeTicks event_time = Now();
   switch (state_) {
     case DISABLED:
-    case SUPPRESSING_TAPS:
       break;
+    case SUPPRESSING_TAPS:
     case NOTHING:
       fling_cancel_time_ = event_time;
       state_ = LAST_CANCEL_STOPPED_FLING;

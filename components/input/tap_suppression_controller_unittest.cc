@@ -225,4 +225,42 @@ TEST_F(TapSuppressionControllerTest, NoSuppressionIfDisabled) {
             tap_suppression_controller_->state());
 }
 
+// Test TapSuppressionController for when a second GestureFlingCancel occurs
+// while the controller is already suppressing taps. The second fling cancel
+// should reset the state so that tap suppression starts again.
+TEST_F(TapSuppressionControllerTest, SecondFlingCancelRestartsTapSuppression) {
+  // First fling cancel stops an active fling.
+  tap_suppression_controller_->NotifyGestureFlingCancelStoppedFling();
+  EXPECT_EQ(MockTapSuppressionController::NONE,
+            tap_suppression_controller_->last_actions());
+  EXPECT_EQ(MockTapSuppressionController::LAST_CANCEL_STOPPED_FLING,
+            tap_suppression_controller_->state());
+
+  // First TapDown is suppressed and moves the controller into SUPPRESSING_TAPS.
+  tap_suppression_controller_->SendTapDown();
+  EXPECT_EQ(MockTapSuppressionController::TAP_DOWN_SUPPRESSED,
+            tap_suppression_controller_->last_actions());
+  EXPECT_EQ(MockTapSuppressionController::SUPPRESSING_TAPS,
+            tap_suppression_controller_->state());
+
+  // Second fling cancel happens while taps are still being suppressed.
+  tap_suppression_controller_->NotifyGestureFlingCancelStoppedFling();
+  EXPECT_EQ(MockTapSuppressionController::NONE,
+            tap_suppression_controller_->last_actions());
+  EXPECT_EQ(MockTapSuppressionController::LAST_CANCEL_STOPPED_FLING,
+            tap_suppression_controller_->state());
+
+  // TapDown after the second fling cancel should be suppressed again.
+  tap_suppression_controller_->SendTapDown();
+  EXPECT_EQ(MockTapSuppressionController::TAP_DOWN_SUPPRESSED,
+            tap_suppression_controller_->last_actions());
+  EXPECT_EQ(MockTapSuppressionController::SUPPRESSING_TAPS,
+            tap_suppression_controller_->state());
+
+  tap_suppression_controller_->SendTapUp();
+  EXPECT_EQ(MockTapSuppressionController::TAP_UP_SUPPRESSED,
+            tap_suppression_controller_->last_actions());
+  EXPECT_EQ(MockTapSuppressionController::SUPPRESSING_TAPS,
+            tap_suppression_controller_->state());
+}
 }  // namespace input
