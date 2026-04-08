@@ -73,13 +73,21 @@ impl<T> Slice<T> {
     }
 
     /// Get the first value.
-    pub fn first(&self) -> Option<&T> {
-        self.entries.first().map(Bucket::key_ref)
+    pub const fn first(&self) -> Option<&T> {
+        if let [first, ..] = &self.entries {
+            Some(&first.key)
+        } else {
+            None
+        }
     }
 
     /// Get the last value.
-    pub fn last(&self) -> Option<&T> {
-        self.entries.last().map(Bucket::key_ref)
+    pub const fn last(&self) -> Option<&T> {
+        if let [.., last] = &self.entries {
+            Some(&last.key)
+        } else {
+            None
+        }
     }
 
     /// Divides one slice into two at an index.
@@ -87,7 +95,7 @@ impl<T> Slice<T> {
     /// ***Panics*** if `index > len`.
     /// For a non-panicking alternative see [`split_at_checked`][Self::split_at_checked].
     #[track_caller]
-    pub fn split_at(&self, index: usize) -> (&Self, &Self) {
+    pub const fn split_at(&self, index: usize) -> (&Self, &Self) {
         let (first, second) = self.entries.split_at(index);
         (Self::from_slice(first), Self::from_slice(second))
     }
@@ -95,14 +103,17 @@ impl<T> Slice<T> {
     /// Divides one slice into two at an index.
     ///
     /// Returns `None` if `index > len`.
-    pub fn split_at_checked(&self, index: usize) -> Option<(&Self, &Self)> {
-        let (first, second) = self.entries.split_at_checked(index)?;
-        Some((Self::from_slice(first), Self::from_slice(second)))
+    pub const fn split_at_checked(&self, index: usize) -> Option<(&Self, &Self)> {
+        if let Some((first, second)) = self.entries.split_at_checked(index) {
+            Some((Self::from_slice(first), Self::from_slice(second)))
+        } else {
+            None
+        }
     }
 
     /// Returns the first value and the rest of the slice,
     /// or `None` if it is empty.
-    pub fn split_first(&self) -> Option<(&T, &Self)> {
+    pub const fn split_first(&self) -> Option<(&T, &Self)> {
         if let [first, rest @ ..] = &self.entries {
             Some((&first.key, Self::from_slice(rest)))
         } else {
@@ -112,7 +123,7 @@ impl<T> Slice<T> {
 
     /// Returns the last value and the rest of the slice,
     /// or `None` if it is empty.
-    pub fn split_last(&self) -> Option<(&T, &Self)> {
+    pub const fn split_last(&self) -> Option<(&T, &Self)> {
         if let [rest @ .., last] = &self.entries {
             Some((&last.key, Self::from_slice(rest)))
         } else {

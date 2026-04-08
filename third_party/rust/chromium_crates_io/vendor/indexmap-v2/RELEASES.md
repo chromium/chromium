@@ -1,5 +1,11 @@
 # Releases
 
+## 2.13.1 (2026-04-02)
+
+- Made some `Slice` methods `const`:
+  - `map::Slice::{first,last,split_at,split_at_checked,split_first,split_last}`
+  - `set::Slice::{first,last,split_at,split_at_checked,split_first,split_last}`
+
 ## 2.13.0 (2026-01-07)
 
 - Implemented `Clone` for `IntoKeys` and `IntoValues`.

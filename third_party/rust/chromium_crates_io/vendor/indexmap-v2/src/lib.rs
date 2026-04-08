@@ -172,10 +172,10 @@ where
 
 impl<K, V> Bucket<K, V> {
     // field accessors -- used for `f` instead of closures in `.map(f)`
-    fn key_ref(&self) -> &K {
+    const fn key_ref(&self) -> &K {
         &self.key
     }
-    fn value_ref(&self) -> &V {
+    const fn value_ref(&self) -> &V {
         &self.value
     }
     fn value_mut(&mut self) -> &mut V {
@@ -190,7 +190,7 @@ impl<K, V> Bucket<K, V> {
     fn key_value(self) -> (K, V) {
         (self.key, self.value)
     }
-    fn refs(&self) -> (&K, &V) {
+    const fn refs(&self) -> (&K, &V) {
         (&self.key, &self.value)
     }
     fn ref_mut(&mut self) -> (&K, &mut V) {
