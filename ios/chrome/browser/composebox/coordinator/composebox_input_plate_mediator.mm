@@ -2210,6 +2210,9 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
   BOOL showShortcuts =
       !hasContent && !canSend &&
       !base::FeatureList::IsEnabled(kHideFuseboxVoiceLensActions);
+  // Hide the plus button is different from !allowsMultimodalActions. When the
+  // plus button is hidden, the user can still use multimodal actions from other
+  // sources such as drag and drop.
   BOOL hidePlusButton = NO;
   if (IsComposeboxConditionalPlusButtonEnabled() &&
       _modeHolder.isRegularSearch && compactMode) {

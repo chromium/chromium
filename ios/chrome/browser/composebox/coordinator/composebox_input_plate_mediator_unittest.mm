@@ -591,6 +591,35 @@ TEST_F(ComposeboxInputPlateMediatorTest, ToolWithoutRuleIsMarkedDisabled) {
   EXPECT_TRUE(consumer_.createImageDisabled);
 }
 
+// Tests that the plus button is hidden in compact mode for URL queries.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       HidePlusButtonInCompactModeForURLQuery) {
+  EnableInputPlateFeatures({.compactMode = true});
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+
+  [mediator_ omniboxDidChangeText:u"http://example.com"
+                    isSearchQuery:NO
+              userInputInProgress:YES];
+
+  EXPECT_FALSE([consumer_ showsControls:ComposeboxInputPlateControls::kPlus]);
+}
+
+// Tests that the plus button is visible in compact mode for pre-edit URL state
+// by default (when variant is not HideInPreEdit).
+TEST_F(ComposeboxInputPlateMediatorTest,
+       ShowPlusButtonInCompactModeForPreEdit) {
+  EnableInputPlateFeatures({.compactMode = true});
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+
+  [mediator_ omniboxDidChangeText:u"http://example.com"
+                    isSearchQuery:NO
+              userInputInProgress:NO];
+
+  EXPECT_TRUE([consumer_ showsControls:ComposeboxInputPlateControls::kPlus]);
+}
+
 // Tests that the mediator forwards background/foreground notifications to the
 // contextual search session.
 TEST_F(ComposeboxInputPlateMediatorTest,
