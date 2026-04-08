@@ -149,6 +149,11 @@ ActorTask::ActorTask(base::PassKey<ActorKeyedService, ActorTask>,
       journal_(service_->GetJournal().GetSafeRef()),
       title_(options && options->title.has_value() ? options->title.value()
                                                    : ""),
+      duration_(options && options->duration.has_value() &&
+                        options->duration.value() ==
+                            actor::webui::mojom::TaskDuration::kTransient
+                    ? TaskDuration::kTransient
+                    : TaskDuration::kDefault),
       policy_checker_(*policy_checker),
       delegate_(std::move(delegate)),
       ui_weak_ptr_factory_(ui_event_dispatcher_.get()) {

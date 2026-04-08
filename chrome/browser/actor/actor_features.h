@@ -109,6 +109,9 @@ BASE_DECLARE_FEATURE(kGlicActorLoadAndExtractContentTool);
 extern const base::FeatureParam<base::TimeDelta>
     kGlicActorLoadAndExtractContentToolTimeout;
 
+BASE_DECLARE_FEATURE(kGlicActorTransientTasks);
+extern const base::FeatureParam<bool> kGlicActorTransientTasksForceTransient;
+
 BASE_DECLARE_FEATURE(kGlicActorEnableScriptTools);
 
 BASE_DECLARE_FEATURE(kActorScriptToolDelayObservation);

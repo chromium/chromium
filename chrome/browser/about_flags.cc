@@ -3705,6 +3705,12 @@ const FeatureEntry::FeatureParam kGlicWarmingShorterDelays[] = {
 const FeatureEntry::FeatureVariation kGlicWarmingVariations[] = {
     {"with shorter delays", kGlicWarmingShorterDelays, nullptr}};
 
+const FeatureEntry::FeatureParam kGlicActorTransientTasksForceTransient[] = {
+    {"force_transient", "true"}};
+
+const FeatureEntry::FeatureVariation kGlicActorTransientTasksVariations[] = {
+    {"(force transient)", kGlicActorTransientTasksForceTransient, nullptr}};
+
 const char kGlicEntrypointVariationsShowLabel[] =
     "glic-entrypoint-variations-show-label";
 const char kGlicEntrypointVariationsAltIcon[] =
@@ -10566,6 +10572,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGlicActorEnableScriptToolsName,
      flag_descriptions::kGlicActorEnableScriptToolsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(actor::kGlicActorEnableScriptTools)},
+    {"glic-actor-transient-tasks",
+     flag_descriptions::kGlicActorTransientTasksName,
+     flag_descriptions::kGlicActorTransientTasksDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(actor::kGlicActorTransientTasks,
+                                    kGlicActorTransientTasksVariations,
+                                    "GlicActorTransientTasks")},
     {"glic-detached", flag_descriptions::kGlicDetachedName,
      flag_descriptions::kGlicDetachedDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGlicDetached)},

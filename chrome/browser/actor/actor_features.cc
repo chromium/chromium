@@ -158,9 +158,16 @@ BASE_FEATURE(kActorSendBrowserSignalForAction,
 BASE_FEATURE(kGlicActorLoadAndExtractContentTool,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::TimeDelta kGlicActorLoadAndExtractContentToolTimeoutDefault =
+    base::Seconds(30);
 const base::FeatureParam<base::TimeDelta>
     kGlicActorLoadAndExtractContentToolTimeout{
-        &kGlicActorLoadAndExtractContentTool, "timeout", base::Seconds(30)};
+        &kGlicActorLoadAndExtractContentTool, "timeout",
+        kGlicActorLoadAndExtractContentToolTimeoutDefault};
+
+BASE_FEATURE(kGlicActorTransientTasks, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kGlicActorTransientTasksForceTransient{
+    &kGlicActorTransientTasks, "force_transient", false};
 
 BASE_FEATURE(kGlicActorEnableScriptTools, base::FEATURE_ENABLED_BY_DEFAULT);
 

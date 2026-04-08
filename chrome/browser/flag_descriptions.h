@@ -1428,6 +1428,11 @@ inline constexpr char kGlicActorEnableScriptToolsName[] =
     "Glic actor script tools";
 inline constexpr char kGlicActorEnableScriptToolsDescription[] =
     "Enables script tools for the Glic actor.";
+inline constexpr char kGlicActorTransientTasksName[] =
+    "Glic actor transient tasks";
+inline constexpr char kGlicActorTransientTasksDescription[] =
+    "Support for transient tasks in actor. If enabled, all tasks will use the "
+    "transient actor UI.";
 inline constexpr char kGlicCaptureRegionDescription[] =
     "Enables Glic to capture a region of the screen.";
 inline constexpr char kGlicCaptureRegionName[] = "Glic Capture Region";

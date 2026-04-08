@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
@@ -41,14 +42,26 @@ using enum HandoffButtonState::ControlOwnership;
 
 // TODO(crbug.com/424495020): Hardcoded states; Move this out to it's own file
 // to be shared with tab controller.
-const UiTabState& GetActorControlledUiTabState() {
-  static const UiTabState kActorState = {
+const UiTabState& GetActorControlledUiTabState(
+    ActorTask::TaskDuration duration) {
+  static const UiTabState kDefaultActorState = {
       .actor_overlay = {.is_active = true, .border_glow_visible = true},
       .handoff_button = {.is_active = true, .controller = kActor},
       .tab_indicator = TabIndicatorStatus::kDynamic,
       .border_glow_visible = true,
   };
-  return kActorState;
+  static const UiTabState kTransientActorState = {
+      .actor_overlay = {.is_active = false, .border_glow_visible = false},
+      .handoff_button = {.is_active = false, .controller = kActor},
+      .tab_indicator = TabIndicatorStatus::kDynamic,
+      .border_glow_visible = false,
+  };
+  switch (duration) {
+    case ActorTask::TaskDuration::kDefault:
+      return kDefaultActorState;
+    case ActorTask::TaskDuration::kTransient:
+      return kTransientActorState;
+  }
 }
 
 const UiTabState& GetWaitingOnUserUiTabState() {
@@ -86,23 +99,6 @@ struct TabUiUpdate {
   UiTabState ui_tab_state;
 };
 
-auto GetNewUiStateFn() {
-  return absl::Overload{
-      [](const StartingToActOnTab& e) -> TabUiUpdate {
-        return TabUiUpdate{e.tab_handle.Get(), GetActorControlledUiTabState()};
-      },
-      [](const MouseClick& e) -> TabUiUpdate {
-        UiTabState ui_tab_state = GetActorControlledUiTabState();
-        ui_tab_state.actor_overlay.mouse_down = true;
-        return TabUiUpdate{e.tab_handle.Get(), ui_tab_state};
-      },
-      [](const MouseMove& e) -> TabUiUpdate {
-        UiTabState ui_tab_state = GetActorControlledUiTabState();
-        ui_tab_state.actor_overlay.mouse_target = e.target;
-        return TabUiUpdate{e.tab_handle.Get(), ui_tab_state};
-      }};
-}
-
 // TODO(crbug.com/424495020): Bool may be converted to a map of ui
 // components:bool depending on what controller returns.
 void OnUiChangeComplete(UiCompleteCallback complete_callback, bool result) {
@@ -134,6 +130,23 @@ ActorUiStateManager::ActorUiStateManager(ActorKeyedService& actor_service)
     : actor_service_(actor_service) {}
 ActorUiStateManager::~ActorUiStateManager() = default;
 
+ActorTask::TaskDuration ActorUiStateManager::GetDuration(TaskId task_id) {
+  if (ActorTask* task = actor_service_->GetTask(task_id)) {
+    return task->get_task_duration();
+  }
+  return ActorTask::TaskDuration::kDefault;
+}
+
+ActorTask::TaskDuration ActorUiStateManager::GetDuration(
+    const tabs::TabInterface* tab) {
+  if (tab) {
+    if (ActorTask* task = actor_service_->GetTaskFromTab(*tab)) {
+      return task->get_task_duration();
+    }
+  }
+  return ActorTask::TaskDuration::kDefault;
+}
+
 // TODO(crbug.com/424495020): If the tab doesn't exist we will silently
 // fail/not send a callback in the interim until these tasks are able to
 // accept a callback.
@@ -152,7 +165,7 @@ void ActorUiStateManager::OnActorTaskStateChange(
           << "Task state should never be set to kCreated from another state.";
     case ActorTask::State::kActing:
     case ActorTask::State::kReflecting:
-      ui_tab_state = GetActorControlledUiTabState();
+      ui_tab_state = GetActorControlledUiTabState(GetDuration(task_id));
       break;
     case ActorTask::State::kWaitingOnUser:
       ui_tab_state = GetWaitingOnUserUiTabState();
@@ -200,7 +213,26 @@ void ActorUiStateManager::OnUiEvent(AsyncUiEvent event,
   TRACE_EVENT("actor", "UiStateManager::OnUiEvent_Async", "event",
               DebugString(event));
   if (base::FeatureList::IsEnabled(features::kGlicActorUi)) {
-    const TabUiUpdate update = std::visit(GetNewUiStateFn(), event);
+    const TabUiUpdate update = std::visit(
+        absl::Overload{
+            [this](const StartingToActOnTab& e) -> TabUiUpdate {
+              return TabUiUpdate{
+                  e.tab_handle.Get(),
+                  GetActorControlledUiTabState(GetDuration(e.task_id))};
+            },
+            [this](const MouseClick& e) -> TabUiUpdate {
+              UiTabState ui_tab_state =
+                  GetActorControlledUiTabState(GetDuration(e.tab_handle.Get()));
+              ui_tab_state.actor_overlay.mouse_down = true;
+              return TabUiUpdate{e.tab_handle.Get(), ui_tab_state};
+            },
+            [this](const MouseMove& e) -> TabUiUpdate {
+              UiTabState ui_tab_state =
+                  GetActorControlledUiTabState(GetDuration(e.tab_handle.Get()));
+              ui_tab_state.actor_overlay.mouse_target = e.target;
+              return TabUiUpdate{e.tab_handle.Get(), ui_tab_state};
+            }},
+        event);
     if (auto* tab_controller =
             ActorUiTabControllerInterface::From(update.tab)) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

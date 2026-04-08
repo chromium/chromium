@@ -314,6 +314,19 @@ TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
 }
 
 TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
+       OnStartingToActOnTransientTab_UpdatesUiCorrectly) {
+  TaskId task_id = actor_keyed_service()->CreateTransientTaskForTesting();
+  UiTabState expected_ui_tab_state{
+      .actor_overlay = {.is_active = false, .border_glow_visible = false},
+      .handoff_button = {.is_active = false, .controller = kActor},
+      .tab_indicator = TabIndicatorStatus::kDynamic,
+      .border_glow_visible = false,
+  };
+  VerifyUiEvent(StartingToActOnTab{mock_tab().GetHandle(), task_id},
+                expected_ui_tab_state);
+}
+
+TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
        OnStoppedActingOnTab_UpdatesUiCorrectly) {
   UiTabState expected_ui_tab_state{
       .actor_overlay = {.is_active = false},
@@ -350,6 +363,57 @@ TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
       .handoff_button = {.is_active = true, .controller = kActor},
       .tab_indicator = TabIndicatorStatus::kDynamic,
       .border_glow_visible = true,
+  };
+  VerifyUiEvent(MouseClick{mock_tab().GetHandle(), mojom::ClickType::kLeft,
+                           mojom::ClickCount::kSingle},
+                expected_ui_tab_state);
+}
+
+TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
+       OnMouseMove_Transient_UpdatesUiCorrectly) {
+  TaskId task_id = actor_keyed_service()->CreateTransientTaskForTesting();
+  base::RunLoop loop;
+  actor_keyed_service()->GetTask(task_id)->AddTab(
+      mock_tab().GetHandle(),
+      base::BindLambdaForTesting([&](ActionResultPtr result) {
+        EXPECT_TRUE(IsOk(*result));
+        loop.Quit();
+      }));
+  loop.Run();
+
+  UiTabState expected_ui_tab_state{
+      .actor_overlay = {.is_active = false,
+                        .border_glow_visible = false,
+                        .mouse_down = false,
+                        .mouse_target = gfx::Point(100, 200)},
+      .handoff_button = {.is_active = false, .controller = kActor},
+      .tab_indicator = TabIndicatorStatus::kDynamic,
+      .border_glow_visible = false,
+  };
+  VerifyUiEvent(MouseMove{mock_tab().GetHandle(), gfx::Point(100, 200),
+                          TargetSource::kToolRequest},
+                expected_ui_tab_state);
+}
+
+TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
+       OnMouseClick_Transient_UpdatesUiCorrectly) {
+  TaskId task_id = actor_keyed_service()->CreateTransientTaskForTesting();
+  base::RunLoop loop;
+  actor_keyed_service()->GetTask(task_id)->AddTab(
+      mock_tab().GetHandle(),
+      base::BindLambdaForTesting([&](ActionResultPtr result) {
+        EXPECT_TRUE(IsOk(*result));
+        loop.Quit();
+      }));
+  loop.Run();
+
+  UiTabState expected_ui_tab_state{
+      .actor_overlay = {.is_active = false,
+                        .border_glow_visible = false,
+                        .mouse_down = true},
+      .handoff_button = {.is_active = false, .controller = kActor},
+      .tab_indicator = TabIndicatorStatus::kDynamic,
+      .border_glow_visible = false,
   };
   VerifyUiEvent(MouseClick{mock_tab().GetHandle(), mojom::ClickType::kLeft,
                            mojom::ClickCount::kSingle},

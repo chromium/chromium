@@ -25,6 +25,17 @@ ActorKeyedServiceFake::ActorKeyedServiceFake(Profile* profile)
 ActorKeyedServiceFake::~ActorKeyedServiceFake() = default;
 
 TaskId ActorKeyedServiceFake::CreateTaskForTesting() {
+  return CreateTaskWithDurationForTesting(  // IN-TEST
+      actor::webui::mojom::TaskDuration::kDefault);
+}
+
+TaskId ActorKeyedServiceFake::CreateTransientTaskForTesting() {
+  return CreateTaskWithDurationForTesting(  // IN-TEST
+      actor::webui::mojom::TaskDuration::kTransient);
+}
+
+TaskId ActorKeyedServiceFake::CreateTaskWithDurationForTesting(  // IN-TEST
+    actor::webui::mojom::TaskDuration duration) {
   std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher =
       ui::NewMockUiEventDispatcher();
   std::unique_ptr<ui::UiEventDispatcher> task_ui_event_dispatcher =
@@ -60,6 +71,7 @@ TaskId ActorKeyedServiceFake::CreateTaskForTesting() {
 
   auto task_options = webui::mojom::TaskOptions::New();
   task_options->title = "Test Task";
+  task_options->duration = duration;
   return ActorKeyedService::CreateTaskForTesting(  // IN-TEST
       std::move(task_ui_event_dispatcher), TestTaskSourceInfo(),
       &no_enterprise_policy_checker_, std::move(task_options),

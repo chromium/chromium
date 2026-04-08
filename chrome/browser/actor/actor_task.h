@@ -142,11 +142,18 @@ class ActorTask : public base::SupportsUserData {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/histograms.xml:StoppedReason,
   // //tools/metrics/histograms/metadata/actor/enums.xml:StoppedReasonEnum)
 
+  enum class TaskDuration {
+    kDefault = 0,
+    kTransient = 1,
+  };
+
   State GetState() const;
   // TODO(bokan): This should be private (this class must be in control of its
   // state) but is used by tests. Make the tests friends (or update the tests)
   // and remove it from the public interface.
   void SetState(State new_state);
+
+  TaskDuration get_task_duration() const { return duration_; }
 
   base::Time GetEndTime() const;
 
@@ -330,8 +337,11 @@ class ActorTask : public base::SupportsUserData {
 
   base::SafeRef<AggregatedJournal> journal_;
 
-  // The title does not change for the duration of a task.
+  // The title does not change for the lifetime of a task.
   const std::string title_;
+
+  // The task duration type does not change for the lifetime of a task.
+  const TaskDuration duration_;
 
   // The callback to notify the client of the result of calling Act().
   ActCallback callback_for_act_;

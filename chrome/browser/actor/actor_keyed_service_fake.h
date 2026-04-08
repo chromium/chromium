@@ -19,11 +19,15 @@ class ActorKeyedServiceFake : public ActorKeyedService {
   ~ActorKeyedServiceFake() override;
 
   TaskId CreateTaskForTesting();
+  TaskId CreateTransientTaskForTesting();
   void PauseTaskForTesting(TaskId task_id, bool from_actor);
   void StopTaskForTesting(TaskId task_id,
                           actor::ActorTask::StoppedReason stopped_reason);
 
  private:
+  TaskId CreateTaskWithDurationForTesting(
+      actor::webui::mojom::TaskDuration duration);
+
   MockPolicyChecker no_enterprise_policy_checker_{
       EnterprisePolicyBlockReason::kNotBlocked};
 

@@ -45,6 +45,8 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   std::vector<tabs::TabInterface*> GetTabs(TaskId id);
 
  private:
+  ActorTask::TaskDuration GetDuration(TaskId task_id);
+  ActorTask::TaskDuration GetDuration(const tabs::TabInterface* tab);
   // Notify profile scoped ui components about actor task state changes.
   void NotifyActorTaskStateChange(TaskId task_id);
   // Called whenever an actor task state changes.

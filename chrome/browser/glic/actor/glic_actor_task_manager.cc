@@ -13,6 +13,7 @@
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_metrics.h"
@@ -142,6 +143,19 @@ void GlicActorTaskManager::CreateTask(
   }
 
   actor::RecordActorTaskCreated(true);
+
+  if (base::FeatureList::IsEnabled(actor::kGlicActorTransientTasks)) {
+    if (actor::kGlicActorTransientTasksForceTransient.Get()) {
+      if (!options) {
+        options = actor::webui::mojom::TaskOptions::New();
+      }
+      options->duration = actor::webui::mojom::TaskDuration::kTransient;
+    }
+  } else if (options && options->duration ==
+                            actor::webui::mojom::TaskDuration::kTransient) {
+    options->duration = actor::webui::mojom::TaskDuration::kDefault;
+  }
+
   current_task_id_ = actor_keyed_service_->CreateTaskWithOptions(
       actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kGlic,
                             conversation_id),
