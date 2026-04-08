@@ -31,6 +31,13 @@ FullscreenControllerImpl::FullscreenControllerImpl(Browser* browser)
           initWithController:this
                     mediator:&mediator_]) {
   CHECK(broadcaster_);
+
+  // TODO(crbug.com/500417603): This can be removed once all calls to
+  // FullscreenController are flag guarded.
+  if (IsFullscreenRefactoringEnabled()) {
+    return;
+  }
+
   web_state_list_observer_.SetWebStateList(browser->GetWebStateList());
   if (web::features::ShouldUseBroadcasterForSmoothScrolling()) {
     [broadcaster_ addObserver:bridge_
