@@ -25,14 +25,14 @@ CSSStyleDeclaration* CSSMarginRule::style() const {
 }
 
 String CSSMarginRule::name() const {
-  // Return the name of the rule, without the preceding '@'.
-  return StringView(CssAtRuleIDToString(margin_rule_->ID()), 1).ToString();
+  return CssAtRuleIDToString(margin_rule_->ID()).ToString();
 }
 
 String CSSMarginRule::cssText() const {
   // TODO(mstensho): Serialization needs to be specced:
   // https://github.com/w3c/csswg-drafts/issues/9952
   StringBuilder result;
+  result.Append('@');
   result.Append(CssAtRuleIDToString(margin_rule_->ID()));
   result.Append(" { ");
   String decls = margin_rule_->Properties().AsText();
