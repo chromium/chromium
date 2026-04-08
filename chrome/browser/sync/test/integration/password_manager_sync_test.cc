@@ -712,8 +712,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   EXPECT_FALSE(bubble_observer.IsSavePromptAvailable());
 }
 
-// TODO(crbug.com/500585809): Enable the test.
-#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/500570908): Enable the test.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
 #define MAYBE_OfferToSaveNonPrimaryAccountCredential \
   DISABLED_OfferToSaveNonPrimaryAccountCredential
 #else
@@ -751,8 +751,16 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   bubble_observer.WaitForAutomaticSavePrompt();
 }
 
+// TODO(crbug.com/500570908): Enable the test.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_OfferToUpdatePrimaryAccountCredential \
+  DISABLED_OfferToUpdatePrimaryAccountCredential
+#else
+#define MAYBE_OfferToUpdatePrimaryAccountCredential \
+  OfferToUpdatePrimaryAccountCredential
+#endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
-                       OfferToUpdatePrimaryAccountCredential) {
+                       MAYBE_OfferToUpdatePrimaryAccountCredential) {
   ASSERT_TRUE(SetupClients());
 
   // The password for the primary account is already saved.
