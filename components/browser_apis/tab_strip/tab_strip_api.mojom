@@ -37,6 +37,7 @@ struct TabsSnapshot {
 // The TabStripService is an object that lives alongside the
 // TabstripModel. It acts as the bridge between the model and any UI Dialog
 // or client.
+[GenerateDirectReturnStub]
 interface TabStripService {
   // Gets the current state of the tab tree. This also returns a stream of
   // future update events. Clients can implement the |TabsObserver| interface

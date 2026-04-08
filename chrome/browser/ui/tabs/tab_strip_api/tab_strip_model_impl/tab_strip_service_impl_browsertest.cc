@@ -23,7 +23,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/browser_adapter_impl.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/tab_strip_model_adapter_impl.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/tab_strip_model_injector.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_mojo_handler.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_impl.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -145,14 +145,13 @@ class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    tab_strip_service_mojo_handler_ =
-        std::make_unique<TabStripServiceMojoHandler>(
-            std::make_unique<tabs_api::tab_strip_model::TabStripModelInjector>(
-                browser(), browser()->tab_strip_model()));
+    tab_strip_service_ = std::make_unique<tabs_api::TabStripServiceImpl>(
+        std::make_unique<tabs_api::tab_strip_model::TabStripModelInjector>(
+            browser(), browser()->tab_strip_model()));
   }
 
   void TearDownOnMainThread() override {
-    tab_strip_service_mojo_handler_.reset();
+    tab_strip_service_.reset();
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
@@ -180,7 +179,7 @@ class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
 
   std::unique_ptr<Observation> SetUpObservation() {
     auto observation = std::make_unique<Observation>();
-    tab_strip_service_mojo_handler_->Accept(
+    tab_strip_service_->Accept(
         observation->remote.BindNewPipeAndPassReceiver());
 
     base::RunLoop run_loop;
@@ -295,19 +294,18 @@ class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
   }
 
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<TabStripServiceMojoHandler> tab_strip_service_mojo_handler_;
+  std::unique_ptr<tabs_api::TabStripServiceImpl> tab_strip_service_;
 };
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, SynchronousObserver) {
   ReallyVerySimpleSyncObserver observer;
 
-  auto* service = tab_strip_service_mojo_handler_->GetTabStripService();
-  service->AddObserver(&observer);
+  tab_strip_service_->AddObserver(&observer);
 
   ASSERT_EQ(0, observer.num_callbacks);
 
-  auto result = service->CreateTabAt(tabs_api::Position(0),
-                                     std::make_optional(GURL("www.foo.bear")));
+  auto result = tab_strip_service_->CreateTabAt(
+      tabs_api::Position(0), std::make_optional(GURL("www.foo.bear")));
 
   ASSERT_TRUE(result.has_value());
 
@@ -315,8 +313,6 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, SynchronousObserver) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, PreventsReentrancy) {
-  auto* service = tab_strip_service_mojo_handler_->GetTabStripService();
-
   class ReallyBadObserver
       : public tabs_api::observation::TabStripApiBatchedObserver {
    public:
@@ -333,21 +329,21 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, PreventsReentrancy) {
     raw_ptr<tabs_api::TabStripService> service_;
   };
 
-  ReallyBadObserver observer(service);
+  ReallyBadObserver observer(tab_strip_service_.get());
 
-  service->AddObserver(&observer);
+  tab_strip_service_->AddObserver(&observer);
 
   // We have a really bad observer that will attempt to re-enter. Assert that
   // this is disallowed.
   EXPECT_CHECK_DEATH([&] {
-    auto _ = service->CreateTabAt(tabs_api::Position(0),
-                                  std::make_optional(GURL("www.foo.bear")));
+    auto _ = tab_strip_service_->CreateTabAt(
+        tabs_api::Position(0), std::make_optional(GURL("www.foo.bear")));
   }());
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CreateTabAt) {
   mojo::Remote<TabStripService> remote;
-  tab_strip_service_mojo_handler_->Accept(remote.BindNewPipeAndPassReceiver());
+  tab_strip_service_->Accept(remote.BindNewPipeAndPassReceiver());
 
   TabStripModel* model = GetTabStripModel();
   const int expected_tab_count = model->count() + 1;
@@ -444,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, Observation) {
   mojo::Remote<TabStripService> remote;
-  tab_strip_service_mojo_handler_->Accept(remote.BindNewPipeAndPassReceiver());
+  tab_strip_service_->Accept(remote.BindNewPipeAndPassReceiver());
   TestTabStripClient client;
   mojo::AssociatedReceiver<tabs_api::mojom::TabsObserver> receiver(&client);
   const GURL url("http://example.com/");
@@ -500,7 +496,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, Observation) {
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CloseNodes) {
   mojo::Remote<TabStripService> remote;
-  tab_strip_service_mojo_handler_->Accept(remote.BindNewPipeAndPassReceiver());
+  tab_strip_service_->Accept(remote.BindNewPipeAndPassReceiver());
 
   const int starting_num_tabs = GetTabStripModel()->count();
 
@@ -527,7 +523,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CloseNodes) {
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, RemoveTabGroup) {
   mojo::Remote<TabStripService> remote;
-  tab_strip_service_mojo_handler_->Accept(remote.BindNewPipeAndPassReceiver());
+  tab_strip_service_->Accept(remote.BindNewPipeAndPassReceiver());
   auto observation = SetUpObservation();
   TabStripModel* model = GetTabStripModel();
   CreateTabs(remote, 3, GURL("http://somwewhere.nowhere"));
@@ -550,7 +546,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, RemoveTabGroup) {
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ActivateTab) {
   mojo::Remote<TabStripService> remote;
-  tab_strip_service_mojo_handler_->Accept(remote.BindNewPipeAndPassReceiver());
+  tab_strip_service_->Accept(remote.BindNewPipeAndPassReceiver());
 
   tabs_api::NodeId created_id;
   // Append a new tab to the end, which will also focus it.
@@ -580,7 +576,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ActivateTab) {
 // Create 5 tabs and select 3 random ones.
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, SetSelectedTabs) {
   mojo::Remote<TabStripService> remote;
-  tab_strip_service_mojo_handler_->Accept(remote.BindNewPipeAndPassReceiver());
+  tab_strip_service_->Accept(remote.BindNewPipeAndPassReceiver());
 
   auto observation = SetUpObservation();
 
@@ -639,7 +635,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, SetSelectedTabs) {
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveTab) {
   mojo::Remote<TabStripService> remote;
-  tab_strip_service_mojo_handler_->Accept(remote.BindNewPipeAndPassReceiver());
+  tab_strip_service_->Accept(remote.BindNewPipeAndPassReceiver());
 
   auto observation = SetUpObservation();
 
@@ -676,7 +672,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveTab) {
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveTabIntoGroup) {
   mojo::Remote<TabStripService> remote;
-  tab_strip_service_mojo_handler_->Accept(remote.BindNewPipeAndPassReceiver());
+  tab_strip_service_->Accept(remote.BindNewPipeAndPassReceiver());
 
   auto observation = SetUpObservation();
 
@@ -741,7 +737,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveTabIntoGroup) {
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveGroupCollection) {
   mojo::Remote<TabStripService> remote;
-  tab_strip_service_mojo_handler_->Accept(remote.BindNewPipeAndPassReceiver());
+  tab_strip_service_->Accept(remote.BindNewPipeAndPassReceiver());
 
   TabStripModel* model = GetTabStripModel();
   CreateTabs(remote, 3, GURL("http://somwewhere.nowhere"));
@@ -776,7 +772,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveGroupCollection) {
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveSplitCollection) {
   mojo::Remote<TabStripService> remote;
-  tab_strip_service_mojo_handler_->Accept(remote.BindNewPipeAndPassReceiver());
+  tab_strip_service_->Accept(remote.BindNewPipeAndPassReceiver());
 
   TabStripModel* model = GetTabStripModel();
   CreateTabs(remote, 3, GURL("http://somwewhere.nowhere"));
@@ -814,8 +810,8 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveSplitCollection) {
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ReplaceTabInSplit) {
   mojo::Remote<TabStripService> remote;
   mojo::Remote<TabStripExperimentService> experiment_remote;
-  tab_strip_service_mojo_handler_->Accept(remote.BindNewPipeAndPassReceiver());
-  tab_strip_service_mojo_handler_->AcceptExperimental(
+  tab_strip_service_->Accept(remote.BindNewPipeAndPassReceiver());
+  tab_strip_service_->AcceptExperimental(
       experiment_remote.BindNewPipeAndPassReceiver());
 
   TabStripModel* model = GetTabStripModel();
@@ -858,8 +854,8 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ReplaceTabInSplit) {
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, UpdateTabGroupData) {
   mojo::Remote<TabStripService> remote;
   mojo::Remote<TabStripExperimentService> experiment_remote;
-  tab_strip_service_mojo_handler_->Accept(remote.BindNewPipeAndPassReceiver());
-  tab_strip_service_mojo_handler_->AcceptExperimental(
+  tab_strip_service_->Accept(remote.BindNewPipeAndPassReceiver());
+  tab_strip_service_->AcceptExperimental(
       experiment_remote.BindNewPipeAndPassReceiver());
   TabStripModel* model = GetTabStripModel();
 
@@ -905,8 +901,8 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, UpdateTabGroupData) {
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ShowTabContextMenu) {
   mojo::Remote<TabStripService> remote;
   mojo::Remote<TabStripExperimentService> experiment_remote;
-  tab_strip_service_mojo_handler_->Accept(remote.BindNewPipeAndPassReceiver());
-  tab_strip_service_mojo_handler_->AcceptExperimental(
+  tab_strip_service_->Accept(remote.BindNewPipeAndPassReceiver());
+  tab_strip_service_->AcceptExperimental(
       experiment_remote.BindNewPipeAndPassReceiver());
 
   tabs_api::NodeId created_id;
@@ -928,7 +924,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ShowTabContextMenu) {
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, GetAllTabsForProfile) {
   mojo::Remote<TabStripExperimentService> experiment_remote;
-  tab_strip_service_mojo_handler_->AcceptExperimental(
+  tab_strip_service_->AcceptExperimental(
       experiment_remote.BindNewPipeAndPassReceiver());
 
   CreateBrowser(browser()->profile());

@@ -14,6 +14,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 // and iteration. It is intentionally separate from the core, stable level
 // TabStripService and not intended for production use. This API should still
 // adhere to security best practices.
+[GenerateDirectReturnStub]
 interface TabStripExperimentService {
   // Replaces a tab that is currently part of a split view (the
   // `tab_to_replace`)

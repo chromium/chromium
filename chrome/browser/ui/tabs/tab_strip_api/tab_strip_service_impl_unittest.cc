@@ -67,7 +67,7 @@ TEST_F(TabStripServiceImplTest, CreateNewTab) {
 TEST_F(TabStripServiceImplTest, GetTabs) {
   tab_strip_->AddTab({tabs::TabHandle(888), GURL("hihi")});
 
-  auto result = service_->GetTabs();
+  auto result = service_->GetTabsWithoutObservation();
 
   const auto& window = result.value();
   ASSERT_TRUE(window->data->is_window());

@@ -49,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(AndroidTabStripApiBrowserTest, Get) {
   // Initial state test, there should be one tab.
   ASSERT_EQ(1, model_->GetTabCount());
   {
-    auto result = service_->GetTabs();
+    auto result = service_->GetTabsWithoutObservation();
     ASSERT_TRUE(result.has_value());
 
     auto& window_container = result.value();
@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(AndroidTabStripApiBrowserTest, Get) {
   {
     // Some of the stuff is repeated, just to make sure we don't mangle the
     // parents.
-    auto result = service_->GetTabs();
+    auto result = service_->GetTabsWithoutObservation();
     ASSERT_TRUE(result.has_value());
 
     auto& window_container = result.value();

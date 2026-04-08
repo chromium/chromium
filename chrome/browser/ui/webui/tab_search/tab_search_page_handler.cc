@@ -399,7 +399,7 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
 
         auto* service = GetTabStripService(browser);
         CHECK(service);
-        auto get_tabs_result = service->GetTabs();
+        auto get_tabs_result = service->GetTabsWithoutObservation();
         if (!get_tabs_result.has_value()) {
           VLOG(1) << "Failed to get tabs";
           return true;

@@ -14,6 +14,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service.h"
 #include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
 #include "components/browser_apis/tab_strip/tab_strip_experiment_api.mojom.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace tabs_api {
@@ -29,7 +31,9 @@ class PlatformAdaptersProvider;
 // clients of the observed events before returning the result of the method
 // invocation. This behaviour is important for the mojo layer. See the tab
 // strip api mojo handler for more details.
-class TabStripServiceImpl : public TabStripService {
+class TabStripServiceImpl
+    : public TabStripService,
+      public tabs_api::observation::TabStripApiBatchedObserver {
  public:
   TabStripServiceImpl(
       std::unique_ptr<PlatformAdaptersProvider> adapters_provider);
@@ -37,7 +41,15 @@ class TabStripServiceImpl : public TabStripService {
   TabStripServiceImpl operator=(const TabStripServiceImpl&&) = delete;
   ~TabStripServiceImpl() override;
 
-  TabStripService::GetTabsResult GetTabs() override;
+  TabStripService::GetTabsResult GetTabsWithoutObservation() override;
+  void Accept(
+      mojo::PendingReceiver<tabs_api::mojom::TabStripService> client) override;
+  void AcceptExperimental(
+      mojo::PendingReceiver<tabs_api::mojom::TabStripExperimentService> client)
+      override;
+
+  // TabStripServiceDirectReturnStub:
+  mojom::TabStripService::GetTabsResult GetTabs() override;
   mojom::TabStripService::GetTabResult GetTab(
       const tabs_api::NodeId& id) override;
   mojom::TabStripService::CreateTabAtResult CreateTabAt(
@@ -74,6 +86,10 @@ class TabStripServiceImpl : public TabStripService {
   void RemoveObserver(
       observation::TabStripApiBatchedObserver* observer) override;
 
+  // tabs_api::observation::TabStripApiBatchedObserver overrides
+  void OnTabEvents(
+      const std::vector<tabs_api::mojom::TabsEventPtr>& events) override;
+
   // Used internally by the tab strip service to control API invocation rules.
   // A session represents an ongoing API invocation.
   class Session {
@@ -89,6 +105,9 @@ class TabStripServiceImpl : public TabStripService {
   };
 
  private:
+  mojom::TabStripServiceBridge bridge_{this};
+  mojom::TabStripExperimentServiceBridge experimental_bridge_{this};
+
   TabStripModelAdapter& tab_strip_model_adapter();
   TranslationAdapter& translation_adapter();
   BrowserAdapter& browser_adapter();
@@ -105,6 +124,11 @@ class TabStripServiceImpl : public TabStripService {
 
   std::unique_ptr<SessionController> session_controller_;
   base::ObserverList<observation::TabStripApiBatchedObserver> observers_;
+
+  mojo::ReceiverSet<tabs_api::mojom::TabStripService> mojo_clients_;
+  mojo::ReceiverSet<tabs_api::mojom::TabStripExperimentService>
+      mojo_experiment_clients_;
+  mojo::AssociatedRemoteSet<tabs_api::mojom::TabsObserver> mojo_observers_;
 };
 
 }  // namespace tabs_api

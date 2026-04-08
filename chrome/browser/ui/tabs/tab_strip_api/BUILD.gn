@@ -11,44 +11,23 @@ source_set("tab_strip_api") {
     "tab_strip_service_feature.h",
   ]
 
-  public_deps = [
-    "adapters",
-    "//components/browser_apis/tab_strip:mojom",
-  ]
+  public_deps = [ "//components/browser_apis/tab_strip:mojom" ]
 
-  deps = [
-    "observation",
-    "//components/browser_apis/tab_strip:mojom_experiment",
-  ]
-}
-
-# This target is needed to prevent circular dependency.
-source_set("impl_header") {
-  sources = [ "tab_strip_service_mojo_handler.h" ]
-
-  deps = [
-    ":tab_strip_api",
-    "adapters",
-    "observation",
-    "//chrome/browser/ui/tabs/tab_strip_api/events",
-    "//components/browser_apis/tab_strip:mojom",
-    "//components/browser_apis/tab_strip:mojom_experiment",
-  ]
+  deps = [ "//components/browser_apis/tab_strip:mojom_experiment" ]
 }
 
 source_set("impl") {
   sources = [
     "event_broadcaster.cc",
     "event_broadcaster.h",
+    "tab_strip_service_feature.cc",
     "tab_strip_service_impl.cc",
     "tab_strip_service_impl.h",
-    "tab_strip_service_mojo_handler.cc",
-    "tab_strip_service_mojo_handler.h",
   ]
 
   deps = [
-    ":impl_header",
     ":tab_strip_api",
+    "adapters",
     "events",
     "observation",
     "utilities",
@@ -76,6 +55,7 @@ if (!is_android) {
     deps = [
       ":impl",
       ":tab_strip_api",
+      "adapters",
       "aggregation:unit_tests",
       "events:unit_tests",
       "observation:unit_tests",

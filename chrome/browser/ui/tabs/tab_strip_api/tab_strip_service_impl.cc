@@ -79,9 +79,11 @@ TabStripServiceImpl::TabStripServiceImpl(
       std::make_unique<SessionControllerImpl>(recorder_.get());
 
   adapters_provider_->event_bridge().AddObserver(recorder_.get());
+  AddObserver(this);
 }
 
 TabStripServiceImpl::~TabStripServiceImpl() {
+  RemoveObserver(this);
   adapters_provider_->event_bridge().RemoveObserver(recorder_.get());
 }
 
@@ -103,11 +105,25 @@ void TabStripServiceImpl::BroadcastEvents(
   broadcaster.Broadcast(observers_, events);
 }
 
-TabStripService::GetTabsResult TabStripServiceImpl::GetTabs() {
+TabStripService::GetTabsResult
+TabStripServiceImpl::GetTabsWithoutObservation() {
   auto session = session_controller_->CreateSession();
 
   return tab_strip_model_adapter().GetTabStripTopology(
       tab_strip_model_adapter().GetRoot()->GetHandle());
+}
+
+mojom::TabStripService::GetTabsResult TabStripServiceImpl::GetTabs() {
+  auto snapshot = tabs_api::mojom::TabsSnapshot::New();
+  ASSIGN_OR_RETURN(auto result, GetTabsWithoutObservation());
+  snapshot->tab_strip = std::move(result);
+
+  mojo::AssociatedRemote<tabs_api::mojom::TabsObserver> stream;
+  auto pending_receiver = stream.BindNewEndpointAndPassReceiver();
+  mojo_observers_.Add(std::move(stream));
+  snapshot->stream = std::move(pending_receiver);
+
+  return snapshot;
 }
 
 mojom::TabStripService::GetTabResult TabStripServiceImpl::GetTab(
@@ -400,6 +416,20 @@ void TabStripServiceImpl::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
+// TODO(crbug.com/445765534): we should probably just move the mojo bits out
+// of this class into their own object. Interleaving them in this class leads
+// to some pertty strange code...
+void TabStripServiceImpl::OnTabEvents(
+    const std::vector<tabs_api::mojom::TabsEventPtr>& events) {
+  for (auto& observer : mojo_observers_) {
+    std::vector<tabs_api::mojom::TabsEventPtr> copy;
+    for (auto& event : events) {
+      copy.push_back(event.Clone());
+    }
+    observer->OnTabEvents(std::move(copy));
+  }
+}
+
 mojom::TabStripExperimentService::ReplaceTabInSplitResult
 TabStripServiceImpl::ReplaceTabInSplit(const tabs_api::NodeId& tab_to_replace,
                                        const tabs_api::NodeId& tab_to_insert) {
@@ -426,6 +456,16 @@ TabStripServiceImpl::ReplaceTabInSplit(const tabs_api::NodeId& tab_to_replace,
                                               insert_index.value());
 
   return std::monostate();
+}
+
+void TabStripServiceImpl::Accept(
+    mojo::PendingReceiver<tabs_api::mojom::TabStripService> client) {
+  mojo_clients_.Add(&bridge_, std::move(client));
+}
+
+void TabStripServiceImpl::AcceptExperimental(
+    mojo::PendingReceiver<tabs_api::mojom::TabStripExperimentService> client) {
+  mojo_experiment_clients_.Add(&experimental_bridge_, std::move(client));
 }
 
 }  // namespace tabs_api
