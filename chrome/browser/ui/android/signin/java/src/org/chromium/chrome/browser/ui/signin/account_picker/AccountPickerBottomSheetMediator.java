@@ -502,7 +502,7 @@ public class AccountPickerBottomSheetMediator
 
     private void setSelectedAccount(CoreAccountInfo account) {
         mSelectedAccount = account;
-        final var profileData = mProfileDataCache.getProfileDataOrDefault(account.getEmail());
+        final var profileData = mProfileDataCache.getById(account.getId());
         updateSelectedAccountData(profileData);
     }
 
