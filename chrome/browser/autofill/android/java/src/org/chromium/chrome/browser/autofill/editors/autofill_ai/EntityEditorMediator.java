@@ -214,6 +214,7 @@ class EntityEditorMediator {
                                     + attributeType.getDataType();
             }
         }
+        maybeAddRequiredFieldsNoticeItem(editorFields);
         maybeAddEntitySourceNoticeItem(editorFields, mEntityInstance.getRecordType());
         return editorFields;
     }
@@ -321,6 +322,31 @@ class EntityEditorMediator {
                     ((AttributeInstance.StringValue) attribute.getAttributeValue()).getValue();
         }
         return attributeValue;
+    }
+
+    private void maybeAddRequiredFieldsNoticeItem(ListModel<EditorItem> editorFields) {
+        for (EditorItem editorItem : editorFields) {
+            if (editorItem.model.get(IS_REQUIRED)) {
+                editorFields.add(getRequiredFieldsNoticeItem());
+                break;
+            }
+        }
+    }
+
+    private EditorItem getRequiredFieldsNoticeItem() {
+        return new EditorItem(
+                NOTICE,
+                new PropertyModel.Builder(NOTICE_ALL_KEYS)
+                        .with(
+                                NOTICE_TEXT,
+                                mContext.getString(R.string.payments_required_field_message))
+                        .with(SHOW_BACKGROUND, false)
+                        // Required fields are indicated by an asterisk (*) and
+                        // announced separately by screen readers. Don't announce
+                        // the message itself.
+                        .with(IMPORTANT_FOR_ACCESSIBILITY, false)
+                        .build(),
+                /* isFullLine= */ true);
     }
 
     private void maybeAddEntitySourceNoticeItem(

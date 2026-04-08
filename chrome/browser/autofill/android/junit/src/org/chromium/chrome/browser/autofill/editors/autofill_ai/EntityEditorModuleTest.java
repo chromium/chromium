@@ -397,6 +397,9 @@ public class EntityEditorModuleTest {
         showEditorDialog(LOCAL_PASSPORT);
 
         PropertyModel model = mCoordinator.getEditorModelForTest();
+        verifyRequiredFieldsItem(
+                model.get(EntityEditorProperties.EDITOR_FIELDS),
+                mActivity.getString(R.string.payments_required_field_message));
         verifySourceNotice(
                 model.get(EntityEditorProperties.EDITOR_FIELDS),
                 mActivity.getString(R.string.autofill_ai_local_entity_editor_source_notice));
@@ -409,6 +412,9 @@ public class EntityEditorModuleTest {
         showEditorDialog(WALLET_PASSPORT);
 
         PropertyModel model = mCoordinator.getEditorModelForTest();
+        verifyRequiredFieldsItem(
+                model.get(EntityEditorProperties.EDITOR_FIELDS),
+                mActivity.getString(R.string.payments_required_field_message));
         verifySourceNotice(
                 model.get(EntityEditorProperties.EDITOR_FIELDS),
                 mActivity
@@ -616,6 +622,17 @@ public class EntityEditorModuleTest {
         assertFalse(item.model.get(IS_REQUIRED));
         assertEquals(label, item.model.get(LABEL));
         assertEquals(value, item.model.get(VALUE));
+    }
+
+    private void verifyRequiredFieldsItem(ListModel<EditorItem> editorFields, String expectedText) {
+        for (EditorItem item : editorFields) {
+            if (item.type == NOTICE && expectedText.equals(item.model.get(NOTICE_TEXT))) {
+                assertFalse(item.model.get(SHOW_BACKGROUND));
+                assertFalse(item.model.get(IMPORTANT_FOR_ACCESSIBILITY));
+                return;
+            }
+        }
+        fail("Required fields notice not found");
     }
 
     private void verifySourceNotice(ListModel<EditorItem> editorFields, String expectedNoticeText) {
