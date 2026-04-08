@@ -254,15 +254,15 @@ IN_PROC_BROWSER_TEST_F(IdentityDialogControllerBrowserTest,
   IdentityProviderDataPtr idp_data = CreateIdentityProviderData(accounts);
 
   EXPECT_CALL(*view_ptr, Show).WillOnce(testing::Return(true));
-  EXPECT_TRUE(controller->ShowAccountsDialog(
+  controller->ShowAccountsDialog(
       content::RelyingPartyData(kTopFrameEtldPlusOne,
                                 /*iframe_for_display=*/u""),
       {idp_data}, accounts, /*filtered_accounts=*/{},
-      blink::mojom::RpMode::kPassive,
+      blink::mojom::RpMode::kActive,
       /*on_selected=*/base::DoNothing(),
       /*on_add_account=*/base::DoNothing(),
       /*dismiss_callback=*/base::DoNothing(),
-      /*accounts_displayed_callback=*/base::DoNothing()));
+      /*accounts_displayed_callback=*/base::DoNothing());
 
   EXPECT_FALSE(controller->DidShowUi());
 }
