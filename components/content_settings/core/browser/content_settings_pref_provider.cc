@@ -171,8 +171,8 @@ PrefProvider::PrefProvider(PrefService* prefs,
                                               base::Unretained(this)))));
   }
 
-  MigrateGeolocationExceptions();
 #if !BUILDFLAG(IS_IOS)
+  MigrateGeolocationExceptions();
   MigrateLocalNetworkAccessExceptions();
 #endif  // !BUILDFLAG(IS_IOS)
 
@@ -463,6 +463,7 @@ void PrefProvider::DiscardOrMigrateObsoletePreferences() {
 #endif  // !BUILDFLAG(IS_IOS)
 }
 
+#if !BUILDFLAG(IS_IOS)
 void PrefProvider::MigrateGeolocationExceptions() {
   if (off_the_record_) {
     return;
@@ -515,7 +516,6 @@ void PrefProvider::MigrateGeolocationExceptions() {
   }
 }
 
-#if !BUILDFLAG(IS_IOS)
 void PrefProvider::MigrateLocalNetworkAccessExceptions() {
   if (off_the_record_) {
     return;
