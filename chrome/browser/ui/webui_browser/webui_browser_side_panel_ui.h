@@ -23,7 +23,7 @@ class WebUIBrowserSidePanelUI : public SidePanelUIBase {
   ~WebUIBrowserSidePanelUI() override;
 
   // SidePanelUI:
-  void Close(SidePanelEntry::PanelType panel_type,
+  void Close(SidePanelType panel_type,
              SidePanelEntryHideReason reason,
              bool suppress_animations) override;
   void Toggle(SidePanelEntryKey key,
@@ -36,7 +36,7 @@ class WebUIBrowserSidePanelUI : public SidePanelUIBase {
 
   content::WebContents* GetWebContentsForId(SidePanelEntryId entry_id) const;
 
-  void OnSidePanelClosed(SidePanelEntry::PanelType type);
+  void OnSidePanelClosed(SidePanelType type);
 
  private:
   // SidePanelUIBase:

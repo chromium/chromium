@@ -114,8 +114,8 @@ ExtensionSidePanelCoordinator::~ExtensionSidePanelCoordinator() {
   }
 }
 
-SidePanelEntry::PanelType ExtensionSidePanelCoordinator::GetPanelType() {
-  return SidePanelEntry::PanelType::kContent;
+SidePanelType ExtensionSidePanelCoordinator::GetPanelType() {
+  return SidePanelType::kContent;
 }
 
 content::WebContents*

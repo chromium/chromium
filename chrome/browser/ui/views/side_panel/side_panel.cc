@@ -100,7 +100,7 @@ gfx::Insets GetBorderInsets() {
 
 SidePanel::HorizontalAlignment GetHorizontalAlignment(
     PrefService* pref_service,
-    SidePanelEntry::PanelType type,
+    SidePanelType type,
     bool use_default_horizontal_alignment) {
   bool is_right_aligned =
       pref_service->GetBoolean(prefs::kSidePanelHorizontalAlignment);
@@ -237,7 +237,7 @@ class SidePanelBorder : public views::Border {
 class ContentParentBackground : public views::Background {
  public:
   ContentParentBackground(BrowserView* browser_view,
-                          SidePanelEntry::PanelType type,
+                          SidePanelType type,
                           base::RepeatingCallback<gfx::RoundedCornersF()>
                               get_rounded_corners_callback)
       : browser_view_(browser_view),
@@ -256,7 +256,7 @@ class ContentParentBackground : public views::Background {
     SkPath path = SkPath::RRect(rrect);
     canvas->ClipPath(path, /*do_anti_alias=*/true);
 
-    if (type_ == SidePanelEntry::PanelType::kToolbar) {
+    if (type_ == SidePanelType::kToolbar) {
       ThemedBackground::PaintBackground(canvas, view, browser_view_);
     } else {
       canvas->DrawColor(
@@ -266,7 +266,7 @@ class ContentParentBackground : public views::Background {
 
  private:
   const raw_ptr<BrowserView> browser_view_;
-  const SidePanelEntry::PanelType type_;
+  const SidePanelType type_;
   base::RepeatingCallback<gfx::RoundedCornersF()> get_rounded_corners_callback_;
 };
 
@@ -278,7 +278,7 @@ class ContentParentView : public views::View, public views::ViewObserver {
  public:
   explicit ContentParentView(BrowserView* browser_view,
                              bool should_round_corners,
-                             SidePanelEntry::PanelType type)
+                             SidePanelType type)
       : browser_view_(browser_view),
         should_round_corners_(should_round_corners),
         type_(type) {
@@ -362,7 +362,7 @@ class ContentParentView : public views::View, public views::ViewObserver {
 
   gfx::RoundedCornersF GetRoundedCorners() {
     ChromeDistanceMetric corner_radius =
-        type_ == SidePanelEntry::PanelType::kToolbar
+        type_ == SidePanelType::kToolbar
             ? ChromeDistanceMetric::
                   DISTANCE_TOOLBAR_HEIGHT_SIDE_PANEL_CONTENT_RADIUS
             : ChromeDistanceMetric::
@@ -375,7 +375,7 @@ class ContentParentView : public views::View, public views::ViewObserver {
 
   const raw_ptr<BrowserView> browser_view_;
   bool should_round_corners_ = false;
-  SidePanelEntry::PanelType type_;
+  SidePanelType type_;
   base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
       this};
   base::CallbackListSubscription web_contents_attached_callback_;
@@ -490,7 +490,7 @@ class SidePanel::VisibleBoundsViewClipper : public views::ViewObserver {
 };
 
 SidePanel::SidePanel(BrowserView* browser_view,
-                     SidePanelEntry::PanelType type,
+                     SidePanelType type,
                      bool has_border)
     : browser_view_(browser_view),
       type_(type),
@@ -525,7 +525,7 @@ SidePanel::SidePanel(BrowserView* browser_view,
       base::BindRepeating(&SidePanel::UpdateHorizontalAlignment,
                           base::Unretained(this)));
 
-  animation_group_ = type_ == SidePanelEntry::PanelType::kContent
+  animation_group_ = type_ == SidePanelType::kContent
                          ? SidePanelAnimations::kContentHeightSidePanel
                          : SidePanelAnimations::kToolbarHeightSidePanel;
   animation_subscription_ =
@@ -985,7 +985,7 @@ bool SidePanel::ShouldShowAnimation() const {
   // Don't show open/close animations for the toolbar height panel on Windows
   // due to jank. The "show from" animation should still run which is the only
   // time |content_starting_bounds_| has a value.
-  if (type_ == SidePanelEntry::PanelType::kToolbar &&
+  if (type_ == SidePanelType::kToolbar &&
       !features::UseSidePanelFlyoverAnimation()) {
     should_show_animations &= content_starting_bounds_.has_value();
   }

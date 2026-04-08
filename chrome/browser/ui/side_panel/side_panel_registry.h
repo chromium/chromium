@@ -49,10 +49,10 @@ class SidePanelRegistry final : public SidePanelEntryObserver,
   static SidePanelRegistry* From(tabs::TabInterface* tab_interface);
 
   SidePanelEntry* GetEntryForKey(const SidePanelEntry::Key& entry_key);
-  void ResetActiveEntryFor(SidePanelEntry::PanelType type);
+  void ResetActiveEntryFor(SidePanelType type);
 
   // Clear cached view for all owned entries with the corresponding panel type.
-  void ClearCachedEntryViews(SidePanelEntry::PanelType type);
+  void ClearCachedEntryViews(SidePanelType type);
 
   // Registers a SidePanelEntry. Returns true if the entry is successfully
   // registered and false if a SidePanelEntry already exists in the registry for
@@ -64,11 +64,10 @@ class SidePanelRegistry final : public SidePanelEntryObserver,
   bool Deregister(const SidePanelEntry::Key& key);
 
   // Set the active entry in the side panel to be |entry| for the entry's
-  // PanelType.
+  // SidePanelType.
   void SetActiveEntry(SidePanelEntry* entry);
 
-  std::optional<SidePanelEntry*> GetActiveEntryFor(
-      SidePanelEntry::PanelType type);
+  std::optional<SidePanelEntry*> GetActiveEntryFor(SidePanelType type);
   std::vector<std::unique_ptr<SidePanelEntry>>& entries() { return entries_; }
 
   // SidePanelEntryObserver:
@@ -83,8 +82,7 @@ class SidePanelRegistry final : public SidePanelEntryObserver,
   // should be visible. This is reset by the coordinator when the panel is
   // closed. When there are multiple registries, this may not be the entry
   // currently visible in the side panel.
-  std::map<SidePanelEntry::PanelType, std::optional<SidePanelEntry*>>
-      active_entries_;
+  std::map<SidePanelType, std::optional<SidePanelEntry*>> active_entries_;
 
   std::vector<std::unique_ptr<SidePanelEntry>> entries_;
 

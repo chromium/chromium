@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENUMS_H_
 #define CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENUMS_H_
 
+#include "base/containers/enum_set.h"
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. SidePanelOpenTrigger in
 // tools/metrics/histograms/enums.xml should also be updated when changed
@@ -74,5 +76,17 @@ enum class SidePanelAnimationType {
   kClose = 2,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:SidePanelAnimationType)
+
+enum class SidePanelType {
+  kMinValue,
+  // Panel aligned with the web contents.
+  kContent = kMinValue,
+  // Panel aligned with the toolbar.
+  kToolbar,
+  kMaxValue = kToolbar,
+};
+
+using SidePanelTypes = base::
+    EnumSet<SidePanelType, SidePanelType::kMinValue, SidePanelType::kMaxValue>;
 
 #endif  // CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENUMS_H_

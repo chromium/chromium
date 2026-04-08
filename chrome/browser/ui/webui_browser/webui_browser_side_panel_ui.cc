@@ -41,7 +41,7 @@ WebUIBrowserSidePanelUI::WebUIBrowserSidePanelUI(Browser* browser)
 
 WebUIBrowserSidePanelUI::~WebUIBrowserSidePanelUI() = default;
 
-void WebUIBrowserSidePanelUI::Close(SidePanelEntry::PanelType panel_type,
+void WebUIBrowserSidePanelUI::Close(SidePanelType panel_type,
                                     SidePanelEntryHideReason reason,
                                     bool supress_animations) {
   if (!IsSidePanelShowing(panel_type)) {
@@ -149,8 +149,7 @@ void WebUIBrowserSidePanelUI::PopulateSidePanel(
   GetWebUIBrowserWindow()->ShowSidePanel(entry->key());
 
   if (auto* contextual_registry = GetActiveContextualRegistry()) {
-    contextual_registry->ResetActiveEntryFor(
-        SidePanelEntry::PanelType::kContent);
+    contextual_registry->ResetActiveEntryFor(SidePanelType::kContent);
   }
 
   entry->OnEntryShown();
@@ -167,7 +166,7 @@ void WebUIBrowserSidePanelUI::MaybeShowEntryOnTabStripModelChanged(
     SidePanelRegistry* new_contextual_registry) {
   // Show an entry in the following fallback order: new contextual registry's
   // active entry > active global entry > none (close the side panel).
-  SidePanelEntry::PanelType panel_type = SidePanelEntry::PanelType::kContent;
+  SidePanelType panel_type = SidePanelType::kContent;
   std::optional<UniqueKey> unique_key =
       IsSidePanelShowing(panel_type) ? GetNewActiveKeyOnTabChanged(panel_type)
                                      : std::nullopt;
@@ -201,8 +200,7 @@ void WebUIBrowserSidePanelUI::MaybeShowEntryOnTabStripModelChanged(
         /*suppress_animations=*/true);
 }
 
-void WebUIBrowserSidePanelUI::OnSidePanelClosed(
-    SidePanelEntry::PanelType type) {
+void WebUIBrowserSidePanelUI::OnSidePanelClosed(SidePanelType type) {
   if (!IsSidePanelShowing(type)) {
     return;
   }
@@ -217,12 +215,11 @@ void WebUIBrowserSidePanelUI::OnSidePanelClosed(
   // everything except remaining active entries (i.e. if another tab has an
   // active contextual entry).
   if (auto* contextual_registry = GetActiveContextualRegistry()) {
-    contextual_registry->ResetActiveEntryFor(
-        SidePanelEntry::PanelType::kContent);
+    contextual_registry->ResetActiveEntryFor(SidePanelType::kContent);
   }
 
   SidePanelRegistry::From(browser())->ResetActiveEntryFor(
-      SidePanelEntry::PanelType::kContent);
+      SidePanelType::kContent);
 
   current_side_panel_view_.reset();
   // TODO(webium): Clear cached views for registry entries for global and

@@ -50,10 +50,10 @@ class SidePanelUI {
                         gfx::Rect starting_bounds_in_browser_coordinates) = 0;
 
   // Close the side panel.
-  virtual void Close(SidePanelEntry::PanelType panel_type,
+  virtual void Close(SidePanelType panel_type,
                      SidePanelEntryHideReason hide_reason,
                      bool suppress_animations) = 0;
-  void Close(SidePanelEntry::PanelType panel_type) {
+  void Close(SidePanelType panel_type) {
     Close(panel_type, SidePanelEntryHideReason::kSidePanelClosed, false);
   }
 
@@ -64,17 +64,16 @@ class SidePanelUI {
 
   // Get the current entry id if the side panel is open.
   virtual std::optional<SidePanelEntryId> GetCurrentEntryId(
-      SidePanelEntry::PanelType panel_type) const = 0;
+      SidePanelType panel_type) const = 0;
 
   // Returns the current entries default width. Returns nullopt if this value is
   // not set or if the side panel is closed.
-  virtual int GetCurrentEntryDefaultContentWidth(
-      SidePanelEntry::PanelType type) const = 0;
+  virtual int GetCurrentEntryDefaultContentWidth(SidePanelType type) const = 0;
 
   // Return whether any entry is being shown in the side panel.
   // Note: this returns false if `entry` is current loading but not actually
   // shown.
-  virtual bool IsSidePanelShowing(SidePanelEntry::PanelType type) const = 0;
+  virtual bool IsSidePanelShowing(SidePanelType type) const = 0;
 
   // Returns whether `entry_key` is currently being shown in the side panel.
   // Note: this returns false if `entry` is current loading but not actually
@@ -92,7 +91,7 @@ class SidePanelUI {
   // animation.
   using ShownCallback = base::RepeatingCallback<void()>;
   virtual base::CallbackListSubscription RegisterSidePanelShown(
-      SidePanelEntry::PanelType type,
+      SidePanelType type,
       ShownCallback callback) = 0;
 
   // This function is intended to only be called by browser on active tab

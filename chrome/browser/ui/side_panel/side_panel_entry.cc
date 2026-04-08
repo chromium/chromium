@@ -20,7 +20,7 @@ SidePanelEntry::SidePanelEntry(
     base::RepeatingCallback<std::unique_ptr<ui::MenuModel>()>
         more_info_callback,
     base::RepeatingCallback<int()> default_content_width_callback)
-    : type_(PanelType::kContent),
+    : type_(SidePanelType::kContent),
       key_(key),
       create_content_callback_(std::move(create_content_callback)),
       open_in_new_tab_url_callback_(std::move(open_in_new_tab_url_callback)),
@@ -30,7 +30,7 @@ SidePanelEntry::SidePanelEntry(
 }
 
 SidePanelEntry::SidePanelEntry(
-    PanelType type,
+    SidePanelType type,
     Key key,
     CreateContentCallback create_content_callback,
     base::RepeatingCallback<int()> default_content_width_callback)
@@ -47,7 +47,7 @@ SidePanelEntry::SidePanelEntry(
     Key key,
     CreateContentCallback create_content_callback,
     base::RepeatingCallback<int()> default_content_width_callback)
-    : SidePanelEntry(PanelType::kContent,
+    : SidePanelEntry(SidePanelType::kContent,
                      key,
                      std::move(create_content_callback),
                      default_content_width_callback) {}

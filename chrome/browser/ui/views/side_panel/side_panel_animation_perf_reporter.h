@@ -24,7 +24,7 @@ class Widget;
 // destruction of the the object.
 class SidePanelAnimationPerfReporter : public ui::CompositorObserver {
  public:
-  SidePanelAnimationPerfReporter(SidePanelEntry::PanelType panel_type,
+  SidePanelAnimationPerfReporter(SidePanelType panel_type,
                                  SidePanelAnimationType animation_type,
                                  base::TimeDelta total_animation_time,
                                  views::Widget* widget);
@@ -47,7 +47,7 @@ class SidePanelAnimationPerfReporter : public ui::CompositorObserver {
       const gfx::PresentationFeedback& feedback) override;
   void OnCompositingShuttingDown(ui::Compositor* compositor) override;
 
-  const SidePanelEntry::PanelType panel_type_;
+  const SidePanelType panel_type_;
   const SidePanelAnimationType animation_type_;
   const base::TimeDelta total_animation_time_;
 

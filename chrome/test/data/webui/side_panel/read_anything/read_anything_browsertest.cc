@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
@@ -38,7 +39,7 @@ class ReadAnythingMochaBrowserTest : public WebUIMochaBrowserTest {
     content::WaitForLoadStop(web_contents);
 
     ASSERT_TRUE(RunTestOnWebContents(web_contents, file, trigger, true));
-    side_panel_ui->Close(SidePanelEntry::PanelType::kContent);
+    side_panel_ui->Close(SidePanelType::kContent);
   }
 
  private:

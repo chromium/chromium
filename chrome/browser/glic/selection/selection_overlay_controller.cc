@@ -316,8 +316,8 @@ ui::ElementIdentifier SelectionOverlayController::GetViewContainerId() {
   return kGlicSelectionOverlayViewElementId;
 }
 
-SidePanelEntry::PanelType SelectionOverlayController::GetSidePanelType() {
-  return SidePanelEntry::PanelType::kContent;
+SidePanelType SelectionOverlayController::GetSidePanelType() {
+  return SidePanelType::kContent;
 }
 
 bool SelectionOverlayController::ShouldCloseSidePanel() {

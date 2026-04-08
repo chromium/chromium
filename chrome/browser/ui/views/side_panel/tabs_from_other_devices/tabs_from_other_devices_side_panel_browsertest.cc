@@ -46,9 +46,8 @@ IN_PROC_BROWSER_TEST_F(TabsFromOtherDevicesSidePanelBrowserTest,
         ->GetVisible();
   }));
 
-  EXPECT_EQ(
-      coordinator()->GetCurrentEntryId(SidePanelEntry::PanelType::kContent),
-      SidePanelEntryId::kTabsFromOtherDevices);
+  EXPECT_EQ(coordinator()->GetCurrentEntryId(SidePanelType::kContent),
+            SidePanelEntryId::kTabsFromOtherDevices);
 
   actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
       kActionSidePanelShowTabsFromOtherDevices,
@@ -71,7 +70,6 @@ IN_PROC_BROWSER_TEST_F(TabsFromOtherDevicesSidePanelBrowserTest, ShowFromMenu) {
         ->GetVisible();
   }));
 
-  EXPECT_EQ(
-      coordinator()->GetCurrentEntryId(SidePanelEntry::PanelType::kContent),
-      SidePanelEntryId::kTabsFromOtherDevices);
+  EXPECT_EQ(coordinator()->GetCurrentEntryId(SidePanelType::kContent),
+            SidePanelEntryId::kTabsFromOtherDevices);
 }

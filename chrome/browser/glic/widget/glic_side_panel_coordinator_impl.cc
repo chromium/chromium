@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_scope.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
@@ -65,8 +66,8 @@ void GlicSidePanelCoordinatorImpl::CreateAndRegisterEntry() {
 
   auto entry = std::make_unique<SidePanelEntry>(
       base::FeatureList::IsEnabled(features::kGlicUseToolbarHeightSidePanel)
-          ? SidePanelEntry::PanelType::kToolbar
-          : SidePanelEntry::PanelType::kContent,
+          ? SidePanelType::kToolbar
+          : SidePanelType::kContent,
       SidePanelEntry::Key(SidePanelEntry::Id::kGlic),
       base::BindRepeating(&GlicSidePanelCoordinatorImpl::CreateView,
                           base::Unretained(this)),

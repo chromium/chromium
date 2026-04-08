@@ -206,7 +206,7 @@ class OverlayBaseController : public content::WebContentsDelegate,
   virtual ui::ElementIdentifier GetViewContainerId() = 0;
 
   // The side panel type.
-  virtual SidePanelEntry::PanelType GetSidePanelType() = 0;
+  virtual SidePanelType GetSidePanelType() = 0;
 
   // Whether the side panel should be closed if it doesn't match
   // the desired type.

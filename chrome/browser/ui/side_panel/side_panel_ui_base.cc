@@ -41,7 +41,7 @@ SidePanelUIBase::PanelData::~PanelData() = default;
 
 SidePanelUIBase::SidePanelUIBase(BrowserWindowInterface* browser)
     : browser_(browser) {
-  for (auto panel_type : SidePanelEntry::PanelTypes::All()) {
+  for (auto panel_type : SidePanelTypes::All()) {
     panel_data_[panel_type] = std::make_unique<PanelData>();
   }
 }
@@ -63,7 +63,7 @@ void SidePanelUIBase::Show(SidePanelEntry::Key entry_key,
 }
 
 std::optional<SidePanelEntry::Id> SidePanelUIBase::GetCurrentEntryId(
-    SidePanelEntry::PanelType panel_type) const {
+    SidePanelType panel_type) const {
   if (!IsSidePanelShowing(panel_type)) {
     return std::nullopt;
   }
@@ -71,7 +71,7 @@ std::optional<SidePanelEntry::Id> SidePanelUIBase::GetCurrentEntryId(
 }
 
 int SidePanelUIBase::GetCurrentEntryDefaultContentWidth(
-    SidePanelEntry::PanelType type) const {
+    SidePanelType type) const {
   if (!current_key(type).has_value()) {
     return SidePanelEntry::kSidePanelDefaultContentWidth;
   }
@@ -82,7 +82,7 @@ int SidePanelUIBase::GetCurrentEntryDefaultContentWidth(
   return entry->GetDefaultContentWidth();
 }
 
-bool SidePanelUIBase::IsSidePanelShowing(SidePanelEntry::PanelType type) const {
+bool SidePanelUIBase::IsSidePanelShowing(SidePanelType type) const {
   return current_key(type).has_value();
 }
 
@@ -110,21 +110,21 @@ bool SidePanelUIBase::IsSidePanelEntryShowing(
 }
 
 base::CallbackListSubscription SidePanelUIBase::RegisterSidePanelShown(
-    SidePanelEntry::PanelType type,
+    SidePanelType type,
     ShownCallback callback) {
   return panel_data_[type]->shown_callback_list.Add(std::move(callback));
 }
 
-void SidePanelUIBase::SetOpenedTimestamp(SidePanelEntry::PanelType type,
+void SidePanelUIBase::SetOpenedTimestamp(SidePanelType type,
                                          base::TimeTicks timestamp) {
   panel_data_.at(type)->opened_timestamp = timestamp;
 }
 
-void SidePanelUIBase::NotifyShownCallbacksFor(SidePanelEntry::PanelType type) {
+void SidePanelUIBase::NotifyShownCallbacksFor(SidePanelType type) {
   panel_data_[type]->shown_callback_list.Notify();
 }
 
-void SidePanelUIBase::SetCurrentKey(SidePanelEntry::PanelType type,
+void SidePanelUIBase::SetCurrentKey(SidePanelType type,
                                     std::optional<UniqueKey> new_key) {
   panel_data_[type]->current_key = new_key;
 }
@@ -179,7 +179,7 @@ SidePanelEntry* SidePanelUIBase::GetActiveContextualEntryForKey(
 }
 
 std::optional<SidePanelUIBase::UniqueKey>
-SidePanelUIBase::GetNewActiveKeyOnTabChanged(SidePanelEntry::PanelType type) {
+SidePanelUIBase::GetNewActiveKeyOnTabChanged(SidePanelType type) {
   // This function should only be called when the side panel view is shown.
   CHECK(IsSidePanelShowing(type));
 
@@ -219,8 +219,7 @@ SidePanelUIBase::GetNewActiveKeyOnTabChanged(SidePanelEntry::PanelType type) {
   return std::nullopt;
 }
 
-SidePanelEntryWaiter* SidePanelUIBase::waiter(
-    SidePanelEntry::PanelType type) const {
+SidePanelEntryWaiter* SidePanelUIBase::waiter(SidePanelType type) const {
   return panel_data_.at(type)->waiter.get();
 }
 

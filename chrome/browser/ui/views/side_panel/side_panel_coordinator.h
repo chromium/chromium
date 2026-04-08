@@ -55,7 +55,7 @@ class SidePanelCoordinator final : public SidePanelUIBase,
 
   // SidePanelUI:
   using SidePanelUI::Close;
-  void Close(SidePanelEntry::PanelType panel_type,
+  void Close(SidePanelType panel_type,
              SidePanelEntryHideReason reason,
              bool suppress_animations) override;
   void Toggle(SidePanelEntryKey key,
@@ -74,8 +74,7 @@ class SidePanelCoordinator final : public SidePanelUIBase,
   content::WebContents* GetWebContentsForTest(SidePanelEntryId id) override;
   void DisableAnimationsForTesting() override;
 
-  SidePanelEntry* GetLoadingEntryForTesting(
-      SidePanelEntry::PanelType type) const;
+  SidePanelEntry* GetLoadingEntryForTesting(SidePanelType type) const;
 
  private:
   // Returns the corresponding entry for `entry_key` or a nullptr if this key is
@@ -96,7 +95,7 @@ class SidePanelCoordinator final : public SidePanelUIBase,
 
   // Clear cached views with the corresponding panel type for registry entries
   // for global and contextual registries.
-  void ClearCachedEntryViews(SidePanelEntry::PanelType type);
+  void ClearCachedEntryViews(SidePanelType type);
 
   // views::ViewObserver:
   void OnViewVisibilityChanged(views::View* observed_view,
@@ -110,7 +109,7 @@ class SidePanelCoordinator final : public SidePanelUIBase,
                                     SidePanelEntryId actual_id);
 
   // Returns the corresponding side panel for the provided panel type.
-  SidePanel* GetSidePanelFor(SidePanelEntry::PanelType type);
+  SidePanel* GetSidePanelFor(SidePanelType type);
 
   const raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_;
 

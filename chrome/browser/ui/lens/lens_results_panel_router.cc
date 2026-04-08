@@ -47,9 +47,9 @@ bool LensResultsPanelRouter::IsEntryShowing() {
   return lens_side_panel_coordinator()->IsEntryShowing();
 }
 
-SidePanelEntry::PanelType LensResultsPanelRouter::GetPanelType() const {
+SidePanelType LensResultsPanelRouter::GetPanelType() const {
   if (lens_search_controller_->should_route_to_contextual_tasks()) {
-    return SidePanelEntry::PanelType::kToolbar;
+    return SidePanelType::kToolbar;
   }
 
   return lens_side_panel_coordinator()->GetPanelType();

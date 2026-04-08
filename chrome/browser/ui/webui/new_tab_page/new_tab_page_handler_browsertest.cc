@@ -104,11 +104,10 @@ class NewTabPageHandlerBaseBrowserTest : public InProcessBrowserTest {
         webui::GetBrowserWindowInterface(web_contents());
     SidePanelRegistry* const side_panel_registry = SidePanelRegistry::From(
         browser_window_interface->GetActiveTabInterface());
-    SidePanelEntry::PanelType panel_type =
-        side_panel_registry
-            ->GetEntryForKey(
-                SidePanelEntryKey(SidePanelEntryId::kCustomizeChrome))
-            ->type();
+    SidePanelType panel_type = side_panel_registry
+                                   ->GetEntryForKey(SidePanelEntryKey(
+                                       SidePanelEntryId::kCustomizeChrome))
+                                   ->type();
     browser_window_interface->GetFeatures().side_panel_ui()->Close(panel_type);
   }
 

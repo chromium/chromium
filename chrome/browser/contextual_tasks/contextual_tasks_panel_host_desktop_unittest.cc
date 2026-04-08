@@ -50,7 +50,7 @@ class MockSidePanelUI : public SidePanelUI {
               (override));
   MOCK_METHOD(void,
               Close,
-              (SidePanelEntry::PanelType panel_type,
+              (SidePanelType panel_type,
                SidePanelEntryHideReason hide_reason,
                bool suppress_animations),
               (override));
@@ -60,15 +60,15 @@ class MockSidePanelUI : public SidePanelUI {
               (override));
   MOCK_METHOD(std::optional<SidePanelEntryId>,
               GetCurrentEntryId,
-              (SidePanelEntry::PanelType panel_type),
+              (SidePanelType panel_type),
               (const, override));
   MOCK_METHOD(int,
               GetCurrentEntryDefaultContentWidth,
-              (SidePanelEntry::PanelType type),
+              (SidePanelType type),
               (const, override));
   MOCK_METHOD(bool,
               IsSidePanelShowing,
-              (SidePanelEntry::PanelType type),
+              (SidePanelType type),
               (const, override));
   MOCK_METHOD(bool,
               IsSidePanelEntryShowing,
@@ -80,7 +80,7 @@ class MockSidePanelUI : public SidePanelUI {
               (const, override));
   MOCK_METHOD(base::CallbackListSubscription,
               RegisterSidePanelShown,
-              (SidePanelEntry::PanelType type, ShownCallback callback),
+              (SidePanelType type, ShownCallback callback),
               (override));
   MOCK_METHOD(void,
               OnActiveTabChanged,
@@ -199,7 +199,7 @@ TEST_F(ContextualTasksPanelHostDesktopTest, CloseCallsSidePanelUI) {
   panel_host_->AddObserver(&observer);
 
   EXPECT_CALL(mock_side_panel_ui_,
-              Close(SidePanelEntry::PanelType::kToolbar,
+              Close(SidePanelType::kToolbar,
                     SidePanelEntryHideReason::kSidePanelClosed, false))
       .Times(1);
 
@@ -211,7 +211,7 @@ TEST_F(ContextualTasksPanelHostDesktopTest, CloseNoAnimation) {
   panel_host_->AddObserver(&observer);
 
   EXPECT_CALL(mock_side_panel_ui_,
-              Close(SidePanelEntry::PanelType::kToolbar,
+              Close(SidePanelType::kToolbar,
                     SidePanelEntryHideReason::kSidePanelClosed, true))
       .Times(1);
 

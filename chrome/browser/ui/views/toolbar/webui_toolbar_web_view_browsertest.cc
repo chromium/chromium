@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -2494,7 +2495,7 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, SidePanelToggle) {
 
   auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
   auto is_any_side_panel_showing = [&]() {
-    for (auto type : SidePanelEntry::PanelTypes::All()) {
+    for (auto type : SidePanelTypes::All()) {
       if (side_panel_ui->IsSidePanelShowing(type)) {
         return true;
       }

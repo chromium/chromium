@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_observer.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -89,8 +90,7 @@ class GlicSidePanelCoordinatorTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     // Create a dummy view for the Lens entry.
     auto lens_entry = std::make_unique<SidePanelEntry>(
-        SidePanelEntry::PanelType::kContent,
-        SidePanelEntry::Key(SidePanelEntry::Id::kLens),
+        SidePanelType::kContent, SidePanelEntry::Key(SidePanelEntry::Id::kLens),
         base::BindRepeating([](SidePanelEntryScope& scope) {
           return std::make_unique<views::View>();
         }),
@@ -223,8 +223,7 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorTest,
       browser()->GetActiveTabInterface()));
 
   // Close the Lens side panel. Glic should still be inactive.
-  SidePanelCoordinator::From(browser())->Close(
-      SidePanelEntry::PanelType::kContent);
+  SidePanelCoordinator::From(browser())->Close(SidePanelType::kContent);
   EXPECT_FALSE(GlicSidePanelCoordinator::IsGlicSidePanelActive(
       browser()->GetActiveTabInterface()));
 

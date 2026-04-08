@@ -52,7 +52,7 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   // Implements `SidePanelUI`:
   void ShowFrom(SidePanelEntryKey entry_key,
                 gfx::Rect starting_bounds_in_browser_coordinates) override;
-  void Close(SidePanelEntry::PanelType panel_type,
+  void Close(SidePanelType panel_type,
              SidePanelEntryHideReason hide_reason,
              bool suppress_animations) override;
   void Toggle(SidePanelEntryKey key,

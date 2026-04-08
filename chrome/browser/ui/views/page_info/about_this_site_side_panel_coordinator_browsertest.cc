@@ -264,8 +264,7 @@ IN_PROC_BROWSER_TEST_F(AboutThisSiteSidePanelCoordinatorBrowserTest,
   EXPECT_TRUE(IsAboutThisSiteSidePanelShowing());
 
   // Close side panel.
-  browser()->GetFeatures().side_panel_ui()->Close(
-      SidePanelEntry::PanelType::kContent);
+  browser()->GetFeatures().side_panel_ui()->Close(SidePanelType::kContent);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return browser()->GetBrowserView().contents_height_side_panel()->state() ==
            SidePanel::State::kClosed;

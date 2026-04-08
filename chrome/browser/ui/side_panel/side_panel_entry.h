@@ -32,17 +32,6 @@ enum class SidePanelEntryHideReason;
 // a SidePanelRegistry (either a per-tab or a per-window registry).
 class SidePanelEntry final : public ui::PropertyHandler {
  public:
-  enum class PanelType {
-    kMinValue,
-    // Panel aligned with the web contents.
-    kContent = kMinValue,
-    // Panel aligned with the toolbar.
-    kToolbar,
-    kMaxValue = kToolbar,
-  };
-
-  using PanelTypes =
-      base::EnumSet<PanelType, PanelType::kMinValue, PanelType::kMaxValue>;
 
   // The default and minimum acceptable side panel content width.
   static constexpr int kSidePanelDefaultContentWidth = 360;
@@ -62,8 +51,8 @@ class SidePanelEntry final : public ui::PropertyHandler {
                  base::RepeatingCallback<int()> default_content_width_callback);
 
   // This constructor should be primarily used for features that want a
-  // non-kContent PanelType.
-  SidePanelEntry(PanelType type,
+  // non-kContent SidePanelType.
+  SidePanelEntry(SidePanelType type,
                  Key key,
                  CreateContentCallback create_content_callback,
                  base::RepeatingCallback<int()> default_content_width_callback);
@@ -97,7 +86,7 @@ class SidePanelEntry final : public ui::PropertyHandler {
   void OnEntryHiddenWithReason(SidePanelEntryHideReason reason);
 #endif
 
-  PanelType type() const { return type_; }
+  SidePanelType type() const { return type_; }
   const Key& key() const { return key_; }
 
   void set_last_open_trigger(std::optional<SidePanelOpenTrigger> trigger) {
@@ -170,7 +159,7 @@ class SidePanelEntry final : public ui::PropertyHandler {
   }
 
  private:
-  const PanelType type_;
+  const SidePanelType type_;
   const Key key_;
   SidePanelNativeView content_view_;
 

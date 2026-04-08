@@ -65,11 +65,11 @@ SidePanelEntry* SidePanelRegistry::GetEntryForKey(
   return it == entries_.end() ? nullptr : it->get();
 }
 
-void SidePanelRegistry::ResetActiveEntryFor(SidePanelEntry::PanelType type) {
+void SidePanelRegistry::ResetActiveEntryFor(SidePanelType type) {
   active_entries_[type].reset();
 }
 
-void SidePanelRegistry::ClearCachedEntryViews(SidePanelEntry::PanelType type) {
+void SidePanelRegistry::ClearCachedEntryViews(SidePanelType type) {
   for (auto const& entry : entries_) {
     if (entry->type() == type &&
         (!active_entries_[type].has_value() ||
@@ -102,7 +102,7 @@ bool SidePanelRegistry::Deregister(const SidePanelEntry::Key& key) {
                  deregistering_entry_key_.value() == key)) {
     return false;
   }
-  SidePanelEntry::PanelType panel_type = entry->type();
+  SidePanelType panel_type = entry->type();
 
   base::AutoReset<std::optional<SidePanelEntryKey>> deregistering_entry_key(
       &deregistering_entry_key_, key);
@@ -145,7 +145,7 @@ void SidePanelRegistry::SetActiveEntry(SidePanelEntry* entry) {
 }
 
 std::optional<SidePanelEntry*> SidePanelRegistry::GetActiveEntryFor(
-    SidePanelEntry::PanelType type) {
+    SidePanelType type) {
   return active_entries_[type];
 }
 

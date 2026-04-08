@@ -14,15 +14,15 @@
 
 namespace {
 
-std::string_view GetSidePanelNameFor(SidePanelEntry::PanelType panel_type) {
+std::string_view GetSidePanelNameFor(SidePanelType panel_type) {
   switch (panel_type) {
-    case SidePanelEntry::PanelType::kContent:
+    case SidePanelType::kContent:
       return "SidePanel";
-    case SidePanelEntry::PanelType::kToolbar:
+    case SidePanelType::kToolbar:
       return "SidePanelToolbarHeight";
   }
 
-  NOTREACHED() << "Invalid PanelType " << static_cast<int>(panel_type);
+  NOTREACHED() << "Invalid SidePanelType " << static_cast<int>(panel_type);
 }
 
 std::string_view GetAnimationNameFor(SidePanelAnimationType animation_type) {
@@ -41,7 +41,7 @@ std::string_view GetAnimationNameFor(SidePanelAnimationType animation_type) {
 }  // namespace
 
 void SidePanelMetrics::RecordSidePanelOpen(
-    SidePanelEntry::PanelType type,
+    SidePanelType type,
     std::optional<SidePanelOpenTrigger> trigger) {
   base::RecordAction(base::UserMetricsAction(
       base::StrCat({GetSidePanelNameFor(type), ".Show"}).c_str()));
@@ -54,7 +54,7 @@ void SidePanelMetrics::RecordSidePanelOpen(
 }
 
 void SidePanelMetrics::RecordSidePanelShowOrChangeEntryTrigger(
-    SidePanelEntry::PanelType type,
+    SidePanelType type,
     std::optional<SidePanelOpenTrigger> trigger) {
   if (trigger.has_value()) {
     base::UmaHistogramEnumeration(
@@ -63,7 +63,7 @@ void SidePanelMetrics::RecordSidePanelShowOrChangeEntryTrigger(
   }
 }
 
-void SidePanelMetrics::RecordSidePanelClosed(SidePanelEntry::PanelType type,
+void SidePanelMetrics::RecordSidePanelClosed(SidePanelType type,
                                              base::TimeTicks opened_timestamp) {
   base::RecordAction(base::UserMetricsAction(
       base::StrCat({GetSidePanelNameFor(type), ".Hide"}).c_str()));
@@ -74,7 +74,7 @@ void SidePanelMetrics::RecordSidePanelClosed(SidePanelEntry::PanelType type,
 }
 
 void SidePanelMetrics::RecordSidePanelResizeMetrics(
-    SidePanelEntry::PanelType type,
+    SidePanelType type,
     SidePanelEntry::Id id,
     int side_panel_contents_width,
     int browser_window_width) {
@@ -107,7 +107,7 @@ void SidePanelMetrics::RecordNewTabButtonClicked(SidePanelEntry::Id id) {
 }
 
 void SidePanelMetrics::RecordEntryShownMetrics(
-    SidePanelEntry::PanelType type,
+    SidePanelType type,
     SidePanelEntry::Id id,
     base::TimeTicks load_started_timestamp) {
   base::RecordComputedAction(
@@ -123,7 +123,7 @@ void SidePanelMetrics::RecordEntryShownMetrics(
 }
 
 void SidePanelMetrics::RecordEntryHiddenMetrics(
-    SidePanelEntry::PanelType type,
+    SidePanelType type,
     SidePanelEntry::Id id,
     base::TimeTicks shown_timestamp) {
   base::UmaHistogramLongTimes(
@@ -132,7 +132,7 @@ void SidePanelMetrics::RecordEntryHiddenMetrics(
       base::TimeTicks::Now() - shown_timestamp);
   // To measure extended usage times, Read Anything also needs a higher maximum
   // than what's supported by the standard ShownDuration histogram.
-  if (type == SidePanelEntry::PanelType::kContent &&
+  if (type == SidePanelType::kContent &&
       id == SidePanelEntryId::kReadAnything) {
     // TODO(crbug.com/456824119): Consider removing the standard ShownDuration
     // histogram for Read Anything after this one has gathered enough data.
@@ -145,7 +145,7 @@ void SidePanelMetrics::RecordEntryHiddenMetrics(
 }
 
 void SidePanelMetrics::RecordEntryShowTriggeredMetrics(
-    SidePanelEntry::PanelType type,
+    SidePanelType type,
     SidePanelEntry::Id id,
     std::optional<SidePanelOpenTrigger> trigger) {
   if (trigger.has_value()) {
@@ -164,7 +164,7 @@ void SidePanelMetrics::RecordPinnedButtonClicked(SidePanelEntry::Id id,
 }
 
 void SidePanelMetrics::RecordSidePanelAnimationMetrics(
-    SidePanelEntry::PanelType panel_type,
+    SidePanelType panel_type,
     SidePanelAnimationType animation_type,
     base::TimeDelta largest_step_time,
     int frames_per_second) {
@@ -183,8 +183,8 @@ void SidePanelMetrics::RecordSidePanelAnimationMetrics(
 }
 
 void SidePanelMetrics::RecordPanelClosedForOtherPanelTypeMetrics(
-    SidePanelEntry::PanelType closing_panel_type,
-    SidePanelEntry::PanelType opening_panel_type,
+    SidePanelType closing_panel_type,
+    SidePanelType opening_panel_type,
     SidePanelEntryId closing_panel_id,
     SidePanelEntryId opening_panel_id) {
   base::RecordComputedAction(

@@ -181,9 +181,8 @@ void LensOverlaySidePanelCoordinator::RegisterEntryAndShow() {
   initialization_data_ = std::make_unique<SidePanelInitializationData>();
 }
 
-SidePanelEntry::PanelType LensOverlaySidePanelCoordinator::GetPanelType()
-    const {
-  return SidePanelEntry::PanelType::kContent;
+SidePanelType LensOverlaySidePanelCoordinator::GetPanelType() const {
+  return SidePanelType::kContent;
 }
 
 void LensOverlaySidePanelCoordinator::RecordAndShowSidePanelErrorPage() {

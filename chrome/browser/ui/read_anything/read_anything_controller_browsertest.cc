@@ -1475,7 +1475,7 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectTotalCount(
       "Accessibility.ReadAnything.ShownDurationMax1Day", 0);
 
-  side_panel_ui->Close(SidePanelEntry::PanelType::kContent);
+  side_panel_ui->Close(SidePanelType::kContent);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return !side_panel_ui->IsSidePanelEntryShowing(
         SidePanelEntryKey(SidePanelEntryId::kReadAnything));

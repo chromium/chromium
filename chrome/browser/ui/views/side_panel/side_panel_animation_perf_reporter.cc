@@ -13,7 +13,7 @@
 #include "ui/views/widget/widget.h"
 
 SidePanelAnimationPerfReporter::SidePanelAnimationPerfReporter(
-    SidePanelEntry::PanelType panel_type,
+    SidePanelType panel_type,
     SidePanelAnimationType animation_type,
     base::TimeDelta total_animation_time,
     views::Widget* widget)

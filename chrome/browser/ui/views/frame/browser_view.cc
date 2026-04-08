@@ -962,7 +962,7 @@ BrowserView::BrowserView(Browser* browser)
   set_contents_view(contents_container_);
 
   contents_height_side_panel_ = AddChildView(std::make_unique<SidePanel>(
-      this, SidePanelEntry::PanelType::kContent, /*has_border=*/true));
+      this, SidePanelType::kContent, /*has_border=*/true));
 
   // InfoBarContainer needs to be added as a child here for drop-shadow, but
   // needs to come after toolbar in focus order (see EnsureFocusOrder()).
@@ -981,7 +981,7 @@ BrowserView::BrowserView(Browser* browser)
   // TODO(crbug.com/454362874): Support dynamic horizontal alignment.
 
   toolbar_height_side_panel_ = AddChildView(std::make_unique<SidePanel>(
-      this, SidePanelEntry::PanelType::kToolbar, /*has_border=*/false));
+      this, SidePanelType::kToolbar, /*has_border=*/false));
 
   // Tabstrip comes basically last because it should be before toolbar in the
   // focus order but also needs to paint on top of everything.

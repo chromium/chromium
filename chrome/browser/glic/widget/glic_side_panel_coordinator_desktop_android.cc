@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/android/side_panel_native_view_android.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
@@ -58,8 +59,8 @@ void GlicSidePanelCoordinatorDesktopAndroid::CreateAndRegisterEntry() {
 
   auto entry = std::make_unique<SidePanelEntry>(
       base::FeatureList::IsEnabled(features::kGlicUseToolbarHeightSidePanel)
-          ? SidePanelEntry::PanelType::kToolbar
-          : SidePanelEntry::PanelType::kContent,
+          ? SidePanelType::kToolbar
+          : SidePanelType::kContent,
       SidePanelEntry::Key(SidePanelEntry::Id::kGlic),
       base::BindRepeating(&GlicSidePanelCoordinatorDesktopAndroid::CreateView,
                           base::Unretained(this)),

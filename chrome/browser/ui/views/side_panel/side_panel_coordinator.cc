@@ -64,7 +64,7 @@ void SidePanelCoordinator::Init(Browser* browser) {
 }
 
 void SidePanelCoordinator::TearDownPreBrowserWindowDestruction() {
-  for (auto panel_type : SidePanelEntry::PanelTypes::All()) {
+  for (auto panel_type : SidePanelTypes::All()) {
     Close(panel_type, SidePanelEntryHideReason::kSidePanelClosed,
           /*suppress_animations=*/true);
   }
@@ -125,13 +125,13 @@ content::WebContents* SidePanelCoordinator::GetWebContentsForTest(
 }
 
 void SidePanelCoordinator::DisableAnimationsForTesting() {
-  for (auto panel_type : SidePanelEntry::PanelTypes::All()) {
+  for (auto panel_type : SidePanelTypes::All()) {
     GetSidePanelFor(panel_type)->DisableAnimationsForTesting();  // IN-TEST
   }
 }
 
 SidePanelEntry* SidePanelCoordinator::GetLoadingEntryForTesting(
-    SidePanelEntry::PanelType type) const {
+    SidePanelType type) const {
   return waiter(type)->loading_entry();
 }
 
@@ -152,9 +152,9 @@ void SidePanelCoordinator::Show(
 
     // If opening the toolbar height side panel, make sure the content height
     // side panel is closed and vice versa.
-    if (auto other_type = entry->type() == SidePanelEntry::PanelType::kContent
-                              ? SidePanelEntry::PanelType::kToolbar
-                              : SidePanelEntry::PanelType::kContent;
+    if (auto other_type = entry->type() == SidePanelType::kContent
+                              ? SidePanelType::kToolbar
+                              : SidePanelType::kContent;
         IsSidePanelShowing(other_type)) {
       SidePanelMetrics::RecordPanelClosedForOtherPanelTypeMetrics(
           other_type, entry->type(), GetCurrentEntryId(other_type).value(),
@@ -162,7 +162,7 @@ void SidePanelCoordinator::Show(
       Close(other_type, SidePanelEntryHideReason::kSidePanelClosed,
             /*suppress_animations=*/true);
     }
-    if (entry->type() == SidePanelEntry::PanelType::kContent) {
+    if (entry->type() == SidePanelType::kContent) {
       // Record usage for side panel promo.
       BrowserUserEducationInterface::From(browser_view_->browser())
           ->NotifyAdditionalConditionEvent("side_panel_shown");
@@ -229,7 +229,7 @@ void SidePanelCoordinator::Show(
 //   (4) At the moment that this comment was written, if this class is showing
 //   a window-scoped side-panel entry, and the window is closed via any
 //   mechanism, this method is not called.
-void SidePanelCoordinator::Close(SidePanelEntry::PanelType panel_type,
+void SidePanelCoordinator::Close(SidePanelType panel_type,
                                  SidePanelEntryHideReason reason,
                                  bool suppress_animations) {
   SidePanel* const side_panel = GetSidePanelFor(panel_type);
@@ -359,8 +359,7 @@ void SidePanelCoordinator::PopulateSidePanel(
   NotifyShownCallbacksFor(entry->type());
 }
 
-void SidePanelCoordinator::ClearCachedEntryViews(
-    SidePanelEntry::PanelType type) {
+void SidePanelCoordinator::ClearCachedEntryViews(SidePanelType type) {
   SidePanelRegistry::From(browser())->ClearCachedEntryViews(type);
   TabStripModel* model = browser_view_->browser()->tab_strip_model();
   for (tabs::TabInterface* tab : *model) {
@@ -372,7 +371,7 @@ void SidePanelCoordinator::ClearCachedEntryViews(
 void SidePanelCoordinator::MaybeShowEntryOnTabStripModelChanged(
     SidePanelRegistry* old_contextual_registry,
     SidePanelRegistry* new_contextual_registry) {
-  for (SidePanelEntry::PanelType type : SidePanelEntry::PanelTypes::All()) {
+  for (SidePanelType type : SidePanelTypes::All()) {
     SidePanel* side_panel = GetSidePanelFor(type);
     CHECK(side_panel);
     // Show an entry in the following fallback order: new contextual registry's
@@ -418,7 +417,7 @@ void SidePanelCoordinator::MaybeShowEntryOnTabStripModelChanged(
 }
 
 void SidePanelCoordinator::SetNoDelaysForTesting(bool no_delays_for_testing) {
-  for (auto type : SidePanelEntry::PanelTypes::All()) {
+  for (auto type : SidePanelTypes::All()) {
     waiter(type)->SetNoDelaysForTesting(no_delays_for_testing);  // IN-TEST
   }
 }
@@ -489,9 +488,8 @@ void SidePanelCoordinator::ClosePromoAndMaybeNotifyUsed(
   }
 }
 
-SidePanel* SidePanelCoordinator::GetSidePanelFor(
-    SidePanelEntry::PanelType type) {
-  return type == SidePanelEntry::PanelType::kContent
+SidePanel* SidePanelCoordinator::GetSidePanelFor(SidePanelType type) {
+  return type == SidePanelType::kContent
              ? browser_view_->contents_height_side_panel()
              : browser_view_->toolbar_height_side_panel();
 }

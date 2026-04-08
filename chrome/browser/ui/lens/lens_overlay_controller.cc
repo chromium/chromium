@@ -1321,7 +1321,7 @@ ui::ElementIdentifier LensOverlayController::GetViewContainerId() {
   return kLensOverlayViewElementId;
 }
 
-SidePanelEntry::PanelType LensOverlayController::GetSidePanelType() {
+SidePanelType LensOverlayController::GetSidePanelType() {
   return GetLensOverlaySidePanelCoordinator()->GetPanelType();
 }
 

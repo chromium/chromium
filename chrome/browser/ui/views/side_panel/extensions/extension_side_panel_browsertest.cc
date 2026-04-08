@@ -416,7 +416,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   SidePanelEntry* const extension_entry =
       global_registry->GetEntryForKey(extension_key);
   ASSERT_TRUE(extension_entry);
-  SidePanelEntry::PanelType panel_type = extension_entry->type();
+  SidePanelType panel_type = extension_entry->type();
   SidePanelUI* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
 
   // The key for the extension should be registered, but the side panel isn't
@@ -517,7 +517,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, SidePanelQuicklyClosed) {
   SidePanelEntry* entry =
       SidePanelRegistry::From(browser())->GetEntryForKey(extension_key);
   EXPECT_TRUE(entry);
-  SidePanelEntry::PanelType panel_type = entry->type();
+  SidePanelType panel_type = entry->type();
   EXPECT_FALSE(side_panel_ui->IsSidePanelShowing(panel_type));
 
   // Quickly open the side panel showing the extension's side panel entry then
@@ -826,7 +826,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   SidePanelEntry::Key extension_key = GetKey(extension->id());
   SidePanelRegistry* const global_registry = SidePanelRegistry::From(browser());
   EXPECT_TRUE(global_registry->GetEntryForKey(extension_key));
-  SidePanelEntry::PanelType panel_type =
+  SidePanelType panel_type =
       global_registry->GetEntryForKey(extension_key)->type();
   SidePanelUI* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
 
@@ -879,7 +879,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
                 /*enabled=*/true);
   waiter.WaitForRegistration();
   EXPECT_TRUE(GetCurrentTabRegistry()->GetEntryForKey(extension_key));
-  SidePanelEntry::PanelType panel_type =
+  SidePanelType panel_type =
       GetCurrentTabRegistry()->GetEntryForKey(extension_key)->type();
 
   // Show the extension side panel. This should show the tab-scoped side panel.
@@ -1081,7 +1081,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   SidePanelUI* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
   SidePanelRegistry* const global_registry = SidePanelRegistry::From(browser());
   EXPECT_TRUE(global_registry->GetEntryForKey(extension_key));
-  SidePanelEntry::PanelType panel_type =
+  SidePanelType panel_type =
       global_registry->GetEntryForKey(extension_key)->type();
 
   {
@@ -1440,7 +1440,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
   SidePanelUI* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
   SidePanelRegistry* const global_registry = SidePanelRegistry::From(browser());
 
-  SidePanelEntry::PanelType panel_type =
+  SidePanelType panel_type =
       global_registry->GetEntryForKey(GetKey(extension->id()))->type();
   EXPECT_FALSE(side_panel_ui->IsSidePanelShowing(panel_type));
   // Run `sidePanel.open()`. The panel should open.
@@ -1459,10 +1459,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
   // Register a global side panel.
   RunSetOptions(*extension, /*tab_id=*/std::nullopt, "panel.html",
                 /*enabled=*/true);
-  SidePanelEntry::PanelType panel_type =
-      SidePanelRegistry::From(browser())
-          ->GetEntryForKey(GetKey(extension->id()))
-          ->type();
+  SidePanelType panel_type = SidePanelRegistry::From(browser())
+                                 ->GetEntryForKey(GetKey(extension->id()))
+                                 ->type();
 
   // For clarity sake, use a named reference to the non-incognito browser.
   Browser* non_incognito_browser = browser();
@@ -1510,7 +1509,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
 
   SidePanelUI* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
   SidePanelRegistry* const global_registry = SidePanelRegistry::From(browser());
-  SidePanelEntry::PanelType panel_type =
+  SidePanelType panel_type =
       global_registry->GetEntryForKey(GetKey(extension->id()))->type();
   EXPECT_FALSE(side_panel_ui->IsSidePanelShowing(panel_type));
 
@@ -1790,10 +1789,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
   // Register a global side panel.
   RunSetOptions(*extension, /*tab_id=*/std::nullopt, "panel.html",
                 /*enabled=*/true);
-  SidePanelEntry::PanelType panel_type =
-      SidePanelRegistry::From(browser())
-          ->GetEntryForKey(GetKey(extension->id()))
-          ->type();
+  SidePanelType panel_type = SidePanelRegistry::From(browser())
+                                 ->GetEntryForKey(GetKey(extension->id()))
+                                 ->type();
 
   // For clarity sake, use a named reference to the non-incognito browser.
   Browser* non_incognito_browser = browser();
@@ -2371,7 +2369,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCloseSidePanelBrowserTest,
   RunSetOptions(*extension, second_tab_id, "panel_2.html", /*enabled=*/true);
   side_panel_ui->Show(extension_key);
   EXPECT_TRUE(side_panel_ui->IsSidePanelEntryShowing(extension_key));
-  SidePanelEntry::PanelType panel_type =
+  SidePanelType panel_type =
       second_tab_registry->GetEntryForKey(extension_key)->type();
   EXPECT_TRUE(second_tab_registry->GetActiveEntryFor(panel_type).has_value());
 
@@ -2415,7 +2413,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCloseSidePanelBrowserTest,
   // Show the global panel first to set it as the window's active global entry.
   side_panel_ui->Show(global_key);
   ASSERT_TRUE(side_panel_ui->IsSidePanelEntryShowing(global_key));
-  SidePanelEntry::PanelType panel_type =
+  SidePanelType panel_type =
       global_registry->GetEntryForKey(global_key)->type();
 
   ASSERT_TRUE(global_registry->GetActiveEntryFor(panel_type).has_value());
@@ -2717,7 +2715,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOnClosedEventSidePanelBrowserTest,
   SidePanelEntry* extension_entry =
       GetCurrentTabRegistry()->GetEntryForKey(GetKey(extension->id()));
   ASSERT_TRUE(extension_entry);
-  SidePanelEntry::PanelType panel_type = extension_entry->type();
+  SidePanelType panel_type = extension_entry->type();
   ShowContextualEntryAndWait(GetKey(extension->id()));
   SidePanelUI* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
 
@@ -2788,7 +2786,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOnClosedEventSidePanelBrowserTest,
   // Show the extension's panel to ensure it is active before proceeding.
   SidePanelEntry* extension_entry =
       GetCurrentTabRegistry()->GetEntryForKey(GetKey(extension->id()));
-  SidePanelEntry::PanelType panel_type = extension_entry->type();
+  SidePanelType panel_type = extension_entry->type();
   ASSERT_TRUE(extension_entry);
   ShowContextualEntryAndWait(GetKey(extension->id()));
 

@@ -32,7 +32,7 @@ class LensResultsPanelRouter {
   bool IsEntryShowing();
 
   // Returns the panel type of the results panel.
-  SidePanelEntry::PanelType GetPanelType() const;
+  SidePanelType GetPanelType() const;
 
   // Focuses the searchbox in the results panel.
   void FocusSearchbox();

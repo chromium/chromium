@@ -62,7 +62,7 @@ void SidePanelCoordinatorAndroid::ShowFrom(
   // TODO(crbug.com/494001629): Implement this.
 }
 
-void SidePanelCoordinatorAndroid::Close(SidePanelEntry::PanelType panel_type,
+void SidePanelCoordinatorAndroid::Close(SidePanelType panel_type,
                                         SidePanelEntryHideReason hide_reason,
                                         bool suppress_animations) {
   if (!IsSidePanelShowing(panel_type)) {
@@ -104,7 +104,7 @@ void SidePanelCoordinatorAndroid::DisableAnimationsForTesting() {
 
 void SidePanelCoordinatorAndroid::SetNoDelaysForTesting(  // IN-TEST
     bool no_delays_for_testing) {
-  for (auto type : SidePanelEntry::PanelTypes::All()) {
+  for (auto type : SidePanelTypes::All()) {
     waiter(type)->SetNoDelaysForTesting(no_delays_for_testing);  // IN-TEST
   }
 }
@@ -150,10 +150,10 @@ void SidePanelCoordinatorAndroid::MaybeShowEntryOnTabStripModelChanged(
     SidePanelRegistry* new_contextual_registry) {
   // TODO(crbug.com/494002625): Complete the full implementation.
   // The full implementation will need to:
-  // consider all SidePanelEntry::PanelTypes,
+  // consider all SidePanelTypes,
   // consider fallback logic, such as falling back to global entries,
   // etc.
-  auto panel_type = SidePanelEntry::PanelType::kContent;
+  auto panel_type = SidePanelType::kContent;
   if (old_contextual_registry && IsSidePanelShowing(panel_type)) {
     std::optional<UniqueKey> key = current_key(panel_type);
     CHECK(key) << "Current key should exist when side panel is showing.";

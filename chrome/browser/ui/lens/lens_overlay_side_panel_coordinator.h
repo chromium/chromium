@@ -104,7 +104,7 @@ class LensOverlaySidePanelCoordinator
   // exist and then shows it.
   void RegisterEntryAndShow();
 
-  SidePanelEntry::PanelType GetPanelType() const;
+  SidePanelType GetPanelType() const;
 
   // Cleans up the side panel entry and closes the side panel.
   void DeregisterEntryAndCleanup();
