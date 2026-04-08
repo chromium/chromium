@@ -70,9 +70,14 @@ class ExternalVkImageBackingFactoryDawnTest
 
     dawnProcSetProcs(&dawn::native::GetProcs());
 
-    // Find a Dawn Vulkan adapter
+    // Find a Dawn Vulkan adapter. We favor high-performance GPUs to match
+    // VulkanDeviceQueue's preference for discrete GPUs. Without this setting,
+    // Dawn might return adapters in an arbitrary order, which may not match the
+    // physical device used by VulkanDeviceQueue, leading to memory import
+    // failures.
     wgpu::RequestAdapterOptions adapter_options;
     adapter_options.backendType = wgpu::BackendType::Vulkan;
+    adapter_options.powerPreference = wgpu::PowerPreference::HighPerformance;
     std::vector<dawn::native::Adapter> adapters =
         dawn_instance_.EnumerateAdapters(&adapter_options);
     ASSERT_GT(adapters.size(), 0u);
