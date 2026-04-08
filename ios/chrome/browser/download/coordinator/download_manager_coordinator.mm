@@ -460,7 +460,12 @@
   }
   base::RecordAction(base::UserMetricsAction("IOSDownloadOpenIn"));
   base::FilePath path = _mediator.GetDownloadPath();
-  NSURL* URL = [NSURL fileURLWithPath:base::SysUTF8ToNSString(path.value())];
+  NSURL* URL = base::apple::FilePathToNSURL(path);
+  base::UmaHistogramBoolean("Download.IOSDownloadOpenInHasFilePath", URL);
+  if (!URL) {
+    // Final file path is not ready yet, so do nothing for now.
+    return;
+  }
 
   NSArray* customActions = @[ URL ];
   NSArray* activities = nil;
