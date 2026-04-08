@@ -78,6 +78,7 @@ public class MultiWindowAppMenuTest {
     @Test
     @LargeTest
     @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // https://crbug.com/500749408
     public void testOpenNewWindow_fromIncognitoNtp() {
         doTestOpenNewWindow_fromIncognitoNtp();
     }
