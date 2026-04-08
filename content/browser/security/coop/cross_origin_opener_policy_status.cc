@@ -96,8 +96,6 @@ CrossOriginOpenerPolicyStatus::CrossOriginOpenerPolicyStatus(
       soap_by_default_virtual_browsing_context_group_(
           frame_tree_node_->current_frame_host()
               ->soap_by_default_virtual_browsing_context_group()),
-      is_navigation_from_initial_empty_document_(
-          frame_tree_node_->is_on_initial_empty_document()),
       current_coop_(
           frame_tree_node_->current_frame_host()->cross_origin_opener_policy()),
       current_origin_(
@@ -114,7 +112,7 @@ CrossOriginOpenerPolicyStatus::CrossOriginOpenerPolicyStatus(
   // navigation in a popup.
   // Note: the origin check is there to avoid leaking the URL of an opener that
   // navigated in the meantime.
-  if (is_navigation_from_initial_empty_document_ &&
+  if (frame_tree_node_->is_on_initial_empty_document() &&
       frame_tree_node_->opener() &&
       frame_tree_node_->opener()
               ->current_frame_host()
@@ -229,7 +227,7 @@ void CrossOriginOpenerPolicyStatus::EnforceCOOP(
   bool cross_origin_policy_swap =
       ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
           current_coop_.value, current_origin_,
-          is_navigation_from_initial_empty_document_, response_coop.value,
+          frame_tree_node_->is_on_initial_empty_document(), response_coop.value,
           response_origin);
 
   // Any mismatch in COOP during any step of the redirect chain will result in
@@ -244,19 +242,19 @@ void CrossOriginOpenerPolicyStatus::EnforceCOOP(
   bool report_only_coop_swap =
       ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
           current_coop_.report_only_value, current_origin_,
-          is_navigation_from_initial_empty_document_,
+          frame_tree_node_->is_on_initial_empty_document(),
           response_coop.report_only_value, response_origin);
 
   bool navigating_to_report_only_coop_swap =
       ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
           current_coop_.value, current_origin_,
-          is_navigation_from_initial_empty_document_,
+          frame_tree_node_->is_on_initial_empty_document(),
           response_coop.report_only_value, response_origin);
 
   bool navigating_from_report_only_coop_swap =
       ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
           current_coop_.report_only_value, current_origin_,
-          is_navigation_from_initial_empty_document_, response_coop.value,
+          frame_tree_node_->is_on_initial_empty_document(), response_coop.value,
           response_origin);
 
   bool has_other_window_in_browsing_context_group =
@@ -327,7 +325,7 @@ void CrossOriginOpenerPolicyStatus::EnforceCOOP(
   // browsing context group switch.
   if (ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
           current_coop_.soap_by_default_value, current_origin_,
-          is_navigation_from_initial_empty_document_,
+          frame_tree_node_->is_on_initial_empty_document(),
           response_coop.soap_by_default_value, response_origin)) {
     soap_by_default_virtual_browsing_context_group_ =
         CrossOriginOpenerPolicyAccessReportManager::
