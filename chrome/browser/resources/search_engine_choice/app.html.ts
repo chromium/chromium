@@ -44,7 +44,7 @@ export function getHtml(this: AppElement) {
   </cr-radio-group>
 </div>
 <div id="buttonContainer">
-  <cr-checkbox ?hidden="${!this.showGuestCheckbox_}"
+  <cr-checkbox id="guestCheckbox" ?hidden="${!this.showGuestCheckbox_}"
       ?checked="${this.saveGuestModeSearchEngineChoice_}"
       @checked-changed="${this.onGuestCheckboxCheckedChanged_}">
     $i18n{guestCheckboxText}

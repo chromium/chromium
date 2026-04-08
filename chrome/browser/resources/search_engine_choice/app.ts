@@ -30,6 +30,7 @@ export interface AppElement {
     infoLink: HTMLElement,
     choiceList: HTMLElement,
     buttonContainer: HTMLElement,
+    guestCheckbox: HTMLElement,
   };
 }
 
@@ -158,12 +159,14 @@ export class AppElement extends AppElementBase {
   }
 
   private addResizeObserver_() {
-    function buttonAndListOverlap(
-        buttonRect: DOMRect, listRect: DOMRect, offset: number): boolean {
+    function doElementsOverlap(
+        firstElement: DOMRect, secondElement: DOMRect,
+        offset: number): boolean {
       return !(
-          buttonRect.right + offset < listRect.left ||
-          buttonRect.left - offset > listRect.right ||
-          buttonRect.bottom < listRect.top || buttonRect.top > listRect.bottom);
+          firstElement.right + offset < secondElement.left ||
+          firstElement.left - offset > secondElement.right ||
+          firstElement.bottom < secondElement.top ||
+          firstElement.top > secondElement.bottom);
     }
 
     this.resizeObserver_ = new ResizeObserver(() => {
@@ -180,15 +183,20 @@ export class AppElement extends AppElementBase {
         offset = 30;
       }
 
+      // Check if the list overlaps with guest checkbox.
+      let isOverlapping = doElementsOverlap(buttonRect, listRect, offset);
+      if (this.$.guestCheckbox && !this.$.guestCheckbox.hidden) {
+        const checkboxRect = this.$.guestCheckbox.getBoundingClientRect();
+        isOverlapping =
+            isOverlapping || doElementsOverlap(checkboxRect, listRect, offset);
+      }
+
       // Defer style changes to after the browser repaints to avoid triggering a
       // resize loop. See crbug.com/409406185.
       requestAnimationFrame(() => {
-        this.$.choiceList.classList.toggle(
-            'overlap-mitigation',
-            buttonAndListOverlap(buttonRect, listRect, offset));
+        this.$.choiceList.classList.toggle('overlap-mitigation', isOverlapping);
         this.$.buttonContainer.classList.toggle(
-            'overlap-mitigation',
-            buttonAndListOverlap(buttonRect, listRect, offset));
+            'overlap-mitigation', isOverlapping);
       });
     });
     this.resizeObserver_.observe(document.body);

@@ -174,11 +174,13 @@ export class AppRefreshElement extends AppRefreshElementBase {
 
   private addResizeObserver_() {
     function doElementsOverlap(
-        buttonRect: DOMRect, listRect: DOMRect, offset: number): boolean {
+        firstElement: DOMRect, secondElement: DOMRect,
+        offset: number): boolean {
       return !(
-          buttonRect.right + offset < listRect.left ||
-          buttonRect.left - offset > listRect.right ||
-          buttonRect.bottom < listRect.top || buttonRect.top > listRect.bottom);
+          firstElement.right + offset < secondElement.left ||
+          firstElement.left - offset > secondElement.right ||
+          firstElement.bottom < secondElement.top ||
+          firstElement.top > secondElement.bottom);
     }
 
     this.resizeObserver_ = new ResizeObserver(() => {
