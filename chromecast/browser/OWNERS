@@ -1,5 +1,3 @@
-seantopping@chromium.org
-
 per-file cast_overlay_manifests.h=set noparent
 per-file cast_overlay_manifests.h=file://ipc/SECURITY_OWNERS
 per-file cast_overlay_manifests.cc=set noparent
