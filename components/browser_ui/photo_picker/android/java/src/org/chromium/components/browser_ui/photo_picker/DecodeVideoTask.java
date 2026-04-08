@@ -157,15 +157,9 @@ class DecodeVideoTask extends AsyncTask<@Nullable List<Bitmap>> {
 
         if (isCancelled()) return null;
 
-        // TODO(finnur): Apply try-with-resources to MediaMetadataRetriever once Chrome no longer
-        //               supports versions below Build.VERSION_CODES.Q. API 29 is when it started
-        //               to implement AutoCloseable:
-        //
-        // https://developer.android.com/sdk/api_diff/29/changes/android.media.MediaMetadataRetriever
-        MediaMetadataRetriever retriever = null;
-        try (AssetFileDescriptor afd = mContentResolver.openAssetFileDescriptor(mUri, "r")) {
+        try (AssetFileDescriptor afd = mContentResolver.openAssetFileDescriptor(mUri, "r");
+                MediaMetadataRetriever retriever = new MediaMetadataRetriever()) {
             assumeNonNull(afd);
-            retriever = new MediaMetadataRetriever();
             retriever.setDataSource(afd.getFileDescriptor());
             String duration =
                     retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
@@ -198,11 +192,6 @@ class DecodeVideoTask extends AsyncTask<@Nullable List<Bitmap>> {
         } catch (IOException exception) {
             mDecodingResult = DecodingResult.IO_ERROR;
             return null;
-        } finally {
-            try {
-                if (retriever != null) retriever.release();
-            } catch (IOException exception) {
-            }
         }
     }
 
