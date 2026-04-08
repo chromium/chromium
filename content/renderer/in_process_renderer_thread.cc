@@ -4,6 +4,8 @@
 
 #include "content/renderer/in_process_renderer_thread.h"
 
+#include "base/message_loop/message_pump.h"
+#include "base/task/current_thread.h"
 #include "build/build_config.h"
 #include "content/public/common/content_client.h"
 #include "content/public/renderer/content_renderer_client.h"
@@ -22,42 +24,13 @@ namespace content {
 InProcessRendererThread::InProcessRendererThread(
     const InProcessChildThreadParams& params,
     int32_t renderer_client_id)
-    : Thread("Chrome_InProcRendererThread"),
+    : Thread("Chrome_InProcRendererThread",
+             std::make_unique<ThreadDelegate>(this)),
       params_(params),
       renderer_client_id_(renderer_client_id) {}
 
 InProcessRendererThread::~InProcessRendererThread() {
   Stop();
-}
-
-void InProcessRendererThread::Init() {
-  // In single-process mode, we never enter the sandbox, so run the post-sandbox
-  // code now.
-  content::ContentRendererClient* client = GetContentClient()->renderer();
-  if (client) {
-    client->PostSandboxInitialized();
-  }
-
-  // Call AttachCurrentThreadWithName, before any other AttachCurrentThread()
-  // calls. The latter causes Java VM to assign Thread-??? to the thread name.
-  // Please note calls to AttachCurrentThreadWithName after AttachCurrentThread
-  // will not change the thread name kept in Java VM.
-#if BUILDFLAG(IS_ANDROID)
-  base::android::AttachCurrentThreadWithName(thread_name());
-  // Make sure we aren't somehow reinitialising the inprocess renderer thread on
-  // Android. Temporary CHECK() to debug http://crbug.com/514141
-  CHECK(!render_process_);
-#endif
-  blink::Platform::InitializeBlink();
-  std::unique_ptr<blink::scheduler::WebThreadScheduler> main_thread_scheduler =
-      blink::scheduler::WebThreadScheduler::CreateMainThreadScheduler();
-
-  render_process_ = RenderProcessImpl::Create();
-  // RenderThreadImpl doesn't currently support a proper shutdown sequence
-  // and it's okay when we're running in multi-process mode because renderers
-  // get killed by the OS. In-process mode is used for test and debug only.
-  new RenderThreadImpl(params_, renderer_client_id_,
-                       std::move(main_thread_scheduler));
 }
 
 void InProcessRendererThread::CleanUp() {
@@ -79,6 +52,59 @@ base::Thread* CreateInProcessRendererThread(
     const InProcessChildThreadParams& params,
     int32_t renderer_client_id) {
   return new InProcessRendererThread(params, renderer_client_id);
+}
+
+InProcessRendererThread::ThreadDelegate::ThreadDelegate(
+    InProcessRendererThread* outer)
+    : outer_(outer) {}
+
+scoped_refptr<base::SingleThreadTaskRunner>
+InProcessRendererThread::ThreadDelegate::GetDefaultTaskRunner() {
+  return web_thread_scheduler_->DeprecatedDefaultTaskRunner();
+}
+
+void InProcessRendererThread::ThreadDelegate::AddTaskObserver(
+    base::TaskObserver* observer) {
+  NOTREACHED();
+}
+
+void InProcessRendererThread::ThreadDelegate::BindToCurrentThread() {
+  // InProcessRendererThread doesn't support being restarted.
+  DCHECK(!web_thread_scheduler_);
+
+  // In single-process mode, we never enter the sandbox, so run the post-sandbox
+  // code now.
+  content::ContentRendererClient* client = GetContentClient()->renderer();
+  if (client) {
+    client->PostSandboxInitialized();
+  }
+
+  // Call AttachCurrentThreadWithName, before any other AttachCurrentThread()
+  // calls. The latter causes Java VM to assign Thread-??? to the thread name.
+  // Please note calls to AttachCurrentThreadWithName after AttachCurrentThread
+  // will not change the thread name kept in Java VM.
+#if BUILDFLAG(IS_ANDROID)
+  base::android::AttachCurrentThreadWithName(outer_->thread_name());
+  // Make sure we aren't somehow reinitialising the inprocess renderer thread on
+  // Android. Temporary CHECK() to debug http://crbug.com/514141
+  CHECK(!outer_->render_process_);
+#endif
+  blink::Platform::InitializeBlink();
+  std::unique_ptr<blink::scheduler::WebThreadScheduler> main_thread_scheduler =
+      blink::scheduler::WebThreadScheduler::CreateInProcessMainThreadScheduler(
+          base::MessagePump::Create(base::MessagePumpType::DEFAULT));
+  web_thread_scheduler_ = main_thread_scheduler.get();
+
+  // Make sure the contract of Thread::Delegate::BindToCurrentThread() is
+  // fulfilled.
+  DCHECK(base::CurrentThread::IsSet());
+
+  outer_->render_process_ = RenderProcessImpl::Create();
+  // RenderThreadImpl doesn't currently support a proper shutdown sequence
+  // and it's okay when we're running in multi-process mode because renderers
+  // get killed by the OS. In-process mode is used for test and debug only.
+  new RenderThreadImpl(outer_->params_, outer_->renderer_client_id_,
+                       std::move(main_thread_scheduler));
 }
 
 }  // namespace content

@@ -280,6 +280,7 @@ class BASE_EXPORT SequenceManager::Settings::Builder {
  public:
   Builder();
   ~Builder();
+  Builder(Builder&& move_from) noexcept = default;
 
   // Sets the MessagePumpType which is used to create a MessagePump.
   Builder& SetMessagePumpType(MessagePumpType message_loop_type);

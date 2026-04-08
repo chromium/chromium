@@ -20,6 +20,18 @@
 
 namespace blink {
 namespace scheduler {
+namespace {
+
+base::sequence_manager::SequenceManager::Settings::Builder
+CreateSequenceManagerSettings() {
+  return std::move(base::sequence_manager::SequenceManager::Settings::Builder()
+                       .SetMessagePumpType(base::MessagePumpType::DEFAULT)
+                       .SetShouldSampleCPUTime(true)
+                       .SetAddQueueTimeToTasks(true)
+                       .SetPrioritySettings(CreatePrioritySettings()));
+}
+
+}  // namespace
 
 WebThreadScheduler::~WebThreadScheduler() = default;
 
@@ -27,21 +39,26 @@ WebThreadScheduler::~WebThreadScheduler() = default;
 std::unique_ptr<WebThreadScheduler>
 WebThreadScheduler::CreateMainThreadScheduler(
     std::unique_ptr<base::MessagePump> message_pump) {
-  auto settings = base::sequence_manager::SequenceManager::Settings::Builder()
-                      .SetMessagePumpType(base::MessagePumpType::DEFAULT)
-                      .SetShouldSampleCPUTime(true)
-                      .SetAddQueueTimeToTasks(true)
-                      .SetPrioritySettings(CreatePrioritySettings())
+  DCHECK(message_pump);
+  auto settings = CreateSequenceManagerSettings()
                       .SetIsMainThread(true)
                       .SetShouldReportLockMetrics(true)
                       .Build();
   auto sequence_manager =
-      message_pump
-          ? base::sequence_manager::
-                CreateSequenceManagerOnCurrentThreadWithPump(
-                    std::move(message_pump), std::move(settings))
-          : base::sequence_manager::CreateSequenceManagerOnCurrentThread(
-                std::move(settings));
+      base::sequence_manager::CreateSequenceManagerOnCurrentThreadWithPump(
+          std::move(message_pump), std::move(settings));
+  return std::make_unique<MainThreadSchedulerImpl>(std::move(sequence_manager));
+}
+
+// static
+std::unique_ptr<WebThreadScheduler>
+WebThreadScheduler::CreateInProcessMainThreadScheduler(
+    std::unique_ptr<base::MessagePump> message_pump) {
+  DCHECK(message_pump);
+  auto settings = CreateSequenceManagerSettings().Build();
+  auto sequence_manager =
+      base::sequence_manager::CreateSequenceManagerOnCurrentThreadWithPump(
+          std::move(message_pump), std::move(settings));
   return std::make_unique<MainThreadSchedulerImpl>(std::move(sequence_manager));
 }
 

@@ -43,10 +43,11 @@ class BLINK_PLATFORM_EXPORT WebThreadScheduler
   // silently dropped.
   virtual void Shutdown() = 0;
 
-  // If |message_pump| is null caller must have registered one using
-  // base::MessageLoop.
   static std::unique_ptr<WebThreadScheduler> CreateMainThreadScheduler(
-      std::unique_ptr<base::MessagePump> message_pump = nullptr);
+      std::unique_ptr<base::MessagePump> message_pump);
+  // Creates the main thread scheduler for use in single-process mode.
+  static std::unique_ptr<WebThreadScheduler> CreateInProcessMainThreadScheduler(
+      std::unique_ptr<base::MessagePump> message_pump);
   static std::unique_ptr<WebThreadScheduler>
   CreateMainThreadSchedulerForTesting(
       base::sequence_manager::SequenceManager* sequence_manager);
