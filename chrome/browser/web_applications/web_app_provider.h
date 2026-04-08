@@ -97,10 +97,11 @@ class WebAppProvider : public KeyedService {
   // This returns a WebAppProvider for the given `profile`, or `nullptr` if
   // installed web apps are not supported on the given `profile`. Use
   // `web_app::AreWebAppsEnabled` to determine if web apps are supported on a
-  // profile.
-  // Note: On ChromeOS, to support the system web app implementation, this also
-  // considers the `profile`'s 'original' profile, if `AreWebAppsEnabled`
-  // returns `false` for `profile`.
+  // profile. If `AreWebAppsEnabled` returns true, then this must return a
+  // non-nullptr.
+  //  Note: On ChromeOS, to support the system web app implementation, this also
+  //  considers the `profile`'s 'original' profile, if `AreWebAppsEnabled`
+  //  returns `false` for `profile`.
   // TODO(https://crbug.com/384063076): Stop returning the WebAppProvider for
   // profiles where `AreWebAppsEnabled` returns `false` to support CrOS system
   // web apps.

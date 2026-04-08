@@ -96,6 +96,16 @@ bool FakeWebAppUiManager::IsAppInQuickLaunchBar(
   return false;
 }
 
+bool FakeWebAppUiManager::IsAppMigrationSuggested(
+    BrowserWindowInterface* window) const {
+  return false;
+}
+
+bool FakeWebAppUiManager::IsAppMigrationDialogShowing(
+    BrowserWindowInterface* window) const {
+  return false;
+}
+
 bool FakeWebAppUiManager::CanReparentAppTabToWindow(
     const webapps::AppId& app_id,
     bool shortcut_created,

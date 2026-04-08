@@ -620,6 +620,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Engagement2.Standalone.MigrationDialogShowing"
+    enum="Boolean" expires_after="2027-03-25">
+  <owner>aditipage@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records whether the PWA 'migration' review dialog is currently showing in a
+    standalone PWA window. This metric is recorded every 5 minutes. Note: this
+    is not 'true' if it is just a name/icon update dialog.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Engagement2.Standalone.MigrationSuggested"
+    enum="Boolean" expires_after="2027-03-25">
+  <owner>aditipage@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records if a standalone PWA window has a 'migration' presented to the user
+    via the 3-dot menu, where the 3-dot menu has &quot;App update
+    available&quot; text. This metric is recorded every 5 minutes. Note: this is
+    not 'true' if it is just a name/icon update.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Engagement2.Tabbed.Active" enum="BooleanValid"
     expires_after="never">
 <!-- expires-never: This is used for dashboard metrics. pwa-team@google.com -->

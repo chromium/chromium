@@ -25,6 +25,7 @@
 
 class Browser;
 class BrowserWindow;
+class BrowserWindowInterface;
 class Profile;
 class SkBitmap;
 
@@ -162,6 +163,11 @@ class WebAppUiManager {
   virtual bool CanAddAppToQuickLaunchBar() const = 0;
   virtual void AddAppToQuickLaunchBar(const webapps::AppId& app_id) = 0;
   virtual bool IsAppInQuickLaunchBar(const webapps::AppId& app_id) const = 0;
+
+  virtual bool IsAppMigrationSuggested(
+      BrowserWindowInterface* window) const = 0;
+  virtual bool IsAppMigrationDialogShowing(
+      BrowserWindowInterface* window) const = 0;
 
   virtual bool CanReparentAppTabToWindow(
       const webapps::AppId& app_id,

@@ -16,12 +16,14 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/banners/installable_web_app_check_result.h"
 #include "components/webapps/browser/banners/web_app_banner_data.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 
 namespace web_app {
 
@@ -190,16 +192,32 @@ void SamplingMetricsProvider::EmitMetrics() {
   int tabbed_pwas_display_mode_standalone_installed_by_user_count = 0;
 
   IdSet emitted_ukm_ids;
+  bool is_migration_suggested_in_menu = false;
+  bool is_migration_dialog_showing = false;
+
   for (BrowserWindowInterface* browser : GetAllBrowserWindowInterfaces()) {
     if (!AreWebAppsEnabled(browser->GetProfile())) {
       continue;
     }
+
+    auto* provider = WebAppProvider::GetForWebApps(browser->GetProfile());
+    CHECK(provider);
+
     // If this is a standalone app window.
     if (AppBrowserController::IsWebApp(browser)) {
       // A browser may be being closed due to empty tabs. See
       // https://crbug.com/378020140.
-      if (!browser->GetActiveTabInterface()) {
+      tabs::TabInterface* active_tab = browser->GetActiveTabInterface();
+      if (!active_tab) {
         continue;
+      }
+
+      if (provider->ui_manager().IsAppMigrationSuggested(browser)) {
+        is_migration_suggested_in_menu = true;
+      }
+
+      if (provider->ui_manager().IsAppMigrationDialogShowing(browser)) {
+        is_migration_dialog_showing = true;
       }
 
       ++standalone_pwas_count;
@@ -210,14 +228,11 @@ void SamplingMetricsProvider::EmitMetrics() {
         standalone_pwas_in_active_use = true;
       }
 
-      MaybeEmitUkmMetricsForTab(browser->GetActiveTabInterface(),
-                                emitted_ukm_ids);
+      MaybeEmitUkmMetricsForTab(active_tab, emitted_ukm_ids);
     }
 
     // If this is a PWA-tab in a normal browser window.
     if (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL) {
-      auto* provider =
-          web_app::WebAppProvider::GetForWebApps(browser->GetProfile());
       auto& registrar = provider->registrar_unsafe();
 
       for (tabs::TabInterface* tab : browser->GetAllTabInterfaces()) {
@@ -298,6 +313,11 @@ void SamplingMetricsProvider::EmitMetrics() {
       "WebApp.Engagement2.Tabbed.UserDisplayModeStandaloneInstalledByUser."
       "Count",
       tabbed_pwas_display_mode_standalone_installed_by_user_count);
+
+  UMA_HISTOGRAM_BOOLEAN("WebApp.Engagement2.Standalone.MigrationSuggested",
+                        is_migration_suggested_in_menu);
+  UMA_HISTOGRAM_BOOLEAN("WebApp.Engagement2.Standalone.MigrationDialogShowing",
+                        is_migration_dialog_showing);
 }
 
 }  // namespace web_app

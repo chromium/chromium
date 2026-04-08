@@ -65,7 +65,8 @@ webapps::AppId InstallWebAppFromPageAndCloseAppBrowser(Browser* browser,
 webapps::AppId InstallWebAppFromManifest(Browser* browser, const GURL& app_url);
 
 // Launches a new app window for |app| in |profile| with specified
-// |disposition|.
+// |disposition|. This call waits until the launch command completes and load to
+// stop, while special-casing the /hung url which will never stop loading.
 Browser* LaunchWebAppBrowser(
     Profile*,
     const webapps::AppId&,

@@ -40,8 +40,11 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
-#include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_blocked_migration_infobar_delegate.h"
+#include "chrome/browser/ui/views/web_apps/web_app_update_review_dialog.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
@@ -302,6 +305,32 @@ bool WebAppUiManagerImpl::IsAppInQuickLaunchBar(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   return false;
+}
+
+bool WebAppUiManagerImpl::IsAppMigrationSuggested(
+    BrowserWindowInterface* window) const {
+  WebAppBrowserController* controller = WebAppBrowserController::From(window);
+  if (!controller) {
+    return false;
+  }
+  return controller->HasPendingMigration();
+}
+
+bool WebAppUiManagerImpl::IsAppMigrationDialogShowing(
+    BrowserWindowInterface* window) const {
+  WebAppBrowserController* controller = WebAppBrowserController::From(window);
+  if (!controller) {
+    return false;
+  }
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(window);
+  return browser_view &&
+         browser_view->GetProperty(kIsPwaUpdateDialogShowingKey) &&
+         controller->HasPendingMigration();
+#else
+  return false;
+#endif
 }
 
 bool WebAppUiManagerImpl::CanReparentAppTabToWindow(
