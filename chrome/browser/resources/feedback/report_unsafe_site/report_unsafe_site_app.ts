@@ -48,12 +48,18 @@ export class ReportUnsafeSiteAppElement extends CrLitElement {
 
   override async connectedCallback() {
     super.connectedCallback();
-    const pageInfo = await ReportUnsafeSiteBrowserProxyImpl.getInstance()
-                         .getPageHandler()
-                         .getTriggeringPageInfo();
+    const pageHandler =
+        ReportUnsafeSiteBrowserProxyImpl.getInstance().getPageHandler();
+    const pageInfo = await pageHandler.getTriggeringPageInfo();
     this.pageUrl_ = pageInfo.pageUrl;
     this.screenshotDataUri_ = pageInfo.screenshotDataUri;
     this.includeScreenshot_ = (this.screenshotDataUri_.length > 0);
+  }
+
+  override firstUpdated() {
+    const pageHandler =
+        ReportUnsafeSiteBrowserProxyImpl.getInstance().getPageHandler();
+    pageHandler.showUi();
   }
 
   protected onIncludeScreenshotCheckedChanged_(

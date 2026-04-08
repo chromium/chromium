@@ -38,6 +38,15 @@ suite('ReportUnsafeSiteTest', () => {
         });
   });
 
+  test('ShowUi', async () => {
+    const app = document.createElement('report-unsafe-site-app');
+    document.body.appendChild(app);
+
+    await browserProxy.getPageHandler().whenCalled('getTriggeringPageInfo');
+    await microtasksFinished();
+    assertEquals(1, browserProxy.getPageHandler().getCallCount('showUi'));
+  });
+
   test('ClickCancel', () => {
     const app = document.createElement('report-unsafe-site-app');
     document.body.appendChild(app);

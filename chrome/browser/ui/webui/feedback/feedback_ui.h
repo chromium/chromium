@@ -30,6 +30,7 @@ class FeedbackUI
   // Required by WebUIContentsWrapper.
   void set_embedder(
       base::WeakPtr<TopChromeWebUIController::Embedder> embedder) {
+    embedder_ = embedder;
   }
 
   void set_triggering_web_contents(content::WebContents* web_contents) {
@@ -58,6 +59,7 @@ class FeedbackUI
   std::unique_ptr<ReportUnsafeSitePageHandler> report_unsafe_site_page_handler_;
   mojo::Receiver<feedback::report_unsafe_site::mojom::PageHandlerFactory>
       report_unsafe_site_factory_receiver_{this};
+  base::WeakPtr<TopChromeWebUIController::Embedder> embedder_;
   base::WeakPtr<content::WebContents> triggering_web_contents_;
   base::WeakPtr<views::Widget> dialog_;
   std::unique_ptr<feedback::ScreenshotTaker> screenshot_taker_;

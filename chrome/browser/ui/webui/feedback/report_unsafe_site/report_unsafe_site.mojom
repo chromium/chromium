@@ -8,6 +8,9 @@ import "url/mojom/url.mojom";
 
 // Browser side handler for receiving calls from the page.
 interface PageHandler {
+  // Notify the browser that the UI is ready to be shown.
+  ShowUi();
+
   // Returns the URL, formatted for display, of the triggering page and a data
   // URI with a screenshot of the triggering page. The returned URL should be
   // used for display only.

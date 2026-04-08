@@ -51,13 +51,15 @@ class ReportUnsafeSiteDialogView : public WebUIBubbleDialogView {
  public:
   ReportUnsafeSiteDialogView(
       std::unique_ptr<WebUIContentsWrapper> contents_wrapper,
-      Browser* browser)
+      tabs::TabInterface* tab_interface)
       : WebUIBubbleDialogView(/*anchor_view=*/nullptr,
                               contents_wrapper->GetWeakPtr()),
         contents_wrapper_(std::move(contents_wrapper)),
-        browser_(browser->AsWeakPtr()) {
-    set_parent_window(
-        platform_util::GetViewForWindow(browser->window()->GetNativeWindow()));
+        tab_interface_(tab_interface->GetWeakPtr()) {
+    set_parent_window(platform_util::GetViewForWindow(
+        tab_interface->GetBrowserWindowInterface()
+            ->GetWindow()
+            ->GetNativeWindow()));
     set_close_on_deactivate(false);
     set_esc_should_cancel_dialog_override(false);
     SetShowCloseButton(false);
@@ -69,6 +71,14 @@ class ReportUnsafeSiteDialogView : public WebUIBubbleDialogView {
   ~ReportUnsafeSiteDialogView() override = default;
 
   // WebUIContentsWrapper::Host:
+  void ShowUI() override {
+    if (!tab_interface_ || !GetWidget()) {
+      return;
+    }
+    tab_interface_->GetTabFeatures()->tab_dialog_manager()->ShowDialog(
+        GetWidget(), std::make_unique<tabs::TabDialogManager::Params>());
+  }
+
   content::WebContents* AddNewContents(
       content::WebContents* source,
       std::unique_ptr<content::WebContents> new_contents,
@@ -77,7 +87,7 @@ class ReportUnsafeSiteDialogView : public WebUIBubbleDialogView {
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
       bool* was_blocked) override {
-    if (!browser_ || !user_gesture) {
+    if (!tab_interface_ || !user_gesture) {
       return nullptr;
     }
     if (disposition != WindowOpenDisposition::NEW_FOREGROUND_TAB &&
@@ -85,14 +95,14 @@ class ReportUnsafeSiteDialogView : public WebUIBubbleDialogView {
       return nullptr;
     }
     return chrome::AddWebContents(
-        browser_.get(), source, std::move(new_contents), target_url,
-        disposition, window_features, NavigateParams::WindowAction::kShowWindow,
-        user_gesture);
+        tab_interface_->GetBrowserWindowInterface(), source,
+        std::move(new_contents), target_url, disposition, window_features,
+        NavigateParams::WindowAction::kShowWindow, user_gesture);
   }
 
  private:
   std::unique_ptr<WebUIContentsWrapper> contents_wrapper_;
-  const base::WeakPtr<Browser> browser_;
+  const base::WeakPtr<tabs::TabInterface> tab_interface_;
 };
 
 BEGIN_METADATA(ReportUnsafeSiteDialogView)
@@ -147,15 +157,13 @@ void ReportUnsafeSiteDialog::Show(Browser* browser) {
   feedback_ui->set_screenshot_taker(
       ScreenshotTaker::Start(web_contents->GetPrimaryMainFrame()->GetView()));
   auto bubble_dialog = std::make_unique<ReportUnsafeSiteDialogView>(
-      std::move(contents_wrapper), browser);
+      std::move(contents_wrapper), tab_interface);
   std::unique_ptr<views::Widget> widget =
       base::WrapUnique(views::BubbleDialogDelegateView::CreateBubble(
           std::move(bubble_dialog),
           views::Widget::InitParams::CLIENT_OWNS_WIDGET));
   feedback_ui->set_dialog_widget(widget.get());
 
-  tab_interface->GetTabFeatures()->tab_dialog_manager()->ShowDialog(
-      widget.get(), std::make_unique<tabs::TabDialogManager::Params>());
   widget->MakeCloseSynchronous(
       base::BindOnce(&OnWidgetClose, std::move(widget)));
 }
