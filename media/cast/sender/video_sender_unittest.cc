@@ -274,7 +274,7 @@ TEST_P(VideoSenderTest, BuiltInEncoder) {
 }
 
 // TODO(crbug.com/500613219): Enable the test.
-#if defined(MEMORY_SANITIZER) && BUILDFLAG(IS_LINUX)
+#if defined(MEMORY_SANITIZER) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 #define MAYBE_MockEncoderGoldenCase DISABLED_MockEncoderGoldenCase
 #else
 #define MAYBE_MockEncoderGoldenCase MockEncoderGoldenCase
