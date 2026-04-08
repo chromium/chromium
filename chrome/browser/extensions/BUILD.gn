@@ -896,6 +896,7 @@ source_set("extensions") {
       "//chrome/browser/feedback",
       "//chrome/browser/glic",
       "//chrome/browser/importer",
+      "//chrome/browser/language",
       "//chrome/browser/lifetime:termination_notification",
       "//chrome/browser/picture_in_picture",
       "//chrome/browser/prefs",

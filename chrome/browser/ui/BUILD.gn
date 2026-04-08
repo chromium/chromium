@@ -322,6 +322,7 @@ static_library("ui") {
     "//chrome/browser/history_embeddings",
     "//chrome/browser/image_decoder",
     "//chrome/browser/image_fetcher",
+    "//chrome/browser/language",
     "//chrome/browser/login_detection",
     "//chrome/browser/lookalikes",
     "//chrome/browser/media/router:media_router_feature",

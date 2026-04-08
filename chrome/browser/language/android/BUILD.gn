@@ -204,3 +204,17 @@ robolectric_library("junit") {
     "//ui/android:ui_no_recycler_view_java",
   ]
 }
+
+source_set("bridge") {
+  sources = [
+    "language_bridge.cc",
+    "language_bridge.h",
+  ]
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//chrome/browser/language",
+    "//chrome/browser/profiles:profile",
+    "//components/language/core/browser",
+  ]
+}
