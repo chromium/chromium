@@ -138,7 +138,8 @@ void FedCmAccountSelectionView::OnPageActionClicked() {
     controller->ShowSuggestionChip(kActionFederation);
     controller->Show(kActionFederation);
     state_ = State::VERIFYING;
-    NotifyDelegateOfAccountSelection(*accounts_[0], *idp_list_[0]);
+    NotifyDelegateOfAccountSelection(*accounts_[0],
+                                     *accounts_[0]->identity_provider);
   } else {
     // For sign-up users, we show a full modal dialog that gathers the necessary
     // permission from the user (e.g. privacy policies and terms of services).
@@ -1426,8 +1427,11 @@ bool FedCmAccountSelectionView::ShowPageAction(
   }
 
   // We currently only support showing the page action when there is exactly one
-  // account. If there are multiple accounts, we fall back to the standard UI.
-  if (accounts.size() != 1u) {
+  // IDP and one account. If there are multiple IDPs or accounts, we fall back
+  // to the standard UI. Note that idp_list.size() != 1u is not redundant with
+  // accounts.size() != 1u because an IDP can be in a mismatch state (and thus
+  // contribute 0 accounts).
+  if (idp_list.size() != 1u || accounts.size() != 1u) {
     return false;
   }
 
@@ -1441,7 +1445,8 @@ bool FedCmAccountSelectionView::ShowPageAction(
                           accounts[0]->browser_trusted_login_state) ==
                       content::IdentityRequestAccount::LoginState::kSignIn;
 
-  std::u16string idp_name = base::UTF8ToUTF16(idp_list[0]->idp_for_display);
+  std::u16string idp_name =
+      base::UTF8ToUTF16(accounts[0]->identity_provider->idp_for_display);
   if (is_returning) {
     controller->SetAnchoredMessageText(kActionFederation,
                                        base::UTF8ToUTF16(accounts[0]->email));
