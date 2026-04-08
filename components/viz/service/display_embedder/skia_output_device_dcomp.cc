@@ -18,7 +18,6 @@
 #include "components/viz/common/switches.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 #include "gpu/command_buffer/common/mailbox.h"
-#include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
@@ -26,6 +25,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
@@ -121,7 +121,7 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
     gpu::SharedImageRepresentationFactory* shared_image_representation_factory,
     gpu::SharedContextState* context_state,
     scoped_refptr<gl::Presenter> presenter,
-    scoped_refptr<gpu::gles2::FeatureInfo> feature_info,
+    const gpu::GpuDriverBugWorkarounds& workarounds,
     gpu::MemoryTracker* memory_tracker,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback)
     : SkiaOutputDevice(context_state->gr_context(),
@@ -131,8 +131,7 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
       shared_image_representation_factory_(shared_image_representation_factory),
       context_state_(context_state),
       presenter_(std::move(presenter)) {
-  DCHECK(!feature_info->workarounds()
-              .disable_post_sub_buffers_for_onscreen_surfaces);
+  DCHECK(!workarounds.disable_post_sub_buffers_for_onscreen_surfaces);
   capabilities_.uses_default_gl_framebuffer = true;
   capabilities_.output_surface_origin = gfx::SurfaceOrigin::kTopLeft;
   capabilities_.number_of_buffers =
@@ -143,7 +142,7 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
     // when the feature |DCompTripleBufferRootSwapChain| is enabled.
     capabilities_.number_of_buffers = 2;
   }
-  if (feature_info->workarounds().supports_two_yuv_hardware_overlays) {
+  if (workarounds.supports_two_yuv_hardware_overlays) {
     capabilities_.allowed_yuv_overlay_count = 2;
   }
   if (base::FeatureList::IsEnabled(
@@ -169,9 +168,6 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
       !IsBufferQueueSupportedAndEnabled(capabilities_.dc_support_level);
 
   DCHECK(context_state_);
-  DCHECK(context_state_->gr_context() ||
-         context_state_->graphite_shared_context());
-  DCHECK(context_state_->context());
   DCHECK(presenter_);
 
   // SRGB
@@ -320,6 +316,9 @@ void SkiaOutputDeviceDComp::ScheduleOverlays(
     params.content_rect = gfx::ScaleRect(
         dc_layer.uv_rect, dc_layer.resource_size_in_pixels.width(),
         dc_layer.resource_size_in_pixels.height());
+    if (params.overlay_image) {
+      params.content_rect.Intersect(gfx::RectF(params.overlay_image->size()));
+    }
 
     params.quad_rect = gfx::ToRoundedRect(dc_layer.display_rect);
     CHECK(std::holds_alternative<gfx::Transform>(dc_layer.transform));

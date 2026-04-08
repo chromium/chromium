@@ -104,11 +104,14 @@ SkiaOutputDevice::SkiaOutputDevice(
     CHECK(!graphite_shared_context);
     capabilities_.max_render_target_size = gr_context->maxRenderTargetSize();
     capabilities_.max_texture_size = gr_context->maxTextureSize();
-  } else {
-    CHECK(graphite_shared_context);
+  } else if (graphite_shared_context) {
     capabilities_.max_render_target_size =
         graphite_shared_context->maxTextureSize();
     capabilities_.max_texture_size = graphite_shared_context->maxTextureSize();
+  } else {
+    // Unit tests may create SkiaOutputDevice without a GPU context.
+    capabilities_.max_render_target_size = 8192;
+    capabilities_.max_texture_size = 8192;
   }
 }
 

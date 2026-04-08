@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
+#include "components/viz/service/viz_service_export.h"
 #include "ui/gl/presenter.h"
 
 namespace gl {
@@ -21,23 +22,20 @@ class DCLayerOverlayImage;
 namespace gpu {
 class SharedContextState;
 class SharedImageRepresentationFactory;
-
-namespace gles2 {
-class FeatureInfo;
-}  // namespace gles2
+class GpuDriverBugWorkarounds;
 }  // namespace gpu
 
 namespace viz {
 
 // Base class for DComp-backed OutputDevices.
-class SkiaOutputDeviceDComp : public SkiaOutputDevice {
+class VIZ_SERVICE_EXPORT SkiaOutputDeviceDComp : public SkiaOutputDevice {
  public:
   SkiaOutputDeviceDComp(
       gpu::SharedImageRepresentationFactory*
           shared_image_representation_factory,
       gpu::SharedContextState* context_state,
       scoped_refptr<gl::Presenter> presenter,
-      scoped_refptr<gpu::gles2::FeatureInfo> feature_info,
+      const gpu::GpuDriverBugWorkarounds& workarounds,
       gpu::MemoryTracker* memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
 
@@ -56,11 +54,12 @@ class SkiaOutputDeviceDComp : public SkiaOutputDevice {
       std::vector<GrBackendSemaphore>* end_semaphores) override;
   void EndPaint() override;
 
+ protected:
+  virtual std::optional<gl::DCLayerOverlayImage> BeginOverlayAccess(
+      const gpu::Mailbox& mailbox);
+
  private:
   class OverlayData;
-
-  std::optional<gl::DCLayerOverlayImage> BeginOverlayAccess(
-      const gpu::Mailbox& mailbox);
 
   void CreateSkSurface();
 
