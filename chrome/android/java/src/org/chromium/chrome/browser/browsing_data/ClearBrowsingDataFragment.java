@@ -933,8 +933,8 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
     private void showSnackbar() {
         SnackbarManager snackbarManager = null;
         Activity activity = getLastFocusedActivity();
-        if (activity instanceof SnackbarManager.SnackbarManageable) {
-            snackbarManager = ((SnackbarManager.SnackbarManageable) activity).getSnackbarManager();
+        if (activity instanceof SnackbarManager.SnackbarManageable manageable) {
+            snackbarManager = manageable.getSnackbarManager();
         }
         if (snackbarManager == null) return;
 

@@ -58,9 +58,8 @@ public abstract class SafetyHubBaseFragment extends ChromeBaseSettingsFragment {
             SnackbarManager.SnackbarController controller,
             Object actionData) {
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
-        if (activity instanceof SnackbarManager.SnackbarManageable) {
-            SnackbarManager snackbarManager =
-                    ((SnackbarManager.SnackbarManageable) activity).getSnackbarManager();
+        if (activity instanceof SnackbarManager.SnackbarManageable manageable) {
+            SnackbarManager snackbarManager = manageable.getSnackbarManager();
             if (snackbarManager != null) {
                 showSnackbar(snackbarManager, text, identifier, controller, actionData);
             }

@@ -88,8 +88,8 @@ public class DownloadSnackbarController implements SnackbarManager.SnackbarContr
 
     public @Nullable SnackbarManager getSnackbarManager() {
         Activity activity = getActivity();
-        if (activity != null && activity instanceof SnackbarManager.SnackbarManageable) {
-            return ((SnackbarManager.SnackbarManageable) activity).getSnackbarManager();
+        if (activity != null && activity instanceof SnackbarManager.SnackbarManageable manageable) {
+            return manageable.getSnackbarManager();
         }
         return null;
     }

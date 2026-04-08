@@ -671,12 +671,11 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
     }
 
     private void onLocalSaveFallback() {
-        if (!(getActivity() instanceof SnackbarManager.SnackbarManageable)) {
+        if (!(getActivity() instanceof SnackbarManager.SnackbarManageable manageable)) {
             return;
         }
 
-        @Nullable SnackbarManager snackbarManager =
-                ((SnackbarManager.SnackbarManageable) getActivity()).getSnackbarManager();
+        @Nullable SnackbarManager snackbarManager = manageable.getSnackbarManager();
         if (snackbarManager == null) {
             return;
         }
