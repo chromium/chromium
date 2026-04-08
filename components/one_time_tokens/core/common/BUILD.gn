@@ -1,0 +1,12 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("features") {
+  defines = [ "IS_ONE_TIME_TOKENS_IMPL" ]
+  sources = [
+    "one_time_token_features.cc",
+    "one_time_token_features.h",
+  ]
+  public_deps = [ "//base" ]
+}

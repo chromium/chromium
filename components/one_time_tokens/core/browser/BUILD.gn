@@ -3,15 +3,6 @@
 # found in the LICENSE file.
 import("//third_party/protobuf/proto_library.gni")
 
-static_library("features") {
-  defines = [ "IS_ONE_TIME_TOKENS_IMPL" ]
-  sources = [
-    "../common/one_time_token_features.cc",
-    "../common/one_time_token_features.h",
-  ]
-  public_deps = [ "//base" ]
-}
-
 static_library("browser") {
   sources = [
     "email_one_time_token_fetcher.cc",
@@ -35,13 +26,13 @@ static_library("browser") {
     "util/expiring_subscription_manager.h",
   ]
   public_deps = [
-    ":features",
     ":fetch_email_one_time_token_error_details_proto",
     ":fetch_email_one_time_token_request_proto",
     ":fetch_email_one_time_token_response_proto",
     "//base",
     "//components/autofill/core/common:features",
     "//components/keyed_service/core",
+    "//components/one_time_tokens/core/common:features",
     "//components/signin/public/identity_manager",
     "//google_apis",
     "//net",

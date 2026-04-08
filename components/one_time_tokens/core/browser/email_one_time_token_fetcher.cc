@@ -10,6 +10,7 @@
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/one_time_token_type.h"
+#include "components/one_time_tokens/core/common/one_time_token_features.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -63,8 +64,7 @@ void EmailOneTimeTokenFetcher::OnAccessTokenFetched(
 void EmailOneTimeTokenFetcher::StartOneTimeTokenServiceCall(
     signin::AccessTokenInfo info) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  GURL url(
-      "https://onetimetoken.pa.googleapis.com/v1/onetimetokens:fetchEmail");
+  GURL url(features::kOneTimeTokenServiceUrl.Get());
 
   // TODO(crbug.com/486806779): figure out correct encoding.
   std::string encoded_reference;
