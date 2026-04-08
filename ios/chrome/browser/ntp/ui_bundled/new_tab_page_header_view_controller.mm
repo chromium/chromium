@@ -193,7 +193,6 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   void (^transitionBlock)(id<UIViewControllerTransitionCoordinatorContext>) =
       ^(id<UIViewControllerTransitionCoordinatorContext>) {
         __strong __typeof(self) strongSelf = weakSelf;
-
         if (!strongSelf) {
           return;
         }
@@ -214,10 +213,19 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
   void (^completionBlock)(id<UIViewControllerTransitionCoordinatorContext>) =
       ^(id<UIViewControllerTransitionCoordinatorContext>) {
+        __strong __typeof(self) strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+
         if (IsChromeNextIaEnabled() && !isTabletFormFactor) {
+          if (!strongSelf.headerView.toolsMenuButton) {
+            return;
+          }
+
           // Hide the tools menu button if it is no longer visible.
-          weakSelf.headerView.toolsMenuButton.hidden =
-              weakSelf.headerView.toolsMenuButton.alpha == 0.0;
+          strongSelf.headerView.toolsMenuButton.hidden =
+              strongSelf.headerView.toolsMenuButton.alpha == 0.0;
         }
       };
 
