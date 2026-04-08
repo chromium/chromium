@@ -58,17 +58,6 @@ class ApiTests extends ApiTestFixtureBase {
         panelOpenData.invocationSource, InvocationSource.TOP_CHROME_BUTTON);
   }
 
-  async testWebClientReadyOnPreload() {}
-
-  // This test should fail even if the ApiTestError is captured in a try-catch
-  // block.
-  async testFailureForCapturedApiTestError() {
-    try {
-      throw new ApiTestError('Non-throwing test error');
-    } catch (e) {
-    }
-  }
-
   async testRequestHeader() {
     const rpcUrls: string[] = this.testParams.rpcUrls;
     await Promise.all(rpcUrls.map(url => fetch(url)));
@@ -2754,10 +2743,6 @@ class ApiTestWithoutOpen extends ApiTestFixtureBase {
     await this.client.waitForInitialize();
   }
 
-  async testLoadWhileWindowClosed() {
-    await observeSequence(this.host.panelActive()).waitForValue(false);
-  }
-
   async testDeferredFocusedTabStateAtCreation() {
     // Initial state.
     assertDefined(this.host.getFocusedTabStateV2);
@@ -2986,14 +2971,6 @@ class ApiTestFailsToInitialize extends ApiTestFixtureBase {
   // is torn down.
   deferredSetUpClient() {
     sleep(100).then(() => super.setUpClient());
-  }
-
-  async testInitializeFailsWindowClosed() {
-    this.deferredSetUpClient();
-  }
-
-  async testInitializeFailsWindowOpen() {
-    this.deferredSetUpClient();
   }
 
   async testReload() {

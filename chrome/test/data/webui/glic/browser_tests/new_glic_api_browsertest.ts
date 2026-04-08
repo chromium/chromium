@@ -5,7 +5,7 @@
 import {ClientCapabilities} from '/glic/glic_api/glic_api.js';
 import type {GlicWebClient, InvokeOptions, Observable, OpenPanelInfo, PanelOpeningData, PanelState, TabData} from '/glic/glic_api/glic_api.js';
 
-import {ApiTestFixtureBase, assertDefined, assertEquals, assertUndefined, mapObservable, observeSequence, runUntil, testMain, WebClient} from './browser_test_base.js';
+import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertUndefined, mapObservable, observeSequence, runUntil, sleep, testMain, WebClient} from './browser_test_base.js';
 
 class ApiTests extends ApiTestFixtureBase {
   override async setUpTest() {
@@ -18,6 +18,17 @@ class ApiTests extends ApiTestFixtureBase {
     const expectedSource = this.testParams as number;
     await observeSequence(this.client.panelOpenData)
         .waitFor((data) => data && data.invocationSource === expectedSource);
+  }
+
+  async testFailureForCapturedApiTestError() {
+    try {
+      throw new ApiTestError('Non-throwing test error');
+    } catch (e) {
+    }
+  }
+
+  async testLoadWhileWindowClosed() {
+    await observeSequence(this.host.panelActive()).waitForValue(false);
   }
 }
 
@@ -212,12 +223,69 @@ class InvokeTest extends ApiTests {
     assertEquals('notifyPanelWillOpen,invoke', client.calls.join(','));
   }
 }
+type InitFailureType = 'error'|'timeout'|'none'|'reloadAfterInitialize'|
+    'navigateToSorryPageBeforeInitialize'|'navigateToSorryPageAfterInitialize';
+
+class WebClientThatFailsInitialize extends WebClient {
+  constructor(private failWith: InitFailureType = 'error') {
+    super();
+  }
+
+  override initialize(glicBrowserHost: any): Promise<void> {
+    if (this.failWith === 'error') {
+      return Promise.reject(
+          new ApiTestError('WebClientThatFailsInitialize.initialize'));
+    }
+    if (this.failWith === 'timeout') {
+      return sleep(15000);
+    }
+    if (this.failWith === 'reloadAfterInitialize') {
+      sleep(500).then(() => location.reload());
+    }
+    if (this.failWith === 'navigateToSorryPageBeforeInitialize') {
+      location.href = '/sorry/index.html';
+      return sleep(5000);
+    }
+    if (this.failWith === 'navigateToSorryPageAfterInitialize') {
+      sleep(500).then(() => {
+        location.href = '/sorry/index.html';
+      });
+    }
+    return super.initialize(glicBrowserHost);
+  }
+}
+
+class ApiTestFailsToInitialize extends ApiTestFixtureBase {
+  getTestParams(): {failWith?: InitFailureType} {
+    return this.testParams ?? {};
+  }
+
+  override createWebClient(): WebClient {
+    return new WebClientThatFailsInitialize(
+        this.getTestParams().failWith ?? 'error');
+  }
+
+  override async setUpClient() {}
+
+  deferredSetUpClient() {
+    sleep(100).then(() => super.setUpClient());
+  }
+
+  async testInitializeFailsWindowClosed() {
+    this.deferredSetUpClient();
+  }
+
+  async testInitializeFailsWindowOpen() {
+    this.deferredSetUpClient();
+  }
+}
 
 const TEST_FIXTURES = [
   ApiTests,
   FaviconTest,
   FaviconOmittedTest,
   InvokeTest,
+  ApiTestFailsToInitialize,
 ];
 
 testMain(TEST_FIXTURES);

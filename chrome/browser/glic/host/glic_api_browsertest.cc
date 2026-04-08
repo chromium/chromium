@@ -711,31 +711,6 @@ class GlicApiTestWithGeminiActOnWebPolicy : public GlicApiTestWithOneTab {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class GlicApiTestWithWebContentsWarming : public GlicApiTest {
- public:
-  GlicApiTestWithWebContentsWarming() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlicWebContentsWarming,
-          {
-              {features::kGlicWebContentsWarmingDelay.name, "200ms"},
-          }},
-         {features::kGlicWarming,
-          {{features::kGlicWarmingDelayMs.name, "0"},
-           {features::kGlicWarmingJitterMs.name, "0"}}}},
-        {});
-  }
-
-  void SetUpOnMainThread() override {
-    GlicApiTest::SetUpOnMainThread();
-    // Clear any warming that was done before the guest URL was set to
-    // the test client.
-    GetService()->web_contents_warming_pool().Clear();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 class GlicApiTestHibernateAllOnMemoryPressure : public GlicApiTest {
  public:
   GlicApiTestHibernateAllOnMemoryPressure() {
@@ -791,53 +766,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
   ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithWebContentsWarming,
-                       testWebClientReadyOnPreload) {
-  auto container = GetService()->web_contents_warming_pool().TakeContainer();
-  ASSERT_TRUE(container);
-  auto* web_contents = container->web_contents();
-
-  // Wait for the WebUI to initialize and reach the kReady state.
-  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
-
-  // We can't use ExecuteJsTest because it relies on the host being attached.
-  // Instead, we check the state directly in the WebUI.
-  constexpr char kCheckReadyScript[] = R"js(
-    (async () => {
-      const controller = window.appRouter.glicController;
-      return new Promise((resolve, reject) => {
-        // Poll for state change.
-        const interval = setInterval(() => {
-          if (controller.state === 13 /* kWarmed */) {
-            clearInterval(interval);
-            resolve(true);
-          } else if (controller.state === 5 /* kError */ ||
-                     controller.state === 6 /* kOffline */ ||
-                     controller.state === 7 /* kUnavailable */ ||
-                     controller.state === 10 /* kSignIn */ ||
-                     controller.state === 11 /* kGuestError */ ||
-                     controller.state === 12 /* kDisabledByAdmin */) {
-            clearInterval(interval);
-            reject(new Error('WebUI entered error state: ' + controller.state));
-          }
-        }, 10);
-      });
-    })()
-  )js";
-  EXPECT_EQ(true, content::EvalJs(web_contents, kCheckReadyScript));
-}
-
-// Confirms that JS assertion errors captured by try-catch blocks will still
-// result in test failures.
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
-                       testFailureForCapturedApiTestError) {
-  const std::string expected_failure =
-      "Failed at step #1 (single or first) due to (captured error): "
-      "Error: Non-throwing test error";
-  ExecuteJsTest(
-      {.should_fail = true, .should_fail_with_error = expected_failure});
-}
-
 // Checks that all tests in api_test.ts have a corresponding test case in this
 // file.
 // TODO(crbug.com/460826483): Enable on CrOS.
@@ -848,49 +776,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
 #endif
 IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testAllTestsAreRegistered) {
   AssertAllTestsRegistered(GetTestSuiteNames());
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testLoadWhileWindowClosed) {
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kNone),
-                  // Registering a conversation id ensures that the instance
-                  // isn't deleted as soon as the side panel is closed.
-                  RegisterConversation("test-id"), CloseGlic());
-  ExecuteJsTest();
-  // Make sure the WebUI transitions to kReady, otherwise the web client may be
-  // destroyed.
-  WaitForWebUiState(mojom::WebUiState::kReady);
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFailsWindowClosed) {
-  GlicHistogramTester histogram_tester;
-  // Immediately close the window to check behavior while window is closed.
-  // Fail client initialization, should see error page.
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kNone),
-                  // Registering a conversation id ensures that the instance
-                  // isn't deleted as soon as the side panel is closed.
-                  RegisterConversation("test-id"), CloseGlic());
-  ExecuteJsTest();
-  WaitForWebUiState(mojom::WebUiState::kError);
-  histogram_tester.ExpectUniqueSample(
-      "Glic.Host.WebClientState.OnDestroy",
-      /*sample=*/2 /*WEB_CLIENT_INITIALIZE_FAILED*/, 1);
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFailsWindowOpen) {
-  // Fail client initialization, should see error page.
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
-  ExecuteJsTest({
-      .params = base::Value(base::DictValue().Set("failWith", "error")),
-  });
-  WaitForWebUiState(mojom::WebUiState::kError);
-
-  // Closing and reopening the window should trigger a retry. This time the
-  // client initializes correctly.
-  RunTestSequence(CloseGlic(), OpenGlic(GlicInstrumentMode::kNone));
-  ExecuteJsTest({
-      .params = base::Value(base::DictValue().Set("failWith", "none")),
-  });
-  WaitForWebUiState(mojom::WebUiState::kReady);
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithDefaultTabContextDisabled,
@@ -4131,10 +4016,6 @@ INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestWithGeminiActOnWebPolicy,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
-INSTANTIATE_TEST_SUITE_P(,
-                         GlicApiTestWithWebContentsWarming,
-                         DefaultTestParamSet(),
-                         WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestHibernateAllOnMemoryPressure,
                          DefaultTestParamSet(),

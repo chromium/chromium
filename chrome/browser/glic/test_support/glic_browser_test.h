@@ -188,13 +188,28 @@ class GlicBrowserTestMixin : public T {
   // Registers a conversation and submits input to prevent the instance from
   // being deleted when closed.
   void PreventDeletionOnClose(
-      GlicInstanceImpl* instance,
+      GlicInstanceImpl* instance = nullptr,
       const std::string& conversation_id = "test_conversation") {
+    if (!instance) {
+      instance = GetOnlyGlicInstance();
+    }
     CHECK(instance);
-    auto info = mojom::ConversationInfo::New();
-    info->conversation_id = conversation_id;
-    instance->RegisterConversation(std::move(info), base::DoNothing());
+    if (!instance->conversation_id().has_value()) {
+      auto info = mojom::ConversationInfo::New();
+      info->conversation_id = conversation_id;
+      instance->RegisterConversation(std::move(info), base::DoNothing());
+    }
     instance->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  }
+
+  void CloseAllEmbeddersAndPreventDeletion(
+      GlicInstanceImpl* instance = nullptr) {
+    if (!instance) {
+      instance = GetOnlyGlicInstance();
+    }
+    CHECK(instance);
+    PreventDeletionOnClose(instance);
+    instance->CloseAllEmbedders();
   }
 
   // Opens the Glic UI on the active tab and detaches it.
@@ -343,7 +358,6 @@ class GlicBrowserTestMixin : public T {
   }
 
   GlicKeyedService* service() { return GlicKeyedService::Get(T::GetProfile()); }
-
   BrowserWindowInterface* GetBrowser() {
     return T::GetTabListInterface()
         ->GetActiveTab()

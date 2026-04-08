@@ -3,8 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_logging_settings.h"
+#include "base/values.h"
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
+#include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/host/webui_contents_container.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/new_glic_api_test.h"
@@ -161,11 +166,103 @@ class NewGlicApiTestWithWebContentsWarming : public NewGlicApiTest {
         {});
   }
 
-  void SetUpOnMainThread() override { NewGlicApiTest::SetUpOnMainThread(); }
+  void SetUpOnMainThread() override {
+    NewGlicApiTest::SetUpOnMainThread();
+    glic::GlicKeyedService::Get(this->GetProfile())
+        ->web_contents_warming_pool()
+        .Clear();
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithWebContentsWarming,
+                       testWebClientReadyOnPreload) {
+  auto container = glic::GlicKeyedService::Get(this->GetProfile())
+                       ->web_contents_warming_pool()
+                       .TakeContainer();
+  ASSERT_TRUE(container);
+  auto* web_contents = container->web_contents();
+
+  // Wait for the WebUI to initialize and reach the kReady state.
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
+
+  constexpr char kCheckReadyScript[] = R"js(
+    (async () => {
+      const controller = window.appRouter.glicController;
+      return new Promise((resolve, reject) => {
+        const interval = setInterval(() => {
+          if (controller.state === 13 /* kWarmed */) {
+            clearInterval(interval);
+            resolve(true);
+          } else if (controller.state === 5 /* kError */ ||
+                     controller.state === 6 /* kOffline */ ||
+                     controller.state === 7 /* kUnavailable */ ||
+                     controller.state === 10 /* kSignIn */ ||
+                     controller.state === 11 /* kGuestError */ ||
+                     controller.state === 12 /* kDisabledByAdmin */) {
+            clearInterval(interval);
+            reject(new Error('WebUI entered error state: ' + controller.state));
+          }
+        }, 10);
+      });
+    })()
+  )js";
+  EXPECT_EQ(true, content::EvalJs(web_contents, kCheckReadyScript));
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testFailureForCapturedApiTestError) {
+  ASSERT_TRUE(OpenGlicForActiveTab());
+  const std::string expected_failure =
+      "Failed at step #1 (single or first) due to (captured error): "
+      "Error: Non-throwing test error";
+  ExecuteJsTest(
+      {.should_fail = true, .should_fail_with_error = expected_failure});
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testLoadWhileWindowClosed) {
+  // Open Glic
+  ToggleGlicForActiveTab();
+  ASSERT_TRUE(WaitForGlicOpen());
+
+  // Close Glic
+  CloseAllEmbeddersAndPreventDeletion();
+  ASSERT_TRUE(WaitForGlicClose());
+
+  ExecuteJsTest();
+
+  ASSERT_TRUE(WaitForWebUiState(mojom::WebUiState::kReady));
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testInitializeFailsWindowClosed) {
+  ToggleGlicForActiveTab();
+  ASSERT_TRUE(WaitForGlicOpen());
+
+  CloseAllEmbeddersAndPreventDeletion();
+  ASSERT_TRUE(WaitForGlicClose());
+
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testInitializeFailsWindowOpen) {
+  ToggleGlicForActiveTab();
+  ASSERT_TRUE(WaitForGlicOpen());
+
+  ExecuteJsTest(
+      {.params = base::Value(base::DictValue().Set("failWith", "error"))});
+  ASSERT_TRUE(WaitForWebUiState(mojom::WebUiState::kError));
+
+  GetOnlyGlicInstance()->CloseAllEmbedders();
+  ASSERT_TRUE(WaitForGlicClose());
+
+  ToggleGlicForActiveTab();
+  ASSERT_TRUE(WaitForGlicOpen());
+
+  ExecuteJsTest(
+      {.params = base::Value(base::DictValue().Set("failWith", "none"))});
+  ASSERT_TRUE(WaitForWebUiState(mojom::WebUiState::kReady));
+}
 
 // Checks that all tests in new_glic_api_browsertest.ts have a corresponding
 // test case in this file.
@@ -203,8 +300,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testInvocationSource) {
     // Close Glic if it exists.
     auto* instance = GetOnlyGlicInstance();
     if (instance) {
-      PreventDeletionOnClose(instance);
-      instance->CloseAllEmbedders();
+      CloseAllEmbeddersAndPreventDeletion(instance);
       ASSERT_TRUE(WaitForGlicClose());
     }
 
