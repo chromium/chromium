@@ -171,3 +171,35 @@ TEST_F(ComposeboxMetricsRecorderTest, TextEditedBeforeAiMode) {
   histogram_tester_.ExpectBucketCount(
       "Omnibox.MobileFusebox.TextEditedBeforeAiMode", false, 1);
 }
+
+TEST_F(ComposeboxMetricsRecorderTest, ImagesAttached) {
+  [recorder_ recordImagesAttached:1];
+  histogram_tester_.ExpectBucketCount("Omnibox.MobileFusebox.ImagesAttached", 1,
+                                      1);
+}
+
+TEST_F(ComposeboxMetricsRecorderTest, FilesAttached) {
+  [recorder_ recordFilesAttached:1];
+  histogram_tester_.ExpectBucketCount("Omnibox.MobileFusebox.FilesAttached", 1,
+                                      1);
+}
+
+TEST_F(ComposeboxMetricsRecorderTest, AttachmentCountAtSubmission) {
+  [recorder_ recordAttachCountAtSubmission:2
+                                   forType:ComposeboxInputItemType::
+                                               kComposeboxInputItemTypeTab];
+  histogram_tester_.ExpectBucketCount(
+      "Omnibox.MobileFusebox.AttachmentCountAtSubmission.Tab", 2, 1);
+
+  [recorder_ recordAttachCountAtSubmission:1
+                                   forType:ComposeboxInputItemType::
+                                               kComposeboxInputItemTypeImage];
+  histogram_tester_.ExpectBucketCount(
+      "Omnibox.MobileFusebox.AttachmentCountAtSubmission.Image", 1, 1);
+
+  [recorder_ recordAttachCountAtSubmission:3
+                                   forType:ComposeboxInputItemType::
+                                               kComposeboxInputItemTypeFile];
+  histogram_tester_.ExpectBucketCount(
+      "Omnibox.MobileFusebox.AttachmentCountAtSubmission.File", 3, 1);
+}

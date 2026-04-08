@@ -2532,6 +2532,21 @@ Keep consistent with active providers. Doesn't need to include every provider in
       variants="FuseboxAttachmentButtonType"/>
 </histogram>
 
+<histogram name="Omnibox.MobileFusebox.AttachmentCountAtSubmission.{Type}"
+    units="count" expires_after="2027-03-30">
+  <owner>mreichhoff@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    The number of attachments of the specified type attached to the query when
+    the user submits navigation.
+  </summary>
+  <token key="Type">
+    <variant name="File" summary="Files"/>
+    <variant name="Image" summary="Images"/>
+    <variant name="Tab" summary="Tabs"/>
+  </token>
+</histogram>
+
 <histogram name="Omnibox.MobileFusebox.AttachmentFailed" units="ms"
     expires_after="2027-02-01">
   <owner>skym@chromium.org</owner>
@@ -2632,6 +2647,24 @@ Keep consistent with active providers. Doesn't need to include every provider in
     Composebox. {ComposeboxDragAndDropType}
   </summary>
   <token key="ComposeboxDragAndDropType" variants="ComposeboxDragAndDropType"/>
+</histogram>
+
+<histogram name="Omnibox.MobileFusebox.FilesAttached" units="count"
+    expires_after="2027-03-30">
+  <owner>mreichhoff@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    The number of files attached to the query when the user selects a file.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.MobileFusebox.ImagesAttached" units="count"
+    expires_after="2027-03-30">
+  <owner>mreichhoff@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    The number of images attached to the query when the user selects an image.
+  </summary>
 </histogram>
 
 <histogram name="Omnibox.MobileFusebox.ModelAtAbandon"

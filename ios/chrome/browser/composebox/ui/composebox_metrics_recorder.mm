@@ -50,6 +50,18 @@ std::string GetStringForDragAndDropType(ComposeboxDragAndDropType type) {
   NOTREACHED();
 }
 
+/// Returns a string mapping to the input item type.
+std::string GetStringForInputItemType(ComposeboxInputItemType type) {
+  switch (type) {
+    case ComposeboxInputItemType::kComposeboxInputItemTypeTab:
+      return "Tab";
+    case ComposeboxInputItemType::kComposeboxInputItemTypeImage:
+      return "Image";
+    case ComposeboxInputItemType::kComposeboxInputItemTypeFile:
+      return "File";
+  }
+}
+
 }  // namespace
 
 @implementation ComposeboxMetricsRecorder {
@@ -110,6 +122,22 @@ std::string GetStringForDragAndDropType(ComposeboxDragAndDropType type) {
 - (void)recordTabPickerTabsAttached:(NSUInteger)count {
   base::UmaHistogramCounts100("Omnibox.MobileFusebox.TabPickerTabsAttached",
                               count);
+}
+
+- (void)recordAttachCountAtSubmission:(NSUInteger)count
+                              forType:(ComposeboxInputItemType)type {
+  std::string histogram_name =
+      "Omnibox.MobileFusebox.AttachmentCountAtSubmission.";
+  histogram_name += GetStringForInputItemType(type);
+  base::UmaHistogramCounts100(histogram_name, count);
+}
+
+- (void)recordImagesAttached:(NSUInteger)count {
+  base::UmaHistogramCounts100("Omnibox.MobileFusebox.ImagesAttached", count);
+}
+
+- (void)recordFilesAttached:(NSUInteger)count {
+  base::UmaHistogramCounts100("Omnibox.MobileFusebox.FilesAttached", count);
 }
 
 - (void)recordComposeboxFocusResultedInNavigation:(BOOL)navigation

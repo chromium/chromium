@@ -1420,6 +1420,18 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
 
   [self.metricsRecorder recordAutocompleteRequestTypeAtNavigation:
                             [self currentAutocompleteRequestType]];
+  [self.metricsRecorder
+      recordAttachCountAtSubmission:_items.tabsCount
+                            forType:ComposeboxInputItemType::
+                                        kComposeboxInputItemTypeTab];
+  [self.metricsRecorder
+      recordAttachCountAtSubmission:_items.imagesCount
+                            forType:ComposeboxInputItemType::
+                                        kComposeboxInputItemTypeImage];
+  [self.metricsRecorder
+      recordAttachCountAtSubmission:_items.filesCount
+                            forType:ComposeboxInputItemType::
+                                        kComposeboxInputItemTypeFile];
   contextual_search::ContextualSearchMetricsRecorder* recorder =
       _contextualSearchSession ? _contextualSearchSession->GetMetricsRecorder()
                                : nullptr;
