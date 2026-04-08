@@ -20,6 +20,13 @@ these documents:**
 *   **Native Client:** See `client/GEMINI.md` if you are working on the native
     client code (ChromeOS/Boca).
 
+*   **D-Bus Interface Generation:** See `host/linux/dbus_interfaces/GEMINI.md` if
+    you need to generate missing D-Bus headers for Linux.
+
+*   **Linux Host Implementation Details:** See `host/linux/GEMINI.md` for
+    information about Linux-specific libraries like GVariant and D-Bus
+    wrappers.
+
 ## Security Context
 
 CRD host processes often run with high privileges (e.g., `SYSTEM` on Windows,
