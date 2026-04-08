@@ -115,6 +115,29 @@ void LogSuggestionShownForPayLaterTab(bool contains_pay_later_tab_suggestions) {
   }
 }
 
+void LogPayLaterTabSuggestionAccepted(
+    autofill::BnplIssuer::IssuerId issuer_id) {
+  switch (issuer_id) {
+    case IssuerId::kBnplAffirm:
+      autofill_metrics::LogPayLaterTabsFormEvent(
+          autofill_metrics::PayLaterTabsFormEvent::kAffirmAccepted);
+      return;
+    case IssuerId::kBnplZip:
+      autofill_metrics::LogPayLaterTabsFormEvent(
+          autofill_metrics::PayLaterTabsFormEvent::kZipAccepted);
+      return;
+    case IssuerId::kBnplAfterpay:
+      autofill_metrics::LogPayLaterTabsFormEvent(
+          autofill_metrics::PayLaterTabsFormEvent::kAfterpayAccepted);
+      return;
+    case IssuerId::kBnplKlarna:
+      autofill_metrics::LogPayLaterTabsFormEvent(
+          autofill_metrics::PayLaterTabsFormEvent::kKlarnaAccepted);
+      return;
+  }
+  NOTREACHED();
+}
+
 void LogPayLaterTabsFormEvent(PayLaterTabsFormEvent event) {
   base::UmaHistogramEnumeration(
       "Autofill.FormEvents.CreditCard.Bnpl.PayLaterTab", event);
