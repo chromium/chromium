@@ -429,7 +429,7 @@ CommandStorageBackend::CommandStorageBackend(
     scoped_refptr<base::SequencedTaskRunner> owning_task_runner,
     const base::FilePath& path,
     SessionType type,
-    std::optional<os_crypt_async::Encryptor> encryptor,
+    std::unique_ptr<os_crypt_async::Encryptor> encryptor,
     base::Clock* clock)
     : RefCountedDeleteOnSequence(owning_task_runner),
       type_(type),

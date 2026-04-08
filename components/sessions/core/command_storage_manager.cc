@@ -55,7 +55,7 @@ CommandStorageManager::CommandStorageManager(
                               : CreateDefaultBackendTaskRunner(),
           path,
           type,
-          /*encryptor=*/std::nullopt)),
+          /*encryptor=*/nullptr)),
       delegate_(delegate),
       backend_task_runner_(backend_->owning_task_runner()) {
   CHECK(os_crypt_async);
