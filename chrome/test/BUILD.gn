@@ -7161,6 +7161,7 @@ test("unit_tests") {
     "//chrome/browser/serial:unit_tests",
     "//chrome/browser/share",
     "//chrome/browser/sharing",
+    "//chrome/browser/sharing/sms:unit_tests",
     "//chrome/browser/site_isolation:unit_tests",
     "//chrome/browser/site_protection",
     "//chrome/browser/site_protection:utils",
@@ -8021,7 +8022,6 @@ test("unit_tests") {
       "../browser/readaloud/android/prefs_unittest.cc",
       "../browser/search/contextual_search_policy_handler_android_unittest.cc",
       "../browser/sharing/click_to_call/click_to_call_message_handler_android_unittest.cc",
-      "../browser/sharing/sms/sms_fetch_request_handler_unittest.cc",
       "../browser/signin/android/signin_manager_android_unittest.cc",
       "../browser/supervised_user/android/favicon_fetcher_unittest.cc",
       "../browser/supervised_user/android/supervised_user_web_content_handler_impl_unittest.cc",
@@ -8317,7 +8317,6 @@ test("unit_tests") {
       "../browser/search/search_unittest.cc",
       "../browser/sessions/restore_on_startup_policy_handler_unittest.cc",
       "../browser/sessions/tab_restore_service_unittest.cc",
-      "../browser/sharing/sms/sms_remote_fetcher_unittest.cc",
       "../browser/signin/signin_promo_unittest.cc",
       "../browser/speech/speech_recognition_service_factory_unittest.cc",
       "../browser/support_tool/support_tool_handler_unittest.cc",
@@ -10570,7 +10569,10 @@ test("unit_tests") {
       ]
     }
 
-    deps += [ "//components/enterprise:test_support" ]
+    deps += [
+      "//chrome/browser/sharing/sms",
+      "//components/enterprise:test_support",
+    ]
 
     if (is_win) {
       deps += [ "//chrome/browser/win:registry_watcher" ]

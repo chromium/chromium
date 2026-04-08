@@ -1,0 +1,74 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("sms") {
+  public = [
+    "sms_remote_fetcher.h",
+    "sms_remote_fetcher_metrics.h",
+  ]
+  sources = [
+    "sms_remote_fetcher.cc",
+    "sms_remote_fetcher_metrics.cc",
+  ]
+  public_deps = [ "//base" ]
+  deps = [
+    "//chrome/browser/sharing",
+    "//content/public/browser",
+  ]
+
+  if (is_android) {
+    public += [ "sms_fetch_request_handler.h" ]
+    sources += [ "sms_fetch_request_handler.cc" ]
+    public_deps += [
+      "//components/sharing_message",
+      "//components/sharing_message/proto",
+    ]
+    deps += [
+      "//chrome/android:jni_headers",
+      "//components/url_formatter",
+    ]
+  } else {
+    public += [ "sms_remote_fetcher_ui_controller.h" ]
+    sources += [ "sms_remote_fetcher_ui_controller.cc" ]
+    public_deps += [
+      "//chrome/browser/ui/page_action:icon_type",
+      "//components/sharing_message",
+    ]
+    deps += [
+      "//chrome/app:generated_resources",
+      "//chrome/app/vector_icons",
+      "//chrome/browser:shell_integration",
+      "//chrome/browser/ui",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+  deps = [ ":sms" ]
+
+  if (is_android) {
+    sources += [ "sms_fetch_request_handler_unittest.cc" ]
+    deps += [
+      "//base",
+      "//base/test:test_support",
+      "//components/sharing_message:unit_tests",
+      "//components/url_formatter",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//url",
+    ]
+  } else {
+    sources += [ "sms_remote_fetcher_unittest.cc" ]
+    deps += [
+      "//base/test:test_support",
+      "//chrome/browser/sharing",
+      "//chrome/test:test_support",
+      "//components/sharing_message:unit_tests",
+      "//components/sharing_message/proto",
+      "//content/public/browser",
+    ]
+  }
+}

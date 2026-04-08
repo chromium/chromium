@@ -27,4 +27,12 @@ source_set("sharing") {
     "//components/sync/base",
     "//components/sync/model",
   ]
+
+  if (!is_android) {
+    sources += [ "sharing_ui_controller.h" ]
+    deps += [
+      "//chrome/browser/ui/page_action:icon_type",
+      "//components/sharing_message/proto",
+    ]
+  }
 }
