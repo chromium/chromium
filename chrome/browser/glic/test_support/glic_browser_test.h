@@ -344,6 +344,12 @@ class GlicBrowserTestMixin : public T {
 
   GlicKeyedService* service() { return GlicKeyedService::Get(T::GetProfile()); }
 
+  BrowserWindowInterface* GetBrowser() {
+    return T::GetTabListInterface()
+        ->GetActiveTab()
+        ->GetBrowserWindowInterface();
+  }
+
   // Returns a simple URL for testing that is guaranteed to load properly via
   // the embedded test server.
   GURL GetSimpleTestUrl() { return GetTestUrl("page.html"); }

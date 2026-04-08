@@ -51,13 +51,6 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testDoNothing() {}
 
-  async testInvocationSource() {
-    const expectedSource = this.testParams as number;
-    const panelOpenData =
-        checkDefined(this.client.panelOpenData.getCurrentValue());
-    assertEquals(panelOpenData.invocationSource, expectedSource);
-  }
-
   async testDefaultInvocationSource() {
     const panelOpenData =
         checkDefined(this.client.panelOpenData.getCurrentValue());

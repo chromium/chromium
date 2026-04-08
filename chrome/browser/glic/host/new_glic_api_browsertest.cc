@@ -188,6 +188,39 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testDoNothing) {
   ExecuteJsTest();
 }
 
+// TODO(harringtond): Flaky on windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_testInvocationSource DISABLED_testInvocationSource
+#else
+#define MAYBE_testInvocationSource testInvocationSource
+#endif
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testInvocationSource) {
+  for (const auto source : {
+           mojom::InvocationSource::kOsHotkey,
+           mojom::InvocationSource::kOsButton,
+           mojom::InvocationSource::kNudge,
+       }) {
+    // Close Glic if it exists.
+    auto* instance = GetOnlyGlicInstance();
+    if (instance) {
+      PreventDeletionOnClose(instance);
+      instance->CloseAllEmbedders();
+      ASSERT_TRUE(WaitForGlicClose());
+    }
+
+    // Toggle Glic from source.
+    coordinator().Toggle(GetBrowser(), /*prevent_close=*/false,
+                         /*source=*/source,
+                         /*deprecated_prompt_suggestion=*/std::nullopt,
+                         /*deprecated_auto_send=*/false,
+                         /*deprecated_conversation_id=*/std::nullopt);
+
+    ASSERT_TRUE(WaitForGlicOpen());
+
+    ExecuteJsTest({.params = base::Value(static_cast<int>(source))});
+  }
+}
+
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_testFaviconLoadsWithGetTabById \
   DISABLED_testFaviconLoadsWithGetTabById

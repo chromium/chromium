@@ -781,21 +781,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testDoNothing) {
 }
 
 // TODO(crbug.com/486793948): Fix and re-enable or remove the test.
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, DISABLED_testInvocationSource) {
-  for (const auto source : {
-           mojom::InvocationSource::kOsHotkey,
-           mojom::InvocationSource::kOsButton,
-           mojom::InvocationSource::kNudge,
-       }) {
-    RunTestSequence(CloseGlic(), WaitForGlicClose(),
-                    ToggleGlicWindowFromSource(GlicWindowMode::kDetached,
-                                               ui::ElementIdentifier(), source),
-                    WaitForGlicOpen());
-    ExecuteJsTest({.params = base::Value(static_cast<int>(source))});
-  }
-}
-
-// TODO(crbug.com/486793948): Fix and re-enable or remove the test.
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        DISABLED_testDefaultInvocationSource) {
   RunTestSequence(CloseGlic(), WaitForGlicClose(),

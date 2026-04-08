@@ -13,6 +13,12 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testDoNothing() {}
+
+  async testInvocationSource() {
+    const expectedSource = this.testParams as number;
+    await observeSequence(this.client.panelOpenData)
+        .waitFor((data) => data && data.invocationSource === expectedSource);
+  }
 }
 
 class FaviconTest extends ApiTests {
