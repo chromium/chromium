@@ -266,11 +266,13 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
     EXPECT_EQ(EXCEPTION_BREAKPOINT, static_cast<DWORD>(info.exit_code));
 #elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     EXPECT_TRUE(WIFSIGNALED(info.exit_code));
-#if defined(OFFICIAL_BUILD)
+#if defined(OFFICIAL_BUILD) || (defined(ARCH_CPU_ARM64) && BUILDFLAG(IS_LINUX))
     EXPECT_EQ(SIGTRAP, WTERMSIG(info.exit_code));
-#else   // defined(OFFICIAL_BUILD)
+#else   // defined(OFFICIAL_BUILD) || (defined(ARCH_CPU_ARM64) &&
+        // BUILDFLAG(IS_LINUX)
     EXPECT_EQ(SIGABRT, WTERMSIG(info.exit_code));
-#endif  // defined(OFFICIAL_BUILD)
+#endif  // defined(OFFICIAL_BUILD) || (defined(ARCH_CPU_ARM64) &&
+        // BUILDFLAG(IS_LINUX)
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     EXPECT_EQ(kTestProcessName, data.metrics_name);
     EXPECT_EQ(false, has_crashed_);

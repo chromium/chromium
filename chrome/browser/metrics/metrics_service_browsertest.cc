@@ -261,11 +261,13 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, MAYBE_CheckCrashRenderers) {
 #elif BUILDFLAG(IS_MAC)
   VerifyRendererExitCodeIsSignal(histogram_tester, SIGTRAP);
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#if defined(OFFICIAL_BUILD)
+#if defined(ARCH_CPU_ARM64)
+  VerifyRendererExitCodeIsSignal(histogram_tester, SIGTRAP);
+#elif defined(OFFICIAL_BUILD)
   VerifyRendererExitCodeIsSignal(histogram_tester, SIGILL);
 #else
   VerifyRendererExitCodeIsSignal(histogram_tester, SIGSEGV);
-#endif  // defined(OFFICIAL_BUILD)
+#endif  // defined(ARCH_CPU_ARM64)
 #endif
 }
 
