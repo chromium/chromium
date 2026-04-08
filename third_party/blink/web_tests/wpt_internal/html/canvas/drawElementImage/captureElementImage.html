@@ -116,4 +116,28 @@ promise_test(async t => {
     () => canvas.getContext('2d').drawElementImage(elementImage, 0, 0),
     'A closed ElementImage cannot be drawn.');
 }, 'ElementImage.close() invalidates the image for drawing');
+
+promise_test(async t => {
+  const nestedCanvas = document.createElement('canvas');
+  nestedCanvas.layoutSubtree = true;
+  nestedCanvas.width = 100;
+  nestedCanvas.height = 100;
+  const childDiv = document.createElement('div');
+  childDiv.style.width = '100px';
+  childDiv.style.height = '100px';
+  nestedCanvas.appendChild(childDiv);
+
+  const outerCanvas = document.getElementById('canvas');
+  outerCanvas.appendChild(nestedCanvas);
+
+  t.add_cleanup(() => {
+    nestedCanvas.remove();
+  });
+
+  await waitForOneFrame();
+
+  assert_throws_dom('NotSupportedError',
+    () => nestedCanvas.captureElementImage(childDiv),
+    'captureElementImage on a nested canvas should throw NotSupportedError.');
+}, 'captureElementImage should throw if called on a nested canvas');
 </script>

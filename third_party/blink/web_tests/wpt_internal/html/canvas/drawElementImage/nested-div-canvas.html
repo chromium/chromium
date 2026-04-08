@@ -1,27 +1,23 @@
 <!DOCTYPE html>
-<html class="reftest-wait">
-<title>drawElementImage should support rendering a div containing a canvas, all under a canvas</title>
+<title>drawElementImage should throw if the canvas is nested inside another canvas</title>
 <link rel="help" href="https://github.com/WICG/html-in-canvas">
-<link rel="match" href="nested-canvas-ref.html">
-<script src="/common/reftest-wait.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 
-<canvas id="canvas" layoutsubtree="true" width="100" height="100" style="background: red;">
-  <div id="nested_div" style="width: 100px; height: 100px;">
+<canvas id="canvas" layoutsubtree="true" width="100" height="100">
+  <div id="nested_div">
     <canvas id="nested_canvas" layoutsubtree="true" width="100" height="100">
-      <div id="inner_div" style="width: 100px; height: 100px; background: radial-gradient(lightgreen, green);"></div>
+      <div id="inner_div" style="width: 100px; height: 100px;"></div>
     </canvas>
   </div>
 </canvas>
 <script>
-async function runTest() {
+promise_test(async (t) => {
   await new Promise(requestAnimationFrame);
   await new Promise(setTimeout);
-  nested_canvas.getContext('2d').drawElementImage(inner_div, 0, 0, 100, 100);
-  await new Promise(requestAnimationFrame);
-  await new Promise(setTimeout);
-  canvas.getContext('2d').drawElementImage(nested_div, 0, 0, 100, 100);
-  takeScreenshot();
-}
-onload = () => runTest();
+  const ctx = nested_canvas.getContext('2d');
+  assert_throws_dom("NotSupportedError", () => {
+    ctx.drawElementImage(inner_div, 0, 0, 100, 100);
+  });
+}, "drawElementImage should throw if called on a nested canvas in a div");
 </script>
-</html>

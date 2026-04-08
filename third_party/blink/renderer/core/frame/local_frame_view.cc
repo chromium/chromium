@@ -5088,6 +5088,9 @@ void LocalFrameView::DidPaintCanvasChild(HTMLCanvasElement& canvas,
                                          Element& child) {
   DCHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled(
       GetFrame().GetDocument()->GetExecutionContext()));
+  if (canvas.IsInCanvasSubtree()) {
+    return;
+  }
   if (IsUpdatingLifecycle()) {
     auto add_result = canvas_elements_needing_onpaint_.insert(&canvas, nullptr);
     if (add_result.is_new_entry) {
@@ -5101,6 +5104,9 @@ void LocalFrameView::DidPaintCanvasChild(HTMLCanvasElement& canvas,
 void LocalFrameView::RequestCanvasOnpaint(HTMLCanvasElement& canvas) {
   DCHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled(
       GetFrame().GetDocument()->GetExecutionContext()));
+  if (canvas.IsInCanvasSubtree()) {
+    return;
+  }
   auto add_result = canvas_elements_needing_onpaint_.insert(&canvas, nullptr);
   if (add_result.is_new_entry) {
     add_result.stored_value->value =
