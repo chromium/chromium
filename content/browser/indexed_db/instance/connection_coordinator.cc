@@ -531,9 +531,6 @@ class ConnectionCoordinator::DeleteRequest
       TakeFactoryClient()->Error(blink::mojom::IDBException::kUnknownError,
                                  base::ASCIIToUTF16(error_message));
       state_ = base::unexpected(exists.error());
-      if (exists.error().IsCorruption()) {
-        bucket_context_->HandleBackingStoreCorruption(error_message);
-      }
       return;
     }
     if (!*exists) {
