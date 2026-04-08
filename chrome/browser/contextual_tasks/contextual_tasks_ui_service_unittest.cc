@@ -920,7 +920,7 @@ TEST_F(ContextualTasksUiServiceTest, OnNavigationToAiPageIntercepted_SameTab) {
                                           weak_factory.GetWeakPtr(), false);
 
   GURL expected_initial_url(
-      "https://google.com/search?udm=50&q=test+query&sourceid=chrome");
+      "https://google.com/search?udm=50&q=test+query&sourceid=chrome&ccb=1");
   EXPECT_EQ(service.GetInitialUrlForTask(task.GetTaskId()),
             expected_initial_url);
 }
@@ -1149,9 +1149,12 @@ TEST_F(ContextualTasksUiServiceTest, GetInitialUrlForTask_HasSourceId) {
   std::string sourceid;
   EXPECT_TRUE(net::GetValueForKeyInQuery(*initial_url, "sourceid", &sourceid));
   EXPECT_EQ(sourceid, "chrome");
+  std::string ccb;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(*initial_url, "ccb", &ccb));
+  EXPECT_EQ(ccb, "1");
 }
 
-TEST_F(ContextualTasksUiServiceTest, GetDefaultAiPageUrl_HasSourceId) {
+TEST_F(ContextualTasksUiServiceTest, GetDefaultAiPageUrl_HasSourceIdAndCcb) {
   ContextualTasksUiService service(/*profile=*/nullptr, /*delegate=*/nullptr,
                                    contextual_tasks_service_.get(),
                                    /*identity_manager=*/nullptr,
@@ -1161,6 +1164,9 @@ TEST_F(ContextualTasksUiServiceTest, GetDefaultAiPageUrl_HasSourceId) {
   std::string sourceid;
   EXPECT_TRUE(net::GetValueForKeyInQuery(url, "sourceid", &sourceid));
   EXPECT_EQ(sourceid, "chrome");
+  std::string ccb;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "ccb", &ccb));
+  EXPECT_EQ(ccb, "1");
 }
 
 TEST_F(ContextualTasksUiServiceTest, ShareUrl_FromEmbeddedPage_Intercepted) {
