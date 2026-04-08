@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.LocationBar;
+import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
@@ -116,7 +117,6 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
     private OptionalBrowsingModeButtonController mOptionalButtonController;
 
     private @Nullable SigninButtonCoordinator mSigninButtonCoordinator;
-    private @Nullable NullableObservableSupplier<Tab> mTabSupplier;
 
     private final MenuButtonCoordinator mMenuButtonCoordinator;
     private @Nullable ReloadButtonCoordinator mReloadButtonCoordinator;
@@ -229,6 +229,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
             Supplier<Integer> incognitoWindowCountSupplier,
             MonotonicObservableSupplier<Profile> profileSupplier,
+            OneshotSupplier<OmniboxStub> omniboxStubSupplier,
             SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher,
             WindowAndroid windowAndroid,
             ActivityResultTracker activityResultTracker,
@@ -248,7 +249,6 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                         () -> toolbarDataProvider.getTab());
 
         if (SigninFeatureMap.sSigninLevelUpButton.isEnabled()) {
-            mTabSupplier = tabSupplier;
             ViewStub signinButtonStub = mToolbarLayout.findViewById(R.id.signin_button_stub);
             if (signinButtonStub != null) {
                 mSigninButtonCoordinator =
@@ -256,6 +256,8 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                                 toolbarLayout.getContext(),
                                 windowAndroid,
                                 signinButtonStub,
+                                tabSupplier,
+                                omniboxStubSupplier,
                                 mToolbarLayout::beginButtonTransition,
                                 profileSupplier,
                                 signinAndHistorySyncActivityLauncher,
@@ -644,8 +646,8 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         if (mOptionalButtonController != null) {
             mOptionalButtonController.updateButtonVisibility();
         }
-        if (mSigninButtonCoordinator != null && mTabSupplier != null) {
-            mSigninButtonCoordinator.updateButtonVisibility(mTabSupplier.get());
+        if (mSigninButtonCoordinator != null) {
+            mSigninButtonCoordinator.updateButtonVisibility();
         }
     }
 

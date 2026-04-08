@@ -322,6 +322,8 @@ public class ToolbarManager
     private @MonotonicNonNull TemplateUrlService mTemplateUrlService;
     private @MonotonicNonNull TemplateUrlServiceObserver mTemplateUrlObserver;
     private LocationBar mLocationBar;
+    private final OneshotSupplierImpl<OmniboxStub> mOmniboxStubSupplier =
+            new OneshotSupplierImpl<>();
     private final Supplier<LocationBar> mLocationBarSupplier = () -> mLocationBar;
     private FindToolbarManager mFindToolbarManager;
 
@@ -1340,6 +1342,7 @@ public class ToolbarManager
 
         var omnibox = mLocationBar.getOmniboxStub();
         if (omnibox != null) {
+            mOmniboxStubSupplier.set(omnibox);
             omnibox.addUrlFocusChangeListener(this);
             omnibox.addUrlFocusChangeListener(mStatusBarColorController);
             omnibox.addUrlFocusChangeListener(mLocationBarFocusHandler);
@@ -2055,6 +2058,7 @@ public class ToolbarManager
                                         PersistedInstanceType.ACTIVE
                                                 | PersistedInstanceType.OFF_THE_RECORD),
                         profileSupplier,
+                        mOmniboxStubSupplier,
                         SigninAndHistorySyncActivityLauncherImpl.get(),
                         mWindowAndroid,
                         activityResultTracker,
