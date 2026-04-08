@@ -183,11 +183,12 @@ class CONTENT_EXPORT MediaDevicesManager
   // navigator.mediaDevices.enumerateDevices). It automatically generates and
   // assigns a unique request ID to track the lifecycle of the user-initiated
   // request through the asynchronous enumeration process.
-  void EnumerateAndRankDevices(GlobalRenderFrameHostId render_frame_host_id,
-                               const BoolDeviceTypes& requested_types,
-                               bool request_video_input_capabilities,
-                               bool request_audio_input_capabilities,
-                               EnumerateDevicesCallback callback);
+  void HandleEnumerateDevicesRequest(
+      GlobalRenderFrameHostId render_frame_host_id,
+      const BoolDeviceTypes& requested_types,
+      bool request_video_input_capabilities,
+      bool request_audio_input_capabilities,
+      EnumerateDevicesCallback callback);
 
   void AddAudioDeviceToOriginMap(GlobalRenderFrameHostId render_frame_host_id,
                                  const blink::WebMediaDeviceInfo& device_info);
@@ -208,11 +209,14 @@ class CONTENT_EXPORT MediaDevicesManager
 
   // Tries to start device monitoring. If successful, enables caching of
   // enumeration results for the device types supported by the monitor.
-  void StartMonitoring(uint64_t request_id = 0);
+  void StartMonitoringAndPopulateCache(uint64_t request_id = 0);
 
-  // Attempts to start device monitoring for audio and/or video.
-  void StartMonitoring(uint64_t request_id,
-                       DeviceStartMonitoringMode start_monitoring_mode);
+  // Attempts to start device monitoring for audio and/or video. If successful,
+  // enables caching of enumeration results for the device types supported by
+  // the monitor.
+  void StartMonitoringAndPopulateCache(
+      uint64_t request_id,
+      DeviceStartMonitoringMode start_monitoring_mode);
 
   // Stops device monitoring and disables caching for all device types.
   void StopMonitoring();
@@ -378,7 +382,7 @@ class CONTENT_EXPORT MediaDevicesManager
       EnumerateDevicesCallback callback,
       const MediaDeviceSaltAndOrigin& salt_and_origin,
       const MediaDevicesManager::BoolDeviceTypes& has_permissions);
-  void OnDevicesEnumerated(
+  void OnDevicesEnumeratedAndRanked(
       uint64_t request_id,
       GlobalRenderFrameHostId render_frame_host_id,
       const MediaDevicesManager::BoolDeviceTypes& requested_types,
@@ -406,7 +410,7 @@ class CONTENT_EXPORT MediaDevicesManager
       const blink::WebMediaDeviceInfoArray& translated_device_infos);
 
   // Helpers to issue low-level device enumerations.
-  void DoEnumerateDevices(uint64_t request_id, MediaDeviceType type);
+  void EnumerateSystemDevices(uint64_t request_id, MediaDeviceType type);
   void EnumerateAudioDevices(uint64_t request_id, bool is_input);
 
   // Callback for VideoCaptureManager::EnumerateDevices.

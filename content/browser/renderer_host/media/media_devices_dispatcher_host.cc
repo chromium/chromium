@@ -149,7 +149,7 @@ void MediaDevicesDispatcherHost::EnumerateDevices(
   devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)] =
       request_audio_output;
 
-  media_stream_manager_->media_devices_manager()->EnumerateAndRankDevices(
+  media_stream_manager_->media_devices_manager()->HandleEnumerateDevicesRequest(
       render_frame_host_id_, devices_to_enumerate,
       request_video_input_capabilities, request_audio_input_capabilities,
       std::move(client_callback));

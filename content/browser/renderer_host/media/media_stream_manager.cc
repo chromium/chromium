@@ -2274,7 +2274,7 @@ void MediaStreamManager::StartEnumeration(DeviceRequest* request,
     start_mode = MediaDevicesManager::DeviceStartMonitoringMode::kStartVideo;
   }
   // Start monitoring the requested devices when doing the first enumeration.
-  media_devices_manager_->StartMonitoring(0, start_mode);
+  media_devices_manager_->StartMonitoringAndPopulateCache(0, start_mode);
 
   // Start enumeration for devices of all requested device types.
   if (request_audio_input) {
