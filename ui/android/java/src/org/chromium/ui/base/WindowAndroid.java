@@ -222,6 +222,8 @@ public class WindowAndroid
     private final SettableNonNullObservableSupplier<Boolean> mOcclusionSupplier =
             ObservableSuppliers.createNonNull(false);
 
+    private long mOcclusionStartTimeMs;
+
     private boolean mIsTopResumedActivity;
     private final boolean mActivityTopResumedSupported;
 
@@ -359,7 +361,7 @@ public class WindowAndroid
                 new Consumer<>() {
                     @Override
                     public void accept(Boolean visible) {
-                        mOcclusionSupplier.set(!visible);
+                        updateOcclusionState(!visible);
                     }
                 };
 
@@ -399,7 +401,30 @@ public class WindowAndroid
         if (shouldTrackOcclusion()) {
             return;
         }
+        updateOcclusionState(isOccluded);
+    }
+
+    private void recordOcclusionDuration() {
+        if (mOcclusionStartTimeMs == 0) return;
+
+        long durationMs = SystemClock.uptimeMillis() - mOcclusionStartTimeMs;
+        // TODO(488882847): Rename to non-experimental once occlusion experiments are
+        // complete.
+        RecordHistogram.recordLongTimesHistogram(
+                "Android.Window.OcclusionExperimental.Duration", durationMs);
+        mOcclusionStartTimeMs = 0;
+    }
+
+    private void updateOcclusionState(boolean isOccluded) {
+        if (mOcclusionSupplier.get() == isOccluded) return;
+
         mOcclusionSupplier.set(isOccluded);
+
+        if (isOccluded) {
+            mOcclusionStartTimeMs = SystemClock.uptimeMillis();
+        } else {
+            recordOcclusionDuration();
+        }
     }
 
     private static boolean isTv(Context context) {
@@ -955,6 +980,8 @@ public class WindowAndroid
     @CalledByNative
     @Override
     public void destroy() {
+        recordOcclusionDuration();
+
         LifetimeAssert.destroy(mLifetimeAssert);
         if (mDestroyStack == null) {
             mDestroyStack = new RuntimeException("WindowAndroid.destroy");

@@ -28,14 +28,17 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.insets.InsetObserver.WindowInsetObserver;
 
 import java.lang.ref.WeakReference;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,7 +91,9 @@ public class WindowAndroidTest {
 
     @After
     public void tearDown() {
-        mWindowAndroid.destroy();
+        if (!mWindowAndroid.isDestroyed()) {
+            mWindowAndroid.destroy();
+        }
     }
 
     @Test
@@ -162,5 +167,31 @@ public class WindowAndroidTest {
         for (WindowInsetObserver observer : mWindowInsetObservers) {
             observer.onInsetChanged();
         }
+    }
+
+    @Test
+    public void testOcclusionDurationMetric() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Window.OcclusionExperimental.Duration", 5000);
+
+        mWindowAndroid.setOccluded(true);
+        ShadowSystemClock.advanceBy(Duration.ofSeconds(5));
+        mWindowAndroid.setOccluded(false);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testOcclusionDurationMetricOnDestroy() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Window.OcclusionExperimental.Duration", 5000);
+
+        mWindowAndroid.setOccluded(true);
+        ShadowSystemClock.advanceBy(Duration.ofSeconds(5));
+        mWindowAndroid.destroy();
+
+        histogramWatcher.assertExpected();
     }
 }
