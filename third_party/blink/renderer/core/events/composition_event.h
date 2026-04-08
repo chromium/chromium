@@ -33,7 +33,7 @@ namespace blink {
 
 class CompositionEventInit;
 
-class CompositionEvent final : public UIEvent {
+class CORE_EXPORT CompositionEvent final : public UIEvent {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

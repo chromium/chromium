@@ -47,22 +47,16 @@ class DOMTimerTest : public RenderingTest {
   };
 
   void SetUp() override {
-    EnablePlatform();
     AdvanceClock(base::Seconds(1));
     RenderingTest::SetUp();
     auto* window_performance =
         DOMWindowPerformance::performance(*GetDocument().domWindow());
-    auto* mock_clock = platform()->GetClock();
-    auto* mock_tick_clock = platform()->GetTickClock();
-    auto now_ticks = platform()->NowTicks();
-    window_performance->SetClocksForTesting(mock_clock, mock_tick_clock);
+    auto now_ticks = base::TimeTicks::Now();
     window_performance->ResetTimeOriginForTesting(now_ticks);
     window_performance->SetCrossOriginIsolatedCapabilityForTesting(true);
     GetDocument().GetSettings()->SetScriptEnabled(true);
     auto* loader = GetDocument().Loader();
     loader->GetTiming().SetNavigationStart(now_ticks);
-    loader->GetTiming().SetClockForTesting(mock_clock);
-    loader->GetTiming().SetTickClockForTesting(mock_tick_clock);
   }
 
   v8::Local<v8::Value> EvalExpression(const char* expr) {

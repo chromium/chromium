@@ -69,7 +69,8 @@ class SoftNavigationHeuristicsTest : public testing::Test {
   }
 
  private:
-  test::TaskEnvironment task_environment_;
+  test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<DummyPageHolder> page_holder_;
 };
 

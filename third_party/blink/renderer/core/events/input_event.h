@@ -14,7 +14,7 @@ namespace blink {
 
 class DataTransfer;
 
-class InputEvent final : public UIEvent {
+class CORE_EXPORT InputEvent final : public UIEvent {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

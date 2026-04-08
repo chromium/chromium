@@ -115,12 +115,9 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // This method requires a DomWindow, a Frame, and an execution context; the
   // caller must check for that.
   // It will always return an instance of PerformanceEventTiming.
-  PerformanceEventTiming* EventTimingProcessingStart(
-      const Event& event,
-      base::TimeTicks processing_start);
+  PerformanceEventTiming* EventTimingProcessingStart(const Event& event);
   void EventTimingProcessingEnd(PerformanceEventTiming* entry,
-                                const Event& event,
-                                base::TimeTicks processing_end);
+                                const Event& event);
 
   // Set commit finish time for all pending events that have finished processing
   // and are watiting for presentation promise to resolve.

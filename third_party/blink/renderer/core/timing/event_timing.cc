@@ -24,39 +24,6 @@
 
 namespace blink {
 namespace {
-const base::TickClock* g_clock_for_testing = nullptr;
-
-static base::TimeTicks Now() {
-  return g_clock_for_testing ? g_clock_for_testing->NowTicks()
-                             : base::TimeTicks::Now();
-}
-
-bool ShouldLogEvent(const Event& event) {
-  return event.type() == event_type_names::kPointerdown ||
-         event.type() == event_type_names::kPointerup ||
-         event.type() == event_type_names::kClick ||
-         event.type() == event_type_names::kKeydown ||
-         event.type() == event_type_names::kMousedown ||
-         event.type() == event_type_names::kMouseup;
-}
-
-void HandleInputDelay(LocalDOMWindow* window,
-                      const Event& event,
-                      base::TimeTicks processing_start) {
-  auto* pointer_event = DynamicTo<PointerEvent>(&event);
-  base::TimeTicks event_timestamp =
-      pointer_event ? pointer_event->OldestPlatformTimeStamp()
-                    : event.PlatformTimeStamp();
-
-  if (ShouldLogEvent(event) && event.isTrusted()) {
-    InteractiveDetector* interactive_detector =
-        InteractiveDetector::From(*window->document());
-    if (interactive_detector) {
-      interactive_detector->HandleForInputDelay(event, event_timestamp,
-                                                processing_start);
-    }
-  }
-}
 
 // Returns true when the type of the event is one of the standard input events
 // measured by Event Timing (e.g. keyboard, mouse, touch, etc.).
@@ -164,13 +131,9 @@ EventTiming::EventTiming(LocalFrame* frame, const Event& event) {
   if (performance->GetCurrentEventTimingEvent() == &event) {
     return;
   }
-  base::TimeTicks processing_start = Now();
-
-  HandleInputDelay(window, event, processing_start);
-
   performance_ = performance;
   event_ = &event;
-  entry_ = performance->EventTimingProcessingStart(event, processing_start);
+  entry_ = performance->EventTimingProcessingStart(event);
   CHECK(entry_);
 
   if (auto* heuristics = window->GetSoftNavigationHeuristics()) {
@@ -182,13 +145,9 @@ EventTiming::~EventTiming() {
   if (entry_) {
     CHECK(event_);
     CHECK(performance_);
-    performance_->EventTimingProcessingEnd(entry_, *event_, Now());
+    performance_->EventTimingProcessingEnd(entry_, *event_);
   }
 }
 
-// static
-void EventTiming::SetTickClockForTesting(const base::TickClock* clock) {
-  g_clock_for_testing = clock;
-}
 
 }  // namespace blink

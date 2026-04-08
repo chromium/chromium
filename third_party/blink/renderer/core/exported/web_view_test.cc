@@ -40,7 +40,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/trees/layer_tree_host.h"
@@ -262,15 +261,12 @@ class WebViewTest : public testing::Test {
       : web_view_helper_(std::move(create_web_frame_callback)) {}
 
   void SetUp() override {
-    test_task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
     // Advance clock so time is not 0.
-    test_task_runner_->FastForwardBy(base::Seconds(1));
-    EventTiming::SetTickClockForTesting(test_task_runner_->GetMockTickClock());
+    task_environment_.FastForwardBy(base::Seconds(1));
     skia::InitializeFontRendering();
   }
 
   void TearDown() override {
-    EventTiming::SetTickClockForTesting(nullptr);
     url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
     web_view_helper_.Reset();
     MemoryCache::Get()->EvictResources();
@@ -346,8 +342,6 @@ class WebViewTest : public testing::Test {
   InteractiveDetector* GetTestInteractiveDetector(Document& document) {
     InteractiveDetector* detector(InteractiveDetector::From(document));
     EXPECT_NE(nullptr, detector);
-    detector->SetTaskRunnerForTesting(test_task_runner_);
-    detector->SetTickClockForTesting(test_task_runner_->GetMockTickClock());
     return detector;
   }
 
@@ -355,7 +349,6 @@ class WebViewTest : public testing::Test {
   test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   frame_test_helpers::WebViewHelper web_view_helper_;
-  scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
 };
 
 class WebViewTestTouchDragEndContextMenuWithPointerType
@@ -6117,8 +6110,8 @@ TEST_F(WebViewTest, FirstInputDelayReported) {
   Document* document = main_frame->GetDocument();
   ASSERT_NE(nullptr, document);
 
-  base::TimeTicks start_time = test_task_runner_->NowTicks();
-  test_task_runner_->FastForwardBy(base::Milliseconds(70));
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  task_environment_.FastForwardBy(base::Milliseconds(70));
 
   InteractiveDetector* interactive_detector =
       GetTestInteractiveDetector(*document);
@@ -6130,8 +6123,8 @@ TEST_F(WebViewTest, FirstInputDelayReported) {
                               WebInputEvent::GetStaticTimeStampForTests());
   key_event1.dom_key = ui::DomKey::FromCharacter(' ');
   key_event1.windows_key_code = VKEY_SPACE;
-  key_event1.SetTimeStamp(test_task_runner_->NowTicks());
-  test_task_runner_->FastForwardBy(base::Milliseconds(50));
+  key_event1.SetTimeStamp(base::TimeTicks::Now());
+  task_environment_.FastForwardBy(base::Milliseconds(50));
   web_view->MainFrameWidget()->HandleInputEvent(
       WebCoalescedInputEvent(key_event1, ui::LatencyInfo()));
 
@@ -6148,8 +6141,8 @@ TEST_F(WebViewTest, FirstInputDelayReported) {
                               WebInputEvent::GetStaticTimeStampForTests());
   key_event2.dom_key = ui::DomKey::FromCharacter(' ');
   key_event2.windows_key_code = VKEY_SPACE;
-  test_task_runner_->FastForwardBy(base::Milliseconds(60));
-  key_event2.SetTimeStamp(test_task_runner_->NowTicks());
+  task_environment_.FastForwardBy(base::Milliseconds(60));
+  key_event2.SetTimeStamp(base::TimeTicks::Now());
   web_view->MainFrameWidget()->HandleInputEvent(
       WebCoalescedInputEvent(key_event2, ui::LatencyInfo()));
 
@@ -6161,14 +6154,13 @@ TEST_F(WebViewTest, FirstInputDelayReported) {
 }
 
 TEST_F(WebViewTest, InputDelayReported) {
-  test_task_runner_->FastForwardBy(base::Milliseconds(50));
+  task_environment_.FastForwardBy(base::Milliseconds(50));
 
   WebViewImpl* web_view = web_view_helper_.Initialize();
 
   WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
   frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(),
-                                     "<html><body></body></html>", base_url,
-                                     test_task_runner_->GetMockTickClock());
+                                     "<html><body></body></html>", base_url);
 
   LocalFrame* main_frame = web_view->MainFrameImpl()->GetFrame();
   ASSERT_NE(nullptr, main_frame);
@@ -6176,7 +6168,7 @@ TEST_F(WebViewTest, InputDelayReported) {
   ASSERT_NE(nullptr, document);
   GetTestInteractiveDetector(*document);
 
-  test_task_runner_->FastForwardBy(base::Milliseconds(70));
+  task_environment_.FastForwardBy(base::Milliseconds(70));
 
   base::HistogramTester histogram_tester;
   WebKeyboardEvent key_event1(WebInputEvent::Type::kRawKeyDown,
@@ -6184,8 +6176,8 @@ TEST_F(WebViewTest, InputDelayReported) {
                               WebInputEvent::GetStaticTimeStampForTests());
   key_event1.dom_key = ui::DomKey::FromCharacter(' ');
   key_event1.windows_key_code = VKEY_SPACE;
-  key_event1.SetTimeStamp(test_task_runner_->NowTicks());
-  test_task_runner_->FastForwardBy(base::Milliseconds(50));
+  key_event1.SetTimeStamp(base::TimeTicks::Now());
+  task_environment_.FastForwardBy(base::Milliseconds(50));
   web_view->MainFrameWidget()->HandleInputEvent(
       WebCoalescedInputEvent(key_event1, ui::LatencyInfo()));
 
@@ -6194,8 +6186,8 @@ TEST_F(WebViewTest, InputDelayReported) {
                               WebInputEvent::GetStaticTimeStampForTests());
   key_event2.dom_key = ui::DomKey::FromCharacter(' ');
   key_event2.windows_key_code = VKEY_SPACE;
-  key_event2.SetTimeStamp(test_task_runner_->NowTicks());
-  test_task_runner_->FastForwardBy(base::Milliseconds(50));
+  key_event2.SetTimeStamp(base::TimeTicks::Now());
+  task_environment_.FastForwardBy(base::Milliseconds(50));
   web_view->MainFrameWidget()->HandleInputEvent(
       WebCoalescedInputEvent(key_event2, ui::LatencyInfo()));
 
@@ -6204,8 +6196,8 @@ TEST_F(WebViewTest, InputDelayReported) {
                               WebInputEvent::GetStaticTimeStampForTests());
   key_event3.dom_key = ui::DomKey::FromCharacter(' ');
   key_event3.windows_key_code = VKEY_SPACE;
-  key_event3.SetTimeStamp(test_task_runner_->NowTicks());
-  test_task_runner_->FastForwardBy(base::Milliseconds(70));
+  key_event3.SetTimeStamp(base::TimeTicks::Now());
+  task_environment_.FastForwardBy(base::Milliseconds(70));
   web_view->MainFrameWidget()->HandleInputEvent(
       WebCoalescedInputEvent(key_event3, ui::LatencyInfo()));
 
@@ -6246,8 +6238,8 @@ TEST_F(WebViewTest, PointerDownUpFirstInputDelay) {
   Document* document = main_frame->GetDocument();
   ASSERT_NE(nullptr, document);
 
-  base::TimeTicks start_time = test_task_runner_->NowTicks();
-  test_task_runner_->FastForwardBy(base::Milliseconds(70));
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  task_environment_.FastForwardBy(base::Milliseconds(70));
 
   InteractiveDetector* interactive_detector =
       GetTestInteractiveDetector(*document);
@@ -6255,11 +6247,11 @@ TEST_F(WebViewTest, PointerDownUpFirstInputDelay) {
   WebPointerEvent pointer_down(
       WebInputEvent::Type::kPointerDown,
       WebPointerProperties(1, WebPointerProperties::PointerType::kTouch), 5, 5);
-  pointer_down.SetTimeStamp(test_task_runner_->NowTicks());
+  pointer_down.SetTimeStamp(base::TimeTicks::Now());
   // Set this to the left button, needed for testing to behave properly.
   pointer_down.SetModifiers(WebInputEvent::kLeftButtonDown);
   pointer_down.button = WebPointerProperties::Button::kLeft;
-  test_task_runner_->FastForwardBy(base::Milliseconds(50));
+  task_environment_.FastForwardBy(base::Milliseconds(50));
   web_view->MainFrameWidget()->HandleInputEvent(
       WebCoalescedInputEvent(pointer_down, ui::LatencyInfo()));
 
@@ -6271,8 +6263,8 @@ TEST_F(WebViewTest, PointerDownUpFirstInputDelay) {
   WebPointerEvent pointer_up(
       WebInputEvent::Type::kPointerUp,
       WebPointerProperties(1, WebPointerProperties::PointerType::kTouch), 5, 5);
-  test_task_runner_->FastForwardBy(base::Milliseconds(60));
-  pointer_up.SetTimeStamp(test_task_runner_->NowTicks());
+  task_environment_.FastForwardBy(base::Milliseconds(60));
+  pointer_up.SetTimeStamp(base::TimeTicks::Now());
   web_view->MainFrameWidget()->HandleInputEvent(
       WebCoalescedInputEvent(pointer_up, ui::LatencyInfo()));
 
@@ -6289,34 +6281,33 @@ class MockClockAdvancingWebFrameClient
     : public frame_test_helpers::TestWebFrameClient {
  public:
   MockClockAdvancingWebFrameClient(
-      scoped_refptr<base::TestMockTimeTaskRunner> task_runner,
+      base::test::TaskEnvironment& task_environment,
       base::TimeDelta event_handling_delay)
-      : task_runner_(std::move(task_runner)),
+      : task_environment_(task_environment),
         event_handling_delay_(event_handling_delay) {}
   // WebLocalFrameClient overrides:
   void DidAddMessageToConsole(const WebConsoleMessage& message,
                               const WebString& source_name,
                               unsigned source_line,
                               const WebString& stack_trace) override {
-    task_runner_->FastForwardBy(event_handling_delay_);
+    task_environment_.FastForwardBy(event_handling_delay_);
   }
 
  private:
-  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
+  base::test::TaskEnvironment& task_environment_;
   base::TimeDelta event_handling_delay_;
 };
 
 // Check that the input delay is correctly reported to the document.
 TEST_F(WebViewTest, FirstInputDelayExcludesProcessingTime) {
   // Page load timing logic depends on the time not being zero.
-  test_task_runner_->FastForwardBy(base::Milliseconds(1));
-  MockClockAdvancingWebFrameClient frame_client(test_task_runner_,
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+  MockClockAdvancingWebFrameClient frame_client(task_environment_,
                                                 base::Milliseconds(6000));
   WebViewImpl* web_view = web_view_helper_.Initialize(&frame_client);
   WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
   frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(),
-                                     "<html><body></body></html>", base_url,
-                                     test_task_runner_->GetMockTickClock());
+                                     "<html><body></body></html>", base_url);
 
   LocalFrame* main_frame = web_view->MainFrameImpl()->GetFrame();
   ASSERT_NE(nullptr, main_frame);
@@ -6338,9 +6329,9 @@ TEST_F(WebViewTest, FirstInputDelayExcludesProcessingTime) {
                              WebInputEvent::GetStaticTimeStampForTests());
   key_event.dom_key = ui::DomKey::FromCharacter(' ');
   key_event.windows_key_code = VKEY_SPACE;
-  key_event.SetTimeStamp(test_task_runner_->NowTicks());
+  key_event.SetTimeStamp(base::TimeTicks::Now());
 
-  test_task_runner_->FastForwardBy(base::Milliseconds(5000));
+  task_environment_.FastForwardBy(base::Milliseconds(5000));
 
   web_view->MainFrameWidget()->HandleInputEvent(
       WebCoalescedInputEvent(key_event, ui::LatencyInfo()));

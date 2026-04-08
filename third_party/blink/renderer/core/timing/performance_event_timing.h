@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_EVENT_TIMING_H_
 
 #include "third_party/blink/public/common/input/pointer_id.h"
+#include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
@@ -134,6 +135,7 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
   void SetTargetSelector(const AtomicString& selector);
 
   uint64_t interactionId() const;
+  UserInteractionType InteractionType() const;
 
   std::optional<PerformanceTimelineEntryIdInfo> GetInteractionIdInfo() const {
     if (reporting_info_.prevent_counting_as_interaction) {

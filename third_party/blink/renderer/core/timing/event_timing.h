@@ -14,10 +14,6 @@
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
-namespace base {
-class TickClock;
-}
-
 namespace blink {
 
 class Event;
@@ -47,12 +43,11 @@ class CORE_EXPORT EventTiming final {
   EventTiming(const EventTiming&) = delete;
   EventTiming& operator=(const EventTiming&) = delete;
 
-  // The caller owns the |clock| which must outlive the EventTiming.
-  static void SetTickClockForTesting(const base::TickClock* clock);
-
   std::optional<PerformanceTimelineEntryIdInfo> GetInteractionIdInfo() const {
     return entry_ ? entry_->GetInteractionIdInfo() : std::nullopt;
   }
+
+  PerformanceEventTiming* GetEntry() const { return entry_; }
 
  private:
   EventTiming(LocalFrame* frame, const Event& event);
@@ -73,6 +68,10 @@ class CORE_EXPORT UIEventTiming final {
     return timing_ ? timing_->GetInteractionIdInfo() : std::nullopt;
   }
 
+  PerformanceEventTiming* GetEntry() const {
+    return timing_ ? timing_->GetEntry() : nullptr;
+  }
+
  private:
   std::optional<EventTiming> timing_;
 };
@@ -85,6 +84,10 @@ class CORE_EXPORT NavigationEventTiming final {
 
   std::optional<PerformanceTimelineEntryIdInfo> GetInteractionIdInfo() const {
     return timing_ ? timing_->GetInteractionIdInfo() : std::nullopt;
+  }
+
+  PerformanceEventTiming* GetEntry() const {
+    return timing_ ? timing_->GetEntry() : nullptr;
   }
 
  private:

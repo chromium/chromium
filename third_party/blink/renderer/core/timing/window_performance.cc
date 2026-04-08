@@ -210,6 +210,33 @@ base::TimeDelta TotalNonOverlappingProcessingDuration(
   return processing_duration;
 }
 
+bool ShouldLogEvent(const Event& event) {
+  return event.type() == event_type_names::kPointerdown ||
+         event.type() == event_type_names::kPointerup ||
+         event.type() == event_type_names::kClick ||
+         event.type() == event_type_names::kKeydown ||
+         event.type() == event_type_names::kMousedown ||
+         event.type() == event_type_names::kMouseup;
+}
+
+void HandleInputDelay(LocalDOMWindow* window,
+                      const Event& event,
+                      base::TimeTicks processing_start) {
+  auto* pointer_event = DynamicTo<PointerEvent>(&event);
+  base::TimeTicks event_timestamp =
+      pointer_event ? pointer_event->OldestPlatformTimeStamp()
+                    : event.PlatformTimeStamp();
+
+  if (ShouldLogEvent(event) && event.isTrusted()) {
+    InteractiveDetector* interactive_detector =
+        InteractiveDetector::From(*window->document());
+    if (interactive_detector) {
+      interactive_detector->HandleForInputDelay(event, event_timestamp,
+                                                processing_start);
+    }
+  }
+}
+
 }  // namespace
 
 constexpr size_t kDefaultVisibilityStateEntrySize = 50;
@@ -565,11 +592,12 @@ void WindowPerformance::ReportLongTask(base::TimeTicks start_time,
 }
 
 PerformanceEventTiming* WindowPerformance::EventTimingProcessingStart(
-    const Event& event,
-    base::TimeTicks processing_start) {
+    const Event& event) {
   CHECK(DomWindow());
   CHECK(DomWindow()->GetFrame());
-  CHECK(!processing_start.is_null());
+  base::TimeTicks processing_start = base::TimeTicks::Now();
+
+  HandleInputDelay(DomWindow(), event, processing_start);
 
   const AtomicString& event_type = event.type();
 
@@ -639,13 +667,11 @@ PerformanceEventTiming* WindowPerformance::EventTimingProcessingStart(
   return entry;
 }
 
-void WindowPerformance::EventTimingProcessingEnd(
-    PerformanceEventTiming* entry,
-    const Event& event,
-    base::TimeTicks processing_end) {
+void WindowPerformance::EventTimingProcessingEnd(PerformanceEventTiming* entry,
+                                                 const Event& event) {
   // DomWindow()->GetFrame() may no longer be available, do not CHECK for it.
   current_event_ = nullptr;
-  CHECK(!processing_end.is_null());
+  base::TimeTicks processing_end = base::TimeTicks::Now();
 
   CHECK(entry);
   CHECK(!active_event_timing_entries_.empty());

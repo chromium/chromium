@@ -36,11 +36,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
-namespace base {
-class Clock;
-class TickClock;
-}  // namespace base
-
 namespace blink {
 
 class DocumentLoader;
@@ -205,9 +200,6 @@ class CORE_EXPORT DocumentLoadTiming final {
 
   void Trace(Visitor*) const;
 
-  void SetTickClockForTesting(const base::TickClock* tick_clock);
-  void SetClockForTesting(const base::Clock* clock);
-
  private:
   void MarkRedirectEnd();
   void NotifyDocumentTimingChanged();
@@ -227,9 +219,6 @@ class CORE_EXPORT DocumentLoadTiming final {
   base::TimeTicks navigation_start_;
   base::TimeTicks commit_navigation_end_;
   Vector<base::TimeTicks> bfcache_restore_navigation_starts_;
-
-  const base::Clock* clock_;
-  const base::TickClock* tick_clock_;
 
   Member<DocumentLoader> document_loader_;
   Member<DocumentLoadTimingValues> document_load_timing_values_;

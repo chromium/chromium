@@ -57,10 +57,6 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8-local-handle.h"
 
-namespace base {
-class Clock;
-class TickClock;
-}  // namespace base
 
 namespace blink {
 
@@ -318,9 +314,6 @@ class CORE_EXPORT Performance : public EventTarget {
 
   void Trace(Visitor*) const override;
 
-  // The caller owns the |clock|.
-  void SetClocksForTesting(const base::Clock* clock,
-                           const base::TickClock* tick_clock);
   void ResetTimeOriginForTesting(base::TimeTicks time_origin);
 
   void SetCrossOriginIsolatedCapabilityForTesting(bool is_isolated) {
@@ -427,7 +420,6 @@ class CORE_EXPORT Performance : public EventTarget {
 
   base::TimeTicks time_origin_;
   base::TimeDelta unix_at_zero_monotonic_;
-  const base::TickClock* tick_clock_;
   bool cross_origin_isolated_capability_;
 
   PerformanceEntryTypeMask observer_filter_options_;

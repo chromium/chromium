@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/events/pointer_event_factory.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -142,6 +143,15 @@ uint64_t PerformanceEventTiming::interactionId() const {
   }
   CHECK(HasKnownInteractionID());
   return interaction_id_->id;
+}
+
+UserInteractionType PerformanceEventTiming::InteractionType() const {
+  std::optional<PointerId> pointer_id =
+      GetEventTimingReportingInfo()->pointer_id;
+  return (pointer_id.has_value() &&
+          *pointer_id != PointerEventFactory::kReservedNonPointerId)
+             ? UserInteractionType::kTapOrClick
+             : UserInteractionType::kKeyboard;
 }
 
 bool PerformanceEventTiming::HasKnownInteractionID() const {

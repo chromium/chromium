@@ -573,14 +573,7 @@ void ResponsivenessMetrics::ReportToMetrics(PerformanceEventTiming* entry) {
     return;
   }
 
-  std::optional<PointerId> pointer_id =
-      entry->GetEventTimingReportingInfo()->pointer_id;
-  UserInteractionType interaction_type =
-      (pointer_id.has_value() &&
-       *pointer_id != PointerEventFactory::kReservedNonPointerId)
-          ? UserInteractionType::kTapOrClick
-          : UserInteractionType::kKeyboard;
-
+  UserInteractionType interaction_type = entry->InteractionType();
   RecordUserInteractionUKM(window, interaction_type, *entry);
   RecordUserInteractionTracing(window, interaction_type, *entry);
 

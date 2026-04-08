@@ -20,4 +20,7 @@ specific_include_rules = {
     "window_performance.h": [
         "+components/viz/common/frame_sinks/begin_frame_args.h",
     ],
+    "window_performance_test.cc": [
+        "+ui/events/keycodes/keyboard_code_conversion.h",
+    ],
 }
