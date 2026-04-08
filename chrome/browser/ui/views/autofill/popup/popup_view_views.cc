@@ -266,7 +266,7 @@ void PopupViewViews::OnPaint(gfx::Canvas* canvas) {
 
 bool PopupViewViews::Show(
     AutoselectFirstSuggestion autoselect_first_suggestion) {
-  base::AutoReset show_in_progress_reset(&show_in_progress_, !!search_bar_);
+  base::AutoReset show_in_progress_reset(&show_in_progress_, search_bar_);
 
   UpdateAccessibleStates();
   if (!DoShow()) {
