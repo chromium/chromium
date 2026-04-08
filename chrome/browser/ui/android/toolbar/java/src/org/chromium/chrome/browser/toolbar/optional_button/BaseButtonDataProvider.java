@@ -20,6 +20,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
@@ -91,18 +92,16 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
                     : "Action chip should only be used on dynamic actions";
         }
 
+        ButtonSpec.Builder buttonSpecBuilder =
+                new ButtonSpec.Builder(buttonDrawable, contentDescription, supportsTinting)
+                        .setOnClickListener(this)
+                        .setActionChipLabelResId(actionChipLabelResId)
+                        .setIphCommandBuilder(iphCommandBuilder)
+                        .setButtonVariant(adaptiveButtonVariant)
+                        .setHoverTooltipTextId(tooltipTextResId);
         mButtonData =
                 new ButtonDataImpl(
-                        /* canShow= */ false,
-                        buttonDrawable,
-                        /* onClickListener= */ this,
-                        contentDescription,
-                        actionChipLabelResId,
-                        supportsTinting,
-                        /* iphCommandBuilder= */ iphCommandBuilder,
-                        /* isEnabled= */ true,
-                        adaptiveButtonVariant,
-                        tooltipTextResId);
+                        /* canShow= */ false, /* isEnabled= */ true, buttonSpecBuilder.build());
     }
 
     /**

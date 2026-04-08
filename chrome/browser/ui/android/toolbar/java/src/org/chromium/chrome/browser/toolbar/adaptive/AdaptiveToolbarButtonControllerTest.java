@@ -90,17 +90,11 @@ public class AdaptiveToolbarButtonControllerTest {
     public void setUp() {
         VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(true);
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
-        mButtonData =
-                new ButtonDataImpl(
-                        /* canShow= */ true,
-                        /* drawable= */ null,
-                        mock(View.OnClickListener.class),
-                        /* contentDescription= */ "",
-                        /* supportsTinting= */ false,
-                        /* iphCommandBuilder= */ null,
-                        /* isEnabled= */ true,
-                        AdaptiveToolbarButtonVariant.UNKNOWN,
-                        /* tooltipTextResId= */ Resources.ID_NULL);
+        ButtonSpec buttonSpec =
+                new ButtonSpec.Builder(null, "", false)
+                        .setOnClickListener(mock(View.OnClickListener.class))
+                        .build();
+        mButtonData = new ButtonDataImpl(/* canShow= */ true, /* isEnabled= */ true, buttonSpec);
         mConfiguration.screenWidthDp = 420;
         doReturn(mProfile).when(mProfile).getOriginalProfile();
         mProfileSupplier = ObservableSuppliers.createMonotonic();

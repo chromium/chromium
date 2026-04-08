@@ -22,6 +22,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.VisualState;
 
@@ -48,16 +49,8 @@ public class PhoneCaptureStateTokenTest {
 
     private static ButtonData makeButtonDate() {
         // Uses default equals impl, reference quality, to compare. Values do not matter.
-        return new ButtonDataImpl(
-                /* canShow= */ false,
-                /* drawable= */ null,
-                /* onClickListener= */ null,
-                /* contentDescription= */ "",
-                /* supportsTinting= */ false,
-                /* iphCommandBuilder= */ null,
-                /* isEnabled= */ false,
-                /* buttonVariant= */ 0,
-                /* tooltipTextResId= */ 0);
+        ButtonSpec buttonSpec = new ButtonSpec.Builder(null, "", false).build();
+        return new ButtonDataImpl(/* canShow= */ false, /* isEnabled= */ false, buttonSpec);
     }
 
     @Before

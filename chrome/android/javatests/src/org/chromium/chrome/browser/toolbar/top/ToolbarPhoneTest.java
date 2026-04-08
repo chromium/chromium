@@ -79,10 +79,10 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
-import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.VisualState;
@@ -242,15 +242,15 @@ public class ToolbarPhoneTest {
                     mToolbar.setMenuButtonCoordinatorForTesting(realMenuButtonCoordinator);
                     mToolbar.updateOptionalButton(
                             new ButtonDataImpl(
-                                    false,
-                                    drawable,
-                                    null,
-                                    mActivityTestRule.getActivity().getString(R.string.share),
-                                    false,
-                                    null,
-                                    false,
-                                    AdaptiveToolbarButtonVariant.UNKNOWN,
-                                    0));
+                                    /* canShow= */ false,
+                                    /* isEnabled= */ false,
+                                    new ButtonSpec.Builder(
+                                                    drawable,
+                                                    mActivityTestRule
+                                                            .getActivity()
+                                                            .getString(R.string.share),
+                                                    /* supportsTinting= */ false)
+                                            .build()));
                     // Make sure the button is visible in the beginning of the test.
                     assertEquals(true, realMenuButtonCoordinator.isVisible());
 
@@ -357,15 +357,13 @@ public class ToolbarPhoneTest {
                         mActivityTestRule.getActivity(), R.drawable.ic_toolbar_share_offset_24dp);
         ButtonData buttonData =
                 new ButtonDataImpl(
-                        true,
-                        drawable,
-                        null,
-                        mActivityTestRule.getActivity().getString(R.string.share),
-                        false,
-                        null,
-                        true,
-                        AdaptiveToolbarButtonVariant.UNKNOWN,
-                        0);
+                        /* canShow= */ true,
+                        /* isEnabled= */ true,
+                        new ButtonSpec.Builder(
+                                        drawable,
+                                        mActivityTestRule.getActivity().getString(R.string.share),
+                                        /* supportsTinting= */ false)
+                                .build());
 
         // Show a button, this will inflate the optional button view and create its coordinator.
         ThreadUtils.runOnUiThreadBlocking(() -> mToolbar.updateOptionalButton(buttonData));
@@ -401,15 +399,13 @@ public class ToolbarPhoneTest {
                         mActivityTestRule.getActivity(), R.drawable.ic_toolbar_share_offset_24dp);
         ButtonData buttonData =
                 new ButtonDataImpl(
-                        true,
-                        drawable,
-                        null,
-                        mActivityTestRule.getActivity().getString(R.string.share),
-                        false,
-                        null,
-                        true,
-                        AdaptiveToolbarButtonVariant.UNKNOWN,
-                        0);
+                        /* canShow= */ true,
+                        /* isEnabled= */ true,
+                        new ButtonSpec.Builder(
+                                        drawable,
+                                        mActivityTestRule.getActivity().getString(R.string.share),
+                                        /* supportsTinting= */ false)
+                                .build());
 
         // Show a button, this will inflate the optional button view and create its coordinator.
         ThreadUtils.runOnUiThreadBlocking(() -> mToolbar.updateOptionalButton(buttonData));
@@ -445,15 +441,13 @@ public class ToolbarPhoneTest {
                         mActivityTestRule.getActivity(), R.drawable.ic_toolbar_share_offset_24dp);
         ButtonData buttonData =
                 new ButtonDataImpl(
-                        true,
-                        drawable,
-                        null,
-                        mActivityTestRule.getActivity().getString(R.string.share),
-                        false,
-                        null,
-                        true,
-                        AdaptiveToolbarButtonVariant.UNKNOWN,
-                        0);
+                        /* canShow= */ true,
+                        /* isEnabled= */ true,
+                        new ButtonSpec.Builder(
+                                        drawable,
+                                        mActivityTestRule.getActivity().getString(R.string.share),
+                                        /* supportsTinting= */ false)
+                                .build());
 
         // Show a button, this will inflate the optional button view and create its coordinator.
         ThreadUtils.runOnUiThreadBlocking(() -> mToolbar.updateOptionalButton(buttonData));
@@ -589,17 +583,15 @@ public class ToolbarPhoneTest {
 
         ButtonData buttonData =
                 new ButtonDataImpl(
-                        true,
-                        AppCompatResources.getDrawable(
-                                mActivityTestRule.getActivity(),
-                                R.drawable.ic_toolbar_share_offset_24dp),
-                        null,
-                        mActivityTestRule.getActivity().getString(R.string.share),
-                        false,
-                        null,
-                        true,
-                        AdaptiveToolbarButtonVariant.UNKNOWN,
-                        0);
+                        /* canShow= */ true,
+                        /* isEnabled= */ true,
+                        new ButtonSpec.Builder(
+                                        AppCompatResources.getDrawable(
+                                                mActivityTestRule.getActivity(),
+                                                R.drawable.ic_toolbar_share_offset_24dp),
+                                        mActivityTestRule.getActivity().getString(R.string.share),
+                                        /* supportsTinting= */ false)
+                                .build());
         ThreadUtils.runOnUiThreadBlocking(() -> mToolbar.updateOptionalButton(buttonData));
         verify(mOptionalButtonCoordinator).updateButton(buttonData, false);
 

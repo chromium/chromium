@@ -4,15 +4,12 @@
 
 package org.chromium.chrome.browser.toolbar.optional_button;
 
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.view.View.OnClickListener;
 
 import androidx.annotation.StringRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 
 import java.util.Objects;
@@ -28,50 +25,10 @@ public class ButtonDataImpl implements ButtonData {
 
     public ButtonDataImpl() {}
 
-    public ButtonDataImpl(
-            boolean canShow,
-            @Nullable Drawable drawable,
-            OnClickListener onClickListener,
-            String contentDescription,
-            boolean supportsTinting,
-            @Nullable IphCommandBuilder iphCommandBuilder,
-            boolean isEnabled,
-            @AdaptiveToolbarButtonVariant int buttonVariant,
-            int tooltipTextResId) {
-        this(
-                canShow,
-                drawable,
-                onClickListener,
-                contentDescription,
-                /* actionChipLabelResId= */ Resources.ID_NULL,
-                supportsTinting,
-                iphCommandBuilder,
-                isEnabled,
-                buttonVariant,
-                tooltipTextResId);
-    }
-
-    public ButtonDataImpl(
-            boolean canShow,
-            @Nullable Drawable drawable,
-            OnClickListener onClickListener,
-            String contentDescription,
-            @StringRes int actionChipLabelResId,
-            boolean supportsTinting,
-            @Nullable IphCommandBuilder iphCommandBuilder,
-            boolean isEnabled,
-            @AdaptiveToolbarButtonVariant int buttonVariant,
-            @StringRes int tooltipTextResId) {
+    public ButtonDataImpl(boolean canShow, boolean isEnabled, ButtonSpec buttonSpec) {
         mCanShow = canShow;
         mIsEnabled = isEnabled;
-        mButtonSpec =
-                new ButtonSpec.Builder(drawable, contentDescription, supportsTinting)
-                        .setOnClickListener(onClickListener)
-                        .setIphCommandBuilder(iphCommandBuilder)
-                        .setButtonVariant(buttonVariant)
-                        .setActionChipLabelResId(actionChipLabelResId)
-                        .setHoverTooltipTextId(tooltipTextResId)
-                        .build();
+        mButtonSpec = buttonSpec;
     }
 
     @Override

@@ -9,7 +9,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.VisibleForTesting;
@@ -153,19 +152,21 @@ public class IdentityDiscController
         mButtonData =
                 new ButtonDataImpl(
                         /* canShow= */ false,
-                        /* drawable= */ null,
-                        /* onClickListener= */ view -> onClick(),
-                        /* contentDescription= */ SigninUtils.getContentDescriptionForIdentityDisc(
-                                mContext, null, UserActionableError.NONE),
-                        /* supportsTinting= */ false,
-                        new IphCommandBuilder(
-                                mContext.getResources(),
-                                FeatureConstants.IDENTITY_DISC_FEATURE,
-                                R.string.iph_identity_disc_text,
-                                R.string.iph_identity_disc_accessibility_text),
                         /* isEnabled= */ true,
-                        AdaptiveToolbarButtonVariant.UNKNOWN,
-                        /* tooltipTextResId= */ Resources.ID_NULL);
+                        new ButtonSpec.Builder(
+                                        /* drawable= */ null,
+                                        /* contentDescription= */ SigninUtils
+                                                .getContentDescriptionForIdentityDisc(
+                                                        mContext, null, UserActionableError.NONE),
+                                        /* supportsTinting= */ false)
+                                .setOnClickListener(view -> onClick())
+                                .setIphCommandBuilder(
+                                        new IphCommandBuilder(
+                                                mContext.getResources(),
+                                                FeatureConstants.IDENTITY_DISC_FEATURE,
+                                                R.string.iph_identity_disc_text,
+                                                R.string.iph_identity_disc_accessibility_text))
+                                .build());
     }
 
     @Override
