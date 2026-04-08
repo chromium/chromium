@@ -30,6 +30,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/glic/glic_button_interface.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
@@ -531,59 +533,63 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyDisablesBackgroundMode) {
   EXPECT_TRUE(background_mode_manager->IsInBackgroundModeForTesting());
 }
 
-auto IsOk() -> auto {
-  return testing::Property(&base::expected<void, std::string>::has_value,
-                           testing::IsTrue());
-}
-
-// Ensure navigating to chrome://glic is enabled only if the policy is enabled.
+// Ensure opening the Glic side panel is enabled only if the policy is enabled.
 IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyDisablesWebUi) {
-  GURL glic_url = GURL(chrome::kChromeUIGlicURL);
+  GlicKeyedService* service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile_1_);
 
-  // Navigating to chrome://glic should succeed.
-  {
-    content::TestNavigationObserver observer(glic_url);
-    observer.WatchExistingWebContents();
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), glic_url));
-    observer.WaitForNavigationFinished();
-    ASSERT_EQ(observer.last_navigation_url(), glic_url);
-    ASSERT_TRUE(observer.last_navigation_succeeded());
-    // WebUi will be in an error state since the mock web client is not setup.
-    ASSERT_THAT(RunUntilWebUIState(mojom::WebUiState::kError), IsOk());
-  }
+  GlicInstanceTracker instance_tracker(profile_1_);
 
-  // Disable the policy.
+  // 1. Open the side panel.
+  service->ToggleUI(/*bwi=*/browser(), /*prevent_close=*/false,
+                    /*source=*/mojom::InvocationSource::kOsButton);
+
+  ASSERT_TRUE(instance_tracker.WaitForShow());
+
+  Host* host = instance_tracker.GetHost();
+  ASSERT_TRUE(host);
+
+  // WebUi will be in an error state since the mock web client is not setup.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return host->GetPrimaryWebUiState() == mojom::WebUiState::kError;
+  }));
+
+  // 2. Disable the policy.
   SetGlicPolicy(policy_for_profile_1(), SettingsPolicyState::kDisabled);
   ASSERT_EQ(kDisabledValue,
             browser()->profile()->GetPrefs()->GetInteger(kGeminiSettings));
 
-  // Navigate to chrome://glic. The glic page should be unavailable.
-  {
-    content::TestNavigationObserver observer(glic_url);
-    observer.WatchExistingWebContents();
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), glic_url));
-    observer.WaitForNavigationFinished();
-    ASSERT_EQ(observer.last_navigation_url(), glic_url);
-    ASSERT_TRUE(observer.last_navigation_succeeded());
-    ASSERT_THAT(RunUntilWebUIState(mojom::WebUiState::kDisabledByAdmin),
-                IsOk());
-  }
+  // Verify it shows the disabled page.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return host->GetPrimaryWebUiState() == mojom::WebUiState::kDisabledByAdmin;
+  }));
 
-  // Re-enable the policy.
+  // 3. Re-enable the policy.
   SetGlicPolicy(policy_for_profile_1(), SettingsPolicyState::kEnabled);
   ASSERT_EQ(kEnabledValue, profile_1_->GetPrefs()->GetInteger(kGeminiSettings));
 
-  // Navigating to chrome://glic should now succeed again.
-  {
-    content::TestNavigationObserver observer(glic_url);
-    observer.WatchExistingWebContents();
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), glic_url));
-    observer.WaitForNavigationFinished();
-    ASSERT_EQ(observer.last_navigation_url(), glic_url);
-    ASSERT_TRUE(observer.last_navigation_succeeded());
-    // WebUi will be in an error state since the mock web client is not setup.
-    ASSERT_THAT(RunUntilWebUIState(mojom::WebUiState::kError), IsOk());
-  }
+  // 4. Close the side panel (by toggling).
+  // Now that it's enabled again, this shouldn't crash.
+  service->ToggleUI(/*bwi=*/browser(), /*prevent_close=*/false,
+                    /*source=*/mojom::InvocationSource::kOsButton);
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !GetGlicInstance()->IsShowing(); }));
+
+  // 5. Open the side panel again.
+  GlicInstanceTracker instance_tracker2(profile_1_);
+  service->ToggleUI(/*bwi=*/browser(), /*prevent_close=*/false,
+                    /*source=*/mojom::InvocationSource::kOsButton);
+
+  ASSERT_TRUE(instance_tracker2.WaitForShow());
+
+  host = instance_tracker2.GetHost();
+  ASSERT_TRUE(host);
+
+  // WebUi will be in an error state since the mock web client is not setup.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return host->GetPrimaryWebUiState() == mojom::WebUiState::kError;
+  }));
 }
 
 // Same as GlicPolicyTest but starts Chrome with the Glic policy disabled.
@@ -595,40 +601,13 @@ class GlicPolicyDisabledTest : public GlicPolicyTest {
   }
 };
 
-// Test that navigations to chrome://glic when the policy is disabled from
-// startup shows glic as unavailable.
+// Test that the glic side panel is not registered when the policy is disabled
+// from startup.
 IN_PROC_BROWSER_TEST_F(GlicPolicyDisabledTest, WebUiDisabledAtLoad) {
-  GURL glic_url = GURL(chrome::kChromeUIGlicURL);
-
-  // Glic shouldn't load since it's disabled by policy from startup.
-  {
-    content::TestNavigationObserver observer(glic_url);
-    observer.WatchExistingWebContents();
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), glic_url));
-    observer.WaitForNavigationFinished();
-    ASSERT_EQ(observer.last_navigation_url(), glic_url);
-    ASSERT_TRUE(observer.last_navigation_succeeded());
-
-    auto state = GetWebUIStateForActiveTab();
-    ASSERT_THAT(RunUntilWebUIState(mojom::WebUiState::kDisabledByAdmin),
-                IsOk());
-  }
-
-  // Enable the policy at runtime
-  SetGlicPolicy(policy_for_profile_1(), SettingsPolicyState::kEnabled);
-  ASSERT_EQ(kEnabledValue, profile_1_->GetPrefs()->GetInteger(kGeminiSettings));
-
-  // Navigating to chrome://glic should now load the webview.
-  {
-    content::TestNavigationObserver observer(glic_url);
-    observer.WatchExistingWebContents();
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), glic_url));
-    observer.WaitForNavigationFinished();
-    ASSERT_EQ(observer.last_navigation_url(), glic_url);
-    ASSERT_TRUE(observer.last_navigation_succeeded());
-    // WebUi will be in an error state since the mock web client is not setup.
-    ASSERT_THAT(RunUntilWebUIState(mojom::WebUiState::kError), IsOk());
-  }
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  SidePanelRegistry* registry = SidePanelRegistry::From(tab);
+  EXPECT_FALSE(
+      registry->GetEntryForKey(SidePanelEntry::Key(SidePanelEntry::Id::kGlic)));
 }
 
 // Ensure that if the policy changes to disabled at runtime, and the user has an

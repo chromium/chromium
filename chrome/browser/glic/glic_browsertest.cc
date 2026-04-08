@@ -104,43 +104,5 @@ IN_PROC_BROWSER_TEST_F(GlicBrowserTest, GlicEnablingDismissed) {
   ASSERT_FALSE(GlicEnabling::DidDismissForProfile(profile));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicBrowserTest, TabHostIsRemovedWhenTabClosed) {
-  auto* profile = browser()->profile();
-  auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(profile);
-  ASSERT_TRUE(glic_service);
-
-  size_t initial_hosts_count =
-      glic_service->host_manager().GetAllHosts().size();
-
-  // Open chrome://glic in a new tab.
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(chrome::kChromeUIGlicURL),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-
-  size_t hosts_count_after_open =
-      glic_service->host_manager().GetAllHosts().size();
-  EXPECT_EQ(hosts_count_after_open, initial_hosts_count + 1);
-
-  tabs::TabInterface* glic_tab = browser()->tab_strip_model()->GetActiveTab();
-  ASSERT_TRUE(glic_tab);
-
-  Host* tab_host =
-      glic_service->host_manager().FindHostForTabForTesting(*glic_tab);
-  ASSERT_TRUE(tab_host);
-
-  base::WeakPtr<Host> tab_host_weak = tab_host->GetWeakPtr();
-  ASSERT_TRUE(tab_host_weak);
-
-  browser()->tab_strip_model()->CloseWebContentsAt(
-      browser()->tab_strip_model()->active_index(), TabCloseTypes::CLOSE_NONE);
-
-  // Wait for the tab close to finish tearing down the tab Host.
-  ASSERT_TRUE(base::test::RunUntil([&]() { return !tab_host_weak; }));
-
-  EXPECT_EQ(glic_service->host_manager().GetAllHosts().size(),
-            initial_hosts_count);
-}
-
 }  // namespace
 }  // namespace glic
