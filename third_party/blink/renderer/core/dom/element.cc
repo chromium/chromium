@@ -9357,21 +9357,26 @@ void Element::SetOuterHTMLInternal(const String& html,
   if (exception_state.HadException()) {
     return;
   }
-  Node* p = parentNode();
+  // https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#the-outerhtml-property
+  ContainerNode* p = parentNode();
   if (!p) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNoModificationAllowedError,
-        "This element has no parent node.");
     return;
   }
 
-  auto* parent = DynamicTo<Element>(p);
-  if (!parent) {
+  if (p->IsDocumentNode()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNoModificationAllowedError,
-        StrCat({"This element's parent is of type '", p->nodeName(),
-                "', which is not an element node."}));
+        "This element's parent is a Document, which may not be modified.");
     return;
+  }
+
+  // Per spec, if parent is a DocumentFragment, use a temporary body element
+  // as the parsing context instead.
+  Element* context_element;
+  if (p->IsDocumentFragment()) {
+    context_element = MakeGarbageCollected<HTMLBodyElement>(GetDocument());
+  } else {
+    context_element = To<Element>(p);
   }
 
   Node* prev = previousSibling();
@@ -9382,7 +9387,7 @@ void Element::SetOuterHTMLInternal(const String& html,
                         {
                             .interface_name = trusted_types_names::kElement,
                             .property_name = trusted_types_names::kOuterHTML,
-                            .context_element = parent,
+                            .context_element = context_element,
                             .registry = customElementRegistry(),
                         },
                         FragmentParserOptions(), exception_state);
@@ -9391,7 +9396,7 @@ void Element::SetOuterHTMLInternal(const String& html,
     return;
   }
 
-  parent->ReplaceChild(fragment, this, exception_state);
+  p->ReplaceChild(fragment, this, exception_state);
   if (exception_state.HadException()) {
     return;
   }

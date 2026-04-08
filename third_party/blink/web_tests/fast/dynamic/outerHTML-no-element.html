@@ -10,11 +10,9 @@ if (window.testRunner)
 var t = document.getElementById("test");
 var outerStr = "<div id='test2'>This test failed!</div>";
 t.outerHTML = outerStr;
-try {
-    t.outerHTML = "<div id='test2'>This test failed!!</div>"
-}catch(e) {
-    document.getElementById("test2").outerHTML = "<div id='test2'>This test passed - expected error - " + e + "</div>";
-}
+// Setting outerHTML on an element without a parent is a no-op.
+t.outerHTML = "<div id='test2'>This test failed!!</div>"
+document.getElementById("test2").outerHTML = "<div id='test2'>This test passed - setting outerHTML on parentless element is a no-op.</div>";
 </script>
 
 </body>

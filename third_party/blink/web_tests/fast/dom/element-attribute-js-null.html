@@ -55,10 +55,8 @@
                     attributes: [
                         {name: 'id', expectedNull: 'null'},
                         {name: 'className', expectedNull: 'null'},
-                        {name: 'innerHTML', expectedNull: ''},
-                        {name: 'outerHTML',
-                         expectedNull: 'NoModificationAllowedError',
-                         isException: true}
+                        {name: 'innerHTML', expectedNull: ''}
+                        // outerHTML: no-op on disconnected elements.
                     ]
                 },
                 {
