@@ -569,10 +569,7 @@ foreach(_target_type,
         # When clang is used, some target may use clang module. This dependency
         # is required for things to work, regardless of whether the libc++
         # module is used in this target or not.
-        public_deps += [
-          "//buildtools/third_party/libc++:custom_headers",
-          "//buildtools/third_party/libc++:libcxx_headers",
-        ]
+        public_deps += [ "//buildtools/third_party/libc++:headers" ]
       }
 
       if (!defined(use_libcxx_modules)) {
@@ -690,10 +687,7 @@ foreach(_target_type,
         # When clang is used, some target may use clang module. This dependency
         # is required for things to work, regardless of whether the libc++
         # module is used in this target or not.
-        public_deps += [
-          "//buildtools/third_party/libc++:custom_headers",
-          "//buildtools/third_party/libc++:libcxx_headers",
-        ]
+        public_deps += [ "//buildtools/third_party/libc++:headers" ]
       }
 
       if (!defined(use_libcxx_modules)) {

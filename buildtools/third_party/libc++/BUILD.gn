@@ -87,9 +87,9 @@ if (current_toolchain == default_toolchain) {
     sources = libcxx_headers
     outputs = [ "{{source_gen_dir}}/{{source_file_part}}" ]
 
-    # Rely on `:libcxx_headers` instead: it abstract away the default toolchain
+    # Rely on `:headers` instead: it abstract away the default toolchain
     # optimization and the internal copy.
-    visibility = [ ":libcxx_headers" ]
+    visibility = [ ":headers" ]
   }
 
   # Note: there are setups where clang_modules is enabled for some, but not all,
@@ -104,25 +104,20 @@ if (current_toolchain == default_toolchain) {
       "${root_gen_dir}/third_party/libc++/src/include/{{source_file_part}}",
     ]
 
-    # Rely on `:custom_headers` instead: it abstract away the default toolchain
+    # Rely on `:headers` instead: it abstract away the default toolchain
     # optimization and the internal copy.
-    visibility = [ ":custom_headers" ]
+    visibility = [ ":headers" ]
   }
 }
 
 # TODO(https://crbug.com/440260716): This intermediate target can be removed
 # once Cronet's gn2bp supports copy targets with multiple outputs.
-group("libcxx_headers") {
+group("headers") {
   if (use_clang_modules) {
-    deps = [ ":copy_libcxx_headers($default_toolchain)" ]
-  }
-}
-
-# TODO(https://crbug.com/440260716): This intermediate target can be removed
-# once Cronet's gn2bp supports copy targets with multiple outputs.
-group("custom_headers") {
-  if (use_clang_modules) {
-    deps = [ ":copy_custom_headers($default_toolchain)" ]
+    deps = [
+      ":copy_custom_headers($default_toolchain)",
+      ":copy_libcxx_headers($default_toolchain)",
+    ]
   }
 }
 
@@ -609,8 +604,7 @@ target(libcxx_target_type, "libc++") {
              ]
 
   deps = [
-    ":custom_headers",
-    ":libcxx_headers",
+    ":headers",
     "//third_party/llvm-libc:llvm-libc-shared",
   ]
 
