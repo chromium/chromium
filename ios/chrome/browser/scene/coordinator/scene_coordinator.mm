@@ -173,6 +173,7 @@ void OnListFamilyMembersResponse(
   id<TabOpening> _tabOpener;
   base::WeakPtr<Browser> _inactiveBrowser;
   base::WeakPtr<Browser> _regularBrowser;
+  raw_ptr<Browser> _incognitoBrowser;
   // Coordinator for the Tab Grid
   TabGridCoordinator* _tabGridCoordinator;
   // Coordinator for the AppBar.
@@ -247,7 +248,7 @@ void OnListFamilyMembersResponse(
       initWithSceneCommandsEndpoint:self
                      regularBrowser:_regularBrowser.get()
                     inactiveBrowser:_inactiveBrowser.get()
-                   incognitoBrowser:_incognitoBrowser];
+                   incognitoBrowser:_incognitoBrowser.get()];
   _tabGridCoordinator.delegate = self.tabGridDelegate;
   [_tabGridCoordinator start];
   if (IsUseSceneViewControllerEnabled()) {
@@ -272,14 +273,14 @@ void OnListFamilyMembersResponse(
         initWithRegularFullscreenController:FullscreenController::FromBrowser(
                                                 _regularBrowser.get())
               incognitoFullscreenController:FullscreenController::FromBrowser(
-                                                _incognitoBrowser)];
+                                                _incognitoBrowser.get())];
     _sceneMediator.consumer = _viewController;
   }
 
   if (IsChromeNextIaEnabled()) {
-    _appBarCoordinator =
-        [[AppBarCoordinator alloc] initWithRegularBrowser:_regularBrowser.get()
-                                         incognitoBrowser:_incognitoBrowser];
+    _appBarCoordinator = [[AppBarCoordinator alloc]
+        initWithRegularBrowser:_regularBrowser.get()
+              incognitoBrowser:_incognitoBrowser.get()];
     [_appBarCoordinator start];
     [_viewController setAppBar:_appBarCoordinator.viewController];
   }
@@ -1374,6 +1375,10 @@ void OnListFamilyMembersResponse(
 - (void)setTabGridDelegate:(id<TabGridCoordinatorDelegate>)delegate {
   _tabGridDelegate = delegate;
   _tabGridCoordinator.delegate = delegate;
+}
+
+- (Browser*)incognitoBrowser {
+  return _incognitoBrowser.get();
 }
 
 - (void)setIncognitoBrowser:(Browser*)incognitoBrowser {
