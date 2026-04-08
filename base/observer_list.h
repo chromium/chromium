@@ -300,7 +300,7 @@ class ObserverList {
   const_iterator begin() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(iteration_sequence_checker_);
     // An optimization: do not involve weak pointers for empty list.
-    return observers_.empty() ? const_iterator() : const_iterator(this);
+    return empty() ? const_iterator() : const_iterator(this);
   }
 
   const_iterator end() const { return const_iterator(); }
@@ -350,6 +350,10 @@ class ObserverList {
   // TODO(40562847): Add static_assert to ensure the reentrancy is
   // kDisallowReentrancy.
   ReentrantRange GetReentrantRange() {
+    // An optimization: do not involve weak pointers for empty list.
+    if (empty()) {
+      return {};
+    }
     return ReentrantRange{Iter</*check_reentrancy=*/false>(this),
                           Iter</*check_reentrancy=*/false>()};
   }
