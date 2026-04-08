@@ -17,14 +17,14 @@ PassageEmbeddingsOpResolver::PassageEmbeddingsOpResolver(
 #if BUILDFLAG(ENABLE_ML_INTERNAL)
   if (allow_gpu_execution) {
     auto* chrome_ml = ml::ChromeML::Get();
-    if (chrome_ml && chrome_ml->api().CreateGpuDelegate &&
-        chrome_ml->api().DestroyGpuDelegate) {
+    if (chrome_ml && chrome_ml->HasCreateGpuDelegate() &&
+        chrome_ml->HasDestroyGpuDelegate()) {
       delegate_creators_.insert(
           delegate_creators_.begin(), [](TfLiteContext* context) {
             return std::unique_ptr<TfLiteDelegate, void (*)(TfLiteDelegate*)>(
-                ml::ChromeML::Get()->api().CreateGpuDelegate(),
+                ml::ChromeML::Get()->CreateGpuDelegate(),
                 [](TfLiteDelegate* delegate) {
-                  ml::ChromeML::Get()->api().DestroyGpuDelegate(delegate);
+                  ml::ChromeML::Get()->DestroyGpuDelegate(delegate);
                 });
           });
     }

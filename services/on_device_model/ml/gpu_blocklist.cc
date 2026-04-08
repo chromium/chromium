@@ -37,8 +37,7 @@ void LogGpuBlocked(GpuBlockedReason reason) {
   base::UmaHistogramEnumeration("OnDeviceModel.GpuBlockedReason", reason);
 }
 
-DISABLE_CFI_DLSYM
-DeviceInfo QueryDeviceInfoInternal(const ChromeMLAPI& api) {
+DeviceInfo QueryDeviceInfoInternal(const ChromeML& api) {
   static crash_reporter::CrashKeyString<256> blocklist_key(
       "ChromeML-blocklist");
   blocklist_key.Set(kGpuBlockList.Get());
@@ -128,7 +127,7 @@ BASE_FEATURE(kOnDeviceModelAllowGpuForTesting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
-DeviceInfo QueryDeviceInfo(const ChromeMLAPI& api, bool log_histogram) {
+DeviceInfo QueryDeviceInfo(const ChromeML& api, bool log_histogram) {
   if (base::FeatureList::IsEnabled(kOnDeviceModelAllowGpuForTesting)) {
     // Each test can use its own override. Don't use cache.
     DeviceInfo query_device_info;

@@ -72,10 +72,9 @@ class TsModel final : public mojom::TextSafetyModel,
 
 TsModel::TsModel(const ChromeML& chrome_ml) : chrome_ml_(chrome_ml) {}
 
-DISABLE_CFI_DLSYM
 TsModel::~TsModel() {
   if (model_ != 0) {
-    chrome_ml_->api().ts_api.DestroyModel(model_);
+    chrome_ml_->TSDestroyModel(model_);
   }
 }
 
@@ -107,7 +106,6 @@ bool TsModel::InitLanguageDetection(mojom::LanguageModelAssetsPtr assets) {
   return language_detector_->IsAvailable();
 }
 
-DISABLE_CFI_DLSYM
 bool TsModel::InitTextSafetyModel(mojom::TextSafetyModelAssetsPtr assets) {
   TRACE_EVENT("optimization_guide", "TsModel::InitTextSafetyModel");
   if (!data_.Initialize(std::move(assets->data)) ||
@@ -118,7 +116,7 @@ bool TsModel::InitTextSafetyModel(mojom::TextSafetyModelAssetsPtr assets) {
       .model = {.data = data_.data(), .size = data_.length()},
       .sp_model = {.data = sp_model_.data(), .size = sp_model_.length()},
   };
-  model_ = chrome_ml_->api().ts_api.CreateModel(&desc);
+  model_ = chrome_ml_->TSCreateModel(&desc);
   return bool(model_);
 }
 
@@ -144,7 +142,6 @@ void TsModel::Clone(mojo::PendingReceiver<mojom::TextSafetySession> session) {
   StartSession(std::move(session));
 }
 
-DISABLE_CFI_DLSYM
 mojom::SafetyInfoPtr TsModel::ClassifyTextSafety(const std::string& text) {
   TRACE_EVENT("optimization_guide", "TsModel::ClassifyTextSafety");
   if (!model_) {
@@ -153,15 +150,15 @@ mojom::SafetyInfoPtr TsModel::ClassifyTextSafety(const std::string& text) {
 
   // First query the API to see how much storage we need for class scores.
   size_t num_scores = 0;
-  if (chrome_ml_->api().ts_api.ClassifyTextSafety(model_, text.c_str(), nullptr,
-                                                  &num_scores) !=
+  if (chrome_ml_->TSClassifyTextSafety(model_, text.c_str(), nullptr,
+                                       &num_scores) !=
       ChromeMLSafetyResult::kInsufficientStorage) {
     return nullptr;
   }
 
   auto safety_info = mojom::SafetyInfo::New();
   safety_info->class_scores.resize(num_scores);
-  const auto result = chrome_ml_->api().ts_api.ClassifyTextSafety(
+  const auto result = chrome_ml_->TSClassifyTextSafety(
       model_, text.c_str(), safety_info->class_scores.data(), &num_scores);
   if (result != ChromeMLSafetyResult::kOk) {
     return nullptr;

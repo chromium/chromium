@@ -417,20 +417,19 @@ class GraphImplTflite::ComputeResources {
       // TODO(crbug.com/394119734): Simplify this check once these functions are
       // always available.
       auto* chrome_ml = ml::ChromeML::Get();
-      if (chrome_ml && chrome_ml->api().CreateGpuDelegate &&
-          chrome_ml->api().DestroyGpuDelegate) {
+      if (chrome_ml && chrome_ml->HasCreateGpuDelegate() &&
+          chrome_ml->HasDestroyGpuDelegate()) {
         GpuDelegatePrecision precision = GpuDelegatePrecision::kFp16;
         if (graph_requires_fp32_precision) {
           precision = GpuDelegatePrecision::kFp32;
         }
         TfLiteDelegate* delegate =
-            ml::ChromeML::Get()->api().CreateGpuDelegateWithPrecision(
-                precision);
+            ml::ChromeML::Get()->CreateGpuDelegateWithPrecision(precision);
         builder.AddDelegate(delegate);
         delegates_.emplace_back(
             TfLiteDelegatePtr(delegate,
                               [](TfLiteDelegate* delegate) {
-                                ml::ChromeML::Get()->api().DestroyGpuDelegate(
+                                ml::ChromeML::Get()->DestroyGpuDelegate(
                                     delegate);
                               }),
             mojom::Device::kGpu);

@@ -37,17 +37,12 @@ ConstraintFactory::~ConstraintFactory() {
 #endif
 }
 
-DISABLE_CFI_DLSYM
 bool ConstraintFactory::GetTokenizerParams(
     ChromeMLModel model,
     ChromeMLSession session,
     const ChromeMLGetTokenizerParamsFn& fn) {
 #if defined(ENABLE_ON_DEVICE_CONSTRAINTS)
-  if (chrome_ml_->api().GetTokenizerParamsV2) {
-    return chrome_ml_->api().GetTokenizerParamsV2(model, session, fn);
-  } else {
-    return chrome_ml_->api().GetTokenizerParams(model, fn);
-  }
+  return chrome_ml_->GetTokenizerParams(model, session, fn);
 #else
   return false;
 #endif

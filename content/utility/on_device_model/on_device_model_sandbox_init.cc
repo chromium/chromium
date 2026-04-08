@@ -88,7 +88,7 @@ bool ShouldWarmDrivers() {
   bool is_gpu_not_blocklisted = true;
 #if BUILDFLAG(ENABLE_ML_INTERNAL)
   ml::DeviceInfo device_info =
-      ml::QueryDeviceInfo(ml::ChromeML::Get()->api(), /*log_histogram=*/false);
+      ml::QueryDeviceInfo(*ml::ChromeML::Get(), /*log_histogram=*/false);
   is_gpu_not_blocklisted =
       device_info.gpu_blocked_reason == ml::GpuBlockedReason::kNotBlocked;
 #endif

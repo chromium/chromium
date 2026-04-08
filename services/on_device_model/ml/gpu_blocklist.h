@@ -7,7 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/feature_list.h"
-#include "services/on_device_model/ml/chrome_ml_api.h"
+#include "services/on_device_model/ml/chrome_ml.h"
 
 namespace ml {
 
@@ -35,7 +35,7 @@ BASE_DECLARE_FEATURE(kOnDeviceModelAllowGpuForTesting);
 // Returns GPU device info. If `log_histogram` is true a histogram
 // will be logged with the result of the check.
 COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
-DeviceInfo QueryDeviceInfo(const ChromeMLAPI& api, bool log_histogram);
+DeviceInfo QueryDeviceInfo(const ChromeML& api, bool log_histogram);
 
 }  // namespace ml
 
