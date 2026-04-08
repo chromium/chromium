@@ -69,9 +69,6 @@ constexpr char kClientChannelOAuth2Scope[] =
 // OAuth2 scope for Cloud Search query API.
 constexpr char kCloudSearchQueryOAuth2Scope[] =
     "https://www.googleapis.com/auth/cloud_search.query";
-// OAuth2 scope for read-write access to contacts.
-constexpr char kContactsOAuth2Scope[] =
-    "https://www.googleapis.com/auth/contacts";
 constexpr char kCryptAuthOAuth2Scope[] =
     "https://www.googleapis.com/auth/cryptauth";
 // OAuth2 scope for Discovery Engine suggestion API.
@@ -86,9 +83,6 @@ constexpr char kDriveAppsOAuth2Scope[] =
 // OAuth2 scope for access to readonly Drive Apps.
 constexpr char kDriveAppsReadonlyOAuth2Scope[] =
     "https://www.googleapis.com/auth/drive.apps.readonly";
-// OAuth 2 scope for readonly access to Drive.
-constexpr char kDriveReadOnlyOAuth2Scope[] =
-    "https://www.googleapis.com/auth/drive.readonly";
 // OAuth2 scope for access for DriveFS to access flags.
 constexpr char kExperimentsAndConfigsOAuth2Scope[] =
     "https://www.googleapis.com/auth/experimentsandconfigs";
@@ -114,8 +108,6 @@ constexpr char kKidManagementPrivilegedOAuth2Scope[] =
 // OAuth2 scope for access to Google Family Link Supervision Setup.
 constexpr char kKidsSupervisionSetupChildOAuth2Scope[] =
     "https://www.googleapis.com/auth/kids.supervision.setup.child";
-// OAuth2 scope for Lens.
-constexpr char kLensOAuth2Scope[] = "https://www.googleapis.com/auth/lens";
 // OAuth2 scope for app license check.
 constexpr char kLicenseCheckOAuth2Scope[] =
     "https://www.googleapis.com/auth/applicense.bytebot";
@@ -181,9 +173,6 @@ constexpr char kSchoolToolsAuthScope[] =
     "https://www.googleapis.com/auth/chromeosschooltools";
 constexpr char kSearchResultsOAuth2Scope[] =
     "https://www.googleapis.com/auth/searchresults";
-// OAuth2 scope for support content API.
-constexpr char kSupportContentOAuth2Scope[] =
-    "https://www.googleapis.com/auth/supportcontent";
 // OAuth 2 scopes for Google Tasks API.
 // https://developers.google.com/identity/protocols/oauth2/scopes#tasks
 constexpr char kTasksOAuth2Scope[] = "https://www.googleapis.com/auth/tasks";
@@ -376,7 +365,7 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
       return OAuthConsumer(
           /*name=*/kProjectorTokenFetcherName,
           /*scopes=*/{GaiaConstants::kDriveOAuth2Scope,
-                      kDriveReadOnlyOAuth2Scope});
+                      GaiaConstants::kDriveReadOnlyOAuth2Scope});
     case OAuthConsumerId::kAddSupervision:
       return OAuthConsumer(
           /*name=*/kAddSupervisionName,
@@ -396,7 +385,7 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
     case OAuthConsumerId::kLauncherItemSuggest:
       return OAuthConsumer(
           /*name=*/kLauncherItemSuggestName,
-          /*scopes=*/{kDriveReadOnlyOAuth2Scope});
+          /*scopes=*/{GaiaConstants::kDriveReadOnlyOAuth2Scope});
     case OAuthConsumerId::kMarketingBackendConnector:
       return OAuthConsumer(
           /*name=*/kMarketingBackendConnectorName,
@@ -439,7 +428,7 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
     case OAuthConsumerId::kNtpDriveService:
       return OAuthConsumer(
           /*name=*/kNtpDriveServiceName,
-          /*scopes=*/{kDriveReadOnlyOAuth2Scope});
+          /*scopes=*/{GaiaConstants::kDriveReadOnlyOAuth2Scope});
     case OAuthConsumerId::kForceSigninVerifier:
       return OAuthConsumer(
           /*name=*/kForceSigninVerifierName,
@@ -447,7 +436,7 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
     case OAuthConsumerId::kCaptureModeDelegate:
       return OAuthConsumer(
           /*name=*/kCaptureModeDelegateName,
-          /*scopes=*/{kSupportContentOAuth2Scope});
+          /*scopes=*/{GaiaConstants::kSupportContentOAuth2Scope});
     case OAuthConsumerId::kFcmInvalidation:
       return OAuthConsumer(
           /*name=*/kFcmInvalidationName,
@@ -471,7 +460,7 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
     case OAuthConsumerId::kFeedbackUploader:
       return OAuthConsumer(
           /*name=*/kFeedbackUploaderName,
-          /*scopes=*/{kSupportContentOAuth2Scope});
+          /*scopes=*/{GaiaConstants::kSupportContentOAuth2Scope});
     case OAuthConsumerId::kPasswordSharingRecipientsDownloader:
       return OAuthConsumer(
           /*name=*/kPasswordSharingRecipientsDownloaderName,
@@ -489,7 +478,7 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
     case OAuthConsumerId::kComposeboxQueryController:
       return OAuthConsumer(
           /*name=*/kComposeboxQueryControllerName,
-          /*scopes=*/{kLensOAuth2Scope});
+          /*scopes=*/{GaiaConstants::kLensOAuth2Scope});
     case OAuthConsumerId::kDocumentSuggestionsService:
       return OAuthConsumer(
           /*name=*/kDocumentSuggestionsServiceName,
@@ -522,7 +511,7 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
     case OAuthConsumerId::kLensOverlayQueryController:
       return OAuthConsumer(
           /*name=*/kLensOverlayQueryControllerName,
-          /*scopes=*/{kLensOAuth2Scope});
+          /*scopes=*/{GaiaConstants::kLensOAuth2Scope});
     case OAuthConsumerId::kTrustedVaultFrontend:
       return OAuthConsumer(
           /*name=*/kTrustedVaultFrontendName,
@@ -683,7 +672,7 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
           /*scopes=*/{contextual_tasks::ShouldUseSearchResultsScope()
                           ? kSearchResultsOAuth2Scope
                           : GaiaConstants::kChromeSyncOAuth2Scope,
-                      kClearCutOAuth2Scope, kLensOAuth2Scope});
+                      kClearCutOAuth2Scope, GaiaConstants::kLensOAuth2Scope});
     case OAuthConsumerId::kEnterprisePlusAddress:
       return GetOAuthConsumerForEnterprisePlusAddress();
     case OAuthConsumerId::kGlicUserStatus:
@@ -695,7 +684,7 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
     case OAuthConsumerId::kAshDriveIntegration:
       return OAuthConsumer(
           /*name=*/kAshDriveIntegrationName,
-          /*scopes=*/{kDriveReadOnlyOAuth2Scope});
+          /*scopes=*/{GaiaConstants::kDriveReadOnlyOAuth2Scope});
     case OAuthConsumerId::kAshBocaClassroomPageHandler:
       return OAuthConsumer(
           /*name=*/kAshClassroomPageHandlerName,
@@ -708,7 +697,7 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
     case OAuthConsumerId::kAshScannerKeyedService:
       return OAuthConsumer(
           /*name=*/kAshScannerKeyedServiceName,
-          /*scopes=*/{kContactsOAuth2Scope});
+          /*scopes=*/{GaiaConstants::kContactsOAuth2Scope});
     case OAuthConsumerId::kAshAutotestPrivateApi:
       // This consumer id should be converted using
       // GetOAuthConsumerForDynamicScopes().

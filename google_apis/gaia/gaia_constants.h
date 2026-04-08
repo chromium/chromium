@@ -27,13 +27,20 @@ COMPONENT_EXPORT(GOOGLE_APIS) extern const char kAnyApiOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kChromeSyncOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kGoogleUserInfoEmail[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kGoogleUserInfoProfile[];
+COMPONENT_EXPORT(GOOGLE_APIS)
+extern const char kContactsOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kFCMOAuthScope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kTachyonOAuthScope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kDriveOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kDriveReadOnlyOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kAccountCapabilitiesOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kSupportContentOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kSecureConnectOAuth2Scope[];
 
+// OAuth2 scopes for Lens.
+COMPONENT_EXPORT(GOOGLE_APIS)
+extern const char kLensOAuth2Scope[];
 
 // Used by wallet sign in helper.
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kClientOAuthEmailKey[];
