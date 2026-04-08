@@ -66,7 +66,6 @@ config("skia_config") {
 
     # Staging
     "SK_ENABLE_LEGACY_SHADERCONTEXT",
-    "SK_ENABLE_AVX512_OPTS",
 
     # Let Skia and Skia clients know whether to use `libpng`-based or
     # Rust-based PNG decoder and encoder.  This mimics what is done in
@@ -80,6 +79,13 @@ config("skia_config") {
     "SK_CODEC_DECODES_BMP_WITH_RUST",
     "SK_EXIF_PARSE_WITH_RUST",
   ]
+
+  if (!allow_avx512) {
+    defines += [ "SK_DISABLE_AVX512_OPTS" ]
+  } else {
+    # TODO(kjlubick) remove this path when Skia has AVX512 on by default
+    defines += [ "SK_ENABLE_AVX512_OPTS" ]
+  }
 
   include_dirs = [
     "//third_party/skia",
