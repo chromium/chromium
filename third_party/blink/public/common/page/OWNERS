@@ -2,7 +2,7 @@ per-file *_mojom_traits*.*=set noparent
 per-file *_mojom_traits*.*=file://ipc/SECURITY_OWNERS
 
 # ContentToVisibleTimeReporter has some non-obvious complexities. Prefer these
-# owners. Do NOT add content_to_visible_time_reporter_mojom_traits.* to this
-# list since it needs SECURITY_OWNERS review.
-per-file content_to_visible_time_{reporter,request}.h=joenotcharles@google.com
-per-file content_to_visible_time_{reporter,request}.h=jonross@chromium.org
+# owners. Do NOT add record_content_to_visible_time_request_mojom_traits.* to
+# this list since it needs SECURITY_OWNERS review.
+per-file content_to_visible_time_*.h=joenotcharles@google.com
+per-file content_to_visible_time_*.h=jonross@chromium.org

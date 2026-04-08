@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/common/page/content_to_visible_time_request_mojom_traits.h"
+#include "third_party/blink/public/common/page/record_content_to_visible_time_request_mojom_traits.h"
 
 #include <variant>
 #include <vector>
