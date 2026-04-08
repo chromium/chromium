@@ -529,8 +529,7 @@ bool Animation::ConvertCSSNumberishToTime(
           numberish->GetAsCSSNumericValue()->to(
               CSSPrimitiveValue::UnitType::kPercentage);
       if (!numberish_as_percentage) {
-        exception_state.ThrowDOMException(
-            DOMExceptionCode::kNotSupportedError,
+        exception_state.ThrowTypeError(
             StrCat({"Invalid ", variable_name,
                     ". CSSNumericValue must be a percentage for progress based "
                     "animations."}));
@@ -541,8 +540,7 @@ bool Animation::ConvertCSSNumberishToTime(
           (numberish_as_percentage->value() / 100) * timeline_duration_.value();
       return true;
     } else {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kNotSupportedError,
+      exception_state.ThrowTypeError(
           StrCat({"Invalid ", variable_name, ". Setting ", variable_name,
                   " using absolute time values is not supported for progress "
                   "based animations."}));
@@ -578,8 +576,7 @@ bool Animation::ConvertCSSNumberishToTime(
 
     // TODO (crbug.com/1232181): Look into allowing document timelines to set
     // currentTime and startTime using CSSNumericValues that are percentages.
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
+    exception_state.ThrowTypeError(
         StrCat({"Invalid ", variable_name,
                 ". CSSNumericValue must be either a number or a time value for "
                 "time based animations."}));
