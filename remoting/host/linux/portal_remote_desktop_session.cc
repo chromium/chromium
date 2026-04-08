@@ -219,6 +219,17 @@ void PortalRemoteDesktopSession::OnSelectDevicesResponse(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void PortalRemoteDesktopSession::ConnectToEIS(
+    GDBusConnectionRef::CallCallback<
+        std::pair<std::tuple<GDBusFdList::Handle>, GDBusFdList>> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  connection_.Call<org_freedesktop_portal_RemoteDesktop::ConnectToEIS>(
+      kPortalBusName, kPortalObjectPath,
+      std::make_tuple(portal_session_->session_handle(),
+                      gvariant::EmptyArrayOf<"{sv}">()),
+      std::move(callback));
+}
+
 void PortalRemoteDesktopSession::OnCaptureStreamInitResult(
     base::expected<void, std::string> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -230,13 +241,9 @@ void PortalRemoteDesktopSession::OnCaptureStreamInitResult(
 
   HOST_LOG << "Capture stream initialized.";
 
-  connection_.Call<org_freedesktop_portal_RemoteDesktop::ConnectToEIS>(
-      kPortalBusName, kPortalObjectPath,
-      std::make_tuple(portal_session_->session_handle(),
-                      gvariant::EmptyArrayOf<"{sv}">()),
-      CheckResultAndContinue(&PortalRemoteDesktopSession::OnEisFd,
-                             /*request=*/nullptr,
-                             "RemoteDesktop.ConnectToEIS failed"));
+  ConnectToEIS(CheckResultAndContinue(&PortalRemoteDesktopSession::OnEisFd,
+                                      /*request=*/nullptr,
+                                      "RemoteDesktop.ConnectToEIS failed"));
 }
 
 void PortalRemoteDesktopSession::OnEisFd(
@@ -255,15 +262,45 @@ void PortalRemoteDesktopSession::OnEisFd(
       std::move(eis_fd),
       CheckResultAndContinue(&PortalRemoteDesktopSession::OnEiSession,
                              /*request=*/nullptr,
-                             "Failed to create EI session"));
+                             "Failed to create EI session"),
+      base::BindOnce(&PortalRemoteDesktopSession::OnEiSessionDisconnected,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PortalRemoteDesktopSession::OnEiSessionDisconnected() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  HOST_LOG << "EI session disconnected, attempting to reconnect...";
+  ConnectToEIS(base::BindOnce(
+      [](base::WeakPtr<PortalRemoteDesktopSession> that,
+         base::expected<std::pair<std::tuple<GDBusFdList::Handle>, GDBusFdList>,
+                        Loggable> result) {
+        if (!that) {
+          return;
+        }
+        if (result.has_value()) {
+          that->OnEisFd(std::move(result).value());
+        } else {
+          // Reconnect failed. Since the session is unusable in this state,
+          // terminate the host process and hope that restarting it will
+          // fix the problem.
+          LOG(FATAL) << "Failed to reconnect to EI session: " << result.error();
+        }
+      },
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PortalRemoteDesktopSession::OnEiSession(
     std::unique_ptr<EiSenderSession> ei_session) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ei_session_ = std::move(ei_session);
-  initialization_state_ = InitializationState::kInitialized;
-  init_callbacks_.Notify(base::ok());
+
+  if (ei_session_) {
+    ei_session_->TransferStateTo(*ei_session);
+    ei_session_ = std::move(ei_session);
+  } else {
+    ei_session_ = std::move(ei_session);
+    initialization_state_ = InitializationState::kInitialized;
+    init_callbacks_.Notify(base::ok());
+  }
 }
 
 void PortalRemoteDesktopSession::OnSessionClosed(
