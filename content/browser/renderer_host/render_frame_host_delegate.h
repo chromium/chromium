@@ -162,7 +162,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // Notifies that the manifest URL is updated.
   virtual void OnManifestUrlChanged(PageImpl& page) {}
 
-  // A message was added to to the console. |source_id| is a URL.
+  // A message was added to the console. |source_id| is a URL.
   // |untrusted_stack_trace| is not present for most messages; only when
   // requested in advance and only for exceptions.
   virtual bool DidAddMessageToConsole(
@@ -179,7 +179,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void RenderFrameCreated(RenderFrameHostImpl* render_frame_host) {}
 
   // Called when a RenderFrame for |render_frame_host| is deleted or the
-  // renderer process in which it runs it has died. Use |RenderFrameCreated| to
+  // renderer process in which it runs has died. Use |RenderFrameCreated| to
   // listen for when RenderFrame objects are created.
   virtual void RenderFrameDeleted(RenderFrameHostImpl* render_frame_host) {}
 
@@ -193,12 +193,13 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
 
   // A JavaScript alert, confirmation or prompt dialog should be shown.
   // Will only be called for active frames belonging to a primary page.
-  virtual void RunJavaScriptDialog(RenderFrameHostImpl* render_frame_host,
-                                   const std::u16string& message,
-                                   const std::u16string& default_prompt,
-                                   JavaScriptDialogType type,
-                                   bool disable_third_party_subframe_suppresion,
-                                   JavaScriptDialogCallback callback) {}
+  virtual void RunJavaScriptDialog(
+      RenderFrameHostImpl* render_frame_host,
+      const std::u16string& message,
+      const std::u16string& default_prompt,
+      JavaScriptDialogType type,
+      bool disable_third_party_subframe_suppression,
+      JavaScriptDialogCallback callback) {}
 
   // Will only be called for active frames belonging to a primary page.
   virtual void RunBeforeUnloadConfirm(RenderFrameHostImpl* render_frame_host,
@@ -221,7 +222,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void DidReceiveUserActivation(
       RenderFrameHostImpl* render_frame_host) {}
 
-  // Called when a RenderFrameHost gets a successful web authn assertion
+  // Called when a RenderFrameHost gets a successful WebAuthn assertion
   // request.
   virtual void WebAuthnAssertionRequestSucceeded(
       RenderFrameHostImpl* render_frame_host) {}
@@ -390,7 +391,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // Returns the focused frame if it exists, potentially in an inner frame tree.
   virtual RenderFrameHostImpl* GetFocusedFrame();
 
-  // Called by when |source_rfh| advances focus to a RenderFrameProxyHost.
+  // Called when |source_rfh| advances focus to a RenderFrameProxyHost.
   virtual void OnAdvanceFocus(RenderFrameHostImpl* source_rfh) {}
 
   // Called by |frame| to notify that it has received an update on focused
@@ -403,11 +404,12 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       blink::mojom::FocusType focus_type) {}
 
   // The page is trying to open a new page (e.g. a popup window). The window
-  // should be created associated the process of |opener|, but it should not
-  // be shown yet. That should happen in response to ShowCreatedWindow.
-  // |params.window_container_type| describes the type of RenderViewHost
-  // container that is requested -- in particular, the window.open call may
-  // have specified 'background' and 'persistent' in the feature string.
+  // should be created and associated with the process of |opener|, but it
+  // should not be shown yet. That should happen in response to
+  // ShowCreatedWindow. |params.window_container_type| describes the type of
+  // RenderViewHost container that is requested -- in particular, the
+  // window.open call may have specified 'background' and 'persistent' in the
+  // feature string.
   //
   // The passed |opener| is the RenderFrameHost initiating the window creation.
   // It will never be null, even if the opener is suppressed via |params|.
@@ -457,7 +459,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // has finished parsing.
   virtual void PrimaryMainDocumentElementAvailable() {}
 
-  // Reports that passive mixed content was found at the specified url.
+  // Reports that passive mixed content was found at the specified URL.
   virtual void PassiveInsecureContentFound(const GURL& resource_url) {}
 
   // Checks if running of active mixed content is allowed in the current tab.
@@ -473,7 +475,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   GetJavaRenderFrameHostDelegate();
 #endif
 
-  // Notified that the render finished loading a subresource for the frame
+  // Notified that the renderer finished loading a subresource for the frame
   // associated with |render_frame_host|.
   virtual void ResourceLoadComplete(
       RenderFrameHostImpl* render_frame_host,
@@ -486,7 +488,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       int document_cookie,
       RenderFrameHostImpl* render_frame_host) {}
 
-  // Request to paint preview a frame that is in a different process that its
+  // Request to paint preview a frame that is in a different process than its
   // parent.
   virtual void CapturePaintPreviewOfCrossProcessSubframe(
       const gfx::Rect& rect,
@@ -741,7 +743,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // Returns the top-level native window for the associated WebContents.
   virtual gfx::NativeWindow GetOwnerNativeWindow();
 
-  // Gets the delegate auto picture in picture information.
+  // Gets the delegate auto picture-in-picture information.
   virtual media::PictureInPictureEventsInfo::AutoPipInfo GetAutoPipInfo() const;
 
   // Invoked when a fetch keepalive request is created in a RenderFrameHost.
