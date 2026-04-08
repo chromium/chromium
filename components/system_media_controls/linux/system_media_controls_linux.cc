@@ -18,7 +18,9 @@
 #include "base/process/process.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -99,6 +101,38 @@ WriteBitmapToTmpFile(const SkBitmap& bitmap) {
                         base::SequenceBound<base::ScopedTempFile>(
                             base::SequencedTaskRunner::GetCurrentDefault(),
                             std::move(scoped_file)));
+}
+
+// Removes noncharacters from a UTF-8 string so it passes
+// `base::IsStringUTF8()`, as DBUS strings must be valid UTF-8 with valid
+// characters.
+std::string RemoveNonCharacters(std::string_view input) {
+  std::string output;
+  output.reserve(input.size());
+
+  for (size_t i = 0; i < input.size(); i++) {
+    base_icu::UChar32 code_point = 0;
+
+    // Read the next Unicode character
+    if (base::ReadUnicodeCharacter(input, &i, &code_point)) {
+      // If it's a valid character (meaning it's NOT a noncharacter)
+      if (base::IsValidCharacter(code_point)) {
+        base::WriteUnicodeCharacter(code_point, &output);
+      }
+    }
+  }
+  return output;
+}
+
+// Takes a UTF-16 string from the web and returns an equivalent UTF-8 string.
+// Since strings sent to DBUS must be valid characters in UTF-8, we remove
+// noncharacters (which `base::UTF16ToUTF8()` does not do).
+std::string GetSanitizedUTF8FromUTF16(const std::u16string& value) {
+  std::string output = base::UTF16ToUTF8(value);
+  if (base::IsStringUTF8(output)) {
+    return output;
+  }
+  return RemoveNonCharacters(output);
 }
 
 }  // namespace
@@ -197,17 +231,17 @@ void SystemMediaControlsLinux::SetID(const std::string* value) {
 }
 
 void SystemMediaControlsLinux::SetTitle(const std::u16string& value) {
-  title_ = base::UTF16ToUTF8(value);
+  title_ = GetSanitizedUTF8FromUTF16(value);
   UpdateMetadata();
 }
 
 void SystemMediaControlsLinux::SetArtist(const std::u16string& value) {
-  artist_ = {base::UTF16ToUTF8(value)};
+  artist_ = {GetSanitizedUTF8FromUTF16(value)};
   UpdateMetadata();
 }
 
 void SystemMediaControlsLinux::SetAlbum(const std::u16string& value) {
-  album_ = base::UTF16ToUTF8(value);
+  album_ = GetSanitizedUTF8FromUTF16(value);
   UpdateMetadata();
 }
 
