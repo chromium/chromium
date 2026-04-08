@@ -38,7 +38,7 @@ bool KernelHasPkruFix() {
   // SAFETY: required from system when uname() returns successfully.
   if (UNSAFE_BUFFERS(sscanf(uname_buffer.release, "%d.%d.%d", &kernel, &major,
                             &minor)) != 3) {
-    return -1;
+    return false;
   }
   return kernel > 5 || (kernel == 5 && major >= 13) ||   // anything >= 5.13
          (kernel == 5 && major == 4 && minor >= 182) ||  // 5.4 >= 5.4.182
