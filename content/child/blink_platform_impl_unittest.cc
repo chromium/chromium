@@ -91,7 +91,7 @@ TEST(BlinkPlatformTest, CastWebSecurityOrigin) {
     SCOPED_TRACE(testing::Message() << test.url);
     blink::WebSecurityOrigin web_origin =
         blink::WebSecurityOrigin::CreateFromString(
-            blink::WebString::FromUTF8(test.url));
+            blink::WebString::FromUtf8(test.url));
     EXPECT_EQ(test.scheme, web_origin.Protocol().Utf8());
     EXPECT_EQ(test.host, web_origin.Host().Utf8());
     EXPECT_EQ(test.port, web_origin.Port());
@@ -164,7 +164,7 @@ TEST(BlinkPlatformTest, WebSecurityOriginNormalization) {
     SCOPED_TRACE(testing::Message() << test.url);
     blink::WebSecurityOrigin web_origin =
         blink::WebSecurityOrigin::CreateFromString(
-            blink::WebString::FromUTF8(test.url));
+            blink::WebString::FromUtf8(test.url));
     CheckCastedOriginsAlreadyNormalized(web_origin);
   }
 }

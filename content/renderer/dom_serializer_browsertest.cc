@@ -166,7 +166,7 @@ class MAYBE_DomSerializerTests : public ContentBrowserTest,
     // Find corresponding WebFrame according to frame_url.
     WebFrame* web_frame = FindSubFrameByURL(frame_url);
     ASSERT_TRUE(web_frame != nullptr);
-    WebString file_path = WebString::FromUTF8("c:\\dummy.htm");
+    WebString file_path = WebString("c:\\dummy.htm");
     SingleLinkRewritingDelegate delegate(frame_url, file_path);
     // Start serializing DOM.
     bool result = WebFrameSerializer::Serialize(

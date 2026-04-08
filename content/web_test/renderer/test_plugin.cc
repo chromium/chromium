@@ -123,13 +123,13 @@ void PrintEventDetails(TestRunner* test_runner,
 
 blink::WebPluginContainer::TouchEventRequestType ParseTouchEventRequestType(
     const blink::WebString& string) {
-  if (string == blink::WebString::FromUTF8("raw")) {
+  if (string == blink::WebString("raw")) {
     return blink::WebPluginContainer::kTouchEventRequestTypeRaw;
   }
-  if (string == blink::WebString::FromUTF8("raw-lowlatency")) {
+  if (string == blink::WebString("raw-lowlatency")) {
     return blink::WebPluginContainer::kTouchEventRequestTypeRawLowLatency;
   }
-  if (string == blink::WebString::FromUTF8("synthetic")) {
+  if (string == blink::WebString("synthetic")) {
     return blink::WebPluginContainer::kTouchEventRequestTypeSynthesizedMouse;
   }
   return blink::WebPluginContainer::kTouchEventRequestTypeNone;

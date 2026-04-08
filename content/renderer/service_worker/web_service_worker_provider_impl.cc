@@ -153,7 +153,7 @@ bool WebServiceWorkerProviderImpl::ValidateScopeAndScriptURL(
       blink::ServiceWorkerScopeOrScriptUrlContainsDisallowedCharacter(
           scope, script_url, &error);
   if (has_error)
-    *error_message = blink::WebString::FromUTF8(error);
+    *error_message = blink::WebString::FromUtf8(error);
   return !has_error;
 }
 

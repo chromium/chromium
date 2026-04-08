@@ -162,7 +162,7 @@ class RendererWebAudioDeviceImplTest
 
   void SetupDevice(blink::WebAudioLatencyHint latencyHint) {
     blink::WebAudioSinkDescriptor sink_descriptor(
-        blink::WebString::FromUTF8(std::string()), kFrameToken);
+        blink::WebString::FromUtf8(std::string()), kFrameToken);
     webaudio_device_ = std::make_unique<RendererWebAudioDeviceImplUnderTest>(
         sink_descriptor, media::ChannelLayoutConfig::Mono(), latencyHint,
         context_sample_rate_, this,
@@ -177,7 +177,7 @@ class RendererWebAudioDeviceImplTest
 
   void SetupDevice(media::ChannelLayoutConfig layout_config) {
     blink::WebAudioSinkDescriptor sink_descriptor(
-        blink::WebString::FromUTF8(std::string()), kFrameToken);
+        blink::WebString::FromUtf8(std::string()), kFrameToken);
     webaudio_device_ = std::make_unique<RendererWebAudioDeviceImplUnderTest>(
         sink_descriptor, layout_config,
         blink::WebAudioLatencyHint(
@@ -653,7 +653,7 @@ TEST_F(RendererWebAudioDeviceImplTest,
         return media::AudioParameters();
       });
   blink::WebAudioSinkDescriptor sink_descriptor(
-      blink::WebString::FromUTF8(std::string()), kFrameToken);
+      blink::WebString::FromUtf8(std::string()), kFrameToken);
 
   RendererWebAudioDeviceImplConstructorParamTest device_under_test(
       sink_descriptor, media::ChannelLayoutConfig::Stereo(),

@@ -484,7 +484,7 @@ void WebFrameTestProxy::FinalizeRequest(blink::WebURLRequest& request) {
   if (test_runner()->HttpHeadersToClear()) {
     for (const std::string& header : *test_runner()->HttpHeadersToClear()) {
       DCHECK(!base::EqualsCaseInsensitiveASCII(header, "referer"));
-      request.ClearHttpHeaderField(blink::WebString::FromUTF8(header));
+      request.ClearHttpHeaderField(blink::WebString::FromUtf8(header));
     }
   }
 
@@ -545,7 +545,7 @@ void WebFrameTestProxy::BeginNavigation(
     for (const std::string& header : *test_runner()->HttpHeadersToClear()) {
       DCHECK(!base::EqualsCaseInsensitiveASCII(header, "referer"));
       info->url_request.ClearHttpHeaderField(
-          blink::WebString::FromUTF8(header));
+          blink::WebString::FromUtf8(header));
     }
   }
 

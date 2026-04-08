@@ -1086,8 +1086,8 @@ void TestRunnerBindings::ExecCommand(gin::Arguments* args) {
   }
 
   // Note: webkit's version does not return the boolean, so neither do we.
-  GetWebFrame()->ExecuteCommand(blink::WebString::FromUTF8(command),
-                                blink::WebString::FromUTF8(value));
+  GetWebFrame()->ExecuteCommand(blink::WebString::FromUtf8(command),
+                                blink::WebString::FromUtf8(value));
 }
 
 void TestRunnerBindings::TriggerTestInspectorIssue(gin::Arguments* args) {
@@ -1102,7 +1102,7 @@ bool TestRunnerBindings::IsCommandEnabled(const std::string& command) {
   if (!frame_) {
     return false;
   }
-  return GetWebFrame()->IsCommandEnabled(blink::WebString::FromUTF8(command));
+  return GetWebFrame()->IsCommandEnabled(blink::WebString::FromUtf8(command));
 }
 
 void TestRunnerBindings::SetDomainRelaxationForbiddenForURLScheme(
@@ -1112,7 +1112,7 @@ void TestRunnerBindings::SetDomainRelaxationForbiddenForURLScheme(
     return;
   }
   blink::SetDomainRelaxationForbiddenForTest(
-      forbidden, blink::WebString::FromUTF8(scheme));
+      forbidden, blink::WebString::FromUtf8(scheme));
 }
 
 void TestRunnerBindings::SetDumpConsoleMessages(bool enabled) {
@@ -1231,7 +1231,7 @@ TestRunnerBindings::EvaluateScriptInIsolatedWorldAndReturnValue(
     return {};
   }
 
-  blink::WebScriptSource source(blink::WebString::FromUTF8(script));
+  blink::WebScriptSource source(blink::WebString::FromUtf8(script));
   return GetWebFrame()->ExecuteScriptInIsolatedWorldAndReturnValue(
       world_id, source, blink::BackForwardCacheAware::kAllow);
 }
@@ -1243,7 +1243,7 @@ void TestRunnerBindings::EvaluateScriptInIsolatedWorld(
     return;
   }
 
-  blink::WebScriptSource source(blink::WebString::FromUTF8(script));
+  blink::WebScriptSource source(blink::WebString::FromUtf8(script));
   GetWebFrame()->ExecuteScriptInIsolatedWorld(
       world_id, source, blink::BackForwardCacheAware::kAllow);
 }
@@ -1256,7 +1256,7 @@ void TestRunnerBindings::EvaluateScriptInOwnTask(
     return;
   }
 
-  blink::WebScriptSource source(blink::WebString::FromUTF8(script),
+  blink::WebScriptSource source(blink::WebString::FromUtf8(script),
                                 blink::WebURL(GURL(url)));
   GetWebFrame()
       ->GetTaskRunner(blink::TaskType::kInternalTest)
@@ -1351,7 +1351,7 @@ void TestRunnerBindings::InsertStyleSheet(const std::string& source_code) {
     return;
   }
   GetWebFrame()->GetDocument().InsertStyleSheet(
-      blink::WebString::FromUTF8(source_code));
+      blink::WebString::FromUtf8(source_code));
 }
 
 bool TestRunnerBindings::FindString(
@@ -1380,7 +1380,7 @@ bool TestRunnerBindings::FindString(
   }
 
   const bool find_result = GetWebFrame()->FindForTesting(
-      0, blink::WebString::FromUTF8(search_text), match_case, forward,
+      0, blink::WebString::FromUtf8(search_text), match_case, forward,
       new_session, false /* force */, wrap_around, async);
   return find_result;
 }
@@ -2666,7 +2666,7 @@ bool TestRunner::WorkQueue::ProcessWorkItemInternal(
           controller_->FindInProcessMainWindowMainFrame();
       DCHECK(main_frame);
       main_frame->GetWebFrame()->ExecuteScript(blink::WebScriptSource(
-          blink::WebString::FromUTF8(item_loading_script->script)));
+          blink::WebString::FromUtf8(item_loading_script->script)));
       return true;  // TODO(danakj): Did it really start a navigation?
     }
     case mojom::WorkItem::Tag::kNonLoadingScript: {
@@ -2676,7 +2676,7 @@ bool TestRunner::WorkQueue::ProcessWorkItemInternal(
           controller_->FindInProcessMainWindowMainFrame();
       DCHECK(main_frame);
       main_frame->GetWebFrame()->ExecuteScript(blink::WebScriptSource(
-          blink::WebString::FromUTF8(item_non_loading_script->script)));
+          blink::WebString::FromUtf8(item_non_loading_script->script)));
       return false;
     }
     case mojom::WorkItem::Tag::kLoad: {
@@ -3039,7 +3039,7 @@ SkBitmap TestRunner::DumpPixelsInRenderer(blink::WebLocalFrame* main_frame) {
   std::string frame_name = web_test_runtime_flags_.printing_frame();
   if (!frame_name.empty()) {
     blink::WebFrame* frame_to_print =
-        main_frame->FindFrameByName(blink::WebString::FromUTF8(frame_name));
+        main_frame->FindFrameByName(blink::WebString::FromUtf8(frame_name));
     if (frame_to_print && frame_to_print->IsWebLocalFrame())
       target_frame = frame_to_print->ToWebLocalFrame();
   }
@@ -3545,8 +3545,8 @@ void TestRunner::AddOriginAccessAllowListEntry(
     return;
 
   blink::WebSecurityPolicy::AddOriginAccessAllowListEntry(
-      url, blink::WebString::FromUTF8(destination_protocol),
-      blink::WebString::FromUTF8(destination_host), /*destination_port=*/0,
+      url, blink::WebString::FromUtf8(destination_protocol),
+      blink::WebString::FromUtf8(destination_host), /*destination_port=*/0,
       allow_destination_subdomains
           ? network::mojom::CorsDomainMatchMode::kAllowSubdomains
           : network::mojom::CorsDomainMatchMode::kDisallowSubdomains,
@@ -3791,7 +3791,7 @@ blink::WebString TestRunner::RegisterIsolatedFileSystem(
   std::string filesystem_id;
   source.GetWebTestControlHostRemote()->RegisterIsolatedFileSystem(
       file_paths, &filesystem_id);
-  return blink::WebString::FromUTF8(filesystem_id);
+  return blink::WebString::FromUtf8(filesystem_id);
 }
 
 void TestRunner::FocusWindow(RenderFrame* main_frame, bool focus) {

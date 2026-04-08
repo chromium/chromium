@@ -83,8 +83,8 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
                       UNSAFE_TODO(it - 1 - data));
   std::string raw_csp(reinterpret_cast<const char*>(it), size - (it - data));
 
-  if (blink::WebString::FromUTF8(raw_url).Utf8() != raw_url ||
-      blink::WebString::FromUTF8(raw_csp).Utf8() != raw_csp) {
+  if (blink::WebString::FromUtf8(raw_url).Utf8() != raw_url ||
+      blink::WebString::FromUtf8(raw_csp).Utf8() != raw_csp) {
     // The back-and-forth conversion can only work for valid utf8 input.
     return EXIT_SUCCESS;
   }

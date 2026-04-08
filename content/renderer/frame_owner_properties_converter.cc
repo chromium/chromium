@@ -11,7 +11,7 @@ TypeConverter<blink::WebFrameOwnerProperties,
               blink::mojom::FrameOwnerProperties>::
     Convert(const blink::mojom::FrameOwnerProperties& mojo_properties) {
   blink::WebFrameOwnerProperties result;
-  result.name = blink::WebString::FromUTF8(mojo_properties.name);
+  result.name = blink::WebString::FromUtf8(mojo_properties.name);
   result.scrollbar_mode = mojo_properties.scrollbar_mode;
   result.margin_width = mojo_properties.margin_width;
   result.margin_height = mojo_properties.margin_height;

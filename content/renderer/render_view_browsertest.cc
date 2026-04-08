@@ -1046,7 +1046,7 @@ TEST_F(RenderViewImplTest, OriginReplicationForUnload) {
   blink::WebSecurityOrigin origin =
       web_frame->FirstChild()->GetSecurityOrigin();
   EXPECT_EQ(origin.ToString(),
-            WebString::FromUTF8(replication_state->origin.Serialize()));
+            WebString::FromUtf8(replication_state->origin.Serialize()));
 
   // Now, unload the second frame using a unique origin and verify that it is
   // replicated correctly.
@@ -2436,7 +2436,7 @@ TEST_F(RenderViewImplTest, MAYBE_OnDeleteSurroundingTextInCodePoints) {
       frame()->GetWebFrame()->GetInputMethodController();
   blink::WebTextInputInfo info = controller->TextInputInfo();
   // "a" + "def" + trophy + space + "gh".
-  EXPECT_EQ(WebString::FromUTF8("adef\xF0\x9F\x8F\x86 gh"), info.value);
+  EXPECT_EQ(WebString::FromUtf8("adef\xF0\x9F\x8F\x86 gh"), info.value);
   EXPECT_EQ(1, info.selection_start);
   EXPECT_EQ(1, info.selection_end);
 

@@ -164,13 +164,13 @@ void WebTestSpellChecker::FillSuggestionList(
     const blink::WebString& word,
     std::vector<blink::WebString>* suggestions) {
   if (word == "wellcome")
-    Append(suggestions, blink::WebString::FromUTF8("welcome"));
+    Append(suggestions, blink::WebString("welcome"));
   else if (word == "upper case")
-    Append(suggestions, blink::WebString::FromUTF8("uppercase"));
+    Append(suggestions, blink::WebString("uppercase"));
   else if (word == "Helllo")
-    Append(suggestions, blink::WebString::FromUTF8("Hello"));
+    Append(suggestions, blink::WebString("Hello"));
   else if (word == "wordl")
-    Append(suggestions, blink::WebString::FromUTF8("world"));
+    Append(suggestions, blink::WebString("world"));
 }
 
 }  // namespace content

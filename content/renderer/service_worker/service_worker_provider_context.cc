@@ -369,7 +369,7 @@ ServiceWorkerProviderContext::GetFetchHandlerBypassOption() const {
 }
 
 const blink::WebString ServiceWorkerProviderContext::client_id() const {
-  return blink::WebString::FromUTF8(client_id_);
+  return blink::WebString::FromUtf8(client_id_);
 }
 
 std::unique_ptr<blink::WebServiceWorkerProvider>

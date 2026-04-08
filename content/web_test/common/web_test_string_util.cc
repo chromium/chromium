@@ -97,7 +97,7 @@ blink::WebString V8StringToWebString(v8::Isolate* isolate,
   auto chars = base::HeapArray<char>::WithSize(length);
   v8_str->WriteUtf8V2(isolate, chars.data(), chars.size(),
                       v8::String::WriteFlags::kNullTerminate);
-  return blink::WebString::FromUTF8(chars.data());
+  return blink::WebString::FromUtf8(chars.data());
 }
 
 }  // namespace web_test_string_util

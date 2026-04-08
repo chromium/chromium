@@ -41,16 +41,16 @@ network::mojom::CSPSourceListPtr BuildCSPSourceList(
 
 std::vector<blink::WebString> ToVectorOfWebStrings(
     const std::vector<std::string>& list_in) {
-  return base::ToVector(list_in, blink::WebString::FromUTF8);
+  return base::ToVector(list_in, blink::WebString::FromUtf8);
 }
 
 // The parameter is a const reference instead of CSPSourcePtr so that the
 // function can be used directly as a projection in ToVector.
 blink::WebCSPSource ToWebCSPSource(const network::mojom::CSPSourcePtr& source) {
-  return {blink::WebString::FromUTF8(source->scheme),
-          blink::WebString::FromUTF8(source->host),
+  return {blink::WebString::FromUtf8(source->scheme),
+          blink::WebString::FromUtf8(source->host),
           source->port,
-          blink::WebString::FromUTF8(source->path),
+          blink::WebString::FromUtf8(source->path),
           source->is_host_wildcard,
           source->is_port_wildcard};
 }
@@ -89,7 +89,7 @@ std::optional<blink::WebCSPTrustedTypes> ToOptionalWebCSPTrustedTypes(
 
 blink::WebContentSecurityPolicyHeader ToWebContentSecurityPolicyHeader(
     const network::mojom::ContentSecurityPolicyHeaderPtr& header) {
-  return {blink::WebString::FromUTF8(header->header_value), header->type,
+  return {blink::WebString::FromUtf8(header->header_value), header->type,
           header->source};
 }
 
@@ -139,7 +139,7 @@ blink::WebContentSecurityPolicy ToWebContentSecurityPolicy(
   std::vector<blink::WebContentSecurityPolicyRawDirective> raw_directives =
       base::ToVector(policy_in->raw_directives, [](const auto& directive) {
         return blink::WebContentSecurityPolicyRawDirective{
-            directive.first, blink::WebString::FromUTF8(directive.second)};
+            directive.first, blink::WebString::FromUtf8(directive.second)};
       });
 
   return {ToWebCSPSource(policy_in->self_origin),

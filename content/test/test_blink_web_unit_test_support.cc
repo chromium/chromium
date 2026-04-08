@@ -146,7 +146,7 @@ TestBlinkWebUnitTestSupport::~TestBlinkWebUnitTestSupport() {
 }
 
 blink::WebString TestBlinkWebUnitTestSupport::UserAgent() {
-  return blink::WebString::FromUTF8("test_runner/0.0.0.0");
+  return blink::WebString("test_runner/0.0.0.0");
 }
 
 blink::WebString TestBlinkWebUnitTestSupport::QueryLocalizedString(

@@ -508,7 +508,7 @@ void AXImageAnnotator::AddDebuggingAttributes(
       std::string status_str = ui::ToString(status);
       if (element.GetAttribute("imageannotation").Utf8() != status_str) {
         element.SetAttribute("imageannotation",
-                             WebString::FromUTF8(status_str));
+                             WebString::FromUtf8(status_str));
       }
 
       std::string title = "%" + status_str;
@@ -518,7 +518,7 @@ void AXImageAnnotator::AddDebuggingAttributes(
         title = title + ": " + annotation;
       }
       if (element.GetAttribute("title").Utf8() != title) {
-        element.SetAttribute("title", WebString::FromUTF8(title));
+        element.SetAttribute("title", WebString::FromUtf8(title));
       }
     }
   }

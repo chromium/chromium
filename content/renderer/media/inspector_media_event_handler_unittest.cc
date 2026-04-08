@@ -190,9 +190,8 @@ TEST_F(InspectorMediaEventHandlerTest, ConvertsProperties) {
       CreatePropChange({{"test_key", "test_value"}})};
 
   blink::InspectorPlayerProperties expected;
-  blink::InspectorPlayerProperty prop = {
-      blink::WebString::FromUTF8("test_key"),
-      blink::WebString::FromUTF8("test_value")};
+  blink::InspectorPlayerProperty prop = {blink::WebString("test_key"),
+                                         blink::WebString("test_value")};
   expected.emplace_back(prop);
   EXPECT_CALL(*mock_context_,
               MockSetPlayerProperties(PropertiesEqualTo(expected)))
@@ -207,11 +206,10 @@ TEST_F(InspectorMediaEventHandlerTest, SplitsDoubleProperties) {
       CreatePropChange({{"test_key", "test_value"}, {"foo", "bar"}})};
 
   blink::InspectorPlayerProperties expected;
-  blink::InspectorPlayerProperty prop_test = {
-      blink::WebString::FromUTF8("test_key"),
-      blink::WebString::FromUTF8("test_value")};
-  blink::InspectorPlayerProperty prop_foo = {blink::WebString::FromUTF8("foo"),
-                                             blink::WebString::FromUTF8("bar")};
+  blink::InspectorPlayerProperty prop_test = {blink::WebString("test_key"),
+                                              blink::WebString("test_value")};
+  blink::InspectorPlayerProperty prop_foo = {blink::WebString("foo"),
+                                             blink::WebString("bar")};
   expected.emplace_back(prop_foo);
   expected.emplace_back(prop_test);
   EXPECT_CALL(*mock_context_,
@@ -230,8 +228,8 @@ TEST_F(InspectorMediaEventHandlerTest, ConvertsMessageEvent) {
   blink::InspectorPlayerMessages expected;
   blink::InspectorPlayerMessage e = {
       blink::InspectorPlayerMessage::Level::kWarning,
-      blink::WebString::FromUTF8("Has Anyone Really Been Far Even as Decided "
-                                 "to Use Even Go Want to do Look More Like?")};
+      blink::WebString("Has Anyone Really Been Far Even as Decided "
+                       "to Use Even Go Want to do Look More Like?")};
   expected.emplace_back(e);
 
   EXPECT_CALL(*mock_context_, MockSetPlayerProperties(_)).Times(0);
@@ -251,16 +249,14 @@ TEST_F(InspectorMediaEventHandlerTest, ConvertsEventsAndProperties) {
   blink::InspectorPlayerMessages expected_messages;
   blink::InspectorPlayerMessage e = {
       blink::InspectorPlayerMessage::Level::kWarning,
-      blink::WebString::FromUTF8("100% medically accurate")};
+      blink::WebString("100% medically accurate")};
   expected_messages.emplace_back(e);
 
   blink::InspectorPlayerProperties expected_properties;
-  blink::InspectorPlayerProperty puppies = {
-      blink::WebString::FromUTF8("free_puppies"),
-      blink::WebString::FromUTF8("all_taken")};
-  blink::InspectorPlayerProperty illumanati = {
-      blink::WebString::FromUTF8("illuminati"),
-      blink::WebString::FromUTF8("confirmed")};
+  blink::InspectorPlayerProperty puppies = {blink::WebString("free_puppies"),
+                                            blink::WebString("all_taken")};
+  blink::InspectorPlayerProperty illumanati = {blink::WebString("illuminati"),
+                                               blink::WebString("confirmed")};
   expected_properties.emplace_back(puppies);
   expected_properties.emplace_back(illumanati);
 
@@ -281,9 +277,9 @@ TEST_F(InspectorMediaEventHandlerTest, PassesPlayAndPauseEvents) {
 
   blink::InspectorPlayerEvents expected_events;
   blink::InspectorPlayerEvent play = {
-      base::TimeTicks(), blink::WebString::FromUTF8("{\"event\":\"kPlay\"}")};
+      base::TimeTicks(), blink::WebString("{\"event\":\"kPlay\"}")};
   blink::InspectorPlayerEvent pause = {
-      base::TimeTicks(), blink::WebString::FromUTF8("{\"event\":\"kPause\"}")};
+      base::TimeTicks(), blink::WebString("{\"event\":\"kPause\"}")};
   expected_events.emplace_back(play);
   expected_events.emplace_back(pause);
 

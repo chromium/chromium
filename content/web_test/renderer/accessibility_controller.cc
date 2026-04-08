@@ -289,8 +289,8 @@ v8::Local<v8::Object> AccessibilityController::AccessibleElementById(
   ax_context_->UpdateAXForAllDocuments();
   blink::WebAXObject root_element = GetAccessibilityObjectForMainFrame();
 
-  return FindAccessibleElementByIdRecursive(
-      root_element, blink::WebString::FromUTF8(id.c_str()));
+  return FindAccessibleElementByIdRecursive(root_element,
+                                            blink::WebString::FromUtf8(id));
 }
 
 v8::Local<v8::Object>

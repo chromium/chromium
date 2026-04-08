@@ -224,7 +224,7 @@ void TextInputController::Install(blink::WebLocalFrame* frame) {
 
 void TextInputController::InsertText(const std::string& text) {
   if (auto* controller = GetInputMethodController()) {
-    controller->CommitText(blink::WebString::FromUTF8(text),
+    controller->CommitText(blink::WebString::FromUtf8(text),
                            std::vector<ui::ImeTextSpan>(), blink::WebRange(),
                            0);
   }
@@ -250,7 +250,7 @@ void TextInputController::DoCommand(const std::string& text) {
                                                      "called if the main frame "
                                                      "is not a local frame.";
     view()->MainFrame()->ToWebLocalFrame()->ExecuteCommand(
-        blink::WebString::FromUTF8(text));
+        blink::WebString::FromUtf8(text));
   }
 }
 
@@ -277,7 +277,7 @@ void TextInputController::DeleteSurroundingText(int before, int after) {
 void TextInputController::SetMarkedText(const std::string& text,
                                         uint32_t start,
                                         uint32_t length) {
-  blink::WebString web_text(blink::WebString::FromUTF8(text));
+  blink::WebString web_text(blink::WebString::FromUtf8(text));
 
   // Split underline into up to 3 elements (before, selection, and after).
   std::vector<ui::ImeTextSpan> ime_text_spans;
@@ -404,7 +404,7 @@ void TextInputController::SetComposition(const std::string& text,
   // The value returned by std::string::length() may not correspond to the
   // actual number of encoded characters in sequences of multi-byte or
   // variable-length characters.
-  blink::WebString newText = blink::WebString::FromUTF8(text);
+  blink::WebString newText = blink::WebString::FromUtf8(text);
   size_t textLength = newText.length();
 
   std::vector<ui::ImeTextSpan> ime_text_spans;

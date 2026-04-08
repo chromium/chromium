@@ -127,10 +127,10 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
 
   impl_ = blink::WebSharedWorker::CreateAndStart(
       token, info->url, info->options->type, info->options->credentials,
-      blink::WebString::FromUTF8(info->options->name),
+      blink::WebString::FromUtf8(info->options->name),
       blink::WebSecurityOrigin(constructor_key.origin()),
       blink::WebSecurityOrigin(origin), is_constructor_secure_context,
-      blink::WebString::FromUTF8(user_agent), ua_metadata,
+      blink::WebString::FromUtf8(user_agent), ua_metadata,
       ToWebContentSecurityPolicies(info->content_security_policies),
       FetchClientSettingsObjectFromMojomToWeb(
           info->outside_fetch_client_settings_object),

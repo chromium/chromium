@@ -311,7 +311,7 @@ v8::Isolate* RenderViewTest::Isolate() {
 }
 
 void RenderViewTest::ExecuteJavaScriptForTests(std::string_view js) {
-  GetMainFrame()->ExecuteScript(WebScriptSource(WebString::FromUTF8(js)));
+  GetMainFrame()->ExecuteScript(WebScriptSource(WebString::FromUtf8(js)));
 }
 
 bool RenderViewTest::ExecuteJavaScriptAndReturnIntValue(
@@ -658,7 +658,7 @@ gfx::Rect RenderViewTest::GetElementBounds(const std::string& element_id) {
   v8::Isolate* isolate = Isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Value> value = GetMainFrame()->ExecuteScriptAndReturnValue(
-      WebScriptSource(WebString::FromUTF8(script)));
+      WebScriptSource(WebString::FromUtf8(script)));
   if (value.IsEmpty() || !value->IsArray())
     return gfx::Rect();
 

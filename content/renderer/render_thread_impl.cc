@@ -834,7 +834,7 @@ void RenderThreadImpl::InitializeRenderer(
               perfetto::TerminatingFlow::Global(trace_id));
   DCHECK(user_agent_.IsNull());
 
-  user_agent_ = WebString::FromUTF8(user_agent);
+  user_agent_ = WebString::FromUtf8(user_agent);
   GetContentClient()->renderer()->DidSetUserAgent(user_agent);
   user_agent_metadata_ = user_agent_metadata;
   cors_exempt_header_list_ = cors_exempt_header_list;
