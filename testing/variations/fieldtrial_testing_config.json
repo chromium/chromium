@@ -20546,7 +20546,7 @@
             ]
         }
     ],
-    "SearchPrefetchIgnoreSaverModesOnPress": [
+    "SearchPrefetchIgnoreSaverModesOnPressAndroid": [
         {
             "platforms": [
                 "android"
