@@ -230,7 +230,7 @@ suite('AddPasswordDialogTest', function() {
     assertEquals(dialog.$.usernameInput.value, params.username);
     assertEquals(dialog.$.passwordInput.value, params.password);
     assertEquals(dialog.$.noteInput.value, params.note);
-    assertFalse(params.useAccountStore);
+    assertEquals(false, params.useAccountStore);
   });
 
   test('view saved password', async function() {
@@ -328,7 +328,7 @@ suite('AddPasswordDialogTest', function() {
     assertEquals(dialog.$.usernameInput.value, params.username);
     assertEquals(dialog.$.passwordInput.value, params.password);
     assertEquals(dialog.$.noteInput.value, params.note);
-    assertTrue(params.useAccountStore);
+    assertEquals(true, params.useAccountStore);
   });
 
   test('save to device', async function() {
@@ -367,7 +367,7 @@ suite('AddPasswordDialogTest', function() {
     assertEquals(dialog.$.usernameInput.value, params.username);
     assertEquals(dialog.$.passwordInput.value, params.password);
     assertEquals(dialog.$.noteInput.value, params.note);
-    assertFalse(params.useAccountStore);
+    assertEquals(false, params.useAccountStore);
   });
 
   test('error when leaving website blank', async function() {

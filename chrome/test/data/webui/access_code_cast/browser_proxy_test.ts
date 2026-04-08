@@ -53,7 +53,7 @@ suite('BrowserProxyTest', () => {
 
     chrome.getVariableValue = mockChromeGetVariableValue;
 
-    assertEquals(proxy.isDialog(), true);
+    assertTrue(proxy.isDialog());
 
     mockChromeGetVariableValue = (message: string) => {
       if (message === 'dialogArguments') {
@@ -65,7 +65,7 @@ suite('BrowserProxyTest', () => {
 
     chrome.getVariableValue = mockChromeGetVariableValue;
 
-    assertEquals(proxy.isDialog(), false);
+    assertFalse(proxy.isDialog());
 
     // restore chrome.getVariableValue;
     chrome.getVariableValue = chromeGetVariableValue;

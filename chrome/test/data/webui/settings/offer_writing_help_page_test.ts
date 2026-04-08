@@ -61,7 +61,7 @@ suite('ComposePage', function() {
     await assertFeatureInteractionMetrics(
         AiPageComposeInteractions.COMPOSE_PROACTIVE_NUDGE_ENABLED,
         AiPageActions.COMPOSE_PROACTIVE_NUDGE_ENABLED);
-    assertTrue(page.getPref(COMPOSE_PROACTIVE_NUDGE_PREF).value);
+    assertEquals(true, page.getPref(COMPOSE_PROACTIVE_NUDGE_PREF).value);
     assertTrue(mainToggle.checked);
 
     metricsBrowserProxy.reset();

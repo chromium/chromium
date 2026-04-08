@@ -168,7 +168,7 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
             entriesList.shadowRoot!.querySelector<CrButtonElement>(
                 '#addEntityInstance');
         assertTrue(!!addButton);
-        assertEquals(addButton.disabled, false);
+        assertFalse(addButton.disabled);
 
         assertTrue(
             isVisible(entriesList.shadowRoot!.querySelector('#entries')));

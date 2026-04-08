@@ -12,7 +12,7 @@ import {CustomizeToolbarClientCallbackRouter, CustomizeToolbarHandlerRemote} fro
 import type {CustomizeToolbarHandlerInterface} from 'chrome://customize-chrome-side-panel.top-chrome/customize_toolbar.mojom-webui.js';
 import {CustomizeToolbarApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_toolbar/customize_toolbar_api_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -241,8 +241,8 @@ suite('AppTest', () => {
         // Switch to non-first-party.
         callbackRouter.attachedTabStateUpdated(NewTabPageType.kThirdPartyWebUI);
         await microtasksFinished();
-        assertEquals(
-            !!customizeChromeApp.shadowRoot.querySelector('#tools'), false,
+        assertFalse(
+            !!customizeChromeApp.shadowRoot.querySelector('#tools'),
             'Hidden on non-first-party NTP');
 
         // Switch back to first-party.
@@ -263,15 +263,15 @@ suite('AppTest', () => {
       });
 
       test('is always hidden', async () => {
-        assertEquals(
-            !!customizeChromeApp.shadowRoot.querySelector('#tools'), false,
+        assertFalse(
+            !!customizeChromeApp.shadowRoot.querySelector('#tools'),
             'Hidden by default with one flag off');
 
         // Switch to first-party.
         callbackRouter.attachedTabStateUpdated(NewTabPageType.kFirstPartyWebUI);
         await microtasksFinished();
-        assertEquals(
-            !!customizeChromeApp.shadowRoot.querySelector('#tools'), false,
+        assertFalse(
+            !!customizeChromeApp.shadowRoot.querySelector('#tools'),
             'Stays hidden on first-party NTP');
       });
     });

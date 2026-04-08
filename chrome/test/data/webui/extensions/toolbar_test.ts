@@ -34,7 +34,7 @@ suite('ExtensionsToolbarTest', function() {
   test('Layout', async () => {
     const boundTestVisible = testVisible.bind(null, toolbar);
     boundTestVisible('#devMode', true);
-    assertEquals(toolbar.$.devMode.disabled, false);
+    assertFalse(toolbar.$.devMode.disabled);
     boundTestVisible('#loadUnpacked', false);
     boundTestVisible('#packExtensions', false);
     boundTestVisible('#updateNow', false);
@@ -42,7 +42,7 @@ suite('ExtensionsToolbarTest', function() {
     await microtasksFinished();
 
     boundTestVisible('#devMode', true);
-    assertEquals(toolbar.$.devMode.disabled, false);
+    assertFalse(toolbar.$.devMode.disabled);
     boundTestVisible('#loadUnpacked', true);
     boundTestVisible('#packExtensions', true);
     boundTestVisible('#updateNow', true);

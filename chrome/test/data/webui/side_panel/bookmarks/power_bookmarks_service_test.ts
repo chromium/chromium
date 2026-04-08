@@ -12,7 +12,7 @@ import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/
 import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
 import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
@@ -453,9 +453,9 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
 
   test('CanAddUrl', () => {
     const folder = service.findBookmarkWithId('SIDE_PANEL_OTHER_BOOKMARKS_ID');
-    assertEquals(service.canAddUrl('http://new/url/', folder), true);
-    assertEquals(service.canAddUrl('http://child/bookmark/1/', folder), false);
-    assertEquals(service.canAddUrl('http://nested/bookmark/', folder), true);
+    assertTrue(service.canAddUrl('http://new/url/', folder));
+    assertFalse(service.canAddUrl('http://child/bookmark/1/', folder));
+    assertTrue(service.canAddUrl('http://nested/bookmark/', folder));
   });
 
   test('RequestsImages', async () => {

@@ -696,7 +696,7 @@ suite('PreviewGenerationTest', function() {
     ticket = JSON.parse(previewArgs.printTicket);
     assertMarginsFooter(ticket, 3, MarginsType.DEFAULT, false);
     assertEquals(MarginsType.DEFAULT, page.getSettingValue('margins'));
-    assertFalse(page.getSettingValue('headerFooter'));
+    assertEquals(false, page.getSettingValue('headerFooter'));
   });
 
   /**

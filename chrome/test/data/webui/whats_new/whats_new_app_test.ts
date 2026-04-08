@@ -164,7 +164,7 @@ suite('WhatsNewAppTest', function() {
 
     const isAutoOpen =
         await proxy.handler.whenCalled('recordVersionPageLoaded');
-    assertFalse(isAutoOpen);
+    assertEquals(false, isAutoOpen);
 
     const contentLoadedCallCount =
         proxy.handler.getCallCount('recordTimeToLoadContent');
@@ -198,10 +198,10 @@ suite('WhatsNewAppTest', function() {
     document.body.appendChild(whatsNewApp);
 
     let expanded = await proxy.handler.whenCalled('recordExploreMoreToggled');
-    assertTrue(expanded);
+    assertEquals(true, expanded);
     proxy.handler.resetResolver('recordExploreMoreToggled');
     expanded = await proxy.handler.whenCalled('recordExploreMoreToggled');
-    assertFalse(expanded);
+    assertEquals(false, expanded);
   });
 
   test('with scroll_depth metrics from embedded page', async () => {
@@ -324,10 +324,10 @@ suite('WhatsNewAppTest', function() {
     document.body.appendChild(whatsNewApp);
 
     let expanded = await proxy.handler.whenCalled('recordQrCodeToggled');
-    assertTrue(expanded);
+    assertEquals(true, expanded);
     proxy.handler.resetResolver('recordQrCodeToggled');
     expanded = await proxy.handler.whenCalled('recordQrCodeToggled');
-    assertFalse(expanded);
+    assertEquals(false, expanded);
   });
 
   test('with expand_media_toggled metrics from embedded page', async () => {
@@ -341,11 +341,11 @@ suite('WhatsNewAppTest', function() {
     let expandedMedia =
         await proxy.handler.whenCalled('recordExpandMediaToggled');
     assertEquals('ChromeFeature', expandedMedia[0]);
-    assertTrue(expandedMedia[1]);
+    assertEquals(true, expandedMedia[1]);
     proxy.handler.resetResolver('recordExpandMediaToggled');
     expandedMedia = await proxy.handler.whenCalled('recordExpandMediaToggled');
     assertEquals('ChromeFeature', expandedMedia[0]);
-    assertFalse(expandedMedia[1]);
+    assertEquals(false, expandedMedia[1]);
   });
 
   test('with next button click metric from embedded page', async () => {

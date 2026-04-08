@@ -69,8 +69,8 @@ suite('WallpaperGridItemElementTest', function() {
         src, img?.getAttribute('auto-src'), 'auto-src set to correct url');
     assertEquals(
         'true', img?.getAttribute('aria-hidden'), 'img is always aria-hidden');
-    assertTrue(
-        !!img?.hasAttribute('clear-src'), 'clear-src attribute always set');
+    assertEquals(
+        true, img?.hasAttribute('clear-src'), 'clear-src attribute always set');
     assertFalse(
         img!.hasAttribute('hidden'),
         'no longer hidden because image has loaded');

@@ -13,7 +13,7 @@ import {Code, LoggingIntent, Progress} from 'chrome-untrusted://data-sharing/dat
 import type {DataSharingSdkSitePreview, RunInviteFlowParams} from 'chrome-untrusted://data-sharing/data_sharing_sdk_types.js';
 import {DataSharingSdkImpl} from 'chrome-untrusted://data-sharing/dummy_data_sharing_sdk.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy.js';
 import {TestMock} from 'chrome-untrusted://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
@@ -148,8 +148,8 @@ suite('Start flows', () => {
     assertEquals(1, testDataSharingSdk.getCallCount('runManageFlow'));
     assertEquals(
         'fake_id', testDataSharingSdk.getArgs('runManageFlow')[0].groupId);
-    assertTrue(
-        testDataSharingSdk.getArgs('runManageFlow')[0].isSharingDisabled);
+    assertEquals(
+        true, testDataSharingSdk.getArgs('runManageFlow')[0].isSharingDisabled);
     assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
     assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
   });
@@ -167,7 +167,7 @@ suite('Start flows', () => {
     assertEquals(1, testDataSharingSdk.getCallCount('runManageFlow'));
     const arg = testDataSharingSdk.getArgs('runManageFlow')[0];
     assertEquals('fake_id', arg.groupId);
-    assertTrue(arg.showLeaveDialogAtStartup);
+    assertEquals(true, arg.showLeaveDialogAtStartup);
     assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
     assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
 
@@ -272,7 +272,7 @@ suite('Start flows', () => {
     await microtasksFinished();
     assertEquals(1, testDataSharingSdk.getCallCount('updateClearcut'));
     const arg = testDataSharingSdk.getArgs('updateClearcut')[0];
-    assertTrue(arg.enabled);
+    assertEquals(true, arg.enabled);
   });
 
   test('Load favicon', async () => {

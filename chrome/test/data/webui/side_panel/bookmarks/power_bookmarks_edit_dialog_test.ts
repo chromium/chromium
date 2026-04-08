@@ -142,10 +142,9 @@ suite('SidePanelPowerBookmarksEditDialogTest', () => {
 
     const titleElement =
         powerBookmarksEditDialog.shadowRoot!.querySelector('h2');
-    assertEquals(
+    assertTrue(
         titleElement!.textContent.includes(
-            loadTimeData.getString('allBookmarks')),
-        true);
+            loadTimeData.getString('allBookmarks')));
   });
 
   test('SavesChanges', async () => {

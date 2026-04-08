@@ -811,6 +811,6 @@ suite('AppListTest', () => {
     const openInWindow =
         contextMenu.querySelector<CrCheckboxElement>('#openInWindow');
     assertTrue(!!openInWindow);
-    assertEquals(openInWindow.hidden, true);
+    assertTrue(openInWindow.hidden);
   });
 });

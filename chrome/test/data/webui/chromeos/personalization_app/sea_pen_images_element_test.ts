@@ -332,10 +332,11 @@ suite('SeaPenImagesElementTest', function() {
             ?.querySelector('wallpaper-grid-item')
             ?.src,
         'sibling wallpaper-grid-item has expected src');
-    assertTrue(
-        !!thumbnailSelectedLoadingElement[0]!.parentElement
-              ?.querySelector('wallpaper-grid-item')
-              ?.selected,
+    assertEquals(
+        true,
+        thumbnailSelectedLoadingElement[0]!.parentElement
+            ?.querySelector('wallpaper-grid-item')
+            ?.selected,
         'sibling wallpaper-grid-item is selected');
 
     // Simulate the request resolving.

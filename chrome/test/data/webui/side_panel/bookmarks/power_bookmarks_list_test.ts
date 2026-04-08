@@ -994,10 +994,9 @@ suite('General', () => {
       // Get the move option in the menu.
       const menuItems =
           contextMenu.shadowRoot!.querySelectorAll('.dropdown-item');
-      assertEquals(
+      assertTrue(
           menuItems[4]!.textContent.includes(
-              loadTimeData.getString('tooltipMove')),
-          true);
+              loadTimeData.getString('tooltipMove')));
       const moveItem = contextMenu.shadowRoot!.querySelectorAll<HTMLElement>(
           '.dropdown-item')[4]!;
 

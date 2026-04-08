@@ -333,7 +333,7 @@ suite('<settings-switch-access-setup-guide-dialog>', () => {
     assertEquals(/*Assign select=*/ 1, setPrefData.length);
     assertEquals(
         'settings.a11y.switch_access.auto_scan.enabled', setPrefData[0]!.key);
-    assertTrue(!!setPrefData[0]!.value);
+    assertEquals(true, setPrefData[0]!.value);
 
     // Moving backward should disable auto-scan.
     dialog['onPreviousClick_']();
@@ -342,7 +342,7 @@ suite('<settings-switch-access-setup-guide-dialog>', () => {
     assertEquals(2, setPrefData.length);
     assertEquals(
         'settings.a11y.switch_access.auto_scan.enabled', setPrefData[1]!.key);
-    assertFalse(!!setPrefData[1]!.value);
+    assertEquals(false, setPrefData[1]!.value);
 
     // Confirm that auto-scan is disabled upon reaching the "Next" assignment
     // page.
@@ -361,7 +361,7 @@ suite('<settings-switch-access-setup-guide-dialog>', () => {
     for (const data of setPrefData) {
       if (data.key === 'settings.a11y.switch_access.auto_scan.enabled') {
         autoScanEnabledSet = true;
-        assertFalse(!!data.value);
+        assertEquals(false, data.value);
       }
     }
     assertTrue(autoScanEnabledSet);

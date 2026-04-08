@@ -9,7 +9,7 @@ import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bo
 import type {PowerBookmarksContextMenuElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_context_menu.js';
 import {PowerBookmarksService} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_service.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
@@ -129,33 +129,26 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
     const menuItems = powerBookmarksContextMenu.shadowRoot!.querySelectorAll(
         '.dropdown-item');
     assertEquals(menuItems.length, 7);
-    assertEquals(
+    assertTrue(
         menuItems[0]!.textContent.includes(
-            loadTimeData.getString('menuOpenNewTab')),
-        true);
-    assertEquals(
+            loadTimeData.getString('menuOpenNewTab')));
+    assertTrue(
         menuItems[1]!.textContent.includes(
-            loadTimeData.getString('menuOpenNewWindow')),
-        true);
-    assertEquals(
+            loadTimeData.getString('menuOpenNewWindow')));
+    assertTrue(
         menuItems[2]!.textContent.includes(
-            loadTimeData.getString('menuOpenSplitView')),
-        true);
-    assertEquals(
+            loadTimeData.getString('menuOpenSplitView')));
+    assertTrue(
         menuItems[3]!.textContent.includes(
-            loadTimeData.getString('menuOpenIncognito')),
-        true);
-    assertEquals(
-        menuItems[4]!.textContent.includes(loadTimeData.getString('menuEdit')),
-        true);
-    assertEquals(
+            loadTimeData.getString('menuOpenIncognito')));
+    assertTrue(
+        menuItems[4]!.textContent.includes(loadTimeData.getString('menuEdit')));
+    assertTrue(
         menuItems[5]!.textContent.includes(
-            loadTimeData.getString('menuMoveToBookmarksBar')),
-        true);
-    assertEquals(
+            loadTimeData.getString('menuMoveToBookmarksBar')));
+    assertTrue(
         menuItems[6]!.textContent.includes(
-            loadTimeData.getString('tooltipDelete')),
-        true);
+            loadTimeData.getString('tooltipDelete')));
   });
 
   test('ShowsMenuItemsForSingleSelectFolder', async () => {
@@ -168,34 +161,27 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
     const menuItems = powerBookmarksContextMenu.shadowRoot!.querySelectorAll(
         '.dropdown-item');
     assertEquals(menuItems.length, 7);
-    assertEquals(
+    assertTrue(
         menuItems[0]!.textContent.includes(
-            loadTimeData.getString('menuOpenNewTab')),
-        true);
-    assertEquals(
+            loadTimeData.getString('menuOpenNewTab')));
+    assertTrue(
         menuItems[1]!.textContent.includes(
-            loadTimeData.getString('menuOpenNewWindow')),
-        true);
-    assertEquals(
+            loadTimeData.getString('menuOpenNewWindow')));
+    assertTrue(
         menuItems[2]!.textContent.includes(
-            loadTimeData.getString('menuOpenIncognito')),
-        true);
-    assertEquals(
+            loadTimeData.getString('menuOpenIncognito')));
+    assertTrue(
         menuItems[3]!.textContent.includes(
-            loadTimeData.getString('menuOpenNewTabGroup')),
-        true);
-    assertEquals(
+            loadTimeData.getString('menuOpenNewTabGroup')));
+    assertTrue(
         menuItems[4]!.textContent.includes(
-            loadTimeData.getString('menuMoveToBookmarksBar')),
-        true);
-    assertEquals(
+            loadTimeData.getString('menuMoveToBookmarksBar')));
+    assertTrue(
         menuItems[5]!.textContent.includes(
-            loadTimeData.getString('menuRename')),
-        true);
-    assertEquals(
+            loadTimeData.getString('menuRename')));
+    assertTrue(
         menuItems[6]!.textContent.includes(
-            loadTimeData.getString('tooltipDelete')),
-        true);
+            loadTimeData.getString('tooltipDelete')));
   });
 
   test('ShowsMenuItemsForMultiSelect', async () => {
@@ -209,30 +195,24 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
     const menuItems = powerBookmarksContextMenu.shadowRoot!.querySelectorAll(
         '.dropdown-item');
     assertEquals(menuItems.length, 6);
-    assertEquals(
+    assertTrue(
         menuItems[0]!.textContent.includes(
-            loadTimeData.getString('menuOpenNewTabWithCount')),
-        true);
-    assertEquals(
+            loadTimeData.getString('menuOpenNewTabWithCount')));
+    assertTrue(
         menuItems[1]!.textContent.includes(
-            loadTimeData.getString('menuOpenNewWindowWithCount')),
-        true);
-    assertEquals(
+            loadTimeData.getString('menuOpenNewWindowWithCount')));
+    assertTrue(
         menuItems[2]!.textContent.includes(
-            loadTimeData.getString('menuOpenIncognitoWithCount')),
-        true);
-    assertEquals(
+            loadTimeData.getString('menuOpenIncognitoWithCount')));
+    assertTrue(
         menuItems[3]!.textContent.includes(
-            loadTimeData.getString('menuOpenNewTabGroupWithCount')),
-        true);
-    assertEquals(
+            loadTimeData.getString('menuOpenNewTabGroupWithCount')));
+    assertTrue(
         menuItems[4]!.textContent.includes(
-            loadTimeData.getString('tooltipMove')),
-        true);
-    assertEquals(
+            loadTimeData.getString('tooltipMove')));
+    assertTrue(
         menuItems[5]!.textContent.includes(
-            loadTimeData.getString('tooltipDelete')),
-        true);
+            loadTimeData.getString('tooltipDelete')));
   });
 
   test('ShowsMenuItemsForPriceTracking', async () => {
@@ -245,37 +225,29 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
     const menuItems = powerBookmarksContextMenu.shadowRoot!.querySelectorAll(
         '.dropdown-item');
     assertEquals(menuItems.length, 8);
-    assertEquals(
+    assertTrue(
         menuItems[0]!.textContent.includes(
-            loadTimeData.getString('menuOpenNewTab')),
-        true);
-    assertEquals(
+            loadTimeData.getString('menuOpenNewTab')));
+    assertTrue(
         menuItems[1]!.textContent.includes(
-            loadTimeData.getString('menuOpenNewWindow')),
-        true);
-    assertEquals(
+            loadTimeData.getString('menuOpenNewWindow')));
+    assertTrue(
         menuItems[2]!.textContent.includes(
-            loadTimeData.getString('menuOpenSplitView')),
-        true);
-    assertEquals(
+            loadTimeData.getString('menuOpenSplitView')));
+    assertTrue(
         menuItems[3]!.textContent.includes(
-            loadTimeData.getString('menuOpenIncognito')),
-        true);
-    assertEquals(
-        menuItems[4]!.textContent.includes(loadTimeData.getString('menuEdit')),
-        true);
-    assertEquals(
+            loadTimeData.getString('menuOpenIncognito')));
+    assertTrue(
+        menuItems[4]!.textContent.includes(loadTimeData.getString('menuEdit')));
+    assertTrue(
         menuItems[5]!.textContent.includes(
-            loadTimeData.getString('menuMoveToBookmarksBar')),
-        true);
-    assertEquals(
+            loadTimeData.getString('menuMoveToBookmarksBar')));
+    assertTrue(
         menuItems[6]!.textContent.includes(
-            loadTimeData.getString('menuUntrackPrice')),
-        true);
-    assertEquals(
+            loadTimeData.getString('menuUntrackPrice')));
+    assertTrue(
         menuItems[7]!.textContent.includes(
-            loadTimeData.getString('tooltipDelete')),
-        true);
+            loadTimeData.getString('tooltipDelete')));
   });
 
   test('ShowsMenuItemsForUserWithIncognitoDisabled', async () => {
@@ -292,30 +264,24 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
     const menuItems = powerBookmarksContextMenu.shadowRoot!.querySelectorAll(
         '.dropdown-item');
     assertEquals(menuItems.length, 6);
-    assertEquals(
+    assertTrue(
         menuItems[0]!.textContent.includes(
-            loadTimeData.getString('menuOpenNewTab')),
-        true);
-    assertEquals(
+            loadTimeData.getString('menuOpenNewTab')));
+    assertTrue(
         menuItems[1]!.textContent.includes(
-            loadTimeData.getString('menuOpenNewWindow')),
-        true);
-    assertEquals(
+            loadTimeData.getString('menuOpenNewWindow')));
+    assertTrue(
         menuItems[2]!.textContent.includes(
-            loadTimeData.getString('menuOpenNewTabGroup')),
-        true);
-    assertEquals(
+            loadTimeData.getString('menuOpenNewTabGroup')));
+    assertTrue(
         menuItems[3]!.textContent.includes(
-            loadTimeData.getString('menuMoveToBookmarksBar')),
-        true);
-    assertEquals(
+            loadTimeData.getString('menuMoveToBookmarksBar')));
+    assertTrue(
         menuItems[4]!.textContent.includes(
-            loadTimeData.getString('menuRename')),
-        true);
-    assertEquals(
+            loadTimeData.getString('menuRename')));
+    assertTrue(
         menuItems[5]!.textContent.includes(
-            loadTimeData.getString('tooltipDelete')),
-        true);
+            loadTimeData.getString('tooltipDelete')));
   });
 
   test('ShowsMenuItemsWithIncognitoDisabledForNotAllowedUrls', async () => {
@@ -334,10 +300,8 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
         '.dropdown-item');
     assertEquals(menuItems.length, 7);
     const incognitoButton = menuItems[3] as HTMLButtonElement;
-    assertEquals(
-        incognitoButton.textContent.includes(
-            loadTimeData.getString('menuOpenIncognito')),
-        true);
-    assertEquals(incognitoButton.disabled, true);
+    assertTrue(incognitoButton.textContent.includes(
+        loadTimeData.getString('menuOpenIncognito')));
+    assertTrue(incognitoButton.disabled);
   });
 });

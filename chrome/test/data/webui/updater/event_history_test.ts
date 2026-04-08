@@ -337,7 +337,7 @@ suite('parseEvent', () => {
     const event = parseEvent(message) as QualifyEndEvent;
     assertEquals('QUALIFY', event.eventType);
     assertEquals('END', event.bound);
-    assertTrue(!!event.qualified);
+    assertEquals(true, event.qualified);
   });
 
   test('should parse a valid ACTIVATE START event', () => {
@@ -367,7 +367,7 @@ suite('parseEvent', () => {
     const event = parseEvent(message) as ActivateEndEvent;
     assertEquals('ACTIVATE', event.eventType);
     assertEquals('END', event.bound);
-    assertTrue(!!event.activated);
+    assertEquals(true, event.activated);
   });
 
   test('should parse a valid POST_REQUEST START event', () => {

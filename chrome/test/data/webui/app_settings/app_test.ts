@@ -151,7 +151,7 @@ suite('AppSettingsAppTest', () => {
     const fileHandlingItem = appSettingsApp.shadowRoot.querySelector(
         'app-management-file-handling-item')!;
     assertTrue(!!fileHandlingItem);
-    assertEquals(fileHandlingItem.app.fileHandlingState!.enabled, false);
+    assertFalse(fileHandlingItem.app.fileHandlingState!.enabled);
 
     const toggleRow =
         fileHandlingItem.shadowRoot.querySelector<ToggleRowElement>(
@@ -159,11 +159,11 @@ suite('AppSettingsAppTest', () => {
     assertTrue(!!toggleRow);
     toggleRow.click();
     await eventToPromise('change', toggleRow);
-    assertEquals(fileHandlingItem.app.fileHandlingState!.enabled, true);
+    assertTrue(fileHandlingItem.app.fileHandlingState!.enabled);
 
     toggleRow.click();
     await eventToPromise('change', toggleRow);
-    assertEquals(fileHandlingItem.app.fileHandlingState!.enabled, false);
+    assertFalse(fileHandlingItem.app.fileHandlingState!.enabled);
   });
 
   test('Toggle window mode', async function() {

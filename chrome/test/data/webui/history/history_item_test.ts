@@ -159,8 +159,8 @@ suite('<history-item> integration test', function() {
     await microtasksFinished();
 
     // Check that all items matching this url are unstarred.
-    assertEquals(getHistoryData()[1]!.starred, false);
-    assertEquals(getHistoryData()[5]!.starred, false);
+    assertFalse(getHistoryData()[1]!.starred);
+    assertFalse(getHistoryData()[5]!.starred);
   });
 
   test('actor-initiated visit annotation enabled', async function() {

@@ -90,7 +90,7 @@ suite('<settings-guest-os-shared-usb-devices>', () => {
     assertEquals('PvmDefault', args[0]);
     assertEquals('', args[1]);
     assertEquals('0001', args[2]);
-    assertTrue(args[3]);
+    assertEquals(true, args[3]);
     // Simulate a change in the underlying model.
     webUIListenerCallback('guest-os-shared-usb-devices-changed', [
       {
@@ -161,6 +161,6 @@ suite('<settings-guest-os-shared-usb-devices>', () => {
     assertEquals('PvmDefault', args[0]);
     assertEquals('', args[1]);
     assertEquals('0003', args[2]);
-    assertTrue(args[3]);
+    assertEquals(true, args[3]);
   });
 });

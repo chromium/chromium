@@ -535,7 +535,7 @@ suite('SafetyHubPage', function() {
     // there is no warning.
     let result = await metricsBrowserProxy.whenCalled(
         'recordSafetyHubDashboardAnyWarning');
-    assertFalse(result);
+    assertEquals(false, result);
 
     // Check general interaction and impression metrics.
     result = await metricsBrowserProxy.whenCalled('recordSafetyHubImpression');
@@ -600,7 +600,7 @@ suite('SafetyHubPage', function() {
     // Expect recordSafetyHubDashboardAnyWarning is called as true.
     result = await metricsBrowserProxy.whenCalled(
         'recordSafetyHubDashboardAnyWarning');
-    assertTrue(result);
+    assertEquals(true, result);
   });
 
   test('Metric Recording for Education module', async function() {

@@ -6,7 +6,7 @@ import 'chrome://personalization/strings.m.js';
 
 import type {GooglePhotosAlbum, GooglePhotosPhoto, SetErrorAction, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
 import {fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchGooglePhotosEnabled, fetchGooglePhotosPhotos, GooglePhotosEnablementState, GooglePhotosPhotosByAlbumIdElement, PersonalizationActionName, WallpaperLayout, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
-import {assertDeepEquals, assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, createSvgDataUrl, initElement, teardownElement} from './personalization_app_test_utils.js';
@@ -110,7 +110,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
               personalizationStore.data.error!.dismiss!.callback = resolve;
             });
             googlePhotosPhotosByAlbumIdElement.hidden = true;
-            assertEquals(await dismissCallbackPromise, /*fromUser=*/ false);
+            assertFalse(await dismissCallbackPromise);
             await new Promise<void>(resolve => setTimeout(resolve));
             assertEquals(
                 wallpaperProvider.getCallCount('fetchGooglePhotosPhotos'), 0);
@@ -748,8 +748,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
     // Select |photo| and verify selection started.
     photoEls[0]!.click();
     assertEquals(personalizationStore.data.wallpaper.loading.setImage, 1);
-    assertEquals(
-        personalizationStore.data.wallpaper.loading.selected.image, true);
+    assertTrue(personalizationStore.data.wallpaper.loading.selected.image);
     assertEquals(personalizationStore.data.wallpaper.pendingSelected, photo);
 
     // Wait for and verify hard-coded selection failure.
@@ -758,8 +757,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
     assertEquals(await wallpaperProvider.whenCalled(methodName), photo.id);
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
     assertEquals(personalizationStore.data.wallpaper.loading.setImage, 0);
-    assertEquals(
-        personalizationStore.data.wallpaper.loading.selected.image, false);
+    assertFalse(personalizationStore.data.wallpaper.loading.selected.image);
     assertEquals(personalizationStore.data.wallpaper.pendingSelected, null);
   });
 });

@@ -320,7 +320,7 @@ suite('<os-settings-paired-bluetooth-list-item>', () => {
 
     // The managed-tooltip-state-changed event should have been fired.
     const showTooltipEvent = await showTooltipPromise;
-    assertTrue(showTooltipEvent.detail.show);
+    assertEquals(true, showTooltipEvent.detail.show);
     assertEquals(getManagedIcon(), showTooltipEvent.detail.element);
     assertEquals(
         device.deviceProperties.address, showTooltipEvent.detail.address);

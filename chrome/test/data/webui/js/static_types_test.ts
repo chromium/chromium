@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 import {getTrustedHTML, getTrustedScript, getTrustedScriptURL} from 'chrome://resources/js/static_types.js';
-
-import {assertEquals, assertNotReached, assertThrows} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertNotReached, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('StaticTypesTest', function() {
   test('compatible with Trusted Types', () => {
@@ -22,10 +21,9 @@ suite('StaticTypesTest', function() {
   });
 
   test('returns Trusted Types', () => {
-    assertEquals(getTrustedHTML`test` instanceof window.TrustedHTML, true);
-    assertEquals(getTrustedScript`test` instanceof window.TrustedScript, true);
-    assertEquals(
-        getTrustedScriptURL`test` instanceof window.TrustedScriptURL, true);
+    assertTrue(getTrustedHTML`test` instanceof window.TrustedHTML);
+    assertTrue(getTrustedScript`test` instanceof window.TrustedScript);
+    assertTrue(getTrustedScriptURL`test` instanceof window.TrustedScriptURL);
   });
 
   test('accepts single and mutiple lines', () => {

@@ -977,13 +977,13 @@ suite('ExpandableJsonViewerElement', function() {
   test('clickingJsonHeaderTogglesState', async () => {
     const jsonHeaderElement = jsonViewer.$('#json-header')!;
 
-    assertEquals(jsonViewer.hasAttribute('expanded'), false);
+    assertFalse(jsonViewer.hasAttribute('expanded'));
     jsonHeaderElement.click();
     await microtasksFinished();
-    assertEquals(jsonViewer.hasAttribute('expanded'), true);
+    assertTrue(jsonViewer.hasAttribute('expanded'));
     jsonHeaderElement.click();
     await microtasksFinished();
-    assertEquals(jsonViewer.hasAttribute('expanded'), false);
+    assertFalse(jsonViewer.hasAttribute('expanded'));
   });
 
   test('rendersTitleInJsonHeader', () => {
@@ -1057,10 +1057,10 @@ suite('ExpandableJsonViewerElement', function() {
     const copyButton: TextCopyButton|null = jsonViewer.$('text-copy-button');
     assertTrue(!!copyButton);
 
-    assertEquals(jsonViewer.hasAttribute('expanded'), false);
+    assertFalse(jsonViewer.hasAttribute('expanded'));
     copyButton.click();
     await microtasksFinished();
-    assertEquals(jsonViewer.hasAttribute('expanded'), false);
+    assertFalse(jsonViewer.hasAttribute('expanded'));
   });
 });
 

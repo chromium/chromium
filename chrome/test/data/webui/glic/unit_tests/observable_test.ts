@@ -36,7 +36,7 @@ suite('ObservableTest', () => {
     observable.complete();
     assertTrue(completeReceived);
     sub.unsubscribe();
-    assertFalse(!!reportedHasActiveSubscription);
+    assertEquals(false, reportedHasActiveSubscription);
   });
 
   test('ObservableValue does not get completion when unsubscribed', () => {
@@ -99,7 +99,7 @@ suite('ObservableTest', () => {
     const error = new Error('test error');
     observable.error(error);
     assertEquals(error, reportedError);
-    assertFalse(!!reportedHasActiveSubscription);
+    assertEquals(false, reportedHasActiveSubscription);
   });
 
   test('Subject subscriber gets value while subscribed', () => {

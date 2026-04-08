@@ -8,7 +8,7 @@ import {MetricsInternalsBrowserProxyImpl} from 'chrome://metrics-internals/brows
 import type {FieldTrialState, HashNameMap, KeyValue, MetricsInternalsBrowserProxy, SeedType, Trial} from 'chrome://metrics-internals/browser_proxy.js';
 import type {FieldTrialsAppElement} from 'chrome://metrics-internals/field_trials.js';
 import type {CwtKeyInfo} from 'chrome://metrics-internals/private_metrics.js';
-import {assertDeepEquals, assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 function wait(): Promise<void> {
@@ -316,8 +316,8 @@ suite('FieldTrialsTest', function() {
         await fakeBrowser.whenCalled('setTrialEnrollState'),
         'after clicking second box');
 
-    assertEquals(checkboxes[0]!.checked, false);
-    assertEquals(checkboxes[1]!.checked, true);
+    assertFalse(checkboxes[0]!.checked);
+    assertTrue(checkboxes[1]!.checked);
   });
 
   test('filter by trial name matches', async function() {

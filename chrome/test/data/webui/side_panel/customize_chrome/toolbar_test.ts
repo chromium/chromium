@@ -161,7 +161,7 @@ suite('CustomizerToolbarTest', () => {
 
     assertEquals(1, handler.getCallCount('pinAction'));
     assertEquals(ActionId.kHome, handler.getArgs('pinAction')[0][0]);
-    assertFalse(handler.getArgs('pinAction')[0][1]);
+    assertEquals(false, handler.getArgs('pinAction')[0][1]);
   });
 
   test('pinning via backend updates toggle state', async () => {
