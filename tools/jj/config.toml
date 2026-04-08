@@ -156,3 +156,6 @@ command = [
 command = ["vpython3.bat", "mojo/public/tools/mojom/mojom_format.py"]
 [--scope.fix.tools.lucicfg-format]
 command = ["lucicfg.bat", "fmt", "-stdio", "$path"]
+
+[gerrit]
+review-url = "https://chromium-review.googlesource.com"
