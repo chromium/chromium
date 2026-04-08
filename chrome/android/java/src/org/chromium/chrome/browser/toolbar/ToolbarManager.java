@@ -1852,6 +1852,11 @@ public class ToolbarManager
         mSideUiObserver =
                 (sideUiSpecs) -> {
                     mControlContainer.onSideUiSpecsChanged(sideUiSpecs);
+                    // Can be null after destroy(), empty specs are passed when the observer
+                    // is removed.
+                    if (mFindToolbarManager != null) {
+                        mFindToolbarManager.onSideUiSpecsChanged(sideUiSpecs);
+                    }
                 };
         mSideUiStateProvider.addObserver(mSideUiObserver);
     }

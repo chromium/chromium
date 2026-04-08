@@ -51,6 +51,8 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.text.VerticallyFixedEditText;
@@ -67,7 +69,7 @@ import java.lang.annotation.RetentionPolicy;
 
 /** A toolbar providing find in page functionality. */
 @NullMarked
-public class FindToolbar extends LinearLayout implements BackPressHandler {
+public class FindToolbar extends LinearLayout implements BackPressHandler, SideUiObserver {
     @IntDef({
         FindLocationBarState.SHOWN,
         FindLocationBarState.SHOWING,
@@ -383,6 +385,9 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
     public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mBackPressStateSupplier;
     }
+
+    @Override
+    public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs) {}
 
     // Overridden by subclasses.
     protected void findResultSelected(Rect rect) {}
