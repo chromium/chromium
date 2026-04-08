@@ -8808,6 +8808,7 @@ from previous Chrome versions.
   <int value="-1755714804" label="FeedCloseRefresh:enabled"/>
   <int value="-1755301960" label="ClearOldBrowsingData:enabled"/>
   <int value="-1754262889" label="RemoteCopyPersistentNotification:enabled"/>
+  <int value="-1753979488" label="SupportForcedSigninPolicy:enabled"/>
   <int value="-1752853388"
       label="OmniboxUIExperimentElideToRegistrableDomain:enabled"/>
   <int value="-1752118355" label="DesktopDetailedLanguageSettings:enabled"/>
@@ -20169,6 +20170,7 @@ from previous Chrome versions.
   <int value="2025618564" label="AutofillShowAutocompleteDeleteButton:enabled"/>
   <int value="2027013221"
       label="IsolatedWebAppManagedGuestSessionInstall:enabled"/>
+  <int value="2027308965" label="SupportForcedSigninPolicy:disabled"/>
   <int value="2027492085" label="SuppressToolbarCaptures:disabled"/>
   <int value="2027793952" label="EditPasswordsInSettings:disabled"/>
   <int value="2029145363"

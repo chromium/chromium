@@ -6964,7 +6964,8 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"composebox-drive-context-menu-option",
      flag_descriptions::kComposeboxDriveContextMenuOptionName,
-     flag_descriptions::kComposeboxDriveContextMenuOptionDescription, kOsDesktop,
+     flag_descriptions::kComposeboxDriveContextMenuOptionDescription,
+     kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kComposeboxDriveContextMenuOption)},
 
     {"composebox-uses-chrome-compose-client",
@@ -7824,6 +7825,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kForceStartupSigninPromoName,
      flag_descriptions::kForceStartupSigninPromoDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(switches::kForceStartupSigninPromo)},
+    {"support-forced-signin-policy",
+     flag_descriptions::kSupportForcedSigninPolicyName,
+     flag_descriptions::kSupportForcedSigninPolicyDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(switches::kSupportForcedSigninPolicy)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"file-handling-icons", flag_descriptions::kFileHandlingIconsName,

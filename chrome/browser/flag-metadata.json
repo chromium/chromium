@@ -8709,6 +8709,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "support-forced-signin-policy",
+    "owners": [ "samarchehade@google.com", "chrome-signin-mobile@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "symphonia-audio-decoding",
     "owners": [ "jophba@google.com", "media-dev@chromium.org" ],
     "expiry_milestone": 152

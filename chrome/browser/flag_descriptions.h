@@ -7703,6 +7703,11 @@ inline constexpr char kSupportF11AndF12ShortcutsDescription[] =
     "Customize keyboard keys "
     "page.";
 
+inline constexpr char kSupportForcedSigninPolicyName[] =
+    "Support Forced Sign-in";
+inline constexpr char kSupportForcedSigninPolicyDescription[] =
+    "Enables the SupportForcedSignin policy to require sign-in to Chrome.";
+
 inline constexpr char kTerminalDevName[] = "Terminal dev";
 inline constexpr char kTerminalDevDescription[] =
     "Enables Terminal System App to load from Downloads for developer testing. "
