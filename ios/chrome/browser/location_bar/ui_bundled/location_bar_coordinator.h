@@ -19,6 +19,7 @@
 @class LocationBarCoordinator;
 @protocol OmniboxPopupPresenterDelegate;
 @protocol OmniboxFocusDelegate;
+@protocol ReaderModeChipCommands;
 @protocol ToolbarOmniboxConsumer;
 
 // Location bar coordinator.
@@ -32,6 +33,10 @@
 // View controller containing the omnibox.
 @property(nonatomic, strong, readonly)
     UIViewController* locationBarViewController;
+
+// Handler for Reader Mode chip commands.
+@property(nonatomic, readonly) id<ReaderModeChipCommands> readerModeChipHandler;
+
 // Delegate for this coordinator.
 // TODO(crbug.com/41363340): Change this.
 @property(nonatomic, weak) id<OmniboxFocusDelegate> delegate;

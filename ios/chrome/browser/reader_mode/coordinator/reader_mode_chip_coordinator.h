@@ -7,11 +7,13 @@
 
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_chip_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "ios/chrome/browser/shared/public/commands/reader_mode_chip_commands.h"
 
 @protocol ReaderModeChipVisibilityDelegate;
 
 // Coordinator for the Reader Mode Chip.
-@interface ReaderModeChipCoordinator : ChromeCoordinator
+@interface ReaderModeChipCoordinator
+    : ChromeCoordinator <ReaderModeChipCommands>
 
 // The viewController visibility delegate.
 @property(nonatomic, weak) id<ReaderModeChipVisibilityDelegate>

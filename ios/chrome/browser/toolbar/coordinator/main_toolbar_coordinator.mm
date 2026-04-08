@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/shared/public/commands/location_bar_badge_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_entry_point_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/shared/public/commands/reader_mode_chip_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
@@ -72,6 +73,7 @@
                                       MainToolbarMediatorDelegate,
                                       PageActionMenuEntryPointCommands,
                                       PrimaryToolbarViewControllerDelegate,
+                                      ReaderModeChipCommands,
                                       ToolbarCommands,
                                       ToolbarMediatorDelegate>
 
@@ -188,6 +190,9 @@
   _mainToolbarMediator = [[MainToolbarMediator alloc]
       initWithPrefService:GetApplicationContext()->GetLocalState()];
   _mainToolbarMediator.delegate = self;
+  [browser->GetCommandDispatcher()
+      startDispatchingToTarget:self
+                   forProtocol:@protocol(ReaderModeChipCommands)];
   BOOL isOmniboxInBottomPosition =
       [_mainToolbarMediator isOmniboxInBottomPosition];
 
@@ -877,6 +882,26 @@
   CHECK(IsChromeNextIaEnabled());
   [_topLocationBarCoordinator markDisplayedBadgeAsUnread:read];
   [_bottomLocationBarCoordinator markDisplayedBadgeAsUnread:read];
+}
+
+#pragma mark - ReaderModeChipCommands
+
+- (void)showReaderModeChip {
+  if (IsChromeNextIaEnabled()) {
+    [_topLocationBarCoordinator.readerModeChipHandler showReaderModeChip];
+    [_bottomLocationBarCoordinator.readerModeChipHandler showReaderModeChip];
+  } else {
+    [self.locationBarCoordinator.readerModeChipHandler showReaderModeChip];
+  }
+}
+
+- (void)hideReaderModeChip {
+  if (IsChromeNextIaEnabled()) {
+    [_topLocationBarCoordinator.readerModeChipHandler hideReaderModeChip];
+    [_bottomLocationBarCoordinator.readerModeChipHandler hideReaderModeChip];
+  } else {
+    [self.locationBarCoordinator.readerModeChipHandler hideReaderModeChip];
+  }
 }
 
 #pragma mark - ContextualPanelEntrypointCommands

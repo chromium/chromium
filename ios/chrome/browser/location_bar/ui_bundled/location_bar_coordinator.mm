@@ -181,6 +181,10 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   return self.browser ? self.browser->GetWebStateList() : nullptr;
 }
 
+- (id<ReaderModeChipCommands>)readerModeChipHandler {
+  return self.readerModeChipCoordinator;
+}
+
 #pragma mark - Public
 
 - (UIViewController*)locationBarViewController {
@@ -304,7 +308,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
         didMoveToParentViewController:self.viewController];
   }
 
-  if (IsReaderModeAvailable() && !IsChromeNextIaEnabled()) {
+  if (IsReaderModeAvailable()) {
     self.readerModeChipCoordinator = [[ReaderModeChipCoordinator alloc]
         initWithBaseViewController:self.viewController
                            browser:self.browser];
