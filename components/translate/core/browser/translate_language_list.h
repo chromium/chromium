@@ -25,7 +25,9 @@ class TranslateUrlFetcher;
 // supporting language list.
 class TranslateLanguageList {
  public:
+  // The empty constructor will create the default TranslateUrlFetcher.
   TranslateLanguageList();
+  explicit TranslateLanguageList(std::unique_ptr<TranslateUrlFetcher> fetcher);
 
   TranslateLanguageList(const TranslateLanguageList&) = delete;
   TranslateLanguageList& operator=(const TranslateLanguageList&) = delete;
@@ -79,9 +81,6 @@ class TranslateLanguageList {
   // Helper methods used by specific unit tests.
   GURL LanguageFetchURLForTesting();
   bool HasOngoingLanguageListLoadingForTesting();
-
-  // Disables the language list updater. This is used only for testing now.
-  static void DisableUpdate();
 
   // static const values shared with our browser tests.
   static const char kTargetLanguagesKey[];

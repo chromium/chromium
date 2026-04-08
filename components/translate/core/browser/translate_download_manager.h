@@ -54,6 +54,10 @@ class TranslateDownloadManager {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return language_list_.get();
   }
+  void set_language_list(std::unique_ptr<TranslateLanguageList> language_list) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    language_list_ = std::move(language_list);
+  }
 
   // The translate script.
   TranslateScript* script() {

@@ -34,6 +34,7 @@
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/browser/translate_step.h"
+#include "components/translate/core/browser/translate_url_fetcher.h"
 #include "components/translate/core/common/translate_switches.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/variations/scoped_variations_ids_provider.h"
@@ -99,6 +100,18 @@ MATCHER_P(EqualsTranslateEventProto, translate_event, "") {
           arg.event_type() == tep.event_type());
 }
 
+class DummyTranslateUrlFetcher : public TranslateUrlFetcher {
+ public:
+  DummyTranslateUrlFetcher() = default;
+  ~DummyTranslateUrlFetcher() override = default;
+
+  bool Request(const GURL& url, Callback callback, bool is_incognito) override {
+    return true;
+  }
+
+  State state() const override { return IDLE; }
+};
+
 // A language model that just returns its instance variable.
 class MockLanguageModel : public language::LanguageModel {
  public:
@@ -146,10 +159,11 @@ class TranslateManagerTest : public ::testing::Test {
         mock_language_model_({MockLanguageModel::LanguageDetails("en", 1.0)}) {}
 
   void SetUp() override {
-    // Ensure we're not requesting a server-side translate language list.
-    TranslateLanguageList::DisableUpdate();
-
     manager_->ResetForTesting();
+
+    // Ensure we're not requesting a server-side translate language list.
+    manager_->set_language_list(std::make_unique<TranslateLanguageList>(
+        std::make_unique<DummyTranslateUrlFetcher>()));
   }
 
   void TearDown() override {
