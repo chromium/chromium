@@ -6,6 +6,6 @@
 // by `tools/crates/run_gnrt.py vendor`. Do not edit!
 //
 // This is an empty placeholder that has replaced the
-// `wasm-bindgen-shared-0.2.114` crate.
+// `wasm-bindgen-shared-0.2.117` crate.
 //
 // See `//tools/crates/gnrt/removed_crate.md` to learn more.
