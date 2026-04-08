@@ -190,22 +190,28 @@ void PluginInfoHostImpl::ShutdownOnUIThread() {
 PluginInfoHostImpl::~PluginInfoHostImpl() = default;
 
 void PluginInfoHostImpl::GetPluginInfo(const GURL& url,
-                                       const url::Origin& origin,
                                        const std::string& mime_type,
                                        GetPluginInfoCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Refresh plugins.
   PluginService::GetInstance()->GetPlugins();
   chrome::mojom::PluginInfoPtr output = chrome::mojom::PluginInfo::New();
+  auto* rfh = content::RenderFrameHost::FromFrameToken(context_.rfh_token());
+  if (!rfh) {
+    std::move(callback).Run(std::move(output));
+    return;
+  }
+
   // This also fills in |actual_mime_type|.
   std::unique_ptr<PluginMetadata> plugin_metadata;
   if (context_.FindEnabledPlugin(url, mime_type, &output->status,
                                  &output->plugin, &output->actual_mime_type,
                                  &plugin_metadata)) {
     // TODO(crbug.com/40164563): Simplify this once PDF is the only "plugin."
-    context_.DecidePluginStatus(url, origin, output->plugin,
-                                plugin_metadata->security_status(),
-                                plugin_metadata->identifier(), &output->status);
+    context_.DecidePluginStatus(
+        url, rfh->GetMainFrame()->GetLastCommittedOrigin(), output->plugin,
+        plugin_metadata->security_status(), plugin_metadata->identifier(),
+        &output->status);
   }
 
   if (plugin_metadata) {

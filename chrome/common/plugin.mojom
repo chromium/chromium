@@ -55,7 +55,5 @@ interface PluginInfoHost {
   // Includes specific reasons why a plugin can't be used, for example because
   // it's disabled.
   [Sync]
-  GetPluginInfo(url.mojom.Url url,
-                url.mojom.Origin origin,
-                string mime_type) => (PluginInfo plugin_info);
+  GetPluginInfo(url.mojom.Url url, string mime_type) => (PluginInfo info);
 };

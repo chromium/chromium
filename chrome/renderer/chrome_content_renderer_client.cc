@@ -829,9 +829,7 @@ bool ChromeContentRendererClient::IsPluginHandledExternally(
   // not supported. Here it suffices to return false but there should perhaps be
   // a more unified approach to avoid sending the IPC twice.
   chrome::mojom::PluginInfoPtr plugin_info = chrome::mojom::PluginInfo::New();
-  plugin_info_host->GetPluginInfo(
-      original_url, render_frame->GetWebFrame()->Top()->GetSecurityOrigin(),
-      mime_type, &plugin_info);
+  plugin_info_host->GetPluginInfo(original_url, mime_type, &plugin_info);
   // TODO(ekaramad): Not continuing here due to a disallowed status should take
   // us to CreatePlugin. See if more in depths investigation of |status| is
   // necessary here (see https://crbug.com/41460326). For now, returning false
@@ -924,9 +922,7 @@ bool ChromeContentRendererClient::OverrideCreatePlugin(
       &plugin_info_host);
 
   chrome::mojom::PluginInfoPtr plugin_info = chrome::mojom::PluginInfo::New();
-  plugin_info_host->GetPluginInfo(
-      url, render_frame->GetWebFrame()->Top()->GetSecurityOrigin(),
-      orig_mime_type, &plugin_info);
+  plugin_info_host->GetPluginInfo(url, orig_mime_type, &plugin_info);
   *plugin = CreatePlugin(render_frame, params, *plugin_info);
 #else  // !BUILDFLAG(ENABLE_PLUGINS)
   if (orig_mime_type == pdf::kPDFMimeType) {

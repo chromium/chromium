@@ -224,10 +224,8 @@ void ChromePluginPlaceholder::PluginListChanged() {
   mojo::AssociatedRemote<chrome::mojom::PluginInfoHost> plugin_info_host;
   render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
       &plugin_info_host);
-  plugin_info_host->GetPluginInfo(
-      GetPluginParams().url,
-      render_frame()->GetWebFrame()->Top()->GetSecurityOrigin(), mime_type,
-      &plugin_info);
+  plugin_info_host->GetPluginInfo(GetPluginParams().url, mime_type,
+                                  &plugin_info);
   if (plugin_info->status == status_)
     return;
   blink::WebPlugin* new_plugin = ChromeContentRendererClient::CreatePlugin(

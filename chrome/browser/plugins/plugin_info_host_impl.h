@@ -61,6 +61,10 @@ class PluginInfoHostImpl : public chrome::mojom::PluginInfoHost {
     void MaybeGrantAccess(chrome::mojom::PluginStatus status,
                           const base::FilePath& path) const;
 
+    const content::GlobalRenderFrameHostToken& rfh_token() const {
+      return rfh_token_;
+    }
+
    private:
     const content::GlobalRenderFrameHostToken rfh_token_;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -81,7 +85,6 @@ class PluginInfoHostImpl : public chrome::mojom::PluginInfoHost {
 
   // chrome::mojom::PluginInfoHost
   void GetPluginInfo(const GURL& url,
-                     const url::Origin& origin,
                      const std::string& mime_type,
                      GetPluginInfoCallback callback) override;
 
