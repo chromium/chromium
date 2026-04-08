@@ -1693,7 +1693,14 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, IssuesIdlePriorityRequests) {
 
 // Checks that a registered ServiceWorker (SW) that is not currently running
 // will intercepts a prefetch request.
-IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, ServiceWorkerIntercept) {
+// TODO(crbug.com/500524504): Enable the test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ServiceWorkerIntercept DISABLED_ServiceWorkerIntercept
+#else
+#define MAYBE_ServiceWorkerIntercept ServiceWorkerIntercept
+#endif
+IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
+                       MAYBE_ServiceWorkerIntercept) {
   // Register and launch a SW.
   std::u16string expected_title = u"SW READY";
   content::TitleWatcher title_watcher(GetActiveWebContents(), expected_title);
