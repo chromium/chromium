@@ -8422,12 +8422,12 @@ data/payments/payment_app.js
 data/payments/payment_app_invocation.html
 data/payments/payment_app_window.html
 data/performance_timeline/cross-origin-non-tao-image.html
-data/performance_timeline/text-lcp-start-time.html
 data/performance_timeline/event_timing.html
 data/performance_timeline/long_animation_frame_style_duration.html
 data/performance_timeline/prefetch.html
 data/performance_timeline/resource-timing-not-for-file-protocol.html
 data/performance_timeline/resources/style.css
+data/performance_timeline/text-lcp-start-time.html
 data/permissions-policy-main.html
 data/permissions-policy-main.html.mock-http-headers
 data/permissions-policy.xml
@@ -8788,6 +8788,8 @@ data/shared_storage/shared-storage-writable.html
 data/shared_storage/shared-storage-writable.html.mock-http-headers
 data/shared_storage/simple_module.js
 data/shared_storage/simple_module2.js
+data/shared_storage/simple_module_with_custom_header.js
+data/shared_storage/simple_module_with_custom_header.js.mock-http-headers
 data/shared_storage/slow_and_fast_module.js
 data/simple_links.html
 data/simple_page.html

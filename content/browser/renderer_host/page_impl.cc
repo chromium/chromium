@@ -408,12 +408,14 @@ base::flat_map<std::string, std::string> PageImpl::GetKeyboardLayoutMap() {
 }
 
 int32_t PageImpl::GetSavedQueryResultIndexOrStoreCallback(
-    const url::Origin& origin,
+    const url::Origin& context_origin,
+    const url::Origin& data_origin,
     const GURL& script_url,
     const std::string& operation_name,
     const std::u16string& query_name,
     base::OnceCallback<void(uint32_t)> callback) {
-  auto key = std::make_tuple(origin, script_url, operation_name, query_name);
+  auto key = std::make_tuple(context_origin, data_origin, script_url,
+                             operation_name, query_name);
   auto it = select_url_saved_query_index_results_.find(key);
   if (it == select_url_saved_query_index_results_.end()) {
     select_url_saved_query_index_results_[key] = SharedStorageSavedQueryData();
@@ -434,12 +436,14 @@ int32_t PageImpl::GetSavedQueryResultIndexOrStoreCallback(
 }
 
 void PageImpl::SetSavedQueryResultIndexAndRunCallbacks(
-    const url::Origin& origin,
+    const url::Origin& context_origin,
+    const url::Origin& data_origin,
     const GURL& script_url,
     const std::string& operation_name,
     const std::u16string& query_name,
     uint32_t index) {
-  auto key = std::make_tuple(origin, script_url, operation_name, query_name);
+  auto key = std::make_tuple(context_origin, data_origin, script_url,
+                             operation_name, query_name);
   auto it = select_url_saved_query_index_results_.find(key);
   CHECK(it != select_url_saved_query_index_results_.end());
   CHECK_EQ(it->second.index, -1L);

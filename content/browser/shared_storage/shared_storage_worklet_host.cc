@@ -840,8 +840,8 @@ void SharedStorageWorkletHost::SelectURL(
                        weak_ptr_factory_.GetWeakPtr(), urn_uuid, start_time,
                        base::TimeTicks::Now(), operation_id, name);
     int32_t index = page_->GetSavedQueryResultIndexOrStoreCallback(
-        shared_storage_origin_, script_source_url_, name, saved_query_name,
-        std::move(saved_query_callback));
+        creator_context_origin_, shared_storage_origin_, script_source_url_,
+        name, saved_query_name, std::move(saved_query_callback));
     if (index >= 0) {
       // The result index has been stored from a previously resolved worklet
       // operation.
@@ -1561,8 +1561,8 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
     // result.
     if (saved_queries_enabled_ && !saved_query_name_to_cache.empty()) {
       page_->SetSavedQueryResultIndexAndRunCallbacks(
-          shared_storage_origin_, script_source_url_, operation_name,
-          saved_query_name_to_cache, index);
+          creator_context_origin_, shared_storage_origin_, script_source_url_,
+          operation_name, saved_query_name_to_cache, index);
     }
   } else {
     LogSharedStorageWorkletError(

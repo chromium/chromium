@@ -231,7 +231,8 @@ class CONTENT_EXPORT PageImpl : public Page {
 
   // Retrieves the index from `select_url_saved_query_index_results_` for the
   // given key, or a special value indicating the status of the query. The key
-  // is a tuple of (`origin`, `script_url`, `operation_name`, `query_name`).
+  // is a tuple of (`context_origin`, `data_origin`, `script_url`,
+  // `operation_name`, `query_name`).
   //
   // - New Query: If no entry exists for the key, initializes a new entry with
   //   an index of -1 (indicating pending) and returns -2.
@@ -240,21 +241,23 @@ class CONTENT_EXPORT PageImpl : public Page {
   // - Completed Query: If an entry exists and the index is nonnegative, returns
   //   the index.
   int32_t GetSavedQueryResultIndexOrStoreCallback(
-      const url::Origin& origin,
+      const url::Origin& context_origin,
+      const url::Origin& data_origin,
       const GURL& script_url,
       const std::string& operation_name,
       const std::u16string& query_name,
       base::OnceCallback<void(uint32_t)> callback);
 
   // Updates `select_url_saved_query_index_results_` for the given key as
-  // follows. The key is a tuple of (`origin`, `script_url`, `operation_name`,
-  // `query_name`).
+  // follows. The key is a tuple of (`context_origin`, `data_origin`,
+  // `script_url`, `operation_name`, `query_name`).
   //  - The index is of the entry is set to `index`.
   //  - If the entry has any callbacks, runs them in order.
   //
   // Precondition: The entry exists and its index has value -1.
   void SetSavedQueryResultIndexAndRunCallbacks(
-      const url::Origin& origin,
+      const url::Origin& context_origin,
+      const url::Origin& data_origin,
       const GURL& script_url,
       const std::string& operation_name,
       const std::u16string& query_name,
@@ -397,10 +400,12 @@ class CONTENT_EXPORT PageImpl : public Page {
   // `blink::features::kSharedStorageSelectURLLimit` is enabled.
   base::flat_map<net::SchemefulSite, double> select_url_per_site_budget_;
 
-  // A map of tuples (origin, worklet script URL, operation name, query name) to
-  // the index returned for the corresponding `sharedStorage.selectURL()` query.
-  base::flat_map<std::tuple<url::Origin, GURL, std::string, std::u16string>,
-                 SharedStorageSavedQueryData>
+  // A map of tuples (context origin, data origin, worklet script URL, operation
+  // name, query name) to the index returned for the corresponding
+  // `sharedStorage.selectURL()` query.
+  base::flat_map<
+      std::tuple<url::Origin, url::Origin, GURL, std::string, std::u16string>,
+      SharedStorageSavedQueryData>
       select_url_saved_query_index_results_;
 
   // This class is owned by the main RenderFrameHostImpl and it's safe to keep a

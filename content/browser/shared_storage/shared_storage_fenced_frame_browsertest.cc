@@ -3287,4 +3287,113 @@ IN_PROC_BROWSER_TEST_F(SharedStorageContextBrowserTest,
             base::UTF16ToUTF8(console_observer.messages().back().message));
 }
 
+IN_PROC_BROWSER_TEST_F(
+    SharedStorageSelectURLSavedQueryBrowserTest,
+    SelectURL_CrossOriginWorklet_SameDataOrigin_DifferentContextOrigin_DoesNotShareQuery) {
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  GURL module_script_url = https_server()->GetURL(
+      "b.test", net::test_server::GetFilePathWithReplacements(
+                    "/shared_storage/simple_module_with_custom_header.js",
+                    SharedStorageCrossOriginWorkletResponseHeaderReplacement(
+                        "Access-Control-Allow-Origin: *",
+                        "Shared-Storage-Cross-Origin-Worklet-Allowed: ?1")));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  // 1. In main frame (a.test), create worklet with b.test script and data
+  // origin b.test. Run selectURL and save query.
+  EXPECT_TRUE(EvalJs(shell(), JsReplace(R"(
+        (async function() {
+          window.worklet1 = await sharedStorage.createWorklet(
+            $1,
+            {dataOrigin: 'script-origin'});
+          const urls = [
+            {url: 'fenced_frames/title0.html'},
+            {url: 'fenced_frames/title1.html'}
+          ];
+          window.select_url_result_1 = await window.worklet1.selectURL(
+            'test-url-selection-operation',
+            urls,
+            {
+              data: {'mockResult': 0},
+              resolveToConfig: true,
+              keepAlive: true,
+              savedQuery: 'test_query'
+            }
+          );
+          return true;
+        })()
+      )",
+                                        module_script_url.spec()))
+                  .ExtractBool());
+
+  size_t num_previous_messages = console_observer.messages().size();
+
+  // 2. Create iframe (c.test).
+  GURL iframe_url = https_server()->GetURL("c.test", kSimplePagePath);
+  FrameTreeNode* iframe_node =
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), iframe_url);
+
+  // In iframe (c.test), create worklet with b.test script and data origin
+  // b.test.
+  EXPECT_TRUE(EvalJs(iframe_node,
+                     JsReplace("(async function() { window.worklet2 = await "
+                               "sharedStorage.createWorklet($1, {dataOrigin: "
+                               "'script-origin'}); return true; })();",
+                               module_script_url.spec()))
+                  .ExtractBool());
+
+  test_runtime_manager()
+      .GetAttachedWorkletHostForFrame(iframe_node->current_frame_host())
+      ->SetExpectedWorkletResponsesCount(1);
+
+  // Run selectURL with the same saved query name.
+  EXPECT_TRUE(EvalJs(iframe_node, R"(
+    (async function() {
+      const urls = [
+        {url: 'fenced_frames/title0.html'},
+        {url: 'fenced_frames/title1.html'}
+      ];
+      window.select_url_result_2 = await window.worklet2.selectURL(
+        'test-url-selection-operation',
+        urls,
+        {
+          data: {'mockResult': 0},
+          resolveToConfig: true,
+          keepAlive: true,
+          savedQuery: 'test_query'
+        }
+      );
+      return true;
+    })()
+  )")
+                  .ExtractBool());
+
+  test_runtime_manager()
+      .GetAttachedWorkletHostForFrame(iframe_node->current_frame_host())
+      ->WaitForWorkletResponses();
+
+  // Verify that the worklet was actually executed again in the iframe.
+  // It should log a new "Start executing" message.
+  int num_new_messages =
+      console_observer.messages().size() - num_previous_messages;
+  EXPECT_GT(num_new_messages, 0);
+
+  // The cache shouldn't be shared, so the worklet actually runs.
+  // If the cache was shared, there would be no new messages from
+  // `test-url-selection-operation`.
+  bool found_start_execution = false;
+  for (size_t i = num_previous_messages; i < console_observer.messages().size();
+       ++i) {
+    if (base::UTF16ToUTF8(console_observer.messages()[i].message) ==
+        "Start executing 'test-url-selection-operation'") {
+      found_start_execution = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found_start_execution);
+}
+
 }  // namespace content
