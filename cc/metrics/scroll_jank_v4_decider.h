@@ -82,7 +82,7 @@ class CC_EXPORT ScrollJankV4Decider {
   //
   //   * `future_real_frame_is_fast_scroll_or_sufficiently_fast_fling`: Whether
   //     the earliest future real frame is a fast scroll or a sufficiently fast
-  //     scroll (i.e.
+  //     fling (i.e.
   //     `future_real_frame_is_fast_scroll_or_sufficiently_fast_fling ==
   //     (IsFastScroll(future_real) || IsSufficientlyFastFling(future_real))`).
   //     False if there are no real frames between this synthetic frame and the
@@ -255,7 +255,8 @@ class CC_EXPORT ScrollJankV4Decider {
       const ScrollJankV4FrameStage::ScrollUpdates& updates,
       const ScrollJankV4Frame::ScrollDamage& damage,
       const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
-      bool treat_as_fast_scroll);
+      bool treat_as_fast_scroll,
+      bool treat_as_sufficiently_fast_fling);
 
   JankReasonArray<int> CalculateMissedVsyncsPerReason(
       int vsyncs_since_previous_frame,
@@ -264,6 +265,7 @@ class CC_EXPORT ScrollJankV4Decider {
       const ScrollJankV4Frame::ScrollDamage& damage,
       const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
       bool treat_as_fast_scroll,
+      bool treat_as_sufficiently_fast_fling,
       ScrollJankV4Result& result) const;
 
   std::optional<base::TimeDelta> CalculateRunningDeliveryCutoff(
