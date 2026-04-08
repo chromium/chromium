@@ -126,7 +126,7 @@ void AudioBus::Zero() {
   }
 }
 
-AudioChannel* AudioBus::ChannelByType(unsigned channel_type) {
+const AudioChannel* AudioBus::ChannelByType(unsigned channel_type) const {
   // For now we only support canonical channel layouts...
   if (layout_ != kLayoutCanonical) {
     return nullptr;
@@ -201,8 +201,9 @@ AudioChannel* AudioBus::ChannelByType(unsigned channel_type) {
   NOTREACHED();
 }
 
-const AudioChannel* AudioBus::ChannelByType(unsigned type) const {
-  return const_cast<AudioBus*>(this)->ChannelByType(type);
+AudioChannel* AudioBus::ChannelByType(unsigned type) {
+  return const_cast<AudioChannel*>(
+      static_cast<const AudioBus*>(this)->ChannelByType(type));
 }
 
 // Returns true if the channel count and frame-size match.
