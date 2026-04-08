@@ -122,6 +122,12 @@ void IdentityDialogController::UpdateTaskId(actor::TaskId task_id) {
       did_show_ui_ = true;
     }
   }
+  // If there is no longer an active task (e.g. user takes over the task) and we
+  // previously invoked active mode UI, dismiss the current API call.
+  if (acting_task_id_.is_null() && rp_mode_ == blink::mojom::RpMode::kActive &&
+      on_dismiss_) {
+    std::move(on_dismiss_).Run(DismissReason::kOther);
+  }
 }
 
 int IdentityDialogController::GetBrandIconMinimumSize(
@@ -215,6 +221,16 @@ bool IdentityDialogController::ShowAccountsDialog(
     // The selected account was not found in the list of accounts fetched from
     // the IdP.
     NotifyEmbedderOfResult(FederatedLoginResult::kAccountNotLoggedIn);
+    return false;
+  }
+  // If the dialog is triggered in active mode and the FedCM UI should not be
+  // shown but there was no embedder request, we consider the flow to failed
+  // without trying to show any UI and reject the FedCM API call accordingly.
+  // Note that actor initiated login is already handled in the above if
+  // statement. This is a case where the user has not yet selected an account so
+  // account autoselection is not possible, but somehow the API call is
+  // triggered. Since we cannot autoselect an account nor show UI, reject.
+  if (rp_mode_ == blink::mojom::RpMode::kActive && !ShouldShowFedCmUi()) {
     return false;
   }
 
@@ -312,6 +328,11 @@ bool IdentityDialogController::ShowErrorDialog(
   on_dismiss_ = std::move(dismiss_callback);
   on_more_details_ = std::move(more_details_callback);
 
+  if (rp_mode == blink::mojom::RpMode::kActive && !ShouldShowFedCmUi()) {
+    NotifyEmbedderOfResult(FederatedLoginResult::kIdpReturnedError);
+    return false;
+  }
+
   if (!TrySetAccountView()) {
     NotifyEmbedderOfResult(FederatedLoginResult::kFrameNotActive);
     return false;
@@ -335,6 +356,13 @@ bool IdentityDialogController::ShowLoadingDialog(
     blink::mojom::RpMode rp_mode,
     DismissCallback dismiss_callback) {
   on_dismiss_ = std::move(dismiss_callback);
+
+  // If the dialog is triggered in active mode and the FedCM UI should not be
+  // shown, early return as if successful so the flow continues.
+  if (rp_mode == blink::mojom::RpMode::kActive && !ShouldShowFedCmUi()) {
+    return true;
+  }
+
   if (!TrySetAccountView()) {
     NotifyEmbedderOfResult(FederatedLoginResult::kFrameNotActive);
     return false;
@@ -355,6 +383,12 @@ bool IdentityDialogController::ShowVerifyingDialog(
     AccountsDisplayedCallback accounts_displayed_callback) {
   on_accounts_displayed_ = std::move(accounts_displayed_callback);
   rp_mode_ = rp_mode;
+
+  // If the dialog is triggered in active mode and the FedCM UI should not be
+  // shown, early return as if successful so the flow continues.
+  if (rp_mode == blink::mojom::RpMode::kActive && !ShouldShowFedCmUi()) {
+    return true;
+  }
 
   if (!TrySetAccountView()) {
     NotifyEmbedderOfResult(FederatedLoginResult::kFrameNotActive);
