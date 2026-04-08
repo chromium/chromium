@@ -111,7 +111,6 @@ public class Clipboard {
         sInstance = null;
     }
 
-    @VisibleForTesting
     public static void setInstanceForTesting(Clipboard instance) {
         sInstance = instance;
         ResettersForTesting.register(Clipboard::resetForTesting);

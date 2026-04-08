@@ -8,8 +8,6 @@ import android.graphics.Outline;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.build.annotations.NullMarked;
 
 /**
@@ -101,7 +99,6 @@ public class RoundedCornerOutlineProvider extends ViewOutlineProvider {
     }
 
     /** Returns the radius used to round the view. */
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public int getRadiusForTesting() {
         return mRadius;
     }

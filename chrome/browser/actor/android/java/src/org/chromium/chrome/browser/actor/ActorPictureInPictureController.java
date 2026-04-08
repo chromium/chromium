@@ -392,7 +392,6 @@ public class ActorPictureInPictureController
         mPipOverlayCoordinator = coordinator;
     }
 
-    @VisibleForTesting
     public void setInActorPiPForTesting(boolean inPiP) {
         mInActorPiP = inPiP;
     }

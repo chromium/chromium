@@ -5,7 +5,6 @@
 package org.chromium.components.safe_browsing;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
@@ -25,7 +24,6 @@ public class OsAdditionalSecurityUtil {
         return sProviderInstance;
     }
 
-    @VisibleForTesting
     public static void setInstanceForTesting(OsAdditionalSecurityProvider provider) {
         sProviderInstance = provider;
         ResettersForTesting.register(() -> sProviderInstance = null);

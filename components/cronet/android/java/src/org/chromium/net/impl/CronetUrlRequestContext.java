@@ -825,7 +825,6 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         mNetworkHandle = networkHandle;
     }
 
-    @VisibleForTesting
     @Override
     public void configureNetworkQualityEstimatorForTesting(
             boolean useLocalHostRequests,

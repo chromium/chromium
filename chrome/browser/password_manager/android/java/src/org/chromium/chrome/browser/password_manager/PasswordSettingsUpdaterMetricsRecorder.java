@@ -11,8 +11,6 @@ import static org.chromium.chrome.browser.password_manager.PasswordManagerSettin
 import android.os.SystemClock;
 import android.text.TextUtils;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -126,7 +124,6 @@ class PasswordSettingsUpdaterMetricsRecorder {
         return mFunctionSuffix;
     }
 
-    @VisibleForTesting
     @PasswordManagerSetting
     int getSettingForTesting() {
         return mSetting;

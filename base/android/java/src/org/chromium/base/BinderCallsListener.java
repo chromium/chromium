@@ -10,7 +10,6 @@ import android.os.RemoteException;
 import android.os.SystemClock;
 
 import androidx.annotation.UiThread;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
@@ -285,7 +284,6 @@ public class BinderCallsListener {
         return true;
     }
 
-    @VisibleForTesting
     void setBinderCallListenerObserverForTesting(BiConsumer<String, String> observer) {
         if (mInvocationHandler != null) mInvocationHandler.mObserver = observer;
     }

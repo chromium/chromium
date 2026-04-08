@@ -1573,7 +1573,6 @@ class BottomSheet extends FrameLayout
      * @param yUpwardsVelocity The sheet's upwards y velocity when reaching the scrolled height.
      * @return The state the bottom sheet would target when the scrolling ends.
      */
-    @VisibleForTesting
     @SheetState
     int forceScrollingStateForTesting(float sheetHeightInPx, float yUpwardsVelocity) {
         mScrollingStartState = mCurrentState;

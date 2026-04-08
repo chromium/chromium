@@ -8,8 +8,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -132,7 +130,6 @@ public class GoogleBottomBarCoordinator {
         BottomBarConfigCreator.initDefaultSearchEngine(originalProfile);
     }
 
-    @VisibleForTesting
     GoogleBottomBarViewCreator getGoogleBottomBarViewCreatorForTesting() {
         return mGoogleBottomBarViewCreator;
     }

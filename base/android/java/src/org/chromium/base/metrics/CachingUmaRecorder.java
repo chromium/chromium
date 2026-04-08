@@ -559,7 +559,6 @@ final class CachingUmaRecorder implements UmaRecorder {
         }
     }
 
-    @VisibleForTesting
     @Override
     public int getHistogramValueCountForTesting(String name, int sample) {
         mRwLock.readLock().lock();
@@ -580,7 +579,6 @@ final class CachingUmaRecorder implements UmaRecorder {
         }
     }
 
-    @VisibleForTesting
     @Override
     public int getHistogramTotalCountForTesting(String name) {
         mRwLock.readLock().lock();
@@ -597,7 +595,6 @@ final class CachingUmaRecorder implements UmaRecorder {
         }
     }
 
-    @VisibleForTesting
     @Override
     public List<HistogramBucket> getHistogramSamplesForTesting(String name) {
         mRwLock.readLock().lock();
@@ -628,7 +625,6 @@ final class CachingUmaRecorder implements UmaRecorder {
         }
     }
 
-    @VisibleForTesting
     @Override
     public void addUserActionCallbackForTesting(Callback<String> callback) {
         mRwLock.writeLock().lock();
@@ -643,7 +639,6 @@ final class CachingUmaRecorder implements UmaRecorder {
         }
     }
 
-    @VisibleForTesting
     @Override
     public void removeUserActionCallbackForTesting(Callback<String> callback) {
         mRwLock.writeLock().lock();

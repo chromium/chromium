@@ -282,13 +282,11 @@ final class SignOutDialogCoordinator {
         };
     }
 
-    @VisibleForTesting
     @MainThread
     View getDialogViewForTesting() {
         return mModel.get(ModalDialogProperties.CUSTOM_VIEW);
     }
 
-    @VisibleForTesting
     @MainThread
     void dismissDialogForTesting() {
         mDialogManager.dismissDialog(mModel, DialogDismissalCause.ACTIVITY_DESTROYED);

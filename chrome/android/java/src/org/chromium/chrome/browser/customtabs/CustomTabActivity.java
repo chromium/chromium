@@ -606,7 +606,6 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         mIsEnterAnimationCompleted = true;
     }
 
-    @VisibleForTesting
     public static void setOnFinishCallbackForTesting(Runnable callback) {
         sOnFinishCallbackForTesting = callback;
         ResettersForTesting.register(() -> sOnFinishCallbackForTesting = null);

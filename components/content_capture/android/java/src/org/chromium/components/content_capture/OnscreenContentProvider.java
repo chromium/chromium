@@ -280,7 +280,6 @@ public class OnscreenContentProvider {
         return mContentCaptureConsumers;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     @RequiresApi(Build.VERSION_CODES.Q)
     public void removePlatformConsumerForTesting() {
         for (ContentCaptureConsumer consumer : mContentCaptureConsumers) {

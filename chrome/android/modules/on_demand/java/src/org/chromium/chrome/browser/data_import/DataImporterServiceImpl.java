@@ -10,8 +10,6 @@ import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.util.Base64;
 
-import androidx.annotation.VisibleForTesting;
-
 import io.grpc.Context;
 import io.grpc.Contexts;
 import io.grpc.Metadata;
@@ -50,19 +48,16 @@ public class DataImporterServiceImpl extends SplitCompatService.Impl {
     private static boolean sFailNextOnBindForTesting;
 
     /** If true, the gRPC server will not enforce a security policy. Only for use in tests. */
-    @VisibleForTesting
     public static void setSkipSecurityPolicyForTesting(boolean skip) {
         ResettersForTesting.register(() -> sSkipSecurityPolicyForTesting = false);
         sSkipSecurityPolicyForTesting = skip;
     }
 
-    @VisibleForTesting
     public static void setOnDestroyLatchForTesting(CountDownLatch latch) {
         ResettersForTesting.register(() -> sOnDestroyLatchForTesting = null);
         sOnDestroyLatchForTesting = latch;
     }
 
-    @VisibleForTesting
     public static void setFailNextOnBindForTesting(boolean fail) {
         ResettersForTesting.register(() -> sFailNextOnBindForTesting = false);
         sFailNextOnBindForTesting = fail;

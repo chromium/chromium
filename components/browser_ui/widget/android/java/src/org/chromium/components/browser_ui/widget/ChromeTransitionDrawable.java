@@ -15,8 +15,6 @@ import android.graphics.drawable.TransitionDrawable;
 import android.graphics.drawable.VectorDrawable;
 import android.util.IntProperty;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.interpolators.Interpolators;
@@ -155,7 +153,6 @@ public class ChromeTransitionDrawable extends LayerDrawable {
         return mFinalDrawable;
     }
 
-    @VisibleForTesting
     public Animator getAnimatorForTesting() {
         return mAnimator;
     }

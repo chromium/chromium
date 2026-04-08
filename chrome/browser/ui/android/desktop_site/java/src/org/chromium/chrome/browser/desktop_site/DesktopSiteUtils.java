@@ -373,7 +373,6 @@ public class DesktopSiteUtils {
         sDisplayMetrics = displayMetrics;
     }
 
-    @VisibleForTesting
     public static void setDefaultEnableGlobalSettingForTesting(
             boolean defaultEnableGlobalSetting) {}
 }

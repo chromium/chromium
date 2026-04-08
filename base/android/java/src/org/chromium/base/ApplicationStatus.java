@@ -486,7 +486,6 @@ public class ApplicationStatus {
     }
 
     /** Testing method to update the state of the specified activity. */
-    @VisibleForTesting
     @MainThread
     public static void onStateChangeForTesting(Activity activity, int newState) {
         onStateChange(activity, newState);
