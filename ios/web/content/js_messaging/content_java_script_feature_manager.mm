@@ -6,6 +6,7 @@
 
 #import "base/feature_list.h"
 #import "base/ios/ios_util.h"
+#import "base/logging.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/js_injection/browser/js_communication_host.h"
