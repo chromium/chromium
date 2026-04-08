@@ -1029,14 +1029,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "ios_custom_webkit",
-    args = [
-        "--args-json",
-        "{\"test_args\": [\"--run-with-custom-webkit\"]}",
-    ],
-)
-
-targets.mixin(
     name = "ios_output_disabled_tests",
     args = [
         "--output-disabled-tests",

@@ -11,6 +11,4 @@ xcode = struct(
 
     # Xcode beta version used on beta bots.
     xcode_beta = _xcode.for_ios("17e192"),
-    # in use by ios-webkit-tot
-    x14wk = _xcode.for_ios("14c18wk"),
 )

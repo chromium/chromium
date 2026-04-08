@@ -1854,58 +1854,6 @@ fyi_ios_builder(
 )
 
 fyi_ios_builder(
-    name = "ios-webkit-tot",
-    schedule = "0 1-23/6 * * *",
-    triggered_by = [],
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "ios",
-            apply_configs = ["ios_webkit_tot"],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-                "mac_toolchain",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.IOS,
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "debug_static_builder",
-            "remoteexec",
-            "ios_simulator",
-            "x64",
-            "xctest",
-            "no_lld",
-        ],
-    ),
-    targets = targets.bundle(
-        targets = [
-            "ios_webkit_tot_tests",
-        ],
-        mixins = [
-            "expand-as-isolated-script",
-            "has_native_resultdb_integration",
-            "ios_custom_webkit",
-            "mac_default_x64",
-            "mac_toolchain",
-            "out_dir_arg",
-            "xcode_26_main",
-            "xctest",
-        ],
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "iOS",
-        short_name = "wk",
-    ),
-    xcode = xcode.x14wk,
-)
-
-fyi_ios_builder(
     name = "ios26-sdk-device",
     description_html = (
         "Validates that Chromium on iOS compiles for device using the latest iOS SDK." +

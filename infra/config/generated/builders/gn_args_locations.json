@@ -332,7 +332,6 @@
     "ios-fieldtrial-rel": "ci/ios-fieldtrial-rel/gn-args.json",
     "ios-structured-test-ids-simulator-fyi": "ci/ios-structured-test-ids-simulator-fyi/gn-args.json",
     "ios-vm": "ci/ios-vm/gn-args.json",
-    "ios-webkit-tot": "ci/ios-webkit-tot/gn-args.json",
     "ios-wpt-fyi-rel": "ci/ios-wpt-fyi-rel/gn-args.json",
     "ios18-beta-simulator": "ci/ios18-beta-simulator/gn-args.json",
     "ios18-sdk-simulator": "ci/ios18-sdk-simulator/gn-args.json",

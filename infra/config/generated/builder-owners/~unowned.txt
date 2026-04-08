@@ -37,7 +37,6 @@ ci/ios-simulator
 ci/ios-simulator-code-coverage
 ci/ios-simulator-full-configs
 ci/ios-simulator-noncq
-ci/ios-webkit-tot
 ci/ios18-beta-simulator
 ci/ios18-sdk-simulator
 ci/ios26-beta-simulator

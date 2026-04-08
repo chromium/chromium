@@ -5840,54 +5840,6 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "ios_webkit_tot_tests",
-    targets = [
-        targets.bundle(
-            targets = "ios_common_tests",
-            variants = [
-                "SIM_IPAD_AIR_6TH_GEN_18_2",
-                "SIM_IPAD_AIR_6TH_GEN_26_0",
-                "SIM_IPHONE_15_18_2",
-                "SIM_IPHONE_16_26_0",
-            ],
-        ),
-        targets.bundle(
-            targets = "ios_eg2_cq_tests",
-            mixins = [
-                "xcodebuild_sim_runner",
-            ],
-            variants = [
-                "SIM_IPAD_AIR_6TH_GEN_18_2",
-                "SIM_IPAD_AIR_6TH_GEN_26_0",
-                "SIM_IPHONE_15_18_2",
-                "SIM_IPHONE_16_26_0",
-            ],
-        ),
-        targets.bundle(
-            targets = "ios_eg2_tests",
-            mixins = [
-                "xcodebuild_sim_runner",
-            ],
-            variants = [
-                "SIM_IPAD_AIR_6TH_GEN_18_2",
-                "SIM_IPAD_AIR_6TH_GEN_26_0",
-                "SIM_IPHONE_15_18_2",
-                "SIM_IPHONE_16_26_0",
-            ],
-        ),
-        targets.bundle(
-            targets = "ios_screen_size_dependent_tests",
-            variants = [
-                "SIM_IPAD_AIR_6TH_GEN_18_2",
-                "SIM_IPAD_AIR_6TH_GEN_26_0",
-                "SIM_IPHONE_15_18_2",
-                "SIM_IPHONE_16_26_0",
-            ],
-        ),
-    ],
-)
-
-targets.bundle(
     name = "js_code_coverage_browser_tests_suite",
     targets = [
         "js_code_coverage_browser_tests",
