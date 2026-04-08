@@ -117,7 +117,7 @@ class OnDeviceModelClassifierController::Solution
 
     // Hardcoded substitution for the classifier model.
     auto* substitution = input_config->add_execute_substitutions();
-    substitution->set_string_template("%s");
+    substitution->set_string_template("%s <ctrl1>");
 
     auto* sub_arg = substitution->add_substitutions();
     auto* candidate = sub_arg->add_candidates();
