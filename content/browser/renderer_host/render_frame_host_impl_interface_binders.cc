@@ -92,7 +92,7 @@ class MessageFilterChain final : public mojo::MessageFilter {
 };
 
 // This class can be added as a MessageFilter to a mojo receiver to detect
-// messages received while the the associated frame is in the Back-Forward
+// messages received while the associated frame is in the Back-Forward
 // Cache. Documents that are in the bfcache should not be sending mojo messages
 // back to the browser.
 class BackForwardCacheMessageFilter : public mojo::MessageFilter {
@@ -144,7 +144,7 @@ class BackForwardCacheMessageFilter : public mojo::MessageFilter {
   void DidDispatchOrReject(mojo::Message* message, bool accepted) override {}
 
   // TODO(crbug.com/40147948): Remove once a well-behaved frozen
-  // RenderFrame never send IPCs messages, even if there are active pages in the
+  // RenderFrame never sends IPC messages, even if there are active pages in the
   // process.
   bool ProcessHoldsNonCachedPages() {
     return RenderViewHostImpl::HasNonBackForwardCachedInstancesForProcess(
