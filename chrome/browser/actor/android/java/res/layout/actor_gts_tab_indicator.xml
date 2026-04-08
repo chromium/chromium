@@ -18,16 +18,19 @@ found in the LICENSE file.
         app:layout_constraintStart_toStartOf="@id/tab_thumbnail"
         app:layout_constraintEnd_toEndOf="@id/tab_thumbnail">
 
-        <View
+       <ImageView
             android:id="@+id/actor_thumbnail_overlay"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@drawable/actor_overlay_background"
+            android:scaleType="fitXY"
+            android:src="@drawable/actor_overlay_background"
+            android:background="@drawable/actor_thumbnail_overlay_outline"
+            android:clipToOutline="true"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
+            app:layout_constraintEnd_toEndOf="parent"
+            android:importantForAccessibility="no" />
         <FrameLayout
             android:layout_width="24dp"
             android:layout_height="24dp"
