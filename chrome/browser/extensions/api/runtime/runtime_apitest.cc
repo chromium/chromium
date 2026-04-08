@@ -194,16 +194,11 @@ class RuntimeAPIUpdateTest : public ExtensionApiTest {
  private:
   base::ScopedTempDir scoped_temp_dir_;
 };
-
 }  // namespace
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/383366125): Enable this test for desktop Android once
-// ChromeRuntimeAPIDelegate::OpenOptionsPage() is implemented.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeOpenOptionsPage) {
   ASSERT_TRUE(RunExtensionTest("runtime/open_options_page"));
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeOpenOptionsPageError) {
   ASSERT_TRUE(RunExtensionTest("runtime/open_options_page_error"));

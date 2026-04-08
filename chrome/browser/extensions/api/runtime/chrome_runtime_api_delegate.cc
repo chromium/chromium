@@ -21,8 +21,11 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/browser_window_util.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "components/update_client/update_query_params.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -54,12 +57,10 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/devtools/devtools_window.h"
-#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #else
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
@@ -415,12 +416,13 @@ bool ChromeRuntimeAPIDelegate::RestartDevice(std::string* error_message) {
   return false;
 }
 
-bool ChromeRuntimeAPIDelegate::OpenOptionsPage(
+void ChromeRuntimeAPIDelegate::OpenOptionsPage(
     const Extension* extension,
-    content::BrowserContext* browser_context) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+    content::BrowserContext* browser_context,
+    base::OnceCallback<void(bool)> callback) {
   if (!extensions::OptionsPageInfo::HasOptionsPage(extension)) {
-    return false;
+    std::move(callback).Run(false);
+    return;
   }
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
@@ -430,12 +432,18 @@ bool ChromeRuntimeAPIDelegate::OpenOptionsPage(
   // that's the only place it's running.
   DCHECK(!profile->IsOffTheRecord() ||
          extensions::IncognitoInfo::IsSplitMode(extension));
-  BrowserWindowInterface* browser = chrome::FindBrowserWithProfile(profile);
 
-  if (!browser) {
-    if (Browser::GetCreationStatusForProfile(profile) !=
-        Browser::CreationStatus::kOk) {
-      return false;
+  BrowserWindowInterface* browser =
+      extensions::browser_window_util::GetLastActiveNormalBrowserWithProfile(
+          *profile, /*include_incognito_or_parent=*/false);
+  const bool create_new_browser = !browser;
+
+  if (create_new_browser) {
+    if (GetBrowserWindowCreationStatusForProfile(*profile) !=
+        BrowserWindowInterface::CreationStatus::kOk) {
+      // No active browser and can't create a new one. Bail.
+      std::move(callback).Run(false);
+      return;
     }
 
     // TODO(devlin): This has always used user_gesture=true, though it's not
@@ -443,20 +451,31 @@ bool ChromeRuntimeAPIDelegate::OpenOptionsPage(
     bool user_gesture = true;
     BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_NORMAL,
                                      *profile, user_gesture);
-    // Note: This uses a non-android variant of the method that returns a
-    // fully-initialized browser window. To port to desktop android, this will
-    // need to be async.
+
+#if BUILDFLAG(IS_ANDROID)
+    // Asynchronously create the window on Android, then open the options page.
+    auto creation_callback = base::BindOnce(
+        [](scoped_refptr<const Extension> extension,
+           base::OnceCallback<void(bool)> complete_callback,
+           BrowserWindowInterface* new_browser) {
+          std::move(complete_callback)
+              .Run(extensions::ExtensionTabUtil::OpenOptionsPage(
+                  extension.get(), new_browser));
+        },
+        base::WrapRefCounted(extension), std::move(callback));
+    CreateBrowserWindow(std::move(params), std::move(creation_callback));
+
+    // Nothing to do here, the callback will open the options page eventually.
+    return;
+#else
+    // Other platforms create windows synchronously. Fallthrough and open
+    // the options page afterwards.
     browser = CreateBrowserWindow(std::move(params));
     CHECK(browser);
-  }
-
-  return extensions::ExtensionTabUtil::OpenOptionsPage(extension, browser);
-#else
-  // TODO(crbug.com/383366125): Implement this when options page for extensions
-  // becomes available for desktop android.
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
 #endif
+  }
+  std::move(callback).Run(
+      extensions::ExtensionTabUtil::OpenOptionsPage(extension, browser));
 }
 
 int ChromeRuntimeAPIDelegate::GetDeveloperToolsWindowId(

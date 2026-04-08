@@ -66,11 +66,12 @@ class RuntimeAPIDelegate {
   // will not be restarted.
   virtual bool RestartDevice(std::string* error_message) = 0;
 
-  // Open `extension`'s options page, if it has one. Returns true if an
-  // options page was opened, false otherwise. See the docs of the
+  // Open `extension`'s options page, if it has one. Runs `callback` with
+  // true if an options page was opened, false otherwise. See the docs of the
   // chrome.runtime.openOptionsPage function for the gritty details.
-  virtual bool OpenOptionsPage(const Extension* extension,
-                               content::BrowserContext* browser_context);
+  virtual void OpenOptionsPage(const Extension* extension,
+                               content::BrowserContext* browser_context,
+                               base::OnceCallback<void(bool)> callback);
 
   // Get the window ID for developer tools. This must be provided by the clients
   // because they can choose to dock developer tools in a different window.

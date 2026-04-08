@@ -57,8 +57,9 @@ class ChromeRuntimeAPIDelegate : public extensions::RuntimeAPIDelegate,
   void OpenURL(const GURL& uninstall_url) override;
   bool GetPlatformInfo(extensions::api::runtime::PlatformInfo* info) override;
   bool RestartDevice(std::string* error_message) override;
-  bool OpenOptionsPage(const extensions::Extension* extension,
-                       content::BrowserContext* browser_context) override;
+  void OpenOptionsPage(const extensions::Extension* extension,
+                       content::BrowserContext* browser_context,
+                       base::OnceCallback<void(bool)> callback) override;
   int GetDeveloperToolsWindowId(
       content::WebContents* developer_tools_web_contents) override;
 

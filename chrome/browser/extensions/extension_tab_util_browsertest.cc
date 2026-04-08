@@ -8,6 +8,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_extensions_browser_client.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -65,7 +66,9 @@ const GURL& GetActiveUrl(BrowserWindowInterface* browser) {
 bool OpenOptionsPageFromAPI(const Extension* extension,
                             content::BrowserContext* browser_context) {
   RuntimeAPI* api = RuntimeAPI::GetFactoryInstance()->Get(browser_context);
-  return api->OpenOptionsPage(extension, browser_context);
+  base::test::TestFuture<bool> future;
+  api->OpenOptionsPage(extension, browser_context, future.GetCallback());
+  return future.Get();
 }
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -268,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   // have only one tab, and it should be open to the options page.
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   EXPECT_TRUE(content::WaitForLoadStop(
-                  browser()->tab_strip_model()->GetActiveWebContents()));
+      browser()->tab_strip_model()->GetActiveWebContents()));
   EXPECT_EQ(options_url, GetActiveUrl(browser()));
 
   // Calling OpenOptionsPage again shouldn't result in any new tabs, since we
@@ -276,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   EXPECT_TRUE(ExtensionTabUtil::OpenOptionsPage(options_in_tab, browser()));
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   EXPECT_TRUE(content::WaitForLoadStop(
-                  browser()->tab_strip_model()->GetActiveWebContents()));
+      browser()->tab_strip_model()->GetActiveWebContents()));
   EXPECT_EQ(options_url, GetActiveUrl(browser()));
 
   // Navigate to google.com (something non-newtab, non-options). Calling
@@ -288,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   EXPECT_TRUE(ExtensionTabUtil::OpenOptionsPage(options_in_tab, browser()));
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_TRUE(content::WaitForLoadStop(
-                  browser()->tab_strip_model()->GetActiveWebContents()));
+      browser()->tab_strip_model()->GetActiveWebContents()));
   EXPECT_EQ(options_url, GetActiveUrl(browser()));
 
   // Navigate the tab to a different extension URL, and call OpenOptionsPage().
@@ -300,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   EXPECT_TRUE(ExtensionTabUtil::OpenOptionsPage(options_in_tab, browser()));
   EXPECT_EQ(3, browser()->tab_strip_model()->count());
   EXPECT_TRUE(content::WaitForLoadStop(
-                  browser()->tab_strip_model()->GetActiveWebContents()));
+      browser()->tab_strip_model()->GetActiveWebContents()));
   EXPECT_EQ(options_url, GetActiveUrl(browser()));
 
   // If the user navigates to the options page e.g. by typing in the url, it

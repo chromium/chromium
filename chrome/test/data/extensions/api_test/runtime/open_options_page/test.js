@@ -9,16 +9,24 @@ const assertTrue = chrome.test.assertTrue;
 const listenOnce = chrome.test.listenOnce;
 const callbackPass = chrome.test.callbackPass;
 
-const optionsTabUrl = `chrome://extensions/?options=${chrome.runtime.id}`;
+let optionsTabUrl = `chrome://extensions/?options=${chrome.runtime.id}`;
 
 // Finds the Tab for an options page, or null if no options page is open.
 // Asserts that there is at most 1 options page open.
 // Result is passed to |callback|.
 function findOptionsTab(callback) {
-  chrome.tabs.query({url: optionsTabUrl}, callbackPass(function(tabs) {
-    assertTrue(tabs.length <= 1);
-    callback(tabs.length == 0 ? null : tabs[0]);
-  }));
+  chrome.runtime.getPlatformInfo(function(info) {
+    if (info.os === 'android') {
+      // The options page on Android has a different URL in the form of
+      // chrome-extensions://<extension-id>/options.html, so use that
+      // one instead.
+      optionsTabUrl = chrome.runtime.getURL('options.html');
+    }
+    chrome.tabs.query({url: optionsTabUrl}, callbackPass(function(tabs) {
+      assertTrue(tabs.length <= 1);
+      callback(tabs.length == 0 ? null : tabs[0]);
+    }));
+  });
 }
 
 // Tests opening a new options page.
@@ -53,11 +61,22 @@ function testRefocusExistingOptionsPage() {
     assertTrue(optionsTab != null);
     chrome.tabs.create({url: testUrl}, callbackPass(function(tab) {
       // Make sure the new tab is active.
-      getActiveTab(function(activeTab) {
+      getActiveTab(async function (activeTab) {
         assertEq(testUrl, activeTab.url || activeTab.pendingUrl);
-        // Open options page should refocus it.
-        chrome.runtime.openOptionsPage(callbackPass(function() {
-          getActiveTab(function(activeTab) {
+
+        // Desktop Android does not support refocusing the options page,
+        // as the option page cannot be embedded as a guest view like it is
+        // on other platforms.
+        // See: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/extensions/extension_tab_util.cc;l=1165-1175;drc=3c2a50b10dbf0b02620aae4d69f80fcf1061292e
+        // and https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/extensions/extension_tab_util.cc;l=207-215;drc=eb1b4c6a26bdb372fc55844b73f5b21a0f38b674
+        if ((await chrome.runtime.getPlatformInfo()).os === 'android') {
+          chrome.test.succeed('skipped');
+          return;
+        }
+
+        // On Win/Mac/Linux, open options page should refocus it immediately.
+        chrome.runtime.openOptionsPage(callbackPass(function () {
+          getActiveTab(function (activeTab) {
             assertEq(optionsTabUrl, activeTab.url);
           });
         }));

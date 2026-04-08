@@ -106,8 +106,13 @@ class RuntimeAPI : public BrowserContextKeyedAPI,
       const ExtensionId& extension_id,
       int seconds_from_now);
 
-  bool OpenOptionsPage(const Extension* extension,
-                       content::BrowserContext* browser_context);
+  // Opens the options page for an extension. On Android, this will open the
+  // options page asynchronously. After the option page attempts to open,
+  // the callback will execute with the result of the attempt. Returns true
+  // if the options page could be opened successfully, false otherwise.
+  void OpenOptionsPage(const Extension* extension,
+                       content::BrowserContext* browser_context,
+                       base::OnceCallback<void(bool)> callback);
 
  private:
   friend class BrowserContextKeyedAPIFactory<RuntimeAPI>;
@@ -250,6 +255,9 @@ class RuntimeOpenOptionsPageFunction : public ExtensionFunction {
  protected:
   ~RuntimeOpenOptionsPageFunction() override = default;
   ResponseAction Run() override;
+
+ private:
+  void OnOpenOptionsPageResult(bool success);
 };
 
 class RuntimeSetUninstallURLFunction : public ExtensionFunction {
