@@ -1,0 +1,17 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://w3c.github.io/webtransport/#webtransportsendstream
+[
+    Exposed=(Window,Worker),
+    SecureContext,
+    RuntimeEnabled=WebTransportSendGroup
+] interface WebTransportSendStream : WritableStream {
+  [RaisesException=Setter] attribute WebTransportSendGroup? sendGroup;
+  attribute long long sendOrder;
+  [CallWith=ScriptState]
+  Promise<WebTransportSendStreamStats> getStats();
+  // TODO(crbug.com/487117768): Add WebTransportWriter getWriter() once
+  // WebTransportWriter interface is implemented.
+};

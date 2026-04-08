@@ -3459,6 +3459,14 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
 [Worker]     method getStats
+[Worker] interface WebTransportSendStream : WritableStream
+[Worker]     attribute @@toStringTag
+[Worker]     getter sendGroup
+[Worker]     getter sendOrder
+[Worker]     method constructor
+[Worker]     method getStats
+[Worker]     setter sendGroup
+[Worker]     setter sendOrder
 [Worker] interface WorkerGlobalScope : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter caches

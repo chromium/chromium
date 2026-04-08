@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 43 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] WebTransportDatagramsWritable interface: existence and properties of interface object
   assert_own_property: self does not have own property "WebTransportDatagramsWritable" expected property "WebTransportDatagramsWritable" missing
 [FAIL] WebTransportDatagramsWritable interface object length
@@ -54,26 +54,8 @@ Found 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_inherits: property "responseHeaders" not found in prototype chain
 [FAIL] WebTransport interface: webTransport must inherit property "draining" with the proper type
   assert_inherits: property "draining" not found in prototype chain
-[FAIL] WebTransportSendStream interface: existence and properties of interface object
-  assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
-[FAIL] WebTransportSendStream interface object length
-  assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
-[FAIL] WebTransportSendStream interface object name
-  assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
-[FAIL] WebTransportSendStream interface: existence and properties of interface prototype object
-  assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
-[FAIL] WebTransportSendStream interface: existence and properties of interface prototype object's "constructor" property
-  assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
-[FAIL] WebTransportSendStream interface: existence and properties of interface prototype object's @@unscopables property
-  assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
-[FAIL] WebTransportSendStream interface: attribute sendGroup
-  assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
-[FAIL] WebTransportSendStream interface: attribute sendOrder
-  assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
-[FAIL] WebTransportSendStream interface: operation getStats()
-  assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
 [FAIL] WebTransportSendStream interface: operation getWriter()
-  assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
+  assert_own_property: interface prototype object missing non-static operation expected property "getWriter" missing
 [FAIL] WebTransportReceiveStream interface: existence and properties of interface object
   assert_own_property: self does not have own property "WebTransportReceiveStream" expected property "WebTransportReceiveStream" missing
 [FAIL] WebTransportReceiveStream interface object length
@@ -105,4 +87,3 @@ Found 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] WebTransportWriter interface: operation commit()
   assert_own_property: self does not have own property "WebTransportWriter" expected property "WebTransportWriter" missing
 Harness: the test ran to completion.
-

@@ -3036,6 +3036,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_transport_send_group.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_transport_send_group.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_transport_send_stream.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_transport_send_stream.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl2_rendering_context.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl2_rendering_context.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl2_rendering_context_webgpu.cc",

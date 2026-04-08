@@ -3555,6 +3555,14 @@ interface WebTransportSendGroup
     attribute @@toStringTag
     method constructor
     method getStats
+interface WebTransportSendStream : WritableStream
+    attribute @@toStringTag
+    getter sendGroup
+    getter sendOrder
+    method constructor
+    method getStats
+    setter sendGroup
+    setter sendOrder
 interface WindowClient : Client
     attribute @@toStringTag
     getter focused
