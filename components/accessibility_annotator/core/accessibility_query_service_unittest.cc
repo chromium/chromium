@@ -11,9 +11,9 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/accessibility_annotator/core/accessibility_query_service_delegate.h"
+#include "components/accessibility_annotator/core/annotation_reducer/entry_type.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_data_provider.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
-#include "components/accessibility_annotator/core/annotation_reducer/query_intent_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,11 +21,11 @@ namespace accessibility_annotator {
 
 namespace {
 
+using ::accessibility_annotator::EntryType;
 using ::accessibility_annotator::MemoryDataProvider;
 using ::accessibility_annotator::MemorySearchResult;
 using ::accessibility_annotator::MemorySearchResults;
 using ::accessibility_annotator::MemorySearchStatus;
-using ::accessibility_annotator::QueryIntentType;
 
 class MockAccessibilityQueryServiceDelegate
     : public AccessibilityQueryServiceDelegate {
@@ -39,7 +39,7 @@ class MockAccessibilityQueryServiceDelegate
 
 class FakeMemoryDataProvider : public MemoryDataProvider {
  public:
-  void RetrieveAll(QueryIntentType type,
+  void RetrieveAll(EntryType type,
                    base::OnceCallback<void(std::vector<MemorySearchResult>)>
                        callback) override {
     last_type_ = type;
@@ -48,11 +48,11 @@ class FakeMemoryDataProvider : public MemoryDataProvider {
   void set_results(std::vector<MemorySearchResult> results) {
     results_ = std::move(results);
   }
-  QueryIntentType last_type() const { return last_type_; }
+  EntryType last_type() const { return last_type_; }
 
  private:
   std::vector<MemorySearchResult> results_;
-  QueryIntentType last_type_ = QueryIntentType::kUnknown;
+  EntryType last_type_ = EntryType::kUnknown;
 };
 
 class FakeOnePResolver : public OnePResolver {
@@ -137,9 +137,9 @@ TEST_F(AccessibilityQueryServiceTest, Query_MultipleProviders) {
       std::move(providers), /*one_p_resolver=*/nullptr,
       /*remote_model_executor=*/nullptr);
 
-  MemorySearchResult result1(QueryIntentType::kNameFull, u"Name", u"John Doe");
+  MemorySearchResult result1(EntryType::kNameFull, u"Name", u"John Doe");
   fake_data_provider1->set_results({result1});
-  MemorySearchResult result2(QueryIntentType::kNameFull, u"Name", u"Jane Doe");
+  MemorySearchResult result2(EntryType::kNameFull, u"Name", u"Jane Doe");
   fake_data_provider2->set_results({result2});
 
   base::test::TestFuture<MemorySearchResults> future;
@@ -151,8 +151,8 @@ TEST_F(AccessibilityQueryServiceTest, Query_MultipleProviders) {
   EXPECT_EQ(result.entries.size(), 2u);
   EXPECT_EQ(result.entries[0].value, u"John Doe");
   EXPECT_EQ(result.entries[1].value, u"Jane Doe");
-  EXPECT_EQ(fake_data_provider1->last_type(), QueryIntentType::kNameFull);
-  EXPECT_EQ(fake_data_provider2->last_type(), QueryIntentType::kNameFull);
+  EXPECT_EQ(fake_data_provider1->last_type(), EntryType::kNameFull);
+  EXPECT_EQ(fake_data_provider2->last_type(), EntryType::kNameFull);
 }
 
 // Tests that the query service returns the expected results when the intent is
@@ -167,7 +167,7 @@ TEST_F(AccessibilityQueryServiceTest, Query_Success) {
       std::move(providers), /*one_p_resolver=*/nullptr,
       /*remote_model_executor=*/nullptr);
 
-  MemorySearchResult result(QueryIntentType::kNameFull, u"Name", u"John Doe");
+  MemorySearchResult result(EntryType::kNameFull, u"Name", u"John Doe");
   fake_data_provider->set_results({result});
 
   base::test::TestFuture<MemorySearchResults> future;
@@ -178,7 +178,7 @@ TEST_F(AccessibilityQueryServiceTest, Query_Success) {
   const auto& search_results = future.Get();
   EXPECT_EQ(search_results.entries.size(), 1u);
   EXPECT_EQ(search_results.entries[0].value, u"John Doe");
-  EXPECT_EQ(fake_data_provider->last_type(), QueryIntentType::kNameFull);
+  EXPECT_EQ(fake_data_provider->last_type(), EntryType::kNameFull);
 }
 
 // Tests that the query service returns an empty list when the intent is
@@ -243,7 +243,7 @@ TEST_F(AccessibilityQueryServiceTest, Query_UnknownIntent_QueriesOnePResolver) {
       std::move(providers), std::move(one_p_resolver),
       /*remote_model_executor=*/nullptr);
 
-  MemorySearchResult one_p_entry(QueryIntentType::kUnknown, u"Custom Type",
+  MemorySearchResult one_p_entry(EntryType::kUnknown, u"Custom Type",
                                  u"Some 1P Value");
   fake_one_p_resolver->set_results({one_p_entry});
 
@@ -294,8 +294,7 @@ TEST_F(AccessibilityQueryServiceTest, Query_NoLocalData_QueriesOnePResolver) {
       std::move(providers), std::move(one_p_resolver),
       /*remote_model_executor=*/nullptr);
 
-  MemorySearchResult one_p_entry(QueryIntentType::kNameFull, u"Name",
-                                 u"Jane Doe");
+  MemorySearchResult one_p_entry(EntryType::kNameFull, u"Name", u"Jane Doe");
   fake_one_p_resolver->set_results({one_p_entry});
 
   base::test::TestFuture<MemorySearchResults> future;
@@ -350,9 +349,9 @@ TEST_F(AccessibilityQueryServiceTest, Query_WithFilterWords) {
       std::move(providers), /*one_p_resolver=*/nullptr,
       /*remote_model_executor=*/nullptr);
 
-  MemorySearchResult entry1(QueryIntentType::kAddressFull, u"Address",
+  MemorySearchResult entry1(EntryType::kAddressFull, u"Address",
                             u"123 San Diego St Home San Diego");
-  MemorySearchResult entry2(QueryIntentType::kAddressFull, u"Address",
+  MemorySearchResult entry2(EntryType::kAddressFull, u"Address",
                             u"456 Mountain View Rd Work Mountain View");
 
   fake_data_provider->set_results({entry1, entry2});
@@ -365,7 +364,7 @@ TEST_F(AccessibilityQueryServiceTest, Query_WithFilterWords) {
   const auto& result = future.Get();
   EXPECT_EQ(result.entries.size(), 1u);
   EXPECT_EQ(result.entries[0].value, u"123 San Diego St Home San Diego");
-  EXPECT_EQ(fake_data_provider->last_type(), QueryIntentType::kAddressFull);
+  EXPECT_EQ(fake_data_provider->last_type(), EntryType::kAddressFull);
 }
 
 // Tests that the query service falls back to returning all results for the
@@ -381,7 +380,7 @@ TEST_F(AccessibilityQueryServiceTest,
       std::move(providers), /*one_p_resolver=*/nullptr,
       /*remote_model_executor=*/nullptr);
 
-  MemorySearchResult entry(QueryIntentType::kAddressFull, u"Address",
+  MemorySearchResult entry(EntryType::kAddressFull, u"Address",
                            u"123 San Diego St Home San Diego");
   fake_data_provider->set_results({entry});
 
@@ -395,7 +394,7 @@ TEST_F(AccessibilityQueryServiceTest,
   const auto& result = future.Get();
   EXPECT_EQ(result.entries.size(), 1u);
   EXPECT_EQ(result.entries[0].value, u"123 San Diego St Home San Diego");
-  EXPECT_EQ(fake_data_provider->last_type(), QueryIntentType::kAddressFull);
+  EXPECT_EQ(fake_data_provider->last_type(), EntryType::kAddressFull);
 }
 
 // Tests that the query service queries the 1P resolver if local filtering
@@ -415,11 +414,11 @@ TEST_F(AccessibilityQueryServiceTest,
       std::move(providers), std::move(one_p_resolver),
       /*remote_model_executor=*/nullptr);
 
-  MemorySearchResult local_entry(QueryIntentType::kAddressFull, u"Address",
+  MemorySearchResult local_entry(EntryType::kAddressFull, u"Address",
                                  u"123 San Diego St Home San Diego");
   fake_data_provider->set_results({local_entry});
 
-  MemorySearchResult one_p_entry(QueryIntentType::kAddressFull, u"Address",
+  MemorySearchResult one_p_entry(EntryType::kAddressFull, u"Address",
                                  u"456 New York Ave Home New York");
   fake_one_p_resolver->set_results({one_p_entry});
 
@@ -454,7 +453,7 @@ TEST_F(AccessibilityQueryServiceTest,
       std::move(providers), std::move(one_p_resolver),
       /*remote_model_executor=*/nullptr);
 
-  MemorySearchResult local_entry(QueryIntentType::kAddressFull, u"Address",
+  MemorySearchResult local_entry(EntryType::kAddressFull, u"Address",
                                  u"123 San Diego St Home San Diego");
   fake_data_provider->set_results({local_entry});
 

@@ -256,8 +256,7 @@ void OnePResolverImpl::OnModelExecutionComplete(
   std::vector<MemorySearchResult> results;
   for (const optimization_guide::proto::ReducedAnswer& answer :
        response->answers()) {
-    std::optional<QueryIntentType> type =
-        AnswerTypeToQueryIntentType(answer.type());
+    std::optional<EntryType> type = AnswerTypeToEntryType(answer.type());
     if (!type) {
       // TODO: crbug.com/499110476 -  Bubble up errors to the caller instead of
       // silently returning empty.
@@ -291,8 +290,7 @@ void OnePResolverImpl::OnModelExecutionComplete(
     // Extract metadata, providing additional context. These are
     // treated as key-value pairs similar to the top-level result.
     for (const auto& meta : answer.metadata_list()) {
-      std::optional<QueryIntentType> meta_type =
-          AnswerTypeToQueryIntentType(meta.type());
+      std::optional<EntryType> meta_type = AnswerTypeToEntryType(meta.type());
       if (!meta_type) {
         // TODO: crbug.com/499110476 -  Bubble up errors to the caller instead
         // of silently returning empty.

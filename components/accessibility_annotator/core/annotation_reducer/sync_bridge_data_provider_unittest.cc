@@ -13,8 +13,8 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "components/accessibility_annotator/core/annotation_reducer/entry_type.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
-#include "components/accessibility_annotator/core/annotation_reducer/query_intent_type.h"
 #include "components/accessibility_annotator/core/data_models/entity_types.h"
 #include "components/accessibility_annotator/core/storage/test_accessibility_annotator_backend.h"
 #include "components/sync/protocol/accessibility_annotation_specifics.pb.h"
@@ -30,7 +30,7 @@ using ::testing::IsEmpty;
 using ::testing::UnorderedElementsAre;
 
 testing::Matcher<MemorySearchResult> MatchesMemorySearchResult(
-    QueryIntentType expected_type,
+    EntryType expected_type,
     std::u16string_view expected_value) {
   return AllOf(Field(&MemorySearchResult::type, expected_type),
                Field(&MemorySearchResult::value, expected_value));
@@ -77,10 +77,10 @@ TEST_F(SyncBridgeDataProviderTest, RetrieveAll_SingleEntry) {
   base::MockCallback<base::OnceCallback<void(std::vector<MemorySearchResult>)>>
       callback;
   EXPECT_CALL(callback, Run(UnorderedElementsAre(MatchesMemorySearchResult(
-                            QueryIntentType::kOrderId, u"order_1"))))
+                            EntryType::kOrderId, u"order_1"))))
       .WillOnce([&]() { run_loop.Quit(); });
 
-  provider()->RetrieveAll(QueryIntentType::kOrderId, callback.Get());
+  provider()->RetrieveAll(EntryType::kOrderId, callback.Get());
   run_loop.Run();
 }
 
@@ -93,13 +93,12 @@ TEST_F(SyncBridgeDataProviderTest, RetrieveAll_MultipleEntriesAndFiltering) {
   base::RunLoop run_loop;
   base::MockCallback<base::OnceCallback<void(std::vector<MemorySearchResult>)>>
       callback;
-  EXPECT_CALL(
-      callback,
-      Run(UnorderedElementsAre(
-          MatchesMemorySearchResult(QueryIntentType::kOrderId, u"order_1"),
-          MatchesMemorySearchResult(QueryIntentType::kOrderId, u"order_3"))))
+  EXPECT_CALL(callback,
+              Run(UnorderedElementsAre(
+                  MatchesMemorySearchResult(EntryType::kOrderId, u"order_1"),
+                  MatchesMemorySearchResult(EntryType::kOrderId, u"order_3"))))
       .WillOnce([&]() { run_loop.Quit(); });
-  provider()->RetrieveAll(QueryIntentType::kOrderId, callback.Get());
+  provider()->RetrieveAll(EntryType::kOrderId, callback.Get());
   run_loop.Run();
 }
 
@@ -110,7 +109,7 @@ TEST_F(SyncBridgeDataProviderTest, RetrieveAll_EmptyBackend) {
   base::MockCallback<base::OnceCallback<void(std::vector<MemorySearchResult>)>>
       callback;
   EXPECT_CALL(callback, Run(IsEmpty())).WillOnce([&]() { run_loop.Quit(); });
-  provider()->RetrieveAll(QueryIntentType::kOrderId, callback.Get());
+  provider()->RetrieveAll(EntryType::kOrderId, callback.Get());
   run_loop.Run();
 }
 

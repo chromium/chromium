@@ -781,7 +781,7 @@ TEST_F(AutofillPopupControllerImplTest, AtMemory_FilterWithResults_NoMessage) {
                   AutofillSuggestionTriggerSource::kAtMemory);
 
   accessibility_annotator::MemorySearchResult entry(
-      accessibility_annotator::QueryIntentType::kNameFull, u"Name", u"result");
+      accessibility_annotator::EntryType::kNameFull, u"Name", u"result");
   accessibility_annotator::MemorySearchResults result(
       accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
       {entry});

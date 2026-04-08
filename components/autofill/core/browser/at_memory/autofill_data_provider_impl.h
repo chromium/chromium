@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "components/accessibility_annotator/core/annotation_reducer/entry_type.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_data_provider.h"
-#include "components/accessibility_annotator/core/annotation_reducer/query_intent_type.h"
 #include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
@@ -30,7 +30,7 @@ class AutofillDataProviderImpl
 
   // accessibility_annotator::MemoryDataProvider:
   void RetrieveAll(
-      accessibility_annotator::QueryIntentType type,
+      accessibility_annotator::EntryType type,
       base::OnceCallback<void(
           std::vector<accessibility_annotator::MemorySearchResult>)> callback)
       override;
@@ -38,7 +38,7 @@ class AutofillDataProviderImpl
  private:
   // Retrieves all entities for a given Autofill data type.
   std::vector<accessibility_annotator::MemorySearchResult> GetAutofillData(
-      accessibility_annotator::QueryIntentType intent_type,
+      accessibility_annotator::EntryType entry_type,
       AtMemoryDataType autofill_type);
 
   raw_ptr<const PersonalDataManager> personal_data_manager_;

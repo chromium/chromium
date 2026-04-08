@@ -6,8 +6,8 @@
 
 #include <optional>
 
+#include "components/accessibility_annotator/core/annotation_reducer/entry_type.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
-#include "components/accessibility_annotator/core/annotation_reducer/query_intent_type.h"
 #include "components/optimization_guide/proto/features/annotation_reducer_one_p_resolver.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -40,356 +40,318 @@ TEST(AnnotationReducerUtilTest, StripMarkdownCodeBlocks_EmptyAndInvalid) {
 }
 
 // Verifies that valid string intents are correctly mapped to their
-// corresponding QueryIntentType enums.
-TEST(AnnotationReducerUtilTest, StringToQueryIntentType_ValidMappings) {
-  EXPECT_EQ(StringToQueryIntentType("kAddressCity"),
-            QueryIntentType::kAddressCity);
-  EXPECT_EQ(StringToQueryIntentType("kAddressCountry"),
-            QueryIntentType::kAddressCountry);
-  EXPECT_EQ(StringToQueryIntentType("kAddressFull"),
-            QueryIntentType::kAddressFull);
-  EXPECT_EQ(StringToQueryIntentType("kAddressState"),
-            QueryIntentType::kAddressState);
-  EXPECT_EQ(StringToQueryIntentType("kAddressStreetAddress"),
-            QueryIntentType::kAddressStreetAddress);
-  EXPECT_EQ(StringToQueryIntentType("kAddressZip"),
-            QueryIntentType::kAddressZip);
-  EXPECT_EQ(StringToQueryIntentType("kCompanyName"),
-            QueryIntentType::kCompanyName);
-  EXPECT_EQ(StringToQueryIntentType("kCreditCardExpirationDate"),
-            QueryIntentType::kCreditCardExpirationDate);
-  EXPECT_EQ(StringToQueryIntentType("kCreditCardFull"),
-            QueryIntentType::kCreditCardFull);
-  EXPECT_EQ(StringToQueryIntentType("kCreditCardNameOnCard"),
-            QueryIntentType::kCreditCardNameOnCard);
-  EXPECT_EQ(StringToQueryIntentType("kCreditCardNickname"),
-            QueryIntentType::kCreditCardNickname);
-  EXPECT_EQ(StringToQueryIntentType("kCreditCardNumber"),
-            QueryIntentType::kCreditCardNumber);
-  EXPECT_EQ(StringToQueryIntentType("kCreditCardSecurityCode"),
-            QueryIntentType::kCreditCardSecurityCode);
-  EXPECT_EQ(StringToQueryIntentType("kDriversLicenseExpirationDate"),
-            QueryIntentType::kDriversLicenseExpirationDate);
-  EXPECT_EQ(StringToQueryIntentType("kDriversLicenseFull"),
-            QueryIntentType::kDriversLicenseFull);
-  EXPECT_EQ(StringToQueryIntentType("kDriversLicenseIssueDate"),
-            QueryIntentType::kDriversLicenseIssueDate);
-  EXPECT_EQ(StringToQueryIntentType("kDriversLicenseName"),
-            QueryIntentType::kDriversLicenseName);
-  EXPECT_EQ(StringToQueryIntentType("kDriversLicenseNumber"),
-            QueryIntentType::kDriversLicenseNumber);
-  EXPECT_EQ(StringToQueryIntentType("kDriversLicenseState"),
-            QueryIntentType::kDriversLicenseState);
-  EXPECT_EQ(StringToQueryIntentType("kEmail"), QueryIntentType::kEmail);
-  EXPECT_EQ(StringToQueryIntentType("kFlightReservationArrivalAirport"),
-            QueryIntentType::kFlightReservationArrivalAirport);
-  EXPECT_EQ(StringToQueryIntentType("kFlightReservationConfirmationCode"),
-            QueryIntentType::kFlightReservationConfirmationCode);
-  EXPECT_EQ(StringToQueryIntentType("kFlightReservationDepartureAirport"),
-            QueryIntentType::kFlightReservationDepartureAirport);
-  EXPECT_EQ(StringToQueryIntentType("kFlightReservationDepartureDate"),
-            QueryIntentType::kFlightReservationDepartureDate);
-  EXPECT_EQ(StringToQueryIntentType("kFlightReservationFlightNumber"),
-            QueryIntentType::kFlightReservationFlightNumber);
-  EXPECT_EQ(StringToQueryIntentType("kFlightReservationFull"),
-            QueryIntentType::kFlightReservationFull);
-  EXPECT_EQ(StringToQueryIntentType("kFlightReservationPassengerName"),
-            QueryIntentType::kFlightReservationPassengerName);
-  EXPECT_EQ(StringToQueryIntentType("kFlightReservationTicketNumber"),
-            QueryIntentType::kFlightReservationTicketNumber);
-  EXPECT_EQ(StringToQueryIntentType("kIban"), QueryIntentType::kIban);
-  EXPECT_EQ(StringToQueryIntentType("kIbanNickname"),
-            QueryIntentType::kIbanNickname);
-  EXPECT_EQ(StringToQueryIntentType("kKnownTravelerNumberExpirationDate"),
-            QueryIntentType::kKnownTravelerNumberExpirationDate);
-  EXPECT_EQ(StringToQueryIntentType("kKnownTravelerNumberFull"),
-            QueryIntentType::kKnownTravelerNumberFull);
-  EXPECT_EQ(StringToQueryIntentType("kKnownTravelerNumberName"),
-            QueryIntentType::kKnownTravelerNumberName);
-  EXPECT_EQ(StringToQueryIntentType("kKnownTravelerNumberNumber"),
-            QueryIntentType::kKnownTravelerNumberNumber);
-  EXPECT_EQ(StringToQueryIntentType("kNameFull"), QueryIntentType::kNameFull);
-  EXPECT_EQ(StringToQueryIntentType("kNationalIdCardCountry"),
-            QueryIntentType::kNationalIdCardCountry);
-  EXPECT_EQ(StringToQueryIntentType("kNationalIdCardExpirationDate"),
-            QueryIntentType::kNationalIdCardExpirationDate);
-  EXPECT_EQ(StringToQueryIntentType("kNationalIdCardFull"),
-            QueryIntentType::kNationalIdCardFull);
-  EXPECT_EQ(StringToQueryIntentType("kNationalIdCardIssueDate"),
-            QueryIntentType::kNationalIdCardIssueDate);
-  EXPECT_EQ(StringToQueryIntentType("kNationalIdCardName"),
-            QueryIntentType::kNationalIdCardName);
-  EXPECT_EQ(StringToQueryIntentType("kNationalIdCardNumber"),
-            QueryIntentType::kNationalIdCardNumber);
-  EXPECT_EQ(StringToQueryIntentType("kOrderAccount"),
-            QueryIntentType::kOrderAccount);
-  EXPECT_EQ(StringToQueryIntentType("kOrderDate"), QueryIntentType::kOrderDate);
-  EXPECT_EQ(StringToQueryIntentType("kOrderFull"), QueryIntentType::kOrderFull);
-  EXPECT_EQ(StringToQueryIntentType("kOrderGrandTotal"),
-            QueryIntentType::kOrderGrandTotal);
-  EXPECT_EQ(StringToQueryIntentType("kOrderId"), QueryIntentType::kOrderId);
-  EXPECT_EQ(StringToQueryIntentType("kOrderMerchantDomain"),
-            QueryIntentType::kOrderMerchantDomain);
-  EXPECT_EQ(StringToQueryIntentType("kOrderMerchantName"),
-            QueryIntentType::kOrderMerchantName);
-  EXPECT_EQ(StringToQueryIntentType("kOrderProductNames"),
-            QueryIntentType::kOrderProductNames);
-  EXPECT_EQ(StringToQueryIntentType("kPassportCountry"),
-            QueryIntentType::kPassportCountry);
-  EXPECT_EQ(StringToQueryIntentType("kPassportExpirationDate"),
-            QueryIntentType::kPassportExpirationDate);
-  EXPECT_EQ(StringToQueryIntentType("kPassportFull"),
-            QueryIntentType::kPassportFull);
-  EXPECT_EQ(StringToQueryIntentType("kPassportIssueDate"),
-            QueryIntentType::kPassportIssueDate);
-  EXPECT_EQ(StringToQueryIntentType("kPassportName"),
-            QueryIntentType::kPassportName);
-  EXPECT_EQ(StringToQueryIntentType("kPassportNumber"),
-            QueryIntentType::kPassportNumber);
-  EXPECT_EQ(StringToQueryIntentType("kPhone"), QueryIntentType::kPhone);
-  EXPECT_EQ(StringToQueryIntentType("kRedressNumberFull"),
-            QueryIntentType::kRedressNumberFull);
-  EXPECT_EQ(StringToQueryIntentType("kRedressNumberName"),
-            QueryIntentType::kRedressNumberName);
-  EXPECT_EQ(StringToQueryIntentType("kRedressNumberNumber"),
-            QueryIntentType::kRedressNumberNumber);
-  EXPECT_EQ(StringToQueryIntentType("kVehicle"), QueryIntentType::kVehicle);
-  EXPECT_EQ(StringToQueryIntentType("kVehicleMake"),
-            QueryIntentType::kVehicleMake);
-  EXPECT_EQ(StringToQueryIntentType("kVehicleModel"),
-            QueryIntentType::kVehicleModel);
-  EXPECT_EQ(StringToQueryIntentType("kVehicleOwner"),
-            QueryIntentType::kVehicleOwner);
-  EXPECT_EQ(StringToQueryIntentType("kVehiclePlateNumber"),
-            QueryIntentType::kVehiclePlateNumber);
-  EXPECT_EQ(StringToQueryIntentType("kVehiclePlateState"),
-            QueryIntentType::kVehiclePlateState);
-  EXPECT_EQ(StringToQueryIntentType("kVehicleVin"),
-            QueryIntentType::kVehicleVin);
-  EXPECT_EQ(StringToQueryIntentType("kVehicleYear"),
-            QueryIntentType::kVehicleYear);
+// corresponding EntryType enums.
+TEST(AnnotationReducerUtilTest, StringToEntryType_ValidMappings) {
+  EXPECT_EQ(StringToEntryType("kAddressCity"), EntryType::kAddressCity);
+  EXPECT_EQ(StringToEntryType("kAddressCountry"), EntryType::kAddressCountry);
+  EXPECT_EQ(StringToEntryType("kAddressFull"), EntryType::kAddressFull);
+  EXPECT_EQ(StringToEntryType("kAddressState"), EntryType::kAddressState);
+  EXPECT_EQ(StringToEntryType("kAddressStreetAddress"),
+            EntryType::kAddressStreetAddress);
+  EXPECT_EQ(StringToEntryType("kAddressZip"), EntryType::kAddressZip);
+  EXPECT_EQ(StringToEntryType("kCompanyName"), EntryType::kCompanyName);
+  EXPECT_EQ(StringToEntryType("kCreditCardExpirationDate"),
+            EntryType::kCreditCardExpirationDate);
+  EXPECT_EQ(StringToEntryType("kCreditCardFull"), EntryType::kCreditCardFull);
+  EXPECT_EQ(StringToEntryType("kCreditCardNameOnCard"),
+            EntryType::kCreditCardNameOnCard);
+  EXPECT_EQ(StringToEntryType("kCreditCardNickname"),
+            EntryType::kCreditCardNickname);
+  EXPECT_EQ(StringToEntryType("kCreditCardNumber"),
+            EntryType::kCreditCardNumber);
+  EXPECT_EQ(StringToEntryType("kCreditCardSecurityCode"),
+            EntryType::kCreditCardSecurityCode);
+  EXPECT_EQ(StringToEntryType("kDriversLicenseExpirationDate"),
+            EntryType::kDriversLicenseExpirationDate);
+  EXPECT_EQ(StringToEntryType("kDriversLicenseFull"),
+            EntryType::kDriversLicenseFull);
+  EXPECT_EQ(StringToEntryType("kDriversLicenseIssueDate"),
+            EntryType::kDriversLicenseIssueDate);
+  EXPECT_EQ(StringToEntryType("kDriversLicenseName"),
+            EntryType::kDriversLicenseName);
+  EXPECT_EQ(StringToEntryType("kDriversLicenseNumber"),
+            EntryType::kDriversLicenseNumber);
+  EXPECT_EQ(StringToEntryType("kDriversLicenseState"),
+            EntryType::kDriversLicenseState);
+  EXPECT_EQ(StringToEntryType("kEmail"), EntryType::kEmail);
+  EXPECT_EQ(StringToEntryType("kFlightReservationArrivalAirport"),
+            EntryType::kFlightReservationArrivalAirport);
+  EXPECT_EQ(StringToEntryType("kFlightReservationConfirmationCode"),
+            EntryType::kFlightReservationConfirmationCode);
+  EXPECT_EQ(StringToEntryType("kFlightReservationDepartureAirport"),
+            EntryType::kFlightReservationDepartureAirport);
+  EXPECT_EQ(StringToEntryType("kFlightReservationDepartureDate"),
+            EntryType::kFlightReservationDepartureDate);
+  EXPECT_EQ(StringToEntryType("kFlightReservationFlightNumber"),
+            EntryType::kFlightReservationFlightNumber);
+  EXPECT_EQ(StringToEntryType("kFlightReservationFull"),
+            EntryType::kFlightReservationFull);
+  EXPECT_EQ(StringToEntryType("kFlightReservationPassengerName"),
+            EntryType::kFlightReservationPassengerName);
+  EXPECT_EQ(StringToEntryType("kFlightReservationTicketNumber"),
+            EntryType::kFlightReservationTicketNumber);
+  EXPECT_EQ(StringToEntryType("kIban"), EntryType::kIban);
+  EXPECT_EQ(StringToEntryType("kIbanNickname"), EntryType::kIbanNickname);
+  EXPECT_EQ(StringToEntryType("kKnownTravelerNumberExpirationDate"),
+            EntryType::kKnownTravelerNumberExpirationDate);
+  EXPECT_EQ(StringToEntryType("kKnownTravelerNumberFull"),
+            EntryType::kKnownTravelerNumberFull);
+  EXPECT_EQ(StringToEntryType("kKnownTravelerNumberName"),
+            EntryType::kKnownTravelerNumberName);
+  EXPECT_EQ(StringToEntryType("kKnownTravelerNumberNumber"),
+            EntryType::kKnownTravelerNumberNumber);
+  EXPECT_EQ(StringToEntryType("kNameFull"), EntryType::kNameFull);
+  EXPECT_EQ(StringToEntryType("kNationalIdCardCountry"),
+            EntryType::kNationalIdCardCountry);
+  EXPECT_EQ(StringToEntryType("kNationalIdCardExpirationDate"),
+            EntryType::kNationalIdCardExpirationDate);
+  EXPECT_EQ(StringToEntryType("kNationalIdCardFull"),
+            EntryType::kNationalIdCardFull);
+  EXPECT_EQ(StringToEntryType("kNationalIdCardIssueDate"),
+            EntryType::kNationalIdCardIssueDate);
+  EXPECT_EQ(StringToEntryType("kNationalIdCardName"),
+            EntryType::kNationalIdCardName);
+  EXPECT_EQ(StringToEntryType("kNationalIdCardNumber"),
+            EntryType::kNationalIdCardNumber);
+  EXPECT_EQ(StringToEntryType("kOrderAccount"), EntryType::kOrderAccount);
+  EXPECT_EQ(StringToEntryType("kOrderDate"), EntryType::kOrderDate);
+  EXPECT_EQ(StringToEntryType("kOrderFull"), EntryType::kOrderFull);
+  EXPECT_EQ(StringToEntryType("kOrderGrandTotal"), EntryType::kOrderGrandTotal);
+  EXPECT_EQ(StringToEntryType("kOrderId"), EntryType::kOrderId);
+  EXPECT_EQ(StringToEntryType("kOrderMerchantDomain"),
+            EntryType::kOrderMerchantDomain);
+  EXPECT_EQ(StringToEntryType("kOrderMerchantName"),
+            EntryType::kOrderMerchantName);
+  EXPECT_EQ(StringToEntryType("kOrderProductNames"),
+            EntryType::kOrderProductNames);
+  EXPECT_EQ(StringToEntryType("kPassportCountry"), EntryType::kPassportCountry);
+  EXPECT_EQ(StringToEntryType("kPassportExpirationDate"),
+            EntryType::kPassportExpirationDate);
+  EXPECT_EQ(StringToEntryType("kPassportFull"), EntryType::kPassportFull);
+  EXPECT_EQ(StringToEntryType("kPassportIssueDate"),
+            EntryType::kPassportIssueDate);
+  EXPECT_EQ(StringToEntryType("kPassportName"), EntryType::kPassportName);
+  EXPECT_EQ(StringToEntryType("kPassportNumber"), EntryType::kPassportNumber);
+  EXPECT_EQ(StringToEntryType("kPhone"), EntryType::kPhone);
+  EXPECT_EQ(StringToEntryType("kRedressNumberFull"),
+            EntryType::kRedressNumberFull);
+  EXPECT_EQ(StringToEntryType("kRedressNumberName"),
+            EntryType::kRedressNumberName);
+  EXPECT_EQ(StringToEntryType("kRedressNumberNumber"),
+            EntryType::kRedressNumberNumber);
+  EXPECT_EQ(StringToEntryType("kVehicle"), EntryType::kVehicle);
+  EXPECT_EQ(StringToEntryType("kVehicleMake"), EntryType::kVehicleMake);
+  EXPECT_EQ(StringToEntryType("kVehicleModel"), EntryType::kVehicleModel);
+  EXPECT_EQ(StringToEntryType("kVehicleOwner"), EntryType::kVehicleOwner);
+  EXPECT_EQ(StringToEntryType("kVehiclePlateNumber"),
+            EntryType::kVehiclePlateNumber);
+  EXPECT_EQ(StringToEntryType("kVehiclePlateState"),
+            EntryType::kVehiclePlateState);
+  EXPECT_EQ(StringToEntryType("kVehicleVin"), EntryType::kVehicleVin);
+  EXPECT_EQ(StringToEntryType("kVehicleYear"), EntryType::kVehicleYear);
 }
 
 // Verifies that an unrecognized or empty string intent is safely mapped to
 // kUnknown.
-TEST(AnnotationReducerUtilTest, StringToQueryIntentType_InvalidMapping) {
-  EXPECT_EQ(StringToQueryIntentType("kNonExistentIntent"),
-            QueryIntentType::kUnknown);
-  EXPECT_EQ(StringToQueryIntentType(""), QueryIntentType::kUnknown);
+TEST(AnnotationReducerUtilTest, StringToEntryType_InvalidMapping) {
+  EXPECT_EQ(StringToEntryType("kNonExistentIntent"), EntryType::kUnknown);
+  EXPECT_EQ(StringToEntryType(""), EntryType::kUnknown);
 }
 
 // Verifies that all valid AnswerType proto enums correctly map to
-// QueryIntentType enums.
-TEST(AnnotationReducerUtilTest, AnswerTypeToQueryIntentType_ValidMappings) {
-  EXPECT_EQ(AnswerTypeToQueryIntentType(ReducedAnswer::ANSWER_TYPE_UNKNOWN),
-            QueryIntentType::kUnknown);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(ReducedAnswer::ANSWER_TYPE_NAME_FULL),
-            QueryIntentType::kNameFull);
+// EntryType enums.
+TEST(AnnotationReducerUtilTest, AnswerTypeToEntryType_ValidMappings) {
+  EXPECT_EQ(AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_UNKNOWN),
+            EntryType::kUnknown);
+  EXPECT_EQ(AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_NAME_FULL),
+            EntryType::kNameFull);
+  EXPECT_EQ(AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_ADDRESS_FULL),
+            EntryType::kAddressFull);
   EXPECT_EQ(
-      AnswerTypeToQueryIntentType(ReducedAnswer::ANSWER_TYPE_ADDRESS_FULL),
-      QueryIntentType::kAddressFull);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
-                ReducedAnswer::ANSWER_TYPE_ADDRESS_STREET_ADDRESS),
-            QueryIntentType::kAddressStreetAddress);
+      AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_ADDRESS_STREET_ADDRESS),
+      EntryType::kAddressStreetAddress);
+  EXPECT_EQ(AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_ADDRESS_CITY),
+            EntryType::kAddressCity);
+  EXPECT_EQ(AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_ADDRESS_STATE),
+            EntryType::kAddressState);
+  EXPECT_EQ(AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_ADDRESS_ZIP),
+            EntryType::kAddressZip);
+  EXPECT_EQ(AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_ADDRESS_COUNTRY),
+            EntryType::kAddressCountry);
+  EXPECT_EQ(AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_PHONE),
+            EntryType::kPhone);
+  EXPECT_EQ(AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_EMAIL),
+            EntryType::kEmail);
+  EXPECT_EQ(AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_COMPANY_NAME),
+            EntryType::kCompanyName);
+  EXPECT_EQ(AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_IBAN),
+            EntryType::kIban);
+  EXPECT_EQ(AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_IBAN_NICKNAME),
+            EntryType::kIbanNickname);
+  EXPECT_EQ(AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_VEHICLE),
+            EntryType::kVehicle);
+  EXPECT_EQ(AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_VEHICLE_MAKE),
+            EntryType::kVehicleMake);
+  EXPECT_EQ(AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_VEHICLE_MODEL),
+            EntryType::kVehicleModel);
+  EXPECT_EQ(AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_VEHICLE_YEAR),
+            EntryType::kVehicleYear);
+  EXPECT_EQ(AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_VEHICLE_OWNER),
+            EntryType::kVehicleOwner);
   EXPECT_EQ(
-      AnswerTypeToQueryIntentType(ReducedAnswer::ANSWER_TYPE_ADDRESS_CITY),
-      QueryIntentType::kAddressCity);
+      AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_VEHICLE_PLATE_NUMBER),
+      EntryType::kVehiclePlateNumber);
   EXPECT_EQ(
-      AnswerTypeToQueryIntentType(ReducedAnswer::ANSWER_TYPE_ADDRESS_STATE),
-      QueryIntentType::kAddressState);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(ReducedAnswer::ANSWER_TYPE_ADDRESS_ZIP),
-            QueryIntentType::kAddressZip);
+      AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_VEHICLE_PLATE_STATE),
+      EntryType::kVehiclePlateState);
+  EXPECT_EQ(AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_VEHICLE_VIN),
+            EntryType::kVehicleVin);
+  EXPECT_EQ(AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_PASSPORT_FULL),
+            EntryType::kPassportFull);
+  EXPECT_EQ(AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_PASSPORT_NAME),
+            EntryType::kPassportName);
+  EXPECT_EQ(AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_PASSPORT_COUNTRY),
+            EntryType::kPassportCountry);
+  EXPECT_EQ(AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_PASSPORT_NUMBER),
+            EntryType::kPassportNumber);
   EXPECT_EQ(
-      AnswerTypeToQueryIntentType(ReducedAnswer::ANSWER_TYPE_ADDRESS_COUNTRY),
-      QueryIntentType::kAddressCountry);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(ReducedAnswer::ANSWER_TYPE_PHONE),
-            QueryIntentType::kPhone);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(ReducedAnswer::ANSWER_TYPE_EMAIL),
-            QueryIntentType::kEmail);
-  EXPECT_EQ(
-      AnswerTypeToQueryIntentType(ReducedAnswer::ANSWER_TYPE_COMPANY_NAME),
-      QueryIntentType::kCompanyName);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(ReducedAnswer::ANSWER_TYPE_IBAN),
-            QueryIntentType::kIban);
-  EXPECT_EQ(
-      AnswerTypeToQueryIntentType(ReducedAnswer::ANSWER_TYPE_IBAN_NICKNAME),
-      QueryIntentType::kIbanNickname);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(ReducedAnswer::ANSWER_TYPE_VEHICLE),
-            QueryIntentType::kVehicle);
-  EXPECT_EQ(
-      AnswerTypeToQueryIntentType(ReducedAnswer::ANSWER_TYPE_VEHICLE_MAKE),
-      QueryIntentType::kVehicleMake);
-  EXPECT_EQ(
-      AnswerTypeToQueryIntentType(ReducedAnswer::ANSWER_TYPE_VEHICLE_MODEL),
-      QueryIntentType::kVehicleModel);
-  EXPECT_EQ(
-      AnswerTypeToQueryIntentType(ReducedAnswer::ANSWER_TYPE_VEHICLE_YEAR),
-      QueryIntentType::kVehicleYear);
-  EXPECT_EQ(
-      AnswerTypeToQueryIntentType(ReducedAnswer::ANSWER_TYPE_VEHICLE_OWNER),
-      QueryIntentType::kVehicleOwner);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
-                ReducedAnswer::ANSWER_TYPE_VEHICLE_PLATE_NUMBER),
-            QueryIntentType::kVehiclePlateNumber);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
-                ReducedAnswer::ANSWER_TYPE_VEHICLE_PLATE_STATE),
-            QueryIntentType::kVehiclePlateState);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(ReducedAnswer::ANSWER_TYPE_VEHICLE_VIN),
-            QueryIntentType::kVehicleVin);
-  EXPECT_EQ(
-      AnswerTypeToQueryIntentType(ReducedAnswer::ANSWER_TYPE_PASSPORT_FULL),
-      QueryIntentType::kPassportFull);
-  EXPECT_EQ(
-      AnswerTypeToQueryIntentType(ReducedAnswer::ANSWER_TYPE_PASSPORT_NAME),
-      QueryIntentType::kPassportName);
-  EXPECT_EQ(
-      AnswerTypeToQueryIntentType(ReducedAnswer::ANSWER_TYPE_PASSPORT_COUNTRY),
-      QueryIntentType::kPassportCountry);
-  EXPECT_EQ(
-      AnswerTypeToQueryIntentType(ReducedAnswer::ANSWER_TYPE_PASSPORT_NUMBER),
-      QueryIntentType::kPassportNumber);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
-                ReducedAnswer::ANSWER_TYPE_PASSPORT_ISSUE_DATE),
-            QueryIntentType::kPassportIssueDate);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
+      AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_PASSPORT_ISSUE_DATE),
+      EntryType::kPassportIssueDate);
+  EXPECT_EQ(AnswerTypeToEntryType(
                 ReducedAnswer::ANSWER_TYPE_PASSPORT_EXPIRATION_DATE),
-            QueryIntentType::kPassportExpirationDate);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
-                ReducedAnswer::ANSWER_TYPE_FLIGHT_RESERVATION_FULL),
-            QueryIntentType::kFlightReservationFull);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
+            EntryType::kPassportExpirationDate);
+  EXPECT_EQ(
+      AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_FLIGHT_RESERVATION_FULL),
+      EntryType::kFlightReservationFull);
+  EXPECT_EQ(AnswerTypeToEntryType(
                 ReducedAnswer::ANSWER_TYPE_FLIGHT_RESERVATION_FLIGHT_NUMBER),
-            QueryIntentType::kFlightReservationFlightNumber);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
+            EntryType::kFlightReservationFlightNumber);
+  EXPECT_EQ(AnswerTypeToEntryType(
                 ReducedAnswer::ANSWER_TYPE_FLIGHT_RESERVATION_TICKET_NUMBER),
-            QueryIntentType::kFlightReservationTicketNumber);
+            EntryType::kFlightReservationTicketNumber);
   EXPECT_EQ(
-      AnswerTypeToQueryIntentType(
+      AnswerTypeToEntryType(
           ReducedAnswer::ANSWER_TYPE_FLIGHT_RESERVATION_CONFIRMATION_CODE),
-      QueryIntentType::kFlightReservationConfirmationCode);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
+      EntryType::kFlightReservationConfirmationCode);
+  EXPECT_EQ(AnswerTypeToEntryType(
                 ReducedAnswer::ANSWER_TYPE_FLIGHT_RESERVATION_PASSENGER_NAME),
-            QueryIntentType::kFlightReservationPassengerName);
+            EntryType::kFlightReservationPassengerName);
   EXPECT_EQ(
-      AnswerTypeToQueryIntentType(
+      AnswerTypeToEntryType(
           ReducedAnswer::ANSWER_TYPE_FLIGHT_RESERVATION_DEPARTURE_AIRPORT),
-      QueryIntentType::kFlightReservationDepartureAirport);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
+      EntryType::kFlightReservationDepartureAirport);
+  EXPECT_EQ(AnswerTypeToEntryType(
                 ReducedAnswer::ANSWER_TYPE_FLIGHT_RESERVATION_ARRIVAL_AIRPORT),
-            QueryIntentType::kFlightReservationArrivalAirport);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
+            EntryType::kFlightReservationArrivalAirport);
+  EXPECT_EQ(AnswerTypeToEntryType(
                 ReducedAnswer::ANSWER_TYPE_FLIGHT_RESERVATION_DEPARTURE_DATE),
-            QueryIntentType::kFlightReservationDepartureDate);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
+            EntryType::kFlightReservationDepartureDate);
+  EXPECT_EQ(AnswerTypeToEntryType(
                 ReducedAnswer::ANSWER_TYPE_FLIGHT_RESERVATION_ARRIVAL_DATE),
-            QueryIntentType::kFlightReservationArrivalDate);
-  EXPECT_EQ(
-      AnswerTypeToQueryIntentType(ReducedAnswer::ANSWER_TYPE_SHIPMENT_FULL),
-      QueryIntentType::kShipmentFull);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
+            EntryType::kFlightReservationArrivalDate);
+  EXPECT_EQ(AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_SHIPMENT_FULL),
+            EntryType::kShipmentFull);
+  EXPECT_EQ(AnswerTypeToEntryType(
                 ReducedAnswer::ANSWER_TYPE_SHIPMENT_TRACKING_NUMBER),
-            QueryIntentType::kShipmentTrackingNumber);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
+            EntryType::kShipmentTrackingNumber);
+  EXPECT_EQ(AnswerTypeToEntryType(
                 ReducedAnswer::ANSWER_TYPE_SHIPMENT_ASSOCIATED_ORDER_ID),
-            QueryIntentType::kShipmentAssociatedOrderId);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
+            EntryType::kShipmentAssociatedOrderId);
+  EXPECT_EQ(AnswerTypeToEntryType(
                 ReducedAnswer::ANSWER_TYPE_SHIPMENT_DELIVERY_ADDRESS),
-            QueryIntentType::kShipmentDeliveryAddress);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
-                ReducedAnswer::ANSWER_TYPE_SHIPMENT_CARRIER_NAME),
-            QueryIntentType::kShipmentCarrierName);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
-                ReducedAnswer::ANSWER_TYPE_SHIPMENT_CARRIER_DOMAIN),
-            QueryIntentType::kShipmentCarrierDomain);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
+            EntryType::kShipmentDeliveryAddress);
+  EXPECT_EQ(
+      AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_SHIPMENT_CARRIER_NAME),
+      EntryType::kShipmentCarrierName);
+  EXPECT_EQ(
+      AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_SHIPMENT_CARRIER_DOMAIN),
+      EntryType::kShipmentCarrierDomain);
+  EXPECT_EQ(AnswerTypeToEntryType(
                 ReducedAnswer::ANSWER_TYPE_SHIPMENT_ESTIMATED_DELIVERY_DATE),
-            QueryIntentType::kShipmentEstimatedDeliveryDate);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
-                ReducedAnswer::ANSWER_TYPE_NATIONAL_ID_CARD_FULL),
-            QueryIntentType::kNationalIdCardFull);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
-                ReducedAnswer::ANSWER_TYPE_NATIONAL_ID_CARD_NAME),
-            QueryIntentType::kNationalIdCardName);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
+            EntryType::kShipmentEstimatedDeliveryDate);
+  EXPECT_EQ(
+      AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_NATIONAL_ID_CARD_FULL),
+      EntryType::kNationalIdCardFull);
+  EXPECT_EQ(
+      AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_NATIONAL_ID_CARD_NAME),
+      EntryType::kNationalIdCardName);
+  EXPECT_EQ(AnswerTypeToEntryType(
                 ReducedAnswer::ANSWER_TYPE_NATIONAL_ID_CARD_COUNTRY),
-            QueryIntentType::kNationalIdCardCountry);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
-                ReducedAnswer::ANSWER_TYPE_NATIONAL_ID_CARD_NUMBER),
-            QueryIntentType::kNationalIdCardNumber);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
+            EntryType::kNationalIdCardCountry);
+  EXPECT_EQ(
+      AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_NATIONAL_ID_CARD_NUMBER),
+      EntryType::kNationalIdCardNumber);
+  EXPECT_EQ(AnswerTypeToEntryType(
                 ReducedAnswer::ANSWER_TYPE_NATIONAL_ID_CARD_ISSUE_DATE),
-            QueryIntentType::kNationalIdCardIssueDate);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
+            EntryType::kNationalIdCardIssueDate);
+  EXPECT_EQ(AnswerTypeToEntryType(
                 ReducedAnswer::ANSWER_TYPE_NATIONAL_ID_CARD_EXPIRATION_DATE),
-            QueryIntentType::kNationalIdCardExpirationDate);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
-                ReducedAnswer::ANSWER_TYPE_REDRESS_NUMBER_FULL),
-            QueryIntentType::kRedressNumberFull);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
-                ReducedAnswer::ANSWER_TYPE_REDRESS_NUMBER_NAME),
-            QueryIntentType::kRedressNumberName);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
-                ReducedAnswer::ANSWER_TYPE_REDRESS_NUMBER_NUMBER),
-            QueryIntentType::kRedressNumberNumber);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
+            EntryType::kNationalIdCardExpirationDate);
+  EXPECT_EQ(
+      AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_REDRESS_NUMBER_FULL),
+      EntryType::kRedressNumberFull);
+  EXPECT_EQ(
+      AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_REDRESS_NUMBER_NAME),
+      EntryType::kRedressNumberName);
+  EXPECT_EQ(
+      AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_REDRESS_NUMBER_NUMBER),
+      EntryType::kRedressNumberNumber);
+  EXPECT_EQ(AnswerTypeToEntryType(
                 ReducedAnswer::ANSWER_TYPE_KNOWN_TRAVELER_NUMBER_FULL),
-            QueryIntentType::kKnownTravelerNumberFull);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
+            EntryType::kKnownTravelerNumberFull);
+  EXPECT_EQ(AnswerTypeToEntryType(
                 ReducedAnswer::ANSWER_TYPE_KNOWN_TRAVELER_NUMBER_NAME),
-            QueryIntentType::kKnownTravelerNumberName);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
+            EntryType::kKnownTravelerNumberName);
+  EXPECT_EQ(AnswerTypeToEntryType(
                 ReducedAnswer::ANSWER_TYPE_KNOWN_TRAVELER_NUMBER_NUMBER),
-            QueryIntentType::kKnownTravelerNumberNumber);
+            EntryType::kKnownTravelerNumberNumber);
   EXPECT_EQ(
-      AnswerTypeToQueryIntentType(
+      AnswerTypeToEntryType(
           ReducedAnswer::ANSWER_TYPE_KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE),
-      QueryIntentType::kKnownTravelerNumberExpirationDate);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
-                ReducedAnswer::ANSWER_TYPE_DRIVERS_LICENSE_FULL),
-            QueryIntentType::kDriversLicenseFull);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
-                ReducedAnswer::ANSWER_TYPE_DRIVERS_LICENSE_NAME),
-            QueryIntentType::kDriversLicenseName);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
-                ReducedAnswer::ANSWER_TYPE_DRIVERS_LICENSE_STATE),
-            QueryIntentType::kDriversLicenseState);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
-                ReducedAnswer::ANSWER_TYPE_DRIVERS_LICENSE_NUMBER),
-            QueryIntentType::kDriversLicenseNumber);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
+      EntryType::kKnownTravelerNumberExpirationDate);
+  EXPECT_EQ(
+      AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_DRIVERS_LICENSE_FULL),
+      EntryType::kDriversLicenseFull);
+  EXPECT_EQ(
+      AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_DRIVERS_LICENSE_NAME),
+      EntryType::kDriversLicenseName);
+  EXPECT_EQ(
+      AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_DRIVERS_LICENSE_STATE),
+      EntryType::kDriversLicenseState);
+  EXPECT_EQ(
+      AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_DRIVERS_LICENSE_NUMBER),
+      EntryType::kDriversLicenseNumber);
+  EXPECT_EQ(AnswerTypeToEntryType(
                 ReducedAnswer::ANSWER_TYPE_DRIVERS_LICENSE_ISSUE_DATE),
-            QueryIntentType::kDriversLicenseIssueDate);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
+            EntryType::kDriversLicenseIssueDate);
+  EXPECT_EQ(AnswerTypeToEntryType(
                 ReducedAnswer::ANSWER_TYPE_DRIVERS_LICENSE_EXPIRATION_DATE),
-            QueryIntentType::kDriversLicenseExpirationDate);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(ReducedAnswer::ANSWER_TYPE_ORDER_FULL),
-            QueryIntentType::kOrderFull);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(ReducedAnswer::ANSWER_TYPE_ORDER_ID),
-            QueryIntentType::kOrderId);
+            EntryType::kDriversLicenseExpirationDate);
+  EXPECT_EQ(AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_ORDER_FULL),
+            EntryType::kOrderFull);
+  EXPECT_EQ(AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_ORDER_ID),
+            EntryType::kOrderId);
+  EXPECT_EQ(AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_ORDER_ACCOUNT),
+            EntryType::kOrderAccount);
+  EXPECT_EQ(AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_ORDER_DATE),
+            EntryType::kOrderDate);
   EXPECT_EQ(
-      AnswerTypeToQueryIntentType(ReducedAnswer::ANSWER_TYPE_ORDER_ACCOUNT),
-      QueryIntentType::kOrderAccount);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(ReducedAnswer::ANSWER_TYPE_ORDER_DATE),
-            QueryIntentType::kOrderDate);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
-                ReducedAnswer::ANSWER_TYPE_ORDER_MERCHANT_NAME),
-            QueryIntentType::kOrderMerchantName);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
-                ReducedAnswer::ANSWER_TYPE_ORDER_MERCHANT_DOMAIN),
-            QueryIntentType::kOrderMerchantDomain);
-  EXPECT_EQ(AnswerTypeToQueryIntentType(
-                ReducedAnswer::ANSWER_TYPE_ORDER_PRODUCT_NAMES),
-            QueryIntentType::kOrderProductNames);
+      AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_ORDER_MERCHANT_NAME),
+      EntryType::kOrderMerchantName);
   EXPECT_EQ(
-      AnswerTypeToQueryIntentType(ReducedAnswer::ANSWER_TYPE_ORDER_GRAND_TOTAL),
-      QueryIntentType::kOrderGrandTotal);
+      AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_ORDER_MERCHANT_DOMAIN),
+      EntryType::kOrderMerchantDomain);
+  EXPECT_EQ(
+      AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_ORDER_PRODUCT_NAMES),
+      EntryType::kOrderProductNames);
+  EXPECT_EQ(AnswerTypeToEntryType(ReducedAnswer::ANSWER_TYPE_ORDER_GRAND_TOTAL),
+            EntryType::kOrderGrandTotal);
 }
 
 // Verifies that an out-of-bounds AnswerType proto enum maps to std::nullopt.
-TEST(AnnotationReducerUtilTest, AnswerTypeToQueryIntentType_InvalidMapping) {
-  EXPECT_EQ(
-      AnswerTypeToQueryIntentType(static_cast<ReducedAnswer::AnswerType>(9999)),
-      std::nullopt);
+TEST(AnnotationReducerUtilTest, AnswerTypeToEntryType_InvalidMapping) {
+  EXPECT_EQ(AnswerTypeToEntryType(static_cast<ReducedAnswer::AnswerType>(9999)),
+            std::nullopt);
 }
 
 // Verifies that all valid SourceType proto enums correctly map to

@@ -9,7 +9,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
-#include "components/accessibility_annotator/core/annotation_reducer/query_intent_type.h"
+#include "components/accessibility_annotator/core/annotation_reducer/entry_type.h"
 #include "components/optimization_guide/optimization_guide_buildflags.h"
 
 #if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
@@ -81,252 +81,234 @@ class QueryClassifierTest : public ::testing::Test {
 
 // Tests that empty or whitespace queries are classified as unknown.
 TEST_F(QueryClassifierTest, EmptyQuery) {
-  EXPECT_EQ(RunClassifier(u"").intent, QueryIntentType::kUnknown);
-  EXPECT_EQ(RunClassifier(u"  ").intent, QueryIntentType::kUnknown);
+  EXPECT_EQ(RunClassifier(u"").intent, EntryType::kUnknown);
+  EXPECT_EQ(RunClassifier(u"  ").intent, EntryType::kUnknown);
 }
 
 // Tests that queries containing only stop words are classified as unknown.
 TEST_F(QueryClassifierTest, QueryWithOnlyStopWords) {
-  EXPECT_EQ(RunClassifier(u"what is my").intent, QueryIntentType::kUnknown);
+  EXPECT_EQ(RunClassifier(u"what is my").intent, EntryType::kUnknown);
   EXPECT_EQ(RunClassifier(u"show me the details please").intent,
-            QueryIntentType::kUnknown);
+            EntryType::kUnknown);
 }
 
 // Tests that address-related queries are correctly classified.
 TEST_F(QueryClassifierTest, AddressIntents) {
-  EXPECT_EQ(RunClassifier(u"my zip code").intent, QueryIntentType::kAddressZip);
+  EXPECT_EQ(RunClassifier(u"my zip code").intent, EntryType::kAddressZip);
   EXPECT_EQ(RunClassifier(u"What is the postal code?").intent,
-            QueryIntentType::kAddressZip);
-  EXPECT_EQ(RunClassifier(u"show me the City").intent,
-            QueryIntentType::kAddressCity);
-  EXPECT_EQ(RunClassifier(u"town").intent, QueryIntentType::kAddressCity);
-  EXPECT_EQ(RunClassifier(u"state").intent, QueryIntentType::kAddressState);
-  EXPECT_EQ(RunClassifier(u"province please").intent,
-            QueryIntentType::kAddressState);
-  EXPECT_EQ(RunClassifier(u"country").intent, QueryIntentType::kAddressCountry);
+            EntryType::kAddressZip);
+  EXPECT_EQ(RunClassifier(u"show me the City").intent, EntryType::kAddressCity);
+  EXPECT_EQ(RunClassifier(u"town").intent, EntryType::kAddressCity);
+  EXPECT_EQ(RunClassifier(u"state").intent, EntryType::kAddressState);
+  EXPECT_EQ(RunClassifier(u"province please").intent, EntryType::kAddressState);
+  EXPECT_EQ(RunClassifier(u"country").intent, EntryType::kAddressCountry);
   EXPECT_EQ(RunClassifier(u"street name").intent,
-            QueryIntentType::kAddressStreetAddress);
+            EntryType::kAddressStreetAddress);
   EXPECT_EQ(RunClassifier(u"What is my address?").intent,
-            QueryIntentType::kAddressFull);
-  EXPECT_EQ(RunClassifier(u"home address").intent,
-            QueryIntentType::kAddressFull);
-  EXPECT_EQ(RunClassifier(u"company name").intent,
-            QueryIntentType::kCompanyName);
-  EXPECT_EQ(RunClassifier(u"organization").intent,
-            QueryIntentType::kCompanyName);
+            EntryType::kAddressFull);
+  EXPECT_EQ(RunClassifier(u"home address").intent, EntryType::kAddressFull);
+  EXPECT_EQ(RunClassifier(u"company name").intent, EntryType::kCompanyName);
+  EXPECT_EQ(RunClassifier(u"organization").intent, EntryType::kCompanyName);
 }
 
 // Tests that contact-related queries are correctly classified.
 TEST_F(QueryClassifierTest, ContactIntents) {
-  EXPECT_EQ(RunClassifier(u"my phone number").intent, QueryIntentType::kPhone);
-  EXPECT_EQ(RunClassifier(u"mobile").intent, QueryIntentType::kPhone);
-  EXPECT_EQ(RunClassifier(u"what is my email").intent, QueryIntentType::kEmail);
-  EXPECT_EQ(RunClassifier(u"e-mail address").intent, QueryIntentType::kEmail);
-  EXPECT_EQ(RunClassifier(u"name").intent, QueryIntentType::kNameFull);
-  EXPECT_EQ(RunClassifier(u"what is my name").intent,
-            QueryIntentType::kNameFull);
+  EXPECT_EQ(RunClassifier(u"my phone number").intent, EntryType::kPhone);
+  EXPECT_EQ(RunClassifier(u"mobile").intent, EntryType::kPhone);
+  EXPECT_EQ(RunClassifier(u"what is my email").intent, EntryType::kEmail);
+  EXPECT_EQ(RunClassifier(u"e-mail address").intent, EntryType::kEmail);
+  EXPECT_EQ(RunClassifier(u"name").intent, EntryType::kNameFull);
+  EXPECT_EQ(RunClassifier(u"what is my name").intent, EntryType::kNameFull);
 }
 
 // Tests that payment-related queries are correctly classified.
 TEST_F(QueryClassifierTest, PaymentIntents) {
-  EXPECT_EQ(RunClassifier(u"IBAN").intent, QueryIntentType::kIban);
-  EXPECT_EQ(RunClassifier(u"my bank account number").intent,
-            QueryIntentType::kIban);
+  EXPECT_EQ(RunClassifier(u"IBAN").intent, EntryType::kIban);
+  EXPECT_EQ(RunClassifier(u"my bank account number").intent, EntryType::kIban);
 }
 
 // Tests that credit card-related queries are correctly classified.
 TEST_F(QueryClassifierTest, CreditCardIntents) {
-  EXPECT_EQ(RunClassifier(u"credit card").intent,
-            QueryIntentType::kCreditCardFull);
+  EXPECT_EQ(RunClassifier(u"credit card").intent, EntryType::kCreditCardFull);
   EXPECT_EQ(RunClassifier(u"credit card number").intent,
-            QueryIntentType::kCreditCardNumber);
+            EntryType::kCreditCardNumber);
   EXPECT_EQ(RunClassifier(u"credit card expiration date").intent,
-            QueryIntentType::kCreditCardExpirationDate);
-  EXPECT_EQ(RunClassifier(u"CVV").intent,
-            QueryIntentType::kCreditCardSecurityCode);
+            EntryType::kCreditCardExpirationDate);
+  EXPECT_EQ(RunClassifier(u"CVV").intent, EntryType::kCreditCardSecurityCode);
   EXPECT_EQ(RunClassifier(u"name on card").intent,
-            QueryIntentType::kCreditCardNameOnCard);
+            EntryType::kCreditCardNameOnCard);
 }
 
 // Tests that entity-related queries are correctly classified.
 TEST_F(QueryClassifierTest, EntityIntents) {
   EXPECT_EQ(RunClassifier(u"license plate").intent,
-            QueryIntentType::kVehiclePlateNumber);
-  EXPECT_EQ(RunClassifier(u"VIN number").intent, QueryIntentType::kVehicleVin);
-  EXPECT_EQ(RunClassifier(u"car details").intent, QueryIntentType::kVehicle);
-  EXPECT_EQ(RunClassifier(u"my vehicle").intent, QueryIntentType::kVehicle);
-  EXPECT_EQ(RunClassifier(u"passport info").intent,
-            QueryIntentType::kPassportFull);
+            EntryType::kVehiclePlateNumber);
+  EXPECT_EQ(RunClassifier(u"VIN number").intent, EntryType::kVehicleVin);
+  EXPECT_EQ(RunClassifier(u"car details").intent, EntryType::kVehicle);
+  EXPECT_EQ(RunClassifier(u"my vehicle").intent, EntryType::kVehicle);
+  EXPECT_EQ(RunClassifier(u"passport info").intent, EntryType::kPassportFull);
   EXPECT_EQ(RunClassifier(u"my reservation").intent,
-            QueryIntentType::kFlightReservationFull);
+            EntryType::kFlightReservationFull);
   EXPECT_EQ(RunClassifier(u"national id").intent,
-            QueryIntentType::kNationalIdCardFull);
+            EntryType::kNationalIdCardFull);
   EXPECT_EQ(RunClassifier(u"redress number").intent,
-            QueryIntentType::kRedressNumberNumber);
+            EntryType::kRedressNumberNumber);
   EXPECT_EQ(RunClassifier(u"known traveler number").intent,
-            QueryIntentType::kKnownTravelerNumberFull);
+            EntryType::kKnownTravelerNumberFull);
   EXPECT_EQ(RunClassifier(u"my KTN").intent,
-            QueryIntentType::kKnownTravelerNumberFull);
+            EntryType::kKnownTravelerNumberFull);
   EXPECT_EQ(RunClassifier(u"driver's license").intent,
-            QueryIntentType::kDriversLicenseFull);
+            EntryType::kDriversLicenseFull);
   EXPECT_EQ(RunClassifier(u"driving license").intent,
-            QueryIntentType::kDriversLicenseFull);
-  EXPECT_EQ(RunClassifier(u"my shipment").intent,
-            QueryIntentType::kShipmentFull);
+            EntryType::kDriversLicenseFull);
+  EXPECT_EQ(RunClassifier(u"my shipment").intent, EntryType::kShipmentFull);
   EXPECT_EQ(RunClassifier(u"where is my package").intent,
-            QueryIntentType::kShipmentFull);
+            EntryType::kShipmentFull);
 }
 
 // Tests that entity attribute queries are correctly classified.
 TEST_F(QueryClassifierTest, EntityAttributeIntents) {
   // Vehicle attributes
-  EXPECT_EQ(RunClassifier(u"car make").intent, QueryIntentType::kVehicleMake);
-  EXPECT_EQ(RunClassifier(u"vehicle model").intent,
-            QueryIntentType::kVehicleModel);
-  EXPECT_EQ(RunClassifier(u"car year").intent, QueryIntentType::kVehicleYear);
-  EXPECT_EQ(RunClassifier(u"vehicle owner").intent,
-            QueryIntentType::kVehicleOwner);
+  EXPECT_EQ(RunClassifier(u"car make").intent, EntryType::kVehicleMake);
+  EXPECT_EQ(RunClassifier(u"vehicle model").intent, EntryType::kVehicleModel);
+  EXPECT_EQ(RunClassifier(u"car year").intent, EntryType::kVehicleYear);
+  EXPECT_EQ(RunClassifier(u"vehicle owner").intent, EntryType::kVehicleOwner);
   EXPECT_EQ(RunClassifier(u"plate state").intent,
-            QueryIntentType::kVehiclePlateState);
+            EntryType::kVehiclePlateState);
 
   // Passport attributes
   EXPECT_EQ(RunClassifier(u"passport number").intent,
-            QueryIntentType::kPassportNumber);
+            EntryType::kPassportNumber);
   EXPECT_EQ(RunClassifier(u"passport expiration").intent,
-            QueryIntentType::kPassportExpirationDate);
+            EntryType::kPassportExpirationDate);
   EXPECT_EQ(RunClassifier(u"passport issue").intent,
-            QueryIntentType::kPassportIssueDate);
+            EntryType::kPassportIssueDate);
   EXPECT_EQ(RunClassifier(u"passport country").intent,
-            QueryIntentType::kPassportCountry);
-  EXPECT_EQ(RunClassifier(u"passport name").intent,
-            QueryIntentType::kPassportName);
+            EntryType::kPassportCountry);
+  EXPECT_EQ(RunClassifier(u"passport name").intent, EntryType::kPassportName);
 
   // Flight Reservation attributes
   EXPECT_EQ(RunClassifier(u"flight number").intent,
-            QueryIntentType::kFlightReservationFlightNumber);
+            EntryType::kFlightReservationFlightNumber);
   EXPECT_EQ(RunClassifier(u"ticket number").intent,
-            QueryIntentType::kFlightReservationTicketNumber);
+            EntryType::kFlightReservationTicketNumber);
   EXPECT_EQ(RunClassifier(u"confirmation code").intent,
-            QueryIntentType::kFlightReservationConfirmationCode);
+            EntryType::kFlightReservationConfirmationCode);
   EXPECT_EQ(RunClassifier(u"passenger name").intent,
-            QueryIntentType::kFlightReservationPassengerName);
+            EntryType::kFlightReservationPassengerName);
   EXPECT_EQ(RunClassifier(u"departure airport").intent,
-            QueryIntentType::kFlightReservationDepartureAirport);
+            EntryType::kFlightReservationDepartureAirport);
   EXPECT_EQ(RunClassifier(u"arrival airport").intent,
-            QueryIntentType::kFlightReservationArrivalAirport);
+            EntryType::kFlightReservationArrivalAirport);
   EXPECT_EQ(RunClassifier(u"departure date").intent,
-            QueryIntentType::kFlightReservationDepartureDate);
+            EntryType::kFlightReservationDepartureDate);
   EXPECT_EQ(RunClassifier(u"arrival date").intent,
-            QueryIntentType::kFlightReservationArrivalDate);
+            EntryType::kFlightReservationArrivalDate);
 
   // Shipment attributes
   EXPECT_EQ(RunClassifier(u"tracking number").intent,
-            QueryIntentType::kShipmentTrackingNumber);
+            EntryType::kShipmentTrackingNumber);
   EXPECT_EQ(RunClassifier(u"associated order id").intent,
-            QueryIntentType::kShipmentAssociatedOrderId);
+            EntryType::kShipmentAssociatedOrderId);
   EXPECT_EQ(RunClassifier(u"shipping address").intent,
-            QueryIntentType::kShipmentDeliveryAddress);
+            EntryType::kShipmentDeliveryAddress);
   EXPECT_EQ(RunClassifier(u"carrier name").intent,
-            QueryIntentType::kShipmentCarrierName);
+            EntryType::kShipmentCarrierName);
   EXPECT_EQ(RunClassifier(u"carrier website").intent,
-            QueryIntentType::kShipmentCarrierDomain);
+            EntryType::kShipmentCarrierDomain);
   EXPECT_EQ(RunClassifier(u"estimated delivery date").intent,
-            QueryIntentType::kShipmentEstimatedDeliveryDate);
+            EntryType::kShipmentEstimatedDeliveryDate);
 
   // National ID attributes
   EXPECT_EQ(RunClassifier(u"national id number").intent,
-            QueryIntentType::kNationalIdCardNumber);
+            EntryType::kNationalIdCardNumber);
   EXPECT_EQ(RunClassifier(u"national id name").intent,
-            QueryIntentType::kNationalIdCardName);
+            EntryType::kNationalIdCardName);
 
   // Redress/KTN attributes
   EXPECT_EQ(RunClassifier(u"redress name").intent,
-            QueryIntentType::kRedressNumberName);
+            EntryType::kRedressNumberName);
   EXPECT_EQ(RunClassifier(u"ktn number").intent,
-            QueryIntentType::kKnownTravelerNumberNumber);
+            EntryType::kKnownTravelerNumberNumber);
 
   // Drivers License attributes
   EXPECT_EQ(RunClassifier(u"driver's license number").intent,
-            QueryIntentType::kDriversLicenseNumber);
+            EntryType::kDriversLicenseNumber);
   EXPECT_EQ(RunClassifier(u"drivers license state").intent,
-            QueryIntentType::kDriversLicenseState);
+            EntryType::kDriversLicenseState);
 }
 
 // Tests that order-related queries are correctly classified.
 TEST_F(QueryClassifierTest, OrderIntents) {
-  EXPECT_EQ(RunClassifier(u"order id").intent, QueryIntentType::kOrderId);
-  EXPECT_EQ(RunClassifier(u"order number").intent, QueryIntentType::kOrderId);
-  EXPECT_EQ(RunClassifier(u"order date").intent, QueryIntentType::kOrderDate);
+  EXPECT_EQ(RunClassifier(u"order id").intent, EntryType::kOrderId);
+  EXPECT_EQ(RunClassifier(u"order number").intent, EntryType::kOrderId);
+  EXPECT_EQ(RunClassifier(u"order date").intent, EntryType::kOrderDate);
   EXPECT_EQ(RunClassifier(u"merchant name").intent,
-            QueryIntentType::kOrderMerchantName);
-  EXPECT_EQ(RunClassifier(u"store name").intent,
-            QueryIntentType::kOrderMerchantName);
+            EntryType::kOrderMerchantName);
+  EXPECT_EQ(RunClassifier(u"store name").intent, EntryType::kOrderMerchantName);
   EXPECT_EQ(RunClassifier(u"order grand total").intent,
-            QueryIntentType::kOrderGrandTotal);
-  EXPECT_EQ(RunClassifier(u"what is my order").intent,
-            QueryIntentType::kOrderFull);
+            EntryType::kOrderGrandTotal);
+  EXPECT_EQ(RunClassifier(u"what is my order").intent, EntryType::kOrderFull);
 }
 
 // Tests that queries mixed with stop words are correctly classified.
 TEST_F(QueryClassifierTest, MixedWithStopWords) {
   EXPECT_EQ(RunClassifier(u"show me my zip code please").intent,
-            QueryIntentType::kAddressZip);
+            EntryType::kAddressZip);
   EXPECT_EQ(RunClassifier(u"what is the car's VIN").intent,
-            QueryIntentType::kVehicleVin);
+            EntryType::kVehicleVin);
   EXPECT_EQ(RunClassifier(u"get my flight details").intent,
-            QueryIntentType::kFlightReservationFull);
+            EntryType::kFlightReservationFull);
 }
 
 // Tests that query classification is case-insensitive.
 TEST_F(QueryClassifierTest, CaseInsensitivity) {
-  EXPECT_EQ(RunClassifier(u"MY ZIP CODE").intent, QueryIntentType::kAddressZip);
-  EXPECT_EQ(RunClassifier(u"My Zip Code").intent, QueryIntentType::kAddressZip);
+  EXPECT_EQ(RunClassifier(u"MY ZIP CODE").intent, EntryType::kAddressZip);
+  EXPECT_EQ(RunClassifier(u"My Zip Code").intent, EntryType::kAddressZip);
 }
 
 // Tests that queries with punctuation are correctly classified.
 TEST_F(QueryClassifierTest, PunctuationHandling) {
-  EXPECT_EQ(RunClassifier(u"zip, code!").intent, QueryIntentType::kAddressZip);
-  EXPECT_EQ(RunClassifier(u"city?").intent, QueryIntentType::kAddressCity);
-  EXPECT_EQ(RunClassifier(u"my email, please").intent, QueryIntentType::kEmail);
+  EXPECT_EQ(RunClassifier(u"zip, code!").intent, EntryType::kAddressZip);
+  EXPECT_EQ(RunClassifier(u"city?").intent, EntryType::kAddressCity);
+  EXPECT_EQ(RunClassifier(u"my email, please").intent, EntryType::kEmail);
 }
 
 // Tests that queries with no matching keywords are classified as unknown.
 TEST_F(QueryClassifierTest, NoKeywordMatch) {
-  EXPECT_EQ(RunClassifier(u"how is the weather").intent,
-            QueryIntentType::kUnknown);
-  EXPECT_EQ(RunClassifier(u"set a timer").intent, QueryIntentType::kUnknown);
+  EXPECT_EQ(RunClassifier(u"how is the weather").intent, EntryType::kUnknown);
+  EXPECT_EQ(RunClassifier(u"set a timer").intent, EntryType::kUnknown);
 }
 
 // Tests that substring matches don't incorrectly trigger classification.
 TEST_F(QueryClassifierTest, SubstringNonMatch) {
-  EXPECT_EQ(RunClassifier(u"bank account").intent, QueryIntentType::kIban);
-  EXPECT_EQ(RunClassifier(u"cartoon").intent, QueryIntentType::kUnknown);
+  EXPECT_EQ(RunClassifier(u"bank account").intent, EntryType::kIban);
+  EXPECT_EQ(RunClassifier(u"cartoon").intent, EntryType::kUnknown);
 }
 
 // Tests that multi-word address queries are correctly classified.
 TEST_F(QueryClassifierTest, MultiWordAddressIntents) {
-  EXPECT_EQ(RunClassifier(u"my postal code").intent,
-            QueryIntentType::kAddressZip);
+  EXPECT_EQ(RunClassifier(u"my postal code").intent, EntryType::kAddressZip);
   EXPECT_EQ(RunClassifier(u"what is the home address").intent,
-            QueryIntentType::kAddressFull);
+            EntryType::kAddressFull);
   EXPECT_EQ(RunClassifier(u"work address please").intent,
-            QueryIntentType::kAddressFull);
+            EntryType::kAddressFull);
 }
 
 // Tests that multi-word entity queries are correctly classified.
 TEST_F(QueryClassifierTest, MultiWordEntityIntents) {
   EXPECT_EQ(RunClassifier(u"show my license plate").intent,
-            QueryIntentType::kVehiclePlateNumber);
+            EntryType::kVehiclePlateNumber);
   EXPECT_EQ(RunClassifier(u"plate number").intent,
-            QueryIntentType::kVehiclePlateNumber);
+            EntryType::kVehiclePlateNumber);
   EXPECT_EQ(RunClassifier(u"flight reservation code").intent,
-            QueryIntentType::kFlightReservationFull);
+            EntryType::kFlightReservationFull);
   EXPECT_EQ(RunClassifier(u"what is my national id").intent,
-            QueryIntentType::kNationalIdCardFull);
+            EntryType::kNationalIdCardFull);
   EXPECT_EQ(RunClassifier(u"known traveler number").intent,
-            QueryIntentType::kKnownTravelerNumberFull);
+            EntryType::kKnownTravelerNumberFull);
   EXPECT_EQ(RunClassifier(u"drivers license").intent,
-            QueryIntentType::kDriversLicenseFull);
+            EntryType::kDriversLicenseFull);
 }
 
 // Tests that filter words are correctly extracted.
@@ -334,14 +316,14 @@ TEST_F(QueryClassifierTest, RequiredWords) {
   {
     ClassifiedQuery classified_query =
         RunClassifier(u"What's my home address in San Diego");
-    EXPECT_EQ(classified_query.intent, QueryIntentType::kAddressFull);
+    EXPECT_EQ(classified_query.intent, EntryType::kAddressFull);
     EXPECT_THAT(classified_query.filter_words,
                 testing::ElementsAre(u"san", u"diego"));
   }
   {
     ClassifiedQuery classified_query =
         RunClassifier(u"show me my VIN for my Tesla");
-    EXPECT_EQ(classified_query.intent, QueryIntentType::kVehicleVin);
+    EXPECT_EQ(classified_query.intent, EntryType::kVehicleVin);
     EXPECT_THAT(classified_query.filter_words,
                 testing::ElementsAre(u"tesla"));
   }
@@ -349,7 +331,7 @@ TEST_F(QueryClassifierTest, RequiredWords) {
     ClassifiedQuery classified_query =
         RunClassifier(u"get flight number for LH123");
     EXPECT_EQ(classified_query.intent,
-              QueryIntentType::kFlightReservationFlightNumber);
+              EntryType::kFlightReservationFlightNumber);
     EXPECT_THAT(classified_query.filter_words,
                 testing::ElementsAre(u"lh123"));
   }
@@ -359,7 +341,7 @@ TEST_F(QueryClassifierTest, RequiredWords) {
 TEST_F(QueryClassifierTest, SimpleMatch) {
   QueryClassifier classifier = internal::CreateKeywordQueryClassifier();
   EXPECT_EQ(RunClassifier(classifier, u"zip code").intent,
-            QueryIntentType::kAddressZip);
+            EntryType::kAddressZip);
 }
 
 #if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
@@ -368,7 +350,7 @@ TEST_F(QueryClassifierTest, SimpleMatch) {
 TEST_F(QueryClassifierTest, NoOp) {
   QueryClassifier classifier = internal::CreateGeminiClassifier(nullptr);
   EXPECT_EQ(RunClassifier(classifier, u"something complicated").intent,
-            QueryIntentType::kUnknown);
+            EntryType::kUnknown);
 }
 
 class GeminiClassifierTest : public QueryClassifierTest {
@@ -418,7 +400,7 @@ TEST_F(GeminiClassifierTest, SuccessWithFilterWords) {
 
   ClassifiedQuery result =
       RunClassifier(classifier_, u"What's my address in San Diego");
-  EXPECT_EQ(result.intent, QueryIntentType::kAddressFull);
+  EXPECT_EQ(result.intent, EntryType::kAddressFull);
   EXPECT_THAT(result.filter_words, testing::ElementsAre(u"san", u"diego"));
 }
 
@@ -427,7 +409,7 @@ TEST_F(GeminiClassifierTest, UnknownIntent) {
   SetMockExecutionResponse(R"({"intent": "kUnknown", "filter_words": []})");
 
   EXPECT_EQ(RunClassifier(classifier_, u"something random").intent,
-            QueryIntentType::kUnknown);
+            EntryType::kUnknown);
 }
 
 // Tests that GeminiClassifier handles invalid JSON response.
@@ -435,7 +417,7 @@ TEST_F(GeminiClassifierTest, InvalidJson) {
   SetMockExecutionResponse("invalid json");
 
   EXPECT_EQ(RunClassifier(classifier_, u"some query").intent,
-            QueryIntentType::kUnknown);
+            EntryType::kUnknown);
 }
 
 // Tests that GeminiClassifier handles response wrapped in Markdown.
@@ -446,7 +428,7 @@ TEST_F(GeminiClassifierTest, MarkdownResponse) {
       "\n```");
 
   EXPECT_EQ(RunClassifier(classifier_, u"What's my name").intent,
-            QueryIntentType::kNameFull);
+            EntryType::kNameFull);
 }
 
 // Tests that GeminiClassifier handles missing fields in JSON.
@@ -454,7 +436,7 @@ TEST_F(GeminiClassifierTest, MissingFields) {
   SetMockExecutionResponse(R"({"filter_words": ["missing", "intent"]})");
 
   EXPECT_EQ(RunClassifier(classifier_, u"some query").intent,
-            QueryIntentType::kUnknown);
+            EntryType::kUnknown);
 }
 #endif  // BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
 

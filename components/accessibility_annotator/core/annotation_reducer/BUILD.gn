@@ -32,14 +32,14 @@ source_set("one_p_resolver") {
 
 source_set("annotation_reducer") {
   sources = [
+    "entry_type.h",
+    "entry_type_util.cc",
+    "entry_type_util.h",
     "memory_data_provider.h",
     "memory_search_result.cc",
     "memory_search_result.h",
     "query_classifier.cc",
     "query_classifier.h",
-    "query_intent_type.h",
-    "query_intent_type_util.cc",
-    "query_intent_type_util.h",
     "sync_bridge_data_provider.cc",
     "sync_bridge_data_provider.h",
     "util.cc",
@@ -59,8 +59,8 @@ source_set("annotation_reducer") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "entry_type_util_unittest.cc",
     "query_classifier_unittest.cc",
-    "query_intent_type_util_unittest.cc",
     "sync_bridge_data_provider_unittest.cc",
     "util_unittest.cc",
   ]

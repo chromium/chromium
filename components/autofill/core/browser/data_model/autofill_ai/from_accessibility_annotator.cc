@@ -278,10 +278,10 @@ std::optional<EntityInstance> FromAccessibilityAnnotator(
                         /*frecency_override=*/"");
 }
 
-aa::QueryIntentType AttributeTypeToQueryIntentType(AttributeType type) {
+aa::EntryType AttributeTypeToEntryType(AttributeType type) {
 #define ATTRIBUTE_TO_QUERY_INTENT(name) \
   case AttributeTypeName::name:         \
-    return aa::QueryIntentType::name
+    return aa::EntryType::name
 
   switch (type.name()) {
     ATTRIBUTE_TO_QUERY_INTENT(kDriversLicenseName);
@@ -329,7 +329,7 @@ aa::QueryIntentType AttributeTypeToQueryIntentType(AttributeType type) {
     ATTRIBUTE_TO_QUERY_INTENT(kShipmentTrackingNumber);
     ATTRIBUTE_TO_QUERY_INTENT(kShipmentEstimatedDeliveryDate);
     case AttributeTypeName::kShipmentOrderIds:
-      return aa::QueryIntentType::kShipmentAssociatedOrderId;
+      return aa::EntryType::kShipmentAssociatedOrderId;
     case AttributeTypeName::kShipmentOrderDates:
     case AttributeTypeName::kShipmentMerchantName:
     case AttributeTypeName::kShipmentProductNames:
@@ -338,118 +338,118 @@ aa::QueryIntentType AttributeTypeToQueryIntentType(AttributeType type) {
       // `kShipmentDeliveryZipCode`. Since `delivery_address` is a
       // `std::string`, it's unclear how we can process this (here and in
       // general).
-      return aa::QueryIntentType::kUnknown;
+      return aa::EntryType::kUnknown;
   }
 #undef ATTRIBUTE_TO_QUERY_INTENT
-  return aa::QueryIntentType::kUnknown;
+  return aa::EntryType::kUnknown;
 }
 
-std::u16string GetEntryTypeNameForI18n(aa::QueryIntentType type) {
+std::u16string GetEntryTypeNameForI18n(aa::EntryType type) {
   switch (type) {
-    case aa::QueryIntentType::kUnknown:
+    case aa::EntryType::kUnknown:
       return u"";
     // Field types:
     // TODO(crbug.com/481979475): Use internationalization for these strings.
-    case aa::QueryIntentType::kNameFull:
+    case aa::EntryType::kNameFull:
       return u"Name";
-    case aa::QueryIntentType::kAddressFull:
+    case aa::EntryType::kAddressFull:
       return u"Address";
-    case aa::QueryIntentType::kAddressStreetAddress:
+    case aa::EntryType::kAddressStreetAddress:
       return u"Street address";
-    case aa::QueryIntentType::kAddressCity:
+    case aa::EntryType::kAddressCity:
       return u"City";
-    case aa::QueryIntentType::kAddressState:
+    case aa::EntryType::kAddressState:
       return u"State";
-    case aa::QueryIntentType::kAddressZip:
+    case aa::EntryType::kAddressZip:
       return u"Zip";
-    case aa::QueryIntentType::kAddressCountry:
+    case aa::EntryType::kAddressCountry:
       return u"Country";
-    case aa::QueryIntentType::kPhone:
+    case aa::EntryType::kPhone:
       return u"Phone";
-    case aa::QueryIntentType::kEmail:
+    case aa::EntryType::kEmail:
       return u"Email";
-    case aa::QueryIntentType::kCompanyName:
+    case aa::EntryType::kCompanyName:
       return u"Company";
-    case aa::QueryIntentType::kIban:
+    case aa::EntryType::kIban:
       return u"IBAN";
-    case aa::QueryIntentType::kIbanNickname:
+    case aa::EntryType::kIbanNickname:
       return u"Name";
-    case aa::QueryIntentType::kCreditCardFull:
+    case aa::EntryType::kCreditCardFull:
       return u"Credit card";
-    case aa::QueryIntentType::kCreditCardNumber:
+    case aa::EntryType::kCreditCardNumber:
       return u"Card number";
-    case aa::QueryIntentType::kCreditCardExpirationDate:
+    case aa::EntryType::kCreditCardExpirationDate:
       return u"Expiration date";
-    case aa::QueryIntentType::kCreditCardSecurityCode:
+    case aa::EntryType::kCreditCardSecurityCode:
       return u"Security code";
-    case aa::QueryIntentType::kCreditCardNameOnCard:
+    case aa::EntryType::kCreditCardNameOnCard:
       return u"Name on card";
-    case aa::QueryIntentType::kCreditCardNickname:
+    case aa::EntryType::kCreditCardNickname:
       return u"Card Nickname";
     // Entity types:
-    case aa::QueryIntentType::kVehicle:
-    case aa::QueryIntentType::kPassportFull:
-    case aa::QueryIntentType::kFlightReservationFull:
-    case aa::QueryIntentType::kNationalIdCardFull:
-    case aa::QueryIntentType::kRedressNumberFull:
-    case aa::QueryIntentType::kKnownTravelerNumberFull:
-    case aa::QueryIntentType::kDriversLicenseFull:
-    case aa::QueryIntentType::kOrderFull:
-    case aa::QueryIntentType::kShipmentFull: {
+    case aa::EntryType::kVehicle:
+    case aa::EntryType::kPassportFull:
+    case aa::EntryType::kFlightReservationFull:
+    case aa::EntryType::kNationalIdCardFull:
+    case aa::EntryType::kRedressNumberFull:
+    case aa::EntryType::kKnownTravelerNumberFull:
+    case aa::EntryType::kDriversLicenseFull:
+    case aa::EntryType::kOrderFull:
+    case aa::EntryType::kShipmentFull: {
       std::optional<AtMemoryDataType> data_type = ToAtMemoryDataType(type);
       const auto* entity_type =
           data_type ? std::get_if<EntityType>(&*data_type) : nullptr;
       return entity_type ? entity_type->GetNameForI18n() : u"";
     }
     // Attribute types:
-    case aa::QueryIntentType::kVehicleMake:
-    case aa::QueryIntentType::kVehicleModel:
-    case aa::QueryIntentType::kVehicleYear:
-    case aa::QueryIntentType::kVehicleOwner:
-    case aa::QueryIntentType::kVehiclePlateNumber:
-    case aa::QueryIntentType::kVehiclePlateState:
-    case aa::QueryIntentType::kVehicleVin:
-    case aa::QueryIntentType::kPassportName:
-    case aa::QueryIntentType::kPassportCountry:
-    case aa::QueryIntentType::kPassportNumber:
-    case aa::QueryIntentType::kPassportIssueDate:
-    case aa::QueryIntentType::kPassportExpirationDate:
-    case aa::QueryIntentType::kFlightReservationFlightNumber:
-    case aa::QueryIntentType::kFlightReservationTicketNumber:
-    case aa::QueryIntentType::kFlightReservationConfirmationCode:
-    case aa::QueryIntentType::kFlightReservationPassengerName:
-    case aa::QueryIntentType::kFlightReservationDepartureAirport:
-    case aa::QueryIntentType::kFlightReservationArrivalAirport:
-    case aa::QueryIntentType::kFlightReservationDepartureDate:
-    case aa::QueryIntentType::kFlightReservationArrivalDate:
-    case aa::QueryIntentType::kNationalIdCardName:
-    case aa::QueryIntentType::kNationalIdCardCountry:
-    case aa::QueryIntentType::kNationalIdCardNumber:
-    case aa::QueryIntentType::kNationalIdCardIssueDate:
-    case aa::QueryIntentType::kNationalIdCardExpirationDate:
-    case aa::QueryIntentType::kRedressNumberName:
-    case aa::QueryIntentType::kRedressNumberNumber:
-    case aa::QueryIntentType::kKnownTravelerNumberName:
-    case aa::QueryIntentType::kKnownTravelerNumberNumber:
-    case aa::QueryIntentType::kKnownTravelerNumberExpirationDate:
-    case aa::QueryIntentType::kDriversLicenseName:
-    case aa::QueryIntentType::kDriversLicenseState:
-    case aa::QueryIntentType::kDriversLicenseNumber:
-    case aa::QueryIntentType::kDriversLicenseIssueDate:
-    case aa::QueryIntentType::kDriversLicenseExpirationDate:
-    case aa::QueryIntentType::kOrderId:
-    case aa::QueryIntentType::kOrderAccount:
-    case aa::QueryIntentType::kOrderDate:
-    case aa::QueryIntentType::kOrderMerchantName:
-    case aa::QueryIntentType::kOrderMerchantDomain:
-    case aa::QueryIntentType::kOrderProductNames:
-    case aa::QueryIntentType::kOrderGrandTotal:
-    case aa::QueryIntentType::kShipmentTrackingNumber:
-    case aa::QueryIntentType::kShipmentAssociatedOrderId:
-    case aa::QueryIntentType::kShipmentDeliveryAddress:
-    case aa::QueryIntentType::kShipmentCarrierName:
-    case aa::QueryIntentType::kShipmentCarrierDomain:
-    case aa::QueryIntentType::kShipmentEstimatedDeliveryDate: {
+    case aa::EntryType::kVehicleMake:
+    case aa::EntryType::kVehicleModel:
+    case aa::EntryType::kVehicleYear:
+    case aa::EntryType::kVehicleOwner:
+    case aa::EntryType::kVehiclePlateNumber:
+    case aa::EntryType::kVehiclePlateState:
+    case aa::EntryType::kVehicleVin:
+    case aa::EntryType::kPassportName:
+    case aa::EntryType::kPassportCountry:
+    case aa::EntryType::kPassportNumber:
+    case aa::EntryType::kPassportIssueDate:
+    case aa::EntryType::kPassportExpirationDate:
+    case aa::EntryType::kFlightReservationFlightNumber:
+    case aa::EntryType::kFlightReservationTicketNumber:
+    case aa::EntryType::kFlightReservationConfirmationCode:
+    case aa::EntryType::kFlightReservationPassengerName:
+    case aa::EntryType::kFlightReservationDepartureAirport:
+    case aa::EntryType::kFlightReservationArrivalAirport:
+    case aa::EntryType::kFlightReservationDepartureDate:
+    case aa::EntryType::kFlightReservationArrivalDate:
+    case aa::EntryType::kNationalIdCardName:
+    case aa::EntryType::kNationalIdCardCountry:
+    case aa::EntryType::kNationalIdCardNumber:
+    case aa::EntryType::kNationalIdCardIssueDate:
+    case aa::EntryType::kNationalIdCardExpirationDate:
+    case aa::EntryType::kRedressNumberName:
+    case aa::EntryType::kRedressNumberNumber:
+    case aa::EntryType::kKnownTravelerNumberName:
+    case aa::EntryType::kKnownTravelerNumberNumber:
+    case aa::EntryType::kKnownTravelerNumberExpirationDate:
+    case aa::EntryType::kDriversLicenseName:
+    case aa::EntryType::kDriversLicenseState:
+    case aa::EntryType::kDriversLicenseNumber:
+    case aa::EntryType::kDriversLicenseIssueDate:
+    case aa::EntryType::kDriversLicenseExpirationDate:
+    case aa::EntryType::kOrderId:
+    case aa::EntryType::kOrderAccount:
+    case aa::EntryType::kOrderDate:
+    case aa::EntryType::kOrderMerchantName:
+    case aa::EntryType::kOrderMerchantDomain:
+    case aa::EntryType::kOrderProductNames:
+    case aa::EntryType::kOrderGrandTotal:
+    case aa::EntryType::kShipmentTrackingNumber:
+    case aa::EntryType::kShipmentAssociatedOrderId:
+    case aa::EntryType::kShipmentDeliveryAddress:
+    case aa::EntryType::kShipmentCarrierName:
+    case aa::EntryType::kShipmentCarrierDomain:
+    case aa::EntryType::kShipmentEstimatedDeliveryDate: {
       std::optional<AtMemoryDataType> data_type = ToAtMemoryDataType(type);
       const auto* attribute_type =
           data_type ? std::get_if<AttributeType>(&*data_type) : nullptr;

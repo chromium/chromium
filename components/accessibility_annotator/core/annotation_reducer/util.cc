@@ -10,8 +10,8 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "components/accessibility_annotator/core/annotation_reducer/entry_type.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
-#include "components/accessibility_annotator/core/annotation_reducer/query_intent_type.h"
 
 namespace accessibility_annotator {
 
@@ -30,291 +30,290 @@ std::string_view StripMarkdownCodeBlocks(std::string_view text) {
 }
 
 // TODO(crbug.com/496281633): Avoid using a custom string to enum conversion.
-QueryIntentType StringToQueryIntentType(std::string_view intent_str) {
-  // LINT.IfChange(QueryIntentType)
-  static constexpr auto kIntentMap = base::MakeFixedFlatMap<std::string_view,
-                                                            QueryIntentType>({
-      {"kAddressCity", QueryIntentType::kAddressCity},
-      {"kAddressCountry", QueryIntentType::kAddressCountry},
-      {"kAddressFull", QueryIntentType::kAddressFull},
-      {"kAddressState", QueryIntentType::kAddressState},
-      {"kAddressStreetAddress", QueryIntentType::kAddressStreetAddress},
-      {"kAddressZip", QueryIntentType::kAddressZip},
-      {"kCompanyName", QueryIntentType::kCompanyName},
-      {"kCreditCardExpirationDate", QueryIntentType::kCreditCardExpirationDate},
-      {"kCreditCardFull", QueryIntentType::kCreditCardFull},
-      {"kCreditCardNameOnCard", QueryIntentType::kCreditCardNameOnCard},
-      {"kCreditCardNickname", QueryIntentType::kCreditCardNickname},
-      {"kCreditCardNumber", QueryIntentType::kCreditCardNumber},
-      {"kCreditCardSecurityCode", QueryIntentType::kCreditCardSecurityCode},
-      {"kDriversLicenseExpirationDate",
-       QueryIntentType::kDriversLicenseExpirationDate},
-      {"kDriversLicenseFull", QueryIntentType::kDriversLicenseFull},
-      {"kDriversLicenseIssueDate", QueryIntentType::kDriversLicenseIssueDate},
-      {"kDriversLicenseName", QueryIntentType::kDriversLicenseName},
-      {"kDriversLicenseNumber", QueryIntentType::kDriversLicenseNumber},
-      {"kDriversLicenseState", QueryIntentType::kDriversLicenseState},
-      {"kEmail", QueryIntentType::kEmail},
-      {"kFlightReservationArrivalAirport",
-       QueryIntentType::kFlightReservationArrivalAirport},
-      {"kFlightReservationConfirmationCode",
-       QueryIntentType::kFlightReservationConfirmationCode},
-      {"kFlightReservationDepartureAirport",
-       QueryIntentType::kFlightReservationDepartureAirport},
-      {"kFlightReservationDepartureDate",
-       QueryIntentType::kFlightReservationDepartureDate},
-      {"kFlightReservationFlightNumber",
-       QueryIntentType::kFlightReservationFlightNumber},
-      {"kFlightReservationFull", QueryIntentType::kFlightReservationFull},
-      {"kFlightReservationPassengerName",
-       QueryIntentType::kFlightReservationPassengerName},
-      {"kFlightReservationTicketNumber",
-       QueryIntentType::kFlightReservationTicketNumber},
-      {"kIban", QueryIntentType::kIban},
-      {"kIbanNickname", QueryIntentType::kIbanNickname},
-      {"kKnownTravelerNumberExpirationDate",
-       QueryIntentType::kKnownTravelerNumberExpirationDate},
-      {"kKnownTravelerNumberFull", QueryIntentType::kKnownTravelerNumberFull},
-      {"kKnownTravelerNumberName", QueryIntentType::kKnownTravelerNumberName},
-      {"kKnownTravelerNumberNumber",
-       QueryIntentType::kKnownTravelerNumberNumber},
-      {"kNameFull", QueryIntentType::kNameFull},
-      {"kNationalIdCardCountry", QueryIntentType::kNationalIdCardCountry},
-      {"kNationalIdCardExpirationDate",
-       QueryIntentType::kNationalIdCardExpirationDate},
-      {"kNationalIdCardFull", QueryIntentType::kNationalIdCardFull},
-      {"kNationalIdCardIssueDate", QueryIntentType::kNationalIdCardIssueDate},
-      {"kNationalIdCardName", QueryIntentType::kNationalIdCardName},
-      {"kNationalIdCardNumber", QueryIntentType::kNationalIdCardNumber},
-      {"kOrderAccount", QueryIntentType::kOrderAccount},
-      {"kOrderDate", QueryIntentType::kOrderDate},
-      {"kOrderFull", QueryIntentType::kOrderFull},
-      {"kOrderGrandTotal", QueryIntentType::kOrderGrandTotal},
-      {"kOrderId", QueryIntentType::kOrderId},
-      {"kOrderMerchantDomain", QueryIntentType::kOrderMerchantDomain},
-      {"kOrderMerchantName", QueryIntentType::kOrderMerchantName},
-      {"kOrderProductNames", QueryIntentType::kOrderProductNames},
-      {"kPassportCountry", QueryIntentType::kPassportCountry},
-      {"kPassportExpirationDate", QueryIntentType::kPassportExpirationDate},
-      {"kPassportFull", QueryIntentType::kPassportFull},
-      {"kPassportIssueDate", QueryIntentType::kPassportIssueDate},
-      {"kPassportName", QueryIntentType::kPassportName},
-      {"kPassportNumber", QueryIntentType::kPassportNumber},
-      {"kPhone", QueryIntentType::kPhone},
-      {"kRedressNumberFull", QueryIntentType::kRedressNumberFull},
-      {"kRedressNumberName", QueryIntentType::kRedressNumberName},
-      {"kRedressNumberNumber", QueryIntentType::kRedressNumberNumber},
-      {"kVehicle", QueryIntentType::kVehicle},
-      {"kVehicleMake", QueryIntentType::kVehicleMake},
-      {"kVehicleModel", QueryIntentType::kVehicleModel},
-      {"kVehicleOwner", QueryIntentType::kVehicleOwner},
-      {"kVehiclePlateNumber", QueryIntentType::kVehiclePlateNumber},
-      {"kVehiclePlateState", QueryIntentType::kVehiclePlateState},
-      {"kVehicleVin", QueryIntentType::kVehicleVin},
-      {"kVehicleYear", QueryIntentType::kVehicleYear},
-  });
-  // LINT.ThenChange(//components/accessibility_annotator/core/annotation_reducer/query_intent_type.h:QueryIntentType)
+EntryType StringToEntryType(std::string_view intent_str) {
+  // LINT.IfChange(EntryType)
+  static constexpr auto kIntentMap =
+      base::MakeFixedFlatMap<std::string_view, EntryType>({
+          {"kAddressCity", EntryType::kAddressCity},
+          {"kAddressCountry", EntryType::kAddressCountry},
+          {"kAddressFull", EntryType::kAddressFull},
+          {"kAddressState", EntryType::kAddressState},
+          {"kAddressStreetAddress", EntryType::kAddressStreetAddress},
+          {"kAddressZip", EntryType::kAddressZip},
+          {"kCompanyName", EntryType::kCompanyName},
+          {"kCreditCardExpirationDate", EntryType::kCreditCardExpirationDate},
+          {"kCreditCardFull", EntryType::kCreditCardFull},
+          {"kCreditCardNameOnCard", EntryType::kCreditCardNameOnCard},
+          {"kCreditCardNickname", EntryType::kCreditCardNickname},
+          {"kCreditCardNumber", EntryType::kCreditCardNumber},
+          {"kCreditCardSecurityCode", EntryType::kCreditCardSecurityCode},
+          {"kDriversLicenseExpirationDate",
+           EntryType::kDriversLicenseExpirationDate},
+          {"kDriversLicenseFull", EntryType::kDriversLicenseFull},
+          {"kDriversLicenseIssueDate", EntryType::kDriversLicenseIssueDate},
+          {"kDriversLicenseName", EntryType::kDriversLicenseName},
+          {"kDriversLicenseNumber", EntryType::kDriversLicenseNumber},
+          {"kDriversLicenseState", EntryType::kDriversLicenseState},
+          {"kEmail", EntryType::kEmail},
+          {"kFlightReservationArrivalAirport",
+           EntryType::kFlightReservationArrivalAirport},
+          {"kFlightReservationConfirmationCode",
+           EntryType::kFlightReservationConfirmationCode},
+          {"kFlightReservationDepartureAirport",
+           EntryType::kFlightReservationDepartureAirport},
+          {"kFlightReservationDepartureDate",
+           EntryType::kFlightReservationDepartureDate},
+          {"kFlightReservationFlightNumber",
+           EntryType::kFlightReservationFlightNumber},
+          {"kFlightReservationFull", EntryType::kFlightReservationFull},
+          {"kFlightReservationPassengerName",
+           EntryType::kFlightReservationPassengerName},
+          {"kFlightReservationTicketNumber",
+           EntryType::kFlightReservationTicketNumber},
+          {"kIban", EntryType::kIban},
+          {"kIbanNickname", EntryType::kIbanNickname},
+          {"kKnownTravelerNumberExpirationDate",
+           EntryType::kKnownTravelerNumberExpirationDate},
+          {"kKnownTravelerNumberFull", EntryType::kKnownTravelerNumberFull},
+          {"kKnownTravelerNumberName", EntryType::kKnownTravelerNumberName},
+          {"kKnownTravelerNumberNumber", EntryType::kKnownTravelerNumberNumber},
+          {"kNameFull", EntryType::kNameFull},
+          {"kNationalIdCardCountry", EntryType::kNationalIdCardCountry},
+          {"kNationalIdCardExpirationDate",
+           EntryType::kNationalIdCardExpirationDate},
+          {"kNationalIdCardFull", EntryType::kNationalIdCardFull},
+          {"kNationalIdCardIssueDate", EntryType::kNationalIdCardIssueDate},
+          {"kNationalIdCardName", EntryType::kNationalIdCardName},
+          {"kNationalIdCardNumber", EntryType::kNationalIdCardNumber},
+          {"kOrderAccount", EntryType::kOrderAccount},
+          {"kOrderDate", EntryType::kOrderDate},
+          {"kOrderFull", EntryType::kOrderFull},
+          {"kOrderGrandTotal", EntryType::kOrderGrandTotal},
+          {"kOrderId", EntryType::kOrderId},
+          {"kOrderMerchantDomain", EntryType::kOrderMerchantDomain},
+          {"kOrderMerchantName", EntryType::kOrderMerchantName},
+          {"kOrderProductNames", EntryType::kOrderProductNames},
+          {"kPassportCountry", EntryType::kPassportCountry},
+          {"kPassportExpirationDate", EntryType::kPassportExpirationDate},
+          {"kPassportFull", EntryType::kPassportFull},
+          {"kPassportIssueDate", EntryType::kPassportIssueDate},
+          {"kPassportName", EntryType::kPassportName},
+          {"kPassportNumber", EntryType::kPassportNumber},
+          {"kPhone", EntryType::kPhone},
+          {"kRedressNumberFull", EntryType::kRedressNumberFull},
+          {"kRedressNumberName", EntryType::kRedressNumberName},
+          {"kRedressNumberNumber", EntryType::kRedressNumberNumber},
+          {"kVehicle", EntryType::kVehicle},
+          {"kVehicleMake", EntryType::kVehicleMake},
+          {"kVehicleModel", EntryType::kVehicleModel},
+          {"kVehicleOwner", EntryType::kVehicleOwner},
+          {"kVehiclePlateNumber", EntryType::kVehiclePlateNumber},
+          {"kVehiclePlateState", EntryType::kVehiclePlateState},
+          {"kVehicleVin", EntryType::kVehicleVin},
+          {"kVehicleYear", EntryType::kVehicleYear},
+      });
+  // LINT.ThenChange(//components/accessibility_annotator/core/annotation_reducer/entry_type.h:EntryType)
 
   auto found_intent_it = kIntentMap.find(intent_str);
   return found_intent_it != kIntentMap.end() ? found_intent_it->second
-                                             : QueryIntentType::kUnknown;
+                                             : EntryType::kUnknown;
 }
 
-// Note: The set of QueryIntentType can be a superset of AnswerType. However,
-// deletion of a QueryIntentType that is currently mapped to an AnswerType
+// Note: The set of EntryType can be a superset of AnswerType. However,
+// deletion of a EntryType that is currently mapped to an AnswerType
 // requires server-side changes.
-// LINT.IfChange(AnswerTypeToQueryIntentType)
-std::optional<QueryIntentType> AnswerTypeToQueryIntentType(
+// LINT.IfChange(AnswerTypeToEntryType)
+std::optional<EntryType> AnswerTypeToEntryType(
     optimization_guide::proto::ReducedAnswer::AnswerType answer_type) {
   switch (answer_type) {
     case optimization_guide::proto::ReducedAnswer::ANSWER_TYPE_UNKNOWN:
-      return QueryIntentType::kUnknown;
+      return EntryType::kUnknown;
     case optimization_guide::proto::ReducedAnswer::ANSWER_TYPE_NAME_FULL:
-      return QueryIntentType::kNameFull;
+      return EntryType::kNameFull;
     case optimization_guide::proto::ReducedAnswer::ANSWER_TYPE_ADDRESS_FULL:
-      return QueryIntentType::kAddressFull;
+      return EntryType::kAddressFull;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_ADDRESS_STREET_ADDRESS:
-      return QueryIntentType::kAddressStreetAddress;
+      return EntryType::kAddressStreetAddress;
     case optimization_guide::proto::ReducedAnswer::ANSWER_TYPE_ADDRESS_CITY:
-      return QueryIntentType::kAddressCity;
+      return EntryType::kAddressCity;
     case optimization_guide::proto::ReducedAnswer::ANSWER_TYPE_ADDRESS_STATE:
-      return QueryIntentType::kAddressState;
+      return EntryType::kAddressState;
     case optimization_guide::proto::ReducedAnswer::ANSWER_TYPE_ADDRESS_ZIP:
-      return QueryIntentType::kAddressZip;
+      return EntryType::kAddressZip;
     case optimization_guide::proto::ReducedAnswer::ANSWER_TYPE_ADDRESS_COUNTRY:
-      return QueryIntentType::kAddressCountry;
+      return EntryType::kAddressCountry;
     case optimization_guide::proto::ReducedAnswer::ANSWER_TYPE_PHONE:
-      return QueryIntentType::kPhone;
+      return EntryType::kPhone;
     case optimization_guide::proto::ReducedAnswer::ANSWER_TYPE_EMAIL:
-      return QueryIntentType::kEmail;
+      return EntryType::kEmail;
     case optimization_guide::proto::ReducedAnswer::ANSWER_TYPE_COMPANY_NAME:
-      return QueryIntentType::kCompanyName;
+      return EntryType::kCompanyName;
     case optimization_guide::proto::ReducedAnswer::ANSWER_TYPE_IBAN:
-      return QueryIntentType::kIban;
+      return EntryType::kIban;
     case optimization_guide::proto::ReducedAnswer::ANSWER_TYPE_IBAN_NICKNAME:
-      return QueryIntentType::kIbanNickname;
+      return EntryType::kIbanNickname;
     case optimization_guide::proto::ReducedAnswer::ANSWER_TYPE_VEHICLE:
-      return QueryIntentType::kVehicle;
+      return EntryType::kVehicle;
     case optimization_guide::proto::ReducedAnswer::ANSWER_TYPE_VEHICLE_MAKE:
-      return QueryIntentType::kVehicleMake;
+      return EntryType::kVehicleMake;
     case optimization_guide::proto::ReducedAnswer::ANSWER_TYPE_VEHICLE_MODEL:
-      return QueryIntentType::kVehicleModel;
+      return EntryType::kVehicleModel;
     case optimization_guide::proto::ReducedAnswer::ANSWER_TYPE_VEHICLE_YEAR:
-      return QueryIntentType::kVehicleYear;
+      return EntryType::kVehicleYear;
     case optimization_guide::proto::ReducedAnswer::ANSWER_TYPE_VEHICLE_OWNER:
-      return QueryIntentType::kVehicleOwner;
+      return EntryType::kVehicleOwner;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_VEHICLE_PLATE_NUMBER:
-      return QueryIntentType::kVehiclePlateNumber;
+      return EntryType::kVehiclePlateNumber;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_VEHICLE_PLATE_STATE:
-      return QueryIntentType::kVehiclePlateState;
+      return EntryType::kVehiclePlateState;
     case optimization_guide::proto::ReducedAnswer::ANSWER_TYPE_VEHICLE_VIN:
-      return QueryIntentType::kVehicleVin;
+      return EntryType::kVehicleVin;
     case optimization_guide::proto::ReducedAnswer::ANSWER_TYPE_PASSPORT_FULL:
-      return QueryIntentType::kPassportFull;
+      return EntryType::kPassportFull;
     case optimization_guide::proto::ReducedAnswer::ANSWER_TYPE_PASSPORT_NAME:
-      return QueryIntentType::kPassportName;
+      return EntryType::kPassportName;
     case optimization_guide::proto::ReducedAnswer::ANSWER_TYPE_PASSPORT_COUNTRY:
-      return QueryIntentType::kPassportCountry;
+      return EntryType::kPassportCountry;
     case optimization_guide::proto::ReducedAnswer::ANSWER_TYPE_PASSPORT_NUMBER:
-      return QueryIntentType::kPassportNumber;
+      return EntryType::kPassportNumber;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_PASSPORT_ISSUE_DATE:
-      return QueryIntentType::kPassportIssueDate;
+      return EntryType::kPassportIssueDate;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_PASSPORT_EXPIRATION_DATE:
-      return QueryIntentType::kPassportExpirationDate;
+      return EntryType::kPassportExpirationDate;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_FLIGHT_RESERVATION_FULL:
-      return QueryIntentType::kFlightReservationFull;
+      return EntryType::kFlightReservationFull;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_FLIGHT_RESERVATION_FLIGHT_NUMBER:
-      return QueryIntentType::kFlightReservationFlightNumber;
+      return EntryType::kFlightReservationFlightNumber;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_FLIGHT_RESERVATION_TICKET_NUMBER:
-      return QueryIntentType::kFlightReservationTicketNumber;
+      return EntryType::kFlightReservationTicketNumber;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_FLIGHT_RESERVATION_CONFIRMATION_CODE:
-      return QueryIntentType::kFlightReservationConfirmationCode;
+      return EntryType::kFlightReservationConfirmationCode;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_FLIGHT_RESERVATION_PASSENGER_NAME:
-      return QueryIntentType::kFlightReservationPassengerName;
+      return EntryType::kFlightReservationPassengerName;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_FLIGHT_RESERVATION_DEPARTURE_AIRPORT:
-      return QueryIntentType::kFlightReservationDepartureAirport;
+      return EntryType::kFlightReservationDepartureAirport;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_FLIGHT_RESERVATION_ARRIVAL_AIRPORT:
-      return QueryIntentType::kFlightReservationArrivalAirport;
+      return EntryType::kFlightReservationArrivalAirport;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_FLIGHT_RESERVATION_DEPARTURE_DATE:
-      return QueryIntentType::kFlightReservationDepartureDate;
+      return EntryType::kFlightReservationDepartureDate;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_FLIGHT_RESERVATION_ARRIVAL_DATE:
-      return QueryIntentType::kFlightReservationArrivalDate;
+      return EntryType::kFlightReservationArrivalDate;
     case optimization_guide::proto::ReducedAnswer::ANSWER_TYPE_SHIPMENT_FULL:
-      return QueryIntentType::kShipmentFull;
+      return EntryType::kShipmentFull;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_SHIPMENT_TRACKING_NUMBER:
-      return QueryIntentType::kShipmentTrackingNumber;
+      return EntryType::kShipmentTrackingNumber;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_SHIPMENT_ASSOCIATED_ORDER_ID:
-      return QueryIntentType::kShipmentAssociatedOrderId;
+      return EntryType::kShipmentAssociatedOrderId;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_SHIPMENT_DELIVERY_ADDRESS:
-      return QueryIntentType::kShipmentDeliveryAddress;
+      return EntryType::kShipmentDeliveryAddress;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_SHIPMENT_CARRIER_NAME:
-      return QueryIntentType::kShipmentCarrierName;
+      return EntryType::kShipmentCarrierName;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_SHIPMENT_CARRIER_DOMAIN:
-      return QueryIntentType::kShipmentCarrierDomain;
+      return EntryType::kShipmentCarrierDomain;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_SHIPMENT_ESTIMATED_DELIVERY_DATE:
-      return QueryIntentType::kShipmentEstimatedDeliveryDate;
+      return EntryType::kShipmentEstimatedDeliveryDate;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_NATIONAL_ID_CARD_FULL:
-      return QueryIntentType::kNationalIdCardFull;
+      return EntryType::kNationalIdCardFull;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_NATIONAL_ID_CARD_NAME:
-      return QueryIntentType::kNationalIdCardName;
+      return EntryType::kNationalIdCardName;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_NATIONAL_ID_CARD_COUNTRY:
-      return QueryIntentType::kNationalIdCardCountry;
+      return EntryType::kNationalIdCardCountry;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_NATIONAL_ID_CARD_NUMBER:
-      return QueryIntentType::kNationalIdCardNumber;
+      return EntryType::kNationalIdCardNumber;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_NATIONAL_ID_CARD_ISSUE_DATE:
-      return QueryIntentType::kNationalIdCardIssueDate;
+      return EntryType::kNationalIdCardIssueDate;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_NATIONAL_ID_CARD_EXPIRATION_DATE:
-      return QueryIntentType::kNationalIdCardExpirationDate;
+      return EntryType::kNationalIdCardExpirationDate;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_REDRESS_NUMBER_FULL:
-      return QueryIntentType::kRedressNumberFull;
+      return EntryType::kRedressNumberFull;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_REDRESS_NUMBER_NAME:
-      return QueryIntentType::kRedressNumberName;
+      return EntryType::kRedressNumberName;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_REDRESS_NUMBER_NUMBER:
-      return QueryIntentType::kRedressNumberNumber;
+      return EntryType::kRedressNumberNumber;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_KNOWN_TRAVELER_NUMBER_FULL:
-      return QueryIntentType::kKnownTravelerNumberFull;
+      return EntryType::kKnownTravelerNumberFull;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_KNOWN_TRAVELER_NUMBER_NAME:
-      return QueryIntentType::kKnownTravelerNumberName;
+      return EntryType::kKnownTravelerNumberName;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_KNOWN_TRAVELER_NUMBER_NUMBER:
-      return QueryIntentType::kKnownTravelerNumberNumber;
+      return EntryType::kKnownTravelerNumberNumber;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE:
-      return QueryIntentType::kKnownTravelerNumberExpirationDate;
+      return EntryType::kKnownTravelerNumberExpirationDate;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_DRIVERS_LICENSE_FULL:
-      return QueryIntentType::kDriversLicenseFull;
+      return EntryType::kDriversLicenseFull;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_DRIVERS_LICENSE_NAME:
-      return QueryIntentType::kDriversLicenseName;
+      return EntryType::kDriversLicenseName;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_DRIVERS_LICENSE_STATE:
-      return QueryIntentType::kDriversLicenseState;
+      return EntryType::kDriversLicenseState;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_DRIVERS_LICENSE_NUMBER:
-      return QueryIntentType::kDriversLicenseNumber;
+      return EntryType::kDriversLicenseNumber;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_DRIVERS_LICENSE_ISSUE_DATE:
-      return QueryIntentType::kDriversLicenseIssueDate;
+      return EntryType::kDriversLicenseIssueDate;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_DRIVERS_LICENSE_EXPIRATION_DATE:
-      return QueryIntentType::kDriversLicenseExpirationDate;
+      return EntryType::kDriversLicenseExpirationDate;
     case optimization_guide::proto::ReducedAnswer::ANSWER_TYPE_ORDER_FULL:
-      return QueryIntentType::kOrderFull;
+      return EntryType::kOrderFull;
     case optimization_guide::proto::ReducedAnswer::ANSWER_TYPE_ORDER_ID:
-      return QueryIntentType::kOrderId;
+      return EntryType::kOrderId;
     case optimization_guide::proto::ReducedAnswer::ANSWER_TYPE_ORDER_ACCOUNT:
-      return QueryIntentType::kOrderAccount;
+      return EntryType::kOrderAccount;
     case optimization_guide::proto::ReducedAnswer::ANSWER_TYPE_ORDER_DATE:
-      return QueryIntentType::kOrderDate;
+      return EntryType::kOrderDate;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_ORDER_MERCHANT_NAME:
-      return QueryIntentType::kOrderMerchantName;
+      return EntryType::kOrderMerchantName;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_ORDER_MERCHANT_DOMAIN:
-      return QueryIntentType::kOrderMerchantDomain;
+      return EntryType::kOrderMerchantDomain;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_ORDER_PRODUCT_NAMES:
-      return QueryIntentType::kOrderProductNames;
+      return EntryType::kOrderProductNames;
     case optimization_guide::proto::ReducedAnswer::
         ANSWER_TYPE_ORDER_GRAND_TOTAL:
-      return QueryIntentType::kOrderGrandTotal;
+      return EntryType::kOrderGrandTotal;
     default:
       return std::nullopt;
   }
 }
-// LINT.ThenChange(//components/accessibility_annotator/core/annotation_reducer/query_intent_type.h:QueryIntentType)
+// LINT.ThenChange(//components/accessibility_annotator/core/annotation_reducer/entry_type.h:EntryType)
 
 // LINT.IfChange(SourceTypeToMemoryEntrySourceType)
 std::optional<MemoryEntrySourceType> SourceTypeToMemoryEntrySourceType(

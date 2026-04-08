@@ -14,10 +14,10 @@
 #include "base/containers/extend.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
+#include "components/accessibility_annotator/core/annotation_reducer/entry_type.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_data_provider.h"
 #include "components/accessibility_annotator/core/annotation_reducer/one_p_resolver.h"
 #include "components/accessibility_annotator/core/annotation_reducer/query_classifier.h"
-#include "components/accessibility_annotator/core/annotation_reducer/query_intent_type.h"
 
 namespace accessibility_annotator {
 
@@ -65,14 +65,14 @@ void AccessibilityQueryService::OnClassificationComplete(
     ClassifiedQuery classified_query) {
   // If the classifier couldn't figure out what the user is asking for, we try
   // the 1P resolver as a fallback.
-  if (classified_query.intent == QueryIntentType::kUnknown) {
+  if (classified_query.intent == EntryType::kUnknown) {
     QueryOnePResolver(std::move(query), update_callback,
                       /*fallback_entries=*/{},
                       MemorySearchStatus::kUnsupportedQuery);
     return;
   }
 
-  QueryIntentType intent = classified_query.intent;
+  EntryType intent = classified_query.intent;
 
   // Use a barrier callback to wait for all data providers to return their
   // results. This ensures we don't process partial results. Once all providers

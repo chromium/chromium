@@ -19,7 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "components/accessibility_annotator/core/annotation_reducer/query_intent_type.h"
+#include "components/accessibility_annotator/core/annotation_reducer/entry_type.h"
 #include "components/accessibility_annotator/core/annotation_reducer/util.h"
 
 #if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
@@ -41,7 +41,7 @@ constexpr char kFilterWordsKeyFromGemini[] = "filter_words";
 #endif  // BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
 
 // Calls the classifiers sequentially until one of them returns a result
-// different than `QueryIntentType::kUnknown`. The `index` parameter indicates
+// different than `EntryType::kUnknown`. The `index` parameter indicates
 // the current classifier to try.
 void CompositeClassify(std::vector<QueryClassifier> classifiers,
                        size_t index,
@@ -50,7 +50,7 @@ void CompositeClassify(std::vector<QueryClassifier> classifiers,
   // If all classifiers were queried, return ClassifiedQuery with unknown
   // intent.
   if (index >= classifiers.size()) {
-    std::move(callback).Run(ClassifiedQuery(QueryIntentType::kUnknown));
+    std::move(callback).Run(ClassifiedQuery(EntryType::kUnknown));
     return;
   }
 
@@ -61,11 +61,11 @@ void CompositeClassify(std::vector<QueryClassifier> classifiers,
                     base::OnceCallback<void(ClassifiedQuery)> callback,
                     ClassifiedQuery result) {
                    // The first classifier that finds a result returns it.
-                   if (result.intent != QueryIntentType::kUnknown) {
+                   if (result.intent != EntryType::kUnknown) {
                      std::move(callback).Run(std::move(result));
                      return;
                    }
-                   // If `QueryIntentType::kUnknown` was returned from the
+                   // If `EntryType::kUnknown` was returned from the
                    // previous classifier, delegate the request to the next
                    // classifier.
                    CompositeClassify(std::move(classifiers), index + 1,
@@ -129,19 +129,19 @@ void KeywordQueryClassify(std::u16string_view query,
   normalized_query = base::JoinString(all_words, u" ");
 
   if (normalized_query.empty()) {
-    std::move(callback).Run(ClassifiedQuery(QueryIntentType::kUnknown));
+    std::move(callback).Run(ClassifiedQuery(EntryType::kUnknown));
     return;
   }
 
-  QueryIntentType matched_intent = QueryIntentType::kUnknown;
+  EntryType matched_intent = EntryType::kUnknown;
   std::u16string_view matched_keyword_phrase;
 
   // Attempts to find any of the `keyword_phrases` in `normalized_query`.
   // If a match is found, `matched_intent` and `matched_keyword_phrase`
   // are updated. Only the first successful match across all calls to
   // `try_match` is kept.
-  auto try_match = [&](QueryIntentType intent, auto... keyword_phrases) {
-    if (matched_intent != QueryIntentType::kUnknown) {
+  auto try_match = [&](EntryType intent, auto... keyword_phrases) {
+    if (matched_intent != EntryType::kUnknown) {
       return;
     }
 
@@ -168,143 +168,140 @@ void KeywordQueryClassify(std::u16string_view query,
   // Note that all search phrases need to be lowercase and ASCII only at
   // the moment.
   // Vehicle
-  try_match(QueryIntentType::kVehicleVin, u"vin");
-  try_match(QueryIntentType::kVehicleMake, u"vehicle make", u"car make");
-  try_match(QueryIntentType::kVehicleModel, u"vehicle model", u"car model");
-  try_match(QueryIntentType::kVehicleYear, u"vehicle year", u"car year");
-  try_match(QueryIntentType::kVehicleOwner, u"vehicle owner", u"car owner");
-  try_match(QueryIntentType::kVehiclePlateState, u"license plate state",
+  try_match(EntryType::kVehicleVin, u"vin");
+  try_match(EntryType::kVehicleMake, u"vehicle make", u"car make");
+  try_match(EntryType::kVehicleModel, u"vehicle model", u"car model");
+  try_match(EntryType::kVehicleYear, u"vehicle year", u"car year");
+  try_match(EntryType::kVehicleOwner, u"vehicle owner", u"car owner");
+  try_match(EntryType::kVehiclePlateState, u"license plate state",
             u"plate state");
-  try_match(QueryIntentType::kVehicle, u"vehicle", u"car");
-  try_match(QueryIntentType::kVehiclePlateNumber, u"license plate",
-            u"plate number", u"plate");
+  try_match(EntryType::kVehicle, u"vehicle", u"car");
+  try_match(EntryType::kVehiclePlateNumber, u"license plate", u"plate number",
+            u"plate");
 
   // Passport
-  try_match(QueryIntentType::kPassportNumber, u"passport number");
-  try_match(QueryIntentType::kPassportExpirationDate, u"passport expiration",
+  try_match(EntryType::kPassportNumber, u"passport number");
+  try_match(EntryType::kPassportExpirationDate, u"passport expiration",
             u"passport expiry");
-  try_match(QueryIntentType::kPassportIssueDate, u"passport issue");
-  try_match(QueryIntentType::kPassportCountry, u"passport country");
-  try_match(QueryIntentType::kPassportName, u"passport name");
-  try_match(QueryIntentType::kPassportFull, u"passport");
+  try_match(EntryType::kPassportIssueDate, u"passport issue");
+  try_match(EntryType::kPassportCountry, u"passport country");
+  try_match(EntryType::kPassportName, u"passport name");
+  try_match(EntryType::kPassportFull, u"passport");
 
   // Flight Reservation
-  try_match(QueryIntentType::kFlightReservationFlightNumber, u"flight number");
-  try_match(QueryIntentType::kFlightReservationTicketNumber, u"ticket number");
-  try_match(QueryIntentType::kFlightReservationConfirmationCode,
-            u"confirmation code", u"flight confirmation");
-  try_match(QueryIntentType::kFlightReservationPassengerName, u"passenger name",
+  try_match(EntryType::kFlightReservationFlightNumber, u"flight number");
+  try_match(EntryType::kFlightReservationTicketNumber, u"ticket number");
+  try_match(EntryType::kFlightReservationConfirmationCode, u"confirmation code",
+            u"flight confirmation");
+  try_match(EntryType::kFlightReservationPassengerName, u"passenger name",
             u"flight passenger");
-  try_match(QueryIntentType::kFlightReservationDepartureAirport,
-            u"departure airport", u"from airport");
-  try_match(QueryIntentType::kFlightReservationArrivalAirport,
-            u"arrival airport", u"to airport");
-  try_match(QueryIntentType::kFlightReservationDepartureDate, u"departure date",
+  try_match(EntryType::kFlightReservationDepartureAirport, u"departure airport",
+            u"from airport");
+  try_match(EntryType::kFlightReservationArrivalAirport, u"arrival airport",
+            u"to airport");
+  try_match(EntryType::kFlightReservationDepartureDate, u"departure date",
             u"flight date");
-  try_match(QueryIntentType::kFlightReservationArrivalDate, u"arrival date");
-  try_match(QueryIntentType::kFlightReservationFull, u"flight reservation",
-            u"flight", u"reservation");
+  try_match(EntryType::kFlightReservationArrivalDate, u"arrival date");
+  try_match(EntryType::kFlightReservationFull, u"flight reservation", u"flight",
+            u"reservation");
 
   // Shipment
-  try_match(QueryIntentType::kShipmentTrackingNumber, u"tracking number");
-  try_match(QueryIntentType::kShipmentAssociatedOrderId, u"associated order id",
+  try_match(EntryType::kShipmentTrackingNumber, u"tracking number");
+  try_match(EntryType::kShipmentAssociatedOrderId, u"associated order id",
             u"shipment order");
-  try_match(QueryIntentType::kShipmentDeliveryAddress, u"delivery address",
+  try_match(EntryType::kShipmentDeliveryAddress, u"delivery address",
             u"shipping address");
-  try_match(QueryIntentType::kShipmentCarrierName, u"carrier name",
+  try_match(EntryType::kShipmentCarrierName, u"carrier name",
             u"shipping company", u"shipper name");
-  try_match(QueryIntentType::kShipmentCarrierDomain, u"carrier domain",
+  try_match(EntryType::kShipmentCarrierDomain, u"carrier domain",
             u"carrier website");
-  try_match(QueryIntentType::kShipmentEstimatedDeliveryDate,
+  try_match(EntryType::kShipmentEstimatedDeliveryDate,
             u"estimated delivery date", u"delivery date");
-  try_match(QueryIntentType::kShipmentFull, u"shipment", u"package",
-            u"delivery");
+  try_match(EntryType::kShipmentFull, u"shipment", u"package", u"delivery");
 
   // Order
-  try_match(QueryIntentType::kOrderId, u"order id", u"order number");
-  try_match(QueryIntentType::kOrderAccount, u"order account");
-  try_match(QueryIntentType::kOrderDate, u"order date");
-  try_match(QueryIntentType::kOrderMerchantName, u"merchant name",
-            u"store name", u"order merchant");
-  try_match(QueryIntentType::kOrderMerchantDomain, u"merchant domain");
-  try_match(QueryIntentType::kOrderProductNames, u"product names",
-            u"order products");
-  try_match(QueryIntentType::kOrderGrandTotal, u"grand total", u"order total",
+  try_match(EntryType::kOrderId, u"order id", u"order number");
+  try_match(EntryType::kOrderAccount, u"order account");
+  try_match(EntryType::kOrderDate, u"order date");
+  try_match(EntryType::kOrderMerchantName, u"merchant name", u"store name",
+            u"order merchant");
+  try_match(EntryType::kOrderMerchantDomain, u"merchant domain");
+  try_match(EntryType::kOrderProductNames, u"product names", u"order products");
+  try_match(EntryType::kOrderGrandTotal, u"grand total", u"order total",
             u"total amount");
-  try_match(QueryIntentType::kOrderFull, u"order");
+  try_match(EntryType::kOrderFull, u"order");
 
   // National ID Card
-  try_match(QueryIntentType::kNationalIdCardNumber, u"national id number");
-  try_match(QueryIntentType::kNationalIdCardExpirationDate,
-            u"national id expiration", u"national id expiry");
-  try_match(QueryIntentType::kNationalIdCardIssueDate, u"national id issue");
-  try_match(QueryIntentType::kNationalIdCardCountry, u"national id country");
-  try_match(QueryIntentType::kNationalIdCardName, u"national id name");
-  try_match(QueryIntentType::kNationalIdCardFull, u"national id");
+  try_match(EntryType::kNationalIdCardNumber, u"national id number");
+  try_match(EntryType::kNationalIdCardExpirationDate, u"national id expiration",
+            u"national id expiry");
+  try_match(EntryType::kNationalIdCardIssueDate, u"national id issue");
+  try_match(EntryType::kNationalIdCardCountry, u"national id country");
+  try_match(EntryType::kNationalIdCardName, u"national id name");
+  try_match(EntryType::kNationalIdCardFull, u"national id");
 
   // Redress Number
-  try_match(QueryIntentType::kRedressNumberName, u"redress number name",
+  try_match(EntryType::kRedressNumberName, u"redress number name",
             u"redress name");
-  try_match(QueryIntentType::kRedressNumberNumber, u"redress number");
-  try_match(QueryIntentType::kRedressNumberFull, u"redress");
+  try_match(EntryType::kRedressNumberNumber, u"redress number");
+  try_match(EntryType::kRedressNumberFull, u"redress");
 
   // Known Traveler Number
-  try_match(QueryIntentType::kKnownTravelerNumberName,
-            u"known traveler number name", u"ktn name");
-  try_match(QueryIntentType::kKnownTravelerNumberNumber,
+  try_match(EntryType::kKnownTravelerNumberName, u"known traveler number name",
+            u"ktn name");
+  try_match(EntryType::kKnownTravelerNumberNumber,
             u"known traveler number number", u"ktn number");
-  try_match(QueryIntentType::kKnownTravelerNumberExpirationDate,
+  try_match(EntryType::kKnownTravelerNumberExpirationDate,
             u"known traveler number expiration", u"ktn expiration",
             u"ktn expiry");
-  try_match(QueryIntentType::kKnownTravelerNumberFull, u"known traveler number",
+  try_match(EntryType::kKnownTravelerNumberFull, u"known traveler number",
             u"traveler number", u"ktn");
 
   // Credit Card
-  try_match(QueryIntentType::kCreditCardNumber, u"credit card number",
+  try_match(EntryType::kCreditCardNumber, u"credit card number",
             u"debit card number", u"card number");
-  try_match(QueryIntentType::kCreditCardExpirationDate,
+  try_match(EntryType::kCreditCardExpirationDate,
             u"credit card expiration date", u"credit card expiry date",
             u"credit card expiration");
-  try_match(QueryIntentType::kCreditCardSecurityCode,
-            u"credit card security code", u"card security code",
-            u"security code", u"cvv", u"cvc");
-  try_match(QueryIntentType::kCreditCardNameOnCard, u"cardholder name",
-            u"card name", u"name card");
-  try_match(QueryIntentType::kCreditCardFull, u"credit card", u"debit card",
+  try_match(EntryType::kCreditCardSecurityCode, u"credit card security code",
+            u"card security code", u"security code", u"cvv", u"cvc");
+  try_match(EntryType::kCreditCardNameOnCard, u"cardholder name", u"card name",
+            u"name card");
+  try_match(EntryType::kCreditCardFull, u"credit card", u"debit card",
             u"payment method");
 
   // Driver's License
-  try_match(QueryIntentType::kDriversLicenseNumber, u"drivers license number",
+  try_match(EntryType::kDriversLicenseNumber, u"drivers license number",
             u"driver's license number", u"driver license number");
-  try_match(QueryIntentType::kDriversLicenseState, u"drivers license state",
+  try_match(EntryType::kDriversLicenseState, u"drivers license state",
             u"driver's license state");
-  try_match(QueryIntentType::kDriversLicenseExpirationDate,
+  try_match(EntryType::kDriversLicenseExpirationDate,
             u"drivers license expiration", u"driver's license expiration",
             u"drivers license expiry", u"driver's license expiry");
-  try_match(QueryIntentType::kDriversLicenseIssueDate, u"drivers license issue",
+  try_match(EntryType::kDriversLicenseIssueDate, u"drivers license issue",
             u"driver's license issue");
-  try_match(QueryIntentType::kDriversLicenseName, u"drivers license name",
+  try_match(EntryType::kDriversLicenseName, u"drivers license name",
             u"driver's license name");
-  try_match(QueryIntentType::kDriversLicenseFull, u"drivers license",
+  try_match(EntryType::kDriversLicenseFull, u"drivers license",
             u"driver's license", u"driving license", u"license");
 
   // Personal profiles
-  try_match(QueryIntentType::kAddressZip, u"zip code", u"zip-code", u"zip",
+  try_match(EntryType::kAddressZip, u"zip code", u"zip-code", u"zip",
             u"postal code", u"postal-code", u"postal");
-  try_match(QueryIntentType::kAddressCity, u"city", u"town");
-  try_match(QueryIntentType::kAddressState, u"state", u"province");
-  try_match(QueryIntentType::kAddressCountry, u"country");
-  try_match(QueryIntentType::kAddressStreetAddress, u"street");
-  try_match(QueryIntentType::kPhone, u"phone", u"mobile", u"telephone");
-  try_match(QueryIntentType::kEmail, u"e-mail", u"email");
-  try_match(QueryIntentType::kCompanyName, u"organization", u"company");
-  try_match(QueryIntentType::kNameFull, u"name");
-  try_match(QueryIntentType::kAddressFull, u"home address", u"work address",
+  try_match(EntryType::kAddressCity, u"city", u"town");
+  try_match(EntryType::kAddressState, u"state", u"province");
+  try_match(EntryType::kAddressCountry, u"country");
+  try_match(EntryType::kAddressStreetAddress, u"street");
+  try_match(EntryType::kPhone, u"phone", u"mobile", u"telephone");
+  try_match(EntryType::kEmail, u"e-mail", u"email");
+  try_match(EntryType::kCompanyName, u"organization", u"company");
+  try_match(EntryType::kNameFull, u"name");
+  try_match(EntryType::kAddressFull, u"home address", u"work address",
             u"address", u"home", u"work", u"live");
-  try_match(QueryIntentType::kIban, u"iban", u"bank account");
+  try_match(EntryType::kIban, u"iban", u"bank account");
 
-  if (matched_intent == QueryIntentType::kUnknown) {
-    std::move(callback).Run(ClassifiedQuery(QueryIntentType::kUnknown));
+  if (matched_intent == EntryType::kUnknown) {
+    std::move(callback).Run(ClassifiedQuery(EntryType::kUnknown));
     return;
   }
 
@@ -329,7 +326,7 @@ void OnGeminiClassificationComplete(
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   auto callback_with_unknown_type = [&]() {
-    std::move(callback).Run(ClassifiedQuery(QueryIntentType::kUnknown));
+    std::move(callback).Run(ClassifiedQuery(EntryType::kUnknown));
   };
 
   if (!result.response.has_value()) {
@@ -373,7 +370,7 @@ void OnGeminiClassificationComplete(
     return;
   }
 
-  QueryIntentType intent = StringToQueryIntentType(*intent_str);
+  EntryType intent = StringToEntryType(*intent_str);
   std::vector<std::u16string> filter_words;
 
   if (const base::ListValue* filter_words_list =
@@ -395,7 +392,7 @@ void GeminiClassify(
     std::u16string_view query,
     base::OnceCallback<void(ClassifiedQuery)> callback) {
   if (!remote_model_executor) {
-    std::move(callback).Run(ClassifiedQuery(QueryIntentType::kUnknown));
+    std::move(callback).Run(ClassifiedQuery(EntryType::kUnknown));
     return;
   }
 
@@ -412,7 +409,7 @@ void GeminiClassify(
 
 }  // namespace
 
-ClassifiedQuery::ClassifiedQuery(QueryIntentType intent,
+ClassifiedQuery::ClassifiedQuery(EntryType intent,
                                  std::vector<std::u16string> filter_words)
     : intent(intent), filter_words(std::move(filter_words)) {}
 

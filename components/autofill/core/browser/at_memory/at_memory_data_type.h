@@ -8,7 +8,7 @@
 #include <optional>
 #include <variant>
 
-#include "components/accessibility_annotator/core/annotation_reducer/query_intent_type.h"
+#include "components/accessibility_annotator/core/annotation_reducer/entry_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -20,10 +20,10 @@ namespace autofill {
 // attribute or to a broader category (e.g. a vehicle, or vehicle's VIN).
 using AtMemoryDataType = std::variant<FieldType, EntityType, AttributeType>;
 
-// Translates a query intent from the accessibility annotator to an
+// Translates an entry type from the accessibility annotator to an
 // Autofill-specific data type.
 std::optional<AtMemoryDataType> ToAtMemoryDataType(
-    accessibility_annotator::QueryIntentType intent_type);
+    accessibility_annotator::EntryType entry_type);
 
 }  // namespace autofill
 

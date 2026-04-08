@@ -8,9 +8,9 @@
 #include <vector>
 
 #include "base/memory/raw_ref.h"
+#include "components/accessibility_annotator/core/annotation_reducer/entry_type.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_data_provider.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
-#include "components/accessibility_annotator/core/annotation_reducer/query_intent_type.h"
 #include "components/accessibility_annotator/core/data_models/entity.h"
 #include "components/accessibility_annotator/core/data_models/entity_types.h"
 
@@ -30,7 +30,7 @@ class SyncBridgeDataProvider : public MemoryDataProvider {
   ~SyncBridgeDataProvider() override;
 
   // Returns all memory search results of the given type from the sync backend.
-  void RetrieveAll(QueryIntentType type,
+  void RetrieveAll(EntryType type,
                    base::OnceCallback<void(std::vector<MemorySearchResult>)>
                        callback) override;
 

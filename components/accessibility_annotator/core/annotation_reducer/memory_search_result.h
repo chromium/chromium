@@ -10,11 +10,9 @@
 #include <variant>
 #include <vector>
 
-#include "components/accessibility_annotator/core/annotation_reducer/query_intent_type.h"
+#include "components/accessibility_annotator/core/annotation_reducer/entry_type.h"
 
 namespace accessibility_annotator {
-
-using EntryType = QueryIntentType;
 
 // Key-value metadata providing additional context for an entry.
 struct EntryMetadata {

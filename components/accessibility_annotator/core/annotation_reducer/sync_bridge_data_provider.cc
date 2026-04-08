@@ -7,9 +7,9 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "components/accessibility_annotator/core/annotation_reducer/entry_type.h"
+#include "components/accessibility_annotator/core/annotation_reducer/entry_type_util.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
-#include "components/accessibility_annotator/core/annotation_reducer/query_intent_type.h"
-#include "components/accessibility_annotator/core/annotation_reducer/query_intent_type_util.h"
 #include "components/accessibility_annotator/core/data_models/entity_converter.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
 
@@ -22,12 +22,12 @@ SyncBridgeDataProvider::SyncBridgeDataProvider(
 SyncBridgeDataProvider::~SyncBridgeDataProvider() = default;
 
 void SyncBridgeDataProvider::RetrieveAll(
-    QueryIntentType type,
+    EntryType type,
     base::OnceCallback<void(std::vector<MemorySearchResult>)> callback) {
   backend_->GetSyncAnnotationsByTypes(
-      GetEntityTypesForQueryIntentType(type),
+      GetEntityTypesForEntryType(type),
       base::BindOnce(
-          [](QueryIntentType type,
+          [](EntryType type,
              base::OnceCallback<void(std::vector<MemorySearchResult>)> callback,
              std::vector<sync_pb::AccessibilityAnnotationSpecifics>
                  annotations) {

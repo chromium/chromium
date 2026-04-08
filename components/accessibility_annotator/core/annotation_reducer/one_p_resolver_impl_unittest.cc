@@ -528,8 +528,7 @@ TEST_F(OnePResolverImplTest, ValidOnePServiceResponse) {
   // Await and verify the fully parsed results.
   std::vector<MemorySearchResult> results = future.Take();
   ASSERT_EQ(results.size(), 1u);
-  EXPECT_EQ(results[0].type,
-            QueryIntentType::kFlightReservationConfirmationCode);
+  EXPECT_EQ(results[0].type, EntryType::kFlightReservationConfirmationCode);
   EXPECT_EQ(results[0].value, u"NEXJ8P");
   EXPECT_EQ(results[0].type_name, u"");
   EXPECT_DOUBLE_EQ(results[0].confidence_score, 0.95f);
@@ -539,7 +538,7 @@ TEST_F(OnePResolverImplTest, ValidOnePServiceResponse) {
             "https://mail.google.com/mail/u/0/#inbox/1");
   ASSERT_EQ(results[0].metadata_list.size(), 1u);
   EXPECT_EQ(results[0].metadata_list[0].type,
-            QueryIntentType::kFlightReservationArrivalAirport);
+            EntryType::kFlightReservationArrivalAirport);
   EXPECT_EQ(results[0].metadata_list[0].type_name, u"");
   EXPECT_EQ(results[0].metadata_list[0].value, u"ASE");
 }
@@ -597,11 +596,10 @@ TEST_F(OnePResolverImplTest, ModelExecutionParsesMultipleResults) {
   // Await and verify that both results were fully parsed.
   std::vector<MemorySearchResult> results = future.Take();
   ASSERT_EQ(results.size(), 2u);
-  EXPECT_EQ(results[0].type,
-            QueryIntentType::kFlightReservationConfirmationCode);
+  EXPECT_EQ(results[0].type, EntryType::kFlightReservationConfirmationCode);
   EXPECT_EQ(results[0].value, u"NEXJ8P");
   EXPECT_EQ(results[0].type_name, u"");
-  EXPECT_EQ(results[1].type, QueryIntentType::kUnknown);
+  EXPECT_EQ(results[1].type, EntryType::kUnknown);
   EXPECT_EQ(results[1].value, u"ABC1234");
   EXPECT_EQ(results[1].type_name, u"Custom Passport");
 }

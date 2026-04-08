@@ -6,28 +6,28 @@
 
 #include <optional>
 
-#include "components/accessibility_annotator/core/annotation_reducer/query_intent_type.h"
+#include "components/accessibility_annotator/core/annotation_reducer/entry_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
 
 std::optional<AtMemoryDataType> ToAtMemoryDataType(
-    accessibility_annotator::QueryIntentType query_intent_type) {
-#define INTENT_TO_FIELD_TYPE(intent, field_type)         \
-  case accessibility_annotator::QueryIntentType::intent: \
+    accessibility_annotator::EntryType entry_type) {
+#define INTENT_TO_FIELD_TYPE(intent, field_type)   \
+  case accessibility_annotator::EntryType::intent: \
     return field_type
-#define INTENT_TO_ENTITY_TYPE(intent, entity_type)       \
-  case accessibility_annotator::QueryIntentType::intent: \
+#define INTENT_TO_ENTITY_TYPE(intent, entity_type) \
+  case accessibility_annotator::EntryType::intent: \
     return EntityType(EntityTypeName::entity_type)
-#define INTENT_TO_ATTRIBUTE_TYPE(intent_and_attribute_type)                 \
-  case accessibility_annotator::QueryIntentType::intent_and_attribute_type: \
+#define INTENT_TO_ATTRIBUTE_TYPE(intent_and_attribute_type)           \
+  case accessibility_annotator::EntryType::intent_and_attribute_type: \
     return AttributeType(AttributeTypeName::intent_and_attribute_type)
 #define INTENT_TO_ATTRIBUTE_TYPE_WITH_NAME(intent, attribute_type) \
-  case accessibility_annotator::QueryIntentType::intent:           \
+  case accessibility_annotator::EntryType::intent:                 \
     return AttributeType(AttributeTypeName::attribute_type)
 
-  switch (query_intent_type) {
+  switch (entry_type) {
     INTENT_TO_FIELD_TYPE(kNameFull, NAME_FULL);
     INTENT_TO_FIELD_TYPE(kAddressFull, ADDRESS_HOME_ADDRESS);
     INTENT_TO_FIELD_TYPE(kAddressStreetAddress, ADDRESS_HOME_STREET_ADDRESS);
@@ -100,18 +100,17 @@ std::optional<AtMemoryDataType> ToAtMemoryDataType(
     INTENT_TO_ATTRIBUTE_TYPE(kShipmentCarrierName);
     INTENT_TO_ATTRIBUTE_TYPE(kShipmentCarrierDomain);
     INTENT_TO_ATTRIBUTE_TYPE(kShipmentEstimatedDeliveryDate);
-    case accessibility_annotator::QueryIntentType::kUnknown:
-    case accessibility_annotator::QueryIntentType::kIbanNickname:
-    case accessibility_annotator::QueryIntentType::kCreditCardFull:
-    case accessibility_annotator::QueryIntentType::kCreditCardNickname:
-    case accessibility_annotator::QueryIntentType::
-        kFlightReservationArrivalDate:
-    case accessibility_annotator::QueryIntentType::kOrderGrandTotal:
+    case accessibility_annotator::EntryType::kUnknown:
+    case accessibility_annotator::EntryType::kIbanNickname:
+    case accessibility_annotator::EntryType::kCreditCardFull:
+    case accessibility_annotator::EntryType::kCreditCardNickname:
+    case accessibility_annotator::EntryType::kFlightReservationArrivalDate:
+    case accessibility_annotator::EntryType::kOrderGrandTotal:
     // TODO(crbug.com/484094746): Map `delivery_address` to
     // `kShipmentDeliveryZipCode`. Since `delivery_address` is a
     // `std::string`, it's unclear how we can process this (here and in
     // general).
-    case accessibility_annotator::QueryIntentType::kShipmentDeliveryAddress:
+    case accessibility_annotator::EntryType::kShipmentDeliveryAddress:
       return std::nullopt;
   }
 

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ANNOTATION_REDUCER_QUERY_INTENT_TYPE_H_
-#define COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ANNOTATION_REDUCER_QUERY_INTENT_TYPE_H_
+#ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ANNOTATION_REDUCER_ENTRY_TYPE_H_
+#define COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ANNOTATION_REDUCER_ENTRY_TYPE_H_
 
 namespace accessibility_annotator {
 
 // Represents the type of data a query or piece of information is related to.
-// LINT.IfChange(QueryIntentType)
-enum class QueryIntentType {
+// LINT.IfChange(EntryType)
+enum class EntryType {
   kUnknown,
   kNameFull,
   kAddressFull,
@@ -88,9 +88,9 @@ enum class QueryIntentType {
   kCreditCardNickname,
 };
 // LINT.ThenChange(
-//     //components/accessibility_annotator/core/annotation_reducer/util.cc:QueryIntentType,
-//     //components/accessibility_annotator/core/annotation_reducer/util.cc:AnswerTypeToQueryIntentType)
+//     //components/accessibility_annotator/core/annotation_reducer/util.cc:EntryType,
+//     //components/accessibility_annotator/core/annotation_reducer/util.cc:AnswerTypeToEntryType)
 
 }  // namespace accessibility_annotator
 
-#endif  // COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ANNOTATION_REDUCER_QUERY_INTENT_TYPE_H_
+#endif  // COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ANNOTATION_REDUCER_ENTRY_TYPE_H_
