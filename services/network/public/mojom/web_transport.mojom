@@ -95,17 +95,17 @@ interface WebTransport {
   // when |succeeded| is true. |writable| is nullable, to support both
   // unidirectional and bidirectional streams.
   CreateStream(handle<data_pipe_consumer> readable,
-               handle<data_pipe_producer>? writable) =>
-      (bool succeeded, uint32 stream_id);
+               handle<data_pipe_producer>? writable)
+      => (bool succeeded, uint32 stream_id);
 
   // Accepts a bidirectional stream created by the server.
   AcceptBidirectionalStream() => (uint32 stream_id,
-                  handle<data_pipe_consumer> readable,
-                  handle<data_pipe_producer> writable);
+                                  handle<data_pipe_consumer> readable,
+                                  handle<data_pipe_producer> writable);
 
   // Accepts a unidirectional stream created by the server.
-  AcceptUnidirectionalStream() => (uint32 stream_id,
-                  handle<data_pipe_consumer> readable);
+  AcceptUnidirectionalStream()
+      => (uint32 stream_id, handle<data_pipe_consumer> readable);
 
   // Expresses that the client will not write data to the stream for
   // |stream_id|. After calling this function on a stream, the client will not

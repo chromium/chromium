@@ -6,9 +6,9 @@ module blink.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
-import "services/network/public/mojom/parsed_headers.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_types.mojom";
+import "services/network/public/mojom/parsed_headers.mojom";
 import "third_party/blink/public/mojom/blob/serialized_blob.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom";
 import "url/mojom/url.mojom";
@@ -35,7 +35,7 @@ struct FetchAPIResponse {
   // Corresponds to response types from the Fetch spec:
   // https://fetch.spec.whatwg.org/#concept-response-type
   network.mojom.FetchResponseType response_type =
-    network.mojom.FetchResponseType.kDefault;
+      network.mojom.FetchResponseType.kDefault;
 
   // Pre-computed padding for this response.  This should only be non-zero
   // for when |response_type| is kOpaque.
@@ -43,7 +43,7 @@ struct FetchAPIResponse {
 
   // The source of this response, e.g. network, CacheStorage.
   network.mojom.FetchResponseSource response_source =
-    network.mojom.FetchResponseSource.kUnspecified;
+      network.mojom.FetchResponseSource.kUnspecified;
 
   // The response headers. It's case insensitive for header name as key.
   map<string, string> headers;
@@ -60,7 +60,7 @@ struct FetchAPIResponse {
 
   // Error codes for service worker APIs.
   ServiceWorkerResponseError error =
-    blink.mojom.ServiceWorkerResponseError.kUnknown;
+      blink.mojom.ServiceWorkerResponseError.kUnknown;
 
   // The time at which the response headers were received.  For cached
   // responses, this time could be "far" in the past.

@@ -4,15 +4,15 @@
 
 module network.mojom;
 
-import "url/mojom/url.mojom";
-import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
+import "services/network/public/mojom/network_param.mojom";
+import "url/mojom/url.mojom";
 
 enum WebSocketMessageType {
   CONTINUATION,
   TEXT,
   BINARY,
-  LAST = BINARY
+  LAST = BINARY,
 };
 
 // TODO(darin): Move to a more general location.
@@ -22,7 +22,6 @@ struct HttpHeader {
 };
 
 // TODO(darin): Remove redundancy b/w |headers| and |headers_text|.
-
 struct WebSocketHandshakeRequest {
   url.mojom.Url url;
   array<HttpHeader> headers;
@@ -50,7 +49,8 @@ interface WebSocketAuthenticationHandler {
   // authentication.
   OnAuthRequired(AuthChallengeInfo info,
                  HttpResponseHeaders headers,
-                 IPEndPoint remote_endpoint) => (AuthCredentials? credentials);
+                 IPEndPoint remote_endpoint)
+      => (AuthCredentials? credentials);
 };
 
 // This interface is for client-side WebSocket handshake. Used to initialize
@@ -98,9 +98,7 @@ interface WebSocketClient {
   //   If |type| is WebSocketMessageType.TEXT, then the concatenation of all
   //   the frames in the message must be valid UTF-8.
   //   If |fin| is not set, |data_length| must be non-zero.
-  OnDataFrame(bool fin,
-              WebSocketMessageType type,
-              uint64 data_length);
+  OnDataFrame(bool fin, WebSocketMessageType type, uint64 data_length);
 
   // Drop the channel.
   //

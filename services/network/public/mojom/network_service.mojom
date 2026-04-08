@@ -5,12 +5,12 @@
 module network.mojom;
 
 import "components/content_settings/core/common/content_settings.mojom";
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/file.mojom";
-import "mojo/public/mojom/base/unguessable_token.mojom";
-import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/proto_wrapper.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "sandbox/policy/mojom/context.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
@@ -20,7 +20,6 @@ import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/http_raw_headers.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
-import "services/network/public/mojom/originating_process_id.mojom";
 import "services/network/public/mojom/key_pinning.mojom";
 import "services/network/public/mojom/mutable_network_traffic_annotation_tag.mojom";
 import "services/network/public/mojom/net_log.mojom";
@@ -32,6 +31,7 @@ import "services/network/public/mojom/network_interface_change_listener.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_quality_estimator_manager.mojom";
 import "services/network/public/mojom/network_service_test.mojom";
+import "services/network/public/mojom/originating_process_id.mojom";
 import "services/network/public/mojom/parsed_headers.mojom";
 import "services/network/public/mojom/proxy_config.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
@@ -40,10 +40,10 @@ import "services/network/public/mojom/system_dns_resolution.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
 import "services/network/public/mojom/url_loader.mojom";
 import "services/network/public/mojom/url_loader_network_service_observer.mojom";
+import "services/network/public/mojom/url_request.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
-import "services/network/public/mojom/url_request.mojom";
 
 [EnableIf=is_android]
 import "mojo/public/mojom/base/application_state.mojom";
@@ -298,8 +298,8 @@ interface NetworkService {
   //   * Values smaller than 6 will saturate to 6.
   // Normal and WebSocket pools are limited independently.
   // If a parameter is nullopt it will not be changed.
-  SetMaxConnectionsPerProxyChain(uint32? max_connections_normal,
-                                 uint32? max_connections_websocket);
+  SetMaxConnectionsPerProxyChain(
+      uint32? max_connections_normal, uint32? max_connections_websocket);
 
   // Gets the NetworkChangeManager.
   GetNetworkChangeManager(
@@ -454,10 +454,10 @@ interface NetworkService {
   // true, which prevents the response body from being decoded on the network
   // service side, and there is a need to check the decoded response body on the
   // browser process side (e.g. DevTools).
-  DecodeContentEncoding(
-      array<SourceType> content_encoding_types,
-      handle<data_pipe_consumer> source_body,
-      handle<data_pipe_producer> dest_body) => (int32 error_code);
+  DecodeContentEncoding(array<SourceType> content_encoding_types,
+                        handle<data_pipe_consumer> source_body,
+                        handle<data_pipe_producer> dest_body)
+      => (int32 error_code);
 
   // Enables or disables TLS 1.3 Early Data.
   SetTLS13EarlyDataEnabled(bool enabled);
@@ -474,10 +474,9 @@ interface NetworkService {
   // This is only meant to be used for Okta SSO authentication requests.
   [EnableIf=is_mac]
   CreateURLSessionURLLoaderAndStart(
-    URLRequest request,
-    pending_receiver<URLLoader> loader_receiver,
-    pending_remote<URLLoaderClient> client_remote
-  );
+      URLRequest request,
+      pending_receiver<URLLoader> loader_receiver,
+      pending_remote<URLLoaderClient> client_remote);
 };
 
 struct NetworkDurableMessageConfig {
@@ -499,13 +498,15 @@ interface DurableMessageCollector {
   // Enable body collection per DevTools Profile ID.
   // This does not affect response bodies that are already stored.
   EnableForProfile(mojo_base.mojom.UnguessableToken throttling_profile_id)
-    => ();
+      => ();
+
   // Disable body collection per DevTools Profile ID.
   // This does not affect response bodies that are already stored.
   DisableForProfile(mojo_base.mojom.UnguessableToken throttling_profile_id)
-    => ();
+      => ();
 
   // Retrieve a collected Durable Message for the given DevTools request ID,
   // if one is available.
-  Retrieve(string devtools_request_id) => (mojo_base.mojom.BigBuffer? message);
+  Retrieve(string devtools_request_id)
+      => (mojo_base.mojom.BigBuffer? message);
 };

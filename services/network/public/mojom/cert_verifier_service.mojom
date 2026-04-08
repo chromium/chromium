@@ -60,7 +60,7 @@ interface CertVerifierService {
                      string hostname,
                      network.mojom.X509Certificate tls_certificate,
                      network.mojom.NetLogSource net_log_source)
-       => (network.mojom.X509Certificate verified_cert);
+      => (network.mojom.X509Certificate verified_cert);
 
   // Sets the config for the underlying CertVerifier.
   SetConfig(CertVerifierConfig config);

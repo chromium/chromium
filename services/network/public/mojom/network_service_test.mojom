@@ -10,12 +10,12 @@ import "mojo/public/mojom/base/memory_pressure_level.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/address_list.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
+import "services/network/public/mojom/http_cache_backend_file_operations.mojom";
+import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/network_change_manager.mojom";
 import "services/network/public/mojom/network_interface_change_listener.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_types.mojom";
-import "services/network/public/mojom/http_cache_backend_file_operations.mojom";
-import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/transferable_socket.mojom";
 
 // Maps to net::RuleBasedHostResolverProc::Rule::ResolverType.
@@ -43,15 +43,12 @@ struct Rule {
 // An entry in the "simple" backend of an HTTP cache.
 interface SimpleCacheEntry {
   // Writes data into the entry. See disk_cache::Entry::WriteData for details.
-  WriteData(int32 index,
-            int32 offset,
-            array<uint8> data,
-            bool truncate) => (int32 result);
+  WriteData(int32 index, int32 offset, array<uint8> data, bool truncate)
+      => (int32 result);
 
   // Reads data from the entry. See disk_cache::Entry::ReadData for details.
-  ReadData(int32 index,
-           int32 offset,
-           uint32 length) => (array<uint8> data, int32 result);
+  ReadData(int32 index, int32 offset, uint32 length)
+      => (array<uint8> data, int32 result);
 
   // Writes data into the entry. See disk_cache::Entry::WriteSparseData for
   // details.
@@ -59,8 +56,8 @@ interface SimpleCacheEntry {
 
   // Reads data from the entry. See disk_cache::Entry::ReadSparseData for
   // details.
-  ReadSparseData(int32 offset,
-                 uint32 length) => (array<uint8> data, int32 result);
+  ReadSparseData(int32 offset, uint32 length)
+      => (array<uint8> data, int32 result);
 
   // Closes the entry.
   Close() => ();
@@ -89,12 +86,12 @@ interface SimpleCacheEntryEnumerator {
 // The "simple" backend of an HTTP cache.
 interface SimpleCache {
   // Creates a new entry.
-  CreateEntry(string key) =>
-    (pending_remote<SimpleCacheEntry>? entry, int32 error);
+  CreateEntry(string key)
+      => (pending_remote<SimpleCacheEntry>? entry, int32 error);
 
   // Opens an entry.
-  OpenEntry(string key) =>
-    (pending_remote<SimpleCacheEntry>? entry, int32 error);
+  OpenEntry(string key)
+      => (pending_remote<SimpleCacheEntry>? entry, int32 error);
 
   // Marks the entry for deletion.
   DoomEntry(string key) => (int32 result);
@@ -145,11 +142,10 @@ interface NetworkServiceTest {
   MockCertVerifierSetDefaultResult(int32 default_result) => ();
 
   [Sync]
-  MockCertVerifierAddResultForCertAndHost(
-      X509Certificate cert,
-      string host_pattern,
-      CertVerifyResult verify_result,
-      int32 rv) => ();
+  MockCertVerifierAddResultForCertAndHost(X509Certificate cert,
+                                          string host_pattern,
+                                          CertVerifyResult verify_result,
+                                          int32 rv) => ();
 
   // Set the global transport security state preloaded static data source to
   // the unittest_default source, if `enable_unittest_source` is true.
@@ -171,8 +167,8 @@ interface NetworkServiceTest {
 
   // Set the DoH configuration to be used during tests.
   [Sync]
-  SetTestDohConfig(SecureDnsMode secure_dns_mode,
-                   DnsOverHttpsConfig doh_config) => ();
+  SetTestDohConfig(
+      SecureDnsMode secure_dns_mode, DnsOverHttpsConfig doh_config) => ();
 
   // Causes the next host resolve to the given hostname to crash the process.
   CrashOnResolveHost(string host);
@@ -189,8 +185,7 @@ interface NetworkServiceTest {
   // Gets the current count of peer to peer connections that may require low
   // latency.
   [Sync]
-  GetPeerToPeerConnectionsCountChange()
-      => (uint32 connection_count);
+  GetPeerToPeerConnectionsCountChange() => (uint32 connection_count);
 
   // Returns the value of an environment variable in the network service's
   // process, or an empty string if it's not set.
@@ -216,8 +211,9 @@ interface NetworkServiceTest {
   OpenFile(mojo_base.mojom.FilePath path) => (bool result);
 
   // Enumerate files in the specified directory.
-  EnumerateFiles(mojo_base.mojom.FilePath path,
-                 pending_remote<HttpCacheBackendFileOperationsFactory> factory)
+  EnumerateFiles(
+      mojo_base.mojom.FilePath path,
+      pending_remote<HttpCacheBackendFileOperationsFactory> factory)
       => (array<FileEnumerationEntry> entries, bool error);
 
   // Creates a "simple" backend for an HTTP cache.
@@ -226,8 +222,7 @@ interface NetworkServiceTest {
   CreateSimpleCache(
       pending_remote<HttpCacheBackendFileOperationsFactory> factory,
       mojo_base.mojom.FilePath path,
-      bool reset)
-      => (pending_remote<SimpleCache>? backend);
+      bool reset) => (pending_remote<SimpleCache>? backend);
 
   // Make a HTTP 1.0 GET request for / to `endpoint` using connected socket `s`.
   // Returns true if request was successfully sent. Intended for use verifying
@@ -236,8 +231,9 @@ interface NetworkServiceTest {
       => (bool result);
 
   // Resolves the machine's own hostname with net::HostResolverSystemTask.
-  ResolveOwnHostnameWithSystemDns()
-      => (network.mojom.AddressList addr_list, int32 os_error, int32 net_error);
+  ResolveOwnHostnameWithSystemDns() => (network.mojom.AddressList addr_list,
+                                        int32 os_error,
+                                        int32 net_error);
 
   // Sets the last IPv6 probe result.
   SetIPv6ProbeResult(bool success) => ();
@@ -266,5 +262,6 @@ interface NetworkServiceTest {
   // enterprise_auth::URLSessionURLLoader, used for performing the Okta SSO
   // URL requests, uses a mock server for testing or the real network.
   [EnableIf=is_mac]
-  SetUseMockURLSessionURLLoaderForTesting(bool use_mock_url_session_url_loader);
+  SetUseMockURLSessionURLLoaderForTesting(
+      bool use_mock_url_session_url_loader);
 };

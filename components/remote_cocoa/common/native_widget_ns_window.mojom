@@ -4,8 +4,8 @@
 
 module remote_cocoa.mojom;
 
-import "components/remote_cocoa/common/select_file_dialog.mojom";
 import "components/remote_cocoa/common/menu.mojom";
+import "components/remote_cocoa/common/select_file_dialog.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "services/network/public/mojom/network_param.mojom";
@@ -61,7 +61,7 @@ enum WindowVisibilityState {
   // if it has one.
   kShowInactive,
   // Miniaturizes with -[NSWindow miniaturize:].
-  kMiniaturizeWindow
+  kMiniaturizeWindow,
 };
 
 // Window transitions to animate, mirrors views::Widget::VisibilityTransition.
@@ -169,9 +169,8 @@ interface NativeWidgetNSWindow {
   // to look up this NSView in other functions (e.g, to specify a parent view).
   // If `corner_radius` is set, the content view clips sublayers to a rounded
   // corner mask of the given radius.
-  CreateContentView(uint64 ns_view_id,
-                    gfx.mojom.Rect bounds,
-                    int32? corner_radius);
+  CreateContentView(
+      uint64 ns_view_id, gfx.mojom.Rect bounds, int32? corner_radius);
 
   // Destroy the content NSView for this window. Note that the window will
   // become blank once this has been called.
@@ -189,8 +188,8 @@ interface NativeWidgetNSWindow {
   // coordinates. It is invalid for |new_bounds| to have an empty size and
   // non-zero position. The size of the window will be expanded so that the
   // content size will be at least |minimum_content_size|.
-  SetInitialBounds(gfx.mojom.Rect new_bounds,
-                   gfx.mojom.Size minimum_content_size);
+  SetInitialBounds(
+      gfx.mojom.Rect new_bounds, gfx.mojom.Size minimum_content_size);
 
   // Specify new bounds for the window via |new_bounds| in screen coordinates.
   // The size of the window will be expanded so that the content size will be
@@ -203,14 +202,13 @@ interface NativeWidgetNSWindow {
   // Specify new size for the window via |new_size|. The top-left corner of the
   // window will be kept in place. The size of the window will be expanded so
   // that the content size will be at least |minimum_content_size|.
-  SetSize(gfx.mojom.Size new_size,
-          gfx.mojom.Size minimum_content_size);
+  SetSize(gfx.mojom.Size new_size, gfx.mojom.Size minimum_content_size);
 
   // Centers the window and sets its content size to |content_size|. The size of
   // the window will be expanded so that the content size will be at least
   // |minimum_content_size|.
-  SetSizeAndCenter(gfx.mojom.Size content_size,
-                   gfx.mojom.Size minimum_content_size);
+  SetSizeAndCenter(
+      gfx.mojom.Size content_size, gfx.mojom.Size minimum_content_size);
 
   // Sets the desired visibility of the window and updates the visibility of
   // descendant windows where necessary.
@@ -290,7 +288,8 @@ interface NativeWidgetNSWindow {
   // Presumably, (10, 15) of this area would be used to draw client-drawn
   // decorations, while the remaining (30, 30) would be used for whatever
   // content is supposed to have a 1.f aspect-ratio.
-  SetAspectRatio(gfx.mojom.SizeF aspect_ratio, gfx.mojom.Size excluded_margin);
+  SetAspectRatio(
+      gfx.mojom.SizeF aspect_ratio, gfx.mojom.Size excluded_margin);
 
   // Specify the content to draw in the NSView.
   SetCALayerParams(gfx.mojom.CALayerParams ca_layer_params);
@@ -318,6 +317,7 @@ interface NativeWidgetNSWindow {
   // Acquiring mouse capture first steals capture from any existing
   // CocoaMouseCaptureDelegate, then captures all mouse events until released.
   AcquireCapture();
+
   ReleaseCapture();
 
   // Redispatch a keyboard event using the widget's window's CommandDispatcher.
@@ -332,8 +332,8 @@ interface NativeWidgetNSWindow {
   // Enables immersive fullscreen. |fullscreen_overlay_widget_id| is the id of
   // the overlay widget which is hosting top chrome.
   // |tab_widget_id| holds the id of the tab hosting widget.
-  EnableImmersiveFullscreen(uint64 fullscreen_overlay_widget_id,
-                            uint64 tab_widget_id);
+  EnableImmersiveFullscreen(
+      uint64 fullscreen_overlay_widget_id, uint64 tab_widget_id);
 
   // Rollback the immersive transition. The top chrome NSView is reparented into
   // the overlay widget.
@@ -376,6 +376,6 @@ interface NativeWidgetNSWindow {
 
   // Begin a file drag operation. Used for download drag-and-drop from PWA
   // running in a separate (app shim) process.
-  BeginFileDrag(FileDragData file_drag_data,
-                gfx.mojom.PointF mouse_location);
+  BeginFileDrag(
+      FileDragData file_drag_data, gfx.mojom.PointF mouse_location);
 };

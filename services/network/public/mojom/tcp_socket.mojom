@@ -6,11 +6,11 @@ module network.mojom;
 
 import "services/network/public/mojom/address_list.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
+import "services/network/public/mojom/mutable_network_traffic_annotation_tag.mojom";
+import "services/network/public/mojom/network_param.mojom";
+import "services/network/public/mojom/socket_connection_tracker.mojom";
 import "services/network/public/mojom/ssl_config.mojom";
 import "services/network/public/mojom/tls_socket.mojom";
-import "services/network/public/mojom/network_param.mojom";
-import "services/network/public/mojom/mutable_network_traffic_annotation_tag.mojom";
-import "services/network/public/mojom/socket_connection_tracker.mojom";
 
 struct TCPKeepAliveOptions {
   // Enable/disable TCP Keep-Alive.
@@ -57,10 +57,10 @@ struct TCPServerSocketOptions {
   // with a platform-agnostic default.
   bool? ipv6_only;
 
-  [EnableIf=is_chromeos]
   // The caller may choose to supply a |connection_tracker| if they lack access
   // to the endpoints of the actual connection but would like to get informed
   // when it shuts down.
+  [EnableIf=is_chromeos]
   pending_remote<SocketConnectionTracker>? connection_tracker;
 };
 
@@ -79,11 +79,10 @@ interface TCPBoundSocket {
   // NetworkContext::CreateTCPConnectedSocket(), except it operates on an
   // already bound socket. The TCPBoundSocket will be destroyed on completion,
   // whether the call succeeds or not.
-  Connect(
-      AddressList remote_addr_list,
-      TCPConnectedSocketOptions? tcp_connected_socket_options,
-      pending_receiver<TCPConnectedSocket> socket,
-      pending_remote<SocketObserver>? observer)
+  Connect(AddressList remote_addr_list,
+          TCPConnectedSocketOptions? tcp_connected_socket_options,
+          pending_receiver<TCPConnectedSocket> socket,
+          pending_remote<SocketObserver>? observer)
       => (int32 net_error,
           IPEndPoint? local_addr,
           IPEndPoint? peer_addr,
@@ -132,6 +131,7 @@ interface TCPConnectedSocket {
   // non-Chrome code.
   // A network error code is returned on completion.
   SetSendBufferSize(int32 send_buffer_size) => (int32 net_error);
+
   SetReceiveBufferSize(int32 receive_buffer_size) => (int32 net_error);
 
   // Enables / disables TCP_NODELAY on the connected socket. See
