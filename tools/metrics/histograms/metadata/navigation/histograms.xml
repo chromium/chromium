@@ -2205,7 +2205,7 @@ chromium-metrics-reviews@google.com.
     enum="BooleanOccurred" expires_after="2026-06-20">
   <owner>tiffanysong@google.com</owner>
   <owner>jacastro@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Recorded on renderer-initiated navigations to about:blank when
     ShouldSwapBrowsingInstancesForDifferentProcessFlags is called. Records
