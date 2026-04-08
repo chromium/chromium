@@ -4,7 +4,7 @@
 
 import("//build/config/chrome_build.gni")
 
-source_set("coordinator") {
+source_set("reauth") {
   sources = [
     "signin_reauth_coordinator.h",
     "signin_reauth_coordinator.mm",
@@ -26,7 +26,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "signin_reauth_coordinator_unittest.mm" ]
   deps = [
-    ":coordinator",
+    ":reauth",
     "//base",
     "//base/test:test_support",
     "//components/signin/public/identity_manager",
