@@ -81,31 +81,24 @@ found in the LICENSE file.
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <ImageView
-        android:id="@+id/pinch_to_resize_icon"
-        android:layout_width="@dimen/ntp_customization_pinch_to_resize_icon_size"
-        android:layout_height="@dimen/ntp_customization_pinch_to_resize_icon_size"
-        android:src="@drawable/pinch_to_resize_hand"
-        android:importantForAccessibility="no"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/pinch_to_resize_text"
-        app:layout_constraintTop_toTopOf="@id/pinch_to_resize_text"
-        android:scaleType="center"
-        app:layout_constraintBottom_toBottomOf="@id/pinch_to_resize_text" />
-
     <TextView
-        android:id="@+id/pinch_to_resize_text"
+        android:id="@+id/pinch_to_resize"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/ntp_customization_theme_image_preview_pinch_to_resize"
         android:contentDescription="@string/accessibility_ntp_customization_theme_image_preview_pinch_to_resize"
         android:textAppearance="@style/TextAppearance.PreviewDialogText"
+        android:drawableStart="@drawable/pinch_to_resize_hand"
+        android:drawablePadding="@dimen/ntp_customization_back_button_margin_start"
+        android:gravity="center_vertical"
+        android:maxLines="2"
+        android:ellipsize="end"
         android:layout_marginBottom="@dimen/ntp_customization_edit_icon_margin"
-        android:layout_marginStart="@dimen/ntp_customization_back_button_margin_start"
-        app:layout_constraintStart_toEndOf="@id/pinch_to_resize_icon"
+        android:layout_marginHorizontal="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
+        app:layout_constraintBottom_toTopOf="@id/save_button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/save_button" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constrainedWidth="true"/>
 
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/cancel_button"
