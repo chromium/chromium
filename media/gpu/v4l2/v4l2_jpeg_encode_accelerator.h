@@ -176,6 +176,7 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
     // Add JPEG Marks if needed. Add EXIF section by |exif_shm|.
     size_t FinalizeJpegImage(scoped_refptr<VideoFrame> output_frame,
                              size_t buffer_size,
+                             size_t max_buffer_capacity,
                              base::WritableSharedMemoryMapping exif_mapping);
 
     bool SetInputBufferFormat(gfx::Size coded_size,
@@ -234,9 +235,6 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
 
     // Pixel format of output buffer.
     uint32_t output_buffer_pixelformat_;
-
-    // sizeimage of output buffer.
-    uint32_t output_buffer_sizeimage_;
   };
 
   void VideoFrameReady(int32_t task_id, size_t encoded_picture_size);
