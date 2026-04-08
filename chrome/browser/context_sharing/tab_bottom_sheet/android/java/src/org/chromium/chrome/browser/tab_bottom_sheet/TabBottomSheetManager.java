@@ -24,34 +24,22 @@ public class TabBottomSheetManager implements Destroyable {
 
     // Interface for the native to communicate with the tab bottom sheet manager.
     interface NativeInterfaceDelegate {
+        /** Inner class to hold the singleton instance. */
+        static class LazyHolder {
+            static final NativeInterfaceDelegate INSTANCE =
+                    new NativeInterfaceDelegate() {
+                        @Override
+                        public void onBottomSheetClosed() {}
+                    };
+        }
+
+        static NativeInterfaceDelegate getInstance() {
+            return LazyHolder.INSTANCE;
+        }
+
         // Method called when the bottom sheet is closed.
         void onBottomSheetClosed();
-
-        // Called when the bottom sheet is opened, or when the bottom sheet state changes.
-        void onBottomSheetOpened(boolean isExpanded);
-
-        // Method called when the bottom sheet is suppressed.
-        void onBottomSheetSuppressed();
     }
-
-    private final TabBottomSheetCoordinator.SheetEventsCallback mSheetEventsCallback =
-            new TabBottomSheetCoordinator.SheetEventsCallback() {
-                @Override
-                public void onBottomSheetClosed() {
-                    if (mNativeInterfaceDelegate == null) return;
-                    if (mIsCloseFromNative) {
-                        notifyOnClose();
-                    } else {
-                        mNativeInterfaceDelegate.onBottomSheetSuppressed();
-                    }
-                }
-
-                @Override
-                public void onBottomSheetOpened(boolean isExpanded) {
-                    if (mNativeInterfaceDelegate == null) return;
-                    mNativeInterfaceDelegate.onBottomSheetOpened(isExpanded);
-                }
-            };
 
     private final LayoutStateObserver mLayoutStateObserver =
             new LayoutStateObserver() {
@@ -95,12 +83,6 @@ public class TabBottomSheetManager implements Destroyable {
     private final CallbackController mCallbackController = new CallbackController();
 
     private boolean mIsSuppressedOnTabSwitcher;
-    // The bottom sheet can only be closed through a native event, if the bottom sheet was ever
-    // hidden, while this boolean is false, we assume that the bottom sheet had been suppressed and
-    // that it will be shown again once the suppression event passes.
-    // When it is true, the close event originated from native, we close the bottom sheet, send an
-    // onClosed event to native, and reset the boolean to false.
-    private boolean mIsCloseFromNative;
 
     private @Nullable TabBottomSheetCoordinator mTabBottomSheetCoordinator;
     private @Nullable NativeInterfaceDelegate mNativeInterfaceDelegate;
@@ -157,7 +139,7 @@ public class TabBottomSheetManager implements Destroyable {
                         mWindowAndroid,
                         mBottomSheetController,
                         coBrowseViews,
-                        mSheetEventsCallback);
+                        this::onBottomSheetClosed);
 
         if (mIsSuppressedOnTabSwitcher) {
             // We are currently in the tab switcher, save this sheet to be shown when we return to a
@@ -171,8 +153,6 @@ public class TabBottomSheetManager implements Destroyable {
             return true;
         }
         // Failed to show bottom sheet.
-        mTabBottomSheetCoordinator.destroy();
-        mTabBottomSheetCoordinator = null;
         return false;
     }
 
@@ -188,7 +168,6 @@ public class TabBottomSheetManager implements Destroyable {
                 // The bottom sheet is already closed. just send a onClose event back to native.
                 notifyOnClose();
             } else {
-                mIsCloseFromNative = true;
                 mTabBottomSheetCoordinator.closeBottomSheet();
             }
         }
@@ -239,8 +218,6 @@ public class TabBottomSheetManager implements Destroyable {
 
     @Override
     public void destroy() {
-        mIsCloseFromNative = true;
-
         mCallbackController.destroy();
 
         // Destroy the coorinator in case the manager is abruptly destroyed before hiding the bottom
@@ -258,6 +235,12 @@ public class TabBottomSheetManager implements Destroyable {
         TabBottomSheetUtils.detachManagerFromWindow(mWindowAndroid);
     }
 
+    private void onBottomSheetClosed() {
+        if (!mIsSuppressedOnTabSwitcher) {
+            notifyOnClose();
+        }
+    }
+
     private void notifyOnClose() {
         if (mNativeInterfaceDelegate != null) {
             mNativeInterfaceDelegate.onBottomSheetClosed();
@@ -271,7 +254,6 @@ public class TabBottomSheetManager implements Destroyable {
             mTabBottomSheetCoordinator.destroy();
             mTabBottomSheetCoordinator = null;
         }
-        mIsCloseFromNative = false;
     }
 
     /* Testing methods */

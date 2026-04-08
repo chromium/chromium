@@ -38,7 +38,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetCoordinator.SheetEventsCallback;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -54,15 +53,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class TabBottomSheetCoordinatorTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    private final SheetEventsCallback mSheetEventsCallback =
-            new SheetEventsCallback() {
-                @Override
-                public void onBottomSheetClosed() {}
-
-                @Override
-                public void onBottomSheetOpened(boolean isExpanded) {}
-            };
 
     @Mock private BottomSheetController mMockBottomSheetController;
     @Mock private CoBrowseViews mCoBrowseViews;
@@ -86,11 +76,7 @@ public class TabBottomSheetCoordinatorTest {
 
         mCoordinator =
                 new TabBottomSheetCoordinator(
-                        mContext,
-                        mWindowAndroid,
-                        mMockBottomSheetController,
-                        mCoBrowseViews,
-                        mSheetEventsCallback);
+                        mContext, mWindowAndroid, mMockBottomSheetController, mCoBrowseViews, null);
 
         mCoordinatorModel = mCoordinator.getModelForTesting();
     }
@@ -111,8 +97,6 @@ public class TabBottomSheetCoordinatorTest {
         when(mMockBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
                 .thenReturn(true);
         mCoordinator.tryToShowBottomSheet(/* animate= */ true, /* startsExpanded= */ true);
-        when(mMockBottomSheetController.getCurrentSheetContent())
-                .thenReturn(mCoordinator.getSheetContentForTesting());
         verify(mMockBottomSheetController)
                 .addObserver(mBottomSheetObserverArgumentCaptor.capture());
         BottomSheetObserver coordinatorObserver = mBottomSheetObserverArgumentCaptor.getValue();

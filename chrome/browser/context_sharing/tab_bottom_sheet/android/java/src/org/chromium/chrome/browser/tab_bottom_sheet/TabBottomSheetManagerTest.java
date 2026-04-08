@@ -43,18 +43,6 @@ public class TabBottomSheetManagerTest {
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
-    private final NativeInterfaceDelegate mDelegate =
-            new NativeInterfaceDelegate() {
-                @Override
-                public void onBottomSheetClosed() {}
-
-                @Override
-                public void onBottomSheetOpened(boolean isExpanded) {}
-
-                @Override
-                public void onBottomSheetSuppressed() {}
-            };
-
     private CoBrowseViews mCoBrowseViews;
     private ChromeTabbedActivity mActivity;
     private WindowAndroid mWindowAndroid;
@@ -95,12 +83,14 @@ public class TabBottomSheetManagerTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mManager.tryToShowBottomSheet(
-                            mDelegate,
+                            NativeInterfaceDelegate.getInstance(),
                             mCoBrowseViews,
                             /* animate= */ true,
                             /* startsExpanded= */ true);
                 });
-        assertEquals(mManager.getNativeInterfaceDelegateForTesting(), mDelegate);
+        assertEquals(
+                mManager.getNativeInterfaceDelegateForTesting(),
+                NativeInterfaceDelegate.getInstance());
     }
 
     @Test
@@ -123,7 +113,7 @@ public class TabBottomSheetManagerTest {
                     webContents.getNavigationController().loadUrl(new LoadUrlParams(url));
 
                     mManager.tryToShowBottomSheet(
-                            mDelegate,
+                            NativeInterfaceDelegate.getInstance(),
                             coBrowseViews,
                             /* animate= */ false,
                             /* startsExpanded= */ true);

@@ -23,21 +23,11 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 /** Coordinator for the tab bottom sheet. */
 @NullMarked
 public class TabBottomSheetCoordinator {
-    // Interface used by the manager to monitor events related to the state of the
-    // bottom sheet.
-    interface SheetEventsCallback {
-        // Called when the bottom sheet is closed or suppressed.
-        void onBottomSheetClosed();
-
-        // Called when the bottom sheet is opened or when the bottom sheet state changes.
-        void onBottomSheetOpened(boolean isExpanded);
-    }
-
     private final ComponentCallbacks mComponentsCallbacks =
             new ComponentCallbacks() {
                 @Override
                 public void onConfigurationChanged(Configuration configuration) {
-                    if (mIsShowingTabBottomSheet) {
+                    if (mIsSheetCurrentlyManagedByController) {
                         mExpectingLayoutChange = true;
                     }
                 }
@@ -53,14 +43,13 @@ public class TabBottomSheetCoordinator {
     private final TabBottomSheetMediator mMediator;
     private final WindowAndroid mWindowAndroid;
 
-    private @Nullable SheetEventsCallback mSheetEventsCallback;
+    private @Nullable Runnable mOnClose;
     private @Nullable TabBottomSheetContent mSheetContent;
     private @Nullable BottomSheetObserver mSheetObserver;
     private @Nullable PropertyModelChangeProcessor mViewBinder;
     private @Nullable View mContentView;
 
-    // Whether or not this sheet is currently showing.
-    private boolean mIsShowingTabBottomSheet;
+    private boolean mIsSheetCurrentlyManagedByController;
     private boolean mExpectingLayoutChange;
 
     /**
@@ -70,20 +59,19 @@ public class TabBottomSheetCoordinator {
      *     obtained via {@link CoBrowseViewFactory}. Note that these views have a single-use
      *     lifecycle; they are destroyed when the bottom sheet is closed and cannot be reused for
      *     subsequent showings.
-     * @param sheetEventsCallback Interface used by the manager to monitor events related to the
-     *     state of the bottom sheet.
+     * @param onClose The callback to be invoked when the bottom sheet is closed.
      */
     TabBottomSheetCoordinator(
             Context context,
             WindowAndroid windowAndroid,
             BottomSheetController bottomSheetController,
             CoBrowseViews coBrowseViews,
-            SheetEventsCallback sheetEventsCallback) {
+            @Nullable Runnable onClose) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mBottomSheetController = bottomSheetController;
         mCoBrowseViews = coBrowseViews;
-        mSheetEventsCallback = sheetEventsCallback;
+        mOnClose = onClose;
 
         mModel = TabBottomSheetProperties.createDefaultModel(coBrowseViews);
 
@@ -94,7 +82,7 @@ public class TabBottomSheetCoordinator {
 
     /** Tries to show the bottom sheet. */
     boolean tryToShowBottomSheet(boolean animate, boolean startsExpanded) {
-        if (mIsShowingTabBottomSheet) {
+        if (mIsSheetCurrentlyManagedByController) {
             return false;
         }
         mContentView = mCoBrowseViews.getView();
@@ -111,7 +99,6 @@ public class TabBottomSheetCoordinator {
             // We set it here, and if it changes later, we will update it in the observer.
             mContentView.post(
                     () -> {
-                        if (mSheetEventsCallback == null) return;
                         boolean isKeyboard = isKeyboardShowing();
                         mMediator.setMaxSheetHeight(
                                 mBottomSheetController.getContainerHeight(), isKeyboard);
@@ -119,9 +106,6 @@ public class TabBottomSheetCoordinator {
                                 && mSheetContent != null
                                 && mMediator.isSheetHeightSufficient()) {
                             mBottomSheetController.expandSheet();
-                            mSheetEventsCallback.onBottomSheetOpened(/* isExpanded= */ true);
-                        } else {
-                            mSheetEventsCallback.onBottomSheetOpened(/* isExpanded= */ false);
                         }
                     });
 
@@ -130,7 +114,7 @@ public class TabBottomSheetCoordinator {
 
             mContext.registerComponentCallbacks(mComponentsCallbacks);
 
-            mIsShowingTabBottomSheet = true;
+            mIsSheetCurrentlyManagedByController = true;
             return true;
         } else {
             // This happens when either.
@@ -138,6 +122,7 @@ public class TabBottomSheetCoordinator {
             // 2) The bottom sheet is null.
             // 3) If its being shown, or is in queue but not currently shown.
             // 4) If a sheet of higher priority came up.
+            cleanupSheetResources();
             return false;
         }
     }
@@ -178,22 +163,27 @@ public class TabBottomSheetCoordinator {
     }
 
     void closeBottomSheet() {
-        if (!mIsShowingTabBottomSheet) {
+        if (!mIsSheetCurrentlyManagedByController) {
             return;
         }
         mBottomSheetController.hideContent(mSheetContent, false, StateChangeReason.NONE);
     }
 
     boolean isSheetShowing() {
-        return mIsShowingTabBottomSheet;
+        return mIsSheetCurrentlyManagedByController;
     }
 
     // Cleanup methods.
     void destroy() {
-        if (mIsShowingTabBottomSheet && mSheetContent != null) {
+        if (mIsSheetCurrentlyManagedByController && mSheetContent != null) {
             mBottomSheetController.hideContent(mSheetContent, false, StateChangeReason.NONE);
+        } else {
+            // Inside else block since this will be called when the bottom sheet is hidden.
+            cleanupSheetResources();
         }
-        cleanupSheetResources();
+        if (mOnClose != null) {
+            mOnClose = null;
+        }
     }
 
     private void cleanupSheetResources() {
@@ -212,9 +202,7 @@ public class TabBottomSheetCoordinator {
             mViewBinder.destroy();
             mViewBinder = null;
         }
-        mSheetEventsCallback = null;
-
-        mIsShowingTabBottomSheet = false;
+        mIsSheetCurrentlyManagedByController = false;
     }
 
     // Observer methods.
@@ -222,27 +210,21 @@ public class TabBottomSheetCoordinator {
         return new EmptyBottomSheetObserver() {
             @Override
             public void onSheetStateChanged(@SheetState int state, @StateChangeReason int reason) {
-                if (mSheetContent == null || mSheetEventsCallback == null) return;
-                if (mBottomSheetController.getCurrentSheetContent() == mSheetContent) {
-                    mMediator.onSheetStateChanged(state, mCoBrowseViews.hasPeekView());
-                    if (state == SheetState.HIDDEN) {
-                        mIsShowingTabBottomSheet = false;
-                        mSheetEventsCallback.onBottomSheetClosed();
-                    } else {
-                        mIsShowingTabBottomSheet = true;
-                        mSheetEventsCallback.onBottomSheetOpened(state != SheetState.PEEK);
+                if (mSheetContent == null) return;
+                mMediator.onSheetStateChanged(state, mCoBrowseViews.hasPeekView());
+                if (state == SheetState.HIDDEN) {
+                    cleanupSheetResources();
+                    if (mOnClose != null) {
+                        mOnClose.run();
                     }
                 }
             }
 
             @Override
             public void onContainerSizeChanged(int containerWidth, int containerHeight) {
-                if (mSheetContent == null) return;
-                if (mBottomSheetController.getCurrentSheetContent() == mSheetContent) {
-                    if (mExpectingLayoutChange) {
-                        mBottomSheetController.collapseSheet(/* animate= */ true);
-                        mExpectingLayoutChange = false;
-                    }
+                if (mExpectingLayoutChange) {
+                    mBottomSheetController.collapseSheet(/* animate= */ true);
+                    mExpectingLayoutChange = false;
                 }
                 mMediator.setMaxSheetHeight(containerHeight, isKeyboardShowing());
             }
@@ -260,14 +242,10 @@ public class TabBottomSheetCoordinator {
     }
 
     boolean isSheetCurrentlyManagedForTesting() {
-        return mIsShowingTabBottomSheet;
+        return mIsSheetCurrentlyManagedByController;
     }
 
     boolean isExpectingLayoutChangeForTesting() {
         return mExpectingLayoutChange;
-    }
-
-    @Nullable TabBottomSheetContent getSheetContentForTesting() {
-        return mSheetContent;
     }
 }

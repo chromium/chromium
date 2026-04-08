@@ -30,19 +30,7 @@ class TabBottomSheetBridge {
   // Observer for bottom sheet lifecycle events.
   class Observer : public base::CheckedObserver {
    public:
-    // Called to notify that the bottom sheet has been closed. This could happen
-    // due to various reasons, e.g. explicit request from the client, tab
-    // switch, or swapping with another bottom sheet.
-    virtual void OnClosed() = 0;
-
-    // Called when the bottom sheet opened, or when the bottom sheet state
-    // changes. Here expanded means full/half state, with peek being collapsed
-    // state.
-    virtual void OnOpened(bool is_expanded) = 0;
-
-    // Called when the bottom sheet has been closed temporarily in java. Expect
-    // an onOpened or onClosed in the future if this is called.
-    virtual void OnSuppressed() = 0;
+    virtual void OnClose() = 0;
   };
 
   // Creates a bridge to the Java `TabBottomSheetNativeInterface`.
@@ -62,14 +50,7 @@ class TabBottomSheetBridge {
   void Close();
 
   // Called by Java when the bottom sheet is closed.
-  void OnClosed(JNIEnv* env);
-
-  // Called by Java when the bottom sheet is suppressed.
-  void OnSuppressed(JNIEnv* env);
-
-  // Called by Java when the bottom sheet is opened, or when the bottom sheet
-  // state changes.
-  void OnOpened(JNIEnv* env, bool is_expanded);
+  void OnClose(JNIEnv* env);
 
  private:
   // Resets and creates the CoBrowseViews object with the attached WebContents.
