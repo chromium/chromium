@@ -3108,7 +3108,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Memory.System.MemAvailableMB" units="MB"
     expires_after="2026-09-06">
-  <owner>andreaorru@chromium.org</owner>
   <owner>hidehiko@chromium.org</owner>
   <summary>
     System-wide estimate of memory available in ChromeOS, without swapping.
@@ -3119,8 +3118,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.System.MemUsedMB" units="MB" expires_after="2026-05-03">
-  <owner>andreaorru@chromium.org</owner>
+<histogram name="Memory.System.MemUsedMB" units="MB" expires_after="2026-09-06">
   <owner>hidehiko@chromium.org</owner>
   <summary>
     System-wide estimate of memory used in ChromeOS, calculated as the

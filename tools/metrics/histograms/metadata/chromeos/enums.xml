@@ -436,14 +436,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="External"/>
 </enum>
 
-<enum name="ChromeOSChannel">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Canary"/>
-  <int value="2" label="Dev"/>
-  <int value="3" label="Beta"/>
-  <int value="4" label="Stable"/>
-</enum>
-
 <!-- LINT.IfChange(ChromeOSFallbackCountry) -->
 
 <enum name="ChromeOSFallbackCountry">

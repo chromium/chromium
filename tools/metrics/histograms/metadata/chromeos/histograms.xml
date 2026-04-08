@@ -2604,54 +2604,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
-<histogram name="ChromeOS.Lacros.LoadTime" units="ms"
-    expires_after="2023-04-01">
-  <owner>erikchen@chromium.org</owner>
-  <owner>tvignatti@igalia.com</owner>
-  <owner>lacros-team@google.com</owner>
-  <summary>
-    Time to load Lacros binary. The bulk of load time may be spent in mounting
-    Lacros browser binary through squashfs in the component manager. If the user
-    has explicitly specified a path for the Lacros browser binary though, load
-    time will very likely be insignificant. Recorded by ash each time the lacros
-    binary is started.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.Lacros.OSChannel" enum="ChromeOSChannel"
-    expires_after="2024-06-30">
-  <owner>erikchen@chromium.org</owner>
-  <owner>lacros-team@google.com</owner>
-  <summary>
-    The release channel of the Chrome OS system on which Lacros is running. May
-    be different than the Lacros browser release channel. Recorded by the lacros
-    binary shortly after startup.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.Lacros.ResumeTime" units="ms"
-    expires_after="2024-11-03">
-  <owner>andreaorru@chromium.org</owner>
-  <owner>lacros-team@google.com</owner>
-  <summary>
-    Time to resume the lacros binary after being prelaunched at login screen,
-    specifically the time between when the process is resumed and the mojo
-    connection is established between ash and lacros. Recorded by ash each time
-    the lacros binary is resumed.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.Lacros.StartTime" units="ms"
-    expires_after="2024-06-30">
-  <owner>erikchen@chromium.org</owner>
-  <owner>lacros-team@google.com</owner>
-  <summary>
-    Time to start the lacros binary, specifically the time between when the
-    process is launched and the mojo connection is established between ash and
-    lacros. Recorded by ash each time the lacros binary is started.
-  </summary>
-</histogram>
-
 <histogram name="ChromeOS.LanguagePacks.GetPackState.FeatureId"
     enum="LanguagePackFeatureIds" expires_after="2026-06-30">
   <owner>mlcui@google.com</owner>
