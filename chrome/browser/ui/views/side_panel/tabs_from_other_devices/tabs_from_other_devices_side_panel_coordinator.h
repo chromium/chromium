@@ -24,7 +24,7 @@ class TabsFromOtherDevicesSidePanelCoordinator {
       const TabsFromOtherDevicesSidePanelCoordinator&) = delete;
   ~TabsFromOtherDevicesSidePanelCoordinator();
 
-  static bool IsSupported();
+  static bool IsSupported(Profile* profile);
 
   void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
 

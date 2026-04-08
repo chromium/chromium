@@ -29,7 +29,8 @@ TabsFromOtherDevicesUIConfig::TabsFromOtherDevicesUIConfig()
 
 bool TabsFromOtherDevicesUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return TabsFromOtherDevicesSidePanelCoordinator::IsSupported();
+  return TabsFromOtherDevicesSidePanelCoordinator::IsSupported(
+      Profile::FromBrowserContext(browser_context));
 }
 
 TabsFromOtherDevicesSidePanelUI::TabsFromOtherDevicesSidePanelUI(

@@ -42,7 +42,8 @@ void SidePanelHelper::PopulateGlobalEntries(
   }
 
   // Add tabs from other devices.
-  if (TabsFromOtherDevicesSidePanelCoordinator::IsSupported()) {
+  if (TabsFromOtherDevicesSidePanelCoordinator::IsSupported(
+          browser->profile())) {
     browser->browser_window_features()
         ->tabs_from_other_devices_side_panel_coordinator()
         ->CreateAndRegisterEntry(window_registry);

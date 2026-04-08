@@ -303,7 +303,9 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
     RegisterWebUIControllerInterfaceBinder<history::mojom::PageHandler,
                                            HistoryUI>(map);
   }
-  if (TabsFromOtherDevicesSidePanelCoordinator::IsSupported()) {
+  if (TabsFromOtherDevicesSidePanelCoordinator::IsSupported(
+          Profile::FromBrowserContext(
+              render_frame_host->GetBrowserContext()))) {
     RegisterWebUIControllerInterfaceBinder<
         history::mojom::ForeignSessionPageHandler, HistoryUI,
         TabsFromOtherDevicesSidePanelUI>(map);

@@ -56,8 +56,10 @@ TabsFromOtherDevicesSidePanelCoordinator::
     ~TabsFromOtherDevicesSidePanelCoordinator() = default;
 
 // static
-bool TabsFromOtherDevicesSidePanelCoordinator::IsSupported() {
-  return base::FeatureList::IsEnabled(features::kTabsFromOtherDevicesSidePanel);
+bool TabsFromOtherDevicesSidePanelCoordinator::IsSupported(Profile* profile) {
+  // This side panel is not supported in incognito, guest, etc.
+  return profile->IsRegularProfile() &&
+         base::FeatureList::IsEnabled(features::kTabsFromOtherDevicesSidePanel);
 }
 
 void TabsFromOtherDevicesSidePanelCoordinator::CreateAndRegisterEntry(

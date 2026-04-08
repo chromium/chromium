@@ -23,7 +23,6 @@
 
 #if BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE)
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_coordinator.h"
 #include "chrome/grit/side_panel_bookmarks_code_cache_resources_map.h"
 #include "chrome/grit/side_panel_customize_chrome_code_cache_resources_map.h"
 #include "chrome/grit/side_panel_reading_list_code_cache_resources_map.h"
@@ -220,7 +219,8 @@ base::flat_map<GURL, int> GetWebUIResourceUrlToCodeCacheMap() {
         kSidePanelReadingListCodeCacheResources, url_to_code_cache_pairs);
 
     // chrome://tabs-from-other-devices.top-chrome
-    if (TabsFromOtherDevicesSidePanelCoordinator::IsSupported()) {
+    if (base::FeatureList::IsEnabled(
+            features::kTabsFromOtherDevicesSidePanel)) {
       AppendWebUIResourceURLToCodeCachePairs(
           content::kChromeUIScheme,
           chrome::kChromeUITabsFromOtherDevicesSidePanelHost,
