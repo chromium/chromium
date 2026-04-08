@@ -219,6 +219,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
       gfx::PointF* transformed_point) override;
   viz::FrameSinkId GetRootFrameSinkId() override;
   viz::SurfaceId GetCurrentSurfaceId() const override;
+  bool HasSavedCompositorFrame() const override;
   void FocusedNodeChanged(bool is_editable_node,
                           const gfx::Rect& node_bounds_in_screen) override;
 #if BUILDFLAG(IS_WIN)

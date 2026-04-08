@@ -2445,6 +2445,10 @@ viz::SurfaceId RenderWidgetHostViewAura::GetCurrentSurfaceId() const {
   return delegated_frame_host_->GetCurrentSurfaceId();
 }
 
+bool RenderWidgetHostViewAura::HasSavedCompositorFrame() const {
+  return delegated_frame_host_ && delegated_frame_host_->HasSavedFrame();
+}
+
 void RenderWidgetHostViewAura::FocusedNodeChanged(
     bool editable,
     const gfx::Rect& node_bounds_in_screen) {

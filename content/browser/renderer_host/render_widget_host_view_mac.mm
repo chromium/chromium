@@ -1399,6 +1399,11 @@ bool RenderWidgetHostViewMac::RequestRepaintOnNewSurface() {
   return browser_compositor_->ForceNewSurfaceId();
 }
 
+bool RenderWidgetHostViewMac::HasSavedCompositorFrame() const {
+  return browser_compositor_ &&
+         browser_compositor_->GetDelegatedFrameHost()->HasSavedFrame();
+}
+
 void RenderWidgetHostViewMac::TransformPointToRootSurface(gfx::PointF* point) {
   browser_compositor_->TransformPointToRootSurface(point);
 }

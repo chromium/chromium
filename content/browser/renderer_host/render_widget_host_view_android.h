@@ -284,6 +284,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   display::ScreenInfo GetScreenInfo() const override;
   ui::mojom::VirtualKeyboardMode GetVirtualKeyboardMode() override;
   viz::SurfaceId GetFallbackSurfaceIdForTesting() const override;
+  bool HasSavedCompositorFrame() const override;
   void ResetGestureDetection() override;
 
   // ui::EventHandlerAndroid implementation.

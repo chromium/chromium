@@ -1692,6 +1692,10 @@ int RenderWidgetHostViewAndroid::GetTouchHandleHeight() {
   return static_cast<int>(touch_selection_controller_->GetTouchHandleHeight());
 }
 
+bool RenderWidgetHostViewAndroid::HasSavedCompositorFrame() const {
+  return delegated_frame_host_ && delegated_frame_host_->HasSavedFrame();
+}
+
 void RenderWidgetHostViewAndroid::ResetGestureDetection() {
   // TODO(crbug.com/412591209): Fix this for active fling case.
   if (IsTouchSequencePotentiallyActiveOnViz()) {

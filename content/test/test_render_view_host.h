@@ -145,6 +145,7 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   const viz::FrameSinkId& GetFrameSinkId() const override;
   const viz::LocalSurfaceId& GetLocalSurfaceId() const override;
   viz::SurfaceId GetCurrentSurfaceId() const override;
+  bool HasSavedCompositorFrame() const override;
   std::unique_ptr<SyntheticGestureTarget> CreateSyntheticGestureTarget()
       override;
   ui::Compositor* GetCompositor() override;

@@ -13,6 +13,9 @@
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/graph/node_data_describer_util.h"
+#include "components/performance_manager/public/render_frame_host_proxy.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 
 namespace performance_manager {
 
@@ -90,6 +93,14 @@ base::DictValue FrameNodeImplDescriber::DescribeFrameNodeData(
   ret.Set("is_intersecting_large_area", impl->IsIntersectingLargeArea());
   ret.Set("is_important", impl->is_important_.value());
   ret.Set("resource_context", impl->GetResourceContext().ToString());
+
+  // RenderFrameHost properties.
+  if (content::RenderFrameHost* rfh = impl->GetRenderFrameHostProxy().Get()) {
+    const content::RenderWidgetHostView* view = rfh->GetView();
+    ret.Set("has_view", view != nullptr);
+    ret.Set("has_saved_compositor_frame",
+            view && view->HasSavedCompositorFrame());
+  }
 
   base::DictValue metrics;
   metrics.Set("resident_set",

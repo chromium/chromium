@@ -805,6 +805,10 @@ viz::SurfaceId RenderWidgetHostViewChildFrame::GetCurrentSurfaceId() const {
   return viz::SurfaceId(frame_sink_id_, GetLocalSurfaceId());
 }
 
+bool RenderWidgetHostViewChildFrame::HasSavedCompositorFrame() const {
+  return GetLocalSurfaceId().is_valid();
+}
+
 bool RenderWidgetHostViewChildFrame::HasSize() const {
   return frame_connector_ && frame_connector_->HasSize();
 }

@@ -271,6 +271,11 @@ viz::SurfaceId RenderWidgetHostViewIOS::GetCurrentSurfaceId() const {
   return browser_compositor_->GetDelegatedFrameHost()->GetCurrentSurfaceId();
 }
 
+bool RenderWidgetHostViewIOS::HasSavedCompositorFrame() const {
+  return browser_compositor_ &&
+         browser_compositor_->GetDelegatedFrameHost()->HasSavedFrame();
+}
+
 void RenderWidgetHostViewIOS::InitAsPopup(
     RenderWidgetHostView* parent_host_view,
     const gfx::Rect& pos,

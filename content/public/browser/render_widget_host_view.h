@@ -336,6 +336,9 @@ class CONTENT_EXPORT RenderWidgetHostView {
 
   // Returns true if this widget is a HTML popup, e.g. a <select> menu.
   virtual bool IsHTMLFormPopup() const = 0;
+
+  // Returns true if this view has a saved compositor frame.
+  virtual bool HasSavedCompositorFrame() const = 0;
 };
 
 }  // namespace content

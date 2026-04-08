@@ -254,6 +254,10 @@ viz::SurfaceId TestRenderWidgetHostView::GetCurrentSurfaceId() const {
   return viz::SurfaceId();
 }
 
+bool TestRenderWidgetHostView::HasSavedCompositorFrame() const {
+  return false;
+}
+
 void TestRenderWidgetHostView::OnFirstSurfaceActivation(
     const viz::SurfaceInfo& surface_info) {
   // TODO(fsamuel): Once surface synchronization is turned on, the fallback

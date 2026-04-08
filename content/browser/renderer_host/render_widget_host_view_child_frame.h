@@ -159,6 +159,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   void PreProcessTouchEvent(const blink::WebTouchEvent& event) override;
   viz::FrameSinkId GetRootFrameSinkId() override;
   viz::SurfaceId GetCurrentSurfaceId() const override;
+  bool HasSavedCompositorFrame() const override;
   bool HasSize() const override;
   double GetCSSZoomFactor() const override;
   gfx::PointF TransformPointToRootCoordSpaceF(

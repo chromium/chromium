@@ -159,16 +159,16 @@ using blink::WebTouchPoint;
 using ui::WebInputEventTraits;
 using viz::FrameEvictionManager;
 
-#define EXPECT_EVICTED(view)                   \
-  {                                            \
-    EXPECT_FALSE((view)->HasPrimarySurface()); \
-    EXPECT_FALSE((view)->HasSavedFrame());     \
+#define EXPECT_EVICTED(view)                         \
+  {                                                  \
+    EXPECT_FALSE((view)->HasPrimarySurface());       \
+    EXPECT_FALSE((view)->HasSavedCompositorFrame()); \
   }
 
-#define EXPECT_HAS_FRAME(view)                \
-  {                                           \
-    EXPECT_TRUE((view)->HasPrimarySurface()); \
-    EXPECT_TRUE((view)->HasSavedFrame());     \
+#define EXPECT_HAS_FRAME(view)                      \
+  {                                                 \
+    EXPECT_TRUE((view)->HasPrimarySurface());       \
+    EXPECT_TRUE((view)->HasSavedCompositorFrame()); \
   }
 
 namespace content {
@@ -310,7 +310,7 @@ class FakeRenderWidgetHostViewAura : public RenderWidgetHostViewAura {
     return GetDelegatedFrameHost()->HasFallbackSurface();
   }
 
-  bool HasSavedFrame() const {
+  bool HasSavedCompositorFrame() const override {
     return GetDelegatedFrameHost()->HasSavedFrame();
   }
 
