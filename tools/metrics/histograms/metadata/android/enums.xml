@@ -1271,6 +1271,15 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="SpeculativeTransferStateReplaced"/>
 </enum>
 
+<!-- LINT.IfChange(LauncherShortcutUpdateFailure) -->
+
+<enum name="LauncherShortcutUpdateFailure">
+  <int value="0" label="Rate Limited"/>
+  <int value="1" label="Limit Exceeded"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/LauncherShortcutActivity.java:UpdateFailure) -->
+
 <enum name="LightTheme">
   <int value="0" label="undefined"/>
   <int value="1" label="no"/>

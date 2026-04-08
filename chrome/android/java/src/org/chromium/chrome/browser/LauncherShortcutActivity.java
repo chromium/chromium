@@ -14,10 +14,12 @@ import android.content.pm.ShortcutManager;
 import android.graphics.drawable.Icon;
 import android.os.Bundle;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -27,6 +29,8 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +50,17 @@ public class LauncherShortcutActivity extends Activity {
     static final String DYNAMIC_OPEN_NEW_INCOGNITO_TAB_ID = "dynamic-new-incognito-tab-shortcut";
 
     private static final String TAG = "LauncherShortcut";
+
+    // LINT.IfChange(UpdateFailure)
+    @IntDef({UpdateFailure.RATE_LIMITED, UpdateFailure.LIMIT_EXCEEDED})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface UpdateFailure {
+        int RATE_LIMITED = 0;
+        int LIMIT_EXCEEDED = 1;
+        int NUM_ENTRIES = 2;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:LauncherShortcutUpdateFailure)
 
     private static @Nullable String sLabelForTesting;
 
@@ -101,9 +116,17 @@ public class LauncherShortcutActivity extends Activity {
                     preferences.writeBoolean(ChromePreferenceKeys.INCOGNITO_SHORTCUT_ADDED, true);
                 } else {
                     Log.e(TAG, "setDynamicShortcuts is rate-limited");
+                    RecordHistogram.recordEnumeratedHistogram(
+                            "Android.LauncherShortcut.UpdateFailure",
+                            UpdateFailure.RATE_LIMITED,
+                            UpdateFailure.NUM_ENTRIES);
                 }
             } catch (IllegalArgumentException e) {
                 Log.e(TAG, "Max number of dynamic shortcuts exceeded", e);
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Android.LauncherShortcut.UpdateFailure",
+                        UpdateFailure.LIMIT_EXCEEDED,
+                        UpdateFailure.NUM_ENTRIES);
             }
         } else if (incognitoShortcutAdded) {
             removeLauncherShortcuts(context);

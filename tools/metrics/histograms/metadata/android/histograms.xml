@@ -3165,6 +3165,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.LauncherShortcut.UpdateFailure"
+    enum="LauncherShortcutUpdateFailure" expires_after="2026-10-08">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records failures when trying to update dynamic shortcuts in
+    LauncherShortcutActivity. Recorded when setDynamicShortcuts is rate-limited
+    or exceeds the maximum number of shortcuts.
+  </summary>
+</histogram>
+
 <histogram name="Android.LibraryLoader.Prefetch.Duration" units="ms"
     expires_after="2026-12-22">
   <owner>ziadyoussef@chromium.org</owner>
