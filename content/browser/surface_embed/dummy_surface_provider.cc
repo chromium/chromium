@@ -7,7 +7,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
-#include "content/public/browser/context_factory.h"
+#include "content/browser/compositor/surface_utils.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/geometry/rect.h"
@@ -16,8 +16,8 @@
 namespace content {
 
 DummySurfaceProvider::DummySurfaceProvider()
-    : frame_sink_manager_(GetContextFactory()->GetHostFrameSinkManager()) {
-  frame_sink_id_ = GetContextFactory()->AllocateFrameSinkId();
+    : frame_sink_manager_(GetHostFrameSinkManager()) {
+  frame_sink_id_ = AllocateFrameSinkId();
   frame_sink_manager_->RegisterFrameSinkId(
       frame_sink_id_, this, viz::ReportFirstSurfaceActivation::kNo);
   frame_sink_manager_->CreateCompositorFrameSink(

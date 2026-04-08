@@ -781,7 +781,10 @@ test("components_unittests") {
     ]
   }
 
-  if (enable_guest_contents) {
+  if ((enable_guest_contents || enable_surface_embed) && use_blink) {
+    # guest_contents is a supporting component for any solution that embeds
+    # unowned inner WebContents. As it is for embedding WebContents, only
+    # add the deps when use_blink is true.
     deps += [ "//components/guest_contents/browser:unit_tests" ]
   }
 

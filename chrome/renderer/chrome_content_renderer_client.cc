@@ -895,7 +895,7 @@ bool ChromeContentRendererClient::OverrideCreatePlugin(
     WebPlugin** plugin) {
   std::string orig_mime_type = params.mime_type.Utf8();
 
-#if BUILDFLAG(ENABLE_SURFACE_EMBED)
+#if BUILDFLAG(ENABLE_SURFACE_EMBED) && !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(surface_embed::features::kSurfaceEmbed)) {
     GURL url = render_frame->GetWebFrame()->GetDocument().Url();
     if (url.SchemeIs(content::kChromeUIScheme) &&
@@ -905,7 +905,7 @@ bool ChromeContentRendererClient::OverrideCreatePlugin(
       }
     }
   }
-#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
+#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED) && !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Used for plugins.

@@ -9,6 +9,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "components/guest_contents/browser/guest_contents_handle.h"
 #include "components/surface_embed/browser/surface_embed_host.h"
 #include "components/surface_embed/common/features.h"
@@ -300,33 +301,58 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, EmbedPixelTest) {
   const gfx::Rect snapshot_bounds(0, 0, embed_bounds.right() + 10,
                                   embed_bounds.bottom() + 10);
 
-  // Scale the bounds by device scale factor since we capture the whole view.
+  // On Android forcing device scale factor might not work for tests, therefore
+  // query the actual scale factor from the view. On other platforms, verify it
+  // matches the forced value.
+  const float device_scale_factor = view->GetDeviceScaleFactor();
+#if !BUILDFLAG(IS_ANDROID)
+  ASSERT_FLOAT_EQ(kTestDeviceScaleFactor, device_scale_factor);
+#endif
+  // Scale the bounds by device scale factor. This is the bounds that we want
+  // for the screenshot output.
   gfx::Rect scaled_snapshot_bounds =
-      gfx::ScaleToEnclosingRect(snapshot_bounds, kTestDeviceScaleFactor);
+      gfx::ScaleToRoundedRect(snapshot_bounds, device_scale_factor);
   gfx::Rect scaled_embed_bounds =
-      gfx::ScaleToEnclosingRect(embed_bounds, kTestDeviceScaleFactor);
+      gfx::ScaleToRoundedRect(embed_bounds, device_scale_factor);
 
+  // On Android CopyFromSurface might not apply scale to input src_subrect.
+  // Capture a snapshot and calculate screen capture scale between output and
+  // input bounds and use it to calculate input bounds needed if we want to get
+  // the desired output bounds. On other platforms, verify screen capture output
+  // to input scale factor matches the device scale factor.
+  // Wait for the view to be ready before start taking screenshots.
+  content::WaitForCopyableViewInWebContents(web_contents());
+  const gfx::Rect input_bounds(0, 0, 20, 20);
+  SkBitmap bitmap = TakeScreenshot(input_bounds);
+  const float capture_scale_factor = static_cast<float>(bitmap.width()) /
+                                     static_cast<float>(input_bounds.width());
+  // Verify that capture scale factor is consistent between width and height.
+  ASSERT_FLOAT_EQ(capture_scale_factor,
+                  static_cast<float>(bitmap.height()) /
+                      static_cast<float>(input_bounds.height()));
+#if !BUILDFLAG(IS_ANDROID)
+  ASSERT_FLOAT_EQ(kTestDeviceScaleFactor, capture_scale_factor);
+#endif
+  gfx::Rect screen_shot_input_bounds = gfx::ScaleToRoundedRect(
+      scaled_snapshot_bounds, 1.0f / capture_scale_factor);
+
+  // Verify that we get expected output scaled_snapshot_bounds for the
+  // screenshot.
+  bitmap = TakeScreenshot(screen_shot_input_bounds);
+  EXPECT_EQ(scaled_snapshot_bounds.width(), bitmap.width());
+  EXPECT_EQ(scaled_snapshot_bounds.height(), bitmap.height());
+
+  // Wait for the expected pixels to be rendered in the embed area.
   EXPECT_TRUE(base::test::RunUntil([&]() {
-    SkBitmap bitmap = TakeScreenshot(snapshot_bounds);
-
-    if (bitmap.width() != scaled_snapshot_bounds.width() ||
-        bitmap.height() != scaled_snapshot_bounds.height()) {
-      return false;
-    }
+    bitmap = TakeScreenshot(screen_shot_input_bounds);
 
     // Check a pixel inside the embed element.
-    if (bitmap.getColor(scaled_embed_bounds.x() + 1,
-                        scaled_embed_bounds.y() + 1) != SK_ColorRED) {
-      return false;
-    }
-
-    // Check a pixel outside the embed element.
-    if (bitmap.getColor(1, 1) != SK_ColorWHITE) {
-      return false;
-    }
-
-    return true;
+    return (bitmap.getColor(scaled_embed_bounds.x() + 1,
+                            scaled_embed_bounds.y() + 1) == SK_ColorRED);
   }));
+
+  // Check a pixel outside the embed element.
+  EXPECT_EQ(bitmap.getColor(1, 1), SK_ColorWHITE);
 }
 
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
