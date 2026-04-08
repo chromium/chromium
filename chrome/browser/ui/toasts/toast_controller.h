@@ -48,8 +48,12 @@ class Widget;
 
 struct ToastParams {
   explicit ToastParams(ToastId id);
+
+  // As a build param, keep move only.
   ToastParams(ToastParams&& other) noexcept;
   ToastParams& operator=(ToastParams&& other) noexcept;
+  ToastParams(const ToastParams&) = delete;
+  ToastParams& operator=(const ToastParams&) = delete;
   ~ToastParams();
 
   ToastId toast_id;

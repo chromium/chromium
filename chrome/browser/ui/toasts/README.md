@@ -104,9 +104,9 @@ if (toast_controller) {
 ToastController* const toast_controller = browser_window_features->toast_controller();
 if (toast_controller) {
   ToastParams params = ToastParams(ToastId);
-  params.body_string_replacement_params_ = {string_1, string_2};
-  params.action_button_string_replacement_params_ = {string_3};
-  toast_controller->MaybeShowToast(ToastParams(std::move(params)));
+  params.body_string_replacement_params = {string_1, string_2};
+  params.action_button_string_replacement_params = {string_3};
+  toast_controller->MaybeShowToast(std::move(params));
 }
 ```
 
@@ -117,7 +117,7 @@ if (toast_controller) {
   std::unique_ptr<MyCustomMenuModel> menu_model = ...
   ToastParams params = ToastParams(ToastId);
   params.menu_model = std::move(menu_model);
-  toast_controller->MaybeShowToast(ToastParams(std::move(params)));
+  toast_controller->MaybeShowToast(std::move(params));
 }
 ```
 
