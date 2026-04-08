@@ -121,9 +121,9 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, BestScoreWith) {
   url_data.passages.add_passages("more text in another passage");
   url_data.passages.add_passages(
       "some deterministic passage with non-ASCII ∅ character");
-  url_data.embeddings.push_back(DeterministicEmbedding(0));
-  url_data.embeddings.push_back(DeterministicEmbedding(1));
-  url_data.embeddings.push_back(DeterministicEmbedding(2));
+  url_data.passage_embeddings.push_back(DeterministicEmbedding(0));
+  url_data.passage_embeddings.push_back(DeterministicEmbedding(1));
+  url_data.passage_embeddings.push_back(DeterministicEmbedding(2));
 
   Embedding query_embedding = DeterministicEmbedding(0).embedding;
   UrlScore url_score =
@@ -160,7 +160,7 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, FindNearest) {
   for (size_t i = 0; i < 10; i++) {
     UrlData url_data(i + 1, i + 1, base::Time::Now());
     url_data.passages.add_passages("some deterministic passage");
-    url_data.embeddings.push_back(DeterministicEmbedding(i));
+    url_data.passage_embeddings.push_back(DeterministicEmbedding(i));
     database.AddUrlData(url_data);
   }
   SearchParams search_params;
@@ -197,19 +197,19 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, FindNearestWordMatchBoosting) {
 
   UrlData url_data1(1, 1, base::Time::Now());
   url_data1.passages.add_passages("some deterministic passage");
-  url_data1.embeddings.push_back(DeterministicEmbedding(0));
+  url_data1.passage_embeddings.push_back(DeterministicEmbedding(0));
   database.AddUrlData(url_data1);
 
   UrlData url_data2(2, 2, base::Time::Now());
   url_data2.passages.add_passages("hello hello world world world world world");
-  url_data2.embeddings.push_back(DeterministicEmbedding(0));
+  url_data2.passage_embeddings.push_back(DeterministicEmbedding(0));
   database.AddUrlData(url_data2);
 
   // Including a non-ASCII passage to demonstrate safe internal CHECKs.
   UrlData url_data3(3, 3, base::Time::Now());
   url_data3.passages.add_passages(
       "this is some deterministic non-ASCII passage, scores ∅, gets skipped");
-  url_data3.embeddings.push_back(DeterministicEmbedding(0));
+  url_data3.passage_embeddings.push_back(DeterministicEmbedding(0));
   database.AddUrlData(url_data3);
 
   SearchParams search_params;
@@ -296,7 +296,7 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, SearchCanBeHaltedEarly) {
     UrlData url_data(i + 1, i + 1, base::Time::Now());
     for (size_t j = 0; j < 3; j++) {
       url_data.passages.add_passages("a random passage");
-      url_data.embeddings.push_back(RandomEmbedding());
+      url_data.passage_embeddings.push_back(RandomEmbedding());
     }
     database.AddUrlData(url_data);
   }
@@ -338,7 +338,7 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, TimeRangeNarrowsSearchResult) {
     UrlData url_data(i + 1, i + 1, now + base::Minutes(i));
     for (size_t j = 0; j < 3; j++) {
       url_data.passages.add_passages("some random passage");
-      url_data.embeddings.push_back(RandomEmbedding());
+      url_data.passage_embeddings.push_back(RandomEmbedding());
     }
     database.AddUrlData(url_data);
   }
@@ -408,7 +408,7 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, DISABLED_ManyVectorsAreFastEnough) {
     // Times 3 embeddings each, on average.
     for (size_t j = 0; j < 3; j++) {
       url_data.passages.add_passages("one of many passages");
-      url_data.embeddings.push_back(RandomEmbedding());
+      url_data.passage_embeddings.push_back(RandomEmbedding());
       count++;
     }
     database.AddUrlData(url_data);
@@ -497,7 +497,7 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, WordMatchBoostProtoDataTest) {
     UrlData url_data(1, 1, base::Time::Now());
     for (const std::string& passage : test_case.passages().passages()) {
       url_data.passages.add_passages(passage);
-      url_data.embeddings.push_back(DeterministicEmbedding(0));
+      url_data.passage_embeddings.push_back(DeterministicEmbedding(0));
     }
     database.AddUrlData(url_data);
 

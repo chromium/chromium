@@ -30,11 +30,11 @@ struct ScoredUrlRow {
   ScoredUrlRow& operator=(const ScoredUrlRow&);
   ScoredUrlRow& operator=(ScoredUrlRow&&);
 
-  // Returns the highest scored passage in `passages_embeddings`.
+  // Returns the highest scored passage in `url_data`.
   std::string GetBestPassage() const;
 
   // Finds the indices of the top scores, ordered descending by score.
-  // This is useful for selecting a subset of `passages_embeddings` for use as
+  // This is useful for selecting a subset of `url_data` for use as
   // answerer context. The size of the returned vector will be at least
   // `min_count` provided there is sufficient data available. The
   // `min_word_count` parameter will also be used to ensure the
@@ -49,9 +49,9 @@ struct ScoredUrlRow {
   bool is_url_known_to_sync = false;
 
   // All passages and embeddings for this URL (i.e. not a partial set).
-  UrlData passages_embeddings;
+  UrlData url_data;
 
-  // All scores against the query for `passages_embeddings`.
+  // All scores against the query for `url_data`.
   std::vector<float> scores;
 };
 

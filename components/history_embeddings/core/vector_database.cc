@@ -138,7 +138,8 @@ UrlData::~UrlData() = default;
 
 bool UrlData::operator==(const UrlData& other) const {
   if (other.url_id == url_id && other.visit_id == visit_id &&
-      other.visit_time == visit_time && embeddings == other.embeddings) {
+      other.visit_time == visit_time &&
+      passage_embeddings == other.passage_embeddings) {
     std::string a, b;
     if (other.passages.SerializeToString(&a) &&
         passages.SerializeToString(&b)) {
@@ -171,8 +172,8 @@ UrlScore UrlData::BestScoreWith(
   float best = 0.0f;
   std::string modified_passage;
   const std::string* passage = nullptr;
-  for (size_t i = 0; i < embeddings.size(); i++) {
-    const PassageEmbedding& passage_embedding = embeddings[i];
+  for (size_t i = 0; i < passage_embeddings.size(); i++) {
+    const PassageEmbedding& passage_embedding = passage_embeddings[i];
     passage = &passages.passages(i);
 
     // Skip non-ASCII strings to avoid scoring problems with the model.
@@ -307,7 +308,7 @@ SearchInfo VectorDatabase::FindNearest(
       break;
     }
     search_info.searched_url_count++;
-    search_info.searched_embedding_count += url_data->embeddings.size();
+    search_info.searched_embedding_count += url_data->passage_embeddings.size();
 
     base::ElapsedTimer scoring_timer;
     UrlScore url_score = url_data->BestScoreWith(
@@ -375,17 +376,19 @@ void VectorDatabaseInMemory::SaveTo(VectorDatabase* database) {
 }
 
 size_t VectorDatabaseInMemory::GetEmbeddingDimensions() const {
-  return data_.empty() ? 0 : data_[0].embeddings[0].embedding.Dimensions();
+  return data_.empty() ? 0
+                       : data_[0].passage_embeddings[0].embedding.Dimensions();
 }
 
 bool VectorDatabaseInMemory::AddUrlData(UrlData url_data) {
   CHECK_EQ(static_cast<size_t>(url_data.passages.passages_size()),
-           url_data.embeddings.size());
+           url_data.passage_embeddings.size());
   if (!data_.empty()) {
-    for (const PassageEmbedding& passage_embedding : url_data.embeddings) {
+    for (const PassageEmbedding& passage_embedding :
+         url_data.passage_embeddings) {
       // All embeddings in the database must have equal dimensions.
       CHECK_EQ(passage_embedding.embedding.Dimensions(),
-               data_[0].embeddings[0].embedding.Dimensions());
+               data_[0].passage_embeddings[0].embedding.Dimensions());
       // All embeddings in the database are expected to be normalized.
       CHECK_LT(std::abs(passage_embedding.embedding.Magnitude() - kUnitLength),
                kEpsilon);

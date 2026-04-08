@@ -61,8 +61,8 @@ class HistoryEmbeddingsSqlDatabaseTest : public testing::Test {
       UrlData url_data_1(1, 10, base::Time::Now());
       url_data_1.passages.add_passages("fake passage 1");
       url_data_1.passages.add_passages("fake passage 2");
-      url_data_1.embeddings.push_back(FakeEmbedding());
-      url_data_1.embeddings.push_back(FakeEmbedding());
+      url_data_1.passage_embeddings.push_back(FakeEmbedding());
+      url_data_1.passage_embeddings.push_back(FakeEmbedding());
       ASSERT_TRUE(sql_database->AddUrlData(url_data_1));
     }
 
@@ -70,8 +70,8 @@ class HistoryEmbeddingsSqlDatabaseTest : public testing::Test {
       UrlData url_data_2(2, 11, base::Time::Now());
       url_data_2.passages.add_passages("fake passage 3");
       url_data_2.passages.add_passages("fake passage 4");
-      url_data_2.embeddings.push_back(FakeEmbedding());
-      url_data_2.embeddings.push_back(FakeEmbedding());
+      url_data_2.passage_embeddings.push_back(FakeEmbedding());
+      url_data_2.passage_embeddings.push_back(FakeEmbedding());
       ASSERT_TRUE(sql_database->AddUrlData(url_data_2));
     }
 
@@ -111,8 +111,8 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, WriteCloseAndThenReadPassages) {
   UrlData url_passages(1, 1, base::Time::Now());
   url_passages.passages.add_passages("fake passage 1");
   url_passages.passages.add_passages("fake passage 2");
-  url_passages.embeddings.push_back(FakeEmbedding());
-  url_passages.embeddings.push_back(FakeEmbedding());
+  url_passages.passage_embeddings.push_back(FakeEmbedding());
+  url_passages.passage_embeddings.push_back(FakeEmbedding());
   EXPECT_TRUE(sql_database->AddUrlData(url_passages));
 
   // Reset and reload.
@@ -145,11 +145,11 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, WriteCloseAndThenReadUrlData) {
       UrlData(2, 2, base::Time::Now()),
   });
   url_datas[0].passages.add_passages("data 0 passage 0");
-  url_datas[0].embeddings.push_back(FakeEmbedding());
+  url_datas[0].passage_embeddings.push_back(FakeEmbedding());
   url_datas[1].passages.add_passages("data 1 passage 0");
   url_datas[1].passages.add_passages("data 1 passage 1");
-  url_datas[1].embeddings.push_back(FakeEmbedding());
-  url_datas[1].embeddings.push_back(FakeEmbedding());
+  url_datas[1].passage_embeddings.push_back(FakeEmbedding());
+  url_datas[1].passage_embeddings.push_back(FakeEmbedding());
   EXPECT_TRUE(sql_database->AddUrlData(url_datas[0]));
   EXPECT_TRUE(sql_database->AddUrlData(url_datas[1]));
 
@@ -190,7 +190,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, TimeRangeNarrowsSearchResult) {
     UrlData url_data(i + 1, i + 1, now + base::Minutes(i));
     for (size_t j = 0; j < 3; j++) {
       url_data.passages.add_passages("fake passage");
-      url_data.embeddings.push_back(FakeEmbedding());
+      url_data.passage_embeddings.push_back(FakeEmbedding());
     }
     sql_database->AddUrlData(url_data);
   }
@@ -258,12 +258,12 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, InsertOrReplacePassages) {
   UrlData url_data(1, 1, base::Time::Now());
   url_data.passages.add_passages("fake passage 1");
   url_data.passages.add_passages("fake passage 2");
-  url_data.embeddings.push_back(FakeEmbedding());
-  url_data.embeddings.push_back(FakeEmbedding());
+  url_data.passage_embeddings.push_back(FakeEmbedding());
+  url_data.passage_embeddings.push_back(FakeEmbedding());
   EXPECT_TRUE(sql_database->AddUrlData(url_data));
   url_data.visit_id = 2;
   url_data.passages.add_passages("fake passage 3");
-  url_data.embeddings.push_back(FakeEmbedding());
+  url_data.passage_embeddings.push_back(FakeEmbedding());
   EXPECT_TRUE(sql_database->AddUrlData(url_data));
 
   // Verify that the new one has replaced the old one.
@@ -360,7 +360,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, DeleteAllData) {
 TEST_F(HistoryEmbeddingsSqlDatabaseTest, DeleteDataWithoutEmbedderMetadata) {
   UrlData url_data(1, 10, base::Time::Now());
   url_data.passages.add_passages("fake passage 1");
-  url_data.embeddings.push_back(FakeEmbedding());
+  url_data.passage_embeddings.push_back(FakeEmbedding());
 
   {
     auto sql_database = MakeDatabase();
@@ -413,9 +413,9 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, GetUrlData) {
     url_data.passages.add_passages("fake passage 1");
     url_data.passages.add_passages("fake passage 2");
     url_data.passages.add_passages("fake passage 3");
-    url_data.embeddings.push_back(FakeEmbedding());
-    url_data.embeddings.push_back(FakeEmbedding());
-    url_data.embeddings.push_back(FakeEmbedding());
+    url_data.passage_embeddings.push_back(FakeEmbedding());
+    url_data.passage_embeddings.push_back(FakeEmbedding());
+    url_data.passage_embeddings.push_back(FakeEmbedding());
     EXPECT_TRUE(sql_database->AddUrlData(url_data));
   }
 
@@ -424,7 +424,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, GetUrlData) {
     CHECK_EQ(data.url_id, 1);
     CHECK_EQ(data.visit_id, 1);
     CHECK_EQ(data.passages.passages_size(), 3);
-    CHECK_EQ(data.embeddings.size(), 3u);
+    CHECK_EQ(data.passage_embeddings.size(), 3u);
     EXPECT_EQ(data.passages.passages(0), "fake passage 1");
     EXPECT_EQ(data.passages.passages(1), "fake passage 2");
     EXPECT_EQ(data.passages.passages(2), "fake passage 3");
@@ -438,7 +438,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, GetUrlData) {
     CHECK_EQ(data.url_id, 1);
     CHECK_EQ(data.visit_id, 1);
     CHECK_EQ(data.passages.passages_size(), 3);
-    CHECK_EQ(data.embeddings.size(), 0u);
+    CHECK_EQ(data.passage_embeddings.size(), 0u);
     EXPECT_EQ(data.passages.passages(0), "fake passage 1");
     EXPECT_EQ(data.passages.passages(1), "fake passage 2");
     EXPECT_EQ(data.passages.passages(2), "fake passage 3");
@@ -459,13 +459,13 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, IterationSkipsAndReportsMismatches) {
       UrlData(2, 2, base::Time::Now()),
   });
   url_datas[0].passages.add_passages("data 0 passage 0");
-  url_datas[0].embeddings.push_back(FakeEmbedding());
+  url_datas[0].passage_embeddings.push_back(FakeEmbedding());
   url_datas[1].passages.add_passages("data 1 passage 0");
   url_datas[1].passages.add_passages("data 1 passage 1");
-  url_datas[1].embeddings.push_back(FakeEmbedding());
-  url_datas[1].embeddings.push_back(FakeEmbedding());
+  url_datas[1].passage_embeddings.push_back(FakeEmbedding());
+  url_datas[1].passage_embeddings.push_back(FakeEmbedding());
   // Add one too many embeddings to trigger a mismatch.
-  url_datas[1].embeddings.push_back(FakeEmbedding());
+  url_datas[1].passage_embeddings.push_back(FakeEmbedding());
   EXPECT_TRUE(sql_database->AddUrlData(url_datas[0]));
   EXPECT_TRUE(sql_database->AddAnyUrlDataForTesting(url_datas[1]));
 
@@ -499,9 +499,9 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, OldVisitsAreExpired) {
       UrlData(/*url_id=*/2, /*visit_id=*/2, base::Time::Now()),
   });
   url_datas[0].passages.add_passages("data 0 passage 0");
-  url_datas[0].embeddings.push_back(FakeEmbedding());
+  url_datas[0].passage_embeddings.push_back(FakeEmbedding());
   url_datas[1].passages.add_passages("data 1 passage 0");
-  url_datas[1].embeddings.push_back(FakeEmbedding());
+  url_datas[1].passage_embeddings.push_back(FakeEmbedding());
   EXPECT_TRUE(sql_database->AddUrlData(url_datas[0]));
   EXPECT_TRUE(sql_database->AddUrlData(url_datas[1]));
 

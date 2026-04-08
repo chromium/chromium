@@ -26,9 +26,9 @@ size_t CountWords(const std::string& s) {
 
 ScoredUrlRow::ScoredUrlRow(ScoredUrl scored_url)
     : scored_url(std::move(scored_url)),
-      passages_embeddings(this->scored_url.url_id,
-                          this->scored_url.visit_id,
-                          this->scored_url.visit_time) {}
+      url_data(this->scored_url.url_id,
+               this->scored_url.visit_id,
+               this->scored_url.visit_time) {}
 ScoredUrlRow::ScoredUrlRow(const ScoredUrlRow&) = default;
 ScoredUrlRow::ScoredUrlRow(ScoredUrlRow&&) = default;
 ScoredUrlRow::~ScoredUrlRow() = default;
@@ -36,11 +36,10 @@ ScoredUrlRow& ScoredUrlRow::operator=(const ScoredUrlRow&) = default;
 ScoredUrlRow& ScoredUrlRow::operator=(ScoredUrlRow&&) = default;
 
 std::string ScoredUrlRow::GetBestPassage() const {
-  CHECK(passages_embeddings.passages.passages_size() != 0);
+  CHECK(url_data.passages.passages_size() != 0);
   size_t best_index = GetBestScoreIndices(1, 0).front();
-  CHECK_LT(best_index,
-           static_cast<size_t>(passages_embeddings.passages.passages_size()));
-  return passages_embeddings.passages.passages(best_index);
+  CHECK_LT(best_index, static_cast<size_t>(url_data.passages.passages_size()));
+  return url_data.passages.passages(best_index);
 }
 
 std::vector<size_t> ScoredUrlRow::GetBestScoreIndices(
@@ -54,8 +53,7 @@ std::vector<size_t> ScoredUrlRow::GetBestScoreIndices(
     // The word count could be calculated from the passage directly, but
     // since it has already been calculated before, use the value stored
     // with the embedding for efficiency.
-    data.emplace_back(scores[i], passages_embeddings.embeddings[i].word_count,
-                      i);
+    data.emplace_back(scores[i], url_data.passage_embeddings[i].word_count, i);
   }
 
   // Sort tuples naturally, descending, so that highest scores come first.
