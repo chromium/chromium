@@ -156,7 +156,7 @@ class PLATFORM_EXPORT AudioDestination final
       const scoped_refptr<AudioDestination> previous_platform_destination);
 
   const PushPullFIFOStateForTest GetPushPullFIFOStateForTest() {
-    return fifo_->GetStateForTest();
+    return fifo_->StateForTest();
   }
 
   MediaMultiChannelResampler* GetResamplerForTesting() {

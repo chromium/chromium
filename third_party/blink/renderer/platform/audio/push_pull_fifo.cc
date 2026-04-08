@@ -322,7 +322,7 @@ PushPullFIFO::PullResult PushPullFIFO::PullAndUpdateEarmark(
                               : 0};
 }
 
-const PushPullFIFOStateForTest PushPullFIFO::GetStateForTest() {
+const PushPullFIFOStateForTest PushPullFIFO::StateForTest() {
   base::AutoLock locker(lock_);
   return {length(),     NumberOfChannels(), frames_available_, index_read_,
           index_write_, overflow_count_,    underflow_count_};

@@ -167,7 +167,7 @@ TEST_P(PushPullFIFOFeatureTest, FeatureTests) {
   }
 
   // Get FIFO config data.
-  const PushPullFIFOStateForTest actual_state = fifo->GetStateForTest();
+  const PushPullFIFOStateForTest actual_state = fifo->StateForTest();
 
   // Verify the read/write indexes.
   EXPECT_EQ(expected_state.index_read, actual_state.index_read);
@@ -177,8 +177,8 @@ TEST_P(PushPullFIFOFeatureTest, FeatureTests) {
 
   // Verify in-FIFO samples.
   for (const auto& sample : expected_state.fifo_samples) {
-    EXPECT_TRUE(VerifyBusValueAtIndex(fifo->GetFIFOBusForTest(),
-                                      sample.index, sample.value));
+    EXPECT_TRUE(VerifyBusValueAtIndex(fifo->FIFOBusForTest(), sample.index,
+                                      sample.value));
   }
 
   // Verify samples from the most recent output bus.
@@ -417,7 +417,7 @@ TEST_P(PushPullFIFOEarmarkFramesTest, FeatureTests) {
   }
 
   // Test the earmark frames.
-  const size_t actual_earmark_frames = fifo->GetEarmarkFramesForTest();
+  const size_t actual_earmark_frames = fifo->EarmarkFramesForTest();
   EXPECT_EQ(expected_earmark_frames, actual_earmark_frames);
 }
 

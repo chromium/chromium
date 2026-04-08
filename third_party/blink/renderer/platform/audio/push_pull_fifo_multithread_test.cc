@@ -31,7 +31,7 @@ class FIFOClient {
  public:
   FIFOClient(PushPullFIFO* fifo, size_t bus_length, size_t jitter_range_ms)
       : fifo_(fifo),
-        bus_(AudioBus::Create(fifo->GetStateForTest().number_of_channels,
+        bus_(AudioBus::Create(fifo->StateForTest().number_of_channels,
                               bus_length)),
         client_thread_(NonMainThread::CreateThread(
             ThreadCreationParams(ThreadType::kTestThread)

@@ -93,17 +93,17 @@ class PLATFORM_EXPORT PushPullFIFO final {
     return fifo_bus_->NumberOfChannels();
   }
 
-  uint32_t GetFramesAvailable() {
+  uint32_t FramesAvailable() {
     base::AutoLock locker(lock_);
     return frames_available_;
   }
 
-  AudioBus* GetFIFOBusForTest() {
+  AudioBus* FIFOBusForTest() {
     base::AutoLock locker(lock_);
     return fifo_bus_.get();
   }
 
-  size_t GetEarmarkFramesForTest() {
+  size_t EarmarkFramesForTest() {
     base::AutoLock locker(lock_);
     return earmark_frames_;
   }
@@ -111,7 +111,7 @@ class PLATFORM_EXPORT PushPullFIFO final {
   // For single thread unit test only. Get the current configuration that
   // consists of FIFO length, number of channels, read/write index position and
   // under/overflow count.
-  const PushPullFIFOStateForTest GetStateForTest();
+  const PushPullFIFOStateForTest StateForTest();
 
  private:
   // The size of the FIFO.
