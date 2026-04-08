@@ -475,13 +475,14 @@ export class AppElement extends AppElementBase implements SpeechListener,
         this.lineFocusController_.getHeight(), this.$.containerParent);
   }
 
-  onNeedScrollForLineFocus(scrollDiff: number): void {
+  onNeedScrollForLineFocus(scrollDiff: number, instant: boolean = false): void {
     if (!chrome.readingMode.isLineFocusEnabled) {
       return;
     }
 
     const top = this.$.containerScroller.scrollTop + scrollDiff;
-    this.$.containerScroller.scrollTo({top, behavior: 'smooth'});
+    this.$.containerScroller.scrollTo(
+        {top, behavior: instant ? 'instant' : 'smooth'});
   }
 
   onNeedScrollToTop(): void {

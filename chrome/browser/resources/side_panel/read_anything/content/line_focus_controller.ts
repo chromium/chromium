@@ -13,7 +13,7 @@ import {LineFocusModel} from './line_focus_model.js';
 
 export interface LineFocusListener {
   onLineFocusMove(): void;
-  onNeedScrollForLineFocus(scrollDiff: number): void;
+  onNeedScrollForLineFocus(scrollDiff: number, instant?: boolean): void;
   onNeedScrollToTop(): void;
   onLineFocusToggled(): void;
 }
@@ -188,7 +188,28 @@ export class LineFocusController {
     if (this.isEnabled()) {
       const previousMaxY = this.model_.getMaxY();
       const previousMinY = this.model_.getMinY();
+
+      // Save the current line index before recalculating positions so we know
+      // which line was in focus.
+      const currentIndex =
+          this.model_.getCurrentLineIndex() ?? this.getFirstLineIndex_(true);
+      this.model_.setCurrentLineIndex(currentIndex);
+
       this.calculateNewPositions_(container, height);
+
+      const lines = this.model_.getTextBounds();
+      if (lines.length > 0) {
+        const targetIndex = Math.min(currentIndex, lines.length - 1);
+        const clampedIndex = this.clampLineIndex_(targetIndex);
+        this.model_.setCurrentLineIndex(clampedIndex);
+
+        // Re-center the line that's in focus when text locations change in
+        // cursor mode. Scroll instantly to reduce dizzying movement.
+        if (!this.isStatic()) {
+          this.scrollToCenter_(lines, targetIndex, /*instant=*/ true);
+        }
+      }
+
       if (this.isStatic()) {
         if (previousMaxY !== this.model_.getMaxY() ||
             previousMinY !== this.model_.getMinY()) {
@@ -353,12 +374,7 @@ export class LineFocusController {
       // const scrollDiff = lines[nextIndex]! - lines[clampedIndex]!;
 
       // Center it vertically.
-      const desiredCenter =
-          this.getCurrentLineFocusType() === LineFocusType.LINE ?
-          bottomRect.bottom :
-          (topRect.top + bottomRect.bottom) / 2;
-      const scrollDiff = desiredCenter - (this.model_.getMaxY() / 2);
-      this.scroll_(scrollDiff);
+      this.scrollToCenter_(lines, clampedIndex);
     } else if (this.model_.getCurrentLineIndex() !== currentIndex) {
       chrome.readingMode.incrementLineFocusKeyboardLines();
       this.setyOrScroll_(lines[nextIndex]!);
@@ -369,6 +385,17 @@ export class LineFocusController {
     if (this.model_.getCurrentLineIndex() === currentIndex) {
       this.listeners_.forEach(l => l.onNeedScrollToTop());
     }
+  }
+
+  private scrollToCenter_(
+      lines: DOMRect[], targetIndex: number, instant: boolean = false) {
+    const {topRect, bottomRect} = this.getFocusWindowRects_(lines, targetIndex);
+    const desiredCenter =
+        this.getCurrentLineFocusType() === LineFocusType.LINE ?
+        bottomRect.bottom :
+        (topRect.top + bottomRect.bottom) / 2;
+    const scrollDiff = desiredCenter - (this.model_.getMaxY() / 2);
+    this.scroll_(scrollDiff, instant);
   }
 
   // Gets the DOMRects for the top and bottom of the focus window for a given
@@ -421,12 +448,13 @@ export class LineFocusController {
     }
   }
 
-  private scroll_(scrollDiff: number) {
+  private scroll_(scrollDiff: number, instant: boolean = false) {
     if (Math.abs(scrollDiff) < SCROLL_THRESHOLD) {
       return;
     }
     this.model_.setInitiatedScroll(true);
-    this.listeners_.forEach(l => l.onNeedScrollForLineFocus(scrollDiff));
+    this.listeners_.forEach(
+        l => l.onNeedScrollForLineFocus(scrollDiff, instant));
   }
 
   private setY_(y: number, quietly: boolean = false) {
@@ -485,8 +513,8 @@ export class LineFocusController {
     // due to font or other spacing changes.
     const newLines = newBounds.map(rect => rect.bottom);
     const currentLineIndex = this.model_.getCurrentLineIndex();
-    if (!this.isStatic() && currentLineIndex && currentLineIndex >= 0 &&
-        currentLineIndex < newLines.length - 1) {
+    if (!this.isStatic() && currentLineIndex !== null &&
+        currentLineIndex >= 0 && currentLineIndex < newLines.length) {
       this.setY_(newLines[currentLineIndex]!);
     }
   }

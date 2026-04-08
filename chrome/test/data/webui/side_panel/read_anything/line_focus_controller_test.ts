@@ -863,7 +863,7 @@ suite('LineFocusController', () => {
     assertTrue(lineFocusMoved);
   });
 
-  test('onTextLocationsChange keeps line position', () => {
+  test('onTextLocationsChange updates line position to current line', () => {
     chrome.readingMode.isLineFocusEnabled = true;
     const container = createLongContainer();
     lineFocusController.onMovementChange(
@@ -880,7 +880,7 @@ suite('LineFocusController', () => {
 
     lineFocusController.onTextLocationsChange(heading, defaultHeight);
 
-    assertEquals(oldTop, lineFocusController.getTop());
+    assertNotEquals(oldTop, lineFocusController.getTop());
   });
 
   test('onWordBoundary updates position', () => {
@@ -1233,5 +1233,23 @@ suite('LineFocusController', () => {
     lineFocusController.snapToNextLine(false);
 
     assertFalse(lineFocusMoved);
+  });
+
+  test('onTextLocationsChange scrolls to re-center line focus', () => {
+    const container = createLongContainer();
+    lineFocusController.onStyleChange(
+        LineFocusStyle.UNDERLINE, container, defaultHeight);
+    lineFocusController.onMovementChange(
+        LineFocusMovement.CURSOR, container, defaultHeight);
+    chrome.readingMode.isLineFocusEnabled = true;
+
+    // Simulate text bounds being available
+    lineFocusController.snapToNextLine(true);
+
+    // Now simulate font size changing or another text layout update
+    scrollDiffReceived = 0;
+    lineFocusController.onTextLocationsChange(container, defaultHeight);
+
+    assertNotEquals(0, scrollDiffReceived);
   });
 });
