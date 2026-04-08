@@ -95,6 +95,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_submit_button_behavior.h"
 #include "third_party/blink/renderer/core/html/forms/labels_node_list.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_bdi_element.h"
@@ -3509,15 +3510,20 @@ FocusgroupFlags HTMLElement::NativeArrowKeyAxes() const {
 }
 
 void HTMLElement::DefaultEventHandler(Event& event) {
-  auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
-
   if (event.type() == event_type_names::kDOMActivate) {
+    // Delegate to `HTMLSubmitButtonBehavior` if present.
+    if (auto* submit_behavior = SubmitBehavior();
+        submit_behavior && submit_behavior->HandleActivation(event)) {
+      return;
+    }
+
     if (HandleCommandForActivation()) {
       return;
     }
   }
 
-  if (event.type() == event_type_names::kKeypress && keyboard_event) {
+  if (auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
+      keyboard_event && event.type() == event_type_names::kKeypress) {
     HandleKeypressEvent(*keyboard_event);
     if (event.DefaultHandled()) {
       return;

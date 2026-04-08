@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_controls_collection.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_submit_button_behavior.h"
 #include "third_party/blink/renderer/core/html/forms/radio_node_list.h"
 #include "third_party/blink/renderer/core/html/forms/submit_event.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
@@ -514,12 +515,12 @@ bool HTMLFormElement::ValidateInteractively() {
   return false;
 }
 
-void HTMLFormElement::PrepareForSubmission(
-    const Event* event,
-    HTMLFormControlElement* submit_button) {
+void HTMLFormElement::PrepareForSubmission(const Event* event,
+                                           Element* submitter) {
   LocalFrame* frame = GetDocument().GetFrame();
-  if (!frame || is_submitting_ || in_user_js_submit_event_)
+  if (!frame || is_submitting_ || in_user_js_submit_event_) {
     return;
+  }
 
   if (!isConnected()) {
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
@@ -580,9 +581,19 @@ void HTMLFormElement::PrepareForSubmission(
     base::AutoReset<bool> submit_event_handler_scope(&in_user_js_submit_event_,
                                                      true);
 
-    bool skip_validation = !GetDocument().GetPage() || NoValidate();
-    if (submit_button && submit_button->FormNoValidate())
-      skip_validation = true;
+    HTMLSubmitButtonBehavior* behavior =
+        submitter ? submitter->SubmitBehavior() : nullptr;
+    // For native form controls, cast `submitter` to get the submit button.
+    // For custom elements with behaviors, `submit_button` will be null.
+    HTMLFormControlElement* submit_button =
+        behavior ? nullptr : DynamicTo<HTMLFormControlElement>(submitter);
+    CHECK(!behavior || !submit_button);
+    CHECK(!behavior ||
+          RuntimeEnabledFeatures::ElementInternalsBehaviorsEnabled());
+
+    bool skip_validation = !GetDocument().GetPage() || NoValidate() ||
+                           (behavior && behavior->formNoValidate()) ||
+                           (submit_button && submit_button->FormNoValidate());
 
     UseCounter::Count(GetDocument(), WebFeature::kFormSubmissionStarted);
     // Interactive validation must be done before dispatching the submit event.
@@ -603,8 +614,7 @@ void HTMLFormElement::PrepareForSubmission(
       SubmitEventInit* submit_event_init = SubmitEventInit::Create();
       submit_event_init->setBubbles(true);
       submit_event_init->setCancelable(true);
-      submit_event_init->setSubmitter(
-          submit_button ? &submit_button->ToHTMLElement() : nullptr);
+      submit_event_init->setSubmitter(DynamicTo<HTMLElement>(submitter));
       if (declarative_webmcp_call) {
         CHECK(RuntimeEnabledFeatures::WebMCPEnabled(GetExecutionContext()));
         submit_event_init->setAgentInvoked(true);
@@ -659,9 +669,10 @@ void HTMLFormElement::PrepareForSubmission(
   if (should_submit) {
     // If this form already made a request to navigate another frame which is
     // still pending, then we should cancel that one.
-    if (cancel_last_submission_)
+    if (cancel_last_submission_) {
       std::move(cancel_last_submission_).Run();
-    ScheduleFormSubmission(event, submit_button);
+    }
+    ScheduleFormSubmission(event, submitter);
     if (IsValidWebMCPForm() && active_webmcp_tool_->CurrentlyRunning()) {
       CHECK(RuntimeEnabledFeatures::WebMCPEnabled(GetExecutionContext()));
       // Return a null string to indicate that a navigation has been
@@ -712,13 +723,12 @@ void HTMLFormElement::SubmitDialog(FormSubmission* form_submission) {
   return;
 }
 
-void HTMLFormElement::ScheduleFormSubmission(
-    const Event* event,
-    HTMLFormControlElement* submit_button) {
-  LocalFrameView* view = GetDocument().View();
+void HTMLFormElement::ScheduleFormSubmission(const Event* event,
+                                             Element* submitter) {
   LocalFrame* frame = GetDocument().GetFrame();
-  if (!view || !frame || !frame->GetPage())
+  if (!GetDocument().View() || !frame || !frame->GetPage()) {
     return;
+  }
 
   // https://html.spec.whatwg.org/C/#form-submission-algorithm
   // 2. If form document is not connected, has no associated browsing context,
@@ -741,14 +751,15 @@ void HTMLFormElement::ScheduleFormSubmission(
     return;
   }
 
-  if (is_submitting_)
+  if (is_submitting_) {
     return;
+  }
 
   // Delay dispatching 'close' to dialog until done submitting.
   EventQueueScope scope_for_dialog_close;
   base::AutoReset<bool> submit_scope(&is_submitting_, true);
 
-  if (event && !submit_button) {
+  if (event && !submitter) {
     // In a case of implicit submission without a submit button, 'submit'
     // event handler might add a submit button. We search for a submit
     // button again.
@@ -759,14 +770,14 @@ void HTMLFormElement::ScheduleFormSubmission(
         continue;
       DCHECK(!control->IsActivatedSubmit());
       if (control->IsSuccessfulSubmitButton()) {
-        submit_button = control;
+        submitter = control;
         break;
       }
     }
   }
 
   FormSubmission* form_submission =
-      FormSubmission::Create(this, attributes_, event, submit_button);
+      FormSubmission::Create(this, attributes_, event, submitter);
   if (!form_submission) {
     // Form submission is not allowed for some NavigationPolicies, e.g. Link
     // Preview. If an user triggered such user event for form submission, just

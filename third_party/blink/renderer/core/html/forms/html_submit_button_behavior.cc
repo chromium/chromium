@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/html_submit_button_behavior.h"
 
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
@@ -29,6 +30,30 @@ const AtomicString& HTMLSubmitButtonBehavior::DefaultAriaRole() const {
 
 const char* HTMLSubmitButtonBehavior::BehaviorName() const {
   return "HTMLSubmitButtonBehavior";
+}
+
+bool HTMLSubmitButtonBehavior::HandleActivation(Event& event) {
+  if (IsEffectivelyDisabled()) {
+    return false;
+  }
+
+  ElementInternals* internals = GetElementInternals();
+  CHECK(internals);
+
+  HTMLFormElement* form = internals->Form();
+  if (!form) {
+    // If it is not associated with a form, it results in no submission.
+    return false;
+  }
+
+  form->PrepareForSubmission(&event, &internals->Target());
+  event.SetDefaultHandled();
+  return true;
+}
+
+bool HTMLSubmitButtonBehavior::IsEffectivelyDisabled() const {
+  ElementInternals* internals = GetElementInternals();
+  return disabled_ || (internals && internals->IsActuallyDisabled());
 }
 
 HTMLFormElement* HTMLSubmitButtonBehavior::form(

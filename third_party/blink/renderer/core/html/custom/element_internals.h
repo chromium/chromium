@@ -85,6 +85,11 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
 
   // Platform-provided behaviors.
   const FrozenArray<ElementBehavior>& behaviors() const;
+  // Find a behavior of a specific type in the behaviors list.
+  template <typename T>
+  T* FindBehavior() const {
+    return static_cast<T*>(FindBehaviorByType(T::GetStaticWrapperTypeInfo()));
+  }
 
   const FrozenArray<Element>* ariaControlsElements() const;
   void setAriaControlsElements(GCedHeapVector<Member<Element>>* given_elements);
@@ -114,6 +119,8 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
   // Sets behaviors during attachInternals(). Can only be called once.
   void SetBehaviors(HeapVector<Member<ElementBehavior>> behaviors,
                     ExceptionState& exception_state);
+  // Looks up an attached behavior by its wrapper type info pointer.
+  ElementBehavior* FindBehaviorByType(const WrapperTypeInfo* type) const;
 
   bool IsTargetFormAssociated() const;
 

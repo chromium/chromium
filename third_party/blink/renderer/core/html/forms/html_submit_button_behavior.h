@@ -30,8 +30,14 @@ class CORE_EXPORT HTMLSubmitButtonBehavior final : public ElementBehavior {
   ~HTMLSubmitButtonBehavior() override;
 
   // ElementBehavior overrides:
+  bool HandleActivation(Event& event) override;
   const AtomicString& DefaultAriaRole() const override;
   const char* BehaviorName() const override;
+
+  // Considers both the behavior's own disabled property and the element's
+  // disabled state (including fieldset inheritance). This allows submission to
+  // be blocked if either the behavior or the element is disabled.
+  bool IsEffectivelyDisabled() const;
 
   // Read-only properties that delegate to the custom element's internals.
   HTMLFormElement* form(ExceptionState& exception_state) const;

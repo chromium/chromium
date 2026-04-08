@@ -449,6 +449,20 @@ void ElementInternals::SetBehaviors(
       MakeGarbageCollected<FrozenArray<ElementBehavior>>(std::move(behaviors));
 }
 
+ElementBehavior* ElementInternals::FindBehaviorByType(
+    const WrapperTypeInfo* type) const {
+  CHECK(RuntimeEnabledFeatures::ElementInternalsBehaviorsEnabled());
+  if (!behaviors_) {
+    return nullptr;
+  }
+  for (ElementBehavior* behavior : behaviors_->AsVector()) {
+    if (behavior->GetWrapperTypeInfo() == type) {
+      return behavior;
+    }
+  }
+  return nullptr;
+}
+
 const FrozenArray<Element>* ElementInternals::ariaControlsElements() const {
   return GetElementArrayAttribute(html_names::kAriaControlsAttr);
 }

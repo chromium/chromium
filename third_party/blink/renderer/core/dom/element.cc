@@ -191,6 +191,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_options_collection.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_submit_button_behavior.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
@@ -7388,6 +7389,15 @@ const ElementInternals* Element::GetElementInternals() const {
     return data->GetElementInternals();
   }
   return nullptr;
+}
+
+HTMLSubmitButtonBehavior* Element::SubmitBehavior() const {
+  if (!RuntimeEnabledFeatures::ElementInternalsBehaviorsEnabled()) {
+    return nullptr;
+  }
+  const auto* internals = GetElementInternals();
+  return internals ? internals->FindBehavior<HTMLSubmitButtonBehavior>()
+                   : nullptr;
 }
 
 bool Element::CanAttachShadowRoot() const {

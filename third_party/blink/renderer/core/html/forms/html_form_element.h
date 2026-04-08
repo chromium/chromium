@@ -95,8 +95,10 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   void Disassociate(HTMLImageElement&);
   void DidAssociateByParser();
 
-  void PrepareForSubmission(const Event*,
-                            HTMLFormControlElement* submit_button);
+  // For native form controls, pass the submit button as submitter. For custom
+  // elements with `HTMLSubmitButtonBehavior`, pass the custom element as
+  // submitter.
+  void PrepareForSubmission(const Event* event, Element* submitter);
   void submitFromJavaScript();
   void requestSubmit(ExceptionState& exception_state);
   void requestSubmit(HTMLElement* submitter, ExceptionState& exception_state);
@@ -188,8 +190,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   }
 
   void SubmitDialog(FormSubmission*);
-  void ScheduleFormSubmission(const Event*,
-                              HTMLFormControlElement* submit_button);
+  void ScheduleFormSubmission(const Event*, Element* submitter);
 
   void CollectListedElementsForReferenceTarget(
       const Node& root,

@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_submit_button_behavior.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
@@ -205,12 +206,32 @@ inline FormSubmission::FormSubmission(const String& result)
 FormSubmission* FormSubmission::Create(HTMLFormElement* form,
                                        const Attributes& attributes,
                                        const Event* event,
-                                       HTMLFormControlElement* submit_button) {
+                                       Element* submitter) {
   DCHECK(form);
 
   FormSubmission::Attributes copied_attributes;
   copied_attributes.CopyFrom(attributes);
-  if (submit_button) {
+
+  // Derive the behavior from the submitter element, if present.
+  HTMLSubmitButtonBehavior* behavior =
+      submitter ? submitter->SubmitBehavior() : nullptr;
+  auto* submit_button = DynamicTo<HTMLFormControlElement>(submitter);
+  // Apply form override attributes from either the behavior or the native
+  // form control's attributes.
+  if (behavior) {
+    if (!behavior->formAction().empty()) {
+      copied_attributes.ParseAction(behavior->formAction());
+    }
+    if (!behavior->formEnctype().empty()) {
+      copied_attributes.UpdateEncodingType(behavior->formEnctype());
+    }
+    if (!behavior->formMethod().empty()) {
+      copied_attributes.UpdateMethodType(behavior->formMethod());
+    }
+    if (!behavior->formTarget().empty()) {
+      copied_attributes.SetTarget(AtomicString(behavior->formTarget()));
+    }
+  } else if (submit_button) {
     AtomicString attribute_value;
     if (!(attribute_value =
               submit_button->FastGetAttribute(html_names::kFormactionAttr))
@@ -274,6 +295,11 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
   FormData* dom_form_data = form->ConstructEntryList(
       submit_button, data_encoding.EncodingForFormSubmission());
   DCHECK(dom_form_data);
+  // For custom elements with behaviors, manually add the behavior's name/value.
+  if (behavior && !behavior->name().empty()) {
+    CHECK(!submit_button);
+    dom_form_data->AppendFromElement(behavior->name(), behavior->value());
+  }
 
   scoped_refptr<EncodedFormData> form_data;
   String boundary;

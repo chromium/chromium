@@ -121,6 +121,7 @@ class ExceptionState;
 class FocusOptions;
 class GetAnimationsOptions;
 class HTMLElement;
+class HTMLSubmitButtonBehavior;
 class HTMLTemplateElement;
 class Image;
 class InputDeviceCapabilities;
@@ -1624,6 +1625,9 @@ class CORE_EXPORT Element : public ContainerNode {
   bool DidAttachInternals() const;
   ElementInternals& EnsureElementInternals();
   const ElementInternals* GetElementInternals() const;
+
+  // Returns the HTMLSubmitButtonBehavior for this element, if any.
+  HTMLSubmitButtonBehavior* SubmitBehavior() const;
 
   bool ContainsFullScreenElement() const {
     return HasElementFlag(ElementFlags::kContainsFullScreenElement);

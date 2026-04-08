@@ -50,7 +50,6 @@ class Element;
 class EncodedFormData;
 class Event;
 class Frame;
-class HTMLFormControlElement;
 class HTMLFormElement;
 class LocalDOMWindow;
 class ResourceRequest;
@@ -110,7 +109,7 @@ class FormSubmission final : public GarbageCollected<FormSubmission> {
   static FormSubmission* Create(HTMLFormElement*,
                                 const Attributes&,
                                 const Event*,
-                                HTMLFormControlElement* submit_button);
+                                Element* submitter);
 
   FormSubmission(
       SubmitMethod,
