@@ -68,4 +68,20 @@ public class AwPacProcessorTest extends AwParameterizedTest {
         mProcessor.setNetwork(null);
         Assert.assertEquals(proxyResultNetworkIsNotSet, mProcessor.makeProxyRequest(M_TEST_URL));
     }
+
+    @Test
+    @SmallTest
+    public void testDestroyIsIdempotentAndSafe() throws Throwable {
+        Assert.assertTrue(mProcessor.setProxyScript(PAC_SCRIPT));
+
+        mProcessor.destroy();
+
+        // Subsequent calls should fail gracefully and not crash.
+        Assert.assertFalse(mProcessor.setProxyScript(PAC_SCRIPT));
+        Assert.assertNull(mProcessor.makeProxyRequest(M_TEST_URL));
+        mProcessor.setNetworkAndLinkAddresses(42, List.of("1.2.3.4"));
+
+        // Calling destroy again should be safe.
+        mProcessor.destroy();
+    }
 }
