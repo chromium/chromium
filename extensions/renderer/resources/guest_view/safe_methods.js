@@ -68,6 +68,7 @@ saveAccessors(Document, SafeMethods.$Document, [
 
 saveMethods(Element, SafeMethods.$Element, [
   'attachShadow',
+  'checkVisibility',
   'getAttribute',
   'getBoundingClientRect',
   'hasAttribute',
