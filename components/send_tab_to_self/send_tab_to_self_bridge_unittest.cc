@@ -691,6 +691,20 @@ TEST_F(SendTabToSelfBridgeTest, IsBridgeReady) {
   ASSERT_FALSE(bridge()->IsReady());
 }
 
+TEST_F(SendTabToSelfBridgeTest, GetTargetDeviceInfoSortedList_BridgeNotReady) {
+  InitializeBridge();
+  ASSERT_TRUE(bridge()->IsReady());
+
+  device_info_tracker()->SetIsSyncingOverride(true);
+  ASSERT_TRUE(device_info_tracker()->IsSyncing());
+
+  DisableBridge();
+  ASSERT_FALSE(bridge()->IsReady());
+
+  // Should return empty list and not crash.
+  EXPECT_TRUE(bridge()->GetTargetDeviceInfoSortedList().empty());
+}
+
 TEST_F(SendTabToSelfBridgeTest, AddDuplicateEntries) {
   InitializeBridge();
 
