@@ -93,4 +93,32 @@ void ToolbarUIService::InvokePinnedToolbarAction(
   }
 }
 
+void ToolbarUIService::OnLhsChipMousePressed(
+    toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
+  if (delegate_) {
+    delegate_->OnLhsChipMousePressed(identifier);
+  }
+}
+
+void ToolbarUIService::OnLhsChipClicked(
+    toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
+  if (delegate_) {
+    delegate_->OnLhsChipClicked(identifier);
+  }
+}
+
+void ToolbarUIService::OnLhsChipExpandAnimationEnded(
+    toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
+  if (delegate_) {
+    delegate_->OnLhsChipExpandAnimationEnded(identifier);
+  }
+}
+
+void ToolbarUIService::OnLhsChipCollapseAnimationEnded(
+    toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
+  if (delegate_) {
+    delegate_->OnLhsChipCollapseAnimationEnded(identifier);
+  }
+}
+
 }  // namespace toolbar_ui_api

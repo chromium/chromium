@@ -33,6 +33,14 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
     virtual void OnPageInitialized() = 0;
     virtual void InvokePinnedToolbarAction(
         toolbar_ui_api::mojom::PinnedToolbarAction action_id) = 0;
+    virtual void OnLhsChipMousePressed(
+        toolbar_ui_api::mojom::LhsChipIdentifier identifier) = 0;
+    virtual void OnLhsChipClicked(
+        toolbar_ui_api::mojom::LhsChipIdentifier identifier) = 0;
+    virtual void OnLhsChipExpandAnimationEnded(
+        toolbar_ui_api::mojom::LhsChipIdentifier identifier) = 0;
+    virtual void OnLhsChipCollapseAnimationEnded(
+        toolbar_ui_api::mojom::LhsChipIdentifier identifier) = 0;
   };
 
   ToolbarUIService(
@@ -61,6 +69,14 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
       ::toolbar_ui_api::mojom::ContentSettingImageType type) override;
   void InvokePinnedToolbarAction(
       toolbar_ui_api::mojom::PinnedToolbarAction action_id) override;
+  void OnLhsChipMousePressed(
+      toolbar_ui_api::mojom::LhsChipIdentifier identifier) override;
+  void OnLhsChipClicked(
+      toolbar_ui_api::mojom::LhsChipIdentifier identifier) override;
+  void OnLhsChipExpandAnimationEnded(
+      toolbar_ui_api::mojom::LhsChipIdentifier identifier) override;
+  void OnLhsChipCollapseAnimationEnded(
+      toolbar_ui_api::mojom::LhsChipIdentifier identifier) override;
 
  private:
   mojo::Receiver<toolbar_ui_api::mojom::ToolbarUIService> service_;

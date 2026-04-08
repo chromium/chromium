@@ -74,6 +74,15 @@ class WebUILocationBar : public LocationBar,
   bool HasSecurityStateChanged() override;
   LocationBarTesting* GetLocationBarForTesting() override;
 
+  // Left hand side (LHS) chip events (called from WebUIToolbarWebView)
+  void OnLhsChipMousePressed(
+      toolbar_ui_api::mojom::LhsChipIdentifier identifier);
+  void OnLhsChipClicked(toolbar_ui_api::mojom::LhsChipIdentifier identifier);
+  void OnLhsChipExpandAnimationEnded(
+      toolbar_ui_api::mojom::LhsChipIdentifier identifier);
+  void OnLhsChipCollapseAnimationEnded(
+      toolbar_ui_api::mojom::LhsChipIdentifier identifier);
+
   // ContentSettingImageViewDelegate:
   bool ShouldHideContentSettingImage() override;
   content::WebContents* GetContentSettingWebContents() override;
@@ -86,7 +95,13 @@ class WebUILocationBar : public LocationBar,
   OmniboxPopupAimPresenter* GetOmniboxPopupAimPresenter() const override;
 
  private:
+  friend class WebUILocationBarTest;
+
   void OnMoved(ui::TrackedElement* element);
+
+  // Updates the state of the LHS location bar chips (e.g. security chip) and
+  // pushes it to the WebUI.
+  void UpdateLhsChipsState();
 
   raw_ptr<Browser> browser_ = nullptr;
   raw_ptr<LocationBarView::Delegate> delegate_ = nullptr;
@@ -102,6 +117,10 @@ class WebUILocationBar : public LocationBar,
   std::unique_ptr<WebUIReadOnlyOmnibox> omnibox_view_;
   std::unique_ptr<OmniboxPopupView> omnibox_popup_view_;
   bool is_initialized_ = false;
+
+  security_state::SecurityLevel last_update_security_level_ =
+      security_state::NONE;
+
   base::WeakPtrFactory<WebUILocationBar> weak_ptr_factory_{this};
 };
 

@@ -171,6 +171,13 @@ WebUIToolbarWebView::WebUIToolbarWebView(
       toolbar_ui_api::mojom::OmniboxViewState::New();
   last_queued_state_.location_bar_state->location_bar_flags =
       toolbar_ui_api::mojom::LocationBarFlags::New();
+  last_queued_state_.location_bar_state->lhs_chips_state =
+      toolbar_ui_api::mojom::LhsChipsState::New(
+          toolbar_ui_api::mojom::SecurityChipState::New(
+              toolbar_ui_api::mojom::SecurityChipIcon::kHttp,
+              toolbar_ui_api::mojom::SecurityLevel::kNone, std::u16string(),
+              false),
+          std::vector<toolbar_ui_api::mojom::ContentSettingImageStatePtr>());
   last_queued_state_.layout_constants_version = 0;
   last_queued_state_.back_forward_control_state = GetBackForwardState();
 
@@ -570,6 +577,43 @@ void WebUIToolbarWebView::OnLocationBarFlagsChanged(
     last_queued_state_.location_bar_state->location_bar_flags =
         std::move(state);
     PostPushNavigationState();
+  }
+}
+
+void WebUIToolbarWebView::OnLhsChipsStateChanged(
+    toolbar_ui_api::mojom::LhsChipsStatePtr state) {
+  if (!mojo::Equals(state,
+                    last_queued_state_.location_bar_state->lhs_chips_state)) {
+    last_queued_state_.location_bar_state->lhs_chips_state = std::move(state);
+    PostPushNavigationState();
+  }
+}
+
+void WebUIToolbarWebView::OnLhsChipMousePressed(
+    toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
+  if (location_bar_) {
+    location_bar_->OnLhsChipMousePressed(identifier);
+  }
+}
+
+void WebUIToolbarWebView::OnLhsChipClicked(
+    toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
+  if (location_bar_) {
+    location_bar_->OnLhsChipClicked(identifier);
+  }
+}
+
+void WebUIToolbarWebView::OnLhsChipExpandAnimationEnded(
+    toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
+  if (location_bar_) {
+    location_bar_->OnLhsChipExpandAnimationEnded(identifier);
+  }
+}
+
+void WebUIToolbarWebView::OnLhsChipCollapseAnimationEnded(
+    toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
+  if (location_bar_) {
+    location_bar_->OnLhsChipCollapseAnimationEnded(identifier);
   }
 }
 

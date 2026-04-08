@@ -123,6 +123,22 @@ class MockToolbarUIDelegate
               InvokePinnedToolbarAction,
               (toolbar_ui_api::mojom::PinnedToolbarAction action_id),
               (override));
+  MOCK_METHOD(void,
+              OnLhsChipMousePressed,
+              (toolbar_ui_api::mojom::LhsChipIdentifier),
+              (override));
+  MOCK_METHOD(void,
+              OnLhsChipClicked,
+              (toolbar_ui_api::mojom::LhsChipIdentifier),
+              (override));
+  MOCK_METHOD(void,
+              OnLhsChipExpandAnimationEnded,
+              (toolbar_ui_api::mojom::LhsChipIdentifier),
+              (override));
+  MOCK_METHOD(void,
+              OnLhsChipCollapseAnimationEnded,
+              (toolbar_ui_api::mojom::LhsChipIdentifier),
+              (override));
 };
 
 // Test fixture for WebUIToolbarUI. These tests test the connectivity between

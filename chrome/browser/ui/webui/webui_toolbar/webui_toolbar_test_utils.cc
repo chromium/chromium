@@ -45,7 +45,14 @@ CreateValidNavigationControlsState() {
       toolbar_ui_api::mojom::LocationBarState::New(
           toolbar_ui_api::mojom::OmniboxViewState::New(),
           toolbar_ui_api::mojom::LocationBarFlags::New(),
-          std::vector<toolbar_ui_api::mojom::ContentSettingImageStatePtr>()),
+          std::vector<toolbar_ui_api::mojom::ContentSettingImageStatePtr>(),
+          toolbar_ui_api::mojom::LhsChipsState::New(
+              toolbar_ui_api::mojom::SecurityChipState::New(
+                  toolbar_ui_api::mojom::SecurityChipIcon::kHttp,
+                  toolbar_ui_api::mojom::SecurityLevel::kNone, std::u16string(),
+                  false),
+              std::vector<
+                  toolbar_ui_api::mojom::ContentSettingImageStatePtr>())),
       std::vector<toolbar_ui_api::mojom::PinnedToolbarActionStatePtr>(),
       /*layout_constants_version=*/0);
 }

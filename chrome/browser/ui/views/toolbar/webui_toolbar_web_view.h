@@ -87,6 +87,14 @@ class WebUIToolbarWebView
   void OnPageInitialized() override;
   void InvokePinnedToolbarAction(
       toolbar_ui_api::mojom::PinnedToolbarAction action_id) override;
+  void OnLhsChipMousePressed(
+      toolbar_ui_api::mojom::LhsChipIdentifier identifier) override;
+  void OnLhsChipClicked(
+      toolbar_ui_api::mojom::LhsChipIdentifier identifier) override;
+  void OnLhsChipExpandAnimationEnded(
+      toolbar_ui_api::mojom::LhsChipIdentifier identifier) override;
+  void OnLhsChipCollapseAnimationEnded(
+      toolbar_ui_api::mojom::LhsChipIdentifier identifier) override;
 
   // BrowserControlsService::BrowserControlsServiceDelegate:
   void PermitLaunchUrl() override;
@@ -175,6 +183,7 @@ class WebUIToolbarWebView
       toolbar_ui_api::mojom::OmniboxViewStatePtr state);
   void OnLocationBarFlagsChanged(
       toolbar_ui_api::mojom::LocationBarFlagsPtr state);
+  void OnLhsChipsStateChanged(toolbar_ui_api::mojom::LhsChipsStatePtr state);
   void OnPinnedToolbarActionsStateChanged(
       std::vector<toolbar_ui_api::mojom::PinnedToolbarActionStatePtr> state);
 

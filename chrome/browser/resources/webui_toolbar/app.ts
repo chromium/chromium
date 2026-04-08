@@ -121,6 +121,15 @@ export class ToolbarAppElement extends CrLitElement {
         renderFocused: false,
       },
       contentSettingImageStates: [],
+      lhsChipsState: {
+        securityChip: {
+          icon: 0,
+          securityLevel: 0,
+          text: '',
+          isClickable: false,
+        },
+        activityIndicators: [],
+      },
     },
     layoutConstantsVersion: 0,
     pinnedToolbarActionsState: [],

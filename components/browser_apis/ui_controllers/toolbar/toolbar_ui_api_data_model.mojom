@@ -248,8 +248,55 @@ struct PinnedToolbarActionState {
 struct LocationBarState {
   OmniboxViewState omnibox_view_state;
   LocationBarFlags location_bar_flags;
-  // The set of content setting icon state for each visible LHS icon.
+  // The set of content setting icon state for each visible RHS icon.
   array<ContentSettingImageState> content_setting_image_states;
+  // LHS location bar chips states.
+  LhsChipsState lhs_chips_state;
+};
+
+enum LhsChipIdentifier {
+  kUnspecified,
+  kLocationIcon,
+};
+
+enum SecurityChipIcon {
+  kUnspecified,
+  kHttp,
+  kSecurePageInfo,
+  kNotSecureWarning,
+  kDangerous,
+  kGoogleSuperG,
+  kGoogleGMonochrome,
+  kAddContext,
+};
+
+// Represents the security state of the current page.
+// This strictly maps to native security_state::SecurityLevel values.
+enum SecurityLevel {
+  kUnspecified,
+  kNone,
+  kSecure,
+  kDangerous,
+  kWarning,
+};
+
+struct SecurityChipState {
+  SecurityChipIcon icon;
+  SecurityLevel security_level;
+  mojo_base.mojom.String16 text;
+  bool is_clickable;
+};
+
+// Note: The security chip and permission chips are visually mutually exclusive.
+// When active permission indicators exist, they override and hide the security
+// chip. The WebUI frontend is responsible for this logic.
+struct LhsChipsState {
+  // The data payload for the location icon. This is referred to as the
+  // "security chip" because its primary role is displaying the page's security
+  // status (e.g., tune icon, "Not Secure" warning, G logo).
+  SecurityChipState security_chip;
+  // Multiple indicators can be active (e.g., Camera + Mic).
+  array<ContentSettingImageState> activity_indicators;
 };
 
 struct NavigationControlsState {

@@ -40,22 +40,6 @@ constexpr char kChangeVisibleModeToLoadingStartMark[] =
 constexpr char kChangeVisibleModeToNotLoadingStartMark[] =
     "ToolbarUI.ChangeVisibleModeToNotLoading.Start";
 
-class MockToolbarUIServiceDelegate
-    : public ToolbarUIService::ToolbarUIServiceDelegate {
- public:
-  MOCK_METHOD(void,
-              HandleContextMenu,
-              (mojom::ContextMenuType type,
-               const gfx::RectF& rect,
-               ui::mojom::MenuSourceType source),
-              (override));
-  MOCK_METHOD(void, OnPageInitialized, (), (override));
-  MOCK_METHOD(void,
-              InvokePinnedToolbarAction,
-              (toolbar_ui_api::mojom::PinnedToolbarAction action_id),
-              (override));
-};
-
 class Observer : public mojom::ToolbarUIObserver {
  public:
   explicit Observer(ToolbarUIService* service) {

@@ -52,4 +52,16 @@ interface ToolbarUIService {
   // `action_id` is one of the `PinnedToolbarActionState.action`'s that's
   // passed to `OnNavigationControlsStateChanged()`.
   InvokePinnedToolbarAction(PinnedToolbarAction action_id);
+
+  // Called when an LHS chip is pressed (e.g., pointerdown).
+  OnLhsChipMousePressed(LhsChipIdentifier identifier);
+
+  // Called when an LHS chip is clicked.
+  OnLhsChipClicked(LhsChipIdentifier identifier);
+
+  // Called when an expand animation finishes.
+  OnLhsChipExpandAnimationEnded(LhsChipIdentifier identifier);
+
+  // Called when a collapse animation finishes.
+  OnLhsChipCollapseAnimationEnded(LhsChipIdentifier identifier);
 };
