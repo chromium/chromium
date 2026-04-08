@@ -178,6 +178,7 @@ public class ExtensionsMenuCoordinator
         // Create the site permissions page property model and bind it to its view.
         mSitePermissionsPageModel =
                 new PropertyModel.Builder(SitePermissionsPageProperties.ALL_KEYS).build();
+        setupSitePermissionsPageModel();
         View sitePermissionsView =
                 mContentView.findViewById(R.id.extensions_menu_site_permissions_page);
         mSitePermissionsPageChangeProcessor =
@@ -286,6 +287,13 @@ public class ExtensionsMenuCoordinator
                 mMenuButtonPinningDelegate.isMenuButtonPinned());
         mMainPageModel.set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_VISIBLE, true);
         mMainPageModel.set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_CHECKED, true);
+        mMainPageModel.set(
+                ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_CLICK_LISTENER,
+                (buttonView, isChecked) -> {
+                    if (mMediator != null) {
+                        mMediator.onSiteSettingsToggleChanged(isChecked);
+                    }
+                });
         mMainPageModel.set(ExtensionsMenuProperties.SITE_SETTINGS_LABEL, "");
         mMainPageModel.set(
                 ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE,
@@ -314,6 +322,19 @@ public class ExtensionsMenuCoordinator
                         mMediator.onReloadPageButtonClicked();
                     }
                 });
+    }
+
+    private void setupSitePermissionsPageModel() {
+        mSitePermissionsPageModel.set(
+                SitePermissionsPageProperties.BACK_CLICK_LISTENER,
+                (view) -> {
+                    if (mMediator != null) {
+                        mMediator.onBackButtonClicked();
+                    }
+                });
+        mSitePermissionsPageModel.set(
+                SitePermissionsPageProperties.CLOSE_CLICK_LISTENER,
+                (view) -> mExtensionsMenuButton.dismiss());
     }
 
     private static void setUpExtensionsRecyclerView(

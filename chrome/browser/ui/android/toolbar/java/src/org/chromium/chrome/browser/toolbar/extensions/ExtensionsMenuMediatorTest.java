@@ -663,15 +663,7 @@ public class ExtensionsMenuMediatorTest {
 
     @Test
     public void testSiteSettingsToggle_ClickCallsBridge() {
-        ArgumentCaptor<android.widget.CompoundButton.OnCheckedChangeListener> captor =
-                ArgumentCaptor.forClass(
-                        android.widget.CompoundButton.OnCheckedChangeListener.class);
-        verify(mMenuPropertyModel)
-                .set(
-                        eq(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_CLICK_LISTENER),
-                        captor.capture());
-
-        captor.getValue().onCheckedChanged(null, true);
+        mMenuMediator.onSiteSettingsToggleChanged(true);
         verify(mExtensionsMenuBridgeJniMock)
                 .onSiteSettingsToggleChanged(EXTENSIONS_MENU_BRIDGE_POINTER, true);
     }
@@ -1091,13 +1083,7 @@ public class ExtensionsMenuMediatorTest {
                 .set(SitePermissionsPageProperties.EXTENSION_NAME, "Extension A");
 
         // Trigger the back button on the site permissions page.
-        ArgumentCaptor<View.OnClickListener> backButtonCaptor =
-                ArgumentCaptor.forClass(View.OnClickListener.class);
-        verify(mSitePermissionsPropertyModel)
-                .set(
-                        eq(SitePermissionsPageProperties.BACK_CLICK_LISTENER),
-                        backButtonCaptor.capture());
-        backButtonCaptor.getValue().onClick(null);
+        mMenuMediator.onBackButtonClicked();
 
         // Verify menu is back to the main page.
         verify(mMenuPropertyModel)
