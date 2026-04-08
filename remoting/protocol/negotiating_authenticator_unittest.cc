@@ -41,8 +41,8 @@ const int kMessages = 1;
 const char kNoClientId[] = "";
 const char kNoPairedSecret[] = "";
 const char kTestClientName[] = "client-name";
-const char kTestClientId[] = "client-id";
-const char kTestHostId[] = "12345678910123456";
+const char kTestClientId[] = "a1b2c3d4-e5f6-7890-1234-567890abcdef";
+const char kTestHostId[] = "fedcba09-8765-4321-abcd-ef0987654321";
 
 const char kClientJid[] = "alice@gmail.com/abc";
 const char kHostJid[] = "alice@gmail.com/123";

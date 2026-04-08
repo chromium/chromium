@@ -122,6 +122,13 @@ void PairingRegistry::GetPairing(const std::string& client_id,
                                  GetPairingCallback callback) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
+  if (!base::Uuid::ParseCaseInsensitive(client_id).is_valid()) {
+    LOG(ERROR) << "Invalid client_id: " << client_id;
+    PostTask(caller_task_runner_, FROM_HERE,
+             base::BindOnce(std::move(callback), Pairing()));
+    return;
+  }
+
   GetPairingCallback wrapped_callback =
       base::BindOnce(&PairingRegistry::InvokeGetPairingCallbackAndScheduleNext,
                      this, std::move(callback));
@@ -144,6 +151,13 @@ void PairingRegistry::GetAllPairings(GetAllPairingsCallback callback) {
 void PairingRegistry::DeletePairing(const std::string& client_id,
                                     DoneCallback callback) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  if (!base::Uuid::ParseCaseInsensitive(client_id).is_valid()) {
+    LOG(ERROR) << "Invalid client_id: " << client_id;
+    PostTask(caller_task_runner_, FROM_HERE,
+             base::BindOnce(std::move(callback), false));
+    return;
+  }
 
   DoneCallback wrapped_callback =
       base::BindOnce(&PairingRegistry::InvokeDoneCallbackAndScheduleNext, this,

@@ -77,6 +77,16 @@ class PairingRegistryTest : public testing::Test {
     ++callback_count_;
   }
 
+  void ExpectSaveResult(bool expected, bool success) {
+    EXPECT_EQ(success, expected);
+    ++callback_count_;
+  }
+
+  void ExpectInvalidPairing(PairingRegistry::Pairing actual) {
+    EXPECT_FALSE(actual.is_valid());
+    ++callback_count_;
+  }
+
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::RunLoop run_loop_;
@@ -159,6 +169,22 @@ TEST_F(PairingRegistryTest, DeletePairing) {
           PairingRegistry::kClientIdKey);
   ASSERT_TRUE(actual_client_id);
   EXPECT_EQ(*actual_client_id, pairing_2.client_id());
+}
+
+TEST_F(PairingRegistryTest, InvalidClientId) {
+  scoped_refptr<PairingRegistry> registry = new SynchronousPairingRegistry(
+      std::make_unique<MockPairingRegistryDelegate>());
+
+  registry->DeletePairing("../tmp/target",
+                          base::BindOnce(&PairingRegistryTest::ExpectSaveResult,
+                                         base::Unretained(this), false));
+  EXPECT_EQ(callback_count_, 1);
+
+  registry->GetPairing(
+      "../tmp/target",
+      base::BindOnce(&PairingRegistryTest::ExpectInvalidPairing,
+                     base::Unretained(this)));
+  EXPECT_EQ(callback_count_, 2);
 }
 
 TEST_F(PairingRegistryTest, ClearAllPairings) {
