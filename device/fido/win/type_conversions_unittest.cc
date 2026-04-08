@@ -146,5 +146,42 @@ TEST(TypeConversionsTest, Transports) {
   }
 }
 
+TEST(TypeConversionsTest, FromWinTransportsBitmask) {
+  // Empty bitmask returns empty set.
+  EXPECT_TRUE(FromWinTransportsBitmask(0).empty());
+
+  // Single transport.
+  EXPECT_THAT(FromWinTransportsBitmask(WEBAUTHN_CTAP_TRANSPORT_INTERNAL),
+              testing::UnorderedElementsAre(FidoTransportProtocol::kInternal));
+
+  // Multiple transports.
+  EXPECT_THAT(FromWinTransportsBitmask(WEBAUTHN_CTAP_TRANSPORT_INTERNAL |
+                                       WEBAUTHN_CTAP_TRANSPORT_HYBRID),
+              testing::UnorderedElementsAre(FidoTransportProtocol::kInternal,
+                                            FidoTransportProtocol::kHybrid));
+
+  // All known transports.
+  EXPECT_THAT(
+      FromWinTransportsBitmask(
+          WEBAUTHN_CTAP_TRANSPORT_USB | WEBAUTHN_CTAP_TRANSPORT_NFC |
+          WEBAUTHN_CTAP_TRANSPORT_BLE | WEBAUTHN_CTAP_TRANSPORT_INTERNAL |
+          WEBAUTHN_CTAP_TRANSPORT_HYBRID),
+      testing::UnorderedElementsAre(
+          FidoTransportProtocol::kUsbHumanInterfaceDevice,
+          FidoTransportProtocol::kNearFieldCommunication,
+          FidoTransportProtocol::kBluetoothLowEnergy,
+          FidoTransportProtocol::kInternal, FidoTransportProtocol::kHybrid));
+
+  // Unknown bits are ignored.
+  EXPECT_THAT(FromWinTransportsBitmask(WEBAUTHN_CTAP_TRANSPORT_INTERNAL |
+                                       WEBAUTHN_CTAP_TRANSPORT_TEST),
+              testing::UnorderedElementsAre(FidoTransportProtocol::kInternal));
+
+  // Round-trip: bitmask -> set -> bitmask.
+  const DWORD original =
+      WEBAUTHN_CTAP_TRANSPORT_USB | WEBAUTHN_CTAP_TRANSPORT_INTERNAL;
+  EXPECT_EQ(ToWinTransportsMask(FromWinTransportsBitmask(original)), original);
+}
+
 }  // namespace
 }  // namespace device

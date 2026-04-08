@@ -86,6 +86,10 @@ std::optional<FidoTransportProtocol> FromWinTransportsMask(
     const DWORD transport);
 
 COMPONENT_EXPORT(DEVICE_FIDO)
+base::flat_set<FidoTransportProtocol> FromWinTransportsBitmask(
+    const DWORD transports);
+
+COMPONENT_EXPORT(DEVICE_FIDO)
 uint32_t ToWinTransportsMask(
     const base::flat_set<FidoTransportProtocol>& transports);
 
