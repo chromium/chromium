@@ -213,7 +213,7 @@ class FirstPartySchemeContentBrowserClient
 }  // namespace
 
 // TODO(mlamouri): part of these tests were removed because they were dependent
-// on an environment were focus is guaranteed. This is only for
+// on an environment where focus is guaranteed. This is only for
 // interactive_ui_tests so these bits need to move there.
 // See https://crbug.com/491535
 class RenderFrameHostImplBrowserTest : public ContentBrowserTest {
@@ -509,7 +509,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, IsFocused_Change) {
         ExecJs(web_contents()->GetPrimaryMainFrame(), "focus" + frame + "()"));
 
     // The main frame is not the focused frame in the frame tree but the main
-    // frame is focused per RFHI rules because one of its descendant is focused.
+    // frame is focused per RFHI rules because one of its descendants is
+    // focused.
     // TODO(mlamouri): we should check the frame focus state per RFHI, see the
     // general comment at the beginning of this test file.
     EXPECT_NE(web_contents()->GetPrimaryMainFrame(),
@@ -2243,12 +2244,13 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
 }
 
 // During a complex WebContents destruction, test resuming a navigation, due to
-// of a beforeunloader. This is a regersion test for: https://crbug.com/1147567.
+// of a beforeunloader. This is a regression test for:
+// https://crbug.com/1147567.
 // - Start from A(B(C))
 // - C adds a beforeunload handler.
 // - B starts a navigation, waiting for C.
 // - The WebContents is closed, which deletes C, then B, then A.
-// When deleting C, the navigations in B can begin, but this happen while B was
+// When deleting C, the navigations in B can begin, but this happens while B was
 // destructing itself.
 //
 // Note: This needs 3 nested documents instead of 2, because deletion of the
@@ -8103,7 +8105,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
   GURL new_url(embedded_test_server()->GetURL("c.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), new_url));
 
-  // We should have received one pings (for the grandchild 'a').
+  // We should have received one ping (for the grandchild 'a').
   EXPECT_EQ(1, RetrievePingsFromMessageQueue(&msg_queue));
 
   // We shouldn't have seen any beforeunload dialogs.
