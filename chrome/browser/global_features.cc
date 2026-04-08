@@ -101,10 +101,6 @@ void GlobalFeatures::ReplaceGlobalFeaturesForTesting(
   f = std::move(factory);
 }
 
-void GlobalFeatures::PreBrowserProcessInit() {
-  PreBrowserProcessInitCore();
-}
-
 void GlobalFeatures::PostBrowserProcessInit() {
 #if BUILDFLAG(IS_WIN)
   startup_launch_manager_ =
@@ -148,10 +144,6 @@ void GlobalFeatures::PostBrowserProcessInit() {
 #if !BUILDFLAG(IS_ANDROID)
   profile_launch_observer_ = std::make_unique<ProfileLaunchObserver>();
 #endif  // !BUILDFLAG(IS_ANDROID)
-}
-
-void GlobalFeatures::PreBrowserProcessInitCore() {
-  global_browser_collection_ = std::make_unique<GlobalBrowserCollection>();
 }
 
 void GlobalFeatures::PostBrowserProcessInitCore() {
@@ -266,4 +258,5 @@ GlobalFeatures::GetUserDataFactory() {
   return *factory;
 }
 
-GlobalFeatures::GlobalFeatures() = default;
+GlobalFeatures::GlobalFeatures()
+    : global_browser_collection_(std::make_unique<GlobalBrowserCollection>()) {}

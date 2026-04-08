@@ -349,8 +349,6 @@ const ui::UnownedUserDataHost& BrowserProcessImpl::GetUnownedUserDataHost()
 }
 
 void BrowserProcessImpl::Init() {
-  features_->PreBrowserProcessInit();
-
 #if BUILDFLAG(IS_ANDROID)
   device_parental_controls_->Init();
 #endif

@@ -90,24 +90,18 @@ class GlobalFeatures {
       base::RepeatingCallback<std::unique_ptr<GlobalFeatures>()>;
   static void ReplaceGlobalFeaturesForTesting(GlobalFeaturesFactory factory);
 
-  // Each of these is called exactly once to initialize features.
-  // `PreBrowserProcessInit()` happens very early in
-  // `BrowserProcessImpl::Init()` - in particular, it must happen before a
-  // `ProfileManager` is created. `PostBrowserProcessInit()` happens further
-  // down near the very end of `BrowserProcessImpl::Init()` after a
-  // `ProfileManager` is allowed to exist. As with anything in
-  // `BrowserProcessImpl::Init()`, both of these functions are called before
+  // `PostBrowserProcessInit()` happens near the very end of
+  // `BrowserProcessImpl::Init()` after a `ProfileManager` is allowed to exist.
+  // As with anything in `BrowserProcessImpl::Init()`, this is called before
   // threads are created.
-  void PreBrowserProcessInit();
   void PostBrowserProcessInit();
 
   // Only initializes core features. Used in unittests to create partial
   // features for TestingBrowserProcess.
   //
   // TODO(crbug.com/463444220) Merge implementation back into
-  // PreBrowserProcessInit() and PostBrowserProcessInit() once unit tests stop
-  // creating TestingBrowserProcess.
-  void PreBrowserProcessInitCore();
+  // PostBrowserProcessInit() once unit tests stop creating
+  // TestingBrowserProcess.
   void PostBrowserProcessInitCore();
 
   // Each of these is called exactly once when the browser starts to shutdown,

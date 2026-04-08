@@ -277,7 +277,6 @@ void TestingBrowserProcess::Init() {
   // Only initialize core features for now. If needed unit tests can call
   // TestingBrowserProcess::CreateGlobalFeaturesForTesting() to initialize rest
   // of the features.
-  features_->PreBrowserProcessInitCore();
   features_->PostBrowserProcessInitCore();
 
   // Assume locale is initialized to "en" during initialization.
@@ -715,7 +714,6 @@ void TestingBrowserProcess::CreateGlobalFeaturesPreProfileManager() {
   features_.reset();
 
   features_ = GlobalFeatures::CreateGlobalFeatures();
-  features_->PreBrowserProcessInit();
 }
 
 void TestingBrowserProcess::CreateGlobalFeaturesPostProfileManager() {
