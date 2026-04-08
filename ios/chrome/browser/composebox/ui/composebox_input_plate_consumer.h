@@ -28,6 +28,9 @@ enum class ComposeboxModelOption;
 // Sets whether to show the shortcuts (Lens and microphone actions).
 - (void)updateVisibleControls:(ComposeboxInputPlateControls)controls;
 
+// Sets whether the AIM actions are hidden.
+- (void)hideAIMActions:(BOOL)hidden;
+
 // Sets whether AI mode is enabled.
 - (void)setAIModeEnabled:(BOOL)enabled;
 

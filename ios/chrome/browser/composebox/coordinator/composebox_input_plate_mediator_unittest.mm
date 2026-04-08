@@ -69,6 +69,8 @@
 - (void)updateState:(ComposeboxInputItemState)state
     forItemWithIdentifier:(const base::UnguessableToken&)identifier {
 }
+- (void)hideAIMActions:(BOOL)hidden {
+}
 - (void)setAIModeEnabled:(BOOL)enabled {
 }
 - (void)setImageGenerationEnabled:(BOOL)enabled {

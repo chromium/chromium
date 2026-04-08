@@ -2490,6 +2490,9 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
 
 /// Updates the consumer actions enabled/disable state.
 - (void)updateConsumerActionsState {
+  // AIM action.
+  [self.consumer hideAIMActions:_entrypoint == ComposeboxEntrypoint::kCobrowse];
+
   // Image generation action.
   [self.consumer disableCreateImageActions:[self imageToolDisabled]];
   [self.consumer hideCreateImageActions:![self imageToolAllowed]];

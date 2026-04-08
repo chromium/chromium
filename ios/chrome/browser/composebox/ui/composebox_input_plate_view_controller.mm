@@ -252,6 +252,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   ComposeboxInputPlateControls _visibleControls;
   /// The current model choice.
   ComposeboxModelOption _modelOption;
+  /// Whether the AIM button is hidden.
+  BOOL _aimHidden;
   /// Attach current tab action state.
   BOOL _attachCurrentTabActionHidden;
   /// Attach tabs actions state.
@@ -619,6 +621,14 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   }
 
   [self updateInputPlateStackViewAnimated:YES];
+}
+
+- (void)hideAIMActions:(BOOL)hidden {
+  if (_aimHidden == hidden) {
+    return;
+  }
+  _aimHidden = hidden;
+  [self updatePlusButtonItems];
 }
 
 - (void)setAIModeEnabled:(BOOL)enabled {
@@ -1572,6 +1582,9 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
   if (self.AIModeEnabled) {
     [aimAction setState:UIMenuElementStateOn];
+  }
+  if (_aimHidden) {
+    aimAction.attributes |= UIMenuElementAttributesHidden;
   }
 
   UIAction* createImageAction = [UIAction
