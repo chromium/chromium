@@ -25,18 +25,23 @@ ModelBrokerImpl::ModelBrokerImpl(
       add_download_progress_observer_callback_(
           std::move(add_download_progress_observer_callback)) {}
 
-ModelBrokerImpl::~ModelBrokerImpl() = default;
+ModelBrokerImpl::~ModelBrokerImpl() {
+  TRACE_EVENT("optimization_guide", "ModelBrokerImpl::BindBroker",
+              perfetto::TerminatingFlow::FromPointer(this));
+}
 
 void ModelBrokerImpl::BindBroker(
     mojo::PendingReceiver<mojom::ModelBroker> receiver) {
-  TRACE_EVENT("optimization_guide", "ModelBrokerImpl::BindBroker");
+  TRACE_EVENT("optimization_guide", "ModelBrokerImpl::BindBroker",
+              perfetto::Flow::FromPointer(this));
   receivers_.Add(this, std::move(receiver));
 }
 
 void ModelBrokerImpl::Subscribe(
     mojom::ModelSubscriptionOptionsPtr options,
     mojo::PendingRemote<mojom::ModelSubscriber> subscriber) {
-  TRACE_EVENT("optimization_guide", "ModelBrokerImpl::Subscribe");
+  TRACE_EVENT("optimization_guide", "ModelBrokerImpl::Subscribe",
+              perfetto::Flow::FromPointer(this));
   ensure_init_callback_.Run(base::BindOnce(
       &ModelBrokerImpl::SubscribeInternal, weak_ptr_factory_.GetWeakPtr(),
       std::move(options), std::move(subscriber)));
@@ -46,13 +51,15 @@ void ModelBrokerImpl::SubscribeInternal(
     mojom::ModelSubscriptionOptionsPtr options,
     mojo::PendingRemote<mojom::ModelSubscriber> subscriber,
     const on_device_model::Capabilities& capabilities) {
-  TRACE_EVENT("optimization_guide", "ModelBrokerImpl::SubscribeInternal");
+  TRACE_EVENT("optimization_guide", "ModelBrokerImpl::SubscribeInternal",
+              perfetto::Flow::FromPointer(this));
   GetSolutionProvider(options->feature)
       .AddSubscriber(std::move(subscriber), capabilities);
 }
 
 void ModelBrokerImpl::RequestAssetsFor(mojom::OnDeviceFeature feature) {
-  TRACE_EVENT("optimization_guide", "ModelBrokerImpl::RequestAssetsFor");
+  TRACE_EVENT("optimization_guide", "ModelBrokerImpl::RequestAssetsFor",
+              perfetto::Flow::FromPointer(this));
   ensure_init_callback_.Run(
       base::BindOnce(&ModelBrokerImpl::RequestAssetsForInternal,
                      weak_ptr_factory_.GetWeakPtr(), feature));
@@ -61,8 +68,8 @@ void ModelBrokerImpl::RequestAssetsFor(mojom::OnDeviceFeature feature) {
 void ModelBrokerImpl::RequestAssetsForInternal(
     mojom::OnDeviceFeature feature,
     const on_device_model::Capabilities& capabilities) {
-  TRACE_EVENT("optimization_guide",
-              "ModelBrokerImpl::RequestAssetsForInternal");
+  TRACE_EVENT("optimization_guide", "ModelBrokerImpl::RequestAssetsForInternal",
+              perfetto::Flow::FromPointer(this));
   usage_tracker_->OnDeviceEligibleFeatureUsed(feature);
 }
 
@@ -75,7 +82,8 @@ ModelBrokerImpl::SolutionProvider& ModelBrokerImpl::GetSolutionProvider(
 void ModelBrokerImpl::AddModelDownloadProgressObserver(
     mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer) {
   TRACE_EVENT("optimization_guide",
-              "ModelBrokerImpl::AddModelDownloadProgressObserver");
+              "ModelBrokerImpl::AddModelDownloadProgressObserver",
+              perfetto::Flow::FromPointer(this));
   add_download_progress_observer_callback_.Run(std::move(observer));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -87,12 +95,17 @@ ModelBrokerImpl::SolutionProvider::SolutionProvider(
     mojom::OnDeviceFeature feature)
     : feature_(feature) {}
 
-ModelBrokerImpl::SolutionProvider::~SolutionProvider() = default;
+ModelBrokerImpl::SolutionProvider::~SolutionProvider() {
+  TRACE_EVENT("optimization_guide",
+              "ModelBrokerImpl::SolutionProvider::~SolutionProvider",
+              perfetto::TerminatingFlow::FromPointer(this));
+}
 
 void ModelBrokerImpl::SolutionProvider::AddSubscriber(
     mojo::PendingRemote<mojom::ModelSubscriber> pending,
     const on_device_model::Capabilities& capabilities) {
-  TRACE_EVENT("optimization_guide", "ModelBrokerImpl::AddSubscriber");
+  TRACE_EVENT("optimization_guide", "ModelBrokerImpl::AddSubscriber",
+              perfetto::Flow::FromPointer(this));
   auto id = subscribers_.Add(std::move(pending));
   UpdatePossibleCapabilities(*subscribers_.Get(id), capabilities);
   UpdateSubscriber(*subscribers_.Get(id));
@@ -100,19 +113,22 @@ void ModelBrokerImpl::SolutionProvider::AddSubscriber(
 
 void ModelBrokerImpl::SolutionProvider::AddObserver(
     OnDeviceModelAvailabilityObserver* observer) {
-  TRACE_EVENT("optimization_guide", "ModelBrokerImpl::AddObserver");
+  TRACE_EVENT("optimization_guide", "ModelBrokerImpl::AddObserver",
+              perfetto::Flow::FromPointer(this));
   observers_.AddObserver(observer);
 }
 
 void ModelBrokerImpl::SolutionProvider::RemoveObserver(
     OnDeviceModelAvailabilityObserver* observer) {
-  TRACE_EVENT("optimization_guide", "ModelBrokerImpl::RemoveObserver");
+  TRACE_EVENT("optimization_guide", "ModelBrokerImpl::RemoveObserver",
+              perfetto::Flow::FromPointer(this));
   observers_.RemoveObserver(observer);
 }
 
 void ModelBrokerImpl::SolutionProvider::Update(MaybeSolution solution) {
   TRACE_EVENT("optimization_guide", "ModelBrokerImpl::SolutionProvider::Update",
-              "feature", base::ToString(feature_));
+              perfetto::Flow::FromPointer(this), "feature",
+              base::ToString(feature_));
   CHECK(!solution.has_value() || solution.value());
   if (solution.has_value()) {
     if (solution_.has_value() && solution_.value()->IsValid()) {
@@ -139,7 +155,8 @@ void ModelBrokerImpl::SolutionProvider::UpdateSubscribers() {
 void ModelBrokerImpl::SolutionProvider::UpdateSubscriber(
     mojom::ModelSubscriber& subscriber) {
   TRACE_EVENT("optimization_guide",
-              "ModelBrokerImpl::SolutionProvider::UpdateSubscriber", "feature",
+              "ModelBrokerImpl::SolutionProvider::UpdateSubscriber",
+              perfetto::Flow::FromPointer(this), "feature",
               base::ToString(feature_));
   if (!solution_.has_value()) {
     subscriber.Unavailable(
@@ -161,7 +178,8 @@ void ModelBrokerImpl::SolutionProvider::UpdateSubscriber(
 
 void ModelBrokerImpl::SolutionProvider::UpdateObservers() {
   TRACE_EVENT("optimization_guide",
-              "ModelBrokerImpl::SolutionProvider::UpdateObservers", "feature",
+              "ModelBrokerImpl::SolutionProvider::UpdateObservers",
+              perfetto::Flow::FromPointer(this), "feature",
               base::ToString(feature_));
   for (auto& observer : observers_) {
     observer.OnDeviceModelAvailabilityChanged(
@@ -174,7 +192,8 @@ void ModelBrokerImpl::SolutionProvider::UpdatePossibleCapabilities(
     const on_device_model::Capabilities& capabilities) {
   TRACE_EVENT("optimization_guide",
               "ModelBrokerImpl::SolutionProvider::UpdatePossibleCapabilities",
-              "feature", base::ToString(feature_));
+              perfetto::Flow::FromPointer(this), "feature",
+              base::ToString(feature_));
   subscriber.CapabilitiesUpdated(capabilities);
 }
 

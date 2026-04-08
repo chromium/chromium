@@ -281,10 +281,17 @@ ManifestAssetManager::ManifestAssetManager(
   usage_tracker_observation_.Observe(&usage_tracker);
 }
 
-ManifestAssetManager::~ManifestAssetManager() = default;
+ManifestAssetManager::~ManifestAssetManager() {
+  TRACE_EVENT("optimization_guide",
+              "ManifestAssetManager::~ManifestAssetManager",
+              perfetto::TerminatingFlow::FromPointer(this));
+}
 
 void ManifestAssetManager::UpdateSolutionFactory(
     std::unique_ptr<ManifestSolutionFactory> factory) {
+  TRACE_EVENT("optimization_guide",
+              "ManifestAssetManager::UpdateSolutionFactory",
+              perfetto::Flow::FromPointer(this));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(holte): Potentially defer stopping the old factory from providing new
   // solutions until we actually download assets for the new factory.
@@ -316,6 +323,10 @@ bool ManifestAssetManager::VerifyInstallation(const base::FilePath& install_dir,
 void ManifestAssetManager::OnDeviceEligibleUseCaseUsed(
     const std::string& use_case_name,
     bool is_first_usage) {
+  TRACE_EVENT("optimization_guide",
+              "ManifestAssetManager::OnDeviceEligibleUseCaseUsed",
+              perfetto::Flow::FromPointer(this), "use_case_name", use_case_name,
+              "is_first_usage", is_first_usage);
   if (is_first_usage) {
     UpdateActiveAssets();
   }
@@ -338,6 +349,9 @@ void ManifestAssetManager::UpdateActiveAssets() {
 
 void ManifestAssetManager::OnDiskSpaceEvaluated(
     std::optional<base::ByteCount> free_space) {
+  TRACE_EVENT("optimization_guide",
+              "ManifestAssetManager::OnDiskSpaceEvaluated",
+              perfetto::Flow::FromPointer(this));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   disk_space_status_.Update(free_space);
   UpdateRegistrations();
@@ -365,6 +379,8 @@ bool ManifestAssetManager::ShouldInstall(
 }
 
 void ManifestAssetManager::UpdateRegistrations() {
+  TRACE_EVENT("optimization_guide", "ManifestAssetManager::UpdateRegistrations",
+              perfetto::Flow::FromPointer(this));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!disk_space_status_.IsFresh()) {
     // Don't do anything yet, just refresh the disk space status.
@@ -430,11 +446,15 @@ void ManifestAssetManager::UpdateRegistrations() {
 }
 
 void ManifestAssetManager::UninstallComponent(const std::string& public_key) {
+  TRACE_EVENT("optimization_guide", "ManifestAssetManager::UninstallComponent",
+              perfetto::Flow::FromPointer(this), "public_key", public_key);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   delegate_->Uninstall(public_key, weak_ptr_factory_.GetWeakPtr());
 }
 
 void ManifestAssetManager::OnAssetUninstalled(const std::string& public_key) {
+  TRACE_EVENT("optimization_guide", "ManifestAssetManager::OnAssetUninstalled",
+              perfetto::Flow::FromPointer(this), "public_key", public_key);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const proto::OnDemandComponent* component =
       factory_->manifest().GetAssetByPublicKey(public_key);
@@ -454,6 +474,9 @@ void ManifestAssetManager::OnAssetUninstalled(const std::string& public_key) {
 void ManifestAssetManager::InstallerRegistered(const std::string& public_key,
                                                const std::string& version,
                                                bool is_already_installed) {
+  TRACE_EVENT("optimization_guide", "ManifestAssetManager::InstallerRegistered",
+              perfetto::Flow::FromPointer(this), "public_key", public_key,
+              "version", version, "is_already_installed", is_already_installed);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ComponentContext* context = ledger_.GetContext(public_key);
   CHECK(context);  // Any asset that is registered should be in the ledger.
@@ -482,6 +505,8 @@ void ManifestAssetManager::InstallerRegistered(const std::string& public_key,
 void ManifestAssetManager::OnAssetReady(const std::string& public_key,
                                         const base::Version& version,
                                         const base::FilePath& install_dir) {
+  TRACE_EVENT("optimization_guide", "ManifestAssetManager::OnAssetReady",
+              perfetto::Flow::FromPointer(this), "public_key", public_key);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ComponentContext* context = ledger_.GetContext(public_key);
   CHECK(context);  // Any asset that is ready should be in the ledger.
@@ -491,6 +516,8 @@ void ManifestAssetManager::OnAssetReady(const std::string& public_key,
 
 void ManifestAssetManager::NotifyFactory(const std::string& public_key,
                                          const ComponentContext& context) {
+  TRACE_EVENT("optimization_guide", "ManifestAssetManager::NotifyFactory",
+              perfetto::Flow::FromPointer(this), "public_key", public_key);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const proto::OnDemandComponent* component =
       factory_->manifest().GetAssetByPublicKey(public_key);
