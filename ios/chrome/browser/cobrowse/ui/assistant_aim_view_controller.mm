@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_view_controller.h"
 
+#import <WebKit/WebKit.h>
+
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_header_view.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_view_controller.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
-#import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -112,6 +112,50 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   [_headerView adjustForPercentage:effectPercentage];
 }
 
+- (BOOL)shouldPauseScrollView:(UIScrollView*)scrollView
+                   forGesture:(UIGestureRecognizer*)gesture
+            isInLargestDetent:(BOOL)isInLargestDetent {
+  // Only handle gestures in the assistant content.
+  BOOL inAssistantContent = [scrollView isDescendantOfView:self.view];
+  if (!inAssistantContent) {
+    return NO;
+  }
+
+  // Only pause if the gesture controls scrolling.
+  if (![gesture isKindOfClass:[UIPanGestureRecognizer class]]) {
+    return NO;
+  }
+
+  // Safe cast because the check above ensures it's a pan gesture.
+  UIPanGestureRecognizer* panRecognizer =
+      static_cast<UIPanGestureRecognizer*>(gesture);
+
+  // Horizontal scroll should not drag the assistant container.
+  if ([self gestureDidScrollHorizontally:panRecognizer]) {
+    return NO;
+  }
+
+  WKWebView* wkWebView = [self findWKWebViewInView:_webStateView];
+
+  // Refrain from moving when handling sub-scrolls within a WKWebView.
+  if (scrollView != wkWebView.scrollView) {
+    return NO;
+  }
+
+  // Check boundaries.
+  CGFloat verticalVelocity = [panRecognizer velocityInView:scrollView].y;
+  BOOL draggingDown = verticalVelocity > 0;
+  BOOL isAtTop = [self isContentScrolledToTop:wkWebView];
+  BOOL sheetMovementForLargestDetent =
+      isInLargestDetent && isAtTop && draggingDown;
+  BOOL sheetMovementForSmallerDetents = !isInLargestDetent && isAtTop;
+
+  if (sheetMovementForLargestDetent || sheetMovementForSmallerDetents) {
+    return YES;
+  }
+  return NO;
+}
+
 - (void)setupInputPlateConstraints {
   _inputPlateBottomMargin = [_inputViewController.view.bottomAnchor
       constraintEqualToAnchor:self.view.bottomAnchor
@@ -170,10 +214,39 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   }
   [_webStateView removeFromSuperview];
   _webStateView = webStateView;
+
   [self setUpWebStateView];
 }
 
 #pragma mark - Private
+
+// Returns YES if the embedded content is at its top boundary.
+- (BOOL)isContentScrolledToTop:(WKWebView*)wkWebView {
+  if (wkWebView) {
+    return wkWebView.scrollView.contentOffset.y <= 0;
+  }
+  return YES;
+}
+
+// Recursively searches for a WKWebView in the given view's hierarchy.
+- (WKWebView*)findWKWebViewInView:(UIView*)view {
+  if ([view isKindOfClass:[WKWebView class]]) {
+    return static_cast<WKWebView*>(view);
+  }
+  for (UIView* subview in view.subviews) {
+    WKWebView* webView = [self findWKWebViewInView:subview];
+    if (webView) {
+      return webView;
+    }
+  }
+  return nil;
+}
+
+// Returns YES if the gesture has a mostly horizontal translation.
+- (BOOL)gestureDidScrollHorizontally:(UIPanGestureRecognizer*)panRecognizer {
+  CGPoint translation = [panRecognizer translationInView:panRecognizer.view];
+  return fabs(translation.y) <= 3 * fabs(translation.x);
+}
 
 // Creates a fade effect behind the input plate.
 - (void)createInputViewFade {

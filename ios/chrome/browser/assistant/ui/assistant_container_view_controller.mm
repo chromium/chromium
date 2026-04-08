@@ -27,9 +27,6 @@ namespace {
 // The height assigned to a detent that isn't in the list.
 constexpr NSInteger kInvalidDetentHeight = -1;
 
-// The height of the top area that responds to the pan gesture.
-constexpr CGFloat kGestureTopAreaHeight = 44.0;
-
 // The maximum width of the sheet container on iPad devices.
 constexpr CGFloat kAssistantSheetMaxWidth = 700.0;
 // The multiplier for the width of the sheet container relative to its parent.
@@ -87,6 +84,8 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
   std::optional<AssistantContainerDetent> _activeDetent;
   // The height of the container when the gesture started.
   CGFloat _initialConstraintHeight;
+  // Tracks whether the active gesture is currently dragging the container.
+  BOOL _isDraggingContainer;
   // Whether the view has appeared.
   BOOL _hasAppeared;
 
@@ -94,6 +93,10 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
   UIPanGestureRecognizer* _headerPanGesture;
   // Observer for the fullscreen controller.
   std::unique_ptr<FullscreenUIUpdater> _fullscreenUIUpdater;
+
+  // An array of unowned scroll views, modeled through provider blocks that
+  // capture weak references to the views in question.
+  NSMutableArray<UIScrollView* (^)()>* _disabledScrollViews;
 }
 
 @synthesize isAnimating = _isAnimating;
@@ -102,6 +105,7 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _childViewController = viewController;
+    _disabledScrollViews = [[NSMutableArray alloc] init];
     _detents = {
         AssistantContainerDetent::kMinimized,
         AssistantContainerDetent::kMedium,
@@ -372,25 +376,50 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
 #pragma mark - UIGestureRecognizerDelegate
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
-       shouldReceiveTouch:(UITouch*)touch {
+    shouldRecognizeSimultaneouslyWithGestureRecognizer:
+        (UIGestureRecognizer*)otherGestureRecognizer {
   if (gestureRecognizer != _headerPanGesture) {
     return YES;
   }
-  CGPoint location = [touch locationInView:_assistantContainerView];
-  // Restrict the gesture to the top area.
-  return location.y <= kGestureTopAreaHeight;
+
+  if ([otherGestureRecognizer.view isKindOfClass:[UIScrollView class]]) {
+    UIScrollView* scrollView =
+        static_cast<UIScrollView*>(otherGestureRecognizer.view);
+    if ([self.delegate
+            respondsToSelector:@selector(assistantContainer:
+                                      shouldPauseScrollView:forGesture:)]) {
+      if ([self.delegate assistantContainer:self
+                      shouldPauseScrollView:scrollView
+                                 forGesture:otherGestureRecognizer]) {
+        [self pauseScrollView:scrollView];
+        return YES;
+      }
+    }
+  }
+
+  return NO;
 }
 
-- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
-    shouldBeRequiredToFailByGestureRecognizer:
-        (UIGestureRecognizer*)otherGestureRecognizer {
-  if (gestureRecognizer == _headerPanGesture) {
-    // Ensures the container's resizing pan gesture has absolute priority over
-    // other gestures, like an embedded UIScrollView's content pan.
-    return
-        [otherGestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]];
+#pragma mark - Private
+
+// Resumes all the previously paused scroll views.
+- (void)resumeAllScrollViews {
+  for (UIScrollView* (^scrollViewProvider)() in _disabledScrollViews) {
+    UIScrollView* scrollView = scrollViewProvider();
+    scrollView.scrollEnabled = YES;
   }
-  return NO;
+  [_disabledScrollViews removeAllObjects];
+}
+
+// Pauses scrolling on the given scroll view.
+- (void)pauseScrollView:(UIScrollView*)scrollView {
+  if (scrollView.scrollEnabled) {
+    __weak UIScrollView* weakScrollView = scrollView;
+    [_disabledScrollViews addObject:^{
+      return weakScrollView;
+    }];
+    scrollView.scrollEnabled = NO;
+  }
 }
 
 #pragma mark - FullscreenUIElement
@@ -621,6 +650,14 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
   CGPoint translation = [gesture translationInView:superview];
   NSInteger newHeight = round(_initialConstraintHeight - translation.y);
 
+  // Transition to container dragging.
+  if (!_isDraggingContainer) {
+    _isDraggingContainer = YES;
+    [gesture setTranslation:CGPointZero inView:superview];
+    _initialConstraintHeight = _heightConstraint.constant;
+    newHeight = round(_initialConstraintHeight);
+  }
+
   if (round(_heightConstraint.constant) == newHeight) {
     return;
   }
@@ -651,6 +688,9 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
 // Handles the state when the pan gesture ends or is cancelled.
 - (void)handlePanGestureEnded:(UIPanGestureRecognizer*)gesture {
   CHECK(gesture == _headerPanGesture);
+
+  [self resumeAllScrollViews];
+  _isDraggingContainer = NO;
 
   UIView* superview = self.view.superview;
   CGPoint velocity = [gesture velocityInView:superview];
