@@ -292,10 +292,6 @@ android_protobuf_src = 'external/protobuf/src'
 NEWLINE = ' " +\n         "'
 
 
-def get_linker_script_ldflag(script_path):
-    return f'-Wl,--script,{tree_path}/{script_path}'
-
-
 _FEATURE_REGEX = "feature=\\\"(.+)\\\""
 _RUST_FLAGS_TO_REMOVE = [
     "--target",  # Added by Soong
@@ -708,6 +704,7 @@ class Module:
             self.generated_headers = set()
             self.export_generated_headers = set()
             self.ldflags = list()
+            self.linker_scripts = set()
             self.compile_multilib = None
             self.stem = ""
             self.edition = ""
@@ -738,6 +735,7 @@ class Module:
             self._output_field(nested_out, 'export_generated_headers')
             # The reasoning for disabling sort is the same as cflags.
             self._output_field(nested_out, 'ldflags', sort=False)
+            self._output_field(nested_out, 'linker_scripts')
             self._output_field(nested_out, 'compile_multilib')
             self._output_field(nested_out, 'stem')
             self._output_field(nested_out, "edition")
@@ -2780,13 +2778,6 @@ def _get_cflags(cflags, defines):
     return cflags
 
 
-def _set_linker_script(module, libs):
-    for lib in libs:
-        if lib.endswith(".lds"):
-            module.ldflags.append(
-                get_linker_script_ldflag(gn_utils.label_to_path(lib)))
-
-
 def _get_cpp_std(cflags: List[str]) -> Union[str, None]:
     cpp_stds = [
         cflag.removeprefix('-std=') for cflag in cflags
@@ -2799,19 +2790,19 @@ def _get_cpp_std(cflags: List[str]) -> Union[str, None]:
     return None
 
 
-def _extract_linker_script(ldflags):
+def _extract_version_script(ldflags):
     new_ldflags = []
-    linker_script = None
+    version_script = None
     for flag in ldflags:
         if flag.startswith("-Wl,--version-script="):
             # Everything after the = is the path and delete all leading ../
-            linker_path = re.sub('^(\.\./)+', '',
-                                 flag.split("=", maxsplit=2)[1])
-            assert linker_script is None, f"Found two different linker script for a single target! First script: {linker_script}, Second script: {linker_path}"
-            linker_script = linker_path
+            new_version_script = re.sub('^(\.\./)+', '',
+                                        flag.split("=", maxsplit=2)[1])
+            assert version_script is None, f"Found two different version scripts for a single target! First script: {version_script}, Second script: {new_version_script}"
+            version_script = new_version_script
         else:
             new_ldflags.append(flag)
-    return new_ldflags, linker_script
+    return new_ldflags, version_script
 
 
 def _create_linker_script_filegroup(linker_script_path):
@@ -2874,25 +2865,31 @@ def _is_allowed_ldflag(flag):
 def configure_cc_module(module, cflags, defines, ldflags, libs, main_module,
                         blueprint):
     module.cflags = _get_cflags(cflags, defines)
-    ldflags, linker_script = _extract_linker_script(ldflags)
+    ldflags, version_script = _extract_version_script(ldflags)
     module.ldflags = [flag for flag in ldflags if _is_allowed_ldflag(flag)]
-    if linker_script:
+    if version_script:
         # Unfortunately, Soong does not allow accessing linker scripts from parent
         # path. So create a filegroup at the top-level Android.bp and reference it instead.
-        filegroup_module = _create_linker_script_filegroup(linker_script)
+        filegroup_module = _create_linker_script_filegroup(version_script)
         blueprint.add_module(filegroup_module)
-        linker_script_deps = f':{filegroup_module.name}'
-        assert main_module.version_script is None or main_module.version_script == linker_script_deps, f'Found different version scripts across different architectures!, target name: {main_module.name}, first linker_script: {main_module.version_script}, second linker script: {version_script_deps}'
-        main_module.version_script = linker_script_deps
-    _set_linker_script(module, libs)
+        version_script_deps = f':{filegroup_module.name}'
+        assert main_module.version_script is None or main_module.version_script == version_script_deps, f'Found different version scripts across different architectures!, target name: {main_module.name}, first version_script: {main_module.version_script}, second version_script: {version_script_deps}'
+        main_module.version_script = version_script_deps
     for lib in libs:
-        # Generally library names should be mangled as 'libXXX', unless they
-        # are HAL libraries (e.g., android.hardware.health@2.0) or AIDL c++ / NDK
-        # libraries (e.g. "android.hardware.power.stats-V1-cpp")
-        android_lib = lib if '@' in lib or "-cpp" in lib or "-ndk" in lib \
-          else 'lib' + lib
-        if lib in shared_library_allowlist:
-            module.shared_libs.add(android_lib)
+        if lib.endswith('.lds'):
+            linker_script = gn_utils.label_to_path(lib)
+            filegroup_module = _create_linker_script_filegroup(linker_script)
+            blueprint.add_module(filegroup_module)
+            linker_script_deps = f':{filegroup_module.name}'
+            module.linker_scripts.add(linker_script_deps)
+        else:
+            # Generally library names should be mangled as 'libXXX', unless they
+            # are HAL libraries (e.g., android.hardware.health@2.0) or AIDL c++ / NDK
+            # libraries (e.g. "android.hardware.power.stats-V1-cpp")
+            android_lib = lib if '@' in lib or "-cpp" in lib or "-ndk" in lib \
+                else 'lib' + lib
+            if lib in shared_library_allowlist:
+                module.shared_libs.add(android_lib)
     # TODO: implement proper cflag parsing.
     for flag in cflags:
         if '-fexceptions' in flag:
