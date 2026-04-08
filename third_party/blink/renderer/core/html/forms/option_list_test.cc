@@ -149,4 +149,31 @@ TEST_F(OptionListTest, RetreatWithOptgroups) {
   EXPECT_EQ("o1", Id(*it));
 }
 
+TEST_F(OptionListTest, RetreatFromLast) {
+  Select().SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <optgroup label=optgroup>
+      <option id=o1>one</option>
+      <option id=o2>two</option>
+      <option id=o3>three</option>
+    </optgroup>
+  )HTML");
+
+  OptionList list = Select().GetOptionList();
+  OptionList::Iterator it = list.last();
+  EXPECT_EQ("o3", Id(*it));
+  --it;
+  EXPECT_EQ("o2", Id(*it));
+  --it;
+  EXPECT_EQ("o1", Id(*it));
+
+  bool (*return_true)(HTMLOptionElement&) = [](HTMLOptionElement&) -> bool {
+    return true;
+  };
+
+  OptionList list2 = Select().GetOptionList();
+  HTMLOptionElement* last_option =
+      list2.FindPreviousOption(*list2.last(), return_true, /*inclusive=*/true);
+  EXPECT_EQ("o3", Id(*last_option));
+}
+
 }  // naemespace blink

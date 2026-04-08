@@ -68,7 +68,7 @@ class CORE_EXPORT OptionListIterator final {
 };
 
 // OptionList class is a lightweight version of HTMLOptionsCollection.
-class OptionList final {
+class CORE_EXPORT OptionList final {
   STACK_ALLOCATED();
 
  public:

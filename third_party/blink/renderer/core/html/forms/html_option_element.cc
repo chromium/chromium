@@ -628,7 +628,17 @@ bool HTMLOptionElement::IsDisplayNone(bool ensure_style) {
 
 void HTMLOptionElement::DefaultEventHandler(Event& event) {
   DefaultEventHandlerInternal(event);
-  HTMLElement::DefaultEventHandler(event);
+
+  // If we unconditionally run the parent class's DefaultEventHandler, it may
+  // cause additional unwanted things to happen like the
+  // Editor::HandleKeyboardEvent scrolling the page when Home/End keys are
+  // pressed even if we set default handled on the event in
+  // HTMLOptionElement::DefaultEventHandlerInternal.
+  // HTMLSelectElement::DefaultEventHandler also does not call the parent
+  // class's DefaultEventHandler in this case.
+  if (!event.DefaultHandled()) {
+    HTMLElement::DefaultEventHandler(event);
+  }
 }
 
 bool HTMLOptionElement::IsVisibleInViewport() {
@@ -646,6 +656,7 @@ bool HTMLOptionElement::IsVisibleInViewport() {
   return option_top >= listbox_top && option_top + option_rect.Height() <=
                                           listbox_top + listbox_rect.Height();
 }
+
 void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
   if (nearest_ancestor_datalist_ && event.type() == event_type_names::kClick &&
       RuntimeEnabledFeatures::CustomizableComboboxEnabled()) {
@@ -753,16 +764,16 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
         if (auto* first_option = options.FindNextOption(
                 *options.begin(), is_option_focusable, /*inclusive*/ true)) {
           first_option->Focus(focus_params);
-          event.SetDefaultHandled();
-          return;
         }
+        event.SetDefaultHandled();
+        return;
       } else if (key == keywords::kEnd) {
         if (auto* last_option = options.FindPreviousOption(
                 *options.last(), is_option_focusable, /*inclusive*/ true)) {
           last_option->Focus(focus_params);
-          event.SetDefaultHandled();
-          return;
         }
+        event.SetDefaultHandled();
+        return;
       } else if (key == keywords::kPageDown) {
         if (!IsVisibleInViewport()) {
           // If the option isn't visible at all right now, *only* scroll it into
