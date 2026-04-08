@@ -12,6 +12,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
@@ -29,8 +30,6 @@
 
 #if !BUILDFLAG(IS_MAC)
 #include "ui/gl/gl_fence_egl.h"
-#include "base/check_op.h"
-#include "base/check.h"
 #endif
 
 namespace gpu::gles2 {

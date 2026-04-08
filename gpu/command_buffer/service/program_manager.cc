@@ -16,6 +16,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
@@ -34,8 +35,6 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/progress_reporter.h"
-#include "base/check_op.h"
-#include "base/check.h"
 
 namespace gpu {
 namespace gles2 {

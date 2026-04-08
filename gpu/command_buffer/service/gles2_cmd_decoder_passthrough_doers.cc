@@ -6,6 +6,7 @@
 #include <array>
 #include <memory>
 
+#include "base/check.h"
 #include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
@@ -14,6 +15,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -38,9 +40,6 @@
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/scoped_make_current.h"
-#include "base/time/time.h"
-#include "base/check_op.h"
-#include "base/check.h"
 
 namespace gpu {
 namespace gles2 {

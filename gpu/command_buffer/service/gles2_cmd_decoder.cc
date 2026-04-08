@@ -17061,8 +17061,6 @@ error::Error GLES2DecoderImpl::HandleSetActiveURLCHROMIUM(
 // we can easily edit the non-auto generated parts right here in this file
 // instead of having to edit some template or the code generator.
 #include "gpu/command_buffer/service/gles2_cmd_decoder_autogen.h"
-#include "base/check_op.h"
-#include "base/check.h"
 
 }  // namespace gles2
 }  // namespace gpu

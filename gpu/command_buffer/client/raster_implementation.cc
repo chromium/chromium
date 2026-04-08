@@ -21,6 +21,7 @@
 #include "base/atomic_sequence_num.h"
 #include "base/atomicops.h"
 #include "base/bits.h"
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -1147,8 +1148,6 @@ void RasterImplementation::UnmapRasterCHROMIUM(uint32_t raster_written_size,
 // we can easily edit the non-auto generated parts right here in this file
 // instead of having to edit some template or the code generator.
 #include "gpu/command_buffer/client/raster_implementation_impl_autogen.h"
-#include "base/check_op.h"
-#include "base/check.h"
 
 void RasterImplementation::CopySharedImage(const gpu::Mailbox& source_mailbox,
                                            const gpu::Mailbox& dest_mailbox,

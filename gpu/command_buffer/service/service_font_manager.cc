@@ -10,6 +10,7 @@
 #include <type_traits>
 
 #include "base/bits.h"
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
@@ -21,8 +22,6 @@
 #include "components/crash/core/common/crash_key.h"
 #include "gpu/command_buffer/common/buffer.h"
 #include "gpu/command_buffer/common/discardable_handle.h"
-#include "base/check_op.h"
-#include "base/check.h"
 
 namespace gpu {
 

@@ -6,10 +6,11 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <cmath>
 
 #include "base/base64.h"
-#include "base/check_op.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
@@ -28,8 +29,6 @@
 #include "gpu/config/gpu_preferences.h"
 #include "third_party/zlib/zlib.h"
 #include "ui/gl/gl_bindings.h"
-#include "base/check.h"
-#include <array>
 
 namespace gpu {
 namespace gles2 {
