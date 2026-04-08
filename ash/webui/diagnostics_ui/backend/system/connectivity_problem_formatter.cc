@@ -62,9 +62,12 @@ void AppendConnectionInfoLines(
 std::string FormatConnectionError(
     const chromeos::network_diagnostics::mojom::
         GoogleServicesConnectivityConnectionErrorPtr& error) {
-  std::string out =
-      base::StrCat({error->connection_info->hostname, ":\n", kStatusFailPrefix,
-                    ProblemTypeToString(error->problem_type), "\n"});
+  std::string out;
+  if (!error->connection_info->hostname.empty()) {
+    base::StrAppend(&out, {error->connection_info->hostname, ":\n"});
+  }
+  base::StrAppend(&out, {kStatusFailPrefix,
+                         ProblemTypeToString(error->problem_type), "\n"});
   if (error->proxy.has_value()) {
     base::StrAppend(&out, {kProxyPrefix, error->proxy.value(), "\n"});
   }

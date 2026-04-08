@@ -16,7 +16,7 @@ namespace ash::diagnostics {
 // plain text for the session log.
 //
 // Each problem produces a multi-line block:
-//   hostname:
+//   hostname:                       (omitted if empty)
 //     Status: FAIL - ConnectionFailure
 //     Proxy: proxy:8080           (optional)
 //     Start: 2/19/26, 10:29 AM   (optional)

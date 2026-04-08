@@ -270,5 +270,23 @@ TEST(ConnectivityProblemFormatterTest, AllProxyProblemTypeLabels) {
   }
 }
 
+TEST(ConnectivityProblemFormatterTest, ConnectionErrorEmptyHostname) {
+  static constexpr char kErrorMessage[] =
+      "Failed to execute the connectivity test.";
+  static constexpr char kExpected[] =
+      "  Status: FAIL - InternalError\n"
+      "  Error: Failed to execute the connectivity test.\n";
+
+  std::vector<GoogleServicesConnectivityProblemPtr> problems;
+  problems.emplace_back(MakeConnectionError(
+      /*hostname=*/"", GoogleServicesConnectivityProblemType::kInternalError,
+      kErrorMessage));
+  const std::string result = FormatConnectivityProblems(problems);
+
+  // Empty hostname should not produce a leading ":\n" line.
+  EXPECT_EQ(std::string::npos, result.find(":\n"));
+  EXPECT_EQ(kExpected, result);
+}
+
 }  // namespace
 }  // namespace ash::diagnostics
