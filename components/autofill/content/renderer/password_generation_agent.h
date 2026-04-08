@@ -121,6 +121,12 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
   // lifetime of the possible interaction.
   struct GenerationItemInfo;
 
+  // Temporarily sets GenerationItemInfo::updating_other_password_fields_ to
+  // true.
+  // This is like AutoReset but tolerates reentrant calls (see
+  // crbug.com/498815068 for more details).
+  class ScopedUpdatingOtherPasswordFields;
+
   // RenderFrameObserver:
   void DidCommitProvisionalLoad(ui::PageTransition transition) override;
   void DidChangeScrollOffset() override;

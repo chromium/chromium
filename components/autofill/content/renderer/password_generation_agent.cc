@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -238,6 +237,26 @@ struct PasswordGenerationAgent::GenerationItemInfo {
   bool generation_rejected_ = false;
 };
 
+class PasswordGenerationAgent::ScopedUpdatingOtherPasswordFields {
+ public:
+  explicit ScopedUpdatingOtherPasswordFields(PasswordGenerationAgent* owner)
+      : owner_(*owner) {
+    owner_->current_generation_item_->updating_other_password_fields_ = true;
+  }
+
+  ~ScopedUpdatingOtherPasswordFields() {
+    // Gracefully handle the case where owner_->current_generation_item_ may
+    // have changed since the constructor.
+    owner_->current_generation_item_->updating_other_password_fields_ =
+        old_value_;
+  }
+
+ private:
+  const raw_ref<PasswordGenerationAgent> owner_;
+  const bool old_value_ =
+      owner_->current_generation_item_->updating_other_password_fields_;
+};
+
 PasswordGenerationAgent::PasswordGenerationAgent(
     content::RenderFrame* render_frame,
     PasswordAutofillAgent* password_agent,
@@ -324,7 +343,8 @@ void PasswordGenerationAgent::PreviewGenerationSuggestion(
     const std::u16string& password) {
   CHECK(current_generation_item_);
 
-  for (auto& password_field : current_generation_item_->password_elements_) {
+  for (blink::WebInputElement& password_field :
+       current_generation_item_->password_elements_) {
     PreviewGeneratedValue(password_field,
                           blink::WebString::FromUtf16(password));
   }
@@ -335,7 +355,8 @@ void PasswordGenerationAgent::ClearPreviewedForm() {
     return;
   }
 
-  for (auto& password_field : current_generation_item_->password_elements_) {
+  for (blink::WebInputElement& password_field :
+       current_generation_item_->password_elements_) {
     if (password_field.SuggestedValue().IsEmpty())
       continue;
 
@@ -360,11 +381,12 @@ void PasswordGenerationAgent::GeneratedPasswordAccepted(
   // Preview needs to be cleared before filling to be removed correctly.
   password_agent_->autofill_agent().ClearPreviewedForm();
 
-  for (auto& password_element : current_generation_item_->password_elements_) {
-    base::AutoReset<bool> auto_reset_update_confirmation_password(
-        &current_generation_item_->updating_other_password_fields_, true);
+  for (blink::WebInputElement& password_element :
+       current_generation_item_->password_elements_) {
+    ScopedUpdatingOtherPasswordFields auto_reset_update_confirmation_password(
+        this);
     password_element.SetAutofillValue(blink::WebString::FromUtf16(password));
-    // setAutofillValue() above may have resulted in JavaScript closing the
+    // SetAutofillValue() above may have resulted in JavaScript closing the
     // frame.
     if (!render_frame()) {
       return;
@@ -391,7 +413,8 @@ void PasswordGenerationAgent::GeneratedPasswordAccepted(
 
   // Call UpdateStateForTextChange after the corresponding PasswordFormManager
   // is notified that the password was generated.
-  for (auto& password_element : current_generation_item_->password_elements_) {
+  for (const blink::WebInputElement& password_element :
+       current_generation_item_->password_elements_) {
     // Needed to notify password_autofill_agent that the content of the field
     // has changed. Without this we will overwrite the generated
     // password with an Autofilled password when saving.
@@ -666,8 +689,8 @@ bool PasswordGenerationAgent::TextDidChangeInTextField(
       PasswordNoLongerGenerated();
     } else if (current_generation_item_->password_is_generated_) {
       current_generation_item_->password_edited_ = true;
-      base::AutoReset<bool> auto_reset_update_confirmation_password(
-          &current_generation_item_->updating_other_password_fields_, true);
+      ScopedUpdatingOtherPasswordFields auto_reset_update_confirmation_password(
+          this);
       // Mirror edits to any confirmation password fields.
       CopyElementValueToOtherInputElements(
           element, current_generation_item_->password_elements_);
@@ -688,7 +711,7 @@ bool PasswordGenerationAgent::TextDidChangeInTextField(
 
     // Notify `password_agent_` of text changes to the other confirmation
     // password fields.
-    for (const auto& password_element :
+    for (const blink::WebInputElement& password_element :
          current_generation_item_->password_elements_) {
       // `PasswordNoLongerGenerated()` and
       // `CopyElementValueToOtherInputElements()` both call
@@ -782,8 +805,8 @@ void PasswordGenerationAgent::PasswordNoLongerGenerated() {
   // Clear all other password fields.
   for (WebInputElement& element :
        current_generation_item_->password_elements_) {
-    base::AutoReset<bool> auto_reset_update_confirmation_password(
-        &current_generation_item_->updating_other_password_fields_, true);
+    ScopedUpdatingOtherPasswordFields auto_reset_update_confirmation_password(
+        this);
     if (current_generation_item_->generation_element_ != element)
       element.SetAutofillValue(blink::WebString());
   }
