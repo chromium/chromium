@@ -64,6 +64,9 @@ constexpr char kObsoletePrivateNetworkChooserDataPref[] =
 constexpr char kGeolocationMigrateExceptionsPref[] =
     "profile.content_settings.exceptions.migrate_geolocation";
 
+constexpr char kObsoleteTpcdHeuristicsGrantsPref[] =
+    "profile.content_settings.exceptions.3pcd_heuristics_grants";
+
 #if !BUILDFLAG(IS_IOS)
 constexpr char kObsoleteTpcdTrialExceptionsPref[] =
     "profile.content_settings.exceptions.3pcd_support";
@@ -122,6 +125,7 @@ void PrefProvider::RegisterProfilePrefs(
   registry->RegisterListPref(
       kObsoleteFederatedIdentityActiveSesssionExceptionsPref);
   registry->RegisterDictionaryPref(kObsoletePrivateNetworkChooserDataPref);
+  registry->RegisterDictionaryPref(kObsoleteTpcdHeuristicsGrantsPref);
 #if !BUILDFLAG(IS_IOS)
   registry->RegisterDictionaryPref(kObsoleteTpcdTrialExceptionsPref);
   registry->RegisterDictionaryPref(kObsoleteTopLevelTpcdTrialExceptionsPref);
@@ -452,6 +456,7 @@ void PrefProvider::DiscardOrMigrateObsoletePreferences() {
       kObsoleteGetDisplayMediaSetAutoSelectAllScreensAllowedForUrlsExceptionsPref);
   prefs_->ClearPref(kObsoleteFederatedIdentityActiveSesssionExceptionsPref);
   prefs_->ClearPref(kObsoletePrivateNetworkChooserDataPref);
+  prefs_->ClearPref(kObsoleteTpcdHeuristicsGrantsPref);
 
 #if !BUILDFLAG(IS_IOS)
   prefs_->ClearPref(kObsoleteTpcdTrialExceptionsPref);

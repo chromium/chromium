@@ -91,8 +91,6 @@ class CookieSettingsBase {
     // Allow by global 3p cookie setting setting (e.g. Enterprise Policy:
     // BlockThirdPartyCookies, UX).
     kAllowByGlobalSetting = 2,
-    // (DEPRECATED) Allow by 3PCD metadata grants content settings. This was
-    // replaced by the `kAllowBy3PCDMetadata.+` enums below.
     // kAllowBy3PCDMetadata = 3,
     // kAllowBy3PCD = 4,  // Deprecated
     // kAllowBy3PCDHeuristics = 5,  // Deprecated
@@ -103,33 +101,16 @@ class CookieSettingsBase {
     // Allow by Enterprise Policy (SettingSource::kPolicy):
     // CookiesAllowedForUrls.
     kAllowByEnterprisePolicyCookieAllowedForUrls = 10,
-    // Same as kAllowBy3PCDMetadata but for
-    // mojom::TpcdMetadataRuleSource::SOURCE_UNSPECIFIED rules.
-    kAllowBy3PCDMetadataSourceUnspecified = 11,
-    // Same as kAllowBy3PCDMetadata but for
-    // mojom::TpcdMetadataRuleSource::SOURCE_TEST rules.
-    kAllowBy3PCDMetadataSourceTest = 12,
-    // Same as kAllowBy3PCDMetadata but for
-    // mojom::TpcdMetadataRuleSource::SOURCE_1P_DT rules.
-    kAllowBy3PCDMetadataSource1pDt = 13,
-    // Same as kAllowBy3PCDMetadata but for
-    // mojom::TpcdMetadataRuleSource::SOURCE_3P_DT rules.
-    kAllowBy3PCDMetadataSource3pDt = 14,
-    // Same as kAllowBy3PCDMetadata but for
-    // mojom::TpcdMetadataRuleSource::SOURCE_DOGFOOD rules.
-    kAllowBy3PCDMetadataSourceDogFood = 15,
-    // Same as kAllowBy3PCDMetadata but for
-    // mojom::TpcdMetadataRuleSource::SOURCE_CRITICAL_SECTOR rules.
-    kAllowBy3PCDMetadataSourceCriticalSector = 16,
-    // Same as kAllowBy3PCDMetadata but for
-    // mojom::TpcdMetadataRuleSource::SOURCE_CUJ rules.
-    kAllowBy3PCDMetadataSourceCuj = 17,
-    // Same as kAllowBy3PCDMetadata but for
-    // mojom::TpcdMetadataRuleSource::SOURCE_GOV_EDU_TLD rules.
-    kAllowBy3PCDMetadataSourceGovEduTld = 18,
+    // kAllowBy3PCDMetadataSourceUnspecified = 11,  // Deprecated
+    // kAllowBy3PCDMetadataSourceTest = 12,  // Deprecated
+    // kAllowBy3PCDMetadataSource1pDt = 13,  // Deprecated
+    // kAllowBy3PCDMetadataSource3pDt = 14,  // Deprecated
+    // kAllowBy3PCDMetadataSourceDogFood = 15,  // Deprecated
+    // kAllowBy3PCDMetadataSourceCriticalSector = 16,  // Deprecated
+    // kAllowBy3PCDMetadataSourceCuj = 17,  // Deprecated
+    // kAllowBy3PCDMetadataSourceGovEduTld = 18,  // Deprecated
     // Allowed by scheme.
     kAllowByScheme = 19,
-    // Allowed by tracking protection exception.
     // kAllowByTrackingProtectionException = 20,  // Deprecated
     // Allowed by sandbox 'allow-same-site-none-cookies' value.
     kAllowBySandboxValue = 21,
@@ -160,37 +141,6 @@ class CookieSettingsBase {
 
     kMaxValue = kTopLevelAndStorageAccess,
   };
-
-  // Returns true if the allow mechanism represents one of the multiple allow
-  // mechanisms derived from the TPCD Mitigations Metadata.
-  static bool IsAnyTpcdMetadataAllowMechanism(
-      const ThirdPartyCookieAllowMechanism& mechanism);
-
-  // Returns true if the allow mechanism corresponds to the 1P (AKA First Party,
-  // Top-level) DT (Deprecation Trial).
-  static bool Is1PDtRelatedAllowMechanism(
-      const ThirdPartyCookieAllowMechanism& mechanism);
-
-  static ThirdPartyCookieAllowMechanism TpcdMetadataSourceToAllowMechanism(
-      const mojom::TpcdMetadataRuleSource& source);
-
-  // MetadataSourceType exposes 3PCD metadata rule sources in UKM. It should
-  // match FirstPartyMetadataSource in tools/metrics/histograms/enums.xml.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class MetadataSourceType {
-    None = 0,
-    FirstPartyDt = 1,
-    ThirdPartyDt = 2,
-    CriticalSector = 3,
-    CriticalSectorTld = 4,
-    Cuj = 5,
-    OtherMetadata = 6,
-    Heuristics = 7,
-  };
-
-  static MetadataSourceType AllowMechanismToMetadataSourceType(
-      const ThirdPartyCookieAllowMechanism& allow_mechanism);
 
   class CookieSettingWithMetadata {
    public:
@@ -253,7 +203,7 @@ class CookieSettingsBase {
   };
 
   // Set of types relevant for CookieSettings.
-  using CookieSettingsTypeSet = base::fixed_flat_set<ContentSettingsType, 7>;
+  using CookieSettingsTypeSet = base::fixed_flat_set<ContentSettingsType, 6>;
 
   // ContentSettings listed in this set will be automatically synced to the
   // CookieSettings instance in the network service.
@@ -427,10 +377,7 @@ class CookieSettingsBase {
     kUndefined = 0,
     // Indicates that third-party cookies are allowed due to the modifiers.
     kAllow = 1,
-    // Indicates that third-party cookies are blocked but may also be unblocked
-    // due to third-party cookie phaseout related mitigations (grace period,
-    // heuristics, etc.)
-    kPhaseout = 2,
+    // kPhaseout = 2,  // Deprecated.
     // Indicates that third-party cookies are blocked and cannot be unblocked
     // due to third-party cookie phaseout related mitigations (grace period,
     // heuristics, etc.)
@@ -455,8 +402,7 @@ class CookieSettingsBase {
   // Returns a content setting for the requested parameters and populates |info|
   // if not null. Implementations might only implement a subset of all
   // ContentSettingsTypes. Currently only COOKIES, STORAGE_ACCESS,
-  // TPCD_METADATA_GRANTS, TPCD_HEURISTICS_GRANTS, TOP_LEVEL_STORAGE_ACCESS, and
-  // FEDERATED_IDENTITY_SHARING are required.
+  // TOP_LEVEL_STORAGE_ACCESS, and FEDERATED_IDENTITY_SHARING are required.
   virtual ContentSetting GetContentSetting(const GURL& primary_url,
                                            const GURL& secondary_url,
                                            ContentSettingsType content_type,

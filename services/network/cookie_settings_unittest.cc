@@ -29,7 +29,6 @@
 #include "net/cookies/static_cookie_policy.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/tpcd/metadata/manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
@@ -485,26 +484,8 @@ TEST_F(CookieSettingsTest,
       /*expected_exclusion_reason=*/net::CookieInclusionStatus::
           ExclusionReason::EXCLUDE_USER_PREFERENCES));
 
-  // Verify that cookie has the phaseout exclusion reason with both required
-  // overrides present.
-  EXPECT_FALSE(check_third_party_accessibility(
-      {net::CookieSettingOverride::kForceDisableThirdPartyCookies,
-       net::CookieSettingOverride::kForceEnableThirdPartyCookieMitigations},
-      /*expected_exclusion_reason=*/net::CookieInclusionStatus::
-          ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT));
-
-  // Force-enable cookie override continues to be suppressed by the
-  // force-disable override.
-  EXPECT_FALSE(check_third_party_accessibility(
-      {net::CookieSettingOverride::kForceDisableThirdPartyCookies,
-       net::CookieSettingOverride::kForceEnableThirdPartyCookieMitigations,
-       net::CookieSettingOverride::kForceEnableThirdPartyCookies},
-      /*expected_exclusion_reason=*/net::CookieInclusionStatus::
-          ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT));
-
   net::CookieSettingOverrides overrides(
-      {net::CookieSettingOverride::kForceDisableThirdPartyCookies,
-       net::CookieSettingOverride::kForceEnableThirdPartyCookieMitigations});
+      {net::CookieSettingOverride::kForceDisableThirdPartyCookies});
   // No override can overrule a site-specific setting.
   settings.set_content_settings(
       ContentSettingsType::COOKIES,
@@ -1835,28 +1816,6 @@ TEST_F(
                         net::HasExactlyExclusionReasonsForTesting(
                             {net::CookieInclusionStatus::ExclusionReason::
                                  EXCLUDE_USER_PREFERENCES}),
-                        _, _, _))));
-  }
-  // Both overrides should be present to yield the phaseout exclusion reason.
-  overrides.Put(
-      net::CookieSettingOverride::kForceEnableThirdPartyCookieMitigations);
-  {
-    net::CookieAccessResultList maybe_included_cookies = {
-        {*MakeCanonicalSameSiteNoneCookie("third_party", kURL), {}}};
-    net::CookieAccessResultList excluded_cookies = {};
-    EXPECT_FALSE(settings.AnnotateAndMoveUserBlockedCookies(
-        GURL(kURL), net::SiteForCookies(), &origin,
-        net::FirstPartySetMetadata(), overrides, maybe_included_cookies,
-        excluded_cookies));
-
-    // Verify that the excluded cookie has the expected reason.
-    EXPECT_THAT(excluded_cookies,
-                UnorderedElementsAre(MatchesCookieWithAccessResult(
-                    net::MatchesCookieWithName("third_party"),
-                    MatchesCookieAccessResult(
-                        net::HasExactlyExclusionReasonsForTesting(
-                            {net::CookieInclusionStatus::ExclusionReason::
-                                 EXCLUDE_THIRD_PARTY_PHASEOUT}),
                         _, _, _))));
   }
 }

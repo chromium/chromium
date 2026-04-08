@@ -2483,9 +2483,9 @@ Called by update_net_error_codes.py.-->
   <int value="104" label="Cookie Controls Metadata"/>
   <int value="105" label="(Obsolete) 3PCD Trial"/>
   <int value="106" label="Auto Picture-in-Picture"/>
-  <int value="107" label="3PCD Metadata Grants"/>
+  <int value="107" label="(Obsolete) 3PCD Metadata Grants"/>
   <int value="108" label="File System Access extended permission"/>
-  <int value="109" label="3PCD Heuristics Grants"/>
+  <int value="109" label="(Obsolete) 3PCD Heuristics Grants"/>
   <int value="110" label="File System Access Restore Permission"/>
   <int value="111" label="Captured Surface Control"/>
   <int value="112" label="Smart Card guard"/>

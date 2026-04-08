@@ -125,9 +125,9 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
     {ContentSettingsType::COOKIE_CONTROLS_METADATA, 104},
     // Removed TPCD_TRIAL in M144.
     {ContentSettingsType::AUTO_PICTURE_IN_PICTURE, 106},
-    {ContentSettingsType::TPCD_METADATA_GRANTS, 107},
+    // Removed TPCD_METADATA_GRANTS in M149.
     {ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION, 108},
-    {ContentSettingsType::TPCD_HEURISTICS_GRANTS, 109},
+    // Removed TPCD_HEURISTICS_GRANTS in M149.
     {ContentSettingsType::FILE_SYSTEM_ACCESS_RESTORE_PERMISSION, 110},
     {ContentSettingsType::CAPTURED_SURFACE_CONTROL, 111},
     {ContentSettingsType::SMART_CARD_GUARD, 112},

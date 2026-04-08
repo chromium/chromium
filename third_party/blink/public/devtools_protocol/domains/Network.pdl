@@ -2377,9 +2377,3 @@ domain Network
     parameters
       # Whether 3pc restriction is enabled.
       boolean enableThirdPartyCookieRestriction
-
-      # Whether 3pc grace period exception should be enabled; false by default.
-      boolean disableThirdPartyCookieMetadata
-
-      # Whether 3pc heuristics exceptions should be enabled; false by default.
-      boolean disableThirdPartyCookieHeuristics

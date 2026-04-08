@@ -69,8 +69,6 @@ void EnableDevtoolsThirdPartyCookieRestriction(
   base::DictValue command_params;
   frame_devtools_client.SendCommandSync("Network.enable");
   command_params.Set("enableThirdPartyCookieRestriction", true);
-  command_params.Set("disableThirdPartyCookieMetadata", false);
-  command_params.Set("disableThirdPartyCookieHeuristics", false);
   frame_devtools_client.SendCommandAsync("Network.setCookieControls",
                                          std::move(command_params));
 }

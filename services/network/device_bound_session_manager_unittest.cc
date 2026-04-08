@@ -158,7 +158,6 @@ class DeviceBoundSessionManagerTest : public ::testing::Test {
                     false,
                     nullptr,
                     false)),
-            nullptr,
             nullptr)),
         manager_(DeviceBoundSessionManager::Create(service_.get(),
                                                    cookie_manager_.get())) {}

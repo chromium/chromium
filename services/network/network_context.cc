@@ -785,8 +785,7 @@ NetworkContext::NetworkContext(
   cookie_manager_ = std::make_unique<CookieManager>(
       url_request_context_, &first_party_sets_access_delegate_,
       std::move(session_cleanup_cookie_store),
-      std::move(params_->cookie_manager_params),
-      network_service_->tpcd_metadata_manager());
+      std::move(params_->cookie_manager_params));
 
   cookie_manager_->AddSettingsWillChangeCallback(
       base::BindRepeating(&NetworkContext::OnCookieManagerSettingsChanged,
@@ -888,8 +887,7 @@ NetworkContext::NetworkContext(
           url_request_context,
           nullptr,
           /*first_party_sets_access_delegate=*/nullptr,
-          /*params=*/nullptr,
-          /*tpcd_metadata_manager=*/nullptr)),
+          /*params=*/nullptr)),
       socket_factory_(
           std::make_unique<SocketFactory>(url_request_context_->net_log(),
                                           url_request_context)),

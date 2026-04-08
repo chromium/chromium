@@ -29,7 +29,6 @@
 #include "net/url_request/url_request_context.h"
 #include "services/network/cookie_access_delegate_impl.h"
 #include "services/network/session_cleanup_cookie_store.h"
-#include "services/network/tpcd/metadata/manager.h"
 #include "url/gurl.h"
 
 using CookieDeletionInfo = net::CookieDeletionInfo;
@@ -59,8 +58,7 @@ CookieManager::CookieManager(
     net::URLRequestContext* url_request_context,
     FirstPartySetsAccessDelegate* const first_party_sets_access_delegate,
     scoped_refptr<SessionCleanupCookieStore> session_cleanup_cookie_store,
-    mojom::CookieManagerParamsPtr params,
-    network::tpcd::metadata::Manager* tpcd_metadata_manager)
+    mojom::CookieManagerParamsPtr params)
     : cookie_store_(url_request_context->cookie_store()),
       session_cleanup_cookie_store_(std::move(session_cleanup_cookie_store)) {
   mojom::CookieAccessDelegateType cookie_access_delegate_type =
@@ -71,7 +69,6 @@ CookieManager::CookieManager(
     // Don't wait for callback, the work happens synchronously.
     AllowFileSchemeCookies(params->allow_file_scheme_cookies,
                            base::DoNothing());
-    cookie_settings_.set_tpcd_metadata_manager(tpcd_metadata_manager);
   }
   cookie_store_->SetCookieAccessDelegate(
       std::make_unique<CookieAccessDelegateImpl>(

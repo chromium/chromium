@@ -2124,8 +2124,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsOverridesThirdPartyCookiesBrowserTest,
   // Apply devtools overrides to enable 3pc restriction.
   base::DictValue command_params;
   command_params.Set("enableThirdPartyCookieRestriction", true);
-  command_params.Set("disableThirdPartyCookieMetadata", false);
-  command_params.Set("disableThirdPartyCookieHeuristics", false);
   SendCommandSync("Network.setCookieControls", std::move(command_params));
 
   NavigateToPageWithFrame(kHostA);

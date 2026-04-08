@@ -985,7 +985,7 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlPolicy) {
                                  mojom::CookieOrLine::Tag::kCookie),
                     net::CookieInclusionStatus::MakeFromReasonsForTesting(
                         {net::CookieInclusionStatus::ExclusionReason::
-                             EXCLUDE_THIRD_PARTY_PHASEOUT}))));
+                             EXCLUDE_USER_PREFERENCES}))));
 
   } else {
     EXPECT_THAT(recorded_activity(),
@@ -1442,7 +1442,7 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicy) {
                     CookieOrLine("A=B", mojom::CookieOrLine::Tag::kCookie),
                     net::HasExactlyExclusionReasonsForTesting(
                         {net::CookieInclusionStatus::ExclusionReason::
-                             EXCLUDE_THIRD_PARTY_PHASEOUT}))));
+                             EXCLUDE_USER_PREFERENCES}))));
   } else {
     EXPECT_THAT(recorded_activity(),
                 ElementsAre(MatchesCookieOp(
@@ -1474,11 +1474,8 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicy) {
                   "https://example.com/", net::SiteForCookies(),
                   CookieOrLine("A2=B2", mojom::CookieOrLine::Tag::kCookie),
                   net::HasExactlyExclusionReasonsForTesting(
-                      {ThirdPartyCookieDisabledByDevtools()
-                           ? net::CookieInclusionStatus::ExclusionReason::
-                                 EXCLUDE_THIRD_PARTY_PHASEOUT
-                           : net::CookieInclusionStatus::ExclusionReason::
-                                 EXCLUDE_USER_PREFERENCES}))));
+                      {net::CookieInclusionStatus::ExclusionReason::
+                           EXCLUDE_USER_PREFERENCES}))));
 
   // Read back, in first-party context
   auto options = mojom::CookieManagerGetOptions::New();
@@ -2218,9 +2215,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(
             net::CookieSettingOverrides(),
             net::CookieSettingOverrides(
-                {net::CookieSettingOverride::kForceDisableThirdPartyCookies,
-                 net::CookieSettingOverride::
-                     kForceEnableThirdPartyCookieMitigations}))),
+                {net::CookieSettingOverride::kForceDisableThirdPartyCookies}))),
     [](const testing::TestParamInfo<
         std::tuple<bool,
                    mojom::RestrictedCookieManagerRole,

@@ -21,17 +21,10 @@ enum class CookieSettingOverride {
   // a matching grant exists) to access third-party cookies. This "opt-in"
   // signal is from script execution, i.e. `document.requestStorageAccess()`.
   kStorageAccessGrantEligible = 1,
-  // Allows TPCD mitigations to be skipped when checking if third party cookies
-  // are allowed, meaning cookies will be blocked despite the presence of any of
-  // these grants/heuristics.
-  kSkipTPCDHeuristicsGrant = 2,
-  kSkipTPCDMetadataGrant = 3,
-  // Corresponds to skipping checks on the TPCD_TRIAL content setting, which
-  // backs 3PC accesses granted via 3PC deprecation trial.
-  kSkipTPCDTrial = 4,
-  // Corresponds to skipping checks on the TOP_LEVEL_TPCD_TRIAL content setting,
-  // which backs 3PC accesses granted via top-level 3PC deprecation trial.
-  kSkipTopLevelTPCDTrial = 5,
+  // kSkipTPCDHeuristicsGrant = 2,  // Deprecated
+  // kSkipTPCDMetadataGrant = 3,  // Deprecated
+  // kSkipTPCDTrial = 4,  // Deprecated
+  // kSkipTopLevelTPCDTrial = 5,  // Deprecated
   // When specified, third party cookies should be forced disabled.
   // Other cookie exceptions like the storage access API could result in
   // third party cookies still being used when this is forced disabled. This
@@ -42,8 +35,7 @@ enum class CookieSettingOverride {
   // stringent requirements, such as the FedCM/SAA integration (which requires
   // the `identity-credentials-get` policy), are not in scope for this variant.
   kStorageAccessGrantEligibleViaHeader = 7,
-  // When present, third-party cookies may be allowed through mitigations.
-  kForceEnableThirdPartyCookieMitigations = 8,
+  // kForceEnableThirdPartyCookieMitigations = 8,  // Deprecated
   // When present, the context is sandboxed in a frame that is same-site
   // with the top-level up its entire ancestor chain. SameSite=None
   // cookies should be included in same-site requests from sandboxed contexts

@@ -1637,8 +1637,6 @@ DispatchResponse NetworkHandler::Disable() {
   extra_headers_.clear();
   ClearAcceptedEncodingsOverride();
   enable_third_party_cookie_restriction_ = false;
-  disable_third_party_cookie_metadata_ = false;
-  disable_third_party_cookie_heuristics_ = false;
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   device_bound_session_receiver_.reset();
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
@@ -4225,16 +4223,6 @@ void NetworkHandler::ApplyCookieControlsOverrides(
     net::CookieSettingOverrides& overrides) {
   if (enable_third_party_cookie_restriction_) {
     overrides.Put(net::CookieSettingOverride::kForceDisableThirdPartyCookies);
-    overrides.Put(
-        net::CookieSettingOverride::kForceEnableThirdPartyCookieMitigations);
-  }
-  // TODO(https://crbug.com/375352611): Handle the case to force enable
-  // third-party cookies.
-  if (disable_third_party_cookie_metadata_) {
-    overrides.Put(net::CookieSettingOverride::kSkipTPCDMetadataGrant);
-  }
-  if (disable_third_party_cookie_heuristics_) {
-    overrides.Put(net::CookieSettingOverride::kSkipTPCDHeuristicsGrant);
   }
 }
 
@@ -4696,14 +4684,9 @@ void NetworkHandler::LoadNetworkResource(
 }
 
 DispatchResponse NetworkHandler::SetCookieControls(
-    bool enable_third_party_cookie_restriction,
-    bool disable_third_party_cookie_metadata,
-    bool disable_third_party_cookie_heuristics) {
+    bool enable_third_party_cookie_restriction) {
   enable_third_party_cookie_restriction_ =
       enable_third_party_cookie_restriction;
-  disable_third_party_cookie_metadata_ = disable_third_party_cookie_metadata;
-  disable_third_party_cookie_heuristics_ =
-      disable_third_party_cookie_heuristics;
 
   return Response::Success();
 }

@@ -306,13 +306,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kCookieDomainRejectNonASCII);
 
 NET_EXPORT BASE_DECLARE_FEATURE(kThirdPartyStoragePartitioning);
 
-// Whether to enable the use of 3PC based on 3PCD metadata grants delivered via
-// component updater.
-NET_EXPORT BASE_DECLARE_FEATURE(kTpcdMetadataGrants);
-
-// Whether to enable staged rollback of the TPCD Metadata Entries.
-NET_EXPORT BASE_DECLARE_FEATURE(kTpcdMetadataStageControl);
-
 // Whether ALPS parsing is on for any type of frame.
 NET_EXPORT BASE_DECLARE_FEATURE(kAlpsParsing);
 

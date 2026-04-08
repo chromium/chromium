@@ -350,8 +350,7 @@ class CookieManagerTest : public testing::Test {
     cookie_service_ = std::make_unique<CookieManager>(
         url_request_context_.get(),
         /*first_party_sets_access_delegate=*/nullptr, std::move(cleanup_store),
-        /*params=*/nullptr,
-        /*tpcd_metadata_manager=*/nullptr);
+        /*params=*/nullptr);
     cookie_service_->AddReceiver(
         cookie_service_remote_.BindNewPipeAndPassReceiver());
     service_wrapper_ = std::make_unique<SynchronousCookieManager>(

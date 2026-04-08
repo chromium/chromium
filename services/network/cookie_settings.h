@@ -39,10 +39,6 @@ class Origin;
 
 namespace network {
 
-namespace tpcd::metadata {
-class Manager;
-}
-
 // Handles cookie access and deletion logic for the network service.
 class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
     : public content_settings::CookieSettingsBase {
@@ -87,10 +83,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
 
   void set_mitigations_enabled_for_3pcd(bool enable) {
     mitigations_enabled_for_3pcd_ = enable;
-  }
-
-  void set_tpcd_metadata_manager(tpcd::metadata::Manager* manager) {
-    tpcd_metadata_manager_ = manager;
   }
 
   // Returns a predicate that takes the domain of a cookie and a bool whether
@@ -242,7 +234,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
 
   EntryIndex content_settings_;
 
-  raw_ptr<tpcd::metadata::Manager> tpcd_metadata_manager_;
 };
 
 }  // namespace network

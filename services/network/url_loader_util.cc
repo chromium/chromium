@@ -56,12 +56,7 @@ namespace {
 // cookies.
 constexpr uint64_t kAllowedDevToolsCookieSettingOverrides =
     1u << static_cast<int>(
-        net::CookieSettingOverride::kForceDisableThirdPartyCookies) |
-    1u << static_cast<int>(
-        net::CookieSettingOverride::kForceEnableThirdPartyCookieMitigations) |
-    1u << static_cast<int>(net::CookieSettingOverride::kSkipTPCDMetadataGrant) |
-    1u << static_cast<int>(
-        net::CookieSettingOverride::kSkipTPCDHeuristicsGrant);
+        net::CookieSettingOverride::kForceDisableThirdPartyCookies);
 
 const char* GetDestinationTypePartString(
     network::mojom::RequestDestination destination) {

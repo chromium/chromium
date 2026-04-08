@@ -42,9 +42,7 @@
   await attachToEmbeddedAndTestCookies(await dp.Target.onceAttachedToTarget(), 'foo');
 
   // Forcing third party cookie restriction. Cookie response should be blank.
-  await dp.Network.setCookieControls({enableThirdPartyCookieRestriction: true,
-                                      disableThirdPartyCookieMetadata: false,
-                                      disableThirdPartyCookieHeuristics: false});
+  await dp.Network.setCookieControls({enableThirdPartyCookieRestriction: true});
 
   // Navigation is required for new overrides to take effect.
   await session.navigate('resources/page-with-iframe.html');

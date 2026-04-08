@@ -1449,17 +1449,11 @@ class DevToolsOverridesThirdPartyCookiesBrowserTest
     return res;
   }
 
-  void SendSetCookieControls(bool enable_third_party_cookie_restriction,
-                             bool disable_third_party_cookie_metadata,
-                             bool disable_third_party_cookie_heuristics) {
+  void SendSetCookieControls(bool enable_third_party_cookie_restriction) {
     base::DictValue command_params;
     web_contents_devtools_client.SendCommandSync("Network.enable");
     command_params.Set("enableThirdPartyCookieRestriction",
                        enable_third_party_cookie_restriction);
-    command_params.Set("disableThirdPartyCookieMetadata",
-                       disable_third_party_cookie_metadata);
-    command_params.Set("disableThirdPartyCookieHeuristics",
-                       disable_third_party_cookie_heuristics);
     web_contents_devtools_client.SendCommandSync("Network.setCookieControls",
                                                  std::move(command_params));
   }
@@ -1476,9 +1470,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsOverridesThirdPartyCookiesBrowserTest,
   EXPECT_EQ(ReadCookiesFromJS(GetFrame()), "cookieAllowed=true");
 
   // Turning on third-party cookie restriction
-  SendSetCookieControls(/*enable_third_party_cookie_restriction=*/true,
-                        /*disable_third_party_cookie_metadata=*/false,
-                        /*disable_third_party_cookie_heuristics=*/false);
+  SendSetCookieControls(/*enable_third_party_cookie_restriction=*/true);
 
   // Refreshing so that RCM is re-created with new controls
   NavigateToPageWith3pIFrame("a.test");
@@ -1515,9 +1507,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsOverridesThirdPartyCookiesBrowserTest,
       net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
 
   // Apply devtools overrides to enable 3pc restriction.
-  SendSetCookieControls(/*enable_third_party_cookie_restriction=*/true,
-                        /*disable_third_party_cookie_metadata=*/false,
-                        /*disable_third_party_cookie_heuristics=*/false);
+  SendSetCookieControls(/*enable_third_party_cookie_restriction=*/true);
 
   // 3pc should be blocked due to devtools overrides.
   EXPECT_THAT(content::ArrangeFramesAndGetContentFromLeaf(
