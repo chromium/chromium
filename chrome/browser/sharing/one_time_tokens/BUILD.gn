@@ -1,0 +1,35 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+source_set("one_time_tokens") {
+  public = [ "one_time_token_sharing_handler.h" ]
+  sources = [ "one_time_token_sharing_handler.cc" ]
+
+  public_deps = [
+    "//base",
+    "//components/sharing_message",
+    "//components/sharing_message/proto",
+  ]
+
+  deps = [
+    "//chrome/browser/autofill",
+    "//components/one_time_tokens/core/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "one_time_token_sharing_handler_unittest.cc" ]
+  deps = [
+    ":one_time_tokens",
+    "//base/test:test_support",
+    "//components/one_time_tokens/core/browser",
+    "//components/sharing_message",
+    "//components/sharing_message/proto",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
