@@ -34,12 +34,17 @@ public class SitePermissionsPageProperties {
     public static final WritableObjectPropertyKey<View.OnClickListener> CLOSE_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
+    /** Click listener for the "Manage this extension" button. */
+    public static final WritableObjectPropertyKey<View.OnClickListener>
+            MANAGE_EXTENSION_CLICK_LISTENER = new WritableObjectPropertyKey<>();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 EXTENSION_ID,
                 EXTENSION_NAME,
                 EXTENSION_ICON,
                 BACK_CLICK_LISTENER,
-                CLOSE_CLICK_LISTENER
+                CLOSE_CLICK_LISTENER,
+                MANAGE_EXTENSION_CLICK_LISTENER
             };
 }

@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -20,6 +21,7 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridg
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes;
 import org.chromium.chrome.browser.ui.extensions.R;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -129,6 +131,14 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
     /** Called when the dismiss extension button is clicked. */
     public void onDismissExtensionClicked(String extensionId) {
         mMenuBridge.onDismissExtensionClicked(extensionId);
+    }
+
+    /** Called when the manage extension button is clicked. */
+    public void onManageThisExtensionClicked(Callback<String> openUrlCallback) {
+        assert getCurrentPage() == ExtensionsMenuProperties.Page.SITE_PERMISSIONS;
+        String extensionId =
+                mSitePermissionsPageModel.get(SitePermissionsPageProperties.EXTENSION_ID);
+        openUrlCallback.onResult(UrlConstants.CHROME_EXTENSIONS_ID_URL + extensionId);
     }
 
     /** Called when the reload page button is clicked. */

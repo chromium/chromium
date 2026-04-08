@@ -133,6 +133,7 @@ public class UrlConstants {
     public static final String CHROME_DINO_URL = "chrome://dino/";
 
     public static final String CHROME_EXTENSIONS_URL = "chrome://extensions/";
+    public static final String CHROME_EXTENSIONS_ID_URL = "chrome://extensions/?id=";
     public static final String CHROME_WEBSTORE_URL = "https://chromewebstore.google.com/";
 
     public static final String LOCALHOST = "localhost";

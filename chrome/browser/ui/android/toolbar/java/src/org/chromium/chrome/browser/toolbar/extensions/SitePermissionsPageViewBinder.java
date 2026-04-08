@@ -31,6 +31,11 @@ public class SitePermissionsPageViewBinder {
         } else if (key == SitePermissionsPageProperties.EXTENSION_ICON) {
             ImageView iconView = view.findViewById(R.id.extensions_menu_extension_icon);
             iconView.setImageBitmap(model.get(SitePermissionsPageProperties.EXTENSION_ICON));
+        } else if (key == SitePermissionsPageProperties.MANAGE_EXTENSION_CLICK_LISTENER) {
+            view.findViewById(R.id.extensions_menu_manage_this_extension)
+                    .setOnClickListener(
+                            model.get(
+                                    SitePermissionsPageProperties.MANAGE_EXTENSION_CLICK_LISTENER));
         } else if (key == SitePermissionsPageProperties.EXTENSION_ID) {
             // TODO(cburg.com/432392216): Implement data pull for site permissions page.
         }

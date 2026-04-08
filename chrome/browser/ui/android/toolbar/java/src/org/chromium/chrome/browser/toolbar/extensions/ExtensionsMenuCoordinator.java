@@ -335,6 +335,13 @@ public class ExtensionsMenuCoordinator
         mSitePermissionsPageModel.set(
                 SitePermissionsPageProperties.CLOSE_CLICK_LISTENER,
                 (view) -> mExtensionsMenuButton.dismiss());
+        mSitePermissionsPageModel.set(
+                SitePermissionsPageProperties.MANAGE_EXTENSION_CLICK_LISTENER,
+                (view) -> {
+                    if (mMediator != null) {
+                        mMediator.onManageThisExtensionClicked(this::openUrlFromMenu);
+                    }
+                });
     }
 
     private static void setUpExtensionsRecyclerView(
