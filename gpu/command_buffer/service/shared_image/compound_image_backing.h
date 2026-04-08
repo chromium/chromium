@@ -192,6 +192,8 @@ class GPU_GLES2_EXPORT CompoundImageBacking
 
   // SharedImageBacking implementation.
   void OnContextLost() override;
+  void SetPurgeable(bool purgeable) override;
+  bool IsPurgeable() const override;
   SharedImageBackingType GetType() const override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
   bool CopyToGpuMemoryBuffer() override;

@@ -706,8 +706,7 @@ bool SharedImageFactory::DestroySharedImage(const Mailbox& mailbox) {
 
 void SharedImageFactory::SetSharedImagePurgeable(const Mailbox& mailbox,
                                                  bool purgeable) {
-  return shared_image_manager_->SetPurgeable(mailbox,
-                                             memory_type_tracker_.get());
+  return shared_image_manager_->SetPurgeable(mailbox, purgeable);
 }
 
 void SharedImageFactory::DestroyAllSharedImages(bool have_context) {

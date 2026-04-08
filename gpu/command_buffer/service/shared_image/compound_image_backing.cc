@@ -1149,6 +1149,28 @@ void CompoundImageBacking::OnContextLost() {
   }
 }
 
+void CompoundImageBacking::SetPurgeable(bool purgeable) {
+  AutoLock auto_lock(this);
+  for (auto& element : elements_) {
+    if (element.backing) {
+      element.backing->SetPurgeable(purgeable);
+    }
+  }
+}
+
+bool CompoundImageBacking::IsPurgeable() const {
+  AutoLock auto_lock(this);
+  for (const auto& element : elements_) {
+    // If any of the elements is purgeable, then return true. The caller may
+    // rely on the return value to e.g. recreate data, so needs to be an OR, nor
+    // an AND.
+    if (element.backing && element.backing->IsPurgeable()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 SharedImageBackingType CompoundImageBacking::GetType() const {
   return SharedImageBackingType::kCompound;
 }
