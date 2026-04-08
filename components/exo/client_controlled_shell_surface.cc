@@ -418,8 +418,10 @@ void ClientControlledShellSurface::SetBounds(int64_t display_id,
 
   SetDisplay(display_id);
 
+  const float scale = GetClientToDpPendingScale();
   const gfx::Rect bounds_dp =
-      gfx::ScaleToRoundedRect(bounds, GetClientToDpPendingScale());
+      gfx::Rect(gfx::ScaleToRoundedPoint(bounds.origin(), scale),
+                gfx::ScaleToRoundedSize(bounds.size(), scale));
   SetGeometry(bounds_dp);
 }
 
