@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/record_replay/content_record_replay_driver.h"
 #include "chrome/browser/record_replay/record_replay_driver.h"
 #include "chrome/browser/record_replay/record_replay_driver_factory.h"
 #include "chrome/browser/record_replay/recording_data_manager.h"
@@ -67,7 +68,8 @@ void ChromeRecordReplayClient::BindRecordReplayDriver(
   if (!driver) {
     return;
   }
-  driver->BindPendingReceiver(std::move(pending_receiver));
+  static_cast<record_replay::ContentRecordReplayDriver*>(driver)
+      ->BindPendingReceiver(std::move(pending_receiver));
 }
 
 record_replay::RecordReplayManager& ChromeRecordReplayClient::GetManager() {

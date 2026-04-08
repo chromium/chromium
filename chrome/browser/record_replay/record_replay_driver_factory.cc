@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/containers/map_util.h"
+#include "chrome/browser/record_replay/content_record_replay_driver.h"
 #include "chrome/browser/record_replay/record_replay_client.h"
 #include "chrome/browser/record_replay/record_replay_driver.h"
 #include "content/public/browser/web_contents.h"
@@ -25,7 +26,7 @@ RecordReplayDriver* RecordReplayDriverFactory::GetOrCreateDriver(
   }
   std::unique_ptr<RecordReplayDriver>& driver = drivers_[rfh->GetFrameToken()];
   if (!driver) {
-    driver = std::make_unique<RecordReplayDriver>(rfh, *client_);
+    driver = std::make_unique<ContentRecordReplayDriver>(rfh, *client_);
   }
   return driver.get();
 }

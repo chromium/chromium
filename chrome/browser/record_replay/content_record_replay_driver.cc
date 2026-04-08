@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/record_replay/record_replay_driver.h"
+#include "chrome/browser/record_replay/content_record_replay_driver.h"
 
 #include "base/functional/callback.h"
 #include "chrome/browser/record_replay/element_id.h"
@@ -15,36 +15,36 @@
 
 namespace record_replay {
 
-RecordReplayDriver::RecordReplayDriver(
+ContentRecordReplayDriver::ContentRecordReplayDriver(
     content::RenderFrameHost* render_frame_host,
     RecordReplayClient& client)
     : client_(client), rfh_(*render_frame_host) {}
 
-RecordReplayDriver::~RecordReplayDriver() = default;
+ContentRecordReplayDriver::~ContentRecordReplayDriver() = default;
 
-void RecordReplayDriver::BindPendingReceiver(
+void ContentRecordReplayDriver::BindPendingReceiver(
     mojo::PendingAssociatedReceiver<mojom::RecordReplayDriver>
         pending_receiver) {
   receiver_.Bind(std::move(pending_receiver));
 }
 
 const mojo::AssociatedRemote<mojom::RecordReplayAgent>&
-RecordReplayDriver::GetAgent() {
+ContentRecordReplayDriver::GetAgent() {
   if (!agent_) {
     rfh_->GetRemoteAssociatedInterfaces()->GetInterface(&agent_);
   }
   return agent_;
 }
 
-bool RecordReplayDriver::IsActive() const {
+bool ContentRecordReplayDriver::IsActive() const {
   return rfh_->IsActive();
 }
 
-const blink::LocalFrameToken& RecordReplayDriver::GetFrameToken() const {
+const blink::LocalFrameToken& ContentRecordReplayDriver::GetFrameToken() const {
   return rfh_->GetFrameToken();
 }
 
-void RecordReplayDriver::StartRecording() {
+void ContentRecordReplayDriver::StartRecording() {
   if (test_autofill_agent_) {
     test_autofill_agent_->StartRecording();
     return;
@@ -52,7 +52,7 @@ void RecordReplayDriver::StartRecording() {
   GetAgent()->StartRecording();
 }
 
-void RecordReplayDriver::StopRecording() {
+void ContentRecordReplayDriver::StopRecording() {
   if (test_autofill_agent_) {
     test_autofill_agent_->StopRecording();
     return;
@@ -60,7 +60,7 @@ void RecordReplayDriver::StopRecording() {
   GetAgent()->StopRecording();
 }
 
-void RecordReplayDriver::GetElementSelector(
+void ContentRecordReplayDriver::GetElementSelector(
     DomNodeId dom_node_id,
     base::OnceCallback<void(Selector)> cb) {
   if (test_autofill_agent_) {
@@ -70,7 +70,7 @@ void RecordReplayDriver::GetElementSelector(
   GetAgent()->GetElementSelector(dom_node_id, std::move(cb));
 }
 
-void RecordReplayDriver::GetMatchingElements(
+void ContentRecordReplayDriver::GetMatchingElements(
     Selector element_selector,
     base::OnceCallback<void(const std::vector<DomNodeId>&)> cb) {
   if (test_autofill_agent_) {
@@ -81,8 +81,8 @@ void RecordReplayDriver::GetMatchingElements(
   GetAgent()->GetMatchingElements(std::move(element_selector), std::move(cb));
 }
 
-void RecordReplayDriver::DoClick(DomNodeId dom_node_id,
-                                 base::OnceCallback<void(bool)> cb) {
+void ContentRecordReplayDriver::DoClick(DomNodeId dom_node_id,
+                                        base::OnceCallback<void(bool)> cb) {
   if (test_autofill_agent_) {
     test_autofill_agent_->DoClick(dom_node_id, std::move(cb));
     return;
@@ -90,9 +90,9 @@ void RecordReplayDriver::DoClick(DomNodeId dom_node_id,
   GetAgent()->DoClick(dom_node_id, std::move(cb));
 }
 
-void RecordReplayDriver::DoPaste(DomNodeId dom_node_id,
-                                 FieldValue text,
-                                 base::OnceCallback<void(bool)> cb) {
+void ContentRecordReplayDriver::DoPaste(DomNodeId dom_node_id,
+                                        FieldValue text,
+                                        base::OnceCallback<void(bool)> cb) {
   if (test_autofill_agent_) {
     test_autofill_agent_->DoPaste(dom_node_id, std::move(text), std::move(cb));
     return;
@@ -100,9 +100,9 @@ void RecordReplayDriver::DoPaste(DomNodeId dom_node_id,
   GetAgent()->DoPaste(dom_node_id, text, std::move(cb));
 }
 
-void RecordReplayDriver::DoSelect(DomNodeId dom_node_id,
-                                  FieldValue value,
-                                  base::OnceCallback<void(bool)> cb) {
+void ContentRecordReplayDriver::DoSelect(DomNodeId dom_node_id,
+                                         FieldValue value,
+                                         base::OnceCallback<void(bool)> cb) {
   if (test_autofill_agent_) {
     test_autofill_agent_->DoSelect(dom_node_id, std::move(value),
                                    std::move(cb));
@@ -111,29 +111,31 @@ void RecordReplayDriver::DoSelect(DomNodeId dom_node_id,
   GetAgent()->DoSelect(dom_node_id, value, std::move(cb));
 }
 
-void RecordReplayDriver::OnClick(DomNodeId dom_node_id,
-                                 Selector element_selector) {
-  client_->GetManager().OnClick(*this, {GetFrameToken(), dom_node_id},
-                                std::move(element_selector),
-                                /*pass_key=*/{});
+void ContentRecordReplayDriver::set_record_replay_agent_for_test(
+    TestRecordReplayAgent* agent) {
+  test_autofill_agent_ = agent;
 }
 
-void RecordReplayDriver::OnSelectChanged(DomNodeId dom_node_id,
-                                         Selector element_selector,
-                                         FieldValue value) {
+void ContentRecordReplayDriver::OnClick(DomNodeId dom_node_id,
+                                        Selector element_selector) {
+  client_->GetManager().OnClick(*this, {GetFrameToken(), dom_node_id},
+                                std::move(element_selector), GetPassKey());
+}
+
+void ContentRecordReplayDriver::OnSelectChanged(DomNodeId dom_node_id,
+                                                Selector element_selector,
+                                                FieldValue value) {
   client_->GetManager().OnSelectChanged(*this, {GetFrameToken(), dom_node_id},
                                         std::move(element_selector),
-                                        std::move(value),
-                                        /*pass_key=*/{});
+                                        std::move(value), GetPassKey());
 }
 
-void RecordReplayDriver::OnTextChange(DomNodeId dom_node_id,
-                                      Selector element_selector,
-                                      FieldValue text) {
+void ContentRecordReplayDriver::OnTextChange(DomNodeId dom_node_id,
+                                             Selector element_selector,
+                                             FieldValue text) {
   client_->GetManager().OnTextChange(*this, {GetFrameToken(), dom_node_id},
                                      std::move(element_selector),
-                                     std::move(text),
-                                     /*pass_key=*/{});
+                                     std::move(text), GetPassKey());
 }
 
 }  // namespace record_replay

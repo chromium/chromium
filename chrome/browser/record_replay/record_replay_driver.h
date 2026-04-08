@@ -5,30 +5,18 @@
 #ifndef CHROME_BROWSER_RECORD_REPLAY_RECORD_REPLAY_DRIVER_H_
 #define CHROME_BROWSER_RECORD_REPLAY_RECORD_REPLAY_DRIVER_H_
 
-#include "base/functional/callback_forward.h"
-#include "base/memory/raw_ref.h"
-#include "chrome/common/record_replay/aliases.h"
-#include "chrome/common/record_replay/record_replay.mojom.h"
-#include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
-#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "third_party/blink/public/common/tokens/tokens.h"
+#include <vector>
 
-namespace content {
-class RenderFrameHost;
-}
+#include "base/functional/callback_forward.h"
+#include "base/types/pass_key.h"
+#include "chrome/common/record_replay/aliases.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace record_replay {
 
-class RecordReplayClient;
-
-// The browser-side endpoint for Mojo communication with the renderer
+// The browser-side endpoint for communication with the renderer
 // implementation of the interface (`RecordReplayAgent`).
-//
-// Owned by `RecordReplayDriverFactory` (1 per frame). Tied to a
-// `RenderFrameHost`. Created when a `RenderFrameHost` is created and
-// destroyed when it is deleted. It runs exclusively on the UI thread.
-class RecordReplayDriver : public mojom::RecordReplayDriver {
+class RecordReplayDriver {
  public:
   // TODO(b/476101114): Remove once RecordReplayDriver has a
   // mojom::RecordReplayAgent.
@@ -51,60 +39,39 @@ class RecordReplayDriver : public mojom::RecordReplayDriver {
                           base::OnceCallback<void(bool)> cb) = 0;
   };
 
-  RecordReplayDriver(content::RenderFrameHost* render_frame_host,
-                     RecordReplayClient& client);
-  RecordReplayDriver(const RecordReplayDriver&) = delete;
-  RecordReplayDriver& operator=(const RecordReplayDriver&) = delete;
-  ~RecordReplayDriver() override;
+  virtual ~RecordReplayDriver() = default;
 
-  void BindPendingReceiver(
-      mojo::PendingAssociatedReceiver<mojom::RecordReplayDriver>
-          pending_receiver);
-
-  // Returns true if the driver's RenderFrameHost is active (i.e., neither
+  // Returns true if the driver's frame is active (i.e., neither
   // prerendered nor bfcached).
-  bool IsActive() const;
+  virtual bool IsActive() const = 0;
 
-  // Returns the unique identifier of the driver's RenderFrameHost.
-  const blink::LocalFrameToken& GetFrameToken() const;
+  // Returns the unique identifier of the driver's frame.
+  virtual const blink::LocalFrameToken& GetFrameToken() const = 0;
 
   // See mojom::RecordReplayAgent record_replay.mojom.
-  void StartRecording();
-  void StopRecording();
-  void GetElementSelector(DomNodeId dom_node_id,
-                          base::OnceCallback<void(Selector)> cb);
-  void GetMatchingElements(
+  virtual void StartRecording() = 0;
+  virtual void StopRecording() = 0;
+  virtual void GetElementSelector(DomNodeId dom_node_id,
+                                  base::OnceCallback<void(Selector)> cb) = 0;
+  virtual void GetMatchingElements(
       Selector element_selector,
-      base::OnceCallback<void(const std::vector<DomNodeId>&)> cb);
-  void DoClick(DomNodeId dom_node_id, base::OnceCallback<void(bool)> cb);
-  void DoPaste(DomNodeId dom_node_id,
-               FieldValue text,
-               base::OnceCallback<void(bool)> cb);
-  void DoSelect(DomNodeId dom_node_id,
-                FieldValue value,
-                base::OnceCallback<void(bool)> cb);
+      base::OnceCallback<void(const std::vector<DomNodeId>&)> cb) = 0;
+  virtual void DoClick(DomNodeId dom_node_id,
+                       base::OnceCallback<void(bool)> cb) = 0;
+  virtual void DoPaste(DomNodeId dom_node_id,
+                       FieldValue text,
+                       base::OnceCallback<void(bool)> cb) = 0;
+  virtual void DoSelect(DomNodeId dom_node_id,
+                        FieldValue value,
+                        base::OnceCallback<void(bool)> cb) = 0;
 
-  // mojom::RecordReplayDriver:
-  void OnClick(DomNodeId dom_node_id, Selector element_selector) override;
-  void OnSelectChanged(DomNodeId dom_node_id,
-                       Selector element_selector,
-                       FieldValue text) override;
-  void OnTextChange(DomNodeId dom_node_id,
-                    Selector element_selector,
-                    FieldValue text) override;
+  virtual void set_record_replay_agent_for_test(
+      TestRecordReplayAgent* agent) = 0;
 
-  void set_record_replay_agent_for_test(TestRecordReplayAgent* agent) {
-    test_autofill_agent_ = agent;
+ protected:
+  base::PassKey<RecordReplayDriver> GetPassKey() {
+    return base::PassKey<RecordReplayDriver>();
   }
-
- private:
-  const mojo::AssociatedRemote<mojom::RecordReplayAgent>& GetAgent();
-
-  const raw_ref<RecordReplayClient> client_;
-  const raw_ref<content::RenderFrameHost> rfh_;
-  raw_ptr<TestRecordReplayAgent> test_autofill_agent_ = nullptr;
-  mojo::AssociatedReceiver<mojom::RecordReplayDriver> receiver_{this};
-  mojo::AssociatedRemote<mojom::RecordReplayAgent> agent_;
 };
 
 }  // namespace record_replay
