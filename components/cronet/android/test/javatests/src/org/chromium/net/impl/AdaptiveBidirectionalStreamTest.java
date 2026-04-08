@@ -7,6 +7,9 @@ package org.chromium.net.impl;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assume.assumeTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
@@ -67,8 +70,9 @@ public class AdaptiveBidirectionalStreamTest {
 
     private SocketDroppingPacketHandler mDroppingPacketHandler;
     private CronetAdaptiveRequestContext mAdaptiveRequestContext;
-    private ConnectivityManagerWrapper mConnectivityManagerWrapper;
+    private ConnectivityManagerWrapper mMockConnectivityManagerWrapper;
     private Network mDefaultNetwork;
+    private long mDefaultNetworkHandle;
 
     @ChannelHandler.Sharable
     private static final class SocketDroppingPacketHandler extends ChannelInboundHandlerAdapter {
@@ -94,6 +98,8 @@ public class AdaptiveBidirectionalStreamTest {
 
     @Before
     public void setUp() throws Exception {
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mTestLogger = mLoggerTestRule.mTestLogger;
         mDroppingPacketHandler = new SocketDroppingPacketHandler();
 
@@ -115,33 +121,33 @@ public class AdaptiveBidirectionalStreamTest {
                 .isTrue();
 
         mAdaptiveRequestContext = ((CronetUrlRequestContext) mCronetEngine).mAdaptiveRequestContext;
-        mConnectivityManagerWrapper =
+        mMockConnectivityManagerWrapper = mock(ConnectivityManagerWrapper.class);
+        mAdaptiveRequestContext.setConnectivityManagerWrapperForTest(
+                mMockConnectivityManagerWrapper);
+
+        ConnectivityManagerWrapper realWrapper =
                 new ConnectivityManagerWrapper(mTestRule.getTestFramework().getContext());
-        mDefaultNetwork = mConnectivityManagerWrapper.getDefaultNetwork();
+        Network defaultNetwork = realWrapper.getDefaultNetwork();
+        if (defaultNetwork == null) {
+            mDefaultNetwork = mock(Network.class);
+            mDefaultNetworkHandle = 2L;
+            when(mDefaultNetwork.getNetworkHandle()).thenReturn(mDefaultNetworkHandle);
+        } else {
+            mDefaultNetwork = defaultNetwork;
+            mDefaultNetworkHandle = defaultNetwork.getNetworkHandle();
+        }
 
-        // Setup a ConnectivityManagerWrapper that returns an alternative network.
-        ConnectivityManagerWrapper mockWrapper =
-                new ConnectivityManagerWrapper() {
-                    @Override
-                    public Network getDefaultNetwork() {
-                        // With null default network, the default network actually becomes
-                        // our alternative network.
-                        // This is perfect for the purpose of this test.
-                        return null;
-                    }
-
-                    @Override
-                    public Network[] getAllNetworks(Network ignoreNetwork) {
-                        // Return default as the alternative network.
-                        return new Network[] {mDefaultNetwork};
-                    }
-                };
-        mAdaptiveRequestContext.setConnectivityManagerWrapperForTest(mockWrapper);
+        // Setup the mock to return an alternative network by default.
+        when(mMockConnectivityManagerWrapper.getDefaultNetwork()).thenReturn(null);
+        when(mMockConnectivityManagerWrapper.getAllNetworks(any()))
+                .thenReturn(new Network[] {mDefaultNetwork});
     }
 
     @After
     public void tearDown() throws Exception {
-        assertThat(Http2TestServer.shutdownHttp2TestServer()).isTrue();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            assertThat(Http2TestServer.shutdownHttp2TestServer()).isTrue();
+        }
     }
 
     @Test
@@ -192,7 +198,7 @@ public class AdaptiveBidirectionalStreamTest {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
 
-        // All packets being dropped for all network. We can't save this.
+        // All packets being dropped for all networks. We can't save this.
         mDroppingPacketHandler.mDropAllRemoteAddresses = true;
         String url = Http2TestServer.getEchoStreamUrl();
         TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
@@ -228,28 +234,17 @@ public class AdaptiveBidirectionalStreamTest {
                         value = "/echostream,/echostream2")
             })
     public void adaptiveNetworkPaths() throws Exception {
-        CronetAdaptiveRequestContext adaptiveRequestContext =
-                new CronetAdaptiveRequestContext(mTestRule.getTestFramework().getContext());
-
-        assertThat(adaptiveRequestContext.isAdaptiveNetworkUrl("https://localhost/echostream"))
-                .isTrue();
-        assertThat(adaptiveRequestContext.isAdaptiveNetworkUrl("https://localhost2/echostream2"))
-                .isTrue();
-        assertThat(
-                        adaptiveRequestContext.isAdaptiveNetworkUrl(
-                                "https://localhost2:8080/echostream2"))
-                .isTrue();
-        assertThat(adaptiveRequestContext.isAdaptiveNetworkUrl("https://localhost/otherstream"))
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        assertThat(isAdaptiveNetworkUrl("https://localhost/echostream")).isTrue();
+        assertThat(isAdaptiveNetworkUrl("https://localhost2/echostream2")).isTrue();
+        assertThat(isAdaptiveNetworkUrl("https://localhost2:8080/echostream2")).isTrue();
+        assertThat(isAdaptiveNetworkUrl("https://localhost/otherstream")).isFalse();
+        assertThat(isAdaptiveNetworkUrl("https://localhost2/otherstream")).isFalse();
+        assertThat(isAdaptiveNetworkUrl("https://otherhost/echostream")).isFalse();
+        assertThat(isAdaptiveNetworkUrl("a QA engineer walks into a bar and orders -1 beer"))
                 .isFalse();
-        assertThat(adaptiveRequestContext.isAdaptiveNetworkUrl("https://localhost2/otherstream"))
-                .isFalse();
-        assertThat(adaptiveRequestContext.isAdaptiveNetworkUrl("https://otherhost/echostream"))
-                .isFalse();
-        assertThat(
-                        adaptiveRequestContext.isAdaptiveNetworkUrl(
-                                "a QA engineer walks into a bar and orders -1 beer"))
-                .isFalse();
-        assertThat(adaptiveRequestContext.isAdaptiveNetworkUrl("")).isFalse();
+        assertThat(isAdaptiveNetworkUrl("")).isFalse();
     }
 
     // TODO(b/474048542): Move this to CronetAdaptiveRequestContextTest.
@@ -268,16 +263,12 @@ public class AdaptiveBidirectionalStreamTest {
                         value = "")
             })
     public void adaptiveNetworkPaths_empty() throws Exception {
-        CronetAdaptiveRequestContext adaptiveRequestContext =
-                new CronetAdaptiveRequestContext(mTestRule.getTestFramework().getContext());
-
-        assertThat(adaptiveRequestContext.isAdaptiveNetworkUrl("https://localhost/echostream"))
-                .isFalse();
-        assertThat(adaptiveRequestContext.isAdaptiveNetworkUrl("")).isFalse();
-        assertThat(adaptiveRequestContext.isAdaptiveNetworkUrl("https://localhost/otherstream"))
-                .isFalse();
-        assertThat(adaptiveRequestContext.isAdaptiveNetworkUrl("https://otherhost/echostream"))
-                .isFalse();
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        assertThat(isAdaptiveNetworkUrl("https://localhost/echostream")).isFalse();
+        assertThat(isAdaptiveNetworkUrl("")).isFalse();
+        assertThat(isAdaptiveNetworkUrl("https://localhost/otherstream")).isFalse();
+        assertThat(isAdaptiveNetworkUrl("https://otherhost/echostream")).isFalse();
     }
 
     @Flags(
@@ -315,7 +306,105 @@ public class AdaptiveBidirectionalStreamTest {
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("Test String");
         // Memorize the fallback network.
-        assertThat(mAdaptiveRequestContext.getFallbackNetworkHandle(url))
-                .isEqualTo(mDefaultNetwork.getNetworkHandle());
+        assertThat(getFallbackNetworkHandle(url)).isEqualTo(mDefaultNetworkHandle);
+    }
+
+    @Flags(
+            stringFlags = {
+                @StringFlag(
+                        name = CronetAdaptiveRequestContext.ENABLE_ADAPTIVE_NETWORK_HOSTS_FLAG_NAME,
+                        value = "https://localhost"),
+                @StringFlag(
+                        name = CronetAdaptiveRequestContext.ENABLE_ADAPTIVE_NETWORK_PATHS_FLAG_NAME,
+                        value = "/echostream")
+            })
+    @Test
+    @SmallTest
+    public void postViaBidirectionalStreamWithMemorizedFallback_successOnPrimaryNetwork()
+            throws Exception {
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+
+        String url = Http2TestServer.getEchoStreamUrl();
+
+        // 1. Manually report a fallback used to memorize it.
+        // We use mDefaultNetwork as the memorized fallback.
+        long memorizedNetworkHandle = mDefaultNetworkHandle;
+        mAdaptiveRequestContext.reportFallbackUsed(url, memorizedNetworkHandle);
+
+        // 2. Now start a stream. It should use memorizedNetworkHandle as PRIMARY.
+        // In our setup, the "normal" network handle is DEFAULT_NETWORK_HANDLE
+        // (CronetEngineBase.DEFAULT_NETWORK_HANDLE).
+        // So they are different, and should be swapped.
+        TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
+        callback.addWriteData("Test String".getBytes());
+
+        // Create stream.
+        BidirectionalStream stream =
+                mCronetEngine
+                        .newBidirectionalStreamBuilder(url, callback, callback.getExecutor())
+                        .build();
+        stream.start();
+        callback.blockForDone();
+
+        // The request should succeed on the "primary" (which was the memorized fallback).
+        assertThat(stream.isDone()).isTrue();
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback.mResponseAsString).isEqualTo("Test String");
+
+        // Verify that it is still memorized.
+        assertThat(getFallbackNetworkHandle(url)).isEqualTo(memorizedNetworkHandle);
+    }
+
+    @Flags(
+            stringFlags = {
+                @StringFlag(
+                        name = CronetAdaptiveRequestContext.ENABLE_ADAPTIVE_NETWORK_HOSTS_FLAG_NAME,
+                        value = "https://example.com"),
+                @StringFlag(
+                        name = CronetAdaptiveRequestContext.ENABLE_ADAPTIVE_NETWORK_PATHS_FLAG_NAME,
+                        value = "/path")
+            })
+    @Test
+    @SmallTest
+    public void getFallbackNetworkHandle_networkNotAvailable_returnsNull() throws Exception {
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+
+        String url = "https://example.com/path";
+        long networkHandle = 12345L;
+        Network mockNetwork = mock(Network.class);
+        when(mockNetwork.getNetworkHandle()).thenReturn(networkHandle);
+
+        // Setup the mock to return our network.
+        when(mMockConnectivityManagerWrapper.getAllNetworks(any()))
+                .thenReturn(new Network[] {mockNetwork});
+
+        mAdaptiveRequestContext.reportFallbackUsed(url, networkHandle);
+        assertThat(getFallbackNetworkHandle(url)).isEqualTo(networkHandle);
+
+        // Now mock that the network is NOT in the list of available networks.
+        when(mMockConnectivityManagerWrapper.getAllNetworks(any())).thenReturn(new Network[] {});
+
+        // Even if not expired, it should return null because the network is not available.
+        assertThat(getFallbackNetworkHandle(url)).isNull();
+    }
+
+    private boolean isAdaptiveNetworkUrl(String url) {
+        return mAdaptiveRequestContext.computeStreamNetworkHandles(
+                        url, CronetEngineBase.DEFAULT_NETWORK_HANDLE)
+                != null;
+    }
+
+    private Long getFallbackNetworkHandle(String url) {
+        CronetAdaptiveRequestContext.AdaptiveStreamNetworkHandles handles =
+                mAdaptiveRequestContext.computeStreamNetworkHandles(
+                        url, CronetEngineBase.DEFAULT_NETWORK_HANDLE);
+        if (handles == null) {
+            return null;
+        }
+        return handles.mPrimaryNetworkHandle != CronetEngineBase.DEFAULT_NETWORK_HANDLE
+                ? handles.mPrimaryNetworkHandle
+                : handles.mFallbackNetworkHandle;
     }
 }

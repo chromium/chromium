@@ -510,7 +510,10 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
                 new CronetAdaptiveRequestContext(ApplicationProvider.getApplicationContext());
         adaptiveRequestContext.setConnectivityManagerWrapperForTest(mockConnectivityManagerWrapper);
 
-        assertEquals(null, adaptiveRequestContext.computeAlternativeNetworkHandle());
+        assertEquals(
+                null,
+                adaptiveRequestContext.computeAlternativeNetworkHandle(
+                        adaptiveRequestContext.getAllNetworks()));
     }
 
     @Test
@@ -529,7 +532,10 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
                 new CronetAdaptiveRequestContext(ApplicationProvider.getApplicationContext());
         adaptiveRequestContext.setConnectivityManagerWrapperForTest(mockConnectivityManagerWrapper);
 
-        assertEquals(null, adaptiveRequestContext.computeAlternativeNetworkHandle());
+        assertEquals(
+                null,
+                adaptiveRequestContext.computeAlternativeNetworkHandle(
+                        adaptiveRequestContext.getAllNetworks()));
     }
 
     @Test
@@ -553,7 +559,10 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         adaptiveRequestContext.setConnectivityManagerWrapperForTest(mockConnectivityManagerWrapper);
 
         assertEquals(
-                alternativeHandle, (long) adaptiveRequestContext.computeAlternativeNetworkHandle());
+                alternativeHandle,
+                (long)
+                        adaptiveRequestContext.computeAlternativeNetworkHandle(
+                                adaptiveRequestContext.getAllNetworks()));
     }
 
     @Test
