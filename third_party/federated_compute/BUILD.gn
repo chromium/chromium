@@ -12,6 +12,14 @@ config("federated_compute_include") {
   ]
 }
 
+# FCP migrates from their own aliases to absl. Some declarations are deprecated
+# but still in use. See monitoring.h.
+#
+# Remove this when the migration is complete.
+config("no_deprecated_declarations") {
+  cflags = [ "-Wno-deprecated-declarations" ]
+}
+
 proto_library("confidential_compute_proto") {
   sources = [
     "src/fcp/protos/confidentialcompute/data_upload_config.proto",
@@ -56,7 +64,10 @@ source_set("confidential_compute") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 
-  public_configs = [ ":federated_compute_include" ]
+  public_configs = [
+    ":federated_compute_include",
+    ":no_deprecated_declarations",
+  ]
 
   public_deps = [
     ":confidential_compute_proto",
