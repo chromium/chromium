@@ -15,7 +15,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
 #include "chrome/browser/printing/web_api/web_printing_service_chromeos.h"
-#include "chrome/browser/web_applications/web_app_tab_helper.h"  // nogncheck crbug.com/1125897
+#include "chrome/browser/web_applications/web_app_tab_helper.h"  // nogncheck crbug.com/40147906
 #include "content/public/browser/web_contents.h"
 #endif
 

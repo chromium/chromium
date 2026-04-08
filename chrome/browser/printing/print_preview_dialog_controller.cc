@@ -38,7 +38,7 @@
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/arc/print_spooler/print_session_impl.h"  // nogncheck crbug.com/1125897
+#include "chrome/browser/ash/arc/print_spooler/print_session_impl.h"  // nogncheck crbug.com/40147906
 #endif
 
 using content::NavigationController;

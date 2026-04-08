@@ -41,7 +41,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
-#include "chrome/common/request_header_integrity/request_header_integrity_url_loader_throttle.h"  // nogncheck crbug.com/1125897
+#include "chrome/common/request_header_integrity/request_header_integrity_url_loader_throttle.h"  // nogncheck crbug.com/40147906
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

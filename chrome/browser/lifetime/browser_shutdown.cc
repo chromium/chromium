@@ -62,7 +62,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_RLZ)
-#include "components/rlz/rlz_tracker.h"  // nogncheck crbug.com/1125897
+#include "components/rlz/rlz_tracker.h"  // nogncheck crbug.com/40147906
 #endif
 
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO_PROFILING)

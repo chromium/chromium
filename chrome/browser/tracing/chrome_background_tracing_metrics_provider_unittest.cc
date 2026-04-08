@@ -24,7 +24,7 @@
 #include "third_party/zlib/google/compression_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-// "nogncheck" because of crbug.com/1125897.
+// "nogncheck" because of crbug.com/40147906.
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/metrics/chromeos_system_profile_provider.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"

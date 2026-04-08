@@ -30,7 +30,7 @@
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
 #if !defined(OFFICIAL_BUILD)
-#include "chrome/browser/ui/webui/new_tab_page/foo/foo.mojom.h"  // nogncheck crbug.com/1125897
+#include "chrome/browser/ui/webui/new_tab_page/foo/foo.mojom.h"  // nogncheck crbug.com/40147906
 #endif
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"

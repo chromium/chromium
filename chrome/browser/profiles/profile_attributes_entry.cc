@@ -40,7 +40,7 @@
 #include "ui/native_theme/native_theme.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/themes/theme_properties.h"  // nogncheck crbug.com/1125897
+#include "chrome/browser/themes/theme_properties.h"  // nogncheck crbug.com/40147906
 #endif
 
 namespace {

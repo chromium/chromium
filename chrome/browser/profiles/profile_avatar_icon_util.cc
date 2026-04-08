@@ -69,7 +69,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
-#include "chrome/grit/chrome_unscaled_resources.h"  // nogncheck crbug.com/1125897
+#include "chrome/grit/chrome_unscaled_resources.h"  // nogncheck crbug.com/40147906
 #include "ui/gfx/win/icon_util.h"  // For Iconutil::kLargeIconSize.
 #endif
 

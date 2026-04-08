@@ -20,7 +20,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/strings/escape.h"
 #else
-#include "components/enterprise/common/proto/upload_request_response.to_value.h"  // nogncheck crbug.com/1125897
+#include "components/enterprise/common/proto/upload_request_response.to_value.h"  // nogncheck crbug.com/40147906
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)

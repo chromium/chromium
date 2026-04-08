@@ -31,7 +31,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chromeos/ash/components/tether/pref_names.h"
-#include "components/drive/drive_pref_names.h"  // nogncheck crbug.com/1125897
+#include "components/drive/drive_pref_names.h"  // nogncheck crbug.com/40147906
 #include "components/metrics/demographics/user_demographics.h"
 #include "components/user_manager/user_manager_pref_names.h"
 #include "components/variations/service/google_groups_manager_prefs.h"

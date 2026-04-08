@@ -36,7 +36,7 @@
 #endif
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"  // nogncheck crbug.com/1125897
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"  // nogncheck crbug.com/40147906
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 namespace base {

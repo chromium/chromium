@@ -260,7 +260,7 @@
 #include "chrome/browser/partnerbookmarks/partner_bookmarks_shim.h"
 #include "chrome/browser/readaloud/android/prefs.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
-#include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck crbug.com/1125897
+#include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck crbug.com/40147906
 #include "components/feed/core/common/pref_names.h"        // nogncheck
 #include "components/feed/core/shared_prefs/pref_names.h"  // nogncheck
 #include "components/feed/core/v2/ios_shared_prefs.h"      // nogncheck
@@ -269,7 +269,7 @@
 #include "components/webapps/browser/android/install_prompt_prefs.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/actor/ui/actor_ui_state_manager_prefs.h"
-#include "chrome/browser/desktop_to_mobile_promos/promos_utils.h"  // nogncheck crbug.com/1125897
+#include "chrome/browser/desktop_to_mobile_promos/promos_utils.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/gcm/gcm_product_util.h"
 #include "chrome/browser/hid/hid_policy_allowed_devices.h"
 #include "chrome/browser/intranet_redirect_detector.h"
@@ -510,7 +510,7 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-#include "components/device_signals/core/browser/pref_names.h"  // nogncheck due to crbug.com/1125897
+#include "components/device_signals/core/browser/pref_names.h"  // nogncheck due to crbug.com/40147906
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

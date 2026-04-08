@@ -308,7 +308,7 @@
 
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/rlz/chrome_rlz_tracker_delegate.h"
-#include "components/rlz/rlz_tracker.h"  // nogncheck crbug.com/1125897
+#include "components/rlz/rlz_tracker.h"  // nogncheck crbug.com/40147906
 #endif
 
 #if defined(TOOLKIT_VIEWS)

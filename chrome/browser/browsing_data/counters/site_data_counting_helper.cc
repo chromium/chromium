@@ -31,7 +31,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck crbug.com/1125897
+#include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck crbug.com/40147906
 #endif
 
 using content::BrowserThread;
