@@ -3711,6 +3711,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.MultiWindow.WindowZOrder.DisplaysCount" units="count"
+    expires_after="2027-04-02">
+  <owner>kalutes@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the number of displays being tracked for WindowZOrderTracker.
+    Recorded every 5 minutes.
+  </summary>
+</histogram>
+
+<histogram name="Android.MultiWindow.WindowZOrder.FocusChangedCount"
+    units="count" expires_after="2027-04-02">
+  <owner>kalutes@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the number of window focus change events handled by
+    WindowZOrderTracker over the preceding 5 minutes.
+  </summary>
+</histogram>
+
+<histogram name="Android.MultiWindow.WindowZOrder.TrackedWindowsCount"
+    units="count" expires_after="2027-04-02">
+  <owner>kalutes@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the number of windows tracked by WindowZOrderTracker. Recorded every
+    5 minutes.
+  </summary>
+</histogram>
+
 <histogram name="Android.MultiWindowMode.Active" enum="BooleanEnabled"
     expires_after="never">
 <!-- expires-never: topline metric for monitoring multi-window mode usage on Chrome for Android. -->
