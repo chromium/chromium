@@ -5459,6 +5459,21 @@ interface LanguageDetector
     method destroy
     method detect
     method measureInputUsage
+interface LanguageModel : EventTarget
+    static method availability
+    static method create
+    attribute @@toStringTag
+    getter contextUsage
+    getter contextWindow
+    getter oncontextoverflow
+    method append
+    method clone
+    method constructor
+    method destroy
+    method measureContextUsage
+    method prompt
+    method promptStreaming
+    setter oncontextoverflow
 interface LargestContentfulPaint : PerformanceEntry
     attribute @@toStringTag
     getter element

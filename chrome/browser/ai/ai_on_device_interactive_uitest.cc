@@ -116,13 +116,12 @@ std::vector<std::string> GetAPINames() {
 
 // Returns whether the API is enabled by default.
 bool IsAPIEnabledByDefault(std::string_view name) {
-  return name == "Summarizer";
+  return name == "Summarizer" || name == "LanguageModel";
 }
 
 // Returns whether the API name matches those currently in origin trial.
 bool IsAPIInOT(std::string_view name) {
-  return name == "Rewriter" || name == "Writer" || name == "LanguageModel" ||
-         name == "Proofreader";
+  return name == "Rewriter" || name == "Writer" || name == "Proofreader";
 }
 
 // Injects an Origin Trial `token` into the page.
