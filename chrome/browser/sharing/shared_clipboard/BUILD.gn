@@ -1,0 +1,69 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("shared_clipboard") {
+  public = [ "shared_clipboard_message_handler.h" ]
+  sources = [ "shared_clipboard_message_handler.cc" ]
+  public_deps = [
+    "//base",
+    "//components/sharing_message",
+  ]
+  deps = [
+    "//components/sharing_message/proto",
+    "//ui/base/clipboard",
+    "//ui/base/clipboard:clipboard_types",
+  ]
+
+  if (!is_android) {
+    public += [
+      "remote_copy_message_handler.h",
+      "shared_clipboard_message_handler_desktop.h",
+    ]
+    sources += [
+      "remote_copy_message_handler.cc",
+      "shared_clipboard_message_handler_desktop.cc",
+    ]
+    public_deps += [
+      "//chrome/browser/image_decoder",
+      "//components/sharing_message/shared_clipboard",
+    ]
+    deps += [
+      "//chrome/app:generated_resources",
+      "//chrome/app/vector_icons",
+      "//chrome/browser/notifications",
+      "//components/strings",
+      "//content/public/browser",
+      "//services/network/public/cpp",
+      "//ui/base",
+      "//ui/gfx",
+      "//ui/message_center/public/cpp",
+    ]
+  }
+}
+
+if (!is_android) {
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "remote_copy_message_handler_unittest.cc",
+      "shared_clipboard_message_handler_desktop_unittest.cc",
+      "shared_clipboard_test_base.cc",
+      "shared_clipboard_test_base.h",
+    ]
+    deps = [
+      ":shared_clipboard",
+      "//base",
+      "//chrome/browser/sharing",
+      "//chrome/test:test_support",
+      "//components/sharing_message:test_support",
+      "//components/sharing_message:unit_tests",
+      "//components/sharing_message/proto",
+      "//components/sharing_message/shared_clipboard",
+      "//components/sync_device_info",
+      "//testing/gtest",
+      "//ui/base/clipboard",
+      "//ui/base/clipboard:clipboard_test_support",
+    ]
+  }
+}
