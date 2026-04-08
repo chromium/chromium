@@ -732,7 +732,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-  if (kIPHExtensionsManageFeature.name == feature->name) {
+  if (kIPHExtensionsManageToolbarFeature.name == feature->name) {
     // Allows an IPH to be shown after a user installs an extension to inform
     // them where it can be managed.
     // Constraints:
@@ -745,7 +745,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(EQUAL, 0);
-    config->trigger = EventConfig("manage_extensions_iph_triggered",
+    config->trigger = EventConfig("manage_extensions_toolbar_iph_triggered",
                                   Comparator(LESS_THAN, 1), 360, 360);
     // Only show if the user hasn't already clicked the extension menu button.
     config->used = EventConfig("extensions_menu_button_clicked",

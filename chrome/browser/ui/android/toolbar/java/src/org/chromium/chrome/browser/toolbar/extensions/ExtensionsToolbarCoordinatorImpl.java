@@ -270,7 +270,7 @@ public class ExtensionsToolbarCoordinatorImpl implements ExtensionsToolbarCoordi
         userEducationHelper.requestShowIph(
                 new IphCommandBuilder(
                                 anchorView.getContext().getResources(),
-                                FeatureConstants.IPH_EXTENSIONS_MANAGE_FEATURE,
+                                FeatureConstants.IPH_EXTENSIONS_MANAGE_TOOLBAR_FEATURE,
                                 R.string.extensions_menu_manage_iph,
                                 R.string.extensions_menu_manage_iph)
                         .setAnchorView(anchorView)

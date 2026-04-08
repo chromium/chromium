@@ -70,8 +70,8 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.GLIC_PROMO_ANDROID_FEATURE,
     FeatureConstants.IDENTITY_DISC_FEATURE,
     FeatureConstants.INSTANCE_SWITCHER,
-    FeatureConstants.IPH_EXTENSIONS_MANAGE_FEATURE,
     FeatureConstants.IPH_EXTENSIONS_MANAGE_MAIN_MENU_FEATURE,
+    FeatureConstants.IPH_EXTENSIONS_MANAGE_TOOLBAR_FEATURE,
     FeatureConstants.IPH_MIC_TOOLBAR_FEATURE,
     FeatureConstants.IPH_PDF_PAGE_DOWNLOAD,
     FeatureConstants.IPH_SHARE_SCREENSHOT_FEATURE,
@@ -293,16 +293,16 @@ public @interface FeatureConstants {
     String INSTANCE_SWITCHER = "IPH_InstanceSwitcher";
 
     /**
-     * An IPH feature that shows after the first extension is installed to inform users to manage
-     * their extensions in the toolbar.
-     */
-    String IPH_EXTENSIONS_MANAGE_FEATURE = "IPH_ExtensionsManage";
-
-    /**
      * An IPH feature that shows after the extensions menu is uninstalled to inform users to manage
      * their extensions in the main menu.
      */
     String IPH_EXTENSIONS_MANAGE_MAIN_MENU_FEATURE = "IPH_ExtensionsManageMainMenu";
+
+    /**
+     * An IPH feature that shows after the first extension is installed to inform users to manage
+     * their extensions in the toolbar.
+     */
+    String IPH_EXTENSIONS_MANAGE_TOOLBAR_FEATURE = "IPH_ExtensionsManageToolbar";
 
     /** An IPH feature attached to the mic button in the toolbar prompring user to try voice. */
     String IPH_MIC_TOOLBAR_FEATURE = "IPH_MicToolbar";
