@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <clocale>
 #include <limits>
 #include <string_view>
@@ -1995,14 +1996,14 @@ void TestRunnerBindings::SetBackingScaleFactor(
     return;
   }
 
-  // Limit backing scale factor to something low - 15x. Without
-  // this limit, arbitrarily large values can be used, which can lead to
-  // crashes and other problems. Examples of problems:
+  // Limit backing scale factor to something low - 15x and non-negative.
+  // Without this limit, arbitrarily large or negative values can be used,
+  // which can lead to crashes and other problems. Examples of problems:
   // gfx::Size::GetCheckedArea crashes with a size which overflows int;
   // GLES2DecoderImpl::TexStorageImpl fails with "dimensions out of range"; GL
   // ERROR :GL_OUT_OF_MEMORY. See https://crbug.com/899482 or
   // https://crbug.com/900271
-  double limited_value = fmin(15, value);
+  double limited_value = std::clamp(value, 0.0, 15.0);
 
   frame_->GetLocalRootWebFrameWidget()->SetDeviceScaleFactorForTesting(
       limited_value);
@@ -3421,7 +3422,8 @@ void TestRunner::SetMainWindowAndTestConfiguration(
             TrimWhitespaceASCII(target_scale_factor_for_testing,
                                 base::TRIM_ALL),
             &scale_factor)) {
-      frame->FrameWidget()->SetDeviceScaleFactorForTesting(scale_factor);
+      frame->FrameWidget()->SetDeviceScaleFactorForTesting(
+          std::clamp(scale_factor, 0.0, 15.0));
     }
   }
 
