@@ -94,3 +94,25 @@ TEST_F(OverlayCallbackManagerImplTest, DispatchCallbacks) {
   EXPECT_EQ(2U, first_execution_count);
   EXPECT_EQ(2U, second_execution_count);
 }
+
+// Tests that OverlayCallbackManagerImpl safely handles being destroyed during
+// the execution of a dispatch callback.
+TEST_F(OverlayCallbackManagerImplTest, DispatchCallbacksWithDestruction) {
+  auto manager = std::make_unique<OverlayCallbackManagerImpl>();
+  std::unique_ptr<OverlayCallbackManagerImpl>* manager_ptr = &manager;
+
+  void (^destroy_callback_block)(OverlayResponse* response) =
+      ^(OverlayResponse* response) {
+        manager_ptr->reset();
+      };
+
+  manager->AddDispatchCallback(
+      OverlayDispatchCallback(base::BindRepeating(destroy_callback_block),
+                              FirstResponseInfo::ResponseSupport()));
+
+  // Send a response and make sure nothing crashes.
+  manager->DispatchResponse(
+      OverlayResponse::CreateWithInfo<FirstResponseInfo>());
+
+  EXPECT_FALSE(manager);
+}

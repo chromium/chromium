@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_response.h"
 
@@ -32,6 +33,7 @@ class OverlayCallbackManagerImpl : public OverlayCallbackManager {
   std::unique_ptr<OverlayResponse> completion_response_;
   std::vector<OverlayCompletionCallback> completion_callbacks_;
   std::vector<OverlayDispatchCallback> dispatch_callbacks_;
+  base::WeakPtrFactory<OverlayCallbackManagerImpl> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_MODEL_OVERLAY_CALLBACK_MANAGER_IMPL_H_
