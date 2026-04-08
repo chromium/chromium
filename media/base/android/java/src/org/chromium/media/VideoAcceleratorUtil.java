@@ -679,6 +679,6 @@ class VideoAcceleratorUtil {
     @CalledByNative
     private static boolean isTemporalLayerEncodingEnabled() {
         AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-        return delegate != null && delegate.isTemporalLayerEncodingEnabled();
+        return delegate == null || delegate.isTemporalLayerEncodingEnabled();
     }
 }
