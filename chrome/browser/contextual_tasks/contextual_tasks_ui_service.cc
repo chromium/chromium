@@ -139,7 +139,7 @@ bool IsSignInDomain(const GURL& url) {
 // Returns whether the chrome-native scheme should be used for contextual tasks.
 // On Android we wrap the WebUI and fusebox inside a native page.
 bool ShouldUseChromeNativeScheme() {
-  return BUILDFLAG(IS_ANDROID);
+  return false;
 }
 
 // Returns the host name for the native contextual tasks page only used on
