@@ -412,7 +412,6 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/history_clusters",
     "//chrome/browser/history_embeddings",
     "//chrome/browser/k_anonymity_service",
-    "//chrome/browser/language",
     "//chrome/browser/language_detection",
     "//chrome/browser/loader",
     "//chrome/browser/login_detection",

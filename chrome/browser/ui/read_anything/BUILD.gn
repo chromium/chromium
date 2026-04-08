@@ -73,7 +73,6 @@ source_set("read_anything") {
     "//chrome/browser:browser_process",
     "//chrome/browser/component_updater",
     "//chrome/browser/extensions",
-    "//chrome/browser/language",
     "//chrome/browser/profiles",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/exclusive_access",
