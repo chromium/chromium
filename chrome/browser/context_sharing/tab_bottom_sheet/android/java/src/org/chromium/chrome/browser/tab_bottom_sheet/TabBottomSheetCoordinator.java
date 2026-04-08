@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
@@ -16,6 +18,9 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.widget.TouchEventObserver;
+import org.chromium.components.browser_ui.widget.TouchEventProvider;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -23,6 +28,10 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 /** Coordinator for the tab bottom sheet. */
 @NullMarked
 public class TabBottomSheetCoordinator {
+    // Values are not final and may need tuning.
+    private static final float FLING_VELOCITY_THRESHOLD_DP = 50f;
+    private static final float SCROLL_DISTANCE_THRESHOLD_DP = 100f;
+
     private final ComponentCallbacks mComponentsCallbacks =
             new ComponentCallbacks() {
                 @Override
@@ -36,8 +45,77 @@ public class TabBottomSheetCoordinator {
                 public void onLowMemory() {}
             };
 
+    private final GestureDetector mGestureDetector;
+    private final GestureDetector.SimpleOnGestureListener mGestureListener =
+            new GestureDetector.SimpleOnGestureListener() {
+                @Override
+                public boolean onDown(MotionEvent e) {
+                    return true;
+                }
+
+                @Override
+                public boolean onDoubleTap(MotionEvent e) {
+                    collapseSheet();
+                    return true;
+                }
+
+                @Override
+                public void onLongPress(MotionEvent e) {
+                    collapseSheet();
+                }
+
+                @Override
+                public boolean onScroll(
+                        @Nullable MotionEvent e1,
+                        MotionEvent e2,
+                        float distanceX,
+                        float distanceY) {
+                    if (e1 == null || e2 == null) return false;
+                    float totalDistanceY = e2.getRawY() - e1.getRawY();
+                    if (Math.abs(totalDistanceY)
+                            > ViewUtils.dpToPx(mContext, SCROLL_DISTANCE_THRESHOLD_DP)) {
+                        collapseSheet();
+                    }
+                    return true;
+                }
+
+                @Override
+                public boolean onFling(
+                        @Nullable MotionEvent e1,
+                        MotionEvent e2,
+                        float velocityX,
+                        float velocityY) {
+                    if (Math.abs(velocityY)
+                            > ViewUtils.dpToPx(mContext, FLING_VELOCITY_THRESHOLD_DP)) {
+                        collapseSheet();
+                    }
+                    return true;
+                }
+            };
+
+    private final TouchEventObserver mTouchEventObserver =
+            new TouchEventObserver() {
+                @Override
+                public boolean mayInterceptTouchSequenceInWebContents() {
+                    // Given that the bottom sheet only intercepts for very brief period of time,
+                    // this is safe to return true. The alternatives suggested by the warning on
+                    // this method are infeasible for this use case.
+                    return true;
+                }
+
+                @Override
+                public boolean onInterceptTouchEvent(MotionEvent e) {
+                    // Intercept the touch stream if it's the start of a gesture, or process
+                    // it normally to detect scrolls.
+                    mGestureDetector.onTouchEvent(e);
+                    // Do not claim the sequence by returning true here, just silently observe it.
+                    return false;
+                }
+            };
+
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
+    private final TouchEventProvider mTouchEventProvider;
     private final PropertyModel mModel;
     private final CoBrowseViews mCoBrowseViews;
     private final TabBottomSheetMediator mMediator;
@@ -55,6 +133,8 @@ public class TabBottomSheetCoordinator {
     /**
      * @param context The context to use for creating views.
      * @param bottomSheetController The {@link BottomSheetController} used to show the bottom sheet.
+     * @param touchEventProvider The {@link TouchEventProvider} used to observe touch events on the
+     *     tab behind the bottom sheet.
      * @param coBrowseViews The views to be displayed within the bottom sheet. These should be
      *     obtained via {@link CoBrowseViewFactory}. Note that these views have a single-use
      *     lifecycle; they are destroyed when the bottom sheet is closed and cannot be reused for
@@ -65,11 +145,14 @@ public class TabBottomSheetCoordinator {
             Context context,
             WindowAndroid windowAndroid,
             BottomSheetController bottomSheetController,
+            TouchEventProvider touchEventProvider,
             CoBrowseViews coBrowseViews,
             @Nullable Runnable onClose) {
         mContext = context;
+        mGestureDetector = new GestureDetector(mContext, mGestureListener);
         mWindowAndroid = windowAndroid;
         mBottomSheetController = bottomSheetController;
+        mTouchEventProvider = touchEventProvider;
         mCoBrowseViews = coBrowseViews;
         mOnClose = onClose;
 
@@ -193,6 +276,7 @@ public class TabBottomSheetCoordinator {
         }
 
         mContext.unregisterComponentCallbacks(mComponentsCallbacks);
+        stopObservingCompositorViewInteractions();
 
         if (mSheetContent != null) {
             mSheetContent.destroy();
@@ -218,6 +302,12 @@ public class TabBottomSheetCoordinator {
                         mOnClose.run();
                     }
                 }
+
+                if (state == SheetState.HALF || state == SheetState.FULL) {
+                    observeCompositorViewInteractions();
+                } else {
+                    stopObservingCompositorViewInteractions();
+                }
             }
 
             @Override
@@ -229,6 +319,20 @@ public class TabBottomSheetCoordinator {
                 mMediator.setMaxSheetHeight(containerHeight, isKeyboardShowing());
             }
         };
+    }
+
+    private void observeCompositorViewInteractions() {
+        mTouchEventProvider.addTouchEventObserver(mTouchEventObserver);
+    }
+
+    private void stopObservingCompositorViewInteractions() {
+        mTouchEventProvider.removeTouchEventObserver(mTouchEventObserver);
+    }
+
+    private void collapseSheet() {
+        if (mBottomSheetController.getCurrentSheetContent() == mSheetContent) {
+            mBottomSheetController.collapseSheet(/* animate= */ true);
+        }
     }
 
     private boolean isKeyboardShowing() {
@@ -247,5 +351,9 @@ public class TabBottomSheetCoordinator {
 
     boolean isExpectingLayoutChangeForTesting() {
         return mExpectingLayoutChange;
+    }
+
+    GestureDetector.SimpleOnGestureListener getGestureListenerForTesting() {
+        return mGestureListener;
     }
 }

@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.widget.TouchEventProvider;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Manager class for the tab bottom sheet. */
@@ -80,6 +81,7 @@ public class TabBottomSheetManager implements Destroyable {
     private final WindowAndroid mWindowAndroid;
     private final BottomSheetController mBottomSheetController;
     private final OneshotSupplier<LayoutStateProvider> mLayoutStateProviderOneShotSupplier;
+    private final TouchEventProvider mTouchEventProvider;
     private final CallbackController mCallbackController = new CallbackController();
 
     private boolean mIsSuppressedOnTabSwitcher;
@@ -96,16 +98,20 @@ public class TabBottomSheetManager implements Destroyable {
      * @param tabModelSelector The {@link TabModelSelector} for managing tab models.
      * @param layoutStateProviderOneShotSupplier The {@link LayoutStateProvider} for managing layout
      *     state.
+     * @param touchEventProvider The {@link TouchEventProvider} used to observe touch events on the
+     *     tab behind the bottom sheet.
      */
     public TabBottomSheetManager(
             Context context,
             WindowAndroid windowAndroid,
             BottomSheetController bottomSheetController,
-            OneshotSupplier<LayoutStateProvider> layoutStateProviderOneShotSupplier) {
+            OneshotSupplier<LayoutStateProvider> layoutStateProviderOneShotSupplier,
+            TouchEventProvider touchEventProvider) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mBottomSheetController = bottomSheetController;
         mLayoutStateProviderOneShotSupplier = layoutStateProviderOneShotSupplier;
+        mTouchEventProvider = touchEventProvider;
 
         mLayoutStateProviderOneShotSupplier.onAvailable(
                 mCallbackController.makeCancelable(
@@ -138,6 +144,7 @@ public class TabBottomSheetManager implements Destroyable {
                         mContext,
                         mWindowAndroid,
                         mBottomSheetController,
+                        mTouchEventProvider,
                         coBrowseViews,
                         this::onBottomSheetClosed);
 

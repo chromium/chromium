@@ -11,15 +11,19 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -43,7 +47,10 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.widget.TouchEventObserver;
+import org.chromium.components.browser_ui.widget.TouchEventProvider;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -55,12 +62,14 @@ public class TabBottomSheetCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private BottomSheetController mMockBottomSheetController;
+    @Mock private TouchEventProvider mMockTouchEventProvider;
     @Mock private CoBrowseViews mCoBrowseViews;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private KeyboardVisibilityDelegate mKeyboardDelegate;
     @Captor private ArgumentCaptor<TabBottomSheetContent> mBottomSheetContentArgumentCaptor;
     @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverArgumentCaptor;
     @Captor private ArgumentCaptor<ComponentCallbacks> mComponentCallbacksArgumentCaptor;
+    @Captor private ArgumentCaptor<TouchEventObserver> mTouchEventObserverArgumentCaptor;
 
     private Context mContext;
     private View mView;
@@ -76,7 +85,12 @@ public class TabBottomSheetCoordinatorTest {
 
         mCoordinator =
                 new TabBottomSheetCoordinator(
-                        mContext, mWindowAndroid, mMockBottomSheetController, mCoBrowseViews, null);
+                        mContext,
+                        mWindowAndroid,
+                        mMockBottomSheetController,
+                        mMockTouchEventProvider,
+                        mCoBrowseViews,
+                        null);
 
         mCoordinatorModel = mCoordinator.getModelForTesting();
     }
@@ -95,7 +109,13 @@ public class TabBottomSheetCoordinatorTest {
      */
     private BottomSheetObserver simulateShowSuccessAndGetObserver() {
         when(mMockBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
-                .thenReturn(true);
+                .thenAnswer(
+                        invocation -> {
+                            BottomSheetContent content = invocation.getArgument(0);
+                            when(mMockBottomSheetController.getCurrentSheetContent())
+                                    .thenReturn(content);
+                            return true;
+                        });
         mCoordinator.tryToShowBottomSheet(/* animate= */ true, /* startsExpanded= */ true);
         verify(mMockBottomSheetController)
                 .addObserver(mBottomSheetObserverArgumentCaptor.capture());
@@ -201,6 +221,97 @@ public class TabBottomSheetCoordinatorTest {
 
         verify(mMockBottomSheetController).collapseSheet(true);
         assertFalse(mCoordinator.isExpectingLayoutChangeForTesting());
+    }
+
+    @Test
+    public void testTouchEventObserverRegistration() {
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+
+        // State HALF should add observer
+        observer.onSheetStateChanged(SheetState.HALF, StateChangeReason.NONE);
+        verify(mMockTouchEventProvider)
+                .addTouchEventObserver(mTouchEventObserverArgumentCaptor.capture());
+        TouchEventObserver touchEventObserver = mTouchEventObserverArgumentCaptor.getValue();
+        assertNotNull(touchEventObserver);
+
+        // State HIDDEN should remove observer
+        observer.onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.NONE);
+        verify(mMockTouchEventProvider, atLeastOnce())
+                .removeTouchEventObserver(eq(touchEventObserver));
+    }
+
+    @Test
+    public void testTouchEventObserver_OnInterceptTouchEvent() {
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+
+        // State FULL should add observer
+        observer.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
+        verify(mMockTouchEventProvider)
+                .addTouchEventObserver(mTouchEventObserverArgumentCaptor.capture());
+        TouchEventObserver touchEventObserver = mTouchEventObserverArgumentCaptor.getValue();
+
+        // Passing event should not crash and should return false
+        MotionEvent event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
+        assertFalse(touchEventObserver.onInterceptTouchEvent(event));
+    }
+
+    @Test
+    public void testGestureListener_Scroll() {
+        simulateShowSuccessAndGetObserver();
+
+        GestureDetector.SimpleOnGestureListener listener =
+                mCoordinator.getGestureListenerForTesting();
+
+        MotionEvent e1 = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
+        MotionEvent e2Small =
+                MotionEvent.obtain(
+                        0, 0, MotionEvent.ACTION_MOVE, 0, ViewUtils.dpToPx(mContext, 40), 0);
+        MotionEvent e2Large =
+                MotionEvent.obtain(
+                        0, 0, MotionEvent.ACTION_MOVE, 0, ViewUtils.dpToPx(mContext, 120), 0);
+
+        // Small scroll should not collapse
+        listener.onScroll(e1, e2Small, 0, 40);
+        verify(mMockBottomSheetController, never()).collapseSheet(true);
+
+        // Large scroll should collapse
+        listener.onScroll(e1, e2Large, 0, 120);
+        verify(mMockBottomSheetController).collapseSheet(true);
+    }
+
+    @Test
+    public void testGestureListener_Fling() {
+        simulateShowSuccessAndGetObserver();
+
+        GestureDetector.SimpleOnGestureListener listener =
+                mCoordinator.getGestureListenerForTesting();
+
+        MotionEvent event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
+
+        // Small fling should not collapse
+        listener.onFling(event, event, 0, ViewUtils.dpToPx(mContext, 5));
+        verify(mMockBottomSheetController, never()).collapseSheet(true);
+
+        // Large fling should collapse
+        listener.onFling(event, event, 0, ViewUtils.dpToPx(mContext, 60));
+        verify(mMockBottomSheetController).collapseSheet(true);
+    }
+
+    @Test
+    public void testGestureListener_DoubleTapAndLongPress() {
+        simulateShowSuccessAndGetObserver();
+
+        GestureDetector.SimpleOnGestureListener listener =
+                mCoordinator.getGestureListenerForTesting();
+
+        MotionEvent event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
+
+        listener.onDoubleTap(event);
+        verify(mMockBottomSheetController).collapseSheet(true);
+
+        listener.onLongPress(event);
+        // Verify it was called twice now
+        verify(mMockBottomSheetController, times(2)).collapseSheet(true);
     }
 
     @Test

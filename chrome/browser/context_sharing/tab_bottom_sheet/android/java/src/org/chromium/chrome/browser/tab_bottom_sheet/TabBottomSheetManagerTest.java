@@ -60,13 +60,15 @@ public class TabBottomSheetManagerTest {
                     mWindowAndroid = mActivity.getWindowAndroid();
                     mBottomSheetController =
                             mActivity.getRootUiCoordinatorForTesting().getBottomSheetController();
+                    var compositorViewHolder = mActivity.getCompositorViewHolderSupplier().get();
                     mCoBrowseViews = new CoBrowseViews(mActivity, null, null, null);
                     mManager =
                             new TabBottomSheetManager(
                                     mActivity,
                                     mWindowAndroid,
                                     mBottomSheetController,
-                                    mActivity.getLayoutStateProviderSupplier());
+                                    mActivity.getLayoutStateProviderSupplier(),
+                                    compositorViewHolder);
                 });
     }
 
