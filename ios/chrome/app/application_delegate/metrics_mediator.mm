@@ -429,12 +429,11 @@ BOOL _credentialExtensionWasUsed = NO;
       continue;
     }
 
-    const WebStateList* webStateList =
-        scene.browserProviderInterface.mainBrowserProvider.browser
-            ->GetWebStateList();
+    Browser* const mainbrowser =
+        scene.browserProviderInterface.mainBrowserProvider.browser;
+    const WebStateList* webStateList = mainbrowser->GetWebStateList();
     const WebStateList* inactiveWebStateList =
-        scene.browserProviderInterface.mainBrowserProvider.inactiveBrowser
-            ->GetWebStateList();
+        mainbrowser->GetInactiveBrowser()->GetWebStateList();
     const int webStateListCount = webStateList->count();
     const int inactiveWebStateListCount = inactiveWebStateList->count();
 

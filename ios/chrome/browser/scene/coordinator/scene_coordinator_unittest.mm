@@ -75,7 +75,8 @@ class SceneCoordinatorTest : public PlatformTest {
     OCMStub([profile_state_ profile]).andReturn(profile_.get());
 
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
-    inactive_browser_ = browser_->CreateInactiveBrowser();
+    browser_->CreateInactiveBrowser();
+
     incognito_browser_ = std::make_unique<TestBrowser>(
         profile_->GetOffTheRecordProfile(), scene_state_);
 
@@ -90,8 +91,6 @@ class SceneCoordinatorTest : public PlatformTest {
     id mock_main_provider = OCMProtocolMock(@protocol(BrowserProvider));
     OCMStub([mock_interface mainBrowserProvider]).andReturn(mock_main_provider);
     OCMStub([mock_main_provider browser]).andReturn(browser_.get());
-    OCMStub([mock_main_provider inactiveBrowser])
-        .andReturn(inactive_browser_.get());
 
     id mock_incognito_provider = OCMProtocolMock(@protocol(BrowserProvider));
     OCMStub([mock_interface incognitoBrowserProvider])
@@ -121,7 +120,6 @@ class SceneCoordinatorTest : public PlatformTest {
 
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
-  raw_ptr<Browser> inactive_browser_;
   std::unique_ptr<Browser> incognito_browser_;
   SceneCoordinator* coordinator_;
   SceneState* scene_state_;

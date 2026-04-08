@@ -328,7 +328,7 @@ void OnListFamilyMembersResponse(
 
 - (void)setBrowsersFromProvider:(id<BrowserProviderInterface>)provider {
   _regularBrowser = provider.mainBrowserProvider.browser->AsWeakPtr();
-  _inactiveBrowser = provider.mainBrowserProvider.inactiveBrowser->AsWeakPtr();
+  _inactiveBrowser = _regularBrowser->GetInactiveBrowser()->AsWeakPtr();
   _incognitoBrowser = provider.incognitoBrowserProvider.browser;
 }
 

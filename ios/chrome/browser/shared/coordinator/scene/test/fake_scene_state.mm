@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 
+#import <utility>
+
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider.h"
@@ -19,7 +21,6 @@
 @implementation FakeSceneState {
   // Owning pointer for the browser that backs the interface provider.
   std::unique_ptr<TestBrowser> _browser;
-  std::unique_ptr<TestBrowser> _inactive_browser;
   std::unique_ptr<TestBrowser> _incognito_browser;
   // Used to check that -shutdown is called before -dealloc.
   BOOL _shutdown;
@@ -43,11 +44,7 @@
     base::apple::ObjCCastStrict<StubBrowserProvider>(
         self.browserProviderInterface.mainBrowserProvider)
         .browser = _browser.get();
-
-    _inactive_browser = std::make_unique<TestBrowser>(profile, self);
-    base::apple::ObjCCastStrict<StubBrowserProvider>(
-        self.browserProviderInterface.mainBrowserProvider)
-        .inactiveBrowser = _inactive_browser.get();
+    std::ignore = _browser->CreateInactiveBrowser();
 
     _incognito_browser =
         std::make_unique<TestBrowser>(profile->GetOffTheRecordProfile(), self);
@@ -79,7 +76,6 @@
 
 - (void)shutdown {
   _incognito_browser.reset();
-  _inactive_browser.reset();
   _browser.reset();
   _shutdown = YES;
 }

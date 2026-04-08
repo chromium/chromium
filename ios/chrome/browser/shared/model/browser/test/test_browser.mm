@@ -103,7 +103,7 @@ Browser* TestBrowser::GetActiveBrowser() {
 }
 
 Browser* TestBrowser::GetInactiveBrowser() {
-  return nullptr;
+  return inactive_browser_.get();
 }
 
 Browser* TestBrowser::CreateInactiveBrowser() {

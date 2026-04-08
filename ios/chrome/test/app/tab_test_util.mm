@@ -198,9 +198,9 @@ void CloseAllTabs() {
     CloseAllTabsForBrowser(GetMainBrowser());
   }
   if (GetInactiveTabCount() && GetForegroundActiveScene()) {
-    CloseAllTabsForBrowser(
-        GetForegroundActiveScene()
-            .browserProviderInterface.mainBrowserProvider.inactiveBrowser);
+    CloseAllTabsForBrowser(GetForegroundActiveScene()
+                               .browserProviderInterface.mainBrowserProvider
+                               .browser->GetInactiveBrowser());
   }
 }
 
@@ -218,7 +218,8 @@ NSUInteger GetMainTabCount() {
 
 NSUInteger GetInactiveTabCount() {
   return GetForegroundActiveScene()
-      .browserProviderInterface.mainBrowserProvider.inactiveBrowser
+      .browserProviderInterface.mainBrowserProvider.browser
+      ->GetInactiveBrowser()
       ->GetWebStateList()
       ->count();
 }

@@ -5,7 +5,4 @@
 #import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider.h"
 
 @implementation StubBrowserProvider
-
-@synthesize inactiveBrowser = _inactiveBrowser;
-
 @end
