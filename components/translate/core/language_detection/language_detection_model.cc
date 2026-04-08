@@ -19,6 +19,12 @@
 #include "components/translate/core/language_detection/language_detection_util.h"
 
 namespace translate {
+
+// The minimum number of bytes required for the language detection model to
+// provide a reliable prediction. Predictions for text shorter than this are
+// considered unreliable and are ignored.
+constexpr size_t kMinimumContentLengthBytes = 25;
+
 LanguageDetectionModel::LanguageDetectionModel(
     language_detection::LanguageDetectionModel& shared_tflite_model)
     : tflite_model_(shared_tflite_model) {}
@@ -64,6 +70,15 @@ std::string LanguageDetectionModel::DeterminePageLanguage(
   *predicted_language = language_detection::kUnknownLanguageCode;
   prediction_reliability_score = 0.0;
 
+  std::string utf8_contents = base::UTF16ToUTF8(contents);
+
+  // If the content is shorter than the minimum content length, return early
+  // without attempting detection.
+  if (utf8_contents.length() < kMinimumContentLengthBytes) {
+    return translate::DeterminePageLanguage(
+        code, html_lang, language_detection::kUnknownLanguageCode, false);
+  }
+
   if (!tflite_model_->IsAvailable()) {
     return language_detection::kUnknownLanguageCode;
   }
@@ -76,7 +91,7 @@ std::string LanguageDetectionModel::DeterminePageLanguage(
   bool is_reliable = prediction_reliability_score > kTFLiteReliabilityThreshold;
 
   std::string final_prediction = translate::FilterDetectedLanguage(
-      base::UTF16ToUTF8(contents), prediction.language, is_reliable);
+      utf8_contents, prediction.language, is_reliable);
   *predicted_language = final_prediction;
   *is_prediction_reliable = is_reliable;
   language::ToTranslateLanguageSynonym(&final_prediction);

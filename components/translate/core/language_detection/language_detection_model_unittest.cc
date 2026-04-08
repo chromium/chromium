@@ -111,7 +111,7 @@ TEST_F(LanguageDetectionModelValidTest, UnreliableLanguageDetermination) {
   bool is_prediction_reliable;
   float model_reliability_score = 0.0;
   std::string predicted_language;
-  std::u16string contents = u"e";
+  std::u16string contents = u"enuuhbuigyfyuftftyf67rritgvyyycc";
   std::string language = language_detection_model_->DeterminePageLanguage(
       std::string("ja"), std::string(), contents, &predicted_language,
       &is_prediction_reliable, model_reliability_score);
@@ -121,6 +121,24 @@ TEST_F(LanguageDetectionModelValidTest, UnreliableLanguageDetermination) {
   EXPECT_EQ("ja", language);
   histogram_tester_.ExpectUniqueSample(
       "LanguageDetection.TFLite.DidAttemptDetection", true, 1);
+}
+
+TEST_F(LanguageDetectionModelValidTest, BelowMinimumContentSizeUnreliable) {
+  bool is_prediction_reliable;
+  float model_reliability_score = 0.0;
+  std::string predicted_language;
+  // This string is exactly 24 bytes in UTF-8.
+  std::u16string contents = u"This is a 24-byte string";
+  ASSERT_EQ(24u, base::UTF16ToUTF8(contents).length());
+
+  std::string language = language_detection_model_->DeterminePageLanguage(
+      std::string("es"), std::string(), contents, &predicted_language,
+      &is_prediction_reliable, model_reliability_score);
+
+  EXPECT_FALSE(is_prediction_reliable);
+  EXPECT_EQ(language_detection::kUnknownLanguageCode, predicted_language);
+  // Should fallback to the provided "es" language code.
+  EXPECT_EQ("es", language);
 }
 
 TEST_F(LanguageDetectionModelValidTest, LongTextLanguageDetemination) {
