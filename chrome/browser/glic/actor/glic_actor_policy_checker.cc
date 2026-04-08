@@ -217,16 +217,6 @@ bool IsEnterpriseAccount(Profile& profile, actor::AggregatedJournal& journal) {
 
 // TODO(crbug.com/471065012): This is a consumer check so it should be moved to
 // the overall actuation account access check. Placed here for a quick fix.
-// LINT.IfChange(GlicG1SubscriptionTier)
-enum class GlicG1SubscriptionTier {
-  kFree = 0,
-  kPro = 1,
-  kUltra = 2,
-  kPlus = 3,
-  kMaxValue = kPlus,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicG1SubscriptionTier)
-
 bool AccountHasChromeBenefits(Profile& profile,
                               actor::AggregatedJournal& journal) {
   subscription_eligibility::SubscriptionEligibilityService*
@@ -242,11 +232,6 @@ bool AccountHasChromeBenefits(Profile& profile,
           .Add("subscription_tier", subscription_tier)
           .Add("eligible_tiers", features::kGlicActorEligibleTiers.Get())
           .Build());
-  if (subscription_tier <= 3) {
-    base::UmaHistogramEnumeration(
-        "Glic.Actor.G1SubscriptionTier",
-        static_cast<GlicG1SubscriptionTier>(subscription_tier));
-  }
   return eligible_tiers.contains(subscription_tier);
 }
 

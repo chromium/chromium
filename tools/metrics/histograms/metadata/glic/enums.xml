@@ -270,17 +270,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/fre/glic_fre_controller.h:GlicFreWidgetClosedReason) -->
 
-<!-- LINT.IfChange(GlicG1SubscriptionTier) -->
-
-<enum name="GlicG1SubscriptionTier">
-  <int value="0" label="Free"/>
-  <int value="1" label="Pro"/>
-  <int value="2" label="Ultra"/>
-  <int value="3" label="Plus"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/glic/actor/glic_actor_policy_checker.cc:GlicG1SubscriptionTier) -->
-
 <!-- LINT.IfChange(GlicGetContextFromTabError) -->
 
 <enum name="GlicGetContextFromTabError">
