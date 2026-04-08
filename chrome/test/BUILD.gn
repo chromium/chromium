@@ -461,6 +461,7 @@ static_library("test_support") {
 
     deps += [
       "//chrome/browser/apps/app_service",
+      "//chrome/browser/sync_file_system",
       "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/web_applications",
@@ -2750,6 +2751,7 @@ if (!is_android) {
       "//chrome/browser/support_tool:support_tool_proto",
       "//chrome/browser/sync",
       "//chrome/browser/sync/test/integration:sync_integration_test_support",
+      "//chrome/browser/sync_file_system",
       "//chrome/browser/tab_contents",
       "//chrome/browser/tab_contents:browser_tests",
       "//chrome/browser/tab_group_sync",
@@ -9842,6 +9844,7 @@ test("unit_tests") {
       "//chrome/browser/affiliations",
       "//chrome/browser/policy:policy_migrator",
       "//chrome/browser/supervised_user",
+      "//chrome/browser/sync_file_system",
       "//chrome/browser/ui/global_error:test_support",
       "//chrome/browser/ui/passwords/settings",
       "//chrome/browser/ui/web_applications:unit_tests",

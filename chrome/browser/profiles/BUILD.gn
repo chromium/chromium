@@ -617,6 +617,7 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/apps/platform_apps",
       "//chrome/browser/apps/platform_apps/api",
       "//chrome/browser/extensions",
+      "//chrome/browser/sync_file_system",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/web_applications",
       "//components/omnibox/browser",

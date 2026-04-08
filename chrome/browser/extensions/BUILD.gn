@@ -841,6 +841,7 @@ source_set("extensions") {
 
       # TODO(crbug.com/344921703): Remove circular dependencies.
       "//chrome/browser/sync",
+      "//chrome/browser/sync_file_system",
 
       # TODO(crbug.com/345487716): Remove this circular dependency.
       "//chrome/browser/ui/views/side_panel",
@@ -907,6 +908,7 @@ source_set("extensions") {
       "//chrome/browser/search_engines",
       "//chrome/browser/signin:google_accounts_private_api",
       "//chrome/browser/sync",
+      "//chrome/browser/sync_file_system",
       "//chrome/browser/themes",
       "//chrome/browser/ui/apps",
       "//chrome/browser/ui/browser_window",

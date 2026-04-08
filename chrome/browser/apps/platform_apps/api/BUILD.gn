@@ -43,6 +43,7 @@ source_set("api") {
     "//chrome/browser:browser_process",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync_file_system",
     "//chrome/browser/ui/select_file_policy",
     "//chrome/common",
     "//chrome/common/apps/platform_apps",
