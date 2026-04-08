@@ -134,15 +134,19 @@ std::optional<std::string> GetModelResponsePrefix(
 // on the model thread; it posts results back to the owning sequence.
 class Responder final {
  public:
-  explicit Responder(
+  Responder(
+      SessionImpl* owning_session_impl,
       mojo::PendingRemote<on_device_model::mojom::StreamingResponder> responder,
       base::OnceClosure on_complete,
       SessionAccessor::Ptr session,
-      base::RepeatingClosure on_tool_calls_emitted)
+      base::RepeatingClosure on_tool_calls_emitted,
+      bool add_output_tokens_to_context)
       : responder_(std::move(responder)),
         session_(std::move(session)),
         on_complete_(std::move(on_complete)),
-        on_tool_calls_emitted_(std::move(on_tool_calls_emitted)) {
+        on_tool_calls_emitted_(std::move(on_tool_calls_emitted)),
+        owning_session_impl_(owning_session_impl),
+        add_output_tokens_to_context_(add_output_tokens_to_context) {
     responder_.set_disconnect_handler(
         base::BindOnce(&Responder::Cancel, base::Unretained(this)));
   }
@@ -262,9 +266,19 @@ class Responder final {
       // Ends the `Decode` trace.
       TRACE_EVENT_END("optimization_guide", perfetto_id());
 
-      // Empty text means the output is finished. Delete the session immediately
-      // to free up any resources.
-      session_ = nullptr;
+      // Empty text means the output is finished.
+      if (add_output_tokens_to_context_) {
+        // The context of `session_` contains all the tokens of the original
+        // session it was cloned from, plus the newly-generated output tokens.
+        // "Add" the generated tokens to the `SessionImpl` by swapping out its
+        // original session with ours.
+        owning_session_impl_->ReplaceSession(std::move(session_),
+                                             base::PassKey<Responder>());
+      } else {
+        // Delete the session immediately to free up any resources.
+        session_ = nullptr;
+      }
+
       base::UmaHistogramCounts10000("OnDeviceModel.TokenCount.Output",
                                     num_output_tokens_);
       if (num_output_tokens_ > 1) {
@@ -308,6 +322,9 @@ class Responder final {
   ChromeMLCancelFn cancel_;
   base::OnceClosure on_complete_;
   base::RepeatingClosure on_tool_calls_emitted_;
+  // `raw_ptr` is safe here because `owning_session_impl_` owns `this`.
+  raw_ptr<SessionImpl> owning_session_impl_;
+  bool add_output_tokens_to_context_;
   base::WeakPtrFactory<Responder> weak_ptr_factory_{this};
 };
 
@@ -575,8 +592,8 @@ void SessionImpl::Generate(
   }
 
   responder_ = std::make_unique<Responder>(
-      std::move(response), std::move(on_complete), std::move(cloned),
-      std::move(on_tool_calls_emitted));
+      this, std::move(response), std::move(on_complete), std::move(cloned),
+      std::move(on_tool_calls_emitted), options->add_output_tokens_to_context);
 
   TRACE_EVENT_BEGIN("optimization_guide", "Decode", responder_->perfetto_id());
   TRACE_EVENT_BEGIN("optimization_guide", "TTFT", responder_->perfetto_id());
@@ -641,6 +658,11 @@ std::unique_ptr<on_device_model::BackendSession> SessionImpl::Clone() {
   clone->has_tool_declarations_ = has_tool_declarations_;
   clone->awaiting_tool_responses_ = awaiting_tool_responses_;
   return clone;
+}
+
+void SessionImpl::ReplaceSession(SessionAccessor::Ptr new_session,
+                                 base::PassKey<Responder> /*pass_key*/) {
+  session_ = std::move(new_session);
 }
 
 void SessionImpl::RemoveContext(ContextHolder* context) {

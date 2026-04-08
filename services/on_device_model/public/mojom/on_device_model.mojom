@@ -252,6 +252,12 @@ struct GenerateOptions {
   // only one of the JSON schema or regex constraints should be provided.
   [MinVersion=2]
   ResponseConstraint? constraint;
+
+  // Whether or not the tokens output from a successful call to Generate()
+  // should be appended to the session context. If Generate() fails or is
+  // cancelled, no tokens will be added to the session context.
+  [MinVersion=3]
+  bool add_output_tokens_to_context = false;
 };
 
 // Priorities which determine how requests to a session are scheduled.

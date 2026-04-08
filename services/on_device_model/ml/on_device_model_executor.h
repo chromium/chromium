@@ -102,6 +102,10 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionImpl final
                      response) override;
   void AsrAddAudioChunk(on_device_model::mojom::AudioDataPtr data) override;
 
+  // Replace the underlying SessionAccessor backing this instance.
+  void ReplaceSession(SessionAccessor::Ptr new_session,
+                      base::PassKey<Responder> pass_key);
+
  private:
   void RemoveContext(ContextHolder* context);
 
