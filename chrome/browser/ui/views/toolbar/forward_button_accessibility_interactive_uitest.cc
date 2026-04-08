@@ -50,7 +50,13 @@ class ForwardButtonAccessibilityTest : public ToolbarAccessibilityTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(ForwardButtonAccessibilityTest, LeftClickForward) {
+// TODO(crbug.com/500598170): Enable the test.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_LeftClickForward DISABLED_LeftClickForward
+#else
+#define MAYBE_LeftClickForward LeftClickForward
+#endif
+IN_PROC_BROWSER_TEST_P(ForwardButtonAccessibilityTest, MAYBE_LeftClickForward) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url1 = embedded_test_server()->GetURL("/title1.html");
   GURL url2 = embedded_test_server()->GetURL("/title2.html");
