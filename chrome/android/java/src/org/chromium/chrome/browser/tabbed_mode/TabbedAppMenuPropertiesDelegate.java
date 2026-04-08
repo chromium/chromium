@@ -196,19 +196,19 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             SparseArray<BiFunction<Context, PropertyModel, Integer>> customSizingSuppliers) {
         modelListAdapter.registerType(
                 TabbedAppMenuItemType.UPDATE_ITEM,
-                new LayoutViewBuilder(R.layout.update_menu_item),
+                new LayoutViewBuilder<>(R.layout.update_menu_item),
                 UpdateMenuItemViewBinder::bind);
         customSizingSuppliers.append(
                 TabbedAppMenuItemType.UPDATE_ITEM, UpdateMenuItemViewBinder::getPixelHeight);
 
         modelListAdapter.registerType(
                 TabbedAppMenuItemType.NEW_INCOGNITO,
-                new LayoutViewBuilder(R.layout.custom_view_menu_item),
+                new LayoutViewBuilder<>(R.layout.custom_view_menu_item),
                 IncognitoMenuItemViewBinder::bind);
 
         modelListAdapter.registerType(
                 TabbedAppMenuItemType.ZOOM_ITEM,
-                new LayoutViewBuilder(R.layout.page_zoom_menu_item),
+                new LayoutViewBuilder<>(R.layout.page_zoom_menu_item),
                 PageZoomMenuItemViewBinder::bind);
     }
 

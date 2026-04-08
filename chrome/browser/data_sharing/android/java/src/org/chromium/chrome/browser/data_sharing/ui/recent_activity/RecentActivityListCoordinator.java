@@ -124,7 +124,7 @@ public class RecentActivityListCoordinator {
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(mModelList);
         adapter.registerType(
                 0,
-                new LayoutViewBuilder(R.layout.recent_activity_log_item),
+                new LayoutViewBuilder<>(R.layout.recent_activity_log_item),
                 RecentActivityListViewBinder::bind);
 
         mContentRecyclerView = mContentContainer.findViewById(R.id.recent_activity_recycler_view);

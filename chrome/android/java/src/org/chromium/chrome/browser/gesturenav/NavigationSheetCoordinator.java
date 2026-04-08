@@ -141,7 +141,7 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
                         });
         mModelAdapter.registerType(
                 NAVIGATION_LIST_ITEM_TYPE_ID,
-                new LayoutViewBuilder(R.layout.navigation_popup_item),
+                new LayoutViewBuilder<>(R.layout.navigation_popup_item),
                 NavigationItemViewBinder::bind);
         mOpenSheetRunnable =
                 () -> {

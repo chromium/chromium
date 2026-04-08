@@ -287,17 +287,17 @@ public class AwContextMenuCoordinator {
     private void registerViewTypes(ModelListAdapter adapter) {
         adapter.registerType(
                 ListItemType.HEADER,
-                new LayoutViewBuilder(R.layout.aw_context_menu_header),
+                new LayoutViewBuilder<>(R.layout.aw_context_menu_header),
                 AwContextMenuHeaderViewBinder::bind);
 
         adapter.registerType(
                 ListItemType.DIVIDER,
-                new LayoutViewBuilder(R.layout.aw_context_menu_divider),
+                new LayoutViewBuilder<>(R.layout.aw_context_menu_divider),
                 (model, view, propertyKey) -> {});
 
         adapter.registerType(
                 ListItemType.CONTEXT_MENU_ITEM,
-                new LayoutViewBuilder(R.layout.aw_context_menu_row),
+                new LayoutViewBuilder<>(R.layout.aw_context_menu_row),
                 AwContextMenuItemViewBinder::bind);
     }
 

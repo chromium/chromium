@@ -88,11 +88,11 @@ public class ListMenuUtils {
 
         adapter.registerType(
                 ListItemType.DIVIDER,
-                new LayoutViewBuilder(R.layout.list_section_divider),
+                new LayoutViewBuilder<>(R.layout.list_section_divider),
                 ListSectionDividerViewBinder::bind);
         adapter.registerType(
                 ListItemType.MENU_ITEM,
-                new LayoutViewBuilder(R.layout.list_menu_item),
+                new LayoutViewBuilder<>(R.layout.list_menu_item),
                 ListMenuItemViewBinder::binder);
         adapter.registerType(
                 ListItemType.MENU_ITEM_WITH_CHECKBOX,

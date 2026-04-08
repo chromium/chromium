@@ -49,7 +49,7 @@ public class DiscountsBottomSheetContentCoordinator implements CommerceBottomShe
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(mModelList);
         adapter.registerType(
                 0,
-                new LayoutViewBuilder(R.layout.discount_item_container),
+                new LayoutViewBuilder<>(R.layout.discount_item_container),
                 DiscountsBottomSheetContentViewBinder::bind);
         mDiscountsContentContainer =
                 LayoutInflater.from(context)

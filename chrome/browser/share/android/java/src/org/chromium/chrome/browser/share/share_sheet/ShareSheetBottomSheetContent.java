@@ -216,7 +216,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
                         ? ShareSheetBottomSheetContent::bindShareItem
                         : ShareSheetBottomSheetContent::bind3PShareItem;
         adapter.registerType(
-                SHARE_SHEET_ITEM, new LayoutViewBuilder(R.layout.share_sheet_item), viewBinder);
+                SHARE_SHEET_ITEM, new LayoutViewBuilder<>(R.layout.share_sheet_item), viewBinder);
         view.setAdapter(adapter);
         LinearLayoutManager layoutManager =
                 new LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false);

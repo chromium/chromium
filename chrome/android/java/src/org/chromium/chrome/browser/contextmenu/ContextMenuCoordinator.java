@@ -637,11 +637,11 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
         // Register types / view binders not covered by the default adapter
         adapter.registerType(
                 ContextMenuItemType.HEADER,
-                new LayoutViewBuilder(R.layout.context_menu_header),
+                new LayoutViewBuilder<>(R.layout.context_menu_header),
                 ContextMenuHeaderViewBinder::bind);
         adapter.registerType(
                 ContextMenuItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
-                new LayoutViewBuilder(R.layout.context_menu_row),
+                new LayoutViewBuilder<>(R.layout.context_menu_row),
                 ContextMenuItemViewBinder::bind);
         return adapter;
     }

@@ -70,7 +70,7 @@ public class CommerceBottomSheetContentCoordinator implements CommerceBottomShee
                 };
         adapter.registerType(
                 0,
-                new LayoutViewBuilder(R.layout.commerce_bottom_sheet_content_item_container),
+                new LayoutViewBuilder<>(R.layout.commerce_bottom_sheet_content_item_container),
                 CommerceBottomSheetContentBinder::bind);
 
         mCommerceBottomSheetContentContainer =

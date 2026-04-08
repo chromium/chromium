@@ -166,21 +166,21 @@ public class AccountSelectionCoordinator
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(sheetItems);
         adapter.registerType(
                 AccountSelectionProperties.ITEM_TYPE_ACCOUNT,
-                new LayoutViewBuilder(
+                new LayoutViewBuilder<>(
                         rpMode == RpMode.ACTIVE
                                 ? R.layout.account_selection_active_mode_account_item
                                 : R.layout.account_selection_account_item),
                 AccountSelectionViewBinder::bindAccountView);
         adapter.registerType(
                 AccountSelectionProperties.ITEM_TYPE_LOGIN,
-                new LayoutViewBuilder(
+                new LayoutViewBuilder<>(
                         rpMode == RpMode.ACTIVE
                                 ? R.layout.account_selection_active_mode_add_account_row_item
                                 : R.layout.account_selection_add_account_row_item),
                 AccountSelectionViewBinder::bindLoginButtonView);
         adapter.registerType(
                 AccountSelectionProperties.ITEM_TYPE_SEPARATOR,
-                new LayoutViewBuilder(R.layout.account_selection_login_buttons_start_separator),
+                new LayoutViewBuilder<>(R.layout.account_selection_login_buttons_start_separator),
                 (unusedModel, unusedView, unusedKey) -> {});
         sheetItemListView.setAdapter(adapter);
 

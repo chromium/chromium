@@ -96,7 +96,7 @@ public class TabListEditorMenu
     private void registerItemTypes() {
         mAdapter.registerType(
                 ListItemType.MENU_ITEM,
-                new LayoutViewBuilder(R.layout.list_menu_item),
+                new LayoutViewBuilder<>(R.layout.list_menu_item),
                 TabListEditorMenuAdapter::bindMenuItem);
     }
 

@@ -345,7 +345,7 @@ public class ExtensionsMenuCoordinator
 
         extensionsAdapter.registerType(
                 0,
-                new LayoutViewBuilder(R.layout.extensions_menu_item),
+                new LayoutViewBuilder<>(R.layout.extensions_menu_item),
                 ExtensionsMenuItemViewBinder::bind);
 
         extensionRecyclerView.setAdapter(extensionsAdapter);

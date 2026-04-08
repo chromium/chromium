@@ -108,7 +108,7 @@ public class ModelListAdapterTest {
         mModelListAdapter.registerType(VIEW_TYPE_2, new TestViewBuilder(), new TestViewBinder());
         mModelListAdapter.registerType(
                 VIEW_TYPE_3_INFLATED,
-                new LayoutViewBuilder(R.layout.layout_view_builder_test),
+                new LayoutViewBuilder<>(R.layout.layout_view_builder_test),
                 new TestViewBinder());
     }
 
