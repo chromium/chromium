@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/jobs/manifest_update_job.h"
 
+#include <iterator>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -494,8 +495,11 @@ void ManifestUpdateJob::FinalizeUpdateIfSilentChangesExist() {
         return SkBitmap();
       }
     }
+    // Fail gracefully old icons that are all too small.
     auto old_icon_it = old_bitmaps_to_use.lower_bound(kLogoSizeInDialog);
-    CHECK(old_icon_it != old_bitmaps_to_use.end());
+    if (old_icon_it == old_bitmaps_to_use.end()) {
+      old_icon_it = std::prev(old_icon_it);
+    }
     return old_icon_it->second;
   }();
 
