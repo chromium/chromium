@@ -225,6 +225,14 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::OnVSync(
 void ExternalBeginFrameSourceAndroid::AChoreographerImpl::SetVsyncPeriod(
     int64_t vsync_period_nanos) {
   vsync_period_ = base::Nanoseconds(vsync_period_nanos);
+  TRACE_EVENT_INSTANT(
+      "viz,input.scrolling",
+      "ExternalBeginFrameSourceAndroid::AChoreographerImpl::SetVsyncPeriod",
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* out = event->set_begin_frame_args();
+        out->set_interval_delta_us(vsync_period_.InMicroseconds());
+      });
 }
 
 void ExternalBeginFrameSourceAndroid::AChoreographerImpl::
