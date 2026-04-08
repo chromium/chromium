@@ -41,7 +41,8 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
       const std::string_view domain) const override;
   bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
-      const SiteForCookies& site_for_cookies) const override;
+      const SiteForCookies& site_for_cookies,
+      const url::Origin& top_level_origin) const override;
   bool ShouldTreatUrlAsTrustworthy(const GURL& url) const override;
   std::optional<
       std::pair<FirstPartySetMetadata, FirstPartySetsCacheFilter::MatchInfo>>

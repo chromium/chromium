@@ -91,7 +91,8 @@ class CallbackCookieSettings : public CookieSettingsBase {
 
   bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
-      const net::SiteForCookies& site_for_cookies) const override {
+      const net::SiteForCookies& site_for_cookies,
+      const url::Origin& top_level_origin) const override {
     NOTREACHED();
   }
 

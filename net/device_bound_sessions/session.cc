@@ -340,7 +340,9 @@ base::TimeDelta Session::MinimumBoundCookieLifetime(
   bool force_ignore_site_for_cookies = request.force_ignore_site_for_cookies();
   if (cookie_store->cookie_access_delegate() &&
       cookie_store->cookie_access_delegate()->ShouldIgnoreSameSiteRestrictions(
-          request.url(), request.site_for_cookies())) {
+          request.url(), request.site_for_cookies(),
+          request.isolation_info().top_frame_origin().value_or(
+              url::Origin()))) {
     force_ignore_site_for_cookies = true;
   }
 
@@ -603,7 +605,9 @@ bool Session::CanSetBoundCookie(
   bool force_ignore_site_for_cookies = request.force_ignore_site_for_cookies();
   if (cookie_store->cookie_access_delegate() &&
       cookie_store->cookie_access_delegate()->ShouldIgnoreSameSiteRestrictions(
-          request.url(), request.site_for_cookies())) {
+          request.url(), request.site_for_cookies(),
+          request.isolation_info().top_frame_origin().value_or(
+              url::Origin()))) {
     force_ignore_site_for_cookies = true;
   }
   bool is_main_frame_navigation =

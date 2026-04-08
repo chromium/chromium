@@ -178,10 +178,17 @@ DeleteCookiePredicate CookieSettings::CreateDeleteCookieOnExitPredicate()
 
 bool CookieSettings::ShouldIgnoreSameSiteRestrictions(
     const GURL& url,
-    const net::SiteForCookies& site_for_cookies) const {
-  return secure_origin_cookies_allowed_schemes_.contains(
-             site_for_cookies.scheme()) &&
-         url.SchemeIsCryptographic();
+    const net::SiteForCookies& site_for_cookies,
+    const url::Origin& top_level_origin) const {
+  if (!url.SchemeIsCryptographic()) {
+    return false;
+  }
+  if (secure_origin_cookies_allowed_schemes_.contains(
+          top_level_origin.scheme()) &&
+      !site_for_cookies.IsNull()) {
+    return true;
+  }
+  return secure_origin_cookies_allowed_origins_.contains(top_level_origin);
 }
 
 bool CookieSettings::IsCookieAccessible(
@@ -219,10 +226,17 @@ bool CookieSettings::IsCookieAccessible(
 bool CookieSettings::ShouldAlwaysAllowCookies(
     const GURL& url,
     const GURL& first_party_url) const {
-  return (secure_origin_cookies_allowed_schemes_.contains(
-              first_party_url.scheme()) &&
-          url.SchemeIsCryptographic()) ||
-         (matching_scheme_cookies_allowed_schemes_.contains(url.scheme()) &&
+  if (url.SchemeIsCryptographic()) {
+    if (secure_origin_cookies_allowed_schemes_.contains(
+            first_party_url.scheme())) {
+      return true;
+    }
+    if (secure_origin_cookies_allowed_origins_.contains(
+            url::Origin::Create(first_party_url))) {
+      return true;
+    }
+  }
+  return (matching_scheme_cookies_allowed_schemes_.contains(url.scheme()) &&
           url.SchemeIs(first_party_url.scheme()));
 }
 
@@ -440,6 +454,16 @@ bool CookieSettings::ShouldAlwaysAllowCookiesForTesting(
     const GURL& url,
     const GURL& first_party_url) const {
   return ShouldAlwaysAllowCookies(url, first_party_url);
+}
+
+void CookieSettings::set_secure_origin_cookies_allowed_origins(
+    const std::vector<url::Origin>& secure_origin_cookies_allowed_origins) {
+  secure_origin_cookies_allowed_origins_.clear();
+  for (const auto& origin : secure_origin_cookies_allowed_origins) {
+    if (!origin.opaque()) {
+      secure_origin_cookies_allowed_origins_.insert(origin);
+    }
+  }
 }
 
 }  // namespace network

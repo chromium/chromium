@@ -30,6 +30,7 @@
 
 #include "third_party/blink/public/web/web_security_policy.h"
 
+#include "base/types/pass_key.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -72,6 +73,12 @@ void WebSecurityPolicy::
         const WebString& scheme) {
   SchemeRegistry::RegisterURLSchemeAsFirstPartyWhenTopLevelEmbeddingSecure(
       scheme);
+}
+
+void WebSecurityPolicy::RegisterURLAsFirstPartyWhenTopLevelEmbeddingSecure(
+    const WebURL& url) {
+  SchemeRegistry::RegisterURLAsFirstPartyWhenTopLevelEmbeddingSecure(
+      url, base::PassKey<WebSecurityPolicy>());
 }
 
 void WebSecurityPolicy::RegisterURLSchemeAsAllowingSharedArrayBuffers(

@@ -50,7 +50,8 @@ CookieScopeSemantics TestCookieAccessDelegate::GetScopeSemantics(
 
 bool TestCookieAccessDelegate::ShouldIgnoreSameSiteRestrictions(
     const GURL& url,
-    const SiteForCookies& site_for_cookies) const {
+    const SiteForCookies& site_for_cookies,
+    const url::Origin& top_level_origin) const {
   auto it =
       ignore_samesite_restrictions_schemes_.find(site_for_cookies.scheme());
   if (it == ignore_samesite_restrictions_schemes_.end())

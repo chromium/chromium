@@ -810,7 +810,9 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
       request_->force_ignore_site_for_cookies();
   if (cookie_store->cookie_access_delegate() &&
       cookie_store->cookie_access_delegate()->ShouldIgnoreSameSiteRestrictions(
-          request_->url(), request_->site_for_cookies())) {
+          request_->url(), request_->site_for_cookies(),
+          request_->isolation_info().top_frame_origin().value_or(
+              url::Origin()))) {
     force_ignore_site_for_cookies = true;
   }
   bool is_main_frame_navigation =
@@ -1035,7 +1037,9 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
       request_->force_ignore_site_for_cookies();
   if (cookie_store->cookie_access_delegate() &&
       cookie_store->cookie_access_delegate()->ShouldIgnoreSameSiteRestrictions(
-          request_->url(), request_->site_for_cookies())) {
+          request_->url(), request_->site_for_cookies(),
+          request_->isolation_info().top_frame_origin().value_or(
+              url::Origin()))) {
     force_ignore_site_for_cookies = true;
   }
   bool is_main_frame_navigation =

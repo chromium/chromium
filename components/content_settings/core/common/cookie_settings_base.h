@@ -312,8 +312,8 @@ class CookieSettingsBase {
 
   // Returns whether a cookie should be attached regardless of its SameSite
   // value vs the request context.
-  // This currently returns true if the `site_for_cookies` is a Chrome UI scheme
-  // URL and the `url` is secure.
+  // This currently returns true if the `site_for_cookies` is not null, the
+  // `top_level_origin` is a Chrome UI scheme URL, and the `url` is secure.
   //
   // This bypass refers to all SameSite cookies (unspecified-defaulted-into-Lax,
   // as well as explicitly specified Lax or Strict). This addresses cases where
@@ -330,7 +330,8 @@ class CookieSettingsBase {
   // embedding context.
   virtual bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
-      const net::SiteForCookies& site_for_cookies) const = 0;
+      const net::SiteForCookies& site_for_cookies,
+      const url::Origin& top_level_origin) const = 0;
 
   // Determines whether |setting| is a valid content setting for cookies.
   static bool IsValidSetting(ContentSetting setting);

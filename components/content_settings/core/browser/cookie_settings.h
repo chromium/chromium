@@ -166,7 +166,8 @@ class CookieSettings
   // content_settings::CookieSettingsBase:
   bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
-      const net::SiteForCookies& site_for_cookies) const override;
+      const net::SiteForCookies& site_for_cookies,
+      const url::Origin& top_level_origin) const override;
 
   // Detaches the |CookieSettings| from |PrefService|. This methods needs to be
   // called before destroying the service. Afterwards, only const methods can be

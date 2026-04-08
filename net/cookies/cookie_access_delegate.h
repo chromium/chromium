@@ -19,6 +19,7 @@
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace net {
 
@@ -54,7 +55,8 @@ class NET_EXPORT CookieAccessDelegate {
   // value vs the request context.
   virtual bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
-      const SiteForCookies& site_for_cookies) const = 0;
+      const SiteForCookies& site_for_cookies,
+      const url::Origin& top_level_origin) const = 0;
 
   // Calls `callback` with First-Party Sets metadata about `site` and
   // `top_frame_site`, and cache filter info for `site`. Cache filter info is

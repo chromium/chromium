@@ -383,6 +383,13 @@ void CookieManager::ConfigureCookieSettings(
   out->set_mitigations_enabled_for_3pcd(params.mitigations_enabled_for_3pcd);
   out->set_secure_origin_cookies_allowed_schemes(
       params.secure_origin_cookies_allowed_schemes);
+  std::vector<url::Origin> filtered_origins;
+  for (const auto& origin : params.secure_origin_cookies_allowed_origins) {
+    if (!origin.opaque()) {
+      filtered_origins.push_back(origin);
+    }
+  }
+  out->set_secure_origin_cookies_allowed_origins(filtered_origins);
   out->set_matching_scheme_cookies_allowed_schemes(
       params.matching_scheme_cookies_allowed_schemes);
   out->set_third_party_cookies_allowed_schemes(

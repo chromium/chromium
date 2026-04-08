@@ -199,8 +199,10 @@ bool CookieSettings::HasAnyFrameRequestedStorageAccess(
 
 bool CookieSettings::ShouldIgnoreSameSiteRestrictions(
     const GURL& url,
-    const net::SiteForCookies& site_for_cookies) const {
-  return site_for_cookies.RepresentativeUrl().SchemeIs(kChromeUIScheme) &&
+    const net::SiteForCookies& site_for_cookies,
+    const url::Origin& top_level_origin) const {
+  return !site_for_cookies.IsNull() &&
+         top_level_origin.scheme() == kChromeUIScheme &&
          url.SchemeIsCryptographic();
 }
 

@@ -21,6 +21,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
+#include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -547,6 +548,24 @@ TEST_F(CookieSettingsTest, TestAllowlistedScheme) {
   EXPECT_FALSE(cookie_settings_->IsFullCookieAccessAllowed(
       kExtensionURL, kHttpSiteForCookies, /*top_frame_origin=*/std::nullopt,
       net::CookieSettingOverrides(), /*cookie_partition_key=*/std::nullopt));
+}
+
+TEST_F(CookieSettingsTest, ShouldIgnoreSameSiteRestrictions) {
+  // Case 1: site_for_cookies is null.
+  EXPECT_FALSE(cookie_settings_->ShouldIgnoreSameSiteRestrictions(
+      kHttpsSite, net::SiteForCookies(), url::Origin::Create(kChromeURL)));
+
+  // Case 2: top_level_origin scheme is not kChromeUIScheme.
+  EXPECT_FALSE(cookie_settings_->ShouldIgnoreSameSiteRestrictions(
+      kHttpsSite, kHttpsSiteForCookies, url::Origin::Create(kHttpsSite)));
+
+  // Case 3: url scheme is not cryptographic.
+  EXPECT_FALSE(cookie_settings_->ShouldIgnoreSameSiteRestrictions(
+      kHttpSite, kHttpsSiteForCookies, url::Origin::Create(kChromeURL)));
+
+  // Case 4: All conditions met.
+  EXPECT_TRUE(cookie_settings_->ShouldIgnoreSameSiteRestrictions(
+      kHttpsSite, kHttpsSiteForCookies, url::Origin::Create(kChromeURL)));
 }
 
 TEST_F(CookieSettingsTest, CookiesBlockSingle) {

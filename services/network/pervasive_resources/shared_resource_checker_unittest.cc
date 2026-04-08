@@ -37,7 +37,8 @@ class MockCookieSettings : public content_settings::CookieSettingsBase {
   }
   bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
-      const net::SiteForCookies& site_for_cookies) const override {
+      const net::SiteForCookies& site_for_cookies,
+      const url::Origin& top_level_origin) const override {
     return false;
   }
   bool ShouldAlwaysAllowCookies(const GURL& url,

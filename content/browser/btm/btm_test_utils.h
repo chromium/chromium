@@ -345,7 +345,8 @@ class TpcBlockingBrowserClient : public ContentBrowserClient,
 
   bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
-      const net::SiteForCookies& site_for_cookies) const override;
+      const net::SiteForCookies& site_for_cookies,
+      const url::Origin& top_level_origin) const override;
 
   ContentSetting GetContentSetting(
       const GURL& primary_url,

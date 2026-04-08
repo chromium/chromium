@@ -701,7 +701,8 @@ class InsecureDelegate : public CookieAccessDelegate {
   // value vs the request context.
   bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
-      const SiteForCookies& site_for_cookies) const override {
+      const SiteForCookies& site_for_cookies,
+      const url::Origin& top_level_origin) const override {
     return true;
   }
   [[nodiscard]] std::optional<

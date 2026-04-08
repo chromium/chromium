@@ -60,10 +60,11 @@ net::CookieScopeSemantics CookieAccessDelegateImpl::GetScopeSemantics(
 
 bool CookieAccessDelegateImpl::ShouldIgnoreSameSiteRestrictions(
     const GURL& url,
-    const net::SiteForCookies& site_for_cookies) const {
+    const net::SiteForCookies& site_for_cookies,
+    const url::Origin& top_level_origin) const {
   if (cookie_settings_) {
-    return cookie_settings_->ShouldIgnoreSameSiteRestrictions(url,
-                                                              site_for_cookies);
+    return cookie_settings_->ShouldIgnoreSameSiteRestrictions(
+        url, site_for_cookies, top_level_origin);
   }
   return false;
 }

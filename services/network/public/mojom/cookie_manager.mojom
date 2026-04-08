@@ -11,6 +11,7 @@ import "sandbox/policy/mojom/context.mojom";
 import "services/network/public/mojom/cookie_partition_key.mojom";
 import "services/network/public/mojom/first_party_sets.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
+import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
 // Parameters for constructing a cookie manager.
@@ -31,6 +32,10 @@ struct CookieManagerParams {
   // needs to be aware of the schemes set here in order to work correctly for
   // embedded frames.
   array<string> secure_origin_cookies_allowed_schemes;
+
+  // Origins that unconditionally allow cookies from secure origins.
+  // Note: Opaque origins are not allowed and will be ignored.
+  array<url.mojom.Origin> secure_origin_cookies_allowed_origins;
 
   // Schemes that unconditionally allow cookies from the same scheme.
   array<string> matching_scheme_cookies_allowed_schemes;

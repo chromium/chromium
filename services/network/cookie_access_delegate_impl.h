@@ -55,7 +55,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieAccessDelegateImpl
       const std::string_view domain) const override;
   bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
-      const net::SiteForCookies& site_for_cookies) const override;
+      const net::SiteForCookies& site_for_cookies,
+      const url::Origin& top_level_origin) const override;
   [[nodiscard]] std::optional<
       std::pair<net::FirstPartySetMetadata,
                 net::FirstPartySetsCacheFilter::MatchInfo>>

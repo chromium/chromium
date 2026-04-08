@@ -459,7 +459,8 @@ void TpcBlockingBrowserClient::SetThirdPartyCookieAccess(
 
 bool TpcBlockingBrowserClient::ShouldIgnoreSameSiteRestrictions(
     const GURL& url,
-    const net::SiteForCookies& site_for_cookies) const {
+    const net::SiteForCookies& site_for_cookies,
+    const url::Origin& top_level_origin) const {
   return false;
 }
 

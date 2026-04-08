@@ -25,6 +25,7 @@
 #include "net/cookies/cookie_util.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "services/network/public/cpp/session_cookie_delete_predicate.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 class GURL;
 
@@ -62,6 +63,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
         secure_origin_cookies_allowed_schemes.end());
   }
 
+  // Cannot be an opaque origin. Opaque origins will be ignored.
+  void set_secure_origin_cookies_allowed_origins(
+      const std::vector<url::Origin>& secure_origin_cookies_allowed_origins);
+
   void set_matching_scheme_cookies_allowed_schemes(
       const std::vector<std::string>& matching_scheme_cookies_allowed_schemes) {
     matching_scheme_cookies_allowed_schemes_.clear();
@@ -93,7 +98,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   // content_settings::CookieSettingsBase:
   bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
-      const net::SiteForCookies& site_for_cookies) const override;
+      const net::SiteForCookies& site_for_cookies,
+      const url::Origin& top_level_origin) const override;
 
   // Returns kStateDisallowed iff the given |url| has to be requested over
   // connection that is not tracked by the server. Usually is kStateAllowed,
@@ -222,6 +228,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   bool mitigations_enabled_for_3pcd_ = false;
 
   std::set<std::string, std::less<>> secure_origin_cookies_allowed_schemes_;
+  absl::flat_hash_set<url::Origin> secure_origin_cookies_allowed_origins_;
   std::set<std::string, std::less<>> matching_scheme_cookies_allowed_schemes_;
   std::set<std::string, std::less<>> third_party_cookies_allowed_schemes_;
 

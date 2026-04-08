@@ -68,6 +68,12 @@ class BLINK_EXPORT WebSecurityPolicy {
   static void RegisterURLSchemeAsFirstPartyWhenTopLevelEmbeddingSecure(
       const WebString&);
 
+  // Like RegisterURLSchemeAsFirstPartyWhenTopLevelEmbeddingSecure, but instead
+  // of allowing the exception for an entire scheme, it limits it to the origin
+  // of the specific URL.
+  static void RegisterURLAsFirstPartyWhenTopLevelEmbeddingSecure(
+      const WebURL& url);
+
   // Registers a URL scheme as always allowing access to SharedArrayBuffers.
   // TODO(crbug.com/1184892): Remove once fixed.
   static void RegisterURLSchemeAsAllowingSharedArrayBuffers(const WebString&);

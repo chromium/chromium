@@ -27,6 +27,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEBORIGIN_SCHEME_REGISTRY_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEBORIGIN_SCHEME_REGISTRY_H_
 
+#include "base/types/pass_key.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -35,6 +36,10 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
+class KURL;
+class SecurityOrigin;
+class WebSecurityPolicy;
 
 using URLSchemesSet = HashSet<String>;
 
@@ -114,8 +119,17 @@ class PLATFORM_EXPORT SchemeRegistry {
   // document to be delivered over a secure scheme.
   static void RegisterURLSchemeAsFirstPartyWhenTopLevelEmbeddingSecure(
       const String& scheme);
-  static bool ShouldTreatURLSchemeAsFirstPartyWhenTopLevelEmbeddingSecure(
-      const String& top_level_scheme,
+  // Like RegisterURLSchemeAsFirstPartyWhenTopLevelEmbeddingSecure, but instead
+  // of allowing the exception for an entire scheme, it limits it to the origin
+  // of the specific URL.
+  // TODO(crbug.com/483614998): This origin top-level cookie exemption was
+  // granted to chrome-untrusted://lens. This is temporary and should not be
+  // used by new callers.
+  static void RegisterURLAsFirstPartyWhenTopLevelEmbeddingSecure(
+      const KURL& url,
+      base::PassKey<WebSecurityPolicy>);
+  static bool ShouldTreatURLAsFirstPartyWhenTopLevelEmbeddingSecure(
+      const SecurityOrigin* top_level_origin,
       const String& child_scheme);
 
   // Schemes that can be used in a referrer.

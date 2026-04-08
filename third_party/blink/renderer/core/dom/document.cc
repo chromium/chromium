@@ -7029,11 +7029,10 @@ net::SiteForCookies Document::SiteForCookies() const {
   }
 
   const Frame* current_frame = GetFrame();
-  if (SchemeRegistry::
-          ShouldTreatURLSchemeAsFirstPartyWhenTopLevelEmbeddingSecure(
-              origin->Protocol(), current_frame->GetSecurityContext()
-                                      ->GetSecurityOrigin()
-                                      ->Protocol())) {
+  if (SchemeRegistry::ShouldTreatURLAsFirstPartyWhenTopLevelEmbeddingSecure(
+          origin.get(), current_frame->GetSecurityContext()
+                            ->GetSecurityOrigin()
+                            ->Protocol())) {
     return candidate;
   }
 

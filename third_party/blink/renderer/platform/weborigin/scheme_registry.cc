@@ -30,6 +30,8 @@
 
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/blink.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
@@ -96,6 +98,8 @@ class URLSchemesRegistry final {
   URLSchemesSet fetch_api_schemes;
   URLSchemesSet first_party_when_top_level_schemes;
   URLSchemesSet first_party_when_top_level_with_secure_embedded_schemes;
+  HashSet<scoped_refptr<const SecurityOrigin>>
+      first_party_when_top_level_with_secure_embedded_origins;
   URLSchemesMap<SchemeRegistry::PolicyAreas, PolicyAreasHashTraits>
       content_security_policy_bypassing_schemes;
   URLSchemesSet secure_context_bypassing_schemes;
@@ -320,21 +324,37 @@ void SchemeRegistry::RegisterURLSchemeAsFirstPartyWhenTopLevelEmbeddingSecure(
       .first_party_when_top_level_with_secure_embedded_schemes.insert(scheme);
 }
 
-bool SchemeRegistry::
-    ShouldTreatURLSchemeAsFirstPartyWhenTopLevelEmbeddingSecure(
-        const String& top_level_scheme,
-        const String& child_scheme) {
-  DCHECK_EQ(top_level_scheme, top_level_scheme.ToAsciiLower());
+void SchemeRegistry::RegisterURLAsFirstPartyWhenTopLevelEmbeddingSecure(
+    const KURL& url,
+    base::PassKey<WebSecurityPolicy>) {
+  scoped_refptr<SecurityOrigin> origin = SecurityOrigin::Create(url);
+  if (origin->IsOpaque()) {
+    return;
+  }
+  GetMutableURLSchemesRegistry()
+      .first_party_when_top_level_with_secure_embedded_origins.insert(
+          std::move(origin));
+}
+
+bool SchemeRegistry::ShouldTreatURLAsFirstPartyWhenTopLevelEmbeddingSecure(
+    const SecurityOrigin* top_level_origin,
+    const String& child_scheme) {
   DCHECK_EQ(child_scheme, child_scheme.ToAsciiLower());
   // Matches GURL::SchemeIsCryptographic used by
   // RenderFrameHostImpl::ComputeIsolationInfoInternal
   if (child_scheme != "https" && child_scheme != "wss")
     return false;
-  if (top_level_scheme.empty())
+  if (!top_level_origin || top_level_origin->IsOpaque()) {
     return false;
+  }
+  if (GetURLSchemesRegistry()
+          .first_party_when_top_level_with_secure_embedded_schemes.Contains(
+              top_level_origin->Protocol())) {
+    return true;
+  }
   return GetURLSchemesRegistry()
-      .first_party_when_top_level_with_secure_embedded_schemes.Contains(
-          top_level_scheme);
+      .first_party_when_top_level_with_secure_embedded_origins.Contains(
+          top_level_origin);
 }
 
 void SchemeRegistry::RegisterURLSchemeAsAllowedForReferrer(
