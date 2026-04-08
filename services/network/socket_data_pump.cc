@@ -4,6 +4,7 @@
 
 #include "services/network/socket_data_pump.h"
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 
@@ -20,6 +21,26 @@
 #include "services/network/tls_client_socket.h"
 
 namespace network {
+
+namespace {
+
+// This is similar to MojoToNetIOBuffer, but only keeps the pending_buffer
+// alive for the duration of the write, without assuming that the entire
+// buffer will be written.
+class MojoToNetPendingBufferOwningIOBuffer : public net::WrappedIOBuffer {
+ public:
+  explicit MojoToNetPendingBufferOwningIOBuffer(
+      scoped_refptr<MojoToNetPendingBuffer> pending_buffer)
+      : net::WrappedIOBuffer(*pending_buffer),
+        pending_buffer_(std::move(pending_buffer)) {}
+
+ private:
+  ~MojoToNetPendingBufferOwningIOBuffer() override = default;
+
+  scoped_refptr<MojoToNetPendingBuffer> pending_buffer_;
+};
+
+}  // namespace
 
 SocketDataPump::SocketDataPump(
     net::StreamSocket* socket,
@@ -198,7 +219,9 @@ void SocketDataPump::SendMore() {
     ShutdownSend();
     return;
   }
-  auto buf = base::MakeRefCounted<net::WrappedIOBuffer>(*pending_send_buffer_);
+
+  auto buf = base::MakeRefCounted<MojoToNetPendingBufferOwningIOBuffer>(
+      pending_send_buffer_);
 
   // Use WeakPtr here because |this| doesn't outlive |socket_|.
   int write_result =
