@@ -26,6 +26,8 @@ NSString* const kSettingsPaymentMethodsCellId =
     @"kSettingsPaymentMethodsCellId";
 NSString* const kSettingsAddressesAndMoreCellId =
     @"kSettingsAddressesAndMoreCellId";
+NSString* const kSettingsAutofillAndPasswordsCellId =
+    @"kSettingsAutofillAndPasswordsCellId";
 NSString* const kSettingsPrivacyCellId = @"kSettingsPrivacyCellId";
 NSString* const kSettingsArticleSuggestionsCellId =
     @"kSettingsArticleSuggestionsCellId";

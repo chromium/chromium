@@ -7,8 +7,21 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@class AutofillAndPasswordsCoordinator;
+
+// Delegate for AutofillAndPasswordsCoordinator.
+@protocol AutofillAndPasswordsCoordinatorDelegate <NSObject>
+
+// Called when the view controller is removed from navigation controller.
+- (void)autofillAndPasswordsCoordinatorDidRemove:
+    (AutofillAndPasswordsCoordinator*)coordinator;
+
+@end
+
 // Coordinator for the Autofill and Passwords settings page.
 @interface AutofillAndPasswordsCoordinator : ChromeCoordinator
+
+@property(nonatomic, weak) id<AutofillAndPasswordsCoordinatorDelegate> delegate;
 
 // Designated initializer.
 - (instancetype)initWithBaseNavigationController:

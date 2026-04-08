@@ -9,6 +9,10 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 
+@interface AutofillAndPasswordsCoordinator () <
+    AutofillAndPasswordsTableViewControllerDelegate>
+@end
+
 @implementation AutofillAndPasswordsCoordinator {
   AutofillAndPasswordsTableViewController* _viewController;
   AutofillAndPasswordsMediator* _mediator;
@@ -30,6 +34,7 @@
 - (void)start {
   _viewController = [[AutofillAndPasswordsTableViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
+  _viewController.delegate = self;
 
   _mediator = [[AutofillAndPasswordsMediator alloc] init];
   _mediator.consumer = _viewController;
@@ -42,10 +47,14 @@
   [_mediator disconnect];
   _mediator = nil;
 
-  if (self.baseNavigationController.topViewController == _viewController) {
-    [self.baseNavigationController popViewControllerAnimated:YES];
-  }
   _viewController = nil;
+}
+
+#pragma mark - AutofillAndPasswordsTableViewControllerDelegate
+
+- (void)autofillAndPasswordsTableViewControllerDidRemove:
+    (UIViewController*)controller {
+  [self.delegate autofillAndPasswordsCoordinatorDidRemove:self];
 }
 
 @end

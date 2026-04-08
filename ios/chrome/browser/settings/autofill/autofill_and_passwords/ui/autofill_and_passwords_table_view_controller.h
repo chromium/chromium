@@ -9,10 +9,21 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_controller_protocol.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 
+@protocol AutofillAndPasswordsTableViewControllerDelegate <NSObject>
+
+// Called when the view controller is removed from its parent.
+- (void)autofillAndPasswordsTableViewControllerDidRemove:
+    (UIViewController*)controller;
+
+@end
+
 // The TableView for Autofill and passwords settings page.
 @interface AutofillAndPasswordsTableViewController
     : SettingsRootTableViewController <AutofillAndPasswordsConsumer,
                                        SettingsControllerProtocol>
+
+@property(nonatomic, weak) id<AutofillAndPasswordsTableViewControllerDelegate>
+    delegate;
 
 @end
 

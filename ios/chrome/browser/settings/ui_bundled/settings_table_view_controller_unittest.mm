@@ -464,3 +464,49 @@ TEST_F(SettingsTableViewControllerTest, ObservedPreferencesChangedDoesntCrash) {
                                    NO);
   CheckController();
 }
+
+// Verifies that the Basics section only shows the Autofill and Passwords row
+// when the YourSavedInfoSettingsPageIos flag is enabled.
+TEST_F(SettingsTableViewControllerTest,
+       BasicsSectionWithYourSavedInfoSettingsPageIosEnabled) {
+  base::test::ScopedFeatureList features{kYourSavedInfoSettingsPageIos};
+
+  CreateController();
+  CheckController();
+
+  NSArray* basics_items = [controller().tableViewModel
+      itemsInSectionWithIdentifier:SettingsSectionIdentifier::
+                                       SettingsSectionIdentifierBasics];
+  ASSERT_EQ(1U, basics_items.count);
+
+  TableViewItem* item = static_cast<TableViewItem*>(basics_items[0]);
+  EXPECT_EQ(SettingsItemTypeAutofillAndPasswords, item.type);
+}
+
+// Verifies that the Basics section shows the Passwords, Payment Methods, and
+// Addresses and More rows when the YourSavedInfoSettingsPageIos flag is
+// disabled.
+// TODO(crbug.com/496456595): Remove once kYourSavedInfoSettingsPageIos is
+// launched.
+TEST_F(SettingsTableViewControllerTest,
+       BasicsSectionWithYourSavedInfoSettingsPageIosDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kYourSavedInfoSettingsPageIos);
+
+  CreateController();
+  CheckController();
+
+  NSArray* basics_items = [controller().tableViewModel
+      itemsInSectionWithIdentifier:SettingsSectionIdentifier::
+                                       SettingsSectionIdentifierBasics];
+  ASSERT_EQ(3U, basics_items.count);
+
+  TableViewItem* item1 = static_cast<TableViewItem*>(basics_items[0]);
+  EXPECT_EQ(SettingsItemTypePasswords, item1.type);
+
+  TableViewItem* item2 = static_cast<TableViewItem*>(basics_items[1]);
+  EXPECT_EQ(SettingsItemTypeAutofillCreditCard, item2.type);
+
+  TableViewItem* item3 = static_cast<TableViewItem*>(basics_items[2]);
+  EXPECT_EQ(SettingsItemTypeAutofillProfile, item3.type);
+}
