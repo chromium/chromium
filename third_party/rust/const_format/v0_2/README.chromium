@@ -1,0 +1,11 @@
+Name: const_format
+URL: https://crates.io/crates/const_format
+Version: 0.2.35
+Revision: 73dbf70b24acf6fe44cc588a0b712b2601bfb7ad
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Zlib
+License File: //third_party/rust/chromium_crates_io/vendor/const_format-v0_2/LICENSE-ZLIB.md
+Shipped: no
+Security Critical: no
+
+Description: Compile-time string formatting

@@ -27,6 +27,7 @@ bincode = "2.0.1" #TODO(crbug.com/496920769): Remove once libafl is added as a d
 bitflags = "2"
 bytes = "1"
 chrono = "0.4.43"
+const_format = "0.2.35" #TODO(crbug.com/496920769): Remove once libafl is added as a dependency.
 cxx = "1"
 fend-core = "1"
 font-types = "0.11.2"

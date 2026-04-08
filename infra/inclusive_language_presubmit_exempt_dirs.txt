@@ -649,6 +649,7 @@ third_party/rust/chromium_crates_io/vendor/clap-v4
 third_party/rust/chromium_crates_io/vendor/clap-v4/src
 third_party/rust/chromium_crates_io/vendor/codespan-reporting-v0_13
 third_party/rust/chromium_crates_io/vendor/codespan-reporting-v0_13/examples
+third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/macros
 third_party/rust/chromium_crates_io/vendor/crc32fast-v1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/cxx-v1
 third_party/rust/chromium_crates_io/vendor/cxx-v1/book
@@ -771,6 +772,7 @@ third_party/rust/chromium_crates_io/vendor/thiserror-v2/.github/workflows
 third_party/rust/chromium_crates_io/vendor/typed-arena-v2/.github/workflows
 third_party/rust/chromium_crates_io/vendor/unicode-ident-v1
 third_party/rust/chromium_crates_io/vendor/unicode-ident-v1/.github/workflows
+third_party/rust/chromium_crates_io/vendor/unicode-xid-v0_2
 third_party/rust/chromium_crates_io/vendor/utf8_iter-v1
 third_party/rust/chromium_crates_io/vendor/winapi-util-v0_1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/windows-link-v0_2

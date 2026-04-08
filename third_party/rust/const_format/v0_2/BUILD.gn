@@ -1,0 +1,115 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "const_format"
+  epoch = "0.2"
+  crate_type = "rlib"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/__ascii_case_conv.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/__ascii_case_conv/word_iterator.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/__hidden_utils.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/__str_methods.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/__str_methods/pattern.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/__str_methods/str_indexing.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/__str_methods/str_repeat.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/__str_methods/str_replace.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/__str_methods/str_splice.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/__str_methods/str_split.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/char_encoding.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/char_encoding/tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/const_debug_derive.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/const_generic_concatcp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/doctests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/equality.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/fmt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/fmt/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/fmt/formatter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/fmt/std_type_impls.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/fmt/std_type_impls/ranges.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/fmt/str_writer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/fmt/str_writer_mut.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/for_assert_macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/for_examples.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/formatting.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/macros/assertions.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/macros/assertions/assertc_macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/macros/assertions/assertcp_macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/macros/call_debug_fmt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/macros/constructors.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/macros/fmt_macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/macros/helper_macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/macros/impl_fmt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/macros/map_ascii_case.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/macros/str_methods.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/marker_traits.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/marker_traits/format_marker.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/marker_traits/write_marker.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/msg.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/pargument.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/slice_cmp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/test_utils.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/utils.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/wrapper_types.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/wrapper_types/ascii_str.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/wrapper_types/pwrapper.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/wrapper_types/pwrapper/tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_format-v0_2/src/wrapper_types/sliced.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2021"
+  cargo_pkg_authors = "rodrimati1992 <rodrimatt1985@gmail.com>"
+  cargo_pkg_name = "const_format"
+  cargo_pkg_description = "Compile-time string formatting"
+  cargo_pkg_repository = "https://github.com/rodrimati1992/const_format_crates/"
+  cargo_pkg_version = "0.2.35"
+
+  allow_unsafe = true
+
+  deps = [ "//third_party/rust/const_format_proc_macros/v0_2:lib" ]
+  features = [ "default" ]
+
+  testonly = true
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = []
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += []
+  _configs_to_add += []
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
+}
