@@ -12,6 +12,8 @@ This crate has the same license requirements as C source code.
 
 All modifications to the source code are described in [opus.patch](https://github.com/DoumanAsh/opusic-sys/blob/master/opus.patch)
 
+High level bindings: [opusic-c](https://github.com/DoumanAsh/opusic-c)
+
 ## Setup
 
 By default, `libopus` is bundled, this can be deactivated using `default-features=false`.

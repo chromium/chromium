@@ -25,13 +25,13 @@ cargo_crate("lib") {
   cargo_pkg_name = "symphonia-adapter-libopus"
   cargo_pkg_description = "Adapter to use libopus with Symphonia"
   cargo_pkg_repository = "https://github.com/aschey/symphonia-adapters"
-  cargo_pkg_version = "0.2.6"
+  cargo_pkg_version = "0.2.7"
 
   allow_unsafe = true
 
   deps = [
     "//third_party/rust/log/v0_4:lib",
-    "//third_party/rust/opusic_sys/v0_5:lib",
+    "//third_party/rust/opusic_sys/v0_6:lib",
     "//third_party/rust/symphonia_core/v0_5:lib",
   ]
 

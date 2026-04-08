@@ -10,26 +10,25 @@ import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
   crate_name = "opusic_sys"
-  epoch = "0.5"
+  epoch = "0.6"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/opusic-sys-v0_5/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/opusic-sys-v0_6/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/opusic-sys-v0_5/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/opusic-sys-v0_6/src/lib.rs",
   ]
-  inputs = [ "//third_party/rust/chromium_crates_io/vendor/opusic-sys-v0_5/src/wrapper.h" ]
+  inputs = [ "//third_party/rust/chromium_crates_io/vendor/opusic-sys-v0_6/src/wrapper.h" ]
 
   build_native_rust_unit_tests = false
-  edition = "2018"
+  edition = "2021"
   cargo_pkg_authors = "Douman <douman@gmx.se>"
   cargo_pkg_name = "opusic-sys"
   cargo_pkg_description = "Bindings to libopus"
   cargo_pkg_repository = "https://github.com/DoumanAsh/opusic-sys"
-  cargo_pkg_version = "0.5.8"
+  cargo_pkg_version = "0.6.0"
 
   allow_unsafe = true
 
-  deps = [ "//third_party/rust/libc/v0_2:lib" ]
   deps += [ "//third_party/opus" ]
 
   # Only for usage from third-party crates. Add the crate to

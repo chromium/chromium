@@ -10,9 +10,10 @@
 # See Cargo.toml.orig for the original contents.
 
 [package]
-edition = "2018"
+edition = "2021"
+rust-version = "1.82.0"
 name = "opusic-sys"
-version = "0.5.8"
+version = "0.6.0"
 authors = ["Douman <douman@gmx.se>"]
 build = "build.rs"
 autolib = false
@@ -31,8 +32,10 @@ build-bindgen = ["bindgen"]
 bundled = ["dep:cmake"]
 default = ["bundled"]
 dred = []
+fixed-point = []
 no-fortify-source = []
 no-hardening = []
+no-simd = []
 no-stack-protector = []
 osce = []
 
@@ -43,10 +46,6 @@ path = "src/lib.rs"
 [[test]]
 name = "version"
 path = "tests/version.rs"
-
-[dependencies.libc]
-version = "0.2"
-default-features = false
 
 [build-dependencies.bindgen]
 version = "0.72"

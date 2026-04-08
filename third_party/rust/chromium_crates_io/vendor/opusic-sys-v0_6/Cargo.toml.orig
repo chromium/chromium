@@ -1,17 +1,14 @@
 [package]
 name = "opusic-sys"
-version = "0.5.8"
+version = "0.6.0"
 authors = ["Douman <douman@gmx.se>"]
 description = "Bindings to libopus"
 keywords = ["opus"]
 readme = "README.md"
 repository = "https://github.com/DoumanAsh/opusic-sys"
 license = "BSD-3-Clause"
-edition = "2018"
-
-[dependencies.libc]
-version = "0.2"
-default-features = false
+rust-version = "1.82.0"
+edition = "2021"
 
 [build-dependencies.cmake]
 version = "0.1"
@@ -35,5 +32,9 @@ no-hardening = []
 no-stack-protector = []
 # disable protection against buffer overflows.
 no-fortify-source = []
+# disable SIMD optimizations
+no-simd = []
+# fixed point for MCUs with no FPU
+fixed-point = []
 # bundle "libopus" instead of dynamic linking
 bundled = ["dep:cmake"]
