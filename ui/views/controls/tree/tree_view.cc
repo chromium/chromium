@@ -118,10 +118,6 @@ TreeView::TreeView()
 }
 
 TreeView::~TreeView() {
-  if (model_) {
-    model_->RemoveObserver(this);
-  }
-
   if (GetInputMethod() && selector_.get()) {
     // TreeView should have been blurred before destroy.
     DCHECK(selector_.get() != GetInputMethod()->GetTextInputClient());
@@ -145,9 +141,8 @@ void TreeView::SetModel(TreeModel* model) {
   if (model == model_) {
     return;
   }
-  if (model_) {
-    model_->RemoveObserver(this);
-  }
+
+  tree_model_observation_.Reset();
 
   CancelEdit();
 
@@ -160,7 +155,7 @@ void TreeView::SetModel(TreeModel* model) {
   GetViewAccessibility().RemoveAllVirtualChildViews();
 
   if (model_) {
-    model_->AddObserver(this);
+    tree_model_observation_.Observe(model_);
     model_->GetIcons(&icons_);
 
     ConfigureInternalNode(model_->GetRoot(), &root_);

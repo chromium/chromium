@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/tree_node_model.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
@@ -522,6 +523,9 @@ class VIEWS_EXPORT TreeView : public View,
 
   // The current drawing provider for this TreeView.
   std::unique_ptr<TreeViewDrawingProvider> drawing_provider_;
+
+  base::ScopedObservation<ui::TreeModel, ui::TreeModelObserver>
+      tree_model_observation_{this};
 };
 
 }  // namespace views
