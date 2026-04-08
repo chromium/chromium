@@ -23,8 +23,6 @@
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/grit/browser_resources.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
@@ -150,36 +148,6 @@ bool IsTaskInterrupted(actor::ActorTask::State new_state) {
           new_state == actor::ActorTask::State::kPausedByUser);
 }
 
-bool IsTaskResumed(actor::ActorTask::State old_state,
-                   actor::ActorTask::State new_state) {
-  return IsTaskInterrupted(old_state) &&
-         new_state == actor::ActorTask::State::kReflecting;
-}
-
-void ActivateTabForWebContents(content::WebContents* web_contents) {
-  if (!web_contents) {
-    return;
-  }
-
-  tabs::TabInterface* tab_interface =
-      tabs::TabInterface::MaybeGetFromContents(web_contents);
-  if (!tab_interface) {
-    return;
-  }
-
-  BrowserWindowInterface* browser_window =
-      tab_interface->GetBrowserWindowInterface();
-  if (!browser_window) {
-    return;
-  }
-
-  TabStripModel* tab_strip = browser_window->GetTabStripModel();
-  int target_index = tab_strip->GetIndexOfWebContents(web_contents);
-
-  if (target_index != TabStripModel::kNoTab) {
-    tab_strip->ActivateTabAt(target_index);
-  }
-}
 
 }  // namespace
 
@@ -307,7 +275,7 @@ glic::GlicKeyedService* PasswordChangeFromCheckupDelegate::GetGlicService() {
 void PasswordChangeFromCheckupDelegate::OnFindFormTaskStateChanged(
     actor::ActorTask& task) {
   const actor::ActorTask::State new_state = task.GetState();
-  if (!find_form_task_id_ && new_state == actor::ActorTask::State::kCreated) {
+  if (!find_form_task_id_) {
     actor::ActorKeyedService* actor_service =
         actor::ActorKeyedService::Get(Profile::FromBrowserContext(
             actuation_web_contents_->GetBrowserContext()));
@@ -332,10 +300,9 @@ void PasswordChangeFromCheckupDelegate::OnFindFormTaskStateChanged(
   }
 
   if (IsTaskInterrupted(new_state)) {
-    ActivateTabForWebContents(actuation_web_contents_.get());
-  } else if (find_form_task_state_.has_value() &&
-             IsTaskResumed(find_form_task_state_.value(), new_state)) {
-    ActivateTabForWebContents(originator_.get());
+    task.Stop(actor::ActorTask::StoppedReason::kShutdown);
+    actor_task_state_subscription_ = {};
+    return;
   }
 
   if (new_state == actor::ActorTask::State::kFinished) {
