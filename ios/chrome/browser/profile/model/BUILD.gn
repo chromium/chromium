@@ -142,6 +142,7 @@ source_set("keyed_service_factories") {
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/bring_android_tabs/model",
     "//ios/chrome/browser/browsing_data/model",
+    "//ios/chrome/browser/cobrowse/model:factory",
     "//ios/chrome/browser/collaboration/model",
     "//ios/chrome/browser/collaboration/model/messaging",
     "//ios/chrome/browser/commerce/model:session_proto_db",

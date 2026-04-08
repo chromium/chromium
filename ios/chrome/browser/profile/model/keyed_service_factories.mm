@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/bookmarks/model/managed_bookmark_service_factory.h"
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service_factory.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
+#import "ios/chrome/browser/cobrowse/model/ios_contextual_tasks_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/messaging/instant_messaging_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
@@ -346,6 +347,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   IOSChromeProfilePasswordStoreFactory::GetInstance();
   IOSChromeSafetyCheckManagerFactory::GetInstance();
   IOSChromeTabRestoreServiceFactory::GetInstance();
+  IOSContextualTasksServiceFactory::GetInstance();
   IOSPasswordFieldClassificationModelHandlerFactory::GetInstance();
   IOSPasskeyModelFactory::GetInstance();
   IOSPasswordManagerSettingsServiceFactory::GetInstance();
