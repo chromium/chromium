@@ -76,6 +76,8 @@ class ChangePasswordFormFinder {
 
  private:
   void OnPageStableInitially();
+  void OnPageStableAfterClick();
+
   void OnFormNotFoundInitially();
   void OnFormFoundInitially(
       password_manager::PasswordFormManager* form_manager);
