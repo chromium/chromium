@@ -34,7 +34,6 @@ class PLATFORM_EXPORT CanvasNon2DSnapshotProviderBitmap
   // CanvasSnapshotProvider:
   bool IsGpuContextLost() const override;
   bool IsValid() const override;
-  bool IsAccelerated() const override { return false; }
   bool IsExternalBitmapProvider() const override { return true; }
   viz::SharedImageFormat GetSharedImageFormat() const override {
     return info_.format;

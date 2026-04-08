@@ -16,7 +16,6 @@ class PLATFORM_EXPORT CanvasSnapshotProvider {
  public:
   virtual ~CanvasSnapshotProvider() = default;
 
-  virtual bool IsAccelerated() const = 0;
   virtual gfx::Size Size() const = 0;
   virtual viz::SharedImageFormat GetSharedImageFormat() const = 0;
   virtual gfx::ColorSpace GetColorSpace() const = 0;

@@ -146,6 +146,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
       FlushReason = FlushReason::kOther);
   virtual ScopedRasterTimer CreateScopedRasterTimer();
 
+  virtual bool IsAccelerated() const = 0;
   SkSurfaceProps GetSkSurfaceProps() const;
   viz::SharedImageFormat GetSharedImageFormat() const override {
     return format_;
