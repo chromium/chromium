@@ -702,10 +702,11 @@ namespace polygon_functions {
 InterpolationValue ConvertCSSValue(
     const cssvalue::CSSBasicShapePolygonValue& polygon) {
   wtf_size_t size = polygon.Values().size();
-  auto* list = MakeGarbageCollected<InterpolableList>(size);
+  auto* list = MakeGarbageCollected<InterpolableList>(size + 1);
   for (wtf_size_t i = 0; i < size; i++) {
     list->Set(i, ConvertCSSLength(polygon.Values()[i].Get()));
   }
+  list->Set(size, ConvertCSSLength(polygon.RoundingRadius()));
   return InterpolationValue(
       list, MakeGarbageCollected<BasicShapeNonInterpolableValue>(
                 polygon.GetWindRule(), size));
@@ -715,10 +716,11 @@ InterpolationValue ConvertBasicShape(const BasicShapePolygon& polygon,
                                      const CSSProperty& property,
                                      double zoom) {
   wtf_size_t size = polygon.Values().size();
-  auto* list = MakeGarbageCollected<InterpolableList>(size);
+  auto* list = MakeGarbageCollected<InterpolableList>(size + 1);
   for (wtf_size_t i = 0; i < size; i++) {
     list->Set(i, ConvertLength(polygon.Values()[i], property, zoom));
   }
+  list->Set(size, ConvertLength(polygon.RoundingRadius(), property, zoom));
   return InterpolationValue(
       list, MakeGarbageCollected<BasicShapeNonInterpolableValue>(
                 polygon.GetWindRule(), size));
@@ -727,10 +729,11 @@ InterpolationValue ConvertBasicShape(const BasicShapePolygon& polygon,
 InterpolableValue* CreateNeutralValue(
     const BasicShapeNonInterpolableValue& non_interpolable_value) {
   auto* list =
-      MakeGarbageCollected<InterpolableList>(non_interpolable_value.size());
+      MakeGarbageCollected<InterpolableList>(non_interpolable_value.size() + 1);
   for (wtf_size_t i = 0; i < non_interpolable_value.size(); i++) {
     list->Set(i, InterpolableLength::CreateNeutral());
   }
+  list->Set(non_interpolable_value.size(), InterpolableLength::CreateNeutral());
   return list;
 }
 
@@ -742,7 +745,7 @@ BasicShape* CreateBasicShape(
   polygon->SetWindRule(non_interpolable_value.GetWindRule());
   const auto& list = To<InterpolableList>(interpolable_value);
   wtf_size_t size = non_interpolable_value.size();
-  DCHECK_EQ(list.length(), size);
+  DCHECK_EQ(list.length(), size + 1);
   DCHECK_EQ(size % 2, 0U);
   for (wtf_size_t i = 0; i < size; i += 2) {
     polygon->AppendPoint(
@@ -751,6 +754,9 @@ BasicShape* CreateBasicShape(
         To<InterpolableLength>(*list.Get(i + 1))
             .CreateLength(conversion_data, Length::ValueRange::kAll));
   }
+  polygon->SetRoundingRadius(
+      To<InterpolableLength>(*list.Get(size))
+          .CreateLength(conversion_data, Length::ValueRange::kNonNegative));
   return polygon;
 }
 

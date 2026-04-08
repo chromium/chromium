@@ -248,18 +248,36 @@ void CSSBasicShapeEllipseValue::TraceAfterDispatch(
 }
 
 static String BuildPolygonString(const WindRule& wind_rule,
+                                 const CSSPrimitiveValue* rounding_radius,
                                  const Vector<String>& points) {
   DCHECK(!(points.size() % 2));
 
+  const bool has_rounding_radius =
+      rounding_radius &&
+      !(rounding_radius->IsNumericLiteralValue() &&
+        To<CSSNumericLiteralValue>(*rounding_radius).DoubleValue() == 0);
+  const String rounding_radius_text =
+      has_rounding_radius ? rounding_radius->CssText() : String();
+
   StringBuilder result;
-  const char kEvenOddOpening[] = "polygon(evenodd, ";
-  const char kNonZeroOpening[] = "polygon(";
+  const char kEvenOddPrefix[] = "evenodd";
+  const char kRoundPrefix[] = "round ";
   const char kCommaSeparator[] = ", ";
-  static_assert(sizeof(kEvenOddOpening) > sizeof(kNonZeroOpening),
-                "polygon string openings should be the same length");
 
   // Compute the required capacity in advance to reduce allocations.
-  wtf_size_t length = sizeof(kEvenOddOpening) - 1;
+  wtf_size_t length = sizeof("polygon(") - 1 + 1;
+  if (wind_rule == RULE_EVENODD) {
+    length += sizeof(kEvenOddPrefix) - 1;
+  }
+  if (has_rounding_radius) {
+    if (wind_rule == RULE_EVENODD) {
+      length += 1;
+    }
+    length += sizeof(kRoundPrefix) - 1 + rounding_radius_text.length();
+  }
+  if (wind_rule == RULE_EVENODD || has_rounding_radius) {
+    length += sizeof(kCommaSeparator) - 1;
+  }
   for (wtf_size_t i = 0; i < points.size(); i += 2) {
     if (i) {
       length += (sizeof(kCommaSeparator) - 1);
@@ -269,10 +287,22 @@ static String BuildPolygonString(const WindRule& wind_rule,
   }
   result.ReserveCapacity(length);
 
+  result.Append("polygon(");
+  bool has_prefix = false;
   if (wind_rule == RULE_EVENODD) {
-    result.Append(kEvenOddOpening);
-  } else {
-    result.Append(kNonZeroOpening);
+    result.Append(kEvenOddPrefix);
+    has_prefix = true;
+  }
+  if (has_rounding_radius) {
+    if (has_prefix) {
+      result.Append(' ');
+    }
+    result.Append(kRoundPrefix);
+    result.Append(rounding_radius_text);
+    has_prefix = true;
+  }
+  if (has_prefix) {
+    result.Append(kCommaSeparator);
   }
 
   for (wtf_size_t i = 0; i < points.size(); i += 2) {
@@ -292,17 +322,19 @@ String CSSBasicShapePolygonValue::CustomCSSText() const {
   Vector<String> points(values_,
                         [](const CSSValue* value) { return value->CssText(); });
 
-  return BuildPolygonString(wind_rule_, points);
+  return BuildPolygonString(wind_rule_, rounding_radius_, points);
 }
 
 bool CSSBasicShapePolygonValue::Equals(
     const CSSBasicShapePolygonValue& other) const {
   return wind_rule_ == other.wind_rule_ &&
+         base::ValuesEquivalent(rounding_radius_, other.rounding_radius_) &&
          CompareCSSValueVector(values_, other.values_);
 }
 
 void CSSBasicShapePolygonValue::TraceAfterDispatch(
     blink::Visitor* visitor) const {
+  visitor->Trace(rounding_radius_);
   visitor->Trace(values_);
   CSSValue::TraceAfterDispatch(visitor);
 }

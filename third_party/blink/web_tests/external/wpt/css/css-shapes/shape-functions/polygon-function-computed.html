@@ -16,6 +16,23 @@ test_computed_value("shape-outside", "polygon(1% 2%)");
 test_computed_value("shape-outside", "polygon(calc(100% - 20px) calc(30% + 10px))");
 test_computed_value("shape-outside", "polygon(nonzero, 1px 2px, 3em 4em)", "polygon(1px 2px, 48px 64px)");
 test_computed_value("shape-outside", "polygon(evenodd, 1px 2px, 3em 4em, 6pt 6%)", "polygon(evenodd, 1px 2px, 48px 64px, 8px 6%)");
+
+test_computed_value(
+    "shape-outside",
+    "polygon(round 1em, 1px 2px, 3em 4em)",
+    "polygon(round 16px, 1px 2px, 48px 64px)");
+test_computed_value(
+    "shape-outside",
+    "polygon(evenodd round 6pt, 1px 2px, 3em 4em, 6pt 6%)",
+    "polygon(evenodd round 8px, 1px 2px, 48px 64px, 8px 6%)");
+test_computed_value(
+    "shape-outside",
+    "polygon(round 0px, 1px 2px, 3px 4px)",
+    "polygon(1px 2px, 3px 4px)");
+test_computed_value(
+    "shape-outside",
+    "polygon(round calc(1em + 2px), 1px 2px, 3px 4px)",
+    "polygon(round 18px, 1px 2px, 3px 4px)");
 </script>
 </body>
 </html>

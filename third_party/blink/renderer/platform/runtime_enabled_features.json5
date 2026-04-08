@@ -1748,6 +1748,13 @@
       name: "CSSParserIgnoreCharsetForURLs",
     },
     {
+      // Support `polygon(round <length>, ...)` per CSS Shapes Level 1.
+      // Spec: https://www.w3.org/TR/css-shapes-1/#typedef-basic-shape
+      // Issue: https://crbug.com/329302249
+      name: "CSSPolygonRounding",
+      status: "experimental",
+    },
+    {
       name: "CSSPositionStickyStaticScrollPosition",
       status: "test",
     },

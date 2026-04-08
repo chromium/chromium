@@ -29,16 +29,85 @@
 
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 
+#include <algorithm>
+#include <cmath>
+#include <limits>
+
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
+
+namespace {
+
+struct RoundedPolygonVertex {
+  gfx::PointF entry;
+  gfx::PointF exit;
+  float radius = 0;
+};
+
+// Minimum length (in pixels) for edges and rounding radii below which rounding
+// is skipped. Values smaller than this won't produce visually noticeable
+// rounding (sub-pixel), so we avoid the computation entirely.
+constexpr float kMinRoundingThreshold = 0.5f;
+
+RoundedPolygonVertex ComputeRoundedPolygonVertex(const gfx::PointF& previous,
+                                                 const gfx::PointF& current,
+                                                 const gfx::PointF& next,
+                                                 float requested_radius) {
+  DCHECK_GT(requested_radius, 0);
+  RoundedPolygonVertex vertex{.entry = current, .exit = current, .radius = 0};
+
+  const gfx::Vector2dF incoming = current - previous;
+  const gfx::Vector2dF outgoing = next - current;
+  const float incoming_length = incoming.Length();
+  const float outgoing_length = outgoing.Length();
+  if (incoming_length <= kMinRoundingThreshold ||
+      outgoing_length <= kMinRoundingThreshold) {
+    return vertex;
+  }
+
+  gfx::Vector2dF incoming_unit = incoming;
+  incoming_unit.InvScale(incoming_length);
+  gfx::Vector2dF outgoing_unit = outgoing;
+  outgoing_unit.InvScale(outgoing_length);
+  const double cos_theta =
+      std::clamp(gfx::DotProduct(incoming_unit, outgoing_unit), -1.0, 1.0);
+  const double theta = std::acos(cos_theta);
+  if (theta <= std::numeric_limits<double>::epsilon() ||
+      std::abs(theta - kPiDouble) <= std::numeric_limits<double>::epsilon()) {
+    return vertex;
+  }
+
+  const double tan_half_theta = std::tan(theta / 2.0);
+  if (!std::isfinite(tan_half_theta) ||
+      tan_half_theta <= std::numeric_limits<double>::epsilon()) {
+    return vertex;
+  }
+
+  const double max_radius = std::min(tan_half_theta * incoming_length * 0.5,
+                                     tan_half_theta * outgoing_length * 0.5);
+  const double radius =
+      std::min(static_cast<double>(requested_radius), max_radius);
+  if (radius <= std::numeric_limits<double>::epsilon()) {
+    return vertex;
+  }
+
+  const float tangent_distance = ClampTo<float>(radius / tan_half_theta);
+  vertex.entry = current - gfx::ScaleVector2d(incoming_unit, tangent_distance);
+  vertex.exit = current + gfx::ScaleVector2d(outgoing_unit, tangent_distance);
+  vertex.radius = ClampTo<float>(radius);
+  return vertex;
+}
+
+}  // namespace
 
 gfx::PointF PointForCenterCoordinate(const BasicShapeCenterCoordinate& center_x,
                                      const BasicShapeCenterCoordinate& center_y,
@@ -152,29 +221,57 @@ Path BasicShapePolygon::GetPath(const gfx::RectF& bounding_box,
     return builder.Finalize();
   }
 
-  builder.MoveTo(gfx::ScalePoint(
-      gfx::PointF(FloatValueForLength(values_.at(0), bounding_box.width()) +
-                      bounding_box.x(),
-                  FloatValueForLength(values_.at(1), bounding_box.height()) +
-                      bounding_box.y()),
-      path_scale));
-  for (wtf_size_t i = 2; i < length; i = i + 2) {
-    builder.LineTo(gfx::ScalePoint(
+  Vector<gfx::PointF> points(length / 2);
+  for (wtf_size_t i = 0; i < length; i += 2) {
+    points[i / 2] = gfx::ScalePoint(
         gfx::PointF(
             FloatValueForLength(values_.at(i), bounding_box.width()) +
                 bounding_box.x(),
             FloatValueForLength(values_.at(i + 1), bounding_box.height()) +
                 bounding_box.y()),
-        path_scale));
+        path_scale);
+  }
+
+  // The rounding radius is a <length>, so the reference size for percentage
+  // resolution is irrelevant here.
+  const float requested_radius =
+      FloatValueForLength(rounding_radius_, 0) * path_scale;
+  if (requested_radius <= kMinRoundingThreshold || points.size() < 3) {
+    builder.MoveTo(points.front());
+    for (wtf_size_t i = 1; i < points.size(); ++i) {
+      builder.LineTo(points.at(i));
+    }
+    builder.Close();
+    return builder.Finalize();
+  }
+
+  Vector<RoundedPolygonVertex> rounded_vertices(points.size());
+  for (wtf_size_t i = 0; i < points.size(); ++i) {
+    rounded_vertices[i] = ComputeRoundedPolygonVertex(
+        points.at((i + points.size() - 1) % points.size()), points.at(i),
+        points.at((i + 1) % points.size()), requested_radius);
+  }
+
+  builder.MoveTo(rounded_vertices.front().entry);
+  for (wtf_size_t i = 0; i < rounded_vertices.size(); ++i) {
+    const RoundedPolygonVertex& vertex = rounded_vertices.at(i);
+    if (vertex.radius > 0) {
+      builder.ArcTo(points[i], vertex.exit, vertex.radius);
+    } else {
+      builder.LineTo(points[i]);
+    }
+    if (i + 1 < rounded_vertices.size()) {
+      builder.LineTo(rounded_vertices.at(i + 1).entry);
+    }
   }
   builder.Close();
-
   return builder.Finalize();
 }
 
 bool BasicShapePolygon::IsEqualAssumingSameType(const BasicShape& o) const {
   const BasicShapePolygon& other = To<BasicShapePolygon>(o);
-  return wind_rule_ == other.wind_rule_ && values_ == other.values_;
+  return wind_rule_ == other.wind_rule_ &&
+         rounding_radius_ == other.rounding_radius_ && values_ == other.values_;
 }
 
 bool BasicShapeInset::IsEqualAssumingSameType(const BasicShape& o) const {

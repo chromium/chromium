@@ -529,6 +529,10 @@ CSSValue* ValueForBasicShape(const ComputedStyle& style,
           MakeGarbageCollected<cssvalue::CSSBasicShapePolygonValue>();
 
       polygon_value->SetWindRule(polygon->GetWindRule());
+      if (polygon->HasRoundingRadius()) {
+        polygon_value->SetRoundingRadius(CSSPrimitiveValue::CreateFromLength(
+            polygon->RoundingRadius(), style.EffectiveZoom()));
+      }
       const Vector<Length>& values = polygon->Values();
       for (unsigned i = 0; i < values.size(); i += 2) {
         polygon_value->AppendPoint(
@@ -678,6 +682,10 @@ BasicShape* BasicShapeForValue(const StyleResolverState& state,
     BasicShapePolygon* polygon = MakeGarbageCollected<BasicShapePolygon>();
 
     polygon->SetWindRule(polygon_value->GetWindRule());
+    if (polygon_value->RoundingRadius()) {
+      polygon->SetRoundingRadius(
+          ConvertToLength(state, polygon_value->RoundingRadius()));
+    }
     const HeapVector<Member<CSSPrimitiveValue>>& values =
         polygon_value->Values();
     for (unsigned i = 0; i < values.size(); i += 2) {

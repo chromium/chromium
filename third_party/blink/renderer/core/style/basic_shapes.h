@@ -250,11 +250,17 @@ struct DowncastTraits<BasicShapeEllipse> {
 
 class BasicShapePolygon final : public BasicShape {
  public:
-  BasicShapePolygon() : wind_rule_(RULE_NONZERO) {}
+  BasicShapePolygon()
+      : wind_rule_(RULE_NONZERO), rounding_radius_(Length::Fixed(0)) {}
 
   const Vector<Length>& Values() const { return values_; }
+  bool HasRoundingRadius() const { return !rounding_radius_.IsZero(); }
+  const Length& RoundingRadius() const { return rounding_radius_; }
 
   void SetWindRule(WindRule wind_rule) { wind_rule_ = wind_rule; }
+  void SetRoundingRadius(const Length& rounding_radius) {
+    rounding_radius_ = rounding_radius;
+  }
   void AppendPoint(const Length& x, const Length& y) {
     values_.push_back(x);
     values_.push_back(y);
@@ -271,6 +277,7 @@ class BasicShapePolygon final : public BasicShape {
 
  private:
   WindRule wind_rule_;
+  Length rounding_radius_;
   Vector<Length> values_;
 };
 

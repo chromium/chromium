@@ -538,15 +538,32 @@ cssvalue::CSSBasicShapePolygonValue* ConsumeBasicShapePolygon(
     const CSSParserContext& context,
     CSSParserLocalContext& local_context) {
   auto* shape = MakeGarbageCollected<cssvalue::CSSBasicShapePolygonValue>();
+  bool has_optional_prefix = false;
   if (IdentMatches<CSSValueID::kEvenodd, CSSValueID::kNonzero>(
           args.Peek().Id())) {
     shape->SetWindRule(args.ConsumeIncludingWhitespace().Id() ==
                                CSSValueID::kEvenodd
                            ? RULE_EVENODD
                            : RULE_NONZERO);
-    if (!ConsumeCommaIncludingWhitespace(args)) {
+    has_optional_prefix = true;
+  }
+
+  if (ConsumeIdent<CSSValueID::kRound>(args)) {
+    if (!RuntimeEnabledFeatures::CSSPolygonRoundingEnabled()) {
       return nullptr;
     }
+    CSSPrimitiveValue* rounding_radius =
+        ConsumeLength(args, context, local_context,
+                      CSSPrimitiveValue::ValueRange::kNonNegative);
+    if (!rounding_radius) {
+      return nullptr;
+    }
+    shape->SetRoundingRadius(rounding_radius);
+    has_optional_prefix = true;
+  }
+
+  if (has_optional_prefix && !ConsumeCommaIncludingWhitespace(args)) {
+    return nullptr;
   }
 
   do {

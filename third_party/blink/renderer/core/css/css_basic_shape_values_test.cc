@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -31,6 +32,34 @@ TEST(CSSBasicShapeValuesTest, PolygonEquals) {
   EXPECT_TRUE(*value_default_windrule == *value_nonzero_windrule);
   EXPECT_FALSE(*value_default_windrule == *value_evenodd_windrule);
   EXPECT_FALSE(*value_nonzero_windrule == *value_evenodd_windrule);
+}
+
+TEST(CSSBasicShapeValuesTest, PolygonRoundParsingIsFlagged) {
+  {
+    ScopedCSSPolygonRoundingForTest scoped_polygon_rounding(false);
+    EXPECT_FALSE(
+        ParsePropertyValue(CSSPropertyID::kClipPath,
+                           "polygon(round 10px, 0% 0%, 100% 0%, 50% 50%)"));
+  }
+
+  ScopedCSSPolygonRoundingForTest scoped_polygon_rounding(true);
+  const auto* value = ParsePropertyValue(
+      CSSPropertyID::kClipPath,
+      "polygon(evenodd round 10px, 0% 0%, 100% 0%, 50% 50%)");
+  ASSERT_TRUE(value);
+  EXPECT_EQ("polygon(evenodd round 10px, 0% 0%, 100% 0%, 50% 50%)",
+            value->CssText());
+}
+
+TEST(CSSBasicShapeValuesTest, PolygonRoundAffectsEquality) {
+  ScopedCSSPolygonRoundingForTest scoped_polygon_rounding(true);
+  const auto* rounded = ParsePropertyValue(
+      CSSPropertyID::kClipPath, "polygon(round 10px, 0% 0%, 100% 0%, 50% 50%)");
+  const auto* sharp = ParsePropertyValue(CSSPropertyID::kClipPath,
+                                         "polygon(0% 0%, 100% 0%, 50% 50%)");
+  ASSERT_TRUE(rounded);
+  ASSERT_TRUE(sharp);
+  EXPECT_NE(*rounded, *sharp);
 }
 
 }  // namespace

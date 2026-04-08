@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/layout/shapes/shape.h"
 
 #include <algorithm>
+#include <cmath>
 #include <memory>
 #include <utility>
 
@@ -50,7 +51,9 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
@@ -119,6 +122,19 @@ class LogicalPixelScanner {
   uint32_t block_offset_ = 0;
 };
 
+bool ExtractPathData(const Path& path,
+                     const gfx::Size& image_size,
+                     ArrayBufferContents& contents);
+std::unique_ptr<RasterShapeIntervals> ExtractIntervalsFromImageData(
+    base::span<const uint8_t> pixel_data,
+    float threshold,
+    int content_block_size,
+    const gfx::Size& image_physical_size,
+    const gfx::Rect& image_logical_rect,
+    const gfx::Rect& margin_logical_rect,
+    WritingMode writing_mode);
+bool IsValidRasterShapeSize(const gfx::Size& size);
+
 }  // namespace
 
 static std::unique_ptr<Shape> CreateInsetShape(const ContouredRect& bounds) {
@@ -171,6 +187,33 @@ std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
 
     case BasicShape::kBasicShapePolygonType: {
       const BasicShapePolygon* polygon = To<BasicShapePolygon>(basic_shape);
+      if (polygon->HasRoundingRadius()) {
+        // When the polygon has a rounding radius, the rounded corners make
+        // the shape too complex to represent analytically as a PolygonShape.
+        // Instead, rasterize the path into a RasterShape (similar to how
+        // image-based shapes are handled).
+        Path physical_path =
+            polygon->GetPath(gfx::RectF(0, 0, box_width, box_height), 1, 1);
+        gfx::Rect path_rect =
+            gfx::ToEnclosingRect(physical_path.BoundingRect());
+        const gfx::Size raster_size(std::max(path_rect.right(), 0),
+                                    std::max(path_rect.bottom(), 0));
+        if (!IsValidRasterShapeSize(raster_size)) {
+          return CreateEmptyRasterShape(writing_mode, margin);
+        }
+        ArrayBufferContents contents;
+        if (!ExtractPathData(physical_path, raster_size, contents)) {
+          return CreateEmptyRasterShape(writing_mode, margin);
+        }
+        std::unique_ptr<RasterShapeIntervals> intervals =
+            ExtractIntervalsFromImageData(contents.ByteSpan(), /*threshold=*/0,
+                                          raster_size.height(), raster_size,
+                                          gfx::Rect(raster_size),
+                                          gfx::Rect(raster_size), writing_mode);
+        shape =
+            std::make_unique<RasterShape>(std::move(intervals), raster_size);
+        break;
+      }
       const Vector<Length>& values = polygon->Values();
       wtf_size_t values_size = values.size();
       DCHECK(!(values_size % 2));
@@ -234,6 +277,46 @@ std::unique_ptr<Shape> Shape::CreateEmptyRasterShape(WritingMode writing_mode,
   return std::move(raster_shape);
 }
 
+namespace {
+
+bool ExtractPathData(const Path& path,
+                     const gfx::Size& image_size,
+                     ArrayBufferContents& contents) {
+  SkImageInfo dst_info = SkImageInfo::Make(
+      image_size.width(), image_size.height(), kN32_SkColorType,
+      kPremul_SkAlphaType, SkColorSpace::MakeSRGB());
+
+  size_t dst_size_bytes = dst_info.computeMinByteSize();
+  {
+    if (SkImageInfo::ByteSizeOverflowed(dst_size_bytes) ||
+        dst_size_bytes > v8::TypedArray::kMaxByteLength) {
+      return false;
+    }
+    ArrayBufferContents result(dst_size_bytes, 1,
+                               ArrayBufferContents::kNotShared,
+                               ArrayBufferContents::kZeroInitialize);
+    if (result.DataLength() != dst_size_bytes) {
+      return false;
+    }
+    result.Transfer(contents);
+  }
+
+  const SkSurfaceProps disable_lcd_props;
+  sk_sp<SkSurface> surface = SkSurfaces::WrapPixels(
+      dst_info, contents.Data(), dst_info.minRowBytes(), &disable_lcd_props);
+  if (!surface) {
+    return false;
+  }
+
+  SkPaint paint;
+  paint.setStyle(SkPaint::kFill_Style);
+  paint.setColor(SK_ColorBLACK);
+  paint.setAntiAlias(true);
+  surface->getCanvas()->clear(SkColors::kTransparent);
+  surface->getCanvas()->drawPath(path.GetSkPath(), paint);
+  return true;
+}
+
 static bool ExtractImageData(Image* image,
                              const gfx::Size& image_size,
                              ArrayBufferContents& contents,
@@ -286,7 +369,7 @@ static bool ExtractImageData(Image* image,
   return true;
 }
 
-static std::unique_ptr<RasterShapeIntervals> ExtractIntervalsFromImageData(
+std::unique_ptr<RasterShapeIntervals> ExtractIntervalsFromImageData(
     base::span<const uint8_t> pixel_data,
     float threshold,
     int content_block_size,
@@ -337,13 +420,15 @@ static std::unique_ptr<RasterShapeIntervals> ExtractIntervalsFromImageData(
   return intervals;
 }
 
-static bool IsValidRasterShapeSize(const gfx::Size& size) {
+bool IsValidRasterShapeSize(const gfx::Size& size) {
   // Some platforms don't limit MaxDecodedImageBytes.
   constexpr size_t size32_max_bytes = 0xFFFFFFFF / 4;
   static const size_t max_image_size_bytes =
       std::min(size32_max_bytes, Platform::Current()->MaxDecodedImageBytes());
   return size.Area64() * 4 < max_image_size_bytes;
 }
+
+}  // namespace
 
 std::unique_ptr<Shape> Shape::CreateRasterShape(
     Image* image,
