@@ -126,7 +126,7 @@ InterpolableColor* InterpolableColor::Create(
       // from Document.
       return Create(
           StyleColor::ColorFromKeyword(keyword, color_scheme, color_provider,
-                                       /*is_in_web_app_scope=*/false));
+                                       /*can_expose_accent_color=*/false));
   }
 }
 

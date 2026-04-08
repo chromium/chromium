@@ -62,7 +62,7 @@ static ColorParseResult ParseColor(Color& parsed_color,
                                    const String& color_string,
                                    mojom::blink::ColorScheme color_scheme,
                                    const ui::ColorProvider* color_provider,
-                                   bool is_in_web_app_scope) {
+                                   bool can_expose_accent_color) {
   if (EqualIgnoringAsciiCase(color_string, "currentcolor")) {
     return ColorParseResult::kCurrentColor;
   }
@@ -70,7 +70,7 @@ static ColorParseResult ParseColor(Color& parsed_color,
     return ColorParseResult::kColor;
   }
   if (CSSParser::ParseSystemColor(parsed_color, color_string, color_scheme,
-                                  color_provider, is_in_web_app_scope)) {
+                                  color_provider, can_expose_accent_color)) {
     return ColorParseResult::kColor;
   }
   CSSParserTokenStream stream(color_string);
@@ -91,7 +91,7 @@ static ColorParseResult ParseColor(Color& parsed_color,
         .text_link_colors = kDefaultTextLinkColors,
         .used_color_scheme = color_scheme,
         .color_provider = color_provider,
-        .is_in_web_app_scope = is_in_web_app_scope};
+        .can_expose_accent_color = can_expose_accent_color};
     const StyleColor style_color = ResolveColorValue(*parsed_value, context);
     parsed_color = style_color.Resolve(Color::kBlack, color_scheme);
     return ColorParseResult::kColorFunction;
@@ -103,16 +103,16 @@ ColorParseResult ParseCanvasColorString(const String& color_string,
                                         mojom::blink::ColorScheme color_scheme,
                                         Color& parsed_color,
                                         const ui::ColorProvider* color_provider,
-                                        bool is_in_web_app_scope) {
+                                        bool can_expose_accent_color) {
   return ParseColor(parsed_color,
                     color_string.StripWhiteSpace(IsHTMLSpace<UChar>),
-                    color_scheme, color_provider, is_in_web_app_scope);
+                    color_scheme, color_provider, can_expose_accent_color);
 }
 
 bool ParseCanvasColorString(const String& color_string, Color& parsed_color) {
   const ColorParseResult parse_result = ParseCanvasColorString(
       color_string, mojom::blink::ColorScheme::kLight, parsed_color,
-      /*color_provider=*/nullptr, /*is_in_web_app_scope=*/false);
+      /*color_provider=*/nullptr, /*can_expose_accent_color=*/false);
   switch (parse_result) {
     case ColorParseResult::kColor:
     case ColorParseResult::kColorFunction:

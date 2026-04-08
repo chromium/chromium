@@ -2934,7 +2934,7 @@ TEST_F(StyleEngineTest, ColorSchemeBaseBackgroundChange) {
   Color system_background_color = LayoutTheme::GetTheme().SystemColor(
       CSSValueID::kCanvas, color_scheme,
       GetDocument().GetColorProviderForPainting(color_scheme),
-      GetDocument().IsInWebAppScope());
+      GetDocument().IsInWebAppScope() && GetDocument().IsInitialProfile());
 
   EXPECT_EQ(system_background_color,
             GetDocument().View()->BaseBackgroundColor());

@@ -273,6 +273,11 @@
     },
 
     {
+      name: "isInitialProfile",
+      initial: false,
+    },
+
+    {
       name: "presentationRequiresUserGesture",
       initial: true,
     },

@@ -514,7 +514,7 @@ Color StyleColor::Resolve(const Color& current_color,
     CHECK(!IsSystemColorIncludingDeprecated());
     return ColorFromKeyword(color_keyword_, color_scheme,
                             /*color_provider=*/nullptr,
-                            /*is_in_web_app_scope=*/false);
+                            /*can_expose_accent_color=*/false);
   }
   return GetColor();
 }
@@ -522,10 +522,10 @@ Color StyleColor::Resolve(const Color& current_color,
 StyleColor StyleColor::ResolveSystemColor(
     mojom::blink::ColorScheme color_scheme,
     const ui::ColorProvider* color_provider,
-    bool is_in_web_app_scope) const {
+    bool can_expose_accent_color) const {
   CHECK(IsSystemColor());
   Color color = ColorFromKeyword(color_keyword_, color_scheme, color_provider,
-                                 is_in_web_app_scope);
+                                 can_expose_accent_color);
   return StyleColor(color, color_keyword_);
 }
 
@@ -542,14 +542,14 @@ const CSSValue* StyleColor::ToCSSValue() const {
 Color StyleColor::ColorFromKeyword(CSSValueID keyword,
                                    mojom::blink::ColorScheme color_scheme,
                                    const ui::ColorProvider* color_provider,
-                                   bool is_in_web_app_scope) {
+                                   bool can_expose_accent_color) {
   std::string_view value_name = GetCSSValueName(keyword);
   if (const NamedColor* named_color = FindColor(value_name)) {
     return Color::FromRGBA32(named_color->argb_value);
   }
 
   return LayoutTheme::GetTheme().SystemColor(
-      keyword, color_scheme, color_provider, is_in_web_app_scope);
+      keyword, color_scheme, color_provider, can_expose_accent_color);
 }
 
 bool StyleColor::IsColorKeyword(CSSValueID id) {

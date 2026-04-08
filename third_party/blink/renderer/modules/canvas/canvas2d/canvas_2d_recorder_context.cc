@@ -1009,7 +1009,7 @@ ColorParseResult Canvas2DRecorderContext::ParseColorOrCurrentColor(
         .text_link_colors = text_link_colors,
         .used_color_scheme = color_scheme_,
         .color_provider = GetColorProvider(),
-        .is_in_web_app_scope = IsInWebAppScope()};
+        .can_expose_accent_color = IsInWebAppScope()};
     const StyleColor style_color = ResolveColorValue(*color_value, context);
     color = style_color.Resolve(GetCurrentColor(), color_scheme_);
     return ColorParseResult::kColor;

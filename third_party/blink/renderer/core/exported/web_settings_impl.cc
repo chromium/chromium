@@ -622,6 +622,10 @@ void WebSettingsImpl::SetWebAppScope(const WebString& scope) {
   settings_->SetWebAppScope(scope);
 }
 
+void WebSettingsImpl::SetIsInitialProfile(bool is_initial_profile) {
+  settings_->SetIsInitialProfile(is_initial_profile);
+}
+
 void WebSettingsImpl::SetPresentationRequiresUserGesture(bool required) {
   settings_->SetPresentationRequiresUserGesture(required);
 }

@@ -288,7 +288,7 @@ class CORE_EXPORT StyleColor {
   // they pick up the correct color on theme change.
   StyleColor ResolveSystemColor(mojom::blink::ColorScheme color_scheme,
                                 const ui::ColorProvider* color_provider,
-                                bool is_in_web_app_scope) const;
+                                bool can_expose_accent_color) const;
 
   const CSSValue* ToCSSValue() const;
 
@@ -299,7 +299,7 @@ class CORE_EXPORT StyleColor {
   static Color ColorFromKeyword(CSSValueID,
                                 mojom::blink::ColorScheme color_scheme,
                                 const ui::ColorProvider* color_provider,
-                                bool is_in_web_app_scope);
+                                bool can_expose_accent_color);
   static bool IsColorKeyword(CSSValueID);
   static bool IsSystemColorIncludingDeprecated(CSSValueID);
   static bool IsSystemColor(CSSValueID);

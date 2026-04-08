@@ -540,6 +540,10 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.web_app_scope;
   }
 
+  static bool is_initial_profile(const ::blink::web_pref::WebPreferences& r) {
+    return r.is_initial_profile;
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   static float font_scale_factor(const blink::web_pref::WebPreferences& r) {
     return r.font_scale_factor;

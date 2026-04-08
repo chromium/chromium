@@ -125,12 +125,12 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
       bool in_forced_colors,
       mojom::blink::ColorScheme color_scheme,
       const ui::ColorProvider* color_provider,
-      bool is_in_web_app_scope) const;
+      bool can_expose_accent_color) const;
   Color PlatformTextSearchColor(bool active_match,
                                 bool in_forced_colors,
                                 mojom::blink::ColorScheme color_scheme,
                                 const ui::ColorProvider* color_provider,
-                                bool is_in_web_app_scope) const;
+                                bool can_expose_accent_color) const;
 
   virtual Color FocusRingColor(mojom::blink::ColorScheme color_scheme) const;
   virtual Color PlatformFocusRingColor() const { return Color(0, 0, 0); }
@@ -154,7 +154,7 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   virtual Color SystemColor(CSSValueID,
                             mojom::blink::ColorScheme color_scheme,
                             const ui::ColorProvider* color_provider,
-                            bool is_in_web_app_scope) const;
+                            bool can_expose_accent_color) const;
 
   virtual void AdjustSliderThumbSize(ComputedStyleBuilder&) const;
 
@@ -198,11 +198,11 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   // the OS and if it is within an installed WebApp scope, otherwise it will
   // return the default accent color.
   Color GetAccentColorOrDefault(mojom::blink::ColorScheme color_scheme,
-                                bool is_in_web_app_scope) const;
+                                bool can_expose_accent_color) const;
   // GetAccentColorText returns black or white depending on which can be
   // rendered with enough contrast on the result of GetAccentColorOrDefault.
   Color GetAccentColorText(mojom::blink::ColorScheme color_scheme,
-                           bool is_in_web_app_scope) const;
+                           bool can_expose_accent_color) const;
 
   virtual Color SystemHighlightFromColorProvider(
       mojom::blink::ColorScheme color_scheme,
@@ -248,11 +248,11 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   Color DefaultSystemColor(CSSValueID,
                            mojom::blink::ColorScheme color_scheme,
                            const ui::ColorProvider* color_provider,
-                           bool is_in_web_app_scope) const;
+                           bool can_expose_accent_color) const;
   Color SystemColorFromColorProvider(CSSValueID,
                                      mojom::blink::ColorScheme color_scheme,
                                      const ui::ColorProvider* color_provider,
-                                     bool is_in_web_app_scope) const;
+                                     bool can_expose_accent_color) const;
 
  private:
   // This function is to be implemented in your platform-specific theme

@@ -26,13 +26,13 @@ LayoutThemeAndroid::~LayoutThemeAndroid() {}
 Color LayoutThemeAndroid::SystemColor(CSSValueID css_value_id,
                                       mojom::blink::ColorScheme color_scheme,
                                       const ui::ColorProvider* color_provider,
-                                      bool is_in_web_app_scope) const {
+                                      bool can_expose_accent_color) const {
   // Color providers are not supported for Android, so we should always use
   // DefaultSystemColor() for system colors.
   // TODO(crbug.com/40779801): This override can be removed if we can always
   // guarantee the provider is nullptr for Android.
   return DefaultSystemColor(css_value_id, color_scheme, color_provider,
-                            is_in_web_app_scope);
+                            can_expose_accent_color);
 }
 
 Color LayoutThemeAndroid::PlatformActiveSelectionBackgroundColor(

@@ -397,7 +397,8 @@ static Color ResolveStopColor(const CSSToLengthConversionData& conversion_data,
       .text_link_colors = document.GetTextLinkColors(),
       .used_color_scheme = color_scheme,
       .color_provider = document.GetColorProviderForPainting(color_scheme),
-      .is_in_web_app_scope = document.IsInWebAppScope()};
+      .can_expose_accent_color =
+          document.IsInWebAppScope() && document.IsInitialProfile()};
   const StyleColor style_stop_color = ResolveColorValue(stop_color, context);
   return style_stop_color.Resolve(
       style.VisitedDependentColor(GetCSSPropertyColor()), color_scheme);

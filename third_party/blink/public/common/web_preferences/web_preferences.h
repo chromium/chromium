@@ -253,6 +253,10 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // Representation of the Web App Manifest scope if any.
   GURL web_app_scope;
 
+  // Whether this renderer is associated with the browser's initial ("Default")
+  // profile.
+  bool is_initial_profile = false;
+
 #if BUILDFLAG(IS_ANDROID)
   float font_scale_factor = 1.0f;
   int font_weight_adjustment = 0;

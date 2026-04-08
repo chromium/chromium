@@ -9679,6 +9679,13 @@ bool Document::IsInWebAppScope() const {
   return Url().GetString().starts_with(web_app_scope);
 }
 
+bool Document::IsInitialProfile() const {
+  if (!GetSettings()) {
+    return false;
+  }
+  return GetSettings()->GetIsInitialProfile();
+}
+
 bool Document::ChildrenCanHaveStyle() const {
   if (LayoutObject* view = GetLayoutView())
     return view->CanHaveChildren();

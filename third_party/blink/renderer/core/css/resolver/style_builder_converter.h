@@ -594,7 +594,7 @@ struct ResolveColorValueContext {
   const mojom::blink::ColorScheme used_color_scheme =
       mojom::blink::ColorScheme::kLight;
   const ui::ColorProvider* color_provider = nullptr;
-  const bool is_in_web_app_scope = false;
+  const bool can_expose_accent_color = false;
   const bool for_visited_link = false;
 };
 

@@ -4619,7 +4619,7 @@ void StyleEngine::UpdateForcedBackgroundColor() {
       CSSValueID::kCanvas, color_scheme,
       GetDocument().GetPage()->GetColorProviderForPainting(
           color_scheme, forced_colors_ != ForcedColors::kNone),
-      GetDocument().IsInWebAppScope());
+      GetDocument().IsInWebAppScope() && GetDocument().IsInitialProfile());
 }
 
 mojom::blink::ColorScheme StyleEngine::AdjustAboutBlankColorScheme(

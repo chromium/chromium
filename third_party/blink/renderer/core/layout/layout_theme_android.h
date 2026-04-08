@@ -15,7 +15,7 @@ class LayoutThemeAndroid final : public LayoutThemeMobile {
   Color SystemColor(CSSValueID,
                     mojom::blink::ColorScheme color_scheme,
                     const ui::ColorProvider* color_provider,
-                    bool is_in_web_app_scope) const override;
+                    bool can_expose_accent_color) const override;
   Color PlatformActiveSelectionBackgroundColor(
       mojom::blink::ColorScheme color_scheme) const override;
   Color PlatformActiveSelectionForegroundColor(

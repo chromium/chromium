@@ -567,30 +567,31 @@ base::TimeDelta LayoutTheme::CaretBlinkInterval() const {
 Color LayoutTheme::SystemColor(CSSValueID css_value_id,
                                mojom::blink::ColorScheme color_scheme,
                                const ui::ColorProvider* color_provider,
-                               bool is_in_web_app_scope) const {
+                               bool can_expose_accent_color) const {
   if (color_provider && !WebTestSupport::IsRunningWebTest()) {
-    return SystemColorFromColorProvider(css_value_id, color_scheme,
-                                        color_provider, is_in_web_app_scope);
+    return SystemColorFromColorProvider(
+        css_value_id, color_scheme, color_provider, can_expose_accent_color);
   }
   return DefaultSystemColor(css_value_id, color_scheme, color_provider,
-                            is_in_web_app_scope);
+                            can_expose_accent_color);
 }
 
 Color LayoutTheme::DefaultSystemColor(CSSValueID css_value_id,
                                       mojom::blink::ColorScheme color_scheme,
                                       const ui::ColorProvider* color_provider,
-                                      bool is_in_web_app_scope) const {
+                                      bool can_expose_accent_color) const {
   // The source for the deprecations commented on below is
   // https://www.w3.org/TR/css-color-4/#deprecated-system-colors.
 
   switch (css_value_id) {
     case CSSValueID::kAccentcolor:
       return RuntimeEnabledFeatures::CSSAccentColorKeywordEnabled()
-                 ? GetAccentColorOrDefault(color_scheme, is_in_web_app_scope)
+                 ? GetAccentColorOrDefault(color_scheme,
+                                           can_expose_accent_color)
                  : Color();
     case CSSValueID::kAccentcolortext:
       return RuntimeEnabledFeatures::CSSAccentColorKeywordEnabled()
-                 ? GetAccentColorText(color_scheme, is_in_web_app_scope)
+                 ? GetAccentColorText(color_scheme, can_expose_accent_color)
                  : Color();
     case CSSValueID::kActivetext:
       return Color::FromRGBA32(0xFFFF0000);
@@ -701,20 +702,20 @@ Color LayoutTheme::DefaultSystemColor(CSSValueID css_value_id,
       return PlatformTextSearchHighlightColor(/* active_match */ false,
                                               /* in_forced_colors */ false,
                                               color_scheme, color_provider,
-                                              is_in_web_app_scope);
+                                              can_expose_accent_color);
     case CSSValueID::kInternalSearchTextColor:
       return PlatformTextSearchColor(/* active_match */ false,
                                      /* in_forced_colors */ false, color_scheme,
-                                     color_provider, is_in_web_app_scope);
+                                     color_provider, can_expose_accent_color);
     case CSSValueID::kInternalCurrentSearchColor:
       return PlatformTextSearchHighlightColor(/* active_match */ true,
                                               /* in_forced_colors */ false,
                                               color_scheme, color_provider,
-                                              is_in_web_app_scope);
+                                              can_expose_accent_color);
     case CSSValueID::kInternalCurrentSearchTextColor:
       return PlatformTextSearchColor(/* active_match */ true,
                                      /* in_forced_colors */ false, color_scheme,
-                                     color_provider, is_in_web_app_scope);
+                                     color_provider, can_expose_accent_color);
     default:
       break;
   }
@@ -727,7 +728,7 @@ Color LayoutTheme::SystemColorFromColorProvider(
     CSSValueID css_value_id,
     mojom::blink::ColorScheme color_scheme,
     const ui::ColorProvider* color_provider,
-    bool is_in_web_app_scope) const {
+    bool can_expose_accent_color) const {
   SkColor system_theme_color;
   switch (css_value_id) {
     case CSSValueID::kActivetext:
@@ -805,7 +806,7 @@ Color LayoutTheme::SystemColorFromColorProvider(
       break;
     default:
       return DefaultSystemColor(css_value_id, color_scheme, color_provider,
-                                is_in_web_app_scope);
+                                can_expose_accent_color);
   }
 
   return Color::FromSkColor(system_theme_color);
@@ -824,11 +825,11 @@ Color LayoutTheme::PlatformTextSearchHighlightColor(
     bool in_forced_colors,
     mojom::blink::ColorScheme color_scheme,
     const ui::ColorProvider* color_provider,
-    bool is_in_web_app_scope) const {
+    bool can_expose_accent_color) const {
   if (active_match) {
     if (in_forced_colors) {
       return GetTheme().SystemColor(CSSValueID::kHighlight, color_scheme,
-                                    color_provider, is_in_web_app_scope);
+                                    color_provider, can_expose_accent_color);
     }
     return Color(255, 150, 50);  // Orange.
   }
@@ -840,10 +841,10 @@ Color LayoutTheme::PlatformTextSearchColor(
     bool in_forced_colors,
     mojom::blink::ColorScheme color_scheme,
     const ui::ColorProvider* color_provider,
-    bool is_in_web_app_scope) const {
+    bool can_expose_accent_color) const {
   if (in_forced_colors && active_match) {
     return GetTheme().SystemColor(CSSValueID::kHighlighttext, color_scheme,
-                                  color_provider, is_in_web_app_scope);
+                                  color_provider, can_expose_accent_color);
   }
   return Color::kBlack;
 }
@@ -934,24 +935,25 @@ Color LayoutTheme::GetSystemAccentColor(
 
 Color LayoutTheme::GetAccentColorOrDefault(
     mojom::blink::ColorScheme color_scheme,
-    bool is_in_web_app_scope) const {
+    bool can_expose_accent_color) const {
   // This is from the kAccent color from NativeThemeBase::GetControlColor
   const Color kDefaultAccentColor = Color(0x00, 0x75, 0xFF);
   Color accent_color = Color();
   // Currently OS-defined accent color is exposed via System AccentColor keyword
-  // ONLY for installed WebApps where fingerprinting risk is not as large of a
-  // risk.
+  // ONLY for installed WebApps running in the browser's initial ("Default")
+  // profile, where fingerprinting risk is not as large of a concern and
+  // cross-profile fingerprinting is prevented.
   if (RuntimeEnabledFeatures::CSSAccentColorKeywordEnabled() &&
-      is_in_web_app_scope) {
+      can_expose_accent_color) {
     accent_color = GetSystemAccentColor(color_scheme);
   }
   return accent_color == Color() ? kDefaultAccentColor : accent_color;
 }
 
 Color LayoutTheme::GetAccentColorText(mojom::blink::ColorScheme color_scheme,
-                                      bool is_in_web_app_scope) const {
+                                      bool can_expose_accent_color) const {
   Color accent_color =
-      GetAccentColorOrDefault(color_scheme, is_in_web_app_scope);
+      GetAccentColorOrDefault(color_scheme, can_expose_accent_color);
   // This logic matches AccentColorText in Firefox. If the accent color to draw
   // text on is dark, then use white. If it's light, then use dark.
   return color_utils::GetRelativeLuminance4f(accent_color.toSkColor4f()) <= 128

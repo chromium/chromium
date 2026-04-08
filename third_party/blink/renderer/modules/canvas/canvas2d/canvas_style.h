@@ -163,7 +163,7 @@ ColorParseResult ParseCanvasColorString(const String& color_string,
                                         mojom::blink::ColorScheme color_scheme,
                                         Color& parsed_color,
                                         const ui::ColorProvider* color_provider,
-                                        bool is_in_web_app_scope);
+                                        bool can_expose_accent_color);
 
 // Parses the canvas color string, returning true on success. If `color_string`
 // indicates the current color should be used, `parsed_color` is set to black.

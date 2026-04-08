@@ -199,7 +199,7 @@ TextPaintStyle TextPaintStyleForTextMatch(const TextMatchMarker& marker,
       LayoutTheme::GetTheme().PlatformTextSearchColor(
           marker.IsActiveMatch(), document.InForcedColorsMode(), color_scheme,
           document.GetColorProviderForPainting(color_scheme),
-          document.IsInWebAppScope());
+          document.IsInWebAppScope() && document.IsInitialProfile());
   // Comparing against the value of the 'color' property doesn't always make
   // sense (for example for SVG <text> which paints using 'fill' and 'stroke').
   if (!ignore_current_color) {
@@ -572,7 +572,7 @@ void HighlightPainter::PaintNonCssMarkers(Phase phase) {
                   originating_style_.UsedColorScheme(),
                   document.GetColorProviderForPainting(
                       originating_style_.UsedColorScheme()),
-                  document.IsInWebAppScope());
+                  document.IsInWebAppScope() && document.IsInitialProfile());
           PaintRect(
               paint_info_.context,
               ComputeBackgroundRect(text, paint_start_offset, paint_end_offset),

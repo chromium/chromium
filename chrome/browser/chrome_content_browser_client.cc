@@ -4774,6 +4774,10 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
     }
 #endif
 
+    web_prefs->is_initial_profile =
+        profile->GetOriginalProfile()->GetBaseName() ==
+        ProfileManager::GetInitialProfileDir();
+
     web_prefs->immersive_mode_enabled = vr::VrTabHelper::IsInVr(web_contents);
   }
 

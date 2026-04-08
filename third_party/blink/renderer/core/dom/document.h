@@ -1986,6 +1986,10 @@ class CORE_EXPORT Document : public ContainerNode,
   // associated Web App Manifest, it will return false.
   bool IsInWebAppScope() const;
 
+  // Returns whether this document is associated with the browser's initial
+  // ("Default") profile.
+  bool IsInitialProfile() const;
+
   void DispatchHandleLoadStart();
   void DispatchHandleLoadComplete();
 

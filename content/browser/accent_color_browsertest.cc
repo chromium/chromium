@@ -26,7 +26,8 @@
 namespace content {
 
 // Test that the System AccentColor keyword is supported ONLY for installed
-// WebApps. Currently this test is applied ONLY for Windows,ChromeOS and Mac.
+// WebApps on the browser's initial ("Default") profile. Currently this test is
+// applied ONLY for Windows, ChromeOS and Mac.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 
 enum class AppType { WebApp, NoneWebApp };
@@ -40,12 +41,18 @@ class SystemAccentColorTest : public ContentBrowserTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "CSSAccentColorKeyword");
+    command_line->AppendSwitchASCII(
+        switches::kEnableBlinkFeatures,
+        "CSSAccentColorKeyword,WebAppScopeSystemAccentColor");
   }
 
   void SetWebAppScope(const GURL web_app_scope) {
     browser_client_->set_web_app_scope(web_app_scope);
+    shell()->web_contents()->OnWebPreferencesChanged();
+  }
+
+  void SetIsInitialProfile(bool is_initial_profile) {
+    browser_client_->set_is_initial_profile(is_initial_profile);
     shell()->web_contents()->OnWebPreferencesChanged();
   }
 
@@ -65,11 +72,14 @@ class SystemAccentColorTest : public ContentBrowserTest {
 #endif  // BUILDFLAG(IS_MAC)
   }
 
-  void SetUpTestPageWithAccentColor(TestType type, SkColor accent_color) {
+  void SetUpTestPageWithAccentColor(TestType type,
+                                    SkColor accent_color,
+                                    bool is_initial_profile = true) {
     GURL web_app_scope = GURL(
         "data:text/html,<body style='background-color: "
         "AccentColor;'> System Accent Color </body>");
     SetWebAppScope(type == TestType::InstalledWebApp ? web_app_scope : GURL());
+    SetIsInitialProfile(is_initial_profile);
 
     SetAccentColor(accent_color);
 
@@ -93,6 +103,10 @@ class SystemAccentColorTest : public ContentBrowserTest {
       web_app_scope_ = web_app_scope;
     }
 
+    void set_is_initial_profile(bool is_initial_profile) {
+      is_initial_profile_ = is_initial_profile;
+    }
+
     void OverrideWebPreferences(
         WebContents* web_contents,
         SiteInstance& main_frame_site,
@@ -101,10 +115,12 @@ class SystemAccentColorTest : public ContentBrowserTest {
           web_contents, main_frame_site, web_prefs);
 
       web_prefs->web_app_scope = web_app_scope_;
+      web_prefs->is_initial_profile = is_initial_profile_;
     }
 
    private:
     GURL web_app_scope_;
+    bool is_initial_profile_ = true;
   };
 
   std::unique_ptr<BrowserClientForAccentColorTest> browser_client_;
@@ -126,6 +142,18 @@ IN_PROC_BROWSER_TEST_F(SystemAccentColorTest,
                                SkColorSetRGB(135, 115, 10));
   // System AccentColor keyword returns a hard coded value (shade of blue) for
   // non-installed websites.
+  EXPECT_EQ("rgb(0, 117, 255)", GetBodyBackgroundColor());
+}
+
+IN_PROC_BROWSER_TEST_F(SystemAccentColorTest,
+                       SystemAccentColorKeywordForNonInitialProfile) {
+  // Even in a web app scope, non-initial profiles should not see the system
+  // accent color to prevent cross-profile fingerprinting.
+  SetUpTestPageWithAccentColor(TestType::InstalledWebApp,
+                               SkColorSetRGB(135, 115, 10),
+                               /*is_initial_profile=*/false);
+  // System AccentColor keyword returns a hard coded value (shade of blue) for
+  // non-initial profiles.
   EXPECT_EQ("rgb(0, 117, 255)", GetBodyBackgroundColor());
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)

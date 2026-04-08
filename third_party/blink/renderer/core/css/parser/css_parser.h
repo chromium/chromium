@@ -153,7 +153,7 @@ class CORE_EXPORT CSSParser {
                                const String&,
                                mojom::blink::ColorScheme color_scheme,
                                const ui::ColorProvider* color_provider,
-                               bool is_in_web_app_scope);
+                               bool can_expose_accent_color);
 
   static void ParseSheetForInspector(const CSSParserContext*,
                                      StyleSheetContents*,

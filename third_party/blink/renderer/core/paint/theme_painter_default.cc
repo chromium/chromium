@@ -276,13 +276,14 @@ std::optional<SkColor> GetAccentColor(
   // We should not allow the system accent color to be rendered in image
   // contexts because it could be read back by the page and used for
   // fingerprinting. We also only allow the system accent color to be used in
-  // web app contexts where fingerprinting risk is not as large of a concern.
+  // web app contexts on the initial profile, where fingerprinting risk is not
+  // as large of a concern and cross-profile fingerprinting is prevented.
   if (!accent_color &&
       !document.GetPage()->GetChromeClient().IsIsolatedSVGChromeClient()) {
     if (!document.InForcedColorsMode() &&
         RuntimeEnabledFeatures::CSSSystemAccentColorEnabled() &&
         (!RuntimeEnabledFeatures::WebAppScopeSystemAccentColorEnabled() ||
-         document.IsInWebAppScope()) &&
+         (document.IsInWebAppScope() && document.IsInitialProfile())) &&
         layout_theme.IsAccentColorCustomized(color_scheme)) {
       SkColor system_accent_color =
           layout_theme.GetSystemAccentColor(color_scheme).Rgb();
@@ -309,9 +310,10 @@ std::optional<SkColor> GetAccentColor(
   if (!accent_color->IsOpaque()) {
     SkColor background_color =
         layout_theme
-            .SystemColor(CSSValueID::kCanvas, color_scheme,
-                         document.GetColorProviderForPainting(color_scheme),
-                         document.IsInWebAppScope())
+            .SystemColor(
+                CSSValueID::kCanvas, color_scheme,
+                document.GetColorProviderForPainting(color_scheme),
+                document.IsInWebAppScope() && document.IsInitialProfile())
             .Rgb();
     return color_utils::GetResultingPaintColor(accent_color->Rgb(),
                                                background_color);

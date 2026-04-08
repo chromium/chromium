@@ -2910,7 +2910,7 @@ StyleColor ResolveColorValueImpl(const CSSValue& value,
     }
     Color color = StyleColor::ColorFromKeyword(
         value_id, context.used_color_scheme, context.color_provider,
-        context.is_in_web_app_scope);
+        context.can_expose_accent_color);
     // Preserve the identifier for system colors since this is needed by
     // 'forced colors mode'.
     if (StyleColor::IsSystemColorIncludingDeprecated(value_id)) {
@@ -3058,7 +3058,8 @@ StyleColor StyleBuilderConverter::ConvertStyleColor(
       .text_link_colors = document.GetTextLinkColors(),
       .used_color_scheme = color_scheme,
       .color_provider = document.GetColorProviderForPainting(color_scheme),
-      .is_in_web_app_scope = document.IsInWebAppScope(),
+      .can_expose_accent_color =
+          document.IsInWebAppScope() && document.IsInitialProfile(),
       .for_visited_link = for_visited_link};
   return ResolveColorValue(value, context);
 }
@@ -3485,7 +3486,8 @@ static const CSSValue& ComputeColorValue(
       .text_link_colors = document.GetTextLinkColors(),
       .used_color_scheme = color_scheme,
       .color_provider = document.GetColorProviderForPainting(color_scheme),
-      .is_in_web_app_scope = document.IsInWebAppScope(),
+      .can_expose_accent_color =
+          document.IsInWebAppScope() && document.IsInitialProfile(),
       .for_visited_link = false};
   const StyleColor style_color = ResolveColorValue(color_value, context);
   return *style_color.ToCSSValue();
