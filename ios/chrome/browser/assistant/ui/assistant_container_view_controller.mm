@@ -400,6 +400,25 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
   return NO;
 }
 
+#pragma mark - FullscreenUIElement
+
+- (void)updateForFullscreenProgress:(CGFloat)progress {
+  if (_presentationContext == AssistantPresentationContext::kPanel) {
+    self.view.alpha = 1.0;
+    return;
+  }
+
+  self.view.alpha = MIN(1.0, progress / kFullscreenMinimizationThreshold);
+
+  AssistantContainerDetent smallestDetent = _detents.front();
+  if (progress <= kFullscreenMinimizationThreshold &&
+      _activeDetent != smallestDetent) {
+    [self animateToDetent:smallestDetent
+                 duration:kAssistantSheetSpringDuration
+                    curve:UIViewAnimationCurveEaseInOut];
+  }
+}
+
 #pragma mark - Private
 
 // Resumes all the previously paused scroll views.
@@ -421,27 +440,6 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
     scrollView.scrollEnabled = NO;
   }
 }
-
-#pragma mark - FullscreenUIElement
-
-- (void)updateForFullscreenProgress:(CGFloat)progress {
-  if (_presentationContext == AssistantPresentationContext::kPanel) {
-    self.view.alpha = 1.0;
-    return;
-  }
-
-  self.view.alpha = MIN(1.0, progress / kFullscreenMinimizationThreshold);
-
-  AssistantContainerDetent smallestDetent = _detents.front();
-  if (progress <= kFullscreenMinimizationThreshold &&
-      _activeDetent != smallestDetent) {
-    [self animateToDetent:smallestDetent
-                 duration:kAssistantSheetSpringDuration
-                    curve:UIViewAnimationCurveEaseInOut];
-  }
-}
-
-#pragma mark - Private
 
 // Configures and adds the background dimming view.
 - (void)setupDimmingView {
