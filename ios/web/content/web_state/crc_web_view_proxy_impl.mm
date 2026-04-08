@@ -127,4 +127,7 @@
 - (void)setObscuredInsets:(UIEdgeInsets)obscuredInsets {
 }
 
+- (void)setMinimumViewportInset:(UIEdgeInsets)minInset
+           maximumViewportInset:(UIEdgeInsets)maxInset {
+}
 @end
