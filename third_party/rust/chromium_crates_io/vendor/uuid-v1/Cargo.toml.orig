@@ -29,7 +29,7 @@ homepage = "https://github.com/uuid-rs/uuid"
 name = "uuid"
 readme = "README.md"
 repository = "https://github.com/uuid-rs/uuid"
-version = "1.22.0" # remember to update html_root_url in lib.rs
+version = "1.23.0" # remember to update html_root_url in lib.rs
 rust-version = "1.85.0"
 
 [package.metadata.docs.rs]
@@ -86,7 +86,7 @@ borsh = ["dep:borsh", "dep:borsh-derive"]
 
 # Public: Used in trait impls on `Uuid`
 [dependencies.bytemuck]
-version = "1.22.0"
+version = "1.22"
 optional = true
 features = ["derive"]
 
@@ -140,7 +140,7 @@ optional = true
 [target.'cfg(all(target_arch = "wasm32", any(target_os = "unknown", target_os = "none")))'.dependencies.uuid-rng-internal-lib]
 # Work-around lack of support for both `dep:x` and `x/` in MSRV
 package = "uuid-rng-internal"
-version = "1.22.0"
+version = "1.23.0"
 path = "rng"
 optional = true
 

@@ -303,7 +303,7 @@ const SHL4_TABLE: &[u8; 256] = &{
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{std::string::ToString, tests::new};
+    use crate::{std::string::ToString, tests::some_uuid_iter};
 
     #[test]
     fn test_parse_uuid_v4_valid() {
@@ -513,58 +513,65 @@ mod tests {
 
     #[test]
     fn test_roundtrip_default() {
-        let uuid_orig = new();
-        let orig_str = uuid_orig.to_string();
-        let uuid_out = Uuid::parse_str(&orig_str).unwrap();
-        assert_eq!(uuid_orig, uuid_out);
+        for uuid_orig in some_uuid_iter() {
+            let orig_str = uuid_orig.to_string();
+            let uuid_out = Uuid::parse_str(&orig_str).unwrap();
+            assert_eq!(uuid_orig, uuid_out);
+        }
     }
 
     #[test]
     fn test_roundtrip_hyphenated() {
-        let uuid_orig = new();
-        let orig_str = uuid_orig.hyphenated().to_string();
-        let uuid_out = Uuid::parse_str(&orig_str).unwrap();
-        assert_eq!(uuid_orig, uuid_out);
+        for uuid_orig in some_uuid_iter() {
+            let orig_str = uuid_orig.hyphenated().to_string();
+            let uuid_out = Uuid::parse_str(&orig_str).unwrap();
+            assert_eq!(uuid_orig, uuid_out);
+        }
     }
 
     #[test]
     fn test_roundtrip_simple() {
-        let uuid_orig = new();
-        let orig_str = uuid_orig.simple().to_string();
-        let uuid_out = Uuid::parse_str(&orig_str).unwrap();
-        assert_eq!(uuid_orig, uuid_out);
+        for uuid_orig in some_uuid_iter() {
+            let orig_str = uuid_orig.simple().to_string();
+            let uuid_out = Uuid::parse_str(&orig_str).unwrap();
+            assert_eq!(uuid_orig, uuid_out);
+        }
     }
 
     #[test]
     fn test_roundtrip_urn() {
-        let uuid_orig = new();
-        let orig_str = uuid_orig.urn().to_string();
-        let uuid_out = Uuid::parse_str(&orig_str).unwrap();
-        assert_eq!(uuid_orig, uuid_out);
+        for uuid_orig in some_uuid_iter() {
+            let orig_str = uuid_orig.urn().to_string();
+            let uuid_out = Uuid::parse_str(&orig_str).unwrap();
+            assert_eq!(uuid_orig, uuid_out);
+        }
     }
 
     #[test]
     fn test_roundtrip_braced() {
-        let uuid_orig = new();
-        let orig_str = uuid_orig.braced().to_string();
-        let uuid_out = Uuid::parse_str(&orig_str).unwrap();
-        assert_eq!(uuid_orig, uuid_out);
+        for uuid_orig in some_uuid_iter() {
+            let orig_str = uuid_orig.braced().to_string();
+            let uuid_out = Uuid::parse_str(&orig_str).unwrap();
+            assert_eq!(uuid_orig, uuid_out);
+        }
     }
 
     #[test]
     fn test_roundtrip_parse_urn() {
-        let uuid_orig = new();
-        let orig_str = uuid_orig.urn().to_string();
-        let uuid_out = Uuid::from_bytes(parse_urn(orig_str.as_bytes()).unwrap());
-        assert_eq!(uuid_orig, uuid_out);
+        for uuid_orig in some_uuid_iter() {
+            let orig_str = uuid_orig.urn().to_string();
+            let uuid_out = Uuid::from_bytes(parse_urn(orig_str.as_bytes()).unwrap());
+            assert_eq!(uuid_orig, uuid_out);
+        }
     }
 
     #[test]
     fn test_roundtrip_parse_braced() {
-        let uuid_orig = new();
-        let orig_str = uuid_orig.braced().to_string();
-        let uuid_out = Uuid::from_bytes(parse_braced(orig_str.as_bytes()).unwrap());
-        assert_eq!(uuid_orig, uuid_out);
+        for uuid_orig in some_uuid_iter() {
+            let orig_str = uuid_orig.braced().to_string();
+            let uuid_out = Uuid::from_bytes(parse_braced(orig_str.as_bytes()).unwrap());
+            assert_eq!(uuid_orig, uuid_out);
+        }
     }
 
     #[test]

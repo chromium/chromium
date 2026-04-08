@@ -17,7 +17,7 @@ impl Uuid {
     /// to be enabled.
     #[cfg(all(feature = "std", feature = "rng"))]
     pub fn now_v6(node_id: &[u8; 6]) -> Self {
-        let ts = Timestamp::now(crate::timestamp::context::shared_context());
+        let ts = Timestamp::now(crate::timestamp::context::shared_context_v1());
 
         Self::new_v6(ts, node_id)
     }
@@ -99,7 +99,8 @@ impl Uuid {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{Context, Variant, Version};
+
+    use crate::{ContextV1, Variant, Version};
     use std::string::ToString;
 
     #[cfg(all(target_arch = "wasm32", any(target_os = "unknown", target_os = "none")))]
@@ -114,7 +115,7 @@ mod tests {
         let time: u64 = 1_496_854_535;
         let time_fraction: u32 = 812_946_000;
         let node = [1, 2, 3, 4, 5, 6];
-        let context = Context::new(0);
+        let context = ContextV1::new(0);
 
         let uuid = Uuid::new_v6(Timestamp::from_unix(context, time, time_fraction), &node);
 
@@ -129,7 +130,7 @@ mod tests {
 
         assert_eq!(ts.0 - 0x01B2_1DD2_1381_4000, 14_968_545_358_129_460);
 
-        assert_eq!(Some(node), uuid.get_node_id(),);
+        assert_eq!(Some(node), uuid.get_node_id());
 
         // Ensure parsing the same UUID produces the same timestamp
         let parsed = Uuid::parse_str("1e74ba22-0616-6934-8000-010203040506").unwrap();
@@ -139,7 +140,7 @@ mod tests {
             parsed.get_timestamp().unwrap()
         );
 
-        assert_eq!(uuid.get_node_id().unwrap(), parsed.get_node_id().unwrap(),);
+        assert_eq!(uuid.get_node_id().unwrap(), parsed.get_node_id().unwrap());
     }
 
     #[test]
