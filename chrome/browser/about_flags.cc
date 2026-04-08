@@ -7829,11 +7829,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBlockTelephonyDevicePhoneMuteDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ui::kBlockTelephonyDevicePhoneMute)},
 
-    {"enable-fast-ink-for-software-cursor",
-     flag_descriptions::kEnableFastInkForSoftwareCursorName,
-     flag_descriptions::kEnableFastInkForSoftwareCursorDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kEnableFastInkForSoftwareCursor)},
-
     {"enable-heatmap-palm-detection",
      flag_descriptions::kEnableHeatmapPalmDetectionName,
      flag_descriptions::kEnableHeatmapPalmDetectionDescription, kOsCrOS,

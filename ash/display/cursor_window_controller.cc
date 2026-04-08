@@ -630,8 +630,7 @@ const gfx::ImageSkia& CursorWindowController::GetCursorImageForTest() const {
 }
 
 bool CursorWindowController::ShouldUseFastInk() const {
-  return features::IsFastInkForSoftwareCursorEnabled() &&
-         !Shell::Get()->fullscreen_magnifier_controller()->IsEnabled();
+  return !Shell::Get()->fullscreen_magnifier_controller()->IsEnabled();
 }
 
 void CursorWindowController::UpdateCursorMode() {

@@ -7141,13 +7141,6 @@ inline constexpr char kEnableExternalKeyboardsInDiagnosticsAppDescription[] =
     "Shows external keyboards in the Diagnostics App's input section. Requires "
     "#enable-input-in-diagnostics-app to be enabled.";
 
-inline constexpr char kEnableFastInkForSoftwareCursorName[] =
-    "Enable fast ink for software cursor";
-inline constexpr char kEnableFastInkForSoftwareCursorDescription[] =
-    "When enabled, software cursor will use fast ink to display cursor with "
-    "minimal latency. "
-    "However, it might also cause tearing artifacts.";
-
 inline constexpr char kEnableGesturePropertiesDBusServiceName[] =
     "Enable gesture properties D-Bus service";
 inline constexpr char kEnableGesturePropertiesDBusServiceDescription[] =

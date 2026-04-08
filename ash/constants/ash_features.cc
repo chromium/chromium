@@ -2073,10 +2073,6 @@ BASE_FEATURE(kEnablePeripheralsLogging,
 // connected to the user's chromebook for the first time.
 BASE_FEATURE(kPeripheralNotification, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable fast ink for software cursor. Fast ink provides a low-latency
-// cursor with possible tearing artifacts.
-BASE_FEATURE(kEnableFastInkForSoftwareCursor, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables fwupd developer mode, disabling all firmware authentication checks.
 BASE_FEATURE(kFwupdDeveloperMode, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -2594,10 +2590,6 @@ bool IsExtendedUpdatesOptInFeatureEnabled() {
 
 bool IsExternalKeyboardInDiagnosticsAppEnabled() {
   return base::FeatureList::IsEnabled(kEnableExternalKeyboardsInDiagnostics);
-}
-
-bool IsFastInkForSoftwareCursorEnabled() {
-  return base::FeatureList::IsEnabled(kEnableFastInkForSoftwareCursor);
 }
 
 bool IsFastPairEnabled() {
