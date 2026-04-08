@@ -223,7 +223,7 @@ crbug.com/522646 http/tests/media/encrypted-media/encrypted-media-encrypted-even
 crbug.com/357427 [ Debug Linux ] http/tests/workers/terminate-during-sync-operation-file.html [ Slow ]
 crbug.com/357427 [ Release ] http/tests/workers/terminate-during-sync-operation-file.html [ Slow ]
 crbug.com/357427 http/tests/workers/terminate-during-sync-operation-filesystem.html [ Slow ]
-crbug.com/402379 [ Debug Linux ] storage/indexeddb/cursor-continue-validity.html [ Slow ]
+crbug.com/402379 storage/indexeddb/cursor-continue-validity.html [ Slow ]
 crbug.com/402379 [ Linux ] storage/indexeddb/mozilla/indexes.html [ Slow ]
 crbug.com/402379 [ Mac12 ] storage/indexeddb/mozilla/indexes.html [ Slow ]
 crbug.com/402379 [ Release Win ] storage/indexeddb/mozilla/indexes.html [ Slow ]
