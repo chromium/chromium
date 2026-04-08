@@ -179,10 +179,10 @@ BASE_FEATURE_PARAM(int,
                    "window_seconds_short",
                    kDefaultWindowSecondsShort);
 
-// Not yet enabled by default.
+// Enabled in M148. Remove in or after M151.
 BASE_FEATURE(kWebAuthnImmediateGet,
              "WebAuthenticationImmediateGet",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(int,
                    kWebAuthnImmediateMediationTimeoutMilliseconds,
