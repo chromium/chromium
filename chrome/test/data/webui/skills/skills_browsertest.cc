@@ -50,7 +50,13 @@ IN_PROC_BROWSER_TEST_F(SkillsBrowserTest, SkillCard) {
   RunTest("skills/card_test.js", "mocha.run();");
 }
 
-IN_PROC_BROWSER_TEST_F(SkillsBrowserTest, SkillsEmojiPicker) {
+// TODO(crbug.com/500741288): Test is flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_SkillsEmojiPicker DISABLED_SkillsEmojiPicker
+#else
+#define MAYBE_SkillsEmojiPicker SkillsEmojiPicker
+#endif
+IN_PROC_BROWSER_TEST_F(SkillsBrowserTest, MAYBE_SkillsEmojiPicker) {
   RunTest("skills/skills_emoji_picker_test.js", "mocha.run();");
 }
 
