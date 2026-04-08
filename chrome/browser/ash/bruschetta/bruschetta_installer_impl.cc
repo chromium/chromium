@@ -631,8 +631,6 @@ void BruschettaInstallerImpl::OnStartVm(
 
   BruschettaServiceFactory::GetForProfile(profile_)->RegisterVmLaunch(
       vm_name_, launch_policy);
-  profile_->GetPrefs()->SetBoolean(bruschetta::prefs::kBruschettaInstalled,
-                                   true);
 
   LaunchTerminal();
 }
@@ -641,15 +639,77 @@ void BruschettaInstallerImpl::LaunchTerminal() {
   VLOG(2) << "Launching terminal";
   NotifyObserver(State::kLaunchTerminal);
 
-  // TODO(b/231899688): Implement Bruschetta sending an RPC when installation
-  // finishes so that we only add to prefs on success.
-  auto guest_id = MakeBruschettaId(std::move(vm_name_));
-  BruschettaServiceFactory::GetForProfile(profile_)->RegisterInPrefs(
-      guest_id, std::move(config_id_));
+  vm_observation_.Observe(ash::ConciergeClient::Get());
+
+  auto guest_id = MakeBruschettaId(vm_name_);
 
   guest_id.container_name = "";
 
   // kInvalidDisplayId will launch terminal on the current active display.
+  guest_os::LaunchTerminal(profile_, display::kInvalidDisplayId, guest_id);
+}
+
+void BruschettaInstallerImpl::OnVmInstallState(
+    const vm_tools::concierge::VmInstallStateSignal& signal) {
+  switch (signal.state()) {
+    case vm_tools::concierge::VmInstallStateSignal::UNKNOWN:
+      LOG(ERROR) << "Received UNKNOWN VM install state";
+      break;
+    case vm_tools::concierge::VmInstallStateSignal::IN_PROGRESS:
+      VLOG(2) << "VM installation at step " << signal.in_progress_step()
+              << ", progress: " << signal.in_progress_percent() << "%";
+      break;
+    case vm_tools::concierge::VmInstallStateSignal::SUCCEEDED:
+      HandleVmInstallSucceeded();
+      break;
+    case vm_tools::concierge::VmInstallStateSignal::FAILED:
+      HandleVmInstallFailed();
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+
+void BruschettaInstallerImpl::HandleVmInstallSucceeded() {
+  auto guest_id = MakeBruschettaId(vm_name_);
+  BruschettaServiceFactory::GetForProfile(profile_)->RegisterInPrefs(
+      guest_id, std::move(config_id_));
+  profile_->GetPrefs()->SetBoolean(bruschetta::prefs::kBruschettaInstalled,
+                                   true);
+
+  auto* client = ash::ConciergeClient::Get();
+  DCHECK(client);
+  vm_tools::concierge::StopVmRequest request;
+  request.set_name(vm_name_);
+  request.set_owner_id(ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
+
+  client->StopVm(std::move(request),
+                 base::BindOnce(&BruschettaInstallerImpl::OnStopVm,
+                                weak_ptr_factory_.GetWeakPtr()));
+}
+
+void BruschettaInstallerImpl::HandleVmInstallFailed() {
+  install_running_ = false;
+  BruschettaServiceFactory::GetForProfile(profile_)->RemoveVm(
+      MakeBruschettaId(vm_name_), base::DoNothing());
+  Error(BruschettaInstallResult::kInstallationFailed);
+}
+
+void BruschettaInstallerImpl::OnStopVm(
+    std::optional<vm_tools::concierge::SuccessFailureResponse> result) {
+  if (MaybeClose()) {
+    return;
+  }
+
+  vm_observation_.Reset();
+
+  if (!result || !result->success()) {
+    install_running_ = false;
+    Error(BruschettaInstallResult::kStartVmFailed);
+    return;
+  }
+
+  auto guest_id = MakeBruschettaId(vm_name_);
   guest_os::LaunchTerminal(profile_, display::kInvalidDisplayId, guest_id);
 
   // Close dialog.

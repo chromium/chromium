@@ -53,6 +53,11 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient
     // OnVmSwapping is signaled by Concierge when a VM is swapping.
     virtual void OnVmSwapping(
         const vm_tools::concierge::VmSwappingSignal& signal) {}
+
+    // OnVmInstallState is signaled by Concierge when a VM installation changes
+    // state.
+    virtual void OnVmInstallState(
+        const vm_tools::concierge::VmInstallStateSignal& signal) {}
   };
 
   // Used for observing all concierge signals related to VM disk image

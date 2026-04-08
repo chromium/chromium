@@ -47,9 +47,10 @@ enum class BruschettaInstallResult {
   kConciergeUnavailableError = 27,
   kNotEnoughMemoryError = 28,
   kNoAdidError = 29,
-  kMaxValue = kNoAdidError,
+  kInstallationFailed = 30,
+  kMaxValue = kInstallationFailed,
 };
-// LINT.ThenChange(tools/metrics/histograms/enums.xml)
+// LINT.ThenChange(/tools/metrics/histograms/enums.xml)
 
 // Returns the string name of the BruschettaResult.
 const char16_t* BruschettaInstallResultString(

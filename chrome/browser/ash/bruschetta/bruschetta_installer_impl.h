@@ -9,12 +9,14 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_download.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "components/download/public/background_service/download_metadata.h"
 #include "url/gurl.h"
@@ -25,7 +27,8 @@ class Profile;
 namespace bruschetta {
 class BruschettaDownload;
 
-class BruschettaInstallerImpl : public BruschettaInstaller {
+class BruschettaInstallerImpl : public BruschettaInstaller,
+                                public ash::ConciergeClient::VmObserver {
  public:
   // Public for a free function in the .cc file, not actually part of the public
   // interface.
@@ -43,6 +46,10 @@ class BruschettaInstallerImpl : public BruschettaInstaller {
 
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
+
+  // ash::ConciergeClient::VmObserver:
+  void OnVmInstallState(
+      const vm_tools::concierge::VmInstallStateSignal& signal) override;
 
   void SetDownloadFactoryForTesting(
       base::RepeatingCallback<std::unique_ptr<BruschettaDownload>(void)>
@@ -85,6 +92,12 @@ class BruschettaInstallerImpl : public BruschettaInstaller {
                  std::optional<vm_tools::concierge::StartVmResponse> result);
   void LaunchTerminal();
 
+  void HandleVmInstallSucceeded();
+  void HandleVmInstallFailed();
+
+  void OnStopVm(
+      std::optional<vm_tools::concierge::SuccessFailureResponse> result);
+
   void NotifyObserver(State state);
   void Error(BruschettaInstallResult error);
 
@@ -112,6 +125,10 @@ class BruschettaInstallerImpl : public BruschettaInstaller {
   base::OnceClosure close_closure_;
 
   raw_ptr<Observer> observer_ = nullptr;
+
+  base::ScopedObservation<ash::ConciergeClient,
+                          ash::ConciergeClient::VmObserver>
+      vm_observation_{this};
 
   base::WeakPtrFactory<BruschettaInstallerImpl> weak_ptr_factory_{this};
 };

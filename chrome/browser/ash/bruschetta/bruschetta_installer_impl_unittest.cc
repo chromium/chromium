@@ -11,6 +11,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_amount_of_physical_memory_override.h"
@@ -274,6 +275,22 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
       } else {
         FakeConciergeClient()->set_start_vm_response(std::nullopt);
       }
+    };
+  }
+
+  auto LaunchTerminalCallback() {
+    return [this]() {
+      this->expect_vm_registered_ = false;
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce([]() {
+            vm_tools::concierge::VmInstallStateSignal signal;
+            signal.set_state(
+                vm_tools::concierge::VmInstallStateSignal::SUCCEEDED);
+            for (auto& observer :
+                 ash::FakeConciergeClient::Get()->vm_observer_list()) {
+              observer.OnVmInstallState(signal);
+            }
+          }));
     };
   }
 
@@ -593,8 +610,8 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
     EXPECT_CALL(observer_,
                 StateChanged(BruschettaInstaller::State::kLaunchTerminal))
         .Times(1)
-        .InSequence(seq);
-    // Dialog closes after this without further action from us
+        .InSequence(seq)
+        .WillOnce(InvokeWithoutArgs(LaunchTerminalCallback()));
 
     // Make sure all input steps other then kMaxSteps got handled earlier.
     if (n != 0) {

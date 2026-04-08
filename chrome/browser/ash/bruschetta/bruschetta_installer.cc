@@ -40,6 +40,7 @@ const char16_t* BruschettaInstallResultString(
     ENTRY(kConciergeUnavailableError);
     ENTRY(kNotEnoughMemoryError);
     ENTRY(kNoAdidError);
+    ENTRY(kInstallationFailed);
   }
 #undef ENTRY
 #undef USTR
