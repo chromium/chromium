@@ -8,10 +8,8 @@
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_provider_manager.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -29,7 +27,24 @@
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #endif  //  BUILDFLAG(IS_MAC)
 
-class PlatformAuthPolicyObserverTest : public InProcessBrowserTest {
+#if BUILDFLAG(IS_ANDROID)
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
+#endif  //  BUILDFLAG(IS_ANDROID)
+
+namespace {
+
+#if BUILDFLAG(IS_WIN)
+const char* kPrefKey = prefs::kCloudApAuthEnabled;
+const char* kPolicyKey = policy::key::kCloudAPAuthEnabled;
+#elif BUILDFLAG(IS_ANDROID)
+const char* kPrefKey = prefs::kAndroidEntraSSOEnabled;
+const char* kPolicyKey = policy::key::kAndroidEntraSsoEnabled;
+#endif
+
+}  // namespace
+
+class PlatformAuthPolicyObserverTest : public PlatformBrowserTest {
  public:
   void SetUp() override {
     policy_provider_.SetDefaultReturns(
@@ -37,7 +52,7 @@ class PlatformAuthPolicyObserverTest : public InProcessBrowserTest {
         /*is_first_policy_load_complete_return=*/true);
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
         &policy_provider_);
-    InProcessBrowserTest::SetUp();
+    PlatformBrowserTest::SetUp();
   }
 
  protected:
@@ -52,9 +67,13 @@ class PlatformAuthPolicyObserverTest : public InProcessBrowserTest {
       policy::ManagementServiceFactory::GetForPlatform(),
       policy::EnterpriseManagementAuthority::COMPUTER_LOCAL};
 #endif  //  BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_ANDROID)
+  base::test::ScopedFeatureList feature_list_{
+      enterprise_auth::kAndroidEntraSSO};
+#endif
 };
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(PlatformAuthPolicyObserverTest, EnableThenDisable) {
   // Initialize the policy handler.
   PrefService* prefs = g_browser_process->local_state();
@@ -65,30 +84,30 @@ IN_PROC_BROWSER_TEST_F(PlatformAuthPolicyObserverTest, EnableThenDisable) {
   // The manager should be disabled by default since the policy is disabled.
   ASSERT_FALSE(manager.IsEnabled());
 
-  EXPECT_EQ(/*Disabled*/ 0, prefs->GetInteger(prefs::kCloudApAuthEnabled));
-  EXPECT_FALSE(prefs->IsManagedPreference(prefs::kCloudApAuthEnabled));
+  EXPECT_EQ(/*Disabled*/ 0, prefs->GetInteger(kPrefKey));
+  EXPECT_FALSE(prefs->IsManagedPreference(kPrefKey));
 
   // Enable the policy.
   policy::PolicyMap policies;
-  policies.Set(policy::key::kCloudAPAuthEnabled, policy::POLICY_LEVEL_MANDATORY,
+  policies.Set(kPolicyKey, policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
                base::Value(1), nullptr);
   policy_provider_.UpdateChromePolicy(policies);
 
-  EXPECT_EQ(/*Enabled*/ 1, prefs->GetInteger(prefs::kCloudApAuthEnabled));
-  EXPECT_TRUE(prefs->IsManagedPreference(prefs::kCloudApAuthEnabled));
+  EXPECT_EQ(/*Enabled*/ 1, prefs->GetInteger(kPrefKey));
+  EXPECT_TRUE(prefs->IsManagedPreference(kPrefKey));
 
   // The manager should now be enabled.
   ASSERT_TRUE(manager.IsEnabled());
 
   // Disable the policy.
-  policies.Set(policy::key::kCloudAPAuthEnabled, policy::POLICY_LEVEL_MANDATORY,
+  policies.Set(kPolicyKey, policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
                base::Value(0), nullptr);
   policy_provider_.UpdateChromePolicy(policies);
 
-  EXPECT_EQ(/*Disabled*/ 0, prefs->GetInteger(prefs::kCloudApAuthEnabled));
-  EXPECT_TRUE(prefs->IsManagedPreference(prefs::kCloudApAuthEnabled));
+  EXPECT_EQ(/*Disabled*/ 0, prefs->GetInteger(kPrefKey));
+  EXPECT_TRUE(prefs->IsManagedPreference(kPrefKey));
 
   // The manager should now be disabled.
   ASSERT_FALSE(manager.IsEnabled());
@@ -106,28 +125,28 @@ IN_PROC_BROWSER_TEST_F(PlatformAuthPolicyObserverTest, EnableThenUnset) {
   // The manager should be disabled by default since the policy is disabled.
   ASSERT_FALSE(manager.IsEnabled());
 
-  EXPECT_EQ(/*Disabled*/ 0, prefs->GetInteger(prefs::kCloudApAuthEnabled));
-  EXPECT_FALSE(prefs->IsManagedPreference(prefs::kCloudApAuthEnabled));
+  EXPECT_EQ(/*Disabled*/ 0, prefs->GetInteger(kPrefKey));
+  EXPECT_FALSE(prefs->IsManagedPreference(kPrefKey));
 
   // Enable the policy.
   policy::PolicyMap policies;
-  policies.Set(policy::key::kCloudAPAuthEnabled, policy::POLICY_LEVEL_MANDATORY,
+  policies.Set(kPolicyKey, policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
                base::Value(1), nullptr);
   policy_provider_.UpdateChromePolicy(policies);
 
-  EXPECT_EQ(/*Enabled*/ 1, prefs->GetInteger(prefs::kCloudApAuthEnabled));
-  EXPECT_TRUE(prefs->IsManagedPreference(prefs::kCloudApAuthEnabled));
+  EXPECT_EQ(/*Enabled*/ 1, prefs->GetInteger(kPrefKey));
+  EXPECT_TRUE(prefs->IsManagedPreference(kPrefKey));
 
   // The manager should now be enabled.
   ASSERT_TRUE(manager.IsEnabled());
 
   // Unset the policy.
-  policies.Erase(policy::key::kCloudAPAuthEnabled);
+  policies.Erase(kPolicyKey);
   policy_provider_.UpdateChromePolicy(policies);
 
-  EXPECT_EQ(/*Disabled*/ 0, prefs->GetInteger(prefs::kCloudApAuthEnabled));
-  EXPECT_FALSE(prefs->IsManagedPreference(prefs::kCloudApAuthEnabled));
+  EXPECT_EQ(/*Disabled*/ 0, prefs->GetInteger(kPrefKey));
+  EXPECT_FALSE(prefs->IsManagedPreference(kPrefKey));
 
   // The manager should now be disabled.
   ASSERT_FALSE(manager.IsEnabled());
@@ -252,5 +271,3 @@ IN_PROC_BROWSER_TEST_F(PlatformAuthPolicyObserverTest, UnmanagedDevice) {
   platform_auth_policy_observer_.reset();
 }
 #endif  //  BUILDFLAG(IS_WIN)
-
-// TODO: b/484014627 - Add tests for Android.

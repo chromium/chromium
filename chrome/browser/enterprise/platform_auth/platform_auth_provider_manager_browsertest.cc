@@ -6,8 +6,8 @@
 
 #include "chrome/browser/enterprise/platform_auth/mock_platform_auth_provider.h"
 #include "chrome/browser/enterprise/platform_auth/scoped_set_provider_for_testing.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/http/http_request_headers.h"
@@ -17,7 +17,7 @@ using ::testing::_;
 
 namespace enterprise_auth {
 
-class PlatformAuthManagerBrowserTest : public InProcessBrowserTest {
+class PlatformAuthManagerBrowserTest : public PlatformBrowserTest {
  public:
   PlatformAuthManagerBrowserTest() = default;
   ~PlatformAuthManagerBrowserTest() override = default;
@@ -31,7 +31,6 @@ class PlatformAuthManagerBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(PlatformAuthManagerBrowserTest,
                        DataWithoutOriginFiltering) {
   ASSERT_TRUE(embedded_test_server()->Start());
-
   // Install a mock provider.
   auto mock_provider =
       std::make_unique<::testing::StrictMock<MockPlatformAuthProvider>>();
@@ -55,8 +54,9 @@ IN_PROC_BROWSER_TEST_F(PlatformAuthManagerBrowserTest,
   PlatformAuthProviderManager::GetInstance().SetEnabled(true,
                                                         base::OnceClosure());
 
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/empty.html")));
+  EXPECT_TRUE(
+      content::NavigateToURL(chrome_test_utils::GetActiveWebContents(this),
+                             embedded_test_server()->GetURL("/empty.html")));
   ::testing::Mock::VerifyAndClearExpectations(unsafe_mock_provider);
 
   // The provider instance will be destroyed when `set_provider` is destroyed.
@@ -89,8 +89,9 @@ IN_PROC_BROWSER_TEST_F(PlatformAuthManagerBrowserTest,
   }
 
   // A request now should not invoke the provider for auth data.
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/empty.html")));
+  EXPECT_TRUE(
+      content::NavigateToURL(chrome_test_utils::GetActiveWebContents(this),
+                             embedded_test_server()->GetURL("/empty.html")));
   ::testing::Mock::VerifyAndClearExpectations(unsafe_mock_provider);
 
   // Configure the manager with the embedded test server as the IdP origin.
@@ -117,8 +118,9 @@ IN_PROC_BROWSER_TEST_F(PlatformAuthManagerBrowserTest,
                                "new-cookie=new-cookie-data");
         std::move(callback).Run(std::move(auth_headers));
       });
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/empty.html")));
+  EXPECT_TRUE(
+      content::NavigateToURL(chrome_test_utils::GetActiveWebContents(this),
+                             embedded_test_server()->GetURL("/empty.html")));
   ::testing::Mock::VerifyAndClearExpectations(unsafe_mock_provider);
 
   // The provider instance will be destroyed when `set_provider` is destroyed.
