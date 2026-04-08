@@ -170,6 +170,7 @@ bool DowngradeManager::PrepareUserDataDirectoryForCurrentVersion(
   }
   // Do not attempt migration if this process is the product of a relaunch from
   // a previous in which migration was attempted/performed.
+#if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
   if (command_line.HasSwitch(switches::kUserDataMigrated)) {
     // Strip the switch from the command line so that it does not propagate to
     // any subsequent relaunches.
@@ -178,6 +179,7 @@ bool DowngradeManager::PrepareUserDataDirectoryForCurrentVersion(
     command_line.AppendSwitch(switches::kRepairAllValidExtensions);
     return false;
   }
+#endif
 
   std::optional<base::Version> last_version = GetLastVersion(user_data_dir);
   if (!last_version)
@@ -278,8 +280,10 @@ void DowngradeManager::ProcessDowngrade(const base::FilePath& user_data_dir,
   // Add the migration switch to the command line so that it is propagated to
   // the relaunched process. This is used to prevent a relaunch bomb in case of
   // pathological failure.
+#if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kUserDataMigrated);
+#endif
 }
 
 // static

@@ -571,6 +571,7 @@ source_set("web_applications") {
     "//chrome/browser:global_features",
     "//chrome/browser:shell_integration",
     "//chrome/browser/apps:user_type_filter",
+    "//chrome/browser/browsing_data",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/favicon",

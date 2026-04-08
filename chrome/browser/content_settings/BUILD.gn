@@ -78,6 +78,7 @@ source_set("impl") {
     ":content_settings_factory",
     ":content_settings_util",
     "//chrome/browser:browser_process",
+    "//chrome/browser/browsing_data",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/permissions",
     "//chrome/browser/permissions/system",
@@ -156,6 +157,7 @@ source_set("content_settings_factory_impl") {
   deps = [
     ":content_settings",
     ":content_settings_factory",
+    "//chrome/browser/browsing_data",
     "//chrome/browser/notifications",
     "//chrome/browser/permissions",
     "//chrome/browser/profiles",
@@ -196,6 +198,7 @@ source_set("content_settings_util_impl") {
   deps = [
     ":content_settings_util",
     "//base",
+    "//chrome/browser/browsing_data",
     "//chrome/browser/ui/browser_window",
     "//content/public/browser",
   ]
@@ -224,6 +227,7 @@ if (!is_android) {
       ":content_settings_factory",
       "//base",
       "//base/test:test_support",
+      "//chrome/browser/browsing_data",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
       "//chrome/browser/ui/browser_window",
@@ -299,6 +303,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//chrome/browser",
+    "//chrome/browser/browsing_data",
     "//chrome/browser/permissions",
     "//chrome/browser/prefs",
     "//chrome/browser/profiles:profile",

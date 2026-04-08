@@ -18,14 +18,16 @@
 #include "chrome/common/buildflags.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/offline_pages/core/offline_page_model.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/browsing_data_remover_delegate.h"
 #include "content/public/common/buildflags.h"
-#include "device/fido/platform_credential_store.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+
+namespace device::fido {
+class PlatformCredentialStore;
+}  // namespace device::fido
 
 class Profile;
 class ScopedProfileKeepAlive;

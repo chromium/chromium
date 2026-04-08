@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include <stddef.h>
+
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -491,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, MediaLicenseDeletion) {
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
-const std::vector<std::string> kStorageTypes{
+constexpr std::string_view kStorageTypes[] = {
     "Cookie",    "LocalStorage",  "FileSystem",   "SessionStorage",
     "IndexedDb", "ServiceWorker", "CacheStorage", "MediaLicense"};
 
@@ -516,9 +518,9 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
   GURL url = https_server.GetURL(kLocalHost, "/browsing_data/site_data.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
 
-  for (const std::string& type : kStorageTypes) {
-    SetDataForType(type);
-    EXPECT_TRUE(HasDataForType(type));
+  for (std::string_view type : kStorageTypes) {
+    SetDataForType(std::string(type));
+    EXPECT_TRUE(HasDataForType(std::string(type)));
   }
   // TODO(crbug.com/40577815): Add more datatypes for testing. E.g.
   // notifications, payment handler, content settings, autofill, ...?

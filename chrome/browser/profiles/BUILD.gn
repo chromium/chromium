@@ -148,6 +148,7 @@ source_set("profile_manager_impl") {
     "//chrome/browser:browser_features",
     "//chrome/browser:browser_process",
     "//chrome/browser:buildflags",
+    "//chrome/browser/browsing_data",
     "//chrome/browser/navigation_predictor",
     "//chrome/browser/prefs",
     "//chrome/browser/profiles/keep_alive",
@@ -270,7 +271,10 @@ source_set("profile_util_impl") {
     "reporting_util.cc",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/browsing_data",
+  ]
 
   deps = [
     ":profile",
@@ -374,6 +378,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/bluetooth",
     "//chrome/browser/bookmarks",
     "//chrome/browser/breadcrumbs",
+    "//chrome/browser/browsing_data",
     "//chrome/browser/browsing_topics",
     "//chrome/browser/btm",
     "//chrome/browser/client_hints",

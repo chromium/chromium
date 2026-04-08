@@ -11,13 +11,16 @@ namespace downgrade {
 
 namespace {
 
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 constexpr int kDefaultMaxNumberOfSnapshots = 3;
-
+#endif
 }
 
 void RegisterPrefs(PrefRegistrySimple* registry) {
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
   registry->RegisterIntegerPref(prefs::kUserDataSnapshotRetentionLimit,
                                 kDefaultMaxNumberOfSnapshots);
+#endif
 }
 
 }  // namespace downgrade
