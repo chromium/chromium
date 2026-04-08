@@ -39,12 +39,17 @@ public class ThinWebViewFactory {
     }
 
     /**
-     * Creates a {@link ThinWebView} backed by a {@link Surface}. The surface is provided by a
-     * either a {@link TextureView} or {@link SurfaceView}.
+     * Special method to create a {@link ThinWebView} using a specific {@link WindowAndroid}.
+     *
+     * <p>Most clients should NOT use this method as it might share a compositor with the existing
+     * window. Typically, a ThinWebView requires an isolated rendering environment with its own
+     * dedicated compositor. Reusing a {@link WindowAndroid} that is already associated with another
+     * compositor (e.g. from the main Activity) might accidentally cause the original compositor to
+     * be detached.
      *
      * @param context The context to create this view.
      * @param constraints A set of constraints associated with this view.
-     * @param windowAndroid The {@link WindowAndroid} of the current activity.
+     * @param windowAndroid The {@link WindowAndroid} to be used for the ThinWebView.
      */
     public static ThinWebView create(
             Context context, ThinWebViewConstraints constraints, WindowAndroid windowAndroid) {
