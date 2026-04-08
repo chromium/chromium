@@ -323,7 +323,8 @@ BrowserProcessImpl::BrowserProcessImpl(StartupData* startup_data)
 #endif
       platform_part_(std::make_unique<BrowserProcessPlatformPart>()),
       network_time_tracker_(startup_data->chrome_feature_list_creator()
-                                ->TakeNetworkTimeTracker()) {
+                                ->TakeNetworkTimeTracker()),
+      features_(GlobalFeatures::CreateGlobalFeatures()) {
   CHECK(!g_browser_process);
   g_browser_process = this;
 
@@ -348,7 +349,6 @@ const ui::UnownedUserDataHost& BrowserProcessImpl::GetUnownedUserDataHost()
 }
 
 void BrowserProcessImpl::Init() {
-  features_ = GlobalFeatures::CreateGlobalFeatures();
   features_->PreBrowserProcessInit();
 
 #if BUILDFLAG(IS_ANDROID)
