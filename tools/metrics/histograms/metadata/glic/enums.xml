@@ -954,7 +954,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="kFailedClipboardCopyPolicy"/>
   <int value="12" label="kFailedClipboardPastePolicy"/>
   <int value="13" label="kFailedNoInstance"/>
-  <int value="15" label="kFailedClientUnreadied"/>
+  <int value="14" label="kFailedClientUnreadied"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:ShareImageResult) -->
