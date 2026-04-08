@@ -44,6 +44,7 @@ bool IsValidRendererDisposition(WindowOpenDisposition disposition) {
     case WindowOpenDisposition::NEW_WINDOW:
     case WindowOpenDisposition::SAVE_TO_DISK:
     case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
+    case WindowOpenDisposition::NEW_SPLIT_VIEW:
       return true;
     default:
       // Certain dispositions, such as SWITCH_TO_TAB, are only used internally
