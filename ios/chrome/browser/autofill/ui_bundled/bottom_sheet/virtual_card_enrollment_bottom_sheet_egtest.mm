@@ -90,7 +90,7 @@ NSString* const kVirtualCardEnrollResponseSuccess =
 
 id<GREYMatcher> VirtualCardEnrollmentTitle() {
   return grey_accessibilityLabel(l10n_util::GetNSString(
-      IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DIALOG_TITLE_LABEL));
+      IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DIALOG_TITLE_LABEL_V2));
 }
 
 id<GREYMatcher> VirtualCardEnrollmentAcceptButton() {
@@ -111,6 +111,13 @@ id<GREYMatcher> ActivityIndicatorMatcher() {
 @end
 
 @implementation VirtualCardEnrollmentBottomSheetEgTest
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_enabled.push_back(
+      autofill::features::kAutofillEnableWalletBrandingV2);
+  return config;
+}
 
 - (void)setUp {
   [super setUp];
