@@ -203,6 +203,3 @@ crbug.com/487895128 [ Linux ] virtual/indexeddb_sqlite/external/wpt/storage/esti
 
 crbug.com/499535771 [ Linux ] external/wpt/html/semantics/permission-element/install/no-focus.tentative.html [ Skip ]
 crbug.com/499535771 [ Linux ] virtual/permission-element/external/wpt/html/semantics/permission-element/install/no-focus.tentative.html [ Skip ]
-
-# Gardener 2025-04-07.
-crbug.com/499293676 [ Linux ] http/tests/devtools/profiler/heap-snapshot-inspect-dom-wrapper.js [ Timeout ]
