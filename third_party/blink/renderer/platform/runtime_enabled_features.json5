@@ -5283,8 +5283,9 @@
     {
       // If enabled, SharedWorker supports extendedLifetime
       // https://github.com/whatwg/html/issues/10997
+      // https://issues.chromium.org/issues/400473072
       name: "SharedWorkerExtendedLifetime",
-      status: "experimental",
+      status: "stable",
       origin_trial_feature_name: "SharedWorkerExtendedLifetime",
       origin_trial_allows_third_party: true,
     },
