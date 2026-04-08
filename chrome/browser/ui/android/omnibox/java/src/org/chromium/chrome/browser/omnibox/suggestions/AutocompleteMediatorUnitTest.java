@@ -1763,6 +1763,46 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
+    public void onTopResumedActivityChanged_managesObservers() {
+        var session = createEmptySession();
+        mMediator.beginInput(session);
+
+        // Initially installed by beginInput -> setAutocompleteController.
+        verify(mAutocompleteController).addOnSuggestionsReceivedListener(mMediator);
+
+        // Deactivate: should remove observers and stop autocomplete.
+        clearInvocations(mAutocompleteController);
+        mMediator.onTopResumedActivityChanged(false);
+        verify(mAutocompleteController).stop(true);
+        verify(mAutocompleteController).removeOnSuggestionsReceivedListener(mMediator);
+
+        // Re-activate: should install observers and trigger suggestions.
+        clearInvocations(mAutocompleteController);
+        mMediator.onTopResumedActivityChanged(true);
+        verify(mAutocompleteController).addOnSuggestionsReceivedListener(mMediator);
+        // This will trigger startZeroSuggest because it's a new tab page in setup.
+        verify(mAutocompleteController).startZeroSuggest(any());
+    }
+
+    @Test
+    public void isInInputSession_ignoresWindowFocus() {
+        var session = createEmptySession();
+        mMediator.beginInput(session);
+
+        assertTrue(mMediator.isInInputSession());
+
+        mMediator.onTopResumedActivityChanged(false);
+        // Previously this would return false. Now it should still be true.
+        assertTrue(mMediator.isInInputSession());
+
+        mMediator.onTopResumedActivityChanged(true);
+        assertTrue(mMediator.isInInputSession());
+
+        mMediator.endInput();
+        assertFalse(mMediator.isInInputSession());
+    }
+
+    @Test
     @SmallTest
     public void triggerSiteSearchSpaceWithQuerySuccess() {
         // Setup: Start session and mock text state with valid keyword and query.
