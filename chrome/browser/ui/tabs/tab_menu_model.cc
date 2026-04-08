@@ -297,24 +297,7 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
 #endif
   }
 
-  AddSeparator(ui::NORMAL_SEPARATOR);
-  AddItemWithStringId(TabStripModel::CommandCloseTab, IDS_TAB_CXMENU_CLOSETAB);
-  AddItemWithStringId(TabStripModel::CommandCloseOtherTabs,
-                      IDS_TAB_CXMENU_CLOSEOTHERTABS);
-
-  if (showing_vertical_tabs) {
-    AddItemWithStringId(TabStripModel::CommandCloseTabsToRight,
-                        IDS_TAB_CXMENU_CLOSETABSBELOW);
-  } else {
-    AddItemWithStringId(TabStripModel::CommandCloseTabsToRight,
-                        base::i18n::IsRTL() ? IDS_TAB_CXMENU_CLOSETABSTOLEFT
-                                            : IDS_TAB_CXMENU_CLOSETABSTORIGHT);
-  }
-  SetEnabledAt(GetItemCount() - 1,
-               tab_strip->IsContextMenuCommandEnabled(
-                   index, TabStripModel::CommandCloseTabsToRight));
-
-  if (controller) {
+  if (tabs::kVerticalTabsToggleInTabContextMenu.Get() && controller) {
     // TODO(crbug.com/475222200): When in immersive, swapping between tab
     // strip types create duplicate tab strips. Until that is resolved,
     // disable the ability to swap between tab strips while in immersive.
@@ -339,6 +322,23 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
       }
     }
   }
+
+  AddSeparator(ui::NORMAL_SEPARATOR);
+  AddItemWithStringId(TabStripModel::CommandCloseTab, IDS_TAB_CXMENU_CLOSETAB);
+  AddItemWithStringId(TabStripModel::CommandCloseOtherTabs,
+                      IDS_TAB_CXMENU_CLOSEOTHERTABS);
+
+  if (showing_vertical_tabs) {
+    AddItemWithStringId(TabStripModel::CommandCloseTabsToRight,
+                        IDS_TAB_CXMENU_CLOSETABSBELOW);
+  } else {
+    AddItemWithStringId(TabStripModel::CommandCloseTabsToRight,
+                        base::i18n::IsRTL() ? IDS_TAB_CXMENU_CLOSETABSTOLEFT
+                                            : IDS_TAB_CXMENU_CLOSETABSTORIGHT);
+  }
+  SetEnabledAt(GetItemCount() - 1,
+               tab_strip->IsContextMenuCommandEnabled(
+                   index, TabStripModel::CommandCloseTabsToRight));
 }
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel,

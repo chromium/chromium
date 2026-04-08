@@ -27,6 +27,8 @@ BASE_DECLARE_FEATURE(kVerticalTabs);
 // version.
 BASE_DECLARE_FEATURE(kVerticalTabsLaunch);
 
+BASE_DECLARE_FEATURE_PARAM(bool, kVerticalTabsToggleInTabContextMenu);
+
 BASE_DECLARE_FEATURE(kVerticalTabsPreviewBadge);
 
 BASE_DECLARE_FEATURE(kVerticalTabsNewBadge);
