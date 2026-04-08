@@ -4,8 +4,14 @@
 
 #import "ios/chrome/browser/app_bar/ui/app_bar_utils.h"
 
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+
 AppBarPosition AppBarPositionForView(UIView* view) {
   if (!view.window || !view.window.windowScene) {
+    return AppBarPosition::kNone;
+  }
+
+  if (CanShowTabStrip(view)) {
     return AppBarPosition::kNone;
   }
 
