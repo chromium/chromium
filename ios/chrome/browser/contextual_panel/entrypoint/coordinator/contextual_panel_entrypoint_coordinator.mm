@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/shared/ui/util/omnibox_util.h"
 
 @interface ContextualPanelEntrypointCoordinator () <
-    ContextualPanelEntrypointCommands,
     ContextualPanelEntrypointMediatorDelegate> {
   // Observer that updates ContextualPanelEntrypointViewController for
   // fullscreen events.
