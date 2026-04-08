@@ -25,9 +25,6 @@ COMPONENT_EXPORT(GOOGLE_APIS) extern const char kOAuth1LoginScope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kDeviceManagementServiceOAuth[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kAnyApiOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kChromeSyncOAuth2Scope[];
-COMPONENT_EXPORT(GOOGLE_APIS)
-extern const char kChromeSyncSupervisedOAuth2Scope[];
-COMPONENT_EXPORT(GOOGLE_APIS) extern const char kGoogleTalkOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kGoogleUserInfoEmail[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kGoogleUserInfoProfile[];
 COMPONENT_EXPORT(GOOGLE_APIS)
@@ -36,14 +33,10 @@ COMPONENT_EXPORT(GOOGLE_APIS) extern const char kFCMOAuthScope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kTachyonOAuthScope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kDriveOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kDriveReadOnlyOAuth2Scope[];
-COMPONENT_EXPORT(GOOGLE_APIS) extern const char kAssistantOAuth2Scope[];
-COMPONENT_EXPORT(GOOGLE_APIS) extern const char kChromeWebstoreOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kAccountCapabilitiesOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kSupportContentOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kSecureConnectOAuth2Scope[];
-COMPONENT_EXPORT(GOOGLE_APIS)
-extern const char kGeminiOAuth2Scope[];
 
 // OAuth2 scopes for Lens.
 COMPONENT_EXPORT(GOOGLE_APIS)
