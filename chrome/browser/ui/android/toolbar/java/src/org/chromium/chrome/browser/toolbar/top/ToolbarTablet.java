@@ -25,7 +25,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
@@ -547,7 +546,6 @@ public class ToolbarTablet extends ToolbarLayout {
      * @param widthMeasureSpec The width measure spec to be used for measurement.
      * @param heightMeasureSpec The height measure spec to be used for measurement.
      */
-    @VisibleForTesting
     static void allocateAvailableToolbarWidth(
             @Nullable ToolbarWidthConsumer[] toolbarWidthConsumer,
             int availableWidthDp,
@@ -853,14 +851,12 @@ public class ToolbarTablet extends ToolbarLayout {
         mToolbarButtonsVisible = value;
     }
 
-    @VisibleForTesting
-    void setReloadButtonCoordinator(ReloadButtonCoordinator coordinator) {
+    void setReloadButtonCoordinatorForTesting(ReloadButtonCoordinator coordinator) {
         mReloadButtonCoordinator = coordinator;
         mToolbarWidthConsumers[ToolbarComponentId.RELOAD] = mReloadButtonCoordinator;
     }
 
-    @VisibleForTesting
-    void setBackButtonCoordinator(BackButtonCoordinator coordinator) {
+    void setBackButtonCoordinatorForTesting(BackButtonCoordinator coordinator) {
         mBackButtonCoordinator = coordinator;
         mToolbarWidthConsumers[ToolbarComponentId.BACK] = mBackButtonCoordinator;
     }

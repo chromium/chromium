@@ -221,8 +221,8 @@ public final class ToolbarTabletUnitTest {
         mToolbarTablet.setMenuButtonCoordinatorForTesting(mMenuButtonCoordinator);
         mToolbarTablet.setTabStripTransitionCoordinator(mTabStripTransitionCoordinator);
         mToolbarTablet.setToolbarColorObserver(mToolbarColorObserver);
-        mToolbarTablet.setReloadButtonCoordinator(mReloadButtonCoordinator);
-        mToolbarTablet.setBackButtonCoordinator(mBackButtonCoordinator);
+        mToolbarTablet.setReloadButtonCoordinatorForTesting(mReloadButtonCoordinator);
+        mToolbarTablet.setBackButtonCoordinatorForTesting(mBackButtonCoordinator);
         mToolbarTablet.setSigninButtonCoordinatorForTesting(mSigninButtonCoordinator);
         mToolbarTablet.setHomeButtonWidthConsumerForTesting(mHomeButtonCoordinator);
         mToolbarTablet.setTabStackButtonCoordinatorForTesting(mTabSwitcherButtonCoordinator);
