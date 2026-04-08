@@ -14,6 +14,7 @@
 namespace features {
 
 BASE_DECLARE_FEATURE(kGlicTabRestoration);
+BASE_DECLARE_FEATURE(kGlicAndroidSidePanel);
 
 BASE_DECLARE_FEATURE(kGlicDaisyChainViaCoordinator);
 BASE_DECLARE_FEATURE(kGlicClearTurnIdOnPanelWillOpen);
