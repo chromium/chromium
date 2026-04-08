@@ -13,6 +13,7 @@
 #include "base/strings/to_string.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/media/router/data_decoder_util.h"
+#include "components/media_router/common/media_source.h"
 #include "net/http/http_status_code.h"
 #include "url/gurl.h"
 
@@ -21,14 +22,6 @@ namespace media_router {
 namespace {
 
 const char kLoggerComponent[] = "DialAppDiscoveryService";
-
-GURL GetAppUrl(const media_router::MediaSinkInternal& sink,
-               const std::string& app_name) {
-  // The DIAL spec (Section 5.4) implies that the app URL must not have a
-  // trailing slash.
-  GURL partial_app_url = sink.dial_data().app_url;
-  return GURL(partial_app_url.spec() + "/" + app_name);
-}
 
 void RecordDialFetchAppInfo(DialAppInfoResultCode result_code) {
   UMA_HISTOGRAM_ENUMERATION("MediaRouter.Dial.FetchAppInfo", result_code,
@@ -65,9 +58,18 @@ void DialAppDiscoveryService::FetchDialAppInfo(
     DialAppInfoCallback app_info_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  GURL app_url = GetDialAppUrl(sink.dial_data().app_url, app_name);
+  if (!app_url.is_valid()) {
+    std::move(app_info_cb)
+        .Run(sink.sink().id(), app_name,
+             DialAppInfoResult(nullptr, DialAppInfoResultCode::kNetworkError,
+                               "Invalid app URL"));
+    return;
+  }
+
   pending_requests_.push_back(
       std::make_unique<DialAppDiscoveryService::PendingRequest>(
-          sink, app_name, std::move(app_info_cb), this));
+          sink, app_name, app_url, std::move(app_info_cb), this));
   pending_requests_.back()->Start();
 }
 
@@ -86,11 +88,12 @@ void DialAppDiscoveryService::RemovePendingRequest(
 DialAppDiscoveryService::PendingRequest::PendingRequest(
     const MediaSinkInternal& sink,
     const std::string& app_name,
+    const GURL& app_url,
     DialAppInfoCallback app_info_cb,
     DialAppDiscoveryService* const service)
     : sink_id_(sink.sink().id()),
       app_name_(app_name),
-      app_url_(GetAppUrl(sink, app_name)),
+      app_url_(app_url),
       // |base::Unretained(this)| since |fetcher_| is owned by |this|.
       fetcher_(
           base::BindOnce(&DialAppDiscoveryService::PendingRequest::

@@ -20,13 +20,6 @@ namespace media_router {
 
 namespace {
 
-// Returns the URL to use to launch |app_name| on |sink|.
-GURL GetAppURL(const MediaSinkInternal& sink, const std::string& app_name) {
-  // The DIAL spec (Section 5.4) implies that the app URL must not have a
-  // trailing slash.
-  return GURL(sink.dial_data().app_url.spec() + "/" + app_name);
-}
-
 // Returns the Application Instance URL from the POST response headers given by
 // |response_info|.
 GURL GetApplicationInstanceURL(
@@ -112,8 +105,10 @@ std::unique_ptr<DialActivity> DialActivity::From(
     return nullptr;
   }
 
-  GURL app_launch_url = GetAppURL(sink, app_name);
-  DCHECK(app_launch_url.is_valid());
+  GURL app_launch_url = GetDialAppUrl(sink.dial_data().app_url, app_name);
+  if (!app_launch_url.is_valid()) {
+    return nullptr;
+  }
 
   const MediaSink::Id& sink_id = sink.sink().id();
   DialLaunchInfo launch_info(app_name, post_data, client_id, app_launch_url);

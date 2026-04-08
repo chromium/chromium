@@ -86,8 +86,9 @@ class DialAppDiscoveryServiceTest : public ::testing::Test {
   DialAppDiscoveryService::PendingRequest* AddFetchRequest(
       const MediaSinkInternal& sink,
       const std::string& app_name) {
+    GURL app_url = GetDialAppUrl(sink.dial_data().app_url, app_name);
     auto request = std::make_unique<DialAppDiscoveryService::PendingRequest>(
-        sink, app_name,
+        sink, app_name, app_url,
         base::BindOnce(&DialAppDiscoveryServiceTest::OnAppInfo,
                        base::Unretained(this)),
         &dial_app_discovery_service_);

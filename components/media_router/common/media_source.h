@@ -50,6 +50,14 @@ bool IsValidPresentationUrl(const GURL& url);
 // Returns true if |media_source| has a valid presentation URL.
 bool IsValidStandardPresentationSource(const std::string& media_source);
 
+// Returns true if |app_name| contains only safe characters allowed for a DIAL
+// app name.
+bool IsDialAppName(std::string_view app_name);
+
+// Returns a DIAL app URL from the device's |app_url| and |app_name|.
+// Returns an invalid GURL if |app_name| is invalid.
+GURL GetDialAppUrl(const GURL& app_url, const std::string& app_name);
+
 // Returns true if |presentation_id| is an ID used by auto-join requests.
 bool IsAutoJoinPresentationId(const std::string& presentation_id);
 

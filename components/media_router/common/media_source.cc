@@ -77,6 +77,30 @@ bool IsSystemAudioCaptureSupported() {
 
 }  // namespace
 
+bool IsDialAppName(std::string_view app_name) {
+  if (app_name.empty()) {
+    return false;
+  }
+  return std::ranges::all_of(app_name, [](char c) {
+    return base::IsAsciiAlpha(c) || base::IsAsciiDigit(c) || c == '-' ||
+           c == '.' || c == '_' || c == '~';
+  });
+}
+
+GURL GetDialAppUrl(const GURL& app_url, const std::string& app_name) {
+  if (!IsDialAppName(app_name) || !app_url.is_valid()) {
+    return GURL();
+  }
+
+  // The DIAL spec (Section 5.4) implies that the app URL must not have a
+  // trailing slash.
+  std::string spec = app_url.spec();
+  if (!spec.empty() && spec.back() != '/') {
+    spec += "/";
+  }
+  return GURL(spec).Resolve(app_name);
+}
+
 bool IsLegacyCastPresentationUrl(const GURL& url) {
   return base::StartsWith(url.spec(), kLegacyCastPresentationUrlPrefix,
                           base::CompareCase::INSENSITIVE_ASCII);
@@ -236,7 +260,11 @@ bool MediaSource::IsDialSource() const {
 }
 
 std::string MediaSource::AppNameFromDialSource() const {
-  return IsDialSource() ? url_.GetPath() : "";
+  if (!IsDialSource()) {
+    return "";
+  }
+  std::string app_name = url_.GetPath();
+  return IsDialAppName(app_name) ? app_name : "";
 }
 
 std::string MediaSource::TruncateForLogging(size_t max_length) const {
