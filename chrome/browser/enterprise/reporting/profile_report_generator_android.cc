@@ -7,6 +7,11 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/enterprise/reporting/extension_info.h"
+#endif
 
 namespace enterprise_reporting {
 
@@ -16,12 +21,14 @@ ProfileReportGeneratorAndroid::~ProfileReportGeneratorAndroid() = default;
 
 void ProfileReportGeneratorAndroid::GetExtensionInfo(
     enterprise_management::ChromeUserProfileInfo* report) {
-  // Extensions aren't supported on Android.
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  AppendExtensionInfoIntoProfileReport(profile_, report);
+#endif
 }
 
 void ProfileReportGeneratorAndroid::GetExtensionRequest(
     enterprise_management::ChromeUserProfileInfo* report) {
-  // Extensions aren't supported on Android.
+  // Extensions request isn't supported on Android.
 }
 
 }  // namespace enterprise_reporting

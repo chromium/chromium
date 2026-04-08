@@ -51,12 +51,12 @@ namespace enterprise_reporting {
 
 namespace {
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 BASE_FEATURE(kAlwaysUploadExtensionInfo, base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 bool CanUploadExtensionInfo(Profile* profile) {
   if (base::FeatureList::IsEnabled(kAlwaysUploadExtensionInfo)) {
     return true;
@@ -77,7 +77,7 @@ bool CanUploadExtensionInfo(Profile* profile) {
                             base::Value::Type::LIST);
 }
 
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 }  // namespace
 
@@ -116,7 +116,7 @@ void CloudProfileReportingService::CreateReportScheduler() {
           enterprise_signals::SignalsAggregatorFactory::GetForProfile(
               profile_));
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   params.profile_request_generator->ToggleExtensionReport(
       base::BindRepeating(&CanUploadExtensionInfo, profile_));
 #endif

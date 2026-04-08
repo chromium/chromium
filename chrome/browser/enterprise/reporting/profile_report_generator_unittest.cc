@@ -39,12 +39,12 @@
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_android.h"
 #else
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
-#include "chrome/common/extensions/extension_constants.h"
-#include "extensions/browser/pref_names.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/common/extensions/extension_constants.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/pref_names.h"
 #include "extensions/common/extension_builder.h"
 #endif
 
@@ -66,9 +66,17 @@ constexpr char kAffiliationId1[] = "affiliation-id-1";
 constexpr char kAffiliationId2[] = "affiliation-id-2";
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+constexpr char kExtensionId[] = "abcdefghijklmnopabcdefghijklmnop";
+
+constexpr char kBlockedExtensionSettings[] = R"({
+  "abcdefghijklmnopabcdefghijklmnop" : {
+    "installation_mode": "blocked"
+  }
+})";
+
 #if !BUILDFLAG(IS_ANDROID)
 const int kMaxNumberOfExtensionRequest = 1000;
-constexpr char kExtensionId[] = "abcdefghijklmnopabcdefghijklmnop";
 constexpr char kExtensionId2[] = "abcdefghijklmnopabcdefghijklmnpo";
 constexpr int kFakeTime = 123456;
 constexpr char kJustification[] = "I really need to change my boring cursor.";
@@ -78,13 +86,9 @@ constexpr char kAllowedExtensionSettings[] = R"({
     "installation_mode": "allowed"
   }
 })";
-
-constexpr char kBlockedExtensionSettings[] = R"({
-  "abcdefghijklmnopabcdefghijklmnop" : {
-    "installation_mode": "blocked"
-  }
-})";
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 std::unique_ptr<KeyedService> CreateProfileIdService(
     content::BrowserContext* context) {
@@ -164,7 +168,8 @@ class ProfileReportGeneratorTest : public ::testing::Test {
     return report;
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#if !BUILDFLAG(IS_ANDROID)
   void SetExtensionToPendingList(const std::vector<std::string>& ids) {
     base::DictValue id_values;
     for (const auto& id : ids) {
@@ -180,6 +185,7 @@ class ProfileReportGeneratorTest : public ::testing::Test {
     profile()->GetTestingPrefService()->SetUserPref(
         prefs::kCloudExtensionRequestIds, std::move(id_values));
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   void SetExtensionSettings(const std::string& settings_string) {
     std::optional<base::Value> settings = base::JSONReader::Read(
@@ -189,7 +195,7 @@ class ProfileReportGeneratorTest : public ::testing::Test {
         extensions::pref_names::kExtensionManagement,
         base::Value::ToUniquePtrValue(std::move(*settings)));
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   std::string GetProfileName() {
     ProfileAttributesEntry* entry =
@@ -270,7 +276,7 @@ TEST_F(ProfileReportGeneratorTest,
 
 TEST_F(ProfileReportGeneratorTest,
        SignalsOnlyMode_IncludesPoliciesAndExcludesExtensions) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kCloudExtensionRequestEnabled,
       std::make_unique<base::Value>(true));
@@ -289,7 +295,7 @@ TEST_F(ProfileReportGeneratorTest,
   auto report = test_future.Take();
   ASSERT_TRUE(report);
   EXPECT_GT(report->chrome_policies_size(), 0);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   EXPECT_EQ(report->extensions_size(), 0);
 #endif
 
@@ -298,7 +304,7 @@ TEST_F(ProfileReportGeneratorTest,
 
 TEST_F(ProfileReportGeneratorTest,
        NoSignalsAndSignalsAttachedMode_IncludesPoliciesAndExtensions) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kCloudExtensionRequestEnabled,
       std::make_unique<base::Value>(true));
@@ -317,7 +323,7 @@ TEST_F(ProfileReportGeneratorTest,
   auto report = test_future.Take();
   ASSERT_TRUE(report);
   EXPECT_GT(report->chrome_policies_size(), 0);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   EXPECT_GT(report->extensions_size(), 0);
 #endif
 
@@ -329,7 +335,7 @@ TEST_F(ProfileReportGeneratorTest,
   auto report2 = test_future.Take();
   ASSERT_TRUE(report2);
   EXPECT_GT(report2->chrome_policies_size(), 0);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   EXPECT_GT(report2->extensions_size(), 0);
 #endif
 }
@@ -483,7 +489,8 @@ TEST_F(ProfileReportGeneratorTest, NotAffiliated) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(ProfileReportGeneratorTest, PendingRequest) {
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kCloudExtensionRequestEnabled,
@@ -570,6 +577,7 @@ TEST_F(ProfileReportGeneratorTest, TooManyRequests) {
               report2->extension_requests(id).id());
   }
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ProfileReportGeneratorTest, DisableExtensionInfo) {
   extensions::ExtensionBuilder builder(
@@ -591,6 +599,6 @@ TEST_F(ProfileReportGeneratorTest, DisableExtensionInfo) {
   EXPECT_EQ(1, GenerateReport()->extensions_size());
 }
 
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 }  // namespace enterprise_reporting

@@ -3286,8 +3286,6 @@ static_library("browser") {
       "enterprise/data_protection/data_protection_url_lookup_service_factory.h",
       "enterprise/reporting/browser_report_generator_desktop.cc",
       "enterprise/reporting/browser_report_generator_desktop.h",
-      "enterprise/reporting/extension_info.cc",
-      "enterprise/reporting/extension_info.h",
       "enterprise/reporting/extension_request/extension_request_notification.cc",
       "enterprise/reporting/extension_request/extension_request_notification.h",
       "enterprise/reporting/extension_request/extension_request_observer.cc",
@@ -6651,6 +6649,10 @@ static_library("browser") {
   }
 
   if (enable_extensions_core) {
+    sources += [
+      "enterprise/reporting/extension_info.cc",
+      "enterprise/reporting/extension_info.h",
+    ]
     if (enable_guest_view) {
       deps += [
         "//chrome/browser/guest_view",
