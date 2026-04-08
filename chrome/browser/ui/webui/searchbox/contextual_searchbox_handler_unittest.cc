@@ -168,7 +168,8 @@ class MockContextualTasksContextService
               (const contextual_tasks::TabSelectionOptions&,
                const std::string&,
                const std::vector<GURL>&,
-               base::OnceCallback<void(std::vector<content::WebContents*>)>),
+               base::OnceCallback<
+                   void(std::vector<base::WeakPtr<content::WebContents>>)>),
               (override));
 };
 
