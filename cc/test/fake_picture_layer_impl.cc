@@ -14,7 +14,6 @@
 #include "cc/raster/raster_buffer_provider.h"
 #include "cc/resources/resource_pool.h"
 #include "cc/test/fake_raster_source.h"
-#include "cc/test/fake_tile_manager.h"
 #include "cc/tiles/tile.h"
 #include "cc/tiles/tile_draw_info.h"
 #include "cc/trees/layer_tree_host_impl.h"
@@ -210,10 +209,8 @@ void FakePictureLayerImpl::InitializeTileWithResourceSize(
     const gfx::Size& resource_size) {
   LayerTreeHostImpl* host_impl = layer_tree_impl()->host_impl();
   ResourcePool* resource_pool = host_impl->resource_pool();
-  FakeTileManager* tile_manager =
-      static_cast<FakeTileManager*>(host_impl->tile_manager());
   RasterBufferProvider* raster_buffer_provider =
-      tile_manager->GetRasterBufferProvider();
+      host_impl->tile_manager()->raster_buffer_provider_for_testing();
   TileDrawInfo& draw_info = tile->draw_info();
   ResourcePool::InUsePoolResource resource = resource_pool->AcquireResource(
       resource_size, host_impl->GetTileFormat(),

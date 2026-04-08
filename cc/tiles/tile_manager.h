@@ -173,6 +173,10 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
     raster_buffer_provider_ = raster_buffer_provider;
   }
 
+  RasterBufferProvider* raster_buffer_provider_for_testing() {
+    return raster_buffer_provider_;
+  }
+
   void SetPendingRasterQueriesForTesting(
       RasterQueryQueue* pending_raster_queries) {
     pending_raster_queries_ = pending_raster_queries;

@@ -26,10 +26,6 @@ class FakeTileManager : public TileManager {
   void AssignMemoryToTiles(
       const GlobalStateThatImpactsTilePriority& state);
 
-  RasterBufferProvider* GetRasterBufferProvider() {
-    return raster_buffer_provider_;
-  }
-
   std::vector<raw_ptr<Tile, VectorExperimental>> tiles_for_raster;
 
  private:
