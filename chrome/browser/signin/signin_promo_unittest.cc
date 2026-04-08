@@ -144,6 +144,18 @@ TEST(SigninPromoTest, SigninURLForDiceWithHistorySyncOptin) {
                               GURL("https://continue_url/")));
 }
 
+TEST(SigninPromoTest, SigninURLForDiceMagiChromeExperiments) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      switches::kMagiChromeSignInExperimentsBatch1,
+      {{"magichrome_fre_exp_branch", "test_branch"}});
+
+  EXPECT_EQ(
+      "https://accounts.google.com/signin/chrome/sync?ssp=1&"
+      "theme=mn&magichrome_fre_exp_branch=test_branch",
+      GetChromeSyncURLForDice({}));
+}
+
 TEST(SigninPromoTest, IsSignInPromo_AutofillTypes) {
   EXPECT_TRUE(IsSignInPromo(signin_metrics::AccessPoint::kPasswordBubble));
   EXPECT_TRUE(IsSignInPromo(signin_metrics::AccessPoint::kAddressBubble));
