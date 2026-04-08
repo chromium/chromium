@@ -10923,6 +10923,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "glic-chrome-status-icon-size-px": "18"
+                    },
                     "enable_features": [
                         "GlicChromeStatusIcon"
                     ]
