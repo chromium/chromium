@@ -108,15 +108,20 @@ test("glic_internal_e2e_interactive_ui_tests") {
     ]
   }
 
+  deps += [
+    "//chrome:browser_tests_pak",
+    "//chrome:packed_resources",
+    "//chrome:resources",
+    "//chrome:strings",
+    "//ui/resources:ui_test_pak",
+  ]
+  data_deps = [
+    "//chrome:browser_tests_pak",
+    "//chrome:packed_resources",
+    "//ui/resources:ui_test_pak_data",
+  ]
+
   if (is_win) {
-    deps += [
-      "//chrome:browser_tests_pak",
-      "//chrome:packed_resources",
-      "//chrome:resources",
-      "//chrome:strings",
-      "//chrome/installer/util:strings",
-      "//ui/resources:ui_test_pak",
-      "//ui/resources:ui_test_pak_data",
-    ]
+    deps += [ "//chrome/installer/util:strings" ]
   }
 }
