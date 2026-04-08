@@ -217,8 +217,7 @@ bool SyncServiceAndroidBridge::IsInitialSyncFeatureSetupComplete() {
       ->IsInitialSyncFeatureSetupComplete();
 }
 
-void SyncServiceAndroidBridge::SetInitialSyncFeatureSetupComplete(
-    int32_t source) {
+void SyncServiceAndroidBridge::SetInitialSyncFeatureSetupComplete() {
   native_sync_service_->GetUserSettings()->SetInitialSyncFeatureSetupComplete();
 }
 
@@ -276,8 +275,8 @@ void SyncServiceAndroidBridge::SetSelectedTypes(
     bool sync_everything,
     const std::vector<int32_t>& user_selectable_types_vector) {
   if (native_sync_service_->GetAccountInfo().account_id.empty()) {
-    // This function shouldn't be called while signed out, but evidence suggests
-    // it sometimes does get called.
+    // This function shouldn't be called while signed out, but evidence
+    // suggests it sometimes does get called.
     // TODO(crbug.com/369301153): Remove workaround and adopt CHECK/NOTREACHED
     // once crashes are no longer reported. This could also be cleaned up once
     // crbug.com/40066949 is tackled.
@@ -296,8 +295,8 @@ void SyncServiceAndroidBridge::SetSelectedTypes(
 
 void SyncServiceAndroidBridge::SetSelectedType(int32_t type, bool is_type_on) {
   if (native_sync_service_->GetAccountInfo().account_id.empty()) {
-    // This function shouldn't be called while signed out, but evidence suggests
-    // it sometimes does get called.
+    // This function shouldn't be called while signed out, but evidence
+    // suggests it sometimes does get called.
     // TODO(crbug.com/369301153): Remove workaround and adopt CHECK/NOTREACHED
     // once crashes are no longer reported. This could also be cleaned up once
     // crbug.com/40066949 is tackled.
@@ -342,9 +341,9 @@ bool SyncServiceAndroidBridge::IsUsingExplicitPassphrase() {
 }
 
 int32_t SyncServiceAndroidBridge::GetPassphraseType() {
-  // TODO(crbug.com/40923935): Mapping nullopt -> kImplicitPassphrase preserves
-  // the historic behavior, but ideally we should propagate the nullopt state to
-  // Java.
+  // TODO(crbug.com/40923935): Mapping nullopt -> kImplicitPassphrase
+  // preserves the historic behavior, but ideally we should propagate the
+  // nullopt state to Java.
   return static_cast<int32_t>(
       native_sync_service_->GetUserSettings()->GetPassphraseType().value_or(
           PassphraseType::kImplicitPassphrase));

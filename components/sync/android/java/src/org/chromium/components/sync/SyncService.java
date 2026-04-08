@@ -143,7 +143,7 @@ public interface SyncService {
      */
     void setSelectedType(@UserSelectableType int type, boolean isTypeOn);
 
-    void setInitialSyncFeatureSetupComplete(int syncFirstSetupCompleteSource);
+    void setInitialSyncFeatureSetupComplete();
 
     boolean isInitialSyncFeatureSetupComplete();
 

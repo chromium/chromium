@@ -19,21 +19,6 @@ namespace syncer {
 
 class Nigori;
 
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-#if !BUILDFLAG(IS_CHROMEOS)
-enum class SyncFirstSetupCompleteSource {
-  BASIC_FLOW = 0,
-  ADVANCED_FLOW_CONFIRM = 1,
-  ADVANCED_FLOW_INTERRUPTED_TURN_SYNC_ON = 2,
-  ADVANCED_FLOW_INTERRUPTED_LEAVE_SYNC_OFF = 3,
-  // Deprecated: ENGINE_INITIALIZED_WITH_AUTO_START = 4,
-  ANDROID_BACKUP_RESTORE = 5,
-  kMaxValue = ANDROID_BACKUP_RESTORE,
-};
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
 // This class encapsulates all the user-configurable bits of Sync.
 class SyncUserSettings {
  public:

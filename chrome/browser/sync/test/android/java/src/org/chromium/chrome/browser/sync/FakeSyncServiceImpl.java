@@ -291,8 +291,8 @@ public class FakeSyncServiceImpl implements SyncService {
     }
 
     @Override
-    public void setInitialSyncFeatureSetupComplete(int syncFirstSetupCompleteSource) {
-        mDelegate.setInitialSyncFeatureSetupComplete(syncFirstSetupCompleteSource);
+    public void setInitialSyncFeatureSetupComplete() {
+        mDelegate.setInitialSyncFeatureSetupComplete();
     }
 
     @Override

@@ -54,7 +54,7 @@ class SyncServiceAndroidBridge : public SyncServiceObserver {
   bool IsEngineInitialized();
   void SetSetupInProgress(bool in_progress);
   bool IsInitialSyncFeatureSetupComplete();
-  void SetInitialSyncFeatureSetupComplete(int32_t source);
+  void SetInitialSyncFeatureSetupComplete();
   std::vector<int32_t> GetActiveDataTypes();
   std::vector<int32_t> GetSelectedTypes();
   void GetTypesWithUnsyncedData(

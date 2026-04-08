@@ -76,7 +76,6 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.BookmarksLimitExceededHelpClickedSource;
-import org.chromium.components.sync.SyncFirstSetupCompleteSource;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
 import org.chromium.components.sync.UserSelectableType;
@@ -1119,8 +1118,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                         REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED);
                 return;
             case UserActionableError.NEEDS_SETTINGS_CONFIRMATION:
-                mSyncService.setInitialSyncFeatureSetupComplete(
-                        SyncFirstSetupCompleteSource.ADVANCED_FLOW_INTERRUPTED_TURN_SYNC_ON);
+                mSyncService.setInitialSyncFeatureSetupComplete();
                 return;
             case UserActionableError.NEEDS_UPM_BACKEND_UPGRADE:
                 GmsUpdateLauncher.launch(getContext());
