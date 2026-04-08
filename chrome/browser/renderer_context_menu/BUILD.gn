@@ -106,6 +106,7 @@ source_set("impl") {
       "//chrome/browser/profiles:profile_io_data",
       "//chrome/browser/search_engines",
       "//chrome/browser/send_tab_to_self",
+      "//chrome/browser/sharing/click_to_call",
       "//chrome/browser/sharing_hub",
       "//chrome/browser/spellchecker",
       "//chrome/browser/sync",

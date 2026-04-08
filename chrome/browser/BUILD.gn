@@ -1179,9 +1179,6 @@ static_library("browser") {
     # c/b/printing/print_preview_dialog_controller.h
     # c/b/printing/print_view_manager_common.h
     # c/b/profiles/profile_window.h
-    # c/b/sharing/click_to_call/click_to_call_context_menu_observer.h
-    # c/b/sharing/click_to_call/click_to_call_metrics.h
-    # c/b/sharing/click_to_call/click_to_call_utils.h
     # c/b/supervised_user/supervised_user_url_filtering_service_factory.h
     # c/b/translate/translate_service.h
     "//chrome/browser/renderer_context_menu:impl",
@@ -1531,6 +1528,8 @@ static_library("browser") {
     "//chrome/browser/share",
     "//chrome/browser/sharing",
     "//chrome/browser/sharing:buildflags",
+    "//chrome/browser/sharing/click_to_call",
+    "//chrome/browser/sharing/click_to_call:impl",
     "//chrome/browser/sharing/optimization_guide",
     "//chrome/browser/sharing/shared_clipboard",
     "//chrome/browser/sharing/sms",
@@ -2765,8 +2764,6 @@ static_library("browser") {
       "segmentation_platform/android/home_modules_ranking_helper.cc",
       "segmentation_platform/android/segmentation_platform_service_factory_android.cc",
       "sessions/session_restore_android.cc",
-      "sharing/click_to_call/click_to_call_message_handler_android.cc",
-      "sharing/click_to_call/click_to_call_message_handler_android.h",
       "shell_integration_android.cc",
       "signin/android/signin_bridge.cc",
       "signin/android/signin_bridge.h",
@@ -3488,12 +3485,6 @@ static_library("browser") {
       "safe_browsing/generated_security_settings_bundle_pref.h",
       "sessions/restore_on_startup_policy_handler.cc",
       "sessions/restore_on_startup_policy_handler.h",
-      "sharing/click_to_call/click_to_call_context_menu_observer.cc",
-      "sharing/click_to_call/click_to_call_context_menu_observer.h",
-      "sharing/click_to_call/click_to_call_metrics.cc",
-      "sharing/click_to_call/click_to_call_metrics.h",
-      "sharing/click_to_call/click_to_call_ui_controller.cc",
-      "sharing/click_to_call/click_to_call_ui_controller.h",
       "sharing/sharing_notification_handler.cc",
       "sharing/sharing_notification_handler.h",
       "sharing/sharing_ui_controller.cc",
@@ -6340,15 +6331,6 @@ static_library("browser") {
     deps += [
       "//ui/events/ozone",
       "//ui/ozone",
-    ]
-  }
-
-  if (enable_click_to_call) {
-    sources += [
-      "sharing/click_to_call/click_to_call_utils.cc",
-      "sharing/click_to_call/click_to_call_utils.h",
-      "sharing/click_to_call/phone_number_regex.cc",
-      "sharing/click_to_call/phone_number_regex.h",
     ]
   }
 

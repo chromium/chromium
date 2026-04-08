@@ -4247,7 +4247,10 @@ if (!is_android) {
 
     if (enable_click_to_call) {
       sources += [ "../browser/ui/views/sharing/click_to_call_browsertest.cc" ]
-      deps += [ "//components/sharing_message" ]
+      deps += [
+        "//chrome/browser/sharing/click_to_call",
+        "//components/sharing_message",
+      ]
     }
 
     if (enable_on_device_translation) {
@@ -7142,6 +7145,7 @@ test("unit_tests") {
     "//chrome/browser/serial:unit_tests",
     "//chrome/browser/share",
     "//chrome/browser/sharing",
+    "//chrome/browser/sharing/click_to_call:unit_tests",
     "//chrome/browser/sharing/sms:unit_tests",
     "//chrome/browser/site_isolation:unit_tests",
     "//chrome/browser/site_protection",
@@ -7998,7 +8002,6 @@ test("unit_tests") {
       "../browser/profiles/android/profile_resolver_unittest.cc",
       "../browser/readaloud/android/prefs_unittest.cc",
       "../browser/search/contextual_search_policy_handler_android_unittest.cc",
-      "../browser/sharing/click_to_call/click_to_call_message_handler_android_unittest.cc",
       "../browser/signin/android/signin_manager_android_unittest.cc",
       "../browser/supervised_user/android/favicon_fetcher_unittest.cc",
       "../browser/supervised_user/android/supervised_user_web_content_handler_impl_unittest.cc",
@@ -9396,14 +9399,6 @@ test("unit_tests") {
     deps += [ "//ui/events/devices:test_support" ]
   }
 
-  if (enable_click_to_call && !is_android) {
-    sources += [
-      "../browser/sharing/click_to_call/click_to_call_context_menu_observer_unittest.cc",
-      "../browser/sharing/click_to_call/click_to_call_ui_controller_unittest.cc",
-      "../browser/sharing/click_to_call/click_to_call_utils_unittest.cc",
-    ]
-  }
-
   if (enable_background_mode) {
     deps += [ "//chrome/browser/background/extensions:unit_tests" ]
   }
@@ -10545,6 +10540,7 @@ test("unit_tests") {
     }
 
     deps += [
+      "//chrome/browser/sharing/click_to_call",
       "//chrome/browser/sharing/sms",
       "//components/enterprise:test_support",
     ]
