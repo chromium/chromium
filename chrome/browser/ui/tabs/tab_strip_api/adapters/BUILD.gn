@@ -17,10 +17,8 @@ source_set("adapters") {
   ]
 
   public_deps = [
-    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs/tab_strip_api/types",
     "//components/browser_apis/tab_strip:mojom",
     "//components/tabs:public",
-    "//content/public/browser",
   ]
 }

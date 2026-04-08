@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/tabs/tab_strip_api/utilities/tab_strip_api_utilities.h"
 
+#include "chrome/browser/ui/tabs/tab_strip_api/adapters/tab_strip_model_adapter.h"
+
 namespace tabs_api::utils {
 
 const tabs_api::NodeId& GetNodeId(const mojom::Data& data) {
@@ -23,6 +25,24 @@ const tabs_api::NodeId& GetNodeId(const mojom::Data& data) {
     case mojom::Data::Tag::kWindow:
       return data.get_window()->id;
   }
+}
+
+base::expected<tab_groups::TabGroupId, mojo_base::mojom::ErrorPtr>
+GetTabGroupId(TabStripModelAdapter& adapter, const NodeId& node_id) {
+  auto collection_handle = node_id.ToTabCollectionHandle();
+  if (!collection_handle.has_value()) {
+    return base::unexpected(
+        mojo_base::mojom::Error::New(mojo_base::mojom::Code::kInvalidArgument,
+                                     "only collection ids accepted"));
+  }
+
+  auto group_id = adapter.FindGroupIdFor(collection_handle.value());
+  if (!group_id.has_value()) {
+    return base::unexpected(
+        mojo_base::mojom::Error::New(mojo_base::mojom::Code::kNotFound,
+                                     "group with the specified ID not found."));
+  }
+  return group_id.value();
 }
 
 }  // namespace tabs_api::utils

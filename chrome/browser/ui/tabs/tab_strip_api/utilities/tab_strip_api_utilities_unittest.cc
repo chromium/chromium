@@ -5,8 +5,14 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/utilities/tab_strip_api_utilities.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/adapters/tab_strip_model_adapter.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/testing/toy_tab_strip.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/testing/toy_tab_strip_model_adapter.h"
 #include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
 #include "components/browser_apis/tab_strip/types/node_id.h"
+#include "components/tab_groups/tab_group_id.h"
+#include "components/tab_groups/tab_group_visual_data.h"
+#include "mojo/public/mojom/base/error.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace tabs_api::utils {
@@ -64,6 +70,36 @@ TEST(TabStripApiUtilsTest, GetNodeIdFromWindow) {
   window->id = CreateTestNodeId(tabs_api::NodeId::Type::kWindow);
   auto data = mojom::Data::NewWindow(window.Clone());
   EXPECT_EQ(GetNodeId(*data), window->id);
+}
+
+TEST(TabStripApiUtilsTest, GetTabGroupId_Valid) {
+  testing::ToyTabStrip tab_strip;
+  testing::ToyTabStripModelAdapter adapter(&tab_strip);
+  tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
+  tab_groups::TabGroupVisualData visual_data;
+  tabs::TabCollectionHandle handle = tab_strip.AddGroup(group_id, visual_data);
+
+  auto result = GetTabGroupId(adapter, NodeId::FromTabCollectionHandle(handle));
+  ASSERT_TRUE(result.has_value());
+  ASSERT_EQ(group_id, result.value());
+}
+
+TEST(TabStripApiUtilsTest, GetTabGroupId_NotFound) {
+  testing::ToyTabStrip tab_strip;
+  testing::ToyTabStripModelAdapter adapter(&tab_strip);
+  auto result = GetTabGroupId(
+      adapter, NodeId::FromTabCollectionHandle(tabs::TabCollectionHandle(123)));
+  ASSERT_FALSE(result.has_value());
+  ASSERT_EQ(mojo_base::mojom::Code::kNotFound, result.error()->code);
+}
+
+TEST(TabStripApiUtilsTest, GetTabGroupId_WrongType) {
+  testing::ToyTabStrip tab_strip;
+  testing::ToyTabStripModelAdapter adapter(&tab_strip);
+  auto result =
+      GetTabGroupId(adapter, NodeId::FromTabHandle(tabs::TabHandle(123)));
+  ASSERT_FALSE(result.has_value());
+  ASSERT_EQ(mojo_base::mojom::Code::kInvalidArgument, result.error()->code);
 }
 
 }  // namespace

@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/event_broadcaster.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/events/tab_strip_event_recorder.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/utilities/tab_id_utils.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/utilities/tab_strip_api_utilities.h"
 #include "mojo/public/mojom/base/error.mojom.h"
 #include "url/gurl.h"
 
@@ -213,13 +214,9 @@ mojom::TabStripService::CloseNodesResult TabStripServiceImpl::CloseNodes(
 
 base::expected<void, mojo_base::mojom::ErrorPtr>
 TabStripServiceImpl::CloseCollection(const NodeId& id) {
-  ASSIGN_OR_RETURN(auto collection_id, utils::GetCollectionNativeId(id));
-  tabs::TabCollectionHandle collection_handle(collection_id);
-
-  auto group_id = tab_strip_model_adapter().FindGroupIdFor(collection_handle);
-  if (group_id.has_value()) {
-    tab_strip_model_adapter().CloseTabGroup(group_id.value());
-  }
+  ASSIGN_OR_RETURN(auto group_id,
+                   utils::GetTabGroupId(tab_strip_model_adapter(), id));
+  tab_strip_model_adapter().CloseTabGroup(group_id);
 
   return base::ok();
 }
@@ -347,21 +344,13 @@ mojom::TabStripService::UpdateResult TabStripServiceImpl::Update(
 
   if (data->is_tab_group()) {
     const auto& tab_group = data->get_tab_group();
-    ASSIGN_OR_RETURN(auto collection_id,
-                     utils::GetCollectionNativeId(tab_group->id));
-    tabs::TabCollectionHandle collection_handle(collection_id);
+    ASSIGN_OR_RETURN(
+        auto group_id,
+        utils::GetTabGroupId(tab_strip_model_adapter(), tab_group->id));
 
-    const std::optional<const tab_groups::TabGroupId> group_id =
-        tab_strip_model_adapter().FindGroupIdFor(collection_handle);
-    if (!group_id.has_value()) {
-      return base::unexpected(mojo_base::mojom::Error::New(
-          mojo_base::mojom::Code::kNotFound,
-          "group with the specified ID not found."));
-    }
-
-    tab_strip_model_adapter().UpdateTabGroupVisuals(group_id.value(),
-                                                    tab_group->data);
-    return translation_adapter().ToMojoData(collection_handle);
+    tab_strip_model_adapter().UpdateTabGroupVisuals(group_id, tab_group->data);
+    return translation_adapter().ToMojoData(
+        tab_group->id.ToTabCollectionHandle().value());
   }
 
   return base::unexpected(mojo_base::mojom::Error::New(

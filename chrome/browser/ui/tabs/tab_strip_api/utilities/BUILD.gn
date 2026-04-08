@@ -14,6 +14,7 @@ source_set("utilities") {
 
   deps = [
     "//base",
+    "//chrome/browser/ui/tabs/tab_strip_api/adapters",
     "//components/browser_apis/tab_strip:mojom",
     "//mojo/public/mojom/base",
   ]
@@ -30,6 +31,8 @@ source_set("unit_tests") {
 
   deps = [
     ":utilities",
+    "//chrome/browser/ui/tabs/tab_strip_api/adapters",
+    "//chrome/browser/ui/tabs/tab_strip_api/testing",
     "//components/browser_apis/tab_strip:mojom",
     "//components/browser_apis/tab_strip/types",
     "//testing/gtest",
