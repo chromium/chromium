@@ -37,13 +37,10 @@ export const inlineEventHandler = ESLintUtils.RuleCreator.withoutDocs<
 
     return {
       ['FunctionDeclaration[id.name=/getHtml|getTemplate/]'](
-          node: TSESTree.FunctionDeclaration) {
+          node: TSESTree.FunctionDeclarationWithName) {
         // Looking for either of the following patterns
         //  - Lit templates: 'getHtml(this: SomeType) {...}'
         //  - Polymer templates: 'getTemplate() {...}'
-
-        assert.ok(node.id);
-        assert.ok(isIdentifier(node.id));
 
         if (node.id.name === 'getHtml' &&
             (node.params.length !== 1 || !isIdentifier(node.params[0]!) ||

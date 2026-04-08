@@ -56,7 +56,7 @@ class ClassInfo {
   private hasCustomElementRegistration: boolean = false;
 
   // The AST Node for the class definition.
-  private node: TSESTree.ClassDeclaration;
+  private node: TSESTree.ClassDeclarationWithName;
 
   // The name of the class.
   private name: string;
@@ -76,10 +76,9 @@ class ClassInfo {
 
   constructor(
       context: TSESLint.RuleContext<MessageIds, Options>,
-      node: TSESTree.ClassDeclaration, isTest: boolean) {
+      node: TSESTree.ClassDeclarationWithName, isTest: boolean) {
     this.context = context;
     this.node = node;
-    assert.ok(this.node.id);
     this.name = this.node.id.name;
     this.isTest = isTest;
   }
@@ -494,8 +493,9 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
           return;
         }
 
-        currentClassInfo = new ClassInfo(context, node, isTest);
         assert.ok(node.id);
+        currentClassInfo = new ClassInfo(
+            context, node as TSESTree.ClassDeclarationWithName, isTest);
         classInfos.set(node.id.name, currentClassInfo);
       },
       'ClassDeclaration > ClassBody > MethodDefinition[key.name="is"] > FunctionExpression > BlockStatement > ReturnStatement'(

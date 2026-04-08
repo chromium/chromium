@@ -2,19 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ESLintUtils} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
+import {AST_NODE_TYPES, ESLintUtils} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
+import type {TSESTree} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 import assert from 'node:assert';
 
-import {getLitPropertyType, isCrLitElementSubclass} from './query_utils.js';
+import {getLitPropertyType, isCrLitElementSubclass, isIdentifier} from './query_utils.js';
 
-export const litPropertyAccessorRule = ESLintUtils.RuleCreator.withoutDocs({
-  name: 'lit-property-accessor',
+type Options = [];
+type MessageIds = 'missingAccessorKeyword'|'extraAccessorKeyword'|
+    'propertyTypeMismatch'|'missingClassMember';
+
+export const litPropertyAccessorRule = ESLintUtils.RuleCreator.withoutDocs<
+    Options, MessageIds>({
   meta: {
     type: 'problem',
     docs: {
       description:
           'Checks for the proper use of the \'accessor\' keyword in Lit code that uses useDefineForClassFields=true.',
-      recommended: 'error',
     },
     messages: {
       missingAccessorKeyword:
@@ -26,6 +30,7 @@ export const litPropertyAccessorRule = ESLintUtils.RuleCreator.withoutDocs({
       missingClassMember:
           'Missing class member declaration for Lit reactive property \'{{propName}}\'',
     },
+    schema: [],
   },
   defaultOptions: [],
   create(context) {
@@ -39,16 +44,18 @@ export const litPropertyAccessorRule = ESLintUtils.RuleCreator.withoutDocs({
     }
 
     let isLitElement = false;
-    let litProperties = null;   // Map<string, string|null>
-    let seenProperties = null;  // Set<string>
-    let currentClass = null;   // TSESTree.ClassDeclaration|null
+    let litProperties: Map<string, string>|null = null;
+    let seenProperties: Set<string>|null = null;
+    let currentClass: TSESTree.ClassDeclaration|null = null;
 
     return {
-      'ClassDeclaration'(node) {
+      'ClassDeclaration'(node: TSESTree.ClassDeclaration) {
         isLitElement = isCrLitElementSubclass(node, context.sourceCode.ast);
 
         if (!isLitElement) {
           currentClass = null;
+          litProperties = null;
+          seenProperties = null;
           return;
         }
 
@@ -57,20 +64,39 @@ export const litPropertyAccessorRule = ESLintUtils.RuleCreator.withoutDocs({
         currentClass = node;
       },
       'ClassDeclaration > ClassBody > MethodDefinition[key.name="properties"] > FunctionExpression > BlockStatement > ReturnStatement > ObjectExpression > Property'(
-          node) {
+          node: TSESTree.Property) {
         if (!isLitElement) {
           return;
         }
 
-        const typeProp = node.value.properties.find(p => p.key.name === 'type');
+        assert.ok(litProperties);
+        assert.ok(node.value.type === AST_NODE_TYPES.ObjectExpression);
+        assert.ok(isIdentifier(node.key));
+
+        const typeProp = node.value.properties.find(p => {
+          assert.ok(p.type === AST_NODE_TYPES.Property);
+          assert.ok(isIdentifier(p.key));
+          return p.key.name === 'type';
+        }) as TSESTree.Property |
+            null;
+
         // Required by Chromium's patch of Lit's reactive-element.d.ts.
         assert.ok(typeProp);
+        assert.ok(isIdentifier(typeProp.value));
         litProperties.set(node.key.name, typeProp.value.name);
       },
-      'ClassDeclaration > ClassBody > PropertyDefinition'(node) {
+      'ClassDeclaration > ClassBody > PropertyDefinition'(
+          node: TSESTree.PropertyDefinition) {
         if (!isLitElement) {
           return;
         }
+
+        assert.ok(currentClass);
+        assert.ok(litProperties);
+        assert.ok(seenProperties);
+
+        assert.ok(isIdentifier(node.key));
+        assert.ok(currentClass.id);
 
         if (litProperties.has(node.key.name)) {
           seenProperties.add(node.key.name);
@@ -84,10 +110,18 @@ export const litPropertyAccessorRule = ESLintUtils.RuleCreator.withoutDocs({
           });
         }
       },
-      'ClassDeclaration > ClassBody > AccessorProperty'(node) {
+      'ClassDeclaration > ClassBody > AccessorProperty'(
+          node: TSESTree.AccessorProperty) {
         if (!isLitElement) {
           return;
         }
+
+        assert.ok(currentClass);
+        assert.ok(litProperties);
+        assert.ok(seenProperties);
+
+        assert.ok(isIdentifier(node.key));
+        assert.ok(currentClass.id);
 
         if (!litProperties.has(node.key.name)) {
           context.report({
@@ -124,10 +158,14 @@ export const litPropertyAccessorRule = ESLintUtils.RuleCreator.withoutDocs({
           });
         }
       },
-      'ClassDeclaration:exit'(node) {
+      'ClassDeclaration:exit'(node: TSESTree.ClassDeclaration) {
         if (!isLitElement || node !== currentClass) {
           return;
         }
+
+        assert.ok(currentClass);
+        assert.ok(litProperties);
+        assert.ok(seenProperties);
 
         for (const [propName, _] of litProperties) {
           if (!seenProperties.has(propName)) {

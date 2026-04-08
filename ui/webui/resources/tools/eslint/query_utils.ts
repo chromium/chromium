@@ -110,11 +110,11 @@ interface ClassImportInfo {
 // Extracts information about the imported element class from a Lit element
 // template file.
 export function extractClassImport(
-    node: TSESTree.FunctionDeclaration,
+    node: TSESTree.FunctionDeclarationWithName,
     programNode: TSESTree.Program): ClassImportInfo {
   assert.ok(
       node.type === AST_NODE_TYPES.FunctionDeclaration &&
-      node.id!.name === 'getHtml');
+      node.id.name === 'getHtml');
   const paramSelector = esquery.parse('Identifier[name="this"]');
   const matchingNodes =
       esquery.match(node, paramSelector) as TSESTree.Identifier[];

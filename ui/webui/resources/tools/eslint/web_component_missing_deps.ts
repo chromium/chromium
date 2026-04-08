@@ -95,12 +95,12 @@ export const webComponentMissingDeps = ESLintUtils.RuleCreator.withoutDocs<
 
     return {
       ['FunctionDeclaration[id.name=/getHtml|getTemplate/]'](
-          node: TSESTree.FunctionDeclaration) {
+          node: TSESTree.FunctionDeclarationWithName) {
         // Looking for either of the following patterns
         //  - Lit templates: 'getHtml(this: SomeType) {...}'
         //  - Polymer templates: 'getTemplate() {...}'
 
-        if (node.id!.name === 'getHtml') {
+        if (node.id.name === 'getHtml') {
           const classParams = extractClassImport(node, context.sourceCode.ast);
 
           // Handle a few cases where lit-html is used directly and there is no
