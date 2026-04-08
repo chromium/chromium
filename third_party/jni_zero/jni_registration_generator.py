@@ -338,8 +338,7 @@ extern const int64_t kJniZeroHash{module_name}Priority = {priority_hash}LL;
 
   if non_proxy_natives_java_classes:
     with sb.section('Class Accessors.'):
-      header_common.class_accessors(sb, non_proxy_natives_java_classes,
-                                    module_name)
+      header_common.class_accessors(sb, non_proxy_natives_java_classes)
 
   with sb.section('Forward Declarations.'):
     for jni_obj in jni_objs:

@@ -140,6 +140,10 @@ class JavaClass:
     return self.package_with_slashes.replace('/', '_')
 
   @property
+  def full_name(self):
+    return self._fqn.replace('/', '.')
+
+  @property
   def full_name_with_slashes(self):
     return self._fqn
 
@@ -622,9 +626,11 @@ class TypeResolver:
 
 
 CLASS_CLASS = JavaClass('java/lang/Class')
+CLASS_LOADER_CLASS = JavaClass('java/lang/ClassLoader')
 OBJECT_CLASS = JavaClass('java/lang/Object')
 STRING_CLASS = JavaClass('java/lang/String')
 LIST_CLASS = JavaClass('java/util/List')
+MAP_CLASS = JavaClass('java/util/Map')
 
 # Collection and types that extend it (for use with toArray()).
 # More can be added here if the need arises.

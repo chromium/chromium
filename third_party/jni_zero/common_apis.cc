@@ -4,7 +4,7 @@
 
 #include "third_party/jni_zero/common_apis.h"
 
-#include "third_party/jni_zero/generate_jni/JniUtil_jni.h"
+#include "third_party/jni_zero/generate_jni/JniZero_jni.h"
 #include "third_party/jni_zero/system_jni/Arrays_jni.h"
 #include "third_party/jni_zero/system_jni/Boolean_jni.h"
 #include "third_party/jni_zero/system_jni/Collection_jni.h"
@@ -23,6 +23,7 @@ namespace jni_zero {
 ScopedJavaLocalRef<jobjectArray> CollectionToArray(
     JNIEnv* env,
     const JavaRef<jobject>& collection) {
+  (void)YouForgotToCallMacro_DEFINE_JNI_JniZero;  // jni_zero.cc defines them.
   return JNI_Collection::Java_Collection_toArray(env, collection);
 }
 
@@ -33,12 +34,12 @@ ScopedJavaLocalRef<jobject> ArrayToList(JNIEnv* env,
 
 ScopedJavaLocalRef<jobjectArray> MapToArray(JNIEnv* env,
                                             const JavaRef<jobject>& map) {
-  return Java_JniUtil_mapToArray(env, map);
+  return Java_JniZero_mapToArray(env, map);
 }
 
 ScopedJavaLocalRef<jobject> ArrayToMap(JNIEnv* env,
                                        const JavaRef<jobjectArray>& array) {
-  return Java_JniUtil_arrayToMap(env, array);
+  return Java_JniZero_arrayToMap(env, array);
 }
 
 //
@@ -193,5 +194,3 @@ ScopedJavaLocalRef<jobject> ByteBufferAllocateDirect(JNIEnv* env, int size) {
 }
 
 }  // namespace jni_zero
-
-DEFINE_JNI(JniUtil)

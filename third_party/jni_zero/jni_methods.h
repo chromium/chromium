@@ -59,21 +59,21 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT bool ClearException(JNIEnv* env);
 // handler, or if none are set, it will fatally LOG.
 JNI_ZERO_COMPONENT_BUILD_EXPORT void CheckException(JNIEnv* env);
 
-// Sets a function to call instead of just using JNIEnv.FindClass. Useful for
-// chrome's "splits" which need to be resolved in special ClassLoaders. The
-// class name parameter (first string) will be given in package.dot.Format. The
-// second parameter is the split name, which will just be an empty string if not
-// used.
+// Overrides the default classloading logic. The string parameter will be in
+// the form "java.lang.String".
 JNI_ZERO_COMPONENT_BUILD_EXPORT void SetClassResolver(
-    jclass (*resolver)(JNIEnv*, const char*, const char*));
+    jclass (*resolver)(JNIEnv*, const char*));
+
+// When SetClassResolver() is not used, overrides the ClassLoader used for
+// resolving java classes.
+JNI_ZERO_COMPONENT_BUILD_EXPORT void SetClassLoader(
+    JNIEnv* env,
+    const JavaRef<jobject>& class_loader);
 
 // Finds the class named |class_name| and returns it.
-// Use this method instead of invoking directly the JNI FindClass method (to
-// prevent leaking local references).
-// This method triggers a fatal assertion if the class could not be found.
-// Use HasClass if you need to check whether the class exists.
-JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jclass>
-GetClass(JNIEnv* env, const char* class_name, const char* split_name);
+// Returns null if the class is not found, and leaves the Java exception
+// pending. You must call ClearException() if you want to not crash when the
+// class is not found.
 JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jclass> GetClass(
     JNIEnv* env,
     const char* class_name);

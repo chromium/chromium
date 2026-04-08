@@ -7,8 +7,7 @@ import common
 import java_types
 
 
-def class_accessors(sb, java_classes, module_name):
-  split_arg = f'"{module_name}", ' if module_name else ''
+def class_accessors(sb, java_classes):
   for java_class in java_classes:
     if java_class in (java_types.OBJECT_CLASS, java_types.STRING_CLASS):
       continue
@@ -26,9 +25,9 @@ def class_accessors(sb, java_classes, module_name):
     # it will always hold the same value, so the copies can't get out-of-sync.
     sb(f"""\
 inline jclass {escaped_name}_clazz(JNIEnv* env) {{
-  static const char kClassName[] = "{java_class.full_name_with_slashes}";
+  static const char kClassName[] = "{java_class.full_name}";
   static std::atomic<jclass> cached_class;
-  return jni_zero::internal::LazyGetClass(env, kClassName, {split_arg}&cached_class);
+  return jni_zero::internal::LazyGetClass(env, kClassName, &cached_class);
 }}
 #endif
 
@@ -36,6 +35,12 @@ inline jclass {escaped_name}_clazz(JNIEnv* env) {{
 
 
 def class_accessor_expression(java_class):
+  if java_class == java_types.CLASS_LOADER_CLASS:
+    return 'jni_zero::g_class_loader_class'
+  if java_class == java_types.LIST_CLASS:
+    return 'jni_zero::g_list_class'
+  if java_class == java_types.MAP_CLASS:
+    return 'jni_zero::g_map_class'
   if java_class == java_types.OBJECT_CLASS:
     return 'jni_zero::g_object_class'
   if java_class == java_types.STRING_CLASS:

@@ -101,7 +101,7 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleGenerics() {}
 #ifndef org_jni_1zero_SampleGenerics_clazz_defined
 #define org_jni_1zero_SampleGenerics_clazz_defined
 inline jclass org_jni_1zero_SampleGenerics_clazz(JNIEnv* env) {
-  static const char kClassName[] = "org/jni_zero/SampleGenerics";
+  static const char kClassName[] = "org.jni_zero.SampleGenerics";
   static std::atomic<jclass> cached_class;
   return jni_zero::internal::LazyGetClass(env, kClassName, &cached_class);
 }

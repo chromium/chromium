@@ -1,20 +1,41 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.jni_zero;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
-/** Used by jni_zero.cc. */
+/** Core APIs. */
 @JNINamespace("jni_zero")
-public class JniInit {
+public class JniZero {
+    private static ClassLoader sPendingJniClassLoader;
+    private static boolean sInitialized;
+
+    /** Sets the ClassLoader used to resolve classes by JNI Zero. */
+    public static void setJniClassLoader(ClassLoader classLoader) {
+        if (sInitialized) {
+            JniZeroJni.get().setJniClassLoader(classLoader);
+        } else {
+            sPendingJniClassLoader = classLoader;
+        }
+    }
+
     @CalledByNative
     private static Object[] init() {
+        sInitialized = true;
         // For JVM (works fine on ART), cannot call from Java -> Native during InitVM because the
         // System.loadLibrary() call has not yet completed. Could work around this by using
         // RegisterNatives(), but simpler to return an array than to make Java->Native work.
-        return new Object[] {Collections.EMPTY_LIST, Collections.EMPTY_MAP};
+        ClassLoader jniClassLoader = sPendingJniClassLoader;
+        if (jniClassLoader != null) {
+            sPendingJniClassLoader = null;
+        } else {
+            jniClassLoader = JniZero.class.getClassLoader();
+        }
+        return new Object[] {Collections.EMPTY_LIST, Collections.EMPTY_MAP, jniClassLoader};
     }
 
     @CalledByNative
@@ -45,5 +66,31 @@ public class JniInit {
             // since it's likely fine.
             assert false : "JNI multiplexing hash lookup failed with " + e.getMessage();
         }
+    }
+
+    @CalledByNative
+    private static Object[] mapToArray(Map<Object, Object> map) {
+        Object[] ret = new Object[map.size() * 2];
+        int i = 0;
+        for (var entry : map.entrySet()) {
+            ret[i++] = entry.getKey();
+            ret[i++] = entry.getValue();
+        }
+        return ret;
+    }
+
+    @CalledByNative
+    private static Map<Object, Object> arrayToMap(Object[] array) {
+        int len = array.length;
+        Map<Object, Object> ret = new HashMap<>(len / 2);
+        for (int i = 0; i < len; i += 2) {
+            ret.put(array[i], array[i + 1]);
+        }
+        return ret;
+    }
+
+    @NativeMethods
+    interface Natives {
+        void setJniClassLoader(ClassLoader classLoader);
     }
 }
