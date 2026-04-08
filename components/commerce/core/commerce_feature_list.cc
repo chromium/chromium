@@ -46,6 +46,10 @@ const CountryLocaleMap& GetAllowedCountryToLocaleMap() {
     map[&kPriceAnnotations] = {{"us", {"en-us"}}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_IOS)
+    map[&kTabResumptionShopCard] = {{"us", {"en-us"}}};
+#endif  // BUILDFLAG(IS_IOS)
+
 #if !BUILDFLAG(IS_IOS)
     map[&kEnableDiscountInfoApi] = {{"us", {"en-us"}}};
 #endif  // !BUILDFLAG(IS_IOS)

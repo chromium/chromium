@@ -967,6 +967,10 @@ class TabResumptionMediatorProxy {
 // product image and updates the card when this data is availalbe.
 // This reduces the overall latency of the card.
 - (void)fetchPriceDropIfApplicable:(TabResumptionConfig*)config {
+  if (!_shoppingService->IsRegionLockedFeatureEnabled(
+          commerce::kTabResumptionShopCard)) {
+    return;
+  }
   __weak TabResumptionMediator* weakSelf = self;
   web::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, base::BindOnce(^{
                                              [weakSelf fetchPriceDrop:config];
