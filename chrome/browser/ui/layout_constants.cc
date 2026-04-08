@@ -150,6 +150,8 @@ int GetLayoutConstant(LayoutConstant constant) {
       return 28;
     case LayoutConstant::kVerticalTabStripNewTabButtonSize:
       return 32;
+    case LayoutConstant::kVerticalTabStripCollapseButtonSize:
+      return 32;
     case LayoutConstant::kVerticalTabStripTopContainerButtonSize:
       return 28;
     case LayoutConstant::kVerticalTabPinnedBorderThickness:

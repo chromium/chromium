@@ -19,6 +19,8 @@ class TopContainerButton : public views::LabelButton {
   void UpdateIcon(const ui::ImageModel& icon_image);
 
   // views::LabelButton:
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   std::unique_ptr<views::ActionViewInterface> GetActionViewInterface() override;
 
  private:
