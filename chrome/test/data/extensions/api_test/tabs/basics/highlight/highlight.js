@@ -34,7 +34,7 @@ chrome.test.runTests([
     testWindowId1 = (await chrome.windows.create({url: tabs1})).id;
     testWindowId2 = (await chrome.windows.create({url: tabs2})).id;
     isAndroid = (await chrome.runtime.getPlatformInfo()).os == 'android';
-    chrome.test.succeed();
+    waitForAllTabs(chrome.test.succeed);
   },
 
   // TODO(crbug.com/40254426): "Current window" can rely on window focus, which
