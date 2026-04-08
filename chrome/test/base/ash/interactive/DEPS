@@ -24,7 +24,6 @@ include_rules = [
   "+chrome/browser/profiles/profile_manager.h",
   "+chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h",
   "+chrome/browser/ui/browser_commands.h",
-  "+chrome/browser/ui/browser_list.h",
   "+chrome/browser/ui/browser_navigator.h",
   "+chrome/browser/ui/interaction",
   "+chrome/grit",

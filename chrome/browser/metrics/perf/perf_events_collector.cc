@@ -25,7 +25,6 @@
 #include "chrome/browser/metrics/perf/cpu_identity.h"
 #include "chrome/browser/metrics/perf/process_type_collector.h"
 #include "chrome/browser/metrics/perf/windowed_incognito_observer.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client_provider.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
 #include "third_party/re2/src/re2/re2.h"

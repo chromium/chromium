@@ -79,7 +79,6 @@ source_set("impl") {
       "//base/version_info",
       "//chrome/browser:browser_process",
       "//chrome/browser/ui",
-      "//chrome/browser/ui:browser_list",
       "//chrome/common:channel_info",
       "//chrome/common:constants",
       "//chrome/common:non_code_constants",

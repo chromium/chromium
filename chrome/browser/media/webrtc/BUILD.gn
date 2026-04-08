@@ -205,7 +205,6 @@ source_set("webrtc") {
     ]
     deps += [
       "//chrome/browser/controlled_frame:media_access_handler",
-      "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/web_applications",
       "//extensions/browser",

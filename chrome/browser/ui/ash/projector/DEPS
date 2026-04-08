@@ -33,8 +33,6 @@ specific_include_rules = {
     "+chrome/browser/global_features.h",
     "+chrome/browser/ui/browser_finder.h",
     "+chrome/browser/ui/browser.h",
-    "+chrome/browser/ui/browser_list.h",
-    "+chrome/browser/ui/browser_list_observer.h",
     "+chrome/browser/ui/browser_navigator.h",
     "+chrome/browser/ui/browser_navigator_params.h",
     "+chrome/browser/ui/browser_window.h",

@@ -269,7 +269,6 @@ if (!is_android) {
       "//chrome/browser/notifications:system_notification_helper",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
-      "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications:web_applications_test_support",

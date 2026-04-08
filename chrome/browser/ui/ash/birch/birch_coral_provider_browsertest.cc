@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/app_restore/app_restore_test_util.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ui/ash/birch/birch_test_util.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ash/util/ash_test_util.h"
 #include "components/prefs/pref_service.h"

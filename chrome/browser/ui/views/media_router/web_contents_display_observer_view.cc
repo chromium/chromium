@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/display/screen.h"

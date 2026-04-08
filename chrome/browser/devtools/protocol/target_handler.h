@@ -8,7 +8,6 @@
 #include <set>
 
 #include "chrome/browser/devtools/protocol/target.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "net/base/host_port_pair.h"
 
 using RemoteLocations = std::set<net::HostPortPair>;

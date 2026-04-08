@@ -61,7 +61,6 @@ source_set("read_anything") {
     "//chrome/browser:primitives",
     "//chrome/browser/dom_distiller",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/webui_browser:headers",
     "//chrome/common",
     "//content/public/browser",

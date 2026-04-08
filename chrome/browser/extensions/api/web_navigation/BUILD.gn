@@ -59,9 +59,6 @@ source_set("web_navigation") {
       "//components/tabs:public",
     ]
   } else {
-    deps += [
-      "//chrome/browser/ui:browser_list",
-      "//chrome/browser/ui:browser_tab_strip",
-    ]
+    deps += [ "//chrome/browser/ui:browser_tab_strip" ]
   }
 }

@@ -16,7 +16,6 @@ source_set("send_tab_to_self") {
   public_deps = [
     "//base",
     "//chrome/browser/send_tab_to_self",
-    "//chrome/browser/ui:browser_list",
     "//components/send_tab_to_self",
   ]
   deps = [ "//chrome/browser/ui/browser_window" ]
@@ -29,7 +28,6 @@ source_set("impl") {
     "//chrome/browser:primitives",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync",
-    "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/views/send_tab_to_self",

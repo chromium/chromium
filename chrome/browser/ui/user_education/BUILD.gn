@@ -42,7 +42,6 @@ source_set("impl") {
   ]
   deps = [
     ":user_education",
-    "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/interaction",

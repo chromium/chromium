@@ -126,7 +126,6 @@ source_set("impl") {
       "//chrome/browser/resources/omnibox_popup:resources_grit",
       "//chrome/browser/safe_browsing",
       "//chrome/browser/search_engines",
-      "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui:layout_constants",
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/contextual_search",

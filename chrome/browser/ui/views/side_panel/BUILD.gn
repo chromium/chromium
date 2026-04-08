@@ -66,7 +66,6 @@ source_set("side_panel") {
     "//chrome/browser/history_clusters",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/customize_chrome",

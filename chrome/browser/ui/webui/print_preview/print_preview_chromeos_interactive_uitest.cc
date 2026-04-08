@@ -6,7 +6,6 @@
 #include "ash/webui/settings/public/constants/routes_util.h"
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "ui/base/accelerators/accelerator.h"
 

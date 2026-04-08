@@ -70,7 +70,6 @@ static_library("app_mode") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/apps/app_service/chrome_app_deprecation/proto",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/web_applications",
     "//chrome/browser/web_applications",
     "//chromeos/dbus/power",

@@ -74,7 +74,6 @@ source_set("download") {
       "//chrome/browser/safe_browsing:advanced_protection",
       "//chrome/browser/themes",
       "//chrome/browser/ui:browser_element_identifiers",
-      "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/browser_window",

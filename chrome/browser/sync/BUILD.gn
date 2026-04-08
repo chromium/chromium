@@ -210,7 +210,7 @@ source_set("sync") {
       "sessions/browser_list_router_helper.h",
     ]
     public_deps += [
-      "//chrome/browser/ui:browser_list",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
     ]
     deps += [

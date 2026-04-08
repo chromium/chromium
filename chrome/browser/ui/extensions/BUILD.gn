@@ -81,7 +81,6 @@ source_set("extensions") {
 
     public_deps += [
       "//base",
-      "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
       "//chrome/browser/ui/toolbar",
       "//chrome/browser/ui/web_applications",

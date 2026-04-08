@@ -54,7 +54,6 @@ static_library("app_service") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_manager",
-    "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/views/crostini",

@@ -36,7 +36,6 @@ specific_include_rules = {
     "+chrome/browser/ash/system_web_apps/system_web_app_manager.h",
     "+chrome/browser/global_features.h",
     "+chrome/browser/ui/browser.h",
-    "+chrome/browser/ui/browser_list.h",
     "+gmock/gmock.h",
   ],
   "birch_coral_provider_browsertest\\.cc": [
