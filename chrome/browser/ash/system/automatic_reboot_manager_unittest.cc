@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/constants/ash_paths.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -29,7 +30,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/system/automatic_reboot_manager_observer.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
@@ -379,7 +379,7 @@ void AutomaticRebootManagerBasicTest::SetRebootAfterUpdate(
     bool expect_reboot) {
   reboot_after_update_ = reboot_after_update;
   TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetManagedPref(
-      prefs::kRebootAfterUpdate,
+      ash::prefs::kRebootAfterUpdate,
       std::make_unique<base::Value>(reboot_after_update));
   task_runner_->RunUntilIdle();
   EXPECT_EQ(
@@ -394,10 +394,10 @@ void AutomaticRebootManagerBasicTest::SetUptimeLimit(
   if (limit.is_zero()) {
     TestingBrowserProcess::GetGlobal()
         ->GetTestingLocalState()
-        ->RemoveManagedPref(prefs::kUptimeLimit);
+        ->RemoveManagedPref(ash::prefs::kUptimeLimit);
   } else {
     TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetManagedPref(
-        prefs::kUptimeLimit,
+        ash::prefs::kUptimeLimit,
         std::make_unique<base::Value>(static_cast<int>(limit.InSeconds())));
   }
   task_runner_->RunUntilIdle();

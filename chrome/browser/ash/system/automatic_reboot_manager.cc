@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "ash/constants/ash_paths.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -35,7 +36,6 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -156,11 +156,11 @@ AutomaticRebootManager::AutomaticRebootManager(
       local_state_(CHECK_DEREF(local_state)) {
   local_state_registrar_.Init(&local_state_.get());
   local_state_registrar_.Add(
-      prefs::kUptimeLimit,
+      ash::prefs::kUptimeLimit,
       base::BindRepeating(&AutomaticRebootManager::Reschedule,
                           base::Unretained(this)));
   local_state_registrar_.Add(
-      prefs::kRebootAfterUpdate,
+      ash::prefs::kRebootAfterUpdate,
       base::BindRepeating(&AutomaticRebootManager::Reschedule,
                           base::Unretained(this)));
   session_termination_observation_.Observe(
@@ -272,8 +272,8 @@ void AutomaticRebootManager::OnUserSessionStarted(bool is_primary_user) {
 
 // static
 void AutomaticRebootManager::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(prefs::kUptimeLimit, 0);
-  registry->RegisterBooleanPref(prefs::kRebootAfterUpdate, false);
+  registry->RegisterIntegerPref(ash::prefs::kUptimeLimit, 0);
+  registry->RegisterBooleanPref(ash::prefs::kRebootAfterUpdate, false);
 }
 
 void AutomaticRebootManager::Init(
@@ -311,7 +311,7 @@ void AutomaticRebootManager::Reschedule() {
   // If an uptime limit is set, calculate the time at which it should cause a
   // reboot to be requested.
   const base::TimeDelta uptime_limit =
-      base::Seconds(local_state_->GetInteger(prefs::kUptimeLimit));
+      base::Seconds(local_state_->GetInteger(ash::prefs::kUptimeLimit));
   base::TimeTicks reboot_request_time = *boot_time_ + uptime_limit;
   bool have_reboot_request_time = !uptime_limit.is_zero();
   if (have_reboot_request_time)
@@ -322,7 +322,7 @@ void AutomaticRebootManager::Reschedule() {
   // requested to the minimum of its current value and the time when the reboot
   // became necessary.
   if (update_reboot_needed_time_ &&
-      local_state_->GetBoolean(prefs::kRebootAfterUpdate) &&
+      local_state_->GetBoolean(ash::prefs::kRebootAfterUpdate) &&
       (!have_reboot_request_time ||
        *update_reboot_needed_time_ < reboot_request_time)) {
     VLOG(1) << "Scheduling reboot because of OS update";

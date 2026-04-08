@@ -2825,6 +2825,19 @@ inline constexpr char kSessionWaitForInitialUserActivity[] =
     "session.wait_for_initial_user_activity";
 
 //-----------------------------------------------------------------------------
+// Automatic reboot related Prefs
+//-----------------------------------------------------------------------------
+
+// Whether an automatic reboot should be scheduled when an update has been
+// applied and a reboot is required to complete the update process.
+inline constexpr char kRebootAfterUpdate[] =
+    "automatic_reboot.reboot_after_update";
+
+// The length of device uptime after which an automatic reboot is scheduled,
+// expressed in seconds.
+inline constexpr char kUptimeLimit[] = "automatic_reboot.uptime_limit";
+
+//-----------------------------------------------------------------------------
 // Kiosk related Prefs
 //-----------------------------------------------------------------------------
 

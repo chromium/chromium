@@ -26,7 +26,6 @@
 #include "chrome/browser/ash/app_mode/metrics/periodic_metrics_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_window_handler.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -127,7 +126,7 @@ void KioskSystemSession::InitKioskAppUpdateService(const std::string& app_id) {
 
 void KioskSystemSession::SetRebootAfterUpdateIfNecessary() {
   if (!ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
-    local_state_->SetBoolean(::prefs::kRebootAfterUpdate, true);
+    local_state_->SetBoolean(ash::prefs::kRebootAfterUpdate, true);
     KioskModeIdleAppNameNotification::Initialize();
   }
 }

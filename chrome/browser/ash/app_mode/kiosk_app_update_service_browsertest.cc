@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/constants/ash_paths.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
@@ -36,7 +37,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -158,7 +158,7 @@ class KioskAppUpdateServiceTest
 
   void RequestPeriodicReboot() {
     test_waiter_ = std::make_unique<TestFuture<void>>();
-    g_browser_process->local_state()->SetInteger(prefs::kUptimeLimit,
+    g_browser_process->local_state()->SetInteger(ash::prefs::kUptimeLimit,
                                                  base::Hours(2).InSeconds());
     EXPECT_TRUE(test_waiter_->Wait());
   }
@@ -192,7 +192,8 @@ IN_PROC_BROWSER_TEST_F(KioskAppUpdateServiceTest, AppUpdate) {
 IN_PROC_BROWSER_TEST_F(KioskAppUpdateServiceTest, OsUpdate) {
   CreateKioskAppUpdateService();
 
-  g_browser_process->local_state()->SetBoolean(prefs::kRebootAfterUpdate, true);
+  g_browser_process->local_state()->SetBoolean(ash::prefs::kRebootAfterUpdate,
+                                               true);
   ExtensionTestMessageListener listener("os_update");
   FireUpdatedNeedReboot();
   EXPECT_TRUE(listener.WaitUntilSatisfied());
@@ -212,7 +213,8 @@ IN_PROC_BROWSER_TEST_F(KioskAppUpdateServiceTest, Periodic) {
 // applied before Chrome was started and the policy to reboot after update is
 // enabled.
 IN_PROC_BROWSER_TEST_F(KioskAppUpdateServiceTest, StartAfterOsUpdate) {
-  g_browser_process->local_state()->SetBoolean(prefs::kRebootAfterUpdate, true);
+  g_browser_process->local_state()->SetBoolean(ash::prefs::kRebootAfterUpdate,
+                                               true);
   FireUpdatedNeedReboot();
 
   ExtensionTestMessageListener listener("os_update");

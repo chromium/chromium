@@ -2456,15 +2456,6 @@ inline constexpr char kAppActivityTimes[] = "device_status.app_activity_times";
 inline constexpr char kUserActivityTimes[] =
     "consumer_device_status.activity_times";
 
-// The length of device uptime after which an automatic reboot is scheduled,
-// expressed in seconds.
-inline constexpr char kUptimeLimit[] = "automatic_reboot.uptime_limit";
-
-// Whether an automatic reboot should be scheduled when an update has been
-// applied and a reboot is required to complete the update process.
-inline constexpr char kRebootAfterUpdate[] =
-    "automatic_reboot.reboot_after_update";
-
 // An any-api scoped refresh token for enterprise-enrolled devices.  Allows
 // for connection to Google APIs when the user isn't logged in.  Currently used
 // for for getting a cloudprint scoped token to allow printing in Guest mode,
