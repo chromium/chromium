@@ -252,7 +252,10 @@ public class BottomSheetUnitTest {
         mBottomSheet.showContent(mSheetContent);
 
         verify(mShadowLayerView).setBackgroundTintList(ColorStateList.valueOf(glowColor));
-        int expectedSize = 60;
+        int expectedSize =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.bottom_sheet_shadow_length_large);
         verify(mShadowLayerView).setShadowLength(expectedSize);
     }
 
