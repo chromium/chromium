@@ -531,6 +531,10 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
                    forProtocol:@protocol(PageActionMenuEntryPointCommands)];
 }
 
+- (void)setLocationBarActive:(BOOL)active {
+  [self.badgeMediator setActive:active];
+}
+
 #pragma mark - LocationBarURLLoader
 
 - (void)loadGURLFromLocationBar:(const GURL&)url

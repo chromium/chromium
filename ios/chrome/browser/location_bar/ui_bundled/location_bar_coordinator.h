@@ -78,6 +78,9 @@
 // Sets command dispatcher for page action menu entry point.
 - (void)setPageActionMenuEntryPointDispatcher;
 
+// Sets whether this location bar is active or not.
+- (void)setLocationBarActive:(BOOL)active;
+
 // Highlights or un-highlights the entry point for page action menu.
 - (void)togglePageActionMenuEntryPointHighlight:(BOOL)highlight;
 

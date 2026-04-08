@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/toolbar/coordinator/toolbar_coordinator.h"
+#import "ios/chrome/browser/toolbar/coordinator/main_toolbar_coordinator.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
@@ -44,6 +44,7 @@
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/toolbar/coordinator/main_toolbar_mediator.h"
 #import "ios/chrome/browser/toolbar/coordinator/toolbar_mediator.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/adaptive_toolbar_view_controller.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/legacy_toolbar_mediator.h"
@@ -65,13 +66,14 @@
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/web/public/web_state.h"
 
-@interface ToolbarCoordinator () <ContextualPanelEntrypointCommands,
-                                  GuidedTourCommands,
-                                  LocationBarBadgeCommands,
-                                  PageActionMenuEntryPointCommands,
-                                  PrimaryToolbarViewControllerDelegate,
-                                  ToolbarCommands,
-                                  ToolbarMediatorDelegate>
+@interface MainToolbarCoordinator () <ContextualPanelEntrypointCommands,
+                                      GuidedTourCommands,
+                                      LocationBarBadgeCommands,
+                                      MainToolbarMediatorDelegate,
+                                      PageActionMenuEntryPointCommands,
+                                      PrimaryToolbarViewControllerDelegate,
+                                      ToolbarCommands,
+                                      ToolbarMediatorDelegate>
 
 /// Whether this coordinator has been started.
 @property(nonatomic, assign) BOOL started;
@@ -96,7 +98,9 @@
 
 @end
 
-@implementation ToolbarCoordinator {
+@implementation MainToolbarCoordinator {
+  // The mediator for this coordinator.
+  MainToolbarMediator* _mainToolbarMediator;
   /// Type of toolbar containing the omnibox. Unlike
   /// `_steadyStateOmniboxPosition`, this tracks the omnibox position at all
   /// time.
@@ -181,8 +185,15 @@
                isIncognito:browser->GetProfile()->IsOffTheRecord()];
   self.legacyToolbarMediator.delegate = self;
 
+  _mainToolbarMediator = [[MainToolbarMediator alloc]
+      initWithPrefService:GetApplicationContext()->GetLocalState()];
+  _mainToolbarMediator.delegate = self;
+  BOOL isOmniboxInBottomPosition =
+      [_mainToolbarMediator isOmniboxInBottomPosition];
+
   if (IsChromeNextIaEnabled()) {
-    _topLocationBarCoordinator = [self createLocationBarCoordinator];
+    _topLocationBarCoordinator =
+        [self createLocationBarCoordinatorActive:!isOmniboxInBottomPosition];
     _topToolbarMediator = [self createToolbarMediatorTopPosition:YES];
     _topToolbarViewController = [self
         createToolbarViewControllerForMediator:_topToolbarMediator
@@ -191,7 +202,8 @@
     _topToolbarFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
         FullscreenController::FromBrowser(browser), _topToolbarViewController);
 
-    _bottomLocationBarCoordinator = [self createLocationBarCoordinator];
+    _bottomLocationBarCoordinator =
+        [self createLocationBarCoordinatorActive:isOmniboxInBottomPosition];
     _bottomToolbarMediator = [self createToolbarMediatorTopPosition:NO];
     _bottomToolbarViewController = [self
         createToolbarViewControllerForMediator:_bottomToolbarMediator
@@ -922,6 +934,19 @@
   }
 }
 
+#pragma mark - MainToolbarMediatorDelegate
+
+- (void)mainToolbarMediatorDidChangeOmniboxPosition:
+    (MainToolbarMediator*)mediator {
+  if (mediator.isOmniboxInBottomPosition) {
+    [_topLocationBarCoordinator setLocationBarActive:NO];
+    [_bottomLocationBarCoordinator setLocationBarActive:YES];
+  } else {
+    [_topLocationBarCoordinator setLocationBarActive:YES];
+    [_bottomLocationBarCoordinator setLocationBarActive:NO];
+  }
+}
+
 #pragma mark - ToolbarMediatorDelegate
 
 - (void)transitionOmniboxToToolbarType:(ToolbarType)toolbarType {
@@ -983,6 +1008,7 @@
 /// Updates toolbars layout whith current omnibox focus state and trait
 /// collection.
 - (void)updateToolbarsLayout {
+  CHECK(!IsChromeNextIaEnabled());
   [self.legacyToolbarMediator
       toolbarTraitCollectionChangedTo:self.traitEnvironment.traitCollection];
   BOOL omniboxFocused = [self inEditState];
@@ -1109,10 +1135,11 @@
 }
 
 // Creates a new location bar coordinator.
-- (LocationBarCoordinator*)createLocationBarCoordinator {
+- (LocationBarCoordinator*)createLocationBarCoordinatorActive:(BOOL)active {
   LocationBarCoordinator* coordinator =
       [[LocationBarCoordinator alloc] initWithBrowser:self.browser];
   [coordinator start];
+  [coordinator setLocationBarActive:active];
 
   return coordinator;
 }
@@ -1142,8 +1169,7 @@
 - (BOOL)isOmniboxInBottomPosition {
   CHECK(IsChromeNextIaEnabled());
   return IsBottomOmniboxAvailable() &&
-         GetApplicationContext()->GetLocalState()->GetBoolean(
-             omnibox::kIsOmniboxInBottomPosition);
+         [_mainToolbarMediator isOmniboxInBottomPosition];
 }
 
 // Returns whether `point` in window coordinates is inside the frame of

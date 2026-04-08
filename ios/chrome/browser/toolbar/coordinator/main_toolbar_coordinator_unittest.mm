@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/toolbar/coordinator/toolbar_coordinator.h"
+#import "ios/chrome/browser/toolbar/coordinator/main_toolbar_coordinator.h"
 
 #import "base/scoped_observation.h"
 #import "base/test/scoped_feature_list.h"
@@ -67,10 +67,10 @@ class TestOmniboxPositionObserver : public OmniboxPositionBrowserAgentObserver {
 };
 }  // namespace
 
-// Unittests related to the ToolbarCoordinator.
-class ToolbarCoordinatorTest : public PlatformTest {
+// Unittests related to the MainToolbarCoordinator.
+class MainToolbarCoordinatorTest : public PlatformTest {
  public:
-  ToolbarCoordinatorTest() {
+  MainToolbarCoordinatorTest() {
     TestProfileIOS::Builder test_profile_builder;
     test_profile_builder.AddTestingFactory(
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),
@@ -179,7 +179,7 @@ class ToolbarCoordinatorTest : public PlatformTest {
     FullscreenController::CreateForBrowser(browser_.get());
   }
 
-  ~ToolbarCoordinatorTest() override {}
+  ~MainToolbarCoordinatorTest() override {}
 
   void TearDown() override { [coordinator_ stop]; }
 
@@ -187,12 +187,12 @@ class ToolbarCoordinatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
-  ToolbarCoordinator* coordinator_;
+  MainToolbarCoordinator* coordinator_;
 };
 
 // Test that the OmniboxPositionBrowserAgent can be observed to tell when the
 // bottom omnibox position changes.
-TEST_F(ToolbarCoordinatorTest, TestOmniboxPositionBrowserAgentObservation) {
+TEST_F(MainToolbarCoordinatorTest, TestOmniboxPositionBrowserAgentObservation) {
   // Bottom omnibox is not supported on all devices (e.g. iPad).
   if (!IsBottomOmniboxAvailable()) {
     return;
@@ -206,7 +206,8 @@ TEST_F(ToolbarCoordinatorTest, TestOmniboxPositionBrowserAgentObservation) {
       OmniboxPositionBrowserAgent::FromBrowser(browser_.get());
   obs.Observe(browser_agent);
 
-  coordinator_ = [[ToolbarCoordinator alloc] initWithBrowser:browser_.get()];
+  coordinator_ =
+      [[MainToolbarCoordinator alloc] initWithBrowser:browser_.get()];
   [coordinator_ start];
   EXPECT_FALSE(observer.is_bottom_omnibox_);
 
@@ -219,8 +220,9 @@ TEST_F(ToolbarCoordinatorTest, TestOmniboxPositionBrowserAgentObservation) {
 
 // Tests that taking a side swipe snapshot of a toolbar that is not in the
 // view hierarchy does not crash and returns nil.
-TEST_F(ToolbarCoordinatorTest, SideSwipeSnapshotForToolbarNotInHierarchy) {
-  coordinator_ = [[ToolbarCoordinator alloc] initWithBrowser:browser_.get()];
+TEST_F(MainToolbarCoordinatorTest, SideSwipeSnapshotForToolbarNotInHierarchy) {
+  coordinator_ =
+      [[MainToolbarCoordinator alloc] initWithBrowser:browser_.get()];
   [coordinator_ start];
   // Add a dummy WebState to the WebStateList.
   auto test_web_state = std::make_unique<web::FakeWebState>();

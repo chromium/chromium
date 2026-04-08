@@ -160,6 +160,9 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
                     overlayPresenter:(OverlayPresenter*)overlayPresenter {
   self = [super init];
   if (self) {
+    if (!IsChromeNextIaEnabled()) {
+      _active = YES;
+    }
     // Set up the OverlayPresenterObserver for the infobar banner presentation.
     _overlayPresenterObserver =
         std::make_unique<OverlayPresenterObserverBridge>(self);
@@ -176,7 +179,9 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
 
     if (_webState) {
-      InfobarBadgeTabHelper::FromWebState(_webState)->SetDelegate(self);
+      if (!IsChromeNextIaEnabled()) {
+        InfobarBadgeTabHelper::FromWebState(_webState)->SetDelegate(self);
+      }
       if (ReaderModeTabHelper* readerModeTabHelper =
               ReaderModeTabHelper::FromWebState(_webState)) {
         readerModeTabHelper->AddObserver(_readerModeObserver.get());
@@ -234,6 +239,19 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
 }
 
 #pragma mark - Accessors
+
+- (void)setActive:(BOOL)active {
+  if (_active == active) {
+    return;
+  }
+  _active = active;
+  if (active) {
+    if (self.badgeTabHelper) {
+      self.badgeTabHelper->SetDelegate(self);
+      [self updateBadgesShownForWebState:self.webState];
+    }
+  }
+}
 
 - (NSArray<id<BadgeItem>>*)badges {
   if (!self.badgeTabHelper) {
@@ -336,7 +354,9 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
     return;
   }
   if (_webState) {
-    InfobarBadgeTabHelper::FromWebState(_webState)->SetDelegate(nil);
+    if (self.active) {
+      InfobarBadgeTabHelper::FromWebState(_webState)->SetDelegate(nil);
+    }
     if (ReaderModeTabHelper* readerModeTabHelper =
             ReaderModeTabHelper::FromWebState(_webState)) {
       readerModeTabHelper->RemoveObserver(_readerModeObserver.get());
@@ -345,7 +365,9 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
   }
   _webState = webState;
   if (_webState) {
-    InfobarBadgeTabHelper::FromWebState(_webState)->SetDelegate(self);
+    if (self.active) {
+      InfobarBadgeTabHelper::FromWebState(_webState)->SetDelegate(self);
+    }
     if (ReaderModeTabHelper* readerModeTabHelper =
             ReaderModeTabHelper::FromWebState(_webState)) {
       readerModeTabHelper->AddObserver(_readerModeObserver.get());
@@ -474,6 +496,9 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
 #pragma mark - InfobarBadgeTabHelperDelegate
 
 - (BOOL)badgeSupportedForInfobarType:(InfobarType)infobarType {
+  if (!self.active) {
+    return NO;
+  }
   if (base::FeatureList::IsEnabled(kAutofillBadgeRemoval)) {
     // TODO(crbug.com/440366193): Remove this ad hoc logic once we can fully
     // cleanup the autofill and password badges code once we are done
@@ -508,6 +533,9 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
 }
 
 - (void)updateBadgesShownForWebState:(web::WebState*)webState {
+  if (!self.active) {
+    return;
+  }
   if (webState != self.webStateList->GetActiveWebState()) {
     // Don't update badges if the update request is not coming from the
     // currently active WebState.

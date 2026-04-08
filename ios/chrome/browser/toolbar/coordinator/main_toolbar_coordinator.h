@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_TOOLBAR_COORDINATOR_TOOLBAR_COORDINATOR_H_
-#define IOS_CHROME_BROWSER_TOOLBAR_COORDINATOR_TOOLBAR_COORDINATOR_H_
+#ifndef IOS_CHROME_BROWSER_TOOLBAR_COORDINATOR_MAIN_TOOLBAR_COORDINATOR_H_
+#define IOS_CHROME_BROWSER_TOOLBAR_COORDINATOR_MAIN_TOOLBAR_COORDINATOR_H_
 
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/composebox/public/composebox_animation_base.h"
@@ -22,7 +22,7 @@
 /// view controller. This object is also an interface between multiple toolbars
 /// and the objects which want to interact with them without having to know to
 /// which one specifically send the call.
-@interface ToolbarCoordinator
+@interface MainToolbarCoordinator
     : ChromeCoordinator <FakeboxFocuser,
                          OmniboxStateProvider,
                          PopupMenuUIUpdating,
@@ -97,4 +97,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_TOOLBAR_COORDINATOR_TOOLBAR_COORDINATOR_H_
+#endif  // IOS_CHROME_BROWSER_TOOLBAR_COORDINATOR_MAIN_TOOLBAR_COORDINATOR_H_

@@ -46,7 +46,7 @@ class TabUsageRecorderBrowserAgent;
 @protocol TextZoomCommands;
 @class ToolbarAccessoryPresenter;
 @protocol ToolbarCommands;
-@class ToolbarCoordinator;
+@class MainToolbarCoordinator;
 class UrlLoadingBrowserAgent;
 @protocol VoiceSearchController;
 
@@ -54,7 +54,7 @@ typedef struct {
   ToolbarAccessoryPresenter* toolbarAccessoryPresenter;
   PopupMenuCoordinator* popupMenuCoordinator;
   NewTabPageCoordinator* ntpCoordinator;
-  ToolbarCoordinator* toolbarCoordinator;
+  MainToolbarCoordinator* toolbarCoordinator;
   SideSwipeCoordinator* sideSwipeCoordinator;
   BookmarksCoordinator* bookmarksCoordinator;
   raw_ptr<FullscreenBrowserAgent> fullscreenBrowserAgent;

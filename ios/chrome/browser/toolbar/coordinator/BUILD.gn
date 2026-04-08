@@ -4,8 +4,10 @@
 
 source_set("coordinator") {
   sources = [
-    "toolbar_coordinator.h",
-    "toolbar_coordinator.mm",
+    "main_toolbar_coordinator.h",
+    "main_toolbar_coordinator.mm",
+    "main_toolbar_mediator.h",
+    "main_toolbar_mediator.mm",
     "toolbar_mediator.h",
     "toolbar_mediator.mm",
   ]
@@ -35,6 +37,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/model/prefs",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url",
+    "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
@@ -61,7 +64,8 @@ source_set("coordinator") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "toolbar_coordinator_unittest.mm",
+    "main_toolbar_coordinator_unittest.mm",
+    "main_toolbar_mediator_unittest.mm",
     "toolbar_mediator_unittest.mm",
   ]
   deps = [

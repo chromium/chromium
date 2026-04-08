@@ -78,7 +78,7 @@
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/chrome/browser/tabs/ui_bundled/foreground_tab_animation_view.h"
 #import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
-#import "ios/chrome/browser/toolbar/coordinator/toolbar_coordinator.h"
+#import "ios/chrome/browser/toolbar/coordinator/main_toolbar_coordinator.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/new_tab_animation_tab_helper.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
@@ -292,7 +292,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     [popup_menu_coordinator_ start];
 
     toolbar_coordinator_ =
-        [[ToolbarCoordinator alloc] initWithBrowser:browser_.get()];
+        [[MainToolbarCoordinator alloc] initWithBrowser:browser_.get()];
     [toolbar_coordinator_ start];
 
     fullscreen_controller_ = FullscreenController::FromBrowser(browser_.get());
@@ -456,7 +456,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   SceneState* scene_state_;
   raw_ptr<commerce::MockShoppingService> shopping_service_;
   PopupMenuCoordinator* popup_menu_coordinator_;
-  ToolbarCoordinator* toolbar_coordinator_;
+  MainToolbarCoordinator* toolbar_coordinator_;
   SideSwipeCoordinator* side_swipe_coordinator_;
   BookmarksCoordinator* bookmarks_coordinator_;
   raw_ptr<FullscreenController> fullscreen_controller_;

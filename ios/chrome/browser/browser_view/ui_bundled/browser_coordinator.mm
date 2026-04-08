@@ -343,7 +343,7 @@
 #import "ios/chrome/browser/tips_notifications/coordinator/price_tracking_promo_coordinator.h"
 #import "ios/chrome/browser/tips_notifications/coordinator/search_what_you_see_promo_coordinator.h"
 #import "ios/chrome/browser/tips_notifications/coordinator/tab_groups_promo_coordinator.h"
-#import "ios/chrome/browser/toolbar/coordinator/toolbar_coordinator.h"
+#import "ios/chrome/browser/toolbar/coordinator/main_toolbar_coordinator.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/accessory/toolbar_accessory_presenter.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_coordinator.h"
@@ -726,7 +726,7 @@ const char kChromeAppStoreUrl[] =
   ToolbarAccessoryPresenter* _toolbarAccessoryPresenter;
   LensViewFinderCoordinator* _lensViewFinderCoordinator;
   LensOverlayCoordinator* _lensOverlayCoordinator;
-  ToolbarCoordinator* _toolbarCoordinator;
+  MainToolbarCoordinator* _toolbarCoordinator;
   BrowserOmniboxStateProvider* _browserOmniboxStateProvider;
   SideSwipeCoordinator* _sideSwipeCoordinator;
   raw_ptr<FullscreenController> _fullscreenController;
@@ -1325,7 +1325,8 @@ const char kChromeAppStoreUrl[] =
   _bubblePresenterCoordinator.bubblePresenterDelegate = self;
   [_bubblePresenterCoordinator start];
 
-  _toolbarCoordinator = [[ToolbarCoordinator alloc] initWithBrowser:browser];
+  _toolbarCoordinator =
+      [[MainToolbarCoordinator alloc] initWithBrowser:browser];
 
   // The location bar is one of the OmniboxStateProvider because omnibox is
   // used both in browser and lens overlay.
