@@ -1495,10 +1495,6 @@ inline constexpr char kGlicPrintMenuItemDescription[] =
 inline constexpr char kGlicWarmingName[] = "Glic Pre-Warming";
 inline constexpr char kGlicWarmingDescription[] =
     "Enables the pre-warming of the Glic panel's web client.";
-inline constexpr char kGlicEntrypointVariationsName[] =
-    "Glic Entrypoint Variations";
-inline constexpr char kGlicEntrypointVariationsDescription[] =
-    "Enables visual tweaks to the Glic entry button in the tab strip.";
 inline constexpr char kGlicContextualCueBubbleName[] =
     "Glic contextual cue bubble";
 inline constexpr char kGlicContextualCueBubbleDescription[] =

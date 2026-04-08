@@ -65,10 +65,6 @@ constexpr ui::ColorId kForegroundOnAltBackground = ui::kColorSysOnSurface;
 constexpr int kIconSize = 16;
 constexpr int kCollapsedWidth = 41;
 
-bool EntrypointVariationsEnabled() {
-  return base::FeatureList::IsEnabled(features::kGlicEntrypointVariations);
-}
-
 std::u16string GetLabelText() {
   if (base::FeatureList::IsEnabled(features::kGlicButtonAltLabel)) {
     switch (features::kGlicButtonAltLabelVariant.Get()) {
@@ -285,10 +281,6 @@ TabStripGlicButton::TabStripGlicButton(
 TabStripGlicButton::~TabStripGlicButton() = default;
 
 void TabStripGlicButton::SetNudgeLabel(std::string label) {
-  if (!EntrypointVariationsEnabled()) {
-    start_width_ = PreferredSize().width();
-    return SetText(base::UTF8ToUTF16(label));
-  }
   // Store the new label text until the right moment in the animation to update
   // the view.
   pending_text_ = base::UTF8ToUTF16(label);
@@ -345,9 +337,6 @@ void TabStripGlicButton::Collapse() {
 }
 
 void TabStripGlicButton::RestoreDefaultLabel() {
-  if (!EntrypointVariationsEnabled()) {
-    return SetText(GetLabelText());
-  }
   // Store the new label text until the right moment in the animation to update
   // the view.
   pending_text_ = GetLabelText();
@@ -393,14 +382,6 @@ bool TabStripGlicButton::GetIsShowingNudge() const {
 }
 
 void TabStripGlicButton::OnAnimationEnded() {
-  // TODO(crbug.com/469850069): Remove.
-  if (!EntrypointVariationsEnabled()) {
-    if (GetWidthFactor() == 0) {
-      RestoreDefaultLabel();
-    }
-    return;
-  }
-
   if (IsHidingNudge()) {
     SetCloseButtonVisible(false);
   }
@@ -422,12 +403,6 @@ gfx::Size TabStripGlicButton::CalculatePreferredSize(
   int start = std::max(start_width_, height);
   int end = std::max(end_width_, height);
 
-  // TODO(crbug.com/469850069): Remove.
-  if (!EntrypointVariationsEnabled()) {
-    start = kCollapsedWidth;
-    end = current_preferred_width;
-  }
-
   // Interpolate based on animation value.
   const int width = std::lerp(start, end, GetWidthFactor());
   return gfx::Size(width, height);
@@ -446,7 +421,6 @@ void TabStripGlicButton::StateChanged(ButtonState old_state) {
 }
 
 void TabStripGlicButton::AddedToWidget() {
-  if (EntrypointVariationsEnabled()) {
     // Both TabStripControlButton and parent LabelButton set up similar logic
     // here for drawing the button as enabled or disabled when window activation
     // changes. Use LabelButton's as TabStripControlButton fails to update the
@@ -454,7 +428,6 @@ void TabStripGlicButton::AddedToWidget() {
     // TODO(crbug.com/452116005): Make this behavior configurable on
     // TabStripControlButton.
     LabelButton::AddedToWidget();
-  }
 
   TabStripNudgeButton::AddedToWidget();
   // Button starts in WidthState::kNormal. Measure that state's width and set
@@ -571,10 +544,6 @@ void TabStripGlicButton::SetDefaultColors() {
 }
 
 void TabStripGlicButton::UpdateTextAndBackgroundColors() {
-  if (!EntrypointVariationsEnabled()) {
-    return;
-  }
-
   SetBackgroundFrameActiveColorId(ui::kColorSysBase);
   SetForegroundFrameActiveColorId(kForegroundOnAltBackground);
   SetTextColor(STATE_DISABLED, kTextDisabled);
@@ -621,12 +590,6 @@ void TabStripGlicButton::ShowNudge() {
   }
   SetWidthState(WidthState::kNudge);
 
-  if (!EntrypointVariationsEnabled()) {
-    // If flag is disabled, the parent drives the animation. Just update the
-    // close button.
-    return SetCloseButtonVisible(true);
-  }
-
   // Remember the button's original width before changing the text and showing
   // the close button.
   start_width_ = PreferredSize().width();
@@ -662,12 +625,6 @@ void TabStripGlicButton::HideNudge() {
   }
   // If the button wasn't collapsed, it must be transitioning back to kNormal.
   SetWidthState(WidthState::kNormal);
-
-  if (!EntrypointVariationsEnabled()) {
-    // If flag is disabled, the parent drives the animation. Just update the
-    // close button.
-    return SetCloseButtonVisible(false);
-  }
 
   start_width_ = PreferredSize().width();
   end_width_ = normal_width_;

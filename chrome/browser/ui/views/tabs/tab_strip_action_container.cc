@@ -1018,8 +1018,7 @@ void TabStripActionContainer::OnAnimationSessionEnded() {
 
 bool TabStripActionContainer::ButtonOwnsAnimation(
     const TabStripNudgeButton* button) const {
-  return button == glic_button_ &&
-         base::FeatureList::IsEnabled(features::kGlicEntrypointVariations);
+  return button == glic_button_;
 }
 
 void TabStripActionContainer::FinalizeHideGlicActorTaskIcon() {

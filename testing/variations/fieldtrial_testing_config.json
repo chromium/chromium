@@ -11004,26 +11004,6 @@
             ]
         }
     ],
-    "GlicEntrypointVariationsChromeOS": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Arm4_LabelAndIcon",
-                    "params": {
-                        "glic-entrypoint-variations-alt-icon": "true",
-                        "glic-entrypoint-variations-highlight-nudge": "false",
-                        "glic-entrypoint-variations-show-label": "true"
-                    },
-                    "enable_features": [
-                        "GlicEntrypointVariations"
-                    ]
-                }
-            ]
-        }
-    ],
     "GlicForceNonSkSLBorder": [
         {
             "platforms": [

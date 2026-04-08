@@ -1036,8 +1036,7 @@ void ToolbarView::ExecuteHideToolbarNudge(glic::GlicButtonInterface* button) {
 
   // Since the glic button is still visible in it's hidden state we need to have
   // a special case to query if it's in its Hide state.
-  if (button == glic_button_ && button->GetWidthFactor() == 0.0 &&
-      base::FeatureList::IsEnabled(features::kGlicEntrypointVariations)) {
+  if (button == glic_button_ && button->GetWidthFactor() == 0.0) {
     return;
   }
 

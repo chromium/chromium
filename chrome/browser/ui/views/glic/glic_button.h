@@ -250,19 +250,12 @@ class GlicButton : public GlicBaseShim<T>,
   }
 
   void SetNudgeLabel(std::string label) {
-    if (!EntrypointVariationsEnabled()) {
-      start_width_ = PreferredSize().width();
-      return SetText(base::UTF8ToUTF16(label));
-    }
     // Store the new label text until the right moment in the animation to
     // update the view.
     pending_text_ = base::UTF8ToUTF16(label);
   }
 
   void RestoreDefaultLabel() {
-    if (!EntrypointVariationsEnabled()) {
-      return SetText(GetLabelText());
-    }
     // Store the new label text until the right moment in the animation to
     // update the view.
     pending_text_ = GetLabelText();
@@ -324,12 +317,6 @@ class GlicButton : public GlicBaseShim<T>,
     int start = std::max(start_width_, height);
     int end = std::max(end_width_, height);
 
-    // TODO(crbug.com/469850069): Remove.
-    if (!EntrypointVariationsEnabled()) {
-      start = kCollapsedWidth;
-      end = current_preferred_width;
-    }
-
     // Interpolate based on animation value.
     const int width = std::lerp(start, end, GetWidthFactor());
     return gfx::Size(width, height);
@@ -349,7 +336,6 @@ class GlicButton : public GlicBaseShim<T>,
   }
 
   void AddedToWidget() override {
-    if (EntrypointVariationsEnabled()) {
       // Both TabStripControlButton and parent LabelButton set up similar logic
       // here for drawing the button as enabled or disabled when window
       // activation changes. Use LabelButton's as TabStripControlButton fails to
@@ -357,7 +343,6 @@ class GlicButton : public GlicBaseShim<T>,
       // TODO(crbug.com/452116005): Make this behavior configurable on
       // TabStripControlButton.
       views::LabelButton::AddedToWidget();
-    }
 
     T::AddedToWidget();
     // Button starts in WidthState::kNormal. Measure that state's width and set
@@ -445,14 +430,6 @@ class GlicButton : public GlicBaseShim<T>,
 
   // Called when the slide animation finishes.
   void OnAnimationEnded() {
-    // TODO(crbug.com/469850069): Remove.
-    if (!EntrypointVariationsEnabled()) {
-      if (GetWidthFactor() == 0) {
-        RestoreDefaultLabel();
-      }
-      return;
-    }
-
     if (IsHidingNudge()) {
       SetCloseButtonVisible(false);
     }
@@ -696,10 +673,6 @@ class GlicButton : public GlicBaseShim<T>,
   }
 
   void UpdateTextAndBackgroundColors() {
-    if (!EntrypointVariationsEnabled()) {
-      return;
-    }
-
     SetBackgroundFrameActiveColorId(ui::kColorSysBase);
     SetForegroundFrameActiveColorId(kForegroundOnAltBackground);
     this->SetTextColor(views::Button::STATE_DISABLED, kTextDisabled);
@@ -740,12 +713,6 @@ class GlicButton : public GlicBaseShim<T>,
     }
     SetWidthState(WidthState::kNudge);
 
-    if (!EntrypointVariationsEnabled()) {
-      // If flag is disabled, the parent drives the animation. Just update the
-      // close button.
-      return SetCloseButtonVisible(true);
-    }
-
     // Remember the button's original width before changing the text and showing
     // the close button.
     start_width_ = PreferredSize().width();
@@ -782,12 +749,6 @@ class GlicButton : public GlicBaseShim<T>,
 
     // If the button wasn't collapsed, it must be transitioning back to kNormal.
     SetWidthState(WidthState::kNormal);
-
-    if (!EntrypointVariationsEnabled()) {
-      // If flag is disabled, the parent drives the animation. Just update the
-      // close button.
-      return SetCloseButtonVisible(false);
-    }
 
     start_width_ = PreferredSize().width();
     end_width_ = normal_width_;
@@ -882,10 +843,6 @@ class GlicButton : public GlicBaseShim<T>,
   WidthState width_state() { return width_state_; }
 
   virtual void OnLabelVisibilityChanged() {}
-
-  static bool EntrypointVariationsEnabled() {
-    return base::FeatureList::IsEnabled(features::kGlicEntrypointVariations);
-  }
 
   static const gfx::VectorIcon& GlicVectorIcon() {
     return GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON);

@@ -3699,50 +3699,6 @@ const FeatureEntry::FeatureParam kGlicActorTransientTasksForceTransient[] = {
 const FeatureEntry::FeatureVariation kGlicActorTransientTasksVariations[] = {
     {"(force transient)", kGlicActorTransientTasksForceTransient, nullptr}};
 
-const char kGlicEntrypointVariationsShowLabel[] =
-    "glic-entrypoint-variations-show-label";
-const char kGlicEntrypointVariationsAltIcon[] =
-    "glic-entrypoint-variations-alt-icon";
-const char kGlicEntrypointVariationsHighlightNudge[] =
-    "glic-entrypoint-variations-highlight-nudge";
-const FeatureEntry::FeatureParam kGlicEntrypointVariationsHighlightOnly[] = {
-    {kGlicEntrypointVariationsHighlightNudge, "true"},
-    {kGlicEntrypointVariationsAltIcon, "false"},
-    {kGlicEntrypointVariationsShowLabel, "false"},
-};
-const FeatureEntry::FeatureParam kGlicEntrypointVariationsLabelOnly[] = {
-    {kGlicEntrypointVariationsHighlightNudge, "false"},
-    {kGlicEntrypointVariationsAltIcon, "false"},
-    {kGlicEntrypointVariationsShowLabel, "true"},
-};
-const FeatureEntry::FeatureParam kGlicEntrypointVariationsLabelAndHighlight[] =
-    {
-        {kGlicEntrypointVariationsHighlightNudge, "true"},
-        {kGlicEntrypointVariationsAltIcon, "false"},
-        {kGlicEntrypointVariationsShowLabel, "true"},
-};
-const FeatureEntry::FeatureParam kGlicEntrypointVariationsLabelAndIcon[] = {
-    {kGlicEntrypointVariationsHighlightNudge, "false"},
-    {kGlicEntrypointVariationsAltIcon, "true"},
-    {kGlicEntrypointVariationsShowLabel, "true"},
-};
-const FeatureEntry::FeatureParam
-    kGlicEntrypointVariationsLabelAndIconAndHighlight[] = {
-        {kGlicEntrypointVariationsHighlightNudge, "true"},
-        {kGlicEntrypointVariationsAltIcon, "true"},
-        {kGlicEntrypointVariationsShowLabel, "true"},
-};
-
-const FeatureEntry::FeatureVariation kGlicEntrypointVariations[] = {
-    {"highlight nudge only", kGlicEntrypointVariationsHighlightOnly, nullptr},
-    {"label only", kGlicEntrypointVariationsLabelOnly, nullptr},
-    {"label, highlight nudge", kGlicEntrypointVariationsLabelAndHighlight,
-     nullptr},
-    {"label, alt icon", kGlicEntrypointVariationsLabelAndIcon, nullptr},
-    {"label, icon, highlight nudge",
-     kGlicEntrypointVariationsLabelAndIconAndHighlight, nullptr},
-};
-
 const FeatureEntry::FeatureParam kGlicButtonPressedStateForceSolidIcon[] = {
     {"glic-button-pressed-force-solid-icon", "true"}};
 
@@ -10599,12 +10555,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kGlicWarming,
                                     kGlicWarmingVariations,
                                     "GlicWarming")},
-    {"glic-entrypoint-variations",
-     flag_descriptions::kGlicEntrypointVariationsName,
-     flag_descriptions::kGlicEntrypointVariationsDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kGlicEntrypointVariations,
-                                    kGlicEntrypointVariations,
-                                    "GlicEntrypointVariations")},
     {"glic-contextual-cue-bubble",
      flag_descriptions::kGlicContextualCueBubbleName,
      flag_descriptions::kGlicContextualCueBubbleDescription, kOsDesktop,

@@ -251,14 +251,9 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   SetLockedExpansionMode(LockedExpansionMode::kWillHide, GlicNudgeButton());
 
   OnButtonDismissed(GlicNudgeButton());
-  if (base::FeatureList::IsEnabled(features::kGlicEntrypointVariations)) {
-    // Animation always runs from 0 to 1, even for dismissal, so IsShowing()
-    // should return true.
-    EXPECT_TRUE(GetExpansionAnimation(GlicNudgeButton())->IsShowing());
-  } else {
-    // TODO(crbug.com/469850069): Clean up GlicEntrypointVariations.
-    EXPECT_TRUE(GetExpansionAnimation(GlicNudgeButton())->IsClosing());
-  }
+  // Animation always runs from 0 to 1, even for dismissal, so IsShowing()
+  // should return true.
+  EXPECT_TRUE(GetExpansionAnimation(GlicNudgeButton())->IsShowing());
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
