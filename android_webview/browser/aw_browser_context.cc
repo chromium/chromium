@@ -25,6 +25,7 @@
 #include "android_webview/browser/aw_permission_manager.h"
 #include "android_webview/browser/aw_quota_manager_bridge.h"
 #include "android_webview/browser/aw_web_ui_controller_factory.h"
+#include "android_webview/browser/content_restriction/aw_content_restriction_blocked_navigation_tracker.h"
 #include "android_webview/browser/content_restriction/aw_content_restriction_manager_client.h"
 #include "android_webview/browser/cookie_manager.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
@@ -240,6 +241,8 @@ AwBrowserContext::AwBrowserContext(std::string name,
 
   content_restriction_manager_client_ =
       std::make_unique<AwContentRestrictionManagerClient>();
+  content_restriction_blocked_navigation_tracker_ =
+      std::make_unique<AwContentRestrictionBlockedNavigationTracker>();
 }
 
 AwBrowserContext::~AwBrowserContext() {
@@ -387,6 +390,12 @@ AwContentRestrictionManagerClient*
 AwBrowserContext::GetContentRestrictionManagerClient() {
   DCHECK(content_restriction_manager_client_);
   return content_restriction_manager_client_.get();
+}
+
+AwContentRestrictionBlockedNavigationTracker*
+AwBrowserContext::GetContentRestrictionBlockedNavigationTracker() {
+  DCHECK(content_restriction_blocked_navigation_tracker_);
+  return content_restriction_blocked_navigation_tracker_.get();
 }
 
 CookieManager* AwBrowserContext::GetCookieManager() {

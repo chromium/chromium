@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/content_restriction/aw_content_restriction_url_loader_throttle.h"
 
+#include "android_webview/browser/content_restriction/aw_content_restriction_blocked_navigation_tracker.h"
 #include "android_webview/browser/content_restriction/aw_content_restriction_manager_client.h"
 #include "base/functional/bind.h"
 #include "net/base/net_errors.h"
@@ -11,8 +12,12 @@
 namespace android_webview {
 
 AwContentRestrictionURLLoaderThrottle::AwContentRestrictionURLLoaderThrottle(
-    AwContentRestrictionManagerClient* client)
-    : content_restriction_manager_client_(client) {}
+    AwContentRestrictionManagerClient* client,
+    AwContentRestrictionBlockedNavigationTracker* tracker,
+    std::optional<int64_t> navigation_id)
+    : content_restriction_manager_client_(client),
+      tracker_(tracker),
+      navigation_id_(navigation_id) {}
 
 AwContentRestrictionURLLoaderThrottle::
     ~AwContentRestrictionURLLoaderThrottle() = default;
@@ -34,12 +39,15 @@ void AwContentRestrictionURLLoaderThrottle::WillStartRequest(
 void AwContentRestrictionURLLoaderThrottle::OnClassificationResult(
     bool is_allowed) {
   DCHECK(delegate_);
+  DCHECK(tracker_);
   if (is_allowed) {
     delegate_->Resume();
     return;
   }
 
-  // TODO(crbug.com/481113131): Integrate error page handler.
+  if (navigation_id_.has_value()) {
+    tracker_->RegisterNavigationAsBlocked(navigation_id_.value());
+  }
   delegate_->CancelWithError(net::ERR_BLOCKED_BY_CLIENT);
 }
 

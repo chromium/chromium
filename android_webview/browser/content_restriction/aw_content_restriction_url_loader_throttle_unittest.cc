@@ -6,6 +6,7 @@
 
 #include <atomic>
 
+#include "android_webview/browser/content_restriction/aw_content_restriction_blocked_navigation_tracker.h"
 #include "android_webview/browser/content_restriction/aw_content_restriction_manager_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/net_errors.h"
@@ -22,6 +23,7 @@ namespace android_webview {
 namespace {
 
 constexpr char kTestUrl[] = "https://www.example.com";
+constexpr int64_t kTestNavigationId = 1;
 
 class MockAwContentRestrictionManagerClient
     : public AwContentRestrictionManagerClient {
@@ -65,7 +67,9 @@ class AwContentRestrictionURLLoaderThrottleTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   MockAwContentRestrictionManagerClient mock_client_;
-  AwContentRestrictionURLLoaderThrottle throttle{&mock_client_};
+  AwContentRestrictionBlockedNavigationTracker tracker_;
+  AwContentRestrictionURLLoaderThrottle throttle{&mock_client_, &tracker_,
+                                                 kTestNavigationId};
   TestThrottleDelegate delegate;
 };
 
@@ -82,6 +86,7 @@ TEST_F(AwContentRestrictionURLLoaderThrottleTest,
   EXPECT_FALSE(defer);
   EXPECT_FALSE(delegate.resume_called());
   EXPECT_FALSE(delegate.cancel_called());
+  EXPECT_FALSE(tracker_.IsNavigationBlocked(kTestNavigationId));
 }
 
 TEST_F(AwContentRestrictionURLLoaderThrottleTest, AllowRequest) {
@@ -119,6 +124,7 @@ TEST_F(AwContentRestrictionURLLoaderThrottleTest, BlockRequest) {
   EXPECT_FALSE(delegate.resume_called());
   EXPECT_TRUE(delegate.cancel_called());
   EXPECT_EQ(delegate.error_code(), net::ERR_BLOCKED_BY_CLIENT);
+  EXPECT_TRUE(tracker_.IsNavigationBlocked(kTestNavigationId));
 }
 
 }  // namespace

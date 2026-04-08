@@ -31,6 +31,8 @@
 #include "android_webview/browser/aw_speech_recognition_manager_delegate.h"
 #include "android_webview/browser/aw_web_contents_delegate.h"
 #include "android_webview/browser/aw_web_contents_view_delegate.h"
+#include "android_webview/browser/content_restriction/aw_content_restriction_manager_client.h"
+#include "android_webview/browser/content_restriction/aw_content_restriction_navigation_throttle.h"
 #include "android_webview/browser/content_restriction/aw_content_restriction_url_loader_throttle.h"
 #include "android_webview/browser/cookie_manager.h"
 #include "android_webview/browser/network_service/aw_browser_context_io_thread_handle.h"
@@ -741,6 +743,14 @@ void AwContentBrowserClient::CreateThrottlesForNavigation(
           std::make_unique<AwSupervisedUserThrottle>(registry, urlClassifier));
     }
   }
+
+  if (base::FeatureList::IsEnabled(
+          android_webview::features::kWebViewContentRestrictionSupport)) {
+    registry.AddThrottle(
+        std::make_unique<AwContentRestrictionNavigationThrottle>(
+            registry,
+            context->GetContentRestrictionBlockedNavigationTracker()));
+  }
 }
 
 std::unique_ptr<content::PrefetchServiceDelegate>
@@ -798,9 +808,12 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
   if (browser_context &&
       base::FeatureList::IsEnabled(
           android_webview::features::kWebViewContentRestrictionSupport)) {
+    AwBrowserContext* const aw_browser_context =
+        static_cast<AwBrowserContext*>(browser_context);
     result.push_back(std::make_unique<AwContentRestrictionURLLoaderThrottle>(
-        static_cast<AwBrowserContext*>(browser_context)
-            ->GetContentRestrictionManagerClient()));
+        aw_browser_context->GetContentRestrictionManagerClient(),
+        aw_browser_context->GetContentRestrictionBlockedNavigationTracker(),
+        navigation_id));
   }
 
   if (request.destination == network::mojom::RequestDestination::kDocument) {

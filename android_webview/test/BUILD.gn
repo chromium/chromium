@@ -845,6 +845,7 @@ test("android_webview_unittests") {
     "../browser/aw_pac_processor_unittest.cc",
     "../browser/aw_permission_manager_unittest.cc",
     "../browser/aw_user_agent_metadata_unittest.cc",
+    "../browser/content_restriction/aw_content_restriction_navigation_throttle_unittest.cc",
     "../browser/content_restriction/aw_content_restriction_url_loader_throttle_unittest.cc",
     "../browser/enterprise_authentication_app_link_policy_handler_unittest.cc",
     "../browser/file_system_access/aw_file_system_access_permission_context_unittest.cc",
