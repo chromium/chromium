@@ -251,6 +251,7 @@ public class ToolbarProgressBarAnimatingView extends ImageView {
 
     /** Cancel the animation. */
     public void cancelAnimation() {
+        if (mIsCanceled) return;
         mIsCanceled = true;
         mAnimatorSet.cancel();
         animate().cancel();

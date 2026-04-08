@@ -142,6 +142,13 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
                 }
             };
 
+    private final Runnable mHideProgressBarRunnable =
+            () -> {
+                if (isAttachedToWindow()) {
+                    hideProgressBar(true);
+                }
+            };
+
     private final TimeAnimator mSmoothProgressAnimator = new TimeAnimator();
     TimeListener mSmoothProgressAnimatorListener =
             new TimeListener() {
@@ -317,6 +324,8 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
     public void onDetachedFromWindow() {
         super.onDetachedFromWindow();
 
+        removeCallbacks(mHideProgressBarRunnable);
+
         mSmoothProgressAnimator.setTimeListener(null);
         mSmoothProgressAnimator.cancel();
 
@@ -427,7 +436,8 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
         }
 
         if (fadeOut) {
-            postDelayed(() -> hideProgressBar(true), HIDE_DELAY_MS);
+            removeCallbacks(mHideProgressBarRunnable);
+            postDelayed(mHideProgressBarRunnable, HIDE_DELAY_MS);
         } else {
             hideProgressBar(false);
         }
