@@ -884,6 +884,9 @@ bool IsComposeboxIOSEnabled() {
 BASE_FEATURE(kTabGroupColorOnSurface, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsTabGroupColorOnSurfaceEnabled() {
+  if (IsSyncedGroupColorEnabled()) {
+    return true;
+  }
   return base::FeatureList::IsEnabled(kTabGroupColorOnSurface);
 }
 
@@ -1133,4 +1136,10 @@ BASE_FEATURE(kOpenEditGroupViewByTappingTitle,
 
 bool IsOpenEditGroupViewByTappingTitleEnabled() {
   return base::FeatureList::IsEnabled(kOpenEditGroupViewByTappingTitle);
+}
+
+BASE_FEATURE(kSyncedGroupColor, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsSyncedGroupColorEnabled() {
+  return base::FeatureList::IsEnabled(kSyncedGroupColor);
 }

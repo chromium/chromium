@@ -938,4 +938,10 @@ BASE_DECLARE_FEATURE(kOpenEditGroupViewByTappingTitle);
 // Returns true if the OpenEditGroupViewByTappingTitle feature is enabled.
 bool IsOpenEditGroupViewByTappingTitleEnabled();
 
+// Enables the SyncedGroupColor feature.
+BASE_DECLARE_FEATURE(kSyncedGroupColor);
+
+// Returns true if the SyncedGroupColor feature is enabled.
+bool IsSyncedGroupColorEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

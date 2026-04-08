@@ -2794,6 +2794,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kIOSCobaltDeveloperModeName,
      flag_descriptions::kIOSCobaltDeveloperModeDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kIOSCobaltDeveloperMode)},
+    {"synced-group-color", flag_descriptions::kSyncedGroupColorName,
+     flag_descriptions::kSyncedGroupColorDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kSyncedGroupColor)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

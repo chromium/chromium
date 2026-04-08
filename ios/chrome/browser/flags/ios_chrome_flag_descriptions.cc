@@ -1668,6 +1668,10 @@ const char kSyncWalletVehicleRegistrationsName[] =
 const char kSyncWalletVehicleRegistrationsDescription[] =
     "Enables syncing vehicle registrations in the wallet to the server.";
 
+const char kSyncedGroupColorName[] = "SyncedGroupColor";
+const char kSyncedGroupColorDescription[] =
+    "Enables the SyncedGroupColor feature.";
+
 const char kTabGridNewTransitionsName[] = "Enable new TabGrid transitions";
 const char kTabGridNewTransitionsDescription[] =
     "When enabled, the new Tab Grid to Browser (and vice versa) transitions"
