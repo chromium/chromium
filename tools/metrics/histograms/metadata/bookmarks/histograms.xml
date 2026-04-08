@@ -487,7 +487,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.IdsReassigned2.OnProfileLoad.{BookmarksFileType}"
-    enum="BooleanReassigned" expires_after="2026-05-20">
+    enum="BooleanReassigned" expires_after="2026-10-06">
   <owner>mastiz@chromium.org</owner>
   <owner>arthurmilchior@chromium.org</owner>
   <summary>
