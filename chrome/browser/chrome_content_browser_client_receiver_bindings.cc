@@ -544,14 +544,16 @@ void ChromeContentBrowserClient::
           },
           &render_frame_host));
 #if BUILDFLAG(ENABLE_PDF)
-  associated_registry.AddInterface<pdf::mojom::PdfHost>(base::BindRepeating(
-      [](content::RenderFrameHost* render_frame_host,
-         mojo::PendingAssociatedReceiver<pdf::mojom::PdfHost> receiver) {
-        pdf::PDFDocumentHelper::BindPdfHost(
-            std::move(receiver), render_frame_host,
-            std::make_unique<ChromePDFDocumentHelperClient>());
-      },
-      &render_frame_host));
+  if (render_frame_host.GetProcess()->IsPdf()) {
+    associated_registry.AddInterface<pdf::mojom::PdfHost>(base::BindRepeating(
+        [](content::RenderFrameHost* render_frame_host,
+           mojo::PendingAssociatedReceiver<pdf::mojom::PdfHost> receiver) {
+          pdf::PDFDocumentHelper::BindPdfHost(
+              std::move(receiver), render_frame_host,
+              std::make_unique<ChromePDFDocumentHelperClient>());
+        },
+        &render_frame_host));
+  }
 #endif  // BUILDFLAG(ENABLE_PDF)
 #if !BUILDFLAG(IS_ANDROID)
   associated_registry.AddInterface<search::mojom::EmbeddedSearchConnector>(
