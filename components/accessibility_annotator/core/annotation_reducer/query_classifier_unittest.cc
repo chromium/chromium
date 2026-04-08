@@ -53,6 +53,12 @@ TEST(QueryClassifierUtilsTest, ContainsStandalonePhrase) {
   // Case sensitivity (it's a raw check, so it should be sensitive).
   EXPECT_FALSE(internal::ContainsStandalonePhrase(u"Hello world", u"hello"));
   EXPECT_TRUE(internal::ContainsStandalonePhrase(u"Hello world", u"Hello"));
+
+  // Punctuation matches.
+  EXPECT_TRUE(internal::ContainsStandalonePhrase(u"hello, world", u"hello"));
+  EXPECT_TRUE(internal::ContainsStandalonePhrase(u"hello, world", u"world"));
+  EXPECT_TRUE(internal::ContainsStandalonePhrase(u"hello world!", u"world"));
+  EXPECT_TRUE(internal::ContainsStandalonePhrase(u"(hello) world", u"hello"));
 }
 
 class QueryClassifierTest : public ::testing::Test {

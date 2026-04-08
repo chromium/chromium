@@ -432,6 +432,10 @@ QueryClassifier CreateQueryClassifier(
 
 namespace internal {
 
+// Returns true if the `needle` is found in the `haystack` as a standalone
+// phrase. A phrase is considered standalone if it is bounded by
+// non-alphanumeric characters (like spaces or punctuation) or the start/end
+// of the `haystack`.
 bool ContainsStandalonePhrase(std::u16string_view haystack,
                               std::u16string_view needle) {
   if (needle.empty()) {
@@ -440,9 +444,15 @@ bool ContainsStandalonePhrase(std::u16string_view haystack,
 
   size_t pos = haystack.find(needle);
   while (pos != std::u16string::npos) {
-    bool start_of_word = pos == 0 || haystack[pos - 1] == u' ';
-    bool end_of_word = pos + needle.length() == haystack.length() ||
-                       haystack[pos + needle.length()] == u' ';
+    // A word starts if it's at the beginning of the string or preceded by a
+    // non-alphanumeric character.
+    bool start_of_word =
+        pos == 0 || !base::IsAsciiAlphaNumeric(haystack[pos - 1]);
+    // A word ends if it's at the end of the string or followed by a
+    // non-alphanumeric character.
+    bool end_of_word =
+        pos + needle.length() == haystack.length() ||
+        !base::IsAsciiAlphaNumeric(haystack[pos + needle.length()]);
     if (start_of_word && end_of_word) {
       return true;
     }

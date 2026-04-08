@@ -12,7 +12,9 @@
 
 #include "base/barrier_callback.h"
 #include "base/containers/extend.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/i18n/break_iterator.h"
 #include "base/strings/string_util.h"
 #include "components/accessibility_annotator/core/annotation_reducer/entry_type.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_data_provider.h"
@@ -20,6 +22,45 @@
 #include "components/accessibility_annotator/core/annotation_reducer/query_classifier.h"
 
 namespace accessibility_annotator {
+
+namespace {
+
+// Tokenizes `text` using native word boundaries and returns true if any
+// token exists in `filter_words_set`.
+bool TextContainsAnyFilterWord(
+    std::u16string_view text,
+    const base::flat_set<std::u16string>& filter_words_set) {
+  base::i18n::BreakIterator iter(text, base::i18n::BreakIterator::BREAK_WORD);
+  if (!iter.Init()) {
+    return false;
+  }
+
+  while (iter.Advance()) {
+    if (iter.IsWord()) {
+      std::u16string word = base::ToLowerASCII(iter.GetString());
+      if (filter_words_set.contains(word)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+// Returns true if at least one word in `filter_words_set` is present in
+// `entry.value` or any of its `metadata_list` values.
+bool EntryMatchesAnyFilterWord(
+    const MemorySearchResult& entry,
+    const base::flat_set<std::u16string>& filter_words_set) {
+  if (TextContainsAnyFilterWord(entry.value, filter_words_set)) {
+    return true;
+  }
+  return std::ranges::any_of(
+      entry.metadata_list, [&](const EntryMetadata& metadata) {
+        return TextContainsAnyFilterWord(metadata.value, filter_words_set);
+      });
+}
+
+}  // namespace
 
 AccessibilityQueryService::AccessibilityQueryService(
     std::unique_ptr<AccessibilityQueryServiceDelegate> delegate,
@@ -117,29 +158,22 @@ void AccessibilityQueryService::OnDataRetrieved(
     return;
   }
 
-  // Returns true if all words in `filter_words` are present in `entry.value`.
-  // Note: `classified_query.filter_words` are guaranteed to be lowercase as
-  // they are processed by `QueryClassifier`.
-  auto all_filter_words_present = [&](const MemorySearchResult& entry) {
-    std::u16string haystack = base::ToLowerASCII(entry.value);
-    return std::ranges::all_of(
-        classified_query.filter_words, [&](const std::u16string& word) {
-          return internal::ContainsStandalonePhrase(haystack, word);
-        });
+  base::flat_set<std::u16string> filter_words_set =
+      classified_query.filter_words;
+
+  auto any_filter_words_present = [&](const MemorySearchResult& entry) {
+    return EntryMatchesAnyFilterWord(entry, filter_words_set);
   };
 
-  // Filters results by ensuring every filter word in response is
+  // Filters results by ensuring at least one filter word in response is
   // present in the result's value (case-insensitive).
   std::vector<MemorySearchResult> filtered_entries;
   std::ranges::copy_if(entries, std::back_inserter(filtered_entries),
-                       all_filter_words_present);
+                       any_filter_words_present);
 
   // If the strict filtering removes all items, it falls back to querying
   // the 1P resolver if one is available. The 1P resolver might
   // be able to find relevant results that the strict local filtering missed.
-  // TODO: crbug.com/495871024 - Only trigger the 1P resolver if *none* of the
-  // filter words were found in the local entries, rather than falling back even
-  // on partial matches.
   if (filtered_entries.empty()) {
     QueryOnePResolver(std::move(query), update_callback, std::move(entries),
                       MemorySearchStatus::kFinalResponseSuccess);
