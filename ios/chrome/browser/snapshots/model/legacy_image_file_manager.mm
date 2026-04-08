@@ -33,7 +33,12 @@ const ImageType kImageTypes[] = {
     IMAGE_TYPE_GREYSCALE,
 };
 
-const CGFloat kJPEGImageQuality = 1.0;  // Highest quality. No compression.
+// Default JPEG quality (no compression).
+const CGFloat kJPEGImageQualityDefault = 1.0;
+
+// Compressed JPEG quality. Provides visually lossless quality while reducing
+// file size by ~3-5x compared to 1.0.
+const CGFloat kJPEGImageQualityCompressed = 0.97;
 
 // Returns the suffix to append to image filename for `image_type`.
 const char* SuffixForImageType(ImageType image_type) {
@@ -131,7 +136,11 @@ void WriteImageToDisk(UIImage* image, const base::FilePath& file_path) {
   }
 
   NSString* path = base::apple::FilePathToNSString(file_path);
-  NSData* data = UIImageJPEGRepresentation(image, kJPEGImageQuality);
+  const CGFloat quality =
+      base::FeatureList::IsEnabled(kSnapshotCompressedJPEGQuality)
+          ? kJPEGImageQualityCompressed
+          : kJPEGImageQualityDefault;
+  NSData* data = UIImageJPEGRepresentation(image, quality);
   if (!data) {
     // Use UIImagePNGRepresentation instead when ImageJPEGRepresentation returns
     // nil. It happens when the underlying CGImageRef contains data in an

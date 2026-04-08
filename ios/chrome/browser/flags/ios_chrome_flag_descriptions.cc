@@ -1587,6 +1587,12 @@ const char kSmoothScrollingUseDelegateDescription[] =
     "When enabled, the SmoothScrollingDefault experiment uses the regular "
     "UIScrollViewDelegate instead of KVO and broadcasting.";
 
+const char kSnapshotCompressedJPEGQualityName[] =
+    "Snapshot Compressed JPEG Quality";
+const char kSnapshotCompressedJPEGQualityDescription[] =
+    "Reduces snapshot JPEG quality from 1.0 to 0.97 for visually lossless "
+    "compression, reducing file size by ~3-5x.";
+
 const char kStrokesAPIEnabledName[] = "Enable Strokes API for Lens";
 const char kStrokesAPIEnabledDescription[] =
     "When enabled, Lens will use the Strokes API.";

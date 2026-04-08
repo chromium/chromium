@@ -105,6 +105,7 @@ source_set("flags") {
     "//ios/chrome/browser/settings/ui_bundled/password:features",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/snapshots/model:features",
     "//ios/chrome/browser/start_surface/ui_bundled:feature_flags",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ios/chrome/browser/text_selection/model:model_utils",

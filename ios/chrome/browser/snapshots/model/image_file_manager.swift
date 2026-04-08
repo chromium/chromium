@@ -10,8 +10,12 @@ enum ImageType {
   case kImageTypeColor, kImageTypeGrey
 }
 
-// Highest quality. No compression.
-let kJPEGImageQuality: CGFloat = 1.0
+// Default JPEG quality (no compression).
+let kJPEGImageQualityDefault: CGFloat = 1.0
+
+// Compressed JPEG quality. Provides visually lossless quality while reducing
+// file size by ~3-5x compared to 1.0.
+let kJPEGImageQualityCompressed: CGFloat = 0.97
 
 // A class to manage images stored in disk.
 // Tasks for handling disk (reading an image, writing an image, deleting images, renaming an image,
@@ -97,7 +101,9 @@ let kJPEGImageQuality: CGFloat = 1.0
     backgroundTaskGroup.enter()
     backgroundTaskQueue.async(group: backgroundTaskGroup) { [weak self] in
       guard let self = self else { return }
-      guard let data = image.jpegData(compressionQuality: kJPEGImageQuality) else {
+      let quality = IsSnapshotCompressedJPEGQualityEnabled()
+        ? kJPEGImageQualityCompressed : kJPEGImageQualityDefault
+      guard let data = image.jpegData(compressionQuality: quality) else {
         backgroundTaskGroup.leave()
         return
       }

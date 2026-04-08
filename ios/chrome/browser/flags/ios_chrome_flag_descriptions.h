@@ -971,6 +971,9 @@ extern const char kSmartTabGroupingDescription[];
 extern const char kSmoothScrollingUseDelegateName[];
 extern const char kSmoothScrollingUseDelegateDescription[];
 
+extern const char kSnapshotCompressedJPEGQualityName[];
+extern const char kSnapshotCompressedJPEGQualityDescription[];
+
 extern const char kStrokesAPIEnabledName[];
 extern const char kStrokesAPIEnabledDescription[];
 
