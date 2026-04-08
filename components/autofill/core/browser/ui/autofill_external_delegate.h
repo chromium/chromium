@@ -17,7 +17,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "components/autofill/core/browser/at_memory/at_memory_controller.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/filling/form_filler.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -75,8 +74,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   GetDriver() override;
   void OnSuggestionsShown(base::span<const Suggestion> suggestions) override;
   void OnSuggestionsHidden(SuggestionHidingReason reason) override;
-  bool OnFilterChanged(const std::u16string& filter) override;
-  bool OnSearchSubmitted(const std::u16string& filter) override;
   void DidSelectSuggestion(const Suggestion& suggestion) override;
   void DidAcceptSuggestion(const Suggestion& suggestion,
                            const SuggestionMetadata& metadata) override;
@@ -270,8 +267,7 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   FormData query_form_;
   FormFieldData query_field_;
   // The method how suggestions were triggered on the current form.
-  AutofillSuggestionTriggerSource trigger_source_ =
-      AutofillSuggestionTriggerSource::kUnspecified;
+  AutofillSuggestionTriggerSource trigger_source_;
 
   std::vector<SuggestionType> shown_suggestion_types_;
 
@@ -283,8 +279,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
 
   // Used to re-authenticate the user before filling.
   std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator_;
-
-  AtMemoryController at_memory_controller_;
 
   base::WeakPtrFactory<AutofillExternalDelegate> weak_ptr_factory_{this};
 };

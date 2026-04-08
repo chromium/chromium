@@ -75,8 +75,6 @@ class PasswordManualFallbackFlow : public autofill::AutofillSuggestionDelegate,
   void OnSuggestionsShown(
       base::span<const autofill::Suggestion> suggestions) override;
   void OnSuggestionsHidden(autofill::SuggestionHidingReason reason) override;
-  bool OnFilterChanged(const std::u16string& filter) override;
-  bool OnSearchSubmitted(const std::u16string& filter) override;
   void DidSelectSuggestion(const autofill::Suggestion& suggestion) override;
   void DidAcceptSuggestion(const autofill::Suggestion& suggestion,
                            const SuggestionMetadata& metadata) override;

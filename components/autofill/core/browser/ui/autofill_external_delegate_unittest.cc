@@ -725,26 +725,6 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryContextMenuUsesCaretAnchor) {
       {CreateAutofillSuggestion(SuggestionType::kAddressEntry, u"suggestion")});
 }
 
-TEST_F(AutofillExternalDelegateTest, AtMemoryPopupDisplayed_TypedTrigger) {
-  base::HistogramTester histogram_tester;
-  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemory);
-
-  external_delegate().OnSuggestionsShown({});
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.AtMemory.Funnel.PopupDisplayed",
-      AutofillMetrics::AtMemoryTriggerSource::kTypedTrigger, 1);
-}
-
-TEST_F(AutofillExternalDelegateTest, AtMemoryPopupDisplayed_ContextMenu) {
-  base::HistogramTester histogram_tester;
-  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemoryContextMenu);
-
-  external_delegate().OnSuggestionsShown({});
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.AtMemory.Funnel.PopupDisplayed",
-      AutofillMetrics::AtMemoryTriggerSource::kContextMenu, 1);
-}
-
 // Test that our external delegate called the virtual methods at the right time.
 TEST_F(AutofillExternalDelegateTest, TestExternalDelegateVirtualCalls) {
   IssueOnQuery();

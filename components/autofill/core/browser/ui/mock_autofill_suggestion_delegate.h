@@ -32,14 +32,6 @@ class MockAutofillSuggestionDelegate : public AutofillSuggestionDelegate {
               (base::span<const Suggestion>),
               (override));
   MOCK_METHOD(void, OnSuggestionsHidden, (SuggestionHidingReason), (override));
-  MOCK_METHOD(bool,
-              OnFilterChanged,
-              (const std::u16string& filter),
-              (override));
-  MOCK_METHOD(bool,
-              OnSearchSubmitted,
-              (const std::u16string& filter),
-              (override));
   MOCK_METHOD(void,
               DidSelectSuggestion,
               (const Suggestion& suggestion),

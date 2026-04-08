@@ -213,6 +213,11 @@ void AutofillPopupControllerImpl::Show(
   trigger_source_ = trigger_source;
   if (IsAtMemoryTriggerSource(trigger_source_)) {
     suggestions_filling_product_ = FillingProduct::kAtMemory;
+    base::UmaHistogramEnumeration(
+        "Autofill.AtMemory.Funnel.PopupDisplayed",
+        trigger_source_ == AutofillSuggestionTriggerSource::kAtMemory
+            ? AutofillMetrics::AtMemoryTriggerSource::kTypedTrigger
+            : AutofillMetrics::AtMemoryTriggerSource::kContextMenu);
   } else if (!suggestions.empty() &&
              IsStandaloneSuggestionType(suggestions[0].type)) {
     suggestions_filling_product_ =
@@ -914,32 +919,80 @@ void AutofillPopupControllerImpl::SetFilter(
     FilterSource source) {
   filter_ = std::move(filter);
 
-  if (delegate_ && filter_) {
-    auto maybe_handle_with_delegate = [&]() {
-      const auto* filter_ptr =
-          std::get_if<AutofillPopupController::StringFilter>(&*filter_);
-      if (!filter_ptr) {
-        return false;
-      }
-
-      const std::u16string& filter_text = **filter_ptr;
-      switch (source) {
-        case FilterSource::kInputChanged:
-          return delegate_->OnFilterChanged(filter_text);
-        case FilterSource::kSearchSubmitted:
-          return delegate_->OnSearchSubmitted(filter_text);
-        case FilterSource::kTabSelected:
-          return false;
-      }
-    };
-
-    if (maybe_handle_with_delegate()) {
-      return;
-    }
+  if (TryStartSearch(source)) {
+    return;
   }
 
   UpdateFilteredSuggestions();
   OnSuggestionsChanged(/*prefer_prev_arrow_side=*/true);
+}
+
+bool AutofillPopupControllerImpl::TryStartSearch(FilterSource source) {
+  if (suggestions_filling_product_ != FillingProduct::kAtMemory) {
+    return false;
+  }
+
+  if (!filter_) {
+    SetSuggestions({});
+    OnSuggestionsChanged(/*prefer_prev_arrow_side=*/true);
+    return true;
+  }
+
+  const auto* string_filter =
+      std::get_if<AutofillPopupController::StringFilter>(&*filter_);
+  if (!string_filter) {
+    return true;
+  }
+  ContentAutofillClient* client =
+      ContentAutofillClient::FromWebContents(GetWebContents());
+  if (!client) {
+    return true;
+  }
+  auto* query_service = client->GetAccessibilityQueryService();
+  if (!query_service) {
+    return true;
+  }
+
+  auto transform =
+      [](const accessibility_annotator::MemorySearchResult& entry) {
+        Suggestion suggestion(entry.value,
+                              SuggestionType::kAtMemorySearchResult);
+        // Label row: [type_name, metadata[0].value, ...]
+        std::vector<Suggestion::Text> label_row;
+        std::u16string type_name = entry.type_name.empty()
+                                       ? GetEntryTypeNameForI18n(entry.type)
+                                       : entry.type_name;
+        if (!type_name.empty()) {
+          label_row.emplace_back(std::move(type_name));
+        }
+        for (const accessibility_annotator::EntryMetadata& metadata :
+             entry.metadata_list) {
+          if (!label_row.empty()) {
+            label_row.emplace_back(u"\u2022");
+          }
+          label_row.emplace_back(metadata.value);
+        }
+        suggestion.labels.emplace_back(std::move(label_row));
+        suggestion.payload = Suggestion::AtMemoryPayload(entry.value);
+        suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+        return suggestion;
+      };
+
+  query_service->Query(
+      **string_filter, /*full_search=*/source == FilterSource::kSearchSubmitted,
+      base::BindRepeating(
+          [](base::WeakPtr<AutofillPopupControllerImpl> self,
+             Suggestion (*transform)(
+                 const accessibility_annotator::MemorySearchResult&),
+             accessibility_annotator::MemorySearchResults result) {
+            if (!self) {
+              return;
+            }
+            self->SetSuggestions(base::ToVector(result.entries, transform));
+            self->OnSuggestionsChanged(/*prefer_prev_arrow_side=*/true);
+          },
+          weak_ptr_factory_.GetWeakPtr(), transform));
+  return true;
 }
 
 bool AutofillPopupControllerImpl::HandleKeyPressEvent(
