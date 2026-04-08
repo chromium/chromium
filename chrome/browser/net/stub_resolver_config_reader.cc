@@ -165,6 +165,8 @@ bool ShouldUseDohFallback(net::SecureDnsMode secure_dns_mode,
   // the perspective of the browser process, relying on the
   // kForceSecureDnsDohFallback feature flag in the network service to actually
   // prevent the functionality from being enabled (for the experiment).
+  // TODO(crbug.com/490045356): Remove this once the experiment is over and
+  // kBundledSecuritySettingsSecureDnsV2 has been enabled by default.
   return true;
 }
 

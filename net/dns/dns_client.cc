@@ -231,6 +231,10 @@ class DnsClientImpl : public DnsClient {
       }
       // It's important to check the feature flag after the other checks so that
       // only eligible users get activated into the experiment.
+      // TODO(crbug.com/490045356): Remove the `doh_fallback_upgrade_allowed()`
+      // check and the kForceSecureDnsDohFallback feature flag check once the
+      // experiment has concluded and kBundledSecuritySettingsSecureDnsV2 has
+      // been enabled by default.
       if (!base::FeatureList::IsEnabled(
               net::features::kForceSecureDnsDohFallback)) {
         RecordFallbackFromSecureTransactionPreferred(

@@ -11,6 +11,7 @@
 #include <limits>
 #include <memory>
 #include <optional>
+#include <set>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -691,7 +692,6 @@ class DnsTransactionTestBase : public testing::Test {
                            size_t num_doh_servers = 1,
                            bool make_available = true,
                            bool use_doh_fallback_upgrade = false) {
-    GURL url;
     if (use_doh_fallback_upgrade) {
       CHECK_EQ(config_.secure_dns_mode, SecureDnsMode::kAutomatic);
       config_.should_perform_doh_fallback_upgrade = true;
@@ -705,8 +705,6 @@ class DnsTransactionTestBase : public testing::Test {
       // but we can at least ensure the parameter value provided matches what
       // will actually be used.
       CHECK_EQ(use_post, config_.doh_config.servers()[0].use_post());
-      url = GURL(GetURLFromTemplateWithoutParameters(
-          config_.doh_config.servers()[0].server_template()));
     } else {
       CHECK_LE(num_doh_servers, 255u);
       std::vector<string> templates;
@@ -718,12 +716,19 @@ class DnsTransactionTestBase : public testing::Test {
       }
       config_.doh_config =
           *DnsOverHttpsConfig::FromTemplatesForTesting(std::move(templates));
-      url = GURL(URLRequestMockDohJob::GetMockHttpsUrl("doh_test"));
     }
 
-    URLRequestFilter* filter = URLRequestFilter::GetInstance();
-    filter->AddHostnameInterceptor(url.GetScheme(), url.GetHost(),
-                                   std::make_unique<DohJobInterceptor>(this));
+    std::set<std::pair<std::string, std::string>> registered_hosts;
+    for (const auto& server : config_.doh_config.servers()) {
+      GURL url(GetURLFromTemplateWithoutParameters(server.server_template()));
+      std::pair<std::string, std::string> host_key(std::string(url.scheme()),
+                                                   std::string(url.host()));
+      if (registered_hosts.insert(host_key).second) {
+        URLRequestFilter::GetInstance()->AddHostnameInterceptor(
+            host_key.first, host_key.second,
+            std::make_unique<DohJobInterceptor>(this));
+      }
+    }
 
     ConfigureFactory();
 
