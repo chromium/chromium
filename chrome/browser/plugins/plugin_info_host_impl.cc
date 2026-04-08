@@ -16,7 +16,6 @@
 #include "base/no_destructor.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
 #include "chrome/browser/plugins/plugin_metadata.h"
@@ -35,7 +34,6 @@
 #include "content/public/browser/plugin_service.h"
 #include "content/public/browser/plugin_service_filter.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_constants.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -126,18 +124,18 @@ std::unique_ptr<PluginMetadata> GetPluginMetadata(const WebPluginInfo& plugin) {
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-// Returns whether a request from a plugin to load |resource| from a renderer
-// with process id |process_id| is a request for an internal resource by an app
-// listed in |accessible_resources| in its manifest.
+// Returns whether a request from a plugin to load `resource` from a renderer
+// with `rfh_token` is a request for an internal resource by an app listed in
+// `accessible_resources` in its manifest.
 bool IsPluginLoadingAccessibleResourceInWebView(
     extensions::ExtensionRegistry* extension_registry,
-    int process_id,
+    const content::GlobalRenderFrameHostToken& rfh_token,
     const GURL& resource) {
   extensions::WebViewRendererState* renderer_state =
       extensions::WebViewRendererState::GetInstance();
   std::string partition_id;
-  if (!renderer_state->IsGuest(process_id) ||
-      !renderer_state->GetPartitionID(process_id, &partition_id)) {
+  if (!renderer_state->IsGuest(rfh_token.child_id) ||
+      !renderer_state->GetPartitionID(rfh_token.child_id, &partition_id)) {
     return false;
   }
 
@@ -152,15 +150,18 @@ bool IsPluginLoadingAccessibleResourceInWebView(
   // Make sure the renderer making the request actually belongs to the
   // same extension.
   std::string owner_extension;
-  return renderer_state->GetOwnerInfo(process_id, nullptr, &owner_extension) &&
+  return renderer_state->GetOwnerInfo(rfh_token.child_id, nullptr,
+                                      &owner_extension) &&
          owner_extension == extension_id;
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 
-PluginInfoHostImpl::Context::Context(int render_process_id, Profile* profile)
-    : render_process_id_(render_process_id),
+PluginInfoHostImpl::Context::Context(
+    content::GlobalRenderFrameHostToken rfh_token,
+    Profile* profile)
+    : rfh_token_(rfh_token),
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       extension_registry_(extensions::ExtensionRegistry::Get(profile)),
 #endif
@@ -170,8 +171,10 @@ PluginInfoHostImpl::Context::Context(int render_process_id, Profile* profile)
 
 PluginInfoHostImpl::Context::~Context() = default;
 
-PluginInfoHostImpl::PluginInfoHostImpl(int render_process_id, Profile* profile)
-    : context_(render_process_id, profile) {
+PluginInfoHostImpl::PluginInfoHostImpl(
+    content::GlobalRenderFrameHostToken rfh_token,
+    Profile* profile)
+    : context_(rfh_token, profile) {
   shutdown_subscription_ =
       PluginInfoHostImplShutdownNotifierFactory::GetInstance()
           ->Get(profile)
@@ -246,7 +249,7 @@ void PluginInfoHostImpl::Context::DecidePluginStatus(
   if (url.SchemeIs(extensions::kExtensionScheme) && !is_managed &&
       plugin_setting == CONTENT_SETTING_BLOCK &&
       IsPluginLoadingAccessibleResourceInWebView(extension_registry_,
-                                                 render_process_id_, url)) {
+                                                 rfh_token_, url)) {
     plugin_setting = CONTENT_SETTING_ALLOW;
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -266,8 +269,9 @@ void PluginInfoHostImpl::Context::DecidePluginStatus(
   if (*status == chrome::mojom::PluginStatus::kAllowed ||
       *status == chrome::mojom::PluginStatus::kBlocked) {
     if (extensions::WebViewRendererState::GetInstance()->IsGuest(
-            render_process_id_))
+            rfh_token_.child_id)) {
       *status = chrome::mojom::PluginStatus::kUnauthorized;
+    }
   }
 #endif
 }
@@ -297,10 +301,9 @@ bool PluginInfoHostImpl::Context::FindEnabledPlugin(
 
   content::PluginServiceFilter* filter =
       PluginService::GetInstance()->GetFilter();
-  content::RenderProcessHost* rph =
-      content::RenderProcessHost::FromID(render_process_id_);
+  auto* rfh = content::RenderFrameHost::FromFrameToken(rfh_token_);
   content::BrowserContext* browser_context =
-      rph ? rph->GetBrowserContext() : nullptr;
+      rfh ? rfh->GetBrowserContext() : nullptr;
   size_t i = 0;
   for (; i < matching_plugins.size(); ++i) {
     if (!filter ||
@@ -335,6 +338,6 @@ void PluginInfoHostImpl::Context::MaybeGrantAccess(
     const base::FilePath& path) const {
   if (status == chrome::mojom::PluginStatus::kAllowed) {
     ChromePluginServiceFilter::GetInstance()->AuthorizePlugin(
-        render_process_id_, path);
+        rfh_token_.child_id, path);
   }
 }

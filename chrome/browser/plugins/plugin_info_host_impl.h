@@ -16,6 +16,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
 
@@ -41,11 +42,8 @@ class PluginInfoHostImpl : public chrome::mojom::PluginInfoHost {
   // Contains all the information needed by the PluginInfoHostImpl.
   class Context {
    public:
-    Context(int render_process_id, Profile* profile);
-
+    Context(content::GlobalRenderFrameHostToken rfh_token, Profile* profile);
     ~Context();
-
-    int render_process_id() { return render_process_id_; }
 
     void DecidePluginStatus(const GURL& url,
                             const url::Origin& main_frame_origin,
@@ -64,7 +62,7 @@ class PluginInfoHostImpl : public chrome::mojom::PluginInfoHost {
                           const base::FilePath& path) const;
 
    private:
-    int render_process_id_;
+    const content::GlobalRenderFrameHostToken rfh_token_;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     raw_ptr<extensions::ExtensionRegistry, DanglingUntriaged>
         extension_registry_;
@@ -73,7 +71,8 @@ class PluginInfoHostImpl : public chrome::mojom::PluginInfoHost {
         host_content_settings_map_;
   };
 
-  PluginInfoHostImpl(int render_process_id, Profile* profile);
+  PluginInfoHostImpl(content::GlobalRenderFrameHostToken rfh_token,
+                     Profile* profile);
 
   PluginInfoHostImpl(const PluginInfoHostImpl&) = delete;
   PluginInfoHostImpl& operator=(const PluginInfoHostImpl&) = delete;

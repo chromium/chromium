@@ -84,7 +84,7 @@ class PluginInfoHostImplTest : public ::testing::Test {
   PluginInfoHostImplTest()
       : foo_plugin_path_(FILE_PATH_LITERAL("/path/to/foo")),
         bar_plugin_path_(FILE_PATH_LITERAL("/path/to/bar")),
-        context_(0, &profile_),
+        context_(content::GlobalRenderFrameHostToken(), &profile_),
         host_content_settings_map_(
             HostContentSettingsMapFactory::GetForProfile(&profile_)) {}
 

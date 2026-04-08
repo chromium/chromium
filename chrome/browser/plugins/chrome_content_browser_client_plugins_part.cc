@@ -12,7 +12,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
@@ -23,17 +22,17 @@ namespace plugins {
 namespace {
 
 void BindPluginInfoHost(
-    int render_process_id,
+    content::GlobalRenderFrameHostToken rfh_token,
     mojo::PendingAssociatedReceiver<chrome::mojom::PluginInfoHost> receiver) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  content::RenderProcessHost* host =
-      content::RenderProcessHost::FromID(render_process_id);
-  if (!host)
+  auto* rfh = content::RenderFrameHost::FromFrameToken(rfh_token);
+  if (!rfh) {
     return;
+  }
 
-  Profile* profile = Profile::FromBrowserContext(host->GetBrowserContext());
+  Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext());
   mojo::MakeSelfOwnedAssociatedReceiver(
-      std::make_unique<PluginInfoHostImpl>(render_process_id, profile),
+      std::make_unique<PluginInfoHostImpl>(rfh_token, profile),
       std::move(receiver));
 }
 
@@ -51,7 +50,7 @@ void ChromeContentBrowserClientPluginsPart::
         blink::AssociatedInterfaceRegistry& associated_registry) {
   associated_registry.AddInterface<chrome::mojom::PluginInfoHost>(
       base::BindRepeating(&BindPluginInfoHost,
-                          render_frame_host.GetProcess()->GetDeprecatedID()));
+                          render_frame_host.GetGlobalFrameToken()));
 }
 
 }  // namespace plugins

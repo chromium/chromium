@@ -28,7 +28,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/plugin_service.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/webplugininfo.h"
 #include "content/public/test/browser_test.h"
@@ -64,15 +63,10 @@ class PluginInfoHostImplTest : public InProcessBrowserTest {
   PluginInfoHostImplTest() {}
 
   void SetUpOnMainThread() override {
-    int active_render_process_id = browser()
-                                       ->tab_strip_model()
-                                       ->GetActiveWebContents()
-                                       ->GetPrimaryMainFrame()
-                                       ->GetProcess()
-                                       ->GetDeprecatedID();
-
+    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
     plugin_info_host_impl_ = std::make_unique<PluginInfoHostImpl>(
-        active_render_process_id, browser()->profile());
+        web_contents->GetPrimaryMainFrame()->GetGlobalFrameToken(),
+        browser()->profile());
   }
 
   void TearDownOnMainThread() override { plugin_info_host_impl_.reset(); }
