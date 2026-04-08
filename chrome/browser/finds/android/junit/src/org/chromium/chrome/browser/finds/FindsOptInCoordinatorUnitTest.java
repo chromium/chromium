@@ -335,6 +335,36 @@ public class FindsOptInCoordinatorUnitTest {
     }
 
     @Test
+    public void testScaleBottomSheetLottieAnimationByHeight_TargetWidthLimitedByMaxSheetWidth() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
+
+        // Simulate where the max sheet width is artificially constrained.
+        int fakeMaxSheetWidthPx = 500;
+        doReturn(fakeMaxSheetWidthPx).when(mBottomSheetController).getMaxSheetWidth();
+
+        Configuration configuration = new Configuration();
+        // Ensure that screen height is not limiting the width calculation.
+        configuration.screenHeightDp = 2000;
+        configuration.screenWidthDp = 1000;
+
+        mCoordinator.scaleBottomSheetLottieAnimationByHeight(configuration);
+
+        View animationView =
+                mCoordinator
+                        .getContentViewForTesting()
+                        .findViewById(R.id.finds_opt_in_lottie_animation);
+        ViewGroup.LayoutParams layoutParams = animationView.getLayoutParams();
+
+        int horizontalMargin =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.chrome_finds_opt_in_bottom_sheet_horizontal_margin);
+        int expectedMaxWidth = fakeMaxSheetWidthPx - (horizontalMargin * 2);
+        assertEquals(expectedMaxWidth, layoutParams.width);
+    }
+
+    @Test
     public void testRecordOptInDismissed() {
         NotificationProxyUtils.setNotificationEnabledForTest(true);
 

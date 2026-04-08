@@ -282,13 +282,18 @@ public class FindsOptInCoordinator {
         // Lottie animation's intrinsic aspect ratio.
         int targetWidth = Math.round(maxHeight * LOTTIE_INTRINSIC_ASPECT_RATIO);
 
-        // Ensure the animation doesn't exceed the screen width minus horizontal margins.
+        // Ensure the animation doesn't exceed the bottom sheet max width/screen width minus
+        // horizontal margins.
         int screenWidthPixels = ViewUtils.dpToPx(mContext, configuration.screenWidthDp);
         int horizontalMargin =
                 mContext.getResources()
                         .getDimensionPixelSize(
                                 R.dimen.chrome_finds_opt_in_bottom_sheet_horizontal_margin);
         int maxWidth = screenWidthPixels - (horizontalMargin * 2);
+        int maxSheetWidth = mBottomSheetController.getMaxSheetWidth();
+        if (maxSheetWidth > 0) {
+            maxWidth = Math.min(maxWidth, maxSheetWidth - (horizontalMargin * 2));
+        }
 
         layoutParams.width = Math.min(targetWidth, maxWidth);
         mAnimationView.setLayoutParams(layoutParams);
