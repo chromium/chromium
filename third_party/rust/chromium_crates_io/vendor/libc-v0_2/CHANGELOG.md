@@ -1,5 +1,48 @@
 # Changelog
 
+## [0.2.184](https://github.com/rust-lang/libc/compare/0.2.183...0.2.184) - 2026-04-01
+
+### MSRV
+
+This release increases the MSRV of `libc` to 1.65. With this update, you can now always use the
+`core::ffi::c_*` types with `libc` definitions, since `libc` has been changed to reexport from
+`core` rather than redefining them. (This _usually_ worked before but had edge cases.)
+([#4972](https://github.com/rust-lang/libc/pull/4972))
+
+### Added
+
+- BSD: Add `IP_MINTTL` to bsd ([#5026](https://github.com/rust-lang/libc/pull/5026))
+- Cygwin: Add `TIOCM_DSR` ([#5031](https://github.com/rust-lang/libc/pull/5031))
+- FreeBSD: Added `xfile` structe and file descriptor types ([#5002](https://github.com/rust-lang/libc/pull/5002))
+- Linux: Add CAN netlink bindings ([#5011](https://github.com/rust-lang/libc/pull/5011))
+- Linux: Add `struct ethhdr` ([#4239](https://github.com/rust-lang/libc/pull/4239))
+- Linux: Add `struct ifinfomsg` ([#5012](https://github.com/rust-lang/libc/pull/5012))
+- Linux: Define `max_align_t` for riscv64 ([#5029](https://github.com/rust-lang/libc/pull/5029))
+- NetBSD: Add missing `CLOCK_` constants ([#5020](https://github.com/rust-lang/libc/pull/5020))
+- NuttX: Add `_SC_HOST_NAME_MAX` ([#5004](https://github.com/rust-lang/libc/pull/5004))
+- VxWorks: Add `flock` and `F_*LCK` constants ([#4043](https://github.com/rust-lang/libc/pull/4043))
+- WASI: Add all `_SC_*` sysconf constants ([#5023](https://github.com/rust-lang/libc/pull/5023))
+
+### Deprecated
+
+The remaining fixed-width integer aliases, `__uint128_t`, `__uint128`, `__int128_t`, and `__int128`,
+have been deprecated. Use `i128` and `u128` instead. ([#4343](https://github.com/rust-lang/libc/pull/4343))
+
+### Fixed
+
+- **breaking** Redox: Fix signal action constant types ([#5009](https://github.com/rust-lang/libc/pull/5009))
+- EspIDF: Correct the value of `DT_*` constants ([#5034](https://github.com/rust-lang/libc/pull/5034))
+- Redox: Fix locale values and add `RTLD_NOLOAD`, some TCP constants ([#5025](https://github.com/rust-lang/libc/pull/5025))
+- Various: Use `Padding::new(<zeroed>)` rather than `Padding::uninit()` ([#5036](https://github.com/rust-lang/libc/pull/5036))
+
+### Changed
+
+- **potentially breaking** Linux: Add new fields to `struct ptrace_syscall_info` ([#4966](https://github.com/rust-lang/libc/pull/4966))
+- Re-export `core::ffi` integer types rather than redefining ([#5015](https://github.com/rust-lang/libc/pull/5015))
+- Redox: Update `F_DUPFD`, `IP`, and `TCP` constants to match relibc  ([#4990](https://github.com/rust-lang/libc/pull/4990))
+
+
+
 ## [0.2.183](https://github.com/rust-lang/libc/compare/0.2.182...0.2.183) - 2026-03-08
 
 ### Added

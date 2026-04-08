@@ -234,7 +234,11 @@ pub const SIG_IGN: sighandler_t = 1 as sighandler_t;
 pub const SIG_ERR: sighandler_t = !0 as sighandler_t;
 
 cfg_if! {
-    if #[cfg(all(not(target_os = "nto"), not(target_os = "aix")))] {
+    if #[cfg(all(
+        not(target_os = "nto"),
+        not(target_os = "aix"),
+        not(target_os = "espidf")
+    ))] {
         pub const DT_UNKNOWN: u8 = 0;
         pub const DT_FIFO: u8 = 1;
         pub const DT_CHR: u8 = 2;

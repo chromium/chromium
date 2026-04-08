@@ -353,6 +353,7 @@ pub const RTLD_DEFAULT: *mut c_void = ptr::null_mut();
 // dlfcn.h
 pub const RTLD_LAZY: c_int = 0x0001;
 pub const RTLD_NOW: c_int = 0x0002;
+pub const RTLD_NOLOAD: c_int = 0x0004;
 pub const RTLD_GLOBAL: c_int = 0x0100;
 pub const RTLD_LOCAL: c_int = 0x0000;
 
@@ -502,9 +503,7 @@ pub const F_GETFD: c_int = 1;
 pub const F_SETFD: c_int = 2;
 pub const F_GETFL: c_int = 3;
 pub const F_SETFL: c_int = 4;
-// FIXME(redox): relibc {
-pub const F_DUPFD_CLOEXEC: c_int = crate::F_DUPFD;
-// }
+pub const F_DUPFD_CLOEXEC: c_int = 1030;
 pub const FD_CLOEXEC: c_int = 0x0100_0000;
 pub const O_RDONLY: c_int = 0x0001_0000;
 pub const O_WRONLY: c_int = 0x0002_0000;
@@ -530,13 +529,13 @@ pub const O_NOFOLLOW: c_int = -0x8000_0000;
 pub const O_NOCTTY: c_int = 0x00000200;
 
 // locale.h
-pub const LC_ALL: c_int = 0;
-pub const LC_COLLATE: c_int = 1;
-pub const LC_CTYPE: c_int = 2;
-pub const LC_MESSAGES: c_int = 3;
-pub const LC_MONETARY: c_int = 4;
-pub const LC_NUMERIC: c_int = 5;
-pub const LC_TIME: c_int = 6;
+pub const LC_COLLATE: c_int = 0;
+pub const LC_CTYPE: c_int = 1;
+pub const LC_MESSAGES: c_int = 2;
+pub const LC_MONETARY: c_int = 3;
+pub const LC_NUMERIC: c_int = 4;
+pub const LC_TIME: c_int = 5;
+pub const LC_ALL: c_int = 6;
 
 // netdb.h
 pub const AI_PASSIVE: c_int = 0x0001;
@@ -574,7 +573,9 @@ pub const IPV6_MULTICAST_IF: c_int = 17;
 pub const IPV6_MULTICAST_HOPS: c_int = 18;
 pub const IPV6_MULTICAST_LOOP: c_int = 19;
 pub const IPV6_ADD_MEMBERSHIP: c_int = 20;
+pub const IPV6_JOIN_GROUP: c_int = 20;
 pub const IPV6_DROP_MEMBERSHIP: c_int = 21;
+pub const IPV6_LEAVE_GROUP: c_int = 21;
 pub const IPV6_V6ONLY: c_int = 26;
 pub const IP_MULTICAST_IF: c_int = 32;
 pub const IP_MULTICAST_TTL: c_int = 33;
@@ -582,7 +583,7 @@ pub const IP_MULTICAST_LOOP: c_int = 34;
 pub const IP_ADD_MEMBERSHIP: c_int = 35;
 pub const IP_DROP_MEMBERSHIP: c_int = 36;
 pub const IP_TOS: c_int = 1;
-pub const IP_RECVTOS: c_int = 2;
+pub const IP_RECVTOS: c_int = 13;
 pub const IPPROTO_IGMP: c_int = 2;
 pub const IPPROTO_PUP: c_int = 12;
 pub const IPPROTO_IDP: c_int = 22;
@@ -592,9 +593,10 @@ pub const IPPROTO_MAX: c_int = 255;
 
 // netinet/tcp.h
 pub const TCP_NODELAY: c_int = 1;
-// FIXME(redox): relibc {
-pub const TCP_KEEPIDLE: c_int = 1;
-// }
+pub const TCP_MAXSEG: c_int = 2;
+pub const TCP_KEEPIDLE: c_int = 4;
+pub const TCP_KEEPINTVL: c_int = 5;
+pub const TCP_KEEPCNT: c_int = 6;
 
 // poll.h
 pub const POLLIN: c_short = 0x001;
@@ -665,14 +667,14 @@ pub const SIGPWR: c_int = 30;
 pub const SIGSYS: c_int = 31;
 pub const NSIG: c_int = 32;
 
-pub const SA_NOCLDWAIT: c_ulong = 0x0000_0002;
-pub const SA_RESTORER: c_ulong = 0x0000_0004; // FIXME(redox): remove after relibc removes it
-pub const SA_SIGINFO: c_ulong = 0x0200_0000;
-pub const SA_ONSTACK: c_ulong = 0x0400_0000;
-pub const SA_RESTART: c_ulong = 0x0800_0000;
-pub const SA_NODEFER: c_ulong = 0x1000_0000;
-pub const SA_RESETHAND: c_ulong = 0x2000_0000;
-pub const SA_NOCLDSTOP: c_ulong = 0x4000_0000;
+pub const SA_NOCLDWAIT: c_int = 0x0000_0002;
+pub const SA_RESTORER: c_int = 0x0000_0004; // FIXME(redox): remove after relibc removes it
+pub const SA_SIGINFO: c_int = 0x0200_0000;
+pub const SA_ONSTACK: c_int = 0x0400_0000;
+pub const SA_RESTART: c_int = 0x0800_0000;
+pub const SA_NODEFER: c_int = 0x1000_0000;
+pub const SA_RESETHAND: c_int = 0x2000_0000;
+pub const SA_NOCLDSTOP: c_int = 0x4000_0000;
 
 // sys/file.h
 pub const LOCK_SH: c_int = 1;

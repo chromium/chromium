@@ -46,6 +46,7 @@ pub type __u16 = c_ushort;
 pub type __s16 = c_short;
 pub type __u32 = c_uint;
 pub type __s32 = c_int;
+pub type __be16 = __u16;
 
 // linux/elf.h
 
@@ -623,6 +624,15 @@ s_no_extra_traits! {
     pub struct ifconf {
         pub ifc_len: c_int, /* Size of buffer.  */
         pub ifc_ifcu: __c_anonymous_ifc_ifcu,
+    }
+
+    // linux/if_ether.h
+
+    #[repr(C, packed)]
+    pub struct ethhdr {
+        pub h_dest: [c_uchar; crate::ETH_ALEN as usize],
+        pub h_source: [c_uchar; crate::ETH_ALEN as usize],
+        pub h_proto: crate::__be16,
     }
 
     // Internal, for casts to access union fields

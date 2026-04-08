@@ -102,7 +102,7 @@ s! {
     }
 
     pub struct user_fpsimd_struct {
-        pub vregs: [crate::__uint128_t; 32],
+        pub vregs: [u128; 32],
         pub fpsr: u32,
         pub fpcr: u32,
     }

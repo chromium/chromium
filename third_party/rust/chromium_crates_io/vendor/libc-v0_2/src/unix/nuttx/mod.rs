@@ -512,6 +512,7 @@ pub const FIONBIO: i32 = 0x30a;
 pub const _SC_PAGESIZE: i32 = 0x36;
 pub const _SC_THREAD_STACK_MIN: i32 = 0x58;
 pub const _SC_GETPW_R_SIZE_MAX: i32 = 0x25;
+pub const _SC_HOST_NAME_MAX: i32 = 0x26;
 
 // signal.h
 pub const SIGHUP: c_int = 1;

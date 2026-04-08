@@ -1254,6 +1254,16 @@ s! {
         pub handle_type: c_int,
         pub f_handle: [c_uchar; 0],
     }
+
+    // include/uapi/linux/rtnetlink.h
+    pub struct ifinfomsg {
+        pub ifi_family: c_uchar,
+        __ifi_pad: Padding<c_uchar>,
+        pub ifi_type: c_ushort,
+        pub ifi_index: c_int,
+        pub ifi_flags: c_uint,
+        pub ifi_change: c_uint,
+    }
 }
 
 cfg_if! {

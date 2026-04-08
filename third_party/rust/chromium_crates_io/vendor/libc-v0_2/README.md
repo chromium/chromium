@@ -57,7 +57,7 @@ The following features are deprecated:
 
 ## Rust version support
 
-The minimum supported Rust toolchain version is currently **Rust 1.63**.
+The minimum supported Rust toolchain version is currently **Rust 1.65**.
 
 Increases to the MSRV are allowed to change without a major (i.e. semver-
 breaking) release in order to avoid a ripple effect in the ecosystem. A policy

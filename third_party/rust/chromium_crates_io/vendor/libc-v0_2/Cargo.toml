@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.63"
+rust-version = "1.65"
 name = "libc"
-version = "0.2.183"
+version = "0.2.184"
 authors = ["The Rust Project Developers"]
 build = "build.rs"
 exclude = [

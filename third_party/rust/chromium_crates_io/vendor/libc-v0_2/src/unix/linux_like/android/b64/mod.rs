@@ -155,11 +155,11 @@ pub const RTLD_DEFAULT: *mut c_void = ptr::null_mut();
 
 pub const PTHREAD_MUTEX_INITIALIZER: pthread_mutex_t = pthread_mutex_t {
     value: 0,
-    __reserved: Padding::uninit(),
+    __reserved: Padding::new([0; 36]),
 };
 pub const PTHREAD_COND_INITIALIZER: pthread_cond_t = pthread_cond_t {
     value: 0,
-    __reserved: Padding::uninit(),
+    __reserved: Padding::new([0; 44]),
 };
 pub const PTHREAD_RWLOCK_INITIALIZER: pthread_rwlock_t = pthread_rwlock_t {
     numLocks: 0,
@@ -167,7 +167,7 @@ pub const PTHREAD_RWLOCK_INITIALIZER: pthread_rwlock_t = pthread_rwlock_t {
     pendingReaders: 0,
     pendingWriters: 0,
     attr: 0,
-    __reserved: Padding::uninit(),
+    __reserved: Padding::new([0; 36]),
 };
 pub const PTHREAD_STACK_MIN: size_t = 4096 * 4;
 pub const CPU_SETSIZE: size_t = 1024;

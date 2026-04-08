@@ -1328,9 +1328,9 @@ cfg_if! {
         pub const PTHREAD_MUTEX_INITIALIZER: pthread_mutex_t = pthread_mutex_t {
             ptm_magic: 0x33330003,
             ptm_errorcheck: 0,
-            ptm_pad1: Padding::uninit(),
-            ptm_unused: Padding::uninit(),
-            ptm_pad2: Padding::uninit(),
+            ptm_pad1: Padding::new([0; 3]),
+            ptm_unused: Padding::new(0),
+            ptm_pad2: Padding::new([0; 3]),
             ptm_waiters: 0 as *mut _,
             ptm_owner: 0,
             ptm_recursed: 0,
@@ -1340,7 +1340,7 @@ cfg_if! {
         pub const PTHREAD_MUTEX_INITIALIZER: pthread_mutex_t = pthread_mutex_t {
             ptm_magic: 0x33330003,
             ptm_errorcheck: 0,
-            ptm_unused: Padding::uninit(),
+            ptm_unused: Padding::new(0),
             ptm_waiters: 0 as *mut _,
             ptm_owner: 0,
             ptm_recursed: 0,

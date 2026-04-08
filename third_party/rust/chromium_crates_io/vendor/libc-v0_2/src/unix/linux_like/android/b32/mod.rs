@@ -209,7 +209,7 @@ pub const PTHREAD_RWLOCK_INITIALIZER: pthread_rwlock_t = pthread_rwlock_t {
     pendingReaders: 0,
     pendingWriters: 0,
     attr: 0,
-    __reserved: Padding::uninit(),
+    __reserved: Padding::new([0; 12]),
 };
 pub const PTHREAD_STACK_MIN: size_t = 4096 * 2;
 pub const CPU_SETSIZE: size_t = 32;

@@ -286,6 +286,11 @@ s_no_extra_traits! {
         pub __fcsr: c_uint,
         pub __glibc_reserved: [c_uint; 3],
     }
+
+    #[repr(align(16))]
+    pub struct max_align_t {
+        priv_: [f32; 8],
+    }
 }
 
 pub const POSIX_FADV_DONTNEED: c_int = 4;

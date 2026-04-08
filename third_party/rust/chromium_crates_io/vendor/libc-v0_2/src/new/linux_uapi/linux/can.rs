@@ -3,6 +3,7 @@
 pub(crate) mod bcm;
 pub(crate) mod error;
 pub(crate) mod j1939;
+pub(crate) mod netlink;
 pub(crate) mod raw;
 
 use crate::prelude::*;

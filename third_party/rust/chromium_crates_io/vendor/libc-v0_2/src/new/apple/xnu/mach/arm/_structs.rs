@@ -24,7 +24,7 @@ s! {
 
     #[cfg(target_arch = "aarch64")]
     pub struct __darwin_arm_neon_state64 {
-        pub __v: [crate::__uint128_t; 32],
+        pub __v: [u128; 32],
         pub __fpsr: u32,
         pub __fpcr: u32,
     }

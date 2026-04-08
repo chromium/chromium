@@ -935,6 +935,7 @@ pub const IP_ADD_MEMBERSHIP: c_int = 12;
 pub const IP_DROP_MEMBERSHIP: c_int = 13;
 pub const IP_RECVIF: c_int = 20;
 pub const IP_RECVTTL: c_int = 65;
+pub const IP_MINTTL: c_int = 66;
 pub const IPV6_RECVHOPLIMIT: c_int = 37;
 pub const IPV6_JOIN_GROUP: c_int = 12;
 pub const IPV6_LEAVE_GROUP: c_int = 13;

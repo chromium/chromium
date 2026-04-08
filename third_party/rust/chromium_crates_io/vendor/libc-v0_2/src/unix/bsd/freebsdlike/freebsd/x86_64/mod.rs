@@ -119,12 +119,12 @@ s! {
         pub mc_xfpustate: register_t,
         pub mc_xfpustate_len: register_t,
         // freebsd < 15
-        #[cfg(any(freebsd11, freebsd12, freebsd13, freebsd14))]
+        #[cfg(any(freebsd11, freebsd12, freebsd13))]
         pub mc_spare: [c_long; 4],
         // freebsd >= 15
-        #[cfg(not(any(freebsd11, freebsd12, freebsd13, freebsd14)))]
+        #[cfg(not(any(freebsd11, freebsd12, freebsd13)))]
         pub mc_tlsbase: register_t,
-        #[cfg(not(any(freebsd11, freebsd12, freebsd13, freebsd14)))]
+        #[cfg(not(any(freebsd11, freebsd12, freebsd13)))]
         pub mc_spare: [c_long; 3],
     }
 }

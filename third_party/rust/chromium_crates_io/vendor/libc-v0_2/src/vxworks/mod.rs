@@ -474,6 +474,14 @@ s! {
         pub mq_curmsgs: c_long,
     }
 
+    pub struct flock {
+        pub l_type: c_short,
+        pub l_whence: c_short,
+        pub l_start: c_longlong,
+        pub l_len: c_longlong,
+        pub l_pid: c_long,
+    }
+
     pub struct winsize {
         pub ws_row: c_ushort,
         pub ws_col: c_ushort,
@@ -1193,6 +1201,9 @@ pub const F_GETLK: c_int = 7;
 pub const F_SETLK: c_int = 8;
 pub const F_SETLKW: c_int = 9;
 pub const F_DUPFD_CLOEXEC: c_int = 14;
+pub const F_RDLCK: c_int = 1;
+pub const F_WRLCK: c_int = 2;
+pub const F_UNLCK: c_int = 3;
 
 pub const LOG_EMERG: c_int = 0;
 pub const LOG_ALERT: c_int = 1;
