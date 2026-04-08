@@ -24,8 +24,13 @@ def _CheckGlicGeneratedApi(input_api, output_api):
         'chrome/browser/resources/glic/glic_api_impl/generate.py',
         'chrome/browser/resources/glic/glic_api/glic_api.ts',
     )
-    if not any(
-        [f.LocalPath() in monitored_files for f in input_api.AffectedFiles()]):
+    repo_root = input_api.change.RepositoryRoot()
+    affected_files = [
+        input_api.os_path.relpath(f.AbsoluteLocalPath(),
+                                  repo_root).replace('\\', '/')
+        for f in input_api.AffectedFiles()
+    ]
+    if not any([path in monitored_files for path in affected_files]):
         return []
 
     os_path = input_api.os_path
