@@ -395,9 +395,6 @@ crbug.com/401988385 [ chromeos angle-opengles mesa_ge_21.0 passthrough ] conform
 # Shader translator needs to be revised
 crbug.com/486945330 conformance/glsl/misc/shader-with-double-underscore.html [ Failure ]
 
-# Failing new ASTC offset tests on multiple Android devices
-crbug.com/487128735 [ android android-pixel-2 passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
-crbug.com/487128735 [ android android-pixel-4 passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 
 
 # Failing on most platforms. Only runs with passthrough.
@@ -433,11 +430,6 @@ crbug.com/angleproject/482223016 [ no-passthrough ] conformance/glsl/misc/shader
 # Fuchsia failures #
 ####################
 
-crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/image-decoder-to-texture.html [ Failure ]
-crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-srgb-upload.html [ Failure ]
-crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
-crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Failure ]
-crbug.com/443182226 [ angle-vulkan arm fuchsia ] conformance/misc/shader-precision-format.html [ Failure ]
 crbug.com/443182226 [ angle-vulkan arm fuchsia ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Failure ]
 
 
@@ -479,7 +471,7 @@ crbug.com/402989074 [ win amd-0x7480 angle-d3d9 passthrough ] conformance/unifor
 crbug.com/496618638 [ win angle-swiftshader arch-x86_64 passthrough ] conformance/extensions/oes-texture-float-linear.html [ RetryOnFailure ]
 
 ## win10 / angle-d3d11 / Passthrough command decoder failures ##
-crbug.com/40167934 [ win10 angle-d3d11 nvidia arch-x86_64 passthrough ] conformance/extensions/khr-parallel-shader-compile.html [ RetryOnFailure ]
+crbug.com/40167934 [ angle-d3d11 arch-x86_64 debug-x64 no-clang-coverage nvidia passthrough target-cpu-64 win10 ] conformance/extensions/khr-parallel-shader-compile.html [ RetryOnFailure ]
 
 ## Vulkan / Win / NVIDIA / Passthrough command decoder ##
 
@@ -495,7 +487,6 @@ crbug.com/41496016 [ win11 qualcomm-0x36334330 angle-d3d11 ] conformance/texture
 crbug.com/452924810 [ win11 qualcomm-0x36334330 angle-vulkan ] conformance/extensions/webgl-blend-func-extended.html [ Failure ]
 
 ## Win / Intel / D3D9
-crbug.com/395934162 [ angle-d3d9 intel-0x4680 passthrough win ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ RetryOnFailure ]
 crbug.com/498951069 [ angle-d3d9 intel-0x9bc5 passthrough win ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ Failure ]
 
 ####################
@@ -528,16 +519,6 @@ crbug.com/436522727 [ amd-0x7340 debug graphite-enabled no-clang-coverage sonoma
 crbug.com/444250724 [ angle-metal debug graphite-enabled intel-0x3e9b no-clang-coverage sonoma ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/444250724 [ angle-metal graphite-enabled intel-0x3e9b no-clang-coverage release sequoia ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 
-# Angel Metal on Intel Sequoia
-crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/image_bitmap_from_canvas/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
-crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
-crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
-crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
-crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
-crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
-crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
-crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/misc/texture-corner-case-videos.html [ Failure ]
-crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/misc/video-rotation.html [ Failure ]
 
 ####################
 # Linux failures   #
@@ -590,7 +571,6 @@ crbug.com/1287280 [ android android-pixel-6 no-passthrough ] WebglExtension_OES_
 crbug.com/1287280 [ android android-pixel-6 no-passthrough ] WebglExtension_OES_texture_half_float [ Failure ]
 crbug.com/1287280 [ android android-pixel-6 no-passthrough ] WebglExtension_OES_texture_half_float_linear [ Failure ]
 crbug.com/1287280 [ android android-pixel-6 no-passthrough ] WebglExtension_WEBGL_color_buffer_float [ Failure ]
-crbug.com/1288590 [ android android-pixel-6 ] conformance/misc/shader-precision-format.html [ Failure ]
 crbug.com/1288603 [ android android-pixel-6 passthrough angle-opengles ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 crbug.com/40236526 [ android android-pixel-6 no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/465162387 [ android android-pixel-6 ] conformance/extensions/oes-element-index-uint.html [ Failure ]
@@ -600,8 +580,6 @@ crbug.com/465162387 [ android android-pixel-6 ] conformance/extensions/oes-eleme
 crbug.com/446122639 [ android android-pixel-10 imagination-technologies ] WebglExtension_EXT_texture_compression_bptc [ Failure ]
 crbug.com/446122639 [ android android-pixel-10 ] WebglExtension_OES_texture_float_linear [ Failure ]
 crbug.com/446122639 [ android android-pixel-10 ] conformance/context/context-size-change.html [ Failure ]
-crbug.com/446122639 [ android android-pixel-10 ] conformance/extensions/oes-texture-float-with-video.html [ Failure ]
-crbug.com/446122639 [ android android-pixel-10 ] conformance/extensions/oes-texture-half-float-with-video.html [ Failure ]
 crbug.com/446122639 [ android android-pixel-10 ] conformance/extensions/webgl-blend-func-extended.html [ Failure ]
 crbug.com/446122639 [ android android-pixel-10 ] conformance/glsl/functions/glsl-function-cross.html [ Failure ]
 crbug.com/446122639 [ android android-pixel-10 ] conformance/ogles/GL/build/build_009_to_016.html [ Failure ]
@@ -622,7 +600,6 @@ crbug.com/380250262 [ android android-pixel-4 angle-opengles passthrough ] confo
 ## Samsung failures ##
 
 crbug.com/40241621 [ android android-sm-a137f no-passthrough ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
-crbug.com/40241621 [ android android-sm-a137f no-passthrough ] conformance/misc/shader-precision-format.html [ Failure ]
 crbug.com/40241621 [ android android-sm-a137f no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/40241621 [ android android-sm-a137f no-passthrough ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
 # These two tests implicitly depend on OES_texture_float, as the context
