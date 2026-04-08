@@ -2231,8 +2231,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DeviceBoundSessions.RefreshQuotaExceededLastResult"
-    enum="DeviceBoundSessionError" expires_after="2026-04-19">
-  <owner>drubery@chromium.org</owner>
+    enum="DeviceBoundSessionError" expires_after="2027-04-19">
+  <owner>alexilin@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     This records the last outcome of refreshing a Device Bound Session
