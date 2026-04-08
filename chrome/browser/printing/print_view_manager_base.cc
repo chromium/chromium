@@ -597,7 +597,8 @@ void PrintViewManagerBase::DidPrintDocument(
 
   const mojom::DidPrintContentParams& content = *params->content;
   if (!content.metafile_data_region.IsValid()) {
-    NOTREACHED() << "invalid memory handle";
+    OnDidPrintDocument(std::move(callback), /*succeeded=*/false);
+    return;
   }
 
   if (IsOopifEnabled() && print_job_->document()->settings().is_modifiable()) {
@@ -612,10 +613,12 @@ void PrintViewManagerBase::DidPrintDocument(
                        params->physical_offsets, std::move(callback)));
     return;
   }
+
   auto data = base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(
       content.metafile_data_region);
   if (!data) {
-    NOTREACHED() << "couldn't map";
+    OnDidPrintDocument(std::move(callback), /*succeeded=*/false);
+    return;
   }
 
   PrintDocument(data, params->page_size, params->content_area,

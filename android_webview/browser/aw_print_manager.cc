@@ -140,13 +140,15 @@ void AwPrintManager::DidPrintDocument(
 
   const printing::mojom::DidPrintContentParams& content = *params->content;
   if (!content.metafile_data_region.IsValid()) {
-    NOTREACHED() << "invalid memory handle";
+    std::move(callback).Run(false);
+    return;
   }
 
   auto data = base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(
       content.metafile_data_region);
   if (!data) {
-    NOTREACHED() << "couldn't map";
+    std::move(callback).Run(false);
+    return;
   }
 
   if (number_pages() > printing::kMaxPageCount) {
