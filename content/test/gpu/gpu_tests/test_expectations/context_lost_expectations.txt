@@ -202,9 +202,6 @@ crbug.com/524808 [ win8 nvidia ] ContextLost_WebGLContextLostFromSelectElement [
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
-# Very flaky on Pixel 2 and Samsung A13 Android bots
-crbug.com/444480419 [ android android-pixel-2 no-clang-coverage ] ContextLost_WebGLContextLostInHiddenTab [ Failure ]
-crbug.com/444480419 [ android android-sm-a137f ] ContextLost_WebGLContextLostInHiddenTab [ Failure ]
 # Suspect tab switch is too slow on older devices
 crbug.com/443295355 [ android android-pixel-4 ] ContextLost_WebGLContextLostInHiddenTab [ Slow ]
 
@@ -249,15 +246,11 @@ crbug.com/338574390 [ mac intel-0x3e9b angle-metal asan graphite-disabled ] Cont
 crbug.com/338574390 [ angle-metal graphite-enabled amd-0x7340 mac ] ContextLost_WebGPUBlockedAfterJSNavigation [ Slow ]
 crbug.com/380088337 [ mac intel-0x3e9b angle-metal asan ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Failure ]
 
-# Failure since webgpu enabled via vulkan interop
-crbug.com/457303654 [ linux nvidia-0x2184 debug ] ContextLost_WebGPUStressRequestDeviceAndRemoveLoop [ Failure ]
 
 # WebGPU is currently not enabled on win11 qualcomm but it will be soon
-[ win11 qualcomm ] ContextLost_WebGPU* [ Failure ]
+[ memory_lt_16gb qualcomm-0x41333430 win11 ] ContextLost_WebGPU* [ Failure ]
 [ memory_lt_16gb qualcomm-0x41333430 win11 ] GpuNormalTermination_WebGPUNotBlocked [ Failure ]
 
-# Flaky crashes on Samsung A23 symbols missing
-crbug.com/476406991 [ android android-sm-a236b ] ContextLost_WebGPUStressRequestDeviceAndRemoveLoop [ RetryOnFailure ]
 
 ###############################
 # Permanent Slow Expectations #
