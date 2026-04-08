@@ -2,6 +2,157 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
+
+assert(is_win)
+
+source_set("win") {
+  public = [
+    "app_icon.h",
+    "automation_controller.h",
+    "browser_util.h",
+    "chrome_elf_init.h",
+    "chrome_select_file_dialog_factory.h",
+    "conflicts/enumerate_input_method_editors.h",
+    "conflicts/enumerate_shell_extensions.h",
+    "conflicts/inspection_results_cache.h",
+    "conflicts/module_database.h",
+    "conflicts/module_database_observer.h",
+    "conflicts/module_event_sink_impl.h",
+    "conflicts/module_inspector.h",
+    "conflicts/third_party_metrics_recorder.h",
+    "icon_reader_service.h",
+    "jumplist_file_util.h",
+    "jumplist_update_util.h",
+    "jumplist_updater.h",
+    "parental_controls.h",
+    "remove_app_compat_entries.h",
+    "settings_app_monitor.h",
+    "taskbar_manager.h",
+    "ui_automation_util.h",
+    "uninstallation_via_os_settings.h",
+    "util_win_service.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//build:branding_buildflags",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/win/conflicts:module_info",
+    "//chrome/common:mojo_bindings",
+    "//chrome/services/util_win/public/mojom",
+    "//components/favicon_base",
+    "//components/history/core/browser",
+    "//components/keyed_service/core",
+    "//components/sessions",
+    "//content/public/common",
+    "//mojo/public/cpp/bindings",
+    "//ui/gfx",
+    "//ui/shell_dialogs",
+  ]
+}
+
+# Jumplist headers depend on //chrome/browser/prefs which creates a cycle
+# if included in the main :win target (prefs -> sync -> web_applications -> win).
+source_set("jumplist") {
+  public = [
+    "jumplist.h",
+    "jumplist_factory.h",
+  ]
+
+  public_deps = [
+    ":win",
+    "//chrome/browser/prefs",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "app_icon.cc",
+    "automation_controller.cc",
+    "browser_util.cc",
+    "chrome_elf_init.cc",
+    "chrome_select_file_dialog_factory.cc",
+    "conflicts/enumerate_input_method_editors.cc",
+    "conflicts/enumerate_shell_extensions.cc",
+    "conflicts/inspection_results_cache.cc",
+    "conflicts/module_database.cc",
+    "conflicts/module_event_sink_impl.cc",
+    "conflicts/module_inspector.cc",
+    "conflicts/third_party_metrics_recorder.cc",
+    "icon_reader_service.cc",
+    "jumplist.cc",
+    "jumplist_factory.cc",
+    "jumplist_file_util.cc",
+    "jumplist_update_util.cc",
+    "jumplist_updater.cc",
+    "parental_controls.cc",
+    "remove_app_compat_entries.cc",
+    "settings_app_monitor.cc",
+    "taskbar_manager.cc",
+    "titlebar_config.cc",
+    "ui_automation_util.cc",
+    "uninstallation_via_os_settings.cc",
+    "util_win_service.cc",
+  ]
+
+  public_deps = [
+    ":jumplist",
+    ":win",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    ":mica_titlebar",
+    "//chrome/app:chrome_exe_main_exports",
+    "//chrome/app:generated_resources",
+    "//chrome/app/theme:chrome_unscaled_resources_grit",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:shell_integration",
+    "//chrome/browser:titlebar_config",
+    "//chrome/browser/favicon",
+    "//chrome/browser/policy:path_parser",
+    "//chrome/browser/profiles:profile_manager",
+    "//chrome/browser/profiles:profile_util",
+    "//chrome/browser/themes",
+    "//chrome/browser/win/conflicts:module_info",
+    "//chrome/chrome_elf:constants",
+    "//chrome/chrome_elf:dll_hash",
+    "//chrome/chrome_elf:third_party_shared_defines",
+    "//chrome/common:constants",
+    "//chrome/common:version_header",
+    "//chrome/install_static:install_static_util",
+    "//chrome/installer/util:with_no_strings",
+    "//chrome/services/util_win/public/mojom",
+    "//components/crash/core/common:crash_key",
+    "//components/favicon/core",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//components/strings:components_strings",
+    "//components/variations",
+    "//content/public/browser",
+    "//crypto",
+    "//sandbox/policy",
+    "//ui/base",
+    "//ui/base:fullscreen_win",
+    "//ui/color:accent_color_observer",
+    "//ui/gfx/codec",
+    "//url",
+  ]
+}
+
+static_library("chrome_process_finder") {
+  sources = [
+    "chrome_process_finder.cc",
+    "chrome_process_finder.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/policy:path_parser",
+    "//chrome/common:constants",
+  ]
+}
+
 source_set("mica_titlebar") {
   sources = [
     "mica_titlebar.cc",

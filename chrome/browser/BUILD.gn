@@ -5630,67 +5630,22 @@ static_library("browser") {
       "profiles/profile_shortcut_manager_win.cc",
       "profiles/profile_shortcut_manager_win.h",
       "shell_integration_win.cc",
-      "win/app_icon.cc",
-      "win/app_icon.h",
-      "win/automation_controller.cc",
-      "win/automation_controller.h",
-      "win/browser_util.cc",
-      "win/browser_util.h",
-      "win/chrome_elf_init.cc",
-      "win/chrome_elf_init.h",
-      "win/chrome_select_file_dialog_factory.cc",
-      "win/chrome_select_file_dialog_factory.h",
-      "win/conflicts/enumerate_input_method_editors.cc",
-      "win/conflicts/enumerate_input_method_editors.h",
-      "win/conflicts/enumerate_shell_extensions.cc",
-      "win/conflicts/enumerate_shell_extensions.h",
-      "win/conflicts/inspection_results_cache.cc",
-      "win/conflicts/inspection_results_cache.h",
-      "win/conflicts/module_database.cc",
-      "win/conflicts/module_database.h",
-      "win/conflicts/module_database_observer.h",
-      "win/conflicts/module_event_sink_impl.cc",
-      "win/conflicts/module_event_sink_impl.h",
-      "win/conflicts/module_inspector.cc",
-      "win/conflicts/module_inspector.h",
-      "win/conflicts/third_party_metrics_recorder.cc",
-      "win/conflicts/third_party_metrics_recorder.h",
-      "win/icon_reader_service.cc",
-      "win/icon_reader_service.h",
-      "win/jumplist.cc",
-      "win/jumplist.h",
-      "win/jumplist_factory.cc",
-      "win/jumplist_factory.h",
-      "win/jumplist_file_util.cc",
-      "win/jumplist_file_util.h",
-      "win/jumplist_update_util.cc",
-      "win/jumplist_update_util.h",
-      "win/jumplist_updater.cc",
-      "win/jumplist_updater.h",
-      "win/parental_controls.cc",
-      "win/parental_controls.h",
-      "win/remove_app_compat_entries.cc",
-      "win/remove_app_compat_entries.h",
-      "win/settings_app_monitor.cc",
-      "win/settings_app_monitor.h",
-      "win/taskbar_manager.cc",
-      "win/taskbar_manager.h",
-      "win/titlebar_config.cc",
-      "win/ui_automation_util.cc",
-      "win/ui_automation_util.h",
-      "win/uninstallation_via_os_settings.cc",
-      "win/uninstallation_via_os_settings.h",
-      "win/util_win_service.cc",
-      "win/util_win_service.h",
     ]
 
     # taskbar_decorator_win.cc in c/b/taskbar includes
     # chrome/browser/profiles/avatar_menu.h which is in this target, hence
     # causing a circular dependency.
-    allow_circular_includes_from += [ "//chrome/browser/taskbar" ]
+    allow_circular_includes_from += [
+      "//chrome/browser/taskbar",
+      "//chrome/browser/win:impl",
+    ]
+
+    public_deps += [
+      "//chrome/browser/win",
+      "//chrome/browser/win:jumplist",
+    ]
 
     deps += [
-      ":chrome_process_finder",
       "//chrome/app:chrome_exe_main_exports",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/browser/install_verification:impl",
@@ -5701,7 +5656,9 @@ static_library("browser") {
       "//chrome/browser/taskbar",
       "//chrome/browser/web_applications/chrome_pwa_launcher:util",
       "//chrome/browser/webnn",
+      "//chrome/browser/win:chrome_process_finder",
       "//chrome/browser/win:cloud_synced_folder_checker",
+      "//chrome/browser/win:impl",
       "//chrome/browser/win:isolated_browser_support",
       "//chrome/browser/win:mica_titlebar",
       "//chrome/browser/win:registry_watcher",
@@ -7564,20 +7521,6 @@ if (is_android) {
 
   proto_library("usage_stats_proto") {
     sources = [ "android/usage_stats/website_event.proto" ]
-  }
-}
-
-if (is_win) {
-  static_library("chrome_process_finder") {
-    sources = [
-      "win/chrome_process_finder.cc",
-      "win/chrome_process_finder.h",
-    ]
-    deps = [
-      "//base",
-      "//chrome/browser/policy:path_parser",
-      "//chrome/common:constants",
-    ]
   }
 }
 

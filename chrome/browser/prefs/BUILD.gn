@@ -320,6 +320,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/os_crypt",
       "//chrome/browser/webnn",
+      "//chrome/browser/win",
     ]
   }
 

@@ -88,7 +88,10 @@ source_set("impl") {
   ]
 
   if (is_win) {
-    deps += [ "//chrome/installer/util:with_no_strings" ]
+    deps += [
+      "//chrome/browser/win",
+      "//chrome/installer/util:with_no_strings",
+    ]
   }
 }
 

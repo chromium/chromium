@@ -685,6 +685,7 @@ source_set("web_applications") {
     deps += [
       "//chrome/browser/profiles:profile_util",
       "//chrome/browser/web_applications/chrome_pwa_launcher:util",
+      "//chrome/browser/win",
       "//components/custom_handlers",
     ]
   }
