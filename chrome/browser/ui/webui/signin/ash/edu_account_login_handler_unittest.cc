@@ -302,7 +302,7 @@ TEST_F(EduAccountLoginHandlerTest, HandleParentSigninSuccess) {
                               kFakeParentCredential));
   handler()->CreateReAuthProofTokenForParent(
       kFakeParentGaiaId, kFakeParentCredential,
-      GoogleServiceAuthError(GoogleServiceAuthError::NONE),
+      GoogleServiceAuthError::AuthErrorNone(),
       signin::AccessTokenInfo(kFakeAccessToken,
                               base::Time::Now() + base::Hours(1), "id_token"));
 
@@ -331,8 +331,7 @@ TEST_F(EduAccountLoginHandlerTest, HandleParentSigninAccessTokenFailure) {
 
   handler()->CreateReAuthProofTokenForParent(
       kFakeParentGaiaId, kFakeParentCredential,
-      GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_ERROR),
-      signin::AccessTokenInfo());
+      GoogleServiceAuthError::FromServiceError(""), signin::AccessTokenInfo());
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   VerifyJavascriptCallbackResolved(data, callback_id, false /*success*/);
 
@@ -360,7 +359,7 @@ TEST_F(EduAccountLoginHandlerTest, HandleParentSigninReAuthProofTokenFailure) {
                               kFakeParentCredential));
   handler()->CreateReAuthProofTokenForParent(
       kFakeParentGaiaId, kFakeParentCredential,
-      GoogleServiceAuthError(GoogleServiceAuthError::NONE),
+      GoogleServiceAuthError::AuthErrorNone(),
       signin::AccessTokenInfo(kFakeAccessToken,
                               base::Time::Now() + base::Hours(1), "id_token"));
 
