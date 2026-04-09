@@ -15,9 +15,5 @@ export class TestWebnnInternalsBrowserProxy {
     this.handler = TestMock.fromClass(PageHandlerRemote);
     this.callbackRouter = new PageCallbackRouter();
     this.page = this.callbackRouter.$.bindNewPipeAndPassRemote();
-    this.handler.setResultFor(
-        'requestExistingContextsDetails', Promise.resolve({
-          contextsInfo: [],
-        }));
   }
 }
