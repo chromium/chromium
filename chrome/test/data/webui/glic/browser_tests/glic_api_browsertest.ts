@@ -1894,7 +1894,6 @@ class ApiTests extends ApiTestFixtureBase {
     }
   }
 
-  async testReloadWebUi() {}
 
   private async assertCreateTabFails(url: string) {
     assertDefined(this.host.createTab);

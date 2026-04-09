@@ -264,6 +264,22 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testInitializeFailsWindowOpen) {
   ASSERT_TRUE(WaitForWebUiState(mojom::WebUiState::kReady));
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testReloadWebUi) {
+  ASSERT_TRUE(OpenGlicForActiveTab());
+  ExecuteJsTest();
+
+  ASSERT_TRUE(WaitForWebUiState(mojom::WebUiState::kReady));
+  GetOnlyGlicInstance()->host().Reload();
+  ASSERT_TRUE(WaitForWebUiState(mojom::WebUiState::kUninitialized));
+  ExecuteJsTest();
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetOnlyGlicInstance()->host().GetPageHandlersForTesting().size() ==
+           1;
+  }));
+  ASSERT_TRUE(GetOnlyGlicInstance()->host().GetPrimaryPageHandlerForTesting());
+}
+
 // Checks that all tests in new_glic_api_browsertest.ts have a corresponding
 // test case in this file.
 // TODO(crbug.com/460826483): Enable on CrOS.

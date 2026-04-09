@@ -14,6 +14,8 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testDoNothing() {}
 
+  async testReloadWebUi() {}
+
   async testInvocationSource() {
     const expectedSource = this.testParams as number;
     await observeSequence(this.client.panelOpenData)
