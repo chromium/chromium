@@ -263,7 +263,7 @@ fn is_error_resumable(read_state: &XmlReadState) -> bool {
     // temporary end of read stream situations.
     matches!(read_state.error_details.as_ref().map(|error| error.kind()),
              Some(ErrorKind::Syntax(msg)) if
-             msg == "Unexpected end of stream: still inside the root element")
+             msg.starts_with("Unexpected end of stream"))
 }
 
 fn reset_error(read_state: &mut XmlReadState) {

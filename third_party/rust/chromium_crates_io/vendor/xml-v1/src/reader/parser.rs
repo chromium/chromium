@@ -411,6 +411,10 @@ impl PullParser {
                 },
                 Err(lexer_error) => {
                     self.next_pos();
+                    if self.config.ignore_end_of_stream {
+                        self.lexer.reset_eof_handled();
+                        return Err(lexer_error);
+                    }
                     return self.set_final_result(Err(lexer_error));
                 },
             }
@@ -423,6 +427,14 @@ impl PullParser {
         let ev = if self.depth() == 0 {
             if self.encountered == Encountered::Element && self.st == State::OutsideTag {  // all is ok
                 Ok(XmlEvent::EndDocument)
+            } else if self.config.ignore_end_of_stream {
+                self.final_result = None;
+                self.lexer.reset_eof_handled();
+                return if self.encountered < Encountered::Element {
+                    self.error(SyntaxError::NoRootElement)
+                } else {
+                    self.error(SyntaxError::UnexpectedEof)
+                };
             } else if self.encountered < Encountered::Element {
                 self.error(SyntaxError::NoRootElement)
             } else {  // self.st != State::OutsideTag
