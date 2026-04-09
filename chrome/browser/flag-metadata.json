@@ -1649,6 +1649,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "classifier-api-for-tiny-model",
+    "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
+    "expiry_milestone": 155
+  },
+  {
     "name": "click-to-call",
     "owners": [ "ellyjones@chromium.org" ],
     "expiry_milestone": 115

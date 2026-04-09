@@ -4924,6 +4924,18 @@ inline constexpr char kProofreaderAPIForGeminiNanoDescription[] =
     "You must comply with our Prohibited Use Policy [2] which provides "
     "additional details about appropriate use of Generative AI.";
 
+inline constexpr char kClassifierAPIForTinyModelName[] =
+    "Classifier API for Tiny Model";
+inline constexpr char kClassifierAPIForTinyModelDescription[] =
+    "Enables the Classifier API, allowing you to classify a piece of text "
+    "with a built-in tiny model in Chrome. "
+    "The API may be subject to changes including the supported options. "
+    "Please refer to the built-in AI article [1] for details. "
+    "You must comply with our Prohibited Use Policy [2] which provides "
+    "additional details about appropriate use of Generative AI.";
+
+
+
 inline constexpr char kSummarizerAPIWithPerformancePreferenceName[] =
     "Summarizer API with Performance Preference";
 inline constexpr char kSummarizerAPIWithPerformancePreferenceDescription[] =

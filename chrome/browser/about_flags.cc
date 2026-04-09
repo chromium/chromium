@@ -10093,6 +10093,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kAIProofreadingAPI),
      flag_descriptions::kAIAPIsForGeminiNanoLinks},
 
+    {"classifier-api-for-tiny-model",
+     flag_descriptions::kClassifierAPIForTinyModelName,
+     flag_descriptions::kClassifierAPIForTinyModelDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(blink::features::kAIClassifierAPI),
+     flag_descriptions::kAIAPIsForGeminiNanoLinks},
+
     {"summarizer-api-performance-preference",
      flag_descriptions::kSummarizerAPIWithPerformancePreferenceName,
      flag_descriptions::kSummarizerAPIWithPerformancePreferenceDescription,
