@@ -17,6 +17,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/compose/compose_session.h"
@@ -486,4 +487,278 @@ IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
   histograms.ExpectUniqueSample(
       "Compose.Server.Request.Reason",
       compose::ComposeRequestReason::kFirstRequestFormalizeMode, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
+                       CloseButtonHistogramTest) {
+  base::HistogramTester histograms;
+  base::UserActionTester user_action_tester;
+  base::ScopedMockElapsedTimersForTest test_timer;
+
+  SetupMockModelExecution(true);
+
+  ShowDialogAndBindMojo();
+
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
+  BindComposeFutureToOnResponseReceived(compose_future);
+
+  // Simulate three Compose requests - two from edits.
+  page_handler()->Compose("", compose::mojom::InputMode::kPolish, false);
+  compose::mojom::ComposeResponsePtr response = compose_future.Take();
+
+  page_handler()->Compose("", compose::mojom::InputMode::kPolish, true);
+  response = compose_future.Take();
+
+  page_handler()->Compose("", compose::mojom::InputMode::kPolish, true);
+  response = compose_future.Take();
+
+  // Show the dialog a second time.
+  ShowDialogAndBindMojo();
+
+  // Simulate two undos.
+  base::test::TestFuture<compose::mojom::ComposeStatePtr> undo_future;
+  page_handler()->Undo(undo_future.GetCallback());
+  compose::mojom::ComposeStatePtr state = undo_future.Take();
+  page_handler()->Undo(undo_future.GetCallback());
+  state = undo_future.Take();
+
+  client().CloseUI(compose::mojom::CloseReason::kCloseButton);
+
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Compose.EndedSession.CloseButtonClicked"));
+
+  // Expect that the close button click was recorded.
+  histograms.ExpectUniqueSample(
+      compose::kComposeSessionCloseReason,
+      compose::ComposeSessionCloseReason::kCloseButtonPressed, 1);
+
+  // Expect that three total Compose calls were recorded.
+  histograms.ExpectUniqueSample(
+      compose::kComposeSessionComposeCount + std::string(".Ignored"), 3, 1);
+  histograms.ExpectUniqueSample("Compose.Server.Session.ComposeCount.Ignored",
+                                3, 1);
+
+  // Expect that two of the Compose calls were from edits.
+  histograms.ExpectUniqueSample(
+      compose::kComposeSessionUpdateInputCount + std::string(".Ignored"), 2, 1);
+  histograms.ExpectUniqueSample(
+      "Compose.Server.Session.SubmitEditCount.Ignored", 2, 1);
+
+  // Expect that two undos were done.
+  histograms.ExpectUniqueSample(
+      compose::kComposeSessionUndoCount + std::string(".Ignored"), 2, 1);
+  histograms.ExpectUniqueSample("Compose.Server.Session.UndoCount.Ignored", 2,
+                                1);
+
+  // Expect that the dialog was shown twice.
+  histograms.ExpectUniqueSample(
+      compose::kComposeSessionDialogShownCount + std::string(".Ignored"), 2, 1);
+  histograms.ExpectUniqueSample(
+      "Compose.Server.Session.DialogShownCount.Ignored", 2, 1);
+
+  // Check expected session duration metrics
+  histograms.ExpectTotalCount(
+      compose::kComposeSessionDuration + std::string(".FRE"), 0);
+  histograms.ExpectTotalCount(
+      compose::kComposeSessionDuration + std::string(".MSBB"), 0);
+  histograms.ExpectUniqueTimeSample(
+      compose::kComposeSessionDuration + std::string(".Ignored"),
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
+  histograms.ExpectUniqueTimeSample(
+      "Compose.Server.Session.Duration.Ignored",
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
+  histograms.ExpectUniqueSample(compose::kComposeSessionOverOneDay, 0, 1);
+
+  // Check the expected event count metrics.
+  std::vector<std::pair<compose::ComposeSessionEventTypes, int>> event_counts =
+      {
+          {compose::ComposeSessionEventTypes::kComposeDialogOpened, 1},
+          {compose::ComposeSessionEventTypes::kMainDialogShown, 1},
+          {compose::ComposeSessionEventTypes::kFREShown, 0},
+          {compose::ComposeSessionEventTypes::kCreateClicked, 1},
+          {compose::ComposeSessionEventTypes::kSuccessfulRequest, 1},
+          {compose::ComposeSessionEventTypes::kUpdateClicked, 1},
+          {compose::ComposeSessionEventTypes::kUndoClicked, 1},
+          {compose::ComposeSessionEventTypes::kAnyModifierUsed, 0},
+          {compose::ComposeSessionEventTypes::kFailedRequest, 0},
+      };
+
+  for (auto [event_type, count] : event_counts) {
+    histograms.ExpectBucketCount(compose::kComposeSessionEventCounts,
+                                 event_type, count);
+    histograms.ExpectBucketCount("Compose.Server.Session.EventCounts",
+                                 event_type, count);
+    histograms.ExpectBucketCount("Compose.OnDevice.Session.EventCounts",
+                                 event_type, 0);
+  }
+
+  // No FRE related close reasons should have been recorded.
+  histograms.ExpectTotalCount(compose::kComposeFirstRunSessionCloseReason, 0);
+
+  // No MSBB related close reasons should have been recorded.
+  histograms.ExpectTotalCount(compose::kComposeMSBBSessionCloseReason, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
+                       ExpiredSessionHistogramTest) {
+  base::HistogramTester histograms;
+  base::UserActionTester user_action_tester;
+  base::ScopedMockElapsedTimersForTest test_timer;
+
+  compose::Config& config = compose::GetMutableConfigForTesting();
+  // ElapsedTimer in test will return an elapsed time of 1337ms by default.
+  // Set the session lifetime threshold to be shorter than this to simulate
+  // expiry.
+  config.session_max_allowed_lifetime = base::Seconds(1);
+
+  ShowDialogAndBindMojo();
+  // Show the dialog a second time - this ends the previous session if it is now
+  // expired.
+  ShowDialogAndBindMojo();
+
+  histograms.ExpectUniqueSample(
+      compose::kComposeSessionCloseReason,
+      compose::ComposeSessionCloseReason::kExceededMaxDuration, 1);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Compose.EndedSession.EndedImplicitly"));
+  // Expect that the dialog was shown once.
+  histograms.ExpectUniqueSample(
+      compose::kComposeSessionDialogShownCount + std::string(".Ignored"), 1, 1);
+
+  // Check expected session duration metrics
+  histograms.ExpectTotalCount(
+      compose::kComposeSessionDuration + std::string(".FRE"), 0);
+  histograms.ExpectTotalCount(
+      compose::kComposeSessionDuration + std::string(".MSBB"), 0);
+  histograms.ExpectUniqueTimeSample(
+      compose::kComposeSessionDuration + std::string(".Ignored"),
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
+  histograms.ExpectUniqueSample(compose::kComposeSessionOverOneDay, 0, 1);
+
+  // No FRE related close reasons should have been recorded.
+  histograms.ExpectTotalCount(compose::kComposeFirstRunSessionCloseReason, 0);
+  // No MSBB related close reasons should have been recorded.
+  histograms.ExpectTotalCount(compose::kComposeMSBBSessionCloseReason, 0);
+
+  client().CloseUI(compose::mojom::CloseReason::kCloseButton);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
+                       ExpiredSessionMSBBHistogramTest) {
+  base::HistogramTester histograms;
+  base::UserActionTester user_action_tester;
+  base::ScopedMockElapsedTimersForTest test_timer;
+
+  SetPrefsForComposeMSBBState(false);
+
+  compose::Config& config = compose::GetMutableConfigForTesting();
+  // ElapsedTimer in test will return an elapsed time of 1337ms by default.
+  // Set the session lifetime threshold to be shorter than this to simulate
+  // expiry.
+  config.session_max_allowed_lifetime = base::Seconds(1);
+
+  ShowDialogAndBindMojo();
+  // Show the dialog a second time - this ends the previous session if it is now
+  // expired.
+  ShowDialogAndBindMojo();
+
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Compose.EndedSession.EndedImplicitly"));
+
+  histograms.ExpectUniqueSample(
+      compose::kComposeMSBBSessionCloseReason,
+      compose::ComposeFreOrMsbbSessionCloseReason::kExceededMaxDuration, 1);
+
+  histograms.ExpectUniqueSample(
+      compose::kComposeMSBBSessionDialogShownCount + std::string(".Ignored"),
+      1,  // Expect that one total MSBB dialog was shown.
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
+                       ExpiredSessionFirstRunHistogramTest) {
+  base::HistogramTester histograms;
+  base::UserActionTester user_action_tester;
+  base::ScopedMockElapsedTimersForTest test_timer;
+
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kPrefHasCompletedComposeFRE, false);
+
+  compose::Config& config = compose::GetMutableConfigForTesting();
+  // ElapsedTimer in test will return an elapsed time of 1337ms by default.
+  // Set the session lifetime threshold to be shorter than this to simulate
+  // expiry.
+  config.session_max_allowed_lifetime = base::Seconds(1);
+
+  ShowDialogAndBindMojo();
+  // Show the dialog a second time - this ends the previous session if it is now
+  // expired.
+  ShowDialogAndBindMojo();
+
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Compose.EndedSession.EndedImplicitly"));
+
+  histograms.ExpectUniqueSample(
+      compose::kComposeFirstRunSessionCloseReason,
+      compose::ComposeFreOrMsbbSessionCloseReason::kExceededMaxDuration, 1);
+
+  histograms.ExpectUniqueSample(
+      compose::kComposeFirstRunSessionDialogShownCount +
+          std::string(".Ignored"),
+      1,  // Expect that one total FRE dialog was shown.
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
+                       CloseButtonMSBBHistogramTest) {
+  base::HistogramTester histograms;
+  base::ScopedMockElapsedTimersForTest test_timer;
+
+  SetPrefsForComposeMSBBState(false);
+  ShowDialogAndBindMojo();
+
+  client().CloseUI(compose::mojom::CloseReason::kMSBBCloseButton);
+
+  histograms.ExpectUniqueSample(
+      compose::kComposeMSBBSessionCloseReason,
+      compose::ComposeFreOrMsbbSessionCloseReason::kCloseButtonPressed, 1);
+
+  histograms.ExpectUniqueSample(
+      compose::kComposeMSBBSessionDialogShownCount + std::string(".Ignored"),
+      1,  // Expect that one total MSBB dialog was shown.
+      1);
+  histograms.ExpectTotalCount(compose::kComposeMSBBSessionCloseReason, 1);
+
+  // No FRE related close reasons should have been recorded.
+  histograms.ExpectTotalCount(compose::kComposeFirstRunSessionCloseReason, 0);
+
+  // Check expected session duration metrics
+  histograms.ExpectTotalCount(
+      compose::kComposeSessionDuration + std::string(".FRE"), 0);
+  histograms.ExpectUniqueTimeSample(
+      compose::kComposeSessionDuration + std::string(".MSBB"),
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
+  histograms.ExpectTotalCount(
+      compose::kComposeSessionDuration + std::string(".Inserted"), 0);
+  histograms.ExpectUniqueSample(compose::kComposeSessionOverOneDay, 0, 1);
+
+  // Check the expected event count metrics.
+  std::vector<std::pair<compose::ComposeSessionEventTypes, int>> event_counts =
+      {
+          {compose::ComposeSessionEventTypes::kComposeDialogOpened, 1},
+          {compose::ComposeSessionEventTypes::kMainDialogShown, 0},
+          {compose::ComposeSessionEventTypes::kFREShown, 0},
+          {compose::ComposeSessionEventTypes::kMSBBShown, 1},
+          {compose::ComposeSessionEventTypes::kFREAccepted, 0},
+          {compose::ComposeSessionEventTypes::kMSBBEnabled, 0},
+      };
+
+  for (auto [event_type, count] : event_counts) {
+    histograms.ExpectBucketCount(compose::kComposeSessionEventCounts,
+                                 event_type, count);
+    histograms.ExpectBucketCount("Compose.Server.Session.EventCounts",
+                                 event_type, 0);
+    histograms.ExpectBucketCount("Compose.OnDevice.Session.EventCounts",
+                                 event_type, 0);
+  }
 }
