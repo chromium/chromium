@@ -948,11 +948,12 @@ unsigned JPEGImageDecoder::DesiredScaleNumerator(wtf_size_t max_decoded_bytes,
     return scale_denominator;
   }
 
-  // Downsample according to the maximum decoded size.
-  return static_cast<unsigned>(floor(sqrt(
-      // MSVC needs explicit parameter type for sqrt().
-      static_cast<float>(max_decoded_bytes) / original_bytes *
-      scale_denominator * scale_denominator)));
+  // Downsample according to the maximum decoded size. Use double to prevent
+  // precision loss that can trigger redundant decoder creation
+  // (crbug.com/500104917).
+  return static_cast<unsigned>(
+      floor(sqrt(static_cast<double>(max_decoded_bytes) / original_bytes) *
+            scale_denominator));
 }
 
 bool JPEGImageDecoder::ShouldGenerateAllSizes() const {
