@@ -1089,20 +1089,16 @@ void StyleResolver::ForEachUARulesForElement(const Element& element,
                                              Functor& func) const {
   CSSDefaultStyleSheets& default_style_sheets =
       CSSDefaultStyleSheets::Instance();
-  if (!print_media_type_) {
-    if (element.IsHTMLElement() || element.IsPseudoElement() ||
-        element.IsVTTElement()) [[likely]] {
-      func(default_style_sheets.DefaultHtmlStyle(), kHTMLUASheet);
-    } else if (element.IsSVGElement()) {
-      func(default_style_sheets.DefaultSVGStyle(), kSVGUASheet);
-    } else if (element.namespaceURI() == mathml_names::kNamespaceURI) {
-      func(default_style_sheets.DefaultMathMLStyle(), kMathMLUASheet);
-    }
-    if (Fullscreen::HasFullscreenElements()) {
-      func(default_style_sheets.DefaultFullscreenStyle(), kFullscreenUASheet);
-    }
-  } else {
-    func(default_style_sheets.DefaultPrintStyle(), kPrintUASheet);
+  if (element.IsHTMLElement() || element.IsPseudoElement() ||
+      element.IsVTTElement()) [[likely]] {
+    func(default_style_sheets.DefaultHtmlStyle(), kHTMLUASheet);
+  } else if (element.IsSVGElement()) {
+    func(default_style_sheets.DefaultSVGStyle(), kSVGUASheet);
+  } else if (element.namespaceURI() == mathml_names::kNamespaceURI) {
+    func(default_style_sheets.DefaultMathMLStyle(), kMathMLUASheet);
+  }
+  if (Fullscreen::HasFullscreenElements()) {
+    func(default_style_sheets.DefaultFullscreenStyle(), kFullscreenUASheet);
   }
 
   // In quirks mode, we match rules from the quirks user agent sheet.
@@ -2196,10 +2192,9 @@ const ComputedStyle* StyleResolver::StyleForPage(uint32_t page_index,
                               page_index, page_name,
                               cascade.MutableMatchResult());
 
-  collector.MatchPageRules(
-      CSSDefaultStyleSheets::Instance().DefaultPrintStyle(),
-      CascadeOrigin::kUserAgent, nullptr /* tree_scope */,
-      nullptr /* layer_map */);
+  collector.MatchPageRules(CSSDefaultStyleSheets::Instance().DefaultHtmlStyle(),
+                           CascadeOrigin::kUserAgent, nullptr /* tree_scope */,
+                           nullptr /* layer_map */);
 
   // Calling this function without being in print mode is unusual and special,
   // but it happens from unit tests, if nothing else.
@@ -2301,7 +2296,7 @@ void StyleResolver::StyleForPageMargins(const ComputedStyle& page_style,
         &page_style, entry.at_rule_id, page_index, page_name,
         margin_cascade.MutableMatchResult());
     margin_rule_collector.MatchPageRules(
-        CSSDefaultStyleSheets::Instance().DefaultPrintStyle(),
+        CSSDefaultStyleSheets::Instance().DefaultHtmlStyle(),
         CascadeOrigin::kUserAgent, /*tree_scope=*/nullptr,
         /*layer_map=*/nullptr);
 

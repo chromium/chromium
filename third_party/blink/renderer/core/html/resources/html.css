@@ -1904,80 +1904,78 @@ slot {
 
 /* Pagination */
 
-@media print {
-  @page {
-    /* https://drafts.csswg.org/css-page-3/#margin-text-alignment */
-    @top-left-corner {
-      text-align: right;
-      vertical-align: middle;
-    }
-    @top-left {
-      text-align: left;
-      vertical-align: middle;
-    }
-    @top-center {
-      text-align: center;
-      vertical-align: middle;
-    }
-    @top-right {
-      text-align: right;
-      vertical-align: middle;
-    }
-    @top-right-corner {
-      text-align: left;
-      vertical-align: middle;
-    }
-    @right-top {
-      text-align: center;
-      vertical-align: top;
-    }
-    @right-middle {
-      text-align: center;
-      vertical-align: middle;
-    }
-    @right-bottom {
-      text-align: center;
-      vertical-align: bottom;
-    }
-    @bottom-right-corner {
-      text-align: left;
-      vertical-align: middle;
-    }
-    @bottom-right {
-      text-align: right;
-      vertical-align: middle;
-    }
-    @bottom-center {
-      text-align: center;
-      vertical-align: middle;
-    }
-    @bottom-left {
-      text-align: left;
-      vertical-align: middle;
-    }
-    @bottom-left-corner {
-      text-align: right;
-      vertical-align: middle;
-    }
-    @left-bottom {
-      text-align: center;
-      vertical-align: bottom;
-    }
-    @left-middle {
-      text-align: center;
-      vertical-align: middle;
-    }
-    @left-top {
-      text-align: center;
-      vertical-align: top;
-    }
+@page {
+  /* https://drafts.csswg.org/css-page-3/#margin-text-alignment */
+  @top-left-corner {
+    text-align: right;
+    vertical-align: middle;
   }
-
-  /* Allows table headers and footers to print at the top / bottom of each
-     page. */
-  thead { break-inside: avoid; }
-  tfoot { break-inside: avoid; }
+  @top-left {
+    text-align: left;
+    vertical-align: middle;
+  }
+  @top-center {
+    text-align: center;
+    vertical-align: middle;
+  }
+  @top-right {
+    text-align: right;
+    vertical-align: middle;
+  }
+  @top-right-corner {
+    text-align: left;
+    vertical-align: middle;
+  }
+  @right-top {
+    text-align: center;
+    vertical-align: top;
+  }
+  @right-middle {
+    text-align: center;
+    vertical-align: middle;
+  }
+  @right-bottom {
+    text-align: center;
+    vertical-align: bottom;
+  }
+  @bottom-right-corner {
+    text-align: left;
+    vertical-align: middle;
+  }
+  @bottom-right {
+    text-align: right;
+    vertical-align: middle;
+  }
+  @bottom-center {
+    text-align: center;
+    vertical-align: middle;
+  }
+  @bottom-left {
+    text-align: left;
+    vertical-align: middle;
+  }
+  @bottom-left-corner {
+    text-align: right;
+    vertical-align: middle;
+  }
+  @left-bottom {
+    text-align: center;
+    vertical-align: bottom;
+  }
+  @left-middle {
+    text-align: center;
+    vertical-align: middle;
+  }
+  @left-top {
+    text-align: center;
+    vertical-align: top;
+  }
 }
+
+/* Allows table headers and footers to print at the top / bottom of each
+   page. Querying overflow-block since media() does not support media types. */
+thead { break-inside: if(media(overflow-block: paged): avoid;) }
+tfoot { break-inside: if(media(overflow-block: paged): avoid;) }
 
 /* spelling/grammar error pseudos */
 
