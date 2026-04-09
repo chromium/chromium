@@ -57,6 +57,9 @@ class PasswordFormManagerForUI {
   // Determines if the user opted to 'never remember' passwords for this form.
   virtual bool IsBlocklisted() const = 0;
 
+  // Returns true if the fetch of credentials from the store is completed.
+  virtual bool IsFetchCompleted() const = 0;
+
   // Determines whether the submitted credentials returned by
   // GetPendingCredentials() can be moved to the signed in account store.
   // Returns true if the submitted credentials are stored in the profile store

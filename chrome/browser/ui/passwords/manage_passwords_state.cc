@@ -84,6 +84,7 @@ ManagePasswordsState::~ManagePasswordsState() = default;
 
 void ManagePasswordsState::OnPendingPassword(
     std::unique_ptr<PasswordFormManagerForUI> form_manager) {
+  CHECK(form_manager->IsFetchCompleted());
   ClearData();
   form_manager_ = std::move(form_manager);
   local_credentials_forms_ =
@@ -96,6 +97,7 @@ void ManagePasswordsState::OnPendingPassword(
 
 void ManagePasswordsState::OnUpdatePassword(
     std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager) {
+  CHECK(form_manager->IsFetchCompleted());
   ClearData();
   form_manager_ = std::move(form_manager);
   local_credentials_forms_ =
@@ -127,6 +129,7 @@ void ManagePasswordsState::OnAutoSignin(
 
 void ManagePasswordsState::OnAutomaticPasswordSave(
     std::unique_ptr<PasswordFormManagerForUI> form_manager) {
+  CHECK(form_manager->IsFetchCompleted());
   ClearData();
   form_manager_ = std::move(form_manager);
   local_credentials_forms_ =
@@ -145,6 +148,7 @@ void ManagePasswordsState::OnSubmittedGeneratedPassword(
         state == password_manager::ui::UPDATE_CONFIRMATION_STATE ||
         state == password_manager::ui::GENERATED_PASSWORD_CONFIRMATION_STATE);
   if (form_manager) {
+    CHECK(form_manager->IsFetchCompleted());
     ClearData();
     form_manager_ = std::move(form_manager);
   }
@@ -215,6 +219,7 @@ void ManagePasswordsState::OnInactive() {
 
 void ManagePasswordsState::OnPasswordMovable(
     std::unique_ptr<PasswordFormManagerForUI> form_to_move) {
+  CHECK(form_to_move->IsFetchCompleted());
   ClearData();
   form_manager_ = std::move(form_to_move);
   local_credentials_forms_ =
