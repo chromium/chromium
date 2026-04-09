@@ -13,8 +13,7 @@ DEBUG = False
 API_FILE = 'chrome/browser/resources/glic/glic_api/glic_api.ts'
 
 TRIGGERING_FILE_PREFIXES = [
-    'chrome/browser/resources/glic/glic_api/',
-    'chrome/browser/resources/glic/presubmit/',
+    'chrome/browser/resources/glic/',
 ]
 
 
@@ -34,8 +33,8 @@ def CheckApiChanges(input_api, output_api, api_file, on_upload):
 
     cmd = [
         input_api.python_executable,
-        input_api.os_path.join(
-            src_root, 'chrome/browser/resources/glic/presubmit/check_api.py'),
+        input_api.os_path.join(input_api.PresubmitLocalPath(), 'presubmit',
+                               'check_api.py'),
         '--old-stdin',
         '--api-file-path=' + api_file_path,
     ]
