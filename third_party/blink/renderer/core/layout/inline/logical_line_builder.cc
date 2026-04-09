@@ -456,7 +456,7 @@ void LogicalLineBuilder::PlaceControlItem(const InlineItem& item,
   line_box->AddChild(item, std::move(item_result->shape_result),
                      item_result->TextOffset(), box->text_top,
                      item_result->inline_size, box->text_height,
-                     item.BidiLevel());
+                     item.BidiLevel(), item_result->fit_text_scale.Get());
 }
 
 void LogicalLineBuilder::PlaceHyphen(const InlineItemResult& item_result,

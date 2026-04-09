@@ -36,7 +36,8 @@ bool ScaleLine(bool is_grow,
   bool should_scale_line_height = false;
   LayoutUnit inline_size = line_info.TextIndent();
   for (auto& item : *line_info.MutableResults()) {
-    if (item.item->Type() != InlineItem::kText) {
+    if (item.item->Type() != InlineItem::kText &&
+        item.item->TextType() != TextItemType::kForcedLineBreak) {
       inline_size += item.inline_size;
       continue;
     }
@@ -477,6 +478,18 @@ bool LineFitter::FitLine(float scale_factor,
   bool is_first_text = true;
   for (auto& item : *line_info_.MutableResults()) {
     if (item.item->Type() != InlineItem::kText) {
+      if (item.item->IsForcedLineBreak()) {
+        const Font& font = *item.item->Style()->GetFont();
+        Font* scaled_font = MakeGarbageCollected<Font>(
+            ScaledFontDescription(font, scale_factor, limit, restricted),
+            font.GetFontSelector());
+        if (!item.fit_text_scale) {
+          item.fit_text_scale = MakeGarbageCollected<FitTextScale>();
+        }
+        item.fit_text_scale->font = scaled_font;
+        item.fit_text_scale->scale = 1.0f;
+        item.fit_text_scale->is_scaled_inline_only = false;
+      }
       static_total_size += item.inline_size;
       continue;
     }

@@ -77,13 +77,15 @@ struct LogicalLineItem {
                   LayoutUnit block_offset,
                   LayoutUnit inline_size,
                   LayoutUnit text_height,
-                  UBiDiLevel bidi_level)
+                  UBiDiLevel bidi_level,
+                  const FitTextScale* fit_text_scale = nullptr)
       : inline_item(&inline_item),
         shape_result(shape_result),
         text_offset(text_offset),
         rect(LayoutUnit(), block_offset, LayoutUnit(), text_height),
         inline_size(inline_size),
-        bidi_level(bidi_level) {}
+        bidi_level(bidi_level),
+        fit_text_scale(fit_text_scale) {}
   // Create a generated text.
   LogicalLineItem(const InlineItem& inline_item,
                   const ShapeResultView* shape_result,

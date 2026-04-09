@@ -946,6 +946,7 @@ void HighlightPainter::PaintHighlightOverlays(
     if (fragment_paint_info_.shape_result) {
       std::optional<base::AutoReset<bool>> is_painting_selection_reset;
       GraphicsContextStateSaver state_saver(paint_info_.context);
+      text_painter_.ApplyTextFitScale(fragment_paint_info_, nullptr);
       // SVG text may have transforms that defeat clipping. The clipping
       // is only required for ligatures, so we will accept potential
       // double painting of ligatures for SVG so as to correctly handle
@@ -982,7 +983,6 @@ void HighlightPainter::PaintHighlightOverlays(
       fragment_paint_info_.shape_result->ExpandRangeToIncludePartialGlyphs(
           &start, &end);
 
-      text_painter_.ApplyTextFitScale(fragment_paint_info_, nullptr);
       text_painter_.Paint(fragment_paint_info_.Slice(start, end), part.style,
                           node_id, foreground_auto_dark_mode_,
                           TextPainter::kTextProperOnly);
