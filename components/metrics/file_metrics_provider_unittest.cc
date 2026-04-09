@@ -239,7 +239,7 @@ class FileMetricsProviderTestBase : public testing::Test {
     // Create both sparse and normal histograms in the allocator. Make them
     // stability histograms to ensure that the histograms are snapshotted (in
     // the case of stability logs) or are put into independent logs. Histogram
-    // names must be 2 characters (see HistogramFlattenerDeltaRecorder).
+    // names must be 2 characters (see DeltaRecordingHistogramSnapshotManager).
     created_histograms_[0] = base::SparseHistogram::FactoryGet(
         "h0", /*flags=*/base::HistogramBase::Flags::kUmaStabilityHistogramFlag);
     created_histograms_[0]->Add(0);
@@ -524,7 +524,8 @@ TEST_P(FileMetricsProviderTest, AccessDirectory) {
                          allocator, base_time);
   WriteMetricsFileAtTime(metrics_files.GetPath().AppendASCII("_bar.pma"),
                          allocator, base_time);
-  // Histogram names must be 2 characters (see HistogramFlattenerDeltaRecorder).
+  // Histogram names must be 2 characters (see
+  // DeltaRecordingHistogramSnapshotManager).
   histogram = base::Histogram::FactoryGet("h1", 1, 100, 10, 0);
   histogram->Add(1);
   WriteMetricsFileAtTime(metrics_files.GetPath().AppendASCII("a1.pma"),
@@ -668,7 +669,7 @@ TEST_P(FileMetricsProviderTest, AccessTimeLimitedDirectory) {
   base::HistogramBase* histogram;
 
   // Create one old file and one new file. Histogram names must be 2 characters
-  // (see HistogramFlattenerDeltaRecorder).
+  // (see DeltaRecordingHistogramSnapshotManager).
   base::ScopedTempDir metrics_files;
   EXPECT_TRUE(metrics_files.CreateUniqueTempDir());
   histogram = base::Histogram::FactoryGet("h1", 1, 100, 10, 0);
@@ -716,7 +717,7 @@ TEST_P(FileMetricsProviderTest, AccessCountLimitedDirectory) {
   base::HistogramBase* histogram;
 
   // Create one old file and one new file. Histogram names must be 2 characters
-  // (see HistogramFlattenerDeltaRecorder).
+  // (see DeltaRecordingHistogramSnapshotManager).
   base::ScopedTempDir metrics_files;
   EXPECT_TRUE(metrics_files.CreateUniqueTempDir());
   histogram = base::Histogram::FactoryGet("h1", 1, 100, 10, 0);
@@ -770,7 +771,7 @@ TEST_P(FileMetricsProviderTest, AccessSizeLimitedDirectory) {
   base::HistogramBase* histogram;
 
   // Create one old file and one new file. Histogram names must be 2 characters
-  // (see HistogramFlattenerDeltaRecorder).
+  // (see DeltaRecordingHistogramSnapshotManager).
   base::ScopedTempDir metrics_files;
   EXPECT_TRUE(metrics_files.CreateUniqueTempDir());
   histogram = base::Histogram::FactoryGet("h1", 1, 100, 10, 0);
@@ -824,7 +825,8 @@ TEST_P(FileMetricsProviderTest, AccessFilteredDirectory) {
   // ensure that each file has a later timestamp on disk than the previous one.
   base::ScopedTempDir metrics_files;
   EXPECT_TRUE(metrics_files.CreateUniqueTempDir());
-  // Histogram names must be 2 characters (see HistogramFlattenerDeltaRecorder).
+  // Histogram names must be 2 characters (see
+  // DeltaRecordingHistogramSnapshotManager).
   histogram = base::Histogram::FactoryGet("h1", 1, 100, 10, 0);
   histogram->Add(1);
   WriteMetricsFileAtTime(metrics_files.GetPath().AppendASCII("a1.pma"),
@@ -1201,7 +1203,8 @@ TEST_P(FileMetricsProviderTest,
 TEST_P(FileMetricsProviderTest, IndependentLogContainsUmaHistograms) {
   ASSERT_FALSE(PathExists(metrics_file()));
   // Create a metrics file with 2 UMA histograms and 2 non-UMA histograms.
-  // Histogram names must be 2 characters (see HistogramFlattenerDeltaRecorder).
+  // Histogram names must be 2 characters (see
+  // DeltaRecordingHistogramSnapshotManager).
   base::GlobalHistogramAllocator::CreateWithLocalMemory(
       create_large_files_ ? kLargeFileSize : kSmallFileSize, 0, kMetricsName);
   base::HistogramBase* h0 = base::SparseHistogram::FactoryGet(
