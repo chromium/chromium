@@ -138,8 +138,10 @@ void ContentSettingsManagerImpl::AllowStorageAccess(
       content::RenderFrameHost::FromFrameToken(
           content::GlobalRenderFrameHostToken(render_process_id_, frame_token));
   if (!render_frame_host) {
-    mojo::ReportBadMessage("Invalid frame_token.");
-    // mojo complains if we don't run the callback.
+    // Ideally this would never happen and we would kill the renderer reporting
+    // a mojo bad message here. Unfortunately, this does happen, because the
+    // renderer calls this method also from workers with the cached parent
+    // document frame_token. If this happens, we just return false here.
     std::move(callback).Run(false);
     return;
   }
