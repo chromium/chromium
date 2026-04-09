@@ -20,6 +20,7 @@ import("//net/features.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//services/screen_ai/buildflags/features.gni")
+import("//services/webnn/public/webnn_features.gni")
 import("//ui/base/ui_features.gni")
 import("//ui/webui/webui_features.gni")
 
@@ -109,4 +110,5 @@ chrome_grit_defines = [
   "optimize_webui=$optimize_webui",
   "chrome_root_store_cert_management_ui=$chrome_root_store_cert_management_ui",
   "use_nss_certs=$use_nss_certs",
+  "webnn_enable_graph_dump=$webnn_enable_graph_dump",
 ]

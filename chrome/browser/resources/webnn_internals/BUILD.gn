@@ -12,8 +12,6 @@ build_webui("build") {
 
   static_files = [ "webnn_internals.html" ]
 
-  preprocessor_defines = [ "webnn_enable_graph_dump=$webnn_enable_graph_dump" ]
-
   ts_files = [
     "app.html.ts",
     "app.ts",
