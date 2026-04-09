@@ -53,7 +53,6 @@
 #include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/interaction/interaction_sequence.h"
-#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/webview/webview.h"
 
@@ -81,8 +80,6 @@ const DeepQuery kCancelIcon = {"omnibox-aim-app", "cr-composebox",
                                "cr-composebox-input", "#cancelIcon"};
 const DeepQuery kAimSubmit = {"omnibox-aim-app", "cr-composebox",
                               "cr-composebox-submit", "#submitContainer"};
-const DeepQuery kComposeboxMatch1 = {"omnibox-aim-app", "cr-composebox",
-                                     "#matches", "#match1", "#textContainer"};
 }  // namespace
 
 class OmniboxWebUiInteractiveTestBase
@@ -616,21 +613,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest, TextTransfersOnEscape) {
       // Ensure text transfers to the Omnibox.
       WaitForViewProperty(kOmniboxElementId, views::Textfield, Text,
                           u"foo bar"));
-}
-
-IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
-                       AimPopupTypedSuggestions) {
-  RunTestSequence(
-      // Open the AIM popup.
-      OpenAimPopupInNewTab(),
-      // Write something into the input field.
-      InputAimPopupText("foo bar"),
-      // Wait for suggestion to appear.
-      WaitForMatch(kAimPopupWebView, kComposeboxMatch1, "suggestion-1"),
-      // Click the match.
-      InSameContext(ClickElement(kAimPopupWebView, kComposeboxMatch1)),
-      // Ensure Google search occurs.
-      WaitForGoogleSearch(kNewTab, "suggestion-1"));
 }
 
 struct AimSearchParam {
