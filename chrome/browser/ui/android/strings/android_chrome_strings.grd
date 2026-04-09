@@ -6209,6 +6209,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_IPH_GESTURE_USER_EDUCATION_TAP_TO_DISMISS" desc="The in-product-help message to notify users how to dismiss.">
         Tap to dismiss
       </message>
+      <message name="IDS_EXTENSIONS_MENU_MANAGE_TOOLBAR_IPH" desc="IPH message pointing to the extension puzzle piece shown after a user installs their first extension explaining they can manage their extensions in the toolbar.">
+        Manage your extensions in the toolbar
+      </message>
 
       <!-- Search Widget strings -->
       <message name="IDS_SEARCH_WIDGET_DEFAULT" desc="Default text for the search widget">
@@ -7779,9 +7782,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
     <!-- Glic strings -->
       <message name="IDS_GLIC_ACTOR_TASK_IN_PROGRESS" desc="Snackbar message shown when a Glic actor task is still in progress.">
         Your task is still in progress
-      </message>
-      <message name="IDS_EXTENSIONS_MENU_MANAGE_IPH" desc="IPH message pointing to the extension puzzle piece shown after a user installs their first extension explaining they can manage their extensions in the toolbar.">
-        Manage your extensions in the toolbar
       </message>
 </messages>
   </release>

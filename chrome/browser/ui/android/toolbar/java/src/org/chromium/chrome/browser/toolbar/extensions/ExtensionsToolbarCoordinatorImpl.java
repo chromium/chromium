@@ -271,8 +271,8 @@ public class ExtensionsToolbarCoordinatorImpl implements ExtensionsToolbarCoordi
                 new IphCommandBuilder(
                                 anchorView.getContext().getResources(),
                                 FeatureConstants.IPH_EXTENSIONS_MANAGE_TOOLBAR_FEATURE,
-                                R.string.extensions_menu_manage_iph,
-                                R.string.extensions_menu_manage_iph)
+                                R.string.extensions_menu_manage_toolbar_iph,
+                                R.string.extensions_menu_manage_toolbar_iph)
                         .setAnchorView(anchorView)
                         .setPreferredHorizontalOrientation(
                                 HorizontalOrientation.MAX_AVAILABLE_SPACE)
