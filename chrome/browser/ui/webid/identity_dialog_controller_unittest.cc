@@ -180,7 +180,7 @@ class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
         /*domain_hints=*/std::vector<std::string>(),
         /*labels=*/std::vector<std::string>(),
         /*idp_claimed_login_state=*/
-        content::IdentityRequestAccount::LoginState::kSignUp,
+        content::IdentityRequestAccount::LoginState::kSignIn,
         /*browser_trusted_login_state=*/
         content::IdentityRequestAccount::LoginState::kSignUp)};
   }
@@ -362,10 +362,8 @@ TEST_F(IdentityDialogControllerTest, ActorTaskSuppressesUi) {
   controller->SetAccountSelectionViewForTesting(std::move(mock_view));
   controller->SetActingTaskIdForTesting(actor::TaskId::FromUnsafeValue(1));
 
-  // 2. Even if there is an active task, ShowLoadingDialog should be called.
-  // The visibility control happens inside the real view implementation,
-  // or via the SetCanShowWidget(false) call we just verified.
-  EXPECT_CALL(*view_ptr, ShowLoadingDialog).WillOnce(testing::Return(true));
+  // 2. If there is an active task, ShowLoadingDialog should NOT be called.
+  EXPECT_CALL(*view_ptr, ShowLoadingDialog).Times(0);
 
   EXPECT_TRUE(controller->ShowLoadingDialog(
       content::RelyingPartyData(kTopFrameEtldPlusOne, u""), kIdpEtldPlusOne,
@@ -978,8 +976,9 @@ TEST_F(IdentityDialogControllerTest, ActorLoginContinuationAndSuccess) {
 TEST_F(IdentityDialogControllerTest, ActorLoginContinuationAndFailure) {
   std::unique_ptr<IdentityDialogController> controller =
       std::make_unique<IdentityDialogController>(web_contents());
-  controller->SetAccountSelectionViewForTesting(
-      std::make_unique<MockAccountSelectionView>());
+  auto mock_view = std::make_unique<MockAccountSelectionView>();
+  MockAccountSelectionView* mock_view_ptr = mock_view.get();
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
 
   GURL idp_url("https://idp.example");
   url::Origin idp_origin = url::Origin::Create(idp_url);
@@ -996,6 +995,10 @@ TEST_F(IdentityDialogControllerTest, ActorLoginContinuationAndFailure) {
 
     content::webid::FederatedEmbedderLoginRequest::Set(
         web_contents(), idp_origin, account_id, result_callback.Get());
+
+    // Should STILL show UI.
+    EXPECT_CALL(*mock_view_ptr, ShowModalDialog)
+        .WillOnce(testing::Return(nullptr));
 
     controller->ShowModalDialog(GURL("https://idp.example/login"),
                                 blink::mojom::RpMode::kActive,
@@ -1024,7 +1027,11 @@ TEST_F(IdentityDialogControllerTest, EmbedderNotifiedOfContinuation) {
       std::make_unique<IdentityDialogController>(web_contents());
   auto mock_view = std::make_unique<MockAccountSelectionView>();
   MockAccountSelectionView* mock_view_ptr = mock_view.get();
+
+  // 1. Set task ID. Should call SetCanShowWidget(false).
+  EXPECT_CALL(*mock_view_ptr, SetCanShowWidget(false));
   controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+  controller->SetActingTaskIdForTesting(actor::TaskId::FromUnsafeValue(1));
 
   GURL idp_url("https://idp.example");
   url::Origin idp_origin = url::Origin::Create(idp_url);
@@ -1033,7 +1040,7 @@ TEST_F(IdentityDialogControllerTest, EmbedderNotifiedOfContinuation) {
   accounts_ = CreateAccount();
   IdentityProviderDataPtr idp_data = CreateIdentityProviderData(accounts_);
 
-  // 1. ShowFailureDialog notifies kAccountNotLoggedIn.
+  // 2. ShowFailureDialog notifies kAccountNotLoggedIn.
   {
     base::MockCallback<
         base::RepeatingCallback<void(content::webid::FederatedLoginResult)>>
@@ -1053,7 +1060,7 @@ TEST_F(IdentityDialogControllerTest, EmbedderNotifiedOfContinuation) {
         base::DoNothing());
   }
 
-  // 2. ShowErrorDialog notifies kIdpReturnedError.
+  // 3. ShowErrorDialog notifies kIdpReturnedError.
   {
     base::MockCallback<
         base::RepeatingCallback<void(content::webid::FederatedLoginResult)>>
@@ -1064,8 +1071,9 @@ TEST_F(IdentityDialogControllerTest, EmbedderNotifiedOfContinuation) {
     content::webid::FederatedEmbedderLoginRequest::Set(
         web_contents(), idp_origin, account_id, callback.Get());
 
-    EXPECT_CALL(*mock_view_ptr, ShowErrorDialog)
-        .WillOnce(testing::Return(true));
+    // ShowErrorDialog not triggered in active mode when there is an embedder
+    // login request.
+    EXPECT_CALL(*mock_view_ptr, ShowErrorDialog).Times(0);
     controller->ShowErrorDialog(
         content::RelyingPartyData(kTopFrameEtldPlusOne, u""), kIdpEtldPlusOne,
         blink::mojom::RpContext::kSignIn, blink::mojom::RpMode::kActive,
@@ -1073,7 +1081,7 @@ TEST_F(IdentityDialogControllerTest, EmbedderNotifiedOfContinuation) {
         base::DoNothing());
   }
 
-  // 3. ShowLoadingDialog does NOT notify on success.
+  // 4. ShowLoadingDialog does NOT notify on success.
   {
     base::MockCallback<
         base::RepeatingCallback<void(content::webid::FederatedLoginResult)>>
@@ -1082,15 +1090,16 @@ TEST_F(IdentityDialogControllerTest, EmbedderNotifiedOfContinuation) {
     content::webid::FederatedEmbedderLoginRequest::Set(
         web_contents(), idp_origin, account_id, callback.Get());
 
-    EXPECT_CALL(*mock_view_ptr, ShowLoadingDialog)
-        .WillOnce(testing::Return(true));
+    // ShowLoadingDialog not triggered in active mode when there is an embedder
+    // login request.
+    EXPECT_CALL(*mock_view_ptr, ShowLoadingDialog).Times(0);
     controller->ShowLoadingDialog(
         content::RelyingPartyData(kTopFrameEtldPlusOne, u""), kIdpEtldPlusOne,
         blink::mojom::RpContext::kSignIn, blink::mojom::RpMode::kActive,
         base::DoNothing());
   }
 
-  // 4. ShowVerifyingDialog does NOT notify on success.
+  // 5. ShowVerifyingDialog does NOT notify on success.
   {
     base::MockCallback<
         base::RepeatingCallback<void(content::webid::FederatedLoginResult)>>
@@ -1099,8 +1108,9 @@ TEST_F(IdentityDialogControllerTest, EmbedderNotifiedOfContinuation) {
     content::webid::FederatedEmbedderLoginRequest::Set(
         web_contents(), idp_origin, account_id, callback.Get());
 
-    EXPECT_CALL(*mock_view_ptr, ShowVerifyingDialog)
-        .WillOnce(testing::Return(true));
+    // ShowVerifyingDialog not triggered in active mode when there is an
+    // embedder login request.
+    EXPECT_CALL(*mock_view_ptr, ShowVerifyingDialog).Times(0);
     controller->ShowVerifyingDialog(
         content::RelyingPartyData(kTopFrameEtldPlusOne, u""), idp_data,
         accounts_[0], content::IdentityRequestAccount::SignInMode::kExplicit,
@@ -1147,4 +1157,154 @@ TEST_F(IdentityDialogControllerTestWithOptimizationDisabled, NoCrash) {
   Accept(manager);
 
   EXPECT_FALSE(prompt_factory->is_visible());
+}
+
+TEST_F(IdentityDialogControllerTest,
+       PassiveAccountSelectionWithEmbedderLoginRequest) {
+  std::unique_ptr<IdentityDialogController> controller =
+      std::make_unique<IdentityDialogController>(web_contents());
+  auto mock_view = std::make_unique<MockAccountSelectionView>();
+  MockAccountSelectionView* mock_view_ptr = mock_view.get();
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+
+  GURL idp_url("https://idp.example");
+  url::Origin idp_origin = url::Origin::Create(idp_url);
+  content::webid::FederatedEmbedderLoginRequest::Set(
+      web_contents(), idp_origin, kAccountId, base::DoNothing());
+
+  accounts_ = CreateAccount();
+  IdentityProviderDataPtr idp_data = CreateIdentityProviderData(accounts_);
+  idp_data->idp_metadata.config_url = idp_url;
+
+  // Should auto select and not show UI.
+  EXPECT_CALL(*mock_view_ptr, Show).Times(0);
+
+  base::MockCallback<AccountSelectionCallback> on_selected;
+  EXPECT_CALL(on_selected, Run(idp_url, kAccountId, true)).Times(1);
+
+  EXPECT_TRUE(controller->ShowAccountsDialog(
+      content::RelyingPartyData(kTopFrameEtldPlusOne,
+                                /*iframe_for_display=*/u""),
+      {idp_data}, accounts_, /*filtered_accounts=*/{},
+      blink::mojom::RpMode::kPassive, on_selected.Get(),
+      /*on_add_account=*/base::DoNothing(),
+      /*dismiss_callback=*/base::DoNothing(),
+      /*accounts_displayed_callback=*/base::DoNothing()));
+}
+
+TEST_F(IdentityDialogControllerTest, ActiveModeGuardedByActorTask) {
+  std::unique_ptr<IdentityDialogController> controller =
+      std::make_unique<IdentityDialogController>(web_contents());
+  auto mock_view = std::make_unique<MockAccountSelectionView>();
+  MockAccountSelectionView* mock_view_ptr = mock_view.get();
+
+  // 1. Set task ID. Should call SetCanShowWidget(false).
+  EXPECT_CALL(*mock_view_ptr, SetCanShowWidget(false));
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+  controller->SetActingTaskIdForTesting(actor::TaskId::FromUnsafeValue(1));
+
+  accounts_ = CreateAccount();
+  IdentityProviderDataPtr idp_data = CreateIdentityProviderData(accounts_);
+
+  // 2. ShowAccountsDialog should NOT show UI and return false in active mode.
+  EXPECT_CALL(*mock_view_ptr, Show).Times(0);
+  base::MockCallback<AccountSelectionCallback> on_selected;
+  EXPECT_CALL(on_selected, Run).Times(0);
+
+  EXPECT_FALSE(controller->ShowAccountsDialog(
+      content::RelyingPartyData(kTopFrameEtldPlusOne, u""), {idp_data},
+      accounts_, {}, blink::mojom::RpMode::kActive, on_selected.Get(),
+      base::DoNothing(), base::DoNothing(), base::DoNothing()));
+
+  // 3. ShowVerifyingDialog should NOT show UI and return true in active mode.
+  EXPECT_CALL(*mock_view_ptr, ShowVerifyingDialog).Times(0);
+  EXPECT_TRUE(controller->ShowVerifyingDialog(
+      content::RelyingPartyData(kTopFrameEtldPlusOne, u""), idp_data,
+      accounts_[0], content::IdentityRequestAccount::SignInMode::kExplicit,
+      blink::mojom::RpMode::kActive, base::DoNothing()));
+}
+
+TEST_F(IdentityDialogControllerTest, ShowModalDialogNotGuardedByActorTask) {
+  std::unique_ptr<IdentityDialogController> controller =
+      std::make_unique<IdentityDialogController>(web_contents());
+  auto mock_view = std::make_unique<MockAccountSelectionView>();
+  MockAccountSelectionView* mock_view_ptr = mock_view.get();
+
+  // 1. Set task ID. Should call SetCanShowWidget(false).
+  EXPECT_CALL(*mock_view_ptr, SetCanShowWidget(false));
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+  controller->SetActingTaskIdForTesting(actor::TaskId::FromUnsafeValue(1));
+
+  // 2. Should STILL show modal UI.
+  EXPECT_CALL(*mock_view_ptr, ShowModalDialog)
+      .WillOnce(testing::Return(nullptr));
+
+  controller->ShowModalDialog(GURL("https://idp.example/login"),
+                              blink::mojom::RpMode::kActive, base::DoNothing());
+}
+
+TEST_F(IdentityDialogControllerTest, PassiveModeNotGuardedByActorTask) {
+  std::unique_ptr<IdentityDialogController> controller =
+      std::make_unique<IdentityDialogController>(web_contents());
+  auto mock_view = std::make_unique<MockAccountSelectionView>();
+  MockAccountSelectionView* mock_view_ptr = mock_view.get();
+
+  // 1. Set task ID. Should call SetCanShowWidget(false).
+  EXPECT_CALL(*mock_view_ptr, SetCanShowWidget(false));
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+  controller->SetActingTaskIdForTesting(actor::TaskId::FromUnsafeValue(1));
+
+  accounts_ = CreateAccount();
+  IdentityProviderDataPtr idp_data = CreateIdentityProviderData(accounts_);
+
+  // 2. ShowAccountsDialog should STILL show UI in passive mode.
+  EXPECT_CALL(*mock_view_ptr, Show).WillOnce(testing::Return(true));
+  base::MockCallback<AccountSelectionCallback> on_selected;
+  EXPECT_CALL(on_selected, Run).Times(0);
+
+  EXPECT_TRUE(controller->ShowAccountsDialog(
+      content::RelyingPartyData(kTopFrameEtldPlusOne, u""), {idp_data},
+      accounts_, {}, blink::mojom::RpMode::kPassive, on_selected.Get(),
+      base::DoNothing(), base::DoNothing(), base::DoNothing()));
+
+  // 3. ShowVerifyingDialog should STILL show UI in passive mode.
+  EXPECT_CALL(*mock_view_ptr, ShowVerifyingDialog)
+      .WillOnce(testing::Return(true));
+  EXPECT_TRUE(controller->ShowVerifyingDialog(
+      content::RelyingPartyData(kTopFrameEtldPlusOne, u""), idp_data,
+      accounts_[0], content::IdentityRequestAccount::SignInMode::kExplicit,
+      blink::mojom::RpMode::kPassive, base::DoNothing()));
+}
+
+TEST_F(IdentityDialogControllerTest, ActiveModeDismissedWhenActorStopsActing) {
+  std::unique_ptr<IdentityDialogController> controller =
+      std::make_unique<IdentityDialogController>(web_contents());
+  auto mock_view = std::make_unique<MockAccountSelectionView>();
+  MockAccountSelectionView* mock_view_ptr = mock_view.get();
+
+  // 1. Simulate an active actor task.
+  EXPECT_CALL(*mock_view_ptr, SetCanShowWidget(false));
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+  controller->SetActingTaskIdForTesting(actor::TaskId::FromUnsafeValue(1));
+
+  accounts_ = CreateAccount();
+  IdentityProviderDataPtr idp_data = CreateIdentityProviderData(accounts_);
+
+  base::MockCallback<DismissCallback> dismiss_callback;
+  // 2. Call ShowAccountsDialog in active mode while task is active.
+  // It should return false and not show any UI.
+  EXPECT_CALL(*mock_view_ptr, Show).Times(0);
+  EXPECT_FALSE(controller->ShowAccountsDialog(
+      content::RelyingPartyData(kTopFrameEtldPlusOne, u""), {idp_data},
+      accounts_, {}, blink::mojom::RpMode::kActive, base::DoNothing(),
+      base::DoNothing(), dismiss_callback.Get(), base::DoNothing()));
+
+  // 3. Simulate the actor task finishing.
+  // This should trigger the dismiss callback because we are in active mode
+  // and we previously suppressed the UI.
+  EXPECT_CALL(*mock_view_ptr, SetCanShowWidget(true));
+  EXPECT_CALL(dismiss_callback,
+              Run(IdentityDialogController::DismissReason::kOther))
+      .Times(1);
+  controller->SetActingTaskIdForTesting(actor::TaskId());
 }
