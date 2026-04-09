@@ -6,6 +6,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "base/timer/timer.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
@@ -47,9 +48,9 @@
 namespace {
 
 // Time to start transition in seconds.
-const int kStartExpandTransitionTimeInSeconds = 2;
+constexpr base::TimeDelta kStartExpandTransitionTime = base::Seconds(2);
 // Time to start the collapse transition in seconds.
-const int kStartCollapseTransitionTimeInSeconds = 5;
+constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
 }  // anonymous namespace
 
 @interface LocationBarBadgeMediator () <ContextualPanelTabHelperObserving,
@@ -373,8 +374,7 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
 - (void)startPromoTimer:(LocationBarBadgeConfiguration*)badgeConfig {
   __weak LocationBarBadgeMediator* weakSelf = self;
   _promoStartTimer = std::make_unique<base::OneShotTimer>();
-  _promoStartTimer->Start(FROM_HERE,
-                          base::Seconds(kStartExpandTransitionTimeInSeconds),
+  _promoStartTimer->Start(FROM_HERE, kStartExpandTransitionTime,
                           base::BindOnce(^{
                             [weakSelf setupAndExpandChip:badgeConfig];
                           }));
@@ -384,8 +384,7 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
 - (void)startEndPromoTimer {
   __weak LocationBarBadgeMediator* weakSelf = self;
   _promoEndTimer = std::make_unique<base::OneShotTimer>();
-  _promoEndTimer->Start(FROM_HERE,
-                        base::Seconds(kStartCollapseTransitionTimeInSeconds),
+  _promoEndTimer->Start(FROM_HERE, kStartCollapseTransitionTime,
                         base::BindOnce(^{
                           [weakSelf cleanupAndTransitionToDefaultBadgeState];
                         }));
@@ -395,8 +394,7 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
 - (void)startIPHTimer:(LocationBarBadgeConfiguration*)badgeConfig {
   __weak LocationBarBadgeMediator* weakSelf = self;
   _promoStartTimer = std::make_unique<base::OneShotTimer>();
-  _promoStartTimer->Start(FROM_HERE,
-                          base::Seconds(kStartExpandTransitionTimeInSeconds),
+  _promoStartTimer->Start(FROM_HERE, kStartExpandTransitionTime,
                           base::BindOnce(^{
                             [weakSelf setupAndShowIPH:badgeConfig];
                           }));
