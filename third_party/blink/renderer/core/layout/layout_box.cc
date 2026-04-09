@@ -664,11 +664,10 @@ void LayoutBox::StyleWillChange(StyleDifference diff,
       }
       if (will_become_inflow)
         SetIsInLayoutNGInlineFormattingContext(false);
-
-      style_change_context.did_prevent_spanner_descendants =
-          IsInsideMulticol() && !IsSelfValidColumnSpanner() &&
-          ShouldPreventColumnSpannerDescendants();
     }
+    style_change_context.did_prevent_spanner_descendants =
+        IsInsideMulticol() && ShouldPreventColumnSpannerDescendants();
+
     // FIXME: This branch runs when !oldStyle, which means that layout was never
     // called so what's the point in invalidating the whole view that we never
     // painted?
@@ -769,11 +768,17 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
       SetNeedsPaintPropertyUpdate();
     }
 
-    if (style_change_context.did_prevent_spanner_descendants &&
-        !ShouldPreventColumnSpannerDescendants()) {
-      // This object used to prevent column spanner descendants, but that is no
-      // longer the case. Look for new spanners inside.
-      MarkNewColumnSpannersForLayoutIfNeeded();
+    bool should_prevent_now =
+        IsInsideMulticol() && ShouldPreventColumnSpannerDescendants();
+    if (style_change_context.did_prevent_spanner_descendants !=
+        should_prevent_now) {
+      // Certain styles (transforms, formatting context roots, etc.) prevent
+      // column spanners inside. If such styles have now been set, we need to
+      // turn now-invalid spanners into regular block-level elements that
+      // participate in the fragmentation context. If such styles have now been
+      // removed, we need to turn regular block-level elements into now-valid
+      // spanners. See https://drafts.csswg.org/css-multicol-1/#spanning-columns
+      MarkColumnSpannerCandidatesForLayoutIfNeeded();
     }
   }
 
@@ -2968,6 +2973,12 @@ bool LayoutBox::DoesAncestryAllowColumnSpanner(
 
 bool LayoutBox::ShouldPreventColumnSpannerDescendants() const {
   NOT_DESTROYED();
+
+  if (IsSelfValidColumnSpanner()) {
+    // No spanners inside spanners in the same multicol context.
+    return true;
+  }
+
   const auto* block_flow = DynamicTo<LayoutBlockFlow>(this);
   if (!block_flow) {
     // Needs to be in a block-flow container, and not e.g. a table.
@@ -2989,17 +3000,15 @@ bool LayoutBox::ShouldPreventColumnSpannerDescendants() const {
   return false;
 }
 
-void LayoutBox::MarkNewColumnSpannersForLayoutIfNeeded() {
+void LayoutBox::MarkColumnSpannerCandidatesForLayoutIfNeeded() {
   NOT_DESTROYED();
 
   // This function examines relevant descendants, and its ancestry, but not
-  // itself. It assumes that it itself doesn't prevent descendants from becoming
-  // column spanners.
-  DCHECK(!ShouldPreventColumnSpannerDescendants());
-  DCHECK(!IsSelfValidColumnSpanner());
+  // itself. It assumes that it has just changed whether it allows spanners
+  // inside or not.
   DCHECK(IsInsideMulticol());
 
-  if (IsMulticolContainer()) {
+  if (IsMulticolContainer() || IsSelfValidColumnSpanner()) {
     return;
   }
 

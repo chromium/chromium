@@ -746,12 +746,14 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // not the box is inside an ancestry that allows spanners.
   bool ShouldPreventColumnSpannerDescendants() const;
 
-  // Mark (any) new column spanner descendants for layout. Descendants with
-  // `column-span:all` may have become valid spanners, because this box no
-  // longer prevents them from becoming that (e.g. if a box used to establish a
-  // transform, but not anymore (transforms disqualify descendants from becoming
-  // spanners).
-  void MarkNewColumnSpannersForLayoutIfNeeded();
+  // Mark (any) column spanner candidate descendants for layout. Descendants
+  // with `column-span:all` may have become valid spanners, because this box no
+  // longer prevents them from becoming a spanner (e.g. if a box used to
+  // establish a transform, but not anymore (transforms disqualify descendants
+  // from becoming spanners). Similarly, descendants with `column-span:all` that
+  // were previously valid spanners, may now have become invalid, because this
+  // box now e.g. sets a transform.
+  void MarkColumnSpannerCandidatesForLayoutIfNeeded();
 
   bool MapToVisualRectInAncestorSpaceInternal(
       const LayoutBoxModelObject* ancestor,
