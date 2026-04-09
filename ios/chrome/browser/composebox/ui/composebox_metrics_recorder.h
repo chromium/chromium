@@ -62,7 +62,8 @@ enum class ComposeboxDragAndDropType {
   kTab = 2,
   kPDF = 3,
   kUnknown = 4,
-  kMaxValue = kUnknown,
+  kRawFile = 5,
+  kMaxValue = kRawFile,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:ComposeboxDragAndDropType)
 

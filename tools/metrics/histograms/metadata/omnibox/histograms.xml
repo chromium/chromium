@@ -87,12 +87,13 @@ chromium-metrics-reviews@google.com.
   <variant name="" summary="All drag and drop types"/>
   <variant name=".Image" summary="Image drag and drop"/>
   <variant name=".PDF" summary="PDF drag and drop"/>
+  <variant name=".RawFile" summary="Raw file drag and drop"/>
   <variant name=".Tab" summary="Tab drag and drop"/>
   <variant name=".Text" summary="Text drag and drop"/>
   <variant name=".Unknown" summary="Unknown drag and drop type"/>
 </variants>
 
-<!-- LINT.ThenChange(ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h:ComposeboxDragAndDropType, //tools/metrics/histograms/metadata/omnibox/enums.xml:ComposeboxDragAndDropType) -->
+<!-- LINT.ThenChange(//ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h:ComposeboxDragAndDropType, //tools/metrics/histograms/metadata/omnibox/enums.xml:ComposeboxDragAndDropType) -->
 
 <variants name="DsePreloadTriggerType">
   <variant name=".OnPress" summary="on-press trigger"/>

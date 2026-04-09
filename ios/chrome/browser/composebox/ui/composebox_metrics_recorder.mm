@@ -44,6 +44,8 @@ std::string GetStringForDragAndDropType(ComposeboxDragAndDropType type) {
       return ".Tab";
     case ComposeboxDragAndDropType::kPDF:
       return ".PDF";
+    case ComposeboxDragAndDropType::kRawFile:
+      return ".RawFile";
     case ComposeboxDragAndDropType::kUnknown:
       return ".Unknown";
   }
