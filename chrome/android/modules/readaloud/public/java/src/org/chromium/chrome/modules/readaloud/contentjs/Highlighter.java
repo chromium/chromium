@@ -54,11 +54,6 @@ public interface Highlighter {
             mHighlightBackgroundColorHex = String.format("#%06X", (0x00FFFFFF & color)) + "40";
         }
 
-        // TODO: remove
-        public Config() {
-            mHighlightBackgroundColorHex = "#000000FF";
-        }
-
         public void setMode(@Mode int mode) {
             mMode = mode;
         }
