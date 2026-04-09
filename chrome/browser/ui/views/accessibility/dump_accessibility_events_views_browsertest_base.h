@@ -123,16 +123,16 @@ class DumpAccessibilityEventsViewsTestBase
 
   virtual void OnDiffFailed();
 
+  // Waits for any pending WidgetAXManager serialization to complete.
+  // Use this instead of RunUntilIdle(), which is brittle because it
+  // guesses async timing rather than waiting for a specific signal.
+  void WaitForPendingSerialization();
+
  private:
   friend class EventRecordingSession;
 
   void SetUpTestWidget();
   void StopRecordingAndCompare(const std::string& test_name);
-
-  // Waits for any pending WidgetAXManager serialization to complete.
-  // Use this instead of RunUntilIdle(), which is brittle because it
-  // guesses async timing rather than waiting for a specific signal.
-  void WaitForPendingSerialization();
 
   base::FilePath GetExpectationFilePath(const std::string& test_name) const;
   std::vector<std::string> CollectEventLogs();
