@@ -725,7 +725,8 @@ std::optional<ui::Cursor> EventHandler::SelectCursor(
                 PhysicalOffset::FromPointFFloor(scaled_hot_spot),
             PhysicalSize::FromSizeFFloor(scaled_size));
 
-        PhysicalRect frame_rect(page->GetVisualViewport().VisibleContentRect());
+        PhysicalRect frame_rect(
+            page->GetVisualViewport().VisibleContentRect(kExcludeScrollbars));
         frame_->ContentLayoutObject()->MapToVisualRectInAncestorSpace(
             nullptr, frame_rect);
 

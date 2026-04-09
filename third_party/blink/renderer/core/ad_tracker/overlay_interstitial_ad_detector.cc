@@ -93,10 +93,11 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(
   started_detection_ = true;
   last_detection_time_ = current_time;
 
-  gfx::Size outermost_main_frame_size = outermost_main_frame->View()
-                                            ->LayoutViewport()
-                                            ->VisibleContentRect()
-                                            .size();
+  gfx::Size outermost_main_frame_size =
+      outermost_main_frame->View()
+          ->LayoutViewport()
+          ->VisibleContentRect(kExcludeScrollbars)
+          .size();
 
   if (outermost_main_frame_size != last_detection_outermost_main_frame_size_) {
     // Reset the candidate when the the viewport size has changed. Changing

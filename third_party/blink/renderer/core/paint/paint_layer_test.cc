@@ -64,7 +64,7 @@ TEST_P(PaintLayerTest, RootLayerScrollBounds) {
             plsa->MaximumScrollOffset());
 
   EXPECT_EQ(gfx::Rect(0, 0, 800 - scrollbarThickness, 600 - scrollbarThickness),
-            plsa->VisibleContentRect());
+            plsa->VisibleContentRect(kExcludeScrollbars));
   EXPECT_EQ(gfx::Rect(0, 0, 800, 600),
             plsa->VisibleContentRect(kIncludeScrollbars));
 }

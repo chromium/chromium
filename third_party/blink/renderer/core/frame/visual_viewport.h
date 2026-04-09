@@ -230,8 +230,7 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   bool UsesCompositedScrolling() const override { return true; }
   cc::AnimationHost* GetCompositorAnimationHost() const override;
   cc::AnimationTimeline* GetCompositorAnimationTimeline() const override;
-  gfx::Rect VisibleContentRect(
-      IncludeScrollbarsInRect = kExcludeScrollbars) const override;
+  gfx::Rect VisibleContentRect(IncludeScrollbarsInRect) const override;
   scoped_refptr<base::SingleThreadTaskRunner> GetTimerTaskRunner()
       const override;
   mojom::blink::ColorScheme UsedColorSchemeScrollbars() const override;

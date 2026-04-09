@@ -925,7 +925,7 @@ bool WebLocalFrameImpl::HasVisibleContent() const {
 
 gfx::Rect WebLocalFrameImpl::VisibleContentRect() const {
   if (LocalFrameView* view = GetFrameView())
-    return view->LayoutViewport()->VisibleContentRect();
+    return view->LayoutViewport()->VisibleContentRect(kExcludeScrollbars);
   return gfx::Rect();
 }
 

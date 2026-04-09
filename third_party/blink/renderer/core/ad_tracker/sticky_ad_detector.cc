@@ -81,10 +81,11 @@ void StickyAdDetector::MaybeFireDetection(LocalFrame* outermost_main_frame) {
 
   TRACE_EVENT0("blink,benchmark", "StickyAdDetector::MaybeFireDetection");
 
-  gfx::Size outermost_main_frame_size = outermost_main_frame->View()
-                                            ->LayoutViewport()
-                                            ->VisibleContentRect()
-                                            .size();
+  gfx::Size outermost_main_frame_size =
+      outermost_main_frame->View()
+          ->LayoutViewport()
+          ->VisibleContentRect(kExcludeScrollbars)
+          .size();
 
   // Hit test the bottom center of the viewport.
   HitTestLocation location(

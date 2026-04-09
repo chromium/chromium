@@ -251,7 +251,8 @@ mojom::blink::AnchorElementMetricsPtr CreateAnchorElementMetrics(
   }
   DCHECK(!root_frame_view->ParentFrameView());
 
-  gfx::Rect viewport = root_frame_view->LayoutViewport()->VisibleContentRect();
+  gfx::Rect viewport =
+      root_frame_view->LayoutViewport()->VisibleContentRect(kExcludeScrollbars);
   if (viewport.IsEmpty()) {
     return metrics;
   }

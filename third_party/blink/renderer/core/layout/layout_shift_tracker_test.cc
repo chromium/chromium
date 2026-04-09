@@ -1154,10 +1154,12 @@ TEST_F(LayoutShiftTrackerTest, ClipByVisualViewport) {
   UpdateAllLifecyclePhasesForTest();
   // The visual viewport.
   EXPECT_EQ(gfx::Rect(0, 100, 200, 500),
-            GetDocument().View()->GetScrollableArea()->VisibleContentRect());
+            GetDocument().View()->GetScrollableArea()->VisibleContentRect(
+                kExcludeScrollbars));
   // The layout viewport .
   EXPECT_EQ(gfx::Rect(0, 0, 800, 600),
-            GetDocument().View()->LayoutViewport()->VisibleContentRect());
+            GetDocument().View()->LayoutViewport()->VisibleContentRect(
+                kExcludeScrollbars));
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
 
   GetElementById("target")->setAttribute(html_names::kStyleAttr,

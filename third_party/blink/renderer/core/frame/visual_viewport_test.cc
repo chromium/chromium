@@ -275,8 +275,9 @@ TEST_P(VisualViewportTest, TestResizeAtFullyScrolledPreservesViewportLocation) {
   ASSERT_EQ(ScrollOffset(200, 1400),
             frame_view.LayoutViewport()->GetScrollOffset());
 
-  gfx::Point expected_location =
-      frame_view.GetScrollableArea()->VisibleContentRect().origin();
+  gfx::Point expected_location = frame_view.GetScrollableArea()
+                                     ->VisibleContentRect(kExcludeScrollbars)
+                                     .origin();
 
   // Shrink the WebView, this should cause both viewports to shrink and
   // WebView should do whatever it needs to do to preserve the visible
@@ -286,16 +287,18 @@ TEST_P(VisualViewportTest, TestResizeAtFullyScrolledPreservesViewportLocation) {
       WebView()->GetBrowserControls().Params());
   UpdateAllLifecyclePhases();
 
-  EXPECT_EQ(expected_location,
-            frame_view.GetScrollableArea()->VisibleContentRect().origin());
+  EXPECT_EQ(expected_location, frame_view.GetScrollableArea()
+                                   ->VisibleContentRect(kExcludeScrollbars)
+                                   .origin());
 
   WebView()->ResizeWithBrowserControls(
       gfx::Size(800, 600), gfx::Size(800, 600),
       WebView()->GetBrowserControls().Params());
   UpdateAllLifecyclePhases();
 
-  EXPECT_EQ(expected_location,
-            frame_view.GetScrollableArea()->VisibleContentRect().origin());
+  EXPECT_EQ(expected_location, frame_view.GetScrollableArea()
+                                   ->VisibleContentRect(kExcludeScrollbars)
+                                   .origin());
 }
 
 // Test that the VisualViewport works as expected in case of a scaled

@@ -332,10 +332,9 @@ class CORE_EXPORT PaintLayerScrollableArea final
   gfx::Vector2d MaximumScrollOffsetInt() const override;
   PhysicalRect LayoutContentRect(
       IncludeScrollbarsInRect = kExcludeScrollbars) const;
-  gfx::Rect VisibleContentRect(
-      IncludeScrollbarsInRect = kExcludeScrollbars) const override;
+  gfx::Rect VisibleContentRect(IncludeScrollbarsInRect) const override;
   PhysicalRect VisibleScrollSnapportRect(
-      IncludeScrollbarsInRect = kExcludeScrollbars) const override;
+      IncludeScrollbarsInRect) const override;
   gfx::Size ContentsSize() const override;
 
   // Similar to |ContentsSize| but snapped considering |paint_offset| which can

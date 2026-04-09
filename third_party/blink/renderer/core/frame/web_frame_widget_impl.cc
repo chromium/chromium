@@ -4185,7 +4185,7 @@ Vector<gfx::Rect> WebFrameWidgetImpl::CalculateVisibleLineBoundsOnScreen() {
   GetLineBounds(bounds_from_blink, editor_node);
 
   gfx::Rect screen = LocalRootImpl()->GetFrameView()->FrameToScreen(
-      GetPage()->GetVisualViewport().VisibleContentRect());
+      GetPage()->GetVisualViewport().VisibleContentRect(kExcludeScrollbars));
   for (auto& quad : bounds_from_blink) {
     gfx::Rect bounding_box = layout_object->GetFrameView()->FrameToScreen(
         gfx::ToRoundedRect(quad.BoundingBox()));

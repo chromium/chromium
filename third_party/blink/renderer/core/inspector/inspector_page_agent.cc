@@ -1651,7 +1651,8 @@ protocol::Response InspectorPageAgent::getLayoutMetrics(
       DocumentUpdateReason::kInspector);
 
   gfx::Rect visible_contents =
-      main_frame->View()->LayoutViewport()->VisibleContentRect();
+      main_frame->View()->LayoutViewport()->VisibleContentRect(
+          kExcludeScrollbars);
   *out_layout_viewport = protocol::Page::LayoutViewport::create()
                              .setPageX(visible_contents.x())
                              .setPageY(visible_contents.y())

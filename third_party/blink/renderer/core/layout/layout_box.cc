@@ -2308,7 +2308,8 @@ bool LayoutBox::IntersectsVisibleViewport() const {
   PhysicalRect rect = VisualOverflowRect();
   MapToVisualRectInAncestorSpace(layout_view, rect);
   return rect.Intersects(PhysicalRect(
-      layout_view->GetFrameView()->GetScrollableArea()->VisibleContentRect()));
+      layout_view->GetFrameView()->GetScrollableArea()->VisibleContentRect(
+          kExcludeScrollbars)));
 }
 
 void LayoutBox::EnsureIsReadyForPaintInvalidation() {

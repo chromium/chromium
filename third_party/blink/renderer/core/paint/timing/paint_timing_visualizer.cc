@@ -96,7 +96,8 @@ void PaintTimingVisualizer::RecordMainFrameViewport(
     return;
   ScrollableArea* scrollable_area = frame_view.GetScrollableArea();
   DCHECK(scrollable_area);
-  gfx::Rect viewport_rect = scrollable_area->VisibleContentRect();
+  gfx::Rect viewport_rect =
+      scrollable_area->VisibleContentRect(kExcludeScrollbars);
 
   FloatClipRect float_clip_visual_rect((gfx::RectF(viewport_rect)));
   gfx::RectF float_visual_rect =

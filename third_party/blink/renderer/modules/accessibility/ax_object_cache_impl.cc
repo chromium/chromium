@@ -3198,7 +3198,8 @@ void AXObjectCacheImpl::FinalizeTree() {
   if (GetAXMode().HasFilterFlags(ui::AXMode::kOnScreenOnly)) {
     LocalFrameView* frame_view = GetDocument().View();
     PhysicalRect viewport_rect(
-        frame_view->GetPage()->GetVisualViewport().VisibleContentRect());
+        frame_view->GetPage()->GetVisualViewport().VisibleContentRect(
+            kExcludeScrollbars));
 
     // We only care about the y-axis content scrolling to determine what will be
     // included. So expand the rectangle to the left and right.

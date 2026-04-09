@@ -99,8 +99,8 @@ void DelegatedInkTrailPresenter::updateInkTrailStartPoint(
   while (layout_view->GetFrame()->OwnerLayoutObject()) {
     PhysicalRect frame_visual_viewport_absolute =
         layout_view->LocalToAbsoluteRect(
-            PhysicalRect(
-                layout_view->GetScrollableArea()->VisibleContentRect()),
+            PhysicalRect(layout_view->GetScrollableArea()->VisibleContentRect(
+                kExcludeScrollbars)),
             kTraverseDocumentBoundaries);
     border_box_rect_absolute.Intersect(frame_visual_viewport_absolute);
 
@@ -108,7 +108,7 @@ void DelegatedInkTrailPresenter::updateInkTrailStartPoint(
   }
 
   border_box_rect_absolute.Intersect(
-      PhysicalRect(visual_viewport.VisibleContentRect()));
+      PhysicalRect(visual_viewport.VisibleContentRect(kExcludeScrollbars)));
 
   gfx::RectF area = gfx::RectF(border_box_rect_absolute);
   area = visual_viewport.RootFrameToViewport(area);

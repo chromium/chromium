@@ -132,7 +132,8 @@ TEST_F(SpatialNavigationTest, RootFramesVisualViewport) {
 
   LocalFrameView* root_frame_view = GetFrame().LocalFrameRoot().View();
   const PhysicalRect roots_visible_doc_rect(
-      root_frame_view->GetScrollableArea()->VisibleContentRect());
+      root_frame_view->GetScrollableArea()->VisibleContentRect(
+          kExcludeScrollbars));
   // Convert the root frame's visible rect from document space -> frame space.
   // For the root frame, frame space == root frame space, obviously.
   PhysicalRect viewport_rect_of_root_frame =

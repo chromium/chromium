@@ -525,7 +525,8 @@ void ComputeScrollerInfo(
   }
 
   const auto scrolling_bounds = scrollable_area->ContentsSize();
-  const auto visible_area = scrollable_area->VisibleContentRect();
+  const auto visible_area =
+      scrollable_area->VisibleContentRect(kExcludeScrollbars);
 
   // If the visible area covers the scrollable area, scrolling this node will be
   // a no-op. Allow 1px of slop due to differences in rounding.

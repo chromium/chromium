@@ -12576,16 +12576,20 @@ TEST_F(WebFrameSimTest, FindInPageSelectNextMatch) {
   frame->EnsureTextFinder().SelectNearestFindMatch(result_rect.CenterPoint(),
                                                    nullptr);
 
-  EXPECT_TRUE(frame_view->GetScrollableArea()->VisibleContentRect().Contains(
-      box1_rect));
+  EXPECT_TRUE(frame_view->GetScrollableArea()
+                  ->VisibleContentRect(kExcludeScrollbars)
+                  .Contains(box1_rect));
   result_rect = web_match_rects[1];
   frame->EnsureTextFinder().SelectNearestFindMatch(result_rect.CenterPoint(),
                                                    nullptr);
 
-  EXPECT_TRUE(
-      frame_view->GetScrollableArea()->VisibleContentRect().Contains(box2_rect))
+  EXPECT_TRUE(frame_view->GetScrollableArea()
+                  ->VisibleContentRect(kExcludeScrollbars)
+                  .Contains(box2_rect))
       << "Box [" << box2_rect.ToString() << "] is not visible in viewport ["
-      << frame_view->GetScrollableArea()->VisibleContentRect().ToString()
+      << frame_view->GetScrollableArea()
+             ->VisibleContentRect(kExcludeScrollbars)
+             .ToString()
       << "]";
 }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -12613,7 +12617,8 @@ TEST_F(WebFrameSimTest, TallBlockRectFindTest) {
   WebView().ZoomToFindInPageRect(span_rect);
 
   ScrollableArea* scrollable_area = frame_view->GetScrollableArea();
-  gfx::Rect viewport_rect(scrollable_area->VisibleContentRect());
+  gfx::Rect viewport_rect(
+      scrollable_area->VisibleContentRect(kExcludeScrollbars));
 
   // Ensure the target is vertically centered by checking that it's in
   // the central 100px band of the viewport. Centering includes an arbitrary
@@ -12773,7 +12778,8 @@ TEST_F(WebFrameSimTest, TestFocusPreventScrollNotScrollElementIntoView) {
   ASSERT_TRUE(input->GetLayoutObject());
   ASSERT_EQ(input, WebView().FocusedElement());
   ASSERT_EQ(ScrollOffset(), area->GetScrollOffset());
-  ASSERT_FALSE(area->VisibleContentRect().Contains(input_rect));
+  ASSERT_FALSE(
+      area->VisibleContentRect(kExcludeScrollbars).Contains(input_rect));
   ASSERT_EQ(WebView().FakePageScaleAnimationPageScaleForTesting(), 0.f);
   // Simulate the keyboard being shown and resizing the widget. Cause a scroll
   // into view after.
@@ -12797,7 +12803,8 @@ TEST_F(WebFrameSimTest, TestFocusPreventScrollNotScrollElementIntoView) {
   ASSERT_TRUE(input->GetLayoutObject());
   ASSERT_EQ(input, WebView().FocusedElement());
   ASSERT_NE(ScrollOffset(), area->GetScrollOffset());
-  ASSERT_TRUE(area->VisibleContentRect().Contains(input_rect));
+  ASSERT_TRUE(
+      area->VisibleContentRect(kExcludeScrollbars).Contains(input_rect));
 }
 
 TEST_F(WebFrameSimTest, TestScrollFocusedEditableElementIntoView) {
@@ -12851,8 +12858,9 @@ TEST_F(WebFrameSimTest, TestScrollFocusedEditableElementIntoView) {
       ScrollOffset(0, 0), mojom::blink::ScrollType::kProgrammatic,
       cc::ScrollSourceType::kNone);
 
-  ASSERT_EQ(gfx::Point(),
-            frame_view->GetScrollableArea()->VisibleContentRect().origin());
+  ASSERT_EQ(gfx::Point(), frame_view->GetScrollableArea()
+                              ->VisibleContentRect(kExcludeScrollbars)
+                              .origin());
 
   WebView()
       .MainFrameImpl()
@@ -12867,8 +12875,9 @@ TEST_F(WebFrameSimTest, TestScrollFocusedEditableElementIntoView) {
                        .OffsetFromOrigin()),
       mojom::blink::ScrollType::kProgrammatic, cc::ScrollSourceType::kNone);
 
-  EXPECT_TRUE(frame_view->GetScrollableArea()->VisibleContentRect().Contains(
-      inputRect));
+  EXPECT_TRUE(frame_view->GetScrollableArea()
+                  ->VisibleContentRect(kExcludeScrollbars)
+                  .Contains(inputRect));
 
   // Reset the testing getters.
   WebView().EnableFakePageScaleAnimationForTesting(true);
@@ -12886,8 +12895,9 @@ TEST_F(WebFrameSimTest, TestScrollFocusedEditableElementIntoView) {
   // Now resize the visual viewport so that the input box is no longer in view
   // (e.g. a keyboard is overlaid).
   WebView().ResizeVisualViewport(gfx::Size(200, 100));
-  ASSERT_FALSE(frame_view->GetScrollableArea()->VisibleContentRect().Contains(
-      inputRect));
+  ASSERT_FALSE(frame_view->GetScrollableArea()
+                   ->VisibleContentRect(kExcludeScrollbars)
+                   .Contains(inputRect));
 
   WebView()
       .MainFrameImpl()
@@ -12899,8 +12909,9 @@ TEST_F(WebFrameSimTest, TestScrollFocusedEditableElementIntoView) {
                        .OffsetFromOrigin()),
       mojom::blink::ScrollType::kProgrammatic, cc::ScrollSourceType::kNone);
 
-  EXPECT_TRUE(frame_view->GetScrollableArea()->VisibleContentRect().Contains(
-      inputRect));
+  EXPECT_TRUE(frame_view->GetScrollableArea()
+                  ->VisibleContentRect(kExcludeScrollbars)
+                  .Contains(inputRect));
   EXPECT_EQ(1, WebView().FakePageScaleAnimationPageScaleForTesting());
 }
 
@@ -12970,10 +12981,12 @@ TEST_F(WebFrameSimTest, TestScrollFocusedEditableInRootScroller) {
   LocalFrameView* frame_view = frame->View();
   gfx::Rect inputRect(200, 700, 100, 20);
   ASSERT_EQ(1, visual_viewport.Scale());
-  ASSERT_EQ(gfx::Point(0, 300),
-            frame_view->GetScrollableArea()->VisibleContentRect().origin());
-  ASSERT_FALSE(frame_view->GetScrollableArea()->VisibleContentRect().Contains(
-      inputRect));
+  ASSERT_EQ(gfx::Point(0, 300), frame_view->GetScrollableArea()
+                                    ->VisibleContentRect(kExcludeScrollbars)
+                                    .origin());
+  ASSERT_FALSE(frame_view->GetScrollableArea()
+                   ->VisibleContentRect(kExcludeScrollbars)
+                   .Contains(inputRect));
 
   WebView()
       .MainFrameImpl()
@@ -12991,8 +13004,9 @@ TEST_F(WebFrameSimTest, TestScrollFocusedEditableInRootScroller) {
       target_offset, mojom::blink::ScrollType::kProgrammatic,
       cc::ScrollSourceType::kNone);
 
-  EXPECT_TRUE(frame_view->GetScrollableArea()->VisibleContentRect().Contains(
-      inputRect));
+  EXPECT_TRUE(frame_view->GetScrollableArea()
+                  ->VisibleContentRect(kExcludeScrollbars)
+                  .Contains(inputRect));
 }
 
 TEST_F(WebFrameSimTest, ScrollFocusedIntoViewClipped) {
@@ -13055,8 +13069,9 @@ TEST_F(WebFrameSimTest, ScrollFocusedIntoViewClipped) {
   LocalFrameView* frame_view = frame->View();
   VisualViewport& visual_viewport = frame->GetPage()->GetVisualViewport();
 
-  ASSERT_EQ(gfx::Point(),
-            frame_view->GetScrollableArea()->VisibleContentRect().origin());
+  ASSERT_EQ(gfx::Point(), frame_view->GetScrollableArea()
+                              ->VisibleContentRect(kExcludeScrollbars)
+                              .origin());
 
   // Simulate the keyboard being shown and resizing the widget. Cause a scroll
   // into view after.
@@ -13216,8 +13231,9 @@ TEST_F(WebFrameSimTest, DoubleTapZoomWhileScrolled) {
         cc::ScrollSourceType::kNone);
 
     EXPECT_FLOAT_EQ(1, visual_viewport.Scale());
-    EXPECT_TRUE(frame_view->GetScrollableArea()->VisibleContentRect().Contains(
-        target_rect_in_document));
+    EXPECT_TRUE(frame_view->GetScrollableArea()
+                    ->VisibleContentRect(kExcludeScrollbars)
+                    .Contains(target_rect_in_document));
   }
 
   // Reset the testing getters.

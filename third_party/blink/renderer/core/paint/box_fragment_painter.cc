@@ -1413,7 +1413,8 @@ void BoxFragmentPainter::PaintCompositeBackgroundAttachmentFixed(
           .Effect());
   const ScrollableArea* layout_viewport = box.GetFrameView()->LayoutViewport();
   DCHECK(layout_viewport);
-  gfx::Rect background_rect(layout_viewport->VisibleContentRect().size());
+  gfx::Rect background_rect(
+      layout_viewport->VisibleContentRect(kExcludeScrollbars).size());
   ScopedPaintChunkProperties fixed_background_properties(
       paint_info.context.GetPaintController(), state, background_client,
       DisplayItem::kFixedAttachmentBackground);

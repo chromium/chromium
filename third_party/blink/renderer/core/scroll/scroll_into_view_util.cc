@@ -652,7 +652,8 @@ ScrollOffset GetScrollOffsetToExpose(
   PhysicalRect scroll_origin_to_expose_rect = expose_rect_no_margin;
   scroll_origin_to_expose_rect.Expand(expose_scroll_margin);
   // Prevent degenerate cases by giving the visible rect a minimum non-0 size.
-  PhysicalRect non_zero_visible_rect = scroll_area.VisibleScrollSnapportRect();
+  PhysicalRect non_zero_visible_rect =
+      scroll_area.VisibleScrollSnapportRect(kExcludeScrollbars);
   ScrollOffset current_scroll_offset = scroll_area.GetScrollOffset();
   LayoutUnit minimum_layout_unit;
   minimum_layout_unit.SetRawValue(1);

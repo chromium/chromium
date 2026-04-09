@@ -540,7 +540,8 @@ void LayoutShiftTracker::NotifyPrePaintFinishedInternal() {
   if (region_.IsEmpty())
     return;
 
-  gfx::Rect viewport = frame_view_->GetScrollableArea()->VisibleContentRect();
+  gfx::Rect viewport =
+      frame_view_->GetScrollableArea()->VisibleContentRect(kExcludeScrollbars);
   if (viewport.IsEmpty())
     return;
 

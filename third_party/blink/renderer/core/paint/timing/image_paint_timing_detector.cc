@@ -448,8 +448,10 @@ uint64_t ImagePaintTimingDetector::ComputeImageRectSize(
     // embedding iframe.
     gfx::Rect viewport_int_rect =
         uses_page_viewport_
-            ? frame_view_->GetPage()->GetVisualViewport().VisibleContentRect()
-            : frame_view_->GetScrollableArea()->VisibleContentRect();
+            ? frame_view_->GetPage()->GetVisualViewport().VisibleContentRect(
+                  kExcludeScrollbars)
+            : frame_view_->GetScrollableArea()->VisibleContentRect(
+                  kExcludeScrollbars);
     gfx::RectF viewport =
         frame_view_->GetPaintTimingDetector().BlinkSpaceToDIPs(
             gfx::RectF(viewport_int_rect));

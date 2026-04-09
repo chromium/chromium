@@ -388,10 +388,13 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
     return ScrollOffset(MaximumScrollOffsetInt());
   }
 
-  virtual gfx::Rect VisibleContentRect(
-      IncludeScrollbarsInRect = kExcludeScrollbars) const = 0;
-  virtual int VisibleHeight() const { return VisibleContentRect().height(); }
-  virtual int VisibleWidth() const { return VisibleContentRect().width(); }
+  virtual gfx::Rect VisibleContentRect(IncludeScrollbarsInRect) const = 0;
+  virtual int VisibleHeight() const {
+    return VisibleContentRect(kExcludeScrollbars).height();
+  }
+  virtual int VisibleWidth() const {
+    return VisibleContentRect(kExcludeScrollbars).width();
+  }
   virtual gfx::Size ContentsSize() const = 0;
 
   // scroll snapport is the area of the scrollport that is used as the alignment
@@ -399,7 +402,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   // the box's scrollport contracted by its scroll-padding.
   // https://drafts.csswg.org/css-scroll-snap-1/#scroll-padding
   virtual PhysicalRect VisibleScrollSnapportRect(
-      IncludeScrollbarsInRect scrollbar_inclusion = kExcludeScrollbars) const {
+      IncludeScrollbarsInRect scrollbar_inclusion) const {
     return PhysicalRect(VisibleContentRect(scrollbar_inclusion));
   }
 

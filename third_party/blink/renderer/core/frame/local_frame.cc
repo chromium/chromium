@@ -2584,7 +2584,10 @@ void LocalFrame::SetViewportIntersectionFromParent(
 gfx::Size LocalFrame::GetOutermostMainFrameSize() const {
   LocalFrame& local_root = LocalFrameRoot();
   return local_root.IsOutermostMainFrame()
-             ? local_root.View()->LayoutViewport()->VisibleContentRect().size()
+             ? local_root.View()
+                   ->LayoutViewport()
+                   ->VisibleContentRect(kExcludeScrollbars)
+                   .size()
              : local_root.intersection_state_.outermost_main_frame_size;
 }
 

@@ -3411,7 +3411,7 @@ void LocalFrameView::UpdateStyleAndLayout() {
   }
 
   gfx::Size visual_viewport_size =
-      GetScrollableArea()->VisibleContentRect().size();
+      GetScrollableArea()->VisibleContentRect(kExcludeScrollbars).size();
 
   bool did_layout = false;
   {
@@ -3457,7 +3457,7 @@ void LocalFrameView::UpdateStyleAndLayout() {
 
   if (did_layout) {
     gfx::Size new_visual_viewport_size =
-        GetScrollableArea()->VisibleContentRect().size();
+        GetScrollableArea()->VisibleContentRect(kExcludeScrollbars).size();
     bool visual_viewport_size_changed =
         (new_visual_viewport_size != visual_viewport_size);
     SetNeedsUpdateGeometries();

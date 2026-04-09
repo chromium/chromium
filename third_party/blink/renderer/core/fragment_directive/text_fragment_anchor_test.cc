@@ -81,7 +81,8 @@ class TextFragmentAnchorTestController : public TextFragmentAnchorTestBase {
   }
 
   gfx::Rect ViewportRect() {
-    return gfx::Rect(LayoutViewport()->VisibleContentRect().size());
+    return gfx::Rect(
+        LayoutViewport()->VisibleContentRect(kExcludeScrollbars).size());
   }
 
   gfx::Rect BoundingRectInFrame(Node& node) {

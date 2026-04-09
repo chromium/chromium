@@ -367,7 +367,8 @@ PhysicalRect BoxBackgroundPaintContext::FixedAttachmentPositioningArea(
   const ScrollableArea* layout_viewport =
       box_->GetFrameView()->LayoutViewport();
   DCHECK(layout_viewport);
-  PhysicalSize size(layout_viewport->VisibleContentRect().size());
+  PhysicalSize size(
+      layout_viewport->VisibleContentRect(kExcludeScrollbars).size());
   if (CanCompositeBackgroundAttachmentFixed()) {
     // The caller should have adjusted paint chunk properties to be in the
     // viewport space.
@@ -382,7 +383,8 @@ PhysicalRect BoxBackgroundPaintContext::FixedAttachmentPositioningArea(
           .MapPoint(gfx::PointF());
   return PhysicalRect(
       PhysicalOffset::FromPointFRound(viewport_origin_in_local_space),
-      PhysicalSize(layout_viewport->VisibleContentRect().size()));
+      PhysicalSize(
+          layout_viewport->VisibleContentRect(kExcludeScrollbars).size()));
 }
 
 const ComputedStyle& BoxBackgroundPaintContext::Style() const {
