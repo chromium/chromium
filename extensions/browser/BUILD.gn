@@ -1096,6 +1096,7 @@ source_set("unit_tests") {
     "renderer_startup_helper_unittest.cc",
     "requirements_checker_unittest.cc",
     "sandboxed_unpacker_unittest.cc",
+    "service_worker/service_worker_host_unittest.cc",
     "service_worker/worker_id_set_unittest.cc",
     "updater/extension_downloader_unittest.cc",
     "updater/extension_installer_unittest.cc",

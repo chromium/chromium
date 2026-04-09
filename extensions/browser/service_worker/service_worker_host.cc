@@ -229,8 +229,12 @@ void ServiceWorkerHost::DidStartServiceWorkerContext(
     // We can legitimately get here if the extension was already unloaded.
     return;
   }
-  CHECK(service_worker_scope.SchemeIs(kExtensionScheme) &&
-        extension_id == service_worker_scope.host());
+  if (!service_worker_scope.SchemeIs(kExtensionScheme) ||
+      extension_id != service_worker_scope.host()) {
+    bad_message::ReceivedBadMessage(
+        render_process_host_, bad_message::SWH_INVALID_SERVICE_WORKER_SCOPE);
+    return;
+  }
 
   ServiceWorkerTaskQueue::Get(browser_context)
       ->RendererDidStartServiceWorkerContext(
@@ -260,8 +264,12 @@ void ServiceWorkerHost::DidStopServiceWorkerContext(
     // We can legitimately get here if the extension was already unloaded.
     return;
   }
-  CHECK(service_worker_scope.SchemeIs(kExtensionScheme) &&
-        extension_id == service_worker_scope.host());
+  if (!service_worker_scope.SchemeIs(kExtensionScheme) ||
+      extension_id != service_worker_scope.host()) {
+    bad_message::ReceivedBadMessage(
+        render_process_host_, bad_message::SWH_INVALID_SERVICE_WORKER_SCOPE);
+    return;
+  }
   CHECK_NE(blink::mojom::kInvalidServiceWorkerVersionId,
            service_worker_version_id);
   ServiceWorkerTaskQueue::Get(browser_context)
