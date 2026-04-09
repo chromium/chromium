@@ -31,6 +31,7 @@ source_set("location_bar") {
       "record_replay_page_action_controller.h",
       "selected_keyword_view.h",
       "star_view.h",
+      "webui_content_setting_image_control.h",
       "webui_location_bar.h",
       "zoom_bubble_coordinator.h",
       "zoom_bubble_view.h",
@@ -47,6 +48,7 @@ source_set("location_bar") {
       "//chrome/browser/ui/page_action:icon_type",
       "//chrome/browser/ui/views/frame:immersive_mode_controller",
       "//chrome/browser/ui/views/page_action",
+      "//components/browser_apis/ui_controllers/toolbar:mojom",
       "//components/browser_apis/ui_controllers/toolbar:mojom_data_model",
       "//components/omnibox/browser:location_bar",
       "//components/page_info/core",
@@ -92,6 +94,7 @@ source_set("impl") {
       "record_replay_page_action_controller.cc",
       "selected_keyword_view.cc",
       "star_view.cc",
+      "webui_content_setting_image_control.cc",
       "webui_location_bar.cc",
       "zoom_bubble_coordinator.cc",
       "zoom_bubble_view.cc",
@@ -278,6 +281,7 @@ source_set("unit_tests") {
     "icon_label_bubble_view_unittest.cc",
     "location_icon_state_helper_unittest.cc",
     "location_icon_view_unittest.cc",
+    "webui_content_setting_image_control_unittest.cc",
   ]
   deps = [
     ":icon_label_bubble",

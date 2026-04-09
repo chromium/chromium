@@ -22,6 +22,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browser_apis/browser_controls/browser_controls_api.mojom.h"
+#include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
@@ -117,6 +118,12 @@ class MockToolbarUIDelegate
               (toolbar_ui_api::mojom::ContextMenuType menu_type,
                const gfx::RectF& bounds,
                ui::mojom::MenuSourceType source),
+              (override));
+  MOCK_METHOD(void,
+              ShowContentSettingsBubble,
+              (::toolbar_ui_api::mojom::ContentSettingImageType type,
+               ::toolbar_ui_api::mojom::ToolbarUIService::
+                   ShowContentSettingsBubbleCallback callback),
               (override));
   MOCK_METHOD(void, OnPageInitialized, (), (override));
   MOCK_METHOD(void,

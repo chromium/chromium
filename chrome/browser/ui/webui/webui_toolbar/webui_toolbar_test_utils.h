@@ -59,6 +59,12 @@ class MockToolbarUIServiceDelegate
                const gfx::RectF&,
                ui::mojom::MenuSourceType),
               (override));
+  MOCK_METHOD(void,
+              ShowContentSettingsBubble,
+              (::toolbar_ui_api::mojom::ContentSettingImageType type,
+               ::toolbar_ui_api::mojom::ToolbarUIService::
+                   ShowContentSettingsBubbleCallback callback),
+              (override));
   MOCK_METHOD(void, OnPageInitialized, (), (override));
   MOCK_METHOD(void,
               InvokePinnedToolbarAction,

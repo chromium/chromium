@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/navigation_controls_state_fetcher.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api.mojom.h"
+#include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -30,6 +31,9 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
         toolbar_ui_api::mojom::ContextMenuType menu_type,
         const gfx::RectF& bounds_in_css_pixels,
         ui::mojom::MenuSourceType source) = 0;
+    virtual void ShowContentSettingsBubble(
+        ::toolbar_ui_api::mojom::ContentSettingImageType type,
+        ShowContentSettingsBubbleCallback callback) = 0;
     virtual void OnPageInitialized() = 0;
     virtual void InvokePinnedToolbarAction(
         toolbar_ui_api::mojom::PinnedToolbarAction action_id) = 0;
@@ -66,7 +70,8 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
                        ui::mojom::MenuSourceType source) override;
   void OnPageInitialized() override;
   void ShowContentSettingsBubble(
-      ::toolbar_ui_api::mojom::ContentSettingImageType type) override;
+      ::toolbar_ui_api::mojom::ContentSettingImageType type,
+      ShowContentSettingsBubbleCallback callback) override;
   void InvokePinnedToolbarAction(
       toolbar_ui_api::mojom::PinnedToolbarAction action_id) override;
   void OnLhsChipMousePressed(

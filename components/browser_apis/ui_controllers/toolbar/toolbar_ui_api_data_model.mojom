@@ -123,18 +123,7 @@ struct ContentSettingImageState {
   // accessibility technologies.
   bool should_notify_accessibility;
 
-  // If true, the bubble should open on its own, without requiring a click from
-  // the user. This round-trips through WebUI so that the bubble never opens
-  // before the icon is ready.
-  //
-  // If set, `is_bubble_visible` should also be set. Technically, the bubble
-  // only displays after requested by the WebUI, but this prevents a flicker
-  // where the icon appears non-highlighted initially before immediately
-  // transitioning to highlighted.
-  bool should_auto_open_bubble;
-
-  // If true, the bubble is visible, so the icon should be highlighted. Should
-  // always be set to true if `should_auto_open_bubble` is true.
+  // If true, the bubble is visible, so the icon should be highlighted.
   bool is_bubble_visible;
 
   // If true, when `explanitory_string` is displayed, it should appear via an

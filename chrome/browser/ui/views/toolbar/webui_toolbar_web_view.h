@@ -84,6 +84,10 @@ class WebUIToolbarWebView
   void HandleContextMenu(toolbar_ui_api::mojom::ContextMenuType menu_type,
                          const gfx::RectF& bounds_in_css_pixels,
                          ui::mojom::MenuSourceType source) override;
+  void ShowContentSettingsBubble(
+      ::toolbar_ui_api::mojom::ContentSettingImageType type,
+      toolbar_ui_api::mojom::ToolbarUIService::ShowContentSettingsBubbleCallback
+          callback) override;
   void OnPageInitialized() override;
   void InvokePinnedToolbarAction(
       toolbar_ui_api::mojom::PinnedToolbarAction action_id) override;
@@ -186,6 +190,8 @@ class WebUIToolbarWebView
   void OnLhsChipsStateChanged(toolbar_ui_api::mojom::LhsChipsStatePtr state);
   void OnPinnedToolbarActionsStateChanged(
       std::vector<toolbar_ui_api::mojom::PinnedToolbarActionStatePtr> state);
+  void OnContentSettingChanged(
+      std::vector<toolbar_ui_api::mojom::ContentSettingImageStatePtr> state);
 
   void OnTouchUiChanged();
   void PostPushNavigationState();

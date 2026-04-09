@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/location_bar/webui_content_setting_image_control.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/views/omnibox/webui_readonly_omnibox.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
@@ -83,6 +84,10 @@ class WebUILocationBar : public LocationBar,
   void OnLhsChipCollapseAnimationEnded(
       toolbar_ui_api::mojom::LhsChipIdentifier identifier);
 
+  WebUIContentSettingImageControl& content_setting_image_control() {
+    return content_setting_image_control_;
+  }
+
   // ContentSettingImageViewDelegate:
   bool ShouldHideContentSettingImage() override;
   content::WebContents* GetContentSettingWebContents() override;
@@ -116,6 +121,9 @@ class WebUILocationBar : public LocationBar,
   std::unique_ptr<OmniboxController> omnibox_controller_;
   std::unique_ptr<WebUIReadOnlyOmnibox> omnibox_view_;
   std::unique_ptr<OmniboxPopupView> omnibox_popup_view_;
+
+  WebUIContentSettingImageControl content_setting_image_control_;
+
   bool is_initialized_ = false;
 
   security_state::SecurityLevel last_update_security_level_ =

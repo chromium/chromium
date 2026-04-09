@@ -14,10 +14,12 @@
 #include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/state_transitions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/named_trigger.h"
+#include "base/types/expected.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
@@ -32,6 +34,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/location_bar/webui_content_setting_image_control.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "chrome/browser/ui/views/toolbar/webui_split_tabs_control.h"
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
@@ -53,6 +56,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/result_codes.h"
+#include "mojo/public/mojom/base/error.mojom.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -71,6 +75,9 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
+
+using Code = mojo_base::mojom::Code;
+using Error = mojo_base::mojom::Error;
 
 constexpr char kHistogramToolbarRenderProcessGone[] =
     "InitialWebUI.Toolbar.RenderProcessGone";
@@ -330,6 +337,22 @@ void WebUIToolbarWebView::HandleContextMenu(
       break;
     case toolbar_ui_api::mojom::ContextMenuType::kUnspecified:
       NOTREACHED() << "Unexpected ClickDispositionFlag::kUnspecified.";
+  }
+}
+
+void WebUIToolbarWebView::ShowContentSettingsBubble(
+    ::toolbar_ui_api::mojom::ContentSettingImageType type,
+    toolbar_ui_api::ToolbarUIService::ShowContentSettingsBubbleCallback
+        callback) {
+  if (location_bar_) {
+    location_bar_->content_setting_image_control().ShowContentSettingsBubble(
+        type, std::move(callback));
+  } else {
+    std::move(callback).Run(base::unexpected(Error::New(
+        Code::kFailedPrecondition,
+        base::StringPrintf("WebUIToolbarWebView: cannot create bubble without "
+                           "location_bar_ for type: %d",
+                           static_cast<int32_t>(type)))));
   }
 }
 
@@ -635,6 +658,16 @@ void WebUIToolbarWebView::OnPinnedToolbarActionsStateChanged(
     std::vector<toolbar_ui_api::mojom::PinnedToolbarActionStatePtr> state) {
   if (!mojo::Equals(state, last_queued_state_.pinned_toolbar_actions_state)) {
     last_queued_state_.pinned_toolbar_actions_state = std::move(state);
+    PostPushNavigationState();
+  }
+}
+
+void WebUIToolbarWebView::OnContentSettingChanged(
+    std::vector<toolbar_ui_api::mojom::ContentSettingImageStatePtr> state) {
+  if (!mojo::Equals(state, last_queued_state_.location_bar_state
+                               ->content_setting_image_states)) {
+    last_queued_state_.location_bar_state->content_setting_image_states =
+        std::move(state);
     PostPushNavigationState();
   }
 }

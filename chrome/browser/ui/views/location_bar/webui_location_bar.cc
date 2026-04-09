@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_state_helper.h"
+#include "chrome/browser/ui/views/location_bar/webui_content_setting_image_control.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/webui_readonly_omnibox.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
@@ -70,7 +71,8 @@ WebUILocationBar::WebUILocationBar(Browser* browser,
                                    LocationBarView::Delegate* delegate)
     : LocationBar(browser ? browser->command_controller() : nullptr),
       browser_(browser),
-      delegate_(delegate) {}
+      delegate_(delegate),
+      content_setting_image_control_(this) {}
 
 WebUILocationBar::~WebUILocationBar() = default;
 
@@ -95,6 +97,8 @@ void WebUILocationBar::Init(WebUIToolbarWebView* toolbar_view) {
   omnibox_popup_view_ = std::make_unique<OmniboxPopupViewWebUI>(
       /*omnibox_view=*/omnibox_view_.get(), omnibox_controller_.get(),
       /*location_bar=*/this, /*presenter_delegate=*/*this);
+
+  content_setting_image_control_.Init();
 
   // Unretained is safe because `this` owns `moved_subscription_`.
   moved_subscription_ =
@@ -126,7 +130,15 @@ void WebUILocationBar::UpdateFocusBehavior(bool toolbar_visible) {
 }
 
 void WebUILocationBar::UpdateContentSettingsIcons() {
-  NOTIMPLEMENTED();
+  content::WebContents* web_contents = GetWebContents();
+  if (!web_contents) {
+    return;
+  }
+  if (!toolbar_view_) {
+    return;
+  }
+  toolbar_view_->OnContentSettingChanged(
+      content_setting_image_control_.ProcessContentSettingState(web_contents));
 }
 
 void WebUILocationBar::SaveStateToContents(content::WebContents* contents) {
@@ -312,19 +324,19 @@ void WebUILocationBar::OnLhsChipCollapseAnimationEnded(
 }
 
 bool WebUILocationBar::ShouldHideContentSettingImage() {
-  NOTIMPLEMENTED();
-  return false;
+  if (omnibox_controller_->edit_model()->user_input_in_progress()) {
+    return true;
+  }
+  return omnibox_controller_->IsPopupOpen();
 }
 
 content::WebContents* WebUILocationBar::GetContentSettingWebContents() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return GetWebContents();
 }
 
 ContentSettingBubbleModelDelegate*
 WebUILocationBar::GetContentSettingBubbleModelDelegate() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return delegate_->GetContentSettingBubbleModelDelegate();
 }
 
 views::Widget* WebUILocationBar::GetLocationBarWidget() {
