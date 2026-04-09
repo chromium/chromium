@@ -912,7 +912,6 @@ public class MultiWindowUtilsUnitTest {
 
     @Test
     @Config(sdk = 31)
-    @DisabledTest(message = "https://crbug.com/423920653")
     public void testGetInstanceIdForViewIntent_LessThanMaxInstancesOpen() {
         MultiWindowTestUtils.enableMultiInstance();
         when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
@@ -936,7 +935,6 @@ public class MultiWindowUtilsUnitTest {
 
     @Test
     @Config(sdk = 31)
-    @DisabledTest(message = "https://crbug.com/423920653")
     public void testGetInstanceIdForViewIntent_MaxInstancesOpen_MaxRunningActivities() {
         MultiWindowTestUtils.enableMultiInstance();
         when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
