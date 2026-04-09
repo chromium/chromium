@@ -1320,6 +1320,28 @@ TEST_F(ShellUtilRegistryTest, ToAndFromCommandLineArgument) {
             parsed_protocol_associations.value().associations[L"web+test"]);
 }
 
+TEST_F(ShellUtilRegistryTest, AddAppProtocolAssociations_InvalidProtocols) {
+  // Create test protocol associations with valid and invalid protocols.
+  const std::wstring app_progid = L"app_progid1";
+  const std::vector<std::wstring> app_protocols = {
+      L"web+test", L"invalid\\protocol", L"invalid/protocol"};
+
+  ASSERT_TRUE(ShellUtil::AddAppProtocolAssociations(app_protocols, app_progid));
+
+  // Ensure that classes were created only for the valid protocol.
+  base::win::RegKey key;
+  ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_CURRENT_USER,
+                                    L"Software\\Classes\\web+test", KEY_READ));
+  EXPECT_TRUE(key.HasValue(L"URL Protocol"));
+
+  ASSERT_NE(ERROR_SUCCESS,
+            key.Open(HKEY_CURRENT_USER, L"Software\\Classes\\invalid\\protocol",
+                     KEY_READ));
+  ASSERT_NE(ERROR_SUCCESS,
+            key.Open(HKEY_CURRENT_USER, L"Software\\Classes\\invalid/protocol",
+                     KEY_READ));
+}
+
 TEST_F(ShellUtilRegistryTest, RemoveAppProtocolAssociations) {
   // Create test protocol associations.
   const std::wstring app_progid = L"app_progid1";

@@ -2452,11 +2452,23 @@ bool ShellUtil::AddAppProtocolAssociations(
     NOTREACHED();
   }
 
-  if (!RegisterApplicationForProtocols(protocols, prog_id, chrome_exe))
+  std::vector<std::wstring> valid_protocols;
+  for (const auto& protocol : protocols) {
+    if (protocol.find_first_of(L"\\/") == std::wstring::npos) {
+      valid_protocols.push_back(protocol);
+    }
+  }
+
+  if (valid_protocols.empty()) {
+    return true;
+  }
+
+  if (!RegisterApplicationForProtocols(valid_protocols, prog_id, chrome_exe)) {
     return false;
+  }
 
   bool success = true;
-  for (const auto& protocol : protocols) {
+  for (const auto& protocol : valid_protocols) {
     // This registry value tells Windows that this 'class' is a URL scheme.
     // HKEY_CURRENT_USER\Software\Classes\<protocol>\URL Protocol
     std::wstring url_key =
