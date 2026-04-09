@@ -4223,6 +4223,14 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
       return nullptr;
     }
 
+    // Don't trust opaque origins to run debug URLs (like javascript: URLs) on
+    // the current page.
+    if (params.initiator_origin.has_value() &&
+        params.initiator_origin->opaque()) {
+      DiscardPendingEntry(true);
+      return nullptr;
+    }
+
     HandleRendererDebugURL(node, params.url);
     return nullptr;
   }

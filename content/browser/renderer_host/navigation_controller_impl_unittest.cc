@@ -697,6 +697,34 @@ TEST_F(NavigationControllerTest, LoadURLWithParams_Reload) {
   CheckNavigationEntryMatchLoadParams(load_url_params, entry);
 }
 
+TEST_F(NavigationControllerTest, LoadURLWithParams_DebugWithOpaqueOrigin) {
+  // Start a navigation in order to have enough state to fake a transfer.
+  const GURL url1("http://foo");
+  const GURL url2("chrome://crashdump/");
+
+  contents()->NavigateAndCommit(url1);
+  NavigationControllerImpl& controller = controller_impl();
+
+  auto navigation =
+      NavigationSimulatorImpl::CreateBrowserInitiated(url2, contents());
+  NavigationController::LoadURLParams load_url_params(url2);
+  load_url_params.initiator_origin = url::Origin();
+  load_url_params.transition_type = ui::PAGE_TRANSITION_LINK;
+  load_url_params.load_type = NavigationController::LOAD_TYPE_DEFAULT;
+  load_url_params.is_renderer_initiated = false;
+  load_url_params.override_user_agent = NavigationController::UA_OVERRIDE_TRUE;
+  navigation->SetLoadURLParams(&load_url_params);
+  navigation->Start();
+  ASSERT_FALSE(controller.GetPendingEntry());
+
+  auto navigation2 =
+      NavigationSimulatorImpl::CreateBrowserInitiated(url2, contents());
+  load_url_params.initiator_origin = url::Origin::Create(url1);
+  navigation2->SetLoadURLParams(&load_url_params);
+  navigation2->Start();
+  ASSERT_TRUE(controller.GetPendingEntry());
+}
+
 TEST_F(NavigationControllerTest, LoadURLWithExtraParams_Data) {
   NavigationControllerImpl& controller = controller_impl();
   GURL url("data:text/html,dataurl");
