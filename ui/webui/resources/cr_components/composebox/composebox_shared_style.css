@@ -46,3 +46,30 @@
   display: flex;
   flex-wrap: nowrap;
 }
+
+/*
+ * Controls the opacity of the icons when the composebox is expanded/collapsed.
+ */
+.icon-fade {
+  opacity: 0;
+  transition: var(--icon-exit-transition);
+}
+
+:host-context([expanding_]) .icon-fade {
+  opacity: 1;
+  transition: var(--icon-entry-transition);
+}
+
+:host-context([in-voice-search-mode]) .icon-fade {
+  opacity: 0;
+  transition: var(--icon-exit-transition);
+}
+
+.action-icon {
+  --cr-icon-button-focus-outline-color:
+      var(--color-searchbox-results-icon-focused-outline);
+  --cr-icon-button-hover-background-color:
+      var(--color-searchbox-results-background-hovered);
+  --cr-icon-button-margin-end: 0;
+  --cr-icon-button-size: 36px;
+}

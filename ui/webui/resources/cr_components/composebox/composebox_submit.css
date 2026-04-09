@@ -5,31 +5,15 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #import=./composebox_shared_style.css.js
  * #scheme=relative
- * #include=cr-icons-lit
+ * #include=cr-icons-lit composebox-shared-style
  * #css_wrapper_metadata_end */
 
 :host {
   --cr-composebox-submit-container-size: 40px;
   --cr-icon-button-size: 36px;
   display: contents;
-}
-
-/*
- * Controls the opacity of the icons when the composebox is expanded/collapsed.
- */
-.icon-fade {
-  opacity: 0;
-  transition: var(--icon-exit-transition);
-}
-
-.action-icon {
-  --cr-icon-button-focus-outline-color:
-      var(--color-searchbox-results-icon-focused-outline);
-  --cr-icon-button-hover-background-color:
-      var(--color-searchbox-results-background-hovered);
-  --cr-icon-button-margin-end: 0;
-  --cr-icon-button-size: 36px;
 }
 
 #submitContainer {
@@ -85,7 +69,7 @@
 }
 
 #submitContainer:hover #submitOverlay {
-  background-color: var(--color-composebox-submit-button-hover);
+  background-color: var(--cr-composebox-submit-button-hover-color, var(--color-composebox-submit-button-hover));
 }
 
 :host([disabled]) #submitContainer:hover #submitOverlay {

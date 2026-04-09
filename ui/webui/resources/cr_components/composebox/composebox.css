@@ -196,27 +196,6 @@ search-animated-glow {
   --input-bottom-spacing: 0;
 }
 
-:host([expanding_]) cr-composebox-submit::part(submit) {
-  opacity: 1;
-  transition: var(--icon-entry-transition);
-}
-
-:host([in-voice-search-mode]) cr-composebox-submit::part(submit) {
-  opacity: 0;
-  transition: var(--icon-exit-transition);
-}
-
-.action-icon {
-  --cr-icon-button-focus-outline-color:
-      var(--color-searchbox-results-icon-focused-outline);
-  --cr-icon-button-hover-background-color:
-      var(--color-searchbox-results-background-hovered);
-  --cr-icon-button-margin-end: 0;
-  --cr-icon-button-size: 36px;
-  position: absolute;
-  right: 16px;
-}
-
 :host-context([dir='rtl']) .action-icon {
   left: 16px;
   right: unset;
@@ -261,54 +240,6 @@ search-animated-glow {
 
 :host(:not([submit-enabled])) cr-composebox-submit::part(submit) {
   display: none;
-}
-
-:host([submit-enabled]) #submitContainer {
-  cursor: pointer;
-}
-
-:host([submit-enabled]) #submitContainer:hover #submitOverlay {
-  background-color: var(--cr-composebox-submit-button-hover-color, var(--color-composebox-submit-button-hover));
-}
-
-/* TODO(crbug.com/486705724): Clean up duplicate styles. */
-#submitIcon {
-  --cr-icon-button-fill-color: var(--color-composebox-submit-button-icon, white);
-  --cr-icon-button-icon-size: 16px;
-  background-color: var(--color-composebox-submit-button-background);
-  margin-inline-start: 0;
-  inset-inline-start: 2px;
-  opacity: 30%; /* For Lens side panel. */
-  top: 2px;
-  transition: var(--submit-enabled-transition);
-}
-
-#submitContainer:has(#submitIcon[disabled]) {
-  cursor: not-allowed;
-}
-
-#submitContainer:has(#submitIcon[disabled]):hover #submitOverlay {
-  background-color: transparent;
-}
-
-#submitContainer #submitIcon[disabled] {
-  opacity: 0.4;
-}
-
-#submitContainer:focus-visible {
-  outline: none;
-}
-
-#submitContainer:focus-visible #submitIcon,
-#submitIcon:focus-visible:focus {
-  box-shadow: none;
-  outline: 2px solid var(--color-searchbox-results-icon-focused-outline);
-  outline-offset: 2px;
-}
-
-:host([submit-enabled]) #submitIcon {
-  display: block;
-  opacity: 100%; /* For Lens side panel. */
 }
 
 :host([searchbox-layout-mode='Compact']) {
