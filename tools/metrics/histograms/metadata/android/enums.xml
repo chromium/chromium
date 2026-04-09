@@ -2900,6 +2900,12 @@ chromium-metrics-reviews@google.com.
              any of the other modes."/>
 </enum>
 
+<enum name="WindowOcclusionCalculateResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Root view unavailable"/>
+  <int value="2" label="Visible rect empty"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

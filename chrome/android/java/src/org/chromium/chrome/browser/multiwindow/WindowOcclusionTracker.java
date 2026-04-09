@@ -69,11 +69,12 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
         if (mWindowZOrderTracker.track(windowAndroid)) {
             View view = getPrimaryView(windowAndroid);
             if (view == null) {
-                Log.w(TAG, "Primary view not found for window: %s", windowAndroid);
+                WindowOcclusionMetrics.recordTrackResult(false);
                 return;
             }
 
             view.getViewTreeObserver().addOnGlobalLayoutListener(this);
+            WindowOcclusionMetrics.recordTrackResult(true);
 
             // No need to forward the occlusion state here, as it will be done shortly by the
             // WindowZOrderTracker once the new window receives the initial focus change event.
@@ -90,11 +91,12 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
         if (mWindowZOrderTracker.untrack(windowAndroid)) {
             View view = getPrimaryView(windowAndroid);
             if (view == null) {
-                Log.w(TAG, "Primary view not found for window: %s", windowAndroid);
+                WindowOcclusionMetrics.recordUntrackResult(false);
                 return;
             }
 
             view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            WindowOcclusionMetrics.recordUntrackResult(true);
 
             // Calculate occlusion state here in case the window was removed for some reason that
             // didn't trigger a focus change or position update (such as a crash or kill).
@@ -179,7 +181,8 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
             ActivityWindowAndroid window = windows.get(i);
             View view = getPrimaryView(window);
             if (view == null) {
-                Log.w(TAG, "Primary view not found for window: %s", window);
+                WindowOcclusionMetrics.recordCalculateResult(
+                        WindowOcclusionMetrics.CalculateResult.VIEW_NOT_FOUND);
                 continue;
             }
 
@@ -191,9 +194,13 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
                 // In case of an error, continue the calculation for subsequent windows. Since the
                 // occluded area is cumulative, any zero-sized view will not affect the correctness
                 // of the occlusion state for subsequent windows.
-                Log.w(TAG, "Visible screen rect is empty for view: %s", view);
+                WindowOcclusionMetrics.recordCalculateResult(
+                        WindowOcclusionMetrics.CalculateResult.VISIBLE_RECT_EMPTY);
                 continue;
             }
+
+            WindowOcclusionMetrics.recordCalculateResult(
+                    WindowOcclusionMetrics.CalculateResult.SUCCESS);
 
             if (cumulativeOccludedRegion.quickContains(viewScreenRect)) {
                 // The window is fully occluded.

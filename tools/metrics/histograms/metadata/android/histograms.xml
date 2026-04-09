@@ -3722,6 +3722,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.MultiWindow.Occlusion.CalculateResult"
+    enum="WindowOcclusionCalculateResult" expires_after="2027-04-02">
+  <owner>kalutes@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the result of WindowOcclusionTracker calculateOcclusion operation.
+    Emitted when window position changes or windows are redrawn.
+  </summary>
+</histogram>
+
+<histogram name="Android.MultiWindow.Occlusion.TrackResult" enum="Boolean"
+    expires_after="2027-04-02">
+  <owner>kalutes@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the result of WindowOcclusionTracker track operation. Emitted when a
+    new window is created. False if the root view could not be found, true on
+    success.
+  </summary>
+</histogram>
+
+<histogram name="Android.MultiWindow.Occlusion.UntrackResult" enum="Boolean"
+    expires_after="2027-04-02">
+  <owner>kalutes@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the result of WindowOcclusionTracker untrack operation. Emitted when
+    a window is destroyed. False if the root view could not be found, true on
+    success.
+  </summary>
+</histogram>
+
 <histogram name="Android.MultiWindow.WindowZOrder.DisplaysCount" units="count"
     expires_after="2027-04-02">
   <owner>kalutes@google.com</owner>

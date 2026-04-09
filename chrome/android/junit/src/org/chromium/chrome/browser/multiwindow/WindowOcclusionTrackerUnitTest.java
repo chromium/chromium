@@ -30,6 +30,7 @@ import org.robolectric.shadows.ShadowView;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
@@ -326,5 +327,62 @@ public class WindowOcclusionTrackerUnitTest {
         assertFalse(
                 "Window with visible height 10 should NOT be occluded",
                 occlusionState.get(bottomWindow));
+    }
+
+    @Test
+    public void testTrack_ViewNotFound() {
+        ActivityWindowAndroid window = org.mockito.Mockito.mock(ActivityWindowAndroid.class);
+        when(mZOrderTracker.track(window)).thenReturn(true);
+        // window.getWindow() returns null by default.
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord("Android.MultiWindow.Occlusion.TrackResult", false)
+                        .build();
+
+        mOcclusionTracker.track(window);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testUntrack_ViewNotFound() {
+        ActivityWindowAndroid window = org.mockito.Mockito.mock(ActivityWindowAndroid.class);
+        when(mZOrderTracker.untrack(window)).thenReturn(true);
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord("Android.MultiWindow.Occlusion.UntrackResult", false)
+                        .build();
+
+        mOcclusionTracker.untrack(window);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testCalculateOcclusion_ViewNotFound() {
+        // 2 windows are required for calculateOcclusion() to do any work.
+        ActivityWindowAndroid window1 = createWindowAndroid(createView(0, 0, 100, 100));
+        ActivityWindowAndroid window2 = org.mockito.Mockito.mock(ActivityWindowAndroid.class);
+        DisplayAndroid displayAndroid = window1.getDisplay();
+        when(window2.getDisplay()).thenReturn(displayAndroid);
+
+        SparseArray<List<ActivityWindowAndroid>> zOrder = new SparseArray<>();
+        zOrder.put(DISPLAY_ID, Arrays.asList(window1, window2));
+        when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
+        when(mZOrderTracker.getAllWindowAndroids()).thenReturn(Arrays.asList(window1, window2));
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Android.MultiWindow.Occlusion.CalculateResult",
+                                WindowOcclusionMetrics.CalculateResult.SUCCESS,
+                                WindowOcclusionMetrics.CalculateResult.VIEW_NOT_FOUND)
+                        .build();
+
+        mOcclusionTracker.calculateOcclusion();
+
+        histogramWatcher.assertExpected();
     }
 }

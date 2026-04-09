@@ -2,3 +2,4 @@ file://chrome/android/java/src/org/chromium/chrome/browser/multiwindow/OWNERS
 per-file ChromeMultiInstancePersistentStoreUnitTest.java=zheliooo@google.com
 per-file WindowOcclusionTrackerUnitTest.java=boliu@chromium.org
 per-file WindowZOrderTrackerUnitTest.java=boliu@chromium.org
+per-file WindowOcclusionMetricsUnitTest.java=boliu@chromium.org
