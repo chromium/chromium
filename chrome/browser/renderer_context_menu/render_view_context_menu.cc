@@ -573,13 +573,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_INSPECTELEMENT_WITH_DEVTOOLS, 160},
        {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY, 161},
        {IDC_CONTENT_CONTEXT_GLIC, 162},
+       {IDC_CONTENT_CONTEXT_VIDEO_FRAME, 163},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
        //     tools/metrics/histograms/metadata/ui/enums.xml.
-       {0, 163}});
+       {0, 164}});
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:RenderViewContextMenuItem)
 
   // LINT.IfChange(ContextMenuOptionDesktop)
@@ -941,6 +942,7 @@ RenderViewContextMenu::RenderViewContextMenu(
       protocol_handler_registry_(
           ProtocolHandlerRegistryFactory::GetForBrowserContext(GetProfile())),
       inspect_submenu_model_(this),
+      video_frame_submenu_model_(this),
       accessibility_labels_submenu_model_(this),
       embedder_web_contents_(GetWebContentsToUse(&render_frame_host)),
       autofill_context_menu_manager_(this, &menu_model_),
@@ -2145,26 +2147,59 @@ void RenderViewContextMenu::AppendCanvasItems() {
 }
 
 void RenderViewContextMenu::AppendVideoItems() {
+  const bool use_submenu =
+      base::FeatureList::IsEnabled(media::kContextMenu2026);
+
+  if (use_submenu) {
+    menu_model_.AddCheckItemWithStringId(IDC_CONTENT_CONTEXT_PICTUREINPICTURE,
+                                         IDS_CONTENT_CONTEXT_PICTUREINPICTURE);
+
+    if (media_router::MediaRouterEnabled(browser_context_)) {
+      menu_model_.AddItemWithStringId(IDC_ROUTE_MEDIA,
+                                      IDS_MEDIA_ROUTER_MENU_ITEM_TITLE);
+    }
+
+    menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
+  }
+
   AppendMediaItems();
   menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
   menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENAVNEWTAB,
                                   IDS_CONTENT_CONTEXT_OPENVIDEONEWTAB);
-  if (base::FeatureList::IsEnabled(media::kContextMenuSaveVideoFrameAs)) {
-    menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS,
-                                    IDS_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS);
+
+  ui::SimpleMenuModel* target_model = &menu_model_;
+  if (use_submenu) {
+    target_model = &video_frame_submenu_model_;
   }
-  menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_SAVEAVAS,
-                                  IDS_CONTENT_CONTEXT_SAVEVIDEOAS);
+
+  if (base::FeatureList::IsEnabled(media::kContextMenuSaveVideoFrameAs)) {
+    target_model->AddItemWithStringId(IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS,
+                                      IDS_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS);
+  }
+
+  if (!use_submenu) {
+    menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_SAVEAVAS,
+                                    IDS_CONTENT_CONTEXT_SAVEVIDEOAS);
+  }
+
   if (base::FeatureList::IsEnabled(media::kContextMenuCopyVideoFrame)) {
-    menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_COPYVIDEOFRAME,
-                                    IDS_CONTENT_CONTEXT_COPYVIDEOFRAME);
+    target_model->AddItemWithStringId(IDC_CONTENT_CONTEXT_COPYVIDEOFRAME,
+                                      IDS_CONTENT_CONTEXT_COPYVIDEOFRAME);
+  }
+
+  if (use_submenu) {
+    menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_SAVEAVAS,
+                                    IDS_CONTENT_CONTEXT_SAVEVIDEOAS);
   }
 
   menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_COPYAVLOCATION,
                                   IDS_CONTENT_CONTEXT_COPYVIDEOLOCATION);
-  menu_model_.AddCheckItemWithStringId(IDC_CONTENT_CONTEXT_PICTUREINPICTURE,
-                                       IDS_CONTENT_CONTEXT_PICTUREINPICTURE);
-  AppendMediaRouterItem();
+
+  if (!use_submenu) {
+    menu_model_.AddCheckItemWithStringId(IDC_CONTENT_CONTEXT_PICTUREINPICTURE,
+                                         IDS_CONTENT_CONTEXT_PICTUREINPICTURE);
+    AppendMediaRouterItem();
+  }
 
   // Search for video frame menu item.
   if (base::FeatureList::IsEnabled(media::kContextMenuSearchForVideoFrame)) {
@@ -2172,42 +2207,50 @@ void RenderViewContextMenu::AppendVideoItems() {
     auto* entry_point_controller =
         GetBrowser() ? lens::LensOverlayEntryPointController::From(GetBrowser())
                      : nullptr;
+
+    bool item_added = false;
     if (entry_point_controller && entry_point_controller->IsEnabled() &&
         lens::features::UseLensOverlayForVideoFrameSearch()) {
-      // If the entrypoint is ephermally hidden, exit early so the item is not
-      // added.
-      if (!entry_point_controller->AreVisible()) {
-        return;
-      }
-      const gfx::VectorIcon& icon =
+      // Add the item only if the entrypoint is visible.
+      if (entry_point_controller->AreVisible()) {
+        const gfx::VectorIcon& icon =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-          vector_icons::kGoogleLensMonochromeLogoIcon;
+            vector_icons::kGoogleLensMonochromeLogoIcon;
 #else
-          vector_icons::kSearchChromeRefreshIcon;
+            vector_icons::kSearchChromeRefreshIcon;
 #endif
-      menu_model_.AddItemWithStringIdAndIcon(
-          search_for_video_frame_idc,
-          lens::GetLensOverlayVideoEntrypointLabelAltIds(
-              IDS_CONTENT_CONTEXT_LENS_OVERLAY),
-          ui::ImageModel::FromVectorIcon(icon));
+        target_model->AddItemWithStringIdAndIcon(
+            search_for_video_frame_idc,
+            lens::GetLensOverlayVideoEntrypointLabelAltIds(
+                IDS_CONTENT_CONTEXT_LENS_OVERLAY),
+            ui::ImageModel::FromVectorIcon(icon));
+        item_added = true;
+      }
     } else {
       const auto* provider = GetImageSearchProvider();
-      if (!provider) {
-        return;
+      if (provider) {
+        target_model->AddItem(
+            search_for_video_frame_idc,
+            l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHFORVIDEOFRAME,
+                                       GetImageSearchProviderName(provider)));
+        item_added = true;
       }
-
-      menu_model_.AddItem(
-          search_for_video_frame_idc,
-          l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHFORVIDEOFRAME,
-                                     GetImageSearchProviderName(provider)));
     }
 
-    // Used for interactive tests. See LensOverlayControllerCUJTest.
-    const int command_index =
-        menu_model_.GetIndexOfCommandId(search_for_video_frame_idc).value();
-    menu_model_.SetElementIdentifierAt(command_index, kSearchForVideoFrameItem);
+    if (item_added) {
+      // Used for interactive tests. See LensOverlayControllerCUJTest.
+      target_model->SetElementIdentifierAt(target_model->GetItemCount() - 1,
+                                           kSearchForVideoFrameItem);
 
-    MaybePrepareForLensQuery();
+      MaybePrepareForLensQuery();
+    }
+  }
+
+  if (use_submenu && video_frame_submenu_model_.GetItemCount() > 0) {
+    menu_model_.AddSubMenu(
+        IDC_CONTENT_CONTEXT_VIDEO_FRAME,
+        l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_VIDEO_FRAME),
+        &video_frame_submenu_model_);
   }
 }
 
@@ -3088,6 +3131,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
       return true;
 #endif
 
+    case IDC_CONTENT_CONTEXT_VIDEO_FRAME:
     case IDC_SPELLCHECK_MENU:
     case IDC_CONTENT_CONTEXT_OPENLINKWITH:
     case IDC_CONTENT_CONTEXT_PROTOCOL_HANDLER_SETTINGS:

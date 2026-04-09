@@ -93,8 +93,10 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/test_extension_prefs.h"
 #include "extensions/common/url_pattern.h"
+#include "media/base/media_switches.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
@@ -798,6 +800,68 @@ TEST_F(RenderViewContextMenuPrefsTest, LoadBrokenImage) {
   AppendImageItems(menu.get());
 
   ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_LOAD_IMAGE));
+}
+
+TEST_F(RenderViewContextMenuPrefsTest, ContextMenu2026VideoOrderDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(media::kContextMenu2026);
+
+  content::ContextMenuParams params = CreateParams(MenuItem::VIDEO);
+  params.media_flags |= blink::ContextMenuData::kMediaCanPictureInPicture;
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents()->GetPrimaryMainFrame(), params);
+  menu->Init();
+
+  auto pip_item =
+      menu->GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_PICTUREINPICTURE);
+  ASSERT_TRUE(pip_item.has_value());
+
+  auto loop_item = menu->GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_LOOP);
+  ASSERT_TRUE(loop_item.has_value());
+
+  // PiP should be somewhere AFTER Loop and Controls when disabled.
+  EXPECT_GT(pip_item->second, loop_item->second);
+}
+
+// Verify that the 2026 video context menu are ordered properly.
+TEST_F(RenderViewContextMenuPrefsTest, ContextMenu2026VideoOrder) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(media::kContextMenu2026);
+
+  content::ContextMenuParams params = CreateParams(MenuItem::VIDEO);
+  params.media_flags |= blink::ContextMenuData::kMediaCanPictureInPicture;
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents()->GetPrimaryMainFrame(), params);
+  menu->Init();
+
+  auto pip_item =
+      menu->GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_PICTUREINPICTURE);
+  ASSERT_TRUE(pip_item.has_value());
+
+  auto route_media_item = menu->GetMenuModelAndItemIndex(IDC_ROUTE_MEDIA);
+  auto loop_item = menu->GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_LOOP);
+  ASSERT_TRUE(loop_item.has_value());
+
+  // PiP should be somewhere BEFORE Loop and Controls when enabled.
+  EXPECT_LT(pip_item->second, loop_item->second);
+
+  ASSERT_TRUE(route_media_item.has_value());
+  EXPECT_EQ(pip_item->second + 1, route_media_item->second);
+  // Ensure there is a separator after them.
+  EXPECT_EQ(ui::MenuModel::TYPE_SEPARATOR,
+            pip_item->first->GetTypeAt(route_media_item->second + 1));
+
+  // Check that the Video Frame submenu exists.
+  auto video_frame_menu =
+      menu->GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_VIDEO_FRAME);
+  ASSERT_TRUE(video_frame_menu.has_value());
+
+  // Check that "Save Video Frame As" is in the submenu.
+  auto save_video_frame =
+      menu->GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS);
+  ASSERT_TRUE(save_video_frame.has_value());
+  EXPECT_EQ(save_video_frame->first, video_frame_menu->first->GetSubmenuModelAt(
+                                         video_frame_menu->second));
 }
 
 // Verify that the suggested file name is propagated to web contents when save a

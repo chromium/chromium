@@ -514,6 +514,9 @@ class RenderViewContextMenu
   // Inspect sub-menu handling.
   ui::SimpleMenuModel inspect_submenu_model_;
 
+  // Video frame sub-menu handling.
+  ui::SimpleMenuModel video_frame_submenu_model_;
+
   // An observer that handles spelling suggestions, "Add to dictionary", and
   // "Use enhanced spell check" items.
   std::unique_ptr<SpellingMenuObserver> spelling_suggestions_menu_observer_;

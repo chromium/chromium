@@ -484,6 +484,9 @@ BASE_FEATURE(kPlatformAudioEncoder,
 // Has no effect if ENABLE_CDM_HOST_VERIFICATION buildflag is false.
 BASE_FEATURE(kCdmHostVerification, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Reorders video context menu items if enabled.
+BASE_FEATURE(kContextMenu2026, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the "Copy Video Frame" context menu item.
 BASE_FEATURE(kContextMenuCopyVideoFrame,
 #if BUILDFLAG(IS_ANDROID)
