@@ -150,6 +150,7 @@ source_set("interactive_ui_tests") {
       "skills_interactive_uitest.cc",
       "skills_interactive_uitest_base.cc",
       "skills_interactive_uitest_base.h",
+      "skills_invocation_interactive_uitest.cc",
     ]
   }
   deps = [
