@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_metrics.h"
+#import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"

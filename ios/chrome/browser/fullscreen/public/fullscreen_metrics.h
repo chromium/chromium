@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_FULLSCREEN_UI_BUNDLED_FULLSCREEN_METRICS_H_
-#define IOS_CHROME_BROWSER_FULLSCREEN_UI_BUNDLED_FULLSCREEN_METRICS_H_
+#ifndef IOS_CHROME_BROWSER_FULLSCREEN_PUBLIC_FULLSCREEN_METRICS_H_
+#define IOS_CHROME_BROWSER_FULLSCREEN_PUBLIC_FULLSCREEN_METRICS_H_
 
 extern const char kEnterFullscreenModeTransitionTriggerHistogram[];
 extern const char kExitFullscreenModeTransitionTriggerHistogram[];
@@ -37,4 +37,4 @@ enum class FullscreenModeTransitionTrigger {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:FullscreenModeTransitionTrigger)
 
-#endif  // IOS_CHROME_BROWSER_FULLSCREEN_UI_BUNDLED_FULLSCREEN_METRICS_H_
+#endif  // IOS_CHROME_BROWSER_FULLSCREEN_PUBLIC_FULLSCREEN_METRICS_H_

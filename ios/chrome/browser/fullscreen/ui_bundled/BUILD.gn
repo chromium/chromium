@@ -55,10 +55,10 @@ source_set("internal") {
   ]
 
   deps = [
-    ":metrics",
     ":ui",
     "//base",
     "//ios/chrome/browser/broadcaster/ui_bundled",
+    "//ios/chrome/browser/fullscreen/public:metrics",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
@@ -96,7 +96,6 @@ source_set("ui") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "fullscreen_metrics_unittest.mm",
     "fullscreen_model_unittest.mm",
     "fullscreen_ui_updater_unittest.mm",
     "fullscreen_web_state_list_observer_unittest.mm",
@@ -107,11 +106,11 @@ source_set("unit_tests") {
 
   deps = [
     ":internal",
-    ":metrics",
     ":ui",
     ":ui_bundled",
     "//base/test:test_support",
     "//ios/chrome/browser/broadcaster/ui_bundled",
+    "//ios/chrome/browser/fullscreen/public:metrics",
     "//ios/chrome/browser/fullscreen/ui_bundled/test",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
@@ -157,12 +156,4 @@ source_set("eg2_tests") {
     "//url",
   ]
   frameworks = [ "UIKit.framework" ]
-}
-
-source_set("metrics") {
-  sources = [
-    "fullscreen_metrics.h",
-    "fullscreen_metrics.mm",
-  ]
-  deps = [ "//base" ]
 }

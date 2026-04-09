@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
-#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_metrics.h"
+#import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 
 enum class ComposeboxEntrypoint;
 namespace base {

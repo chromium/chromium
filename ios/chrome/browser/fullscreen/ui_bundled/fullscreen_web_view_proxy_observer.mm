@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_web_view_proxy_observer.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_content_adjustment_util.h"
-#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/legacy_fullscreen_mediator.h"
 #import "ios/chrome/common/ui/util/ui_util.h"

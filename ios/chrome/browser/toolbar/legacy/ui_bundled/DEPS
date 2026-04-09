@@ -15,6 +15,7 @@ include_rules = [
   "+ios/chrome/browser/first_run/model/first_run.h",
   "+ios/chrome/browser/fullscreen/internal",
   "+ios/chrome/browser/fullscreen/model",
+  "+ios/chrome/browser/fullscreen/public",
   "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/infobars/model/infobar_manager_impl.h",
   "+ios/chrome/browser/infobars/ui_bundled/test_infobar_delegate.h",

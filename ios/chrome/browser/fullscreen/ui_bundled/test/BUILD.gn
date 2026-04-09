@@ -20,9 +20,9 @@ source_set("test") {
   deps = [
     "//base",
     "//ios/chrome/browser/broadcaster/ui_bundled",
+    "//ios/chrome/browser/fullscreen/public:metrics",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/fullscreen/ui_bundled:internal",
-    "//ios/chrome/browser/fullscreen/ui_bundled:metrics",
     "//ios/chrome/browser/fullscreen/ui_bundled:ui",
     "//ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen",
     "//testing/gtest",

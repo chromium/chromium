@@ -7,7 +7,7 @@
 #import "base/memory/ptr_util.h"
 #import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcast_observer_bridge.h"
 #import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcaster.h"
-#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_metrics.h"
+#import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_system_notification_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size.h"

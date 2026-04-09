@@ -6,6 +6,7 @@ include_rules = [
   "+ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h",
   "+ios/chrome/browser/authentication/ui_bundled/signin",
   "+ios/chrome/browser/cobrowse/model",
+  "+ios/chrome/browser/fullscreen/public",
   "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/intelligence/bwg/model",
   "+ios/chrome/browser/intelligence/bwg/utils",
