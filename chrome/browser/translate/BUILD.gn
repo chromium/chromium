@@ -46,6 +46,7 @@ source_set("impl") {
 
   deps = [
     "//chrome/browser:browser_process",
+    "//chrome/browser/language",
     "//chrome/browser/language_detection",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile_manager",
