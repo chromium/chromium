@@ -200,6 +200,8 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
   if (!_hasInitializedInsets) {
     _browserAgent->InvalidateInsetRange();
     _hasInitializedInsets = YES;
+  } else {
+    [self setViewportInsetRange];
   }
   [self updateViewportInsets:_browserAgent->insets()];
 }
@@ -335,16 +337,22 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
 }
 
 - (void)fullscreenDidUpdateObscuredInsetRange:(FullscreenBrowserAgent*)agent {
-  if (!self.webState) {
-    return;
-  }
-  id<CRWWebViewProxy> webViewProxy =
-      WebViewProxyTabHelper::FromWebState(self.webState)->GetWebViewProxy();
-  [webViewProxy setMinimumViewportInset:agent->min_insets()
-                   maximumViewportInset:agent->max_insets()];
+  [self setViewportInsetRange];
 }
 
 #pragma mark - Private
+
+// Sets the min/max viewport insets for the current WebView.
+- (void)setViewportInsetRange {
+  if (!self.webState) {
+    return;
+  }
+
+  id<CRWWebViewProxy> webView =
+      WebViewProxyTabHelper::FromWebState(self.webState)->GetWebViewProxy();
+  [webView setMinimumViewportInset:_browserAgent->min_insets()
+              maximumViewportInset:_browserAgent->max_insets()];
+}
 
 // Updates the WebView's obscuredContentInset and the scroll view's
 // contentInset to adjust for the current position and size of
