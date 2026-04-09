@@ -135,6 +135,8 @@ void VideoFrameFactoryImpl::CreateVideoFrame(
     std::unique_ptr<CodecOutputBuffer> output_buffer,
     base::TimeDelta timestamp,
     gfx::Size natural_size,
+    const gfx::ColorSpace& color_space,
+    const gfx::HDRMetadata& hdr_metadata,
     PromotionHintAggregator::NotifyPromotionHintCB promotion_hint_cb,
     OnceOutputCB output_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -163,22 +165,24 @@ void VideoFrameFactoryImpl::CreateVideoFrame(
     return;
   }
 
-  auto image_ready_cb =
-      base::BindOnce(&VideoFrameFactoryImpl::CreateVideoFrame_OnImageReady,
-                     weak_factory_.GetWeakPtr(), std::move(output_cb),
-                     timestamp, natural_size, !!codec_buffer_wait_coordinator_,
-                     std::move(promotion_hint_cb), pixel_format, overlay_mode_,
-                     video_frame_copy_required_, gpu_task_runner_);
+  auto image_ready_cb = base::BindOnce(
+      &VideoFrameFactoryImpl::CreateVideoFrame_OnImageReady,
+      weak_factory_.GetWeakPtr(), std::move(output_cb), timestamp, natural_size,
+      hdr_metadata, !!codec_buffer_wait_coordinator_,
+      std::move(promotion_hint_cb), pixel_format, overlay_mode_,
+      video_frame_copy_required_, gpu_task_runner_);
 
-  RequestImage(std::move(output_buffer_renderer), std::move(image_ready_cb));
+  RequestImage(std::move(output_buffer_renderer), color_space,
+               std::move(image_ready_cb));
 }
 
 void VideoFrameFactoryImpl::RequestImage(
     std::unique_ptr<CodecOutputBufferRenderer> buffer_renderer,
+    const gfx::ColorSpace& image_color_space,
     ImageWithInfoReadyCB image_ready_cb) {
-  auto info_cb =
-      base::BindOnce(&VideoFrameFactoryImpl::CreateVideoFrame_OnFrameInfoReady,
-                     weak_factory_.GetWeakPtr(), std::move(image_ready_cb));
+  auto info_cb = base::BindOnce(
+      &VideoFrameFactoryImpl::CreateVideoFrame_OnFrameInfoReady,
+      weak_factory_.GetWeakPtr(), std::move(image_ready_cb), image_color_space);
 
   frame_info_helper_->GetFrameInfo(std::move(buffer_renderer),
                                    std::move(info_cb));
@@ -186,6 +190,7 @@ void VideoFrameFactoryImpl::RequestImage(
 
 void VideoFrameFactoryImpl::CreateVideoFrame_OnFrameInfoReady(
     ImageWithInfoReadyCB image_ready_cb,
+    gfx::ColorSpace image_color_space,
     std::unique_ptr<CodecOutputBufferRenderer> output_buffer_renderer,
     FrameInfoHelper::FrameInfo frame_info) {
   // If we don't have output buffer here we can't rely on reply from
@@ -195,7 +200,7 @@ void VideoFrameFactoryImpl::CreateVideoFrame_OnFrameInfoReady(
   // all RequestImage, so skip updating image_spec_ in this case.
   if (output_buffer_renderer) {
     image_spec_.coded_size = frame_info.coded_size;
-    image_spec_.color_space = output_buffer_renderer->color_space();
+    image_spec_.color_space = image_color_space;
   } else {
     // It is possible that we come here from RunAfterPendingVideoFrames before
     // CreateVideoFrame was called. In this case we don't have coded_size, but
@@ -221,6 +226,7 @@ void VideoFrameFactoryImpl::CreateVideoFrame_OnImageReady(
     OnceOutputCB output_cb,
     base::TimeDelta timestamp,
     gfx::Size natural_size,
+    gfx::HDRMetadata hdr_metadata,
     bool is_texture_owner_backed,
     PromotionHintAggregator::NotifyPromotionHintCB promotion_hint_cb,
     VideoPixelFormat pixel_format,
@@ -273,6 +279,7 @@ void VideoFrameFactoryImpl::CreateVideoFrame_OnImageReady(
   frame->set_ycbcr_info(frame_info.ycbcr_info);
 
   frame->set_color_space(color_space);
+  frame->set_hdr_metadata(hdr_metadata);
 
   frame->metadata().copy_required = video_frame_copy_required;
 
@@ -345,7 +352,7 @@ void VideoFrameFactoryImpl::RunAfterPendingVideoFrames(
       },
       std::move(closure));
 
-  RequestImage(nullptr, std::move(image_ready_cb));
+  RequestImage(nullptr, gfx::ColorSpace(), std::move(image_ready_cb));
 }
 
 bool VideoFrameFactoryImpl::IsStalled() const {

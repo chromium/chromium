@@ -1116,6 +1116,18 @@ bool MediaCodecVideoDecoder::DequeueOutput() {
   if (output_buffer->size().GetArea() > decoder_config_.coded_size().GetArea())
     decoder_config_.set_coded_size(output_buffer->size());
 
+  // TODO(https://crbug.com/395659818): Translate from MediaFormat's color
+  // space to gfx::ColorSpace here.
+  const gfx::ColorSpace color_space = output_buffer->color_space();
+  // Attach the HDR metadata if the color space got this far and is still an HDR
+  // color space.  Note that it might be converted to something else along the
+  // way, often sRGB.  In that case, don't confuse things with HDR metadata.
+  // TODO(https://crbug.com/395659818): Revisit this behavior.
+  gfx::HDRMetadata hdr_metadata;
+  if (color_space.IsHDR() && !decoder_config_.hdr_metadata().IsEmpty()) {
+    hdr_metadata = decoder_config_.hdr_metadata();
+  }
+
   gfx::Rect visible_rect(output_buffer->size());
   std::unique_ptr<ScopedAsyncTrace> async_trace =
       ScopedAsyncTrace::CreateIfEnabled(
@@ -1132,8 +1144,8 @@ bool MediaCodecVideoDecoder::DequeueOutput() {
   }
   video_frame_factory_->CreateVideoFrame(
       std::move(output_buffer), presentation_time,
-      decoder_config_.aspect_ratio().GetNaturalSize(visible_rect),
-      CreatePromotionHintCB(),
+      decoder_config_.aspect_ratio().GetNaturalSize(visible_rect), color_space,
+      hdr_metadata, CreatePromotionHintCB(),
       base::BindOnce(&MediaCodecVideoDecoder::ForwardVideoFrame,
                      weak_factory_.GetWeakPtr(), reset_generation_,
                      std::move(async_trace), base::TimeTicks::Now()));
@@ -1166,14 +1178,6 @@ void MediaCodecVideoDecoder::ForwardVideoFrame(
     EnterTerminalState(State::kError, {DecoderStatus::Codes::kFailed,
                                        "Could not create VideoFrame"});
     return;
-  }
-
-  // Attach the HDR metadata if the color space got this far and is still an HDR
-  // color space.  Note that it might be converted to something else along the
-  // way, often sRGB.  In that case, don't confuse things with HDR metadata.
-  if (frame->ColorSpace().IsHDR() &&
-      !decoder_config_.hdr_metadata().IsEmpty()) {
-    frame->set_hdr_metadata(decoder_config_.hdr_metadata());
   }
 
   if (media_crypto_context_) {

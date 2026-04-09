@@ -79,11 +79,6 @@ class MEDIA_GPU_EXPORT CodecOutputBufferRenderer
   bool CanGuessCodedSize() const { return output_buffer_->CanGuessCodedSize(); }
   gfx::Size GuessCodedSize() const { return output_buffer_->GuessCodedSize(); }
 
-  // Color space of the image.
-  const gfx::ColorSpace& color_space() const {
-    return output_buffer_->color_space();
-  }
-
   scoped_refptr<gpu::TextureOwner> texture_owner() const {
     return codec_buffer_wait_coordinator_
                ? codec_buffer_wait_coordinator_->texture_owner()

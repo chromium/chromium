@@ -70,6 +70,8 @@ class MEDIA_GPU_EXPORT VideoFrameFactoryImpl
       std::unique_ptr<CodecOutputBuffer> output_buffer,
       base::TimeDelta timestamp,
       gfx::Size natural_size,
+      const gfx::ColorSpace& color_space,
+      const gfx::HDRMetadata& hdr_metadata,
       PromotionHintAggregator::NotifyPromotionHintCB promotion_hint_cb,
       OnceOutputCB output_cb) override;
   void RunAfterPendingVideoFrames(base::OnceClosure closure) override;
@@ -83,6 +85,7 @@ class MEDIA_GPU_EXPORT VideoFrameFactoryImpl
 
  private:
   void RequestImage(std::unique_ptr<CodecOutputBufferRenderer> buffer_renderer,
+                    const gfx::ColorSpace& image_color_space,
                     ImageWithInfoReadyCB image_ready_cb);
   // ImageReadyCB that will construct a VideoFrame, and forward it to
   // |output_cb| if construction succeeds.  This is static for two reasons.
@@ -100,6 +103,7 @@ class MEDIA_GPU_EXPORT VideoFrameFactoryImpl
       OnceOutputCB output_cb,
       base::TimeDelta timestamp,
       gfx::Size natural_size,
+      gfx::HDRMetadata hdr_metadata,
       bool is_texture_owner_backed,
       PromotionHintAggregator::NotifyPromotionHintCB promotion_hint_cb,
       VideoPixelFormat pixel_format,
@@ -112,6 +116,7 @@ class MEDIA_GPU_EXPORT VideoFrameFactoryImpl
 
   void CreateVideoFrame_OnFrameInfoReady(
       ImageWithInfoReadyCB image_ready_cb,
+      gfx::ColorSpace image_color_space,
       std::unique_ptr<CodecOutputBufferRenderer> output_buffer_renderer,
       FrameInfoHelper::FrameInfo frame_info);
 

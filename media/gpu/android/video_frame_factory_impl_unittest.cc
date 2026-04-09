@@ -122,6 +122,7 @@ class VideoFrameFactoryImplTest : public testing::Test {
 
     impl_->CreateVideoFrame(std::move(output_buffer), base::TimeDelta(),
                             video_frame_params_.natural_size,
+                            video_frame_params_.color_space, gfx::HDRMetadata(),
                             base::NullCallback(), output_cb_.Get());
     base::RunLoop().RunUntilIdle();
 
@@ -227,7 +228,9 @@ TEST_F(VideoFrameFactoryImplTest, CreateVideoFrameFailsIfUnsupportedFormat) {
   EXPECT_CALL(*image_provider_raw_, MockRequestImage()).Times(0);
 
   impl_->CreateVideoFrame(std::move(output_buffer), base::TimeDelta(),
-                          natural_size, base::NullCallback(), output_cb.Get());
+                          natural_size, gfx::ColorSpace::CreateREC709(),
+                          gfx::HDRMetadata(), base::NullCallback(),
+                          output_cb.Get());
   base::RunLoop().RunUntilIdle();
 }
 
