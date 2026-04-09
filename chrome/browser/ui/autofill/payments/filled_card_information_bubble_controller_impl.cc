@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
@@ -436,7 +437,7 @@ void FilledCardInformationBubbleControllerImpl::DoShowBubble() {
 
 bool FilledCardInformationBubbleControllerImpl::IsWebContentsActive() {
   BrowserWindowInterface* active_browser =
-      chrome::FindBrowserWithActiveWindow();
+      GlobalBrowserCollection::GetInstance()->GetActiveBrowser();
   if (!active_browser) {
     return false;
   }

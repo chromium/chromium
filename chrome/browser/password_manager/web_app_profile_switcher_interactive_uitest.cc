@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -191,8 +192,8 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileSwitcherBrowserTest,
 
   // Check that there is only one browser for the first_profile and it's active.
   ASSERT_EQ(chrome::FindAllTabbedBrowsersWithProfile(first_profile).size(), 1U);
-  EXPECT_EQ(chrome::FindBrowserWithActiveWindow(),
-            first_profile_app_browser->GetBrowserForMigrationOnly());
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetActiveBrowser(),
+            first_profile_app_browser);
 
   EXPECT_THAT(histogram_tester.GetAllSamples("PasswordManager.ShortcutMetric"),
               base::BucketsAre(base::Bucket(2, 1)));

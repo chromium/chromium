@@ -54,11 +54,11 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -235,7 +235,8 @@ ChromeNewWindowClient* ChromeNewWindowClient::Get() {
 }
 
 void ChromeNewWindowClient::NewTab() {
-  BrowserWindowInterface* browser = chrome::FindBrowserWithActiveWindow();
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->GetActiveBrowser();
   if (browser &&
       browser->GetType() == BrowserWindowInterface::TYPE_NORMAL) {
     chrome::NewTab(browser, NewTabTypes::kNewTabCommand);
@@ -266,7 +267,8 @@ void ChromeNewWindowClient::NewWindow(bool is_incognito,
     return;
   }
 
-  BrowserWindowInterface* browser = chrome::FindBrowserWithActiveWindow();
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->GetActiveBrowser();
   Profile* profile = (browser && browser->GetProfile())
                          ? browser->GetProfile()->GetOriginalProfile()
                          : ProfileManager::GetActiveUserProfile();
@@ -489,7 +491,8 @@ void ChromeNewWindowClient::RestoreTab() {
     return;
   }
 
-  BrowserWindowInterface* browser = chrome::FindBrowserWithActiveWindow();
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->GetActiveBrowser();
   Profile* profile = browser ? browser->GetProfile() : nullptr;
   if (!profile) {
     profile = ProfileManager::GetActiveUserProfile();
@@ -527,8 +530,9 @@ void ChromeNewWindowClient::OpenDiagnostics() {
 void ChromeNewWindowClient::OpenFeedbackPage(
     FeedbackSource source,
     const std::string& description_template) {
-  chrome::OpenFeedbackDialog(chrome::FindBrowserWithActiveWindow(),
-                             MapToChromeSource(source), description_template);
+  chrome::OpenFeedbackDialog(
+      GlobalBrowserCollection::GetInstance()->GetActiveBrowser(),
+      MapToChromeSource(source), description_template);
 }
 
 void ChromeNewWindowClient::OpenPersonalizationHub() {

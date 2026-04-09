@@ -18,7 +18,6 @@
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
@@ -183,7 +182,7 @@ TabStripModel* TabLifecycleUnitSource::GetFocusedTabStripModel() const {
     return focused_tab_strip_model_for_testing_;
   }
   BrowserWindowInterface* const focused_browser =
-      chrome::FindBrowserWithActiveWindow();
+      GlobalBrowserCollection::GetInstance()->GetActiveBrowser();
   if (!focused_browser) {
     return nullptr;
   }
@@ -355,8 +354,8 @@ void TabLifecycleUnitSource::OnBrowserActivated(
     BrowserWindowInterface* browser) {
   // In this case, we know that `browser` is active. Pass it directly into
   // `UpdateFocusedTab` since during startup
-  // `chrome::FindBrowserWithActiveWindow()` sometimes fails to return the
-  // proper browser.
+  // `GlobalBrowserCollection::GetInstance()->GetActiveBrowser()` sometimes
+  // fails to return the proper browser.
   UpdateFocusedTab(browser);
 }
 

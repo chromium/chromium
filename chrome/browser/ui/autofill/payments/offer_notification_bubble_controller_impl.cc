@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -264,7 +265,7 @@ OfferNotificationBubbleControllerImpl::GetBubbleControllerBaseWeakPtr() {
 
 bool OfferNotificationBubbleControllerImpl::IsWebContentsActive() {
   BrowserWindowInterface* active_browser =
-      chrome::FindBrowserWithActiveWindow();
+      GlobalBrowserCollection::GetInstance()->GetActiveBrowser();
   if (!active_browser) {
     return false;
   }

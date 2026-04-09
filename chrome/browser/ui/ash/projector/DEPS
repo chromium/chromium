@@ -36,6 +36,8 @@ specific_include_rules = {
     "+chrome/browser/ui/browser_navigator.h",
     "+chrome/browser/ui/browser_navigator_params.h",
     "+chrome/browser/ui/browser_window.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
+    "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
     "+chrome/browser/ui/tabs/tab_strip_model.h",
     "+chrome/test"
   ],

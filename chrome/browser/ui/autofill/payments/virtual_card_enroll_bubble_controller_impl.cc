@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace autofill {
@@ -449,7 +450,7 @@ VirtualCardEnrollBubbleControllerImpl::GetBubbleControllerBaseWeakPtr() {
 #if !BUILDFLAG(IS_ANDROID)
 bool VirtualCardEnrollBubbleControllerImpl::IsWebContentsActive() {
   BrowserWindowInterface* active_browser =
-      chrome::FindBrowserWithActiveWindow();
+      GlobalBrowserCollection::GetInstance()->GetActiveBrowser();
   if (!active_browser) {
     return false;
   }

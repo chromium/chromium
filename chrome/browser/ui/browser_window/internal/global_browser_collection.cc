@@ -11,6 +11,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "ui/base/base_window.h"
 
 GlobalBrowserCollection::GlobalBrowserCollection()
     : platform_delegate_(GlobalBrowserCollectionPlatformDelegate(*this)) {}
@@ -81,4 +83,9 @@ void GlobalBrowserCollection::OnBrowserDeactivated(
 GlobalBrowserCollectionPlatformDelegate*
 GlobalBrowserCollection::GetPlatformDelegate() {
   return &platform_delegate_;
+}
+
+BrowserWindowInterface* GlobalBrowserCollection::GetActiveBrowser() {
+  BrowserWindowInterface* browser = GetLastActiveBrowser();
+  return (browser && browser->GetWindow()->IsActive()) ? browser : nullptr;
 }

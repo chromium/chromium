@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/url_constants.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -100,7 +101,8 @@ void ShoppingUiHandlerDelegate::SwitchToOrOpenTab(const GURL& url) {
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
     return;
   }
-  BrowserWindowInterface* browser = chrome::FindBrowserWithActiveWindow();
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->GetActiveBrowser();
   if (!browser) {
     browser = chrome::FindLastActiveWithProfile(profile_);
   }

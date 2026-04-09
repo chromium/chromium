@@ -13,7 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/policy_test_utils.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_required_dialog_view.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
@@ -178,7 +178,8 @@ IN_PROC_BROWSER_TEST_F(RelaunchNotificationControllerUiTest,
   // Make sure a browser window is active.
   auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ASSERT_TRUE(browser_view->IsActive());
-  ASSERT_EQ(chrome::FindBrowserWithActiveWindow(), browser());
+  ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetActiveBrowser(),
+            browser());
 
   // Simulate an update and wait for the notification to show.
   RelaunchRequiredDialogView* dialog = nullptr;
@@ -197,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(RelaunchNotificationControllerUiTest,
 
   // Deactivate the browser window.
   MinimizeBrowser(browser_view);
-  ASSERT_FALSE(chrome::FindBrowserWithActiveWindow());
+  ASSERT_FALSE(GlobalBrowserCollection::GetInstance()->GetActiveBrowser());
 
   // The code below assumes that `action_timeout` is greater than 2.5 seconds.
   ASSERT_GT(TestTimeouts::action_timeout(), base::Milliseconds(2500));

@@ -20,6 +20,8 @@
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
@@ -90,9 +92,10 @@ void WaitForFirstFileLoadInActiveWindow(const std::string& filename) {
       })();
   )";
 
-  Browser* app_browser = chrome::FindBrowserWithActiveWindow();
+  BrowserWindowInterface* app_browser =
+      GlobalBrowserCollection::GetInstance()->GetActiveBrowser();
   content::WebContents* web_ui =
-      app_browser->tab_strip_model()->GetActiveWebContents();
+      app_browser->GetTabStripModel()->GetActiveWebContents();
   MediaAppUiBrowserTest::PrepareAppForTest(web_ui);
 
   EXPECT_EQ("loaded",

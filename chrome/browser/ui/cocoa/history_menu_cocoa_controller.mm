@@ -12,11 +12,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/sessions/core/session_id.h"
@@ -52,7 +52,8 @@ void OpenURLForItem(HistoryMenuBridge::HistoryItem node,
     // Specifically, if the active window has the same root profile as the
     // bridge, target the active profile. Without this, history menu items open
     // in the nearest non-incognito window, or create one.
-    if (auto* active_browser = chrome::FindBrowserWithActiveWindow()) {
+    if (auto* active_browser =
+            GlobalBrowserCollection::GetInstance()->GetActiveBrowser()) {
       if (active_browser->GetProfile()->GetOriginalProfile() ==
           target_profile) {
         target_profile = active_browser->GetProfile();

@@ -39,6 +39,10 @@ class GlobalBrowserCollection final : public BrowserCollection {
 
   GlobalBrowserCollectionPlatformDelegate* GetPlatformDelegate();
 
+  // Returns the last-active browser if its window is currently active,
+  // nullptr otherwise.
+  BrowserWindowInterface* GetActiveBrowser();
+
  protected:
   // BrowserCollection:
   BrowserVector GetBrowsers(Order order) override;

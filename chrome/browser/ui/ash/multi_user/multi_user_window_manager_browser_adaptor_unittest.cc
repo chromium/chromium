@@ -48,8 +48,9 @@
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/session/session_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/test_browser_window_aura.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -1651,10 +1652,10 @@ TEST_F(MultiUserWindowManagerBrowserAdaptorTest, WindowsOrderPreservedTests) {
   EXPECT_EQ(mru_list[2], window(2));
 }
 
-// Tests that chrome::FindBrowserWithActiveWindow works properly in
+// Tests that GlobalBrowserCollection::GetActiveBrowser() works properly in
 // multi-user scenario, that is it should return the browser with active window
 // associated with it (crbug.com/675265).
-TEST_F(MultiUserWindowManagerBrowserAdaptorTest, FindBrowserWithActiveWindow) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest, GetActiveBrowser) {
   AddLoggedInUsers({kAccountIdA, kAccountIdB});
 
   SetUpForThisManyWindows(1);
@@ -1673,13 +1674,15 @@ TEST_F(MultiUserWindowManagerBrowserAdaptorTest, FindBrowserWithActiveWindow) {
   ui_test_utils::DeprecatedFakeActivateBrowser(browser.get());
   EXPECT_EQ(browser.get(), GetLastActiveBrowserWindowInterfaceWithAnyProfile());
   EXPECT_TRUE(browser->window()->IsActive());
-  EXPECT_EQ(browser.get(), chrome::FindBrowserWithActiveWindow());
+  EXPECT_EQ(browser.get(),
+            GlobalBrowserCollection::GetInstance()->GetActiveBrowser());
 
   // Switch to another user's desktop with no active window.
   SwitchActiveUser(kAccountIdB);
   EXPECT_EQ(browser.get(), GetLastActiveBrowserWindowInterfaceWithAnyProfile());
   EXPECT_FALSE(browser->window()->IsActive());
-  EXPECT_EQ(nullptr, chrome::FindBrowserWithActiveWindow());
+  EXPECT_EQ(nullptr,
+            GlobalBrowserCollection::GetInstance()->GetActiveBrowser());
 }
 
 // Tests that a window's bounds get restored to their pre tablet mode bounds,
