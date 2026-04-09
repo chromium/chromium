@@ -72,7 +72,7 @@ BASE_FEATURE(kContextualTasksUrlRedirectToAimUrl,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kContextualTasksUseStratusDarkModeColors,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, animates the caret.
 BASE_FEATURE(kContextualTasksAnimatedCaret, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -212,8 +212,9 @@ const base::FeatureParam<bool> kForceGscInTabMode(
 // Version 1.2: Client is capable of composebox camouflage.
 // Version 1.3: Bug fix for privacy notice on composebox camouflage.
 // Version 2.0: M146 respin launch candidate.
+// Version 2.1: Enables stratus dark mode colors.
 const base::FeatureParam<std::string> kContextualTasksUserAgentSuffix{
-    &kContextualTasks, "contextual-tasks-user-agent-suffix", "Cobrowsing/2.0"};
+    &kContextualTasks, "contextual-tasks-user-agent-suffix", "Cobrowsing/2.1"};
 
 const base::FeatureParam<std::string> kContextualTasksHelpUrl(
     &kContextualTasks,
