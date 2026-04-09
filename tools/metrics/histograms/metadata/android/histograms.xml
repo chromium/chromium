@@ -6317,19 +6317,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.TabStrip.ReopenClosedEntry.Result" enum="Boolean"
-    expires_after="2027-01-26">
-  <owner>mklw@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    Records the result of the 'Reopen closed entry' action from the empty space
-    tab strip context menu. Recorded when the user selects the menu item. True
-    if the tab model is non-null, thus succeeding to call the tab model's
-    openMostRecentlyClosedEntry method. False if the tab model is null, thus
-    failing to call the method.
-  </summary>
-</histogram>
-
 <histogram name="Android.TabStrip.TabGroupCollapsed" enum="Boolean"
     expires_after="2025-11-09">
   <owner>nemco@google.com</owner>

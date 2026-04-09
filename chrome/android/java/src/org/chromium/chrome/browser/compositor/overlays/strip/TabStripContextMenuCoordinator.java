@@ -18,7 +18,6 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -55,7 +54,7 @@ import java.util.Set;
 @NullMarked
 public class TabStripContextMenuCoordinator {
     private final Context mContext;
-    private final @Nullable TabModel mTabModel;
+    private final TabModel mTabModel;
     private final MultiInstanceManager mMultiInstanceManager;
     private final WindowAndroid mWindowAndroid;
     private final SnackbarManager mSnackbarManager;
@@ -63,7 +62,7 @@ public class TabStripContextMenuCoordinator {
     private @Nullable AnchoredPopupWindow mMenuWindow;
 
     public static TabStripContextMenuCoordinator createContextMenuCoordinator(
-            @Nullable TabModel tabModel,
+            TabModel tabModel,
             MultiInstanceManager multiInstanceManager,
             WindowAndroid windowAndroid,
             SnackbarManager snackbarManager,
@@ -73,7 +72,7 @@ public class TabStripContextMenuCoordinator {
     }
 
     private TabStripContextMenuCoordinator(
-            @Nullable TabModel tabModel,
+            TabModel tabModel,
             MultiInstanceManager multiInstanceManager,
             WindowAndroid windowAndroid,
             SnackbarManager snackbarManager,
@@ -159,10 +158,7 @@ public class TabStripContextMenuCoordinator {
                             .build());
             // Add "Reopen closed tab/tabs/group" option.
             @RecentlyClosedEntryType
-            int recentlyClosedEntryType =
-                    (mTabModel != null)
-                            ? mTabModel.getMostRecentlyClosedEntryType()
-                            : RecentlyClosedEntryType.NONE;
+            int recentlyClosedEntryType = mTabModel.getMostRecentlyClosedEntryType();
             if (recentlyClosedEntryType != RecentlyClosedEntryType.NONE) {
                 int titleRes = R.string.menu_reopen_closed_tab;
                 if (recentlyClosedEntryType == RecentlyClosedEntryType.TABS) {
@@ -178,7 +174,7 @@ public class TabStripContextMenuCoordinator {
                                 .build());
             }
             // Add "Bookmark all tabs" option.
-            if (!isIncognito && mTabModel != null && mTabModel.getCount() > 1) {
+            if (!isIncognito && mTabModel.getCount() > 1) {
                 itemList.add(
                         new ListItemBuilder()
                                 .withTitleRes(R.string.menu_bookmark_all_tabs)
@@ -245,14 +241,7 @@ public class TabStripContextMenuCoordinator {
                 mOnNewTabClick.run();
             } else if (model.get(MENU_ITEM_ID) == R.id.reopen_closed_entry) {
                 RecordUserAction.record("Android.TabStripMenu.ReopenClosedEntry");
-                if (mTabModel != null) {
-                    RecordHistogram.recordBooleanHistogram(
-                            "Android.TabStripMenu.ReopenClosedEntry.Result", true);
-                    mTabModel.openMostRecentlyClosedEntry();
-                } else {
-                    RecordHistogram.recordBooleanHistogram(
-                            "Android.TabStripMenu.ReopenClosedEntry.Result", false);
-                }
+                mTabModel.openMostRecentlyClosedEntry();
             } else if (model.get(MENU_ITEM_ID) == R.id.bookmark_all_tabs) {
                 BookmarkAllTabsHandler.bookmarkAllTabs(mTabModel, mWindowAndroid, mSnackbarManager);
             } else if (model.get(MENU_ITEM_ID) == R.id.name_window) {
