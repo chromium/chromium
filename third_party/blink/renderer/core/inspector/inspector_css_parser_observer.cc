@@ -262,18 +262,18 @@ void InspectorCSSParserObserver::ObserveComment(unsigned start_offset,
 
   // The lexer is not inside a property AND it is scanning a declaration-aware
   // rule body.
-  String comment_text =
-      parsed_text_.Substring(start_offset, end_offset - start_offset);
+  StringView comment_text =
+      parsed_text_.subview(start_offset, end_offset - start_offset);
 
   DCHECK(comment_text.starts_with("/*"));
-  comment_text = comment_text.Substring(2);
+  comment_text.remove_prefix(2);
 
   // Require well-formed comments.
   if (!comment_text.ends_with("*/")) {
     return;
   }
-  comment_text =
-      comment_text.substr(0, comment_text.length() - 2).StripWhiteSpace();
+  comment_text.remove_suffix(2);
+  comment_text = comment_text.StripWhiteSpace();
   if (comment_text.empty()) {
     return;
   }
@@ -281,9 +281,11 @@ void InspectorCSSParserObserver::ObserveComment(unsigned start_offset,
   // FIXME: Use the actual rule type rather than STYLE_RULE?
   CSSRuleSourceDataList source_data;
 
-  InspectorCSSParserObserver observer(comment_text, document_, &source_data);
+  String comment_text_string = comment_text.ToString();
+  InspectorCSSParserObserver observer(comment_text_string, document_,
+                                      &source_data);
   CSSParser::ParseDeclarationListForInspector(
-      ParserContextForDocument(document_), comment_text, observer);
+      ParserContextForDocument(document_), comment_text_string, observer);
   Vector<CSSPropertySourceData>& comment_property_data =
       source_data.front()->property_data;
   if (comment_property_data.size() != 1) {

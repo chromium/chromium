@@ -122,7 +122,7 @@ bool SpellCheckMarkerListImpl::RemoveMarkersUnderWords(
     const DocumentMarker& marker = *markers_[j - 1];
     const unsigned start = marker.StartOffset();
     const unsigned length = marker.EndOffset() - marker.StartOffset();
-    const String& marker_text = node_text.Substring(start, length);
+    const String& marker_text = node_text.DeprecatedSubstring(start, length);
     if (words.Contains(marker_text)) {
       markers_.EraseAt(j - 1);
       removed_markers = true;

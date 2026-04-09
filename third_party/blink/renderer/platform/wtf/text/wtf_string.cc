@@ -129,7 +129,7 @@ String& String::erase(size_type pos, size_type len) {
   return *this;
 }
 
-String String::Substring(size_type pos, size_type len) const {
+String String::DeprecatedSubstring(size_type pos, size_type len) const {
   if (!impl_)
     return String();
   return impl_->Substring(pos, len);

@@ -37,7 +37,9 @@ LayoutTextFragment::LayoutTextFragment(Node* node,
                                        const String& str,
                                        int start_offset,
                                        int length)
-    : LayoutText(node, str ? str.Substring(start_offset, length) : String()),
+    : LayoutText(
+          node,
+          str ? str.DeprecatedSubstring(start_offset, length) : String()),
       start_(start_offset),
       fragment_length_(length),
       is_remaining_text_layout_object_(false),
@@ -105,7 +107,7 @@ String LayoutTextFragment::OriginalText() const {
   String result = CompleteText();
   if (!result)
     return String();
-  return result.Substring(Start(), FragmentLength());
+  return result.DeprecatedSubstring(Start(), FragmentLength());
 }
 
 void LayoutTextFragment::TextDidChange() {

@@ -365,7 +365,8 @@ void EditContext::updateText(uint32_t start,
     }
   }
 
-  text_ = StrCat({text_.subview(0, start), new_text, text_.Substring(end)});
+  text_ = StrCat(
+      {text_.subview(0, start), new_text, text_.DeprecatedSubstring(end)});
 
   if (RuntimeEnabledFeatures::
           EditContextHandleTextOrSelectionUpdateDuringCompositionEnabled()) {
@@ -459,9 +460,9 @@ bool EditContext::SetComposition(
 
   // Update the selection and buffer if the composition range has changed.
   String update_text(text);
-  text_ = StrCat({text_.subview(0, actual_replacement_range.StartOffset()),
-                  update_text,
-                  text_.Substring(actual_replacement_range.EndOffset())});
+  text_ = StrCat(
+      {text_.subview(0, actual_replacement_range.StartOffset()), update_text,
+       text_.DeprecatedSubstring(actual_replacement_range.EndOffset())});
 
   // Fire textupdate and textformatupdate events to JS.
   // Note the EditContext's internal selection start is a global offset while
@@ -566,7 +567,7 @@ void EditContext::OnCancelComposition() {
 
   // Delete the text in the composition range
   text_ = StrCat({text_.subview(0, composition_range_start_),
-                  text_.Substring(composition_range_end_)});
+                  text_.DeprecatedSubstring(composition_range_end_)});
 
   // Place the selection where the deleted composition had been
   SetSelection(composition_range_start_, composition_range_start_);
@@ -584,7 +585,7 @@ bool EditContext::InsertText(const WebString& text) {
 
   String update_text(text);
   text_ = StrCat({text_.subview(0, OrderedSelectionStart()), update_text,
-                  text_.Substring(OrderedSelectionEnd())});
+                  text_.DeprecatedSubstring(OrderedSelectionEnd())});
   uint32_t update_range_start = OrderedSelectionStart();
   uint32_t update_range_end = OrderedSelectionEnd();
   SetSelection(OrderedSelectionStart() + update_text.length(),
@@ -704,9 +705,9 @@ bool EditContext::CommitText(const WebString& text,
     }
   }
 
-  text_ = StrCat({text_.subview(0, actual_replacement_range.StartOffset()),
-                  update_text,
-                  text_.Substring(actual_replacement_range.EndOffset())});
+  text_ = StrCat(
+      {text_.subview(0, actual_replacement_range.StartOffset()), update_text,
+       text_.DeprecatedSubstring(actual_replacement_range.EndOffset())});
   SetSelection(actual_replacement_range.StartOffset() + update_text.length(),
                actual_replacement_range.StartOffset() + update_text.length());
 
@@ -733,9 +734,9 @@ bool EditContext::FinishComposingText(
       RuntimeEnabledFeatures::EditContextAssignmentAsPerSpecEnabled();
   int text_length = 0;
   if (has_composition_) {
-    String text =
-        text_.Substring(composition_range_start_,
-                        composition_range_end_ - composition_range_start_);
+    String text = text_.DeprecatedSubstring(
+        composition_range_start_,
+        composition_range_end_ - composition_range_start_);
     text_length = text.length();
     DispatchTextFormatEvent(std::vector<ui::ImeTextSpan>());
     DispatchCompositionEndEvent(text);
@@ -758,7 +759,7 @@ void EditContext::ExtendSelectionAndDelete(int before, int after) {
   before = std::min(before, static_cast<int>(OrderedSelectionStart()));
   after = std::min(after, static_cast<int>(text_.length()));
   text_ = StrCat({text_.subview(0, OrderedSelectionStart() - before),
-                  text_.Substring(OrderedSelectionEnd() + after)});
+                  text_.DeprecatedSubstring(OrderedSelectionEnd() + after)});
   const uint32_t update_range_start = OrderedSelectionStart() - before;
   const uint32_t update_range_end = OrderedSelectionEnd() + after;
   SetSelection(OrderedSelectionStart() - before,
@@ -779,12 +780,12 @@ void EditContext::DeleteSurroundingText(int before, int after) {
       update_range_start,
       OrderedSelectionEnd() - (OrderedSelectionStart() - update_range_start));
   CHECK_GE(selection_end_, selection_start_);
-  text_ = StrCat(
-      {text_.subview(0, update_range_start),
-       text_.Substring(selection_start_, selection_end_ - selection_start_),
-       text_.Substring(update_range_end)});
-  String update_event_text(
-      text_.Substring(selection_start_, selection_end_ - selection_start_));
+  text_ = StrCat({text_.subview(0, update_range_start),
+                  text_.DeprecatedSubstring(selection_start_,
+                                            selection_end_ - selection_start_),
+                  text_.DeprecatedSubstring(update_range_end)});
+  String update_event_text(text_.DeprecatedSubstring(
+      selection_start_, selection_end_ - selection_start_));
 
   if (is_backwards_selection) {
     SetSelection(selection_end_, selection_start_);

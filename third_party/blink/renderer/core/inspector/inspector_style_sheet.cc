@@ -780,7 +780,7 @@ std::unique_ptr<protocol::CSS::CSSStyle> InspectorStyle::BuildObjectForStyle(
     if (success) {
       const SourceRange& declarations_range =
           source_data_->rule_declarations_range;
-      result->setCssText(sheet_text.Substring(
+      result->setCssText(sheet_text.DeprecatedSubstring(
           declarations_range.start,
           declarations_range.end - declarations_range.start));
     }
@@ -807,7 +807,8 @@ bool InspectorStyle::TextForRange(const SourceRange& range, String* result) {
   DCHECK(0 <= range.start);
   DCHECK_LE(range.start, range.end);
   DCHECK_LE(range.end, style_sheet_text.length());
-  *result = style_sheet_text.Substring(range.start, range.end - range.start);
+  *result = style_sheet_text.DeprecatedSubstring(range.start,
+                                                 range.end - range.start);
   return true;
 }
 
@@ -1380,10 +1381,10 @@ CSSRule* InspectorStyleSheet::SetStyleText(
     // so if we extract the text from the start of the header to the end of the
     // body, we only need to add `@font-feature-values ` and `}` to have the
     // full rule text.
-    auto old_prefix = text_.Substring(
+    auto old_prefix = text_.DeprecatedSubstring(
         parent_source_data->rule_header_range.start,
         range.start - parent_source_data->rule_header_range.start);
-    auto old_suffix = text_.Substring(
+    auto old_suffix = text_.DeprecatedSubstring(
         range.end, parent_source_data->rule_body_range.end - range.end);
 
     if (!(old_prefix.ends_with('{') && old_suffix.starts_with('}'))) {
@@ -1903,7 +1904,7 @@ void InspectorStyleSheet::ReplaceText(const SourceRange& range,
                                       String* old_text) {
   String sheet_text = text_;
   if (old_text) {
-    *old_text = sheet_text.Substring(range.start, range.length());
+    *old_text = sheet_text.DeprecatedSubstring(range.start, range.length());
   }
   sheet_text.replace(range.start, range.length(), text);
   if (new_range) {
@@ -2152,7 +2153,8 @@ InspectorStyleSheet::SelectorsFromSource(CSSRuleSourceData* source_data,
   for (wtf_size_t i = 0, size = ranges.size(); i < size && obj_selector;
        ++i, obj_selector = CSSSelectorList::Next(*obj_selector)) {
     const SourceRange& range = ranges.at(i);
-    String selector = sheet_text.Substring(range.start, range.length());
+    String selector =
+        sheet_text.DeprecatedSubstring(range.start, range.length());
 
     if (comment) {
       // We don't want to see any comments in the selector components, only the

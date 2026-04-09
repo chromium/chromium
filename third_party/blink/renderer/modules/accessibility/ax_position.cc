@@ -1041,7 +1041,7 @@ int AXPosition::GetLeadingIgnoredCharacterCount(const OffsetMapping* mapping,
     }
 
     if (unit.TextContentStart() != previous_content_end) {
-      String substring = text.Substring(
+      String substring = text.DeprecatedSubstring(
           previous_content_end, unit.TextContentStart() - previous_content_end);
       String unignored = substring.RemoveCharacters(IsIgnoredCharacter);
       count += substring.length() - unignored.length();

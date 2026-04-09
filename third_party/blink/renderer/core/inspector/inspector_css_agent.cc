@@ -4681,8 +4681,8 @@ protocol::Response InspectorCSSAgent::setEffectivePropertyValueForNode(
   SourceRange body_range = source_data->rule_body_range;
   String style_sheet_text;
   inspector_style_sheet->GetText(&style_sheet_text);
-  String style_text =
-      style_sheet_text.Substring(body_range.start, body_range.length());
+  String style_text = style_sheet_text.DeprecatedSubstring(body_range.start,
+                                                           body_range.length());
   SourceRange change_range;
   if (found_index == -1) {
     String new_property_text =

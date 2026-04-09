@@ -513,7 +513,8 @@ bool LocalDOMWindow::AllowInlineJavascriptUrl(const DOMWrapperWorld* world,
   const int kJavascriptSchemeLength = sizeof("javascript:") - 1;
   String decoded_url = DecodeUrlEscapeSequences(
       url.GetString(), DecodeUrlMode::kUtf8OrIsomorphic);
-  String script_source = decoded_url.Substring(kJavascriptSchemeLength);
+  String script_source =
+      decoded_url.DeprecatedSubstring(kJavascriptSchemeLength);
 
   // Check the CSP of the caller (the "source browsing context") if required,
   // as per https://html.spec.whatwg.org/C/#javascript-protocol.
@@ -530,7 +531,8 @@ String LocalDOMWindow::CheckAndGetJavascriptUrl(
   const int kJavascriptSchemeLength = sizeof("javascript:") - 1;
   String decoded_url = DecodeUrlEscapeSequences(
       url.GetString(), DecodeUrlMode::kUtf8OrIsomorphic);
-  String script_source = decoded_url.Substring(kJavascriptSchemeLength);
+  String script_source =
+      decoded_url.DeprecatedSubstring(kJavascriptSchemeLength);
 
   if (csp_disposition == network::mojom::CSPDisposition::DO_NOT_CHECK)
     return script_source;

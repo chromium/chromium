@@ -465,10 +465,10 @@ DocumentFragment* CreateFragmentFromMarkupWithContext(
   StringBuilder tagged_markup;
   tagged_markup.Append(markup.subview(0, fragment_start));
   MarkupFormatter::AppendComment(tagged_markup, kFragmentMarkerTag);
-  tagged_markup.Append(
-      markup.Substring(fragment_start, fragment_end - fragment_start));
+  tagged_markup.Append(markup.DeprecatedSubstring(
+      fragment_start, fragment_end - fragment_start));
   MarkupFormatter::AppendComment(tagged_markup, kFragmentMarkerTag);
-  tagged_markup.Append(markup.Substring(fragment_end));
+  tagged_markup.Append(markup.DeprecatedSubstring(fragment_end));
 
   DocumentFragment* tagged_fragment = CreateFragmentFromMarkup(
       document, tagged_markup.ToString(), base_url, parser_content_policy);

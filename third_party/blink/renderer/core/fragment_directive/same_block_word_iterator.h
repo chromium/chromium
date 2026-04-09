@@ -53,7 +53,8 @@ class CORE_EXPORT ForwardDirection {
   static String Substring(const String& text,
                           int start_position,
                           int end_position) {
-    return text.Substring(start_position, end_position - start_position);
+    return text.DeprecatedSubstring(start_position,
+                                    end_position - start_position);
   }
 
   // Returns the text within given positions.
@@ -103,7 +104,8 @@ class CORE_EXPORT BackwardDirection {
   static String Substring(const String& text,
                           int start_position,
                           int end_position) {
-    return text.Substring(end_position, start_position - end_position);
+    return text.DeprecatedSubstring(end_position,
+                                    start_position - end_position);
   }
 
   // Returns the text within given positions.
