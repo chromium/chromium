@@ -549,7 +549,7 @@
 <translation id="6556866813142980365">Повторити</translation>
 <translation id="6557290421156335491">Мої ярлики</translation>
 <translation id="656065428026159829">Показати більше</translation>
-<translation id="6561560012278703671">Показувати лише значок повідомлення (блокувати сповіщення)</translation>
+<translation id="6561560012278703671">Обмежувати сповіщення (не відволікати)</translation>
 <translation id="6565144332292237355">Сайти можуть використовувати цю функцію, щоб шукати пристрої в локальній мережі й підключатися до них</translation>
 <translation id="6593061639179217415">Версія для комп’ютера</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Файли cookie дозволено для <ph name="RWS_MEMBERS_COUNT" /> сайту в групі сайту-власника <ph name="RWS_OWNER" />}one{Файли cookie дозволено для <ph name="RWS_MEMBERS_COUNT" /> сайту в групі сайту-власника <ph name="RWS_OWNER" />}few{Файли cookie дозволено для <ph name="RWS_MEMBERS_COUNT" /> сайтів у групі сайту-власника <ph name="RWS_OWNER" />}many{Файли cookie дозволено для <ph name="RWS_MEMBERS_COUNT" /> сайтів у групі сайту-власника <ph name="RWS_OWNER" />}other{Файли cookie дозволено для <ph name="RWS_MEMBERS_COUNT" /> сайту в групі сайту-власника <ph name="RWS_OWNER" />}}</translation>
