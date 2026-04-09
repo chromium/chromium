@@ -194,6 +194,11 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
       browser_view_->tab_overlay_widget()->Hide();
       browser_view_->tab_strip_view()->SetBorder(nullptr);
     }
+    // Reset tab widget state so that re-entering fullscreen with a different
+    // tab layout (e.g. vertical tabs) does not carry over stale values from a
+    // previous horizontal-tab fullscreen session.
+    tab_native_widget_id_ = 0;
+    tab_widget_height_ = 0;
     top_container_observation_.Reset();
     overlay_widget_observation_.Reset();
 

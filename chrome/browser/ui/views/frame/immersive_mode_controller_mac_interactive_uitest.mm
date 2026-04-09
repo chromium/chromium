@@ -613,3 +613,51 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
   // vertical tab strip should return HTCAPTION.
   EXPECT_EQ(hit_test, HTCAPTION);
 }
+
+// Regression test for crbug.com/500609044. Verifies that entering fullscreen
+// with horizontal tabs, exiting, switching to vertical tabs, and re-entering
+// fullscreen does not leave the tab overlay widget visible. Previously, stale
+// tab_native_widget_id_ caused an ImmersiveModeTabbedControllerCocoa to be
+// created even with vertical tabs, resulting in a stuck titlebar.
+IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
+                       TabOverlayHiddenAfterSwitchToVerticalTabs) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  views::Widget* tab_overlay_widget = browser_view->tab_overlay_widget();
+  ASSERT_TRUE(tab_overlay_widget);
+
+  // Step 1: Start with horizontal tabs (default, VTS pref is false).
+  EXPECT_FALSE(browser_view->ShouldDrawVerticalTabStrip());
+
+  // Step 2: Enter fullscreen with horizontal tabs.
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+  FullscreenController* fullscreen_controller = browser()
+                                                    ->GetFeatures()
+                                                    .exclusive_access_manager()
+                                                    ->fullscreen_controller();
+  EXPECT_TRUE(fullscreen_controller->IsFullscreenForBrowser());
+
+  // The tab overlay widget should be visible with horizontal tabs in
+  // fullscreen, and should have non-zero height.
+  EXPECT_TRUE(tab_overlay_widget->IsVisible());
+  EXPECT_GT(tab_overlay_widget->GetWindowBoundsInScreen().height(), 0);
+
+  // Step 3: Exit fullscreen.
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+  EXPECT_FALSE(fullscreen_controller->IsFullscreenForBrowser());
+
+  // Step 4: Switch to vertical tabs.
+  tabs::VerticalTabStripStateController::From(browser())
+      ->SetVerticalTabsEnabled(true);
+  RunScheduledLayouts();
+  EXPECT_TRUE(browser_view->ShouldDrawVerticalTabStrip());
+
+  // Step 5: Re-enter fullscreen with vertical tabs.
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+  EXPECT_TRUE(fullscreen_controller->IsFullscreenForBrowser());
+
+  // The tab overlay widget should NOT be visible with vertical tabs in
+  // fullscreen. Before the fix, stale tab_native_widget_id_ caused the
+  // ImmersiveModeTabbedControllerCocoa to be created, leaving the tab overlay
+  // visible and resulting in a stuck titlebar with a white gap.
+  EXPECT_FALSE(tab_overlay_widget->IsVisible());
+}
