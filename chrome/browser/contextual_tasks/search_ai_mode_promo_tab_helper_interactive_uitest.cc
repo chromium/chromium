@@ -7,6 +7,7 @@
 #include "base/callback_list.h"
 #include "base/check_deref.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
@@ -29,6 +30,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -261,6 +263,8 @@ IN_PROC_BROWSER_TEST_P(SearchAiModePromoTabHelperInteractiveUiTest,
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSignInTabId);
 
+  base::HistogramTester histogram_tester;
+
   RunTestSequence(InAnyContext(
       CheckResult([this]() { return browser()->tab_strip_model()->count(); },
                   1),
@@ -290,6 +294,13 @@ IN_PROC_BROWSER_TEST_P(SearchAiModePromoTabHelperInteractiveUiTest,
       WaitForShow(kContextualTasksSidePanelWebViewElementId),
       CheckResult([this]() { return browser()->tab_strip_model()->count(); },
                   3)));
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignInPromo.Accepted",
+      signin_metrics::AccessPoint::kSearchAIModeBubble, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Completed",
+      signin_metrics::AccessPoint::kSearchAIModeBubble, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
