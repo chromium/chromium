@@ -28,7 +28,7 @@
 #include "components/policy/core/common/policy_service.h"
 #include "extensions/buildflags/buildflags.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
@@ -117,7 +117,7 @@ base::ListValue ChromePolicyConversionsClient::GetExtensionPolicies(
     PolicyDomain policy_domain) {
   base::ListValue policies;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   const bool for_signin_screen =
       policy_domain == POLICY_DOMAIN_SIGNIN_EXTENSIONS;
@@ -172,7 +172,7 @@ base::ListValue ChromePolicyConversionsClient::GetExtensionPolicies(
                                 std::move(extension_policies));
     policies.Append(std::move(extension_policies_data));
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   return policies;
 }
 
