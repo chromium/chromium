@@ -208,10 +208,11 @@ void OffscreenCanvas::SetSize(gfx::Size size) {
   if (size == Size()) {
     if (context_ && context_->IsRenderingContext2D()) {
       context_->Reset();
-      dirty_rect_for_commit_ = SkIRect::MakeWH(Size().width(), Size().height());
       origin_clean_ = true;
       // We need to trigger the draw, because we did reset the context.
       context_->DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
+      dirty_rect_for_commit_.intersect(
+          SkIRect::MakeWH(Size().width(), Size().height()));
     }
     return;
   }
@@ -235,8 +236,9 @@ void OffscreenCanvas::SetSize(gfx::Size size) {
         origin_clean_ = true;
       }
     }
-    dirty_rect_for_commit_ = SkIRect::MakeWH(Size().width(), Size().height());
     context_->DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
+    dirty_rect_for_commit_.intersect(
+        SkIRect::MakeWH(Size().width(), Size().height()));
   }
 }
 
