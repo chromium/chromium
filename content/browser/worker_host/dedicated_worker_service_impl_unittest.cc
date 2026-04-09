@@ -10,15 +10,20 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"
 #include "content/browser/worker_host/dedicated_worker_host_factory_impl.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_features.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/isolation_info.h"
 #include "net/storage_access_api/status.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
@@ -279,6 +284,138 @@ TEST_F(DedicatedWorkerServiceImplTest, DedicatedWorkerServiceObserver) {
 
   // The service sent a OnBeforeWorkerTerminated() notification.
   EXPECT_TRUE(observer.dedicated_worker_infos().empty());
+}
+
+class DedicatedWorkerHostFactoryImplTest
+    : public RenderViewHostImplTestHarness {
+ public:
+  void SetUp() override { RenderViewHostImplTestHarness::SetUp(); }
+};
+
+TEST_F(DedicatedWorkerHostFactoryImplTest, CrossOriginScriptOriginCheck) {
+  const GURL kCreatorUrl("https://example.com/index.html");
+  const url::Origin kCreatorOrigin = url::Origin::Create(kCreatorUrl);
+  const GURL kCrossOriginScriptUrl("https://other.com/worker.js");
+
+  NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                    kCreatorUrl);
+  RenderFrameHost* creator_rfh = web_contents()->GetPrimaryMainFrame();
+
+  auto create_factory =
+      [&](mojo::Remote<blink::mojom::DedicatedWorkerHostFactory>& factory) {
+        auto coep_reporter =
+            std::make_unique<CrossOriginEmbedderPolicyReporter>(
+                static_cast<StoragePartitionImpl*>(
+                    creator_rfh->GetStoragePartition())
+                    ->GetWeakPtr(),
+                GURL(), std::nullopt, std::nullopt,
+                base::UnguessableToken::Create(),
+                net::NetworkAnonymizationKey());
+
+        return std::make_unique<DedicatedWorkerHostFactoryImpl>(
+            creator_rfh->GetProcess()->GetID(),
+            static_cast<RenderFrameHostImpl*>(creator_rfh)->GetGlobalId(),
+            static_cast<RenderFrameHostImpl*>(creator_rfh)->GetGlobalId(),
+            blink::StorageKey::CreateFirstParty(kCreatorOrigin),
+            net::IsolationInfo::CreateTransient(std::nullopt),
+            network::mojom::ClientSecurityState::New(),
+            PolicyContainerPolicies(), coep_reporter->GetWeakPtr(),
+            /*network_restrictions_id=*/std::nullopt);
+      };
+
+  auto start_script_load =
+      [](mojo::Remote<blink::mojom::DedicatedWorkerHostFactory>& factory,
+         const GURL& script_url) {
+        auto fetch_client_settings_object =
+            blink::mojom::FetchClientSettingsObject::New();
+        fetch_client_settings_object->policy_container_policies =
+            blink::mojom::PolicyContainerPolicies::New();
+
+        mojo::PendingRemote<blink::mojom::DedicatedWorkerHostFactoryClient>
+            client_remote;
+        std::ignore = client_remote.InitWithNewPipeAndPassReceiver();
+
+        factory->CreateWorkerHostAndStartScriptLoad(
+            blink::DedicatedWorkerToken(), script_url,
+            network::mojom::CredentialsMode::kSameOrigin,
+            std::move(fetch_client_settings_object),
+            mojo::PendingRemote<blink::mojom::BlobURLToken>(),
+            std::move(client_remote), net::StorageAccessApiStatus::kNone);
+      };
+
+  // Flag OFF: Cross-origin script URL should NOT cause a bad message.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        features::kEnforceDedicatedWorkerSameOriginCheck);
+
+    mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory;
+    auto factory_impl = create_factory(factory);
+    mojo::Receiver<blink::mojom::DedicatedWorkerHostFactory> receiver(
+        factory_impl.get(), factory.BindNewPipeAndPassReceiver());
+
+    mojo::test::BadMessageObserver bad_message_observer;
+    start_script_load(factory, kCrossOriginScriptUrl);
+    factory.FlushForTesting();
+
+    EXPECT_FALSE(bad_message_observer.got_bad_message());
+  }
+
+  // Flag ON: Cross-origin script URL should cause a bad message.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        features::kEnforceDedicatedWorkerSameOriginCheck);
+
+    mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory;
+    auto factory_impl = create_factory(factory);
+    mojo::Receiver<blink::mojom::DedicatedWorkerHostFactory> receiver(
+        factory_impl.get(), factory.BindNewPipeAndPassReceiver());
+
+    mojo::test::BadMessageObserver bad_message_observer;
+    start_script_load(factory, kCrossOriginScriptUrl);
+    factory.FlushForTesting();
+
+    EXPECT_EQ("DWH_INVALID_SCRIPT_URL_ORIGIN",
+              bad_message_observer.WaitForBadMessage());
+  }
+
+  // Flag ON: Same-origin script URL should NOT cause a bad message.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        features::kEnforceDedicatedWorkerSameOriginCheck);
+
+    mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory;
+    auto factory_impl = create_factory(factory);
+    mojo::Receiver<blink::mojom::DedicatedWorkerHostFactory> receiver(
+        factory_impl.get(), factory.BindNewPipeAndPassReceiver());
+
+    mojo::test::BadMessageObserver bad_message_observer;
+    start_script_load(factory, kCreatorUrl);
+    factory.FlushForTesting();
+
+    EXPECT_FALSE(bad_message_observer.got_bad_message());
+  }
+
+  // Flag ON: Data URL script should NOT cause a bad message (exceptions are
+  // allowed).
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        features::kEnforceDedicatedWorkerSameOriginCheck);
+
+    mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory;
+    auto factory_impl = create_factory(factory);
+    mojo::Receiver<blink::mojom::DedicatedWorkerHostFactory> receiver(
+        factory_impl.get(), factory.BindNewPipeAndPassReceiver());
+
+    mojo::test::BadMessageObserver bad_message_observer;
+    start_script_load(factory, GURL("data:text/javascript,console.log('hi')"));
+    factory.FlushForTesting();
+
+    EXPECT_FALSE(bad_message_observer.got_bad_message());
+  }
 }
 
 }  // namespace content

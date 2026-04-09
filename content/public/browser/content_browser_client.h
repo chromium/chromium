@@ -1921,6 +1921,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // process. The caller must not send any of |factories| to any other process.
   virtual void RegisterNonNetworkWorkerMainResourceURLLoaderFactories(
       BrowserContext* browser_context,
+      const std::optional<url::Origin>& request_initiator,
       NonNetworkURLLoaderFactoryMap* factories);
 
   // Allows the embedder to register per-scheme URLLoaderFactory

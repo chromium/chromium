@@ -635,7 +635,8 @@ WorkerScriptFetcher::CreateFactoryBundle(
       GetContentClient()
           ->browser()
           ->RegisterNonNetworkWorkerMainResourceURLLoaderFactories(
-              storage_partition->browser_context(), &non_network_factories);
+              storage_partition->browser_context(),
+              request_initiator_storage_key.origin(), &non_network_factories);
       break;
     case LoaderType::kSubResource:
       GetContentClient()

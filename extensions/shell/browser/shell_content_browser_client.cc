@@ -245,6 +245,7 @@ ShellContentBrowserClient::CreateNonNetworkNavigationURLLoaderFactory(
 void ShellContentBrowserClient::
     RegisterNonNetworkWorkerMainResourceURLLoaderFactories(
         content::BrowserContext* browser_context,
+        const std::optional<url::Origin>& request_initiator,
         NonNetworkURLLoaderFactoryMap* factories) {
   DCHECK(browser_context);
   DCHECK(factories);
@@ -252,7 +253,7 @@ void ShellContentBrowserClient::
   factories->emplace(
       extensions::kExtensionScheme,
       extensions::CreateExtensionWorkerMainResourceURLLoaderFactory(
-          browser_context));
+          browser_context, request_initiator));
 }
 
 void ShellContentBrowserClient::

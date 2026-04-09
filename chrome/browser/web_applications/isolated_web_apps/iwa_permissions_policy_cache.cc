@@ -479,7 +479,8 @@ void IwaPermissionsPolicyCache::ObtainManifestAndCache(
   auto loader_factory =
       std::make_unique<mojo::Remote<network::mojom::URLLoaderFactory>>();
   loader_factory->Bind(web_app::IsolatedWebAppURLLoaderFactory::Create(
-      provider_->profile(), iwa_origin.origin()));
+      provider_->profile(), iwa_origin.origin(),
+      /*enforce_same_origin=*/true));
 
   network::SimpleURLLoader* raw_loader = manifest_loader.get();
   auto* raw_loader_factory = loader_factory->get();

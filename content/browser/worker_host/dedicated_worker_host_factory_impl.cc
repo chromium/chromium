@@ -118,6 +118,14 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
 
   // TODO(crbug.com/40051700): Compare `creator_storage_key_.origin()` to
   // `script_url`, and report as bad message if that fails.
+  if (base::FeatureList::IsEnabled(
+          features::kEnforceDedicatedWorkerSameOriginCheck) &&
+      !script_url.SchemeIs(url::kDataScheme) &&
+      !creator_storage_key_.origin().IsSameOriginWith(
+          url::Origin::Create(script_url))) {
+    mojo::ReportBadMessage("DWH_INVALID_SCRIPT_URL_ORIGIN");
+    return;
+  }
 
   mojo::PendingRemote<blink::mojom::DedicatedWorkerHost> pending_remote_host;
 

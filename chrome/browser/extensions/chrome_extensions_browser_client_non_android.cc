@@ -62,8 +62,12 @@ ChromeExtensionsBrowserClient::GetControlledFrameEmbedderURLLoader(
     const url::Origin& app_origin,
     content::FrameTreeNodeId frame_tree_node_id,
     content::BrowserContext* browser_context) {
+  // For ControlledFrame, the request initiator is typically the content inside
+  // the frame (cross-origin to the embedder IWA). Thus, strict same-origin
+  // enforcement must be disabled to allow access to the embedder's resources.
   return web_app::IsolatedWebAppURLLoaderFactory::CreateForFrame(
-      browser_context, app_origin, frame_tree_node_id);
+      browser_context, app_origin, frame_tree_node_id,
+      /*enforce_same_origin=*/false);
 }
 
 void ChromeExtensionsBrowserClient::ReportError(

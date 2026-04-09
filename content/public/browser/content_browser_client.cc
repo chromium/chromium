@@ -1095,6 +1095,7 @@ ContentBrowserClient::CreateNonNetworkNavigationURLLoaderFactory(
 void ContentBrowserClient::
     RegisterNonNetworkWorkerMainResourceURLLoaderFactories(
         BrowserContext* browser_context,
+        const std::optional<url::Origin>& request_initiator,
         NonNetworkURLLoaderFactoryMap* factories) {}
 
 void ContentBrowserClient::

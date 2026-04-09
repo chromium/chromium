@@ -21,24 +21,36 @@ namespace web_app {
 // A URLLoaderFactory used for the isolated-app:// scheme.
 class IsolatedWebAppURLLoaderFactory {
  public:
-  // Returns mojo::PendingRemote to a newly constructed
+  // Returns a mojo::PendingRemote to a newly constructed URLLoaderFactory
+  // for an Isolated Web App.
+  //
+  // Receivers are bound to an implementation of
   // IsolatedWebAppURLLoaderFactory. The factory is self-owned - it will delete
   // itself once there are no more receivers (including the receiver associated
   // with the returned mojo::PendingRemote and the receivers bound by the Clone
   // method).
   //
-  // If `app_origin` is present, the factory will only handle requests that are
-  // same-origin to it.
+  // If `app_origin` is present, it identifies the IWA this factory is intended
+  // for.
+  //
+  // `enforce_same_origin` should be true only when the spec requires strict
+  // same-origin enforcement (e.g., DedicatedWorker main scripts) and we want to
+  // guard against a compromised renderer process. It should be false for
+  // navigations or subresource loads where cross-origin requests might be
+  // legitimate or are handled by other security layers (like CORS/CSP/Site
+  // Isolation).
   static mojo::PendingRemote<network::mojom::URLLoaderFactory> CreateForFrame(
       content::BrowserContext* browser_context,
       std::optional<url::Origin> app_origin,
-      content::FrameTreeNodeId frame_tree_node_id);
+      content::FrameTreeNodeId frame_tree_node_id,
+      bool enforce_same_origin);
 
   // The same as `CreateForFrame`, but doesn't have access to a FrameTreeNode
   // to log errors to.
   static mojo::PendingRemote<network::mojom::URLLoaderFactory> Create(
       content::BrowserContext* browser_context,
-      std::optional<url::Origin> app_origin);
+      std::optional<url::Origin> app_origin,
+      bool enforce_same_origin);
 
   static void EnsureAssociatedFactoryBuilt();
 };

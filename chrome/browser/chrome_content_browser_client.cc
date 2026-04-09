@@ -6056,7 +6056,8 @@ ChromeContentBrowserClient::CreateNonNetworkNavigationURLLoaderFactory(
     if (content::AreIsolatedWebAppsEnabled(browser_context) &&
         !browser_context->ShutdownStarted()) {
       return web_app::IsolatedWebAppURLLoaderFactory::CreateForFrame(
-          browser_context, /*app_origin=*/std::nullopt, frame_tree_node_id);
+          browser_context, /*app_origin=*/std::nullopt, frame_tree_node_id,
+          /*enforce_same_origin=*/true);
     }
 
     return {};
@@ -6072,6 +6073,7 @@ ChromeContentBrowserClient::CreateNonNetworkNavigationURLLoaderFactory(
 void ChromeContentBrowserClient::
     RegisterNonNetworkWorkerMainResourceURLLoaderFactories(
         content::BrowserContext* browser_context,
+        const std::optional<url::Origin>& request_initiator,
         NonNetworkURLLoaderFactoryMap* factories) {
   DCHECK(browser_context);
   DCHECK(factories);
@@ -6080,9 +6082,21 @@ void ChromeContentBrowserClient::
     BUILDFLAG(IS_CHROMEOS)
   if (content::AreIsolatedWebAppsEnabled(browser_context) &&
       !browser_context->ShutdownStarted()) {
-    factories->emplace(webapps::kIsolatedAppScheme,
-                       web_app::IsolatedWebAppURLLoaderFactory::Create(
-                           browser_context, /*app_origin=*/std::nullopt));
+    std::optional<url::Origin> app_origin;
+    // The IsolatedWebAppURLLoaderFactory CHECKs that app_origin is an IWA
+    // origin if it is set. We only care about enforcing same-origin checks
+    // for IWA-to-IWA cross-origin requests (to prevent asset exfiltration),
+    // so we only set app_origin if the initiator is an IWA.
+    if (request_initiator &&
+        request_initiator->scheme() == webapps::kIsolatedAppScheme) {
+      app_origin = request_initiator;
+    }
+    factories->emplace(
+        webapps::kIsolatedAppScheme,
+        web_app::IsolatedWebAppURLLoaderFactory::Create(
+            browser_context, app_origin,
+            base::FeatureList::IsEnabled(
+                features::kEnforceDedicatedWorkerSameOriginCheck)));
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
@@ -6094,7 +6108,7 @@ void ChromeContentBrowserClient::
   factories->emplace(
       extensions::kExtensionScheme,
       extensions::CreateExtensionWorkerMainResourceURLLoaderFactory(
-          browser_context));
+          browser_context, request_initiator));
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 
@@ -6111,7 +6125,8 @@ void ChromeContentBrowserClient::
       !browser_context->ShutdownStarted()) {
     factories->emplace(webapps::kIsolatedAppScheme,
                        web_app::IsolatedWebAppURLLoaderFactory::Create(
-                           browser_context, /*app_origin=*/std::nullopt));
+                           browser_context, /*app_origin=*/std::nullopt,
+                           /*enforce_same_origin=*/true));
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
@@ -6394,11 +6409,13 @@ void ChromeContentBrowserClient::
             webapps::kIsolatedAppScheme,
             web_app::IsolatedWebAppURLLoaderFactory::CreateForFrame(
                 browser_context, request_initiator_origin,
-                frame_host->GetFrameTreeNodeId()));
+                frame_host->GetFrameTreeNodeId(),
+                /*enforce_same_origin=*/true));
       } else {
         factories->emplace(webapps::kIsolatedAppScheme,
                            web_app::IsolatedWebAppURLLoaderFactory::Create(
-                               browser_context, request_initiator_origin));
+                               browser_context, request_initiator_origin,
+                               /*enforce_same_origin=*/true));
       }
     }
   }

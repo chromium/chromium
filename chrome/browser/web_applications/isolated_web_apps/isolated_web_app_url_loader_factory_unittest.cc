@@ -241,21 +241,22 @@ class IsolatedWebAppURLLoaderFactoryTest
   }
 
   void CreateFactoryForFrame(
-      std::optional<url::Origin> app_origin = std::nullopt) {
+      std::optional<url::Origin> app_origin = std::nullopt,
+      bool enforce_same_origin = true) {
     factory_.Bind(IsolatedWebAppURLLoaderFactory::CreateForFrame(
         profile(), app_origin,
-        web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId()));
+        web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId(),
+        enforce_same_origin));
   }
 
-  void CreateFactoryForWorker() {
-    factory_.Bind(
-        IsolatedWebAppURLLoaderFactory::Create(profile(),
-                                               /*app_origin=*/std::nullopt));
-  }
-
-  void CreateFactoryForBrowser() {
+  void CreateFactoryForWorker(bool enforce_same_origin = true) {
     factory_.Bind(IsolatedWebAppURLLoaderFactory::Create(
-        profile(), /*app_origin=*/std::nullopt));
+        profile(), /*app_origin=*/std::nullopt, enforce_same_origin));
+  }
+
+  void CreateFactoryForBrowser(bool enforce_same_origin = true) {
+    factory_.Bind(IsolatedWebAppURLLoaderFactory::Create(
+        profile(), /*app_origin=*/std::nullopt, enforce_same_origin));
   }
 
   int CreateLoaderAndRun(std::unique_ptr<network::ResourceRequest> request) {
@@ -832,7 +833,8 @@ TEST_F(IsolatedWebAppURLLoaderFactoryWebAppProviderReadyTest, Waits) {
   mojo::Remote<network::mojom::URLLoaderFactory> factory;
   factory.Bind(IsolatedWebAppURLLoaderFactory::CreateForFrame(
       profile(), /*app_origin=*/std::nullopt,
-      web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId()));
+      web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId(),
+      /*enforce_same_origin=*/true));
 
   auto request = std::make_unique<network::ResourceRequest>();
   request->method = net::HttpRequestHeaders::kGetMethod;

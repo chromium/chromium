@@ -305,13 +305,15 @@ class IsolatedWebAppURLLoaderFactoryImpl
       content::BrowserContext* browser_context,
       std::optional<url::Origin> app_origin,
       std::optional<content::FrameTreeNodeId> frame_tree_node_id,
+      bool enforce_same_origin,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
       : network::SelfDeletingURLLoaderFactory(std::move(factory_receiver)),
         browser_context_(content::AreIsolatedWebAppsEnabled(browser_context)
                              ? browser_context
                              : nullptr),
         app_origin_(std::move(app_origin)),
-        frame_tree_node_id_(frame_tree_node_id) {
+        frame_tree_node_id_(frame_tree_node_id),
+        enforce_same_origin_(enforce_same_origin) {
     CHECK(!app_origin_.has_value() ||
           app_origin_->scheme() == webapps::kIsolatedAppScheme);
     // TODO(crbug.com/432676258): Do not create the factory for inelibigle
@@ -493,9 +495,14 @@ class IsolatedWebAppURLLoaderFactoryImpl
   }
 
   bool CanRequestUrl(const GURL& url) const {
-    // If no origin was specified we should allow the request. This will be the
-    // case for navigations and worker script/update loads.
-    if (!app_origin_) {
+    // If no origin was specified, we allow the request (typical for
+    // navigations).
+    //
+    // If `enforce_same_origin_` is false, we allow cross-origin requests
+    // because this factory is being used for subresources or other contexts
+    // where CORS/CSP should handle security instead of strict same-origin
+    // enforcement at the factory level.
+    if (!app_origin_ || !enforce_same_origin_) {
       return true;
     }
     return app_origin_->IsSameOriginWith(url);
@@ -508,13 +515,15 @@ class IsolatedWebAppURLLoaderFactoryImpl
 
   const std::optional<url::Origin> app_origin_;
   const std::optional<content::FrameTreeNodeId> frame_tree_node_id_;
+  const bool enforce_same_origin_;
   base::WeakPtrFactory<IsolatedWebAppURLLoaderFactoryImpl> weak_factory_{this};
 };
 
 mojo::PendingRemote<network::mojom::URLLoaderFactory> CreateInternal(
     content::BrowserContext* browser_context,
     std::optional<url::Origin> app_origin,
-    std::optional<content::FrameTreeNodeId> frame_tree_node_id) {
+    std::optional<content::FrameTreeNodeId> frame_tree_node_id,
+    bool enforce_same_origin) {
   DCHECK(browser_context);
   DCHECK(!browser_context->ShutdownStarted());
 
@@ -525,7 +534,7 @@ mojo::PendingRemote<network::mojom::URLLoaderFactory> CreateInternal(
   // network::SelfDeletingURLLoaderFactory::OnDisconnect method.
   new IsolatedWebAppURLLoaderFactoryImpl(
       browser_context, std::move(app_origin), frame_tree_node_id,
-      pending_remote.InitWithNewPipeAndPassReceiver());
+      enforce_same_origin, pending_remote.InitWithNewPipeAndPassReceiver());
 
   return pending_remote;
 }
@@ -537,17 +546,20 @@ mojo::PendingRemote<network::mojom::URLLoaderFactory>
 IsolatedWebAppURLLoaderFactory::CreateForFrame(
     content::BrowserContext* browser_context,
     std::optional<url::Origin> app_origin,
-    content::FrameTreeNodeId frame_tree_node_id) {
+    content::FrameTreeNodeId frame_tree_node_id,
+    bool enforce_same_origin) {
   return CreateInternal(browser_context, std::move(app_origin),
-                        frame_tree_node_id);
+                        frame_tree_node_id, enforce_same_origin);
 }
 
 // static
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
 IsolatedWebAppURLLoaderFactory::Create(content::BrowserContext* browser_context,
-                                       std::optional<url::Origin> app_origin) {
+                                       std::optional<url::Origin> app_origin,
+                                       bool enforce_same_origin) {
   return CreateInternal(browser_context, std::move(app_origin),
-                        /*frame_tree_node_id=*/std::nullopt);
+                        /*frame_tree_node_id=*/std::nullopt,
+                        enforce_same_origin);
 }
 
 // static
