@@ -44,12 +44,12 @@ chromium-metrics-reviews@google.com.
 
 <variants name="ImportantFileWriter">
   <variant name="BookmarkStorage" summary="bookmarks storage for user actions"/>
-  <variant name="BookmarkStorage.Immediate"
-      summary="bookmarks storage for profile load"/>
   <variant name="BookmarkStorageEncrypted"
       summary="encrypted bookmarks storage for user actions"/>
-  <variant name="BookmarkStorageEncrypted.Immediate"
+  <variant name="BookmarkStorageEncryptedImmediate"
       summary="encrypted bookmarks storage for profile load"/>
+  <variant name="BookmarkStorageImmediate"
+      summary="bookmarks storage for profile load"/>
 </variants>
 
 <!-- LINT.ThenChange(//components/bookmarks/common/bookmark_metrics.cc:ImportantFileWriter) -->
