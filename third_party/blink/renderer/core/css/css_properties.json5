@@ -377,6 +377,7 @@
         "filter-data",
         "gap-decorations",
         "has-transform",
+        "inert",
         "inset",
         "layout",
         "margin",

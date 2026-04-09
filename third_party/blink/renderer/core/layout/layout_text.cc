@@ -201,22 +201,6 @@ bool LayoutText::IsWordBreak() const {
   return false;
 }
 
-void LayoutText::StyleWillChange(StyleDifference diff,
-                                 const ComputedStyle& new_style,
-                                 StyleChangeContext& style_change_context) {
-  NOT_DESTROYED();
-
-  if (const ComputedStyle* current_style = Style()) {
-    // Process accessibility for style changes that affect text.
-    if (current_style->Visibility() != new_style.Visibility() ||
-        current_style->IsInert() != new_style.IsInert()) {
-      if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
-        cache->StyleChanged(this, /*visibility_or_inertness_changed*/ true);
-      }
-    }
-  }
-}
-
 void LayoutText::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,
@@ -257,6 +241,12 @@ void LayoutText::StyleDidChange(
   if (diff.needs_reshape) {
     valid_ng_items_ = false;
     SetNeedsCollectInlines();
+  }
+
+  if (diff.ax_visibility_or_inert_changed) {
+    if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
+      cache->StyleChanged(this, /*visibility_or_inertness_changed*/ true);
+    }
   }
 
   SetHorizontalWritingMode(new_style.IsHorizontalWritingMode());

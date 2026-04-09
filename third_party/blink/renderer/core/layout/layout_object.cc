@@ -3176,6 +3176,8 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
                                    const ComputedStyle& new_style,
                                    StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
+  DCHECK(!IsText());
+
   if (style_) {
     bool visibility_changed = style_->Visibility() != new_style.Visibility();
     // If our z-index changes value or our visibility changes,
@@ -3206,12 +3208,6 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
         if (GetNode()) {
           cache->RemoveSubtree(GetNode(), /* remove_root */ false);
         }
-      }
-    }
-
-    if (visibility_changed || style_->IsInert() != new_style.IsInert()) {
-      if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
-        cache->StyleChanged(this, /*visibility_or_inertness_changed*/ true);
       }
     }
 
@@ -3255,8 +3251,7 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
       style_ ? (style_->EffectiveTouchAction() == TouchAction::kAuto) : true;
   const bool is_new_touch_action_auto =
       new_style.EffectiveTouchAction() == TouchAction::kAuto;
-  if (GetNode() && !IsText() &&
-      is_old_touch_action_auto != is_new_touch_action_auto) {
+  if (GetNode() && is_old_touch_action_auto != is_new_touch_action_auto) {
     EventHandlerRegistry& registry =
         GetDocument().GetFrame()->GetEventHandlerRegistry();
     if (is_new_touch_action_auto) {
@@ -3412,6 +3407,12 @@ void LayoutObject::StyleDidChange(
       } else {
         containing_block->SetChildNeedsLayout();
       }
+    }
+  }
+
+  if (diff.ax_visibility_or_inert_changed) {
+    if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
+      cache->StyleChanged(this, /*visibility_or_inertness_changed*/ true);
     }
   }
 

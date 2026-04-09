@@ -853,7 +853,11 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
   if (field_diff & kFilterData) {
     diff.filter_changed = true;
   }
-
+  if (field_diff & kInert) {
+    if (IsInert() != other.IsInert()) {
+      diff.ax_visibility_or_inert_changed = true;
+    }
+  }
   if (field_diff & kMask) {
     diff.mask_changed = true;
   }
@@ -893,6 +897,7 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
         (other.Visibility() == EVisibility::kCollapse)) {
       diff.SetNeedsFullLayout();
     }
+    diff.ax_visibility_or_inert_changed = true;
   }
   if (field_diff & kZIndex) {
     diff.z_index_changed = true;

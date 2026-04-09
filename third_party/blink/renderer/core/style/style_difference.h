@@ -39,6 +39,7 @@ class StyleDifference {
     paint_type_ = std::max(paint_type_, other.paint_type_);
     layout_type_ = std::max(layout_type_, other.layout_type_);
     needs_box_paint_property_update |= other.needs_box_paint_property_update;
+    ax_visibility_or_inert_changed |= other.ax_visibility_or_inert_changed;
   }
 
   bool HasDifference() const {
@@ -50,7 +51,8 @@ class StyleDifference {
            opacity_changed || only_transform_property_changed ||
            text_decoration_or_color_changed || transform_changed ||
            transform_data_changed || z_index_changed || paint_type_ ||
-           layout_type_ || needs_box_paint_property_update;
+           layout_type_ || needs_box_paint_property_update ||
+           ax_visibility_or_inert_changed;
   }
 
   // For simple paint invalidation, we can directly invalidate the
@@ -102,6 +104,7 @@ class StyleDifference {
   unsigned transform_data_changed : 1 = false;
   unsigned z_index_changed : 1 = false;
   unsigned needs_box_paint_property_update : 1 = false;
+  unsigned ax_visibility_or_inert_changed : 1 = false;
 
  private:
   enum PaintType { kNoPaint = 0, kSimplePaint, kNormalPaint };
@@ -115,7 +118,7 @@ class StyleDifference {
   // writes to the stack and then reading the same data back again with a large
   // read can cause store-to-load forward stalls). Feel free to take bits from
   // here if you need them for something else.
-  unsigned padding_ [[maybe_unused]] : 9;
+  unsigned padding_ [[maybe_unused]] : 8;
 
   friend CORE_EXPORT std::ostream& operator<<(std::ostream&,
                                               const StyleDifference&);

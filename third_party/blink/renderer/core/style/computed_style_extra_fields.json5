@@ -1222,6 +1222,7 @@
       field_template: "primitive",
       type_name: "bool",
       default_value: "false",
+      invalidate: ["inert"],
     },
     {
       // https://drafts.csswg.org/css-ui-4/#inertness
@@ -1233,6 +1234,7 @@
       field_template: "primitive",
       type_name: "bool",
       default_value: "false",
+      invalidate: ["inert"],
     },
     {
       // We need to go through LayoutObject::SetStyle with
