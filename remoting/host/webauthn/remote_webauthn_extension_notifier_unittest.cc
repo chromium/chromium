@@ -5,6 +5,7 @@
 #include "remoting/host/webauthn/remote_webauthn_extension_notifier.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -17,6 +18,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
@@ -71,12 +73,14 @@ RemoteWebAuthnExtensionNotifierTest::RemoteWebAuthnExtensionNotifierTest() {
   EXPECT_TRUE(scoped_temp_dir_2_.CreateUniqueTempDir());
   io_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::WithBaseSyncPrimitives()});
-  notifier_ = base::WrapUnique(new RemoteWebAuthnExtensionNotifier(
-      {
-          scoped_temp_dir_1_.GetPath(),
-          scoped_temp_dir_2_.GetPath(),
-      },
-      io_task_runner_));
+
+  RemoteWebAuthnExtensionNotifier::RemoteStateChangeContext context;
+  context.dirs = {
+      scoped_temp_dir_1_.GetPath(),
+      scoped_temp_dir_2_.GetPath(),
+  };
+  notifier_ = base::WrapUnique(
+      new RemoteWebAuthnExtensionNotifier(std::move(context), io_task_runner_));
 }
 
 RemoteWebAuthnExtensionNotifierTest::~RemoteWebAuthnExtensionNotifierTest() {

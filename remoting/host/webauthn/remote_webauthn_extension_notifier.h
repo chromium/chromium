@@ -5,8 +5,6 @@
 #ifndef REMOTING_HOST_WEBAUTHN_REMOTE_WEBAUTHN_EXTENSION_NOTIFIER_H_
 #define REMOTING_HOST_WEBAUTHN_REMOTE_WEBAUTHN_EXTENSION_NOTIFIER_H_
 
-#include "remoting/host/webauthn/remote_webauthn_state_change_notifier.h"
-
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -14,6 +12,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
+#include "build/build_config.h"
+#include "remoting/host/webauthn/remote_webauthn_state_change_notifier.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/scoped_handle.h"
+#endif
 
 namespace remoting {
 
@@ -39,10 +43,23 @@ class RemoteWebAuthnExtensionNotifier final
   friend class RemoteWebAuthnExtensionNotifierTest;
   class Core;
 
+  struct RemoteStateChangeContext {
+    RemoteStateChangeContext();
+    RemoteStateChangeContext(RemoteStateChangeContext&&);
+    ~RemoteStateChangeContext();
+
+    std::vector<base::FilePath> dirs;
+#if BUILDFLAG(IS_WIN)
+    base::win::ScopedHandle user_token;
+#endif
+  };
+
+  static RemoteStateChangeContext GetRemoteStateChangeContext();
+
   void WakeUpExtension();
 
   RemoteWebAuthnExtensionNotifier(
-      std::vector<base::FilePath> possible_remote_state_change_directories,
+      RemoteStateChangeContext context,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner);
 
   base::SequenceBound<Core> core_;
