@@ -58,6 +58,14 @@
       ],
     },
 
+    // - parse_helper: "function-name"
+    // Specifies a css_parsing_utils helper function to use for ParseSingleValue,
+    // allowing the method to be generated instead of hand-written.
+    parse_helper: {
+      default: null,
+      valid_type: "str",
+    },
+
     // Suppresses code generation for the specified style builder functions.
     // This allows us to provide hand-written style builder functions in cases
     // where it's needed.
@@ -1305,7 +1313,8 @@
     },
     {
       name: "trigger-scope",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ConsumeNameScope",
       include_paths: ["third_party/blink/renderer/core/style/style_trigger_scope.h"],
       type_name: "StyleTriggerScope",
       default_value: "StyleTriggerScope()",
@@ -1436,7 +1445,8 @@
     },
     {
       name: "font-palette",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal" ],
+      property_methods: ["CSSValueFromComputedStyleInternal" ],
+      parse_helper: "ConsumeFontPalette",
       interpolable: true,
       inherited: true,
       font: true,
@@ -1498,7 +1508,8 @@
     },
     {
       name: "font-stretch",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ConsumeFontStretch",
       is_descriptor: true,
       interpolable: true,
       inherited: true,
@@ -1524,7 +1535,8 @@
     },
     {
       name: "font-style",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ConsumeFontStyle",
       is_descriptor: true,
       interpolable: true,
       inherited: true,
@@ -1650,7 +1662,8 @@
     },
     {
       name: "font-weight",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ConsumeFontWeight",
       is_descriptor: true,
       interpolable: true,
       inherited: true,
@@ -2036,7 +2049,8 @@
     },
     {
       name: "anchor-scope",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal" ],
+      property_methods: ["CSSValueFromComputedStyleInternal" ],
+      parse_helper: "ConsumeNameScope",
       include_paths: ["third_party/blink/renderer/core/style/style_anchor_scope.h"],
       type_name: "StyleAnchorScope",
       default_value: "StyleAnchorScope()",
@@ -2268,7 +2282,8 @@
     },
     {
       name: "background-size",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ParseBackgroundSize",
       interpolable: true,
       keywords: ["auto", "cover", "contain"],
       typedom_types: ["Keyword", "Length", "Percentage"],
@@ -2491,7 +2506,8 @@
     },
     {
       name: "border-image-source",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
+      property_methods: ["CSSValueFromComputedStyleInternal", "InitialValue"],
+      parse_helper: "ConsumeImageOrNone",
       interpolable: true,
       keywords: ["none"],
       typedom_types: ["Keyword", "Image"],
@@ -3183,7 +3199,8 @@
     },
     {
       name: "corner-bottom-left-shape",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ConsumeCornerShape",
       interpolable: true,
       field_group: "surround",
       field_template: "external",
@@ -3202,7 +3219,8 @@
     },
     {
       name: "corner-bottom-right-shape",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ConsumeCornerShape",
       interpolable: true,
       field_group: "surround",
       field_template: "external",
@@ -3221,7 +3239,8 @@
     },
     {
       name: "corner-top-left-shape",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ConsumeCornerShape",
       interpolable: true,
       field_group: "surround",
       field_template: "external",
@@ -3240,7 +3259,8 @@
     },
     {
       name: "corner-top-right-shape",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ConsumeCornerShape",
       interpolable: true,
       field_group: "surround",
       field_template: "external",
@@ -3408,7 +3428,8 @@
     },
     {
       name: "fill",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
+      property_methods: ["CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
+      parse_helper: "ConsumeSVGPaint",
       interpolable: true,
       inherited: true,
       includes_currentcolor: true,
@@ -3430,7 +3451,8 @@
     },
     {
       name: "fill-opacity",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ConsumeAlphaValue",
       interpolable: true,
       inherited: true,
       field_group: "svginherited->fill",
@@ -3557,7 +3579,8 @@
     },
     {
       name: "flood-color",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
+      property_methods: ["CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
+      parse_helper: "ConsumeColor",
       interpolable: true,
       field_group: "svg->svgmisc",
       field_template: "external",
@@ -3577,7 +3600,8 @@
     },
     {
       name: "flood-opacity",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ConsumeAlphaValue",
       interpolable: true,
       field_group: "svg->svgmisc",
       field_template: "primitive",
@@ -3662,7 +3686,8 @@
     },
     {
       name: "grid-column-end",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ConsumeGridLine",
       field_group: "*",
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/style/grid_position.h"],
@@ -3675,7 +3700,8 @@
     },
     {
       name: "grid-column-start",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ConsumeGridLine",
       field_group: "*",
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/style/grid_position.h"],
@@ -3715,7 +3741,8 @@
     },
     {
       name: "grid-row-end",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ConsumeGridLine",
       field_group: "*",
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/style/grid_position.h"],
@@ -3728,7 +3755,8 @@
     },
     {
       name: "grid-row-start",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ConsumeGridLine",
       field_group: "*",
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/style/grid_position.h"],
@@ -4062,7 +4090,8 @@
     },
     {
       name: "letter-spacing",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ParseSpacing",
       interpolable: true,
       inherited: true,
       keywords: ["normal"],
@@ -4085,7 +4114,8 @@
     },
     {
       name: "lighting-color",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
+      property_methods: ["CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
+      parse_helper: "ConsumeColor",
       interpolable: true,
       field_group: "svg->svgmisc",
       field_template: "external",
@@ -4104,7 +4134,8 @@
     },
     {
       name: "line-height",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ConsumeLineHeight",
       interpolable: true,
       inherited: true,
       field_group: "inherited",
@@ -4129,7 +4160,8 @@
     },
     {
       name: "list-style-image",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ConsumeImageOrNone",
       interpolable: true,
       inherited: true,
       field_group: "*",
@@ -4552,7 +4584,8 @@
     },
     {
       name: "offset-path",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ConsumeOffsetPath",
       interpolable: true,
       field_group: "*",
       field_template: "pointer",
@@ -4582,7 +4615,8 @@
     },
     {
       name: "offset-rotate",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ConsumeOffsetRotate",
       interpolable: true,
       field_group: "*",
       field_template: "external",
@@ -4596,7 +4630,8 @@
     },
     {
       name: "opacity",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ConsumeAlphaValue",
       interpolable: true,
       compositable: true,
       field_group: "svg",  // Not SVG, but frequently used with it.
@@ -4615,7 +4650,8 @@
     },
     {
       name: "order",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ConsumeInteger",
       interpolable: true,
       field_group: "*",
       field_template: "primitive",
@@ -5694,7 +5730,8 @@
     },
     {
       name: "shape-image-threshold",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ConsumeAlphaValue",
       interpolable: true,
       field_group: "*",
       field_template: "primitive",
@@ -5767,7 +5804,8 @@
     },
     {
       name: "stop-color",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
+      property_methods: ["CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
+      parse_helper: "ConsumeColor",
       interpolable: true,
       field_group: "svg->stop",
       field_template: "external",
@@ -5787,7 +5825,8 @@
     },
     {
       name: "stop-opacity",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ConsumeAlphaValue",
       interpolable: true,
       field_group: "svg->stop",
       field_template: "primitive",
@@ -5801,7 +5840,8 @@
     },
     {
       name: "stroke",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
+      property_methods: ["CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
+      parse_helper: "ConsumeSVGPaint",
       interpolable: true,
       inherited: true,
       includes_currentcolor: true,
@@ -5899,7 +5939,8 @@
     },
     {
       name: "stroke-opacity",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ConsumeAlphaValue",
       interpolable: true,
       inherited: true,
       field_group: "svginherited->stroke",
@@ -6055,7 +6096,8 @@
     },
     {
       name: "text-decoration-color",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
+      property_methods: ["CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
+      parse_helper: "ConsumeColor",
       interpolable: true,
       field_group: "*",
       field_template: "external",
@@ -6803,7 +6845,8 @@
     },
     {
       name: "column-count",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ConsumeColumnCount",
       interpolable: true,
       field_group: "*",
       field_template: "primitive",
@@ -6817,7 +6860,8 @@
     },
     {
       name: "column-gap",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ConsumeGapLength",
       interpolable: true,
       field_group: "*",
       field_template: "external",
@@ -6833,7 +6877,8 @@
     },
     {
       name: "row-gap",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ConsumeGapLength",
       interpolable: true,
       field_group: "*",
       field_template: "external",
@@ -7146,7 +7191,8 @@
     },
     {
       name: "column-width",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ConsumeColumnLength",
       interpolable: true,
       field_group: "*",
       field_template: "primitive",
@@ -7162,7 +7208,8 @@
     },
     {
       name: "column-height",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ConsumeColumnLength",
       interpolable: true,
       field_group: "*",
       field_template: "primitive",
@@ -7313,7 +7360,8 @@
     },
     {
       name: "-webkit-mask-box-image-source",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ConsumeImageOrNone",
       interpolable: true,
       style_builder_custom_functions: ["value"],
       includes_currentcolor: true,
@@ -7435,7 +7483,8 @@
     },
     {
       name: "mask-size",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
+      property_methods: ["CSSValueFromComputedStyleInternal", "InitialValue"],
+      parse_helper: "ParseMaskSize",
       interpolable: true,
       style_builder_template: "mask_layer",
       style_builder_template_args: {
@@ -7533,7 +7582,8 @@
     },
     {
       name: "-webkit-tap-highlight-color",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
+      property_methods: ["CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
+      parse_helper: "ConsumeColor",
       inherited: true,
       field_group: "*",
       field_template: "external",
@@ -7553,7 +7603,8 @@
     },
     {
       name: "text-emphasis-color",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
+      property_methods: ["CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
+      parse_helper: "ConsumeColor",
       interpolable: true,
       inherited: true,
       field_group: "*",
@@ -7595,7 +7646,8 @@
     },
     {
       name: "-webkit-text-fill-color",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
+      property_methods: ["CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
+      parse_helper: "ConsumeColor",
       interpolable: true,
       inherited: true,
       field_group: "*",
@@ -7610,7 +7662,8 @@
     },
     {
       name: "text-fit",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ConsumeFitText",
       field_group: "*",
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/style/fit_text.h"],
@@ -7633,7 +7686,8 @@
     },
     {
       name: "-webkit-text-stroke-color",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
+      property_methods: ["CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
+      parse_helper: "ConsumeColor",
       interpolable: true,
       inherited: true,
       field_group: "*",
@@ -7860,7 +7914,8 @@
     },
     {
       name: "word-spacing",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      parse_helper: "ParseSpacing",
       interpolable: true,
       inherited: true,
       converter: "ConvertSpacing",
@@ -8120,7 +8175,7 @@
     },
     {
       name: "border-inline-start-color",
-      property_methods: ["ParseSingleValue"],
+      parse_helper: "ConsumeColor",
       logical_property_group: {
         name: "border-color",
         resolver: "inline-start",
@@ -8152,7 +8207,7 @@
     },
     {
       name: "border-inline-end-color",
-      property_methods: ["ParseSingleValue"],
+      parse_helper: "ConsumeColor",
       logical_property_group: {
         name: "border-color",
         resolver: "inline-end",
@@ -8184,7 +8239,7 @@
     },
     {
       name: "border-block-start-color",
-      property_methods: ["ParseSingleValue"],
+      parse_helper: "ConsumeColor",
       logical_property_group: {
         name: "border-color",
         resolver: "block-start",
@@ -8216,7 +8271,7 @@
     },
     {
       name: "border-block-end-color",
-      property_methods: ["ParseSingleValue"],
+      parse_helper: "ConsumeColor",
       logical_property_group: {
         name: "border-color",
         resolver: "block-end",
@@ -8333,7 +8388,7 @@
 
     {
       name: "corner-start-start-shape",
-      property_methods: ["ParseSingleValue"],
+      parse_helper: "ConsumeCornerShape",
       logical_property_group: {
         name: "corner-shape",
         resolver: "start-start",
@@ -8344,7 +8399,7 @@
     },
     {
       name: "corner-start-end-shape",
-      property_methods: ["ParseSingleValue"],
+      parse_helper: "ConsumeCornerShape",
       logical_property_group: {
         name: "corner-shape",
         resolver: "start-end",
@@ -8355,7 +8410,7 @@
     },
     {
       name: "corner-end-start-shape",
-      property_methods: ["ParseSingleValue"],
+      parse_helper: "ConsumeCornerShape",
       logical_property_group: {
         name: "corner-shape",
         resolver: "end-start",
@@ -8366,7 +8421,7 @@
     },
     {
       name: "corner-end-end-shape",
-      property_methods: ["ParseSingleValue"],
+      parse_helper: "ConsumeCornerShape",
       logical_property_group: {
         name: "corner-shape",
         resolver: "end-end",

@@ -101,6 +101,9 @@ class CORE_EXPORT {{class_name}} final : public {{property.superclass}} {
   {% for property_method in property.property_methods %}
   {{property_method.return_type}} {{property_method.name}}{{property_method.parameters}} const override;
   {% endfor %}
+  {% if property.parse_helper %}
+  const CSSValue* ParseSingleValue(CSSParserTokenStream&, const CSSParserContext&, CSSParserLocalContext&) const override;
+  {% endif %}
   {% if property.logical_property_group %}
   bool IsInSameLogicalPropertyGroupWithDifferentMappingLogic(CSSPropertyID) const override;
     {% if property.logical_property_group.is_logical %}

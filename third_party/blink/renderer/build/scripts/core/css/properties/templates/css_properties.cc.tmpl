@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/properties/css_direction_aware_resolver.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/properties/style_building_utils.h"
 #include "third_party/blink/renderer/core/css/resolver/font_builder.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
@@ -116,6 +117,14 @@ const CSSProperty& {{class_name}}::ToLogicalInternal(
       CSSDirectionAwareResolver::Logical{{group_name}}Mapping());
 }
     {% endif %}
+  {% endif %}
+  {% if property.parse_helper %}
+const CSSValue* {{class_name}}::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context) const {
+  return css_parsing_utils::{{property.parse_helper}}(stream, context, local_context);
+}
   {% endif %}
 
 {{style_builder_functions(property)}}
