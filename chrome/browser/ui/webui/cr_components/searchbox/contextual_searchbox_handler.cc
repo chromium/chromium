@@ -311,8 +311,6 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
   }
 }
 
-
-
 void ContextualSearchboxHandler::OnTabAdded(TabListInterface& tab_list,
                                             tabs::TabInterface* tab,
                                             int index) {
@@ -413,11 +411,26 @@ omnibox::InputState ContextualSearchboxHandler::GetInputState() const {
 }
 
 bool ContextualSearchboxHandler::IsSmartTabSharingActive() const {
+  if (smart_tab_sharing_active_for_thread_.has_value()) {
+    return *smart_tab_sharing_active_for_thread_;
+  }
   if (profile_) {
     return profile_->GetPrefs()->GetBoolean(
         contextual_tasks::kContextualTasksShareOpenTabsEveryThread);
   }
   return false;
+}
+
+void ContextualSearchboxHandler::SetSmartTabSharingActive(bool active) {
+  if (!contextual_tasks::GetIsSmartTabSharingEnabled()) {
+    return;
+  }
+  smart_tab_sharing_active_for_thread_ = active;
+}
+
+void ContextualSearchboxHandler::GetSmartTabSharingActive(
+    composebox::mojom::PageHandler::GetSmartTabSharingActiveCallback callback) {
+  std::move(callback).Run(IsSmartTabSharingActive());
 }
 
 void ContextualSearchboxHandler::NotifySessionStarted() {

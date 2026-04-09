@@ -38,6 +38,12 @@ interface PageHandler {
 
   // Called to close the Lens overlay.
   CloseLensOverlayFromWebUI(LensOverlayDismissalSource dismissal_source);
+
+  // Called to enable or disable Smart Tab Sharing for subsequent queries.
+  SetSmartTabSharingActive(bool active);
+
+  // Called to retrieve the current Smart Tab Sharing state.
+  GetSmartTabSharingActive() => (bool active);
 };
 
 // NewTabPage WebUI-side handler for requests from the browser.

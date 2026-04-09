@@ -24,6 +24,8 @@
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/mock_contextual_search_context_controller.h"
+#include "components/contextual_tasks/public/features.h"
+#include "components/contextual_tasks/public/prefs.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -111,6 +113,10 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
   MockQueryController& query_controller() { return *query_controller_; }
   MockContextualSearchMetricsRecorder& metrics_recorder() {
     return *metrics_recorder_;
+  }
+  contextual_search::ContextualSearchSessionHandle*
+  contextual_session_handle() {
+    return contextual_session_handle_.get();
   }
 
   void SubmitQueryAndWaitForNavigation() {
@@ -277,4 +283,19 @@ TEST_F(ComposeboxHandlerTest, SubmitQueryWithToolMetric) {
       "ContextualSearch.Tools.ModeOnSubmission.NewTabPage", 3);
   histogram_tester().ExpectTotalCount(
       "ContextualSearch.Models.ModeOnSubmission.NewTabPage", 3);
+}
+
+TEST_F(ComposeboxHandlerTest, SetSmartTabSharingActive) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      contextual_tasks::kContextualTasksContext,
+      {{"ContextualTasksContextSmartTabSharing", "true"}});
+
+  EXPECT_FALSE(handler().IsSmartTabSharingActive());
+
+  handler().SetSmartTabSharingActive(true);
+  EXPECT_TRUE(handler().IsSmartTabSharingActive());
+
+  handler().SetSmartTabSharingActive(false);
+  EXPECT_FALSE(handler().IsSmartTabSharingActive());
 }

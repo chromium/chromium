@@ -50,6 +50,9 @@ class LensComposeboxHandler : public composebox::mojom::PageHandler,
   void NavigateUrl(const GURL& url) override;
   void CloseLensOverlayFromWebUI(
       composebox::mojom::LensOverlayDismissalSource dismissal_source) override;
+  void SetSmartTabSharingActive(bool active) override;
+  void GetSmartTabSharingActive(
+      GetSmartTabSharingActiveCallback callback) override;
   // searchbox::mojom::PageHandler:
   void DeleteAutocompleteMatch(uint8_t line, const GURL& url) override;
   void ExecuteAction(uint8_t line,

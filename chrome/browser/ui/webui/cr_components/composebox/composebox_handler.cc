@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_search/input_state_model.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -204,6 +205,19 @@ void ComposeboxHandler::NavigateUrl(const GURL& url) {
 void ComposeboxHandler::CloseLensOverlayFromWebUI(
     composebox::mojom::LensOverlayDismissalSource dismissal_source) {
   // Ignore, intentionally unimplemented for NTP.
+}
+
+// Required by composebox::mojom::PageHandler. Delegates to the base class
+// ContextualSearchboxHandler which does not implement that interface.
+void ComposeboxHandler::SetSmartTabSharingActive(bool active) {
+  ContextualSearchboxHandler::SetSmartTabSharingActive(active);
+}
+
+// Required by composebox::mojom::PageHandler. Delegates to the base class
+// ContextualSearchboxHandler which does not implement that interface.
+void ComposeboxHandler::GetSmartTabSharingActive(
+    GetSmartTabSharingActiveCallback callback) {
+  ContextualSearchboxHandler::GetSmartTabSharingActive(std::move(callback));
 }
 
 void ComposeboxHandler::ExecuteAction(uint8_t line,

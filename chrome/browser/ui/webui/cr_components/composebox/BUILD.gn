@@ -17,6 +17,7 @@ source_set("composebox") {
     "//chrome/browser/ui/webui/cr_components/searchbox",
     "//chrome/browser/ui/webui/top_chrome",
     "//components/contextual_search:public",
+    "//components/contextual_tasks/public:feature_list",
     "//components/lens",
     "//components/metrics",
     "//components/omnibox/browser",

@@ -174,6 +174,16 @@ void LensComposeboxHandler::CloseLensOverlayFromWebUI(
       "CloseLensOverlayFromWebUI is not implemented in Lens");
 }
 
+void LensComposeboxHandler::SetSmartTabSharingActive(bool active) {
+  // No-op for Lens composebox.
+}
+
+void LensComposeboxHandler::GetSmartTabSharingActive(
+    GetSmartTabSharingActiveCallback callback) {
+  // No-op for Lens composebox.
+  std::move(callback).Run(false);
+}
+
 void LensComposeboxHandler::DeleteAutocompleteMatch(uint8_t line,
                                                     const GURL& url) {
   mojo::ReportBadMessage("Delete autocomplete match not implemented in lens");
