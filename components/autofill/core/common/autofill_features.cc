@@ -900,7 +900,7 @@ BASE_FEATURE(kAutofillReplaceFormElementObserver,
 // TODO(crbug.com/435646513) - Clean-up after feature lands at 100% Stable.
 // Enables the new experimental server-side signatures for evaluation purposes.
 BASE_FEATURE(kAutofillServerExperimentalSignatures,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(crbug.com/470949499) - Clean-up after feature lands at 100% Stable.
 // Enables querying the server for predictions before the form has been parsed
