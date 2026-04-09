@@ -5368,6 +5368,11 @@
       status: "stable",
     },
     {
+      // See crbug.com/446113738.
+      name: "SkipUnselectableElementsInParagraphBoundary",
+      status: "stable",
+    },
+    {
       name: "SmallerViewportUnits",
       status: "stable",
     },

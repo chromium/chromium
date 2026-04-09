@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -143,8 +144,15 @@ PositionTemplate<Strategy> StartOfParagraphAlgorithm(
       previous_node_iterator = previousNode();
     } else if (EditingIgnoresContent(*previous_node_iterator) ||
                IsDisplayInsideTable(previous_node_iterator)) {
-      candidate_node = previous_node_iterator;
-      candidate_type = PositionAnchorType::kBeforeAnchor;
+      // Only update candidate if this element is selectable. If it's inside a
+      // user-select:none container, skip it to avoid setting the paragraph
+      // boundary inside non-selectable content. See crbug.com/446113738.
+      if (!RuntimeEnabledFeatures::
+              SkipUnselectableElementsInParagraphBoundaryEnabled() ||
+          layout_object->IsSelectable()) {
+        candidate_node = previous_node_iterator;
+        candidate_type = PositionAnchorType::kBeforeAnchor;
+      }
       previous_node_iterator = previousNodeSkippingChildren();
     } else {
       previous_node_iterator = previousNode();
@@ -283,8 +291,15 @@ PositionTemplate<Strategy> EndOfParagraphAlgorithm(
       next_node_iterator = nextNode();
     } else if (EditingIgnoresContent(*next_node_iterator) ||
                IsDisplayInsideTable(next_node_iterator)) {
-      candidate_node = next_node_iterator;
-      candidate_type = PositionAnchorType::kAfterAnchor;
+      // Only update candidate if this element is selectable. If it's inside a
+      // user-select:none container, skip it to avoid setting the paragraph
+      // boundary inside non-selectable content. See crbug.com/446113738.
+      if (!RuntimeEnabledFeatures::
+              SkipUnselectableElementsInParagraphBoundaryEnabled() ||
+          layout_object->IsSelectable()) {
+        candidate_node = next_node_iterator;
+        candidate_type = PositionAnchorType::kAfterAnchor;
+      }
       next_node_iterator =
           Strategy::NextSkippingChildren(*next_node_iterator, start_block);
     } else {
