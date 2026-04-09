@@ -766,4 +766,24 @@ class FakeCreditCardServer : public CreditCardSaveManager::ObserverForTest {
   return YES;
 }
 
++ (NSString*)saveServerWalletPassportEntity {
+  autofill::EntityDataManager* entityDataManager = [self entityDataManager];
+  if (!entityDataManager) {
+    return nil;
+  }
+
+  autofill::test::PassportEntityOptions options = {};
+  base::Uuid uuid = base::Uuid::GenerateRandomV4();
+  std::string guid_str = uuid.AsLowercaseString();
+  options.guid = guid_str;
+  options.record_type = autofill::EntityInstance::RecordType::kServerWallet;
+
+  autofill::EntityInstance entity =
+      autofill::test::GetPassportEntityInstance(options);
+  autofill::EntityInstance masked_entity =
+      autofill::test::MaskEntityInstance(entity);
+  entityDataManager->AddOrUpdateEntityInstance(masked_entity);
+  return base::SysUTF8ToNSString(guid_str);
+}
+
 @end

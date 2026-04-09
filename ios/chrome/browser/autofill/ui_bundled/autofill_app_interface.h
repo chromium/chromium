@@ -169,6 +169,9 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Saves a Passport entity with test data.
 + (BOOL)savePassportEntity;
 
+// Saves a Passport entity with type kServerWallet.
++ (NSString*)saveServerWalletPassportEntity;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_AUTOFILL_APP_INTERFACE_H_
