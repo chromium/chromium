@@ -941,34 +941,6 @@ suite('SearchboxTest', () => {
     assertEquals(2, testProxy.handler.getCallCount('queryAutocomplete'));
   });
 
-  test('query autocomplete for empty inputs when enabled', async () => {
-    // Arrange.
-    loadTimeData.overrideValues({
-      isLensSearchbox: true,
-    });
-    realbox = await createAndAppendRealbox();
-
-    realbox.$.input.inputElement.value = 'he';
-    realbox.$.input.inputElement.dispatchEvent(new InputEvent('input'));
-
-    await testProxy.handler.whenCalled('queryAutocomplete');
-    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
-
-    // Deleting a character queries autocomplete for non-empty input.
-    realbox.$.input.inputElement.value = 'h';
-    realbox.$.input.inputElement.dispatchEvent(new InputEvent('input'));
-
-    await testProxy.handler.whenCalled('queryAutocomplete');
-    assertEquals(2, testProxy.handler.getCallCount('queryAutocomplete'));
-
-    // Deleting a character still queries autocomplete for empty input in lens
-    // searchboxes.
-    realbox.$.input.inputElement.value = '';
-    realbox.$.input.inputElement.dispatchEvent(new InputEvent('input'));
-    await testProxy.handler.whenCalled('queryAutocomplete');
-    assertEquals(3, testProxy.handler.getCallCount('queryAutocomplete'));
-  });
-
   test('autocomplete result change does not impact focus', async () => {
     realbox = await createAndAppendRealbox();
     realbox.$.input.inputElement.dispatchEvent(

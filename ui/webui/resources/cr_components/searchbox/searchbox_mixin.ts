@@ -500,7 +500,7 @@ export interface SearchboxMixinInterface {
   onMatchFocusin(e: CustomEvent<number>): void;
   onSearchboxInputTextUpdated(
       e: CustomEvent<{value: string, isComposing: boolean}>,
-      forceAutocomplete: boolean): void;
+      forceAutocomplete?: boolean): void;
   onSelectedMatchIndexChanged(e: CustomEvent<{value: number}>): void;
   pageHandler(): PageHandlerInterface;
   queryAutocomplete(input: string, preventInlineAutocomplete?: boolean): void;
