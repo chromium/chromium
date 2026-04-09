@@ -34,6 +34,14 @@ class AndroidTabStripApiBrowserTest : public AndroidBrowserTest {
         std::move(android_injector));
   }
 
+  void TearDownOnMainThread() override {
+    // Necessary to prevent out of order destruction between tab model and
+    // the service.
+    service_.reset();
+
+    AndroidBrowserTest::TearDownOnMainThread();
+  }
+
  protected:
   static base::PassKey<tabs_api::AndroidTabStripModelAdapter> GetPassKey() {
     return tabs_api::AndroidTabStripModelAdapter::GetPassKey();
@@ -42,6 +50,37 @@ class AndroidTabStripApiBrowserTest : public AndroidBrowserTest {
   raw_ptr<TabModel> model_;
   std::unique_ptr<tabs_api::TabStripService> service_;
 };
+
+class TestTabStripClient
+    : public tabs_api::observation::TabStripApiBatchedObserver {
+ public:
+  void OnTabEvents(const std::vector<mojom::TabsEventPtr>& events) override {
+    for (auto& event : events) {
+      received.push_back(event.Clone());
+    }
+  }
+
+  std::vector<mojom::TabsEventPtr> received;
+};
+
+IN_PROC_BROWSER_TEST_F(AndroidTabStripApiBrowserTest, Observation) {
+  TestTabStripClient client;
+  service_->AddObserver(&client);
+
+  auto target_to_close = model_->GetTab(0)->GetHandle();
+  model_->DuplicateTab(target_to_close);
+  model_->CloseTab(target_to_close);
+
+  ASSERT_EQ(1u, client.received.size());
+
+  auto& event = client.received.at(0);
+  auto& close_event = event->get_nodes_closed_event();
+  ASSERT_EQ(1u, close_event->node_ids.size());
+  ASSERT_EQ(NodeId::FromTabHandle(target_to_close),
+            close_event->node_ids.at(0));
+
+  service_->RemoveObserver(&client);
+}
 
 IN_PROC_BROWSER_TEST_F(AndroidTabStripApiBrowserTest, Get) {
   auto tab_strip_id = base::NumberToString(

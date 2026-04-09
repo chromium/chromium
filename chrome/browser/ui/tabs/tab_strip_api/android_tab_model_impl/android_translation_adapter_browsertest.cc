@@ -27,6 +27,14 @@ class AndroidTranslationAdapterBrowserTest : public AndroidBrowserTest {
     injector_ = std::make_unique<tabs_api::AndroidTabStripApiInjector>(model_);
   }
 
+  void TearDownOnMainThread() override {
+    // This needs to be done to ensure that the injector is destroyed before
+    // the tab model.
+    injector_.reset();
+
+    AndroidBrowserTest::TearDownOnMainThread();
+  }
+
  protected:
   AndroidTranslationAdapter& GetTranslator() {
     return *(static_cast<AndroidTranslationAdapter*>(

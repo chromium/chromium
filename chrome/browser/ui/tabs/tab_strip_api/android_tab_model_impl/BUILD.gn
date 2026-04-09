@@ -9,6 +9,8 @@ source_set("android_tab_model_impl") {
   sources = [
     "android_browser_adapter_impl.cc",
     "android_browser_adapter_impl.h",
+    "android_tab_model_event_bridge.cc",
+    "android_tab_model_event_bridge.h",
     "android_tab_strip_api_injector.cc",
     "android_tab_strip_api_injector.h",
     "android_tab_strip_model_adapter.cc",
@@ -19,6 +21,7 @@ source_set("android_tab_model_impl") {
 
   deps = [
     "//base",
+    "//chrome/browser/android:tabs_public",
     "//chrome/browser/favicon",
     "//chrome/browser/ui/android/tab_model",
     "//chrome/browser/ui/tabs/tab_strip_api/adapters",
