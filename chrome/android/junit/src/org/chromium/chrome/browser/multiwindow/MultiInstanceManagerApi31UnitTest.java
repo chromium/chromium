@@ -598,7 +598,79 @@ public class MultiInstanceManagerApi31UnitTest {
         mFakeTimeTestRule.advanceMillis(MultiInstanceManagerApi31.SIX_MONTHS_MS + 5000000);
         // Closing the two other instances that are not managing the current activity.
         assertEquals(1, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
-        verify(mMultiInstanceManager, times(2))
+        ArgumentCaptor<List<Integer>> captor = ArgumentCaptor.forClass(List.class);
+        verify(mMultiInstanceManager, times(1))
+                .closeWindows(
+                        captor.capture(), eq(CloseWindowAppSource.RETENTION_PERIOD_EXPIRATION));
+        List<List<Integer>> capturedLists = captor.getAllValues();
+        assertEquals(1, capturedLists.size());
+        assertEquals(2, capturedLists.get(0).size());
+    }
+
+    @Test
+    public void testRemoveInvalidInstanceData_doesNotCloseCurrentInstanceEvenIfExpired() {
+        // Setup current activity and instance.
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mCurrentActivity));
+        mMultiInstanceManager.initialize(0, TASK_ID_56, SupportedProfileType.MIXED);
+
+        // Advance time by over six months.
+        mFakeTimeTestRule.advanceMillis(MultiInstanceManagerApi31.SIX_MONTHS_MS + 1000);
+
+        // Instance 0 is the current instance, it should NOT be closed.
+        assertEquals(1, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
+        verify(mMultiInstanceManager, never())
+                .closeWindows(any(), eq(CloseWindowAppSource.RETENTION_PERIOD_EXPIRATION));
+    }
+
+    @Test
+    public void testRemoveInvalidInstanceData_closesExpiredInactiveInstance() {
+        // Setup current activity and instance.
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mCurrentActivity));
+        mMultiInstanceManager.initialize(0, TASK_ID_56, SupportedProfileType.MIXED);
+
+        // Setup another instance and make it inactive.
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
+        removeTaskOnRecentsScreen(mActivityTask57);
+
+        // Advance time by over six months.
+        mFakeTimeTestRule.advanceMillis(MultiInstanceManagerApi31.SIX_MONTHS_MS + 1000);
+
+        // Instance 1 is expired and inactive, it should be closed.
+        // Instance 0 is expired but current, it should not be closed.
+        assertEquals(1, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
+        assertEquals(
+                0,
+                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).get(0).instanceId);
+        verify(mMultiInstanceManager, times(1))
+                .closeWindows(any(), eq(CloseWindowAppSource.RETENTION_PERIOD_EXPIRATION));
+    }
+
+    @Test
+    public void testAllocInstanceId_cleansUpExpiredInstanceBeforeAllocation() {
+        // Setup an existing instance.
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
+        mMultiInstanceManager.initialize(0, TASK_ID_56, SupportedProfileType.MIXED);
+
+        // Simulate activity destruction and task removal (inactive instance).
+        removeTaskOnRecentsScreen(mActivityTask56);
+
+        // Advance time by over six months.
+        mFakeTimeTestRule.advanceMillis(MultiInstanceManagerApi31.SIX_MONTHS_MS + 1000);
+
+        // Now allocate a new instance for a new activity.
+        // The old instance 0 should be cleaned up because it is expired and not the current
+        // activity.
+        // Then ID 0 should be re-allocated as a NEW instance.
+        AllocatedIdInfo info =
+                mMultiInstanceManager.allocInstanceId(
+                        PASSED_ID_INVALID,
+                        TASK_ID_57,
+                        /* preferNew= */ false,
+                        /* isIncognitoIntent= */ false);
+
+        assertEquals(0, info.instanceId);
+        assertEquals(InstanceAllocationType.NEW_INSTANCE_NEW_TASK, info.allocationType);
+        verify(mMultiInstanceManager, times(1))
                 .closeWindows(any(), eq(CloseWindowAppSource.RETENTION_PERIOD_EXPIRATION));
     }
 

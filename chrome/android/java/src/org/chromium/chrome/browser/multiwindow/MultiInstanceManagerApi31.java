@@ -281,16 +281,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             }
 
             long lastAccessedTime = ChromeMultiInstancePersistentStore.readLastAccessedTime(i);
-            // It is generally assumed and expected that the last-accessed time for the current
-            // activity is already updated to a "current" time when this method is called. However,
-            // we will avoid closing the current instance explicitly to avoid an unexpected outcome
-            // if this is not the case.
-            if (isOlderThanSixMonths(lastAccessedTime) && type != InstanceInfo.Type.CURRENT) {
-                closeWindows(
-                        Collections.singletonList(i),
-                        CloseWindowAppSource.RETENTION_PERIOD_EXPIRATION);
-                continue;
-            }
             result.add(
                     new InstanceInfo(
                             i,
@@ -691,15 +681,29 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
 
         List<Integer> instancesRemoved = new ArrayList<>();
         List<Integer> inactiveInstances = new ArrayList<>();
+        List<Integer> expiredInstances = new ArrayList<>();
         for (int i : MultiWindowUtils.getPersistedInstanceIds(PersistedInstanceType.ANY)) {
             // Remove persistent data for unrecoverable instances.
             if (!MultiWindowUtils.isRestorableInstance(appTaskIds, i)) {
                 instancesRemoved.add(i);
                 // An instance with no live task is deleted if it has no tabs.
                 removeInstanceInfo(i, CloseWindowAppSource.NO_TABS_IN_WINDOW);
-            } else if (ChromeMultiInstancePersistentStore.readTaskId(i) == INVALID_TASK_ID) {
-                inactiveInstances.add(i);
+            } else {
+                long lastAccessedTime = ChromeMultiInstancePersistentStore.readLastAccessedTime(i);
+                if (isOlderThanSixMonths(lastAccessedTime)
+                        && MultiWindowUtils.getActivityById(i) != mActivity) {
+                    expiredInstances.add(i);
+                    continue;
+                }
+
+                if (ChromeMultiInstancePersistentStore.readTaskId(i) == INVALID_TASK_ID) {
+                    inactiveInstances.add(i);
+                }
             }
+        }
+
+        if (expiredInstances.size() > 0) {
+            closeWindows(expiredInstances, CloseWindowAppSource.RETENTION_PERIOD_EXPIRATION);
         }
 
         int numInactiveInstances = inactiveInstances.size();
@@ -729,13 +733,20 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                     CloseWindowAppSource.RECENTLY_CLOSED_LIMIT_EXCEEDED);
         }
 
-        if (!tasksRemoved.isEmpty() || !instancesRemoved.isEmpty()) {
+        if (!tasksRemoved.isEmpty()
+                || !instancesRemoved.isEmpty()
+                || !inactiveInstances.isEmpty()
+                || !expiredInstances.isEmpty()) {
             Log.i(
                     TAG_MULTI_INSTANCE,
                     "Removed invalid instance data. Removed tasks-instance mappings: "
                             + tasksRemoved
                             + " and shared prefs for instances: "
-                            + instancesRemoved);
+                            + instancesRemoved
+                            + " and inactive instances in excess of the closed instance limit: "
+                            + inactiveInstances
+                            + " and expired instances: "
+                            + expiredInstances);
         }
     }
 
