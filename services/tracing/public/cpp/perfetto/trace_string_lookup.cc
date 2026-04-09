@@ -49,6 +49,7 @@ constexpr auto kThreadTypes = std::to_array<ThreadType>({
     {"AudioOutputDevice", pbzero_enums::THREAD_AUDIO_OUTPUTDEVICE},
     {"GpuMemoryThread", pbzero_enums::THREAD_GPU_MEMORY},
     {"GpuVSyncThread", pbzero_enums::THREAD_GPU_VSYNC},
+    {"VSyncThread", pbzero_enums::THREAD_BROWSER_VSYNC},
     {"DXVAVideoDecoderThread", pbzero_enums::THREAD_DXA_VIDEODECODER},
     {"BrowserWatchdog", pbzero_enums::THREAD_BROWSER_WATCHDOG},
     {"WebRTC_Network", pbzero_enums::THREAD_WEBRTC_NETWORK},
