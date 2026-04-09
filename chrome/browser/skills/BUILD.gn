@@ -146,6 +146,7 @@ source_set("interactive_ui_tests") {
   sources = []
   if (!is_android) {
     sources += [
+      "skills_creation_interactive_uitest.cc",
       "skills_interactive_uitest.cc",
       "skills_interactive_uitest_base.cc",
       "skills_interactive_uitest_base.h",
