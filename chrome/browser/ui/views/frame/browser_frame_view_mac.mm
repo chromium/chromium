@@ -174,9 +174,11 @@ void BrowserFrameViewMac::OnTabStripStateChanged() {
   // Toggling the full size content view mask is a hacky way to force the
   // caption button to re-layout. Note that this will only work for normal
   // browser windows (not PWAs or anything using a remote `NSWindow`).
+  const NSRect frame = [window frame];
   const NSUInteger style_mask = [window styleMask];
   [window setStyleMask:style_mask ^ NSWindowStyleMaskFullSizeContentView];
   [window setStyleMask:style_mask];
+  [window setFrame:frame display:YES];
 }
 
 bool BrowserFrameViewMac::CaptionButtonsOnLeadingEdge() const {
