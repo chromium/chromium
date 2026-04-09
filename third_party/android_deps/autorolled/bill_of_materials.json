@@ -542,7 +542,7 @@
     {
         "name": "graphics-core",
         "group": "androidx.graphics",
-        "version": "1.0.4"
+        "version": "1.1.0-SNAPSHOT"
     },
     {
         "name": "graphics-path",
@@ -567,62 +567,62 @@
     {
         "name": "ink-authoring",
         "group": "androidx.ink",
-        "version": "1.0.0"
+        "version": "1.1.0-SNAPSHOT"
     },
     {
         "name": "ink-authoring-android",
         "group": "androidx.ink",
-        "version": "1.0.0"
+        "version": "1.1.0-SNAPSHOT"
     },
     {
         "name": "ink-brush",
         "group": "androidx.ink",
-        "version": "1.0.0"
+        "version": "1.1.0-SNAPSHOT"
     },
     {
         "name": "ink-brush-android",
         "group": "androidx.ink",
-        "version": "1.0.0"
+        "version": "1.1.0-SNAPSHOT"
     },
     {
         "name": "ink-geometry",
         "group": "androidx.ink",
-        "version": "1.0.0"
+        "version": "1.1.0-SNAPSHOT"
     },
     {
         "name": "ink-geometry-android",
         "group": "androidx.ink",
-        "version": "1.0.0"
+        "version": "1.1.0-SNAPSHOT"
     },
     {
         "name": "ink-nativeloader",
         "group": "androidx.ink",
-        "version": "1.0.0"
+        "version": "1.1.0-SNAPSHOT"
     },
     {
         "name": "ink-nativeloader-android",
         "group": "androidx.ink",
-        "version": "1.0.0"
+        "version": "1.1.0-SNAPSHOT"
     },
     {
         "name": "ink-rendering",
         "group": "androidx.ink",
-        "version": "1.0.0"
+        "version": "1.1.0-SNAPSHOT"
     },
     {
         "name": "ink-rendering-android",
         "group": "androidx.ink",
-        "version": "1.0.0"
+        "version": "1.1.0-SNAPSHOT"
     },
     {
         "name": "ink-strokes",
         "group": "androidx.ink",
-        "version": "1.0.0"
+        "version": "1.1.0-SNAPSHOT"
     },
     {
         "name": "ink-strokes-android",
         "group": "androidx.ink",
-        "version": "1.0.0"
+        "version": "1.1.0-SNAPSHOT"
     },
     {
         "name": "input-motionprediction",
@@ -932,22 +932,22 @@
     {
         "name": "pdf-document-service",
         "group": "androidx.pdf",
-        "version": "1.0.0-alpha13"
+        "version": "1.0.0-SNAPSHOT"
     },
     {
         "name": "pdf-ink",
         "group": "androidx.pdf",
-        "version": "1.0.0-alpha13"
+        "version": "1.0.0-SNAPSHOT"
     },
     {
         "name": "pdf-viewer",
         "group": "androidx.pdf",
-        "version": "1.0.0-alpha13"
+        "version": "1.0.0-SNAPSHOT"
     },
     {
         "name": "pdf-viewer-fragment",
         "group": "androidx.pdf",
-        "version": "1.0.0-alpha13"
+        "version": "1.0.0-SNAPSHOT"
     },
     {
         "name": "preference",
@@ -1208,11 +1208,6 @@
         "name": "webkit",
         "group": "androidx.webkit",
         "version": "1.17.0-SNAPSHOT"
-    },
-    {
-        "name": "core",
-        "group": "androidx.window.extensions.core",
-        "version": "1.0.0"
     },
     {
         "name": "sidecar",
