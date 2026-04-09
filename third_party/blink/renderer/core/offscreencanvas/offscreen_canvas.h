@@ -83,7 +83,7 @@ class CORE_EXPORT OffscreenCanvas final
   void DeregisterFromAnimationFrameProvider();
   DOMNodeId PlaceholderCanvasId() const { return placeholder_canvas_id_; }
   bool HasPlaceholderCanvas() const;
-  bool IsDirtyRectEmpty() const { return dirty_rect_for_commit_.isEmpty(); }
+  bool IsPendingFrame() const { return needs_push_frame_; }
 
   bool IsNeutered() const override { return is_neutered_; }
   void SetNeutered();

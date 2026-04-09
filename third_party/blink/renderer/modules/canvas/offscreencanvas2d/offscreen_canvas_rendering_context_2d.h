@@ -72,8 +72,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
       return false;
     DCHECK(Host()->IsOffscreenCanvas());
     auto* offscreen_canvas = static_cast<OffscreenCanvas*>(Host());
-    return offscreen_canvas->HasPlaceholderCanvas() &&
-           !offscreen_canvas->IsDirtyRectEmpty();
+    return offscreen_canvas->IsPendingFrame();
   }
 
   // BaseRenderingContext2D implementation
