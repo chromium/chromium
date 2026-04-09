@@ -183,10 +183,14 @@ void CSSStyleRule::Reattach(StyleRuleBase* rule) {
   if (properties_cssom_wrapper_) {
     properties_cssom_wrapper_->Reattach(style_rule_->MutableProperties());
   }
-  for (unsigned i = 0; i < child_rule_cssom_wrappers_.size(); ++i) {
-    if (child_rule_cssom_wrappers_[i]) {
-      child_rule_cssom_wrappers_[i]->Reattach(
-          (*style_rule_->ChildRules())[i].Get());
+  if (style_rule_->ChildRules()) {
+    CHECK_EQ(style_rule_->ChildRules()->size(),
+             child_rule_cssom_wrappers_.size());
+    for (auto [child_rule, child_wrapper] :
+         base::zip(*style_rule_->ChildRules(), child_rule_cssom_wrappers_)) {
+      if (child_wrapper) {
+        child_wrapper->Reattach(child_rule);
+      }
     }
   }
 }
