@@ -226,13 +226,16 @@ void PermissionDialogDelegate::Dismissed(JNIEnv* env, int dismissalType) {
     // But, all the underlying data associated with it will get wiped.
     // So, we destroy the Java delegate and use the `IsJavaDelegateDestroyed`
     // signal as a way to tell if the `PermissionPrompt` creation failed.
-    DestroyJavaDelegate();
+
+    // Delete asynchronously to avoid re-entrancy issues.
+    base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(java_delegate_));
   }
   permission_prompt_->Dismiss(prompt_options_);
 }
 
 void PermissionDialogDelegate::Destroy(JNIEnv* env) {
-  DestroyJavaDelegate();
+  java_delegate_.reset();
 }
 
 void PermissionDialogDelegate::NotifyPermissionAllowed() {
