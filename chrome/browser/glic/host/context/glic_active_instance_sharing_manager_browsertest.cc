@@ -30,8 +30,6 @@ class GlicActiveInstanceSharingManagerBrowserTest
   GlicActiveInstanceSharingManagerBrowserTest() {
     // Enable multi-instance and multi-tab to ensure
     // GlicActiveInstanceSharingManager is used.
-    // kGlicMultiInstance, kGlicMultiTab, kGlicMultitabUnderlines are required
-    // for IsMultiInstanceEnabled().
     scoped_feature_list_.InitWithFeatures(
         {features::kGlic, features::kGlicMultiInstance,
          mojom::features::kGlicMultiTab, features::kGlicMultitabUnderlines},

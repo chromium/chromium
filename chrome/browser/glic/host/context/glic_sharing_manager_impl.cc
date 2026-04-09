@@ -260,14 +260,6 @@ void GlicSharingManagerImpl::GetContextFromTab(
     return;
   }
 
-  // If tab context was allowed to be extracted, report to metrics.
-  // Instance-level metrics for context requests are recorded by the caller
-  // (e.g., GlicPageHandler) to ensure correct attribution in multi-instance
-  // mode.
-  if (!GlicEnabling::IsMultiInstanceEnabled()) {
-    metrics_->DidRequestContextFromTab(*tab);
-  }
-
   GetContextFromTabImpl(tab, options, std::move(callback));
 }
 

@@ -532,8 +532,6 @@ struct WebClientInitialState {
   bool panel_is_active;
   bool browser_is_open;
   bool instance_is_active;
-  // Reflects the enabling state of always-detached mode.
-  bool always_detached_mode;
   bool enable_zero_state_suggestions;
   bool enable_cached_get_user_profile_info;
   // Whether features::kGlicActor is enabled.

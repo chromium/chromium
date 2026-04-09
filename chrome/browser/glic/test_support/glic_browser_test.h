@@ -305,7 +305,6 @@ class GlicBrowserTestMixin : public T {
 
   // Returns the only glic instance. CHECK fails if there is ever more than one.
   GlicInstanceImpl* GetOnlyGlicInstance() {
-    CHECK(GlicEnabling::IsMultiInstanceEnabled());
     return static_cast<GlicInstanceImpl*>(
         ::glic::GetOnlyGlicInstance(T::GetProfile()));
   }
@@ -313,20 +312,17 @@ class GlicBrowserTestMixin : public T {
   // Returns the glic instance bound to the given tab. Returns nullptr if not
   // found.
   GlicInstanceImpl* GetInstanceForTab(tabs::TabInterface* tab) {
-    CHECK(GlicEnabling::IsMultiInstanceEnabled());
     return static_cast<GlicInstanceImpl*>(
         ::glic::GetInstanceForTab(T::GetProfile(), tab));
   }
 
   // Returns the glic instance with the given id. Returns nullptr if not found.
   GlicInstanceImpl* GetInstanceById(InstanceId id) {
-    CHECK(GlicEnabling::IsMultiInstanceEnabled());
     return static_cast<GlicInstanceImpl*>(
         ::glic::GetInstanceById(T::GetProfile(), id));
   }
 
   GlicInstanceCoordinatorImpl& coordinator() {
-    CHECK(GlicEnabling::IsMultiInstanceEnabled());
     return static_cast<GlicInstanceCoordinatorImpl&>(
         GlicKeyedService::Get(T::GetProfile())->instance_coordinator());
   }

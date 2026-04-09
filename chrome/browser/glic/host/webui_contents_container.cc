@@ -145,10 +145,8 @@ void WebUIContentsContainerImpl::PrimaryMainFrameRenderProcessGone(
     base::RecordAction(base::UserMetricsAction("GlicSessionWebUiCrash"));
   }
   auto* keyed_service = GlicKeyedServiceFactory::GetGlicKeyedService(profile_);
-  if (GlicEnabling::IsMultiInstanceEnabled()) {
-    // TODO(crbug.com/454120908): swap for a reloaded host in case of a crash.
-    keyed_service->CloseAndShutdown(web_contents_->GetPrimaryMainFrame());
-  }
+  // TODO(crbug.com/454120908): swap for a reloaded host in case of a crash.
+  keyed_service->CloseAndShutdown(web_contents_->GetPrimaryMainFrame());
   // WARNING: Do not do any more work, as `this` may have been destroyed.
 }
 

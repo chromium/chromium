@@ -428,39 +428,6 @@ void BrowserActions::InitializeSidePanelActions() {
                     actions::ActionPinnableState::kNotPinnable))
             .Build());
   }
-
-  // TODO(crbug.com/454112198): Delete this after Multi Instance launches. This
-  // is currently only used in the experimental single instance side panel.
-  auto* glic_service = glic::GlicKeyedService::Get(bwi->GetProfile());
-  if (glic_service && !glic::GlicEnabling::IsMultiInstanceEnabled()) {
-    root_action_item_->AddChild(
-        actions::ActionItem::Builder(
-            base::BindRepeating(
-                [](base::WeakPtr<BrowserWindowInterface> bwi,
-                   actions::ActionItem* item,
-                   actions::ActionInvocationContext context) {
-                  if (!bwi) {
-                    return;
-                  }
-                  if (auto* glic_service =
-                          glic::GlicKeyedService::Get(bwi->GetProfile())) {
-                    glic_service->ToggleUI(
-                        bwi.get(), /*prevent_close=*/false,
-                        glic::mojom::InvocationSource::kTopChromeButton);
-                  }
-                },
-                bwi->GetWeakPtr()))
-            .SetActionId(kActionSidePanelShowGlic)
-            .SetText(l10n_util::GetStringUTF16(IDS_SETTINGS_GLIC_PAGE_TITLE))
-            .SetTooltipText(
-                l10n_util::GetStringUTF16(IDS_SETTINGS_GLIC_PAGE_TITLE))
-            .SetImage(ui::ImageModel::FromVectorIcon(
-                glic::GlicVectorIconManager::GetVectorIcon(
-                    IDR_GLIC_BUTTON_VECTOR_ICON),
-                ui::kColorIcon))
-            .SetProperty(actions::kActionItemPinnableKey, true)
-            .Build());
-  }
 }
 
 void BrowserActions::InitializePageActionIconActions() {

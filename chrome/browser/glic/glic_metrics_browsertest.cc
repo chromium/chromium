@@ -68,8 +68,6 @@ class GlicMetricsBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, GlicFreShown_MultiInstance) {
-  ASSERT_TRUE(GlicEnabling::IsMultiInstanceEnabled());
-
   base::UserActionTester user_action_tester;
 
   GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile())
@@ -88,8 +86,6 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, GlicFreShown_MultiInstance) {
 
 IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
                        ToggleAndOpenSourceMetrics_SidePanel) {
-  ASSERT_TRUE(GlicEnabling::IsMultiInstanceEnabled());
-
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
 
@@ -120,8 +116,6 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
                        InvokeAndOpenSourceMetrics_SidePanel) {
-  ASSERT_TRUE(GlicEnabling::IsMultiInstanceEnabled());
-
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
 
@@ -151,8 +145,6 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
                        Invoke_NewConversationMetrics_SidePanel) {
-  ASSERT_TRUE(GlicEnabling::IsMultiInstanceEnabled());
-
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
 
@@ -190,8 +182,6 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
                        Invoke_CurrentConversation_SidePanel) {
-  ASSERT_TRUE(GlicEnabling::IsMultiInstanceEnabled());
-
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
 
@@ -223,8 +213,6 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
                        ToggleAndOpenSourceMetrics_Floaty) {
-  ASSERT_TRUE(GlicEnabling::IsMultiInstanceEnabled());
-
   base::HistogramTester histogram_tester;
 
   auto* glic_service =

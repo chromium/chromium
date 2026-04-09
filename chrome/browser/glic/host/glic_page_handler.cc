@@ -321,27 +321,8 @@ class ActiveStateCalculator : public PanelStateObserver {
   }
 
   bool Calculate() {
-    if (panel_state_kind_ == glic::mojom::PanelStateKind::kHidden) {
-      return false;
-    }
     // TODO(b:444463509): Implement better calculation.
-
-#if !BUILDFLAG(IS_ANDROID)
-    if (GlicEnabling::IsMultiInstanceEnabled()) {
-      return true;
-    }
-    if (!attached_browser_) {
-      return true;
-    }
-    if (attached_browser_->IsDeleteScheduled()) {
-      return false;
-    }
-
-    return glic::IsActive(attached_browser_);
-#else
-    // MultiInstance is always enabled on Android.
-    return true;
-#endif
+    return panel_state_kind_ != glic::mojom::PanelStateKind::kHidden;
   }
 
   base::OneShotTimer calc_timer_;
@@ -818,19 +799,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
             base::BindRepeating(&GlicWebClientHandler::OnFocusedTabDataChanged,
                                 base::Unretained(this)));
 
-    if (!GlicEnabling::IsMultiInstanceEnabled()) {
-      focused_browser_changed_subscription_ =
-          sharing_manager().AddFocusedBrowserChangedCallback(
-              base::BindRepeating(
-                  &GlicWebClientHandler::OnFocusedBrowserChanged,
-                  base::Unretained(this)));
-    }
 
-#if !BUILDFLAG(IS_ANDROID)  // single instance not implemented on android
-    if (!GlicEnabling::IsMultiInstanceEnabled()) {
-      browser_attach_observation_ = ObserveBrowserForAttachment(profile_, this);
-    }
-#endif
 
     system_permission_settings_observation_ =
         system_permission_settings::Observe(base::BindRepeating(
@@ -886,8 +855,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     state->browser_is_open = browser_is_open_calculator_.IsOpen();
     state->instance_is_active = host().instance_delegate().IsActive();
 
-    state->always_detached_mode = GlicInstanceCoordinator::AlwaysDetached();
-
     state->enable_act_in_focused_tab =
         base::FeatureList::IsEnabled(features::kGlicActor);
     state->enable_scroll_to =
@@ -930,9 +897,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       state->host_capabilities.push_back(
           mojom::HostCapability::kResetSizeAndLocationOnOpen);
     }
-    if (GlicEnabling::IsMultiInstanceEnabled()) {
-      state->host_capabilities.push_back(mojom::HostCapability::kMultiInstance);
-    }
+    state->host_capabilities.push_back(mojom::HostCapability::kMultiInstance);
 
     if (GlicEnabling::IsAutoOpenForPdfEnabled(profile_)) {
       state->host_capabilities.push_back(mojom::HostCapability::kPdfZeroState);
@@ -1079,27 +1044,13 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void ClosePanel() override { host().ClosePanel(page_handler_); }
 
-  void ClosePanelAndShutdown() override {
-    if (GlicEnabling::IsMultiInstanceEnabled()) {
-      ClosePanel();
-    }
-  }
+  void ClosePanelAndShutdown() override { ClosePanel(); }
 
   void AttachPanel() override {
-    if (GlicInstanceCoordinator::AlwaysDetached()) {
-      receiver_.ReportBadMessage(
-          "AttachPanel cannot be called when always detached mode is enabled.");
-      return;
-    }
     host().AttachPanel(page_handler_);
   }
 
   void DetachPanel() override {
-    if (GlicInstanceCoordinator::AlwaysDetached()) {
-      receiver_.ReportBadMessage(
-          "DetachPanel cannot be called when always detached mode is enabled.");
-      return;
-    }
     host().DetachPanel(page_handler_);
   }
 
@@ -2119,14 +2070,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
  private:
-  bool ComputeCanAttach() const {
-    if (GlicEnabling::IsMultiInstanceEnabled()) {
-      return floating_panel_can_attach_;
-    }
-    return floating_panel_can_attach_ ||
-           (browser_attach_observation_ &&
-            browser_attach_observation_->CanAttachToBrowser());
-  }
+  bool ComputeCanAttach() const { return floating_panel_can_attach_; }
 
   void NotifyCanAttachChanged() {
     if (!web_client_) {

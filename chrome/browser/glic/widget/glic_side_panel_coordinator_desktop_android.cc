@@ -32,7 +32,6 @@ GlicSidePanelCoordinatorDesktopAndroid::GlicSidePanelCoordinatorDesktopAndroid(
       tab_(tab_interface),
       side_panel_registry_(side_panel_registry),
       glic_service_(GlicKeyedServiceFactory::GetGlicKeyedService(profile)) {
-  CHECK(GlicEnabling::IsMultiInstanceEnabled());
   if (glic_service_) {
     on_glic_enabled_changed_subscription_ =
         glic_service_->enabling().RegisterAllowedChanged(base::BindRepeating(

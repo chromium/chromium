@@ -173,17 +173,9 @@ class GlicEnabling : public signin::IdentityManager::Observer,
   // Whether the tab web contents contextual menu item is enabled.
   static bool IsContextualMenuItemEnabled(Profile* profile);
 
-  // Deprecated, Multi-instance is always enabled.
-  static bool IsMultiInstanceEnabledByFlags();
-
   // Returns true if Glic is enabled for the profile, the feature is enabled,
   // and the account is non-enterprise (or for Glic dev).
   static bool IsShareImageEnabledForProfile(Profile* profile);
-
-  // Whether the required feature flags for multi-instance are enabled. This
-  // serves as the default enablement check for the multi-instance feature and
-  // should be used in most cases.
-  static bool IsMultiInstanceEnabled();
 
   // Whether the live mode and floaty window are enabled by flags.
   static bool IsLiveAndFloatyEnabledByFlags();

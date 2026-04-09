@@ -743,13 +743,6 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
       this.actorTaskListRowClicked = undefined;
     }
 
-    if (state.alwaysDetachedMode) {
-      this.attachPanel = undefined;
-      this.detachPanel = undefined;
-      this.canAttachPanel = undefined;
-      this.getPanelState = undefined;
-    }
-
     if (!state.enableZeroStateSuggestions) {
       this.getZeroStateSuggestionsForFocusedTab = undefined;
       // MOJO_RUNTIME_FEATURE_GATED GetZeroStateSuggestionsAndSubscribe

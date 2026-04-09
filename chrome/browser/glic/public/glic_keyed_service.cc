@@ -200,9 +200,7 @@ GlicKeyedService::GlicKeyedService(
       web_contents_warming_pool_(
           std::make_unique<GlicWebContentsWarmingPool>(profile)),
       contextual_cueing_service_(contextual_cueing_service) {
-  // GlicMultiInstance is launched. This CHECK is here to ensure no tests are
-  // added that try to turn if off.
-  CHECK(GlicEnabling::IsMultiInstanceEnabled());
+
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
 
   // TODO(crbug.com/450026474): Consider not constructing this metrics

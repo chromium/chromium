@@ -2886,9 +2886,6 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       }
       if (command_id == CommandGlicStartShare) {
         CHECK(delegate_->GlicPinTabs(tab_handles));
-        if (!glic::GlicEnabling::IsMultiInstanceEnabled()) {
-          delegate_->OpenGlicWindowFromSharedTab();
-        }
       } else {
         CHECK(delegate_->GlicUnpinTabs(tab_handles));
       }

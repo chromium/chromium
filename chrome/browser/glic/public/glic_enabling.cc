@@ -648,7 +648,7 @@ bool GlicEnabling::IsChromeOSProfileEligible(const Profile* profile) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(Profile* profile) {
-  return IsMultiInstanceEnabled() && !HasConsentedForProfile(profile) &&
+  return !HasConsentedForProfile(profile) &&
          base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding);
 }
 
@@ -679,7 +679,7 @@ bool GlicEnabling::IsTrustFirstOnboardingGatedFeatureEnabled(
     Profile* profile,
     const base::Feature& feature,
     const base::FeatureParam<bool>& onboarding_param) {
-  if (!IsMultiInstanceEnabled() || !base::FeatureList::IsEnabled(feature)) {
+  if (!base::FeatureList::IsEnabled(feature)) {
     return false;
   }
 
@@ -695,9 +695,6 @@ bool GlicEnabling::IsTrustFirstOnboardingGatedFeatureEnabled(
   return false;
 }
 
-bool GlicEnabling::IsMultiInstanceEnabledByFlags() {
-  return true;
-}
 
 bool GlicEnabling::IsLiveAndFloatyEnabledByFlags() {
   // Despite the name, when off, this disables live mode and floaty.
@@ -710,9 +707,6 @@ bool GlicEnabling::IsShareImageEnabledForProfile(Profile* profile) {
          base::FeatureList::IsEnabled(features::kGlicShareImage);
 }
 
-bool GlicEnabling::IsMultiInstanceEnabled() {
-  return IsMultiInstanceEnabledByFlags();
-}
 
 GlicEnabling::GlicEnabling(Profile* profile,
                            ProfileAttributesStorage* profile_attributes_storage)

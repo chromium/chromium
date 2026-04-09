@@ -1137,8 +1137,7 @@ void RenderViewContextMenu::InitMenu() {
     // Add "Copy Link Address" menu option for Glic Multi instance. Link
     // options are not supported by default (since Glic uses WebView's context
     // menu).
-    if (glic::GlicEnabling::IsMultiInstanceEnabled() &&
-        IsGlicWindow(this, browser_context_) && !params_.link_url.is_empty()) {
+    if (IsGlicWindow(this, browser_context_) && !params_.link_url.is_empty()) {
       AppendCopyLinkLocationItem();
       menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
     }
@@ -1233,8 +1232,7 @@ void RenderViewContextMenu::InitMenu() {
     AppendPrintItem();
   } else {
     if (IsGlicWindow(this, browser_context_) &&
-        base::FeatureList::IsEnabled(features::kGlicPrintMenuItem) &&
-        glic::GlicEnabling::IsMultiInstanceEnabled()) {
+        base::FeatureList::IsEnabled(features::kGlicPrintMenuItem)) {
       AppendPrintItem();
     }
   }
@@ -2432,16 +2430,7 @@ void RenderViewContextMenu::AppendGlicItems() {
         menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_RELOAD_GLIC)
             .value(),
         kGlicReloadMenuItem);
-    if (!glic::GlicEnabling::IsMultiInstanceEnabled()) {
-      menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_CLOSE_GLIC,
-                                      IDS_CONTENT_CONTEXT_CLOSE_GLIC);
-      menu_model_.SetElementIdentifierAt(
-          menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_CLOSE_GLIC)
-              .value(),
-          kGlicCloseMenuItem);
-    }
-    if (glic::GlicEnabling::IsMultiInstanceEnabled() &&
-        base::FeatureList::IsEnabled(features::kGlicArchiveConversation)) {
+    if (base::FeatureList::IsEnabled(features::kGlicArchiveConversation)) {
       // Archive  Glic conversation.
       menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_ARCHIVE_GLIC,
                                       IDS_CONTENT_CONTEXT_ARCHIVE_GLIC);
@@ -3385,23 +3374,12 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       break;
 
     case IDC_CONTENT_CONTEXT_CLOSE_GLIC:
-      if (glic::GlicEnabling::IsEnabledByFlags() &&
-          !glic::GlicEnabling::IsMultiInstanceEnabled()) {
-        auto* glic_service = glic::GlicKeyedService::Get(browser_context_);
-        if (glic_service) {
-          // TODO(crbug.com/454112198): Clean up after multi-instance launches.
-          if (glic::GlicEnabling::IsMultiInstanceEnabled()) {
-            if (auto* rfh = GetRenderFrameHost()) {
-              glic_service->Close(rfh->GetOutermostMainFrame());
-            }
-          }
-        }
-      }
+      // This command is only available when multi-instance is disabled.
+      // Since multi-instance is always enabled, this is dead code.
       break;
 
     case IDC_CONTENT_CONTEXT_ARCHIVE_GLIC:  // Added for archive conversation
-      if (glic::GlicEnabling::IsMultiInstanceEnabled() &&
-          base::FeatureList::IsEnabled(features::kGlicArchiveConversation)) {
+      if (base::FeatureList::IsEnabled(features::kGlicArchiveConversation)) {
         auto* glic_service = glic::GlicKeyedService::Get(browser_context_);
         if (glic_service) {
           // Call the Archive method on the Glic service.
@@ -3989,8 +3967,7 @@ bool RenderViewContextMenu::IsPasteAndMatchStyleEnabled() const {
 
 bool RenderViewContextMenu::IsPrintPreviewEnabled() const {
   if (IsGlicWindow(this, browser_context_) &&
-      base::FeatureList::IsEnabled(features::kGlicPrintMenuItem) &&
-      glic::GlicEnabling::IsMultiInstanceEnabled()) {
+      base::FeatureList::IsEnabled(features::kGlicPrintMenuItem)) {
     return GetPrefs(browser_context_)->GetBoolean(prefs::kPrintingEnabled) &&
            (source_web_contents_ && !source_web_contents_->IsCrashed());
   }

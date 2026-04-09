@@ -156,8 +156,7 @@ GURL GetLocalizedGuestURL(const GURL& guest_url) {
 }
 
 GURL MaybeAddMultiInstanceParameter(const GURL& guest_url) {
-  if (GlicEnabling::IsMultiInstanceEnabled() &&
-      base::FeatureList::IsEnabled(kGlicGuestUrlMultiInstanceParam)) {
+  if (base::FeatureList::IsEnabled(kGlicGuestUrlMultiInstanceParam)) {
     return net::AppendOrReplaceQueryParameter(guest_url, "mode", "mi");
   }
   return guest_url;

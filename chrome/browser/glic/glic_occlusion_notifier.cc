@@ -26,26 +26,6 @@ void GlicOcclusionNotifier::PanelStateChanged(
     const GlicInstanceCoordinator::PanelStateContext& context) {
   // Under GlicMultiInstance, occlusion tracking is managed through
   // GlicFloatingUi.
-  if (GlicEnabling::IsMultiInstanceEnabled()) {
-    return;
-  }
-
-  PictureInPictureOcclusionTracker* tracker =
-      PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
-  if (!glic_instance_->IsShowing() || glic_instance_->IsAttached() ||
-      !tracker) {
-    return;
-  }
-
-  if (!context.glic_widget) {
-    return;
-  }
-
-  if (panel_state.kind == mojom::PanelStateKind::kDetached) {
-    tracker->OnPictureInPictureWidgetOpened(context.glic_widget);
-  } else {
-    tracker->RemovePictureInPictureWidget(context.glic_widget);
-  }
 }
 
 }  // namespace glic

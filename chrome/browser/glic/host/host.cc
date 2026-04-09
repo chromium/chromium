@@ -275,8 +275,7 @@ void Host::Reload() {
     return;
   }
 
-  if (GlicEnabling::IsMultiInstanceEnabled() &&
-      base::FeatureList::IsEnabled(kGlicReloadUsesFreshWebContents)) {
+  if (base::FeatureList::IsEnabled(kGlicReloadUsesFreshWebContents)) {
     if (handler_info_ && handler_info_->web_client) {
       UnsetWebClient(handler_info_->web_client);
     }

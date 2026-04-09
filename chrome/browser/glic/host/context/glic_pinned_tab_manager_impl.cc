@@ -602,8 +602,7 @@ void GlicPinnedTabManagerImpl::OnTabDataChanged(tabs::TabHandle tab_handle,
 
 void GlicPinnedTabManagerImpl::OnTabChangedOrigin(tabs::TabHandle tab_handle) {
   CHECK(IsTabPinned(tab_handle));
-  if ((!GlicEnabling::IsMultiInstanceEnabled() ||
-       base::FeatureList::IsEnabled(kGlicAutoUnpinOnTabChangedOrigin)) &&
+  if (base::FeatureList::IsEnabled(kGlicAutoUnpinOnTabChangedOrigin) &&
       !IsGlicWindowShowing()) {
     // If the tab was restored, we do not unpin it when the origin changes.
     // TODO(b/456482198): Find a more nuanced solution that doesn't permanently
