@@ -36,7 +36,7 @@ ServiceWorkerInstalledScriptsSender::~ServiceWorkerInstalledScriptsSender() {}
 
 blink::mojom::ServiceWorkerInstalledScriptsInfoPtr
 ServiceWorkerInstalledScriptsSender::CreateInfoAndBind() {
-  DCHECK_EQ(State::kNotStarted, state_);
+  DCHECK(!manager_.is_bound());
 
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources =
       owner_->script_cache_map()->GetResources();
@@ -262,6 +262,14 @@ void ServiceWorkerInstalledScriptsSender::UpdateFinishedReasonAndBecomeIdle(
   DCHECK(current_sending_url_.is_empty());
   state_ = State::kIdle;
   last_finished_reason_ = reason;
+
+  // Inform the owner that we are done with the main script. If the reason is
+  // not Success, we may still need to notify listeners that no metadata will
+  // be forthcoming.
+  if (reason != ServiceWorkerInstalledScriptReader::FinishedReason::kSuccess) {
+    owner_->SetMainScriptResponse(nullptr);
+  }
+
   if (finish_callback_) {
     std::move(finish_callback_).Run();
   }
