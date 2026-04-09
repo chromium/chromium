@@ -208,7 +208,7 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
                 /* listenToActivityState= */ true,
                 getIntentRequestTracker(),
                 getInsetObserver(),
-                /* trackOcclusion= */ true);
+                /* occlusionTrackingAllowed= */ true);
     }
 
     @Override

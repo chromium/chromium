@@ -216,7 +216,7 @@ public class WindowAndroid
 
     private @Nullable Consumer<Boolean> mOcclusionObserver;
 
-    private final boolean mTrackOcclusion;
+    private final boolean mOcclusionTrackingAllowed;
 
     /** True when this window is occluded. */
     private final SettableNonNullObservableSupplier<Boolean> mOcclusionSupplier =
@@ -232,14 +232,14 @@ public class WindowAndroid
 
     /**
      * @param context The application {@link Context}.
-     * @param trackOcclusion Whether to track occlusion of the window.
+     * @param occlusionTrackingAllowed Whether occlusion tracking is allowed.
      */
-    public WindowAndroid(Context context, boolean trackOcclusion) {
+    public WindowAndroid(Context context, boolean occlusionTrackingAllowed) {
         this(
                 context,
                 DisplayAndroid.getNonMultiDisplay(context),
                 /* activityTopResumedSupported= */ false,
-                trackOcclusion);
+                occlusionTrackingAllowed);
     }
 
     protected WindowAndroid(
@@ -247,12 +247,12 @@ public class WindowAndroid
             boolean activityTopResumedSupported,
             IntentRequestTracker tracker,
             @Nullable InsetObserver insetObserver,
-            boolean trackOcclusion) {
+            boolean occlusionTrackingAllowed) {
         this(
                 context,
                 DisplayAndroid.getNonMultiDisplay(context),
                 activityTopResumedSupported,
-                trackOcclusion);
+                occlusionTrackingAllowed);
         mIntentRequestTracker = (IntentRequestTrackerImpl) tracker;
         mInsetObserver = insetObserver;
         mApplicationBottomInsetSupplier.setInsetObserver(mInsetObserver);
@@ -274,14 +274,14 @@ public class WindowAndroid
      *     onTopResumedActivityChanged() on the Activity owning the WindowAndroid. If this is not
      *     enabled, WindowAndroid assumes the activity is in the top when it is resumed.
      * @param display The application {@link DisplayAndroid}.
-     * @param trackOcclusion Whether to track occlusion of the window.
+     * @param occlusionTrackingAllowed Whether occlusion tracking is allowed.
      */
     @SuppressLint("UseSparseArrays")
     protected WindowAndroid(
             Context context,
             DisplayAndroid display,
             boolean activityTopResumedSupported,
-            boolean trackOcclusion) {
+            boolean occlusionTrackingAllowed) {
         mLifetimeAssert = LifetimeAssert.create(this);
         // context does not have the same lifetime guarantees as an application context so we can't
         // hold a strong reference to it.
@@ -309,7 +309,7 @@ public class WindowAndroid
             mOverlayTransformApiHelper = OverlayTransformApiHelper.create(this);
         }
 
-        mTrackOcclusion = trackOcclusion;
+        mOcclusionTrackingAllowed = occlusionTrackingAllowed;
         maybeTrackOcclusion();
 
         mActivityTopResumedSupported = activityTopResumedSupported;
@@ -328,7 +328,7 @@ public class WindowAndroid
     private boolean shouldTrackOcclusion() {
         // On rotate Android seems to send a spurious occlusion signal. See crbug.com/380209799 for
         // details.
-        return mTrackOcclusion
+        return mOcclusionTrackingAllowed
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
                 && UiAndroidFeatureList.sAndroidWindowOcclusion.isEnabled();
     }
@@ -438,7 +438,8 @@ public class WindowAndroid
     private static long createForTesting() {
         WindowAndroid windowAndroid =
                 new WindowAndroid(
-                        ContextUtils.getApplicationContext(), /* trackOcclusion= */ false);
+                        ContextUtils.getApplicationContext(),
+                        /* occlusionTrackingAllowed= */ false);
         // |windowAndroid.getNativePointer()| creates native WindowAndroid object
         // which stores a global ref to |windowAndroid|. Therefore |windowAndroid|
         // is not immediately eligible for gc.
@@ -1002,7 +1003,7 @@ public class WindowAndroid
             }
         }
 
-        if (mTrackOcclusion) {
+        if (mOcclusionTrackingAllowed) {
             View decorView = getDecorView();
             if (decorView != null) {
                 decorView.removeOnAttachStateChangeListener(this);

@@ -58,7 +58,7 @@ public final class AutofillSaveCardBottomSheetBridgeTest {
     public void setUp() {
         AutofillSaveCardBottomSheetBridgeJni.setInstanceForTesting(mBridgeNatives);
         Activity activity = Robolectric.buildActivity(Activity.class).create().get();
-        mWindow = new WindowAndroid(activity, /* trackOcclusion= */ true);
+        mWindow = new WindowAndroid(activity, /* occlusionTrackingAllowed= */ true);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
         AnchoredDialogCoordinatorProvider.attach(mWindow, mAnchoredDialogCoordinator);
         LayoutManagerAppUtils.attach(mWindow, mLayoutManager);

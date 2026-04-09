@@ -44,7 +44,7 @@ class CastWebContentsScopes {
                             /* listenToActivityState= */ true,
                             IntentRequestTracker.createFromActivity(activity),
                             /* insetObserver= */ null,
-                            /* trackOcclusion= */ true);
+                            /* occlusionTrackingAllowed= */ true);
                 },
                 backgroundColor);
     }
@@ -55,7 +55,7 @@ class CastWebContentsScopes {
         return onLayoutInternal(
                 activity,
                 layout,
-                () -> new WindowAndroid(activity, /* trackOcclusion= */ false),
+                () -> new WindowAndroid(activity, /* occlusionTrackingAllowed= */ false),
                 backgroundColor);
     }
 
@@ -69,7 +69,7 @@ class CastWebContentsScopes {
                 context,
                 layout,
                 () ->
-                        new WindowAndroid(context, /* trackOcclusion= */ false) {
+                        new WindowAndroid(context, /* occlusionTrackingAllowed= */ false) {
                             @Override
                             public IBinder getWindowToken() {
                                 return windowTokenProvider.provideWindowToken();
@@ -132,7 +132,7 @@ class CastWebContentsScopes {
 
     public static Observer<WebContents> withoutLayout(Context context) {
         return (WebContents webContents) -> {
-            WindowAndroid window = new WindowAndroid(context, /* trackOcclusion= */ false);
+            WindowAndroid window = new WindowAndroid(context, /* occlusionTrackingAllowed= */ false);
             ContentView contentView = ContentView.createContentView(context, webContents);
             WebContentsRegistry.initializeWebContents(webContents, contentView, window);
             // Enable display of current webContents.

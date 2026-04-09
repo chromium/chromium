@@ -78,7 +78,7 @@ public final class AutofillVcnEnrollBottomSheetCoordinatorTest {
 
         AutofillImageFetcherFactory.setInstanceForTesting(mImageFetcher);
         Activity activity = buildActivity(Activity.class).create().get();
-        mWindow = new WindowAndroid(activity, /* trackOcclusion= */ true);
+        mWindow = new WindowAndroid(activity, /* occlusionTrackingAllowed= */ true);
         setUpCreditCardWithCardArtUrl();
         mCoordinator =
                 new AutofillVcnEnrollBottomSheetCoordinator(

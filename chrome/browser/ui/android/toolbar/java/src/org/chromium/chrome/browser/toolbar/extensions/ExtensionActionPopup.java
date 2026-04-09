@@ -112,7 +112,7 @@ class ExtensionActionPopup implements Destroyable {
                         /* listenToActivityState= */ true,
                         NullUtil.assumeNonNull(windowAndroid.getIntentRequestTracker()),
                         /* insetObserver= */ null,
-                        /* trackOcclusion= */ true) {
+                        /* occlusionTrackingAllowed= */ true) {
                     @Override
                     public @Nullable ModalDialogManager getModalDialogManager() {
                         return windowAndroid.getModalDialogManager();

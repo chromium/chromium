@@ -148,7 +148,7 @@ public class PhotoPickerDialogTest
                                     IntentRequestTracker.createFromActivity(
                                             mActivityTestRule.getActivity()),
                                     /* insetObserver= */ null,
-                                    /* trackOcclusion= */ true);
+                                    /* occlusionTrackingAllowed= */ true);
                         });
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

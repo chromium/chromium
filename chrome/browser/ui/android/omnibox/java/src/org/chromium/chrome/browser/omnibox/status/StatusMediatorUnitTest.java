@@ -126,7 +126,7 @@ public final class StatusMediatorUnitTest {
         mContext =
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
-        mWindowAndroid = new WindowAndroid(mContext, /* trackOcclusion= */ false);
+        mWindowAndroid = new WindowAndroid(mContext, /* occlusionTrackingAllowed= */ false);
         mModel = new PropertyModel(StatusProperties.ALL_KEYS);
         mMediator =
                 new StatusMediator(

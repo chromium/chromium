@@ -975,6 +975,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                 /* listenToActivityState= */ true,
                 getIntentRequestTracker(),
                 getInsetObserver(),
-                /* trackOcclusion= */ true);
+                /* occlusionTrackingAllowed= */ true);
     }
 }

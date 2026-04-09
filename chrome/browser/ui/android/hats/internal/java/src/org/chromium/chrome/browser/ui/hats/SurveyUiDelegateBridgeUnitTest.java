@@ -66,7 +66,7 @@ public class SurveyUiDelegateBridgeUnitTest {
                         false,
                         IntentRequestTracker.createFromActivity(mActivity),
                         mInsetObserver,
-                        /* trackOcclusion= */ true);
+                        /* occlusionTrackingAllowed= */ true);
         MessagesFactory.attachMessageDispatcher(mWindow, mMockMessageDispatcher);
         TabModelSelectorSupplier.setInstanceForTesting(mTabModelSelector);
     }

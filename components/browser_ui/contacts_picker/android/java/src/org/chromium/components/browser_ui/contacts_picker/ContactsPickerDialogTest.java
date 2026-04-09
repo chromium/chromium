@@ -150,7 +150,7 @@ public class ContactsPickerDialogTest
                                     /* listenToActivityState= */ true,
                                     IntentRequestTracker.createFromActivity(mActivity),
                                     mInsetObserver,
-                                    /* trackOcclusion= */ true);
+                                    /* occlusionTrackingAllowed= */ true);
                         });
         mWebContents = Mockito.mock(WebContents.class);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);

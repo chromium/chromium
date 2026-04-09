@@ -96,7 +96,8 @@ public class MerchantTrustBottomSheetCoordinatorTest {
     public void setUp() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mWindowAndroid = new WindowAndroid(sActivity, /* trackOcclusion= */ true);
+                    mWindowAndroid =
+                            new WindowAndroid(sActivity, /* occlusionTrackingAllowed= */ true);
                     mDetailsTabCoordinator =
                             new MerchantTrustBottomSheetCoordinator(
                                     sActivity,

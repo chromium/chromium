@@ -118,7 +118,7 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         AutofillImageFetcherFactory.setInstanceForTesting(mAutofillImageFetcher);
         mApplicationContext = ApplicationProvider.getApplicationContext();
-        mWindow = new WindowAndroid(mApplicationContext, /* trackOcclusion= */ false);
+        mWindow = new WindowAndroid(mApplicationContext, /* occlusionTrackingAllowed= */ false);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
         mViewBridge =
                 FacilitatedPaymentsPaymentMethodsViewBridge.create(

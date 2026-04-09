@@ -117,7 +117,7 @@ public class SaveBitmapDelegateTest {
         private final int mPermissionResult = PackageManager.PERMISSION_GRANTED;
 
         public TestWindowAndroid(Context context) {
-            super(context, /* trackOcclusion= */ true);
+            super(context, /* occlusionTrackingAllowed= */ true);
         }
 
         public void setHasPermission(boolean hasPermission) {

@@ -440,7 +440,7 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
                 /* listenToActivityState= */ true,
                 getIntentRequestTracker(),
                 getInsetObserver(),
-                /* trackOcclusion= */ true);
+                /* occlusionTrackingAllowed= */ true);
     }
 
     @Override

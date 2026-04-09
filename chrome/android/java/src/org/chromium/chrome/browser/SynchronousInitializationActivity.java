@@ -97,7 +97,7 @@ public abstract class SynchronousInitializationActivity extends ChromeBaseAppCom
                 /* listenToActivityState= */ true,
                 IntentRequestTracker.createFromActivity(this),
                 getInsetObserver(),
-                /* trackOcclusion= */ true);
+                /* occlusionTrackingAllowed= */ true);
     }
 
     /** Returns the {@link ActivityWindowAndroid} instance attached to the activity. */

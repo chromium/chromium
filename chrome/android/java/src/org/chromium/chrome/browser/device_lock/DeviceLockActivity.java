@@ -74,7 +74,7 @@ public class DeviceLockActivity extends SynchronousInitializationActivity
                         /* listenToActivityState= */ true,
                         IntentRequestTracker.createFromActivity(this),
                         getInsetObserver(),
-                        /* trackOcclusion= */ true);
+                        /* occlusionTrackingAllowed= */ true);
         mIntentRequestTracker = mWindowAndroid.getIntentRequestTracker();
 
         Bundle fragmentArgs = getIntent().getBundleExtra(ARGUMENT_FRAGMENT_ARGS);

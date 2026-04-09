@@ -404,7 +404,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                         /* listenToActivityState= */ true,
                         mIntentRequestTracker,
                         getInsetObserver(),
-                        /* trackOcclusion= */ true));
+                        /* occlusionTrackingAllowed= */ true));
 
         if (isContainmentEnabled()) {
             int backgroundColor = SemanticColorUtils.getSettingsBackgroundColor(this);

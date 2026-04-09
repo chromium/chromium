@@ -123,7 +123,7 @@ public class VoiceRecognitionHandlerUnitTest {
         doReturn(true).when(mPermissionDelegate).hasPermission(anyString());
         var activity = Robolectric.buildActivity(Activity.class).setup().get();
 
-        mWindowAndroid = spy(new WindowAndroid(activity, /* trackOcclusion= */ true));
+        mWindowAndroid = spy(new WindowAndroid(activity, /* occlusionTrackingAllowed= */ true));
         mHandler =
                 spy(
                         new VoiceRecognitionHandler(

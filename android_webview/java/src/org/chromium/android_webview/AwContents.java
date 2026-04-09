@@ -1521,13 +1521,13 @@ public class AwContents implements SmartClipProvider {
                                     listenToActivityState,
                                     IntentRequestTracker.createFromActivity(activity),
                                     /* insetObserver= */ null,
-                                    /* trackOcclusion= */ false);
+                                    /* occlusionTrackingAllowed= */ false);
                 }
                 wrapper = new WindowAndroidWrapper(activityWindow);
             } else {
                 wrapper =
                         new WindowAndroidWrapper(
-                                new WindowAndroid(context, /* trackOcclusion= */ false));
+                                new WindowAndroid(context, /* occlusionTrackingAllowed= */ false));
             }
             sContextWindowMap.put(context, wrapper);
         }

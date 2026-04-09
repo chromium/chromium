@@ -67,7 +67,7 @@ public class ChromeWindow extends ActivityWindowAndroid {
                 /* activityTopResumedSupported= */ true,
                 intentRequestTracker,
                 insetObserver,
-                /* trackOcclusion= */ true);
+                /* occlusionTrackingAllowed= */ true);
         assert insetObserver != null;
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;

@@ -394,7 +394,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         assert tabContentManager != null;
 
         Context context = ContextUtils.getApplicationContext();
-        mWindow = new WindowAndroid(context, /* trackOcclusion= */ false);
+        mWindow = new WindowAndroid(context, /* occlusionTrackingAllowed= */ false);
         mArchivedTabCreator = new ArchivedTabCreator(mWindow);
         mCipherFactory = cipherFactory;
 

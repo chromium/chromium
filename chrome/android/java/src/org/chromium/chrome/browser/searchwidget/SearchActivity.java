@@ -278,7 +278,7 @@ public class SearchActivity extends AsyncInitializationActivity
                 /* activityTopResumedSupported= */ false,
                 getIntentRequestTracker(),
                 getInsetObserver(),
-                /* trackOcclusion= */ true) {
+                /* occlusionTrackingAllowed= */ true) {
             @Override
             public @Nullable ModalDialogManager getModalDialogManager() {
                 return SearchActivity.this.getModalDialogManager();

@@ -105,7 +105,7 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
         AutofillVcnEnrollBottomSheetBridgeJni.setInstanceForTesting(mBridgeNatives);
         Activity activity = Robolectric.buildActivity(Activity.class).create().get();
         mShadowActivity = shadowOf(activity);
-        mWindow = new WindowAndroid(activity, /* trackOcclusion= */ true);
+        mWindow = new WindowAndroid(activity, /* occlusionTrackingAllowed= */ true);
         when(mImageFetcher.getImageIfAvailable(
                         ISSUER_ICON_URL,
                         IconSpecs.create(

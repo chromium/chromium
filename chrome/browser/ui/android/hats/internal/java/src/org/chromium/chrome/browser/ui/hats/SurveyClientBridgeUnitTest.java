@@ -71,7 +71,7 @@ public class SurveyClientBridgeUnitTest {
                         false,
                         IntentRequestTracker.createFromActivity(mActivity),
                         /* insetObserver= */ null,
-                        /* trackOcclusion= */ true);
+                        /* occlusionTrackingAllowed= */ true);
     }
 
     @After
