@@ -9990,13 +9990,14 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
     // current entry but don't, due to this line.
     bool should_replace_current_entry = false;
 
-    // TODO(crbug.com/40221940): Null out the initiator origin, frame token, and
-    // site instance.
-    // We use an opaque `initiator_origin` in order to avoid leaking
-    // information from the fenced frame to its embedder. (The navigation will
-    // be treated as cross-origin unconditionally.) We don't need to provide a
-    // `source_site_instance`.
-    // url::Origin initiator_origin;
+    // Use an opaque initiator_origin to prevent the fenced frame's
+    // origin from leaking to the destination of the _unfencedTop
+    // navigation via Sec-Fetch-Site and related request headers.
+    // The fenced frame privacy model requires that the embedder
+    // cannot identify the content of the fenced frame; passing the
+    // renderer-supplied params->initiator_origin would violate this.
+    // See crbug.com/40221940.
+    url::Origin initiator_origin;
 
     // TODO(crbug.com/40193166): Resolve the discussion of download policy.
     blink::NavigationDownloadPolicy download_policy;
@@ -10007,7 +10008,7 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
     target_frame->frame_tree_node()->navigator().NavigateFromFrameProxy(
         target_frame, validated_params_url,
         base::OptionalToPtr(params->initiator_frame_token),
-        GetProcess()->GetDeprecatedID(), params->initiator_origin,
+        GetProcess()->GetDeprecatedID(), initiator_origin,
         params->initiator_base_url, GetSiteInstance(), content::Referrer(),
         ui::PAGE_TRANSITION_LINK, should_replace_current_entry, download_policy,
         "GET",
