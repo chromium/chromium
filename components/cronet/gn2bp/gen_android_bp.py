@@ -2886,7 +2886,9 @@ def configure_cc_module(module, cflags, defines, ldflags, libs, main_module,
         # path. So create a filegroup at the top-level Android.bp and reference it instead.
         filegroup_module = _create_linker_script_filegroup(linker_script)
         blueprint.add_module(filegroup_module)
-        module.version_script = f":{filegroup_module.name}"
+        linker_script_deps = f':{filegroup_module.name}'
+        assert main_module.version_script is None or main_module.version_script == linker_script_deps, f'Found different version scripts across different architectures!, target name: {main_module.name}, first linker_script: {main_module.version_script}, second linker script: {version_script_deps}'
+        main_module.version_script = linker_script_deps
     _set_linker_script(module, libs)
     for lib in libs:
         # Generally library names should be mangled as 'libXXX', unless they
