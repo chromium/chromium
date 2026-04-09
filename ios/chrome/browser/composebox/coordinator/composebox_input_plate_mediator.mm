@@ -422,6 +422,12 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
     _aimEligibilityService = aimEligibilityService;
     _items = [[ComposeboxInputItemCollection alloc] init];
     _items.delegate = self;
+
+    if (_entrypoint == ComposeboxEntrypoint::kCobrowse) {
+      CHECK([self isEligibleToAIM])
+          << "The Cobrowse entry point requires AIM eligibility. Accessing it "
+             "without valid eligibility represents an illegal state.";
+    }
   }
   return self;
 }
@@ -867,12 +873,15 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
 
 #pragma mark - ComposeboxModeObserver
 
+// Handles mode transitions, updates the model, applies mode-specific state,
+// and refreshes the UI.
 - (void)composeboxModeDidChange:(ComposeboxMode)mode {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 
   if (_entrypoint == ComposeboxEntrypoint::kCobrowse &&
       mode == ComposeboxMode::kRegularSearch) {
     _modeHolder.mode = ComposeboxMode::kAIM;
+    // Return early as setting mode triggers a new call.
     return;
   }
 
@@ -887,41 +896,7 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
 
   [self updateMode];
 
-  switch (mode) {
-    case ComposeboxMode::kRegularSearch:
-      if (_contextualSearchSession) {
-        _contextualSearchSession->ClearFiles();
-      }
-      [_items clearItems];
-      _imageUploadCount = 0;
-      [self setActiveTool:omnibox::TOOL_MODE_UNSPECIFIED];
-      break;
-    case ComposeboxMode::kAIM:
-      if (![self isEligibleToAIM]) {
-        _modeHolder.mode = ComposeboxMode::kRegularSearch;
-      }
-      [self setActiveTool:omnibox::TOOL_MODE_UNSPECIFIED];
-      break;
-    case ComposeboxMode::kImageGeneration:
-      if (![self imageToolAllowed]) {
-        _modeHolder.mode = ComposeboxMode::kRegularSearch;
-      }
-      [self cleanAttachmentsForImageGeneration];
-      [self updateImageGenerationToolMode];
-      break;
-    case ComposeboxMode::kCanvas:
-      if (![self canvasToolAllowed]) {
-        _modeHolder.mode = ComposeboxMode::kRegularSearch;
-      }
-      [self setActiveTool:omnibox::TOOL_MODE_CANVAS];
-      break;
-    case ComposeboxMode::kDeepSearch:
-      if (![self deepSearchToolAllowed]) {
-        _modeHolder.mode = ComposeboxMode::kRegularSearch;
-      }
-      [self setActiveTool:omnibox::TOOL_MODE_DEEP_SEARCH];
-      break;
-  }
+  [self applyStateForMode:mode];
 
   [self updateModelOnModeChange];
   [self commitUIUpdates];
@@ -1280,6 +1255,45 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
 }
 
 #pragma mark - Private
+
+// Applies state changes and resets specific to the newly selected mode.
+- (void)applyStateForMode:(ComposeboxMode)mode {
+  switch (mode) {
+    case ComposeboxMode::kRegularSearch:
+      if (_contextualSearchSession) {
+        _contextualSearchSession->ClearFiles();
+      }
+      [_items clearItems];
+      _imageUploadCount = 0;
+      [self setActiveTool:omnibox::TOOL_MODE_UNSPECIFIED];
+      break;
+    case ComposeboxMode::kAIM:
+      if (![self isEligibleToAIM]) {
+        _modeHolder.mode = ComposeboxMode::kRegularSearch;
+      }
+      [self setActiveTool:omnibox::TOOL_MODE_UNSPECIFIED];
+      break;
+    case ComposeboxMode::kImageGeneration:
+      if (![self imageToolAllowed]) {
+        _modeHolder.mode = ComposeboxMode::kRegularSearch;
+      }
+      [self cleanAttachmentsForImageGeneration];
+      [self updateImageGenerationToolMode];
+      break;
+    case ComposeboxMode::kCanvas:
+      if (![self canvasToolAllowed]) {
+        _modeHolder.mode = ComposeboxMode::kRegularSearch;
+      }
+      [self setActiveTool:omnibox::TOOL_MODE_CANVAS];
+      break;
+    case ComposeboxMode::kDeepSearch:
+      if (![self deepSearchToolAllowed]) {
+        _modeHolder.mode = ComposeboxMode::kRegularSearch;
+      }
+      [self setActiveTool:omnibox::TOOL_MODE_DEEP_SEARCH];
+      break;
+  }
+}
 
 // Whether the current instance is associated with cobrowse.
 - (BOOL)isCobrowse {
