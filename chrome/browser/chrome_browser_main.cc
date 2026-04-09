@@ -352,6 +352,10 @@
 #include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #endif
 
+#if BUILDFLAG(CHROME_FOR_TESTING)
+#include "chrome/browser/chrome_for_testing/chrome_browser_main_extra_parts_cft.h"
+#endif
+
 namespace {
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
@@ -810,6 +814,11 @@ std::unique_ptr<content::BrowserMainParts> ChromeBrowserMainParts::Create(
 #if !BUILDFLAG(IS_ANDROID)
   main_parts->AddParts(
       std::make_unique<headless::ChromeBrowserMainExtraPartsHeadless>());
+#endif
+
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  main_parts->AddParts(
+      std::make_unique<chrome_for_testing::ChromeBrowserMainExtraPartsCft>());
 #endif
 
 #if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)

@@ -389,6 +389,10 @@ if (!is_android && !is_mac) {
         "app/chrome_main_linux.h",
       ]
     }
+
+    if (is_chrome_for_testing) {
+      deps += [ "//chrome/browser/chrome_for_testing:browser" ]
+    }
   }
 
   # TODO(crbug.com/40204298): Make this work on other platforms.
@@ -450,6 +454,10 @@ if (is_win) {
 
     if (use_aura) {
       deps += [ "//ui/compositor" ]
+    }
+
+    if (is_chrome_for_testing) {
+      deps += [ "//chrome/browser/chrome_for_testing:browser" ]
     }
   }
 
@@ -1141,6 +1149,10 @@ if (is_win) {
 
     if (is_chromeos) {
       deps += [ "//chrome/browser/ash/schedqos" ]
+    }
+
+    if (is_chrome_for_testing) {
+      deps += [ "//chrome/browser/chrome_for_testing:browser" ]
     }
 
     if (is_component_build) {
