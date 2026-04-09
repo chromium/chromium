@@ -90,8 +90,10 @@ void CSSStyleRule::setSelectorText(const ExecutionContext* execution_context,
 
   const auto* context = MakeGarbageCollected<CSSParserContext>(
       ParserContext(execution_context->GetSecureContextMode()));
+  CSSRule* root_rule = RootCSSRule();
+  CSSStyleSheet* parent_stylesheet = root_rule->parentStyleSheet();
   StyleSheetContents* parent_contents =
-      parentStyleSheet() ? parentStyleSheet()->Contents() : nullptr;
+      parent_stylesheet ? parent_stylesheet->Contents() : nullptr;
   HeapVector<CSSSelector> arena;
 
   NestingContext nesting_context = CalculateNestingContext(parentRule());
@@ -115,6 +117,19 @@ void CSSStyleRule::setSelectorText(const ExecutionContext* execution_context,
   if (parent_contents) {
     position_hint_ = parent_contents->ReplaceRuleIfExists(
         style_rule_, new_style_rule, position_hint_);
+  } else if (root_rule) {
+    // This wrapper is detached from its CSSStyleSheet. We need to look
+    // for the rule to replace starting at the root of the (detached)
+    // rule tree.
+    if (auto* style_rule_root = DynamicTo<CSSStyleRule>(root_rule)) {
+      style_rule_root->GetStyleRule()->ReplaceRuleIfExists(style_rule_,
+                                                           new_style_rule);
+    } else {
+      To<CSSGroupingRule>(root_rule)->GroupRule()->ReplaceRuleIfExists(
+          style_rule_, new_style_rule);
+    }
+    // Note that "position hint" is an optimization for the top level
+    // only, so we don't update that here.
   }
 
   // Updates style_rule_, as well as any inner CSSOM wrappers.

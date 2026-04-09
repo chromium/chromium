@@ -275,6 +275,7 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet,
   bool IsContentsShared() const;
   void SetContents(StyleSheetContents*);
   void ReattachChildRuleCSSOMWrappers();
+  void DetachCSSOMWrappers();
 
   bool CanAccessRules() const;
 

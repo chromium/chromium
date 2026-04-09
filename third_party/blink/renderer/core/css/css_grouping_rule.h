@@ -114,6 +114,8 @@ class CORE_EXPORT CSSGroupingRule : public CSSRule {
     return Item(index, /*trigger_use_counters=*/false);
   }
 
+  StyleRuleGroup* GroupRule() const { return group_rule_; }
+
   void Trace(Visitor*) const override;
 
  protected:

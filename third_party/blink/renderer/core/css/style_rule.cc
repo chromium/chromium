@@ -527,6 +527,13 @@ MutableCSSPropertyValueSet& StyleRule::MutableProperties() {
   return *To<MutableCSSPropertyValueSet>(properties_.Get());
 }
 
+void StyleRule::ReplaceRuleIfExists(StyleRuleBase* old_rule,
+                                    StyleRuleBase* new_rule) {
+  if (child_rules_) {
+    ReplaceStyleRuleInVector(old_rule, new_rule, *child_rules_);
+  }
+}
+
 void StyleRule::WrapperInsertRule(CSSStyleSheet* parent_sheet,
                                   unsigned index,
                                   StyleRuleBase* rule) {
@@ -865,6 +872,11 @@ void StyleRuleScope::TraceAfterDispatch(blink::Visitor* visitor) const {
 StyleRuleGroup::StyleRuleGroup(RuleType type,
                                HeapVector<Member<StyleRuleBase>> rules)
     : StyleRuleBase(type), child_rules_(std::move(rules)) {}
+
+void StyleRuleGroup::ReplaceRuleIfExists(StyleRuleBase* old_rule,
+                                         StyleRuleBase* new_rule) {
+  ReplaceStyleRuleInVector(old_rule, new_rule, child_rules_);
+}
 
 void StyleRuleGroup::WrapperInsertRule(CSSStyleSheet* parent_sheet,
                                        unsigned index,

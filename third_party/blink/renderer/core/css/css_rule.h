@@ -126,6 +126,10 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
     return parent_is_rule_ ? ParentAsCSSRule() : nullptr;
   }
 
+  CSSRule* RootCSSRule() {
+    return parentRule() ? parentRule()->RootCSSRule() : this;
+  }
+
   // The CSSOM spec states that "setting the cssText attribute must do nothing."
   void setCSSText(const String&) {}
 

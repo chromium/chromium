@@ -267,36 +267,6 @@ void StyleSheetContents::ClearRules() {
   child_rules_.clear();
 }
 
-template <typename ChildRulesType>
-static wtf_size_t ReplaceRuleIfExistsInternal(const StyleRuleBase* old_rule,
-                                              StyleRuleBase* new_rule,
-                                              ChildRulesType& child_rules) {
-  for (wtf_size_t i = 0; i < child_rules.size(); ++i) {
-    StyleRuleBase* rule = child_rules[i].Get();
-    if (rule == old_rule) {
-      child_rules[i] = new_rule;
-      return i;
-    }
-    if (auto* style_rule_group = DynamicTo<StyleRuleGroup>(rule)) {
-      if (ReplaceRuleIfExistsInternal(old_rule, new_rule,
-                                      style_rule_group->ChildRules()) !=
-          std::numeric_limits<wtf_size_t>::max()) {
-        return 0;  // Dummy non-failure value.
-      }
-    } else if (auto* style_rule = DynamicTo<StyleRule>(rule);
-               style_rule && style_rule->ChildRules()) {
-      if (ReplaceRuleIfExistsInternal(old_rule, new_rule,
-                                      *style_rule->ChildRules()) !=
-          std::numeric_limits<wtf_size_t>::max()) {
-        return 0;  // Dummy non-failure value.
-      }
-    }
-  }
-
-  // Not found.
-  return std::numeric_limits<wtf_size_t>::max();
-}
-
 wtf_size_t StyleSheetContents::ReplaceRuleIfExists(StyleRuleBase* old_rule,
                                                    StyleRuleBase* new_rule,
                                                    wtf_size_t position_hint) {
@@ -311,7 +281,7 @@ wtf_size_t StyleSheetContents::ReplaceRuleIfExists(StyleRuleBase* old_rule,
     return position_hint;
   }
 
-  return ReplaceRuleIfExistsInternal(old_rule, new_rule, child_rules_);
+  return ReplaceStyleRuleInVector(old_rule, new_rule, child_rules_);
 }
 
 bool StyleSheetContents::WrapperInsertRule(StyleRuleBase* rule,
