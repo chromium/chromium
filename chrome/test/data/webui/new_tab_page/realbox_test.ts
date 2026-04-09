@@ -709,4 +709,65 @@ suite('NewTabPageRealboxNextTest', () => {
     }));
     assertEquals(1, metrics.count(metricName, ContextType.TAB));
   });
+
+  test('metrics are recorded for shown context menu items', async () => {
+    loadTimeData.overrideValues({
+      composeboxSource: 'TestSource',
+    });
+    realbox = createAndAppendRealbox({
+      composeButtonEnabled: true,
+      composeboxEnabled: true,
+      ntpRealboxNextEnabled: true,
+    });
+    await microtasksFinished();
+
+    const metricName =
+        'TestSource.AimEntrypoint.ClassicPopup.ContextualElement.Shown';
+
+    // Verify no metrics are recorded initially.
+    assertEquals(0, metrics.count(metricName));
+
+    // Setup tab suggestions.
+    const sampleTabs = [
+      {
+        tabId: 1,
+        title: 'Sample Tab 1',
+        url: 'https://example.com/1',
+        lastActive: {internalValue: BigInt(1)},
+      },
+      {
+        tabId: 2,
+        title: 'Sample Tab 2',
+        url: 'https://example.com/2',
+        lastActive: {internalValue: BigInt(2)},
+      },
+    ];
+    testProxy.handler.setResultFor(
+        'getRecentTabs', Promise.resolve({tabs: sampleTabs}));
+
+    // Open context menu to trigger shown metrics.
+    const entrypointAndMenu = realbox.shadowRoot.querySelector(
+        'cr-composebox-contextual-entrypoint-and-menu');
+    assertTrue(!!entrypointAndMenu);
+    entrypointAndMenu.dispatchEvent(new CustomEvent('context-menu-opened'));
+    await microtasksFinished();
+
+    assertEquals(testProxy.handler.getCallCount('getRecentTabs'), 1);
+    assertDeepEquals((realbox as any).tabSuggestions_, sampleTabs);
+
+    // Verify shown metrics for input types based on SAMPLE_INPUT_STATE
+    assertEquals(1, metrics.count(metricName, ContextType.IMAGE));
+    assertEquals(1, metrics.count(metricName, ContextType.FILE));
+    assertEquals(1, metrics.count(metricName, ContextType.TAB));
+
+    // Verify shown metrics for tools based on SAMPLE_INPUT_STATE
+    assertEquals(1, metrics.count(metricName, ContextType.DEEP_RESEARCH));
+    assertEquals(1, metrics.count(metricName, ContextType.IMAGE_GEN));
+    assertEquals(0, metrics.count(metricName, ContextType.CANVAS));
+
+    // Verify shown metrics for models based on SAMPLE_INPUT_STATE
+    assertEquals(1, metrics.count(metricName, ContextType.REGULAR_MODEL));
+    assertEquals(1, metrics.count(metricName, ContextType.THINKING_MODEL));
+    assertEquals(0, metrics.count(metricName, ContextType.AUTO_MODEL));
+  });
 });
