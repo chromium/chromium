@@ -253,6 +253,10 @@ class ArrayDataViewImpl<T> {
 template <typename K, typename V>
 class MapDataView;
 
+// A view of the contents of a Mojo array for deserialization. Similar to
+// `base::span<T>`, this type does not own the underlying data. Access is
+// read-only, except in the case of built-in handle types and interfaces,
+// where individual elements can be consumed with `Take(index)`.
 template <typename T>
 class ArrayDataView : public internal::ArrayDataViewImpl<T> {
  public:
