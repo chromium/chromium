@@ -165,6 +165,10 @@ Not all DCHECK failures in V8 or d8 are security bugs, but many are, so to be
 conservative we assume that all of them are security bugs until we are confident
 they are not.
 
+Any proof of concept that uses d8 **must** use `--run-as-security-poc`, in
+addition to any other command-line arguments it needs. Proofs of concept that do
+not work with `--run-as-security-poc` are not security bugs.
+
 ### Cross-Site Bugs
 
 A security bug that allows for one origin to either read data from another
@@ -225,6 +229,8 @@ Chromium:
     * `--single-process`
     * any flag whose name contains `unsafe`
     * SwiftShader
+* Bugs that use d8, but don't reproduce with `--run-as-security-poc` added to
+  the command line.
 * Bugs that require an attacker to have created or dropped files onto the system
   in advance
 * Bugs that require physical access of any kind
