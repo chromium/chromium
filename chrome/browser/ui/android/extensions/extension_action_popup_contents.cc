@@ -5,11 +5,11 @@
 #include "chrome/browser/ui/android/extensions/extension_action_popup_contents.h"
 
 #include "base/android/jni_string.h"
-#include "base/notimplemented.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/extensions/extension_view_host_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/internal/android/android_browser_window.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_action.h"
@@ -102,8 +102,9 @@ void ExtensionActionPopupContents::RenderFrameCreated(
 bool ExtensionActionPopupContents::HandleKeyboardEvent(
     content::WebContents* source,
     const input::NativeWebKeyboardEvent& event) {
-  NOTIMPLEMENTED();
-  return false;
+  return Java_ExtensionActionPopupContents_handleKeyboardEvent(
+      AttachCurrentThread(), java_object_, source->GetJavaWebContents(),
+      event.os_event);
 }
 
 void ExtensionActionPopupContents::OnLoaded() {

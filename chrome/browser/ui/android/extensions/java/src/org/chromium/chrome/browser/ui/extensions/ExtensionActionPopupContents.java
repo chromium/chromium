@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.extensions;
 
+import android.view.KeyEvent;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
@@ -114,6 +116,14 @@ public class ExtensionActionPopupContents implements Destroyable {
         }
     }
 
+    @CalledByNative
+    private boolean handleKeyboardEvent(WebContents webContents, KeyEvent event) {
+        if (mDelegate != null) {
+            return mDelegate.handleKeyboardEvent(webContents, event);
+        }
+        return false;
+    }
+
     /**
      * Interface for receiving UI-related callbacks from an {@link ExtensionActionPopupContents}.
      *
@@ -122,6 +132,13 @@ public class ExtensionActionPopupContents implements Destroyable {
     public interface Delegate {
         /** Called when the renderer requested to resize the window to fit the content size. */
         void resizeDueToAutoResize(int width, int height);
+
+        /**
+         * Allows delegates to handle unhandled keyboard messages coming back from the renderer.
+         *
+         * @return True if the event was handled, otherwise false.
+         */
+        boolean handleKeyboardEvent(WebContents webContents, KeyEvent event);
 
         /** Called when it finished loading the initial page. */
         void onLoaded();

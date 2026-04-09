@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.PopupWindow.OnDismissListener;
@@ -203,8 +204,16 @@ class ExtensionActionPopup implements Destroyable {
         }
 
         @Override
+        public boolean handleKeyboardEvent(WebContents webContents, KeyEvent event) {
+            // We send unhandled keyboard events to the main {@link Activity} so that unconsumed
+            // keybindings pass through to the application window.
+            return mActivity.dispatchKeyEvent(event);
+        }
+
+        @Override
         public void onLoaded() {
             mPopupWindow.show();
+            mContentView.requestFocus();
         }
 
         @Override
