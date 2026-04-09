@@ -12,8 +12,10 @@
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/service_worker/service_worker_installed_scripts_sender.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/common/features.h"
 #include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_response_callback.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
@@ -53,8 +55,21 @@ void ServiceWorkerCacheStorageMatcher::Run() {
   CHECK(cache_lookup_start_.is_null());
   cache_lookup_start_ = base::TimeTicks::Now();
 
-  // Ensure that the main script response is set before proceeding.
-  version_->EnsureMainScriptResponseSet(base::DoNothing());
+  if (base::FeatureList::IsEnabled(
+          features::kServiceWorkerStaticRouterConsolidateMainScriptResponse)) {
+    // Ensure that the main script response is set before proceeding.
+    version_->EnsureMainScriptResponseSet(base::DoNothing());
+  } else {
+    // If `GetMainScriptResponse` is not set, it need to be set from the
+    // installed script.  Or, calling the fallback function may fail.
+    if (!version_->GetMainScriptResponse()) {
+      CHECK(ServiceWorkerVersion::IsInstalled(version_->status()));
+      CHECK(!installed_scripts_sender_);
+      installed_scripts_sender_ =
+          std::make_unique<ServiceWorkerInstalledScriptsSender>(version_.get());
+      installed_scripts_sender_->Start();
+    }
+  }
 
   // Gets receiver.
   if (!version_->context()) {
@@ -185,13 +200,27 @@ void ServiceWorkerCacheStorageMatcher::RunCallback(
     return;
   }
 
-  // Wait until the main script response is ready.
-  if (!version_->main_script_fetched()) {
-    version_->EnsureMainScriptResponseSet(base::BindOnce(
-        &ServiceWorkerCacheStorageMatcher::RunCallback,
-        weak_ptr_factory_.GetWeakPtr(), status, fetch_result,
-        std::move(response), std::move(body_as_stream), std::move(timing)));
-    return;
+  if (base::FeatureList::IsEnabled(
+          features::kServiceWorkerStaticRouterConsolidateMainScriptResponse)) {
+    // Wait until the main script response is ready.
+    if (!version_->main_script_fetched()) {
+      version_->EnsureMainScriptResponseSet(base::BindOnce(
+          &ServiceWorkerCacheStorageMatcher::RunCallback,
+          weak_ptr_factory_.GetWeakPtr(), status, fetch_result,
+          std::move(response), std::move(body_as_stream), std::move(timing)));
+      return;
+    }
+  } else {
+    // Wait until `installed_scripts_sender_` updates the main script response.
+    if (installed_scripts_sender_ &&
+        installed_scripts_sender_->last_finished_reason() ==
+            ServiceWorkerInstalledScriptReader::FinishedReason::kNotFinished) {
+      installed_scripts_sender_->SetFinishCallback(base::BindOnce(
+          &ServiceWorkerCacheStorageMatcher::RunCallback,
+          weak_ptr_factory_.GetWeakPtr(), status, fetch_result,
+          std::move(response), std::move(body_as_stream), std::move(timing)));
+      return;
+    }
   }
 
   // Fall back if the main script response is not available.
