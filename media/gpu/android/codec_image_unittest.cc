@@ -48,8 +48,7 @@ class CodecImageTest : public testing::Test {
     codec_ = codec.get();
     wrapper_ = std::make_unique<CodecWrapper>(
         CodecSurfacePair(std::move(codec), new CodecSurfaceBundle()),
-        base::DoNothing(), kFrameSize, gfx::ColorSpace::CreateREC709(),
-        std::nullopt);
+        base::DoNothing(), kFrameSize, std::nullopt);
     ON_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
         .WillByDefault(Return(OkStatus()));
 

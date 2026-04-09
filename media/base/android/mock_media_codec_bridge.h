@@ -35,7 +35,7 @@ class MockMediaCodecBridge : public MediaCodecBridge,
   MOCK_METHOD1(GetOutputSamplingRate, MediaCodecResult(int* sampling_rate));
   MOCK_METHOD1(GetOutputChannelCount, MediaCodecResult(int* channel_count));
   MOCK_METHOD1(GetOutputColorSpace,
-               MediaCodecResult(gfx::ColorSpace* color_space));
+               MediaCodecResult(MediaFormatColorSpace* color_space));
   MOCK_METHOD3(GetInputFormat,
                MediaCodecResult(int* stride,
                                 int* slice_height,

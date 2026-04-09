@@ -15,6 +15,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/android/media_codec_bridge.h"
+#include "media/base/android/media_format_color_space.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/status.h"
 #include "media/gpu/android/codec_surface_bundle.h"
@@ -60,7 +61,7 @@ class MEDIA_GPU_EXPORT CodecOutputBuffer {
   }
 
   // Color space of the image.
-  const gfx::ColorSpace& color_space() const { return color_space_; }
+  const MediaFormatColorSpace& color_space() const { return color_space_; }
 
   // Note that you can't use the first ctor, since CodecWrapperImpl isn't
   // defined here.  Use the second, and it'll be nullptr.
@@ -77,13 +78,13 @@ class MEDIA_GPU_EXPORT CodecOutputBuffer {
   CodecOutputBuffer(scoped_refptr<CodecWrapperImpl> codec,
                     int64_t id,
                     const gfx::Size& size,
-                    const gfx::ColorSpace& color_space,
+                    const MediaFormatColorSpace& color_space,
                     std::optional<gfx::Size> coded_size_alignment);
 
   // For testing, since CodecWrapperImpl isn't available.  Uses nullptr.
   CodecOutputBuffer(int64_t id,
                     const gfx::Size& size,
-                    const gfx::ColorSpace& color_space,
+                    const MediaFormatColorSpace& color_space,
                     std::optional<gfx::Size> coded_size_alignment);
 
   scoped_refptr<CodecWrapperImpl> codec_;
@@ -91,7 +92,7 @@ class MEDIA_GPU_EXPORT CodecOutputBuffer {
   bool was_rendered_ = false;
   gfx::Size size_;
   base::OnceClosure render_cb_;
-  gfx::ColorSpace color_space_;
+  MediaFormatColorSpace color_space_;
 
   // The alignment to use for width, height when guessing coded size.
   const std::optional<gfx::Size> coded_size_alignment_;
@@ -123,7 +124,6 @@ class MEDIA_GPU_EXPORT CodecWrapper {
   CodecWrapper(CodecSurfacePair codec_surface_pair,
                OutputReleasedCB output_buffer_release_cb,
                const gfx::Size& initial_expected_size,
-               const gfx::ColorSpace& config_color_space,
                std::optional<gfx::Size> coded_size_alignment);
 
   CodecWrapper(const CodecWrapper&) = delete;

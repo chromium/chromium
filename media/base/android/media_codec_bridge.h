@@ -21,10 +21,11 @@
 #include "media/base/encryption_scheme.h"
 #include "media/base/media_export.h"
 #include "media/base/status.h"
-#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
+
+struct MediaFormatColorSpace;
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.media
 enum class CodecType {
@@ -146,7 +147,7 @@ class MEDIA_EXPORT MediaCodecBridge {
   // kOk on success, with |color_space| initialized, or
   // kError with |color_space| unmodified otherwise.
   virtual MediaCodecResult GetOutputColorSpace(
-      gfx::ColorSpace* color_space) = 0;
+      MediaFormatColorSpace* color_space) = 0;
 
   // Submits a byte array to the given input buffer. Call this after getting an
   // available buffer from DequeueInputBuffer(). `data` will be copied into the

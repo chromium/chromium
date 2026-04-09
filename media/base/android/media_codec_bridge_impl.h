@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "media/base/android/media_codec_bridge.h"
 #include "media/base/android/media_codec_direction.h"
+#include "media/base/android/media_format_color_space.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/media_export.h"
 #include "media/base/video_decoder_config.h"
@@ -22,8 +23,6 @@
 #include "ui/gfx/hdr_metadata.h"
 
 namespace media {
-
-class VideoColorSpace;
 
 // Configuration info for MediaCodec.
 class MEDIA_EXPORT VideoCodecConfig {
@@ -53,7 +52,7 @@ class MEDIA_EXPORT VideoCodecConfig {
   std::vector<uint8_t> csd0;
   std::vector<uint8_t> csd1;
 
-  VideoColorSpace container_color_space;
+  MediaFormatColorSpace container_color_space;
 
   // VP9 HDR metadata is only embedded in the container. HDR10 metadata is
   // embedded in the video stream.
@@ -115,7 +114,8 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
   MediaCodecResult GetOutputSize(gfx::Size* size) override;
   MediaCodecResult GetOutputSamplingRate(int* sampling_rate) override;
   MediaCodecResult GetOutputChannelCount(int* channel_count) override;
-  MediaCodecResult GetOutputColorSpace(gfx::ColorSpace* color_space) override;
+  MediaCodecResult GetOutputColorSpace(
+      MediaFormatColorSpace* color_space) override;
   MediaCodecResult QueueInputBuffer(int index,
                                     base::span<const uint8_t> data,
                                     base::TimeDelta presentation_time) override;

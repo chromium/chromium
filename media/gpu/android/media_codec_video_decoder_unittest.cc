@@ -956,7 +956,7 @@ TEST_P(MediaCodecVideoDecoderVp9Test, ColorSpaceIsIncludedInCodecConfig) {
       TestVideoConfig::NormalWithColorSpace(VideoCodec::kVP9, color_space);
   EXPECT_TRUE(InitializeFully_OneDecodePending(config));
 
-  EXPECT_EQ(color_space,
+  EXPECT_EQ(MediaFormatColorSpace(color_space),
             codec_allocator_->most_recent_config->container_color_space);
 }
 

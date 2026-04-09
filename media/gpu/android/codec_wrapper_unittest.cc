@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/gpu/android/codec_wrapper.h"
+
 #include <memory>
 
 #include "base/functional/bind.h"
@@ -14,10 +16,10 @@
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "media/base/android/media_codec_bridge.h"
+#include "media/base/android/media_format_color_space.h"
 #include "media/base/android/mock_media_codec_bridge.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/subsample_entry.h"
-#include "media/gpu/android/codec_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -42,7 +44,7 @@ class CodecWrapperTest : public testing::Test {
     wrapper_ = std::make_unique<CodecWrapper>(
         CodecSurfacePair(std::move(codec), surface_bundle_),
         output_buffer_release_cb_.Get(), kInitialCodedSize,
-        gfx::ColorSpace::CreateREC709(), kCodedSizeAlignment);
+        kCodedSizeAlignment);
     ON_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
         .WillByDefault(Return(OkStatus()));
     ON_CALL(*codec_, DequeueInputBuffer(_, _))
@@ -236,9 +238,9 @@ TEST_F(CodecWrapperTest, CodecOutputBuffersGuessCodedSize) {
 
 TEST_F(CodecWrapperTest, CodecOutputBuffersGuessCodedSizeNoAlignment) {
   auto surface_pair = wrapper_->TakeCodecSurfacePair();
-  wrapper_ = std::make_unique<CodecWrapper>(
-      std::move(surface_pair), output_buffer_release_cb_.Get(),
-      kInitialCodedSize, gfx::ColorSpace::CreateREC709(), std::nullopt);
+  wrapper_ = std::make_unique<CodecWrapper>(std::move(surface_pair),
+                                            output_buffer_release_cb_.Get(),
+                                            kInitialCodedSize, std::nullopt);
 
   EXPECT_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
       .WillOnce(Return(MediaCodecResult::Codes::kOutputFormatChanged))
@@ -254,7 +256,7 @@ TEST_F(CodecWrapperTest, CodecOutputBuffersGuessCodedSizeWeirdAlignment) {
   auto surface_pair = wrapper_->TakeCodecSurfacePair();
   wrapper_ = std::make_unique<CodecWrapper>(
       std::move(surface_pair), output_buffer_release_cb_.Get(),
-      kInitialCodedSize, gfx::ColorSpace::CreateREC709(), gfx::Size(128, 1));
+      kInitialCodedSize, gfx::Size(128, 1));
 
   EXPECT_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
       .WillOnce(Return(MediaCodecResult::Codes::kOutputFormatChanged))
@@ -397,46 +399,11 @@ TEST_F(CodecWrapperTest, CodecWrapperGetsColorSpaceFromCodec) {
   EXPECT_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
       .WillOnce(Return(MediaCodecResult::Codes::kOutputFormatChanged))
       .WillOnce(Return(OkStatus()));
-  gfx::ColorSpace color_space{gfx::ColorSpace::CreateHDR10()};
+  MediaFormatColorSpace color_space = MediaFormatColorSpace::MakeHdr10();
   EXPECT_CALL(*codec_, GetOutputColorSpace(_))
       .WillOnce(DoAll(SetArgPointee<0>(color_space), Return(OkStatus())));
   auto codec_buffer = DequeueCodecOutputBuffer();
   ASSERT_EQ(codec_buffer->color_space(), color_space);
-}
-
-TEST_F(CodecWrapperTest, CodecWrapperDefaultsToSRGB) {
-  auto surface_pair = wrapper_->TakeCodecSurfacePair();
-  wrapper_ = std::make_unique<CodecWrapper>(
-      std::move(surface_pair), output_buffer_release_cb_.Get(),
-      kInitialCodedSize, gfx::ColorSpace(), std::nullopt);
-
-  // If MediaCodec doesn't provide a color space and we don't have a valid
-  // config color space, then CodecWrapper should default to sRGB for sanity.
-  // CodecWrapper should provide the color space that's reported by the bridge.
-  EXPECT_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
-      .WillOnce(Return(MediaCodecResult::Codes::kOutputFormatChanged))
-      .WillOnce(Return(OkStatus()));
-  EXPECT_CALL(*codec_, GetOutputColorSpace(_))
-      .WillOnce(Return(MediaCodecResult::Codes::kError));
-  auto codec_buffer = DequeueCodecOutputBuffer();
-  ASSERT_EQ(codec_buffer->color_space(), gfx::ColorSpace::CreateSRGB());
-}
-
-TEST_F(CodecWrapperTest, CodecWrapperUseConfigColorSpace) {
-  auto surface_pair = wrapper_->TakeCodecSurfacePair();
-  wrapper_ = std::make_unique<CodecWrapper>(
-      std::move(surface_pair), output_buffer_release_cb_.Get(),
-      kInitialCodedSize, gfx::ColorSpace::CreateJpeg(), std::nullopt);
-
-  // If MediaCodec doesn't provide a color space and we have a valid config
-  // color space, then CodecWrapper should use it.
-  EXPECT_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
-      .WillOnce(Return(MediaCodecResult::Codes::kOutputFormatChanged))
-      .WillOnce(Return(OkStatus()));
-  EXPECT_CALL(*codec_, GetOutputColorSpace(_))
-      .WillOnce(Return(MediaCodecResult::Codes::kError));
-  auto codec_buffer = DequeueCodecOutputBuffer();
-  ASSERT_EQ(codec_buffer->color_space(), gfx::ColorSpace::CreateJpeg());
 }
 
 TEST_F(CodecWrapperTest, CodecOutputsIgnoreZeroSize) {

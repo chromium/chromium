@@ -78,6 +78,24 @@ MediaFormatColorSpace::MediaFormatColorSpace(
   }
 }
 
+// static
+MediaFormatColorSpace MediaFormatColorSpace::MakeRec709() {
+  MediaFormatColorSpace result;
+  result.standard = kColorStandardBT709;
+  result.transfer = kColorTransferSDRVideo;
+  result.range = kColorRangeLimited;
+  return result;
+}
+
+// static
+MediaFormatColorSpace MediaFormatColorSpace::MakeHdr10() {
+  MediaFormatColorSpace result;
+  result.standard = kColorStandardBT2020;
+  result.transfer = kColorTransferST2084;
+  result.range = kColorRangeLimited;
+  return result;
+}
+
 gfx::ColorSpace MediaFormatColorSpace::ToGfxColorSpace() const {
   auto primary_id = gfx::ColorSpace::PrimaryID::INVALID;
   auto matrix_id = gfx::ColorSpace::MatrixID::INVALID;

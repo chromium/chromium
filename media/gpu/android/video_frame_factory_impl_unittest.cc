@@ -98,7 +98,7 @@ class VideoFrameFactoryImplTest : public testing::Test {
     gfx::Size coded_size{100, 100};
     gfx::Rect visible_rect{coded_size};
     gfx::Size natural_size{coded_size};
-    gfx::ColorSpace color_space{gfx::ColorSpace::CreateSRGBLinear()};
+    MediaFormatColorSpace color_space = MediaFormatColorSpace::MakeRec709();
   } video_frame_params_;
 
   void RequestVideoFrame() {
@@ -122,8 +122,9 @@ class VideoFrameFactoryImplTest : public testing::Test {
 
     impl_->CreateVideoFrame(std::move(output_buffer), base::TimeDelta(),
                             video_frame_params_.natural_size,
-                            video_frame_params_.color_space, gfx::HDRMetadata(),
-                            base::NullCallback(), output_cb_.Get());
+                            video_frame_params_.color_space.ToGfxColorSpace(),
+                            gfx::HDRMetadata(), base::NullCallback(),
+                            output_cb_.Get());
     base::RunLoop().RunUntilIdle();
 
     // TODO(liberato): Verify that it requested a shared image.
@@ -136,7 +137,7 @@ class VideoFrameFactoryImplTest : public testing::Test {
     gpu::SharedImageMetadata metadata;
     metadata.format = viz::SinglePlaneFormat::kRGBA_8888;
     metadata.size = video_frame_params_.coded_size;
-    metadata.color_space = video_frame_params_.color_space;
+    metadata.color_space = video_frame_params_.color_space.ToGfxColorSpace();
     metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
     metadata.alpha_type = kOpaque_SkAlphaType;
     metadata.usage = gpu::SharedImageUsageSet();
@@ -217,7 +218,7 @@ TEST_F(VideoFrameFactoryImplTest, CreateVideoFrameFailsIfUnsupportedFormat) {
   gfx::Rect visible_rect(coded_size);
   gfx::Size natural_size(0, 0);
   auto output_buffer = CodecOutputBuffer::CreateForTesting(
-      0, coded_size, gfx::ColorSpace(), std::nullopt);
+      0, coded_size, MediaFormatColorSpace::MakeRec709(), std::nullopt);
   ASSERT_FALSE(VideoFrame::IsValidConfig(PIXEL_FORMAT_ARGB,
                                          VideoFrame::STORAGE_OPAQUE, coded_size,
                                          visible_rect, natural_size));
@@ -259,7 +260,8 @@ TEST_F(VideoFrameFactoryImplTest, CreateVideoFrameSucceeds) {
   EXPECT_EQ(frame->coded_size(), video_frame_params_.coded_size);
   EXPECT_EQ(frame->natural_size(), video_frame_params_.natural_size);
   EXPECT_EQ(frame->visible_rect(), video_frame_params_.visible_rect);
-  EXPECT_EQ(frame->ColorSpace(), video_frame_params_.color_space);
+  EXPECT_EQ(frame->ColorSpace(),
+            video_frame_params_.color_space.ToGfxColorSpace());
 
   // Destroy the VideoFrame, and verify that our release cb is called.
   EXPECT_FALSE(release_cb_called_flag);

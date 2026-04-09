@@ -692,8 +692,14 @@ void MediaCodecVideoDecoder::CreateCodec() {
   config->surface = target_surface_bundle_->GetJavaSurface();
   config->media_crypto = media_crypto_;
   config->initial_expected_coded_size = decoder_config_.coded_size();
-  config->container_color_space = decoder_config_.color_space_info();
-  config->hdr_metadata = decoder_config_.hdr_metadata();
+  if (!decoder_config_.hdr_metadata().IsEmpty()) {
+    // Do not communicate the container level color space unless there is also
+    // HDR metadata attached.
+    // TODO(https://crbug.com/395659818): Revisit this behavior.
+    config->container_color_space =
+        MediaFormatColorSpace(decoder_config_.color_space_info());
+    config->hdr_metadata = decoder_config_.hdr_metadata();
+  }
   config->use_block_model = use_block_model_;
   config->profile = decoder_config_.profile();
 
@@ -809,9 +815,7 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
           &OutputBufferReleased,
           base::BindPostTaskToCurrentDefault(base::BindRepeating(
               &MediaCodecVideoDecoder::PumpCodec, weak_factory_.GetWeakPtr()))),
-      decoder_config_.coded_size(),
-      decoder_config_.color_space_info().ToGfxColorSpace(),
-      coded_size_alignment);
+      decoder_config_.coded_size(), coded_size_alignment);
 
   // If the target surface changed while codec creation was in progress,
   // transition to it immediately.
@@ -1116,9 +1120,23 @@ bool MediaCodecVideoDecoder::DequeueOutput() {
   if (output_buffer->size().GetArea() > decoder_config_.coded_size().GetArea())
     decoder_config_.set_coded_size(output_buffer->size());
 
-  // TODO(https://crbug.com/395659818): Translate from MediaFormat's color
-  // space to gfx::ColorSpace here.
-  const gfx::ColorSpace color_space = output_buffer->color_space();
+  // If the codec specified a color space for `output_buffer`, then update the
+  // output color space.
+  auto color_space = output_buffer->color_space().ToGfxColorSpace();
+  if (!color_space.IsValid()) {
+    color_space = decoder_config_.color_space_info().ToGfxColorSpace();
+    if (!color_space.IsValid()) {
+      // If we get back an unsupported color space, then just default to
+      // sRGB for < 720p, or 709 otherwise.  It's better than nothing.
+      // TODO(https://crbug.com/395659818): Revisit this behavior. There is no
+      // way that sometimes returning a YUV color and sometimes returning an RGB
+      // color space is correct.
+      color_space = output_buffer->size().width() >= 1280
+                        ? gfx::ColorSpace::CreateREC709()
+                        : gfx::ColorSpace::CreateSRGB();
+    }
+  }
+
   // Attach the HDR metadata if the color space got this far and is still an HDR
   // color space.  Note that it might be converted to something else along the
   // way, often sRGB.  In that case, don't confuse things with HDR metadata.

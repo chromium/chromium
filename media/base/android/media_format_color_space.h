@@ -21,9 +21,19 @@ struct MEDIA_EXPORT MediaFormatColorSpace {
   int transfer = kUnknown;
   int range = kUnknown;
 
+  bool operator==(const MediaFormatColorSpace& other) const {
+    return standard == other.standard && transfer == other.transfer &&
+           range == other.range;
+  }
+  bool operator!=(const MediaFormatColorSpace& other) const {
+    return !(*this == other);
+  }
+
   // This will set `standard`, `transfer`, or `range` to kUnknown if there is no
   // clear translation.
   explicit MediaFormatColorSpace(const VideoColorSpace& color_space);
+  static MediaFormatColorSpace MakeRec709();
+  static MediaFormatColorSpace MakeHdr10();
 
   // This will return the default (invalid) color space if any of `standard`,
   // `transfer`, or `range` are unrecognized.
