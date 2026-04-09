@@ -214,7 +214,6 @@
 #include "chrome/browser/chromeos/cros_apps/cros_apps_tab_helper.h"
 #include "chrome/browser/chromeos/gemini_app/gemini_app_tab_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
-#include "chrome/browser/chromeos/printing/print_preview/printing_init_cros.h"
 #include "chrome/browser/ui/ash/google_one/google_one_offer_iph_tab_helper.h"
 #include "chromeos/ash/experiences/isolated_web_app/cros_isolated_web_app_enabler.h"
 #endif
@@ -813,15 +812,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   PluginObserver::CreateForWebContents(web_contents);
 #endif
 
-// Only enable ChromeOS print preview if `kPrintPreviewCrosPrimary` is enabled
-// and is a ChromeOS build. Otherwise instantiate browser print preview.
-#if BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(::features::kPrintPreviewCrosPrimary)) {
-    chromeos::printing::InitializePrintingForWebContents(web_contents);
-  } else {
-    printing::InitializePrintingForWebContents(web_contents);
-  }
-#elif BUILDFLAG(ENABLE_PRINTING)
+#if BUILDFLAG(ENABLE_PRINTING)
   printing::InitializePrintingForWebContents(web_contents);
 #endif
 

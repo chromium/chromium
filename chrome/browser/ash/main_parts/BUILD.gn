@@ -94,7 +94,6 @@ static_library("main_parts") {
     "//chrome/browser/ash/system",
     "//chrome/browser/ash/usb",
     "//chrome/browser/ash/video_conference",
-    "//chrome/browser/chromeos/printing/print_preview",
     "//chrome/browser/chromeos/video_conference",
     "//chrome/browser/component_updater",
     "//chrome/browser/device_identity",

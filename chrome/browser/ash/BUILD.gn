@@ -209,7 +209,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/printing/history:unit_tests",
     "//chrome/browser/ash/printing/oauth2:unit_tests",
     "//chrome/browser/ash/printing/print_management:unit_tests",
-    "//chrome/browser/ash/printing/print_preview:unit_tests",
     "//chrome/browser/ash/release_notes:unit_tests",
     "//chrome/browser/ash/remote_apps:unit_tests",
     "//chrome/browser/ash/report_controller_initializer:unit_tests",

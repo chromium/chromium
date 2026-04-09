@@ -7997,12 +7997,6 @@ inline constexpr char kPlatformKeysChangesWave1Description[] =
     "\"RSA-OAEP\" key type with the \"unwrapKey\" key usage and adding the "
     "setKeyTag() API method to mark keys for future lookup.";
 
-inline constexpr char kPrintPreviewCrosPrimaryName[] =
-    "Enables the ChromeOS print preview to be the primary print preview.";
-inline constexpr char kPrintPreviewCrosPrimaryDescription[] =
-    "Allows the ChromeOS print preview to be opened instead of the browser "
-    " print preview.";
-
 inline constexpr char kQuickAnswersRichCardName[] =
     "Enable Quick Answers Rich Card";
 inline constexpr char kQuickAnswersRichCardDescription[] =

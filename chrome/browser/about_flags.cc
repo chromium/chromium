@@ -8659,10 +8659,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"focus-follows-cursor", flag_descriptions::kFocusFollowsCursorName,
      flag_descriptions::kFocusFollowsCursorDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(::features::kFocusFollowsCursor)},
-    {"print-preview-cros-primary",
-     flag_descriptions::kPrintPreviewCrosPrimaryName,
-     flag_descriptions::kPrintPreviewCrosPrimaryDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kPrintPreviewCrosPrimary)},
 #endif
 
     {"prerender2", flag_descriptions::kPrerender2Name,

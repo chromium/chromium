@@ -20,7 +20,6 @@ group("unit_tests") {
     "//chrome/browser/ui/webui/ash/login:unit_tests",
     "//chrome/browser/ui/webui/ash/mako:unit_tests",
     "//chrome/browser/ui/webui/ash/parent_access:unit_tests",
-    "//chrome/browser/ui/webui/ash/print_preview_cros:unit_tests",
     "//chrome/browser/ui/webui/ash/sensor_info:unit_tests",
     "//chrome/browser/ui/webui/ash/settings:unit_tests",
     "//chrome/browser/ui/webui/ash/settings/pages:unit_tests",

@@ -222,10 +222,6 @@
 #include "components/rlz/rlz_tracker.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/chromeos/printing/print_preview/print_view_manager_common.h"
-#endif
-
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/link_capturing/enable_link_capturing_infobar_delegate.h"
 #endif
@@ -2113,20 +2109,6 @@ void Print(BrowserWindowInterface* browser) {
 #if BUILDFLAG(ENABLE_PRINTING)
   auto* const web_contents =
       browser->GetTabStripModel()->GetActiveWebContents();
-
-  // Launch ChromeOS print preview only if in a ChromeOS build and
-  // `kPrintPreviewCrosPrimary` enabled. Otherwise use browser print preview.
-#if BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(::features::kPrintPreviewCrosPrimary)) {
-    chromeos::printing::StartPrint(
-        web_contents,
-        /*print_renderer=*/mojo::NullAssociatedRemote(),
-        browser->GetProfile()->GetPrefs()->GetBoolean(
-            prefs::kPrintPreviewDisabled),
-        /*has_selection=*/false);
-    return;
-  }
-#endif
 
   printing::StartPrint(web_contents,
 #if BUILDFLAG(IS_CHROMEOS)

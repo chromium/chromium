@@ -57,7 +57,6 @@ include_rules = [
   "+chrome/browser/browser_process.h",
   "+chrome/browser/browser_process_platform_part_ash.h",
   "+chrome/browser/chrome_browser_main_linux.h",
-  "+chrome/browser/chromeos/printing/print_preview",
   "+chrome/browser/chromeos/video_conference",
   "+chrome/browser/component_updater",
   "+chrome/browser/defaults.h",

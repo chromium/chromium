@@ -1268,10 +1268,6 @@ BASE_FEATURE(kPluginVm, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPrerenderFallbackToPreconnect, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS)
-// Enable the ChromeOS print preview to be opened instead of the browser print
-// preview.
-BASE_FEATURE(kPrintPreviewCrosPrimary, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, use managed per-printer print job options set via
 // DevicePrinters/PrinterBulkConfiguration policy in print preview.
 BASE_FEATURE(kUseManagedPrintJobOptionsInPrintPreview,
