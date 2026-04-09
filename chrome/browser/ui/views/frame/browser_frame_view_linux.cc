@@ -6,17 +6,18 @@
 
 #include "base/notreached.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/frame/browser_frame_view_paint_utils_linux.h"
 #include "chrome/browser/ui/views/frame/browser_native_widget_aura_linux.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/geometry/insets_f.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/window/frame_view_utils_linux.h"
 #include "ui/views/window/window_button_order_provider.h"
 
 namespace {
@@ -51,16 +52,14 @@ gfx::Insets BrowserFrameViewLinux::GetInputInsets() const {
 }
 
 SkRRect BrowserFrameViewLinux::GetRestoredClipRegion() const {
-  gfx::RectF bounds_dip(GetLocalBounds());
-  if (ShouldDrawRestoredFrameShadow()) {
-    gfx::InsetsF border(layout_->RestoredMirroredFrameBorderInsets());
-    bounds_dip.Inset(border);
-  }
-  float radius_dip = GetRestoredCornerRadiusDip();
-  SkVector radii[4]{{radius_dip, radius_dip}, {radius_dip, radius_dip}, {}, {}};
-  SkRRect clip;
-  clip.setRectRadii(gfx::RectFToSkRect(bounds_dip), radii);
-  return clip;
+  gfx::InsetsF border =
+      ShouldDrawRestoredFrameShadow()
+          ? gfx::InsetsF(layout_->RestoredMirroredFrameBorderInsets())
+          : gfx::InsetsF();
+  float radius = GetRestoredCornerRadiusDip();
+  return views::GetRestoredClipRegion(
+      gfx::RectF(GetLocalBounds()), border,
+      gfx::RoundedCornersF(radius, radius, 0, 0));
 }
 
 // static
@@ -79,7 +78,7 @@ void BrowserFrameViewLinux::PaintRestoredFrameBorder(
 #endif
   auto shadow_values =
       tiled ? gfx::ShadowValues() : GetShadowValues(ShouldPaintAsActive());
-  PaintRestoredFrameBorderLinux(
+  views::PaintRestoredFrameBorderLinux(
       *canvas, *this, frame_background(), GetRestoredClipRegion(),
       ShouldDrawRestoredFrameShadow(), ShouldPaintAsActive(),
       layout_->RestoredMirroredFrameBorderInsets(), shadow_values, tiled);
