@@ -1,0 +1,20 @@
+This directory contains API schema files which have been converted from an older
+schema format to the more modern WebIDL format. When a conversion is done, the
+original old schema file is moved here and a copy of the new WebIDL file is
+added. The file pair is then added to the `web_idl_diff_tool_test.py` file, in
+order to have a verifiable test run in the CL that converts the schema, which
+shows there is no functional difference in the output from the old and new file
+after processing.
+
+This means these file should not be updated with any subsequent changes to the
+WebIDL schema that might come in the future, as they are meant to represent that
+there was no difference at the time of conversion. There is a PRESUBMIT in place
+to help enforce this, which gives a warning on upload if any edits have been
+made to the schema files (additions and deletions are okay). It is expected that
+these schemas will diverge from the actual schemas over time.
+
+Eventually once enough of the schema files have been converted, these files and
+the test entries can be deleted. However, while the conversion process is still
+ongoing, they are useful to pick up on subtle regressions that might come from
+additions to the WebIDL processor, letting us add specific test cases for them
+to the actual `web_idl_schema_test.py` test cases.
