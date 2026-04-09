@@ -167,9 +167,9 @@ void SetUpSeedFileTrial(
     return;
   }
 
-  // Only 1% of clients on stable should participate in the experiment.
+  // Only 10% of clients on stable should participate in the experiment.
   base::FieldTrial::Probability group_probability =
-      channel == version_info::Channel::STABLE ? 1 : 50;
+      channel == version_info::Channel::STABLE ? 10 : 50;
 
   scoped_refptr<base::FieldTrial> trial(
       base::FieldTrialList::FactoryGetFieldTrial(
