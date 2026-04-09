@@ -889,11 +889,6 @@ const char kIOSProvidesAppNotificationSettingsName[] =
 const char kIOSProvidesAppNotificationSettingsDescription[] =
     "Enabled integration with iOS's ProvidesAppNotificationSettings feature.";
 
-const char kIOSReactivationNotificationsName[] = "Reactivation Notifications";
-const char kIOSReactivationNotificationsDescription[] =
-    "Enables a feature to send provisional notifications of interest to new"
-    "users and encourage them to return to the app.";
-
 const char kIOSSaveToDriveClientFolderName[] = "Save to Drive client folder";
 const char kIOSSaveToDriveClientFolderDescription[] =
     "Enables a feature to use a client folder API for Save to Drive on iOS.";

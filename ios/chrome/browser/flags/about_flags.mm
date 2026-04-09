@@ -286,22 +286,6 @@ const FeatureEntry::FeatureVariation
          kEnableDefaultModel, nullptr},
     };
 
-const FeatureEntry::FeatureParam
-    kIOSReactivationNotifications10SecondTrigger[] = {
-        {kIOSReactivationNotificationsTriggerTimeParam, "10s"},
-};
-const FeatureEntry::FeatureParam
-    kIOSReactivationNotifications30SecondTrigger[] = {
-        {kIOSReactivationNotificationsTriggerTimeParam, "30s"},
-};
-const FeatureEntry::FeatureVariation kIOSReactivationNotificationsVariations[] =
-    {
-        {"(10s trigger)", kIOSReactivationNotifications10SecondTrigger,
-         nullptr},
-        {"(30s trigger)", kIOSReactivationNotifications30SecondTrigger,
-         nullptr},
-};
-
 #if BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
 // Feed Background Refresh Feature Params.
 const FeatureEntry::FeatureParam kOneHourIntervalOneHourMaxAgeOnce[] = {
@@ -1506,13 +1490,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kSnapshotDownsampleImageDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kSnapshotDownsampleImage)},
-    {"ios-reactivation-notifications",
-     flag_descriptions::kIOSReactivationNotificationsName,
-     flag_descriptions::kIOSReactivationNotificationsDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSReactivationNotifications,
-                                    kIOSReactivationNotificationsVariations,
-                                    "IOSReactivationNotifications")},
     {"ios-expanded-setup-list", flag_descriptions::kIOSExpandedSetupListName,
      flag_descriptions::kIOSExpandedSetupListDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSExpandedSetupList,
