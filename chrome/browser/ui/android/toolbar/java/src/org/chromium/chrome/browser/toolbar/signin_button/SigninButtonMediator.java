@@ -46,7 +46,6 @@ import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -304,7 +303,7 @@ final class SigninButtonMediator
         if (mSyncService != null) {
             mSyncService.addSyncStateChangedListener(this);
         }
-        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
+        if (SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled()) {
             initializeSigninCoordinator();
         }
         updateButtonState();
@@ -338,7 +337,7 @@ final class SigninButtonMediator
                             .signinSurveyType(
                                     SigninSurveyController.SigninSurveyType.NTP_SIGNIN_BUTTON)
                             .build();
-            if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
+            if (SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled()) {
                 assumeNonNull(mSigninCoordinator).startSigninFlow(config);
             } else {
                 @Nullable Intent intent =
