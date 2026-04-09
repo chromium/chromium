@@ -1958,16 +1958,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.Navigation.BeforeUnloadExecutionMode"
+    name="PageLoad.Clients.GoogleSearch.Navigation.BeforeUnloadExecutionMode{SameOrCrossOrigin}"
     enum="BeforeUnloadExecutionMode" expires_after="2027-01-10">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     Records the execution mode of the beforeunload handlers for a Google Search
     navigation. This is a GWS-specific version of
-    PageLoad.Navigation.BeforeUnloadExecutionMode. Recorded at the time of
-    navigation commit for cross-document outermost main frame navigations.
+    PageLoad.Navigation.BeforeUnloadExecutionMode{SameOrCrossOrigin}. Recorded
+    at the time of navigation commit for cross-document {SameOrCrossOrigin}
+    outermost main frame navigations.
   </summary>
+  <token key="SameOrCrossOrigin">
+    <variant name="" summary=""/>
+    <variant name=".CrossOrigin" summary="cross-origin"/>
+    <variant name=".SameOrigin" summary="same-origin"/>
+  </token>
 </histogram>
 
 <histogram
