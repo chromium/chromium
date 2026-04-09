@@ -21,17 +21,42 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_URL_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_URL_DATA_H_
 
+#include <optional>
+
 #include "base/types/pass_key.h"
+#include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 class Document;
 class KURL;
+class StringBuilder;
 class TextEncoding;
+
+// Stores URL request modifiers parsed from CSS url() functions.
+// https://drafts.csswg.org/css-values-5/#request-url-modifiers
+//
+// TODO(crbug.com/435625756): Currently only CSSImageValue::PrepareFetch
+// applies these modifiers to fetches. Other url() consumers (SVG filters,
+// @font-face src, etc.) need similar wiring.
+struct CORE_EXPORT CSSUrlRequestModifiers {
+  CrossOriginAttributeValue cross_origin = kCrossOriginAttributeNotSet;
+  String integrity;
+  std::optional<network::mojom::blink::ReferrerPolicy> referrer_policy;
+
+  bool IsEmpty() const {
+    return cross_origin == kCrossOriginAttributeNotSet && integrity.IsNull() &&
+           !referrer_policy;
+  }
+  bool operator==(const CSSUrlRequestModifiers&) const = default;
+  void AppendCssText(StringBuilder&) const;
+};
 
 // Stores data for a <url> value (url(), src()).
 class CORE_EXPORT CSSUrlData : public GarbageCollected<CSSUrlData> {
@@ -40,7 +65,8 @@ class CORE_EXPORT CSSUrlData : public GarbageCollected<CSSUrlData> {
              const KURL& resolved_url,
              const Referrer&,
              bool is_from_origin_clean_style_sheet,
-             bool is_ad_related);
+             bool is_ad_related,
+             const CSSUrlRequestModifiers& modifiers);
   CSSUrlData(base::PassKey<CSSUrlData>,
              const AtomicString& unresolved_url,
              const AtomicString& resolved_url,
@@ -48,7 +74,8 @@ class CORE_EXPORT CSSUrlData : public GarbageCollected<CSSUrlData> {
              bool is_from_origin_clean_style_sheet,
              bool is_ad_related,
              bool is_local,
-             bool potentially_dangling_markup);
+             bool potentially_dangling_markup,
+             const CSSUrlRequestModifiers& modifiers);
 
   // Create URL data with a resolved (absolute) URL. Generally used for
   // computed values - the above should otherwise be preferred.
@@ -91,6 +118,7 @@ class CORE_EXPORT CSSUrlData : public GarbageCollected<CSSUrlData> {
     return is_from_origin_clean_style_sheet_;
   }
   bool IsAdRelated() const { return is_ad_related_; }
+  const CSSUrlRequestModifiers& GetModifiers() const { return modifiers_; }
 
   // Returns true if this URL is "local" to the specified Document (either by
   // being a fragment-only URL or by matching the document URL).
@@ -121,6 +149,9 @@ class CORE_EXPORT CSSUrlData : public GarbageCollected<CSSUrlData> {
   // set. That information needs to be passed on to the fetch code to block such
   // resources from loading.
   const bool potentially_dangling_markup_;
+
+  // URL request modifiers from CSS url() function.
+  const CSSUrlRequestModifiers modifiers_;
 };
 
 }  // namespace blink

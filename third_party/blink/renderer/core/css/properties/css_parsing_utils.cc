@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/notreached.h"
+#include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
 #include "third_party/blink/renderer/core/css/css_alpha_color_value.h"
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
@@ -108,6 +109,7 @@
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -1779,11 +1781,110 @@ bool IsFetchRestricted(StringView url, const CSSParserContext& context) {
 }
 
 const CSSUrlData* CollectUrlData(const StringView& url,
+                                 const CSSUrlRequestModifiers& modifiers,
                                  const CSSParserContext& context) {
   AtomicString url_string = url.ToAtomicString();
   return MakeGarbageCollected<CSSUrlData>(
       url_string, context.CompleteNonEmptyURL(url_string),
-      context.GetReferrer(), context.IsOriginClean(), context.IsAdRelated());
+      context.GetReferrer(), context.IsOriginClean(), context.IsAdRelated(),
+      modifiers);
+}
+
+// Parses URL request modifiers inside a url() function block, after the URL
+// string has been consumed. Returns true on success, false on parse error.
+// On failure, |modifiers| is left unchanged.
+//
+// https://drafts.csswg.org/css-values-5/#request-url-modifiers
+bool ConsumeUrlRequestModifiers(CSSParserTokenStream& stream,
+                                CSSUrlRequestModifiers& modifiers) {
+  CSSUrlRequestModifiers result;
+  while (!stream.AtEnd()) {
+    CSSValueID function_id = stream.Peek().FunctionId();
+    if (function_id == CSSValueID::kCrossOrigin) {
+      if (result.cross_origin != kCrossOriginAttributeNotSet) {
+        return false;  // Duplicate modifier.
+      }
+      CSSParserTokenStream::RestoringBlockGuard guard(stream);
+      stream.ConsumeWhitespace();
+      CSSValueID value_id = stream.Peek().Id();
+      if (value_id == CSSValueID::kAnonymous) {
+        result.cross_origin = kCrossOriginAttributeAnonymous;
+      } else if (value_id == CSSValueID::kUseCredentials) {
+        result.cross_origin = kCrossOriginAttributeUseCredentials;
+      } else {
+        return false;
+      }
+      stream.ConsumeIncludingWhitespace();
+      if (!guard.Release()) {
+        return false;  // Trailing junk inside cross-origin().
+      }
+    } else if (function_id == CSSValueID::kIntegrity) {
+      if (!result.integrity.IsNull()) {
+        return false;  // Duplicate modifier.
+      }
+      CSSParserTokenStream::RestoringBlockGuard guard(stream);
+      stream.ConsumeWhitespace();
+      if (stream.Peek().GetType() != kStringToken) {
+        return false;
+      }
+      result.integrity = stream.ConsumeIncludingWhitespace().Value().ToString();
+      if (!guard.Release()) {
+        return false;  // Trailing junk inside integrity().
+      }
+    } else if (function_id == CSSValueID::kReferrerPolicy) {
+      if (result.referrer_policy) {
+        return false;  // Duplicate modifier.
+      }
+      CSSParserTokenStream::RestoringBlockGuard guard(stream);
+      stream.ConsumeWhitespace();
+      CSSValueID value_id = stream.Peek().Id();
+      switch (value_id) {
+        case CSSValueID::kNoReferrer:
+          result.referrer_policy =
+              network::mojom::blink::ReferrerPolicy::kNever;
+          break;
+        case CSSValueID::kNoReferrerWhenDowngrade:
+          result.referrer_policy =
+              network::mojom::blink::ReferrerPolicy::kNoReferrerWhenDowngrade;
+          break;
+        case CSSValueID::kSameOrigin:
+          result.referrer_policy =
+              network::mojom::blink::ReferrerPolicy::kSameOrigin;
+          break;
+        case CSSValueID::kOrigin:
+          result.referrer_policy =
+              network::mojom::blink::ReferrerPolicy::kOrigin;
+          break;
+        case CSSValueID::kStrictOrigin:
+          result.referrer_policy =
+              network::mojom::blink::ReferrerPolicy::kStrictOrigin;
+          break;
+        case CSSValueID::kOriginWhenCrossOrigin:
+          result.referrer_policy =
+              network::mojom::blink::ReferrerPolicy::kOriginWhenCrossOrigin;
+          break;
+        case CSSValueID::kStrictOriginWhenCrossOrigin:
+          result.referrer_policy = network::mojom::blink::ReferrerPolicy::
+              kStrictOriginWhenCrossOrigin;
+          break;
+        case CSSValueID::kUnsafeUrl:
+          result.referrer_policy =
+              network::mojom::blink::ReferrerPolicy::kAlways;
+          break;
+        default:
+          return false;
+      }
+      stream.ConsumeIncludingWhitespace();
+      if (!guard.Release()) {
+        return false;  // Trailing junk inside referrer-policy().
+      }
+    } else {
+      return false;  // Unknown modifier.
+    }
+    stream.ConsumeWhitespace();
+  }
+  modifiers = std::move(result);
+  return true;
 }
 
 }  // namespace
@@ -1794,8 +1895,12 @@ const CSSUrlData* CollectUrlData(const StringView& url,
 //
 // NOTE: We are careful not to return a reference, since the token
 // will be overwritten once we move to the next one.
+//
+// Any URL request modifiers found after the URL string will be parsed and
+// stored in |modifiers|.
 CSSParserToken ConsumeUrlAsToken(CSSParserTokenStream& stream,
-                                 const CSSParserContext& context) {
+                                 const CSSParserContext& context,
+                                 CSSUrlRequestModifiers& modifiers) {
   wtf_size_t value_start_offset = stream.LookAheadOffset();
   stream.EnsureLookAhead();
 
@@ -1814,8 +1919,16 @@ CSSParserToken ConsumeUrlAsToken(CSSParserTokenStream& stream,
              stream.Peek().GetType() == kBadStringToken)
           << "Got unexpected token " << stream.Peek();
       token = stream.ConsumeIncludingWhitespace();
-      if (token.GetType() == kBadStringToken || !stream.AtEnd()) {
+      if (token.GetType() == kBadStringToken) {
         return CSSParserToken(kEOFToken);
+      }
+      if (!stream.AtEnd()) {
+        // There is content after the URL string. Try to parse URL modifiers
+        // if the feature is enabled.
+        if (!RuntimeEnabledFeatures::CSSURLRequestModifiersEnabled() ||
+            !ConsumeUrlRequestModifiers(stream, modifiers)) {
+          return CSSParserToken(kEOFToken);
+        }
       }
       guard.Release();
     }
@@ -1835,12 +1948,13 @@ CSSParserToken ConsumeUrlAsToken(CSSParserTokenStream& stream,
 
 cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenStream& stream,
                                   const CSSParserContext& context) {
-  CSSParserToken url = ConsumeUrlAsToken(stream, context);
+  CSSUrlRequestModifiers modifiers;
+  CSSParserToken url = ConsumeUrlAsToken(stream, context, modifiers);
   if (url.GetType() == kEOFToken) {
     return nullptr;
   }
   return MakeGarbageCollected<cssvalue::CSSURIValue>(
-      *CollectUrlData(url.Value(), context));
+      *CollectUrlData(url.Value(), modifiers, context));
 }
 
 // https://drafts.csswg.org/css-navigation-1/#funcdef-url-pattern
@@ -3621,9 +3735,10 @@ static CSSValue* ConsumeGeneratedImage(CSSParserTokenStream& stream,
 
 static CSSImageValue* CreateCSSImageValueWithReferrer(
     const StringView& uri,
+    const CSSUrlRequestModifiers& modifiers,
     const CSSParserContext& context) {
-  auto* image_value =
-      MakeGarbageCollected<CSSImageValue>(*CollectUrlData(uri, context));
+  auto* image_value = MakeGarbageCollected<CSSImageValue>(
+      *CollectUrlData(uri, modifiers, context));
   if (context.Mode() == kUASheetMode) {
     image_value->SetInitiator(fetch_initiator_type_names::kUacss);
   }
@@ -3736,9 +3851,10 @@ CSSValue* ConsumeImage(
     const ConsumeGeneratedImagePolicy generated_image_policy,
     const ConsumeStringUrlImagePolicy string_url_image_policy,
     const ConsumeImageSetImagePolicy image_set_image_policy) {
-  CSSParserToken uri = ConsumeUrlAsToken(stream, context);
+  CSSUrlRequestModifiers modifiers;
+  CSSParserToken uri = ConsumeUrlAsToken(stream, context, modifiers);
   if (uri.GetType() != kEOFToken) {
-    return CreateCSSImageValueWithReferrer(uri.Value(), context);
+    return CreateCSSImageValueWithReferrer(uri.Value(), modifiers, context);
   }
   if (string_url_image_policy == ConsumeStringUrlImagePolicy::kAllow) {
     wtf_size_t value_start_offset = stream.LookAheadOffset();
@@ -3755,7 +3871,7 @@ CSSValue* ConsumeImage(
       if (IsFetchRestricted(uri_string, context)) {
         uri_string = "";
       }
-      return CreateCSSImageValueWithReferrer(uri_string, context);
+      return CreateCSSImageValueWithReferrer(uri_string, {}, context);
     }
   }
   if (stream.Peek().GetType() == kFunctionToken) {

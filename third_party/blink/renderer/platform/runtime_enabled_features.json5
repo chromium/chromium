@@ -1997,6 +1997,14 @@
       name: "CSSTypedArithmetic",
       status: "stable",
     },
+    {
+      // CSS URL request modifiers: cross-origin(), integrity(),
+      // referrer-policy() inside url() functions.
+      //
+      // https://drafts.csswg.org/css-values-5/#request-url-modifiers
+      name: "CSSURLRequestModifiers",
+      status: "experimental",
+    },
     // Support for `user-select:contain`.
     {
       name: "CSSUserSelectContain",

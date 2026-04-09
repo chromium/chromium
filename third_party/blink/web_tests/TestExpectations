@@ -1255,27 +1255,6 @@ crbug.com/393395931 external/wpt/css/css-shadow/slotted-has-002.html [ Failure ]
 crbug.com/393395931 external/wpt/css/css-shadow/slotted-has-003.html [ Failure ]
 crbug.com/393395931 external/wpt/css/css-shadow/slotted-has-004.html [ Failure ]
 
-# URL modifiers
-# https://drafts.csswg.org/css-values-5/#request-url-modifiers
-crbug.com/435625756 external/wpt/css/css-values/urls/cross-origin/url-image-cross-origin-anonymous.sub.html [ Failure ]
-crbug.com/435625756 external/wpt/css/css-values/urls/cross-origin/url-image-cross-origin-use-credentials.sub.html [ Failure ]
-crbug.com/435625756 external/wpt/css/css-values/urls/referrer-policy/no-referrer/url-image-referrer-policy-cross-origin.sub.html [ Failure ]
-crbug.com/435625756 external/wpt/css/css-values/urls/referrer-policy/no-referrer/url-image-referrer-policy-same-origin.sub.html [ Failure ]
-crbug.com/435625756 external/wpt/css/css-values/urls/referrer-policy/no-referrer-when-downgrade/url-image-referrer-policy-cross-origin.sub.html [ Failure ]
-crbug.com/435625756 external/wpt/css/css-values/urls/referrer-policy/no-referrer-when-downgrade/url-image-referrer-policy-same-origin.sub.html [ Failure ]
-crbug.com/435625756 external/wpt/css/css-values/urls/referrer-policy/origin/url-image-referrer-policy-cross-origin.sub.html [ Failure ]
-crbug.com/435625756 external/wpt/css/css-values/urls/referrer-policy/origin/url-image-referrer-policy-same-origin.sub.html [ Failure ]
-crbug.com/435625756 external/wpt/css/css-values/urls/referrer-policy/origin-when-cross-origin/url-image-referrer-policy-cross-origin.sub.html [ Failure ]
-crbug.com/435625756 external/wpt/css/css-values/urls/referrer-policy/origin-when-cross-origin/url-image-referrer-policy-same-origin.sub.html [ Failure ]
-crbug.com/435625756 external/wpt/css/css-values/urls/referrer-policy/same-origin/url-image-referrer-policy-cross-origin.sub.html [ Failure ]
-crbug.com/435625756 external/wpt/css/css-values/urls/referrer-policy/same-origin/url-image-referrer-policy-same-origin.sub.html [ Failure ]
-crbug.com/435625756 external/wpt/css/css-values/urls/referrer-policy/strict-origin/url-image-referrer-policy-cross-origin.sub.html [ Failure ]
-crbug.com/435625756 external/wpt/css/css-values/urls/referrer-policy/strict-origin/url-image-referrer-policy-same-origin.sub.html [ Failure ]
-crbug.com/435625756 external/wpt/css/css-values/urls/referrer-policy/strict-origin-when-cross-origin/url-image-referrer-policy-cross-origin.sub.html [ Failure ]
-crbug.com/435625756 external/wpt/css/css-values/urls/referrer-policy/strict-origin-when-cross-origin/url-image-referrer-policy-same-origin.sub.html [ Failure ]
-crbug.com/435625756 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/url-image-referrer-policy-cross-origin.sub.html [ Failure ]
-crbug.com/435625756 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/url-image-referrer-policy-same-origin.sub.html [ Failure ]
-
 # Media queries
 crbug.com/1001078 external/wpt/css/mediaqueries/mq-non-matching-lazy-load.tentative.html [ Failure ]
 crbug.com/40781325 external/wpt/css/mediaqueries/at-custom-media-basic.html [ Failure ]

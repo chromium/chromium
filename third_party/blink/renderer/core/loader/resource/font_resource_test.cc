@@ -257,7 +257,8 @@ TEST_F(CacheAwareFontResourceTest, CacheAwareFontLoading) {
       *MakeGarbageCollected<CSSUrlData>(
           AtomicString(url.GetString()), url,
           Referrer(document.Url(), document.GetReferrerPolicy()),
-          /*origin_clean=*/true, /*is_ad_related=*/false));
+          /*origin_clean=*/true, /*is_ad_related=*/false,
+          /*modifiers=*/CSSUrlRequestModifiers()));
   auto* src_value =
       CSSFontFaceSrcValue::Create(src_uri_value, nullptr /* world */);
 
