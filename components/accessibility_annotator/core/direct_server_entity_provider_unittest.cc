@@ -4,6 +4,8 @@
 
 #include "components/accessibility_annotator/core/direct_server_entity_provider.h"
 
+#include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/accessibility_annotator/core/data_models/entity.h"
@@ -116,6 +118,35 @@ TEST_F(DirectServerEntityProviderTest, GetEntities_TypeNotPresent) {
   base::test::TestFuture<std::vector<Entity>> future;
   provider_->GetEntities({EntityType::kShipment}, future.GetCallback());
   EXPECT_THAT(future.Get(), IsEmpty());
+}
+
+TEST_F(DirectServerEntityProviderTest, GetEntitiesRecordsSuccessMetrics) {
+  base::HistogramTester histogram_tester;
+  backend_.SetSyncAnnotations({CreateSpecifics("1", EntityType::kOrder),
+                               CreateSpecifics("2", EntityType::kShipment)});
+
+  base::test::TestFuture<std::vector<Entity>> future;
+  provider_->GetEntities(EntityTypeEnumSet::All(), future.GetCallback());
+  EXPECT_THAT(future.Get(), SizeIs(2));
+
+  histogram_tester.ExpectUniqueSample(
+      "AccessibilityAnnotator.DirectServerProvider.EntityCount", 2, 1);
+  histogram_tester.ExpectTotalCount(
+      "AccessibilityAnnotator.DirectServerProvider.GetEntitiesLatency", 1);
+}
+
+TEST_F(DirectServerEntityProviderTest, GetEntitiesRecordsNoDataMetrics) {
+  base::HistogramTester histogram_tester;
+  backend_.SetSyncAnnotations({});
+
+  base::test::TestFuture<std::vector<Entity>> future;
+  provider_->GetEntities(/*types=*/{}, future.GetCallback());
+  EXPECT_THAT(future.Get(), IsEmpty());
+
+  histogram_tester.ExpectUniqueSample(
+      "AccessibilityAnnotator.DirectServerProvider.EntityCount", 0, 1);
+  histogram_tester.ExpectTotalCount(
+      "AccessibilityAnnotator.DirectServerProvider.GetEntitiesLatency", 1);
 }
 
 TEST_F(DirectServerEntityProviderTest, ObserverNotifiedOnBridgeLoaded) {

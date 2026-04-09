@@ -60,6 +60,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="AccessibilityAnnotator.DirectServerProvider.EntityCount"
+    units="entities" expires_after="2026-08-01">
+  <owner>victorshu@google.com</owner>
+  <owner>zelarabaty@google.com</owner>
+  <summary>
+    Number of annotations retrieved from sync bridge that were converted to
+    entities for service. Recorded when GetEntities is called on the
+    DirectServerEntityProvider.
+  </summary>
+</histogram>
+
+<histogram
+    name="AccessibilityAnnotator.DirectServerProvider.GetEntitiesLatency"
+    units="ms" expires_after="2026-08-01">
+  <owner>victorshu@google.com</owner>
+  <owner>zelarabaty@google.com</owner>
+  <summary>
+    Duration of the GetEntities method in the DirectServerEntityProvider.
+    Recorded when GetEntities is called.
+  </summary>
+</histogram>
+
 <histogram name="AccessibilityAnnotator.FullAnnotationReached" enum="Boolean"
     expires_after="2026-10-04">
   <owner>qiaoli@google.com</owner>

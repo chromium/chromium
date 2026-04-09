@@ -8,6 +8,8 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/accessibility_annotator/core/data_models/entity_converter.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
 
@@ -40,6 +42,7 @@ void DirectServerEntityProvider::GetEntities(
   backend_->GetSyncAnnotationsByTypes(
       types, base::BindOnce(
                  [](base::OnceCallback<void(std::vector<Entity>)> callback,
+                    base::ElapsedTimer timer,
                     std::vector<sync_pb::AccessibilityAnnotationSpecifics>
                         annotations) {
                    std::vector<Entity> entities;
@@ -50,9 +53,19 @@ void DirectServerEntityProvider::GetEntities(
                        entities.push_back(std::move(*entity));
                      }
                    }
+                   base::UmaHistogramCounts1000(
+                       "AccessibilityAnnotator.DirectServerProvider."
+                       "EntityCount",
+                       entities.size());
+
+                   base::UmaHistogramTimes(
+                       "AccessibilityAnnotator.DirectServerProvider."
+                       "GetEntitiesLatency",
+                       timer.Elapsed());
+
                    std::move(callback).Run(std::move(entities));
                  },
-                 std::move(callback)));
+                 std::move(callback), base::ElapsedTimer()));
 }
 
 void DirectServerEntityProvider::OnAccessibilityAnnotationSyncBridgeLoaded() {
