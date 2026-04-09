@@ -3083,7 +3083,7 @@ Status BackingStore::Transaction::FindKeyInIndex(
     std::string_view slice(it->Value());
 
     int64_t version;
-    if (!DecodeVarInt(&slice, &version)) {
+    if (!DecodeVarInt(&slice, &version) || slice.empty()) {
       INTERNAL_READ_ERROR(FIND_KEY_IN_INDEX);
       return InternalInconsistencyStatus();
     }

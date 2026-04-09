@@ -1354,11 +1354,13 @@ int Compare(std::string_view a,
     return 0;
   }
 
+  if (slice_a.empty() || slice_b.empty()) {
+    *ok = false;
+    return 0;
+  }
+
   switch (*type) {
     case KeyPrefix::GLOBAL_METADATA: {
-      CHECK(!slice_a.empty());
-      CHECK(!slice_b.empty());
-
       unsigned char type_byte_a;
       if (!DecodeByte(&slice_a, &type_byte_a)) {
         *ok = false;
@@ -1395,9 +1397,6 @@ int Compare(std::string_view a,
     }
 
     case KeyPrefix::DATABASE_METADATA: {
-      CHECK(!slice_a.empty());
-      CHECK(!slice_b.empty());
-
       unsigned char type_byte_a;
       if (!DecodeByte(&slice_a, &type_byte_a)) {
         *ok = false;
@@ -1447,47 +1446,27 @@ int Compare(std::string_view a,
       break;
     }
 
-    case KeyPrefix::OBJECT_STORE_DATA: {
-      // Provide a stable ordering for invalid data.
-      if (slice_a.empty() || slice_b.empty())
-        return CompareSizes(slice_a.size(), slice_b.size());
-
+    case KeyPrefix::OBJECT_STORE_DATA:
       return CompareSuffix<ObjectStoreDataKey>(
           &slice_a, &slice_b, /*only_compare_index_keys*/ false, ok);
-    }
 
-    case KeyPrefix::EXISTS_ENTRY: {
-      // Provide a stable ordering for invalid data.
-      if (slice_a.empty() || slice_b.empty())
-        return CompareSizes(slice_a.size(), slice_b.size());
-
+    case KeyPrefix::EXISTS_ENTRY:
       return CompareSuffix<ExistsEntryKey>(
           &slice_a, &slice_b, /*only_compare_index_keys*/ false, ok);
-    }
 
-    case KeyPrefix::BLOB_ENTRY: {
-      // Provide a stable ordering for invalid data.
-      if (slice_a.empty() || slice_b.empty())
-        return CompareSizes(slice_a.size(), slice_b.size());
-
+    case KeyPrefix::BLOB_ENTRY:
       return CompareSuffix<BlobEntryKey>(&slice_a, &slice_b,
                                          /*only_compare_index_keys*/ false, ok);
-    }
 
-    case KeyPrefix::INDEX_DATA: {
-      // Provide a stable ordering for invalid data.
-      if (slice_a.empty() || slice_b.empty())
-        return CompareSizes(slice_a.size(), slice_b.size());
-
+    case KeyPrefix::INDEX_DATA:
       return CompareSuffix<IndexDataKey>(&slice_a, &slice_b,
                                          only_compare_index_keys, ok);
-    }
 
     case KeyPrefix::INVALID_TYPE:
       break;
   }
-
-  NOTREACHED();
+  *ok = false;
+  return 0;
 }
 
 }  // namespace
@@ -2481,6 +2460,7 @@ std::string ObjectStoreDataKey::Encode(int64_t database_id,
                                        int64_t object_store_id,
                                        const std::string& encoded_user_key) {
   CHECK(KeyPrefix::ValidIds(database_id, object_store_id));
+  CHECK(!encoded_user_key.empty());
   KeyPrefix prefix(KeyPrefix::CreateWithSpecialIndex(
       database_id, object_store_id, kSpecialIndexNumber));
   std::string ret = prefix.Encode();
@@ -2528,6 +2508,7 @@ std::string ExistsEntryKey::Encode(int64_t database_id,
                                    int64_t object_store_id,
                                    const std::string& encoded_key) {
   CHECK(KeyPrefix::ValidIds(database_id, object_store_id));
+  CHECK(!encoded_key.empty());
   KeyPrefix prefix(KeyPrefix::CreateWithSpecialIndex(
       database_id, object_store_id, kSpecialIndexNumber));
   std::string ret = prefix.Encode();
