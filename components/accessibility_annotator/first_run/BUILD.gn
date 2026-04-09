@@ -15,3 +15,17 @@ static_library("first_run") {
     "//content/public/browser",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "accessibility_annotator_first_run_service_impl_unittest.cc" ]
+  deps = [
+    ":first_run",
+    "//base",
+    "//base/test:test_support",
+    "//components/accessibility_annotator/core",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

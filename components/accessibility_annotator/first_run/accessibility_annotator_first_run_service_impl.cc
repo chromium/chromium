@@ -43,11 +43,14 @@ void AccessibilityAnnotatorFirstRunServiceImpl::MaybeTriggerFirstRun(
       &AccessibilityAnnotatorFirstRunServiceImpl::OnInfoDialogCompleted,
       weak_ptr_factory_.GetWeakPtr(), std::move(callback));
 
-  // TODO(b/489414512): Check if and which first run should be
-  // triggered.
-
-  client_->ShowRemoteAnnotatorInfo(web_contents, invocation_source,
-                                   std::move(wrapped_callback));
+  switch (state) {
+    case RemoteAnnotatorEnablementState::kDisabledPendingInfo:
+      client_->ShowRemoteAnnotatorInfo(web_contents, invocation_source,
+                                       std::move(wrapped_callback));
+      break;
+    default:
+      break;
+  }
 }
 
 void AccessibilityAnnotatorFirstRunServiceImpl::OnInfoDialogCompleted(

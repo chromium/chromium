@@ -470,6 +470,7 @@ test("components_unittests") {
 
   if (use_blink) {
     deps += [
+      "//components/accessibility_annotator/first_run:unit_tests",
       "//components/autofill/content/browser:unit_tests",
       "//components/autofill/core/common/mojom:unit_tests",
       "//components/browsing_data/content:unit_tests",
