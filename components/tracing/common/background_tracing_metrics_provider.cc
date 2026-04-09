@@ -141,9 +141,6 @@ BackgroundTracingMetricsProvider::GetEmbedderMetricsProvider() {
 void BackgroundTracingMetricsProvider::SetTrace(
     metrics::TraceLog* log,
     std::string&& compressed_trace) {
-  base::UmaHistogramCounts100000("Tracing.Background.UploadingTraceSizeInKB",
-                                 compressed_trace.size() / 1024);
-
   log->set_raw_data(std::move(compressed_trace));
   log->set_compression_type(metrics::TraceLog::COMPRESSION_TYPE_ZLIB);
 }
