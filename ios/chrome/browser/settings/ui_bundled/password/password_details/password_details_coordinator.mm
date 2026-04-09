@@ -11,6 +11,7 @@
 #import "base/check.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -52,7 +53,7 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
-const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
+constexpr base::TimeDelta kShareSpinnerMinTime = base::Seconds(0.5);
 }  // namespace
 
 @interface PasswordDetailsCoordinator () <
@@ -533,7 +534,7 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
 - (void)startPasswordSharingCoordinator {
   [self.viewController showSpinnerOnRightNavigationBar];
   _shareSpinnerTimer =
-      [NSTimer scheduledTimerWithTimeInterval:kShareSpinnerMinTimeInSeconds
+      [NSTimer scheduledTimerWithTimeInterval:kShareSpinnerMinTime.InSecondsF()
                                        target:self
                                      selector:@selector(shareSpinnerTimerFired)
                                      userInfo:nil
