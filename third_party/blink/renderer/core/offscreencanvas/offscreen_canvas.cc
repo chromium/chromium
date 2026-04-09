@@ -216,7 +216,6 @@ void OffscreenCanvas::SetSize(gfx::Size size) {
   }
 
   size_ = size;
-  current_frame_damage_rect_ = SkIRect::MakeWH(Size().width(), Size().height());
 
   if (context_ && context_->isContextLost()) {
     context_->RestoreFromInvalidSizeIfNeeded();
@@ -482,7 +481,6 @@ CanvasRenderingContext* OffscreenCanvas::GetCanvasRenderingContext(
     }
 
     context_ = factory->Create(execution_context, this, recomputed_attributes);
-    dirty_rect_for_commit_.setEmpty();
     if (context_) {
       context_->RecordUKMCanvasRenderingAPI();
       context_->RecordUMACanvasRenderingAPI();
@@ -565,7 +563,7 @@ void OffscreenCanvas::DidDraw(const SkIRect& rect) {
   if (rect.isEmpty())
     return;
 
-  dirty_rect_for_commit_.join(rect);
+  current_frame_damage_rect_.join(rect);
 
   if (HasPlaceholderCanvas()) {
     needs_push_frame_ = true;
@@ -592,9 +590,6 @@ bool OffscreenCanvas::PushFrame(
   TRACE_EVENT0("blink", "OffscreenCanvas::PushFrame");
   DCHECK(needs_push_frame_);
   needs_push_frame_ = false;
-
-  current_frame_damage_rect_.join(dirty_rect_for_commit_);
-  dirty_rect_for_commit_.setEmpty();
 
   if (current_frame_damage_rect_.isEmpty() || !canvas_resource)
     return false;
