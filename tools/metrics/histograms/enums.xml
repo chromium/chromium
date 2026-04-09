@@ -716,6 +716,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="0" label="HashMismatch"/>
   <int value="1" label="FileDoesNotExist"/>
   <int value="2" label="GenericRemovalError"/>
+  <int value="3" label="kFileReadFailure"/>
 </enum>
 
 <enum name="AutofillSuggestionAcceptedMethod">

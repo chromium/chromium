@@ -35,6 +35,20 @@ std::string HashDownloadData(base::span<const uint8_t> data) {
   return base::HexEncodeLower(crypto::hash::Sha256(data));
 }
 
+// Returns a base::FilePath object pointing to the location on the device where
+// `file` persists.
+base::FilePath GetFilePathForScheduledFile(
+    const auto_deletion::ScheduledFile& file) {
+  NSString* filename =
+      base::apple::FilePathToNSString(file.filepath().BaseName());
+  NSFileManager* manager = [NSFileManager defaultManager];
+  NSURL* documentsDirectory =
+      [[manager URLsForDirectory:NSDocumentDirectory
+                       inDomains:NSUserDomainMask] firstObject];
+  NSURL* URL = [NSURL URLWithString:filename relativeToURL:documentsDirectory];
+  return base::apple::NSURLToFilePath(URL.absoluteURL);
+}
+
 // Removes the ScheduledFiles from the device. It is intended to be invoked on a
 // background thread.
 void RemoveScheduledFilesHelper(
@@ -46,43 +60,39 @@ void RemoveScheduledFilesHelper(
     base::UmaHistogramEnumeration(
         kAutoDeletionServiceActionsHistogram,
         AutoDeletionServiceActions::kScheduledFileIdentifiedForRemoval);
-    NSString* filename =
-        base::apple::FilePathToNSString(file.filepath().BaseName());
-    NSFileManager* manager = [NSFileManager defaultManager];
-    NSURL* documentsDirectory =
-        [[manager URLsForDirectory:NSDocumentDirectory
-                         inDomains:NSUserDomainMask] firstObject];
-    NSURL* URL = [NSURL URLWithString:filename
-                        relativeToURL:documentsDirectory];
-    NSString* path = URL.absoluteURL.path;
+    base::FilePath file_path = GetFilePathForScheduledFile(file);
 
-    if (![manager fileExistsAtPath:path]) {
+    if (!base::PathExists(file_path)) {
       base::UmaHistogramEnumeration(
           kAutoDeletionServiceFileRemovalFailureHistogram,
           AutoDeletionServiceFileRemovalFailures::kFileDoesNotExist);
       continue;
     }
 
-    // TODO(crbug.com/455800280): Use `base::ReadFileToBytes()` to read the file
-    // into `buffer`.
-    std::vector<uint8_t> buffer;
-    const std::string hash = HashDownloadData(buffer);
+    std::optional<std::vector<uint8_t>> buffer =
+        base::ReadFileToBytes(file_path);
+    if (!buffer.has_value()) {
+      base::UmaHistogramEnumeration(
+          kAutoDeletionServiceFileRemovalFailureHistogram,
+          AutoDeletionServiceFileRemovalFailures::kFileReadFailure);
+      continue;
+    }
 
+    const std::string hash = HashDownloadData(buffer.value());
     if (hash != file.hash()) {
       base::UmaHistogramEnumeration(
           kAutoDeletionServiceFileRemovalFailureHistogram,
           AutoDeletionServiceFileRemovalFailures::kHashMismatch);
-      return;
+      continue;
     }
 
-    NSError* error;
-    [manager removeItemAtPath:path error:&error];
-    if (error) {
+    if (!base::DeleteFile(file_path)) {
       base::UmaHistogramEnumeration(
           kAutoDeletionServiceFileRemovalFailureHistogram,
           AutoDeletionServiceFileRemovalFailures::kGenericRemovalError);
-      return;
+      continue;
     }
+
     base::UmaHistogramEnumeration(
         kAutoDeletionServiceActionsHistogram,
         AutoDeletionServiceActions::kScheduledFileRemovedFromDevice);
