@@ -951,42 +951,52 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
   // to the DOM tree.
   auto* template_element = To<HTMLTemplateElement>(
       CreateElement(token, html_names::xhtmlNamespaceURI));
-  HTMLStackItem* template_stack_item =
-      HTMLStackItem::Create(template_element, token);
+
+  AtomicString patch_target =
+      RuntimeEnabledFeatures::DocumentPatchingEnabled()
+          ? template_element->FastGetAttribute(html_names::kForAttr)
+          : g_null_atom;
+
+  if (sanitizer_ &&
+      (!declarative_shadow_root_mode.IsNull() || !patch_target.IsNull())) {
+    CHECK(RuntimeEnabledFeatures::StreamingSanitizerEnabled());
+    bool ok = sanitizer_->Sanitize(template_element) == template_element;
+    if (!ok ||
+        !template_element->FastHasAttribute(html_names::kShadowrootmodeAttr)) {
+      declarative_shadow_root_mode = String();
+    }
+    if (!ok || !template_element->FastHasAttribute(html_names::kForAttr)) {
+      patch_target = g_null_atom;
+    }
+  }
+
   bool should_attach_template = true;
 
   if (!declarative_shadow_root_mode.IsNull() &&
       IsA<Element>(open_elements_.TopStackItem()->GetNode())) {
-    auto focus_delegation = template_stack_item->GetAttributeItem(
+    auto focus_delegation = template_element->FastHasAttribute(
                                 html_names::kShadowrootdelegatesfocusAttr)
                                 ? FocusDelegation::kDelegateFocus
                                 : FocusDelegation::kNone;
     // TODO(crbug.com/1063157): Add an attribute for imperative slot
     // assignment.
     auto slot_assignment_mode = SlotAssignmentMode::kNamed;
-    bool serializable =
-        template_stack_item->GetAttributeItem(
-            html_names::kShadowrootserializableAttr);
-    bool clonable = template_stack_item->GetAttributeItem(
-        html_names::kShadowrootclonableAttr);
+    bool serializable = template_element->FastHasAttribute(
+        html_names::kShadowrootserializableAttr);
+    bool clonable =
+        template_element->FastHasAttribute(html_names::kShadowrootclonableAttr);
     Element* host = open_elements_.TopStackItem()->GetElement();
-    const auto* reference_target_attr =
+    AtomicString reference_target =
         RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled(
             host->GetDocument().GetExecutionContext())
-            ? template_stack_item->GetAttributeItem(
+            ? template_element->FastGetAttribute(
                   html_names::kShadowrootreferencetargetAttr)
-            : nullptr;
-    const auto& reference_target =
-        reference_target_attr ? reference_target_attr->Value() : g_null_atom;
-    const auto* adopted_stylesheets_attr =
-        template_stack_item->GetAttributeItem(
-            html_names::kShadowrootadoptedstylesheetsAttr);
-    const auto& adopted_stylesheets = adopted_stylesheets_attr
-                                          ? adopted_stylesheets_attr->Value()
-                                          : g_null_atom;
+            : g_null_atom;
+    AtomicString adopted_stylesheets = template_element->FastGetAttribute(
+        html_names::kShadowrootadoptedstylesheetsAttr);
     bool waiting_for_scoped_registry =
         RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
-        template_stack_item->GetAttributeItem(
+        template_element->FastHasAttribute(
             html_names::kShadowrootcustomelementregistryAttr);
 
     bool success = host->AttachDeclarativeShadowRoot(
@@ -1006,18 +1016,20 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
   }
 
   auto current_insertion_location = CurrentInsertionLocation();
-  open_elements_.Push(template_stack_item);
+  open_elements_.Push(HTMLStackItem::Create(template_element, token));
   if (!should_attach_template) {
     return;
   }
 
-  if (auto* patch = Patch::Prepare(
-          current_insertion_location.parent,
-          template_element->FastGetAttribute(html_names::kForAttr))) {
-    CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
-    UseCounter::Count(OwnerDocumentForCurrentNode(), WebFeature::kHTMLPatching);
-    template_element->SetPatch(patch);
-    return;
+  if (!patch_target.IsNull()) {
+    if (auto* patch =
+            Patch::Prepare(current_insertion_location.parent, patch_target)) {
+      CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
+      UseCounter::Count(OwnerDocumentForCurrentNode(),
+                        WebFeature::kHTMLPatching);
+      template_element->SetPatch(patch);
+      return;
+    }
   }
 
   AttachLater(current_insertion_location, template_element);
