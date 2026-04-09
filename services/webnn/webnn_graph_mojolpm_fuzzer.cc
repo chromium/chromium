@@ -8,6 +8,7 @@
 #include "base/base_switches.h"
 #include "base/byte_count.h"
 #include "base/command_line.h"
+#include "base/debug/asan_service.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
@@ -56,6 +57,10 @@ struct InitGlobals {
         webnn::mojom::features::kWebMachineLearningNeuralNetwork);
 
     TestTimeouts::Initialize();
+
+#if defined(ADDRESS_SANITIZER)
+    base::debug::AsanService::GetInstance()->Initialize();
+#endif
 
     base::test::AllowCheckIsTestForTesting();
   }
