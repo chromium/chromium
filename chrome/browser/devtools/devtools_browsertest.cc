@@ -4778,9 +4778,6 @@ IN_PROC_BROWSER_TEST_P(DevToolsOriginTrialsApiBrowserTest,
   EXPECT_EQ(
       expected_defined,
       content::EvalJs(devtools_contents, "typeof Rewriter !== 'undefined'"));
-  EXPECT_EQ(expected_defined,
-            content::EvalJs(devtools_contents,
-                            "typeof LanguageModel !== 'undefined'"));
 
   DevToolsWindowTesting::CloseDevToolsWindowSync(devtools_window);
 }

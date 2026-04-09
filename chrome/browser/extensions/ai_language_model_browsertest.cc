@@ -123,10 +123,9 @@ IN_PROC_BROWSER_TEST_P(MAYBE_ExtensionAILanguageModelBrowserTest,
   )JS";
   TestExtensionDir test_dir;
   test_dir.WriteManifest(kManifestTemplate);
-  // Extension access is blocked by either kill switch.
-  const bool is_api_exposed = IsAPIFlagEnabled(GetParam()) ||
-                              (!IsAPIKillSwitchTriggered(GetParam()) &&
-                               !IsExtensionKillSwitchTriggered(GetParam()));
+  // Extension access is only fully blocked by the overall API kill switch.
+  const bool is_api_exposed =
+      IsAPIFlagEnabled(GetParam()) || !IsAPIKillSwitchTriggered(GetParam());
   test_dir.WriteFile(
       FILE_PATH_LITERAL("sw.js"),
       base::StringPrintf(kScript, base::ToString(is_api_exposed)));
