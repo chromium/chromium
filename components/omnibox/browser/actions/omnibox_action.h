@@ -36,6 +36,13 @@ struct VectorIcon;
 class AutocompleteInput;
 class AutocompleteProviderClient;
 
+// How the action should be presented in the UI.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.omnibox.action
+enum class ActionPresentationMode {
+  CHIP = 1,
+  BUTTON = 2,
+};
+
 // Omnibox Actions are additional actions associated with matches. They appear
 // in the suggestion button row and are not matches themselves.
 //
@@ -157,9 +164,10 @@ class OmniboxAction : public base::RefCountedThreadSafe<OmniboxAction> {
     int enter_starter_pack_id_;
   };
 
-  OmniboxAction(LabelStrings strings,
-                GURL url,
-                bool show_as_action_button = false);
+  OmniboxAction(
+      LabelStrings strings,
+      GURL url,
+      ActionPresentationMode presentation_mode = ActionPresentationMode::CHIP);
 
   // Provides read access to labels associated with this Action.
   const LabelStrings& GetLabelStrings() const;
@@ -213,8 +221,8 @@ class OmniboxAction : public base::RefCountedThreadSafe<OmniboxAction> {
   // For navigation Actions, this holds the destination URL. Otherwise, empty.
   GURL url_;
 
-  // Whether to show as action button.
-  bool show_as_action_button_;
+  // How the action should be presented in the UI.
+  ActionPresentationMode presentation_mode_;
 
 #if BUILDFLAG(IS_ANDROID)
   mutable base::android::ScopedJavaGlobalRef<jobject> j_omnibox_action_;

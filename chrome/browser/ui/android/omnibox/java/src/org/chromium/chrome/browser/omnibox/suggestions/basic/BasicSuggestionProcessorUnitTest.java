@@ -50,6 +50,7 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
+import org.chromium.components.omnibox.action.ActionPresentationMode;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -205,7 +206,7 @@ public class BasicSuggestionProcessorUnitTest {
                                                         .CHROME_TAB_SWITCH_VALUE,
                                                 "https://google.com",
                                                 /* tabId= */ 0,
-                                                /* showAsActionButton= */ true)))
+                                                ActionPresentationMode.BUTTON)))
                         .build();
         mModel = mProcessor.createModel();
         mProcessor.populateModel(mInput, mSuggestion, mModel, 0);

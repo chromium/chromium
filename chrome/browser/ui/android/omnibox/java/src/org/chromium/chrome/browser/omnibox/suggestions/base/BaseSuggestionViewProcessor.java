@@ -35,6 +35,7 @@ import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatch.MatchClassification;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.omnibox.action.ActionPresentationMode;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -294,7 +295,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
     private void addActionButtonIfAvailable(
             AutocompleteMatch suggestion, PropertyModel model, int position) {
         for (var action : suggestion.getActions()) {
-            if (!action.showAsActionButton) {
+            if (action.presentationMode != ActionPresentationMode.BUTTON) {
                 continue;
             }
             setActionButtons(

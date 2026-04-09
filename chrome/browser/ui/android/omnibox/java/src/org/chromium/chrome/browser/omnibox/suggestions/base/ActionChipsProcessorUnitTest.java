@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
+import org.chromium.components.omnibox.action.ActionPresentationMode;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.action.OmniboxActionId;
@@ -57,7 +58,7 @@ public class ActionChipsProcessorUnitTest {
                 "accessibility hint",
                 OmniboxAction.DEFAULT_ICON,
                 textAppearance,
-                /* showAsActionButton= */ false,
+                ActionPresentationMode.CHIP,
                 WindowOpenDisposition.CURRENT_TAB) {
             @Override
             public boolean execute(OmniboxActionDelegate delegate) {

@@ -8,6 +8,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.action.ActionPresentationMode;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -48,7 +49,7 @@ public class ActionChipsProcessor {
 
         for (OmniboxAction action : actions) {
             // Skip the action that is shown as button, instead of chip.
-            if (action.showAsActionButton) {
+            if (action.presentationMode != ActionPresentationMode.CHIP) {
                 continue;
             }
 

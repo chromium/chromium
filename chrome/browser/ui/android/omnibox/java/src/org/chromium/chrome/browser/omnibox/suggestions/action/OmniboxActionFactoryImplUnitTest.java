@@ -23,6 +23,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
+import org.chromium.components.omnibox.action.ActionPresentationMode;
 import org.chromium.components.omnibox.action.OmniboxActionFactoryJni;
 
 /** Tests for {@link OmniboxActionFactoryImpl}. */
@@ -90,7 +91,7 @@ public class OmniboxActionFactoryImplUnitTest {
                                         1,
                                         "url",
                                         /* tabId= */ 0,
-                                        /* showAsActionButton= */ false)));
+                                        ActionPresentationMode.CHIP)));
     }
 
     @Test
@@ -105,7 +106,7 @@ public class OmniboxActionFactoryImplUnitTest {
                                 SuggestTemplateInfo.TemplateAction.ActionType.CALL_VALUE,
                                 "url",
                                 /* tabId= */ 0,
-                                /* showAsActionButton= */ false));
+                                ActionPresentationMode.CHIP));
     }
 
     @Test
@@ -120,6 +121,6 @@ public class OmniboxActionFactoryImplUnitTest {
                                 SuggestTemplateInfo.TemplateAction.ActionType.CALL_VALUE,
                                 "url",
                                 /* tabId= */ 0,
-                                /* showAsActionButton= */ false));
+                                ActionPresentationMode.CHIP));
     }
 }

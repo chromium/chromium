@@ -79,8 +79,8 @@ public abstract class OmniboxAction {
 
     public final int primaryTextAppearance;
 
-    /** Whether to show it as action button. */
-    public final boolean showAsActionButton;
+    /** How the action should be presented in the UI. */
+    public final @ActionPresentationMode int presentationMode;
 
     /** The window open disposition. */
     public int disposition;
@@ -95,7 +95,7 @@ public abstract class OmniboxAction {
             String accessibilityHint,
             ActionIcon icon,
             int primaryTextAppearance,
-            boolean showAsActionButton,
+            @ActionPresentationMode int presentationMode,
             int disposition) {
         assert !TextUtils.isEmpty(hint);
         this.actionId = actionId;
@@ -103,7 +103,7 @@ public abstract class OmniboxAction {
         this.accessibilityHint = accessibilityHint;
         this.icon = icon;
         this.primaryTextAppearance = primaryTextAppearance;
-        this.showAsActionButton = showAsActionButton;
+        this.presentationMode = presentationMode;
         this.disposition = disposition;
         mNativeInstance = nativeInstance;
     }

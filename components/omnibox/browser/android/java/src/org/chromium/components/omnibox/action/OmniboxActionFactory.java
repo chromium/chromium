@@ -49,7 +49,7 @@ public interface OmniboxActionFactory {
      * @param actionType the specific type of an action matching the {@link
      *     SuggestTemplateInfo.TemplateAction.ActionType}
      * @param actionUri the corresponding action URI/URL (serialized intent)
-     * @param showAsActionButton whether to show it as action button
+     * @param presentationMode how to present the action in the UI
      * @return new instance of an OmniboxActionInSuggest
      */
     @CalledByNative
@@ -60,7 +60,7 @@ public interface OmniboxActionFactory {
             /* SuggestTemplateInfo.TemplateAction.ActionType */ int actionType,
             String actionUri,
             int tabId,
-            boolean showAsActionButton);
+            @ActionPresentationMode int presentationMode);
 
     @NativeMethods
     public interface Natives {

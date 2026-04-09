@@ -300,9 +300,9 @@ TEST_F(OmniboxActionInSuggestTest, ShowAsActionButton) {
           std::move(template_action), std::nullopt);
       if (type ==
           omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM) {
-        EXPECT_TRUE(action->show_as_action_button_);
+        EXPECT_EQ(ActionPresentationMode::BUTTON, action->presentation_mode_);
       } else {
-        EXPECT_FALSE(action->show_as_action_button_);
+        EXPECT_EQ(ActionPresentationMode::CHIP, action->presentation_mode_);
       }
     }
   }
@@ -322,7 +322,9 @@ TEST_F(OmniboxActionInSuggestTest, ShowAsActionButtonForTabSwitch) {
       std::move(template_action), std::nullopt);
   auto form_factor = ui::GetDeviceFormFactor();
   EXPECT_EQ(form_factor == ui::DEVICE_FORM_FACTOR_PHONE ||
-                form_factor == ui::DEVICE_FORM_FACTOR_FOLDABLE,
-            action->show_as_action_button_);
+                    form_factor == ui::DEVICE_FORM_FACTOR_FOLDABLE
+                ? ActionPresentationMode::BUTTON
+                : ActionPresentationMode::CHIP,
+            action->presentation_mode_);
 }
 #endif

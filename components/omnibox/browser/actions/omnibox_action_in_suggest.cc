@@ -142,7 +142,9 @@ OmniboxActionInSuggest::OmniboxActionInSuggest(
                         IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX,
                         ToActionContents(template_action.action_type())),
                     {},
-                    AllowAsActionButton(template_action)),
+                    AllowAsActionButton(template_action)
+                        ? ActionPresentationMode::BUTTON
+                        : ActionPresentationMode::CHIP),
       template_action{std::move(template_action)},
       search_terms_args{std::move(search_terms_args)} {
 #if BUILDFLAG(IS_ANDROID)
@@ -152,11 +154,13 @@ OmniboxActionInSuggest::OmniboxActionInSuggest(
       omnibox::
           SuggestTemplateInfo_TemplateAction_ActionType_CHROME_TAB_SWITCH) {
     auto form_factor = ui::GetDeviceFormFactor();
-    show_as_action_button_ =
+    bool show_as_button =
         !(base::FeatureList::IsEnabled(omnibox::kOmniboxImprovementForLFF) &&
           OmniboxFieldTrial::kOmniboxImprovementForLFFSwitchToTabChip.Get() &&
           (form_factor != ui::DEVICE_FORM_FACTOR_PHONE &&
            form_factor != ui::DEVICE_FORM_FACTOR_FOLDABLE));
+    presentation_mode_ = show_as_button ? ActionPresentationMode::BUTTON
+                                        : ActionPresentationMode::CHIP;
   }
 #endif
 }
@@ -170,7 +174,7 @@ OmniboxActionInSuggest::GetOrCreateJavaObject(JNIEnv* env) const {
     j_omnibox_action_.Reset(BuildOmniboxActionInSuggest(
         env, reinterpret_cast<intptr_t>(this), strings_.hint,
         strings_.accessibility_hint, template_action.action_type(),
-        template_action.action_uri(), tab_id, show_as_action_button_));
+        template_action.action_uri(), tab_id, presentation_mode_));
   }
   return base::android::ScopedJavaLocalRef<jobject>(j_omnibox_action_);
 }

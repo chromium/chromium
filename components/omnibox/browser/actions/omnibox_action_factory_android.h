@@ -41,7 +41,7 @@ base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxActionInSuggest(
     int action_type,
     const std::string& action_uri,
     int tab_id,
-    bool show_as_action_button);
+    ActionPresentationMode presentation_mode);
 
 std::vector<jni_zero::ScopedJavaLocalRef<jobject>> ToJavaOmniboxActionsList(
     JNIEnv* env,
