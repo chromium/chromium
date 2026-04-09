@@ -42,6 +42,8 @@
 #include "cc/trees/render_frame_metadata_observer.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/http/http_response_headers.h"
+#include "services/network/public/cpp/connection_allowlist_parser.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -285,6 +287,32 @@ void FillNavigationParamsResponse(WebNavigationParams* params) {
     params->policy_container->policies.sandbox_flags |= csp->sandbox;
     params->policy_container->policies.content_security_policies.emplace_back(
         ToWebContentSecurityPolicy(*csp));
+  }
+
+  // Parse Connection Allowlist response headers into the policy container,
+  // simulating what the browser does.
+  WebString enforced_header =
+      params->response.HttpHeaderField("Connection-Allowlist");
+  WebString report_only_header =
+      params->response.HttpHeaderField("Connection-Allowlist-Report-Only");
+  if (!enforced_header.IsNull() || !report_only_header.IsNull()) {
+    auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+    if (!enforced_header.IsNull()) {
+      headers->AddHeader("Connection-Allowlist", enforced_header.Utf8());
+    }
+    if (!report_only_header.IsNull()) {
+      headers->AddHeader("Connection-Allowlist-Report-Only",
+                         report_only_header.Utf8());
+    }
+    // The Connection Allowlist parser is defined in the network service and
+    // therefore requires a GURL; given that we are in Blink/KURL land, there's
+    // no automatic WebURL->GURL conversion, so we have to construct it
+    // manually.
+    params->policy_container->policies.connection_allowlists =
+        network::ParseConnectionAllowlistsFromHeaders(
+            *headers, GURL(params->response.ResponseUrl().GetString().Utf8(),
+                           params->response.ResponseUrl().GetParsed(),
+                           params->response.ResponseUrl().IsValid()));
   }
 }
 

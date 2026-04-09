@@ -253,6 +253,7 @@ blink_core_tests_frame = [
   "browser_controls_test.cc",
   "cached_permission_status_test.cc",
   "child_frame_compositing_helper_test.cc",
+  "connection_allowlist_sim_test.cc",
   "csp/content_security_policy_test.cc",
   "csp/csp_directive_list_test.cc",
   "csp/csp_source_test.cc",
