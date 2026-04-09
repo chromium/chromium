@@ -452,6 +452,8 @@ AccessoryController* ManualFillingControllerImpl::GetControllerForAction(
     case AccessoryAction::AUTOFILL_SUGGESTION:
     case AccessoryAction::DISMISS:
     case AccessoryAction::AUTOFILL_SUGGESTION_FROM_ACCESSORY_SHEET:
+    case AccessoryAction::SHOW_AT_MEMORY_BOTTOMSHEET:
+      // TODO(crbug.com/458644290): Implement @memory sheet controller.
     case AccessoryAction::COUNT:
       NOTREACHED() << "Controller not defined for action: "
                    << static_cast<int>(action);

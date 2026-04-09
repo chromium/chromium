@@ -472,6 +472,12 @@ class ManualFillingMediator
         hideSoftKeyboard();
     }
 
+    void setAtMemoryCallback(Runnable callback) {
+        if (mKeyboardAccessory != null) {
+            mKeyboardAccessory.setAtMemoryCallback(callback);
+        }
+    }
+
     void resume() {
         if (!isInitialized()) return;
         pause(); // Resuming dismisses the keyboard. Ensure the accessory doesn't linger.

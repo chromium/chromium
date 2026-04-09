@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.ACTIVE_TAB;
+import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.AT_MEMORY_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.TABS;
 
 import org.junit.Before;
@@ -40,6 +41,7 @@ public class KeyboardAccessoryButtonGroupControllerTest {
 
     @Mock private PropertyObserver<PropertyKey> mMockPropertyObserver;
     @Mock private ListObservable.ListObserver<Void> mMockTabListObserver;
+    @Mock private Runnable mMockAtMemoryCallback;
 
     @Mock
     private KeyboardAccessoryButtonGroupCoordinator.AccessoryTabObserver mMockAccessoryTabObserver;
@@ -57,6 +59,12 @@ public class KeyboardAccessoryButtonGroupControllerTest {
         mMediator = mCoordinator.getMediatorForTesting();
         mModel = mCoordinator.getModelForTesting();
         mCoordinator.setTabObserver(mMockAccessoryTabObserver);
+    }
+
+    @Test
+    public void testSetsAtMemoryCallback() {
+        mCoordinator.setAtMemoryCallback(mMockAtMemoryCallback);
+        assertThat(mModel.get(AT_MEMORY_CALLBACK), is(mMockAtMemoryCallback));
     }
 
     @Test

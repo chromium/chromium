@@ -312,6 +312,10 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
         mButtonGroup.getTabSwitchingDelegate().setTabs(tabs);
     }
 
+    public void setAtMemoryCallback(Runnable callback) {
+        mButtonGroup.setAtMemoryCallback(callback);
+    }
+
     public void setActiveTab(@AccessoryTabType int tabType) {
         mButtonGroup.getTabSwitchingDelegate().setActiveTab(tabType);
     }

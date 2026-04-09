@@ -186,6 +186,9 @@ public class KeyboardAccessoryData {
                 case AccessoryAction.RETRIEVE_TRUSTED_VAULT_KEY:
                     typeName = "RETRIEVE_TRUSTED_VAULT_KEY";
                     break;
+                case AccessoryAction.SHOW_AT_MEMORY_BOTTOMSHEET:
+                    typeName = "SHOW_AT_MEMORY_BOTTOMSHEET";
+                    break;
             }
             return typeName;
         }

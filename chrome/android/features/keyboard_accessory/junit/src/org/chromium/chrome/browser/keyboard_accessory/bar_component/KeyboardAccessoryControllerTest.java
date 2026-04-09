@@ -122,6 +122,7 @@ public class KeyboardAccessoryControllerTest {
     @Mock private FillingProductBridgeJni mMockFillingProductBridgeJni;
     @Mock private Supplier<Boolean> mMockIsLargeFormFactorSupplier;
     @Mock private Runnable mMockDismissRunnable;
+    @Mock private Runnable mMockAtMemoryCallback;
 
     private final KeyboardAccessoryData.Tab mTestTab =
             new KeyboardAccessoryData.Tab("Passwords", 0, null, 0, 0, null);
@@ -166,6 +167,12 @@ public class KeyboardAccessoryControllerTest {
                         mMockDismissRunnable);
         mMediator = mCoordinator.getMediatorForTesting();
         mModel = mMediator.getModelForTesting();
+    }
+
+    @Test
+    public void testSetsAtMemoryCallback() {
+        mCoordinator.setAtMemoryCallback(mMockAtMemoryCallback);
+        verify(mMockButtonGroup).setAtMemoryCallback(mMockAtMemoryCallback);
     }
 
     @Test
