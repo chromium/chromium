@@ -328,6 +328,7 @@ class GlicInstanceImpl : public GlicInstance,
   void CloseInternal(EmbedderKey key,
                      EmbedderEntry& entry,
                      const CloseOptions& options = {});
+  bool ShouldUnbindOnClose(EmbedderKey key, const EmbedderEntry& entry);
   void MaybeShowHostUi(
       GlicUiEmbedder* embedder,
       mojom::InvocationSource source,

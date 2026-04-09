@@ -443,8 +443,7 @@ void GlicInstanceImpl::Close(EmbedderKey key, const CloseOptions& options) {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kGlicUnbindOnClose) &&
-      !entry->user_input_submitted_while_bound) {
+  if (ShouldUnbindOnClose(key, *entry)) {
     UnbindEmbedder(key);
     return;
   }
@@ -460,6 +459,39 @@ void GlicInstanceImpl::CloseInternal(EmbedderKey key,
   if (entry.embedder) {
     entry.embedder->Close(options);
   }
+}
+
+bool GlicInstanceImpl::ShouldUnbindOnClose(EmbedderKey key,
+                                           const EmbedderEntry& entry) {
+  // Determines whether the instance should be unbound from the embedder when
+  // closed. Unbinding occurs only when all of the following conditions are met:
+  // - Both `kGlicUnbindOnClose` and `kGlicDefaultToLastActiveConversation`
+  //   flags are enabled.
+  // - The user has not submitted input (ie. sent a prompt) while the tab was
+  //   bound.
+  // - The instance is scoped to a tab (not a floating panel or window).
+  // - The tab was pinned as a result of clicking an entrypoint (e.g., clicking
+  //   the entrypoint), rather than being pinned via one of the other mechanisms
+  //   (eg. actuation, daisy chaining, explicit pinning, etc.)
+  if (!base::FeatureList::IsEnabled(kGlicUnbindOnClose)) {
+    return false;
+  }
+  if (!base::FeatureList::IsEnabled(
+          features::kGlicDefaultToLastActiveConversation)) {
+    return false;
+  }
+  if (entry.user_input_submitted_while_bound) {
+    return false;
+  }
+  const auto* tab_key = std::get_if<tabs::TabInterface*>(&key);
+  if (!tab_key) {
+    return false;
+  }
+  auto usage = sharing_manager().GetPinnedTabUsage((**tab_key).GetHandle());
+  // This is the pin trigger used for entrypoint clicks.
+  // TODO(b/501090068): Figure out how to separate this from invoke pin
+  // triggers.
+  return usage && usage->pin_event.trigger == GlicPinTrigger::kInstanceCreation;
 }
 
 bool GlicInstanceImpl::Toggle(ShowOptions&& options,
@@ -929,15 +961,15 @@ void GlicInstanceImpl::DeactivateCurrentEmbedder() {
 GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedder(
     const ShowOptions& options) {
   return std::visit(
-      absl::Overload{[&](const SidePanelShowOptions& opts) {
-                       return CreateActiveEmbedderForSidePanel(opts);
-                     },
-                     [&](const FloatingShowOptions& opts) {
-                       CHECK(base::FeatureList::IsEnabled(
-                           features::kGlicLiveMode));
-                       return CreateActiveEmbedderForFloaty(opts.initial_bounds,
-                                                            opts.source_tab);
-                     }},
+      absl::Overload{
+          [&](const SidePanelShowOptions& opts) {
+            return CreateActiveEmbedderForSidePanel(opts);
+          },
+          [&](const FloatingShowOptions& opts) {
+            CHECK(base::FeatureList::IsEnabled(features::kGlicLiveMode));
+            return CreateActiveEmbedderForFloaty(opts.initial_bounds,
+                                                 opts.source_tab);
+          }},
       options.embedder_options);
 }
 

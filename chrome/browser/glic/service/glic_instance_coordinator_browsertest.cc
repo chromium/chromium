@@ -290,7 +290,9 @@ class GlicInstanceCoordinatorUnbindOnCloseTest
     : public GlicInstanceCoordinatorBrowserTest {
  public:
   GlicInstanceCoordinatorUnbindOnCloseTest() {
-    feature_list_.InitAndEnableFeature(kGlicUnbindOnClose);
+    feature_list_.InitWithFeatures(
+        {kGlicUnbindOnClose, features::kGlicDefaultToLastActiveConversation},
+        {});
   }
 
  private:
@@ -300,8 +302,72 @@ class GlicInstanceCoordinatorUnbindOnCloseTest
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
                        UnboundWhenNoInputSubmitted) {
   tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
+  auto* instance1 = OpenGlicForActiveTab();
+  ASSERT_TRUE(instance1);
+
+  // Submit input on tab1 to keep it bound when closed.
+  PreventDeletionOnClose(instance1, "test_conversation_1");
+
+  // Close Glic for tab1. It stays bound because of input.
+  ASSERT_TRUE(CloseGlicForTabAndWait(tab1));
+  ASSERT_EQ(GetInstanceForTab(tab1), instance1);
+
   tabs::TabInterface* tab2 = CreateAndActivateTab(GURL("about:blank"));
 
+  // Open Glic for tab2. It should reuse instance1.
+  auto* instance2 = OpenGlicForActiveTab();
+  ASSERT_TRUE(instance2);
+  EXPECT_EQ(instance1, instance2);
+
+  EXPECT_EQ(coordinator().GetInstances().size(), 1u);
+  EXPECT_TRUE(instance2->IsShowing());
+
+  // Do not submit any input on tab2, close the side panel for the active tab
+  // (tab2).
+  ASSERT_TRUE(CloseGlicForTabAndWait(tab2));
+
+  // Because no input was submitted on tab2 and the flags are on, it should
+  // unbind from tab2.
+  EXPECT_FALSE(coordinator().GetInstanceForTab(tab2));
+
+  // But because it was bound to tab1 (and kept bound), the instance itself
+  // should still exist.
+  EXPECT_EQ(coordinator().GetInstances().size(), 1u);
+  EXPECT_EQ(coordinator().GetInstanceForTab(tab1), instance1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
+                       KeptBoundWhenInputSubmitted) {
+  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
+  auto* instance1 = OpenGlicForActiveTab();
+  ASSERT_TRUE(instance1);
+
+  PreventDeletionOnClose(instance1, "test_conversation_1");
+  ASSERT_TRUE(CloseGlicForTabAndWait(tab1));
+
+  tabs::TabInterface* tab2 = CreateAndActivateTab(GURL("about:blank"));
+  auto* instance2 = OpenGlicForActiveTab();
+  ASSERT_TRUE(instance2);
+  EXPECT_EQ(instance1, instance2);
+
+  // Simulate user input on tab2.
+  instance2->OnUserInputSubmitted(mojom::WebClientMode::kText);
+
+  // Close the side panel for the active tab (tab2).
+  ASSERT_TRUE(CloseGlicForTabAndWait(tab2));
+
+  // Because input was submitted, it should NOT unbind from tab2.
+  EXPECT_TRUE(coordinator().GetInstanceForTab(tab2));
+  EXPECT_EQ(coordinator().GetInstances().size(), 1u);
+  EXPECT_FALSE(instance2->IsShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
+                       KeptBoundWhenPinnedViaContextMenu) {
+  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
+  tabs::TabInterface* tab2 = CreateAndActivateTab(GURL("about:blank"));
+
+  // This pins with kContextMenu.
   coordinator().CreateNewConversationForTabs({tab1, tab2});
   auto* instance = coordinator().GetInstanceImplForTab(tab2);
   ASSERT_TRUE(instance);
@@ -312,34 +378,8 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
   // Do not submit any input, close the side panel for the active tab (tab2).
   ASSERT_TRUE(CloseGlicForTabAndWait(tab2));
 
-  // Because no input was submitted and the flag is on, it should unbind from
-  // tab2.
-  EXPECT_FALSE(coordinator().GetInstanceForTab(tab2));
-
-  // But because it's still bound to tab1, the instance itself should still
-  // exist.
-  EXPECT_EQ(coordinator().GetInstances().size(), 1u);
-  EXPECT_EQ(coordinator().GetInstanceForTab(tab1), instance);
-}
-
-IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
-                       KeptBoundWhenInputSubmitted) {
-  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
-  tabs::TabInterface* tab2 = CreateAndActivateTab(GURL("about:blank"));
-
-  coordinator().CreateNewConversationForTabs({tab1, tab2});
-  auto* instance = coordinator().GetInstanceImplForTab(tab2);
-  ASSERT_TRUE(instance);
-  EXPECT_EQ(coordinator().GetInstances().size(), 1u);
-  EXPECT_TRUE(instance->IsShowing());
-
-  // Simulate user input.
-  instance->OnUserInputSubmitted(mojom::WebClientMode::kText);
-
-  // Close the side panel for the active tab (tab2).
-  ASSERT_TRUE(CloseGlicForTabAndWait(tab2));
-
-  // Because input was submitted, it should NOT unbind from tab2, just hide.
+  // Because it was pinned with kContextMenu (not kInstanceCreation),
+  // it should NOT unbind from tab2, even though no input was submitted.
   EXPECT_TRUE(coordinator().GetInstanceForTab(tab2));
   EXPECT_EQ(coordinator().GetInstances().size(), 1u);
   EXPECT_FALSE(instance->IsShowing());
