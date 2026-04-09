@@ -197,6 +197,18 @@ source_set("page_context") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_bwg_service.h",
+    "fake_bwg_service.mm",
+  ]
+  public_deps = [
+    ":bwg_service",
+    "//ios/chrome/browser/intelligence/bwg/metrics",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [

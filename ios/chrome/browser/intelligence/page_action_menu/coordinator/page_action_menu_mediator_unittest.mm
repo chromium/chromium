@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/model/fake_bwg_service.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_consumer.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_content_entry_point.h"
@@ -29,36 +30,6 @@
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
-
-// Fake BwgService for testing.
-class FakeBwgService : public BwgService {
- public:
-  FakeBwgService() = default;
-  ~FakeBwgService() override = default;
-  bool IsProfileEligibleForGemini() override {
-    return !ineligibility_reasons_.has_value();
-  }
-  std::optional<gemini::IneligibilityReasons> GeminiIneligibilityForProfile()
-      override {
-    return ineligibility_reasons_;
-  }
-  void SetIsEligible(bool is_eligible) {
-    if (is_eligible) {
-      ineligibility_reasons_ = std::nullopt;
-    } else {
-      gemini::IneligibilityReasons reasons;
-      reasons.chrome_enterprise = true;
-      ineligibility_reasons_ = reasons;
-    }
-  }
-  void SetIneligibilityReasons(
-      std::optional<gemini::IneligibilityReasons> reasons) {
-    ineligibility_reasons_ = reasons;
-  }
-
- private:
-  std::optional<gemini::IneligibilityReasons> ineligibility_reasons_;
-};
 
 // Fake consumer that absorbs delegate events during testing.
 @interface FakePageActionMenuConsumer : NSObject <PageActionMenuConsumer>
