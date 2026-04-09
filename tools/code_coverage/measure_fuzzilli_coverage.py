@@ -8,6 +8,7 @@
                    --build-out-dir ~/chromium/src/out/Fuzzilli
                    --fuzzilli-dir ~/fuzzilli
                    --report-out-dir ~/chromium/src/out/report
+                   --profile chromiumMojo
                    --minutes 20
 
     Optionally, use --ignore-filename-regex to provide a regular
@@ -46,8 +47,7 @@ import sys
 import tempfile
 
 DEFAULT_FUZZILLI_FLAGS = [
-    '--profile=chromiumMojo', '--storagePath=/tmp/fuzzilli_storage',
-    '--overwrite', '--engine=hybrid'
+    '--storagePath=/tmp/fuzzilli_storage', '--overwrite', '--engine=hybrid'
 ]
 SCRIPT_DIR = Path(__file__).resolve().parent
 SRC_DIR = SCRIPT_DIR.parents[1]
@@ -144,11 +144,20 @@ def _ParseCommandArguments():
       'regular expression. For example, use -i=\'.*/out/.*|.*/third_party/.*\' '
       'to exclude files in third_party/ and out/ folders from the report.')
 
+  arg_parser.add_argument(
+      '-p',
+      '--profile',
+      type=str,
+      required=True,
+      help='Provide a profile for Fuzzilli to use while running, identifying'
+      'by the key defined in Fuzzilli\'s `profiles` Dictionary.')
+
   args = arg_parser.parse_args()
   return args
 
 
-def _RunFuzzilli(pg_handler, fuzzilli_dir, build_out_dir, minutes, profraw_dir):
+def _RunFuzzilli(pg_handler, fuzzilli_dir, build_out_dir, minutes, profile,
+                 profraw_dir):
   """Builds and runs Fuzzilli.
 
      Bypasses the 'swift run' wrapper to ensure signals are handled correctly.
@@ -189,7 +198,8 @@ def _RunFuzzilli(pg_handler, fuzzilli_dir, build_out_dir, minutes, profraw_dir):
     fuzzilli_executable = os.path.join(fuzzilli_dir,
                                        '.build/release/FuzzilliCli')
     run_command = [
-        fuzzilli_executable, *DEFAULT_FUZZILLI_FLAGS, temp_wrapper.name
+        fuzzilli_executable, *DEFAULT_FUZZILLI_FLAGS, f'--profile={profile}',
+        temp_wrapper.name
     ]
 
     # Use a process group, as this command will create many child processes that
@@ -261,7 +271,7 @@ def Main():
     print(f'Using {profraw_path} for profraw files.')
 
     if not _RunFuzzilli(pg_handler, args.fuzzilli_dir, args.build_out_dir,
-                        args.minutes, profraw_path):
+                        args.minutes, args.profile, profraw_path):
       sys.exit('Error: Fuzzilli failed to build or run.')
 
     if not _GenerateCoverageReport(args.build_out_dir, args.report_out_dir,

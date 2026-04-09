@@ -19,6 +19,7 @@ TEST_BUILD_OUT_DIR = '/fake/out/Fuzzilli'
 TEST_REPORT_OUT_DIR = '/fake/out/report'
 TEST_MINUTES = 2
 TEST_SECONDS = 120
+TEST_PROFILE = "fakeProfile"
 TEST_PROFRAW_DIR = '/tmp/fake_profraw_dir'
 
 
@@ -37,7 +38,7 @@ class MeasureFuzzilliCoverageTest(unittest.TestCase):
     success = measure_fuzzilli_coverage._RunFuzzilli(mock_pg_handler,
                                                      TEST_FUZZILLI_DIR,
                                                      TEST_BUILD_OUT_DIR,
-                                                     TEST_MINUTES,
+                                                     TEST_MINUTES, TEST_PROFILE,
                                                      TEST_PROFRAW_DIR)
 
     self.assertTrue(success)
@@ -49,9 +50,9 @@ class MeasureFuzzilliCoverageTest(unittest.TestCase):
                                 cwd=TEST_FUZZILLI_DIR)
 
     expected_run_command_prefix = [
-        os.path.join(TEST_FUZZILLI_DIR,
-                     '.build/release/FuzzilliCli'), '--profile=chromiumMojo',
-        '--storagePath=/tmp/fuzzilli_storage', '--overwrite', '--engine=hybrid'
+        os.path.join(TEST_FUZZILLI_DIR, '.build/release/FuzzilliCli'),
+        '--storagePath=/tmp/fuzzilli_storage', '--overwrite', '--engine=hybrid',
+        '--profile=fakeProfile'
     ]
 
     self.assertTrue(mock_popen.called)
@@ -79,7 +80,7 @@ class MeasureFuzzilliCoverageTest(unittest.TestCase):
     success = measure_fuzzilli_coverage._RunFuzzilli(mock_pg_handler,
                                                      TEST_FUZZILLI_DIR,
                                                      TEST_BUILD_OUT_DIR,
-                                                     TEST_MINUTES,
+                                                     TEST_MINUTES, TEST_PROFILE,
                                                      TEST_PROFRAW_DIR)
 
     self.assertFalse(success)
@@ -103,7 +104,7 @@ class MeasureFuzzilliCoverageTest(unittest.TestCase):
     success = measure_fuzzilli_coverage._RunFuzzilli(mock_pg_handler,
                                                      TEST_FUZZILLI_DIR,
                                                      TEST_BUILD_OUT_DIR,
-                                                     TEST_MINUTES,
+                                                     TEST_MINUTES, TEST_PROFILE,
                                                      TEST_PROFRAW_DIR)
 
     self.assertFalse(success)
