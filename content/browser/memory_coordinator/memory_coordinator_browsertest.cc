@@ -123,17 +123,19 @@ IN_PROC_BROWSER_TEST_F(MemoryCoordinatorBrowserTest, ChildProcessRegistration) {
   MemoryCoordinatorPolicyRegistration registration(manager, policy);
 
   // 1. Register two consumers with different traits in the renderer process.
-  base::MemoryConsumerTraits traits_a = {
-      .estimated_memory_usage =
-          base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-      .release_gc_references =
-          base::MemoryConsumerTraits::ReleaseGCReferences::kYes};
+  base::MemoryConsumerTraits traits_a(
+      base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
+      base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+      base::MemoryConsumerTraits::InformationRetention::kLossless,
+      base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+      base::MemoryConsumerTraits::ReleaseGCReferences::kYes);
 
-  base::MemoryConsumerTraits traits_b = {
-      .estimated_memory_usage =
-          base::MemoryConsumerTraits::EstimatedMemoryUsage::kLarge,
-      .release_gc_references =
-          base::MemoryConsumerTraits::ReleaseGCReferences::kYes};
+  base::MemoryConsumerTraits traits_b(
+      base::MemoryConsumerTraits::EstimatedMemoryUsage::kLarge,
+      base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+      base::MemoryConsumerTraits::InformationRetention::kLossless,
+      base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+      base::MemoryConsumerTraits::ReleaseGCReferences::kYes);
 
   std::unique_ptr<ChildConsumerClient> consumer_a =
       RegisterChildConsumer("ConsumerA", traits_a);

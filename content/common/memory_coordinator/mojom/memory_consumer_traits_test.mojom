@@ -9,7 +9,6 @@ import "content/common/memory_coordinator/mojom/memory_coordinator.mojom";
 // Interface to test the serialization of base::MemoryConsumerTraits.
 interface MemoryConsumerTraitsTest {
   // Echoes back the input.
-  [Sync]
   EchoMemoryConsumerTraits(MemoryConsumerTraits in)
       => (MemoryConsumerTraits out);
 };

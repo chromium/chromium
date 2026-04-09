@@ -32,12 +32,11 @@ using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Test;
 
-constexpr base::MemoryConsumerTraits kTestTraits1{
-    .estimated_memory_usage =
-        base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-    .release_memory_cost = base::MemoryConsumerTraits::ReleaseMemoryCost::
-        kFreesPagesWithoutTraversal,
-    .execution_type = base::MemoryConsumerTraits::ExecutionType::kSynchronous};
+constexpr base::MemoryConsumerTraits kTestTraits1(
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
+    base::MemoryConsumerTraits::ReleaseMemoryCost::kFreesPagesWithoutTraversal,
+    base::MemoryConsumerTraits::InformationRetention::kLossy,
+    base::MemoryConsumerTraits::ExecutionType::kSynchronous);
 
 class MockPolicy : public MemoryCoordinatorPolicy {
  public:
@@ -325,12 +324,19 @@ TEST_F(MemoryCoordinatorPolicyManagerTest, UpdateConsumers_Filter) {
   policy_manager().AddMemoryConsumerGroupHost(kChildId1, &host1);
   policy_manager().AddMemoryConsumerGroupHost(kChildId2, &host2);
 
-  const base::MemoryConsumerTraits kTraits1{
-      .supports_memory_limit =
-          base::MemoryConsumerTraits::SupportsMemoryLimit::kYes};
-  const base::MemoryConsumerTraits kTraits2{
-      .supports_memory_limit =
-          base::MemoryConsumerTraits::SupportsMemoryLimit::kNo};
+  // 2 test traits that differ by their SupportsMemoryLimit value.
+  const base::MemoryConsumerTraits kTraits1(
+      base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
+      base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+      base::MemoryConsumerTraits::InformationRetention::kLossy,
+      base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+      base::MemoryConsumerTraits::SupportsMemoryLimit::kYes);
+  const base::MemoryConsumerTraits kTraits2(
+      base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
+      base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+      base::MemoryConsumerTraits::InformationRetention::kLossy,
+      base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+      base::MemoryConsumerTraits::SupportsMemoryLimit::kNo);
 
   policy_manager().OnConsumerGroupAdded(kConsumerId1, kConsumerName1, kTraits1,
                                         PROCESS_TYPE_RENDERER, kChildId1);

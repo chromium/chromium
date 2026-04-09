@@ -51,25 +51,12 @@ namespace blink {
 namespace {
 
 // The set of traits that describes the behavior of MemoryCache.
-constexpr base::MemoryConsumerTraits kMemoryCacheTraits = {
-    .estimated_memory_usage =
-        base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
-    .release_memory_cost =
-        base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
-    .information_retention =
-        base::MemoryConsumerTraits::InformationRetention::kLossless,
-    .execution_type = base::MemoryConsumerTraits::ExecutionType::kAsynchronous,
-    .supports_memory_limit =
-        base::MemoryConsumerTraits::SupportsMemoryLimit::kYes,
-    .in_process = base::MemoryConsumerTraits::InProcess::kYes,
-    .recreate_memory_cost = base::MemoryConsumerTraits::RecreateMemoryCost::kNA,
-    .memory_release_behavior =
-        base::MemoryConsumerTraits::MemoryReleaseBehavior::kIdempotent,
-    .release_gc_references =
-        base::MemoryConsumerTraits::ReleaseGCReferences::kYes,
-    .garbage_collects_v8_heap =
-        base::MemoryConsumerTraits::GarbageCollectsV8Heap::kNo,
-};
+constexpr base::MemoryConsumerTraits kMemoryCacheTraits(
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
+    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    base::MemoryConsumerTraits::InformationRetention::kLossless,
+    base::MemoryConsumerTraits::ExecutionType::kAsynchronous,
+    base::MemoryConsumerTraits::ReleaseGCReferences::kYes);
 
 // Use function-local statics to cache the feature parameters. This avoids
 // global constructors and ensures the .Get() call happens only once.

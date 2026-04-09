@@ -27,6 +27,7 @@ mojom_component("mojom") {
           mojom = "content.mojom.MemoryConsumerTraits"
           cpp = "::base::MemoryConsumerTraits"
           copyable_pass_by_value = true
+          default_constructible = false
         },
       ]
 

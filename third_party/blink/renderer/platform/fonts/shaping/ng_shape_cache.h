@@ -187,26 +187,14 @@ class NGShapeCache : public GarbageCollected<NGShapeCache>,
   typedef HeapHashMap<ShapeCacheKey, Member<const ShapeResult>> StrongMap;
 
   static constexpr char kConsumerId[] = "NGShapeCache";
-  static constexpr base::MemoryConsumerTraits kNGShapeCacheTraits = {
-      .estimated_memory_usage =
-          base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-      .release_memory_cost =
-          base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
-      .information_retention =
-          base::MemoryConsumerTraits::InformationRetention::kLossless,
-      .execution_type = base::MemoryConsumerTraits::ExecutionType::kSynchronous,
-      .supports_memory_limit =
-          base::MemoryConsumerTraits::SupportsMemoryLimit::kNo,
-      .in_process = base::MemoryConsumerTraits::InProcess::kYes,
-      .recreate_memory_cost =
-          base::MemoryConsumerTraits::RecreateMemoryCost::kCheap,
-      .memory_release_behavior =
-          base::MemoryConsumerTraits::MemoryReleaseBehavior::kIdempotent,
-      .release_gc_references =
-          base::MemoryConsumerTraits::ReleaseGCReferences::kYes,
-      .garbage_collects_v8_heap =
-          base::MemoryConsumerTraits::GarbageCollectsV8Heap::kNo,
-  };
+  static constexpr base::MemoryConsumerTraits kNGShapeCacheTraits{
+      base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
+      base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+      base::MemoryConsumerTraits::InformationRetention::kLossless,
+      base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+      base::MemoryConsumerTraits::SupportsMemoryLimit::kNo,
+      base::MemoryConsumerTraits::RecreateMemoryCost::kCheap,
+      base::MemoryConsumerTraits::ReleaseGCReferences::kYes};
 
   template <typename StringMap, typename ShapeResultFunc>
   const ShapeResult* GetOrCreateImpl(StringMap& map,

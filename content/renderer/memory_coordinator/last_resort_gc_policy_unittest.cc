@@ -21,6 +21,24 @@ using ::testing::InSequence;
 using ::testing::Mock;
 using ::testing::Test;
 
+namespace {
+
+constexpr base::MemoryConsumerTraits kTraitsWithReleaseGC(
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
+    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    base::MemoryConsumerTraits::InformationRetention::kLossy,
+    base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+    base::MemoryConsumerTraits::ReleaseGCReferences::kYes);
+
+constexpr base::MemoryConsumerTraits kTraitsWithoutReleaseGC(
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
+    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    base::MemoryConsumerTraits::InformationRetention::kLossy,
+    base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+    base::MemoryConsumerTraits::ReleaseGCReferences::kNo);
+
+}  // namespace
+
 class LastResortGCPolicyTest : public Test {
  protected:
   LastResortGCPolicyTest() = default;
@@ -40,9 +58,8 @@ TEST_F(LastResortGCPolicyTest, Enabled_NoTrait) {
   LastResortGCPolicy policy{coordinator};
 
   // Create the consumer with the `ReleaseGCReferences::kNo` trait.
-  base::RegisteredMockMemoryConsumer consumer(
-      "Consumer", {.release_gc_references =
-                       base::MemoryConsumerTraits::ReleaseGCReferences::kNo});
+  base::RegisteredMockMemoryConsumer consumer("Consumer",
+                                              kTraitsWithoutReleaseGC);
 
   // Does not get notified.
   EXPECT_CALL(consumer, OnUpdateMemoryLimit()).Times(0);
@@ -56,9 +73,7 @@ TEST_F(LastResortGCPolicyTest, Enabled_NoTimer) {
   LastResortGCPolicy policy{coordinator};
 
   // Create the consumer with the `ReleaseGCReferences::kYes` trait.
-  base::RegisteredMockMemoryConsumer consumer(
-      "Consumer", {.release_gc_references =
-                       base::MemoryConsumerTraits::ReleaseGCReferences::kYes});
+  base::RegisteredMockMemoryConsumer consumer("Consumer", kTraitsWithReleaseGC);
 
   InSequence s;
 
@@ -88,9 +103,7 @@ TEST_F(LastResortGCPolicyTest, Enabled_Timer) {
   LastResortGCPolicy policy{coordinator};
 
   // Create the consumer with the `ReleaseGCReferences::kYes` trait.
-  base::RegisteredMockMemoryConsumer consumer(
-      "Consumer", {.release_gc_references =
-                       base::MemoryConsumerTraits::ReleaseGCReferences::kYes});
+  base::RegisteredMockMemoryConsumer consumer("Consumer", kTraitsWithReleaseGC);
 
   InSequence s;
 
@@ -138,11 +151,7 @@ TEST_F(LastResortGCPolicyTest, Persistence) {
   });
 
   base::MemoryConsumerRegistration registration(
-      "Consumer",
-      base::MemoryConsumerTraits{
-          .release_gc_references =
-              base::MemoryConsumerTraits::ReleaseGCReferences::kYes},
-      &consumer);
+      "Consumer", kTraitsWithReleaseGC, &consumer);
 }
 
 }  // namespace content

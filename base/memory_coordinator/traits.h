@@ -1,4 +1,4 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,33 @@
 
 #include <stdint.h>
 
+#include <concepts>
+
+#include "base/base_export.h"
+#include "base/traits_bag.h"
+
+namespace mojo {
+struct DefaultConstruct;
+}
+
 namespace base {
 
+namespace internal {
+
+// Helper to make getting an enum from a trait with a default defined in the
+// enum more readable.
+template <typename Enum, typename... Args>
+constexpr Enum GetTraitOrDefault(Args... args) {
+  return trait_helpers::GetEnum<Enum, Enum::kDefaultValue>(args...);
+}
+
+}  // namespace internal
+
 // Describes how a MemoryConsumer works using a set of enum values.
-struct MemoryConsumerTraits {
+struct BASE_EXPORT MemoryConsumerTraits {
+  // ---- Required Traits ------------------------------------------------------
+  // These traits must be set explicitly. There are no default values.
+
   // The approximate scale of how much memory the consumer can manage.
   enum class EstimatedMemoryUsage : uint8_t {
     // Under 10 MBs.
@@ -59,12 +82,17 @@ struct MemoryConsumerTraits {
     kMaxValue = kAsynchronous,
   };
 
+  // ---- Optional Traits ------------------------------------------------------
+  // If not specified, the constructor's template machinery will use the
+  // `kDefaultValue` defined in each enum.
+
   // Indicates if this MemoryConsumer supports the concept of a memory limit.
   enum class SupportsMemoryLimit : uint8_t {
     kYes,
     kNo,
 
     kMaxValue = kNo,
+    kDefaultValue = kYes,
   };
 
   // Indicates if the memory freed happens inside the process where the consumer
@@ -75,6 +103,7 @@ struct MemoryConsumerTraits {
     kNo,
 
     kMaxValue = kNo,
+    kDefaultValue = kYes,
   };
 
   // Indicates if recreating the memory is possible, and if so, if is it
@@ -88,6 +117,7 @@ struct MemoryConsumerTraits {
     kExpensive,
 
     kMaxValue = kExpensive,
+    kDefaultValue = kNA,
   };
 
   enum class MemoryReleaseBehavior : uint8_t {
@@ -99,6 +129,7 @@ struct MemoryConsumerTraits {
     kIdempotent,
 
     kMaxValue = kIdempotent,
+    kDefaultValue = kIdempotent,
   };
 
   // Indicates if this consumer manages references to the v8 heap. In this case,
@@ -108,6 +139,7 @@ struct MemoryConsumerTraits {
     kNo,
 
     kMaxValue = kNo,
+    kDefaultValue = kNo,
   };
 
   // Trait for the v8 garbage collector.
@@ -116,6 +148,7 @@ struct MemoryConsumerTraits {
     kNo,
 
     kMaxValue = kNo,
+    kDefaultValue = kNo,
   };
 
   // Indicates if the consumer is stateful. Stateful consumers (kYes) are
@@ -138,7 +171,86 @@ struct MemoryConsumerTraits {
     kNo,
 
     kMaxValue = kNo,
+    kDefaultValue = kYes,
   };
+
+  // ---- End of traits --------------------------------------------------------
+
+  using RequiredTraitsList = base::ParameterPack<EstimatedMemoryUsage,
+                                                 ReleaseMemoryCost,
+                                                 InformationRetention,
+                                                 ExecutionType>;
+
+  using OptionalTraitsList = base::ParameterPack<SupportsMemoryLimit,
+                                                 InProcess,
+                                                 RecreateMemoryCost,
+                                                 MemoryReleaseBehavior,
+                                                 ReleaseGCReferences,
+                                                 GarbageCollectsV8Heap,
+                                                 IsStateful>;
+
+  using AllTraitsList =
+      base::ConcatParameterPacks<RequiredTraitsList, OptionalTraitsList>;
+
+  // Constructs a MemoryConsumerTraits with the specified required traits and
+  // zero or more optional traits. Uses the default value for optional traits
+  // that are not specified.
+  //
+  // Examples:
+  //   // Only required traits:
+  //   constexpr base::MemoryConsumerTraits traits(
+  //       base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
+  //       base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+  //       base::MemoryConsumerTraits::InformationRetention::kLossy,
+  //       base::MemoryConsumerTraits::ExecutionType::kSynchronous);
+  //
+  //   // Required + some optional traits:
+  //   constexpr base::MemoryConsumerTraits traits(
+  //       base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
+  //       base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+  //       base::MemoryConsumerTraits::InformationRetention::kLossless,
+  //       base::MemoryConsumerTraits::ExecutionType::kAsynchronous,
+  //       base::MemoryConsumerTraits::InProcess::kNo,
+  //       base::MemoryConsumerTraits::IsStateful::kNo);
+  //
+  template <typename... Args>
+    requires trait_helpers::AreValidTraits<OptionalTraitsList, Args...>
+  constexpr MemoryConsumerTraits(EstimatedMemoryUsage estimated_memory_usage,
+                                 ReleaseMemoryCost release_memory_cost,
+                                 InformationRetention information_retention,
+                                 ExecutionType execution_type,
+                                 Args... args)
+      : estimated_memory_usage(estimated_memory_usage),
+        release_memory_cost(release_memory_cost),
+        information_retention(information_retention),
+        execution_type(execution_type),
+        supports_memory_limit(
+            internal::GetTraitOrDefault<SupportsMemoryLimit>(args...)),
+        in_process(internal::GetTraitOrDefault<InProcess>(args...)),
+        recreate_memory_cost(
+            internal::GetTraitOrDefault<RecreateMemoryCost>(args...)),
+        memory_release_behavior(
+            internal::GetTraitOrDefault<MemoryReleaseBehavior>(args...)),
+        release_gc_references(
+            internal::GetTraitOrDefault<ReleaseGCReferences>(args...)),
+        garbage_collects_v8_heap(
+            internal::GetTraitOrDefault<GarbageCollectsV8Heap>(args...)),
+        is_stateful(internal::GetTraitOrDefault<IsStateful>(args...)) {}
+
+  // Mojo-specific constructor used for deserialization.
+  //
+  // This constructor uses a template parameter to accept the
+  // `mojo::DefaultConstruct::Tag` type. This is a workaround for a layering
+  // issue where `base` cannot depend on `mojo`, preventing us from including
+  // the Mojo header that defines this tag. By using a template and a forward
+  // declaration, we can safely reference the tag type without an explicit
+  // dependency.
+  template <typename T = mojo::DefaultConstruct>
+    requires std::same_as<T, mojo::DefaultConstruct>
+  constexpr explicit MemoryConsumerTraits(typename T::Tag) {}
+
+  MemoryConsumerTraits(const MemoryConsumerTraits& other);
+  MemoryConsumerTraits& operator=(const MemoryConsumerTraits& other);
 
   friend bool operator==(const MemoryConsumerTraits& lhs,
                          const MemoryConsumerTraits& rhs) = default;
