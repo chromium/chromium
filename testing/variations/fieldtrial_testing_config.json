@@ -9745,7 +9745,7 @@
             ]
         }
     ],
-    "EncryptedBookmarks": [
+    "EncryptBookmarks": [
         {
             "platforms": [
                 "chromeos",
