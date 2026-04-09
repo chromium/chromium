@@ -103,6 +103,8 @@ bool IsThinkingModel(omnibox::ModelMode model) {
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxContextMenuController,
                                       kDeepResearchIdForTesting);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxContextMenuController,
+                                      kFirstTabMenuItemIdForTesting);
 
 OmniboxContextMenuController::OmniboxContextMenuController(
     OmniboxPopupFileSelector* file_selector,
@@ -215,6 +217,7 @@ void OmniboxContextMenuController::AddRecentTabItems() {
   }
   std::vector<OmniboxContextMenuController::TabInfo> tabs = GetRecentTabs();
 
+  const size_t first_tab_index = menu_model_->GetItemCount();
   for (const auto& tab : tabs) {
     AddItemWithIcon(next_command_id_, tab.title,
                     favicon::GetDefaultFaviconModel());
@@ -222,6 +225,10 @@ void OmniboxContextMenuController::AddRecentTabItems() {
     input_type_for_command_id_[next_command_id_] =
         omnibox::InputType::INPUT_TYPE_BROWSER_TAB;
     next_command_id_ += 1;
+  }
+  if (!tabs.empty()) {
+    menu_model_->SetElementIdentifierAt(first_tab_index,
+                                        kFirstTabMenuItemIdForTesting);
   }
   // Remove header if no tabs to show.
   if (tabs.empty()) {
