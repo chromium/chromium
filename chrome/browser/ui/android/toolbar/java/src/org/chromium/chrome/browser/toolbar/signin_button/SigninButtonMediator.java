@@ -53,6 +53,7 @@ import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
+import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -230,11 +231,9 @@ final class SigninButtonMediator
                                             .build(mContext));
         }
 
-        @Nullable String email = CoreAccountInfo.getEmailFrom(coreAccountInfo);
+        @Nullable CoreAccountId id = CoreAccountInfo.getIdFrom(coreAccountInfo);
         DisplayableProfileData profileData =
-                email == null
-                        ? null
-                        : assumeNonNull(mProfileDataCache).getProfileDataOrDefault(email);
+                id == null ? null : assumeNonNull(mProfileDataCache).getById(id);
         setButton(profileData);
     }
 
