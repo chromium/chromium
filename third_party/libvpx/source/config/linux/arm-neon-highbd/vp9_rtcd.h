@@ -74,12 +74,6 @@ void vp9_fht8x8_c(const int16_t *input, tran_low_t *output, int stride, int tx_t
 void vp9_fht8x8_neon(const int16_t *input, tran_low_t *output, int stride, int tx_type);
 #define vp9_fht8x8 vp9_fht8x8_neon
 
-void vp9_filter_by_weight16x16_c(const uint8_t *src, int src_stride, uint8_t *dst, int dst_stride, int src_weight);
-#define vp9_filter_by_weight16x16 vp9_filter_by_weight16x16_c
-
-void vp9_filter_by_weight8x8_c(const uint8_t *src, int src_stride, uint8_t *dst, int dst_stride, int src_weight);
-#define vp9_filter_by_weight8x8 vp9_filter_by_weight8x8_c
-
 void vp9_fwht4x4_c(const int16_t *input, tran_low_t *output, int stride);
 #define vp9_fwht4x4 vp9_fwht4x4_c
 
@@ -113,15 +107,6 @@ void vp9_highbd_iht4x4_16_add_neon(const tran_low_t *input, uint16_t *dest, int 
 void vp9_highbd_iht8x8_64_add_c(const tran_low_t *input, uint16_t *dest, int stride, int tx_type, int bd);
 void vp9_highbd_iht8x8_64_add_neon(const tran_low_t *input, uint16_t *dest, int stride, int tx_type, int bd);
 #define vp9_highbd_iht8x8_64_add vp9_highbd_iht8x8_64_add_neon
-
-void vp9_highbd_mbpost_proc_across_ip_c(uint16_t *src, int pitch, int rows, int cols, int flimit);
-#define vp9_highbd_mbpost_proc_across_ip vp9_highbd_mbpost_proc_across_ip_c
-
-void vp9_highbd_mbpost_proc_down_c(uint16_t *dst, int pitch, int rows, int cols, int flimit);
-#define vp9_highbd_mbpost_proc_down vp9_highbd_mbpost_proc_down_c
-
-void vp9_highbd_post_proc_down_and_across_c(const uint16_t *src_ptr, uint16_t *dst_ptr, int src_pixels_per_line, int dst_pixels_per_line, int rows, int cols, int flimit);
-#define vp9_highbd_post_proc_down_and_across vp9_highbd_post_proc_down_and_across_c
 
 void vp9_highbd_quantize_fp_c(const tran_low_t *coeff_ptr, intptr_t n_coeffs, const struct macroblock_plane *const mb_plane, tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr, const struct ScanOrder *const scan_order);
 void vp9_highbd_quantize_fp_neon(const tran_low_t *coeff_ptr, intptr_t n_coeffs, const struct macroblock_plane *const mb_plane, tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr, const struct ScanOrder *const scan_order);
