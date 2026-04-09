@@ -219,7 +219,6 @@ class MappableSharedImageVideoFramePool::PoolImpl
   // `frame_resource` and return nullptr.
   scoped_refptr<VideoFrame> BindAndCreateMailboxHardwareFrameResource(
       FrameResource* frame_resource,
-      const gfx::Size& coded_size,
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
       const gfx::ColorSpace& color_space,
@@ -1041,8 +1040,7 @@ void MappableSharedImageVideoFramePool::PoolImpl::OnCopiesDoneOnMediaThread(
   }
 
   scoped_refptr<VideoFrame> frame = BindAndCreateMailboxHardwareFrameResource(
-      frame_resource, CodedSize(video_frame.get(), output_format_),
-      gfx::Rect(video_frame->visible_rect().size()),
+      frame_resource, gfx::Rect(video_frame->visible_rect().size()),
       video_frame->natural_size(), video_frame->ColorSpace(),
       video_frame->timestamp(), video_frame->metadata().allow_overlay);
   if (!frame) {
@@ -1063,7 +1061,6 @@ void MappableSharedImageVideoFramePool::PoolImpl::OnCopiesDoneOnMediaThread(
 scoped_refptr<VideoFrame> MappableSharedImageVideoFramePool::PoolImpl::
     BindAndCreateMailboxHardwareFrameResource(
         FrameResource* frame_resource,
-        const gfx::Size& coded_size,
         const gfx::Rect& visible_rect,
         const gfx::Size& natural_size,
         const gfx::ColorSpace& color_space,
@@ -1148,8 +1145,7 @@ scoped_refptr<VideoFrame> MappableSharedImageVideoFramePool::PoolImpl::
   // Create the VideoFrame backed by native textures.
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
       frame_format, frame_resource->shared_image, sync_token,
-      VideoFrame::ReleaseMailboxCB(), coded_size, visible_rect, natural_size,
-      timestamp);
+      VideoFrame::ReleaseMailboxCB(), visible_rect, natural_size, timestamp);
 
   if (!frame) {
     frame_resource->MarkUnused(tick_clock_->NowTicks());
