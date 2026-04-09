@@ -33,6 +33,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -61,7 +62,8 @@ class GlicInstanceCoordinatorImpl
     : public GlicInstanceCoordinator,
       public GlicInstanceImpl::InstanceCoordinatorDelegate,
       public base::MemoryPressureListener,
-      public GlicInstanceCoordinatorMetrics::DataProvider {
+      public GlicInstanceCoordinatorMetrics::DataProvider,
+      public signin::IdentityManager::Observer {
  public:
   GlicInstanceCoordinatorImpl(const GlicInstanceCoordinatorImpl&) = delete;
   GlicInstanceCoordinatorImpl& operator=(const GlicInstanceCoordinatorImpl&) =
@@ -97,6 +99,10 @@ class GlicInstanceCoordinatorImpl
       size_t limit) override;
   void ContextAccessIndicatorChanged(GlicInstanceImpl& instance,
                                      bool enabled) override;
+
+  // signin::IdentityManager::Observer implementation
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
 
   // GlicInstanceCoordinator and GlicInstanceCoordinatorMetrics::DataProvider
   // implementation
@@ -187,6 +193,7 @@ class GlicInstanceCoordinatorImpl
   GlicInstanceImpl* GetInstanceImplForTab(const tabs::TabInterface* tab) const;
 
  private:
+  void RemoveAllInstances();
   void InvokeInternal(
       std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey,
       tabs::TabInterface* tab,
@@ -284,6 +291,10 @@ class GlicInstanceCoordinatorImpl
   GlicInstanceCoordinatorMetrics metrics_;
 
   std::unique_ptr<GlicTabObserver> tab_observer_;
+
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   base::WeakPtrFactory<GlicInstanceCoordinatorImpl> weak_ptr_factory_{this};
 };

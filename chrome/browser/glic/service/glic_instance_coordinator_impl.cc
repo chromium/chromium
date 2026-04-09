@@ -124,6 +124,9 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
           base::MemoryPressureListenerTag::kGlicKeyedService,
           this),
       metrics_(this) {
+  if (identity_manager) {
+    identity_manager_observation_.Observe(identity_manager);
+  }
   if (base::FeatureList::IsEnabled(features::kGlicDaisyChainNewTabs) ||
       base::FeatureList::IsEnabled(features::kGlicTabRestoration) ||
       base::FeatureList::IsEnabled(features::kGlicDaisyChainViaCoordinator)) {
@@ -183,6 +186,15 @@ void GlicInstanceCoordinatorImpl::OnInstanceVisibilityChanged(
     ComputeContentAccessIndicator();
   }
   metrics_.OnInstanceVisibilityChanged();
+}
+
+void GlicInstanceCoordinatorImpl::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
+      signin::PrimaryAccountChangeEvent::Type::kCleared) {
+    // Close all instances on sign-out.
+    RemoveAllInstances();
+  }
 }
 
 void GlicInstanceCoordinatorImpl::NotifyActiveInstanceChanged() {
@@ -310,6 +322,12 @@ void GlicInstanceCoordinatorImpl::Close(const CloseOptions& options) {
   CloseFloaty(options);
 }
 
+void GlicInstanceCoordinatorImpl::RemoveAllInstances() {
+  while (!instances_.empty()) {
+    RemoveInstance(instances_.begin()->second.get());
+  }
+}
+
 void GlicInstanceCoordinatorImpl::Invoke(tabs::TabInterface* tab,
                                          GlicInvokeOptions options) {
   InvokeInternal(std::nullopt, tab, std::move(options));
@@ -345,7 +363,7 @@ void GlicInstanceCoordinatorImpl::InvokeInternal(
                          }
                          // TODO(crbug.com/483387751): Show default toast here
                          // once implemented.
-                         return (GlicInstanceImpl*)nullptr;
+                         return static_cast<GlicInstanceImpl*>(nullptr);
                        }
                        return GetOrCreateInstanceImplForConversationId(
                            conv_id.conversation_id, conv_id.turn_id);

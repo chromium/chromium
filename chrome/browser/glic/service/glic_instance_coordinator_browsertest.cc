@@ -29,10 +29,12 @@
 #include "chrome/browser/glic/test_support/glic_histogram_tester.h"
 #include "chrome/browser/glic/widget/glic_floating_ui.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -246,6 +248,30 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        ToggleCreatesInstance) {
   ToggleGlicForActiveTab();
   EXPECT_EQ(coordinator().GetInstances().size(), 1u);
+}
+
+// ClearPrimaryAccount is not supported on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_SignOutClosesAllInstances DISABLED_SignOutClosesAllInstances
+#else
+#define MAYBE_SignOutClosesAllInstances SignOutClosesAllInstances
+#endif
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       MAYBE_SignOutClosesAllInstances) {
+  ASSERT_TRUE(OpenGlicForActiveTab());
+  EXPECT_EQ(coordinator().GetInstances().size(), 1u);
+
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(GetProfile());
+  ASSERT_TRUE(identity_manager);
+
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    signin::MakePrimaryAccountAvailable(identity_manager, "test@gmail.com",
+                                        signin::ConsentLevel::kSignin);
+  }
+
+  signin::ClearPrimaryAccount(identity_manager);
+
+  EXPECT_EQ(coordinator().GetInstances().size(), 0u);
 }
 
 // Flaky test. crbug.com/492576266
