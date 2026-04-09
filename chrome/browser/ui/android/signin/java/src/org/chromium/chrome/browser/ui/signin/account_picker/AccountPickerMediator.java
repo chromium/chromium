@@ -97,7 +97,7 @@ class AccountPickerMediator implements AccountsChangeObserver, ProfileDataCache.
         for (CoreAccountInfo account : accounts) {
             PropertyModel model =
                     ExistingAccountRowProperties.createModel(
-                            mProfileDataCache.getProfileDataOrDefault(account.getEmail()),
+                            mProfileDataCache.getById(account.getId()),
                             /* isCurrentlySelected= */ false,
                             () -> mAccountPickerListener.onAccountSelected(account));
             mListModel.add(new MVCListAdapter.ListItem(ItemType.EXISTING_ACCOUNT_ROW, model));
