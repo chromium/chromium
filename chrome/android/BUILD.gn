@@ -2166,6 +2166,15 @@ if (_is_default_toolchain) {
     ]
 
     # More deps for DFMs.
+    if (enable_chrome_android_internal) {
+      deps += [
+        "//chrome/browser/ui/android/app_rating:play_review_aar_for_clank_java",
+      ]
+    } else {
+      deps +=
+          [ "//third_party/android_deps:com_google_android_play_review_java" ]
+    }
+
     if (dfmify_dev_ui) {
       deps += [ "//chrome/android/modules/dev_ui/provider:java" ]
     }
