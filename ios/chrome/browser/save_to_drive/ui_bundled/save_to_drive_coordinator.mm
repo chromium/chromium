@@ -330,7 +330,7 @@
       base::UmaHistogramEnumeration(kSaveToDriveSignInResult,
                                     SaveToDriveSignInResult::kSignInSuccess);
       [_mediator saveWithSelectedIdentity:identity];
-      break;
+      return;
     case SigninCoordinatorResultCanceledByUser:
       base::UmaHistogramEnumeration(kSaveToDriveSignInResult,
                                     SaveToDriveSignInResult::kSignInCanceled);
@@ -345,6 +345,9 @@
                                     SaveToDriveSignInResult::kSignInFailed);
       break;
   }
+  id<SaveToDriveCommands> saveToDriveHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SaveToDriveCommands);
+  [saveToDriveHandler hideSaveToDrive];
 }
 
 @end
