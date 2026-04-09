@@ -169,7 +169,7 @@ ScrollPredictor::GenerateSyntheticScrollUpdate(
     base::TimeDelta frame_interval,
     mojom::blink::GestureDevice gesture_device,
     int modifiers) {
-  if (!should_resample_scroll_events_ &&
+  if (!should_resample_scroll_events_ ||
       !HasPrediction(frame_time, frame_interval)) {
     return nullptr;
   }

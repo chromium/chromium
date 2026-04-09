@@ -179,14 +179,14 @@ TEST_F(ScrollJankV4FrameStageTest, SyntheticFirstGestureScrollUpdate) {
       ScrollJankV4FrameStage::CalculateStages(events_metrics, kResultId);
   EXPECT_THAT(
       stages,
-      ElementsAre(
-          ScrollJankV4FrameStage{ScrollStart{}},
-          ScrollJankV4FrameStage{ScrollUpdates(
-              /* real= */ std::nullopt,
-              Synthetic{
-                  .first_input_begin_frame_ts = MillisecondsTicks(24),
-                  .first_input_trace_id = TraceId(42),
-              })}));
+      ElementsAre(ScrollJankV4FrameStage{ScrollStart{}},
+                  ScrollJankV4FrameStage{ScrollUpdates(
+                      /* real= */ std::nullopt,
+                      Synthetic{
+                          .first_input_begin_frame_ts = MillisecondsTicks(24),
+                          .has_inertial_input = false,
+                          .first_input_trace_id = TraceId(42),
+                      })}));
   EXPECT_EQ(events_metrics[0]->AsScroll()->scroll_jank_v4_result_id(),
             kResultId);
 }
@@ -291,14 +291,37 @@ TEST_F(ScrollJankV4FrameStageTest, SyntheticGestureScrollUpdate) {
            DispatchBeginFrameArgs{.frame_time = MillisecondsTicks(24)}}));
   auto stages =
       ScrollJankV4FrameStage::CalculateStages(events_metrics, kResultId);
-  EXPECT_THAT(
-      stages,
-      ElementsAre(ScrollJankV4FrameStage{ScrollUpdates(
-          /* real= */ std::nullopt,
-          Synthetic{
-              .first_input_begin_frame_ts = MillisecondsTicks(24),
-              .first_input_trace_id = TraceId(42),
-          })}));
+  EXPECT_THAT(stages,
+              ElementsAre(ScrollJankV4FrameStage{ScrollUpdates(
+                  /* real= */ std::nullopt,
+                  Synthetic{
+                      .first_input_begin_frame_ts = MillisecondsTicks(24),
+                      .has_inertial_input = false,
+                      .first_input_trace_id = TraceId(42),
+                  })}));
+  EXPECT_EQ(events_metrics[0]->AsScroll()->scroll_jank_v4_result_id(),
+            kResultId);
+}
+
+TEST_F(ScrollJankV4FrameStageTest, SyntheticInertialGestureScrollUpdate) {
+  EventMetrics::List events_metrics;
+  events_metrics.push_back(metrics_creator_.CreateInertialGestureScrollUpdate(
+      {.timestamp = MillisecondsTicks(16),
+       .delta = 4,
+       .is_synthetic = true,
+       .trace_id = TraceId(42),
+       .dispatch_args =
+           DispatchBeginFrameArgs{.frame_time = MillisecondsTicks(24)}}));
+  auto stages = ScrollJankV4FrameStage::CalculateStages(
+      events_metrics, kResultId, /*skip_non_damaging_events=*/false);
+  EXPECT_THAT(stages,
+              ElementsAre(ScrollJankV4FrameStage{ScrollUpdates(
+                  /* real= */ std::nullopt,
+                  Synthetic{
+                      .first_input_begin_frame_ts = MillisecondsTicks(24),
+                      .has_inertial_input = true,
+                      .first_input_trace_id = TraceId(42),
+                  })}));
   EXPECT_EQ(events_metrics[0]->AsScroll()->scroll_jank_v4_result_id(),
             kResultId);
 }
@@ -664,21 +687,21 @@ TEST_F(ScrollJankV4FrameStageTest, MultipleScrollUpdatesIncludingSynthetic) {
       events_metrics, kResultId, /* skip_non_damaging_events= */ false);
   EXPECT_THAT(
       stages,
-      ElementsAre(
-          ScrollJankV4FrameStage{ScrollStart{}},
-          ScrollJankV4FrameStage{ScrollUpdates(
-              Real{
-                  .first_input_generation_ts = MillisecondsTicks(2),
-                  .last_input_generation_ts = MillisecondsTicks(8),
-                  .has_inertial_input = true,
-                  .abs_total_raw_delta_pixels = 183'000,
-                  .max_abs_inertial_raw_delta_pixels = 128'000,
-                  .first_input_trace_id = TraceId(22),
-              },
-              Synthetic{
-                  .first_input_begin_frame_ts = MillisecondsTicks(24),
-                  .first_input_trace_id = TraceId(44),
-              })}));
+      ElementsAre(ScrollJankV4FrameStage{ScrollStart{}},
+                  ScrollJankV4FrameStage{ScrollUpdates(
+                      Real{
+                          .first_input_generation_ts = MillisecondsTicks(2),
+                          .last_input_generation_ts = MillisecondsTicks(8),
+                          .has_inertial_input = true,
+                          .abs_total_raw_delta_pixels = 183'000,
+                          .max_abs_inertial_raw_delta_pixels = 128'000,
+                          .first_input_trace_id = TraceId(22),
+                      },
+                      Synthetic{
+                          .first_input_begin_frame_ts = MillisecondsTicks(24),
+                          .has_inertial_input = false,
+                          .first_input_trace_id = TraceId(44),
+                      })}));
   for (const auto& event : events_metrics) {
     EXPECT_EQ(event->AsScroll()->scroll_jank_v4_result_id(), kResultId);
   }
@@ -959,6 +982,7 @@ TEST_F(ScrollJankV4FrameStageTest, EmptySyntheticScrollUpdatesToOstream) {
 TEST_F(ScrollJankV4FrameStageTest, NonEmptySyntheticScrollUpdatesToOstream) {
   std::optional<ScrollUpdates::Synthetic> updates = ScrollUpdates::Synthetic{
       .first_input_begin_frame_ts = MillisecondsTicks(42),
+      .has_inertial_input = false,
   };
 
   std::ostringstream out;

@@ -328,6 +328,59 @@ TEST_F(ScrollPredictorTest, ScrollResamplingStatesWithFlingFlag) {
   EXPECT_FALSE(GetResamplingState());
 }
 
+TEST_F(ScrollPredictorTest, ScrollResamplingStatesWithFlingResamplingDisabled) {
+  InitLinearResamplingTest();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kResampleScrollEventsForFling);
+
+  // Send a GSB to enable resampling.
+  SendGestureScrollBegin();
+  EXPECT_TRUE(GetResamplingState());
+
+  const double refresh_rate = 125.0;  // 8ms interval
+  const double interval_ms = 8.0;
+  EXPECT_DOUBLE_EQ(refresh_rate * interval_ms, 1000.0);
+
+  // Send two regular GSUs to establish a prediction.
+  // Events at T=8ms and T=16ms.
+  std::unique_ptr<WebInputEvent> gesture_update =
+      CreateGestureScrollUpdate(0, 10, interval_ms);
+  HandleResampleScrollEvents(gesture_update, interval_ms, refresh_rate);
+
+  gesture_update = CreateGestureScrollUpdate(0, 10, 2 * interval_ms);
+  HandleResampleScrollEvents(gesture_update, 2 * interval_ms, refresh_rate);
+
+  EXPECT_TRUE(GetResamplingState());
+  // Verify prediction is available at T=24ms.
+  EXPECT_TRUE(scroll_predictor_->HasPrediction(
+      WebInputEvent::GetStaticTimeStampForTests() +
+          base::Milliseconds(3 * interval_ms),
+      base::Milliseconds(interval_ms)));
+
+  // Send a GSU with kMomentum at T=24ms.
+  // Since resampling for fling is disabled, should_resample_scroll_events_
+  // should be set to false.
+  gesture_update = CreateGestureScrollUpdate(
+      0, 10, 3 * interval_ms, WebGestureEvent::InertialPhaseState::kMomentum);
+  HandleResampleScrollEvents(gesture_update, 3 * interval_ms, refresh_rate);
+  EXPECT_FALSE(GetResamplingState());
+
+  // At T=32ms, the last real input was at T=24ms. 32-24 = 8ms.
+  // 8ms < 20ms (default kScrollPredictorMaxResampleTime), so HasPrediction()
+  // would be true. However, GenerateSyntheticScrollUpdate should return
+  // nullptr because should_resample_scroll_events_ is false.
+  base::TimeTicks t4 = WebInputEvent::GetStaticTimeStampForTests() +
+                       base::Milliseconds(4 * interval_ms);
+  base::TimeDelta interval = base::Milliseconds(interval_ms);
+
+  EXPECT_TRUE(scroll_predictor_->HasPrediction(t4, interval));
+
+  auto synthetic_event = scroll_predictor_->GenerateSyntheticScrollUpdate(
+      t4, interval, mojom::blink::GestureDevice::kTouchscreen, 0);
+  EXPECT_FALSE(synthetic_event);
+}
+
 TEST_F(ScrollPredictorTest, ResampleGestureScrollEvents) {
   ConfigurePredictorFieldTrialAndInitialize(features::kResamplingScrollEvents,
                                             ::features::kPredictorNameEmpty);

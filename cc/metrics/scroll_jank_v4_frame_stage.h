@@ -164,6 +164,10 @@ struct CC_EXPORT ScrollJankV4FrameStage {
       // update.
       base::TimeTicks first_input_begin_frame_ts;
 
+      // Whether at least one of the scroll updates is a fling
+      // (`EventType::kInertialGestureScrollUpdate`).
+      bool has_inertial_input = false;
+
       // Trace ID of the first synthetic input in the frame, whose begin frame
       // timestamp is equal to `first_input_begin_frame_ts`.
       std::optional<EventMetrics::TraceId> first_input_trace_id;
@@ -265,6 +269,7 @@ inline std::ostream& operator<<(
     const ScrollJankV4FrameStage::ScrollUpdates::Synthetic& synthetic_updates) {
   return os << "Synthetic{first_input_begin_frame_ts: "
             << synthetic_updates.first_input_begin_frame_ts
+            << ", has_inertial_input: " << synthetic_updates.has_inertial_input
             << ", first_input_trace_id: "
             << synthetic_updates.first_input_trace_id << "}";
 }
