@@ -287,8 +287,6 @@ struct AuthenticatorRequestDialogModel
     // Changing GPM PIN.
     kGPMReauthForPinReset,
     kGPMLockedPin,
-    // ChallengeUrl failure.
-    kErrorFetchingChallenge,
     // OS authentication after selecting a password.
     kPasswordOsAuth,
     // The request is being dispatched to a platform authenticator.

@@ -3524,8 +3524,6 @@ static_library("browser") {
       "webauthn/authenticator_request_scheduler.h",
       "webauthn/cablev2_devices.cc",
       "webauthn/cablev2_devices.h",
-      "webauthn/challenge_url_fetcher.cc",
-      "webauthn/challenge_url_fetcher.h",
       "webauthn/change_pin_controller.cc",
       "webauthn/change_pin_controller.h",
       "webauthn/change_pin_controller_impl.cc",

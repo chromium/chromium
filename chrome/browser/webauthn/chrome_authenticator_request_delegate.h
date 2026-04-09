@@ -174,10 +174,6 @@ class ChromeAuthenticatorRequestDelegate
                                  credential_list) override;
   void SetUserEntityForMakeCredentialRequest(
       const device::PublicKeyCredentialUserEntity& user_entity) override;
-  void ProvideChallengeUrl(
-      const GURL& url,
-      base::OnceCallback<void(std::optional<base::span<const uint8_t>>)>
-          callback) override;
 
   // device::FidoRequestHandlerBase::Observer:
   void StartObserving(device::FidoRequestHandlerBase* request_handler) override;

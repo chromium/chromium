@@ -360,12 +360,6 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
       blink::mojom::PaymentOptionsPtr payment_options,
       blink::mojom::Authenticator::GetCredentialCallback callback);
 
-  void UpdateChallengeFromUrl(
-      webauthn::ClientDataJsonParams params,
-      blink::mojom::PaymentOptionsPtr payment_options,
-      std::string payment_rp,
-      std::optional<base::span<const uint8_t>> challenge);
-
   // Get an identifier for the current request. Callbacks that might span a
   // cancelation must hold one of these values to check whether they're still
   // pertinent when called.

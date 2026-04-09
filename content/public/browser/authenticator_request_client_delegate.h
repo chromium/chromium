@@ -103,8 +103,6 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
     // At the time of writing the only way to trigger this is to cancel the
     // Windows Hello user verification dialog.
     kEnclaveCancel,
-    // The request included a challenge URL but fetching the challenge failed.
-    kChallengeUrlFailure,
   };
 
   // RequestSource enumerates the source of a request, which is either the Web
@@ -276,14 +274,6 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   // The discoveries' `transport()` must be `FidoTransportProtocol::kInternal`.
   virtual std::vector<std::unique_ptr<device::FidoDiscoveryBase>>
   CreatePlatformDiscoveries();
-
-  // Provides a URL from which the challenge for an assertion request may
-  // be retrieved. The callback is invoked once the challenge is received or
-  // an error is encountered. In the case of an error it passes nullopt.
-  virtual void ProvideChallengeUrl(
-      const GURL& url,
-      base::OnceCallback<void(std::optional<base::span<const uint8_t>>)>
-          callback);
 
   // device::FidoRequestHandlerBase::Observer:
   void StartObserving(device::FidoRequestHandlerBase* request_handler) override;

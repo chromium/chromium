@@ -1496,16 +1496,6 @@ void AuthenticatorCommonImpl::GetCredential(
     BeginRequestTimeout(public_key_options->timeout);
   }
 
-  if (public_key_options->challenge.has_value() ==
-      public_key_options->challenge_url.has_value()) {
-    mojo::ReportBadMessage(
-        "Exactly one of challenge and challenge_url must be provided");
-    req_state_->request_outcome = GetAssertionOutcome::kOtherFailure;
-    CompleteGetAssertionRequest(
-        blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
-    return;
-  }
-
   if (options->mediation == Mediation::IMMEDIATE &&
       !public_key_options->allow_credentials.empty()) {
     mojo::ReportBadMessage(
@@ -1528,15 +1518,6 @@ void AuthenticatorCommonImpl::GetCredential(
   }
 
   req_state_->mediation_ = options->mediation;
-
-  if (public_key_options->challenge_url.has_value() &&
-      !public_key_options->challenge_url->is_valid()) {
-    mojo::ReportBadMessage("challenge_url must contain a valid URL");
-    req_state_->request_outcome = GetAssertionOutcome::kOtherFailure;
-    CompleteGetAssertionRequest(
-        blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
-    return;
-  }
 
   WebAuthRequestSecurityChecker::RequestType request_type =
       payment_options.is_null()
@@ -1839,19 +1820,9 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
              ->same_origin_with_ancestors;
   }
 
-  if (public_key_options->challenge.has_value()) {
-    req_state_->client_data_json = BuildClientDataJsonWithPayment(
-        std::move(client_data_json_params), std::move(payment_options),
-        req_state_->relying_party_id);
-  } else {
-    std::string payment_rp = req_state_->relying_party_id;
-    req_state_->request_delegate->ProvideChallengeUrl(
-        *public_key_options->challenge_url,
-        base::BindOnce(&AuthenticatorCommonImpl::UpdateChallengeFromUrl,
-                       weak_factory_.GetWeakPtr(),
-                       std::move(client_data_json_params),
-                       std::move(payment_options), std::move(payment_rp)));
-  }
+  req_state_->client_data_json = BuildClientDataJsonWithPayment(
+      std::move(client_data_json_params), std::move(payment_options),
+      req_state_->relying_party_id);
 
   if (options->mediation == Mediation::CONDITIONAL ||
       options->mediation == Mediation::AMBIENT ||
@@ -3336,37 +3307,6 @@ void AuthenticatorCommonImpl::OnGetAssertionProxyResponse(
   }
   CompleteGetAssertionRequest(blink::mojom::AuthenticatorStatus::SUCCESS,
                               std::move(response));
-}
-
-void AuthenticatorCommonImpl::UpdateChallengeFromUrl(
-    webauthn::ClientDataJsonParams params,
-    blink::mojom::PaymentOptionsPtr payment_options,
-    std::string payment_rp,
-    std::optional<base::span<const uint8_t>> challenge) {
-  // ChallengeUrl is only valid for GetAssertion requests.
-  CHECK(std::holds_alternative<device::CtapGetAssertionRequest>(
-      req_state_->ctap_request));
-
-  if (!challenge) {
-    // TODO(https://crbug.com/381219428): This might warrant a more specific
-    // error being returned to the RP. Also this should have its own logging
-    // value when it is no longer a prototype.
-    req_state_->request_outcome = GetAssertionOutcome::kOtherFailure;
-    SignalFailureToRequestDelegate(
-        AuthenticatorRequestClientDelegate::InterestingFailureReason::
-            kChallengeUrlFailure,
-        blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
-    return;
-  }
-
-  params.challenge = base::ToVector(*challenge);
-  req_state_->client_data_json = BuildClientDataJsonWithPayment(
-      std::move(params), std::move(payment_options), payment_rp);
-  std::get<device::CtapGetAssertionRequest>(req_state_->ctap_request)
-      .SetClientDataJson(req_state_->client_data_json);
-  reinterpret_cast<device::GetAssertionRequestHandler*>(
-      req_state_->request_handler.get())
-      ->ProvideClientDataJson(req_state_->client_data_json);
 }
 
 AuthenticatorCommonImpl::RequestKey AuthenticatorCommonImpl::GetRequestKey() {

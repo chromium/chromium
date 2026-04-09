@@ -147,11 +147,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
   // dispatching to the authenticator.
   std::optional<DiscoverableCredentialMetadata> preselected_credential_;
 
-  // A list of Authenticators for which DispatchRequest has been called while
-  // the request is not yet ready. This is emptied and processed on a call to
-  // `RequestReady`.
-  std::vector<base::WeakPtr<FidoAuthenticator>> pending_authenticator_requests_;
-
   SEQUENCE_CHECKER(my_sequence_checker_);
   base::WeakPtrFactory<GetAssertionRequestHandler> weak_factory_{this};
 };

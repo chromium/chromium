@@ -315,7 +315,6 @@ std::ostream& operator<<(std::ostream& os,
       {Step::kGPMTrustThisComputerCreation, "kGPMTrustThisComputerCreation"},
       {Step::kGPMReauthForPinReset, "kGPMReauthForPinReset"},
       {Step::kGPMLockedPin, "kGPMLockedPin"},
-      {Step::kErrorFetchingChallenge, "kErrorFetchingChallenge"},
       {Step::kPasswordOsAuth, "kPasswordAuth"},
       {Step::kPlatformAuthenticator, "kPlatformAuthenticator"},
   });

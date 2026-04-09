@@ -387,11 +387,6 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
           std::make_unique<AuthenticatorGPMLockedPinSheetModel>(dialog_model));
       break;
-    case Step::kErrorFetchingChallenge:
-      sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
-          std::make_unique<AuthenticatorChallengeFetchErrorModel>(
-              dialog_model));
-      break;
     case Step::kNotStarted:
     case Step::kPasskeyAutofill:
     case Step::kPasskeyUpgrade:

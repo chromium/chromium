@@ -369,8 +369,6 @@ bool ChromeAuthenticatorRequestDelegate::DoesBlockRequestOnFailure(
     case InterestingFailureReason::kEnclaveCancel:
       dialog_model_->CancelAuthenticatorRequest();
       break;
-    case InterestingFailureReason::kChallengeUrlFailure:
-      dialog_controller_->OnChallengeUrlFailure();
   }
   return true;
 }
@@ -711,13 +709,6 @@ void ChromeAuthenticatorRequestDelegate::SetCredentialIdFilter(
 void ChromeAuthenticatorRequestDelegate::SetUserEntityForMakeCredentialRequest(
     const device::PublicKeyCredentialUserEntity& user_entity) {
   dialog_model_->user_entity = user_entity;
-}
-
-void ChromeAuthenticatorRequestDelegate::ProvideChallengeUrl(
-    const GURL& url,
-    base::OnceCallback<void(std::optional<base::span<const uint8_t>>)>
-        callback) {
-  dialog_controller_->ProvideChallengeUrl(url, std::move(callback));
 }
 
 void ChromeAuthenticatorRequestDelegate::StartObserving(
