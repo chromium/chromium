@@ -46,15 +46,15 @@ class CONTENT_EXPORT MediaPlayersCallbackAggregator
     : public base::RefCountedThreadSafe<MediaPlayersCallbackAggregator> {
  public:
   // Individual callbacks to ask the renderer for player's video visibility.
-  using VisibilityCb = base::OnceCallback<void(bool)>;
+  using OnDemandRequestVisibilityCb = base::OnceCallback<void(bool)>;
 
   // Aggregate callback. Run once if any player returns `true` for
   // `meets_visibility_threshold`, or at destruction time if no player returns
   // `true` for `meets_visibility_threshold`.
-  using ReportVisibilityCb = base::OnceCallback<void(bool)>;
+  using ReportContinuousVisibilityCb = base::OnceCallback<void(bool)>;
 
   explicit MediaPlayersCallbackAggregator(
-      ReportVisibilityCb report_visibility_cb);
+      ReportContinuousVisibilityCb report_continuous_visibility_cb);
   MediaPlayersCallbackAggregator() = delete;
   MediaPlayersCallbackAggregator(const MediaPlayersCallbackAggregator&) =
       delete;
@@ -62,10 +62,10 @@ class CONTENT_EXPORT MediaPlayersCallbackAggregator
   MediaPlayersCallbackAggregator& operator=(
       const MediaPlayersCallbackAggregator&) = delete;
 
-  // Creates and returns a `VisibilityCb`. The resulting callback holds a strong
-  // reference to the aggregator, therefore it will live until all
-  // `VisibilityCb` s are executed.
-  VisibilityCb CreateVisibilityCallback();
+  // Creates and returns a `OnDemandRequestVisibilityCb`. The resulting callback
+  // holds a strong reference to the aggregator, therefore it will live until
+  // all `OnDemandRequestVisibilityCb` s are executed.
+  OnDemandRequestVisibilityCb CreateVisibilityCallback();
 
  private:
   friend class base::RefCountedThreadSafe<MediaPlayersCallbackAggregator>;
@@ -73,7 +73,7 @@ class CONTENT_EXPORT MediaPlayersCallbackAggregator
 
   void OnGetVisibility(bool meets_visibility_threshold);
 
-  ReportVisibilityCb report_visibility_cb_;
+  ReportContinuousVisibilityCb report_continuous_visibility_cb_;
 };
 
 }  // namespace content

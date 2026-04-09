@@ -436,16 +436,17 @@ void HTMLVideoElement::CreateVisibilityTrackerIfNeeded() {
     return;
   }
 
-  MediaVideoVisibilityTracker::ReportVisibilityCb report_visibility_cb;
+  MediaVideoVisibilityTracker::ReportContinuousVisibilityCb
+      report_continuous_visibility_cb;
   if (autopip_video_heuristics_enabled) {
     // Callback used by |MediaVideoVisibilityTracker| to report whether |this|
     // meets/does not meet the visibility threshold (kVisibilityThreshold).
-    report_visibility_cb = BindRepeating(&HTMLVideoElement::ReportVisibility,
-                                         WrapWeakPersistent(this));
+    report_continuous_visibility_cb = BindRepeating(
+        &HTMLVideoElement::ReportVisibility, WrapWeakPersistent(this));
   }
 
   visibility_tracker_ = MakeGarbageCollected<MediaVideoVisibilityTracker>(
-      *this, kVisibilityThreshold, std::move(report_visibility_cb));
+      *this, kVisibilityThreshold, std::move(report_continuous_visibility_cb));
   UpdateVideoVisibilityTracker();
 }
 

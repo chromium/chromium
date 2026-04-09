@@ -320,11 +320,12 @@ void RecordVideoOcclusionState(
 MediaVideoVisibilityTracker::MediaVideoVisibilityTracker(
     HTMLVideoElement& video,
     const int visibility_threshold,
-    ReportVisibilityCb report_visibility_cb,
+    ReportContinuousVisibilityCb report_continuous_visibility_cb,
     base::TimeDelta hit_test_interval)
     : video_element_(video),
       visibility_threshold_(visibility_threshold),
-      report_visibility_cb_(std::move(report_visibility_cb)),
+      report_continuous_visibility_cb_(
+          std::move(report_continuous_visibility_cb)),
       hit_test_interval_(hit_test_interval) {
   DCHECK_GT(visibility_threshold_, 0)
       << "Invalid threshold: " << visibility_threshold_;
@@ -370,7 +371,21 @@ void MediaVideoVisibilityTracker::Detach() {
   tracker_attached_to_document_ = nullptr;
 }
 
+bool MediaVideoVisibilityTracker::HasActiveVisibilityRequests() const {
+  return report_continuous_visibility_cb_ || on_demand_visibility_cb_ ||
+         on_demand_visibility_ratio_cb_;
+}
+
 void MediaVideoVisibilityTracker::UpdateVisibilityTrackerState() {
+  // If we don't have any active continuous visibility callbacks or pending
+  // one-shot requests, we don't need the tracker. This ensures the tracker
+  // dynamically detaches itself once its one-shot work (like a visibility
+  // ratio report) is completed.
+  if (!HasActiveVisibilityRequests()) {
+    Detach();
+    return;
+  }
+
   const auto& video_element = VideoElement();
 
   // `fullscreen_element` is used to determine if any element within the
@@ -449,23 +464,24 @@ void MediaVideoVisibilityTracker::MaybeRemoveFullscreenEventListeners() {
 }
 
 void MediaVideoVisibilityTracker::RequestVisibility(
-    RequestVisibilityCallback request_visibility_callback) {
+    OnDemandRequestVisibilityCb request_visibility_callback) {
   // Latest requests take precedence over old ones. Therefore, if we had a
   // pending request, we simply run the current callback with `false` and store
   // the new one.
-  if (request_visibility_callback_) {
-    std::move(request_visibility_callback_).Run(false);
+  if (on_demand_visibility_cb_) {
+    std::move(on_demand_visibility_cb_).Run(false);
   }
 
-  request_visibility_callback_ = std::move(request_visibility_callback);
+  on_demand_visibility_cb_ = std::move(request_visibility_callback);
+  Attach();
   MaybeComputeVisibility(ShouldReportVisibility::kNo);
 }
 
 void MediaVideoVisibilityTracker::RequestVisibilityRatio(
-    RequestVisibilityRatioCallback callback) {
-  request_visibility_ratio_callback_ = std::move(callback);
-  ratio_requested_ = true;
+    OnDemandRequestVisibilityRatioCb callback) {
+  on_demand_visibility_ratio_cb_ = std::move(callback);
   Attach();
+  MaybeComputeVisibilityRatio();
 }
 
 const MediaVideoVisibilityTracker::ClientIdsSet
@@ -766,10 +782,10 @@ void MediaVideoVisibilityTracker::ComputeAreaOccludedByViewport(
 void MediaVideoVisibilityTracker::MaybeComputeVisibility(
     ShouldReportVisibility should_report_visibility) {
   if (!HasValidFrameAndLayout()) {
-    if (request_visibility_callback_) {
+    if (on_demand_visibility_cb_) {
       RecordVideoOcclusionState(VideoElement(), occlusion_state_, false,
                                 visibility_threshold_);
-      std::move(request_visibility_callback_).Run(false);
+      std::move(on_demand_visibility_cb_).Run(false);
     }
     return;
   }
@@ -777,11 +793,11 @@ void MediaVideoVisibilityTracker::MaybeComputeVisibility(
   if (!IsPaintClean()) {
     // If we have a pending visibility request, run it now with the cached
     // `meets_visibility_threshold_` value.
-    if (request_visibility_callback_) {
+    if (on_demand_visibility_cb_) {
       RecordVideoOcclusionState(VideoElement(), occlusion_state_,
                                 meets_visibility_threshold_,
                                 visibility_threshold_);
-      std::move(request_visibility_callback_).Run(meets_visibility_threshold_);
+      std::move(on_demand_visibility_cb_).Run(meets_visibility_threshold_);
     }
     return;
   }
@@ -791,32 +807,30 @@ void MediaVideoVisibilityTracker::MaybeComputeVisibility(
 
   meets_visibility_threshold_ = ComputeVisibility();
   if (should_report_visibility == ShouldReportVisibility::kYes) {
-    if (report_visibility_cb_) {
-      report_visibility_cb_.Run(meets_visibility_threshold_);
+    if (report_continuous_visibility_cb_) {
+      report_continuous_visibility_cb_.Run(meets_visibility_threshold_);
     }
   }
-  if (request_visibility_callback_) {
+  if (on_demand_visibility_cb_) {
     RecordVideoOcclusionState(VideoElement(), occlusion_state_,
                               meets_visibility_threshold_,
                               visibility_threshold_);
-    std::move(request_visibility_callback_).Run(meets_visibility_threshold_);
+    std::move(on_demand_visibility_cb_).Run(meets_visibility_threshold_);
   }
 }
 
 void MediaVideoVisibilityTracker::MaybeComputeVisibilityRatio() {
-  DCHECK(ratio_requested_);
-  DCHECK(HasValidFrameAndLayout());
-  DCHECK(IsPaintClean());
+  if (!on_demand_visibility_ratio_cb_ || !HasValidFrameAndLayout() ||
+      !IsPaintClean()) {
+    return;
+  }
 
   last_visibility_ratio_ = ComputeVisibilityRatio();
-  if (request_visibility_ratio_callback_) {
-    std::move(request_visibility_ratio_callback_).Run(last_visibility_ratio_);
-  }
-  ratio_requested_ = false;
+  std::move(on_demand_visibility_ratio_cb_).Run(last_visibility_ratio_);
 
   // Detach if no continuous reporting is needed, and we don't have a pending
   // visibility request.
-  if (!report_visibility_cb_ && !request_visibility_callback_) {
+  if (!HasActiveVisibilityRequests()) {
     Detach();
   }
 }
@@ -825,7 +839,7 @@ void MediaVideoVisibilityTracker::DidFinishLifecycleUpdate(
     const LocalFrameView& local_frame_view) {
   const auto now = base::TimeTicks::Now();
   if ((now - last_hit_test_timestamp_ < hit_test_interval_) &&
-      !request_visibility_callback_ && !ratio_requested_) {
+      !on_demand_visibility_cb_ && !on_demand_visibility_ratio_cb_) {
     return;
   }
 
@@ -833,17 +847,17 @@ void MediaVideoVisibilityTracker::DidFinishLifecycleUpdate(
     return;
   }
 
-  if (ratio_requested_ && HasValidFrameAndLayout() && IsPaintClean()) {
-    MaybeComputeVisibilityRatio();
-    if (!tracker_attached_to_document_) {
-      return;
-    }
+  MaybeComputeVisibilityRatio();
+  if (!tracker_attached_to_document_) {
+    // If the ratio request was the only active request, the tracker will have
+    // detached itself during `MaybeComputeVisibilityRatio`.
+    return;
   }
 
   // We need to check if the interval has passed again, as we could have entered
   // this method solely to handle a ratio request.
   if ((now - last_hit_test_timestamp_ >= hit_test_interval_) ||
-      request_visibility_callback_) {
+      on_demand_visibility_cb_) {
     last_hit_test_timestamp_ = now;
     MaybeComputeVisibility(ShouldReportVisibility::kYes);
   }

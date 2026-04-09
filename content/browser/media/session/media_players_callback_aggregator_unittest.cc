@@ -92,7 +92,7 @@ class FakeMediaSession {
 
 class MediaPlayersCallbackAggregatorTest : public testing::Test {
  public:
-  using ReportVisibilityCb = base::OnceCallback<void(bool)>;
+  using ReportContinuousVisibilityCb = base::OnceCallback<void(bool)>;
 
   MediaPlayersCallbackAggregatorTest() = default;
   MediaPlayersCallbackAggregatorTest(
@@ -103,9 +103,9 @@ class MediaPlayersCallbackAggregatorTest : public testing::Test {
       const MediaPlayersCallbackAggregatorTest&) = delete;
 
   scoped_refptr<MediaPlayersCallbackAggregator> CreateAggregator() {
-    // base::Unretained() is safe since `ReportVisibilityCb` will always be
-    // executed at destruction time (if it is not null).
-    ReportVisibilityCb report_visibility_cb =
+    // base::Unretained() is safe since `ReportContinuousVisibilityCb` will
+    // always be executed at destruction time (if it is not null).
+    ReportContinuousVisibilityCb report_visibility_cb =
         base::BindOnce(&MediaPlayersCallbackAggregatorTest::GetVisibility,
                        base::Unretained(this));
     return MakeRefCounted<MediaPlayersCallbackAggregator>(
@@ -149,7 +149,7 @@ TEST_F(MediaPlayersCallbackAggregatorTest, DoesNotCrashWithEmptyPlayers) {
   EXPECT_EQ(0, fake_media_session.TotalPlayersCount());
   EXPECT_EQ(0, fake_media_session.CallbacksExecutedCount());
 
-  // Wait for ReportVisibilityCb to run and verify expectations.
+  // Wait for ReportContinuousVisibilityCb to run and verify expectations.
   WaitUntilReportVisibilityCbRuns();
   EXPECT_TRUE(ReportVisibilityCbExecuted());
   EXPECT_FALSE(MeetsVisibility());
@@ -166,7 +166,7 @@ TEST_F(MediaPlayersCallbackAggregatorTest, MultiplePlayersAllMeetVisibility) {
   EXPECT_EQ(3, fake_media_session.TotalPlayersCount());
   EXPECT_EQ(1, fake_media_session.CallbacksExecutedCount());
 
-  // Wait for ReportVisibilityCb to run and verify expectations.
+  // Wait for ReportContinuousVisibilityCb to run and verify expectations.
   WaitUntilReportVisibilityCbRuns();
   EXPECT_TRUE(ReportVisibilityCbExecuted());
   EXPECT_TRUE(MeetsVisibility());
@@ -184,7 +184,7 @@ TEST_F(MediaPlayersCallbackAggregatorTest,
   EXPECT_EQ(3, fake_media_session.TotalPlayersCount());
   EXPECT_EQ(3, fake_media_session.CallbacksExecutedCount());
 
-  // Wait for ReportVisibilityCb to run and verify expectations.
+  // Wait for ReportContinuousVisibilityCb to run and verify expectations.
   WaitUntilReportVisibilityCbRuns();
   EXPECT_TRUE(ReportVisibilityCbExecuted());
   EXPECT_FALSE(MeetsVisibility());
@@ -202,7 +202,7 @@ TEST_F(MediaPlayersCallbackAggregatorTest, MultiplePlayersSomeMeetVisibility) {
   EXPECT_EQ(5, fake_media_session.TotalPlayersCount());
   EXPECT_EQ(4, fake_media_session.CallbacksExecutedCount());
 
-  // Wait for ReportVisibilityCb to run and verify expectations.
+  // Wait for ReportContinuousVisibilityCb to run and verify expectations.
   WaitUntilReportVisibilityCbRuns();
   EXPECT_TRUE(ReportVisibilityCbExecuted());
   EXPECT_TRUE(MeetsVisibility());
@@ -221,7 +221,7 @@ TEST_F(MediaPlayersCallbackAggregatorTest,
   EXPECT_EQ(5, fake_media_session.TotalPlayersCount());
   EXPECT_EQ(1, fake_media_session.CallbacksExecutedCount());
 
-  // Wait for ReportVisibilityCb to run and verify expectations.
+  // Wait for ReportContinuousVisibilityCb to run and verify expectations.
   WaitUntilReportVisibilityCbRuns();
   EXPECT_TRUE(ReportVisibilityCbExecuted());
   EXPECT_TRUE(MeetsVisibility());

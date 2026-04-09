@@ -7,25 +7,26 @@
 namespace content {
 
 MediaPlayersCallbackAggregator::MediaPlayersCallbackAggregator(
-    ReportVisibilityCb report_visibility_cb)
-    : report_visibility_cb_(std::move(report_visibility_cb)) {}
+    ReportContinuousVisibilityCb report_continuous_visibility_cb)
+    : report_continuous_visibility_cb_(
+          std::move(report_continuous_visibility_cb)) {}
 
 void MediaPlayersCallbackAggregator::OnGetVisibility(
     bool meets_visibility_threshold) {
-  if (meets_visibility_threshold && report_visibility_cb_) {
-    std::move(report_visibility_cb_).Run(true);
+  if (meets_visibility_threshold && report_continuous_visibility_cb_) {
+    std::move(report_continuous_visibility_cb_).Run(true);
   }
 }
 
-MediaPlayersCallbackAggregator::VisibilityCb
+MediaPlayersCallbackAggregator::OnDemandRequestVisibilityCb
 MediaPlayersCallbackAggregator::CreateVisibilityCallback() {
   return base::BindOnce(&MediaPlayersCallbackAggregator::OnGetVisibility,
                         base::RetainedRef(this));
 }
 
 MediaPlayersCallbackAggregator::~MediaPlayersCallbackAggregator() {
-  if (report_visibility_cb_) {
-    std::move(report_visibility_cb_).Run(false);
+  if (report_continuous_visibility_cb_) {
+    std::move(report_continuous_visibility_cb_).Run(false);
   }
 }
 
