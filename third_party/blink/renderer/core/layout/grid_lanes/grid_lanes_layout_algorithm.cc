@@ -379,10 +379,12 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
 
   // To determine the size of the grid axis, add the size of the tracks.
   const LayoutUnit grid_axis_size = track_collection.CalculateSetSpanSize();
-  const LayoutUnit current_intrinsic_block_size =
-      is_for_columns ? stacking_axis_size : grid_axis_size;
-  intrinsic_block_size_ = current_intrinsic_block_size;
-
+  // For column grid-lanes, the block size is the stacking axis size. For row
+  // grid-lanes, `intrinsic_block_size_` is already set in
+  // `ComputeGridLanesGeometry` from the track collection.
+  if (is_for_columns) {
+    intrinsic_block_size_ = stacking_axis_size;
+  }
   // Apply content alignment/justification. This is an additional offset
   // determined by the intrinsic inline or block size of the grid-lanes
   // container, so it must occur after that has been determined. This must also
@@ -394,7 +396,7 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
         is_for_columns ? grid_axis_size : stacking_axis_size;
 
     LayoutUnit align_content_offset = AlignContentOffset(
-        is_for_columns ? current_intrinsic_block_size : intrinsic_inline_size,
+        is_for_columns ? intrinsic_block_size_ : intrinsic_inline_size,
         is_for_columns ? ChildAvailableSize().block_size
                        : ChildAvailableSize().inline_size,
         baseline_accumulator->FirstBaseline().value_or(LayoutUnit()),
@@ -1283,12 +1285,64 @@ GridLayoutSubtree* GridLanesLayoutAlgorithm::ComputeGridLanesGeometry(
                                 &sizing_tree, needs_intrinsic_track_size);
   }
 
-  // TODO(almaher): We will want special logic here for `needs_additional_pass`,
-  // similar to grid.
+  const auto& container_style = Style();
+  const auto grid_axis_direction =
+      container_style.GridLanesTrackSizingDirection();
+
+  const bool applies_auto_min_size =
+      !container_style.AspectRatio().IsAuto() &&
+      container_style.IsOverflowVisibleOrClip() &&
+      container_style.LogicalMinHeight().HasAuto();
+
+  if (grid_axis_direction == kForRows) {
+    auto& track_collection =
+        sizing_tree.LayoutData().SizingCollection(kForRows);
+
+    // For row grid-lanes, capture `intrinsic_block_size_` before any
+    // additional layout pass that may change the track sizes. This preserves
+    // the pre-re-run value so the container height is not affected by the
+    // re-run, matching grid behavior.
+    if (!sizing_tree.GetGridItems().IsEmpty()) {
+      intrinsic_block_size_ = track_collection.CalculateSetSpanSize();
+    }
+
+    if (grid_lanes_available_size_.block_size == kIndefiniteSize ||
+        applies_auto_min_size) {
+      const auto& constraint_space = GetConstraintSpace();
+      LayoutUnit intrinsic_block_size =
+          track_collection.CalculateSetSpanSize() +
+          BorderScrollbarPadding().BlockSum();
+      intrinsic_block_size = ClampIntrinsicBlockSize(
+          constraint_space, Node(), GetBreakToken(), BorderScrollbarPadding(),
+          intrinsic_block_size);
+
+      const auto block_size = ComputeBlockSizeForFragment(
+          constraint_space, Node(), BorderPadding(), intrinsic_block_size,
+          container_builder_.InlineSize());
+
+      grid_lanes_available_size_.block_size =
+          grid_lanes_min_available_size_.block_size =
+              grid_lanes_max_available_size_.block_size =
+                  (block_size - BorderScrollbarPadding().BlockSum())
+                      .ClampNegativeToZero();
+
+      if (NeedsAdditionalLayoutPass(container_style, constraint_space, Node(),
+                                    BorderPadding(), track_collection,
+                                    container_builder_.InlineSize())) {
+        // TODO(yanlingwang): The auto-repeat count is preserved from the first
+        // pass. Recomputing it here would require re-running
+        // `ComputeSizingTreeInGridAxis`, which is expensive and rarely needed,
+        // though we could end up with potentially more allowed repetitions
+        // after percentages are properly resolved.
+        InitializeTrackSizes(&sizing_tree);
+        CompleteTrackSizingAlgorithm(sizing_constraint, &sizing_tree,
+                                     /*needs_intrinsic_track_size=*/false);
+      }
+    }
+  }
 
   CompleteFinalBaselineAlignment(&sizing_tree);
 
-  const auto grid_axis_direction = Style().GridLanesTrackSizingDirection();
   auto& sizing_collection =
       sizing_tree.LayoutData().SizingCollection(grid_axis_direction);
   sizing_tree.LayoutData().SetTrackCollection(
