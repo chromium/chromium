@@ -5,13 +5,19 @@
 #include "third_party/blink/renderer/modules/permissions/permission_status.h"
 
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-shared.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_permission_state.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_permission_name.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/event_target_modules_names.h"
+#include "third_party/blink/renderer/modules/permissions/geolocation_permission_status.h"
 #include "third_party/blink/renderer/modules/permissions/permission_status_listener.h"
+#include "third_party/blink/renderer/modules/permissions/permission_utils.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -19,8 +25,17 @@ namespace blink {
 PermissionStatus* PermissionStatus::Take(PermissionStatusListener* listener,
                                          ScriptPromiseResolverBase* resolver) {
   ExecutionContext* execution_context = resolver->GetExecutionContext();
-  PermissionStatus* permission_status =
-      MakeGarbageCollected<PermissionStatus>(listener, execution_context);
+  PermissionStatus* permission_status;
+  if (RuntimeEnabledFeatures::ApproximateGeolocationPermissionAPIEnabled(
+          execution_context) &&
+      listener->permission_name() ==
+          mojom::blink::PermissionName::GEOLOCATION) {
+    permission_status = MakeGarbageCollected<GeolocationPermissionStatus>(
+        listener, execution_context);
+  } else {
+    permission_status =
+        MakeGarbageCollected<PermissionStatus>(listener, execution_context);
+  }
   permission_status->UpdateStateIfNeeded();
   permission_status->StartListening();
   return permission_status;
@@ -95,7 +110,7 @@ V8PermissionState PermissionStatus::state() const {
 String PermissionStatus::name() const {
   if (!listener_)
     return String();
-  return listener_->name();
+  return PermissionNameToString(listener_->permission_name());
 }
 
 void PermissionStatus::StartListening() {
@@ -110,7 +125,8 @@ void PermissionStatus::StopListening() {
   listener_->RemoveObserver(this);
 }
 
-void PermissionStatus::OnPermissionStatusChange(MojoPermissionStatus status) {
+void PermissionStatus::OnPermissionStatusChange(
+    MojoPermissionStatusWithDetails status) {
   // https://www.w3.org/TR/permissions/#onchange-attribute
   // 1. If this's relevant global object is a Window object, then:
   // - Let document be status's relevant global object's associated Document.

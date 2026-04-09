@@ -2726,6 +2726,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_periodic_sync_manager.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_periodic_wave.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_periodic_wave.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_geolocation_permission_status.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_geolocation_permission_status.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_permission_status.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_permission_status.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_permissions.cc",

@@ -126,19 +126,10 @@ ScriptPromise<PermissionStatus> Permissions::query(
   PermissionDescriptorPtr descriptor_copy = descriptor->Clone();
   GetService(context)->HasPermission(
       std::move(descriptor),
-      // TODO(crbug.com/494089503): Simplify this once all mojo permission
-      // methods return a PermissionStatusWithDetails and let TaskComplete
-      // take a PermissionStatusWithDetails directly.
-      blink::BindOnce(
-          [](Permissions* permissions,
-             ScriptPromiseResolver<PermissionStatus>* resolver,
-             mojom::blink::PermissionDescriptorPtr descriptor,
-             mojom::blink::PermissionStatusWithDetailsPtr result) {
-            permissions->TaskComplete(resolver, std::move(descriptor),
-                                      result->status);
-          },
-          WrapPersistent(this), WrapPersistent(resolver),
-          std::move(descriptor_copy)));
+      blink::BindOnce(&Permissions::TaskComplete,
+
+                      WrapPersistent(this), WrapPersistent(resolver),
+                      std::move(descriptor_copy)));
   return promise;
 }
 
@@ -186,19 +177,9 @@ ScriptPromise<PermissionStatus> Permissions::revoke(
   GetService(ExecutionContext::From(script_state))
       ->RevokePermission(
           std::move(descriptor),
-          // TODO(crbug.com/494089503): Simplify this once all mojo permission
-          // methods return a PermissionStatusWithDetails and let TaskComplete
-          // take a PermissionStatusWithDetails directly.
-          blink::BindOnce(
-              [](Permissions* permissions,
-                 ScriptPromiseResolver<PermissionStatus>* resolver,
-                 mojom::blink::PermissionDescriptorPtr descriptor,
-                 mojom::blink::PermissionStatusWithDetailsPtr result) {
-                permissions->TaskComplete(resolver, std::move(descriptor),
-                                          result->status);
-              },
-              WrapPersistent(this), WrapPersistent(resolver),
-              std::move(descriptor_copy)));
+          blink::BindOnce(&Permissions::TaskComplete, WrapPersistent(this),
+                          WrapPersistent(resolver),
+                          std::move(descriptor_copy)));
   return promise;
 }
 
@@ -284,13 +265,13 @@ void Permissions::ServiceConnectionError() {
 void Permissions::TaskComplete(
     ScriptPromiseResolver<PermissionStatus>* resolver,
     mojom::blink::PermissionDescriptorPtr descriptor,
-    mojom::blink::PermissionStatus result) {
+    mojom::blink::PermissionStatusWithDetailsPtr result) {
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed())
     return;
 
-  PermissionStatusListener* listener =
-      GetOrCreatePermissionStatusListener(result, std::move(descriptor));
+  PermissionStatusListener* listener = GetOrCreatePermissionStatusListener(
+      std::move(result), std::move(descriptor));
   if (listener)
     resolver->Resolve(PermissionStatus::Take(listener, resolver));
 }
@@ -344,26 +325,8 @@ void Permissions::VerifyPermissionsAndReturnStatus(
       auto descriptor_copy = descriptors[internal_index]->Clone();
       service_->HasPermission(
           std::move(descriptor_copy),
-          // TODO(crbug.com/494089503): Simplify this once all mojo permission
-          // methods return a PermissionStatusWithDetails and let
-          // PermissionVerificationComplete take a PermissionStatusWithDetails
-          // directly.
           blink::BindOnce(
-              [](Permissions* permissions, ScriptPromiseResolverBase* resolver,
-                 Vector<mojom::blink::PermissionDescriptorPtr> descriptors,
-                 Vector<int> caller_index_to_internal_index,
-                 Vector<mojom::blink::PermissionStatusWithDetailsPtr> results,
-                 mojom::blink::PermissionDescriptorPtr verification_descriptor,
-                 int internal_index_to_verify, bool is_bulk_request,
-                 mojom::blink::PermissionStatusWithDetailsPtr
-                     verification_result) {
-                permissions->PermissionVerificationComplete(
-                    resolver, std::move(descriptors),
-                    std::move(caller_index_to_internal_index),
-                    std::move(results), std::move(verification_descriptor),
-                    internal_index_to_verify, is_bulk_request,
-                    std::move(verification_result));
-              },
+              &Permissions::PermissionVerificationComplete,
               WrapPersistent(this), WrapPersistent(resolver),
               std::move(descriptors), std::move(caller_index_to_internal_index),
               std::move(results), std::move(verification_descriptor),
@@ -376,7 +339,8 @@ void Permissions::VerifyPermissionsAndReturnStatus(
       last_verified_permission_index = -1;
 
     PermissionStatusListener* listener = GetOrCreatePermissionStatusListener(
-        results[internal_index]->status, descriptors[internal_index]->Clone());
+        std::move(results[internal_index]),
+        descriptors[internal_index]->Clone());
     if (listener) {
       // If it's not a bulk request, return the first (and only) result.
       if (!is_bulk_request) {
@@ -413,18 +377,18 @@ void Permissions::PermissionVerificationComplete(
 }
 
 PermissionStatusListener* Permissions::GetOrCreatePermissionStatusListener(
-    mojom::blink::PermissionStatus status,
+    mojom::blink::PermissionStatusWithDetailsPtr status,
     mojom::blink::PermissionDescriptorPtr descriptor) {
   auto type = GetPermissionType(*descriptor);
   if (!type)
     return nullptr;
 
   if (!listeners_.Contains(*type)) {
-    listeners_.insert(
-        *type, PermissionStatusListener::Create(GetExecutionContext(), status,
-                                                std::move(descriptor)));
+    listeners_.insert(*type, PermissionStatusListener::Create(
+                                 GetExecutionContext(), std::move(status),
+                                 std::move(descriptor)));
   } else {
-    listeners_.at(*type)->SetStatus(status);
+    listeners_.at(*type)->SetStatus(std::move(status));
   }
 
   return listeners_.at(*type);

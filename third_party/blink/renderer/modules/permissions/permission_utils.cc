@@ -8,6 +8,8 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -69,6 +71,17 @@ void ConnectToPermissionService(
 
 V8PermissionState ToV8PermissionState(mojom::blink::PermissionStatus status) {
   return V8PermissionState(ToPermissionStateEnum(status));
+}
+
+V8AccuracyMode ToV8AccuracyMode(
+    mojom::blink::GeolocationAccuracy accuracy_mode) {
+  switch (accuracy_mode) {
+    case mojom::blink::GeolocationAccuracy::kPrecise:
+      return V8AccuracyMode(V8AccuracyMode::Enum::kPrecise);
+    case mojom::blink::GeolocationAccuracy::kApproximate:
+      return V8AccuracyMode(V8AccuracyMode::Enum::kApproximate);
+  }
+  NOTREACHED();
 }
 
 String PermissionNameToString(PermissionName name) {

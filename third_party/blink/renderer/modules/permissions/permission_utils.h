@@ -7,6 +7,7 @@
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_accuracy_mode.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -23,6 +24,9 @@ void ConnectToPermissionService(
     mojo::PendingReceiver<mojom::blink::PermissionService>);
 
 V8PermissionState ToV8PermissionState(mojom::blink::PermissionStatus);
+
+V8AccuracyMode ToV8AccuracyMode(
+    mojom::blink::GeolocationAccuracy accuracy_mode);
 
 String PermissionNameToString(mojom::blink::PermissionName);
 

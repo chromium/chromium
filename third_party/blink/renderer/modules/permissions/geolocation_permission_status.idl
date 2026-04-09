@@ -1,0 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Specification at:
+// https://w3c.github.io/geolocation/
+
+[
+    Exposed=(Window,Worker),
+    RuntimeEnabled=ApproximateGeolocationPermissionAPI
+] interface GeolocationPermissionStatus : PermissionStatus {
+  readonly attribute AccuracyMode? accuracyMode;
+};

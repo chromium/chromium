@@ -6,6 +6,8 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("permissions") {
   sources = [
+    "geolocation_permission_status.cc",
+    "geolocation_permission_status.h",
     "permission_status.cc",
     "permission_status.h",
     "permission_status_listener.cc",

@@ -68,7 +68,7 @@ class Permissions final : public ScriptWrappable,
 
   void TaskComplete(ScriptPromiseResolver<PermissionStatus>* resolver,
                     mojom::blink::PermissionDescriptorPtr descriptor,
-                    mojom::blink::PermissionStatus result);
+                    mojom::blink::PermissionStatusWithDetailsPtr result);
 
   void VerifyPermissionAndReturnStatus(
       ScriptPromiseResolverBase* resolver,
@@ -93,7 +93,7 @@ class Permissions final : public ScriptWrappable,
       mojom::blink::PermissionStatusWithDetailsPtr verification_result);
 
   PermissionStatusListener* GetOrCreatePermissionStatusListener(
-      mojom::blink::PermissionStatus status,
+      mojom::blink::PermissionStatusWithDetailsPtr status,
       mojom::blink::PermissionDescriptorPtr descriptor);
   std::optional<PermissionType> GetPermissionType(
       const mojom::blink::PermissionDescriptor& descriptor);

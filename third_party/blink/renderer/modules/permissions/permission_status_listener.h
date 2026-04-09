@@ -6,7 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PERMISSIONS_PERMISSION_STATUS_LISTENER_H_
 
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/modules/permissions/permission_utils.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -22,24 +24,25 @@ class PermissionStatusListener final
       public ExecutionContextClient,
       public mojom::blink::PermissionObserver {
   using MojoPermissionDescriptor = mojom::blink::PermissionDescriptorPtr;
-  using MojoPermissionStatus = mojom::blink::PermissionStatus;
+  using MojoPermissionStatusWithDetails =
+      mojom::blink::PermissionStatusWithDetailsPtr;
 
  public:
   class Observer : public GarbageCollectedMixin {
    public:
     virtual ~Observer() = default;
 
-    virtual void OnPermissionStatusChange(MojoPermissionStatus) = 0;
+    virtual void OnPermissionStatusChange(MojoPermissionStatusWithDetails) = 0;
 
     void Trace(Visitor* visitor) const override {}
   };
 
   static PermissionStatusListener* Create(ExecutionContext*,
-                                          MojoPermissionStatus,
+                                          MojoPermissionStatusWithDetails,
                                           MojoPermissionDescriptor);
 
   PermissionStatusListener(ExecutionContext*,
-                           MojoPermissionStatus,
+                           MojoPermissionStatusWithDetails,
                            MojoPermissionDescriptor);
   ~PermissionStatusListener() override;
 
@@ -52,10 +55,14 @@ class PermissionStatusListener final
   void RemovedEventListener(const AtomicString& event_type);
 
   bool HasPendingActivity();
-  void SetStatus(MojoPermissionStatus status) { status_ = status; }
+  void SetStatus(MojoPermissionStatusWithDetails status) {
+    status_ = std::move(status);
+  }
 
   V8PermissionState state() const;
-  String name() const;
+  const mojom::blink::PermissionDetailsPtr& details() const;
+
+  mojom::blink::PermissionName permission_name() const;
 
   void Trace(Visitor*) const override;
 
@@ -65,10 +72,9 @@ class PermissionStatusListener final
   void NotifyEventListener(const AtomicString& event_type, bool is_added);
 
   // mojom::blink::PermissionObserver
-  void OnPermissionStatusChange(
-      mojom::blink::PermissionStatusWithDetailsPtr) override;
+  void OnPermissionStatusChange(MojoPermissionStatusWithDetails) override;
 
-  MojoPermissionStatus status_;
+  MojoPermissionStatusWithDetails status_;
   MojoPermissionDescriptor descriptor_;
   HeapHashSet<WeakMember<Observer>> observers_;
   HeapMojoReceiver<mojom::blink::PermissionObserver, PermissionStatusListener>
