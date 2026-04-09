@@ -7212,6 +7212,9 @@
        <message name="IDS_BOCA_SHARE_SCREEN_NOTIFICATION_MESSAGE" desc="Message of a notification that tells the user that the Class Tools app is sharing their screen to a display">
         Class Tools is sharing your screen to <ph name="RECEIVER_NAME">$1<ex>Classroom 101</ex></ph>
       </message>
+      <message name="IDS_BOCA_UNKNOWN_RECEIVER" desc="Text to display when the receiver name is unknown.">
+        an unknown receiver
+      </message>
 
       <!-- Strings for Spotlight notifications -->
       <message name="IDS_BOCA_SPOTLIGHT_NOTIFICATION_MESSAGE" desc="Message signaling the countdown before the start of a Spotlight session in the Boca app.">

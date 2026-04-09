@@ -201,7 +201,9 @@ TEST_F(BocaNotificationHandlerTest,
   handler_.HandleScreenShareStartedNotification(&test_message_center_, "");
   auto* notification = test_message_center_.FindVisibleNotificationById(
       handler_.kScreenShareNotificationId);
-  EXPECT_FALSE(notification);
+  EXPECT_TRUE(notification);
+  EXPECT_EQ(u"Class Tools is sharing your screen to an unknown receiver",
+            notification->message());
 }
 
 TEST_F(BocaNotificationHandlerTest, HandleShareEndedShouldRemoveNotification) {
