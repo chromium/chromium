@@ -516,6 +516,14 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
   }
 
   /**
+   * This function returns a string that can be used in a srcset to scale
+   * the provided `url` based on the user's screen resolution.
+   */
+  private getScaledSrcSet_(url: string): string {
+    return `${url} 1x, ${url}@2x 2x`;
+  }
+
+  /**
    * Returns true if the date is invalid. A date is invalid either if it is
    * incomplete (i.e. only some of the month, day, year selectors are empty), or
    * if the combination of month, day, year is invalid (i.e. 30th of February
