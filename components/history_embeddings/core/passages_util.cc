@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "base/numerics/safe_conversions.h"
+#include "base/system/sys_info.h"
 #include "components/history_embeddings/proto/history_embeddings.pb.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "third_party/zlib/google/compression_utils.h"
@@ -61,10 +63,19 @@ std::optional<history_embeddings::proto::PassagesValue> PassagesBlobToProto(
 
   // To prevent an out-of-memory crash from a corrupted gzip footer allocating
   // a huge string, verify the uncompressed size is reasonable (16 MB).
+  // This is still potentially a large single allocation so also guard on
+  // available memory for systems that support it. Doing so will gracefully
+  // degrade feature performance instead of crashing the browser with OOM.
   uint32_t uncompressed_size =
       compression::GetUncompressedSize(compressed_proto);
   constexpr uint32_t kMaxUncompressedSize = 16 * 1024 * 1024;
-  if (uncompressed_size > kMaxUncompressedSize) {
+#if BUILDFLAG(IS_FUCHSIA)
+  const uint32_t available_size = kMaxUncompressedSize;
+#else
+  const uint32_t available_size = base::saturated_cast<uint32_t>(
+      base::SysInfo::AmountOfAvailablePhysicalMemory().InBytes());
+#endif
+  if (uncompressed_size > std::min(kMaxUncompressedSize, available_size)) {
     return std::nullopt;
   }
 
