@@ -101,6 +101,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
@@ -114,6 +115,8 @@
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/split_tabs/split_tab_id.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
 #endif
 
@@ -162,6 +165,27 @@ tabs::TabInterface* OpenTabWithHistory(TabListInterface* tab_list,
     observer.Wait();
   }
   return tab;
+}
+
+struct TabListData {
+  std::vector<int> tab_ids;
+  std::vector<content::WebContents*> web_contentses;
+};
+
+// Opens tabs in `tab_list` until there are `count` tabs, then returns the tab
+// list's data (tab IDs and WebContentses).
+TabListData CreateAndGetTabData(TabListInterface* tab_list, int count) {
+  // Account for the initial tab.
+  for (int i = tab_list->GetTabCount(); i < count; ++i) {
+    tab_list->OpenTab(GURL(url::kAboutBlankURL), -1);
+  }
+  TabListData data;
+  for (int i = 0; i < count; ++i) {
+    content::WebContents* contents = tab_list->GetTab(i)->GetContents();
+    data.tab_ids.push_back(ExtensionTabUtil::GetTabId(contents));
+    data.web_contentses.push_back(contents);
+  }
+  return data;
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -2093,34 +2117,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TestGroupDetachedAndReInserted) {
       event_observer.events().contains(api::tabs::OnUpdated::kEventName));
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, SplitViewAddedAndRemoved) {
-  // Create the `TabsEventRouter`, which is required to get a tab update event.
-  TabsWindowsAPI::Get(profile())->InitTabsEventRouter();
-
-  chrome::AddTabAt(browser(), GURL(), -1, true);
-  chrome::AddTabAt(browser(), GURL(), -1, true);
-  chrome::AddTabAt(browser(), GURL(), -1, true);
-
-  TestEventRouterObserver event_observer(EventRouter::Get(profile()));
-
-  browser()->tab_strip_model()->ActivateTabAt(0);
-  split_tabs::SplitTabId split = browser()->tab_strip_model()->AddToNewSplit(
-      {1}, split_tabs::SplitTabVisualData(),
-      split_tabs::SplitTabCreatedSource());
-
-  event_observer.WaitForEventWithName(api::tabs::OnUpdated::kEventName);
-  EXPECT_TRUE(
-      event_observer.events().contains(api::tabs::OnUpdated::kEventName));
-
-  event_observer.ClearEvents();
-
-  browser()->tab_strip_model()->RemoveSplit(split);
-
-  event_observer.WaitForEventWithName(api::tabs::OnUpdated::kEventName);
-  EXPECT_TRUE(
-      event_observer.events().contains(api::tabs::OnUpdated::kEventName));
-}
-
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, Freezing) {
   // Create a background tab.
   ui_test_utils::NavigateToURLWithDisposition(
@@ -3836,20 +3832,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsMoveWithinWindow) {
 
   // Continue adding tabs until there are `kNumTabs` tabs.
   constexpr int kNumTabs = 5;
-  for (int i = GetTabListInterface()->GetTabCount(); i < kNumTabs; i++) {
-    GetTabListInterface()->OpenTab(GURL(url::kAboutBlankURL), -1);
-  }
+  auto [tab_ids, web_contentses] =
+      CreateAndGetTabData(GetTabListInterface(), kNumTabs);
 
   ASSERT_EQ(kNumTabs, GetTabListInterface()->GetTabCount());
-
-  std::vector<int> tab_ids;
-  std::vector<content::WebContents*> web_contentses;
-  for (int i = 0; i < kNumTabs; ++i) {
-    content::WebContents* contents =
-        GetTabListInterface()->GetTab(i)->GetContents();
-    tab_ids.push_back(ExtensionTabUtil::GetTabId(contents));
-    web_contentses.push_back(contents);
-  }
 
   // Use the TabsMoveFunction to move tabs 0, 2, and 4 to index 1.
   auto function = base::MakeRefCounted<TabsMoveFunction>();
@@ -3878,19 +3864,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsMoveAcrossWindows) {
 
   // Continue adding tabs until there are `kNumTabs` tabs.
   constexpr int kNumTabs = 5;
-  for (int i = tab_list1->GetTabCount(); i < kNumTabs; ++i) {
-    tab_list1->OpenTab(GURL(url::kAboutBlankURL), -1);
-  }
+  auto [tab_ids, web_contentses] = CreateAndGetTabData(tab_list1, kNumTabs);
 
   ASSERT_EQ(kNumTabs, tab_list1->GetTabCount());
-
-  std::vector<int> tab_ids;
-  std::vector<content::WebContents*> web_contentses;
-  for (int i = 0; i < kNumTabs; ++i) {
-    content::WebContents* contents = tab_list1->GetTab(i)->GetContents();
-    tab_ids.push_back(ExtensionTabUtil::GetTabId(contents));
-    web_contentses.push_back(contents);
-  }
 
   // Create a new window with three tabs.
   BrowserWindowInterface* window_2 =
@@ -3899,26 +3875,22 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsMoveAcrossWindows) {
   TabListInterface* tab_list2 = TabListInterface::From(window_2);
 
   constexpr int kNumTabs2 = 3;
-  for (int i = tab_list2->GetTabCount(); i < kNumTabs2; ++i) {
-    tab_list2->OpenTab(GURL(url::kAboutBlankURL), -1);
-  }
+  auto [tab_ids2, web_contentses2] = CreateAndGetTabData(tab_list2, kNumTabs2);
   ASSERT_EQ(kNumTabs2, tab_list2->GetTabCount());
-
-  content::WebContents* web_contents2 = tab_list2->GetTab(2)->GetContents();
-  int tab_id2 = ExtensionTabUtil::GetTabId(web_contents2);
 
   constexpr int kNumTabsMovedAcrossWindows = 3;
   auto function = base::MakeRefCounted<TabsMoveFunction>();
   function->set_extension(extension.get());
   constexpr char kFormatArgs[] =
       R"([[%d, %d, %d, %d], {"windowId": %d, "index": 1}])";
-  const std::string args = base::StringPrintf(
-      kFormatArgs, tab_id2, tab_ids[0], tab_ids[2], tab_ids[4], window_2_id);
+  const std::string args =
+      base::StringPrintf(kFormatArgs, tab_ids2[2], tab_ids[0], tab_ids[2],
+                         tab_ids[4], window_2_id);
   ASSERT_TRUE(utils::RunFunction(function.get(), args, profile(),
                                  utils::FunctionMode::kNone));
 
   ASSERT_EQ(kNumTabs2 + kNumTabsMovedAcrossWindows, tab_list2->GetTabCount());
-  EXPECT_EQ(tab_list2->GetTab(1)->GetContents(), web_contents2);
+  EXPECT_EQ(tab_list2->GetTab(1)->GetContents(), web_contentses2[2]);
   EXPECT_EQ(tab_list2->GetTab(2)->GetContents(), web_contentses[0]);
   EXPECT_EQ(tab_list2->GetTab(3)->GetContents(), web_contentses[2]);
   EXPECT_EQ(tab_list2->GetTab(4)->GetContents(), web_contentses[4]);
@@ -3931,9 +3903,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
 
   TabListInterface* tab_list1 = GetTabListInterface();
   // original browser has 1 tab, add 4 to make 5.
-  for (int i = 0; i < 4; ++i) {
-    tab_list1->OpenTab(GURL(url::kAboutBlankURL), -1);
-  }
+  auto [tab_ids1, web_contentses1] = CreateAndGetTabData(tab_list1, 5);
 
   constexpr int kNumTabs = 5;
   ASSERT_EQ(kNumTabs, tab_list1->GetTabCount());
@@ -3945,16 +3915,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
   TabListInterface* tab_list2 = TabListInterface::From(window_2);
 
   constexpr int kNumTabs2 = 3;
-  for (int i = tab_list2->GetTabCount(); i < kNumTabs2; ++i) {
-    tab_list2->OpenTab(GURL(url::kAboutBlankURL), -1);
-  }
+  auto [tab_ids2, web_contentses2] = CreateAndGetTabData(tab_list2, kNumTabs2);
   ASSERT_EQ(kNumTabs2, tab_list2->GetTabCount());
 
   tab_list2->CreateTabGroup(
       {tab_list2->GetTab(0)->GetHandle(), tab_list2->GetTab(1)->GetHandle()});
 
-  content::WebContents* web_contents1 = tab_list1->GetTab(2)->GetContents();
-  int tab_extension_id = ExtensionTabUtil::GetTabId(web_contents1);
+  int tab_extension_id = tab_ids1[2];
 
   // Attempt to move the tab at index 2 from `tab_list1` to the middle of a
   // group in `tab_list2`. This should return an error.
@@ -3977,19 +3944,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsMoveSavedTabGroupTabAllowed) {
   TabListInterface* tab_list = GetTabListInterface();
   // Continue adding tabs until there are `kNumTabs` tabs.
   constexpr int kNumTabs = 5;
-  for (int i = tab_list->GetTabCount(); i < kNumTabs; ++i) {
-    tab_list->OpenTab(GURL(url::kAboutBlankURL), -1);
-  }
+  auto [tab_ids, web_contentses] = CreateAndGetTabData(tab_list, kNumTabs);
 
   ASSERT_EQ(kNumTabs, tab_list->GetTabCount());
-
-  std::vector<int> tab_ids;
-  std::vector<content::WebContents*> web_contentses;
-  for (int i = 0; i < kNumTabs; ++i) {
-    content::WebContents* contents = tab_list->GetTab(i)->GetContents();
-    tab_ids.push_back(ExtensionTabUtil::GetTabId(contents));
-    web_contentses.push_back(contents);
-  }
 
   tab_groups::TabGroupSyncService* saved_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile());
@@ -4032,19 +3989,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsGroupWithinWindow) {
   TabListInterface* tab_list = GetTabListInterface();
   // Add several web contents to the browser.
   constexpr int kNumTabs = 5;
-  for (int i = tab_list->GetTabCount(); i < kNumTabs; ++i) {
-    tab_list->OpenTab(GURL(url::kAboutBlankURL), -1);
-  }
+  auto [tab_ids, web_contentses] = CreateAndGetTabData(tab_list, kNumTabs);
   ASSERT_EQ(kNumTabs, tab_list->GetTabCount());
-
-  // Get the tab IDs of the web contents added in the above loop.
-  std::vector<int> tab_ids;
-  std::vector<content::WebContents*> web_contentses;
-  for (int i = 0; i < kNumTabs; ++i) {
-    content::WebContents* contents = tab_list->GetTab(i)->GetContents();
-    tab_ids.push_back(ExtensionTabUtil::GetTabId(contents));
-    web_contentses.push_back(contents);
-  }
 
   // Use the `TabsGroupFunction` to group tabs 0, 2, and 4.
   auto function = base::MakeRefCounted<TabsGroupFunction>();
@@ -4078,19 +4024,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsGroupMixedTabIds) {
   TabListInterface* tab_list = GetTabListInterface();
   // Add several web contents to the browser.
   constexpr int kNumTabs = 5;
-  for (int i = tab_list->GetTabCount(); i < kNumTabs; ++i) {
-    tab_list->OpenTab(GURL(url::kAboutBlankURL), -1);
-  }
+  auto [tab_ids, web_contentses] = CreateAndGetTabData(tab_list, kNumTabs);
   ASSERT_EQ(kNumTabs, tab_list->GetTabCount());
-
-  // Get the tab IDs of the web contents added in the above loop.
-  std::vector<int> tab_ids;
-  std::vector<content::WebContents*> web_contentses;
-  for (int i = 0; i < kNumTabs; ++i) {
-    content::WebContents* contents = tab_list->GetTab(i)->GetContents();
-    tab_ids.push_back(ExtensionTabUtil::GetTabId(contents));
-    web_contentses.push_back(contents);
-  }
 
   // Use the `TabsGroupFunction` to group tab 1 twice, along with tabs 3 and 2.
   auto function = base::MakeRefCounted<TabsGroupFunction>();
@@ -4125,17 +4060,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsGroupParamsError) {
   TabListInterface* tab_list = GetTabListInterface();
   // Add several web contents to the browser.
   constexpr int kNumTabs = 5;
-  for (int i = tab_list->GetTabCount(); i < kNumTabs; ++i) {
-    tab_list->OpenTab(GURL(url::kAboutBlankURL), -1);
-  }
+  auto [tab_ids, web_contentses] = CreateAndGetTabData(tab_list, kNumTabs);
   ASSERT_EQ(kNumTabs, tab_list->GetTabCount());
-
-  // Get the tab IDs of the web contents added in the above loop.
-  std::vector<int> tab_ids;
-  for (int i = 0; i < kNumTabs; ++i) {
-    content::WebContents* contents = tab_list->GetTab(i)->GetContents();
-    tab_ids.push_back(ExtensionTabUtil::GetTabId(contents));
-  }
 
   // Add a tab to a group to have an existing group ID.
   std::optional<tab_groups::TabGroupId> group =
@@ -4165,19 +4091,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsGroupAcrossWindows) {
   TabListInterface* tab_list1 = GetTabListInterface();
   // Add several web contents to the browser.
   constexpr int kNumTabs = 5;
-  for (int i = tab_list1->GetTabCount(); i < kNumTabs; ++i) {
-    tab_list1->OpenTab(GURL(url::kAboutBlankURL), -1);
-  }
+  auto [tab_ids, web_contentses] = CreateAndGetTabData(tab_list1, kNumTabs);
   ASSERT_EQ(kNumTabs, tab_list1->GetTabCount());
-
-  // Get the tab IDs of the web contents added in the above loop.
-  std::vector<int> tab_ids;
-  std::vector<content::WebContents*> web_contentses;
-  for (int i = 0; i < kNumTabs; ++i) {
-    content::WebContents* contents = tab_list1->GetTab(i)->GetContents();
-    tab_ids.push_back(ExtensionTabUtil::GetTabId(contents));
-    web_contentses.push_back(contents);
-  }
 
   // Create a new window and add a few tabs, adding one to a group.
   BrowserWindowInterface* bwi2 =
@@ -4185,9 +4100,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsGroupAcrossWindows) {
   TabListInterface* tab_list2 = TabListInterface::From(bwi2);
 
   constexpr int kNumTabs2 = 3;
-  for (int i = tab_list2->GetTabCount(); i < kNumTabs2; ++i) {
-    tab_list2->OpenTab(GURL(url::kAboutBlankURL), -1);
-  }
+  auto [tab_ids2, web_contentses2] = CreateAndGetTabData(tab_list2, kNumTabs2);
   ASSERT_EQ(kNumTabs2, tab_list2->GetTabCount());
 
   std::optional<tab_groups::TabGroupId> group2 =
@@ -4225,16 +4138,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsGroupForSavedTabGroupTab) {
   TabListInterface* tab_list = GetTabListInterface();
   // Create 2 tabs.
   constexpr int kNumTabs = 2;
-  for (int i = tab_list->GetTabCount(); i < kNumTabs; ++i) {
-    tab_list->OpenTab(GURL(url::kAboutBlankURL), -1);
-  }
+  auto [tab_ids, web_contentses] = CreateAndGetTabData(tab_list, kNumTabs);
   ASSERT_EQ(kNumTabs, tab_list->GetTabCount());
-
-  std::vector<int> tab_ids;
-  for (int i = 0; i < kNumTabs; ++i) {
-    content::WebContents* contents = tab_list->GetTab(i)->GetContents();
-    tab_ids.push_back(ExtensionTabUtil::GetTabId(contents));
-  }
 
   tab_groups::TabGroupSyncService* saved_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile());
@@ -4274,17 +4179,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsUngroupSingleGroup) {
   TabListInterface* tab_list = GetTabListInterface();
   // Add several web contents to the browser.
   constexpr int kNumTabs = 5;
-  for (int i = tab_list->GetTabCount(); i < kNumTabs; ++i) {
-    tab_list->OpenTab(GURL(url::kAboutBlankURL), -1);
-  }
+  auto [tab_ids, web_contentses] = CreateAndGetTabData(tab_list, kNumTabs);
   ASSERT_EQ(kNumTabs, tab_list->GetTabCount());
-
-  // Get the tab IDs of the web contents added in the above loop.
-  std::vector<int> tab_ids;
-  for (int i = 0; i < kNumTabs; ++i) {
-    content::WebContents* contents = tab_list->GetTab(i)->GetContents();
-    tab_ids.push_back(ExtensionTabUtil::GetTabId(contents));
-  }
 
   // Add tabs 1, 2, and 3 to a group.
   std::optional<tab_groups::TabGroupId> group = tab_list->CreateTabGroup(
@@ -4360,17 +4256,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsUngroupFromMultipleGroups) {
   TabListInterface* tab_list = GetTabListInterface();
   // Add several web contents to the browser.
   constexpr int kNumTabs = 5;
-  for (int i = tab_list->GetTabCount(); i < kNumTabs; ++i) {
-    tab_list->OpenTab(GURL(url::kAboutBlankURL), -1);
-  }
+  auto [tab_ids, web_contentses] = CreateAndGetTabData(tab_list, kNumTabs);
   ASSERT_EQ(kNumTabs, tab_list->GetTabCount());
-
-  // Get the tab IDs of the web contents added in the above loop.
-  std::vector<int> tab_ids;
-  for (int i = 0; i < kNumTabs; ++i) {
-    content::WebContents* contents = tab_list->GetTab(i)->GetContents();
-    tab_ids.push_back(ExtensionTabUtil::GetTabId(contents));
-  }
 
   // Add tabs 1, 2, and 3 to `group1`, and tab 4 to `group2`.
   std::optional<tab_groups::TabGroupId> group1 = tab_list->CreateTabGroup(
@@ -4724,6 +4611,441 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
                                            base::NumberToString(pip_tab_id)),
             error);
 }
+
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Tests that calling chrome.tabs.discard on a saved tab does discard for
+// extensions with locked fullscreen permission. Locked fullscreen permission
+// is ChromeOS only.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionTabsTest,
+    TabsDiscardSavedTabGroupTabAllowedForLockedFullscreenPermission) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("DiscardTest")
+          .SetID("pmgljoohajacndjcjlajcopidgnhphcl")
+          .AddAPIPermission("lockWindowFullscreenPrivate")
+          .Build();
+  const GURL kExampleCom("http://example.com");
+
+  TabListInterface* tab_list = GetTabListInterface();
+  tabs::TabInterface* tab = tab_list->OpenTab(kExampleCom, -1);
+  content::WebContents* web_contents = tab->GetContents();
+  content::WaitForLoadStop(web_contents);
+
+  int index = tab_list->GetIndexOfTab(tab->GetHandle());
+  int tab_id = ExtensionTabUtil::GetTabId(web_contents);
+
+  tab_groups::TabGroupSyncService* saved_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(saved_service);
+
+#if !BUILDFLAG(IS_ANDROID)
+  tab_groups::TabGroupSyncServiceInitializedObserver sync_observer(
+      saved_service);
+  sync_observer.Wait();
+#endif
+
+  // Group the tab and save it.
+  std::optional<tab_groups::TabGroupId> group =
+      tab_list->CreateTabGroup({tab->GetHandle()});
+  ASSERT_TRUE(group.has_value());
+  tab_groups::TabGroupVisualData visual_data(
+      u"Initial title", tab_groups::TabGroupColorId::kBlue);
+  tab_list->SetTabGroupVisualData(*group, visual_data);
+
+  // The tab discard function should not fail.
+  auto function = base::MakeRefCounted<TabsDiscardFunction>();
+  function->set_extension(extension);
+  ASSERT_TRUE(utils::RunFunction(function.get(),
+                                 base::StringPrintf("[%d]", tab_id), profile(),
+                                 utils::FunctionMode::kNone));
+  // Check that the tab was discarded.
+  EXPECT_TRUE(tab_list->GetTab(index)->GetContents()->WasDiscarded());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_ANDROID)
+// Split view is not enabled on Android.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, SplitViewAddedAndRemoved) {
+  // Create the `TabsEventRouter`, which is required to get a tab update event.
+  TabsWindowsAPI::Get(profile())->InitTabsEventRouter();
+
+  auto [tab_ids, web_contentses] =
+      CreateAndGetTabData(GetTabListInterface(), 4);
+
+  TestEventRouterObserver event_observer(EventRouter::Get(profile()));
+
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  split_tabs::SplitTabId split = browser()->tab_strip_model()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource());
+
+  event_observer.WaitForEventWithName(api::tabs::OnUpdated::kEventName);
+  EXPECT_TRUE(
+      event_observer.events().contains(api::tabs::OnUpdated::kEventName));
+
+  event_observer.ClearEvents();
+
+  browser()->tab_strip_model()->RemoveSplit(split);
+
+  event_observer.WaitForEventWithName(api::tabs::OnUpdated::kEventName);
+  EXPECT_TRUE(
+      event_observer.events().contains(api::tabs::OnUpdated::kEventName));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, SplitTabsWithHighlightFunction) {
+  // Add a couple of web contents to the browser and mark them as split.
+  auto [tab_ids, web_contentses] =
+      CreateAndGetTabData(GetTabListInterface(), 2);
+
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->tab_strip_model()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kLinkContextMenu);
+
+  // Run extension to highlight tabs
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("Test").AddAPIPermission("tabs").Build();
+  std::string args = base::StringPrintf("[{\"tabs\": [%d]}]", 0);
+  auto function = base::MakeRefCounted<TabsHighlightFunction>();
+  function->set_extension(extension);
+  ASSERT_TRUE(utils::RunFunction(function.get(), args, profile(),
+                                 utils::FunctionMode::kNone));
+
+  // Check that both sides of the split are selected.
+  ASSERT_TRUE(browser()
+                  ->tab_strip_model()
+                  ->selection_model()
+                  .GetListSelectionModel()
+                  .IsSelected(0));
+  ASSERT_TRUE(browser()
+                  ->tab_strip_model()
+                  ->selection_model()
+                  .GetListSelectionModel()
+                  .IsSelected(1));
+}
+
+// Tests that calling chrome.tabs.move() works when a tab is moved within a
+// split view.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MoveWithinSplitView) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("TabsMoveWithinSplitView").Build();
+
+  // Add several web contents to the browser and get their tab IDs.
+  auto [tab_ids, web_contentses] =
+      CreateAndGetTabData(GetTabListInterface(), 5);
+
+  // Create a split with tabs 3 and 4.
+  browser()->tab_strip_model()->AddToNewSplit(
+      {3}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kTabContextMenu);
+  EXPECT_TRUE(browser()->tab_strip_model()->GetSplitForTab(3).has_value());
+  EXPECT_TRUE(browser()->tab_strip_model()->GetSplitForTab(4).has_value());
+
+  // Use the TabsMoveFunction to move tab at index 0 to the middle of the split
+  // view with tabs 3 and 4.
+  int tab_id = tab_ids[0];
+  auto function = base::MakeRefCounted<TabsMoveFunction>();
+  function->set_extension(extension);
+  constexpr char kFormatArgs[] = R"([[%d], {"index": 3}])";
+  const std::string args = base::StringPrintf(kFormatArgs, tab_id);
+
+  EXPECT_TRUE(utils::RunFunction(function.get(), args, profile(),
+                                 utils::FunctionMode::kNone));
+
+  // Expect that the tab has been moved between the two tabs previously in a
+  // split view and that the split view has been destroyed.
+  EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(2),
+            web_contentses[3]);
+  EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(3),
+            web_contentses[0]);
+  EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(4),
+            web_contentses[4]);
+  EXPECT_FALSE(browser()->tab_strip_model()->GetSplitForTab(2).has_value());
+  EXPECT_FALSE(browser()->tab_strip_model()->GetSplitForTab(4).has_value());
+}
+
+// Tests that calling chrome.tabs.move() works when a tab within a split view is
+// moved.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MoveFromSplitView) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("TabsMoveFromSplitView").Build();
+
+  // Add several web contents to the browser and get their tab IDs.
+  auto [tab_ids, web_contentses] =
+      CreateAndGetTabData(GetTabListInterface(), 5);
+
+  // Create a split with tabs 3 and 4.
+  browser()->tab_strip_model()->AddToNewSplit(
+      {3}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kTabContextMenu);
+  EXPECT_TRUE(browser()->tab_strip_model()->GetSplitForTab(3).has_value());
+  EXPECT_TRUE(browser()->tab_strip_model()->GetSplitForTab(4).has_value());
+
+  // Use the TabsMoveFunction to move split tab at index 3 to index 0.
+  int tab_id = tab_ids[3];
+  auto function = base::MakeRefCounted<TabsMoveFunction>();
+  function->set_extension(extension);
+  constexpr char kFormatArgs[] = R"([[%d], {"index": 0}])";
+  const std::string args = base::StringPrintf(kFormatArgs, tab_id);
+
+  EXPECT_TRUE(utils::RunFunction(function.get(), args, profile(),
+                                 utils::FunctionMode::kNone));
+
+  // Expect that the tab has been moved to index 0 and the original split view
+  // is removed.
+  EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(0),
+            web_contentses[3]);
+  EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(1),
+            web_contentses[0]);
+  EXPECT_FALSE(browser()->tab_strip_model()->GetSplitForTab(0).has_value());
+  EXPECT_FALSE(browser()->tab_strip_model()->GetSplitForTab(4).has_value());
+}
+
+// Tests that chrome.tabs.duplicate removes split view.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DuplicateSplitView) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("TabsDuplicateSplitView").Build();
+
+  // Add a couple of web contents to the browser and mark them as split.
+  auto [tab_ids, web_contentses] =
+      CreateAndGetTabData(GetTabListInterface(), 2);
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->tab_strip_model()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kTabContextMenu);
+
+  // Check that the two tabs are split
+  EXPECT_TRUE(browser()->tab_strip_model()->GetSplitForTab(0).has_value());
+  EXPECT_TRUE(browser()->tab_strip_model()->GetSplitForTab(1).has_value());
+
+  // Use the TabsDuplicateFunction to duplicate the tab at index 0.
+  int tab_id = tab_ids[0];
+  auto function = base::MakeRefCounted<TabsDuplicateFunction>();
+  function->set_extension(extension);
+  constexpr char kFormatArgs[] = R"([%d])";
+  const std::string args = base::StringPrintf(kFormatArgs, tab_id);
+
+  EXPECT_TRUE(utils::RunFunction(function.get(), args, profile(),
+                                 utils::FunctionMode::kNone));
+
+  // Expect that there is one new tab in the tab strip the split view has been
+  // removed.
+  EXPECT_EQ(3, browser()->tab_strip_model()->count());
+  EXPECT_FALSE(browser()->tab_strip_model()->GetSplitForTab(0).has_value());
+  EXPECT_FALSE(browser()->tab_strip_model()->GetSplitForTab(1).has_value());
+  EXPECT_FALSE(browser()->tab_strip_model()->GetSplitForTab(2).has_value());
+}
+
+// Tests that calling chrome.tabs.discard on an inactive tab in an active split
+// will discard that tab.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardInactiveTabInActiveSplitView) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("TabsDeleteFromSplitView").Build();
+
+  // Add a couple of web contents to the browser and mark them as split.
+  auto [tab_ids, web_contentses] =
+      CreateAndGetTabData(GetTabListInterface(), 2);
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->tab_strip_model()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kTabContextMenu);
+
+  // Check that the two tabs are split and the tab at index 0 is active.
+  EXPECT_TRUE(browser()->tab_strip_model()->GetSplitForTab(0).has_value());
+  EXPECT_TRUE(browser()->tab_strip_model()->GetSplitForTab(1).has_value());
+  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+
+  // The tab discard function should succeed.
+  int tab_id = tab_ids[1];
+  auto function = base::MakeRefCounted<TabsDiscardFunction>();
+  function->set_extension(extension);
+  EXPECT_TRUE(utils::RunFunction(function.get(),
+                                 base::StringPrintf("[%d]", tab_id), profile(),
+                                 utils::FunctionMode::kNone));
+
+  // The tab should be discarded.
+  content::WebContents* new_contents_at_index =
+      browser()->tab_strip_model()->GetWebContentsAt(1);
+  EXPECT_TRUE(new_contents_at_index->WasDiscarded());
+}
+
+// Tests that calling chrome.tabs.delete works when a tab within a split view
+// is deleted.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DeleteFromSplitView) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("TabsDeleteFromSplitView").Build();
+
+  // Add a couple of web contents to the browser and mark them as split.
+  auto [tab_ids, web_contentses] =
+      CreateAndGetTabData(GetTabListInterface(), 2);
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->tab_strip_model()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kTabContextMenu);
+
+  // Check that the two tabs are split
+  EXPECT_TRUE(browser()->tab_strip_model()->GetSplitForTab(0).has_value());
+  EXPECT_TRUE(browser()->tab_strip_model()->GetSplitForTab(1).has_value());
+
+  // Use the TabsRemoveFunction to remove the tab at index 0.
+  int tab_id = tab_ids[0];
+  auto function = base::MakeRefCounted<TabsRemoveFunction>();
+  function->set_extension(extension);
+  constexpr char kFormatArgs[] = R"([[%d]])";
+  const std::string args = base::StringPrintf(kFormatArgs, tab_id);
+
+  EXPECT_TRUE(utils::RunFunction(function.get(), args, profile(),
+                                 utils::FunctionMode::kNone));
+
+  // Expect that the tab has been removed and the remaining tab is not in a
+  // split view.
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_FALSE(browser()->tab_strip_model()->GetSplitForTab(0).has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, QueryWithSplitView) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("TabsDeleteFromSplitView").Build();
+
+  // Add a couple of web contents to the browser and mark the first two as
+  // split.
+  auto [tab_ids, web_contentses] =
+      CreateAndGetTabData(GetTabListInterface(), 5);
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->tab_strip_model()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kTabContextMenu);
+
+  // Check that the two tabs are split
+  EXPECT_TRUE(browser()->tab_strip_model()->GetSplitForTab(0).has_value());
+  EXPECT_TRUE(browser()->tab_strip_model()->GetSplitForTab(1).has_value());
+
+  // Use the TabsQueryFunction to get the list of tabs without a split.
+  const char* kNoSplitQueryInfo = "[{\"splitViewId\": -1}]";
+  base::ListValue tabs_list_without_split =
+      RunQueryFunction(extension.get(), kNoSplitQueryInfo);
+  EXPECT_EQ(3u, tabs_list_without_split.size());
+
+  int split_id = ExtensionTabUtil::GetSplitId(
+      browser()->tab_strip_model()->GetSplitForTab(0).value());
+
+  constexpr char kFormatArgs[] = R"([{"splitViewId": %d}])";
+  const std::string args = base::StringPrintf(kFormatArgs, split_id);
+  base::ListValue tabs_list_with_split =
+      RunQueryFunction(extension.get(), args.c_str());
+  EXPECT_EQ(2u, tabs_list_with_split.size());
+  EXPECT_EQ(split_id, tabs_list_with_split[0].GetDict().FindInt("splitViewId"));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, UngroupSingleTabFromSplitView) {
+  TabListInterface* tab_list = GetTabListInterface();
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("TabsUngroupSingleTabFromSplitView").Build();
+
+  // Add a couple of web contents to the browser and mark the first two as
+  // split.
+  auto [tab_ids, web_contentses] =
+      CreateAndGetTabData(GetTabListInterface(), 5);
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->tab_strip_model()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kTabContextMenu);
+
+  // Add tabs 0 and 1 to a group.
+  std::optional<tab_groups::TabGroupId> group = tab_list->CreateTabGroup(
+      {tab_list->GetTab(0)->GetHandle(), tab_list->GetTab(1)->GetHandle()});
+  ASSERT_TRUE(group.has_value());
+
+  // Use the TabsUngroupFunction to ungroup tab 1
+  auto function = base::MakeRefCounted<TabsUngroupFunction>();
+  function->set_extension(extension);
+  constexpr char kFormatArgs[] = R"([[%d]])";
+  const std::string args = base::StringPrintf(kFormatArgs, tab_ids[1]);
+  ASSERT_TRUE(utils::RunFunction(function.get(), args, profile(),
+                                 utils::FunctionMode::kNone));
+
+  // Expect the group to be deleted because all tabs were ungrouped from it but
+  // the split view will remain.
+  EXPECT_FALSE(tab_list->GetTab(0)->GetGroup());
+  EXPECT_FALSE(tab_list->GetTab(1)->GetGroup());
+  EXPECT_TRUE(browser()->tab_strip_model()->GetSplitForTab(0).has_value());
+  EXPECT_TRUE(browser()->tab_strip_model()->GetSplitForTab(1).has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, UngroupBothTabsFromSplitView) {
+  TabListInterface* tab_list = GetTabListInterface();
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("TabsUngroupBothTabsFromSplitView").Build();
+
+  // Add a couple of web contents to the browser and mark the first two as
+  // split.
+  auto [tab_ids, web_contentses] =
+      CreateAndGetTabData(GetTabListInterface(), 5);
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->tab_strip_model()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kTabContextMenu);
+
+  // Add tabs 0 and 1 to a group.
+  std::optional<tab_groups::TabGroupId> group = tab_list->CreateTabGroup(
+      {tab_list->GetTab(0)->GetHandle(), tab_list->GetTab(1)->GetHandle()});
+  ASSERT_TRUE(group.has_value());
+
+  // Use the TabsUngroupFunction to ungroup tabs 0 and 1
+  auto function = base::MakeRefCounted<TabsUngroupFunction>();
+  function->set_extension(extension);
+  constexpr char kFormatArgs[] = R"([[%d, %d]])";
+  const std::string args =
+      base::StringPrintf(kFormatArgs, tab_ids[0], tab_ids[1]);
+  ASSERT_TRUE(utils::RunFunction(function.get(), args, profile(),
+                                 utils::FunctionMode::kNone));
+
+  // Expect the group to be deleted because all tabs were ungrouped from it but
+  // the split view will remain.
+  EXPECT_FALSE(tab_list->GetTab(0)->GetGroup());
+  EXPECT_FALSE(tab_list->GetTab(1)->GetGroup());
+  EXPECT_TRUE(browser()->tab_strip_model()->GetSplitForTab(0).has_value());
+  EXPECT_TRUE(browser()->tab_strip_model()->GetSplitForTab(1).has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GroupSingleTabInSplitView) {
+  TabListInterface* tab_list = GetTabListInterface();
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("TabsGroupSingleTabInSplitView").Build();
+
+  // Add a couple of web contents to the browser and mark them as split.
+  auto [tab_ids, web_contentses] =
+      CreateAndGetTabData(GetTabListInterface(), 2);
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->tab_strip_model()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kTabContextMenu);
+
+  // Verify that tabs are in a split view.
+  EXPECT_TRUE(browser()->tab_strip_model()->GetSplitForTab(0).has_value());
+  EXPECT_TRUE(browser()->tab_strip_model()->GetSplitForTab(1).has_value());
+
+  // Use the TabsGroupFunction to group tab 0.
+  auto function = base::MakeRefCounted<TabsGroupFunction>();
+  function->set_extension(extension);
+  constexpr char kFormatArgs[] = R"([{"tabIds": [%d]}])";
+  const std::string args = base::StringPrintf(kFormatArgs, tab_ids[0]);
+  ASSERT_TRUE(utils::RunFunction(function.get(), args, profile(),
+                                 utils::FunctionMode::kNone));
+
+  // Expect both tabs to be in the same group and still in a split view.
+  std::optional<tab_groups::TabGroupId> group = tab_list->GetTab(0)->GetGroup();
+  EXPECT_TRUE(group.has_value());
+  EXPECT_EQ(group, tab_list->GetTab(1)->GetGroup());
+  EXPECT_TRUE(browser()->tab_strip_model()->GetSplitForTab(0).has_value());
+  EXPECT_TRUE(browser()->tab_strip_model()->GetSplitForTab(1).has_value());
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions

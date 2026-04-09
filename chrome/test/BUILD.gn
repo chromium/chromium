@@ -9658,7 +9658,6 @@ test("unit_tests") {
       "../browser/extensions/api/socket/tls_socket_unittest.cc",
       "../browser/extensions/api/socket/udp_socket_unittest.cc",
       "../browser/extensions/api/sockets_tcp_server/sockets_tcp_server_api_unittest.cc",
-      "../browser/extensions/api/tabs/tabs_api_unittest.cc",
       "../browser/extensions/api/tabs/windows_util_unittest.cc",
       "../browser/extensions/app_tab_helper_unittest.cc",
       "../browser/extensions/blocklist_states_interaction_unittest.cc",
