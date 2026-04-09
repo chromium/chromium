@@ -25,6 +25,8 @@ class TestAccessibilityAnnotatorBackend : public AccessibilityAnnotatorBackend {
               GetAccessibilityAnnotationControllerDelegate,
               (),
               (override));
+  MOCK_METHOD(void, AddObserver, (Observer*), (override));
+  MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
   MOCK_METHOD(base::optional_ref<const ContentAnnotationsData>,
               GetContentAnnotationsCacheData,
               (const GURL&),

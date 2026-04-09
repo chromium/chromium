@@ -73,6 +73,16 @@ AccessibilityAnnotatorBackendImpl::
       ->GetControllerDelegate();
 }
 
+void AccessibilityAnnotatorBackendImpl::AddObserver(
+    AccessibilityAnnotatorBackend::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void AccessibilityAnnotatorBackendImpl::RemoveObserver(
+    AccessibilityAnnotatorBackend::Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void AccessibilityAnnotatorBackendImpl::OnAccessibilityAnnotationChanged() {
   // TODO(crbug.com/486856790): Implement logic to handle changed annotations.
 }
@@ -115,6 +125,8 @@ void AccessibilityAnnotatorBackendImpl::SetContentAnnotationsCacheData(
     ContentAnnotationsData data) {
   // This automatically handles eviction of the oldest entries if full.
   content_annotations_cache_.Put(url, std::move(data));
+  observers_.Notify(
+      &AccessibilityAnnotatorBackend::Observer::OnContentAnnotationsAdded);
 }
 
 void AccessibilityAnnotatorBackendImpl::RemoveContentAnnotationsCacheData(

@@ -20,6 +20,11 @@ namespace {
 
 using ::base::test::DictionaryHasValues;
 
+class MockBackendObserver : public AccessibilityAnnotatorBackend::Observer {
+ public:
+  MOCK_METHOD(void, OnContentAnnotationsAdded, (), (override));
+};
+
 class AccessibilityAnnotatorBackendTest : public testing::Test {
  public:
   AccessibilityAnnotatorBackendTest() = default;
@@ -230,6 +235,22 @@ TEST_F(AccessibilityAnnotatorBackendTest, ClearContentAnnotationsCache) {
   backend_->ClearContentAnnotationsCache();
   EXPECT_FALSE(backend_->GetContentAnnotationsCacheData(url1).has_value());
   EXPECT_FALSE(backend_->GetContentAnnotationsCacheData(url2).has_value());
+}
+
+TEST_F(AccessibilityAnnotatorBackendTest, ObserverNotified) {
+  MockBackendObserver observer;
+  backend_->AddObserver(&observer);
+
+  GURL url("https://example.com/");
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data;
+  data.page_title = "Test Page Title";
+
+  // Setting data should notify.
+  EXPECT_CALL(observer, OnContentAnnotationsAdded);
+  backend_->SetContentAnnotationsCacheData(url, std::move(data));
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  backend_->RemoveObserver(&observer);
 }
 
 }  // namespace

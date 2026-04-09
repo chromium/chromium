@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list_types.h"
 #include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "components/accessibility_annotator/core/data_models/entity_types.h"
@@ -34,6 +35,12 @@ class AccessibilityAnnotationSyncBridge;
 
 class AccessibilityAnnotatorBackend : public KeyedService {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when content annotations are added.
+    virtual void OnContentAnnotationsAdded() = 0;
+  };
+
   struct ContentAnnotationsData {
     ContentAnnotationsData();
     ~ContentAnnotationsData();
@@ -60,6 +67,12 @@ class AccessibilityAnnotatorBackend : public KeyedService {
   // datatype.
   virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetAccessibilityAnnotationControllerDelegate() = 0;
+
+  // Adds an observer to the backend.
+  virtual void AddObserver(Observer* observer) = 0;
+
+  // Removes an observer from the backend.
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   // Reads from Content Annotations cache.
   virtual base::optional_ref<const ContentAnnotationsData>

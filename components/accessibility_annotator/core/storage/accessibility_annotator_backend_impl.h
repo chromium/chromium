@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/threading/sequence_bound.h"
 #include "base/types/optional_ref.h"
@@ -62,6 +63,9 @@ class AccessibilityAnnotatorBackendImpl
   void Init() override;
   base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetAccessibilityAnnotationControllerDelegate() override;
+  void AddObserver(AccessibilityAnnotatorBackend::Observer* observer) override;
+  void RemoveObserver(
+      AccessibilityAnnotatorBackend::Observer* observer) override;
   base::optional_ref<const ContentAnnotationsData>
   GetContentAnnotationsCacheData(const GURL& url) const override;
   void SetContentAnnotationsCacheData(const GURL& url,
@@ -111,6 +115,8 @@ class AccessibilityAnnotatorBackendImpl
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_service_observation_{this};
+
+  base::ObserverList<AccessibilityAnnotatorBackend::Observer> observers_;
 };
 
 }  // namespace accessibility_annotator
