@@ -115,8 +115,7 @@ StyleSheetContents::StyleSheetContents(const StyleSheetContents& o)
   DCHECK(o.import_rules_.empty());
 
   for (unsigned i = 0; i < namespace_rules_.size(); ++i) {
-    namespace_rules_[i] =
-        static_cast<StyleRuleNamespace*>(o.namespace_rules_[i]->Copy());
+    namespace_rules_[i] = To<StyleRuleNamespace>(o.namespace_rules_[i]->Copy());
   }
 
   // Copying child rules is a strict point for deferred property parsing, so

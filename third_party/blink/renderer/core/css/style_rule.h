@@ -924,6 +924,14 @@ struct DowncastTraits<StyleRuleCustomMedia> {
   }
 };
 
+template <>
+struct DowncastTraits<StyleRuleCondition> {
+  static bool AllowFrom(const StyleRuleBase& rule) {
+    return IsA<StyleRuleMedia>(rule) || IsA<StyleRuleSupports>(rule) ||
+           IsA<StyleRuleContainer>(rule) || IsA<StyleRuleNavigation>(rule);
+  }
+};
+
 }  // namespace blink
 
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(

@@ -20,7 +20,7 @@ String CSSConditionRule::conditionText() const {
 }
 
 String CSSConditionRule::ConditionTextInternal() const {
-  return static_cast<StyleRuleCondition*>(group_rule_.Get())->ConditionText();
+  return To<StyleRuleCondition>(group_rule_.Get())->ConditionText();
 }
 
 }  // namespace blink
