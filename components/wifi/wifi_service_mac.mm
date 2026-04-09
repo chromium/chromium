@@ -129,6 +129,10 @@ class WiFiServiceMac : public WiFiService {
   // |networks_|.
   NetworkList::iterator FindNetwork(const std::string& network_guid);
 
+  // Refreshes live properties for the connected network from CWInterface
+  // without triggering a scan.
+  void RefreshConnectedNetworkProperties(NetworkList::iterator it);
+
   // Handles notification from |wlan_observer_|.
   void OnWlanObserverNotification();
 
@@ -196,6 +200,9 @@ void WiFiServiceMac::GetProperties(const std::string& network_guid,
   }
 
   it->connection_state = GetNetworkConnectionState(network_guid);
+  if (it->connection_state != onc::connection_state::kNotConnected) {
+    RefreshConnectedNetworkProperties(it);
+  }
   *properties = it->ToValue(/*network_list=*/false);
   DVLOG(1) << *properties;
 }
@@ -567,6 +574,22 @@ NetworkList::iterator WiFiServiceMac::FindNetwork(
       return it;
   }
   return networks_.end();
+}
+
+void WiFiServiceMac::RefreshConnectedNetworkProperties(
+    NetworkList::iterator it) {
+  NSString* ns_bssid = [interface_ bssid];
+  NSInteger rssi = [interface_ rssiValue];
+  CWChannel* channel = [interface_ wlanChannel];
+
+  if (!ns_bssid || rssi == 0 || !channel) {
+    return;  // Disconnected or XPC failure, keep cached values.
+  }
+
+  it->signal_strength = static_cast<uint32_t>(rssi);
+  it->frequency = FrequencyFromCWChannelBand([channel channelBand]);
+  it->frequency_set = {it->frequency};
+  it->bssid = base::SysNSStringToUTF8(ns_bssid);
 }
 
 void WiFiServiceMac::OnWlanObserverNotification() {
