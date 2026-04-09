@@ -98,10 +98,6 @@ extern const base::FeatureParam<base::TimeDelta>
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 BASE_DECLARE_FEATURE(kLeftHandSideActivityIndicators);
 
-// Feature to enable redesigned tracking protection UX + prefs for 3PCD.
-COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
-BASE_DECLARE_FEATURE(kTrackingProtection3pcd);
-
 // Shows the option to disable the v8 optimizer for unfamiliar sites on the
 // site settings page.
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)

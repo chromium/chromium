@@ -273,9 +273,7 @@ bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() const {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(pref_change_registrar_);
 
-  if (net::cookie_util::IsForceThirdPartyCookieBlockingEnabled() ||
-      base::FeatureList::IsEnabled(
-          content_settings::features::kTrackingProtection3pcd)) {
+  if (net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()) {
     return true;
   }
 
@@ -293,10 +291,7 @@ bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() const {
 }
 
 bool CookieSettings::MitigationsEnabledFor3pcdInternal() const {
-  return (base::FeatureList::IsEnabled(
-              content_settings::features::kTrackingProtection3pcd) &&
-          !is_incognito_) ||
-         net::cookie_util::IsForceThirdPartyCookieBlockingEnabled();
+  return net::cookie_util::IsForceThirdPartyCookieBlockingEnabled();
 }
 
 void CookieSettings::OnContentSettingChanged(
@@ -332,11 +327,6 @@ void CookieSettings::OnMitigationsEnabledChanged() {
 
 void CookieSettings::OnCookiePreferencesChanged() {
   DCHECK(thread_checker_.CalledOnValidThread());
-
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kTrackingProtection3pcd)) {
-    OnMitigationsEnabledChanged();
-  }
 
   bool new_block_third_party_cookies = ShouldBlockThirdPartyCookiesInternal();
   {
