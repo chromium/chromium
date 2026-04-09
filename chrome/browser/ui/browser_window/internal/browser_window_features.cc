@@ -580,8 +580,11 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
                                                                   browser);
     }
 
-    send_tab_to_self_toolbar_bubble_controller_ = std::make_unique<
-        send_tab_to_self::SendTabToSelfToolbarBubbleController>(browser);
+    send_tab_to_self_toolbar_bubble_controller_ =
+        GetUserDataFactory()
+            .CreateInstance<
+                send_tab_to_self::SendTabToSelfToolbarBubbleController>(
+                *browser, browser);
 
     if (browser_view) {
       // Get the PinnedToolbarActions for the browser; it might not exist for

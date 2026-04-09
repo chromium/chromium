@@ -56,8 +56,8 @@ BrowserActivationWaiter::BrowserActivationWaiter(
     return;
   }
 
-  BrowserView::GetBrowserViewForBrowser(browser)->GetWidget()->AddObserver(
-      this);
+  observation_.Observe(
+      BrowserView::GetBrowserViewForBrowser(browser)->GetWidget());
 }
 
 BrowserActivationWaiter::~BrowserActivationWaiter() = default;
@@ -79,7 +79,7 @@ void BrowserActivationWaiter::OnWidgetActivationChanged(views::Widget* widget,
   }
 
   observed_ = true;
-  widget->RemoveObserver(this);
+  observation_.Reset();
   if (run_loop_.running()) {
     run_loop_.Quit();
   }

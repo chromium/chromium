@@ -197,8 +197,8 @@ void SendTabToSelfToolbarBubbleView::ReplaceEntry(
   SendTabToSelfSyncServiceFactory::GetForProfile(browser_->GetProfile())
       ->GetSendTabToSelfModel()
       ->DismissEntry(entry_.GetGUID());
-
   title_label_->SetText(base::UTF8ToUTF16(new_entry.GetTitle()));
+
   url_label_->SetText(
       url_formatter::FormatUrlForSecurityDisplay(new_entry.GetURL()));
   device_label_->SetText(l10n_util::GetStringFUTF16(

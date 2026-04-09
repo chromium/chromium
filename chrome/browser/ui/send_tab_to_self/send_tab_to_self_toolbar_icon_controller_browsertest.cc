@@ -31,7 +31,7 @@ class SendTabToSelfToolbarIconControllerTest : public InProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+    ui_test_utils::WaitForBrowserSetLastActive(browser());
   }
 
   void WaitUntilBrowserBecomeActiveOrLastActive(Browser* browser) {
@@ -49,9 +49,7 @@ class SendTabToSelfToolbarIconControllerTest : public InProcessBrowserTest {
   }
 
   SendTabToSelfToolbarBubbleController* bubble_controller() {
-    return browser()
-        ->browser_window_features()
-        ->send_tab_to_self_toolbar_bubble_controller();
+    return SendTabToSelfToolbarBubbleController::From(browser());
   }
 
  private:
@@ -126,6 +124,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerTest,
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerTest,
                        ReplaceExistingEntry) {
+  controller()->set_ignore_active_for_testing(true);
   SendTabToSelfEntry existing_entry(
       "a", GURL("http://www.example-a.com"), "a site", base::Time(), "device a",
       "device b", PageContext(), NavigationHistory());

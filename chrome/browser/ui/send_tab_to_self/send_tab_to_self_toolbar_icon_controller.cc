@@ -52,7 +52,8 @@ void SendTabToSelfToolbarIconController::DisplayNewEntries(
   // appropriate browser.
   BrowserWindowInterface* const browser =
       ProfileBrowserCollection::GetForProfile(profile_)->GetLastActiveBrowser();
-  if (browser && browser->IsActive() && CanShowOnBrowser(browser)) {
+  if (browser && (browser->IsActive() || ignore_active_for_testing_) &&
+      CanShowOnBrowser(browser)) {
     ShowToolbarButton(*new_entry, browser);
     return;
   }
@@ -115,8 +116,7 @@ void SendTabToSelfToolbarIconController::ShowToolbarButton(
   controller->ShowActionEphemerallyInToolbar(kActionSendTabToSelf, true);
   auto anchor = controller->GetBubbleAnchor(kActionSendTabToSelf);
   CHECK(!anchor.IsNull());
-  browser->GetFeatures()
-      .send_tab_to_self_toolbar_bubble_controller()
+  send_tab_to_self::SendTabToSelfToolbarBubbleController::From(browser)
       ->ShowBubble(entry, anchor);
 
   send_tab_to_self::RecordNotificationShown();

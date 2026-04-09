@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_view.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 class BrowserWindowInterface;
@@ -20,6 +21,11 @@ class SendTabToSelfToolbarBubbleController {
   explicit SendTabToSelfToolbarBubbleController(BrowserWindowInterface* bwi);
   ~SendTabToSelfToolbarBubbleController();
 
+  DECLARE_USER_DATA(SendTabToSelfToolbarBubbleController);
+
+  static SendTabToSelfToolbarBubbleController* From(
+      BrowserWindowInterface* bwi);
+
   void ShowBubble(const SendTabToSelfEntry& entry, views::BubbleAnchor anchor);
   void HideBubble();
 
@@ -30,8 +36,12 @@ class SendTabToSelfToolbarBubbleController {
   }
 
  private:
+  friend class ui::ScopedUnownedUserData<SendTabToSelfToolbarBubbleController>;
+
   views::ViewTracker bubble_tracker_;
   const raw_ref<BrowserWindowInterface> bwi_;
+  ::ui::ScopedUnownedUserData<SendTabToSelfToolbarBubbleController>
+      scoped_unowned_user_data_;
 };
 
 }  // namespace send_tab_to_self

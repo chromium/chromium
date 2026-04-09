@@ -950,9 +950,8 @@ void BrowserActions::InitializeChromeMenuActions() {
                 [](BrowserWindowInterface* bwi, TabStripModel* tab_strip_model,
                    actions::ActionItem* item,
                    actions::ActionInvocationContext context) {
-                  auto* const bubble_controller =
-                      bwi->GetFeatures()
-                          .send_tab_to_self_toolbar_bubble_controller();
+                  auto* const bubble_controller = send_tab_to_self::
+                      SendTabToSelfToolbarBubbleController::From(bwi);
                   if (bubble_controller->IsBubbleShowing()) {
                     bubble_controller->HideBubble();
                   } else {

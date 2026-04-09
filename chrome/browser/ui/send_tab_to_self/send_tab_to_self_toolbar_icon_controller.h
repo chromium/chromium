@@ -33,6 +33,12 @@ class SendTabToSelfToolbarIconController
   // Returns true if the toolbar button can be shown for the provided browser.
   static bool CanShowOnBrowser(BrowserWindowInterface* bwi);
 
+  // Bypasses the browser activation check in DisplayNewEntries.
+  // Needed because browser activation is flaky in tests, especially on Wayland.
+  void set_ignore_active_for_testing(bool ignore) {
+    ignore_active_for_testing_ = ignore;
+  }
+
   // ReceivingUiHandler implementation.
   void DisplayNewEntries(
       const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
@@ -58,6 +64,9 @@ class SendTabToSelfToolbarIconController
 
   base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
       browser_collection_observer_{this};
+
+  // If true, bypasses the browser activation check in DisplayNewEntries.
+  bool ignore_active_for_testing_ = false;
 };
 
 }  // namespace send_tab_to_self
