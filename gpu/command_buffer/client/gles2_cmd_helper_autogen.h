@@ -2524,16 +2524,6 @@ void GetMaxValueInBufferCHROMIUM(GLuint buffer_id,
   }
 }
 
-void EnableFeatureCHROMIUM(GLuint bucket_id,
-                           uint32_t result_shm_id,
-                           uint32_t result_shm_offset) {
-  gles2::cmds::EnableFeatureCHROMIUM* c =
-      GetCmdSpace<gles2::cmds::EnableFeatureCHROMIUM>();
-  if (c) {
-    c->Init(bucket_id, result_shm_id, result_shm_offset);
-  }
-}
-
 void MapBufferRange(GLenum target,
                     GLintptr offset,
                     GLsizeiptr size,

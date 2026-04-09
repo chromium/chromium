@@ -4193,21 +4193,6 @@ TEST_F(GLES2FormatTest, GetMaxValueInBufferCHROMIUM) {
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 
-TEST_F(GLES2FormatTest, EnableFeatureCHROMIUM) {
-  cmds::EnableFeatureCHROMIUM& cmd =
-      *GetBufferAs<cmds::EnableFeatureCHROMIUM>();
-  void* next_cmd =
-      cmd.Set(&cmd, static_cast<GLuint>(11), static_cast<uint32_t>(12),
-              static_cast<uint32_t>(13));
-  EXPECT_EQ(static_cast<uint32_t>(cmds::EnableFeatureCHROMIUM::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLuint>(11), cmd.bucket_id);
-  EXPECT_EQ(static_cast<uint32_t>(12), cmd.result_shm_id);
-  EXPECT_EQ(static_cast<uint32_t>(13), cmd.result_shm_offset);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
 TEST_F(GLES2FormatTest, MapBufferRange) {
   cmds::MapBufferRange& cmd = *GetBufferAs<cmds::MapBufferRange>();
   void* next_cmd =

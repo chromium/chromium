@@ -612,16 +612,6 @@ typedef void (GL_APIENTRYP PFNGLLOSECONTEXTCHROMIUMPROC) (
 #endif
 #endif  /* GL_ARB_texture_rectangle */
 
-/* GL_CHROMIUM_enable_feature */
-#ifndef GL_CHROMIUM_enable_feature
-#define GL_CHROMIUM_enable_feature 1
-#ifdef GL_GLEXT_PROTOTYPES
-GL_APICALL GLboolean GL_APIENTRY glEnableFeatureCHROMIUM(const char* feature);
-#endif
-typedef GLboolean (GL_APIENTRYP PFNGLENABLEFEATURECHROMIUMPROC) (
-    const char* feature);
-#endif  /* GL_CHROMIUM_enable_feature */
-
 /* GL_ARB_robustness */
 #ifndef GL_ARB_robustness
 #define GL_ARB_robustness 1

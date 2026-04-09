@@ -1283,9 +1283,6 @@ GLuint GL_APIENTRY GLES2GetMaxValueInBufferCHROMIUM(GLuint buffer_id,
   return gles2::GetGLContext()->GetMaxValueInBufferCHROMIUM(buffer_id, count,
                                                             type, offset);
 }
-GLboolean GL_APIENTRY GLES2EnableFeatureCHROMIUM(const char* feature) {
-  return gles2::GetGLContext()->EnableFeatureCHROMIUM(feature);
-}
 void* GL_APIENTRY GLES2MapBufferCHROMIUM(GLuint target, GLenum access) {
   return gles2::GetGLContext()->MapBufferCHROMIUM(target, access);
 }
@@ -2768,10 +2765,6 @@ extern const NameToFunc g_gles2_function_table[] = {
     {
         "glGetMaxValueInBufferCHROMIUM",
         reinterpret_cast<GLES2FunctionPointer>(glGetMaxValueInBufferCHROMIUM),
-    },
-    {
-        "glEnableFeatureCHROMIUM",
-        reinterpret_cast<GLES2FunctionPointer>(glEnableFeatureCHROMIUM),
     },
     {
         "glMapBufferCHROMIUM",

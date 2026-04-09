@@ -768,7 +768,6 @@ error::Error DoGetMaxValueInBufferCHROMIUM(GLuint buffer_id,
                                            GLenum type,
                                            GLuint offset,
                                            uint32_t* result);
-error::Error DoEnableFeatureCHROMIUM(const char* feature);
 error::Error DoMapBufferRange(GLenum target,
                               GLintptr offset,
                               GLsizeiptr size,

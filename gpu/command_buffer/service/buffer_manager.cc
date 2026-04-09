@@ -38,8 +38,6 @@ BufferManager::BufferManager(scoped_refptr<MemoryTracker> memory_tracker,
     : memory_type_tracker_(new MemoryTypeTracker(std::move(memory_tracker))),
       feature_info_(feature_info),
       max_buffer_size_(kDefaultMaxBufferSize),
-      allow_buffers_on_multiple_targets_(false),
-      allow_fixed_attribs_(false),
       buffer_count_(0),
       primitive_restart_fixed_index_(0),
       lost_context_(false),
@@ -405,8 +403,7 @@ bool BufferManager::UseShadowBuffer(GLenum target, GLenum usage) {
   const bool is_client_side_array = IsUsageClientSideArray(usage);
 
   // TODO(zmo): Don't shadow buffer data on ES3. crbug.com/491002.
-  return (target == GL_ELEMENT_ARRAY_BUFFER ||
-          allow_buffers_on_multiple_targets_ || is_client_side_array);
+  return (target == GL_ELEMENT_ARRAY_BUFFER || is_client_side_array);
 }
 
 void BufferManager::SetInfo(Buffer* buffer,
@@ -589,15 +586,14 @@ void BufferManager::ValidateAndDoCopyBufferSubData(ContextState* context_state,
     return;
   }
 
-  if (!allow_buffers_on_multiple_targets_) {
-    if ((readbuffer->initial_target() == GL_ELEMENT_ARRAY_BUFFER &&
-         writebuffer->initial_target() != GL_ELEMENT_ARRAY_BUFFER) ||
-        (writebuffer->initial_target() == GL_ELEMENT_ARRAY_BUFFER &&
-         readbuffer->initial_target() != GL_ELEMENT_ARRAY_BUFFER)) {
-      ERRORSTATE_SET_GL_ERROR(error_state, GL_INVALID_OPERATION, func_name,
-          "copying between ELEMENT_ARRAY_BUFFER and another buffer type");
-      return;
-    }
+  if ((readbuffer->initial_target() == GL_ELEMENT_ARRAY_BUFFER &&
+       writebuffer->initial_target() != GL_ELEMENT_ARRAY_BUFFER) ||
+      (writebuffer->initial_target() == GL_ELEMENT_ARRAY_BUFFER &&
+       readbuffer->initial_target() != GL_ELEMENT_ARRAY_BUFFER)) {
+    ERRORSTATE_SET_GL_ERROR(
+        error_state, GL_INVALID_OPERATION, func_name,
+        "copying between ELEMENT_ARRAY_BUFFER and another buffer type");
+    return;
   }
 
   DoCopyBufferSubData(readbuffer, readtarget, readoffset,
@@ -692,40 +688,39 @@ void BufferManager::ValidateAndDoGetBufferParameteriv(
 }
 
 bool BufferManager::SetTarget(Buffer* buffer, GLenum target) {
-  if (!allow_buffers_on_multiple_targets_) {
-    // After being bound to ELEMENT_ARRAY_BUFFER target, a buffer cannot be
-    // bound to any other targets except for COPY_READ/WRITE_BUFFER target;
-    // After being bound to non ELEMENT_ARRAY_BUFFER target, a buffer cannot
-    // be bound to ELEMENT_ARRAY_BUFFER target.
+  // After being bound to ELEMENT_ARRAY_BUFFER target, a buffer cannot be
+  // bound to any other targets except for COPY_READ/WRITE_BUFFER target;
+  // After being bound to non ELEMENT_ARRAY_BUFFER target, a buffer cannot
+  // be bound to ELEMENT_ARRAY_BUFFER target.
 
-    switch (buffer->initial_target()) {
-      case GL_ELEMENT_ARRAY_BUFFER:
-        switch (target) {
-          case GL_ARRAY_BUFFER:
-          case GL_PIXEL_PACK_BUFFER:
-          case GL_PIXEL_UNPACK_BUFFER:
-          case GL_TRANSFORM_FEEDBACK_BUFFER:
-          case GL_UNIFORM_BUFFER:
-            return false;
-          default:
-            break;
-        }
-        break;
-      case GL_ARRAY_BUFFER:
-      case GL_COPY_READ_BUFFER:
-      case GL_COPY_WRITE_BUFFER:
-      case GL_PIXEL_PACK_BUFFER:
-      case GL_PIXEL_UNPACK_BUFFER:
-      case GL_TRANSFORM_FEEDBACK_BUFFER:
-      case GL_UNIFORM_BUFFER:
-        if (target == GL_ELEMENT_ARRAY_BUFFER) {
+  switch (buffer->initial_target()) {
+    case GL_ELEMENT_ARRAY_BUFFER:
+      switch (target) {
+        case GL_ARRAY_BUFFER:
+        case GL_PIXEL_PACK_BUFFER:
+        case GL_PIXEL_UNPACK_BUFFER:
+        case GL_TRANSFORM_FEEDBACK_BUFFER:
+        case GL_UNIFORM_BUFFER:
           return false;
-        }
-        break;
-      default:
-        break;
-    }
+        default:
+          break;
+      }
+      break;
+    case GL_ARRAY_BUFFER:
+    case GL_COPY_READ_BUFFER:
+    case GL_COPY_WRITE_BUFFER:
+    case GL_PIXEL_PACK_BUFFER:
+    case GL_PIXEL_UNPACK_BUFFER:
+    case GL_TRANSFORM_FEEDBACK_BUFFER:
+    case GL_UNIFORM_BUFFER:
+      if (target == GL_ELEMENT_ARRAY_BUFFER) {
+        return false;
+      }
+      break;
+    default:
+      break;
   }
+
   if (buffer->initial_target() == 0)
     buffer->set_initial_target(target);
   return true;

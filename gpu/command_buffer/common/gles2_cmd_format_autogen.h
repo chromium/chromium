@@ -12595,55 +12595,6 @@ static_assert(
     offsetof(GetMaxValueInBufferCHROMIUM, result_shm_offset) == 24,
     "offset of GetMaxValueInBufferCHROMIUM result_shm_offset should be 24");
 
-struct EnableFeatureCHROMIUM {
-  typedef EnableFeatureCHROMIUM ValueType;
-  static const CommandId kCmdId = kEnableFeatureCHROMIUM;
-  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
-  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
-
-  typedef GLint Result;
-
-  static uint32_t ComputeSize() {
-    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
-  }
-
-  void SetHeader() { header.SetCmd<ValueType>(); }
-
-  void Init(GLuint _bucket_id,
-            uint32_t _result_shm_id,
-            uint32_t _result_shm_offset) {
-    SetHeader();
-    bucket_id = _bucket_id;
-    result_shm_id = _result_shm_id;
-    result_shm_offset = _result_shm_offset;
-  }
-
-  void* Set(void* cmd,
-            GLuint _bucket_id,
-            uint32_t _result_shm_id,
-            uint32_t _result_shm_offset) {
-    static_cast<ValueType*>(cmd)->Init(_bucket_id, _result_shm_id,
-                                       _result_shm_offset);
-    return NextCmdAddress<ValueType>(cmd);
-  }
-
-  gpu::CommandHeader header;
-  uint32_t bucket_id;
-  uint32_t result_shm_id;
-  uint32_t result_shm_offset;
-};
-
-static_assert(sizeof(EnableFeatureCHROMIUM) == 16,
-              "size of EnableFeatureCHROMIUM should be 16");
-static_assert(offsetof(EnableFeatureCHROMIUM, header) == 0,
-              "offset of EnableFeatureCHROMIUM header should be 0");
-static_assert(offsetof(EnableFeatureCHROMIUM, bucket_id) == 4,
-              "offset of EnableFeatureCHROMIUM bucket_id should be 4");
-static_assert(offsetof(EnableFeatureCHROMIUM, result_shm_id) == 8,
-              "offset of EnableFeatureCHROMIUM result_shm_id should be 8");
-static_assert(offsetof(EnableFeatureCHROMIUM, result_shm_offset) == 12,
-              "offset of EnableFeatureCHROMIUM result_shm_offset should be 12");
-
 struct MapBufferRange {
   typedef MapBufferRange ValueType;
   static const CommandId kCmdId = kMapBufferRange;

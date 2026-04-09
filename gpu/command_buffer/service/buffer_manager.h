@@ -327,14 +327,6 @@ class GPU_GLES2_EXPORT BufferManager
     max_buffer_size_ = max_buffer_size;
   }
 
-  void set_allow_buffers_on_multiple_targets(bool allow) {
-    allow_buffers_on_multiple_targets_ = allow;
-  }
-
-  void set_allow_fixed_attribs(bool allow) {
-    allow_fixed_attribs_ = allow;
-  }
-
   size_t mem_represented() const {
     return memory_type_tracker_->GetMemRepresented();
   }
@@ -461,12 +453,6 @@ class GPU_GLES2_EXPORT BufferManager
 
   // The maximum size of buffers.
   GLsizeiptr max_buffer_size_;
-
-  // Whether or not buffers can be bound to multiple targets.
-  bool allow_buffers_on_multiple_targets_;
-
-  // Whether or not allow using GL_FIXED type for vertex attribs.
-  bool allow_fixed_attribs_;
 
   // Counts the number of Buffer allocated with 'this' as its manager.
   // Allows to check no Buffer will outlive this.

@@ -870,9 +870,6 @@ GLuint GLES2InterfaceStub::GetMaxValueInBufferCHROMIUM(GLuint /* buffer_id */,
                                                        GLuint /* offset */) {
   return 0;
 }
-GLboolean GLES2InterfaceStub::EnableFeatureCHROMIUM(const char* /* feature */) {
-  return 0;
-}
 void* GLES2InterfaceStub::MapBufferCHROMIUM(GLuint /* target */,
                                             GLenum /* access */) {
   return 0;

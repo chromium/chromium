@@ -408,13 +408,6 @@ TEST_P(GLES2DecoderManualInitTest, BindGeneratesResourceFalse) {
   EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
 }
 
-TEST_P(GLES2DecoderTest, EnableFeatureCHROMIUMBadBucket) {
-  const uint32_t kBadBucketId = 123;
-  cmds::EnableFeatureCHROMIUM cmd;
-  cmd.Init(kBadBucketId, shared_memory_id_, shared_memory_offset_);
-  EXPECT_NE(error::kNoError, ExecuteCmd(cmd));
-}
-
 TEST_P(GLES2DecoderTest, RequestExtensionCHROMIUMBadBucket) {
   const uint32_t kBadBucketId = 123;
   cmds::RequestExtensionCHROMIUM cmd;

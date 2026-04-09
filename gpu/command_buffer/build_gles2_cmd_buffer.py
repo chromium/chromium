@@ -1815,15 +1815,6 @@ _FUNCTION_INFO = {
     'type': 'StateSet',
     'state': 'ClearStencil',
   },
-  'EnableFeatureCHROMIUM': {
-    'type': 'Custom',
-    'data_transfer_methods': ['shm'],
-    'decoder_func': 'DoEnableFeatureCHROMIUM',
-    'cmd_args': 'GLuint bucket_id, GLint* result',
-    'result': ['GLint'],
-    'extension': 'GL_CHROMIUM_enable_feature',
-    'pepper_interface': 'ChromiumEnableFeature',
-  },
   'CompileShader': {'decoder_func': 'DoCompileShader', 'unit_test': False},
   'CompressedTexImage2D': {
     'type': 'Custom',

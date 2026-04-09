@@ -1860,11 +1860,6 @@ GLuint GLES2TraceImplementation::GetMaxValueInBufferCHROMIUM(GLuint buffer_id,
   return gl_->GetMaxValueInBufferCHROMIUM(buffer_id, count, type, offset);
 }
 
-GLboolean GLES2TraceImplementation::EnableFeatureCHROMIUM(const char* feature) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::EnableFeatureCHROMIUM");
-  return gl_->EnableFeatureCHROMIUM(feature);
-}
-
 void* GLES2TraceImplementation::MapBufferCHROMIUM(GLuint target,
                                                   GLenum access) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::MapBufferCHROMIUM");

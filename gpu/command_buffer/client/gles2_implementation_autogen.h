@@ -898,8 +898,6 @@ GLuint GetMaxValueInBufferCHROMIUM(GLuint buffer_id,
                                    GLenum type,
                                    GLuint offset) override;
 
-GLboolean EnableFeatureCHROMIUM(const char* feature) override;
-
 void* MapBufferCHROMIUM(GLuint target, GLenum access) override;
 
 GLboolean UnmapBufferCHROMIUM(GLuint target) override;

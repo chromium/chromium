@@ -1358,43 +1358,6 @@ error::Error GLES2DecoderPassthroughImpl::HandlePushGroupMarkerEXT(
   return DoPushGroupMarkerEXT(0, str.c_str());
 }
 
-error::Error GLES2DecoderPassthroughImpl::HandleEnableFeatureCHROMIUM(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::EnableFeatureCHROMIUM& c =
-      *static_cast<const volatile gles2::cmds::EnableFeatureCHROMIUM*>(
-          cmd_data);
-  uint32_t bucket_id = c.bucket_id;
-  uint32_t result_shm_id = c.result_shm_id;
-  uint32_t result_shm_offset = c.result_shm_offset;
-
-  Bucket* bucket = GetBucket(bucket_id);
-  if (!bucket || bucket->size() == 0) {
-    return error::kInvalidArguments;
-  }
-  typedef cmds::EnableFeatureCHROMIUM::Result Result;
-  Result* result = GetSharedMemoryAs<Result*>(result_shm_id, result_shm_offset,
-                                              sizeof(*result));
-  if (!result) {
-    return error::kOutOfBounds;
-  }
-  // Check that the client initialized the result.
-  if (*result != 0) {
-    return error::kInvalidArguments;
-  }
-  std::string feature_str;
-  if (!bucket->GetAsString(&feature_str)) {
-    return error::kInvalidArguments;
-  }
-  error::Error error = DoEnableFeatureCHROMIUM(feature_str.c_str());
-  if (error != error::kNoError) {
-    return error;
-  }
-
-  *result = 1;  // true.
-  return error::kNoError;
-}
-
 error::Error GLES2DecoderPassthroughImpl::HandleMapBufferRange(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {

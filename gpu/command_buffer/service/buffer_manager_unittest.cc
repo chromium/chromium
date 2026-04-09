@@ -505,7 +505,6 @@ TEST_F(BufferManagerTest, MaxValueCacheClearedCorrectly) {
 }
 
 TEST_F(BufferManagerTest, BindBufferConflicts) {
-  manager_->set_allow_buffers_on_multiple_targets(false);
   GLuint client_id = 1;
   GLuint service_id = 101;
 
