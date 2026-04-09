@@ -143,9 +143,9 @@ When packaging clang/LLVM on our various supported platforms (`upload_*_clang`
 tryjobs), we run the entire LLVM test suite and block the build if any
 test failed. The most common test failures we see are Mac and Windows-specific
 tests since upstream LLVM is mostly Linux-focused. There are public bots that
-also run LLVM tests, mostly accessible from https://lab.llvm.org/buildbot.
+also run LLVM tests, mostly accessible from <https://lab.llvm.org/buildbot>.
 There are also some Apple bots running at
-https://green.lab.llvm.org/job/llvm.org/ which mirror test failures we see on
+<https://green.lab.llvm.org/job/llvm.org/> which mirror test failures we see on
 Mac. Reverting the culprit change upstream with a pointer to a public bot
 showing the test failure is encouraged.
 
@@ -155,7 +155,7 @@ policy](https://llvm.org/docs/DeveloperPolicy.html#patch-reversion-policy).
 ## Disk out of space
 
 If there are any issues with disk running out of space, file a go/bug-a-trooper
-bug, for example https://crbug.com/1105134.
+bug, for example <https://crbug.com/1105134>.
 
 ## Is it the compiler?
 
@@ -230,13 +230,15 @@ things:
 
    If that doesn't work, use `git bisect`. Use this as a template for the bisect
    run script:
+
    ```shell
    #!/bin/bash
    cd $(dirname $0)  # get into llvm build dir
    ninja -j900 clang || exit 125 # skip revisions that don't compile
    ./t-8f292b.sh || exit 1  # exit 0 if good, 1 if bad
    ```
-1. File an upstream bug like https://llvm.org/PR43016. Usually the unminimized repro
+
+1. File an upstream bug like <https://llvm.org/PR43016>. Usually the unminimized repro
    is too large for LLVM's bugzilla, so attach it to a (public) crbug and link
    to that from the LLVM bug. Then revert with a commit message like
    "Revert r368987, it caused PR43016."
@@ -331,7 +333,7 @@ To use `ld.lld`'s `--reproduce` flag, follow these steps:
    address, you won't be able to make a world-shareable link to it, so upload
    it in a Window where you're signed in with your @chromium account.
 
-1. File an LLVM bug linking to the file. Example: https://llvm.org/PR43241
+1. File an LLVM bug linking to the file. Example: <https://llvm.org/PR43241>
 
 TODO: Describe object file bisection, identify obj with symbol that no longer
 has the section.
@@ -343,13 +345,13 @@ These steps can be used to debug such problems.
 
 Notes:
 
- - All steps assume they are run from the output directory (the same directory args.gn is in).
+- All steps assume they are run from the output directory (the same directory args.gn is in).
 
- - Commands have been shortened for clarity. In particular, Chromium build commands are
+- Commands have been shortened for clarity. In particular, Chromium build commands are
    generally long, with many parts that you just copy-paste when debugging. These have
    largely been omitted.
 
- - The commands below use "clang++", where in practice there would be some path prefix
+- The commands below use "clang++", where in practice there would be some path prefix
    in front of this. Make sure you are invoking the right clang++. In particular, there
    may be one in the PATH which behaves very differently.
 
@@ -358,8 +360,8 @@ Notes:
 To get the command that is used to link base_unittests:
 
 ```sh
-$ rm base_unittests
-$ ninja -n -d keeprsp -v base_unittests
+rm base_unittests
+ninja -n -d keeprsp -v base_unittests
 ```
 
 This will print a command line. It will also write a file called `base_unittests.rsp`, which
@@ -378,7 +380,7 @@ The script `tools/clang/scripts/expand_thin_archives.py` can be used for this pu
 For example:
 
 ```sh
-$ ../../tools/clang/scripts/expand_thin_archives.py -p=-Wl, -- @base_unittests.rsp > base_unittests.expanded.rsp
+../../tools/clang/scripts/expand_thin_archives.py -p=-Wl, -- @base_unittests.rsp > base_unittests.expanded.rsp
 ```
 
 The `-p` parameter here specifies the prefix for parameters to be passed to the linker.
@@ -386,7 +388,7 @@ If you are invoking the linker directly (as opposed to through clang++), the pre
 be empty.
 
 ```sh
-$ ../../tools/clang/scripts/expand_thin_archives.py -p='', -- @base_unittests.rsp > base_unittests.expanded.rsp
+../../tools/clang/scripts/expand_thin_archives.py -p='', -- @base_unittests.rsp > base_unittests.expanded.rsp
 ```
 
 ### Remove -Wl,--start-group and -Wl,--end-group
@@ -409,20 +411,20 @@ In a ThinLTO build, what is normally the compile step that produces native objec
 instead produces LLVM bitcode files. A simple example would be:
 
 ```sh
-$ clang++ -c -flto=thin foo.cpp -o foo.o
+clang++ -c -flto=thin foo.cpp -o foo.o
 ```
 
 In a Chromium build, these files reside under `obj/`, and you can generate them using ninja.
 For example:
 
 ```sh
-$ ninja obj/base/base/lock.o
+ninja obj/base/base/lock.o
 ```
 
 These can be fed to `llvm-dis` to produce textual LLVM IR:
-   
+
 ```
-$ llvm-dis -o - obj/base/base/lock.o | less
+llvm-dis -o - obj/base/base/lock.o | less
 ```
 
 When using split LTO unit (`-fsplit-lto-unit`, which is required for
@@ -431,9 +433,9 @@ some features, CFI among them), this may produce a message like:
     llvm-dis: error: Expected a single module
 
    In that case, you can use `llvm-modextract`:
-   
+
 ```sh
-$ llvm-modextract -n 0 -o - obj/base/base/lock.o | llvm-dis -o - | less
+llvm-modextract -n 0 -o - obj/base/base/lock.o | llvm-dis -o - | less
 ```
 
 ### Saving Intermediate Bitcode
@@ -442,23 +444,25 @@ The ThinLTO linking process proceeds in a number of stages. The bitcode that is
 generated during these stages can be saved by passing `-save-temps` to the linker:
 
 ```
-$ clang++ -fuse-ld=lld -Wl,-save-temps -o ./base_unittests @base_unittests.expanded.rsp
+clang++ -fuse-ld=lld -Wl,-save-temps -o ./base_unittests @base_unittests.expanded.rsp
 ```
 
 This generates files such as:
- - lock.o.0.preopt.bc
- - lock.o.3.import.bc
- - lock.o.5.precodegen.bc
+
+- lock.o.0.preopt.bc
+- lock.o.3.import.bc
+- lock.o.5.precodegen.bc
 
 in the directory where lock.o is (obj/base/base).
 
 These can be fed to `llvm-dis` to produce textual LLVM IR. They show
 how the code is transformed as it progresses through ThinLTO stages.
 Of particular interest are:
- - .3.import.bc, which shows the IR after definitions have been imported from
+
+- .3.import.bc, which shows the IR after definitions have been imported from
    other modules, but before optimizations. Running this through LLVM's `opt`
    tool with the right optimization level can often reproduce issues.
- - .5.precodegen.bc, which shows the IR just before it is transformed to native
+- .5.precodegen.bc, which shows the IR just before it is transformed to native
    code. Running this through LLVM's `llc` tool with the right optimization level
    can often reproduce issues.
 
@@ -469,12 +473,13 @@ shows symbol resolutions. These look like:
 
 In this example, run_all_base_unittests.o contains a symbol named
 main, with flags plx.
-   
+
 The possible flags are:
- - p: prevailing: of symbols with this name, this one has been chosen.
- - l: final definition in this linkage unit.
- - r: redefined by the linker.
- - x: visible to regular (that is, non-LTO) objects.
+
+- p: prevailing: of symbols with this name, this one has been chosen.
+- l: final definition in this linkage unit.
+- r: redefined by the linker.
+- x: visible to regular (that is, non-LTO) objects.
 
 ### Code Generation for a Single Module
 
@@ -487,7 +492,7 @@ optimizations/codegen on files matching the pattern and skip linking. This is
 helpful especially in combination with `-Wl,-save-temps`.
 
 ```sh
-$ clang++ -fuse-ld=lld -Wl,--thinlto-single-module=obj/base/base/lock.o -o ./base_unittests @base_unittests.expanded.rsp
+clang++ -fuse-ld=lld -Wl,--thinlto-single-module=obj/base/base/lock.o -o ./base_unittests @base_unittests.expanded.rsp
 ```
 
 You should see
@@ -497,6 +502,11 @@ You should see
 ```
 
 being printed.
+
+## Crubit Failure
+
+If one of the ToT Rust bots fails with an error that looks related to crubit,
+you can file a bug against the current crubit gardener (go/crubit-onduty).
 
 ## Tips and tricks
 
@@ -510,5 +520,5 @@ $ diff -u <(cd out.good && find . -name "*.o" -exec sha1sum {} \; | sort -k2) \
 Or with cmp:
 
 ```
-$ find good -name "*.o" -exec bash -c 'cmp -s $0 ${0/good/bad} || echo $0' {} \;
+find good -name "*.o" -exec bash -c 'cmp -s $0 ${0/good/bad} || echo $0' {} \;
 ```
