@@ -346,8 +346,6 @@ TEST_P(SecurePaymentConfirmationAppBrowserBindingTest,
   web_contents_ = web_contents_factory_.CreateWebContents(&context_);
   base::HistogramTester histograms;
   base::RunLoop run_loop;
-  base::test::ScopedFeatureList features(
-      blink::features::kSecurePaymentConfirmationBrowserBoundKeys);
   auto authenticator =
       std::make_unique<webauthn::MockInternalAuthenticator>(web_contents_);
   webauthn::MockInternalAuthenticator* mock_authenticator = authenticator.get();

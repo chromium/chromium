@@ -598,9 +598,6 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_BrowserBroundPubKeyCredParams) {
   request_cred_params.push_back(std::move(cred_param_1));
   request->setBrowserBoundPubKeyCredParams(std::move(request_cred_params));
 
-  // browserBoundPubKeyCredParams() are behind the
-  // SecurePaymentConfirmationBrowserBoundKeys runtime features flag. This test
-  // needs the flag's status at "test" or greater.
   ScriptValue script_value(scope.GetIsolate(),
                            ToV8Traits<SecurePaymentConfirmationRequest>::ToV8(
                                scope.GetScriptState(), request));

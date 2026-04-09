@@ -5034,16 +5034,6 @@
       status: "stable",
     },
     {
-      name: "SecurePaymentConfirmationBrowserBoundKeys",
-      status: {
-        "Android": "stable",
-        "Mac": "stable",
-        "Win": "stable",
-        "iOS": "",
-        "default": "test",
-      },
-    },
-    {
       name: "SecurePaymentConfirmationCapabilities",
       status: "stable",
     },

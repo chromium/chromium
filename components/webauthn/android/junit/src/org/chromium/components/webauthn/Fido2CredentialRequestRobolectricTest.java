@@ -59,12 +59,12 @@ import org.chromium.blink.mojom.GetAssertionResponse;
 import org.chromium.blink.mojom.GetCredentialOptions;
 import org.chromium.blink.mojom.GetCredentialResponse;
 import org.chromium.blink.mojom.Mediation;
+import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
 import org.chromium.blink.mojom.PublicKeyCredentialReportOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
-import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webauthn.cred_man.CredManHelper;
 import org.chromium.components.webauthn.cred_man.CredManSupportProvider;
@@ -90,7 +90,6 @@ import java.util.List;
         })
 @DisableFeatures({
     WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_FOR_DEV,
-    BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_BROWSER_BOUND_KEYS,
     WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_REQUEST_EXTRA_BUNDLE
 })
 public class Fido2CredentialRequestRobolectricTest {
@@ -813,8 +812,12 @@ public class Fido2CredentialRequestRobolectricTest {
 
     private void handleMakeCredentialRequest(Bundle browserOptions) {
         setUpMakeCredentialCallback();
+        PaymentOptions paymentOptions = null;
+        if (mCreationOptions.isPaymentCredentialCreation) {
+            paymentOptions = Fido2ApiTestHelper.createPaymentOptions();
+        }
         mRequest.handleMakeCredentialRequest(
-                mCreationOptions, browserOptions, mOrigin, mOrigin, /* paymentOptions= */ null);
+                mCreationOptions, browserOptions, mOrigin, mOrigin, paymentOptions);
     }
 
     private void handleGetCredentialRequest() {

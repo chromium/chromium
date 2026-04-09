@@ -114,10 +114,6 @@ class BrowserBoundKeyDeleterServiceDesktopTest : public ::testing::Test {
   std::unique_ptr<BrowserBoundKeyDeleterServiceDesktop> deleter_;
   raw_ptr<MockLocalCredentialManagement> local_credential_management_;
   raw_ptr<MockPasskeyBrowserBinder> passkey_browser_binder_;
-
- private:
-  base::test::ScopedFeatureList feature_list_{
-      blink::features::kSecurePaymentConfirmationBrowserBoundKeys};
 };
 
 TEST_F(BrowserBoundKeyDeleterServiceDesktopTest,
@@ -348,25 +344,6 @@ TEST_F(BrowserBoundKeyDeleterServiceDesktopTest,
   EXPECT_CALL(*passkey_browser_binder_ptr, GetAllBrowserBoundKeys).Times(0);
 
   deleter->RemoveInvalidBBKs();
-}
-
-class BrowserBoundKeyDeleterServiceDesktopBbkFeatureDisabledTest
-    : public BrowserBoundKeyDeleterServiceDesktopTest {
- public:
-  BrowserBoundKeyDeleterServiceDesktopBbkFeatureDisabledTest() {
-    feature_list_.InitAndDisableFeature(
-        blink::features::kSecurePaymentConfirmationBrowserBoundKeys);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(BrowserBoundKeyDeleterServiceDesktopBbkFeatureDisabledTest,
-       RemoveInvalidBBKs) {
-  EXPECT_CALL(*passkey_browser_binder_, GetAllBrowserBoundKeys).Times(0);
-
-  deleter_->RemoveInvalidBBKs();
 }
 
 }  // namespace payments

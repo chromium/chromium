@@ -211,23 +211,6 @@ static constexpr char kMakeCredentialUvDiscouraged[] = R"((() => {
            e => window.domAutomationController.send('error ' + e));
 })())";
 
-static constexpr char kMakeCredentialSecurePaymentConfirmation[] = R"((() => {
-  return navigator.credentials.create({ publicKey: {
-    rp: { name: "www.example.com" },
-    user: { id: new Uint8Array([0]), name: "foo", displayName: "" },
-    pubKeyCredParams: [{type: "public-key", alg: -7}],
-    challenge: new Uint8Array([0]),
-    timeout: 10000,
-    authenticatorSelection: {
-      userVerification: 'required',
-      residentKey: 'preferred',
-      authenticatorAttachment: 'platform',
-    },
-    extensions: {payment: {isPayment: true}},
-  }}).then(c => window.domAutomationController.send('webauthn: OK'),
-           e => window.domAutomationController.send('error ' + e));
-})())";
-
 static constexpr char kMakeCredentialReturnId[] = R"((() => {
   return navigator.credentials.create({ publicKey: {
     rp: { name: "www.example.com" },
@@ -1032,38 +1015,6 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
 
   // Verify the secret was redacted when being sent for wrapping.
   EXPECT_THAT(GetDeviceLog(), testing::HasSubstr("\"key\": \"[redacted]\""));
-}
-
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, NonWebauthnRequest) {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSecurePaymentConfirmationBrowserBoundKeys)) {
-    GTEST_SKIP() << "With kSecurePaymentConfirmationBrowserBoundKeys the "
-                    "SecurePaymentConfirmationService directs the request to "
-                    "the internal authenticator.";
-  }
-  if (!base::FeatureList::IsEnabled(features::kSecurePaymentConfirmation)) {
-    // SPC is not enabled in this configuration and so the `payment` extension
-    // in the Javascript will be ignored.
-    return;
-  }
-
-  CheckRegistrationStateNotRequested();
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  content::DOMMessageQueue message_queue(web_contents);
-  content::ExecuteScriptAsync(web_contents,
-                              kMakeCredentialSecurePaymentConfirmation);
-  delegate_observer()->WaitForUI();
-
-  // Non-WebAuthn requests (e.g. Secure Payment Confirmation and credit-card
-  // confirmation) must not use the enclave. In some cases, they will disable
-  // the UI, which is not simulated here.
-  EXPECT_TRUE(
-      dialog_model()->step() ==
-          AuthenticatorRequestDialogModel::Step::kChromeProfileCreatePasskey ||
-      dialog_model()->step() ==
-          AuthenticatorRequestDialogModel::Step::kErrorNoAvailableTransports);
 }
 
 // Regression test for https://crbug.com/451876194.

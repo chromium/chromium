@@ -315,11 +315,6 @@ class SecurePaymentConfirmationServiceCredentialTest
     : public SecurePaymentConfirmationServiceTestBase,
       public ::testing::TestWithParam<CredentialTestParams> {
  public:
-  SecurePaymentConfirmationServiceCredentialTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kSecurePaymentConfirmationBrowserBoundKeys);
-  }
-
   void SetUpTest(bool is_off_the_record) {
     InitializeSecurePaymentConfirmationService(/*with_authenticator=*/true,
                                                is_off_the_record);
@@ -356,8 +351,6 @@ class SecurePaymentConfirmationServiceCredentialTest
   base::MockCallback<
       mojom::SecurePaymentConfirmationService::MakePaymentCredentialCallback>
       mock_payment_credential_callback_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 static ::testing::Matcher<

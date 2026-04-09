@@ -184,6 +184,8 @@ class SecurePaymentConfirmationAppFactoryTest : public testing::Test {
   // after it to avoid a dangling raw_ptr during destruction.
   raw_ptr<MockSecurePaymentConfirmationCredentialFinder>
       mock_credential_finder_;
+  scoped_refptr<FakeBrowserBoundKeyStore> browser_bound_key_store_ =
+      base::MakeRefCounted<FakeBrowserBoundKeyStore>();
 
  private:
   crypto::ScopedFakeUnexportableKeyProvider scoped_key_provider_;
@@ -786,20 +788,8 @@ TEST_F(SecurePaymentConfirmationAppFactoryPaymentEntitiesLogosTest,
                               kPaymentEntity2LogoUrl)));
 }
 
-#if !BUILDFLAG(IS_IOS)
-class SecurePaymentConfirmationAppFactoryBrowserBoundKeysTest
-    : public SecurePaymentConfirmationAppFactoryTest {
- protected:
-  scoped_refptr<FakeBrowserBoundKeyStore> browser_bound_key_store_ =
-      base::MakeRefCounted<FakeBrowserBoundKeyStore>();
-
- private:
-  base::test::ScopedFeatureList feature_list_{
-      blink::features::kSecurePaymentConfirmationBrowserBoundKeys};
-};
-
-// Test that the browser bound key is retrieved
-TEST_F(SecurePaymentConfirmationAppFactoryBrowserBoundKeysTest,
+// Test that the browser bound key is retrieved.
+TEST_F(SecurePaymentConfirmationAppFactoryTest,
        ProvidesBrowserBoundingToSecurePaymentConfirmationApp) {
   url::Origin caller_origin = url::Origin::Create(GURL("https://site.example"));
   std::vector<uint8_t> browser_bound_key_id({0x11, 0x12, 0x13, 0x14});
@@ -846,9 +836,6 @@ TEST_F(SecurePaymentConfirmationAppFactoryBrowserBoundKeysTest,
   EXPECT_EQ(mock_service_.get(),
             passkey_browser_binder->GetWebDataServiceForTesting());
 }
-#endif  // !BUILDFLAG(IS_IOS)
-
-
 
 // Test that the SecurePaymentConfirmationApp can be created even when there is
 // no user-verify platform authenticator available. This will ultimately create

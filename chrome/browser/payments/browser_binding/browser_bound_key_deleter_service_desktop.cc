@@ -44,11 +44,6 @@ void BrowserBoundKeyDeleterServiceDesktop::RemoveInvalidBBKs() {
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kSecurePaymentConfirmationBrowserBoundKeys)) {
-    return;
-  }
-
   auto passkey_browser_binder =
       passkey_browser_binder_for_testing_
           ? std::move(passkey_browser_binder_for_testing_)

@@ -111,10 +111,6 @@ class BrowserBoundKeyDeleterServiceAndroidTest : public ::testing::Test {
   std::unique_ptr<BrowserBoundKeyDeleterServiceAndroid> deleter_;
   raw_ptr<webauthn::MockInternalAuthenticator> authenticator_;
   raw_ptr<MockPasskeyBrowserBinder> passkey_browser_binder_;
-
- private:
-  base::test::ScopedFeatureList feature_list_{
-      blink::features::kSecurePaymentConfirmationBrowserBoundKeys};
 };
 
 TEST_F(BrowserBoundKeyDeleterServiceAndroidTest, RemoveInvalidBBKs) {
@@ -266,28 +262,6 @@ TEST_F(BrowserBoundKeyDeleterServiceAndroidTest,
   EXPECT_CALL(*passkey_browser_binder_, GetAllBrowserBoundKeys).Times(0);
 
   deleter->RemoveInvalidBBKs();
-}
-
-class BrowserBoundKeyDeleterServiceAndroidBbkFeatureDisabledTest
-    : public BrowserBoundKeyDeleterServiceAndroidTest {
- public:
-  BrowserBoundKeyDeleterServiceAndroidBbkFeatureDisabledTest() {
-    feature_list_.InitAndDisableFeature(
-        blink::features::kSecurePaymentConfirmationBrowserBoundKeys);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(BrowserBoundKeyDeleterServiceAndroidBbkFeatureDisabledTest,
-       RemoveInvalidBBKs) {
-  EXPECT_CALL(*authenticator_, IsGetMatchingCredentialIdsSupported())
-      .WillRepeatedly(Return(true));
-
-  EXPECT_CALL(*passkey_browser_binder_, GetAllBrowserBoundKeys).Times(0);
-
-  deleter_->RemoveInvalidBBKs();
 }
 
 }  // namespace payments

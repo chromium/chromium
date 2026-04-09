@@ -4079,13 +4079,6 @@ inline constexpr char kSaasUsageReportingDescription[] =
     "Enable reporting of SaaS usage. This feature only takes effect if a "
     "related enterprise policy is also configured by an administrator.";
 
-inline constexpr char kSecurePaymentConfirmationBrowserBoundKeysName[] =
-    "Secure Payment Confirmation Browser Bound Key";
-inline constexpr char kSecurePaymentConfirmationBrowserBoundKeysDescription[] =
-    "This flag enables an additional browser-bound signature in secure payment "
-    "confirmation in PaymentRequest and for WebAuthn payment credentials.";
-
-
 inline constexpr char kSegmentationSurveyPageName[] =
     "Segmentation survey internals page and model";
 inline constexpr char kSegmentationSurveyPageDescription[] =

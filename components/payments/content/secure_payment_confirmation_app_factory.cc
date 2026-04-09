@@ -510,23 +510,20 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
   std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder;
   bool device_supports_browser_bound_keys_in_hardware = false;
 #if !BUILDFLAG(IS_IOS)
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSecurePaymentConfirmationBrowserBoundKeys)) {
-    scoped_refptr key_store =
-        browser_bound_key_store_for_testing_
-            ? std::move(browser_bound_key_store_for_testing_)
-            : GetBrowserBoundKeyStoreInstance(BrowserBoundKeyStore::Config{
+  scoped_refptr key_store =
+      browser_bound_key_store_for_testing_
+          ? std::move(browser_bound_key_store_for_testing_)
+          : GetBrowserBoundKeyStoreInstance(BrowserBoundKeyStore::Config{
 #if BUILDFLAG(IS_MAC)
-                  .keychain_access_group =
-                      request->delegate->GetPaymentRequestDelegate()
-                          ->GetSecurePaymentConfirmationKeychainAccessGroup()
+                .keychain_access_group =
+                    request->delegate->GetPaymentRequestDelegate()
+                        ->GetSecurePaymentConfirmationKeychainAccessGroup()
 #endif  // BUILDFLAG(IS_MAC)
-              });
-    device_supports_browser_bound_keys_in_hardware =
-        key_store->GetDeviceSupportsHardwareKeys();
-    passkey_browser_binder = std::make_unique<PasskeyBrowserBinder>(
-        std::move(key_store), request->web_data_service);
-  }
+            });
+  device_supports_browser_bound_keys_in_hardware =
+      key_store->GetDeviceSupportsHardwareKeys();
+  passkey_browser_binder = std::make_unique<PasskeyBrowserBinder>(
+      std::move(key_store), request->web_data_service);
 #endif  // !BUILDFLAG(IS_IOS)
 
   request->delegate->OnPaymentAppCreated(

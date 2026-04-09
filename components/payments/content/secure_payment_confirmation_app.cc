@@ -293,9 +293,7 @@ SecurePaymentConfirmationApp::SetAppSpecificResponseFields(
           response_->info.Clone(), response_->authenticator_attachment,
           response_->signature, response_->user_handle,
           response_->extensions.Clone());
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSecurePaymentConfirmationBrowserBoundKeys) &&
-      assertion_response->extensions->payment.is_null()) {
+  if (assertion_response->extensions->payment.is_null()) {
     assertion_response->extensions->payment =
         blink::mojom::AuthenticationExtensionsPaymentResponse::New();
   }

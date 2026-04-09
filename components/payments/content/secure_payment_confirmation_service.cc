@@ -179,9 +179,7 @@ void SecurePaymentConfirmationService::MakePaymentCredential(
     MakePaymentCredentialCallback callback) {
 #if !BUILDFLAG(IS_IOS)
   std::string relying_party_id;
-  if (options &&
-      base::FeatureList::IsEnabled(
-          blink::features::kSecurePaymentConfirmationBrowserBoundKeys)) {
+  if (options) {
     relying_party_id = options->relying_party.id;
     if (!passkey_browser_binder_) {
       if (scoped_refptr<BrowserBoundKeyStore> key_store =
@@ -263,19 +261,16 @@ void SecurePaymentConfirmationService::OnAuthenticatorMakeCredential(
     ::blink::mojom::AuthenticatorStatus authenticator_status,
     ::blink::mojom::MakeCredentialAuthenticatorResponsePtr response,
     ::blink::mojom::WebAuthnDOMExceptionDetailsPtr maybe_exception_details) {
-  if (response &&
-      base::FeatureList::IsEnabled(
-          blink::features::kSecurePaymentConfirmationBrowserBoundKeys)) {
-    if (browser_bound_key) {
-      std::vector<uint8_t> signature_output =
-          browser_bound_key->Get().Sign(response->info->client_data_json);
-      response->payment =
-          blink::mojom::AuthenticationExtensionsPaymentResponse::New();
-      response->payment->browser_bound_signature = std::move(signature_output);
+  if (response && browser_bound_key) {
+    std::vector<uint8_t> signature_output =
+        browser_bound_key->Get().Sign(response->info->client_data_json);
+    response->payment =
+        blink::mojom::AuthenticationExtensionsPaymentResponse::New();
+    response->payment->browser_bound_signature = std::move(signature_output);
 
-      // Last used time is needed on platforms where the credentials cannot be
-      // listed by platform APIs.
-      std::optional<base::Time> last_used;
+    // Last used time is needed on platforms where the credentials cannot be
+    // listed by platform APIs.
+    std::optional<base::Time> last_used;
 #if BUILDFLAG(IS_WIN)
       last_used = base::Time::NowFromSystemTime();
 #endif
@@ -283,7 +278,6 @@ void SecurePaymentConfirmationService::OnAuthenticatorMakeCredential(
       passkey_browser_binder_->BindKey(
           std::move(*browser_bound_key), response->info->raw_id,
           std::move(relying_party), std::move(last_used));
-    }
   }
 
   std::move(callback).Run(authenticator_status, std::move(response),
