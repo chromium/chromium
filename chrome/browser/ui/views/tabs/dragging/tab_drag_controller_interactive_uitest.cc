@@ -39,8 +39,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -1040,23 +1038,25 @@ class DetachToBrowserTabDragControllerTest
     observer.Wait();
   }
 
-  // Executes |task| once the |new_browser| exists in the
-  // BrowserList and its widget is visible. Effectively guarantees execution
-  // safely after TabDragController's VisibilityWaiter has exited.
-  // A generic asynchronous browser waiter that intercepts OnBrowserAdded
-  // and queues a double-PostTask before RunMoveLoop() spins up.
-  class AsyncBrowserWaiter : public BrowserListObserver {
+  // Executes |task| once the |new_browser| exists in the BrowserCollection and
+  // its widget is visible. Effectively guarantees execution safely after
+  // TabDragController's VisibilityWaiter has exited. A generic asynchronous
+  // browser waiter that intercepts OnBrowserCreated and queues a
+  // double-PostTask before RunMoveLoop() spins up.
+  class AsyncBrowserWaiter : public BrowserCollectionObserver {
    public:
-    explicit AsyncBrowserWaiter(base::OnceCallback<void(Browser*)> callback)
+    explicit AsyncBrowserWaiter(
+        base::OnceCallback<void(BrowserWindowInterface*)> callback)
         : callback_(std::move(callback)) {
-      BrowserList::AddObserver(this);
+      browser_collection_observation_.Observe(
+          GlobalBrowserCollection::GetInstance());
     }
-    ~AsyncBrowserWaiter() override { BrowserList::RemoveObserver(this); }
+    ~AsyncBrowserWaiter() override = default;
 
-    void OnBrowserAdded(Browser* browser) override {
-      BrowserList::RemoveObserver(this);
+    void OnBrowserCreated(BrowserWindowInterface* browser) override {
+      browser_collection_observation_.Reset();
       test::PostTaskToRunMoveLoop(base::BindOnce(
-          [](base::WeakPtr<AsyncBrowserWaiter> w, Browser* b) {
+          [](base::WeakPtr<AsyncBrowserWaiter> w, BrowserWindowInterface* b) {
             if (w && w->callback_) {
               std::move(w->callback_).Run(b);
             }
@@ -1065,7 +1065,9 @@ class DetachToBrowserTabDragControllerTest
     }
 
    private:
-    base::OnceCallback<void(Browser*)> callback_;
+    base::OnceCallback<void(BrowserWindowInterface*)> callback_;
+    base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+        browser_collection_observation_{this};
     base::WeakPtrFactory<AsyncBrowserWaiter> weak_ptr_factory_{this};
   };
 
@@ -3519,7 +3521,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ui_test_utils::WaitForBrowserSetLastActive(browser());
 
   // Create another browser.
-  Browser* browser2 = CreateAnotherBrowserAndResize();
+  BrowserWindowInterface* browser2 = CreateAnotherBrowserAndResize();
   ui_test_utils::WaitForBrowserSetLastActive(browser2);
   TabStrip* tab_strip2 = GetTabStripForBrowser(browser2);
 
@@ -3537,23 +3539,24 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   // AsyncBrowserWaiter because waiting synchronously via BrowserCreatedObserver
   // here would hijack the thread before TabDragController::RunMoveLoop() can
   // spin up its own nested loop, causing deadlocks on Wayland and X11.
-  Browser* new_browser = nullptr;
+  BrowserWindowInterface* new_browser = nullptr;
   TabStrip* new_tab_strip = nullptr;
 
-  AsyncBrowserWaiter waiter(base::BindLambdaForTesting([&](Browser* browser) {
-    new_browser = browser;
-    new_tab_strip = GetTabStripForBrowser(browser);
+  AsyncBrowserWaiter waiter(
+      base::BindLambdaForTesting([&](BrowserWindowInterface* browser) {
+        new_browser = browser;
+        new_tab_strip = GetTabStripForBrowser(browser);
 
-    ASSERT_FALSE(IsDragSessionActive(tab_strip2));
-    ASSERT_TRUE(IsDragSessionActive(new_tab_strip));
-    ASSERT_TRUE(TabDragController::IsActive());
+        ASSERT_FALSE(IsDragSessionActive(tab_strip2));
+        ASSERT_TRUE(IsDragSessionActive(new_tab_strip));
+        ASSERT_TRUE(TabDragController::IsActive());
 
 #if BUILDFLAG(IS_WIN)
-    ReleaseInput(0, /*async=*/true);
+        ReleaseInput(0, /*async=*/true);
 #else
-    ReleaseInput();
+        ReleaseInput();
 #endif
-  }));
+      }));
 
   // Drag out of tab_strip2 again.
   EXPECT_TRUE(DragInputToCenterAsync(tab_strip2,
@@ -3563,8 +3566,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
     return new_tab_strip && !IsDragSessionActive(new_tab_strip) &&
            !TabDragController::IsActive();
   }));
-  EXPECT_EQ("100", IDString(browser2->tab_strip_model()));
-  EXPECT_EQ("0 1", IDString(new_browser->tab_strip_model()));
+  EXPECT_EQ("100", IDString(browser2->GetTabStripModel()));
+  EXPECT_EQ("0 1", IDString(new_browser->GetTabStripModel()));
   EXPECT_FALSE(GetIsDragged(new_browser));
 }
 
@@ -3883,7 +3886,7 @@ class AsyncEscapePresser : public views::WidgetObserver {
 
 void PressEscapeWhileDetachedHeaderStep2(
     DetachToBrowserTabDragControllerTest* test,
-    Browser* new_browser) {
+    BrowserWindowInterface* new_browser) {
   if (!new_browser) {
     new_browser = ui_test_utils::GetBrowserNotInSet({test->browser()});
   }
@@ -3927,7 +3930,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
   ui_test_utils::BrowserDestroyedObserver browser_removed_observer;
   AsyncBrowserWaiter waiter(
-      base::BindLambdaForTesting([this](Browser* new_browser) {
+      base::BindLambdaForTesting([this](BrowserWindowInterface* new_browser) {
         PressEscapeWhileDetachedHeaderStep2(this, new_browser);
       }));
   DragToDetachGroupAndNotify(tab_strip, base::DoNothing(), group);
@@ -4043,7 +4046,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
   ui_test_utils::BrowserDestroyedObserver browser_destroyed_observer;
   AsyncBrowserWaiter waiter(
-      base::BindLambdaForTesting([this](Browser* new_browser) {
+      base::BindLambdaForTesting([this](BrowserWindowInterface* new_browser) {
         PressEscapeWhileDetachedHeaderStep2(this, new_browser);
       }));
   DragToDetachGroupAndNotify(tab_strip, base::DoNothing(), group);
@@ -4637,7 +4640,7 @@ namespace {
 
 // Invoked from the nested run loop.
 void CancelOnNewTabWhenDraggingStep2(DetachToBrowserTabDragControllerTest* test,
-                                     Browser* new_browser,
+                                     BrowserWindowInterface* new_browser,
                                      base::OnceClosure quit_closure,
                                      content::WebContents** contents_out) {
   if (!new_browser) {
@@ -4687,7 +4690,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   // beginning to exercise past crash when model/tabstrip got out of sync.
   // crbug.com/474082
   AsyncBrowserWaiter waiter(
-      base::BindLambdaForTesting([&](Browser* new_browser) {
+      base::BindLambdaForTesting([&](BrowserWindowInterface* new_browser) {
         CancelOnNewTabWhenDraggingStep2(this, new_browser,
                                         std::move(quit_closure), &web_contents);
       }));
