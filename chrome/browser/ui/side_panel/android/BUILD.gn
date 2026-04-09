@@ -35,9 +35,13 @@ android_library("java") {
     "//build/android:build_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/ui/browser_window/public/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
-  srcjar_deps = [ ":jni_headers" ]
+  srcjar_deps = [
+    ":jni_headers",
+    ":side_panel_enums_java",
+  ]
 }
 
 # Public Java factory
@@ -56,4 +60,8 @@ android_library_factory("factory_java") {
 generate_jni("jni_headers") {
   visibility = [ ":*" ]
   sources = [ "java/src/org/chromium/chrome/browser/ui/side_panel/AndroidSidePanelEnabledFn.java" ]
+}
+
+java_cpp_enum("side_panel_enums_java") {
+  sources = [ "//chrome/browser/ui/side_panel/side_panel_enums.h" ]
 }

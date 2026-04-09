@@ -77,6 +77,8 @@ enum class SidePanelAnimationType {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:SidePanelAnimationType)
 
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.side_panel
+// GENERATED_JAVA_PREFIX_TO_STRIP: k
 enum class SidePanelType {
   kMinValue,
   // Panel aligned with the web contents.
