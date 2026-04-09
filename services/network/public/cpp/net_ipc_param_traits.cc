@@ -213,7 +213,6 @@ void ParamTraits<net::SSLInfo>::Write(base::Pickle* m, const param_type& p) {
   WriteParam(m, p.public_key_hashes);
   WriteParam(m, p.signed_certificate_timestamps);
   WriteParam(m, p.ct_policy_compliance);
-  WriteParam(m, p.ocsp_result);
   WriteParam(m, p.is_fatal_cert_error);
 }
 
@@ -239,7 +238,6 @@ bool ParamTraits<net::SSLInfo>::Read(const base::Pickle* m,
          ReadParam(m, iter, &r->public_key_hashes) &&
          ReadParam(m, iter, &r->signed_certificate_timestamps) &&
          ReadParam(m, iter, &r->ct_policy_compliance) &&
-         ReadParam(m, iter, &r->ocsp_result) &&
          ReadParam(m, iter, &r->is_fatal_cert_error);
 }
 

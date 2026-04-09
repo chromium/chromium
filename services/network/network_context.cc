@@ -2189,7 +2189,7 @@ void NetworkContext::CreateHostResolver(
 void NetworkContext::VerifyCertInternal(
     const scoped_refptr<net::X509Certificate>& certificate,
     const net::HostPortPair& host_port,
-    const std::string& ocsp_result,
+    const std::string& ocsp_response,
     const std::string& sct_list,
     CTVerificationMode ct_verification_mode,
     VerifyCertCallback callback) {
@@ -2213,7 +2213,7 @@ void NetworkContext::VerifyCertInternal(
   }
   int result = cert_verifier->Verify(
       net::CertVerifier::RequestParams(certificate, host_port.host(), flags,
-                                       ocsp_result, sct_list),
+                                       ocsp_response, sct_list),
       pending_cert_verify->result.get(),
       base::BindOnce(&NetworkContext::OnVerifyCertComplete,
                      base::Unretained(this), cert_verify_id),
@@ -2230,20 +2230,20 @@ void NetworkContext::VerifyCertInternal(
 void NetworkContext::VerifyCert(
     const scoped_refptr<net::X509Certificate>& certificate,
     const net::HostPortPair& host_port,
-    const std::string& ocsp_result,
+    const std::string& ocsp_response,
     const std::string& sct_list,
     VerifyCertCallback callback) {
-  VerifyCertInternal(certificate, host_port, ocsp_result, sct_list,
+  VerifyCertInternal(certificate, host_port, ocsp_response, sct_list,
                      CTVerificationMode::kTlsCertificate, std::move(callback));
 }
 
 void NetworkContext::VerifyCertForSignedExchange(
     const scoped_refptr<net::X509Certificate>& certificate,
     const net::HostPortPair& host_port,
-    const std::string& ocsp_result,
+    const std::string& ocsp_response,
     const std::string& sct_list,
     VerifyCertCallback callback) {
-  VerifyCertInternal(certificate, host_port, ocsp_result, sct_list,
+  VerifyCertInternal(certificate, host_port, ocsp_response, sct_list,
                      CTVerificationMode::kSignedExchange, std::move(callback));
 }
 

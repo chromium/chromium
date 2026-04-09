@@ -12,7 +12,6 @@
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/sct_status_flags.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
-#include "third_party/boringssl/src/include/openssl/pki/ocsp.h"
 
 namespace net {
 
@@ -107,9 +106,6 @@ class NET_EXPORT SSLInfo {
   // not, why not.
   ct::CTPolicyCompliance ct_policy_compliance =
       ct::CTPolicyCompliance::CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE;
-
-  // OCSP stapling details.
-  bssl::OCSPVerifyResult ocsp_result;
 
   // True if there was a certificate error which should be treated as fatal,
   // and false otherwise.

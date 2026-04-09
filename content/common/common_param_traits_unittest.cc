@@ -116,8 +116,6 @@ TEST(IPCMessageTest, SSLInfo) {
 
   in.ct_policy_compliance =
       net::ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS;
-  in.ocsp_result.response_status = bssl::OCSPVerifyResult::PROVIDED;
-  in.ocsp_result.revocation_status = bssl::OCSPRevocationStatus::REVOKED;
 
   // Now serialize and deserialize.
   base::Pickle msg;
@@ -166,7 +164,6 @@ TEST(IPCMessageTest, SSLInfo) {
             out.signed_certificate_timestamps[0].sct->log_description);
 
   ASSERT_EQ(in.ct_policy_compliance, out.ct_policy_compliance);
-  ASSERT_EQ(in.ocsp_result, out.ocsp_result);
 }
 
 static constexpr viz::FrameSinkId kArbitraryFrameSinkId(1, 1);

@@ -31,6 +31,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/referrer_policy.h"
+#include "third_party/boringssl/src/include/openssl/pki/ocsp.h"
 #include "url/ipc/url_param_traits.h"
 #include "url/origin.h"
 
