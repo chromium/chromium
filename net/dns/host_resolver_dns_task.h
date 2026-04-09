@@ -128,6 +128,15 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
 
   void StartNextTransaction();
 
+  // Returns the DoH resolution details (such as connection protocol and
+  // session source) for this task, if DoH was used. Returns std::nullopt
+  // otherwise. If multiple transactions (e.g., A, AAAA, HTTPS) are executed
+  // concurrently, this retains the details from the first successfully
+  // completed DoH transaction to prevent overwriting.
+  std::optional<DohResolutionDetails> GetDohResolutionDetails() const {
+    return doh_details_;
+  }
+
   base::WeakPtr<HostResolverDnsTask> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -277,6 +286,8 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
 
   // Set to true when HTTPS query is disabled.
   bool https_disabled_ = false;
+
+  std::optional<DohResolutionDetails> doh_details_;
 
   base::WeakPtrFactory<HostResolverDnsTask> weak_ptr_factory_{this};
 };

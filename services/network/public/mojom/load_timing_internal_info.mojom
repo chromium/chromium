@@ -38,12 +38,31 @@ enum ResolutionSource {
 };
 // LINT.ThenChange(//net/dns/resolution_details.h:ResolutionSource)
 
+// Mirror of net::HttpConnectionInfoCoarse.
+// LINT.IfChange(HttpConnectionInfoCoarse)
+enum HttpConnectionInfoCoarse {
+  kHTTP1,
+  kHTTP2,
+  kQUIC,
+  kOTHER,
+};
+// LINT.ThenChange(//net/http/http_connection_info.h:HttpConnectionInfoCoarse)
+
+// Mirror of net::DohResolutionDetails.
+// LINT.IfChange(DohResolutionDetails)
+struct DohResolutionDetails {
+  SessionSource session_source;
+  HttpConnectionInfoCoarse connection_info;
+};
+// LINT.ThenChange(//net/dns/public/resolution_details.h:DohResolutionDetails)
+
 // Mirror of net::ResolutionDetails.
 // LINT.IfChange(ResolutionDetails)
 struct ResolutionDetails {
   ResolutionSource source;
   mojo_base.mojom.TimeDelta? task_completion_delay;
   bool secure_dns_attempted;
+  DohResolutionDetails? doh_details;
 };
 // LINT.ThenChange(//net/dns/public/resolution_details.h:ResolutionDetails)
 

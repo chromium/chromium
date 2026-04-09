@@ -54,6 +54,11 @@ size_t DnsAttempt::server_index() const {
   return server_index_;
 }
 
+std::optional<DohResolutionDetails> DnsAttempt::GetDohResolutionDetails()
+    const {
+  return std::nullopt;
+}
+
 // Returns a Value representing the received response, along with a reference
 // to the NetLog source source of the UDP socket used.  The request must have
 // completed before this is called.

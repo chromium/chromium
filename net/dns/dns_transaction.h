@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "net/base/request_priority.h"
 #include "net/dns/opt_record_rdata.h"
+#include "net/dns/public/resolution_details.h"
 #include "net/dns/public/secure_dns_mode.h"
 
 namespace net {
@@ -56,6 +57,9 @@ class NET_EXPORT_PRIVATE DnsTransaction {
   virtual void Start(ResponseCallback callback) = 0;
 
   virtual void SetRequestPriority(RequestPriority priority) = 0;
+
+  virtual std::optional<DohResolutionDetails> GetDohResolutionDetails()
+      const = 0;
 };
 
 // Startable/Cancellable object to represent a DNS probe sequence.

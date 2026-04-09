@@ -31,6 +31,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/load_timing_internal_info.h"
 #include "net/base/net_errors.h"
 #include "net/dns/address_sorter.h"
 #include "net/dns/dns_hosts.h"
@@ -415,10 +416,15 @@ DnsResponse BuildTestDnsServiceResponse(
   return BuildTestDnsResponse(std::move(name), dns_protocol::kTypeSRV, answers);
 }
 
-MockDnsClientRule::Result::Result(ResultType type,
-                                  std::optional<DnsResponse> response,
-                                  std::optional<int> net_error)
-    : type(type), response(std::move(response)), net_error(net_error) {}
+MockDnsClientRule::Result::Result(
+    ResultType type,
+    std::optional<DnsResponse> response,
+    std::optional<int> net_error,
+    std::optional<DohResolutionDetails> doh_details)
+    : type(type),
+      response(std::move(response)),
+      net_error(net_error),
+      doh_details(std::move(doh_details)) {}
 
 MockDnsClientRule::Result::Result(DnsResponse response)
     : type(ResultType::kOk),
@@ -488,6 +494,7 @@ class MockDnsTransactionFactory::MockTransaction final : public DnsTransaction {
           const MockDnsClientRule::Result* result = &rule.result;
           result_ = MockDnsClientRule::Result(result->type);
           result_.net_error = result->net_error;
+          result_.doh_details = result->doh_details;
           delayed_ = rule.delay;
 
           // Generate a DnsResponse when not provided with the rule.
@@ -553,6 +560,10 @@ class MockDnsTransactionFactory::MockTransaction final : public DnsTransaction {
   const std::string& GetHostname() const override { return hostname_; }
 
   uint16_t GetType() const override { return qtype_; }
+
+  std::optional<DohResolutionDetails> GetDohResolutionDetails() const override {
+    return result_.doh_details;
+  }
 
   void Start(ResponseCallback callback) override {
     CHECK(!callback.is_null());

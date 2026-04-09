@@ -888,7 +888,8 @@ void HostResolverManager::Job::OnDnsTaskComplete(
   }
 
   CompleteRequests(legacy_results, bounded_ttl, true /* allow_cache */, secure,
-                   AttemptModeToTaskType(attempt_mode), duration);
+                   AttemptModeToTaskType(attempt_mode), duration,
+                   dns_task_->GetDohResolutionDetails());
 }
 
 void HostResolverManager::Job::OnIntermediateTransactionsComplete(
@@ -1135,7 +1136,8 @@ void HostResolverManager::Job::CompleteRequests(
     bool allow_cache,
     bool secure,
     std::optional<TaskType> task_type,
-    std::optional<base::TimeDelta> task_completion_delay) {
+    std::optional<base::TimeDelta> task_completion_delay,
+    std::optional<DohResolutionDetails> doh_details) {
   CHECK(resolver_.get());
 
   ResolutionDetails resolution_details;
@@ -1172,6 +1174,7 @@ void HostResolverManager::Job::CompleteRequests(
     resolution_details.task_completion_delay = task_completion_delay;
   }
   resolution_details.secure_dns_attempted = secure_dns_attempted_;
+  resolution_details.doh_details = std::move(doh_details);
 
   // This job must be removed from resolver's |jobs_| now to make room for a
   // new job with the same key in case one of the OnComplete callbacks decides

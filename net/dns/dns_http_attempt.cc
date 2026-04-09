@@ -27,6 +27,7 @@
 #include "net/dns/dns_query.h"
 #include "net/dns/dns_response.h"
 #include "net/dns/public/dns_protocol.h"
+#include "net/dns/public/resolution_details.h"
 #include "net/dns/resolve_context.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_values.h"
@@ -331,6 +332,13 @@ void DnsHTTPAttempt::ResponseCompleted(int net_error) {
   DCHECK(request_);
   int rv = CompleteResponse(net_error);
 
+  if (rv == OK &&
+      request_->GetLoadTimingInternalInfo().session_source.has_value()) {
+    doh_details_ = DohResolutionDetails{
+        request_->GetLoadTimingInternalInfo().session_source.value(),
+        HttpConnectionInfoToCoarse(request_->response_info().connection_info)};
+  }
+
   // Skip DoH probe requests here since those are most likely to incur the cost
   // of establishing the encrypted tunnel to the DoH server and also don't have
   // an impact on page load time. Also ignore requests that aren't made in
@@ -347,6 +355,11 @@ void DnsHTTPAttempt::ResponseCompleted(int net_error) {
   request_.reset();
   session_.reset();
   std::move(callback_).Run(rv);
+}
+
+std::optional<DohResolutionDetails> DnsHTTPAttempt::GetDohResolutionDetails()
+    const {
+  return doh_details_;
 }
 
 int DnsHTTPAttempt::CompleteResponse(int net_error) {

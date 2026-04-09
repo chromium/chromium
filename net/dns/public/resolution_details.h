@@ -34,6 +34,24 @@ enum class ResolutionSource {
   kNat64 = 8,
 };
 
+enum class SessionSource;
+enum class HttpConnectionInfoCoarse;
+
+// Contains information about a successful DoH (DNS-over-HTTPS) session.
+// LINT.IfChange(DohResolutionDetails)
+struct NET_EXPORT DohResolutionDetails {
+  // Indicates how the DoH session was established (e.g., new session vs.
+  // reused).
+  SessionSource session_source;
+
+  // Coarse representation of the protocol used for the DoH connection (e.g.,
+  // HTTP/2, HTTP/3).
+  HttpConnectionInfoCoarse connection_info;
+
+  bool operator==(const DohResolutionDetails& other) const = default;
+};
+// LINT.ThenChange(//services/network/public/mojom/load_timing_internal_info.mojom:DohResolutionDetails)
+
 // Details about how the host resolution was performed. Should be only used
 // for logging and recording histograms.
 // TODO(crbug.com/485672648): This struct exposes internal implementation
@@ -54,6 +72,12 @@ struct NET_EXPORT ResolutionDetails {
   // is set to true regardless of whether the DoH query ultimately succeeded,
   // timed out, or failed and fell back to insecure DNS/system resolution.
   bool secure_dns_attempted = false;
+
+  // Details of the DoH (DNS-over-HTTPS) session, if DoH was used. If multiple
+  // DoH queries are executed concurrently, details from the first successfully
+  // reported transaction are retained. Returns std::nullopt if DoH was not
+  // used, or if DoH failed before session details could be retrieved.
+  std::optional<DohResolutionDetails> doh_details;
 
   bool operator==(const ResolutionDetails& other) const = default;
 };

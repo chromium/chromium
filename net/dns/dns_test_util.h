@@ -33,6 +33,7 @@
 #include "net/dns/dns_util.h"
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/dns_protocol.h"
+#include "net/dns/public/resolution_details.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/socket/socket_test_util.h"
 #include "url/scheme_host_port.h"
@@ -322,9 +323,11 @@ struct MockDnsClientRule {
   };
 
   struct Result {
-    explicit Result(ResultType type,
-                    std::optional<DnsResponse> response = std::nullopt,
-                    std::optional<int> net_error = std::nullopt);
+    explicit Result(
+        ResultType type,
+        std::optional<DnsResponse> response = std::nullopt,
+        std::optional<int> net_error = std::nullopt,
+        std::optional<DohResolutionDetails> doh_details = std::nullopt);
     explicit Result(DnsResponse response);
     Result(Result&&);
     Result& operator=(Result&&);
@@ -333,6 +336,7 @@ struct MockDnsClientRule {
     ResultType type;
     std::optional<DnsResponse> response;
     std::optional<int> net_error;
+    std::optional<DohResolutionDetails> doh_details;
   };
 
   // If |delay| is true, matching transactions will be delayed until triggered

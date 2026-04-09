@@ -15,6 +15,7 @@
 #include "net/dns/dns_query.h"
 #include "net/dns/dns_response.h"
 #include "net/dns/public/dns_protocol.h"
+#include "net/dns/public/resolution_details.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_with_source.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -52,6 +53,13 @@ class DnsAttempt {
   virtual const DnsResponse* GetResponse() const = 0;
 
   virtual base::Value GetRawResponseBufferForLog() const = 0;
+
+  // Returns DoH resolution details if this attempt successfully performed DoH
+  // resolution.
+  // TODO(crbug.com/485672648): This method is specific to DnsHttpAttempt and
+  // breaks the DnsAttempt abstraction. Remove this once we gather enough data
+  // for the DoH performance.
+  virtual std::optional<DohResolutionDetails> GetDohResolutionDetails() const;
 
   // Returns the net log bound to the source of the socket.
   virtual const NetLogWithSource& GetSocketNetLog() const = 0;

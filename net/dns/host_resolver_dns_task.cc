@@ -509,6 +509,14 @@ void HostResolverDnsTask::OnDnsTransactionComplete(
   TransactionInfo transaction_info =
       std::move(transactions_in_progress_.extract(transaction_info_it).value());
 
+  if (transaction_info.transaction) {
+    std::optional<DohResolutionDetails> details =
+        transaction_info.transaction->GetDohResolutionDetails();
+    if (details.has_value() && !doh_details_.has_value()) {
+      doh_details_ = std::move(details);
+    }
+  }
+
   const base::TimeTicks now = tick_clock_->NowTicks();
   base::TimeDelta elapsed_time = now - task_start_time_;
   enum HttpssvcDnsRcode rcode_for_httpssvc = HttpssvcDnsRcode::kNoError;

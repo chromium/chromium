@@ -65,12 +65,14 @@ enum class HttpConnectionInfo {
   kMaxValue = kQUIC_2_DRAFT_8,
 };
 
+// LINT.IfChange(HttpConnectionInfoCoarse)
 enum class HttpConnectionInfoCoarse {
   kHTTP1,  // HTTP/0.9, 1.0 and 1.1
   kHTTP2,
   kQUIC,
   kOTHER,
 };
+// LINT.ThenChange(//services/network/public/mojom/load_timing_internal_info.mojom:HttpConnectionInfoCoarse)
 
 NET_EXPORT std::string_view HttpConnectionInfoToString(
     HttpConnectionInfo connection_info);

@@ -6682,6 +6682,51 @@ TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Secure) {
       response_system.request()->GetResolveErrorInfo().is_secure_network_error);
 }
 
+TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Secure_ResolutionDetails) {
+  constexpr char kName[] = "secure.test";
+
+  MockDnsClientRuleList rules;
+  rules.emplace_back(
+      kName, dns_protocol::kTypeA, /*secure=*/true,
+      MockDnsClientRule::Result(
+          MockDnsClientRule::ResultType::kOk,
+          BuildTestDnsAddressResponse(kName, IPAddress(192, 168, 1, 103)),
+          std::nullopt,
+          DohResolutionDetails{SessionSource::kNew,
+                               HttpConnectionInfoCoarse::kHTTP2}),
+      /*delay=*/false);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeAAAA, /*secure=*/true,
+      MockDnsClientRule::Result(
+          MockDnsClientRule::ResultType::kOk,
+          BuildTestDnsAddressResponse(kName, IPAddress::IPv6Localhost()),
+          std::nullopt,
+          DohResolutionDetails{SessionSource::kNew,
+                               HttpConnectionInfoCoarse::kHTTP2}),
+      /*delay=*/false);
+
+  DnsConfig config = CreateValidDnsConfig();
+  CreateResolver();
+  UseMockDnsClient(config, std::move(rules));
+  DnsConfigOverrides overrides;
+  overrides.secure_dns_mode = SecureDnsMode::kSecure;
+  resolver_->SetDnsConfigOverrides(overrides);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      url::SchemeHostPort(url::kHttpsScheme, kName, 443),
+      NetworkAnonymizationKey(), NetLogWithSource(),
+      /*optional_parameters=*/std::nullopt, resolve_context_.get()));
+  EXPECT_THAT(response.result_error(), IsOk());
+
+  const std::optional<ResolutionDetails>& details =
+      response.request()->GetResolutionDetails();
+  ASSERT_TRUE(details.has_value());
+  ASSERT_TRUE(details->doh_details.has_value());
+  EXPECT_EQ(details->doh_details->session_source, SessionSource::kNew);
+  EXPECT_EQ(details->doh_details->connection_info,
+            HttpConnectionInfoCoarse::kHTTP2);
+}
+
 TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Secure_InsecureAsyncDisabled) {
   proc_->AddRuleForAllFamilies("nx_succeed", "192.168.1.100");
   set_allow_fallback_to_systemtask(true);

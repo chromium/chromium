@@ -72,6 +72,7 @@ class NET_EXPORT_PRIVATE DnsHTTPAttempt : public DnsAttempt,
   const DnsResponse* GetResponse() const override;
   base::Value GetRawResponseBufferForLog() const override;
   const NetLogWithSource& GetSocketNetLog() const override;
+  std::optional<DohResolutionDetails> GetDohResolutionDetails() const override;
 
   // URLRequest::Delegate overrides
   void OnResponseStarted(net::URLRequest* request, int net_error) override;
@@ -106,6 +107,8 @@ class NET_EXPORT_PRIVATE DnsHTTPAttempt : public DnsAttempt,
   std::unique_ptr<URLRequest> request_;
   base::TimeTicks start_time_;
   NetLogWithSource net_log_;
+
+  std::optional<DohResolutionDetails> doh_details_;
 
   base::WeakPtrFactory<DnsHTTPAttempt> weak_factory_{this};
 };
