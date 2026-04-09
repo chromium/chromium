@@ -16,6 +16,7 @@
 #include "chrome/browser/contextual_cueing/zero_state_suggestions_page_data.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -422,22 +423,21 @@ void ContextualCueingHelper::OnCueingDecision(
   // If auto-open fails or is disabled, falls through to standard nudge.
   if (should_open_side_panel) {
     auto* tab_interface = tabs::TabInterface::GetFromContents(web_contents());
-    auto* browser_window_interface = tab_interface->GetBrowserWindowInterface();
     auto* glic_service =
         glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
-    if (glic_service && browser_window_interface) {
+    if (glic_service && tab_interface) {
       glic::mojom::InvocationSource invocation_source =
           glic::mojom::InvocationSource::kAutoOpenedByContextualCue;
       if (is_auto_open_pdf_side_panel_cue) {
         invocation_source = glic::mojom::InvocationSource::kAutoOpenedForPdf;
       }
 
-      glic_service->ToggleUI(
-          browser_window_interface,
-          /*prevent_close=*/true, invocation_source,
-          decision_result->prompt_suggestion.empty()
-              ? std::nullopt
-              : std::make_optional(decision_result->prompt_suggestion));
+      glic::GlicInvokeOptions options(invocation_source);
+      options.fre_override = glic::mojom::FreOverride::kTrustFirstInline;
+      if (!decision_result->prompt_suggestion.empty()) {
+        options.prompts.push_back(decision_result->prompt_suggestion);
+      }
+      glic_service->Invoke(tab_interface, std::move(options));
       return;
     }
     // Fall through to nudge if side panel open fails.
