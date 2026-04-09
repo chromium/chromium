@@ -24,7 +24,6 @@ source_set("impl") {
   deps = [
     ":vr",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window",
     "//device/vr/buildflags",
     "//third_party/blink/public/common:headers",
@@ -303,7 +302,6 @@ if (enable_vr) {
     deps = [
       ":vr_test_support",
       "//chrome/app/vector_icons",
-      "//chrome/browser",
       "//chrome/test:test_support",
       "//components/url_formatter",
       "//components/vector_icons",
