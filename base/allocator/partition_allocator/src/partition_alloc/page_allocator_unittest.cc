@@ -19,7 +19,6 @@
 #include "partition_alloc/partition_alloc_base/cpu.h"
 #include "partition_alloc/partition_alloc_base/logging.h"
 #include "partition_alloc/partition_alloc_base/notreached.h"
-#include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/tagging.h"
 
@@ -36,41 +35,6 @@
 #include <csetjmp>
 #include <csignal>
 #endif  // PA_BUILDFLAG(IS_POSIX)
-
-#if PA_BUILDFLAG(IS_IOS)
-#include <sys/sysctl.h>
-#include <sys/types.h>
-#include <unistd.h>
-
-namespace {
-// Based on Apple's recommended method as described in
-// http://developer.apple.com/qa/qa2004/qa1361.html
-bool BeingDebugged() {
-  // Note this code is not signal safe since we only use it in this
-  // unittest, this differs from the Chromium posix
-  // `base::debug::BeingDebugged()` function. Also since we only need it
-  // for IOS the BSD code is removed.
-
-  // Initialize mib, which tells sysctl what info we want.  In this case,
-  // we're looking for information about a specific process ID.
-  int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid()};
-
-  // Caution: struct kinfo_proc is marked __APPLE_API_UNSTABLE.  The
-  // source and binary interfaces may change.
-  struct kinfo_proc info;
-  size_t info_size = sizeof(info);
-
-  int sysctl_result = sysctl(mib, std::size(mib), &info, &info_size, NULL, 0);
-  PA_CHECK(sysctl_result == 0);
-  if (sysctl_result != 0) {
-    return false;
-  }
-
-  // This process is being debugged if the P_TRACED flag is set.
-  return (info.kp_proc.p_flag & P_TRACED) != 0;
-}
-}  // namespace
-#endif
 
 #include "partition_alloc/arm_bti_test_functions.h"
 
@@ -485,14 +449,6 @@ void SignalHandler(int signal, siginfo_t* info, void*) {
   }
 
 TEST(PartitionAllocPageAllocatorTest, InaccessiblePages) {
-#if PA_BUILDFLAG(IS_IOS)
-  // InaccessiblePages will fail when attached to the debugger.
-  if (BeingDebugged()) {
-    GTEST_SKIP()
-        << "Skipping InaccessiblePages test because it fails when attached to "
-           "the debugger.";
-  }
-#endif
   uintptr_t buffer =
       AllocPages(PageAllocationGranularity(), PageAllocationGranularity(),
                  PageAccessibilityConfiguration(
@@ -516,20 +472,15 @@ TEST(PartitionAllocPageAllocatorTest, InaccessiblePages) {
 }
 
 TEST(PartitionAllocPageAllocatorTest, ReadExecutePages) {
-#if PA_BUILDFLAG(IS_IOS)
-  // ReadExecutePages will fail when attached to the debugger.
-  if (BeingDebugged()) {
-    GTEST_SKIP()
-        << "Skipping ReadExecutePages test because it fails when attached to "
-           "the debugger.";
-  }
-#endif
   // Before iOS 18.6 on devices this appears to trigger a mach exception and not
   // a fault signal, which doesn't work with the FAULT_TEST_BEGIN/FAULT_TEST_END
   // logic. Skip on these devices.
 #if PA_BUILDFLAG(IS_IOS) && !TARGET_IPHONE_SIMULATOR
-  if (!__builtin_available(iOS 18.6, *)) {
-    GTEST_SKIP() << "FAULT_TEST not supported on iOS < 18.6";
+  if (__builtin_available(iOS 18.6, *)) {
+  } else {
+    // Workaround for incorrectly failed iOS tests with GTEST_SKIP,
+    // see crbug.com/912138 for details.
+    return;
   }
 #endif  // PA_BUILDFLAG(IS_IOS) && !TARGET_IPHONE_SIMULATOR
   uintptr_t buffer =
