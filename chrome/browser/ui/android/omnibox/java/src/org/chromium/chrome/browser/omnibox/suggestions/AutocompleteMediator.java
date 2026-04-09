@@ -1001,19 +1001,19 @@ class AutocompleteMediator
      */
     @Override
     public void setOmniboxEditingText(String text) {
+        if (!isInInputSession()) return;
         if (mIgnoreOmniboxItemSelection) return;
         mIgnoreOmniboxItemSelection = true;
 
-        if (mAutocompleteInput != null) {
-            // Sync the source of truth (AutocompleteInput) with the focused match.
-            // This includes stripping the keyword if we were previously in keyword mode.
-            mAutocompleteInput.setUserText(stripKeywordIfNecessary(text));
-            // When moving focus between suggestions via keyboard, we should always clear
-            // the site search preview unless we explicitly target a site search chip.
-            mAutocompleteInput.setSiteSearchData(null);
-
-            mDelegate.setOmniboxEditingText(mAutocompleteInput.getUserText());
-        }
+        // In most cases the AutocompleteInput needs to be the source of truth.
+        // This method is used to communicate user selection back to the UrlBar without
+        // committing UserText -- the most recently committed UserText is what the user typed,
+        // and the DPAD selection triggered here represents text that is uncommitted until
+        // - the user amends the input (by typing), or
+        // - the user accepts the input (by pressing Enter).
+        // for that reason this logic should not apply UserText.
+        mDelegate.setOmniboxEditingText(stripKeywordIfNecessary(text));
+        mAutocompleteInput.setSiteSearchData(null);
     }
 
     /**

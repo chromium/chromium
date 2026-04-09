@@ -1684,46 +1684,35 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
-    public void setOmniboxEditingText_syncsSourceOfTruthWithMatch() {
+    public void setOmniboxEditingText_doesNotCommitUserText() {
         mMediator.onNativeInitialized();
         var session = createEmptySession();
+        session.getAutocompleteInput().setUserText("user text");
         mMediator.beginInput(session);
 
         mMediator.allowPendingItemSelection();
-        AutocompleteMatch match =
-                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
-                        .setDisplayText("suggestion text")
-                        .setFillIntoEdit("suggestion text")
-                        .build();
-
         mMediator.setOmniboxEditingText("suggestion text");
 
-        // Verify the source of truth (AutocompleteInput) is updated.
-        assertEquals("suggestion text", session.getAutocompleteInput().getUserText());
-        // Verify UI is updated with the same text.
+        // Verify the source of truth (AutocompleteInput) is NOT updated.
+        assertEquals("user text", session.getAutocompleteInput().getUserText());
+        // Verify UI is updated with the suggestion text.
         verify(mAutocompleteDelegate).setOmniboxEditingText("suggestion text");
     }
 
     @Test
-    public void setOmniboxEditingText_stripsKeywordBeforeClearingState() {
+    public void setOmniboxEditingText_stripsKeywordWithoutCommittingUserText() {
         mMediator.onNativeInitialized();
         var session = createEmptySession();
-        mMediator.beginInput(session);
+        session.getAutocompleteInput().setUserText("u");
         session.getAutocompleteInput().setSiteSearchData(new SiteSearchData("keyword", "label"));
+        mMediator.beginInput(session);
 
         mMediator.allowPendingItemSelection();
-        // C++ typically provides the fill-into-edit with the keyword prefix when in keyword mode.
-        AutocompleteMatch match =
-                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
-                        .setDisplayText("keyword query")
-                        .setFillIntoEdit("keyword query")
-                        .build();
-
         mMediator.setOmniboxEditingText("keyword query");
 
-        // Verify user text is stripped correctly based on OLD keyword state.
-        assertEquals("query", session.getAutocompleteInput().getUserText());
-        // Verify SiteSearchData is cleared AFTER stripping.
+        // Verify user text is NOT updated.
+        assertEquals("u", session.getAutocompleteInput().getUserText());
+        // Verify SiteSearchData is cleared.
         assertNull(session.getAutocompleteInput().getSiteSearchData());
         // Verify UI is updated with stripped text.
         verify(mAutocompleteDelegate).setOmniboxEditingText("query");
@@ -1733,18 +1722,14 @@ public class AutocompleteMediatorUnitTest {
     public void setOmniboxEditingText_clearsKeywordModePreview() {
         mMediator.onNativeInitialized();
         var session = createEmptySession();
-        mMediator.beginInput(session);
-        session.getAutocompleteInput().setUserText("");
+        session.getAutocompleteInput().setUserText("user text");
         session.getAutocompleteInput().setSiteSearchData(new SiteSearchData("keyword", "label"));
+        mMediator.beginInput(session);
 
         mMediator.allowPendingItemSelection();
-        AutocompleteMatch match =
-                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
-                        .setDisplayText("new text")
-                        .setFillIntoEdit("new text")
-                        .build();
         mMediator.setOmniboxEditingText("new text");
 
+        assertEquals("user text", session.getAutocompleteInput().getUserText());
         assertNull(session.getAutocompleteInput().getSiteSearchData());
         verify(mAutocompleteDelegate).setOmniboxEditingText("new text");
     }
