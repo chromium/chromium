@@ -8,9 +8,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -93,7 +93,8 @@ std::unique_ptr<sessions::SessionWindow> DeepCopySessionWindow(
 TabStripInternalsObserver::TabStripInternalsObserver(Profile* profile,
                                                      UpdateCallback callback)
     : callback_(std::move(callback)) {
-  BrowserList::AddObserver(this);
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [this](BrowserWindowInterface* browser) {
         StartObservingBrowser(browser);
@@ -104,18 +105,19 @@ TabStripInternalsObserver::TabStripInternalsObserver(Profile* profile,
 }
 
 TabStripInternalsObserver::~TabStripInternalsObserver() {
-  BrowserList::RemoveObserver(this);
   TabStripModelObserver::StopObservingAll(this);
   StopObservingTabRestore();
   SessionRestore::RemoveObserver(this);
 }
 
-void TabStripInternalsObserver::OnBrowserAdded(Browser* browser) {
+void TabStripInternalsObserver::OnBrowserCreated(
+    BrowserWindowInterface* browser) {
   StartObservingBrowser(browser);
   FireUpdate();
 }
 
-void TabStripInternalsObserver::OnBrowserRemoved(Browser* browser) {
+void TabStripInternalsObserver::OnBrowserClosed(
+    BrowserWindowInterface* browser) {
   StopObservingBrowser(browser);
   FireUpdate();
 }

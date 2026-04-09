@@ -420,9 +420,10 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsObserverBrowserTest,
   base::MockCallback<base::RepeatingCallback<void()>> mock_callback;
   {
     TabStripInternalsObserver observer(otr_profile, mock_callback.Get());
-    // Use the expected callback count triggered by the TabStripModel to confirm
-    // that the TabRestoreService did not trigger any additional callbacks.
-    EXPECT_CALL(mock_callback, Run()).Times(1);
+    // Use the expected callback count triggered by the TabStripModel and
+    // subsequently the browser-close notification to confirm that the
+    // TabRestoreService did not trigger any additional callbacks.
+    EXPECT_CALL(mock_callback, Run()).Times(2);
 
     // Close an incognito browser tab.
     otr_browser->tab_strip_model()->CloseWebContentsAt(

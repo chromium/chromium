@@ -18,7 +18,7 @@ source_set("tab_strip_internals") {
   deps = [
     ":mojo_bindings",
     "//chrome/browser/sessions",
-    "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/common",
     "//components/sessions",

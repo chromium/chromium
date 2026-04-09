@@ -10,19 +10,20 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/sessions/session_restore_observer.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
 
-class Browser;
+class BrowserCollection;
 class BrowserWindowInterface;
 class Profile;
 class TabStripModel;
 
 // Observes tab strip–related events and notifies clients when something
 // changes.
-class TabStripInternalsObserver : public BrowserListObserver,
+class TabStripInternalsObserver : public BrowserCollectionObserver,
                                   public TabStripModelObserver,
                                   public sessions::TabRestoreServiceObserver,
                                   public SessionRestoreObserver {
@@ -36,9 +37,9 @@ class TabStripInternalsObserver : public BrowserListObserver,
       delete;
   ~TabStripInternalsObserver() override;
 
-  // BrowserListObserver methods
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
+  void OnBrowserClosed(BrowserWindowInterface* browser) override;
 
   // TabStripModelObserver methods
   void OnTabStripModelChanged(
@@ -91,6 +92,9 @@ class TabStripInternalsObserver : public BrowserListObserver,
   // The TabRestoreService instance currently being observed.
   raw_ptr<sessions::TabRestoreService> service_ = nullptr;
   UpdateCallback callback_;
+
+  base::ScopedObservation<BrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_TAB_STRIP_INTERNALS_TAB_STRIP_INTERNALS_OBSERVER_H_
