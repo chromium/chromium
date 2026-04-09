@@ -13923,21 +13923,6 @@
             ]
         }
     ],
-    "InitializePoliciesForSignedInUserInNewEntryPoints": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "InitializePoliciesForSignedInUserInNewEntryPoints"
-                    ]
-                }
-            ]
-        }
-    ],
     "InputVizard": [
         {
             "platforms": [
