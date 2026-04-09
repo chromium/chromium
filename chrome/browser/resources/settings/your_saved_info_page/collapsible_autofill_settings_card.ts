@@ -263,12 +263,14 @@ export class CollapsibleCardElement extends SettingsViewMixin
    * without blocking the UI.
    */
   private async onEnterprisePolicyChanged_() {
-    const addressAutofillEnabled =
-        this.getPref<boolean>('autofill.profile_enabled');
+    // TODO(crbug.com/490338056): replace undefined check with pref
+    // initialization check
+    const addressAutofillEnabled = this.get('prefs.autofill.profile_enabled');
 
     if (this.enableYourSavedInfoPolicyAndExtentionToggleIndicators_ &&
         !this.autofillAddOtherDatatypesPrefIsEnabled_) {
-      if (addressAutofillEnabled.enforcement ===
+      if (!!addressAutofillEnabled &&
+          addressAutofillEnabled.enforcement ===
               chrome.settingsPrivate.Enforcement.ENFORCED &&
           !addressAutofillEnabled.value) {
         this.set(
@@ -318,7 +320,7 @@ export class CollapsibleCardElement extends SettingsViewMixin
         this.set(
             'enhancedAutofillOptedIn_.value',
             this.enhancedAutofillEligibleUser_ && enhancedAutofillOptedIn &&
-                addressAutofillEnabled.value);
+                !!addressAutofillEnabled && addressAutofillEnabled.value);
       }
     }
   }
@@ -328,11 +330,12 @@ export class CollapsibleCardElement extends SettingsViewMixin
       return false;
     }
 
-    const addressAutofillEnabled =
-        this.getPref<boolean>('autofill.profile_enabled');
+    // TODO(crbug.com/490338056): replace undefined check with pref
+    // initialization check
+    const addressAutofillEnabled = this.get('prefs.autofill.profile_enabled');
 
     // We show the extension control only if extension forces false value
-    return !!addressAutofillEnabled.extensionId &&
+    return !!addressAutofillEnabled && !!addressAutofillEnabled.extensionId &&
         !addressAutofillEnabled.value;
   }
 
