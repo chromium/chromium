@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/test/split_view_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -93,12 +94,16 @@ class MultiContentsViewUiTest
 
   void SetUpOnMainThread() override {
     SplitViewInteractiveTestMixin::SetUpOnMainThread();
+    browser()->profile()->GetPrefs()->SetBoolean(
+        prefs::kTabSearchPinnedToTabstrip, true);
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
-  const std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
-    return {tabs::kHorizontalTabStripComboButton};
+  void TearDownOnMainThread() override {
+    browser()->profile()->GetPrefs()->ClearPref(
+        prefs::kTabSearchPinnedToTabstrip);
+    SplitViewInteractiveTestMixin::TearDownOnMainThread();
   }
 
  protected:

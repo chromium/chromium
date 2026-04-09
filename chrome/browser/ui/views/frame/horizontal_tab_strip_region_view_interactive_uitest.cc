@@ -50,8 +50,8 @@ class HorizontalTabStripRegionViewBrowserBaseTest : public InProcessBrowserTest 
 
   TabStrip* tab_strip() { return tab_strip_region_view()->tab_strip(); }
 
-  TabSearchButton* tab_search_button() {
-    return BrowserElementsViews::From(browser())->GetViewAs<TabSearchButton>(
+  views::LabelButton* tab_search_button() {
+    return BrowserElementsViews::From(browser())->GetViewAs<views::LabelButton>(
         kTabSearchButtonElementId);
   }
 
@@ -73,8 +73,7 @@ class HorizontalTabStripRegionViewBrowserTest : public HorizontalTabStripRegionV
 #endif  // BUILDFLAG(IS_CHROMEOS)
         },
         /*disabled_features=*/{features::kGlicLocaleFiltering,
-                               features::kGlicCountryFiltering,
-                               tabs::kHorizontalTabStripComboButton});
+                               features::kGlicCountryFiltering});
   }
   HorizontalTabStripRegionViewBrowserTest(const HorizontalTabStripRegionViewBrowserTest&) = delete;
   HorizontalTabStripRegionViewBrowserTest& operator=(
@@ -250,10 +249,14 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewBrowserTest,
       tabs::TabSearchPosition::kLeadingHorizontalTabstrip) {
     // The TabSearchButton is calculated as controls padding away from the
     // first tab (not including bottom corner radius)
-    const int tab_search_button_expected_end =
+    int tab_search_button_expected_end =
         tab_strip_region_view()->tab_strip()->x() +
         TabStyle::Get()->GetBottomCornerRadius() -
         GetLayoutConstant(LayoutConstant::kTabStripPadding);
+    if (base::FeatureList::IsEnabled(tabs::kHorizontalTabStripComboButton)) {
+      tab_search_button_expected_end -=
+          GetLayoutConstant(LayoutConstant::kTabStripPadding);
+    }
 
     EXPECT_EQ(tab_search_button()->bounds().right(),
               tab_search_button_expected_end);

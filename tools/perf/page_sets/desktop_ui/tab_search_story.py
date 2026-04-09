@@ -5,12 +5,11 @@
 import logging
 import py_utils
 
-from page_sets.desktop_ui.browser_element_identifiers import \
-    kTabSearchButtonElementId
 from page_sets.desktop_ui.custom_metric_utils import SetMetricNames
 from page_sets.desktop_ui.js_utils import MEASURE_JS_MEMORY
 from page_sets.desktop_ui.multitab_story import MultiTabStory
-from page_sets.desktop_ui.ui_devtools_utils import ClickOn
+from page_sets.desktop_ui.ui_devtools_utils import \
+    PressKey, PLATFORM_ACCELERATOR, SHIFT_DOWN
 from page_sets.desktop_ui.url_list import TOP_URL
 from page_sets.desktop_ui.webui_utils import Inspect
 from page_sets.desktop_ui import story_tags
@@ -52,7 +51,7 @@ class TabSearchStory(MultiTabStory):
 
   def RunPageInteractions(self, action_runner):
     SetMetricNames(action_runner, TAB_SEARCH_CUSTOM_METRIC_NAMES)
-    self.ToggleTabSearch()
+    self.OpenTabSearch()
     action_runner = Inspect(action_runner.tab.browser, TAB_SEARCH_URL)
     action_runner.ExecuteJavaScript(MEASURE_JS_MEMORY %
                                     'tab_search:used_js_heap_size_begin')
@@ -60,14 +59,18 @@ class TabSearchStory(MultiTabStory):
     action_runner.ExecuteJavaScript(MEASURE_JS_MEMORY %
                                     'tab_search:used_js_heap_size_end')
 
-  def ToggleTabSearch(self, index=0):
-    # Click a little bit into the button instead of the extreme top-left corner.
-    # The button's corners are not included in its hit test mask.
-    ClickOn(self._devtools,
-            element_id=kTabSearchButtonElementId,
-            index=index,
-            x=10,
-            y=10)
+  def OpenTabSearch(self, index=0):
+    # Use keyboard shortcut to open tab search.
+    # index is used to select which window to send the shortcut to.
+    window_node_id = self._devtools.QueryNodes('<Window>')[index]
+    PressKey(self._devtools, window_node_id, 'A',
+             PLATFORM_ACCELERATOR | SHIFT_DOWN)
+
+  def CloseTabSearch(self, index=0):
+    # Use escape key to close tab search.
+    # index is used to select which window to send the key to.
+    window_node_id = self._devtools.QueryNodes('<Window>')[index]
+    PressKey(self._devtools, window_node_id, 'Esc')
 
   def InteractWithPage(self, action_runner):
     self.ScrollTabs(action_runner)
@@ -104,21 +107,21 @@ class TabSearchStory(MultiTabStory):
 
   def CloseAndOpen(self, action_runner):
     action_runner.Wait(1)
-    self.ToggleTabSearch()
+    self.CloseTabSearch()
     action_runner.Wait(1)
-    self.ToggleTabSearch()
+    self.OpenTabSearch()
     action_runner.Wait(5)
 
   def CloseAndOpenLoading(self, action_runner):
     action_runner.Wait(1)
-    self.ToggleTabSearch()
+    self.CloseTabSearch()
     action_runner.Wait(1)
     tabs = action_runner.tab.browser.tabs
     i = 0
     for url in self.URL_LIST2:
       tabs[i].Navigate(url)
       i = i + 1
-    self.ToggleTabSearch()
+    self.OpenTabSearch()
     action_runner.Wait(5)
 
   def ScrollUpAndDown(self, action_runner):
@@ -305,8 +308,7 @@ class TabSearchStoryMeasureMemoryMultiwindow(TabSearchStoryMeasureMemory):
     action_runner.Wait(2)
     tabs = action_runner.tab.browser.tabs
     tabs.New(in_new_window=True)
-    self.ToggleTabSearch(
-        index=1)  # Toggle the tab search button in the 2nd window.
+    self.OpenTabSearch(index=1)  # Open the tab search bubble in the 2nd window.
     action_runner.Wait(2)
     action_runner.MeasureMemory(deterministic_mode=True)
 

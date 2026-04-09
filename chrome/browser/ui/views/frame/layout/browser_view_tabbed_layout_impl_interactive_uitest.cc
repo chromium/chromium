@@ -70,8 +70,7 @@ class BrowserViewTabbedLayoutImplUiTest : public InteractiveBrowserTest {
 
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        {tabs::kVerticalTabs, features::kSidePanelFlyoverAnimation},
-        {tabs::kHorizontalTabStripComboButton});
+        {tabs::kVerticalTabs, features::kSidePanelFlyoverAnimation}, {});
     set_open_about_blank_on_browser_launch(true);
     InteractiveBrowserTest::SetUp();
   }
