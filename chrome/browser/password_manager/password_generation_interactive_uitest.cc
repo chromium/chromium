@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/passwords/password_generation_popup_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
@@ -39,6 +40,7 @@
 #include "content/public/test/prerender_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/test/ui_controls.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -386,7 +388,21 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
   FocusPasswordField();
   WaitForGenerationPopupShowing();
 
-  FocusUsernameField();
+  // Simulate the tap on username field using a native platform event. This is
+  // necessary for tests running in forced accessibility mode, where the popup
+  // would only be closed due to the widget deactivating, which doesn't happen
+  // through a renderer-simulated event in some test environments. More details
+  // in crrev.com/c/7735522.
+  gfx::PointF click_point =
+      GetCenterCoordinatesOfElementWithId(WebContents(), "username_field");
+  gfx::Rect container_bounds = WebContents()->GetContainerBounds();
+  gfx::Point screen_point(click_point.x() + container_bounds.x(),
+                          click_point.y() + container_bounds.y());
+  ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(screen_point));
+  ASSERT_TRUE(
+      ui_test_utils::SendMouseEventsSync(ui_controls::LEFT, ui_controls::DOWN));
+  ASSERT_TRUE(
+      ui_test_utils::SendMouseEventsSync(ui_controls::LEFT, ui_controls::UP));
 
   // Popup is dismissed.
   WaitForStatus(TestGenerationPopupObserver::GenerationPopup::kHidden);

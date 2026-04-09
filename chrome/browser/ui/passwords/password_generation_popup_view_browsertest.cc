@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
 
   ui::AXNodeData node_data;
   popup_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
-  EXPECT_EQ(node_data.role, ax::mojom::Role::kListBox);
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kDialog);
   EXPECT_FALSE(node_data.HasState(ax::mojom::State::kInvisible));
 }
 
