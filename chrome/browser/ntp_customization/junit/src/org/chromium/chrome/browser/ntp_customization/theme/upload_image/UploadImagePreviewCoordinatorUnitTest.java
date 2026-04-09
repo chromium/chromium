@@ -487,9 +487,11 @@ public class UploadImagePreviewCoordinatorUnitTest {
         // 2. Verifies the top margin of the real search box view
         ConstraintLayout.LayoutParams layoutParams = getSearchBoxLayoutParams();
         int expectedGoneMargin =
-                mActivity.getResources().getDimensionPixelSize(R.dimen.mvt_container_top_margin);
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.ntp_search_box_top_margin_if_no_logo);
         assertEquals(
-                "The real view should use mvt_container_top_margin for goneTopMargin",
+                "The real view should use ntp_search_box_top_margin_if_no_logo for goneTopMargin",
                 expectedGoneMargin,
                 layoutParams.goneTopMargin);
     }

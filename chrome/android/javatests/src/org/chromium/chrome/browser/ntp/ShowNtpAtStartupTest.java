@@ -368,7 +368,8 @@ public class ShowNtpAtStartupTest {
 
         // Verifies the vertical margins of the module most visited tiles is correct.
         verifyMvtAndSingleTabCardVerticalMargins(
-                /* expectedMvtBottomMargin= */ 0,
+                /* expectedMvtBottomMargin= */ cta.getResources()
+                        .getDimensionPixelSize(R.dimen.ntp_section_bottom_margin),
                 /* expectedSingleTabCardTopMargin= */ 0,
                 /* expectedSingleTabCardBottomMargin= */ 0,
                 /* isNtpHomepage= */ false,

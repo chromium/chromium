@@ -57,7 +57,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:visibility="gone"
         android:clipChildren="false"
-        app:layout_goneMarginTop="@dimen/mvt_container_top_margin"
+        app:layout_goneMarginTop="@dimen/ntp_search_box_top_margin_if_no_logo"
         app:layout_constraintTop_toBottomOf="@+id/default_search_engine_logo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">

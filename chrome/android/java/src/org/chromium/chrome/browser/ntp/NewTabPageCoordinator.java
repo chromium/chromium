@@ -257,7 +257,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
         Resources resources = mActivity.getResources();
         mNtpSearchBoxTopMarginWithoutLogo =
-                resources.getDimensionPixelSize(R.dimen.mvt_container_top_margin);
+                resources.getDimensionPixelSize(R.dimen.ntp_search_box_top_margin_if_no_logo);
         mNtpSearchBoxTransitionStartOffset =
                 resources.getDimensionPixelSize(R.dimen.ntp_search_box_transition_start_offset);
 

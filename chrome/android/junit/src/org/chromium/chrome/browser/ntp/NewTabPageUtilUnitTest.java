@@ -90,8 +90,7 @@ public class NewTabPageUtilUnitTest {
     @Test
     public void testUpdateTilesLayoutTopMargin_shouldShowLogo_phones() {
         Resources resources = mContext.getResources();
-        int mvtContainerTopMargin =
-                resources.getDimensionPixelSize(R.dimen.mvt_container_top_margin);
+        int mvtContainerTopMargin = resources.getDimensionPixelSize(R.dimen.ntp_section_top_margin);
 
         testUpdateTilesLayoutTopMargin_shouldShowLogoImpl(
                 /* isTablet*/ false, mvtContainerTopMargin);
@@ -100,8 +99,7 @@ public class NewTabPageUtilUnitTest {
     @Test
     public void testUpdateTilesLayoutTopMargin_shouldShowLogo_tablets() {
         Resources resources = mContext.getResources();
-        int mvtContainerTopMargin =
-                resources.getDimensionPixelSize(R.dimen.mvt_container_top_margin);
+        int mvtContainerTopMargin = resources.getDimensionPixelSize(R.dimen.ntp_section_top_margin);
 
         testUpdateTilesLayoutTopMargin_shouldShowLogoImpl(
                 /* isTablet*/ true, mvtContainerTopMargin);
@@ -130,7 +128,7 @@ public class NewTabPageUtilUnitTest {
     public void testUpdateTilesLayoutTopMargin_shouldNotShowLogo_tablets() {
         Resources resources = mContext.getResources();
         int expectedTileLayoutTopMargin =
-                resources.getDimensionPixelSize(R.dimen.mvt_container_top_margin);
+                resources.getDimensionPixelSize(R.dimen.ntp_section_top_margin);
 
         testUpdateTilesLayoutTopMargin_shouldNotShowLogoImpl(
                 /* isTablet*/ true, expectedTileLayoutTopMargin);

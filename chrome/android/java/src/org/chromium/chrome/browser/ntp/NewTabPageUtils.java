@@ -66,11 +66,10 @@ public class NewTabPageUtils {
         ViewGroup.MarginLayoutParams marginLayoutParams =
                 (ViewGroup.MarginLayoutParams) view.getLayoutParams();
         Resources resources = view.getResources();
-
         int topMargin =
                 resources.getDimensionPixelSize(
                         (shouldShowLogo || isTablet)
-                                ? R.dimen.mvt_container_top_margin
+                                ? R.dimen.ntp_section_top_margin
                                 : R.dimen.tile_layout_no_logo_top_margin);
 
         marginLayoutParams.topMargin = topMargin;

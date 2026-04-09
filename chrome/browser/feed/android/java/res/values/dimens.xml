@@ -34,7 +34,7 @@ found in the LICENSE file.
     <dimen name="ntp_wide_card_width_breakpoint">840dp</dimen>
     <dimen name="ntp_wide_card_width_max">1200dp</dimen>
     <dimen name="ntp_wide_card_lateral_margins_max">200dp</dimen>
-    <dimen name="feed_header_top_margin">16dp</dimen>
+    <dimen name="feed_header_top_padding">16dp</dimen>
     <dimen name="feed_gutter_padding_per_column">12dp</dimen>
 
     <!-- Feed containment. -->

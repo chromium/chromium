@@ -541,7 +541,7 @@ public class FeedSurfaceCoordinator
 
         if (mNtpHeader != null && ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CONTAINMENT)) {
             int bottomPadding =
-                    mActivity.getResources().getDimensionPixelSize(R.dimen.feed_header_top_margin);
+                    mActivity.getResources().getDimensionPixelSize(R.dimen.ntp_section_top_margin);
             mNtpHeader.setPadding(
                     mNtpHeader.getPaddingLeft(),
                     mNtpHeader.getPaddingTop(),
@@ -1140,7 +1140,7 @@ public class FeedSurfaceCoordinator
                 int topPadding =
                         mActivity
                                 .getResources()
-                                .getDimensionPixelSize(R.dimen.feed_header_top_margin);
+                                .getDimensionPixelSize(R.dimen.feed_header_top_padding);
                 mSigninPromoView.setPadding(
                         mSigninPromoView.getPaddingLeft(),
                         topPadding,

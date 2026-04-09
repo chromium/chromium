@@ -969,8 +969,8 @@ public class NewTabPageTest {
                 expectedMvtLateralMargin * 2L,
                 ntpLayout.getWidth() - mvTilesContainer.getWidth());
 
-        int expectedMvtTopMargin = res.getDimensionPixelSize(R.dimen.mvt_container_top_margin);
-        int expectedMvtBottomMargin = 0;
+        int expectedMvtTopMargin = res.getDimensionPixelSize(R.dimen.ntp_section_top_margin);
+        int expectedMvtBottomMargin = res.getDimensionPixelSize(R.dimen.ntp_section_bottom_margin);
         Assert.assertEquals(
                 "The top margin of the most visited tiles container is wrong.",
                 expectedMvtTopMargin,

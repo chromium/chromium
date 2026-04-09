@@ -13,10 +13,8 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    android:paddingTop="@dimen/composeplate_view_long_button_padding_top"
     android:clipChildren="false"
-    android:clipToPadding="false"
-    android:paddingBottom="@dimen/composeplate_view_long_button_padding_top">
+    android:clipToPadding="false">
 
     <LinearLayout
         android:id="@+id/composeplate_button"

@@ -12,7 +12,6 @@ found in the LICENSE file.
     android:id="@+id/educational_tip_module_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/single_tab_module_padding_top"
     android:layout_marginStart="@dimen/single_tab_module_lateral_margin"
     android:layout_marginEnd="@dimen/single_tab_module_lateral_margin"
     android:paddingStart="@dimen/single_tab_module_padding_bottom"
