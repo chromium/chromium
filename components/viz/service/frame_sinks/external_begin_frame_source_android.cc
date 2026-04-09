@@ -147,7 +147,7 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::VsyncCallback(
     return;
   }
 
-  TRACE_EVENT_BEGIN("toplevel,graphics.pipeline", "Extend_VSync");
+  TRACE_EVENT_BEGIN("toplevel,graphics.pipeline,viz", "Extend_VSync");
 
   DCHECK(gfx::AChoreographerCompat33::Get().supported);
   int64_t frame_time_nanos =
@@ -183,8 +183,14 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::VsyncCallback(
 
   (*self)->OnVSync(frame_time_nanos, possible_deadlines, self);
 
-  TRACE_EVENT_END("toplevel,graphics.pipeline", [&](perfetto::EventContext
-                                                        ctx) {
+  TRACE_EVENT_END("toplevel,graphics.pipeline,viz", [&](perfetto::EventContext
+                                                            ctx) {
+    bool emit_choreographer_data_in_trace_event = false;
+    TRACE_EVENT_CATEGORY_GROUP_ENABLED("viz",
+                                       &emit_choreographer_data_in_trace_event);
+    if (!emit_choreographer_data_in_trace_event) {
+      return;
+    }
     auto* data = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
                      ->set_android_choreographer_frame_callback_data();
     auto frame_time_us = base::TimeTicks::FromJavaNanoTime(frame_time_nanos)
