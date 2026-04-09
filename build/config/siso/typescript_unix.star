@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 """Siso configuration for typescript on Unix."""
 
+load("@builtin//lib/gn.star", "gn")
 load("@builtin//struct.star", "module")
 load("./config.star", "config")
 load("./typescript_all.star", "typescript_all")
@@ -15,9 +16,11 @@ def __step_config(ctx, step_config):
     remote_run = config.get(ctx, "googlechrome")
     step_config["input_deps"].update(typescript_all.input_deps)
 
-    # crbug.com/345528247 - use_javascript_coverage
-    # b/348104171: absolute path used in //ash/webui/recorder_app_ui/resources:build_ts?
-    use_input_root_absolute_path = True
+    use_input_root_absolute_path = False
+    if gn.args(ctx).get("use_javascript_coverage") == "true":
+        # crbug.com/345528247: The mismatch of checkout paths between the bot
+        # and remote workers breaks js coverage builds.
+        use_input_root_absolute_path = True
 
     # TODO: crbug.com/1478909 - Specify typescript inputs in GN config.
     step_config["input_deps"].update({
