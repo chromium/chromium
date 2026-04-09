@@ -628,10 +628,6 @@ source_set("extensions") {
   if (is_mac || is_win || is_linux || is_chromeos) {
     deps += [ "//components/webapps/isolated_web_apps:scheme" ]
   }
-
-  if (is_mac) {
-    deps += [ "//chrome/browser/mac" ]
-  }
   if (enable_spellcheck) {
     deps += [ "//chrome/browser/spellchecker" ]
   }

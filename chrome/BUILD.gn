@@ -1136,7 +1136,6 @@ if (is_win) {
       ":dependencies",
       "//build:chromeos_buildflags",
       "//chrome/app:command_ids",
-      "//chrome/browser/mac",
       "//chrome/common:buildflags",
       "//chrome/common:version_header",
       "//chrome/common/profiler",

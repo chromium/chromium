@@ -60,7 +60,6 @@ source_set("impl") {
 
   if (is_mac) {
     sources += [ "pin_infobar_mac_util.mm" ]
-    deps += [ "//chrome/browser/mac" ]
   }
 }
 
