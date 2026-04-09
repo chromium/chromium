@@ -29,7 +29,10 @@ class MockPageActionController : public PageActionController {
               (actions::ActionId, const SuggestionChipConfig&),
               (override));
   MOCK_METHOD(void, HideSuggestionChip, (actions::ActionId), (override));
-  MOCK_METHOD(void, ShowAnchoredMessage, (actions::ActionId), (override));
+  MOCK_METHOD(void,
+              ShowAnchoredMessage,
+              (actions::ActionId, const AnchoredMessageConfig&),
+              (override));
   MOCK_METHOD(void, HideAnchoredMessage, (actions::ActionId), (override));
   MOCK_METHOD(void,
               OverrideText,

@@ -424,7 +424,9 @@ void TabStripActionContainer::OnTriggerAnchoredMessage(
   controller->SetAnchoredMessageAction(
       kActionGlicContextualCueing,
       page_actions::AnchoredMessageActionIconType::kClose, /*model=*/nullptr);
-  controller->ShowAnchoredMessage(kActionGlicContextualCueing);
+  controller->ShowAnchoredMessage(
+      kActionGlicContextualCueing,
+      {.priority = page_actions::PageActionPriorityCategory::kContextualCue});
 }
 
 void TabStripActionContainer::OnHideGlicNudgeUI() {

@@ -766,7 +766,7 @@ TEST_F(PageActionControllerMockModelTest, ShowAnchoredMessage) {
   EXPECT_CALL(models().Get(kFirstActionItemId),
               SetShouldShowAnchoredMessage(_, true))
       .Times(1);
-  controller().ShowAnchoredMessage(kFirstActionItemId);
+  controller().ShowAnchoredMessage(kFirstActionItemId, {});
 
   EXPECT_CALL(models().Get(kFirstActionItemId),
               SetShouldShowAnchoredMessage(_, false))

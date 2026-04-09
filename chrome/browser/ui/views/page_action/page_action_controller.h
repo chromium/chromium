@@ -162,7 +162,8 @@ class PageActionController {
   // be shown. The framework currently supports a page action showing an
   // anchored message or a suggestion chip, not both. A later successful show
   // request will override an earlier one.
-  virtual void ShowAnchoredMessage(actions::ActionId action_id) = 0;
+  virtual void ShowAnchoredMessage(actions::ActionId action_id,
+                                   const AnchoredMessageConfig& config) = 0;
   virtual void HideAnchoredMessage(actions::ActionId action_id) = 0;
 
   // By default, in suggestion chip mode, the ActionItem text will be used as
@@ -298,7 +299,8 @@ class PageActionControllerImpl : public PageActionController,
   void ShowSuggestionChip(actions::ActionId action_id,
                           const SuggestionChipConfig& config) override;
   void HideSuggestionChip(actions::ActionId action_id) override;
-  void ShowAnchoredMessage(actions::ActionId action_id) override;
+  void ShowAnchoredMessage(actions::ActionId action_id,
+                           const AnchoredMessageConfig& config) override;
   void HideAnchoredMessage(actions::ActionId action_id) override;
   void OverrideText(actions::ActionId action_id,
                     const std::u16string& override_text) override;

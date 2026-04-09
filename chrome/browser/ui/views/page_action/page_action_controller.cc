@@ -194,8 +194,9 @@ void PageActionControllerImpl::DoHideSuggestionChip(
 }
 
 void PageActionControllerImpl::ShowAnchoredMessage(
-    actions::ActionId action_id) {
-  chip_selector_->RequestAnchoredMessageShow(action_id, {});
+    actions::ActionId action_id,
+    const AnchoredMessageConfig& config) {
+  chip_selector_->RequestAnchoredMessageShow(action_id, config);
 }
 
 void PageActionControllerImpl::DoShowAnchoredMessage(

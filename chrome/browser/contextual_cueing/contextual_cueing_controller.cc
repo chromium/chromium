@@ -324,7 +324,9 @@ void ContextualCueingController::ShowCue(
       kActionAnchoredContextualCue, base::UTF8ToUTF16(strings.action_text()));
   page_action_controller->OverrideImage(kActionAnchoredContextualCue,
                                         target.GetIcon());
-  page_action_controller->ShowAnchoredMessage(kActionAnchoredContextualCue);
+  page_action_controller->ShowAnchoredMessage(
+      kActionAnchoredContextualCue,
+      {.priority = page_actions::PageActionPriorityCategory::kContextualCue});
 
   MODEL_EXECUTION_LOG(base::StringPrintf(
       "Showing cue for CUJ %s: %s [%s]", response.suggested_cuj(),

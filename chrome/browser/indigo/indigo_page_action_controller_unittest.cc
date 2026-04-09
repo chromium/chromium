@@ -384,7 +384,13 @@ TEST_F(IndigoPageActionControllerTest, ShowsAnchoredMessageThenSuggestionChip) {
     GURL url("https://example.com/1");
     ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
 
-    EXPECT_CALL(*page_action_controller_, ShowAnchoredMessage(kActionIndigo));
+    EXPECT_CALL(
+        *page_action_controller_,
+        ShowAnchoredMessage(
+            kActionIndigo,
+            page_actions::AnchoredMessageConfig{
+                .priority =
+                    page_actions::PageActionPriorityCategory::kContextualCue}));
     EXPECT_CALL(*page_action_controller_, ShowSuggestionChip(_, _)).Times(0);
 
     auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
@@ -398,7 +404,7 @@ TEST_F(IndigoPageActionControllerTest, ShowsAnchoredMessageThenSuggestionChip) {
     GURL url("https://example.com/2");
     ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
 
-    EXPECT_CALL(*page_action_controller_, ShowAnchoredMessage(_)).Times(0);
+    EXPECT_CALL(*page_action_controller_, ShowAnchoredMessage(_, _)).Times(0);
     EXPECT_CALL(*page_action_controller_, ShowSuggestionChip(kActionIndigo, _));
 
     auto navigation = content::NavigationSimulator::CreateBrowserInitiated(

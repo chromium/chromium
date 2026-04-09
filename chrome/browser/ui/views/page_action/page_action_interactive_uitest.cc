@@ -209,7 +209,7 @@ class PageActionUiTestBase {
       page_action_controller()->SetAnchoredMessageIcon(
           action_id, anchored_message_icon.value());
     }
-    page_action_controller()->ShowAnchoredMessage(action_id);
+    page_action_controller()->ShowAnchoredMessage(action_id, {});
   }
 
   void HideAnchoredMessage(actions::ActionId action_id) const {

@@ -236,7 +236,13 @@ void IndigoPageActionController::UpdateEntryPointsState() {
       page_action_controller_->SetAnchoredMessageText(
           kActionIndigo, l10n_util::GetStringUTF16(
                              IDS_INDIGO_ENTRYPOINT_ANCHORED_MESSAGE_TEXT));
-      page_action_controller_->ShowAnchoredMessage(kActionIndigo);
+      page_action_controller_->ShowAnchoredMessage(
+          kActionIndigo,
+          {.priority =
+               page_actions::PageActionPriorityCategory::kContextualCue});
+      // TODO(b/483103108): ShowAnchoredMessage is not guaranteed to show the
+      // anchored message. Migrate the following logic to use
+      // PageActionObserver.
       indigo_service_->AnchoredMessageShown();
       base::RecordAction(
           base::UserMetricsAction("Indigo.PageAction.ShowAnchoredMessage"));
