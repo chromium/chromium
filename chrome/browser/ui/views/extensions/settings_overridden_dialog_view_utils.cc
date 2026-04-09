@@ -15,54 +15,20 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/cascading_property.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
 namespace extensions {
 
-namespace {
-
-// This class helps make focus work correctly on the explicit-choice setting
-// selection dialog. Requirements for that dialog are that (1) despite using
-// radio buttons, no radio button is initially selected or focused (for the
-// sake of an unbiased choice) and (2) the Save button that locks in the
-// selection is disabled until a choice is made. Hence, when initially shown,
-// no element on the dialog can have focus. To make this possible,
-// InitialFocusTrapView is a small, user-invisible element at the top of the
-// dialog, which grabs focus initially. When it loses focus (usually to a
-// selected radio button), it makes itself unfocusable, so that it cannot
-// regain focus later.
-class InitialFocusTrapView : public views::View {
-  METADATA_HEADER(InitialFocusTrapView, views::View)
-
- public:
-  InitialFocusTrapView() {
-    SetPreferredSize(gfx::Size(1, 1));
-    SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-    // Make this object a Paragraph so it can be used to describe the
-    // options that follow. It would be more ideal if the actual Paragraph
-    // member of the dialog could read its text when the dialog appears.
-    GetViewAccessibility().SetRole(ax::mojom::Role::kParagraph);
-  }
-  ~InitialFocusTrapView() override = default;
-
- protected:
-  // views::View:
-  void OnBlur() override {
-    views::View::OnBlur();
-    SetFocusBehavior(FocusBehavior::NEVER);
-  }
-};
-
-}  // namespace
-
-BEGIN_METADATA(InitialFocusTrapView)
-END_METADATA
-
-void AddExplicitChoiceRadioButtons(
+void AddDialogContent(
     ui::DialogModel::Builder& builder,
     std::u16string dialog_description,
+    ui::ElementIdentifier paragraph_id,
     const SettingsOverriddenDialogController::SettingOption& option1,
     ui::ElementIdentifier id1,
     base::RepeatingClosure callback1,
@@ -71,17 +37,49 @@ void AddExplicitChoiceRadioButtons(
     base::RepeatingClosure callback2) {
   constexpr int kExplicitChoiceRadioGroupId = 1;
 
+  // This dialog can have no initially-focused button, because neither radio
+  // can be selected or have a focus ring, and the Save button is disabled until
+  // a choice is made. This creates an interesting situation where we need to
+  // make sure focus lands somewhere safe, and screen-readers announce the
+  // dialog properly. This is important because this dialog is meant to be
+  // non-escapable, so screen-readers need to work well.
+  //
+  // On Windows, we need to focus the paragraph element (which is explicitly
+  // made focusable when created), or else the dialog does not grab focus when
+  // it appears (ie. nothing is read, and a Tab keystroke is required to select
+  // the dialog).
+  //
+  // On Mac, the dialog heading is picked up as the initially-focused element
+  // and the dialog is properly introduced by screen readers. If we set an
+  // initially-focused field, the focus appears to change within the dialog
+  // immediately after it appears, which interrupts introduction of the dialog
+  // by the screen reader.
+#if BUILDFLAG(IS_WIN)
+  const bool initially_focus_description = true;
+#else
+  const bool initially_focus_description = false;
+#endif
+
+  const auto* const layout_provider = views::LayoutProvider::Get();
+  views::Label* paragraph_label = nullptr;
   auto container =
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .AddChildren(
-              views::Builder<views::View>(
-                  std::make_unique<InitialFocusTrapView>())
-                  // Have the initially-focused element read the
-                  // dialog description. Ideally, this would not be
-                  // done here, and the paragraph on the dialog itself
-                  // would provide this text.
-                  .SetAccessibleName(dialog_description),
+              views::Builder<views::Label>()
+                  .CopyAddressTo(&paragraph_label)
+                  .SetProperty(views::kElementIdentifierKey, paragraph_id)
+                  .SetText(dialog_description)
+                  .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+                  .SetTextStyle(views::style::STYLE_PRIMARY)
+                  .SetMultiLine(true)
+                  .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                  .SetFocusBehavior(initially_focus_description
+                                        ? views::View::FocusBehavior::ALWAYS
+                                        : views::View::FocusBehavior::NEVER),
+              views::Builder<views::View>().SetPreferredSize(gfx::Size(
+                  1, layout_provider->GetDistanceMetric(
+                         views::DISTANCE_UNRELATED_CONTROL_VERTICAL))),
               views::Builder<views::Separator>(),
               views::Builder<RichRadioButton>(
                   std::make_unique<RichRadioButton>(
@@ -105,7 +103,12 @@ void AddExplicitChoiceRadioButtons(
   builder.AddCustomField(
       std::make_unique<views::BubbleDialogModelHost::CustomView>(
           std::move(container),
-          views::BubbleDialogModelHost::FieldType::kControl));
+          views::BubbleDialogModelHost::FieldType::kControl, paragraph_label),
+      paragraph_id);
+
+  if (initially_focus_description) {
+    builder.SetInitiallyFocusedField(paragraph_id);
+  }
 }
 
 }  // namespace extensions

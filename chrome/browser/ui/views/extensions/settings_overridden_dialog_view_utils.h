@@ -15,9 +15,10 @@ namespace extensions {
 // of which setting to use. The buttons are returned inside a container,
 // allowing the radio buttons to be grouped, as well as to support any required
 // customization.
-void AddExplicitChoiceRadioButtons(
+void AddDialogContent(
     ui::DialogModel::Builder& builder,
     std::u16string dialog_description,
+    ui::ElementIdentifier paragraph_id,
     const SettingsOverriddenDialogController::SettingOption& option1,
     ui::ElementIdentifier id1,
     base::RepeatingClosure callback1,
