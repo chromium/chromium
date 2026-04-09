@@ -15,7 +15,6 @@
                                                     }));
     const {result: {ruleIds}} =
         await dp.Network.emulateNetworkConditionsByRule({
-          offline: false,
           matchedNetworkConditions,
         });
     return ruleIds;

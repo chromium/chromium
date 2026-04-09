@@ -227,7 +227,8 @@ class NetworkHandler : public DevToolsDomainHandler,
       std::optional<int> packet_queue_length,
       std::optional<bool> packet_reordering) override;
   Response EmulateNetworkConditionsByRule(
-      bool offline,
+      std::optional<bool> offline,
+      std::optional<bool> emulate_offline_service_worker,
       std::unique_ptr<protocol::Array<protocol::Network::NetworkConditions>>
           matched_network_conditions,
       std::unique_ptr<protocol::Array<String>>* rule_ids_result) override;

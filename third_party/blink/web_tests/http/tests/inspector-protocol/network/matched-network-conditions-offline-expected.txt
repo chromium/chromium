@@ -1,0 +1,4 @@
+Verify pattern matched network conditions offline emulation are applied.
+a.html:Failed to fetch
+b.html:200
+

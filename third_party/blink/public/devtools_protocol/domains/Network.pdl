@@ -1057,6 +1057,8 @@ domain Network
       optional integer packetQueueLength
       # WebRTC packetReordering feature.
       optional boolean packetReordering
+      # True to emulate internet disconnection.
+      optional boolean offline
 
   # Activates emulation of network conditions. This command is deprecated in favor of the emulateNetworkConditionsByRule
   # and overrideNetworkState commands, which can be used together to the same effect.
@@ -1084,8 +1086,11 @@ domain Network
   # explicitly modify `navigator` behavior.
   experimental command emulateNetworkConditionsByRule
     parameters
-      # True to emulate internet disconnection.
-      boolean offline
+      # True to emulate internet disconnection. Deprecated, use the offline property in matchedNetworkConditions
+      # or emulateOfflineServiceWorker instead.
+      deprecated optional boolean offline
+      # True to emulate offline service worker.
+      optional boolean emulateOfflineServiceWorker
       # Configure conditions for matching requests. If multiple entries match a request, the first entry wins.  Global
       # conditions can be configured by leaving the urlPattern for the conditions empty. These global conditions are
       # also applied for throttling of p2p connections.

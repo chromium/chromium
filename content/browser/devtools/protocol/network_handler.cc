@@ -2793,7 +2793,8 @@ Response NetworkHandler::EmulateNetworkConditions(
 }
 
 Response NetworkHandler::EmulateNetworkConditionsByRule(
-    bool offline,
+    std::optional<bool> offline,
+    std::optional<bool> emulate_offline_service_worker,
     std::unique_ptr<protocol::Array<protocol::Network::NetworkConditions>>
         matched_network_conditions,
     std::unique_ptr<protocol::Array<String>>* rule_ids_result) {
@@ -2805,7 +2806,9 @@ Response NetworkHandler::EmulateNetworkConditionsByRule(
         network::mojom::MatchedNetworkConditions::New();
     conditions->pattern = matched_condition->GetUrlPattern();
     conditions->conditions = network::mojom::NetworkConditions::New();
-    conditions->conditions->offline = offline;
+    conditions->conditions->offline =
+        offline.has_value() ? offline.value()
+                            : matched_condition->GetOffline(false);
     conditions->conditions->latency =
         base::Milliseconds(matched_condition->GetLatency());
     conditions->conditions->download_throughput =
@@ -2821,7 +2824,9 @@ Response NetworkHandler::EmulateNetworkConditionsByRule(
     rule_ids_result->get()->push_back(rule_id.ToString());
     matched_conditions.emplace_back(std::move(conditions));
   }
-  SetNetworkConditions(std::move(matched_conditions), offline);
+  SetNetworkConditions(
+      std::move(matched_conditions),
+      emulate_offline_service_worker.value_or(offline.value_or(false)));
   return Response::Success();
 }
 
