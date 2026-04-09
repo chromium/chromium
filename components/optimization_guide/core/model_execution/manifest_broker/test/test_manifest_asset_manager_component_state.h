@@ -126,15 +126,16 @@ class TestManifestAssetManagerComponentState final {
   // Methods for making components installable.
   // These will also cause installations to complete based on the download
   // scenario and active registrations.
-  void UpdateManifest(const ManifestComponentDirectory& manifest_dir);
+  void UpdateManifest(std::unique_ptr<ManifestComponentDirectory> manifest_dir);
   void UpdateBaseModel(const std::string& public_key,
-                       const FakeBaseModelAsset& asset);
+                       std::unique_ptr<FakeBaseModelAsset> asset);
   void UpdateModelAdaptation(const std::string& public_key,
-                             const FakeAdaptationAsset& asset);
+                             std::unique_ptr<FakeAdaptationAsset> asset);
   void UpdateSafetyModel(const std::string& public_key,
-                         const FakeSafetyModelAsset& asset);
-  void UpdateLanguageDetectionModel(const std::string& public_key,
-                                    const FakeLanguageModelAsset& asset);
+                         std::unique_ptr<FakeSafetyModelAsset> asset);
+  void UpdateLanguageDetectionModel(
+      const std::string& public_key,
+      std::unique_ptr<FakeLanguageModelAsset> asset);
 
   // Simulate restart behavior.
   // This will clear all registrations, but not installed components.
@@ -189,6 +190,8 @@ class TestManifestAssetManagerComponentState final {
   // The directories that we are pretending that the component updater has
   // installed, keyed by public key.
   absl::flat_hash_map<std::string, InstallableComponent> installed_components_;
+  // The path for the installed manifest.
+  std::optional<base::FilePath> manifest_path_;
 
   // Whether to defer calling OnInstallerRegistered/OnAssetUninstalled.
   bool defer_registration_callbacks_ = false;
@@ -197,6 +200,13 @@ class TestManifestAssetManagerComponentState final {
 
   // All registrations for the Manifest component.
   base::RepeatingCallbackList<void(base::FilePath)> manifest_ready_callbacks_;
+
+  // Owned assets for simulations.
+  std::vector<std::unique_ptr<ManifestComponentDirectory>> manifest_assets_;
+  std::vector<std::unique_ptr<FakeBaseModelAsset>> base_model_assets_;
+  std::vector<std::unique_ptr<FakeAdaptationAsset>> adaptation_assets_;
+  std::vector<std::unique_ptr<FakeSafetyModelAsset>> safety_model_assets_;
+  std::vector<std::unique_ptr<FakeLanguageModelAsset>> language_model_assets_;
 
   testing::NiceMock<FakeComponentUpdateService> component_update_service_;
   base::WeakPtrFactory<TestManifestAssetManagerComponentState>
