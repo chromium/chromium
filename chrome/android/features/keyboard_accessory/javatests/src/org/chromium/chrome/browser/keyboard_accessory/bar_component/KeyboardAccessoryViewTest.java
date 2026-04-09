@@ -793,6 +793,58 @@ public class KeyboardAccessoryViewTest {
 
     @Test
     @MediumTest
+    public void testScrollingNotResetOnItemUpdate() throws InterruptedException {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                    mModel.get(BAR_ITEMS)
+                            .set(
+                                    new BarItem[] {
+                                        createAutofillBarItem(
+                                                "Item 1 - very long text to fill width", null),
+                                        createAutofillBarItem(
+                                                "Item 2 - very long text to fill width", null),
+                                        createAutofillBarItem(
+                                                "Item 3 - very long text to fill width", null),
+                                        createAutofillBarItem(
+                                                "Item 4 - very long text to fill width", null),
+                                        createAutofillBarItem(
+                                                "Item 5 - very long text to fill width", null),
+                                        createAutofillBarItem(
+                                                "Item 6 - very long text to fill width", null),
+                                        createAutofillBarItem(
+                                                "Item 7 - very long text to fill width", null),
+                                        createSheetOpener()
+                                    });
+                });
+        KeyboardAccessoryView view = mKeyboardAccessoryView.take();
+        CriteriaHelper.pollUiThread(() -> view.mBarItemsView.getChildCount() > 0);
+
+        // Scroll the view manually
+        ThreadUtils.runOnUiThreadBlocking(() -> view.mBarItemsView.scrollBy(500, 0));
+
+        // Wait until it actually scrolled
+        CriteriaHelper.pollUiThread(() -> view.mBarItemsView.computeHorizontalScrollOffset() > 0);
+
+        int initialScrollOffset =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> view.mBarItemsView.computeHorizontalScrollOffset());
+
+        // Update an item in the middle
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AutofillBarItem updatedItem = createAutofillBarItem("Item 3 Updated", null);
+                    updatedItem.setViewState(ActionBarItem.ViewState.LOADING);
+                    mModel.get(BAR_ITEMS).update(2, updatedItem);
+                });
+
+        // The scroll offset should not be reset to 0
+        CriteriaHelper.pollUiThread(
+                () -> view.mBarItemsView.computeHorizontalScrollOffset() == initialScrollOffset);
+    }
+
+    @Test
+    @MediumTest
     public void testNotifiesAboutPartiallyVisibleSuggestions() throws InterruptedException {
         // Ensure that the callback isn't triggered while all items are visible:
         AtomicInteger obfuscatedChildAt = new AtomicInteger(-1);
