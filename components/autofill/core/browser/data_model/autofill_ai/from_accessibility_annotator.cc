@@ -208,10 +208,7 @@ std::optional<EntityInstance> FromAccessibilityAnnotator(
             add(&aa::Shipment::carrier_domain, kShipmentCarrierDomain);
             add(&aa::Shipment::estimated_delivery_date,
                 kShipmentEstimatedDeliveryDate);
-            // TODO(crbug.com/484094746): Map `delivery_address` to
-            // `kShipmentDeliveryZipCode`. Since `delivery_address` is a
-            // `std::string`, it's unclear how we can process this (here and in
-            // general).
+            add(&aa::Shipment::delivery_zip_code, kShipmentDeliveryZipCode);
           },
 
           [&](const aa::Passport& src) {
@@ -447,6 +444,7 @@ std::u16string GetEntryTypeNameForI18n(aa::EntryType type) {
     case aa::EntryType::kShipmentTrackingNumber:
     case aa::EntryType::kShipmentAssociatedOrderId:
     case aa::EntryType::kShipmentDeliveryAddress:
+    case aa::EntryType::kShipmentDeliveryZipCode:
     case aa::EntryType::kShipmentCarrierName:
     case aa::EntryType::kShipmentCarrierDomain:
     case aa::EntryType::kShipmentEstimatedDeliveryDate: {

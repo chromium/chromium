@@ -2357,6 +2357,7 @@ VISIT_PROTO_FIELDS(
   VISIT(carrier_name);
   VISIT(carrier_domain);
   VISIT(estimated_delivery_date);
+  VISIT(delivery_zip_code);
 }
 
 VISIT_PROTO_FIELDS(

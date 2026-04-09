@@ -50,6 +50,7 @@ enum class EntryType {
   kShipmentTrackingNumber,
   kShipmentAssociatedOrderId,
   kShipmentDeliveryAddress,
+  kShipmentDeliveryZipCode,
   kShipmentCarrierName,
   kShipmentCarrierDomain,
   kShipmentEstimatedDeliveryDate,

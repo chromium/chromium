@@ -100,16 +100,13 @@ std::optional<AtMemoryDataType> ToAtMemoryDataType(
     INTENT_TO_ATTRIBUTE_TYPE(kShipmentCarrierName);
     INTENT_TO_ATTRIBUTE_TYPE(kShipmentCarrierDomain);
     INTENT_TO_ATTRIBUTE_TYPE(kShipmentEstimatedDeliveryDate);
+    INTENT_TO_ATTRIBUTE_TYPE(kShipmentDeliveryZipCode);
     case accessibility_annotator::EntryType::kUnknown:
     case accessibility_annotator::EntryType::kIbanNickname:
     case accessibility_annotator::EntryType::kCreditCardFull:
     case accessibility_annotator::EntryType::kCreditCardNickname:
     case accessibility_annotator::EntryType::kFlightReservationArrivalDate:
     case accessibility_annotator::EntryType::kOrderGrandTotal:
-    // TODO(crbug.com/484094746): Map `delivery_address` to
-    // `kShipmentDeliveryZipCode`. Since `delivery_address` is a
-    // `std::string`, it's unclear how we can process this (here and in
-    // general).
     case accessibility_annotator::EntryType::kShipmentDeliveryAddress:
       return std::nullopt;
   }

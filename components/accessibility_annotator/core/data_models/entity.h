@@ -85,6 +85,7 @@ struct Shipment {
   std::string tracking_number;
   std::string associated_order_id;
   std::string delivery_address;
+  std::string delivery_zip_code;
   std::string carrier_name;
   GURL carrier_domain;
   std::optional<Date> estimated_delivery_date;
@@ -152,7 +153,7 @@ struct Vehicle {
   std::string vin;
 };
 
-// LINT.ThenChange(//core/browser/data_model/autofill_ai/from_accessibility_annotator.cc:AttributeConversions)
+// LINT.ThenChange(//components/autofill/core/browser/data_model/autofill_ai/from_accessibility_annotator.cc:AttributeConversions)
 
 struct GmailSource {
   GmailSource();

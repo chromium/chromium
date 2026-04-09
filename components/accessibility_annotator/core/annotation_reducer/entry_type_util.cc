@@ -191,6 +191,7 @@ bool IsFullEntryType(EntryType entry_type) {
     case EntryType::kShipmentTrackingNumber:
     case EntryType::kShipmentAssociatedOrderId:
     case EntryType::kShipmentDeliveryAddress:
+    case EntryType::kShipmentDeliveryZipCode:
     case EntryType::kShipmentCarrierName:
     case EntryType::kShipmentCarrierDomain:
     case EntryType::kShipmentEstimatedDeliveryDate:
@@ -525,6 +526,7 @@ EntityTypeEnumSet GetEntityTypesForEntryType(EntryType entry_type) {
     case EntryType::kShipmentTrackingNumber:
     case EntryType::kShipmentAssociatedOrderId:
     case EntryType::kShipmentDeliveryAddress:
+    case EntryType::kShipmentDeliveryZipCode:
     case EntryType::kShipmentCarrierName:
     case EntryType::kShipmentCarrierDomain:
     case EntryType::kShipmentEstimatedDeliveryDate:

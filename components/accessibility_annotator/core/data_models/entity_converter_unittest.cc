@@ -59,6 +59,7 @@ TEST(EntityConverterTest, ConvertShipment) {
   shipment->add_associated_order_ids("order_1");
   shipment->add_associated_order_ids("order_2");
   shipment->set_delivery_address("123 Main St");
+  shipment->set_delivery_zip_code("80339");
   shipment->set_carrier_name("Carrier Co");
   shipment->set_carrier_domain("https://carrier.com");
   auto* delivery_date = shipment->mutable_estimated_delivery_date();
@@ -75,6 +76,7 @@ TEST(EntityConverterTest, ConvertShipment) {
   EXPECT_EQ(entity_shipment.tracking_number, "track_123");
   EXPECT_EQ(entity_shipment.associated_order_id, "order_1");
   EXPECT_EQ(entity_shipment.delivery_address, "123 Main St");
+  EXPECT_EQ(entity_shipment.delivery_zip_code, "80339");
   EXPECT_EQ(entity_shipment.carrier_name, "Carrier Co");
   EXPECT_EQ(entity_shipment.carrier_domain, GURL("https://carrier.com"));
   ASSERT_TRUE(entity_shipment.estimated_delivery_date.has_value());

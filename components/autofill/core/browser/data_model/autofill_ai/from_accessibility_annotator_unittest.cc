@@ -201,6 +201,7 @@ TEST(FromAccessibilityAnnotatorTest, EntityConversion_Shipment) {
   s.tracking_number = "238947234597";
   s.associated_order_id = "#shonet34234";
   s.delivery_address = "Foostreet 123, 234987 Bar, USA";
+  s.delivery_zip_code = "234987";
   s.carrier_name = "Bar";
   s.carrier_domain = GURL("https://bar.com");
   s.estimated_delivery_date = aa::Date{.day = 31, .month = 7, .year = 2030};
@@ -222,7 +223,9 @@ TEST(FromAccessibilityAnnotatorTest, EntityConversion_Shipment) {
               IsAttribute(AttributeType(kShipmentCarrierDomain),
                           u"https://bar.com/"),
               IsAttribute(AttributeType(kShipmentEstimatedDeliveryDate),
-                          u"2030-07-31")))));
+                          u"2030-07-31"),
+              IsAttribute(AttributeType(kShipmentDeliveryZipCode),
+                          u"234987")))));
 }
 
 // Tests conversion of a drivers license from Accessibility Annotator to
