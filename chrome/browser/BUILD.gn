@@ -1229,7 +1229,7 @@ static_library("browser") {
     "//chrome/browser/enterprise/connectors/reporting:impl",
     "//chrome/browser/external_protocol",
     "//chrome/browser/google",
-    "//chrome/browser/headless",
+    "//chrome/browser/headless:initializer",
     "//chrome/browser/history_embeddings",
     "//chrome/browser/interstitials",
     "//chrome/browser/ntp_tiles",

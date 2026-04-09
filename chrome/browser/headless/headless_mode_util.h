@@ -5,19 +5,7 @@
 #ifndef CHROME_BROWSER_HEADLESS_HEADLESS_MODE_UTIL_H_
 #define CHROME_BROWSER_HEADLESS_HEADLESS_MODE_UTIL_H_
 
-#include <memory>
-
-#include "base/command_line.h"
-#include "base/types/expected.h"
-
 namespace headless {
-
-// Represents opaque headless mode state.
-class HeadlessModeHandle {
- public:
-  HeadlessModeHandle() = default;
-  virtual ~HeadlessModeHandle() = default;
-};
 
 // Returns positive if Chrome headless mode is in effect. In this mode Chrome is
 // running without any visible UI.
@@ -26,11 +14,6 @@ bool IsHeadlessMode();
 // Returns positive if headless mode can access any URL whose scheme is
 // chrome://.
 bool IsChromeSchemeUrlAllowed();
-
-// Initializes headless mode returning a handle that would clean up the state
-// upon destruction or a meaningful error message.
-base::expected<std::unique_ptr<HeadlessModeHandle>, std::string>
-InitHeadlessMode();
 
 }  // namespace headless
 

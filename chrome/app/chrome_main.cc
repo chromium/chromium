@@ -16,7 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_main_delegate.h"
 #include "chrome/app/startup_timestamps.h"
-#include "chrome/browser/headless/headless_mode_util.h"
+#include "chrome/browser/headless/headless_mode_init.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_result_codes.h"
 #include "chrome/common/chrome_switches.h"

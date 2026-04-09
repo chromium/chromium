@@ -9,10 +9,22 @@ import("//testing/test.gni")
 
 source_set("headless") {
   sources = [
-    "headless_mode_platform.h",
     "headless_mode_switches.h",
     "headless_mode_util.cc",
     "headless_mode_util.h",
+  ]
+
+  deps = [
+    "//base",
+    "//ui/gfx",
+  ]
+}
+
+source_set("initializer") {
+  sources = [
+    "headless_mode_init.cc",
+    "headless_mode_init.h",
+    "headless_mode_platform.h",
   ]
 
   if (is_mac) {
@@ -20,6 +32,8 @@ source_set("headless") {
   }
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [ ":headless" ]
 
   deps = [
     "//base",
@@ -110,7 +124,7 @@ if (!is_android) {
     }
 
     deps = [
-      ":headless",
+      ":initializer",
       "//base",
       "//chrome/browser",
       "//chrome/browser/infobars",
