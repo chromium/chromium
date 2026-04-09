@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/android/android_info.h"
 #include "net/cert/cert_net_fetcher.h"
 #include "net/cert/cert_verify_proc_android.h"
 #include "net/cert/cert_verify_result.h"
@@ -26,9 +27,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+using ::testing::_;
 using ::testing::ByMove;
 using ::testing::Return;
-using ::testing::_;
 
 namespace net {
 
@@ -312,6 +313,208 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching, MaxAIAFetches) {
                    NetLogWithSource()));
 }
 
+// Tests that if the deepest intermediate has no AIA but an earlier cert does,
+// backtracking occurs and the earlier cert's AIA is used to find a cross-signed
+// path to a trusted root.
+//
+// On pre-Q Android, the system verifier doesn't do path building on the input
+// certs - it just assumes they form a single chain in order. So backtracking
+// with extra certs appended won't work on those versions.
+TEST_F(CertVerifyProcAndroidTestWithAIAFetching,
+       BacktrackToCrossSignedIntermediate) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_Q) {
+    GTEST_SKIP() << "Skipping on pre-Q Android where system verifier does not "
+                    "do path building";
+  }
+  // Create a separate trusted root (different from the test fixture's root_).
+  auto [unused_leaf, trusted_root] = CertBuilder::CreateSimpleChain2();
+  ScopedTestRoot scoped_trusted_root({trusted_root->GetX509Certificate()});
+
+  // Create a cross-signed version of intermediate_: same public key/subject,
+  // but signed by trusted_root instead of root_.
+  CertBuilder cross_signed_intermediate(intermediate_->GetCertBuffer(),
+                                        trusted_root.get());
+  cross_signed_intermediate.SetSubjectTLV(
+      base::as_byte_span(intermediate_->GetSubject()));
+  cross_signed_intermediate.SetKey(bssl::UpRef(intermediate_->GetKey()));
+  cross_signed_intermediate.SetSubjectKeyIdentifier(
+      intermediate_->GetSubjectKeyIdentifier());
+
+  // Remove AIA from intermediate_ so backtracking is required.
+  intermediate_->SetCaIssuersAndOCSPUrls(
+      /*ca_issuers_urls=*/std::vector<GURL>(),
+      /*ocsp_urls=*/std::vector<GURL>());
+
+  // leaf_ has AIA pointing to cross-signed intermediate.
+  const GURL kCrossSignedURL("http://aia.test/cross-signed");
+  leaf_->SetCaIssuersUrl(kCrossSignedURL);
+
+  scoped_refptr<CertVerifyProcAndroid> proc =
+      base::MakeRefCounted<CertVerifyProcAndroid>(fetcher_,
+                                                  CRLSet::BuiltinCRLSet());
+
+  // Chain sent: leaf → intermediate → root_ (untrusted).
+  // intermediate_ has no AIA, so backtrack to leaf_'s AIA.
+  // Fetching returns cross_signed_intermediate (signed by trusted_root).
+  // New chain: leaf → cross_signed_intermediate → trusted_root (trusted).
+  EXPECT_CALL(*fetcher_, FetchCaIssuers(kCrossSignedURL, _, _))
+      .WillOnce(Return(ByMove(MockCertNetFetcherRequest::Create(
+          cross_signed_intermediate.GetCertBuffer()))));
+
+  CertVerifyResult verify_result;
+  EXPECT_EQ(OK, proc->Verify(LeafWithIntermediate().get(), kHostname,
+                             /*ocsp_response=*/std::string(),
+                             /*sct_list=*/std::string(), 0, &verify_result,
+                             NetLogWithSource()));
+
+  // Verify the returned chain has the expected certs.
+  ASSERT_TRUE(verify_result.verified_cert);
+  EXPECT_TRUE(x509_util::CryptoBufferEqual(
+      verify_result.verified_cert->cert_buffer(), leaf_->GetCertBuffer()));
+  // The verified chain may also include the trusted root, so check that the
+  // first intermediate is the cross-signed one.
+  ASSERT_GE(verify_result.verified_cert->intermediate_buffers().size(), 1u);
+  EXPECT_TRUE(x509_util::CryptoBufferEqual(
+      verify_result.verified_cert->intermediate_buffers()[0].get(),
+      cross_signed_intermediate.GetCertBuffer()));
+}
+
+// Tests that if the intermediate has an AIA URL pointing to an untrusted root,
+// that root is fetched and verification fails, and then backtracking occurs to
+// try the leaf's AIA URL which fetches a cross-signed intermediate that leads
+// to a trusted root.
+//
+// On pre-Q Android, the system verifier doesn't do path building on the input
+// certs - it just assumes they form a single chain in order. So backtracking
+// with extra certs appended won't work on those versions.
+TEST_F(CertVerifyProcAndroidTestWithAIAFetching,
+       BacktrackAfterIntermediateAIAFetchesUntrustedRoot) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_Q) {
+    GTEST_SKIP() << "Skipping on pre-Q Android where system verifier does not "
+                    "do path building";
+  }
+  // Create a separate trusted root (different from the test fixture's root_).
+  auto [unused_leaf, trusted_root] = CertBuilder::CreateSimpleChain2();
+  ScopedTestRoot scoped_trusted_root({trusted_root->GetX509Certificate()});
+
+  // Create a cross-signed version of intermediate_: same public key/subject,
+  // but signed by trusted_root instead of root_.
+  CertBuilder cross_signed_intermediate(intermediate_->GetCertBuffer(),
+                                        trusted_root.get());
+  cross_signed_intermediate.SetSubjectTLV(
+      base::as_byte_span(intermediate_->GetSubject()));
+  cross_signed_intermediate.SetKey(bssl::UpRef(intermediate_->GetKey()));
+  cross_signed_intermediate.SetSubjectKeyIdentifier(
+      intermediate_->GetSubjectKeyIdentifier());
+
+  // leaf_ has AIA pointing to cross-signed intermediate.
+  const GURL kCrossSignedURL("http://aia.test/cross-signed");
+  leaf_->SetCaIssuersUrl(kCrossSignedURL);
+
+  // intermediate_ keeps its AIA pointing to kRootURL (set in SetUp).
+
+  scoped_refptr<CertVerifyProcAndroid> proc =
+      base::MakeRefCounted<CertVerifyProcAndroid>(fetcher_,
+                                                  CRLSet::BuiltinCRLSet());
+
+  // Chain sent: leaf → intermediate → root_ (untrusted).
+  // First, intermediate_'s AIA (kRootURL) fetches root_, but root_ is
+  // untrusted and self-signed, so verification fails.
+  // Then backtrack to leaf_'s AIA (kCrossSignedURL), which fetches
+  // cross_signed_intermediate (signed by trusted_root).
+  // New chain: leaf → cross_signed_intermediate → trusted_root (trusted).
+  EXPECT_CALL(*fetcher_, FetchCaIssuers(kRootURL, _, _))
+      .WillOnce(Return(
+          ByMove(MockCertNetFetcherRequest::Create(root_->GetCertBuffer()))));
+  EXPECT_CALL(*fetcher_, FetchCaIssuers(kCrossSignedURL, _, _))
+      .WillOnce(Return(ByMove(MockCertNetFetcherRequest::Create(
+          cross_signed_intermediate.GetCertBuffer()))));
+
+  CertVerifyResult verify_result;
+  EXPECT_EQ(OK, proc->Verify(LeafWithIntermediate().get(), kHostname,
+                             /*ocsp_response=*/std::string(),
+                             /*sct_list=*/std::string(), 0, &verify_result,
+                             NetLogWithSource()));
+
+  // Verify the returned chain has the expected certs.
+  ASSERT_TRUE(verify_result.verified_cert);
+  EXPECT_TRUE(x509_util::CryptoBufferEqual(
+      verify_result.verified_cert->cert_buffer(), leaf_->GetCertBuffer()));
+  ASSERT_GE(verify_result.verified_cert->intermediate_buffers().size(), 1u);
+  EXPECT_TRUE(x509_util::CryptoBufferEqual(
+      verify_result.verified_cert->intermediate_buffers()[0].get(),
+      cross_signed_intermediate.GetCertBuffer()));
+}
+
+// Tests that cross-signed certificates work (without AIA fetching).
+// This verifies the test infrastructure for cross-signing is correct.
+TEST_F(CertVerifyProcAndroidTestWithAIAFetching, CrossSignedCertWithoutAIA) {
+  // Create a separate trusted root (different from the test fixture's root_).
+  auto [unused_leaf, trusted_root] = CertBuilder::CreateSimpleChain2();
+  ScopedTestRoot scoped_trusted_root({trusted_root->GetX509Certificate()});
+
+  // Create a cross-signed version of intermediate_: same public key/subject,
+  // but signed by trusted_root instead of root_.
+  // Use intermediate_ as template, then override subject/key/SKI to ensure
+  // they match exactly (since CertBuilder randomizes these by default).
+  CertBuilder cross_signed_intermediate(intermediate_->GetCertBuffer(),
+                                        trusted_root.get());
+  cross_signed_intermediate.SetSubjectTLV(
+      base::as_byte_span(intermediate_->GetSubject()));
+  cross_signed_intermediate.SetKey(bssl::UpRef(intermediate_->GetKey()));
+  cross_signed_intermediate.SetSubjectKeyIdentifier(
+      intermediate_->GetSubjectKeyIdentifier());
+
+  // Build a chain with leaf and the cross-signed intermediate.
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
+  intermediates.push_back(
+      bssl::UpRef(cross_signed_intermediate.GetCertBuffer()));
+  scoped_refptr<X509Certificate> chain = X509Certificate::CreateFromBuffer(
+      bssl::UpRef(leaf_->GetCertBuffer()), std::move(intermediates));
+  ASSERT_TRUE(chain);
+
+  scoped_refptr<CertVerifyProcAndroid> proc =
+      base::MakeRefCounted<CertVerifyProcAndroid>(fetcher_,
+                                                  CRLSet::BuiltinCRLSet());
+
+  // No AIA fetches expected - chain is complete.
+  CertVerifyResult verify_result;
+  EXPECT_EQ(OK, proc->Verify(chain.get(), kHostname,
+                             /*ocsp_response=*/std::string(),
+                             /*sct_list=*/std::string(), 0, &verify_result,
+                             NetLogWithSource()));
+}
+
+// Tests that if an AIA fetch returns a certificate already present in the
+// chain (a duplicate), it is detected and skipped without triggering
+// re-verification. This exercises the duplicate-detection loop that handles
+// the case where an AIA response may contain multiple certificates.
+TEST_F(CertVerifyProcAndroidTestWithAIAFetching, DuplicateFetchedCertSkipped) {
+  scoped_refptr<CertVerifyProcAndroid> proc =
+      base::MakeRefCounted<CertVerifyProcAndroid>(fetcher_,
+                                                  CRLSet::BuiltinCRLSet());
+
+  // Leaf's AIA (kIntermediateURL) fetches the intermediate, which is new and
+  // gets added. Re-verification fails because root_ is not trusted.
+  // Then intermediate's AIA (kRootURL) fetches the intermediate again — this
+  // is a duplicate and should be skipped without triggering re-verification.
+  EXPECT_CALL(*fetcher_, FetchCaIssuers(kIntermediateURL, _, _))
+      .WillOnce(Return(ByMove(
+          MockCertNetFetcherRequest::Create(intermediate_->GetCertBuffer()))));
+  EXPECT_CALL(*fetcher_, FetchCaIssuers(kRootURL, _, _))
+      .WillOnce(Return(ByMove(
+          MockCertNetFetcherRequest::Create(intermediate_->GetCertBuffer()))));
+
+  CertVerifyResult verify_result;
+  EXPECT_EQ(
+      ERR_CERT_AUTHORITY_INVALID,
+      proc->Verify(LeafOnly().get(), kHostname, /*ocsp_response=*/std::string(),
+                   /*sct_list=*/std::string(), 0, &verify_result,
+                   NetLogWithSource()));
+}
+
 // Tests that if the supplied chain contains an intermediate with an AIA URL,
 // that AIA URL is fetched if necessary.
 TEST_F(CertVerifyProcAndroidTestWithAIAFetching, FetchForSuppliedIntermediate) {
@@ -326,6 +529,11 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching, FetchForSuppliedIntermediate) {
   EXPECT_CALL(*fetcher_, FetchCaIssuers(kRootURL, _, _))
       .WillOnce(Return(
           ByMove(MockCertNetFetcherRequest::Create(root_->GetCertBuffer()))));
+
+  // After fetching root_ (which is untrusted), backtracking will also try
+  // leaf_'s AIA URL. Return an error since it won't help either.
+  EXPECT_CALL(*fetcher_, FetchCaIssuers(kIntermediateURL, _, _))
+      .WillOnce(Return(ByMove(MockCertNetFetcherRequest::Create(ERR_FAILED))));
 
   CertVerifyResult verify_result;
   // This chain results in an AUTHORITY_INVALID root because |root_| is not
