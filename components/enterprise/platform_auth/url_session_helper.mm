@@ -129,11 +129,11 @@ NSData* ConvertRequestBody(
   NSMutableData* body_data = [NSMutableData data];
 
   for (const auto& data_element : *elements) {
-    if (data_element.type() != network::DataElement::Tag::kBytes) {
+    const auto* bytes = data_element.TryAs<network::DataElementBytes>();
+    if (!bytes) {
       return nil;
     }
-    base::span<const uint8_t> data_span =
-        data_element.As<network::DataElementBytes>().bytes();
+    base::span<const uint8_t> data_span = bytes->bytes();
     [body_data appendBytes:data_span.data() length:data_span.size()];
   }
 

@@ -806,11 +806,11 @@ bool GetPostData(
   }
   for (const auto& element : *elements) {
     // TODO(caseq): Also support blobs.
-    if (element.type() != network::DataElement::Tag::kBytes) {
+    const auto* bytes_element = element.TryAs<network::DataElementBytes>();
+    if (!bytes_element) {
       return false;
     }
-    base::span<const uint8_t> bytes =
-        element.As<network::DataElementBytes>().bytes();
+    base::span<const uint8_t> bytes = bytes_element->bytes();
     auto data_entry = protocol::Network::PostDataEntry::Create().Build();
     data_entry->SetBytes(protocol::Binary::fromSpan(bytes));
     data_entries->push_back(std::move(data_entry));

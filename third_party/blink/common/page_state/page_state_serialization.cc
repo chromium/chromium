@@ -64,10 +64,9 @@ void AppendFileRangeToRequestBody(
 void AppendReferencedFilesFromHttpBody(
     const std::vector<network::DataElement>& elements,
     std::vector<std::optional<std::u16string>>* referenced_files) {
-  for (size_t i = 0; i < elements.size(); ++i) {
-    if (elements[i].type() == network::DataElement::Tag::kFile) {
-      referenced_files->emplace_back(
-          elements[i].As<network::DataElementFile>().path().AsUTF16Unsafe());
+  for (const auto& element : elements) {
+    if (const auto* file = element.TryAs<network::DataElementFile>()) {
+      referenced_files->emplace_back(file->path().AsUTF16Unsafe());
     }
   }
 }

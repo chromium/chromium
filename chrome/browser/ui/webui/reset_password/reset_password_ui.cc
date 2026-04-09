@@ -100,11 +100,9 @@ PasswordType GetPasswordType(content::WebContents* web_contents) {
     return PasswordType::PASSWORD_TYPE_UNKNOWN;
   }
   auto& post_data = nav_entry->GetPostData()->elements()->at(0);
-  if (post_data.type() == network::DataElement::Tag::kBytes) {
+  if (const auto* bytes = post_data.TryAs<network::DataElementBytes>()) {
     int post_data_int = -1;
-    if (base::StringToInt(
-            post_data.As<network::DataElementBytes>().AsStringPiece(),
-            &post_data_int)) {
+    if (base::StringToInt(bytes->AsStringPiece(), &post_data_int)) {
       return static_cast<PasswordType>(post_data_int);
     }
   }
