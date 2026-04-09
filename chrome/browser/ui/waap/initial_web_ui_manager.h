@@ -12,6 +12,10 @@
 class BrowserWindowInterface;
 class InitialWebUIWindowMetricsManager;
 
+namespace content {
+class WebContents;
+}
+
 // Manages the initialization state of WebUI components that must be loaded
 // before the browser window is shown.
 class InitialWebUIManager {
@@ -25,6 +29,11 @@ class InitialWebUIManager {
 
   static InitialWebUIManager* From(
       BrowserWindowInterface* browser_window_interface);
+
+  // Configures the WebContents used for the toolbar (e.g. metrics, background
+  // color).
+  static void ConfigureToolbarWebContents(content::WebContents* web_contents,
+                                          BrowserWindowInterface* browser);
 
   // Requests to defer showing the browser window until the initial WebUI
   // finishes loading. Returns true if the deferral was successful and the state
@@ -40,6 +49,11 @@ class InitialWebUIManager {
   // Notifies that the web UI toolbar has finished loading. It will also call
   // `Show()` from the `window_` if `is_show_pending_` is true.
   void OnWebUIToolbarLoaded();
+
+  // Transfers ownership of the pre-warmed `WebContents` for the toolbar to the
+  // caller. Returns nullptr if pre-warming was disabled or if the contents
+  // have already been taken.
+  std::unique_ptr<content::WebContents> TakeToolbarContents();
 
  private:
   // These callbacks are triggered when the initial WebUI is ready.
@@ -65,6 +79,8 @@ class InitialWebUIManager {
   ui::ScopedUnownedUserData<InitialWebUIManager> scoped_data_holder_;
 
   raw_ptr<InitialWebUIWindowMetricsManager> metrics_manager_;
+
+  std::unique_ptr<content::WebContents> toolbar_web_contents_;
 };
 
 #endif  // CHROME_BROWSER_UI_WAAP_INITIAL_WEB_UI_MANAGER_H_

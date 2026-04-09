@@ -1747,6 +1747,10 @@ const base::FeatureParam<bool> kWebUIReloadButtonRestartUnresponsive{
 // has finished loading.
 const base::FeatureParam<bool> kWebUIReloadButtonDeferBrowserViewShow{
     &kWebUIReloadButton, "WebUIReloadButtonDeferBrowserViewShow", true};
+// When this is enabled, the WebUI toolbar will be pre-warmed during browser
+// initialization.
+const base::FeatureParam<bool> kWebUIReloadButtonPrewarmWebUI{
+    &kWebUIReloadButton, "WebUIReloadButtonPrewarmWebUI", true};
 // When this is enabled, the reload button will be marked as visible until its
 // first non-empty paint.
 const base::FeatureParam<bool> kWebUIReloadButtonKeepVisibleUntilPaint{

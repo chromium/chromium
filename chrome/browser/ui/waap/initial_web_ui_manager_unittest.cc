@@ -8,21 +8,26 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace {
 
-class InitialWebUIManagerTest : public testing::Test {
+class InitialWebUIManagerTest : public ChromeRenderViewHostTestHarness {
  protected:
   void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
     EXPECT_CALL(browser_window_, GetUnownedUserDataHost())
         .WillRepeatedly(testing::ReturnRef(unowned_user_data_host_));
+    EXPECT_CALL(browser_window_, GetProfile())
+        .WillRepeatedly(testing::Return(profile()));
+    EXPECT_CALL(testing::Const(browser_window_), GetProfile())
+        .WillRepeatedly(testing::Return(profile()));
   }
 
-  content::BrowserTaskEnvironment task_environment_;
   testing::NiceMock<MockBrowserWindowInterface> browser_window_;
   ui::UnownedUserDataHost unowned_user_data_host_;
 };

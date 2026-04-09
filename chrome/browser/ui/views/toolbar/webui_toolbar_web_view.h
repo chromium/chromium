@@ -241,6 +241,9 @@ class WebUIToolbarWebView
   // Extra space to put before the back button, which is the first button.
   int back_button_leading_margin_ = 0;
 
+  // True if the WebContents was pre-warmed and injected.
+  bool is_preloaded_ = false;
+
   base::WeakPtrFactory<WebUIToolbarWebView> weak_ptr_factory_{this};
 };
 

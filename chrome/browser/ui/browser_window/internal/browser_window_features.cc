@@ -300,6 +300,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   // instantiated in this block.
   Profile* const profile = browser->GetProfile();
   if (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL) {
+    initial_web_ui_manager_ = std::make_unique<InitialWebUIManager>(browser);
+
     if (search::IsInstantExtendedAPIEnabled()) {
       instant_controller_ = std::make_unique<BrowserInstantController>(
           profile, browser->GetTabStripModel());
@@ -747,9 +749,6 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
                 *browser->GetTabStripModel()));
   }
 
-  if (browser->is_type_normal()) {
-    initial_web_ui_manager_ = std::make_unique<InitialWebUIManager>(browser);
-  }
 
   // Initialize post-window dependent embedder features last.
   embedder_browser_window_features_->InitPostWindowConstruction(browser);

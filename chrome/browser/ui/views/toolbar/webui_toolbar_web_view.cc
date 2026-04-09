@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 
+#include <memory>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -19,7 +21,6 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
-#include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -189,20 +190,35 @@ WebUIToolbarWebView::WebUIToolbarWebView(
 
   auto web_view =
       std::make_unique<WebUIToolbarInternalWebView>(browser->GetProfile());
-  auto* web_contents =
-      web_view->GetWebContents(GURL(chrome::kChromeUIWebUIToolbarURL));
-  // PLM has to be initialized before loading the URL.
-  InitializePageLoadMetricsForWebContents(web_contents);
-  // Needed for UKM PageLoad metrics.
-  ukm::InitializeSourceUrlRecorderForWebContents(web_contents);
+  std::unique_ptr<content::WebContents> pre_created_contents;
 
-  web_contents->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
-  web_contents->SetIgnoreZoomGestures(true);
+  if (auto* manager = InitialWebUIManager::From(browser)) {
+    pre_created_contents = manager->TakeToolbarContents();
+  }
+  if (pre_created_contents) {
+    is_preloaded_ = true;
+    // When preload is not enabled, the `WebUIToolbarUI` init is done in
+    // `WebUIToolbarWebView::DidFinishNavigation()`. Here since the
+    // `WebContents` is pre-created, it might finish navigation before we
+    // install the observer, so we have to manually init the `WebUIToolbarUI`.
+    if (!pre_created_contents->IsLoading() &&
+        pre_created_contents->GetController().GetLastCommittedEntry()) {
+      if (auto* ui = GetWebUIToolbarUI()) {
+        ui->Init(this);
+      }
+    }
+    Observe(pre_created_contents.get());
+    web_view->SetOwnedWebContents(std::move(pre_created_contents));
+  } else {
+    content::WebContents* web_contents =
+        web_view->GetWebContents(GURL(chrome::kChromeUIWebUIToolbarURL));
+    Observe(web_contents);
+    InitialWebUIManager::ConfigureToolbarWebContents(web_contents, browser);
+  }
 
   // We must save the pointer to the WebView so we can load the URL after the
   // view is added to a widget.
   web_view_ = AddChildView(std::move(web_view));
-  Observe(web_contents);
 
   // The accessibility and tooltip attributes are handled by the WebUI.
   SetProperty(views::kElementIdentifierKey, kWebUIToolbarElementIdentifier);
@@ -220,11 +236,9 @@ void WebUIToolbarWebView::AddedToWidget() {
 
   SetInitializationState(InitializationState::kPending);
 
-  // Ensure the browser window interface is associated with the WebContents
-  // before the WebUI acts on it.
-  webui::SetBrowserWindowInterface(web_view_->GetWebContents(), browser_);
-
-  web_view_->LoadInitialURL(GURL(chrome::kChromeUIWebUIToolbarURL));
+  if (!is_preloaded_) {
+    web_view_->LoadInitialURL(GURL(chrome::kChromeUIWebUIToolbarURL));
+  }
 
   // Initialize the split tabs control early to determine its initial visibility
   // state (based on prefs/tab state) before the first layout. This prevents

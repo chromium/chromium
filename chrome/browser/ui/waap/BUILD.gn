@@ -35,9 +35,13 @@ source_set("manager") {
   deps = [
     ":window_metrics_manager",
     "//base",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views/toolbar",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/common:chrome_features",
+    "//chrome/common:constants",
     "//ui/base/unowned_user_data",
     "//ui/views",
   ]
