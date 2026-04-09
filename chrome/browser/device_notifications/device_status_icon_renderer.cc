@@ -5,7 +5,6 @@
 #include "chrome/browser/device_notifications/device_status_icon_renderer.h"
 
 #include "base/i18n/message_formatter.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
@@ -161,8 +160,6 @@ void DeviceStatusIconRenderer::RefreshIcon() {
   auto menu = std::make_unique<StatusIconMenuModel>(this);
   size_t total_connection_count = 0;
   size_t total_origin_count = 0;
-  const size_t total_profile_count =
-      device_system_tray_icon_->profiles().size();
   // Title will be updated after looping through profiles below.
   menu->AddTitle(u"");
   AddItem(menu.get(), GetAboutDeviceLabel(),
@@ -213,16 +210,6 @@ void DeviceStatusIconRenderer::RefreshIcon() {
     status_icon_->SetToolTip(title_label);
   }
   status_icon_->SetContextMenu(std::move(menu));
-
-  if (command_id_callbacks_.size() + IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST >
-      IDC_DEVICE_SYSTEM_TRAY_ICON_LAST) {
-    UMA_HISTOGRAM_COUNTS_100(
-        "DeviceNotifications.StatusIconMenu.Overflow.ProfileCount",
-        total_profile_count);
-    UMA_HISTOGRAM_COUNTS_100(
-        "DeviceNotifications.StatusIconMenu.Overflow.ConnectionCount",
-        total_origin_count);
-  }
 }
 
 void DeviceStatusIconRenderer::AddItem(StatusIconMenuModel* menu,

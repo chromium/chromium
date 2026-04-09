@@ -3213,28 +3213,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DeviceNotifications.StatusIconMenu.Overflow.ConnectionCount"
-    units="connections" expires_after="2026-05-03">
-  <owner>robpitkin@google.com</owner>
-  <owner>deviceapi-team@google.com</owner>
-  <summary>
-    The number of connections when the number of menu items for the device
-    status icon exceeds the command ID limit. This is recorded when the status
-    icon is refreshed and the number of items overflows.
-  </summary>
-</histogram>
-
-<histogram name="DeviceNotifications.StatusIconMenu.Overflow.ProfileCount"
-    units="profiles" expires_after="2026-05-03">
-  <owner>robpitkin@google.com</owner>
-  <owner>deviceapi-team@google.com</owner>
-  <summary>
-    The number of profiles when the number of menu items for the device status
-    icon exceeds the command ID limit. This is recorded when the status icon is
-    refreshed and the number of items overflows.
-  </summary>
-</histogram>
-
 <histogram name="DirectSockets.TCPNetworkFailures" enum="NetErrorCodes"
     expires_after="2026-09-27">
   <owner>greengrape@google.com</owner>
