@@ -12,6 +12,7 @@ source_set("send_tab_to_self") {
     "send_tab_to_self_bubble.h",
     "send_tab_to_self_context_menu_delegate.h",
     "send_tab_to_self_toolbar_icon_controller.h",
+    "send_tab_to_self_util.h",
   ]
 
   public_deps = [
@@ -27,6 +28,7 @@ source_set("impl") {
   sources = [
     "send_tab_to_self_context_menu_delegate.cc",
     "send_tab_to_self_toolbar_icon_controller.cc",
+    "send_tab_to_self_util.cc",
   ]
   deps = [
     ":send_tab_to_self",

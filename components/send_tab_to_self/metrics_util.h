@@ -37,6 +37,24 @@ void RecordNotificationDismissReasonUnknown();
 // Records when a received STTS notification is throttled from being sent.
 void RecordNotificationThrottled();
 
+// Status of the auto-open attempt for a received STTS tab.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// GENERATED_JAVA_ENUM_PACKAGE: (
+//   org.chromium.chrome.browser.share.send_tab_to_self)
+// LINT.IfChange(AutoOpenOutcome)
+enum class AutoOpenOutcome {
+  kSuccess = 0,
+  kPending = 1,
+  kOpenedPending = 2,
+  kMaxValue = kOpenedPending,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sharing/enums.xml:SendTabToSelfAutoOpenOutcome)
+
+// Records the outcome of an auto-open attempt.
+void RecordAutoOpenOutcome(AutoOpenOutcome outcome);
+
 // Status of scroll position generation when sending a tab.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

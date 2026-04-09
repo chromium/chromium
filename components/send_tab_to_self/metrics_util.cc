@@ -60,6 +60,11 @@ void RecordNotificationThrottled() {
                                 NotificationStatus::kThrottled);
 }
 
+void RecordAutoOpenOutcome(AutoOpenOutcome outcome) {
+  base::UmaHistogramEnumeration("Sharing.SendTabToSelf.AutoOpenOutcome",
+                                outcome);
+}
+
 void RecordScrollPositionGenerationTime(base::TimeDelta time) {
   base::UmaHistogramTimes("Sharing.SendTabToSelf.ScrollPosition.GenerationTime",
                           time);

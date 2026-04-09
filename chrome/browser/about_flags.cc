@@ -2740,17 +2740,19 @@ const FeatureEntry::Choice kWebOtpBackendChoices[] = {
 const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
-     "SendTabToSelfShowTargetsInContextMenus,"
+     "SendTabToSelfAutoOpen,"
+     "SendTabToSelfImprovedLastActiveLabels,"
      "SendTabToSelfPropagateFormFields,"
-     "SendTabToSelfPropagateScrollPosition,"
      "SendTabToSelfPropagateNavigationHistory,"
-     "SendTabToSelfImprovedLastActiveLabels"},
+     "SendTabToSelfPropagateScrollPosition,"
+     "SendTabToSelfShowTargetsInContextMenus"},
     {flags_ui::kGenericExperimentChoiceDisabled, switches::kDisableFeatures,
-     "SendTabToSelfShowTargetsInContextMenus,"
+     "SendTabToSelfAutoOpen,"
+     "SendTabToSelfImprovedLastActiveLabels,"
      "SendTabToSelfPropagateFormFields,"
-     "SendTabToSelfPropagateScrollPosition,"
      "SendTabToSelfPropagateNavigationHistory,"
-     "SendTabToSelfImprovedLastActiveLabels"},
+     "SendTabToSelfPropagateScrollPosition,"
+     "SendTabToSelfShowTargetsInContextMenus"},
 };
 
 // The choices for --enable-experimental-cookie-features. This really should

@@ -11,11 +11,13 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
@@ -54,10 +56,20 @@ void SendTabToSelfToolbarIconController::DisplayNewEntries(
       ProfileBrowserCollection::GetForProfile(profile_)->GetLastActiveBrowser();
   if (browser && (browser->IsActive() || ignore_active_for_testing_) &&
       CanShowOnBrowser(browser)) {
-    ShowToolbarButton(*new_entry, browser);
+    // TODO(crbug.com/488072250): Move this logic into a separate notification
+    // handler class.
+    if (base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen)) {
+      OpenEntryInNewTab(profile_, *new_entry);
+      RecordAutoOpenOutcome(AutoOpenOutcome::kSuccess);
+      // TODO(crbug.com/488072250): Show a toast.
+    } else {
+      ShowToolbarButton(*new_entry, browser);
+    }
     return;
   }
-
+  if (base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen)) {
+    RecordAutoOpenOutcome(AutoOpenOutcome::kPending);
+  }
   StorePendingEntry(new_entry);
 }
 
@@ -67,6 +79,7 @@ void SendTabToSelfToolbarIconController::StorePendingEntry(
 
   // |pending_entry_| might already be set, but it's better to overwrite
   // it with a fresher value.
+  // TODO(crbug.com/488072250): Allow multiple pending entries.
   pending_entry_ =
       std::make_unique<SendTabToSelfEntry>(*new_entry_pending_notification);
   // Prevent adding the observer several times. This might happen when the
@@ -100,8 +113,12 @@ void SendTabToSelfToolbarIconController::OnBrowserActivated(
   }
 
   if (CanShowOnBrowser(browser)) {
-    ShowToolbarButton(*entry, browser);
-    pending_entry_ = nullptr;
+    if (base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen)) {
+      OpenEntryInNewTab(profile_, *entry);
+      RecordAutoOpenOutcome(AutoOpenOutcome::kOpenedPending);
+    } else {
+      ShowToolbarButton(*entry, browser);
+    }
   }
 }
 

@@ -12799,6 +12799,7 @@ from previous Chrome versions.
   <int value="-426514080" label="EnableBuiltInAIAPI:enabled"/>
   <int value="-425754211" label="FirstPartyVietnameseInput:disabled"/>
   <int value="-425406751" label="TabStripAutoSelectOnCloseChange:enabled"/>
+  <int value="-424871899" label="SendTabToSelfAutoOpen:enabled"/>
   <int value="-424701311" label="SignedHTTPExchange:disabled"/>
   <int value="-424689493" label="HistoryClustersHideVisits:enabled"/>
   <int value="-424584720" label="ClipboardFilenames:enabled"/>
@@ -17023,6 +17024,7 @@ from previous Chrome versions.
   <int value="996987392" label="SearchNavigationPrefetch:disabled"/>
   <int value="997264173" label="MacLoopbackAudioForCast:disabled"/>
   <int value="997319533" label="ReaderModeSupportNewFonts:disabled"/>
+  <int value="997579474" label="SendTabToSelfAutoOpen:disabled"/>
   <int value="998317588"
       label="SegmentationPlatformEphemeralCardRanker:disabled"/>
   <int value="998748600" label="SyncErrorInfoBarAndroid:disabled"/>

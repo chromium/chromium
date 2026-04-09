@@ -139,9 +139,11 @@ namespace {
 const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
+     "SendTabToSelfAutoOpen,"
      "SendTabToSelfPropagateFormFields,"
      "SendTabToSelfPropagateScrollPosition"},
     {flags_ui::kGenericExperimentChoiceDisabled, switches::kDisableFeatures,
+     "SendTabToSelfAutoOpen,"
      "SendTabToSelfPropagateFormFields,"
      "SendTabToSelfPropagateScrollPosition"},
 };

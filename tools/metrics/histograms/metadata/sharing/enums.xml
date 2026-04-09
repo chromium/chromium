@@ -89,6 +89,16 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(SendTabToSelfAutoOpenOutcome) -->
+
+<enum name="SendTabToSelfAutoOpenOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Marked as pending"/>
+  <int value="2" label="Opened pending notification"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/send_tab_to_self/metrics_util.h:AutoOpenOutcome) -->
+
 <!-- LINT.IfChange(SendTabToSelfScrollPositionGenerationOutcome) -->
 
 <enum name="SendTabToSelfScrollPositionGenerationOutcome">
