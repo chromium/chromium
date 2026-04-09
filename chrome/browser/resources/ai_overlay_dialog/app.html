@@ -1,5 +1,6 @@
 <div id="container">
-  <div id="transcription" ?hidden="${!this.transcription}">
+  <div id="transcription"
+      ?hidden="${!this.transcription || !this.captionsVisible}">
     <span id="transcription-text">${this.transcription}</span>
   </div>
   <div id="main-content">
@@ -15,9 +16,11 @@
         </div>
       `)}
     </div>
-    ${this.initializationState !== 'initialized'
+    ${this.initializationState !== 'initialized' || !this.usePersona
     ? html`
-      <div id="initializerState" .className=${this.initializationState}>
+      <div id="initializerState"
+          .className=${this.initializationState}
+          ?hidden=${!this.usePersona}>
       </div >`
     : html`
       <video id="talking" .src="${this.speakingBlobUrl}"

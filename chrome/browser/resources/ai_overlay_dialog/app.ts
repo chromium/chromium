@@ -93,6 +93,12 @@ export class AppElement extends CrLitElement {
       uiState: {
         type: String,
       },
+      captionsVisible: {
+        type: Boolean,
+      },
+      usePersona: {
+        type: Boolean,
+      },
     };
   }
 
@@ -102,6 +108,8 @@ export class AppElement extends CrLitElement {
   protected accessor transcription: string = '';
   protected accessor speakingBlobUrl: string = '';
   protected accessor listeningBlobUrl: string = '';
+  protected accessor captionsVisible: boolean = true;
+  protected accessor usePersona: boolean = false;
 
   private pageHandler: PageHandlerRemote;
   private toolsRemote: AiOverlayToolsRemote;
@@ -148,6 +156,31 @@ export class AppElement extends CrLitElement {
       this.initialPageContext = undefined;
       this.unregisterPageContextListeners = null;
     };
+
+    this.pageCallbackRouter.setCaptionsVisible.addListener(
+        (visible: boolean) => {
+          log(FILE, `setCaptionsVisible: ${visible}`);
+          this.captionsVisible = visible;
+        });
+
+    this.pageCallbackRouter.setUsePersona.addListener((usePersona: boolean) => {
+      log(FILE, `setUsePersona: ${usePersona}`);
+      if (this.usePersona === usePersona) {
+        return;
+      }
+      this.usePersona = usePersona;
+      if (this.conversation?.connected) {
+        log(FILE, 'Restarting conversation for persona change');
+        // TODO(gklassen): Make it so that conversation can trigger and block on
+        // an initial page context, instead of pulling it out of the old
+        // conversation or having AppElement proxy it during initialization.
+        this.initialPageContext = this.conversation.pageContext ?? undefined;
+        this.stopConversation();
+        this.conversation = null;
+        assert(this.initializationState === InitializationState.UNINITIALIZED);
+        this.startConversation();
+      }
+    });
 
     const factory = PageHandlerFactory.getRemote();
     factory.createPageHandler(
@@ -430,9 +463,9 @@ export class AppElement extends CrLitElement {
         },
         this.toolsRemote, this.pageCallbackRouter, this.initialPageContext);
 
-    // The conversation should only ever be created once.
-    assert(this.unregisterPageContextListeners);
-    this.unregisterPageContextListeners();
+    if (this.unregisterPageContextListeners) {
+      this.unregisterPageContextListeners();
+    }
 
     return conversation;
   }

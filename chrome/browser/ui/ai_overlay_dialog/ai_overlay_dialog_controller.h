@@ -6,8 +6,11 @@
 #define CHROME_BROWSER_UI_AI_OVERLAY_DIALOG_AI_OVERLAY_DIALOG_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "ui/base/class_property.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace views {
@@ -20,6 +23,12 @@ namespace ttc {
 
 class AiOverlayDialogController : public content::WebContentsDelegate {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnCaptionsVisibleChanged(bool visible) {}
+    virtual void OnUsePersonaChanged(bool use_persona) {}
+  };
+
   DECLARE_USER_DATA(AiOverlayDialogController);
 
   static AiOverlayDialogController* From(BrowserWindowInterface* browser);
@@ -52,6 +61,15 @@ class AiOverlayDialogController : public content::WebContentsDelegate {
   void ResizeDueToAutoResize(content::WebContents* source,
                              const gfx::Size& new_size) override;
 
+  bool captions_visible() const { return captions_visible_; }
+  void set_captions_visible(bool visible);
+
+  bool use_persona() const { return use_persona_; }
+  void set_use_persona(bool use_persona);
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
  private:
   views::WebView* GetActiveOverlayWebView() const;
 
@@ -61,7 +79,14 @@ class AiOverlayDialogController : public content::WebContentsDelegate {
       scoped_unowned_user_data_;
 
   const raw_ptr<HostContentSettingsMap> host_content_settings_map_;
+
+  bool captions_visible_ = true;
+  bool use_persona_ = false;
+
+  base::ObserverList<Observer> observers_;
 };
+
+extern const ::ui::ClassProperty<bool>* const kActionAiOverlayActiveKey;
 
 }  // namespace ttc
 

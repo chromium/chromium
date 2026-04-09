@@ -114,6 +114,10 @@ export class Conversation implements ApiSessionDelegate {
     return this.state !== State.STOPPED;
   }
 
+  get pageContext(): PageContext|null {
+    return this.pageContextManager.pageContext;
+  }
+
   /**
    * ApiSessionDelegate interface
    */

@@ -9,6 +9,7 @@ import("//ui/webui/webui_features.gni")
 
 source_set("toolbar") {
   public = [
+    "ai_overlay_toolbar_button.h",
     "app_menu.h",
     "back_forward_button.h",
     "browser_app_menu_button.h",
@@ -105,6 +106,7 @@ source_set("toolbar") {
 
 source_set("impl") {
   sources = [
+    "ai_overlay_toolbar_button.cc",
     "app_menu.cc",
     "back_forward_button.cc",
     "browser_app_menu_button.cc",

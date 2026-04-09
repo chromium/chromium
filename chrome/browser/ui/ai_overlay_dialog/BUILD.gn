@@ -28,6 +28,7 @@ source_set("ai_overlay_dialog") {
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/views/interaction",
+    "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/common",
     "//components/content_settings/core/browser",

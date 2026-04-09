@@ -8,6 +8,8 @@
 #include <type_traits>
 
 #include "base/auto_reset.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -59,12 +61,17 @@ DEFINE_UI_CLASS_PROPERTY_KEY(
     std::underlying_type_t<PinnedToolbarActionFlexPriority>(
         PinnedToolbarActionFlexPriority::kLow))
 
+DEFINE_UI_CLASS_PROPERTY_TYPE(CreateCustomPinnedActionToolbarButtonCallback*)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(
+    CreateCustomPinnedActionToolbarButtonCallback,
+    kCustomPinnedActionToolbarButtonFactoryKey)
+
 PinnedActionToolbarButton::PinnedActionToolbarButton(
     Browser* browser,
     actions::ActionId action_id,
     base::WeakPtr<PinnedToolbarActionsContainer> container)
     : ToolbarButton(
-          PressedCallback(),
+          views::Button::PressedCallback(),
           std::make_unique<PinnedActionToolbarButtonMenuModel>(browser,
                                                                action_id),
           nullptr,

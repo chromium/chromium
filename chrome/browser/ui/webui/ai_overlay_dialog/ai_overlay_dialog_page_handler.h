@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -24,7 +25,8 @@ class ActionItem;
 namespace ttc {
 
 class AiOverlayDialogPageHandler
-    : public ai_overlay_dialog::mojom::PageHandler {
+    : public ai_overlay_dialog::mojom::PageHandler,
+      public AiOverlayDialogController::Observer {
  public:
   AiOverlayDialogPageHandler(
       mojo::PendingReceiver<ai_overlay_dialog::mojom::PageHandler> receiver,
@@ -41,6 +43,10 @@ class AiOverlayDialogPageHandler
                      const std::optional<std::string>& content);
   void UpdateCurrentPageContext(const std::u16string& title,
                                 const std::string& content);
+
+  // AiOverlayDialogController::Observer
+  void OnCaptionsVisibleChanged(bool visible) override;
+  void OnUsePersonaChanged(bool use_persona) override;
 
  private:
   mojo::Receiver<ai_overlay_dialog::mojom::PageHandler> receiver_;

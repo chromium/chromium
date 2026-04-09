@@ -36,4 +36,10 @@ interface Page {
 
   // Passes context about the current page to the app.
   UpdateCurrentPageContext(string page_title, string page_content);
+
+  // Controls whether captions are visible.
+  SetCaptionsVisible(bool visible);
+
+  // Sets whether to use a persona.
+  SetUsePersona(bool use_persona);
 };

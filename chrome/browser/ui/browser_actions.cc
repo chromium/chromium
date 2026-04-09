@@ -96,7 +96,9 @@
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_utils.h"
 #include "chrome/browser/ui/views/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/tabs/groups/recent_activity_bubble_dialog_view.h"
+#include "chrome/browser/ui/views/toolbar/ai_overlay_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
+#include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button_menu_model.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/zoom/zoom_view_controller.h"
@@ -1513,7 +1515,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
 
   if (glic::GlicEnabling::IsProfileEligible(profile) &&
       base::FeatureList::IsEnabled(features::kAiOverlayDialog)) {
-    root_action_item_->AddChild(
+    std::unique_ptr<actions::ActionItem> item =
         actions::ActionItem::Builder(
             base::BindRepeating(
                 [](BrowserWindowInterface* bwi, actions::ActionItem* item,
@@ -1526,6 +1528,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                 bwi))
             .SetActionId(kActionShowAiOverlayDialog)
             .SetText(l10n_util::GetStringUTF16(IDS_APPMENU_TOOLTIP))
+            .SetTooltipText(l10n_util::GetStringUTF16(IDS_APPMENU_TOOLTIP))
             .SetImage(ui::ImageModel::FromVectorIcon(
                 vector_icons::kMicIcon, ui::kColorIcon,
                 ui::SimpleMenuModel::kDefaultIconSize))
@@ -1534,7 +1537,19 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                 static_cast<
                     std::underlying_type_t<actions::ActionPinnableState>>(
                     actions::ActionPinnableState::kPinnable))
-            .Build());
+            .Build();
+
+    item->SetProperty(
+        kCustomPinnedActionToolbarButtonFactoryKey,
+        std::make_unique<CreateCustomPinnedActionToolbarButtonCallback>(
+            base::BindRepeating(
+                [](Browser* browser, actions::ActionId action_id,
+                   base::WeakPtr<PinnedToolbarActionsContainer> container)
+                    -> std::unique_ptr<PinnedActionToolbarButton> {
+                  return std::make_unique<AiOverlayToolbarButton>(
+                      browser, action_id, container);
+                })));
+    root_action_item_->AddChild(std::move(item));
   }
 
   // Registration of Gemini in Chrome Anchored Cues, but requires call-time

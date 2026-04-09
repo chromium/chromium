@@ -849,10 +849,20 @@ PinnedToolbarActionsContainer::CreateOrGetButtonForAction(
     return button;
   }
 
-  auto button = std::make_unique<PinnedActionToolbarButton>(
-      browser_view_->browser(), id, weak_ptr_factory_.GetWeakPtr());
+  std::unique_ptr<PinnedActionToolbarButton> button;
+  actions::ActionItem* action_item = GetActionItemFor(id);
+  auto* custom_factory =
+      action_item->GetProperty(kCustomPinnedActionToolbarButtonFactoryKey);
+
+  if (custom_factory && !custom_factory->is_null()) {
+    button = custom_factory->Run(browser_view_->browser(), id,
+                                 weak_ptr_factory_.GetWeakPtr());
+  } else {
+    button = std::make_unique<PinnedActionToolbarButton>(
+        browser_view_->browser(), id, weak_ptr_factory_.GetWeakPtr());
+  }
   action_view_controller_->CreateActionViewRelationship(
-      button.get(), GetActionItemFor(id)->GetAsWeakPtr());
+      button.get(), action_item->GetAsWeakPtr());
 
   button->SetPaintToLayer();
   button->layer()->SetFillsBoundsOpaquely(false);

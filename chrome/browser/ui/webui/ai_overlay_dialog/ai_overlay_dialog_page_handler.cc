@@ -86,9 +86,19 @@ AiOverlayDialogPageHandler::AiOverlayDialogPageHandler(
     BrowserWindowInterface* browser)
     : receiver_(this, std::move(receiver)),
       page_(std::move(remote)),
-      browser_(browser) {}
+      browser_(browser) {
+  if (auto* controller = AiOverlayDialogController::From(browser_)) {
+    controller->AddObserver(this);
+    page_->SetCaptionsVisible(controller->captions_visible());
+    page_->SetUsePersona(controller->use_persona());
+  }
+}
 
-AiOverlayDialogPageHandler::~AiOverlayDialogPageHandler() = default;
+AiOverlayDialogPageHandler::~AiOverlayDialogPageHandler() {
+  if (auto* controller = AiOverlayDialogController::From(browser_)) {
+    controller->RemoveObserver(this);
+  }
+}
 
 void AiOverlayDialogPageHandler::GetMockAudioData(
     GetMockAudioDataCallback callback) {
@@ -174,6 +184,14 @@ void AiOverlayDialogPageHandler::UpdateCurrentPageContext(
   VLOG(1) << "\tContent: " << content.substr(0, 200) << "...";
 
   page_->UpdateCurrentPageContext(base::UTF16ToUTF8(title), content);
+}
+
+void AiOverlayDialogPageHandler::OnCaptionsVisibleChanged(bool visible) {
+  page_->SetCaptionsVisible(visible);
+}
+
+void AiOverlayDialogPageHandler::OnUsePersonaChanged(bool use_persona) {
+  page_->SetUsePersona(use_persona);
 }
 
 }  // namespace ttc
