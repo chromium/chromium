@@ -108,11 +108,6 @@ struct ParsingContext {
   // FormFieldData::name().
   base::flat_map<FieldGlobalId, std::u16string> name_overrides;
 
-  // Contains the parseable labels that override FormFieldData::label().
-  // Parsing code should prefer these labels but fall back to
-  // FormFieldData::label().
-  base::flat_map<FieldGlobalId, std::u16string> label_overrides;
-
   const GeoIpCountryCode client_country;
   const LanguageCode page_language;
   // Mutable so that the caches can be reused across different pattern files

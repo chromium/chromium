@@ -50,7 +50,6 @@
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/form_processing/autofill_ai/determine_attribute_types.h"
-#include "components/autofill/core/browser/form_processing/label_processing_util.h"
 #include "components/autofill/core/browser/form_processing/name_processing_util.h"
 #include "components/autofill/core/browser/form_structure_rationalizer.h"
 #include "components/autofill/core/browser/form_structure_sectioning_util.h"
@@ -256,9 +255,6 @@ FormDataPredictions FormStructure::GetFieldTypePredictions() const {
   const base::flat_map<FieldGlobalId, std::u16string> parseable_names =
       GetParseableNames(fields_);
 
-  const base::flat_map<FieldGlobalId, std::u16string> parseable_labels =
-      GetParseableLabels(fields_);
-
   for (const auto& field : fields_) {
     FormFieldDataPredictions annotated_field;
     annotated_field.host_form_signature =
@@ -298,13 +294,6 @@ FormDataPredictions FormStructure::GetFieldTypePredictions() const {
         return it->second;
       }
       return field->name();
-    }());
-    annotated_field.parseable_label = base::UTF16ToUTF8([&]() {
-      if (auto it = parseable_labels.find(field->global_id());
-          it != parseable_labels.end()) {
-        return it->second;
-      }
-      return field->label();
     }());
     annotated_field.section = field->section().ToString();
     annotated_field.rank = field->rank();
@@ -864,9 +853,6 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
   const base::flat_map<FieldGlobalId, std::u16string> parseable_names =
       GetParseableNames(form.fields());
 
-  const base::flat_map<FieldGlobalId, std::u16string> parseable_labels =
-      GetParseableLabels(form.fields());
-
   for (size_t i = 0; i < form.field_count(); ++i) {
     const AutofillField* field = form.field(i);
     const std::u16string& name = [&]() -> const std::u16string& {
@@ -963,13 +949,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
     buffer << Tr{} << "Section:" << field->section();
 
     constexpr size_t kMaxLabelSize = 100;
-    const std::u16string& label = [&]() -> const std::u16string& {
-      if (auto it = parseable_labels.find(field->global_id());
-          it != parseable_labels.end()) {
-        return it->second;
-      }
-      return field->label();
-    }();
+    const std::u16string& label = field->label();
     const std::u16string truncated_label =
         label.substr(0, std::min(label.length(), kMaxLabelSize));
     buffer << Tr{} << "Label:" << truncated_label;

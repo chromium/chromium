@@ -177,18 +177,6 @@ TEST_F(FormFieldParserTest, ParseFormFieldsEnforceMinFillableFields) {
   EXPECT_EQ(0, ParseFormFields());
 }
 
-// Test that the parseable label is used when the feature is enabled.
-TEST_F(FormFieldParserTest, TestParseableLabels) {
-  AddTextFormFieldData("", "not a parseable label", UNKNOWN_TYPE);
-  FormFieldData& field = fields_.back();
-  ParsingContext context(fields_, GeoIpCountryCode(""), LanguageCode(""),
-                         GetActivePatternFile().value(), /*active_features=*/{},
-                         /*log_manager=*/nullptr);
-  context.label_overrides[field.global_id()] = u"First Name";
-  EXPECT_TRUE(FormFieldParserTestApi::Match(context, field, u"First Name",
-                                            {MatchAttribute::kLabel}));
-}
-
 // Tests that `ParseSingleFields` is called as part of `ParseFormFields`.
 TEST_F(FormFieldParserTest, ParseSingleFieldsInsideParseFormField) {
   AddTextFormFieldData("", "Phone", PHONE_HOME_CITY_AND_NUMBER);

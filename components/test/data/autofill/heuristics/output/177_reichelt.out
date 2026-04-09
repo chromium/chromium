@@ -5,8 +5,8 @@ NAME_LAST |  | Nachname: |  | _1
 UNKNOWN_TYPE |  |  |  | _1
 UNKNOWN_TYPE |  |  |  | _1
 ADDRESS_HOME_LINE1 |  | Straße mit Hausnummer: |  | _1
-ADDRESS_HOME_ZIP |  | Postleitzahl/Ort: |  | _1
-ADDRESS_HOME_CITY |  |  |  | _1
+ADDRESS_HOME_CITY |  | Postleitzahl/Ort: |  | _1
+UNKNOWN_TYPE |  |  |  | _1
 ADDRESS_HOME_COUNTRY |  | Land:* |  | _1
 EMAIL_ADDRESS |  | E-Mail: |  | _1
 PHONE_HOME_CITY_AND_NUMBER |  | Telefon: |  | _1

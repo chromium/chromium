@@ -628,11 +628,6 @@ BASE_FEATURE_PARAM(std::string,
                    "nickname_regex",
                    R"(\s+\([^)]*\)|\s+\"[^\"]*\")");
 
-// Controls if the heuristic field parsing utilizes shared labels.
-// TODO(crbug.com/40741721): Remove once shared labels are launched.
-BASE_FEATURE(kAutofillEnableSupportForParsingWithSharedLabels,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables extended zip code validation.
 // TODO(crbug.com/434140055): Clean up when launched.
 BASE_FEATURE(kAutofillExtendZipCodeValidation,

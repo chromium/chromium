@@ -39,7 +39,6 @@
 #include "components/autofill/core/browser/form_parsing/search_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/standalone_cvc_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/travel_field_parser.h"
-#include "components/autofill/core/browser/form_processing/label_processing_util.h"
 #include "components/autofill/core/browser/form_processing/name_processing_util.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -165,7 +164,6 @@ ParsingContext::ParsingContext(base::span<const FormFieldData> fields,
                                DenseSet<RegexFeature> active_features,
                                LogManager* log_manager)
     : name_overrides(GetParseableNames(fields)),
-      label_overrides(GetParseableLabels(fields)),
       client_country(std::move(client_country)),
       page_language(std::move(page_language)),
       pattern_file(pattern_file),
@@ -187,7 +185,6 @@ ParsingContext::ParsingContext(
     DenseSet<RegexFeature> active_features,
     LogManager* log_manager)
     : name_overrides(GetParseableNames(fields)),
-      label_overrides(GetParseableLabels(fields)),
       client_country(std::move(client_country)),
       page_language(std::move(page_language)),
       pattern_file(pattern_file),
@@ -712,13 +709,7 @@ std::optional<FormFieldParser::MatchInfo> FormFieldParser::MatchInLabel(
       context.log_manager && context.log_manager->IsLoggingActive() ? &matches
                                                                     : nullptr;
 
-  const std::u16string& label = [&]() -> const std::u16string& {
-    if (auto it = context.label_overrides.find(field.global_id());
-        it != context.label_overrides.end()) {
-      return it->second;
-    }
-    return field.label();
-  }();
+  const std::u16string& label = field.label();
 
   if (!context.better_placeholder_support || field.placeholder().empty()) {
     if (MatchesRegexWithCache(context, label, pattern, capture_destination)) {
