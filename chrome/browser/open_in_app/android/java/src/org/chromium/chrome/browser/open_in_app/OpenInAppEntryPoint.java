@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
+import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.url.GURL;
@@ -77,45 +78,55 @@ public abstract class OpenInAppEntryPoint implements OpenInAppMenuItemProvider {
                         new AsyncTask<ResolveResult>() {
                             @Override
                             protected ResolveResult doInBackground() {
-                                ResolveInfo resolveActivity =
-                                        PackageManagerUtils.resolveActivity(
-                                                targetIntent, PackageManager.MATCH_DEFAULT_ONLY);
-
-                                if (resolveActivity == null) return new ResolveResult.None();
-
                                 List<ResolveInfo> resolveInfos =
                                         PackageManagerUtils.queryIntentActivities(
                                                 targetIntent,
                                                 PackageManager.GET_RESOLVED_FILTER
-                                                        | PackageManager.MATCH_DEFAULT_ONLY);
+                                                        | PackageManager.GET_META_DATA);
 
                                 var browserPackages =
                                         ExternalNavigationHandler.getInstalledBrowserPackages();
 
-                                if (ExternalNavigationHandler.resolvesToChooser(
-                                        resolveActivity, resolveInfos)) {
-                                    ArrayList<ResolveInfo> nonBrowserApps = new ArrayList<>();
-                                    for (var info : resolveInfos) {
-                                        if (!browserPackages.contains(
-                                                info.activityInfo.packageName)) {
-                                            nonBrowserApps.add(info);
-                                        }
+                                ArrayList<ResolveInfo> suitableApps = new ArrayList<>();
+                                for (var info : resolveInfos) {
+                                    if (browserPackages.contains(info.activityInfo.packageName)) {
+                                        continue;
                                     }
-                                    if (nonBrowserApps.isEmpty()) {
-                                        return new ResolveResult.None();
+
+                                    boolean isDefault =
+                                            info.filter != null
+                                                    && info.filter.hasCategory(
+                                                            Intent.CATEGORY_DEFAULT);
+                                    boolean isWebApk =
+                                            WebApkValidator.isValidWebApk(
+                                                    mContext, info.activityInfo.packageName);
+
+                                    if (isDefault || isWebApk) {
+                                        suitableApps.add(info);
                                     }
-                                    if (nonBrowserApps.size() > 1) {
-                                        return new ResolveResult.ResolverActivity();
-                                    }
-                                    return new ResolveResult.Info(nonBrowserApps.get(0));
                                 }
 
-                                if (browserPackages.contains(
-                                        resolveActivity.activityInfo.packageName)) {
+                                if (suitableApps.isEmpty()) {
                                     return new ResolveResult.None();
                                 }
 
-                                return new ResolveResult.Info(resolveActivity);
+                                if (suitableApps.size() > 1) {
+                                    ResolveInfo resolveActivity =
+                                            PackageManagerUtils.resolveActivity(
+                                                    targetIntent,
+                                                    PackageManager.MATCH_DEFAULT_ONLY);
+
+                                    if (resolveActivity != null) {
+                                        if (ExternalNavigationHandler.resolvesToChooser(
+                                                resolveActivity, resolveInfos)) {
+                                            return new ResolveResult.ResolverActivity();
+                                        } else {
+                                            return new ResolveResult.Info(resolveActivity);
+                                        }
+                                    }
+                                }
+
+                                return new ResolveResult.Info(suitableApps.get(0));
                             }
 
                             @Override
