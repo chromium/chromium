@@ -8948,6 +8948,7 @@ test("unit_tests") {
       "//chrome/browser/ui/passwords/settings:unit_tests",
       "//chrome/browser/ui/search",
       "//chrome/browser/ui/views/location_bar",
+      "//chrome/browser/ui/webui/accessibility_annotator:unit_tests",
     ]
   }
 

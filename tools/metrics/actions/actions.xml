@@ -3372,6 +3372,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="AccessibilityAnnotator.RemoteAnnotatorInfo.SettingsLinkClick">
+  <owner>tommasin@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    Recorded when the user clicks the Manage Settings link in the Accessibility
+    Annotator info dialog.
+  </description>
+</action>
+
 <action name="ActionBox.ClickButton">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

@@ -8,6 +8,13 @@
 
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "components/accessibility_annotator/core/url_constants.h"
+#include "content/public/browser/page_navigator.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace accessibility_annotator::info {
 
@@ -15,10 +22,10 @@ AccessibilityAnnotatorInfoPageHandler::AccessibilityAnnotatorInfoPageHandler(
     mojo::PendingReceiver<accessibility_annotator::info::mojom::PageHandler>
         receiver,
     base::OnceCallback<void(InfoDialogResult)> callback,
-    content::BrowserContext* browser_context)
+    content::WebContents* web_contents)
     : receiver_(this, std::move(receiver)),
       callback_(std::move(callback)),
-      browser_context_(browser_context) {}
+      web_contents_(web_contents) {}
 
 AccessibilityAnnotatorInfoPageHandler::
     ~AccessibilityAnnotatorInfoPageHandler() {
@@ -51,7 +58,19 @@ void AccessibilityAnnotatorInfoPageHandler::OnInfoDismissed() {
 }
 
 void AccessibilityAnnotatorInfoPageHandler::OnManageSettingsClicked() {
-  // TODO(b/488320942): Open settings page and record metric.
+  base::RecordAction(base::UserMetricsAction(
+      "AccessibilityAnnotator.RemoteAnnotatorInfo.SettingsLinkClick"));
+
+  if (auto* browser_window_interface =
+          webui::GetBrowserWindowInterface(web_contents_)) {
+    browser_window_interface->OpenURL(
+        content::OpenURLParams(
+            GURL(accessibility_annotator::kAccessibilityAnnotatorSettingsURL),
+            content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            ui::PAGE_TRANSITION_LINK,
+            /*is_renderer_initiated=*/false),
+        /*navigation_handle_callback=*/base::DoNothing());
+  }
 }
 
 void AccessibilityAnnotatorInfoPageHandler::OnLearnMoreClicked() {

@@ -12,7 +12,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace content {
-class BrowserContext;
+class WebContents;
 }
 
 namespace accessibility_annotator::info {
@@ -24,7 +24,7 @@ class AccessibilityAnnotatorInfoPageHandler
       mojo::PendingReceiver<accessibility_annotator::info::mojom::PageHandler>
           receiver,
       base::OnceCallback<void(InfoDialogResult)> callback,
-      content::BrowserContext* browser_context);
+      content::WebContents* web_contents);
   AccessibilityAnnotatorInfoPageHandler(
       const AccessibilityAnnotatorInfoPageHandler&) = delete;
   AccessibilityAnnotatorInfoPageHandler& operator=(
@@ -41,7 +41,7 @@ class AccessibilityAnnotatorInfoPageHandler
  private:
   mojo::Receiver<accessibility_annotator::info::mojom::PageHandler> receiver_;
   base::OnceCallback<void(InfoDialogResult)> callback_;
-  raw_ptr<content::BrowserContext> browser_context_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 }  // namespace accessibility_annotator::info

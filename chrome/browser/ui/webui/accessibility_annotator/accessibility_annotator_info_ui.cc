@@ -52,7 +52,7 @@ void AccessibilityAnnotatorInfoUI::BindInterface(
         receiver) {
   page_handler_ = std::make_unique<AccessibilityAnnotatorInfoPageHandler>(
       std::move(receiver), std::move(dialog_callback_),
-      web_ui()->GetWebContents()->GetBrowserContext());
+      web_ui()->GetWebContents());
 }
 
 void AccessibilityAnnotatorInfoUI::SetDialogCallback(
