@@ -14451,16 +14451,6 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Foreground_OptOut",
-                    "params": {
-                        "default_preference": "enabled",
-                        "mode": "foreground"
-                    },
-                    "enable_features": [
-                        "LaunchOnStartup"
-                    ]
-                },
-                {
                     "name": "Enabled_Foreground_OptIn",
                     "params": {
                         "default_preference": "disabled",
