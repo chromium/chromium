@@ -12,14 +12,6 @@
 @protocol AutofillAIEntityEditTableViewControllerDelegate;
 @protocol AutofillAIEntityEditMutator;
 
-// Defines the presentation and behavioral mode of the view controller.
-enum class AutofillAIEntityEditMode {
-  // Used when viewing an existing entity.
-  kViewAndEdit,
-  // Used when creating a new entity from scratch.
-  kCreate,
-};
-
 @interface AutofillAIEntityEditTableViewController
     : AutofillEditTableViewController <AutofillAIEntityEditConsumer,
                                        AutofillAIEntityEditDateItemDelegate,

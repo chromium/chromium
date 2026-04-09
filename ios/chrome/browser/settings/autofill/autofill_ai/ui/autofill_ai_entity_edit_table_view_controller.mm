@@ -294,7 +294,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     __weak __typeof(self) weakSelf = self;
     [self.mutator
         requestEditingWithCompletion:^(ReauthenticationResult result) {
-          if (result == ReauthenticationResult::kSuccess) {
+          if (result != ReauthenticationResult::kFailure) {
             [weakSelf onEditingRequestSucceeded];
           }
         }];
