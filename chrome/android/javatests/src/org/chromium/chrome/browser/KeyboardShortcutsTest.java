@@ -37,6 +37,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.ui.KeyboardUtils;
@@ -218,6 +219,7 @@ public class KeyboardShortcutsTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "Flaky - crbug.com/490369117")
     public void testCloseTab_singlePinnedTab_firstAttempt_timeout() {
         // Setup the first closure attempt of a pinned tab.
         setUpTabModelSelector(List.of(mTab));
