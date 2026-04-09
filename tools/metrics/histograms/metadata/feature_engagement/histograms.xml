@@ -796,6 +796,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InProductHelp.InitializationTime.Total" units="ms"
+    expires_after="2026-10-03">
+  <owner>agazal@chromium.org</owner>
+  <owner>mschillaci@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    Records the total end-to-end time taken for the Feature Engagement Tracker
+    to become fully initialized at startup. This includes asynchronous database
+    loading, event processing, profile-to-device migration (on iOS), and event
+    exports.
+  </summary>
+</histogram>
+
 <histogram name="InProductHelp.NotifyEventReadyState.{IPHFeature}"
     enum="BooleanSuccess" expires_after="2026-09-27">
   <owner>nyquist@chromium.org</owner>

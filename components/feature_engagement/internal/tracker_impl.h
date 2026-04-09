@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "components/feature_engagement/internal/event_storage_migration.h"
 #include "components/feature_engagement/public/session_controller.h"
@@ -184,6 +185,12 @@ class TrackerImpl : public Tracker {
 
   // Registered priority notification handlers for various features.
   std::map<std::string, base::OnceClosure> priority_notification_handlers_;
+
+  // A timer to measure the total time taken for initialization.
+  base::ElapsedTimer init_timer_;
+
+  // Whether the initialization time has been recorded.
+  bool initialization_time_recorded_ = false;
 
   base::WeakPtrFactory<TrackerImpl> weak_ptr_factory_{this};
 };
