@@ -1,6 +1,6 @@
 [package]
 name = "zip"
-version = "8.2.0"
+version = "8.5.1"
 authors = [
     "Mathijs van de Nes <git@mathijs.vd-nes.nl>",
     "Marli Frost <marli@frost.red>",
@@ -8,17 +8,15 @@ authors = [
     "Chris Hennick <hennickc@amazon.com>",
 ]
 license = "MIT"
-repository = "https://github.com/zip-rs/zip2.git"
+repository = "https://github.com/zip-rs/zip2"
 keywords = ["zip", "archive", "compression"]
 # Any change to rust-version must be reflected also in `README.md` and `.github/workflows/ci.yaml`.
 # The MSRV policy is documented in `README.md`.
 rust-version = "1.88"
 categories = ["compression", "filesystem", "parser-implementations"]
-description = """
-Library to support the reading and writing of zip files.
-"""
+description = "Library to support the reading and writing of zip files."
 edition = "2024"
-exclude = ["tests/**", "examples/**", ".github/**", "fuzz/**", ".amazonq/**", "benches/**"]
+exclude = ["tests/**", "examples/**", ".github/**", "fuzz/**", ".amazonq/**", "benches/**", ".typos.toml"]
 
 [package.metadata.docs.rs]
 all-features = true
@@ -40,7 +38,7 @@ nt-time = { version = "0.13", default-features = false, optional = true }
 ppmd-rust = { version = "1.4", optional = true }
 pbkdf2 = { version = "0.12", optional = true }
 sha1 = { version = "0.10", optional = true }
-zeroize = { version = "1.8", optional = true, features = ["zeroize_derive"] }
+zeroize = { version = "1.8", optional = true }
 zstd = { version = "^0.13.3", optional = true, default-features = false }
 zopfli = { version = "^0.8.3", optional = true }
 deflate64 = { version = "^0.1.10", optional = true }
@@ -130,6 +128,10 @@ harness = false
 
 [[bench]]
 name = "read_metadata"
+harness = false
+
+[[bench]]
+name = "read_many_entries"
 harness = false
 
 [[bench]]

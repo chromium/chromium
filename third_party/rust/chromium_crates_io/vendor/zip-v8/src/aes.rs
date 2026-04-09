@@ -29,6 +29,17 @@ enum Cipher {
     Aes256(Box<aes_ctr::AesCtrZipKeyStream<aes_ctr::Aes256>>),
 }
 
+/// Holds the AES information of a file in the zip archive
+#[derive(Debug)]
+pub struct AesInfo {
+    /// The AES encryption mode
+    pub aes_mode: AesMode,
+    /// The verification key
+    pub verification_value: [u8; crate::aes::PWD_VERIFY_LENGTH],
+    /// The salt
+    pub salt: Vec<u8>,
+}
+
 #[non_exhaustive]
 #[derive(Clone, Debug, Copy, Eq, PartialEq)]
 pub(crate) struct AesModeOptions {

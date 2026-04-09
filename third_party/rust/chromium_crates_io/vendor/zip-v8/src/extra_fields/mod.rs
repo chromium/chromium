@@ -1,16 +1,18 @@
 //! Types for extra fields
 
-use std::fmt::Display;
+use core::fmt::Display;
 
+mod aex_encryption;
 mod extended_timestamp;
 mod ntfs;
 mod zip64_extended_information;
 mod zipinfo_utf8;
 
+pub(crate) use aex_encryption::AexEncryption;
 pub(crate) use zip64_extended_information::Zip64ExtendedInformation;
 
 // re-export
-pub use extended_timestamp::*;
+pub use extended_timestamp::ExtendedTimestamp;
 pub use ntfs::Ntfs;
 pub use zipinfo_utf8::UnicodeExtraField;
 
@@ -49,7 +51,7 @@ pub(crate) enum UsedExtraField {
     /// NTFS
     Ntfs = 0x000a,
     /// extended timestamp
-    /// from https://libzip.org/specifications/extrafld.txt
+    /// from <https://libzip.org/specifications/extrafld.txt>
     ExtendedTimestamp = 0x5455,
     /// Info-ZIP Unicode Comment Extra Field
     UnicodeComment = 0x6375,
@@ -63,19 +65,23 @@ pub(crate) enum UsedExtraField {
 
 impl UsedExtraField {
     pub const fn to_le_bytes(self) -> [u8; 2] {
-        let field_u16 = self as u16;
+        let field_u16 = self.as_u16();
         field_u16.to_le_bytes()
+    }
+
+    pub const fn as_u16(self) -> u16 {
+        self as u16
     }
 }
 
 impl From<UsedExtraField> for u16 {
     fn from(value: UsedExtraField) -> Self {
-        value as u16
+        value.as_u16()
     }
 }
 
 impl Display for UsedExtraField {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "0x{:04X}", *self as u16)
     }
 }
@@ -110,11 +116,11 @@ impl TryFrom<u16> for UsedExtraField {
 
 /// Known Extra fields (PKWARE and Third party) mappings, sorted
 pub const EXTRA_FIELD_MAPPING: [u16; 59] = [
-    UsedExtraField::Zip64ExtendedInfo as u16,
+    UsedExtraField::Zip64ExtendedInfo.as_u16(),
     0x0007, // AV Info
     0x0008, // Reserved for extended language encoding data (PFS)
     0x0009, // OS/2
-    UsedExtraField::Ntfs as u16,
+    UsedExtraField::Ntfs.as_u16(),
     0x000c, // OpenVMS
     0x000d, // UNIX
     0x000e, // Reserved for file stream and fork descriptors
@@ -151,20 +157,20 @@ pub const EXTRA_FIELD_MAPPING: [u16; 59] = [
     0x4d63, // Macintosh Smartzip (??)
     0x4f4c, // Xceed original location extra field
     0x5356, // AOS/VS (ACL)
-    UsedExtraField::ExtendedTimestamp as u16,
+    UsedExtraField::ExtendedTimestamp.as_u16(),
     0x554e, // Xceed unicode extra field
     0x5855, // Info-ZIP UNIX (original, also OS/2, NT, etc)
-    UsedExtraField::UnicodeComment as u16,
+    UsedExtraField::UnicodeComment.as_u16(),
     0x6542, // BeOS/BeBox
     0x6854, // THEOS
-    UsedExtraField::UnicodePath as u16,
+    UsedExtraField::UnicodePath.as_u16(),
     0x7441, // AtheOS/Syllable
     0x756e, // ASi UNIX
     0x7855, // Info-ZIP UNIX (new)
     0x7875, // Info-ZIP UNIX (newer UID/GID)
-    UsedExtraField::AeXEncryption as u16,
+    UsedExtraField::AeXEncryption.as_u16(),
     0x9902, // unknown
-    UsedExtraField::DataStreamAlignment as u16,
+    UsedExtraField::DataStreamAlignment.as_u16(),
     0xa220, // Microsoft Open Packaging Growth Hint
     0xcafe, // Java JAR file Extra Field Header ID
     0xd935, // Android ZIP Alignment Extra Field

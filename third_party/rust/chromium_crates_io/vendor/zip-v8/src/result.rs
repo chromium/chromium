@@ -1,5 +1,3 @@
-#![allow(unknown_lints)] // non_local_definitions isn't in Rust 1.70
-#![allow(non_local_definitions)]
 //! Error types that can be emitted from this library
 
 use core::error::Error;

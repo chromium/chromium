@@ -1,9 +1,16 @@
-use super::{
-    ZipCentralEntryBlock, ZipFile, ZipFileData, ZipResult, central_header_to_zip_file_inner,
-    make_symlink, read_zipfile_from_stream,
+//! Code related to stream reading
+
+use crate::read::parse_extra_field;
+use crate::read::readers::{make_crypto_reader, make_reader};
+use crate::read::{
+    ZipFile, ZipFileData, ZipResult, central_header_to_zip_file_inner, make_symlink,
 };
-use crate::spec::FixedSizeBlock;
+use crate::result::ZipError;
+use crate::spec::Magic;
+use crate::spec::Pod;
+use crate::spec::{FixedSizeBlock, ZipCentralEntryBlock, ZipLocalEntryBlock};
 use indexmap::IndexMap;
+use std::borrow::Cow;
 use std::io::{self, Read};
 use std::path::{Path, PathBuf};
 
@@ -56,9 +63,6 @@ impl<R: Read> ZipStreamReader<R> {
     /// Extraction is not atomic; If an error is encountered, some of the files
     /// may be left on disk.
     pub fn extract<P: AsRef<Path>>(self, directory: P) -> ZipResult<()> {
-        use std::fs;
-        fs::create_dir_all(&directory)?;
-        let directory = directory.as_ref().canonicalize()?;
         struct Extractor(PathBuf, IndexMap<Box<str>, ()>);
         impl ZipStreamVisitor for Extractor {
             fn visit_file<R: Read>(&mut self, file: &mut ZipFile<'_, R>) -> ZipResult<()> {
@@ -91,13 +95,13 @@ impl<R: Read> ZipStreamReader<R> {
                 #[cfg(unix)]
                 {
                     use super::ZipError;
+                    use std::os::unix::fs::PermissionsExt;
                     let filepath = metadata
                         .enclosed_name()
                         .ok_or(crate::result::invalid!("Invalid file path"))?;
 
                     let outpath = self.0.join(filepath);
 
-                    use std::os::unix::fs::PermissionsExt;
                     if let Some(mode) = metadata.unix_mode() {
                         fs::set_permissions(outpath, fs::Permissions::from_mode(mode))?;
                     }
@@ -106,6 +110,9 @@ impl<R: Read> ZipStreamReader<R> {
                 Ok(())
             }
         }
+        use std::fs;
+        fs::create_dir_all(&directory)?;
+        let directory = directory.as_ref().canonicalize()?;
 
         self.visit(&mut Extractor(directory, IndexMap::new()))
     }
@@ -206,15 +213,132 @@ impl ZipStreamFileMetadata {
     }
 }
 
-#[cfg(test)]
-mod test {
-    use tempfile::TempDir;
+/// Read `ZipFile` structures from a non-seekable reader.
+///
+/// This is an alternative method to read a zip file. If possible, use the `ZipArchive` functions
+/// as some information will be missing when reading this manner.
+///
+/// Reads a file header from the start of the stream. Will return `Ok(Some(..))` if a file is
+/// present at the start of the stream. Returns `Ok(None)` if the start of the central directory
+/// is encountered. No more files should be read after this.
+///
+/// The Drop implementation of `ZipFile` ensures that the reader will be correctly positioned after
+/// the structure is done.
+///
+/// Missing fields are:
+/// * `comment`: set to an empty string
+/// * `data_start`: set to 0
+/// * `external_attributes`: `unix_mode()`: will return None
+pub fn read_zipfile_from_stream<R: Read>(reader: &mut R) -> ZipResult<Option<ZipFile<'_, R>>> {
+    // We can't use the typical [`ZipLocalEntryBlock::parse`] method, as we follow separate code paths depending on the
+    // "magic" value (since the magic value will be from the central directory header if we've
+    // finished iterating over all the actual files).
+    /* TODO: smallvec? */
 
-    use crate::ZipWriter;
+    let mut magic_buf = [0; size_of::<u32>()];
+    reader.read_exact(&mut magic_buf)?;
+
+    match Magic::from_le_bytes(magic_buf) {
+        Magic::LOCAL_FILE_HEADER_SIGNATURE => (),
+        Magic::CENTRAL_DIRECTORY_HEADER_SIGNATURE => return Ok(None),
+        _ => return Err(ZipLocalEntryBlock::WRONG_MAGIC_ERROR),
+    }
+
+    let mut block = ZipLocalEntryBlock::zeroed();
+    reader.read_exact(block.as_bytes_mut())?;
+
+    let block = block.from_le();
+
+    let mut result = ZipFileData::from_local_block(block, reader)?;
+
+    match parse_extra_field(&mut result) {
+        Ok(..) | Err(ZipError::Io(..)) => {}
+        Err(e) => return Err(e),
+    }
+
+    let limit_reader = reader.take(result.compressed_size);
+    let crypto_reader = make_crypto_reader(&result, limit_reader, None, None)?;
+    let ZipFileData {
+        crc32,
+        uncompressed_size,
+        compression_method,
+        #[cfg(feature = "legacy-zip")]
+        flags,
+        ..
+    } = result;
+
+    Ok(Some(ZipFile {
+        data: Cow::Owned(result),
+        reader: make_reader(
+            compression_method,
+            uncompressed_size,
+            Some(crc32),
+            crypto_reader,
+            #[cfg(feature = "legacy-zip")]
+            flags,
+        )?,
+    }))
+}
+
+/// Read `ZipFile` from a non-seekable reader like [`read_zipfile_from_stream`] does, but assume the
+/// given compressed size and don't read any further ahead than that.
+pub fn read_zipfile_from_stream_with_compressed_size<R: io::Read>(
+    reader: &mut R,
+    compressed_size: u64,
+) -> ZipResult<Option<ZipFile<'_, R>>> {
+    let mut magic_buf = [0; size_of::<u32>()];
+    reader.read_exact(&mut magic_buf)?;
+
+    match Magic::from_le_bytes(magic_buf) {
+        Magic::LOCAL_FILE_HEADER_SIGNATURE => (),
+        Magic::CENTRAL_DIRECTORY_HEADER_SIGNATURE => return Ok(None),
+        _ => return Err(ZipLocalEntryBlock::WRONG_MAGIC_ERROR),
+    }
+
+    let mut block = ZipLocalEntryBlock::zeroed();
+    reader.read_exact(block.as_bytes_mut())?;
+
+    let block = block.from_le();
+
+    let mut result = ZipFileData::from_local_block(block, reader)?;
+    result.compressed_size = compressed_size;
+
+    if result.encrypted {
+        return Err(ZipError::UnsupportedArchive(
+            "Encrypted files are not supported",
+        ));
+    }
+
+    let limit_reader = reader.take(result.compressed_size);
+    let crypto_reader = make_crypto_reader(&result, limit_reader, None, None)?;
+    let ZipFileData {
+        crc32,
+        compression_method,
+        uncompressed_size,
+        #[cfg(feature = "legacy-zip")]
+        flags,
+        ..
+    } = result;
+
+    Ok(Some(ZipFile {
+        data: Cow::Owned(result),
+        reader: make_reader(
+            compression_method,
+            uncompressed_size,
+            Some(crc32),
+            crypto_reader,
+            #[cfg(feature = "legacy-zip")]
+            flags,
+        )?,
+    }))
+}
+
+#[cfg(test)]
+mod tests {
+
     use crate::read::ZipFile;
     use crate::read::stream::{ZipStreamFileMetadata, ZipStreamReader, ZipStreamVisitor};
     use crate::result::ZipResult;
-    use crate::write::SimpleFileOptions;
     use std::collections::BTreeSet;
     use std::io::{Cursor, Read};
 
@@ -269,7 +393,7 @@ mod test {
     }
 
     #[test]
-    fn zip_read_streaming() {
+    fn zip_read_streaming_visitor() {
         let reader =
             ZipStreamReader::new(Cursor::new(include_bytes!("../../tests/data/mimetype.zip")));
 
@@ -373,9 +497,14 @@ mod test {
     }
 
     /// Symlinks being extracted shouldn't be followed out of the destination directory.
+    /// Only on little endian because we cannot use fs with miri CI
+    #[cfg(all(target_endian = "little", not(miri)))]
     #[test]
     fn test_cannot_symlink_outside_destination() -> ZipResult<()> {
+        use crate::ZipWriter;
+        use crate::write::SimpleFileOptions;
         use std::fs::create_dir;
+        use tempfile::TempDir;
 
         let mut writer = ZipWriter::new(Cursor::new(Vec::new()));
         writer.add_symlink("symlink/", "../dest-sibling/", SimpleFileOptions::default())?;
@@ -391,14 +520,65 @@ mod test {
         Ok(())
     }
 
+    /// Only on little endian because we cannot use fs with miri CI
+    #[cfg(all(target_endian = "little", not(miri)))]
     #[test]
     fn test_can_create_destination() -> ZipResult<()> {
-        let mut v = Vec::new();
-        v.extend_from_slice(include_bytes!("../../tests/data/mimetype.zip"));
-        let reader = ZipStreamReader::new(v.as_slice());
+        use tempfile::TempDir;
+
+        let v = include_bytes!("../../tests/data/mimetype.zip");
+        let reader = ZipStreamReader::new(v.as_ref());
         let dest = TempDir::with_prefix("stream_test_can_create_destination").unwrap();
         reader.extract(&dest)?;
         assert!(dest.path().join("mimetype").exists());
         Ok(())
+    }
+
+    #[test]
+    fn zip_read_streaming() {
+        use super::read_zipfile_from_stream;
+
+        let mut reader = Cursor::new(include_bytes!("../../tests/data/mimetype.zip"));
+        loop {
+            if read_zipfile_from_stream(&mut reader).unwrap().is_none() {
+                break;
+            }
+        }
+    }
+
+    #[test]
+    #[cfg(feature = "deflate")]
+    fn zip_read_streaming_compressed() {
+        use super::read_zipfile_from_stream_with_compressed_size;
+        use crate::ZipWriter;
+        use crate::write::SimpleFileOptions;
+        use std::io::Write;
+
+        let compression_method = crate::CompressionMethod::Deflated;
+        let options = SimpleFileOptions::default()
+            .compression_method(compression_method)
+            .unix_permissions(0o755);
+
+        let mut bytes = Vec::new();
+        let mut writer = ZipWriter::new(std::io::Cursor::new(&mut bytes));
+        writer.start_file("file.txt", options).unwrap();
+        write!(&mut writer, "{}", "test-".repeat(100)).unwrap();
+        writer.finish().unwrap();
+
+        let compressed_size = u32::from_le_bytes(bytes[18..22].try_into().unwrap());
+        let uncompressed_size = u32::from_le_bytes(bytes[22..26].try_into().unwrap());
+
+        assert_eq!(compressed_size, 14);
+        assert_eq!(uncompressed_size as usize, "test-".len() * 100);
+
+        let mut reader = Cursor::new(bytes);
+        loop {
+            if read_zipfile_from_stream_with_compressed_size(&mut reader, compressed_size as u64)
+                .unwrap()
+                .is_none()
+            {
+                break;
+            }
+        }
     }
 }

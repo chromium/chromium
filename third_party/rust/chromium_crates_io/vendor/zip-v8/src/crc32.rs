@@ -17,13 +17,13 @@ pub struct Crc32Reader<R> {
 
 impl<R> Crc32Reader<R> {
     /// Get a new `Crc32Reader` which checks the inner reader against checksum.
-    /// The check is disabled if `ae2_encrypted == true`.
-    pub(crate) fn new(inner: R, checksum: u32, ae2_encrypted: bool) -> Crc32Reader<R> {
+    /// The check can be disabled with the arg `should_disable` (used in aes for example)
+    pub(crate) fn new(inner: R, checksum: u32, should_disable: bool) -> Crc32Reader<R> {
         Crc32Reader {
             inner,
             hasher: Hasher::new(),
             check: checksum,
-            enabled: !ae2_encrypted,
+            enabled: !should_disable,
         }
     }
 
@@ -36,9 +36,10 @@ impl<R> Crc32Reader<R> {
     }
 }
 
-#[cold]
-fn invalid_checksum() -> io::Error {
-    io::Error::new(io::ErrorKind::InvalidData, "Invalid checksum")
+macro_rules! invalid_checksum {
+    ( $( $x:expr ),* ) => {
+        io::Error::new(io::ErrorKind::InvalidData, "Invalid checksum")
+    };
 }
 
 impl<R: Read> Read for Crc32Reader<R> {
@@ -47,7 +48,7 @@ impl<R: Read> Read for Crc32Reader<R> {
 
         if self.enabled {
             if count == 0 && !buf.is_empty() && !self.check_matches() {
-                return Err(invalid_checksum());
+                return Err(invalid_checksum!());
             }
             self.hasher.update(&buf[..count]);
         }
@@ -61,7 +62,7 @@ impl<R: Read> Read for Crc32Reader<R> {
         if self.enabled {
             self.hasher.update(&buf[start..]);
             if !self.check_matches() {
-                return Err(invalid_checksum());
+                return Err(invalid_checksum!());
             }
         }
 
@@ -75,7 +76,7 @@ impl<R: Read> Read for Crc32Reader<R> {
         if self.enabled {
             self.hasher.update(&buf.as_bytes()[start..]);
             if !self.check_matches() {
-                return Err(invalid_checksum());
+                return Err(invalid_checksum!());
             }
         }
 
@@ -84,7 +85,7 @@ impl<R: Read> Read for Crc32Reader<R> {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use std::io::Read;
 
     use super::Crc32Reader;

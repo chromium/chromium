@@ -22,7 +22,7 @@ struct FollowerSet {
 /// Read the follower sets from is into fsets. Returns true on success.
 type FollowerSetArray = [FollowerSet; u8::MAX as usize + 1];
 
-fn read_follower_sets<T: std::io::Read, E: Endianness>(
+fn read_follower_sets<T: Read, E: Endianness>(
     is: &mut BitReader<T, E>,
 ) -> io::Result<FollowerSetArray> {
     let mut fsets = [FollowerSet::default(); u8::MAX as usize + 1];
@@ -52,7 +52,7 @@ fn read_follower_sets<T: std::io::Read, E: Endianness>(
 ///
 /// * `Ok` with the byte if it was successfully read.
 /// * `Err(io::Error)` on bad data or end of input.
-fn read_next_byte<T: std::io::Read, E: Endianness>(
+fn read_next_byte<T: Read, E: Endianness>(
     is: &mut BitReader<T, E>,
     prev_byte: u8,
     fsets: &mut FollowerSetArray,

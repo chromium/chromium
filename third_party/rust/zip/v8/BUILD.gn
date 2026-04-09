@@ -19,6 +19,8 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/zip-v8/src/compression.rs",
     "//third_party/rust/chromium_crates_io/vendor/zip-v8/src/cp437.rs",
     "//third_party/rust/chromium_crates_io/vendor/zip-v8/src/crc32.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v8/src/datetime.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v8/src/extra_fields/aex_encryption.rs",
     "//third_party/rust/chromium_crates_io/vendor/zip-v8/src/extra_fields/extended_timestamp.rs",
     "//third_party/rust/chromium_crates_io/vendor/zip-v8/src/extra_fields/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/zip-v8/src/extra_fields/ntfs.rs",
@@ -34,7 +36,9 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/zip-v8/src/read.rs",
     "//third_party/rust/chromium_crates_io/vendor/zip-v8/src/read/config.rs",
     "//third_party/rust/chromium_crates_io/vendor/zip-v8/src/read/magic_finder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v8/src/read/readers.rs",
     "//third_party/rust/chromium_crates_io/vendor/zip-v8/src/read/stream.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v8/src/read/zip_archive.rs",
     "//third_party/rust/chromium_crates_io/vendor/zip-v8/src/result.rs",
     "//third_party/rust/chromium_crates_io/vendor/zip-v8/src/spec.rs",
     "//third_party/rust/chromium_crates_io/vendor/zip-v8/src/types.rs",
@@ -42,7 +46,8 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/zip-v8/src/write.rs",
     "//third_party/rust/chromium_crates_io/vendor/zip-v8/src/zipcrypto.rs",
   ]
-  inputs = []
+  inputs =
+      [ "//third_party/rust/chromium_crates_io/vendor/zip-v8/src/../README.md" ]
 
   build_native_rust_unit_tests = false
   edition = "2024"
@@ -50,8 +55,8 @@ cargo_crate("lib") {
   cargo_pkg_name = "zip"
   cargo_pkg_description =
       "Library to support the reading and writing of zip files."
-  cargo_pkg_repository = "https://github.com/zip-rs/zip2.git"
-  cargo_pkg_version = "8.2.0"
+  cargo_pkg_repository = "https://github.com/zip-rs/zip2"
+  cargo_pkg_version = "8.5.1"
 
   allow_unsafe = true
 

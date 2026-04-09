@@ -13,12 +13,19 @@ pub struct UnicodeExtraField {
 
 impl UnicodeExtraField {
     /// Verifies the checksum and returns the content.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the crc32 from the extra field does not match the crc32 of the
+    /// `ascii_field`.
     pub fn unwrap_valid(self, ascii_field: &[u8]) -> ZipResult<Box<[u8]>> {
-        let mut crc32 = crc32fast::Hasher::new();
-        crc32.update(ascii_field);
-        let actual_crc32 = crc32.finalize();
-        if self.crc32 != actual_crc32 {
-            return Err(invalid!("CRC32 checksum failed on Unicode extra field"));
+        let computed_crc32 = crc32fast::hash(ascii_field);
+        if self.crc32 != computed_crc32 {
+            return Err(invalid!(
+                "CRC32 checksum failed on Unicode extra field, it is '{:#08X}' and it should be '{:#08X}'",
+                self.crc32,
+                computed_crc32
+            ));
         }
         Ok(self.content)
     }
@@ -36,5 +43,33 @@ impl UnicodeExtraField {
         let mut content = vec![0u8; content_len].into_boxed_slice();
         reader.read_exact(&mut content)?;
         Ok(Self { crc32, content })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::extra_fields::UnicodeExtraField;
+    #[test]
+    fn unicode_extra_field_crc32_correct() {
+        let data = [
+            0x01, 0xef, 0x39, 0x8e, 0x4b, 'u' as u8, 't' as u8, 'f' as u8, '-' as u8, '8' as u8,
+        ];
+        let extra =
+            UnicodeExtraField::try_from_reader(&mut std::io::Cursor::new(data), 10).unwrap();
+        let res = extra.unwrap_valid(b"abcdef");
+        assert!(res.is_ok());
+        let content = res.unwrap();
+        assert_eq!(content.as_ref(), b"utf-8");
+    }
+
+    #[test]
+    fn unicode_extra_field_crc32_incorrect() {
+        let data = [
+            0x01, 0x00, 0x00, 0x00, 0x00, 'u' as u8, 't' as u8, 'f' as u8, '-' as u8, '8' as u8,
+        ];
+        let extra =
+            UnicodeExtraField::try_from_reader(&mut std::io::Cursor::new(data), 10).unwrap();
+        let res = extra.unwrap_valid(b"abcdef");
+        assert!(res.is_err());
     }
 }

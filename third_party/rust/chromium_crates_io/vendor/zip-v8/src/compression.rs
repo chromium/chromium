@@ -304,7 +304,7 @@ pub(crate) enum Decompressor<R: io::BufRead> {
 }
 
 impl<R: io::BufRead> Debug for Decompressor<R> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::Stored(_) => write!(f, "StoredDecompressor"),
             #[cfg(feature = "deflate-flate2")]
@@ -471,10 +471,9 @@ impl<R: io::BufRead> Decompressor<R> {
     pub fn new(
         reader: R,
         compression_method: CompressionMethod,
-        #[cfg(any(feature = "lzma", feature = "legacy-zip"))] uncompressed_size: u64,
-        #[cfg(not(any(feature = "lzma", feature = "legacy-zip")))] _uncompressed_size: u64,
-        #[cfg(feature = "legacy-zip")] flags: u16,
-        #[cfg(not(feature = "legacy-zip"))] _flags: u16,
+        #[cfg_attr(not(any(feature = "lzma", feature = "legacy-zip")), allow(unused))]
+        uncompressed_size: u64,
+        #[cfg_attr(not(feature = "legacy-zip"), allow(unused))] flags: u16,
     ) -> crate::result::ZipResult<Self> {
         Ok(match compression_method {
             CompressionMethod::Stored => Decompressor::Stored(reader),
@@ -562,7 +561,7 @@ impl<R: io::BufRead> Decompressor<R> {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use super::{CompressionMethod, SUPPORTED_COMPRESSION_METHODS};
 
     #[test]

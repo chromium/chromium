@@ -1,34 +1,4 @@
-//! A library for reading and writing ZIP archives.
-//! ZIP is a format designed for cross-platform file "archiving".
-//! That is, storing a collection of files in a single datastream
-//! to make them easier to share between computers.
-//! Additionally, ZIP is able to compress and encrypt files in its
-//! archives.
-//!
-//! The current implementation is based on [PKWARE's APPNOTE.TXT v6.3.9](https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT)
-//!
-//! ---
-//!
-//! [`zip`](`crate`) has support for the most common ZIP archives found in common use.
-//! However, in special cases,
-//! there are some zip archives that are difficult to read or write.
-//!
-//! This is a list of supported features:
-//!
-//! |                                 | Reading                               | Writing                                                  |
-//! | ------------------------------- | ------------------------------------- | -------------------------------------------------------- |
-//! | Stored                          | ✅                                    | ✅                                                       |
-//! | Deflate                         | ✅ [->](`crate::ZipArchive::by_name`) | ✅ [->](`crate::write::FileOptions::compression_method`) |
-//! | Deflate64                       | ✅                                    |                                                          |
-//! | Bzip2                           | ✅                                    | ✅                                                       |
-//! | ZStandard                       | ✅                                    | ✅                                                       |
-//! | LZMA                            | ✅                                    |                                                          |
-//! | XZ                              | ✅                                    | ✅                                                       |
-//! | PPMd                            | ✅                                    | ✅                                                       |
-//! | AES encryption                  | ✅                                    | ✅                                                       |
-//! | ZipCrypto deprecated encryption | ✅                                    | ✅                                                       |
-//!
-
+#![doc = include_str!("../README.md")]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![warn(clippy::all, rust_2018_idioms)]
 #![deny(
@@ -38,16 +8,18 @@
     clippy::cargo,
     clippy::panic,
     clippy::cast_lossless,
-    clippy::decimal_literal_representation
+    clippy::decimal_literal_representation,
+    clippy::must_use_candidate
 )]
 #![cfg_attr(not(test), deny(clippy::unwrap_used, clippy::expect_used))]
 #![allow(unexpected_cfgs)] // Needed for cfg(fuzzing)
 #![allow(clippy::multiple_crate_versions)] // https://github.com/rust-lang/rust-clippy/issues/16440
 pub use crate::compression::{CompressionMethod, SUPPORTED_COMPRESSION_METHODS};
+pub use crate::datetime::DateTime;
 pub use crate::read::HasZipMetadata;
 pub use crate::read::{ZipArchive, ZipReadOptions};
 pub use crate::spec::{ZIP64_BYTES_THR, ZIP64_ENTRY_THR};
-pub use crate::types::{AesMode, DateTime, System};
+pub use crate::types::{AesMode, System};
 pub use crate::write::ZipWriter;
 
 #[cfg(feature = "aes-crypto")]
@@ -59,6 +31,7 @@ mod aes_ctr;
 mod compression;
 mod cp437;
 mod crc32;
+mod datetime;
 pub mod extra_fields;
 mod path;
 pub mod read;

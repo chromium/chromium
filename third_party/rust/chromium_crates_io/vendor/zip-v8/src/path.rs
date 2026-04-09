@@ -1,6 +1,9 @@
 //! Path manipulation utilities
 
-use std::{ffi::OsStr, path::Path};
+use std::{
+    ffi::OsStr,
+    path::{Path, PathBuf},
+};
 use typed_path::{Utf8WindowsComponent, Utf8WindowsPath};
 
 /// Simplify a path by removing the prefix and parent directories and only return normal components
@@ -22,9 +25,43 @@ pub(crate) fn simplified_components(input: &Path) -> Option<Vec<&OsStr>> {
     Some(out)
 }
 
+pub(crate) fn file_name_sanitized(no_null_filename: &str) -> PathBuf {
+    Utf8WindowsPath::new(no_null_filename)
+        .components()
+        .filter_map(|component| match component {
+            Utf8WindowsComponent::Normal(s) => Some(s),
+            _ => None,
+        })
+        .collect()
+}
+
+pub(crate) fn enclosed_name(file_name: &str) -> Option<PathBuf> {
+    let mut depth = 0usize;
+    let mut out_path = PathBuf::new();
+    for component in Utf8WindowsPath::new(file_name).components() {
+        match component {
+            Utf8WindowsComponent::Prefix(_) | Utf8WindowsComponent::RootDir => {
+                if depth > 0 {
+                    return None;
+                }
+            }
+            Utf8WindowsComponent::ParentDir => {
+                depth = depth.checked_sub(1)?;
+                out_path.pop();
+            }
+            Utf8WindowsComponent::Normal(s) => {
+                depth += 1;
+                out_path.push(s);
+            }
+            Utf8WindowsComponent::CurDir => (),
+        }
+    }
+    Some(out_path)
+}
+
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::simplified_components;
     use std::path::Path;
 
     #[test]

@@ -30,6 +30,8 @@ impl<'a> FromCp437 for &'a [u8] {
         Ok(target)
     }
 }
+
+#[allow(clippy::too_many_lines)]
 fn to_char(input: u8) -> char {
     match input {
         0x00..=0x7f => input as char,
@@ -165,7 +167,7 @@ fn to_char(input: u8) -> char {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     #[test]
     fn to_char_valid() {
         for i in u8::MIN..=u8::MAX {
@@ -181,12 +183,11 @@ mod test {
     }
 
     #[test]
-    #[allow(unknown_lints)] // invalid_from_utf8 was added in rust 1.72
     #[allow(invalid_from_utf8)]
     fn example_slice() {
         use super::FromCp437;
         let data = b"Cura\x87ao";
-        assert!(::std::str::from_utf8(data).is_err());
+        assert!(std::str::from_utf8(data).is_err());
         let converted = &(*data.from_cp437().unwrap());
         assert_eq!(converted, "Curaçao");
     }

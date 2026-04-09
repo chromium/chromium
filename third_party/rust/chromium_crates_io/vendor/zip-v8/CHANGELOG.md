@@ -7,6 +7,85 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.5.1](https://github.com/zip-rs/zip2/compare/v8.5.0...v8.5.1) - 2026-04-06
+
+### <!-- 2 -->🚜 Refactor
+
+- change magic finder to stack buffer ([#763](https://github.com/zip-rs/zip2/pull/763))
+- simplify extra field parsing ([#764](https://github.com/zip-rs/zip2/pull/764))
+
+## [8.5.0](https://github.com/zip-rs/zip2/compare/v8.4.0...v8.5.0) - 2026-04-01
+
+### <!-- 1 -->🐛 Bug Fixes
+
+- remove `zip64 comment` and add `zip64 extensible data sector` ([#747](https://github.com/zip-rs/zip2/pull/747))
+
+### <!-- 2 -->🚜 Refactor
+
+- remove useless magic in struct ([#730](https://github.com/zip-rs/zip2/pull/730))
+- change extra_field from Arc<Vec<u8>> to Arc<[u8]> ([#741](https://github.com/zip-rs/zip2/pull/741))
+
+### <!-- 7 -->⚙️ Miscellaneous Tasks
+
+- cleanup README ([#758](https://github.com/zip-rs/zip2/pull/758))
+
+## [8.4.0](https://github.com/zip-rs/zip2/compare/v8.3.1...v8.4.0) - 2026-03-23
+
+### <!-- 0 -->🚀 Features
+
+- add a check for building benches ([#748](https://github.com/zip-rs/zip2/pull/748))
+
+### <!-- 2 -->🚜 Refactor
+
+- split part of `read.rs` for code readability ([#744](https://github.com/zip-rs/zip2/pull/744))
+- remove unused allow ([#745](https://github.com/zip-rs/zip2/pull/745))
+
+### <!-- 4 -->⚡ Performance
+
+- skip BufReader for Stored files in make_reader ([#739](https://github.com/zip-rs/zip2/pull/739))
+
+### <!-- 7 -->⚙️ Miscellaneous Tasks
+
+- move pull request template to correct folder ([#749](https://github.com/zip-rs/zip2/pull/749))
+
+## [8.3.1](https://github.com/zip-rs/zip2/compare/v8.3.0...v8.3.1) - 2026-03-21
+
+### <!-- 2 -->🚜 Refactor
+
+- use `AexEncryption::new` ([#736](https://github.com/zip-rs/zip2/pull/736))
+- update tests to add big endian miri check ([#735](https://github.com/zip-rs/zip2/pull/735))
+
+### <!-- 7 -->⚙️ Miscellaneous Tasks
+
+- cleanup repository files ([#743](https://github.com/zip-rs/zip2/pull/743))
+
+## [8.3.0](https://github.com/zip-rs/zip2/compare/v8.2.0...v8.3.0) - 2026-03-19
+
+### <!-- 0 -->🚀 Features
+
+- add must_use ([#727](https://github.com/zip-rs/zip2/pull/727))
+- improve and fix extended timestamp extra field parsing ([#713](https://github.com/zip-rs/zip2/pull/713))
+- add crc32 ignore option ([#710](https://github.com/zip-rs/zip2/pull/710))
+- path related code in single file ([#712](https://github.com/zip-rs/zip2/pull/712))
+
+### <!-- 1 -->🐛 Bug Fixes
+
+- Malformed ZIP64 file output ([#715](https://github.com/zip-rs/zip2/pull/715)) ([#717](https://github.com/zip-rs/zip2/pull/717))
+
+### <!-- 2 -->🚜 Refactor
+
+- refactor some imports ([#734](https://github.com/zip-rs/zip2/pull/734))
+- move code to distinct file (datetime, FixedSizeBlock) ([#733](https://github.com/zip-rs/zip2/pull/733))
+- move stream code to `src/read/stream.rs` ([#731](https://github.com/zip-rs/zip2/pull/731))
+- remove zip64 extra field update ([#732](https://github.com/zip-rs/zip2/pull/732))
+- improve part of the code with clippy help ([#725](https://github.com/zip-rs/zip2/pull/725))
+- simplify code for unicode extra field and improve error message ([#724](https://github.com/zip-rs/zip2/pull/724))
+- reorganize code ([#714](https://github.com/zip-rs/zip2/pull/714))
+
+### Deps
+
+- avoid pulling in `zeroize_derive` ([#720](https://github.com/zip-rs/zip2/pull/720))
+
 ## [8.2.0](https://github.com/zip-rs/zip2/compare/v8.1.0...v8.2.0) - 2026-03-02
 
 ### <!-- 0 -->🚀 Features

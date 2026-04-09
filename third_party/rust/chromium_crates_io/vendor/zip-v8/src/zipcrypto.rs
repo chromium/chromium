@@ -10,7 +10,7 @@ use core::num::Wrapping;
 
 use crate::result::ZipError;
 
-/// ZipCrypto header size in bytes.
+/// `ZipCrypto` header size in bytes.
 const ZIP_CRYPTO_HEADER_SIZE: usize = 12;
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
@@ -46,6 +46,7 @@ impl<'a> arbitrary::Arbitrary<'a> for EncryptWith<'a> {
 /// A container to hold the current key state
 #[cfg_attr(feature = "_arbitrary", derive(arbitrary::Arbitrary))]
 #[derive(Clone, Copy, Hash, Ord, PartialOrd, Eq, PartialEq)]
+#[allow(clippy::struct_field_names)]
 pub(crate) struct ZipCryptoKeys {
     key_0: Wrapping<u32>,
     key_1: Wrapping<u32>,
@@ -54,14 +55,14 @@ pub(crate) struct ZipCryptoKeys {
 
 impl Debug for ZipCryptoKeys {
     #[cfg(any(test, fuzzing))]
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         f.write_fmt(format_args!(
             "ZipCryptoKeys::of({:#10x},{:#10x},{:#10x})",
             self.key_0, self.key_1, self.key_2
         ))
     }
     #[cfg(not(any(test, fuzzing)))]
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         use std::collections::hash_map::DefaultHasher;
         use std::hash::Hasher;
         let mut t = DefaultHasher::new();
@@ -71,16 +72,16 @@ impl Debug for ZipCryptoKeys {
 }
 
 impl ZipCryptoKeys {
-    /// Initial value of `key_0` as specified by the classic ZipCrypto algorithm.
-    const INITIAL_KEY_0: u32 = 0x12345678;
-    /// Initial value of `key_1` as specified by the classic ZipCrypto algorithm.
-    const INITIAL_KEY_1: u32 = 0x23456789;
-    /// Initial value of `key_2` as specified by the classic ZipCrypto algorithm.
-    const INITIAL_KEY_2: u32 = 0x34567890;
+    /// Initial value of `key_0` as specified by the classic `ZipCrypto` algorithm.
+    const INITIAL_KEY_0: u32 = 0x1234_5678;
+    /// Initial value of `key_1` as specified by the classic `ZipCrypto` algorithm.
+    const INITIAL_KEY_1: u32 = 0x2345_6789;
+    /// Initial value of `key_2` as specified by the classic `ZipCrypto` algorithm.
+    const INITIAL_KEY_2: u32 = 0x3456_7890;
 
     /// Bitmask applied to the lower 2 bits of `key_2` when computing the
-    /// ZipCrypto keystream base, corresponding to the step described
-    /// in the ZipCrypto specification variously as `| 2` or `| 3` (both give the same keystream
+    /// `ZipCrypto` keystream base, corresponding to the step described
+    /// in the `ZipCrypto` specification variously as `| 2` or `| 3` (both give the same keystream
     /// due to the use of `keystream_base * (keystream_base ^ Wrapping(1))` and a quirk of CRC32).
     const KEYSTREAM_BITMASK: u16 = 2;
 
@@ -104,7 +105,7 @@ impl ZipCryptoKeys {
     fn update(&mut self, input: u8) {
         self.key_0 = ZipCryptoKeys::crc32(self.key_0, input);
         self.key_1 =
-            (self.key_1 + (self.key_0 & Wrapping(0xff))) * Wrapping(0x08088405) + Wrapping(1);
+            (self.key_1 + (self.key_0 & Wrapping(0xff))) * Wrapping(0x0808_8405) + Wrapping(1);
         self.key_2 = ZipCryptoKeys::crc32(self.key_2, (self.key_1 >> 24).0 as u8);
     }
 
@@ -275,8 +276,9 @@ impl<R: std::io::Read> ZipCryptoReaderValid<R> {
     }
 }
 
-/// Standard CRC-32 lookup table used by the ZipCrypto encryption algorithm
+/// Standard CRC-32 lookup table used by the `ZipCrypto` encryption algorithm
 /// to update the internal keys during encryption and decryption.
+#[allow(clippy::unreadable_literal)]
 static CRC_TABLE: [u32; 256] = [
     0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419, 0x706af48f, 0xe963a535, 0x9e6495a3,
     0x0edb8832, 0x79dcb8a4, 0xe0d5e91e, 0x97d2d988, 0x09b64c2b, 0x7eb17cbd, 0xe7b82d07, 0x90bf1d91,

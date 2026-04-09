@@ -11,14 +11,20 @@
 //!
 
 use core::mem;
+use std::io::{ErrorKind, Read, copy, sink};
 
-use crate::{ZIP64_BYTES_THR, extra_fields::UsedExtraField};
+use crate::unstable::LittleEndianReadExt;
+use crate::{
+    ZIP64_BYTES_THR,
+    extra_fields::UsedExtraField,
+    result::{ZipResult, invalid},
+};
 
 /// Zip64 extended information extra field
 #[derive(Copy, Clone, Debug)]
 pub(crate) struct Zip64ExtendedInformation {
     /// The local header does not contains any `header_start`
-    _is_local_header: bool,
+    is_local_header: bool,
     magic: UsedExtraField,
     size: u16,
     uncompressed_size: Option<u64>,
@@ -61,7 +67,7 @@ impl Zip64ExtendedInformation {
         // Disk Start Number  4 bytes    Number of the disk on which this file starts
 
         Some(Self {
-            _is_local_header: true,
+            is_local_header: true,
             magic: Self::MAGIC,
             size,
             uncompressed_size,
@@ -71,18 +77,19 @@ impl Zip64ExtendedInformation {
     }
 
     pub(crate) fn central_header(
+        is_large_file: bool,
         uncompressed_size: u64,
         compressed_size: u64,
         header_start: u64,
     ) -> Option<Self> {
         let mut size: u16 = 0;
-        let uncompressed_size = if uncompressed_size != 0 && uncompressed_size >= ZIP64_BYTES_THR {
+        let uncompressed_size = if is_large_file || uncompressed_size >= ZIP64_BYTES_THR {
             size += mem::size_of::<u64>() as u16;
             Some(uncompressed_size)
         } else {
             None
         };
-        let compressed_size = if compressed_size != 0 && compressed_size >= ZIP64_BYTES_THR {
+        let compressed_size = if is_large_file || compressed_size >= ZIP64_BYTES_THR {
             size += mem::size_of::<u64>() as u16;
             Some(compressed_size)
         } else {
@@ -103,7 +110,7 @@ impl Zip64ExtendedInformation {
         }
 
         Some(Self {
-            _is_local_header: false,
+            is_local_header: false,
             magic: Self::MAGIC,
             size,
             uncompressed_size,
@@ -120,7 +127,7 @@ impl Zip64ExtendedInformation {
     /// Serialize the block
     pub fn serialize(self) -> Box<[u8]> {
         let Self {
-            _is_local_header,
+            is_local_header,
             magic,
             size,
             uncompressed_size,
@@ -129,10 +136,10 @@ impl Zip64ExtendedInformation {
         } = self;
 
         let full_size = self.full_size();
-        if _is_local_header {
+        if is_local_header {
             // the local header does not contains the header start
             if let (Some(uncompressed_size), Some(compressed_size)) =
-                (self.compressed_size, self.compressed_size)
+                (uncompressed_size, compressed_size)
             {
                 let mut ret = Vec::with_capacity(full_size);
                 ret.extend(magic.to_le_bytes());
@@ -161,5 +168,61 @@ impl Zip64ExtendedInformation {
 
             ret.into_boxed_slice()
         }
+    }
+
+    #[inline]
+    pub(crate) fn parse<R: Read>(
+        reader: &mut R,
+        len: u16,
+        uncompressed_size: &mut u64,
+        compressed_size: &mut u64,
+        header_start: &mut u64,
+    ) -> ZipResult<()> {
+        let mut consumed_len = 0;
+        if len >= 24 || *uncompressed_size == ZIP64_BYTES_THR {
+            *uncompressed_size = match reader.read_u64_le() {
+                Ok(v) => v,
+                Err(e) if e.kind() == ErrorKind::UnexpectedEof => {
+                    return Err(invalid!("ZIP64 extra field truncated"));
+                }
+                Err(e) => return Err(e.into()),
+            };
+            consumed_len += mem::size_of::<u64>();
+        }
+
+        if len >= 24 || *compressed_size == ZIP64_BYTES_THR {
+            *compressed_size = match reader.read_u64_le() {
+                Ok(v) => v,
+                Err(e) if e.kind() == ErrorKind::UnexpectedEof => {
+                    return Err(invalid!("ZIP64 extra field truncated"));
+                }
+                Err(e) => return Err(e.into()),
+            };
+            consumed_len += mem::size_of::<u64>();
+        }
+
+        if len >= 24 || *header_start == ZIP64_BYTES_THR {
+            *header_start = match reader.read_u64_le() {
+                Ok(v) => v,
+                Err(e) if e.kind() == ErrorKind::UnexpectedEof => {
+                    return Err(invalid!("ZIP64 extra field truncated"));
+                }
+                Err(e) => return Err(e.into()),
+            };
+            consumed_len += mem::size_of::<u64>();
+        }
+
+        let Some(leftover_len) = (len as usize).checked_sub(consumed_len) else {
+            return Err(invalid!("ZIP64 extra-data field is the wrong length"));
+        };
+        let mut limited = reader.take(leftover_len as u64);
+        if let Err(e) = copy(&mut limited, &mut sink()) {
+            if e.kind() == ErrorKind::UnexpectedEof {
+                return Err(invalid!("ZIP64 extra field truncated"));
+            }
+            return Err(e.into());
+        }
+
+        Ok(())
     }
 }

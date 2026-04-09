@@ -102,7 +102,7 @@ fn unshrink_partial_clear(codetab: &mut [Codetab], queue: &mut CodeQueue) {
 /// Read the next code from the input stream and return it in next_code. Returns
 /// `Ok(None)` if the end of the stream is reached. If the stream contains invalid
 /// data, returns `Err`.
-fn read_code<T: std::io::Read, E: Endianness>(
+fn read_code<T: Read, E: Endianness>(
     is: &mut BitReader<T, E>,
     code_size: &mut u8,
     codetab: &mut [Codetab],
@@ -182,15 +182,14 @@ fn output_code(
     // table at a later point.
     let prefix_code = codetab[code as usize]
         .prefix_code
-        .ok_or_else(|| std::io::Error::other("Cannot get prefix code"))?;
+        .ok_or_else(|| io::Error::other("Cannot get prefix code"))?;
     if cfg!(debug_assertions) {
         let tab_entry = codetab[code as usize];
         assert!(tab_entry.len == UNKNOWN_LEN);
         assert!(
             tab_entry
                 .prefix_code
-                .ok_or_else(|| std::io::Error::other("Cannot get prefix code"))?
-                as usize
+                .ok_or_else(|| io::Error::other("Cannot get prefix code"))? as usize
                 > CONTROL_CODE
         );
     }
@@ -340,7 +339,7 @@ impl<R: Read> ShrinkDecoder<R> {
 }
 
 impl<R: Read> Read for ShrinkDecoder<R> {
-    fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+    fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
         if !self.stream_read {
             self.stream_read = true;
             let mut compressed_bytes = Vec::new();

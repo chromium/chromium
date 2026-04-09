@@ -1,16 +1,14 @@
 //! Writing a ZIP archive
 
 use crate::compression::CompressionMethod;
+use crate::datetime::DateTime;
+use crate::extra_fields::AexEncryption;
 use crate::extra_fields::UsedExtraField;
 use crate::extra_fields::Zip64ExtendedInformation;
 use crate::read::{Config, ZipArchive, ZipFile, parse_single_extra_field};
 use crate::result::{ZipError, ZipResult, invalid};
-use crate::spec::{self, FixedSizeBlock, Zip32CDEBlock};
-use crate::types::ffi::S_IFLNK;
-use crate::types::{
-    AesExtraField, AesVendorVersion, DateTime, MIN_VERSION, System, ZipFileData,
-    ZipLocalEntryBlock, ZipRawValues, ffi,
-};
+use crate::spec::{self, FixedSizeBlock, Magic, Pod, Zip32CDEBlock, ZipLocalEntryBlock};
+use crate::types::{AesVendorVersion, MIN_VERSION, System, ZipFileData, ZipRawValues, ffi};
 use core::default::Default;
 use core::fmt::{Debug, Formatter};
 use core::marker::PhantomData;
@@ -56,7 +54,7 @@ impl<W: Write> MaybeEncrypted<W> {
 }
 
 impl<W> Debug for MaybeEncrypted<W> {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         // Don't print W, since it may be a huge Vec<u8>
         f.write_str(match self {
             MaybeEncrypted::Unencrypted(_) => "Unencrypted",
@@ -107,7 +105,7 @@ enum GenericZipWriter<W: Write + Seek> {
 }
 
 impl<W: Write + Seek> Debug for GenericZipWriter<W> {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::Closed => f.write_str("Closed"),
             Self::Storer(w) => f.write_fmt(format_args!("Storer({w:?})")),
@@ -147,24 +145,26 @@ pub(crate) mod zip_writer {
     /// ```
     /// # fn doit() -> zip::result::ZipResult<()>
     /// # {
-    /// # use zip::ZipWriter;
+    /// use zip::ZipWriter;
     /// use std::io::Write;
     /// use zip::write::SimpleFileOptions;
     ///
     /// // We use a cursor + vec here, though you'd normally use a `File`
-    /// let mut cur = std::io::Cursor::new(Vec::new());
-    /// let mut zip = ZipWriter::new(&mut cur);
+    /// let mut cursor = std::io::Cursor::new(Vec::new());
+    /// let mut archive = ZipWriter::new(&mut cursor);
     ///
     /// let options = SimpleFileOptions::default().compression_method(zip::CompressionMethod::Stored);
-    /// zip.start_file("hello_world.txt", options)?;
-    /// zip.write(b"Hello, World!")?;
+    /// archive.start_file("hello_world.txt", options)?;
+    /// archive.write(b"Hello, World!")?;
+    /// // also direct write with
+    /// // std::io::copy(&mut file, &mut zip)?;
     ///
     /// // Apply the changes you've made.
     /// // Dropping the `ZipWriter` will have the same effect, but may silently fail
-    /// zip.finish()?;
+    /// archive.finish()?;
     ///
     /// // raw zip data is available as a Vec<u8>
-    /// let zip_bytes = cur.into_inner();
+    /// let zip_bytes = cursor.into_inner();
     ///
     /// # Ok(())
     /// # }
@@ -177,14 +177,14 @@ pub(crate) mod zip_writer {
         pub(super) writing_to_file: bool,
         pub(super) writing_raw: bool,
         pub(super) comment: Box<[u8]>,
-        pub(super) zip64_comment: Option<Box<[u8]>>,
+        pub(super) zip64_extensible_data_sector: Option<Box<[u8]>>,
         pub(super) flush_on_finish_file: bool,
         pub(super) seek_possible: bool,
         pub(crate) auto_large_file: bool,
     }
 
     impl<W: Write + Seek> Debug for ZipWriter<W> {
-        fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
             f.write_fmt(format_args!(
                 "ZipWriter {{files: {:?}, stats: {:?}, writing_to_file: {}, writing_raw: {}, comment: {:?}, flush_on_finish_file: {}}}",
                 self.files, self.stats, self.writing_to_file, self.writing_raw,
@@ -193,55 +193,57 @@ pub(crate) mod zip_writer {
     }
 
     impl<W: Write + Seek> ZipWriter<W> {
-        /// Gets a reference to the underlying writer in this ZipWrite.
+        /// Gets a reference to the underlying writer in this `ZipWriter`.
         pub fn get_ref(&self) -> Option<&W> {
-            use GenericZipWriter::*;
             match &self.inner {
-                Closed => None,
-                Storer(w) => Some(w.get_ref()),
+                GenericZipWriter::Closed => None,
+                GenericZipWriter::Storer(w) => Some(w.get_ref()),
                 #[cfg(feature = "deflate-flate2")]
-                Deflater(w) => Some(w.get_ref().get_ref()),
+                GenericZipWriter::Deflater(w) => Some(w.get_ref().get_ref()),
                 #[cfg(feature = "deflate-zopfli")]
-                ZopfliDeflater(w) => Some(w.get_ref().get_ref()),
+                GenericZipWriter::ZopfliDeflater(w) => Some(w.get_ref().get_ref()),
                 #[cfg(feature = "deflate-zopfli")]
-                BufferedZopfliDeflater(w) => Some(w.get_ref().get_ref().get_ref()),
+                GenericZipWriter::BufferedZopfliDeflater(w) => {
+                    Some(w.get_ref().get_ref().get_ref())
+                }
                 #[cfg(feature = "_bzip2_any")]
-                Bzip2(w) => Some(w.get_ref().get_ref()),
+                GenericZipWriter::Bzip2(w) => Some(w.get_ref().get_ref()),
                 #[cfg(feature = "zstd")]
-                Zstd(w) => Some(w.get_ref().get_ref()),
+                GenericZipWriter::Zstd(w) => Some(w.get_ref().get_ref()),
                 #[cfg(feature = "xz")]
-                Xz(w) => Some(w.inner().get_ref()),
+                GenericZipWriter::Xz(w) => Some(w.inner().get_ref()),
                 #[cfg(feature = "ppmd")]
-                Ppmd(w) => Some(w.get_ref().get_ref()),
+                GenericZipWriter::Ppmd(w) => Some(w.get_ref().get_ref()),
             }
         }
 
-        /// Gets a reference to the underlying writer in this ZipWrite.
+        /// Gets a reference to the underlying writer in this `ZipWriter`.
         ///
         /// # Safety
         ///
         /// Caller must not corrupt the archive, and must seek back to the current position
-        /// before continuing to write to the ZipWriter.
+        /// before continuing to write to the `ZipWriter`.
         pub unsafe fn get_mut(&mut self) -> Option<&mut W> {
-            use GenericZipWriter::*;
             unsafe {
                 match &mut self.inner {
-                    Closed => None,
-                    Storer(w) => Some(w.get_mut()),
+                    GenericZipWriter::Closed => None,
+                    GenericZipWriter::Storer(w) => Some(w.get_mut()),
                     #[cfg(feature = "deflate-flate2")]
-                    Deflater(w) => Some(w.get_mut().get_mut()),
+                    GenericZipWriter::Deflater(w) => Some(w.get_mut().get_mut()),
                     #[cfg(feature = "deflate-zopfli")]
-                    ZopfliDeflater(w) => Some(w.get_mut().get_mut()),
+                    GenericZipWriter::ZopfliDeflater(w) => Some(w.get_mut().get_mut()),
                     #[cfg(feature = "deflate-zopfli")]
-                    BufferedZopfliDeflater(w) => Some(w.get_mut().get_mut().get_mut()),
+                    GenericZipWriter::BufferedZopfliDeflater(w) => {
+                        Some(w.get_mut().get_mut().get_mut())
+                    }
                     #[cfg(feature = "_bzip2_any")]
-                    Bzip2(w) => Some(w.get_mut().get_mut()),
+                    GenericZipWriter::Bzip2(w) => Some(w.get_mut().get_mut()),
                     #[cfg(feature = "zstd")]
-                    Zstd(w) => Some(w.get_mut().get_mut()),
+                    GenericZipWriter::Zstd(w) => Some(w.get_mut().get_mut()),
                     #[cfg(feature = "xz")]
-                    Xz(w) => Some(w.inner_mut().get_mut()),
+                    GenericZipWriter::Xz(w) => Some(w.inner_mut().get_mut()),
                     #[cfg(feature = "ppmd")]
-                    Ppmd(w) => Some(w.get_mut().get_mut()),
+                    GenericZipWriter::Ppmd(w) => Some(w.get_mut().get_mut()),
                 }
             }
         }
@@ -390,7 +392,7 @@ impl ExtendedFileOptions {
         header_id: u16,
         data: &[u8],
     ) -> Result<(), ZipError> {
-        vec.reserve_exact(data.len() + 4);
+        vec.reserve_exact(data.len() + size_of::<u16>() + size_of::<u16>());
         vec.write_u16_le(header_id)?;
         vec.write_u16_le(data.len() as u16)?;
         vec.write_all(data)?;
@@ -427,9 +429,8 @@ impl ExtendedFileOptions {
                     && EXTRA_FIELD_MAPPING.contains(&header_id)
                 {
                     return Err(ZipError::Io(io::Error::other(format!(
-                        "Extra data header ID {:#06} (0x{:x}) \
+                        "Extra data header ID {header_id:#06} (0x{header_id:x}) \
                             requires crate feature \"unreserved\"",
-                        header_id, header_id,
                     ))));
                 }
                 data.seek(SeekFrom::Current(-2))?;
@@ -442,7 +443,7 @@ impl ExtendedFileOptions {
 }
 
 impl Debug for ExtendedFileOptions {
-    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), core::fmt::Error> {
         f.write_fmt(format_args!("ExtendedFileOptions {{extra_data: vec!{:?}.into(), central_extra_data: vec!{:?}.into()}}",
         self.extra_data, self.central_extra_data))
     }
@@ -715,7 +716,8 @@ impl FileOptions<'static, ()> {
 }
 
 impl<'k> FileOptions<'k, ()> {
-    /// Convert to FullFileOptions.
+    /// Convert to `FullFileOptions`.
+    #[must_use]
     pub fn into_full_options(self) -> FullFileOptions<'k> {
         FileOptions {
             compression_method: self.compression_method,
@@ -840,7 +842,7 @@ impl<A: Read + Write + Seek> ZipWriter<A> {
             stats: ZipWriterStats::default(),
             writing_to_file: false,
             comment: shared.comment,
-            zip64_comment: shared.zip64_comment,
+            zip64_extensible_data_sector: shared.zip64_extensible_data_sector,
             writing_raw: true, // avoid recomputing the last file's header
             flush_on_finish_file: false,
             seek_possible: true,
@@ -856,8 +858,8 @@ impl<A: Read + Write + Seek> ZipWriter<A> {
     /// read previously-written files and not overwrite them.
     ///
     /// Note: when using an `inner` that cannot overwrite flushed bytes, do not wrap it in a
-    /// [`BufWriter`], because that has a [`Seek::seek`] method that implicitly calls
-    /// [`BufWriter::flush`], and `ZipWriter` needs to seek backward to update each file's header with
+    /// [`std::io::BufWriter`], because that has a [`Seek::seek`] method that implicitly calls
+    /// [`std::io::BufWriter::flush`], and `ZipWriter` needs to seek backward to update each file's header with
     /// the size and checksum after writing the body.
     ///
     /// This setting is false by default.
@@ -897,15 +899,15 @@ impl<A: Read + Write + Seek> ZipWriter<A> {
         new_data.file_name_raw = dest_name_raw.into();
         new_data.header_start = write_position;
         let extra_data_start = write_position
-            + size_of::<ZipLocalEntryBlock>() as u64
+            + (size_of::<Magic>() + size_of::<ZipLocalEntryBlock>()) as u64
             + new_data.file_name_raw.len() as u64;
         new_data.extra_data_start = Some(extra_data_start);
         if let Some(extra) = &src_data.extra_field {
-            let stripped = strip_alignment_extra_field(extra);
-            if !stripped.is_empty() {
-                new_data.extra_field = Some(stripped.into());
-            } else {
+            let stripped = strip_alignment_extra_field(extra, false);
+            if stripped.is_empty() {
                 new_data.extra_field = None;
+            } else {
+                new_data.extra_field = Some(Arc::from(stripped.into_boxed_slice()));
             }
         }
 
@@ -985,12 +987,16 @@ impl<A: Read + Write + Seek> ZipWriter<A> {
         let central_start = self.finalize()?;
         let inner = self.close_writer()?;
         let comment = mem::take(&mut self.comment);
-        let zip64_comment = mem::take(&mut self.zip64_comment);
+        let zip64_extensible_data_sector = mem::take(&mut self.zip64_extensible_data_sector);
         let files = mem::take(&mut self.files);
 
-        let archive =
-            ZipArchive::from_finalized_writer(files, comment, zip64_comment, inner, central_start)?;
-        Ok(archive)
+        Ok(ZipArchive::from_finalized_writer(
+            files,
+            comment,
+            zip64_extensible_data_sector,
+            inner,
+            central_start,
+        ))
     }
 }
 
@@ -1004,11 +1010,11 @@ impl<W: Write + Seek> ZipWriter<W> {
         ZipWriter {
             inner: GenericZipWriter::Storer(MaybeEncrypted::Unencrypted(inner)),
             files: IndexMap::new(),
-            stats: Default::default(),
+            stats: ZipWriterStats::default(),
             writing_to_file: false,
             writing_raw: false,
             comment: Box::new([]),
-            zip64_comment: None,
+            zip64_extensible_data_sector: None,
             flush_on_finish_file: false,
             seek_possible: true,
             auto_large_file: false,
@@ -1016,6 +1022,7 @@ impl<W: Write + Seek> ZipWriter<W> {
     }
 
     /// Set automatically large file to true if needed
+    #[must_use]
     pub fn set_auto_large_file(mut self) -> Self {
         self.auto_large_file = true;
         self
@@ -1027,26 +1034,30 @@ impl<W: Write + Seek> ZipWriter<W> {
     }
 
     /// Set ZIP archive comment.
-    pub fn set_comment<S>(&mut self, comment: S)
+    pub fn set_comment<S>(&mut self, comment: S) -> ZipResult<()>
     where
         S: Into<Box<str>>,
     {
-        self.set_raw_comment(comment.into().into_boxed_bytes());
+        self.set_raw_comment(comment.into().into_boxed_bytes())
     }
 
-    /// Set ZIP archive comment.
+    /// Set raw ZIP archive comment.
     ///
-    /// This sets the raw bytes of the comment. The comment
-    /// is typically expected to be encoded in UTF-8.
-    pub fn set_raw_comment(&mut self, comment: Box<[u8]>) {
+    /// This sets the raw bytes of the comment.
+    /// The comment is typically expected to be encoded in UTF-8.
+    /// If the comment is more than `u16::MAX` it will be truncated
+    pub fn set_raw_comment(&mut self, comment: Box<[u8]>) -> ZipResult<()> {
         let max_comment_len = u16::MAX as usize; // 65,535
-        if comment.len() > max_comment_len {
-            self.set_raw_zip64_comment(Some(comment));
-            self.comment = Box::new([]);
-        } else {
+        if comment.len() <= max_comment_len {
             self.comment = comment;
-            self.set_raw_zip64_comment(None);
+            return Ok(());
         }
+        let (allowed, rest) = comment.split_at(max_comment_len);
+        self.comment = allowed.into();
+        Err(ZipError::Io(std::io::Error::new(
+            std::io::ErrorKind::InvalidData,
+            format!("Unexpected data comment - {} bytes too long", rest.len()),
+        )))
     }
 
     /// Get ZIP archive comment.
@@ -1054,7 +1065,7 @@ impl<W: Write + Seek> ZipWriter<W> {
         from_utf8(self.get_raw_comment())
     }
 
-    /// Get ZIP archive comment.
+    /// Get raw ZIP archive comment.
     ///
     /// This returns the raw bytes of the comment. The comment
     /// is typically expected to be encoded in UTF-8.
@@ -1063,32 +1074,58 @@ impl<W: Write + Seek> ZipWriter<W> {
     }
 
     /// Set ZIP64 archive comment.
-    pub fn set_zip64_comment<S>(&mut self, comment: Option<S>)
+    #[deprecated(
+        note = "Zip64 comment is not part of the zip specification - see https://github.com/zip-rs/zip2/pull/747"
+    )]
+    pub fn set_zip64_comment<S>(&mut self, comment: Option<S>) -> ZipResult<()>
     where
         S: Into<Box<str>>,
     {
-        self.set_raw_zip64_comment(comment.map(|v| v.into().into_boxed_bytes()));
+        if let Some(com) = comment {
+            self.set_comment(com)?;
+        }
+        Ok(())
     }
 
-    /// Set ZIP64 archive comment.
+    /// Set raw ZIP64 archive comment.
     ///
     /// This sets the raw bytes of the comment. The comment
     /// is typically expected to be encoded in UTF-8.
-    pub fn set_raw_zip64_comment(&mut self, comment: Option<Box<[u8]>>) {
-        self.zip64_comment = comment;
+    #[deprecated(
+        note = "Zip64 comment is not part of the zip specification - see https://github.com/zip-rs/zip2/pull/747"
+    )]
+    pub fn set_raw_zip64_comment(&mut self, comment: Option<Box<[u8]>>) -> ZipResult<()> {
+        if let Some(com) = comment {
+            self.set_raw_comment(com)?;
+        }
+        Ok(())
+    }
+
+    /// Get the zip64 extensible data. Use at your own risk
+    /// See 4.3.14.3, 4.3.14.4, 4.4.27 and APPENDIX C of the specification
+    pub fn set_raw_zip64_extensible_data_sector(&mut self, extensible_data: Box<[u8]>) {
+        self.zip64_extensible_data_sector = Some(extensible_data);
     }
 
     /// Get ZIP64 archive comment.
+    #[deprecated(
+        note = "Zip64 comment is not part of the zip specification - see https://github.com/zip-rs/zip2/pull/747"
+    )]
     pub fn get_zip64_comment(&mut self) -> Option<Result<&str, Utf8Error>> {
-        self.get_raw_zip64_comment().map(from_utf8)
+        // no-op since deprecated
+        None
     }
 
-    /// Get ZIP archive comment.
+    /// Get raw ZIP64 archive comment.
     ///
     /// This returns the raw bytes of the comment. The comment
     /// is typically expected to be encoded in UTF-8.
+    #[deprecated(
+        note = "Zip64 comment is not part of the zip specification - see https://github.com/zip-rs/zip2/pull/747"
+    )]
     pub fn get_raw_zip64_comment(&self) -> Option<&[u8]> {
-        self.zip64_comment.as_deref()
+        // no-op since deprecated
+        None
     }
 
     /// Set the file length and crc32 manually.
@@ -1099,7 +1136,7 @@ impl<W: Write + Seek> ZipWriter<W> {
     /// been (or will be) written for the currently open file entry.
     ///
     /// The caller must ensure that:
-    /// - A file entry is currently being written (that is, [`start_file`] or equivalent has
+    /// - A file entry is currently being written (that is, [`Self::start_file`] or equivalent has
     ///   been called successfully and `abort_file` has not been called since).
     /// - `length` is the exact uncompressed size, in bytes, of the file data written to the
     ///   underlying [`Write`] implementation for this entry.
@@ -1134,7 +1171,7 @@ impl<W: Write + Seek> ZipWriter<W> {
     /// Start a new file for with the requested options.
     fn start_entry<S: ToString, T: FileOptionExtension>(
         &mut self,
-        name: S,
+        name: &S,
         mut options: FileOptions<'_, T>,
         raw_values: Option<ZipRawValues>,
     ) -> ZipResult<()> {
@@ -1189,20 +1226,19 @@ impl<W: Write + Seek> ZipWriter<W> {
         }) = aes_mode
         {
             // For raw copies of AES entries, write the correct AES extra data immediately
-            let mut body = [0; 7];
-            [body[0], body[1]] = (vendor_version as u16).to_le_bytes(); // vendor version (1 or 2)
-            [body[2], body[3]] = *b"AE"; // vendor id
-            body[4] = mode as u8; // strength
-            [body[5], body[6]] = actual_compression_method.serialize_to_u16().to_le_bytes(); // real compression method
+            let aex_extra_field =
+                AexEncryption::new(vendor_version, mode, actual_compression_method);
+            let buf = &aex_extra_field.as_bytes()[offset_of!(AexEncryption, version)..];
             aes_extra_data_start = extra_data.len() as u64;
             ExtendedFileOptions::add_extra_data_unchecked(
                 &mut extra_data,
-                UsedExtraField::AeXEncryption as u16,
-                &body,
+                UsedExtraField::AeXEncryption.as_u16(),
+                buf,
             )?;
         }
-        let header_end =
-            header_start + size_of::<ZipLocalEntryBlock>() as u64 + name.to_string().len() as u64;
+        let header_end = header_start
+            + (size_of::<Magic>() + size_of::<ZipLocalEntryBlock>()) as u64
+            + name.to_string().len() as u64;
 
         if options.alignment > 1 {
             let extra_data_end = header_end + extra_data.len() as u64;
@@ -1224,7 +1260,7 @@ impl<W: Write + Seek> ZipWriter<W> {
                     [pad_body[0], pad_body[1]] = options.alignment.to_le_bytes();
                     ExtendedFileOptions::add_extra_data_unchecked(
                         &mut extra_data,
-                        UsedExtraField::DataStreamAlignment as u16,
+                        UsedExtraField::DataStreamAlignment.as_u16(),
                         &pad_body,
                     )?;
                     debug_assert_eq!((extra_data.len() as u64 + header_end) % align, 0);
@@ -1241,11 +1277,11 @@ impl<W: Write + Seek> ZipWriter<W> {
             ExtendedFileOptions::validate_extra_data(data, true)?;
         }
         #[cfg(feature = "aes-crypto")]
-        let aes_mode = aes_mode.map(|mode| mode.to_tuple());
+        let aes_mode = aes_mode.map(super::aes::AesModeOptions::to_tuple);
         let mut file = ZipFileData::initialize_local_block(
             name,
             &options,
-            raw_values,
+            &raw_values,
             header_start,
             None,
             aes_extra_data_start,
@@ -1278,7 +1314,7 @@ impl<W: Write + Seek> ZipWriter<W> {
             writer.write_all(&file.file_name_raw)?;
             if extra_data_len > 0 {
                 writer.write_all(&extra_data)?;
-                file.extra_field = Some(extra_data.into());
+                file.extra_field = Some(Arc::from(extra_data.into_boxed_slice()));
             }
             Ok(())
         };
@@ -1396,7 +1432,7 @@ impl<W: Write + Seek> ZipWriter<W> {
             if file.using_data_descriptor {
                 file.write_data_descriptor(writer, self.auto_large_file)?;
             } else {
-                update_local_file_header(writer, file)?;
+                file.update_local_file_header(writer)?;
                 writer.seek(SeekFrom::Start(file_end))?;
             }
         }
@@ -1477,7 +1513,7 @@ impl<W: Write + Seek> ZipWriter<W> {
             #[cfg(feature = "deflate-zopfli")]
             options.zopfli_buffer_size,
         )?;
-        self.start_entry(name, options, None)?;
+        self.start_entry(&name, options, None)?;
         let result = self.inner.switch_to(make_new_self);
         self.ok_or_abort_file(result)?;
         self.writing_raw = false;
@@ -1596,13 +1632,13 @@ impl<W: Write + Seek> ZipWriter<W> {
         if !file.comment().is_empty() {
             options = options.with_file_comment(file.comment());
         }
-        self.raw_copy_file_rename_internal(file, name, options)
+        self.raw_copy_file_rename_internal(file, &name, options)
     }
 
     fn raw_copy_file_rename_internal<R: Read, S: ToString, T: FileOptionExtension>(
         &mut self,
         mut file: ZipFile<'_, R>,
-        name: S,
+        name: &S,
         options: FileOptions<'_, T>,
     ) -> ZipResult<()> {
         let raw_values = ZipRawValues {
@@ -1705,7 +1741,7 @@ impl<W: Write + Seek> ZipWriter<W> {
 
         options.normalize();
 
-        self.raw_copy_file_rename_internal(file, name, options)
+        self.raw_copy_file_rename_internal(file, &name, options)
     }
 
     /// Add a directory entry.
@@ -1736,7 +1772,7 @@ impl<W: Write + Seek> ZipWriter<W> {
             _ => name_as_string + "/",
         };
 
-        self.start_entry(name_with_slash, options, None)?;
+        self.start_entry(&name_with_slash, options, None)?;
         self.writing_to_file = false;
         self.switch_to_non_encrypting_writer()?;
         Ok(())
@@ -1798,12 +1834,13 @@ impl<W: Write + Seek> ZipWriter<W> {
         *options
             .permissions
             .as_mut()
-            .ok_or_else(|| std::io::Error::other("Cannot get permissions as mutable"))? |= S_IFLNK;
+            .ok_or_else(|| std::io::Error::other("Cannot get permissions as mutable"))? |=
+            ffi::S_IFLNK;
         // The symlink target is stored as file content. And compressing the target path
         // likely wastes space. So always store.
         options.compression_method = Stored;
 
-        self.start_entry(name, options, None)?;
+        self.start_entry(&name, options, None)?;
         self.writing_to_file = true;
         let result = self.write_all(target.to_string().as_bytes());
         self.ok_or_abort_file(result)?;
@@ -1843,7 +1880,9 @@ impl<W: Write + Seek> ZipWriter<W> {
             writer.seek(SeekFrom::Start(central_start))?;
             writer.write_u32_le(0)?;
             writer.seek(SeekFrom::Start(
-                footer_end - size_of::<Zip32CDEBlock>() as u64 - self.comment.len() as u64,
+                footer_end
+                    - (size_of::<Magic>() + size_of::<Zip32CDEBlock>()) as u64
+                    - self.comment.len() as u64,
             ))?;
             writer.write_u32_le(0)?;
 
@@ -1863,19 +1902,23 @@ impl<W: Write + Seek> ZipWriter<W> {
         let mut version_needed = u16::from(MIN_VERSION);
         let central_start = writer.stream_position()?;
         for file in self.files.values() {
-            write_central_directory_header(writer, file)?;
+            file.write_central_directory_header(writer)?;
             version_needed = version_needed.max(file.version_needed());
         }
         let central_size = writer.stream_position()? - central_start;
         let is64 = self.files.len() > spec::ZIP64_ENTRY_THR
             || central_size.max(central_start) > spec::ZIP64_BYTES_THR
-            || self.zip64_comment.is_some();
+            || self.zip64_extensible_data_sector.is_some();
 
         if is64 {
-            let comment = self.zip64_comment.clone().unwrap_or_default();
+            let zip64_extensible_data_sector = self.zip64_extensible_data_sector.clone();
+            let extensible_len = zip64_extensible_data_sector
+                .as_ref()
+                .map(|e| e.len() as u64)
+                .unwrap_or(0);
 
             let zip64_footer = spec::Zip64CentralDirectoryEnd {
-                record_size: comment.len() as u64 + 44,
+                record_size: extensible_len + 44,
                 version_made_by: version_needed,
                 version_needed_to_extract: version_needed,
                 disk_number: 0,
@@ -1884,7 +1927,7 @@ impl<W: Write + Seek> ZipWriter<W> {
                 number_of_files: self.files.len() as u64,
                 central_directory_size: central_size,
                 central_directory_offset: central_start,
-                extensible_data_sector: comment,
+                zip64_extensible_data_sector,
             };
 
             zip64_footer.write(writer)?;
@@ -1898,6 +1941,12 @@ impl<W: Write + Seek> ZipWriter<W> {
             zip64_footer.write(writer)?;
         }
 
+        let central_directory_size = if is64 {
+            spec::ZIP64_BYTES_THR as u32
+        } else {
+            central_size.min(spec::ZIP64_BYTES_THR) as u32
+        };
+
         let number_of_files = self.files.len().min(spec::ZIP64_ENTRY_THR) as u16;
         let footer = spec::Zip32CentralDirectoryEnd {
             disk_number: 0,
@@ -1905,7 +1954,7 @@ impl<W: Write + Seek> ZipWriter<W> {
             zip_file_comment: self.comment.clone(),
             number_of_files_on_this_disk: number_of_files,
             number_of_files,
-            central_directory_size: central_size.min(spec::ZIP64_BYTES_THR) as u32,
+            central_directory_size,
             central_directory_offset: central_start.min(spec::ZIP64_BYTES_THR) as u32,
         };
 
@@ -1961,11 +2010,11 @@ impl<W: Write> ZipWriter<StreamWriter<W>> {
         ZipWriter {
             inner: GenericZipWriter::Storer(MaybeEncrypted::Unencrypted(StreamWriter::new(inner))),
             files: IndexMap::new(),
-            stats: Default::default(),
+            stats: ZipWriterStats::default(),
             writing_to_file: false,
             writing_raw: false,
             comment: Box::new([]),
-            zip64_comment: None,
+            zip64_extensible_data_sector: None,
             flush_on_finish_file: false,
             seek_possible: false,
             auto_large_file: false,
@@ -2031,8 +2080,7 @@ impl<W: Write + Seek> GenericZipWriter<W> {
                     compression_level.unwrap_or(default),
                     deflate_compression_level_range(),
                 )
-                .ok_or(UnsupportedArchive("Unsupported compression level"))?
-                    as u32;
+                .ok_or(UnsupportedArchive("Unsupported compression level"))?;
 
                 #[cfg(feature = "deflate-zopfli")]
                 {
@@ -2108,12 +2156,11 @@ impl<W: Write + Seek> GenericZipWriter<W> {
             }
             #[cfg(feature = "_bzip2_any")]
             CompressionMethod::Bzip2 => {
-                let level = validate_value_in_range(
+                let level: u32 = validate_value_in_range(
                     compression_level.unwrap_or(i64::from(bzip2::Compression::default().level())),
                     bzip2_compression_level_range(),
                 )
-                .ok_or(UnsupportedArchive("Unsupported compression level"))?
-                    as u32;
+                .ok_or(UnsupportedArchive("Unsupported compression level"))?;
                 Ok(Box::new(move |bare| {
                     Ok(GenericZipWriter::Bzip2(bzip2::write::BzEncoder::new(
                         bare,
@@ -2156,9 +2203,8 @@ impl<W: Write + Seek> GenericZipWriter<W> {
             }
             #[cfg(feature = "xz")]
             CompressionMethod::Xz => {
-                let level = validate_value_in_range(compression_level.unwrap_or(6), 0..=9)
-                    .ok_or(UnsupportedArchive("Unsupported compression level"))?
-                    as u32;
+                let level = validate_value_in_range(compression_level.unwrap_or(6), 0_u32..=9_u32)
+                    .ok_or(UnsupportedArchive("Unsupported compression level"))?;
                 Ok(Box::new(move |bare| {
                     Ok(GenericZipWriter::Xz(Box::new(
                         lzma_rust2::XzWriter::new(bare, lzma_rust2::XzOptions::with_preset(level))
@@ -2170,9 +2216,8 @@ impl<W: Write + Seek> GenericZipWriter<W> {
             CompressionMethod::Ppmd => {
                 const ORDERS: [u32; 10] = [0, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
-                let level = validate_value_in_range(compression_level.unwrap_or(7), 1..=9)
-                    .ok_or(UnsupportedArchive("Unsupported compression level"))?
-                    as u32;
+                let level = validate_value_in_range(compression_level.unwrap_or(7), 1_u32..=9_u32)
+                    .ok_or(UnsupportedArchive("Unsupported compression level"))?;
 
                 let order = ORDERS[level as usize];
                 let memory_size = 1 << (level + 19);
@@ -2287,7 +2332,7 @@ impl<W: Write + Seek> GenericZipWriter<W> {
 }
 
 #[cfg(feature = "_deflate-any")]
-fn deflate_compression_level_range() -> std::ops::RangeInclusive<i64> {
+fn deflate_compression_level_range() -> std::ops::RangeInclusive<u32> {
     #[cfg(not(any(feature = "deflate-zopfli", feature = "deflate-flate2")))]
     {
         compile_error!("min: unknown deflate variant - enable deflate-zopfli or deflate-flate2")
@@ -2296,7 +2341,7 @@ fn deflate_compression_level_range() -> std::ops::RangeInclusive<i64> {
     let min = {
         #[cfg(feature = "deflate-flate2")]
         {
-            i64::from(flate2::Compression::fast().level())
+            flate2::Compression::fast().level()
         }
         #[cfg(all(not(feature = "deflate-flate2"), feature = "deflate-zopfli"))]
         {
@@ -2311,7 +2356,7 @@ fn deflate_compression_level_range() -> std::ops::RangeInclusive<i64> {
         }
         #[cfg(all(not(feature = "deflate-zopfli"), feature = "deflate-flate2"))]
         {
-            flate2::Compression::best().level() as i64
+            flate2::Compression::best().level()
         }
     };
 
@@ -2319,9 +2364,9 @@ fn deflate_compression_level_range() -> std::ops::RangeInclusive<i64> {
 }
 
 #[cfg(feature = "_bzip2_any")]
-fn bzip2_compression_level_range() -> std::ops::RangeInclusive<i64> {
-    let min = i64::from(bzip2::Compression::fast().level());
-    let max = i64::from(bzip2::Compression::best().level());
+fn bzip2_compression_level_range() -> std::ops::RangeInclusive<u32> {
+    let min = bzip2::Compression::fast().level();
+    let max = bzip2::Compression::best().level();
     min..=max
 }
 
@@ -2335,8 +2380,9 @@ fn bzip2_compression_level_range() -> std::ops::RangeInclusive<i64> {
 fn validate_value_in_range<T: Ord + Copy, U: Ord + Copy + TryFrom<T>>(
     value: T,
     range: std::ops::RangeInclusive<U>,
-) -> Option<T> {
-    if range.contains(&value.try_into().ok()?) {
+) -> Option<U> {
+    let value: U = value.try_into().ok()?;
+    if range.contains(&value) {
         Some(value)
     } else {
         None
@@ -2374,12 +2420,9 @@ fn update_aes_extra_data<W: Write + Seek>(
         extra_data_start + file.aes_extra_data_start,
     ))?;
 
-    let mut buf = [0u8; size_of::<AesExtraField>()];
-
-    let aes_extra_field = AesExtraField::new(*version, *aes_mode, *compression_method);
-
-    aes_extra_field.write(&mut buf.as_mut())?;
-    writer.write_all(&buf)?;
+    let aes_extra_field = AexEncryption::new(*version, *aes_mode, *compression_method);
+    let buf = aes_extra_field.as_bytes();
+    writer.write_all(buf)?;
 
     let aes_extra_data_start = file.aes_extra_data_start as usize;
     let Some(ref mut extra_field) = file.extra_field else {
@@ -2387,85 +2430,109 @@ fn update_aes_extra_data<W: Write + Seek>(
             "update_aes_extra_data called on a file that has no extra-data field"
         ));
     };
-    let extra_field = Arc::make_mut(extra_field);
-    extra_field[aes_extra_data_start..aes_extra_data_start + size_of::<AesExtraField>()]
-        .copy_from_slice(&buf);
+    let mut vec = extra_field.to_vec();
+    vec[aes_extra_data_start..aes_extra_data_start + size_of::<AexEncryption>()]
+        .copy_from_slice(buf);
+    *extra_field = Arc::from(vec.into_boxed_slice());
 
     Ok(())
 }
 
-fn update_local_file_header<T: Write + Seek>(
-    writer: &mut T,
-    file: &mut ZipFileData,
-) -> ZipResult<()> {
-    writer.seek(SeekFrom::Start(
-        file.header_start + offset_of!(ZipLocalEntryBlock, crc32) as u64,
-    ))?;
-    writer.write_u32_le(file.crc32)?;
-    if file.large_file {
-        writer.write_u32_le(spec::ZIP64_BYTES_THR as u32)?;
-        writer.write_u32_le(spec::ZIP64_BYTES_THR as u32)?;
+impl ZipFileData {
+    pub(crate) fn update_local_file_header<T: Write + Seek>(
+        &mut self,
+        writer: &mut T,
+    ) -> ZipResult<()> {
+        writer.seek(SeekFrom::Start(
+            self.header_start + (size_of::<Magic>() + offset_of!(ZipLocalEntryBlock, crc32)) as u64,
+        ))?;
+        writer.write_u32_le(self.crc32)?;
+        if self.large_file {
+            writer.write_u32_le(spec::ZIP64_BYTES_THR as u32)?;
+            writer.write_u32_le(spec::ZIP64_BYTES_THR as u32)?;
 
-        update_local_zip64_extra_field(writer, file)?;
+            self.update_local_zip64_extra_field(writer)?;
 
-        // file.compressed_size = spec::ZIP64_BYTES_THR;
-        // file.uncompressed_size = spec::ZIP64_BYTES_THR;
-    } else {
-        // check compressed size as well as it can also be slightly larger than uncompressed size
-        if file.compressed_size > spec::ZIP64_BYTES_THR {
-            return Err(ZipError::Io(io::Error::other(
-                "large_file(true) option has not been set",
-            )));
+            // self.compressed_size = spec::ZIP64_BYTES_THR;
+            // self.uncompressed_size = spec::ZIP64_BYTES_THR;
+        } else {
+            // check compressed size as well as it can also be slightly larger than uncompressed size
+            if self.compressed_size > spec::ZIP64_BYTES_THR {
+                return Err(ZipError::Io(std::io::Error::other(
+                    "large_file(true) option has not been set",
+                )));
+            }
+            writer.write_u32_le(self.compressed_size as u32)?;
+            // uncompressed size is already checked on write to catch it as soon as possible
+            writer.write_u32_le(self.uncompressed_size as u32)?;
         }
-        writer.write_u32_le(file.compressed_size as u32)?;
-        // uncompressed size is already checked on write to catch it as soon as possible
-        writer.write_u32_le(file.uncompressed_size as u32)?;
+        Ok(())
     }
-    Ok(())
+
+    fn update_local_zip64_extra_field<T: Write + Seek>(&mut self, writer: &mut T) -> ZipResult<()> {
+        let zip64_block = Zip64ExtendedInformation::local_header(
+            self.large_file,
+            self.uncompressed_size,
+            self.compressed_size,
+        )
+        .ok_or(invalid!(
+            "Attempted to update a nonexistent ZIP64 extra field"
+        ))?;
+
+        let zip64_extra_field_start = self.header_start
+            + (size_of::<Magic>() + size_of::<ZipLocalEntryBlock>()) as u64
+            + self.file_name_raw.len() as u64;
+
+        writer.seek(SeekFrom::Start(zip64_extra_field_start))?;
+        let zip64_block = zip64_block.serialize();
+        writer.write_all(&zip64_block)?;
+        Ok(())
+    }
+
+    pub(crate) fn write_central_directory_header<T: Write>(&self, writer: &mut T) -> ZipResult<()> {
+        let mut block = self.block()?;
+        let stripped_extra = if let Some(extra) = &self.extra_field {
+            strip_alignment_extra_field(extra, true)
+        } else {
+            Vec::new()
+        };
+        let central_len = self.central_extra_field_len();
+        let zip64_extra_field_block = Zip64ExtendedInformation::central_header(
+            self.large_file,
+            self.uncompressed_size,
+            self.compressed_size,
+            self.header_start,
+        );
+        let zip64_block_len = if let Some(zip64) = zip64_extra_field_block {
+            zip64.full_size()
+        } else {
+            0
+        };
+        let total_extra_len = zip64_block_len + stripped_extra.len() + central_len;
+        block.extra_field_length = u16::try_from(total_extra_len)
+            .map_err(|_| invalid!("Extra field length in central directory exceeds 64KiB"))?;
+
+        block.write(writer)?;
+        // file name
+        writer.write_all(&self.file_name_raw)?;
+        // extra field
+        if let Some(zip64_extra_field) = zip64_extra_field_block {
+            writer.write_all(&zip64_extra_field.serialize())?;
+        }
+        if !stripped_extra.is_empty() {
+            writer.write_all(&stripped_extra)?;
+        }
+        if let Some(central_extra_field) = &self.central_extra_field {
+            writer.write_all(central_extra_field)?;
+        }
+        // file comment
+        writer.write_all(self.file_comment.as_bytes())?;
+
+        Ok(())
+    }
 }
 
-fn write_central_directory_header<T: Write>(writer: &mut T, file: &ZipFileData) -> ZipResult<()> {
-    let mut block = file.block()?;
-    let stripped_extra = if let Some(extra) = &file.extra_field {
-        strip_alignment_extra_field(extra)
-    } else {
-        Vec::new()
-    };
-    let central_len = file.central_extra_field_len();
-    let zip64_extra_field_block = Zip64ExtendedInformation::central_header(
-        file.uncompressed_size,
-        file.compressed_size,
-        file.header_start,
-    );
-    let zip64_block_len = if let Some(zip64) = zip64_extra_field_block {
-        zip64.full_size()
-    } else {
-        0
-    };
-    let total_extra_len = zip64_block_len + stripped_extra.len() + central_len;
-    block.extra_field_length = u16::try_from(total_extra_len)
-        .map_err(|_| invalid!("Extra field length in central directory exceeds 64KiB"))?;
-
-    block.write(writer)?;
-    // file name
-    writer.write_all(&file.file_name_raw)?;
-    // extra field
-    if let Some(zip64_extra_field) = zip64_extra_field_block {
-        writer.write_all(&zip64_extra_field.serialize())?;
-    }
-    if !stripped_extra.is_empty() {
-        writer.write_all(&stripped_extra)?;
-    }
-    if let Some(central_extra_field) = &file.central_extra_field {
-        writer.write_all(central_extra_field)?;
-    }
-    // file comment
-    writer.write_all(file.file_comment.as_bytes())?;
-
-    Ok(())
-}
-
-fn strip_alignment_extra_field(extra_field: &[u8]) -> Vec<u8> {
+pub(crate) fn strip_alignment_extra_field(extra_field: &[u8], remove_zip64: bool) -> Vec<u8> {
     let mut new_extra = Vec::with_capacity(extra_field.len());
     let mut cursor = 0;
     while cursor + 4 <= extra_field.len() {
@@ -2476,7 +2543,9 @@ fn strip_alignment_extra_field(extra_field: &[u8]) -> Vec<u8> {
             break;
         }
 
-        if tag != UsedExtraField::DataStreamAlignment as u16 {
+        if tag != UsedExtraField::DataStreamAlignment.as_u16()
+            && !(tag == UsedExtraField::Zip64ExtendedInfo.as_u16() && remove_zip64)
+        {
             new_extra.extend_from_slice(&extra_field[cursor..cursor + 4 + len]);
         }
         cursor += 4 + len;
@@ -2485,38 +2554,6 @@ fn strip_alignment_extra_field(extra_field: &[u8]) -> Vec<u8> {
         new_extra.extend_from_slice(&extra_field[cursor..]);
     }
     new_extra
-}
-
-fn update_local_zip64_extra_field<T: Write + Seek>(
-    writer: &mut T,
-    file: &mut ZipFileData,
-) -> ZipResult<()> {
-    let block = Zip64ExtendedInformation::local_header(
-        file.large_file,
-        file.uncompressed_size,
-        file.compressed_size,
-    )
-    .ok_or(invalid!(
-        "Attempted to update a nonexistent ZIP64 extra field"
-    ))?;
-
-    let zip64_extra_field_start = file.header_start
-        + size_of::<ZipLocalEntryBlock>() as u64
-        + file.file_name_raw.len() as u64;
-
-    writer.seek(SeekFrom::Start(zip64_extra_field_start))?;
-    let block = block.serialize();
-    writer.write_all(&block)?;
-
-    let Some(ref mut extra_field) = file.extra_field else {
-        return Err(invalid!(
-            "update_aes_extra_data called on a file that has no extra-data field"
-        ));
-    };
-    let extra_field = Arc::make_mut(extra_field);
-    extra_field[..block.len()].copy_from_slice(&block);
-
-    Ok(())
 }
 
 /// Wrapper around a [Write] implementation that implements the [Seek] trait, but where seeking
@@ -2583,12 +2620,13 @@ impl<W: Write> Seek for StreamWriter<W> {
 #[allow(unknown_lints)] // needless_update is new in clippy pre 1.29.0
 #[allow(clippy::needless_update)] // So we can use the same FileOptions decls with and without zopfli_buffer_size
 #[allow(clippy::octal_escapes)] // many false positives in converted fuzz cases
-mod test {
+mod tests {
     use super::{ExtendedFileOptions, FileOptions, FullFileOptions, ZipWriter};
     use crate::CompressionMethod::Stored;
     use crate::compression::CompressionMethod;
+    use crate::datetime::DateTime;
     use crate::result::ZipResult;
-    use crate::types::{DateTime, System};
+    use crate::types::System;
     use crate::write::EncryptWith::ZipCrypto;
     use crate::write::SimpleFileOptions;
     use crate::zipcrypto::ZipCryptoKeys;
@@ -2608,7 +2646,7 @@ mod test {
     #[test]
     fn write_empty_zip() {
         let mut writer = ZipWriter::new(Cursor::new(Vec::new()));
-        writer.set_comment("ZIP");
+        writer.set_comment("ZIP").unwrap();
         let result = writer.finish().unwrap();
         assert_eq!(result.get_ref().len(), 25);
         assert_eq!(
@@ -3248,7 +3286,7 @@ mod test {
             255, 255, 255, 255, 255, 16,
         ]
         .into_boxed_slice();
-        writer.set_raw_comment(comment);
+        writer.set_raw_comment(comment).unwrap();
         let options = SimpleFileOptions::default()
             .compression_method(Stored)
             .with_alignment(11823);
@@ -4042,14 +4080,16 @@ mod test {
     #[test]
     fn test_fuzz_crash_2024_06_18() -> ZipResult<()> {
         let mut writer = ZipWriter::new(Cursor::new(Vec::new()));
-        writer.set_raw_comment(Box::<[u8]>::from([
-            80, 75, 5, 6, 255, 255, 255, 255, 255, 255, 80, 75, 5, 6, 255, 255, 255, 255, 255, 255,
-            13, 0, 13, 13, 13, 13, 13, 255, 255, 255, 255, 255, 255, 255, 255,
-        ]));
+        writer
+            .set_raw_comment(Box::<[u8]>::from([
+                80, 75, 5, 6, 255, 255, 255, 255, 255, 255, 80, 75, 5, 6, 255, 255, 255, 255, 255,
+                255, 13, 0, 13, 13, 13, 13, 13, 255, 255, 255, 255, 255, 255, 255, 255,
+            ]))
+            .unwrap();
         let sub_writer = {
             let mut writer = ZipWriter::new(Cursor::new(Vec::new()));
             writer.set_flush_on_finish_file(false);
-            writer.set_raw_comment(Box::new([]));
+            writer.set_raw_comment(Box::new([])).unwrap();
             writer
         };
         writer.merge_archive(sub_writer.finish_into_readable()?)?;
@@ -4062,7 +4102,7 @@ mod test {
     fn test_fuzz_crash_2024_06_18a() -> ZipResult<()> {
         let mut writer = ZipWriter::new(Cursor::new(Vec::new()));
         writer.set_flush_on_finish_file(false);
-        writer.set_raw_comment(Box::<[u8]>::from([]));
+        writer.set_raw_comment(Box::<[u8]>::from([])).unwrap();
         let sub_writer = {
             let mut writer = ZipWriter::new(Cursor::new(Vec::new()));
             writer.set_flush_on_finish_file(false);
@@ -4136,7 +4176,7 @@ mod test {
     fn test_fuzz_crash_2024_06_18b() -> ZipResult<()> {
         let mut writer = ZipWriter::new(Cursor::new(Vec::new()));
         writer.set_flush_on_finish_file(true);
-        writer.set_raw_comment([0].into());
+        writer.set_raw_comment([0].into())?;
         writer = ZipWriter::new_append(writer.finish_into_readable()?.into_inner())?;
         assert_eq!(writer.get_raw_comment()[0], 0);
         let options = FileOptions {
@@ -4207,7 +4247,7 @@ mod test {
         writer.deep_copy_file_from_path("", "copy")?;
         writer.abort_file()?;
         writer.set_flush_on_finish_file(false);
-        writer.set_raw_comment([255, 0].into());
+        writer.set_raw_comment([255, 0].into())?;
         writer.abort_file()?;
         assert_eq!(writer.get_raw_comment(), [255, 0]);
         writer = ZipWriter::new_append(writer.finish_into_readable()?.into_inner())?;
@@ -4252,7 +4292,7 @@ mod test {
         writer = ZipWriter::new_append(writer.finish()?)?;
         writer.deep_copy_file_from_path(LONG_PATH, "oo\0\0\0")?;
         writer.abort_file()?;
-        writer.set_raw_comment([33].into());
+        writer.set_raw_comment([33].into())?;
         let archive = writer.finish_into_readable()?;
         writer = ZipWriter::new_append(archive.into_inner())?;
         assert!(writer.get_raw_comment().starts_with(&[33]));
