@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AST_NODE_TYPES, ESLintUtils} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
+import {AST_NODE_TYPES as Node, ESLintUtils} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 import type {TSESTree} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 import assert from 'node:assert';
 
@@ -75,13 +75,13 @@ export const litElementTemplateStructure = ESLintUtils.RuleCreator.withoutDocs<
           const expression = node.expressions[i];
           assert.ok(expression);
 
-          if (expression.type !== AST_NODE_TYPES.MemberExpression) {
+          if (expression.type !== Node.MemberExpression) {
             // Ignore the following pattern for now.
             // @dragenter="${this.dragAndDropHandler_?.handleDragEnter}"
             return;
           }
 
-          if (expression.object.type !== AST_NODE_TYPES.ThisExpression) {
+          if (expression.object.type !== Node.ThisExpression) {
             // Ignore the following pattern for now.
             // @dragenter="${this.dragAndDropHandler_.handleDragEnter}"
             return;

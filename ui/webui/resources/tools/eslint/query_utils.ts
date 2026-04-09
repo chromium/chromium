@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {TSESTree} from '/third_party/node/node_modules/@typescript-eslint/types/dist/index.js';
-import {AST_NODE_TYPES} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
+import {AST_NODE_TYPES as Node} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 import esquery from '/third_party/node/node_modules/esquery/dist/esquery.esm.min.js';
 import ts from '/third_party/node/node_modules/typescript/lib/typescript.js';
 import assert from 'node:assert';
@@ -25,13 +25,13 @@ export const POLYMER_ELEMENT_EXTENDS_MIXIN_SELECTOR =
 
 export function isCrLitElementSubclass(
     node: TSESTree.ClassDeclaration, programNode: TSESTree.Program): boolean {
-  assert.ok(node.type === AST_NODE_TYPES.ClassDeclaration);
+  assert.ok(isType(node, Node.ClassDeclaration));
 
   if (!node.superClass) {
     return false;
   }
 
-  if (node.superClass.type === AST_NODE_TYPES.Identifier) {
+  if (isType(node.superClass, Node.Identifier)) {
     if (node.superClass.name === 'CrLitElement') {
       // Case1: 'MyElement extends CrLitElement {...}'
       return true;
@@ -47,7 +47,7 @@ export function isCrLitElementSubclass(
     return matchingNodes.length > 0;
   }
 
-  if (node.superClass.type === AST_NODE_TYPES.CallExpression) {
+  if (isType(node.superClass, Node.CallExpression)) {
     // Case3: 'MyElement extends SomeMixin(SomeOtherMixin(CrLitElement)) {...}'
     const selector = esquery.parse(CR_LIT_ELEMENT_EXTENDS_MIXIN_SELECTOR);
     const matchingNodes = esquery.match(node.superClass, selector);
@@ -59,13 +59,13 @@ export function isCrLitElementSubclass(
 
 export function isPolymerElementSubclass(
     node: TSESTree.ClassDeclaration, programNode: TSESTree.Program): boolean {
-  assert.ok(node.type === AST_NODE_TYPES.ClassDeclaration);
+  assert.ok(isType(node, Node.ClassDeclaration));
 
   if (!node.superClass) {
     return false;
   }
 
-  if (node.superClass.type === AST_NODE_TYPES.Identifier) {
+  if (isType(node.superClass, Node.Identifier)) {
     if (node.superClass.name === 'PolymerElement') {
       // Case1: 'MyElement extends PolymerElement {...}'
       return true;
@@ -81,7 +81,7 @@ export function isPolymerElementSubclass(
     return matchingNodes.length > 0;
   }
 
-  if (node.superClass.type === AST_NODE_TYPES.CallExpression) {
+  if (isType(node.superClass, Node.CallExpression)) {
     // Case3: 'MyElement extends
     // SomeMixin(SomeOtherMixin(PolymerElement)) {...}'
     const selector = esquery.parse(POLYMER_ELEMENT_EXTENDS_MIXIN_SELECTOR);
@@ -92,12 +92,17 @@ export function isPolymerElementSubclass(
   return false;
 }
 
-export function isIdentifier(node: TSESTree.Node): node is TSESTree.Identifier {
-  return node.type === AST_NODE_TYPES.Identifier;
+export function isIdentifier(node: TSESTree.Node) {
+  return isType(node, Node.Identifier);
 }
 
-export function isLiteral(node: TSESTree.Node): node is TSESTree.Literal {
-  return node.type === AST_NODE_TYPES.Literal;
+export function isLiteral(node: TSESTree.Node) {
+  return isType(node, Node.Literal);
+}
+
+export function isType<T extends Node>(
+    node: TSESTree.Node, type: T): node is Extract<TSESTree.Node, {type: T}> {
+  return node.type === type;
 }
 
 export function dashCaseToCamelCase(string: string): string {
@@ -117,8 +122,7 @@ export function extractClassImport(
     node: TSESTree.FunctionDeclarationWithName,
     programNode: TSESTree.Program): ClassImportInfo {
   assert.ok(
-      node.type === AST_NODE_TYPES.FunctionDeclaration &&
-      node.id.name === 'getHtml');
+      isType(node, Node.FunctionDeclaration) && node.id.name === 'getHtml');
   const paramSelector = esquery.parse('Identifier[name="this"]');
   const matchingNodes =
       esquery.match(node, paramSelector) as TSESTree.Identifier[];

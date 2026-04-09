@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AST_NODE_TYPES, ESLintUtils} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
+import {AST_NODE_TYPES as Node, ESLintUtils} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 import type {TSESTree} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 import assert from 'node:assert';
 
-import {getLitPropertyType, isCrLitElementSubclass, isIdentifier} from './query_utils.js';
+import {getLitPropertyType, isCrLitElementSubclass, isIdentifier, isType} from './query_utils.js';
 
 type Options = [];
 type MessageIds = 'missingAccessorKeyword'|'extraAccessorKeyword'|
@@ -70,11 +70,11 @@ export const litPropertyAccessorRule = ESLintUtils.RuleCreator.withoutDocs<
         }
 
         assert.ok(litProperties);
-        assert.ok(node.value.type === AST_NODE_TYPES.ObjectExpression);
+        assert.ok(isType(node.value, Node.ObjectExpression));
         assert.ok(isIdentifier(node.key));
 
         const typeProp = node.value.properties.find(p => {
-          assert.ok(p.type === AST_NODE_TYPES.Property);
+          assert.ok(isType(p, Node.Property));
           assert.ok(isIdentifier(p.key));
           return p.key.name === 'type';
         }) as TSESTree.Property |

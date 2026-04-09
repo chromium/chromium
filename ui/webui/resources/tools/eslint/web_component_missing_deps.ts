@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AST_NODE_TYPES, ESLintUtils} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
+import {AST_NODE_TYPES as Node, ESLintUtils} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 import type {TSESLint, TSESTree} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 import type * as ts from '/third_party/node/node_modules/typescript/lib/typescript.js';
 import assert from 'node:assert';
 import path from 'node:path';
 
-import {extractClassImport} from './query_utils.js';
+import {extractClassImport, isType} from './query_utils.js';
 
 type Options = [];
 type MessageIds = 'missingImportStatement'|'missingImportStatementWithLazyLoad';
@@ -44,7 +44,7 @@ export const webComponentMissingDeps = ESLintUtils.RuleCreator.withoutDocs<
           .filter(
               (node: TSESTree.ProgramStatement):
                   node is TSESTree.ImportDeclaration =>
-                  node.type === AST_NODE_TYPES.ImportDeclaration &&
+                  isType(node, Node.ImportDeclaration) &&
                   node.specifiers.length === 0)
           .map(node => node.source.value);
     }

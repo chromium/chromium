@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AST_NODE_TYPES, ESLintUtils} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
+import {AST_NODE_TYPES as Node, ESLintUtils} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 import type {TSESTree} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
+
+import {isType} from './query_utils.js';
 
 type Options = [];
 type MessageIds = 'noMixedTypeAndValueImports';
@@ -33,8 +35,8 @@ export const noMixedTypeAndValueImports =
 
             const specifiers = node.specifiers;
             const hasTypeSpecifier = specifiers.some(
-                s => s.type === AST_NODE_TYPES.ImportSpecifier &&
-                    s.importKind === 'type');
+                s =>
+                    isType(s, Node.ImportSpecifier) && s.importKind === 'type');
 
             if (!hasTypeSpecifier) {
               return;
@@ -43,7 +45,7 @@ export const noMixedTypeAndValueImports =
             // It has at least one 'type' specifier.
             // It is mixed if it also has at least one 'value' specifier.
             const hasValueSpecifier = specifiers.some(
-                s => s.type !== AST_NODE_TYPES.ImportSpecifier ||
+                s => !isType(s, Node.ImportSpecifier) ||
                     s.importKind !== 'type');
 
             if (hasValueSpecifier) {

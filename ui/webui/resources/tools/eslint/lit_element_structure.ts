@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AST_NODE_TYPES, ESLintUtils} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
+import {AST_NODE_TYPES as Node, ESLintUtils} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 import type {TSESLint, TSESTree} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 import assert from 'node:assert';
 import path from 'node:path';
 
-import {dashCaseToCamelCase, isCrLitElementSubclass, isIdentifier, isLiteral, LIT_IMPORT_REGEX} from './query_utils.js';
+import {dashCaseToCamelCase, isCrLitElementSubclass, isIdentifier, isLiteral, isType, LIT_IMPORT_REGEX} from './query_utils.js';
 
 // The order in which boilerplate and lifecycle CrLitElement methods should
 // be defined.
@@ -83,10 +83,10 @@ class ClassInfo {
     assert.ok(node.argument);
 
     switch (node.argument.type) {
-      case AST_NODE_TYPES.Literal:
+      case Node.Literal:
         this.domName = node.argument.value as string;
         return;
-      case AST_NODE_TYPES.TSAsExpression:
+      case Node.TSAsExpression:
         // Handle case where 'return 'foo-bar' as const;' is encountered.
         assert.ok(isLiteral(node.argument.expression));
         this.domName = node.argument.expression.value as string;
@@ -110,7 +110,7 @@ class ClassInfo {
     const arg0 = node.arguments[0]!;
     const arg1 = node.arguments[1]!;
 
-    const arg0Correct = arg0.type === AST_NODE_TYPES.MemberExpression &&
+    const arg0Correct = isType(arg0, Node.MemberExpression) &&
         isIdentifier(arg0.object) && arg0.object.name === this.name &&
         isIdentifier(arg0.property) && arg0.property.name === 'is';
     const arg1Correct = isIdentifier(arg1) && arg1.name === this.name;
@@ -131,7 +131,7 @@ class ClassInfo {
   }
 
   runCustomEventTypeParameterCheck(node: TSESTree.TSTypeReference) {
-    assert.ok(node.type === AST_NODE_TYPES.TSTypeReference);
+    assert.ok(isType(node, Node.TSTypeReference));
 
     const parentNode = node.parent!.parent!;
 
@@ -147,7 +147,7 @@ class ClassInfo {
       return;
     }
 
-    assert.ok(parentNode.type === AST_NODE_TYPES.VariableDeclarator);
+    assert.ok(isType(parentNode, Node.VariableDeclarator));
     assert.ok(isIdentifier(parentNode.id));
     this.context.report({
       node: parentNode,
@@ -160,18 +160,18 @@ class ClassInfo {
   }
 
   runUseFireHelperCheck(node: TSESTree.ObjectExpression) {
-    assert.ok(node.type === AST_NODE_TYPES.ObjectExpression);
+    assert.ok(isType(node, Node.ObjectExpression));
 
     const callExpressionNode = node.parent!.parent! as TSESTree.CallExpression;
-    assert.ok(callExpressionNode.type === AST_NODE_TYPES.CallExpression);
+    assert.ok(isType(callExpressionNode, Node.CallExpression));
 
     function hasProp(
         node: TSESTree.ObjectExpression, name: string,
         value: unknown): boolean {
       return node.properties.some(prop => {
-        return prop.type === AST_NODE_TYPES.Property &&
-            isIdentifier(prop.key) && prop.key.name === name &&
-            isLiteral(prop.value) && prop.value.value === value;
+        return isType(prop, Node.Property) && isIdentifier(prop.key) &&
+            prop.key.name === name && isLiteral(prop.value) &&
+            prop.value.value === value;
       });
     }
 
@@ -181,8 +181,8 @@ class ClassInfo {
 
     let propertiesLength = 2;
     if (node.properties.find(
-            prop => prop.type === AST_NODE_TYPES.Property &&
-                isIdentifier(prop.key) && prop.key.name === 'detail')) {
+            prop => isType(prop, Node.Property) && isIdentifier(prop.key) &&
+                prop.key.name === 'detail')) {
       propertiesLength++;
     }
 
@@ -570,7 +570,7 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
 
         assert.ok(node.typeAnnotation);
         const typeAnnotation = node.typeAnnotation.typeAnnotation;
-        assert.ok(typeAnnotation.type === AST_NODE_TYPES.TSTypeReference);
+        assert.ok(isType(typeAnnotation, Node.TSTypeReference));
         assert.ok(isIdentifier(typeAnnotation.typeName));
         const className = typeAnnotation.typeName.name;
 

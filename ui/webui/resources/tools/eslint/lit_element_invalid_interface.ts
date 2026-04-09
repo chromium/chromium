@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AST_NODE_TYPES, ESLintUtils} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
+import {AST_NODE_TYPES as Node, ESLintUtils} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 import type {TSESTree} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 import esquery from '/third_party/node/node_modules/esquery/dist/esquery.esm.min.js';
 import assert from 'node:assert';
 import path from 'node:path';
 
-import {dashCaseToCamelCase, isCrLitElementSubclass, isIdentifier, isLiteral} from './query_utils.js';
+import {dashCaseToCamelCase, isCrLitElementSubclass, isIdentifier, isLiteral, isType} from './query_utils.js';
 
 type Options = [];
 type MessageIds =
@@ -90,11 +90,11 @@ export const litElementInvalidInterface = ESLintUtils.RuleCreator.withoutDocs<
 
         assert.ok(interfaceNode.typeAnnotation);
         const typeAnnotation = interfaceNode.typeAnnotation.typeAnnotation;
-        assert.ok(typeAnnotation.type === AST_NODE_TYPES.TSTypeLiteral);
+        assert.ok(isType(typeAnnotation, Node.TSTypeLiteral));
         const interfaceMembers = typeAnnotation.members;
 
         for (const member of interfaceMembers) {
-          assert.ok(member.type === AST_NODE_TYPES.TSPropertySignature);
+          assert.ok(isType(member, Node.TSPropertySignature));
           if (isLiteral(member.key)) {
             context.report({
               node: member,
