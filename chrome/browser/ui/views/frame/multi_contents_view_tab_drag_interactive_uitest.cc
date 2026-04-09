@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/test_timeouts.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -255,8 +256,14 @@ class MultiContentsViewTabDragEntrypointsUiParamTest
   ~MultiContentsViewTabDragEntrypointsUiParamTest() override = default;
 };
 
+// TODO(crbug.com/500937645): Re-enable the test
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DragAndDrop DISABLED_DragAndDrop
+#else
+#define MAYBE_DragAndDrop DragAndDrop
+#endif
 IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
-                       DragAndDrop) {
+                       MAYBE_DragAndDrop) {
   // TODO(crbug.com/448651072): Remove when Weston support is added.
 #if BUILDFLAG(IS_LINUX)
   if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
@@ -289,8 +296,14 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
           true));
 }
 
+// TODO(crbug.com/500937645): Re-enable the test
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ShowAndHideDropTarget DISABLED_ShowAndHideDropTarget
+#else
+#define MAYBE_ShowAndHideDropTarget ShowAndHideDropTarget
+#endif
 IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
-                       ShowAndHideDropTarget) {
+                       MAYBE_ShowAndHideDropTarget) {
   // TODO(crbug.com/448651072): Remove when Weston support is added.
 #if BUILDFLAG(IS_LINUX)
   if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
@@ -320,8 +333,15 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
       }));
 }
 
+// TODO(crbug.com/500937645): Re-enable the test
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DragAndDropDisabledForChromePage \
+  DISABLED_DragAndDropDisabledForChromePage
+#else
+#define MAYBE_DragAndDropDisabledForChromePage DragAndDropDisabledForChromePage
+#endif
 IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
-                       DragAndDropDisabledForChromePage) {
+                       MAYBE_DragAndDropDisabledForChromePage) {
   // TODO(crbug.com/448651072): Remove when Weston support is added.
 #if BUILDFLAG(IS_LINUX)
   if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
