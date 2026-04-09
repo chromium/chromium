@@ -176,9 +176,6 @@ def validateJavaScriptAllowed(source_dir, out_dir, platform):
       'ui/webui/resources/js',
       'ui/webui/resources/mojo',
 
-      # TODO(crbug.com/496180948): Migrate to TypeScript.
-      'ui/webui/resources/tools/eslint',
-
       # TODO(crbug.com/40280699) : Migrate to TypeScript.
       'chrome/test/data/webui/media_internals',
       'content/browser/resources/media',

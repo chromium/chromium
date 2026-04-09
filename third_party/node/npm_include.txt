@@ -70,6 +70,7 @@
 @types/webrtc
 @types/webrtc/*.d.ts
 @types/wicg-file-system-access/index.d.ts
+@typescript-eslint/eslint-plugin/dist/index.d.ts
 @typescript-eslint/parser/dist/**.d.ts
 @typescript-eslint/types/dist/**.d.ts
 @typescript-eslint/utils/dist/**.d.ts
@@ -77,6 +78,7 @@
 /chai/index.js
 /chai/LICENSE
 /chai/package.json
+/eslint-plugin-lit/lib/index.d.ts
 /eslint/lib/types/**.d.ts
 /messageformat/**/**.js
 /messageformat/**/**.d.ts

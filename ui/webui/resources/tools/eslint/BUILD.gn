@@ -7,7 +7,7 @@ import("//tools/typescript/ts_library.gni")
 ts_library("build_ts") {
   tsconfig_base = "tsconfig_base.json"
   in_files = [
-    "eslint_ts.config_base.js",
+    "eslint_ts.config_base.ts",
     "inline_event_handler.ts",
     "lit_element_bindings.ts",
     "lit_element_invalid_interface.ts",
@@ -34,5 +34,9 @@ ts_library("build_ts") {
     "/third_party/node/node_modules/esquery/dist/esquery.esm.min.js|" +
         rebase_path("//third_party/node/node_modules/@types/esquery/index.d.ts",
                     target_gen_dir),
+    "/third_party/node/node_modules/eslint-plugin-lit/lib/index.js|" +
+        rebase_path(
+            "//third_party/node/node_modules/eslint-plugin-lit/lib/index.d.ts",
+            target_gen_dir),
   ]
 }
