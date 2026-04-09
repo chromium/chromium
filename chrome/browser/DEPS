@@ -301,7 +301,6 @@ include_rules = [
   "+components/safe_browsing/core/browser",
   "+components/safe_browsing/core/common",
   "+components/themes",
-  "+components/tpcd/metadata",
   "+components/safe_search_api",
   "+components/safety_check",
   "+components/saved_tab_groups/public",
