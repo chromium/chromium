@@ -80,8 +80,7 @@ class DeviceAuthenticatorChromeOSTest : public testing::Test {
         std::make_unique<MockSystemAuthenticator>();
     system_authenticator_ = system_authenticator.get();
     authenticator_ = std::make_unique<DeviceAuthenticatorChromeOS>(
-        std::move(system_authenticator), &proxy_, device_authenticator_params_,
-        local_state());
+        std::move(system_authenticator), &proxy_, device_authenticator_params_);
   }
 
   DeviceAuthenticatorChromeOS* authenticator() { return authenticator_.get(); }
@@ -226,8 +225,7 @@ TEST_F(DeviceAuthenticatorChromeOSTest, CachePinAvailability) {
       .WillOnce(RunOnceCallback<0>(true));
 
   // Trigger the caching logic
-  DeviceAuthenticatorChromeOS::CacheIfPinIsAvailable(&system_authenticator(),
-                                                     local_state());
+  DeviceAuthenticatorChromeOS::CacheIfPinIsAvailable(&system_authenticator());
 
   // Verify the preference was updated in the global local_state
   EXPECT_TRUE(local_state()->GetBoolean(

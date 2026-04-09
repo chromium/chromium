@@ -9,10 +9,6 @@
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "ui/gfx/native_ui_types.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/scoped_java_ref.h"
-#endif
-
 class Profile;
 
 namespace content {

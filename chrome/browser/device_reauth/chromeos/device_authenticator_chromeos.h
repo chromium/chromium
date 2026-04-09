@@ -6,20 +6,16 @@
 #define CHROME_BROWSER_DEVICE_REAUTH_CHROMEOS_DEVICE_AUTHENTICATOR_CHROMEOS_H_
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/device_reauth/chromeos/authenticator_chromeos.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/device_reauth/device_authenticator_common.h"
-
-class PrefService;
 
 class DeviceAuthenticatorChromeOS : public DeviceAuthenticatorCommon {
  public:
   DeviceAuthenticatorChromeOS(
       std::unique_ptr<AuthenticatorChromeOSInterface> authenticator,
       DeviceAuthenticatorProxy* proxy,
-      const device_reauth::DeviceAuthParams& params,
-      PrefService* local_state);
+      const device_reauth::DeviceAuthParams& params);
   ~DeviceAuthenticatorChromeOS() override;
 
   bool CanAuthenticateWithBiometrics() override;
@@ -32,8 +28,7 @@ class DeviceAuthenticatorChromeOS : public DeviceAuthenticatorCommon {
   void Cancel() override;
 
   static void CacheIfPinIsAvailable(
-      AuthenticatorChromeOSInterface* authenticator,
-      PrefService* local_state);
+      AuthenticatorChromeOSInterface* authenticator);
 
  private:
   // Records authentication status and executes |callback| with |success|
@@ -49,8 +44,6 @@ class DeviceAuthenticatorChromeOS : public DeviceAuthenticatorCommon {
   // Password Manager). This is used to determine the correct context and UI for
   // the Ash in-session auth dialog.
   const device_reauth::DeviceAuthSource source_;
-
-  raw_ptr<PrefService> local_state_;
 
   // Factory for weak pointers to this class.
   base::WeakPtrFactory<DeviceAuthenticatorChromeOS> weak_ptr_factory_{this};

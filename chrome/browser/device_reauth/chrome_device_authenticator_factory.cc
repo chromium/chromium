@@ -4,7 +4,6 @@
 
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/device_reauth/device_authenticator_common.h"
 
@@ -62,15 +61,14 @@ ChromeDeviceAuthenticatorFactory::GetForProfile(
       std::make_unique<AuthenticatorMac>(), proxy, params);
 #elif BUILDFLAG(IS_WIN)
   auto device_authenticator = std::make_unique<DeviceAuthenticatorWin>(
-      std::make_unique<AuthenticatorWin>(window), proxy, params);
+      std::make_unique<AuthenticatorWin>(), proxy, params);
 #elif BUILDFLAG(IS_CHROMEOS)
   auto device_authenticator = std::make_unique<DeviceAuthenticatorChromeOS>(
-      std::make_unique<AuthenticatorChromeOS>(), proxy, params,
-      g_browser_process->local_state());
+      std::make_unique<AuthenticatorChromeOS>(), proxy, params);
 #else
-  std::unique_ptr<DeviceAuthenticator> device_authenticator = nullptr;
+  static_assert(false);
 #endif
-  return device_authenticator;
+  return std::move(device_authenticator);
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -98,15 +96,14 @@ ChromeDeviceAuthenticatorFactory::BuildServiceInstanceForBrowserContext(
   // disable biometrics while chrome is running) then standard password prompt
   // will appear.
   DeviceAuthenticatorWin::CacheIfBiometricsAvailable(
-      std::make_unique<AuthenticatorWin>(nullptr).get());
+      std::make_unique<AuthenticatorWin>().get());
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Asynchronously check for PIN availability and cache the result in a local
   // state preference.
   DeviceAuthenticatorChromeOS::CacheIfPinIsAvailable(
-      std::make_unique<AuthenticatorChromeOS>().get(),
-      g_browser_process->local_state());
+      std::make_unique<AuthenticatorChromeOS>().get());
 #endif
   return std::make_unique<DeviceAuthenticatorProxy>();
 }
