@@ -82,6 +82,7 @@
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller_impl.h"
 #include "chrome/browser/keyboard_accessory/android/payment_method_accessory_controller.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller.h"
+#include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller_impl.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view_impl.h"
 #include "chrome/browser/ui/android/autofill/autofill_cvc_save_message_delegate.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.h"
@@ -131,7 +132,10 @@ ChromePaymentsAutofillClient::ChromePaymentsAutofillClient(
       client_(CHECK_DEREF(client)),
       save_and_fill_manager_(
           std::make_unique<payments::SaveAndFillManagerImpl>(&client_.get())) {
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  touch_to_fill_payment_method_controller_ =
+      std::make_unique<TouchToFillPaymentMethodControllerImpl>(&client_.get());
+#else
   if (base::FeatureList::IsEnabled(features::kAutofillEnableOmniboxAutofill)) {
     omnibox_autofill_delegate_ =
         std::make_unique<OmniboxAutofillDelegate>(&client_.get());

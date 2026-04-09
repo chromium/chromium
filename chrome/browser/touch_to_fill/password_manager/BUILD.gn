@@ -38,6 +38,82 @@ source_set("public") {
 }
 
 if (is_android) {
+  source_set("impl") {
+    sources = [
+      "touch_to_fill_controller.cc",
+      "touch_to_fill_controller.h",
+      "touch_to_fill_controller_autofill_delegate.cc",
+      "touch_to_fill_controller_autofill_delegate.h",
+      "touch_to_fill_controller_delegate.cc",
+      "touch_to_fill_controller_delegate.h",
+      "touch_to_fill_controller_webauthn_delegate.cc",
+      "touch_to_fill_controller_webauthn_delegate.h",
+    ]
+
+    public_deps = [
+      ":factory",
+      ":public",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+
+    deps = [
+      "//base",
+      "//chrome/browser/password_manager/android:utils",
+      "//chrome/browser/password_manager/android/grouped_affiliations:public",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/touch_to_fill/password_manager/no_passkeys/android:public",
+      "//chrome/browser/webauthn",
+      "//components/device_reauth",
+      "//components/password_manager/content/browser",
+      "//components/password_manager/core/browser",
+      "//components/webauthn/android",
+      "//content/public/browser",
+      "//ui/android",
+      "//ui/gfx",
+      "//url",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+
+    sources = [
+      "touch_to_fill_controller_autofill_delegate_unittest.cc",
+      "touch_to_fill_controller_webauthn_delegate_unittest.cc",
+    ]
+
+    # In touch_to_fill_controller_webauthn_delegate_unittest.cc, test globals
+    # (const std::vector, std::u16string) have non-trivial destructors.
+    cflags_cc = [ "-Wno-exit-time-destructors" ]
+
+    deps = [
+      ":impl",
+      ":public",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/browser/password_manager/android/grouped_affiliations:public",
+      "//chrome/browser/password_manager/android/grouped_affiliations:test_utils",
+      "//chrome/browser/touch_to_fill/password_manager/no_passkeys/android:public",
+      "//chrome/browser/webauthn",
+      "//chrome/test:test_support",
+      "//components/autofill/core/common",
+      "//components/password_manager/content/browser",
+      "//components/password_manager/content/browser:test_support",
+      "//components/password_manager/core/browser",
+      "//components/password_manager/core/browser:test_support",
+      "//components/ukm:test_support",
+      "//components/webauthn/android",
+      "//components/webauthn/android:test_support",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/android",
+      "//url",
+    ]
+  }
+
   java_cpp_enum("java_enum_srcjar") {
     visibility = [ "./*" ]
     sources = [ "touch_to_fill_controller_autofill_delegate.h" ]

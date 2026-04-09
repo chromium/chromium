@@ -38,6 +38,63 @@ source_set("android") {
   ]
 }
 
+source_set("impl") {
+  sources = [
+    "touch_to_fill_delegate_android_impl.cc",
+    "touch_to_fill_delegate_android_impl.h",
+    "touch_to_fill_payment_method_controller_impl.cc",
+    "touch_to_fill_payment_method_controller_impl.h",
+  ]
+
+  public_deps = [
+    ":public",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    ":android",
+    "//base",
+    "//chrome/android:chrome_jni_headers",
+    "//chrome/browser/android:resource_mapper",
+    "//chrome/browser/ui/autofill/payments",
+    "//components/affiliations/core/browser:affiliations",
+    "//components/autofill/android:keyboard_suppressor",
+    "//components/autofill/content/browser",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
+    "//content/public/browser",
+    "//ui/android",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "touch_to_fill_delegate_android_impl_unittest.cc",
+    "touch_to_fill_payment_method_controller_unittest.cc",
+    "touch_to_fill_payment_method_quality_metrics_unittest.cc",
+  ]
+
+  deps = [
+    ":impl",
+    ":public",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ui/autofill/payments",
+    "//chrome/test:test_support",
+    "//components/autofill/content/browser",
+    "//components/autofill/content/browser:test_support",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/browser:test_support",
+    "//components/autofill/core/common",
+    "//components/autofill/core/common:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
   sources = [
