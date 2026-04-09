@@ -16,18 +16,7 @@ class CobrowseBrowserAgent : public BrowserUserData<CobrowseBrowserAgent>,
                              public CobrowseTabHelper::Delegate,
                              public TabsDependencyInstaller {
  public:
-  // Interface to be implemented by the UI layer to provide state information.
-  class UIStateProvider {
-   public:
-    virtual ~UIStateProvider() = default;
-
-    virtual bool IsTabGridVisible() = 0;
-  };
-
   ~CobrowseBrowserAgent() override;
-
-  // Sets the provider for UI state information.
-  void SetUIStateProvider(UIStateProvider* provider);
 
   // Sets the context for the Cobrowse flow.
   void SetCobrowseContext(CobrowseContext* context);
@@ -52,9 +41,6 @@ class CobrowseBrowserAgent : public BrowserUserData<CobrowseBrowserAgent>,
   friend class BrowserUserData<CobrowseBrowserAgent>;
 
   explicit CobrowseBrowserAgent(Browser* browser);
-
-  // The provider for UI state information.
-  raw_ptr<UIStateProvider> ui_state_provider_ = nullptr;
 
   // The context for the Cobrowse flow.
   __strong CobrowseContext* context_ = nil;
