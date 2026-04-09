@@ -4,19 +4,15 @@
 
 import("//build/rust/rust_bindgen.gni")
 
+source_set("log_severity") {
+  public = [ "log_severity.h" ]
+  deps = [ "//base:dcheck_is_on" ]
+  visibility = [ "*" ]
+}
+
 rust_bindgen("log_severity_bindgen") {
   header = "log_severity.h"
   cpp = true
   visibility = [ "rust_logger:*" ]
-
-  # This somewhat random `deps` entry is needed, because `log_severity.h` ends
-  # up transitively including `debug/debugging_buildflags.h` (a generated
-  # header that needs to be written first).
-  #
-  # TODO(https://crbug.com/495537792): Depend directly on a target that
-  # provides `log_severity.h`.  Today this target is `//base` and depending
-  # on it is impossible because it would lead to a circular dependency.
-  # In the future we should fix this by extracting `log_severity.h` into a
-  # separate, smaller target.
-  deps = [ "//base:debugging_buildflags" ]
+  deps = [ ":log_severity" ]
 }

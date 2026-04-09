@@ -277,7 +277,6 @@ component("base") {
     "containers/unique_ptr_adapters.h",
     "containers/vector_buffer.h",
     "critical_closure.h",
-    "dcheck_is_on.h",
     "debug/alias.cc",
     "debug/alias.h",
     "debug/asan_invalid_access.cc",
@@ -365,7 +364,6 @@ component("base") {
     "location.h",
     "logging.cc",
     "logging.h",
-    "logging/log_severity.h",
     "logging/logging_settings.h",
     "macros/concat.h",
     "macros/if.h",
@@ -1130,6 +1128,7 @@ component("base") {
     ":base_static",
     ":cfi_buildflags",
     ":clang_profiling_buildflags",
+    ":dcheck_is_on",
     ":debugging_buildflags",
     ":feature_buildflags",
     ":ios_cronet_buildflags",
@@ -1142,6 +1141,7 @@ component("base") {
     ":tracing_buildflags",
     "//base/allocator/partition_allocator:buildflags",
     "//base/allocator/partition_allocator:raw_ptr",
+    "//base/logging:log_severity",
     "//base/numerics:base_numerics",
     "//base/third_party/icu",
     "//build:chromecast_buildflags",
@@ -2601,6 +2601,12 @@ group("base_rust") {
 # A separate source_set for this header to avoid circular dependencies.
 source_set("compiler_specific") {
   public = [ "compiler_specific.h" ]
+}
+
+# A separate source_set for this header to avoid circular dependencies.
+source_set("dcheck_is_on") {
+  public = [ "dcheck_is_on.h" ]
+  deps = [ ":debugging_buildflags" ]
 }
 
 # Separate simdutf from ":base", so simdutf cannot accidentally affect the

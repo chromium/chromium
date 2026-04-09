@@ -11,23 +11,22 @@ rust_static_library("rust_logger") {
     "//third_party/rust/log/v0_4:lib",
   ]
 
-  # These somewhat random `deps` are needed, because `rust_logger.rs`
-  # contains: `include!("base/logging/rust_log_integration.h")` and it ends
-  # up transitively including `debug/debugging_buildflags.h` (a generated
-  # header that needs to be written first) as well as PartitionAlloc headers
-  # (which require specific `include_dirs` to be set up via `deps`).
+  # These somewhat random `deps` are needed, because `print_rust_log.rs`
+  # contains: `include!("base/logging/rust_logger/print_rust_log_ffi.h")` and
+  # it ends up transitively including `log_severity.h` as well as
+  # PartitionAlloc headers (which require specific `include_dirs` to be set up
+  # via `deps`).
   #
   # TODO(https://crbug.com/495537792): Depend directly on a target that
-  # provides `rust_log_integration.h`.  Today this target is `//base` and
+  # provides `print_rust_log_ffi.h`.  Today this target is `//base` and
   # depending on `//base` would create a circular dependency.  In the future we
-  # should move `rust_log_integration.h` into a separate target (which may also
+  # should move `print_rust_log_ffi.h` into a separate target (which may also
   # necessitary moving `logging::LogMessage` into a small target, as well as
-  # moving _its_ dependencies into smaller/low-layer targets).  See also
-  # https://crbug.com/406267472.
+  # moving _its_ dependencies into smaller/low-layer targets).
   deps += [
-    "//base:debugging_buildflags",
     "//base:tracing_buildflags",
     "//base/allocator/partition_allocator:raw_ptr",
+    "//base/logging:log_severity",
     "//build:chromeos_buildflags",
   ]
 
@@ -61,7 +60,7 @@ source_set("unittests") {
   sources = [ "unittests.cc" ]
   deps = [
     ":test_support",
-    "//base",
+    "//base/logging:log_severity",
     "//base/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
