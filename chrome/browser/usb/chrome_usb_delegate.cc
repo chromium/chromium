@@ -23,6 +23,7 @@
 #include "chrome/browser/usb/web_usb_chooser.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "content/public/browser/isolated_context_util.h"
 #include "content/public/browser/page.h"
@@ -31,15 +32,17 @@
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/common/features_generated.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "base/containers/fixed_flat_set.h"
 #include "chrome/common/chrome_features.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
-#endif
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 namespace {
 
@@ -62,7 +65,7 @@ UsbConnectionTracker* GetConnectionTracker(
 }
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 // These extensions can claim the smart card USB class and automatically gain
 // permissions for devices that have an interface with this class.
 constexpr auto kSmartCardPrivilegedExtensionIds =
@@ -86,12 +89,12 @@ bool DeviceHasInterfaceWithClass(
   }
   return false;
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 bool IsDevicePermissionAutoGranted(
     const url::Origin& origin,
     const device::mojom::UsbDeviceInfo& device_info) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Note: The `DeviceHasInterfaceWithClass()` call is made after checking the
   // origin, since that method call is expensive.
   if (origin.scheme() == extensions::kExtensionScheme &&
@@ -100,7 +103,7 @@ bool IsDevicePermissionAutoGranted(
                                   device::mojom::kUsbSmartCardClass)) {
     return true;
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   return false;
 }
@@ -184,7 +187,7 @@ void ChromeUsbDelegate::AdjustProtectedInterfaceClasses(
     const url::Origin& origin,
     content::RenderFrameHost* frame,
     std::vector<uint8_t>& classes) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // We only adjust interfaces for extensions here.
   if (origin.scheme() != extensions::kExtensionScheme) {
     return;
@@ -252,7 +255,7 @@ void ChromeUsbDelegate::AdjustProtectedInterfaceClasses(
   if (kSmartCardPrivilegedExtensionIds.contains(origin.host())) {
     std::erase(classes, device::mojom::kUsbSmartCardClass);
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 
 std::unique_ptr<UsbChooser> ChromeUsbDelegate::RunChooser(
@@ -266,7 +269,7 @@ std::unique_ptr<UsbChooser> ChromeUsbDelegate::RunChooser(
 
 bool ChromeUsbDelegate::PageMayUseUsb(content::Page& page) {
   content::RenderFrameHost& main_rfh = page.GetMainDocument();
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && BUILDFLAG(ENABLE_GUEST_VIEW)
   // WebViewGuests have no mechanism to show permission prompts and their
   // embedder can't grant USB access through its permissionrequest API. Also
   // since webviews use a separate StoragePartition, they must not gain access
@@ -274,7 +277,7 @@ bool ChromeUsbDelegate::PageMayUseUsb(content::Page& page) {
   if (extensions::WebViewGuest::FromRenderFrameHost(&main_rfh)) {
     return false;
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE) && BUILDFLAG(ENABLE_GUEST_VIEW)
 
   // USB permissions are scoped to a BrowserContext instead of a
   // StoragePartition, so we need to be careful about usage across
@@ -401,12 +404,12 @@ ChromeUsbDelegate::ContextObservation* ChromeUsbDelegate::GetContextObserver(
 
 bool ChromeUsbDelegate::IsServiceWorkerAllowedForOrigin(
     const url::Origin& origin) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // WebUSB is only available on extension service workers for now.
   if (origin.scheme() == extensions::kExtensionScheme) {
     return true;
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   return false;
 }
 

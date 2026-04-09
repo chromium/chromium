@@ -174,12 +174,26 @@ if (!is_android) {
 
 source_set("unit_tests") {
   testonly = true
-  sources = []
-  deps = []
+  sources = [ "chrome_usb_delegate_unittest.cc" ]
+  deps = [
+    ":usb",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//services/device/public/cpp:test_support",
+  ]
+
+  if (enable_extensions_core) {
+    deps += [
+      "//chrome/browser/extensions:test_support",
+      "//extensions/browser",
+      "//extensions/buildflags",
+    ]
+  }
 
   if (!is_android) {
     sources += [
-      "chrome_usb_delegate_unittest.cc",
       "usb_blocklist_unittest.cc",
       "usb_chooser_context_mock_device_observer.cc",
       "usb_chooser_context_mock_device_observer.h",
@@ -187,30 +201,21 @@ source_set("unit_tests") {
       "usb_chooser_controller_unittest.cc",
       "usb_policy_allowed_devices_unittest.cc",
     ]
-    deps = [
+    deps += [
       ":test_support",
-      ":usb",
-      "//base",
-      "//base/test:test_support",
       "//chrome/browser/content_settings:content_settings_factory",
-      "//chrome/browser/device_notifications:test_support",
-      "//chrome/browser/extensions:test_support",
+      "//chrome/browser/device_notifications:unit_tests",
       "//chrome/common:chrome_features",
       "//chrome/common:non_code_constants",
-      "//chrome/test:test_support",
       "//components/content_settings/core/browser",
       "//components/content_settings/core/common",
       "//components/permissions:test_support",
       "//components/prefs",
       "//components/sync_preferences:test_support",
       "//content/public/browser",
-      "//content/test:test_support",
       "//extensions:test_support",
-      "//extensions/browser",
-      "//extensions/buildflags",
       "//mojo/public/cpp/bindings",
       "//services/device/public/cpp:device_features",
-      "//services/device/public/cpp:test_support",
       "//url",
     ]
   }
