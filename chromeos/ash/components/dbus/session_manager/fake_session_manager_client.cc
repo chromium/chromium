@@ -149,6 +149,10 @@ std::string GetStubPolicyFilenamePostfix(
       DCHECK(descriptor.has_component_id());
       return kStubSigninExtensionPolicyFileNameFragment +
              descriptor.component_id();
+    // TODO (crbug.com/486888143) Remove default case once
+    // login_manager::POLICY_DOMAIN_EXTENSION_INSTALL is added and supported.
+    default:
+      return std::string();
   }
   NOTREACHED();
 }
