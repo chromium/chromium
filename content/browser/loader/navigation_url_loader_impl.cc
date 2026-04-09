@@ -1421,6 +1421,8 @@ void NavigationURLLoaderImpl::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle response_body,
     std::optional<mojo_base::BigBuffer> cached_metadata) {
+  TRACE_EVENT("navigation", "NavigationURLLoaderImpl::OnReceiveResponse",
+              perfetto::Flow::FromPointer(this));
   DCHECK(!cached_metadata);
   // TODO(https://crbug.com/434182226): Remove DUMP_WILL_BE_.
   DUMP_WILL_BE_CHECK(!loader_holder_.HasExclusiveTask());
@@ -1889,6 +1891,9 @@ void NavigationURLLoaderImpl::Clone(
 bool NavigationURLLoaderImpl::MaybeCreateLoaderForResponse(
     const network::URLLoaderCompletionStatus& status,
     network::mojom::URLResponseHeadPtr* response) {
+  TRACE_EVENT("navigation",
+              "NavigationURLLoaderImpl::MaybeCreateLoaderForResponse",
+              perfetto::Flow::FromPointer(this));
   if (!default_loader_used_) {
     return false;
   }
@@ -1981,6 +1986,8 @@ void NavigationURLLoaderImpl::ParseHeaders(
     network::mojom::URLResponseHeadPtr head,
     base::OnceCallback<void(network::mojom::URLResponseHeadPtr)> continuation,
     bool clear_parsed_headers_for_testing) {
+  TRACE_EVENT("navigation", "NavigationURLLoaderImpl::ParseHeaders",
+              perfetto::Flow::FromPointer(this));
   // As an optimization, when we know the parsed headers will be empty, we can
   // skip the network process roundtrip.
   // TODO(arthursonzogni): If there are any performance issues, consider
@@ -2393,6 +2400,8 @@ void NavigationURLLoaderImpl::NotifyResponseStarted(
     const GlobalRequestID& global_request_id,
     bool is_download,
     network::mojom::URLResponseHeadPtr response_head) {
+  TRACE_EVENT("navigation", "NavigationURLLoaderImpl::NotifyResponseStarted",
+              perfetto::Flow::FromPointer(this));
   // End "Navigation timeToResponseStarted" trace event.
   TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this),
                   "&NavigationURLLoaderImpl", static_cast<void*>(this),
