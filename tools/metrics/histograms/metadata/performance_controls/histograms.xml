@@ -15,7 +15,7 @@ each histogram. Maybe add here or add a new performance controls one
 <histograms>
 
 <histogram name="PerformanceControls.BatterySaver.BubbleAction"
-    enum="BatterySaverBubbleActionType" expires_after="2026-05-17">
+    enum="BatterySaverBubbleActionType" expires_after="2026-10-09">
   <owner>agale@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
@@ -184,7 +184,7 @@ each histogram. Maybe add here or add a new performance controls one
 
 <histogram
     name="PerformanceControls.Intervention.BackgroundTab.{ResourceType}.RateLimitedCount"
-    units="count" expires_after="2026-05-17">
+    units="count" expires_after="2026-10-09">
   <owner>stluong@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
@@ -231,7 +231,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.Intervention.DiscardedTabCount"
-    units="tabs" expires_after="2026-05-17">
+    units="tabs" expires_after="2026-10-09">
   <owner>stluong@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
@@ -329,7 +329,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.MemorySaver.SettingsChangeAggressiveness"
-    enum="MemorySaverModeAggressiveness" expires_after="2026-03-01">
+    enum="MemorySaverModeAggressiveness" expires_after="2026-10-09">
   <owner>charlesmeng@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
@@ -340,7 +340,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.MemorySaver.SettingsChangeExceptionList"
-    enum="MemorySaverModeExceptionListAction" expires_after="2026-03-01">
+    enum="MemorySaverModeExceptionListAction" expires_after="2026-10-09">
   <owner>charlesmeng@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
@@ -352,7 +352,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.MemorySaver.SettingsChangeMode"
-    enum="MemorySaverModeState" expires_after="2026-03-01">
+    enum="MemorySaverModeState" expires_after="2026-10-09">
   <owner>charlesmeng@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
