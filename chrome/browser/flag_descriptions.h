@@ -3388,7 +3388,8 @@ inline constexpr char kOmniboxContextualSuggestionsDescription[] =
 inline constexpr char kEmbeddedPermissionEnabledName[] =
     "Searchbox embedded permission dialogue";
 inline constexpr char kEmbeddedPermissionEnabledDescription[] =
-    "Enables embedded permission dialogues for New Tab Page, omnibox popup, and contextual "
+    "Enables embedded permission dialogues for New Tab Page, omnibox popup, "
+    "and contextual "
     "tasks' permission requests.";
 
 inline constexpr char kOmniboxFocusTriggersWebAndSRPZeroSuggestName[] =
@@ -8254,6 +8255,10 @@ inline constexpr char kComposeSelectionNudgeDescription[] =
 
 inline constexpr char kGlicName[] = "Glic";
 inline constexpr char kGlicDescription[] = "Enables glic";
+
+inline constexpr char kGlicAndroidSidePanelName[] = "Glic Android Side Panel";
+inline constexpr char kGlicAndroidSidePanelDescription[] =
+    "Enables the Glic side panel on Android.";
 
 inline constexpr char kGlicSelectionPromptName[] = "Glic Selection Prompt";
 inline constexpr char kGlicSelectionPromptDescription[] =

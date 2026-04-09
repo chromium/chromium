@@ -5073,6 +5073,14 @@
     "expiry_milestone": 170
   },
   {
+    "name": "glic-android-side-panel",
+    "owners": [
+      "bryantchandler@chromium.org",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "glic-bind-pinned-unbound-tab",
     "owners": [
       "basiaz@google.com",

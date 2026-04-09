@@ -10478,6 +10478,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"glic", flag_descriptions::kGlicName, flag_descriptions::kGlicDescription,
      kOsAll, FEATURE_VALUE_TYPE(features::kGlic)},
+    {"glic-android-side-panel", flag_descriptions::kGlicAndroidSidePanelName,
+     flag_descriptions::kGlicAndroidSidePanelDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kGlicAndroidSidePanel)},
     {"glic-z-order-changes", flag_descriptions::kGlicZOrderChangesName,
      flag_descriptions::kGlicZOrderChangesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGlicZOrderChanges)},
@@ -11312,7 +11315,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kTouchToSearchCalloutVariations,
                                     "TouchToSearchCallout")},
 #endif  // BUILDFLAG(IS_ANDROID)
-
 
 #if BUILDFLAG(IS_ANDROID)
     {"android-use-correct-display-work-area",

@@ -7972,6 +7972,7 @@ from previous Chrome versions.
   <int value="-2033136855" label="MessagesForAndroidPasswords:disabled"/>
   <int value="-2032870269" label="PrivacyGuideAndroid3:disabled"/>
   <int value="-2032557005" label="SurfacePolishForToolbarKillSwitch:disabled"/>
+  <int value="-2032343923" label="GlicAndroidSidePanel:enabled"/>
   <int value="-2032292269" label="ImprovedIncognitoScreenshot:enabled"/>
   <int value="-2032013236"
       label="AutofillEnforceDelaysInStrikeDatabase:disabled"/>
@@ -12910,6 +12911,7 @@ from previous Chrome versions.
   <int value="-389664522"
       label="OmniboxUIExperimentHideSteadyStateUrlPathQueryAndRefOnInteraction:enabled"/>
   <int value="-389601101" label="HelpAppAutoTriggerInstallDialog:enabled"/>
+  <int value="-389584002" label="GlicAndroidSidePanel:disabled"/>
   <int value="-389283574" label="IPH_PasswordsAccountStorage:disabled"/>
   <int value="-388869173"
       label="AccessibilityRequestScopedContentChangedEvents:enabled"/>
