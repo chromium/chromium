@@ -2394,12 +2394,8 @@ public class RootUiCoordinator
     }
 
     /** Returns the {@link BottomSheetController} Supplier for this activity. */
-    @SuppressWarnings("unchecked")
     public MonotonicObservableSupplier<BottomSheetController> getBottomSheetControllerSupplier() {
-        // This cast is ok since we're removing "Settable", and the Supplier's value actual type
-        // will remain ManagedBottomSheetController.
-        return (MonotonicObservableSupplier<BottomSheetController>)
-                (MonotonicObservableSupplier<?>) mBottomSheetControllerSupplier;
+        return SupplierUtils.upcast(mBottomSheetControllerSupplier, BottomSheetController.class);
     }
 
     /**

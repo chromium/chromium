@@ -330,6 +330,49 @@ public class ObservableSupplierImplTest {
         assertNull(mSupplier.get());
     }
 
+    @Test
+    public void testUpcast_Nullable() {
+        SettableNullableObservableSupplier<String> stringSupplier =
+                ObservableSuppliers.createNullable();
+        NullableObservableSupplier<CharSequence> charSequenceSupplier =
+                SupplierUtils.upcast(stringSupplier, CharSequence.class);
+
+        assertEquals(stringSupplier, charSequenceSupplier);
+
+        stringSupplier.set("foo");
+        assertEquals("foo", charSequenceSupplier.get());
+
+        stringSupplier.set(null);
+        assertNull(charSequenceSupplier.get());
+    }
+
+    @Test
+    public void testUpcast_Monotonic() {
+        SettableMonotonicObservableSupplier<String> stringSupplier =
+                ObservableSuppliers.createMonotonic();
+        MonotonicObservableSupplier<CharSequence> charSequenceSupplier =
+                SupplierUtils.upcast(stringSupplier, CharSequence.class);
+
+        assertEquals(stringSupplier, charSequenceSupplier);
+
+        stringSupplier.set("foo");
+        assertEquals("foo", charSequenceSupplier.get());
+    }
+
+    @Test
+    public void testUpcast_NonNull() {
+        SettableNonNullObservableSupplier<String> stringSupplier =
+                ObservableSuppliers.createNonNull("initial");
+        NonNullObservableSupplier<CharSequence> charSequenceSupplier =
+                SupplierUtils.upcast(stringSupplier, CharSequence.class);
+
+        assertEquals(stringSupplier, charSequenceSupplier);
+        assertEquals("initial", charSequenceSupplier.get());
+
+        stringSupplier.set("foo");
+        assertEquals("foo", charSequenceSupplier.get());
+    }
+
     private void checkState(
             int expectedCallCount,
             String expectedLastSuppliedString,
