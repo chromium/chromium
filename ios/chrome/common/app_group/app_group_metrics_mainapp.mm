@@ -8,6 +8,7 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "base/threading/scoped_blocking_call.h"
+#import "base/time/time.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/app_group/app_group_metrics.h"
 
@@ -15,7 +16,7 @@ namespace {
 // Delay in seconds before reporting the metrics coming from Open extensions.
 // This delay is needed to be sure the shared user default
 // is correctly synchronized.
-const int kDispatchTimeInSeconds = 2;
+constexpr base::TimeDelta kDispatchTime = base::Seconds(2);
 
 // Maximum number of outcomes reported to UMA to avoid infinite loops.
 const int kMaxNumberOfLogs = 10;
@@ -48,8 +49,7 @@ void EnableMetrics(NSString* client_id,
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     dispatch_after(
-        dispatch_time(DISPATCH_TIME_NOW,
-                      (int64_t)(kDispatchTimeInSeconds * NSEC_PER_SEC)),
+        dispatch_time(DISPATCH_TIME_NOW, kDispatchTime.InNanoseconds()),
         dispatch_get_main_queue(), ^{
           LogOpenExtensionMetrics();
         });
