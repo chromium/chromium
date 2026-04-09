@@ -6976,18 +6976,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="RequestResult" variants="Autofill.RequestResult"/>
 </histogram>
 
-<histogram name="Autofill.SaveAndFill.DialogResult"
-    enum="SaveAndFillDialogResultLegacy" expires_after="M145">
-  <owner>averina@google.com</owner>
-  <owner>siyua@chromium.org</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Obsolete metric, replaced by Autofill.SaveAndFill.DialogResult2. Records the
-    user's action in the Save and Fill dialog. Logged when the user accepts
-    (with or without providing a CVC) or cancels the dialog.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.SaveAndFill.DialogResult2"
     enum="SaveAndFillDialogResult" expires_after="2026-06-01">
   <owner>averina@google.com</owner>
