@@ -61,6 +61,7 @@
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
+#include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
@@ -853,6 +854,20 @@ void VerticalTabStripRegionView::RegionViewFocusListener::OnDidChangeFocus(
   }
 }
 
+VerticalTabStripRegionView::ClickEventHandler::ClickEventHandler(
+    VerticalTabStripRegionView* region_view)
+    : region_view_(region_view) {}
+
+void VerticalTabStripRegionView::ClickEventHandler::OnMouseEvent(
+    ui::MouseEvent* event) {
+  if (event->type() == ui::EventType::kMousePressed &&
+      region_view_->state_controller_->IsExpandOnHoverEnabled() &&
+      !region_view_->is_expanded_on_hover()) {
+    region_view_->RestartExpandOnHoverTimer(
+        tabs::kVerticalTabsExpandOnHoverClickDelay.Get());
+  }
+}
+
 views::View* VerticalTabStripRegionView::SetTabStripView(
     std::unique_ptr<views::View> view) {
   CHECK(views::IsViewClass<VerticalTabStripView>(view.get()));
@@ -1012,6 +1027,9 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState(
   // state.
   if (!state_controller_->IsCollapsed()) {
     expand_on_hover_timer_.Stop();
+    if (tabs::IsExpandOnHoverClickDelayEnabled()) {
+      RemovePreTargetHandler(&click_handler_);
+    }
     hover_card_animation_lock_.reset();
     is_expanded_on_hover_ = false;
     resize_area_->SetVisible(true);
@@ -1043,6 +1061,9 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState(
     } else {
       // If the timer is running but we shouldn't be expanding, stop the timer.
       expand_on_hover_timer_.Stop();
+      if (tabs::IsExpandOnHoverClickDelayEnabled()) {
+        RemovePreTargetHandler(&click_handler_);
+      }
       hover_card_animation_lock_.reset();
       is_expanded_on_hover_ = false;
       resize_area_->SetVisible(true);
@@ -1056,9 +1077,23 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState(
         base::BindOnce(&VerticalTabStripRegionView::AnimateExpandOnHover,
                        base::Unretained(this),
                        /*expand=*/true));
+    if (tabs::IsExpandOnHoverClickDelayEnabled()) {
+      AddPreTargetHandler(&click_handler_);
+    }
   } else if (is_expanded_on_hover_ && !should_expand &&
              keep_expanded_lock_count_ == 0) {
     AnimateExpandOnHover(/*expand=*/false);
+  }
+}
+
+void VerticalTabStripRegionView::RestartExpandOnHoverTimer(
+    const base::TimeDelta& delay) {
+  if (expand_on_hover_timer_.IsRunning()) {
+    expand_on_hover_timer_.Start(
+        FROM_HERE, delay,
+        base::BindOnce(&VerticalTabStripRegionView::AnimateExpandOnHover,
+                       base::Unretained(this),
+                       /*expand=*/true));
   }
 }
 
