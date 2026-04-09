@@ -11,6 +11,8 @@ source_set("model") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/enterprise/data_protection/model",
+    "//ios/chrome/browser/enterprise/data_protection/public:features",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/main/ui_bundled",
     "//ios/chrome/browser/reader_mode/model",
@@ -30,6 +32,9 @@ source_set("unit_tests") {
     ":model",
     "//base",
     "//base/test:test_support",
+    "//components/enterprise/data_controls/core/browser:test_support",
+    "//ios/chrome/browser/enterprise/data_protection/model",
+    "//ios/chrome/browser/enterprise/data_protection/public:features",
     "//ios/chrome/browser/main/ui_bundled",
     "//ios/chrome/browser/shared/coordinator/scene/test",
     "//ios/chrome/browser/shared/model/browser",

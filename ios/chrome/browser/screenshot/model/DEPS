@@ -1,8 +1,13 @@
 specific_include_rules = {
   # TODO(crbug.com/40820398): Remove this dependency.
   "^screenshot_delegate.mm": [
+    "+ios/chrome/browser/enterprise/data_protection/model",
     "+ios/chrome/browser/main/ui_bundled/browser_interface_provider.h",
     "+ios/chrome/browser/reader_mode/model",
+  ],
+  "^screenshot_delegate_unittest.mm": [
+    "+components/enterprise/data_controls/core/browser",
+    "+ios/chrome/browser/enterprise/data_protection/model",
   ],
 }
 
