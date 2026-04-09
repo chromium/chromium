@@ -26,7 +26,6 @@ source_set("google_services") {
   ]
   deps = [
     ":constants",
-    ":personalize_google_services",
     ":sync_error_settings_command_handler",
     "//base",
     "//components/application_locale_storage",
@@ -74,6 +73,7 @@ source_set("google_services") {
     "//ios/chrome/browser/settings/google_services/manage_accounts/coordinator",
     "//ios/chrome/browser/settings/google_services/manage_accounts/public",
     "//ios/chrome/browser/settings/google_services/manage_accounts/ui",
+    "//ios/chrome/browser/settings/google_services/personalize_google_services/coordinator",
     "//ios/chrome/browser/settings/model/sync/utils",
     "//ios/chrome/browser/settings/model/sync/utils:identity_error_util",
     "//ios/chrome/browser/settings/ui_bundled:constants",
@@ -122,35 +122,6 @@ source_set("sync_error_settings_command_handler") {
   sources = [ "sync_error_settings_command_handler.h" ]
   deps = []
   frameworks = [ "UIKit.framework" ]
-}
-
-source_set("personalize_google_services") {
-  sources = [
-    "personalize_google_services_command_handler.h",
-    "personalize_google_services_coordinator.h",
-    "personalize_google_services_coordinator.mm",
-    "personalize_google_services_view_controller.h",
-    "personalize_google_services_view_controller.mm",
-  ]
-  deps = [
-    ":constants",
-    "//base",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/settings/ui_bundled:settings_root",
-    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
-    "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/ui/list_model",
-    "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/shared/ui/table_view:utils",
-    "//ios/chrome/browser/shared/ui/table_view/cells",
-    "//ios/chrome/browser/signin/model:authentication_service",
-    "//ios/chrome/browser/signin/model:authentication_service_factory",
-    "//ios/chrome/browser/signin/model:system_identity_manager",
-    "//ios/chrome/common/ui/colors",
-    "//ui/base",
-  ]
 }
 
 source_set("constants") {
@@ -255,11 +226,9 @@ source_set("unit_tests") {
   sources = [
     "manage_sync_settings_coordinator_unittest.mm",
     "manage_sync_settings_mediator_unittest.mm",
-    "personalize_google_services_view_controller_unittest.mm",
   ]
   deps = [
     ":google_services",
-    ":personalize_google_services",
     ":sync_error_settings_command_handler",
     "//base/test:test_support",
     "//components/prefs",
@@ -274,6 +243,7 @@ source_set("unit_tests") {
     "//google_apis",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled/cells",
+    "//ios/chrome/browser/settings/google_services/personalize_google_services/ui:unit_tests",
     "//ios/chrome/browser/settings/ui_bundled/cells",
     "//ios/chrome/browser/settings/ui_bundled/google_services:constants",
     "//ios/chrome/browser/shared/model/application_context",

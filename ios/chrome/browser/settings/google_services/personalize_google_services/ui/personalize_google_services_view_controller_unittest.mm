@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/google_services/personalize_google_services_view_controller.h"
+#import "ios/chrome/browser/settings/google_services/personalize_google_services/ui/personalize_google_services_view_controller.h"
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/settings/ui_bundled/google_services/personalize_google_services_command_handler.h"
+#import "ios/chrome/browser/settings/google_services/personalize_google_services/ui/personalize_google_services_command_handler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
