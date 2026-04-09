@@ -894,6 +894,25 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Filtered weaker signals"/>
 </enum>
 
+<!-- LINT.IfChange(BringTabToFrontResult) -->
+
+<enum name="BringTabToFrontResult">
+  <int value="0" label="Success">
+    The intent was successfully dispatched to the target instance via
+    MultiWindowUtils.launchIntentInInstance.
+  </int>
+  <int value="1" label="Failed: Window Info Not Found">
+    The feature was enabled, but TabWindowInfo could not be found for the given
+    tabId.
+  </int>
+  <int value="2" label="Failed: Launch In Instance Failed">
+    The feature was enabled, windowInfo was found, but
+    MultiWindowUtils.launchIntentInInstance failed (returned false).
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/document/ChromeLauncherActivity.java:BringTabToFrontResult) -->
+
 <enum name="BrowserControlsLockReason">
   <summary>The reason why browser controls were locked.</summary>
   <int value="0" label="CHROME_URL"/>
@@ -1279,6 +1298,19 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/LauncherShortcutActivity.java:UpdateFailure) -->
+
+<!-- LINT.IfChange(LaunchInInstanceEarlyFailureReason) -->
+
+<enum name="LaunchInInstanceEarlyFailureReason">
+  <int value="0" label="Activity Not Found Or Wrong Type">
+    Activity from instanceId is not found or not a ChromeTabbedActivity.
+  </int>
+  <int value="1" label="Invalid Task ID">
+    The activity has an invalid task ID.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java:LaunchInInstanceEarlyFailureReason) -->
 
 <enum name="LightTheme">
   <int value="0" label="undefined"/>

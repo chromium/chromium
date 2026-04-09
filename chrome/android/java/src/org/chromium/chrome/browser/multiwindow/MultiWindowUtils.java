@@ -114,6 +114,12 @@ public class MultiWindowUtils implements ActivityStateListener {
             "Android.MultiInstance.NumInstances.DesktopWindow.Incognito";
     static final String HISTOGRAM_PERSISTENT_STATE_ID_VERIFICATION =
             "Android.MultiInstance.PersistAcrossReboots.IdVerification";
+    static final String HISTOGRAM_LAUNCH_IN_INSTANCE_EARLY_FAILURE =
+            "Android.Intent.LaunchInInstance.EarlyFailureReason";
+    static final String HISTOGRAM_LAUNCH_IN_INSTANCE_APP_TASK_RESULT =
+            "Android.Intent.LaunchInInstance.AppTaskStartActivity.Result";
+    static final String HISTOGRAM_LAUNCH_IN_INSTANCE_SAFE_START_RESULT =
+            "Android.Intent.LaunchInInstance.SafeStartActivity.Result";
     static final String OPEN_ADJACENTLY_PARAM = "open_adjacently";
 
     static @Nullable Integer sMaxInstancesForTesting;
@@ -1155,6 +1161,22 @@ public class MultiWindowUtils implements ActivityStateListener {
                 true);
     }
 
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    // LINT.IfChange(LaunchInInstanceEarlyFailureReason)
+    @IntDef({
+        LaunchInInstanceEarlyFailureReason.ACTIVITY_NOT_FOUND_OR_WRONG_TYPE,
+        LaunchInInstanceEarlyFailureReason.INVALID_TASK_ID,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface LaunchInInstanceEarlyFailureReason {
+        int ACTIVITY_NOT_FOUND_OR_WRONG_TYPE = 0;
+        int INVALID_TASK_ID = 1;
+        int NUM_ENTRIES = 2;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:LaunchInInstanceEarlyFailureReason)
+
     /**
      * Launch the given intent in an existing ChromeTabbedActivity instance.
      *
@@ -1164,9 +1186,21 @@ public class MultiWindowUtils implements ActivityStateListener {
      */
     public static boolean launchIntentInInstance(Intent intent, int instanceId) {
         Activity activity = getActivityById(instanceId);
-        if (!(activity instanceof ChromeTabbedActivity)) return false;
+        if (!(activity instanceof ChromeTabbedActivity)) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    HISTOGRAM_LAUNCH_IN_INSTANCE_EARLY_FAILURE,
+                    LaunchInInstanceEarlyFailureReason.ACTIVITY_NOT_FOUND_OR_WRONG_TYPE,
+                    LaunchInInstanceEarlyFailureReason.NUM_ENTRIES);
+            return false;
+        }
         int taskId = activity.getTaskId();
-        if (taskId == INVALID_TASK_ID) return false;
+        if (taskId == INVALID_TASK_ID) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    HISTOGRAM_LAUNCH_IN_INSTANCE_EARLY_FAILURE,
+                    LaunchInInstanceEarlyFailureReason.INVALID_TASK_ID,
+                    LaunchInInstanceEarlyFailureReason.NUM_ENTRIES);
+            return false;
+        }
 
         // Launch the intent in the existing activity and bring the task to foreground if it is
         // alive. AppTask.startActivity() is used to robustly bring specific tasks to the front,
@@ -1174,30 +1208,51 @@ public class MultiWindowUtils implements ActivityStateListener {
         // notification is tapped while the target activity is backgrounded (minimized).
         AppTask appTask = AndroidTaskUtils.getAppTaskFromId(activity, taskId);
         if (appTask != null) {
-            intent.setClass(ContextUtils.getApplicationContext(), activity.getClass());
-            if (isMultiInstanceApi31Enabled()) {
-                // Remove NEW_TASK to prevent the OS from spawning a duplicate instance,
-                // and strictly target the existing activity class.
-                intent.removeFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                appTask.startActivity(ContextUtils.getApplicationContext(), intent, null);
-            } else {
-                // On older Android versions or devices where multi-instance is not enabled, the OS
-                // enforces strict singleTask checks on AppTask.startActivity() and throws an
-                // exception if the task is not empty. However, since these versions do not support
-                // multiple tasks for the same ChromeTabbedActivity class, we can safely fallback
-                // to Context.startActivity() with NEW_TASK, which will inherently route to the
-                // correct task and still bypass BAL restrictions.
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                IntentUtils.safeStartActivity(ContextUtils.getApplicationContext(), intent);
-            }
-            return true;
+            Intent launchIntent = new Intent(intent);
+            launchIntent.setClass(ContextUtils.getApplicationContext(), activity.getClass());
+            boolean success =
+                    isMultiInstanceApi31Enabled()
+                            ? launchIntentViaAppTask(launchIntent, appTask)
+                            : launchIntentViaSafeStartActivity(launchIntent);
+            if (success) return true;
         }
 
-        // Fallback: If the OS lost the AppTask record but our Activity is still alive,
+        // Fallback: If the OS lost the AppTask record or startActivity failed,
         // manually inject the intent and attempt a best effort move to front.
         ((ChromeTabbedActivity) activity).onNewIntent(intent);
         ApiCompatibilityUtils.moveTaskToFront(activity, taskId, 0);
         return true;
+    }
+
+    private static boolean launchIntentViaAppTask(Intent launchIntent, AppTask appTask) {
+        // Remove NEW_TASK to prevent the OS from spawning a duplicate instance,
+        // and strictly target the existing activity class.
+        launchIntent.removeFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        try {
+            appTask.startActivity(ContextUtils.getApplicationContext(), launchIntent, null);
+            RecordHistogram.recordBooleanHistogram(
+                    HISTOGRAM_LAUNCH_IN_INSTANCE_APP_TASK_RESULT, true);
+            return true;
+        } catch (Exception e) {
+            RecordHistogram.recordBooleanHistogram(
+                    HISTOGRAM_LAUNCH_IN_INSTANCE_APP_TASK_RESULT, false);
+            return false;
+        }
+    }
+
+    private static boolean launchIntentViaSafeStartActivity(Intent launchIntent) {
+        // On older Android versions or devices where multi-instance is not enabled, the OS
+        // enforces strict singleTask checks on AppTask.startActivity() and throws an
+        // exception if the task is not empty. However, since these versions do not support
+        // multiple tasks for the same ChromeTabbedActivity class, we can safely fallback
+        // to Context.startActivity() with NEW_TASK, which will inherently route to the
+        // correct task and still bypass BAL restrictions.
+        launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        boolean success =
+                IntentUtils.safeStartActivity(ContextUtils.getApplicationContext(), launchIntent);
+        RecordHistogram.recordBooleanHistogram(
+                HISTOGRAM_LAUNCH_IN_INSTANCE_SAFE_START_RESULT, success);
+        return success;
     }
 
     /**

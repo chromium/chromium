@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.document;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -31,6 +32,7 @@ import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -53,6 +55,13 @@ public class ChromeLauncherActivityTest {
 
     private static final int TEST_TAB_ID = 100;
     private static final int TEST_WINDOW_ID = 2;
+
+    private static final String HISTOGRAM_BRING_TAB_TO_FRONT_RESULT =
+            "Android.Intent.BringTabToFront.Result";
+    private static final String HISTOGRAM_LAUNCH_IN_INSTANCE_EARLY_FAILURE =
+            "Android.Intent.LaunchInInstance.EarlyFailureReason";
+    private static final String HISTOGRAM_LAUNCH_IN_INSTANCE_APP_TASK_RESULT =
+            "Android.Intent.LaunchInInstance.AppTaskStartActivity.Result";
 
     // We use a real subclass so we can attach it to ApplicationStatus
     public static class MockChromeTabbedActivity extends ChromeTabbedActivity {
@@ -138,6 +147,66 @@ public class ChromeLauncherActivityTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.MOVE_TO_FRONT_IN_LAUNCH_INTENT_DISPATCHER})
+    public void testBringTabToFront_FailsWhenWindowInfoNotFound() {
+        Intent intent =
+                IntentHandler.createTrustedBringTabToFrontIntent(
+                        TEST_TAB_ID, IntentHandler.BringToFrontSource.NOTIFICATION);
+
+        when(mTabWindowManager.getTabWindowInfoById(TEST_TAB_ID)).thenReturn(null);
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                HISTOGRAM_BRING_TAB_TO_FRONT_RESULT,
+                                ChromeLauncherActivity.BringTabToFrontResult
+                                        .FAILED_WINDOW_INFO_NOT_FOUND)
+                        .build();
+
+        ActivityController<TestChromeLauncherActivity> launcherActivityController =
+                Robolectric.buildActivity(TestChromeLauncherActivity.class, intent);
+        ChromeLauncherActivity launcherActivity = launcherActivityController.create().get();
+
+        Assert.assertTrue(launcherActivity.isFinishing());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.MOVE_TO_FRONT_IN_LAUNCH_INTENT_DISPATCHER})
+    public void testBringTabToFront_FailsWhenActivityNotFound() {
+        Intent intent =
+                IntentHandler.createTrustedBringTabToFrontIntent(
+                        TEST_TAB_ID, IntentHandler.BringToFrontSource.NOTIFICATION);
+
+        TabWindowInfo tabWindowInfo =
+                new TabWindowInfo(TEST_WINDOW_ID, mTabModelSelector, mTabModel, mTab);
+        when(mTabWindowManager.getTabWindowInfoById(TEST_TAB_ID)).thenReturn(tabWindowInfo);
+        when(mTabWindowManager.getIdForWindow(any())).thenReturn(TEST_WINDOW_ID);
+
+        // Remove the activity from MultiWindowUtils so it fails to find it.
+        MultiWindowUtils.setActivityByWindowIdForTesting(TEST_WINDOW_ID, null);
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                HISTOGRAM_LAUNCH_IN_INSTANCE_EARLY_FAILURE,
+                                MultiWindowUtils.LaunchInInstanceEarlyFailureReason
+                                        .ACTIVITY_NOT_FOUND_OR_WRONG_TYPE)
+                        .expectIntRecord(
+                                HISTOGRAM_BRING_TAB_TO_FRONT_RESULT,
+                                ChromeLauncherActivity.BringTabToFrontResult
+                                        .FAILED_LAUNCH_IN_INSTANCE)
+                        .build();
+
+        ActivityController<TestChromeLauncherActivity> launcherActivityController =
+                Robolectric.buildActivity(TestChromeLauncherActivity.class, intent);
+        ChromeLauncherActivity launcherActivity = launcherActivityController.create().get();
+
+        Assert.assertTrue(launcherActivity.isFinishing());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.MOVE_TO_FRONT_IN_LAUNCH_INTENT_DISPATCHER})
     public void testBringTabToFront_Fallback_CallsMoveTaskToFront() {
         Intent intent =
                 IntentHandler.createTrustedBringTabToFrontIntent(
@@ -151,6 +220,13 @@ public class ChromeLauncherActivityTest {
         // Ensure AppTask fallback is triggered by returning no matching tasks.
         when(mActivityManager.getAppTasks()).thenReturn(Collections.emptyList());
 
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                HISTOGRAM_BRING_TAB_TO_FRONT_RESULT,
+                                ChromeLauncherActivity.BringTabToFrontResult.SUCCESS)
+                        .build();
+
         ActivityController<TestChromeLauncherActivity> launcherActivityController =
                 Robolectric.buildActivity(TestChromeLauncherActivity.class, intent);
         ChromeLauncherActivity launcherActivity = launcherActivityController.create().get();
@@ -163,6 +239,8 @@ public class ChromeLauncherActivityTest {
 
         // Verify we finished the dispatcher activity
         Assert.assertTrue(launcherActivity.isFinishing());
+
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -184,6 +262,14 @@ public class ChromeLauncherActivityTest {
         when(mockTask.getTaskInfo()).thenReturn(taskInfo);
         when(mActivityManager.getAppTasks()).thenReturn(List.of(mockTask));
 
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(HISTOGRAM_LAUNCH_IN_INSTANCE_APP_TASK_RESULT, true)
+                        .expectIntRecord(
+                                HISTOGRAM_BRING_TAB_TO_FRONT_RESULT,
+                                ChromeLauncherActivity.BringTabToFrontResult.SUCCESS)
+                        .build();
+
         ActivityController<TestChromeLauncherActivity> launcherActivityController =
                 Robolectric.buildActivity(TestChromeLauncherActivity.class, intent);
         ChromeLauncherActivity launcherActivity = launcherActivityController.create().get();
@@ -199,5 +285,56 @@ public class ChromeLauncherActivityTest {
 
         // Verify we finished the dispatcher activity
         Assert.assertTrue(launcherActivity.isFinishing());
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.MOVE_TO_FRONT_IN_LAUNCH_INTENT_DISPATCHER})
+    public void testBringTabToFront_AppTaskException_CallsMoveTaskToFront() {
+        Intent intent =
+                IntentHandler.createTrustedBringTabToFrontIntent(
+                        TEST_TAB_ID, IntentHandler.BringToFrontSource.NOTIFICATION);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        TabWindowInfo tabWindowInfo =
+                new TabWindowInfo(TEST_WINDOW_ID, mTabModelSelector, mTabModel, mTab);
+        when(mTabWindowManager.getTabWindowInfoById(TEST_TAB_ID)).thenReturn(tabWindowInfo);
+        when(mTabWindowManager.getIdForWindow(any())).thenReturn(TEST_WINDOW_ID);
+
+        // Mock an AppTask that throws an exception.
+        AppTask mockTask = mock(AppTask.class);
+        ActivityManager.RecentTaskInfo taskInfo = new ActivityManager.RecentTaskInfo();
+        taskInfo.taskId = mTabbedActivity.getTaskId();
+        when(mockTask.getTaskInfo()).thenReturn(taskInfo);
+        when(mActivityManager.getAppTasks()).thenReturn(List.of(mockTask));
+        doThrow(new RuntimeException("API failure"))
+                .when(mockTask)
+                .startActivity(any(), any(), any());
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(HISTOGRAM_LAUNCH_IN_INSTANCE_APP_TASK_RESULT, false)
+                        .expectIntRecord(
+                                HISTOGRAM_BRING_TAB_TO_FRONT_RESULT,
+                                ChromeLauncherActivity.BringTabToFrontResult.SUCCESS)
+                        .build();
+
+        ActivityController<TestChromeLauncherActivity> launcherActivityController =
+                Robolectric.buildActivity(TestChromeLauncherActivity.class, intent);
+        ChromeLauncherActivity launcherActivity = launcherActivityController.create().get();
+
+        // Verify fallback was called
+        Assert.assertTrue(mTabbedActivity.mOnNewIntentCalled);
+        verify(mActivityManager).moveTaskToFront(mTabbedActivity.getTaskId(), 0);
+
+        // Verify the original intent was NOT mutated (still has the flag we added)
+        Assert.assertEquals(
+                Intent.FLAG_ACTIVITY_NEW_TASK, intent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        // Verify we finished the dispatcher activity
+        Assert.assertTrue(launcherActivity.isFinishing());
+
+        histogramWatcher.assertExpected();
     }
 }

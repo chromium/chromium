@@ -2989,6 +2989,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Intent.BringTabToFront.Result"
+    enum="BringTabToFrontResult" expires_after="2026-12-31">
+  <owner>philyan@chromium.org</owner>
+  <owner>skavuluru@google.com</owner>
+  <summary>
+    Records the outcome of attempting to bring a tabbed activity to the front
+    using a multi-window intent. This helps track the success rate and failure
+    reasons of the MoveToFrontInLaunchIntentDispatcher feature.
+  </summary>
+</histogram>
+
 <histogram name="Android.Intent.HasNonSpoofablePackageName" enum="Boolean"
     expires_after="2024-12-01">
   <owner>katzz@google.com</owner>
@@ -3043,6 +3054,31 @@ chromium-metrics-reviews@google.com.
     on Android, and should only happen when background/early navigations
     redirect.
   </summary>
+</histogram>
+
+<histogram name="Android.Intent.LaunchInInstance.EarlyFailureReason"
+    enum="LaunchInInstanceEarlyFailureReason" expires_after="2026-12-31">
+  <owner>philyan@chromium.org</owner>
+  <owner>skavuluru@google.com</owner>
+  <summary>
+    Records the reason for early failure when launching an intent into an
+    existing multi-window instance. Recorded only when an early failure occurs.
+  </summary>
+</histogram>
+
+<histogram name="Android.Intent.LaunchInInstance.{Api}.Result"
+    enum="BooleanSuccess" expires_after="2026-12-31">
+  <owner>philyan@chromium.org</owner>
+  <owner>skavuluru@google.com</owner>
+  <summary>
+    Records the success or failure of attempting to bring a task to the front
+    using the {Api} API path.
+  </summary>
+  <token key="Api">
+    <variant name="AppTaskStartActivity" summary="AppTask.startActivity()"/>
+    <variant name="SafeStartActivity"
+        summary="IntentUtils.safeStartActivity()"/>
+  </token>
 </histogram>
 
 <histogram name="Android.Intent.MainFrameIntentLaunch"
