@@ -12,6 +12,19 @@ This file defines enums used in Critical User Journey histograms.
 
 <enums>
 
+<!-- Define the steps for your journeys below! -->
+
+<!-- LINT.IfChange(ClearBrowsingHistoryJourneySteps) -->
+
+<enum name="ClearBrowsingHistoryJourneySteps">
+  <int value="1" label="Open clear browsing data dialog via accelerator"/>
+  <int value="2" label="Activate app menu toolbar button"/>
+  <int value="3" label="Show clear browsing data settings dialog"/>
+  <int value="4" label="Clear browsing data history event"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h:ClearBrowsingHistoryJourneySteps) -->
+
 <!-- LINT.IfChange(CriticalUserJourneyResult) -->
 
 <enum name="CriticalUserJourneyResult">
@@ -21,8 +34,6 @@ This file defines enums used in Critical User Journey histograms.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/metrics/critical_user_journeys/critical_user_journey_session.h:JourneyResult) -->
-
-<!-- Define the steps for your journeys below! -->
 
 <!-- LINT.IfChange(PinExtensionJourneySteps) -->
 

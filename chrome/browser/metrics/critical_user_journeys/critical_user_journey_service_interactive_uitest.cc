@@ -10,6 +10,8 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
+#include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_service.h"
@@ -23,12 +25,15 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -37,6 +42,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/download_test_observer.h"
 #include "ui/actions/actions.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interaction_sequence.h"
 
@@ -51,6 +57,9 @@ namespace {
 BASE_FEATURE(kAppMenuJourney, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kBranchingJourney, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAnyOfStartJourney, base::FEATURE_ENABLED_BY_DEFAULT);
+
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTabElementId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kClearBrowsingDataPage);
 
 const std::string GetMetricJourneyPrefix(const base::Feature& feature) {
   return base::StrCat({"CriticalUserJourney.", feature.name});
@@ -300,7 +309,7 @@ IN_PROC_BROWSER_TEST_F(CriticalUserJourneyServiceInteractiveTest,
 }
 
 class RealCriticalUserJourneyServiceInteractiveTest
-    : public InteractiveBrowserTest {
+    : public WebUiInteractiveTestMixin<InteractiveBrowserTest> {
  private:
   base::test::ScopedFeatureList feature_list_;
 
@@ -308,7 +317,7 @@ class RealCriticalUserJourneyServiceInteractiveTest
   RealCriticalUserJourneyServiceInteractiveTest() {
     feature_list_.InitWithFeatures(
         {kCriticalUserJourneyService, kViewDownloadedFileJourney,
-         kViewDownloadedFileFromAppMenuJourney},
+         kViewDownloadedFileFromAppMenuJourney, kClearBrowsingHistoryJourney},
         {});
   }
   ~RealCriticalUserJourneyServiceInteractiveTest() override = default;
@@ -322,10 +331,6 @@ class RealCriticalUserJourneyServiceInteractiveTest
     embedded_test_server()->ServeFilesFromDirectory(
         base::PathService::CheckedGet(chrome::DIR_TEST_DATA));
     ASSERT_TRUE(embedded_test_server()->Start());
-  }
-
-  void TearDownOnMainThread() override {
-    InteractiveBrowserTest::TearDownOnMainThread();
   }
 
   // The Download Bubble UI is not used on ChromeOS.
@@ -454,5 +459,89 @@ IN_PROC_BROWSER_TEST_F(RealCriticalUserJourneyServiceInteractiveTest,
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+IN_PROC_BROWSER_TEST_F(RealCriticalUserJourneyServiceInteractiveTest,
+                       ClearBrowsingHistoryViaAppMenu) {
+  base::HistogramTester histograms;
+
+  const std::string step_reached = base::StrCat(
+      {GetMetricJourneyPrefix(kClearBrowsingHistoryJourney), ".StepReached"});
+  const std::string result = base::StrCat(
+      {GetMetricJourneyPrefix(kClearBrowsingHistoryJourney), ".Result"});
+
+  const WebContentsInteractionTestUtil::DeepQuery kDeleteBrowsingHistoryButton =
+      {"settings-ui",
+       "settings-main",
+       "settings-privacy-page-index",
+       "settings-privacy-page",
+       "settings-clear-browsing-data-dialog-v2",
+       "#deleteButton"};
+
+  RunTestSequence(
+      InstrumentTab(kFirstTabElementId),
+      PressButton(kToolbarAppMenuButtonElementId),
+      SelectMenuItem(AppMenuModel::kClearBrowsingDataMenuItem),
+      WaitForHide(AppMenuModel::kClearBrowsingDataMenuItem),
+      WaitForWebContentsReady(
+          kFirstTabElementId,
+          chrome::GetSettingsUrl(chrome::kClearBrowserDataSubPage)),
+      InstrumentTab(kClearBrowsingDataPage),
+      ClickElement(kClearBrowsingDataPage, kDeleteBrowsingHistoryButton),
+      WaitForEvent(kBrowserViewElementId,
+                   browsing_data_important_sites_util::
+                       kClearBrowsingDataHistoryEventId));
+
+  histograms.ExpectBucketCount(step_reached, 2, 1);  // App Menu Clicked
+  histograms.ExpectBucketCount(step_reached, 3,
+                               1);  // Clear browsing dialog shown
+  histograms.ExpectBucketCount(step_reached, 4,
+                               1);  // Clear browsing data history event
+  histograms.ExpectUniqueSample(
+      result, CriticalUserJourneySession::JourneyResult::kCompleted, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(RealCriticalUserJourneyServiceInteractiveTest,
+                       ClearBrowsingHistoryViaKeyboardShortcut) {
+  base::HistogramTester histograms;
+
+  const std::string step_reached = base::StrCat(
+      {GetMetricJourneyPrefix(kClearBrowsingHistoryJourney), ".StepReached"});
+  const std::string result = base::StrCat(
+      {GetMetricJourneyPrefix(kClearBrowsingHistoryJourney), ".Result"});
+
+  const WebContentsInteractionTestUtil::DeepQuery kDeleteBrowsingHistoryButton =
+      {"settings-ui",
+       "settings-main",
+       "settings-privacy-page-index",
+       "settings-privacy-page",
+       "settings-clear-browsing-data-dialog-v2",
+       "#deleteButton"};
+
+  ui::Accelerator clear_browsing_data_accelerator;
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser());
+  ASSERT_TRUE(browser_view->GetAccelerator(IDC_CLEAR_BROWSING_DATA,
+                                           &clear_browsing_data_accelerator));
+
+  RunTestSequence(
+      InstrumentTab(kFirstTabElementId),
+      SendAccelerator(kBrowserViewElementId, clear_browsing_data_accelerator),
+      WaitForWebContentsReady(
+          kFirstTabElementId,
+          chrome::GetSettingsUrl(chrome::kClearBrowserDataSubPage)),
+      InstrumentTab(kClearBrowsingDataPage),
+      ClickElement(kClearBrowsingDataPage, kDeleteBrowsingHistoryButton),
+      WaitForEvent(kBrowserViewElementId,
+                   browsing_data_important_sites_util::
+                       kClearBrowsingDataHistoryEventId));
+
+  histograms.ExpectBucketCount(step_reached, 1, 1);  // App Menu Clicked
+  histograms.ExpectBucketCount(step_reached, 3,
+                               1);  // Clear browsing dialog shown
+  histograms.ExpectBucketCount(step_reached, 4,
+                               1);  // Clear browsing data history event
+  histograms.ExpectUniqueSample(
+      result, CriticalUserJourneySession::JourneyResult::kCompleted, 1);
+}
 
 }  // namespace metrics

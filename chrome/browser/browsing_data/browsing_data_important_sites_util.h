@@ -7,12 +7,18 @@
 
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "ui/base/interaction/element_tracker.h"
 
 namespace content {
 class BrowsingDataFilterBuilder;
 }
 
 namespace browsing_data_important_sites_util {
+
+DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(
+    kOpenClearBrowsingDataDialogViaAcceleratorEventId);
+DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kClearBrowsingDataHistoryEventId);
+DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kShowClearBrowsingDataDialogEventId);
 
 // Deletes the types protected by Important Sites with the filter from
 // |filter_builder|, the other types are deleted completely.

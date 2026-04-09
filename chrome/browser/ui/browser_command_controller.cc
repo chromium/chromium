@@ -25,6 +25,7 @@
 #include "chrome/browser/actor/ui/actor_overlay_web_view.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/features.h"
@@ -53,6 +54,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -134,6 +136,9 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/devtools/devtools_policy_dialog.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -1162,6 +1167,18 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       } else {
         ShowClearBrowsingDataDialog(browser_->GetBrowserForOpeningWebUi());
       }
+#if !BUILDFLAG(IS_ANDROID)
+      ui::ElementContext context =
+          BrowserElements::From(browser_)->GetContext();
+      ui::TrackedElement* const tracked_element =
+          ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+              kBrowserViewElementId, context);
+      if (tracked_element) {
+        ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+            tracked_element, browsing_data_important_sites_util::
+                                 kShowClearBrowsingDataDialogEventId);
+      }
+#endif  // !BUILDFLAG(IS_ANDROID)
       break;
     }
     case IDC_IMPORT_SETTINGS:

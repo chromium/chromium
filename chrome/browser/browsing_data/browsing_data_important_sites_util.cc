@@ -7,6 +7,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
+#include "ui/base/interaction/element_tracker.h"
 
 namespace {
 
@@ -59,6 +60,11 @@ void BrowsingDataTaskObserver::OnBrowsingDataRemoverDone(
 }  // namespace
 
 namespace browsing_data_important_sites_util {
+
+DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(
+    kOpenClearBrowsingDataDialogViaAcceleratorEventId);
+DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kClearBrowsingDataHistoryEventId);
+DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kShowClearBrowsingDataDialogEventId);
 
 void Remove(uint64_t remove_mask,
             uint64_t origin_mask,

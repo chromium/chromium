@@ -61,6 +61,7 @@ source_set("browsing_data") {
     "//content/public/browser",
     "//device/fido",
     "//extensions/buildflags",
+    "//ui/base/interaction",
   ]
 }
 

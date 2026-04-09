@@ -24,10 +24,12 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
@@ -53,6 +55,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
 
@@ -311,9 +314,9 @@ void ClearBrowsingDataHandler::OnClearingTaskFinished(
   result.Set("showHistoryNotice", show_history_notice);
   result.Set("showPasswordsNotice", show_passwords_notice);
 
+  tabs::TabInterface* const tab =
+      tabs::TabInterface::MaybeGetFromContents(web_ui()->GetWebContents());
   if (toast_features::IsEnabled(toast_features::kClearBrowsingDataToast)) {
-    tabs::TabInterface* tab =
-        tabs::TabInterface::MaybeGetFromContents(web_ui()->GetWebContents());
     if (tab && tab->IsActivated()) {
       CHECK(tab->GetBrowserWindowInterface());
       ToastController* const toast_controller =
@@ -323,6 +326,18 @@ void ClearBrowsingDataHandler::OnClearingTaskFinished(
             ToastParams(ToastId::kClearBrowsingData));
       }
     }
+  }
+
+  if (tab && data_types.find(BrowsingDataType::HISTORY) != data_types.end()) {
+    ui::ElementContext context =
+        BrowserElements::From(tab->GetBrowserWindowInterface())->GetContext();
+    ui::TrackedElement* const browser_element =
+        ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+            kBrowserViewElementId, context);
+    CHECK(browser_element);
+    ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+        browser_element,
+        browsing_data_important_sites_util::kClearBrowsingDataHistoryEventId);
   }
 
   ResolveJavascriptCallback(base::Value(webui_callback_id), result);
