@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.pdf.PdfInfo;
 import org.chromium.chrome.browser.pdf.PdfUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.rlz.RevenueStats;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
@@ -1816,12 +1817,29 @@ class TabImpl implements Tab {
                     param.setInitiatorOrigin(initiatorOrigin);
                 }
                 loadUrl(param);
-            } else {
+            } else if (!maybeLaunchActivity(url)) {
                 showRenderedPage();
             }
         }
 
         setLastNavigationCommittedTimestampMillis(System.currentTimeMillis());
+    }
+
+    private boolean maybeLaunchActivity(GURL url) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_SETTINGS_URL)) return false;
+
+        String scheme = url.getScheme();
+        if (!UrlConstants.CHROME_SCHEME.equals(scheme)) return false;
+
+        String host = url.getHost();
+        if (UrlConstants.SETTINGS_HOST.equals(host)) {
+            // TODO(crbug.com/456164910): Use the URL path to open deeplinks into Settings.
+            SettingsNavigationFactory.createSettingsNavigation()
+                    .startSettings(assumeNonNull(getActivity()));
+            goBack(); // Keep showing the previous contents in the tab.
+            return true;
+        }
+        return false;
     }
 
     /**

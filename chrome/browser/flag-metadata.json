@@ -343,6 +343,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "android-settings-url",
+    "owners": [ "jinsukkim@chromium.org", "clank-app-team@google.com" ],
+    "expiry_milestone": 152
+  },
+  {
     "name": "android-setup-list",
     "owners": [ "agazal@google.com", "clank-app-team@google.com" ],
     "expiry_milestone": 150

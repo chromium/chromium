@@ -74,6 +74,7 @@ public class UrlConstants {
     public static final String GRID_TAB_SWITCHER_URL = "chrome-native://gts/";
 
     public static final String HISTORY_HOST = "history";
+    public static final String SETTINGS_HOST = "settings";
 
     public static final String CONTEXTUAL_TASKS_HOST = "contextual-tasks-page";
     public static final String CONTEXTUAL_TASKS_WEBUI_HOST = "contextual-tasks";

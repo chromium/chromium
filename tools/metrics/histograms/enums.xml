@@ -9134,6 +9134,7 @@ from previous Chrome versions.
       label="OmniboxMostVisitedTilesTitleWrapAround:disabled"/>
   <int value="-1642482834" label="AutofillEnableBuyNowPayLater:disabled"/>
   <int value="-1642043665" label="SearchEngineUnconditionalDialog:disabled"/>
+  <int value="-1642036457" label="AndroidSettingsUrl:disabled"/>
   <int value="-1641832607" label="DragToPinTabs:enabled"/>
   <int value="-1641656402"
       label="RTCDisallowPlanBOutsideDeprecationTrial:disabled"/>
@@ -12072,6 +12073,7 @@ from previous Chrome versions.
   <int value="-674265959" label="AppPreloadService:enabled"/>
   <int value="-674185337" label="GlicZOrderChanges:enabled"/>
   <int value="-673804828" label="EnablePlayStoreAppSearch:disabled"/>
+  <int value="-673589612" label="AndroidSettingsUrl:enabled"/>
   <int value="-673149604" label="RelatedSearches:enabled"/>
   <int value="-672212526"
       label="ClientSideDetectionShowScamVerdictWarningAndroid:enabled"/>

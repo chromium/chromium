@@ -1251,6 +1251,10 @@ inline constexpr char kAndroidSettingsContainmentName[] =
 inline constexpr char kAndroidSettingsContainmentDescription[] =
     "Enables the Android Settings Containment feature.";
 
+inline constexpr char kAndroidSettingsUrlName[] = "Android Settings URL";
+inline constexpr char kAndroidSettingsUrlDescription[] =
+    "Enables the use of chrome://settings on Android.";
+
 inline constexpr char kAndroidSetupListName[] = "Android Setup List";
 inline constexpr char kAndroidSetupListDescription[] =
     "Enables the Android Setup List feature.";
