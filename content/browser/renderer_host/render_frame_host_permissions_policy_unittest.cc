@@ -188,7 +188,7 @@ TEST_F(RenderFrameHostPermissionsPolicyTest, HeaderAndContainerPolicy) {
   SetContainerPolicy(parent, child, kDefaultSelfFeature,
                      {std::string(kOrigin2), std::string(kOrigin3)});
 
-  // The feature should be enabled in kOrigin2, kOrigin3 but not kOrigin4.
+  // The feature should be enabled in kOrigin2 but not kOrigin3 or kOrigin4.
   SimulateNavigation(&child, GURL(kOrigin2));
   EXPECT_TRUE(child->IsFeatureEnabled(kDefaultSelfFeature));
   SimulateNavigation(&child, GURL(kOrigin3));
