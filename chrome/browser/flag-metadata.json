@@ -1347,7 +1347,7 @@
       "awado@google.com",
       "jacastro@chromium.org",
       "chrome-counter-abuse-alerts@google.com"],
-      "expiry_milestone": 148
+      "expiry_milestone": 150
   },
   {
     "name": "bundled-security-settings-secure-dns-v2",
