@@ -134,24 +134,6 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
       viz::RasterContextProvider* raster_context_provider,
       viz::SharedImageFormat::ChannelFormat channel_format);
 
-  // Copy the contents of |video_frame| to |texture| of |destination_gl| using
-  // an intermediate SharedImage.
-  //
-  // The format of |video_frame| must be VideoFrame::NATIVE_TEXTURE.
-  static bool CopyVideoFrameTexturesToGLTextureViaIntermediateSI(
-      viz::RasterContextProvider* raster_context_provider,
-      gpu::gles2::GLES2Interface* destination_gl,
-      scoped_refptr<VideoFrame> video_frame,
-      VideoFrameSharedImageCache* rgb_si_cache,
-      unsigned int target,
-      unsigned int texture,
-      unsigned int internal_format,
-      unsigned int format,
-      unsigned int type,
-      int level,
-      SkAlphaType dst_alpha_type,
-      GrSurfaceOrigin dst_origin);
-
   // Copy the CPU-side YUV contents of |video_frame| to texture |texture| in
   // context |destination_gl|.
   // |level|, |internal_format|, |type| specify target texture |texture|.

@@ -39,7 +39,7 @@ class MEDIA_EXPORT VideoFrameSharedImageCache {
     kCreatedNewSharedImage,
   };
 
-  struct CachedData {
+  struct MEDIA_EXPORT CachedData {
     CachedData(scoped_refptr<gpu::ClientSharedImage> shared_image,
                const gpu::SyncToken& sync_token,
                Status status);
