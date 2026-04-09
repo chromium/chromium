@@ -57,9 +57,4 @@ void BrowserIOThreadDelegate::BindToCurrentThread() {
   sequence_manager_->EnableCrashKeys("io_scheduler_async_stack");
 }
 
-void BrowserIOThreadDelegate::AddTaskObserver(base::TaskObserver* observer) {
-  DCHECK(sequence_manager_);
-  sequence_manager_->AddTaskObserver(observer);
-}
-
 }  // namespace content

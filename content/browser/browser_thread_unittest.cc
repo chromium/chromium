@@ -75,10 +75,6 @@ class SequenceManagerThreadDelegate : public base::Thread::Delegate {
         base::MessagePump::Create(base::MessagePumpType::DEFAULT));
   }
 
-  void AddTaskObserver(base::TaskObserver* observer) override {
-    ui_sequence_manager_->AddTaskObserver(observer);
-  }
-
  private:
   std::unique_ptr<base::sequence_manager::SequenceManager> ui_sequence_manager_;
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;

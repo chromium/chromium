@@ -63,11 +63,6 @@ InProcessRendererThread::ThreadDelegate::GetDefaultTaskRunner() {
   return web_thread_scheduler_->DeprecatedDefaultTaskRunner();
 }
 
-void InProcessRendererThread::ThreadDelegate::AddTaskObserver(
-    base::TaskObserver* observer) {
-  NOTREACHED();
-}
-
 void InProcessRendererThread::ThreadDelegate::BindToCurrentThread() {
   // InProcessRendererThread doesn't support being restarted.
   DCHECK(!web_thread_scheduler_);

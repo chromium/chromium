@@ -26,7 +26,6 @@ class InProcessRendererThread : public base::Thread {
     explicit ThreadDelegate(InProcessRendererThread* outer);
     ~ThreadDelegate() override = default;
     scoped_refptr<base::SingleThreadTaskRunner> GetDefaultTaskRunner() override;
-    void AddTaskObserver(base::TaskObserver* observer) override;
     void BindToCurrentThread() override;
 
    private:
