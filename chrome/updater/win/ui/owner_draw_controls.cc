@@ -573,48 +573,76 @@ LRESULT CustomProgressBarCtrl::OnPaint(UINT, WPARAM, LPARAM, BOOL& handled) {
   // ensures the empty areas of the progress bar show the gradient.
   DrawParentBackground(m_hWnd, dc.m_hDC, window_rect);
 
+  // Draw at 4x scale to get smooth edges when scaling back down.
+  constexpr int kScale = 4;
+  CRect high_res_rect(0, 0, client_rect.Width() * kScale,
+                      client_rect.Height() * kScale);
+
+  WTL::CDC dc_hi_res;
+  dc_hi_res.CreateCompatibleDC(dc.m_hDC);
+
+  WTL::CBitmap bmp_hi_res;
+  bmp_hi_res.CreateCompatibleBitmap(dc.m_hDC, high_res_rect.Width(),
+                                    high_res_rect.Height());
+  const HBITMAP old_bmp = dc_hi_res.SelectBitmap(bmp_hi_res);
+
+  // Fill the high-res background with the fill color to avoid bleeding at the
+  // edges.
+  dc_hi_res.FillSolidRect(&high_res_rect, empty_fill_color_);
+
   // Setup GDI objects for rounded drawing. `NULL_PEN` prevents the thin black
   // border around the shapes.
   const HPEN old_pen =
       dc.SelectPen(static_cast<HPEN>(::GetStockObject(NULL_PEN)));
-  const int corner_size = client_rect.Height();
+  const int corner_size = high_res_rect.Height();
 
   // Draw the Background Track.
   WTL::CBrush bg_brush = ::CreateSolidBrush(empty_fill_color_);
   const HBRUSH old_brush = dc.SelectBrush(bg_brush);
-  dc.RoundRect(&client_rect, {corner_size, corner_size});
+  dc_hi_res.RoundRect(&high_res_rect, {corner_size, corner_size});
 
   // Calculate Progress Width.
   const int kBarWidth = kMaxPosition - kMinPosition;
-  if (kBarWidth <= 0) {
-    return 0;
+  if (kBarWidth > 0) {
+    const LONG bar_rect_right =
+        high_res_rect.left +
+        high_res_rect.Width() * (current_position_ - kMinPosition) / kBarWidth;
+
+    CRect progress_rect = high_res_rect;
+    progress_rect.right = std::min(bar_rect_right, high_res_rect.right);
+
+    // Handle Marquee Style animation.
+    if (GetStyle() & PBS_MARQUEE) {
+      const LONG bar_rect_left =
+          bar_rect_right - (high_res_rect.Width() * kMarqueeWidth / kBarWidth);
+      progress_rect.left = std::max(bar_rect_left, high_res_rect.left);
+    }
+
+    // Draw the fill.
+    if (!progress_rect.IsRectEmpty() &&
+        progress_rect.Width() > (corner_size / 2)) {
+      WTL::CBrush fill_brush = ::CreateSolidBrush(bar_color_);
+      dc_hi_res.SelectBrush(fill_brush);
+      dc_hi_res.RoundRect(&progress_rect, {corner_size, corner_size});
+    }
   }
 
-  const LONG bar_rect_right =
-      client_rect.left +
-      client_rect.Width() * (current_position_ - kMinPosition) / kBarWidth;
+  // `HALFTONE` creates a smooth anti-aliased look.
+  ::SetStretchBltMode(dc.m_hDC, HALFTONE);
 
-  CRect progress_rect = client_rect;
-  progress_rect.right = std::min(bar_rect_right, client_rect.right);
+  // Required for HALFTONE to work correctly.
+  ::SetBrushOrgEx(dc.m_hDC, 0, 0, NULL);
 
-  // Handle Marquee Style animation.
-  if (GetStyle() & PBS_MARQUEE) {
-    const LONG bar_rect_left =
-        bar_rect_right - (client_rect.Width() * kMarqueeWidth / kBarWidth);
-    progress_rect.left = std::max(bar_rect_left, client_rect.left);
-  }
-
-  // Draw the Fill.
-  if (!progress_rect.IsRectEmpty() &&
-      progress_rect.Width() > (corner_size / 2)) {
-    WTL::CBrush fill_brush = ::CreateSolidBrush(bar_color_);
-    dc.SelectBrush(fill_brush);
-    dc.RoundRect(&progress_rect, {corner_size, corner_size});
-  }
+  // Scale the high-res bar back down to the screen.
+  dc.StretchBlt(client_rect.left, client_rect.top, client_rect.Width(),
+                client_rect.Height(), dc_hi_res.m_hDC, 0, 0,
+                high_res_rect.Width(), high_res_rect.Height(), SRCCOPY);
 
   // Cleanup.
-  dc.SelectBrush(old_brush);
-  dc.SelectPen(old_pen);
+  dc_hi_res.SelectBrush(old_brush);
+  dc_hi_res.SelectPen(old_pen);
+  dc_hi_res.SelectBitmap(old_bmp);
+
   return 0;
 }
 
