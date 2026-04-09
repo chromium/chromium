@@ -204,11 +204,6 @@ void ActorLoginDelegateImpl::AttemptLogin(
   action_sequence_delegate_ = std::move(action_sequence_delegate);
   action_sequence_subscription_ = {};
 
-  PasswordManagerDriver* driver = driver_supplier_.Run(&GetWebContents());
-  CHECK(driver);
-  PasswordManagerInterface* password_manager = driver->GetPasswordManager();
-  CHECK(password_manager);
-
   const url::Origin origin =
       GetWebContents().GetPrimaryMainFrame()->GetLastCommittedOrigin();
   mqls_logger->SetDomainAndLanguage(
@@ -249,6 +244,11 @@ void ActorLoginDelegateImpl::AttemptLogin(
     siwg_controller_->StartFederatedLogin(std::move(metrics_helper_));
     return;
   }
+
+  PasswordManagerDriver* driver = driver_supplier_.Run(&GetWebContents());
+  CHECK(driver);
+  PasswordManagerInterface* password_manager = driver->GetPasswordManager();
+  CHECK(password_manager);
   credential_filler_ = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission, client_, mqls_logger,
       attempt_login_tool_start_time,
@@ -343,6 +343,18 @@ void ActorLoginDelegateImpl::OnAttemptLoginCompleted(
   CHECK(pending_attempt_login_done_callback_);
   credential_filler_.reset();
 
+  if (last_attempted_credential_->type == CredentialType::kFederated) {
+    ProcessFederatedResult(result);
+  }
+
+  // Record metrics by resetting the metrics helper.
+  metrics_helper_.reset();
+
+  std::move(pending_attempt_login_done_callback_).Run(std::move(result));
+}
+
+void ActorLoginDelegateImpl::ProcessFederatedResult(
+    base::expected<LoginStatusResult, ActorLoginError> result) {
   // `kRequiresButtonClick` means that the federated login is not yet done.
   // We need to keep the controller alive so it can receive the result of the
   // login and store permissions if needed. It will be cleaned up together with
@@ -354,19 +366,43 @@ void ActorLoginDelegateImpl::OnAttemptLoginCompleted(
         action_sequence_delegate_->RegisterActionSequenceEnded(
             base::BindOnce(&ActorLoginDelegateImpl::OnActionSequenceEnded,
                            weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    siwg_controller_.reset();
+    return;
   }
 
-  // Record metrics by resetting the metrics helper.
-  metrics_helper_.reset();
-
-  std::move(pending_attempt_login_done_callback_).Run(std::move(result));
+  // If the federated login doesn't require a button click, there is no
+  // action sequence to wait for, so we can clean up the controller and
+  // clean up conflicting permissions if needed.
+  if (result.has_value() &&
+      result.value() == LoginStatusResult::kSuccessFederated &&
+      found_conflicting_permissions_ &&
+      siwg_controller_->should_store_permission() &&
+      base::FeatureList::IsEnabled(
+          password_manager::features::
+              kActorLoginConflictingPermissionCleanup)) {
+    ClearConflictingPermissions(std::nullopt);
+    found_conflicting_permissions_ = false;
+  }
+  last_attempted_credential_.reset();
+  siwg_controller_.reset();
 }
 
 void ActorLoginDelegateImpl::OnActionSequenceEnded(bool success) {
+  bool should_store_permission = siwg_controller_->should_store_permission();
   siwg_controller_.reset();
   action_sequence_subscription_ = {};
+  if (last_attempted_credential_->type != CredentialType::kFederated) {
+    // The last login attempt wasn't a federated login, so this result
+    // doesn't correspond to the `last_attempted_credential_`.
+    return;
+  }
+  if (success && found_conflicting_permissions_ && should_store_permission &&
+      base::FeatureList::IsEnabled(
+          password_manager::features::
+              kActorLoginConflictingPermissionCleanup)) {
+    ClearConflictingPermissions(std::nullopt);
+  }
+  found_conflicting_permissions_ = false;
+  last_attempted_credential_.reset();
 }
 
 void ActorLoginDelegateImpl::OnActorTaskStateChanged(actor::ActorTask& task) {

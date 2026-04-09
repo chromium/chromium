@@ -310,14 +310,14 @@ class ActorLoginDelegateImplTest : public ChromeRenderViewHostTestHarness {
   NiceMock<MockPasswordManager> mock_password_manager_;
   NiceMock<MockPasswordFormCache> mock_form_cache_;
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers_;
-  MockPasswordManagerDriver mock_driver_;
+  NiceMock<MockPasswordManagerDriver> mock_driver_;
   FakeFormFetcher form_fetcher_;
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_{
       {.disable_server_communication = true}};
-  MockActorLoginQualityLogger mock_mqls_logger;
+  NiceMock<MockActorLoginQualityLogger> mock_mqls_logger;
 
   // Tab setup
-  MockBrowserWindowInterface mock_browser_window_interface_;
+  NiceMock<MockBrowserWindowInterface> mock_browser_window_interface_;
   TestTabStripModelDelegate test_tab_strip_model_delegate_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
   ui::UnownedUserDataHost user_data_host_;
@@ -913,11 +913,21 @@ TEST_F(ActorLoginDelegateImplTest,
   ASSERT_TRUE(get_creds_future.Get().has_value());
 
   EXPECT_CALL(mock_password_manager_, AddObserver(delegate_.get()));
+  EXPECT_CALL(mock_driver_, FillField)
+      .WillRepeatedly(WithArg<3>(&PostResponse<true>));
 
+  Credential credential = CreateTestCredential(kTestUsername, url, origin);
+  credential.type = CredentialType::kPassword;
+  credential.source_site_or_app =
+      base::UTF8ToUTF16(url.GetWithEmptyPath().spec());
+
+  base::test::TestFuture<LoginStatusResultOrError> attempt_login_future;
   delegate_->AttemptLogin(credential, /*should_store_permission=*/true,
                           mqls_logger(), base::TimeTicks::Now(),
-                          base::DoNothing(),
+                          attempt_login_future.GetCallback(),
                           /*action_sequence_delegate=*/nullptr);
+
+  ASSERT_TRUE(attempt_login_future.Wait());
 
   // Now simulate a successful login notification.
   password_manager::PasswordForm form;
@@ -1213,6 +1223,335 @@ TEST_F(ActorLoginDelegateImplTest, RemovedOnUserTakeover) {
   // Verify that the FederatedEmbedderLoginRequest is no longer set.
   EXPECT_EQ(nullptr,
             content::webid::FederatedEmbedderLoginRequest::Get(test_contents));
+}
+
+TEST_F(ActorLoginDelegateImplTest,
+       SuccessfulFederatedLoginClearsConflictingPermissions) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {password_manager::features::kActorLogin,
+       password_manager::features::kActorLoginConflictingPermissionCleanup,
+       password_manager::features::kActorLoginFederatedClickFromActor},
+      /*disabled_features=*/{});
+
+  // Setup mock cleaning service
+  auto* mock_cleaning_service =
+      static_cast<MockActorLoginPermissionCleaningService*>(
+          ActorLoginPermissionCleaningServiceFactory::GetInstance()
+              ->SetTestingFactoryAndUse(
+                  profile(),
+                  base::BindRepeating([](content::BrowserContext* context)
+                                          -> std::unique_ptr<KeyedService> {
+                    return std::make_unique<
+                        NiceMock<MockActorLoginPermissionCleaningService>>();
+                  })));
+
+  GURL url = GURL(kTestUrl);
+  url::Origin origin = url::Origin::Create(url);
+  SetUpConflictingPermissions(url, kTestUsername);
+
+  // Set up a signin form on the page to force the getter into calling
+  // the hooked fake fetcher.
+  const autofill::FormData form_data = CreateSigninFormData(url);
+  form_managers_.push_back(
+      CreateFormManagerWithParsedForm(origin, form_data, mock_driver_));
+
+  // Mock driver methods that are called by `GetCredentials` to check
+  // whether there is a signin form on the page.
+  ON_CALL(mock_driver_, GetLastCommittedOrigin())
+      .WillByDefault(ReturnRef(origin));
+  ON_CALL(mock_driver_, IsInPrimaryMainFrame).WillByDefault(Return(true));
+  ON_CALL(mock_driver_, IsNestedWithinFencedFrame).WillByDefault(Return(false));
+  ON_CALL(mock_driver_, CheckViewAreaVisible)
+      .WillByDefault(WithArg<1>(&PostResponse<true>));
+  SetUpActorCredentialFillerDeps();
+
+  EXPECT_CALL(mock_form_cache_, GetFormManagers())
+      .WillRepeatedly(Return(base::span(form_managers_)));
+
+  // Call `GetCredentials` first to find conflicting permissions.
+  base::test::TestFuture<CredentialsOrError> get_creds_future;
+  delegate_->GetCredentials(/*has_sign_in_with_google_button=*/false,
+                            mqls_logger(), get_creds_future.GetCallback());
+
+  // Wait until the async visibility checks complete and the fetcher registers
+  // as a consumer.
+  ASSERT_TRUE(
+      base::test::RunUntil([this]() { return form_fetcher_.HasConsumers(); }));
+
+  form_fetcher_.NotifyFetchCompleted();
+  ASSERT_TRUE(get_creds_future.Get().has_value());
+
+  // Setup ActorKeyedServiceFake
+  auto* actor_service = static_cast<actor::ActorKeyedServiceFake*>(
+      actor::ActorKeyedServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(), base::BindRepeating([](content::BrowserContext* context)
+                                             -> std::unique_ptr<KeyedService> {
+            return std::make_unique<actor::ActorKeyedServiceFake>(
+                Profile::FromBrowserContext(context));
+          })));
+
+  actor::TaskId task_id = actor_service->CreateTaskForTesting();
+  actor::ActorTask* task = actor_service->GetTask(task_id);
+  content::WebContents* test_contents = tab_strip_model_->GetWebContentsAt(0);
+  base::RunLoop loop;
+  task->AddTab(tabs::TabInterface::GetFromContents(test_contents)->GetHandle(),
+               base::BindLambdaForTesting(
+                   [&](actor::mojom::ActionResultPtr result) { loop.Quit(); }));
+  loop.Run();
+  Credential credential = CreateTestCredential(kTestUsername, url, origin);
+  credential.type = CredentialType::kFederated;
+  FederationDetail federation_detail;
+  federation_detail.idp_origin =
+      url::Origin::Create(GURL("https://accounts.google.com"));
+  federation_detail.account_id = "12345";
+  credential.federation_detail = federation_detail;
+
+  MockActionSequenceDelegate mock_action_delegate;
+  base::WeakPtrFactory<ActionSequenceDelegate> factory(&mock_action_delegate);
+  base::OnceCallback<void(bool)> captured_callback;
+
+  EXPECT_CALL(mock_action_delegate, RegisterActionSequenceEnded)
+      .WillOnce([&](base::OnceCallback<void(bool)> callback) {
+        captured_callback = std::move(callback);
+        return base::CallbackListSubscription();
+      });
+
+  base::test::TestFuture<LoginStatusResultOrError> attempt_login_future;
+  delegate_->AttemptLogin(credential, /*should_store_permission=*/true,
+                          mqls_logger(), base::TimeTicks::Now(),
+                          attempt_login_future.GetCallback(),
+                          factory.GetWeakPtr());
+
+  ASSERT_TRUE(attempt_login_future.Wait());
+  ASSERT_TRUE(attempt_login_future.Get().has_value());
+  EXPECT_EQ(attempt_login_future.Get().value(),
+            LoginStatusResult::kRequiresButtonClick);
+
+  ASSERT_TRUE(captured_callback);
+
+  EXPECT_CALL(*mock_cleaning_service,
+              ClearConflictingPermissions(Eq(credential), Eq(std::nullopt), _));
+
+  std::move(captured_callback).Run(/*success=*/true);
+}
+
+TEST_F(ActorLoginDelegateImplTest, FailedFederatedLoginDoesntClearPermissions) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {password_manager::features::kActorLogin,
+       password_manager::features::kActorLoginConflictingPermissionCleanup,
+       password_manager::features::kActorLoginFederatedClickFromActor},
+      /*disabled_features=*/{});
+
+  // Setup mock cleaning service
+  auto* mock_cleaning_service =
+      static_cast<MockActorLoginPermissionCleaningService*>(
+          ActorLoginPermissionCleaningServiceFactory::GetInstance()
+              ->SetTestingFactoryAndUse(
+                  profile(),
+                  base::BindRepeating([](content::BrowserContext* context)
+                                          -> std::unique_ptr<KeyedService> {
+                    return std::make_unique<
+                        NiceMock<MockActorLoginPermissionCleaningService>>();
+                  })));
+
+  GURL url = GURL(kTestUrl);
+  url::Origin origin = url::Origin::Create(url);
+  SetUpConflictingPermissions(url, kTestUsername);
+
+  // Set up a signin form on the page to force the getter into calling
+  // the hooked fake fetcher.
+  const autofill::FormData form_data = CreateSigninFormData(url);
+  form_managers_.push_back(
+      CreateFormManagerWithParsedForm(origin, form_data, mock_driver_));
+
+  // Mock driver methods that are called by `GetCredentials` to check
+  // whether there is a signin form on the page.
+  ON_CALL(mock_driver_, GetLastCommittedOrigin())
+      .WillByDefault(ReturnRef(origin));
+  ON_CALL(mock_driver_, IsInPrimaryMainFrame).WillByDefault(Return(true));
+  ON_CALL(mock_driver_, IsNestedWithinFencedFrame).WillByDefault(Return(false));
+  ON_CALL(mock_driver_, CheckViewAreaVisible)
+      .WillByDefault(WithArg<1>(&PostResponse<true>));
+  SetUpActorCredentialFillerDeps();
+
+  EXPECT_CALL(mock_form_cache_, GetFormManagers())
+      .WillRepeatedly(Return(base::span(form_managers_)));
+
+  // Call `GetCredentials` first to find conflicting permissions.
+  base::test::TestFuture<CredentialsOrError> get_creds_future;
+  delegate_->GetCredentials(/*has_sign_in_with_google_button=*/false,
+                            mqls_logger(), get_creds_future.GetCallback());
+
+  // Wait until the async visibility checks complete and the fetcher registers
+  // as a consumer.
+  ASSERT_TRUE(
+      base::test::RunUntil([this]() { return form_fetcher_.HasConsumers(); }));
+
+  form_fetcher_.NotifyFetchCompleted();
+  ASSERT_TRUE(get_creds_future.Get().has_value());
+
+  // Setup ActorKeyedServiceFake
+  auto* actor_service = static_cast<actor::ActorKeyedServiceFake*>(
+      actor::ActorKeyedServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(), base::BindRepeating([](content::BrowserContext* context)
+                                             -> std::unique_ptr<KeyedService> {
+            return std::make_unique<actor::ActorKeyedServiceFake>(
+                Profile::FromBrowserContext(context));
+          })));
+
+  actor::TaskId task_id = actor_service->CreateTaskForTesting();
+  actor::ActorTask* task = actor_service->GetTask(task_id);
+  content::WebContents* test_contents = tab_strip_model_->GetWebContentsAt(0);
+  base::RunLoop loop;
+  task->AddTab(tabs::TabInterface::GetFromContents(test_contents)->GetHandle(),
+               base::BindLambdaForTesting(
+                   [&](actor::mojom::ActionResultPtr result) { loop.Quit(); }));
+  loop.Run();
+
+  Credential credential = CreateTestCredential(u"username", url, origin);
+  credential.type = CredentialType::kFederated;
+  FederationDetail federation_detail;
+  federation_detail.idp_origin =
+      url::Origin::Create(GURL("https://accounts.google.com"));
+  federation_detail.account_id = "12345";
+  credential.federation_detail = federation_detail;
+
+  MockActionSequenceDelegate mock_action_delegate;
+  base::WeakPtrFactory<ActionSequenceDelegate> factory(&mock_action_delegate);
+  base::OnceCallback<void(bool)> captured_callback;
+
+  EXPECT_CALL(mock_action_delegate, RegisterActionSequenceEnded)
+      .WillOnce([&](base::OnceCallback<void(bool)> callback) {
+        captured_callback = std::move(callback);
+        return base::CallbackListSubscription();
+      });
+
+  base::test::TestFuture<LoginStatusResultOrError> attempt_login_future;
+  delegate_->AttemptLogin(credential, /*should_store_permission=*/true,
+                          mqls_logger(), base::TimeTicks::Now(),
+                          attempt_login_future.GetCallback(),
+                          factory.GetWeakPtr());
+
+  ASSERT_TRUE(attempt_login_future.Wait());
+  ASSERT_TRUE(attempt_login_future.Get().has_value());
+  EXPECT_EQ(attempt_login_future.Get().value(),
+            LoginStatusResult::kRequiresButtonClick);
+
+  ASSERT_TRUE(captured_callback);
+
+  EXPECT_CALL(*mock_cleaning_service, ClearConflictingPermissions).Times(0);
+
+  std::move(captured_callback).Run(/*success=*/false);
+}
+
+TEST_F(ActorLoginDelegateImplTest,
+       NoButtonClickSuccessfulFederatedLoginClearsConflictingPermissions) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {password_manager::features::kActorLogin,
+       password_manager::features::kActorLoginConflictingPermissionCleanup},
+      /*disabled_features=*/{});
+
+  // Setup mock cleaning service
+  auto* mock_cleaning_service =
+      static_cast<MockActorLoginPermissionCleaningService*>(
+          ActorLoginPermissionCleaningServiceFactory::GetInstance()
+              ->SetTestingFactoryAndUse(
+                  profile(),
+                  base::BindRepeating([](content::BrowserContext* context)
+                                          -> std::unique_ptr<KeyedService> {
+                    return std::make_unique<
+                        NiceMock<MockActorLoginPermissionCleaningService>>();
+                  })));
+  GURL url = GURL(kTestUrl);
+  url::Origin origin = url::Origin::Create(url);
+  SetUpConflictingPermissions(url, kTestUsername);
+
+  // Set up a signin form on the page to force the getter into calling
+  // the hooked fake fetcher.
+  const autofill::FormData form_data = CreateSigninFormData(url);
+  form_managers_.push_back(
+      CreateFormManagerWithParsedForm(origin, form_data, mock_driver_));
+
+  // Mock driver methods that are called by `GetCredentials` to check
+  // whether there is a signin form on the page.
+  ON_CALL(mock_driver_, GetLastCommittedOrigin())
+      .WillByDefault(ReturnRef(origin));
+  ON_CALL(mock_driver_, IsInPrimaryMainFrame).WillByDefault(Return(true));
+  ON_CALL(mock_driver_, IsNestedWithinFencedFrame).WillByDefault(Return(false));
+  ON_CALL(mock_driver_, CheckViewAreaVisible)
+      .WillByDefault(WithArg<1>(&PostResponse<true>));
+  SetUpActorCredentialFillerDeps();
+
+  EXPECT_CALL(mock_form_cache_, GetFormManagers())
+      .WillRepeatedly(Return(base::span(form_managers_)));
+
+  // Call `GetCredentials` first to find conflicting permissions.
+  base::test::TestFuture<CredentialsOrError> get_creds_future;
+  delegate_->GetCredentials(/*has_sign_in_with_google_button=*/false,
+                            mqls_logger(), get_creds_future.GetCallback());
+
+  // Wait until the async visibility checks complete and the fetcher registers
+  // as a consumer.
+  ASSERT_TRUE(
+      base::test::RunUntil([this]() { return form_fetcher_.HasConsumers(); }));
+
+  form_fetcher_.NotifyFetchCompleted();
+  ASSERT_TRUE(get_creds_future.Get().has_value());
+
+  // Setup ActorKeyedServiceFake
+  auto* actor_service = static_cast<actor::ActorKeyedServiceFake*>(
+      actor::ActorKeyedServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(), base::BindRepeating([](content::BrowserContext* context)
+                                             -> std::unique_ptr<KeyedService> {
+            return std::make_unique<actor::ActorKeyedServiceFake>(
+                Profile::FromBrowserContext(context));
+          })));
+
+  actor::TaskId task_id = actor_service->CreateTaskForTesting();
+  actor::ActorTask* task = actor_service->GetTask(task_id);
+  content::WebContents* test_contents = tab_strip_model_->GetWebContentsAt(0);
+  base::RunLoop loop;
+  task->AddTab(tabs::TabInterface::GetFromContents(test_contents)->GetHandle(),
+               base::BindLambdaForTesting(
+                   [&](actor::mojom::ActionResultPtr result) { loop.Quit(); }));
+  loop.Run();
+
+  Credential credential = CreateTestCredential(u"username", url, origin);
+  credential.type = CredentialType::kFederated;
+  FederationDetail federation_detail;
+  federation_detail.idp_origin =
+      url::Origin::Create(GURL("https://accounts.google.com"));
+  federation_detail.account_id = "12345";
+  credential.federation_detail = federation_detail;
+
+  base::test::TestFuture<LoginStatusResultOrError> attempt_login_future;
+  delegate_->AttemptLogin(credential, /*should_store_permission=*/true,
+                          mqls_logger(), base::TimeTicks::Now(),
+                          attempt_login_future.GetCallback(),
+                          /*action_sequence_delegate=*/nullptr);
+
+  auto* request =
+      content::webid::FederatedEmbedderLoginRequest::Get(test_contents);
+  ASSERT_TRUE(request);
+
+  EXPECT_CALL(*mock_cleaning_service,
+              ClearConflictingPermissions(Eq(credential), Eq(std::nullopt), _));
+
+  // Because there is no action_sequence_delegate passed in, this will call
+  // `OnAttemptLoginCompleted` directly.
+  request->OnFederatedResultReceived(
+      content::webid::FederatedLoginResult::kSuccess);
+
+  ASSERT_TRUE(attempt_login_future.Wait());
+  ASSERT_TRUE(attempt_login_future.Get().has_value());
+  EXPECT_EQ(attempt_login_future.Get().value(),
+            LoginStatusResult::kSuccessFederated);
 }
 
 }  // namespace actor_login

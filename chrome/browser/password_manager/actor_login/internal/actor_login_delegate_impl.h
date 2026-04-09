@@ -97,6 +97,11 @@ class ActorLoginDelegateImpl
   void OnAttemptLoginCompleted(
       base::expected<LoginStatusResult, ActorLoginError> result);
 
+  // Called when `OnAttemptLoginCompleted` is invoked with a result for
+  // a federated credential login.
+  void ProcessFederatedResult(
+      base::expected<LoginStatusResult, ActorLoginError> result);
+
   void OnActorTaskStateChanged(actor::ActorTask& task);
 
   void OnActionSequenceEnded(bool success);

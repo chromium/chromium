@@ -75,6 +75,8 @@ class ActorLoginSiwgController : public content::WebContentsObserver {
   ActorLoginSiwgController(const ActorLoginSiwgController&) = delete;
   ActorLoginSiwgController& operator=(const ActorLoginSiwgController&) = delete;
 
+  bool should_store_permission() const { return should_store_permission_; }
+
   // Starts the federated login flow. This will notify FedCM API that an
   // automated login is in progress, and then start the button detection and
   // click flow.
