@@ -1750,14 +1750,16 @@ WebMediaPlayerImpl::GetHlsDataSourceProvider() {
   // these things when they change, for example when CORS mode changes from
   // untainted to tainted. Using a NullMediaLog here prevents the unnecessary
   // spamming.
-  auto media_log = std::make_unique<media::NullMediaLog>();
   return base::SequenceBound<media::HlsDataSourceProviderImpl>(
       main_task_runner_,
       std::make_unique<MultiBufferDataSource::Factory>(
-          media_log.get(),
+          std::make_unique<media::NullMediaLog>(),
           blink::BindRepeating(&WebMediaPlayerImpl::GetUrlData,
                                weak_factory_.GetWeakPtr()),
-          main_task_runner_, tick_clock_));
+          client_->IsAudioElement(), preload_,
+          blink::BindRepeating(&WebMediaPlayerImpl::OnDataSourceTainted,
+                               weak_this_),
+          tick_clock_, main_task_runner_));
 }
 #endif
 

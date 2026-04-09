@@ -2109,4 +2109,87 @@ TEST_F(MultiBufferDataSourceTest, Http_Seek_Back) {
   Stop();
 }
 
+TEST_F(MultiBufferDataSourceTest, FactoryCreation) {
+  auto media_log = std::make_unique<NiceMock<media::MockMediaLog>>();
+  bool redirect_called = false;
+  MultiBufferDataSource::Factory factory(
+      std::move(media_log),
+      base::BindRepeating(
+          [](UrlIndex* url_index, const GURL& url, bool ignore_cache,
+             base::OnceCallback<void(scoped_refptr<UrlData>)> cb) {
+            std::move(cb).Run(url_index->GetByUrl(
+                KURL(url), UrlData::CORS_UNSPECIFIED,
+                ignore_cache ? UrlData::kCacheDisabled : UrlData::kNormal));
+          },
+          base::Unretained(&url_index_)),
+      /*is_audio_element=*/true,
+      /*preload=*/media::DataSource::METADATA,
+      base::BindRepeating(
+          [](bool* called, const media::DataSource* source) { *called = true; },
+          base::Unretained(&redirect_called)),
+      /*tick_clock=*/nullptr, task_runner_);
+
+  std::unique_ptr<media::DataSource> created_source;
+  factory.Create(GURL(kHttpUrl), false,
+                 base::BindOnce(
+                     [](std::unique_ptr<media::DataSource>* out_source,
+                        std::unique_ptr<media::DataSource> source) {
+                       *out_source = std::move(source);
+                     },
+                     &created_source));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(created_source);
+  MultiBufferDataSource* mb_source =
+      static_cast<MultiBufferDataSource*>(created_source.get());
+
+  EXPECT_EQ(GetPreload(mb_source), media::DataSource::METADATA);
+  EXPECT_TRUE(GetIsClientAudioElement(mb_source));
+
+  CallOnRedirected(mb_source, url_index_.GetByUrl(KURL(kHttpDifferentOriginUrl),
+                                                  UrlData::CORS_UNSPECIFIED,
+                                                  UrlData::kNormal));
+  EXPECT_TRUE(redirect_called);
+}
+
+TEST_F(MultiBufferDataSourceTest, FactoryCreationDefault) {
+  auto media_log = std::make_unique<NiceMock<media::MockMediaLog>>();
+  MultiBufferDataSource::Factory factory(
+      std::move(media_log),
+      base::BindRepeating(
+          [](UrlIndex* url_index, const GURL& url, bool ignore_cache,
+             base::OnceCallback<void(scoped_refptr<UrlData>)> cb) {
+            std::move(cb).Run(url_index->GetByUrl(
+                KURL(url), UrlData::CORS_UNSPECIFIED,
+                ignore_cache ? UrlData::kCacheDisabled : UrlData::kNormal));
+          },
+          base::Unretained(&url_index_)),
+      /*is_audio_element=*/false,
+      /*preload=*/media::DataSource::METADATA, base::DoNothing(), nullptr,
+      task_runner_);
+
+  std::unique_ptr<media::DataSource> created_source;
+  factory.Create(GURL(kHttpUrl), false,
+                 base::BindOnce(
+                     [](std::unique_ptr<media::DataSource>* out_source,
+                        std::unique_ptr<media::DataSource> source) {
+                       *out_source = std::move(source);
+                     },
+                     &created_source));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(created_source);
+  MultiBufferDataSource* mb_source =
+      static_cast<MultiBufferDataSource*>(created_source.get());
+
+  // Default values from media::DataSource::Factory::ClientMetadata
+  EXPECT_EQ(GetPreload(mb_source), media::DataSource::METADATA);
+  EXPECT_FALSE(GetIsClientAudioElement(mb_source));
+
+  // Should not crash if tainted_source_cb is not set.
+  CallOnRedirected(mb_source, url_index_.GetByUrl(KURL(kHttpDifferentPathUrl),
+                                                  UrlData::CORS_UNSPECIFIED,
+                                                  UrlData::kNormal));
+}
+
 }  // namespace blink

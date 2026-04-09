@@ -47,7 +47,7 @@ class PLATFORM_EXPORT MultiBufferDataSource
  public:
   using DownloadingCB = base::RepeatingCallback<void(bool)>;
 
-  class Factory : public media::DataSource::Factory {
+  class PLATFORM_EXPORT Factory : public media::DataSource::Factory {
    public:
     using UrlDataCb = base::RepeatingCallback<void(
         const GURL& url,
@@ -55,10 +55,13 @@ class PLATFORM_EXPORT MultiBufferDataSource
         base::OnceCallback<void(scoped_refptr<UrlData>)>)>;
 
     ~Factory() override;
-    Factory(media::MediaLog* media_log,
+    Factory(std::unique_ptr<media::MediaLog> media_log,
             UrlDataCb get_url_data,
-            scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
-            const base::TickClock* tick_clock);
+            bool is_audio_element,
+            Preload preload,
+            EventCb data_source_tainted_cb,
+            const base::TickClock* tick_clock,
+            scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
 
     void Create(const GURL& uri, bool ignore_cache, DataSourceCb cb) override;
 
@@ -67,11 +70,19 @@ class PLATFORM_EXPORT MultiBufferDataSource
                    base::RepeatingCallback<void(bool)> download_cb,
                    scoped_refptr<UrlData> data);
 
+    // Flags & Options passed to the created MultiBufferDataSources in `Create`.
+    const bool is_audio_element_;
+    const Preload preload_;
     std::unique_ptr<media::MediaLog> media_log_;
+
+    EventCb tainted_source_cb_;
+
     UrlDataCb get_url_data_;
+
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
 
     std::unique_ptr<BufferedDataSourceHostImpl> buffered_data_source_host_;
+
     base::WeakPtrFactory<Factory> weak_factory_{this};
   };
 
