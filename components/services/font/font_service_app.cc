@@ -252,52 +252,6 @@ void FontServiceApp::MatchFontByPostscriptNameOrFullFontName(
 }
 
 #if BUILDFLAG(ENABLE_PDF)
-void FontServiceApp::ListFamilies(ListFamiliesCallback callback) {
-  TRACE_EVENT0("fonts", "FontServiceApp::ListFamilies");
-
-  std::set<std::string> family_set;
-  std::unique_ptr<FcPattern, decltype(&FcPatternDestroy)> pattern(
-      FcPatternCreate(), &FcPatternDestroy);
-  std::unique_ptr<FcObjectSet, decltype(&FcObjectSetDestroy)> object_set(
-      FcObjectSetBuild(FC_FAMILY, nullptr), &FcObjectSetDestroy);
-
-  if (pattern && object_set) {
-    FcPatternAddBool(pattern.get(), FC_SCALABLE, FcTrue);
-    FcPatternAddBool(pattern.get(), FC_COLOR, FcFalse);
-
-    std::unique_ptr<FcFontSet, decltype(&FcFontSetDestroy)> font_set(
-        FcFontList(nullptr, pattern.get(), object_set.get()),
-        &FcFontSetDestroy);
-    if (font_set && font_set->nfont >= 0) {
-      // SAFETY: font_set->fonts is an array of FcPattern* managed by
-      // fontconfig, guaranteed to contain exactly font_set->nfont elements.
-      base::span<FcPattern* const> fonts = UNSAFE_BUFFERS(
-          base::span(font_set->fonts, static_cast<size_t>(font_set->nfont)));
-      for (FcPattern* font_pattern : fonts) {
-        FcChar8* font_format = nullptr;
-        if (FcPatternGetString(font_pattern, FC_FONTFORMAT, 0, &font_format) ==
-            FcResultMatch) {
-          std::string_view format(reinterpret_cast<const char*>(font_format));
-          if (format != "TrueType" && format != "CFF") {
-            continue;
-          }
-        }
-
-        FcChar8* family = nullptr;
-        if (FcPatternGetString(font_pattern, FC_FAMILY, 0, &family) ==
-            FcResultMatch) {
-          family_set.emplace(reinterpret_cast<char*>(family));
-        }
-      }
-    }
-  }
-
-  std::vector<std::string> families(family_set.begin(), family_set.end());
-  std::move(callback).Run(std::move(families));
-}
-#endif  // BUILDFLAG(ENABLE_PDF)
-
-#if BUILDFLAG(ENABLE_PDF)
 void FontServiceApp::MatchFontWithFallback(
     const std::string& family,
     bool is_bold,

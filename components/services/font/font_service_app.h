@@ -51,7 +51,6 @@ class FontServiceApp : public mojom::FontService {
       const std::string& family,
       MatchFontByPostscriptNameOrFullFontNameCallback callback) override;
 #if BUILDFLAG(ENABLE_PDF)
-  void ListFamilies(ListFamiliesCallback callback) override;
   void MatchFontWithFallback(const std::string& family,
                              bool is_bold,
                              bool is_italic,

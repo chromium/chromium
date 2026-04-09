@@ -90,10 +90,6 @@ interface FontService {
   MatchFontByPostscriptNameOrFullFontName(
       string postscript_name_or_full_font_name) => (FontIdentity? identity);
 
-  // Returns the list of available font family names on the host system.
-  [EnableIf=enable_pdf]
-  ListFamilies() => (array<string> families);
-
   // PDF-specific font call to match a font family and charset.
   [EnableIf=enable_pdf]
   MatchFontWithFallback(string family,

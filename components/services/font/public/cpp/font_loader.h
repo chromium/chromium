@@ -7,7 +7,8 @@
 
 #include <stdint.h>
 
-#include <vector>
+#include <string>
+#include <unordered_map>
 
 #include "base/containers/lru_cache.h"
 #include "base/memory/raw_ptr.h"
@@ -96,7 +97,6 @@ class FontLoader : public SkFontConfigInterface,
                              uint32_t charset,
                              uint32_t fallbackFamilyType,
                              base::File* out_font_file_handle);
-  std::vector<std::string> ListFamilies();
 #endif  // BUILDFLAG(ENABLE_PDF)
 
  private:

@@ -147,10 +147,6 @@ void FontLoader::MatchFontWithFallback(std::string family,
   thread_->MatchFontWithFallback(std::move(family), is_bold, is_italic, charset,
                                  fallback_family_type, out_font_file_handle);
 }
-
-std::vector<std::string> FontLoader::ListFamilies() {
-  return thread_->ListFamilies();
-}
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 void FontLoader::OnMappedFontFileDestroyed(internal::MappedFontFile* f) {
