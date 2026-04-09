@@ -1593,6 +1593,35 @@ TEST_F(OmniboxEditModelTest, OpenTabMatch) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+TEST_F(OmniboxEditModelTest, OpenMatchInvocationSource) {
+  AutocompleteMatch match(
+      controller()->autocomplete_controller()->search_provider(), 0, false,
+      AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
+  match.destination_url = GURL("https://google.com/search?q=test");
+
+  // Set the page classification to simulate an NTP realbox.
+  client()->location_bar_model()->set_page_classification(
+      metrics::OmniboxEventProto::NTP_REALBOX);
+
+  model()->OnSetFocus(false);  // Avoids DCHECK in OpenMatch().
+  model()->SetUserText(u"test");
+
+  // Start autocomplete to sync the OmniboxEditModel's client state with the
+  // underlying AutocompleteController's input state.
+  model()->StartAutocomplete(/*prevent_inline_autocomplete=*/false);
+
+  GURL destination_url;
+  EXPECT_CALL(*client(), OnAutocompleteAccept(_, _, _, _, _, _, _, _, _, _, _))
+      .WillOnce(SaveArg<0>(&destination_url));
+
+  model()->OpenMatchForTesting(match, WindowOpenDisposition::CURRENT_TAB,
+                               GURL(), std::u16string(), 0);
+
+  // Verify the destination URL has the realbox source appended.
+  EXPECT_EQ(destination_url.spec(),
+            "https://google.com/search?q=test&source=chrome.rb");
+}
+
 TEST_F(OmniboxEditModelTest, LogAnswerUsed) {
   base::HistogramTester histogram_tester;
   AutocompleteMatch match(

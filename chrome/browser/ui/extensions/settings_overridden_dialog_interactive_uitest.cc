@@ -41,6 +41,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/extension_features.h"
+#include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -462,20 +463,22 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
   // on the existing page until the dialog is resolved.
   const GURL kInitialUrl("https://www.google.com/");
 
-  RunTestSequence(
-      InstrumentTab(kWebContentsId),
-      NavigateWebContents(kWebContentsId, kInitialUrl),
-      SetNewSearchProvider(DefaultSearch::kUseDefault),
-      LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
-      WaitForDialogToShow(),
-      // Visible URL should still be the initial site, not the extension's
-      // search.
-      CheckActiveUrl(kInitialUrl),
-      // Select previous search setting.
-      PressButton(kNewSettingButtonId), PressButton(kSaveButtonId),
-      WaitForHide(kSettingsOverriddenDialogId),
-      // Only now should the navigation complete.
-      WaitForWebContentsNavigation(kWebContentsId, GURL(kExtensionSearchUrl)));
+  RunTestSequence(InstrumentTab(kWebContentsId),
+                  NavigateWebContents(kWebContentsId, kInitialUrl),
+                  SetNewSearchProvider(DefaultSearch::kUseDefault),
+                  LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
+                  WaitForDialogToShow(),
+                  // Visible URL should still be the initial site, not the
+                  // extension's search.
+                  CheckActiveUrl(kInitialUrl),
+                  // Select previous search setting.
+                  PressButton(kNewSettingButtonId), PressButton(kSaveButtonId),
+                  WaitForHide(kSettingsOverriddenDialogId),
+                  // Only now should the navigation complete.
+                  WaitForWebContentsNavigation(
+                      kWebContentsId,
+                      net::AppendOrReplaceQueryParameter(
+                          GURL(kExtensionSearchUrl), "source", "chrome.ob")));
 }
 
 class SettingsOverriddenExplicitChoiceDialogHatsInteractiveUiTest

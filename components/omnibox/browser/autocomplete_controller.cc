@@ -96,6 +96,7 @@
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
+#include "net/base/url_util.h"
 #include "net/http/http_util.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
@@ -118,6 +119,10 @@
 constexpr bool kIsDesktop = !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
 
 namespace {
+
+inline constexpr char kInvocationSourceParameterKey[] = "source";
+inline constexpr char kInvocationSourceOmnibox[] = "chrome.ob";
+inline constexpr char kInvocationSourceRealbox[] = "chrome.rb";
 
 using ScoringSignals = ::metrics::OmniboxScoringSignals;
 using ProviderType = AutocompleteProvider::Type;
@@ -1016,6 +1021,26 @@ void AutocompleteController::UpdateSearchTermsArgsWithAdditionalSearchboxStats(
 #endif
 }
 
+void AutocompleteController::UpdateMatchDestinationURLWithInvocationSource(
+    AutocompleteMatch* match) const {
+  if (!AutocompleteMatch::IsSearchType(match->type) ||
+      !match->destination_url.is_valid()) {
+    return;
+  }
+
+  std::string source_param;
+  if (omnibox::IsOmnibox(input_.current_page_classification())) {
+    source_param = kInvocationSourceOmnibox;
+  } else if (omnibox::IsNTPRealbox(input_.current_page_classification())) {
+    source_param = kInvocationSourceRealbox;
+  }
+
+  if (!source_param.empty()) {
+    match->destination_url = net::AppendOrReplaceQueryParameter(
+        match->destination_url, kInvocationSourceParameterKey, source_param);
+  }
+}
+
 void AutocompleteController::SetMatchDestinationURL(
     AutocompleteMatch* match) const {
   TRACE_EVENT0("omnibox", "AutocompleteController::SetMatchDestinationURL");
@@ -1659,7 +1684,6 @@ void AutocompleteController::PostProcessMatches() {
   MaybeRemoveCompanyEntityImages(&internal_result_);
   MaybeCleanSuggestionsForKeywordMode(input_, &internal_result_);
   MaybeCleanIphSuggestions(&internal_result_);
-
   // Notify providers which of their matches were shown. If we end up with more
   // providers to notify, we should add `RegisterDisplayedMatches()` to the
   // `AutocompleteProvider` interface and iterate all providers here.

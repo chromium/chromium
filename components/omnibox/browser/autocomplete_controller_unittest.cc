@@ -3274,3 +3274,61 @@ TEST_F(AutocompleteControllerTest, SmartComposeClearedWithNewResults) {
   ASSERT_TRUE(controller_.internal_result_.smart_compose_inline_hint().empty());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+TEST_F(AutocompleteControllerTest,
+       UpdateMatchDestinationURLWithInvocationSource) {
+  controller_.input_ =
+      AutocompleteInput(u"a", 1u, metrics::OmniboxEventProto::NTP_REALBOX,
+                        TestSchemeClassifier());
+
+  AutocompleteMatch search_match = CreateSearchMatch(u"search term");
+  search_match.destination_url =
+      GURL("https://google.com/search?q=search+term");
+
+  AutocompleteMatch url_match = CreateHistoryURLMatch("https://example.com/");
+  url_match.destination_url = GURL("https://example.com/");
+
+  controller_.UpdateMatchDestinationURLWithInvocationSource(&search_match);
+  controller_.UpdateMatchDestinationURLWithInvocationSource(&url_match);
+
+  EXPECT_EQ(search_match.destination_url.spec(),
+            "https://google.com/search?q=search+term&source=chrome.rb");
+
+  // URL match shouldn't be affected because it's not a search match.
+  EXPECT_EQ(url_match.destination_url.spec(), "https://example.com/");
+
+  // Now test Omnibox
+  controller_.input_ = AutocompleteInput(
+      u"a", 1u, metrics::OmniboxEventProto::NTP, TestSchemeClassifier());
+
+  AutocompleteMatch search_match2 = CreateSearchMatch(u"search term");
+  search_match2.destination_url =
+      GURL("https://google.com/search?q=search+term");
+  controller_.UpdateMatchDestinationURLWithInvocationSource(&search_match2);
+
+  EXPECT_EQ(search_match2.destination_url.spec(),
+            "https://google.com/search?q=search+term&source=chrome.ob");
+}
+
+TEST_F(AutocompleteControllerTest,
+       UpdateMatchDestinationURLWithInvocationSource_DoesNotAttachToWebsites) {
+  // Check across both Omnibox and Realbox contexts to ensure site navigations
+  // are safe.
+  std::vector<metrics::OmniboxEventProto::PageClassification> classifications =
+      {metrics::OmniboxEventProto::NTP_REALBOX,
+       metrics::OmniboxEventProto::NTP};
+
+  for (auto classification : classifications) {
+    controller_.input_ =
+        AutocompleteInput(u"a", 1u, classification, TestSchemeClassifier());
+
+    // Use a NON-search match type (e.g. history URL navigation).
+    AutocompleteMatch url_match = CreateHistoryURLMatch("https://example.com/");
+    url_match.destination_url = GURL("https://example.com/");
+
+    controller_.UpdateMatchDestinationURLWithInvocationSource(&url_match);
+
+    // The destination URL must remain unmodified.
+    EXPECT_EQ(url_match.destination_url.spec(), "https://example.com/");
+  }
+}
