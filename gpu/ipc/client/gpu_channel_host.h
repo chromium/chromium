@@ -60,13 +60,24 @@ class GPU_IPC_CLIENT_EXPORT GpuChannelEstablishFactory {
 class GPU_IPC_CLIENT_EXPORT GpuChannelHost
     : public base::RefCountedThreadSafe<GpuChannelHost> {
  public:
-  GpuChannelHost(
+  // Factory for the early GPU channel path, with the GPUInfo etc fetched
+  // synchronously from the GPU process. If the info request fails, this will
+  // return nullptr.
+  static scoped_refptr<GpuChannelHost> Create(
+      int channel_id,
+      mojo::ScopedMessagePipeHandle handle,
+      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner = nullptr);
+
+  // Factory for the standard GPU channel path (info provided upfront). This
+  // will never return nullptr.
+  static scoped_refptr<GpuChannelHost> Create(
       int channel_id,
       const gpu::GPUInfo& gpu_info,
       const gpu::GpuFeatureInfo& gpu_feature_info,
       const gpu::SharedImageCapabilities& shared_image_capabilities,
       mojo::ScopedMessagePipeHandle handle,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner = nullptr);
+
   GpuChannelHost(const GpuChannelHost&) = delete;
   GpuChannelHost& operator=(const GpuChannelHost&) = delete;
 
@@ -176,12 +187,22 @@ class GPU_IPC_CLIENT_EXPORT GpuChannelHost
 
  protected:
   friend class base::RefCountedThreadSafe<GpuChannelHost>;
+
+  GpuChannelHost(
+      int channel_id,
+      mojo::ScopedMessagePipeHandle handle,
+      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner = nullptr);
+
   virtual ~GpuChannelHost();
 
   // Clears its SharedAssociatedRemote.
   void ResetChannelRemoteForTesting();
 
  private:
+  void SetInfo(const gpu::GPUInfo& gpu_info,
+               const gpu::GpuFeatureInfo& gpu_feature_info,
+               const gpu::SharedImageCapabilities& shared_image_capabilities);
+
   // Establishes shared memory communication with the GPU process. This memory
   // is used to keep track of flushed items and avoid unnecessary IPCs.
   void EstablishSharedMemoryForFlushVerification()
@@ -282,8 +303,8 @@ class GPU_IPC_CLIENT_EXPORT GpuChannelHost
   const scoped_refptr<base::SingleThreadTaskRunner> io_thread_;
 
   const int channel_id_;
-  const gpu::GPUInfo gpu_info_;
-  const gpu::GpuFeatureInfo gpu_feature_info_;
+  gpu::GPUInfo gpu_info_;
+  gpu::GpuFeatureInfo gpu_feature_info_;
 
   // Lifetime/threading notes: Listener only operates on the IO thread, and
   // outlives |this|. It is therefore safe to PostTask calls to the IO thread
@@ -300,7 +321,7 @@ class GPU_IPC_CLIENT_EXPORT GpuChannelHost
       mojo::SharedAssociatedRemote<mojom::GpuChannel>;
   std::variant<SharedRemote, SharedAssociatedRemote> gpu_channel_;
 
-  SharedImageInterfaceProxy shared_image_interface_;
+  std::unique_ptr<SharedImageInterfaceProxy> shared_image_interface_;
 
   mutable base::Lock shared_memory_version_lock_;
   // Used to synchronize flushed request ids with the GPU process.

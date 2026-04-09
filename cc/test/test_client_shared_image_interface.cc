@@ -10,9 +10,6 @@ namespace cc {
 
 TestGpuChannelHost::TestGpuChannelHost()
     : GpuChannelHost(0 /* channel_id */,
-                     gpu::GPUInfo(),
-                     gpu::GpuFeatureInfo(),
-                     gpu::SharedImageCapabilities(),
                      mojo::ScopedMessagePipeHandle(
                          mojo::MessagePipeHandle(mojo::kInvalidHandleValue))) {
   // There is a "LeakSanitizer: detected memory leaks" on

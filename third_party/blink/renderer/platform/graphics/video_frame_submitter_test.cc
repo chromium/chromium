@@ -169,7 +169,7 @@ class TestClientSharedImageInterface : public gpu::ClientSharedImageInterface {
   TestClientSharedImageInterface()
       : gpu::ClientSharedImageInterface(
             nullptr,
-            base::MakeRefCounted<gpu::GpuChannelHost>(
+            gpu::GpuChannelHost::Create(
                 0 /* channel_id */,
                 gpu::GPUInfo(),
                 gpu::GpuFeatureInfo(),

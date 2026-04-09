@@ -130,7 +130,7 @@ GpuChannel* GpuChannelTestCommon::CreateChannel(int32_t client_id,
   GpuChannel* channel = channel_manager()->EstablishChannel(
       base::UnguessableToken::Create(), client_id, kClientTracingId,
       is_gpu_host, /*enable_extra_handles_validation=*/false,
-      gfx::GpuExtraInfo());
+      gfx::GpuExtraInfo(), gpu::GPUInfo(), gpu::GpuFeatureInfo());
   base::ProcessId kProcessId = 1;
   channel->set_client_pid(kProcessId);
   return channel;

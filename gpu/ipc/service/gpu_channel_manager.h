@@ -36,6 +36,7 @@
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
+#include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/common/gpu_disk_cache_type.h"
 #include "gpu/ipc/common/gpu_peak_memory.h"
@@ -119,7 +120,9 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
                                uint64_t client_tracing_id,
                                bool is_gpu_host,
                                bool enable_extra_handles_validation,
-                               const gfx::GpuExtraInfo& gpu_extra_info);
+                               const gfx::GpuExtraInfo& gpu_extra_info,
+                               const gpu::GPUInfo& gpu_info,
+                               const gpu::GpuFeatureInfo& gpu_feature_info);
 
   void SetChannelClientPid(int client_id, base::ProcessId client_pid);
   void SetChannelDiskCacheHandle(int client_id,
