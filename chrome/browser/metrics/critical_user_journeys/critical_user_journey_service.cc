@@ -95,6 +95,23 @@ void CriticalUserJourneyService::OnJourneyStarted(
     const CriticalUserJourney* journey,
     std::optional<int> metric_id,
     ui::TrackedElement* element) {
+  // 1. Find and preempt any existing session for this journey.
+  auto it = std::find_if(
+      active_sessions_.begin(), active_sessions_.end(),
+      [journey](const auto& s) { return s->journey() == journey; });
+
+  if (it != active_sessions_.end()) {
+    // Safely extract the session before erasing it from the vector.
+    // If we erase it directly, the session's destructor will synchronously
+    // trigger `OnJourneyEnded`, which also attempts to modify
+    // `active_sessions_`. Mutating the vector while it is already in the middle
+    // of `erase()` causes a re-entrancy crash.
+    std::unique_ptr<CriticalUserJourneySession> old_session = std::move(*it);
+    active_sessions_.erase(it);
+    // old_session goes out of scope and is destroyed cleanly.
+  }
+
+  // 2. Start the new session.
   auto session = std::make_unique<CriticalUserJourneySession>(journey);
   auto* session_ptr = session.get();
   session->set_on_done_callback(
