@@ -14,6 +14,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/first_run/first_run_internal.h"
@@ -235,7 +236,11 @@ void StartBookmarkImportFromDict(Profile* profile,
   // importer.
   bookmarks::ScheduleCallbackOnBookmarkModelLoad(
       *bookmark_model,
-      base::BindOnce(
+      // We shouldn't update the bookmark model while handling the
+      // BookmarkModelObserver notifications. Post the task to the sequenced
+      // task runner to ensure that the import is scheduled after the
+      // notification is handled by all observers.
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
           [](std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
              const base::DictValue& bookmarks,
              bookmarks::BookmarkModel& bookmark_model_arg) {
@@ -243,7 +248,7 @@ void StartBookmarkImportFromDict(Profile* profile,
                                              bookmarks, bookmark_model_arg);
           },
           std::move(profile_keep_alive), std::move(*bookmarks_to_import),
-          std::ref(*bookmark_model)));
+          std::ref(*bookmark_model))));
 }
 
 }  // namespace first_run

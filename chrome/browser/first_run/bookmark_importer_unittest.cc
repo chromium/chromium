@@ -22,6 +22,7 @@
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -119,6 +120,7 @@ TEST_F(BookmarkDictImporterTest, SucceedsWithValidDict) {
   bookmark_model->AddObserver(&observer);
 
   StartBookmarkImportFromDict(profile(), std::move(bookmarks_dict));
+
   ASSERT_TRUE(future.Wait());
 
   bookmark_model->RemoveObserver(&observer);
@@ -142,6 +144,44 @@ TEST_F(BookmarkDictImporterTest, SucceedsWithValidDict) {
   histogram_tester.ExpectUniqueSample("FirstRun.ImportBookmarksDict",
                                       FirstRunImportBookmarksResult::kSuccess,
                                       1);
+}
+
+TEST_F(BookmarkDictImporterTest, ImportStartsAfterModelLoadIsComplete) {
+  base::DictValue bookmarks_dict = ParseJSONIfValid(
+      R"(
+        {
+          "first_run_bookmarks": {
+            "children": [
+              {
+                "name": "Google",
+                "type": "url",
+                "url": "https://www.google.com"
+              }
+            ]
+          }
+        }
+      )");
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile());
+
+  base::test::TestFuture<void> future;
+  BookmarkImportObserver observer(future.GetCallback());
+  bookmark_model->AddObserver(&observer);
+
+  StartBookmarkImportFromDict(profile(), std::move(bookmarks_dict));
+  bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
+  const bookmarks::BookmarkNode* bar = bookmark_model->bookmark_bar_node();
+  // Bookmark model has just finished loading, no nodes should have been
+  // imported yet.
+  ASSERT_EQ(0u, bookmark_model->bookmark_bar_node()->children().size());
+
+  ASSERT_TRUE(future.Wait());
+  bookmark_model->RemoveObserver(&observer);
+
+  ASSERT_EQ(1u, bookmark_model->bookmark_bar_node()->children().size());
+  const bookmarks::BookmarkNode* node1 = bar->children()[0].get();
+  EXPECT_EQ(u"Google", node1->GetTitle());
+  EXPECT_EQ(GURL("https://www.google.com"), node1->url());
 }
 
 TEST_F(BookmarkDictImporterTest, FailsWithInvalidDict) {
