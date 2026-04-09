@@ -5806,7 +5806,13 @@ static_library("browser") {
 
     # Any circular includes must depend on the target
     # "browser_public_dependencies".
-    allow_circular_includes_from += [ "//chrome/browser/apps/app_shim" ]
+    allow_circular_includes_from += [
+      "//chrome/browser/apps/app_shim",
+      "//chrome/browser/ui/cocoa",
+    ]
+
+    deps += [ "//chrome/browser/ui/cocoa" ]
+
     frameworks = [
       "Accelerate.framework",
       "AudioUnit.framework",

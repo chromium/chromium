@@ -47,6 +47,7 @@ if (is_mac) {
 
     deps = [
       "//chrome/browser/ui",
+      "//chrome/browser/ui/cocoa",
       "//third_party/blink/public/common:headers",
     ]
   }

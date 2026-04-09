@@ -3295,6 +3295,7 @@ if (!is_android) {
     if (is_mac) {
       deps += [ "//device/fido:icloud_keychain_test_support" ]
       deps += [ "//chrome/app_shim:browser_tests" ]
+      deps += [ "//chrome/browser/ui/cocoa" ]
     }
 
     if (enable_background_mode) {
@@ -11888,6 +11889,7 @@ if (!is_android && !is_chromeos_device) {
     if (is_mac) {
       sources += [ "../installer/mac/keystone_install_unittest.cc" ]
       deps += [ "../installer/mac:install_test_util" ]
+      deps += [ "//chrome/browser/ui/cocoa" ]
       data += [
         "//chrome/installer/mac/keystone_install.sh",
         "//chrome/installer/mac/keystone_install_test.sh",

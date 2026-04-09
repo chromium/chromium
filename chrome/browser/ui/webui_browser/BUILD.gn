@@ -119,6 +119,7 @@ source_set("impl") {
   if (is_mac) {
     deps += [
       "//chrome/browser/apps/app_shim",
+      "//chrome/browser/ui/cocoa",
       "//components/remote_cocoa/app_shim",
       "//ui/base/accelerators/global_accelerator_listener",
     ]
