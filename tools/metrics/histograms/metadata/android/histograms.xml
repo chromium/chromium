@@ -5098,6 +5098,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Pdf.UriIsNull" enum="Boolean"
+    expires_after="2026-09-20">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records whether the PDF file URI is null when attempting to load the file.
+    Recorded in PdfCoordinator#loadPdfFile.
+  </summary>
+</histogram>
+
 <histogram name="Android.PhotoPicker.BitmapScalerTask" units="ms"
     expires_after="2024-06-01">
   <owner>finnur@chromium.org</owner>

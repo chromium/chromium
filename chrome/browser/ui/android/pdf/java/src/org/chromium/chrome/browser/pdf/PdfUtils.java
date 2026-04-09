@@ -413,4 +413,8 @@ public class PdfUtils {
     private static void recordIsPdfDownloadUrlDecoded(boolean decodeResult) {
         RecordHistogram.recordBooleanHistogram("Android.Pdf.DownloadUrlDecoded", decodeResult);
     }
+
+    static void recordIsUriNull(boolean isNull) {
+        RecordHistogram.recordBooleanHistogram("Android.Pdf.UriIsNull", isNull);
+    }
 }

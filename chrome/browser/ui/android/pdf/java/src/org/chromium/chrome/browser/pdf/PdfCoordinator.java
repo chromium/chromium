@@ -363,6 +363,7 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
             return;
         }
         mUri = PdfUtils.getUriFromFilePath(mPdfFilePath);
+        PdfUtils.recordIsUriNull(mUri == null);
         if (mUri != null) {
             if (sSkipLoadPdfForTesting) {
                 mIsPdfLoaded = true;
