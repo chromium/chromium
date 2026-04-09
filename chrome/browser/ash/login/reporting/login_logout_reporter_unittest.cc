@@ -9,6 +9,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/ash/login/reporting/login_logout_reporter_test_delegate.h"
+#include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper_testing.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -48,9 +49,12 @@ class LoginLogoutTestHelper {
     session_termination_manager_ =
         std::make_unique<SessionTerminationManager>();
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    user_session_manager_ = std::make_unique<ash::UserSessionManager>();
   }
 
   void Shutdown() {
+    user_session_manager_->Shutdown();
+    user_session_manager_.reset();
     fake_user_manager_.Reset();
     session_termination_manager_.reset();
     chromeos::PowerManagerClient::Shutdown();
@@ -156,6 +160,7 @@ class LoginLogoutTestHelper {
  private:
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
+  std::unique_ptr<ash::UserSessionManager> user_session_manager_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<SessionTerminationManager> session_termination_manager_;
 

@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/testing_profile.h"
@@ -40,6 +41,7 @@ class ManagedSessionServiceTest : public ::testing::Test,
     session_manager_ = std::make_unique<session_manager::SessionManager>(
         std::make_unique<session_manager::FakeSessionManagerDelegate>());
     user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    user_session_manager_ = std::make_unique<ash::UserSessionManager>();
 
     managed_session_service_ =
         std::make_unique<ManagedSessionService>(&test_clock_);
@@ -47,6 +49,8 @@ class ManagedSessionServiceTest : public ::testing::Test,
 
   void TearDown() override {
     managed_session_service_.reset();
+    user_session_manager_->Shutdown();
+    user_session_manager_.reset();
     session_manager_.reset();
     user_manager_.Reset();
     session_termination_manager_.reset();
@@ -156,6 +160,7 @@ class ManagedSessionServiceTest : public ::testing::Test,
   std::unique_ptr<session_manager::SessionManager> session_manager_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       user_manager_;
+  std::unique_ptr<ash::UserSessionManager> user_session_manager_;
 
   base::SimpleTestClock test_clock_;
 

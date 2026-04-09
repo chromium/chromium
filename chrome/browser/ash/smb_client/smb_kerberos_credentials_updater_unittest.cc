@@ -13,6 +13,7 @@
 #include "base/test/mock_callback.h"
 #include "base/values.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
+#include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -45,6 +46,7 @@ class SmbKerberosCredentialsUpdaterTest : public testing::Test {
     SetPref(ash::prefs::kKerberosEnabled, base::Value(true));
 
     user_manager_.Reset(std::make_unique<FakeChromeUserManager>());
+    user_session_manager_ = std::make_unique<ash::UserSessionManager>();
     user_manager_->AddUser(AccountId::FromUserEmail(kProfileEmail));
 
     // Initialize User, Profile and KerberosCredentialsManager.
@@ -63,6 +65,8 @@ class SmbKerberosCredentialsUpdaterTest : public testing::Test {
     credentials_manager_.reset();
     KerberosClient::Shutdown();
 
+    user_session_manager_->Shutdown();
+    user_session_manager_.reset();
     user_manager_.Reset();
   }
 
@@ -89,6 +93,7 @@ class SmbKerberosCredentialsUpdaterTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   user_manager::TypedScopedUserManager<FakeChromeUserManager> user_manager_;
+  std::unique_ptr<ash::UserSessionManager> user_session_manager_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<KerberosCredentialsManager> credentials_manager_;
   std::unique_ptr<SmbKerberosCredentialsUpdater> credentials_updater_;

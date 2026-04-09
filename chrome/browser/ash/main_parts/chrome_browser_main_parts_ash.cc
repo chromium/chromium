@@ -944,6 +944,8 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
 
   g_browser_process->platform_part()->InitializeUserManager();
 
+  user_session_manager_ = std::make_unique<UserSessionManager>();
+
   bluetooth_log_controller_ = std::make_unique<ash::BluetoothLogController>(
       user_manager::UserManager::Get());
 
@@ -971,6 +973,8 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   lock_to_single_user_manager_ =
       std::make_unique<policy::LockToSingleUserManager>();
 
+  // TODO(crbug.com/40203434): Remove this object once
+  // kDeviceI18nShortcutsEnabled policy is deprecated.
   shortcut_mapping_pref_service_ = std::make_unique<ShortcutMappingPrefService>(
       *g_browser_process->local_state());
 
@@ -1322,13 +1326,9 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
     // Initialize input methods.
     input_method::InputMethodManager* manager =
         input_method::InputMethodManager::Get();
-    // TODO(crbug.com/40203434): Remove this object once
-    // kDeviceI18nShortcutsEnabled policy is deprecated.
-    UserSessionManager* session_manager = UserSessionManager::GetInstance();
-    DCHECK(manager);
-    DCHECK(session_manager);
-
-    manager->SetState(session_manager->GetDefaultIMEState(profile));
+    CHECK(manager);
+    CHECK(user_session_manager_);
+    manager->SetState(user_session_manager_->GetDefaultIMEState(profile));
 
     misconfigured_user_cleaner_ = std::make_unique<MisconfiguredUserCleaner>(
         g_browser_process->local_state(), ash::SessionController::Get());
@@ -1745,8 +1745,8 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   ambient_client_.reset();
 
   // Make sure that there is no pending URLRequests.
-  if (pre_profile_init_called_) {
-    UserSessionManager::GetInstance()->Shutdown();
+  if (user_session_manager_) {
+    user_session_manager_->Shutdown();
   }
 
   // Give BrowserPolicyConnectorAsh a chance to unregister any observers
@@ -1850,6 +1850,8 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   quirks::QuirksManager::Shutdown();
 
   bluetooth_log_controller_.reset();
+
+  user_session_manager_.reset();
 
   g_browser_process->platform_part()->ShutdownSessionManager();
   // Ash needs to be closed before UserManager is destroyed.

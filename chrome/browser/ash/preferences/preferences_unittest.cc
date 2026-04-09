@@ -151,11 +151,14 @@ class PreferencesTest : public testing::Test {
   ~PreferencesTest() override = default;
 
   void SetUp() override {
+    fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
+
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
 
     user_manager_.Reset(std::make_unique<FakeChromeUserManager>());
+    user_session_manager_ = std::make_unique<ash::UserSessionManager>();
 
     const char test_user_email[] = "test_user@example.com";
     const AccountId test_account_id(AccountId::FromUserEmail(test_user_email));
@@ -163,8 +166,8 @@ class PreferencesTest : public testing::Test {
     user_manager_->LoginUser(test_account_id);
     user_manager_->SwitchActiveUser(test_account_id);
 
-    test_profile_ = profile_manager_->CreateTestingProfile(
-        chrome::kInitialProfile);
+    test_profile_ =
+        profile_manager_->CreateTestingProfile(chrome::kInitialProfile);
     pref_service_ = test_profile_->GetTestingPrefService();
 
     previous_input_method_.Init(ash::prefs::kLanguagePreviousInputMethod,
@@ -181,8 +184,6 @@ class PreferencesTest : public testing::Test {
         &previous_input_method_, &current_input_method_);
     input_method::InitializeForTesting(mock_manager_);
 
-    fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
-
     prefs_ = std::make_unique<Preferences>(
         TestingBrowserProcess::GetGlobal()->local_state(),
         TestingBrowserProcess::GetGlobal()
@@ -195,23 +196,26 @@ class PreferencesTest : public testing::Test {
     // `prefs_` accesses UpdateEngineClient in its destructor.
     prefs_.reset();
 
-    fake_update_engine_client_ = nullptr;
-    UpdateEngineClient::Shutdown();
-
-    mock_manager_ = nullptr;
-    input_method::Shutdown();
+    user_session_manager_->Shutdown();
 
     pref_service_ = nullptr;
     test_profile_ = nullptr;
     profile_manager_.reset();
 
+    mock_manager_ = nullptr;
+    input_method::Shutdown();
+
     // UserSessionManager doesn't listen to profile destruction, so make sure
     // the default IME state isn't still cached in case test_profile_ is
     // given the same address in the next test.
-    UserSessionManager::GetInstance()->RemoveProfileForTesting(test_profile_);
+    user_session_manager_->RemoveProfileForTesting(test_profile_);
 
+    user_session_manager_.reset();
     test_user_ = nullptr;
     user_manager_.Reset();
+
+    fake_update_engine_client_ = nullptr;
+    UpdateEngineClient::Shutdown();
   }
 
   void InitPreferences() {
@@ -223,6 +227,7 @@ class PreferencesTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   user_manager::TypedScopedUserManager<FakeChromeUserManager> user_manager_;
+  std::unique_ptr<ash::UserSessionManager> user_session_manager_;
   std::unique_ptr<Preferences> prefs_;
   StringPrefMember previous_input_method_;
   StringPrefMember current_input_method_;

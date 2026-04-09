@@ -299,6 +299,7 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
     test_user_session_manager_ =
         std::make_unique<ash::test::TestUserSessionManager>(
             TestingBrowserProcess::GetGlobal()->local_state());
+    user_session_manager_ = std::make_unique<ash::UserSessionManager>();
 
     const AccountId account_id =
         AccountId::FromUserEmailGaiaId(kFakeUserEmail, GaiaId("12345"));
@@ -306,7 +307,7 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
     ASSERT_TRUE(fake_user_);
 
     // Simulate log-in.
-    ash::UserSessionManager::GetInstance()->set_start_session_type_for_testing(
+    user_session_manager_->set_start_session_type_for_testing(
         ash::UserSessionManager::StartSessionType::kPrimary);
     test_user_session_manager_->LogIn(account_id);
 
@@ -355,8 +356,10 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
     provider_.Shutdown();
     base::RunLoop().RunUntilIdle();
 
+    user_session_manager_->Shutdown();
     profile_.reset();
     fake_user_ = nullptr;
+    user_session_manager_.reset();
     test_user_session_manager_.reset();
   }
 
@@ -433,7 +436,9 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 
+  // NOTE: TestUserSessionManager is not a UserSessionManager.
   std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::UserSessionManager> user_session_manager_;
 
   // Ownership of client_certificate_importer_owned_ is passed to the
   // NetworkConfigurationUpdater. When that happens, |certificate_importer_|

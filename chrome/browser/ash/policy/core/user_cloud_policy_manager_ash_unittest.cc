@@ -23,6 +23,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_token_forwarder.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -153,6 +154,7 @@ class UserCloudPolicyManagerAshTest : public testing::Test {
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
     user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    user_session_manager_ = std::make_unique<ash::UserSessionManager>();
 
     // The initialization path that blocks on the initial policy fetch requires
     // a signin Profile to use its URLRequestContext.
@@ -225,6 +227,9 @@ class UserCloudPolicyManagerAshTest : public testing::Test {
       manager_->RemoveObserver(&observer_);
       manager_->Shutdown();
     }
+
+    user_session_manager_->Shutdown();
+
     signin_profile_ = nullptr;
     profile_ = nullptr;
     identity_test_env_profile_adaptor_.reset();
@@ -232,6 +237,7 @@ class UserCloudPolicyManagerAshTest : public testing::Test {
     test_system_shared_loader_factory_->Detach();
     test_signin_shared_loader_factory_->Detach();
 
+    user_session_manager_.reset();
     user_manager_.Reset();
 
     ash::ConciergeClient::Shutdown();
@@ -385,6 +391,7 @@ class UserCloudPolicyManagerAshTest : public testing::Test {
 
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       user_manager_;
+  std::unique_ptr<ash::UserSessionManager> user_session_manager_;
 
   // This is automatically checked in TearDown() to ensure that we get a
   // fatal error iff |fatal_error_expected_| is true.

@@ -58,6 +58,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_utils.h"
+#include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
@@ -850,6 +851,7 @@ class DeviceStatusCollectorTest : public testing::Test {
       : user_manager_(std::make_unique<user_manager::UserManagerImpl>(
             std::make_unique<user_manager::FakeUserManagerDelegate>(),
             TestingBrowserProcess::GetGlobal()->GetTestingLocalState())),
+        user_session_manager_(std::make_unique<ash::UserSessionManager>()),
         reporting_user_tracker_(
             std::make_unique<ReportingUserTracker>(user_manager_.Get())),
         got_session_status_(false),
@@ -932,6 +934,8 @@ class DeviceStatusCollectorTest : public testing::Test {
       delete;
 
   ~DeviceStatusCollectorTest() override {
+    user_session_manager_->Shutdown();
+
     ash::SeneschalClient::Shutdown();
     kiosk_chrome_app_manager_.reset();
     ash::ConciergeClient::Shutdown();
@@ -1235,6 +1239,7 @@ class DeviceStatusCollectorTest : public testing::Test {
       std::make_unique<user_manager::UserManagerImpl>(
           std::make_unique<user_manager::FakeUserManagerDelegate>(),
           TestingBrowserProcess::GetGlobal()->GetTestingLocalState())};
+  std::unique_ptr<ash::UserSessionManager> user_session_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile> testing_profile_ = nullptr;
   ash::FakeOwnerSettingsService owner_settings_service_{

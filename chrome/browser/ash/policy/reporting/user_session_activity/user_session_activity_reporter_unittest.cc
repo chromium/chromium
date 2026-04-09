@@ -16,6 +16,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper_testing.h"
@@ -61,9 +62,12 @@ class UserSessionActivityReporterTest : public ::testing::Test {
     session_manager_ = std::make_unique<session_manager::SessionManager>(
         std::make_unique<session_manager::FakeSessionManagerDelegate>());
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    user_session_manager_ = std::make_unique<ash::UserSessionManager>();
   }
 
   void TearDown() override {
+    user_session_manager_->Shutdown();
+    user_session_manager_.reset();
     session_manager_.reset();
     fake_user_manager_.Reset();
     session_termination_manager_.reset();
@@ -125,6 +129,7 @@ class UserSessionActivityReporterTest : public ::testing::Test {
   std::unique_ptr<session_manager::SessionManager> session_manager_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
+  std::unique_ptr<ash::UserSessionManager> user_session_manager_;
 };
 
 // Mocks all of the reporting::UserSessionActivityReporter::Delegate` class so

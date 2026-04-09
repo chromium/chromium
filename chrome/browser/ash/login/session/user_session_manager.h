@@ -19,7 +19,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
@@ -150,8 +149,10 @@ class UserSessionManager
   // Returns UserSessionManager instance.
   static UserSessionManager* GetInstance();
 
+  UserSessionManager();
   UserSessionManager(const UserSessionManager&) = delete;
   UserSessionManager& operator=(const UserSessionManager&) = delete;
+  ~UserSessionManager() override;
 
   // Registers session related preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -339,16 +340,10 @@ class UserSessionManager
 
   base::WeakPtr<UserSessionManager> GetUserSessionManagerAsWeakPtr();
 
- protected:
-  // Protected for testability reasons.
-  UserSessionManager();
-  ~UserSessionManager() override;
-
  private:
   // Observes the Device Account's LST and informs UserSessionManager about it.
   class DeviceAccountGaiaTokenObserver;
   friend class test::UserSessionManagerTestApi;
-  friend struct base::DefaultSingletonTraits<UserSessionManager>;
 
   using SigninSessionRestoreStateSet = std::set<AccountId>;
 

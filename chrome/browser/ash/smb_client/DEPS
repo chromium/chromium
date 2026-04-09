@@ -28,3 +28,9 @@ include_rules = [
   "+chrome/grit",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "smb_kerberos_credentials_updater_unittest\\.cc": [
+    "+chrome/browser/ash/login/session/user_session_manager.h",
+  ],
+}

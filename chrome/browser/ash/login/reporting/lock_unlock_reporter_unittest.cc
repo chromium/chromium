@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/simple_test_clock.h"
+#include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper_testing.h"
@@ -56,9 +57,12 @@ class LockUnlockTestHelper {
     chromeos::PowerManagerClient::InitializeFake();
     SessionManagerClient::InitializeFake();
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    user_session_manager_ = std::make_unique<ash::UserSessionManager>();
   }
 
   void Shutdown() {
+    user_session_manager_->Shutdown();
+    user_session_manager_.reset();
     fake_user_manager_.Reset();
     SessionManagerClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
@@ -117,6 +121,7 @@ class LockUnlockTestHelper {
  private:
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
+  std::unique_ptr<ash::UserSessionManager> user_session_manager_;
   content::BrowserTaskEnvironment task_environment_;
 
   LockUnlockRecord record_;

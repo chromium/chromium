@@ -24,6 +24,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_command_line.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_client_factory_ash.h"
@@ -231,6 +232,7 @@ class DeviceCloudPolicyManagerAshTest
     user_manager_ = std::make_unique<user_manager::FakeUserManager>(
         TestingBrowserProcess::GetGlobal()->local_state());
     manager_->OnUserManagerCreated(user_manager_.get());
+    user_session_manager_ = std::make_unique<ash::UserSessionManager>();
 
     // SharedURLLoaderFactory and LocalState singletons have to be set since
     // they are accessed by EnrollmentHandler and StartupUtils.
@@ -266,6 +268,8 @@ class DeviceCloudPolicyManagerAshTest
     }
     ShutdownManager();
 
+    user_session_manager_->Shutdown();
+    user_session_manager_.reset();
     manager_->OnUserManagerWillBeDestroyed();
     user_manager_.reset();
 
@@ -379,6 +383,7 @@ class DeviceCloudPolicyManagerAshTest
   net::HttpStatusCode url_fetcher_response_code_;
   std::string url_fetcher_response_string_;
   std::unique_ptr<user_manager::FakeUserManager> user_manager_;
+  std::unique_ptr<ash::UserSessionManager> user_session_manager_;
   StrictMock<MockJobCreationHandler> job_creation_handler_;
   FakeDeviceManagementService device_management_service_{
       &job_creation_handler_};

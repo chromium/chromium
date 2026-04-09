@@ -314,6 +314,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
 
   std::unique_ptr<parent_access::ParentAccessService> parent_access_service_;
 
+  std::unique_ptr<UserSessionManager> user_session_manager_;
+
 #if BUILDFLAG(USE_CUPS)
   std::unique_ptr<ash::LocalPrinter> local_printer_;
 #endif

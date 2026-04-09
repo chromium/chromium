@@ -14,6 +14,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -78,11 +79,14 @@ class UserAddedRemovedReporterTest : public ::testing::Test {
   void SetUp() override {
     chromeos::PowerManagerClient::InitializeFake();
     user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    user_session_manager_ = std::make_unique<ash::UserSessionManager>();
     mock_queue_ = std::make_unique<::reporting::MockReportQueueStrict>();
   }
 
   void TearDown() override {
     mock_queue_.reset();
+    user_session_manager_->Shutdown();
+    user_session_manager_.reset();
     user_manager_.Reset();
     chromeos::PowerManagerClient::Shutdown();
   }
@@ -135,6 +139,7 @@ class UserAddedRemovedReporterTest : public ::testing::Test {
  private:
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       user_manager_;
+  std::unique_ptr<ash::UserSessionManager> user_session_manager_;
 
   content::BrowserTaskEnvironment task_environment_;
 };

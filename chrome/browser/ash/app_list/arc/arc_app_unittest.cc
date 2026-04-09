@@ -63,6 +63,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
+#include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -499,6 +500,8 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
     browser_controller_.emplace();
     model_ = std::make_unique<ash::ShelfModel>();
 
+    user_session_manager_ = std::make_unique<ash::UserSessionManager>();
+
     arc_app_test_.set_initialize_real_intent_helper_bridge(true);
     arc_app_test_.PreProfileSetUp();
 
@@ -520,12 +523,14 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
   }
 
   void TearDown() override {
+    user_session_manager_->Shutdown();
     shelf_controller_.reset();
     model_.reset();
     arc_app_test_.PreProfileTearDown();
     ResetBuilder();
     extensions::ExtensionServiceTestBase::TearDown();
     arc_app_test_.PostProfileTearDown();
+    user_session_manager_.reset();
     browser_controller_.reset();
   }
 
@@ -913,6 +918,7 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
  private:
   ash::SessionTerminationManager session_termination_manager_;
   ArcAppTest arc_app_test_;
+  std::unique_ptr<ash::UserSessionManager> user_session_manager_;
   display::test::TestScreen test_screen_{/*create_dispay=*/true,
                                          /*register_screen=*/true};
   std::unique_ptr<FakeAppListModelUpdater> model_updater_;
