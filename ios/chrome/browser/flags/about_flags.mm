@@ -156,6 +156,20 @@ const FeatureEntry::Choice
         {"5000", signin::kWaitThresholdMillisecondsForCapabilitiesApi, "5000"},
 };
 
+const FeatureEntry::FeatureParam kAIMCobrowseHeaderOptionA[] = {
+    {kAIMCobrowseHeaderParam, kAIMCobrowseHeaderParamOptionA}};
+const FeatureEntry::FeatureParam kAIMCobrowseHeaderOptionB[] = {
+    {kAIMCobrowseHeaderParam, kAIMCobrowseHeaderParamOptionB}};
+const FeatureEntry::FeatureParam kAIMCobrowseHeaderOptionC[] = {
+    {kAIMCobrowseHeaderParam, kAIMCobrowseHeaderParamOptionC}};
+
+const FeatureEntry::FeatureVariation kAIMCobrowseHeaderVariations[] = {
+    {"A: Center logo, overflow menu leading", kAIMCobrowseHeaderOptionA,
+     nullptr},
+    {"B: Left logo with histroy button", kAIMCobrowseHeaderOptionB, nullptr},
+    {"C: Left logo with overflow button", kAIMCobrowseHeaderOptionC, nullptr},
+};
+
 const FeatureEntry::FeatureParam kDisableKeyboardAccessoryOnlySymbolsParam[] = {
     {kDisableKeyboardAccessoryParam, kDisableKeyboardAccessoryOnlySymbols}};
 
@@ -2625,6 +2639,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kAIMCobrowseDebugEntrypointName,
      flag_descriptions::kAIMCobrowseDebugEntrypointDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kAIMCobrowseDebugEntrypoint)},
+    {"aim-cobrowse-header", flag_descriptions::kAimCobrowseHeaderName,
+     flag_descriptions::kAimCobrowseHeaderDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kAIMCobrowseHeader,
+                                    kAIMCobrowseHeaderVariations,
+                                    "kAIMCobrowseHeader")},
     {"ios-date-to-calendar-signed-out",
      flag_descriptions::kIOSDateToCalendarSignedOutName,
      flag_descriptions::kIOSDateToCalendarSignedOutDescription,

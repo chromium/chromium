@@ -33,6 +33,10 @@ const char kAIMNTPEntrypointTabletName[] = "AIMNTPEntrypointTablet";
 const char kAIMNTPEntrypointTabletDescription[] =
     "Enables the AIMNTPEntrypointTablet feature.";
 
+const char kAimCobrowseHeaderName[] = "AimCobrowseHeader";
+const char kAimCobrowseHeaderDescription[] =
+    "Changes the design of the AIM cobrowse header.";
+
 const char kAimCobrowseName[] = "AimCobrowse";
 const char kAimCobrowseDescription[] = "Enables the AimCobrowse feature.";
 

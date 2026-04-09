@@ -1036,6 +1036,14 @@ bool IsAIMCobrowseDebugEntrypointEnabled() {
   return base::FeatureList::IsEnabled(kAIMCobrowseDebugEntrypoint);
 }
 
+const char kAIMCobrowseHeaderParam[] = "kNTPMIAEntrypointParam";
+const char kAIMCobrowseHeaderParamOptionA[] = "kAIMCobrowseHeaderParamOptionA";
+const char kAIMCobrowseHeaderParamOptionB[] = "kAIMCobrowseHeaderParamOptionB";
+const char kAIMCobrowseHeaderParamOptionC[] = "kAIMCobrowseHeaderParamOptionC";
+
+// Feature flag to change the cobrowse header design.
+BASE_FEATURE(kAIMCobrowseHeader, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kRecordRecentActiveDays, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsRecordRecentActiveDaysEnabled() {

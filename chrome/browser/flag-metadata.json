@@ -70,6 +70,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "aim-cobrowse-header",
+    "owners": [ "radunitescu@google.com", "bling-search@google.com" ],
+    "expiry_milestone": 153
+  },
+  {
     "name": "aim-eligibility-refresh-ntp-modules",
     "owners": [ "christianxu@chromium.org", "bling-search@google.com" ],
     "expiry_milestone": 149

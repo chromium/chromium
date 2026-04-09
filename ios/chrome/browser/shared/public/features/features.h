@@ -851,6 +851,14 @@ BASE_DECLARE_FEATURE(kAIMCobrowseDebugEntrypoint);
 // Returns true if the AIMCobrowseDebugEntrypoint feature is enabled.
 bool IsAIMCobrowseDebugEntrypointEnabled();
 
+extern const char kAIMCobrowseHeaderParam[];
+extern const char kAIMCobrowseHeaderParamOptionA[];
+extern const char kAIMCobrowseHeaderParamOptionB[];
+extern const char kAIMCobrowseHeaderParamOptionC[];
+
+// Variation for the Cobrowse header.
+BASE_DECLARE_FEATURE(kAIMCobrowseHeader);
+
 // Enables recording the number of recent days with active sessions.
 BASE_DECLARE_FEATURE(kRecordRecentActiveDays);
 
