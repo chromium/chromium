@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+  <ImageView
+      android:importantForAccessibility="no"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_horizontal"
+      android:layout_marginTop="8dp"
+      android:src="@drawable/drag_handlebar"
+      app:tint="@macro/drag_handle_color" />
+
+  <ScrollView
+      android:id="@+id/accessibility_annotator_scroll_view"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:layout_marginTop="8dp">
+
+      <com.airbnb.lottie.LottieAnimationView
+          android:id="@+id/accessibility_annotator_icon"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_horizontal"
+          android:minHeight="60dp"
+          android:maxHeight="100dp"
+          android:importantForAccessibility="no"
+          android:scaleType="fitCenter"
+          android:adjustViewBounds="true"/>
+
+      <TextView
+          android:id="@+id/accessibility_annotator_title"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textAppearance="@style/TextAppearance.Headline.Primary"
+          android:textAlignment="center" />
+
+      <org.chromium.ui.widget.TextViewWithClickableSpans
+          android:id="@+id/accessibility_annotator_description"
+          android:layout_height="wrap_content"
+          android:layout_width="match_parent"
+          android:layout_marginTop="8dp"
+          android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+          android:textAlignment="viewStart" />
+
+      <org.chromium.ui.widget.ButtonCompat
+          android:id="@+id/accessibility_annotator_primary_button"
+          style="@style/FilledButton"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textAlignment="center"
+          android:layout_marginTop="22dp"
+          android:minHeight="@dimen/min_touch_target_size"
+          android:minWidth="@dimen/min_touch_target_size" />
+
+      <org.chromium.ui.widget.ButtonCompat
+          android:id="@+id/accessibility_annotator_secondary_button"
+          style="@style/TextButton"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textAlignment="center"
+          android:layout_marginTop="8dp"
+          android:layout_marginBottom="8dp"
+          android:minHeight="@dimen/min_touch_target_size"
+          android:minWidth="@dimen/min_touch_target_size" />
+
+    </LinearLayout>
+  </ScrollView>
+</LinearLayout>
