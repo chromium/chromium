@@ -74,6 +74,7 @@ import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextHelper;
 import org.chromium.chrome.browser.tab.TabContextMenuItemDelegate;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.ui.signin.ForcedSigninStatusProvider;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.embedder_support.contextmenu.ChipDelegate;
@@ -433,6 +434,11 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         return UrlFormatter.formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(url.getSpec());
     }
 
+    private boolean areMandatoryFlowsCompleted(Profile profile) {
+        return FirstRunStatus.getFirstRunFlowComplete()
+                && !ForcedSigninStatusProvider.getForProfile(profile).isForcedSigninShowing();
+    }
+
     @VisibleForTesting
     boolean isTabletScreen() {
         return DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
@@ -487,7 +493,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         }
         if (mParams.isAnchor()) {
             ModelList linkGroup = new ModelList();
-            if (FirstRunStatus.getFirstRunFlowComplete()
+            if (areMandatoryFlowsCompleted(getProfile())
                     && !isEmptyUrl(mParams.getUrl())
                     && UrlUtilities.isAcceptedScheme(mParams.getUrl())) {
                 if (mMode == ContextMenuMode.NORMAL) {
@@ -539,7 +545,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     linkGroup.add(createListItem(Item.COPY_LINK_TEXT));
                 }
             }
-            if (FirstRunStatus.getFirstRunFlowComplete()) {
+            if (areMandatoryFlowsCompleted(getProfile())) {
                 if (!mItemDelegate.isIncognito()
                         && UrlUtilities.isDownloadableScheme(mParams.getLinkUrl())) {
                     linkGroup.add(
@@ -604,7 +610,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             }
         }
 
-        if (mParams.isImage() && FirstRunStatus.getFirstRunFlowComplete()) {
+        if (mParams.isImage() && areMandatoryFlowsCompleted(getProfile())) {
             ModelList imageGroup = new ModelList();
             boolean isSrcDownloadableScheme =
                     UrlUtilities.isDownloadableScheme(mParams.getSrcUrl());
@@ -679,7 +685,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             groupedItems.add(imageGroup);
         }
 
-        if (mParams.isVideo() && FirstRunStatus.getFirstRunFlowComplete()) {
+        if (mParams.isVideo() && areMandatoryFlowsCompleted(getProfile())) {
             ModelList videoGroup = new ModelList();
             if (mParams.canSaveMedia() && UrlUtilities.isDownloadableScheme(mParams.getSrcUrl())) {
                 videoGroup.add(
@@ -721,7 +727,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         // Only add below items to the front of link group iff it's in the CUSTOM_TAB or WEB_APP
         // mode.
         if ((mMode == ContextMenuMode.WEB_APP || mMode == ContextMenuMode.CUSTOM_TAB)
-                && FirstRunStatus.getFirstRunFlowComplete()) {
+                && areMandatoryFlowsCompleted(getProfile())) {
             ModelList items =
                     groupedItems.isEmpty()
                             ? new ModelList()
@@ -751,7 +757,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             }
         }
 
-        if (shouldShowDeveloperMenu() && FirstRunStatus.getFirstRunFlowComplete()) {
+        if (shouldShowDeveloperMenu() && areMandatoryFlowsCompleted(getProfile())) {
             ModelList developerGroup = new ModelList();
             if (mParams.isPage()
                     && shouldShowEmptySpaceContextMenu()

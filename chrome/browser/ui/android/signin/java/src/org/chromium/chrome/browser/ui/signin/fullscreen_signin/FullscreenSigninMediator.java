@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager.SignOutCallback
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.ui.signin.ForcedSigninStatusProvider;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninSurveyController;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerCoordinator;
@@ -69,6 +70,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.util.ColorUtils;
+import org.chromium.ui.util.TokenHolder;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -113,11 +115,13 @@ public class FullscreenSigninMediator
     private final ModalDialogManager mModalDialogManager;
     private final AccountManagerFacade mAccountManagerFacade;
     private @MonotonicNonNull SigninManager mSigninManager;
+    private @MonotonicNonNull ForcedSigninStatusProvider mForcedSigninStatusProvider;
     private final Delegate mDelegate;
     private final PrivacyPreferencesManager mPrivacyPreferencesManager;
     private final @SigninAccessPoint int mAccessPoint;
     private final FullscreenSigninConfig mConfig;
     private final PropertyModel mModel;
+
     private @Nullable ProfileDataCache mProfileDataCache;
     private boolean mDestroyed;
 
@@ -135,6 +139,7 @@ public class FullscreenSigninMediator
     private boolean mIsSigninSupported;
     private boolean mIsSigninForcedByPolicy;
     private boolean mIsChild;
+    private int mForcedSigninToken = TokenHolder.INVALID_TOKEN;
 
     FullscreenSigninMediator(
             Context context,
@@ -198,6 +203,10 @@ public class FullscreenSigninMediator
         assert !mDestroyed;
         if (mProfileDataCache != null) {
             mProfileDataCache.removeObserver(this);
+        }
+        if (mForcedSigninStatusProvider != null) {
+            mForcedSigninStatusProvider.hideForcedSigninScreen(mForcedSigninToken);
+            mForcedSigninToken = TokenHolder.INVALID_TOKEN;
         }
         mAccountManagerFacade.removeObserver(this);
         mDestroyed = true;
@@ -268,6 +277,7 @@ public class FullscreenSigninMediator
         Log.i(TAG, "#onInitialLoadCompleted() hasPolicies:" + hasPolicies);
         Profile profile = assumeNonNull(mDelegate.getProfileSupplier().get()).getOriginalProfile();
         mSigninManager = assertNonNull(IdentityServicesProvider.get().getSigninManager(profile));
+        mForcedSigninStatusProvider = ForcedSigninStatusProvider.getForProfile(profile);
         initializeProfileDataCache(profile);
 
         // 1. Update all fields.
@@ -278,6 +288,10 @@ public class FullscreenSigninMediator
             mIsSigninForcedByPolicy =
                     SigninFeatureMap.isEnabled(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
                             && mSigninManager.isForceSigninEnabled();
+            mForcedSigninToken =
+                    mIsSigninForcedByPolicy
+                            ? mForcedSigninStatusProvider.showForcedSigninScreen()
+                            : TokenHolder.INVALID_TOKEN;
         } else {
             mAllowMetricsAndCrashUploading = true;
             mIsSigninForcedByPolicy = false;
