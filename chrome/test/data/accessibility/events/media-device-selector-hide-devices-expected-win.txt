@@ -1,0 +1,1 @@
+EVENT_OBJECT_STATECHANGE on class=MediaItemUIDeviceSelectorView role=ROLE_SYSTEM_GROUPING name="Device Selector" COLLAPSED,INVISIBLE

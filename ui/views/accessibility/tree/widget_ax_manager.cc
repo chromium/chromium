@@ -54,6 +54,7 @@ bool ShouldSerializeEvent(Event event_type) {
     case Event::kActiveDescendantChanged:
     case Event::kCheckedStateChanged:
     case Event::kChildrenChanged:
+    case Event::kExpandedChanged:
     case Event::kLiveRegionChanged:
     case Event::kValueChanged:
       return false;
@@ -69,10 +70,11 @@ bool ShouldSerializeEvent(Event event_type) {
   switch (event_type) {
     // TODO(crbug.com/40672441): Add events here as needed.
     case Event::kLocationChanged:
+    case Event::kRowCollapsed:
+    case Event::kRowCountChanged:
+    case Event::kRowExpanded:
     case Event::kScrollPositionChanged:
     case Event::kTreeChanged:
-    case Event::kRowCollapsed:
-    case Event::kRowExpanded:
       return false;
     default:
       break;
@@ -81,7 +83,6 @@ bool ShouldSerializeEvent(Event event_type) {
   // Events fired by views on some platforms but not yet handled. These are
   // being addressed incrementally, one event at a time.
   switch (event_type) {
-    case Event::kExpandedChanged:
     case Event::kFocusAfterMenuClose:
     case Event::kFocusContext:
     case Event::kMenuEnd:
