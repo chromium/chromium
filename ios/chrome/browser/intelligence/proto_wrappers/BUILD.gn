@@ -194,6 +194,7 @@ source_set("page_context_wrapper_test_utils") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "annotated_page_content_extraction_utils_unittest.mm",
     "dom_node_ids_js_unittest.mm",
     "frame_grafter_unittest.mm",
     "page_context_extractor_java_script_feature_unittest.mm",

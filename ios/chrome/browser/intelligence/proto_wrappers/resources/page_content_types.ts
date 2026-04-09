@@ -138,8 +138,8 @@ export enum PageContentAnnotatedRole {
 
 export interface PageContentGeometry {
   outerBoundingBox: Rect;
-  visibleBoundingBox: Rect;
-  fragmentVisibleBoundingBoxes: Rect[];
+  visibleBoundingBox?: Rect;
+  fragmentVisibleBoundingBoxes?: Rect[];
 }
 
 export interface PageContentSelection {
