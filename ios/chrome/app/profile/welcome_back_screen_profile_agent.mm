@@ -96,9 +96,6 @@ constexpr size_t kMinEligibleFeatures = 2;
       GetWelcomeBackEligibleItems().size() >= kMinEligibleFeatures) {
     PromosManagerFactory::GetForProfile(self.profileState.profile)
         ->RegisterPromoForSingleDisplay(promos_manager::Promo::WelcomeBack);
-  } else {
-    PromosManagerFactory::GetForProfile(self.profileState.profile)
-        ->DeregisterPromo(promos_manager::Promo::WelcomeBack);
   }
 }
 
