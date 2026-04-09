@@ -122,6 +122,7 @@ XRCompositionLayer::CreateLayerData() const {
     // it as left-right. See XRWebGLTextureArraySwapChain.
     layer_data->read_only_data->layout =
         device::mojom::blink::XRLayerLayout::kStereoLeftRight;
+    layer_data->read_only_data->texture_width = textureWidth() * 2;
   } else {
     layer_data->read_only_data->layout = V8ToMojomLayerLayout(layout_);
   }

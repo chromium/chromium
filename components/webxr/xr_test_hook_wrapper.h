@@ -27,7 +27,8 @@ class XRTestHookWrapper : public device::VRTestHook {
   virtual ~XRTestHookWrapper();
 
   // VRTestHook
-  void OnFrameSubmitted(const std::vector<device::ViewData>& views) override;
+  void OnFrameSubmitted(const std::vector<device::ViewData>& views,
+                        const std::vector<device::LayerData>& layers) override;
   device::DeviceConfig WaitGetDeviceConfig() override;
   std::optional<gfx::Transform> WaitGetPresentingPose() override;
   std::optional<gfx::Transform> WaitGetMagicWindowPose() override;
