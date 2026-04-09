@@ -210,9 +210,6 @@ class CrOSDriverFactory(DriverFactory):
         f'--fake-variations-channel={self.channel}',
         '--disable-variations-safe-mode',
         '--disable-field-trial-config',
-        # TODO(http://crbug.com/379869158) -- remove this once the new
-        # seed loading mechanism is fixed.
-        '--force-fieldtrials=SeedFileTrial/Default'
       ])
 
     browser = _launch_browser(browser_args)
