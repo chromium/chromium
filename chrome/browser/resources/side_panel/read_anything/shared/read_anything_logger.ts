@@ -29,8 +29,20 @@ export enum LinkStatus {
 // Handles the business logic for logging.
 export class ReadAnythingLogger {
   private metrics: MetricsBrowserProxy = MetricsBrowserProxyImpl.getInstance();
+  // When this class is first instantiated, it will be because reading mode
+  // is visible, so isHidden_ should be false be default.
+  private isHidden_: boolean = false;
+
+  setHidden(hidden: boolean) {
+    this.isHidden_ = hidden;
+  }
 
   logEmptyState() {
+    // Don't log the empty state if the UI is hidden;
+    if (this.isHidden_) {
+      return;
+    }
+
     this.metrics.recordEmptyState();
   }
 
@@ -90,6 +102,10 @@ export class ReadAnythingLogger {
   }
 
   logNewPage(speechPlayed: boolean) {
+    // Don't log the new page if the UI is hidden.
+    if (this.isHidden_) {
+      return;
+    }
     speechPlayed ? this.metrics.recordNewPageWithSpeech() :
                    this.metrics.recordNewPage();
   }

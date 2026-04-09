@@ -1190,6 +1190,11 @@ void ReadAnythingUntrustedPageHandler::Activate(
   if (active_) {
     last_open_trigger_ = open_trigger;
     tab_will_detach_ = false;
+    if (features::IsImmersiveReadAnythingEnabled()) {
+      // Signal that reading mode has been re-opened and is no longer hidden if
+      // it was previously marked as hidden.
+      OnGetPresentationState();
+    }
   }
   if (!active && !tab_will_detach_) {
     page_->OnReadingModeHidden(tab_->IsActivated());

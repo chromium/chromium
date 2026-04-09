@@ -303,6 +303,8 @@ export class ContentController {
         return null;
       }
 
+      this.logger_.logNewPage(/*speechPlayed=*/ false);
+
       this.setState(ContentType.HAS_CONTENT);
 
       contentFragment.appendChild(contentContainer);
