@@ -11,7 +11,14 @@ import android.accounts.AuthenticatorDescription;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
+import android.content.pm.SigningInfo;
 import android.os.Bundle;
+import android.util.Base64;
+
+import androidx.annotation.VisibleForTesting;
 
 import com.google.common.base.Preconditions;
 
@@ -20,14 +27,21 @@ import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
+import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.JniOnceCallback2;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.enterprise.platform_auth.entra_provider_android.TokenReadResult;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @NullMarked
@@ -38,7 +52,12 @@ public class PlatformAuthEntraTokensReader {
     private static final String BUNDLE_RESULT_KEY = "sso_header_result";
     private static final long TIMEOUT_SECONDS = 10;
 
+    // Maps trusted package provider names to their respective signature thumbprint in SHA-512.
+    private static final Map<String, byte[]> TRUSTED_PROVIDERS = new HashMap<>();
+    private static final Map<String, byte[]> DEBUG_PROVIDERS = new HashMap<>();
+
     private static @Nullable ResultOverride sReadTokensOverride;
+    @VisibleForTesting public static byte @Nullable [] sSignatureSha512BytesForTesting;
 
     /**
      * Reads authentication tokens from the Entra broker via the Android {@link AccountManager}.
@@ -75,7 +94,21 @@ public class PlatformAuthEntraTokensReader {
                 return;
             }
 
-            // TODO: b:484014627 - verify signature of the provider package.
+            final byte @Nullable [] expectedSignature = getPackageSignature(providerPackageName);
+            if (expectedSignature == null) {
+                callback.onResult(
+                        TokenReadResult.UNEXPECTED_PACKAGE_PROVIDER,
+                        providerPackageName
+                                + " is not a trusted provider for the authentication headers.");
+                return;
+            }
+
+            if (!verifyPackageSignature(providerPackageName, context, expectedSignature)) {
+                callback.onResult(
+                        TokenReadResult.SIGNATURE_VERIFICATION_FAILED,
+                        "could not verify signature of " + providerPackageName);
+                return;
+            }
 
             Bundle parameters = new Bundle();
             parameters.putString("url", url);
@@ -105,7 +138,11 @@ public class PlatformAuthEntraTokensReader {
             }
 
             callback.onResult(TokenReadResult.OK, stringResult);
-        } catch (AuthenticatorException | OperationCanceledException | IOException e) {
+        } catch (AuthenticatorException
+                | OperationCanceledException
+                | IOException
+                | PackageManager.NameNotFoundException
+                | NoSuchAlgorithmException e) {
             callback.onResult(TokenReadResult.UNEXPECTED_ERROR, e.toString());
         }
     }
@@ -120,6 +157,113 @@ public class PlatformAuthEntraTokensReader {
             }
         }
         return providerPackageName;
+    }
+
+    private static byte @Nullable [] getPackageSignature(String providerPackageName) {
+        if (TRUSTED_PROVIDERS.containsKey(providerPackageName)) {
+            return TRUSTED_PROVIDERS.get(providerPackageName);
+        }
+
+        if (CommandLine.getInstance()
+                        .hasSwitch(ChromeSwitches.ANDROID_ENTRA_SSO_ALLOW_DEBUG_BROKERS)
+                && DEBUG_PROVIDERS.containsKey(providerPackageName)) {
+            return DEBUG_PROVIDERS.get(providerPackageName);
+        }
+
+        return null;
+    }
+
+    private static boolean verifyPackageSignature(
+            String packageName, Context context, byte[] expectedSignature)
+            throws PackageManager.NameNotFoundException, NoSuchAlgorithmException {
+        final PackageManager packageManager = context.getPackageManager();
+        final PackageInfo packageInfo =
+                packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNING_CERTIFICATES);
+        final SigningInfo signingInfo = packageInfo.signingInfo;
+        if (signingInfo == null) {
+            return false;
+        }
+
+        Signature[] signatures;
+        if (signingInfo.hasMultipleSigners()) {
+            // Only a single signer is expected.
+            return false;
+        }
+        signatures = signingInfo.getSigningCertificateHistory();
+
+        for (Signature signature : signatures) {
+            MessageDigest digest = MessageDigest.getInstance("SHA-512");
+            byte[] currentSha512 = digest.digest(signature.toByteArray());
+            if (currentSha512 == null) {
+                continue;
+            }
+            if (Arrays.equals(currentSha512, expectedSignature)) {
+                return true;
+            }
+            if (sSignatureSha512BytesForTesting != null
+                    && Arrays.equals(currentSha512, sSignatureSha512BytesForTesting)) {
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    static {
+        TRUSTED_PROVIDERS.put(
+                "com.azure.authenticator",
+                Base64.decode(
+                        "Gu8CuaYmSV5CHWd6dz3tGPXIE+YTalCVIXi5lEBXpvUgsMKoHbU9Rqou3WNRNU1tsz8pvEADTCCJ5f02fbw9qw==",
+                        Base64.DEFAULT));
+        TRUSTED_PROVIDERS.put(
+                "com.microsoft.windowsintune.companyportal",
+                Base64.decode(
+                        "oIuNoUwMsxC10VneTQXnt/GXN+Pjqd6mpOKEMF/cH3i06K93TZMBWq+fHN/zt4zUe/W6zGj6YLymd1/tGuypNQ==",
+                        Base64.DEFAULT));
+        TRUSTED_PROVIDERS.put(
+                "com.microsoft.appmanager",
+                Base64.decode(
+                        "5PAhhZNSRRvq7vpTT5vrYJbSLh05AU8USf7oUTS239PEltebX87uGN7GhAe5244lJepwZ5RU4vu8N6ospXVOlg==",
+                        Base64.DEFAULT));
+
+        // Note: Certain package names overlap, but unlike `TRUSTED_PROVIDERS` these represent
+        // non-production builds with separate signatures.
+        DEBUG_PROVIDERS.put(
+                "com.azure.authenticator",
+                Base64.decode(
+                        "pdAtoxfsEwbpQsIaua5Uobl5AQEjqt40aPXI7UY1lIW0NTmg0G4jHQ5T5mujSjjU06q4mEHs5hb6z/Mr0PNlmQ==",
+                        Base64.DEFAULT));
+        DEBUG_PROVIDERS.put(
+                "com.microsoft.windowsintune.companyportal",
+                Base64.decode(
+                        "oIuNoUwMsxC10VneTQXnt/GXN+Pjqd6mpOKEMF/cH3i06K93TZMBWq+fHN/zt4zUe/W6zGj6YLymd1/tGuypNQ==",
+                        Base64.DEFAULT));
+        DEBUG_PROVIDERS.put(
+                "com.microsoft.appmanager",
+                Base64.decode(
+                        "5PAhhZNSRRvq7vpTT5vrYJbSLh05AU8USf7oUTS239PEltebX87uGN7GhAe5244lJepwZ5RU4vu8N6ospXVOlg==",
+                        Base64.DEFAULT));
+        DEBUG_PROVIDERS.put(
+                "com.microsoft.identity.testuserapp",
+                Base64.decode(
+                        "xxAk8S05zu0Nkce+X2J6IKJ2e7YE4F9ZorZj0YnYUQ2vw8vLc8VGGOqJdTnVySbbcy9VY8UDbOfeOETSErYllw==",
+                        Base64.DEFAULT));
+        DEBUG_PROVIDERS.put(
+                "com.microsoft.mockauthapp",
+                Base64.decode(
+                        "QhjKSYYD31K7+C4q4Mpd08crE0LN/3GgnKVVuej4JWckUTc0Wp/i//LWLQnANaWiAjdESJJrjavu0cE6hkQihQ==",
+                        Base64.DEFAULT));
+        DEBUG_PROVIDERS.put(
+                "com.microsoft.mockcp",
+                Base64.decode(
+                        "EZ2RCcsmf869Ec41PgHHnFdI0MgmVsADFFy8AtcfEKsjD1YAPtKxCMZVdT+y+K1IWRnPk4Lf2PUAcL5N49OqAA==",
+                        Base64.DEFAULT));
+        DEBUG_PROVIDERS.put(
+                "com.microsoft.mockltw",
+                Base64.decode(
+                        "felxzv/rpqa69dOADXVVKnawk5x8snBW2k/kDxzQLVkbcdzAvrGm8gcBRItzUGIQTupHCTWksN6WBGbn+b0KIA==",
+                        Base64.DEFAULT));
     }
 
     private static class ResultOverride {

@@ -7,6 +7,7 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_string.h"
 #include "base/check_is_test.h"
+#include "base/command_line.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -17,6 +18,7 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/android/chrome_jni_headers/PlatformAuthEntraTokensReader_jni.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
@@ -48,6 +50,8 @@ std::string TokenReadResultToString(TokenReadResult result_code) {
       return "kNoBrokerRegistered";
     case TokenReadResult::kSignatureVerificationFailed:
       return "kSignatureVerificationFailed";
+    case TokenReadResult::kUnexpectedPackageProvider:
+      return "kUnexpectedPackageProvider";
     case TokenReadResult::kInvalidBundleFormat:
       return "kInvalidBundleFormat";
   }
@@ -135,7 +139,17 @@ void InvokeJavaReadTokens(const std::string& url,
 
 }  // namespace
 
-EntraProviderAndroid::EntraProviderAndroid() = default;
+EntraProviderAndroid::EntraProviderAndroid() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAndroidEntraSsoAllowDebugBrokers)) {
+    LOG_POLICY(WARNING, POLICY_AUTH)
+        << kLogTag
+        << " Entra SSO will accept authentication tokens from non-production "
+           "broker apps. This should be used ONLY for testing. To disable "
+           "rerun chrome without commandline flag "
+        << switches::kAndroidEntraSsoAllowDebugBrokers;
+  }
+}
 
 EntraProviderAndroid::~EntraProviderAndroid() = default;
 
@@ -203,6 +217,7 @@ void EntraProviderAndroid::OnJavaHeadersRead(
       return;
     case TokenReadResult::kSignatureVerificationFailed:
     case TokenReadResult::kUnexpectedError:
+    case TokenReadResult::kUnexpectedPackageProvider:
       LOG_POLICY(ERROR, POLICY_AUTH)
           << kLogTag << " tokens fetching failed with "
           << TokenReadResultToString(result_code) << ": " << result;

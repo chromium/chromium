@@ -26,7 +26,8 @@ class EntraProviderAndroid : public enterprise_auth::PlatformAuthProvider {
     kNoBrokerRegistered,
     kSignatureVerificationFailed,
     kInvalidBundleFormat,
-    kMax = kInvalidBundleFormat
+    kUnexpectedPackageProvider,
+    kMax = kUnexpectedPackageProvider
   };
 
   using OnJavaReadTokensCallback = base::OnceCallback<void(

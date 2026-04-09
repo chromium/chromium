@@ -215,6 +215,7 @@ extern const char kWinHttpProxyResolver[];
 extern const char kWinJumplistAction[];
 
 #if BUILDFLAG(IS_ANDROID)
+extern const char kAndroidEntraSsoAllowDebugBrokers[];
 extern const char kAuthAndroidNegotiateAccountType[];
 extern const char kDisableDefaultBrowserPromo[];
 extern const char kForceDeviceOwnership[];
