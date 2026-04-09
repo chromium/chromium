@@ -72,28 +72,35 @@ suite('cr-scrollable-mixin', function() {
   test('fires events', async () => {
     assertEquals(undefined, element.selected);
 
-    let selectEvent = eventToPromise('iron-select', element);
-    let activateEvent = eventToPromise('iron-activate', element);
+    let selectEvent =
+        eventToPromise<CustomEvent<{item: Element}>>('iron-select', element);
+    let activateEvent =
+        eventToPromise<CustomEvent<{item: Element, selected: string}>>(
+            'iron-activate', element);
     const elements = element.querySelectorAll('a');
     elements[0]!.click();
     const events = await Promise.all([activateEvent, selectEvent]);
 
-    assertEquals('/a', events[0]!.detail.selected);
-    assertEquals(elements[0], events[0]!.detail.item);
-    assertEquals(elements[0], events[1]!.detail.item);
+    assertEquals('/a', events[0].detail.selected);
+    assertEquals(elements[0], events[0].detail.item);
+    assertEquals(elements[0], events[1].detail.item);
     assertEquals('/a', element.selected);
 
-    selectEvent = eventToPromise('iron-select', element);
-    activateEvent = eventToPromise('iron-activate', element);
-    const deselectEvent = eventToPromise('iron-deselect', element);
+    selectEvent =
+        eventToPromise<CustomEvent<{item: Element}>>('iron-select', element);
+    activateEvent =
+        eventToPromise<CustomEvent<{item: Element, selected: string}>>(
+            'iron-activate', element);
+    const deselectEvent =
+        eventToPromise<CustomEvent<{item: Element}>>('iron-deselect', element);
     elements[1]!.click();
     const newEvents =
         await Promise.all([activateEvent, deselectEvent, selectEvent]);
 
-    assertEquals('/b', newEvents[0]!.detail.selected);
-    assertEquals(elements[1], newEvents[0]!.detail.item);
-    assertEquals(elements[0], newEvents[1]!.detail.item);
-    assertEquals(elements[1], newEvents[2]!.detail.item);
+    assertEquals('/b', newEvents[0].detail.selected);
+    assertEquals(elements[1], newEvents[0].detail.item);
+    assertEquals(elements[0], newEvents[1].detail.item);
+    assertEquals(elements[1], newEvents[2].detail.item);
     assertEquals('/b', element.selected);
   });
 

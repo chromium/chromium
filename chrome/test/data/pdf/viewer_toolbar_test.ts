@@ -176,7 +176,8 @@ const tests = [
     chrome.test.assertEq('53%', zoomField.value);
 
     // Setting a value that is over the max zoom clips to the max value.
-    const whenSent = eventToPromise('zoom-changed', toolbar);
+    const whenSent =
+        eventToPromise<CustomEvent<number>>('zoom-changed', toolbar);
     zoomField.value = '90000%';
     zoomField.dispatchEvent(new CustomEvent('change'));
     let event = await whenSent;
@@ -195,7 +196,8 @@ const tests = [
     chrome.test.assertEq('500%', zoomField.value);
 
     // Setting a new value sends the value in a zoom-changed event.
-    const whenSentNew = eventToPromise('zoom-changed', toolbar);
+    const whenSentNew =
+        eventToPromise<CustomEvent<number>>('zoom-changed', toolbar);
     zoomField.value = '110%';
     zoomField.dispatchEvent(new CustomEvent('change'));
     event = await whenSentNew;
@@ -204,7 +206,8 @@ const tests = [
     // Setting a new value and blurring sends the value in a zoom-changed
     // event. If the value is below the minimum, this sends the minimum
     // zoom.
-    const whenSentFromBlur = eventToPromise('zoom-changed', toolbar);
+    const whenSentFromBlur =
+        eventToPromise<CustomEvent<number>>('zoom-changed', toolbar);
     zoomField.value = '18%';
     zoomField.dispatchEvent(new CustomEvent('blur'));
     event = await whenSentFromBlur;
@@ -243,7 +246,8 @@ const tests = [
     const button = toolbar.$.twoPageViewButton;
     assertCheckboxMenuButton(toolbar, button, false);
 
-    let whenChanged = eventToPromise('two-up-view-changed', toolbar);
+    let whenChanged =
+        eventToPromise<CustomEvent<boolean>>('two-up-view-changed', toolbar);
     button.click();
     let event = await whenChanged;
 
@@ -255,7 +259,8 @@ const tests = [
     await microtasksFinished();
     chrome.test.assertEq(true, event.detail);
     assertCheckboxMenuButton(toolbar, button, true);
-    whenChanged = eventToPromise('two-up-view-changed', toolbar);
+    whenChanged =
+        eventToPromise<CustomEvent<boolean>>('two-up-view-changed', toolbar);
     button.click();
     event = await whenChanged;
 
@@ -279,7 +284,8 @@ const tests = [
         '#show-annotations-button')!;
     assertCheckboxMenuButton(toolbar, button, true);
 
-    let whenChanged = eventToPromise('display-annotations-changed', toolbar);
+    let whenChanged = eventToPromise<CustomEvent<boolean>>(
+        'display-annotations-changed', toolbar);
     button.click();
     let event = await whenChanged;
 
@@ -288,7 +294,8 @@ const tests = [
 
     chrome.test.assertEq(false, event.detail);
     assertCheckboxMenuButton(toolbar, button, false);
-    whenChanged = eventToPromise('display-annotations-changed', toolbar);
+    whenChanged = eventToPromise<CustomEvent<boolean>>(
+        'display-annotations-changed', toolbar);
     button.click();
     event = await whenChanged;
 

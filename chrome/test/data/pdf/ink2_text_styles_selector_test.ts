@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {Ink2Manager, TextStyle} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import type {CrIconButtonElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {CrIconButtonElement, TextAttributes} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {setupTestMockPluginForInk} from './test_util.js';
@@ -28,7 +28,8 @@ chrome.test.runTests([
       chrome.test.assertEq(
           initialValue.toString(), button.getAttribute('aria-pressed'));
 
-      const whenChanged = eventToPromise('attributes-changed', manager);
+      const whenChanged = eventToPromise<CustomEvent<TextAttributes>>(
+          'attributes-changed', manager);
       button.click();
       const changedEvent = await whenChanged;
       chrome.test.assertEq(!initialValue, changedEvent.detail.styles[style]);

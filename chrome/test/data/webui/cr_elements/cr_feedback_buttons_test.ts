@@ -73,18 +73,24 @@ suite('CrFeedbackButtonsTest', () => {
   });
 
   test('SendsEvent', async () => {
-    const thumbsUpEvent = eventToPromise('selected-option-changed', element);
+    const thumbsUpEvent =
+        eventToPromise<CustomEvent<{value: CrFeedbackOption}>>(
+            'selected-option-changed', element);
     element.$.thumbsUp.click();
     const thumbsUpEventArgs = await thumbsUpEvent;
     assertEquals(CrFeedbackOption.THUMBS_UP, thumbsUpEventArgs.detail.value);
 
-    const thumbsDownEvent = eventToPromise('selected-option-changed', element);
+    const thumbsDownEvent =
+        eventToPromise<CustomEvent<{value: CrFeedbackOption}>>(
+            'selected-option-changed', element);
     element.$.thumbsDown.click();
     const thumbsDownEventArgs = await thumbsDownEvent;
     assertEquals(
         CrFeedbackOption.THUMBS_DOWN, thumbsDownEventArgs.detail.value);
 
-    const noThumbsEvent = eventToPromise('selected-option-changed', element);
+    const noThumbsEvent =
+        eventToPromise<CustomEvent<{value: CrFeedbackOption}>>(
+            'selected-option-changed', element);
     element.$.thumbsDown.click();
     const noThumbsEventArgs = await noThumbsEvent;
     assertEquals(CrFeedbackOption.UNSPECIFIED, noThumbsEventArgs.detail.value);

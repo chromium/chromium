@@ -257,7 +257,8 @@ suite('cr-toolbar-search-field', function() {
     simulateSearch('a');
     const inputEvent = new InputEvent('input', {data: 'a'});
     const searchTermInputEventPromise =
-        eventToPromise('search-term-native-input', field);
+        eventToPromise<CustomEvent<{e: InputEvent, inputValue: string}>>(
+            'search-term-native-input', field);
     field.$.searchInput.dispatchEvent(inputEvent);
     const searchTermInputEvent = await searchTermInputEventPromise;
     assertEquals(inputEvent, searchTermInputEvent.detail.e);
@@ -267,7 +268,8 @@ suite('cr-toolbar-search-field', function() {
   test('fires a custom event for native beforeinput event', async () => {
     const beforeInputEvent = new InputEvent('beforeinput', {data: 'a'});
     const searchTermBeforeInputEventPromise =
-        eventToPromise('search-term-native-before-input', field);
+        eventToPromise<CustomEvent<{e: InputEvent}>>(
+            'search-term-native-before-input', field);
     field.$.searchInput.dispatchEvent(beforeInputEvent);
     const searchTermBeforeInputEvent = await searchTermBeforeInputEventPromise;
     assertEquals(beforeInputEvent, searchTermBeforeInputEvent.detail.e);

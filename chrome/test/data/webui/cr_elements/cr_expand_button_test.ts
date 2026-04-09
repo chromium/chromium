@@ -52,12 +52,14 @@ suite('cr-expand-button', function() {
   });
 
   test('expanded-changed event fires', async () => {
-    let whenFired = eventToPromise('expanded-changed', button);
+    let whenFired = eventToPromise<CustomEvent<{value: boolean}>>(
+        'expanded-changed', button);
     button.expanded = true;
     let event = await whenFired;
     assertTrue(event.detail.value);
 
-    whenFired = eventToPromise('expanded-changed', button);
+    whenFired = eventToPromise<CustomEvent<{value: boolean}>>(
+        'expanded-changed', button);
     button.expanded = false;
     event = await whenFired;
     assertFalse(event.detail.value);

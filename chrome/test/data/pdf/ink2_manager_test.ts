@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AnnotationBrush, TextAnnotation, TextAttributes, TextBoxInit} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {AnnotationBrush, TextAnnotation, TextAttributes, TextBoxInit, ViewportParams} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {AnnotationBrushType, DEFAULT_TEXTBOX_WIDTH, Ink2Manager, MIN_TEXTBOX_SIZE_PX, PluginController, PluginControllerEventType, TextAlignment, TextTypeface} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -208,7 +208,8 @@ chrome.test.runTests([
 
     // Check that the two existing annotations can be activated.
     mockPlugin.clearMessages();
-    let whenInitEvent = eventToPromise('initialize-text-box', testManager);
+    let whenInitEvent = eventToPromise<CustomEvent<TextBoxInit>>(
+        'initialize-text-box', testManager);
     chrome.test.assertTrue(
         testManager.initializeTextAnnotation({x: 120, y: 30}));
     let initEvent = await whenInitEvent;
@@ -228,7 +229,8 @@ chrome.test.runTests([
     verifyEditTextAnnotationMessage(true, testAnnotation1.id);
 
     // Simulate making a change.
-    const whenUpdatedColor = eventToPromise('attributes-changed', testManager);
+    const whenUpdatedColor = eventToPromise<CustomEvent<TextAttributes>>(
+        'attributes-changed', testManager);
     const blue = {r: 0, g: 0, b: 100};
     testManager.setTextColor(blue);
     const updateEvent = await whenUpdatedColor;
@@ -239,7 +241,8 @@ chrome.test.runTests([
     testAnnotation1ScreenCoords.textAttributes = updateEvent.detail;
 
     mockPlugin.clearMessages();
-    whenInitEvent = eventToPromise('initialize-text-box', testManager);
+    whenInitEvent = eventToPromise<CustomEvent<TextBoxInit>>(
+        'initialize-text-box', testManager);
     chrome.test.assertTrue(
         testManager.initializeTextAnnotation({x: 120, y: 70}));
     initEvent = await whenInitEvent;
@@ -270,7 +273,8 @@ chrome.test.runTests([
     // Check that initializing a new annotation in a different location sets
     // a different id, and uses the default settings.
     mockPlugin.clearMessages();
-    whenInitEvent = eventToPromise('initialize-text-box', testManager);
+    whenInitEvent = eventToPromise<CustomEvent<TextBoxInit>>(
+        'initialize-text-box', testManager);
     chrome.test.assertTrue(
         testManager.initializeTextAnnotation({x: 200, y: 200}));
     initEvent = await whenInitEvent;
@@ -366,7 +370,8 @@ chrome.test.runTests([
   },
 
   async function testInitializeTextboxNoLocation() {
-    let whenInitEvent = eventToPromise('initialize-text-box', manager);
+    let whenInitEvent = eventToPromise<CustomEvent<TextBoxInit>>(
+        'initialize-text-box', manager);
     // Initialize without a location. This is what happens when the user creates
     // a textbox by using "Enter" on the plugin, instead of with the mouse.
     chrome.test.assertTrue(manager.initializeTextAnnotation());
@@ -400,7 +405,8 @@ chrome.test.runTests([
     // Zoom to 2.0. Now, the new annotation should be centered on the visible
     // portion of the page.
     viewport.setZoom(2.0);
-    whenInitEvent = eventToPromise('initialize-text-box', manager);
+    whenInitEvent = eventToPromise<CustomEvent<TextBoxInit>>(
+        'initialize-text-box', manager);
     // Initialize without a location. This is what happens when the user creates
     // a textbox by using "Enter" on the plugin, instead of with the mouse.
     chrome.test.assertTrue(manager.initializeTextAnnotation());
@@ -431,7 +437,8 @@ chrome.test.runTests([
     // Zoom to 0.5. The new box should still be centered on the page, even
     // though it is not centered in the viewport.
     viewport.setZoom(0.5);
-    whenInitEvent = eventToPromise('initialize-text-box', manager);
+    whenInitEvent = eventToPromise<CustomEvent<TextBoxInit>>(
+        'initialize-text-box', manager);
     // Initialize without a location. This is what happens when the user creates
     // a textbox by using "Enter" on the plugin, instead of with the mouse.
     chrome.test.assertTrue(
@@ -470,7 +477,8 @@ chrome.test.runTests([
   },
 
   async function testInitializeTextboxClampToPage() {
-    let whenInitEvent = eventToPromise('initialize-text-box', manager);
+    let whenInitEvent = eventToPromise<CustomEvent<TextBoxInit>>(
+        'initialize-text-box', manager);
 
     // Test initializing with the top left corner of the box near the right edge
     // of the page. Instead of initializing at this point, this should
@@ -495,7 +503,8 @@ chrome.test.runTests([
 
     // Now test initializing very close to the bottom of the page. This should
     // instead initialize far enough from bottom to fit the box.
-    whenInitEvent = eventToPromise('initialize-text-box', manager);
+    whenInitEvent = eventToPromise<CustomEvent<TextBoxInit>>(
+        'initialize-text-box', manager);
     chrome.test.assertTrue(manager.initializeTextAnnotation({x: 200, y: 490}));
     initEvent = await whenInitEvent;
 
@@ -529,7 +538,8 @@ chrome.test.runTests([
     const attributes = manager.getCurrentTextAttributes();
     async function verifyTextboxInit(
         x: number, y: number, rotation: number, id: number) {
-      const whenUpdateEvent = eventToPromise('initialize-text-box', manager);
+      const whenUpdateEvent = eventToPromise<CustomEvent<TextBoxInit>>(
+          'initialize-text-box', manager);
       chrome.test.assertTrue(
           Ink2Manager.getInstance().initializeTextAnnotation({x, y}));
       await whenUpdateEvent;
@@ -715,7 +725,8 @@ chrome.test.runTests([
       });
     });
 
-    const whenUpdateEvent = eventToPromise('initialize-text-box', manager);
+    const whenUpdateEvent = eventToPromise<CustomEvent<TextBoxInit>>(
+        'initialize-text-box', manager);
     // Click inside the existing text box area.
     chrome.test.assertTrue(
         Ink2Manager.getInstance().initializeTextAnnotation({x: 80, y: 40}));
@@ -769,7 +780,8 @@ chrome.test.runTests([
     verifyEditTextAnnotationMessage(false);
 
     // Zoom out should fire an event.
-    let whenViewportChanged = eventToPromise('viewport-changed', manager);
+    let whenViewportChanged = eventToPromise<CustomEvent<ViewportParams>>(
+        'viewport-changed', manager);
     viewport.setZoom(0.5);
     let changedEvent = await whenViewportChanged;
     chrome.test.assertEq(0.5, changedEvent.detail.zoom);
@@ -794,7 +806,8 @@ chrome.test.runTests([
     verifyEditTextAnnotationMessage(false);
 
     // Zoom in should fire an event.
-    whenViewportChanged = eventToPromise('viewport-changed', manager);
+    whenViewportChanged = eventToPromise<CustomEvent<ViewportParams>>(
+        'viewport-changed', manager);
     viewport.setZoom(2.0);
     changedEvent = await whenViewportChanged;
     chrome.test.assertEq(2, changedEvent.detail.zoom);
@@ -818,7 +831,8 @@ chrome.test.runTests([
     verifyEditTextAnnotationMessage(false);
 
     // Translation.
-    whenViewportChanged = eventToPromise('viewport-changed', manager);
+    whenViewportChanged = eventToPromise<CustomEvent<ViewportParams>>(
+        'viewport-changed', manager);
     viewport.goToPageAndXy(0, 20, 20);
     changedEvent = await whenViewportChanged;
     chrome.test.assertEq(2, changedEvent.detail.zoom);
@@ -844,7 +858,8 @@ chrome.test.runTests([
     verifyEditTextAnnotationMessage(false);
 
     // Rotation
-    whenViewportChanged = eventToPromise('viewport-changed', manager);
+    whenViewportChanged = eventToPromise<CustomEvent<ViewportParams>>(
+        'viewport-changed', manager);
     rotateViewport(/* clockwiseRotations= */ 3);  // 90 degree CCW rotation.
     changedEvent = await whenViewportChanged;
     chrome.test.assertEq(2, changedEvent.detail.zoom);

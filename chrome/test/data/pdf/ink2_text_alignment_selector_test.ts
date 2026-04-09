@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {Ink2Manager, TextAlignment} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import type {SelectableIconButtonElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {SelectableIconButtonElement, TextAttributes} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {setupTestMockPluginForInk} from './test_util.js';
@@ -32,7 +32,8 @@ chrome.test.runTests([
       chrome.test.assertFalse(button.checked);
       chrome.test.assertEq(icon, button.icon);
 
-      const whenChanged = eventToPromise('attributes-changed', manager);
+      const whenChanged = eventToPromise<CustomEvent<TextAttributes>>(
+          'attributes-changed', manager);
       button.click();
       const changedEvent = await whenChanged;
       chrome.test.assertEq(alignment, changedEvent.detail.alignment);

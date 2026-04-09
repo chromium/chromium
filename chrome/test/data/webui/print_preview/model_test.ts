@@ -88,9 +88,10 @@ suite('ModelTest', function() {
      *     the saved string has been validated, and the setting has been
      *     reset to its default value.
      */
-    const testStickySetting =
-        async function(setting: keyof Settings, field: string): Promise<void> {
-      const promise = eventToPromise('sticky-setting-changed', model);
+    const testStickySetting = async function(
+        setting: keyof Settings, field: string): Promise<CustomEvent<string>> {
+      const promise =
+          eventToPromise<CustomEvent<string>>('sticky-setting-changed', model);
       model.setSetting(setting, stickySettingsChange[field]);
       settingsSet.push(field);
 
@@ -105,7 +106,8 @@ suite('ModelTest', function() {
           assertDeepEquals(toCompare[settingName], settings[settingName]);
         }
       });
-      const restorePromise = eventToPromise('sticky-setting-changed', model);
+      const restorePromise =
+          eventToPromise<CustomEvent<string>>('sticky-setting-changed', model);
       model.setSetting(setting, stickySettingsDefault[field]);
       return restorePromise;
     };

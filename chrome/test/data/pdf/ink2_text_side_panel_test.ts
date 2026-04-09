@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {AnnotationMode, hexToColor, Ink2Manager, TEXT_COLORS, TextTypeface, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import type {Color} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {Color, TextAttributes} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {setupMockMetricsPrivate} from './test_util.js';
@@ -41,8 +41,8 @@ chrome.test.runTests([
         Ink2Manager.getInstance().getCurrentTextAttributes().typeface;
     chrome.test.assertEq(initialFont, fontSelect.value);
 
-    const whenChanged =
-        eventToPromise('attributes-changed', Ink2Manager.getInstance());
+    const whenChanged = eventToPromise<CustomEvent<TextAttributes>>(
+        'attributes-changed', Ink2Manager.getInstance());
     const newValue = TextTypeface.SERIF;
     fontSelect.focus();
     fontSelect.value = newValue;
@@ -69,8 +69,8 @@ chrome.test.runTests([
         Ink2Manager.getInstance().getCurrentTextAttributes().size;
     chrome.test.assertEq(initialSize.toString(), sizeSelect.value);
 
-    const whenChanged =
-        eventToPromise('attributes-changed', Ink2Manager.getInstance());
+    const whenChanged = eventToPromise<CustomEvent<TextAttributes>>(
+        'attributes-changed', Ink2Manager.getInstance());
     sizeSelect.focus();
     sizeSelect.value = '20';
     sizeSelect.dispatchEvent(new CustomEvent('change'));
@@ -128,8 +128,8 @@ chrome.test.runTests([
     }
 
     // Change to a different color by clicking on an unchecked button.
-    const whenChanged =
-        eventToPromise('attributes-changed', Ink2Manager.getInstance());
+    const whenChanged = eventToPromise<CustomEvent<TextAttributes>>(
+        'attributes-changed', Ink2Manager.getInstance());
     buttons[1]!.click();
     const changedEvent = await whenChanged;
     assertColorsEqual(

@@ -269,7 +269,8 @@ suite('DestinationStoreTest', function() {
     return Promise
         .all([
           setInitialSettings(true),
-          eventToPromise(DestinationStoreEventType.ERROR, destinationStore),
+          eventToPromise<CustomEvent<DestinationErrorType>>(
+              DestinationStoreEventType.ERROR, destinationStore),
         ])
         .then(function(argsArray) {
           const errorEvent = argsArray[1];

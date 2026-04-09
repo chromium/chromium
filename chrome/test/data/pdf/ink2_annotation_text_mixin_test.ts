@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {TextAttributes} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {hexToColor, Ink2Manager, InkAnnotationTextMixin, TEXT_COLORS, TEXT_SIZES, TextAlignment, TextStyle, TextTypeface} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -58,7 +59,8 @@ chrome.test.runTests([
     const newColor = hexToColor(TEXT_COLORS[1]!.color);
     const colorEvent =
         new CustomEvent('current-color-changed', {detail: {value: newColor}});
-    let whenChanged = eventToPromise('attributes-changed', manager);
+    let whenChanged = eventToPromise<CustomEvent<TextAttributes>>(
+        'attributes-changed', manager);
     testElement.onCurrentColorChanged(colorEvent);
     let changedEvent = await whenChanged;
     assertDeepEquals(newColor, changedEvent.detail.color);
@@ -67,7 +69,8 @@ chrome.test.runTests([
     // registered as the listener calls the manager and results in an event.
     const selects = testElement.shadowRoot.querySelectorAll('select');
     chrome.test.assertEq(2, selects.length);
-    whenChanged = eventToPromise('attributes-changed', manager);
+    whenChanged = eventToPromise<CustomEvent<TextAttributes>>(
+        'attributes-changed', manager);
     const fontSelect = selects[0]!;
     fontSelect.value = TextTypeface.SERIF;
     fontSelect.dispatchEvent(
@@ -77,7 +80,8 @@ chrome.test.runTests([
 
     // Test firing a change event from a <select> with onSizeSelected
     // registered as the listener calls the manager and results in an event.
-    whenChanged = eventToPromise('attributes-changed', manager);
+    whenChanged = eventToPromise<CustomEvent<TextAttributes>>(
+        'attributes-changed', manager);
     const sizeSelect = selects[1]!;
     sizeSelect.value = `${TEXT_SIZES[1]!}`;
     sizeSelect.dispatchEvent(

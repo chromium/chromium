@@ -48,7 +48,9 @@ async function testEventDispatchedFromButtonClick(
     expectedEvent: SaveToDriveBubbleRequestType) {
   const button =
       element.shadowRoot.querySelector<HTMLButtonElement>(buttonSelector)!;
-  const eventPromise = eventToPromise('save-to-drive-bubble-action', element);
+  const eventPromise =
+      eventToPromise<CustomEvent<SaveToDriveBubbleRequestType>>(
+          'save-to-drive-bubble-action', element);
   button.click();
   const e: CustomEvent<SaveToDriveBubbleRequestType> = await eventPromise;
   chrome.test.assertEq(expectedEvent, e.detail);

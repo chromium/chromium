@@ -6,7 +6,7 @@
 import 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import type {CrProfileAvatarSelectorElement} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
+import type {AvatarIcon, CrProfileAvatarSelectorElement} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {keyDownOn, pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -156,7 +156,8 @@ suite('cr-profile-avatar-selector', function() {
   test('selected-avatar-changed fires', async function() {
     const items = getGridItems();
     items[2]!.click();
-    const e = await eventToPromise('selected-avatar-changed', avatarSelector);
+    const e = await eventToPromise<CustomEvent<{value: AvatarIcon}>>(
+        'selected-avatar-changed', avatarSelector);
     assertEquals(avatarSelector.avatars[2], e.detail.value);
   });
 

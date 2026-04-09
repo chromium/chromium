@@ -21,7 +21,8 @@ const tests = [
     document.body.appendChild(element);
 
     // Do not show the menu if there are no edits.
-    let onSave = eventToPromise('save-to-drive', element);
+    let onSave =
+        eventToPromise<CustomEvent<SaveRequestType>>('save-to-drive', element);
     element.$.save.click();
     let e: CustomEvent<SaveRequestType> = await onSave;
     chrome.test.assertEq(SaveRequestType.ORIGINAL, e.detail);
@@ -34,7 +35,8 @@ const tests = [
 
     // Click on "Edited".
     const buttons = element.shadowRoot.querySelectorAll('button');
-    onSave = eventToPromise('save-to-drive', element);
+    onSave =
+        eventToPromise<CustomEvent<SaveRequestType>>('save-to-drive', element);
     buttons[0]!.click();
     e = await onSave;
     chrome.test.assertEq(SaveRequestType.EDITED, e.detail);
@@ -43,7 +45,8 @@ const tests = [
     element.$.save.click();
     await eventToPromise('save-menu-shown-for-testing', element);
     chrome.test.assertTrue(element.$.menu.open);
-    onSave = eventToPromise('save-to-drive', element);
+    onSave =
+        eventToPromise<CustomEvent<SaveRequestType>>('save-to-drive', element);
     buttons[1]!.click();
     e = await onSave;
     chrome.test.assertEq(SaveRequestType.ORIGINAL, e.detail);

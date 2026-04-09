@@ -438,14 +438,16 @@ suite('CrLitElement', function() {
     }
 
     // Case2: An event should be fired whenever the property changes.
-    let whenFired2 = eventToPromise('prop1-changed', element);
+    let whenFired2 =
+        eventToPromise<CustomEvent<{value: boolean}>>('prop1-changed', element);
     element.prop1 = true;
     let event = await whenFired2;
     assertFalse(event.bubbles);
     assertFalse(event.composed);
     assertDeepEquals({value: true}, event.detail);
 
-    whenFired2 = eventToPromise('prop-four-changed', element);
+    whenFired2 = eventToPromise<CustomEvent<{value: boolean}>>(
+        'prop-four-changed', element);
     element.propFour = true;
     event = await whenFired2;
     assertFalse(event.bubbles);
@@ -514,7 +516,8 @@ suite('CrLitElement', function() {
     const dummyEventName = 'dummy-event';
     const dummyPayload = 'hello dummy';
 
-    const whenFired = eventToPromise(dummyEventName, element);
+    const whenFired =
+        eventToPromise<CustomEvent<string>>(dummyEventName, element);
     element.fire<string>(dummyEventName, dummyPayload);
 
     const event = await whenFired;

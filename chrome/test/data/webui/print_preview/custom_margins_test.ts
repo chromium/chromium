@@ -589,7 +589,8 @@ suite('CustomMarginsTest', function() {
     // Focus the bottom control, which is currently not visible since
     // the viewer is showing only the top left quarter of the page.
     const bottomControl = controls[2]!;
-    const whenEventFired = eventToPromise('text-focus-position', container);
+    const whenEventFired = eventToPromise<CustomEvent<{x: number, y: number}>>(
+        'text-focus-position', container);
     bottomControl.$.input.focus();
     // Workaround for mac so that this does not need to be an
     // interactive test: manually fire the focus event from the

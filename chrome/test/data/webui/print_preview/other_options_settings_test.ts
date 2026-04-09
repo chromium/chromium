@@ -73,8 +73,8 @@ suite('OtherOptionsSettingsTest', function() {
       assertFalse(optionSetting.setFromUi);
       element.click();
 
-      const event =
-          await eventToPromise('update-checkbox-setting', otherOptionsSection);
+      const event = await eventToPromise<CustomEvent<string>>(
+          'update-checkbox-setting', otherOptionsSection);
       assertEquals(element.id, event.detail);
       assertFalse(optionSetting.value);
       assertTrue(optionSetting.setFromUi);

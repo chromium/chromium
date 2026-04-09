@@ -21,7 +21,8 @@ const tests = [
     const actionMenu = downloadsElement.$.menu;
 
     // Do not show the menu if there are no edits.
-    let onSave = eventToPromise('save', downloadsElement);
+    let onSave =
+        eventToPromise<CustomEvent<SaveRequestType>>('save', downloadsElement);
     downloadButton.click();
     let e: CustomEvent<SaveRequestType> = await onSave;
     chrome.test.assertEq(SaveRequestType.ORIGINAL, e.detail);
@@ -34,7 +35,8 @@ const tests = [
 
     // Click on "Edited".
     const buttons = downloadsElement.shadowRoot.querySelectorAll('button');
-    onSave = eventToPromise('save', downloadsElement);
+    onSave =
+        eventToPromise<CustomEvent<SaveRequestType>>('save', downloadsElement);
     buttons[0]!.click();
     e = await onSave;
     chrome.test.assertEq(SaveRequestType.EDITED, e.detail);
@@ -43,7 +45,8 @@ const tests = [
     downloadButton.click();
     await eventToPromise('save-menu-shown-for-testing', downloadsElement);
     chrome.test.assertTrue(actionMenu.open);
-    onSave = eventToPromise('save', downloadsElement);
+    onSave =
+        eventToPromise<CustomEvent<SaveRequestType>>('save', downloadsElement);
     buttons[1]!.click();
     e = await onSave;
     chrome.test.assertEq(SaveRequestType.ORIGINAL, e.detail);

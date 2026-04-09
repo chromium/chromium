@@ -61,7 +61,8 @@ const tests = [
     chrome.test.assertFalse(actionMenu.open);
 
     // Call `onSaveClick` without any edits.
-    let onSave = eventToPromise('save', testElement);
+    let onSave =
+        eventToPromise<CustomEvent<SaveRequestType>>('save', testElement);
     testElement.onSaveClick();
     let e: CustomEvent<SaveRequestType> = await onSave;
     chrome.test.assertFalse(actionMenu.open);
@@ -70,7 +71,7 @@ const tests = [
 
     // Set form field focused.
     testElement.isFormFieldFocused = true;
-    onSave = eventToPromise('save', testElement);
+    onSave = eventToPromise<CustomEvent<SaveRequestType>>('save', testElement);
     testElement.onSaveClick();
 
     // Unfocus, without making any edits. Saves the original document.
@@ -93,7 +94,7 @@ const tests = [
     chrome.test.assertEq(2, numRequests);
 
     // Save "Edited".
-    onSave = eventToPromise('save', testElement);
+    onSave = eventToPromise<CustomEvent<SaveRequestType>>('save', testElement);
     testElement.onSaveEditedClick();
     e = await onSave;
     chrome.test.assertFalse(actionMenu.open);
@@ -101,7 +102,7 @@ const tests = [
     chrome.test.assertEq(3, numRequests);
 
     // Save "Original".
-    onSave = eventToPromise('save', testElement);
+    onSave = eventToPromise<CustomEvent<SaveRequestType>>('save', testElement);
     testElement.onSaveOriginalClick();
     e = await onSave;
     chrome.test.assertFalse(actionMenu.open);

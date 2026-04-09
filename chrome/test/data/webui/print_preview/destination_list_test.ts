@@ -122,13 +122,15 @@ suite('DestinationListTest', function() {
   test('FireDestinationSelected', async () => {
     const items =
         list.shadowRoot.querySelectorAll('print-preview-destination-list-item');
-    let whenDestinationSelected = eventToPromise('destination-selected', list);
+    let whenDestinationSelected =
+        eventToPromise<CustomEvent<Destination>>('destination-selected', list);
     items[0]!.click();
 
     let event = await whenDestinationSelected;
     assertEquals(items[0]!.destination, event.detail);
 
-    whenDestinationSelected = eventToPromise('destination-selected', list);
+    whenDestinationSelected =
+        eventToPromise<CustomEvent<Destination>>('destination-selected', list);
     keyEventOn(items[1]!, 'keydown', 13, undefined, 'Enter');
 
     event = await whenDestinationSelected;
