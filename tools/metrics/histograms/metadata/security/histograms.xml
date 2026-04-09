@@ -1221,15 +1221,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SiteIsolation.MainFrameProcessReuse.BlockReason"
-    enum="MainFrameProcessReuseBlockReason" expires_after="2025-12-31">
+<histogram name="SiteIsolation.MainFrameProcessReuse.BlockReason2"
+    enum="MainFrameProcessReuseBlockReason" expires_after="2026-12-31">
   <owner>bashi@chromium.org</owner>
   <owner>gjc@google.com</owner>
   <owner>blink-network-stack@google.com</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
-    The reason why process sharing is disallowed for main frame navigation. The
-    UMA is only reported when the feature flag
+    The reason why process sharing is allowed or disallowed for main frame
+    navigation. The UMA is only reported when the feature flag
     ProcessPerSiteWithMainFrameThreshold or
     ReusePrerenderingProcessForMainFrames is enabled. The UMA is recorded when
     initializing a frame tree or getting a site instance for navigation.

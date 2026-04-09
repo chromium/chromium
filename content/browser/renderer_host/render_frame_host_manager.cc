@@ -448,29 +448,31 @@ void ReuseDefaultProcessFromDifferentBrowsingInstanceIfPossible(
 //
 // LINT.IfChange(MainFrameProcessReuseBlockReason)
 enum class MainFrameProcessReuseBlockReason {
-  kNotBlocked = 0,
-  kDisableProcessResuse = 1,
+  kObsoleteNotBlocked = 0,
+  kDisableProcessReuse = 1,
   kDevToolsWasEverAttached = 2,
   kDoesNotRequireDedicatedProcess = 3,
   kIsIpAddressOrLocalHost = 4,
   kSchemeIsNotHttpOrHttps = 5,
-  kEmbedderDisallowedReuseForUrl = 6,
-  kMaxValue = kEmbedderDisallowedReuseForUrl,
+  kEmbedderDisallowedProcessPerSiteReuseForUrl = 6,
+  kEmbedderDisallowedAnyProcessPerSiteReuse = 7,
+  kAllowedByProcessPerSite = 8,
+  kAllowedByPrerenderReuse = 9,
+  kNoReuseFeatureEnabled = 10,
+  kMaxValue = kNoReuseFeatureEnabled,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/security/enums.xml:MainFrameProcessReuseBlockReason)
 
 void RecordMainFrameProcessReuseBlockReason(
     MainFrameProcessReuseBlockReason reason) {
   base::UmaHistogramEnumeration(
-      "SiteIsolation.MainFrameProcessReuse.BlockReason", reason);
+      "SiteIsolation.MainFrameProcessReuse.BlockReason2", reason);
 }
 
 // Helper to compute the ProcessReusePolicy for a main frame navigation.
 // Returns the policy if reuse should be attempted, or a block reason if reuse
-// was considered but disqualified. Returns base::unexpected(std::nullopt) if
-// the feature flags aren't enabled.
-base::expected<ProcessReusePolicy,
-               std::optional<MainFrameProcessReuseBlockReason>>
+// was considered but disqualified.
+base::expected<ProcessReusePolicy, MainFrameProcessReuseBlockReason>
 GetProcessReusePolicyForMainFrame(BrowserContext* browser_context,
                                   const IsolationContext& isolation_context,
                                   const SiteInfo& site_info,
@@ -479,21 +481,6 @@ GetProcessReusePolicyForMainFrame(BrowserContext* browser_context,
   // ShouldAllowProcessPerSiteForMultipleMainFrames for the prerender process
   // reuse feature? This will cause the feature to be disabled for enterprise
   // users.
-  if (!base::FeatureList::IsEnabled(
-          features::kReusePrerenderingProcessForMainFrames)) {
-    if (!base::FeatureList::IsEnabled(
-            features::kProcessPerSiteUpToMainFrameThreshold) ||
-        !GetContentClient()
-             ->browser()
-             ->ShouldAllowProcessPerSiteForMultipleMainFrames(
-                 browser_context)) {
-      // TODO(crbug.com/495640925): MainFrameProcessReuseBlockReason is not
-      // returned here to keep the same behavior before the refactor. Consider
-      // extending the MainFrameProcessReuseBlockReason.
-      return base::unexpected(std::nullopt);
-    }
-  }
-
   if (!site_info.RequiresDedicatedProcess(isolation_context)) {
     return base::unexpected(
         MainFrameProcessReuseBlockReason::kDoesNotRequireDedicatedProcess);
@@ -501,7 +488,7 @@ GetProcessReusePolicyForMainFrame(BrowserContext* browser_context,
 
   if (base::FeatureList::IsEnabled(features::kDisableProcessReuse)) {
     return base::unexpected(
-        MainFrameProcessReuseBlockReason::kDisableProcessResuse);
+        MainFrameProcessReuseBlockReason::kDisableProcessReuse);
   }
 
   if (!base::FeatureList::IsEnabled(
@@ -532,28 +519,59 @@ GetProcessReusePolicyForMainFrame(BrowserContext* browser_context,
         MainFrameProcessReuseBlockReason::kSchemeIsNotHttpOrHttps);
   }
 
+  bool process_per_site_reuse_enabled = base::FeatureList::IsEnabled(
+      features::kProcessPerSiteUpToMainFrameThreshold);
+  bool prerender_reuse_enabled = base::FeatureList::IsEnabled(
+      features::kReusePrerenderingProcessForMainFrames);
+  bool client_allow_process_per_site = false;
+  bool client_allow_process_per_site_for_url = false;
+
+  if (process_per_site_reuse_enabled) {
+    client_allow_process_per_site =
+        GetContentClient()
+            ->browser()
+            ->ShouldAllowProcessPerSiteForMultipleMainFrames(browser_context);
+    client_allow_process_per_site_for_url =
+        GetContentClient()
+            ->browser()
+            ->ShouldReuseAnyExistingProcessForNewMainFrameSiteInstance(
+                browser_context, original_url);
+  }
+
   // Check embedder preference for reusing the process for this main frame
   // SiteInstance. Its original_url() allows path-specific embedder decisions.
   // This is most reliable for initial navigations in new SiteInstances where
-  // original_url() accurately reflects the intended target. Return if the
-  // embedder does not prefer reuse here.
-  if (base::FeatureList::IsEnabled(
-          features::kProcessPerSiteUpToMainFrameThreshold) &&
-      GetContentClient()
-          ->browser()
-          ->ShouldReuseAnyExistingProcessForNewMainFrameSiteInstance(
-              browser_context, original_url)) {
+  // original_url() accurately reflects the intended target.
+  //
+  // The process-per-site threshold policy takes precedence if enabled and
+  // allowed by the embedder for this specific URL.
+  if (process_per_site_reuse_enabled && client_allow_process_per_site &&
+      client_allow_process_per_site_for_url) {
     return ProcessReusePolicy::
         kReusePendingOrCommittedSiteWithMainFrameThreshold;
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kReusePrerenderingProcessForMainFrames)) {
+  // If the process-per-site policy is not applicable, we fall back to the
+  // prerendering process reuse policy.
+  if (prerender_reuse_enabled) {
     return ProcessReusePolicy::kReusePrerenderingProcessForMainFrame;
   }
 
-  return base::unexpected(
-      MainFrameProcessReuseBlockReason::kEmbedderDisallowedReuseForUrl);
+  // At this point, neither reuse policy was selected. We record the specific
+  // reason why.
+  if (!process_per_site_reuse_enabled && !prerender_reuse_enabled) {
+    return base::unexpected(
+        MainFrameProcessReuseBlockReason::kNoReuseFeatureEnabled);
+  }
+
+  // At this point, process-per-site reuse is enabled, decide the reason for
+  // disabling reuse from the embedder.
+  if (!client_allow_process_per_site) {
+    return base::unexpected(MainFrameProcessReuseBlockReason::
+                                kEmbedderDisallowedAnyProcessPerSiteReuse);
+  }
+  return base::unexpected(MainFrameProcessReuseBlockReason::
+                              kEmbedderDisallowedProcessPerSiteReuseForUrl);
 }
 
 // If `site_instance` is for a main frame, try to reuse an existing process
@@ -590,11 +608,19 @@ void UpdateProcessReusePolicyForMainFrame(SiteInstanceImpl* site_instance,
       site_instance->GetSiteInfo(), original_url);
 
   if (expected_policy.has_value()) {
-    RecordMainFrameProcessReuseBlockReason(
-        MainFrameProcessReuseBlockReason::kNotBlocked);
+    if (expected_policy.value() ==
+        ProcessReusePolicy::
+            kReusePendingOrCommittedSiteWithMainFrameThreshold) {
+      RecordMainFrameProcessReuseBlockReason(
+          MainFrameProcessReuseBlockReason::kAllowedByProcessPerSite);
+    } else if (expected_policy.value() ==
+               ProcessReusePolicy::kReusePrerenderingProcessForMainFrame) {
+      RecordMainFrameProcessReuseBlockReason(
+          MainFrameProcessReuseBlockReason::kAllowedByPrerenderReuse);
+    }
     site_instance->set_process_reuse_policy(expected_policy.value());
-  } else if (expected_policy.error().has_value()) {
-    RecordMainFrameProcessReuseBlockReason(expected_policy.error().value());
+  } else {
+    RecordMainFrameProcessReuseBlockReason(expected_policy.error());
   }
 }
 

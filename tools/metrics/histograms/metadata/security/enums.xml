@@ -227,13 +227,17 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(MainFrameProcessReuseBlockReason) -->
 
 <enum name="MainFrameProcessReuseBlockReason">
-  <int value="0" label="Not blocked"/>
+  <int value="0" label="(Obsolete) Not blocked. Removed in 2026/04"/>
   <int value="1" label="Process reuse is disabled"/>
   <int value="2" label="DevTools was ever attached"/>
   <int value="3" label="Does not require dedicated process"/>
   <int value="4" label="Localhost or IP address based host"/>
   <int value="5" label="Scheme is not http(s)"/>
-  <int value="6" label="Embedder disallowed reuse for URL"/>
+  <int value="6" label="Embedder disallowed process-per-site reuse for URL"/>
+  <int value="7" label="Embedder disallowed any process-per-site reuse"/>
+  <int value="8" label="Allowed by process-per-site threshold"/>
+  <int value="9" label="Allowed by prerender process reuse"/>
+  <int value="10" label="No main frame process reuse feature is enabled"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/renderer_host/render_frame_host_manager.cc:MainFrameProcessReuseBlockReason) -->
