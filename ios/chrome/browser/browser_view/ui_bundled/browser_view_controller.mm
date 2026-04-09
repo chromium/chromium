@@ -233,6 +233,9 @@ const CGFloat kTopDynamicIslandInset = 24;
   std::unique_ptr<FullscreenBrowserAgentObserverBridge>
       _fullscreenBrowserAgentObserverBridge;
 
+  // The fullscreen browser agent.
+  raw_ptr<FullscreenBrowserAgent> _fullscreenBrowserAgent;
+
   // The service used to load url parameters in current or new tab.
   raw_ptr<UrlLoadingBrowserAgent> _urlLoadingBrowserAgent;
 
@@ -401,6 +404,7 @@ const CGFloat kTopDynamicIslandInset = 24;
     _footerFullscreenProgress = 1.0;
 
     if (IsFullscreenRefactoringEnabled()) {
+      _fullscreenBrowserAgent = dependencies.fullscreenBrowserAgent;
       _fullscreenBrowserAgentObserverBridge =
           std::make_unique<FullscreenBrowserAgentObserverBridge>(
               self, dependencies.fullscreenBrowserAgent);
@@ -1047,11 +1051,20 @@ const CGFloat kTopDynamicIslandInset = 24;
       animateAlongsideTransition:^(
           id<UIViewControllerTransitionCoordinatorContext>) {
         [weakSelf animateTransition];
+        [weakSelf invalidateFullscreenInsets];
       }
                       completion:nil];
 
   crash_keys::SetCurrentOrientation(GetInterfaceOrientation(),
                                     [[UIDevice currentDevice] orientation]);
+}
+
+- (void)invalidateFullscreenInsets {
+  if (!IsFullscreenRefactoringEnabled()) {
+    return;
+  }
+  CHECK(_fullscreenBrowserAgent);
+  _fullscreenBrowserAgent->InvalidateInsetRange();
 }
 
 - (void)animateTransition {

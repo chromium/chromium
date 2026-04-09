@@ -72,10 +72,6 @@ class FullscreenBrowserAgentTest : public PlatformTest {
     return base::PassKey<FullscreenBrowserAgentTest>();
   }
 
-  void InvalidateInsetRange(FullscreenBrowserAgent* agent) {
-    agent->InvalidateInsetRange(PassKey());
-  }
-
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
@@ -117,7 +113,7 @@ TEST_F(FullscreenBrowserAgentTest, InvalidateInsetRange) {
   agent->AddObserver(&observer2);
   agent->AddObserver(&observer3);
 
-  InvalidateInsetRange(agent);
+  agent->InvalidateInsetRange();
 
   EXPECT_TRUE(base_observer.will_update_obscured_inset_range_called_);
   EXPECT_TRUE(base_observer.did_update_obscured_inset_range_called_);
@@ -149,7 +145,7 @@ TEST_F(FullscreenBrowserAgentTest, IncrementalScroll) {
   agent->AddObserver(&observer2);
 
   // Initialize ranges. Top delta = 40, Bottom delta = 60.
-  InvalidateInsetRange(agent);
+  agent->InvalidateInsetRange();
 
   EXPECT_EQ(1.0, agent->top_progress());
   EXPECT_EQ(1.0, agent->bottom_progress());
@@ -205,7 +201,7 @@ TEST_F(FullscreenBrowserAgentTest, EnterExitFullscreen) {
   // Initialize ranges. Top delta = 40.
   RangeTestFullscreenBrowserAgentObserver observer1(UIRectEdgeTop, 10.0, 50.0);
   agent->AddObserver(&observer1);
-  InvalidateInsetRange(agent);
+  agent->InvalidateInsetRange();
 
   EXPECT_EQ(1.0, agent->top_progress());
 

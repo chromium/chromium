@@ -138,7 +138,7 @@ void FullscreenBrowserAgent::DecrementDisabledCounter(PassKey) {
   }
 }
 
-void FullscreenBrowserAgent::InvalidateInsetRange(PassKey) {
+void FullscreenBrowserAgent::InvalidateInsetRange() {
   min_insets_ = UIEdgeInsetsZero;
   max_insets_ = UIEdgeInsetsZero;
 

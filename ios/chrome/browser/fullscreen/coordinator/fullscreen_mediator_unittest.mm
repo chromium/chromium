@@ -128,16 +128,3 @@ TEST_F(FullscreenMediatorTest, WebStateWasShownInvalidatesInsetsOnce) {
   EXPECT_EQ(observer_.will_update_obscured_inset_range_count(),
             initial_count + 1);
 }
-
-// Tests that UIDeviceOrientationDidChangeNotification invalidates the inset
-// range.
-TEST_F(FullscreenMediatorTest, OrientationDidChangeInvalidatesInsets) {
-  int initial_count = observer_.will_update_obscured_inset_range_count();
-
-  [[NSNotificationCenter defaultCenter]
-      postNotificationName:UIDeviceOrientationDidChangeNotification
-                    object:nil];
-
-  EXPECT_EQ(observer_.will_update_obscured_inset_range_count(),
-            initial_count + 1);
-}

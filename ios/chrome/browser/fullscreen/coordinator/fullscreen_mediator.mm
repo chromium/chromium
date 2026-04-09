@@ -113,10 +113,6 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
                name:UIAccessibilityVoiceOverStatusDidChangeNotification
              object:nil];
     [defaultCenter addObserver:self
-                      selector:@selector(orientationDidChange)
-                          name:UIDeviceOrientationDidChangeNotification
-                        object:nil];
-    [defaultCenter addObserver:self
                       selector:@selector(applicationDidEnterBackground)
                           name:UIApplicationDidEnterBackgroundNotification
                         object:nil];
@@ -193,7 +189,7 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
     return;
   }
   _isBottomOmnibox = isCurrentLayoutBottomOmnibox;
-  _browserAgent->InvalidateInsetRange(PassKey());
+  _browserAgent->InvalidateInsetRange();
 }
 
 #pragma mark - CRWWebStateObserver
@@ -202,7 +198,7 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
   // TODO(crbug.com/496229929): Call InvalidateInsetRange() from the correct
   // event(s).
   if (!_hasInitializedInsets) {
-    _browserAgent->InvalidateInsetRange(PassKey());
+    _browserAgent->InvalidateInsetRange();
     _hasInitializedInsets = YES;
   }
   [self updateViewportInsets:_browserAgent->insets()];
@@ -320,10 +316,6 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
   _voiceOverDisabler = UIAccessibilityIsVoiceOverRunning()
                            ? std::make_unique<ScopedFullscreenDisabler>(self)
                            : nullptr;
-}
-
-- (void)orientationDidChange {
-  _browserAgent->InvalidateInsetRange(PassKey());
 }
 
 - (void)applicationDidEnterBackground {

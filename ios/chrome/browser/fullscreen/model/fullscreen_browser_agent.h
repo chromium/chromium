@@ -77,7 +77,7 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
 
   // Invalidates the current inset ranges and recalculates them by notifying
   // observers.
-  void InvalidateInsetRange(PassKey);
+  void InvalidateInsetRange();
 
  private:
   friend class BrowserUserData<FullscreenBrowserAgent>;
