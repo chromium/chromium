@@ -510,6 +510,17 @@ void CheckParsedHeadersEquals(const network::mojom::ParsedHeadersPtr& lhs,
     adjusted_lhs->critical_ch = std::nullopt;
     adjusted_lhs->client_hints_ignored_due_to_clear_site_data_header = true;
   }
+
+  // The parsed Connection-Allowlist header holds a copy of the response URL,
+  // which is used to construct violation reports. If devtools protocol or
+  // similar is used to tinker with the navigation URL, it's possible for there
+  // to be a mismatch between the two sets of headers. For now, force the two
+  // URLs to be equal, in order to prevent this check from failing.
+  if (base::FeatureList::IsEnabled(network::features::kConnectionAllowlists)) {
+    adjusted_lhs->connection_allowlists.response_url =
+        rhs->connection_allowlists.response_url;
+  }
+
   if (mojo::Equals(adjusted_lhs, rhs)) {
     return;
   }
