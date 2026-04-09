@@ -145,8 +145,14 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserDialogManagerInteractiveTest,
       WaitForHide(default_browser::kBubbleDialogId));
 }
 
+// TODO(crbug.com/501030880): Re-enable the test
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ShowAndAccept DISABLED_ShowAndAccept
+#else
+#define MAYBE_ShowAndAccept ShowAndAccept
+#endif
 IN_PROC_BROWSER_TEST_F(DefaultBrowserDialogManagerInteractiveTest,
-                       ShowAndAccept) {
+                       MAYBE_ShowAndAccept) {
   RunTestSequence(
       Do([this]() { ShowDialogManager(); }),
       WaitForShow(default_browser::kBubbleDialogOpenSettingsButtonId),
