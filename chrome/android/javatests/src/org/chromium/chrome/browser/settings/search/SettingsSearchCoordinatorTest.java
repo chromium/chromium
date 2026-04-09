@@ -23,12 +23,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsActivity;
@@ -83,6 +85,30 @@ public class SettingsSearchCoordinatorTest {
         return activityRef.get();
     }
 
+    private void performSearch(String query) throws Exception {
+        var resultDisplayHelper = new CallbackHelper();
+        int callCount = resultDisplayHelper.getCallCount();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    try {
+                        SettingsSearchCoordinator searchCoordinator = getSearchCoordinator();
+
+                        searchCoordinator.enterSearchState(/* isRestored= */ false);
+                        searchCoordinator.performSearch(
+                                query,
+                                (results) -> {
+                                    searchCoordinator.displayResultsFragment(results);
+                                    resultDisplayHelper.notifyCalled();
+                                });
+                        return true;
+                    } catch (IllegalStateException e) {
+                        return false; // FragmentManager destroyed during enterSearchState
+                    }
+                });
+
+        resultDisplayHelper.waitForCallback(callCount);
+    }
+
     @Test
     @SmallTest
     @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
@@ -90,7 +116,6 @@ public class SettingsSearchCoordinatorTest {
         mSettingsActivityTestRule.startSettingsActivity();
 
         CallbackHelper callbackHelper = new CallbackHelper();
-
         CriteriaHelper.pollUiThread(
                 () -> {
                     SettingsSearchCoordinator searchCoordinator = getSearchCoordinator();
@@ -122,32 +147,10 @@ public class SettingsSearchCoordinatorTest {
         SettingsSearchCoordinator searchCoordinator = activity.getSearchCoordinatorForTesting();
         assertFalse(searchCoordinator.hasRecentSearchEntriesForTesting());
 
-        var resultDisplayHelper = new CallbackHelper();
-        int callCount = resultDisplayHelper.getCallCount();
-
         // Search for 'Privacy Guide'.
         int titleId = R.string.privacy_guide_pref_title;
         String query = activity.getString(titleId);
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    SettingsSearchCoordinator currentCoordinator = getSearchCoordinator();
-                    if (currentCoordinator == null) return false;
-
-                    try {
-                        currentCoordinator.enterSearchState(/* isRestored= */ false);
-                        currentCoordinator.performSearch(
-                                query,
-                                (results) -> {
-                                    currentCoordinator.displayResultsFragment(results);
-                                    resultDisplayHelper.notifyCalled();
-                                });
-                        return true;
-                    } catch (IllegalStateException e) {
-                        return false; // FragmentManager destroyed during enterSearchState
-                    }
-                });
-
-        resultDisplayHelper.waitForCallback(callCount);
+        performSearch(query);
         onView(withText(titleId)).perform(click());
         assertTrue(searchCoordinator.hasRecentSearchEntriesForTesting());
 
@@ -159,5 +162,97 @@ public class SettingsSearchCoordinatorTest {
         SettingsActivity activity2 = waitForSettingsActivity();
         SettingsSearchCoordinator searchCoordinator2 = activity2.getSearchCoordinatorForTesting();
         assertTrue(searchCoordinator2.hasRecentSearchEntriesForTesting());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
+    public void testHistograms_clickedResult() throws Exception {
+        mSettingsActivityTestRule.startSettingsActivity();
+        SettingsActivity activity = waitForSettingsActivity();
+        var histograms =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return HistogramWatcher.newSingleRecordWatcher(
+                                    "Settings.Search.ExitReason",
+                                    SettingsSearchCoordinator.ExitReason.CLICKED_RESULT);
+                        });
+
+        // Search for 'Privacy Guide' and click the result -> emit "clicked-result"
+        int titleId = R.string.privacy_guide_pref_title;
+        String query = activity.getString(titleId);
+        performSearch(query);
+        onView(withText(titleId)).perform(click());
+        ThreadUtils.runOnUiThreadBlocking(() -> histograms.assertExpected());
+
+        // Invoke OS back to get back to search UI, and perform a new search. But exit search
+        // without cliking the results -> emit "abandoned-results"
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SettingsSearchCoordinator searchCoordinator = getSearchCoordinator();
+                    searchCoordinator.handleBackAction();
+                });
+        performSearch("address");
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var histograms2 =
+                            HistogramWatcher.newSingleRecordWatcher(
+                                    "Settings.Search.ExitReason",
+                                    SettingsSearchCoordinator.ExitReason.ABANDONED_RESULTS);
+                    getSearchCoordinator().exitSearchState(/* clearFragment= */ true);
+                    histograms2.assertExpected();
+                });
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
+    public void testHistograms_abandonedResults() throws Exception {
+        mSettingsActivityTestRule.startSettingsActivity();
+        SettingsActivity activity = waitForSettingsActivity();
+
+        var histograms =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return HistogramWatcher.newSingleRecordWatcher(
+                                    "Settings.Search.ExitReason",
+                                    SettingsSearchCoordinator.ExitReason.ABANDONED_RESULTS);
+                        });
+
+        // Search for 'Privacy Guide'.
+        int titleId = R.string.privacy_guide_pref_title;
+        String query = activity.getString(titleId);
+        performSearch(query);
+
+        // Do not click on search results but just exit -> emit "abandoned-results"
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getSearchCoordinator().exitSearchState(/* clearFragment= */ true);
+                    histograms.assertExpected();
+                });
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
+    public void testHistograms_abandonedNoResults() throws Exception {
+        mSettingsActivityTestRule.startSettingsActivity();
+        SettingsActivity activity = waitForSettingsActivity();
+
+        var histograms =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return HistogramWatcher.newSingleRecordWatcher(
+                                    "Settings.Search.ExitReason",
+                                    SettingsSearchCoordinator.ExitReason.ABANDONED_NORESULTS);
+                        });
+        performSearch("xzvfl"); // search returns no results for this gibberish
+
+        // Just exit when there's no result -> emit "abandoned-no-results"
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getSearchCoordinator().exitSearchState(/* clearFragment= */ true);
+                    histograms.assertExpected();
+                });
     }
 }

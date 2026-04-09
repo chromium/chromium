@@ -29,6 +29,7 @@ import android.widget.EditText;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.DimenRes;
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.ActionMenuView;
@@ -50,7 +51,7 @@ import org.json.JSONObject;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
-import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.ui.KeyboardUtils;
@@ -115,8 +116,8 @@ public class SettingsSearchCoordinator
     private static final String KEY_SELECTION_START = "SelectionStart";
     private static final String KEY_SELECTION_END = "SelectionEnd";
     private static final String KEY_FIRST_UI_ENTERED = "FirstUiEntered";
-    private static final String KEY_RESULT_UPDATED = "ResultUpdated";
-    private static final String KEY_SEARCH_COMPLETED = "SearchCompleted";
+    private static final String KEY_RESULT_RETURNED = "ResultReturned";
+    private static final String KEY_EXIT_REASON_LOGGED = "ExitReasonLogged";
 
     private final AppCompatActivity mActivity;
     private final BooleanSupplier mUseMultiColumnSupplier;
@@ -164,26 +165,38 @@ public class SettingsSearchCoordinator
     private boolean mQueryEntered;
     private SettingsIndexData mIndexData;
 
-    // True if "Search performed" event should be logged. The event is logged when user newly
-    // taps into search box to perform the operation, not afterwards.
-    private boolean mShouldLogSearchPerformed;
-
     // True while local search (language, site settings) UI is enabled, so that settings search
     // should remain hidden across configuration changes.
     private boolean mSuppressUi;
+
+    // Used for histogram that logs the user behavior for search.
+    // LINT.IfChange(ExitReason)
+    @IntDef({
+        ExitReason.CLICKED_RESULT,
+        ExitReason.ABANDONED_RESULTS,
+        ExitReason.ABANDONED_NORESULTS,
+        ExitReason.COUNT
+    })
+    public @interface ExitReason {
+        int CLICKED_RESULT = 0;
+        int ABANDONED_RESULTS = 1;
+        int ABANDONED_NORESULTS = 2;
+        int COUNT = 3;
+    }
+
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/settings/enums.xml:SettingsSearchExitReason)
 
     // Flags for metrics:
     // Whether the search UI is entered for the first time for the current settings activity
     // session. Used to record the event a user ever entered search since the settings is opened.
     private boolean mFirstUiEntered = true;
 
-    // Whether the result for a new query is displayed. Used to record the event 'a user tapped
-    // search result' only once per search result.
-    private boolean mResultUpdated;
+    // Whether the last search returns non-zero results.
+    private boolean mResultReturned;
 
-    // Whether user went through the critical user journey of performing search and clicked
-    // the search result.
-    private boolean mSearchCompleted;
+    // Whether the ExitReason histogram was already logged for a given query session, to avoid
+    // double logging when exiting search.
+    private boolean mExitReasonLogged;
 
     // Interface to communite with search backend and receive results asynchronously.
     public interface SearchCallback {
@@ -323,8 +336,8 @@ public class SettingsSearchCoordinator
             }
             mPaneOpenedBySearch = savedState.getBoolean(KEY_PANE_OPENED_BY_SEARCH);
             mFirstUiEntered = savedState.getBoolean(KEY_FIRST_UI_ENTERED);
-            mResultUpdated = savedState.getBoolean(KEY_RESULT_UPDATED);
-            mSearchCompleted = savedState.getBoolean(KEY_SEARCH_COMPLETED);
+            mResultReturned = savedState.getBoolean(KEY_RESULT_RETURNED);
+            mExitReasonLogged = savedState.getBoolean(KEY_EXIT_REASON_LOGGED);
             mHandler.post(() -> showTitleTextView(true));
         }
         mHandler.post(this::restoreRecentSearches);
@@ -337,9 +350,9 @@ public class SettingsSearchCoordinator
     }
 
     private void onClickSearchBox(View view) {
-        RecordUserAction.record("Android.Settings.Search.UiOpened");
+        RecordHistogram.recordBooleanHistogram("Settings.Search.UiOpened", true);
         if (mFirstUiEntered) {
-            RecordUserAction.record("Android.Settings.Search.UiOpenedPerSession");
+            RecordHistogram.recordBooleanHistogram("Settings.Search.UiOpenedPerSession", true);
             mFirstUiEntered = false;
         }
 
@@ -716,6 +729,8 @@ public class SettingsSearchCoordinator
         EditText queryEdit = mActivity.findViewById(R.id.search_query);
         queryEdit.setText("");
         mQueryEntered = false;
+        mResultReturned = false;
+        mExitReasonLogged = false;
         if (!isRestored) {
             // Focus is required only when we display a zero-state illustration, not when we simply
             // mean to clear fragment at activity restoration.
@@ -762,7 +777,8 @@ public class SettingsSearchCoordinator
         assumeNonNull(mActivity.getSupportActionBar()).setDisplayHomeAsUpEnabled(show);
     }
 
-    private void exitSearchState(boolean clearFragment) {
+    @VisibleForTesting(otherwise = PRIVATE)
+    void exitSearchState(boolean clearFragment) {
         // Back action in search state. Restore the settings fragment and search UI.
         View searchBox = mActivity.findViewById(R.id.search_box);
         View queryContainer = mActivity.findViewById(R.id.search_query_container);
@@ -774,7 +790,6 @@ public class SettingsSearchCoordinator
         // in observeFragmentForVisibilityChange for single-column settings.
         if (mUseMultiColumn) searchBox.setVisibility(View.VISIBLE);
 
-        mQueryEntered = false;
         showBackArrowInSingleColumnMode(true);
         EditText queryEdit = mActivity.findViewById(R.id.search_query);
         KeyboardUtils.hideAndroidSoftKeyboard(queryEdit);
@@ -796,10 +811,23 @@ public class SettingsSearchCoordinator
         setFragmentState(FS_SETTINGS);
         mBackActionCallback.setEnabled(false);
         if (mUseMultiColumn) mUpdateFirstVisibleTitle.onResult(0);
-        mShouldLogSearchPerformed = false;
 
         updateHelpMenuVisibility();
         adjustTalkbackTraversalOrder(searchBox);
+        logExitReason();
+    }
+
+    private void logExitReason() {
+        // Do not log if user exit search UI without ever entering queries.
+        if (!mQueryEntered) return;
+
+        if (!mResultReturned) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Settings.Search.ExitReason", ExitReason.ABANDONED_NORESULTS, ExitReason.COUNT);
+        } else if (!mExitReasonLogged) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Settings.Search.ExitReason", ExitReason.ABANDONED_RESULTS, ExitReason.COUNT);
+        }
     }
 
     /** Update the visibility of the help menu on the toolbar. */
@@ -914,7 +942,6 @@ public class SettingsSearchCoordinator
                     },
                     false);
         }
-        mShouldLogSearchPerformed = true;
         return emptyFragment;
     }
 
@@ -937,7 +964,6 @@ public class SettingsSearchCoordinator
                 .addToBackStack(null)
                 .setReorderingAllowed(true)
                 .commit();
-        mShouldLogSearchPerformed = true;
         return fragment;
     }
 
@@ -1295,13 +1321,7 @@ public class SettingsSearchCoordinator
         }
         if (!query.isEmpty()) {
             mQueryEntered = true;
-            mSearchRunnable =
-                    () -> {
-                        if (mShouldLogSearchPerformed) {
-                            RecordUserAction.record("Android.Settings.Search.Performed");
-                        }
-                        callback.onSearchResults(mIndexData.search(query));
-                    };
+            mSearchRunnable = () -> callback.onSearchResults(mIndexData.search(query));
             mHandler.postDelayed(mSearchRunnable, 200);
         } else if (mQueryEntered) {
             // Do this only after a query has been entered at least once.
@@ -1319,15 +1339,17 @@ public class SettingsSearchCoordinator
     @VisibleForTesting(otherwise = PRIVATE)
     void displayResultsFragment(SearchResults results) {
         mSearchRunnable = null;
+        mExitReasonLogged = false;
+        mResultReturned = !results.getItems().isEmpty();
 
-        if (results.getItems().isEmpty()) {
+        if (!mResultReturned) {
             clearFragment(
                     R.drawable.settings_no_match,
                     /* addToBackStack= */ false,
                     this::openHelpCenter);
-            RecordUserAction.record("Android.Settings.Search.NoMatchFound");
             return;
         }
+
         // Create a new instance of the fragment and pass the results
         SearchResultsPreferenceFragment resultsFragment = new SearchResultsPreferenceFragment();
         resultsFragment.setPreferenceData(results.groupByHeader());
@@ -1340,8 +1362,6 @@ public class SettingsSearchCoordinator
                 .replace(getViewIdForSearchDisplay(), resultsFragment, RESULT_FRAGMENT)
                 .setReorderingAllowed(true)
                 .commit();
-        mShouldLogSearchPerformed = false;
-        mResultUpdated = true;
     }
 
     /**
@@ -1354,11 +1374,10 @@ public class SettingsSearchCoordinator
      */
     private void onResultSelected(
             @Nullable String preferenceFragment, boolean highlight, SettingsIndexData.Entry entry) {
-        if (mResultUpdated) {
-            RecordUserAction.record("Android.Settings.Search.ResultClicked");
-            mResultUpdated = false;
-            mSearchCompleted = true;
-        }
+        RecordHistogram.recordEnumeratedHistogram(
+                "Settings.Search.ExitReason", ExitReason.CLICKED_RESULT, ExitReason.COUNT);
+        mExitReasonLogged = true; // Avoid double-logging when search is exited
+
         mRecentSearches.add(entry);
         EditText queryEdit = mActivity.findViewById(R.id.search_query);
         KeyboardUtils.hideAndroidSoftKeyboard(queryEdit);
@@ -1416,11 +1435,6 @@ public class SettingsSearchCoordinator
         }
 
         enterResultState();
-    }
-
-    /** Returns whether user performed search and clicked the result. */
-    public boolean searchCompleted() {
-        return mSearchCompleted;
     }
 
     private void enterResultState() {
@@ -1604,8 +1618,8 @@ public class SettingsSearchCoordinator
         outState.putInt(KEY_FRAGMENT_STATE, mFragmentState);
         outState.putBoolean(KEY_PANE_OPENED_BY_SEARCH, mPaneOpenedBySearch);
         outState.putBoolean(KEY_FIRST_UI_ENTERED, mFirstUiEntered);
-        outState.putBoolean(KEY_RESULT_UPDATED, mResultUpdated);
-        outState.putBoolean(KEY_SEARCH_COMPLETED, mSearchCompleted);
+        outState.putBoolean(KEY_RESULT_RETURNED, mResultReturned);
+        outState.putBoolean(KEY_EXIT_REASON_LOGGED, mExitReasonLogged);
         EditText queryEdit = mActivity.findViewById(R.id.search_query);
         String queryText = queryEdit != null ? queryEdit.getText().toString() : null;
         if (!TextUtils.isEmpty(queryText)) {
@@ -1625,6 +1639,9 @@ public class SettingsSearchCoordinator
         mContainmentController = null;
 
         persistRecentSearches();
+        if (mFragmentState != FS_SETTINGS) {
+            logExitReason();
+        }
     }
 
     private void persistRecentSearches() {

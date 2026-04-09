@@ -4913,48 +4913,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="Android.Settings.Opened">
-  <owner>adelm@google.com</owner>
-  <owner>jinsukkim@chromium.org</owner>
-  <description>User opened Settings activity.</description>
-</action>
-
-<action name="Android.Settings.Search.NoMatchFound">
-  <owner>adelm@google.com</owner>
-  <owner>jinsukkim@chromium.org</owner>
-  <description>
-    Settings search found no match to the entered query.
-  </description>
-</action>
-
-<action name="Android.Settings.Search.Performed">
-  <owner>adelm@google.com</owner>
-  <owner>jinsukkim@chromium.org</owner>
-  <description>User entered a new query for search.</description>
-</action>
-
-<action name="Android.Settings.Search.ResultClicked">
-  <owner>adelm@google.com</owner>
-  <owner>jinsukkim@chromium.org</owner>
-  <description>
-    User clicked the search result to open the corresponding entry.
-  </description>
-</action>
-
-<action name="Android.Settings.Search.UiOpened">
-  <owner>adelm@google.com</owner>
-  <owner>jinsukkim@chromium.org</owner>
-  <description>User tapped search bar UI.</description>
-</action>
-
-<action name="Android.Settings.Search.UiOpenedPerSession">
-  <owner>adelm@google.com</owner>
-  <owner>jinsukkim@chromium.org</owner>
-  <description>
-    Same as above, but recorded only once since user opens Settings.
-  </description>
-</action>
-
 <action name="Android.Survey.ShowSurveyInfoBar">
   <obsolete>
     Deprecated 12/2022 as part of survey message launch cleanup.

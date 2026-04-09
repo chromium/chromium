@@ -552,6 +552,16 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Keyboard shortcut switched to Space or Tab"/>
 </enum>
 
+<!-- LINT.IfChange(SettingsSearchExitReason) -->
+
+<enum name="SettingsSearchExitReason">
+  <int value="0" label="Clicked Results"/>
+  <int value="1" label="Abandoned Results"/>
+  <int value="2" label="Abandoned No Results"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/settings/search/SettingsSearchCoordinator.java:ExitReason) -->
+
 <enum name="TrackedPreference">
   <int value="0" label="kShowHomeButton"/>
   <int value="1" label="kHomePageIsNewTabPage"/>

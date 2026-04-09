@@ -423,7 +423,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             if (startTime > 0) mStartTime = startTime;
         } else if (isForMainSettings()) {
             mStartTime = SystemClock.elapsedRealtime();
-            RecordUserAction.record("Android.Settings.Opened");
+            RecordHistogram.recordBooleanHistogram("Settings.Opened", true);
         }
     }
 
@@ -966,10 +966,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (!mStartTimeSaved && isForMainSettings()) {
             long timeSpent = SystemClock.elapsedRealtime() - mStartTime;
             RecordHistogram.recordLongTimesHistogram("Settings.SessionDuration", timeSpent);
-            if (mSearchCoordinator != null && mSearchCoordinator.searchCompleted()) {
-                RecordHistogram.recordLongTimesHistogram(
-                        "Settings.SessionDuration.SearchCompleted", timeSpent);
-            }
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
                 && mAppHeaderCoordinator != null) {
