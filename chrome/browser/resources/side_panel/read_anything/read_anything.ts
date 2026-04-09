@@ -50,6 +50,7 @@ export {PauseActionSource, SpeechEngineState, SpeechModel} from './read_aloud/sp
 export {getCurrentSpeechRate, isInvalidHighlightForWordHighlighting, textEndsWithOpeningPunctuation} from './read_aloud/speech_presentation_rules.js';
 export {TextSegmenter} from './read_aloud/text_segmenter.js';
 export {TsReadModelImpl} from './read_aloud/ts_model_impl.js';
+export type {TtsClient, TtsUtterance} from './read_aloud/tts_client.js';
 export {getFilteredVoiceList} from './read_aloud/tts_voice_filtering.js';
 export {V8ModelImpl} from './read_aloud/v8_model_impl.js';
 export type {VoiceLanguageListener} from './read_aloud/voice_language_controller.js';
@@ -59,6 +60,7 @@ export {VoiceLanguageModel} from './read_aloud/voice_language_model.js';
 export type {VoiceNotificationListener} from './read_aloud/voice_notification_manager.js';
 export {VoiceNotificationManager} from './read_aloud/voice_notification_manager.js';
 export type {VoiceSelectionMenuElement} from './read_aloud/voice_selection_menu.js';
+export {WebSpeechTtsClient} from './read_aloud/webspeech_tts_client.js';
 export type {WordBoundaryState} from './read_aloud/word_boundaries.js';
 export {WordBoundaries} from './read_aloud/word_boundaries.js';
 export {getWordCount, isRectMostlyVisible, isRectVisible, LOG_EMPTY_DELAY_MS, MOSTLY_VISIBLE_PERCENT, playFromSelectionTimeout, spinnerDebounceTimeout} from './shared/common.js';

@@ -276,6 +276,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, TtsVoiceFiltering) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, WebSpeechTtsClient) {
+  RunSidePanelTest("side_panel/read_anything/webspeech_tts_client_test.js",
+                   "mocha.run()");
+}
+
 class ImmersiveReadAnythingMochaTest : public ReadAnythingMochaBrowserTest {
  protected:
   ImmersiveReadAnythingMochaTest() {

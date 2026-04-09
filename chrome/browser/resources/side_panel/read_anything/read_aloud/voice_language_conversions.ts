@@ -75,11 +75,11 @@ export enum VoiceClientSideStatusCode {
   NOT_INSTALLED,         // Available to be downloaded but not installed
   SENT_INSTALL_REQUEST,  // We sent an install request
   SENT_INSTALL_REQUEST_ERROR_RETRY,  // We sent an install request retrying a
-                                     // previously failed download
+  // previously failed download
   INSTALLED_AND_UNAVAILABLE,  // The server says voice is on disk, but it's not
-                              // available to the local speechSynthesis API yet
+  // available to the local speechSynthesis API yet
   AVAILABLE,  // The voice is installed and available to be used by the local
-              // speechSynthesis API
+  // speechSynthesis API
   ERROR_INSTALLING,          // Couldn't install
   INSTALL_ERROR_ALLOCATION,  // Couldn't install due to not enough memory
 }
@@ -89,7 +89,7 @@ export enum NotificationType {
   DOWNLOADING,                // Language is downloading.
   DOWNLOADED,                 // Language is downloaded.
   GOOGLE_VOICES_UNAVAILABLE,  // Google voices are not available due to not
-                              // accessing the extension.
+  // accessing the extension.
   NO_INTERNET,  // No available voices for this language due to no internet.
   NO_SPACE,     // No available voices for this language due to no space.
   NO_SPACE_HQ,  // No high-quality voices for this language due to no space.
@@ -107,6 +107,10 @@ const GOOGLE_STRING_IDENTIFIER = 'Google';
 
 export function hasNaturalIdentifier(voice: SpeechSynthesisVoice) {
   return voice.name.includes(NATURAL_STRING_IDENTIFIER);
+}
+
+export function defaultIsNatural(voice: SpeechSynthesisVoice) {
+  return hasNaturalIdentifier(voice);
 }
 
 export function hasEspeakIdentifier(voice?: SpeechSynthesisVoice|null):
