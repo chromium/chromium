@@ -18174,6 +18174,25 @@
             ]
         }
     ],
+    "PopularSitesRefreshUs": [
+        {
+            "platforms": [
+                "android",
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Arm1",
+                    "params": {
+                        "arm": "1"
+                    },
+                    "enable_features": [
+                        "PopularSitesRefreshUs"
+                    ]
+                }
+            ]
+        }
+    ],
     "PostDelayedTaskFocusTab": [
         {
             "platforms": [
