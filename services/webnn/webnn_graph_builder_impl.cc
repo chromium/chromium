@@ -2358,6 +2358,10 @@ bool OperationValidationContext::ValidateSlice(const mojom::Slice& slice,
     // The slice operator is invalid.
     return false;
   }
+  if (input->descriptor.Rank() == 0) {
+    // Slicing a scalar is a no-op that the blink side has handled.
+    return false;
+  }
 
   const base::expected<OperandDescriptor, std::string> validated_output =
       ValidateSliceAndInferOutput(*context_properties_, input->descriptor,
