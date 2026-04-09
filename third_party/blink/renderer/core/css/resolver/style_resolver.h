@@ -385,6 +385,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
     kSVGUASheet,
     kMathMLUASheet,
     kFullscreenUASheet,
+    kPrintUASheet,
     kQuirksUASheet,
     kViewSourceUASheet,
     kForcedColorsUASheet,
