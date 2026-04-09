@@ -129,6 +129,16 @@ MLMultiArray* CreateMultiArrayBackedByIOSurface(OperandDescriptor descriptor) {
   IOSurfaceRef surface =
       IOSurfaceCreate(base::apple::NSToCFPtrCast(iosurface_properties));
 
+  CHECK_EQ(IOSurfaceLock(surface, 0, NULL), kIOReturnSuccess);
+
+  // SAFETY: IOSurfaceGetAllocSize is guaranteed to return the total
+  // allocation size of the buffer. See:
+  // https://developer.apple.com/documentation/iosurface/iosurfacegetallocsize(_:)
+  UNSAFE_BUFFERS(memset(IOSurfaceGetBaseAddress(surface), 0,
+                        IOSurfaceGetAllocSize(surface)));
+
+  CHECK_EQ(IOSurfaceUnlock(surface, 0, NULL), kIOReturnSuccess);
+
   CVPixelBufferRef pixel_buffer = nil;
   CVReturn pixel_buffer_result = CVPixelBufferCreateWithIOSurface(
       kCFAllocatorDefault, surface,
