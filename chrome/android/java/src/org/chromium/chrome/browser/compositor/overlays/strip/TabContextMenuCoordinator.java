@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -231,7 +230,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             TabModel tabModel = tabModelSupplier.get();
             List<Tab> tabs = TabModelUtils.getTabsById(tabIds, tabModel, /* allowClosing= */ false);
             assert !tabs.isEmpty() : "Empty tab list provided";
-            recordMenuAction(menuId, tabs.size() > 1);
+            recordMenuAction(menuId, tabs.size() > 1, tabModel.isIncognitoBranded());
 
             if (menuId == R.id.add_to_tab_group) {
                 tabGroupListBottomSheetCoordinator.showBottomSheet(tabs);
@@ -465,7 +464,9 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                         .withClickListener(
                                 (v) -> {
                                     recordMenuAction(
-                                            R.id.add_to_new_group_sub_menu_id, tabs.size() > 1);
+                                            R.id.add_to_new_group_sub_menu_id,
+                                            tabs.size() > 1,
+                                            isIncognito);
                                     createNewGroupForTabs(
                                             tabs,
                                             mTabGroupModelFilter,
@@ -489,7 +490,10 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
 
     private boolean shouldShowMoveToWindowItem(List<Tab> tabs, AnchorInfo anchorInfo) {
         if (TabGroupUtils.isAnyTabInGroup(tabs)) return false;
-        if (getActiveInstanceCount(tabs.get(0).isIncognitoBranded()) == 1
+        if (MultiWindowUtils.getInstanceCount(
+                                getActiveInstanceTypeForProfileType(
+                                        tabs.get(0).isIncognitoBranded()))
+                        == 1
                 && (getTabModel().getTabCountSupplier().get()
                         == anchorInfo.getAllTabIds().size())) {
             return false;
@@ -590,7 +594,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         return buildListItem(stringRes, menuRes, isIncognito);
     }
 
-    private static void recordMenuAction(int menuId, boolean isMultipleTabs) {
+    private static void recordMenuAction(int menuId, boolean isMultipleTabs, boolean isIncognito) {
         if (menuId == R.id.add_to_tab_group) {
             recordUserAction("AddToTabGroup", isMultipleTabs);
         } else if (menuId == R.id.add_to_new_tab_group) {
@@ -598,7 +602,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         } else if (menuId == R.id.remove_from_tab_group) {
             recordUserAction("RemoveTabFromTabGroup", isMultipleTabs);
         } else if (menuId == R.id.move_to_other_window_menu_id) {
-            if (MultiWindowUtils.getInstanceCount(PersistedInstanceType.ACTIVE) == 1) {
+            if (MultiWindowUtils.getInstanceCount(getActiveInstanceTypeForProfileType(isIncognito))
+                    == 1) {
                 recordUserAction("MoveTabToNewWindow", isMultipleTabs);
             } else {
                 recordUserAction("MoveTabsToOtherWindow", isMultipleTabs);
@@ -679,7 +684,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                             tabWindowManager, groupId, /* isIncognito= */ false);
             OnClickListener clickListener =
                     (v) -> {
-                        recordMenuAction(R.id.add_to_group_sub_menu_id, tabs.size() > 1);
+                        recordMenuAction(R.id.add_to_group_sub_menu_id, tabs.size() > 1, false);
                         if (isGroupInCurrentWindow) {
                             // If the tab is already in the current window,
                             // then just merge it to the group.
@@ -720,7 +725,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             int tabIdInGroup = mTabGroupModelFilter.getGroupLastShownTabId(groupId);
             OnClickListener clickListener =
                     (v) -> {
-                        recordMenuAction(R.id.add_to_group_incognito_sub_menu_id, tabs.size() > 1);
+                        recordMenuAction(
+                                R.id.add_to_group_incognito_sub_menu_id, tabs.size() > 1, true);
                         mergeTabsToDest(
                                 tabs,
                                 tabIdInGroup,
@@ -782,7 +788,10 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         List<Tab> tabs = TabModelUtils.getTabsById(tabIds, tabModel, /* allowClosing= */ false);
         if (tabs.isEmpty()) return;
         ungroupTabs(tabs);
-        recordMenuAction(R.id.move_to_new_window_sub_menu_id, tabs.size() > 1);
+        recordMenuAction(
+                R.id.move_to_new_window_sub_menu_id,
+                tabs.size() > 1,
+                tabModel.isIncognitoBranded());
         moveAndCleanupSource(
                 mMultiInstanceManager,
                 () ->
@@ -799,7 +808,10 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         List<Tab> tabs = TabModelUtils.getTabsById(tabIds, tabModel, /* allowClosing= */ false);
         if (tabs.isEmpty()) return;
         ungroupTabs(tabs);
-        recordMenuAction(R.id.move_to_other_window_sub_menu_id, tabs.size() > 1);
+        recordMenuAction(
+                R.id.move_to_other_window_sub_menu_id,
+                tabs.size() > 1,
+                tabModel.isIncognitoBranded());
         moveAndCleanupSource(
                 mMultiInstanceManager,
                 () ->

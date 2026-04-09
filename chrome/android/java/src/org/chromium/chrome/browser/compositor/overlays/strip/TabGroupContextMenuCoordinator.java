@@ -45,7 +45,6 @@ import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -256,7 +255,10 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
                         TabLaunchType.FROM_TAB_GROUP_UI);
                 RecordUserAction.record("MobileToolbarTabGroupMenu.NewTabInGroup");
             } else if (menuId == R.id.move_to_other_window_menu_id) {
-                if (MultiWindowUtils.getInstanceCount(PersistedInstanceType.ACTIVE) == 1) {
+                boolean isIncognito = tabModelSupplier.get().isIncognitoBranded();
+                if (MultiWindowUtils.getInstanceCount(
+                                getActiveInstanceTypeForProfileType(isIncognito))
+                        == 1) {
                     RecordUserAction.record("MobileToolbarTabGroupMenu.MoveGroupToNewWindow");
                 } else {
                     RecordUserAction.record("MobileToolbarTabGroupMenu.MoveGroupToAnotherWindow");
@@ -389,7 +391,9 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
             int totalTabCount = getTabModel().getTabCountSupplier().get();
             TabGroupMetadata tabGroupMetadata = assertNonNull(getTabGroupMetadata(id));
             int groupTabCount = tabGroupMetadata.tabIdsToUrls.size();
-            int activeInstanceCount = getActiveInstanceCount(isIncognito);
+            int activeInstanceCount =
+                    MultiWindowUtils.getInstanceCount(
+                            getActiveInstanceTypeForProfileType(isIncognito));
             boolean currentWindowHasOtherTabs = totalTabCount > groupTabCount;
             // Support moving the tab group to another window only if there are tabs other than the
             // group tabs, or if there are other active instances to move the tab group to.

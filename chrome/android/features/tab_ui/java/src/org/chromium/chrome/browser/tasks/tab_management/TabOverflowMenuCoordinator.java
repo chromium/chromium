@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -462,14 +461,7 @@ public abstract class TabOverflowMenuCoordinator<T>
             @IdRes int menuId,
             boolean allowMoveToNewWindow) {
         // TODO(crbug.com/437418051): Clean up move_tab_to_another_window strings.
-        int instanceType = PersistedInstanceType.ACTIVE;
-        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-            if (isIncognito) {
-                instanceType |= PersistedInstanceType.OFF_THE_RECORD;
-            } else {
-                instanceType |= PersistedInstanceType.REGULAR;
-            }
-        }
+        @PersistedInstanceType int instanceType = getActiveInstanceTypeForProfileType(isIncognito);
         List<InstanceInfo> activeInstances = mMultiInstanceManager.getInstanceInfo(instanceType);
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
                 || activeInstances.size() <= 1) {
@@ -532,15 +524,16 @@ public abstract class TabOverflowMenuCoordinator<T>
     @RequiresNonNull("mMultiInstanceManager")
     protected void moveToWindow(InstanceInfo instanceInfo, T id) {}
 
-    protected static int getActiveInstanceCount(boolean isIncognito) {
-        int instanceType = PersistedInstanceType.ACTIVE;
+    protected static @PersistedInstanceType int getActiveInstanceTypeForProfileType(
+            boolean isIncognito) {
+        @PersistedInstanceType int instanceType = PersistedInstanceType.ACTIVE;
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             instanceType |=
                     isIncognito
                             ? PersistedInstanceType.OFF_THE_RECORD
                             : PersistedInstanceType.REGULAR;
         }
-        return MultiWindowUtils.getInstanceCount(instanceType);
+        return instanceType;
     }
 
     @Override
