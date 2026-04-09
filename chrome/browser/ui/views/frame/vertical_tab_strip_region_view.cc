@@ -449,7 +449,20 @@ void VerticalTabStripRegionView::OnMouseMoved(const ui::MouseEvent& event) {
 }
 
 void VerticalTabStripRegionView::OnMouseExited(const ui::MouseEvent& event) {
-  UpdateExpandOnHoverState();
+  UpdateExpandOnHoverState(
+#if BUILDFLAG(IS_LINUX)
+      // On Linux, `GetCursorScreenPoint()` can be buggy because it doesn't
+      // return values outside the browser window. To work around that, force a
+      // value of false when `OnMouseExited` is called. See
+      // `WaylandScreen::GetCursorScreenPoint()` for details.
+      false
+#else
+      // On Windows, we can get OnMouseExited events when the region view has
+      // fully expanded due to hover and the mouse leaves the original bounds of
+      // the region view. So defer to checking the mouse position in this case.
+      std::nullopt
+#endif
+  );
 }
 
 void VerticalTabStripRegionView::InitializeTabStrip() {
@@ -996,7 +1009,7 @@ void VerticalTabStripRegionView::OnExpandOnHoverEnabledChanged(bool enabled) {
   UpdateExpandOnHoverState();
 }
 
-void VerticalTabStripRegionView::UpdateExpandOnHoverState() {
+void VerticalTabStripRegionView::UpdateExpandOnHoverState(std::optional<bool> hovered) {
   // If not collapsed, then we shouldn't be in or entering the expand on hover
   // state.
   if (!state_controller_->IsCollapsed()) {
@@ -1014,9 +1027,13 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState() {
     return;
   }
 
+  // On Linux, `GetCursorScreenPoint()` can be buggy because it doesn't return
+  // values outside the browser window. To work around that, force a value of
+  // false when `OnMouseExited` is called. See
+  // `WaylandScreen::GetCursorScreenPoint()` for details.
   const bool should_expand =
       state_controller_->IsExpandOnHoverEnabled() &&
-      (IsMouseHovered() ||
+      (hovered.value_or(IsMouseHovered()) ||
        (GetFocusManager() && Contains(GetFocusManager()->GetFocusedView())));
 
   if (expand_on_hover_timer_.IsRunning()) {
