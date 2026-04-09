@@ -11,6 +11,8 @@
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/surface_embed/dummy_surface_provider.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
@@ -18,6 +20,27 @@
 #include "ui/compositor/compositor.h"
 
 namespace content {
+
+// Forwards notifications about the child web contents to the connector.
+class SurfaceEmbedConnectorImpl::WCObserver : public WebContentsObserver {
+ public:
+  explicit WCObserver(SurfaceEmbedConnectorImpl* surface_embed_connector,
+                      WebContents* child_web_contents)
+      : WebContentsObserver(child_web_contents),
+        surface_embed_connector_(surface_embed_connector) {}
+
+  ~WCObserver() override = default;
+
+  // WebContentsObserver:
+  void RenderFrameCreated(RenderFrameHost* render_frame_host) override {
+    if (render_frame_host->IsInPrimaryMainFrame()) {
+      surface_embed_connector_->OnRenderFrameCreated();
+    }
+  }
+
+ private:
+  raw_ptr<SurfaceEmbedConnectorImpl> surface_embed_connector_;
+};
 
 // static
 void SurfaceEmbedConnector::Attach(WebContents* child_web_contents,
@@ -49,9 +72,13 @@ SurfaceEmbedConnectorImpl::SurfaceEmbedConnectorImpl(
     : delegate_(delegate),
       child_web_contents_(static_cast<WebContentsImpl*>(child_web_contents)),
       parent_web_contents_(parent_web_contents->GetWeakPtr()),
-      dummy_surface_provider_(std::make_unique<DummySurfaceProvider>()) {}
+      dummy_surface_provider_(std::make_unique<DummySurfaceProvider>()) {
+  wc_observer_ = std::make_unique<WCObserver>(this, child_web_contents);
+}
 
-SurfaceEmbedConnectorImpl::~SurfaceEmbedConnectorImpl() = default;
+SurfaceEmbedConnectorImpl::~SurfaceEmbedConnectorImpl() {
+  SetView(nullptr, /*allow_paint_holding=*/false);
+}
 
 WebContentsView* SurfaceEmbedConnectorImpl::GetParentWebContentsView() const {
   return parent_web_contents() ? parent_web_contents()->GetView() : nullptr;
@@ -258,7 +285,12 @@ bool SurfaceEmbedConnectorImpl::IsDisplayLocked() {
 }
 
 void SurfaceEmbedConnectorImpl::DidUpdateVisualProperties(
-    const cc::RenderFrameMetadata& metadata) {}
+    const cc::RenderFrameMetadata& metadata) {
+  if (metadata.local_surface_id.has_value() &&
+      local_surface_id_ != *metadata.local_surface_id) {
+    delegate_->UpdateLocalSurfaceIdFromChild(*metadata.local_surface_id);
+  }
+}
 
 void SurfaceEmbedConnectorImpl::SetVisibilityForChildViews(bool visible) {}
 
@@ -300,7 +332,7 @@ SurfaceEmbedConnectorImpl::GetRootViewInput() {
 }
 
 void SurfaceEmbedConnectorImpl::UpdateViewForCurrentRenderFrameHost() {
-  // Should not get here without attached to a child WebContents.
+  // Should not get here without being attached to a child WebContents.
   CHECK(child_web_contents_);
 
   // Get the current RenderWidgetHostView for the child WebContents.
@@ -324,6 +356,10 @@ void SurfaceEmbedConnectorImpl::ResetRectInParentView() {
   local_surface_id_ = viz::LocalSurfaceId();
   rect_in_parent_view_in_dip_ = gfx::Rect();
   last_received_local_frame_size_ = gfx::Size();
+}
+
+void SurfaceEmbedConnectorImpl::OnRenderFrameCreated() {
+  UpdateViewForCurrentRenderFrameHost();
 }
 
 }  // namespace content

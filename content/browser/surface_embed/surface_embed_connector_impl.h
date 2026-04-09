@@ -31,7 +31,6 @@ class RenderWidgetHostInputEventRouter;
 namespace content {
 
 class DummySurfaceProvider;
-
 class RenderViewHostDelegateView;
 class RenderWidgetHostViewChildFrame;
 class TextInputManager;
@@ -116,7 +115,11 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
   input::RenderWidgetHostViewInput* GetParentViewInput() override;
   input::RenderWidgetHostViewInput* GetRootViewInput() override;
 
+  void OnRenderFrameCreated();
+
  private:
+  class WCObserver;
+
   friend class SurfaceEmbedConnector;
   friend class SurfaceEmbedConnectorImplBrowserTest;
   friend class SurfaceEmbedConnectorWebContentsBrowserTest;
@@ -139,6 +142,9 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
   // Resets the rect and the viz::LocalSurfaceId of the connector to ensure the
   // unguessable surface ID is not reused after a navigation.
   void ResetRectInParentView();
+
+  // Observes the child web contents to send notifications to the connector.
+  std::unique_ptr<WCObserver> wc_observer_;
 
   raw_ptr<SurfaceEmbedConnector::Delegate> delegate_ = nullptr;
 

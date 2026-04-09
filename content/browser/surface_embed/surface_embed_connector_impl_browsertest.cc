@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/run_until.h"
 #include "cc/input/touch_action.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
@@ -55,21 +56,36 @@ class SurfaceEmbedConnectorImplBrowserTest : public ContentBrowserTest {
   SurfaceEmbedConnectorImplBrowserTest() = default;
   ~SurfaceEmbedConnectorImplBrowserTest() override = default;
 
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ContentBrowserTest::SetUpOnMainThread();
+  }
+
+  void SetScreenInfos(SurfaceEmbedConnectorImpl* connector,
+                      const display::ScreenInfos& screen_infos) {
+    connector->screen_infos_ = screen_infos;
+  }
+
+  void SetLocalSurfaceId(SurfaceEmbedConnectorImpl* connector,
+                         const viz::LocalSurfaceId& local_surface_id) {
+    connector->local_surface_id_ = local_surface_id;
+  }
+
  protected:
   WebContentsImpl* GetParentWebContents() {
     return static_cast<WebContentsImpl*>(shell()->web_contents());
   }
 
-  struct SetViewTestContext {
+  struct ConnectorTestContext {
     std::unique_ptr<WebContents> child_web_contents;
     raw_ptr<RenderWidgetHostViewChildFrame> rwhvcf;
     std::unique_ptr<WebContents> parent_web_contents;
     raw_ptr<SurfaceEmbedConnectorImpl> connector;
   };
 
-  SetViewTestContext SetupSetViewTest(
+  ConnectorTestContext SetupConnectorTest(
       MockSurfaceEmbedConnectorDelegate* delegate) {
-    SetViewTestContext context;
+    ConnectorTestContext context;
 
     WebContents::CreateParams create_params(
         GetParentWebContents()->GetBrowserContext());
@@ -97,7 +113,7 @@ class SurfaceEmbedConnectorImplBrowserTest : public ContentBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest, BasicConnection) {
   MockSurfaceEmbedConnectorDelegate delegate;
-  auto context = SetupSetViewTest(&delegate);
+  auto context = SetupConnectorTest(&delegate);
   auto* connector = context.connector.get();
   auto* parent_impl =
       static_cast<WebContentsImpl*>(context.parent_web_contents.get());
@@ -120,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest, BasicConnection) {
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
                        ParentDestruction) {
   MockSurfaceEmbedConnectorDelegate delegate;
-  auto context = SetupSetViewTest(&delegate);
+  auto context = SetupConnectorTest(&delegate);
   auto* connector = context.connector.get();
   auto* parent_impl =
       static_cast<WebContentsImpl*>(context.parent_web_contents.get());
@@ -141,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest, ConstGetters) {
   MockSurfaceEmbedConnectorDelegate delegate;
-  auto context = SetupSetViewTest(&delegate);
+  auto context = SetupConnectorTest(&delegate);
   auto* connector = context.connector.get();
   auto* parent_impl =
       static_cast<WebContentsImpl*>(context.parent_web_contents.get());
@@ -156,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest, ConstGetters) {
 
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest, Attach) {
   MockSurfaceEmbedConnectorDelegate delegate;
-  auto context = SetupSetViewTest(&delegate);
+  auto context = SetupConnectorTest(&delegate);
   auto* parent_impl =
       static_cast<WebContentsImpl*>(context.parent_web_contents.get());
 
@@ -174,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest, Attach) {
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
                        FrameConnectorImplementation) {
   MockSurfaceEmbedConnectorDelegate delegate;
-  auto context = SetupSetViewTest(&delegate);
+  auto context = SetupConnectorTest(&delegate);
   auto* connector = context.connector.get();
 
   // Verify FrameConnector implementation defaults.
@@ -258,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest, SetView) {
   MockSurfaceEmbedConnectorDelegate delegate;
-  auto context = SetupSetViewTest(&delegate);
+  auto context = SetupConnectorTest(&delegate);
 
   EXPECT_CALL(delegate, SetFrameSinkId(testing::_)).Times(1);
   FrameConnector* original_connector =
@@ -277,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest, SetView) {
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
                        SetViewReplacesViewAndVisibility) {
   MockSurfaceEmbedConnectorDelegate delegate;
-  auto context = SetupSetViewTest(&delegate);
+  auto context = SetupConnectorTest(&delegate);
 
   FrameConnector* original_connector =
       context.rwhvcf->FrameConnectorForTesting();
@@ -297,4 +313,82 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
   context.connector->SetView(nullptr, false);
   context.rwhvcf->SetFrameConnector(original_connector);
 }
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
+                       ChildNavigationReplacesView) {
+  MockSurfaceEmbedConnectorDelegate delegate;
+  auto context = SetupConnectorTest(&delegate);
+
+  // TODO(crbug.com/479743223): Remove mocked screen info once visual data
+  // plumbs through the connector.
+  // Initialize screen_infos_ to prevent crashes during navigation.
+  display::ScreenInfo screen_info;
+  screen_info.display_id = 1;
+  screen_info.device_scale_factor = 1.0f;
+  screen_info.rect = gfx::Rect(800, 600);
+  screen_info.available_rect = gfx::Rect(800, 600);
+  SetScreenInfos(context.connector, display::ScreenInfos(screen_info));
+  SetLocalSurfaceId(context.connector,
+                    viz::LocalSurfaceId(1, base::UnguessableToken::Create()));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  EXPECT_TRUE(
+      NavigateToURL(context.parent_web_contents.get(), GURL("about:blank")));
+
+  GURL url_a = embedded_test_server()->GetURL("a.com", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(context.child_web_contents.get(), url_a));
+
+  auto* old_view = context.child_web_contents->GetRenderWidgetHostView();
+  EXPECT_TRUE(old_view);
+
+  // Clear the raw_ptr in context since the old view will be destroyed
+  // during the cross-process navigation, which triggers DanglingPtr checks.
+  context.rwhvcf = nullptr;
+
+  // Force the old view to fetch the updated screen_infos_ from the connector.
+  // This ensures the speculative RenderWidgetHostView created during navigation
+  // inherits a valid ScreenInfos object, preventing crashes.
+  static_cast<RenderWidgetHostViewBase*>(old_view)->UpdateScreenInfo();
+
+  // The new view creation is asynchronous.
+  GURL url_b = embedded_test_server()->GetURL("b.com", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(context.child_web_contents.get(), url_b));
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return context.child_web_contents->GetRenderWidgetHostView() != old_view;
+  }));
+
+  auto* new_view = context.child_web_contents->GetRenderWidgetHostView();
+  EXPECT_NE(old_view, new_view);
+  ASSERT_TRUE(new_view);
+
+  // Verify that the connector was registered with the new view.
+  ASSERT_TRUE(static_cast<RenderWidgetHostViewBase*>(new_view)
+                  ->IsRenderWidgetHostViewChildFrame());
+  auto* new_rwhvcf = static_cast<RenderWidgetHostViewChildFrame*>(new_view);
+  EXPECT_EQ(new_rwhvcf->FrameConnectorForTesting(), context.connector);
+
+  // Clean up.
+  context.connector->SetView(nullptr, false);
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
+                       PropagateLocalSurfaceId) {
+  MockSurfaceEmbedConnectorDelegate delegate;
+  auto context = SetupConnectorTest(&delegate);
+
+  cc::RenderFrameMetadata metadata;
+  metadata.local_surface_id =
+      viz::LocalSurfaceId(1, base::UnguessableToken::Create());
+
+  EXPECT_CALL(delegate,
+              UpdateLocalSurfaceIdFromChild(*metadata.local_surface_id))
+      .Times(1);
+
+  // SurfaceEmbedConnectorImpl inherits from
+  // FrameConnector so we can call
+  // DidUpdateVisualProperties directly.
+  context.connector->DidUpdateVisualProperties(metadata);
+}
+
 }  // namespace content
