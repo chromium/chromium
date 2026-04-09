@@ -150,13 +150,17 @@ bool CrashHandler::InstallMachExceptionHandler() {
       ~(EXC_MASK_EMULATION | EXC_MASK_SOFTWARE | EXC_MASK_RPC_ALERT |
         EXC_MASK_GUARD | (IsBeingDebugged() ? EXC_MASK_BREAKPOINT : 0));
 
+  exception_behavior_t behavior = EXCEPTION_STATE_IDENTITY;
+  if (__builtin_available(iOS 18.0, *)) {
+    behavior = EXCEPTION_STATE_IDENTITY_PROTECTED;
+  }
+
   ExceptionPorts exception_ports(ExceptionPorts::kTargetTypeTask, TASK_NULL);
   if (!exception_ports.GetExceptionPorts(mask, &original_handlers_) ||
-      !exception_ports.SetExceptionPort(
-          mask,
-          exception_port,
-          EXCEPTION_STATE_IDENTITY_PROTECTED | MACH_EXCEPTION_CODES,
-          MACHINE_THREAD_STATE)) {
+      !exception_ports.SetExceptionPort(mask,
+                                        exception_port,
+                                        behavior | MACH_EXCEPTION_CODES,
+                                        MACHINE_THREAD_STATE)) {
     return false;
   }
 
