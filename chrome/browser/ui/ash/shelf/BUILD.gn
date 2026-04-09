@@ -324,6 +324,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui:test_support",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/test:app_window",
     "//chrome/browser/ui/web_applications",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",

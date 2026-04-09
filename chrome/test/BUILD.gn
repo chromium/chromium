@@ -890,12 +890,6 @@ static_library("test_support") {
       "../browser/sync_file_system/mock_remote_file_sync_service.h",
       "../browser/themes/test/theme_service_changed_waiter.cc",
       "../browser/themes/test/theme_service_changed_waiter.h",
-      "../browser/ui/test/pixel_test_configuration_mixin.cc",
-      "../browser/ui/test/pixel_test_configuration_mixin.h",
-      "../browser/ui/test/test_browser_dialog.cc",
-      "../browser/ui/test/test_browser_dialog.h",
-      "../browser/ui/test/test_browser_ui.cc",
-      "../browser/ui/test/test_browser_ui.h",
       "../browser/ui/views/performance_controls/test_support/discard_mock_navigation_handle.cc",
       "../browser/ui/views/performance_controls/test_support/discard_mock_navigation_handle.h",
       "../browser/ui/views/performance_controls/test_support/memory_saver_unit_test_mixin.h",
@@ -2833,6 +2827,8 @@ if (!is_android) {
       "//chrome/browser/ui/tabs/saved_tab_groups:test_support",
       "//chrome/browser/ui/tabs/tab_strip_api",
       "//chrome/browser/ui/tabs/tab_strip_api:browser_tests",
+      "//chrome/browser/ui/test:browser_tests",
+      "//chrome/browser/ui/test:test_support",
       "//chrome/browser/ui/thumbnails",
       "//chrome/browser/ui/thumbnails:browser_tests",
       "//chrome/browser/ui/toasts",
@@ -3287,11 +3283,7 @@ if (!is_android) {
     # c/b/ui/passwords/password_change_ui_controller.h gets built from `//c/b/ui/passwords:passwords`.
     deps += [ "//chrome/browser/ui/passwords:impl" ]
 
-    allow_circular_includes_from = [
-      # `alternate_nav_infobar_delegate_browsertest.cc` includes test_infobar.h, which is
-      # built as part of //chrome/test:browser_tests, hence the circular dep.
-      "//chrome/browser/ui/omnibox:browser_tests",
-    ]
+    allow_circular_includes_from = []
 
     if (is_win || is_chromeos) {
       deps += [ "//chrome/browser/ui/webui/signin:inline_login" ]
@@ -3775,16 +3767,6 @@ if (!is_android) {
       "../browser/ui/tab_modal_confirm_dialog_browsertest.cc",
       "../browser/ui/tab_modal_confirm_dialog_browsertest.h",
       "../browser/ui/tab_ui_helper_browsertest.cc",
-      "../browser/ui/test/browser_ui_browsertest.cc",
-      "../browser/ui/test/browser_ui_test_base.cc",
-      "../browser/ui/test/browser_ui_test_base.h",
-      "../browser/ui/test/fullscreen_test_util.cc",
-      "../browser/ui/test/fullscreen_test_util.h",
-      "../browser/ui/test/popup_browsertest.cc",
-      "../browser/ui/test/test_browser_dialog.cc",
-      "../browser/ui/test/test_browser_dialog.h",
-      "../browser/ui/test/test_infobar.cc",
-      "../browser/ui/test/test_infobar.h",
       "../browser/ui/unload_controller_browsertest.cc",
       "../browser/ui/update_chrome_dialog_browsertest.cc",
       "../browser/ui/views/apps/app_info_dialog/app_info_dialog_views_browsertest.cc",
@@ -4427,8 +4409,6 @@ if (!is_android) {
         "../browser/ui/cocoa/share_menu_controller_browsertest.mm",
         "../browser/ui/cocoa/touchbar/browser_window_touch_bar_controller_browsertest.mm",
         "../browser/ui/fullscreen_util_mac_browsertest.cc",
-        "../browser/ui/test/test_browser_dialog_mac.h",
-        "../browser/ui/test/test_browser_dialog_mac.mm",
         "../browser/ui/views/frame/browser_frame_view_mac_browsertest.mm",
         "../browser/ui/views/fullscreen_mac_browsertest.cc",
         "../browser/ui/views/web_apps/app_shim_metrics_browsertest.cc",
@@ -10979,8 +10959,6 @@ if (!is_android) {
       "../browser/ssl/cert_verifier_browser_test.h",
       "../browser/ssl/cert_verifier_platform_browser_test.cc",
       "../browser/ssl/cert_verifier_platform_browser_test.h",
-      "../browser/ui/test/test_browser_closed_waiter.cc",
-      "../browser/ui/test/test_browser_closed_waiter.h",
       "../browser/ui/views/autofill/payments/card_unmask_prompt_view_tester_views.cc",
       "../browser/ui/views/autofill/payments/card_unmask_prompt_view_tester_views.h",
       "../browser/ui/views/autofill/payments/offer_notification_bubble_views_test_base.cc",
@@ -11058,10 +11036,22 @@ if (!is_android) {
 
     configs += [ "//build/config:precompiled_headers" ]
 
+    allow_circular_includes_from = [
+      # TODO(crbug.com/353332589): Remove this circular dependency when
+      # chrome/test/base/ui_test_utils.h gets componentized.
+      "//chrome/browser/ui/test:closed_waiter",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when
+      # chrome/test/base/in_process_browser_test.h gets componentized.
+      "//chrome/browser/ui/test:dialog",
+    ]
+
     public_deps = [
       "//chrome/browser:test_support_ui",
       "//chrome/browser/renderer_context_menu:test_support",
       "//chrome/browser/ui/exclusive_access",
+      "//chrome/browser/ui/test:closed_waiter",
+      "//chrome/browser/ui/test:dialog",
       "//chrome/browser/ui/views/frame:toolbar_button_provider",
       "//chrome/browser/ui/views/interaction",
       "//chrome/browser/ui/views/side_panel",
@@ -11226,8 +11216,6 @@ if (!is_android) {
 
     if (is_mac) {
       sources += [
-        "../browser/ui/test/test_browser_dialog_mac.h",
-        "../browser/ui/test/test_browser_dialog_mac.mm",
         "base/in_process_browser_test_mac.mm",
         "base/interactive_test_utils_mac.mm",
       ]
@@ -11431,14 +11419,6 @@ if (!is_android && !is_chromeos_device) {
       "../browser/ui/fullscreen_keyboard_browsertest_base.cc",
       "../browser/ui/fullscreen_keyboard_browsertest_base.h",
       "../browser/ui/keyboard_lock_interactive_uitest.cc",
-      "../browser/ui/test/browser_ui_interactive_uitest.cc",
-      "../browser/ui/test/browser_ui_test_base.cc",
-      "../browser/ui/test/browser_ui_test_base.h",
-      "../browser/ui/test/fullscreen_test_util.cc",
-      "../browser/ui/test/fullscreen_test_util.h",
-      "../browser/ui/test/popup_multiscreen_interactive_uitest.cc",
-      "../browser/ui/test/test_browser_dialog.cc",
-      "../browser/ui/test/test_browser_dialog.h",
       "../browser/ui/views/autofill/payments/bnpl_tos_view_desktop_interactive_uitest.cc",
       "../browser/ui/views/autofill/payments/iban_bubble_view_interactive_uitest.cc",
       "../browser/ui/views/autofill/payments/select_bnpl_issuer_dialog_interactive_uitest.cc",
@@ -11637,6 +11617,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs/alert:interactive_ui_tests",
       "//chrome/browser/ui/tabs/projects:interactive_ui_tests",
+      "//chrome/browser/ui/test:interactive_ui_tests",
       "//chrome/browser/ui/thumbnails:interactive_ui_tests",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts:interactive_ui_tests",

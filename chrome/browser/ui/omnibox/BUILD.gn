@@ -281,6 +281,8 @@ if (!is_android) {
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/omnibox:test_support",
       "//chrome/browser/ui/search",
+      "//chrome/browser/ui/test:browser_tests",
+      "//chrome/browser/ui/test:test_support",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/cr_components/composebox",
       "//chrome/test:test_support",

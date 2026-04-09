@@ -5911,13 +5911,10 @@ static_library("test_support") {
       "views/webauthn/authenticator_request_dialog_view_test_api.h",
     ]
     if (use_aura) {
-      sources += [
-        "test/test_app_window_icon_observer.cc",
-        "test/test_app_window_icon_observer.h",
-        "views/extensions/extension_action_test_helper_aura.cc",
-      ]
+      sources += [ "views/extensions/extension_action_test_helper_aura.cc" ]
 
       deps += [
+        "//chrome/browser/ui/test:app_window",
         "//ui/aura",
         "//ui/wm",
       ]
@@ -5933,14 +5930,11 @@ static_library("test_support") {
     ]
   } else {
     sources += [
-      "test/popup_test_base.cc",
-      "test/popup_test_base.h",
-      "test/test_confirm_bubble_model.cc",
-      "test/test_confirm_bubble_model.h",
       "webui/help/test_version_updater.cc",
       "webui/help/test_version_updater.h",
       "webui/settings/saved_info_handler_test_api.h",
     ]
+    public_deps += [ "//chrome/browser/ui/test:confirm_bubble" ]
     deps += [
       "//chrome/browser/ui/content_settings:test_support",
       "//chrome/browser/ui/passwords:test_support_ui",

@@ -1,0 +1,203 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/ui.gni")
+
+if (!is_android) {
+  source_set("dialog") {
+    testonly = true
+
+    sources = [
+      "pixel_test_configuration_mixin.cc",
+      "pixel_test_configuration_mixin.h",
+      "test_browser_dialog.cc",
+      "test_browser_dialog.h",
+      "test_browser_ui.cc",
+      "test_browser_ui.h",
+    ]
+
+    deps = [
+      "//base",
+      "//base/test:test_support",
+      "//content/public/common",
+      "//testing/gtest",
+      "//ui/base",
+      "//ui/base:pixel_diff_test_support",
+      "//ui/base/interaction:test_support",
+      "//ui/gfx",
+      "//ui/views",
+      "//ui/views:test_support",
+      "//ui/views:view_pixel_diff_test_support",
+    ]
+
+    if (is_chromeos) {
+      deps += [ "//ash" ]
+    }
+
+    if (is_mac) {
+      sources += [
+        "test_browser_dialog_mac.h",
+        "test_browser_dialog_mac.mm",
+      ]
+    }
+
+    if (toolkit_views) {
+      deps += [
+        "//third_party/abseil-cpp:absl",
+        "//ui/compositor",
+        "//ui/compositor:test_support",
+        "//ui/display",
+      ]
+    }
+
+    if (use_aura) {
+      deps += [
+        "//ui/aura",
+        "//ui/events:test_support",
+      ]
+    }
+  }
+
+  source_set("closed_waiter") {
+    testonly = true
+
+    sources = [
+      "test_browser_closed_waiter.cc",
+      "test_browser_closed_waiter.h",
+    ]
+
+    deps = [
+      "//chrome/browser/ui",
+      "//testing/gtest",
+    ]
+  }
+
+  source_set("test_support") {
+    testonly = true
+
+    sources = [
+      "browser_ui_test_base.cc",
+      "browser_ui_test_base.h",
+      "fullscreen_test_util.cc",
+      "fullscreen_test_util.h",
+      "popup_test_base.cc",
+      "popup_test_base.h",
+      "test_infobar.cc",
+      "test_infobar.h",
+    ]
+
+    deps = [
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/infobars:test_support",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support",
+      "//components/embedder_support",
+      "//components/infobars/content",
+      "//components/infobars/core",
+      "//components/permissions",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//ui/display",
+      "//ui/gfx",
+      "//ui/views",
+      "//url",
+    ]
+  }
+
+  source_set("confirm_bubble") {
+    testonly = true
+
+    sources = [
+      "test_confirm_bubble_model.cc",
+      "test_confirm_bubble_model.h",
+    ]
+
+    deps = [
+      "//base",
+      "//chrome/browser/ui",
+      "//ui/base",
+    ]
+  }
+
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "browser_ui_browsertest.cc",
+      "popup_browsertest.cc",
+    ]
+
+    deps = [
+      ":test_support",
+      "//base",
+      "//chrome/browser",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui:test_support",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//third_party/blink/public/common",
+      "//ui/display",
+      "//ui/gfx",
+      "//ui/views",
+    ]
+  }
+
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "browser_ui_interactive_uitest.cc",
+      "popup_multiscreen_interactive_uitest.cc",
+    ]
+
+    deps = [
+      ":test_support",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui:test_support",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//testing/gtest",
+      "//third_party/blink/public/common",
+      "//ui/display",
+      "//ui/display:test_support",
+      "//ui/gfx",
+      "//ui/views",
+      "//url",
+    ]
+
+    if (is_chromeos) {
+      deps += [ "//ash" ]
+    }
+  }
+
+  if (use_aura) {
+    source_set("app_window") {
+      testonly = true
+
+      sources = [
+        "test_app_window_icon_observer.cc",
+        "test_app_window_icon_observer.h",
+      ]
+
+      deps = [
+        "//base",
+        "//crypto",
+        "//extensions/browser",
+        "//ui/aura",
+        "//ui/gfx",
+        "//ui/gfx:test_support",
+      ]
+    }
+  }
+}
