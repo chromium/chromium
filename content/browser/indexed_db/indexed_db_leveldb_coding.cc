@@ -1203,7 +1203,7 @@ int CompareEncodedIDBKeys(std::string_view* slice_a,
     case kIndexedDBKeyArrayTypeByte: {
       int64_t length_a, length_b;
       if (!DecodeVarInt(slice_a, &length_a) ||
-          !DecodeVarInt(slice_b, &length_b)) {
+          !DecodeVarInt(slice_b, &length_b) || length_a < 0 || length_b < 0) {
         *ok = false;
         return 0;
       }
