@@ -349,13 +349,11 @@ public class ContextualSearchManager
     public void initialize(
             ViewGroup parentView,
             LayoutManagerImpl layoutManager,
-            BottomSheetController bottomSheetController,
             CompositorViewHolder compositorViewHolder,
             float toolbarHeightDp,
             ToolbarManager toolbarManager,
             boolean canPromoteToNewTab,
-            IntentRequestTracker intentRequestTracker,
-            DesktopWindowStateManager desktopWindowStateManager,
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
             BottomControlsStacker bottomControlsStacker) {
         mNativeContextualSearchManagerPtr = ContextualSearchManagerJni.get().init(this, mProfile);
 

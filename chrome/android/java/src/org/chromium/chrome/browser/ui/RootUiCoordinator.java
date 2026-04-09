@@ -49,6 +49,7 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.R;
@@ -294,7 +295,7 @@ public class RootUiCoordinator
             mReadAloudControllerSupplier = ObservableSuppliers.createMonotonic();
 
     protected AppCompatActivity mActivity;
-    protected @Nullable AppMenuCoordinator mAppMenuCoordinator;
+    protected @MonotonicNonNull AppMenuCoordinator mAppMenuCoordinator;
     private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     protected final ActivityWindowAndroid mWindowAndroid;
     protected final ActivityResultTracker mActivityResultTracker;
@@ -718,6 +719,7 @@ public class RootUiCoordinator
                                                 /* showNavigationBar= */ false,
                                                 /* showStatusBar= */ false,
                                                 /* displayId= */ display.getDisplayId()));
+                                assumeNonNull(mAppMenuCoordinator);
                                 mAppMenuCoordinator.getAppMenuHandler().hideAppMenu();
                             }
 
@@ -1334,12 +1336,10 @@ public class RootUiCoordinator
         manager.initialize(
                 mActivity.findViewById(android.R.id.content),
                 mLayoutManager,
-                assertNonNull(getBottomSheetController()),
                 mCompositorViewHolderSupplier.get(),
                 toolbarHeightDp,
                 assertNonNull(mToolbarManager),
                 canContextualSearchPromoteToNewTab(),
-                mIntentRequestTracker,
                 getDesktopWindowStateManager(),
                 mBottomControlsStacker);
     }
@@ -1359,9 +1359,7 @@ public class RootUiCoordinator
     public void hideContextualSearch() {
         var manager = mContextualSearchManagerSupplier.get();
         if (manager != null) {
-            mContextualSearchManagerSupplier
-                    .get()
-                    .hideContextualSearch(OverlayPanel.StateChangeReason.UNKNOWN);
+            manager.hideContextualSearch(OverlayPanel.StateChangeReason.UNKNOWN);
         }
     }
 

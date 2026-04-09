@@ -73,7 +73,7 @@ public class ChromeActionModeHandler {
             ActivityTabProvider activityTabProvider,
             Callback<String> searchCallback,
             boolean showWebSearch,
-            Supplier<ShareDelegate> shareDelegateSupplier,
+            Supplier<@Nullable ShareDelegate> shareDelegateSupplier,
             BrowserControlsStateProvider controlsState,
             Supplier<@Nullable ReadAloudController> readAloudControllerSupplier) {
         mInitWebContentsObserver =
@@ -134,7 +134,7 @@ public class ChromeActionModeHandler {
         private final ActionModeCallbackHelper mHelper;
         private final Callback<String> mSearchCallback;
         private final boolean mShowWebSearch;
-        private final Supplier<ShareDelegate> mShareDelegateSupplier;
+        private final Supplier<@Nullable ShareDelegate> mShareDelegateSupplier;
         private final Supplier<@Nullable ReadAloudController> mReadAloudControllerSupplier;
         private final BrowserControlsStateProvider mControlsState;
 
@@ -146,7 +146,7 @@ public class ChromeActionModeHandler {
                 WebContents webContents,
                 Callback<String> searchCallback,
                 boolean showWebSearch,
-                Supplier<ShareDelegate> shareDelegateSupplier,
+                Supplier<@Nullable ShareDelegate> shareDelegateSupplier,
                 BrowserControlsStateProvider controlsState,
                 Supplier<@Nullable ReadAloudController> readAloudControllerSupplier) {
             mTab = tab;

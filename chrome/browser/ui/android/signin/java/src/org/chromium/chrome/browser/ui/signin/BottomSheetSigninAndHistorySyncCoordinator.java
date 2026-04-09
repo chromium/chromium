@@ -215,7 +215,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
             OneshotSupplier<Profile> profileSupplier,
             Supplier<BottomSheetController> bottomSheetController,
             ModalDialogManager modalDialogManager,
-            SnackbarManager snackbarManager,
+            @Nullable SnackbarManager snackbarManager,
             @SigninAccessPoint int signinAccessPoint) {
         assert SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
         return new BottomSheetSigninAndHistorySyncCoordinator(
@@ -240,7 +240,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
             OneshotSupplier<Profile> profileSupplier,
             Supplier<BottomSheetController> bottomSheetController,
             ModalDialogManager modalDialogManager,
-            SnackbarManager snackbarManager,
+            @Nullable SnackbarManager snackbarManager,
             @SigninAccessPoint int signinAccessPoint) {
         mWindowAndroid = windowAndroid;
         mActivity = activity;

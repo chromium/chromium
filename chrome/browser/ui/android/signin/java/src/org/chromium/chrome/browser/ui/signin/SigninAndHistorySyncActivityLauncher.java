@@ -101,7 +101,7 @@ public interface SigninAndHistorySyncActivityLauncher {
                     OneshotSupplier<Profile> profileSupplier,
                     Supplier<BottomSheetController> bottomSheetController,
                     ModalDialogManager modalDialogManager,
-                    SnackbarManager snackbarManager,
+                    @Nullable SnackbarManager snackbarManager,
                     @SigninAccessPoint int signinAccessPoint);
 
     /**

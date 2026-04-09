@@ -85,7 +85,7 @@ public final class SigninAndHistorySyncActivityLauncherImpl
                     OneshotSupplier<Profile> profileSupplier,
                     Supplier<BottomSheetController> bottomSheetController,
                     ModalDialogManager modalDialogManager,
-                    SnackbarManager snackbarManager,
+                    @Nullable SnackbarManager snackbarManager,
                     @SigninAccessPoint int signinAccessPoint) {
         return BottomSheetSigninAndHistorySyncCoordinator.createAndObserveAddAccountResult(
                 windowAndroid,

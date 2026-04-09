@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.merchant_viewer;
 
 import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.os.Handler;
 import android.util.Pair;
@@ -29,14 +30,14 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class MerchantTrustMessageScheduler {
     public static final long MESSAGE_ENQUEUE_NO_DELAY = 0;
 
-    private final MessageDispatcher mMessageDispatcher;
+    private final @Nullable MessageDispatcher mMessageDispatcher;
     private final MerchantTrustMetrics mMetrics;
     private final NullableObservableSupplier<Tab> mTabSupplier;
     private Handler mEnqueueMessageTimer;
     private @Nullable Pair<MerchantTrustMessageContext, PropertyModel> mScheduledMessage;
 
     public MerchantTrustMessageScheduler(
-            MessageDispatcher messageDispatcher,
+            @Nullable MessageDispatcher messageDispatcher,
             MerchantTrustMetrics metrics,
             NullableObservableSupplier<Tab> tabSupplier) {
         mEnqueueMessageTimer = new Handler(ThreadUtils.getUiThreadLooper());
@@ -49,6 +50,7 @@ public class MerchantTrustMessageScheduler {
     void clear(@MessageClearReason int clearReason) {
         mEnqueueMessageTimer.removeCallbacksAndMessages(null);
         if (mScheduledMessage != null && mScheduledMessage.second != null) {
+            assumeNonNull(mMessageDispatcher);
             mMessageDispatcher.dismissMessage(
                     mScheduledMessage.second, DismissReason.SCOPE_DESTROYED);
         }
@@ -90,6 +92,7 @@ public class MerchantTrustMessageScheduler {
                             // TODO(crbug.com/40215605): Use a new message clear reason.
                             clearScheduledMessage(MessageClearReason.UNKNOWN);
                         } else {
+                            assumeNonNull(mMessageDispatcher);
                             mMessageDispatcher.enqueueMessage(
                                     model,
                                     assertNonNull(messageContext.getWebContents()),

@@ -87,7 +87,7 @@ public class MerchantTrustSignalsCoordinator
             WindowAndroid windowAndroid,
             BottomSheetController bottomSheetController,
             View layoutView,
-            MessageDispatcher messageDispatcher,
+            @Nullable MessageDispatcher messageDispatcher,
             NullableObservableSupplier<Tab> tabSupplier,
             NonNullObservableSupplier<Profile> profileSupplier,
             MerchantTrustMetrics metrics,
