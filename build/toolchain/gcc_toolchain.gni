@@ -101,6 +101,8 @@ if (enable_resource_allowlist_generation) {
 # additional toolchain for Rust targets that are build-time artificts such as
 # proc macros.
 template("single_gcc_toolchain") {
+  _host_toolchain_is_msan = host_toolchain_is_msan
+  _host_toolchain_msan_track_origins = host_toolchain_msan_track_origins
   toolchain(target_name) {
     assert(defined(invoker.ar), "gcc_toolchain() must specify a \"ar\" value")
     assert(defined(invoker.cc), "gcc_toolchain() must specify a \"cc\" value")
@@ -140,6 +142,15 @@ template("single_gcc_toolchain") {
       if (!defined(invoker_toolchain_args.v8_current_cpu)) {
         v8_current_cpu = invoker_toolchain_args.current_cpu
       }
+
+      # These are set for some non-host toolchain e.g. system_allocator which
+      # requires to run built binary from host toolchain with msan config but
+      # in non-host toolchain context.
+      # Use captured values here because host_toolchain_is_msan might be
+      # overridden by the invoker_toolchain_args or defaults if already in a
+      # sub-toolchain.
+      host_toolchain_is_msan = _host_toolchain_is_msan
+      host_toolchain_msan_track_origins = _host_toolchain_msan_track_origins
     }
 
     # When the invoker has explicitly overridden use_remoteexec or

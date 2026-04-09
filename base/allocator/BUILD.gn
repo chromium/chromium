@@ -7,6 +7,7 @@ import("//base/allocator/partition_allocator/partition_alloc.gni")
 import("//build/buildflag_header.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")
+import("//build/toolchain/toolchain.gni")
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
@@ -29,5 +30,33 @@ if (is_apple) {
       ":buildflags",
       "//base/allocator/partition_allocator:buildflags",
     ]
+  }
+}
+
+if (is_win || is_linux) {
+  if (current_toolchain == default_system_allocator_toolchain) {
+    # This binary ends up in the 'system_allocator' build output directory.
+    executable("system_allocator_test_helper") {
+      testonly = true
+      sources = [ "system_allocator_test_helper.cc" ]
+      deps = [ "//base" ]
+    }
+  } else {
+    # This copies the binary (and symbols) from the 'system_allocator' build
+    # output directory into the main build output dir.
+    copy("system_allocator_test_helper") {
+      testonly = true
+      _toolchain = default_system_allocator_toolchain
+      _label = ":system_allocator_test_helper($_toolchain)"
+      _dir = get_label_info(_label, "root_out_dir")
+      _name = get_label_info(_label, "name")
+      sources = [ "$_dir/$_name" ]
+      if (target_os == "win") {
+        sources[0] += ".exe"
+        sources += [ "$_dir/$_name.exe.pdb" ]
+      }
+      outputs = [ "$root_out_dir/{{source_file_part}}" ]
+      deps = [ _label ]
+    }
   }
 }
