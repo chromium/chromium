@@ -71,7 +71,6 @@ struct RuleMetaData {
   TpcdMetadataCohort tpcd_metadata_cohort;
   bool decided_by_related_website_sets;
   bool autorevocation_bypassed_by_user;
-  mojo_base.mojom.Value rule_options;
 };
 
 // This mirrors the C++ type in content_settings.h.

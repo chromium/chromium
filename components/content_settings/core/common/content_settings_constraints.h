@@ -22,7 +22,6 @@ class ContentSettingConstraints {
   explicit ContentSettingConstraints(base::Time now);
 
   ContentSettingConstraints(ContentSettingConstraints&& other);
-  ContentSettingConstraints(const ContentSettingConstraints& other) = delete;
   ContentSettingConstraints& operator=(ContentSettingConstraints&& other);
   ContentSettingConstraints& operator=(const ContentSettingConstraints& other) =
       delete;
@@ -67,11 +66,9 @@ class ContentSettingConstraints {
     decided_by_related_website_sets_ = granted_by_related_website_sets;
   }
 
-  void set_options(base::Value options) { options_ = std::move(options); }
-
-  const base::Value& options() const { return options_; }
-
  private:
+  ContentSettingConstraints(const ContentSettingConstraints& other) = default;
+
   // Tracks the base::Time that this instance was constructed. Copies and moves
   // reuse this time.
   base::Time created_at_;
@@ -92,8 +89,6 @@ class ContentSettingConstraints {
 
   // Set to true if the storage access was decided by a Related Website Set.
   bool decided_by_related_website_sets_ = false;
-
-  base::Value options_;
 };
 
 }  // namespace content_settings

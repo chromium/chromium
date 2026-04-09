@@ -28,7 +28,6 @@ class RuleMetaData {
  public:
   RuleMetaData();
   RuleMetaData(RuleMetaData&& other);
-  RuleMetaData(const RuleMetaData& other) = delete;
   RuleMetaData& operator=(const RuleMetaData& other) = delete;
   RuleMetaData& operator=(RuleMetaData&& other);
 
@@ -113,13 +112,9 @@ class RuleMetaData {
     autorevocation_bypassed_by_user_ = autorevocation_bypassed_by_user;
   }
 
-  const base::Value& rule_options() const { return rule_options_; }
-
-  void set_rule_options(const base::Value& rule_options) {
-    rule_options_ = rule_options.Clone();
-  }
-
  private:
+  RuleMetaData(const RuleMetaData& other);
+
   // mojo (de)serialization needs access to private details.
   friend struct mojo::
       StructTraits<content_settings::mojom::RuleMetaDataDataView, RuleMetaData>;
@@ -157,9 +152,6 @@ class RuleMetaData {
   // Set to true if the user has explicitly "undone" the autorevocation using
   // the Safety Hub UI.
   bool autorevocation_bypassed_by_user_ = false;
-
-  // Represents options which apply to the rule. May be empty.
-  base::Value rule_options_;
 };
 
 }  // namespace content_settings

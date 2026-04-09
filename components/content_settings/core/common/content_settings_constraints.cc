@@ -21,15 +21,7 @@ ContentSettingConstraints& ContentSettingConstraints::operator=(
 ContentSettingConstraints::~ContentSettingConstraints() = default;
 
 ContentSettingConstraints ContentSettingConstraints::Clone() const {
-  ContentSettingConstraints clone;
-  clone.created_at_ = created_at_;
-  clone.lifetime_ = lifetime_;
-  clone.session_model_ = session_model_;
-  clone.track_last_visit_for_autoexpiration_ =
-      track_last_visit_for_autoexpiration_;
-  clone.decided_by_related_website_sets_ = decided_by_related_website_sets_;
-  clone.options_ = options_.Clone();
-  return clone;
+  return ContentSettingConstraints(*this);
 }
 
 }  // namespace content_settings

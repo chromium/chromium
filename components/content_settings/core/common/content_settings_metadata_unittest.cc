@@ -68,17 +68,14 @@ TEST(RuleMetaDataTest, DefaultConstructor) {
   EXPECT_EQ(metadata.lifetime(), base::TimeDelta());
   EXPECT_FALSE(metadata.decided_by_related_website_sets());
   EXPECT_FALSE(metadata.autorevocation_bypassed_by_user());
-  EXPECT_TRUE(metadata.rule_options().is_none());
 }
 
 TEST(RuleMetaDataTest, SetFromConstraints) {
-  {
     ContentSettingConstraints constraints(
         base::Time::FromSecondsSinceUnixEpoch(12345));
     constraints.set_session_model(mojom::SessionModel::USER_SESSION);
     constraints.set_lifetime(base::Days(10));
     constraints.set_decided_by_related_website_sets(true);
-    constraints.set_options(base::Value(true));
 
     RuleMetaData metadata;
     metadata.SetFromConstraints(constraints);
@@ -88,8 +85,6 @@ TEST(RuleMetaDataTest, SetFromConstraints) {
               base::Time::FromSecondsSinceUnixEpoch(12345) + base::Days(10));
     EXPECT_EQ(metadata.lifetime(), base::Days(10));
     EXPECT_EQ(metadata.decided_by_related_website_sets(), true);
-    EXPECT_EQ(metadata.rule_options(), base::Value(true));
-  }
 }
 
 TEST(RuleMetaDataTest, SetExpirationAndLifetime) {
@@ -133,7 +128,6 @@ TEST(RuleMetaDataTest, Comparison) {
       [](RuleMetaData& m) { m.set_tpcd_metadata_elected_dtrp(42); },
       [](RuleMetaData& m) { m.set_decided_by_related_website_sets(true); },
       [](RuleMetaData& m) { m.set_autorevocation_bypassed_by_user(true); },
-      [](RuleMetaData& m) { m.set_rule_options(base::Value(true)); },
   };
 
   for (void (*modifier)(RuleMetaData&) : modifiers) {
@@ -159,7 +153,6 @@ TEST(RuleMetaDataTest, Clone) {
   metadata.set_tpcd_metadata_elected_dtrp(42);
   metadata.set_decided_by_related_website_sets(true);
   metadata.set_autorevocation_bypassed_by_user(true);
-  metadata.set_rule_options(base::Value(true));
 
   RuleMetaData clone = metadata.Clone();
   EXPECT_EQ(metadata, clone);

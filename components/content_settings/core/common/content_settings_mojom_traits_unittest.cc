@@ -80,7 +80,6 @@ TEST(ContentSettingsTraitsTest, Roundtrips_RuleMetadata) {
       content_settings::mojom::TpcdMetadataCohort::GRACE_PERIOD_FORCED_OFF);
   original.set_decided_by_related_website_sets(true);
   original.set_autorevocation_bypassed_by_user(true);
-  original.set_rule_options(base::Value(true));
 
   content_settings::RuleMetaData round_tripped;
 
