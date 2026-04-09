@@ -127,6 +127,7 @@ if (!is_android) {
     sources = [
       "shared_tab_group_version_upgrade_modal.h",
       "tab_group_attention_indicator.h",
+      "tab_group_data.h",
       "tab_group_deletion_dialog_controller.h",
       "tab_group_desktop.h",
       "tab_group_features.h",
@@ -151,6 +152,7 @@ if (!is_android) {
     sources = [
       "shared_tab_group_version_upgrade_modal.cc",
       "tab_group_attention_indicator.cc",
+      "tab_group_data.cc",
       "tab_group_deletion_dialog_controller.cc",
       "tab_group_desktop.cc",
       "tab_group_features.cc",
@@ -684,6 +686,7 @@ if (!is_android) {
       "tab_creation_metrics_controller_browsertest.cc",
       "tab_data_browsertest.cc",
       "tab_dialog_manager_browsertest.cc",
+      "tab_group_data_browsertest.cc",
       "tab_list_bridge_browsertest.cc",
       "tab_menu_model_browsertest.cc",
       "tab_model_browsertest.cc",

@@ -46,8 +46,6 @@ struct GroupCardData {
   FadeLabelViewData group_title_data;
   std::vector<FadeLabelViewData> tab_title_data;
   FadeLabelViewData excess_tab_data;
-  // Maximum number of tab titles to show in the hover card for a tab group
-  static constexpr size_t kMaxTabs = 5;
 };
 
 namespace views {

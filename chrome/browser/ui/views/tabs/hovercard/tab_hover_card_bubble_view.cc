@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/tab_data.h"
+#include "chrome/browser/ui/tabs/tab_group_data.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -561,7 +562,7 @@ class TabHoverCardBubbleView::GroupCardView : public views::View {
 
  public:
   explicit GroupCardView(TabHoverCardBubbleView* bubble_view)
-      : tab_titles_(GroupCardData::kMaxTabs, nullptr) {
+      : tab_titles_(tabs::TabGroupData::kMaxTabs, nullptr) {
     SetProperty(views::kElementIdentifierKey, kGroupCardElementId);
 
     title_ = AddChildView(std::make_unique<FadeLabelView>(

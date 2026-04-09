@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/tab_data.h"
+#include "chrome/browser/ui/tabs/tab_group_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 #include "chrome/browser/ui/views/tabs/hovercard/filename_elider.h"
@@ -183,7 +184,7 @@ void HoverCardAnchorTarget::SetHoverCardDataFrom(const TabGroup& group_data) {
   CHECK(tabs.size() > 0u);
 
   for (tabs::TabInterface* tab : tabs) {
-    if (card_data.tab_title_data.size() >= GroupCardData::kMaxTabs) {
+    if (card_data.tab_title_data.size() >= tabs::TabGroupData::kMaxTabs) {
       break;
     }
 
@@ -214,9 +215,9 @@ void HoverCardAnchorTarget::SetHoverCardDataFrom(const TabGroup& group_data) {
   // Set the data for the number of tabs not shown in the hover card.
   card_data.group_title_data = {group_title, false};
 
-  if (tabs.size() > GroupCardData::kMaxTabs) {
+  if (tabs.size() > tabs::TabGroupData::kMaxTabs) {
     std::u16string num_excess_str =
-        base::NumberToString16(tabs.size() - GroupCardData::kMaxTabs);
+        base::NumberToString16(tabs.size() - tabs::TabGroupData::kMaxTabs);
     card_data.excess_tab_data = {l10n_util::GetStringFUTF16(
         IDS_TAB_GROUPS_HOVER_CARD_FOOTER, num_excess_str)};
   } else {

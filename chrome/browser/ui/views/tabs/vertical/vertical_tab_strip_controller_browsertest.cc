@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/tabs/tab_group_data.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -305,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupHoverCardTest,
 IN_PROC_BROWSER_TEST_F(VerticalTabGroupHoverCardTest,
                        TabGroupHeaderHoverCardWithExcessTabs) {
   // Create a group with more than kMaxTabs tabs.
-  const size_t n_tabs = GroupCardData::kMaxTabs + 1;
+  const size_t n_tabs = tabs::TabGroupData::kMaxTabs + 1;
   for (size_t i = 0; i < n_tabs; ++i) {
     AppendTab();
   }
