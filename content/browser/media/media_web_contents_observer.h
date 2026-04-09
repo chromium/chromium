@@ -20,6 +20,7 @@
 #include "content/browser/media/media_power_experiment_manager.h"
 #include "content/browser/media/session/media_session_controllers_manager.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_player_id.h"
 #include "content/public/browser/render_frame_host.h"
@@ -58,6 +59,26 @@ namespace content {
 
 class AudibleMetrics;
 class WebContentsImpl;
+
+// Used to authorize a frame to bypass the browser's audio service for
+// audibility, when using `MediaFoundationRenderer`. This is stored as
+// `DocumentUserData` on the `RenderFrameHost`.
+class CONTENT_EXPORT AudibilityBypassAuthorization
+    : public DocumentUserData<AudibilityBypassAuthorization> {
+ public:
+  ~AudibilityBypassAuthorization() override;
+
+  // Returns true if the given `rfh` has been authorized to bypass the
+  // browser's audio service for audibility. This is used for renderers that
+  // handle their own audio output, currently only `MediaFoundationRenderer` on
+  // Windows.
+  static bool IsAuthorized(RenderFrameHost* rfh);
+
+ private:
+  friend class DocumentUserData<AudibilityBypassAuthorization>;
+  explicit AudibilityBypassAuthorization(RenderFrameHost* rfh);
+  DOCUMENT_USER_DATA_KEY_DECL();
+};
 
 // This class manages all RenderFrame based media related managers at the
 // browser side. It receives IPC messages from media RenderFrameObservers and

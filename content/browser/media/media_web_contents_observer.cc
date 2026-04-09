@@ -567,7 +567,14 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
   if (!player_info)
     return;
 
-  bool should_add_client = player_info->IsAudible() && !uses_audio_service_;
+  // Register as an audible client if the player is audible and bypasses the
+  // standard audio service (currently only for `MediaFoundationRenderer`).
+  // This requires explicit browser-side authorization to prevent spoofing.
+  bool should_add_client =
+      player_info->IsAudible() && !uses_audio_service_ &&
+      AudibilityBypassAuthorization::IsAuthorized(
+          RenderFrameHost::FromID(media_player_id_.frame_routing_id));
+
   auto* audio_stream_monitor =
       media_web_contents_observer_->web_contents_impl()->audio_stream_monitor();
 
@@ -806,5 +813,18 @@ MediaWebContentsObserver::GetWeakPtrForFrame(
       std::make_unique<base::WeakPtrFactory<MediaWebContentsObserver>>(this)));
   return result.first->second->GetWeakPtr();
 }
+
+AudibilityBypassAuthorization::AudibilityBypassAuthorization(
+    RenderFrameHost* rfh)
+    : DocumentUserData<AudibilityBypassAuthorization>(rfh) {}
+
+AudibilityBypassAuthorization::~AudibilityBypassAuthorization() = default;
+
+// static
+bool AudibilityBypassAuthorization::IsAuthorized(RenderFrameHost* rfh) {
+  return rfh && GetForCurrentDocument(rfh) != nullptr;
+}
+
+DOCUMENT_USER_DATA_KEY_IMPL(AudibilityBypassAuthorization);
 
 }  // namespace content
