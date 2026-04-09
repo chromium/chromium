@@ -1009,10 +1009,9 @@ void FormFiller::FillOrPreviewForm(
       skip_reasons[form.fields()[i].global_id()].insert(
           FieldFillingSkipReason::kNoValueToFill);
     } else {
-      if (filled_field_type) {
-        filled_field_types.emplace(result_fields[i].global_id(),
-                                   *filled_field_type);
-      }
+      CHECK(filled_field_type);
+      filled_field_types.emplace(result_fields[i].global_id(),
+                                 *filled_field_type);
       if (may_refill_in_future) {
         refill_context->type_groups_originally_filled.insert_all(
             autofill_field.Type().GetGroups());
@@ -1118,9 +1117,7 @@ void FormFiller::FillOrPreviewForm(
           return std::pair(field.global_id(), !field.value().empty());
         });
     for (const std::unique_ptr<AutofillField>& field : form_structure) {
-      if (base::FeatureList::IsEnabled(features::kAutofillFixIsAutofilled)
-              ? !safe_filled_field_ids.contains(field->global_id())
-              : !filled_field_types.contains(field->global_id())) {
+      if (!safe_filled_field_ids.contains(field->global_id())) {
         continue;
       }
       const FieldType& autofilled_type =
