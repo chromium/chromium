@@ -7,12 +7,14 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager.NativeInterfaceDelegate;
+import org.chromium.content_public.browser.WebContents;
 
 /** Interface for native methods to interact with the tab bottom sheet. */
 @NullMarked
@@ -53,6 +55,14 @@ public class TabBottomSheetNativeInterface implements NativeInterfaceDelegate {
         if (tabBottomSheetManager != null) {
             tabBottomSheetManager.tryToCloseBottomSheet();
         }
+    }
+
+    @CalledByNative
+    public void resetTouchOffset(
+            @Nullable @JniType("content::WebContents*") WebContents webContents) {
+        if (webContents == null) return;
+        webContents.getEventForwarder().setCurrentTouchOffsetX(0.0f);
+        webContents.getEventForwarder().setCurrentTouchOffsetY(0.0f);
     }
 
     private @Nullable TabBottomSheetManager getTabBottomSheetManager(Tab tab) {

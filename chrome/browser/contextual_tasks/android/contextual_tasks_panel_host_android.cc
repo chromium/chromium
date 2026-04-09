@@ -85,8 +85,11 @@ void ContextualTasksPanelHostAndroid::SetWebContents(
   web_contents_ = web_contents;
   if (auto* bridge = GetOrCreateBridge()) {
     bridge->SetWebContents(web_contents);
-
-    if (is_open_ && web_contents) {
+    if (!web_contents) {
+      return;
+    }
+    bridge->ResetTouchOffset(web_contents);
+    if (is_open_) {
       bridge->Show(/*animate=*/false, /*starts_expanded=*/true);
     }
   }
