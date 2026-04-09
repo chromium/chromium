@@ -4,8 +4,8 @@
 
 #include "chrome/browser/performance_manager/policies/transient_keep_alive_policy.h"
 
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -13,6 +13,7 @@
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/test_support/test_harness_helper.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -65,6 +66,16 @@ class TransientKeepAlivePolicyTest : public ChromeRenderViewHostTestHarness {
 
   TransientKeepAlivePolicy* policy() { return policy_; }
 
+  // Flushes any pending tasks posted to the UI thread. The policy posts async
+  // ref count decrements to the UI thread; this method posts a sentinel task
+  // after them and waits for it, guaranteeing the decrements have completed.
+  void FlushUIThreadTasks() {
+    base::RunLoop run_loop;
+    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                                 run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
  protected:
   base::HistogramTester histogram_tester_;
 
@@ -86,6 +97,9 @@ TEST_F(TransientKeepAlivePolicyTest, KeepAliveReleasedAfterTimeout) {
 
   // Fast forward to just after the timeout.
   task_environment()->FastForwardBy(kTimerDelay + base::Seconds(1));
+
+  // Ref count decrement is posted asynchronously to the UI thread.
+  FlushUIThreadTasks();
 
   EXPECT_EQ(0, initial_rph->GetPendingReuseRefCountForTesting());
 
@@ -115,6 +129,9 @@ TEST_F(TransientKeepAlivePolicyTest, MultipleQuickNavigations) {
   // Fast forward to just after the timeout.
   task_environment()->FastForwardBy(kTimerDelay + base::Seconds(1));
 
+  // Ref count decrements are posted asynchronously to the UI thread.
+  FlushUIThreadTasks();
+
   EXPECT_EQ(0, rph1->GetPendingReuseRefCountForTesting());
   EXPECT_EQ(0, rph2->GetPendingReuseRefCountForTesting());
   // This should remain 1 since 'rph3' still has a main frame.
@@ -132,10 +149,15 @@ TEST_F(TransientKeepAlivePolicyTest, KeepAliveNotYetExpired) {
   // Fast forward to just before the timeout.
   task_environment()->FastForwardBy(kTimerDelay - base::Seconds(1));
 
+  // Flush to confirm the timer has NOT fired yet — ref count must still be 1.
+  FlushUIThreadTasks();
   EXPECT_EQ(1, rph1->GetPendingReuseRefCountForTesting());
 
   // Fast forward by the remaining time to reach the exact timeout duration.
   task_environment()->FastForwardBy(base::Seconds(1));
+
+  // Ref count decrement is posted asynchronously to the UI thread.
+  FlushUIThreadTasks();
 
   EXPECT_EQ(0, rph1->GetPendingReuseRefCountForTesting());
 }
@@ -166,14 +188,12 @@ TEST_F(TransientKeepAlivePolicyTest, EvictsOldestProcessWhenLimitExceeded) {
   NavigateAndCommit(GURL(kTestUrl4));
   content::RenderProcessHost* rph4 = process();
 
-  // This ensures all OnLastMainFrameRemoved tasks have completed, including the
+  // Wait for all OnLastMainFrameRemoved tasks to complete, including the
   // eviction logic triggered by the third navigation.
-  task_environment()->RunUntilIdle();
+  FlushUIThreadTasks();
 
-  // After eviction the async decrement may trigger Cleanup() on rph1, setting
-  // deleting_soon_. GetPendingReuseRefCountForTesting() CHECKs
-  // !deleting_soon_, so verify eviction via the histogram instead.
-  // rph2, rph3, rph4 are still alive and safe to query.
+  // Verify final ref count for each renderer process host.
+  EXPECT_EQ(0, rph1->GetPendingReuseRefCountForTesting());  // Evicted
   EXPECT_EQ(1, rph2->GetPendingReuseRefCountForTesting());  // Still kept alive
   EXPECT_EQ(1, rph3->GetPendingReuseRefCountForTesting());  // Now kept alive
   EXPECT_EQ(1, rph4->GetPendingReuseRefCountForTesting());  // Active process
@@ -197,6 +217,76 @@ TEST_F(TransientKeepAlivePolicyTest, NoHistogramOnActiveProcessShutdown) {
   DeleteContents();
 
   // Verify no logs.
+  histogram_tester_.ExpectTotalCount(kKeepAliveResultHistogramName, 0);
+}
+
+// Tests that eviction and timeout can happen in the same test run without
+// interference: evict the oldest, then let a second keep-alive expire via
+// the timer. Both paths post async decrements.
+TEST_F(TransientKeepAlivePolicyTest, EvictionFollowedByTimeout) {
+  // rph1 will be evicted when we exceed the keep-alive limit.
+  NavigateAndCommit(GURL(kTestUrl1));
+
+  NavigateAndCommit(GURL(kTestUrl2));
+  content::RenderProcessHost* rph2 = process();
+
+  NavigateAndCommit(GURL(kTestUrl3));
+  content::RenderProcessHost* rph3 = process();
+
+  // rph1 and rph2 are now empty and kept alive (limit is 2).
+  // Navigating to a 4th URL will evict rph1.
+  NavigateAndCommit(GURL(kTestUrl4));
+
+  // Wait for the async eviction decrement to complete.
+  FlushUIThreadTasks();
+
+  // rph1 was evicted, rph2 and rph3 are kept alive, rph4 is active.
+  histogram_tester_.ExpectBucketCount(
+      kKeepAliveResultHistogramName,
+      TransientKeepAlivePolicy::TransientKeepAliveResult::kEvicted, 1);
+  EXPECT_EQ(1, rph2->GetPendingReuseRefCountForTesting());
+  EXPECT_EQ(1, rph3->GetPendingReuseRefCountForTesting());
+
+  // Now let the keep-alive timers expire for rph2 and rph3.
+  task_environment()->FastForwardBy(kTimerDelay + base::Seconds(1));
+
+  // Wait for the async timeout decrements to complete.
+  FlushUIThreadTasks();
+
+  EXPECT_EQ(0, rph2->GetPendingReuseRefCountForTesting());
+  EXPECT_EQ(0, rph3->GetPendingReuseRefCountForTesting());
+
+  // Both eviction and timeout should be recorded. rph2 and rph3 both timed
+  // out, so we expect 2 timeout samples.
+  histogram_tester_.ExpectBucketCount(
+      kKeepAliveResultHistogramName,
+      TransientKeepAlivePolicy::TransientKeepAliveResult::kEvicted, 1);
+  histogram_tester_.ExpectBucketCount(
+      kKeepAliveResultHistogramName,
+      TransientKeepAlivePolicy::TransientKeepAliveResult::kTimedOut, 2);
+}
+
+// Tests that destroying the web contents while a keep-alive timer is running
+// does not crash. The async ref count decrement should safely handle the
+// process being gone.
+TEST_F(TransientKeepAlivePolicyTest, DestroyContentsWhileKeepAliveActive) {
+  NavigateAndCommit(GURL(kTestUrl1));
+  content::RenderProcessHost* rph1 = process();
+  EXPECT_EQ(1, rph1->GetPendingReuseRefCountForTesting());
+
+  // Navigate away so rph1 becomes empty and gets a keep-alive timer.
+  NavigateAndCommit(GURL(kTestUrl2));
+  EXPECT_EQ(1, rph1->GetPendingReuseRefCountForTesting());
+
+  // Destroy everything while the keep-alive timer is still running.
+  // This triggers OnProcessNodeRemoved, which cleans up the map entry
+  // and destroys the KeepAliveInfo (cancelling the timer).
+  // No crash should occur.
+  DeleteContents();
+  FlushUIThreadTasks();
+
+  // The keep-alive was cut short by process removal, not by timeout.
+  // No timeout histogram should be recorded.
   histogram_tester_.ExpectTotalCount(kKeepAliveResultHistogramName, 0);
 }
 
