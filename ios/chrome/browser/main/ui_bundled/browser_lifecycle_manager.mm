@@ -91,8 +91,6 @@
   DCHECK(_mainBrowserCoordinator.viewController);
   _mainInterface =
       [[WrangledBrowser alloc] initWithCoordinator:_mainBrowserCoordinator];
-  _mainInterface.inactiveBrowser = _mainBrowser->GetInactiveBrowser();
-
   _incognitoInterface = [self createOTRInterface];
 }
 

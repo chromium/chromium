@@ -18,8 +18,6 @@
 
 #pragma mark - Public
 
-@synthesize inactiveBrowser = _inactiveBrowser;
-
 - (instancetype)initWithCoordinator:(BrowserCoordinator*)coordinator {
   if ((self = [super init])) {
     DCHECK(coordinator.browser);

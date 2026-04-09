@@ -219,7 +219,7 @@ TEST_F(BrowserLifecycleManagerTest, TestBrowserList) {
   EXPECT_EQ(1UL,
             browser_list->BrowsersOfType(BrowserList::BrowserType::kIncognito)
                 .size());
-  EXPECT_EQ(wrangler.mainInterface.inactiveBrowser,
+  EXPECT_EQ(wrangler.mainInterface.browser->GetInactiveBrowser(),
             browser_list_observer().GetLastAddedBrowser());
   EXPECT_EQ(wrangler.incognitoInterface.browser,
             browser_list_observer().GetLastAddedIncognitoBrowser());
@@ -282,7 +282,7 @@ TEST_F(BrowserLifecycleManagerTest, TestInactiveInterface) {
             browser_list
                 ->BrowsersOfType(BrowserList::BrowserType::kRegularAndInactive)
                 .size());
-  EXPECT_EQ(wrangler.mainInterface.inactiveBrowser,
+  EXPECT_EQ(wrangler.mainInterface.browser->GetInactiveBrowser(),
             browser_list_observer().GetLastAddedBrowser());
 
   // After shutdown all browsers are destroyed.

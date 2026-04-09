@@ -33,9 +33,6 @@ class ProfileIOS;
     BrowserLayoutViewController* browserLayoutViewController;
 // The active browser. This can never be nullptr.
 @property(nonatomic, readonly) Browser* browser;
-// The inactive browser. This can be nullptr if in an incognito interface or if
-// Inactive Tabs is disabled.
-@property(nonatomic) Browser* inactiveBrowser;
 // The profile for this interface. This can never be nullptr.
 @property(nonatomic, readonly) ProfileIOS* profile;
 // YES if this interface is incognito.
