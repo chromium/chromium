@@ -462,7 +462,8 @@ class CORE_EXPORT PaintLayerScrollableArea final
   PhysicalRect ScrollIntoView(
       const PhysicalRect&,
       const PhysicalBoxStrut& scroll_margin,
-      const mojom::blink::ScrollIntoViewParamsPtr&) override;
+      const mojom::blink::ScrollIntoViewParamsPtr&,
+      std::unique_ptr<ScrollPromiseResolver::ActiveScrollTracker>) override;
 
   // Returns true if the scrollable area is user-scrollable and it does
   // in fact overflow. This means this method will return false for

@@ -320,7 +320,8 @@ bool RootFrameViewport::SetScrollOffsetInternal(
     cc::ScrollSourceType source_type,
     mojom::blink::ScrollBehavior scroll_behavior,
     bool targeted_scroll,
-    std::unique_ptr<ScopedScrollPromiseResolver> promise_resolver) {
+    std::unique_ptr<ScrollPromiseResolver::ActiveScrollTracker>
+        scroll_tracker) {
   UpdateScrollAnimator();
 
   if (scroll_behavior == mojom::blink::ScrollBehavior::kAuto)
@@ -339,7 +340,7 @@ bool RootFrameViewport::SetScrollOffsetInternal(
   ScrollOffset clamped_offset = ClampScrollOffset(offset);
   return ScrollableArea::SetScrollOffsetInternal(
       clamped_offset, scroll_type, source_type, scroll_behavior,
-      /*targeted_scroll=*/false, std::move(promise_resolver));
+      /*targeted_scroll=*/false, std::move(scroll_tracker));
 }
 
 mojom::blink::ScrollBehavior RootFrameViewport::ScrollBehaviorStyle() const {
@@ -376,7 +377,9 @@ PhysicalOffset RootFrameViewport::LocalToScrollOriginOffset() const {
 PhysicalRect RootFrameViewport::ScrollIntoView(
     const PhysicalRect& rect_in_absolute,
     const PhysicalBoxStrut& scroll_margin,
-    const mojom::blink::ScrollIntoViewParamsPtr& params) {
+    const mojom::blink::ScrollIntoViewParamsPtr& params,
+    std::unique_ptr<ScrollPromiseResolver::ActiveScrollTracker>
+        scroll_tracker) {
   ScrollOffset new_scroll_offset =
       ClampScrollOffset(scroll_into_view_util::GetScrollOffsetToExpose(
           *this, rect_in_absolute, scroll_margin, *params->align_x.get(),
@@ -399,8 +402,9 @@ PhysicalRect RootFrameViewport::ScrollIntoView(
       behavior = DetermineScrollBehavior(
           params->behavior, GetLayoutBox()->StyleRef().GetScrollBehavior());
     }
-    SetScrollOffset(new_scroll_offset, params->type,
-                    cc::ScrollSourceType::kAbsoluteScroll, behavior);
+    SetScrollOffsetInternal(
+        new_scroll_offset, params->type, cc::ScrollSourceType::kAbsoluteScroll,
+        behavior, /*targeted_scroll=*/false, std::move(scroll_tracker));
   }
 
   // Return the newly moved rect to absolute coordinates.

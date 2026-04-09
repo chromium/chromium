@@ -1707,7 +1707,8 @@ void ListBoxSelectType::ScrollToOptionTask() {
       scroll_into_view_util::CreateScrollIntoViewParams(
           ScrollAlignment::ToEdgeIfNeeded(), ScrollAlignment::ToEdgeIfNeeded(),
           mojom::blink::ScrollType::kProgrammatic, false,
-          mojom::blink::ScrollBehavior::kInstant));
+          mojom::blink::ScrollBehavior::kInstant),
+      nullptr);
 }
 
 void ListBoxSelectType::SelectAll() {

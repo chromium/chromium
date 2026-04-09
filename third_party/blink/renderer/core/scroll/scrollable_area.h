@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/loader/history_item.h"
+#include "third_party/blink/renderer/core/scroll/scroll_promise_resolver.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
@@ -77,7 +78,6 @@ class MacScrollbarAnimator;
 class Node;
 class PaintLayer;
 class ProgrammaticScrollAnimator;
-class ScopedScrollPromiseResolver;
 class ScrollAnchor;
 class ScrollAnimatorBase;
 struct SerializedAnchor;
@@ -143,7 +143,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
       const ScrollOffset&,
       cc::ScrollSourceType,
       mojom::blink::ScrollBehavior,
-      std::unique_ptr<ScopedScrollPromiseResolver>);
+      std::unique_ptr<ScrollPromiseResolver::ActiveScrollTracker>);
 
   void ScrollBy(
       const ScrollOffset&,
@@ -164,7 +164,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   virtual PhysicalRect ScrollIntoView(
       const PhysicalRect&,
       const PhysicalBoxStrut& scroll_margin,
-      const mojom::blink::ScrollIntoViewParamsPtr&);
+      const mojom::blink::ScrollIntoViewParamsPtr&,
+      std::unique_ptr<ScrollPromiseResolver::ActiveScrollTracker>);
 
   virtual PhysicalOffset LocalToScrollOriginOffset() const = 0;
 
@@ -642,7 +643,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
       cc::ScrollSourceType,
       mojom::blink::ScrollBehavior,
       bool targeted_scroll,
-      std::unique_ptr<ScopedScrollPromiseResolver>);
+      std::unique_ptr<ScrollPromiseResolver::ActiveScrollTracker>);
 
   // Deduces the mojom::blink::ScrollBehavior based on the
   // element style and the parameter set by programmatic scroll into either
@@ -712,12 +713,13 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   void SetScrollbarsHiddenIfOverlayInternal(bool);
 
-  bool InitiateScrollAnimation(const ScrollOffset&,
-                               mojom::blink::ScrollType,
-                               mojom::blink::ScrollBehavior,
-                               gfx::Vector2d animation_adjustment,
-                               cc::ScrollSourceType,
-                               std::unique_ptr<ScopedScrollPromiseResolver>);
+  bool InitiateScrollAnimation(
+      const ScrollOffset&,
+      mojom::blink::ScrollType,
+      mojom::blink::ScrollBehavior,
+      gfx::Vector2d animation_adjustment,
+      cc::ScrollSourceType,
+      std::unique_ptr<ScrollPromiseResolver::ActiveScrollTracker>);
   void UserScrollHelper(const ScrollOffset&,
                         mojom::blink::ScrollBehavior,
                         cc::ScrollSourceType);

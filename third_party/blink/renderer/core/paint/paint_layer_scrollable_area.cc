@@ -2571,7 +2571,9 @@ PhysicalOffset PaintLayerScrollableArea::LocalToScrollOriginOffset() const {
 PhysicalRect PaintLayerScrollableArea::ScrollIntoView(
     const PhysicalRect& absolute_rect,
     const PhysicalBoxStrut& scroll_margin,
-    const mojom::blink::ScrollIntoViewParamsPtr& params) {
+    const mojom::blink::ScrollIntoViewParamsPtr& params,
+    std::unique_ptr<ScrollPromiseResolver::ActiveScrollTracker>
+        scroll_tracker) {
   // Ignore sticky position offsets for the purposes of scrolling elements into
   // view. See https://www.w3.org/TR/css-position-3/#stickypos-scroll for
   // details
@@ -2610,7 +2612,7 @@ PhysicalRect PaintLayerScrollableArea::ScrollIntoView(
           : mojom::blink::ScrollBehavior::kInstant;
   SetScrollOffsetInternal(new_scroll_offset, params->type,
                           cc::ScrollSourceType::kAbsoluteScroll, behavior, true,
-                          /*promise_handler=*/nullptr);
+                          std::move(scroll_tracker));
 
   ScrollOffset scroll_offset_difference = new_scroll_offset - old_scroll_offset;
   // The container hasn't performed the scroll yet if it's for scroll sequence.

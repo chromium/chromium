@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/page/frame_tree.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
+#include "third_party/blink/renderer/core/scroll/scroll_promise_resolver.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -166,12 +167,14 @@ BubblingScrollResult PerformBubblingScrollIntoViewWithResult(
     const PhysicalBoxStrut& scroll_margin,
     const LayoutObject* container,
     bool from_remote_frame,
-    bool include_self) {
+    bool include_self,
+    ScrollPromiseResolver* resolver) {
   DCHECK(params->type == mojom::blink::ScrollType::kProgrammatic ||
          params->type == mojom::blink::ScrollType::kUser);
 
-  if (!box.GetFrameView())
+  if (!box.GetFrameView()) {
     return BubblingScrollResult{};
+  }
 
   PhysicalRect absolute_rect_to_scroll = absolute_rect;
   PhysicalBoxStrut active_scroll_margin = scroll_margin;
@@ -194,6 +197,7 @@ BubblingScrollResult PerformBubblingScrollIntoViewWithResult(
       }
     }
   }
+
   while (current_box) {
     AdjustRectToNotEmpty(absolute_rect_to_scroll);
 
@@ -219,7 +223,8 @@ BubblingScrollResult PerformBubblingScrollIntoViewWithResult(
       ScrollOffset scroll_before = area_to_scroll->GetScrollOffset();
 
       absolute_rect_to_scroll = area_to_scroll->ScrollIntoView(
-          absolute_rect_to_scroll, active_scroll_margin, params);
+          absolute_rect_to_scroll, active_scroll_margin, params,
+          resolver ? resolver->CreateActiveScrollTracker() : nullptr);
 
       // TODO(bokan): Temporary, to track cross-origin scroll-into-view
       // prevalence. https://crbug.com/1339003.
@@ -270,8 +275,9 @@ BubblingScrollResult PerformBubblingScrollIntoViewWithResult(
             current_box->GetFrame()
                 ->GetPage()
                 ->GetVisualViewport()
-                .ScrollIntoView(absolute_rect_to_scroll, active_scroll_margin,
-                                params);
+                .ScrollIntoView(
+                    absolute_rect_to_scroll, active_scroll_margin, params,
+                    resolver ? resolver->CreateActiveScrollTracker() : nullptr);
         if (visual_viewport.GetScrollOffset() != viewport_scroll_before) {
           any_actual_scroll = true;
         }
@@ -398,10 +404,12 @@ bool ScrollRectToVisible(const LayoutObject& layout_object,
                          mojom::blink::ScrollIntoViewParamsPtr params,
                          const LayoutObject* container,
                          bool from_remote_frame,
-                         bool include_self) {
+                         bool include_self,
+                         ScrollPromiseResolver* resolver) {
   LayoutBox* enclosing_box = layout_object.EnclosingBox();
-  if (!enclosing_box)
+  if (!enclosing_box) {
     return false;
+  }
   // If we've already skipped the layout object, we shouldn't skip scrolling
   // an ancestor scrolling container.
   if (layout_object != enclosing_box) {
@@ -418,7 +426,7 @@ bool ScrollRectToVisible(const LayoutObject& layout_object,
                             : PhysicalBoxStrut();
   BubblingScrollResult result = PerformBubblingScrollIntoViewWithResult(
       *enclosing_box, absolute_rect_to_scroll, params, scroll_margin, container,
-      from_remote_frame, include_self);
+      from_remote_frame, include_self, resolver);
   // If the scroll into view stopped early (i.e. before the local root),
   // there's no need to continue bubbling or finishing a scroll focused
   // editable into view.
@@ -429,8 +437,9 @@ bool ScrollRectToVisible(const LayoutObject& layout_object,
   LocalFrame& local_root = frame->LocalFrameRoot();
   LocalFrameView* local_root_view = local_root.View();
 
-  if (!local_root_view)
+  if (!local_root_view) {
     return result.did_scroll;
+  }
 
   if (!local_root.IsOutermostMainFrame()) {
     // Continue the scroll via IPC if there's a remote ancestor.
@@ -447,6 +456,7 @@ bool ScrollRectToVisible(const LayoutObject& layout_object,
     local_root.GetPage()->GetChromeClient().FinishScrollFocusedEditableIntoView(
         caret_rect_in_root_frame, std::move(params));
   }
+
   return result.did_scroll;
 }
 

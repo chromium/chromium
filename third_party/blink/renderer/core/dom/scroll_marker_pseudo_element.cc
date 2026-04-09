@@ -210,7 +210,7 @@ void ScrollMarkerPseudoElement::ScrollIntoView(bool apply_snap_alignment) {
       // longer perform ScrollIntoView in sequence. We should delete
       // or rename it.
       params->is_for_scroll_sequence = true;
-      group_scroller->ScrollIntoView(rect, scroll_margin, params);
+      group_scroller->ScrollIntoView(rect, scroll_margin, params, nullptr);
     }
   }
 }

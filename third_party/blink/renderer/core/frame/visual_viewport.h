@@ -191,7 +191,8 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   PhysicalRect ScrollIntoView(
       const PhysicalRect&,
       const PhysicalBoxStrut& scroll_margin,
-      const mojom::blink::ScrollIntoViewParamsPtr&) override;
+      const mojom::blink::ScrollIntoViewParamsPtr&,
+      std::unique_ptr<ScrollPromiseResolver::ActiveScrollTracker>) override;
   bool IsThrottled() const override {
     // VisualViewport is always in the main frame, so the frame does not get
     // throttled.
@@ -318,7 +319,7 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
       cc::ScrollSourceType,
       mojom::blink::ScrollBehavior,
       bool targeted_scroll,
-      std::unique_ptr<ScopedScrollPromiseResolver>) override;
+      std::unique_ptr<ScrollPromiseResolver::ActiveScrollTracker>) override;
 
  private:
   bool DidSetScaleOrLocation(float scale,

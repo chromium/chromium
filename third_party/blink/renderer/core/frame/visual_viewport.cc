@@ -793,7 +793,8 @@ bool VisualViewport::SetScrollOffsetInternal(
     cc::ScrollSourceType source_type,
     mojom::blink::ScrollBehavior scroll_behavior,
     bool targeted_scroll,
-    std::unique_ptr<ScopedScrollPromiseResolver> promise_resolver) {
+    std::unique_ptr<ScrollPromiseResolver::ActiveScrollTracker>
+        scroll_tracker) {
   // We clamp the offset here, because the ScrollAnimator may otherwise be
   // set to a non-clamped offset by ScrollableArea::setScrollOffsetInternal,
   // which may lead to incorrect scrolling behavior in RootFrameViewport down
@@ -805,7 +806,7 @@ bool VisualViewport::SetScrollOffsetInternal(
   ScrollOffset new_scroll_offset = ClampScrollOffset(offset);
   return ScrollableArea::SetScrollOffsetInternal(
       new_scroll_offset, scroll_type, source_type, scroll_behavior,
-      /*targeted_scroll=*/false, std::move(promise_resolver));
+      /*targeted_scroll=*/false, std::move(scroll_tracker));
 }
 
 PhysicalOffset VisualViewport::LocalToScrollOriginOffset() const {
@@ -815,9 +816,12 @@ PhysicalOffset VisualViewport::LocalToScrollOriginOffset() const {
 PhysicalRect VisualViewport::ScrollIntoView(
     const PhysicalRect& rect_in_absolute,
     const PhysicalBoxStrut& scroll_margin,
-    const mojom::blink::ScrollIntoViewParamsPtr& params) {
-  if (!IsActiveViewport())
+    const mojom::blink::ScrollIntoViewParamsPtr& params,
+    std::unique_ptr<ScrollPromiseResolver::ActiveScrollTracker>
+        scroll_tracker) {
+  if (!IsActiveViewport()) {
     return rect_in_absolute;
+  }
 
   ScrollOffset new_scroll_offset =
       ClampScrollOffset(scroll_into_view_util::GetScrollOffsetToExpose(
@@ -825,8 +829,9 @@ PhysicalRect VisualViewport::ScrollIntoView(
           *params->align_y.get()));
 
   if (new_scroll_offset != GetScrollOffset()) {
-    SetScrollOffset(new_scroll_offset, params->type,
-                    cc::ScrollSourceType::kAbsoluteScroll, params->behavior);
+    SetScrollOffsetInternal(
+        new_scroll_offset, params->type, cc::ScrollSourceType::kAbsoluteScroll,
+        params->behavior, /*targeted_scroll=*/false, std::move(scroll_tracker));
   }
 
   return rect_in_absolute;

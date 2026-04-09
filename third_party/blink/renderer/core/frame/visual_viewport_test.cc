@@ -2444,7 +2444,8 @@ TEST_F(VisualViewportScrollIntoViewTest, ScrollingToFixed) {
       /*make_visible_in_visual_viewport=*/true,
       mojom::blink::ScrollBehavior::kInstant);
   WebView().GetPage()->GetVisualViewport().ScrollIntoView(
-      bottom_element->BoundingBox(), PhysicalBoxStrut(), scroll_params);
+      bottom_element->BoundingBox(), PhysicalBoxStrut(), scroll_params,
+      nullptr);
   EXPECT_EQ(100.f, visual_viewport.GetScrollOffset().y());
 }
 

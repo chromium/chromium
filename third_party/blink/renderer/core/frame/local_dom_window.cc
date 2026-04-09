@@ -55,10 +55,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/isolated_world_csp.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_scroll_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_to_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_void_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
@@ -138,7 +136,7 @@
 #include "third_party/blink/renderer/core/scheduler/scripted_idle_task_controller.h"
 #include "third_party/blink/renderer/core/scheduler/task_attribution_util.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
-#include "third_party/blink/renderer/core/scroll/scoped_scroll_promise_resolver.h"
+#include "third_party/blink/renderer/core/scroll/scroll_promise_resolver.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
@@ -1819,25 +1817,17 @@ ScriptPromise<ScrollResult> LocalDOMWindow::scrollBy(ScriptState* script_state,
 ScriptPromise<ScrollResult> LocalDOMWindow::scrollBy(
     ScriptState* script_state,
     const ScrollToOptions* scroll_to_options) const {
-  ScriptPromiseResolver<ScrollResult>* resolver = nullptr;
-  if (script_state &&
-      RuntimeEnabledFeatures::ProgrammaticScrollPromiseEnabled()) {
-    resolver =
-        MakeGarbageCollected<ScriptPromiseResolver<ScrollResult>>(script_state);
-  }
-  ScriptPromise<ScrollResult> promise =
-      resolver ? resolver->Promise() : EmptyPromise();
-  auto scoped_resolver =
-      std::make_unique<ScopedScrollPromiseResolver>(resolver);
+  ScrollPromiseResolver* resolver =
+      MakeGarbageCollected<ScrollPromiseResolver>(script_state);
 
   if (!IsCurrentlyDisplayedInFrame()) {
-    return promise;
+    return resolver->CreateScriptPromise();
   }
 
   LocalFrameView* view = GetFrame()->View();
   Page* page = GetFrame()->GetPage();
   if (!view || !page) {
-    return promise;
+    return resolver->CreateScriptPromise();
   }
 
   // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
@@ -1877,9 +1867,9 @@ ScriptPromise<ScrollResult> LocalDOMWindow::scrollBy(
   viewport->SetProgrammaticScrollOffset(
       viewport->ScrollPositionToOffset(new_scaled_position),
       cc::ScrollSourceType::kRelativeScroll, scroll_behavior,
-      std::move(scoped_resolver));
+      resolver ? resolver->CreateActiveScrollTracker() : nullptr);
 
-  return promise;
+  return resolver->CreateScriptPromise();
 }
 
 ScriptPromise<ScrollResult> LocalDOMWindow::scrollTo(ScriptState* script_state,
@@ -1894,25 +1884,17 @@ ScriptPromise<ScrollResult> LocalDOMWindow::scrollTo(ScriptState* script_state,
 ScriptPromise<ScrollResult> LocalDOMWindow::scrollTo(
     ScriptState* script_state,
     const ScrollToOptions* scroll_to_options) const {
-  ScriptPromiseResolver<ScrollResult>* resolver = nullptr;
-  if (script_state &&
-      RuntimeEnabledFeatures::ProgrammaticScrollPromiseEnabled()) {
-    resolver =
-        MakeGarbageCollected<ScriptPromiseResolver<ScrollResult>>(script_state);
-  }
-  ScriptPromise<ScrollResult> promise =
-      resolver ? resolver->Promise() : EmptyPromise();
-  auto scoped_resolver =
-      std::make_unique<ScopedScrollPromiseResolver>(resolver);
+  ScrollPromiseResolver* resolver =
+      MakeGarbageCollected<ScrollPromiseResolver>(script_state);
 
   if (!IsCurrentlyDisplayedInFrame()) {
-    return promise;
+    return resolver->CreateScriptPromise();
   }
 
   LocalFrameView* view = GetFrame()->View();
   Page* page = GetFrame()->GetPage();
   if (!view || !page) {
-    return promise;
+    return resolver->CreateScriptPromise();
   }
 
   // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
@@ -1962,9 +1944,9 @@ ScriptPromise<ScrollResult> LocalDOMWindow::scrollTo(
   viewport->SetProgrammaticScrollOffset(
       viewport->ScrollPositionToOffset(new_scaled_position),
       cc::ScrollSourceType::kAbsoluteScroll, scroll_behavior,
-      std::move(scoped_resolver));
+      resolver ? resolver->CreateActiveScrollTracker() : nullptr);
 
-  return promise;
+  return resolver->CreateScriptPromise();
 }
 
 void LocalDOMWindow::scrollByForTesting(double x, double y) const {

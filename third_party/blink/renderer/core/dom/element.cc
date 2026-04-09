@@ -49,7 +49,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_lock_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_container.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_scroll_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_to_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_set_html_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_set_html_unsafe_options.h"
@@ -254,6 +253,7 @@
 #include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer_api.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
+#include "third_party/blink/renderer/core/scroll/scroll_promise_resolver.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
@@ -2192,26 +2192,6 @@ void Element::setNonce(const AtomicString& nonce) {
   data_ = EnsureRareData().SetNonce(nonce);
 }
 
-namespace {
-
-// TODO(https://crbug.com/41406914): Ad-hoc method until we hook up with scroll
-// animation end.
-ScriptPromise<ScrollResult> CreateScrollResolvedPromise(
-    ScriptState* script_state) {
-  // Legacy binary tests pass a null `script_state`.
-  if (!script_state ||
-      !RuntimeEnabledFeatures::ProgrammaticScrollPromiseEnabled()) {
-    return EmptyPromise();  // This is exposed to JS as `undefined`.
-  }
-
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<ScrollResult>>(script_state);
-  resolver->Resolve(ScrollResult::Create());
-  return resolver->Promise();
-}
-
-}  // namespace
-
 ScriptPromise<ScrollResult> Element::scrollIntoView(ScriptState* script_state,
                                                     bool align_to_top) {
   auto* arg =
@@ -2222,6 +2202,9 @@ ScriptPromise<ScrollResult> Element::scrollIntoView(ScriptState* script_state,
 ScriptPromise<ScrollResult> Element::scrollIntoView(
     ScriptState* script_state,
     const V8UnionBooleanOrScrollIntoViewOptions* arg) {
+  ScrollPromiseResolver* resolver =
+      MakeGarbageCollected<ScrollPromiseResolver>(script_state);
+
   ScrollIntoViewOptions* options = nullptr;
   switch (arg->GetContentType()) {
     case V8UnionBooleanOrScrollIntoViewOptions::ContentType::kBoolean:
@@ -2236,13 +2219,14 @@ ScriptPromise<ScrollResult> Element::scrollIntoView(
       options = arg->GetAsScrollIntoViewOptions();
       break;
   }
-  DCHECK(options);
-  scrollIntoViewWithOptions(options);
 
-  return CreateScrollResolvedPromise(script_state);
+  scrollIntoViewWithOptions(options, resolver);
+
+  return resolver->CreateScriptPromise();
 }
 
-void Element::scrollIntoViewWithOptions(const ScrollIntoViewOptions* options) {
+void Element::scrollIntoViewWithOptions(const ScrollIntoViewOptions* options,
+                                        ScrollPromiseResolver* resolver) {
   ActivateDisplayLockIfNeeded(DisplayLockActivationReason::kScrollIntoView);
   GetDocument().EnsurePaintLocationDataValidForNode(
       this, DocumentUpdateReason::kJavaScript);
@@ -2261,7 +2245,7 @@ void Element::scrollIntoViewWithOptions(const ScrollIntoViewOptions* options) {
     GetDocument().CountUse(WebFeature::kScrollIntoViewContainerNearest);
   }
 
-  ScrollIntoViewNoVisualUpdate(std::move(params), container);
+  ScrollIntoViewNoVisualUpdate(std::move(params), container, false, resolver);
 }
 
 // TODO(crbug.com/385129957): This only searches up to the nearest scroll
@@ -2385,7 +2369,8 @@ ScrollMarkerPseudoElement* Element::FindScrollMarkerForTargetedScroll() {
 void Element::ScrollIntoViewNoVisualUpdate(
     mojom::blink::ScrollIntoViewParamsPtr params,
     const Element* container,
-    bool include_self) {
+    bool include_self,
+    ScrollPromiseResolver* resolver) {
   if (!GetLayoutObject() || !GetDocument().GetPage()) {
     return;
   }
@@ -2417,8 +2402,7 @@ void Element::ScrollIntoViewNoVisualUpdate(
   scroll_into_view_util::ScrollRectToVisible(
       *target, bounds, std::move(params),
       container ? container->GetLayoutObject() : nullptr,
-      /* from_remote_frame = */ false,
-      /* include_self = */ include_self);
+      /*from_remote_frame=*/false, include_self, resolver);
 
   GetDocument().SetSequentialFocusNavigationStartingPoint(originating_element);
 }
@@ -2831,7 +2815,7 @@ void Element::setScrollLeft(double new_left) {
     }
     scrollable_area->SetProgrammaticScrollOffset(
         end_offset, cc::ScrollSourceType::kAbsoluteScroll,
-        mojom::blink::ScrollBehavior::kAuto, /*resolver=*/nullptr);
+        mojom::blink::ScrollBehavior::kAuto, /*scroll_tracker=*/nullptr);
   }
 }
 
@@ -2889,7 +2873,7 @@ void Element::setScrollTop(double new_top) {
 
     scrollable_area->SetProgrammaticScrollOffset(
         end_offset, cc::ScrollSourceType::kAbsoluteScroll,
-        mojom::blink::ScrollBehavior::kAuto, /*resolver=*/nullptr);
+        mojom::blink::ScrollBehavior::kAuto, /*scroll_tracker=*/nullptr);
   }
 }
 
@@ -2953,19 +2937,11 @@ ScriptPromise<ScrollResult> Element::scrollBy(ScriptState* script_state,
 ScriptPromise<ScrollResult> Element::scrollBy(
     ScriptState* script_state,
     const ScrollToOptions* scroll_to_options) {
-  ScriptPromiseResolver<ScrollResult>* resolver = nullptr;
-  if (script_state &&
-      RuntimeEnabledFeatures::ProgrammaticScrollPromiseEnabled()) {
-    resolver =
-        MakeGarbageCollected<ScriptPromiseResolver<ScrollResult>>(script_state);
-  }
-  auto scoped_resolver =
-      std::make_unique<ScopedScrollPromiseResolver>(resolver);
-  ScriptPromise<ScrollResult> promise =
-      resolver ? resolver->Promise() : EmptyPromise();
+  ScrollPromiseResolver* resolver =
+      MakeGarbageCollected<ScrollPromiseResolver>(script_state);
 
   if (!InActiveDocument()) {
-    return promise;
+    return resolver->CreateScriptPromise();
   }
 
   // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
@@ -2978,12 +2954,12 @@ ScriptPromise<ScrollResult> Element::scrollBy(
                                             DocumentUpdateReason::kJavaScript);
 
   if (GetDocument().ScrollingElementNoLayout() == this) {
-    ScrollFrameBy(scroll_to_options, std::move(scoped_resolver));
+    ScrollFrameBy(scroll_to_options, resolver);
   } else {
-    ScrollLayoutBoxBy(scroll_to_options, std::move(scoped_resolver));
+    ScrollLayoutBoxBy(scroll_to_options, resolver);
   }
 
-  return promise;
+  return resolver->CreateScriptPromise();
 }
 
 ScriptPromise<ScrollResult> Element::scrollTo(ScriptState* script_state,
@@ -2998,22 +2974,15 @@ ScriptPromise<ScrollResult> Element::scrollTo(ScriptState* script_state,
 ScriptPromise<ScrollResult> Element::scrollTo(
     ScriptState* script_state,
     const ScrollToOptions* scroll_to_options) {
-  ScriptPromiseResolver<ScrollResult>* resolver = nullptr;
-  if (script_state &&
-      RuntimeEnabledFeatures::ProgrammaticScrollPromiseEnabled()) {
-    resolver =
-        MakeGarbageCollected<ScriptPromiseResolver<ScrollResult>>(script_state);
-  }
-  auto scoped_resolver =
-      std::make_unique<ScopedScrollPromiseResolver>(resolver);
+  ScrollPromiseResolver* resolver =
+      MakeGarbageCollected<ScrollPromiseResolver>(script_state);
+  ScrollTo(scroll_to_options, resolver);
 
-  ScrollTo(scroll_to_options, std::move(scoped_resolver));
-  return resolver ? resolver->Promise() : EmptyPromise();
+  return resolver->CreateScriptPromise();
 }
 
-bool Element::ScrollTo(
-    const ScrollToOptions* scroll_to_options,
-    std::unique_ptr<ScopedScrollPromiseResolver> scoped_resolver) {
+bool Element::ScrollTo(const ScrollToOptions* scroll_to_options,
+                       ScrollPromiseResolver* resolver) {
   if (!InActiveDocument()) {
     return false;
   }
@@ -3028,9 +2997,9 @@ bool Element::ScrollTo(
                                             DocumentUpdateReason::kJavaScript);
 
   if (GetDocument().ScrollingElementNoLayout() == this) {
-    return ScrollFrameTo(scroll_to_options, std::move(scoped_resolver));
+    return ScrollFrameTo(scroll_to_options, resolver);
   } else {
-    return ScrollLayoutBoxTo(scroll_to_options, std::move(scoped_resolver));
+    return ScrollLayoutBoxTo(scroll_to_options, resolver);
   }
 }
 
@@ -3051,9 +3020,8 @@ void Element::scrollToForTesting(double x, double y) {
   scrollTo(nullptr, x, y);
 }
 
-bool Element::ScrollLayoutBoxBy(
-    const ScrollToOptions* scroll_to_options,
-    std::unique_ptr<ScopedScrollPromiseResolver> scoped_resolver) {
+bool Element::ScrollLayoutBoxBy(const ScrollToOptions* scroll_to_options,
+                                ScrollPromiseResolver* resolver) {
   gfx::Vector2dF displacement;
   if (scroll_to_options->hasLeft()) {
     displacement.set_x(
@@ -3090,12 +3058,11 @@ bool Element::ScrollLayoutBoxBy(
   return scrollable_area->SetProgrammaticScrollOffset(
       ScrollOffset(new_position - gfx::PointF(scrollable_area->ScrollOrigin())),
       cc::ScrollSourceType::kRelativeScroll, scroll_behavior,
-      std::move(scoped_resolver));
+      resolver ? resolver->CreateActiveScrollTracker() : nullptr);
 }
 
-bool Element::ScrollLayoutBoxTo(
-    const ScrollToOptions* scroll_to_options,
-    std::unique_ptr<ScopedScrollPromiseResolver> scoped_resolver) {
+bool Element::ScrollLayoutBoxTo(const ScrollToOptions* scroll_to_options,
+                                ScrollPromiseResolver* resolver) {
   mojom::blink::ScrollBehavior scroll_behavior =
       ScrollableArea::V8EnumToScrollBehavior(
           scroll_to_options->behavior().AsEnum());
@@ -3158,12 +3125,11 @@ bool Element::ScrollLayoutBoxTo(
 
   return scrollable_area->SetProgrammaticScrollOffset(
       new_offset, cc::ScrollSourceType::kAbsoluteScroll, scroll_behavior,
-      std::move(scoped_resolver));
+      resolver ? resolver->CreateActiveScrollTracker() : nullptr);
 }
 
-bool Element::ScrollFrameBy(
-    const ScrollToOptions* scroll_to_options,
-    std::unique_ptr<ScopedScrollPromiseResolver> scoped_resolver) {
+bool Element::ScrollFrameBy(const ScrollToOptions* scroll_to_options,
+                            ScrollPromiseResolver* resolver) {
   gfx::Vector2dF displacement;
   if (scroll_to_options->hasLeft()) {
     displacement.set_x(
@@ -3198,12 +3164,11 @@ bool Element::ScrollFrameBy(
   return viewport->SetProgrammaticScrollOffset(
       viewport->ScrollPositionToOffset(new_position),
       cc::ScrollSourceType::kRelativeScroll, scroll_behavior,
-      std::move(scoped_resolver));
+      resolver ? resolver->CreateActiveScrollTracker() : nullptr);
 }
 
-bool Element::ScrollFrameTo(
-    const ScrollToOptions* scroll_to_options,
-    std::unique_ptr<ScopedScrollPromiseResolver> scoped_resolver) {
+bool Element::ScrollFrameTo(const ScrollToOptions* scroll_to_options,
+                            ScrollPromiseResolver* resolver) {
   mojom::blink::ScrollBehavior scroll_behavior =
       ScrollableArea::V8EnumToScrollBehavior(
           scroll_to_options->behavior().AsEnum());
@@ -3239,7 +3204,7 @@ bool Element::ScrollFrameTo(
 
   return viewport->SetProgrammaticScrollOffset(
       new_offset, cc::ScrollSourceType::kAbsoluteScroll, scroll_behavior,
-      std::move(scoped_resolver));
+      resolver ? resolver->CreateActiveScrollTracker() : nullptr);
 }
 
 bool Element::HandleScrollByPageCommand(CommandEventType command) {
