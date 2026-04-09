@@ -66,13 +66,7 @@ class DeleteProfileHelperBrowserTest : public InProcessBrowserTest {
   }
 };
 
-// TODO(crbug.com/499611575): Re-enable the test
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_KeepAlive DISABLED_KeepAlive
-#else
-#define MAYBE_KeepAlive KeepAlive
-#endif
-IN_PROC_BROWSER_TEST_F(DeleteProfileHelperBrowserTest, MAYBE_KeepAlive) {
+IN_PROC_BROWSER_TEST_F(DeleteProfileHelperBrowserTest, KeepAlive) {
   // Create an additional profile.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath profile_path_to_delete =
@@ -86,27 +80,30 @@ IN_PROC_BROWSER_TEST_F(DeleteProfileHelperBrowserTest, MAYBE_KeepAlive) {
   Browser::Create(Browser::CreateParams(&profile_to_delete, true));
   profiles::SetLastUsedProfile(profile_path_to_delete.BaseName());
   // Schedule profile deletion.
-  ProfileKeepAliveAddedWaiter keep_alive_added_waiter(
-      &profile_to_delete, ProfileKeepAliveOrigin::kProfileDeletionProcess);
   base::RunLoop loop;
-  profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
-      profile_path_to_delete,
-      base::BindLambdaForTesting([&loop, &profile_path_to_delete,
-                                  profile_manager,
-                                  &profile_to_delete](Profile* profile) {
-        // `profile` is the new active profile.
-        EXPECT_NE(&profile_to_delete, profile);
-        // There is an active `ScopedKeepAlive`.
-        EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
-            KeepAliveOrigin::PROFILE_MANAGER));
-        // The profile has been deleted.
-        EXPECT_FALSE(profile_manager->GetProfileAttributesStorage()
-                         .GetProfileAttributesWithPath(profile_path_to_delete));
-        loop.Quit();
-      }),
-      ProfileMetrics::DELETE_PROFILE_PRIMARY_ACCOUNT_NOT_ALLOWED);
-  // Check that kProfileDeletionProcess was added.
-  keep_alive_added_waiter.Wait();
+  {
+    ProfileKeepAliveAddedWaiter keep_alive_added_waiter(
+        &profile_to_delete, ProfileKeepAliveOrigin::kProfileDeletionProcess);
+    profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
+        profile_path_to_delete,
+        base::BindLambdaForTesting([&loop, &profile_path_to_delete,
+                                    profile_manager,
+                                    &profile_to_delete](Profile* profile) {
+          // `profile` is the new active profile.
+          EXPECT_NE(&profile_to_delete, profile);
+          // There is an active `ScopedKeepAlive`.
+          EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+              KeepAliveOrigin::PROFILE_MANAGER));
+          // The profile has been deleted.
+          EXPECT_FALSE(
+              profile_manager->GetProfileAttributesStorage()
+                  .GetProfileAttributesWithPath(profile_path_to_delete));
+          loop.Quit();
+        }),
+        ProfileMetrics::DELETE_PROFILE_PRIMARY_ACCOUNT_NOT_ALLOWED);
+    // Check that kProfileDeletionProcess was added.
+    keep_alive_added_waiter.Wait();
+  }
   loop.Run();
   // The `ScopedKeepAlive` has been released.
   EXPECT_TRUE(base::test::RunUntil([&]() {
