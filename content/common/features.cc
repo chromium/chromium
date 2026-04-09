@@ -697,6 +697,11 @@ BASE_FEATURE(kServiceWorkerStaticRouterRaceRequestFix2,
 BASE_FEATURE(kServiceWorkerStaticRouterOpaqueCheck,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// (crbug.com/497302265): When enabled, the main script response fetching is
+// consolidated into ServiceWorkerVersion.
+BASE_FEATURE(kServiceWorkerStaticRouterConsolidateMainScriptResponse,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // (crbug.com/1371756): When enabled, the static routing API starts
 // ServiceWorker when the routing result of a main resource request was network
 // fallback.
