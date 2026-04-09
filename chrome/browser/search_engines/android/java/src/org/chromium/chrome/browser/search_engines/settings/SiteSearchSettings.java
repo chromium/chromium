@@ -21,9 +21,13 @@ import org.chromium.chrome.browser.search_engines.settings.custom_site_search.Cu
 import org.chromium.chrome.browser.search_engines.settings.extensions.ExtensionSearchEngineCoordinator;
 import org.chromium.chrome.browser.search_engines.settings.inactive_shortcut.InactiveShortcutCoordinator;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
+import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.settings.search.PreferenceParser;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
@@ -40,6 +44,12 @@ public class SiteSearchSettings extends ChromeBaseSettingsFragment {
     private static final String CUSTOM_SITE_SEARCH_LIST_PREF = "custom_site_search_item_list";
     private static final String INACTIVE_SHORTCUT_LIST_PREF = "inactive_shortcut_list";
     private static final String EXTENSIONS_PREF_KEY = "extension_item_list";
+
+    private static final String SEARCH_ENGINES_SECTION_PREF_KEY = "custom_search_engine_section";
+    private static final String CUSTOM_SITE_SEARCH_SECTION_PREF_KEY = "custom_site_search_section";
+    private static final String INACTIVE_SHORTCUTS_SECTION_PREF_KEY = "inactive_shortcut_section";
+    private static final String EXTENSIONS_SECTION_PREF_KEY = "extension_section";
+
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
 
@@ -130,4 +140,62 @@ public class SiteSearchSettings extends ChromeBaseSettingsFragment {
         }
         super.onDestroy();
     }
+
+    public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new ChromeBaseSearchIndexProvider(
+                    SiteSearchSettings.class.getName(), 0, /* isSearchable= */ false) {
+                @Override
+                public void updateDynamicPreferences(
+                        Context context, SettingsIndexData indexData, Profile profile) {
+                    if (OmniboxFeatures.sOmniboxSiteSearch.isEnabled()) {
+                        addNonSearchableIndex(
+                                context,
+                                indexData,
+                                SEARCH_ENGINES_SECTION_PREF_KEY,
+                                R.string.site_search_search_engines_header,
+                                R.string.site_search_search_engines_description);
+                        addNonSearchableIndex(
+                                context,
+                                indexData,
+                                CUSTOM_SITE_SEARCH_SECTION_PREF_KEY,
+                                R.string.site_search_site_search_header,
+                                R.string.site_search_site_search_description);
+                        addNonSearchableIndex(
+                                context,
+                                indexData,
+                                INACTIVE_SHORTCUTS_SECTION_PREF_KEY,
+                                R.string.site_search_inactive_shortcuts_header,
+                                0);
+                        if (ExtensionUi.isEnabled(profile)) {
+                            addNonSearchableIndex(
+                                    context,
+                                    indexData,
+                                    EXTENSIONS_SECTION_PREF_KEY,
+                                    R.string.site_search_extensions_header,
+                                    R.string.site_search_extensions_description);
+                        }
+                    }
+                }
+
+                private static void addNonSearchableIndex(
+                        Context context,
+                        SettingsIndexData indexData,
+                        String key,
+                        int titleResId,
+                        int summaryResId) {
+                    String fragment = SiteSearchSettings.class.getName();
+                    String id = PreferenceParser.createUniqueId(fragment, key);
+                    SettingsIndexData.Entry.Builder builder =
+                            new SettingsIndexData.Entry.Builder(
+                                    /* id= */ id,
+                                    /* key= */ key,
+                                    /* title= */ context.getString(titleResId),
+                                    /* parentFragment= */ fragment);
+                    builder.setIsSearchable(false);
+                    if (summaryResId != 0) {
+                        builder.setSummary(context.getString(summaryResId));
+                    }
+                    indexData.addEntry(id, builder.build());
+                }
+            };
 }

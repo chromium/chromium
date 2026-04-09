@@ -164,6 +164,7 @@ public class SearchEngineSettings extends ListFragment
                                             context.getString(
                                                     R.string.manage_search_engines_and_site_search),
                                             SearchEngineSettings.class.getName())
+                                    .setFragment(SiteSearchSettings.class.getName())
                                     .build();
                     indexData.addEntry(uniqueId, entry);
                 }
