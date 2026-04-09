@@ -133,7 +133,4 @@ tast.secagentd.NetworkEvents.relaxed_udp@chromeos-betty-cfi-thin-lto-chrome
 # b/488388275
 tast.health.RunCameraFrameAnalysisRoutine
 
-# b/493342485
-tast.peripherals.LaunchAppFromLauncher.feedback@amd64-generic-vm
-
 # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
