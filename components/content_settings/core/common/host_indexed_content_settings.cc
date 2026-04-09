@@ -75,14 +75,18 @@ const RuleEntry* FindContentSetting(const GURL& primary_url,
   return it == settings.end() ? nullptr : &*it;
 }
 
+// Looks up an entry in |indexed_content_setting|. |index_key| must be the URL that
+// was used to populate this index structure.
 const RuleEntry* FindInHostToContentSettings(
     const GURL& primary_url,
     const GURL& secondary_url,
     const HostIndexedContentSettings::HostToContentSettings&
         indexed_content_setting,
-    std::string_view host,
+    const GURL& index_key,
     const base::Clock* clock,
     bool return_expired_settings) {
+  std::string_view host = index_key.host();
+
   if (host.empty() || indexed_content_setting.empty()) {
     return nullptr;
   }
@@ -91,7 +95,7 @@ const RuleEntry* FindInHostToContentSettings(
   if (host.back() == '.') {
     host.remove_suffix(1);
   }
-  if (primary_url.HostIsIPAddress()) {
+  if (index_key.HostIsIPAddress()) {
     auto it = indexed_content_setting.find(host);
     if (it != indexed_content_setting.end()) {
       auto* result = FindContentSetting(primary_url, secondary_url, it->second,
@@ -297,14 +301,14 @@ const RuleEntry* HostIndexedContentSettings::Find(
     const GURL& primary_url,
     const GURL& secondary_url) const {
   const RuleEntry* found = FindInHostToContentSettings(
-      primary_url, secondary_url, primary_host_indexed_, primary_url.host(),
-      clock_, return_expired_settings_);
+      primary_url, secondary_url, primary_host_indexed_,
+      /*index_key=*/primary_url, clock_, return_expired_settings_);
   if (found) {
     return found;
   }
   found = FindInHostToContentSettings(
-      primary_url, secondary_url, secondary_host_indexed_, secondary_url.host(),
-      clock_, return_expired_settings_);
+      primary_url, secondary_url, secondary_host_indexed_,
+      /*index_key=*/secondary_url, clock_, return_expired_settings_);
   if (found) {
     return found;
   }

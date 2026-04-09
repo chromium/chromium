@@ -353,5 +353,19 @@ TEST_F(FindContentSettingTest, VectorOfIndices) {
   EXPECT_EQ(ToVector(indices[2]), expected_2);
 }
 
+TEST_F(HostIndexedContentSettingsTest, CheckSubresourceIsIP) {
+  GURL test_primary_url("http://192.168.1.2/");
+  GURL test_secondary_url("https://www.example.com");
+  ContentSettingsForOneType test_settings = {
+      CreateSetting("*", "[*.]example.com", CONTENT_SETTING_BLOCK),
+  };
+  HostIndexedContentSettings index = FromVector(test_settings);
+
+  auto* result = index.Find(test_primary_url, test_secondary_url);
+  ASSERT_TRUE(result);
+  EXPECT_EQ(ValueToContentSetting(result->second.value), CONTENT_SETTING_BLOCK);
+  EXPECT_THAT(ToVector(index), testing::ContainerEq(test_settings));
+}
+
 }  // namespace
 }  // namespace content_settings
