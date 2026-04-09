@@ -591,8 +591,9 @@ bool OffscreenCanvas::PushFrame(
   DCHECK(needs_push_frame_);
   needs_push_frame_ = false;
 
-  if (current_frame_damage_rect_.isEmpty() || !canvas_resource)
+  if (!canvas_resource) {
     return false;
+  }
   canvas_resource->SetOriginClean(OriginClean());
   current_frame_damage_rect_.intersect(
       SkIRect::MakeWH(Size().width(), Size().height()));
