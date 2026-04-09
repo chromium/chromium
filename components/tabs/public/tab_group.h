@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_list.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -65,6 +67,12 @@ class TabGroup {
   // Updates internal bookkeeping for group contents.
   void AddTab();
   void RemoveTab();
+  void MoveTab();
+
+  base::CallbackListSubscription RegisterOnGroupChanged(
+      base::RepeatingClosure callback);
+  base::CallbackListSubscription RegisterOnVisualDataChanged(
+      base::RepeatingClosure callback);
 
   // The number of tabs in this group, determined by AddTab() and
   // RemoveTab() calls.
@@ -123,6 +131,9 @@ class TabGroup {
   std::unique_ptr<tab_groups::TabGroupVisualData> visual_data_;
 
   int tab_count_ = 0;
+
+  base::RepeatingClosureList group_changed_callbacks_;
+  base::RepeatingClosureList visual_data_changed_callbacks_;
 
   bool is_closing_ = false;
   bool is_customized_ = false;

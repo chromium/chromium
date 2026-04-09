@@ -48,6 +48,8 @@ void TabGroup::SetVisualData(tab_groups::TabGroupVisualData visual_data,
 
   // Is customized is always true after it has been set to true once.
   is_customized_ |= is_customized;
+
+  visual_data_changed_callbacks_.Notify();
 }
 
 void TabGroup::SetGroupIsClosing(bool is_closing) {
@@ -56,11 +58,27 @@ void TabGroup::SetGroupIsClosing(bool is_closing) {
 
 void TabGroup::AddTab() {
   ++tab_count_;
+  group_changed_callbacks_.Notify();
 }
 
 void TabGroup::RemoveTab() {
   DCHECK_GT(tab_count_, 0);
   --tab_count_;
+  group_changed_callbacks_.Notify();
+}
+
+void TabGroup::MoveTab() {
+  group_changed_callbacks_.Notify();
+}
+
+base::CallbackListSubscription TabGroup::RegisterOnGroupChanged(
+    base::RepeatingClosure callback) {
+  return group_changed_callbacks_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription TabGroup::RegisterOnVisualDataChanged(
+    base::RepeatingClosure callback) {
+  return visual_data_changed_callbacks_.Add(std::move(callback));
 }
 
 bool TabGroup::IsEmpty() const {

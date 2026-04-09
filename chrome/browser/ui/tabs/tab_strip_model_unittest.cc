@@ -7273,3 +7273,54 @@ TEST_P(TabStripModelTest, ReinsertTabGroupCollectionVerifyListSelectionModel) {
   EXPECT_EQ("active=2 anchor=2 selection=2 4",
             tabstrip()->selection_model().GetListSelectionModel().ToString());
 }
+
+TEST_P(TabStripModelTest, TabGroupCallbackOnTabAdded) {
+  PrepareTabstripForSelectionTest(tabstrip(), /*tab_count*/ 2,
+                                  /*pinned_count*/ 0,
+                                  /*selected_tabs*/ {0});
+
+  tab_groups::TabGroupId group_id =
+      tabstrip()->AddToNewGroup(std::vector<int>{0});
+  TabGroup* const tab_group = tabstrip()->group_model()->GetTabGroup(group_id);
+
+  bool was_notified = false;
+  base::CallbackListSubscription subscription =
+      tab_group->RegisterOnGroupChanged(base::BindRepeating(
+          [](bool* was_notified) { *was_notified = true; }, &was_notified));
+  tabstrip()->AddToExistingGroup({1}, group_id);
+  EXPECT_TRUE(was_notified);
+}
+
+TEST_P(TabStripModelTest, TabGroupCallbackOnTabRemoved) {
+  PrepareTabstripForSelectionTest(tabstrip(), /*tab_count*/ 2,
+                                  /*pinned_count*/ 0,
+                                  /*selected_tabs*/ {0});
+
+  tab_groups::TabGroupId group_id =
+      tabstrip()->AddToNewGroup(std::vector<int>{0, 1});
+  TabGroup* const tab_group = tabstrip()->group_model()->GetTabGroup(group_id);
+
+  bool was_notified = false;
+  base::CallbackListSubscription subscription =
+      tab_group->RegisterOnGroupChanged(base::BindRepeating(
+          [](bool* was_notified) { *was_notified = true; }, &was_notified));
+  tabstrip()->CloseWebContentsAt(0, TabCloseTypes::CLOSE_NONE);
+  EXPECT_TRUE(was_notified);
+}
+
+TEST_P(TabStripModelTest, TabGroupCallbackOnTabMoved) {
+  PrepareTabstripForSelectionTest(tabstrip(), /*tab_count*/ 2,
+                                  /*pinned_count*/ 0,
+                                  /*selected_tabs*/ {0});
+
+  tab_groups::TabGroupId group_id =
+      tabstrip()->AddToNewGroup(std::vector<int>{0, 1});
+  TabGroup* const tab_group = tabstrip()->group_model()->GetTabGroup(group_id);
+
+  bool was_notified = false;
+  base::CallbackListSubscription subscription =
+      tab_group->RegisterOnGroupChanged(base::BindRepeating(
+          [](bool* was_notified) { *was_notified = true; }, &was_notified));
+  tabstrip()->MoveWebContentsAt(0, 1, false);
+  EXPECT_TRUE(was_notified);
+}
