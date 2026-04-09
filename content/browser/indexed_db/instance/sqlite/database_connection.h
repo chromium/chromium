@@ -113,11 +113,11 @@ class CONTENT_EXPORT DatabaseConnection {
   // (i.e., excluding free pages) multiplied by the page size.
   uint64_t GetSize() const;
 
-  // Called when the BucketContext is not currently serving requests. Relatively
-  // low-cost maintenance such as WAL checkpointing and memory trimming are
-  // performed here but NOT vacuuming since the "idle time" is shared by all
-  // open `DatabaseConnection` instances.
-  void PerformIdleMaintenance();
+  // Called when `BucketContext` is not currently serving requests. `long_idle`
+  // is true if the `BucketContext` has been idle for a relatively long time,
+  // in which case more expensive maintenance such as vacuuming is performed.
+  // Note that "idle time" is shared by all open `DatabaseConnection` instances.
+  void PerformIdleMaintenance(bool long_idle);
 
   std::unique_ptr<BackingStoreDatabaseImpl> CreateDatabaseWrapper();
 

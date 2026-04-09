@@ -479,7 +479,7 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
   void OnForceClosing() override;
   void StartPreCloseTasks(base::OnceClosure on_done) override;
   void StopPreCloseTasks() override;
-  void RunIdleTasks() override { /*Not used by LevelDB*/ }
+  void RunIdleTasks(bool long_idle) override { /*Not used by LevelDB*/ }
   StatusOr<std::unique_ptr<indexed_db::BackingStore::Database>>
   CreateOrOpenDatabase(const std::u16string& name) override;
   uintptr_t GetIdentifierForMemoryDump() override;

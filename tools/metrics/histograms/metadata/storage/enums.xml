@@ -370,12 +370,15 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(IndexedDbSqliteVacuumEvent) -->
 
 <enum name="IndexedDbSqliteVacuumEvent">
-  <int value="1" label="Vacuum requested because conditions were met"/>
+  <int value="0" label="(Obsolete) Vacuum needed because conditions were met"/>
+  <int value="1" label="Vacuum requested on close because conditions were met"/>
   <int value="2" label="Vacuum succeeded"/>
   <int value="3" label="Vacuum skipped due to force close"/>
   <int value="4" label="Error while determining required/available disk space"/>
   <int value="5" label="Vacuum skipped due to insufficient disk space"/>
   <int value="6" label="Vacuum failed at SQLite layer"/>
+  <int value="7" label="Vacuum requested on long idle"/>
+  <int value="8" label="Checkpoint before vacuum failed"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/indexed_db/instance/sqlite/database_connection.cc:VacuumEvent) -->

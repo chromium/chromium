@@ -276,7 +276,7 @@ class BackingStore {
 
   // Called when the bucket has been idle for some time so that the backing
   // store can perform maintenance without adversely impacting client requests.
-  virtual void RunIdleTasks() = 0;
+  virtual void RunIdleTasks(bool long_idle) = 0;
 
   // Estimate the total size of all databases (including blobs) in this store.
   // `write_in_progress` is true iff the last readwrite transaction did not

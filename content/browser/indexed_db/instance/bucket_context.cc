@@ -287,7 +287,13 @@ BucketContext::BucketContext(
       idle_timer_(FROM_HERE,
                   kIdleTimeout,
                   base::BindRepeating(&BucketContext::RunIdleTasks,
-                                      base::Unretained(this))),
+                                      base::Unretained(this),
+                                      /*long_idle=*/false)),
+      long_idle_timer_(FROM_HERE,
+                       kIdleTimeout * 3,
+                       base::BindRepeating(&BucketContext::RunIdleTasks,
+                                           base::Unretained(this),
+                                           /*long_idle=*/true)),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
       blob_storage_context_(std::move(blob_storage_context)),
       file_system_access_context_(std::move(file_system_access_context)),
@@ -635,9 +641,10 @@ void BucketContext::OnActivity() {
     last_idle_tasks_completion_time_.reset();
   }
   idle_timer_.Reset();
+  long_idle_timer_.Reset();
 }
 
-void BucketContext::RunIdleTasks() {
+void BucketContext::RunIdleTasks(bool long_idle) {
   // Though the idle timer is stopped before resetting the backing store, an
   // already posted task may run after the backing store has been reset.
   if (!backing_store_) {
@@ -648,9 +655,11 @@ void BucketContext::RunIdleTasks() {
     return;
   }
   base::TimeTicks start = base::TimeTicks::Now();
-  backing_store()->RunIdleTasks();
+  backing_store()->RunIdleTasks(long_idle);
   base::TimeTicks end = base::TimeTicks::Now();
-  LogDuration(end - start, "IndexedDB.BackendDuration.RunIdleTasks",
+  LogDuration(end - start,
+              long_idle ? "IndexedDB.BackendDuration.RunLongIdleTasks"
+                        : "IndexedDB.BackendDuration.RunIdleTasks",
               GetHistogramSuffix());
   last_idle_tasks_completion_time_ = end;
 }
@@ -1325,6 +1334,7 @@ void BucketContext::ResetBackingStore() {
   file_reader_map_.clear();
   weak_factory_.InvalidateWeakPtrs();
   idle_timer_.Stop();
+  long_idle_timer_.Stop();
   close_timer_.Stop();
 
   if (backing_store_) {

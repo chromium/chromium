@@ -58,9 +58,11 @@ uint64_t BackingStoreImpl::SumSizesOfDatabaseFiles(
   return total_size;
 }
 
-void BackingStoreImpl::RunIdleTasks() {
+void BackingStoreImpl::RunIdleTasks(bool long_idle) {
   for (auto& [_, connection] : open_connections_) {
-    connection->PerformIdleMaintenance();
+    // TODO(crbug.com/436880909): Should we limit "long idle" maintenance to a
+    // handful of databases?
+    connection->PerformIdleMaintenance(long_idle);
   }
 }
 

@@ -391,7 +391,7 @@ class CONTENT_EXPORT BucketContext
   // Called when there is any activity that should reset the idle timer.
   void OnActivity();
   // Called after a period of inactivity.
-  void RunIdleTasks();
+  void RunIdleTasks(bool long_idle);
 
   void OnGotBucketSpaceRemaining(storage::QuotaErrorOr<int64_t> space_left);
 
@@ -445,6 +445,7 @@ class CONTENT_EXPORT BucketContext
 
   ClosingState closing_stage_ = ClosingState::kNotClosing;
   InactivityTimer idle_timer_;
+  InactivityTimer long_idle_timer_;
   std::optional<base::TimeTicks> last_idle_tasks_completion_time_;
   base::OneShotTimer close_timer_;
   std::unique_ptr<PartitionedLockManager> lock_manager_;

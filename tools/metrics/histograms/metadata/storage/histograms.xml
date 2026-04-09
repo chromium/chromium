@@ -341,6 +341,7 @@ chromium-metrics-reviews@google.com.
     <variant name="RenameIndex"/>
     <variant name="RenameObjectStore"/>
     <variant name="RunIdleTasks"/>
+    <variant name="RunLongIdleTasks"/>
     <variant name="SetIndexKeys"/>
   </token>
 </histogram>
@@ -909,10 +910,9 @@ chromium-metrics-reviews@google.com.
   <owner>abhishek.shanthkumar@microsoft.com</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
-    Tracks the vacuum funnel for SQLite-backed IndexedDB databases. The first
-    event is logged when a database is closed and the conditions for vacuuming
-    are met. Multiple events may be logged subsequently as the funnel
-    progresses.
+    Tracks the vacuum funnel for SQLite-backed IndexedDB databases. An event is
+    logged when vacuuming is attempted on long idle or requested at close.
+    Multiple events may be logged subsequently as the funnel progresses.
   </summary>
 </histogram>
 
