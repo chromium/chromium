@@ -186,16 +186,47 @@ UPLOAD_SKIA_JSON_BUILDERS = frozenset([
 ])
 
 PUBLIC_PERF_BUILDERS = [
-    # ChromiumPerf
+    # all except latest pixels
+    'android_arm64-builder-perf',
+    'android-builder-perf',
+    'android-go-wembley-perf',
+    'android-go-wembley_webview-perf',
+    'android-pixel-fold-perf',
+    'android-pixel-tangor-perf',
+    'android-pixel4-perf',
+    'android-pixel4_webview-perf',  # One of the mobile testers.
+    'android-pixel4_webview-perf-pgo',
+    'android-pixel6-perf',
+    'android-pixel6-perf-pgo',
+    'android-pixel6-pro-perf',
     'android-pixel9-perf',
     'android-pixel9-pro-perf',
     'android-pixel9-pro-xl-perf',
+    'linux-builder-perf',
+    'linux-falcon-rak-5070-perf',
     'linux-perf',
-    'linux-r350-perf',
-    'win-10-perf',
-
-    # ChromiumPerfFyi
     'linux-perf-fyi',
+    'linux-perf-rel',
+    'linux-r350-processor-perf',
+    'linux-r350-perf',
+    'mac-arm-builder-perf',
+    'mac-builder-perf',
+    'mac-intel-perf',
+    'mac-m1-pro-perf',
+    'mac-m1_mini_2020-no-brp-perf',
+    'mac-m1_mini_2020-perf',
+    'mac-m1_mini_2020-perf-pgo',
+    'mac-m2-pro-perf',
+    'mac-m3-pro-perf',
+    'mac-m4-mini-processor-perf',
+    'win-10-processor-perf',
+    'win-10_amd_laptop-perf',
+    'win-10_laptop_low_end-processor-perf',
+    'win-10_laptop_low_end-perf_HP-Candidate',
+    'win-11-processor-perf',
+    'win-falcon-rak-5070-perf',
+    'win64-builder-perf',
+    'win-arm64-snapdragon-elite-perf',
 ]
 
 # TODO(zijiehe): Fuchsia should check the os version, i.e. --os-check=check, but
