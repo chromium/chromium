@@ -293,11 +293,8 @@ std::vector<omnibox::ToolMode> GetAllowedTools(
   }
   const omnibox::SearchboxConfig* searchbox_config =
       aim_eligibility_service->GetSearchboxConfig();
-  if (!searchbox_config->has_rule_set()) {
-    return tools;
-  }
-  for (const int tool : searchbox_config->rule_set().allowed_tools()) {
-    tools.push_back(static_cast<omnibox::ToolMode>(tool));
+  for (const auto& tool_config : searchbox_config->tool_configs()) {
+    tools.push_back(tool_config.tool());
   }
   return tools;
 }
