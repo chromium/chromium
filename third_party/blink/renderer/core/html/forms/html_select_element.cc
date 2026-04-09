@@ -1961,10 +1961,15 @@ void HTMLSelectElement::UpdateAllSelectedcontents(
   DCHECK_EQ(selected_option, SelectedOption());
 
   if (RuntimeEnabledFeatures::SelectedcontentSpecEnabled()) {
-    VectorOf<HTMLSelectedContentElement> descendant_selectedcontents_copy(
-        descendant_selectedcontents_);
+    VectorOf<HTMLSelectedContentElement> enabled_selectedcontents;
     for (HTMLSelectedContentElement* selectedcontent :
-         descendant_selectedcontents_copy) {
+         descendant_selectedcontents_) {
+      if (!selectedcontent->IsDisabled()) {
+        enabled_selectedcontents.push_back(selectedcontent);
+      }
+    }
+    for (HTMLSelectedContentElement* selectedcontent :
+         enabled_selectedcontents) {
       selectedcontent->CloneContentsFromOptionElement(selected_option);
     }
   } else {

@@ -17,6 +17,8 @@ class HTMLSelectedContentElement : public HTMLElement {
  public:
   explicit HTMLSelectedContentElement(Document&);
 
+  bool IsDisabled() const { return disabled_; }
+
   ElementType GetElementType() const final {
     return ElementType::kHTMLSelectedContentElement;
   }
