@@ -675,9 +675,9 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
   // Lay out vertical tab strip if visible.
   int collapsed_vertical_tab_strip_adjustment = 0;
   VerticalTabStripAnimation vertical_tab_strip_animation;
+  gfx::Rect vertical_tab_strip_bounds;
   if (IsParentedTo(views().vertical_tab_strip_region_view,
                    views().browser_view)) {
-    gfx::Rect vertical_tab_strip_bounds;
     if (tab_strip_type == TabStripType::kVertical) {
       vertical_tab_strip_animation = CalculateVerticalTabStripAnimation(params);
       if (vertical_tab_strip_animation.top_offset > 0) {
@@ -737,7 +737,8 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
           views().vertical_tab_strip_top_corner->GetPreferredSize();
       preferred.set_width(base::ClampCeil(
           preferred.width() * vertical_tab_strip_animation.top_corner));
-      corner_bounds = gfx::Rect(params.visual_client_area.origin(), preferred);
+      corner_bounds =
+          gfx::Rect(vertical_tab_strip_bounds.top_right(), preferred);
       corner_bounds.Outset(
           gfx::Outsets::TLBR(0, views::Separator::kThickness, 0, 0));
     }
@@ -757,8 +758,8 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
       preferred.set_width(base::ClampCeil(
           preferred.width() * vertical_tab_strip_animation.bottom_corner));
       corner_bounds =
-          gfx::Rect(params.visual_client_area.x(),
-                    params.visual_client_area.bottom() - preferred.height(),
+          gfx::Rect(vertical_tab_strip_bounds.right(),
+                    vertical_tab_strip_bounds.bottom() - preferred.height(),
                     preferred.width(), preferred.height());
       corner_bounds.Outset(
           gfx::Outsets::TLBR(0, views::Separator::kThickness, 0, 0));

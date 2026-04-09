@@ -72,6 +72,6 @@ TabStripAnimations::GroupInfos TabStripAnimations::GenerateAnimations() const {
       Motion(kCollapseOnHover, TotalDurationMs(duration_ms),
              expand_collapse_tween,
              Animate(kTabStripHoverWidth, FromValue(1.0), ToValue(0.0)),
-             Animate(kTopCorner, FromValue(1.0), ToValue(-1.0)),
+             Animate(kTopCorner, FromValue(-1.0), ToValue(1.0)),
              Animate(kBottomCorner, FromValue(-1.0), ToValue(1.0)))));
 }
