@@ -12,6 +12,7 @@ source_set("model") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/fullscreen/public:metrics",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/common:timing",
   ]
@@ -24,6 +25,7 @@ source_set("unit_tests") {
     ":model",
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/browser/fullscreen/public:metrics",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//testing/gtest",

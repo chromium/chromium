@@ -15,6 +15,7 @@
 
 class FullscreenBrowserAgentTest;
 class FullscreenMediatorPassKeyProvider;
+enum class FullscreenModeTransitionTrigger;
 
 // A class that holds the fullscreen state for a browser.
 class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
@@ -57,8 +58,12 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
   void IncrementalScroll(CGFloat amount, PassKey);
 
   // Enters or exits fullscreen mode.
-  void EnterFullscreen(PassKey, bool animated);
-  void ExitFullscreen(PassKey, bool animated);
+  void EnterFullscreen(PassKey,
+                       FullscreenModeTransitionTrigger trigger,
+                       bool animated);
+  void ExitFullscreen(PassKey,
+                      FullscreenModeTransitionTrigger trigger,
+                      bool animated);
 
   // Increments the disabled counter. If the counter becomes 1, it exits
   // fullscreen mode.

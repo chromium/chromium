@@ -7,14 +7,18 @@
 
 #import <Foundation/Foundation.h>
 
+enum class FullscreenModeTransitionTrigger;
+
 // Protocol for commands that control the fullscreen state.
 @protocol FullscreenCommands
 
 // Enters fullscreen mode.
-- (void)enterFullscreenWithAnimation:(BOOL)animated;
+- (void)enterFullscreenWithTrigger:(FullscreenModeTransitionTrigger)trigger
+                          animated:(BOOL)animated;
 
 // Exits fullscreen mode.
-- (void)exitFullscreenWithAnimation:(BOOL)animated;
+- (void)exitFullscreenWithTrigger:(FullscreenModeTransitionTrigger)trigger
+                         animated:(BOOL)animated;
 
 // Disables fullscreen. Increments the disabled counter.
 - (void)disableFullscreenAnimated:(BOOL)animated;

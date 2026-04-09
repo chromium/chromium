@@ -9,6 +9,8 @@
 #import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
+#import "base/metrics/histogram_functions.h"
+#import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/common/material_timing.h"
 
 namespace {
@@ -55,14 +57,34 @@ void FullscreenBrowserAgent::IncrementalScroll(CGFloat amount, PassKey) {
     return;
   }
 
+  if (top_progress_ == 0.0 && bottom_progress_ == 0.0) {
+    base::UmaHistogramEnumeration(
+        kEnterFullscreenModeTransitionTriggerHistogram,
+        FullscreenModeTransitionTrigger::kUserControlled);
+  } else if (top_progress_ == 1.0 && bottom_progress_ == 1.0) {
+    base::UmaHistogramEnumeration(
+        kExitFullscreenModeTransitionTriggerHistogram,
+        FullscreenModeTransitionTrigger::kUserControlled);
+  }
+
   NotifyObserversOfUpdatedState();
 }
 
-void FullscreenBrowserAgent::EnterFullscreen(PassKey, bool animated) {
+void FullscreenBrowserAgent::EnterFullscreen(
+    PassKey pass_key,
+    FullscreenModeTransitionTrigger trigger,
+    bool animated) {
+  base::UmaHistogramEnumeration(kEnterFullscreenModeTransitionTriggerHistogram,
+                                trigger);
   UpdateProgressAndBroadcast(0.0, 0.0, animated);
 }
 
-void FullscreenBrowserAgent::ExitFullscreen(PassKey, bool animated) {
+void FullscreenBrowserAgent::ExitFullscreen(
+    PassKey pass_key,
+    FullscreenModeTransitionTrigger trigger,
+    bool animated) {
+  base::UmaHistogramEnumeration(kExitFullscreenModeTransitionTriggerHistogram,
+                                trigger);
   UpdateProgressAndBroadcast(1.0, 1.0, animated);
 }
 
@@ -105,7 +127,8 @@ void FullscreenBrowserAgent::IncrementDisabledCounter(PassKey pass_key,
                                                       bool animated) {
   disabled_count_++;
   if (disabled_count_ == 1) {
-    ExitFullscreen(pass_key, animated);
+    ExitFullscreen(pass_key, FullscreenModeTransitionTrigger::kForcedByCode,
+                   animated);
   }
 }
 

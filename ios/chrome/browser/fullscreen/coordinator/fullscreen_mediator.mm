@@ -10,6 +10,7 @@
 #import "base/types/pass_key.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer_bridge.h"
+#import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent_observer_bridge.h"
@@ -210,7 +211,9 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
 - (void)webState:(web::WebState*)webState
     didFinishNavigation:(web::NavigationContext*)navigationContext {
   if (!navigationContext->IsSameDocument()) {
-    _browserAgent->ExitFullscreen(PassKey(), /*animated=*/true);
+    _browserAgent->ExitFullscreen(
+        PassKey(), FullscreenModeTransitionTrigger::kForcedByCode,
+        /*animated=*/true);
   }
 }
 
@@ -293,12 +296,14 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
 
 #pragma mark - FullscreenCommands
 
-- (void)enterFullscreenWithAnimation:(BOOL)animated {
-  _browserAgent->EnterFullscreen(PassKey(), animated);
+- (void)enterFullscreenWithTrigger:(FullscreenModeTransitionTrigger)trigger
+                          animated:(BOOL)animated {
+  _browserAgent->EnterFullscreen(PassKey(), trigger, animated);
 }
 
-- (void)exitFullscreenWithAnimation:(BOOL)animated {
-  _browserAgent->ExitFullscreen(PassKey(), animated);
+- (void)exitFullscreenWithTrigger:(FullscreenModeTransitionTrigger)trigger
+                         animated:(BOOL)animated {
+  _browserAgent->ExitFullscreen(PassKey(), trigger, animated);
 }
 
 - (void)disableFullscreenAnimated:(BOOL)animated {
@@ -322,11 +327,13 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
 }
 
 - (void)applicationDidEnterBackground {
-  [self exitFullscreenWithAnimation:NO];
+  [self exitFullscreenWithTrigger:FullscreenModeTransitionTrigger::kForcedByCode
+                         animated:NO];
 }
 
 - (void)applicationWillEnterForeground {
-  [self exitFullscreenWithAnimation:NO];
+  [self exitFullscreenWithTrigger:FullscreenModeTransitionTrigger::kForcedByCode
+                         animated:NO];
 }
 
 #pragma mark - FullscreenBrowserAgentObserving
@@ -398,9 +405,15 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
   }
 
   if (snapType == SnapType::kExit) {
-    _browserAgent->ExitFullscreen(PassKey(), /*animated=*/true);
+    _browserAgent->ExitFullscreen(
+        PassKey(),
+        FullscreenModeTransitionTrigger::kUserInitiatedFinishedByCode,
+        /*animated=*/true);
   } else {
-    _browserAgent->EnterFullscreen(PassKey(), /*animated=*/true);
+    _browserAgent->EnterFullscreen(
+        PassKey(),
+        FullscreenModeTransitionTrigger::kUserInitiatedFinishedByCode,
+        /*animated=*/true);
   }
 }
 
