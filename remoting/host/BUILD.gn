@@ -323,6 +323,17 @@ source_set("mojo_caller_security_checker") {
   }
 }
 
+if (is_posix) {
+  source_set("signal_handler") {
+    sources = [
+      "posix/signal_handler.cc",
+      "posix/signal_handler.h",
+    ]
+
+    deps = [ "//base" ]
+  }
+}
+
 # This must be a static library instead of a source set because
 # remoting_unittests requires that remoting_me2me_host.cc not be pulled in,
 # which in turn depends on remoting_me2me_host_static which isn't part of that
@@ -558,11 +569,11 @@ static_library("common") {
     sources += [
       "host_event_logger_posix.cc",
       "pam_utils.cc",
-      "posix/signal_handler.cc",
-      "posix/signal_handler.h",
     ]
 
     libs += [ "pam" ]
+
+    deps += [ ":signal_handler" ]
 
     if (!is_android) {
       deps += [ "//components/policy/core/common:policy_path_constants" ]
@@ -1190,6 +1201,7 @@ if (enable_me2me_host) {
         "pam_authorization_factory_posix.cc",
         "pam_authorization_factory_posix.h",
       ]
+      deps += [ ":signal_handler" ]
     }
 
     if (!is_ios) {

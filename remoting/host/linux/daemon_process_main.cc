@@ -12,14 +12,17 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "net/base/backoff_entry.h"
 #include "remoting/base/auto_thread.h"
@@ -27,6 +30,7 @@
 #include "remoting/base/logging.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/daemon_process.h"
+#include "remoting/host/posix/signal_handler.h"
 
 namespace remoting {
 
@@ -58,6 +62,10 @@ const net::BackoffEntry::Policy kBackoffPolicy = {
 
 // How long a process must run in order to reset the backoff and failure count.
 constexpr base::TimeDelta kMinProcessLifetime = base::Seconds(60);
+
+// The amount of time to wait for the daemon process to clean up before
+// exiting.
+constexpr base::TimeDelta kSigTermTimeout = base::Seconds(10);
 
 // How many transient failures are allowed before the daemon process exits
 // permanently.
@@ -112,14 +120,50 @@ int DaemonProcessMain() {
 
   net::BackoffEntry backoff_entry(&kBackoffPolicy);
 
+  std::unique_ptr<DaemonProcess> daemon_process;
+
+  // Set up a dedicated IO thread for handling the SIGTERM signal.
+  auto sigterm_handler_task_runner = AutoThread::CreateWithType(
+      "SIGTERM handler thread", main_task_executor.task_runner(),
+      base::MessagePumpType::IO);
+  auto on_sigterm = base::BindRepeating(
+      [](std::unique_ptr<DaemonProcess>& process, int signal) {
+        HOST_LOG << "SIGTERM received.";
+        if (!process) {
+          HOST_LOG << "Nothing to cleanup. Exiting now.";
+          exit(kSuccessExitCode);
+        }
+        base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+            FROM_HERE, base::BindOnce([]() {
+              HOST_LOG << "Cleanup timed out. Exiting now.";
+              exit(kSuccessExitCode);
+            }),
+            kSigTermTimeout);
+        process->Cleanup(base::BindOnce([]() {
+          HOST_LOG << "Cleanup completed. Exiting now.";
+          exit(kSuccessExitCode);
+        }));
+      },
+      std::ref(daemon_process));
+
+  sigterm_handler_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          base::IgnoreResult(&RegisterSignalHandler), SIGTERM,
+          base::BindPostTask(main_task_executor.task_runner(), on_sigterm)));
+
   while (true) {
     base::RunLoop run_loop;
+
+    // Note that this is just main_task_executor.task_runner() with a reference
+    // counted wrapper. Code that uses SequencedTaskRunner::GetCurrentDefault()
+    // will still get main_task_executor.task_runner() and won't increase the
+    // reference count.
     auto main_auto_thread_task_runner =
         base::MakeRefCounted<AutoThreadTaskRunner>(
             main_task_executor.task_runner(), run_loop.QuitClosure());
     auto io_task_runner = AutoThread::CreateWithType(
         "I/O thread", main_auto_thread_task_runner, base::MessagePumpType::IO);
-    std::unique_ptr<DaemonProcess> daemon_process;
     int daemon_exit_code = kSuccessExitCode;
 
     base::TimeTicks launch_time = base::TimeTicks::Now();
@@ -169,7 +213,12 @@ int DaemonProcessMain() {
 
     base::TimeDelta backoff = backoff_entry.GetTimeUntilRelease();
     HOST_LOG << "Waiting " << backoff << " before relaunching.";
-    base::PlatformThread::Sleep(backoff);
+    // Use a run loop instead of the blocking PlatformThread::Sleep() to allow
+    // the SIGTERM handler to be run.
+    base::RunLoop backoff_run_loop;
+    main_task_executor.task_runner()->PostDelayedTask(
+        FROM_HERE, backoff_run_loop.QuitClosure(), backoff);
+    backoff_run_loop.Run();
   }
 }
 

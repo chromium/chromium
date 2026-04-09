@@ -101,6 +101,11 @@ class DaemonProcess : public ConfigWatcher::Delegate,
   // Requests the network process to crash.
   void CrashNetworkProcess(const base::Location& location);
 
+  // Called whenever the daemon process is asked to terminate gracefully. The
+  // implementation may cleanup resources such as closing desktop sessions.
+  // `callback` is called once the cleanup has complete.
+  virtual void Cleanup(base::OnceClosure callback);
+
  protected:
   DaemonProcess(scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
                 scoped_refptr<AutoThreadTaskRunner> io_task_runner,
