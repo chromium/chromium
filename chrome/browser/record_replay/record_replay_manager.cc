@@ -166,9 +166,8 @@ void RecordReplayManager::OnFillOrPreviewForm(
     return;
   }
   autofill::FieldGlobalId field_id = *filled_field_ids.begin();
-  blink::LocalFrameToken token = blink::LocalFrameToken(*field_id.frame_token);
   DomNodeId dom_node_id = DomNodeId(*field_id.renderer_id);
-  if (auto* driver = client_->GetDriverFactory().GetDriver(token)) {
+  if (auto* driver = client_->GetDriverFactory().GetDriver(field_id)) {
     driver->GetElementSelector(
         dom_node_id,
         base::BindOnce(
@@ -205,7 +204,8 @@ void RecordReplayManager::GetMatchingRecording(
 
         auto invoke_only_with_exact_match = base::BindOnce(
             [](base::OnceCallback<void(std::optional<Recording>)> cb,
-               Recording recording, std::vector<ElementId> matches) {
+               Recording recording,
+               std::vector<std::unique_ptr<ElementId>> matches) {
               if (matches.size() != 1) {
                 std::move(cb).Run(std::nullopt);
                 return;
@@ -251,33 +251,25 @@ void RecordReplayManager::StopReplay() {
 
 void RecordReplayManager::GetMatchingElements(
     Selector element_selector,
-    base::OnceCallback<void(std::vector<ElementId>)> cb) {
+    base::OnceCallback<void(std::vector<std::unique_ptr<ElementId>>)> cb) {
   std::vector<RecordReplayDriver*> drivers =
       client_->GetDriverFactory().GetActiveDrivers();
 
-  base::RepeatingCallback<void(std::vector<ElementId>)> bcb =
-      base::BarrierCallback<std::vector<ElementId>>(
+  base::RepeatingCallback<void(std::vector<std::unique_ptr<ElementId>>)> bcb =
+      base::BarrierCallback<std::vector<std::unique_ptr<ElementId>>>(
           drivers.size(),
-          base::BindOnce([](std::vector<std::vector<ElementId>> elements_vecs) {
-            std::vector<ElementId> all_elements;
-            for (std::vector<ElementId>& elements : elements_vecs) {
+          base::BindOnce([](std::vector<std::vector<std::unique_ptr<ElementId>>>
+                                elements_vecs) {
+            std::vector<std::unique_ptr<ElementId>> all_elements;
+            for (std::vector<std::unique_ptr<ElementId>>& elements :
+                 elements_vecs) {
               base::Extend(all_elements, std::move(elements));
             }
             return all_elements;
           }).Then(std::move(cb)));
 
   for (RecordReplayDriver* driver : drivers) {
-    driver->GetMatchingElements(
-        element_selector,
-        base::BindOnce(
-            [](blink::LocalFrameToken frame_token,
-               const std::vector<DomNodeId>& dom_node_ids) {
-              return base::ToVector(dom_node_ids, [&](DomNodeId dom_node_id) {
-                return ElementId{frame_token, dom_node_id};
-              });
-            },
-            driver->GetFrameToken())
-            .Then(bcb));
+    driver->GetMatchingElements(element_selector, bcb);
   }
 }
 

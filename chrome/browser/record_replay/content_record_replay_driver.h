@@ -52,7 +52,8 @@ class ContentRecordReplayDriver : public RecordReplayDriver,
                           base::OnceCallback<void(Selector)> cb) override;
   void GetMatchingElements(
       Selector element_selector,
-      base::OnceCallback<void(const std::vector<DomNodeId>&)> cb) override;
+      base::OnceCallback<void(std::vector<std::unique_ptr<ElementId>>)> cb)
+      override;
   void DoClick(DomNodeId dom_node_id,
                base::OnceCallback<void(bool)> cb) override;
   void DoPaste(DomNodeId dom_node_id,

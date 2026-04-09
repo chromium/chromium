@@ -8,8 +8,11 @@
 #include <memory>
 
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/record_replay/element_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace record_replay {
 
@@ -32,7 +35,10 @@ class RecordReplayDriverFactory : public content::WebContentsObserver {
   using content::WebContentsObserver::Observe;
 
   RecordReplayDriver* GetOrCreateDriver(content::RenderFrameHost* rfh);
+  // DEPRECATED — Use `element_id` or `field_id` instead of frame_token.
   RecordReplayDriver* GetDriver(const blink::LocalFrameToken& frame_token);
+  RecordReplayDriver* GetDriver(const ElementId& element_id);
+  RecordReplayDriver* GetDriver(const autofill::FieldGlobalId& field_id);
 
   // Returns all drivers whose frame is active. That is, it does not include
   // drivers whose frame is bfcached or prerendered.

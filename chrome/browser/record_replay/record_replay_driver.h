@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_RECORD_REPLAY_RECORD_REPLAY_DRIVER_H_
 #define CHROME_BROWSER_RECORD_REPLAY_RECORD_REPLAY_DRIVER_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/record_replay/element_id.h"
 #include "chrome/common/record_replay/aliases.h"
 #include "chrome/common/record_replay/record_replay.mojom-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -35,7 +37,7 @@ class RecordReplayDriver {
                                   base::OnceCallback<void(Selector)> cb) = 0;
   virtual void GetMatchingElements(
       Selector element_selector,
-      base::OnceCallback<void(const std::vector<DomNodeId>&)> cb) = 0;
+      base::OnceCallback<void(std::vector<std::unique_ptr<ElementId>>)> cb) = 0;
   virtual void DoClick(DomNodeId dom_node_id,
                        base::OnceCallback<void(bool)> cb) = 0;
   virtual void DoPaste(DomNodeId dom_node_id,

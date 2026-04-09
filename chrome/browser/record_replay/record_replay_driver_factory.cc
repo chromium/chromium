@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/containers/map_util.h"
+#include "chrome/browser/record_replay/content_element_id.h"
 #include "chrome/browser/record_replay/content_record_replay_driver.h"
 #include "chrome/browser/record_replay/record_replay_client.h"
 #include "chrome/browser/record_replay/record_replay_driver.h"
@@ -36,6 +37,18 @@ RecordReplayDriver* RecordReplayDriverFactory::GetDriver(
   std::unique_ptr<RecordReplayDriver>* driver =
       base::FindOrNull(drivers_, frame_token);
   return driver ? driver->get() : nullptr;
+}
+
+RecordReplayDriver* RecordReplayDriverFactory::GetDriver(
+    const ElementId& element_id) {
+  const auto& content_element_id =
+      static_cast<const ContentElementId&>(element_id);
+  return GetDriver(content_element_id.frame_token());
+}
+
+RecordReplayDriver* RecordReplayDriverFactory::GetDriver(
+    const autofill::FieldGlobalId& field_id) {
+  return GetDriver(blink::LocalFrameToken(field_id.frame_token.value()));
 }
 
 std::vector<RecordReplayDriver*> RecordReplayDriverFactory::GetActiveDrivers() {

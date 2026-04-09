@@ -10,6 +10,8 @@ static_library("record_replay") {
   sources = [
     "capabilities_database.cc",
     "capabilities_database.h",
+    "content_element_id.cc",
+    "content_element_id.h",
     "content_record_replay_driver.cc",
     "content_record_replay_driver.h",
     "element_id.cc",

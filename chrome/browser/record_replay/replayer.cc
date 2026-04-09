@@ -135,10 +135,10 @@ void Replayer::ReplayClickAction(Selector element_selector,
                                  SuccessCallback cb) {
   GetUniqueMatchingElementsAndDo(
       std::move(element_selector),
-      base::BindOnce(
-          [](RecordReplayDriver& driver, ElementId match, SuccessCallback cb) {
-            driver.DoClick(match.dom_node_id(), std::move(cb));
-          }),
+      base::BindOnce([](RecordReplayDriver& driver, const ElementId& match,
+                        SuccessCallback cb) {
+        driver.DoClick(match.dom_node_id(), std::move(cb));
+      }),
       std::move(cb));
 }
 
@@ -148,8 +148,8 @@ void Replayer::ReplaySelectChangeAction(Selector element_selector,
   GetUniqueMatchingElementsAndDo(
       std::move(element_selector),
       base::BindOnce(
-          [](FieldValue value, RecordReplayDriver& driver, ElementId match,
-             SuccessCallback cb) {
+          [](FieldValue value, RecordReplayDriver& driver,
+             const ElementId& match, SuccessCallback cb) {
             driver.DoSelect(match.dom_node_id(), std::move(value),
                             std::move(cb));
           },
@@ -163,8 +163,8 @@ void Replayer::ReplayTextChangeAction(Selector element_selector,
   GetUniqueMatchingElementsAndDo(
       element_selector,
       base::BindOnce(
-          [](FieldValue text, RecordReplayDriver& driver, ElementId match,
-             SuccessCallback cb) {
+          [](FieldValue text, RecordReplayDriver& driver,
+             const ElementId& match, SuccessCallback cb) {
             driver.DoPaste(match.dom_node_id(), std::move(text), std::move(cb));
           },
           std::move(text)),
@@ -173,16 +173,17 @@ void Replayer::ReplayTextChangeAction(Selector element_selector,
 
 void Replayer::GetUniqueMatchingElementsAndDo(
     Selector element_selector,
-    base::OnceCallback<void(RecordReplayDriver&, ElementId, SuccessCallback)>
-        action_cb,
+    base::OnceCallback<
+        void(RecordReplayDriver&, const ElementId&, SuccessCallback)> action_cb,
     SuccessCallback result_cb) {
   owner_->GetMatchingElements(
       element_selector,
       base::BindOnce(
           [](base::WeakPtr<Replayer> self,
-             base::OnceCallback<void(RecordReplayDriver&, ElementId,
+             base::OnceCallback<void(RecordReplayDriver&, const ElementId&,
                                      SuccessCallback)> action_cb,
-             SuccessCallback result_cb, std::vector<ElementId> matches) {
+             SuccessCallback result_cb,
+             std::vector<std::unique_ptr<ElementId>> matches) {
             if (!self) {
               std::move(result_cb).Run(false);
               return;
@@ -194,10 +195,9 @@ void Replayer::GetUniqueMatchingElementsAndDo(
               std::move(result_cb).Run(false);
               return;
             }
-            ElementId match = matches.front();
+            const ElementId& match = *matches.front();
             RecordReplayDriver* driver =
-                self->owner_->client().GetDriverFactory().GetDriver(
-                    match.frame_token());
+                self->owner_->client().GetDriverFactory().GetDriver(match);
             if (!driver) {
               std::move(result_cb).Run(false);
               return;

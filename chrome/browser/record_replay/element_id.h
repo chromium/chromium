@@ -6,28 +6,30 @@
 #define CHROME_BROWSER_RECORD_REPLAY_ELEMENT_ID_H_
 
 #include <ostream>
+#include <string>
 
 #include "chrome/common/record_replay/aliases.h"
-#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace record_replay {
 
 // Uniquely identifies a DOM element in the browser process.
 class ElementId {
  public:
-  ElementId(blink::LocalFrameToken frame_token, DomNodeId dom_node_id);
+  // Note: We use std::unique_ptr<ElementId> in collections to avoid slicing
+  // when using derived classes like ContentElementId.
+  explicit ElementId(DomNodeId dom_node_id);
   ElementId(const ElementId&);
   ElementId& operator=(const ElementId&);
-  ~ElementId();
+  virtual ~ElementId();
 
-  const blink::LocalFrameToken& frame_token() const { return frame_token_; }
   DomNodeId dom_node_id() const { return dom_node_id_; }
+
+  virtual std::string ToString() const;
 
   friend bool operator==(const ElementId& lhs, const ElementId& rhs);
   friend auto operator<=>(const ElementId& lhs, const ElementId& rhs);
 
  private:
-  blink::LocalFrameToken frame_token_;
   DomNodeId dom_node_id_{};
 };
 

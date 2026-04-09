@@ -73,8 +73,9 @@ class Replayer {
   // `result_cb` to report failure.
   void GetUniqueMatchingElementsAndDo(
       Selector element_selector,
-      base::OnceCallback<void(RecordReplayDriver&, ElementId, SuccessCallback)>
-          action_cb,
+      base::OnceCallback<void(RecordReplayDriver&,
+                              const ElementId&,
+                              SuccessCallback)> action_cb,
       SuccessCallback result_cb);
 
   base::WeakPtr<Replayer> GetWeakPtr() {

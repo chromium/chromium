@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_RECORD_REPLAY_RECORD_REPLAY_MANAGER_H_
 #define CHROME_BROWSER_RECORD_REPLAY_RECORD_REPLAY_MANAGER_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -81,8 +82,9 @@ class RecordReplayManager : public autofill::AutofillManager::Observer {
       base::OnceCallback<void(std::optional<Recording>)> cb);
 
   // Retrieves all elements in all active frames that match `element_selector`.
-  void GetMatchingElements(Selector element_selector,
-                           base::OnceCallback<void(std::vector<ElementId>)> cb);
+  void GetMatchingElements(
+      Selector element_selector,
+      base::OnceCallback<void(std::vector<std::unique_ptr<ElementId>>)> cb);
 
   // Displays a message to the user, typically via the browser's UI or console.
   void ReportToUser(std::string_view message);
