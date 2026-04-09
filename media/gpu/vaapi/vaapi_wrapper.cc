@@ -1565,9 +1565,9 @@ void VADisplayStateSingleton::PreSandboxInitialization(
     auto [drm_fd, should_skip] =
         LoadDrmFD(base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
             switches::kRenderNodeOverride));
-    va_display_state.drm_fd_ = std::move(drm_fd);
-    LOG_IF(WARNING, should_skip)
-        << "Forcibly using value of --render-node-override";
+    if (drm_fd.is_valid() && !should_skip) {
+      va_display_state.drm_fd_ = std::move(drm_fd);
+    }
     return;
   }
 
