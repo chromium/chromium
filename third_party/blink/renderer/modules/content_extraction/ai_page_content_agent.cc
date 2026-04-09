@@ -205,7 +205,7 @@ String ReplaceUnpairedSurrogates(const String& node_text) {
   // (UTF-8, etc).
   //
   // But Utf8() conversion returns a std::string, so we need to convert back
-  // to a WTF::String for Blink usage.
+  // to a blink::String for Blink usage.
   //
   // Strings that are already in 8 bit representation (like Latin1 encoding)
   // can't contain unpaired surrogates, so we can return those transparently.

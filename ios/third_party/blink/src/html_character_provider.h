@@ -14,7 +14,7 @@ namespace WebCore {
 const LChar kEndOfFileMarker = 0;
 
 // CharacterProvider provides input characters to WebCore::HTMLTokenizer.
-// It replaces WebCore::SegmentedString (which sits ontop of WTF::String).
+// It replaces WebCore::SegmentedString (which sits on top of blink::String).
 class CharacterProvider {
 public:
     CharacterProvider()
