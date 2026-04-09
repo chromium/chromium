@@ -429,11 +429,11 @@ macro_rules! impl_ordered_float_binop {
         }
 
         // Work around for: https://github.com/reem/rust-ordered-float/issues/91
-        impl<'a, T: $imp + Copy> $imp<Self> for &'a OrderedFloat<T> {
+        impl<'a, 'b, T: $imp + Copy> $imp<&'b OrderedFloat<T>> for &'a OrderedFloat<T> {
             type Output = OrderedFloat<T::Output>;
 
             #[inline]
-            fn $method(self, other: Self) -> Self::Output {
+            fn $method(self, other: &'b OrderedFloat<T>) -> Self::Output {
                 OrderedFloat((self.0).$method(other.0))
             }
         }
@@ -1241,6 +1241,7 @@ impl<T: FloatCore + Num> Num for OrderedFloat<T> {
 /// [transmute](core::mem::transmute) or pointer casts to convert between any type `T` and
 /// `NotNan<T>`, as long as this does not create a NaN value.
 /// However, consider using [`bytemuck`] as a safe alternative if possible.
+///
 #[cfg_attr(
     not(feature = "bytemuck"),
     doc = "[`bytemuck`]: https://docs.rs/bytemuck/1/"
@@ -1555,11 +1556,11 @@ macro_rules! impl_not_nan_binop {
             }
         }
 
-        impl<T: FloatCore> $imp for &NotNan<T> {
+        impl<T: FloatCore> $imp<&NotNan<T>> for &NotNan<T> {
             type Output = NotNan<T>;
 
             #[inline]
-            fn $method(self, other: Self) -> Self::Output {
+            fn $method(self, other: &NotNan<T>) -> Self::Output {
                 (*self).$method(*other)
             }
         }
@@ -2444,6 +2445,9 @@ mod impl_rkyv {
         assert_eq!(deser_float, float);
     }
 }
+
+#[cfg(any(feature = "rkyv_08_16", feature = "rkyv_08_32", feature = "rkyv_08_64"))]
+mod impl_rkyv_08;
 
 #[cfg(feature = "speedy")]
 mod impl_speedy {

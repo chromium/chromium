@@ -15,6 +15,7 @@ cargo_crate("lib") {
   crate_root =
       "//third_party/rust/chromium_crates_io/vendor/ordered-float-v5/src/lib.rs"
   sources = [
+    "//third_party/rust/chromium_crates_io/vendor/ordered-float-v5/src/impl_rkyv_08.rs",
     "//third_party/rust/chromium_crates_io/vendor/ordered-float-v5/src/lib.rs",
   ]
   inputs = []
@@ -25,7 +26,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "ordered-float"
   cargo_pkg_description = "Wrappers for total ordering on floats"
   cargo_pkg_repository = "https://github.com/reem/rust-ordered-float"
-  cargo_pkg_version = "5.1.0"
+  cargo_pkg_version = "5.3.0"
 
   allow_unsafe = true
 

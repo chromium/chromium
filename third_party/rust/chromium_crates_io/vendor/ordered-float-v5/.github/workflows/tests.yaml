@@ -24,11 +24,15 @@ jobs:
 
       - name: Check Fmt
         if: matrix.rust == 'stable'
-        run: cargo fmt --check
+        run: |
+          rustup component add rustfmt
+          cargo fmt --check
 
       - name: Check Lints (all features)
         if: matrix.rust == 'stable'
-        run: cargo clippy --tests --features ${{ env.all_features }}
+        run: |
+          rustup component add clippy
+          cargo clippy --tests --features ${{ env.all_features }}
 
       - name: Test (default features)
         run: cargo test

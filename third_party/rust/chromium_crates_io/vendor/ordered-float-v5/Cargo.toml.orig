@@ -1,6 +1,6 @@
 [package]
 name        = "ordered-float"
-version     = "5.1.0"
+version     = "5.3.0"
 authors     = [
   "Jonathan Reem <jonathan.reem@gmail.com>",
   "Matt Brubeck <mbrubeck@limpet.net>",
@@ -24,6 +24,7 @@ num-traits = { version = "0.2.9", default-features = false }
 proptest   = { version = "1.0.0", optional = true }
 rand       = { version = "0.8.3", optional = true, default-features = false }
 rkyv       = { version = "0.7.41", optional = true, default-features = false, features = ["rend"] }
+rkyv_08    = { version = "0.8", optional = true, default-features = false, package = "rkyv" }
 schemars   = { version = "0.8.8", optional = true }
 serde      = { version = "1.0", optional = true, default-features = false }
 speedy     = { version = "0.8.3", optional = true, default-features = false }
@@ -42,3 +43,8 @@ rkyv_16  = ["dep:rkyv", "rkyv?/size_16"]
 rkyv_32  = ["dep:rkyv", "rkyv?/size_32"]
 rkyv_64  = ["dep:rkyv", "rkyv?/size_64"]
 rkyv_ck  = ["rkyv?/validation"]
+rkyv_08    = ["rkyv_08_32"]
+rkyv_08_16 = ["dep:rkyv_08", "rkyv_08?/pointer_width_16"]
+rkyv_08_32 = ["dep:rkyv_08", "rkyv_08?/pointer_width_32"]
+rkyv_08_64 = ["dep:rkyv_08", "rkyv_08?/pointer_width_64"]
+rkyv_08_ck = ["dep:rkyv_08", "rkyv_08?/bytecheck"]
