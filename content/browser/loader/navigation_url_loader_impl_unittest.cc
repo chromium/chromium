@@ -158,7 +158,7 @@ class NavigationURLLoaderImplTest : public testing::Test {
             base::TimeTicks() /* before_unload_dialog_closed */,
             false /* started_with_transient_activation */,
             false /* started_by_ad */, false /* is_container_initiated */,
-            net::StorageAccessApiStatus::kNone, false /* has_rel_opener */);
+            false /* has_rel_opener */);
 
     auto common_params = blink::CreateCommonNavigationParams();
     common_params->url = url;

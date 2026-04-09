@@ -3262,7 +3262,6 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
     bool force_new_browsing_instance,
     bool is_container_initiated,
     bool has_rel_opener,
-    net::StorageAccessApiStatus storage_access_api_status,
     std::optional<std::u16string> embedder_shared_storage_context) {
   if (is_renderer_initiated) {
     DCHECK(initiator_origin.has_value());
@@ -3393,7 +3392,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
           /*from_frame_proxy=*/true,
           is_embedder_initiated_fenced_frame_navigation,
           is_unfenced_top_navigation, is_container_initiated,
-          storage_access_api_status, embedder_shared_storage_context);
+          embedder_shared_storage_context);
 
   if (!request) {
     return;
@@ -4496,7 +4495,6 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
     bool is_embedder_initiated_fenced_frame_navigation,
     bool is_unfenced_top_navigation,
     bool is_container_initiated,
-    net::StorageAccessApiStatus storage_access_api_status,
     std::optional<std::u16string> embedder_shared_storage_context) {
   DCHECK_EQ(-1, GetIndexOfEntry(entry));
 
@@ -4720,8 +4718,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
       params.impression, started_with_transient_activation,
       params.started_by_ad, params.is_pdf,
       is_embedder_initiated_fenced_frame_navigation, is_container_initiated,
-      params.has_rel_opener, storage_access_api_status,
-      embedder_shared_storage_context);
+      params.has_rel_opener, embedder_shared_storage_context);
 
   if (!navigation_request) {
     return nullptr;

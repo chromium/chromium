@@ -168,13 +168,6 @@ struct OpenURLParams {
   // True if the initiator explicitly asked for opener relationships to be
   // preserved, via rel="opener".
   bool has_rel_opener = false;
-
-  // The renderer's Storage Access API status (e.g. whether it has opted into
-  // accessing cross-site cookies). Note that this is not trusted; cookies will
-  // not actually be attached unless there is also a matching permission grant
-  // created by the browser process. (Also note that the Storage Access API is
-  // only relevant when third-party cookies are blocked.)
-  network.mojom.StorageAccessApiStatus storage_access_api_status = kNone;
 };
 
 // Implemented in Browser, this interface defines frame-specific methods that

@@ -207,10 +207,6 @@ struct BLINK_EXPORT WebNavigationInfo {
   CrossVariantMojoRemote<mojom::NavigationStateKeepAliveHandleInterfaceBase>
       initiator_navigation_state_keep_alive_handle;
 
-  // The initiator frame's LocalDOMWindow's Storage Access API status.
-  net::StorageAccessApiStatus storage_access_api_status =
-      net::StorageAccessApiStatus::kNone;
-
   // Whether this navigation was initiated by the container, e.g. iframe changed
   // src. Only container-initiated navigation report resource timing to the
   // parent.

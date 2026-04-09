@@ -692,15 +692,6 @@ void LocalFrameClientImpl::BeginNavigation(
 
   navigation_info->impression = impression;
 
-  // Allow cookie access via Storage Access API during the navigation, if the
-  // initiator has obtained storage access. Note that the network service still
-  // applies cookie semantics and user settings, and that this value is not
-  // trusted by the browser process. (The Storage Access API is only relevant
-  // when third-party cookies are blocked.)
-  navigation_info->storage_access_api_status =
-      origin_window ? origin_window->GetStorageAccessApiStatus()
-                    : net::StorageAccessApiStatus::kNone;
-
   // Can be null.
   LocalFrame* local_parent_frame = GetLocalParentFrame(web_frame_);
 

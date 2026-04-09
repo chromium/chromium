@@ -6218,8 +6218,7 @@ void RenderFrameImpl::BeginNavigationInternal(
           info->url_request.HasUserGesture(),
           /*started_by_ad=*/
           (info->initiator_frame_is_ad || info->is_ad_script_in_stack),
-          info->is_container_initiated, info->storage_access_api_status,
-          info->has_rel_opener);
+          info->is_container_initiated, info->has_rel_opener);
 
   bool current_frame_has_download_sandbox_flag = !frame_->IsAllowedToDownload();
   bool has_download_sandbox_flag =

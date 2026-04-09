@@ -187,7 +187,6 @@ void FencedFrame::Navigate(
       /*is_unfenced_top_navigation=*/false,
       /*force_new_browsing_instance=*/true, /*is_container_initiated=*/false,
       /*has_rel_opener=*/false,
-      /*storage_access_api_status=*/net::StorageAccessApiStatus::kNone,
       embedder_shared_storage_context);
 }
 
