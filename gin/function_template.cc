@@ -8,9 +8,7 @@
 #include "base/strings/strcat.h"
 #include "gin/public/gin_embedders.h"
 
-namespace gin {
-
-namespace internal {
+namespace gin::internal {
 
 CallbackHolderBase::DisposeObserver::DisposeObserver(
     gin::PerIsolateData* per_isolate_data,
@@ -30,8 +28,10 @@ void CallbackHolderBase::DisposeObserver::OnDisposed() {
   delete &holder_.get();
 }
 
-CallbackHolderBase::CallbackHolderBase(v8::Isolate* isolate)
-    : v8_ref_(
+CallbackHolderBase::CallbackHolderBase(v8::Isolate* isolate,
+                                       uintptr_t type_identifier)
+    : type_identifier_(type_identifier),
+      v8_ref_(
           isolate,
           v8::External::New(isolate, this, kGinInternalCallbackHolderBaseTag)),
       dispose_observer_(PerIsolateData::From(isolate), this) {
@@ -84,6 +84,4 @@ void ThrowConversionError(Arguments* args,
   }
 }
 
-}  // namespace internal
-
-}  // namespace gin
+}  // namespace gin::internal
