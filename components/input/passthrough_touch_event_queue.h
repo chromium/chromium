@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "components/input/dispatch_to_renderer_callback.h"
@@ -298,6 +299,8 @@ class COMPONENT_EXPORT(INPUT) PassthroughTouchEventQueue {
   // What events types are allowed to bypass the filter.
   const std::string events_to_always_forward_;
   static const base::FeatureParam<std::string> kSkipTouchEventFilterType;
+
+  base::WeakPtrFactory<PassthroughTouchEventQueue> weak_ptr_factory_{this};
 };
 
 }  // namespace input
