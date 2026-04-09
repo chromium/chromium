@@ -617,6 +617,8 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   // scoped.
   side_panel_registry_->Deregister(
       SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite));
+  side_panel_registry_->Deregister(
+      SidePanelEntry::Key(SidePanelEntry::Id::kMerchantTrust));
 
   if (web_app::AreWebAppsEnabled(
           tab->GetBrowserWindowInterface()->GetProfile())) {
