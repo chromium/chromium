@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import android.content.Context;
 import android.view.View;
+import android.graphics.Color;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.StringRes;
 
 import org.chromium.build.annotations.NullMarked;
@@ -72,6 +74,12 @@ public class TabBottomSheetContent implements BottomSheetContent {
     public boolean hasCustomScrimLifecycle() {
         // No scrim.
         return true;
+    }
+
+    @Override
+    public @ColorInt int getSheetBackgroundColorOverride() {
+        // TODO(crbug.com/490402422): Remove when color scheme is updated.
+        return Color.WHITE;
     }
 
     @Override
