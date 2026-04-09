@@ -717,6 +717,32 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   self.accessibilityButton.translatesAutoresizingMaskIntoConstraints = NO;
   AddSameConstraints(self.fakeOmnibox, self.accessibilityButton);
 
+  NSMutableArray<UIAccessibilityCustomAction*>* accessibilityCustomActions =
+      [[NSMutableArray alloc] init];
+  if (self.headerView.lensButton) {
+    [accessibilityCustomActions
+        addObject:[[UIAccessibilityCustomAction alloc]
+                      initWithName:l10n_util::GetNSString(
+                                       IDS_IOS_KEYBOARD_ACCESSORY_VIEW_LENS)
+                             image:nil
+                            target:self
+                          selector:@selector(openLensViewFinder)]];
+  }
+
+  if (self.headerView.voiceSearchButton) {
+    [accessibilityCustomActions
+        addObject:
+            [[UIAccessibilityCustomAction alloc]
+                initWithName:l10n_util::GetNSString(
+                                 IDS_IOS_KEYBOARD_ACCESSORY_VIEW_VOICE_SEARCH)
+                       image:nil
+                      target:self
+                    selector:@selector(openVoiceSearch)]];
+  }
+
+  self.accessibilityButton.accessibilityCustomActions =
+      accessibilityCustomActions;
+
   [self.fakeOmnibox
       addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
 
@@ -1000,6 +1026,18 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   [self.NTPMetricsRecorder recordFakeOmniboxTapped];
   TriggerHapticFeedbackForSelectionChange();
   [self.commandHandler fakeboxTapped];
+}
+
+// Opens Lens View Finder.
+- (void)openLensViewFinder {
+  [self.NTPShortcutsHandler openLensViewFinder];
+}
+
+// Directly loads voice search in single action.
+- (void)openVoiceSearch {
+  [self.NTPShortcutsHandler preloadVoiceSearch];
+  [self.NTPShortcutsHandler
+      loadVoiceSearchFromView:self.headerView.voiceSearchButton];
 }
 
 - (void)focusAccessibilityOnOmnibox {
