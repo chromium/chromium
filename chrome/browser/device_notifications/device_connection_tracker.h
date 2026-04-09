@@ -5,14 +5,25 @@
 #ifndef CHROME_BROWSER_DEVICE_NOTIFICATIONS_DEVICE_CONNECTION_TRACKER_H_
 #define CHROME_BROWSER_DEVICE_NOTIFICATIONS_DEVICE_CONNECTION_TRACKER_H_
 
+#include <string>
+#include <vector>
+
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/origin.h"
 
+namespace base {
+class SingleThreadTaskRunner;
+class TickClock;
+}  // namespace base
+
+class DeviceConnectionTrackerTestBase;
 class DeviceSystemTrayIcon;
+class Profile;
 
 // Manages the opened device connection count by the profile.
 class DeviceConnectionTracker : public KeyedService {
@@ -61,6 +72,13 @@ class DeviceConnectionTracker : public KeyedService {
   void CleanUpOrigin(const url::Origin& origin,
                      const base::TimeTicks& timestamp);
 
+ protected:
+  friend class DeviceConnectionTrackerTestBase;
+
+  void SetTaskRunnerAndClockForTesting(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      const base::TickClock* tick_clock);
+
   int total_connection_count_ = 0;
   raw_ptr<Profile> profile_;
 
@@ -73,6 +91,9 @@ class DeviceConnectionTracker : public KeyedService {
 
  private:
   virtual DeviceSystemTrayIcon* GetSystemTrayIcon() = 0;
+
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   base::WeakPtrFactory<DeviceConnectionTracker> weak_factory_{this};
 };

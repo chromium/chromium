@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/device_notifications/device_connection_tracker_unittest.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/device_notifications/device_connection_tracker_test_base.h"
 #include "chrome/browser/usb/usb_connection_tracker_factory.h"
 #include "chrome/browser/usb/usb_test_utils.h"
-#include "chrome/test/base/testing_browser_process.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class UsbConnectionTrackerTest : public DeviceConnectionTrackerTestBase {
@@ -15,19 +16,18 @@ class UsbConnectionTrackerTest : public DeviceConnectionTrackerTestBase {
   UsbConnectionTrackerTest& operator=(const UsbConnectionTrackerTest&) = delete;
   ~UsbConnectionTrackerTest() override = default;
 
-  void SetUp() override {
-    DeviceConnectionTrackerTestBase::SetUp();
+  void SetUpOnMainThread() override {
+    DeviceConnectionTrackerTestBase::SetUpOnMainThread();
     auto usb_system_tray_icon = std::make_unique<TestUsbSystemTrayIcon>();
-    TestingBrowserProcess::GetGlobal()->set_usb_system_tray_icon_for_test(
+    g_browser_process->set_usb_system_tray_icon_for_test(
         std::move(usb_system_tray_icon));
   }
 
-  void TearDown() override {
+  void TearDownOnMainThread() override {
     // Set the system tray icon to null to avoid uninteresting call to it during
     // profile destruction.
-    TestingBrowserProcess::GetGlobal()->set_usb_system_tray_icon_for_test(
-        nullptr);
-    DeviceConnectionTrackerTestBase::TearDown();
+    g_browser_process->set_usb_system_tray_icon_for_test(nullptr);
+    DeviceConnectionTrackerTestBase::TearDownOnMainThread();
   }
 
   DeviceConnectionTracker* GetDeviceConnectionTracker(Profile* profile,
@@ -38,7 +38,7 @@ class UsbConnectionTrackerTest : public DeviceConnectionTrackerTestBase {
   MockDeviceSystemTrayIcon* GetMockDeviceSystemTrayIcon() override {
     TestUsbSystemTrayIcon* test_usb_system_tray_icon =
         static_cast<TestUsbSystemTrayIcon*>(
-            TestingBrowserProcess::GetGlobal()->usb_system_tray_icon());
+            g_browser_process->usb_system_tray_icon());
 
     if (!test_usb_system_tray_icon) {
       return nullptr;
@@ -49,19 +49,20 @@ class UsbConnectionTrackerTest : public DeviceConnectionTrackerTestBase {
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-TEST_F(UsbConnectionTrackerTest, DeviceConnectionExtensionOrigins) {
+IN_PROC_BROWSER_TEST_F(UsbConnectionTrackerTest,
+                       DeviceConnectionExtensionOrigins) {
   TestDeviceConnectionExtensionOrigins(/*has_system_tray_icon=*/true);
 }
 
 // Test the scenario with null USB system tray icon and it doesn't cause crash.
-TEST_F(UsbConnectionTrackerTest,
-       DeviceConnectionExtensionOriginsWithNullSystemTrayIcon) {
-  TestingBrowserProcess::GetGlobal()->set_usb_system_tray_icon_for_test(
-      nullptr);
+IN_PROC_BROWSER_TEST_F(UsbConnectionTrackerTest,
+                       DeviceConnectionExtensionOriginsWithNullSystemTrayIcon) {
+  g_browser_process->set_usb_system_tray_icon_for_test(nullptr);
   TestDeviceConnectionExtensionOrigins(/*has_system_tray_icon=*/false);
 }
 
-TEST_F(UsbConnectionTrackerTest, ProfileDestroyedExtensionOrigin) {
+IN_PROC_BROWSER_TEST_F(UsbConnectionTrackerTest,
+                       ProfileDestroyedExtensionOrigin) {
   TestProfileDestroyedExtensionOrigin();
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

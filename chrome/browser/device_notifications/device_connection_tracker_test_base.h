@@ -2,31 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_DEVICE_NOTIFICATIONS_DEVICE_CONNECTION_TRACKER_UNITTEST_H_
-#define CHROME_BROWSER_DEVICE_NOTIFICATIONS_DEVICE_CONNECTION_TRACKER_UNITTEST_H_
+#ifndef CHROME_BROWSER_DEVICE_NOTIFICATIONS_DEVICE_CONNECTION_TRACKER_TEST_BASE_H_
+#define CHROME_BROWSER_DEVICE_NOTIFICATIONS_DEVICE_CONNECTION_TRACKER_TEST_BASE_H_
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/device_notifications/device_connection_tracker.h"
 #include "chrome/browser/device_notifications/device_system_tray_icon.h"
 #include "chrome/browser/device_notifications/device_test_utils.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "base/command_line.h"
-#include "base/values.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/test_extension_system.h"
+#include "base/memory/scoped_refptr.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_builder.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-class DeviceConnectionTrackerTestBase : public BrowserWithTestWindowTest {
+#if BUILDFLAG(IS_CHROMEOS)
+#include "components/account_id/account_id.h"
+#include "google_apis/gaia/gaia_id.h"
+#endif
+
+class Profile;
+
+class DeviceConnectionTrackerTestBase : public InProcessBrowserTest {
  public:
   DeviceConnectionTrackerTestBase();
   DeviceConnectionTrackerTestBase(const DeviceConnectionTrackerTestBase&) =
@@ -35,14 +39,16 @@ class DeviceConnectionTrackerTestBase : public BrowserWithTestWindowTest {
       const DeviceConnectionTrackerTestBase&) = delete;
   ~DeviceConnectionTrackerTestBase() override;
 
-  void SetUp() override;
+#if BUILDFLAG(IS_CHROMEOS)
+  void SetUpLocalStatePrefService(PrefService* local_state) override;
+
+  Profile& StartUserSession(const AccountId& account_id);
+#endif
 
   virtual DeviceConnectionTracker* GetDeviceConnectionTracker(Profile* profile,
                                                               bool create) = 0;
 
   virtual MockDeviceSystemTrayIcon* GetMockDeviceSystemTrayIcon() = 0;
-
-  Profile* CreateTestingProfile(const std::string& profile_name);
 
   void TestDeviceConnection(
       bool has_system_tray_icon,
@@ -77,6 +83,12 @@ class DeviceConnectionTrackerTestBase : public BrowserWithTestWindowTest {
       std::string whitelisted_extension_id);
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(IS_CHROMEOS)
+ protected:
+  const AccountId test_account_id_ =
+      AccountId::FromUserEmailGaiaId("test@gmail.com", GaiaId("9876543210"));
+#endif
 };
 
-#endif  // CHROME_BROWSER_DEVICE_NOTIFICATIONS_DEVICE_CONNECTION_TRACKER_UNITTEST_H_
+#endif  // CHROME_BROWSER_DEVICE_NOTIFICATIONS_DEVICE_CONNECTION_TRACKER_TEST_BASE_H_

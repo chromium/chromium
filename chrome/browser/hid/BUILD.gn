@@ -22,3 +22,35 @@ source_set("hid") {
     "//url",
   ]
 }
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "hid_test_utils.cc",
+    "hid_test_utils.h",
+  ]
+  public_deps = [
+    ":hid",
+    "//chrome/browser/device_notifications:test_support",
+  ]
+  deps = [ "//chrome/browser" ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "hid_connection_tracker_browsertest.cc" ]
+    deps = [
+      ":hid",
+      ":test_support",
+      "//base",
+      "//chrome/browser",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/device_notifications:browser_test_support",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
+}

@@ -158,6 +158,20 @@ source_set("impl") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
+if (!is_android) {
+  source_set("test_support") {
+    testonly = true
+    sources = [
+      "usb_test_utils.cc",
+      "usb_test_utils.h",
+    ]
+    public_deps = [
+      ":usb",
+      "//chrome/browser/device_notifications:test_support",
+    ]
+  }
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = []
@@ -171,17 +185,15 @@ source_set("unit_tests") {
       "usb_chooser_context_mock_device_observer.h",
       "usb_chooser_context_unittest.cc",
       "usb_chooser_controller_unittest.cc",
-      "usb_connection_tracker_unittest.cc",
       "usb_policy_allowed_devices_unittest.cc",
-      "usb_test_utils.cc",
-      "usb_test_utils.h",
     ]
     deps = [
+      ":test_support",
       ":usb",
       "//base",
       "//base/test:test_support",
       "//chrome/browser/content_settings:content_settings_factory",
-      "//chrome/browser/device_notifications:unit_tests",
+      "//chrome/browser/device_notifications:test_support",
       "//chrome/browser/extensions:test_support",
       "//chrome/common:chrome_features",
       "//chrome/common:non_code_constants",
@@ -208,6 +220,7 @@ source_set("unit_tests") {
     deps += [
       "//chrome/app:branded_strings",
       "//chrome/app:command_ids",
+      "//chrome/browser/device_notifications:unit_tests",
       "//extensions/common:common_constants",
       "//ui/base",
     ]
@@ -220,6 +233,7 @@ source_set("unit_tests") {
       "//chrome/app:branded_strings",
       "//chrome/browser/ash/settings",
       "//chrome/browser/ash/settings:test_support",
+      "//chrome/browser/device_notifications:unit_tests",
       "//chromeos/ash/components/settings",
       "//extensions/common:common_constants",
       "//ui/base",
@@ -253,6 +267,7 @@ if (!is_android) {
       "chrome_usb_browsertest.cc",
       "usb_browser_test_utils.cc",
       "usb_browser_test_utils.h",
+      "usb_connection_tracker_browsertest.cc",
       "web_usb_detector_browsertest.cc",
     ]
     public_deps = [
@@ -261,10 +276,13 @@ if (!is_android) {
       "//chrome/browser",
     ]
     deps = [
+      ":test_support",
       "//base/test:test_support",
       "//chrome/app:command_ids",
       "//chrome/browser:browser_process",
       "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/device_notifications:browser_test_support",
+      "//chrome/browser/device_notifications:test_support",
       "//chrome/browser/notifications",
       "//chrome/browser/notifications:system_notification_helper",
       "//chrome/browser/profiles:profile",

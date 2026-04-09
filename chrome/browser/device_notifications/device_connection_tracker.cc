@@ -8,6 +8,9 @@
 #include <string>
 
 #include "base/notreached.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/time/default_tick_clock.h"
+#include "base/time/tick_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/device_notifications/device_system_tray_icon.h"
 #include "chrome/browser/profiles/profile.h"
@@ -45,7 +48,10 @@ std::string GetOriginName(Profile* profile, const url::Origin& origin) {
 }  // namespace
 
 DeviceConnectionTracker::DeviceConnectionTracker(Profile* profile)
-    : profile_(profile) {}
+    : profile_(profile),
+      task_runner_(content::BrowserThread::GetTaskRunnerForThread(
+          content::BrowserThread::UI)),
+      tick_clock_(base::DefaultTickClock::GetInstance()) {}
 
 DeviceConnectionTracker::~DeviceConnectionTracker() {
   CleanUp();
@@ -64,7 +70,7 @@ void DeviceConnectionTracker::IncrementConnectionCount(
     state.name = GetOriginName(profile_, origin);
   }
   ++state.count;
-  state.timestamp = TimeTicks::Now();
+  state.timestamp = tick_clock_->NowTicks();
   ++total_connection_count_;
 
   auto* system_tray_icon = GetSystemTrayIcon();
@@ -89,15 +95,14 @@ void DeviceConnectionTracker::DecrementConnectionCount(
   auto& state = it->second;
   CHECK_GT(state.count, 0);
   --state.count;
-  state.timestamp = TimeTicks::Now();
+  state.timestamp = tick_clock_->NowTicks();
   --total_connection_count_;
   if (state.count == 0) {
-    content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
-        ->PostDelayedTask(
-            FROM_HERE,
-            base::BindOnce(&DeviceConnectionTracker::CleanUpOrigin,
-                           weak_factory_.GetWeakPtr(), origin, state.timestamp),
-            kOriginInactiveTime);
+    task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&DeviceConnectionTracker::CleanUpOrigin,
+                       weak_factory_.GetWeakPtr(), origin, state.timestamp),
+        kOriginInactiveTime);
   }
 
   auto* system_tray_icon = GetSystemTrayIcon();
@@ -109,6 +114,13 @@ void DeviceConnectionTracker::DecrementConnectionCount(
 
 void DeviceConnectionTracker::ShowSiteSettings(const url::Origin& origin) {
   chrome::ShowSiteSettings(profile_, origin.GetURL());
+}
+
+void DeviceConnectionTracker::SetTaskRunnerAndClockForTesting(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    const base::TickClock* tick_clock) {
+  task_runner_ = std::move(task_runner);
+  tick_clock_ = tick_clock;
 }
 
 void DeviceConnectionTracker::CleanUp() {

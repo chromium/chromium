@@ -1572,7 +1572,6 @@ source_set("platform_browser_tests") {
   if (!is_android || enable_desktop_android_extensions) {
     deps += [ "//chrome/browser/ui/prefs:browser_tests" ]
   }
-
   if (enable_extensions) {
     deps += [
       "//chrome/browser/extensions",
@@ -2603,6 +2602,7 @@ if (!is_android) {
       "//chrome/browser/data_sharing:browser_tests",
       "//chrome/browser/desktop_to_mobile_promos:utils",
       "//chrome/browser/device_api:browser_tests",
+      "//chrome/browser/device_notifications:browser_test_support",
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/digital_credentials",
@@ -2633,6 +2633,8 @@ if (!is_android) {
       "//chrome/browser/glic/test_support",
       "//chrome/browser/headless:browser_tests",
       "//chrome/browser/heavy_ad_intervention:browser_tests",
+      "//chrome/browser/hid:browser_tests",
+      "//chrome/browser/hid:test_support",
       "//chrome/browser/history",
       "//chrome/browser/history_clusters",
       "//chrome/browser/history_clusters:browser_tests",
@@ -8213,10 +8215,7 @@ test("unit_tests") {
       "../browser/first_run/first_run_unittest.cc",
       "../browser/hid/chrome_hid_delegate_unittest.cc",
       "../browser/hid/hid_chooser_context_unittest.cc",
-      "../browser/hid/hid_connection_tracker_unittest.cc",
       "../browser/hid/hid_policy_allowed_devices_unittest.cc",
-      "../browser/hid/hid_test_utils.cc",
-      "../browser/hid/hid_test_utils.h",
       "../browser/lifetime/smart_restart_metrics_observer_unittest.cc",
       "../browser/media/webrtc/current_tab_desktop_media_list_unittest.cc",
       "../browser/media/webrtc/desktop_capture_access_handler_unittest.cc",
@@ -8461,6 +8460,7 @@ test("unit_tests") {
       "//chrome/browser/geolocation",
       "//chrome/browser/geolocation:unit_tests",
       "//chrome/browser/glic/suggestions:unit_tests",
+      "//chrome/browser/hid:test_support",
       "//chrome/browser/indigo:unit_tests",
       "//chrome/browser/lookalikes:unit_tests",
       "//chrome/browser/media:access_handler",

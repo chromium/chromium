@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/device_notifications/device_connection_tracker_unittest.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/device_notifications/device_connection_tracker_test_base.h"
 #include "chrome/browser/hid/hid_connection_tracker_factory.h"
 #include "chrome/browser/hid/hid_test_utils.h"
-#include "chrome/test/base/testing_browser_process.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class HidConnectionTrackerTest : public DeviceConnectionTrackerTestBase {
@@ -15,19 +16,18 @@ class HidConnectionTrackerTest : public DeviceConnectionTrackerTestBase {
   HidConnectionTrackerTest& operator=(const HidConnectionTrackerTest&) = delete;
   ~HidConnectionTrackerTest() override = default;
 
-  void SetUp() override {
-    DeviceConnectionTrackerTestBase::SetUp();
+  void SetUpOnMainThread() override {
+    DeviceConnectionTrackerTestBase::SetUpOnMainThread();
     auto hid_system_tray_icon = std::make_unique<TestHidSystemTrayIcon>();
-    TestingBrowserProcess::GetGlobal()->set_hid_system_tray_icon_for_test(
+    g_browser_process->set_hid_system_tray_icon_for_test(
         std::move(hid_system_tray_icon));
   }
 
-  void TearDown() override {
+  void TearDownOnMainThread() override {
     // Set the system tray icon to null to avoid uninteresting call to it during
     // profile destruction.
-    TestingBrowserProcess::GetGlobal()->set_hid_system_tray_icon_for_test(
-        nullptr);
-    DeviceConnectionTrackerTestBase::TearDown();
+    g_browser_process->set_hid_system_tray_icon_for_test(nullptr);
+    DeviceConnectionTrackerTestBase::TearDownOnMainThread();
   }
 
   DeviceConnectionTracker* GetDeviceConnectionTracker(Profile* profile,
@@ -38,7 +38,7 @@ class HidConnectionTrackerTest : public DeviceConnectionTrackerTestBase {
   MockDeviceSystemTrayIcon* GetMockDeviceSystemTrayIcon() override {
     TestHidSystemTrayIcon* test_hid_system_tray_icon =
         static_cast<TestHidSystemTrayIcon*>(
-            TestingBrowserProcess::GetGlobal()->hid_system_tray_icon());
+            g_browser_process->hid_system_tray_icon());
 
     if (!test_hid_system_tray_icon) {
       return nullptr;
@@ -49,27 +49,28 @@ class HidConnectionTrackerTest : public DeviceConnectionTrackerTestBase {
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-TEST_F(HidConnectionTrackerTest, DeviceConnectionExtensionOrigins) {
+IN_PROC_BROWSER_TEST_F(HidConnectionTrackerTest,
+                       DeviceConnectionExtensionOrigins) {
   TestDeviceConnectionExtensionOrigins(/*has_system_tray_icon=*/true);
 }
 
-TEST_F(HidConnectionTrackerTest,
-       DeviceConnectionExtensionOriginsWithNullSystemTrayIcon) {
-  TestingBrowserProcess::GetGlobal()->set_hid_system_tray_icon_for_test(
-      nullptr);
+IN_PROC_BROWSER_TEST_F(HidConnectionTrackerTest,
+                       DeviceConnectionExtensionOriginsWithNullSystemTrayIcon) {
+  g_browser_process->set_hid_system_tray_icon_for_test(nullptr);
   TestDeviceConnectionExtensionOrigins(/*has_system_tray_icon=*/false);
 }
 
-TEST_F(HidConnectionTrackerTest, ProfileDestroyedExtensionOrigin) {
+IN_PROC_BROWSER_TEST_F(HidConnectionTrackerTest,
+                       ProfileDestroyedExtensionOrigin) {
   TestProfileDestroyedExtensionOrigin();
 }
 
-TEST_F(HidConnectionTrackerTest, WhitelistedGnubbyDev) {
+IN_PROC_BROWSER_TEST_F(HidConnectionTrackerTest, WhitelistedGnubbyDev) {
   TestSingleProfileWhitelistedExtension("gnubbyd-v3 dev",
                                         "ckcendljdlmgnhghiaomidhiiclmapok");
 }
 
-TEST_F(HidConnectionTrackerTest, WhitelistedGnubbyProd) {
+IN_PROC_BROWSER_TEST_F(HidConnectionTrackerTest, WhitelistedGnubbyProd) {
   TestSingleProfileWhitelistedExtension("gnubbyd-v3 prod",
                                         "lfboplenmmjcmpbkeemecobbadnmpfhi");
 }
