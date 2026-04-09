@@ -48,6 +48,9 @@ public class AdaptiveToolbarFeatures {
     /** Default action chip delay for reader mode. */
     public static final int DEFAULT_READER_MODE_ACTION_CHIP_DELAY_MS = 3000;
 
+    /** Default action chip delay for glic. */
+    public static final int DEFAULT_GLIC_ACTION_CHIP_DELAY_MS = 60000;
+
     @VisibleForTesting
     public static final String CONTEXTUAL_PAGE_ACTION_TEST_FEATURE_NAME =
             "CONTEXTUAL_PAGE_ACTION_TEST_FEATURE_NAME";
@@ -144,7 +147,7 @@ public class AdaptiveToolbarFeatures {
             case AdaptiveToolbarButtonVariant.READER_MODE:
                 return DEFAULT_READER_MODE_ACTION_CHIP_DELAY_MS;
             case AdaptiveToolbarButtonVariant.GLIC:
-                return DEFAULT_CONTEXTUAL_PAGE_ACTION_CHIP_DELAY_MS;
+                return DEFAULT_GLIC_ACTION_CHIP_DELAY_MS;
             default:
                 assert false : "Unknown button variant " + buttonVariant;
                 return DEFAULT_CONTEXTUAL_PAGE_ACTION_CHIP_DELAY_MS;
