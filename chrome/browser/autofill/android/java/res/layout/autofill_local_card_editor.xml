@@ -59,64 +59,6 @@ found in the LICENSE file.
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Expiration date -->
-    <TextView
-        android:id="@+id/credit_card_expiration_label"
-        android:labelFor="@+id/credit_card_expiration_month"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/pref_autofill_field_top_margin"
-        android:layout_marginStart="@dimen/pref_autofill_field_horizontal_padding"
-        android:layout_marginEnd="@dimen/pref_autofill_field_horizontal_padding"
-        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
-        android:text="@string/autofill_credit_card_editor_expiration_date" />
-
-    <LinearLayout
-        android:id="@+id/credit_card_expiration_spinner_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/pref_autofill_field_top_margin"
-        android:layout_marginBottom="@dimen/pref_autofill_dropdown_bottom_margin"
-        android:layout_marginStart="@dimen/pref_autofill_field_horizontal_padding"
-        android:layout_marginEnd="@dimen/pref_autofill_field_horizontal_padding"
-        android:orientation="horizontal"
-        android:baselineAligned="false">
-
-        <LinearLayout
-            android:id="@+id/credit_card_expiration_month"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginEnd="@dimen/editor_dialog_section_large_spacing"
-            android:orientation="vertical">
-
-            <androidx.appcompat.widget.AppCompatSpinner
-                android:id="@+id/autofill_credit_card_editor_month_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="@dimen/min_touch_target_size" />
-
-            <View style="@style/PreferenceSpinnerUnderlineView" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <androidx.appcompat.widget.AppCompatSpinner
-                android:id="@+id/autofill_credit_card_editor_year_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="@dimen/min_touch_target_size" />
-
-            <View style="@style/PreferenceSpinnerUnderlineView"  />
-
-        </LinearLayout>
-    </LinearLayout>
-
     <!--- Expiration date & CVC -->
     <LinearLayout
         android:id="@+id/credit_card_expiration_and_cvc_layout"

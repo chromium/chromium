@@ -25,7 +25,6 @@ found in the LICENSE file.
 
     <!-- The dropdown element has no embedded bottom padding like the TextView has so the margin
       is doubled. -->
-    <dimen name="pref_autofill_dropdown_bottom_margin">16dp</dimen>
     <dimen name="pref_autofill_touch_target_padding">15dp</dimen>
 
     <!-- Editor dialog UI -->

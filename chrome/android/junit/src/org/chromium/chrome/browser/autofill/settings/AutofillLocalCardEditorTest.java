@@ -28,7 +28,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Spinner;
 
 import androidx.annotation.DrawableRes;
 import androidx.test.core.app.ActivityScenario;
@@ -190,8 +189,6 @@ public class AutofillLocalCardEditorTest {
     private EditText mNicknameText;
     private TextInputLayout mNicknameLabel;
 
-    private Spinner mExpirationMonth;
-    private Spinner mExpirationYear;
     private EditText mExpirationDate;
     private EditText mCvc;
 
@@ -275,10 +272,6 @@ public class AutofillLocalCardEditorTest {
         mNicknameLabel = mSettingsActivity.findViewById(R.id.credit_card_nickname_label);
         mNicknameInvalidError =
                 mSettingsActivity.getString(R.string.autofill_credit_card_editor_invalid_nickname);
-        mExpirationMonth =
-                mSettingsActivity.findViewById(R.id.autofill_credit_card_editor_month_spinner);
-        mExpirationYear =
-                mSettingsActivity.findViewById(R.id.autofill_credit_card_editor_year_spinner);
         mExpirationDate = mSettingsActivity.findViewById(R.id.expiration_month_and_year);
 
         View cvcLegacyContainer = mSettingsActivity.findViewById(R.id.cvc_legacy_container);
@@ -387,16 +380,12 @@ public class AutofillLocalCardEditorTest {
     public void testExpirationDateAndSecurityCodeFieldsAreShown() {
         initFragment(getSampleLocalCardWithCvc());
 
-        // When the flag is on, expiration date and cvc fields should be visible.
+        // Expiration date and cvc fields should be visible.
         assertThat(mExpirationDate.getVisibility()).isEqualTo(View.VISIBLE);
         assertThat(mCvc.getVisibility()).isEqualTo(View.VISIBLE);
 
         assertTrue(mExpirationDate.isShown());
         assertTrue(mCvc.isShown());
-
-        // When the flag is on, month and year fields shouldn't be visible.
-        assertFalse(mExpirationMonth.isShown());
-        assertFalse(mExpirationYear.isShown());
     }
 
     @Test
