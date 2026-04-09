@@ -478,6 +478,12 @@ void RecalcFragmentScrollableOverflow(RecalcScrollableOverflowResult& result,
   }
 }
 
+bool IsAppearanceAutoMenuList(const LayoutBox& obj) {
+  return obj.IsMenuList() &&
+         obj.StyleRef().EffectiveAppearance() != AppearanceValue::kBase &&
+         obj.StyleRef().EffectiveAppearance() != AppearanceValue::kBaseSelect;
+}
+
 }  // namespace
 
 LayoutBoxRareData::LayoutBoxRareData()
@@ -2422,7 +2428,7 @@ PhysicalRect LayoutBox::OverflowClipRect(
       control_clip.Move(location);
       clip_rect.Intersect(control_clip);
     }
-  } else if (IsMenuList()) [[unlikely]] {
+  } else if (IsAppearanceAutoMenuList(*this)) [[unlikely]] {
     DCHECK(HasControlClip());
     PhysicalRect control_clip = PhysicalContentBoxRect();
     control_clip.Move(location);
@@ -2441,7 +2447,8 @@ PhysicalRect LayoutBox::OverflowClipRectForScrollNode(
 
 bool LayoutBox::HasControlClip() const {
   NOT_DESTROYED();
-  if (IsTextField() || IsMenuList() || IsInputButton()) [[unlikely]] {
+  if (IsTextField() || IsAppearanceAutoMenuList(*this) || IsInputButton())
+      [[unlikely]] {
     return true;
   }
   return false;
