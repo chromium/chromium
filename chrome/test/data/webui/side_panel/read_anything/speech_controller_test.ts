@@ -780,4 +780,27 @@ suite('SpeechController', () => {
     speechController.onVoiceSelected(voice3);
     assertFalse(wordBoundaries.hasBoundaries());
   });
+
+  test('onVoiceSelected logs voice language change', () => {
+    const voice1 = createSpeechSynthesisVoice({lang: 'en-US', name: 'Voice 1'});
+    const voice2 = createSpeechSynthesisVoice({lang: 'en-UK', name: 'Voice 2'});
+    const voice3 = createSpeechSynthesisVoice({lang: 'fr-FR', name: 'Voice 3'});
+
+    voiceLanguageController.setUserPreferredVoice(voice1);
+    metrics.reset();
+
+    // Different locale, same base language should log
+    speechController.onVoiceSelected(voice2);
+    assertEquals(1, metrics.getCallCount('recordVoiceLanguageChange'));
+    metrics.reset();
+
+    // Different language should log
+    speechController.onVoiceSelected(voice3);
+    assertEquals(1, metrics.getCallCount('recordVoiceLanguageChange'));
+    metrics.reset();
+
+    // Same voice should not log
+    speechController.onVoiceSelected(voice3);
+    assertEquals(0, metrics.getCallCount('recordVoiceLanguageChange'));
+  });
 });

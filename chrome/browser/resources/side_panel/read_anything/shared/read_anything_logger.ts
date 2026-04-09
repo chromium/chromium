@@ -98,6 +98,15 @@ export class ReadAnythingLogger {
     this.metrics.recordHighlightGranularity(highlight);
   }
 
+  logVoiceLanguageChange(
+      currentVoice: SpeechSynthesisVoice|null,
+      newVoice: SpeechSynthesisVoice|null) {
+    if (currentVoice && newVoice &&
+        (currentVoice.lang.toLowerCase() !== newVoice.lang.toLowerCase())) {
+      this.metrics.recordVoiceLanguageChange();
+    }
+  }
+
   private logVoiceTypeUsedForReading_(voice: SpeechSynthesisVoice|null) {
     if (!voice) {
       return;
