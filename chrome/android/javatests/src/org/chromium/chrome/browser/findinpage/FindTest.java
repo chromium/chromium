@@ -346,6 +346,49 @@ public class FindTest {
                 });
     }
 
+    @Test
+    @MediumTest
+    @Feature({"FindInPage"})
+    @EnableFeatures({"BlockMouseEventsOnView"})
+    public void testFindToolbarGenericMotionEventConsumed() {
+        mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(FILEPATH));
+        findInPageFromMenu();
+        final FindToolbar findToolbar = getFindToolbar();
+        Assert.assertNotNull(findToolbar);
+
+        MotionEvent.PointerProperties pp = new MotionEvent.PointerProperties();
+        pp.id = 0;
+        pp.toolType = MotionEvent.TOOL_TYPE_MOUSE;
+
+        MotionEvent.PointerCoords pc = new MotionEvent.PointerCoords();
+        pc.x = 0f;
+        pc.y = 0f;
+
+        MotionEvent mouseEvent =
+                MotionEvent.obtain(
+                        0,
+                        0,
+                        MotionEvent.ACTION_BUTTON_PRESS,
+                        1,
+                        new MotionEvent.PointerProperties[] {pp},
+                        new MotionEvent.PointerCoords[] {pc},
+                        0,
+                        MotionEvent.BUTTON_PRIMARY,
+                        1.0f,
+                        1.0f,
+                        0,
+                        0,
+                        InputDevice.SOURCE_MOUSE,
+                        0);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertTrue(
+                            "FindToolbar should consume generic motion events for pointers",
+                            findToolbar.dispatchGenericMotionEvent(mouseEvent));
+                });
+    }
+
     /**
      * Verify Find In Page isn't dismissed and matches no results if invoked with an empty string.
      */
