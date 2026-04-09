@@ -72,7 +72,7 @@ scoped_refptr<StaticBitmapImage> MakeAccelerated(
         paint.setBlendMode(SkBlendMode::kSrc);
         canvas.drawImage(paint_image, 0, 0, SkSamplingOptions(), &paint);
       },
-      ImageOrientationEnum::kDefault, /*is_overwrite=*/false);
+      ImageOrientationEnum::kDefault, /*is_overwrite=*/true);
 }
 
 }  // namespace
