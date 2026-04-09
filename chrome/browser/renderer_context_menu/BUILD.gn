@@ -12,10 +12,6 @@ source_set("renderer_context_menu") {
     # chrome/browser/ui gets componentized further.
     allow_circular_includes_from = [ "//chrome/browser/ui" ]
 
-    if (is_mac) {
-      allow_circular_includes_from += [ "//chrome/browser/ui/cocoa" ]
-    }
-
     public = [
       "accessibility_labels_bubble_model.h",
       "render_view_context_menu.h",
@@ -44,10 +40,6 @@ source_set("renderer_context_menu") {
       "//ui/menus",
       "//url",
     ]
-
-    if (is_mac) {
-      public_deps += [ "//chrome/browser/ui/cocoa" ]
-    }
 
     if (is_chromeos) {
       public_deps += [ "//chromeos/ui/clipboard_history" ]

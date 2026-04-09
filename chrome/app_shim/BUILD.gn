@@ -32,7 +32,6 @@ source_set("app_shim") {
     "//chrome/app:command_ids",
     "//chrome/browser/renderer_host:history_swiper",
     "//chrome/browser/ui",
-    "//chrome/browser/ui/cocoa",
     "//chrome/common",
     "//chrome/common:mojo_bindings",
     "//chrome/services/mac_notifications",

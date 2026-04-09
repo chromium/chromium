@@ -397,10 +397,7 @@ source_set("impl") {
   }
 
   if (is_mac) {
-    deps += [
-      "//chrome/browser/ui/cocoa",
-      "//chrome/browser/web_applications",
-    ]
+    deps += [ "//chrome/browser/web_applications" ]
   }
 
   if (!is_android) {

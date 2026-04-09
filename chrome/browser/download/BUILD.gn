@@ -282,8 +282,6 @@ source_set("impl") {
       "download_status_updater_mac.mm",
       "drag_download_item_mac.mm",
     ]
-
-    deps += [ "//chrome/browser/ui/cocoa" ]
   }
 
   if (is_linux) {
