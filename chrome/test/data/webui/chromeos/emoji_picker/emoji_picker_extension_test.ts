@@ -36,7 +36,7 @@ suite('emoji-picker-extension', () => {
         const leftChevron = findInEmojiPicker('#left-chevron');
         const rightChevron = findInEmojiPicker('#right-chevron');
         const emoticonCategoryButton = findInEmojiPicker(
-            'emoji-search', 'emoji-category-button:last-of-type',
+            'emoji-search', 'emoji-category-button:nth-of-type(3)',
             'cr-icon-button');
         emoticonCategoryButton!.click();
         await flush();
@@ -66,7 +66,7 @@ suite('emoji-picker-extension', () => {
         const emojiCategoryButton = findInEmojiPicker(
             'emoji-search', 'emoji-category-button', 'cr-icon-button');
         const emoticonCategoryButton = findInEmojiPicker(
-            'emoji-search', 'emoji-category-button:last-of-type',
+            'emoji-search', 'emoji-category-button:nth-of-type(3)',
             'cr-icon-button');
 
         const emoticonTestGroupId = '20';
@@ -97,7 +97,7 @@ suite('emoji-picker-extension', () => {
   test('Scrolling to an emoticon group should update chevrons.', async () => {
     const leftChevron = findInEmojiPicker('#left-chevron');
     const rightChevron = findInEmojiPicker('#right-chevron');
-    const emoticonTestGroupId = '25';
+    const emoticonTestGroupId = '20';
 
     emojiPicker.scrollToGroup(emoticonTestGroupId);
     await waitForCondition(
@@ -113,7 +113,7 @@ suite('emoji-picker-extension', () => {
         const emojiCategoryButton = findInEmojiPicker(
             'emoji-search', 'emoji-category-button', 'cr-icon-button');
         const emoticonCategoryButton = findInEmojiPicker(
-            'emoji-search', 'emoji-category-button:last-of-type',
+            'emoji-search', 'emoji-category-button:nth-of-type(3)',
             'cr-icon-button');
         const emojiGroups = await waitUntilFindInEmojiPicker('#groups');
         emoticonCategoryButton!.click();
@@ -162,7 +162,7 @@ suite('emoji-picker-extension', () => {
       'Focusing on emoticon tab groups does should not scroll the tabs section',
       async () => {
         const categoryButton = findInEmojiPicker(
-            'emoji-search', 'emoji-category-button:last-of-type',
+            'emoji-search', 'emoji-category-button:nth-of-type(3)',
             'cr-icon-button');
         categoryButton!.click();
         await waitForCondition(

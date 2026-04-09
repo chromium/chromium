@@ -7481,11 +7481,6 @@ inline constexpr char kIppFirstSetupForUsbPrintersDescription[] =
     "When enabled, ChromeOS attempts to setup USB printers via IPP Everywhere "
     "first, then falls back to PPD-based setup.";
 
-inline constexpr char kImeSystemEmojiPickerGIFSupportName[] =
-    "System emoji picker gif support";
-inline constexpr char kImeSystemEmojiPickerGIFSupportDescription[] =
-    "Emoji picker gif support allows users to select gifs to input.";
-
 inline constexpr char kImeSystemEmojiPickerJellySupportName[] =
     "Enable jelly colors for the System Emoji Picker";
 inline constexpr char kImeSystemEmojiPickerJellySupportDescription[] =

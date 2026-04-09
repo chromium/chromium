@@ -275,16 +275,12 @@ EmojiPageHandler::EmojiPageHandler(
       initial_category_(initial_category),
       initial_query_(initial_query),
       profile_(Profile::FromWebUI(web_ui)) {
-  // There are two conditions to control the GIF support:
-  //   1. Feature flag is turned on.
-  //   2. For managed users, the policy is turned on.
-  gif_support_enabled_ =
-      base::FeatureList::IsEnabled(features::kImeSystemEmojiPickerGIFSupport) &&
-      (profile_->GetPrefs()->IsManagedPreference(
-           prefs::kEmojiPickerGifSupportEnabled)
-           ? profile_->GetPrefs()->GetBoolean(
-                 prefs::kEmojiPickerGifSupportEnabled)
-           : true);
+  // For managed users, the GIF support is controlled by enterprise policy.
+  gif_support_enabled_ = profile_->GetPrefs()->IsManagedPreference(
+                             prefs::kEmojiPickerGifSupportEnabled)
+                             ? profile_->GetPrefs()->GetBoolean(
+                                   prefs::kEmojiPickerGifSupportEnabled)
+                             : true;
 
   url_loader_factory_ = profile_->GetDefaultStoragePartition()
                             ->GetURLLoaderFactoryForBrowserProcess();

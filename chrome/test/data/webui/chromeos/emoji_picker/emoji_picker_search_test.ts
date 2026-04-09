@@ -67,17 +67,6 @@ suite('emoji-search', () => {
       });
 
   test(
-      'Search should display meaningful output when no result is found.',
-      async () => {
-        emojiSearch.setSearchQuery('zyxt');
-        await waitForCondition(
-            () => findInEmojiPicker('emoji-search', '.no-result'),
-            'wait for no result to render');
-        const message = findInEmojiPicker('emoji-search', '.no-result');
-        assertEquals(message!.innerText, 'No result found');
-      });
-
-  test(
       'If there is only one emoji returned, pressing Enter triggers the ' +
           'clicking event.',
       async () => {

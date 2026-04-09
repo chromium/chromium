@@ -42,12 +42,6 @@ var EmojiPickerExtensionBrowserTest = class extends PolymerTest {
     return 'chrome://emoji-picker/test_loader.html?module=' +
         'chromeos/emoji_picker/emoji_picker_extension_test.js';
   }
-
-  // TODO(b/295426497): Make tests work with GIF support on.
-  /** @override */
-  get featureList() {
-    return {disabled: ['ash::features::kImeSystemEmojiPickerGIFSupport']};
-  }
 };
 
 TEST_F('EmojiPickerExtensionBrowserTest', 'All', function() {
@@ -102,7 +96,6 @@ var EmojiPickerExtensionSearchTest = class extends PolymerTest {
   get featureList() {
     return {
       enabled: ['ash::features::kImeSystemEmojiPickerVariantGrouping'],
-      disabled: ['ash::features::kImeSystemEmojiPickerGIFSupport'],
     };
   }
 };
@@ -137,10 +130,6 @@ TEST_F('EmojiPickerPrefixSearchTest', 'All', function() {
 });
 
 var EmojiPickerGifTest = class extends PolymerTest {
-  /** @override */
-  get featureList() {
-    return {enabled: ['ash::features::kImeSystemEmojiPickerGIFSupport']};
-  }
 
   /** @override */
   get browsePreload() {
@@ -154,10 +143,6 @@ TEST_F('EmojiPickerGifTest', 'All', function() {
 });
 
 var EmojiPickerGifValidationTest = class extends PolymerTest {
-  /** @override */
-  get featureList() {
-    return {enabled: ['ash::features::kImeSystemEmojiPickerGIFSupport']};
-  }
 
   /** @override */
   get browsePreload() {
@@ -171,10 +156,6 @@ TEST_F('EmojiPickerGifValidationTest', 'All', function() {
 });
 
 var EmojiPickerGifSearchTest = class extends PolymerTest {
-  /** @override */
-  get featureList() {
-    return {enabled: ['ash::features::kImeSystemEmojiPickerGIFSupport']};
-  }
 
   /** @override */
   get browsePreload() {
@@ -188,10 +169,6 @@ TEST_F('EmojiPickerGifSearchTest', 'All', function() {
 });
 
 var EmojiPickerGifOfflineTest = class extends PolymerTest {
-  /** @override */
-  get featureList() {
-    return {enabled: ['ash::features::kImeSystemEmojiPickerGIFSupport']};
-  }
 
   /** @override */
   get browsePreload() {
@@ -205,10 +182,6 @@ TEST_F('EmojiPickerGifOfflineTest', 'All', function() {
 });
 
 var EmojiPickerGifHttpErrorTest = class extends PolymerTest {
-  /** @override */
-  get featureList() {
-    return {enabled: ['ash::features::kImeSystemEmojiPickerGIFSupport']};
-  }
 
   /** @override */
   get browsePreload() {
