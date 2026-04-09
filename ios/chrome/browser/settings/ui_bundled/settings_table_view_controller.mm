@@ -74,6 +74,7 @@
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/autofill_and_passwords_coordinator.h"
+#import "ios/chrome/browser/settings/autofill/autofill_and_passwords/utils/autofill_and_passwords_item_utils.h"
 #import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/about_chrome_table_view_controller.h"
@@ -861,61 +862,20 @@ struct EnhancedSafeBrowsingActivePromoData
 }
 
 - (TableViewItem*)passwordsDetailItem {
-  BOOL passwordsEnabled = _profile->GetPrefs()->GetBoolean(
-      password_manager::prefs::kCredentialsEnableService);
-
-  NSString* passwordsDetail = passwordsEnabled
-                                  ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
-                                  : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-
-  NSString* passwordsSectionTitle =
-      l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER);
-
-  _passwordsDetailItem =
-      [self detailItemWithType:SettingsItemTypePasswords
-                             text:passwordsSectionTitle
-                       detailText:passwordsDetail
-                           symbol:CustomSettingsRootSymbol(kPasswordSymbol)
-            symbolBackgroundColor:[UIColor colorNamed:kYellow500Color]
-          accessibilityIdentifier:kSettingsPasswordsCellId];
-
+  _passwordsDetailItem = PasswordsItem(_profile->GetPrefs()->GetBoolean(
+      password_manager::prefs::kCredentialsEnableService));
   return _passwordsDetailItem;
 }
 
 - (TableViewItem*)autoFillCreditCardDetailItem {
-  BOOL autofillCreditCardEnabled =
-      autofill::prefs::IsAutofillPaymentMethodsEnabled(_profile->GetPrefs());
-  NSString* detailText = autofillCreditCardEnabled
-                             ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
-                             : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-
-  _autoFillCreditCardDetailItem =
-      [self detailItemWithType:SettingsItemTypeAutofillCreditCard
-                             text:l10n_util::GetNSString(
-                                      IDS_AUTOFILL_PAYMENT_METHODS)
-                       detailText:detailText
-                           symbol:DefaultSettingsRootSymbol(kCreditCardSymbol)
-            symbolBackgroundColor:[UIColor colorNamed:kYellow500Color]
-          accessibilityIdentifier:kSettingsPaymentMethodsCellId];
-
+  _autoFillCreditCardDetailItem = AutofillCreditCardItem(
+      autofill::prefs::IsAutofillPaymentMethodsEnabled(_profile->GetPrefs()));
   return _autoFillCreditCardDetailItem;
 }
 
 - (TableViewItem*)autoFillProfileDetailItem {
-  BOOL autofillProfileEnabled =
-      autofill::prefs::IsAutofillProfileEnabled(_profile->GetPrefs());
-  NSString* detailText = autofillProfileEnabled
-                             ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
-                             : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-
-  _autoFillProfileDetailItem =
-      [self detailItemWithType:SettingsItemTypeAutofillProfile
-                             text:l10n_util::GetNSString(
-                                      IDS_AUTOFILL_ADDRESSES_SETTINGS_TITLE)
-                       detailText:detailText
-                           symbol:CustomSettingsRootSymbol(kLocationSymbol)
-            symbolBackgroundColor:[UIColor colorNamed:kYellow500Color]
-          accessibilityIdentifier:kSettingsAddressesAndMoreCellId];
+  _autoFillProfileDetailItem = AutofillProfileItem(
+      autofill::prefs::IsAutofillProfileEnabled(_profile->GetPrefs()));
   return _autoFillProfileDetailItem;
 }
 
@@ -2507,32 +2467,23 @@ struct EnhancedSafeBrowsingActivePromoData
 
   if (!IsYourSavedInfoSettingsPageIosEnabled()) {
     if (preferenceName == password_manager::prefs::kCredentialsEnableService) {
-      BOOL passwordsEnabled = _profile->GetPrefs()->GetBoolean(preferenceName);
-      NSString* passwordsDetail =
-          passwordsEnabled ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
-                           : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-      _passwordsDetailItem.detailText = passwordsDetail;
+      _passwordsDetailItem.detailText =
+          PasswordsItemDetailText(_profile->GetPrefs()->GetBoolean(
+              password_manager::prefs::kCredentialsEnableService));
       [self reconfigureCellsForItems:@[ _passwordsDetailItem ]];
     }
 
     if (preferenceName == autofill::prefs::kAutofillProfileEnabled) {
-      BOOL autofillProfileEnabled =
-          autofill::prefs::IsAutofillProfileEnabled(_profile->GetPrefs());
-      NSString* detailText = autofillProfileEnabled
-                                 ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
-                                 : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-      _autoFillProfileDetailItem.detailText = detailText;
+      _autoFillProfileDetailItem.detailText = AutofillProfileItemDetailText(
+          autofill::prefs::IsAutofillProfileEnabled(_profile->GetPrefs()));
       [self reconfigureCellsForItems:@[ _autoFillProfileDetailItem ]];
     }
 
     if (preferenceName == autofill::prefs::kAutofillCreditCardEnabled) {
-      BOOL autofillCreditCardEnabled =
-          autofill::prefs::IsAutofillPaymentMethodsEnabled(
-              _profile->GetPrefs());
-      NSString* detailText = autofillCreditCardEnabled
-                                 ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
-                                 : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-      _autoFillCreditCardDetailItem.detailText = detailText;
+      _autoFillCreditCardDetailItem.detailText =
+          AutofillCreditCardItemDetailText(
+              autofill::prefs::IsAutofillPaymentMethodsEnabled(
+                  _profile->GetPrefs()));
       [self reconfigureCellsForItems:@[ _autoFillCreditCardDetailItem ]];
     }
   }
