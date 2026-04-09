@@ -1037,7 +1037,8 @@ CanvasNon2DResourceProviderSharedImage::DoExternalDrawAndProduceResource(
 scoped_refptr<StaticBitmapImage>
 CanvasNon2DResourceProviderSharedImage::DoExternalDrawAndSnapshot(
     base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
-    ImageOrientation orientation) {
+    ImageOrientation orientation,
+    bool is_overwrite) {
   cached_snapshot_.reset();
   draw_callback(recorder_->getRecordingCanvas());
 
@@ -1045,7 +1046,7 @@ CanvasNon2DResourceProviderSharedImage::DoExternalDrawAndSnapshot(
     return nullptr;
   }
 
-  FlushCanvas(/*is_overwrite=*/false);
+  FlushCanvas(is_overwrite);
   return Snapshot(orientation);
 }
 

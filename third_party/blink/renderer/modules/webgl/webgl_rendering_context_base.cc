@@ -2040,7 +2040,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
           [&image, dest_rect](cc::PaintCanvas& canvas) {
             DrawImageToCanvas(image.get(), canvas, dest_rect);
           },
-          ImageOrientationEnum::kDefault);
+          ImageOrientationEnum::kDefault, /*is_overwrite=*/false);
       copy_succeeded = true;
     }
   }

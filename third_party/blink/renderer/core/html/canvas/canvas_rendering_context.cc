@@ -223,7 +223,7 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
 
       return resource_provider->DoExternalDrawAndSnapshot(
           [&](cc::PaintCanvas& canvas) { draw_to_canvas(canvas); },
-          ImageOrientation());
+          ImageOrientation(), /*is_overwrite=*/false);
     }
   }
 

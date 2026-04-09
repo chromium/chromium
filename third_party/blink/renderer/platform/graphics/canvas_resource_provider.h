@@ -702,7 +702,8 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
 
   scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
       base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
-      ImageOrientation orientation);
+      ImageOrientation orientation,
+      bool is_overwrite);
 
   // For WebGpu RecyclableCanvasResource.
   void OnAcquireRecyclableCanvasResource();
