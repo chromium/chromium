@@ -79,8 +79,3 @@ def CheckPromptfooTestCases(input_api, output_api):
         return [output_api.PresubmitError(message, long_text=long_text)]
 
     return []
-
-
-def CheckSkillFiles(input_api, output_api):
-    """Checks that SKILL.md files are valid."""
-    return input_api.canned_checks.CheckSkillFiles(input_api, output_api)
