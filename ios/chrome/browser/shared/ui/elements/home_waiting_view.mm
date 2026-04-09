@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 @implementation HomeWaitingView {
   UIActivityIndicatorView* _activityIndicator;
@@ -43,9 +44,10 @@
 - (void)startActivityIndiactor {
   _activityIndicator = [[UIActivityIndicatorView alloc] init];
   _activityIndicator.color = [UIColor colorNamed:kBlueColor];
-  _activityIndicator.autoresizingMask =
-      UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  _activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
   [self addSubview:_activityIndicator];
+  [_activityIndicator sizeToFit];
+  AddSameCenterConstraints(self, _activityIndicator);
   [_activityIndicator startAnimating];
 }
 
