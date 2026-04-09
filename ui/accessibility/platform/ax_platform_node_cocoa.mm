@@ -2353,6 +2353,16 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
         _node->GetIntAttribute(ax::mojom::IntAttribute::kCheckedState));
     return checkedState == ax::mojom::CheckedState::kTrue ? @1 : @0;
   }
+
+  // Must be kept in sync with BrowserAccessibilityCocoa::value.
+  if (_node->GetData().IsRangeValueSupported()) {
+    float floatValue;
+    if (_node->GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange,
+                                 &floatValue)) {
+      return @(floatValue);
+    }
+  }
+
   return base::SysUTF16ToNSString(_node->GetValueForControl());
 }
 

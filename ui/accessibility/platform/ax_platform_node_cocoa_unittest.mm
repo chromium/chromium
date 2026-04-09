@@ -34,6 +34,7 @@ using AXRange = ui::AXPlatformNodeDelegate::AXRange;
 
 @interface AXPlatformNodeCocoa (Private)
 
+- (id)AXValue;
 - (void)addTextAnnotationsIn:(const AXRange*)axRange
                           to:(NSMutableAttributedString*)attributedString;
 
@@ -1649,6 +1650,56 @@ TEST_P(AXPlatformNodeCocoaTest, ExpandedChangedNotificationForGroup) {
           nativeNotificationForExpandedChangedWithRole:ax::mojom::Role::kGroup
                                            isExpanded:NO],
       @"AXExpandedChanged");
+}
+
+TEST_P(AXPlatformNodeCocoaTest, AXValueOnSliderReturnsNSNumber) {
+  AXNodeData root = AXNodeData();
+  root.id = 1;
+  root.role = ax::mojom::Role::kSlider;
+  root.AddStringAttribute(ax::mojom::StringAttribute::kValue, "50%");
+  root.AddFloatAttribute(ax::mojom::FloatAttribute::kValueForRange, 0.5f);
+  Init(root);
+  AXPlatformNodeCocoa* node = GetCocoaNode(GetRoot());
+  id value = [node AXValue];
+  ASSERT_TRUE([value isKindOfClass:[NSNumber class]]);
+  EXPECT_FLOAT_EQ([value floatValue], 0.5f);
+}
+
+TEST_P(AXPlatformNodeCocoaTest,
+       AXValueOnSliderWithoutRangeValueReturnsString) {
+  AXNodeData root = AXNodeData();
+  root.id = 1;
+  root.role = ax::mojom::Role::kSlider;
+  root.AddStringAttribute(ax::mojom::StringAttribute::kValue, "50%");
+  Init(root);
+  AXPlatformNodeCocoa* node = GetCocoaNode(GetRoot());
+  id value = [node AXValue];
+  ASSERT_TRUE([value isKindOfClass:[NSString class]]);
+  EXPECT_NSEQ(value, @"50%");
+}
+
+TEST_P(AXPlatformNodeCocoaTest, AXValueOnProgressIndicatorReturnsNSNumber) {
+  AXNodeData root = AXNodeData();
+  root.id = 1;
+  root.role = ax::mojom::Role::kProgressIndicator;
+  root.AddFloatAttribute(ax::mojom::FloatAttribute::kValueForRange, 0.75f);
+  Init(root);
+  AXPlatformNodeCocoa* node = GetCocoaNode(GetRoot());
+  id value = [node AXValue];
+  ASSERT_TRUE([value isKindOfClass:[NSNumber class]]);
+  EXPECT_FLOAT_EQ([value floatValue], 0.75f);
+}
+
+TEST_P(AXPlatformNodeCocoaTest, AXValueOnTextFieldReturnsString) {
+  AXNodeData root = AXNodeData();
+  root.id = 1;
+  root.role = ax::mojom::Role::kTextField;
+  root.AddStringAttribute(ax::mojom::StringAttribute::kValue, "hello");
+  Init(root);
+  AXPlatformNodeCocoa* node = GetCocoaNode(GetRoot());
+  id value = [node AXValue];
+  ASSERT_TRUE([value isKindOfClass:[NSString class]]);
+  EXPECT_NSEQ(value, @"hello");
 }
 
 }  // namespace ui
