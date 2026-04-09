@@ -43,7 +43,7 @@ bool IsSupportedPlatform() {
 
 bool IsFindsOptInPromoCooldownPassed(const PrefService* pref_service) {
   const int64_t last_timestamp_value =
-      pref_service->GetInt64(prefs::kFindsOptInPromoLastInteractedTimestamp);
+      pref_service->GetInt64(prefs::kFindsOptInPromoLastShownTimestamp);
   if (last_timestamp_value == 0) {
     return true;
   }
@@ -55,7 +55,7 @@ bool IsFindsOptInPromoCooldownPassed(const PrefService* pref_service) {
 }
 
 bool IsFindsOptInPromoMaxCountExceeded(const PrefService* pref_service) {
-  return pref_service->GetInteger(prefs::kFindsOptInPromoInteractedCount) >=
+  return pref_service->GetInteger(prefs::kFindsOptInPromoShownCount) >=
          finds::features::kFindsOptInPromoMaxInteractedCount.Get();
 }
 
