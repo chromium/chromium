@@ -255,7 +255,10 @@ android_library("core_java") {
 }
 
 java_group("java") {
-  deps = [ ":core_java" ]
+  deps = [
+    ":core_java",
+    "//components/messages/android:java",
+  ]
   if (enable_extensions_core) {
     deps += [ "java/src/org/chromium/chrome/browser/toolbar/extensions:java" ]
   }

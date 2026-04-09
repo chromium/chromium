@@ -23,6 +23,7 @@ import java.util.Objects;
 @JNINamespace("extensions")
 public class ExtensionAction {
     private final String mId;
+    private final String mName;
     private final String mTooltip;
     private final String mAccessibleName;
 
@@ -30,11 +31,17 @@ public class ExtensionAction {
     @VisibleForTesting
     public ExtensionAction(
             @JniType("std::string") String id,
+            @JniType("std::string") String name,
             @JniType("std::string") String tooltip,
             @JniType("std::string") String accessibleName) {
         mId = id;
+        mName = name;
         mTooltip = tooltip;
         mAccessibleName = accessibleName;
+    }
+
+    public String getName() {
+        return mName;
     }
 
     public String getId() {
@@ -53,6 +60,7 @@ public class ExtensionAction {
     public boolean equals(Object o) {
         if (o instanceof ExtensionAction other) {
             return mId.equals(other.mId)
+                    && mName.equals(other.mName)
                     && mTooltip.equals(other.mTooltip)
                     && mAccessibleName.equals(other.mAccessibleName);
         }
@@ -61,6 +69,6 @@ public class ExtensionAction {
 
     @Override
     public int hashCode() {
-        return Objects.hash(mId, mTooltip, mAccessibleName);
+        return Objects.hash(mId, mName, mTooltip, mAccessibleName);
     }
 }

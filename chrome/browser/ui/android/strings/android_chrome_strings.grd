@@ -556,6 +556,9 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
         Some extensions can add search engines to Chrome
       </message>
       <if expr="enable_extensions_core">
+        <message name="IDS_EXTENSIONS_REQUEST_ACCESS_MESSAGE_TITLE_SINGLE_EXTENSION" desc="The title of the request access message banner that appears on the toolbar when an extension requests access to the site" formatter_data="android_java">
+          Allow extension "<ph name="EXTENSION_NAME">%1$s</ph>"?
+        </message>
         <message name="IDS_SITE_SEARCH_EXTENSIONS_MENU_MANAGE" desc="Menu item to manage extensions">
           Manage
         </message>

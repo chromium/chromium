@@ -9,11 +9,17 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.view.Display;
+import android.view.View.OnClickListener;
+import android.view.WindowManager;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,15 +29,28 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.extensions.ExtensionAction;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.chrome.browser.ui.extensions.RequestAccessButtonParams;
+import org.chromium.components.messages.DismissReason;
+import org.chromium.components.messages.ManagedMessageDispatcher;
+import org.chromium.components.messages.MessageBannerProperties;
+import org.chromium.components.messages.MessagesFactory;
+import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.lang.ref.WeakReference;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 /** Unit tests for ExtensionAccessControlButtonMediator. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -42,6 +61,10 @@ public class ExtensionAccessControlButtonMediatorTest {
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
     @Mock private Context mContext;
+    @Mock private Supplier<Boolean> mIsWindowCompactSupplier;
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private ManagedMessageDispatcher mMessageDispatcher;
+
     private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
             ObservableSuppliers.createNullable();
 
@@ -54,6 +77,21 @@ public class ExtensionAccessControlButtonMediatorTest {
     public void setUp() {
         when(mTab.getWebContents()).thenReturn(mWebContents);
         mCurrentTabSupplier.set(mTab);
+        when(mIsWindowCompactSupplier.get()).thenReturn(false);
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
+        when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(new UnownedUserDataHost());
+        when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(mContext));
+
+        Resources resources = mock(Resources.class);
+        when(mContext.getResources()).thenReturn(resources);
+        when(resources.getDimensionPixelSize(org.mockito.ArgumentMatchers.anyInt())).thenReturn(10);
+        WindowManager windowManager = mock(WindowManager.class);
+        when(mContext.getSystemService(Context.WINDOW_SERVICE)).thenReturn(windowManager);
+        Display display = mock(Display.class);
+        when(windowManager.getDefaultDisplay()).thenReturn(display);
+
+        MessagesFactory.attachMessageDispatcher(mWindowAndroid, mMessageDispatcher);
+
         when(mContext.getString(
                         org.chromium.chrome.browser.ui.extensions.R.string
                                 .extensions_request_access_button_dismissed_text))
@@ -71,8 +109,18 @@ public class ExtensionAccessControlButtonMediatorTest {
 
         mMediator =
                 new ExtensionAccessControlButtonMediator(
-                        mContext, mModel, mCurrentTabSupplier, mExtensionsToolbarBridge, (v) -> {});
+                        mContext,
+                        mModel,
+                        mCurrentTabSupplier,
+                        mExtensionsToolbarBridge,
+                        (v) -> {},
+                        mIsWindowCompactSupplier);
         verify(mExtensionsToolbarBridge).addObserver(mToolbarObserverCaptor.capture());
+    }
+
+    @After
+    public void tearDown() {
+        MessagesFactory.detachMessageDispatcher(mMessageDispatcher);
     }
 
     @Test
@@ -151,7 +199,7 @@ public class ExtensionAccessControlButtonMediatorTest {
                 1, mModel.get(ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_EXTENSION_COUNT));
 
         // 2. User clicks the button
-        android.view.View.OnClickListener listener =
+        OnClickListener listener =
                 mModel.get(ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_CLICK_LISTENER);
         listener.onClick(null);
 
@@ -175,5 +223,79 @@ public class ExtensionAccessControlButtonMediatorTest {
         // State should be immediately cleared and the button should evaluate state for the new tab
         // (no requests)
         assertFalse(mModel.get(ExtensionsToolbarProperties.IS_REQUEST_ACCESS_BUTTON_VISIBLE));
+    }
+
+    @Test
+    public void testRequestAccessButtonVisibility_CompactWindow() {
+        ExtensionsToolbarBridge.Observer observer = mToolbarObserverCaptor.getValue();
+        when(mIsWindowCompactSupplier.get()).thenReturn(true);
+
+        String tooltip = "Some tooltip";
+        RequestAccessButtonParams paramsWithRequests =
+                new RequestAccessButtonParams(new String[] {"a"}, tooltip);
+        when(mExtensionsToolbarBridge.getRequestAccessButtonParams(any()))
+                .thenReturn(paramsWithRequests);
+        when(mContext.getString(
+                        org.chromium.chrome.browser.ui.extensions.R.string
+                                .extensions_request_access_message_title_single_extension,
+                        "ExtensionName"))
+                .thenReturn("Allow extension \"ExtensionName\"?");
+        when(mContext.getString(
+                        org.chromium.chrome.browser.ui.extensions.R.string
+                                .extensions_request_access_button))
+                .thenReturn("Allow $1 extensions?");
+        when(mContext.getString(
+                        org.chromium.chrome.browser.ui.extensions.R.string
+                                .extensions_menu_requests_access_section_allow_button_text))
+                .thenReturn("Allow");
+
+        ExtensionAction action = mock(ExtensionAction.class);
+        when(action.getName()).thenReturn("ExtensionName");
+        when(mExtensionsToolbarBridge.getAction("a", mWebContents)).thenReturn(action);
+
+        observer.onRequestAccessButtonParamsChanged();
+
+        // Button should be hidden when window is compact
+        assertFalse(mModel.get(ExtensionsToolbarProperties.IS_REQUEST_ACCESS_BUTTON_VISIBLE));
+
+        // But message should be enqueued
+        ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
+        verify(mMessageDispatcher)
+                .enqueueWindowScopedMessage(messageCaptor.capture(), any(Boolean.class));
+
+        PropertyModel messageModel = messageCaptor.getValue();
+        assertEquals(
+                "Allow extension \"ExtensionName\"?",
+                messageModel.get(MessageBannerProperties.TITLE));
+
+        // Test primary action click behavior
+        Supplier<Integer> primaryAction =
+                messageModel.get(MessageBannerProperties.ON_PRIMARY_ACTION);
+        int result = primaryAction.get();
+        assertEquals(PrimaryActionClickBehavior.DISMISS_IMMEDIATELY, result);
+        verify(mExtensionsToolbarBridge).onRequestAccessButtonClicked(mWebContents);
+
+        // Test multi-extension case
+        RequestAccessButtonParams multiParams =
+                new RequestAccessButtonParams(new String[] {"a", "b"}, tooltip);
+        when(mExtensionsToolbarBridge.getRequestAccessButtonParams(any())).thenReturn(multiParams);
+
+        // Dismiss first message so a new one can be enqueued
+        org.chromium.base.Callback<Integer> dismissAction =
+                messageModel.get(MessageBannerProperties.ON_DISMISSED);
+        dismissAction.onResult(DismissReason.UNKNOWN);
+
+        // Advance time to allow the "Allowed" text to clear.
+        // The mediator hides the button while showing the "Allowed" text for 4 seconds.
+        // We must advance the looper to simulate this delay passing before we can
+        // show the next message.
+        ShadowLooper.idleMainLooper(4000, TimeUnit.MILLISECONDS);
+
+        observer.onRequestAccessButtonParamsChanged();
+
+        verify(mMessageDispatcher, times(2))
+                .enqueueWindowScopedMessage(messageCaptor.capture(), any(Boolean.class));
+        PropertyModel multiMessageModel = messageCaptor.getValue();
+        assertEquals("Allow 2 extensions?", multiMessageModel.get(MessageBannerProperties.TITLE));
     }
 }

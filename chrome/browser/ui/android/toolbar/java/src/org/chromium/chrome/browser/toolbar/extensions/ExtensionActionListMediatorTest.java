@@ -167,7 +167,10 @@ public class ExtensionActionListMediatorTest {
                             assert action != null;
 
                             return new ExtensionAction(
-                                    action.getId(), action.getTitle(), action.getTitle());
+                                    action.getId(),
+                                    action.getTitle(),
+                                    action.getTitle(),
+                                    action.getTitle());
                         });
 
         when(mExtensionsToolbarBridge.getPinnedActionIds())

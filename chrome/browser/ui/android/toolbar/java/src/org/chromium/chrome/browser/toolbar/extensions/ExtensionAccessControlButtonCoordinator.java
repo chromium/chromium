@@ -15,6 +15,8 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+import java.util.function.Supplier;
+
 /**
  * Coordinator for the request access button. This class is responsible for the button that allows
  * extensions to request access to the current site.
@@ -37,7 +39,8 @@ public class ExtensionAccessControlButtonCoordinator implements Destroyable {
             NullableObservableSupplier<Tab> currentTabSupplier,
             ExtensionsToolbarBridge extensionsToolbarBridge,
             TextView requestAccessButton,
-            Callback<Boolean> visibilityObserver) {
+            Callback<Boolean> visibilityObserver,
+            Supplier<Boolean> isWindowCompactSupplier) {
 
         mChangeProcessor =
                 PropertyModelChangeProcessor.create(
@@ -49,7 +52,12 @@ public class ExtensionAccessControlButtonCoordinator implements Destroyable {
                         model,
                         currentTabSupplier,
                         extensionsToolbarBridge,
-                        visibilityObserver);
+                        visibilityObserver,
+                        isWindowCompactSupplier);
+    }
+
+    public void requestVisibilityUpdate() {
+        mMediator.requestVisibilityUpdate();
     }
 
     @Override

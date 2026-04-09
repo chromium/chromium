@@ -364,6 +364,8 @@ public class MessagesMetrics {
                 return "SaveUpdateEntity";
             case MessageIdentifier.SIGNIN_SURVEY:
                 return "SigninSurvey";
+            case MessageIdentifier.EXTENSIONS_REQUEST_ACCESS:
+                return "ExtensionsRequestAccess";
             default:
                 return "Unknown";
         }

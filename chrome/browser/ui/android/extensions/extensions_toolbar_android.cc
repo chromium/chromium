@@ -190,7 +190,8 @@ base::android::ScopedJavaLocalRef<jobject> ExtensionsToolbarAndroid::GetAction(
   ToolbarActionViewModel* action =
       toolbar_view_model_->GetActionModelForId(action_id);
   return Java_ExtensionAction_Constructor(
-      env, action_id, base::UTF16ToUTF8(action->GetTooltip(web_contents)),
+      env, action_id, base::UTF16ToUTF8(action->GetActionName()),
+      base::UTF16ToUTF8(action->GetTooltip(web_contents)),
       base::UTF16ToUTF8(action->GetAccessibleName(web_contents)));
 }
 

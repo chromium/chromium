@@ -156,6 +156,7 @@ enum class MessageIdentifier {
   PERMISSION_PROMPT_LOUD = 66,
   SAVE_UPDATE_ENTITY = 67,
   SIGNIN_SURVEY = 68,
+  EXTENSIONS_REQUEST_ACCESS = 69,
   // Insert new values before this line.
   COUNT
 };
