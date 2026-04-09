@@ -528,8 +528,17 @@ struct Pool2dDescriptors {
 // Helper to set up Pool2dDescriptors. Returns nullopt if any validation fails.
 std::optional<Pool2dDescriptors> SetUpPool2dDescriptors(
     const ContextProperties& context_properties,
-    const Pool2dParams& params) {
+    Pool2dParams& params) {
   InputOperandLayout input_layout = context_properties.input_operand_layout;
+
+#if BUILDFLAG(IS_LINUX)
+  // Pool2d does not support dilation for TFLite backend:
+  // https://source.chromium.org/chromium/chromium/src/+/4c1aaa2f981951e7e6f636df92fb89e48b642aa6:services/webnn/tflite/graph_builder_tflite.cc;l=7203
+  // TODO(crbug.com/498987226): Remove this restriction to increase test
+  // coverage.
+  params.dilation_height = 1;
+  params.dilation_width = 1;
+#endif  // BUILDFLAG(IS_LINUX)
 
   std::vector<uint32_t> input_dims;
   switch (input_layout) {
