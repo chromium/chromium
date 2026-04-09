@@ -344,7 +344,7 @@ def _CreateCoverageProfileDataForTargets(targets,
     A relative path to the generated profdata file.
   """
   if not no_compile:
-    _BuildTargets(targets, jobs_count, no_compile)
+    _BuildTargets(targets, jobs_count)
   target_profdata_file_paths = _GetTargetProfDataPathsByExecutingCommands(
       targets, commands)
   coverage_profdata_file_path = (
