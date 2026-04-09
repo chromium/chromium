@@ -27,11 +27,7 @@ const CGFloat kJavaScriptTimeout = 0.5;
 // while the loop is executed in the same bucket. Marked as `noinline` to
 // prevent clang from optimising the function out in official builds.
 void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
-  if (base::FeatureList::IsEnabled(web::features::kEnableContextMenuTimeout)) {
-    CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.5, false);
-  } else {
-    CFRunLoopRun();
-  }
+  CFRunLoopRun();
 }
 
 }  // namespace

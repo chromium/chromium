@@ -12615,24 +12615,6 @@
             ]
         }
     ],
-    "IOSContextMenuCrashConfig": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableBEContextMenuConfiguration"
-                    ],
-                    "disable_features": [
-                        "EnableContextMenuTimeout"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSCustomFileUploadMenu": [
         {
             "platforms": [
