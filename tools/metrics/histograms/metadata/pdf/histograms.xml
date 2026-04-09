@@ -82,7 +82,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PDF.FormType" enum="PDFFormTypes" expires_after="2026-09-13">
   <owner>dhoss@chromium.org</owner>
-  <owner>kmoon@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
     Tracks what types of forms are present in PDF document, logged when the
@@ -266,7 +265,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PDF.LoadStatus2" enum="ChromePDFViewerLoadStatus"
     expires_after="2026-08-30">
-  <owner>kmoon@chromium.org</owner>
+  <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
     Tracks what happens when Chrome tries to load a PDF. This metric tracks all
