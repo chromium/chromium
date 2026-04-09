@@ -18,6 +18,9 @@ specific_include_rules = {
   "angle_platform_impl.cc": [
     "+third_party/angle/include/platform/PlatformMethods.h",
   ],
+  "dc_layer_tree.h": [
+    "+third_party/microsoft_dxheaders/src/include/experimental-composition/experimental-dcomp.h"
+  ],
   "delegated_ink_point_renderer_gpu_unittest.cc": [
     "+ui/base/win/hidden_window.h",
   ],
@@ -26,6 +29,9 @@ specific_include_rules = {
     "+ui/base/test/skia_gold_pixel_diff.h",
     "+ui/base/win/hidden_window.h",
     "+ui/platform_window",
+  ],
+  "direct_composition_support.cc": [
+    "+third_party/microsoft_dxheaders/src/include/experimental-composition/experimental-dcomp.h"
   ],
   "direct_composition_surface_win_unittest.cc": [
     "+ui/base/win/hidden_window.h",

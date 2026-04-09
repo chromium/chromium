@@ -25,6 +25,9 @@ class DawnSharedTextureCache
       const wgpu::Device& device,
       const wgpu::SharedTextureMemory& shared_texture_memory);
 
+  // Erases the cached entry for the device, if present.
+  void EraseDawnSharedTextureCache(const wgpu::Device& device);
+
   // Returns the cached Texture for this device and texture_usage.
   wgpu::Texture GetCachedWGPUTexture(
       const wgpu::Device& device,

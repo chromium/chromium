@@ -46,13 +46,15 @@
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/dawn/DawnBackendContext.h"
 #include "third_party/skia/include/gpu/graphite/dawn/DawnUtils.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_implementation.h"
-#include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <d3d11_4.h>
+#include <d3d11on12.h>
 
 #include "third_party/dawn/include/dawn/native/D3D11Backend.h"
+#include "third_party/dawn/include/dawn/native/D3D12Backend.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_angle_util_win.h"
 #endif
@@ -294,6 +296,7 @@ std::vector<wgpu::FeatureName> GetRequiredFeatures(
       wgpu::FeatureName::SharedTextureMemoryD3D11Texture2D,
       wgpu::FeatureName::SharedTextureMemoryDXGISharedHandle,
       wgpu::FeatureName::SharedFenceDXGISharedHandle,
+      wgpu::FeatureName::SharedTextureMemoryD3D12Resource,
 
       // The following feature is always supported by the the D3D12 backend.
       wgpu::FeatureName::SharedBufferMemoryD3D12Resource,
@@ -490,6 +493,37 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
   Microsoft::WRL::ComPtr<ID3D11Device> GetD3D11Device() const {
     if (backend_type() == wgpu::BackendType::D3D11) {
       return dawn::native::d3d11::GetD3D11Device(device_.Get());
+    }
+
+    // Even if the backend is D3D12, use D3D11On12 to get a D3D11 device. This
+    // will bridge the gap in places where SharedImage code uses D3D11 for
+    // internal operations like copying to staging textures.
+    // TODO(crbug.com/425864542) Transition shared image copy code to D3D12.
+    if (backend_type() == wgpu::BackendType::D3D12 &&
+        base::FeatureList::IsEnabled(features::kDCompOnD3D12)) {
+      // If the backend is D3D12, we can use D3D11On12 device.
+      Microsoft::WRL::ComPtr<ID3D11On12Device> d3d11on12_device =
+          dawn::native::d3d12::GetOrCreateD3D11On12Device(device_.Get());
+
+      // If the user's platform version does not support ID3D11On12Device2,
+      // return nullptr. This will prevent Chromium from using
+      // D3D11On12 APIs.
+      Microsoft::WRL::ComPtr<ID3D11On12Device2> d3d11on12_device_2;
+      if (FAILED(d3d11on12_device.As(&d3d11on12_device_2))) {
+        return nullptr;
+      }
+
+      Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device;
+      HRESULT hr = d3d11on12_device.As(&d3d11_device);
+      CHECK_EQ(hr, S_OK);
+      return d3d11_device;
+    }
+    return nullptr;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D12CommandQueue> GetD3D12CommandQueue() const {
+    if (backend_type() == wgpu::BackendType::D3D12) {
+      return dawn::native::d3d12::GetD3D12CommandQueue(device_.Get());
     }
     return nullptr;
   }
@@ -1307,6 +1341,11 @@ void DawnContextProvider::SetCachingInterface(
 Microsoft::WRL::ComPtr<ID3D11Device> DawnContextProvider::GetD3D11Device()
     const {
   return dawn_shared_context_->GetD3D11Device();
+}
+
+Microsoft::WRL::ComPtr<ID3D12CommandQueue>
+DawnContextProvider::GetD3D12CommandQueue() const {
+  return dawn_shared_context_->GetD3D12CommandQueue();
 }
 #endif
 

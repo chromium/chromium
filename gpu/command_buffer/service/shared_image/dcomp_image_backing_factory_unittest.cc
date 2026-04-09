@@ -78,7 +78,8 @@ class DCompImageBackingFactoryTest : public testing::Test {
                                  GpuFeatureInfo());
 
     d3d11_device_ = gl::QueryD3D11DeviceObjectFromANGLE();
-    gl::InitializeDirectComposition(d3d11_device_);
+    gl::InitializeDirectComposition(d3d11_device_,
+                                    /*d3d12_command_queue=*/nullptr);
 
     memory_type_tracker_ = std::make_unique<MemoryTypeTracker>(nullptr);
     shared_image_representation_factory_ =

@@ -141,6 +141,35 @@ bool UseCompositorClockVSyncInterval() {
          base::FeatureList::IsEnabled(
              features::kUseCompositorClockVSyncInterval);
 }
+
+// Enables DirectComposition textures backed by D3D12 resources.
+// When this feature is enabled, the GPU pipeline may create and present DComp-
+// backed surfaces using the D3D12 path and leverage Dawn’s D3D12 device. This
+// allows unified resource sharing and fences between Dawn (WebGPU), Skia
+// Graphite, and DComp when the system supports D3D12.
+//
+// Important notes:
+// - Keyed-mutex resources are not compatible with the D3D12 unwrap path and
+//   will continue using D3D11.
+// - WebGL will continue to use the D3D11 runtime backed by D3D11 drivers with
+//   ANGLE's D3D11 device.
+// - Certain SharedImage functionality such as copies to staging
+//   textures rely on the D3D11 DDI. These code paths will use
+//   D3D11on12 when this feature is enabled.
+//
+// This feature requires SkiaGraphite with a dawn-d3d12 backend, BufferQueue to
+// be enabled, and either DelegatedCompositing to be disabled or in full
+// mode. As there is currently no support for D3D12 swapchains or DComp
+// surfaces, BufferQueue is required to manage presentation. BufferQueue is not
+// supported on Windows with partial delegated compositing, so in that mode this
+// feature will not work.
+//
+// Example command line to enable this feature:
+// --enable-features=SkiaGraphite,BufferQueue,DCompOnD3D12 AND
+// --disable-features=DelegatedCompositing or
+// --enable-features=DelegatedCompositing:mode/full AND
+// --skia-graphite-backend=dawn-d3d12
+BASE_FEATURE(kDCompOnD3D12, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 bool UseGpuVsync() {

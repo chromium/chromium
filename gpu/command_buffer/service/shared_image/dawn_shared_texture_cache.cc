@@ -78,6 +78,12 @@ void DawnSharedTextureCache::MaybeCacheSharedTextureMemory(
                                      std::move(shared_texture_data));
 }
 
+void DawnSharedTextureCache::EraseDawnSharedTextureCache(
+    const wgpu::Device& device) {
+  // Erase the entire cached entry
+  shared_texture_data_cache_.erase(device.Get());
+}
+
 wgpu::Texture DawnSharedTextureCache::GetCachedWGPUTexture(
     const wgpu::Device& device,
     wgpu::TextureUsage usage,

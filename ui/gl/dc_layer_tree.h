@@ -8,6 +8,7 @@
 #include <windows.h>
 
 #include <d3d11.h>
+#include <d3d12.h>
 #include <dcomp.h>
 #include <wrl/client.h>
 
@@ -18,6 +19,7 @@
 #include "base/moving_window.h"
 #include "base/types/expected.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/microsoft_dxheaders/src/include/experimental-composition/experimental-dcomp.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/overlay_layer_id.h"
 #include "ui/gl/dc_layer_overlay_params.h"
@@ -45,6 +47,7 @@ struct CommitError {
     kSolidColorSurfaceBeginDraw,
     kSolidColorSurfaceEndDraw,
     kSolidColorSurfaceCreateRenderTargetView,
+    kIDCompositionDevice6PresentCompositionTextures,
   };
 
   Reason reason = Reason::kUnknown;
@@ -535,6 +538,11 @@ class GL_EXPORT DCLayerTree {
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
   Microsoft::WRL::ComPtr<IDCompositionDevice3> dcomp_device_;
   Microsoft::WRL::ComPtr<IDCompositionTarget> dcomp_target_;
+  // IDCompositionDevice6 enables support for D3D12 composition textures.
+  Microsoft::WRL::ComPtr<EXPERIMENTAL_IDCompositionDevice6> dcomp_device_6_;
+  // A d3d12 command queue from Dawn that is used to present composition
+  // textures prior to DComp commit.
+  Microsoft::WRL::ComPtr<ID3D12CommandQueue> d3d12_command_queue_;
 
   // Resource pool which owns surfaces for solid color overlays. This is needed
   // since there is no way to procedurally fill a DComp visual.

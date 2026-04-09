@@ -129,8 +129,7 @@ bool D3D11ImageSameAdapterCopyStrategy::Copy(SharedImageBacking* source_backing,
     return false;
   }
   absl::Cleanup src_end_access = [&] {
-    d3d_source_backing->EndAccessD3D11(
-        d3d_source_backing->texture_d3d11_device_);
+    d3d_source_backing->EndAccessD3D(d3d_source_backing->texture_d3d11_device_);
   };
 
   if (!d3d_dest_backing->BeginAccessD3D11(
@@ -138,7 +137,7 @@ bool D3D11ImageSameAdapterCopyStrategy::Copy(SharedImageBacking* source_backing,
     return false;
   }
   absl::Cleanup dest_end_access = [&] {
-    d3d_dest_backing->EndAccessD3D11(d3d_dest_backing->texture_d3d11_device_);
+    d3d_dest_backing->EndAccessD3D(d3d_dest_backing->texture_d3d11_device_);
   };
 
   D3D11TextureAndArrayIndex source_texture(d3d_source_backing->d3d11_texture_,

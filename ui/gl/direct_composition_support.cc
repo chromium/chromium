@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/lock.h"
 #include "base/win/windows_version.h"
+#include "third_party/microsoft_dxheaders/src/include/experimental-composition/experimental-dcomp.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/win/d3d_shared_fence.h"
 #include "ui/gl/gl_features.h"
@@ -147,6 +148,9 @@ std::set<HMONITOR>* GetHDRMonitors() {
 IDCompositionDevice3* g_dcomp_device = nullptr;
 // Global d3d11 device used by direct composition.
 ID3D11Device* g_d3d11_device = nullptr;
+// Global d3d12 command queue created by Chromium's Dawn instance and used by
+// SharedImage code to queue work when it runs in D3D12 mode.
+ID3D12CommandQueue* g_d3d12_command_queue = nullptr;
 
 // Preferred overlay format set when detecting overlay support during
 // initialization.  Set to NV12 by default so that it's used when enabling
@@ -695,7 +699,8 @@ HRESULT DCompositionGetStatistics(COMPOSITION_FRAME_ID frameId,
 }
 
 void InitializeDirectComposition(
-    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device) {
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
+    Microsoft::WRL::ComPtr<ID3D12CommandQueue> d3d12_command_queue) {
   CHECK(!g_dcomp_device);
   if (!d3d11_device) {
     return;
@@ -741,6 +746,8 @@ void InitializeDirectComposition(
   HRESULT hr = d3d11_device.As(&dxgi_device);
   CHECK_EQ(hr, S_OK);
 
+  // TODO(crbug.com/487755329) Create the DComp device without DXGI device when
+  // the Graphite Dawn backend is D3D12 since DComp surface will not be used.
   Microsoft::WRL::ComPtr<IDCompositionDesktopDevice> desktop_device;
   hr =
       create_device3_function(dxgi_device.Get(), IID_PPV_ARGS(&desktop_device));
@@ -762,6 +769,12 @@ void InitializeDirectComposition(
   DCHECK(g_dcomp_device);
 
   g_d3d11_device = d3d11_device.Detach();
+
+  Microsoft::WRL::ComPtr<EXPERIMENTAL_IDCompositionDevice6> dcomp_device6;
+  hr = g_dcomp_device->QueryInterface(IID_PPV_ARGS(&dcomp_device6));
+  if (SUCCEEDED(hr)) {
+    g_d3d12_command_queue = d3d12_command_queue.Detach();
+  }
 
   if (features::UseCompositorClockVSyncInterval()) {
     using PFN_DXGI_DISABLE_VBLANK_VIRTUALIZATION = HRESULT(WINAPI*)();
@@ -800,6 +813,10 @@ void ShutdownDirectComposition() {
     g_dcomp_device = nullptr;
     g_d3d11_device->Release();
     g_d3d11_device = nullptr;
+    if (g_d3d12_command_queue) {
+      g_d3d12_command_queue->Release();
+      g_d3d12_command_queue = nullptr;
+    }
   }
 }
 
@@ -809,6 +826,10 @@ IDCompositionDevice3* GetDirectCompositionDevice() {
 
 ID3D11Device* GetDirectCompositionD3D11Device() {
   return g_d3d11_device;
+}
+
+ID3D12CommandQueue* GetDirectCompositionD3D12CommandQueue() {
+  return g_d3d12_command_queue;
 }
 
 bool DirectCompositionSupported() {
@@ -1207,9 +1228,14 @@ bool DirectCompositionTextureSupported() {
   }
 
   Microsoft::WRL::ComPtr<ID3D11On12Device> d3d11on12_device;
-  if (SUCCEEDED(d3d11_device.As(&d3d11on12_device))) {
+  if (SUCCEEDED(d3d11_device.As(&d3d11on12_device)) &&
+      !base::FeatureList::IsEnabled(features::kDCompOnD3D12)) {
     // IDCompositionTexture is not implemented on an 11on12, even though the
-    // device will claim support for it.
+    // device will claim support for it. It is however implemented on D3D12,
+    // and if the feature is enabled,
+    // IDCompositionDevice6::PresentCompositionTextures will be used for D3D12
+    // backed composition textures. D3D11On12 is needed in that case for all
+    // SharedImage features to work correctly.
     LOG(WARNING) << "IDCompositionTexture is not supported on 11on12 devices.";
     return false;
   }

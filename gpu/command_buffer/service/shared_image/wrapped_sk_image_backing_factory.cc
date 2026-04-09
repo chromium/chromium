@@ -45,7 +45,6 @@ SharedImageUsageSet GetSupportedUsage(const SharedContextState* context_state) {
 
   if (context_state->IsGraphiteDawn()) {
     switch (context_state->dawn_context_provider()->backend_type()) {
-      case wgpu::BackendType::D3D12:
       case wgpu::BackendType::Vulkan:
         return kSupportedUsage | kGraphiteDawnFallbackUsage;
       default:

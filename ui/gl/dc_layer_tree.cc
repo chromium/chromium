@@ -334,6 +334,15 @@ void DCLayerTree::Initialize(
   dcomp_device_ = GetDirectCompositionDevice();
   DCHECK(dcomp_device_);
 
+  d3d12_command_queue_ = GetDirectCompositionD3D12CommandQueue();
+
+  if (d3d12_command_queue_) {
+    Microsoft::WRL::ComPtr<EXPERIMENTAL_IDCompositionDevice6> dcomp_device6;
+    HRESULT hr = dcomp_device_.As(&dcomp_device6);
+    CHECK_EQ(hr, S_OK);
+    dcomp_device_6_ = std::move(dcomp_device6);
+  }
+
   solid_color_surface_pool_ =
       std::make_unique<SolidColorSurfacePool>(d3d11_device_, dcomp_device_);
 
@@ -869,7 +878,6 @@ base::expected<void, CommitError> DCLayerTree::VisualTree::BuildTree(
 #if EXPENSIVE_DCHECKS_ARE_ON()
   CHECK(std::ranges::is_sorted(overlays, {}, &DCLayerOverlayParams::z_order));
 #endif
-
   // Index into the subtree from the previous frame that is being reused in the
   // current frame for the given overlay index.
   // |overlay_index_to_reused_subtree| has an entry for every overlay in the
@@ -1030,6 +1038,22 @@ base::expected<void, CommitError> DCLayerTree::VisualTree::BuildTree(
                        num_layers_modified);
 
   if (needs_commit) {
+    if (dc_layer_tree_->dcomp_device_6_) {
+      // First call `PresentCompositionTextures` to specify the queue that the
+      // next `Commit` call uses to actually present the composition textures.
+      IUnknown* command_queue_unk = dc_layer_tree_->d3d12_command_queue_.Get();
+      HRESULT hr = dc_layer_tree_->dcomp_device_6_->PresentCompositionTextures(
+          &command_queue_unk, 1);
+      if (FAILED(hr)) {
+        LOG(ERROR) << "PresentCompositionTextures failed with error: "
+                   << logging::SystemErrorCodeToString(hr);
+        return base::unexpected(
+            CommitError{CommitError::Reason::
+                            kIDCompositionDevice6PresentCompositionTextures,
+                        hr});
+      }
+    }
+
     TRACE_EVENT0("gpu", "DCLayerTree::CommitAndClearPendingOverlays::Commit");
     base::ScopedUmaHistogramTimer scoped_timer(
         "GPU.DirectComposition.DCompCommitDuration",

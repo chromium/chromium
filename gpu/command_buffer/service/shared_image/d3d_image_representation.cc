@@ -78,7 +78,7 @@ bool GLTexturePassthroughD3DImageRepresentation::BeginAccess(GLenum mode) {
 
   const bool write_access =
       mode == GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM;
-  if (!d3d_image_backing->BeginAccessD3D11(d3d11_device_, write_access)) {
+  if (!d3d_image_backing->BeginAccessD3D(d3d11_device_, write_access)) {
     return false;
   }
 
@@ -92,7 +92,7 @@ bool GLTexturePassthroughD3DImageRepresentation::BeginAccess(GLenum mode) {
 
 void GLTexturePassthroughD3DImageRepresentation::EndAccess() {
   D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
-  d3d_image_backing->EndAccessD3D11(d3d11_device_);
+  d3d_image_backing->EndAccessD3D(d3d11_device_);
 }
 
 DawnD3DImageRepresentation::DawnD3DImageRepresentation(
@@ -229,15 +229,15 @@ OverlayD3DImageRepresentation::~OverlayD3DImageRepresentation() = default;
 
 bool OverlayD3DImageRepresentation::BeginReadAccess(
     gfx::GpuFenceHandle& acquire_fence) {
-  return static_cast<D3DImageBacking*>(backing())->BeginAccessD3D11(
+  return static_cast<D3DImageBacking*>(backing())->BeginAccessD3D(
       d3d11_device_, /*write_access=*/false, /*is_overlay=*/true);
 }
 
 void OverlayD3DImageRepresentation::EndReadAccess(
     gfx::GpuFenceHandle release_fence) {
   DCHECK(release_fence.is_null());
-  static_cast<D3DImageBacking*>(backing())->EndAccessD3D11(d3d11_device_,
-                                                           /*is_overlay=*/true);
+  static_cast<D3DImageBacking*>(backing())->EndAccessD3D(d3d11_device_,
+                                                         /*is_overlay=*/true);
 }
 
 std::optional<gl::DCLayerOverlayImage>
@@ -245,7 +245,7 @@ OverlayD3DImageRepresentation::GetDCLayerOverlayImage() {
   return static_cast<D3DImageBacking*>(backing())->GetDCLayerOverlayImage();
 }
 
-D3D11VideoImageRepresentation::D3D11VideoImageRepresentation(
+D3DVideoImageRepresentation::D3DVideoImageRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
@@ -255,38 +255,37 @@ D3D11VideoImageRepresentation::D3D11VideoImageRepresentation(
       d3d11_device_(std::move(d3d11_device)),
       d3d11_texture_(std::move(d3d11_texture)) {}
 
-D3D11VideoImageRepresentation::~D3D11VideoImageRepresentation() = default;
+D3DVideoImageRepresentation::~D3DVideoImageRepresentation() = default;
 
-bool D3D11VideoImageRepresentation::BeginWriteAccess() {
+bool D3DVideoImageRepresentation::BeginWriteAccess() {
   D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
-  if (!d3d_image_backing->BeginAccessD3D11(d3d11_device_,
-                                           /*write_access=*/true)) {
+  if (!d3d_image_backing->BeginAccessD3D(d3d11_device_,
+                                         /*write_access=*/true)) {
     return false;
   }
   return true;
 }
 
-void D3D11VideoImageRepresentation::EndWriteAccess() {
+void D3DVideoImageRepresentation::EndWriteAccess() {
   D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
-  d3d_image_backing->EndAccessD3D11(d3d11_device_);
+  d3d_image_backing->EndAccessD3D(d3d11_device_);
 }
 
-bool D3D11VideoImageRepresentation::BeginReadAccess() {
+bool D3DVideoImageRepresentation::BeginReadAccess() {
   D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
-  if (!d3d_image_backing->BeginAccessD3D11(d3d11_device_,
-                                           /*write_access=*/false)) {
+  if (!d3d_image_backing->BeginAccessD3D(d3d11_device_,
+                                         /*write_access=*/false)) {
     return false;
   }
   return true;
 }
 
-void D3D11VideoImageRepresentation::EndReadAccess() {
+void D3DVideoImageRepresentation::EndReadAccess() {
   D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
-  d3d_image_backing->EndAccessD3D11(d3d11_device_);
+  d3d_image_backing->EndAccessD3D(d3d11_device_);
 }
 
-D3D11TextureAndArrayIndex D3D11VideoImageRepresentation::GetD3D11Texture()
-    const {
+D3D11TextureAndArrayIndex D3DVideoImageRepresentation::GetD3D11Texture() const {
   return d3d11_texture_;
 }
 
@@ -401,12 +400,12 @@ D3D11VideoImageCopyRepresentation::CreateFromD3D(
     std::string_view debug_label,
     ID3D11Device* texture_device) {
   auto* d3d_backing = static_cast<D3DImageBacking*>(backing);
-  if (!d3d_backing->BeginAccessD3D11(texture_device, /*write_access=*/false,
-                                     /*is_overlay_access=*/false)) {
+  if (!d3d_backing->BeginAccessD3D(texture_device, /*write_access=*/false,
+                                   /*is_overlay_access=*/false)) {
     return nullptr;
   }
   absl::Cleanup end_access = [&] {
-    d3d_backing->EndAccessD3D11(texture_device, /*is_overlay_access=*/false);
+    d3d_backing->EndAccessD3D(texture_device, /*is_overlay_access=*/false);
   };
 
   D3D11_TEXTURE2D_DESC source_desc;

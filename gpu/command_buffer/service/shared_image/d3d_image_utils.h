@@ -43,6 +43,10 @@ wgpu::SharedTextureMemory CreateDawnSharedTextureMemory(
     const wgpu::Device& device,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> texture);
 
+wgpu::SharedTextureMemory CreateDawnSharedTextureMemory(
+    const wgpu::Device& device,
+    Microsoft::WRL::ComPtr<ID3D12Resource> resource);
+
 wgpu::Buffer CreateDawnSharedBuffer(
     const wgpu::SharedBufferMemory& shared_buffer_memory,
     wgpu::BufferUsage usage);

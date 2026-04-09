@@ -67,6 +67,8 @@ GL_EXPORT bool IsSwiftShaderAllowed(const base::CommandLine* command_line);
 
 #if BUILDFLAG(IS_WIN)
 GL_EXPORT BASE_DECLARE_FEATURE(kAllowD3D11WarpFallback);
+
+GL_EXPORT BASE_DECLARE_FEATURE(kDCompOnD3D12);
 #endif
 
 GL_EXPORT bool IsWARPAllowed(const base::CommandLine* command_line);

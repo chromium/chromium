@@ -25,6 +25,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <d3d11.h>
+#include <d3d12.h>
 #include <wrl/client.h>
 #endif
 
@@ -104,6 +105,7 @@ class GPU_GLES2_EXPORT DawnContextProvider {
 
 #if BUILDFLAG(IS_WIN)
   Microsoft::WRL::ComPtr<ID3D11Device> GetD3D11Device() const;
+  Microsoft::WRL::ComPtr<ID3D12CommandQueue> GetD3D12CommandQueue() const;
 #endif
 
   bool SupportsFeature(wgpu::FeatureName feature);

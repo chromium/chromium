@@ -8,6 +8,7 @@
 #include <windows.h>
 
 #include <d3d11.h>
+#include <d3d12.h>
 #include <dcomp.h>
 #include <wrl/client.h>
 
@@ -36,9 +37,11 @@ HRESULT DCompositionGetStatistics(COMPOSITION_FRAME_ID frameId,
                                   COMPOSITION_TARGET_ID* targetIds,
                                   UINT* actualTargetIdCount);
 
-// Initialize direct composition with the given d3d11 device.
+// Initialize direct composition with the given d3d11 device and d3d12 command
+// queue. The command queue can be null.
 GL_EXPORT void InitializeDirectComposition(
-    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
+    Microsoft::WRL::ComPtr<ID3D12CommandQueue> d3d12_command_queue);
 
 GL_EXPORT void ShutdownDirectComposition();
 
@@ -52,6 +55,13 @@ GL_EXPORT IDCompositionDevice3* GetDirectCompositionDevice();
 // device is retrieved, and ShutdownDirectComposition must be called at process
 // shutdown.
 GL_EXPORT ID3D11Device* GetDirectCompositionD3D11Device();
+
+// Retrieves the global d3d12 command queue created by Chromium's Dawn instance
+// and used by SharedImage code to queue work when it runs in D3D12 mode.
+// InitializeDirectComposition must be called on GPU process startup before the
+// command queue is retrieved, and ShutdownDirectComposition must be called at
+// process shutdown.
+GL_EXPORT ID3D12CommandQueue* GetDirectCompositionD3D12CommandQueue();
 
 // Returns true if direct composition is supported.  We prefer to use direct
 // composition even without hardware overlays, because it allows us to bypass

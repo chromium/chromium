@@ -12,6 +12,7 @@
 #include "ui/gl/dcomp_presenter.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_bindings.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_switches.h"
@@ -50,7 +51,9 @@ scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
 #if BUILDFLAG(SKIA_USE_DAWN)
     // DirectComposition is only supported on Graphite with Dawn D3D11 backend.
     DCHECK(!context_state->IsGraphiteDawn() ||
-           context_state->IsGraphiteDawnD3D11());
+           context_state->IsGraphiteDawnD3D11() ||
+           (context_state->IsGraphiteDawnD3D() &&
+            base::FeatureList::IsEnabled(features::kDCompOnD3D12)));
 #endif
     return base::MakeRefCounted<gl::DCompPresenter>(
         CreatDCompPresenterSettings(workarounds));
