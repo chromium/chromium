@@ -2043,32 +2043,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="OptimizationGuide.PageContentExtraction.Async.PendingContentCallbacksBatched"
-    units="callbacks" expires_after="2026-09-16">
-  <owner>alexmt@chromium.org</owner>
-  <owner>chrome-intelligence-core@google.com</owner>
-  <summary>
-    Records the number of pending async content callbacks that are resolved
-    together when a page content extraction completes. Recorded once per
-    completed extraction if there was at least one pending callback of any type
-    (on-demand, async content, or async eligibility). This excludes PDFs.
-  </summary>
-</histogram>
-
-<histogram
-    name="OptimizationGuide.PageContentExtraction.Async.PendingEligibilityCallbacksBatched"
-    units="callbacks" expires_after="2026-09-16">
-  <owner>alexmt@chromium.org</owner>
-  <owner>chrome-intelligence-core@google.com</owner>
-  <summary>
-    Records the number of pending async eligibility callbacks that are resolved
-    together when a page content extraction completes. Recorded once per
-    completed extraction if there was at least one pending callback of any type
-    (on-demand, async content, or async eligibility). This excludes PDFs.
-  </summary>
-</histogram>
-
 <histogram name="OptimizationGuide.PageContentExtraction.OnDemand.IsPDF"
     enum="Boolean" expires_after="2026-09-16">
   <owner>alexmt@chromium.org</owner>
@@ -2099,8 +2073,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the number of pending on-demand callbacks that are resolved together
     when a page content extraction completes. Recorded once per completed
-    extraction if there was at least one pending callback of any type
-    (on-demand, async content, or async eligibility). This excludes PDFs.
+    extraction that had at least one pending on-demand callback. This excludes
+    PDFs.
   </summary>
 </histogram>
 

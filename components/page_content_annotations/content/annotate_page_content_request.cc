@@ -4,7 +4,6 @@
 
 #include "components/page_content_annotations/content/annotate_page_content_request.h"
 
-#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -194,7 +193,7 @@ void AnnotatedPageContentRequest::DidStopLoading() {
     return;
   }
 
-  if (IsPdf() ||
+  if (web_contents_->GetContentsMimeType() == pdf::kPDFMimeType ||
       web_contents_->GetVisibility() == content::Visibility::HIDDEN ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kPageContentAnnotationsSkipFCPWaitForTesting)) {
@@ -253,7 +252,7 @@ void AnnotatedPageContentRequest::OnExtractionTimerFired() {
 
 void AnnotatedPageContentRequest::StartExtraction() {
   lifecycle_ = Lifecycle::kRunning;
-  if (IsPdf()) {
+  if (web_contents_->GetContentsMimeType() == pdf::kPDFMimeType) {
 #if BUILDFLAG(ENABLE_PDF)
     RequestPdfPageCount();
 #endif  // BUILDFLAG(ENABLE_PDF)
@@ -394,7 +393,7 @@ void AnnotatedPageContentRequest::OnInnerTextReceived(
 
 #if BUILDFLAG(ENABLE_PDF)
 void AnnotatedPageContentRequest::RequestPdfPageCount() {
-  CHECK(IsPdf());
+  CHECK_EQ(pdf::kPDFMimeType, web_contents_->GetContentsMimeType());
   auto* pdf_helper =
       pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents_);
   if (pdf_helper) {
@@ -405,7 +404,7 @@ void AnnotatedPageContentRequest::RequestPdfPageCount() {
 }
 
 void AnnotatedPageContentRequest::OnPdfDocumentLoadComplete() {
-  CHECK(IsPdf());
+  CHECK_EQ(pdf::kPDFMimeType, web_contents_->GetContentsMimeType());
   lifecycle_ = Lifecycle::kExtracted;
 
   auto* pdf_helper =
@@ -423,8 +422,6 @@ void AnnotatedPageContentRequest::OnPdfDocumentLoadComplete() {
   // RefreshExtractedPageContentAndEligibilityForPage. Therefore, they never get
   // added to the on_demand_callbacks_ queue, so it will always be empty here.
   CHECK(on_demand_callbacks_.empty());
-
-  ResolveAllCallbacksWith(std::nullopt);
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -444,65 +441,16 @@ std::optional<bool> AnnotatedPageContentRequest::GetServerUploadEligibility() {
                          : std::nullopt;
 }
 
-bool AnnotatedPageContentRequest::IsPdf() const {
-  return web_contents_->GetContentsMimeType() == pdf::kPDFMimeType;
-}
-
-bool AnnotatedPageContentRequest::ShouldAsyncWaitForExtraction() const {
-  if (IsPdf()) {
-    CHECK(!cached_content_.has_value());
-    return false;
-  }
-
-  switch (lifecycle_) {
-    case Lifecycle::kNavigated: {
-      bool is_on_hidden_mode =
-          features::GetPageContentExtractionTriggeringMode() ==
-          features::PageContentExtractionTriggeringMode::kOnHidden;
-      if (is_on_hidden_mode && !is_hidden_) {
-        // In 'on hidden' mode, extraction is only triggered when the page
-        // becomes hidden. If it is currently visible, no extraction is
-        // scheduled yet, so we return false to avoid waiting indefinitely.
-        CHECK(!cached_content_.has_value());
-        return false;
-      }
-      return true;
-    }
-    case Lifecycle::kScheduled:
-    case Lifecycle::kRunning:
-      return true;
-    case Lifecycle::kExtracted:
-      return false;
-  }
-}
-
-void AnnotatedPageContentRequest::GetCachedContentAndEligibilityAsync(
-    GetExtractedPageContentAndEligibilityCallback callback) {
-  if (ShouldAsyncWaitForExtraction()) {
-    pending_content_callbacks_.push_back(std::move(callback));
-    return;
-  }
-  std::move(callback).Run(GetCachedContentAndEligibility());
-}
-
-void AnnotatedPageContentRequest::GetServerUploadEligibilityAsync(
-    GetServerUploadEligibilityCallback callback) {
-  if (ShouldAsyncWaitForExtraction()) {
-    pending_eligibility_callbacks_.push_back(std::move(callback));
-    return;
-  }
-  std::move(callback).Run(GetServerUploadEligibility());
-}
-
 void AnnotatedPageContentRequest::
     RefreshExtractedPageContentAndEligibilityForPage(
         GetExtractedPageContentAndEligibilityCallback callback) {
+  bool is_pdf = web_contents_->GetContentsMimeType() == pdf::kPDFMimeType;
   base::UmaHistogramBoolean(
-      "OptimizationGuide.PageContentExtraction.OnDemand.IsPDF", IsPdf());
+      "OptimizationGuide.PageContentExtraction.OnDemand.IsPDF", is_pdf);
 
   // PDFs have special handling where we only save a metric of their page count
   // and do not extract an AnnotatedPageContent.
-  if (IsPdf()) {
+  if (is_pdf) {
     CHECK(!cached_content_.has_value());
     std::move(callback).Run(std::nullopt);
     return;
@@ -543,44 +491,21 @@ void AnnotatedPageContentRequest::
 
 void AnnotatedPageContentRequest::ResolveAllCallbacksWith(
     const std::optional<ExtractedPageContentResult>& result) {
-  if (!on_demand_callbacks_.empty() || !pending_content_callbacks_.empty() ||
-      !pending_eligibility_callbacks_.empty()) {
-    base::UmaHistogramCounts100(
-        "OptimizationGuide.PageContentExtraction.OnDemand."
-        "PendingCallbacksBatched",
-        on_demand_callbacks_.size());
-    base::UmaHistogramCounts100(
-        "OptimizationGuide.PageContentExtraction.Async."
-        "PendingContentCallbacksBatched",
-        pending_content_callbacks_.size());
-    base::UmaHistogramCounts100(
-        "OptimizationGuide.PageContentExtraction.Async."
-        "PendingEligibilityCallbacksBatched",
-        pending_eligibility_callbacks_.size());
+  if (on_demand_callbacks_.empty()) {
+    return;
   }
 
-  auto on_demand_callbacks = std::exchange(on_demand_callbacks_, {});
-  auto pending_content_callbacks =
-      std::exchange(pending_content_callbacks_, {});
-  auto pending_eligibility_callbacks =
-      std::exchange(pending_eligibility_callbacks_, {});
+  base::UmaHistogramCounts100(
+      "OptimizationGuide.PageContentExtraction.OnDemand."
+      "PendingCallbacksBatched",
+      on_demand_callbacks_.size());
 
-  // TODO(b/490161242): Consider wrapping the screenshot data (or the whole
-  // ExtractedPageContentResult) in a scoped_refptr to avoid copying for each of
-  // the callbacks.
-  for (auto& callback : on_demand_callbacks) {
+  auto callbacks = std::exchange(on_demand_callbacks_, {});
+  for (auto& callback : callbacks) {
+    // TODO(b/490161242): Consider wrapping the screenshot data (or the whole
+    // ExtractedPageContentResult) in a scoped_refptr to avoid copying for each
+    // of the callbacks.
     std::move(callback).Run(result);
-  }
-
-  for (auto& callback : pending_content_callbacks) {
-    std::move(callback).Run(result);
-  }
-
-  std::optional<bool> server_eligibility =
-      result ? std::make_optional(result->is_eligible_for_server_upload)
-             : std::nullopt;
-  for (auto& callback : pending_eligibility_callbacks) {
-    std::move(callback).Run(server_eligibility);
   }
 }
 
