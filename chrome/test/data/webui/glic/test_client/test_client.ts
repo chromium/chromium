@@ -9,6 +9,7 @@ import './sections/get_page_context.js';
 import './sections/sizing.js';
 import './sections/permissions.js';
 import './sections/file.js';
+import './sections/fre.js';
 import './sections/action.js';
 import './sections/apc.js';
 import './sections/autofill_dialog.js';

@@ -44,6 +44,7 @@ ts_library("build_extra_ts") {
     "test_client/sections/sizing.ts",
     "test_client/sections/permissions.ts",
     "test_client/sections/file.ts",
+    "test_client/sections/fre.ts",
     "test_client/sections/action.ts",
     "test_client/sections/additional_context.ts",
     "test_client/sections/interaction.ts",
