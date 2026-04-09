@@ -12,7 +12,9 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
 import org.chromium.chrome.browser.preferences.MultiInstancePreferenceKeys;
 
 import java.util.HashSet;
@@ -218,5 +220,47 @@ public class MultiWindowMetricsUtils {
                             : WindowingMode.FULLSCREEN;
         }
         return newMode;
+    }
+
+    /* package */ static void recordNameWindowUserAction(@NameWindowDialogSource int source) {
+        switch (source) {
+            case NameWindowDialogSource.WINDOW_MANAGER:
+                RecordUserAction.record("Android.WindowManager.NameWindow");
+                break;
+            case NameWindowDialogSource.TAB_STRIP:
+                RecordUserAction.record("Android.TabStripMenu.NameWindow");
+                break;
+            default:
+                assert false : "Unexpected @NameWindowDialogSource.";
+                break;
+        }
+    }
+
+    /* package */ static void recordSaveWindowNameUserAction(@NameWindowDialogSource int source) {
+        switch (source) {
+            case NameWindowDialogSource.WINDOW_MANAGER:
+                RecordUserAction.record("Android.WindowManager.SaveWindowName");
+                break;
+            case NameWindowDialogSource.TAB_STRIP:
+                RecordUserAction.record("Android.TabStripMenu.SaveWindowName");
+                break;
+            default:
+                assert false : "Unexpected @NameWindowDialogSource.";
+                break;
+        }
+    }
+
+    /* package */ static void recordChangeWindowNameUserAction(@NameWindowDialogSource int source) {
+        switch (source) {
+            case NameWindowDialogSource.WINDOW_MANAGER:
+                RecordUserAction.record("Android.WindowManager.ChangeWindowName");
+                break;
+            case NameWindowDialogSource.TAB_STRIP:
+                RecordUserAction.record("Android.TabStripMenu.ChangeWindowName");
+                break;
+            default:
+                assert false : "Unexpected @NameWindowDialogSource.";
+                break;
+        }
     }
 }

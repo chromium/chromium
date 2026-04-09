@@ -46,7 +46,7 @@ public class TargetSelectorCoordinator {
     private final Callback<InstanceInfo> mMoveCallback;
 
     private final ModelList mModelList = new ModelList();
-    private final UiUtils mUiUtils;
+    private final InstanceSwitcherFaviconHelper mFaviconHelper;
     private final View mDialogView;
     private final ModalDialogManager mModalDialogManager;
 
@@ -82,7 +82,7 @@ public class TargetSelectorCoordinator {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mMoveCallback = moveCallback;
-        mUiUtils = new UiUtils(mContext, iconBridge);
+        mFaviconHelper = new InstanceSwitcherFaviconHelper(mContext, iconBridge);
 
         var adapter = new SimpleRecyclerViewAdapter(mModelList);
         adapter.registerType(
@@ -172,7 +172,7 @@ public class TargetSelectorCoordinator {
 
     private PropertyModel generateListItem(InstanceInfo item) {
         String title = UiUtils.getItemTitle(mContext, item);
-        String desc = mUiUtils.getItemDesc(item);
+        String desc = UiUtils.getItemDesc(mContext, item);
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(TargetSelectorItemProperties.ALL_KEYS)
                         .with(TargetSelectorItemProperties.TITLE, title)
@@ -188,7 +188,7 @@ public class TargetSelectorCoordinator {
         builder.with(TargetSelectorItemProperties.IS_SELECTED, false);
 
         PropertyModel model = builder.build();
-        mUiUtils.setFavicon(model, TargetSelectorItemProperties.FAVICON, item);
+        mFaviconHelper.setFavicon(model, TargetSelectorItemProperties.FAVICON, item);
         return model;
     }
 

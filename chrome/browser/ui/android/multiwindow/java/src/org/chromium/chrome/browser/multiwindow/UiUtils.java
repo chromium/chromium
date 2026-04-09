@@ -9,31 +9,20 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.android.material.textfield.TextInputEditText;
 
 import org.chromium.base.Callback;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
-import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
-import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
-import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
-import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.url.GURL;
 
 import java.util.Objects;
 
@@ -43,14 +32,6 @@ public class UiUtils {
     @VisibleForTesting
     static final int INVALID_TASK_ID = -1; // Defined in android.app.ActivityTaskManager.
 
-    private final Context mContext;
-    private final int mMinIconSizeDp;
-    private final int mDisplayedIconSize;
-    private final Drawable mIncognitoFavicon;
-    private final Drawable mGlobeFavicon;
-    private final LargeIconBridge mLargeIconBridge;
-    private final RoundedIconGenerator mIconGenerator;
-
     @IntDef({
         NameWindowDialogSource.WINDOW_MANAGER,
         NameWindowDialogSource.TAB_STRIP,
@@ -58,23 +39,6 @@ public class UiUtils {
     public @interface NameWindowDialogSource {
         int WINDOW_MANAGER = 0;
         int TAB_STRIP = 1;
-    }
-
-    UiUtils(Context context, LargeIconBridge iconBridge) {
-        mContext = context;
-        mLargeIconBridge = iconBridge;
-        Resources res = context.getResources();
-        mMinIconSizeDp = (int) res.getDimension(R.dimen.default_favicon_min_size);
-        mDisplayedIconSize = res.getDimensionPixelSize(R.dimen.default_favicon_size);
-        mIncognitoFavicon =
-                IncognitoUtils.shouldOpenIncognitoAsWindow()
-                        ? mContext.getResources()
-                                .getDrawable(
-                                        R.drawable.ic_incognito_circle_fill_24dp,
-                                        mContext.getTheme())
-                        : getTintedIcon(R.drawable.ic_incognito_fill_24dp);
-        mGlobeFavicon = getTintedIcon(R.drawable.ic_globe_24dp);
-        mIconGenerator = FaviconUtils.createRoundedRectangleIconGenerator(context);
     }
 
     /**
@@ -91,7 +55,7 @@ public class UiUtils {
             String currentTitle,
             Callback<String> nameChangedCallback,
             @NameWindowDialogSource int source) {
-        recordNameWindowUserAction(source);
+        MultiWindowMetricsUtils.recordNameWindowUserAction(source);
 
         int style = R.style.Theme_Chromium_Multiwindow_RenameWindowDialog;
         Dialog dialog = new Dialog(context, style);
@@ -115,9 +79,9 @@ public class UiUtils {
                 v -> {
                     String newTitle = Objects.toString(editText.getText(), "").trim();
                     if (!TextUtils.isEmpty(newTitle)) {
-                        recordSaveWindowNameUserAction(source);
+                        MultiWindowMetricsUtils.recordSaveWindowNameUserAction(source);
                         if (!newTitle.equals(currentTitle)) {
-                            recordChangeWindowNameUserAction(source);
+                            MultiWindowMetricsUtils.recordChangeWindowNameUserAction(source);
                             nameChangedCallback.onResult(newTitle);
                         }
                     } else {
@@ -162,62 +126,15 @@ public class UiUtils {
         return title;
     }
 
-    private static void recordNameWindowUserAction(@NameWindowDialogSource int source) {
-        switch (source) {
-            case NameWindowDialogSource.WINDOW_MANAGER:
-                RecordUserAction.record("Android.WindowManager.NameWindow");
-                break;
-            case NameWindowDialogSource.TAB_STRIP:
-                RecordUserAction.record("Android.TabStripMenu.NameWindow");
-                break;
-            default:
-                assert false : "Unexpected @NameWindowDialogSource.";
-                break;
-        }
-    }
-
-    private static void recordSaveWindowNameUserAction(@NameWindowDialogSource int source) {
-        switch (source) {
-            case NameWindowDialogSource.WINDOW_MANAGER:
-                RecordUserAction.record("Android.WindowManager.SaveWindowName");
-                break;
-            case NameWindowDialogSource.TAB_STRIP:
-                RecordUserAction.record("Android.TabStripMenu.SaveWindowName");
-                break;
-            default:
-                assert false : "Unexpected @NameWindowDialogSource.";
-                break;
-        }
-    }
-
-    private static void recordChangeWindowNameUserAction(@NameWindowDialogSource int source) {
-        switch (source) {
-            case NameWindowDialogSource.WINDOW_MANAGER:
-                RecordUserAction.record("Android.WindowManager.ChangeWindowName");
-                break;
-            case NameWindowDialogSource.TAB_STRIP:
-                RecordUserAction.record("Android.TabStripMenu.ChangeWindowName");
-                break;
-            default:
-                assert false : "Unexpected @NameWindowDialogSource.";
-                break;
-        }
-    }
-
-    Drawable getTintedIcon(@DrawableRes int drawableId) {
-        return org.chromium.ui.UiUtils.getTintedDrawable(
-                mContext, drawableId, R.color.default_icon_color_tint_list);
-    }
-
     /**
      * @param item {@link InstanceInfo} to get a description string for.
      * @return Text string containing additional description for a given instance.
      */
-    String getItemDesc(InstanceInfo item) {
+    /* package */ static String getItemDesc(Context context, InstanceInfo item) {
         int incognitoTabCount = recoverableIncognitoTabCount(item);
         int totalTabCount = totalTabCount(item);
         String desc;
-        Resources res = mContext.getResources();
+        Resources res = context.getResources();
         if (totalTabCount == 0) { // <ex>No tabs</ex>
             desc = res.getString(R.string.instance_switcher_tab_count_zero);
         } else if (item.isIncognitoSelected && incognitoTabCount > 0) {
@@ -264,11 +181,11 @@ public class UiUtils {
      * @param item {@link InstanceInfo} to get a confirmation message for.
      * @return Confirmation message for closing a given instance.
      */
-    String getConfirmationMessage(InstanceInfo item) {
+    /* package */ static String getConfirmationMessage(Context context, InstanceInfo item) {
         String title = item.title;
         int totalTabCount = totalTabCount(item);
         int incognitoTabCount = recoverableIncognitoTabCount(item);
-        Resources res = mContext.getResources();
+        Resources res = context.getResources();
         String msg;
         if (item.isIncognitoSelected && incognitoTabCount > 0) {
             if (item.tabCount == 0) { // 2 incognito tabs will be closed
@@ -305,57 +222,18 @@ public class UiUtils {
         return msg;
     }
 
-    /**
-     * Set the favicon for the given instance.
-     *
-     * @param model {@link PropertyModel} that represents the instance entry.
-     * @param faviconKey Property key for favicon item in the model.
-     * @param item {@link InstanceInfo} object for the given instance.
-     */
-    void setFavicon(
-            PropertyModel model,
-            PropertyModel.WritableObjectPropertyKey<Drawable> faviconKey,
-            InstanceInfo item) {
-        int incognitoTabCount = recoverableIncognitoTabCount(item);
-        int totalTabCount = totalTabCount(item);
-        if (totalTabCount == 0 || isInitialNonIncognitoWindow(item, totalTabCount)) {
-            model.set(faviconKey, mGlobeFavicon);
-        } else if (item.isIncognitoSelected && incognitoTabCount > 0) {
-            model.set(faviconKey, mIncognitoFavicon);
-        } else {
-            GURL url = new GURL(item.url);
-            mLargeIconBridge.getLargeIconForUrl(
-                    url,
-                    mMinIconSizeDp,
-                    (icon, fallbackColor, isFallbackColorDefault, iconType) -> {
-                        model.set(faviconKey, createIconDrawable(item.url, icon, fallbackColor));
-                    });
-        }
-    }
-
-    @VisibleForTesting
-    static int recoverableIncognitoTabCount(InstanceInfo item) {
+    /* package */ static int recoverableIncognitoTabCount(InstanceInfo item) {
         return item.taskId == INVALID_TASK_ID ? 0 : item.incognitoTabCount;
     }
 
-    static int totalTabCount(InstanceInfo item) {
+    /* package */ static int totalTabCount(InstanceInfo item) {
         return item.tabCount + recoverableIncognitoTabCount(item);
-    }
-
-    private Drawable createIconDrawable(String url, @Nullable Bitmap icon, int fallbackColor) {
-        if (icon == null) {
-            mIconGenerator.setBackgroundColor(fallbackColor);
-            icon = mIconGenerator.generateIconForUrl(url);
-        } else {
-            icon = Bitmap.createScaledBitmap(icon, mDisplayedIconSize, mDisplayedIconSize, true);
-        }
-        return new BitmapDrawable(mContext.getResources(), icon);
     }
 
     /**
      * @return Whether a new Chrome instance has not yet started loading a URL on its tab.
      */
-    private static boolean isInitialNonIncognitoWindow(InstanceInfo item, int totalTabCount) {
+    /* package */ static boolean isInitialNonIncognitoWindow(InstanceInfo item, int totalTabCount) {
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             return !item.isIncognitoSelected
                     && totalTabCount == 1
@@ -365,7 +243,7 @@ public class UiUtils {
         return totalTabCount == 1 && TextUtils.isEmpty(item.url) && TextUtils.isEmpty(item.title);
     }
 
-    static void closeOpenDialogs() {
+    /* package */ static void closeOpenDialogs() {
         if (InstanceSwitcherCoordinator.sPrevInstance != null) {
             InstanceSwitcherCoordinator.sPrevInstance.dismissDialog(
                     DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);

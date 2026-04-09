@@ -84,7 +84,7 @@ public class InstanceSwitcherCoordinator {
 
     private final ModelList mActiveModelList = new ModelList();
     private final ModelList mInactiveModelList = new ModelList();
-    private final UiUtils mUiUtils;
+    private final InstanceSwitcherFaviconHelper mFaviconHelper;
     private final View mDialogView;
     private final boolean mIsIncognitoWindow;
     private final TabLayout mTabHeaderRow;
@@ -141,7 +141,7 @@ public class InstanceSwitcherCoordinator {
             boolean isIncognitoWindow) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
-        mUiUtils = new UiUtils(mContext, iconBridge);
+        mFaviconHelper = new InstanceSwitcherFaviconHelper(mContext, iconBridge);
         mDelegate = delegate;
         mMaxInstanceCount = maxInstanceCount;
         mMinCommandItemHeightPx =
@@ -531,7 +531,7 @@ public class InstanceSwitcherCoordinator {
 
     private PropertyModel generateListItem(InstanceInfo item) {
         String title = UiUtils.getItemTitle(mContext, item);
-        String desc = mUiUtils.getItemDesc(item);
+        String desc = UiUtils.getItemDesc(mContext, item);
         boolean isCurrentWindow = item.type == InstanceInfo.Type.CURRENT;
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(InstanceSwitcherItemProperties.ALL_KEYS)
@@ -569,7 +569,7 @@ public class InstanceSwitcherCoordinator {
         builder.with(InstanceSwitcherItemProperties.IS_SELECTED, false);
 
         PropertyModel model = builder.build();
-        mUiUtils.setFavicon(model, InstanceSwitcherItemProperties.FAVICON, item);
+        mFaviconHelper.setFavicon(model, InstanceSwitcherItemProperties.FAVICON, item);
         return model;
     }
 
@@ -809,7 +809,7 @@ public class InstanceSwitcherCoordinator {
         }
         ((TextView) dialog.findViewById(R.id.title)).setText(title);
         TextView messageView = dialog.findViewById(R.id.message);
-        messageView.setText(mUiUtils.getConfirmationMessage(item));
+        messageView.setText(UiUtils.getConfirmationMessage(mContext, item));
 
         TextView positiveButton = dialog.findViewById(R.id.positive_button);
         positiveButton.setText(res.getString(R.string.close));
