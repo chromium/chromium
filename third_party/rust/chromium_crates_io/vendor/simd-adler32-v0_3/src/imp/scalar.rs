@@ -32,26 +32,40 @@ pub fn update(a: u16, b: u16, data: &[u8]) -> (u16, u16) {
 #[cfg(test)]
 mod tests {
   #[test]
-  fn zeroes() {
+  fn zeroes_short() {
     assert_eq!(adler32(&[]), 1);
     assert_eq!(adler32(&[0]), 1 | 1 << 16);
     assert_eq!(adler32(&[0, 0]), 1 | 2 << 16);
     assert_eq!(adler32(&[0; 100]), 0x00640001);
     assert_eq!(adler32(&[0; 1024]), 0x04000001);
+  }
+
+  #[test]
+  #[cfg_attr(miri, ignore)]
+  fn zeroes_long() {
     assert_eq!(adler32(&[0; 1024 * 1024]), 0x00f00001);
   }
 
   #[test]
-  fn ones() {
+  fn ones_short() {
     assert_eq!(adler32(&[0xff; 1024]), 0x79a6fc2e);
+  }
+
+  #[test]
+  #[cfg_attr(miri, ignore)]
+  fn ones_long() {
     assert_eq!(adler32(&[0xff; 1024 * 1024]), 0x8e88ef11);
   }
 
   #[test]
-  fn mixed() {
+  fn mixed_short() {
     assert_eq!(adler32(&[1]), 2 | 2 << 16);
     assert_eq!(adler32(&[40]), 41 | 41 << 16);
+  }
 
+  #[test]
+  #[cfg_attr(miri, ignore)]
+  fn mixed_long() {
     assert_eq!(adler32(&[0xA5; 1024 * 1024]), 0xd5009ab1);
   }
 

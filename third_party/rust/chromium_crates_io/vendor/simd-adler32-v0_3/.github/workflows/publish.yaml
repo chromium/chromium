@@ -24,8 +24,7 @@ jobs:
       - name: Publish
         run: |
           echo "${{ secrets.CRATES_IO_TOKEN }}" | cargo login
-          git restore Cargo.lock # FIXME: likely an issue during resolve causing this
-          cargo release --no-confirm --no-push -x
+          cargo --locked release --no-confirm --no-push -x
 
       - name: Push changes
         uses: ad-m/github-push-action@master

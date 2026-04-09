@@ -112,9 +112,6 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            target: mips-unknown-linux-gnu
-            toolchain: stable
-          - os: ubuntu-latest
             target: arm-unknown-linux-gnueabi
             toolchain: stable
           - os: ubuntu-latest
@@ -171,3 +168,36 @@ jobs:
       - uses: Swatinem/rust-cache@v1
       - name: Build top-level only
         run: cargo build --target=thumbv6m-none-eabi --no-default-features
+
+  test-miri:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          override: true
+      - uses: Swatinem/rust-cache@v1
+      - name: Install Miri
+        run: |
+          rustup toolchain install nightly --component miri
+          rustup override set nightly
+          cargo miri setup
+      - name: Run scalar tests under miri
+        run: cargo +nightly miri test scalar
+      - name: Run sse2 tests under miri
+        run: cargo +nightly miri test sse2
+      - name: Run ssse3 tests under miri
+        run: cargo +nightly miri test --lib ssse3
+        env:
+          RUSTFLAGS: "-Ctarget-cpu=x86-64-v2"
+      - name: Run avx2 tests under miri
+        run: cargo +nightly miri test --lib avx2
+        env:
+          RUSTFLAGS: "-Ctarget-cpu=x86-64-v3"
+      - name: Run avx512 tests under miri
+        run: cargo +nightly miri test --lib --features=nightly avx512
+        env:
+          RUSTFLAGS: "-Ctarget-cpu=x86-64-v4"

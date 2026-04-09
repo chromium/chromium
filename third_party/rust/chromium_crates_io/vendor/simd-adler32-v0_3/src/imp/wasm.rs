@@ -184,7 +184,7 @@ mod imp {
 
 #[cfg(test)]
 mod tests {
-  use rand::Rng;
+  use rand::{Rng, SeedableRng, rngs::SmallRng};
 
   #[test]
   fn zeroes() {
@@ -208,8 +208,9 @@ mod tests {
 
   #[test]
   fn random() {
+    if super::get_imp().is_none() { return; } // don't do any work if we're not on this target
     let mut random = [0; 512 * 1024];
-    rand::thread_rng().fill(&mut random[..]);
+    SmallRng::from_entropy().fill(&mut random[..]);
 
     assert_sum_eq(&random[..1]);
     assert_sum_eq(&random[..100]);

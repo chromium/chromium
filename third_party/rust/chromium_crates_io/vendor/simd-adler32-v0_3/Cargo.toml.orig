@@ -2,7 +2,7 @@
 name = "simd-adler32"
 authors = ["Marvin Countryman <me@maar.vin>"]
 license = "MIT"
-version = "0.3.8"
+version = "0.3.9"
 edition = "2018"
 keywords = ["simd", "avx2", "ssse3", "adler", "adler32"]
 categories = ["algorithms", "no-std"]
@@ -31,7 +31,7 @@ nightly = []
 const-generics = []
 
 [dev-dependencies]
-rand = "0.8"
+rand = { version = "0.8", features = ["small_rng"] }
 criterion = "0.3"
 
 # competition

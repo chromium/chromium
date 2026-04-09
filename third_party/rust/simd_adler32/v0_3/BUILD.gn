@@ -34,7 +34,7 @@ cargo_crate("lib") {
   cargo_pkg_description =
       "A SIMD-accelerated Adler-32 hash algorithm implementation."
   cargo_pkg_repository = "https://github.com/mcountryman/simd-adler32"
-  cargo_pkg_version = "0.3.8"
+  cargo_pkg_version = "0.3.9"
 
   allow_unsafe = true
 
@@ -48,6 +48,9 @@ cargo_crate("lib") {
   # //third_party/rust/chromium_crates_io/Cargo.toml to use
   # it from first-party code.
   visibility = [ "//third_party/rust/*" ]
+
+  # `gnrt_config.toml` for this crate specifies `allow_unstable_features`.
+  rustflags = [ "-Zallow-features=stdarch_arm_neon_intrinsics" ]
 
   #####################################################################
   # Tweaking which GN `config`s apply to this target.
@@ -64,6 +67,9 @@ cargo_crate("lib") {
     "//build/config/compiler:chromium_code",
   ]
   _configs_to_add = []
+
+  # `gnrt_config.toml` for this crate specifies `allow_unstable_features`.
+  _configs_to_remove += [ "//build/config/compiler:disallow_unstable_features" ]
 
   # Changing (if needed) which configs apply to this specific crate (based on
   # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from

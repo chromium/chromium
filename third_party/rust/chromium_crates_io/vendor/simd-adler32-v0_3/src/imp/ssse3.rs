@@ -168,7 +168,7 @@ mod imp {
 
 #[cfg(test)]
 mod tests {
-  use rand::Rng;
+  use rand::{Rng, SeedableRng, rngs::SmallRng};
 
   #[test]
   fn zeroes() {
@@ -177,6 +177,8 @@ mod tests {
     assert_sum_eq(&[0, 0]);
     assert_sum_eq(&[0; 100]);
     assert_sum_eq(&[0; 1024]);
+    assert_sum_eq(&[0; 1024 - 5]);
+    #[cfg(not(miri))]
     assert_sum_eq(&[0; 1024 * 1024]);
   }
 
@@ -187,18 +189,22 @@ mod tests {
     assert_sum_eq(&[1, 1]);
     assert_sum_eq(&[1; 100]);
     assert_sum_eq(&[1; 1024]);
+    assert_sum_eq(&[1; 1024 - 5]); // non-power-of-2 to test remainder handling
+    #[cfg(not(miri))]
     assert_sum_eq(&[1; 1024 * 1024]);
   }
 
   #[test]
   fn random() {
-    let mut random = [0; 1024 * 1024];
-    rand::thread_rng().fill(&mut random[..]);
+    if super::get_imp().is_none() { return; } // don't do any work if we're not on this target
+    let mut random = [0; 1024 * 10];
+    SmallRng::from_entropy().fill(&mut random[..]);
 
     assert_sum_eq(&random[..1]);
     assert_sum_eq(&random[..100]);
     assert_sum_eq(&random[..1024]);
-    assert_sum_eq(&random[..1024 * 1024]);
+    assert_sum_eq(&random[..1024 - 5]); // non-power-of-2 to test remainder handling
+    assert_sum_eq(&random[..1024 * 10]);
   }
 
   /// Example calculation from https://en.wikipedia.org/wiki/Adler-32.
