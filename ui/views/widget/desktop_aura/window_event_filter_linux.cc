@@ -157,38 +157,27 @@ void WindowEventFilterLinux::OnClickedCaption(ui::MouseEvent* event,
       MaybeToggleMaximizedState(content_window);
       event->SetHandled();
       break;
-    case ui::LinuxUi::WindowFrameAction::kMenu: {
-      // Prefer the view's context menu when one is installed so that
-      // app-specific actions are available on right-click.
+    case ui::LinuxUi::WindowFrameAction::kMenu:
       views::Widget* widget =
           views::Widget::GetWidgetForNativeView(content_window);
-      if (widget) {
-        views::View* view = widget->GetContentsView();
-        if (view && view->context_menu_controller()) {
-          // Controller requires locations to be in DIP, while |this| receives
-          // the location in px.
-          gfx::PointF location = desktop_window_tree_host_->GetRootTransform()
-                                     .InverseMapPoint(event->location_f())
-                                     .value_or(event->location_f());
-          gfx::Point location_in_screen = gfx::ToRoundedPoint(location);
-          views::View::ConvertPointToScreen(view, &location_in_screen);
-          view->ShowContextMenu(location_in_screen,
-                                ui::mojom::MenuSourceType::kMouse);
-          event->SetHandled();
-          break;
-        }
+      if (!widget) {
+        break;
       }
-      // Fall back to the compositor's window menu when no view context menu
-      // is available.
-      if (ui::OzonePlatform::GetInstance()
-              ->GetPlatformRuntimeProperties()
-              .supports_server_window_menus) {
-        desktop_window_tree_host_->ShowWindowControlsMenu(
-            display::Screen::Get()->GetCursorScreenPoint());
-        event->SetHandled();
+      views::View* view = widget->GetContentsView();
+      if (!view || !view->context_menu_controller()) {
+        break;
       }
+      // Controller requires locations to be in DIP, while |this| receives the
+      // location in px.
+      gfx::PointF location = desktop_window_tree_host_->GetRootTransform()
+                                 .InverseMapPoint(event->location_f())
+                                 .value_or(event->location_f());
+      gfx::Point location_in_screen = gfx::ToRoundedPoint(location);
+      views::View::ConvertPointToScreen(view, &location_in_screen);
+      view->ShowContextMenu(location_in_screen,
+                            ui::mojom::MenuSourceType::kMouse);
+      event->SetHandled();
       break;
-    }
   }
 }
 

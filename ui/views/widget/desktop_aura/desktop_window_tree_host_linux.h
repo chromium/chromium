@@ -11,13 +11,10 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/native_theme/native_theme.h"
-#include "ui/native_theme/native_theme_observer.h"
 #include "ui/platform_window/extensions/x11_extension_delegate.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
@@ -32,8 +29,6 @@ class X11Extension;
 
 namespace views {
 
-class FrameView;
-
 class WindowEventFilterLinux;
 using WindowEventFilterClass = WindowEventFilterLinux;
 
@@ -41,8 +36,7 @@ using WindowEventFilterClass = WindowEventFilterLinux;
 // backend.
 class VIEWS_EXPORT DesktopWindowTreeHostLinux
     : public DesktopWindowTreeHostPlatform,
-      public ui::X11ExtensionDelegate,
-      public ui::NativeThemeObserver {
+      public ui::X11ExtensionDelegate {
  public:
   static const char kWindowKey[];
 
@@ -61,7 +55,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
   gfx::Rect GetXRootWindowOuterBounds() const;
 
   // DesktopWindowTreeHostPlatform:
-  std::unique_ptr<FrameView> CreateFrameView() override;
   void LowerWindow() override;
   // Disables event listening to make |dialog| modal.
   base::OnceClosure DisableEventListening();
@@ -81,12 +74,9 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
       Widget::MoveLoopEscapeBehavior escape_behavior) override;
 
   // PlatformWindowDelegate:
-  gfx::Insets CalculateInsetsInDIP(
-      ui::PlatformWindowState window_state) const override;
   void DispatchEvent(ui::Event* event) override;
   void OnClosed() override;
   void OnBoundsChanged(const BoundsChange& change) override;
-  void OnWindowTiledStateChanged(ui::WindowTiledEdges new_tiled_edges) override;
 
   ui::X11Extension* GetX11Extension();
   const ui::X11Extension* GetX11Extension() const;
@@ -95,9 +85,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
   void AddAdditionalInitProperties(
       const Widget::InitParams& params,
       ui::PlatformWindowInitProperties* properties) override;
-
-  // ui::NativeThemeObserver:
-  void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformImplTestWithTouch,
@@ -116,10 +103,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
 
   void CreateNonClientEventFilter();
   void DestroyNonClientEventFilter();
-
-  // Sets the opaque and input regions for the window based on
-  // FrameViewLinux decorations.
-  void UpdateFrameRegions();
 
   // X11ExtensionDelegate overrides:
   void OnLostMouseGrab() override;
@@ -142,9 +125,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
   std::unique_ptr<aura::ScopedWindowTargeter> targeter_for_modal_;
 
   uint32_t modal_dialog_counter_ = 0;
-
-  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
-      theme_observation_{this};
 
   // The display and the native X window hosting the root window.
   base::WeakPtrFactory<DesktopWindowTreeHostLinux> weak_factory_{this};

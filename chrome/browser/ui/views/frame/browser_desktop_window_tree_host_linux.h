@@ -28,11 +28,13 @@ class DesktopNativeWidgetAura;
 
 namespace ui {
 class LinuxUi;
+class NativeTheme;
 }  // namespace ui
 
 class BrowserDesktopWindowTreeHostLinux
     : public BrowserDesktopWindowTreeHost,
       public views::DesktopWindowTreeHostLinux,
+      ui::NativeThemeObserver,
       ui::DeviceScaleFactorObserver {
  public:
   BrowserDesktopWindowTreeHostLinux(
@@ -107,6 +109,8 @@ class BrowserDesktopWindowTreeHostLinux
   std::unique_ptr<DbusAppmenu> dbus_appmenu_;
 #endif
 
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
+      theme_observation_{this};
   base::ScopedObservation<ui::LinuxUi, ui::DeviceScaleFactorObserver>
       scale_observation_{this};
 };
