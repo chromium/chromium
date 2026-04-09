@@ -13,20 +13,19 @@
 
 namespace tabs_api::tab_strip_model {
 
-// TODO(ffred): I think this design is probably more complicated than it needs
-// to be. Maybe we could simplify the bridge between TSM and the service.
-//
-// Binds an EventObserver to the TabStripModel. There are some annoyances with
-// the event typing which prevents reuse. Each instance of a bridge has two
-// ends: an EventObserver and a TSM observer.
-class BridgeInstance : public TabStripModelObserver,
-                       public tabs::TabCollectionObserver {
+class TabStripModelEventBridge : public EventBridge,
+                                 public TabStripModelObserver,
+                                 public tabs::TabCollectionObserver {
  public:
-  BridgeInstance(TabStripModelAdapterImpl& tab_strip_model_adapter,
-                 events::EventObserver* observer);
-  BridgeInstance(const BridgeInstance&&) = delete;
-  BridgeInstance operator=(const BridgeInstance&) = delete;
-  ~BridgeInstance() override;
+  explicit TabStripModelEventBridge(
+      TabStripModelAdapterImpl& tab_strip_model_adapter);
+  TabStripModelEventBridge(const TabStripModelEventBridge&&) = delete;
+  TabStripModelEventBridge operator=(const TabStripModelEventBridge&) = delete;
+  ~TabStripModelEventBridge() override;
+
+  // EventBridge:
+  void AddObserver(events::EventObserver* observer) override;
+  void RemoveObserver(events::EventObserver* observer) override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -51,29 +50,11 @@ class BridgeInstance : public TabStripModelObserver,
                     const NodeData& node_data) override;
 
  private:
-  void ForwardToObserver(events::Event event);
-  void ForwardToObserver(std::vector<events::Event> events);
+  void Notify(const events::Event& event) const;
+  void Notify(const std::vector<events::Event>& events) const;
 
+  base::ObserverList<events::EventObserver> observers_;
   raw_ref<TabStripModelAdapterImpl> tab_strip_model_adapter_;
-  raw_ptr<events::EventObserver> observer_;
-};
-
-class TabStripModelEventBridge : public EventBridge {
- public:
-  explicit TabStripModelEventBridge(
-      TabStripModelAdapterImpl& tab_strip_model_adapter);
-  TabStripModelEventBridge(const TabStripModelEventBridge&&) = delete;
-  TabStripModelEventBridge operator=(const TabStripModelEventBridge&) = delete;
-  ~TabStripModelEventBridge() override;
-
-  // EventBridge:
-  void AddObserver(events::EventObserver* observer) override;
-  void RemoveObserver(events::EventObserver* observer) override;
-
- private:
-  raw_ref<TabStripModelAdapterImpl> tab_strip_model_adapter_;
-  std::map<events::EventObserver*, std::unique_ptr<BridgeInstance>>
-      observer_to_bridge_;
 };
 
 }  // namespace tabs_api::tab_strip_model

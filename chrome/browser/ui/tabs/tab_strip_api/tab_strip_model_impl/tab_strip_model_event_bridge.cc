@@ -11,38 +11,39 @@ namespace tabs_api::tab_strip_model {
 
 TabStripModelEventBridge::TabStripModelEventBridge(
     TabStripModelAdapterImpl& tab_strip_model_adapter)
-    : tab_strip_model_adapter_(tab_strip_model_adapter) {}
-
-TabStripModelEventBridge::~TabStripModelEventBridge() = default;
-
-void TabStripModelEventBridge::AddObserver(events::EventObserver* observer) {
-  CHECK(!observer_to_bridge_.contains(observer))
-      << "cannot re-add the same observer";
-  observer_to_bridge_.emplace(
-      observer,
-      std::make_unique<BridgeInstance>(*tab_strip_model_adapter_, observer));
-}
-
-void TabStripModelEventBridge::RemoveObserver(events::EventObserver* observer) {
-  CHECK(observer_to_bridge_.contains(observer))
-      << "observer has not been registered";
-  observer_to_bridge_.erase(observer);
-}
-
-BridgeInstance::BridgeInstance(
-    TabStripModelAdapterImpl& tab_strip_model_adapter,
-    events::EventObserver* observer)
-    : tab_strip_model_adapter_(tab_strip_model_adapter), observer_(observer) {
+    : tab_strip_model_adapter_(tab_strip_model_adapter) {
   tab_strip_model_adapter_->AddModelObserver(this);
   tab_strip_model_adapter_->AddCollectionObserver(this);
 }
 
-BridgeInstance::~BridgeInstance() {
+TabStripModelEventBridge::~TabStripModelEventBridge() {
   tab_strip_model_adapter_->RemoveModelObserver(this);
   tab_strip_model_adapter_->RemoveCollectionObserver(this);
 }
 
-void BridgeInstance::OnChildrenAdded(
+void TabStripModelEventBridge::AddObserver(events::EventObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void TabStripModelEventBridge::RemoveObserver(events::EventObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void TabStripModelEventBridge::Notify(const events::Event& event) const {
+  for (auto& observer : observers_) {
+    std::visit([&observer](const auto& e) { observer.OnEvent(e.Clone()); },
+               event);
+  }
+}
+
+void TabStripModelEventBridge::Notify(
+    const std::vector<events::Event>& events) const {
+  for (auto& event : events) {
+    Notify(event);
+  }
+}
+
+void TabStripModelEventBridge::OnChildrenAdded(
     const tabs::TabCollection::Position& position,
     const tabs::TabCollectionNodes& handles,
     bool insert_from_detached) {
@@ -51,21 +52,20 @@ void BridgeInstance::OnChildrenAdded(
       if (!tab_handle_ptr->Get()) {
         continue;
       }
-      ForwardToObserver(events::ToEvent(*tab_handle_ptr, position,
-                                        *tab_strip_model_adapter_));
+      Notify(events::ToEvent(*tab_handle_ptr, position,
+                             *tab_strip_model_adapter_));
     } else if (const auto* collection_handle_ptr =
                    std::get_if<tabs::TabCollectionHandle>(&handle)) {
       if (!collection_handle_ptr->Get()) {
         continue;
       }
-      ForwardToObserver(events::ToEvent(*collection_handle_ptr, position,
-                                        *tab_strip_model_adapter_,
-                                        insert_from_detached));
+      Notify(events::ToEvent(*collection_handle_ptr, position,
+                             *tab_strip_model_adapter_, insert_from_detached));
     }
   }
 }
 
-void BridgeInstance::OnChildrenRemoved(
+void TabStripModelEventBridge::OnChildrenRemoved(
     const tabs::TabCollection::Position& position,
     const tabs::TabCollectionNodes& handles) {
   tabs::TabCollectionNodes filtered_handles;
@@ -78,20 +78,20 @@ void BridgeInstance::OnChildrenRemoved(
       filtered_handles.push_back(handle);
     }
   }
-  ForwardToObserver(events::ToEvent(filtered_handles));
+  Notify(events::ToEvent(filtered_handles));
 }
 
-void BridgeInstance::OnChildMoved(
+void TabStripModelEventBridge::OnChildMoved(
     const tabs::TabCollection::Position& to_position,
     const NodeData& node_data) {
   const tabs::TabCollection::Position& from_position = node_data.position;
   const tabs::TabCollection::NodeHandle node_handle = node_data.handle;
 
-  ForwardToObserver(events::ToEvent(to_position, from_position, node_handle,
-                                    *tab_strip_model_adapter_));
+  Notify(events::ToEvent(to_position, from_position, node_handle,
+                         *tab_strip_model_adapter_));
 }
 
-void BridgeInstance::OnTabStripModelChanged(
+void TabStripModelEventBridge::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
@@ -101,7 +101,7 @@ void BridgeInstance::OnTabStripModelChanged(
     for (const auto& contents : remove->contents) {
       removed_nodes.push_back(contents.tab->GetHandle());
     }
-    ForwardToObserver(events::ToEvent(removed_nodes));
+    Notify(events::ToEvent(removed_nodes));
   }
   // Avoid listening to add and move changes as this is handled by the
   // TabCollection observation methods.
@@ -110,41 +110,32 @@ void BridgeInstance::OnTabStripModelChanged(
   }
 
   if (selection.active_tab_changed() || selection.selection_changed()) {
-    ForwardToObserver(events::ToEvent(selection, *tab_strip_model_adapter_));
+    Notify(events::ToEvent(selection, *tab_strip_model_adapter_));
   }
 }
 
-void BridgeInstance::OnTabChangedAt(tabs::TabInterface* tab,
-                                    int index,
-                                    TabChangeType change_type) {
-  ForwardToObserver(
-      events::ToEvent(*tab_strip_model_adapter_, index, change_type));
+void TabStripModelEventBridge::OnTabChangedAt(tabs::TabInterface* tab,
+                                              int index,
+                                              TabChangeType change_type) {
+  Notify(events::ToEvent(*tab_strip_model_adapter_, index, change_type));
 }
 
-void BridgeInstance::OnTabGroupChanged(const TabGroupChange& change) {
+void TabStripModelEventBridge::OnTabGroupChanged(const TabGroupChange& change) {
   if (change.type == TabGroupChange::Type::kEditorOpened) {
     NOTIMPLEMENTED();
     return;
   }
 
   if (change.type == TabGroupChange::Type::kVisualsChanged) {
-    ForwardToObserver(events::ToEvent(change, *tab_strip_model_adapter_));
+    Notify(events::ToEvent(change, *tab_strip_model_adapter_));
     return;
   }
 }
 
-void BridgeInstance::OnSplitTabChanged(const SplitTabChange& change) {
+void TabStripModelEventBridge::OnSplitTabChanged(const SplitTabChange& change) {
   if (change.type == SplitTabChange::Type::kVisualsChanged) {
-    ForwardToObserver(events::ToEvent(change, *tab_strip_model_adapter_));
+    Notify(events::ToEvent(change, *tab_strip_model_adapter_));
   }
-}
-
-void BridgeInstance::ForwardToObserver(events::Event event) {
-  observer_->OnEvent(std::move(event));
-}
-
-void BridgeInstance::ForwardToObserver(std::vector<events::Event> event) {
-  observer_->OnEvents(std::move(event));
 }
 
 }  // namespace tabs_api::tab_strip_model
