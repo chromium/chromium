@@ -166,6 +166,92 @@ public class GlicToolbarButtonControllerTest {
     }
 
     @Test
+    public void testTaskState_Done_Persists() {
+        GlicToolbarButtonController controller =
+                new GlicToolbarButtonController(
+                        mContext, () -> mTab, mToggleGlicCallback, () -> mTracker);
+        controller.addObserver(mObserver);
+
+        controller.get(mTab);
+        verify(mActorService).addObserver(mActorObserverCaptor.capture());
+        ActorKeyedService.Observer actorObserver = mActorObserverCaptor.getValue();
+
+        ActorTask task = mock(ActorTask.class);
+        when(task.getState()).thenReturn(ActorTaskState.FINISHED);
+        when(mActorService.getCurrentActiveTask()).thenReturn(task);
+
+        actorObserver.onTaskStateChanged(1, ActorTaskState.FINISHED);
+
+        ButtonData buttonData = controller.get(mTab);
+        Assert.assertEquals(
+                mContext.getString(R.string.glic_button_status_done),
+                mContext.getString(buttonData.getButtonSpec().getActionChipLabelResId()));
+
+        when(mActorService.getCurrentActiveTask()).thenReturn(null);
+
+        buttonData = controller.get(mTab);
+        Assert.assertEquals(
+                mContext.getString(R.string.glic_button_status_done),
+                mContext.getString(buttonData.getButtonSpec().getActionChipLabelResId()));
+    }
+
+    @Test
+    public void testTaskState_Done_ClearedOnClick() {
+        GlicToolbarButtonController controller =
+                new GlicToolbarButtonController(
+                        mContext, () -> mTab, mToggleGlicCallback, () -> mTracker);
+
+        controller.get(mTab);
+        verify(mActorService).addObserver(mActorObserverCaptor.capture());
+        ActorKeyedService.Observer actorObserver = mActorObserverCaptor.getValue();
+
+        ActorTask task = mock(ActorTask.class);
+        when(task.getState()).thenReturn(ActorTaskState.FINISHED);
+        when(mActorService.getCurrentActiveTask()).thenReturn(task);
+
+        actorObserver.onTaskStateChanged(1, ActorTaskState.FINISHED);
+
+        when(mActorService.getCurrentActiveTask()).thenReturn(null);
+
+        ButtonData buttonData = controller.get(mTab);
+        Assert.assertEquals(
+                mContext.getString(R.string.glic_button_status_done),
+                mContext.getString(buttonData.getButtonSpec().getActionChipLabelResId()));
+
+        controller.onClick(null);
+
+        buttonData = controller.get(mTab);
+        Assert.assertEquals(0, buttonData.getButtonSpec().getActionChipLabelResId());
+    }
+
+    @Test
+    public void testTaskState_Done_ClearedOnNewTask() {
+        GlicToolbarButtonController controller =
+                new GlicToolbarButtonController(
+                        mContext, () -> mTab, mToggleGlicCallback, () -> mTracker);
+
+        controller.get(mTab);
+        verify(mActorService).addObserver(mActorObserverCaptor.capture());
+        ActorKeyedService.Observer actorObserver = mActorObserverCaptor.getValue();
+
+        ActorTask task = mock(ActorTask.class);
+        when(task.getState()).thenReturn(ActorTaskState.FINISHED);
+        when(mActorService.getCurrentActiveTask()).thenReturn(task);
+
+        actorObserver.onTaskStateChanged(1, ActorTaskState.FINISHED);
+
+        ActorTask newTask = mock(ActorTask.class);
+        when(newTask.getState()).thenReturn(ActorTaskState.ACTING);
+        when(mActorService.getCurrentActiveTask()).thenReturn(newTask);
+
+        actorObserver.onTaskStateChanged(2, ActorTaskState.ACTING);
+
+        ButtonData buttonData = controller.get(mTab);
+        Assert.assertTrue(buttonData.getButtonSpec().getDrawable() instanceof LayerDrawable);
+        Assert.assertEquals(0, buttonData.getButtonSpec().getActionChipLabelResId());
+    }
+
+    @Test
     public void testProfileSwitching() {
         GlicToolbarButtonController controller =
                 new GlicToolbarButtonController(

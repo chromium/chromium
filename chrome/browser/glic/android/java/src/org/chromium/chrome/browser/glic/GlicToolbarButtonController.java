@@ -68,6 +68,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
     private final ButtonSpec mDoneSpec;
 
     private @ButtonState int mButtonState = ButtonState.DEFAULT;
+    private boolean mPersistDoneState;
 
     /**
      * @param context The Android context.
@@ -230,6 +231,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
             ActorTask task = mCurrentActorService.getCurrentActiveTask();
             if (task != null) {
                 @ActorTaskState int state = task.getState();
+                mPersistDoneState = false;
                 switch (state) {
                     case ActorTaskState.WAITING_ON_USER:
                     case ActorTaskState.FAILED:
@@ -237,11 +239,11 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
                         break;
                     case ActorTaskState.FINISHED:
                         mButtonState = ButtonState.DONE;
+                        mPersistDoneState = true;
                         break;
                     case ActorTaskState.ACTING:
                     case ActorTaskState.REFLECTING:
                         mButtonState = ButtonState.WORKING;
-                        // TODO(haileywang): Start the animation of the working button.
                         break;
                     case ActorTaskState.PAUSED_BY_USER:
                     case ActorTaskState.PAUSED_BY_ACTOR:
@@ -254,6 +256,8 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
                     default:
                         throw new AssertionError("Unexpected task state: " + state);
                 }
+            } else if (mPersistDoneState) {
+                mButtonState = ButtonState.DONE;
             }
         }
     }
@@ -286,11 +290,14 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
 
     @Override
     public void onClick(View view) {
+        mPersistDoneState = false;
         mToggleGlicCallback.run();
         Tracker tracker = mTrackerSupplier.get();
         if (tracker != null) {
             tracker.notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_GLIC_CLICKED);
         }
+        updateButtonState();
+        notifyObservers(true);
     }
 
     @Override
