@@ -16,7 +16,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/win/scoped_hdc.h"
 #include "printing/mojom/print.mojom.h"
@@ -105,12 +104,13 @@ TEST_F(EmfPrintingTest, Enumerate) {
                  .Append(FILE_PATH_LITERAL("test4.emf"));
 
   // Load any EMF with an image.
-  std::string emf_data;
-  base::ReadFileToString(emf_file, &emf_data);
-  ASSERT_TRUE(emf_data.size());
+  std::optional<std::vector<uint8_t>> emf_data =
+      base::ReadFileToBytes(emf_file);
+  ASSERT_TRUE(emf_data.has_value());
+  ASSERT_TRUE(emf_data.value().size());
 
   Emf emf;
-  EXPECT_TRUE(emf.InitFromData(base::as_byte_span(emf_data)));
+  EXPECT_TRUE(emf.InitFromData(emf_data.value()));
 
   // This will print to file. The reason is that when running inside a
   // unit_test, PrintingContext automatically dumps its files to the
@@ -177,41 +177,6 @@ TEST_F(EmfPrintingTest, PageBreak) {
     ::SetJob(printer, job_id, 0, nullptr, JOB_CONTROL_DELETE);
     ClosePrinter(printer);
   }
-}
-
-TEST(EmfTest, FileBackedEmf) {
-  // Simplest use case.
-  base::ScopedTempDir scratch_metafile_dir;
-  ASSERT_TRUE(scratch_metafile_dir.CreateUniqueTempDir());
-  base::FilePath metafile_path;
-  EXPECT_TRUE(base::CreateTemporaryFileInDir(scratch_metafile_dir.GetPath(),
-                                             &metafile_path));
-  std::vector<char> data;
-  {
-    Emf emf;
-    EXPECT_TRUE(emf.InitToFileForTesting(metafile_path));
-    EXPECT_TRUE(emf.context());
-    // An empty EMF is invalid, so we put at least a rectangle in it.
-    ::Rectangle(emf.context(), 10, 10, 190, 190);
-    EXPECT_TRUE(emf.FinishDocument());
-    uint32_t size = emf.GetDataSize();
-    EXPECT_GT(size, EMF_HEADER_SIZE);
-    EXPECT_TRUE(emf.GetDataAsVector(&data));
-    EXPECT_EQ(data.size(), size);
-  }
-  std::optional<int64_t> file_size = base::GetFileSize(metafile_path);
-  ASSERT_TRUE(file_size.has_value());
-  ASSERT_GT(file_size.value(), 0);
-  EXPECT_EQ(data.size(), static_cast<uint64_t>(file_size.value()));
-
-  // Playback the data.
-  HDC hdc = CreateCompatibleDC(nullptr);
-  EXPECT_TRUE(hdc);
-  Emf emf;
-  EXPECT_TRUE(emf.InitFromFile(metafile_path));
-  RECT output_rect = {0, 0, 10, 10};
-  EXPECT_TRUE(emf.Playback(hdc, &output_rect));
-  EXPECT_TRUE(DeleteDC(hdc));
 }
 
 }  // namespace printing

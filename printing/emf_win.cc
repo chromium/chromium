@@ -11,8 +11,6 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/files/file.h"
-#include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "printing/mojom/print.mojom.h"
@@ -70,21 +68,6 @@ void Emf::Close() {
   if (emf_)
     DeleteEnhMetaFile(emf_);
   emf_ = nullptr;
-}
-
-bool Emf::InitToFileForTesting(const base::FilePath& metafile_path) {
-  DCHECK(!emf_ && !hdc_);
-  hdc_ = CreateEnhMetaFile(nullptr, metafile_path.value().c_str(), nullptr,
-                           nullptr);
-  DCHECK(hdc_);
-  return !!hdc_;
-}
-
-bool Emf::InitFromFile(const base::FilePath& metafile_path) {
-  DCHECK(!emf_ && !hdc_);
-  emf_ = GetEnhMetaFile(metafile_path.value().c_str());
-  DCHECK(emf_);
-  return !!emf_;
 }
 
 bool Emf::Init() {
