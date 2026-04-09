@@ -774,6 +774,7 @@ void GpuServiceImpl::DidLoseContext(gpu::error::ContextLostReason reason,
 }
 
 std::string GpuServiceImpl::GetShaderPrefixKey() {
+  base::AutoLock lock(shader_prefix_key_lock_);
   if (shader_prefix_key_.empty()) {
     const gpu::GPUInfo::GPUDevice& active_gpu = gpu_info_.active_gpu();
     std::string product =

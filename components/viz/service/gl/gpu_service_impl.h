@@ -542,7 +542,8 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
 
   base::RepeatingClosure wake_up_closure_;
 
-  std::string shader_prefix_key_;
+  base::Lock shader_prefix_key_lock_;
+  std::string shader_prefix_key_ GUARDED_BY(shader_prefix_key_lock_);
 
   // This is flag is controlled by the finch experiment
   // ClearGrShaderDiskCacheOnInvalidPrefix. Earlier this flag was assigned in
