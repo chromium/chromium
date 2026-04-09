@@ -1187,8 +1187,7 @@ class PaintCanvasVideoRendererWithGLTest : public testing::Test {
   }
 
   // Copies |frame| into a GL texture, reads back its contents, and runs
-  // |check_pixels| to validate it. The copy is performed either directly (if
-  // supported) or via CopyVideoFrameTexturesToGLTextureViaIntermediateSI.
+  // |check_pixels| to validate it.
   template <class CheckPixels>
   void CopyVideoFrameTexturesAndCheckPixels(scoped_refptr<VideoFrame> frame,
                                             CheckPixels check_pixels) {
@@ -1202,28 +1201,19 @@ class PaintCanvasVideoRendererWithGLTest : public testing::Test {
     gfx::Size expected_size = frame->visible_rect().size();
 
     const auto shared_image = frame->shared_image();
-    if (destination_gl->CanCopySharedImageDirectlyToGLTexture(
-            media::IsOpaque(frame->format()), shared_image.get(), target,
-            GL_RGBA, GL_UNSIGNED_BYTE, 0, kUnpremul_SkAlphaType)) {
-      std::unique_ptr<gpu::RasterScopedAccess> destination_access =
-          destination_gl->CopySharedImageDirectlyToGLTexture(
-              frame->visible_rect(), shared_image.get(),
-              frame->acquire_sync_token(), media::IsOpaque(frame->format()),
-              target, texture, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 0,
-              kUnpremul_SkAlphaType, kTopLeft_GrSurfaceOrigin);
+    CHECK(destination_gl->CanCopySharedImageDirectlyToGLTexture(
+        media::IsOpaque(frame->format()), shared_image.get(), target, GL_RGBA,
+        GL_UNSIGNED_BYTE, 0, kUnpremul_SkAlphaType));
+    std::unique_ptr<gpu::RasterScopedAccess> destination_access =
+        destination_gl->CopySharedImageDirectlyToGLTexture(
+            frame->visible_rect(), shared_image.get(),
+            frame->acquire_sync_token(), media::IsOpaque(frame->format()),
+            target, texture, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 0,
+            kUnpremul_SkAlphaType, kTopLeft_GrSurfaceOrigin);
 
-      media::PaintCanvasVideoRenderer::SynchronizeVideoFrameRead(
-          std::move(frame), destination_gl,
-          destination_context_->ContextSupport(),
-          std::move(destination_access));
-    } else {
-      PaintCanvasVideoRenderer::
-          CopyVideoFrameTexturesToGLTextureViaIntermediateSI(
-              media_context_.get(), destination_gl, frame,
-              GetRGBSharedImageCache(), target, texture, GL_RGBA, GL_RGBA,
-              GL_UNSIGNED_BYTE, 0, kUnpremul_SkAlphaType,
-              kTopLeft_GrSurfaceOrigin);
-    }
+    media::PaintCanvasVideoRenderer::SynchronizeVideoFrameRead(
+        std::move(frame), destination_gl,
+        destination_context_->ContextSupport(), std::move(destination_access));
 
     base::HeapArray<uint8_t> pixels =
         ReadbackTexture(destination_gl, texture, expected_size);
