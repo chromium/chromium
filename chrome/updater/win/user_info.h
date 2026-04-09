@@ -9,8 +9,6 @@
 
 #include <string>
 
-#include "base/win/atl.h"
-
 namespace updater {
 
 // Gets the user name, domain, and the SID associated with the access token
@@ -18,9 +16,6 @@ namespace updater {
 HRESULT GetProcessUser(std::wstring* name,
                        std::wstring* domain,
                        std::wstring* sid);
-
-// Gets SID associated with the access token of the current process.
-HRESULT GetProcessUserSid(CSid* sid);
 
 // Returns true if the current user is NT AUTHORITY\SYSTEM.
 bool IsLocalSystemUser();

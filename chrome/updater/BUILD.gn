@@ -1038,6 +1038,7 @@ if (is_win || is_mac || is_linux) {
         "win/ui/l10n_util_unittest.cc",
         "win/ui/progress_wnd_unittest.cc",
         "win/updater_tests.rc",
+        "win/user_info_unittest.cc",
       ]
 
       configs -= [ "//build/config/win:winver" ]

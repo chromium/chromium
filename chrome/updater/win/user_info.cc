@@ -7,6 +7,8 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/win/access_token.h"
+#include "base/win/sid.h"
 #include "chrome/updater/util/win_util.h"
 
 namespace updater {
@@ -21,35 +23,48 @@ constexpr wchar_t kSystemPrincipalSid[] = L"S-1-5-18";
 HRESULT GetProcessUser(std::wstring* name,
                        std::wstring* domain,
                        std::wstring* sid) {
-  CSid current_sid;
+  auto token = base::win::AccessToken::FromCurrentProcess();
+  if (!token) {
+    return HRESULTFromLastError();
+  }
 
-  HRESULT hr = GetProcessUserSid(&current_sid);
-  if (FAILED(hr)) {
-    return hr;
+  base::win::Sid user_sid = token->User();
+  auto sddl = user_sid.ToSddlString();
+  if (!sddl) {
+    return E_FAIL;
   }
 
   if (sid) {
-    *sid = current_sid.Sid();
-  }
-  if (name) {
-    *name = current_sid.AccountName();
-  }
-  if (domain) {
-    *domain = current_sid.Domain();
+    *sid = *sddl;
   }
 
-  return S_OK;
-}
-
-HRESULT GetProcessUserSid(CSid* sid) {
-  CHECK(sid);
-
-  CAccessToken token;
-  if (!token.GetProcessToken(TOKEN_QUERY) || !token.GetUser(sid)) {
-    HRESULT hr = HRESULTFromLastError();
-    std::wstring thread_sid;
-    CHECK(FAILED(GetThreadUserSid(&thread_sid)));
-    return hr;
+  if (name || domain) {
+    // Use LookupAccountSid to resolve account name and domain.
+    PSID psid = user_sid.GetPSID();
+    DWORD name_len = 0;
+    DWORD domain_len = 0;
+    SID_NAME_USE use = SidTypeUnknown;
+    ::LookupAccountSid(/*lpSystemName=*/nullptr, psid, /*lpName=*/nullptr,
+                       &name_len, /*lpReferencedDomainName=*/nullptr,
+                       &domain_len, &use);
+    if (name_len > 0 && domain_len > 0) {
+      std::wstring account_name(name_len, L'\0');
+      std::wstring account_domain(domain_len, L'\0');
+      if (::LookupAccountSid(nullptr, psid, account_name.data(), &name_len,
+                             account_domain.data(), &domain_len, &use)) {
+        // LookupAccountSid returns lengths including null terminator on the
+        // first call, but writes the string without null on second call.
+        // Trim the trailing null.
+        account_name.resize(name_len);
+        account_domain.resize(domain_len);
+        if (name) {
+          *name = std::move(account_name);
+        }
+        if (domain) {
+          *domain = std::move(account_domain);
+        }
+      }
+    }
   }
 
   return S_OK;
@@ -63,15 +78,19 @@ bool IsLocalSystemUser() {
 
 HRESULT GetThreadUserSid(std::wstring* sid) {
   CHECK(sid);
-  CAccessToken access_token;
-  CSid user_sid;
-  if (access_token.GetThreadToken(TOKEN_READ) &&
-      access_token.GetUser(&user_sid)) {
-    *sid = user_sid.Sid();
-    return S_OK;
+  auto token = base::win::AccessToken::FromCurrentThread(
+      /*open_as_self=*/false);
+  if (!token) {
+    return HRESULTFromLastError();
   }
 
-  return HRESULTFromLastError();
+  auto sddl = token->User().ToSddlString();
+  if (!sddl) {
+    return HRESULTFromLastError();
+  }
+
+  *sid = std::move(*sddl);
+  return S_OK;
 }
 
 }  // namespace updater
