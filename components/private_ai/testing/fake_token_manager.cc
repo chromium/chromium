@@ -46,7 +46,7 @@ void FakeTokenManager::RunPendingProxyCallbacks() {
     if (return_token_) {
       token = phosphor::BlindSignedAuthToken{
           .token = kFakeProxyToken,
-          .encoded_extensions = "cHJveHlfZXh0ZW5zaW9ucw==",
+          .encoded_extensions = "cHJveHlfZXh0ZW5zaW9ucw",
           .expiration = base::Time::Now() + base::Minutes(1)};
     }
     proxy_callback_future_.Take().Run(std::move(token));

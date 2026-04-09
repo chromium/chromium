@@ -12,7 +12,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
@@ -29,6 +28,7 @@
 #include "components/private_ai/secure_channel.h"
 #include "components/private_ai/testing/fake_secure_channel.h"
 #include "components/private_ai/testing/fake_token_manager.h"
+#include "services/network/network_service.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,8 +47,11 @@ class ClientImplIntegrationTest : public testing::Test {
   void SetUp() override {
     GURL url("wss://example.com?key=test-api-key");
 
+    network_service_ = network::NetworkService::CreateForTesting();
+
     auto factory = std::make_unique<ConnectionFactoryImpl>(
         url, &test_network_context_, &logger_);
+    factory_ptr_ = factory.get();
     factory->EnableTokenAttestation(&token_manager_);
     factory->SetSecureChannelFactoryForTesting(base::BindLambdaForTesting(
         [this]() -> std::unique_ptr<SecureChannel::Factory> {
@@ -66,9 +69,10 @@ class ClientImplIntegrationTest : public testing::Test {
 
   void TearDown() override {
     // Ensure that all SecureChannels are destroyed.
+    factory_ptr_ = nullptr;
     client_.reset();
-    ASSERT_TRUE(
-        base::test::RunUntil([&]() { return secure_channels_.empty(); }));
+    ASSERT_TRUE(secure_channels_.empty());
+    network_service_ = nullptr;
   }
 
   void on_secure_channel_created(FakeSecureChannel* secure_channel) {
@@ -92,9 +96,11 @@ class ClientImplIntegrationTest : public testing::Test {
 
   PrivateAiLogger logger_;
   network::TestNetworkContext test_network_context_;
+  std::unique_ptr<network::NetworkService> network_service_;
   FakeTokenManager token_manager_;
   std::vector<raw_ptr<FakeSecureChannel>> secure_channels_;
   std::unique_ptr<ClientImpl> client_;
+  raw_ptr<ConnectionFactoryImpl> factory_ptr_ = nullptr;
 };
 
 TEST_F(ClientImplIntegrationTest, FullStackSuccess) {
@@ -266,6 +272,7 @@ TEST_F(ClientImplIntegrationTest, ClientDestroyedDuringAttestation) {
   token_manager_.RunPendingCallbacks();
 
   // 2. Destroy the client while attestation is pending.
+  factory_ptr_ = nullptr;
   client_.reset();
 
   // 3. The request should be resolved with kDestroyed.
@@ -294,6 +301,70 @@ TEST_F(ClientImplIntegrationTest, AttestationTimedOut) {
   auto result = future.Get();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), ErrorCode::kTimeout);
+}
+
+TEST_F(ClientImplIntegrationTest, ProxySuccess) {
+  // 1. Enable proxy.
+  ASSERT_TRUE(secure_channels_.empty());
+  factory_ptr_->EnableProxy(GURL("https://proxy.example.com"),
+                            network_service_.get());
+
+  base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
+  client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
+                           "hello", future.GetCallback(), /*options=*/{});
+
+  // 2. Respond to token requests.
+  token_manager_.RunPendingProxyCallbacks();
+  token_manager_.RunPendingCallbacks();
+
+  auto* channel = last_secure_channel();
+  ASSERT_TRUE(channel);
+
+  // 3. Now the original text request should be sent immediately after
+  // attestation.
+  ASSERT_EQ(channel->written_requests().size(), 2u);
+  EXPECT_TRUE(channel->written_requests()[0].has_anonymous_token_request());
+  EXPECT_EQ(channel->written_requests()[0].feature_name(),
+            proto::FeatureName::FEATURE_NAME_CHROME_CLIENT_ATTESTATION);
+  EXPECT_TRUE(channel->written_requests()[1].has_generate_content_request());
+
+  // 4. Respond to text request.
+  proto::PrivateAiResponse text_response;
+  text_response.set_request_id(channel->written_requests()[1].request_id());
+  text_response.mutable_generate_content_response()
+      ->add_candidates()
+      ->mutable_content()
+      ->add_parts()
+      ->set_text("world");
+  channel->send_back_response(text_response);
+
+  // 5. Verify final result is success.
+  ASSERT_TRUE(future.IsReady());
+  auto result = future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), "world");
+}
+
+TEST_F(ClientImplIntegrationTest, ProxyConfigFailure) {
+  // 1. Enable proxy.
+  ASSERT_TRUE(secure_channels_.empty());
+  factory_ptr_->EnableProxy(GURL("https://proxy.example.com"),
+                            network_service_.get());
+
+  base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
+  client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
+                           "hello", future.GetCallback(), /*options=*/{});
+
+  // 2. Respond to proxy token request with invalid token.
+  token_manager_.RespondToGetAuthTokenForProxy(phosphor::BlindSignedAuthToken{
+      .token = "invalid base64!!!",
+      .encoded_extensions = "cHJveHlfZXh0ZW5zaW9ucw=="});
+
+  // 3. Verify final result is kProxyConfigFailed.
+  ASSERT_TRUE(future.IsReady());
+  auto result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), ErrorCode::kProxyConfigFailed);
 }
 
 }  // namespace private_ai

@@ -165,14 +165,20 @@ void ConnectionProxy::OnProxyToken(
     return;
   }
 
-  logger_->LogInfo(FROM_HERE, "Got auth token for proxy. Connecting to " +
-                                  proxy_url_.spec());
 
   auto context_params = network::mojom::NetworkContextParams::New();
   context_params->cert_verifier_params = content::GetCertVerifierParams(
       cert_verifier::mojom::CertVerifierCreationParams::New());
   context_params->initial_custom_proxy_config =
       internal::CreateCustomProxyConfig(proxy_url_, *auth_token, logger_);
+
+  if (!context_params->initial_custom_proxy_config) {
+    CallOnDisconnect(ErrorCode::kProxyConfigFailed);
+    return;
+  }
+
+  logger_->LogInfo(FROM_HERE, "Got auth token for proxy. Connecting to " +
+                                  proxy_url_.spec());
 
   network_service_->CreateNetworkContext(
       proxied_context_.BindNewPipeAndPassReceiver(), std::move(context_params));

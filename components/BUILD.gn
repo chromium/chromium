@@ -763,7 +763,6 @@ test("components_unittests") {
       "//components/headless/console_message_logger:unit_tests",
       "//components/headless/screen_info:unit_tests",
       "//components/live_caption:unit_tests",
-      "//components/private_ai:unit_tests",
 
       # TODO(crbug.com/470475787): Enable this test on Android.
       "//components/password_manager/core/browser/actor_login/internal:unit_tests",
@@ -778,6 +777,7 @@ test("components_unittests") {
     deps += [
       "//components/accessibility_annotator/content/content_annotator:unit_tests",
       "//components/accessibility_annotator/core/live_tab_context:unit_tests",
+      "//components/private_ai:unit_tests",
     ]
   }
 
