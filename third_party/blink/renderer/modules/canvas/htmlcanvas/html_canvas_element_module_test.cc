@@ -101,8 +101,8 @@ TEST_F(HTMLCanvasElementModuleTest, TransferControlToOffscreen) {
 
 // Test that lang and direction attributes are transferred correctly.
 TEST_F(HTMLCanvasElementModuleTest, TransferLangAndDirectionToOffscreen) {
-  canvas_element_->setAttribute(AtomicString("lang"), "zh-CN");
-  canvas_element_->setAttribute(AtomicString("dir"), "rtl");
+  canvas_element_->setAttribute(AtomicString("lang"), AtomicString("zh-CN"));
+  canvas_element_->setAttribute(AtomicString("dir"), AtomicString("rtl"));
 
   OffscreenCanvas* offscreen_canvas = TransferControlToOffscreen();
 
@@ -130,8 +130,10 @@ TEST_F(HTMLCanvasElementModuleTest,
 // Test that lang and direction from document are transferred correctly.
 TEST_F(HTMLCanvasElementModuleTest,
        TransferLangAndDirectionDocumentToOffscreen) {
-  GetDocument().documentElement()->setAttribute(AtomicString("lang"), "zh-CN");
-  GetDocument().documentElement()->setAttribute(AtomicString("dir"), "rtl");
+  GetDocument().documentElement()->setAttribute(AtomicString("lang"),
+                                                AtomicString("zh-CN"));
+  GetDocument().documentElement()->setAttribute(AtomicString("dir"),
+                                                AtomicString("rtl"));
   OffscreenCanvas* offscreen_canvas = TransferControlToOffscreen();
 
   const LayoutLocale* locale = offscreen_canvas->GetLocale();

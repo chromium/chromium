@@ -464,7 +464,7 @@ class CORE_EXPORT Element : public ContainerNode {
                                      const AtomicString& local_name) const;
 
   void setAttribute(AtomicString name,
-                    String value,
+                    AtomicString value,
                     ExceptionState& exception_state = ASSERT_NO_EXCEPTION) {
     AtomicStringTable::WeakResult weak_lowercase_name =
         WeakLowercaseIfNecessary(name);
@@ -494,7 +494,7 @@ class CORE_EXPORT Element : public ContainerNode {
       ExceptionState&);
   void setAttributeNS(const AtomicString& namespace_uri,
                       const AtomicString& qualified_name,
-                      String value,
+                      AtomicString value,
                       ExceptionState& exception_state);
   void setAttributeNS(const AtomicString& namespace_uri,
                       const AtomicString& qualified_name,
@@ -2472,18 +2472,14 @@ class CORE_EXPORT Element : public ContainerNode {
                                const AtomicString& value,
                                AttributeModificationReason);
   void RemoveAttributeInternal(wtf_size_t index, AttributeModificationReason);
-  String TrustedTypesCheckForAttribute(const QualifiedName&,
-                                       String value,
-                                       const char* legacy_sink_name,
-                                       ExceptionState&) const;
-  String TrustedTypesCheckForAttribute(const QualifiedName&,
-                                       const V8TrustedType* value,
-                                       const char* legacy_sink_name,
-                                       ExceptionState&) const;
-  String TrustedTypesCheckForAttribute(const QualifiedName&,
-                                       const AtomicString&,
-                                       const char* legacy_sink_name,
-                                       ExceptionState&) const;
+  AtomicString TrustedTypesCheckForAttribute(const QualifiedName&,
+                                             AtomicString value,
+                                             const char* legacy_sink_name,
+                                             ExceptionState&) const;
+  AtomicString TrustedTypesCheckForAttribute(const QualifiedName&,
+                                             const V8TrustedType* value,
+                                             const char* legacy_sink_name,
+                                             ExceptionState&) const;
 
   // These Hinted versions of the functions are subtle hot path
   // optimizations designed to reduce the number of unnecessary AtomicString
@@ -2501,7 +2497,7 @@ class CORE_EXPORT Element : public ContainerNode {
                                   AtomicStringTable::WeakResult hint) const;
   void SetAttributeHinted(AtomicString name,
                           AtomicStringTable::WeakResult hint,
-                          String value,
+                          AtomicString value,
                           ExceptionState& = ASSERT_NO_EXCEPTION);
   void SetAttributeHinted(AtomicString name,
                           AtomicStringTable::WeakResult hint,

@@ -557,28 +557,28 @@ String TrustedTypesCheckForScriptURL(const String& script_url,
   return result->toString();
 }
 
-String TrustedTypesCheckFor(SpecificTrustedType type,
-                            const V8TrustedType* trusted,
-                            const ExecutionContext* execution_context,
-                            const AtomicString& interface_name,
-                            const AtomicString& property_name,
-                            ExceptionState& exception_state) {
+AtomicString TrustedTypesCheckFor(SpecificTrustedType type,
+                                  const V8TrustedType* trusted,
+                                  const ExecutionContext* execution_context,
+                                  const AtomicString& interface_name,
+                                  const AtomicString& property_name,
+                                  ExceptionState& exception_state) {
   DCHECK(trusted);
 
   // Whatever happens below, we will need the string value:
-  String value;
+  AtomicString value;
   bool does_type_match = false;
   switch (trusted->GetContentType()) {
     case V8TrustedType::ContentType::kTrustedHTML:
-      value = trusted->GetAsTrustedHTML()->toString();
+      value = AtomicString(trusted->GetAsTrustedHTML()->toString());
       does_type_match = type == SpecificTrustedType::kHTML;
       break;
     case V8TrustedType::ContentType::kTrustedScript:
-      value = trusted->GetAsTrustedScript()->toString();
+      value = AtomicString(trusted->GetAsTrustedScript()->toString());
       does_type_match = type == SpecificTrustedType::kScript;
       break;
     case V8TrustedType::ContentType::kTrustedScriptURL:
-      value = trusted->GetAsTrustedScriptURL()->toString();
+      value = AtomicString(trusted->GetAsTrustedScriptURL()->toString());
       does_type_match = type == SpecificTrustedType::kScriptURL;
       break;
   }
@@ -792,29 +792,29 @@ String TrustedTypesCheckForScriptURL(
   NOTREACHED();
 }
 
-String TrustedTypesCheckFor(SpecificTrustedType type,
-                            String trusted,
-                            const ExecutionContext* execution_context,
-                            const AtomicString& interface_name,
-                            const AtomicString& property_name,
-                            ExceptionState& exception_state) {
+AtomicString TrustedTypesCheckFor(SpecificTrustedType type,
+                                  AtomicString trusted,
+                                  const ExecutionContext* execution_context,
+                                  const AtomicString& interface_name,
+                                  const AtomicString& property_name,
+                                  ExceptionState& exception_state) {
   if (type == SpecificTrustedType::kNone) {
     return trusted;
   }
 
   switch (type) {
     case SpecificTrustedType::kHTML:
-      return TrustedTypesCheckForHTML(std::move(trusted), execution_context,
-                                      interface_name, property_name,
-                                      exception_state);
+      return AtomicString(TrustedTypesCheckForHTML(
+          std::move(trusted), execution_context, interface_name, property_name,
+          exception_state));
     case SpecificTrustedType::kScript:
-      return TrustedTypesCheckForScript(std::move(trusted), execution_context,
-                                        interface_name, property_name,
-                                        exception_state);
+      return AtomicString(TrustedTypesCheckForScript(
+          std::move(trusted), execution_context, interface_name, property_name,
+          exception_state));
     case SpecificTrustedType::kScriptURL:
-      return TrustedTypesCheckForScriptURL(std::move(trusted),
-                                           execution_context, interface_name,
-                                           property_name, exception_state);
+      return AtomicString(TrustedTypesCheckForScriptURL(
+          std::move(trusted), execution_context, interface_name, property_name,
+          exception_state));
     case SpecificTrustedType::kNone:
       NOTREACHED();  // This case is handled above.
   }

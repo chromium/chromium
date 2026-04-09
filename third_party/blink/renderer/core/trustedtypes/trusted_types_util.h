@@ -39,7 +39,7 @@ enum class MarkupInsertionMode { kFragment, kStream };
 
 // Perform Trusted Type checks, with the IDL union types as input. All of these
 // will call String& versions below to do the heavy lifting.
-[[nodiscard]] CORE_EXPORT String
+[[nodiscard]] CORE_EXPORT AtomicString
 TrustedTypesCheckFor(SpecificTrustedType type,
                      const V8TrustedType* trusted,
                      const ExecutionContext* execution_context,
@@ -81,12 +81,13 @@ TrustedTypesCheckForScriptURL(const V8UnionTrustedScriptURLOrUSVString* value,
 // type.
 // Returns the effective value (which may have been modified by the "default"
 // policy.
-[[nodiscard]] String TrustedTypesCheckFor(SpecificTrustedType,
-                                          String,
-                                          const ExecutionContext*,
-                                          const AtomicString& interface_name,
-                                          const AtomicString& property_name,
-                                          ExceptionState&);
+[[nodiscard]] AtomicString TrustedTypesCheckFor(
+    SpecificTrustedType,
+    AtomicString,
+    const ExecutionContext*,
+    const AtomicString& interface_name,
+    const AtomicString& property_name,
+    ExceptionState&);
 [[nodiscard]] CORE_EXPORT String
 TrustedTypesCheckForHTML(const String&,
                          const ExecutionContext*,

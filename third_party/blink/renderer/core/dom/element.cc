@@ -3715,7 +3715,7 @@ Element::GetTrustedTypeDataForAttribute(const QualifiedName& q_name,
   }
 }
 
-String Element::TrustedTypesCheckForAttribute(
+AtomicString Element::TrustedTypesCheckForAttribute(
     const QualifiedName& q_name,
     const V8TrustedType* value,
     const char* legacy_sink_name,
@@ -3726,20 +3726,9 @@ String Element::TrustedTypesCheckForAttribute(
                               exception_state);
 }
 
-String Element::TrustedTypesCheckForAttribute(
+AtomicString Element::TrustedTypesCheckForAttribute(
     const QualifiedName& q_name,
-    const AtomicString& value,
-    const char* legacy_sink_name,
-    ExceptionState& exception_state) const {
-  auto data = GetTrustedTypeDataForAttribute(q_name, legacy_sink_name);
-  return TrustedTypesCheckFor(std::get<0>(data), value, GetExecutionContext(),
-                              std::get<1>(data), std::get<2>(data),
-                              exception_state);
-}
-
-String Element::TrustedTypesCheckForAttribute(
-    const QualifiedName& q_name,
-    String value,
+    AtomicString value,
     const char* legacy_sink_name,
     ExceptionState& exception_state) const {
   auto data = GetTrustedTypeDataForAttribute(q_name, legacy_sink_name);
@@ -7897,7 +7886,7 @@ std::optional<QualifiedName> Element::ParseAttributeName(
 
 void Element::setAttributeNS(const AtomicString& namespace_uri,
                              const AtomicString& qualified_name,
-                             String value,
+                             AtomicString value,
                              ExceptionState& exception_state) {
   std::optional<QualifiedName> parsed_name =
       ParseAttributeName(namespace_uri, qualified_name, exception_state);
@@ -7905,13 +7894,13 @@ void Element::setAttributeNS(const AtomicString& namespace_uri,
     return;
   }
 
-  AtomicString trusted_value(TrustedTypesCheckForAttribute(
-      *parsed_name, std::move(value), "setAttributeNS", exception_state));
+  AtomicString trusted_value = TrustedTypesCheckForAttribute(
+      *parsed_name, std::move(value), "setAttributeNS", exception_state);
   if (exception_state.HadException()) {
     return;
   }
 
-  setAttribute(*parsed_name, trusted_value);
+  setAttribute(*parsed_name, std::move(trusted_value));
 }
 
 void Element::setAttributeNS(const AtomicString& namespace_uri,
@@ -7924,13 +7913,13 @@ void Element::setAttributeNS(const AtomicString& namespace_uri,
     return;
   }
 
-  AtomicString value(TrustedTypesCheckForAttribute(
-      *parsed_name, trusted_string, "setAttributeNS", exception_state));
+  AtomicString trusted_value = TrustedTypesCheckForAttribute(
+      *parsed_name, trusted_string, "setAttributeNS", exception_state);
   if (exception_state.HadException()) {
     return;
   }
 
-  setAttribute(*parsed_name, value);
+  setAttribute(*parsed_name, std::move(trusted_value));
 }
 
 void Element::RemoveAttributeInternal(wtf_size_t index,
@@ -13143,8 +13132,8 @@ void Element::SetAttributeWithValidation(Attr* attribute,
     // Note: originalElement is this. We already remember that.
 
     // Step 2.2: Let verifiedValue be [..] verify attribute value [...].
-    AtomicString verified_value = AtomicString(TrustedTypesCheckForAttribute(
-        attribute->GetQualifiedName(), value, "setAttribute", exception_state));
+    AtomicString verified_value = TrustedTypesCheckForAttribute(
+        attribute->GetQualifiedName(), value, "setAttribute", exception_state);
     if (exception_state.HadException()) {
       return;
     }
@@ -13175,8 +13164,8 @@ void Element::SetAttributeWithValidation(Attr* attribute,
   const QualifiedName name = attribute->GetQualifiedName();
   SynchronizeAttribute(name);
 
-  AtomicString trusted_value(TrustedTypesCheckForAttribute(
-      name, value, "setAttribute", exception_state));
+  AtomicString trusted_value = TrustedTypesCheckForAttribute(
+      name, value, "setAttribute", exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -13194,7 +13183,7 @@ void Element::SetSynchronizedLazyAttribute(const QualifiedName& name,
 
 void Element::SetAttributeHinted(AtomicString local_name,
                                  AtomicStringTable::WeakResult hint,
-                                 String value,
+                                 AtomicString value,
                                  ExceptionState& exception_state) {
   bool is_valid = Document::IsValidAttributeLocalName(local_name);
   if (!is_valid) {
@@ -13232,7 +13221,7 @@ void Element::SetAttributeHinted(AtomicString local_name,
     DCHECK_EQ(index, ValidateAttributeIndex(index, q_name));
   }
 
-  SetAttributeInternal(index, q_name, AtomicString(std::move(value)),
+  SetAttributeInternal(index, q_name, value,
                        AttributeModificationReason::kDirectly);
 }
 
@@ -13250,8 +13239,8 @@ void Element::SetAttributeHinted(AtomicString local_name,
 
   auto [index, q_name] =
       LookupAttributeQNameHinted(std::move(local_name), hint);
-  AtomicString value(TrustedTypesCheckForAttribute(
-      q_name, trusted_string, "setAttribute", exception_state));
+  AtomicString value = TrustedTypesCheckForAttribute(
+      q_name, trusted_string, "setAttribute", exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -13317,9 +13306,9 @@ ALWAYS_INLINE void Element::SetAttributeInternal(
 
 Attr* Element::setAttributeNode(Attr* attr_node,
                                 ExceptionState& exception_state) {
-  AtomicString value(TrustedTypesCheckForAttribute(
+  AtomicString value = TrustedTypesCheckForAttribute(
       attr_node->GetQualifiedName(), attr_node->value(), "setAttributeNode",
-      exception_state));
+      exception_state);
   if (exception_state.HadException()) {
     return nullptr;
   }
