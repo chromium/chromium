@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.bottomsheet;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
@@ -178,6 +179,16 @@ public class BottomSheetControllerImplUnitTest {
 
         mEdgeToEdgeBottomInsetSupplier.set(100);
         assertTrue(mController.hasBottomInset());
+    }
+
+    @Test
+    public void testGetMaxOffset() {
+        assertEquals(0, mController.getMaxOffset());
+
+        mController.runSheetInitializerForTesting();
+        doReturn(123.0f).when(mBottomSheet).getMaxOffsetPx();
+
+        assertEquals(123, mController.getMaxOffset());
     }
 
     @Test

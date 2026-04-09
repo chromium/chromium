@@ -20,6 +20,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -178,16 +179,18 @@ public class TabBottomSheetCoordinator {
             // Set peek height for touch arbitration.
             mMediator.setPeekHeight(mSheetContent.getPeekHeight());
 
-            // If bottom sheet has never been initialized, its max height return 0.
+            // If bottom sheet has never been initialized, the max bottom offset may be 0.
             // We set it here, and if it changes later, we will update it in the observer.
             mContentView.post(
                     () -> {
                         boolean isKeyboard = isKeyboardShowing();
                         mMediator.setMaxSheetHeight(
                                 mBottomSheetController.getContainerHeight(), isKeyboard);
-                        if (startsExpanded
-                                && mSheetContent != null
-                                && mMediator.isSheetHeightSufficient()) {
+
+                        boolean isSheetHeightSufficient =
+                                mMediator.isSheetHeightSufficient(
+                                        mBottomSheetController.getMaxOffset());
+                        if (startsExpanded && mSheetContent != null && isSheetHeightSufficient) {
                             mBottomSheetController.expandSheet();
                         }
                     });
@@ -336,8 +339,9 @@ public class TabBottomSheetCoordinator {
     }
 
     private boolean isKeyboardShowing() {
-        if (mWindowAndroid.getKeyboardDelegate() == null) return false;
-        return mWindowAndroid.getKeyboardDelegate().isKeyboardShowing(mCoBrowseViews.getView());
+        KeyboardVisibilityDelegate keyboardDelegate = mWindowAndroid.getKeyboardDelegate();
+        if (keyboardDelegate == null) return false;
+        return keyboardDelegate.isKeyboardShowing(mCoBrowseViews.getView());
     }
 
     // Testing methods.

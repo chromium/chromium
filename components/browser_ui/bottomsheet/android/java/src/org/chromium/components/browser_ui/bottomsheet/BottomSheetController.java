@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.bottomsheet;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
+import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -130,25 +131,30 @@ public interface BottomSheetController {
      */
     boolean collapseSheet(boolean animate);
 
-    /** @return The content currently showing in the bottom sheet. */
+    /** Returns the content currently showing in the bottom sheet. */
     @Nullable BottomSheetContent getCurrentSheetContent();
 
-    /** @return The current state of the bottom sheet. */
+    /** Returns the current state of the bottom sheet. */
     @SheetState
     int getSheetState();
 
-    /** @return The target state of the bottom sheet (usually during animations). */
+    /** Returns the target state of the bottom sheet (usually during animations). */
     @SheetState
     int getTargetSheetState();
 
-    /** @return Whether the bottom sheet is currently open (expanded beyond peek state). */
+    /** Returns whether the bottom sheet is currently open (expanded beyond peek state). */
     boolean isSheetOpen();
 
-    /** @return Whether the bottom sheet is in the process of hiding. */
+    /** Returns whether the bottom sheet is in the process of hiding. */
     boolean isSheetHiding();
 
-    /** @return The current offset from the bottom of the screen that the sheet is in px. */
+    /** Returns the current offset from the bottom of the screen that the sheet is in px. */
+    @Px
     int getCurrentOffset();
+
+    /** Returns the maximum offset from the bottom of the screen that the sheet can be at in px. */
+    @Px
+    int getMaxOffset();
 
     /**
      * @return The height of the bottom sheet's parent container in px. This is not the bottom sheet

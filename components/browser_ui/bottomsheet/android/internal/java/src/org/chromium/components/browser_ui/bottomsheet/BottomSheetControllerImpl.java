@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -426,8 +427,13 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
     }
 
     @Override
-    public int getCurrentOffset() {
+    public @Px int getCurrentOffset() {
         return mBottomSheet == null ? 0 : (int) mBottomSheet.getCurrentOffsetPx();
+    }
+
+    @Override
+    public @Px int getMaxOffset() {
+        return mBottomSheet != null ? (int) mBottomSheet.getMaxOffsetPx() : 0;
     }
 
     @Override

@@ -8,6 +8,8 @@ import android.content.Context;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.annotation.Px;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.widget.R;
@@ -84,14 +86,10 @@ public class TabBottomSheetMediator extends GestureStateListener {
         mModel.set(TabBottomSheetProperties.SHEET_HEIGHT, sheetHeight);
     }
 
-    int getMaxSheetHeight() {
-        return mModel.get(TabBottomSheetProperties.SHEET_HEIGHT);
-    }
-
-    boolean isSheetHeightSufficient() {
+    boolean isSheetHeightSufficient(@Px int maxSheetOffset) {
+        int sheetHeightPx = (int) (maxSheetOffset * mFullheightRatio);
         int webUiHeightDp =
-                DisplayUtil.pxToDp(
-                        DisplayAndroid.getNonMultiDisplay(mContext), getMaxSheetHeight());
+                DisplayUtil.pxToDp(DisplayAndroid.getNonMultiDisplay(mContext), sheetHeightPx);
 
         return webUiHeightDp >= MIN_SHEET_HEIGHT_DP;
     }
