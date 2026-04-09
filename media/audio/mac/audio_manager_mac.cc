@@ -46,6 +46,7 @@
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/channel_layout.h"
 #include "media/base/limits.h"
+#include "media/base/mac/channel_layout_util_mac.h"
 #include "media/base/media_switches.h"
 
 namespace media {
@@ -381,19 +382,20 @@ void ParseCoreAudioChannelLayout(AudioChannelLayout* device_layout,
   // find out a matched one.
   *channel_layout = CHANNEL_LAYOUT_DISCRETE;
 
+  const auto descriptions = GetDescriptions(*device_layout);
   std::vector<Channels> channels_to_match;
-  for (UInt32 i = 0; i < device_layout->mNumberChannelDescriptions; i++) {
-    AudioChannelLabel label =
-        UNSAFE_TODO(device_layout->mChannelDescriptions[i]).mChannelLabel;
+  for (const auto& description : descriptions) {
+    AudioChannelLabel label = description.mChannelLabel;
     if (label == kAudioChannelLabel_Unknown) {
       continue;
     }
 
-    (*channels)++;
+    *channels += 1;
 
-    Channels channel;
-    if (AudioChannelLabelToChannel(label, &channel)) {
-      channels_to_match.push_back(channel);
+    const std::optional<Channels> maybe_channel =
+        AudioChannelLabelToChannel(label);
+    if (maybe_channel.has_value()) {
+      channels_to_match.push_back(*maybe_channel);
     }
   }
 
@@ -496,6 +498,7 @@ static bool GetOutputDeviceChannelsAndLayout(AudioUnit audio_unit,
     DLOG(ERROR) << "Failed to retrieve output device channel layout.";
     return false;
   }
+
   ParseCoreAudioChannelLayout(scoped_device_layout->layout(), channels,
                               channel_layout);
   return true;

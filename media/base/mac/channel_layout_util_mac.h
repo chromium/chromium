@@ -5,35 +5,59 @@
 #ifndef MEDIA_BASE_MAC_CHANNEL_LAYOUT_UTIL_MAC_H_
 #define MEDIA_BASE_MAC_CHANNEL_LAYOUT_UTIL_MAC_H_
 
-
 #include <AudioToolbox/AudioToolbox.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "media/base/channel_layout.h"
 #include "media/base/media_export.h"
 
 namespace media {
 
+inline base::span<const AudioChannelDescription> GetDescriptions(
+    const AudioChannelLayout& layout) {
+  // SAFETY: the core audio framework guarantees that the channel descriptions
+  // variable array is of size `mNumberChannelDescriptions`.
+  // https://developer.apple.com/documentation/coreaudiotypes/audiochannellayout/mchanneldescriptions
+  return UNSAFE_BUFFERS(base::span<const AudioChannelDescription>(
+      layout.mChannelDescriptions, layout.mNumberChannelDescriptions));
+}
+
+inline base::span<AudioChannelDescription> GetDescriptions(
+    AudioChannelLayout& layout) {
+  // SAFETY: the core audio framework guarantees that the channel descriptions
+  // variable array is of size `mNumberChannelDescriptions`.
+  // https://developer.apple.com/documentation/coreaudiotypes/audiochannellayout/mchanneldescriptions
+  return UNSAFE_BUFFERS(base::span<AudioChannelDescription>(
+      layout.mChannelDescriptions, layout.mNumberChannelDescriptions));
+}
+
 // Used to store audio channel layout and layout size.
 class MEDIA_EXPORT ScopedAudioChannelLayout {
  public:
   explicit ScopedAudioChannelLayout(size_t layout_size);
+  ScopedAudioChannelLayout(const ScopedAudioChannelLayout&) = delete;
+  ScopedAudioChannelLayout(ScopedAudioChannelLayout&&) = delete;
+  ScopedAudioChannelLayout& operator=(const ScopedAudioChannelLayout&) = delete;
+  ScopedAudioChannelLayout& operator=(ScopedAudioChannelLayout&&) = delete;
   ~ScopedAudioChannelLayout();
 
-  ScopedAudioChannelLayout(const ScopedAudioChannelLayout&) = delete;
-  ScopedAudioChannelLayout& operator=(const ScopedAudioChannelLayout&) = delete;
-
-  size_t layout_size() const { return layout_.size(); }
+  size_t layout_size() const { return layout_memory_.size(); }
 
   AudioChannelLayout* layout() {
-    return UNSAFE_TODO(reinterpret_cast<AudioChannelLayout*>(layout_.data()));
+    return reinterpret_cast<AudioChannelLayout*>(layout_memory_.data());
+  }
+  const AudioChannelLayout* layout() const {
+    return reinterpret_cast<const AudioChannelLayout*>(layout_memory_.data());
   }
 
  private:
-  std::vector<uint8_t> layout_;
+  base::HeapArray<uint8_t> layout_memory_;
 };
 
 // Mapping from Chrome's channel to CoreAudio's channel.
@@ -41,9 +65,9 @@ MEDIA_EXPORT AudioChannelLabel
 ChannelToAudioChannelLabel(Channels input_channel);
 
 // Mapping from CoreAudio's channel to Chrome's channel.
-// Return false if couldn't find a matched channel.
-MEDIA_EXPORT bool AudioChannelLabelToChannel(AudioChannelLabel input_channel,
-                                             Channels* output_channel);
+// Return std::nullopt if couldn't find a matched channel.
+MEDIA_EXPORT std::optional<Channels> AudioChannelLabelToChannel(
+    AudioChannelLabel input_channel);
 
 // Mapping from Chrome's layout to CoreAudio's layout.
 MEDIA_EXPORT std::unique_ptr<ScopedAudioChannelLayout>

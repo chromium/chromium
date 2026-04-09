@@ -197,8 +197,8 @@ void CrasUnifiedStream::Start(AudioSourceCallback* callback) {
   static const int kChannelMap[] = {
       CRAS_CH_FL, CRAS_CH_FR, CRAS_CH_FC, CRAS_CH_LFE, CRAS_CH_RL, CRAS_CH_RR,
       CRAS_CH_FLC, CRAS_CH_FRC, CRAS_CH_RC, CRAS_CH_SL, CRAS_CH_SR,
-      // CRAS doesn't currently define explicit mappings for x.y.4 height
-      // channels.
+      // CRAS doesn't currently define explicit mappings for all channels.
+      kUnsupportedChannel, kUnsupportedChannel, kUnsupportedChannel,
       kUnsupportedChannel, kUnsupportedChannel, kUnsupportedChannel,
       kUnsupportedChannel};
   static_assert(std::size(kChannelMap) == CHANNELS_MAX + 1,

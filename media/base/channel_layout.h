@@ -165,10 +165,13 @@ enum Channels {
   BACK_CENTER = 8,
   SIDE_LEFT = 9,
   SIDE_RIGHT = 10,
-  TOP_FRONT_LEFT = 11,
-  TOP_FRONT_RIGHT = 12,
-  TOP_BACK_LEFT = 13,
-  TOP_BACK_RIGHT = 14,
+  TOP_CENTER = 11,
+  TOP_FRONT_LEFT = 12,
+  TOP_FRONT_CENTER = 13,
+  TOP_FRONT_RIGHT = 14,
+  TOP_BACK_LEFT = 15,
+  TOP_BACK_CENTER = 16,
+  TOP_BACK_RIGHT = 17,
   CHANNELS_MAX =
       TOP_BACK_RIGHT,  // Must always equal the largest value ever logged.
 };

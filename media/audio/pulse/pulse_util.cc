@@ -85,6 +85,20 @@ pa_channel_position ChromiumToPAChannelPosition(Channels channel) {
       return PA_CHANNEL_POSITION_SIDE_LEFT;
     case SIDE_RIGHT:
       return PA_CHANNEL_POSITION_SIDE_RIGHT;
+    case TOP_CENTER:
+      return PA_CHANNEL_POSITION_TOP_CENTER;
+    case TOP_FRONT_LEFT:
+      return PA_CHANNEL_POSITION_TOP_FRONT_LEFT;
+    case TOP_FRONT_CENTER:
+      return PA_CHANNEL_POSITION_TOP_FRONT_CENTER;
+    case TOP_FRONT_RIGHT:
+      return PA_CHANNEL_POSITION_TOP_FRONT_RIGHT;
+    case TOP_BACK_LEFT:
+      return PA_CHANNEL_POSITION_TOP_REAR_LEFT;
+    case TOP_BACK_CENTER:
+      return PA_CHANNEL_POSITION_TOP_REAR_CENTER;
+    case TOP_BACK_RIGHT:
+      return PA_CHANNEL_POSITION_TOP_REAR_RIGHT;
     default:
       NOTREACHED() << "Invalid channel: " << channel;
   }
