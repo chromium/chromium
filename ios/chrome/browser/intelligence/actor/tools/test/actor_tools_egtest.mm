@@ -621,4 +621,36 @@ FindNodeResult FindNodeWithText(
                          @"Element was not scrolled the expected distance.");
 }
 
+// Tests that the ScrollTool can successfully scroll the viewport when target is
+// omitted.
+- (void)testScrollTool_scrollsViewport {
+  const std::string scrollableHTML = R"(
+      <div id='big-div' style='height: 2000px;'>
+      </div>
+  )";
+  [ChromeEarlGrey loadURL:[self URLForHTML:scrollableHTML]];
+  [ChromeEarlGrey
+      waitForWebStateContainingElement:[ElementSelector
+                                           selectorWithCSSSelector:"#big-div"]];
+
+  NSData* apcData = [ActorAppInterface fetchLatestAPC];
+  optimization_guide::proto::PageContext pageContext;
+  GREYAssertTrue(pageContext.ParseFromArray([apcData bytes], [apcData length]),
+                 @"Failed to parse PageContext");
+
+  optimization_guide::proto::Action action;
+  optimization_guide::proto::ScrollAction* scrollAction =
+      action.mutable_scroll();
+  scrollAction->set_tab_id([ChromeEarlGrey currentTabID].intValue);
+  scrollAction->set_direction(optimization_guide::proto::ScrollAction::DOWN);
+  scrollAction->set_distance(123);
+
+  [self executeAction:action];
+
+  base::Value scrollTop = [ChromeEarlGrey
+      evaluateJavaScript:@"document.scrollingElement.scrollTop.toString()"];
+  GREYAssertEqualObjects(base::SysUTF8ToNSString(scrollTop.GetString()), @"123",
+                         @"Viewport was not scrolled");
+}
+
 @end

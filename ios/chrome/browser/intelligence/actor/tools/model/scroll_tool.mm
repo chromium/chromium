@@ -11,6 +11,7 @@
 #import "base/functional/callback.h"
 #import "base/types/expected.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_constants.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_error.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/scroll_tool_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -41,19 +42,16 @@ base::expected<std::unique_ptr<ScrollTool>, ActorToolError> ScrollTool::Create(
         ActorToolError{ActorToolErrorCode::kCreationMissingRequiredFields});
   }
 
-  if (!action.has_target()) {
-    return base::unexpected(
-        ActorToolError{ActorToolErrorCode::kCreationMissingRequiredFields});
-  }
+  if (action.has_target()) {
+    const auto& target = action.target();
+    bool can_target_by_coordinate = target.has_coordinate();
+    bool can_target_by_node_id =
+        target.has_content_node_id() && target.has_document_identifier();
 
-  const auto& target = action.target();
-  bool can_target_by_coordinate = target.has_coordinate();
-  bool can_target_by_node_id =
-      target.has_content_node_id() && target.has_document_identifier();
-
-  if (!can_target_by_coordinate && !can_target_by_node_id) {
-    return base::unexpected(
-        ActorToolError{ActorToolErrorCode::kCreationMissingRequiredFields});
+    if (!can_target_by_coordinate && !can_target_by_node_id) {
+      return base::unexpected(
+          ActorToolError{ActorToolErrorCode::kCreationMissingRequiredFields});
+    }
   }
 
   return std::unique_ptr<ScrollTool>(
@@ -71,6 +69,21 @@ void ScrollTool::Execute(ToolExecutionCallback callback) {
   if (!frames_manager || !frames_manager->GetMainWebFrame()) {
     std::move(callback).Run(base::unexpected(
         ActorToolError{ActorToolErrorCode::kExecutionMissingDependencies}));
+    return;
+  }
+
+  // Fall back to targeting the document root if a target is not specified.
+  // This follows the behavior of Desktop's ScrollTool, see
+  // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/actor/actor_proto_conversion.cc;l=264-277;drc=4a530ad3251da1da3fbde56051d440a7df0a60bd
+  if (!action_.has_target()) {
+    auto* target = action_.mutable_target();
+    target->set_content_node_id(kRootElementDomNodeId);
+    target->mutable_document_identifier()->set_serialized_token(
+        frames_manager->GetMainWebFrame()->GetFrameId());
+    OnTargetFrameResolved(
+        action_, std::move(callback),
+        base::ok(ActionTargetJavaScriptFeature::TargetFrameResult{
+            frames_manager->GetMainWebFrame(), *target}));
     return;
   }
 

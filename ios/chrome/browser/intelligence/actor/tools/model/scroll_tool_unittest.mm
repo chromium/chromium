@@ -117,7 +117,7 @@ TEST_F(ScrollToolTest, Create_MissingDistance) {
             result.error().code);
 }
 
-TEST_F(ScrollToolTest, Create_MissingTarget) {
+TEST_F(ScrollToolTest, Create_MissingTarget_Supported) {
   optimization_guide::proto::Action action;
   auto web_state = std::make_unique<web::FakeWebState>();
   web_state->SetBrowserState(profile_.get());
@@ -134,9 +134,7 @@ TEST_F(ScrollToolTest, Create_MissingTarget) {
   base::expected<std::unique_ptr<ScrollTool>, ActorToolError> result =
       ScrollTool::Create(action.scroll(), profile_.get());
 
-  EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(ActorToolErrorCode::kCreationMissingRequiredFields,
-            result.error().code);
+  EXPECT_TRUE(result.has_value());
 }
 
 TEST_F(ScrollToolTest, Execute_WebStateDestroyed_ReturnsError) {

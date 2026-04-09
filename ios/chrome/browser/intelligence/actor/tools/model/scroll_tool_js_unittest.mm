@@ -18,6 +18,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_constants.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/javascript_test.h"
 #import "ios/web/public/test/js_test_util.h"
@@ -27,6 +28,8 @@
 
 using optimization_guide::proto::Coordinate;
 using optimization_guide::proto::ScrollAction;
+
+namespace actor {
 
 namespace {
 
@@ -205,7 +208,7 @@ class ScrollToolJavascriptTest
     return [result boolValue];
   }
 
- private:
+ protected:
   int GetNodeId(const std::string& element_id) {
     std::string script = base::StringPrintf(
         R"(
@@ -355,20 +358,6 @@ TEST_P(ScrollToolJavascriptTest, Scroll_WithZoom_Success) {
       }));
 }
 
-TEST_P(ScrollToolJavascriptTest, Scroll_NotScrollable_Fails) {
-  std::string node_id = "non_scrollable_div";
-
-  NSDictionary* result = Scroll(
-      node_id, ScrollActionFields{static_cast<int>(ScrollAction::DOWN), 50});
-
-  EXPECT_FALSE([result[@"success"] boolValue]);
-  if (GetParam() == CallType::kByCoordinate) {
-    EXPECT_NSEQ(result[@"message"], @"Element has no scrollable ancestor.");
-  } else {
-    EXPECT_NSEQ(result[@"message"], @"Element is not scrollable.");
-  }
-}
-
 INSTANTIATE_TEST_SUITE_P(,
                          ScrollToolJavascriptTest,
                          ::testing::Values(CallType::kByCoordinate,
@@ -392,6 +381,15 @@ TEST_F(ScrollToolJavascriptTest, Scroll_InvalidDirection_Fails) {
   EXPECT_NSEQ(result[@"message"], @"Element is not scrollable.");
 }
 
+TEST_P(ScrollToolJavascriptTest, ScrollByNodeId_NotScrollable_Fails) {
+  int node_id = GetNodeId("non_scrollable_div");
+  NSDictionary* result = ScrollByNodeId(
+      node_id, ScrollActionFields{static_cast<int>(ScrollAction::DOWN), 100});
+
+  EXPECT_FALSE([result[@"success"] boolValue]);
+  EXPECT_NSEQ(result[@"message"], @"Element is not scrollable.");
+}
+
 TEST_F(ScrollToolJavascriptTest, Scroll_ByCoordinate_InvalidCoordinates) {
   NSDictionary* result = ScrollByCoordinate(
       -10, -10, static_cast<int>(Coordinate::PIXEL_TYPE_DIPS),
@@ -408,52 +406,20 @@ TEST_F(ScrollToolJavascriptTest, Scroll_ByNodeId_InvalidNode) {
   EXPECT_NSEQ(result[@"message"], @"No element found with id -1.");
 }
 
-TEST_F(ScrollToolJavascriptTest, IsScrollable_DocumentElement) {
-  EXPECT_FALSE(IsScrollable(@"document.documentElement",
-                            static_cast<int>(ScrollAction::DOWN)));
-  EXPECT_FALSE(IsScrollable(@"document.documentElement",
-                            static_cast<int>(ScrollAction::RIGHT)));
+TEST_F(ScrollToolJavascriptTest, IsScrollable_DocumentScrollableElement) {
+  // Ensure that the document is scrollable.
+  int client_height =
+      [web::test::ExecuteJavaScript(web_view(), base::SysUTF8ToNSString(R"(
+    document.documentElement.clientHeight;
+  )")) intValue];
+  int body_height =
+      [web::test::ExecuteJavaScript(web_view(), base::SysUTF8ToNSString(R"(
+    document.body.clientHeight;
+  )")) intValue];
+  ASSERT_TRUE(body_height > client_height);
 
-  // Make it scrollable by ensuring content overflows
-  id __unused js_result =
-      web::test::ExecuteJavaScript(web_view(), base::SysUTF8ToNSString(R"(
-    document.documentElement.style.overflow = 'auto';
-    var inner = document.createElement('div');
-    inner.style.height = '4000px';
-    inner.style.width = '4000px';
-    document.documentElement.appendChild(inner);
-    true;
-  )"));
-
-  EXPECT_TRUE(IsScrollable(@"document.documentElement",
+  EXPECT_TRUE(IsScrollable(@"document.scrollingElement",
                            static_cast<int>(ScrollAction::DOWN)));
-  EXPECT_TRUE(IsScrollable(@"document.documentElement",
-                           static_cast<int>(ScrollAction::RIGHT)));
-}
-
-TEST_F(ScrollToolJavascriptTest, IsScrollable_Body) {
-  EXPECT_FALSE(
-      IsScrollable(@"document.body", static_cast<int>(ScrollAction::DOWN)));
-  EXPECT_FALSE(
-      IsScrollable(@"document.body", static_cast<int>(ScrollAction::RIGHT)));
-
-  // Make it scrollable by ensuring content overflows the body's view.
-  id __unused js_result =
-      web::test::ExecuteJavaScript(web_view(), base::SysUTF8ToNSString(R"(
-    document.body.style.height = '100px';
-    document.body.style.width = '100px';
-    document.body.style.overflow = 'auto';
-    var inner = document.createElement('div');
-    inner.style.height = '4000px';
-    inner.style.width = '4000px';
-    document.body.appendChild(inner);
-    true;
-  )"));
-
-  EXPECT_TRUE(
-      IsScrollable(@"document.body", static_cast<int>(ScrollAction::DOWN)));
-  EXPECT_TRUE(
-      IsScrollable(@"document.body", static_cast<int>(ScrollAction::RIGHT)));
 }
 
 TEST_F(ScrollToolJavascriptTest, IsScrollable_ScrollableDiv) {
@@ -511,3 +477,35 @@ TEST_F(ScrollToolJavascriptTest, IsScrollable_NotOverflowingDiv) {
   EXPECT_FALSE(IsScrollable(@"document.getElementById('not_overflowing_div')",
                             static_cast<int>(ScrollAction::RIGHT)));
 }
+
+TEST_F(ScrollToolJavascriptTest,
+       ScrollByNodeId_kRootElementDomNodeId_ScrollsViewport) {
+  // Ensure that the document is scrollable.
+  int client_height =
+      [web::test::ExecuteJavaScript(web_view(), base::SysUTF8ToNSString(R"(
+    document.documentElement.clientHeight;
+  )")) intValue];
+  int body_height =
+      [web::test::ExecuteJavaScript(web_view(), base::SysUTF8ToNSString(R"(
+    document.body.clientHeight;
+  )")) intValue];
+  ASSERT_TRUE(body_height > client_height);
+  float initial_scroll_top = [web::test::ExecuteJavaScript(
+      web_view(), @"document.scrollingElement.scrollTop;") floatValue];
+  float distance = 100.0;
+
+  NSDictionary* result = ScrollByNodeId(
+      kRootElementDomNodeId,
+      ScrollActionFields{static_cast<int>(ScrollAction::DOWN), distance});
+
+  EXPECT_TRUE([result[@"success"] boolValue])
+      << base::SysNSStringToUTF8(result[@"message"]);
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^{
+        float new_scroll_top = [web::test::ExecuteJavaScript(
+            web_view(), @"document.scrollingElement.scrollTop;") floatValue];
+        return new_scroll_top == initial_scroll_top + distance;
+      }));
+}
+
+}  // namespace actor

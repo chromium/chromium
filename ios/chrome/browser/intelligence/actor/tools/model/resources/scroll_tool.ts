@@ -35,6 +35,9 @@ enum ScrollDirection {
   DOWN = 4,
 }
 
+type ScrollDirectionX = ScrollDirection.LEFT|ScrollDirection.RIGHT;
+type ScrollDirectionY = ScrollDirection.UP|ScrollDirection.DOWN;
+
 function getScrollDirection(direction: number): ScrollDirection {
   switch (direction) {
     case 1:
@@ -57,6 +60,61 @@ interface ScrollParams {
   direction: ScrollDirection;
 }
 
+// Checks if an elements style allows scrolling.
+function hasScrollableOverflowStyle(
+    element: Element, overflowProperty: string): boolean {
+  const overflowStyle =
+      window.getComputedStyle(element).getPropertyValue(overflowProperty);
+  if (overflowStyle === 'auto' || overflowStyle === 'scroll') {
+    return true;
+  }
+  // `document.scrollingElement` may not have the overflow-* values set, in
+  // which case the browser treats 'visible' like 'auto'. See
+  // https://www.w3.org/TR/css-overflow-3/#overflow-propagation.
+  const isDocumentScrollingElement = element === document.scrollingElement;
+  return (isDocumentScrollingElement && overflowStyle === 'visible');
+}
+
+// Checks if an element is scrollable along the x-axis in the given direction.
+function isScrollableX(element: Element, direction: ScrollDirectionX): boolean {
+  if (!hasScrollableOverflowStyle(element, /*overflowProperty*/ 'overflow-x')) {
+    return false;
+  }
+  const hasScrollableContentX = element.scrollWidth > element.clientWidth;
+  if (!hasScrollableContentX) {
+    return false;
+  }
+  switch (direction) {
+    case ScrollDirection.LEFT:
+      return element.scrollLeft > 0;
+    case ScrollDirection.RIGHT:
+      return Math.ceil(element.scrollLeft) + element.clientWidth <
+          element.scrollWidth;
+    default:
+      return false;  // Unreachable
+  }
+}
+
+// Checks if an element is scrollable along the y-axis in the given direction.
+function isScrollableY(element: Element, direction: ScrollDirectionY): boolean {
+  if (!hasScrollableOverflowStyle(element, /*overflowProperty*/ 'overflow-y')) {
+    return false;
+  }
+  const hasScrollableContentY = element.scrollHeight > element.clientHeight;
+  if (!hasScrollableContentY) {
+    return false;
+  }
+  switch (direction) {
+    case ScrollDirection.UP:
+      return element.scrollTop > 0;
+    case ScrollDirection.DOWN:
+      return Math.ceil(element.scrollTop) + element.clientHeight <
+          element.scrollHeight;
+    default:
+      return false;  // Unreachable
+  }
+}
+
 /**
  * Checks if an element is scrollable in a given direction.
  * @param element The element to check.
@@ -64,31 +122,15 @@ interface ScrollParams {
  */
 export function isScrollable(
     element: Element, direction: ScrollDirection): boolean {
-  const style = window.getComputedStyle(element);
-  const overflowX = style.getPropertyValue('overflow-x');
-  const overflowY = style.getPropertyValue('overflow-y');
-  const hasOverflowX = overflowX === 'auto' || overflowX === 'scroll';
-  const hasOverflowY = overflowY === 'auto' || overflowY === 'scroll';
-  const hasScrollableContentX = element.scrollWidth > element.clientWidth;
-  const hasScrollableContentY = element.scrollHeight > element.clientHeight;
-
-  const canScrollLeft = hasScrollableContentX && element.scrollLeft > 0;
-  const canScrollRight = hasScrollableContentX &&
-      Math.ceil(element.scrollLeft) + element.clientWidth < element.scrollWidth;
-  const canScrollUp = hasScrollableContentY && element.scrollTop > 0;
-  const canScrollDown = hasScrollableContentY &&
-      Math.ceil(element.scrollTop) + element.clientHeight <
-          element.scrollHeight;
-
   switch (direction) {
     case ScrollDirection.LEFT:
-      return hasOverflowX && canScrollLeft;
+      return isScrollableX(element, direction);
     case ScrollDirection.RIGHT:
-      return hasOverflowX && canScrollRight;
+      return isScrollableX(element, direction);
     case ScrollDirection.UP:
-      return hasOverflowY && canScrollUp;
+      return isScrollableY(element, direction);
     case ScrollDirection.DOWN:
-      return hasOverflowY && canScrollDown;
+      return isScrollableY(element, direction);
     default:
       return false;
   }
@@ -252,7 +294,13 @@ function scrollByNodeId(
   success: boolean,
   message: string,
 } {
-  const node = getNodeById(nodeId, window);
+  let node: Node|null = null;
+  if (nodeId === 0) {
+    node = document.scrollingElement;
+  } else {
+    node = getNodeById(nodeId, window);
+  }
+
   if (!node) {
     return {
       success: false,

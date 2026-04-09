@@ -65,6 +65,10 @@ source_set("web_actor_interface") {
   ]
 }
 
+source_set("actor_tool_constants") {
+  sources = [ "actor_tool_constants.h" ]
+}
+
 source_set("navigate_tool") {
   sources = [
     "navigate_tool.h",
@@ -212,6 +216,7 @@ source_set("scroll_tool") {
 
   deps = [
     ":actor_interface",
+    ":actor_tool_constants",
     ":actor_tool_error",
     ":java_script_features",
     ":web_actor_interface",
@@ -292,6 +297,7 @@ source_set("unit_tests") {
   deps = [
     ":action_target_ts",
     ":actor_interface",
+    ":actor_tool_constants",
     ":actor_tool_error",
     ":actor_tool_factory",
     ":actor_tool_java_script_feature_test_base",
