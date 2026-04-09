@@ -1012,10 +1012,6 @@ TEST_F(ExternalBeginFrameSourceTest, GetMissedBeginFrameArgs) {
 
 // Tests that an InputClient is notified before observers.
 TEST_F(ExternalBeginFrameSourceTest, InputClientNotifiedFirst) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kFlingSchedulingImprovements);
-
   using ::testing::InSequence;
   using ::testing::SaveArg;
 
