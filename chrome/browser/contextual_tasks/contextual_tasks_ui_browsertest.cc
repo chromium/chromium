@@ -9,9 +9,13 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/contextual_search/contextual_search_service_factory.h"
+#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -23,6 +27,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/contextual_search/contextual_search_context_controller.h"
+#include "components/contextual_search/input_state_model.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
@@ -211,6 +217,11 @@ class ContextualTasksUIBrowserTest : public InProcessBrowserTest {
 
   void TriggerOnInnerWebContentsCreated(content::WebContents* inner) {
     controller_->OnInnerWebContentsCreated(inner);
+  }
+
+  ContextualTasksComposeboxHandler* GetComposeboxHandler() {
+    return static_cast<ContextualTasksComposeboxHandler*>(
+        controller_->composebox_handler_.get());
   }
 
  protected:
@@ -484,4 +495,150 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest, CanZoom) {
   auto* zoom_controller = zoom::ZoomController::FromWebContents(web_contents);
   ASSERT_EQ(zoom::ZoomController::ZoomMode::ZOOM_MODE_DEFAULT,
             zoom_controller->zoom_mode());
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
+                       UpdateModelFromUrlOnNavigation) {
+  omnibox::SearchboxConfig config;
+
+  auto* fast_config = config.add_model_configs();
+  fast_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  fast_config->mutable_rule()->set_model(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  auto* fast_param = fast_config->add_aim_url_params();
+  fast_param->set_param_key("udm");
+  fast_param->set_param_value("50");
+
+  auto* pro_config = config.add_model_configs();
+  pro_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  pro_config->mutable_rule()->set_model(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  auto* pro_param1 = pro_config->add_aim_url_params();
+  pro_param1->set_param_key("udm");
+  pro_param1->set_param_value("50");
+  auto* pro_param2 = pro_config->add_aim_url_params();
+  pro_param2->set_param_key("arv");
+  pro_param2->set_param_value("1");
+
+  auto* sibling_config = config.add_model_configs();
+  sibling_config->set_model(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE);
+  sibling_config->mutable_rule()->set_model(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE);
+  auto* sib_param1 = sibling_config->add_aim_url_params();
+  sib_param1->set_param_key("udm");
+  sib_param1->set_param_value("50");
+  auto* sib_param2 = sibling_config->add_aim_url_params();
+  sib_param2->set_param_key("xyz");
+  sib_param2->set_param_value("1");
+
+  auto* contextual_search_service =
+      ContextualSearchServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(contextual_search_service);
+
+  auto config_params = std::make_unique<
+      contextual_search::ContextualSearchContextController::ConfigParams>();
+  config_params->send_lns_surface = true;
+  config_params->enable_viewport_images = true;
+  config_params->attach_page_title_and_url_to_suggest_requests = false;
+
+  auto session_handle = contextual_search_service->CreateSession(
+      std::move(config_params),
+      contextual_search::ContextualSearchSource::kContextualTasks,
+      /*invocation_source=*/std::nullopt);
+  ASSERT_TRUE(session_handle);
+
+  GURL initial_url("https://example.com/");
+  auto input_state_model = std::make_unique<contextual_search::InputStateModel>(
+      *session_handle, config, initial_url, /*is_off_the_record=*/false);
+
+  content::WebContents* web_contents =
+      TabListInterface::From(browser())->GetActiveTab()->GetContents();
+  auto* helper = ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+      web_contents);
+
+  mojo::PendingRemote<contextual_tasks::mojom::Page> base_page;
+  auto base_page_receiver = base_page.InitWithNewPipeAndPassReceiver();
+  mojo::PendingReceiver<contextual_tasks::mojom::PageHandler>
+      base_handler_receiver;
+  controller_->CreatePageHandler(std::move(base_page),
+                                 std::move(base_handler_receiver));
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  controller_->SetTaskId(task_id);
+
+  helper->SetTaskSession(task_id, std::move(session_handle),
+                         std::move(input_state_model));
+
+  mojo::PendingReceiver<composebox::mojom::PageHandler> handler_receiver;
+  mojo::Remote<composebox::mojom::PageHandler> handler_remote(
+      handler_receiver.InitWithNewPipeAndPassRemote());
+  mojo::PendingRemote<composebox::mojom::Page> composebox_page;
+  std::ignore = composebox_page.InitWithNewPipeAndPassReceiver();
+  mojo::PendingReceiver<searchbox::mojom::PageHandler>
+      searchbox_handler_receiver;
+  mojo::PendingRemote<searchbox::mojom::Page> searchbox_page;
+  std::ignore = searchbox_page.InitWithNewPipeAndPassReceiver();
+
+  controller_->CreatePageHandler(
+      std::move(composebox_page), std::move(handler_receiver),
+      std::move(searchbox_page), std::move(searchbox_handler_receiver));
+
+  std::unique_ptr<content::WebContents> inner_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->profile()));
+
+  TriggerOnInnerWebContentsCreated(inner_contents.get());
+
+  auto* handler = GetComposeboxHandler();
+  ASSERT_TRUE(handler);
+  ASSERT_TRUE(handler->input_state_model());
+
+  // Navigate with Fast model parameters.
+  GURL fast_url = embedded_test_server()->GetURL("/title1.html?udm=50");
+  inner_contents->GetController().LoadURL(
+      fast_url, content::Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
+  EXPECT_TRUE(content::WaitForLoadStop(inner_contents.get()));
+
+  EXPECT_EQ(handler->input_state_model()->get_state_for_testing().active_model,
+            omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+
+  // Navigate with Pro model parameters.
+  GURL pro_url = embedded_test_server()->GetURL("/title1.html?udm=50&arv=1");
+  inner_contents->GetController().LoadURL(
+      pro_url, content::Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
+  EXPECT_TRUE(content::WaitForLoadStop(inner_contents.get()));
+
+  EXPECT_EQ(handler->input_state_model()->get_state_for_testing().active_model,
+            omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+
+  // Permutation Reversal Navigations
+  GURL reversed_pro_url =
+      embedded_test_server()->GetURL("/title1.html?arv=1&udm=50");
+  inner_contents->GetController().LoadURL(reversed_pro_url, content::Referrer(),
+                                          ui::PAGE_TRANSITION_TYPED,
+                                          std::string());
+  EXPECT_TRUE(content::WaitForLoadStop(inner_contents.get()));
+  EXPECT_EQ(handler->input_state_model()->get_state_for_testing().active_model,
+            omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+
+  // Sibling ambiguity rank Navigations
+  GURL ambiguous_url =
+      embedded_test_server()->GetURL("/title1.html?udm=50&arv=1&xyz=1");
+  inner_contents->GetController().LoadURL(ambiguous_url, content::Referrer(),
+                                          ui::PAGE_TRANSITION_TYPED,
+                                          std::string());
+  EXPECT_TRUE(content::WaitForLoadStop(inner_contents.get()));
+  EXPECT_EQ(handler->input_state_model()->get_state_for_testing().active_model,
+            omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+
+  // Differentiating sibling specificity Navigations
+  GURL sibling_url =
+      embedded_test_server()->GetURL("/title1.html?udm=50&xyz=1");
+  inner_contents->GetController().LoadURL(sibling_url, content::Referrer(),
+                                          ui::PAGE_TRANSITION_TYPED,
+                                          std::string());
+  EXPECT_TRUE(content::WaitForLoadStop(inner_contents.get()));
+  EXPECT_EQ(handler->input_state_model()->get_state_for_testing().active_model,
+            omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE);
 }

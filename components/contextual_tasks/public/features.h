@@ -71,6 +71,11 @@ BASE_DECLARE_FEATURE(kContextualTasksRoundedClipPath);
 // panel. The menu is still shown for lens flows.
 BASE_DECLARE_FEATURE(kContextualTasksHideMenuOnAiPage);
 
+// Enables updating the model from URL parameters on every inner navigation.
+BASE_DECLARE_FEATURE(kContextualTasksUpdateModelOnNavigation);
+
+bool GetIsContextualTasksUpdateModeOnNavigationEnabled();
+
 // Enum denoting which entry point can show when enabled.
 enum class EntryPointOption {
   kNoEntryPoint,

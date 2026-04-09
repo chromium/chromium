@@ -898,4 +898,89 @@ TEST_F(InputStateModelCompatibilityTest, ForcedDisabledToolsAndInputTypes) {
                   omnibox::InputType::INPUT_TYPE_BROWSER_TAB)));
 }
 
+TEST_F(InputStateModelTest, UpdateModelFromUrl) {
+  omnibox::SearchboxConfig config;
+
+  auto* regular_config = config.add_model_configs();
+  regular_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  regular_config->mutable_rule()->set_model(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+
+  auto* reg_param = regular_config->add_aim_url_params();
+  reg_param->set_param_key("udm");
+  reg_param->set_param_value("50");
+
+  auto* pro_config = config.add_model_configs();
+  pro_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  pro_config->mutable_rule()->set_model(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+
+  auto* pro_param1 = pro_config->add_aim_url_params();
+  pro_param1->set_param_key("udm");
+  pro_param1->set_param_value("50");
+  auto* pro_param2 = pro_config->add_aim_url_params();
+  pro_param2->set_param_key("arv");
+  pro_param2->set_param_value("1");
+
+  auto* sibling_config = config.add_model_configs();
+  sibling_config->set_model(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE);
+  sibling_config->mutable_rule()->set_model(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE);
+
+  auto* sib_param1 = sibling_config->add_aim_url_params();
+  sib_param1->set_param_key("udm");
+  sib_param1->set_param_value("50");
+  auto* sib_param2 = sibling_config->add_aim_url_params();
+  sib_param2->set_param_key("xyz");
+  sib_param2->set_param_value("1");
+
+  // Initialize with Pro URL.
+  GURL pro_url("https://example.com/?udm=50&arv=1");
+  input_state_model_ = std::make_unique<InputStateModel>(
+      session_handle_, config, pro_url, /*is_off_the_record=*/false);
+
+  EXPECT_EQ(input_state_model_->get_state_for_testing().active_model,
+            omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+
+  // Update with Regular URL.
+  GURL regular_url("https://example.com/?udm=50");
+  input_state_model_->UpdateModelFromUrl(regular_url);
+
+  EXPECT_EQ(input_state_model_->get_state_for_testing().active_model,
+            omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+
+  // Permutation Reversal: Order of params shouldn't affect match.
+  GURL reversed_pro_url("https://example.com/?arv=1&udm=50");
+  input_state_model_->UpdateModelFromUrl(reversed_pro_url);
+  EXPECT_EQ(input_state_model_->get_state_for_testing().active_model,
+            omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+
+  // Noise subset: Extra parameters don't break match if required are present.
+  GURL noisy_regular_url("https://example.com/?udm=50&noise=x");
+  input_state_model_->UpdateModelFromUrl(noisy_regular_url);
+  EXPECT_EQ(input_state_model_->get_state_for_testing().active_model,
+            omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+
+  // Sibling ambiguity rank: Both match with count 2. Deterministic precedence
+  // (first achieves higher max wins or stable keep).
+  GURL ambiguous_url("https://example.com/?udm=50&arv=1&xyz=1");
+  input_state_model_->UpdateModelFromUrl(ambiguous_url);
+  EXPECT_EQ(input_state_model_->get_state_for_testing().active_model,
+            omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+
+  // Differentiating sibling specificity: Match sibling rule keys.
+  GURL sibling_url("https://example.com/?udm=50&xyz=1");
+  input_state_model_->UpdateModelFromUrl(sibling_url);
+  EXPECT_EQ(input_state_model_->get_state_for_testing().active_model,
+            omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE);
+
+  // Default fallback: Missing required keys.
+  GURL missing_keys_url("https://example.com/?arv=1");
+  input_state_model_->UpdateModelFromUrl(missing_keys_url);
+  // Default fallback: No match retains previous active model.
+  EXPECT_EQ(input_state_model_->get_state_for_testing().active_model,
+            omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE);
+}
+
 }  // namespace contextual_search

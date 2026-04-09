@@ -28,6 +28,7 @@ class TaskInfoDelegate {
   virtual void SetThreadTitle(std::optional<std::string> title) = 0;
   virtual void SetAimUrl(const GURL& url) = 0;
   virtual void SetIsAiPage(bool is_ai_page) = 0;
+  virtual void UpdateModelModeFromUrl(const GURL& url) = 0;
   virtual bool IsShownInTab() = 0;
   virtual BrowserWindowInterface* GetBrowser() = 0;
   virtual content::WebContents* GetWebUIWebContents() = 0;

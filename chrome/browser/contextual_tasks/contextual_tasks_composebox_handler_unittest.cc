@@ -225,6 +225,15 @@ class ContextualTasksComposeboxHandlerTest
   ContextualTasksComposeboxHandlerTest() = default;
   ~ContextualTasksComposeboxHandlerTest() override = default;
 
+  std::unique_ptr<contextual_search::InputStateModel>
+  CreateMockInputStateModel() {
+    omnibox::SearchboxConfig config;
+    auto model = std::make_unique<contextual_search::InputStateModel>(
+        *session_handle_, config, GURL(), false);
+    model->setActiveModel(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+    return model;
+  }
+
   void SetUp() override {
     feature_list_.InitAndEnableFeature(contextual_tasks::kContextualTasks);
 
@@ -2849,14 +2858,9 @@ TEST_F(ContextualTasksComposeboxHandlerTest, ActiveModelIsPassed) {
   // 1. Arrange: Setup a mock callback to simulate ContextualTasksUI returning a
   // model. We explicitly set a distinct state (MODEL_MODE_GEMINI_PRO) to verify
   // it gets passed correctly.
-  auto mock_callback = base::BindLambdaForTesting(
-      [this]() -> std::unique_ptr<contextual_search::InputStateModel> {
-        omnibox::SearchboxConfig config;
-        auto model = std::make_unique<contextual_search::InputStateModel>(
-            *session_handle_, config, GURL(), false);
-        model->setActiveModel(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
-        return model;
-      });
+  auto mock_callback = base::BindRepeating(
+      &ContextualTasksComposeboxHandlerTest::CreateMockInputStateModel,
+      base::Unretained(this));
   mojo::PendingRemote<composebox::mojom::Page> page_remote;
   auto page_receiver = page_remote.InitWithNewPipeAndPassReceiver();
   auto custom_handler = std::make_unique<TestContextualTasksComposeboxHandler>(

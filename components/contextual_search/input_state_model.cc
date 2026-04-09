@@ -93,7 +93,8 @@ std::optional<omnibox::ModelMode> GetActiveModelFromUrl(
     return std::nullopt;
   }
 
-  std::optional<omnibox::ModelMode> active_model = std::nullopt;
+  std::optional<omnibox::ModelMode> best_model = std::nullopt;
+  size_t max_matched_params = 0;
 
   for (const auto& model_config : model_configs) {
     if (!std::ranges::contains(allowed_models, model_config.model())) {
@@ -103,6 +104,7 @@ std::optional<omnibox::ModelMode> GetActiveModelFromUrl(
       continue;
     }
     bool all_params_match = true;
+    size_t matched_count = model_config.aim_url_params().size();
     for (const auto& url_param : model_config.aim_url_params()) {
       std::string value;
       bool found =
@@ -113,13 +115,16 @@ std::optional<omnibox::ModelMode> GetActiveModelFromUrl(
       }
     }
     if (all_params_match) {
-      DCHECK(!active_model.has_value())
-          << "Multiple models matched URL parameters";
-      active_model = model_config.model();
+      if (!best_model.has_value() || matched_count > max_matched_params) {
+        best_model = model_config.model();
+        max_matched_params = matched_count;
+      } else if (matched_count == max_matched_params) {
+        DLOG(WARNING) << "Ambiguous model match tie!";
+      }
     }
   }
 
-  return active_model;
+  return best_model;
 }
 
 }  // namespace
@@ -299,6 +304,14 @@ void InputStateModel::setActiveTool(ToolMode tool) {
 
 void InputStateModel::setActiveModel(ModelMode model) {
   updateSelectedState(state_.active_tool, model);
+}
+
+void InputStateModel::UpdateModelFromUrl(const GURL& url) {
+  if (auto matched_model = GetActiveModelFromUrl(url, state_.model_configs,
+                                                 state_.allowed_models);
+      matched_model.has_value()) {
+    setActiveModel(*matched_model);
+  }
 }
 
 void InputStateModel::OnContextChanged() {

@@ -193,10 +193,14 @@ ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
   // Set the callback for getting suggest inputs from the session.
   // The session is owned by WebUI controller and accessed via callback.
   // It is safe to use Unretained because omnibox client is owned by `this`.
-  static_cast<ContextualOmniboxClient*>(omnibox_controller()->client())
+  static_cast<ContextualTasksOmniboxClient*>(omnibox_controller()->client())
       ->SetSuggestInputsCallback(base::BindRepeating(
           &ContextualTasksComposeboxHandler::GetSuggestInputs,
           base::Unretained(this)));
+
+  if (contextual_tasks::GetIsContextualTasksUpdateModeOnNavigationEnabled()) {
+    InitializeInputStateModel();
+  }
 }
 
 ContextualTasksComposeboxHandler::~ContextualTasksComposeboxHandler() = default;
@@ -354,6 +358,12 @@ void ContextualTasksComposeboxHandler::ResetInputStateModel() {
   ComposeboxHandler::ResetInputStateModel();
 }
 
+void ContextualTasksComposeboxHandler::UpdateModelFromUrl(const GURL& url) {
+  if (input_state_model()) {
+    input_state_model()->UpdateModelFromUrl(url);
+  }
+}
+
 void ContextualTasksComposeboxHandler::OnTaskChanged() {
   ClearFiles(/*should_block_auto_suggested_tabs=*/false);
   InitializeInputStateModel();
@@ -362,7 +372,7 @@ void ContextualTasksComposeboxHandler::OnTaskChanged() {
 void ContextualTasksComposeboxHandler::InitializeInputStateModel() {
   if (take_input_model_callback_) {
     std::unique_ptr<contextual_search::InputStateModel> current_input_state =
-        std::move(take_input_model_callback_).Run();
+        take_input_model_callback_.Run();
 
     if (current_input_state) {
       ResetInputStateModel();

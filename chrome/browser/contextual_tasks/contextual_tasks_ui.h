@@ -129,6 +129,7 @@ class ContextualTasksUI
   void SetThreadTitle(std::optional<std::string> title) override;
   void SetAimUrl(const GURL& url) override;
   void SetIsAiPage(bool is_ai_page) override;
+  void UpdateModelModeFromUrl(const GURL& url) override;
   bool IsShownInTab() override;
   BrowserWindowInterface* GetBrowser() override;
   content::WebContents* GetWebUIWebContents() override;

@@ -578,6 +578,12 @@ void ContextualTasksUI::SetAimUrl(const GURL& url) {
   }
 }
 
+void ContextualTasksUI::UpdateModelModeFromUrl(const GURL& url) {
+  if (composebox_handler_) {
+    composebox_handler_->UpdateModelFromUrl(url);
+  }
+}
+
 void ContextualTasksUI::SetIsAiPage(bool is_ai_page) {
   if (page_) {
     page_->OnAiPageStatusChanged(is_ai_page);
@@ -1079,6 +1085,11 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
   bool is_ai_page = ui_service_->IsAiUrl(url);
   task_info_delegate_->SetIsAiPage(is_ai_page);
   task_info_delegate_->SetAimUrl(url);
+
+  if (base::FeatureList::IsEnabled(
+          contextual_tasks::kContextualTasksUpdateModelOnNavigation)) {
+    task_info_delegate_->UpdateModelModeFromUrl(url);
+  }
 
   OMNIBOX_LOG("embedded_page_nav") << navigation_handle->GetURL().spec();
 
