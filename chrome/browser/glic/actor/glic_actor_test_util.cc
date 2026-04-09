@@ -7,7 +7,7 @@
 #include <string_view>
 
 #include "base/no_destructor.h"
-#include "components/actor/task_source_info.h"
+#include "components/actor/core/task_source_info.h"
 
 namespace glic {
 

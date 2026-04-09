@@ -23,6 +23,7 @@
 #include "base/types/optional_ref.h"
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/page_content_annotations/core/page_content_annotations_enums.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "pdf/buildflags.h"
@@ -42,15 +43,6 @@ class WebContents;
 namespace page_content_annotations {
 
 class PageContentScreenshotService;
-
-enum class ScreenshotIframeRedactionScope {
-  // No redaction.
-  kNone,
-  // Redact cross-site iframes.
-  kCrossSite,
-  // Redact cross-origin iframes.
-  kCrossOrigin,
-};
 
 struct PaintPreviewOptions {
   // The maximum memory/file bytes used for the capture of a single frame.

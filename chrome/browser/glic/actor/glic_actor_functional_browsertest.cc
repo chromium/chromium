@@ -8,8 +8,8 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/test/bind.h"
-#include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
+#include "components/actor/core/actor_features.h"
 
 namespace glic::actor {
 

@@ -24,6 +24,16 @@ enum PageContentAnnotationsStorageStatus {
   kMaxValue = kSpecificVisitForUrlNotFound,
 };
 
+// Controls whether iframe redaction is enabled, and which scope is used if so.
+enum class ScreenshotIframeRedactionScope {
+  // No redaction.
+  kNone,
+  // Redact cross-site iframes.
+  kCrossSite,
+  // Redact cross-origin iframes.
+  kCrossOrigin,
+};
+
 }  // namespace page_content_annotations
 
 #endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_ANNOTATIONS_ENUMS_H_

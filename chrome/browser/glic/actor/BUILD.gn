@@ -64,5 +64,5 @@ source_set("test_support") {
 
   public_deps = [ "//base" ]
 
-  deps = [ "//components/actor" ]
+  deps = [ "//components/actor/core" ]
 }

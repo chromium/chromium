@@ -38,7 +38,7 @@
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_constants.h"
 #include "chrome/common/actor/task_id.h"
-#include "components/actor/task_source_info.h"
+#include "components/actor/core/task_source_info.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/filters/bloom_filter.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"

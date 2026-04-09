@@ -1,16 +1,16 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACTOR_ACTOR_FEATURES_H_
-#define CHROME_BROWSER_ACTOR_ACTOR_FEATURES_H_
+#ifndef COMPONENTS_ACTOR_CORE_ACTOR_FEATURES_H_
+#define COMPONENTS_ACTOR_CORE_ACTOR_FEATURES_H_
 
 #include <string>
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
-#include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
+#include "components/page_content_annotations/core/page_content_annotations_enums.h"
 
 namespace actor {
 
@@ -119,4 +119,4 @@ extern const base::FeatureParam<int> kActorScriptToolDelayObservationMillis;
 
 }  // namespace actor
 
-#endif  // CHROME_BROWSER_ACTOR_ACTOR_FEATURES_H_
+#endif  // COMPONENTS_ACTOR_CORE_ACTOR_FEATURES_H_

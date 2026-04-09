@@ -4,15 +4,17 @@
 
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_manager.h"
 
-#include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
+#include "components/actor/core/actor_features.h"
+
 namespace tabs {
 namespace {
+
 using actor::ActorKeyedService;
 using ActorTaskNudgeState = actor::ui::ActorTaskNudgeState;
 using actor::ActorTask;

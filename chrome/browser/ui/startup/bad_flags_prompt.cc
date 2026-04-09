@@ -60,7 +60,7 @@
 #include "chrome/browser/android/flags/bad_flags_snackbar_manager.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #else
-#include "chrome/browser/actor/actor_switches.h"
+#include "components/actor/core/actor_switches.h"
 #include "services/device/public/cpp/hid/hid_switches.h"
 #endif
 

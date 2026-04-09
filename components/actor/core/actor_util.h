@@ -1,9 +1,9 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACTOR_ACTOR_UTIL_H_
-#define CHROME_BROWSER_ACTOR_ACTOR_UTIL_H_
+#ifndef COMPONENTS_ACTOR_CORE_ACTOR_UTIL_H_
+#define COMPONENTS_ACTOR_CORE_ACTOR_UTIL_H_
 
 namespace actor {
 
@@ -15,4 +15,4 @@ bool IsNavigationGatingEnabled();
 
 }  // namespace actor
 
-#endif  // CHROME_BROWSER_ACTOR_ACTOR_UTIL_H_
+#endif  // COMPONENTS_ACTOR_CORE_ACTOR_UTIL_H_

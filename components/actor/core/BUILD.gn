@@ -1,0 +1,21 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("core") {
+  sources = [
+    "actor_features.cc",
+    "actor_features.h",
+    "actor_switches.cc",
+    "actor_switches.h",
+    "actor_util.cc",
+    "actor_util.h",
+    "task_source_info.cc",
+    "task_source_info.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/page_content_annotations/core",
+  ]
+}

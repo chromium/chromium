@@ -7,9 +7,9 @@
 #include <algorithm>
 
 #include "base/containers/map_util.h"
-#include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_metrics.h"
-#include "chrome/browser/actor/actor_util.h"
+#include "components/actor/core/actor_features.h"
+#include "components/actor/core/actor_util.h"
 #include "net/base/schemeful_site.h"
 #include "url/origin.h"
 

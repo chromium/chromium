@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ACTOR_TASK_SOURCE_INFO_H_
-#define COMPONENTS_ACTOR_TASK_SOURCE_INFO_H_
+#ifndef COMPONENTS_ACTOR_CORE_TASK_SOURCE_INFO_H_
+#define COMPONENTS_ACTOR_CORE_TASK_SOURCE_INFO_H_
 
 #include <optional>
 #include <string>
@@ -48,4 +48,4 @@ struct TaskSourceInfo {
 
 }  // namespace actor
 
-#endif  // COMPONENTS_ACTOR_TASK_SOURCE_INFO_H_
+#endif  // COMPONENTS_ACTOR_CORE_TASK_SOURCE_INFO_H_

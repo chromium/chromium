@@ -25,7 +25,7 @@
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/buildflags.h"
-#include "components/actor/task_source_info.h"
+#include "components/actor/core/task_source_info.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"

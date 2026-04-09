@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/android/ui/actor_ui_tab_controller_android.h"
@@ -26,6 +25,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
+#include "components/actor/core/actor_features.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/tabs/public/tab_interface.h"
 #include "net/base/features.h"

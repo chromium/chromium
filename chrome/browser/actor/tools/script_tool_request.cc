@@ -6,13 +6,13 @@
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
-#include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/script_tool_host.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_constants.h"
+#include "components/actor/core/actor_features.h"
 
 namespace actor {
 

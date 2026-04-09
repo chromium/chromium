@@ -26,7 +26,7 @@
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/actor_webui.mojom-forward.h"
-#include "components/actor/task_source_info.h"
+#include "components/actor/core/task_source_info.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/visibility.h"
