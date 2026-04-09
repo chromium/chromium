@@ -85,13 +85,7 @@ class ChromeDeviceAuthenticatorFactoryTest : public testing::Test {
 // `kAuthValidityPeriod` since previous authentication. And if needs to
 // authenticate after that time.
 // Also checks that other profiles need to authenticate.
-// TODO(crbug.com/500906468): Re-enable the test
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_NeedAuthentication DISABLED_NeedAuthentication
-#else
-#define MAYBE_NeedAuthentication NeedAuthentication
-#endif
-TEST_F(ChromeDeviceAuthenticatorFactoryTest, MAYBE_NeedAuthentication) {
+TEST_F(ChromeDeviceAuthenticatorFactoryTest, NeedAuthentication) {
   static_cast<DeviceAuthenticatorCommon*>(
       ChromeDeviceAuthenticatorFactory::GetForProfile(
           profile1(), native_window(), GetDeviceAuthenticatorParams())
@@ -123,13 +117,7 @@ TEST_F(ChromeDeviceAuthenticatorFactoryTest, MAYBE_NeedAuthentication) {
 }
 
 // Checks whether factory is instantiated correctly on a Guest profile.
-// TODO(crbug.com/500906468): Re-enable the test
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_Guest DISABLED_Guest
-#else
-#define MAYBE_Guest Guest
-#endif
-TEST_F(ChromeDeviceAuthenticatorFactoryTest, MAYBE_Guest) {
+TEST_F(ChromeDeviceAuthenticatorFactoryTest, Guest) {
   ChromeDeviceAuthenticatorFactory::GetForProfile(
       guest_profile(), native_window(), GetDeviceAuthenticatorParams());
 }
