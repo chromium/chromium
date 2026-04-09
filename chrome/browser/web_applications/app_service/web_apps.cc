@@ -196,8 +196,9 @@ void WebApps::GetMenuModel(const std::string& app_id,
     // should not allow open more windows because user won't be able to close
     // them.
   } else if (can_close) {
-    // Isolated web apps can only be launched in new window.
-    if (web_app->isolation_data().has_value()) {
+    // Isolated web apps or sub apps can only be launched in new window.
+    if (web_app->isolation_data().has_value() ||
+        web_app->IsSubAppInstalledApp()) {
       // Isolated Web Apps with focus-existing or navigate-existing do not need
       // a new window button.
       if (!web_app->launch_handler()
