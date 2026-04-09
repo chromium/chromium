@@ -561,4 +561,12 @@ TEST_F(LengthTest, Add) {
       non_simplified.Add(Length::Fixed(1)).GetCalculationValue().Evaluate(123));
 }
 
+TEST_F(LengthTest, BlendWithInfiniteProgressShouldNotCrash) {
+  Length from(0.0f, Length::kFixed);
+  Length to(100.0f, Length::kFixed);
+  Length result = to.Blend(from, std::numeric_limits<double>::infinity(),
+                           Length::ValueRange::kAll);
+  EXPECT_TRUE(std::isfinite(result.Pixels()));
+}
+
 }  // namespace blink

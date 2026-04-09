@@ -153,6 +153,10 @@ Length Length::BlendSameTypes(const Length& from,
 
   float blended_value =
       blink::Blend(from.GetFloatValue(), GetFloatValue(), progress);
+  if (std::isinf(blended_value)) {
+    blended_value = blended_value > 0 ? std::numeric_limits<float>::max()
+                                      : std::numeric_limits<float>::lowest();
+  }
   if (range == ValueRange::kNonNegative)
     blended_value = ClampTo<float>(blended_value, 0);
   return Length(blended_value, result_type);
