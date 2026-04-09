@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
@@ -420,6 +421,7 @@ DeepScanningRequest::DeepScanningRequest(
       pre_scan_download_check_result_(pre_scan_download_check_result),
       password_(password.CopyAsOptional()),
       reason_(enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD),
+      user_action_id_(base::HexEncode(base::RandBytesAsVector(128))),
       weak_ptr_factory_(this) {
   base::UmaHistogramEnumeration("SBClientDownload.DeepScanType",
                                 DeepScanType::NORMAL);
@@ -443,6 +445,7 @@ DeepScanningRequest::DeepScanningRequest(
       pending_scan_requests_(save_package_files_.size()),
       pre_scan_download_check_result_(pre_scan_download_check_result),
       reason_(enterprise_connectors::ContentAnalysisRequest::SAVE_AS_DOWNLOAD),
+      user_action_id_(base::HexEncode(base::RandBytesAsVector(128))),
       weak_ptr_factory_(this) {
   base::UmaHistogramEnumeration("SBClientDownload.DeepScanType",
                                 DeepScanType::SAVE_PACKAGE);
@@ -841,6 +844,21 @@ void DeepScanningRequest::OnDownloadDestroyed(
   // scan has finished.
   callback_.Reset();
 
+  Profile* profile =
+      Profile::FromBrowserContext(metadata_->GetBrowserContext());
+  enterprise_connectors::BinaryUploadService* upload_service =
+      download_service_->GetBinaryUploadService(profile, analysis_settings_);
+
+  if (upload_service) {
+    auto cancel =
+        std::make_unique<enterprise_connectors::BinaryUploadCancelRequests>(
+            analysis_settings_.cloud_or_local_settings);
+    cancel->set_user_action_id(user_action_id_);
+
+    // We do the best effort to cancel the requests in upload service.
+    upload_service->MaybeCancelRequests(std::move(cancel));
+  }
+
   // `FinishRequest` always clears the `download_observation` and `metadata`,
   // preventing use-after-free issues for `download_item` after it's been
   // destroyed.
@@ -869,7 +887,7 @@ std::string DeepScanningRequest::tab_title() const {
 }
 
 std::string DeepScanningRequest::user_action_id() const {
-  return "";
+  return user_action_id_;
 }
 
 std::string DeepScanningRequest::email() const {

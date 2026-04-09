@@ -408,7 +408,15 @@ class FakeBinaryUploadService
 
   void MaybeCancelRequests(
       std::unique_ptr<enterprise_connectors::BinaryUploadCancelRequests> cancel)
-      override {}
+      override {
+    was_cancelled_ = true;
+    last_cancel_user_action_id_ = cancel->get_user_action_id();
+  }
+
+  bool was_cancelled() const { return was_cancelled_; }
+  std::string last_cancel_user_action_id() const {
+    return last_cancel_user_action_id_;
+  }
 
   base::WeakPtr<enterprise_connectors::BinaryUploadService> AsWeakPtr()
       override {
@@ -462,6 +470,8 @@ class FakeBinaryUploadService
   base::RepeatingClosure quit_on_last_request_;
   size_t num_finished_requests_ = 0;
   size_t num_acks_ = 0;
+  bool was_cancelled_ = false;
+  std::string last_cancel_user_action_id_;
   base::WeakPtrFactory<FakeBinaryUploadService> weak_ptr_factory_{this};
 };
 
@@ -942,6 +952,30 @@ TEST_P(DeepScanningRequestAllFeaturesEnabledTest,
 }
 
 class DeepScanningAPPRequestTest : public DeepScanningRequestTest {};
+
+TEST_F(DeepScanningAPPRequestTest, CancelsUploadOnDownloadDestroyed) {
+  enterprise_connectors::AnalysisSettings settings;
+  settings.tags = {{"malware", enterprise_connectors::TagSettings()}};
+
+  std::unique_ptr<DeepScanningRequest> request =
+      std::make_unique<DeepScanningRequest>(
+          CreateMetadata(),
+          DownloadItemWarningData::DeepScanTrigger::TRIGGER_CONSUMER_PROMPT,
+          DownloadCheckResult::SAFE, base::DoNothing(),
+          &download_protection_service_, std::move(settings),
+          /*password=*/std::nullopt);
+
+  std::string user_action_id = request->user_action_id();
+  request->Start();
+
+  request->OnDownloadDestroyed(&item_);
+
+  EXPECT_TRUE(download_protection_service_.GetFakeBinaryUploadService()
+                  ->was_cancelled());
+  EXPECT_EQ(user_action_id,
+            download_protection_service_.GetFakeBinaryUploadService()
+                ->last_cancel_user_action_id());
+}
 
 TEST_F(DeepScanningAPPRequestTest, GeneratesCorrectRequestForConsumer) {
   enterprise_connectors::AnalysisSettings settings;

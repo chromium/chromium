@@ -329,6 +329,9 @@ class DeepScanningRequest : public download::DownloadItem::Observer,
   enterprise_connectors::ContentAnalysisRequest::Reason reason_ =
       enterprise_connectors::ContentAnalysisRequest::UNKNOWN;
 
+  // User action id for the scanning.
+  std::string user_action_id_;
+
   base::WeakPtrFactory<DeepScanningRequest> weak_ptr_factory_;
 };
 
