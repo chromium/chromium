@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/blink/fling_booster.h"
@@ -769,6 +770,33 @@ TEST_P(FlingControllerTest,
   ProgressFling(NowTicks(), first_coalesced_frame_begin_time);
 
   EXPECT_EQ(first_coalesced_frame_begin_time, last_sent_gesture_.TimeStamp());
+}
+
+TEST_P(FlingControllerTest, SetGenerationTimestampToFlingStartEventTime) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kResampleScrollEventsForFling);
+
+  base::TimeTicks event_time = NowTicks();
+  WebGestureEvent fling_start(WebInputEvent::Type::kGestureFlingStart, 0,
+                              event_time,
+                              blink::WebGestureDevice::kTouchscreen);
+  fling_start.data.fling_start.velocity_x = 1000.f;
+  fling_start.data.fling_start.velocity_y = 0.f;
+  GestureEventWithLatencyInfo fling_start_with_latency(fling_start);
+
+  // Advance time to simulate delay in event processing (e.g., CPU delay)
+  AdvanceTime(10.0);
+
+  fling_controller_->ProcessGestureFlingStart(fling_start_with_latency);
+  EXPECT_TRUE(FlingInProgress());
+
+  if (!ProgressFlingOnFlingStart()) {
+    ProgressFling(NowTicks());
+  }
+
+  // The first update should have the original event_time timestamp
+  EXPECT_EQ(event_time, last_sent_gesture_.TimeStamp());
 }
 
 class FlingControllerWithPhysicsBasedFlingTest : public FlingControllerTest {

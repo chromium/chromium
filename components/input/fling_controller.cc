@@ -7,6 +7,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/gestures/blink/web_gesture_curve_impl.h"
@@ -250,6 +251,14 @@ void FlingController::ProgressFling(
       std::abs(delta_to_scroll.y()) > kMinInertialScrollDelta) {
     base::TimeTicks event_generation_time =
         first_coalesced_frame_begin_time.value_or(current_time);
+
+    if (!first_fling_update_sent() &&
+        base::FeatureList::IsEnabled(
+            blink::features::kResampleScrollEventsForFling)) {
+      // Align the first update's timestamp with the original fling event time.
+      event_generation_time = current_fling_parameters_.fling_start_event_time;
+    }
+
     GenerateAndSendFlingProgressEvents(event_generation_time, delta_to_scroll);
     last_progress_time_ = current_time;
   }
@@ -403,6 +412,8 @@ bool FlingController::UpdateCurrentFlingState(
     // scroll, the animation should begin at the time of the last update.
     current_fling_parameters_.start_time = last_seen_scroll_update_;
   }
+  current_fling_parameters_.fling_start_event_time =
+      fling_start_event.TimeStamp();
 
   if (velocity.IsZero() && fling_start_event.SourceDevice() !=
                                blink::WebGestureDevice::kSyntheticAutoscroll) {
