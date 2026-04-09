@@ -85,7 +85,7 @@ std::unique_ptr<AudioFloatArray> MakeReducedKernel(int size) {
 DownSampler::DownSampler(unsigned input_block_size)
     : input_block_size_(input_block_size),
       convolver_(input_block_size / 2,  // runs at 1/2 source sample-rate
-                 MakeReducedKernel(kDefaultKernelSize)),
+                 *MakeReducedKernel(kDefaultKernelSize)),
       temp_buffer_(input_block_size / 2),
       input_buffer_(input_block_size * 2) {}
 

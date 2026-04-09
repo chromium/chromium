@@ -90,7 +90,7 @@ UpSampler::UpSampler(unsigned input_block_size)
     // Otherwise, use FFT convolution because it is faster than direct
     // convolution for large input block sizes.
     simple_fft_convolver_ = std::make_unique<SimpleFFTConvolver>(
-        input_block_size_, std::move(convolution_kernel));
+        input_block_size_, *convolution_kernel);
   }
 }
 

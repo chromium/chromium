@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_SIMPLE_FFT_CONVOLVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_SIMPLE_FFT_CONVOLVER_H_
 
-#include <memory>
-
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/audio/fft_frame.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -23,9 +21,8 @@ class SimpleFFTConvolver final {
   USING_FAST_MALLOC(SimpleFFTConvolver);
 
  public:
-  SimpleFFTConvolver(
-      unsigned input_block_size,
-      const std::unique_ptr<AudioFloatArray>& convolution_kernel);
+  SimpleFFTConvolver(unsigned input_block_size,
+                     const AudioFloatArray& convolution_kernel);
   SimpleFFTConvolver(const SimpleFFTConvolver&) = delete;
   SimpleFFTConvolver& operator=(const SimpleFFTConvolver&) = delete;
 

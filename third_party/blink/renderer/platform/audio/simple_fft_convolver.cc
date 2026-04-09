@@ -11,8 +11,8 @@ namespace blink {
 
 SimpleFFTConvolver::SimpleFFTConvolver(
     unsigned input_block_size,
-    const std::unique_ptr<AudioFloatArray>& convolution_kernel)
-    : convolution_kernel_size_(convolution_kernel->size()),
+    const AudioFloatArray& convolution_kernel)
+    : convolution_kernel_size_(convolution_kernel.size()),
       fft_kernel_(2 * input_block_size),
       frame_(2 * input_block_size),
       input_buffer_(2 *
@@ -23,7 +23,7 @@ SimpleFFTConvolver::SimpleFFTConvolver(
   // Do padded FFT to get frequency-domain version of the convolution kernel.
   // This FFT and caching is done once in here so that it does not have to be
   // done repeatedly in |Process|.
-  fft_kernel_.DoPaddedFFT(convolution_kernel->as_span());
+  fft_kernel_.DoPaddedFFT(convolution_kernel.as_span());
 }
 
 void SimpleFFTConvolver::Process(base::span<const float> source,
