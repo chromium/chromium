@@ -29,6 +29,7 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
                 new PropertyModel.Builder(PdfToolbarProperties.ALL_KEYS)
                         .with(PdfToolbarProperties.ON_CLICK_LISTENER, this)
                         .with(PdfToolbarProperties.CURRENT_PAGE_NUMBER, 99)
+                        .with(PdfToolbarProperties.TITLE, "This_is_a_pdf_title.pdf")
                         .with(PdfToolbarProperties.TOTAL_PAGE_COUNT, 100)
                         .with(PdfToolbarProperties.ZOOM_VALUE, "100%")
                         .build();

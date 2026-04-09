@@ -17,6 +17,9 @@ class PdfToolbarProperties {
     /** The current page number. */
     static final WritableIntPropertyKey CURRENT_PAGE_NUMBER = new WritableIntPropertyKey();
 
+    /** The title of the PDF document. */
+    static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
+
     /** The total number of pages in the document. */
     static final WritableIntPropertyKey TOTAL_PAGE_COUNT = new WritableIntPropertyKey();
 
@@ -28,6 +31,6 @@ class PdfToolbarProperties {
             new WritableObjectPropertyKey<>();
 
     static final PropertyKey[] ALL_KEYS = {
-        CURRENT_PAGE_NUMBER, TOTAL_PAGE_COUNT, ZOOM_VALUE, ON_CLICK_LISTENER
+        CURRENT_PAGE_NUMBER, TITLE, TOTAL_PAGE_COUNT, ZOOM_VALUE, ON_CLICK_LISTENER
     };
 }
