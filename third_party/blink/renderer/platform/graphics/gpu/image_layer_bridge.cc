@@ -62,8 +62,9 @@ scoped_refptr<StaticBitmapImage> MakeAccelerated(
       source->Size(), source->GetSharedImageFormat(), source->GetAlphaType(),
       source->GetColorSpace(), context_provider_wrapper,
       kSharedImageUsageFlags);
-  if (!provider || !provider->IsAccelerated())
+  if (!provider) {
     return nullptr;
+  }
 
   const auto paint_image = source->PaintImageForCurrentFrame();
   return provider->DoExternalDrawAndSnapshot(
