@@ -15,7 +15,6 @@ owners:
 - file://components/policy/OWNERS
 example_value: 1
 future_on:
-- android
 - chrome.linux
 features:
   dynamic_refresh: true
@@ -39,4 +38,5 @@ supported_on:
 - chrome.mac:137-
 - ios:139-
 - chrome_os:144-
+- android:149-
 tags: []
