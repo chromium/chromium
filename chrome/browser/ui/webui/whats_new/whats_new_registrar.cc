@@ -26,10 +26,6 @@ namespace features {
 
 void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
   // Register modules here.
-  // 129
-  registry->RegisterModule(
-      WhatsNewModule("Googlepayreauth", "vinnypersky@google.com",
-                     BrowserCommand::kOpenPaymentsSettings));
 
   // M143
   registry->RegisterModule(
