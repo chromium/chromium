@@ -21,6 +21,7 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_response_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -140,15 +141,20 @@ TEST_F(DiceHeaderHelperTest, BuildDiceSignoutResponseParams_Invalid) {
   EXPECT_EQ(DiceAction::SIGNOUT, params.user_intention());
 }
 
-TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParams_Signin) {
+TEST_F(DiceHeaderHelperTest, CreateDiceResponseParams_Signin) {
   base::HistogramTester histogram_tester;
-  DiceResponseParams params = DiceHeaderHelper::BuildDiceSigninResponseParams(
-      base::StringPrintf("action=SIGNIN,id=%s,email=%s,authuser=%i,"
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\r\n");
+  headers->AddHeader(
+      kDiceResponseHeader,
+      base::StringPrintf("action=SIGNIN,id=%s,email=%s,authuser=%d,"
                          "authorization_code=%s,"
-                         "eligible_for_token_binding=%s,",
+                         "eligible_for_token_binding=%s",
                          kGaiaID.ToString().c_str(), kEmail.c_str(),
                          kSessionIndex, kAuthorizationCode.c_str(),
                          kSupportedTokenBindingAlgorithms.c_str()));
+  DiceResponseParams params =
+      DiceHeaderHelper::CreateDiceResponseParams(headers.get());
   EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
   const auto* signin_info = params.signin_info();
   ASSERT_TRUE(signin_info);
@@ -393,24 +399,6 @@ TEST_F(DiceHeaderHelperTest,
   }
 }
 
-TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParamsSemicolon_Signin) {
-  DiceResponseParams params =
-      DiceHeaderHelper::BuildDiceSigninResponseParams(base::StringPrintf(
-          "action=SIGNIN;id=%s;email=%s;authuser=%i;authorization_code=%s",
-          kGaiaID.ToString().c_str(), kEmail.c_str(), kSessionIndex,
-          kAuthorizationCode.c_str()));
-  EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
-  const auto* signin_info = params.signin_info();
-  ASSERT_TRUE(signin_info);
-  const auto* account = signin_info->GetInitiator();
-  ASSERT_TRUE(account);
-
-  {
-    SCOPED_TRACE("Verifying Semicolon Signin Account");
-    VerifySigninAccount(*account, kGaiaID, kEmail, kSessionIndex,
-                        kAuthorizationCode);
-  }
-}
 
 TEST_F(DiceHeaderHelperTest,
        BuildDiceSigninResponseParamsSemicolon_EnableSync) {
@@ -519,18 +507,45 @@ TEST_F(DiceHeaderHelperTest,
   EXPECT_FALSE(params.IsValid());
 }
 
-TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParamsMultiAccount_Basic) {
-  std::string header_value =
-      "action=SIGNIN;id=id1;email=email1;authuser=1;authorization_code=code1,"
-      "action=SIGNIN;id=id2;email=email2;authuser=2;authorization_code=code2";
+TEST_F(DiceHeaderHelperTest, CreateDiceResponseParams_NullHeaders) {
   DiceResponseParams params =
-      DiceHeaderHelper::BuildDiceSigninResponseParams(header_value);
+      DiceHeaderHelper::CreateDiceResponseParams(nullptr);
+  EXPECT_FALSE(params.IsValid());
+}
 
-  // Metadata is required to identify the initiator when multiple accounts are
-  // present.
-  params.signin_info()->set_linked_accounts_metadata(
-      DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
-          .initiator_id = GaiaId("id2")});
+TEST_F(DiceHeaderHelperTest, CreateDiceResponseParams_SigninHeader) {
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\r\n");
+  headers->AddHeader(
+      kDiceResponseHeader,
+      base::StringPrintf("action=SIGNIN;id=%s;email=%s;authuser=%d;"
+                         "authorization_code=%s",
+                         kGaiaID.ToString().c_str(), kEmail.c_str(),
+                         kSessionIndex, kAuthorizationCode.c_str()));
+  DiceResponseParams params =
+      DiceHeaderHelper::CreateDiceResponseParams(headers.get());
+  EXPECT_TRUE(params.IsValid());
+  EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
+  const auto* signin_info = params.signin_info();
+  ASSERT_TRUE(signin_info);
+  ASSERT_EQ(1u, signin_info->accounts().size());
+  VerifySigninAccount(signin_info->accounts()[0], kGaiaID, kEmail,
+                      kSessionIndex, kAuthorizationCode);
+}
+
+TEST_F(DiceHeaderHelperTest,
+       CreateDiceResponseParams_MultipleAccountsAndMetaHeader) {
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\r\n");
+  headers->AddHeader(
+      kDiceResponseHeader,
+      "action=SIGNIN;id=id1;email=email1;authuser=1;authorization_code=code1,"
+      "action=SIGNIN;id=id2;email=email2;authuser=2;authorization_code=code2");
+  headers->AddHeader(kDiceLinkedAccountsMetaHeader,
+                     "initiator_id=id2;primary_is_connected=1");
+
+  DiceResponseParams params =
+      DiceHeaderHelper::CreateDiceResponseParams(headers.get());
 
   EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
   const auto* signin_info = params.signin_info();
@@ -550,10 +565,11 @@ TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParamsMultiAccount_Basic) {
   const auto* initiator = signin_info->GetInitiator();
   ASSERT_TRUE(initiator);
   EXPECT_EQ(GaiaId("id2"), initiator->account_info.gaia_id);
+  EXPECT_EQ(Tribool::kTrue,
+            signin_info->linked_accounts_metadata().primary_is_connected);
 }
 
-TEST_F(DiceHeaderHelperTest,
-       BuildDiceSigninResponseParamsMultiAccount_AllFields) {
+TEST_F(DiceHeaderHelperTest, CreateDiceResponseParams_MultiAccountAllFields) {
   base::test::ScopedFeatureList scoped_feature_list(
       switches::kEnableMtlsTokenBinding);
   const GaiaId kGaiaID1("id1");
@@ -567,12 +583,14 @@ TEST_F(DiceHeaderHelperTest,
       kGaiaID1.ToString().c_str(), kGaiaID2.ToString().c_str(),
       kSupportedAlgorithms2.c_str());
 
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\r\n");
+  headers->AddHeader(kDiceResponseHeader, header_value);
+  headers->AddHeader(
+      kDiceLinkedAccountsMetaHeader,
+      base::StringPrintf("initiator_id=%s", kGaiaID2.ToString().c_str()));
   DiceResponseParams params =
-      DiceHeaderHelper::BuildDiceSigninResponseParams(header_value);
-
-  params.signin_info()->set_linked_accounts_metadata(
-      DiceResponseParams::SigninInfo::LinkedAccountsMetadata{.initiator_id =
-                                                                 kGaiaID2});
+      DiceHeaderHelper::CreateDiceResponseParams(headers.get());
 
   EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
   const auto* signin_info = params.signin_info();
@@ -596,21 +614,20 @@ TEST_F(DiceHeaderHelperTest,
   EXPECT_EQ(kGaiaID2, initiator->account_info.gaia_id);
 }
 
-TEST_F(DiceHeaderHelperTest,
-       BuildDiceSigninResponseParamsMultiAccount_Duplicates) {
+TEST_F(DiceHeaderHelperTest, CreateDiceResponseParams_MultiAccountDuplicates) {
   std::string header_value = base::StringPrintf(
       "action=SIGNIN;id=%s;email=%s;authuser=1;authorization_code=code1,"
       "action=SIGNIN;id=%s;email=%s;authuser=2;authorization_code=code2",
       kGaiaID.ToString().c_str(), kEmail.c_str(), kGaiaID.ToString().c_str(),
       kEmail.c_str());
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\r\n");
+  headers->AddHeader(kDiceResponseHeader, header_value);
+  headers->AddHeader(
+      kDiceLinkedAccountsMetaHeader,
+      base::StringPrintf("initiator_id=%s", kGaiaID.ToString().c_str()));
   DiceResponseParams params =
-      DiceHeaderHelper::BuildDiceSigninResponseParams(header_value);
-
-  // Metadata is required to identify the initiator when multiple accounts are
-  // present.
-  params.signin_info()->set_linked_accounts_metadata(
-      DiceResponseParams::SigninInfo::LinkedAccountsMetadata{.initiator_id =
-                                                                 kGaiaID});
+      DiceHeaderHelper::CreateDiceResponseParams(headers.get());
 
   EXPECT_EQ(1U, params.signin_info()->accounts().size());
   {
@@ -622,16 +639,16 @@ TEST_F(DiceHeaderHelperTest,
 }
 
 TEST_F(DiceHeaderHelperTest,
-       BuildDiceSigninResponseParamsMultiAccount_TrailingSemicolon) {
+       CreateDiceResponseParams_MultiAccountTrailingSemicolon) {
   std::string header_value = base::StringPrintf(
       "action=SIGNIN;id=id1;email=email1;authuser=1;authorization_code=code1,"
       "action=SIGNIN;id=id2;email=email2;authuser=2;authorization_code=code2;");
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\r\n");
+  headers->AddHeader(kDiceResponseHeader, header_value);
+  headers->AddHeader(kDiceLinkedAccountsMetaHeader, "initiator_id=id2");
   DiceResponseParams params =
-      DiceHeaderHelper::BuildDiceSigninResponseParams(header_value);
-
-  params.signin_info()->set_linked_accounts_metadata(
-      DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
-          .initiator_id = GaiaId("id2")});
+      DiceHeaderHelper::CreateDiceResponseParams(headers.get());
 
   EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
   ASSERT_TRUE(params.signin_info());
@@ -650,17 +667,20 @@ TEST_F(DiceHeaderHelperTest,
 }
 
 TEST_F(DiceHeaderHelperTest,
-       BuildDiceSigninResponseParamsMultiAccount_DifferentActionsFirstWins) {
+       CreateDiceResponseParams_MultiAccountDifferentActionsFirstWins) {
+  // This is a synthetic edgecase to test that the first action in the header
+  // wins when actions differ between accounts. In real-world scenarios, all
+  // actions in a multi-account header should be the same.
   std::string header_value = base::StringPrintf(
       "action=SIGNIN;id=id1;email=email1;authuser=1;authorization_code=code1,"
       "action=ENABLE_SYNC;id=id2;email=email2;authuser=2;authorization_code="
       "code2");
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\r\n");
+  headers->AddHeader(kDiceResponseHeader, header_value);
+  headers->AddHeader(kDiceLinkedAccountsMetaHeader, "initiator_id=id2");
   DiceResponseParams params =
-      DiceHeaderHelper::BuildDiceSigninResponseParams(header_value);
-
-  params.signin_info()->set_linked_accounts_metadata(
-      DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
-          .initiator_id = GaiaId("id2")});
+      DiceHeaderHelper::CreateDiceResponseParams(headers.get());
 
   EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
   ASSERT_TRUE(params.signin_info());

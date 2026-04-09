@@ -13,10 +13,15 @@
 
 class GURL;
 
+namespace net {
+class HttpResponseHeaders;
+}
+
 namespace signin {
 
 // Version of the Dice protocol.
 extern const char kDiceProtocolVersion[];
+extern const char kGoogleSignoutResponseHeader[];
 
 // SigninHeaderHelper implementation managing the Dice header.
 class DiceHeaderHelper : public SigninHeaderHelper {
@@ -42,6 +47,11 @@ class DiceHeaderHelper : public SigninHeaderHelper {
   // X-Chrome-ID-Consistency-Linked-Accounts-Meta response header.
   static DiceResponseParams::SigninInfo::LinkedAccountsMetadata
   ParseLinkedAccountsMetadata(const std::string& header_value);
+
+  // Creates DiceResponseParams from the response headers by combining standard
+  // Dice and Linked Accounts metadata.
+  static DiceResponseParams CreateDiceResponseParams(
+      const net::HttpResponseHeaders* response_headers);
 
   // Adds the Dice to all Gaia requests from a connected profile, with the
   // exception of requests from gaia webview.

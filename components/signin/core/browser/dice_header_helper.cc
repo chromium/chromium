@@ -22,10 +22,12 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "net/http/http_response_headers.h"
 
 namespace signin {
 
 const char kDiceProtocolVersion[] = "1";
+const char kGoogleSignoutResponseHeader[] = "Google-Accounts-SignOut";
 
 namespace {
 
@@ -308,6 +310,57 @@ DiceHeaderHelper::ParseLinkedAccountsMetadata(const std::string& header_value) {
   }
 
   return metadata;
+}
+
+// static
+DiceResponseParams DiceHeaderHelper::CreateDiceResponseParams(
+    const net::HttpResponseHeaders* response_headers) {
+  if (!response_headers) {
+    return DiceResponseParams();
+  }
+
+  DiceResponseParams params;
+  std::optional<std::string> dice_header =
+      response_headers->GetNormalizedHeader(kDiceResponseHeader);
+  std::optional<std::string> signout_header =
+      response_headers->GetNormalizedHeader(kGoogleSignoutResponseHeader);
+  std::optional<std::string> meta_header =
+      response_headers->GetNormalizedHeader(kDiceLinkedAccountsMetaHeader);
+
+  if (dice_header) {
+    params = BuildDiceSigninResponseParams(*dice_header);
+    if (DiceResponseParams::SigninInfo* signin_info = params.signin_info();
+        signin_info && meta_header) {
+      signin_info->set_linked_accounts_metadata(
+          ParseLinkedAccountsMetadata(*meta_header));
+      if (!signin_info->linked_accounts_metadata().IsValid()) {
+        DLOG(WARNING)
+            << "Malformed X-Chrome-ID-Consistency-Linked-Accounts-Meta header: "
+            << *meta_header;
+      }
+    }
+  } else if (signout_header) {
+    params = BuildDiceSignoutResponseParams(*signout_header);
+  }
+
+  if (!params.signin_info() && meta_header) {
+    DLOG(WARNING) << "X-Chrome-ID-Consistency-Linked-Accounts-Meta is only "
+                     "supported for Sign-in Dice action";
+  }
+
+  if (!params.IsValid()) {
+    if (dice_header) {
+      DLOG(WARNING) << "Invalid DICE header: " << *dice_header;
+    }
+    if (signout_header) {
+      DLOG(WARNING) << "Invalid Signout header: " << *signout_header;
+    }
+    if (meta_header) {
+      DLOG(WARNING) << "Associated Meta header: " << *meta_header;
+    }
+  }
+
+  return params;
 }
 
 // static
