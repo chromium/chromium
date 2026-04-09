@@ -441,7 +441,8 @@ class Host : public GlicSharingManagerProvider {
 
   void NotifySkillToInvokeChanged(mojom::SkillPtr skill);
 
-  void Invoke(mojom::InvokeOptionsPtr options, base::OnceClosure callback);
+  virtual void Invoke(mojom::InvokeOptionsPtr options,
+                      base::OnceClosure callback);
   void InvokeWithAutoSubmit(InvokeWithAutoSubmitPasskey auto_submit_passkey,
                             mojom::InvokeOptionsPtr options,
                             base::OnceClosure callback);

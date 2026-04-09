@@ -112,6 +112,12 @@ struct GlicInvokeOptions {
   AllowedInflightNavigation allowed_inflight_navigation =
       AllowedInflightNavigation::kAll;
 
+  // Whether to wait until the side panel has fully opened and the web
+  // contents have stabilized before sending the invoke payload to the client.
+  // Defaults to false. If the panel was already open when the invoke was
+  // triggered, this flag is ignored.
+  bool wait_for_panel_open = false;
+
   // Browser-specific callback for when the invocation successfully completes.
   base::OnceClosure on_success;
 

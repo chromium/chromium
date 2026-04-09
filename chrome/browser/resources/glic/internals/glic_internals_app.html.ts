@@ -118,11 +118,18 @@ export function getHtml(this: GlicInternalsAppElement) {
           <input id="invokePromptInput" .value="${this.invokePrompt_}"
               @input="${this.onInvokePromptInput_}">
           </input>
-          <label>
-            <input type="checkbox" .checked="${this.invokeAutoSubmit_}"
-                @change="${this.onInvokeAutoSubmitChange_}">
-            Auto Submit
-          </label>
+          <div style="display: flex; gap: 16px; align-items: center;">
+            <label>
+              <input type="checkbox" .checked="${this.invokeAutoSubmit_}"
+                  @change="${this.onInvokeAutoSubmitChange_}">
+              Auto Submit
+            </label>
+            <label>
+              <input type="checkbox" .checked="${this.invokeWaitForPanelOpen_}"
+                  @change="${this.onInvokeWaitForPanelOpenChange_}">
+              Wait for Panel Open
+            </label>
+          </div>
           <label for="invokeFreOverrideSelect">FRE Override</label>
           <select id="invokeFreOverrideSelect"
               .value="${this.invokeFreOverride_.toString()}"
