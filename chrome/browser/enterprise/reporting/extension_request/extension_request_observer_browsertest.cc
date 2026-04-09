@@ -13,11 +13,15 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/policy_constants.h"
+#include "components/prefs/pref_service.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/pref_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -75,19 +79,33 @@ constexpr char kPendingListUpdateMetricsName[] =
 
 }  // namespace
 
-class ExtensionRequestObserverTest : public BrowserWithTestWindowTest {
+class ExtensionRequestObserverTest : public InProcessBrowserTest {
  public:
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
+  void SetUpInProcessBrowserTestFixture() override {
+    provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
     display_service_tester_ =
-        std::make_unique<NotificationDisplayServiceTester>(profile());
+        std::make_unique<NotificationDisplayServiceTester>(
+            browser()->profile());
     ToggleExtensionRequest(true);
   }
 
   void ToggleExtensionRequest(bool enable) {
-    profile()->GetTestingPrefService()->SetManagedPref(
-        prefs::kCloudExtensionRequestEnabled,
-        std::make_unique<base::Value>(enable));
+    policy_map_.Set(policy::key::kCloudReportingEnabled,
+                    policy::POLICY_LEVEL_MANDATORY,
+                    policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
+                    base::Value(true), nullptr);
+    policy_map_.Set(policy::key::kCloudExtensionRequestEnabled,
+                    policy::POLICY_LEVEL_MANDATORY,
+                    policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
+                    base::Value(enable), nullptr);
+    provider_.UpdateChromePolicy(policy_map_);
   }
 
   // Creates fake pending request in pref.
@@ -98,8 +116,8 @@ class ExtensionRequestObserverTest : public BrowserWithTestWindowTest {
           id, base::DictValue().Set(extension_misc::kExtensionRequestTimestamp,
                                     ::base::TimeToValue(base::Time::Now())));
     }
-    profile()->GetTestingPrefService()->SetUserPref(
-        prefs::kCloudExtensionRequestIds, std::move(id_values));
+    browser()->profile()->GetPrefs()->Set(prefs::kCloudExtensionRequestIds,
+                                          base::Value(std::move(id_values)));
   }
 
   std::vector<std::optional<message_center::Notification>>
@@ -111,18 +129,22 @@ class ExtensionRequestObserverTest : public BrowserWithTestWindowTest {
 
   // Waits and verifies if the notifications are displayed or not.
   void VerifyNotification(bool has_notification) {
-    task_environment()->RunUntilIdle();
-    for (auto& notification : GetAllNotifications())
+    base::RunLoop().RunUntilIdle();
+    for (auto& notification : GetAllNotifications()) {
       EXPECT_EQ(has_notification, notification.has_value());
+    }
   }
 
-  //
   void SetExtensionSettings(const std::string& settings_string) {
     std::optional<base::Value> settings = base::JSONReader::Read(
         settings_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(settings.has_value());
-    profile()->GetTestingPrefService()->SetManagedPref(
-        extensions::pref_names::kExtensionManagement, std::move(*settings));
+
+    policy_map_.Set(policy::key::kExtensionSettings,
+                    policy::POLICY_LEVEL_MANDATORY,
+                    policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
+                    std::move(*settings), nullptr);
+    provider_.UpdateChromePolicy(policy_map_);
   }
 
   void CloseNotificationAndVerify(
@@ -130,7 +152,11 @@ class ExtensionRequestObserverTest : public BrowserWithTestWindowTest {
       const std::vector<std::string>& expected_removed_requests) {
     // Record the number of requests before closing any notification.
     size_t number_of_existing_requests =
-        profile()->GetPrefs()->GetDict(prefs::kCloudExtensionRequestIds).size();
+        browser()
+            ->profile()
+            ->GetPrefs()
+            ->GetDict(prefs::kCloudExtensionRequestIds)
+            .size();
 
     // Close the notification
     base::RunLoop close_run_loop;
@@ -143,7 +169,8 @@ class ExtensionRequestObserverTest : public BrowserWithTestWindowTest {
 
     // Verify that only |expected_removed_requests| are removed from the pref.
     const base::DictValue& actual_pending_requests =
-        profile()->GetPrefs()->GetDict(prefs::kCloudExtensionRequestIds);
+        browser()->profile()->GetPrefs()->GetDict(
+            prefs::kCloudExtensionRequestIds);
     EXPECT_EQ(number_of_existing_requests - expected_removed_requests.size(),
               actual_pending_requests.size());
     for (auto it : actual_pending_requests) {
@@ -161,11 +188,13 @@ class ExtensionRequestObserverTest : public BrowserWithTestWindowTest {
   base::HistogramTester histogram_tester_;
   int closed_notification_count_ = 0;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
+  policy::PolicyMap policy_map_;
 };
 
-TEST_F(ExtensionRequestObserverTest, NoPendingRequestTest) {
+IN_PROC_BROWSER_TEST_F(ExtensionRequestObserverTest, NoPendingRequestTest) {
   SetPendingList({});
-  ExtensionRequestObserver observer(profile());
+  ExtensionRequestObserver observer(browser()->profile());
   VerifyNotification(false);
 
   SetExtensionSettings(kExtensionSettings);
@@ -173,10 +202,10 @@ TEST_F(ExtensionRequestObserverTest, NoPendingRequestTest) {
   histogram_tester()->ExpectTotalCount(kPendingListUpdateMetricsName, 0);
 }
 
-TEST_F(ExtensionRequestObserverTest, UserConfirmNotification) {
+IN_PROC_BROWSER_TEST_F(ExtensionRequestObserverTest, UserConfirmNotification) {
   SetPendingList({kExtensionId1, kExtensionId2, kExtensionId3, kExtensionId4,
                   kExtensionId5, kExtensionId6});
-  ExtensionRequestObserver observer(profile());
+  ExtensionRequestObserver observer(browser()->profile());
   VerifyNotification(false);
 
   SetExtensionSettings(kExtensionSettings);
@@ -188,13 +217,14 @@ TEST_F(ExtensionRequestObserverTest, UserConfirmNotification) {
                              {kExtensionId3, kExtensionId4});
 }
 
-TEST_F(ExtensionRequestObserverTest, NotificationClosedWithoutUserConfirmed) {
+IN_PROC_BROWSER_TEST_F(ExtensionRequestObserverTest,
+                       NotificationClosedWithoutUserConfirmed) {
   std::vector<std::string> pending_list = {kExtensionId1, kExtensionId2,
                                            kExtensionId3, kExtensionId4,
                                            kExtensionId5, kExtensionId6};
   SetPendingList(pending_list);
   std::unique_ptr<ExtensionRequestObserver> observer =
-      std::make_unique<ExtensionRequestObserver>(profile());
+      std::make_unique<ExtensionRequestObserver>(browser()->profile());
   VerifyNotification(false);
 
   SetExtensionSettings(kExtensionSettings);
@@ -204,16 +234,18 @@ TEST_F(ExtensionRequestObserverTest, NotificationClosedWithoutUserConfirmed) {
   VerifyNotification(false);
 
   // No request removed when notification is not closed by user.
-  EXPECT_EQ(
-      pending_list.size(),
-      profile()->GetPrefs()->GetDict(prefs::kCloudExtensionRequestIds).size());
+  EXPECT_EQ(pending_list.size(), browser()
+                                     ->profile()
+                                     ->GetPrefs()
+                                     ->GetDict(prefs::kCloudExtensionRequestIds)
+                                     .size());
   histogram_tester()->ExpectTotalCount(kPendingListUpdateMetricsName, 0);
 }
 
-TEST_F(ExtensionRequestObserverTest, NotificationClose) {
+IN_PROC_BROWSER_TEST_F(ExtensionRequestObserverTest, NotificationClose) {
   SetPendingList({kExtensionId1, kExtensionId2, kExtensionId3, kExtensionId4,
                   kExtensionId5, kExtensionId6});
-  ExtensionRequestObserver observer(profile());
+  ExtensionRequestObserver observer(browser()->profile());
   VerifyNotification(false);
 
   SetExtensionSettings(kExtensionSettings);
@@ -224,10 +256,10 @@ TEST_F(ExtensionRequestObserverTest, NotificationClose) {
   histogram_tester()->ExpectTotalCount(kPendingListUpdateMetricsName, 0);
 }
 
-TEST_F(ExtensionRequestObserverTest, NotificationUpdate) {
+IN_PROC_BROWSER_TEST_F(ExtensionRequestObserverTest, NotificationUpdate) {
   SetPendingList({kExtensionId1, kExtensionId2, kExtensionId3, kExtensionId4,
                   kExtensionId5, kExtensionId6});
-  ExtensionRequestObserver observer(profile());
+  ExtensionRequestObserver observer(browser()->profile());
   VerifyNotification(false);
 
   SetExtensionSettings(kExtensionSettings);
@@ -238,7 +270,8 @@ TEST_F(ExtensionRequestObserverTest, NotificationUpdate) {
   histogram_tester()->ExpectTotalCount(kPendingListUpdateMetricsName, 0);
 }
 
-TEST_F(ExtensionRequestObserverTest, ExtensionRequestPolicyToggle) {
+IN_PROC_BROWSER_TEST_F(ExtensionRequestObserverTest,
+                       ExtensionRequestPolicyToggle) {
   std::vector<std::string> pending_list = {kExtensionId1, kExtensionId2,
                                            kExtensionId3, kExtensionId4,
                                            kExtensionId5, kExtensionId6};
@@ -247,7 +280,7 @@ TEST_F(ExtensionRequestObserverTest, ExtensionRequestPolicyToggle) {
   ToggleExtensionRequest(false);
 
   // No notification without the policy.
-  ExtensionRequestObserver observer(profile());
+  ExtensionRequestObserver observer(browser()->profile());
   VerifyNotification(false);
 
   // Show notification when the policy is turned on.
@@ -259,14 +292,17 @@ TEST_F(ExtensionRequestObserverTest, ExtensionRequestPolicyToggle) {
   VerifyNotification(false);
 
   // And no pending requests are removed.
-  EXPECT_EQ(
-      pending_list.size(),
-      profile()->GetPrefs()->GetDict(prefs::kCloudExtensionRequestIds).size());
+  EXPECT_EQ(pending_list.size(), browser()
+                                     ->profile()
+                                     ->GetPrefs()
+                                     ->GetDict(prefs::kCloudExtensionRequestIds)
+                                     .size());
   histogram_tester()->ExpectTotalCount(kPendingListUpdateMetricsName, 0);
 }
 
-TEST_F(ExtensionRequestObserverTest, PendingRequestAddedAfterPolicyUpdated) {
-  ExtensionRequestObserver observer(profile());
+IN_PROC_BROWSER_TEST_F(ExtensionRequestObserverTest,
+                       PendingRequestAddedAfterPolicyUpdated) {
+  ExtensionRequestObserver observer(browser()->profile());
   VerifyNotification(false);
 
   SetExtensionSettings(kExtensionSettings);
@@ -280,13 +316,14 @@ TEST_F(ExtensionRequestObserverTest, PendingRequestAddedAfterPolicyUpdated) {
                                          /*added*/ 0, 1);
 }
 
-TEST_F(ExtensionRequestObserverTest, UpdateWithReportEnabledAndDisabled) {
-  ExtensionRequestObserver observer(profile());
+IN_PROC_BROWSER_TEST_F(ExtensionRequestObserverTest,
+                       UpdateWithReportEnabledAndDisabled) {
+  ExtensionRequestObserver observer(browser()->profile());
 
   base::MockCallback<ExtensionRequestObserver::ReportTrigger> callback;
 
   observer.EnableReport(callback.Get());
-  EXPECT_CALL(callback, Run(profile())).Times(1);
+  EXPECT_CALL(callback, Run(browser()->profile())).Times(1);
   SetPendingList({kExtensionId1});
 
   observer.DisableReport();
