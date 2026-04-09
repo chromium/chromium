@@ -167,7 +167,8 @@ suite(SettingsSliderRowElement.is, () => {
 
     test('updating pref value dispatches change event', () => {
       ticks.forEach(async (tickValue, index) => {
-        const changeEventPromise = eventToPromise('change', window);
+        const changeEventPromise =
+            eventToPromise<CustomEvent<{value: number}>>('change', window);
         sliderRow.set('pref.value', tickValue);
         assertSliderValueByTick(index);
 
@@ -189,7 +190,8 @@ suite(SettingsSliderRowElement.is, () => {
 
     test('updating value dispatches change event', () => {
       ticks.forEach(async (tickValue, index) => {
-        const changeEventPromise = eventToPromise('change', window);
+        const changeEventPromise =
+            eventToPromise<CustomEvent<number>>('change', window);
         sliderRow.value = tickValue;
         assertSliderValueByTick(index);
 

@@ -149,7 +149,7 @@ const tests = [
 
     await microtasksFinished();
 
-    function waitForwardFocus(pageNumber: number): Promise<void> {
+    function waitForwardFocus(pageNumber: number): Promise<Event> {
       // Reset focus.
       thumbnailBar.blur();
 

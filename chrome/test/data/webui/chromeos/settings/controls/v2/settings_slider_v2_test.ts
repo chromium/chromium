@@ -346,7 +346,8 @@ suite(SettingsSliderV2Element.is, () => {
         slider.ticks = ticks;
         updateSliderValue(hasPref, /*newValue=*/ 32);
 
-        const changeEventPromise = eventToPromise('change', window);
+        const changeEventPromise =
+            eventToPromise<CustomEvent<number>>('change', window);
         press('ArrowRight');
         const newValue = 64;
         assertEquals(newValue, slider.value);

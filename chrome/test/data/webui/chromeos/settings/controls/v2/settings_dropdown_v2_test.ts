@@ -269,7 +269,8 @@ suite(SettingsDropdownV2Element.is, () => {
     test('Selecting an option dispatches change event', async () => {
       for (const testOption of testOptions) {
         const value = testOption.value;
-        const changeEventPromise = eventToPromise('change', window);
+        const changeEventPromise =
+            eventToPromise<CustomEvent<number>>('change', window);
         simulateSelectAction(value);
         assertOptionSelected(value);
         const event = await changeEventPromise;
@@ -313,7 +314,8 @@ suite(SettingsDropdownV2Element.is, () => {
     test('Selecting an option dispatches change event', async () => {
       for (const testOption of testOptions) {
         const value = testOption.value;
-        const changeEventPromise = eventToPromise('change', window);
+        const changeEventPromise =
+            eventToPromise<CustomEvent<number>>('change', window);
         simulateSelectAction(value);
         assertOptionSelected(value);
         const event = await changeEventPromise;

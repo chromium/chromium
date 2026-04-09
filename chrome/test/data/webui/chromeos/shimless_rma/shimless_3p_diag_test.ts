@@ -99,7 +99,7 @@ suite('shimless3pDiagTest', function() {
   }
 
   function pressKey(
-      key: string, altKey: boolean, shiftKey: boolean): Promise<void> {
+      key: string, altKey: boolean, shiftKey: boolean): Promise<KeyboardEvent> {
     assert(component);
     const eventPromise = eventToPromise('keydown', component);
     component.dispatchEvent(new KeyboardEvent(
@@ -115,7 +115,7 @@ suite('shimless3pDiagTest', function() {
     return eventPromise;
   }
 
-  function pressEnterOnDialog(selector: string): Promise<void> {
+  function pressEnterOnDialog(selector: string): Promise<KeyboardEvent> {
     assert(component);
     const dialog = strictQuery(selector, component.shadowRoot, CrDialogElement);
     const eventPromise = eventToPromise('keypress', dialog);
@@ -130,7 +130,7 @@ suite('shimless3pDiagTest', function() {
     return eventPromise;
   }
 
-  function cancelDialog(selector: string): Promise<void> {
+  function cancelDialog(selector: string): Promise<Event> {
     assert(component);
     const dialog = strictQuery(selector, component.shadowRoot, CrDialogElement);
     const eventPromise = eventToPromise('cancel', component);

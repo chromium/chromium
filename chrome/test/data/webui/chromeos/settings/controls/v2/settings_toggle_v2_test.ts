@@ -81,7 +81,8 @@ suite(SettingsToggleV2Element.is, () => {
   test(
       'triggers a change event when the value of toggle changes.', async () => {
         await init();
-        const checkedChangeEventPromise = eventToPromise('change', window);
+        const checkedChangeEventPromise =
+            eventToPromise<CustomEvent<boolean>>('change', window);
 
         internalToggleElement.click();
 

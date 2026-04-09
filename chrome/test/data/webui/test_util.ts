@@ -56,8 +56,18 @@ export function whenCheck(
  * Converts an event occurrence to a promise.
  * @return A promise firing once the event occurs.
  */
+
+export function eventToPromise<K extends keyof HTMLElementEventMap>(
+    eventType: K, target: HTMLElement): Promise<HTMLElementEventMap[K]>;
+
+export function eventToPromise<K extends keyof WindowEventMap>(
+    eventType: K, target: Window): Promise<WindowEventMap[K]>;
+
+export function eventToPromise<E extends Event = any>(
+    eventType: string, target: Element|EventTarget|Window): Promise<E>;
+
 export function eventToPromise(
-    eventType: string, target: Element|EventTarget|Window): Promise<any> {
+    eventType: string, target: Element|EventTarget|Window) {
   return new Promise(function(resolve, _reject) {
     target.addEventListener(eventType, function f(e) {
       target.removeEventListener(eventType, f);

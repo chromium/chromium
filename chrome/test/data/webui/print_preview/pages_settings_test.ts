@@ -34,7 +34,7 @@ suite('PagesSettingsTest', function() {
    * @return Promise that resolves when the input has been set and
    *     the input-change event has fired.
    */
-  function setCustomInput(inputString: string): Promise<void> {
+  function setCustomInput(inputString: string): Promise<Event> {
     const pagesInput = pagesSection.$.pageSettingsCustomInput.inputElement;
     return triggerInputEvent(pagesInput, inputString, pagesSection);
   }

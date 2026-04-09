@@ -66,12 +66,14 @@ suite('SettingsToggleButton', () => {
 
   test('fires a change event', async () => {
     assertTrue(testElement.checked);
-    let changeEventPromise = eventToPromise('change', testElement);
+    let changeEventPromise =
+        eventToPromise<CustomEvent<boolean>>('change', testElement);
     testElement.click();
     let changeEvent = await changeEventPromise;
     assertFalse(changeEvent.detail);
 
-    changeEventPromise = eventToPromise('change', testElement);
+    changeEventPromise =
+        eventToPromise<CustomEvent<boolean>>('change', testElement);
     testElement.click();
     changeEvent = await changeEventPromise;
     assertTrue(changeEvent.detail);
@@ -157,7 +159,8 @@ suite('SettingsToggleButton', () => {
     const noToggleTestElement = createNoToggleOnClickElement();
     assertTrue(noToggleTestElement.checked);
     assertTrue(noToggleTestElement.pref!.value);
-    let changeEventPromise = eventToPromise('change', noToggleTestElement);
+    let changeEventPromise =
+        eventToPromise<CustomEvent<boolean>>('change', noToggleTestElement);
     // Click specifically on the internal cr-toggle control
     noToggleTestElement.$.control.click();
     // Wait for the change event
@@ -167,7 +170,8 @@ suite('SettingsToggleButton', () => {
     assertFalse(noToggleTestElement.checked);
     assertFalse(noToggleTestElement.pref!.value);
     // Click again to toggle back
-    changeEventPromise = eventToPromise('change', noToggleTestElement);
+    changeEventPromise =
+        eventToPromise<CustomEvent<boolean>>('change', noToggleTestElement);
     noToggleTestElement.$.control.click();
     changeEvent = await changeEventPromise;
     assertTrue(changeEvent.detail);

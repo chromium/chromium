@@ -378,7 +378,7 @@ export function getMediaSizeCapabilityWithCustomNames(): MediaSizeCapability {
  */
 export async function triggerInputEvent(
     inputElement: HTMLInputElement|CrInputElement, input: string,
-    parentElement: HTMLElement): Promise<void> {
+    parentElement: HTMLElement): Promise<Event> {
   inputElement.value = input;
   if (inputElement.tagName === 'CR-INPUT') {
     await (inputElement as CrInputElement).updateComplete;
@@ -434,7 +434,7 @@ export function getSaveAsPdfDestination(): Destination {
  *     process-select-change event has fired.
  */
 export function selectOption(
-    section: HTMLElement, option: string): Promise<void> {
+    section: HTMLElement, option: string): Promise<Event> {
   const select = section.shadowRoot!.querySelector('select')!;
   select.value = option;
   select.dispatchEvent(new CustomEvent('change'));

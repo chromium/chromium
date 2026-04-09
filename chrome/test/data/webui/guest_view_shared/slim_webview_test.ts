@@ -6,7 +6,7 @@ import '//glic/shared/guest_view/slim_webview.js';
 
 import {OnBeforeSendHeadersParams} from '//glic/shared/guest_view/request_throttlers.js';
 import {PermissionRequestEvent} from '//glic/shared/guest_view/slim_webview.js';
-import type {SlimWebviewElement} from '//glic/shared/guest_view/slim_webview.js';
+import type {LoadAbortEvent, LoadEvent, SlimWebviewElement} from '//glic/shared/guest_view/slim_webview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -92,8 +92,8 @@ suite('Loading', function() {
     const webview = document.createElement('webview');
     document.body.appendChild(webview);
 
-    const loadStartPromise = eventToPromise('loadstart', webview);
-    const loadCommitPromise = eventToPromise('loadcommit', webview);
+    const loadStartPromise = eventToPromise<LoadEvent>('loadstart', webview);
+    const loadCommitPromise = eventToPromise<LoadEvent>('loadcommit', webview);
     const contentLoadPromise = eventToPromise('contentload', webview);
     const loadStopPromise = eventToPromise('loadstop', webview);
     const loadAbortPromise = eventToPromise('loadabort', webview);
@@ -119,10 +119,11 @@ suite('Loading', function() {
     const webview = document.createElement('webview');
     document.body.appendChild(webview);
 
-    const loadStartPromise = eventToPromise('loadstart', webview);
-    const loadAbortPromise = eventToPromise('loadabort', webview);
+    const loadStartPromise = eventToPromise<LoadEvent>('loadstart', webview);
+    const loadAbortPromise =
+        eventToPromise<LoadAbortEvent>('loadabort', webview);
     // The remaining events are still fired for the error page.
-    const loadCommitPromise = eventToPromise('loadcommit', webview);
+    const loadCommitPromise = eventToPromise<LoadEvent>('loadcommit', webview);
     const contentLoadPromise = eventToPromise('contentload', webview);
     const loadStopPromise = eventToPromise('loadstop', webview);
 

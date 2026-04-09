@@ -441,7 +441,7 @@ suite('cr-input', function() {
     // Initialization events
     element.validateEvents(['value-changed', 'invalid-changed']);
 
-    function simulateUserInput(inputValue: string): Promise<void> {
+    function simulateUserInput(inputValue: string): Promise<Event> {
       element.setExpectedValue(inputValue);
       assertTrue(!!input);
       input.inputElement.value = inputValue;

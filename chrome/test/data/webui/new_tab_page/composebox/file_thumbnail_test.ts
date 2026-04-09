@@ -163,9 +163,8 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
     await microtasksFinished();
 
     // Act.
-    const deleteEventPromise =
-        eventToPromise('delete-file', fileThumbnailElement) as
-        Promise<CustomEvent>;
+    const deleteEventPromise = eventToPromise<CustomEvent<{uuid: string}>>(
+        'delete-file', fileThumbnailElement);
     assertTrue(!!fileThumbnailElement.$.removeImgButton);
     fileThumbnailElement.$.removeImgButton.click();
 
@@ -195,9 +194,8 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
     await microtasksFinished();
 
     // Act.
-    const deleteEventPromise =
-        eventToPromise('delete-file', fileThumbnailElement) as
-        Promise<CustomEvent>;
+    const deleteEventPromise = eventToPromise<CustomEvent<{uuid: string}>>(
+        'delete-file', fileThumbnailElement);
     assertTrue(!!fileThumbnailElement.$.removeDocumentButton);
     fileThumbnailElement.$.removeDocumentButton.click();
 
@@ -226,9 +224,8 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
     await microtasksFinished();
 
     // Act.
-    const deleteEventPromise =
-        eventToPromise('delete-file', fileThumbnailElement) as
-        Promise<CustomEvent>;
+    const deleteEventPromise = eventToPromise<CustomEvent<{uuid: string}>>(
+        'delete-file', fileThumbnailElement);
     assertTrue(!!fileThumbnailElement.$.removeTabButton);
     fileThumbnailElement.$.removeTabButton.click();
 

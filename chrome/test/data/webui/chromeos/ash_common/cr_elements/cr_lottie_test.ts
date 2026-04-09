@@ -55,8 +55,8 @@ suite('cr_lottie_test', function() {
   let container: HTMLElement;
   let canvas: HTMLCanvasElement;
 
-  let waitForInitializeEvent: Promise<void>;
-  let waitForPlayingEvent: Promise<void>;
+  let waitForInitializeEvent: Promise<Event>;
+  let waitForPlayingEvent: Promise<Event>;
 
   const defaultWidth = 300;
   const defaultHeight = 200;
