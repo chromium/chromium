@@ -298,7 +298,8 @@ bool AXRelationCache::IsAriaOwned(const AXObject* child, bool check) const {
       for (AXID id : owner_axids_to_update_) {
         msg << " " << id;
       }
-      DUMP_WILL_BE_CHECK(false) << msg.str();
+      // TODO(crbug.com/500774800): Investigate and convert to CHECK.
+      DCHECK(false) << msg.str();
     }
   }
 

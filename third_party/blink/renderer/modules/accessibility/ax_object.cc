@@ -595,7 +595,8 @@ void AXObject::SetParent(AXObject* new_parent) {
   if (parent_ && new_parent != parent_ && !parent_->NeedsToUpdateChildren() &&
       !parent_->IsDetached()) {
     for (const auto& child : parent_->ChildrenIncludingIgnored()) {
-      DUMP_WILL_BE_CHECK(child != this)
+      // TODO(crbug.com/500774799): Investigate and convert to CHECK.
+      DCHECK(child != this)
           << "Previous parent still has |this| child:\n"
           << this << " should be a child of " << new_parent << " not of "
           << parent_;
@@ -637,13 +638,15 @@ bool AXObject::IsMissingParent() const {
     // object, because hidden ones are purposely kept around without being in
     // the tree, and without a parent, for potential later reuse.
     bool is_missing = !IsRoot();
-    DUMP_WILL_BE_CHECK(!is_missing || !AXObjectCache().IsFrozen())
+    // TODO(crbug.com/500793607): Investigate and convert to CHECK.
+    DCHECK(!is_missing || !AXObjectCache().IsFrozen())
         << "Should not have missing parent in frozen tree: " << this;
     return is_missing;
   }
 
   if (parent_->IsDetached()) {
-    DUMP_WILL_BE_CHECK(!AXObjectCache().IsFrozen())
+    // TODO(crbug.com/500793607): Investigate and convert to CHECK.
+    DCHECK(!AXObjectCache().IsFrozen())
         << "Should not have detached parent in frozen tree: " << this;
     return true;
   }
@@ -3535,7 +3538,8 @@ bool AXObject::IsIncludedInTree() {
 
 void AXObject::CheckCanAccessCachedValues() const {
   if (!IsDetached() && AXObjectCache().IsFrozen()) {
-    DUMP_WILL_BE_CHECK(!NeedsToUpdateCachedValues())
+    // TODO(crbug.com/500793607): Investigate and convert to CHECK.
+    DCHECK(!NeedsToUpdateCachedValues())
         << "Stale values: " << this;
   }
 }
@@ -3572,7 +3576,8 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
 #if AX_FAIL_FAST_BUILD()
     parent_chain = "\n* Parent Chain:\n" + ParentChainToStringHelper(this);
 #endif
-    DUMP_WILL_BE_CHECK(false)
+    // TODO(crbug.com/500774800): Investigate and convert to CHECK.
+    DCHECK(false)
         << AXObjectCache() << "\n* Object: " << this << parent_chain;
   }
 
@@ -3592,7 +3597,8 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
       << GetDocument()->Lifecycle().ToString();
 #endif  // DCHECK_IS_ON()
 
-  DUMP_WILL_BE_CHECK(!IsMissingParent()) << "Missing parent: " << this;
+  // TODO(crbug.com/500774799): Investigate and convert to CHECK.
+  DCHECK(!IsMissingParent()) << "Missing parent: " << this;
 
   const ComputedStyle* style = GetComputedStyle();
 
@@ -3751,7 +3757,8 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     // The document root is never a live region root.
     cached_live_region_root_ = nullptr;
   } else {
-    DUMP_WILL_BE_CHECK(!IsMissingParent()) << this;
+    // TODO(crbug.com/500774799): Investigate and convert to CHECK.
+    DCHECK(!IsMissingParent()) << this;
     // Is a live region root if this or an ancestor is a live region.
     if (IsLiveRegionRoot()) {
       cached_live_region_root_ = this;
@@ -3833,7 +3840,8 @@ bool AXObject::ComputeIsIgnored(
 
 bool AXObject::ShouldIgnoreForHiddenOrInert(
     IgnoredReasons* ignored_reasons) const {
-  DUMP_WILL_BE_CHECK(!cached_values_need_update_)
+  // TODO(crbug.com/500793607): Investigate and convert to CHECK.
+  DCHECK(!cached_values_need_update_)
       << "Tried to compute ignored value without up-to-date hidden/inert "
          "values on "
       << this;
@@ -6493,14 +6501,17 @@ AXObject* AXObject::UnignoredPreviousInPreOrderSlow() const {
 }
 
 AXObject* AXObject::ParentObject() const {
-  DUMP_WILL_BE_CHECK(!IsDetached());
-  DUMP_WILL_BE_CHECK(!IsMissingParent()) << "Missing parent: " << this;
+  // TODO(crbug.com/500774799): Investigate and convert to CHECK.
+  DCHECK(!IsDetached());
+  // TODO(crbug.com/500774799): Investigate and convert to CHECK.
+  DCHECK(!IsMissingParent()) << "Missing parent: " << this;
 
   return parent_;
 }
 
 AXObject* AXObject::ParentObject() {
-  DUMP_WILL_BE_CHECK(!IsDetached());
+  // TODO(crbug.com/500774799): Investigate and convert to CHECK.
+  DCHECK(!IsDetached());
   // Calling IsMissingParent can cause us to dereference pointers that
   // are null on detached objects, return early here to avoid crashing.
   // TODO(accessibility) Remove early return and change above assertion
@@ -6508,7 +6519,8 @@ AXObject* AXObject::ParentObject() {
   if (IsDetached()) {
     return nullptr;
   }
-  DUMP_WILL_BE_CHECK(!IsMissingParent()) << "Missing parent: " << this;
+  // TODO(crbug.com/500774799): Investigate and convert to CHECK.
+  DCHECK(!IsMissingParent()) << "Missing parent: " << this;
 
   // TODO(crbug.com/337178753): this should not be necessary once subtree
   // removals can be immediate, complete and safe.
@@ -6628,7 +6640,8 @@ void AXObject::UpdateChildrenIfNecessary() {
   }
 
   if (AXObjectCache().IsFrozen()) {
-    DUMP_WILL_BE_CHECK(!AXObjectCache().IsFrozen())
+    // TODO(crbug.com/500793607): Investigate and convert to CHECK.
+    DCHECK(!AXObjectCache().IsFrozen())
         << "Object should have already had its children updated in "
            "AXObjectCacheImpl::FinalizeTree(): "
         << this;

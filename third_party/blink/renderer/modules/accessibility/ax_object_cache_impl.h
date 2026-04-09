@@ -191,7 +191,8 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
     IncrementGenerationalCacheId();
 
     CHECK(FocusedObject());
-    DUMP_WILL_BE_CHECK(!IsDirty());
+    // TODO(crbug.com/500793607): Investigate and convert to CHECK.
+    DCHECK(!IsDirty());
   }
   void Thaw() override {
     CHECK_GE(frozen_count_, 1);

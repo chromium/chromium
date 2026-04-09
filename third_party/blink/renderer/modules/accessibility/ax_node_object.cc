@@ -6409,7 +6409,8 @@ void AXNodeObject::AddNodeChildImpl(Node* node) {
       children_.size() && children_[children_.size() - 1] == ax_child;
   if (did_add_child_as_included && ax_cached_parent) {
     CHECK(ax_child->IsIncludedInTree());
-    DUMP_WILL_BE_CHECK(ax_cached_parent->AXObjectID() == AXObjectID())
+    // TODO(crbug.com/500774799): Investigate and convert to CHECK.
+    DCHECK(ax_cached_parent->AXObjectID() == AXObjectID())
         << "Newly added child shouldn't have a different preexisting parent:"
         << "\nChild = " << ax_child << "\nNew parent = " << this
         << "\nPreexisting parent = " << ax_cached_parent;

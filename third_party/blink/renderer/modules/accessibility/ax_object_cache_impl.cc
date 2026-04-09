@@ -1896,7 +1896,8 @@ void AXObjectCacheImpl::Remove(AXID ax_id, bool notify_parent) {
 
   // RemoveReferencesToAXID can cause the object to detach, in this case,
   // fail gracefully rather than attempting to double detach.
-  DUMP_WILL_BE_CHECK(!obj->IsDetached()) << obj;
+  // TODO(crbug.com/500774799): Investigate and convert to CHECK.
+  DCHECK(!obj->IsDetached()) << obj;
   if (obj->IsDetached()) {
     // TODO(accessibility): Remove early return and change above assertion
     // to CHECK() once this no longer occurs.
@@ -2323,7 +2324,8 @@ bool AXObjectCacheImpl::CanDeferTreeUpdate(Document* tree_update_document) {
     // If we are queuing an update to a document other than the main document,
     // then it must be in an active popup document. The cache would never
     // receive notifications from other documents.
-    DUMP_WILL_BE_CHECK_EQ(tree_update_document, popup_document_)
+    // TODO(crbug.com/500774800): Investigate and convert to CHECK.
+    DCHECK_EQ(tree_update_document, popup_document_)
         << "Update in non-main, non-popup document: "
         << tree_update_document->Url().GetString();
   }
@@ -3164,7 +3166,8 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* optional_node,
 #endif  // DCHECK_IS_ON()
 
   obj->ChildrenChangedWithCleanLayout();
-  DUMP_WILL_BE_CHECK(!obj->IsDetached());
+  // TODO(crbug.com/500774799): Investigate and convert to CHECK.
+  DCHECK(!obj->IsDetached());
   if (optional_node) {
     CHECK(relation_cache_);
     relation_cache_->UpdateRelatedTree(optional_node, obj);
@@ -3594,8 +3597,10 @@ bool AXObjectCacheImpl::CommitAXUpdates(Document& document, bool force) {
       mark_all_dirty_ = false;
 
       // All tree updates have been processed.
-      DUMP_WILL_BE_CHECK(!IsMainDocumentDirty());
-      DUMP_WILL_BE_CHECK(!IsPopupDocumentDirty());
+      // TODO(crbug.com/500793607): Investigate and convert to CHECK.
+      DCHECK(!IsMainDocumentDirty());
+      // TODO(crbug.com/500793607): Investigate and convert to CHECK.
+      DCHECK(!IsPopupDocumentDirty());
 
       // Clean up any remaining unprocessed aria-owns relations, which can
       // result from processing deferred tree updates. For example, if an object
@@ -3644,12 +3649,14 @@ bool AXObjectCacheImpl::CommitAXUpdates(Document& document, bool force) {
                 << "\nUpdate Reason: "
                 << TreeUpdateReasonAsDebugString(entry.value);
           }
-          DUMP_WILL_BE_CHECK(false) << msg.str();
+          // TODO(crbug.com/500793607): Investigate and convert to CHECK.
+          DCHECK(false) << msg.str();
         }
 #endif
 
         // Updating the tree did not add dirty objects.
-        DUMP_WILL_BE_CHECK(!IsDirty())
+        // TODO(crbug.com/500793607): Investigate and convert to CHECK.
+        DCHECK(!IsDirty())
             << "Cache dirtied at bad time:" << "\nAll: " << mark_all_dirty_
             << "\nRoot children: " << Root()->NeedsToUpdateChildren()
             << "\nRoot descendants: " << Root()->HasDirtyDescendants()
@@ -3741,10 +3748,12 @@ void AXObjectCacheImpl::SerializeAXUpdatesIfNeeded(Document& document) {
       std::move(callback).Run();
     }
 
-    DUMP_WILL_BE_CHECK(!IsDirty());
+    // TODO(crbug.com/500793607): Investigate and convert to CHECK.
+    DCHECK(!IsDirty());
     // TODO(accessibility): in the future, we may break up serialization into
     // pieces to reduce jank, in which case this assertion will not hold.
-    DUMP_WILL_BE_CHECK(!HasObjectsPendingSerialization() || !did_serialize)
+    // TODO(crbug.com/500793607): Investigate and convert to CHECK.
+    DCHECK(!HasObjectsPendingSerialization() || !did_serialize)
         << "A serialization occurred but dirty objects remained.";
   }
 }
@@ -4152,7 +4161,8 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForAXID(
 
   // TODO(crbug.com/452392024): Investigate why this fails, fix it, and move to
   // a CHECK.
-  DUMP_WILL_BE_CHECK(!ax_object->IsMissingParent())
+  // TODO(crbug.com/500774799): Investigate and convert to CHECK.
+  DCHECK(!ax_object->IsMissingParent())
       << tree_update->ToString() << " on " << ax_object;
 
   // Update cached attributes for all changed nodes before serialization,
@@ -4227,7 +4237,8 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForNode(
 
   // TODO(crbug.com/452392024): Investigate why this fails, fix it, and move to
   // a CHECK.
-  DUMP_WILL_BE_CHECK(!ax_object->IsMissingParent())
+  // TODO(crbug.com/500774799): Investigate and convert to CHECK.
+  DCHECK(!ax_object->IsMissingParent())
       << tree_update->ToString() << " on " << ax_object;
 
   base::AutoReset<ax::mojom::blink::EventFrom> event_from_resetter(
@@ -5670,7 +5681,8 @@ void AXObjectCacheImpl::MarkAXObjectDirty(AXObject* obj) {
 }
 
 void AXObjectCacheImpl::NotifySubtreeDirty(AXObject* obj) {
-  DUMP_WILL_BE_CHECK(obj->IsIncludedInTree());
+  // TODO(crbug.com/500774800): Investigate and convert to CHECK.
+  DCHECK(obj->IsIncludedInTree());
 
   // Note: if there is no serializer yet, then there is nothing to mark dirty
   // for serialization purposes yet -- effectively everything starts out dirty
@@ -6163,7 +6175,8 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
             DocumentLifecycle::kLayoutClean);
   DCHECK(!popup_document_ || popup_document_->Lifecycle().GetState() >=
                                  DocumentLifecycle::kLayoutClean);
-  DUMP_WILL_BE_CHECK(HasObjectsPendingSerialization());
+  // TODO(crbug.com/500793607): Investigate and convert to CHECK.
+  DCHECK(HasObjectsPendingSerialization());
 
   DCHECK_GE(pending_objects_to_serialize_.size(),
             pending_events_to_serialize_.size())
@@ -6203,7 +6216,8 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
       continue;
 
     if (GetAXMode().HasFilterFlags(ui::AXMode::kOnScreenOnly)) {
-      DUMP_WILL_BE_CHECK(obj->IsRoot() || obj->ParentObjectIncludedInTree())
+      // TODO(crbug.com/500774800): Investigate and convert to CHECK.
+      DCHECK(obj->IsRoot() || obj->ParentObjectIncludedInTree())
           << "Non-root object has no parent: " << obj->ToString();
       if (!obj->IsRoot() && !obj->WasEverOnScreen() &&
           !obj->ParentObjectIncludedInTree()->WasEverOnScreen()) {
