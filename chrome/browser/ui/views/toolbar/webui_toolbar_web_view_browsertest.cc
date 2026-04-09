@@ -373,20 +373,15 @@ class WebUIToolbarWebViewPixelBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/493362471): Deflake and reenable it.
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, DISABLED_Basic) {
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Basic) {
   BasicPixelTest(browser(), "Basic");
 }
 
-// TODO(crbug.com/493362471): Deflake and reenable it.
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
-                       DISABLED_IncognitoBasic) {
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, IncognitoBasic) {
   BasicPixelTest(CreateIncognitoBrowser(), "IncognitoBasic");
 }
 
-// TODO(crbug.com/493362471): Deflake and reenable it.
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
-                       DISABLED_Accessibility) {
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Accessibility) {
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   ui::TrackedElement* element = nullptr;
   WebUIToolbarWebView* webui_toolbar_view = nullptr;
@@ -412,21 +407,25 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
             reload.GetStringAttribute(ax::mojom::StringAttribute::kName));
   EXPECT_EQ("Reload this page", reload.GetStringAttribute(
                                     ax::mojom::StringAttribute::kDescription));
-  EXPECT_EQ(0, reload.GetIntAttribute(ax::mojom::IntAttribute::kHasPopup));
+  EXPECT_EQ(static_cast<int>(ax::mojom::HasPopup::kFalse),
+            reload.GetIntAttribute(ax::mojom::IntAttribute::kHasPopup));
 
   // Verify enabling devtools is reflected in HasPopup attribute.
   webui_toolbar_view->GetReloadControl()->SetDevToolsStatus(true);
   content::WaitForAccessibilityTreeToChange(web_view->GetWebContents());
   content::WaitForAccessibilityTreeToContainNodeWithName(
       web_view->GetWebContents(), "Reload");
-  reload_node =
-      content::FindAccessibilityNode(web_view->GetWebContents(), find_criteria);
-  ASSERT_TRUE(reload_node);
-  EXPECT_EQ(2, reload_node->GetData().GetIntAttribute(
-                   ax::mojom::IntAttribute::kHasPopup));
-  EXPECT_EQ("Reload this page, hold to see more options",
-            reload_node->GetData().GetStringAttribute(
-                ax::mojom::StringAttribute::kDescription));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    ui::AXPlatformNodeDelegate* node = content::FindAccessibilityNode(
+        web_view->GetWebContents(), find_criteria);
+    return node &&
+           node->GetData().GetIntAttribute(
+               ax::mojom::IntAttribute::kHasPopup) ==
+               static_cast<int>(ax::mojom::HasPopup::kMenu) &&
+           node->GetData().GetStringAttribute(
+               ax::mojom::StringAttribute::kDescription) ==
+               "Reload this page, hold to see more options";
+  }));
 
   // Verify appropriate accessibility properties for back button.
   content::WaitForAccessibilityTreeToContainNodeWithName(
@@ -490,14 +489,17 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
   content::WaitForAccessibilityTreeToContainNodeWithName(
       web_view->GetWebContents(), "Reload");
   find_criteria.name = "Reload";
-  reload_node =
-      content::FindAccessibilityNode(web_view->GetWebContents(), find_criteria);
-  ASSERT_TRUE(reload_node);
-  EXPECT_EQ(0, reload_node->GetData().GetIntAttribute(
-                   ax::mojom::IntAttribute::kHasPopup));
-  EXPECT_EQ("Stop loading this page",
-            reload_node->GetData().GetStringAttribute(
-                ax::mojom::StringAttribute::kDescription));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    ui::AXPlatformNodeDelegate* node = content::FindAccessibilityNode(
+        web_view->GetWebContents(), find_criteria);
+    return node &&
+           node->GetData().GetIntAttribute(
+               ax::mojom::IntAttribute::kHasPopup) ==
+               static_cast<int>(ax::mojom::HasPopup::kFalse) &&
+           node->GetData().GetStringAttribute(
+               ax::mojom::StringAttribute::kDescription) ==
+               "Stop loading this page";
+  }));
 
   // Verify it works when returning to kReload mode.
   webui_toolbar_view->GetReloadControl()->ChangeMode(
@@ -505,15 +507,17 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
   content::WaitForAccessibilityTreeToChange(web_view->GetWebContents());
   content::WaitForAccessibilityTreeToContainNodeWithName(
       web_view->GetWebContents(), "Reload");
-  find_criteria.name = "Reload";
-  reload_node =
-      content::FindAccessibilityNode(web_view->GetWebContents(), find_criteria);
-  ASSERT_TRUE(reload_node);
-  EXPECT_EQ(2, reload_node->GetData().GetIntAttribute(
-                   ax::mojom::IntAttribute::kHasPopup));
-  EXPECT_EQ("Reload this page, hold to see more options",
-            reload_node->GetData().GetStringAttribute(
-                ax::mojom::StringAttribute::kDescription));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    ui::AXPlatformNodeDelegate* node = content::FindAccessibilityNode(
+        web_view->GetWebContents(), find_criteria);
+    return node &&
+           node->GetData().GetIntAttribute(
+               ax::mojom::IntAttribute::kHasPopup) ==
+               static_cast<int>(ax::mojom::HasPopup::kMenu) &&
+           node->GetData().GetStringAttribute(
+               ax::mojom::StringAttribute::kDescription) ==
+               "Reload this page, hold to see more options";
+  }));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
