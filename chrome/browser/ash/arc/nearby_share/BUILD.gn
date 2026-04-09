@@ -69,6 +69,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/app_list/arc:test_support",
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/browser_delegate:impl",
+    "//chrome/browser/nearby_sharing",
     "//chrome/browser/ui/ash/shelf",
     "//chrome/test:test_support",
     "//chromeos/ash/experiences/arc",

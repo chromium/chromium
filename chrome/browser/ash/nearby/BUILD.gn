@@ -32,6 +32,7 @@ static_library("nearby") {
     "//base",
     "//chrome/browser/ash/nearby/presence/credential_storage/",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/nearby_sharing",
     "//chrome/browser/nearby_sharing/common",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",

@@ -33,6 +33,7 @@ static_library("shell_delegate") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/scanner",
     "//chrome/browser/feedback",
+    "//chrome/browser/nearby_sharing",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/sessions",

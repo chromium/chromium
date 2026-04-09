@@ -9188,6 +9188,8 @@ test("unit_tests") {
       "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
       "//chrome/browser/extensions/api/terminal:startup_status",
       "//chrome/browser/media_galleries/fileapi:unit_tests",
+      "//chrome/browser/nearby_sharing",
+      "//chrome/browser/nearby_sharing:impl",
       "//chrome/browser/nearby_sharing:share_target",
       "//chrome/browser/nearby_sharing/certificates",
       "//chrome/browser/nearby_sharing/certificates:test_support",
