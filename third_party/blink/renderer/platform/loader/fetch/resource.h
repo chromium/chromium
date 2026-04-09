@@ -540,6 +540,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   // Call this when the resource is successfully retrieved from MemoryCache.
   void IncrementMemoryCacheHitCount() { ++memory_cache_hit_count_; }
   uint32_t MemoryCacheHitCount() const { return memory_cache_hit_count_; }
+  double DecayedHitScore() const { return decayed_hit_score_; }
 
  private:
   friend class ResourceLoader;
@@ -588,6 +589,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   bool is_preloaded_by_early_hints_ = false;
 
   uint32_t memory_cache_hit_count_ = 0;
+  double decayed_hit_score_ = 0.0;
 
   enum class RevalidationStatus {
     kNoRevalidatingOrFailed,  // not in revalidate procedure or

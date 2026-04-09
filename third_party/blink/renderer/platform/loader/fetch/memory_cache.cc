@@ -714,15 +714,29 @@ void MemoryCache::ClearStrongReferences() {
 }
 
 double MemoryCache::CalculateResourceValue(const Resource* resource) const {
-  double cost_score = resource->EncodedSize() * GetCostWeight();
-  // Use log1p to apply diminishing returns to the hit count. This prevents a
-  // high frequency from dominating the resource's score and is numerically
-  // stable for low hit counts.
+  // Use time-decayed frequency score.
   double frequency_score =
-      std::log1p(resource->MemoryCacheHitCount()) * GetFrequencyWeight();
+      std::log1p(resource->DecayedHitScore()) * GetFrequencyWeight();
   double type_score =
       GetResourceTypePriority(resource->GetType()) * GetTypeWeight();
 
+  features::MemoryCacheCostScoringModel model =
+      features::kMemoryCacheCostScoringModel.Get();
+
+  if (model == features::MemoryCacheCostScoringModel::kValueDensity) {
+    // Value-density (additive with inverse size)
+    double size_bytes = static_cast<double>(resource->EncodedSize());
+    double cost_factor = (size_bytes > 0) ? (1.0 / size_bytes) : 1.0;
+    double cost_score = cost_factor * GetCostWeight();
+    return frequency_score + type_score + cost_score;
+  } else if (model == features::MemoryCacheCostScoringModel::kLogPenalty) {
+    // Log penalty
+    double cost_penalty = std::log1p(resource->EncodedSize()) * GetCostWeight();
+    return frequency_score + type_score - cost_penalty;
+  }
+
+  // Default Model kOriginal: Original behavior (cost increases score)
+  double cost_score = resource->EncodedSize() * GetCostWeight();
   return frequency_score + cost_score + type_score;
 }
 

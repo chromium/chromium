@@ -1292,7 +1292,16 @@ void Resource::SetIsAdResource(AdProvenance ad_provenance) {
 }
 
 void Resource::UpdateMemoryCacheLastAccessedTime() {
-  memory_cache_last_accessed_ = base::TimeTicks::Now();
+  base::TimeTicks now = base::TimeTicks::Now();
+  double decay_rate = features::kMemoryCacheDecayRate.Get();
+  if (memory_cache_last_accessed_.is_null()) {
+    decayed_hit_score_ = 1.0;
+  } else {
+    double elapsed_seconds = (now - memory_cache_last_accessed_).InSecondsF();
+    double decay = std::exp(-decay_rate * elapsed_seconds);
+    decayed_hit_score_ = decayed_hit_score_ * decay + 1.0;
+  }
+  memory_cache_last_accessed_ = now;
   IncrementMemoryCacheHitCount();
 }
 

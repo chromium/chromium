@@ -1298,6 +1298,17 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // for the MemoryCache's strong references.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMemoryCacheIntelligentPruning);
 
+enum class MemoryCacheCostScoringModel {
+  kOriginal,
+  kValueDensity,
+  kLogPenalty,
+};
+
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(MemoryCacheCostScoringModel,
+                                               kMemoryCacheCostScoringModel);
+
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(double, kMemoryCacheDecayRate);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     double,
     kMemoryCacheIntelligentPruningFreqWeight);
