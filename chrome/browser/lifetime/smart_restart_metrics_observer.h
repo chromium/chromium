@@ -10,17 +10,20 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/lifetime/restartability_monitor.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
 
+class BrowserCollection;
+class BrowserWindowInterface;
 class UpgradeDetector;
 
 namespace smart_restart {
 
 // Observes to record metrics related to smart restart opportunities.
-class SmartRestartMetricsObserver : public BrowserListObserver,
+class SmartRestartMetricsObserver : public BrowserCollectionObserver,
                                     public UpgradeObserver {
  public:
   explicit SmartRestartMetricsObserver(UpgradeDetector* upgrade_detector);
@@ -37,9 +40,9 @@ class SmartRestartMetricsObserver : public BrowserListObserver,
   ~SmartRestartMetricsObserver() override;
 
 #if BUILDFLAG(IS_MAC)
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
+  void OnBrowserClosed(BrowserWindowInterface* browser) override;
 #endif
 
   // For tests to simulate a change in the lock state.
@@ -61,6 +64,9 @@ class SmartRestartMetricsObserver : public BrowserListObserver,
   std::optional<base::ElapsedTimer> zero_window_timer_;
   std::optional<base::ElapsedTimer> zero_window_update_timer_;
   std::optional<RestartabilityState> zero_window_snapshot_;
+
+  base::ScopedObservation<BrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 #endif
   base::CallbackListSubscription lock_state_subscription_;
   std::optional<base::ElapsedTimer> locked_timer_;

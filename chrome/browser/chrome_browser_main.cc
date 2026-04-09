@@ -2235,6 +2235,10 @@ void ChromeBrowserMainParts::PostDestroyThreads() {
 #endif
   }
 
+  // SmartMetricsObserver must be destroyed before GlobalFeatures begins tear
+  // down in BrowserProcess::PostDestroyThreads().
+  smart_restart_metrics_observer_.reset();
+
   browser_process_->PostDestroyThreads();
 
   // We need to do this call as late as possible, but due to modularity, this

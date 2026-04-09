@@ -87,14 +87,14 @@ TEST_F(SmartRestartMetricsObserverTest, RecordZeroWindowDuration) {
 
   // 2. Simulate entering "Zero Window" state.
   set_browser_count(0);
-  observer_->OnBrowserRemoved(nullptr);
+  observer_->OnBrowserClosed(nullptr);
 
   // 3. Advance time to simulate a 1-minute background duration.
   task_environment_.FastForwardBy(base::Minutes(1));
 
   // 4. End the "Zero Window" state.
   set_browser_count(1);
-  observer_->OnBrowserAdded(nullptr);
+  observer_->OnBrowserCreated(nullptr);
 
   // 5. Verify that the duration was recorded correctly.
   histogram_tester.ExpectUniqueTimeSample("Session.ZeroWindowDuration",
@@ -110,14 +110,14 @@ TEST_F(SmartRestartMetricsObserverTest, RecordZeroWindowDurationWithUpdate) {
 
   // 2. Enter Zero Window state.
   set_browser_count(0);
-  observer_->OnBrowserRemoved(nullptr);
+  observer_->OnBrowserClosed(nullptr);
 
   // 3. Advance time.
   task_environment_.FastForwardBy(base::Minutes(5));
 
   // 4. Exit Zero Window state.
   set_browser_count(1);
-  observer_->OnBrowserAdded(nullptr);
+  observer_->OnBrowserCreated(nullptr);
 
   // 5. Verify both metrics.
   histogram_tester.ExpectUniqueTimeSample("Session.ZeroWindowDuration",
@@ -137,20 +137,20 @@ TEST_F(SmartRestartMetricsObserverTest, NoRecordIfNotEmpty) {
 
   // 2. Remove one. Count is 1, not 0.
   set_browser_count(1);
-  observer_->OnBrowserRemoved(nullptr);
+  observer_->OnBrowserClosed(nullptr);
 
   task_environment_.FastForwardBy(base::Minutes(1));
 
   // 3. Remove the final browser.
   set_browser_count(0);
-  observer_->OnBrowserRemoved(nullptr);
+  observer_->OnBrowserClosed(nullptr);
 
   // 4. Advance time for 2 minutes.
   task_environment_.FastForwardBy(base::Minutes(2));
 
   // 5. Re-add browser.
   set_browser_count(1);
-  observer_->OnBrowserAdded(nullptr);
+  observer_->OnBrowserCreated(nullptr);
 
   // 6. Only the 2-minute duration should be recorded.
   histogram_tester.ExpectUniqueTimeSample("Session.ZeroWindowDuration",
@@ -162,7 +162,7 @@ TEST_F(SmartRestartMetricsObserverTest, RecordOnDestruction) {
 
   // 1. Enter Zero Window state.
   set_browser_count(0);
-  observer_->OnBrowserRemoved(nullptr);
+  observer_->OnBrowserClosed(nullptr);
 
   // 2. Advance time.
   task_environment_.FastForwardBy(base::Minutes(10));

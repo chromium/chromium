@@ -8,9 +8,9 @@
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/restartability_monitor.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "ui/base/idle/idle.h"
 
@@ -78,7 +78,10 @@ SmartRestartMetricsObserver::SmartRestartMetricsObserver(
     : upgrade_detector_(upgrade_detector),
       is_zero_callback_(std::move(is_zero_callback)) {
   upgrade_detector_->AddObserver(this);
-  BrowserList::AddObserver(this);
+#if BUILDFLAG(IS_MAC)
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
+#endif
   lock_state_subscription_ = ui::AddScreenLockCallback(
       base::BindRepeating(&SmartRestartMetricsObserver::OnLockStateChanged,
                           base::Unretained(this)));
@@ -90,7 +93,6 @@ SmartRestartMetricsObserver::SmartRestartMetricsObserver(
 
 SmartRestartMetricsObserver::~SmartRestartMetricsObserver() {
   upgrade_detector_->RemoveObserver(this);
-  BrowserList::RemoveObserver(this);
   // If the browser process is shutting down, record any pending durations.
 #if BUILDFLAG(IS_MAC)
   RecordZeroWindowMetrics();
@@ -155,13 +157,15 @@ void SmartRestartMetricsObserver::RecordLockedDurationMetrics() {
 }
 
 #if BUILDFLAG(IS_MAC)
-void SmartRestartMetricsObserver::OnBrowserAdded(Browser* browser) {
+void SmartRestartMetricsObserver::OnBrowserCreated(
+    BrowserWindowInterface* browser) {
   // If we were tracking a zero-window duration, stop now because a window
   // appeared.
   RecordZeroWindowMetrics();
 }
 
-void SmartRestartMetricsObserver::OnBrowserRemoved(Browser* browser) {
+void SmartRestartMetricsObserver::OnBrowserClosed(
+    BrowserWindowInterface* browser) {
   // If the last browser window is closed, start tracking the duration.
   // Note: On macOS, the application stays running even with zero windows.
   if (is_zero_callback_.Run() && !zero_window_timer_.has_value()) {
