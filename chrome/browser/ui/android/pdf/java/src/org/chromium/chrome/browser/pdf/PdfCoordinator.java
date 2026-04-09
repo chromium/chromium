@@ -438,12 +438,7 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
         ResettersForTesting.register(() -> sSkipLoadPdfForTesting = oldValue);
     }
 
-    static float calculateYOffsetPoints(float viewHeightPx, float currentZoom) {
-        return (viewHeightPx / 2f) / currentZoom;
-    }
-
     // Implementation of PdfToolbarActionsDelegate
-
     /**
      * Navigates to the specified page.
      *

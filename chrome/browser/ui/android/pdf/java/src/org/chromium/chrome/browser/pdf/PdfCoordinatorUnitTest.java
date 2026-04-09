@@ -15,6 +15,8 @@ import static org.mockito.Mockito.when;
 import android.net.Uri;
 
 import androidx.fragment.app.FragmentActivity;
+import androidx.pdf.PdfPoint;
+import androidx.pdf.view.PdfView;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -25,6 +27,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
+import org.robolectric.shadow.api.Shadow;
+import org.robolectric.shadows.ShadowView;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -50,12 +57,14 @@ public class PdfCoordinatorUnitTest {
 
     private FragmentActivity mActivity;
     private PdfCoordinator mPdfCoordinator;
+    private PdfView mPdfView;
     private static final String PDF_URL =
             "chrome-native://pdf/link?url=https%3A%2F%2Fwww.irs.gov%2Fpub%2Firs-pdf%2Ffw4.pdf";
     private static final String LINK_URL = "https://www.bar.com";
     private static final String FILE_PATH =
             "/data/user/10/com.google.android.apps.chrome/cache/pdfs/fw4.pdf";
     private static final int TAB_ID = 123;
+    private static final int PDF_CONTENT_HEIGHT = 1000;
 
     @Before
     public void setUp() {
@@ -63,14 +72,16 @@ public class PdfCoordinatorUnitTest {
         PdfCoordinator.skipLoadPdfForTesting(true);
     }
 
-    private void createPdfCoordinator(boolean isIncognito) {
-        when(mProfile.isOffTheRecord()).thenReturn(isIncognito);
+    private void createPdfCoordinator() {
         // For the purpose of testing, we are using the transient file path and url above when in
         // reality, the file path will not be available for a transient pdf when this constructor
         // is called.
         mPdfCoordinator =
                 new PdfCoordinator(
                         mNativePageHost, mProfile, mActivity, FILE_PATH, TAB_ID, PDF_URL);
+        mPdfView = new PdfView(mActivity);
+        mPdfView.layout(0, 0, /* width= */ 500, /* height= */ PDF_CONTENT_HEIGHT);
+        mPdfCoordinator.mChromePdfViewerFragment.setPdfViewForTesting(mPdfView);
     }
 
     @Test
@@ -87,44 +98,31 @@ public class PdfCoordinatorUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @Config(shadows = {ShadowPdfView.class})
     public void testNavigateToPage() {
-        createPdfCoordinator(false);
+        createPdfCoordinator();
+        int pageIndex = 2;
 
-        // Mock the fragment to isolate the coordinator and avoid calling real viewport scrolling
-        // logic which might reach final methods on PdfView.
-        PdfCoordinator.ChromePdfViewerFragment mockFragment =
-                org.mockito.Mockito.mock(PdfCoordinator.ChromePdfViewerFragment.class);
-        mPdfCoordinator.mChromePdfViewerFragment = mockFragment;
+        // Test
+        mPdfCoordinator.navigateToPage(pageIndex);
 
-        mPdfCoordinator.navigateToPage(2);
-
-        // Verify delegation to the fragment.
-        verify(mockFragment).scrollToPage(2);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
-    public void testCalculateYOffsetPoints() {
-        float viewHeightPx = 1000f;
-        float zoom = 2.0f;
-
-        // (1000 / 2) / 2.0 = 250f
-        float expectedOffset = 250f;
-        float actualOffset = PdfCoordinator.calculateYOffsetPoints(viewHeightPx, zoom);
-
-        assertEquals("Y offset calculation should be correct", expectedOffset, actualOffset, 0.01f);
+        // Assert
+        ShadowPdfView shadowPdfView = Shadow.extract(mPdfView);
+        float expectedYOffsetPoints = (PDF_CONTENT_HEIGHT / 2f) / shadowPdfView.mZoom;
+        assertEquals(new PdfPoint(pageIndex, 0f, expectedYOffsetPoints), shadowPdfView.mPdfPoint);
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
     public void testNavigateToPage_PdfViewNull() {
-        createPdfCoordinator(false);
+        createPdfCoordinator();
         mPdfCoordinator.mChromePdfViewerFragment.setPdfViewForTesting(null);
         mPdfCoordinator.navigateToPage(2);
     }
 
     private void runOnLinkClickedTest(boolean isIncognito) {
-        createPdfCoordinator(isIncognito);
+        when(mProfile.isOffTheRecord()).thenReturn(isIncognito);
+        createPdfCoordinator();
         Uri linkUri = Uri.parse(LINK_URL);
         boolean result = mPdfCoordinator.onLinkClicked(linkUri);
         assertTrue("onLinkClicked should return true.", result);
@@ -150,6 +148,24 @@ public class PdfCoordinatorUnitTest {
             assertNotNull("Fragment should be created successfully.", fragment);
         } catch (Exception e) {
             fail("Fragment instantiation should not throw an exception: " + e.getMessage());
+        }
+    }
+
+    @Implements(PdfView.class)
+    public static class ShadowPdfView extends ShadowView {
+        public PdfPoint mPdfPoint;
+        public float mZoom = 2.0f;
+
+        public ShadowPdfView() {}
+
+        @Implementation
+        public void scrollToPosition(PdfPoint pdfPoint) {
+            mPdfPoint = pdfPoint;
+        }
+
+        @Implementation
+        public float getZoom() {
+            return mZoom;
         }
     }
 }
