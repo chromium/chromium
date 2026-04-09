@@ -4517,6 +4517,24 @@
             ]
         }
     ],
+    "CCTResetTimeoutEnabled": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_30min",
+                    "params": {
+                        "minimum_reset_timeout_mins": "30"
+                    },
+                    "enable_features": [
+                        "CCTResetTimeoutEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "CacheIdentityListInChrome": [
         {
             "platforms": [
