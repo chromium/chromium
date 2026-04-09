@@ -1082,7 +1082,8 @@ LayoutUnit FragmentItem::CaretInlinePositionForOffset(StringView text,
     // Allows for better code separation and avoids the extra copy below.
     return LayoutUnit::FromFloatRound(
         TextShapeResult()->CreateShapeResult()->CaretPositionForOffset(
-            offset, text, AdjustMidCluster::kToEnd));
+            offset, text, AdjustMidCluster::kToEnd) *
+        GetFitTextScale().first);
   }
 
   // This fragment is a flow control because otherwise ShapeResult exists.

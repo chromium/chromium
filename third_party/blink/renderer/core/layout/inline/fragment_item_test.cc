@@ -928,4 +928,25 @@ TEST_F(FragmentItemTest, Disabled_DebugVisualizers) {
   EXPECT_NE(box, nullptr);
 }
 
+TEST_F(FragmentItemTest, CaretInlinePositionForOffset_TextFit) {
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(<style>
+    body {
+      margin: 0;
+      font: 10px/1 Ahem;
+    }
+    div {
+      width: 10ch;
+      text-fit: grow;
+    }
+    </style>
+    <div id="container">12345</div>
+  )HTML");
+  auto* layout_text = GetLayoutBlockFlowByElementId("container")->FirstChild();
+  // Used font-size is 20px.
+  EXPECT_EQ(LayoutUnit(20),
+            ItemsForAsVector(*layout_text)[0]->CaretInlinePositionForOffset(
+                "12345", 1));
+}
+
 }  // namespace blink
