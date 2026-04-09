@@ -4,7 +4,7 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {CrExpandButtonElement, SettingsSecureDnsV2Element, SettingsSecurityPageV2Element} from 'chrome://settings/lazy_load.js';
+import type {CrExpandButtonElement, SettingsSecureDnsV2Element, SettingsSecurityPageV2Element, SettingsSimpleConfirmationDialogElement} from 'chrome://settings/lazy_load.js';
 import {HttpsFirstModeSetting, JavascriptOptimizerSetting, SafeBrowsingSetting, SecuritySettingsBundleSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import type {ControlledRadioButtonElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
@@ -21,6 +21,30 @@ import {TestSecurityPageBrowserProxy} from './test_security_page_browser_proxy.j
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
 // clang-format on
+
+async function clickCancelOnDisableSafebrowsingDialog(
+    page: SettingsSecurityPageV2Element) {
+  const confirmationDialog =
+      page.shadowRoot!.querySelector<SettingsSimpleConfirmationDialogElement>(
+          'settings-simple-confirmation-dialog');
+  assertTrue(!!confirmationDialog);
+  const closePromise = eventToPromise('close', confirmationDialog);
+  confirmationDialog.$.cancel.click();
+  await closePromise;
+  await flushTasks();
+}
+
+async function clickConfirmOnDisableSafebrowsingDialog(
+    page: SettingsSecurityPageV2Element) {
+  const confirmationDialog =
+      page.shadowRoot!.querySelector<SettingsSimpleConfirmationDialogElement>(
+          'settings-simple-confirmation-dialog');
+  assertTrue(!!confirmationDialog);
+  const closePromise = eventToPromise('close', confirmationDialog);
+  confirmationDialog.$.confirm.click();
+  await closePromise;
+  await flushTasks();
+}
 
 suite('Main', function() {
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
@@ -558,6 +582,85 @@ suite('Main', function() {
             routes.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER,
             Router.getInstance().getCurrentRoute());
       });
+
+  test('DisableSafebrowsingDialog_Confirm', async function() {
+    // Set SB to disabled.
+    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.DISABLED);
+    await flushTasks();
+    page.$.safeBrowsingRow.dispatchEvent(new CustomEvent(
+        'toggle-button-change', {bubbles: true, composed: true}));
+    flush();
+
+    // Confirm that SB is Off after dialog confirmation.
+    await clickConfirmOnDisableSafebrowsingDialog(page);
+    assertFalse(page.$.standardProtectionButton.checked);
+    assertFalse(page.$.enhancedProtectionButton.checked);
+
+    assertEquals(
+        SafeBrowsingSetting.DISABLED, page.prefs.generated.safe_browsing.value);
+  });
+
+  // TODO(crbug.com/500641616): Investigate why user click action is flaky.
+  test('DisableSafebrowsingDialog_CancelFromStandard', async function() {
+    // Expand the row.
+    page.$.safeBrowsingRow.$.expandButton.click();
+    await flushTasks();
+    assertEquals(
+        SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
+
+    // Simulate clicks on safe-browsing-radio-group.
+    page.$.enhancedProtectionButton.click();
+    await flushTasks();
+    page.$.standardProtectionButton.click();
+    await flushTasks();
+
+    assertEquals(
+        SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
+
+    // Simulate turning off Safe Browsing.
+    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.DISABLED);
+    await flushTasks();
+    page.$.safeBrowsingRow.dispatchEvent(new CustomEvent(
+        'toggle-button-change', {bubbles: true, composed: true}));
+    flush();
+
+    await clickCancelOnDisableSafebrowsingDialog(page);
+
+    assertTrue(page.$.standardProtectionButton.checked);
+    assertEquals(
+        SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
+  });
+
+  test('DisableSafebrowsingDialog_CancelFromEnhanced', async function() {
+    page.$.safeBrowsingRow.$.expandButton.click();
+    await flushTasks();
+    assertEquals(
+        SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
+
+    // Set SB to Enhanced.
+    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.ENHANCED);
+    await flushTasks();
+
+    page.$.safeBrowsingRadioGroup.dispatchEvent(
+        new CustomEvent('change', {bubbles: true, composed: true}));
+    await flushTasks();
+    assertEquals(
+        SafeBrowsingSetting.ENHANCED, page.prefs.generated.safe_browsing.value);
+
+    // Simulate turning off Safe Browsing.
+    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.DISABLED);
+    await flushTasks();
+    page.$.safeBrowsingRow.dispatchEvent(new CustomEvent(
+        'toggle-button-change', {bubbles: true, composed: true}));
+    flush();
+
+    // Make sure enhanced is still selected after cancelling out of the dialog.
+    await clickCancelOnDisableSafebrowsingDialog(page);
+
+    assertTrue(page.$.enhancedProtectionButton.checked);
+    assertEquals(
+        SafeBrowsingSetting.ENHANCED, page.prefs.generated.safe_browsing.value);
+  });
 });
 
 suite('SecurityKeysSubpageDisabled', function() {
