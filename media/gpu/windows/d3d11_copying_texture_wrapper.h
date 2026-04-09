@@ -47,6 +47,8 @@ class MEDIA_GPU_EXPORT CopyingTexture2DWrapper : public Texture2DWrapper {
                    PictureBufferGPUResourceInitDoneCB
                        picture_buffer_gpu_resource_init_done_cb) override;
 
+  const gfx::Size& GetSize() const override;
+
  private:
   const gfx::Size size_;
   const gfx::ColorSpace input_color_space_;

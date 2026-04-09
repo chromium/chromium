@@ -76,6 +76,10 @@ D3D11Status DefaultTexture2DWrapper::ProcessTexture(
   return D3D11Status::Codes::kOk;
 }
 
+const gfx::Size& DefaultTexture2DWrapper::GetSize() const {
+  return size_;
+}
+
 D3D11Status DefaultTexture2DWrapper::Init(
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
     GetCommandBufferHelperCB get_helper_cb,

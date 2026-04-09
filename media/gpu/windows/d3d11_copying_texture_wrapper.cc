@@ -76,6 +76,10 @@ D3D11Status CopyingTexture2DWrapper::ProcessTexture(
   return output_texture_wrapper_->ProcessTexture(shared_image_dest);
 }
 
+const gfx::Size& CopyingTexture2DWrapper::GetSize() const {
+  return size_;
+}
+
 D3D11Status CopyingTexture2DWrapper::Init(
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
     GetCommandBufferHelperCB get_helper_cb,

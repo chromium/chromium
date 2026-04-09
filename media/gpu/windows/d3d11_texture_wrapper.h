@@ -69,6 +69,8 @@ class MEDIA_GPU_EXPORT Texture2DWrapper {
   // used to refer to it.
   virtual D3D11Status ProcessTexture(
       scoped_refptr<gpu::ClientSharedImage>& shared_image_dest_out) = 0;
+
+  virtual const gfx::Size& GetSize() const = 0;
 };
 
 // The default texture wrapper that uses GPUResources to talk to hardware
@@ -107,6 +109,8 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
 
   D3D11Status ProcessTexture(
       scoped_refptr<gpu::ClientSharedImage>& shared_image_dest) override;
+
+  const gfx::Size& GetSize() const override;
 
   void OnGPUResourceInitDone(
       scoped_refptr<media::D3D11PictureBuffer> picture_buffer,

@@ -15,9 +15,14 @@ namespace media {
 class D3D11PictureBufferTest : public ::testing::Test {
  public:
   D3D11PictureBufferTest() {
+    // Made-up size for the images.
+    const gfx::Size size_{100, 200};
+    auto wrapper = std::make_unique<DefaultTexture2DWrapper>(
+        size_, gfx::ColorSpace::CreateREC709(), viz::MultiPlaneFormat::kNV12,
+        /*device=*/nullptr);
     picture_buffer_ = base::MakeRefCounted<D3D11PictureBuffer>(
-        task_environment_.GetMainThreadTaskRunner(), nullptr, 0, nullptr,
-        gfx::Size(), 0);
+        task_environment_.GetMainThreadTaskRunner(), nullptr, 0,
+        std::move(wrapper), size_, 0);
   }
 
   base::test::TaskEnvironment task_environment_;

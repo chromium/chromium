@@ -100,11 +100,14 @@ class MockTexture2DWrapper : public Texture2DWrapper {
     return MockBeginSharedImageAccess();
   }
 
+  const gfx::Size& GetSize() const override { return size_; }
+
   MOCK_METHOD0(MockInit, D3D11Status());
   MOCK_METHOD0(MockProcessTexture, D3D11Status());
   MOCK_METHOD0(MockBeginSharedImageAccess, D3D11Status());
 
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
+  gfx::Size size_;
 };
 
 CommandBufferHelperPtr UselessHelper() {
