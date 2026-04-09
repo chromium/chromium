@@ -4490,12 +4490,10 @@ if (!is_android) {
         "../browser/profiles/profile_window_browsertest.cc",
         "../browser/ui/views/accessibility/accessibility_focus_highlight_browsertest.cc",
         "../browser/ui/views/accessibility/dump_accessibility_events_views_browsertest.cc",
-        "../browser/ui/views/accessibility/tree_view_dump_accessibility_events_browsertest.cc",
         "../browser/ui/views/controls/button/button_dump_accessibility_events_browsertest.cc",
         "../browser/ui/views/controls/button/checkbox_dump_accessibility_events_browsertest.cc",
         "../browser/ui/views/download/bubble/download_bubble_row_list_view_browsertest.cc",
         "../browser/ui/views/download/bubble/download_toolbar_ui_controller_browsertest.cc",
-        "../browser/ui/views/global_media_controls/media_item_ui_device_selector_view_dump_accessibility_events_browsertest.cc",
         "../browser/ui/views/profiles/signin_view_controller_delegate_views_browsertest.cc",
       ]
 
@@ -4512,9 +4510,6 @@ if (!is_android) {
         ":dump_accessibility_events_views_browsertest_base",
         "//chrome/browser/default_browser:browser_tests",
         "//chrome/browser/ui/download",
-        "//chrome/browser/ui/global_media_controls",
-        "//components/global_media_controls:test_support",
-        "//components/global_media_controls/public/mojom:device_service",
       ]
     }
 
