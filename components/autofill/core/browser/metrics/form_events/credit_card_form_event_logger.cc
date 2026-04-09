@@ -153,8 +153,14 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
 
   if (!has_logged_suggestions_shown_on_bnpl_eligible_merchant_ &&
       payments::IsEligibleForBnpl(owner_->client())) {
-    LogBnplFormEvent(BnplFormEvent::kSuggestionsShownOnBnplEligiblePage);
-    LogSuggestionShownForPayLaterTab(suggestion_contains_pay_later_tab_entry_);
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnablePayNowPayLaterTabs)) {
+      LogSuggestionShownForPayLaterTab(
+          suggestion_contains_pay_later_tab_entry_);
+    } else {
+      LogBnplFormEvent(BnplFormEvent::kSuggestionsShownOnBnplEligiblePage);
+    }
+
     has_logged_suggestions_shown_on_bnpl_eligible_merchant_ = true;
   }
 }
@@ -546,9 +552,20 @@ void CreditCardFormEventLogger::LogCardUnmaskAuthenticationPromptCompleted(
 }
 
 void CreditCardFormEventLogger::OnUserDecisionToUseBnpl() {
-  if (!has_logged_bnpl_suggestion_accepted_) {
-    LogBnplSuggestionAccepted(driver().GetPageUkmSourceId());
-    has_logged_bnpl_suggestion_accepted_ = true;
+  if (!has_logged_user_decision_to_use_bnpl_) {
+    if (suggestion_contains_pay_later_tab_entry_) {
+      LogPayLaterTabsFormEvent(PayLaterTabsFormEvent::kSwitchedToPayLaterTab);
+    } else {
+      LogBnplSuggestionAccepted(driver().GetPageUkmSourceId());
+    }
+    has_logged_user_decision_to_use_bnpl_ = true;
+  }
+}
+
+void CreditCardFormEventLogger::OnUserDecisionToUsePayNowTab() {
+  if (!has_logged_user_decision_to_use_pay_now_tab_) {
+    LogPayLaterTabsFormEvent(PayLaterTabsFormEvent::kSwitchedToPayNowTab);
+    has_logged_user_decision_to_use_pay_now_tab_ = true;
   }
 }
 
