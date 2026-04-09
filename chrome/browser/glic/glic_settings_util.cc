@@ -18,6 +18,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "content/public/common/content_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -99,11 +100,18 @@ void OpenGlicKeyboardShortcutSetting(Profile* profile) {
 }
 
 void OpenPasswordManagerSettingsPage(Profile* profile) {
+#if !BUILDFLAG(IS_ANDROID)  /// NEEDS_ANDROID_IMPL: implement settings
+  const GURL settings_url =
+      base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin)
+          ? chrome::GetSettingsUrl(chrome::kGlicLoginSettingsSubpage)
+          : GURL(GetGooglePasswordManagerSubPageURLStr());
   auto params = std::make_unique<NavigateParams>(
-      profile, GURL(GetGooglePasswordManagerSubPageURLStr()),
-      ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+      profile, settings_url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params->disposition = WindowOpenDisposition::SINGLETON_TAB;
   glic::Navigate(std::move(params));
+#else
+  NOTIMPLEMENTED();
+#endif
 }
 
 }  // namespace glic
