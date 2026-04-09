@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/contextual_search/contextual_search_types.h"
+#include "components/contextual_search/pref_names.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/omnibox/common/input_state.h"
@@ -148,6 +149,9 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   void SetActiveModelMode(omnibox::ModelMode model) override {}
   void RecordModelSelectionAction(omnibox::ModelMode model) override {}
   void ActivateMetricsFunnel(const std::string& funnel_name) override {}
+  void ShouldShowDriveDisclaimer(
+      ShouldShowDriveDisclaimerCallback callback) override;
+  void OnDriveDisclaimerAccepted() override;
 
   // Stores `callback` to be run when the page remote is bound and ready to
   // receive calls. Runs `callback` immediately if the remote is already bound.

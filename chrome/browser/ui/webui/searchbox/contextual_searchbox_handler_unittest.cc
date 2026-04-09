@@ -55,6 +55,7 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/fake_autocomplete_controller.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "components/omnibox/composebox/contextual_search_mojom_traits.h"
 #include "components/prefs/pref_service.h"
@@ -909,6 +910,36 @@ TEST_F(ContextualSearchboxHandlerTest, OnInputStateChanged) {
   histogram_tester().ExpectUniqueSample(
       "ContextualSearch.Models.NewTabPage",
       omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR, 1);
+}
+
+TEST_F(ContextualSearchboxHandlerTest, DriveDisclaimer_ShouldShow) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kComposeboxDriveContextMenuOption);
+
+  base::test::TestFuture<bool> future;
+  handler().ShouldShowDriveDisclaimer(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+}
+
+TEST_F(ContextualSearchboxHandlerTest, DriveDisclaimer_AfterAccepted) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kComposeboxDriveContextMenuOption);
+
+  handler().OnDriveDisclaimerAccepted();
+
+  base::test::TestFuture<bool> future;
+  handler().ShouldShowDriveDisclaimer(future.GetCallback());
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(ContextualSearchboxHandlerTest, DriveDisclaimer_FlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      omnibox::kComposeboxDriveContextMenuOption);
+
+  base::test::TestFuture<bool> future;
+  handler().ShouldShowDriveDisclaimer(future.GetCallback());
+  EXPECT_FALSE(future.Get());
 }
 
 TEST_F(ContextualSearchboxHandlerTest, OpenAutocompleteMatch_ZeroSuggestClick) {

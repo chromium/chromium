@@ -58,6 +58,8 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'activateMetricsFunnel',
       'setPopupSelection',
       'openPopupSelection',
+      'shouldShowDriveDisclaimer',
+      'onDriveDisclaimerAccepted',
     ]);
   }
 
@@ -252,6 +254,15 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       disposition: WindowOpenDisposition) {
     this.methodCalled(
         'openPopupSelection', {resultSequenceId, selection, disposition});
+  }
+
+  shouldShowDriveDisclaimer(): Promise<{shouldShow: boolean}> {
+    this.methodCalled('shouldShowDriveDisclaimer');
+    return Promise.resolve({shouldShow: false});
+  }
+
+  onDriveDisclaimerAccepted() {
+    this.methodCalled('onDriveDisclaimerAccepted');
   }
 }
 

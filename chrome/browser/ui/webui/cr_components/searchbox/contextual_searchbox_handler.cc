@@ -43,6 +43,7 @@
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/contextual_search/pref_names.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/prefs.h"
@@ -52,6 +53,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/composebox/contextual_search_mojom_traits.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -770,6 +772,23 @@ void ContextualSearchboxHandler::OpenAutocompleteMatch(uint8_t line,
   SearchboxHandler::OpenAutocompleteMatch(line, url, are_matches_showing,
                                           mouse_button, alt_key, ctrl_key,
                                           meta_key, shift_key);
+}
+
+void ContextualSearchboxHandler::ShouldShowDriveDisclaimer(
+    ShouldShowDriveDisclaimerCallback callback) {
+  if (!base::FeatureList::IsEnabled(
+          omnibox::kComposeboxDriveContextMenuOption)) {
+    std::move(callback).Run(false);
+    return;
+  }
+  bool accepted = profile_->GetPrefs()->GetBoolean(
+      contextual_search::kDriveDisclaimerAccepted);
+  std::move(callback).Run(!accepted);
+}
+
+void ContextualSearchboxHandler::OnDriveDisclaimerAccepted() {
+  profile_->GetPrefs()->SetBoolean(contextual_search::kDriveDisclaimerAccepted,
+                                   true);
 }
 
 void ContextualSearchboxHandler::OnContextUploadStatusChanged(
