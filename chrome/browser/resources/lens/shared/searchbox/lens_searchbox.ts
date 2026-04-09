@@ -150,7 +150,15 @@ export class LensSearchboxElement extends LensSearchboxElementBase implements
     super.onInputWrapperFocusout(e);
   }
 
-  onFocusin() {
+  onFocusin(e: FocusEvent) {
+    // Check event path to ensure input is not focused from this function if
+    // thumbnail is told to focus. This is better than stopping propagation in
+    // case other higher components depend on focus in events.
+    const path = e.composedPath();
+    if (path.some(
+            el => (el as HTMLElement).tagName === 'CR-SEARCHBOX-THUMBNAIL')) {
+      return;
+    }
     this.proxy_.handler.onFocusChanged(true);
     this.focusInput();
   }
@@ -160,7 +168,7 @@ export class LensSearchboxElement extends LensSearchboxElementBase implements
   }
 
   focusInput() {
-    this.$.input.inputElement.focus();
+    this.$.input.focus();
   }
 
   hasThumbnail(): boolean {

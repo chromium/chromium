@@ -6,18 +6,34 @@ import 'chrome-untrusted://lens-overlay/lens_overlay_app.js';
 
 import {BrowserProxyImpl} from 'chrome-untrusted://lens-overlay/browser_proxy.js';
 import type {LensOverlayAppElement} from 'chrome-untrusted://lens-overlay/lens_overlay_app.js';
+import type {LensSearchboxElement} from 'chrome-untrusted://lens/lens/shared/searchbox/lens_searchbox.js';
+import {SearchboxBrowserProxy} from 'chrome-untrusted://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
-import {assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {getDeepActiveElement} from 'chrome-untrusted://resources/js/util.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
+import {TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
 suite('Searchbox', () => {
   let testBrowserProxy: TestLensOverlayBrowserProxy;
+  let testSearchboxProxy: TestSearchboxBrowserProxy;
   let lensOverlayElement: LensOverlayAppElement;
+  let lensSearchbox: LensSearchboxElement;
+
+  async function areMatchesShowing(): Promise<boolean> {
+    await testSearchboxProxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+    return window.getComputedStyle(lensSearchbox.getDropdownElement())
+               .display !== 'none';
+  }
 
   setup(async () => {
+    testSearchboxProxy = new TestSearchboxBrowserProxy();
+    SearchboxBrowserProxy.setInstance(testSearchboxProxy);
+
     // Resetting the HTML needs to be the first thing we do in setup to
     // guarantee that any singleton instances don't change while any UI is still
     // attached to the DOM.
@@ -39,6 +55,9 @@ suite('Searchbox', () => {
 
     testBrowserProxy.page.shouldShowContextualSearchBox(true);
     await waitAfterNextRender(lensOverlayElement);
+
+    lensSearchbox = lensOverlayElement.$.searchbox;
+    await microtasksFinished();
   });
 
   test('Searchbox is focused initially', async () => {
@@ -252,5 +271,217 @@ suite('Searchbox', () => {
 
     // Dropdown should show (queryInputAutocomplete should be called).
     assertTrue(queryAutocompleteCalled);
+  });
+
+  //============================================================================
+  // Test Thumbnails
+  //============================================================================
+  test('thumbnail appears on page call from browser', async () => {
+    assertNull(
+        lensSearchbox.shadowRoot.querySelector('cr-searchbox-thumbnail'),
+        'thumbnail should not exist');
+    testSearchboxProxy.callbackRouterRemote.setThumbnail(
+        'foo.png', /*isDeletable=*/ true);
+    await testSearchboxProxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+    const thumbnailContainer =
+        lensSearchbox.shadowRoot.querySelector('cr-searchbox-thumbnail');
+    assertTrue(thumbnailContainer !== null, 'thumbnail should exist');
+    assertTrue(
+        isVisible(thumbnailContainer), 'thumbnail container should be visible');
+  });
+
+  test('thumbnail clicked deletion', async () => {
+    testSearchboxProxy.callbackRouterRemote.setThumbnail(
+        'foo.png', /*isDeletable=*/ true);
+    await testSearchboxProxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+    const thumbnail =
+        lensSearchbox.shadowRoot.querySelector('cr-searchbox-thumbnail');
+    assertTrue(!!thumbnail, 'thumbnail should exist');
+    const thumbnailRemoveButton =
+        thumbnail.shadowRoot.querySelector<HTMLElement>('#remove');
+    assertTrue(!!thumbnailRemoveButton, 'thumbnail delete button should exist');
+    // Thumbnail remove button click should remove thumbnail, focus input,
+    // and notify browser.
+    thumbnailRemoveButton.click();
+    await microtasksFinished();
+    const thumbnailContainer =
+        lensSearchbox.shadowRoot.querySelector<HTMLElement>(
+            'cr-searchbox-thumbnail');
+    assertNull(thumbnailContainer, 'thumbnail should not exist');
+    assertEquals(
+        lensSearchbox.$.input.inputElement, getDeepActiveElement(),
+        'input should be focused');
+    await testSearchboxProxy.handler.whenCalled('onThumbnailRemoved');
+    assertEquals(
+        1, testSearchboxProxy.handler.getCallCount('onThumbnailRemoved'),
+        'thumbnail should be removed');
+    // When thumbnail is removed, autocomplete should be re-queried
+    const args =
+        await testSearchboxProxy.handler.whenCalled('stopAutocomplete');
+    assertTrue(args.clearResult, 'results should be cleared');
+    assertEquals(
+        1, testSearchboxProxy.handler.getCallCount('queryAutocomplete'),
+        'autocomplete should be queried');
+  });
+
+  test('thumbnail keyboard deletion', async () => {
+    testSearchboxProxy.callbackRouterRemote.setThumbnail(
+        'foo.png', /*isDeletable=*/ true);
+    await testSearchboxProxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+    const thumbnail =
+        lensSearchbox.shadowRoot.querySelector('cr-searchbox-thumbnail');
+    assertTrue(thumbnail !== null, 'thumbnail should exist');
+    lensSearchbox.$.input.focus();
+    lensSearchbox.$.inputWrapper.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Backspace',
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+    // First backspace should focus the thumbnail
+    assertEquals(
+        thumbnail, getDeepActiveElement(), 'thumbnail should be focused');
+
+    // When thumbnail is focused, a backspace should delete the thumbnail,
+    // focus input, and notify browser.
+    lensSearchbox.$.inputWrapper.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Backspace',
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+    const thumbnailContainer =
+        lensSearchbox.shadowRoot.querySelector<HTMLElement>(
+            'cr-searchbox-thumbnail');
+    assertNull(thumbnailContainer, 'thumbnail should not exist');
+    assertEquals(
+        lensSearchbox.$.input.inputElement, getDeepActiveElement(),
+        'input should be focused');
+    await testSearchboxProxy.handler.whenCalled('onThumbnailRemoved');
+    assertEquals(
+        1, testSearchboxProxy.handler.getCallCount('onThumbnailRemoved'),
+        'thumbnail should be removed');
+    // When thumbnail is removed, autocomplete should be re-queried
+    const args =
+        await testSearchboxProxy.handler.whenCalled('stopAutocomplete');
+    assertTrue(args.clearResult, 'results should be cleared');
+    assertEquals(
+        1, testSearchboxProxy.handler.getCallCount('queryAutocomplete'),
+        'autocomplete should be queried');
+  });
+
+  test('keyboard deletion with non-empty input', async () => {
+    testSearchboxProxy.callbackRouterRemote.setThumbnail(
+        'foo.png', /*isDeletable=*/ true);
+    await testSearchboxProxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+    const thumbnail =
+        lensSearchbox.shadowRoot.querySelector('cr-searchbox-thumbnail');
+    assertTrue(thumbnail !== null, 'thumbnail should exist');
+    lensSearchbox.$.input.inputElement.value = 'hi';
+    lensSearchbox.$.input.dispatchEvent(new CustomEvent('input'));
+    lensSearchbox.$.input.focus();
+    // Cursor is at the end of the input.
+    assertEquals(
+        lensSearchbox.$.input.inputElement.selectionStart, 2,
+        'cursor should be at the end of the input');
+    const backspaceEvent = new KeyboardEvent('keydown', {
+      key: 'Backspace',
+      bubbles: true,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+    });
+    lensSearchbox.$.input.inputElement.dispatchEvent(backspaceEvent);
+    // Checking the input value after a backspace event doesn't work
+    // so check the default behavior occurs (deleting a character).
+    assertFalse(
+        backspaceEvent.defaultPrevented,
+        'default behavior should not be prevented');
+  });
+
+  test(
+      'autocomplete triggers on focus on non-empty input with thumbnail',
+      async () => {
+        testSearchboxProxy.callbackRouterRemote.setThumbnail(
+            'foo.png', /*isDeletable=*/ true);
+        await testSearchboxProxy.callbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+        const thumbnail =
+            lensSearchbox.shadowRoot.querySelector('cr-searchbox-thumbnail');
+        assertTrue(thumbnail !== null, 'thumbnail should exist');
+        lensSearchbox.$.input.inputElement.value = 'hi';
+        lensSearchbox.$.input.inputElement.dispatchEvent(
+            new InputEvent('input'));
+        // Make sure lensSearchbox is not focused and matches aren't showing.
+        lensSearchbox.$.input.blur();
+        assertFalse(await areMatchesShowing(), 'matches should not be showing');
+
+        // Click on lensSearchbox.
+        lensSearchbox.$.input.inputElement.dispatchEvent(
+            new MouseEvent('mousedown', {button: 0}));
+
+        // Check that autocomplete gets queried with last input on click with
+        // non empty input when thumbnail is showing.
+        let args =
+            await testSearchboxProxy.handler.whenCalled('queryAutocomplete');
+        assertEquals(
+            args.input, lensSearchbox.$.input.inputElement.value,
+            'input should be passed to queryAutocomplete');
+
+        // Make sure lensSearchbox focus is not focused and matches aren't
+        // showing.
+        lensSearchbox.$.input.blur();
+        assertFalse(await areMatchesShowing(), 'matches should not be showing');
+
+        // Tabbing into lensSearchbox.
+        lensSearchbox.$.input.inputElement.dispatchEvent(
+            new KeyboardEvent('keyup', {
+              bubbles: true,
+              cancelable: true,
+              composed: true,
+              key: 'Tab',
+            }));
+
+        // Check that autocomplete gets queried with last input on keyup with
+        // non empty input when thumbnail is showing.
+        args = await testSearchboxProxy.handler.whenCalled('queryAutocomplete');
+        assertEquals(
+            args.input, lensSearchbox.$.input.inputElement.value,
+            'input should be passed to queryAutocomplete again');
+      });
+
+  test('query autocomplete for empty inputs when enabled', async () => {
+    // Arrange.
+
+    lensSearchbox.$.input.inputElement.value = 'he';
+    lensSearchbox.$.input.inputElement.dispatchEvent(new InputEvent('input'));
+
+    await testSearchboxProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(
+        1, testSearchboxProxy.handler.getCallCount('queryAutocomplete'),
+        'query autocomplete should be called for non-empty input');
+
+    // Deleting a character queries autocomplete for non-empty input.
+    lensSearchbox.$.input.inputElement.value = 'h';
+    lensSearchbox.$.input.inputElement.dispatchEvent(new InputEvent('input'));
+
+    await testSearchboxProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(
+        2, testSearchboxProxy.handler.getCallCount('queryAutocomplete'),
+        'deleting character should query autocomplete for non-empty input');
+
+    // Deleting a character still queries autocomplete for empty input in lens
+    // searchboxes.
+    lensSearchbox.$.input.inputElement.value = '';
+    lensSearchbox.$.input.inputElement.dispatchEvent(new InputEvent('input'));
+    await testSearchboxProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(
+        3, testSearchboxProxy.handler.getCallCount('queryAutocomplete'),
+        'deleting character should query autocomplete for empty input');
   });
 });
