@@ -474,7 +474,7 @@ TEST_F(CompoundImageBackingTest,
 
   // Verify that the security fix correctly triggers a CHECK failure when
   // the backing is not of type SharedMemoryImageBacking.
-  EXPECT_DEATH(CallGetSharedMemoryPixmaps(compound.get()), "");
+  EXPECT_DEATH_IF_SUPPORTED(CallGetSharedMemoryPixmaps(compound.get()), "");
 }
 
 TEST_F(CompoundImageBackingTest, Multiplanar) {
