@@ -496,6 +496,75 @@
             ]
         }
     ],
+    "AccessibilityRequestScopedContentChangedEvents": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "MaxContentChangedEventsToFire_0",
+                    "params": {
+                        "max_events": "0"
+                    },
+                    "enable_features": [
+                        "AccessibilityRequestScopedContentChangedEvents"
+                    ]
+                },
+                {
+                    "name": "MaxContentChangedEventsToFire_2",
+                    "params": {
+                        "max_events": "2"
+                    },
+                    "enable_features": [
+                        "AccessibilityRequestScopedContentChangedEvents"
+                    ]
+                },
+                {
+                    "name": "MaxContentChangedEventsToFire_5",
+                    "params": {
+                        "max_events": "5"
+                    },
+                    "enable_features": [
+                        "AccessibilityRequestScopedContentChangedEvents"
+                    ]
+                },
+                {
+                    "name": "MaxContentChangedEventsToFire_10",
+                    "params": {
+                        "max_events": "10"
+                    },
+                    "enable_features": [
+                        "AccessibilityRequestScopedContentChangedEvents"
+                    ]
+                },
+                {
+                    "name": "MaxContentChangedEventsToFire_30",
+                    "params": {
+                        "max_events": "30"
+                    },
+                    "enable_features": [
+                        "AccessibilityRequestScopedContentChangedEvents"
+                    ]
+                },
+                {
+                    "name": "MaxContentChangedEventsToFire_50",
+                    "params": {
+                        "max_events": "50"
+                    },
+                    "enable_features": [
+                        "AccessibilityRequestScopedContentChangedEvents"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "AccessibilityRequestScopedContentChangedEvents"
+                    ]
+                }
+            ]
+        }
+    ],
     "AccessibilitySequentialFocus": [
         {
             "platforms": [
