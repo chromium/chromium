@@ -19,7 +19,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_task.h"
-#include "chrome/browser/actor/enterprise_policy_url_checker.h"
+#include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/shared_types.h"
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
@@ -332,19 +332,27 @@ class ScopedExecutionEngineFactory {
   ~ScopedExecutionEngineFactory();
 };
 
-class MockPolicyChecker : public EnterprisePolicyUrlChecker {
+class MockPolicyChecker : public EnterprisePolicyChecker {
  public:
-  explicit MockPolicyChecker(EnterprisePolicyBlockReason reason);
-  ~MockPolicyChecker();
+  explicit MockPolicyChecker(UrlBlockReason reason,
+                             ContentValidationReason content_reason =
+                                 ContentValidationReason::kAllowed);
+  ~MockPolicyChecker() override;
 
-  EnterprisePolicyBlockReason Evaluate(const GURL& url) const override;
+  UrlBlockReason Evaluate(const GURL& url) const override;
+  void ValidateContentSentToRenderer(
+      content::RenderFrameHost* frame,
+      const std::string& content,
+      ContentValidationCallback callback) const override;
+
  private:
-  EnterprisePolicyBlockReason reason_;
+  UrlBlockReason reason_;
+  ContentValidationReason content_reason_;
 };
 
-// Returns a passthrough EnterprisePolicyUrlChecker tests can use to avoid
+// Returns a passthrough EnterprisePolicyChecker tests can use to avoid
 // policy checks.
-const EnterprisePolicyUrlChecker* NoEnterprisePolicyChecker();
+const EnterprisePolicyChecker* NoEnterprisePolicyChecker();
 
 // Returns a common mock TaskSourceInfo used by actor tests.
 const TaskSourceInfo& TestTaskSourceInfo();

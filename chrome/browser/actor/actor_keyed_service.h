@@ -43,7 +43,7 @@ namespace ui {
 class ActorUiStateManagerInterface;
 }
 
-class EnterprisePolicyUrlChecker;
+class EnterprisePolicyChecker;
 class ActorTaskMetadata;
 class ToolRequest;
 
@@ -84,15 +84,15 @@ class ActorKeyedService : public KeyedService,
   // The provided `policy_checker` must be non-null and it must outlive the
   // ActorTask.
   TaskId CreateTask(const TaskSourceInfo& source_info,
-                    const EnterprisePolicyUrlChecker* policy_checker);
+                    const EnterprisePolicyChecker* policy_checker);
   TaskId CreateTaskWithOptions(const TaskSourceInfo& source_info,
-                               const EnterprisePolicyUrlChecker* policy_checker,
+                               const EnterprisePolicyChecker* policy_checker,
                                webui::mojom::TaskOptionsPtr options,
                                base::WeakPtr<ActorTaskDelegate> delegate);
   TaskId CreateTaskForTesting(
       std::unique_ptr<actor::ui::UiEventDispatcher> ui_event_dispatcher,
       const TaskSourceInfo& source_info,
-      const EnterprisePolicyUrlChecker* policy_checker,
+      const EnterprisePolicyChecker* policy_checker,
       webui::mojom::TaskOptionsPtr options,
       base::WeakPtr<ActorTaskDelegate> delegate);
 
@@ -185,7 +185,7 @@ class ActorKeyedService : public KeyedService,
   TaskId CreateTaskImpl(
       std::unique_ptr<actor::ui::UiEventDispatcher> ui_event_dispatcher,
       const TaskSourceInfo& source_info,
-      const EnterprisePolicyUrlChecker* policy_checker,
+      const EnterprisePolicyChecker* policy_checker,
       webui::mojom::TaskOptionsPtr options,
       base::WeakPtr<ActorTaskDelegate> delegate);
 

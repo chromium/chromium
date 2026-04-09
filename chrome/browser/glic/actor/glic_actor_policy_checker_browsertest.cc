@@ -17,7 +17,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/actor_util.h"
-#include "chrome/browser/actor/enterprise_policy_url_checker.h"
+#include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/site_policy.h"
 #include "chrome/browser/actor/tools/tool_request.h"
@@ -782,11 +782,13 @@ IN_PROC_BROWSER_TEST_F(
     GlicActorPolicyCheckerBrowserTestManagedWithBulkDataSupport,
     ValidateContentAllowedWhenPolicyDisabled) {
   // Disabled by default since no enterprise connector policy is set.
-  base::test::TestFuture<GlicActorPolicyChecker::ValidationReason> future;
+  base::test::TestFuture<GlicActorPolicyChecker::ContentValidationReason>
+      future;
   GetPolicyChecker().ValidateContentSentToRenderer(
       web_contents()->GetPrimaryMainFrame(), "test content",
       future.GetCallback());
-  EXPECT_EQ(future.Get(), GlicActorPolicyChecker::ValidationReason::kAllowed);
+  EXPECT_EQ(future.Get(),
+            GlicActorPolicyChecker::ContentValidationReason::kAllowed);
 }
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
@@ -828,7 +830,8 @@ IN_PROC_BROWSER_TEST_F(
           &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
           base::DoNothing(), status_callback, "fake_dm_token"));
 
-  base::test::TestFuture<GlicActorPolicyChecker::ValidationReason> future;
+  base::test::TestFuture<GlicActorPolicyChecker::ContentValidationReason>
+      future;
 
   // Content size set to be above minimum scan data size threshold.
   GetPolicyChecker().ValidateContentSentToRenderer(
@@ -836,7 +839,8 @@ IN_PROC_BROWSER_TEST_F(
       future.GetCallback());
 
   // Block rule on all urls triggered.
-  EXPECT_EQ(future.Get(), GlicActorPolicyChecker::ValidationReason::kBlocked);
+  EXPECT_EQ(future.Get(),
+            GlicActorPolicyChecker::ContentValidationReason::kBlocked);
 }
 #endif
 

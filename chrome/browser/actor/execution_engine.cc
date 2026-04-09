@@ -35,7 +35,7 @@
 #include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_util.h"
-#include "chrome/browser/actor/enterprise_policy_url_checker.h"
+#include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/origin_checker.h"
 #include "chrome/browser/actor/safety_list_manager.h"
 #include "chrome/browser/actor/site_policy.h"
@@ -345,11 +345,11 @@ ExecutionEngine::GatingDecision ExecutionEngine::DetermineGatingDecision(
     const GURL& source_url,
     const GURL& destination_url) const {
   switch (task_->policy_checker().Evaluate(destination_url)) {
-    case EnterprisePolicyBlockReason::kNotBlocked:
+    case EnterprisePolicyChecker::UrlBlockReason::kNotBlocked:
       break;
-    case EnterprisePolicyBlockReason::kExplicitlyAllowed:
+    case EnterprisePolicyChecker::UrlBlockReason::kExplicitlyAllowed:
       return GatingDecision::kAllowByStaticList;
-    case EnterprisePolicyBlockReason::kExplicitlyBlocked:
+    case EnterprisePolicyChecker::UrlBlockReason::kExplicitlyBlocked:
       return GatingDecision::kBlockByStaticList;
   }
 

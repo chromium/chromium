@@ -23,7 +23,7 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/autofill_selection_dialog_event_handler.h"
-#include "chrome/browser/actor/enterprise_policy_url_checker.h"
+#include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/safety_list_manager.h"
 #include "chrome/browser/actor/shared_types.h"
 #include "chrome/browser/actor/tool_request_variant.h"
@@ -374,7 +374,7 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
   std::optional<TestTabState> tab_state_;
 
   MockPolicyChecker no_enterprise_checker_{
-      EnterprisePolicyBlockReason::kNotBlocked};
+      EnterprisePolicyChecker::UrlBlockReason::kNotBlocked};
 };
 
 // TODO(crbug.com/480230075): Crashing on Android.

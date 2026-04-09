@@ -467,24 +467,24 @@ GlicActorPolicyChecker::ComputeActOnWebCapability() {
   return log_and_return(CanActOutcome::kNo, CannotActReason::kDisabledByPolicy);
 }
 
-actor::EnterprisePolicyBlockReason GlicActorPolicyChecker::Evaluate(
+GlicActorPolicyChecker::UrlBlockReason GlicActorPolicyChecker::Evaluate(
     const GURL& url) const {
   const policy::URLBlocklist::URLBlocklistState state =
       url_blocklist_manager_.GetURLBlocklistState(url);
   if (state == policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
-    return actor::EnterprisePolicyBlockReason::kExplicitlyBlocked;
+    return UrlBlockReason::kExplicitlyBlocked;
   }
   if (state == policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST) {
-    return actor::EnterprisePolicyBlockReason::kExplicitlyAllowed;
+    return UrlBlockReason::kExplicitlyAllowed;
   }
 
   // If the general policy is set to disable acting, then if the url is not in
   // the allow list, we block.
   if (can_act_on_web_ == CanActOutcome::kByAllowlistOnly) {
-    return actor::EnterprisePolicyBlockReason::kExplicitlyBlocked;
+    return UrlBlockReason::kExplicitlyBlocked;
   }
 
-  return actor::EnterprisePolicyBlockReason::kNotBlocked;
+  return UrlBlockReason::kNotBlocked;
 }
 
 base::CallbackListSubscription
@@ -496,11 +496,11 @@ GlicActorPolicyChecker::AddUrlListsUpdateObserverForTesting(
 void GlicActorPolicyChecker::ValidateContentSentToRenderer(
     content::RenderFrameHost* frame,
     const std::string& content,
-    actor::EnterprisePolicyContentChecker::ValidationCallback callback) {
+    ContentValidationCallback callback) const {
   content::WebContents* web_contents =
       frame ? content::WebContents::FromRenderFrameHost(frame) : nullptr;
   if (!web_contents || !profile_) {
-    std::move(callback).Run(ValidationReason::kAllowed);
+    std::move(callback).Run(ContentValidationReason::kAllowed);
     return;
   }
 
@@ -517,7 +517,7 @@ void GlicActorPolicyChecker::ValidateContentSentToRenderer(
       enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
           web_contents, std::move(data),
           base::BindOnce(
-              [](actor::EnterprisePolicyContentChecker::ValidationCallback cb,
+              [](ContentValidationCallback cb,
                  const enterprise_connectors::ContentAnalysisDelegate::Data&,
                  enterprise_connectors::ContentAnalysisDelegate::Result&
                      result) {
@@ -525,8 +525,8 @@ void GlicActorPolicyChecker::ValidateContentSentToRenderer(
                 // would want to return `kWarned` verdicts at some point.
                 bool allowed =
                     result.text_results.empty() || result.text_results[0];
-                std::move(cb).Run(allowed ? ValidationReason::kAllowed
-                                          : ValidationReason::kBlocked);
+                std::move(cb).Run(allowed ? ContentValidationReason::kAllowed
+                                          : ContentValidationReason::kBlocked);
               },
               std::move(callback)),
           enterprise_connectors::DeepScanAccessPoint::PASTE);
@@ -535,7 +535,7 @@ void GlicActorPolicyChecker::ValidateContentSentToRenderer(
   }
 #endif
 
-  std::move(callback).Run(ValidationReason::kAllowed);
+  std::move(callback).Run(ContentValidationReason::kAllowed);
 }
 
 }  // namespace glic

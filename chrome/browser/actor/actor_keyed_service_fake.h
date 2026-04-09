@@ -7,7 +7,7 @@
 
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_test_util.h"
-#include "chrome/browser/actor/enterprise_policy_url_checker.h"
+#include "chrome/browser/actor/enterprise_policy_checker.h"
 
 class Profile;
 
@@ -29,7 +29,7 @@ class ActorKeyedServiceFake : public ActorKeyedService {
       actor::webui::mojom::TaskDuration duration);
 
   MockPolicyChecker no_enterprise_policy_checker_{
-      EnterprisePolicyBlockReason::kNotBlocked};
+      EnterprisePolicyChecker::UrlBlockReason::kNotBlocked};
 
   base::WeakPtrFactory<ActorKeyedServiceFake> weak_ptr_factory_{this};
 };
