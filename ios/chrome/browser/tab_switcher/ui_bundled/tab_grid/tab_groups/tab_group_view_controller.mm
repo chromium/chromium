@@ -196,6 +196,7 @@ UIButton* TopToolbarButton(NSString* symbol_name,
       _gridViewController.theme = GridThemeDark;
     }
     _gridViewController.viewDelegate = self;
+    _gridViewController.tabGroupHeaderDelegate = self;
 
     // This view controller has a dark background and should be considered as
     // dark mode regardless of the theme of the grid.
@@ -1132,6 +1133,12 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 - (void)showRecentActivity {
   CHECK(_gridViewController.shared);
   [_handler showRecentActivityForGroup:_tabGroup->GetWeakPtr()];
+}
+
+#pragma mark - TabGroupHeaderDelegate
+
+- (void)tabGroupHeaderDidTapTitle:(TabGroupHeader*)tabGroupHeader {
+  [self displayEditionMenu];
 }
 
 #pragma mark - TabGridToolbarsGridDelegate

@@ -9,6 +9,7 @@
 
 @protocol GridViewDelegate;
 @class TabGroupColorPalette;
+@protocol TabGroupHeaderDelegate;
 
 // A view controller that contains a grid of tabs from the same group.
 @interface TabGroupGridViewController : BaseGridViewController
@@ -30,6 +31,9 @@
 
 // The text in the activity summary cell.
 @property(nonatomic, copy) NSString* activitySummaryCellText;
+
+// Delegate to display the edition view.
+@property(nonatomic, weak) id<TabGroupHeaderDelegate> tabGroupHeaderDelegate;
 
 @end
 

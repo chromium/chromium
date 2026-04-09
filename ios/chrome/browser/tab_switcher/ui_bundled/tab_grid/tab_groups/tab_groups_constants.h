@@ -21,6 +21,7 @@ extern NSString* const kTabGroupNewTabButtonIdentifier;
 extern NSString* const kTabGroupOverflowMenuButtonIdentifier;
 extern NSString* const kTabGroupCloseButtonIdentifier;
 extern NSString* const kTabGroupFacePileButtonIdentifier;
+extern NSString* const kTabGroupTitleButtonToEditGroupIdentifier;
 
 // Color for the button background.
 UIColor* TabGroupViewButtonBackgroundColor();

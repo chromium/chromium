@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_view_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_consumer.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_edition_delegate.h"
 
 @class TabGroupGridViewController;
 class TabGroup;
@@ -17,8 +18,9 @@ class TabGroup;
 @protocol TabGroupPresentationCommands;
 
 // Tab group view controller displaying one group.
-@interface TabGroupViewController
-    : UIViewController <GridViewDelegate, TabGroupConsumer>
+@interface TabGroupViewController : UIViewController <GridViewDelegate,
+                                                      TabGroupConsumer,
+                                                      TabGroupHeaderDelegate>
 
 // Mutator used to send notification to the tab group  model.
 @property(nonatomic, weak) id<TabGroupMutator> mutator;

@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol TabGroupHeaderDelegate;
+
 // A collection view header displaying tab group information.
 @interface TabGroupHeader : UICollectionReusableView
 
@@ -14,6 +16,8 @@
 @property(nonatomic, copy) NSString* title;
 // Group's color.
 @property(nonatomic, copy) UIColor* color;
+// Delegate to display the edition view.
+@property(nonatomic, weak) id<TabGroupHeaderDelegate> tabGroupHeaderDelegate;
 
 @end
 

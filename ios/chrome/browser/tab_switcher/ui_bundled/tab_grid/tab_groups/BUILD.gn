@@ -169,6 +169,7 @@ source_set("tab_groups_ui") {
   ]
   deps = [
     ":tab_group_consumer",
+    ":tab_group_edition_delegate",
     ":tab_group_mutator",
     ":tab_groups_constant",
     "//base",
@@ -296,6 +297,10 @@ source_set("tab_group_mutator") {
     "tab_group_mutator.h",
   ]
   deps = [ "//components/tab_groups" ]
+}
+
+source_set("tab_group_edition_delegate") {
+  sources = [ "tab_group_edition_delegate.h" ]
 }
 
 source_set("unit_tests") {

@@ -189,6 +189,9 @@
 // Configures the tab group header according to the current state.
 - (void)configureTabGroupHeader:(TabGroupHeader*)header {
   header.title = self.groupTitle;
+  if (IsOpenEditGroupViewByTappingTitleEnabled()) {
+    header.tabGroupHeaderDelegate = self.tabGroupHeaderDelegate;
+  }
   if (IsTabGroupColorOnSurfaceEnabled()) {
     header.color = self.tabGroupColorPalette.commonColor;
     return;

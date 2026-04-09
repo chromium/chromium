@@ -27,6 +27,8 @@ NSString* const kTabGroupCloseButtonIdentifier =
     @"kTabGroupCloseButtonIdentifier";
 NSString* const kTabGroupFacePileButtonIdentifier =
     @"kTabGroupFacePileButtonIdentifier";
+NSString* const kTabGroupTitleButtonToEditGroupIdentifier =
+    @"kTabGroupTitleButtonToEditGroupIdentifier";
 
 UIColor* TabGroupViewButtonBackgroundColor() {
   return [[UIColor colorNamed:kGrey200Color] colorWithAlphaComponent:0.35];
