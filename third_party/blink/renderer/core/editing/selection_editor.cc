@@ -150,11 +150,11 @@ void SelectionEditor::SetSelectionAndEndTyping(
     Node* new_focus = new_selection.Focus().AnchorNode();
     LayoutObject* old_style_owner =
         old_focus && old_focus->GetLayoutObject()
-            ? old_focus->GetLayoutObject()->NonAnonymousContainingBlock()
+            ? old_focus->GetLayoutObject()->ContainingBlockForTextOverflow()
             : nullptr;
     LayoutObject* new_style_owner =
         new_focus && new_focus->GetLayoutObject()
-            ? new_focus->GetLayoutObject()->NonAnonymousContainingBlock()
+            ? new_focus->GetLayoutObject()->ContainingBlockForTextOverflow()
             : nullptr;
 
     if (old_style_owner != new_style_owner) {

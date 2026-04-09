@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -2032,6 +2033,48 @@ TEST_F(LayoutObjectTest, GeneratingNode) {
   ASSERT_TRUE(cell2);
   EXPECT_TRUE(cell2->IsAnonymous());
   EXPECT_EQ(GetElementById("table2"), cell2->GeneratingNode());
+}
+
+// crbug.com/495648335 - Anonymous blocks inside non-block-container parents
+// should not truncate text with ellipsis, since their parent layout doesn't
+// support text truncation.
+TEST_F(LayoutObjectTest, NoEllipsisForAnonymousBlockWithNonBlockParent) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="outer"
+         style="width:100px; overflow:hidden; text-overflow:ellipsis;
+                white-space:nowrap;">
+      <div id="flex" style="display:flex;">
+        <span id="text">This is long text that overflows the container</span>
+      </div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  const LayoutObject* text_layout = GetLayoutObjectByElementId("text");
+  ASSERT_TRUE(text_layout);
+
+  // ContainingBlockForTextOverflow() returns nullptr because the parent is a
+  // flex container (non-block-container).
+  EXPECT_EQ(nullptr, text_layout->ContainingBlockForTextOverflow());
+
+  // Since ContainingBlockForTextOverflow() is nullptr, no block will have
+  // ShouldTruncateOverflowingText() set to true. Verify this on the anonymous
+  // block flow inside the flex container.
+  const LayoutObject* flex_layout = GetLayoutObjectByElementId("flex");
+  ASSERT_TRUE(flex_layout);
+  EXPECT_FALSE(flex_layout->BehavesLikeBlockContainer());
+
+  const LayoutObject* child = flex_layout->SlowFirstChild();
+  while (child && !child->IsAnonymousBlockFlow()) {
+    child = child->NextSibling();
+  }
+  if (child) {
+    const auto* anon_block = DynamicTo<LayoutBlockFlow>(child);
+    if (anon_block) {
+      EXPECT_FALSE(anon_block->ShouldTruncateOverflowingText());
+    }
+  }
 }
 
 }  // namespace blink

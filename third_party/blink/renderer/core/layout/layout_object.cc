@@ -1829,11 +1829,14 @@ const LayoutBox* LayoutObject::ContainingScrollContainer(
   return nullptr;
 }
 
-LayoutObject* LayoutObject::NonAnonymousContainingBlock() const {
+LayoutObject* LayoutObject::ContainingBlockForTextOverflow() const {
   NOT_DESTROYED();
   LayoutObject* block = ContainingBlock();
   if (block && block->IsAnonymous()) {
     block = block->Parent();
+  }
+  if (block && !block->BehavesLikeBlockContainer()) {
+    return nullptr;
   }
   return block;
 }

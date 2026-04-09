@@ -2244,9 +2244,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // See layout_block.h for some extra explanations on containing blocks.
   LayoutBlock* ContainingBlock(AncestorSkipInfo* = nullptr) const;
 
-  // Returns the containing block, resolving anonymous blocks to their
-  // Parent(). This mirrors the lookup in ShouldTruncateOverflowingText().
-  LayoutObject* NonAnonymousContainingBlock() const;
+  // Returns the containing block that owns the text-overflow style,
+  // resolving anonymous blocks to their parent. Returns nullptr if the
+  // resolved parent is not a block container (e.g., flex or inline).
+  LayoutObject* ContainingBlockForTextOverflow() const;
 
   // Returns the nearest ancestor in the layout tree that IsForElement(),
   // or null if there is none.
