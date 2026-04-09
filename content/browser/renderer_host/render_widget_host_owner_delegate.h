@@ -7,6 +7,8 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/public/common/widget/visual_properties.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 namespace web_pref {
@@ -56,6 +58,13 @@ class RenderWidgetHostOwnerDelegate {
   // Returns the WebkitPreferences for the page. The preferences are shared
   // between all widgets for the page.
   virtual blink::web_pref::WebPreferences GetWebkitPreferencesForWidget() = 0;
+
+  // Zoom into a specific rect on the page.
+  virtual void ZoomToFindInPageRect(const gfx::Rect& rect_to_zoom) = 0;
+
+  // Animate a double tap zoom to a specific point and rect on the page.
+  virtual void AnimateDoubleTapZoom(const gfx::Point& point,
+                                    const gfx::Rect& rect) = 0;
 
  protected:
   virtual ~RenderWidgetHostOwnerDelegate() {}
