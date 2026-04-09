@@ -35,4 +35,13 @@ web::JavaScriptFeature* GetCobaltJavascriptFeatureForProfile(
   return nullptr;
 }
 
+ChromeCoordinator* CreateCobaltAlertCoordinator(
+    UIViewController* base_view_controller,
+    Browser* browser,
+    NSString* title,
+    NSString* message,
+    CobaltAlertCompletion completion) {
+  return nil;
+}
+
 }  // namespace ios::provider
