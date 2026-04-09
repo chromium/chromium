@@ -2251,7 +2251,7 @@ bool WebGLRenderingContextBase::
       shared_context_wrapper->ContextProvider().RasterInterface();
   gpu::SyncToken sync_token;
   auto client_si =
-      resource_provider->BeginExternalWrite(sync_token, /*is_overwrite=*/false);
+      resource_provider->BeginExternalWrite(sync_token, /*is_overwrite=*/true);
   if (!client_si) {
     return false;
   }
