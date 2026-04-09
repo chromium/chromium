@@ -96,7 +96,15 @@ OpenXrTestHelper::OpenXrTestHelper()
     // since openxr_statics is created first, so the first instance returned
     // should be a fake one since openxr_statics does not need to use
     // test_hook_;
-    : interaction_profile_(device::kMicrosoftMotionInteractionProfilePath) {
+    : system_id_(0),
+      session_(XR_NULL_HANDLE),
+      frame_count_(0),
+      session_state_(XR_SESSION_STATE_UNKNOWN),
+      frame_begin_(false),
+      acquired_swapchain_texture_(0),
+      next_handle_(0),
+      next_predicted_display_time_(0),
+      interaction_profile_(device::kMicrosoftMotionInteractionProfilePath) {
   // We currently only support one primary and one secondary view configs, but
   // there will likely be more added in the future to support various devices.
   // Add new ones here for testing.
@@ -132,12 +140,11 @@ void OpenXrTestHelper::Reset() {
 #if BUILDFLAG(IS_WIN)
   d3d_device_ = nullptr;
   textures_arr_.clear();
-  acquired_swapchain_texture_ = 0;
 #elif BUILDFLAG(IS_ANDROID)
-  opengl_es_textures_arrays_.clear();
+  opengl_es_textures_arr_.clear();
   xr_gl_.reset();
-  acquired_swapchain_textures_.clear();
 #endif
+  acquired_swapchain_texture_ = 0;
   next_handle_ = 0;
   next_predicted_display_time_ = 0;
 
@@ -172,17 +179,16 @@ void OpenXrTestHelper::SetTestHook(device::VRTestHook* hook) {
   test_hook_ = hook;
 }
 
-void OpenXrTestHelper::OnPresentedFrame(const XrFrameEndInfo* frame_end_info) {
+void OpenXrTestHelper::OnPresentedFrame() {
 #if BUILDFLAG(IS_WIN)
   DCHECK_NE(textures_arr_.size(), 0ull);
 #elif BUILDFLAG(IS_ANDROID)
-  DCHECK_NE(opengl_es_textures_arrays_.size(), 0ull);
+  DCHECK_NE(opengl_es_textures_arr_.size(), 0ull);
 #endif
 
   std::vector<device::ViewData> submitted_views;
-  std::vector<device::LayerData> submitted_layers;
-#if BUILDFLAG(IS_WIN)
   uint32_t current_x = 0;
+
   for (XrViewConfigurationType view_config_type : view_configs_enabled_) {
     const device::OpenXrViewConfiguration& view_config =
         GetViewConfigInfo(view_config_type);
@@ -201,84 +207,19 @@ void OpenXrTestHelper::OnPresentedFrame(const XrFrameEndInfo* frame_end_info) {
       }
     }
   }
-#elif BUILDFLAG(IS_ANDROID)
-  // SAFETY: Test-only implementation of a C-Style API that thus has to
-  // provide arrays as a pointer and a size. The sole callers are our own
-  // product/test code.
-  auto layers = UNSAFE_BUFFERS(
-      base::span(frame_end_info->layers, frame_end_info->layerCount));
-  for (uint32_t i = 0; i < frame_end_info->layerCount; i++) {
-    const XrCompositionLayerBaseHeader* layer = layers[i];
-    if (layer->type == XR_TYPE_COMPOSITION_LAYER_PROJECTION) {
-      const auto* proj_layer =
-          reinterpret_cast<const XrCompositionLayerProjection*>(layer);
-      uint32_t current_x = 0;
-      // SAFETY: Test-only implementation of a C-Style API that thus has to
-      // provide arrays as a pointer and a size. The sole callers are our own
-      // product/test code.
-      auto views =
-          UNSAFE_BUFFERS(base::span(proj_layer->views, proj_layer->viewCount));
-      for (XrViewConfigurationType view_config_type : view_configs_enabled_) {
-        const device::OpenXrViewConfiguration& view_config =
-            GetViewConfigInfo(view_config_type);
-        if (view_config.Active()) {
-          const std::vector<device::OpenXrViewProperties>& view_properties =
-              view_config.Properties();
-          for (uint32_t j = 0; j < view_properties.size(); j++) {
-            const device::OpenXrViewProperties& properties = view_properties[j];
-            device::ViewData& data = submitted_views.emplace_back();
-            data.viewport = gfx::Rect(current_x, 0, properties.Width(),
-                                      properties.Height());
-            data.eye = GetEyeForIndex(j, view_properties.size());
-            CopyTextureDataIntoFrameData(views[j].subImage.swapchain, current_x,
-                                         data);
-            current_x += properties.Width();
-          }
-        }
-      }
-    } else if (layer->type == XR_TYPE_COMPOSITION_LAYER_QUAD) {
-      device::LayerData& layer_data =
-          submitted_layers.emplace_back(device::LayerType::kQuad);
-      const auto* quad_layer =
-          reinterpret_cast<const XrCompositionLayerQuad*>(layer);
-      layer_data.face_colors.push_back(ReadTextureColor(quad_layer->subImage));
-    } else if (layer->type == XR_TYPE_COMPOSITION_LAYER_CYLINDER_KHR) {
-      device::LayerData& layer_data =
-          submitted_layers.emplace_back(device::LayerType::kCylinder);
-      const auto* cylinder_layer =
-          reinterpret_cast<const XrCompositionLayerCylinderKHR*>(layer);
-      layer_data.face_colors.push_back(
-          ReadTextureColor(cylinder_layer->subImage));
-    } else if (layer->type == XR_TYPE_COMPOSITION_LAYER_EQUIRECT2_KHR) {
-      device::LayerData& layer_data =
-          submitted_layers.emplace_back(device::LayerType::kEquirect);
-      const auto* equirect_layer =
-          reinterpret_cast<const XrCompositionLayerEquirect2KHR*>(layer);
-      layer_data.face_colors.push_back(
-          ReadTextureColor(equirect_layer->subImage));
-    } else if (layer->type == XR_TYPE_COMPOSITION_LAYER_CUBE_KHR) {
-      device::LayerData& layer_data =
-          submitted_layers.emplace_back(device::LayerType::kCube);
-      const auto* cube_layer =
-          reinterpret_cast<const XrCompositionLayerCubeKHR*>(layer);
-      layer_data.face_colors =
-          ReadCubeMapFirstPixelColor(cube_layer->swapchain);
-    }
-  }
-#endif
 
   base::AutoLock auto_lock(lock_);
   if (!test_hook_)
     return;
 
-  test_hook_->OnFrameSubmitted(submitted_views, submitted_layers);
+  test_hook_->OnFrameSubmitted(submitted_views);
 }
 
-#if BUILDFLAG(IS_WIN)
 void OpenXrTestHelper::CopyTextureDataIntoFrameData(uint32_t x_start,
                                                     device::ViewData& data) {
   constexpr uint32_t buffer_size = sizeof(device::ViewData::raw_buffer);
   constexpr uint32_t buffer_size_pixels = buffer_size / sizeof(device::Color);
+#if BUILDFLAG(IS_WIN)
   DCHECK(d3d_device_);
   DCHECK_NE(textures_arr_.size(), 0ull);
   Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
@@ -329,18 +270,10 @@ void OpenXrTestHelper::CopyTextureDataIntoFrameData(uint32_t x_start,
   data_buffer.copy_from_nonoverlapping(mapped_data_span);
 
   context->Unmap(texture_destination.Get(), 0);
-}
 #elif BUILDFLAG(IS_ANDROID)
-void OpenXrTestHelper::CopyTextureDataIntoFrameData(XrSwapchain swapchain,
-                                                    uint32_t x_start,
-                                                    device::ViewData& data) {
-  constexpr uint32_t buffer_size = sizeof(device::ViewData::raw_buffer);
-  constexpr uint32_t buffer_size_pixels = buffer_size / sizeof(device::Color);
-  DCHECK_NE(opengl_es_textures_arrays_.size(), 0u);
+  DCHECK_NE(opengl_es_textures_arr_.size(), 0u);
   DCHECK_NE(xr_gl_, nullptr);
-  DCHECK_NE(swapchain, XR_NULL_HANDLE);
-  auto texture_index = acquired_swapchain_textures_[swapchain];
-  DCHECK_LT(texture_index, opengl_es_textures_arrays_[swapchain].size());
+  DCHECK_LT(acquired_swapchain_texture_, opengl_es_textures_arr_.size());
   base::span<char> out_buffer(data.raw_buffer);
 
   // Generate a framebuffer to read from and attach the current texture to it.
@@ -349,7 +282,7 @@ void OpenXrTestHelper::CopyTextureDataIntoFrameData(XrSwapchain swapchain,
   xr_gl_->glBindFramebuffer_fn(GL_FRAMEBUFFER, fbo);
   xr_gl_->glFramebufferTexture2D_fn(
       GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-      opengl_es_textures_arrays_[swapchain][texture_index], 0);
+      opengl_es_textures_arr_[acquired_swapchain_texture_], 0);
 
   GLenum status = xr_gl_->glCheckFramebufferStatus_fn(GL_FRAMEBUFFER);
   if (status == GL_FRAMEBUFFER_COMPLETE) {
@@ -364,76 +297,8 @@ void OpenXrTestHelper::CopyTextureDataIntoFrameData(XrSwapchain swapchain,
 
   xr_gl_->glBindFramebuffer_fn(GL_FRAMEBUFFER, 0);
   xr_gl_->glDeleteFramebuffers_fn(1, &fbo);
-}
-
-device::Color OpenXrTestHelper::ReadTextureColor(
-    const XrSwapchainSubImage& sub_image) {
-  device::Color color;
-  DCHECK_NE(opengl_es_textures_arrays_.size(), 0u);
-  DCHECK_NE(xr_gl_, nullptr);
-  auto texture_index = acquired_swapchain_textures_[sub_image.swapchain];
-  DCHECK_LT(texture_index,
-            opengl_es_textures_arrays_[sub_image.swapchain].size());
-
-  GLuint fbo = 0;
-  xr_gl_->glGenFramebuffers_fn(1, &fbo);
-  xr_gl_->glBindFramebuffer_fn(GL_FRAMEBUFFER, fbo);
-
-  auto texture = opengl_es_textures_arrays_[sub_image.swapchain][texture_index];
-  xr_gl_->glFramebufferTexture2D_fn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                                    GL_TEXTURE_2D, texture, 0);
-
-  GLenum status = xr_gl_->glCheckFramebufferStatus_fn(GL_FRAMEBUFFER);
-  if (status == GL_FRAMEBUFFER_COMPLETE) {
-    char pixel[4];
-    xr_gl_->glReadPixels_fn(sub_image.imageRect.offset.x,
-                            sub_image.imageRect.offset.y, 1, 1, GL_RGBA,
-                            GL_UNSIGNED_BYTE, pixel);
-    color = GetFirstColor(pixel);
-  } else {
-    DLOG(ERROR) << "Framebuffer not complete: " << std::hex << status;
-  }
-
-  xr_gl_->glBindFramebuffer_fn(GL_FRAMEBUFFER, 0);
-  xr_gl_->glDeleteFramebuffers_fn(1, &fbo);
-  return color;
-}
-
-std::vector<device::Color> OpenXrTestHelper::ReadCubeMapFirstPixelColor(
-    XrSwapchain swapchain) {
-  std::vector<device::Color> colors;
-  DCHECK_NE(opengl_es_textures_arrays_.size(), 0u);
-  DCHECK_NE(xr_gl_, nullptr);
-  auto texture_index = acquired_swapchain_textures_[swapchain];
-  DCHECK_LT(texture_index, opengl_es_textures_arrays_[swapchain].size());
-
-  GLuint fbo = 0;
-  xr_gl_->glGenFramebuffers_fn(1, &fbo);
-  xr_gl_->glBindFramebuffer_fn(GL_FRAMEBUFFER, fbo);
-
-  GLuint texture = opengl_es_textures_arrays_[swapchain][texture_index];
-  DCHECK_NE(texture, 0u);
-  for (int i = 0; i < 6; ++i) {
-    xr_gl_->glFramebufferTexture2D_fn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                                      GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                                      texture, 0);
-
-    GLenum status = xr_gl_->glCheckFramebufferStatus_fn(GL_FRAMEBUFFER);
-    if (status == GL_FRAMEBUFFER_COMPLETE) {
-      char pixel[4];
-      xr_gl_->glReadPixels_fn(0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
-      colors.push_back(GetFirstColor(pixel));
-    } else {
-      DLOG(ERROR) << "Framebuffer not complete: " << std::hex << status;
-      colors.emplace_back();
-    }
-  }
-
-  xr_gl_->glBindFramebuffer_fn(GL_FRAMEBUFFER, 0);
-  xr_gl_->glDeleteFramebuffers_fn(1, &fbo);
-  return colors;
-}
 #endif
+}
 
 XrSystemId OpenXrTestHelper::GetSystemId() {
   system_id_ = 1;
@@ -468,10 +333,9 @@ XrResult OpenXrTestHelper::DestroySession(XrSession session) {
   return XR_SUCCESS;
 }
 
-XrSwapchain OpenXrTestHelper::CreateSwapchain(
-    const XrSwapchainCreateInfo& create_info) {
+XrSwapchain OpenXrTestHelper::CreateSwapchain() {
   auto swapchain = TreatIntegerAsHandle<XrSwapchain>(++next_handle_);
-  swapchains_.emplace(swapchain, create_info);
+  swapchains_.insert(swapchain);
   return swapchain;
 }
 
@@ -882,13 +746,11 @@ void OpenXrTestHelper::ReinitializeTextures() {
     }
   }
 
-#if BUILDFLAG(IS_WIN)
   CreateTextures(total_width, total_height);
-#endif
 }
 
-#if BUILDFLAG(IS_WIN)
 void OpenXrTestHelper::CreateTextures(uint32_t width, uint32_t height) {
+#if BUILDFLAG(IS_WIN)
   DCHECK(d3d_device_);
   textures_arr_.clear();
 
@@ -910,45 +772,24 @@ void OpenXrTestHelper::CreateTextures(uint32_t width, uint32_t height) {
     textures_arr_.push_back(texture);
   }
 #elif BUILDFLAG(IS_ANDROID)
-void OpenXrTestHelper::CreateTextures(XrSwapchain swapchain) {
   DCHECK_NE(xr_gl_, nullptr);
-  DCHECK(swapchains_.contains(swapchain));
-
-  // Assume the first layer is projection layer for now.
-  auto& textures = opengl_es_textures_arrays_[swapchain];
-  textures.clear();
+  opengl_es_textures_arr_.clear();
   if (kMinSwapchainBuffering == 0) {
     return;
   }
 
-  textures.resize(kMinSwapchainBuffering);
-  xr_gl_->glGenTextures_fn(kMinSwapchainBuffering, textures.data());
+  opengl_es_textures_arr_.resize(kMinSwapchainBuffering);
 
-  const auto& swapchain_info = swapchains_[swapchain];
-  const bool is_cube = swapchain_info.faceCount == 6;
-  for (GLuint texture_id : textures) {
+  xr_gl_->glGenTextures_fn(kMinSwapchainBuffering,
+                           opengl_es_textures_arr_.data());
+  for (GLuint texture_id : opengl_es_textures_arr_) {
+    xr_gl_->glBindTexture_fn(GL_TEXTURE_2D, texture_id);
     // Allocate storage for the texture.
-    if (is_cube) {
-      xr_gl_->glBindTexture_fn(GL_TEXTURE_CUBE_MAP, texture_id);
-      for (unsigned int i = 0; i < 6; i++) {
-        xr_gl_->glTexImage2D_fn(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0,
-                                kSwapchainFormat, swapchain_info.width,
-                                swapchain_info.height, 0, GL_RGBA,
-                                GL_UNSIGNED_BYTE, nullptr);
-      }
-    } else {
-      xr_gl_->glBindTexture_fn(GL_TEXTURE_2D, texture_id);
-      xr_gl_->glTexImage2D_fn(GL_TEXTURE_2D, 0, kSwapchainFormat,
-                              swapchain_info.width, swapchain_info.height, 0,
-                              GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-    }
+    xr_gl_->glTexImage2D_fn(GL_TEXTURE_2D, 0, kSwapchainFormat, width, height,
+                            0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
   }
   // Unbind the last texture.
-  if (is_cube) {
-    xr_gl_->glBindTexture_fn(GL_TEXTURE_CUBE_MAP, 0);
-  } else {
-    xr_gl_->glBindTexture_fn(GL_TEXTURE_2D, 0);
-  }
+  xr_gl_->glBindTexture_fn(GL_TEXTURE_2D, 0);
 #endif
 }
 
@@ -971,6 +812,8 @@ void OpenXrTestHelper::SetOpenGLESInfo(EGLDisplay display, EGLContext context) {
   DCHECK_NE(display, EGL_NO_DISPLAY);
   DCHECK_NE(context, EGL_NO_CONTEXT);
   xr_gl_ = std::make_unique<XrTestGl>();
+
+  CreateTextures(kPrimaryViewDimension * 2, kPrimaryViewDimension);
 }
 #endif
 
@@ -1179,25 +1022,20 @@ OpenXrTestHelper::GetSwapchainTextures() const {
   return textures_arr_;
 }
 #elif BUILDFLAG(IS_ANDROID)
-const std::vector<uint32_t>& OpenXrTestHelper::GetSwapchainTextureIDs(
-    XrSwapchain swapchain) {
-  if (!opengl_es_textures_arrays_.contains(swapchain)) {
-    CreateTextures(swapchain);
-  }
-  return opengl_es_textures_arrays_[swapchain];
+const std::vector<uint32_t>& OpenXrTestHelper::GetSwapchainTextureIDs() const {
+  return opengl_es_textures_arr_;
 }
 #endif
 
-uint32_t OpenXrTestHelper::NextSwapchainImageIndex(XrSwapchain swapchain) {
+uint32_t OpenXrTestHelper::NextSwapchainImageIndex() {
 #if BUILDFLAG(IS_WIN)
   acquired_swapchain_texture_ =
       (acquired_swapchain_texture_ + 1) % textures_arr_.size();
   return acquired_swapchain_texture_;
 #else
-  acquired_swapchain_textures_[swapchain] =
-      (acquired_swapchain_textures_[swapchain] + 1) %
-      opengl_es_textures_arrays_[swapchain].size();
-  return acquired_swapchain_textures_[swapchain];
+  acquired_swapchain_texture_ =
+      (acquired_swapchain_texture_ + 1) % opengl_es_textures_arr_.size();
+  return acquired_swapchain_texture_;
 #endif
 }
 
@@ -1742,64 +1580,6 @@ XrResult OpenXrTestHelper::ValidateXrCompositionLayerProjection(
               "XrCompositionLayerProjectionView next is not nullptr");
   }
 
-  return XR_SUCCESS;
-}
-
-XrResult OpenXrTestHelper::ValidateXrCompositionLayerQuad(
-    const XrCompositionLayerQuad& quad_layer) {
-  RETURN_IF(quad_layer.type != XR_TYPE_COMPOSITION_LAYER_QUAD,
-            XR_ERROR_LAYER_INVALID, "XrCompositionLayerQuad type invalid");
-  RETURN_IF(reference_spaces_.count(quad_layer.space) != 1,
-            XR_ERROR_VALIDATION_FAILURE,
-            "XrCompositionLayerQuad space is not reference space");
-  std::string space_path = reference_spaces_.at(quad_layer.space);
-  RETURN_IF(space_path.compare(kLocalReferenceSpacePath) != 0,
-            XR_ERROR_VALIDATION_FAILURE,
-            "XrCompositionLayerQuad space is not local space");
-  return XR_SUCCESS;
-}
-
-XrResult OpenXrTestHelper::ValidateXrCompositionLayerCylinder(
-    const XrCompositionLayerCylinderKHR& cylinder_layer) {
-  RETURN_IF(cylinder_layer.type != XR_TYPE_COMPOSITION_LAYER_CYLINDER_KHR,
-            XR_ERROR_LAYER_INVALID,
-            "XrCompositionLayerCylinderKHR type invalid");
-  RETURN_IF(reference_spaces_.count(cylinder_layer.space) != 1,
-            XR_ERROR_VALIDATION_FAILURE,
-            "XrCompositionLayerCylinderKHR space is not reference space");
-  std::string space_path = reference_spaces_.at(cylinder_layer.space);
-  RETURN_IF(space_path.compare(kLocalReferenceSpacePath) != 0,
-            XR_ERROR_VALIDATION_FAILURE,
-            "XrCompositionLayerCylinderKHR space is not local space");
-  return XR_SUCCESS;
-}
-
-XrResult OpenXrTestHelper::ValidateXrCompositionLayerEquirect2(
-    const XrCompositionLayerEquirect2KHR& equirect_layer) {
-  RETURN_IF(equirect_layer.type != XR_TYPE_COMPOSITION_LAYER_EQUIRECT2_KHR,
-            XR_ERROR_LAYER_INVALID,
-            "XrCompositionLayerEquirect2KHR type invalid");
-  RETURN_IF(reference_spaces_.count(equirect_layer.space) != 1,
-            XR_ERROR_VALIDATION_FAILURE,
-            "XrCompositionLayerEquirect2KHR space is not reference space");
-  std::string space_path = reference_spaces_.at(equirect_layer.space);
-  RETURN_IF(space_path.compare(kLocalReferenceSpacePath) != 0,
-            XR_ERROR_VALIDATION_FAILURE,
-            "XrCompositionLayerEquirect2KHR space is not local space");
-  return XR_SUCCESS;
-}
-
-XrResult OpenXrTestHelper::ValidateXrCompositionLayerCube(
-    const XrCompositionLayerCubeKHR& cube_layer) {
-  RETURN_IF(cube_layer.type != XR_TYPE_COMPOSITION_LAYER_CUBE_KHR,
-            XR_ERROR_LAYER_INVALID, "XrCompositionLayerCubeKHR type invalid");
-  RETURN_IF(reference_spaces_.count(cube_layer.space) != 1,
-            XR_ERROR_VALIDATION_FAILURE,
-            "XrCompositionLayerCubeKHR space is not reference space");
-  std::string space_path = reference_spaces_.at(cube_layer.space);
-  RETURN_IF(space_path.compare(kLocalReferenceSpacePath) != 0,
-            XR_ERROR_VALIDATION_FAILURE,
-            "XrCompositionLayerCubeKHR space is not local space");
   return XR_SUCCESS;
 }
 

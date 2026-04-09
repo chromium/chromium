@@ -13,9 +13,8 @@ Tests WebXR secondary views are correctly exposed when requested for a session.
     <script>var shouldAutoCreateNonImmersiveSession = false;</script>
     <script src="../resources/webxr_boilerplate.js"></script>
     <script>
-      // 'webgl2' is required for texture-array.
-      // Also, there is a mysterious context loss on the pixel 7 used by the bot
-      // and 'webgl2' can work around it.
+      // Use 'webgl2' to work around a mysterious context loss on the pixel 7
+      // used by the bot.
       useWebGL2 = true;
       immersiveSessionInit = {
         requiredFeatures: ['layers']
@@ -40,10 +39,6 @@ Tests WebXR secondary views are correctly exposed when requested for a session.
             subImage.viewport.x, subImage.viewport.y, subImage.viewport.width,
             subImage.viewport.height);
         assert_equals(gl.getError(), gl.NO_ERROR, "fillColor - viewport");
-        gl.enable(gl.SCISSOR_TEST);
-        gl.scissor(subImage.viewport.x, subImage.viewport.y, subImage.viewport.width,
-            subImage.viewport.height)
-        assert_equals(gl.getError(), gl.NO_ERROR, "fillColor - scissor");
         gl.framebufferTexture2D(
             gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D,
             subImage.colorTexture, 0);
@@ -54,33 +49,6 @@ Tests WebXR secondary views are correctly exposed when requested for a session.
         assert_equals(gl.getError(), gl.NO_ERROR, "fillColor - clear");
         gl.finish();
         assert_equals(gl.getError(), gl.NO_ERROR, "fillColor");
-      }
-
-      function fillLayerColorAndVerify(gl, subImage, color) {
-        gl.viewport(
-            subImage.viewport.x, subImage.viewport.y, subImage.viewport.width,
-            subImage.viewport.height);
-        assert_equals(gl.getError(), gl.NO_ERROR, "fillLayerColor - viewport");
-        gl.enable(gl.SCISSOR_TEST);
-        gl.scissor(subImage.viewport.x, subImage.viewport.y, subImage.viewport.width,
-            subImage.viewport.height);
-        gl.framebufferTextureLayer(
-            gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, subImage.colorTexture, 0, subImage.imageIndex);
-        assert_equals(gl.getError(), gl.NO_ERROR, "fillLayerColor - framebufferTextureLayer");
-        gl.clearColor(color[0], color[1], color[2], color[3]);
-        assert_equals(gl.getError(), gl.NO_ERROR, "fillLayerColor - clearColor");
-        gl.clear(gl.COLOR_BUFFER_BIT);
-        assert_equals(gl.getError(), gl.NO_ERROR, "fillLayerColor - clear");
-        gl.finish();
-        assert_equals(gl.getError(), gl.NO_ERROR, "fillLayerColor");
-
-        const pixel = new Uint8Array(4);
-        gl.readPixels(subImage.viewport.x, subImage.viewport.y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
-        assert_equals(gl.getError(), gl.NO_ERROR, "fillLayerColor - readPixels");
-        assert_equals(pixel[0], Math.round(color[0] * 255), "fillLayerColor - Red channel");
-        assert_equals(pixel[1], Math.round(color[1] * 255), "fillLayerColor - Green channel");
-        assert_equals(pixel[2], Math.round(color[2] * 255), "fillLayerColor - Blue channel");
-        assert_equals(pixel[3], Math.round(color[3] * 255), "fillLayerColor - Alpha channel");
       }
 
       onSessionStartedCallback = function(session) {
@@ -95,27 +63,17 @@ Tests WebXR secondary views are correctly exposed when requested for a session.
             {textureType: 'texture', depthFormat: 0 /*GL_NONE*/});
 
         const refSpace = sessionInfos[getSessionType(session)].currentRefSpace;
-        const commonTransform = new XRRigidTransform({x: 0, y: 1.5, z: -3});
-        const commonOptions = {
+        const common_transform = new XRRigidTransform({x: 0, y: 1.5, z: -3});
+        const common_options = {
           ...defaultOptions,
           space: refSpace,
-          transform: commonTransform,
+          transform: common_transform,
         };
 
-        const quadLayerOptions = {
-          ...commonOptions,
-          layout: 'stereo-left-right',
-        }
-        const cylinderLayerOptions = {
-          ...commonOptions,
-          layout: 'stereo',
-          textureType: 'texture-array',
-        }
-        quadLayer = glBinding.createQuadLayer(quadLayerOptions);
-        cylinderLayer = glBinding.createCylinderLayer(cylinderLayerOptions);
-        equirectLayer = glBinding.createEquirectLayer(commonOptions);
-        equirectLayer.opacity = 0.5;
-        cubeLayer = glBinding.createCubeLayer(commonOptions);
+        quadLayer = glBinding.createQuadLayer(common_options);
+        cylinderLayer = glBinding.createCylinderLayer(common_options);
+        equirectLayer = glBinding.createEquirectLayer(common_options);
+        cubeLayer = glBinding.createCubeLayer(common_options);
 
         session.updateRenderState({
           layers:
@@ -137,17 +95,11 @@ Tests WebXR secondary views are correctly exposed when requested for a session.
           fillColor(gl, subImage, [1.0, 0.0, 0.0, 1.0]);  // Red
         }
 
-        // stereo-left-right layout.
-        let subImage = glBinding.getSubImage(quadLayer, frame, 'left');
+        let subImage = glBinding.getSubImage(quadLayer, frame);
         fillColor(gl, subImage, [0.0, 1.0, 0.0, 1.0]);  // Green
-        subImage = glBinding.getSubImage(quadLayer, frame, 'right');
-        fillColor(gl, subImage, [0.0, 1.0, 1.0, 1.0]);  // Cyan
 
-        // stereo layout with texture-arary.
-        subImage = glBinding.getSubImage(cylinderLayer, frame, 'left');
-        fillLayerColorAndVerify(gl, subImage, [0.0, 0.0, 1.0, 1.0]);  // Blue
-        subImage = glBinding.getSubImage(cylinderLayer, frame, 'right');
-        fillLayerColorAndVerify(gl, subImage, [1.0, 0.0, 1.0, 1.0]);  // Magenta
+        subImage = glBinding.getSubImage(cylinderLayer, frame);
+        fillColor(gl, subImage, [0.0, 0.0, 1.0, 1.0]);  // Blue
 
         subImage = glBinding.getSubImage(equirectLayer, frame);
         fillColor(gl, subImage, [1.0, 1.0, 0.0, 1.0]);  // Yellow
@@ -174,8 +126,6 @@ Tests WebXR secondary views are correctly exposed when requested for a session.
             subImage.viewport.width,  // halfWidth,
             subImage.viewport.height);
         assert_equals(gl.getError(), gl.NO_ERROR, "viewport");
-        gl.enable(gl.SCISSOR_TEST);
-        gl.scissor(subImage.viewport.x, subImage.viewport.y, subImage.viewport.width, subImage.viewport.height);
         for (let i = 0; i < 6; i++) {
           gl.framebufferTexture2D(
               gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0,

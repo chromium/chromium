@@ -37,7 +37,6 @@ class MockXRDeviceHookBase : public device_test::mojom::XRTestHook {
   // device_test::mojom::XRTestHook
   void OnFrameSubmitted(
       const std::vector<device::ViewData>& views,
-      const std::vector<device::LayerData>& layers,
       device_test::mojom::XRTestHook::OnFrameSubmittedCallback callback) final;
   void WaitGetDeviceConfig(
       device_test::mojom::XRTestHook::WaitGetDeviceConfigCallback callback)
@@ -89,8 +88,7 @@ class MockXRDeviceHookBase : public device_test::mojom::XRTestHook {
   // called *after* the frame count has been incremented but *before* any
   // potenital wait loop is signaled.
   virtual void ProcessSubmittedFrameUnlocked(
-      const std::vector<device::ViewData>& views,
-      const std::vector<device::LayerData>& layers) {}
+      const std::vector<device::ViewData>& views) {}
 
   SEQUENCE_CHECKER(mock_device_sequence_);
   SEQUENCE_CHECKER(main_sequence_);

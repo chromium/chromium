@@ -561,16 +561,11 @@ XRWebGLSubImage* XRWebGLBinding::getSubImage(XRCompositionLayer* layer,
     return nullptr;
   }
 
-  uint16_t image_index = 0;
   if (layer->layout() == V8XRLayerLayout::Enum::kStereo) {
     if (eye == V8XREye::Enum::kNone) {
       exception_state.ThrowTypeError(
           "The 'eye' parameter cannot be 'none' for the stereo layout.");
       return nullptr;
-    }
-    CHECK_GT(layer->textureArrayLength(), 1);
-    if (eye == V8XREye::Enum::kRight) {
-      image_index = 1;
     }
   }
 
@@ -580,8 +575,7 @@ XRWebGLSubImage* XRWebGLBinding::getSubImage(XRCompositionLayer* layer,
       static_cast<XRWebGLDrawingContext*>(layer->drawing_context());
 
   return MakeGarbageCollected<XRWebGLSubImage>(
-      GetViewportForLayer(*layer, eye), image_index,
-      drawing_context->color_swap_chain(),
+      GetViewportForLayer(*layer, eye), 0, drawing_context->color_swap_chain(),
       drawing_context->depth_stencil_swap_chain(),
       /*motion_vector_swap_chain=*/nullptr);
 }

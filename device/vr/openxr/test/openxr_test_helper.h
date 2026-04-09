@@ -17,7 +17,7 @@
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
 #include "device/vr/test/test_hook.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -53,7 +53,7 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   // Helper methods called by the mock OpenXR runtime. These methods will
   // call back into the test hook, thus communicating with the test object
   // on the browser process side.
-  void OnPresentedFrame(const XrFrameEndInfo* frame_end_info);
+  void OnPresentedFrame();
 
   // Helper methods called by the mock OpenXR runtime to query or set the
   // state of the runtime.
@@ -61,7 +61,7 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   XrSystemId GetSystemId();
   XrSystemProperties GetSystemProperties();
 
-  XrSwapchain CreateSwapchain(const XrSwapchainCreateInfo& create_info);
+  XrSwapchain CreateSwapchain();
   XrResult DestroySwapchain(XrSwapchain);
   XrInstance CreateInstance();
   XrResult DestroyInstance(XrInstance instance);
@@ -126,10 +126,10 @@ class OpenXrTestHelper : public device::ServiceTestHook {
 #endif
 #if BUILDFLAG(IS_ANDROID)
   void SetOpenGLESInfo(EGLDisplay display, EGLContext context);
-  const std::vector<uint32_t>& GetSwapchainTextureIDs(XrSwapchain swapchain);
+  const std::vector<uint32_t>& GetSwapchainTextureIDs() const;
 #endif
 
-  uint32_t NextSwapchainImageIndex(XrSwapchain swapchain);
+  uint32_t NextSwapchainImageIndex();
   XrTime NextPredictedDisplayTime();
 
   void UpdateEventQueue();
@@ -160,14 +160,6 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   XrResult ValidateXrCompositionLayerProjection(
       XrViewConfigurationType view_config,
       const XrCompositionLayerProjection& projection_layer);
-  XrResult ValidateXrCompositionLayerQuad(
-      const XrCompositionLayerQuad& quad_layer);
-  XrResult ValidateXrCompositionLayerCylinder(
-      const XrCompositionLayerCylinderKHR& cylinder_layer);
-  XrResult ValidateXrCompositionLayerEquirect2(
-      const XrCompositionLayerEquirect2KHR& equirect_layer);
-  XrResult ValidateXrCompositionLayerCube(
-      const XrCompositionLayerCubeKHR& cube_layer);
   XrResult ValidateXrPosefIsIdentity(const XrPosef& pose) const;
   XrResult ValidateViews(uint32_t view_capacity_input, XrView* views) const;
   XrResult ValidateViewConfigType(XrViewConfigurationType view_config) const;
@@ -215,18 +207,9 @@ class OpenXrTestHelper : public device::ServiceTestHook {
     ActionProperties(const ActionProperties& other);
   };
 
-  void ReinitializeTextures();
-#if BUILDFLAG(IS_WIN)
-  void CreateTextures(uint32_t width, uint32_t height);
   void CopyTextureDataIntoFrameData(uint32_t x_start, device::ViewData& data);
-#elif BUILDFLAG(IS_ANDROID)
-  void CreateTextures(XrSwapchain swapchain);
-  void CopyTextureDataIntoFrameData(XrSwapchain swapchain,
-                                    uint32_t x_start,
-                                    device::ViewData& data);
-  device::Color ReadTextureColor(const XrSwapchainSubImage&);
-  std::vector<device::Color> ReadCubeMapFirstPixelColor(XrSwapchain swapchain);
-#endif
+  void ReinitializeTextures();
+  void CreateTextures(uint32_t width, uint32_t height);
   void AddDimensions(const device::OpenXrViewConfiguration& view_config,
                      uint32_t& width,
                      uint32_t& height) const;
@@ -247,32 +230,29 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   // initialized to an invalid value and set to their actual value in their
   // respective Get*/Create* functions. This allows these variables to be used
   // to validate that they were queried before being used.
-  XrSystemId system_id_ = 0;
-  XrSession session_ = XR_NULL_HANDLE;
-  absl::flat_hash_map<XrSwapchain, XrSwapchainCreateInfo> swapchains_;
+  XrSystemId system_id_;
+  XrSession session_;
+  absl::flat_hash_set<XrSwapchain> swapchains_;
   XrHandTrackerEXT left_hand_;
   XrHandTrackerEXT right_hand_;
 
   // Properties that changes depending on the state of the runtime.
   uint32_t frame_count_ = 0;
-  XrSessionState session_state_ = XR_SESSION_STATE_UNKNOWN;
-  bool frame_begin_ = false;
-  uint32_t next_handle_ = 0;
-  XrTime next_predicted_display_time_ = 0;
+  XrSessionState session_state_;
+  bool frame_begin_;
+  uint32_t acquired_swapchain_texture_;
+  uint32_t next_handle_;
+  XrTime next_predicted_display_time_;
   std::string interaction_profile_;
 
   // TODO(https://crbug.com/381076468): Consider abstractions for platform
   // specific code.
 #if BUILDFLAG(IS_WIN)
   Microsoft::WRL::ComPtr<ID3D11Device> d3d_device_;
-  uint32_t acquired_swapchain_texture_ = 0;
   std::vector<Microsoft::WRL::ComPtr<ID3D11Texture2D>> textures_arr_;
 #elif BUILDFLAG(IS_ANDROID)
   std::unique_ptr<XrTestGl> xr_gl_;
-  // Acquired swapchain texture per swapchain.
-  absl::flat_hash_map<XrSwapchain, uint32_t> acquired_swapchain_textures_;
-  absl::flat_hash_map<XrSwapchain, std::vector<uint32_t>>
-      opengl_es_textures_arrays_;
+  std::vector<uint32_t> opengl_es_textures_arr_;
 #endif
 
   // paths_ is used to keep tracked of strings that already has a corresponding

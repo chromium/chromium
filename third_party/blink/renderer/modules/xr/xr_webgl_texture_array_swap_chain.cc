@@ -218,7 +218,7 @@ GLuint XRWebGLTextureArraySwapChain::GetCopyProgram() {
           vec2 pos = quad[gl_VertexID] + vec2(float(gl_InstanceID), 0.0f);
           pos /= vec2(u_layer_count, 1.0f);
           gl_Position = vec4(pos * 2.0 - 1.0, 0.0, 1.0);
-          v_texcoord = vec3(quad[gl_VertexID], float(gl_InstanceID));
+          v_texcoord = vec3(quad[gl_VertexID], gl_InstanceID);
       }
     )";
 

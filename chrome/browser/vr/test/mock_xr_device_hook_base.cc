@@ -94,11 +94,10 @@ void MockXRDeviceHookBase::WaitForTotalFrameCount(uint32_t total_count) {
 
 void MockXRDeviceHookBase::OnFrameSubmitted(
     const std::vector<device::ViewData>& views,
-    const std::vector<device::LayerData>& layers,
     device_test::mojom::XRTestHook::OnFrameSubmittedCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
   frame_count_++;
-  ProcessSubmittedFrameUnlocked(views, layers);
+  ProcessSubmittedFrameUnlocked(std::move(views));
   if (can_signal_wait_loop_ && frame_count_ >= target_frame_count_) {
     wait_loop_->Quit();
     can_signal_wait_loop_ = false;

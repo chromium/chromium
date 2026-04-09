@@ -22,20 +22,6 @@ enum Eye {
   NONE = 3
 };
 
-enum LayerType {
-  NONE = 0,
-  QUAD = 1,
-  CYLINDER = 2,
-  EQUIRECT = 3,
-  CUBE = 4,
-};
-
-struct LayerData {
-  LayerType type;
-  // Color of first pixel on every face. Cube layers have 6 faces.
-  array<Color> face_colors;
-};
-
 struct ViewData {
   Color color;
   Eye eye;
@@ -105,8 +91,7 @@ interface XRTestHook {
   // frame_data is an array of all the views that are active in the frame. This
   // is generally the left and right eye view, but may contain additional
   // secondary views as well if secondary view configurations are enabled.
-  // Layers include data for layers other than the projection layer.
-  [Sync] OnFrameSubmitted(array<ViewData> frame_data, array<LayerData> layers) => ();
+  [Sync] OnFrameSubmitted(array<ViewData> frame_data) => ();
 
   // Called by the XR runtime to retrieve the XR device's configuration set by
   // the test.

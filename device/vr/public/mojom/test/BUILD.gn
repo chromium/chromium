@@ -18,10 +18,6 @@ mojom("test_mojom") {
     {
       types = [
         {
-          mojom = "device_test.mojom.LayerData"
-          cpp = "::device::LayerData"
-        },
-        {
           mojom = "device_test.mojom.ViewData"
           cpp = "::device::ViewData"
         },
@@ -46,7 +42,6 @@ mojom("test_mojom") {
         "//device/vr/public/mojom/test/browser_test_interfaces_mojom_traits.h",
         "//device/vr/public/mojom/test/controller_frame_data.h",
         "//device/vr/public/mojom/test/device_config.h",
-        "//device/vr/public/mojom/test/layer_data.h",
         "//device/vr/public/mojom/test/view_data.h",
         "//device/vr/public/mojom/test/visibility_mask.h",
       ]
@@ -68,8 +63,6 @@ component("vr_public_test_typemaps") {
     "controller_frame_data.cc",
     "controller_frame_data.h",
     "device_config.h",
-    "layer_data.cc",
-    "layer_data.h",
     "view_data.h",
     "visibility_mask.h",
   ]
