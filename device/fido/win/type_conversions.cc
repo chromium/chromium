@@ -401,6 +401,9 @@ WinCredentialDetailsListToCredentialMetadata(
                   base::WideToUTF8(credential->pwszAuthenticatorName))
             : std::nullopt);
     metadata.system_created = !credential->bRemovable;
+    if (credential->dwVersion >= WEBAUTHN_CREDENTIAL_DETAILS_VERSION_4) {
+      metadata.transports = FromWinTransportsBitmask(credential->dwTransports);
+    }
     result.push_back(std::move(metadata));
   }
   return result;

@@ -32,6 +32,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
@@ -2103,6 +2104,49 @@ TEST_F(AuthenticatorRequestDialogControllerTest, PreSelect) {
       EXPECT_EQ(model->creds[0].cred_id, std::vector<uint8_t>({1}));
     }
   }
+}
+
+TEST_F(AuthenticatorRequestDialogControllerTest,
+       PreSelectWithMultipleTransportsOnCredential) {
+  auto cred = kCred2;
+  cred.transports = {device::FidoTransportProtocol::kInternal,
+                     device::FidoTransportProtocol::kHybrid};
+
+  auto model =
+      base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
+  AuthenticatorRequestDialogController controller(model.get(), main_rfh());
+  int preselect_num_called = 0;
+  controller.SetAccountPreselectedCallback(base::BindLambdaForTesting(
+      [&](device::DiscoverableCredentialMetadata selected_cred) {
+        EXPECT_EQ(selected_cred.cred_id, cred.cred_id);
+        EXPECT_THAT(selected_cred.transports,
+                    testing::UnorderedElementsAre(
+                        device::FidoTransportProtocol::kInternal,
+                        device::FidoTransportProtocol::kHybrid));
+        ++preselect_num_called;
+      }));
+  controller.SetRequestCallback(
+      base::BindLambdaForTesting([](const std::string& authenticator_id) {}));
+
+  controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+      /*device_id=*/"internal-authenticator", AuthenticatorTransport::kInternal,
+      device::AuthenticatorType::kOther));
+
+  TransportAvailabilityInfo transports_info;
+  transports_info.request_type = device::FidoRequestType::kGetAssertion;
+  transports_info.available_transports = kAllTransports;
+  transports_info.has_empty_allow_list = true;
+  transports_info.user_verification_requirement =
+      device::UserVerificationRequirement::kPreferred;
+  transports_info.has_platform_authenticator_credential = device::
+      FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential;
+  transports_info.recognized_credentials = {cred};
+  UpdateModelBeforeStartFlow(model.get(), transports_info,
+                             /*is_off_the_record=*/false);
+  controller.StartFlow(std::move(transports_info), {});
+
+  controller.OnAccountPreselected(cred.cred_id);
+  ASSERT_TRUE(base::test::RunUntil([&] { return preselect_num_called == 1; }));
 }
 
 #if BUILDFLAG(IS_WIN)

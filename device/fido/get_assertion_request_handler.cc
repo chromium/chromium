@@ -233,11 +233,18 @@ CtapGetAssertionRequest SpecializeRequestForAuthenticator(
   }
   if (preselected_credential &&
       preselected_credential->source == authenticator.GetType()) {
+    base::flat_set<FidoTransportProtocol> transports;
+    if (!preselected_credential->transports.empty()) {
+      transports = preselected_credential->transports;
+    } else if (preselected_credential->source ==
+               device::AuthenticatorType::kPhone) {
+      transports = {FidoTransportProtocol::kHybrid};
+    } else {
+      transports = {FidoTransportProtocol::kInternal};
+    }
     specialized_request.allow_list = {PublicKeyCredentialDescriptor(
         CredentialType::kPublicKey, preselected_credential->cred_id,
-        {preselected_credential->source == device::AuthenticatorType::kPhone
-             ? FidoTransportProtocol::kHybrid
-             : FidoTransportProtocol::kInternal})};
+        std::move(transports))};
   }
   return specialized_request;
 }

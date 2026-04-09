@@ -626,7 +626,10 @@ HRESULT FakeWinWebAuthnApi::GetPlatformCredentialList(
         .pwszDisplayName = base::as_wcstr(credential->user_display_name),
     };
     credential->details = {
-        .dwVersion = WEBAUTHN_CREDENTIAL_DETAILS_CURRENT_VERSION,
+        .dwVersion =
+            static_cast<DWORD>(version_ >= WEBAUTHN_API_VERSION_9
+                                   ? WEBAUTHN_CREDENTIAL_DETAILS_VERSION_4
+                                   : WEBAUTHN_CREDENTIAL_DETAILS_VERSION_3),
         .cbCredentialID = static_cast<DWORD>(credential->credential_id.size()),
         .pbCredentialID = credential->credential_id.data(),
         .pRpInformation = &credential->rp,
@@ -637,6 +640,10 @@ HRESULT FakeWinWebAuthnApi::GetPlatformCredentialList(
                 ? base::as_wcstr(*credential->provider_name)
                 : nullptr,
     };
+    if (version_ >= WEBAUTHN_API_VERSION_9) {
+      credential->details.dwTransports =
+          WEBAUTHN_CTAP_TRANSPORT_INTERNAL | WEBAUTHN_CTAP_TRANSPORT_HYBRID;
+    }
     credential_list->win_credentials.push_back(&credential->details);
     credential_list->credentials.push_back(std::move(credential));
   }
