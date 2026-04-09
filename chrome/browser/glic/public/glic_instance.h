@@ -122,6 +122,12 @@ class GlicInstance : public glic_instance_internal::UiDelegate {
 
   virtual GlicInstanceMetrics* instance_metrics() = 0;
 
+  // Metrics springboard for selection area changed.
+  // TODO(b/500385503): Figure out what to do here. This is exposed for now
+  // given that GlicInstanceMetrics can't be used outside of glic
+  // implementation.
+  virtual void OnSelectionAreasChanged(int count) = 0;
+
   virtual void BindTabForTesting(tabs::TabInterface* tab) = 0;
 };
 

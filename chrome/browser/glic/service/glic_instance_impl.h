@@ -231,6 +231,7 @@ class GlicInstanceImpl : public GlicInstance,
   glic::GlicInstanceMetrics* instance_metrics() override;
   glic::GlicInstanceMetricsBackwardsCompatibility&
   instance_metrics_backwards_compatibility() override;
+  void OnSelectionAreasChanged(int count) override;
 
   // GlicUiEmbedder::Delegate:
   void OnEmbedderWindowActivationChanged(bool has_focus) override;
