@@ -17,27 +17,27 @@
     {
         "name": "annotation",
         "group": "androidx.annotation",
-        "version": "1.10.0-rc01"
+        "version": "1.10.0"
     },
     {
         "name": "annotation-experimental",
         "group": "androidx.annotation",
-        "version": "1.6.0-rc01"
+        "version": "1.6.0"
     },
     {
         "name": "annotation-jvm",
         "group": "androidx.annotation",
-        "version": "1.10.0-rc01"
+        "version": "1.10.0"
     },
     {
         "name": "appcompat",
         "group": "androidx.appcompat",
-        "version": "1.8.0-SNAPSHOT"
+        "version": "1.8.0-alpha01"
     },
     {
         "name": "appcompat-resources",
         "group": "androidx.appcompat",
-        "version": "1.8.0-SNAPSHOT"
+        "version": "1.8.0-alpha01"
     },
     {
         "name": "appsearch",
@@ -357,7 +357,7 @@
     {
         "name": "core",
         "group": "androidx.core",
-        "version": "1.19.0-SNAPSHOT"
+        "version": "1.19.0-alpha01"
     },
     {
         "name": "core-animation",
@@ -372,7 +372,7 @@
     {
         "name": "core-ktx",
         "group": "androidx.core",
-        "version": "1.19.0-SNAPSHOT"
+        "version": "1.19.0-alpha01"
     },
     {
         "name": "core-pip",
@@ -407,7 +407,7 @@
     {
         "name": "cursoradapter",
         "group": "androidx.cursoradapter",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.0.0"
     },
     {
         "name": "customview",
@@ -832,7 +832,7 @@
     {
         "name": "media",
         "group": "androidx.media",
-        "version": "1.8.0-SNAPSHOT"
+        "version": "1.8.0-alpha01"
     },
     {
         "name": "mediarouter",
@@ -877,12 +877,12 @@
     {
         "name": "navigationevent",
         "group": "androidx.navigationevent",
-        "version": "1.1.0-beta01"
+        "version": "1.1.0-rc01"
     },
     {
         "name": "navigationevent-android",
         "group": "androidx.navigationevent",
-        "version": "1.1.0-beta01"
+        "version": "1.1.0-rc01"
     },
     {
         "name": "navigationevent-compose",
@@ -982,7 +982,7 @@
     {
         "name": "resourceinspection-annotation",
         "group": "androidx.resourceinspection",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.0.1"
     },
     {
         "name": "room-common",
@@ -1142,12 +1142,12 @@
     {
         "name": "tracing",
         "group": "androidx.tracing",
-        "version": "2.0.0-alpha04"
+        "version": "2.0.0-alpha05"
     },
     {
         "name": "tracing-android",
         "group": "androidx.tracing",
-        "version": "2.0.0-alpha04"
+        "version": "2.0.0-alpha05"
     },
     {
         "name": "tracing-ktx",
