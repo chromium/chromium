@@ -62,12 +62,21 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
 
   struct SmallObject {
     using TypeTag = SmallObject*;
+    static constexpr bool IsAligned() { return false; }
     char c[42];
   };
   CHECK_LT(sizeof(SmallObject), kObjectSizeThresholdInBytes);
 
+  struct alignas(64) AlignedSmallObject {
+    using TypeTag = AlignedSmallObject*;
+    static constexpr bool IsAligned() { return true; }
+    char c[1];
+  };
+  CHECK_LT(sizeof(AlignedSmallObject), kObjectSizeThresholdInBytes);
+
   struct LargeObject {
     using TypeTag = LargeObject*;
+    static constexpr bool IsAligned() { return false; }
     char c[1234];
   };
   CHECK_GT(sizeof(LargeObject), kObjectSizeThresholdInBytes);
@@ -92,11 +101,45 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
     return nullptr;
   };
 
+  auto test_usable_size_and_object_size = []<typename ObjectType>(
+                                              ObjectType* object) {
+    uint64_t word = *reinterpret_cast<uint64_t*>(object);
+    size_t usable_size = (~word & 0x0000FFFE00000000u) >> 32;
+    size_t object_size = (~word & 0x00000000FFFF0000u) >> 16;
+    bool is_aligned = ~word & 0x0000000100000000u;
+    partition_alloc::internal::UntaggedSlotStart slot_start =
+        partition_alloc::internal::SlotStart::Unchecked(object).Untag();
+    partition_alloc::internal::SlotSpanMetadata* slot_span =
+        partition_alloc::internal::SlotSpanMetadata::FromSlotStart(slot_start);
+    partition_alloc::PartitionRoot* root =
+        partition_alloc::PartitionRoot::FromSlotSpanMetadata(slot_span);
+    EXPECT_EQ(usable_size, root->GetSlotUsableSize(slot_span));
+    if (object_size) {
+      EXPECT_EQ(object_size, sizeof *object);
+    }
+    // Operator delete with alignment is currently guarded with
+    // SHIM_SUPPORTS_SIZED_DEALLOC.
+#if PA_BUILDFLAG(SHIM_SUPPORTS_SIZED_DEALLOC)
+    EXPECT_EQ(is_aligned, ObjectType::IsAligned());
+#else
+    EXPECT_FALSE(is_aligned);
+#endif  // PA_BUILDFLAG(SHIM_SUPPORTS_SIZED_DEALLOC)
+  };
+
   SmallObject* small_object =
       try_to_quarantine(small_quarantine, SmallObject::TypeTag());
   EXPECT_TRUE(small_object);
   EXPECT_TRUE(small_quarantine.IsQuarantinedForTesting(small_object));
   EXPECT_FALSE(large_quarantine.IsQuarantinedForTesting(small_object));
+  test_usable_size_and_object_size(small_object);
+  small_quarantine.Purge();
+
+  AlignedSmallObject* aligned_small_object =
+      try_to_quarantine(small_quarantine, AlignedSmallObject::TypeTag());
+  EXPECT_TRUE(aligned_small_object);
+  EXPECT_TRUE(small_quarantine.IsQuarantinedForTesting(aligned_small_object));
+  EXPECT_FALSE(large_quarantine.IsQuarantinedForTesting(aligned_small_object));
+  test_usable_size_and_object_size(aligned_small_object);
   small_quarantine.Purge();
 
   LargeObject* large_object =
@@ -104,6 +147,7 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
   EXPECT_TRUE(large_object);
   EXPECT_FALSE(small_quarantine.IsQuarantinedForTesting(large_object));
   EXPECT_TRUE(large_quarantine.IsQuarantinedForTesting(large_object));
+  test_usable_size_and_object_size(large_object);
   large_quarantine.Purge();
 
   return ::testing::Test::HasFailure() ? kFailure : kSuccess;
