@@ -362,7 +362,11 @@ TEST_P(ScrollToolJavascriptTest, Scroll_NotScrollable_Fails) {
       node_id, ScrollActionFields{static_cast<int>(ScrollAction::DOWN), 50});
 
   EXPECT_FALSE([result[@"success"] boolValue]);
-  EXPECT_NSEQ(result[@"message"], @"Element is not scrollable.");
+  if (GetParam() == CallType::kByCoordinate) {
+    EXPECT_NSEQ(result[@"message"], @"Element has no scrollable ancestor.");
+  } else {
+    EXPECT_NSEQ(result[@"message"], @"Element is not scrollable.");
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(,

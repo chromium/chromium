@@ -94,6 +94,39 @@ export function isScrollable(
   }
 }
 
+/**
+ * Finds the first scrollable ancestor of an element in a given direction.
+ *
+ * This behavior is mirrored from ScrollTool::Validate on desktop linked below:
+ * https://source.chromium.org/chromium/chromium/src/+/main:chrome/renderer/actor/scroll_tool.cc;l=134-173;drc=06d06050f1a98a6ce06cc1dc4470eebaf5a81990
+ *
+ * @param element The element to check.
+ * @param direction The scroll direction.
+ * @return The first scrollable ancestor, or null if none found.
+ */
+function findScrollableAncestor(
+    element: Element, direction: ScrollDirection): Element|null {
+  let current: Node|null = element as Node;
+  while (current) {
+    if (current.nodeType === Node.DOCUMENT_NODE) {
+      const scrollingElement = document.scrollingElement;
+      if (scrollingElement && isScrollable(scrollingElement, direction)) {
+        return scrollingElement;
+      }
+    }
+
+    if (current instanceof Element && isScrollable(current, direction)) {
+      return current;
+    }
+
+    if (current instanceof ShadowRoot) {
+      current = current.host;
+    } else {
+      current = current.parentNode;
+    }
+  }
+  return null;
+}
 
 /**
  * Scrolls an element into view.
@@ -120,10 +153,8 @@ function scrollElement(target: Element, scrollParams?: ScrollParams):
   if (!scrollParams) {
     return scrollElementIntoView(target);
   }
-
-  // The desktop ScrollTool treats targets that are not scrollable as invalid.
-  // See
-  // https://source.chromium.org/chromium/chromium/src/+/main:chrome/renderer/actor/scroll_tool.cc;l=34;drc=06d06050f1a98a6ce06cc1dc4470eebaf5a81990
+  // The desktop ScrollTool first validates that the target is scrollable.
+  // https://source.chromium.org/chromium/chromium/src/+/main:chrome/renderer/actor/scroll_tool.cc;l=134-196;drc=06d06050f1a98a6ce06cc1dc4470eebaf5a81990
   if (!isScrollable(target, scrollParams.direction)) {
     return {success: false, message: 'Element is not scrollable.'};
   }
@@ -177,7 +208,7 @@ function scrollByCoordinate(
   success: boolean,
   message: string,
 } {
-  const {element} = getElementFromPoint(x, y, pixelType);
+  let {element} = getElementFromPoint(x, y, pixelType);
   if (!element) {
     return {
       success: false,
@@ -191,6 +222,19 @@ function scrollByCoordinate(
       direction: getScrollDirection(direction),
       distance,
     };
+
+    // When the desktop ScrollTool does a directional scroll of an element
+    // targeted by coordinate, it checks if it has a scrollable ancestor and
+    // uses that for scrolling.
+    // https://source.chromium.org/chromium/chromium/src/+/main:chrome/renderer/actor/scroll_tool.cc;l=34;drc=06d06050f1a98a6ce06cc1dc4470eebaf5a81990
+    const scrollableElement = findScrollableAncestor(element, direction);
+    if (!scrollableElement) {
+      return {
+        success: false,
+        message: 'Element has no scrollable ancestor.',
+      };
+    }
+    element = scrollableElement;
   }
 
   return scrollElement(element, scrollParams);
