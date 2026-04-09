@@ -2018,7 +2018,10 @@ NavigationRequest::NavigationRequest(
     // TODO(acolwell): Move this below so it can be enforced on all paths.
     // This requires auditing same-document and other navigations that don't
     // have |from_begin_navigation_| or |entry| set.
-    CHECK(!RequiresInitiatorBasedSourceSiteInstance() || source_site_instance_);
+    // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK once
+    // we are sure this isn't hit.
+    DCHECK(!RequiresInitiatorBasedSourceSiteInstance() ||
+           source_site_instance_);
   }
 
   // Let the NTP override the navigation params and pretend that this is a
@@ -9573,7 +9576,9 @@ NavigationRequest::MakeDidCommitProvisionalLoadParamsForActivation() {
 
   CHECK_EQ(params->post_id, -1);
   params->navigation_token = commit_params().navigation_token;
-  CHECK_EQ(params->url, common_params().url);
+  // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK once
+  // we are sure this isn't hit.
+  DCHECK_EQ(params->url, common_params().url);
   params->should_update_history = true;
   CHECK_EQ(params->method, common_params().method);
   params->item_sequence_number = frame_entry_item_sequence_number_;

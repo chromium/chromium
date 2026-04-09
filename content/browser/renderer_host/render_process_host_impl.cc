@@ -1653,7 +1653,9 @@ RenderProcessHostImpl::RenderProcessHostImpl(
           perfetto::NamedTrack::FromPointer("RenderProcessHostImpl",
                                             this,
                                             GetChildProcessTracingTrack(id_))) {
-  CHECK(!browser_context->ShutdownStarted());
+  // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK once
+  // we are sure this isn't hit.
+  DCHECK(!browser_context->ShutdownStarted());
   TRACE_EVENT("shutdown", "RenderProcessHostImpl",
               ChromeTrackEvent::kRenderProcessHost, *this);
   TRACE_EVENT_BEGIN("shutdown", "Browser.RenderProcessHostImpl", tracing_track_,
