@@ -6242,9 +6242,9 @@
     },
     {
       // If enabled, form controls will only render the OS accent color in a
-      // web app context.
+      // web app context for the initial browser profile.
       name: "WebAppScopeSystemAccentColor",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "WebAppTabStrip",
