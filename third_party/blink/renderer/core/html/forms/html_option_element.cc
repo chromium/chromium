@@ -369,8 +369,7 @@ void HTMLOptionElement::SetSelectedState(bool selected,
     }
   }
 
-  if (RuntimeEnabledFeatures::OptionMutationObserverImprovementEnabled() &&
-      !skip_mutation_observer_update) {
+  if (!skip_mutation_observer_update) {
     UpdateMutationObserver(/*in_style_recalc=*/false);
   }
 }
@@ -429,13 +428,6 @@ void HTMLOptionElement::UpdateMutationObserver(bool in_style_recalc) {
 bool HTMLOptionElement::NeedsMutationObserver() {
   if (!was_element_inserted_) {
     return false;
-  }
-
-  // This flag check runs after was_element_inserted_ in order to match the
-  // behavior before the flag was added, which was that a MutationObserver is
-  // always registered when an element is inserted.
-  if (!RuntimeEnabledFeatures::OptionMutationObserverImprovementEnabled()) {
-    return true;
   }
 
   HTMLSelectElement* select = OwnerSelectElement();

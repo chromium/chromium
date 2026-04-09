@@ -124,8 +124,6 @@ TEST_F(HTMLOptionElementTest, DescendantOptionsInNestedSelects) {
 }
 
 TEST_F(HTMLOptionElementTest, MutationObserver) {
-  ASSERT_TRUE(
-      RuntimeEnabledFeatures::OptionMutationObserverImprovementEnabled());
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       .custom, .custom::picker(select) {

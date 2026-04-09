@@ -645,13 +645,10 @@ void MenuListSelectType::ManuallyAssignSlots() {
   }
 
   CHECK(button_slot_);
-  if (RuntimeEnabledFeatures::OptionMutationObserverImprovementEnabled()) {
-    bool had_slotted_button = !button_slot_->ManuallyAssignedNodes().empty();
-    if (select_->last_on_change_option_ &&
-        had_slotted_button != !!first_button) {
-      select_->last_on_change_option_->UpdateMutationObserver(
-          /*in_style_recalc=*/true);
-    }
+  bool had_slotted_button = !button_slot_->ManuallyAssignedNodes().empty();
+  if (select_->last_on_change_option_ && had_slotted_button != !!first_button) {
+    select_->last_on_change_option_->UpdateMutationObserver(
+        /*in_style_recalc=*/true);
   }
   button_slot_->Assign(first_button);
   popover_options_slot_->Assign(all_children_except_first_button);
@@ -971,8 +968,7 @@ void MenuListSelectType::DidRecalcStyle(const StyleRecalcChange change) {
       // time that the size and multiple attributes are changed.
       select_->SetNeedsReattachLayoutTree();
 
-      if (RuntimeEnabledFeatures::OptionMutationObserverImprovementEnabled() &&
-          select_->last_on_change_option_) {
+      if (select_->last_on_change_option_) {
         select_->last_on_change_option_->UpdateMutationObserver(
             /*in_style_recalc=*/true);
       }
@@ -1954,9 +1950,6 @@ void ListBoxSelectType::DidRecalcStyle(const StyleRecalcChange) {
 }
 
 void ListBoxSelectType::UpdateOptionMutationObservers(bool in_style_recalc) {
-  if (!RuntimeEnabledFeatures::OptionMutationObserverImprovementEnabled()) {
-    return;
-  }
   bool needs_update = false;
   if (auto* style = select_->GetComputedStyle()) {
     AppearanceState new_state =
