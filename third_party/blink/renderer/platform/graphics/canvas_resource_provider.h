@@ -717,9 +717,8 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   // will occur on it. The caller should wait on `internal_access_sync_token`
   // before writing the contents. When the external write is complete, the
   // caller should call `EndExternalWrite()`.
-  scoped_refptr<gpu::ClientSharedImage> BeginExternalWrite(
-      gpu::SyncToken& internal_access_sync_token,
-      bool is_overwrite);
+  scoped_refptr<gpu::ClientSharedImage> BeginExternalOverwrite(
+      gpu::SyncToken& internal_access_sync_token);
 
   // Copies the contents of the passed-in SharedImage at `copy_rect` into this
   // instance's SharedImage. Waits on `ready_sync_token` before copying; pass

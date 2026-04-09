@@ -426,8 +426,7 @@ ExternalTexture CreateExternalTexture(
     // `use_copy_to_shared_image` is true. Below we are going to copy the
     // contents of that visible rect into the resource provider's SharedImage,
     // completely overwriting the SharedImage.
-    auto client_si = resource_provider->BeginExternalWrite(
-        sync_token, /*is_overwrite=*/true);
+    auto client_si = resource_provider->BeginExternalOverwrite(sync_token);
 
     // The returned sync token is from the SharedGpuContext.
     sync_token = video_renderer->CopyVideoFrameToSharedImage(
