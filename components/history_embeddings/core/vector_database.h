@@ -140,8 +140,6 @@ struct UrlScore {
 
 // A single embedding and its associated metadata.
 struct PassageEmbedding {
-  bool operator==(const PassageEmbedding&) const;
-
   passage_embeddings::Embedding embedding;
   size_t word_count = 0;
 };
@@ -155,8 +153,6 @@ struct UrlData {
   UrlData& operator=(const UrlData&);
   UrlData& operator=(UrlData&&);
   ~UrlData();
-
-  bool operator==(const UrlData&) const;
 
   // Finds score of embedding nearest to query, also taking passages
   // into consideration since some should be skipped. The passages

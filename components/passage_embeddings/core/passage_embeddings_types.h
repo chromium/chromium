@@ -123,7 +123,6 @@ class Embedding {
   Embedding& operator=(const Embedding&);
   Embedding(Embedding&&);
   Embedding& operator=(Embedding&&);
-  bool operator==(const Embedding&) const;
 
   // The number of elements in the data vector.
   size_t Dimensions() const;

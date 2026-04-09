@@ -43,6 +43,7 @@
 #include "components/page_content_annotations/core/test_page_content_annotator.h"
 #include "components/passage_embeddings/core/passage_embeddings_test_util.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
@@ -50,6 +51,10 @@ namespace history_embeddings {
 
 using passage_embeddings::ComputeEmbeddingsStatus;
 using passage_embeddings::Embedding;
+using testing::ElementsAreArray;
+using testing::Eq;
+using testing::ExplainMatchResult;
+using testing::Optional;
 
 namespace {
 
@@ -58,6 +63,16 @@ base::FilePath GetTestFilePath(const std::string& file_name) {
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir);
   return test_data_dir.AppendASCII("components/test/data/history_embeddings")
       .AppendASCII(file_name);
+}
+
+MATCHER_P2(PassageEmbeddingEq,
+           expected_embedding_data,
+           expected_word_count,
+           "") {
+  return ExplainMatchResult(ElementsAreArray(expected_embedding_data),
+                            arg.embedding.GetData(), result_listener) &&
+         ExplainMatchResult(Eq(expected_word_count), arg.word_count,
+                            result_listener);
 }
 
 }  // namespace
@@ -937,10 +952,10 @@ TEST_F(HistoryEmbeddingsServiceTest, GetUrlData) {
 
     // Note the word count gets set when storing the embedding with its passage.
     const auto& embeddings = url_data->passage_embeddings;
-    EXPECT_EQ(embeddings[0],
-              PassageEmbedding(Embedding(std::vector<float>(768, 1.0f)), 3));
-    EXPECT_EQ(embeddings[1],
-              PassageEmbedding(Embedding(std::vector<float>(768, 1.0f)), 3));
+    EXPECT_THAT(embeddings[0], Optional(PassageEmbeddingEq(
+                                   std::vector<float>(768, 1.0f), 3u)));
+    EXPECT_THAT(embeddings[1], Optional(PassageEmbeddingEq(
+                                   std::vector<float>(768, 1.0f), 3u)));
   }
   {
     base::test::TestFuture<std::optional<UrlData>> future;
@@ -991,10 +1006,10 @@ TEST_F(HistoryEmbeddingsServiceTest, GetUrlDataInTimeRange) {
       EXPECT_EQ(passages[0], "test passage 7");
       EXPECT_EQ(passages[1], "test passage 8");
       const auto& embeddings = url_data.passage_embeddings;
-      EXPECT_EQ(embeddings[0],
-                PassageEmbedding(Embedding(std::vector<float>(768, 1.0f)), 3));
-      EXPECT_EQ(embeddings[1],
-                PassageEmbedding(Embedding(std::vector<float>(768, 1.0f)), 3));
+      EXPECT_THAT(embeddings[0], Optional(PassageEmbeddingEq(
+                                     std::vector<float>(768, 1.0f), 3u)));
+      EXPECT_THAT(embeddings[1], Optional(PassageEmbeddingEq(
+                                     std::vector<float>(768, 1.0f), 3u)));
     }
     {
       // The last is the latest due to ordering by visit_time.
@@ -1009,10 +1024,10 @@ TEST_F(HistoryEmbeddingsServiceTest, GetUrlDataInTimeRange) {
       EXPECT_EQ(passages[0], "test passage 3");
       EXPECT_EQ(passages[1], "test passage 4");
       const auto& embeddings = url_data.passage_embeddings;
-      EXPECT_EQ(embeddings[0],
-                PassageEmbedding(Embedding(std::vector<float>(768, 1.0f)), 3));
-      EXPECT_EQ(embeddings[1],
-                PassageEmbedding(Embedding(std::vector<float>(768, 1.0f)), 3));
+      EXPECT_THAT(embeddings[0], Optional(PassageEmbeddingEq(
+                                     std::vector<float>(768, 1.0f), 3u)));
+      EXPECT_THAT(embeddings[1], Optional(PassageEmbeddingEq(
+                                     std::vector<float>(768, 1.0f), 3u)));
     }
   }
   {

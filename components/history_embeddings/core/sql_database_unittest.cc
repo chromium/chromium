@@ -19,13 +19,25 @@
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace history_embeddings {
 
 using passage_embeddings::Embedding;
+using testing::ElementsAreArray;
+using testing::Eq;
+using testing::ExplainMatchResult;
+using testing::Optional;
 
 namespace {
+
+MATCHER_P(PassageEmbeddingEq, expected, "") {
+  return ExplainMatchResult(Eq(expected.word_count), arg.word_count,
+                            result_listener) &&
+         ExplainMatchResult(ElementsAreArray(expected.embedding.GetData()),
+                            arg.embedding.GetData(), result_listener);
+}
 
 constexpr int64_t kEmbeddingsVersion = 1;
 constexpr size_t kEmbeddingsSize = 768ul;
@@ -88,6 +100,27 @@ class HistoryEmbeddingsSqlDatabaseTest : public testing::Test {
       count++;
     }
     return count;
+  }
+
+  void ExpectUrlDataEqual(const UrlData& a, const UrlData& b) {
+    EXPECT_EQ(a.url_id, b.url_id);
+    EXPECT_EQ(a.visit_id, b.visit_id);
+    EXPECT_EQ(a.visit_time, b.visit_time);
+
+    ASSERT_EQ(a.passage_embeddings.size(), b.passage_embeddings.size());
+    for (size_t i = 0; i < a.passage_embeddings.size(); ++i) {
+      if (b.passage_embeddings[i].has_value()) {
+        EXPECT_THAT(a.passage_embeddings[i],
+                    Optional(PassageEmbeddingEq(*b.passage_embeddings[i])));
+      } else {
+        EXPECT_EQ(a.passage_embeddings[i], std::nullopt);
+      }
+    }
+
+    std::string a_passages, b_passages;
+    ASSERT_TRUE(a.passages.SerializeToString(&a_passages));
+    ASSERT_TRUE(b.passages.SerializeToString(&b_passages));
+    EXPECT_EQ(a_passages, b_passages);
   }
 
  protected:
@@ -168,7 +201,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, WriteCloseAndThenReadUrlData) {
     for (const UrlData& url_data : url_datas) {
       const UrlData* read_url_data = iterator->Next();
       EXPECT_TRUE(read_url_data);
-      EXPECT_EQ(*read_url_data, url_data);
+      ExpectUrlDataEqual(*read_url_data, url_data);
     }
     EXPECT_FALSE(iterator->Next());
   }

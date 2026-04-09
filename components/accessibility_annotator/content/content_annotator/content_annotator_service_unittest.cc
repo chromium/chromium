@@ -49,9 +49,16 @@
 namespace accessibility_annotator {
 
 using ::testing::_;
+using ::testing::ElementsAreArray;
+using ::testing::ExplainMatchResult;
 using ::testing::Field;
 using ::testing::Optional;
 using ::testing::Return;
+
+MATCHER_P(EmbeddingDataEq, expected_data, "") {
+  return ExplainMatchResult(ElementsAreArray(expected_data), arg.GetData(),
+                            result_listener);
+}
 
 class ContentAnnotatorFeatureList {
  public:
@@ -298,22 +305,22 @@ TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_TwoUrlsOnlyOneCompletes) {
   apc2->data.mutable_main_frame_data()->set_title("Title 2");
 
   // Expect Classify to be called only for URL 2 with correct data
-  EXPECT_CALL(
-      *mock_classifier_,
-      Classify(testing::AllOf(
-          Field(&ContentClassificationInput::url, url2),
-          Field(&ContentClassificationInput::sensitivity_score,
-                Optional(testing::FloatEq(0.7f))),
-          Field(&ContentClassificationInput::navigation_timestamp,
-                Optional(nav_time2)),
-          Field(&ContentClassificationInput::adopted_language,
-                Optional(std::string("fr"))),
-          Field(&ContentClassificationInput::page_title,
-                Optional(std::string("Title 2"))),
-          Field(&ContentClassificationInput::annotated_page_content,
-                testing::Eq(apc2)),
-          Field(&ContentClassificationInput::page_title_embedding,
-                Optional(passage_embeddings::Embedding({1.0f, 2.0f, 3.0f}))))))
+  EXPECT_CALL(*mock_classifier_,
+              Classify(testing::AllOf(
+                  Field(&ContentClassificationInput::url, url2),
+                  Field(&ContentClassificationInput::sensitivity_score,
+                        Optional(testing::FloatEq(0.7f))),
+                  Field(&ContentClassificationInput::navigation_timestamp,
+                        Optional(nav_time2)),
+                  Field(&ContentClassificationInput::adopted_language,
+                        Optional(std::string("fr"))),
+                  Field(&ContentClassificationInput::page_title,
+                        Optional(std::string("Title 2"))),
+                  Field(&ContentClassificationInput::annotated_page_content,
+                        testing::Eq(apc2)),
+                  Field(&ContentClassificationInput::page_title_embedding,
+                        Optional(EmbeddingDataEq(
+                            std::vector<float>{1.0f, 2.0f, 3.0f}))))))
       .WillOnce(Return(ContentClassificationResult()));
 
   // URL 1 shouldn't trigger classification because it's incomplete.

@@ -122,10 +122,6 @@ SearchInfo::~SearchInfo() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool PassageEmbedding::operator==(const PassageEmbedding& other) const {
-  return word_count == other.word_count && embedding == other.embedding;
-}
-
 UrlData::UrlData(history::URLID url_id,
                  history::VisitID visit_id,
                  base::Time visit_time)
@@ -135,19 +131,6 @@ UrlData::UrlData(UrlData&&) = default;
 UrlData& UrlData::operator=(const UrlData&) = default;
 UrlData& UrlData::operator=(UrlData&&) = default;
 UrlData::~UrlData() = default;
-
-bool UrlData::operator==(const UrlData& other) const {
-  if (other.url_id == url_id && other.visit_id == visit_id &&
-      other.visit_time == visit_time &&
-      passage_embeddings == other.passage_embeddings) {
-    std::string a, b;
-    if (other.passages.SerializeToString(&a) &&
-        passages.SerializeToString(&b)) {
-      return a == b;
-    }
-  }
-  return false;
-}
 
 UrlScore UrlData::BestScoreWith(
     SearchInfo& search_info,

@@ -20,7 +20,6 @@ Embedding::Embedding(const Embedding&) = default;
 Embedding& Embedding::operator=(const Embedding&) = default;
 Embedding::Embedding(Embedding&&) = default;
 Embedding& Embedding::operator=(Embedding&&) = default;
-bool Embedding::operator==(const Embedding&) const = default;
 
 size_t Embedding::Dimensions() const {
   return data_.size();
