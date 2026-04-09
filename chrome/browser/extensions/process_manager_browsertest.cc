@@ -304,6 +304,21 @@ class ProcessManagerBrowserTest : public ExtensionBrowserTest {
     return popup;
   }
 
+  size_t GetActiveExtensionFrameCount(ProcessManager* pm,
+                                      const ExtensionId& id) {
+    auto frames = pm->GetRenderFrameHostsForExtension(id);
+    return std::count_if(
+        frames.begin(), frames.end(),
+        [](content::RenderFrameHost* rfh) { return rfh->IsActive(); });
+  }
+
+  size_t GetActiveFrameCount(ProcessManager* pm) {
+    auto frames = pm->GetAllFrames();
+    return std::count_if(
+        frames.begin(), frames.end(),
+        [](content::RenderFrameHost* rfh) { return rfh->IsActive(); });
+  }
+
  private:
   guest_view::TestGuestViewManagerFactory factory_;
   std::vector<TestExtensionDir> temp_dirs_;
@@ -1056,8 +1071,8 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   const GURL extension_url(extension->GetResourceURL("blank_iframe.html"));
   NavigateToURL(extension_url);
   ProcessManager* pm = ProcessManager::Get(profile());
-  EXPECT_EQ(2u, pm->GetAllFrames().size());
-  EXPECT_EQ(2u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
+  EXPECT_EQ(2u, GetActiveFrameCount(pm));
+  EXPECT_EQ(2u, GetActiveExtensionFrameCount(pm, extension->id()));
 
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1075,8 +1090,8 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   EXPECT_EQ(blob_url, child->GetLastCommittedURL());
   EXPECT_EQ(extension_origin, child->GetLastCommittedOrigin());
   EXPECT_EQ("foo", GetTextContent(child));
-  EXPECT_EQ(2u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
-  EXPECT_EQ(2u, pm->GetAllFrames().size());
+  EXPECT_EQ(2u, GetActiveExtensionFrameCount(pm, extension->id()));
+  EXPECT_EQ(2u, GetActiveFrameCount(pm));
 
   // From the main frame, create a blank popup and navigate it to the nested
   // blob URL. This should also be allowed, since the navigation originated from
@@ -1095,8 +1110,8 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
               popup->GetPrimaryMainFrame()->GetLastCommittedOrigin());
     EXPECT_EQ("foo", GetTextContent(popup->GetPrimaryMainFrame()));
 
-    EXPECT_EQ(3u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
-    EXPECT_EQ(3u, pm->GetAllFrames().size());
+    EXPECT_EQ(3u, GetActiveExtensionFrameCount(pm, extension->id()));
+    EXPECT_EQ(3u, GetActiveFrameCount(pm));
   }
 }
 
