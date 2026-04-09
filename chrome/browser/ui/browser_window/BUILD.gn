@@ -21,7 +21,10 @@ source_set("browser_window") {
     "//content/public/browser",
     "//ui/gfx",
   ]
-  deps = [ "//ui/base/unowned_user_data" ]
+  deps = [
+    "//components/sessions:session_id",
+    "//ui/base/unowned_user_data",
+  ]
 
   if (!is_android) {
     sources += [

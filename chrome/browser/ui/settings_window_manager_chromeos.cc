@@ -21,11 +21,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -249,7 +249,8 @@ BrowserWindowInterface* SettingsWindowManager::FindBrowserForProfile(
 
   auto iter = settings_session_map_.find(profile);
   if (iter != settings_session_map_.end()) {
-    return chrome::FindBrowserWithID(iter->second);
+    return GlobalBrowserCollection::GetInstance()->FindBrowserWithID(
+        iter->second);
   }
 
   return nullptr;

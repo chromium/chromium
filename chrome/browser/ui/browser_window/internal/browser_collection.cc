@@ -95,6 +95,21 @@ BrowserWindowInterface* BrowserCollection::FindBrowserWithWindow(
   return found;
 }
 
+BrowserWindowInterface* BrowserCollection::FindBrowserWithID(
+    SessionID desired_id) {
+  BrowserWindowInterface* found = nullptr;
+  ForEach(
+      [&found, desired_id](BrowserWindowInterface* browser) {
+        if (browser->GetSessionID() == desired_id) {
+          found = browser;
+          return false;
+        }
+        return true;
+      },
+      Order::kActivation);
+  return found;
+}
+
 void BrowserCollection::AddObserver(BrowserCollectionObserver* observer) {
   observers_.AddObserver(observer);
 }

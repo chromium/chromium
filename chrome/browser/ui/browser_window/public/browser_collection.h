@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
+#include "components/sessions/core/session_id.h"
 #include "ui/gfx/native_ui_types.h"
 
 class BrowserCollectionObserver;
@@ -62,6 +63,10 @@ class BrowserCollection {
   // Returns the browser represented by `window`. Returns nullptr if no such
   // browser currently exists in this collection.
   BrowserWindowInterface* FindBrowserWithWindow(gfx::NativeWindow window);
+
+  // Finds a browser by its session ID. Returns nullptr if no browser with the
+  // given ID exists in this collection.
+  BrowserWindowInterface* FindBrowserWithID(SessionID desired_id);
 
  protected:
   BrowserCollection();

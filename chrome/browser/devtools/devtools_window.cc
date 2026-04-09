@@ -116,6 +116,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"  // nogncheck crbug.com/40147906
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #endif
@@ -525,7 +526,8 @@ DevToolsWindow::~DevToolsWindow() {
   // returns to the window that opened DevTools (e.g., a PWA window).
   if (!is_docked_ && inspected_browser_session_id_.is_valid()) {
     BrowserWindowInterface* const browser =
-        chrome::FindBrowserWithID(inspected_browser_session_id_);
+        GlobalBrowserCollection::GetInstance()->FindBrowserWithID(
+            inspected_browser_session_id_);
     if (browser && browser->GetWindow()) {
       browser->GetWindow()->Activate();
     }
