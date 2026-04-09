@@ -420,8 +420,14 @@ ExternalTexture CreateExternalTexture(
   scoped_refptr<CanvasResource> canvas_resource;
   if (use_copy_to_shared_image) {
     gpu::SyncToken sync_token;
+
+    // The size of the resource provider here is the VideoFrame's natural size,
+    // which is guaranteed to be the same size as its visible rect since
+    // `use_copy_to_shared_image` is true. Below we are going to copy the
+    // contents of that visible rect into the resource provider's SharedImage,
+    // completely overwriting the SharedImage.
     auto client_si = resource_provider->BeginExternalWrite(
-        sync_token, /*is_overwrite=*/false);
+        sync_token, /*is_overwrite=*/true);
 
     // The returned sync token is from the SharedGpuContext.
     sync_token = video_renderer->CopyVideoFrameToSharedImage(
