@@ -240,8 +240,11 @@ class ChromeComposeClientBrowserTest : public InProcessBrowserTest {
         msbb_state);
   }
 
+  // Sets up mock model execution. `times` specifies the expected number of
+  // calls. Default is 1, which is functionally equivalent to `WillOnce()`
+  // because the action is identical for all calls.
   void SetupMockModelExecution(
-      bool repeatedly = false,
+      int times = 1,
       const std::string& response_output = "Cucumbers") {
     auto action = testing::WithArg<3>(
         [response_output](
@@ -257,21 +260,28 @@ class ChromeComposeClientBrowserTest : public InProcessBrowserTest {
               /*model_quality_log_entry=*/nullptr);
         });
 
-    if (repeatedly) {
-      EXPECT_CALL(model_executor(),
-                  ExecuteModel(testing::_, testing::_, testing::_, testing::_))
-          .WillRepeatedly(std::move(action));
-    } else {
-      EXPECT_CALL(model_executor(),
-                  ExecuteModel(testing::_, testing::_, testing::_, testing::_))
-          .WillOnce(std::move(action));
-    }
+    EXPECT_CALL(model_executor(),
+                ExecuteModel(testing::_, testing::_, testing::_, testing::_))
+        .Times(times)
+        .WillRepeatedly(std::move(action));
   }
 
   MockOptimizationGuideKeyedService& GetOptimizationGuide() {
     return *static_cast<MockOptimizationGuideKeyedService*>(
         OptimizationGuideKeyedServiceFactory::GetForProfile(
             browser()->profile()));
+  }
+
+  optimization_guide::TestModelQualityLogsUploaderService& logs_uploader() {
+    return *static_cast<
+        optimization_guide::TestModelQualityLogsUploaderService*>(
+        GetOptimizationGuide().GetModelQualityLogsUploaderService());
+  }
+
+  const std::vector<
+      std::unique_ptr<optimization_guide::proto::LogAiDataRequest>>&
+  uploaded_logs() {
+    return logs_uploader().uploaded_logs();
   }
 
   MockSegmentationPlatformService& GetSegmentationPlatformService() {
@@ -495,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
   base::UserActionTester user_action_tester;
   base::ScopedMockElapsedTimersForTest test_timer;
 
-  SetupMockModelExecution(true);
+  SetupMockModelExecution(3);
 
   ShowDialogAndBindMojo();
 
@@ -761,4 +771,76 @@ IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
     histograms.ExpectBucketCount("Compose.OnDevice.Session.EventCounts",
                                  event_type, 0);
   }
+}
+
+// Tests that quality logs are uploaded when a new valid response clears forward
+// state and when the session is destroyed, and that those logs have the
+// expected session IDs attached.
+IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
+                       TestComposeQualitySessionId) {
+  client().SetSessionIdForTest(base::Token(kSessionIdHigh, kSessionIdLow));
+
+  ShowDialogAndBindMojo();
+
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
+  BindComposeFutureToOnResponseReceived(compose_future);
+
+  SetupMockModelExecution(3);
+
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader().WaitForLogUpload(log_uploaded_signal.GetCallback());
+
+  page_handler()->Compose("a user typed one",
+                          compose::mojom::InputMode::kPolish, false);
+  EXPECT_TRUE(compose_future.Wait());
+  // Reset future for second compose call.
+  compose_future.Clear();
+
+  page_handler()->Compose("a user typed two",
+                          compose::mojom::InputMode::kPolish, false);
+  EXPECT_TRUE(compose_future.Wait());
+  // Reset future for third compose call.
+  compose_future.Clear();
+
+  base::test::TestFuture<compose::mojom::ComposeStatePtr> undo_future;
+  // Undo reverts client to the first saved state in the history, with one
+  // forward state resulting from the second compose.
+  page_handler()->Undo(undo_future.GetCallback());
+  EXPECT_TRUE(undo_future.Wait());
+
+  // Third compose should clear the forward state from the second compose and
+  // upload its corresponding quality logs.
+  page_handler()->Compose("a user typed three",
+                          compose::mojom::InputMode::kPolish, false);
+  EXPECT_TRUE(compose_future.Wait());
+
+  EXPECT_TRUE(log_uploaded_signal.Wait());
+  ASSERT_EQ(1u, uploaded_logs().size());
+  const auto& session_id = uploaded_logs()[0]->compose().quality().session_id();
+  EXPECT_EQ(kSessionIdHigh, session_id.high());
+  EXPECT_EQ(kSessionIdLow, session_id.low());
+
+  // Wait for two log uploads.
+  log_uploaded_signal.Clear();
+  logs_uploader().WaitForLogUpload(
+      log_uploaded_signal.GetCallback().Then(base::BindLambdaForTesting([&]() {
+        EXPECT_TRUE(log_uploaded_signal.WaitAndClear());
+        logs_uploader().WaitForLogUpload(log_uploaded_signal.GetCallback());
+      })));
+
+  client().CloseUI(compose::mojom::CloseReason::kInsertButton);
+
+  EXPECT_TRUE(log_uploaded_signal.Wait());
+  ASSERT_EQ(3u, uploaded_logs().size());
+  const auto& session_id2 =
+      uploaded_logs()[1]->compose().quality().session_id();
+  EXPECT_EQ(kSessionIdHigh, session_id2.high());
+  EXPECT_EQ(kSessionIdLow, session_id2.low());
+  const auto& session_id3 =
+      uploaded_logs()[2]->compose().quality().session_id();
+  EXPECT_EQ(kSessionIdHigh, session_id3.high());
+  EXPECT_EQ(kSessionIdLow, session_id3.low());
+  EXPECT_EQ(
+      optimization_guide::proto::FinalModelStatus::FINAL_MODEL_STATUS_SUCCESS,
+      uploaded_logs()[1]->compose().quality().final_model_status());
 }
