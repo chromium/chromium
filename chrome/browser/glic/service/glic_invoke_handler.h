@@ -62,9 +62,7 @@ class GlicInvokeHandler : public Host::Observer,
   void MaybeWaitForWebClientReady();
   void OnWebClientReady();
   void MaybeWaitForPanelOpen();
-  void OnPanelOpen();
   void MaybeWaitForStableWidth();
-  void OnStateChange(bool is_showing);
   void OnStabilized();
 
   void SendToClient();
@@ -86,7 +84,6 @@ class GlicInvokeHandler : public Host::Observer,
   base::ScopedObservation<Host, Host::Observer> host_observation_{this};
   base::OneShotTimer timeout_timer_;
 
-  base::CallbackListSubscription state_change_subscription_;
   base::OneShotTimer stabilization_timer_;
 
   base::WeakPtrFactory<GlicInvokeHandler> weak_ptr_factory_{this};

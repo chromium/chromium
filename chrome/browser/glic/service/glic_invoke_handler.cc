@@ -93,27 +93,10 @@ void GlicInvokeHandler::OnWebClientReady() {
 
 void GlicInvokeHandler::MaybeWaitForPanelOpen() {
   if (options_.wait_for_panel_open) {
-    if (instance_->IsShowing()) {
-      OnPanelOpen();
-    } else {
-      state_change_subscription_ = instance_->RegisterStateChange(
-          base::BindRepeating(&GlicInvokeHandler::OnStateChange,
-                              weak_ptr_factory_.GetWeakPtr()));
-    }
+    MaybeWaitForStableWidth();
   } else {
     SendToClient();
   }
-}
-
-void GlicInvokeHandler::OnStateChange(bool is_showing) {
-  if (is_showing) {
-    state_change_subscription_ = {};
-    OnPanelOpen();
-  }
-}
-
-void GlicInvokeHandler::OnPanelOpen() {
-  MaybeWaitForStableWidth();
 }
 
 void GlicInvokeHandler::MaybeWaitForStableWidth() {
