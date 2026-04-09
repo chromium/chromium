@@ -86,7 +86,10 @@ import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooksFactory;
 import org.chromium.chrome.modules.readaloud.contentjs.Extractor;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter.Mode;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -154,6 +157,7 @@ public class ReadAloudController
     private final FullscreenManager.Observer mFullscreenObserver;
 
     private final BottomSheetController mBottomSheetController;
+    private final BottomSheetObserver mBottomSheetObserver;
     private final BottomControlsStacker mBottomControlsStacker;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Nullable private ReadAloudReadabilityHooks mReadabilityHooks;
@@ -182,6 +186,10 @@ public class ReadAloudController
     private boolean mIsDestroyed;
     private boolean mIsScreenOnAndUnlocked = true;
     private boolean mKeepScreenOnFlagIsSet;
+    private boolean mIsFullscreen;
+    private boolean mHasBottomSheetThatActsAsBrowserControls;
+    private boolean mHasKeyboardInsets;
+    private boolean mIsInTabSwitcher;
     @Nullable private CallbackController mCallbackController;
 
     @Nullable private List<String> mUrls;
@@ -630,16 +638,36 @@ public class ReadAloudController
                 new FullscreenManager.Observer() {
                     @Override
                     public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
+                        mIsFullscreen = true;
                         maybeHidePlayer();
                     }
 
                     @Override
                     public void onExitFullscreen(Tab tab) {
+                        mIsFullscreen = false;
                         maybeShowPlayer();
                     }
                 };
 
         mFullscreenManager.addObserver(mFullscreenObserver);
+
+        mBottomSheetObserver =
+                new EmptyBottomSheetObserver() {
+                    @Override
+                    public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {
+                        if (newContent == null) {
+                            mHasBottomSheetThatActsAsBrowserControls = false;
+                            maybeShowPlayer();
+                        } else if (newContent.actsAsBrowserControls()) {
+                            mHasBottomSheetThatActsAsBrowserControls = true;
+                            pause();
+                            maybeHidePlayer();
+                        } else {
+                            mHasBottomSheetThatActsAsBrowserControls = false;
+                        }
+                    }
+                };
+        mBottomSheetController.addObserver(mBottomSheetObserver);
     }
 
     private void addLayoutStateObserver(LayoutStateProvider layoutStateProvider) {
@@ -649,6 +677,7 @@ public class ReadAloudController
                     @Override
                     public void onStartedShowing(@LayoutType int layoutType) {
                         if (layoutType == LayoutType.TAB_SWITCHER) {
+                            mIsInTabSwitcher = true;
                             maybeHidePlayer();
                         }
                     }
@@ -656,6 +685,7 @@ public class ReadAloudController
                     @Override
                     public void onFinishedHiding(@LayoutType int layoutType) {
                         if (layoutType == LayoutType.TAB_SWITCHER) {
+                            mIsInTabSwitcher = false;
                             maybeShowPlayer();
                         }
                     }
@@ -1335,6 +1365,7 @@ public class ReadAloudController
         if (mLayoutStateProviderSupplier.get() != null && mLayoutStateObserver != null) {
             mLayoutStateProviderSupplier.get().removeObserver(mLayoutStateObserver);
         }
+        mBottomSheetController.removeObserver(mBottomSheetObserver);
         removeTranslationObservers(null);
 
         mHighlightingEnabled.removeObserver(mHighlightingEnabledObserver);
@@ -1426,7 +1457,9 @@ public class ReadAloudController
 
     /** Pause audio if playing. */
     public void pause() {
-        if (mPlayback != null && assumeNonNull(mCurrentPlaybackData).state() == PLAYING) {
+        if (mPlayback != null
+                && mCurrentPlaybackData != null
+                && mCurrentPlaybackData.state() == PLAYING) {
             mPlayback.pause();
         }
     }
@@ -1921,7 +1954,8 @@ public class ReadAloudController
     // InsetObserver.WindowInsetObserver
     @Override
     public void onKeyboardInsetChanged(int inset) {
-        if (inset > 0) {
+        mHasKeyboardInsets = inset > 0;
+        if (mHasKeyboardInsets) {
             maybeHidePlayer();
         } else {
             maybeShowPlayer();
@@ -1934,9 +1968,19 @@ public class ReadAloudController
         notifyReadabilityMayHaveChanged();
     }
 
-    /** Show mini player if there is an active playback. */
+    /** Returns true if the player should be suppressed. */
+    private boolean isSuppressed() {
+        return mIsFullscreen
+                || mIsInTabSwitcher
+                || mHasBottomSheetThatActsAsBrowserControls
+                || mHasKeyboardInsets;
+    }
+
+    /**
+     * Show mini player if there is an active playback add other suppression conditions are not met.
+     */
     public void maybeShowPlayer() {
-        if (mPlayback != null) {
+        if (mPlayback != null && !isSuppressed()) {
             assumeNonNull(mPlayerCoordinator).restorePlayers();
         }
     }

@@ -107,7 +107,9 @@ import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooks;
 import org.chromium.chrome.modules.readaloud.contentjs.Extractor;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrl;
@@ -203,6 +205,7 @@ public class ReadAloudControllerUnitTest {
     @Captor ArgumentCaptor<PlaybackListener> mPlaybackListenerCaptor;
     @Captor ArgumentCaptor<LayoutStateObserver> mLayoutStateObserver;
     @Captor ArgumentCaptor<FullscreenManager.Observer> mFullscreenObserver;
+    @Captor ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
 
     @Mock private Playback mPlayback;
     @Mock private Playback.Metadata mMetadata;
@@ -315,6 +318,7 @@ public class ReadAloudControllerUnitTest {
         mController = createController();
         verify(mLayoutStateProvider).addObserver(mLayoutStateObserver.capture());
         verify(mFullscreenManager).addObserver(mFullscreenObserver.capture());
+        verify(mBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
         when(mMetadata.languageCode()).thenReturn("en");
         when(mMetadata.playbackMode()).thenReturn(PlaybackMode.CLASSIC);
         when(mPlayback.getMetadata()).thenReturn(mMetadata);
@@ -403,6 +407,41 @@ public class ReadAloudControllerUnitTest {
 
         mFullscreenObserver.getValue().onExitFullscreen(mTab);
         verify(mPlayerCoordinator).restorePlayers();
+    }
+
+    @Test
+    public void testHidePlayer_BottomSheet() {
+        requestAndStartPlayback();
+        var data = Mockito.mock(PlaybackListener.PlaybackData.class);
+        doReturn(PlaybackListener.State.PLAYING).when(data).state();
+        mController.onPlaybackDataChanged(data);
+
+        BottomSheetContent content = Mockito.mock(BottomSheetContent.class);
+        doReturn(true).when(content).actsAsBrowserControls();
+
+        mBottomSheetObserverCaptor.getValue().onSheetContentChanged(content);
+
+        verify(mPlayback).pause();
+        verify(mPlayerCoordinator).hidePlayers();
+
+        mBottomSheetObserverCaptor.getValue().onSheetContentChanged(null);
+        verify(mPlayerCoordinator).restorePlayers();
+    }
+
+    @Test
+    public void testDontHidePlayer_BottomSheet() {
+        requestAndStartPlayback();
+        var data = Mockito.mock(PlaybackListener.PlaybackData.class);
+        doReturn(PlaybackListener.State.PLAYING).when(data).state();
+        mController.onPlaybackDataChanged(data);
+
+        BottomSheetContent content = Mockito.mock(BottomSheetContent.class);
+        doReturn(false).when(content).actsAsBrowserControls();
+
+        mBottomSheetObserverCaptor.getValue().onSheetContentChanged(content);
+
+        verify(mPlayback, never()).pause();
+        verify(mPlayerCoordinator, never()).hidePlayers();
     }
 
     @Test
@@ -2964,6 +3003,66 @@ public class ReadAloudControllerUnitTest {
         requestAndStartPlayback();
         mController.maybeShowPlayer();
 
+        verify(mPlayerCoordinator).restorePlayers();
+    }
+
+    @Test
+    public void testMaybeShowPlayer_suppressedByFullscreen() {
+        requestAndStartPlayback();
+
+        FullscreenOptions fo = new FullscreenOptions(true, true, INVALID_DISPLAY);
+        mFullscreenObserver.getValue().onEnterFullscreen(mTab, fo);
+
+        reset(mPlayerCoordinator);
+        mController.maybeShowPlayer();
+        verify(mPlayerCoordinator, never()).restorePlayers();
+
+        mFullscreenObserver.getValue().onExitFullscreen(mTab);
+        verify(mPlayerCoordinator).restorePlayers();
+    }
+
+    @Test
+    public void testMaybeShowPlayer_suppressedByTabSwitcher() {
+        requestAndStartPlayback();
+
+        mLayoutStateObserver.getValue().onStartedShowing(LayoutType.TAB_SWITCHER);
+
+        reset(mPlayerCoordinator);
+        mController.maybeShowPlayer();
+        verify(mPlayerCoordinator, never()).restorePlayers();
+
+        mLayoutStateObserver.getValue().onFinishedHiding(LayoutType.TAB_SWITCHER);
+        verify(mPlayerCoordinator).restorePlayers();
+    }
+
+    @Test
+    public void testMaybeShowPlayer_suppressedByBottomSheet() {
+        requestAndStartPlayback();
+
+        BottomSheetContent content = Mockito.mock(BottomSheetContent.class);
+        doReturn(true).when(content).actsAsBrowserControls();
+
+        mBottomSheetObserverCaptor.getValue().onSheetContentChanged(content);
+
+        reset(mPlayerCoordinator);
+        mController.maybeShowPlayer();
+        verify(mPlayerCoordinator, never()).restorePlayers();
+
+        mBottomSheetObserverCaptor.getValue().onSheetContentChanged(null);
+        verify(mPlayerCoordinator).restorePlayers();
+    }
+
+    @Test
+    public void testMaybeShowPlayer_suppressedByKeyboard() {
+        requestAndStartPlayback();
+
+        mController.onKeyboardInsetChanged(100);
+
+        reset(mPlayerCoordinator);
+        mController.maybeShowPlayer();
+        verify(mPlayerCoordinator, never()).restorePlayers();
+
+        mController.onKeyboardInsetChanged(0);
         verify(mPlayerCoordinator).restorePlayers();
     }
 
