@@ -187,3 +187,32 @@ By adding your notice to this list, the framework will automatically emit severa
 
 *   `PrivacySandbox.Notice.NoticeEvent.{PSNotice}`: Records each user interaction (e.g., `Shown`, `Ack`, `OptIn`) with the notice as it happens.
 *   `PrivacySandbox.Notice.Startup.LastRecordedEvent.{PSNotice}`: Records the very last event that occurred for a notice, captured once during browser startup. This helps track the final state of the notice across sessions.
+
+---
+## Deprecating a Notice
+
+When a notice is no longer needed, you must deprecate it safely to prevent data corruption, avoid reusing identifiers, and keep the user's local `PrefService` clean. Do **not** just delete the notice code.
+
+Follow these steps exactly:
+
+1.  **Move to the Deprecated Notices list**:
+    Open `chrome/browser/privacy_sandbox/notice/deprecated_notices.h`. Add your notice's ID and storage name (the `base::Feature` name) to the `kDeprecatedNotices` array. This ensures the framework prevents these identifiers from ever being reused.
+
+2.  **Remove from the Catalog**:
+    Open `chrome/browser/privacy_sandbox/notice/notice_catalog.cc`. Delete the `RegisterAndRetrieveNewNotice` (or `RegisterNoticeGroup`) call that was adding your notice to the catalog.
+
+3.  **Clean up C++ Code**:
+    Delete the `base::Feature` declarations and definitions for the notice in `notice_definitions.h` and `notice_definitions.cc`. Remove any UI code associated with the notice.
+
+4.  **Rename the Mojom Enum**:
+    Open `chrome/browser/privacy_sandbox/notice/notice.mojom`. **Do not delete the enum value** or renumber subsequent values. Instead, prefix the name with `kDeprecated` (e.g., change `kMyNotice = 4` to `kDeprecatedMyNotice = 4`). This preserves IPC compatibility and prevents the integer from being reused.
+
+5.  **Update Enums XML**:
+    Open `tools/metrics/histograms/enums.xml`. Find the `<enum name="PrivacySandboxNotice">` block. Locate your notice's integer value and prepend `(Obsolete) ` to its label (e.g., `<int value="4" label="(Obsolete) My Notice"/>`). Do not delete the entry.
+
+6.  **Delete Histogram Variants**:
+    Open `tools/metrics/histograms/metadata/privacy/histograms.xml`. Locate your notice's `<variant>` inside the `PSNotice` token block and **delete** it.
+
+7.  **Add CL Description Tag**:
+    When creating your Gerrit CL, add the following tag to the CL description to inform the metrics dashboard that the histograms are obsolete:
+    `OBSOLETE_HISTOGRAMS=Removed MyCoolFeatureNotice in M125`
