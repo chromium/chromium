@@ -10,6 +10,7 @@ import "ui/base/mojom/menu_source_type.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "mojo/public/mojom/base/empty.mojom";
 import "mojo/public/mojom/base/error.mojom";
+import "url/mojom/url.mojom";
 
 // Used by Toolbar UI to observe navigation controls state changes.
 interface ToolbarUIObserver {
@@ -66,4 +67,12 @@ interface ToolbarUIService {
 
   // Called when a collapse animation finishes.
   OnLhsChipCollapseAnimationEnded(LhsChipIdentifier identifier);
+  // Sets the home page to the currently dragged url, if any, and displays the
+
+  // home page undo bubble.
+  OnHomeButtonDropUrl(url.mojom.Url url);
+
+  // Sets the home page to the currently dragged file, if any, and displays the
+  // home page undo bubble.
+  OnHomeButtonDropFile(gfx.mojom.PointF drop_position);
 };

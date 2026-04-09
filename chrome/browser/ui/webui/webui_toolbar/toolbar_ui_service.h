@@ -45,6 +45,8 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
         toolbar_ui_api::mojom::LhsChipIdentifier identifier) = 0;
     virtual void OnLhsChipCollapseAnimationEnded(
         toolbar_ui_api::mojom::LhsChipIdentifier identifier) = 0;
+    virtual void OnHomeButtonDropUrl(const GURL& url) = 0;
+    virtual void OnHomeButtonDropFile(const gfx::PointF& drop_position) = 0;
   };
 
   ToolbarUIService(
@@ -82,6 +84,8 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
       toolbar_ui_api::mojom::LhsChipIdentifier identifier) override;
   void OnLhsChipCollapseAnimationEnded(
       toolbar_ui_api::mojom::LhsChipIdentifier identifier) override;
+  void OnHomeButtonDropUrl(const GURL& url) override;
+  void OnHomeButtonDropFile(const gfx::PointF& drop_position) override;
 
  private:
   mojo::Receiver<toolbar_ui_api::mojom::ToolbarUIService> service_;

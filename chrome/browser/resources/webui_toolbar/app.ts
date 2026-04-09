@@ -178,7 +178,11 @@ export class ToolbarAppElement extends CrLitElement {
     for (const {selector, id} of TRACKED_ELEMENTS) {
       const el = this.shadowRoot.querySelector<HTMLElement>(selector);
       if (el) {
-        this.trackedElementManager_.startTracking(el, id);
+        this.trackedElementManager_.startTracking(el, id, {
+          onHighlightChanged: (highlighted: boolean) => {
+            el.classList.toggle('anchor-highlight', highlighted);
+          },
+        });
       }
     }
   }

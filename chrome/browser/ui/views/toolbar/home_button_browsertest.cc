@@ -31,8 +31,8 @@ class HomeButtonUiTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     auto* const prefs = browser()->profile()->GetPrefs();
     prefs->SetBoolean(prefs::kShowHomeButton, true);
-    HomePageUndoBubbleCoordinator coordinator(GetHomeButton(), prefs);
-    coordinator.Show(GURL(), false);
+    HomePageUndoBubbleCoordinator coordinator(prefs);
+    coordinator.Show(GURL(), false, views::BubbleAnchor(GetHomeButton()));
   }
 };
 

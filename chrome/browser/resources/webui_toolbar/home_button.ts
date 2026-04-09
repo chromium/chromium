@@ -69,6 +69,36 @@ export class HomeButtonElement extends CrLitElement {
       this.onShortPress_(e);
     }
   }
+
+  protected onDragEnter_(e: DragEvent) {
+    if (e.dataTransfer && e.dataTransfer.types.includes('Files') &&
+        !e.dataTransfer.types.includes('text/uri-list')) {
+      e.preventDefault();
+    }
+  }
+
+  protected onDragOver_(e: DragEvent) {
+    if (e.dataTransfer &&
+        (e.dataTransfer.types.includes('text/uri-list') ||
+         e.dataTransfer.types.includes('Files'))) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'copy';
+    }
+  }
+
+  protected onDrop_(e: DragEvent) {
+    e.preventDefault();
+    if (!e.dataTransfer) {
+      return;
+    }
+
+    const url = e.dataTransfer.getData('text/uri-list');
+    if (url) {
+      this.browserProxy_.toolbarUIHandler.onHomeButtonDropUrl(url.split('\n')[0]!);
+    } else if (e.dataTransfer.types.includes('Files')) {
+      this.browserProxy_.toolbarUIHandler.onHomeButtonDropFile({x: e.clientX, y: e.clientY});
+    }
+  }
 }
 
 declare global {

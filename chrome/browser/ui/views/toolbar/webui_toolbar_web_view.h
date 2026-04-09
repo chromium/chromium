@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_TOOLBAR_WEB_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_TOOLBAR_WEB_VIEW_H_
 
+#include <optional>
+#include <string>
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -31,6 +35,7 @@
 class BrowserWindowInterface;
 class WebUILocationBar;
 class WebUIToolbarUI;
+class WebUIToolbarInternalWebView;
 
 namespace views {
 class WebView;
@@ -99,6 +104,8 @@ class WebUIToolbarWebView
       toolbar_ui_api::mojom::LhsChipIdentifier identifier) override;
   void OnLhsChipCollapseAnimationEnded(
       toolbar_ui_api::mojom::LhsChipIdentifier identifier) override;
+  void OnHomeButtonDropUrl(const GURL& url) override;
+  void OnHomeButtonDropFile(const gfx::PointF& drop_position) override;
 
   // BrowserControlsService::BrowserControlsServiceDelegate:
   void PermitLaunchUrl() override;
@@ -119,7 +126,7 @@ class WebUIToolbarWebView
 
   void SetDidFirstNonEmptyPaintCallbackForTesting(base::OnceClosure callback);
   void SetTickClockForTesting(const base::TickClock* clock);
-  views::WebView* GetWebViewForTesting() { return web_view_; }
+  views::WebView* GetWebViewForTesting();
   bool IsPendingForTesting() const {
     return initialization_state_ == InitializationState::kPending;
   }
@@ -143,6 +150,8 @@ class WebUIToolbarWebView
                            RightClickHomeButton);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewHomeButtonBrowserTest,
                            LongPressHomeButton);
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewHomeButtonBrowserTest,
+                           DropFileOnHomeButtonAndUndo);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewPixelBrowserTest,
                            BackForwardButtonsModifierClick);
   friend WebUIReloadControl;
@@ -215,7 +224,7 @@ class WebUIToolbarWebView
 
   // The WebView displaying the toolbar. Initialized during construction, and
   // not modified afterwards. Cannot be null.
-  raw_ptr<views::WebView> web_view_;
+  raw_ptr<WebUIToolbarInternalWebView> web_view_;
 
   const raw_ptr<BrowserWindowInterface> browser_;
   const raw_ptr<chrome::BrowserCommandController> controller_;

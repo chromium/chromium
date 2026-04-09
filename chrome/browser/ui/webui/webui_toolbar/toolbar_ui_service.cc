@@ -136,4 +136,16 @@ void ToolbarUIService::OnLhsChipCollapseAnimationEnded(
   }
 }
 
+void ToolbarUIService::OnHomeButtonDropUrl(const GURL& url) {
+  if (delegate_) {
+    delegate_->OnHomeButtonDropUrl(url);
+  }
+}
+
+void ToolbarUIService::OnHomeButtonDropFile(const gfx::PointF& drop_position) {
+  if (delegate_) {
+    delegate_->OnHomeButtonDropFile(drop_position);
+  }
+}
+
 }  // namespace toolbar_ui_api

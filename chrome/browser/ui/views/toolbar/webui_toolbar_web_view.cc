@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
@@ -55,8 +56,10 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/drop_data.h"
 #include "content/public/common/result_codes.h"
 #include "mojo/public/mojom/base/error.mojom.h"
+#include "net/base/filename_util.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -84,6 +87,8 @@ constexpr char kHistogramToolbarRenderProcessGone[] =
 constexpr char kHistogramToolbarRenderProcessGoneExceedingRecoveryLimit[] =
     "InitialWebUI.Toolbar.RenderProcessGoneExceedingRecoveryLimit";
 
+}  // namespace
+
 class WebUIToolbarInternalWebView : public views::WebView {
   METADATA_HEADER(WebUIToolbarInternalWebView, views::WebView)
 
@@ -93,6 +98,14 @@ class WebUIToolbarInternalWebView : public views::WebView {
   ~WebUIToolbarInternalWebView() override = default;
 
   // views::WebView:
+  void PreHandleDragUpdate(const content::DropData& drop_data,
+                           const gfx::PointF& client_pt) override {
+    if (!drop_data.filenames.empty()) {
+      cached_dragged_file_path_ = drop_data.filenames.front().path;
+      cached_dragged_file_position_ = client_pt;
+    }
+  }
+
   void RendererUnresponsive(
       content::WebContents* source,
       content::RenderWidgetHost* render_widget_host,
@@ -138,16 +151,28 @@ class WebUIToolbarInternalWebView : public views::WebView {
         event, GetFocusManager());
   }
 
+  std::optional<GURL> ConsumeDroppedUrl(const gfx::PointF& point) {
+    std::optional<GURL> url = std::nullopt;
+    if (cached_dragged_file_position_.has_value() &&
+        point == *cached_dragged_file_position_ &&
+        cached_dragged_file_path_.has_value()) {
+      url = net::FilePathToFileURL(*cached_dragged_file_path_);
+    }
+    cached_dragged_file_path_.reset();
+    cached_dragged_file_position_.reset();
+    return url;
+  }
+
  private:
   // A handler to handle unhandled keyboard messages coming back from the
   // renderer process.
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
+  std::optional<base::FilePath> cached_dragged_file_path_;
+  std::optional<gfx::PointF> cached_dragged_file_position_;
 };
 
 BEGIN_METADATA(WebUIToolbarInternalWebView)
 END_METADATA
-
-}  // namespace
 
 WebUIToolbarWebView::WebUIToolbarWebView(
     BrowserWindowInterface* browser,
@@ -554,6 +579,10 @@ void WebUIToolbarWebView::SetTickClockForTesting(const base::TickClock* clock) {
   clock_ = clock;
 }
 
+views::WebView* WebUIToolbarWebView::GetWebViewForTesting() {
+  return web_view_;
+}
+
 WebUIToolbarUI* WebUIToolbarWebView::GetWebUIToolbarUI() {
   content::WebUI* web_ui = web_view_->web_contents()->GetWebUI();
   if (!web_ui) {
@@ -565,6 +594,17 @@ WebUIToolbarUI* WebUIToolbarWebView::GetWebUIToolbarUI() {
 
 void WebUIToolbarWebView::PermitLaunchUrl() {
   ExternalProtocolHandler::PermitLaunchUrl();
+}
+
+void WebUIToolbarWebView::OnHomeButtonDropUrl(const GURL& url) {
+  home_control_.OnHomeButtonDropUrl(url);
+}
+
+void WebUIToolbarWebView::OnHomeButtonDropFile(
+    const gfx::PointF& drop_position) {
+  if (std::optional<GURL> url = web_view_->ConsumeDroppedUrl(drop_position)) {
+    home_control_.OnHomeButtonDropUrl(*url);
+  }
 }
 
 void WebUIToolbarWebView::OnReloadControlStateChanged(
