@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/accessibility_annotator/core/accessibility_query_service_delegate.h"
+#include "components/accessibility_annotator/core/annotation_reducer/memory_data_provider.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
 #include "components/accessibility_annotator/core/annotation_reducer/one_p_resolver.h"
 #include "components/accessibility_annotator/core/annotation_reducer/query_classifier.h"

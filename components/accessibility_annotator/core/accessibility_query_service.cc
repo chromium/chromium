@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -15,6 +16,8 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/i18n/break_iterator.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "components/accessibility_annotator/core/annotation_reducer/entry_type.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_data_provider.h"
@@ -127,7 +130,20 @@ void AccessibilityQueryService::OnClassificationComplete(
 
   // Request all data providers to fetch entries matching the classified intent.
   for (const std::unique_ptr<MemoryDataProvider>& provider : data_providers_) {
-    provider->RetrieveAll(intent, barrier_callback);
+    auto log_and_call_barrier_callback = base::BindOnce(
+        [](std::string_view provider_histogram_suffix,
+           base::RepeatingCallback<void(std::vector<MemorySearchResult>)>
+               barrier_callback,
+           std::vector<MemorySearchResult> results) {
+          base::UmaHistogramCounts1000(
+              base::StrCat({"AccessibilityAnnotator.AccessibilityQueryService."
+                            "ProviderResultCount.",
+                            provider_histogram_suffix}),
+              results.size());
+          barrier_callback.Run(std::move(results));
+        },
+        provider->GetHistogramSuffix(), barrier_callback);
+    provider->RetrieveAll(intent, std::move(log_and_call_barrier_callback));
   }
 }
 

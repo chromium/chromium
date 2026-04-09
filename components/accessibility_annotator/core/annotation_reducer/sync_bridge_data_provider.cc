@@ -21,6 +21,10 @@ SyncBridgeDataProvider::SyncBridgeDataProvider(
 
 SyncBridgeDataProvider::~SyncBridgeDataProvider() = default;
 
+std::string_view SyncBridgeDataProvider::GetHistogramSuffix() const {
+  return "SyncBridgeDataProvider";
+}
+
 void SyncBridgeDataProvider::RetrieveAll(
     EntryType type,
     base::OnceCallback<void(std::vector<MemorySearchResult>)> callback) {

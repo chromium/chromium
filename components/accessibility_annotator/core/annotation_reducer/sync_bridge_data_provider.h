@@ -34,6 +34,8 @@ class SyncBridgeDataProvider : public MemoryDataProvider {
                    base::OnceCallback<void(std::vector<MemorySearchResult>)>
                        callback) override;
 
+  std::string_view GetHistogramSuffix() const override;
+
  private:
   raw_ref<AccessibilityAnnotatorBackend> backend_;
 };

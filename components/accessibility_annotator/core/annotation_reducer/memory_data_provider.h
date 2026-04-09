@@ -24,6 +24,13 @@ class MemoryDataProvider {
   virtual void RetrieveAll(
       EntryType type,
       base::OnceCallback<void(std::vector<MemorySearchResult>)> callback) = 0;
+
+  // Returns a unique suffix to identify the provider in histograms. If this
+  // value is changed, the histogram variant
+  // "AccessibilityAnnotator.MemoryDataProvider" in
+  // tools/metrics/histograms/metadata/accessibility_annotator/histograms.xml
+  // should also be updated.
+  virtual std::string_view GetHistogramSuffix() const = 0;
 };
 
 }  // namespace accessibility_annotator

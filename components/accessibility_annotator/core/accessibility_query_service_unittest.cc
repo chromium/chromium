@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/accessibility_annotator/core/accessibility_query_service_delegate.h"
@@ -22,10 +23,6 @@ namespace accessibility_annotator {
 namespace {
 
 using ::accessibility_annotator::EntryType;
-using ::accessibility_annotator::MemoryDataProvider;
-using ::accessibility_annotator::MemorySearchResult;
-using ::accessibility_annotator::MemorySearchResults;
-using ::accessibility_annotator::MemorySearchStatus;
 
 class MockAccessibilityQueryServiceDelegate
     : public AccessibilityQueryServiceDelegate {
@@ -45,10 +42,14 @@ class FakeMemoryDataProvider : public MemoryDataProvider {
     last_type_ = type;
     std::move(callback).Run(results_);
   }
-  void set_results(std::vector<MemorySearchResult> results) {
+  void SetResults(std::vector<MemorySearchResult> results) {
     results_ = std::move(results);
   }
   EntryType last_type() const { return last_type_; }
+
+  std::string_view GetHistogramSuffix() const override {
+    return "FakeMemoryDataProvider";
+  }
 
  private:
   std::vector<MemorySearchResult> results_;
@@ -138,9 +139,9 @@ TEST_F(AccessibilityQueryServiceTest, Query_MultipleProviders) {
       /*remote_model_executor=*/nullptr);
 
   MemorySearchResult result1(EntryType::kNameFull, u"Name", u"John Doe");
-  fake_data_provider1->set_results({result1});
+  fake_data_provider1->SetResults({result1});
   MemorySearchResult result2(EntryType::kNameFull, u"Name", u"Jane Doe");
-  fake_data_provider2->set_results({result2});
+  fake_data_provider2->SetResults({result2});
 
   base::test::TestFuture<MemorySearchResults> future;
   service->Query(u"what is my name", /*full_search=*/false,
@@ -168,7 +169,7 @@ TEST_F(AccessibilityQueryServiceTest, Query_Success) {
       /*remote_model_executor=*/nullptr);
 
   MemorySearchResult result(EntryType::kNameFull, u"Name", u"John Doe");
-  fake_data_provider->set_results({result});
+  fake_data_provider->SetResults({result});
 
   base::test::TestFuture<MemorySearchResults> future;
   service->Query(u"what is my name", /*full_search=*/false,
@@ -354,7 +355,7 @@ TEST_F(AccessibilityQueryServiceTest, Query_WithFilterWords) {
   MemorySearchResult entry2(EntryType::kAddressFull, u"Address",
                             u"456 Mountain View Rd Work Mountain View");
 
-  fake_data_provider->set_results({entry1, entry2});
+  fake_data_provider->SetResults({entry1, entry2});
 
   base::test::TestFuture<MemorySearchResults> future;
   service->Query(u"What's my home address in San Diego", /*full_search=*/false,
@@ -382,7 +383,7 @@ TEST_F(AccessibilityQueryServiceTest,
 
   MemorySearchResult entry(EntryType::kAddressFull, u"Address",
                            u"123 San Diego St Home San Diego");
-  fake_data_provider->set_results({entry});
+  fake_data_provider->SetResults({entry});
 
   // "New York" won't match "San Diego", so it should fallback to returning all
   // results for that intent.
@@ -395,6 +396,34 @@ TEST_F(AccessibilityQueryServiceTest,
   EXPECT_EQ(result.entries.size(), 1u);
   EXPECT_EQ(result.entries[0].value, u"123 San Diego St Home San Diego");
   EXPECT_EQ(fake_data_provider->last_type(), EntryType::kAddressFull);
+}
+
+// Tests that the query service records the provider result count metric.
+TEST_F(AccessibilityQueryServiceTest, RecordsProviderResultCountMetric) {
+  base::HistogramTester histogram_tester;
+
+  auto data_provider = std::make_unique<FakeMemoryDataProvider>();
+  auto* fake_data_provider = data_provider.get();
+  std::vector<std::unique_ptr<MemoryDataProvider>> providers;
+  providers.push_back(std::move(data_provider));
+  auto service = std::make_unique<AccessibilityQueryService>(
+      /*delegate=*/nullptr, std::move(providers), /*one_p_resolver=*/nullptr,
+      /*remote_model_executor=*/nullptr);
+
+  MemorySearchResult result1(EntryType::kNameFull, u"Name", u"John Doe");
+  MemorySearchResult result2(EntryType::kNameFull, u"Name", u"Jane Doe");
+  fake_data_provider->SetResults({result1, result2});
+
+  base::test::TestFuture<MemorySearchResults> future;
+  service->Query(u"what is my name", /*full_search=*/false,
+                 future.GetRepeatingCallback());
+
+  ASSERT_TRUE(future.Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      "AccessibilityAnnotator.AccessibilityQueryService.ProviderResultCount."
+      "FakeMemoryDataProvider",
+      /*sample=*/2, /*expected_bucket_count=*/1);
 }
 
 // Tests that the query service queries the 1P resolver if local filtering
@@ -416,7 +445,7 @@ TEST_F(AccessibilityQueryServiceTest,
 
   MemorySearchResult local_entry(EntryType::kAddressFull, u"Address",
                                  u"123 San Diego St Home San Diego");
-  fake_data_provider->set_results({local_entry});
+  fake_data_provider->SetResults({local_entry});
 
   MemorySearchResult one_p_entry(EntryType::kAddressFull, u"Address",
                                  u"456 New York Ave Home New York");
@@ -455,7 +484,7 @@ TEST_F(AccessibilityQueryServiceTest,
 
   MemorySearchResult local_entry(EntryType::kAddressFull, u"Address",
                                  u"123 San Diego St Home San Diego");
-  fake_data_provider->set_results({local_entry});
+  fake_data_provider->SetResults({local_entry});
 
   // The 1P resolver returns nothing.
   fake_one_p_resolver->set_results({});

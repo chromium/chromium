@@ -267,6 +267,10 @@ AutofillDataProviderImpl::AutofillDataProviderImpl(
 
 AutofillDataProviderImpl::~AutofillDataProviderImpl() = default;
 
+std::string_view AutofillDataProviderImpl::GetHistogramSuffix() const {
+  return "AutofillDataProvider";
+}
+
 void AutofillDataProviderImpl::RetrieveAll(
     EntryType entry_type,
     base::OnceCallback<void(std::vector<MemorySearchResult>)> callback) {

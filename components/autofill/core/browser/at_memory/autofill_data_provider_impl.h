@@ -34,6 +34,7 @@ class AutofillDataProviderImpl
       base::OnceCallback<void(
           std::vector<accessibility_annotator::MemorySearchResult>)> callback)
       override;
+  std::string_view GetHistogramSuffix() const override;
 
  private:
   // Retrieves all entities for a given Autofill data type.
