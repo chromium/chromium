@@ -85,6 +85,9 @@ class BrowserCollection {
   virtual BrowserVector GetBrowsers(Order order) = 0;
 
  private:
+  // TODO(crbug.com/c/500850766): Remove this once ChromeTracingDelegate
+  // supports being a global feature.
+  friend class ChromeTracingDelegate;
   friend base::ScopedObservationTraits<BrowserCollection,
                                        BrowserCollectionObserver>;
 
