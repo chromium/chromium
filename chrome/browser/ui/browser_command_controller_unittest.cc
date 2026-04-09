@@ -32,6 +32,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/performance_manager/public/features.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -570,9 +571,8 @@ class BrowserCommandControllerWithBookmarksTest
 // command.
 TEST_F(BrowserCommandControllerWithBookmarksTest,
        BookmarkAllTabsUpdatesOnTabStripChanges) {
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return BookmarkModelFactory::GetForBrowserContext(profile())->loaded();
-  })) << "Timeout waiting for bookmarks to load";
+  bookmarks::test::WaitForBookmarkModelToLoad(
+      BookmarkModelFactory::GetForBrowserContext(profile()));
 
   chrome::BrowserCommandController command_controller(browser());
   EXPECT_FALSE(command_controller.IsCommandEnabled(IDC_BOOKMARK_ALL_TABS));
@@ -589,6 +589,27 @@ TEST_F(BrowserCommandControllerWithBookmarksTest,
   browser()->tab_strip_model()->CloseWebContentsAt(/*index=*/1,
                                                    TabCloseTypes::CLOSE_NONE);
   EXPECT_FALSE(command_controller.IsCommandEnabled(IDC_BOOKMARK_ALL_TABS));
+}
+
+TEST_F(BrowserCommandControllerWithBookmarksTest,
+       BookmarkTabEnabledWhenBookmarkModelIsAlreadyLoaded) {
+  bookmarks::test::WaitForBookmarkModelToLoad(
+      BookmarkModelFactory::GetForBrowserContext(profile()));
+
+  chrome::BrowserCommandController command_controller(browser());
+  EXPECT_TRUE(command_controller.IsCommandEnabled(IDC_BOOKMARK_THIS_TAB));
+}
+
+TEST_F(BrowserCommandControllerWithBookmarksTest,
+       BookmarkTabUpdateWhenBookmarkLoadingCompletes) {
+  // Create a command controller before the bookmark model is loaded.
+  chrome::BrowserCommandController command_controller(browser());
+  EXPECT_FALSE(command_controller.IsCommandEnabled(IDC_BOOKMARK_THIS_TAB));
+
+  bookmarks::test::WaitForBookmarkModelToLoad(
+      BookmarkModelFactory::GetForBrowserContext(profile()));
+  // Command should be enabled after the bookmark model is loaded.
+  EXPECT_TRUE(command_controller.IsCommandEnabled(IDC_BOOKMARK_THIS_TAB));
 }
 
 TEST_F(BrowserCommandControllerTest,

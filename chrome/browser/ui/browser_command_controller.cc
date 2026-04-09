@@ -23,6 +23,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/actor/ui/actor_overlay_web_view.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -99,6 +100,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/bookmarks/browser/bookmark_model_load_waiter.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/input/native_web_keyboard_event.h"
@@ -366,6 +368,23 @@ BrowserCommandController::BrowserCommandController(BrowserWindowInterface* bwi)
   }
 
   InitCommandState();
+
+  // Bookmark editing commands depend on the bookmark model to be loaded.
+  // Schedule a callback to update them once the model is loaded instead of just
+  // relying on other updates like TabStateChanged.
+  //
+  // In some cases, such as when the user sets their homepage to about:blank
+  // and bookmarks encryption is enabled, the other updates are triggered
+  // before the bookmark model is loaded.
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile());
+  if (bookmark_model) {
+    bookmarks::ScheduleCallbackOnBookmarkModelLoad(
+        *bookmark_model,
+        base::BindOnce(
+            &BrowserCommandController::UpdateCommandsForBookmarkEditing,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
 
   sessions::TabRestoreService* tab_restore_service =
       TabRestoreServiceFactory::GetForProfile(profile());

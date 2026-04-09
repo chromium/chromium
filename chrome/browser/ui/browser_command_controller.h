@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_BROWSER_COMMAND_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/command_updater_delegate.h"
@@ -269,6 +270,8 @@ class BrowserCommandController : public CommandUpdater,
   // Observes for extension state changes (load/unload).
   class ExtensionStateObserver;
   std::unique_ptr<ExtensionStateObserver> extension_state_observer_;
+
+  base::WeakPtrFactory<BrowserCommandController> weak_ptr_factory_{this};
 };
 
 }  // namespace chrome
