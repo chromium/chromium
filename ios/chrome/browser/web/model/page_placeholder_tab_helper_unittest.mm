@@ -175,7 +175,10 @@ TEST_F(PagePlaceholderTabHelperTest, DestructWebStateWhenShowingPlaceholder) {
 
   EXPECT_TRUE(tab_helper()->displaying_placeholder());
   EXPECT_FALSE(tab_helper()->will_add_placeholder_for_next_navigation());
-  EXPECT_TRUE([[web_state_view_ subviews] count] != 0);
+  // Wait for the snapshot retrieval to complete and add the subview.
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
+    return [[web_state_view_ subviews] count] != 0;
+  }));
   web_state_.reset();
 
   // The tab helper has been deleted at this point, so do not check the value
