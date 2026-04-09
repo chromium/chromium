@@ -120,6 +120,37 @@ HeapVector<Member<Node>> CollectFlattenedAssignedNodes(
 
 }  // namespace
 
+bool HTMLSlotElement::HasFlattenedAssignedNodesNoRecalc() const {
+  if (!SupportsAssignment()) {
+    DCHECK(assigned_nodes_.empty());
+    return false;
+  }
+
+  auto has_flattened = [](const Node& node) -> bool {
+    if (auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(node)) {
+      return slot->HasFlattenedAssignedNodesNoRecalc();
+    }
+    return true;
+  };
+
+  if (assigned_nodes_.empty()) {
+    for (auto& child : NodeTraversal::ChildrenOf(*this)) {
+      if (child.IsSlotable() && has_flattened(child)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  for (auto& node : assigned_nodes_) {
+    DCHECK(node->IsSlotable());
+    if (has_flattened(*node)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 const HeapVector<Member<Node>> HTMLSlotElement::FlattenedAssignedNodes() {
   if (!SupportsAssignment()) {
     DCHECK(assigned_nodes_.empty());

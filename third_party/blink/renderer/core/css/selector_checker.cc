@@ -2585,7 +2585,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoHasSlotted:
       DCHECK(RuntimeEnabledFeatures::CSSPseudoHasSlottedEnabled());
       if (auto* slot = DynamicTo<HTMLSlotElement>(element)) {
-        return slot->HasAssignedNodesNoRecalc();
+        return slot->HasFlattenedAssignedNodesNoRecalc();
       }
       return false;
     case CSSSelector::kPseudoHover:

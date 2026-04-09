@@ -102,6 +102,11 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
   // slot assignments while marking the tree style-dirty.
   bool HasAssignedNodesNoRecalc() const { return !assigned_nodes_.empty(); }
 
+  // Returns true if FlattenedAssignedNodes() would be non-empty, without
+  // doing assignment recalc. Used for :has-slotted matching during style
+  // resolution.
+  bool HasFlattenedAssignedNodesNoRecalc() const;
+
   bool SupportsAssignment() const { return IsInShadowTree(); }
 
   void CheckFallbackAfterInsertedIntoShadowTree();

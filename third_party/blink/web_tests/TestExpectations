@@ -1239,7 +1239,6 @@ crbug.com/41491726 external/wpt/css/css-conditional/container-queries/multiple-c
 crbug.com/498318534 external/wpt/css/css-conditional/container-queries/query-style-color.html [ Failure ]
 
 # css-shadow
-crbug.com/369883705 external/wpt/css/css-shadow/has-slotted-flattened-004.html [ Failure ]
 crbug.com/369883705 external/wpt/css/css-shadow/has-slotted-functional-001.tentative.html [ Failure ]
 crbug.com/369883705 external/wpt/css/css-shadow/has-slotted-functional-004.tentative.html [ Failure ]
 crbug.com/369883705 external/wpt/css/css-shadow/has-slotted-functional-006.tentative.html [ Failure ]
