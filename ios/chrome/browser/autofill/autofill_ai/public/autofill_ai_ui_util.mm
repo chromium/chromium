@@ -7,10 +7,17 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/shared/ui/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
+
+namespace {
+constexpr CGFloat kWalletLogoHeight = 26.0;
+constexpr CGFloat kWalletLogoSpacing = 6.0;
+}  // namespace
 
 namespace autofill {
 
@@ -195,6 +202,21 @@ GURL GetManageYourInfoURL() {
 
 GURL GetGoogleWalletPassesURL() {
   return GURL("https://wallet.google.com/wallet/passes");
+}
+
+UIView* CreateBrandedTitleForWalletSave(NSString* title) {
+  BrandedNavigationItemTitleView* titleView =
+      [[BrandedNavigationItemTitleView alloc] init];
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+  titleView.imageLogo = MakeSymbolMulticolor(
+      CustomSymbolWithPointSize(kGoogleWalletIconSymbol, kWalletLogoHeight));
+#else
+  titleView.imageLogo =
+      CustomSymbolWithPointSize(kSparklesSymbol, kWalletLogoHeight);
+#endif
+  titleView.title = title;
+  titleView.titleLogoSpacing = kWalletLogoSpacing;
+  return titleView;
 }
 
 }  // namespace autofill
