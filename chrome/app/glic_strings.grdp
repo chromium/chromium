@@ -491,4 +491,18 @@
   <message name="IDS_GLIC_SELECTION_TELL_ME_ABOUT" desc="Prompt suggestion for telling me about the selected text.">
     Tell me about <ph name="TEXT">$1<ex>something</ex></ph>
   </message>
+
+  <!-- Educational Tip -->
+  <message name="IDS_EDUCATIONAL_TIP_GLIC_TITLE" desc="Title for the Glic educational tip card." formatter_data="android_java">
+    Meet Gemini on Chrome
+  </message>
+  <message name="IDS_EDUCATIONAL_TIP_GLIC_DESCRIPTION" desc="Description for the Glic educational tip card." formatter_data="android_java">
+    Get the best of Google AI. Pin Gemini to your toolbar for easy access, or open it anytime from the Chrome menu.
+  </message>
+  <message name="IDS_EDUCATIONAL_TIP_GLIC_BUTTON" desc="Button text for the Glic educational tip card." formatter_data="android_java">
+    Pin on toolbar
+  </message>
+  <message name="IDS_EDUCATIONAL_TIP_GLIC_DISMISS_BUTTON" desc="Dismiss button text for the Glic educational tip card." formatter_data="android_java">
+    No, thanks
+  </message>
 </grit-part>

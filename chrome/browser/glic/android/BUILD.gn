@@ -14,8 +14,10 @@ generate_jni("jni_headers") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/glic_promo_logo.xml",
     "java/res/layout/glic_auto_browse.xml",
     "java/res/layout/glic_default_tab_access.xml",
+    "java/res/layout/glic_promo_bottom_sheet.xml",
     "java/res/layout/glic_settings_extra_info.xml",
     "java/res/raw/glic_spinner.json",
     "java/res/values/dimens.xml",
@@ -32,6 +34,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/glic/GlicExtraInfoPreference.java",
     "java/src/org/chromium/chrome/browser/glic/GlicHelper.java",
     "java/src/org/chromium/chrome/browser/glic/GlicKeyedServiceImpl.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicPromoCoordinator.java",
     "java/src/org/chromium/chrome/browser/glic/GlicSettings.java",
     "java/src/org/chromium/chrome/browser/glic/GlicToolbarButtonController.java",
   ]
@@ -45,6 +48,7 @@ android_library("java") {
     "//build/android:build_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/actor/android:java",
+    "//chrome/browser/educational_tip:java",
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/glic:public_java",
     "//chrome/browser/preferences:java",
@@ -55,6 +59,7 @@ android_library("java") {
     "//chrome/browser/ui/browser_window/public/android:java",
     "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/user_education:java",
+    "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/styles/android:java",
     "//components/embedder_support/android:util_java",
@@ -110,6 +115,7 @@ source_set("android") {
 robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/glic/GlicHelperUnitTest.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicPromoCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicSettingsUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicToolbarButtonControllerTest.java",
   ]
@@ -122,13 +128,16 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//base:base_shared_preferences_java",
     "//chrome/browser/actor/android:java",
+    "//chrome/browser/educational_tip:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/glic:public_java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/actions:java",
     "//chrome/browser/ui/android/toolbar:java",
     "//chrome/browser/ui/messages/android:java",
+    "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/feature_engagement/public:public_java",
     "//components/prefs/android:java",
@@ -139,6 +148,7 @@ robolectric_library("junit") {
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",

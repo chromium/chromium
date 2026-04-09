@@ -14,4 +14,10 @@ found in the LICENSE file.
     <dimen name="glic_expanded_row_icon_margin_end">12dp</dimen>
     <dimen name="glic_expanded_container_padding_bottom">16dp</dimen>
     <dimen name="glic_expanded_content_line_height">20sp</dimen>
+
+    <!-- Glic promo dimensions -->
+    <dimen name="glic_promo_bottom_sheet_margin_bottom">20dp</dimen>
+    <dimen name="glic_promo_description_margin_top">8dp</dimen>
+    <dimen name="glic_promo_description_margin_bottom">24dp</dimen>
+    <dimen name="glic_promo_description_line_spacing">4dp</dimen>
 </resources>
