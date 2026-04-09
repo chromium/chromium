@@ -418,6 +418,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compositing.Display.ScheduleOverlayToSwapStart"
+    units="microseconds" expires_after="2027-04-08">
+  <owner>magchen@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    This is logged once per frame, if the output surface provides timing
+    information. It measures the time between the GPU main thread initiating
+    overlay scheduling and the start of all related draw call issuances to the
+    driver. Only reported for clients with high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="Compositing.Display.SwapStartToSwapEnd" units="microseconds"
+    expires_after="2027-04-08">
+  <owner>magchen@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    This is logged once per frame, if the output surface provides timing
+    information. It measures the time between the GPU main thread initiating
+    draw call issuances to the driver and their final completion. Only reported
+    for clients with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.Display.VizCodePath.{VizCodePathName}"
     enum="Boolean" expires_after="2026-06-09">
   <owner>fangzhoug@chromium.org</owner>

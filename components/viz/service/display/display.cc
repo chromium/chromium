@@ -1249,6 +1249,25 @@ void Display::DidReceiveSwapBuffersAck(
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "Compositing.Display.DrawToSwapUs", draw_start_to_swap_start,
         kDrawToSwapMin, kDrawToSwapMax, kDrawToSwapUsBuckets);
+
+    if (!timings.gpu_started_overlay.is_null()) {
+      DCHECK_LE(timings.gpu_started_overlay, timings.swap_start);
+      base::TimeDelta overlay_to_swap_start =
+          timings.swap_start - timings.gpu_started_overlay;
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+          "Compositing.Display.ScheduleOverlayToSwapStart",
+          overlay_to_swap_start, kDrawToSwapMin, kDrawToSwapMax,
+          kDrawToSwapUsBuckets);
+    }
+
+    if (!timings.swap_end.is_null()) {
+      DCHECK_LE(timings.swap_start, timings.swap_end);
+      base::TimeDelta swap_start_to_swap_end =
+          timings.swap_end - timings.swap_start;
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+          "Compositing.Display.SwapStartToSwapEnd", swap_start_to_swap_end,
+          kDrawToSwapMin, kDrawToSwapMax, kDrawToSwapUsBuckets);
+    }
   }
 
   if (!timings.gpu_started_overlay.is_null()) {
