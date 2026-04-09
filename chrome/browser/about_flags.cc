@@ -11876,6 +11876,10 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
+    {"media-codec-block-model", flag_descriptions::kMediaCodecBlockModelName,
+     flag_descriptions::kMediaCodecBlockModelDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(media::kMediaCodecBlockModel)},
+
     {"media-codec-low-delay-mode",
      flag_descriptions::kMediaCodecLowDelayModeName,
      flag_descriptions::kMediaCodecLowDelayModeDescription, kOsAndroid,

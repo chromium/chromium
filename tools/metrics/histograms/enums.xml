@@ -14546,6 +14546,7 @@ from previous Chrome versions.
   <int value="158086823"
       label="AutofillAndroidDesktopSuppressAccessoryOnEmpty:disabled"/>
   <int value="158490417" label="PhoneHubCameraRoll:enabled"/>
+  <int value="158532244" label="MediaCodecBlockModel:disabled"/>
   <int value="158889810" label="ArcInputOverlayAlphaV2:enabled"/>
   <int value="160429011" label="LensSearchOptimizations:enabled"/>
   <int value="160506687" label="ArcRtVcpuDualCore:disabled"/>
@@ -17966,6 +17967,7 @@ from previous Chrome versions.
   <int value="1298788828" label="WebID:disabled"/>
   <int value="1298927156" label="TouchpadOverscrollHistoryNavigation:enabled"/>
   <int value="1298981651" label="disable-new-task-manager"/>
+  <int value="1299317717" label="MediaCodecBlockModel:enabled"/>
   <int value="1299336534"
       label="AutofillSuppressCreditCardSaveForAssistant:disabled"/>
   <int value="1299784522" label="EmptyStates:disabled"/>
