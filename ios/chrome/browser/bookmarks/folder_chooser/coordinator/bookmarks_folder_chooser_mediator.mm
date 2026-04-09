@@ -92,8 +92,8 @@ using bookmarks::BookmarkNode;
 }
 
 - (void)dealloc {
-  CHECK(!_localOrSyncableDataSource, base::NotFatalUntil::M149);
-  CHECK(!_authServiceBridge, base::NotFatalUntil::M149);
+  DUMP_WILL_BE_CHECK(!_localOrSyncableDataSource);
+  DUMP_WILL_BE_CHECK(!_authServiceBridge);
 }
 
 - (const std::set<const BookmarkNode*>&)editedNodes {

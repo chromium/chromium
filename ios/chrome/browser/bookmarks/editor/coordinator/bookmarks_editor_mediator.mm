@@ -98,7 +98,7 @@
 }
 
 - (void)dealloc {
-  CHECK(!_bookmarkModel, base::NotFatalUntil::M152);
+  DUMP_WILL_BE_CHECK(!_bookmarkModel);
 }
 
 #pragma mark - Public

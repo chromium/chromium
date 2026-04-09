@@ -107,10 +107,10 @@
 }
 
 - (void)dealloc {
-  CHECK(!_viewController, base::NotFatalUntil::M149);
-  CHECK(!_baseNavigationController, base::NotFatalUntil::M149);
-  CHECK(!_mediator, base::NotFatalUntil::M149);
-  CHECK(!_folderEditorCoordinator, base::NotFatalUntil::M149);
+  DUMP_WILL_BE_CHECK(!_viewController);
+  DUMP_WILL_BE_CHECK(!_baseNavigationController);
+  DUMP_WILL_BE_CHECK(!_mediator);
+  DUMP_WILL_BE_CHECK(!_folderEditorCoordinator);
 }
 
 #pragma mark - ChromeCoordinator
@@ -159,8 +159,8 @@
   // Stop child coordinator before stopping `self`.
   [self stopBookmarksFolderEditorCoordinator];
 
-  CHECK(_mediator, base::NotFatalUntil::M150);
-  CHECK(_viewController, base::NotFatalUntil::M150);
+  DUMP_WILL_BE_CHECK(_mediator);
+  DUMP_WILL_BE_CHECK(_viewController);
   [_mediator disconnect];
   _mediator.consumer = nil;
   _mediator.delegate = nil;
@@ -177,8 +177,8 @@
     // the parent coordinator (who owns the `_baseNavigationController`) has
     // already been dismissed. In this case `_baseNavigationController` itself
     // is no longer being presented and this coordinator was dismissed as well.
-    CHECK_EQ(_baseNavigationController.topViewController, _viewController,
-             base::NotFatalUntil::M150);
+    DUMP_WILL_BE_CHECK_EQ(_baseNavigationController.topViewController,
+                          _viewController);
     [_baseNavigationController popViewControllerAnimated:YES];
   } else if (!_baseNavigationController) {
     // If there is no `_baseNavigationController` and `_navigationController`,
@@ -187,8 +187,7 @@
     // `bookmarksFolderChooserViewControllerDidDismiss:`.
     // Therefore `self.baseViewController.presentedViewController` must be
     // `nil`.
-    CHECK(!self.baseViewController.presentedViewController,
-          base::NotFatalUntil::M150);
+    DUMP_WILL_BE_CHECK(!self.baseViewController.presentedViewController);
   }
   _viewController.delegate = nil;
   _viewController.dataSource = nil;

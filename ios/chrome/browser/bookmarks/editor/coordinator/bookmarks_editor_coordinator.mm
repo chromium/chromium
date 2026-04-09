@@ -131,7 +131,7 @@
 }
 
 - (void)dealloc {
-  CHECK(!_navigationController, base::NotFatalUntil::M150);
+  DUMP_WILL_BE_CHECK(!_navigationController);
 }
 
 - (BOOL)canDismiss {
