@@ -620,6 +620,14 @@ id FakeWebState::GetActivityItem() API_AVAILABLE(ios(16.4)) {
   return nil;
 }
 
+bool FakeWebState::IsCustomOpenPanelSupported() const {
+  return supports_custom_open_panel_;
+}
+
+void FakeWebState::SetCustomOpenPanelSupported(bool supports) {
+  supports_custom_open_panel_ = supports;
+}
+
 UIColor* FakeWebState::GetThemeColor() {
   return nil;
 }

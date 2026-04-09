@@ -378,6 +378,8 @@ class WebStateImpl final : public WebState {
   void SetFindInteractionEnabled(bool enabled) final;
   id<CRWFindInteraction> GetFindInteraction() final API_AVAILABLE(ios(16));
   id GetActivityItem() final API_AVAILABLE(ios(16.4));
+  bool IsCustomOpenPanelSupported() const final;
+  void SetCustomOpenPanelSupported(bool supports) final;
   UIColor* GetThemeColor() final;
   UIColor* GetUnderPageBackgroundColor() final;
 

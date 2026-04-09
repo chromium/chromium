@@ -96,7 +96,8 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
       (webView:runOpenPanelWithParameters:initiatedByFrame:completionHandler:);
   if (selector == runOpenPanelWithParametersSelector) {
     if (@available(iOS 18.4, *)) {
-      return web::GetWebClient()->CanRunOpenPanel(self.webStateImpl);
+      return self.webStateImpl->IsCustomOpenPanelSupported() &&
+             web::GetWebClient()->CanRunOpenPanel(self.webStateImpl);
     } else {
       NOTREACHED() << "@selector(-webView:runOpenPanelWithParameters:"
                       "initiatedByFrame:completionHandler:) only exists on "
@@ -331,6 +332,11 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
               initiatedByFrame:(WKFrameInfo*)frame
              completionHandler:(void (^)(NSArray<NSURL*>*))completionHandler
     API_AVAILABLE(ios(18.4)) {
+  CHECK(self.webStateImpl->IsCustomOpenPanelSupported())
+      << "-[CRWWKUIHandler "
+         "webView:runOpenPanelWithParameters:initiatedByFrame:"
+         "completionHandler:] was called while "
+         "self.webStateImpl->IsCustomOpenPanelSupported() returned false.";
   CHECK(web::GetWebClient()->CanRunOpenPanel(self.webStateImpl))
       << "-[CRWWKUIHandler "
          "webView:runOpenPanelWithParameters:initiatedByFrame:"

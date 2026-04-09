@@ -21,6 +21,16 @@ class ChooseFileTabHelper : public web::WebStateUserData<ChooseFileTabHelper>,
                             public web::WebStateObserver,
                             public ChooseFileController::Delegate {
  public:
+  // Override of inherited CreateForWebState(...) that ensure the
+  // call of SetCustomOpenPanelSupported(true) is only called after
+  // the TabHelper has been attached.
+  template <typename... Args>
+  static void CreateForWebState(web::WebState* web_state, Args&&... args) {
+    web::WebStateUserData<ChooseFileTabHelper>::CreateForWebState(
+        web_state, std::forward<Args>(args)...);
+    web_state->SetCustomOpenPanelSupported(true);
+  }
+
   ~ChooseFileTabHelper() override;
 
   // Start file selection in the current tab using non-null `controller`.
@@ -130,6 +140,8 @@ class ChooseFileTabHelper : public web::WebStateUserData<ChooseFileTabHelper>,
   // When there is a file selection ongoing in the WebState, this controller can
   // be used to keep track of the file selection, submit files, or cancel.
   std::unique_ptr<ChooseFileController> controller_;
+  // The WebState this tab is associated with.
+  const raw_ref<web::WebState> web_state_;
   // Scoped observation of the WebState.
   base::ScopedObservation<web::WebState, web::WebStateObserver> observation_{
       this};

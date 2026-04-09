@@ -8,6 +8,7 @@
 #import <WebKit/WebKit.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/check_deref.h"
 #import "base/feature_list.h"
 #import "base/files/file_util.h"
 #import "base/memory/raw_ptr.h"
@@ -23,11 +24,14 @@
 #import "ios/web/public/web_state.h"
 
 ChooseFileTabHelper::ChooseFileTabHelper(web::WebState* web_state)
-    : file_urls_ready_for_selection_([NSMutableDictionary dictionary]) {
+    : file_urls_ready_for_selection_([NSMutableDictionary dictionary]),
+      web_state_(CHECK_DEREF(web_state)) {
   observation_.Observe(web_state);
 }
 
-ChooseFileTabHelper::~ChooseFileTabHelper() = default;
+ChooseFileTabHelper::~ChooseFileTabHelper() {
+  web_state_->SetCustomOpenPanelSupported(false);
+}
 
 void ChooseFileTabHelper::StartChoosingFiles(
     std::unique_ptr<ChooseFileController> controller) {

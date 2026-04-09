@@ -13,6 +13,7 @@
 #import "base/compiler_specific.h"
 #import "base/debug/dump_without_crashing.h"
 #import "base/feature_list.h"
+#import "base/notreached.h"
 #import "base/time/time.h"
 #import "ios/web/common/features.h"
 #import "ios/web/js_messaging/web_frames_manager_impl.h"
@@ -1024,6 +1025,19 @@ id WebStateImpl::GetActivityItem() API_AVAILABLE(ios(16.4)) {
     return nil;
   }
   return [GetWebController() activityItem];
+}
+
+bool WebStateImpl::IsCustomOpenPanelSupported() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (pimpl_) [[likely]] {
+    return pimpl_->IsCustomOpenPanelSupported();
+  }
+  return false;
+}
+
+void WebStateImpl::SetCustomOpenPanelSupported(bool supports) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RealizedState()->SetCustomOpenPanelSupported(supports);
 }
 
 UIColor* WebStateImpl::GetThemeColor() {

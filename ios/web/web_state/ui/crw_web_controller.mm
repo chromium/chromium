@@ -1434,6 +1434,12 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
   return self.webView;
 }
 
+// Refresh the UIDelegate implemented method cache in Webkit by re-setting the
+// UIDelegate to itself.
+- (void)refreshUIDelegateMethodCache {
+  [_webView setUIDelegate:_webView.UIDelegate];
+}
+
 // Creates a web view with given `config`. No-op if web view is already created.
 - (WKWebView*)ensureWebViewCreatedWithConfiguration:
     (WKWebViewConfiguration*)config {

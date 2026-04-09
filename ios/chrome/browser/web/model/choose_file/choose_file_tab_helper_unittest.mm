@@ -299,3 +299,9 @@ TEST_F(ChooseFileTabHelperTest, RunOpenPanelHistograms) {
         "IOS.Web.FileInput.DirectoryAttributeMismatched", false, 1);
   }
 }
+
+// Tests that IsCustomOpenPanelSupported is set to true on creation for realized
+// web state.
+TEST_F(ChooseFileTabHelperTest, TestIsCustomOpenPanelSupported) {
+  EXPECT_TRUE(web_state_->IsCustomOpenPanelSupported());
+}

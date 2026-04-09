@@ -788,6 +788,23 @@ void WebStateImpl::RealizedWebState::SetFaviconStatus(
   }
 }
 
+bool WebStateImpl::RealizedWebState::IsCustomOpenPanelSupported() const {
+  return supports_custom_open_panel_;
+}
+
+void WebStateImpl::RealizedWebState::SetCustomOpenPanelSupported(
+    bool supports) {
+  if (supports_custom_open_panel_ == supports) {
+    return;
+  }
+  supports_custom_open_panel_ = supports;
+  // TODO(crbug.com/500705261): WebKit only checks the methods implemented in
+  // the UIDelegate when setting the delegate. Resetting the delegate forces
+  // WebKit to re-call respondToSelector: and check if a custom implementation
+  // of openPanel is provided.
+  [web_controller_ refreshUIDelegateMethodCache];
+}
+
 int WebStateImpl::RealizedWebState::GetNavigationItemCount() const {
   return navigation_manager_->GetItemCount();
 }

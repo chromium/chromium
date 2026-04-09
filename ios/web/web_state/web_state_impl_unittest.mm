@@ -1171,4 +1171,29 @@ TEST_F(WebStateImplTest, SerializeMetadataToProto) {
   }
 }
 
+TEST_F(WebStateImplTest, TestIsCustomOpenPanelSupported) {
+  // Test realized state created via CreateParams.
+  WebStateImpl web_state =
+      WebStateImpl(WebState::CreateParams(GetBrowserState()));
+
+  EXPECT_FALSE(web_state.IsCustomOpenPanelSupported());
+
+  web_state.SetCustomOpenPanelSupported(true);
+  EXPECT_TRUE(web_state.IsCustomOpenPanelSupported());
+
+  web_state.SetCustomOpenPanelSupported(false);
+  EXPECT_FALSE(web_state.IsCustomOpenPanelSupported());
+
+  // Test unrealized state.
+  proto::WebStateStorage storage;
+  proto::WebStateMetadataStorage metadata;
+  WebStateImpl unrealized_web_state = WebStateImpl(
+      GetBrowserState(), web::WebStateID::NewUnique(), metadata,
+      base::ReturnValueOnce(std::make_optional(std::move(storage))),
+      base::ReturnValueOnce<NSData*>(nil));
+
+  ASSERT_FALSE(unrealized_web_state.IsRealized());
+  EXPECT_FALSE(unrealized_web_state.IsCustomOpenPanelSupported());
+}
+
 }  // namespace web
