@@ -730,7 +730,8 @@ public class StripLayoutHelperManager
                 (LayerTitleCache layerTitleCache) -> {
                     mNormalHelper.setLayerTitleCache(layerTitleCache);
                     mIncognitoHelper.setLayerTitleCache(layerTitleCache);
-                    setGlicButtonText(mContext.getString(R.string.glic_button_entrypoint_label));
+                    setGlicButtonText(
+                            mContext.getString(R.string.glic_button_entrypoint_ask_gemini_label));
                 });
 
         if (mDesktopWindowStateManager != null) {
@@ -783,7 +784,7 @@ public class StripLayoutHelperManager
                         },
                         selectorClickHandler,
                         keyboardFocusHandler,
-                        R.drawable.ic_spark_16dp,
+                        R.drawable.ic_spark_4c_16dp,
                         GLIC_BUTTON_CLICK_SLOP_DP,
                         /* hasLongClickAction= */ false,
                         /* dismissButton= */ null);
@@ -806,11 +807,6 @@ public class StripLayoutHelperManager
                 ColorUtils.setAlphaComponentWithFloat(
                         SemanticColorUtils.getColorPrimary(context),
                         GLIC_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY);
-
-        @ColorInt int iconDefaultColor = SemanticColorUtils.getDefaultIconColor(context);
-
-        mGlicButton.setTint(
-                iconDefaultColor, iconDefaultColor, Color.TRANSPARENT, Color.TRANSPARENT);
 
         mGlicButton.setBackgroundTint(
                 backgroundDefaultColor,

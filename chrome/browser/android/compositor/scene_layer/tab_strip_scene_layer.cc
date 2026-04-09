@@ -347,8 +347,8 @@ void TabStripSceneLayer::UpdateGlicButton(
     float icon_text_padding,
     float corner_radius) {
   DCHECK(resource_manager_);
-  ui::Resource* icon_resource =
-      resource_manager_->GetStaticResourceWithTint(resource_id, tint);
+  ui::Resource* icon_resource = resource_manager_->GetResource(
+      ui::ANDROID_RESOURCE_TYPE_STATIC, resource_id);
   ui::Resource* text_resource = resource_manager_->GetResource(
       ui::ANDROID_RESOURCE_TYPE_DYNAMIC, text_texture_id);
   ui::Resource* keyboard_focus_ring_drawable =
