@@ -1754,6 +1754,10 @@ AvatarToolbarButton* ToolbarView::GetAvatarToolbarButton() {
   return avatar_;
 }
 
+AvatarToolbarButtonInterface* ToolbarView::GetAvatarToolbarButtonInterface() {
+  return avatar_;
+}
+
 ToolbarButton* ToolbarView::GetBackButton() {
   return back_;
 }

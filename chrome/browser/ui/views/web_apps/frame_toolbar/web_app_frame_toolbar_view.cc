@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
@@ -366,6 +367,11 @@ void WebAppFrameToolbarView::ZoomChangedForActiveTab(bool can_show_bubble) {
 }
 
 AvatarToolbarButton* WebAppFrameToolbarView::GetAvatarToolbarButton() {
+  return right_container_ ? right_container_->avatar_button() : nullptr;
+}
+
+AvatarToolbarButtonInterface*
+WebAppFrameToolbarView::GetAvatarToolbarButtonInterface() {
   return right_container_ ? right_container_->avatar_button() : nullptr;
 }
 

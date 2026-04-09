@@ -13,6 +13,7 @@
 
 class AppMenuButton;
 class AvatarToolbarButton;
+class AvatarToolbarButtonInterface;
 class PinnedToolbarActions;
 class ExtensionsToolbarDesktop;
 class IconLabelBubbleView;
@@ -82,7 +83,11 @@ class ToolbarButtonProvider {
   virtual void ZoomChangedForActiveTab(bool can_show_bubble) = 0;
 
   // Returns the avatar button.
+  // Deprecated. Use GetAvatarToolbarButtonInterface() instead.
   virtual AvatarToolbarButton* GetAvatarToolbarButton() = 0;
+
+  // Returns the avatar button interface.
+  virtual AvatarToolbarButtonInterface* GetAvatarToolbarButtonInterface() = 0;
 
   // Returns the back button.
   virtual ToolbarButton* GetBackButton() = 0;

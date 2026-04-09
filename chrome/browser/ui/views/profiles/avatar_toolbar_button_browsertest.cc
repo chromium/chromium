@@ -1165,7 +1165,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithSyncBrowserTest,
 
   EXPECT_FALSE(
       browser()->GetFeatures().profile_menu_coordinator()->IsShowing());
-  avatar_button->ButtonPressed();
+  avatar_button->ButtonPressed(/*is_source_accelerator=*/false);
   // TODO(crbug.com/478780706) Verifying the presence and functionality of error
   // cards within the profile menu is not easily testable. Consider implementing
   // a test harness for this purpose.
@@ -1282,7 +1282,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   EXPECT_EQ(avatar->GetText(), text_1);
   EXPECT_TRUE(avatar->HasExplicitButtonState());
   EXPECT_CALL(mock_callback_1, Run).Times(1);
-  avatar->ButtonPressed();
+  avatar->ButtonPressed(/*is_source_accelerator=*/false);
 
   const std::u16string text_2(u"Some New Text 2");
   base::MockCallback<base::RepeatingCallback<void(bool)>> mock_callback_2;
@@ -1291,7 +1291,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   EXPECT_EQ(avatar->GetText(), text_2);
   EXPECT_TRUE(avatar->HasExplicitButtonState());
   EXPECT_CALL(mock_callback_2, Run).Times(1);
-  avatar->ButtonPressed();
+  avatar->ButtonPressed(/*is_source_accelerator=*/false);
 
   // Calling the first reset callback should do nothing after the second call
   // to `SetExplicitButtonState`.

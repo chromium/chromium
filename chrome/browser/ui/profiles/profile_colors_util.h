@@ -17,6 +17,7 @@ namespace ui {
 class ColorProvider;
 }
 
+class Browser;
 class ProfileAttributesEntry;
 class ProfileAttributesStorage;
 class ThemeService;
@@ -78,6 +79,11 @@ ProfileThemeColors GetCurrentProfileThemeColors(
 // theme (CWS themes, system themes etc).
 ProfileThemeColors GetDefaultProfileThemeColors(
     const ui::ColorProvider* color_provider = nullptr);
+
+// Updates the profile theme colors for the profile of the given `browser`.
+// Should be called when the theme changes.
+void UpdateProfileThemeColors(Browser* browser,
+                              const ui::ColorProvider* color_provider);
 
 // Returns the color that should be used to display text over the profile
 // highlight color.

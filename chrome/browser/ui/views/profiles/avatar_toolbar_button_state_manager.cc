@@ -51,6 +51,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
+#include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
@@ -75,6 +76,7 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -608,25 +610,26 @@ class OnSigninStateProvider : public StateProvider {
   base::CallbackListSubscription state_changed_callback_subscription_;
 };
 
-class ShowIdentityNameStateProvider : public StateProvider,
-                                      public signin::IdentityManager::Observer,
-                                      public AvatarToolbarButton::Observer {
+class ShowIdentityNameStateProvider
+    : public StateProvider,
+      public signin::IdentityManager::Observer,
+      public AvatarToolbarButtonInterface::Observer {
  public:
   explicit ShowIdentityNameStateProvider(
       Profile* profile,
       StateObserver* state_observer,
-      AvatarToolbarButton* avatar_toolbar_button)
+      AvatarToolbarButtonInterface* avatar_control)
       : StateProvider(profile, state_observer),
-        avatar_toolbar_button_(*avatar_toolbar_button) {
+        avatar_control_(*avatar_control) {
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
     CHECK(identity_manager);
     identity_manager_observation_.Observe(identity_manager);
-    avatar_button_observation_.Observe(avatar_toolbar_button);
+    avatar_control_observation_.Observe(avatar_control);
   }
 
   ~ShowIdentityNameStateProvider() override {
-    avatar_button_observation_.Reset();
+    avatar_control_observation_.Reset();
   }
 
   // StateProvider:
@@ -707,7 +710,7 @@ class ShowIdentityNameStateProvider : public StateProvider,
     identity_manager_observation_.Reset();
   }
 
-  // AvatarToolbarButton::Observer
+  // AvatarToolbarButtonInterface::Observer
   void OnMouseExited() override { MaybeHideIdentityAnimation(); }
 
   void OnBlur() override { MaybeHideIdentityAnimation(); }
@@ -788,8 +791,8 @@ class ShowIdentityNameStateProvider : public StateProvider,
     // Keep identity visible if this button is in use (hovered or has focus) or
     // has an associated In-Product-Help promo. We should not move things around
     // when the user wants to click on `this` or another button in the parent.
-    if (avatar_toolbar_button_->IsMouseHovered() ||
-        avatar_toolbar_button_->HasFocus() || has_in_product_help_promo_) {
+    if (avatar_control_->IsMouseHovered() || avatar_control_->HasFocus() ||
+        has_in_product_help_promo_) {
       return;
     }
 
@@ -800,13 +803,12 @@ class ShowIdentityNameStateProvider : public StateProvider,
   void Clear() {
     show_identity_request_count_ = 0;
     waiting_for_image_ = false;
-    show_identity_request_count_ = false;
     has_in_product_help_promo_ = false;
 
     RequestUpdate();
   }
 
-  const raw_ref<const AvatarToolbarButton> avatar_toolbar_button_;
+  const raw_ref<const AvatarToolbarButtonInterface> avatar_control_;
 
   // Count of the show identity pill name timeouts that are currently scheduled.
   // Multiple timeouts are scheduled when multiple show requests triggers happen
@@ -820,8 +822,9 @@ class ShowIdentityNameStateProvider : public StateProvider,
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
-  base::ScopedObservation<AvatarToolbarButton, AvatarToolbarButton::Observer>
-      avatar_button_observation_{this};
+  base::ScopedObservation<AvatarToolbarButtonInterface,
+                          AvatarToolbarButtonInterface::Observer>
+      avatar_control_observation_{this};
 
   base::WeakPtrFactory<ShowIdentityNameStateProvider> weak_ptr_factory_{this};
 };
@@ -1720,10 +1723,10 @@ class SigninPendingStateProvider : public StateProvider,
   explicit SigninPendingStateProvider(
       Profile* profile,
       StateObserver* state_observer,
-      const AvatarToolbarButton* avatar_toolbar_button)
+      const AvatarToolbarButtonInterface* avatar_control)
       : StateProvider(profile, state_observer),
         identity_manager_(*IdentityManagerFactory::GetForProfile(profile)),
-        avatar_toolbar_button_(*avatar_toolbar_button) {
+        avatar_control_(*avatar_control) {
     identity_manager_observation_.Observe(&identity_manager_.get());
 
     TimeStampData* signed_in_pending_delay_start = static_cast<TimeStampData*>(
@@ -1860,7 +1863,7 @@ class SigninPendingStateProvider : public StateProvider,
   }
 
   raw_ref<signin::IdentityManager> identity_manager_;
-  const raw_ref<const AvatarToolbarButton> avatar_toolbar_button_;
+  const raw_ref<const AvatarToolbarButtonInterface> avatar_control_;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
@@ -1877,9 +1880,9 @@ class ManagementStateProvider : public StateProvider,
   explicit ManagementStateProvider(
       Profile* profile,
       StateObserver* state_observer,
-      const AvatarToolbarButton* avatar_toolbar_button)
+      const AvatarToolbarButtonInterface* avatar_control)
       : StateProvider(profile, state_observer),
-        avatar_toolbar_button_(*avatar_toolbar_button) {
+        avatar_control_(*avatar_control) {
     browser_collection_observer_.Observe(
         GlobalBrowserCollection::GetInstance());
     profile_observation_.Observe(&GetProfileAttributesStorage());
@@ -1929,7 +1932,7 @@ class ManagementStateProvider : public StateProvider,
   // ManagementService::Observer
   void OnEnterpriseLabelUpdated() override { RequestUpdate(); }
 
-  const raw_ref<const AvatarToolbarButton> avatar_toolbar_button_;
+  const raw_ref<const AvatarToolbarButtonInterface> avatar_control_;
 
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_collection_observer_{this};
@@ -2036,10 +2039,9 @@ void StateProvider::RequestUpdate() {
 }
 
 AvatarToolbarButtonStateManager::AvatarToolbarButtonStateManager(
-    AvatarToolbarButton& avatar_toolbar_button,
+    AvatarToolbarButtonInterface& avatar_control,
     Browser* browser)
-    : avatar_toolbar_button_(avatar_toolbar_button),
-      profile_(*browser->profile()) {
+    : avatar_control_(avatar_control), profile_(*browser->profile()) {
   // Creates the main states and listeners.
   CreateStatesAndListeners(browser);
   ComputeButtonActiveState();
@@ -2126,9 +2128,9 @@ void AvatarToolbarButtonStateManager::CreateStatesAndListeners(
                                                   /*state_observer=*/this);
     }
     states_[ButtonState::kShowIdentityName] =
-        std::make_unique<ShowIdentityNameStateProvider>(
-            profile,
-            /*state_observer=*/this, &avatar_toolbar_button_.get());
+        std::make_unique<ShowIdentityNameStateProvider>(profile,
+                                                        /*state_observer=*/this,
+                                                        &avatar_control_.get());
 
     states_[ButtonState::kUpgradeClientError] =
         std::make_unique<UpgradeClientErrorStateProvider>(
@@ -2168,14 +2170,14 @@ void AvatarToolbarButtonStateManager::CreateStatesAndListeners(
 
     // Contains both Work and School.
     states_[ButtonState::kManagement] =
-        std::make_unique<ManagementStateProvider>(
-            profile,
-            /*state_observer=*/this, &avatar_toolbar_button_.get());
+        std::make_unique<ManagementStateProvider>(profile,
+                                                  /*state_observer=*/this,
+                                                  &avatar_control_.get());
 
     states_[ButtonState::kSigninPending] =
-        std::make_unique<SigninPendingStateProvider>(
-            profile,
-            /*state_observer=*/this, &avatar_toolbar_button_.get());
+        std::make_unique<SigninPendingStateProvider>(profile,
+                                                     /*state_observer=*/this,
+                                                     &avatar_control_.get());
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
     if (webauthn::PasskeyUnlockManager::IsPasskeyUnlockErrorUiEnabled()) {
@@ -2218,7 +2220,7 @@ void AvatarToolbarButtonStateManager::OnStateProviderUpdateRequest(
     // Updates goes through if the requesting state was the current button
     // active state, since we are now clearing it, otherwise we just ignore
     // the request.
-    if (current_active_state_pair_->second.get() == requesting_state) {
+    if (GetActiveStateProvider() == requesting_state) {
       // Recompute the new button active state as we are clearing the
       // requesting state effects.
       ComputeButtonActiveState();
@@ -2237,7 +2239,7 @@ void AvatarToolbarButtonStateManager::OnStateProviderUpdateRequest(
   // because the requesting state despite being active, does not have the
   // highest current active priority, meaning that it's update request should
   // not have any effect.
-  if (current_active_state_pair_->second.get() != requesting_state) {
+  if (GetActiveStateProvider() != requesting_state) {
     return;
   }
   UpdateAvatarButton();
@@ -2268,11 +2270,11 @@ void AvatarToolbarButtonStateManager::ComputeButtonActiveState() {
 }
 
 void AvatarToolbarButtonStateManager::UpdateButtonIcon() {
-  avatar_toolbar_button_->UpdateIcon();
+  avatar_control_->UpdateIcon();
 }
 
 void AvatarToolbarButtonStateManager::UpdateButtonText() {
-  avatar_toolbar_button_->UpdateText();
+  avatar_control_->UpdateText();
 }
 
 void AvatarToolbarButtonStateManager::UpdateAvatarButton() {

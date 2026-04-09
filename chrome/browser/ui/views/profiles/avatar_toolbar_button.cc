@@ -93,38 +93,6 @@ constexpr int kChromeRefreshImageLabelPadding = 6;
 // Value used to enlarge the AvatarIcon to accommodate for DIP scaling.
 constexpr int kAvatarIconEnlargement = 1;
 
-void UpdateProfileThemeColors(Browser* browser,
-                              const ui::ColorProvider* color_provider) {
-  if (!color_provider) {
-    return;
-  }
-  CHECK(browser);
-  Profile* profile = browser->profile();
-  CHECK(profile);
-  if (profile->IsOffTheRecord() || profile->IsGuestSession()) {
-    return;
-  }
-  if (web_app::AppBrowserController::IsWebApp(browser)) {
-    return;
-  }
-  ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile->GetPath());
-  if (!entry) {
-    return;
-  }
-  ThemeService* service = ThemeServiceFactory::GetForProfile(profile);
-  if (!service) {
-    return;
-  }
-  // Use default profile colors only for extension and system themes.
-  entry->SetProfileThemeColors(
-      ShouldUseDefaultProfileColors(*service)
-          ? GetDefaultProfileThemeColors(color_provider)
-          : GetCurrentProfileThemeColors(*color_provider, *service));
-}
-
 }  // namespace
 
 // static
@@ -500,14 +468,6 @@ bool AvatarToolbarButton::HasExplicitButtonState() const {
   return state_manager_->HasExplicitButtonState();
 }
 
-void AvatarToolbarButton::SetButtonActionDisabled(bool disabled) {
-  button_action_disabled_ = disabled;
-}
-
-bool AvatarToolbarButton::IsButtonActionDisabled() const {
-  return button_action_disabled_;
-}
-
 void AvatarToolbarButton::MaybeShowProfileSwitchIPH() {
   // Prevent showing the promo right when the browser was created. Wait a small
   // delay for a smoother animation.
@@ -695,19 +655,7 @@ void AvatarToolbarButton::OnThemeChanged() {
   }
 }
 
-// static
-base::AutoReset<base::TimeDelta>
-AvatarToolbarButton::SetScopedIPHMinDelayAfterCreationForTesting(
-    base::TimeDelta delay) {
-  return base::AutoReset<base::TimeDelta>(&g_iph_min_delay_after_creation,
-                                          delay);
-}
-
 void AvatarToolbarButton::ButtonPressed(bool is_source_accelerator) {
-  if (button_action_disabled_) {
-    return;
-  }
-
 #if !BUILDFLAG(IS_CHROMEOS)
   if (BrowserUserEducationInterface::From(browser_)->IsFeaturePromoActive(
           feature_engagement::kIPHPasswordsSavePrimingPromoFeature)) {
@@ -820,6 +768,14 @@ bool AvatarToolbarButton::IsLabelPresentAndVisible() const {
   return label()->GetVisible() && !label()->GetText().empty();
 }
 
+bool AvatarToolbarButton::IsMouseHovered() const {
+  return views::View::IsMouseHovered();
+}
+
+bool AvatarToolbarButton::HasFocus() const {
+  return views::View::HasFocus();
+}
+
 void AvatarToolbarButton::UpdateLayoutInsets() {
   SetLayoutInsets(::GetLayoutInsets(
       IsLabelPresentAndVisible() ? AVATAR_CHIP_PADDING : TOOLBAR_BUTTON));
@@ -849,14 +805,6 @@ void AvatarToolbarButton::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-// static
-base::AutoReset<std::optional<base::TimeDelta>>
-AvatarToolbarButton::CreateScopedInfiniteDelayOverrideForTesting(
-    AvatarDelayType delay_type) {
-  return AvatarToolbarButtonStateManager::
-      CreateScopedInfiniteDelayOverrideForTesting(delay_type);
-}
-
 void AvatarToolbarButton::ClearActiveStateForTesting() {
   CHECK(state_manager_);
   StateProvider* state_provider = state_manager_->GetActiveStateProvider();
@@ -865,13 +813,6 @@ void AvatarToolbarButton::ClearActiveStateForTesting() {
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// static
-base::AutoReset<std::optional<base::TimeDelta>> AvatarToolbarButton::
-    CreateScopedZeroDelayOverrideSigninPendingTextForTesting() {
-  return AvatarToolbarButtonStateManager::
-      CreateScopedZeroDelayOverrideSigninPendingTextForTesting();
-}
-
 void AvatarToolbarButton::ForceShowingPromoForTesting() {
   CHECK(state_manager_);
   state_manager_->ForceShowingPromoForTesting();

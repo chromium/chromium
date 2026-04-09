@@ -343,7 +343,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
 
   views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
   // Pressing the avatar button should dismiss the bubble.
-  GetAvatarButton()->ButtonPressed();
+  GetAvatarButton()->ButtonPressed(false);
   destroyed_waiter.Wait();
   EXPECT_TRUE(callback_result_.has_value());
   EXPECT_EQ(callback_result_, SigninInterceptionResult::kDismissed);
@@ -568,7 +568,6 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
 
-  ASSERT_FALSE(GetAvatarButton()->IsButtonActionDisabled());
   // Creating the bubble through the static function.
   std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> handle =
       DiceWebSigninInterceptionBubbleView::CreateBubble(
@@ -597,7 +596,6 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   ASSERT_TRUE(callback_result_.has_value());
   EXPECT_EQ(callback_result_, SigninInterceptionResult::kAccepted);
   EXPECT_TRUE(bubble->GetAccepted());
-  EXPECT_FALSE(GetAvatarButton()->IsButtonActionDisabled());
 
   // Widget was not closed yet - the delegate then takes care of it through the
   // handle.
@@ -655,7 +653,6 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   ASSERT_TRUE(callback_result_.has_value());
   EXPECT_EQ(callback_result_, SigninInterceptionResult::kDeclined);
   EXPECT_FALSE(bubble->GetAccepted());
-  EXPECT_FALSE(GetAvatarButton()->IsButtonActionDisabled());
 
   EXPECT_TRUE(widget->IsClosed());
   // Widget will close now.
@@ -718,7 +715,6 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
 
   ASSERT_TRUE(callback_result_.has_value());
   EXPECT_EQ(callback_result_, SigninInterceptionResult::kDismissed);
-  EXPECT_FALSE(GetAvatarButton()->IsButtonActionDisabled());
 
   histogram_tester.ExpectUniqueSample("Signin.InterceptResult.ChromeSignin",
                                       SigninInterceptionResult::kDismissed, 1);
@@ -805,7 +801,6 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
 
   ASSERT_TRUE(callback_result_.has_value());
   EXPECT_EQ(callback_result_, SigninInterceptionResult::kDismissed);
-  EXPECT_FALSE(GetAvatarButton()->IsButtonActionDisabled());
 
   histogram_tester.ExpectUniqueSample("Signin.InterceptResult.ChromeSignin",
                                       SigninInterceptionResult::kDismissed, 1);
@@ -856,7 +851,6 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
 
   ASSERT_TRUE(callback_result_.has_value());
   EXPECT_EQ(callback_result_, SigninInterceptionResult::kDismissed);
-  EXPECT_FALSE(GetAvatarButton()->IsButtonActionDisabled());
 
   histogram_tester.ExpectUniqueSample("Signin.InterceptResult.ChromeSignin",
                                       SigninInterceptionResult::kDismissed, 1);

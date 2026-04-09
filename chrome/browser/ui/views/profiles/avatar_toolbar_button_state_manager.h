@@ -17,14 +17,14 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/profiles/avatar_toolbar_button_types.h"
+#include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "ui/base/models/image_model.h"
 
 class Browser;
 class Profile;
-class AvatarToolbarButton;
-enum class AvatarDelayType;
 
 namespace ui {
 class ColorProvider;
@@ -187,7 +187,7 @@ class AvatarToolbarButtonStateManager
   };
 
   explicit AvatarToolbarButtonStateManager(
-      AvatarToolbarButton& avatar_toolbar_button,
+      AvatarToolbarButtonInterface& avatar_control,
       Browser* browser);
   ~AvatarToolbarButtonStateManager() override;
 
@@ -210,7 +210,7 @@ class AvatarToolbarButtonStateManager
   // Testing functions: check `AvatarToolbarButton` equivalent functions.
   [[nodiscard]] static base::AutoReset<std::optional<base::TimeDelta>>
   CreateScopedInfiniteDelayOverrideForTesting(AvatarDelayType delay_type);
-  void ClearActiveStateForTesting();
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   [[nodiscard]] static base::AutoReset<std::optional<base::TimeDelta>>
   CreateScopedZeroDelayOverrideSigninPendingTextForTesting();
@@ -235,8 +235,8 @@ class AvatarToolbarButtonStateManager
   // Multiple states could be active at the same time.
   void ComputeButtonActiveState();
 
-  // `AvatarToolbarButton::UpdateIcon()` will notify observers, the
-  // `ShowIdentityNameStateProvider` being one of the observers.
+  // `AvatarToolbarButtonInterface::UpdateIcon()` will notify observers,
+  // the `ShowIdentityNameStateProvider` being one of the observers.
   void UpdateButtonIcon();
 
   void UpdateButtonText();
@@ -267,7 +267,7 @@ class AvatarToolbarButtonStateManager
                             const std::u16string&) override;
 
   base::flat_map<ButtonState, std::unique_ptr<StateProvider>> states_;
-  raw_ref<AvatarToolbarButton> avatar_toolbar_button_;
+  raw_ref<AvatarToolbarButtonInterface> avatar_control_;
 
   // Active state per the last request to `ComputeButtonActiveState()`.
   // Pointer to the active element of `states_` with the highest priority.
