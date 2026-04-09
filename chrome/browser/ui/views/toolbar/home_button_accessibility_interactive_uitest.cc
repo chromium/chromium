@@ -164,8 +164,16 @@ IN_PROC_BROWSER_TEST_P(HomeButtonAccessibilityTest, AccessibilityNode) {
           l10n_util::GetStringUTF16(IDS_TOOLTIP_HOME)));
 }
 
+// TODO(crbug.com/500966638): Re-enable the test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ToggleHomeButtonVisibilityWithPref \
+  DISABLED_ToggleHomeButtonVisibilityWithPref
+#else
+#define MAYBE_ToggleHomeButtonVisibilityWithPref \
+  ToggleHomeButtonVisibilityWithPref
+#endif
 IN_PROC_BROWSER_TEST_P(HomeButtonAccessibilityTest,
-                       ToggleHomeButtonVisibilityWithPref) {
+                       MAYBE_ToggleHomeButtonVisibilityWithPref) {
   RunTestSequence(
       // Start visible
       Do([this]() {
