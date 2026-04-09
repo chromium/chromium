@@ -949,7 +949,8 @@ void VerticalTabStripRegionView::OnCollapseStateChanged(
     tab_strip_view_->SetCollapsedState(collapsed);
   }
 
-  if (state == tabs::VerticalTabStripCollapseState::kExpanded) {
+  if (state == tabs::VerticalTabStripCollapseState::kExpanded ||
+      state == tabs::VerticalTabStripCollapseState::kCollapsed) {
     UpdateExpandOnHoverState();
   }
 }
