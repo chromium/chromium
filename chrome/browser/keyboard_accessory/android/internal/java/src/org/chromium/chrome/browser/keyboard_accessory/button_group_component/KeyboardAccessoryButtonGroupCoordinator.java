@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.keyboard_accessory.button_group_component;
 
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.ACTIVE_TAB;
-import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.BUTTON_SELECTION_CALLBACKS;
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.TABS;
 
 import android.view.View;
@@ -29,7 +28,7 @@ import java.util.HashMap;
 @NullMarked
 public class KeyboardAccessoryButtonGroupCoordinator {
     private final PropertyModel mModel =
-            new PropertyModel.Builder(TABS, ACTIVE_TAB, BUTTON_SELECTION_CALLBACKS)
+            new PropertyModel.Builder(KeyboardAccessoryButtonGroupProperties.ALL_KEYS)
                     .with(TABS, new ListModel<>())
                     .with(ACTIVE_TAB, null)
                     .build();
@@ -132,6 +131,15 @@ public class KeyboardAccessoryButtonGroupCoordinator {
 
     public SheetOpenerCallbacks getSheetOpenerCallbacks() {
         return mSheetOpenerCallbacks;
+    }
+
+    /**
+     * Sets the callback to be performed when the @memory search button is clicked.
+     *
+     * @param callback The {@link Runnable} to execute.
+     */
+    public void setAtMemoryCallback(Runnable callback) {
+        mModel.set(KeyboardAccessoryButtonGroupProperties.AT_MEMORY_CALLBACK, callback);
     }
 
     /**

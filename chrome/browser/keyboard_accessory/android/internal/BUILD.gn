@@ -72,6 +72,7 @@ android_library("java") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/util:java",
+    "//components/autofill/android:autofill_features_java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",

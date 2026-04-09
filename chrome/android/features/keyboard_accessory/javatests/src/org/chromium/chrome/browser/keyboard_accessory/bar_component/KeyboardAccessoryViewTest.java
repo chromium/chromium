@@ -1018,7 +1018,7 @@ public class KeyboardAccessoryViewTest {
     public void testAccessoryButtonsHaveHoverBackground() throws InterruptedException {
         KeyboardAccessoryButtonGroupView buttonGroupView = setupButtonsAndGetGroup();
         ArrayList<ImageButton> buttons = buttonGroupView.getButtons();
-        assertEquals("Expected two buttons to be present.", 2, buttons.size());
+        assertEquals("Expected three buttons to be present.", 3, buttons.size());
 
         // The presence of a background drawable (e.g., a state-list drawable)
         // is used to enable visual feedback on hover and press states.
@@ -1028,6 +1028,9 @@ public class KeyboardAccessoryViewTest {
         assertNotNull(
                 "Second button should have a background for hover effects.",
                 buttons.get(1).getBackground());
+        assertNotNull(
+                "Third button should have a background for hover effects.",
+                buttons.get(2).getBackground());
     }
 
     @Test
@@ -1035,16 +1038,19 @@ public class KeyboardAccessoryViewTest {
     public void testAccessoryButtonsHaveCorrectSpacing() throws InterruptedException {
         KeyboardAccessoryButtonGroupView buttonGroupView = setupButtonsAndGetGroup();
         ArrayList<ImageButton> buttons = buttonGroupView.getButtons();
-        assertEquals("Expected two buttons to be present.", 2, buttons.size());
+        assertEquals("Expected three buttons to be present.", 3, buttons.size());
 
         ImageButton button1 = buttons.get(0);
         ImageButton button2 = buttons.get(1);
+        ImageButton button3 = buttons.get(2);
 
         // Check spacing.
         ViewGroup.MarginLayoutParams params1 =
                 (ViewGroup.MarginLayoutParams) button1.getLayoutParams();
         ViewGroup.MarginLayoutParams params2 =
                 (ViewGroup.MarginLayoutParams) button2.getLayoutParams();
+        ViewGroup.MarginLayoutParams params3 =
+                (ViewGroup.MarginLayoutParams) button3.getLayoutParams();
 
         int expectedMargin =
                 buttonGroupView
@@ -1059,6 +1065,24 @@ public class KeyboardAccessoryViewTest {
                 "Second button's left margin is incorrect.", expectedMargin, params2.leftMargin);
         assertEquals(
                 "Second button's right margin is incorrect.", expectedMargin, params2.rightMargin);
+        assertEquals(
+                "Third button's left margin is incorrect.", expectedMargin, params3.leftMargin);
+        assertEquals(
+                "Third button's right margin is incorrect.", expectedMargin, params3.rightMargin);
+    }
+
+    @Test
+    @MediumTest
+    public void testAlwaysAddsAtMemoryButton() throws InterruptedException {
+        KeyboardAccessoryButtonGroupView buttonGroupView = setupButtonsAndGetGroup();
+        ArrayList<ImageButton> buttons = buttonGroupView.getButtons();
+        assertEquals("Expected three buttons to be present.", 3, buttons.size());
+
+        // The first button should be the @memory spark icon.
+        ImageButton atMemoryButton = buttons.get(0);
+        assertEquals(
+                buttonGroupView.getContext().getString(R.string.at_memory_icon_description),
+                atMemoryButton.getContentDescription());
     }
 
     @Test
@@ -1066,26 +1090,26 @@ public class KeyboardAccessoryViewTest {
     public void testAccessoryButtonsEnabledState() throws InterruptedException {
         KeyboardAccessoryButtonGroupView buttonGroupView = setupButtonsAndGetGroup();
         ArrayList<ImageButton> buttons = buttonGroupView.getButtons();
-        assertEquals("Expected two buttons to be present.", 2, buttons.size());
+        assertEquals("Expected three buttons to be present.", 3, buttons.size());
 
         // Initially buttons should be enabled.
         assertTrue(buttonGroupView.isEnabled());
         assertTrue(buttons.get(0).isEnabled());
         assertTrue(buttons.get(1).isEnabled());
+        assertTrue(buttons.get(2).isEnabled());
 
         // Disable the group.
         ThreadUtils.runOnUiThreadBlocking(() -> buttonGroupView.setEnabled(false));
         assertFalse(buttonGroupView.isEnabled());
         assertFalse(buttons.get(0).isEnabled());
         assertFalse(buttons.get(1).isEnabled());
+        assertFalse(buttons.get(2).isEnabled());
 
         // Add a new button while the group is disabled.
         ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        buttonGroupView.addButton(
-                                R.drawable.ic_password_manager_key, "New Key Icon"));
-        assertEquals("Expected three buttons to be present.", 3, buttons.size());
-        assertFalse("New button should inherit disabled state", buttons.get(2).isEnabled());
+                () -> buttonGroupView.addButton(R.drawable.ic_password_manager_key, "Key Icon", 2));
+        assertEquals("Expected four buttons to be present.", 4, buttons.size());
+        assertFalse("New button should inherit disabled state", buttons.get(3).isEnabled());
 
         // Enable the group again.
         ThreadUtils.runOnUiThreadBlocking(() -> buttonGroupView.setEnabled(true));
@@ -1093,6 +1117,7 @@ public class KeyboardAccessoryViewTest {
         assertTrue(buttons.get(0).isEnabled());
         assertTrue(buttons.get(1).isEnabled());
         assertTrue(buttons.get(2).isEnabled());
+        assertTrue(buttons.get(3).isEnabled());
     }
 
     @Test
@@ -1221,7 +1246,7 @@ public class KeyboardAccessoryViewTest {
         assertNotNull(buttonGroupView);
 
         // Wait for buttons to be added.
-        CriteriaHelper.pollUiThread(() -> buttonGroupView.getButtons().size() == 2);
+        CriteriaHelper.pollUiThread(() -> buttonGroupView.getButtons().size() == 3);
 
         return buttonGroupView;
     }
@@ -1310,13 +1335,14 @@ public class KeyboardAccessoryViewTest {
                     public void onViewBound(View buttons) {
                         KeyboardAccessoryButtonGroupView group =
                                 (KeyboardAccessoryButtonGroupView) buttons;
-                        if (group.getButtons().size() > 0) {
+                        if (group.getButtons().size() > 1) {
                             return;
                         }
 
-                        group.addButton(R.drawable.ic_password_manager_key, "Key Icon");
+                        group.addAtMemoryButton();
+                        group.addButton(R.drawable.ic_password_manager_key, "Key Icon", 0);
 
-                        group.addButton(R.drawable.ic_credit_card_black, "Card Icon 2");
+                        group.addButton(R.drawable.ic_credit_card_black, "Card Icon 2", 1);
                     }
 
                     @Override

@@ -27,6 +27,7 @@ import java.util.ArrayList;
 public class KeyboardAccessoryButtonGroupView extends LinearLayout {
     private final ArrayList<ImageButton> mButtons = new ArrayList<>();
     private @Nullable KeyboardAccessoryButtonGroupListener mListener;
+    private @Nullable Runnable mAtMemoryCallback;
 
     /**
      * This interface should be implemented by classes which want to observe clicks on the buttons
@@ -42,6 +43,10 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
         this.setGravity(Gravity.CENTER);
     }
 
+    public void setAtMemoryCallback(Runnable callback) {
+        mAtMemoryCallback = callback;
+    }
+
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
@@ -51,12 +56,24 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
     }
 
     /**
-     * Creates a new button and appends it to the end of the button group at the end of the bar. ...
+     * Creates a new button and appends it to the end of the button group at the end of the bar.
      *
      * @param iconId Id of the icon to be displayed in the button.
      * @param contentDescription The contentDescription to be used for the button.
+     * @param tabIndex The logical position of the button (e.g. the tab index).
      */
-    public void addButton(@DrawableRes int iconId, CharSequence contentDescription) {
+    public void addButton(@DrawableRes int iconId, CharSequence contentDescription, int tabIndex) {
+        ImageButton button = createButton(iconId, contentDescription);
+        button.setOnClickListener(
+                view -> {
+                    if (mListener == null) return;
+                    mListener.onButtonClicked(tabIndex);
+                });
+        mButtons.add(button);
+        addView(button);
+    }
+
+    private ImageButton createButton(@DrawableRes int iconId, CharSequence contentDescription) {
         LayoutInflater inflater = LayoutInflater.from(getContext());
         ImageButton button =
                 (ImageButton)
@@ -64,11 +81,6 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
         button.setImageResource(iconId);
         button.setContentDescription(contentDescription);
         button.setEnabled(isEnabled());
-        button.setOnClickListener(
-                view -> {
-                    if (mListener == null) return;
-                    mListener.onButtonClicked(mButtons.indexOf(view));
-                });
         // Add a spacing between buttons in the group.
         ViewGroup.MarginLayoutParams marginParams =
                 (ViewGroup.MarginLayoutParams) button.getLayoutParams();
@@ -77,6 +89,18 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
         marginParams.leftMargin = spacing;
         marginParams.rightMargin = spacing;
         button.setLayoutParams(marginParams);
+        return button;
+    }
+
+    public void addAtMemoryButton() {
+        ImageButton button =
+                createButton(
+                        R.drawable.search_spark,
+                        getContext().getString(R.string.at_memory_icon_description));
+        button.setOnClickListener(
+                v -> {
+                    if (mAtMemoryCallback != null) mAtMemoryCallback.run();
+                });
         mButtons.add(button);
         addView(button);
     }

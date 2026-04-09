@@ -280,6 +280,9 @@
       <message name="IDS_PASSWORD_ACCESSORY_RECOVERY_PASSWORD_TITLE" desc="Title marking that a saved credential offered for filling is a recovery password which the user can try filling if the main password doesn't work.">
         Recovery password
       </message>
+      <message name="IDS_AT_MEMORY_ICON_DESCRIPTION" desc="Accessibility description for a button that opens a feature to help users find and fill saved autofill information.">
+        Recall and Fill
+      </message>
     </messages>
   </release>
 </grit>

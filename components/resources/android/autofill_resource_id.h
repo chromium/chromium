@@ -137,3 +137,6 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_VEHICLE, R.drawable.directions_car)
 // Note that R.drawable.google_wallet_24dp is always present, but the icon in
 // branded builds is different from the one in unbranded builds.
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_WALLET, R.drawable.google_wallet_24dp)
+
+// @memory search icon.
+DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_SEARCH_SPARK, R.drawable.search_spark)

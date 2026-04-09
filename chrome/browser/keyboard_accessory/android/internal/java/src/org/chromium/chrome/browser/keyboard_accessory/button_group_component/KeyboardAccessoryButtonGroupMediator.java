@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.keyboard_accessory.button_group_component;
 
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.ACTIVE_TAB;
+import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.AT_MEMORY_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.BUTTON_SELECTION_CALLBACKS;
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.TABS;
 
@@ -81,7 +82,7 @@ class KeyboardAccessoryButtonGroupMediator
             closeActiveTab(); // Make sure the active tab is reset for a modified tab list.
             return;
         }
-        if (propertyKey == BUTTON_SELECTION_CALLBACKS) {
+        if (propertyKey == BUTTON_SELECTION_CALLBACKS || propertyKey == AT_MEMORY_CALLBACK) {
             return;
         }
         assert false : "Every property update needs to be handled explicitly!";
