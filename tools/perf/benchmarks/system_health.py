@@ -231,7 +231,7 @@ class MobileMemorySystemHealth(_MemorySystemHealthBenchmark):
     return 'system_health.memory_mobile'
 
 
-@benchmark.Info(emails=['oksamyt@chromium.org', 'torne@chromium.org'],
+@benchmark.Info(emails=['torne@chromium.org', 'ptrucinskas@chromium.org'],
                 component='Mobile>WebView>Perf')
 class WebviewStartupSystemHealthBenchmark(perf_benchmark.PerfBenchmark):
   """Webview startup time benchmark

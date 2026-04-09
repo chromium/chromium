@@ -7939,7 +7939,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Android.WebView.LoadUrl.UrlScheme" enum="WebViewUrlScheme"
     expires_after="2024-06-13">
   <owner>ntfschr@chromium.org</owner>
-  <owner>oksamyt@chromium.org</owner>
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
