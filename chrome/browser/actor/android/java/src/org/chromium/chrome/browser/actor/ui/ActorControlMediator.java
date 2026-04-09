@@ -16,14 +16,14 @@ public class ActorControlMediator {
         mModel = model;
     }
 
-    void setContent(String title, String desc) {
+    /**
+     * Sets the content and state of the actor control view.
+     *
+     * @param title The title of the actor control view.
+     * @param state The PeekViewUiState containing the desired UI properties.
+     */
+    void setContent(String title, PeekViewUiState state) {
         mModel.set(ActorControlProperties.TASK_TITLE, title);
-        mModel.set(ActorControlProperties.TASK_STEP_DESCRIPTION, desc);
-    }
-
-    void updateStatusIcon(boolean isPaused) {
-        int iconRes =
-                isPaused ? R.drawable.ic_play_arrow_white_24dp : R.drawable.ic_pause_white_24dp;
-        mModel.set(ActorControlProperties.STATUS_ICON_RESOURCE, iconRes);
+        mModel.set(ActorControlProperties.PEEK_VIEW_UI_STATE, state);
     }
 }

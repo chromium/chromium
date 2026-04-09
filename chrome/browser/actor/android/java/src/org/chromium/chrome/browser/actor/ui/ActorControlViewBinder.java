@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.actor.ui;
 
+import android.content.Context;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -22,14 +24,15 @@ public class ActorControlViewBinder {
     public static void bind(PropertyModel model, ActorControlView view, PropertyKey propertyKey) {
         if (ActorControlProperties.TASK_TITLE == propertyKey) {
             view.setTitle(model.get(ActorControlProperties.TASK_TITLE));
-        } else if (ActorControlProperties.TASK_STEP_DESCRIPTION == propertyKey) {
-            view.setStepDescription(model.get(ActorControlProperties.TASK_STEP_DESCRIPTION));
+        } else if (ActorControlProperties.PEEK_VIEW_UI_STATE == propertyKey) {
+            PeekViewUiState state = model.get(ActorControlProperties.PEEK_VIEW_UI_STATE);
+            Context context = view.getContext();
+            view.setStepDescription(state.getDescription(context));
+            view.setStatusIconResource(state.iconResId);
         } else if (ActorControlProperties.ON_PLAY_PAUSE_CLICKED == propertyKey) {
             view.setPlayPauseListener(model.get(ActorControlProperties.ON_PLAY_PAUSE_CLICKED));
         } else if (ActorControlProperties.ON_CLOSE_CLICKED == propertyKey) {
             view.setCloseClickListener(model.get(ActorControlProperties.ON_CLOSE_CLICKED));
-        } else if (propertyKey == ActorControlProperties.STATUS_ICON_RESOURCE) {
-            view.setStatusIconResource(model.get(ActorControlProperties.STATUS_ICON_RESOURCE));
         }
     }
 }

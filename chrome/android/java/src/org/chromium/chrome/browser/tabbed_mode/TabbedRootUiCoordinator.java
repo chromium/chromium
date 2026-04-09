@@ -1184,7 +1184,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             (v) -> {},
                             (v) -> {},
                             mActivityTabProvider.asObservable(),
-                            mTabBottomSheetManager);
+                            mTabBottomSheetManager,
+                            mProfileSupplier);
         }
 
         mForcedSigninController =

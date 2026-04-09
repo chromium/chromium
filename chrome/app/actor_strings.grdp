@@ -122,4 +122,15 @@
   <message name="IDS_ACTOR_NOTIFICATION_BODY_INTERRUPTED" desc="Notification body text when the actor has task is stopped not by user." formatter_data="android_java">
     <ph name="TASK_TITLE">%s<ex>My Task</ex></ph>\nGemini stopped your task. Return to Chrome to review it.
   </message>
+
+    <!-- Glic Peek View UI State Strings -->
+  <message name="IDS_PEEK_STATE_ACTING" desc="Status message indicating that Gemini is actively working on a task the user assigned." formatter_data="android_java">
+    Working on your task...
+  </message>
+  <message name="IDS_PEEK_STATE_PAUSED" desc="Status message indicating that the task Gemini was working on has been paused." formatter_data="android_java">
+    Task paused
+  </message>
+  <message name="IDS_PEEK_STATE_WAITING" desc="Status message indicating that Gemini requires user input or attention to continue the current task." formatter_data="android_java">
+    Needs your attention
+  </message>
 </grit-part>

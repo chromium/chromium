@@ -17,15 +17,14 @@ class ActorControlProperties {
     public static final PropertyModel.WritableObjectPropertyKey<String> TASK_TITLE =
             new PropertyModel.WritableObjectPropertyKey<>();
 
-    /** A sub-label describing the specific step or status of the current task. */
-    public static final PropertyModel.WritableObjectPropertyKey<String> TASK_STEP_DESCRIPTION =
-            new PropertyModel.WritableObjectPropertyKey<>();
+    /** The current state of the Peek View UI, containing description, icon, and button states. */
+    public static final PropertyModel.WritableObjectPropertyKey<PeekViewUiState>
+            PEEK_VIEW_UI_STATE = new PropertyModel.WritableObjectPropertyKey<>();
 
-    /** Whether the task is currently paused. */
-    public static final PropertyModel.WritableBooleanPropertyKey IS_TASK_PAUSED =
-            new PropertyModel.WritableBooleanPropertyKey();
-
-    /** The click listener for the close button, typically used to dismiss the control. */
+    /**
+     * The click listener for the play/pause button. The button's appearance and visibility are
+     * dictated by the current PEEK_VIEW_UI_STATE.
+     */
     public static final PropertyModel.ReadableObjectPropertyKey<View.OnClickListener>
             ON_PLAY_PAUSE_CLICKED = new PropertyModel.ReadableObjectPropertyKey<>();
 
@@ -33,17 +32,8 @@ class ActorControlProperties {
     public static final PropertyModel.ReadableObjectPropertyKey<View.OnClickListener>
             ON_CLOSE_CLICKED = new PropertyModel.ReadableObjectPropertyKey<>();
 
-    /** The resource ID for the status icon (e.g., play or pause). */
-    public static final PropertyModel.WritableIntPropertyKey STATUS_ICON_RESOURCE =
-            new PropertyModel.WritableIntPropertyKey();
-
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                TASK_TITLE,
-                TASK_STEP_DESCRIPTION,
-                IS_TASK_PAUSED,
-                ON_PLAY_PAUSE_CLICKED,
-                ON_CLOSE_CLICKED,
-                STATUS_ICON_RESOURCE
+                TASK_TITLE, PEEK_VIEW_UI_STATE, ON_PLAY_PAUSE_CLICKED, ON_CLOSE_CLICKED
             };
 }
