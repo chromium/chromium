@@ -11,7 +11,6 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "printing/mojom/print.mojom.h"
 #include "skia/ext/skia_utils_win.h"
@@ -57,7 +56,7 @@ const BYTE* GetBitmapBits(const EMRSTRETCHDIBITS* sdib_record) {
 
 }  // namespace
 
-Emf::Emf() : emf_(nullptr), hdc_(nullptr) {}
+Emf::Emf() = default;
 
 Emf::~Emf() {
   Close();
@@ -108,9 +107,7 @@ bool Emf::Playback(HDC hdc, const RECT* rect) const {
 bool Emf::SafePlayback(HDC context) const {
   DCHECK(emf_ && !hdc_);
   XFORM base_matrix;
-  if (!GetWorldTransform(context, &base_matrix)) {
-    NOTREACHED();
-  }
+  CHECK(GetWorldTransform(context, &base_matrix));
   Emf::EnumerationContext playback_context;
   playback_context.base_matrix = &base_matrix;
   gfx::Rect bound = GetPageBounds(1);
@@ -125,9 +122,7 @@ gfx::Rect Emf::GetPageBounds(unsigned int page_number) const {
   DCHECK(emf_ && !hdc_);
   DCHECK_EQ(1U, page_number);
   ENHMETAHEADER header;
-  if (GetEnhMetaFileHeader(emf_, sizeof(header), &header) != sizeof(header)) {
-    NOTREACHED();
-  }
+  CHECK_EQ(GetEnhMetaFileHeader(emf_, sizeof(header), &header), sizeof(header));
   // Add 1 to right and bottom because it's inclusive rectangle.
   // See ENHMETAHEADER.
   return gfx::Rect(header.rclBounds.left, header.rclBounds.top,
@@ -311,9 +306,7 @@ bool Emf::Record::SafePlayback(Emf::EnumerationContext* context) const {
       } else {
         const uint32_t* pixels =
             static_cast<const uint32_t*>(bitmap.getPixels());
-        if (!pixels) {
-          NOTREACHED();
-        }
+        CHECK(pixels);
         BITMAPINFOHEADER bmi = {0};
         skia::CreateBitmapHeaderForN32SkBitmap(bitmap, &bmi);
         res =
@@ -394,15 +387,12 @@ bool Emf::FinishPage() {
 }
 
 Emf::Enumerator::Enumerator(const Emf& emf, HDC context, const RECT* rect) {
-  items_.clear();
-  if (!::EnumEnhMetaFile(context, emf.emf(), &Emf::Enumerator::EnhMetaFileProc,
-                         reinterpret_cast<void*>(this), rect)) {
-    NOTREACHED();
-  }
+  CHECK(::EnumEnhMetaFile(context, emf.emf(), &Emf::Enumerator::EnhMetaFileProc,
+                          this, rect));
   DCHECK_EQ(context_.hdc, context);
 }
 
-Emf::Enumerator::~Enumerator() {}
+Emf::Enumerator::~Enumerator() = default;
 
 Emf::Enumerator::const_iterator Emf::Enumerator::begin() const {
   return items_.begin();

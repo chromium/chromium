@@ -86,10 +86,10 @@ class COMPONENT_EXPORT(PRINTING_METAFILE) Emf : public Metafile {
                                        LPARAM param);
 
   // Compiled EMF data handle.
-  HENHMETAFILE emf_;
+  HENHMETAFILE emf_ = nullptr;
 
   // Valid when generating EMF data through a virtual HDC.
-  HDC hdc_;
+  HDC hdc_ = nullptr;
 };
 
 // Emf subclass that knows how to play back PostScript data embedded as EMF
