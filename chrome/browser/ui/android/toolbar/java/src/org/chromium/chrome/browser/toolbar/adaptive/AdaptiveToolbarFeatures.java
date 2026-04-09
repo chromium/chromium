@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudFeatures;
+import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -209,7 +210,9 @@ public class AdaptiveToolbarFeatures {
     }
 
     public static boolean isGlicActionEnabled() {
-        return ChromeFeatureList.sGlic.isEnabled();
+        // TODO(crbug.com/500410559): Remove side panel check and instead check if tab strip is
+        // hidden after launch.
+        return ChromeFeatureList.sGlic.isEnabled() && !AndroidSidePanelEnabledFn.isEnabled();
     }
 
     static void setDefaultSegmentForTesting(String defaultSegment) {

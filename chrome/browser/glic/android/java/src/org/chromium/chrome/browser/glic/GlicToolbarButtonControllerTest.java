@@ -26,6 +26,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
@@ -45,6 +46,7 @@ import org.chromium.url.JUnitTestGURLs;
     ChromeFeatureList.GLIC,
     ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2
 })
+@DisableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
 public class GlicToolbarButtonControllerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

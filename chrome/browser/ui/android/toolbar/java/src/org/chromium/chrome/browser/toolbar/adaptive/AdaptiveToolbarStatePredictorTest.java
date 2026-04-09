@@ -238,6 +238,7 @@ public class AdaptiveToolbarStatePredictorTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.GLIC)
+    @DisableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
     public void testGlicEnabled() {
         AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
 
@@ -263,6 +264,7 @@ public class AdaptiveToolbarStatePredictorTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.GLIC)
+    @DisableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
     public void testGlicEnabled_ManualOverride() {
         AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
 

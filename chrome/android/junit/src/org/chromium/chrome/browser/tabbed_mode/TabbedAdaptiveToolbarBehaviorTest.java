@@ -15,6 +15,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
@@ -37,6 +38,7 @@ public class TabbedAdaptiveToolbarBehaviorTest {
     @Test
     @Config(qualifiers = "w390dp-h820dp")
     @EnableFeatures(ChromeFeatureList.GLIC)
+    @DisableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
     public void testResultFilterWithGlicEnabled() {
         assertTopResult(
                 /* segmentationResults= */ List.of(

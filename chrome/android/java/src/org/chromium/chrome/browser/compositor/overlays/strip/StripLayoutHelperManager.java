@@ -111,6 +111,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
@@ -2031,7 +2032,7 @@ public class StripLayoutHelperManager
     }
 
     private boolean isGlicButtonEnabled() {
-        return ChromeFeatureList.sGlic.isEnabled();
+        return ChromeFeatureList.sGlic.isEnabled() && AndroidSidePanelEnabledFn.isEnabled();
     }
 
     @Override
