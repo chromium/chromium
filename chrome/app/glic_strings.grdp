@@ -433,10 +433,12 @@
   </message>
 
   <!-- Gemini tab strip button label -->
+  <message name="IDS_GLIC_SETTING_LABEL" desc="Label in setting list used to open Gemini in Chrome settings." formatter_data="android_java">
+    Gemini in Chrome
+  </message>
   <message name="IDS_GLIC_BUTTON_ENTRYPOINT_LABEL" desc="Label on the button used to open Gemini in Chrome." formatter_data="android_java">
     Gemini
   </message>
-
   <message name="IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL" desc="Label on the button used to open Gemini in Chrome." formatter_data="android_java">
     Ask Gemini
   </message>

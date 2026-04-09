@@ -92,7 +92,7 @@ public class GlicSettingsUnitTest {
         mActivityScenarioRule.getScenario().moveToState(State.STARTED);
 
         assertEquals(
-                mActivity.getString(R.string.settings_glic_button_toggle),
+                mActivity.getString(R.string.glic_setting_label),
                 glicSettings.getPageTitle().get());
 
         return glicSettings;

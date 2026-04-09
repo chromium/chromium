@@ -70,7 +70,7 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.glic_settings);
-        mPageTitle.set(getString(R.string.settings_glic_button_toggle));
+        mPageTitle.set(getString(R.string.glic_setting_label));
         SettingsCustomTabLauncher customTabLauncher = getCustomTabLauncher();
 
         PrefService prefService = UserPrefs.get(getProfile());
