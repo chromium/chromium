@@ -333,10 +333,8 @@ class CustomProgressBarCtrl : public CWindowImpl<CustomProgressBarCtrl> {
   bool is_marquee_mode_ = false;
   int current_position_ = kMinPosition;
 
-  COLORREF bar_color_light_ = kProgressBarLightColor;
-  COLORREF bar_color_dark_ = kProgressBarDarkColor;
-  COLORREF empty_fill_color_ = kProgressEmptyFillColor;
-  WTL::CBrush empty_frame_brush_;
+  COLORREF bar_color_ = kProgressBarFillColor;
+  COLORREF empty_fill_color_ = kProgressEmptyFrameColor;
 };
 
 }  // namespace updater::ui

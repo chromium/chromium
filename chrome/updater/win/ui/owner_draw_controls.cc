@@ -517,8 +517,7 @@ LRESULT CustomDlgColors::OnCtrlColor(UINT,
   return reinterpret_cast<LRESULT>(GetColorBrush(bk_brush_, COLOR_WINDOW));
 }
 
-CustomProgressBarCtrl::CustomProgressBarCtrl()
-    : empty_frame_brush_(::CreateSolidBrush(kProgressEmptyFrameColor)) {}
+CustomProgressBarCtrl::CustomProgressBarCtrl() = default;
 
 CustomProgressBarCtrl::~CustomProgressBarCtrl() = default;
 
@@ -553,84 +552,69 @@ void CustomProgressBarCtrl::GradientFill(HDC dc,
 LRESULT CustomProgressBarCtrl::OnPaint(UINT, WPARAM, LPARAM, BOOL& handled) {
   handled = true;
 
-  CRect client_rect;
-  GetClientRect(&client_rect);
+  WTL::CPaintDC dc_paint(m_hWnd);
+  CRect window_rect;
+  GetClientRect(&window_rect);
 
-  CRect progress_bar_rect = client_rect;
+  // Calculate a half-width rectangle.
+  CRect client_rect = window_rect;
+  const int original_height = window_rect.Height();
+  const int slim_height = original_height / 2;
+  const int vertical_padding = (original_height - slim_height) / 2;
 
-  const int kBarWidth = kMaxPosition - kMinPosition;
-  const LONG bar_rect_right =
-      client_rect.left +
-      client_rect.Width() * (current_position_ - kMinPosition) / kBarWidth;
-  progress_bar_rect.right = std::min(bar_rect_right, client_rect.right);
-
-  if (GetStyle() & PBS_MARQUEE) {
-    LONG bar_rect_left(bar_rect_right -
-                       client_rect.Width() * kMarqueeWidth / kBarWidth);
-    progress_bar_rect.left = std::max(bar_rect_left, client_rect.left);
-    CHECK_LE(progress_bar_rect.left, progress_bar_rect.right);
-  }
-
-  WTL::CRgn rgn = ::CreateRectRgnIndirect(&client_rect);
-  WTL::CRgn rgn_temp = ::CreateRectRgnIndirect(&progress_bar_rect);
-  rgn.CombineRgn(rgn_temp, RGN_DIFF);
+  // Shrink the top and bottom to center the bar.
+  client_rect.top += vertical_padding;
+  client_rect.bottom -= vertical_padding;
 
   // Using a memory device context eliminates flicker.
-  WTL::CPaintDC dcPaint(m_hWnd);
-  WTL::CMemoryDC dc(dcPaint, client_rect);
+  WTL::CMemoryDC dc(dc_paint, window_rect);
 
   // Draw the parent's gradient background into the memory DC first. This
   // ensures the empty areas of the progress bar show the gradient.
-  DrawParentBackground(m_hWnd, dc.m_hDC, client_rect);
+  DrawParentBackground(m_hWnd, dc.m_hDC, window_rect);
 
-  // FillRgn appears to have a bug with RTL/mirroring where it does not paint
-  // the first pixel of the rightmost rectangle with the 'rgn' created above.
-  // Since the region is rectangles, instead of using FillRgn, this code gets
-  // all the rectangles in the 'rgn' and fills them by hand.
-  const int rgndata_size = rgn.GetRegionData(nullptr, 0);
-  CHECK(rgndata_size);
-  std::vector<uint8_t> rgndata_buff(rgndata_size);
-  RGNDATA& rgndata = *reinterpret_cast<RGNDATA*>(&rgndata_buff[0]);
+  // Setup GDI objects for rounded drawing. `NULL_PEN` prevents the thin black
+  // border around the shapes.
+  const HPEN old_pen =
+      dc.SelectPen(static_cast<HPEN>(::GetStockObject(NULL_PEN)));
+  const int corner_size = client_rect.Height();
 
-  if (rgn.GetRegionData(&rgndata, rgndata_size)) {
-    for (DWORD count = 0; count < rgndata.rdh.nCount; count++) {
-      CRect r = reinterpret_cast<RECT*>(
-          UNSAFE_TODO(rgndata.Buffer + count * sizeof(RECT)));
+  // Draw the Background Track.
+  WTL::CBrush bg_brush = ::CreateSolidBrush(empty_fill_color_);
+  const HBRUSH old_brush = dc.SelectBrush(bg_brush);
+  dc.RoundRect(&client_rect, {corner_size, corner_size});
 
-      // Draw the frame for the empty part of the bar.
-      dc.FrameRect(r, empty_frame_brush_);
-    }
-  }
-
-  if (progress_bar_rect.IsRectEmpty()) {
+  // Calculate Progress Width.
+  const int kBarWidth = kMaxPosition - kMinPosition;
+  if (kBarWidth <= 0) {
     return 0;
   }
 
-  // Have a 2-pixel bottom shadow with a gradient fill.
-  CRect shadow_rect = progress_bar_rect;
-  shadow_rect.top = shadow_rect.bottom - 2;
-  GradientFill(dc, shadow_rect, kProgressShadowDarkColor,
-               kProgressShadowLightColor);
+  const LONG bar_rect_right =
+      client_rect.left +
+      client_rect.Width() * (current_position_ - kMinPosition) / kBarWidth;
 
-  // Have a 1-pixel left highlight.
-  CRect left_highlight_rect = progress_bar_rect;
-  left_highlight_rect.right = left_highlight_rect.left + 1;
-  dc.FillSolidRect(left_highlight_rect, kProgressLeftHighlightColor);
+  CRect progress_rect = client_rect;
+  progress_rect.right = std::min(bar_rect_right, client_rect.right);
 
-  // Adjust progress bar rectangle to accommodate the highlight and shadow.
-  // Then draw the outer and inner frames. Then fill in the bar.
-  progress_bar_rect.DeflateRect(1, 0, 0, 2);
-  GradientFill(dc, progress_bar_rect, kProgressOuterFrameLight,
-               kProgressOuterFrameDark);
+  // Handle Marquee Style animation.
+  if (GetStyle() & PBS_MARQUEE) {
+    const LONG bar_rect_left =
+        bar_rect_right - (client_rect.Width() * kMarqueeWidth / kBarWidth);
+    progress_rect.left = std::max(bar_rect_left, client_rect.left);
+  }
 
-  progress_bar_rect.DeflateRect(1, 1);
-  GradientFill(dc, progress_bar_rect, kProgressInnerFrameLight,
-               kProgressInnerFrameDark);
+  // Draw the Fill.
+  if (!progress_rect.IsRectEmpty() &&
+      progress_rect.Width() > (corner_size / 2)) {
+    WTL::CBrush fill_brush = ::CreateSolidBrush(bar_color_);
+    dc.SelectBrush(fill_brush);
+    dc.RoundRect(&progress_rect, {corner_size, corner_size});
+  }
 
-  progress_bar_rect.DeflateRect(1, 1);
-  GradientFill(dc, progress_bar_rect, GetColor(bar_color_light_, COLOR_WINDOW),
-               GetColor(bar_color_dark_, COLOR_WINDOW));
-
+  // Cleanup.
+  dc.SelectBrush(old_brush);
+  dc.SelectPen(old_pen);
   return 0;
 }
 
@@ -685,8 +669,8 @@ LRESULT CustomProgressBarCtrl::OnSetBarColor(UINT,
                                              BOOL& handled) {
   handled = true;
 
-  COLORREF old_bar_color = bar_color_light_;
-  bar_color_light_ = bar_color_dark_ = static_cast<COLORREF>(bar_color);
+  COLORREF old_bar_color = bar_color_;
+  bar_color_ = static_cast<COLORREF>(bar_color);
 
   RedrawWindow();
 
@@ -699,7 +683,7 @@ LRESULT CustomProgressBarCtrl::OnSetBkColor(UINT,
                                             BOOL& handled) {
   handled = true;
 
-  COLORREF old_empty_fill_color = kProgressEmptyFillColor;
+  COLORREF old_empty_fill_color = empty_fill_color_;
   empty_fill_color_ = static_cast<COLORREF>(empty_fill_color);
 
   RedrawWindow();
