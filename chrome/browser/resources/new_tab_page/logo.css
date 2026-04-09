@@ -48,10 +48,16 @@
   cursor: auto;
 }
 
-:host([doodle-boxed_]) #imageDoodle {
+:host([doodle-boxed_]:not([show-tight-doodle-boxing_])) #imageDoodle {
   background-color: var(--ntp-logo-box-color);
   border-radius: 20px;
   padding: 16px 24px;
+}
+
+:host([doodle-boxed_][show-tight-doodle-boxing_]) #imageDoodle {
+  background-color: var(--ntp-logo-box-color);
+  border-radius: 28px;
+  padding: 16px;
 }
 
 :host-context(.focus-outline-visible) #imageDoodle:focus {

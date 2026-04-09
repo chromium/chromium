@@ -8,6 +8,7 @@ import './doodle_share_dialog.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
@@ -61,6 +62,11 @@ export class LogoElement extends CrLitElement {
         type: Boolean,
       },
 
+      showTightDoodleBoxing_: {
+        reflect: true,
+        type: Boolean,
+      },
+
       imageUrl_: {type: String},
       showAnimation_: {type: Boolean},
       showShareDialog_: {type: Boolean},
@@ -76,6 +82,8 @@ export class LogoElement extends CrLitElement {
   protected accessor showLogo_: boolean = false;
   protected accessor showDoodle_: boolean = false;
   private accessor doodleBoxed_: boolean = false;
+  protected accessor showTightDoodleBoxing_: boolean =
+      loadTimeData.getBoolean('animatedDoodlesEnabled');
   protected accessor imageUrl_: string = '';
   protected accessor showAnimation_: boolean = false;
   protected accessor showShareDialog_: boolean = false;
