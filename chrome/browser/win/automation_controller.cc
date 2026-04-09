@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include <wrl/client.h>
+#include <wrl/implements.h>
 
 #include <memory>
 #include <utility>
@@ -16,10 +17,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
-#include "base/win/atl.h"
 #include "base/win/scoped_variant.h"
 #include "chrome/browser/win/ui_automation_util.h"
-#include "ui/base/win/atl_module.h"
 
 namespace {
 
@@ -150,22 +149,18 @@ class AutomationController::Context {
   base::WeakPtrFactory<Context> weak_ptr_factory_{this};
 };
 
-class AutomationController::Context::EventHandler
-    : public ATL::CComObjectRootEx<ATL::CComMultiThreadModel>,
-      public IUIAutomationEventHandler,
-      public IUIAutomationFocusChangedEventHandler {
+class AutomationController::Context::EventHandler final
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          IUIAutomationEventHandler,
+          IUIAutomationFocusChangedEventHandler> {
  public:
-  BEGIN_COM_MAP(AutomationController::Context::EventHandler)
-  COM_INTERFACE_ENTRY(IUIAutomationEventHandler)
-  COM_INTERFACE_ENTRY(IUIAutomationFocusChangedEventHandler)
-  END_COM_MAP()
-
-  EventHandler();
+  EventHandler() = default;
 
   EventHandler(const EventHandler&) = delete;
   EventHandler& operator=(const EventHandler&) = delete;
 
-  ~EventHandler();
+  ~EventHandler() override = default;
 
   // Initializes the object. Events will be dispatched back to |context| via
   // |context_runner|.
@@ -185,10 +180,6 @@ class AutomationController::Context::EventHandler
   // Pointer to the delegate.
   scoped_refptr<RefCountedDelegate> ref_counted_delegate_;
 };
-
-AutomationController::Context::EventHandler::EventHandler() = default;
-
-AutomationController::Context::EventHandler::~EventHandler() = default;
 
 void AutomationController::Context::EventHandler::Initialize(
     Microsoft::WRL::ComPtr<IUIAutomation> automation,
@@ -298,12 +289,10 @@ Microsoft::WRL::ComPtr<IUnknown>
 AutomationController::Context::GetEventHandler() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!event_handler_) {
-    ATL::CComObject<EventHandler>* obj = nullptr;
-    HRESULT result = ATL::CComObject<EventHandler>::CreateInstance(&obj);
-    if (SUCCEEDED(result)) {
-      obj->Initialize(automation_, ref_counted_delegate_);
-      obj->QueryInterface(IID_PPV_ARGS(&event_handler_));
-    }
+    Microsoft::WRL::ComPtr<EventHandler> obj =
+        Microsoft::WRL::Make<EventHandler>();
+    obj->Initialize(automation_, ref_counted_delegate_);
+    obj.As(&event_handler_);
   }
   return event_handler_;
 }
@@ -358,8 +347,6 @@ HRESULT AutomationController::Context::InstallObservers() {
 // AutomationController --------------------------------------------------------
 
 AutomationController::AutomationController(std::unique_ptr<Delegate> delegate) {
-  ui::win::CreateATLModuleIfNeeded();
-
   // Create the task runner on which the automation client lives.
   automation_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::USER_VISIBLE,

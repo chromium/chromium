@@ -9,6 +9,7 @@
 
 #include <stdint.h>
 #include <wrl/client.h>
+#include <wrl/implements.h>
 
 #include <string>
 #include <vector>
@@ -19,7 +20,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
-#include "base/win/atl.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
 #include <uiautomation.h>
@@ -83,31 +83,25 @@ class UiaAccessibilityEventWaiter {
 
     // An implementation of various UIA interfaces that forward event
     // notifications to the waiter.
-    class EventHandler : public CComObjectRootEx<CComMultiThreadModel>,
-                         public IUIAutomationFocusChangedEventHandler,
-                         public IUIAutomationPropertyChangedEventHandler,
-                         public IUIAutomationStructureChangedEventHandler,
-                         public IUIAutomationEventHandler,
-                         public IUIAutomationNotificationEventHandler {
+    class EventHandler final
+        : public Microsoft::WRL::RuntimeClass<
+              Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+              IUIAutomationFocusChangedEventHandler,
+              IUIAutomationPropertyChangedEventHandler,
+              IUIAutomationStructureChangedEventHandler,
+              IUIAutomationEventHandler,
+              IUIAutomationNotificationEventHandler> {
      public:
       EventHandler();
 
       EventHandler(const EventHandler&) = delete;
       EventHandler& operator=(const EventHandler&) = delete;
 
-      virtual ~EventHandler();
+      ~EventHandler() override;
 
       void Init(UiaAccessibilityEventWaiter::Thread* owner,
                 Microsoft::WRL::ComPtr<IUIAutomationElement> root);
       void CleanUp();
-
-      BEGIN_COM_MAP(EventHandler)
-      COM_INTERFACE_ENTRY(IUIAutomationFocusChangedEventHandler)
-      COM_INTERFACE_ENTRY(IUIAutomationPropertyChangedEventHandler)
-      COM_INTERFACE_ENTRY(IUIAutomationStructureChangedEventHandler)
-      COM_INTERFACE_ENTRY(IUIAutomationEventHandler)
-      COM_INTERFACE_ENTRY(IUIAutomationNotificationEventHandler)
-      END_COM_MAP()
 
       // IUIAutomationFocusChangedEventHandler interface.
       IFACEMETHODIMP HandleFocusChangedEvent(
@@ -144,7 +138,7 @@ class UiaAccessibilityEventWaiter {
 
       Microsoft::WRL::ComPtr<IUIAutomationElement> root_;
     };
-    Microsoft::WRL::ComPtr<CComObject<EventHandler>> uia_event_handler_;
+    Microsoft::WRL::ComPtr<EventHandler> uia_event_handler_;
   };
 
   Thread thread_;

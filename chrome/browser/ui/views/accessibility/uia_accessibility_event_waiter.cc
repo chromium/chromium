@@ -15,7 +15,6 @@
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_variant.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
-#include "ui/base/win/atl_module.h"
 
 UiaAccessibilityEventWaiter::UiaAccessibilityEventWaiter(
     UiaAccessibilityWaiterInfo info) {
@@ -85,10 +84,8 @@ void UiaAccessibilityEventWaiter::Thread::ThreadMain() {
   CHECK(root_.Get());
 
   // Create the event handler.
-  ui::win::CreateATLModuleIfNeeded();
-  CHECK(
-      SUCCEEDED(CComObject<EventHandler>::CreateInstance(&uia_event_handler_)));
-  uia_event_handler_->AddRef();
+  uia_event_handler_ = Microsoft::WRL::Make<Thread::EventHandler>();
+  CHECK(uia_event_handler_);
   uia_event_handler_->Init(this, root_);
 
   // Create a cache request to avoid cross-thread issues when logging.
