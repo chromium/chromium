@@ -31,6 +31,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
+import org.chromium.google_apis.gaia.CoreAccountId;
 
 @NullMarked
 public class SyncErrorCardPreference extends ChromeBasePreference
@@ -146,16 +147,15 @@ public class SyncErrorCardPreference extends ChromeBasePreference
     }
 
     private void setupSyncErrorCardView(PersonalizedSigninPromoView errorCardView) {
-        String signedInAccount =
-                CoreAccountInfo.getEmailFrom(
+        CoreAccountId signedInAccountId =
+                CoreAccountInfo.getIdFrom(
                         mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC));
         // May happen if account is removed from the device while this screen is shown.
         // ManageSyncSettings will take care of finishing the activity in such case.
-        if (signedInAccount == null) {
+        if (signedInAccountId == null) {
             return;
         }
-        Drawable accountImage =
-                mProfileDataCache.getProfileDataOrDefault(signedInAccount).getImage();
+        Drawable accountImage = mProfileDataCache.getById(signedInAccountId).getImage();
         errorCardView.getImage().setImageDrawable(accountImage);
 
         errorCardView.getDismissButton().setVisibility(View.GONE);
