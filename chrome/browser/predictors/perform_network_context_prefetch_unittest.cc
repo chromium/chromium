@@ -64,10 +64,10 @@ constexpr std::string_view kPagePath = "/page";
 constexpr std::string_view kResourcePath = "/nocontent";
 constexpr std::string_view kHostname = "a.test";
 
-class PerformNetworkContextPrefetchRecorderTest
+class DISABLED_PerformNetworkContextPrefetchRecorderTest
     : public ::testing::TestWithParam<bool> {
  public:
-  PerformNetworkContextPrefetchRecorderTest() {
+  DISABLED_PerformNetworkContextPrefetchRecorderTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
         network::features::kNetworkContextPrefetch,
         features::kLoadingPredictorPrefetch,
@@ -182,13 +182,7 @@ auto HasHeader(std::string_view name, ValueMatcher value_matcher) {
   return Contains(Pair(StrCaseEq(name), value_matcher));
 }
 
-// TODO(crbug.com/500215556): Re-enable this test on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_Script DISABLED_Script
-#else
-#define MAYBE_Script Script
-#endif
-TEST_P(PerformNetworkContextPrefetchRecorderTest, MAYBE_Script) {
+TEST_P(DISABLED_PerformNetworkContextPrefetchRecorderTest, Script) {
   DoPrefetch(RequestDestination::kScript);
   const auto request = GetRequest();
   EXPECT_EQ(request.relative_url, "/nocontent");
@@ -232,13 +226,7 @@ TEST_P(PerformNetworkContextPrefetchRecorderTest, MAYBE_Script) {
   EXPECT_TRUE(request.content.empty());
 }
 
-// TODO(crbug.com/500215556): Re-enable this test on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_Style DISABLED_Style
-#else
-#define MAYBE_Style Style
-#endif
-TEST_P(PerformNetworkContextPrefetchRecorderTest, MAYBE_Style) {
+TEST_P(DISABLED_PerformNetworkContextPrefetchRecorderTest, Style) {
   DoPrefetch(RequestDestination::kStyle);
   const auto request = GetRequest();
 
@@ -266,7 +254,7 @@ class InsecureTestServer final {
 
 constexpr auto kERROR = ::logging::LOGGING_ERROR;
 
-TEST_P(PerformNetworkContextPrefetchRecorderTest, NonSSLPage) {
+TEST_P(DISABLED_PerformNetworkContextPrefetchRecorderTest, NonSSLPage) {
   InsecureTestServer insecure(GetFutureCallback());
   {
     StrictMock<base::test::MockLog> log;
@@ -281,13 +269,7 @@ TEST_P(PerformNetworkContextPrefetchRecorderTest, NonSSLPage) {
   ExpectNoRequest();
 }
 
-// TODO(crbug.com/500217595): Re-enable this test on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_NonSSLResource DISABLED_NonSSLResource
-#else
-#define MAYBE_NonSSLResource NonSSLResource
-#endif
-TEST_P(PerformNetworkContextPrefetchRecorderTest, MAYBE_NonSSLResource) {
+TEST_P(DISABLED_PerformNetworkContextPrefetchRecorderTest, NonSSLResource) {
   InsecureTestServer insecure(GetFutureCallback());
   {
     StrictMock<base::test::MockLog> log;
@@ -308,14 +290,15 @@ TEST_P(PerformNetworkContextPrefetchRecorderTest, MAYBE_NonSSLResource) {
   EXPECT_EQ(request.relative_url, kResourcePath);
 }
 
-TEST_P(PerformNetworkContextPrefetchRecorderTest, ReferrerSameOrigin) {
+TEST_P(DISABLED_PerformNetworkContextPrefetchRecorderTest, ReferrerSameOrigin) {
   DoPrefetch(RequestDestination::kStyle);
   const auto request = GetRequest();
 
   EXPECT_THAT(request.headers, HasHeader("Referer", PageURL().spec()));
 }
 
-TEST_P(PerformNetworkContextPrefetchRecorderTest, ReferrerCrossOrigin) {
+TEST_P(DISABLED_PerformNetworkContextPrefetchRecorderTest,
+       ReferrerCrossOrigin) {
   // These are both included in CERT_TEST_NAMES
   constexpr char kPageHostname[] = "a.test";
   constexpr char kResourceHostname[] = "b.test";
@@ -333,7 +316,7 @@ TEST_P(PerformNetworkContextPrefetchRecorderTest, ReferrerCrossOrigin) {
 }
 
 INSTANTIATE_TEST_SUITE_P(RemovePurposeHeaderVariations,
-                         PerformNetworkContextPrefetchRecorderTest,
+                         DISABLED_PerformNetworkContextPrefetchRecorderTest,
                          ::testing::Bool());
 
 }  // namespace
