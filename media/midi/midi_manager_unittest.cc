@@ -219,6 +219,8 @@ class MidiManagerTest : public ::testing::Test {
 
   base::WeakPtr<FakeMidiManagerFactory> factory() { return factory_; }
 
+  MidiService* service() { return service_.get(); }
+
  private:
   base::test::TaskEnvironment env_;
   base::WeakPtr<FakeMidiManagerFactory> factory_;
@@ -335,6 +337,31 @@ TEST_F(MidiManagerTest, AbortSession) {
   // Following function should not call the destructed |client| function.
   EXPECT_FALSE(CompleteInitialization(Result::OK));
   EXPECT_FALSE(test_future.IsReady());
+}
+
+TEST_F(MidiManagerTest, ReproduceLifecycleRace) {
+  base::test::TestFuture<void> test_future;
+  std::unique_ptr<FakeMidiManagerClient> client =
+      std::make_unique<FakeMidiManagerClient>(test_future.GetCallback());
+
+  // Start a session. This will put the client in pending_clients_.
+  StartSession(client.get());
+  ASSERT_TRUE(factory()->manager());
+  EXPECT_EQ(1U, factory()->manager()->GetPendingClientCount());
+  EXPECT_EQ(0U, factory()->manager()->GetClientCount());
+
+  // FIXED: HasOpenSession() now checks both clients_ and pending_clients_,
+  // so it should return true while initialization is ongoing.
+  EXPECT_TRUE(factory()->manager()->HasOpenSession());
+
+  // If we end the session now, EndSession calls HasOpenSession to decide if it
+  // should delete the manager. Since the client is still in pending_clients_
+  // until removed, EndSession correctly removes it.
+  EXPECT_TRUE(service()->EndSession(client.get()));
+
+  // Now that the last client is gone (even from pending_clients_),
+  // HasOpenSession should return false and the manager should be deleted.
+  EXPECT_FALSE(factory()->manager());
 }
 
 class PlatformMidiManagerTest : public ::testing::Test {
