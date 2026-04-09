@@ -1315,13 +1315,13 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
             mOnLogoAvailableCallback = null;
         }
 
-        if (mIsTablet) {
+        if (mDisplayStyleObserver != null) {
             if (mUiConfig != null) {
                 mUiConfig.removeObserver(mDisplayStyleObserver);
-                mUiConfig = null;
             }
             mDisplayStyleObserver = null;
         }
+        mUiConfig = null;
 
         mModel.set(NewTabPageLayoutProperties.DELEGATE, null);
 

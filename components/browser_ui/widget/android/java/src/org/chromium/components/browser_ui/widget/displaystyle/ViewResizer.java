@@ -70,8 +70,8 @@ public class ViewResizer implements DisplayStyleObserver, View.OnLayoutChangeLis
 
     /** Detaches from the {@link #mUiConfig} and cleans up. */
     public void destroy() {
-        mDisplayStyleObserver.destroy();
         mView.removeOnLayoutChangeListener(this);
+        mDisplayStyleObserver.destroy();
     }
 
     @Override

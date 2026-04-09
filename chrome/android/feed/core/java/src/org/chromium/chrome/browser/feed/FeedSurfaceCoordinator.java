@@ -777,8 +777,11 @@ public class FeedSurfaceCoordinator
         }
 
         mFeedStreamViewResizer.destroy();
+        mContentManager.destroy();
         mUiConfig.destroy();
         mActionDelegate.destroy();
+
+        mObservers.clear();
 
         // Null remaining objects.
         mReliabilityLogger = null;

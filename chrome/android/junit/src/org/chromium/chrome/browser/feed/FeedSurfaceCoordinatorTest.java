@@ -576,6 +576,7 @@ public class FeedSurfaceCoordinatorTest {
         // Observer is added in FeedSurfaceCoordinator constructor.
         assertEquals(1, mTabStripHeightSupplier.getObserverCount());
         assertNotNull(mRecyclerView.getItemAnimator());
+        assertEquals(1, mContentManagerCaptor.getValue().getItemCount());
 
         mCoordinator.destroy();
 
@@ -584,6 +585,7 @@ public class FeedSurfaceCoordinatorTest {
         verify(mBackgroundImageCoordinator).destroy();
         verify(mFeedActionDelegate).destroy();
         verify(mEdgeToEdgeController).unregisterAdjuster(any());
+        assertEquals(0, mContentManagerCaptor.getValue().getItemCount());
         assertFalse(FeedSurfaceTracker.getInstance().mCoordinators.contains(mCoordinator));
         assertEquals(0, mTabStripHeightSupplier.getObserverCount());
         assertNull(mRecyclerView.getItemAnimator());
