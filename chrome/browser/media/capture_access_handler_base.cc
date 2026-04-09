@@ -17,7 +17,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "ui/gfx/native_ui_types.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/common/extension.h"
 #endif
 
