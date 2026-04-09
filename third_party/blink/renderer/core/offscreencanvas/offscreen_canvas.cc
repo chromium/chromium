@@ -211,8 +211,6 @@ void OffscreenCanvas::SetSize(gfx::Size size) {
       origin_clean_ = true;
       // We need to trigger the draw, because we did reset the context.
       context_->DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
-      dirty_rect_for_commit_.intersect(
-          SkIRect::MakeWH(Size().width(), Size().height()));
     }
     return;
   }
@@ -237,8 +235,6 @@ void OffscreenCanvas::SetSize(gfx::Size size) {
       }
     }
     context_->DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
-    dirty_rect_for_commit_.intersect(
-        SkIRect::MakeWH(Size().width(), Size().height()));
   }
 }
 
@@ -603,6 +599,8 @@ bool OffscreenCanvas::PushFrame(
   if (current_frame_damage_rect_.isEmpty() || !canvas_resource)
     return false;
   canvas_resource->SetOriginClean(OriginClean());
+  current_frame_damage_rect_.intersect(
+      SkIRect::MakeWH(Size().width(), Size().height()));
   GetOrCreateResourceDispatcher()->DispatchFrame(
       std::move(canvas_resource), current_frame_damage_rect_, IsOpaque());
   current_frame_damage_rect_ = SkIRect::MakeEmpty();

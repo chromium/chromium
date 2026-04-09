@@ -415,9 +415,6 @@ void OffscreenCanvasRenderingContext2D::WillDraw(
   SkIRect adjusted_dirty_rect = dirty_rect;
   if (GetState().ShouldAntialias()) {
     adjusted_dirty_rect = adjusted_dirty_rect.makeOutset(1, 1);
-
-    // We might expanded rect beyond canvas's bounds. Clamp it back.
-    adjusted_dirty_rect.intersect(SkIRect::MakeWH(Width(), Height()));
   }
 
   GetCanvasPerformanceMonitor().DidDraw(draw_type);
