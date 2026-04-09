@@ -1366,6 +1366,7 @@ if (is_android) {
     sources = [
       "src/org/chromium/chrome/browser/ui/AppLaunchDrawBlockerUnitTest.java",
       "src/org/chromium/chrome/browser/ui/ChromeActivitySnackbarHelperUnitTest.java",
+      "src/org/chromium/chrome/browser/ui/ExclusiveAccessBubbleTest.java",
       "src/org/chromium/chrome/browser/ui/ExpandedSheetHelperImplUnitTest.java",
       "src/org/chromium/chrome/browser/ui/IncognitoRestoreAppLaunchDrawBlockerUnitTest.java",
       "src/org/chromium/chrome/browser/ui/activity_recreation/ActivityRecreationControllerUnitTest.java",

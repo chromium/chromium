@@ -24,30 +24,89 @@ std::optional<std::u16string> GetOriginString(const url::Origin& origin) {
   return url_formatter::FormatOriginForSecurityDisplay(
       origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
 }
+
+class BridgeImpl : public ExclusiveAccessBubbleAndroid::Bridge {
+ public:
+  explicit BridgeImpl(const jni_zero::JavaRef<jobject>& context) {
+    if (context) {
+      JNIEnv* env = jni_zero::AttachCurrentThread();
+      j_bubble_.Reset(Java_ExclusiveAccessBubble_create(env, context));
+    }
+  }
+
+  ~BridgeImpl() override { Hide(); }
+
+  void Show() override {
+    if (j_bubble_) {
+      JNIEnv* env = jni_zero::AttachCurrentThread();
+      Java_ExclusiveAccessBubble_show(env, j_bubble_);
+    }
+  }
+
+  void Hide() override {
+    if (j_bubble_) {
+      JNIEnv* env = jni_zero::AttachCurrentThread();
+      Java_ExclusiveAccessBubble_hide(env, j_bubble_);
+    }
+  }
+
+  void Update(const std::u16string& text) override {
+    if (j_bubble_) {
+      JNIEnv* env = jni_zero::AttachCurrentThread();
+      Java_ExclusiveAccessBubble_update(
+          env, j_bubble_, base::android::ConvertUTF16ToJavaString(env, text));
+    }
+  }
+
+  bool IsVisible() const override {
+    if (j_bubble_) {
+      JNIEnv* env = jni_zero::AttachCurrentThread();
+      return Java_ExclusiveAccessBubble_isVisible(env, j_bubble_);
+    }
+    return false;
+  }
+
+  bool IsKeyboardConnected() const override {
+    if (j_bubble_) {
+      JNIEnv* env = jni_zero::AttachCurrentThread();
+      return Java_ExclusiveAccessBubble_isKeyboardConnected(env, j_bubble_);
+    }
+    return false;
+  }
+
+ private:
+  jni_zero::ScopedJavaGlobalRef<jobject> j_bubble_;
+};
 }  // namespace
 
 ExclusiveAccessBubbleAndroid::ExclusiveAccessBubbleAndroid(
     const ExclusiveAccessBubbleParams& params,
     ExclusiveAccessBubbleHideCallback first_hide_callback,
     const jni_zero::ScopedJavaGlobalRef<jobject>& jcontext)
-    : ExclusiveAccessBubble(params) {
-  JNIEnv* env = jni_zero::AttachCurrentThread();
-  j_bubble_.Reset(Java_ExclusiveAccessBubble_create(env, jcontext));
+    : ExclusiveAccessBubbleAndroid(params,
+                                   std::move(first_hide_callback),
+                                   std::make_unique<BridgeImpl>(jcontext)) {}
+
+ExclusiveAccessBubbleAndroid::ExclusiveAccessBubbleAndroid(
+    const ExclusiveAccessBubbleParams& params,
+    ExclusiveAccessBubbleHideCallback first_hide_callback,
+    std::unique_ptr<Bridge> bridge)
+    : ExclusiveAccessBubble(params), bridge_(std::move(bridge)) {
   Update(params, std::move(first_hide_callback));
 }
 
 ExclusiveAccessBubbleAndroid::~ExclusiveAccessBubbleAndroid() {
-  j_bubble_.Reset();
+  Hide();
 }
 
 void ExclusiveAccessBubbleAndroid::Hide() {
-  JNIEnv* env = jni_zero::AttachCurrentThread();
-  Java_ExclusiveAccessBubble_hide(env, j_bubble_);
+  was_shown_ = false;
+  bridge_->Hide();
 }
 
 void ExclusiveAccessBubbleAndroid::Show() {
-  JNIEnv* env = jni_zero::AttachCurrentThread();
-  Java_ExclusiveAccessBubble_show(env, j_bubble_);
+  was_shown_ = true;
+  bridge_->Show();
 }
 
 void ExclusiveAccessBubbleAndroid::HideImmediately() {
@@ -61,9 +120,10 @@ void ExclusiveAccessBubbleAndroid::Update(
          params.has_download);
   bool already_shown = IsVisible();
   if (params_.type == params.type && params_.origin == params.origin &&
-      !params.force_update && already_shown) {
+      !params.force_update && (already_shown || was_shown_)) {
     return;
   }
+  was_shown_ = true;
 
   // notify_overridden_ and has_download are used to change the bubble text to
   // notify the user that a download has/had started, and they need to exit the
@@ -99,14 +159,10 @@ void ExclusiveAccessBubbleAndroid::UpdateBubbleContent(
   DCHECK(params_.has_download ||
          EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE != bubble_type);
 
-  JNIEnv* env = jni_zero::AttachCurrentThread();
-
-  bool keyboard_connected =
-      Java_ExclusiveAccessBubble_isKeyboardConnected(env, j_bubble_);
+  bool keyboard_connected = bridge_->IsKeyboardConnected();
   std::u16string text = GetBubbleText(bubble_type, keyboard_connected);
 
-  Java_ExclusiveAccessBubble_update(
-      env, j_bubble_, base::android::ConvertUTF16ToJavaString(env, text));
+  bridge_->Update(text);
 }
 
 std::u16string ExclusiveAccessBubbleAndroid::GetBubbleText(
@@ -138,8 +194,7 @@ std::u16string ExclusiveAccessBubbleAndroid::GetBubbleText(
 }
 
 bool ExclusiveAccessBubbleAndroid::IsVisible() const {
-  JNIEnv* env = jni_zero::AttachCurrentThread();
-  return Java_ExclusiveAccessBubble_isVisible(env, j_bubble_);
+  return bridge_->IsVisible();
 }
 
 void ExclusiveAccessBubbleAndroid::RunHideCallbackIfNeeded(

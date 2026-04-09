@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -63,6 +64,18 @@ public class ExclusiveAccessContext implements Destroyable {
 
     Context getAppContext() {
         return mContext;
+    }
+
+    /**
+     * @return The SnackbarManager for this context, or null if the context does not support
+     *     snackbars (e.g. application context, or activity that doesn't implement
+     *     SnackbarManageable).
+     */
+    public @Nullable SnackbarManager getSnackbarManager() {
+        if (mContext instanceof SnackbarManager.SnackbarManageable manageable) {
+            return manageable.getSnackbarManager();
+        }
+        return null;
     }
 
     @Override

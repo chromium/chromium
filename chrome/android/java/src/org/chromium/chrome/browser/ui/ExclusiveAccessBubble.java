@@ -4,23 +4,31 @@
 
 package org.chromium.chrome.browser.ui;
 
-import android.view.Gravity;
-
 import org.jni_zero.CalledByNative;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.ui.base.DeviceInput;
-import org.chromium.ui.widget.Toast;
 
 /**
  * This class is the Java counterpart of ExclusiveAccessBubbleAndroid. It owns the notification
- * toast for the exclusive access APIs (fullscreen, keyboard lock & pointer lock)
+ * snackbar for the exclusive access APIs (fullscreen, keyboard lock & pointer lock)
  */
 @NullMarked
 public class ExclusiveAccessBubble {
     private final ExclusiveAccessContext mParentContext;
-    private @Nullable Toast mNotificationToast;
+    private @Nullable Snackbar mSnackbar;
+    private final SnackbarManager.SnackbarController mSnackbarController =
+            new SnackbarManager.SnackbarController() {
+                @Override
+                public void onDismissNoAction(@Nullable Object actionData) {
+                    mSnackbar = null;
+                }
+            };
+
+    private @Nullable String mText;
 
     private ExclusiveAccessBubble(ExclusiveAccessContext parentContext) {
         mParentContext = parentContext;
@@ -33,35 +41,39 @@ public class ExclusiveAccessBubble {
 
     @CalledByNative
     public void show() {
-        if (mNotificationToast != null) {
-            mNotificationToast.show();
+        if (mText == null || mSnackbar != null) return;
+        SnackbarManager snackbarManager = mParentContext.getSnackbarManager();
+        if (snackbarManager != null) {
+            mSnackbar =
+                    Snackbar.make(
+                            mText,
+                            mSnackbarController,
+                            Snackbar.TYPE_ACTION,
+                            Snackbar.UMA_EXCLUSIVE_ACCESS_BUBBLE);
+            snackbarManager.showSnackbar(mSnackbar);
         }
     }
 
     @CalledByNative
     public void update(String text) {
+        if (mText != null && mText.equals(text) && mSnackbar != null) return;
+        mText = text;
         hide();
-        mNotificationToast =
-                Toast.makeTextWithPriority(
-                        mParentContext.getAppContext(),
-                        text,
-                        Toast.LENGTH_LONG,
-                        Toast.ToastPriority.HIGH);
-        mNotificationToast.setGravity(Gravity.BOTTOM | Gravity.CENTER, 0, 0);
         show();
     }
 
     @CalledByNative
     public void hide() {
-        if (mNotificationToast != null) {
-            mNotificationToast.cancel();
-            mNotificationToast = null;
+        SnackbarManager snackbarManager = mParentContext.getSnackbarManager();
+        if (snackbarManager != null && mSnackbar != null) {
+            snackbarManager.dismissSnackbars(mSnackbarController);
         }
+        mSnackbar = null;
     }
 
     @CalledByNative
     public boolean isVisible() {
-        return mNotificationToast != null;
+        return mSnackbar != null;
     }
 
     @CalledByNative

@@ -8017,6 +8017,7 @@ test("unit_tests") {
       "../browser/ui/android/autofill/save_update_address_profile_flow_manager_unittest.cc",
       "../browser/ui/android/device_dialog/serial_chooser_dialog_android_unittest.cc",
       "../browser/ui/android/device_dialog/usb_chooser_dialog_android_unittest.cc",
+      "../browser/ui/android/exclusive_access/exclusive_access_bubble_android_unittest.cc",
       "../browser/ui/android/tab_contents/chrome_web_contents_view_delegate_android_unittest.cc",
       "../browser/ui/android/toolbar/adaptive_toolbar_bridge_unittest.cc",
       "../browser/ui/android/toolbar/location_bar_model_android_unittest.cc",

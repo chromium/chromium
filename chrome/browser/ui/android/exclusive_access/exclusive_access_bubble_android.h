@@ -16,10 +16,27 @@
 // pointer lock), actual display logic is handled by the java side.
 class ExclusiveAccessBubbleAndroid : public ExclusiveAccessBubble {
  public:
+  // Interface for the Java counterpart of ExclusiveAccessBubbleAndroid.
+  class Bridge {
+   public:
+    virtual ~Bridge() = default;
+    virtual void Show() = 0;
+    virtual void Hide() = 0;
+    virtual void Update(const std::u16string& text) = 0;
+    virtual bool IsVisible() const = 0;
+    virtual bool IsKeyboardConnected() const = 0;
+  };
+
   ExclusiveAccessBubbleAndroid(
       const ExclusiveAccessBubbleParams& params,
       ExclusiveAccessBubbleHideCallback first_hide_callback,
       const jni_zero::ScopedJavaGlobalRef<jobject>& jcontext);
+
+  // Test-only constructor which is called directly to inject a Mock Bridge.
+  ExclusiveAccessBubbleAndroid(
+      const ExclusiveAccessBubbleParams& params,
+      ExclusiveAccessBubbleHideCallback first_hide_callback,
+      std::unique_ptr<Bridge> bridge);
 
   ExclusiveAccessBubbleAndroid(const ExclusiveAccessBubbleAndroid&) = delete;
   ExclusiveAccessBubbleAndroid& operator=(const ExclusiveAccessBubbleAndroid&) =
@@ -53,9 +70,11 @@ class ExclusiveAccessBubbleAndroid : public ExclusiveAccessBubble {
 
   ExclusiveAccessBubbleParams params_;
   bool notify_overridden_;
+  bool was_shown_ = false;
   ExclusiveAccessBubbleHideCallback first_hide_callback_;
   std::u16string browser_fullscreen_exit_accelerator_;
-  jni_zero::ScopedJavaGlobalRef<jobject> j_bubble_;
+
+  std::unique_ptr<Bridge> bridge_;
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_BUBBLE_ANDROID_H_

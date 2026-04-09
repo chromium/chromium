@@ -479,6 +479,7 @@ chromium-metrics-reviews@google.com.
   <int value="84" label="UMA_CROSS_DEVICE_SETTING_REDO"/>
   <int value="85" label="UMA_CHROME_FINDS_OPT_IN"/>
   <int value="86" label="UMA_AUTOFILL_AI_LOCAL_SAVE_FALLBACK"/>
+  <int value="87" label="UMA_EXCLUSIVE_ACCESS_BUBBLE"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/messages/android/java/src/org/chromium/chrome/browser/ui/messages/snackbar/Snackbar.java:SnackbarIdentifier) -->
