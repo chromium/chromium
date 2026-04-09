@@ -136,6 +136,13 @@ public class TabBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
+    public boolean actsAsBrowserControls() {
+        // TODO(crbug.com/491512853): Revisit if this is correct for landscape mode or in non-PEEK
+        // states. For now, always returning true seems most correct.
+        return true;
+    }
+
+    @Override
     public boolean allowInSheetContentSnackbars() {
         return false;
     }
