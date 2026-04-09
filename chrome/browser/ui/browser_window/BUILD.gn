@@ -17,7 +17,10 @@ source_set("browser_window") {
     "public/global_browser_collection_platform_delegate.h",
     "public/profile_browser_collection.h",
   ]
-  public_deps = [ "//content/public/browser" ]
+  public_deps = [
+    "//content/public/browser",
+    "//ui/gfx",
+  ]
   deps = [ "//ui/base/unowned_user_data" ]
 
   if (!is_android) {

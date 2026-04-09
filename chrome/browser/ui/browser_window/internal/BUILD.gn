@@ -19,6 +19,7 @@ source_set("internal") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/browser_window:create_browser_window",
     "//components/sessions:session_id",
+    "//ui/base",
     "//ui/base/unowned_user_data",
   ]
 

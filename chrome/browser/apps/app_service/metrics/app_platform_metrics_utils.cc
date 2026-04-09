@@ -20,9 +20,8 @@
 #include "chrome/browser/metrics/usertype_by_devicetype_metrics_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
@@ -179,7 +178,8 @@ AppTypeName GetAppTypeNameForWebApp(Profile* profile,
 
 bool IsAshBrowserWindow(aura::Window* window) {
   BrowserWindowInterface* browser =
-      chrome::FindBrowserWithWindow(window->GetToplevelWindow());
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithWindow(
+          window->GetToplevelWindow());
   if (!browser || browser->GetType() == BrowserWindowInterface::TYPE_APP ||
       browser->GetType() == BrowserWindowInterface::TYPE_APP_POPUP) {
     return false;

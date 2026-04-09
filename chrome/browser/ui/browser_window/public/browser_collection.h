@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
+#include "ui/gfx/native_ui_types.h"
 
 class BrowserCollectionObserver;
 class BrowserWindowInterface;
@@ -57,6 +58,10 @@ class BrowserCollection {
 
   // Gets the last active browser for this collection.
   BrowserWindowInterface* GetLastActiveBrowser();
+
+  // Returns the browser represented by `window`. Returns nullptr if no such
+  // browser currently exists in this collection.
+  BrowserWindowInterface* FindBrowserWithWindow(gfx::NativeWindow window);
 
  protected:
   BrowserCollection();

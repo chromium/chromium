@@ -5,10 +5,9 @@
 #include "chrome/browser/page_load_metrics/observers/initial_webui_page_load_metrics_observer.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/waap/waap_ui_metrics_service.h"
 #include "chrome/browser/ui/waap/waap_utils.h"
@@ -138,7 +137,8 @@ InitialWebUIPageLoadMetricsObserver::GetMetricsManager() const {
   gfx::NativeWindow window = web_contents
                                  ? web_contents->GetTopLevelNativeWindow()
                                  : gfx::NativeWindow();
-  BrowserWindowInterface* browser = chrome::FindBrowserWithWindow(window);
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithWindow(window);
   return browser ? InitialWebUIWindowMetricsManager::From(browser) : nullptr;
 }
 

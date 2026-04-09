@@ -6,8 +6,8 @@
 
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 
@@ -30,7 +30,8 @@ class ChromeConstrainedWindowViewsClient
   web_modal::ModalDialogHost* GetModalDialogHost(
       gfx::NativeWindow parent) override {
     // Get the browser dialog management and hosting components from |parent|.
-    Browser* const browser = chrome::FindBrowserWithWindow(parent);
+    BrowserWindowInterface* const browser =
+        GlobalBrowserCollection::GetInstance()->FindBrowserWithWindow(parent);
     if (browser) {
       return browser->GetWebContentsModalDialogHostForWindow();
     }

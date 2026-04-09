@@ -137,7 +137,8 @@ BrowserDelegate* BrowserControllerImpl::GetBrowserForWindow(
   // TODO(crbug.com/369688254): We'd like to use
   // BrowserView::GetBrowserViewForNativeWindow followed by BrowserView::browser
   // here but this can CHECK-fail during shutdown. Find a solution.
-  return GetDelegate(chrome::FindBrowserWithWindow(window));
+  return GetDelegate(
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithWindow(window));
 }
 
 BrowserDelegate* BrowserControllerImpl::GetBrowserForTab(

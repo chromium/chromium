@@ -11,7 +11,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/cocoa/confirm_quit.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -131,7 +131,8 @@ typedef NS_ENUM(NSInteger, FadeWindowsOperation) { kHide, kShow };
 - (void)setCurrentProgress:(NSAnimationProgress)progress {
   CGFloat value = _op == kShow ? progress : 1.0 - progress;
   for (NSWindow* window in NSApp.windows) {
-    if (chrome::FindBrowserWithWindow(gfx::NativeWindow(window))) {
+    if (GlobalBrowserCollection::GetInstance()->FindBrowserWithWindow(
+            gfx::NativeWindow(window))) {
       window.alphaValue = value;
     }
   }

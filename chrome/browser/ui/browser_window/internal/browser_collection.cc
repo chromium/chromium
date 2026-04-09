@@ -6,6 +6,8 @@
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "ui/base/base_window.h"
 
 namespace {
 
@@ -72,6 +74,25 @@ void BrowserCollection::ForEach(
 BrowserWindowInterface* BrowserCollection::GetLastActiveBrowser() {
   auto browsers = GetBrowsers(Order::kActivation);
   return browsers.empty() ? nullptr : browsers.front();
+}
+
+BrowserWindowInterface* BrowserCollection::FindBrowserWithWindow(
+    gfx::NativeWindow window) {
+  if (!window) {
+    return nullptr;
+  }
+  BrowserWindowInterface* found = nullptr;
+  ForEach(
+      [&found, &window](BrowserWindowInterface* browser) {
+        if (browser->GetWindow() &&
+            browser->GetWindow()->GetNativeWindow() == window) {
+          found = browser;
+          return false;
+        }
+        return true;
+      },
+      Order::kActivation);
+  return found;
 }
 
 void BrowserCollection::AddObserver(BrowserCollectionObserver* observer) {

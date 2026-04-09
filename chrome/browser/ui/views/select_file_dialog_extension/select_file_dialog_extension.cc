@@ -35,9 +35,8 @@
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/login_web_dialog.h"
 #include "chrome/browser/ui/ash/login/webui_login_view.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -128,12 +127,14 @@ void FindRuntimeContext(gfx::NativeWindow owner_window,
   *web_contents = nullptr;
   // To get the base_window and web contents, either a Browser or AppWindow is
   // needed.
-  Browser* owner_browser = nullptr;
+  BrowserWindowInterface* owner_browser = nullptr;
   AppWindow* app_window = nullptr;
 
   // If owner_window is supplied, use that to find a browser or a app window.
   if (owner_window) {
-    owner_browser = chrome::FindBrowserWithWindow(owner_window);
+    owner_browser =
+        GlobalBrowserCollection::GetInstance()->FindBrowserWithWindow(
+            owner_window);
     if (!owner_browser) {
       // If an owner_window was supplied but we couldn't find a browser, this
       // could be for a app window.
@@ -149,11 +150,12 @@ void FindRuntimeContext(gfx::NativeWindow owner_window,
     // If the owning window is still unknown, this could be a background page or
     // and extension popup. Use the last active browser.
     if (!owner_browser) {
-      owner_browser = chrome::FindLastActive();
+      owner_browser =
+          GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
     }
     if (owner_browser) {
-      *base_window = owner_browser->window();
-      *web_contents = owner_browser->tab_strip_model()->GetActiveWebContents();
+      *base_window = owner_browser->GetWindow();
+      *web_contents = owner_browser->GetTabStripModel()->GetActiveWebContents();
     }
   }
 

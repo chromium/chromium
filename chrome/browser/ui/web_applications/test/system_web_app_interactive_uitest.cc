@@ -42,8 +42,11 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
@@ -832,11 +835,13 @@ class TestActivationObserver : public wm::ActivationChangeObserver {
   void OnWindowActivated(ActivationReason reason,
                          aura::Window* gained_active,
                          aura::Window* lost_active) override {
-    Browser* browser = chrome::FindBrowserWithWindow(gained_active);
+    BrowserWindowInterface* browser =
+        GlobalBrowserCollection::GetInstance()->FindBrowserWithWindow(
+            gained_active);
     // Check that the activated window is actually a browser.
     EXPECT_TRUE(browser);
     // Check also that the browser is actually an app.
-    EXPECT_TRUE(browser->is_type_app());
+    EXPECT_TRUE(browser->GetType() == BrowserWindowInterface::Type::TYPE_APP);
     run_loop_.Quit();
   }
 

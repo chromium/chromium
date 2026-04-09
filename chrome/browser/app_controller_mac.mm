@@ -77,6 +77,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/cocoa/apps/quit_with_apps_controller_mac.h"
 #import "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_bridge.h"
@@ -1056,8 +1057,9 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
 }
 
 - (void)windowDidBecomeMain:(NSNotification*)notify {
-  Browser* browser =
-      chrome::FindBrowserWithWindow(gfx::NativeWindow([notify object]));
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithWindow(
+          gfx::NativeWindow([notify object]));
   if (!browser)
     return;
 
@@ -1065,12 +1067,12 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
   // subscription each time a window becomes the main.
   _verticalTabSubscription = {};
 
-  if (browser->is_type_normal()) {
+  if (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL) {
     if (!_tabMenuBridge) {
       _tabMenuBridge = std::make_unique<TabMenuBridge>(
           [[NSApp mainMenu] itemWithTag:IDC_TAB_MENU]);
     }
-    _tabMenuBridge->SetTabStripModel(browser->tab_strip_model());
+    _tabMenuBridge->SetTabStripModel(browser->GetTabStripModel());
 
     if (tabs::IsVerticalTabsFeatureEnabled()) {
       if (auto* vertical_tab_strip_state_controller =
@@ -1095,7 +1097,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
     _tabMenuBridge->SetTabStripModel(nullptr);
   }
 
-  Profile* profile = browser->profile();
+  Profile* profile = browser->GetProfile();
 
   _lastActiveBrowser = browser->GetWeakPtr();
   [self setLastProfile:profile];
@@ -2198,10 +2200,13 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
   if (!window) {
     return NO;
   }
-  Browser* browser = chrome::FindBrowserWithWindow(gfx::NativeWindow(window));
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithWindow(
+          gfx::NativeWindow(window));
 
-  return browser && browser->is_type_normal() &&
-         !browser->tab_strip_model()->empty();
+  return browser &&
+         browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL &&
+         !browser->GetTabStripModel()->empty();
 }
 
 - (void)configureMenuItemForCloseTab:(NSMenuItem*)menuItem {
