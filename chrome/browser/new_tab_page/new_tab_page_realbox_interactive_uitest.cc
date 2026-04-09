@@ -525,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest, ComposeboxTypedSuggestions) {
       // Click the match.
       ClickElement(kNtpElementId, kComposeboxMatch1),
       // Ensure google search occurs.
-      WaitForGoogleSearch(kNtpElementId, "suggestion-1"));
+      WaitForGoogleSearch(kNtpElementId, {{"q", "suggestion-1"}}));
 }
 
 IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest, RealboxMultilineInputTest) {
@@ -652,7 +652,7 @@ IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest,
       WaitForSubmitEnabled(),
       ClickElement(kNtpElementId, kComposeboxSubmitButton),
       // 13. Ensure google search occurs.
-      WaitForGoogleSearch(kNtpElementId, "test"));
+      WaitForGoogleSearch(kNtpElementId, {{"q", "test"}}));
 }
 
 struct NtpRealboxUploadInteractiveTestParams {
@@ -748,7 +748,7 @@ IN_PROC_BROWSER_TEST_P(NtpRealboxUploadInteractiveTest,
       WaitForSubmitEnabled(),
       ClickElement(kNtpElementId, kComposeboxSubmitButton),
       // Ensure google search occurs.
-      WaitForGoogleSearch(kNtpElementId, "test"),
+      WaitForGoogleSearch(kNtpElementId, {{"q", "test"}}),
       // Clean up.
       Do([]() { ui::SelectFileDialog::SetFactory(nullptr); }));
 }
@@ -797,7 +797,7 @@ IN_PROC_BROWSER_TEST_P(NtpRealboxSubmitInteractiveTest,
              "key:'Enter', bubbles: true, cancelable: true, composed: true "
              "})); }"))),
       // Ensure google search occurs.
-      WaitForGoogleSearch(kNtpElementId, "a"));
+      WaitForGoogleSearch(kNtpElementId, {{"q", "a"}}));
 }
 
 struct NtpRealboxToolInteractiveTestParams {
@@ -929,7 +929,7 @@ IN_PROC_BROWSER_TEST_P(NtpComposeboxSearchFulfillmentTest,
                                            kComposeboxSubmitButton))),
 
       // Ensure tab navigates to a Google search results page.
-      WaitForGoogleSearch(kNtpElementId, query));
+      WaitForGoogleSearch(kNtpElementId, {{"q", query}}));
 }
 
 class NtpComposeboxDismissTest : public NtpRealboxUiTestBase,
