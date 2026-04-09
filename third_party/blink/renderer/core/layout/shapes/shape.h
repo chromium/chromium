@@ -129,7 +129,6 @@ class CORE_EXPORT Shape {
            (!line_height && line_top == rect_line_top);
   }
 
-  WritingMode writing_mode_ = WritingMode::kHorizontalTb;
   float margin_ = 0;
 };
 

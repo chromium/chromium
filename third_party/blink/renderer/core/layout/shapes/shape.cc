@@ -260,9 +260,7 @@ std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
       NOTREACHED();
   }
 
-  shape->writing_mode_ = writing_mode;
   shape->margin_ = margin;
-
   return shape;
 }
 
@@ -272,9 +270,8 @@ std::unique_ptr<Shape> Shape::CreateEmptyRasterShape(WritingMode writing_mode,
       std::make_unique<RasterShapeIntervals>(0, 0);
   std::unique_ptr<RasterShape> raster_shape =
       std::make_unique<RasterShape>(std::move(intervals), gfx::Size());
-  raster_shape->writing_mode_ = writing_mode;
   raster_shape->margin_ = margin;
-  return std::move(raster_shape);
+  return raster_shape;
 }
 
 namespace {
@@ -462,9 +459,8 @@ std::unique_ptr<Shape> Shape::CreateRasterShape(
                                     writing_mode);
   std::unique_ptr<RasterShape> raster_shape =
       std::make_unique<RasterShape>(std::move(intervals), margin_box_size);
-  raster_shape->writing_mode_ = writing_mode;
   raster_shape->margin_ = margin;
-  return std::move(raster_shape);
+  return raster_shape;
 }
 
 std::unique_ptr<Shape> Shape::CreateLayoutBoxShape(
@@ -477,9 +473,7 @@ std::unique_ptr<Shape> Shape::CreateLayoutBoxShape(
       PhysicalSize::FromSizeFFloor(contoured_rect.Rect().size()));
   std::unique_ptr<Shape> shape =
       CreateInsetShape(BoxShape::ToLogical(contoured_rect, converter));
-  shape->writing_mode_ = writing_mode;
   shape->margin_ = margin;
-
   return shape;
 }
 
