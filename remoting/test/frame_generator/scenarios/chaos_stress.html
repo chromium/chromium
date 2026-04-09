@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { margin: 0; overflow: hidden; background: #000; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<script>
+  // Simple deterministic seeded random number generator (LCG)
+  class Lcg {
+    constructor(seed = 42) {
+      this.m = 0x80000000;
+      this.a = 1103515245;
+      this.c = 12345;
+      this.state = seed;
+    }
+    next() {
+      this.state = (this.a * this.state + this.c) % this.m;
+      return this.state / (this.m - 1);
+    }
+    range(min, max) {
+      return min + this.next() * (max - min);
+    }
+  }
+
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  let shapes = [];
+
+  function initShapes() {
+    canvas.width = window.innerWidth || 1920;
+    canvas.height = window.innerHeight || 1080;
+
+    const rng = new Lcg(12345);
+    shapes = [];
+    // 150 shapes for massive entropy
+    for (let i = 0; i < 150; i++) {
+      shapes.push({
+        x: rng.range(0, canvas.width),
+        y: rng.range(0, canvas.height),
+        vx: rng.range(-30, 30), // High speed
+        vy: rng.range(-30, 30),
+        vr: rng.range(-5, 5), // High rotation speed
+        size: rng.range(20, 100),
+        color: `hsla(${rng.range(0, 360)}, 80%, 60%, 0.6)`,
+        type: rng.next() > 0.5 ? 'circle' : 'rect'
+      });
+    }
+  }
+
+  let autoAnimate = true;
+  window.setBenchmarkTime = function(t) {
+    autoAnimate = false;
+    draw(t);
+  };
+
+  function draw(t) {
+    if (shapes.length === 0) initShapes();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    shapes.forEach(s => {
+      let x = (s.x + s.vx * t) % canvas.width;
+      let y = (s.y + s.vy * t) % canvas.height;
+      if (x < 0) x += canvas.width;
+      if (y < 0) y += canvas.height;
+
+      let rotation = s.vr * t;
+
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rotation);
+      ctx.fillStyle = s.color;
+
+      if (s.type === 'circle') {
+        ctx.beginPath();
+        ctx.arc(0, 0, s.size, 0, Math.PI * 2);
+        ctx.fill();
+        // Add a line to make rotation visible
+        ctx.strokeStyle = 'white';
+        ctx.beginPath();
+        ctx.moveTo(0,0);
+        ctx.lineTo(s.size, 0);
+        ctx.stroke();
+      } else {
+        ctx.fillRect(-s.size/2, -s.size/2, s.size, s.size);
+        ctx.strokeStyle = 'white';
+        ctx.strokeRect(-s.size/2, -s.size/2, s.size, s.size);
+      }
+      ctx.restore();
+    });
+  }
+
+  function animate(t) {
+    if (autoAnimate) {
+      draw(t / 1000);
+      requestAnimationFrame(animate);
+    }
+  }
+
+  initShapes();
+  requestAnimationFrame(animate);
+</script>
+</body>
+</html>

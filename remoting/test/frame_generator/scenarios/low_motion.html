@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: #f0f0f0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  #container {
+    width: 3840px;
+    height: 2160px;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  .line {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    background: white;
+    color: #333;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+  .header {
+    background: #4285f4;
+    color: white;
+    padding: 20px;
+    font-size: 24px;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+<div id="container">
+  <div class="header">Deterministic Low Motion - Scrolling Text UI</div>
+  <div id="content"></div>
+</div>
+<script>
+  const content = document.getElementById('content');
+  const container = document.getElementById('container');
+
+  // Deterministic "random" text generation
+  function generateText(seed) {
+    const words = ["chromoting", "encoder", "benchmark", "av1", "webrtc", "latency", "bitrate", "remoting", "desktop", "capture"];
+    let result = "";
+    let s = seed;
+    for (let i = 0; i < 20; i++) {
+      s = (s * 9301 + 49297) % 233280;
+      result += words[Math.floor((s / 233280) * words.length)] + " ";
+    }
+    return result;
+  }
+
+  function init() {
+    for (let i = 0; i < 100; i++) {
+      const line = document.createElement('div');
+      line.className = 'line';
+      line.textContent = `Line ${i.toString().padStart(3, '0')}: ${generateText(i)}`;
+      content.appendChild(line);
+    }
+  }
+
+  let autoAnimate = true;
+  window.setBenchmarkTime = function(t) {
+    autoAnimate = false;
+    render(t);
+  };
+
+  function render(t) {
+    // Constant slow scroll: 50 pixels per second
+    const yOffset = -(t * 50) % 500;
+    container.style.transform = `translateY(${yOffset}px)`;
+  }
+
+  function animate(t) {
+    if (autoAnimate) {
+      render(t / 1000);
+      requestAnimationFrame(animate);
+    }
+  }
+
+  init();
+  requestAnimationFrame(animate);
+</script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: serif;
+    background: white;
+    color: black;
+  }
+  .page {
+    width: 10000px;
+    height: 100vh;
+    display: flex;
+    flex-direction: row;
+    padding: 50px;
+    box-sizing: border-box;
+  }
+  .column {
+    width: 600px;
+    margin-right: 50px;
+    flex-shrink: 0;
+  }
+  h1 { font-size: 48px; }
+  p { font-size: 18px; line-height: 1.6; }
+  .box {
+    width: 100%;
+    height: 200px;
+    background: #eee;
+    margin: 20px 0;
+    border: 1px solid #ccc;
+  }
+</style>
+</head>
+<body>
+<div class="page" id="content">
+  <div class="column">
+    <h1>Horizontal Scrolling Benchmark</h1>
+    <div class="box"></div>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+  </div>
+</div>
+<script>
+  function initContent() {
+    const content = document.getElementById('content');
+    for (let i = 0; i < 20; i++) {
+      const column = document.createElement('div');
+      column.className = 'column';
+      column.innerHTML = `
+        <h2>Column ${i}</h2>
+        <div class="box" style="background: hsl(${i * 15}, 70%, 80%)"></div>
+        <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.</p>
+      `;
+      content.appendChild(column);
+    }
+  }
+
+  let autoAnimate = true;
+  window.setBenchmarkTime = function(t) {
+    autoAnimate = false;
+    render(t);
+  };
+
+  function render(t) {
+    const maxScroll = document.documentElement.scrollWidth - window.innerWidth;
+    const speed = 300; // pixels per second
+    const totalDistance = t * speed;
+
+    // Use modulo to find position in a back-and-forth cycle
+    const cycle = maxScroll * 2;
+    const pos = totalDistance % cycle;
+
+    const x = pos > maxScroll ? cycle - pos : pos;
+    window.scrollTo(x, 0);
+  }
+
+  function animate(t) {
+    if (autoAnimate) {
+      render(t / 1000);
+      requestAnimationFrame(animate);
+    }
+  }
+
+  initContent();
+  requestAnimationFrame(animate);
+</script>
+</body>
+</html>

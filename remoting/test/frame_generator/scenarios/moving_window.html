@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #2c3e50;
+    width: 100vw;
+    height: 100vh;
+  }
+  #window {
+    position: absolute;
+    width: 800px;
+    height: 600px;
+    background: white;
+    border: 1px solid #999;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border-radius: 8px;
+    overflow: hidden;
+    left: 100px;
+    top: 100px;
+  }
+  .title-bar {
+    height: 30px;
+    background: #ecf0f1;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    font-family: sans-serif;
+    font-size: 14px;
+    color: #333;
+    border-bottom: 1px solid #ccc;
+  }
+  .content {
+    padding: 20px;
+    font-family: sans-serif;
+  }
+</style>
+</head>
+<body>
+<div id="window">
+  <div class="title-bar">Terminal</div>
+  <div class="content">
+    <pre>
+$ git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   remoting/codec/frame_generation_plan.md
+
+no changes added to commit (use "git add" and/or "git commit -a")
+    </pre>
+  </div>
+</div>
+<script>
+  let autoAnimate = true;
+  const win = document.getElementById('window');
+
+  window.setBenchmarkTime = function(t) {
+    autoAnimate = false;
+    draw(t);
+  };
+
+  function draw(t) {
+    // Deterministic movement: 100px radius circle at 1 radian/sec
+    const x = 200 + Math.sin(t) * 100;
+    const y = 200 + Math.cos(t) * 100;
+    win.style.left = x + 'px';
+    win.style.top = y + 'px';
+  }
+
+  function animate(t) {
+    if (autoAnimate) {
+      draw(t / 1000);
+      requestAnimationFrame(animate);
+    }
+  }
+
+  window.onload = () => {
+    requestAnimationFrame(animate);
+  };
+</script>
+</body>
+</html>

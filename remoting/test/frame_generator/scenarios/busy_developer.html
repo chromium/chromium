@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { margin: 0; overflow: hidden; background: #202124; font-family: monospace; }
+  #background-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+  }
+  #terminal-window {
+    position: absolute;
+    width: 600px;
+    height: 400px;
+    background: #000;
+    border: 2px solid #5f6368;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    z-index: 10;
+    color: #0f0;
+    padding: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .title-bar {
+    background: #3c4043;
+    margin: -10px -10px 10px -10px;
+    padding: 5px 10px;
+    color: #e8eaed;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+<canvas id="background-canvas"></canvas>
+<div id="terminal-window">
+  <div class="title-bar">bash — 80x24</div>
+  <div id="terminal-content"></div>
+</div>
+
+<script>
+  // Simple deterministic seeded random number generator (LCG)
+  class Lcg {
+    constructor(seed = 42) {
+      this.m = 0x80000000;
+      this.a = 1103515245;
+      this.c = 12345;
+      this.state = seed;
+    }
+    next() {
+      this.state = (this.a * this.state + this.c) % this.m;
+      return this.state / (this.m - 1);
+    }
+    range(min, max) {
+      return min + this.next() * (max - min);
+    }
+  }
+
+  const canvas = document.getElementById('background-canvas');
+  const ctx = canvas.getContext('2d');
+  const terminal = document.getElementById('terminal-window');
+  const terminalContent = document.getElementById('terminal-content');
+
+  const shapes = [];
+  const textLines = [];
+
+  function init() {
+    canvas.width = window.innerWidth || 1920;
+    canvas.height = window.innerHeight || 1080;
+
+    const rng = new Lcg(54321);
+
+    // Background shapes
+    for (let i = 0; i < 20; i++) {
+      shapes.push({
+        x: rng.range(0, canvas.width),
+        y: rng.range(0, canvas.height),
+        vx: rng.range(-20, 20),
+        vy: rng.range(-20, 20),
+        size: rng.range(50, 150),
+        color: `hsla(${rng.range(0, 360)}, 50%, 40%, 0.3)`
+      });
+    }
+
+    // "Code" text for background
+    for (let i = 0; i < 100; i++) {
+      textLines.push(`function benchmarkAV1(frame) { return encode(frame, { speed: 10, threads: ${i} }); } // Loop ${i}`);
+    }
+
+    // Terminal content
+    for (let i = 0; i < 50; i++) {
+      const line = document.createElement('div');
+      line.textContent = `user@chromoting:~/src$ ./run_test.sh --iteration=${i} --verbose`;
+      terminalContent.appendChild(line);
+    }
+  }
+
+  function draw(t) {
+    if (canvas.width === 0) init();
+
+    // 1. Draw scrolling background text
+    ctx.fillStyle = '#202124';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.font = '14px monospace';
+    ctx.fillStyle = '#3c4043';
+    const scrollY = (t * 100) % (textLines.length * 20);
+    textLines.forEach((line, i) => {
+      ctx.fillText(line, 20, (i * 20) - scrollY + 500);
+      ctx.fillText(line, 20, (i * 20) - scrollY + 500 + (textLines.length * 20));
+    });
+
+    // 2. Draw moving background shapes
+    shapes.forEach(s => {
+      let x = (s.x + s.vx * t) % canvas.width;
+      let y = (s.y + s.vy * t) % canvas.height;
+      if (x < 0) x += canvas.width;
+      if (y < 0) y += canvas.height;
+      ctx.fillStyle = s.color;
+      ctx.beginPath();
+      ctx.arc(x, y, s.size, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // 3. Move terminal window (Circular path)
+    const winX = (canvas.width/2 - 300) + Math.cos(t * 0.5) * (canvas.width/4);
+    const winY = (canvas.height/2 - 200) + Math.sin(t * 0.8) * (canvas.height/4);
+    terminal.style.left = `${winX}px`;
+    terminal.style.top = `${winY}px`;
+
+    // 4. Scroll terminal content
+    terminalContent.style.marginTop = `-${(t * 50) % 400}px`;
+  }
+
+  let autoAnimate = true;
+  window.setBenchmarkTime = function(t) {
+    autoAnimate = false;
+    draw(t);
+  };
+
+  function animate(t) {
+    if (autoAnimate) {
+      draw(t / 1000);
+      requestAnimationFrame(animate);
+    }
+  }
+
+  init();
+  requestAnimationFrame(animate);
+</script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+    width: 100vw;
+    height: 100vh;
+  }
+  #taskbar {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 40px;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    box-sizing: border-box;
+  }
+  #start-button {
+    width: 32px;
+    height: 32px;
+    background: #0078d7;
+    margin-right: 15px;
+    border-radius: 2px;
+  }
+  .active-app {
+    width: 32px;
+    height: 32px;
+    margin-right: 8px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-bottom: 2px solid #0078d7;
+  }
+  #clock {
+    margin-left: auto;
+    font-size: 14px;
+    width: 80px;
+    text-align: right;
+  }
+  .icon {
+    width: 48px;
+    height: 48px;
+    margin: 25px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+  .icon-label {
+    position: absolute;
+    top: 55px;
+    font-size: 12px;
+    text-shadow: 1px 1px 2px black;
+    white-space: nowrap;
+  }
+  #desktop {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    height: calc(100% - 40px);
+  }
+  #terminal {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 33%; /* Approx 1/6th of area is hard to hit exactly, but 1/3 width * 1/2 height works */
+    height: 30%;
+    background: #0c0c0c;
+    border: 1px solid #333;
+    border-radius: 6px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    padding: 10px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 14px;
+    color: #cccccc;
+    overflow: hidden;
+  }
+  .term-header {
+    color: #00ff00;
+    margin-bottom: 8px;
+  }
+</style>
+</head>
+<body>
+<div id="desktop">
+  <div class="icon" style="background: #e74c3c;"><span class="icon-label">Browser</span></div>
+  <div class="icon" style="background: #2ecc71;"><span class="icon-label">Files</span></div>
+  <div class="icon" style="background: #f1c40f;"><span class="icon-label">Settings</span></div>
+</div>
+
+<div id="terminal">
+  <div class="term-header">user@chromoting:~$ git status</div>
+  <div>On branch main</div>
+  <div>Your branch is up to date with 'origin/main'.</div>
+  <div></div>
+  <div>Changes not staged for commit:</div>
+  <div>  modified:   remoting/codec/webrtc_video_encoder_av1.cc</div>
+  <div></div>
+  <div>no changes added to commit (use "git add" and/or "git commit -a")</div>
+</div>
+
+<div id="taskbar">
+  <div id="start-button"></div>
+  <div class="active-app" style="background: rgba(231, 76, 60, 0.4);"></div>
+  <div class="active-app" style="background: rgba(46, 204, 113, 0.4);"></div>
+  <div id="clock">02:14:00</div>
+</div>
+
+<script>
+  // Start at 2:14:00 (8040 seconds since midnight)
+  const START_TIME_SECONDS = (2 * 3600) + (14 * 60);
+
+  function updateClock(benchmarkTime) {
+    const totalSeconds = (START_TIME_SECONDS + Math.floor(benchmarkTime)) % 86400;
+    const h = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+    const m = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+    const s = String(totalSeconds % 60).padStart(2, '0');
+    document.getElementById('clock').textContent = `${h}:${m}:${s}`;
+  }
+
+  let autoAnimate = true;
+  window.setBenchmarkTime = function(t) {
+    autoAnimate = false;
+    updateClock(t);
+  };
+
+  let startTime = null;
+  function animate(timestamp) {
+    if (autoAnimate) {
+      if (!startTime) startTime = timestamp;
+      updateClock((timestamp - startTime) / 1000);
+      requestAnimationFrame(animate);
+    }
+  }
+
+  window.onload = () => {
+    requestAnimationFrame(animate);
+  };
+</script>
+</body>
+</html>

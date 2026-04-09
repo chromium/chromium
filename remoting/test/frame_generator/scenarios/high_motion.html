@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { margin: 0; overflow: hidden; background: #111; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<script>
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  const NUM_BLOCKS = 10;
+  const blocks = [];
+
+  function init() {
+    canvas.width = window.innerWidth || 1920;
+    canvas.height = window.innerHeight || 1080;
+
+    // Deterministic block generation
+    for (let i = 0; i < NUM_BLOCKS; i++) {
+      blocks.push({
+        w: 400 + (i * 50),
+        h: 300 + (i * 30),
+        color: `hsl(${(i * 360 / NUM_BLOCKS)}, 70%, 50%)`,
+        // Speed in pixels per second
+        speedX: 500 + (i * 100),
+        speedY: 300 + (i * 150),
+        phase: i * Math.PI / 4
+      });
+    }
+  }
+
+  let autoAnimate = true;
+  window.setBenchmarkTime = function(t) {
+    autoAnimate = false;
+    draw(t);
+  };
+
+  function draw(t) {
+    if (canvas.width === 0) init();
+    ctx.fillStyle = '#111';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    blocks.forEach((b, i) => {
+      // Deterministic bounce logic
+      let x = (canvas.width / 2 - b.w / 2) + Math.sin(t * (b.speedX / 500) + b.phase) * (canvas.width / 2 - b.w / 2);
+      let y = (canvas.height / 2 - b.h / 2) + Math.cos(t * (b.speedY / 500) + b.phase) * (canvas.height / 2 - b.h / 2);
+
+      ctx.fillStyle = b.color;
+      ctx.globalAlpha = 0.8;
+      ctx.fillRect(x, y, b.w, b.h);
+
+      // Add some high-contrast interior detail to stress ME
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = 5;
+      ctx.strokeRect(x + 20, y + 20, b.w - 40, b.h - 40);
+      ctx.fillStyle = 'white';
+      ctx.font = 'bold 40px Arial';
+      ctx.fillText(`BLOCK ${i}`, x + 50, y + 100);
+    });
+  }
+
+  function animate(t) {
+    if (autoAnimate) {
+      draw(t / 1000);
+      requestAnimationFrame(animate);
+    }
+  }
+
+  init();
+  requestAnimationFrame(animate);
+</script>
+</body>
+</html>
