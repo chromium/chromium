@@ -1937,6 +1937,7 @@ public class ToolbarManager
                         mControlContainer,
                         mToolbarLayout,
                         mBottomControlsStacker,
+                        mBottomSheetController,
                         mBottomToolbarControlsOffsetSupplier,
                         mProgressBarContainer,
                         controlContainerTranslationSupplier,

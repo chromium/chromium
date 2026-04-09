@@ -39,6 +39,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -78,6 +79,9 @@ import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPosi
 import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -276,6 +280,7 @@ public class ToolbarPositionControllerTest {
     @Mock private ControlContainer mControlContainer;
     @Mock private ToolbarLayout mToolbarLayout;
     @Mock private View mControlContainerView;
+    @Mock private BottomSheetController mBottomSheetController;
     @Mock private View mProgressBarContainer;
     @Mock private ViewGroup mProgressBarParent;
     @Mock private TopInsetProvider mTopInsetProvider;
@@ -386,6 +391,7 @@ public class ToolbarPositionControllerTest {
                         mControlContainer,
                         mToolbarLayout,
                         mBottomControlsStacker,
+                        mBottomSheetController,
                         mBottomToolbarOffsetSupplier,
                         mProgressBarContainer,
                         mControlContainerTranslationSupplier,
@@ -1178,6 +1184,115 @@ public class ToolbarPositionControllerTest {
         clearInvocations(mControlContainer);
         mController.maybeForceBottomToolbarLayoutUpdateAndCapture(/* isNtpShowing= */ false);
         verify(mControlContainer, never()).doSynchronousLayoutAndCapture();
+    }
+
+    @Test
+    public void testUpdateLayerVisibility_BottomSheetHalf() {
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
+        assertControlsAtBottom();
+
+        ArgumentCaptor<BottomSheetObserver> observerCaptor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mBottomSheetController).addObserver(observerCaptor.capture());
+        BottomSheetObserver observer = observerCaptor.getValue();
+
+        BottomSheetContent bottomSheetContent = mock(BottomSheetContent.class);
+        when(bottomSheetContent.actsAsBrowserControls()).thenReturn(true);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(bottomSheetContent);
+        when(mBottomSheetController.getSheetState())
+                .thenReturn(BottomSheetController.SheetState.HALF);
+
+        observer.onSheetStateChanged(
+                BottomSheetController.SheetState.HALF,
+                BottomSheetController.StateChangeReason.NONE);
+
+        BottomControlsLayer toolbarLayer =
+                mBottomControlsStacker.getLayerForTesting(LayerType.BOTTOM_TOOLBAR);
+        assertEquals(LayerVisibility.HIDDEN, toolbarLayer.getLayerVisibility());
+
+        // Restore to HIDDEN
+        when(mBottomSheetController.getSheetState())
+                .thenReturn(BottomSheetController.SheetState.HIDDEN);
+        observer.onSheetStateChanged(
+                BottomSheetController.SheetState.HIDDEN,
+                BottomSheetController.StateChangeReason.NONE);
+
+        assertEquals(LayerVisibility.VISIBLE, toolbarLayer.getLayerVisibility());
+    }
+
+    @Test
+    public void testUpdateLayerVisibility_BottomSheetFull() {
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
+        assertControlsAtBottom();
+
+        ArgumentCaptor<BottomSheetObserver> observerCaptor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mBottomSheetController).addObserver(observerCaptor.capture());
+        BottomSheetObserver observer = observerCaptor.getValue();
+
+        BottomSheetContent bottomSheetContent = mock(BottomSheetContent.class);
+        when(bottomSheetContent.actsAsBrowserControls()).thenReturn(true);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(bottomSheetContent);
+        when(mBottomSheetController.getSheetState())
+                .thenReturn(BottomSheetController.SheetState.FULL);
+
+        observer.onSheetStateChanged(
+                BottomSheetController.SheetState.FULL,
+                BottomSheetController.StateChangeReason.NONE);
+
+        BottomControlsLayer toolbarLayer =
+                mBottomControlsStacker.getLayerForTesting(LayerType.BOTTOM_TOOLBAR);
+        assertEquals(LayerVisibility.HIDDEN, toolbarLayer.getLayerVisibility());
+    }
+
+    @Test
+    public void testUpdateLayerVisibility_BottomSheetNotBrowserControls() {
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
+        assertControlsAtBottom();
+
+        ArgumentCaptor<BottomSheetObserver> observerCaptor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mBottomSheetController).addObserver(observerCaptor.capture());
+        BottomSheetObserver observer = observerCaptor.getValue();
+
+        BottomSheetContent bottomSheetContent = mock(BottomSheetContent.class);
+        when(bottomSheetContent.actsAsBrowserControls()).thenReturn(false);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(bottomSheetContent);
+        when(mBottomSheetController.getSheetState())
+                .thenReturn(BottomSheetController.SheetState.HALF);
+
+        observer.onSheetStateChanged(
+                BottomSheetController.SheetState.HALF,
+                BottomSheetController.StateChangeReason.NONE);
+
+        BottomControlsLayer toolbarLayer =
+                mBottomControlsStacker.getLayerForTesting(LayerType.BOTTOM_TOOLBAR);
+        assertEquals(LayerVisibility.VISIBLE, toolbarLayer.getLayerVisibility());
+    }
+
+    @Test
+    public void testUpdateLayerVisibility_TopToolbar() {
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ true);
+        assertControlsAtTop();
+
+        ArgumentCaptor<BottomSheetObserver> observerCaptor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mBottomSheetController).addObserver(observerCaptor.capture());
+        BottomSheetObserver observer = observerCaptor.getValue();
+
+        BottomSheetContent bottomSheetContent = mock(BottomSheetContent.class);
+        when(bottomSheetContent.actsAsBrowserControls()).thenReturn(true);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(bottomSheetContent);
+        when(mBottomSheetController.getSheetState())
+                .thenReturn(BottomSheetController.SheetState.HALF);
+
+        observer.onSheetStateChanged(
+                BottomSheetController.SheetState.HALF,
+                BottomSheetController.StateChangeReason.NONE);
+
+        BottomControlsLayer toolbarLayer =
+                mBottomControlsStacker.getLayerForTesting(LayerType.BOTTOM_TOOLBAR);
+        assertEquals(LayerVisibility.HIDDEN, toolbarLayer.getLayerVisibility());
     }
 
     private void assertControlsAtBottom() {
