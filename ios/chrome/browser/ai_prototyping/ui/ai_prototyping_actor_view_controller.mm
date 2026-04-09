@@ -183,6 +183,7 @@ bool IsWebActuationTool(NSString* tool) {
         }
         strongSelf->_frameMenuCompletion = completion;
         [strongSelf.mutator executeAPCExtractionWithRichExtraction:YES
+                                                    actionableMode:YES
                                                   includeDebugData:YES];
       }];
   _frameIdButton.menu = [UIMenu menuWithTitle:@"Select Frame"
@@ -570,6 +571,7 @@ bool IsWebActuationTool(NSString* tool) {
 
   if (isWebActuationTool) {
     [self.mutator executeAPCExtractionWithRichExtraction:YES
+                                          actionableMode:YES
                                         includeDebugData:YES];
   }
 
@@ -616,6 +618,7 @@ bool IsWebActuationTool(NSString* tool) {
 - (void)onUpdateApcButtonPressed:(UIButton*)sender {
   _framesAndContentNodesContainer.text = @"Refreshing page context...";
   [self.mutator executeAPCExtractionWithRichExtraction:YES
+                                        actionableMode:YES
                                       includeDebugData:YES];
 }
 

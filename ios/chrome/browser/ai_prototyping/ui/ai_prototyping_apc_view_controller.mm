@@ -14,6 +14,7 @@
   UIButton* _submitButton;
   UIButton* _copyButton;
   UISwitch* _richExtractionSwitch;
+  UISwitch* _actionableModeSwitch;
   UITextView* _responseContainer;
   // The raw bytes of the APC in Base64 format.
   NSString* _rawBytes;
@@ -86,6 +87,24 @@
   switchContainer.spacing = kButtonStackViewSpacing;
   switchContainer.alignment = UIStackViewAlignmentCenter;
 
+  _actionableModeSwitch = [[UISwitch alloc] init];
+  _actionableModeSwitch.translatesAutoresizingMaskIntoConstraints = NO;
+  _actionableModeSwitch.on = NO;
+
+  UILabel* actionableSwitchLabel = [[UILabel alloc] init];
+  actionableSwitchLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  actionableSwitchLabel.numberOfLines = 0;
+  actionableSwitchLabel.text = @"Use Actionable Mode(APC V2 Only)";
+
+  UIStackView* actionableSwitchContainer =
+      [[UIStackView alloc] initWithArrangedSubviews:@[
+        _actionableModeSwitch, actionableSwitchLabel
+      ]];
+  actionableSwitchContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  actionableSwitchContainer.axis = UILayoutConstraintAxisHorizontal;
+  actionableSwitchContainer.spacing = kButtonStackViewSpacing;
+  actionableSwitchContainer.alignment = UIStackViewAlignmentCenter;
+
   _responseContainer = [UITextView textViewUsingTextLayoutManager:NO];
   _responseContainer.translatesAutoresizingMaskIntoConstraints = NO;
   _responseContainer.editable = NO;
@@ -97,7 +116,8 @@
   _responseContainer.text = @"Press 'Extract APC' to begin.";
 
   UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-    label, switchContainer, buttonsContainer, _responseContainer
+    label, switchContainer, actionableSwitchContainer, buttonsContainer,
+    _responseContainer
   ]];
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   stackView.axis = UILayoutConstraintAxisVertical;
@@ -124,6 +144,7 @@
   _responseContainer.text = @"";
   [self.mutator
       executeAPCExtractionWithRichExtraction:_richExtractionSwitch.isOn
+                              actionableMode:_actionableModeSwitch.isOn
                             includeDebugData:NO];
 }
 

@@ -627,6 +627,7 @@
 // in a background thread, and the file path is displayed in the prototyping
 // menu.
 - (void)executeAPCExtractionWithRichExtraction:(BOOL)useRichExtraction
+                                actionableMode:(BOOL)actionableMode
                               includeDebugData:(BOOL)includeDebugData {
   web::WebState* activeWebState = _webStateList->GetActiveWebState();
   if (!activeWebState) {
@@ -638,9 +639,11 @@
     return;
   }
 
-  PageContextWrapperConfig config = PageContextWrapperConfigBuilder()
-                                        .SetUseRichExtraction(useRichExtraction)
-                                        .Build();
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(useRichExtraction)
+          .SetUseRichExtractionWithActionable(actionableMode)
+          .Build();
 
   __weak __typeof(self) weakSelf = self;
   auto completion = base::BindOnce(^(
