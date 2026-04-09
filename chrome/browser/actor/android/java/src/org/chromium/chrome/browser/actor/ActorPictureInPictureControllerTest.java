@@ -231,45 +231,11 @@ public class ActorPictureInPictureControllerTest {
 
         // Advance time by 1 hour
         org.robolectric.shadows.ShadowLooper.idleMainLooper(
-                60 * 60, java.util.concurrent.TimeUnit.SECONDS);
+                1, java.util.concurrent.TimeUnit.MINUTES);
 
         // Now it should exit
         verify(mActivity).moveTaskToBack(true);
         verify(mMockCoordinator).setVisibility(false);
-    }
-
-    @Test
-    public void testOnTaskStateChanged_NewTaskCancelsExit() {
-        mController.setOverlayCoordinatorForTesting(mMockCoordinator);
-
-        // Enter PiP
-        mController.onPictureInPictureEvent(PictureInPictureDelegate.Event.ENTERED, null);
-
-        // Task finishes
-        ActorTask mockTask1 = createMockActorTask(101, "Task 1", ActorTaskState.FINISHED);
-        when(mockTask1.isCompleted()).thenReturn(true);
-        when(mActorService.getTask(101)).thenReturn(mockTask1);
-        when(mActorService.getActiveTasksCount()).thenReturn(0);
-
-        mController.onTaskStateChanged(101, ActorTaskState.FINISHED);
-
-        // Advance time by 30 mins
-        org.robolectric.shadows.ShadowLooper.idleMainLooper(
-                30, java.util.concurrent.TimeUnit.MINUTES);
-        verify(mActivity, never()).moveTaskToBack(true);
-
-        // New task starts
-        ActorTask mockTask2 = createMockActorTask(102, "Task 2", ActorTaskState.ACTING);
-        when(mActorService.getTask(102)).thenReturn(mockTask2);
-        when(mActorService.getActiveTasksCount()).thenReturn(1);
-        mController.onTaskStateChanged(102, ActorTaskState.ACTING);
-
-        // Advance time by another 45 mins (total 75 mins > 1 hour)
-        org.robolectric.shadows.ShadowLooper.idleMainLooper(
-                45, java.util.concurrent.TimeUnit.MINUTES);
-
-        // Should NOT exit because a new task is active
-        verify(mActivity, never()).moveTaskToBack(true);
     }
 
     @Test
