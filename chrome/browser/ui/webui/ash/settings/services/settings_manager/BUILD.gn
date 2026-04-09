@@ -75,7 +75,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/multidevice_setup",
     "//chrome/browser/ash/phonehub",
     "//chrome/browser/ash/printing",
-    "//chrome/browser/nearby_sharing",
     "//chrome/browser/signin",
     "//chrome/browser/ui/ash/graduation",
     "//chrome/browser/ui/webui/ash/settings/constants",
