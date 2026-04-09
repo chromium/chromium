@@ -95,7 +95,7 @@ std::string GetSetCookiesPath(std::string_view cookie_value) {
 
 class SecurityReportingBrowserTest
     : public MixinBasedPlatformBrowserTest,
-      public testing::WithParamInterface<testing::tuple<bool, bool>> {
+      public testing::WithParamInterface<testing::tuple<bool, bool, bool>> {
  protected:
   SecurityReportingBrowserTest() {
     management_mixin_ = ManagementContextMixin::Create(
@@ -105,6 +105,9 @@ class SecurityReportingBrowserTest
             .is_cloud_machine_managed = is_device_managed(),
             .affiliated = is_affiliated(),
         });
+    scoped_feature_list_.InitWithFeatureState(
+        enterprise_signals::features::kPolicyDataCollectionEnabled,
+        is_policy_collection_enabled());
   }
 
   void SetUp() override {
@@ -244,12 +247,16 @@ class SecurityReportingBrowserTest
               enterprise::ProfileIdServiceFactory::GetForProfile(GetProfile())
                   ->GetProfileId()
                   .value());
-
-    EXPECT_GT(chrome_user_profile_info.chrome_policies_size(), 0);
+    if (is_policy_collection_enabled()) {
+      EXPECT_GT(chrome_user_profile_info.chrome_policies_size(), 0);
+    } else {
+      EXPECT_EQ(chrome_user_profile_info.chrome_policies_size(), 0);
+    }
   }
 
   bool is_device_managed() { return testing::get<0>(GetParam()); }
   bool is_affiliated() { return testing::get<1>(GetParam()); }
+  bool is_policy_collection_enabled() { return testing::get<2>(GetParam()); }
 
   bool can_collect_pii_signals() {
     return is_device_managed() && is_affiliated();
@@ -276,6 +283,7 @@ class SecurityReportingBrowserTest
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<ManagementContextMixin> management_mixin_;
 };
@@ -348,13 +356,15 @@ INSTANTIATE_TEST_SUITE_P(
     ManagedDeviceCase,
     SecurityReportingBrowserTest,
     testing::Combine(/*is_device_managed=*/testing::Values(true),
-                     /*is_affiliated=*/testing::Bool()));
+                     /*is_affiliated=*/testing::Bool(),
+                     /*is_policy_collection_enabled*/ testing::Bool()));
 
 INSTANTIATE_TEST_SUITE_P(
     UnmanagedDeviceCase,
     SecurityReportingBrowserTest,
     testing::Combine(/*is_device_managed=*/testing::Values(false),
-                     /*is_affiliated=*/testing::Values(false)));
+                     /*is_affiliated=*/testing::Values(false),
+                     /*is_policy_collection_enabled*/ testing::Bool()));
 
 // Test that confirms the correct form of reports are being triggered.
 // Collection contexts such as management state don't affect the expectations so
@@ -486,6 +496,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     SecurityReportTriggerBrowserTest,
     testing::Combine(/*is_device_managed*/ ::testing::Values(false),
-                     /*is_affiliated*/ ::testing::Values(false)));
+                     /*is_affiliated*/ ::testing::Values(false),
+                     /*is_policy_collection_enabled*/ testing::Values(true)));
 
 }  // namespace enterprise_reporting
