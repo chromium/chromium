@@ -1471,8 +1471,10 @@ void ClientControlledShellSurface::UpdateFrameWidth() {
   if (shadow_bounds_) {
     float device_scale_factor =
         GetWidget()->GetNativeWindow()->layer()->device_scale_factor();
-    float dsf_to_default_dsf = device_scale_factor / GetScale();
-    width = base::ClampRound(shadow_bounds_->width() * dsf_to_default_dsf);
+    int dp_width =
+        gfx::ScaleToRoundedSize(shadow_bounds_->size(), 1.f / GetScale())
+            .width();
+    width = base::ClampRound(dp_width * device_scale_factor);
   }
   static_cast<chromeos::HeaderView*>(GetFrameView()->GetHeaderView())
       ->SetWidthInPixels(width);
