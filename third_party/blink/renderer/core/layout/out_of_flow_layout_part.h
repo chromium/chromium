@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/static_position.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_containing_block_utils.h"
 #include "third_party/blink/renderer/core/layout/non_overflowing_scroll_range.h"
+#include "third_party/blink/renderer/core/layout/oof_positioned_node.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -30,12 +31,7 @@ class BlockBreakToken;
 class LayoutBox;
 class LayoutObject;
 class LayoutResult;
-template <typename OffsetType>
-class OofContainingBlock;
 class SimplifiedOofLayoutAlgorithm;
-struct LogicalOofPositionedNode;
-template <typename OffsetType>
-struct MulticolWithPendingOofs;
 
 // Helper class for positioning of out-of-flow blocks.
 // It should be used together with BoxFragmentBuilder.

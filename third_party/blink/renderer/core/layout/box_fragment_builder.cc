@@ -435,11 +435,13 @@ void BoxFragmentBuilder::MoveChildrenInDirection(LayoutUnit offset,
   }
 
   for (auto& candidate : oof_positioned_candidates_) {
+    LogicalOffset increase;
     if (is_block_direction) {
-      candidate.static_position.offset.block_offset += offset;
+      increase.block_offset = offset;
     } else {
-      candidate.static_position.offset.inline_offset += offset;
+      increase.inline_offset = offset;
     }
+    candidate.IncreaseStaticPositionOffset(increase);
   }
 
   for (auto& descendant : oof_positioned_fragmentainer_descendants_) {
@@ -747,15 +749,15 @@ void BoxFragmentBuilder::AdjustFragmentainerDescendant(
       !descendant.containing_block.Fragment()) {
     descendant.containing_block.IncreaseBlockOffset(
         -previous_consumed_block_size);
-    descendant.static_position.offset.block_offset +=
-        previous_consumed_block_size;
+    descendant.IncreaseStaticPositionOffset(
+        LogicalOffset(LayoutUnit(), previous_consumed_block_size));
   }
 
   // If the fixedpos containing block is fragmented, adjust the offset to be
   // from the first containing block fragment to the fragmentation context root.
   if (!descendant.fixedpos_containing_block.Fragment() &&
       (node_.IsFixedContainer() ||
-       descendant.fixedpos_inline_container.container)) {
+       descendant.fixedpos_inline_container.Container())) {
     descendant.fixedpos_containing_block.IncreaseBlockOffset(
         -previous_consumed_block_size);
   }
@@ -788,7 +790,7 @@ void BoxFragmentBuilder::AdjustFixedposContainingBlockForInnerMulticols() {
     MulticolWithPendingOofs<LogicalOffset>& value = *multicol.value;
     if (!value.fixedpos_containing_block.Fragment() &&
         (node_.IsFixedContainer() ||
-         value.fixedpos_inline_container.container)) {
+         value.fixedpos_inline_container.Container())) {
       value.fixedpos_containing_block.IncreaseBlockOffset(
           -previous_consumed_block_size);
       value.multicol_offset.block_offset += previous_consumed_block_size;

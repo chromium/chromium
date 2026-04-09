@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/geometry/static_position.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
@@ -89,20 +90,31 @@ class OofContainingBlock {
 // root (i.e. the first LayoutInline in the continuation chain for the same
 // node) if continuations are involved.
 template <typename OffsetType>
-struct OofInlineContainer {
+class OofInlineContainer {
   DISALLOW_NEW();
 
  public:
-  Member<const LayoutInline> container;
-  // Store the relative offset so that it can be applied after fragmentation,
-  // if inside a fragmentation context.
-  OffsetType relative_offset;
-
   OofInlineContainer() = default;
   OofInlineContainer(const LayoutInline* container, OffsetType relative_offset)
-      : container(container), relative_offset(relative_offset) {}
+      : container_(container), relative_offset_(relative_offset) {}
 
-  void Trace(Visitor* visitor) const { visitor->Trace(container); }
+  void Trace(Visitor* visitor) const { visitor->Trace(container_); }
+
+  const LayoutInline* Container() const { return container_; }
+  OffsetType RelativeOffset() const {
+    // This field is only used by the old OOF fragmentation machinery.
+    if (RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
+      return OffsetType();
+    }
+    return relative_offset_;
+  }
+
+ private:
+  Member<const LayoutInline> container_;
+
+  // Store the relative offset so that it can be applied after fragmentation,
+  // if inside a fragmentation context.
+  OffsetType relative_offset_;
 };
 
 // If an out-of-flow positioned element is inside a nested fragmentation
@@ -143,118 +155,96 @@ struct MulticolWithPendingOofs
   }
 };
 
-// A physical out-of-flow positioned-node is an element with the style
-// "postion: absolute" or "position: fixed" which hasn't been bubbled up to its
-// containing block yet, (e.g. an element with "position: relative"). As soon
-// as a positioned-node reaches its containing block, it gets placed, and
-// doesn't bubble further up the tree.
+// An out-of-flow positioned node which hasn't bubbled up to the container where
+// it is to be handled yet. This container is typically its containing block,
+// but for block fragmentation it may have to bubble all the way to the
+// outermost fragmentation context root.
 //
-// This needs its static position [1] to be placed correctly in its containing
-// block.
+// The hypothetical static position [1] is needed for it to be placed correctly
+// in its containing block.
 //
-// This is struct is allowed to be stored/persisted.
+// It is templatized, as it needs both a logical (inside layout algorithms) and
+// physical (stored/persisted in physical fragments for bubbling up the tree)
+// representation.
 //
-// [1] https://www.w3.org/TR/CSS2/visudet.html#abs-non-replaced-width
-struct CORE_EXPORT PhysicalOofPositionedNode {
-  DISALLOW_NEW();
-
-  using HorizontalEdge = PhysicalStaticPosition::HorizontalEdge;
-  using VerticalEdge = PhysicalStaticPosition::VerticalEdge;
-  using PhysicalAlignmentDirection =
-      PhysicalStaticPosition::PhysicalAlignmentDirection;
-
- public:
-  Member<LayoutBox> box;
-  Member<const BlockBreakToken> break_token;
-  // Unpacked PhysicalStaticPosition.
-  PhysicalOffset static_position;
-  unsigned static_position_horizontal_edge : 2;
-  unsigned static_position_vertical_edge : 2;
-  unsigned static_position_align_self_direction : 1;
-  // Whether or not this is an PhysicalOofNodeForFragmentation.
-  unsigned is_for_fragmentation : 1;
-  unsigned requires_content_before_breaking : 1;
-  OofInlineContainer<PhysicalOffset> inline_container;
-
-  PhysicalOofPositionedNode(
-      BlockNode node,
-      const BlockBreakToken* break_token,
-      PhysicalStaticPosition static_position,
-      bool requires_content_before_breaking,
-      OofInlineContainer<PhysicalOffset> inline_container = {})
-      : box(node.GetLayoutBox()),
-        break_token(break_token),
-        static_position(static_position.offset),
-        static_position_horizontal_edge(static_position.horizontal_edge),
-        static_position_vertical_edge(static_position.vertical_edge),
-        static_position_align_self_direction(
-            static_position.align_self_direction),
-        is_for_fragmentation(false),
-        requires_content_before_breaking(requires_content_before_breaking),
-        inline_container(inline_container) {
-    DCHECK(node.IsBlock());
-  }
-
-  BlockNode Node() const { return BlockNode(box); }
-  HorizontalEdge GetStaticPositionHorizontalEdge() const {
-    return static_cast<HorizontalEdge>(static_position_horizontal_edge);
-  }
-  VerticalEdge GetStaticPositionVerticalEdge() const {
-    return static_cast<VerticalEdge>(static_position_vertical_edge);
-  }
-  PhysicalAlignmentDirection GetStaticPositionAlignSelfDirection() const {
-    return static_cast<PhysicalAlignmentDirection>(
-        static_position_align_self_direction);
-  }
-  PhysicalStaticPosition StaticPosition() const {
-    return {static_position, GetStaticPositionHorizontalEdge(),
-            GetStaticPositionVerticalEdge(),
-            GetStaticPositionAlignSelfDirection()};
-  }
-
-  void Trace(Visitor* visitor) const;
-  void TraceAfterDispatch(Visitor*) const;
-};
-
-// The logical version of above. It is used within a an algorithm pass (within
-// an |FragmentBuilder|), and its logical coordinate system is wrt.
-// the container builder's writing-mode.
-//
-// It is *only* used within an algorithm pass, (it is temporary, and should not
-// be stored/persisted).
-struct CORE_EXPORT LogicalOofPositionedNode {
+// [1] https://www.w3.org/TR/CSS22/visudet.html#abs-non-replaced-width
+template <typename OffsetType, typename StaticPositionType>
+class CORE_EXPORT OofPositionedNode {
   DISALLOW_NEW();
 
  public:
-  Member<LayoutBox> box;
-  Member<const BlockBreakToken> break_token;
-  LogicalStaticPosition static_position;
-  OofInlineContainer<LogicalOffset> inline_container;
-  // Whether or not this is an LogicalOofNodeForFragmentation.
-  unsigned is_for_fragmentation : 1;
-
-  unsigned requires_content_before_breaking : 1;
-
-  LogicalOofPositionedNode(
-      BlockNode node,
-      const BlockBreakToken* break_token,
-      LogicalStaticPosition static_position,
-      bool requires_content_before_breaking,
-      OofInlineContainer<LogicalOffset> inline_container = {})
-      : box(node.GetLayoutBox()),
-        break_token(break_token),
-        static_position(static_position),
-        inline_container(inline_container),
-        is_for_fragmentation(false),
-        requires_content_before_breaking(requires_content_before_breaking) {
+  OofPositionedNode(const BlockNode& node,
+                    const BlockBreakToken* break_token,
+                    const StaticPositionType& static_position,
+                    bool requires_content_before_breaking,
+                    OofInlineContainer<OffsetType> inline_container = {})
+      : box_(node.GetLayoutBox()),
+        break_token_(break_token),
+        static_position_(static_position),
+        inline_container_(inline_container),
+        requires_content_before_breaking_(requires_content_before_breaking) {
     DCHECK(node.IsBlock());
   }
 
-  BlockNode Node() const { return BlockNode(box); }
-
   void Trace(Visitor* visitor) const;
-  void TraceAfterDispatch(Visitor*) const;
+  void TraceAfterDispatch(Visitor* visitor) const {
+    visitor->Trace(box_);
+    visitor->Trace(break_token_);
+    visitor->Trace(inline_container_);
+  }
+
+  BlockNode Node() const { return BlockNode(box_); }
+  const BlockBreakToken* GetBreakToken() const { return break_token_; }
+  StaticPositionType StaticPosition() const { return static_position_; }
+  const LayoutInline* InlineContainer() const {
+    return inline_container_.Container();
+  }
+  OffsetType InlineContainerRelativeOffset() const {
+    // Only needed by the old OOF fragmentation machinery, i.e. when
+    // FragmentedOofInCb is off.
+    return inline_container_.RelativeOffset();
+  }
+  bool IsForFragmentation() const {
+    DCHECK(!is_for_fragmentation_ ||
+           !RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
+    return is_for_fragmentation_;
+  }
+  bool RequiresContentBeforeBreaking() const {
+    return requires_content_before_breaking_;
+  }
+
+  void IncreaseStaticPositionOffset(OffsetType increase) {
+    static_position_.offset += increase;
+  }
+  void SetInlineContainer(const LayoutInline* object) {
+    inline_container_ = OofInlineContainer<OffsetType>(object, OffsetType());
+  }
+
+ protected:
+  Member<LayoutBox> box_;
+  Member<const BlockBreakToken> break_token_;
+  StaticPositionType static_position_;
+  OofInlineContainer<OffsetType> inline_container_;
+
+  // Set if this is a PhysicalOofNodeForFragmentation or
+  // LogicalOofNodeForFragmentation. This flag will go away with
+  // FragmentedOofInCb.
+  unsigned is_for_fragmentation_ : 1 = false;
+
+  unsigned requires_content_before_breaking_ : 1;
 };
+
+using PhysicalOofPositionedNode =
+    OofPositionedNode<PhysicalOffset, PhysicalStaticPosition>;
+using LogicalOofPositionedNode =
+    OofPositionedNode<LogicalOffset, LogicalStaticPosition>;
+
+template <>
+void OofPositionedNode<PhysicalOffset, PhysicalStaticPosition>::Trace(
+    Visitor* visitor) const;
+template <>
+void OofPositionedNode<LogicalOffset, LogicalStaticPosition>::Trace(
+    Visitor* visitor) const;
 
 // When fragmentation comes into play, we no longer place a positioned-node as
 // soon as it reaches its containing block. Instead, we continue to bubble the
@@ -299,7 +289,7 @@ struct CORE_EXPORT PhysicalOofNodeForFragmentation final
         fixedpos_containing_block(fixedpos_containing_block),
         fixedpos_inline_container(fixedpos_inline_container) {
     DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
-    is_for_fragmentation = true;
+    is_for_fragmentation_ = true;
   }
 
   void TraceAfterDispatch(Visitor* visitor) const;
@@ -337,21 +327,24 @@ struct CORE_EXPORT LogicalOofNodeForFragmentation final
         fixedpos_containing_block(fixedpos_containing_block),
         fixedpos_inline_container(fixedpos_inline_container) {
     DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
-    is_for_fragmentation = true;
+    is_for_fragmentation_ = true;
   }
 
   explicit LogicalOofNodeForFragmentation(
       const LogicalOofPositionedNode& oof_node)
-      : LogicalOofPositionedNode(oof_node.Node(),
-                                 /*break_token=*/nullptr,
-                                 oof_node.static_position,
-                                 oof_node.requires_content_before_breaking,
-                                 oof_node.inline_container) {
+      : LogicalOofPositionedNode(
+            oof_node.Node(),
+            /*break_token=*/nullptr,
+            oof_node.StaticPosition(),
+            oof_node.RequiresContentBeforeBreaking(),
+            OofInlineContainer<LogicalOffset>(
+                oof_node.InlineContainer(),
+                oof_node.InlineContainerRelativeOffset())) {
     DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
-    is_for_fragmentation = true;
+    is_for_fragmentation_ = true;
   }
 
-  const LayoutObject* CssContainingBlock() const { return box->Container(); }
+  const LayoutObject* CssContainingBlock() const { return box_->Container(); }
 
   void TraceAfterDispatch(Visitor* visitor) const;
 };
@@ -359,7 +352,7 @@ struct CORE_EXPORT LogicalOofNodeForFragmentation final
 template <>
 struct DowncastTraits<LogicalOofNodeForFragmentation> {
   static bool AllowFrom(const LogicalOofPositionedNode& oof_node) {
-    return oof_node.is_for_fragmentation;
+    return oof_node.IsForFragmentation();
   }
 };
 

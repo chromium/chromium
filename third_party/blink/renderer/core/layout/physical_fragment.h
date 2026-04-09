@@ -43,7 +43,12 @@ class PaintLayer;
 enum class OutlineType;
 struct FragmentedOofData;
 struct LogicalRect;
-struct PhysicalOofPositionedNode;
+struct PhysicalStaticPosition;
+
+template <typename OffsetType, typename StaticPositionType>
+class OofPositionedNode;
+using PhysicalOofPositionedNode =
+    OofPositionedNode<PhysicalOffset, PhysicalStaticPosition>;
 
 // The PhysicalFragment contains the output geometry from layout. The
 // fragment stores all of its information in the physical coordinate system for

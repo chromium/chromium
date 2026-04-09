@@ -806,14 +806,14 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
             .rect = rect};
   };
 
-  if (candidate.inline_container.container) {
-    const auto it =
-        containing_blocks_map_.find(candidate.inline_container.container);
+  if (const LayoutInline* container = candidate.InlineContainer()) {
+    const auto it = containing_blocks_map_.find(container);
     CHECK(it != containing_blocks_map_.end());
     return it->value;
   }
 
-  if (candidate.is_for_fragmentation) {
+  if (candidate.IsForFragmentation()) {
+    DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
     LogicalOofNodeForFragmentation fragmentainer_descendant =
         To<LogicalOofNodeForFragmentation>(candidate);
     if (fragmentainer_descendant.containing_block.Fragment()) {
@@ -891,13 +891,12 @@ void OutOfFlowLayoutPart::ComputeInlineContainingBlocks(
       inline_container_fragments;
 
   for (auto& candidate : candidates) {
-    if (candidate.inline_container.container &&
-        !inline_container_fragments.Contains(
-            candidate.inline_container.container)) {
+    const LayoutInline* inline_container = candidate.InlineContainer();
+    if (inline_container &&
+        !inline_container_fragments.Contains(inline_container)) {
       InlineContainingBlockUtils::InlineContainingBlockGeometry
           inline_geometry = {};
-      inline_container_fragments.insert(
-          candidate.inline_container.container.Get(), inline_geometry);
+      inline_container_fragments.insert(inline_container, inline_geometry);
     }
   }
 
@@ -936,7 +935,7 @@ void OutOfFlowLayoutPart::ComputeInlineContainingBlocksForFragmentainer(
 
   // Collect the inline containers by shared containing block.
   for (auto& descendant : descendants) {
-    if (descendant.inline_container.container) {
+    if (const LayoutInline* inline_container = descendant.InlineContainer()) {
       DCHECK(descendant.containing_block.Fragment());
       const LayoutBox* containing_block = To<LayoutBox>(
           descendant.containing_block.Fragment()->GetLayoutObject());
@@ -944,20 +943,18 @@ void OutOfFlowLayoutPart::ComputeInlineContainingBlocksForFragmentainer(
       InlineContainingBlockUtils::InlineContainingBlockGeometry
           inline_geometry = {};
       inline_geometry.relative_offset =
-          descendant.inline_container.relative_offset;
+          descendant.InlineContainerRelativeOffset();
       auto it = inline_containing_blocks.find(containing_block);
       if (it != inline_containing_blocks.end()) {
-        if (!it->value.map.Contains(descendant.inline_container.container)) {
-          it->value.map.insert(descendant.inline_container.container.Get(),
-                               inline_geometry);
+        if (!it->value.map.Contains(inline_container)) {
+          it->value.map.insert(inline_container, inline_geometry);
         }
         continue;
       }
-      InlineContainingBlockUtils::InlineContainingBlockMap inline_containers;
-      inline_containers.insert(descendant.inline_container.container.Get(),
-                               inline_geometry);
+      InlineContainingBlockUtils::InlineContainingBlockMap inline_container_map;
+      inline_container_map.insert(inline_container, inline_geometry);
       InlineContainingBlockInfo inline_info{
-          std::move(inline_containers),
+          std::move(inline_container_map),
           descendant.containing_block.RelativeOffset(),
           descendant.containing_block.Offset()};
       inline_containing_blocks.insert(containing_block, inline_info);
@@ -1154,9 +1151,9 @@ void OutOfFlowLayoutPart::LayoutCandidates(
     ComputeInlineContainingBlocks(candidates);
   }
   for (const LogicalOofPositionedNode& candidate : candidates) {
-    LayoutBox* layout_box = candidate.box;
+    LayoutBox* layout_box = candidate.Node().GetLayoutBox();
     if (!container_builder_->IsBlockFragmentationContextRoot()) {
-      SaveStaticPositionOnPaintLayer(layout_box, candidate.static_position);
+      SaveStaticPositionOnPaintLayer(layout_box, candidate.StaticPosition());
     }
     if (IsContainingBlockForCandidate(candidate)) {
       if (should_add_outer_fragmentainer_children_) {
@@ -1213,9 +1210,12 @@ void OutOfFlowLayoutPart::LayoutCandidates(
               node_info.node.Style().GetWritingDirection());
       BoxStrut margins = physical_margins.ConvertToLogical(
           container_builder_->GetWritingDirection());
+      OofInlineContainer<LogicalOffset> inline_container_info(
+          candidate.InlineContainer(),
+          candidate.InlineContainerRelativeOffset());
       container_builder_->AddResult(
           *result, result->OutOfFlowPositionedOffset(), margins,
-          /* relative_offset */ std::nullopt, &candidate.inline_container);
+          /* relative_offset */ std::nullopt, &inline_container_info);
       container_builder_->SetHasOutOfFlowFragmentChild(true);
       if (GetConstraintSpace().IsInitialColumnBalancingPass()) {
         container_builder_->PropagateTallestUnbreakableBlockSize(
@@ -1597,7 +1597,7 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
         //
         // Do this only when needed, to avoid rebuilding fragmentainers more
         // times than necessary.
-        if (descendant.box->MayContainAnchor()) {
+        if (descendant.Node().MayContainAnchor()) {
           // This OOF is an achor and/or has anchors inside. Lay out the OOFs
           // that we've collected so far, then resume collecting OOFs
           // afterwards, if there are any left.
@@ -1872,7 +1872,7 @@ OutOfFlowLayoutPart::NodeInfo OutOfFlowLayoutPart::SetupNodeInfo(
     const LogicalOofPositionedNode& oof_node) {
   BlockNode node = oof_node.Node();
   const PhysicalFragment* containing_block_fragment =
-      oof_node.is_for_fragmentation
+      oof_node.IsForFragmentation()
           ? To<LogicalOofNodeForFragmentation>(oof_node)
                 .containing_block.Fragment()
           : nullptr;
@@ -1914,12 +1914,12 @@ OutOfFlowLayoutPart::NodeInfo OutOfFlowLayoutPart::SetupNodeInfo(
         To<LogicalOofNodeForFragmentation>(oof_node).fixedpos_inline_container;
   }
 
-  return NodeInfo(node, oof_node.static_position, base_container_info,
+  return NodeInfo(node, oof_node.StaticPosition(), base_container_info,
                   GetConstraintSpace().GetWritingDirection(),
                   /* is_fragmentainer_descendant */ containing_block_fragment,
                   containing_block, fixedpos_containing_block,
-                  fixedpos_inline_container, oof_node.break_token,
-                  oof_node.requires_content_before_breaking);
+                  fixedpos_inline_container, oof_node.GetBreakToken(),
+                  oof_node.RequiresContentBeforeBreaking());
 }
 
 const LayoutResult* OutOfFlowLayoutPart::LayoutOOFNode(
@@ -2713,7 +2713,8 @@ bool OutOfFlowLayoutPart::IsContainingBlockForCandidate(
   if (container_builder_->IsFragmentainerBoxType())
     return false;
 
-  if (candidate.break_token && !candidate.break_token->IsForcedBreak()) {
+  if (candidate.GetBreakToken() &&
+      !candidate.GetBreakToken()->IsForcedBreak()) {
     // This OOF node was discovered in an earlier fragmentainer and is now
     // resumed. Its break token is a direct child of the break token of its
     // containing block. We are at the containing block now. No need to check
@@ -2729,11 +2730,11 @@ bool OutOfFlowLayoutPart::IsContainingBlockForCandidate(
 
   // Candidates whose containing block is inline are always positioned inside
   // closest parent block flow.
-  if (candidate.inline_container.container) {
-    DCHECK(candidate.inline_container.container
-               ->CanContainOutOfFlowPositionedElement(position));
+  if (candidate.InlineContainer()) {
+    DCHECK(candidate.InlineContainer()->CanContainOutOfFlowPositionedElement(
+        position));
     return container_builder_->GetLayoutObject() ==
-           candidate.box->ContainingBlock();
+           candidate.Node().GetLayoutBox()->ContainingBlock();
   }
   return (is_absolute_container_ && position == EPosition::kAbsolute) ||
          (is_fixed_container_ && position == EPosition::kFixed);

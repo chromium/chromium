@@ -4,12 +4,14 @@
 
 #include "third_party/blink/renderer/core/layout/oof_positioned_node.h"
 
-#include "third_party/blink/renderer/core/layout/block_break_token.h"
-
 namespace blink {
 
-void PhysicalOofPositionedNode::Trace(Visitor* visitor) const {
-  if (is_for_fragmentation) {
+template <>
+void OofPositionedNode<PhysicalOffset, PhysicalStaticPosition>::Trace(
+    Visitor* visitor) const {
+  // Some poor-man's RTTI here, which will go away with FragmentedOofInCb, at
+  // which point TraceAfterDispatch() can be merged into Trace().
+  if (is_for_fragmentation_) {
     static_cast<const PhysicalOofNodeForFragmentation*>(this)
         ->TraceAfterDispatch(visitor);
   } else {
@@ -17,25 +19,17 @@ void PhysicalOofPositionedNode::Trace(Visitor* visitor) const {
   }
 }
 
-void PhysicalOofPositionedNode::TraceAfterDispatch(Visitor* visitor) const {
-  visitor->Trace(box);
-  visitor->Trace(break_token);
-  visitor->Trace(inline_container);
-}
-
-void LogicalOofPositionedNode::Trace(Visitor* visitor) const {
-  if (is_for_fragmentation) {
+template <>
+void OofPositionedNode<LogicalOffset, LogicalStaticPosition>::Trace(
+    Visitor* visitor) const {
+  // Some poor-man's RTTI here, which will go away with FragmentedOofInCb, at
+  // which point TraceAfterDispatch() can be merged into Trace().
+  if (is_for_fragmentation_) {
     static_cast<const LogicalOofNodeForFragmentation*>(this)
         ->TraceAfterDispatch(visitor);
   } else {
     TraceAfterDispatch(visitor);
   }
-}
-
-void LogicalOofPositionedNode::TraceAfterDispatch(Visitor* visitor) const {
-  visitor->Trace(box);
-  visitor->Trace(break_token);
-  visitor->Trace(inline_container);
 }
 
 void PhysicalOofNodeForFragmentation::TraceAfterDispatch(

@@ -590,14 +590,14 @@ void FragmentBuilder::AddOutOfFlowFragmentainerDescendant(
     const LogicalOofNodeForFragmentation& descendant) {
   DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   oof_fragmentainer_descendants_may_have_anchors_ |=
-      descendant.box->MayContainAnchor();
+      descendant.Node().MayContainAnchor();
   oof_positioned_fragmentainer_descendants_.push_back(descendant);
 }
 
 void FragmentBuilder::AddOutOfFlowFragmentainerDescendant(
     const LogicalOofPositionedNode& descendant) {
   DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
-  DCHECK(!descendant.is_for_fragmentation);
+  DCHECK(!descendant.IsForFragmentation());
   LogicalOofNodeForFragmentation fragmentainer_descendant(descendant);
   AddOutOfFlowFragmentainerDescendant(fragmentainer_descendant);
 }
@@ -615,8 +615,8 @@ void FragmentBuilder::SwapOutOfFlowPositionedCandidates(
                       const LogicalOofPositionedNode& b) -> bool {
       // Positioned elements with the deepest inline containing-block
       // should have layout performed first.
-      const auto* a_inline = a.inline_container.container.Get();
-      const auto* b_inline = b.inline_container.container.Get();
+      const LayoutInline* a_inline = a.InlineContainer();
+      const LayoutInline* b_inline = b.InlineContainer();
       if (a_inline != b_inline) {
         const wtf_size_t a_inline_depth = a_inline ? a_inline->Depth() : 0u;
         const wtf_size_t b_inline_depth = b_inline ? b_inline->Depth() : 0u;
@@ -627,7 +627,8 @@ void FragmentBuilder::SwapOutOfFlowPositionedCandidates(
           return false;
         }
       }
-      return a.box->IsBeforeInPreOrder(*b.box);
+      return a.Node().GetLayoutBox()->IsBeforeInPreOrder(
+          *b.Node().GetLayoutBox());
     };
     std::sort(oof_positioned_candidates_.begin(),
               oof_positioned_candidates_.end(), compare);
@@ -670,7 +671,8 @@ void FragmentBuilder::SwapOutOfFlowFragmentainerDescendants(
               oof_positioned_fragmentainer_descendants_.end(),
               [](const LogicalOofNodeForFragmentation& a,
                  const LogicalOofNodeForFragmentation& b) {
-                return a.box->IsBeforeInPreOrder(*b.box);
+                return a.Node().GetLayoutBox()->IsBeforeInPreOrder(
+                    *b.Node().GetLayoutBox());
               });
     oof_fragmentainer_descendants_may_have_anchors_ = false;
   }
@@ -684,15 +686,15 @@ void FragmentBuilder::TransferOutOfFlowCandidates(
   DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   for (auto& candidate : oof_positioned_candidates_) {
     BlockNode node = candidate.Node();
-    candidate.static_position.offset += additional_offset;
+    candidate.IncreaseStaticPositionOffset(additional_offset);
     if (multicol && multicol->fixedpos_containing_block.Fragment() &&
         node.Style().GetPosition() == EPosition::kFixed) {
       // A fixedpos containing block was found in |multicol|. Add the fixedpos
       // as a fragmentainer descendant instead.
-      DCHECK(!candidate.inline_container.container);
+      DCHECK(!candidate.InlineContainer());
       destination_builder->AddOutOfFlowFragmentainerDescendant(
-          {node, candidate.static_position,
-           !!candidate.requires_content_before_breaking,
+          {node, candidate.StaticPosition(),
+           candidate.RequiresContentBeforeBreaking(),
            multicol->fixedpos_inline_container,
            multicol->fixedpos_containing_block,
            multicol->fixedpos_containing_block,
@@ -711,21 +713,21 @@ void FragmentBuilder::MoveOutOfFlowDescendantCandidatesToDescendants() {
   DCHECK(oof_positioned_descendants_.empty());
   std::swap(oof_positioned_candidates_, oof_positioned_descendants_);
 
-  if (!layout_object_->IsInline())
+  const auto* layout_inline = DynamicTo<LayoutInline>(layout_object_);
+  if (!layout_inline) {
     return;
+  }
 
-  for (auto& candidate : oof_positioned_descendants_) {
+  for (LogicalOofPositionedNode& candidate : oof_positioned_descendants_) {
     // If we are inside the inline algorithm, (and creating a fragment for a
     // <span> or similar), we may add a child (e.g. an atomic-inline) which has
     // OOF descandants.
     //
     // This checks if the object creating this box will be the container for
     // the given descendant.
-    if (!candidate.inline_container.container &&
-        IsInlineContainerForNode(candidate.Node(), layout_object_)) {
-      candidate.inline_container = OofInlineContainer<LogicalOffset>(
-          To<LayoutInline>(layout_object_),
-          /* relative_offset */ LogicalOffset());
+    if (!candidate.InlineContainer() &&
+        IsInlineContainerForNode(candidate.Node(), layout_inline)) {
+      candidate.SetInlineContainer(layout_inline);
     }
   }
 }
@@ -768,14 +770,15 @@ void FragmentBuilder::PropagateOOFPositionedInfo(
         descendant.StaticPosition().ConvertToLogical(converter);
 
     OofInlineContainer<LogicalOffset> new_inline_container;
-    if (descendant.inline_container.container) {
-      new_inline_container.container = descendant.inline_container.container;
-      new_inline_container.relative_offset =
-          converter.ToLogical(descendant.inline_container.relative_offset,
+    if (const LayoutInline* inline_object = descendant.InlineContainer()) {
+      LogicalOffset new_relative_offset =
+          converter.ToLogical(descendant.InlineContainerRelativeOffset(),
                               PhysicalSize()) +
           relative_offset;
+      new_inline_container =
+          OofInlineContainer<LogicalOffset>(inline_object, new_relative_offset);
     } else if (inline_container &&
-               IsInlineContainerForNode(node, inline_container->container)) {
+               IsInlineContainerForNode(node, inline_container->Container())) {
       new_inline_container = *inline_container;
     }
 
@@ -803,7 +806,7 @@ void FragmentBuilder::PropagateOOFPositionedInfo(
       static_position.offset +=
           relative_offset - fixedpos_containing_block->RelativeOffset();
       if (fixedpos_inline_container)
-        static_position.offset -= fixedpos_inline_container->relative_offset;
+        static_position.offset -= fixedpos_inline_container->RelativeOffset();
       // The containing block for fixed-positioned elements should normally
       // already be laid out, and therefore have a fragment - with one
       // exception: If this is the pagination root, it obviously won't have a
@@ -818,8 +821,7 @@ void FragmentBuilder::PropagateOOFPositionedInfo(
         if (fixedpos_inline_container)
           new_fixedpos_inline_container = *fixedpos_inline_container;
         AddOutOfFlowFragmentainerDescendant(
-            {node, static_position,
-             !!descendant.requires_content_before_breaking,
+            {node, static_position, descendant.RequiresContentBeforeBreaking(),
              new_fixedpos_inline_container, *fixedpos_containing_block,
              *fixedpos_containing_block, new_fixedpos_inline_container});
         continue;
@@ -832,8 +834,8 @@ void FragmentBuilder::PropagateOOFPositionedInfo(
                                   &LogicalOofPositionedNode::Node));
     oof_candidates_may_have_anchors_ |= node.MayContainAnchor();
     oof_positioned_candidates_.emplace_back(
-        node, descendant.break_token, static_position,
-        descendant.requires_content_before_breaking, new_inline_container);
+        node, descendant.GetBreakToken(), static_position,
+        descendant.RequiresContentBeforeBreaking(), new_inline_container);
   }
 
   const auto* oof_data = fragment.GetFragmentedOofData();
@@ -853,10 +855,10 @@ void FragmentBuilder::PropagateOOFPositionedInfo(
           converter.ToLogical(multicol_info->multicol_offset, PhysicalSize());
 
       LogicalOffset fixedpos_inline_relative_offset = converter.ToLogical(
-          multicol_info->fixedpos_inline_container.relative_offset,
+          multicol_info->fixedpos_inline_container.RelativeOffset(),
           PhysicalSize());
       OofInlineContainer<LogicalOffset> new_fixedpos_inline_container(
-          multicol_info->fixedpos_inline_container.container,
+          multicol_info->fixedpos_inline_container.Container(),
           fixedpos_inline_relative_offset);
       const PhysicalFragment* fixedpos_containing_block_fragment =
           multicol_info->fixedpos_containing_block.Fragment();
@@ -1018,9 +1020,9 @@ void FragmentBuilder::PropagateOOFFragmentainerDescendants(
         UpdatedClippedContainerBlockOffset(descendant.containing_block);
 
     LogicalOffset inline_relative_offset = converter.ToLogical(
-        descendant.inline_container.relative_offset, PhysicalSize());
+        descendant.InlineContainerRelativeOffset(), PhysicalSize());
     OofInlineContainer<LogicalOffset> new_inline_container(
-        descendant.inline_container.container, inline_relative_offset);
+        descendant.InlineContainer(), inline_relative_offset);
 
     // The static position should remain relative to its containing block
     // fragment.
@@ -1033,14 +1035,15 @@ void FragmentBuilder::PropagateOOFFragmentainerDescendants(
     // The relative offset should be applied after fragmentation. Subtract out
     // the accumulated relative offset from the inline container to the
     // containing block so that it can be re-applied at the correct time.
-    if (new_inline_container.container && box_fragment &&
-        containing_block_fragment == box_fragment)
+    if (new_inline_container.Container() && box_fragment &&
+        containing_block_fragment == box_fragment) {
       static_position.offset -= inline_relative_offset;
+    }
 
     LogicalOffset fixedpos_inline_relative_offset = converter.ToLogical(
-        descendant.fixedpos_inline_container.relative_offset, PhysicalSize());
+        descendant.fixedpos_inline_container.RelativeOffset(), PhysicalSize());
     OofInlineContainer<LogicalOffset> new_fixedpos_inline_container(
-        descendant.fixedpos_inline_container.container,
+        descendant.fixedpos_inline_container.Container(),
         fixedpos_inline_relative_offset);
     const PhysicalFragment* fixedpos_containing_block_fragment =
         descendant.fixedpos_containing_block.Fragment();
@@ -1082,7 +1085,7 @@ void FragmentBuilder::PropagateOOFFragmentainerDescendants(
     }
     LogicalOofNodeForFragmentation oof_node(
         descendant.Node(), static_position,
-        descendant.requires_content_before_breaking, new_inline_container,
+        descendant.RequiresContentBeforeBreaking(), new_inline_container,
         OofContainingBlock<LogicalOffset>(
             containing_block_offset, containing_block_rel_offset,
             containing_block_fragment, clipped_container_block_offset,
@@ -1115,25 +1118,27 @@ void FragmentBuilder::AdjustFixedposContainerInfo(
     return;
 
   if (!*fixedpos_containing_block_fragment && box_fragment->GetLayoutObject()) {
-    if (current_inline_container && current_inline_container->container &&
-        current_inline_container->container->CanContainFixedPositionObjects()) {
+    if (current_inline_container && current_inline_container->Container() &&
+        current_inline_container->Container()
+            ->CanContainFixedPositionObjects()) {
       *fixedpos_inline_container = *current_inline_container;
       *fixedpos_containing_block_fragment = box_fragment;
     } else if (box_fragment->GetLayoutObject()
                    ->CanContainFixedPositionObjects()) {
-      if (!fixedpos_inline_container->container &&
+      if (!fixedpos_inline_container->Container() &&
           box_fragment->GetLayoutObject()->IsLayoutInline()) {
         *fixedpos_inline_container = OofInlineContainer<LogicalOffset>(
             To<LayoutInline>(box_fragment->GetLayoutObject()), relative_offset);
       } else if (!box_fragment->GetLayoutObject()->IsLayoutInline()) {
         *fixedpos_containing_block_fragment = box_fragment;
       }
-    } else if (fixedpos_inline_container->container) {
+    } else if (fixedpos_inline_container->Container()) {
       // Candidates whose containing block is inline are always positioned
       // inside closest parent block flow.
       if (box_fragment->GetLayoutObject() ==
-          fixedpos_inline_container->container->ContainingBlock())
+          fixedpos_inline_container->Container()->ContainingBlock()) {
         *fixedpos_containing_block_fragment = box_fragment;
+      }
     }
   }
 }
