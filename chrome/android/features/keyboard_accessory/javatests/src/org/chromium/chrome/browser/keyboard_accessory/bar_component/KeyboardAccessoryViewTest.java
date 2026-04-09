@@ -1011,6 +1011,40 @@ public class KeyboardAccessoryViewTest {
 
     @Test
     @MediumTest
+    public void testAccessoryButtonsEnabledState() throws InterruptedException {
+        KeyboardAccessoryButtonGroupView buttonGroupView = setupButtonsAndGetGroup();
+        ArrayList<ImageButton> buttons = buttonGroupView.getButtons();
+        assertEquals("Expected two buttons to be present.", 2, buttons.size());
+
+        // Initially buttons should be enabled.
+        assertTrue(buttonGroupView.isEnabled());
+        assertTrue(buttons.get(0).isEnabled());
+        assertTrue(buttons.get(1).isEnabled());
+
+        // Disable the group.
+        ThreadUtils.runOnUiThreadBlocking(() -> buttonGroupView.setEnabled(false));
+        assertFalse(buttonGroupView.isEnabled());
+        assertFalse(buttons.get(0).isEnabled());
+        assertFalse(buttons.get(1).isEnabled());
+
+        // Add a new button while the group is disabled.
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        buttonGroupView.addButton(
+                                R.drawable.ic_password_manager_key, "New Key Icon"));
+        assertEquals("Expected three buttons to be present.", 3, buttons.size());
+        assertFalse("New button should inherit disabled state", buttons.get(2).isEnabled());
+
+        // Enable the group again.
+        ThreadUtils.runOnUiThreadBlocking(() -> buttonGroupView.setEnabled(true));
+        assertTrue(buttonGroupView.isEnabled());
+        assertTrue(buttons.get(0).isEnabled());
+        assertTrue(buttons.get(1).isEnabled());
+        assertTrue(buttons.get(2).isEnabled());
+    }
+
+    @Test
+    @MediumTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)
     public void testUndockedStyleWithDynamicPositioning_BottomNotch() throws InterruptedException {
         ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
