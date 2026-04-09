@@ -169,7 +169,11 @@ import java.util.concurrent.ExecutionException;
 @SuppressLint("VisibleForTests")
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 @TestAnimations.EnableAnimations
-@EnableFeatures({ContentFeatureList.ACCESSIBILITY_EXTENDED_SELECTION})
+@EnableFeatures({
+    ContentFeatureList.ACCESSIBILITY_EXTENDED_SELECTION,
+    // This flag is needed to set and read `isTextSelectable` property.
+    ContentFeatureList.ACCESSIBILITY_SET_SELECTABLE_ON_ALL_NODES_WITH_TEXT
+})
 public class WebContentsAccessibilityTest {
     private static final String TAG = "WebContentsAXTest";
 
@@ -3042,6 +3046,93 @@ public class WebContentsAccessibilityTest {
         setAndAssertExtendedSelection(rootVvid, paragraphVvid, 0, paragraphVvid, 4);
 
         setAndAssertExtendedSelection(rootVvid, paragraphVvid, 4, paragraphVvid, 14);
+    }
+
+    /** Test extended selection on a button with aria label. */
+    @Test
+    @SmallTest
+    public void testPerformAction_setExtendedSelection_buttonWithAriaLabel() throws Throwable {
+        setupTestWithHTML(
+                """
+                <button id="button" aria-label="Button">Button!</button>
+                """);
+
+        // Find node.
+        int buttonVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "button");
+
+        printAccessibilityNodeInfoTree();
+        AccessibilityNodeInfoCompat buttonNode = createAccessibilityNodeInfo(buttonVvid);
+
+        // TODO(crbug.com/500206508): This should be true. Fix the issue and add the rest
+        // of the test to select and verify the button text using text offsets.
+        Assert.assertFalse(buttonNode.isTextSelectable());
+    }
+
+    /** Test extended selection at the beginning and end of an anchor (e.g. image). */
+    @Test
+    @SmallTest
+    public void testPerformAction_setExtendedSelection_atBeginningAndEndOfAnchor()
+            throws Throwable {
+        setupTestWithHTML(
+                """
+                <p id="paragraph1">Paragraph1</p>
+                <img id="image" src="pipe.jpg" alt="" tabIndex="0" />
+                """);
+
+        // Find nodes.
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        waitForNodeMatching(sViewIdResourceNameMatcher, "paragraph1");
+        waitForNodeMatching(sViewIdResourceNameMatcher, "image");
+
+        // Select before and after the image using root child offsets.
+        // TODO(crbug.com/443078007): Selection end is wrong, fix it.
+        setAndAssertExtendedSelection(rootVvid, rootVvid, 1, rootVvid, 2, rootVvid, 1, rootVvid, 1);
+    }
+
+    /** Test extended selection with a leaf node at the end of root to trigger at_end_of_anchor. */
+    @Test
+    @SmallTest
+    public void testPerformAction_setExtendedSelection_atEndOfEmptyTextAnchor() throws Throwable {
+        setupTestWithHTML(
+                """
+                <p id="paragraph1">Paragraph1</p>
+                <div id="empty" tabIndex="0"></div>
+                """);
+
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int emptyVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "empty");
+
+        // Select after the empty div using root child offsets.
+        // Since the empty div is a TextView, selection is set as text offset, which
+        // does not differentiate between beginning and end of the text on Android.
+        // TODO(crbug.com/443078007): Either with current API or the new API, fix this
+        // to point to the very end of the document.
+        setAndAssertExtendedSelection(
+                rootVvid, rootVvid, 2, rootVvid, 2, emptyVvid, 0, emptyVvid, 0);
+    }
+
+    /** Test extended selection with a contentEditable and a non-text-selectable image. */
+    @Test
+    @SmallTest
+    public void testPerformAction_setExtendedSelection_editableWithImage() throws Throwable {
+        setupTestWithHTML(
+                """
+                <div id="editable" contenteditable>
+                  <img id="image" src="pipe.jpg" alt="" tabIndex="0" />
+                </div>
+                """);
+
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int editableVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "editable");
+        waitForNodeMatching(sViewIdResourceNameMatcher, "image");
+
+        // Select the image within the contentEditable.
+        // The image is non-text selectable and should be selected using child offsets,
+        // However the parent node is text selectable and considers the offsets as text
+        // and hence the selection result is not as expected.
+        // TODO(crbug.com/443078007): Fix this.
+        setAndAssertExtendedSelection(
+                rootVvid, editableVvid, 0, editableVvid, 1, editableVvid, 0, editableVvid, 0);
     }
 
     /** Test that the performAction for ACTION_CUT works properly with accessibility. */
