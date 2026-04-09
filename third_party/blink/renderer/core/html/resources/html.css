@@ -2163,12 +2163,12 @@ select:not(:-internal-list-box)::picker(select) {
   max-block-size: stretch;
   overflow: auto;
   /* Below and span-right, by default. */
-  position-area: block-end span-inline-end;
+  position-area: self-block-end span-self-inline-end;
   position-try-order: most-block-size;
   position-try-fallbacks:
-    block-start span-inline-end,
-    block-end span-inline-start,
-    block-start span-inline-start;
+    self-block-start span-self-inline-end,
+    self-block-end span-self-inline-start,
+    self-block-start span-self-inline-start;
 }
 
 select:not(:-internal-list-box) option {
@@ -2535,12 +2535,12 @@ input:tool-submit-active {
     max-block-size: stretch;
     overflow: auto;
     /* Below and span-right, by default. */
-    position-area: block-end span-inline-end;
+    position-area: self-block-end span-self-inline-end;
     position-try-order: most-block-size;
     position-try-fallbacks:
-        block-start span-inline-end,   /* First try above and span-right. */
-        block-end span-inline-start,   /* Then below but span-left. */
-        block-start span-inline-start; /* Then above and span-left. */
+        self-block-start span-self-inline-end,   /* First try above and span-right. */
+        self-block-end span-self-inline-start,   /* Then below but span-left. */
+        self-block-start span-self-inline-start; /* Then above and span-left. */
   }
 
   datalist option {
