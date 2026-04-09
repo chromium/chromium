@@ -50,6 +50,15 @@ struct ResponseEntry {
   absl::flat_hash_map<std::string, std::string> headers;
 };
 
+class ConnectionAllowlistContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  MOCK_METHOD(void,
+              LogWebFeatureForCurrentPage,
+              (content::RenderFrameHost*, blink::mojom::WebFeature),
+              (override));
+};
+
 // TODO(crbug.com/486121443): Once the test flakiness due to the issue in
 // WebPrescientNetworkingImpl is resolved, add a test covering preconnect from
 // the link header response.
@@ -62,7 +71,7 @@ class ConnectionAllowlistTest : public ContentBrowserTest {
                                   kOverrideConnectionAllowlistOriginTrial},
         /*disabled_features=*/{});
   }
-  ~ConnectionAllowlistTest() override = default;
+  ~ConnectionAllowlistTest() override { content_browser_client_.reset(); }
 
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
@@ -75,6 +84,9 @@ class ConnectionAllowlistTest : public ContentBrowserTest {
         &embedded_https_test_server());
     embedded_https_test_server().RegisterRequestHandler(base::BindRepeating(
         &ConnectionAllowlistTest::ServeResponses, base::Unretained(this)));
+
+    content_browser_client_ =
+        std::make_unique<ConnectionAllowlistContentBrowserClient>();
   }
 
   void RegisterResponse(const std::string& relative_url,
@@ -82,7 +94,7 @@ class ConnectionAllowlistTest : public ContentBrowserTest {
     response_map_[relative_url] = std::move(entry);
   }
 
- private:
+ protected:
   std::unique_ptr<net::test_server::HttpResponse> ServeResponses(
       const net::test_server::HttpRequest& request) {
     if (auto it = response_map_.find(request.relative_url);
@@ -105,6 +117,8 @@ class ConnectionAllowlistTest : public ContentBrowserTest {
 
   base::test::ScopedFeatureList scoped_feature_list_;
   absl::flat_hash_map<std::string, ResponseEntry> response_map_;
+  std::unique_ptr<ConnectionAllowlistContentBrowserClient>
+      content_browser_client_;
 };
 
 IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, LinkPrefetch) {
@@ -720,6 +734,42 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, WebSocketBlocked) {
     });
   )",
                                                                denied_ws_url)));
+}
+
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, UseCounterForWorker) {
+  RegisterResponse(
+      "/worker.js",
+      ResponseEntry("onmessage = async (e) => { postMessage('end'); }",
+                    {{"Connection-Allowlist", "(response-origin)"},
+                     {"Content-Type", "text/javascript"}}));
+  RegisterResponse(kSameOriginAllowlistedPage,
+                   ResponseEntry(R"(<html><body>Hello</body></html>)", {}));
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  GURL main_url =
+      embedded_https_test_server().GetURL("a.test", kSameOriginAllowlistedPage);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  EXPECT_CALL(*content_browser_client_,
+              LogWebFeatureForCurrentPage(
+                  shell()->web_contents()->GetPrimaryMainFrame(),
+                  blink::mojom::WebFeature::kConnectionAllowlist));
+
+  // To ensure that fetching the worker (and its separate Connection-Allowlist)
+  // completes, we create a Promise that only resolves when the worker is
+  // running.
+  EXPECT_TRUE(ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                     R"(
+            (async () => {
+              await new Promise((resolve) => {
+                window.myworker = new Worker('../worker.js', { type: 'module'});
+                window.myworker.onmessage = async (e) => {
+                  resolve();
+                };
+                window.myworker.postMessage('start');
+              });
+            })();
+          )"));
 }
 
 }  // namespace content

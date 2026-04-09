@@ -12,6 +12,7 @@
 
 namespace content {
 
+class RenderFrameHost;
 class StoragePartitionImpl;
 
 // A URLLoaderThrottle that applies network restrictions for a worker's
@@ -22,12 +23,14 @@ class NetworkRestrictionsWorkerThrottle : public blink::URLLoaderThrottle {
   static std::unique_ptr<NetworkRestrictionsWorkerThrottle> Create(
       base::WeakPtr<StoragePartitionImpl> storage_partition,
       const base::UnguessableToken& network_restrictions_id,
-      PolicyContainerPolicies creator_policies);
+      PolicyContainerPolicies creator_policies,
+      base::WeakPtr<RenderFrameHost> ancestor_render_frame_host);
 
   NetworkRestrictionsWorkerThrottle(
       base::WeakPtr<StoragePartitionImpl> storage_partition,
       const base::UnguessableToken& network_restrictions_id,
-      PolicyContainerPolicies creator_policies);
+      PolicyContainerPolicies creator_policies,
+      base::WeakPtr<RenderFrameHost> ancestor_render_frame_host);
   ~NetworkRestrictionsWorkerThrottle() override;
 
   // blink::URLLoaderThrottle:
@@ -42,6 +45,7 @@ class NetworkRestrictionsWorkerThrottle : public blink::URLLoaderThrottle {
   base::WeakPtr<StoragePartitionImpl> storage_partition_;
   const base::UnguessableToken network_restrictions_id_;
   const PolicyContainerPolicies creator_policies_;
+  base::WeakPtr<RenderFrameHost> ancestor_render_frame_host_;
 
   base::WeakPtrFactory<NetworkRestrictionsWorkerThrottle> weak_factory_{this};
 };

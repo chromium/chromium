@@ -565,7 +565,8 @@ void WorkerScriptFetcher::CreateScriptLoader(
             static_cast<StoragePartitionImpl*>(
                 factory_process->GetStoragePartition())
                 ->GetWeakPtr(),
-            *worker_network_restrictions_id, creator_policies->Clone())) {
+            *worker_network_restrictions_id, creator_policies->Clone(),
+            ancestor_render_frame_host.GetWeakPtr())) {
       throttles.push_back(std::move(throttle));
     }
   }
