@@ -20,7 +20,6 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/fake_translate_agent.h"
