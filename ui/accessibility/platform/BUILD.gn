@@ -250,6 +250,8 @@ component("platform") {
         "//ui/accessibility/platform:ichromeaccessible",
       ]
 
+      deps += [ "//base/tracing/protos:chrome_track_event_zero" ]
+
       libs = [
         "oleacc.lib",
         "uiautomationcore.lib",

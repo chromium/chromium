@@ -2912,9 +2912,16 @@ message FrameIntervalDecider {
   optional FrameIntervalMatcherType matcher_type = 2;
 }
 
+message ChromeAccessibilityWinNotifyWinEvent {
+  // The DWORD `event` parameter to ::NotifyWinEvent(). See
+  // https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-notifywinevent
+  // One of the following constants:
+  // https://learn.microsoft.com/en-us/windows/win32/winauto/event-constants
+  optional uint32 native_event = 1;
+}
+
 message ChromeTrackEvent {
-  reserved 1045, 1080;
-  reserved "chrome_accessibility_win_notify_win_event";
+  reserved 1045;
 
   // Extension range for Chrome: 1000-1999
   // Next ID: 1083
@@ -3088,6 +3095,9 @@ message ChromeTrackEvent {
     // Identifies the MemoryDumpProvider object that runs in the scope of a
     // trace event, to identify which objects cause delays in a trace.
     optional MemoryDumpProvider memory_dump_provider = 1079;
+
+    optional ChromeAccessibilityWinNotifyWinEvent
+        chrome_accessibility_win_notify_win_event = 1080;
 
     optional FrameIntervalDecider frame_interval_decider = 1081;
 

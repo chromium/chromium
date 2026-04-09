@@ -8,11 +8,31 @@
 
 #include "base/check.h"
 #include "base/notimplemented.h"
+#include "base/trace_event/typed_macros.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
+
+namespace {
+
+void NotifyWinEventAndTrace(DWORD event_id,
+                            HWND hwnd,
+                            LONG object,
+                            LONG child) {
+  TRACE_EVENT(
+      "accessibility", "NotifyWinEvent", [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* accessibility_event =
+            event->set_chrome_accessibility_win_notify_win_event();
+        accessibility_event->set_native_event(event_id);
+      });
+  ::NotifyWinEvent(event_id, hwnd, object, child);
+}
+
+}  // namespace
 
 namespace ui {
 
@@ -31,15 +51,15 @@ AXSystemCaretWin::AXSystemCaretWin(gfx::AcceleratedWidget event_target)
   data_.relative_bounds.offset_container_id = kInvalidAXNodeID;
 
   if (event_target_) {
-    ::NotifyWinEvent(EVENT_OBJECT_CREATE, event_target_, OBJID_CARET,
-                     -caret_->GetUniqueId());
+    NotifyWinEventAndTrace(EVENT_OBJECT_CREATE, event_target_, OBJID_CARET,
+                           -caret_->GetUniqueId());
   }
 }
 
 AXSystemCaretWin::~AXSystemCaretWin() {
   if (event_target_) {
-    ::NotifyWinEvent(EVENT_OBJECT_DESTROY, event_target_, OBJID_CARET,
-                     -caret_->GetUniqueId());
+    NotifyWinEventAndTrace(EVENT_OBJECT_DESTROY, event_target_, OBJID_CARET,
+                           -caret_->GetUniqueId());
   }
 }
 
@@ -62,8 +82,8 @@ void AXSystemCaretWin::MoveCaretTo(const gfx::Rect& bounds_physical_pixels) {
     return;
 
   if (newly_visible) {
-    ::NotifyWinEvent(EVENT_OBJECT_SHOW, event_target_, OBJID_CARET,
-                     -caret_->GetUniqueId());
+    NotifyWinEventAndTrace(EVENT_OBJECT_SHOW, event_target_, OBJID_CARET,
+                           -caret_->GetUniqueId());
   }
 
   gfx::RectF new_location(bounds_physical_pixels);
@@ -71,8 +91,8 @@ void AXSystemCaretWin::MoveCaretTo(const gfx::Rect& bounds_physical_pixels) {
   // always fire when it's made visible again.
   if (data_.relative_bounds.bounds != new_location || newly_visible) {
     data_.relative_bounds.bounds = new_location;
-    ::NotifyWinEvent(EVENT_OBJECT_LOCATIONCHANGE, event_target_, OBJID_CARET,
-                     -caret_->GetUniqueId());
+    NotifyWinEventAndTrace(EVENT_OBJECT_LOCATIONCHANGE, event_target_,
+                           OBJID_CARET, -caret_->GetUniqueId());
   }
 }
 
@@ -81,8 +101,8 @@ void AXSystemCaretWin::Hide() {
     data_.AddState(ax::mojom::State::kInvisible);
     data_.relative_bounds.bounds.set_width(0);
     if (event_target_) {
-      ::NotifyWinEvent(EVENT_OBJECT_HIDE, event_target_, OBJID_CARET,
-                       -caret_->GetUniqueId());
+      NotifyWinEventAndTrace(EVENT_OBJECT_HIDE, event_target_, OBJID_CARET,
+                             -caret_->GetUniqueId());
     }
   }
 }

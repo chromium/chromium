@@ -31,6 +31,7 @@
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/typed_macros.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "base/values.h"
 #include "base/win/enum_variant.h"
 #include "base/win/scoped_bstr.h"
@@ -748,7 +749,14 @@ void AXPlatformNodeWin::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
   if (std::optional<DWORD> native_event = MojoEventToMSAAEvent(event_type)) {
     HWND hwnd = GetDelegate()->GetTargetForNativeAccessibilityEvent();
     if (hwnd) {
-      TRACE_EVENT("accessibility", "NotifyWinEvent");
+      TRACE_EVENT("accessibility", "NotifyWinEvent",
+                  [&](perfetto::EventContext ctx) {
+                    auto* event =
+                        ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+                    auto* accessibility_event =
+                        event->set_chrome_accessibility_win_notify_win_event();
+                    accessibility_event->set_native_event(*native_event);
+                  });
       ::NotifyWinEvent(*native_event, hwnd, OBJID_CLIENT, -GetUniqueId());
     }
   }
@@ -8688,6 +8696,13 @@ void AXPlatformNodeWin::OnAriaNotificationIA2Fallback(
   const DWORD native_event = EVENT_OBJECT_LIVEREGIONCHANGED;
   HWND hwnd = GetDelegate()->GetTargetForNativeAccessibilityEvent();
   if (hwnd) {
+    TRACE_EVENT(
+        "accessibility", "NotifyWinEvent", [&](perfetto::EventContext ctx) {
+          auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+          auto* accessibility_event =
+              event->set_chrome_accessibility_win_notify_win_event();
+          accessibility_event->set_native_event(native_event);
+        });
     ::NotifyWinEvent(native_event, hwnd, OBJID_CLIENT, -GetUniqueId());
   }
 }

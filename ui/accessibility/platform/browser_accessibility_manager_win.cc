@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/typed_macros.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/windows_version.h"
@@ -709,9 +710,14 @@ void BrowserAccessibilityManagerWin::FireWinAccessibilityEvent(
   // on the HWND's accessibility object and pass it that same id, which
   // we can use to retrieve the IAccessible for this node.
   auto* const com = ToBrowserAccessibilityWin(node)->GetCOM();
-  TRACE_EVENT("accessibility", "NotifyWinEvent",
-              perfetto::Flow::FromPointer(com), "win_event_type",
-              base::StringPrintf("0x%04lX", win_event_type));
+  TRACE_EVENT(
+      "accessibility", "NotifyWinEvent", perfetto::Flow::FromPointer(com),
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* accessibility_event =
+            event->set_chrome_accessibility_win_notify_win_event();
+        accessibility_event->set_native_event(win_event_type);
+      });
   ::NotifyWinEvent(win_event_type, hwnd, OBJID_CLIENT, -(com->GetUniqueId()));
 }
 
