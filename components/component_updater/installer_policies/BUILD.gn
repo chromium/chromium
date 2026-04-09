@@ -32,6 +32,7 @@ static_library("installer_policies_no_content_deps") {
 
   deps = [
     "//base",
+    "//components/actor/core",
     "//components/autofill/core/browser",
     "//components/component_updater",
     "//components/lookalikes/core:proto",

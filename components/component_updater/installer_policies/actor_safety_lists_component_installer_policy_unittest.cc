@@ -136,7 +136,6 @@ TEST_F(ActorSafetyListsComponentInstallerPolicyTest, ComponentRegistered) {
   base::RunLoop run_loop;
   RegisterActorSafetyListsComponent(
       service.get(),
-      base::BindRepeating([](const std::optional<std::string>&) {}),
       run_loop.QuitClosure());
   run_loop.Run();
 }

@@ -58,7 +58,6 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/actor/safety_list_manager.h"
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
 #include "chrome/browser/component_updater/zxcvbn_data_component_installer.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
@@ -194,15 +193,7 @@ void RegisterComponentsForUpdate() {
 #if !BUILDFLAG(IS_ANDROID)
   RegisterIwaKeyDistributionComponent(cus);
   RegisterZxcvbnDataComponent(cus);
-  RegisterActorSafetyListsComponent(
-      cus,
-      base::BindRepeating([](const std::optional<std::string>& raw_metadata) {
-        if (raw_metadata.has_value()) {
-          actor::SafetyListManager::GetInstance()->ParseSafetyLists(
-              *raw_metadata);
-        }
-      }),
-      base::OnceClosure());
+  RegisterActorSafetyListsComponent(cus, base::OnceClosure());
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

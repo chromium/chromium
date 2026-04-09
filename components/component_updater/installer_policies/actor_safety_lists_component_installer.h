@@ -75,8 +75,6 @@ class ActorSafetyListsComponentInstallerPolicy
 // the Actor Safety Lists component.
 void RegisterActorSafetyListsComponent(
     ComponentUpdateService* cus,
-    ActorSafetyListsComponentInstallerPolicy::
-        OnActorSafetyListsComponentReadyCallback on_ready_callback,
     base::OnceClosure callback);
 
 }  // namespace component_updater

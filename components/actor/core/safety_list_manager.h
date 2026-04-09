@@ -1,9 +1,9 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACTOR_SAFETY_LIST_MANAGER_H_
-#define CHROME_BROWSER_ACTOR_SAFETY_LIST_MANAGER_H_
+#ifndef COMPONENTS_ACTOR_CORE_SAFETY_LIST_MANAGER_H_
+#define COMPONENTS_ACTOR_CORE_SAFETY_LIST_MANAGER_H_
 
 #include <string_view>
 
@@ -87,4 +87,4 @@ class SafetyListManager {
 
 }  // namespace actor
 
-#endif  // CHROME_BROWSER_ACTOR_SAFETY_LIST_MANAGER_H_
+#endif  // COMPONENTS_ACTOR_CORE_SAFETY_LIST_MANAGER_H_

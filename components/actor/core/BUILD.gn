@@ -10,12 +10,28 @@ source_set("core") {
     "actor_switches.h",
     "actor_util.cc",
     "actor_util.h",
+    "safety_list_manager.cc",
+    "safety_list_manager.h",
     "task_source_info.cc",
     "task_source_info.h",
   ]
 
   public_deps = [
     "//base",
+    "//components/content_settings/core/common",
     "//components/page_content_annotations/core",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "safety_list_manager_unittest.cc" ]
+  deps = [
+    ":core",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+

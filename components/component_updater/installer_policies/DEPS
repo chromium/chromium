@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/actor/core",
   "+components/autofill/core/browser",
   "+components/autofill/core/common",
   "+components/content_settings/core",

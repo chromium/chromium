@@ -20,6 +20,7 @@
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
+#include "components/actor/core/safety_list_manager.h"
 #include "components/component_updater/component_updater_paths.h"
 
 namespace {
@@ -135,13 +136,17 @@ ActorSafetyListsComponentInstallerPolicy::GetInstallerAttributes() const {
 
 void RegisterActorSafetyListsComponent(
     ComponentUpdateService* cus,
-    ActorSafetyListsComponentInstallerPolicy::
-        OnActorSafetyListsComponentReadyCallback on_ready_callback,
     base::OnceClosure callback) {
   VLOG(1) << "Registering Actor Safety Lists Component.";
   auto policy = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<ActorSafetyListsComponentInstallerPolicy>(
-          std::move(on_ready_callback)));
+          base::BindRepeating(
+              [](const std::optional<std::string>& raw_metadata) {
+                if (raw_metadata.has_value()) {
+                  actor::SafetyListManager::GetInstance()->ParseSafetyLists(
+                      *raw_metadata);
+                }
+              })));
   policy->Register(cus, std::move(callback));
 }
 
