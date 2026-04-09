@@ -128,6 +128,8 @@ void FullscreenBrowserAgent::InvalidateInsetRange(PassKey) {
   for (auto& observer : observers_) {
     observer.DidUpdateObscuredInsetRange(this);
   }
+
+  NotifyObserversOfUpdatedState();
 }
 
 void FullscreenBrowserAgent::AddObscuredInsetRange(UIRectEdge edge,

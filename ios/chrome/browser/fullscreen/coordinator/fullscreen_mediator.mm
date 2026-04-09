@@ -204,6 +204,7 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
     _browserAgent->InvalidateInsetRange(PassKey());
     _hasInitializedInsets = YES;
   }
+  [self updateViewportInsets:_browserAgent->insets()];
 }
 
 - (void)webState:(web::WebState*)webState

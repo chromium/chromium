@@ -151,8 +151,12 @@ TEST_F(FullscreenBrowserAgentTest, IncrementalScroll) {
 
   EXPECT_EQ(1.0, agent->top_progress());
   EXPECT_EQ(1.0, agent->bottom_progress());
-  EXPECT_FALSE(base_observer.will_update_called_);
-  EXPECT_FALSE(base_observer.did_update_called_);
+  EXPECT_TRUE(base_observer.will_update_called_);
+  EXPECT_TRUE(base_observer.did_update_called_);
+
+  // Reset observer flags.
+  base_observer.will_update_called_ = false;
+  base_observer.did_update_called_ = false;
 
   // Scroll down partially.
   agent->IncrementalScroll(20.0, PassKey());
@@ -201,6 +205,10 @@ TEST_F(FullscreenBrowserAgentTest, EnterExitFullscreen) {
   InvalidateInsetRange(agent);
 
   EXPECT_EQ(1.0, agent->top_progress());
+
+  // Reset observer flags.
+  base_observer.will_update_called_ = false;
+  base_observer.did_update_called_ = false;
 
   // Enter Fullscreen.
   agent->EnterFullscreen(PassKey(), /*animated=*/false);
