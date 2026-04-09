@@ -11,6 +11,7 @@ group("proto_lite") {
 proto_library("proto") {
   sources = [
     "click_to_call_message.proto",
+    "glic_experimental_triggering.proto",
     "one_time_token_backend_notification.proto",
     "optimization_guide_push_notification.proto",
     "peer_connection_messages.proto",

@@ -24982,6 +24982,8 @@ Called by update_net_error_codes.py.-->
   <int value="7" label="7"/>
 </enum>
 
+<!-- LINT.IfChange(SharingMessageType) -->
+
 <enum name="SharingMessageType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Ping"/>
@@ -24998,7 +25000,10 @@ Called by update_net_error_codes.py.-->
   <int value="12" label="SendTabToSelfPushNotification"/>
   <int value="13" label="DesktopToMobilePromoPushNotification"/>
   <int value="14" label="OneTimeTokenBackendNotification"/>
+  <int value="15" label="GlicExperimentalTriggering"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/sharing_message/proto/sharing_message_type.proto:MessageType) -->
 
 <enum name="SharingScreenshotAction">
 <!--

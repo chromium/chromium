@@ -9,6 +9,7 @@ option java_package = "org.chromium.components.sharing_message.proto";
 
 import "click_to_call_message.proto";
 import "one_time_token_backend_notification.proto";
+import "glic_experimental_triggering.proto";
 import "optimization_guide_push_notification.proto";
 import "peer_connection_messages.proto";
 import "remote_copy_message.proto";
@@ -21,7 +22,7 @@ package components_sharing_message;
 option optimize_for = LITE_RUNTIME;
 
 // Message for sending between devices in Sharing.
-// Next tag: 17
+// Next tag: 19
 message SharingMessage {
   // Identifier of sender. required unless any of the following is true:
   // 1. payload is a AckMessage
@@ -43,6 +44,7 @@ message SharingMessage {
     WebRtcSignalingMessage web_rtc_signaling_frame = 14;
     OptimizationGuidePushNotification optimization_guide_push_notification = 16;
     OneTimeTokenBackendNotification one_time_token_backend_notification = 17;
+    GlicExperimentalTriggering glic_experimental_triggering = 18;
   }
 
   oneof ack_channel_configuration {

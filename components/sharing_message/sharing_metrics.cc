@@ -148,6 +148,9 @@ sharing_message::MessageType SharingPayloadCaseToMessageType(
     case components_sharing_message::SharingMessage::
         kOneTimeTokenBackendNotification:
       return sharing_message::ONE_TIME_TOKEN_BACKEND_NOTIFICATION;
+    case components_sharing_message::SharingMessage::
+        kGlicExperimentalTriggering:
+      return sharing_message::GLIC_EXPERIMENTAL_TRIGGERING;
   }
   // For proto3 enums unrecognized enum values are kept when parsing, and a new
   // payload case received over the network would not default to
