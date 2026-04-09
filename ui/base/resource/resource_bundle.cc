@@ -149,13 +149,12 @@ base::span<uint8_t> GetBufferForWriting(OutputBufferType out_buf, size_t len) {
   if (std::holds_alternative<std::string*>(out_buf)) {
     std::string* str = std::get<std::string*>(out_buf);
     str->resize(len);
-    return UNSAFE_TODO(
-        base::span<uint8_t>(reinterpret_cast<uint8_t*>(str->data()), len));
+    return base::as_writable_byte_span(*str);
   }
 
   std::vector<uint8_t>* vec = std::get<std::vector<uint8_t>*>(out_buf);
   vec->resize(len);
-  return UNSAFE_TODO(base::span<uint8_t>(vec->data(), len));
+  return base::as_writable_byte_span(*vec);
 }
 
 // Decompresses data in |input| using brotli, storing
@@ -1297,8 +1296,9 @@ std::u16string ResourceBundle::GetLocalizedStringImpl(int resource_id) const {
   // Data pack encodes strings as either UTF8 or UTF16.
   std::u16string msg;
   if (encoding == ResourceHandle::UTF16) {
-    msg.assign(UNSAFE_TODO(reinterpret_cast<const char16_t*>(data->data())),
-               data->length() / 2);
+    CHECK_EQ(data->size() % sizeof(std::u16string::value_type), 0u);
+    msg.resize(data->size() / sizeof(std::u16string::value_type));
+    base::as_writable_byte_span(msg).copy_from(base::as_byte_span(*data));
   } else if (encoding == ResourceHandle::UTF8) {
     // Best-effort conversion.
     base::UTF8ToUTF16(data->data(), data->size(), &msg);

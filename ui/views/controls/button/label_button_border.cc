@@ -24,8 +24,10 @@ namespace views {
 namespace {
 
 // The text-button hot and pushed image IDs; normal is unadorned by default.
-constexpr int kTextHoveredImages[] = IMAGE_GRID(IDR_TEXTBUTTON_HOVER);
-constexpr int kTextPressedImages[] = IMAGE_GRID(IDR_TEXTBUTTON_PRESSED);
+constexpr ui::NineImageIds kTextHoveredImages =
+    IMAGE_GRID(IDR_TEXTBUTTON_HOVER);
+constexpr ui::NineImageIds kTextPressedImages =
+    IMAGE_GRID(IDR_TEXTBUTTON_PRESSED);
 
 // A helper function to paint the appropriate broder images.
 void PaintHelper(LabelButtonAssetBorder* border,

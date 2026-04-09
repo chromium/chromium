@@ -172,7 +172,7 @@ class ImagePainter : public Painter {
  public:
   // Constructs an ImagePainter with the specified image resource ids.
   // See CreateImageGridPainter()'s comment regarding image ID count and order.
-  explicit ImagePainter(const int image_ids[]);
+  explicit ImagePainter(const ui::NineImageIds& image_ids);
 
   // Constructs an ImagePainter with the specified image and insets.
   ImagePainter(const gfx::ImageSkia& image, const gfx::Insets& insets);
@@ -190,7 +190,7 @@ class ImagePainter : public Painter {
   std::unique_ptr<gfx::NineImagePainter> nine_painter_;
 };
 
-ImagePainter::ImagePainter(const int image_ids[])
+ImagePainter::ImagePainter(const ui::NineImageIds& image_ids)
     : nine_painter_(ui::CreateNineImagePainter(image_ids)) {}
 
 ImagePainter::ImagePainter(const gfx::ImageSkia& image,
@@ -328,7 +328,7 @@ std::unique_ptr<Painter> Painter::CreateImagePainter(
 
 // static
 std::unique_ptr<Painter> Painter::CreateImageGridPainter(
-    const int image_ids[]) {
+    const ui::NineImageIds& image_ids) {
   return std::make_unique<ImagePainter>(image_ids);
 }
 

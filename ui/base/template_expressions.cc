@@ -148,13 +148,11 @@ bool ReplaceTemplateExpressionsInternal(
     size_t next_pos = source.find(kLeader, current_pos);
 
     if (next_pos == std::string::npos) {
-      formatted->append(UNSAFE_TODO(source.data() + current_pos),
-                        source.size() - current_pos);
+      formatted->append(source.substr(current_pos));
       break;
     }
 
-    formatted->append(UNSAFE_TODO(source.data() + current_pos),
-                      next_pos - current_pos);
+    formatted->append(source.substr(current_pos, next_pos - current_pos));
     current_pos = next_pos + kLeaderSize;
 
     size_t context_end = source.find(kKeyOpen, current_pos);

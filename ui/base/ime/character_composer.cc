@@ -44,9 +44,7 @@ bool UTF32CharacterToUTF16(uint32_t character, std::u16string* output) {
   if (!CBU_IS_UNICODE_CHAR(character))
     return false;
   if (character) {
-    output->resize(CBU16_LENGTH(character));
-    size_t i = 0;
-    UNSAFE_TODO(CBU16_APPEND_UNSAFE(&(*output)[0], i, character));
+    base::WriteUnicodeCharacter(character, output);
   }
   return true;
 }

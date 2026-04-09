@@ -111,7 +111,8 @@ class VIEWS_EXPORT Painter {
   // size, while center and edge images are stretched to fill the painted area.
   // The center image may be zero (to be skipped). This ordering must be used:
   // Top-Left/Top/Top-Right/Left/[Center]/Right/Bottom-Left/Bottom/Bottom-Right.
-  static std::unique_ptr<Painter> CreateImageGridPainter(const int image_ids[]);
+  static std::unique_ptr<Painter> CreateImageGridPainter(
+      const ui::NineImageIds& image_ids);
 
   // Deprecated: used the InsetsF version below.
   static std::unique_ptr<Painter> CreateSolidFocusPainter(

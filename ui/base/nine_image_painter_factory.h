@@ -5,6 +5,7 @@
 #ifndef UI_BASE_NINE_IMAGE_PAINTER_FACTORY_H_
 #define UI_BASE_NINE_IMAGE_PAINTER_FACTORY_H_
 
+#include <array>
 #include <memory>
 
 #include "base/component_export.h"
@@ -38,15 +39,16 @@
 
 namespace gfx {
 class NineImagePainter;
+inline constexpr size_t kNineImageCount = 9;
 }
 
 namespace ui {
-
+using NineImageIds = std::array<int, gfx::kNineImageCount>;
 // Creates a NineImagePainter from an array of image ids. It's expected the
 // array came from the IMAGE_GRID macro.
 COMPONENT_EXPORT(UI_BASE)
 std::unique_ptr<gfx::NineImagePainter> CreateNineImagePainter(
-    const int image_ids[]);
+    const NineImageIds& image_ids);
 
 }  // namespace ui
 
