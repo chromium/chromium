@@ -225,6 +225,11 @@ void BnplManager::OnIssuerAccepted(BnplIssuer issuer) {
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnablePayNowPayLaterTabs)) {
     ReplaceIssuerSuggestionsWithLoadingThrobber();
+    if (!has_logged_bnpl_suggestion_accepted_) {
+      autofill_metrics::LogPayLaterTabSuggestionAccepted(
+          ongoing_flow_state_->issuer->issuer_id());
+      has_logged_bnpl_suggestion_accepted_ = true;
+    }
   }
 
   // When an issuer is accepted but no checkout amount is present, call

@@ -356,6 +356,9 @@ class BnplManager : public AutofillManager::Observer {
   // page load.
   bool has_logged_ai_amount_extracted_in_issuer_range_ = false;
 
+  // Set to true after the first time a BNPL issuer is accepted by users.
+  bool has_logged_bnpl_suggestion_accepted_ = false;
+
   // Callback to collect the current shown suggestion list and checkout
   // amount, and insert BNPL suggestion if the amount is eligible.
   std::optional<base::RepeatingCallback<void(
