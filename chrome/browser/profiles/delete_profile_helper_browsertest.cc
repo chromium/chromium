@@ -66,7 +66,13 @@ class DeleteProfileHelperBrowserTest : public InProcessBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(DeleteProfileHelperBrowserTest, KeepAlive) {
+// TODO(crbug.com/499611575): Re-enable the test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_KeepAlive DISABLED_KeepAlive
+#else
+#define MAYBE_KeepAlive KeepAlive
+#endif
+IN_PROC_BROWSER_TEST_F(DeleteProfileHelperBrowserTest, MAYBE_KeepAlive) {
   // Create an additional profile.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath profile_path_to_delete =
