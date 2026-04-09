@@ -40,7 +40,8 @@ export function getHtml(this: AppRefreshElement) {
 
   <div class="content-child" id="showcase-description">
     <div id="stepper-placeholder">
-      <img id="product-logo" src="images/product-logo.svg" alt="">
+      <img id="product-logo" src="images/product-logo.svg"
+        alt="$i18n{productLogoAltText}" aria-hidden="true">
     </div>
     <div id="showcase-text">
       <h1 class="title">$i18n{title}</h1>
