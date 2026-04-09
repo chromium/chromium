@@ -832,6 +832,9 @@ const char kChromeAppStoreUrl[] =
 
   // The coordinator for Cobalt.
   ChromeCoordinator* _cobaltCoordinator;
+
+  // The coordinator for Cobalt alerts.
+  ChromeCoordinator* _cobaltAlertCoordinator;
 }
 
 #pragma mark - ReaderModeBrowserAgentDelegate
@@ -1858,6 +1861,7 @@ const char kChromeAppStoreUrl[] =
 
   [self hideDriveFilePicker];
   [self hideCobalt];
+  [self hideCobaltAlert];
   if (@available(iOS 18.4, *)) {
     if (base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu)) {
       [self hideFileUploadPanel];
@@ -2987,6 +2991,7 @@ const char kChromeAppStoreUrl[] =
   [self hideSaveToDrive];
   [self hideDriveFilePicker];
   [self hideCobalt];
+  [self hideCobaltAlert];
   if (@available(iOS 18.4, *)) {
     if (base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu)) {
       [self hideFileUploadPanel];
@@ -3131,6 +3136,28 @@ const char kChromeAppStoreUrl[] =
 - (void)hideCobalt {
   [_cobaltCoordinator stop];
   _cobaltCoordinator = nil;
+}
+
+- (void)showCobaltAlertWithTitle:(NSString*)title
+                         message:(NSString*)message
+                      completion:(void (^)(bool))completion {
+  if (_cobaltAlertCoordinator) {
+    completion(false);
+    return;
+  }
+  // If `_cobaltCoordinator` is present hide it first.
+  if (_cobaltCoordinator) {
+    [self hideCobalt];
+  }
+  _cobaltAlertCoordinator = ios::provider::CreateCobaltAlertCoordinator(
+      self.viewController, self.browser, title, message, completion);
+  CHECK(_cobaltAlertCoordinator);
+  [_cobaltAlertCoordinator start];
+}
+
+- (void)hideCobaltAlert {
+  [_cobaltAlertCoordinator stop];
+  _cobaltAlertCoordinator = nil;
 }
 
 #pragma mark - ContextualPanelEntrypointIPHCommands

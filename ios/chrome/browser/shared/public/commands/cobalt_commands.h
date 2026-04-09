@@ -16,6 +16,14 @@
 // Hides Cobalt.
 - (void)hideCobalt;
 
+// Shows a cobalt alert with the given `title` and `message`.
+- (void)showCobaltAlertWithTitle:(NSString*)title
+                         message:(NSString*)message
+                      completion:(void (^)(bool))completion;
+
+// Hides the cobalt alert.
+- (void)hideCobaltAlert;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_COBALT_COMMANDS_H_
