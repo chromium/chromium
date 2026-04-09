@@ -392,7 +392,7 @@ bool ImagePaintTimingDetector::RecordImage(
     records_manager_.OnImageLoaded(record_id_hash, frame_index_, style_image);
     added_entry_in_latest_frame_ = true;
 
-    if (std::optional<PaintTimingVisualizer>& visualizer =
+    if (PaintTimingVisualizer* visualizer =
             frame_view_->GetPaintTimingDetector().Visualizer()) {
       visualizer->DumpImageDebuggingRect(
           object, mapped_visual_rect,
@@ -414,7 +414,7 @@ uint64_t ImagePaintTimingDetector::ComputeImageRectSize(
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     const LayoutObject& object,
     const MediaTiming& media_timing) {
-  if (std::optional<PaintTimingVisualizer>& visualizer =
+  if (PaintTimingVisualizer* visualizer =
           frame_view_->GetPaintTimingDetector().Visualizer()) {
     visualizer->DumpImageDebuggingRect(
         object, mapped_visual_rect,

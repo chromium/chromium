@@ -199,7 +199,7 @@ void TextPaintTimingDetector::RecordAggregatedText(
   if (context && record) {
     context->AddPaintedArea(record);
   }
-  if (std::optional<PaintTimingVisualizer>& visualizer =
+  if (PaintTimingVisualizer* visualizer =
           frame_view_->GetPaintTimingDetector().Visualizer()) {
     visualizer->DumpTextDebuggingRect(aggregator, mapped_visual_rect);
   }
