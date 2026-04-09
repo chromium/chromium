@@ -127,6 +127,10 @@ const char
     kHistogramGWSConnectTimingFirstRequestResolutionDetailsTaskCompletionDelay
         [] = HISTOGRAM_PREFIX
     "ConnectTiming.FirstRequestResolutionDetails.TaskCompletionDelay";
+const char kHistogramGWSConnectTimingFirstRequestDohDetailsSessionSource[] =
+    HISTOGRAM_PREFIX "ConnectTiming.FirstRequestDohDetails.SessionSource";
+const char kHistogramGWSConnectTimingFirstRequestDohDetailsConnectionInfo[] =
+    HISTOGRAM_PREFIX "ConnectTiming.FirstRequestDohDetails.ConnectionInfo";
 const char kHistogramGWSConnectTimingFirstRequestConnectDelay[] =
     HISTOGRAM_PREFIX "ConnectTiming.FirstRequestConnectDelay";
 const char kHistogramGWSConnectTimingFirstRequestSslDelay[] =
@@ -1219,6 +1223,17 @@ void GWSPageLoadMetricsObserver::RecordNavigationTimingHistograms() {
                  *suffix}),
             *details.task_completion_delay);
       }
+    }
+
+    if (details.doh_details.has_value()) {
+      base::UmaHistogramEnumeration(
+          internal::
+              kHistogramGWSConnectTimingFirstRequestDohDetailsSessionSource,
+          details.doh_details->session_source);
+      base::UmaHistogramEnumeration(
+          internal::
+              kHistogramGWSConnectTimingFirstRequestDohDetailsConnectionInfo,
+          details.doh_details->connection_info);
     }
   }
 

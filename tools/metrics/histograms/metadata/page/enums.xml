@@ -106,6 +106,17 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(HttpConnectionInfoCoarse) -->
+
+<enum name="HttpConnectionInfoCoarse">
+  <int value="0" label="HTTP1"/>
+  <int value="1" label="HTTP2"/>
+  <int value="2" label="QUIC"/>
+  <int value="3" label="OTHER"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/http/http_connection_info.h:HttpConnectionInfoCoarse) -->
+
 <enum name="InternalErrorLoadEvent">
   <summary>Internal Errors in the page_load_metrics system</summary>
   <int value="0" label="Invalid timing IPC sent from renderer (deprecated)"/>

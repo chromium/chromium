@@ -1692,6 +1692,32 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.GoogleSearch.ConnectTiming.FirstRequestDohDetails.ConnectionInfo"
+    enum="HttpConnectionInfoCoarse" expires_after="2026-09-06">
+  <owner>bashi@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The coarse connection info used for the DNS-over-HTTPS resolution of the
+    first HTTP request sent for the main resource of a main frame navigation,
+    for Google Search page loads. Only recorded for Search navigations that
+    happen entirely in the foreground.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.ConnectTiming.FirstRequestDohDetails.SessionSource"
+    enum="NetworkSessionSource" expires_after="2026-09-06">
+  <owner>bashi@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The session source (e.g. new, existing) used for the DNS-over-HTTPS
+    resolution of the first HTTP request sent for the main resource of a main
+    frame navigation, for Google Search page loads. Only recorded for Search
+    navigations that happen entirely in the foreground.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.GoogleSearch.ConnectTiming.FirstRequestDomainLookupDelay.InsecureDns"
     units="ms" expires_after="2026-09-06">
   <owner>bashi@chromium.org</owner>

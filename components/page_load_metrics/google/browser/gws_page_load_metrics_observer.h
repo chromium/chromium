@@ -40,6 +40,10 @@ extern const char
 extern const char
     kHistogramGWSConnectTimingFirstRequestResolutionDetailsTaskCompletionDelay
         [];
+extern const char
+    kHistogramGWSConnectTimingFirstRequestDohDetailsSessionSource[];
+extern const char
+    kHistogramGWSConnectTimingFirstRequestDohDetailsConnectionInfo[];
 extern const char kHistogramGWSConnectTimingFirstRequestConnectDelay[];
 extern const char kHistogramGWSConnectTimingFirstRequestSslDelay[];
 extern const char kHistogramGWSConnectTimingFinalRequestDomainLookupDelay[];

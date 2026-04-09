@@ -223,6 +223,11 @@ TEST_F(GWSPageLoadMetricsObserverTest, DNSResolutionSegmentation) {
           net::ResolutionDetails{
               .source = net::ResolutionSource::kSecure,
               .task_completion_delay = base::Milliseconds(5),
+              .doh_details =
+                  net::DohResolutionDetails{
+                      .session_source = net::SessionSource::kNew,
+                      .connection_info = net::HttpConnectionInfoCoarse::kHTTP2,
+                  },
           },
   };
   timing.first_request_domain_lookup_delay = base::Milliseconds(10);
@@ -280,6 +285,12 @@ TEST_F(GWSPageLoadMetricsObserverTest, DNSResolutionSegmentation) {
       internal::
           kHistogramGWSConnectTimingFirstRequestDomainLookupDelayInsecureDns,
       0);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramGWSConnectTimingFirstRequestDohDetailsSessionSource,
+      static_cast<int>(net::SessionSource::kNew), 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramGWSConnectTimingFirstRequestDohDetailsConnectionInfo,
+      static_cast<int>(net::HttpConnectionInfoCoarse::kHTTP2), 1);
 }
 
 TEST_F(GWSPageLoadMetricsObserverTest, DNSResolutionSegmentationFallback) {

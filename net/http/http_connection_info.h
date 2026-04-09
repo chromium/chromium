@@ -71,6 +71,7 @@ enum class HttpConnectionInfoCoarse {
   kHTTP2,
   kQUIC,
   kOTHER,
+  kMaxValue = kOTHER,
 };
 // LINT.ThenChange(//services/network/public/mojom/load_timing_internal_info.mojom:HttpConnectionInfoCoarse)
 
