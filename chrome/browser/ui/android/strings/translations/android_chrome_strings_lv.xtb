@@ -640,6 +640,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3739455665973395693">Jūsu Google kontā nav uzlauztu paroļu</translation>
 <translation id="3739899004075612870">Pievienota grāmatzīme pārlūkā <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Meklēšana ar balsi šajā ierīcē nav pieejama.</translation>
+<translation id="3763110477555836428">Kad norēķināsieties, izmantojot šo karti, tiks ievadīts virtuālās kartes numurs, lai aizsargātu jūsu faktiskās kartes informāciju. Pārvaldiet to lietotnē Google maks. <ph name="BEGIN_LINK1" />Uzziniet vairāk par virtuālajām kartēm<ph name="END_LINK1" />.</translation>
 <translation id="376561056759077985">Noteikti dati vēl nav saglabāti</translation>
 <translation id="3770620323585347665">Piešķirt nosaukumu logam</translation>
 <translation id="3771033907050503522">Inkognito režīma cilnes</translation>
@@ -683,6 +684,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">iepriekšējām 4 nedēļām</translation>
 <translation id="393697183122708255">Nav iespējota meklēšana ar balsi.</translation>
+<translation id="3941718885865495207">Chrome ieteikumu izvēles ekrāna apakšdaļas lapa</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" /> ir piesprausta cilne, kas tiek rādīta režīmā “Attēls attēlā”</translation>
 <translation id="3950820424414687140">Pierakstīties</translation>
 <translation id="395377504920307820">Izmantot bez konta</translation>
@@ -1188,6 +1190,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="6011308810877101166">Uzlabot meklēšanas ieteikumus</translation>
 <translation id="6013305291643746595">Kārtošana pēc vecākās</translation>
 <translation id="6022659036123304283">Pielāgojiet Chrome savām prasībām</translation>
+<translation id="6023820583797130428">Atveriet izvēlni, lai pārietu atpakaļ.</translation>
 <translation id="6026538407078977628">Izvērst pilnekrāna režīmā</translation>
 <translation id="6030719887161080597">Pārvaldiet informāciju, ko izmanto vietnes, lai novērtētu reklāmu veiktspēju.</translation>
 <translation id="6039379616847168523">Pāriet uz nākamo cilni</translation>
@@ -1632,6 +1635,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standarta cilne}zero{<ph name="TABS_COUNT_MANY" /> standarta cilnes}one{<ph name="TABS_COUNT_MANY" /> standarta cilne}other{<ph name="TABS_COUNT_MANY" /> standarta cilnes}}</translation>
 <translation id="7603168929588204083">Nederīgs datums</translation>
 <translation id="7605594153474022051">Sinhronizācija nedarbojas</translation>
+<translation id="7608245556672190037">Chrome ieteikumu izvēles ekrāna apakšdaļas lapa ir atvērta pilnā augstumā</translation>
 <translation id="7612619742409846846">Pierakstījies Google kontā kā</translation>
 <translation id="7612989789287281429">Notiek pierakstīšanās…</translation>
 <translation id="7619072057915878432">Neizdevās lejupielādēt failu <ph name="FILE_NAME" />, jo radās tīkla kļūdas.</translation>
@@ -1639,6 +1643,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="7628417132421583481">Pāriet uz Paroļu pārvaldnieku</translation>
 <translation id="7630202231528827509">Piegādātāja URL</translation>
 <translation id="7638584964844754484">Nepareiza ieejas frāze</translation>
+<translation id="764047009170754705">Chrome ieteikumu izvēles ekrāna apakšdaļas lapa ir aizvērta</translation>
 <translation id="7646499124171960488">Tiek rādīti brīdinājumi par nedrošām publiskām vietnēm</translation>
 <translation id="7646772052135772216">Paroļu sinhronizācija nedarbojas</translation>
 <translation id="7655240423373329753">pēdējās 7 dienas</translation>
@@ -1863,6 +1868,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8473863474539038330">Adreses un citi dati</translation>
 <translation id="847433688444405067">Pārlūkošana dažādās ierīcēs</translation>
 <translation id="8477178913400731244">Dzēst datus</translation>
+<translation id="8481771036036087705">Chrome ieteikumu izvēles ekrāna apakšdaļas lapa ir atvērta pusekrāna augstumā</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">Nav neaktīvu logu</translation>
 <translation id="8493948351860045254">Atbrīvot vietu</translation>

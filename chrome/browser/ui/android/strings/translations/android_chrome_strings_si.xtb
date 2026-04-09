@@ -640,6 +640,7 @@
 <translation id="3739455665973395693">ඔබේ Google ගිණුමේ අවදානමට ලක් වූ මුරපද නොමැත</translation>
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> තුළ පිටුසන් කරන ලදි</translation>
 <translation id="3740525748616366977">මෙම උපාංගයෙහි හඬ සෙවීම නොමැත</translation>
+<translation id="3763110477555836428">ඔබේ සැබෑ විස්තර ආරක්ෂා කිරීමට ඔබ මෙම කාඩ්පත සමග පිටවන විට අතථ්‍ය කාඩ්පත් අංකයක් පුරවනු ලැබේ. Google Wallet තුළ කළමනාකරණය කරන්න. <ph name="BEGIN_LINK1" />අතථ්‍ය කාඩ්පත් ගැන තව දැන ගන්න<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">සමහර දත්ත නොසුරැකේ</translation>
 <translation id="3770620323585347665">නම් කවුළුව</translation>
 <translation id="3771033907050503522">අප්‍රකට පටිති</translation>
@@ -683,6 +684,7 @@
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">පසුගිය සති 4</translation>
 <translation id="393697183122708255">ලබා ගත හැකි සබල කළ හඬ සෙවීමක් නැත</translation>
+<translation id="3941718885865495207">Chrome සොයා ගැනීම් තේරීම් පහළ පත්‍රය</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, ඇමිණූ පින්තූරය තුළ පින්තූර පටිත්ත</translation>
 <translation id="3950820424414687140">පුරන්න</translation>
 <translation id="395377504920307820">ගිණුමක් නොමැතිව භාවිත කරන්න</translation>
@@ -1188,6 +1190,7 @@
 <translation id="6011308810877101166">සෙවීම් යෝජනා වැඩි දියුණු කරන්න</translation>
 <translation id="6013305291643746595">පැරණිම අනුව වර්ග කිරීම</translation>
 <translation id="6022659036123304283">Chrome ඔබේම කර ගන්න</translation>
+<translation id="6023820583797130428">ආපසු යාමට මෙනුව විවෘත කරන්න</translation>
 <translation id="6026538407078977628">පූර්ණ තිරයට දිග හරින්න</translation>
 <translation id="6030719887161080597">දැන්වීම් කාර්ය සාධනය මැනීමට අඩවි විසින් භාවිතා කරන තතු කළමනාකරණය කරන්න</translation>
 <translation id="6039379616847168523">ඊළඟ ටැබය වෙත පනින්න</translation>
@@ -1632,6 +1635,7 @@
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> සම්මත පටිත්තක්}one{සම්මත පටිති <ph name="TABS_COUNT_MANY" />ක්}other{සම්මත පටිති <ph name="TABS_COUNT_MANY" />ක්}}</translation>
 <translation id="7603168929588204083">අවලංගු දිනය</translation>
 <translation id="7605594153474022051">සමමුහුර්තය වැඩ නොකරයි</translation>
+<translation id="7608245556672190037">Chrome සොයා ගැනීම් තෝරා ගැනීම සම්පූර්ණ උසින් විවෘත විය</translation>
 <translation id="7612619742409846846">Google වෙත පුරනය වූයේ</translation>
 <translation id="7612989789287281429">ඔබව පුරමින්…</translation>
 <translation id="7619072057915878432">ජාල දෝෂ නිසා <ph name="FILE_NAME" /> බාගැනීම අසාර්ථක විය.</translation>
@@ -1639,6 +1643,7 @@
 <translation id="7628417132421583481">මුරපද කළමනාකරු වෙත යන්න</translation>
 <translation id="7630202231528827509">සැපයුම්කරු URL</translation>
 <translation id="7638584964844754484">රහස්පදය වැරදියි</translation>
+<translation id="764047009170754705">Chrome සොයා ගැනීම් තෝරා ගැනීම වසා ඇත</translation>
 <translation id="7646499124171960488">අනාරක්ෂිත පොදු වෙබ් අඩවි සඳහා ඔබට අනතුරු අඟවයි</translation>
 <translation id="7646772052135772216">මුරපද සමමුහූර්තය ක්‍රියා නොකරයි</translation>
 <translation id="7655240423373329753">පසුගිය දින 7</translation>
@@ -1863,6 +1868,7 @@
 <translation id="8473863474539038330">ලිපින සහ තව</translation>
 <translation id="847433688444405067">උපාංග හරහා බ්‍රවුස් කරන්න</translation>
 <translation id="8477178913400731244">දත්ත මකන්න</translation>
+<translation id="8481771036036087705">Chrome සොයා ගැනීම් තෝරා ගැනීම අඩ උසින් විවෘත විය</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">අක්‍රිය කවුළු නැත</translation>
 <translation id="8493948351860045254">ඉඩ හිස් කරන්න</translation>

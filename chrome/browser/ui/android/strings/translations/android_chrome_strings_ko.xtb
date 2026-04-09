@@ -640,6 +640,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3739455665973395693">Google 계정에 유출된 비밀번호 없음</translation>
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> 북마크에 추가됨</translation>
 <translation id="3740525748616366977">이 기기에서는 음성 검색을 사용할 수 없습니다.</translation>
+<translation id="3763110477555836428">이 카드로 결제하면 실제 정보를 보호하기 위해 가상 카드 번호가 입력됩니다. Google 월렛에서 관리하세요. <ph name="BEGIN_LINK1" />가상 카드에 대해 자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">일부 데이터가 아직 저장되지 않음</translation>
 <translation id="3770620323585347665">창 이름 지정</translation>
 <translation id="3771033907050503522">시크릿 탭</translation>
@@ -683,6 +684,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">지난 4주</translation>
 <translation id="393697183122708255">사용 가능한 음성 검색이 없습니다.</translation>
+<translation id="3941718885865495207">Chrome Finds 선택 하단 시트</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, 고정된 PIP 모드 탭</translation>
 <translation id="3950820424414687140">로그인</translation>
 <translation id="395377504920307820">계정 없이 사용</translation>
@@ -1188,6 +1190,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6011308810877101166">추천 검색어 개선</translation>
 <translation id="6013305291643746595">오래된 항목순으로 정렬</translation>
 <translation id="6022659036123304283">나만의 Chrome 만들기</translation>
+<translation id="6023820583797130428">메뉴를 열어 뒤로 이동하기</translation>
 <translation id="6026538407078977628">전체 화면으로 확장</translation>
 <translation id="6030719887161080597">사이트에서 광고 실적을 측정하는 데 사용하는 정보 관리</translation>
 <translation id="6039379616847168523">다음 탭으로 이동</translation>
@@ -1632,6 +1635,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{일반 탭 <ph name="TABS_COUNT_ONE" />개}other{일반 탭 <ph name="TABS_COUNT_MANY" />개}}</translation>
 <translation id="7603168929588204083">날짜가 잘못되었습니다.</translation>
 <translation id="7605594153474022051">동기화가 작동하지 않음</translation>
+<translation id="7608245556672190037">Chrome Finds 선택이 전체 높이로 열림</translation>
 <translation id="7612619742409846846">다음 계정으로 Google에 로그인함:</translation>
 <translation id="7612989789287281429">로그인하는 중…</translation>
 <translation id="7619072057915878432">네트워크에 문제가 발생하여 <ph name="FILE_NAME" />을(를) 다운로드할 수 없습니다.</translation>
@@ -1639,6 +1643,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7628417132421583481">비밀번호 관리자로 이동</translation>
 <translation id="7630202231528827509">제공업체 URL</translation>
 <translation id="7638584964844754484">암호가 잘못되었습니다.</translation>
+<translation id="764047009170754705">Chrome Finds 선택 닫힘</translation>
 <translation id="7646499124171960488">안전하지 않은 공개 사이트에 대해 경고 표시</translation>
 <translation id="7646772052135772216">비밀번호 동기화가 작동하지 않음</translation>
 <translation id="7655240423373329753">지난 7일</translation>
@@ -1863,6 +1868,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8473863474539038330">주소 및 기타</translation>
 <translation id="847433688444405067">여러 기기에서 탐색하기</translation>
 <translation id="8477178913400731244">데이터 삭제</translation>
+<translation id="8481771036036087705">Chrome Finds 선택이 절반 높이로 열림</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">비활성 창 없음</translation>
 <translation id="8493948351860045254">저장 공간 확보하기</translation>

@@ -465,7 +465,6 @@
 <translation id="1717218214683051432">モーション センサー</translation>
 <translation id="1717494416764505390">用紙受け 3</translation>
 <translation id="1717688554309417925">デビット、小切手</translation>
-<translation id="1717882880162336471">AI モードを試す</translation>
 <translation id="1719434663396780149">値下げアラートはオンになっています。[<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />] で変更できます。</translation>
 <translation id="1719838434204287058">24x30 インチ</translation>
 <translation id="1720941539803966190">チュートリアルを閉じる</translation>
@@ -615,7 +614,6 @@
 <translation id="1960664692890490165">Chrome での購入手続きの際、オプションとしてカード以外のお支払い方法が表示されます</translation>
 <translation id="196146181975453736">1 回限りのセキュリティ チェックを行ってすばやくお支払いいただけます</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> のブックマーク</translation>
-<translation id="1966259577349514951">今すぐ支払う</translation>
 <translation id="1973335181906896915">シリアル化エラーです</translation>
 <translation id="1973785048533660168">事務系の求人情報</translation>
 <translation id="1974060860693918893">詳細設定</translation>
@@ -1057,6 +1055,7 @@
 <translation id="2627847595568876492">PDF からテキストを抽出しています...</translation>
 <translation id="2628025184666666186">このサーバーは、Chrome またはウェブ トラフィック暗号化のシステム構成で信頼されていないセキュリティ証明書を使用しているため、<ph name="DOMAIN" /> であることを証明できませんでした。原因として、設定が不適切であるか、悪意のあるユーザーが接続を妨害していることが考えられます。</translation>
 <translation id="2628224721443278970">Microsoft OneDrive にログイン</translation>
+<translation id="2631059741268498165">このデバイスの位置情報を管理者が取得しました。デバイスは無効になっていましたが、再度有効化され、使用できるようになっています。</translation>
 <translation id="2631387782019878060">確認コード: <ph name="OTP" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> のサーバーの IP アドレスが見つかりませんでした。</translation>
 <translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> で検索するには、@ を入力してください</translation>
@@ -1098,7 +1097,6 @@
 <translation id="2696385693639654606">Chrome Enterprise Core を使用すると、ブラウザ ポリシー、アプリ、拡張機能をクラウドから管理できます</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> に質問</translation>
 <translation id="2699273987028089219">サブメニューがあります。<ph name="SHORTCUT" />を使って追加オプションに移動できます。</translation>
-<translation id="2700335762333112350">後で支払う</translation>
 <translation id="2701514975700770343">下向き</translation>
 <translation id="2702592986366989640">低価格のオプション</translation>
 <translation id="2702801445560668637">リーディング リスト</translation>
@@ -2447,7 +2445,6 @@
 <translation id="4832388034239846146">タブグループを共有するには、Chrome を更新してください</translation>
 <translation id="483241715238664915">警告をオンにする</translation>
 <translation id="4832961164064927107">バーベキュー、グリル</translation>
-<translation id="4839984801146463230">情報を保存すると、Google サービス全体でフォームの入力などをすばやく行えるようになります。<ph name="ACCOUNT" /> の <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> で<ph name="BEGIN_LINK" />情報を管理<ph name="END_LINK" />できます</translation>
 <translation id="4840250757394056958">Chrome 履歴を表示</translation>
 <translation id="484462545196658690">自動</translation>
 <translation id="4844937814014739139">共有タブのスクロールとズーム</translation>
@@ -2724,11 +2721,12 @@
 <translation id="5255833070095767006">350x460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{管理者のポリシーでは、このファイルを <ph name="DESTINATION_NAME" /> にコピーすることは推奨されていません}other{管理者のポリシーでは、これらのファイルを <ph name="DESTINATION_NAME" /> にコピーすることは推奨されていません}}</translation>
 <translation id="5258473597674772367">「<ph name="GROUP_NAME" />」タブグループは使用できなくなりました</translation>
+<translation id="5262342527470539728">情報は <ph name="ACCOUNT" /> の <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> に保存されます</translation>
 <translation id="5263867360296733198">アップロードする前に確認が必要です</translation>
 <translation id="5266128565379329178">製本（上綴じ）</translation>
 <translation id="5269225904387178860">4 穴パンチ（下）</translation>
 <translation id="5271381225185906340">「<ph name="DATA_CONTROLS_ATTRIBUTE" />」は「<ph name="DATA_CONTROLS_RESTRICTION" />」のサポートされている条件ではありません</translation>
-<translation id="527191520368130807">ポーランド語</translation>
+<translation id="527191520368130807">推敲</translation>
 <translation id="5273658854610202413">警告: このポリシーは統合可能な辞書ポリシーに含まれていないため、PolicyDictionaryMultipleSourceMergeList ポリシーで指定されているとおりには統合されませんでした。</translation>
 <translation id="5274074150785993864">開いているタブ、ページのコンテンツ、URL が Chrome から Google に送信され、回答がパーソナライズされます</translation>
 <translation id="5278778426231952189">今すぐアップロード</translation>
@@ -2920,6 +2918,7 @@
 <translation id="5543564889050342791">動物園、水族館、自然保護地域</translation>
 <translation id="5543722831081909240">180°</translation>
 <translation id="5544836308113951378">クルーズ、チャーター船</translation>
+<translation id="5546252337258681768">デバイスのロックを解除しました</translation>
 <translation id="5547939254150808298">印刷、出版</translation>
 <translation id="554815783948612276">掲示板、チャット サービス</translation>
 <translation id="5548606607480005320">安全チェック</translation>
@@ -4773,6 +4772,7 @@
 詳細:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">一時的にマイクを許可しました</translation>
+<translation id="8421746712901926961"><ph name="GOOGLE_WALLET_TITLE_1" /> に情報を保存すると、Google サービス全体でフォームの入力などをすばやく行えるようになります。<ph name="ACCOUNT" /> の <ph name="GOOGLE_WALLET_TITLE_2" /> で<ph name="MANAGE_INFO_LINK" />できます。</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">変更</translation>
 <translation id="8426945547715537628">キーボードのオーバーライドを許可しますか？</translation>
@@ -4829,6 +4829,7 @@
 <translation id="8521812709849134608">調理台</translation>
 <translation id="8522180136695974431">クレジット レポート、モニタリング</translation>
 <translation id="8522552481199248698">Chrome には Google アカウントの保護とパスワードの変更をサポートする機能があります。</translation>
+<translation id="852450791482410042">今すぐ支払う</translation>
 <translation id="8527228059738193856">スピーカー</translation>
 <translation id="8527681393107582734">農業、林業</translation>
 <translation id="8528149813106025610">子供服</translation>

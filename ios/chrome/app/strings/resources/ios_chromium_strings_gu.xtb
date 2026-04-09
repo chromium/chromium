@@ -134,6 +134,7 @@
 <translation id="377649297473651452">Chromium પર ઑટોમૅટિક રીતે ભરવાની સુવિધાનો મોટો કરેલો વ્યૂ</translation>
 <translation id="3780779443901618967">સાઇટ પરથી માનક સંરક્ષણ કરતા વધુ ડેટા વિશ્લેષિત કરીને, Googleને પણ પહેલાંથી જાણ ન હોય તેવી ખતરનાક સાઇટ માટે તમને ચેતવણી આપે છે. તમે Chromium ચેતવણીઓને છોડી દેવાનું પસંદ કરી શકો છો.</translation>
 <translation id="3805899903892079518">Chromiumને તમારા ફોટા અથવા વીડિયોનો ઍક્સેસ નથી. iOS સેટિંગ &gt; પ્રાઇવસી &gt; ફોટામાં ઍક્સેસને ચાલુ કરો.</translation>
+<translation id="3809591243528646631">બાળકની સલામતી સંબંધિત સુવિધાઓ મેળવવા માટે, તમે બાળક માટે સેટઅપ કરેલા Google એકાઉન્ટનો ઉપયોગ કરી શકો છો અથવા એકાઉન્ટ વિના Chromiumનો ઉપયોગ કરી શકો છો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="3816686541346279443">Chromium તમારો પાસવર્ડ સાચવવાનું ઑફર કરશે.</translation>
 <translation id="3827545470516145620">તમે આ ડિવાઇસ માટે સ્ટૅન્ડર્ડ સુરક્ષા સંરક્ષણ મેળવી રહ્યા છો</translation>
 <translation id="3833326979834193417">Chromium દરરોજ ઑટોમૅટિક રીતે સલામતી માટે તપાસ ચલાવે છે, જેથી તમને ડેટા ઉલ્લંઘનની ઘટનાઓ, અસલામત વેબસાઇટ અને બીજા ઘણા જોખમોથી સલામત રાખી શકાય. તમે સેટિંગમાં જઈને સલામતી માટે તપાસની સુવિધા વિશે વધુ જાણી શકો છો.</translation>
@@ -169,6 +170,7 @@
 આ સેટિંગ બદલવા માટે, <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાંનો Chromium ડેટા ડિલીટ કરો<ph name="END_LINK" />.</translation>
 <translation id="4578500311756617174">Chromium વિશે ટિપ: ડિફૉલ્ટ તરીકે Chromiumનો ઉપયોગ કરો</translation>
 <translation id="458786853569524949">હવે તમે જ્યારે પણ ઇમેઇલ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર ટૅપ કરો, ત્યારે Chromiumનો ઉપયોગ કરી શકો છો.</translation>
+<translation id="4625730353066900738">તમે શરૂ કરી શકો તે માટે Chromiumની મદદરૂપ મૂળભૂત બાબતો વિશે જાણો</translation>
 <translation id="4633738821577273991">આ Chromium પ્રોફાઇલ માટે પણ Safe Browsingમાં વધારેલી સુરક્ષા મેળવો</translation>
 <translation id="4654936625574199632">ઍપને બહેતર બનાવવામાં સહાય કરવા માટે, Chromium વપરાશ અને ક્રૅશ થવા સંબંધિત ડેટા Googleને મોકલે છે. <ph name="BEGIN_LINK" />મેનેજ કરો<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Chromium સ્કૅન ચાલુ કરો</translation>
@@ -179,7 +181,6 @@
 <translation id="4856138222358683580">Chromium ઍક્શન</translation>
 <translation id="4869706986935301458">જ્યારે તમે તમારા iPhone પર હો, ત્યારે Chromiumને ઝટપટ ખોલો</translation>
 <translation id="4904452304169763785">તમારા માટે Chromium ભાળ મેળવે તેવી પ્રાઇવસી કે સુરક્ષા સંબંધિત કોઈપણ સમસ્યાઓ માટેના અલર્ટ.</translation>
-<translation id="4908570938463711775">તમે શરૂ કરી શકો તે માટે Chromiumની સહાયરૂપ મૂળભૂત બાબતો વિશે જાણો</translation>
 <translation id="4962295957157529683">તમે અન્ય ખુલ્લી Chromium વિંડોમાં જે કાર્ય કરતા તા તે પૂર્ણ કરો.</translation>
 <translation id="4985291216379576555">ઑફલાઇન, Chromium અપડેટ ચેક કરી શકતાં નથી</translation>
 <translation id="4996471330284142407">Chromiumના સરળ, સુરક્ષિત અને અત્યાર સુધીના સૌથી ઝડપી વર્ઝન વડે વધુ કાર્યો પૂર્ણ કરો.</translation>
@@ -355,6 +356,7 @@
 <translation id="8900052431807804054">Chromiumની સૌથી સશક્ત સુરક્ષા મેળવો</translation>
 <translation id="8908791447256515663">તમારા iPadના ડૉકમાંથી Chromium વધુ ઝડપથી ઍક્સેસ કરો.</translation>
 <translation id="8925569192291721236">કિંમત ટ્રૅક કરવાના અપડેટ અને Chromium ટિપ વડે ચાલુ રાખો.</translation>
+<translation id="8939412301975414416">Chromiumમાં બાળકની સલામતી સંબંધિત સુવિધાઓ મેળવવા માટે, તમે બાળક માટે સેટઅપ કરેલા Google એકાઉન્ટનો ઉપયોગ કરી શકો છો અથવા એકાઉન્ટ વિના Chromiumનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{જ્યારે {THRESHOLD} મિનિટ સુધી Chromiumનો ઉપયોગ ન કરવામાં આવે, ત્યારે આવું થાય છે}one{જ્યારે {THRESHOLD} મિનિટ સુધી Chromiumનો ઉપયોગ ન કરવામાં આવે, ત્યારે આવું થાય છે}other{જ્યારે {THRESHOLD} મિનિટ સુધી Chromiumનો ઉપયોગ ન કરવામાં આવે, ત્યારે આવું થાય છે}}</translation>
 <translation id="8963279154877372067">Chromium નોટિફિકેશનને કિંમતમાં ઘટાડા વિશે અલર્ટ મેળવવાની મંજૂરી આપો</translation>
 <translation id="8975812008711371178">Chromiumમાં વૉઇસની સુવિધા વડે શોધો.</translation>

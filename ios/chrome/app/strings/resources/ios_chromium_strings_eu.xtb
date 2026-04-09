@@ -134,6 +134,7 @@ Kontua aldatu aurretik, itxaron minutu batzuk. Kontua orain aldatzen baduzu, dat
 <translation id="377649297473651452">Chromium-en betetze automatikoaren ikuspegi zabaldua</translation>
 <translation id="3780779443901618967">Webgune arriskutsuen berri ematen dizu, Google-k ezagutzen ez zituenak barne, webguneetan babes estandarrak baino datu gehiago aztertuz. Chromium-en abisuak saltatzea aukera dezakezu.</translation>
 <translation id="3805899903892079518">Chromium-ek ez du argazki eta bideoetarako sarbiderik. Gaitu sarbidea iOS sistemako Settings &gt; Privacy &gt; Photos atalean.</translation>
+<translation id="3809591243528646631">Haurren segurtasunerako eginbideak lortzeko, haurrentzat konfiguratutako Google-ko kontu bat erabil dezakezu, edo Chromium konturik gabe erabili. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="3816686541346279443">Chromium-ek pasahitza gordetzea nahi duzun galdetuko dizu.</translation>
 <translation id="3827545470516145620">Babes estandarra darabilzu gailu honetan</translation>
 <translation id="3833326979834193417">Egunero, Chromium-ek segurtasun-egiaztapena exekutatzen du automatikoki, datuen isilpekotasunaren urratzeen, seguruak ez diren webguneen eta abarren aurka babestuta egon zaitezen. Segurtasun-egiaztapenari buruzko informazio gehiago lortzeko, joan ezarpenetara.</translation>
@@ -169,6 +170,7 @@ Datuak pasaesaldiarekin enkriptatuta daude. Chromium-eko datuak Google-ko kontua
 Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chromium-eko datuak<ph name="END_LINK" />.</translation>
 <translation id="4578500311756617174">Chromium-i buruzko aholkua: erabili Chromium modu lehenetsian</translation>
 <translation id="458786853569524949">Orain, Chromium erabili ahalko duzu mezu elektronikoetan, dokumentuetan eta aplikazioetan estekak sakatzen dituzunean.</translation>
+<translation id="4625730353066900738">Erabiltzen hasteko, lortu Chromium-i buruzko oinarrizko ezagutza lagungarriak</translation>
 <translation id="4633738821577273991">Lortu Arakatze seguru hobetua Chromium-eko profil honetan ere</translation>
 <translation id="4654936625574199632">Aplikazioa hobetzeko, Chromium-ek erabilera-datuak eta hutsegite-txostenak bidaltzen dizkio Google-ri. <ph name="BEGIN_LINK" />Kudeatu<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Aktibatu Chromium-en eskanerra</translation>
@@ -179,7 +181,6 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chromium-eko dat
 <translation id="4856138222358683580">Chromium-en ekintzak</translation>
 <translation id="4869706986935301458">Ireki Chromium berehala iPhone-a erabiltzen ari zarenean</translation>
 <translation id="4904452304169763785">Chromium-ek zuretzat hautematen dituen pribatutasun- edo segurtasun-arazoei buruzko alertak.</translation>
-<translation id="4908570938463711775">Erabiltzen hasteko, lortu Chromium-i buruzko oinarrizko ezagutza lagungarriak</translation>
 <translation id="4962295957157529683">Amaitu egiten ari zarena irekita daukazun Chromium-eko beste leihoan.</translation>
 <translation id="4985291216379576555">Interneteko konexiorik gabe, Chromium-ek ezin ditu bilatu eguneratzeak</translation>
 <translation id="4996471330284142407">Egin gauza gehiago Chromium-ekin: sinplea, segurua eta inoiz baino bizkorragoa da.</translation>
@@ -355,6 +356,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="8900052431807804054">Lortu Chromium-en segurtasun-aukerarik sendoena</translation>
 <translation id="8908791447256515663">Sartu Chromium-en bizkorrago iPad-eko zintaren bidez.</translation>
 <translation id="8925569192291721236">Egin prezioen jarraipenaren informazio eguneratuaren eta Chromium-i buruzko aholku lagungarrien jarraipena.</translation>
+<translation id="8939412301975414416">Chromium-en haurren segurtasunerako eginbideak lortzeko, haurrentzat konfiguratutako Google-ko kontu bat erabil dezakezu, edo Chromium konturik gabe erabili.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Chromium {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori}other{Chromium {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori}}</translation>
 <translation id="8963279154877372067">Prezio-jaitsierei buruzko alertak jasotzeko, eman jakinarazpenak bidaltzeko baimena Chromium-i</translation>
 <translation id="8975812008711371178">Bilatu ahotsarekin Chromium-en</translation>

@@ -1647,6 +1647,7 @@ Se eliminó en Chrome 145 y se recomienda usar el método requestStorageAccess e
 <translation id="2149957154942061013">Solo para uso interno</translation>
 <translation id="2151831603578119302">Habilitar las combinaciones de teclas para las funciones de accesibilidad</translation>
 <translation id="2156132677421487971">Configura las políticas de <ph name="PRODUCT_NAME" />, una función que permite que los usuarios envíen contenido de las pestañas, los sitios web o el escritorio desde el navegador a pantallas y sistemas de sonido remotos.</translation>
+<translation id="2156359411909638496">Configuración de Chrome Finds</translation>
 <translation id="2156755242840687300">Servidores de impresión externos habilitados</translation>
 <translation id="2157842368188031417">La política solo se aplica a las sesiones de invitado administradas. Tiene que estar habilitada para que el modo de estación de trabajo compartida de Imprivata permita cambios de usuario durante la sesión.
       Si se le asigna el valor True a la política, se forzará la anulación de determinadas políticas de funciones, que conservan datos de usuario sensibles y no se gestionan mediante el mecanismo de limpieza usado en los cambios de usuario durante la sesión del modo de estación de trabajo compartida de Imprivata.
@@ -4067,6 +4068,7 @@ Esta política de dispositivos es equivalente a la política de usuarios <ph nam
 <translation id="3749511622128647337">Inhabilitar la salida de audio</translation>
 <translation id="3750220015372671395">Bloquear la generación de claves en estos sitios web</translation>
 <translation id="3753267109888284695">Lista de URLs de HTTP permitidas</translation>
+<translation id="3753514818525019935">No permitir Chrome Finds.</translation>
 <translation id="3753959315989102457">Inhabilitar los informes de ubicación del dispositivo</translation>
 <translation id="3755237588083934849">Si se define esta política, determinará la frecuencia con la que se envían informes del estado del dispositivo (en milisegundos). El valor mínimo es 60 segundos.
 
@@ -6026,6 +6028,13 @@ Si la política se inhabilita, esta función también lo hará.</translation>
 <translation id="4997074784107449343">Cuando la opción Imprimir como imagen está disponible, no se establece como opción predeterminada en las vistas previas de impresión de documentos PDF.</translation>
 <translation id="500149597848135831">Habilitar todas las variaciones</translation>
 <translation id="5006222080181284191">Controlar si se habilitará la función Ayúdame a escribir en ChromeOS</translation>
+<translation id="501542798290854504">Configura el inicio de sesión automático de usuarios con cuentas respaldadas por un proveedor de identidades en la nube de Microsoft® en <ph name="ANDROID_NAME" />.
+
+Si se le asigna el valor 1 (<ph name="POLICY_VALUE_ENABLED" />) a esta política, los usuarios que hayan iniciado sesión en una aplicación de productividad de Microsoft® en su dispositivo podrán iniciar sesión automáticamente en propiedades web de Microsoft® en <ph name="PRODUCT_NAME" />. Esta función requiere la presencia de una aplicación de agente de autenticación de Microsoft®, como <ph name="MS_AUTH_APP_NAME" />, <ph name="MS_ICP_NAME" /> o <ph name="MS_LTW_NAME" />. Para facilitar el inicio de sesión único, se comparten los datos de autenticación necesarios con el proveedor de identidades en la nube de Microsoft®.
+
+Si se le asigna el valor 0 (<ph name="POLICY_VALUE_DISABLED" />) a esta política o no se le asigna ningún valor, el inicio de sesión automático, como se ha descrito más arriba, se inhabilitará y los usuarios deberán proporcionar manualmente las credenciales de las propiedades web de Microsoft®.
+
+Nota: Esta política no se aplica a los modos Incógnito ni Invitado.</translation>
 <translation id="5017157692744444035">Esta política controla si se proporciona información que pueda usarse para identificar equipos, como el nombre del equipo o direcciones de red.
 
 Si no se establece la política <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> o se inhabilita, esta se ignorará.
@@ -7277,6 +7286,7 @@ Si esta política se inhabilita o no se define, no se habilitarán los widgets G
 <translation id="5776485039795852974">Preguntar siempre que un sitio quiera mostrar notificaciones de escritorio</translation>
 <translation id="5776508475264864949">No permite que la aplicación Gemini realice acciones en páginas web.</translation>
 <translation id="5783009211970309878">Imprimir encabezados y pies de página</translation>
+<translation id="5786913136266632175">Permitir Chrome Finds y mejorar los modelos de IA.</translation>
 <translation id="5789288985554424301">Permite definir si los sitios web tienen permiso para usar la API Idle Detection.
 
 Si se le asigna el valor 1 (<ph name="ALLOW_IDLE_DETECTION_VALUE_NAME" />) a esta política, los sitios web podrán usar la API sin pedir permiso al usuario.
@@ -8795,6 +8805,17 @@ Si se asigna el valor False a esta política o no se define, se usará el compor
 
       Si no se define, no se registrarán datos de telemetría adicionales en los eventos de cambio de intensidad de la señal.</translation>
 <translation id="6751612743847158732">Restaura siempre la última sesión.</translation>
+<translation id="6751882390104737961">Chrome Finds es una función basada en IA que ayuda a los usuarios a buscar y entender el contenido de la página web actual.
+
+Si se asigna el valor 0, permite que se use la función y que Google utilice datos relevantes para mejorar sus modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados, materiales de origen y comentarios escritos. También es posible que los revisen un equipo de personas para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
+
+Si se asigna el valor 1, permite que se use la función, pero no permite que Google mejore los modelos con el contenido de los usuarios (incluyendo peticiones, entradas, resultados, materiales de origen y comentarios escritos). 1 es el valor predeterminado de los usuarios de empresa que se gestionan en la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Si se asigna el valor 2, no se permite la función.
+
+Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6752711782954612641">Si <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está activada y se asigna un valor a <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" />, se especificarán los parámetros utilizados al buscar una URL con POST. Se compone de pares de nombre-valor separados por comas. Si un valor es un parámetro de plantilla, como <ph name="SEARCH_TERM_MARKER" />, se sustituirá por datos de términos de búsqueda reales.
 
       Si no se asigna ningún valor a <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" />, las solicitudes de búsqueda se enviarán mediante el método GET.</translation>
@@ -9953,6 +9974,7 @@ Si la política no se establece, será lo mismo que asignarle el valor <ph name=
 <translation id="7481702249684965639">La papelera está habilitada para el usuario.</translation>
 <translation id="7482768039644066614">Habilitar la obtención de metadatos de carga de páginas y modelos de aprendizaje automático para mejorar la experiencia de navegación</translation>
 <translation id="748292668225669178">Configura el montaje de <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
+<translation id="7483786326602801858">Permitir el inicio de sesión automático con proveedores de identidades en la nube de Microsoft® en <ph name="ANDROID_NAME" /></translation>
 <translation id="7485481791539008776">Reglas para la selección de la impresora predeterminada</translation>
 <translation id="7486205887492534734">Preguntar cuando coincidan varios certificados en la pantalla de inicio de sesión</translation>
 <translation id="748873163367340515">Usa solo cookies y datos esenciales en la búsqueda.</translation>
@@ -11841,6 +11863,7 @@ Si se inhabilita <ph name="LIVE_CAPTION_ENABLED_POLICY_NAME" />, Traducción ins
 <translation id="8713535263782304771">Inhabilitar Navegación segura</translation>
 <translation id="8714556680280715750">Una URL que los usuarios pueden visitar para obtener más información. Si no se define, no aparecerá ninguna URL para obtener más información en el instalador. Si se define, la URL debe usar el esquema https.</translation>
 <translation id="8715885991031124968">Permitir los cuadros de diálogo de JavaScript que se activen desde un submarco de origen diferente</translation>
+<translation id="8720288018555457355">Permitir Chrome Finds sin mejorar los modelos de IA.</translation>
 <translation id="8720547069538712402">Permitir que los usuarios habiliten o inhabiliten el corrector ortográfico</translation>
 <translation id="8721685661759544418">Habilitar la lectura en voz alta (extracción de texto y síntesis de conversión de texto a voz) para páginas web</translation>
 <translation id="8726080977639508431">Esta política controla cómo interpreta <ph name="PRODUCT_NAME" /> las políticas de listas de sitios y las políticas de listas de sospechosos en el caso de la función de compatibilidad con navegadores antiguos. Afecta a las siguientes políticas: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> y <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.

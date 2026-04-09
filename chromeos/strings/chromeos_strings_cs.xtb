@@ -740,7 +740,7 @@
           Když vytvoříte vlastní tapetu, odešle se pokyn na servery Google, aby vygenerovaly obrázky a aby tuhle službu bylo možné vylepšovat. Platí <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />smluvní podmínky a zásady ochrany soukromí společnosti Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Neuvádějte žádné osobní, citlivé ani důvěrné informace.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Generativní umělá inteligence může dělat chyby, a to i v případě lidí, proto si odpovědi kontrolujte. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Další informace<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
+          Generativní umělá inteligence může dělat chyby, včetně chyb týkajících se lidí, proto si informace raději ověřte. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Další informace<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4253971074682120908">negativní prostor</translation>
 <translation id="4258281355379922695">Latence požadavků HTTP</translation>
 <translation id="4266143281602681663">příze</translation>
@@ -832,7 +832,7 @@
 <translation id="4650608062294027130">Pravý Shift</translation>
 <translation id="4654549501020883054">Měnit denně</translation>
 <translation id="4655868084888499342">Obrázek nastaven jako tapeta</translation>
-<translation id="4660989616054030633">Generativní umělá inteligence může dělat chyby, a to i v případě lidí, proto si odpovědi kontrolujte</translation>
+<translation id="4660989616054030633">Generativní umělá inteligence může dělat chyby, včetně chyb týkajících se lidí, proto si informace raději ověřte</translation>
 <translation id="4661249927038176904">Fantaskní</translation>
 <translation id="4661392828086261436">Tuto aktualizaci poskytuje výrobce zařízení a nebyla ověřena společností Google</translation>
 <translation id="4664651912255946953">kožešina</translation>
@@ -1709,7 +1709,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="8538236298648811558">Používá Google AI</translation>
 <translation id="8550364285433943656">Přiřaďte herním akcím ovládání, abyste mohli hrát pomocí klávesnice</translation>
 <translation id="8557447961879934694">WPA2</translation>
-<translation id="8558521694042102707">Generativní umělá inteligence může dělat chyby, a to i v případě lidí, proto si odpověď zkontrolujte.</translation>
+<translation id="8558521694042102707">Generativní umělá inteligence může dělat chyby, včetně chyb týkajících se lidí, proto si informace raději ověřte.</translation>
 <translation id="8575298406870537639">Někteří operátoři k připojení k síti vyžadují tuto možnost. Na podrobnosti se zeptejte mobilního operátora.</translation>
 <translation id="8576249514688522074">Neinicializováno</translation>
 <translation id="8584654835905316966">K dokončení aktualizace firmwaru zařízení <ph name="DEVICE_NAME" /> na verzi <ph name="VERSION" /> je potřeba restart. Počítač se může restartovat několikrát. Jedná se o očekávané chování.</translation>

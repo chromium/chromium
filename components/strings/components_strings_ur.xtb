@@ -465,7 +465,6 @@
 <translation id="1717218214683051432">موشن سینسرز</translation>
 <translation id="1717494416764505390">میل باکس 3</translation>
 <translation id="1717688554309417925">ڈیبٹ اور چیکنگ سروسز</translation>
-<translation id="1717882880162336471">‏‫AI وضع آزمائیں</translation>
 <translation id="1719434663396780149">قیمت میں کمی کے الرٹس آن ہیں۔ آپ اسے <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> میں تبدیل کر سکتے ہیں۔</translation>
 <translation id="1719838434204287058">‏‎24 x 30 انچ</translation>
 <translation id="1720941539803966190">ٹیوٹوریل بند کریں</translation>
@@ -615,7 +614,6 @@
 <translation id="1960664692890490165">‏جب آپ Chrome میں خریداری کرتے ہیں تو ایک اختیار کے طور پر غیر کارڈ ادائیگی کے طریقے دیکھیں</translation>
 <translation id="196146181975453736">تیزی سے ادائیگی کرنے کے لیے یک وقتی سیکیورٹی چیک مکمل کریں</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> بک مارکس</translation>
-<translation id="1966259577349514951">ابھی ادائیگی کریں</translation>
 <translation id="1973335181906896915">ترتیب وار سازی کی خرابی</translation>
 <translation id="1973785048533660168">کلیریکل اور انتظامی جابز</translation>
 <translation id="1974060860693918893">جدید ترین</translation>
@@ -1045,6 +1043,7 @@
 <translation id="2610561535971892504">کلک کر کے کاپی کریں</translation>
 <translation id="2612676031748830579">کارڈ نمبر</translation>
 <translation id="2612993535136743634">‏آپ کے آلے اور Google اکاؤنٹ میں محفوظ کردہ تمام سیکیورٹی کوڈز کو حذف کر دیا جائے گا</translation>
+<translation id="2613758321247965174">{MINUTES,plural, =1{‫1 منٹ پہلے فعال}other{‫# منٹ قبل فعال}}</translation>
 <translation id="2614835674900828050">اس خریداری کیلئے دستیاب نہیں ہے</translation>
 <translation id="2616412942031748191">سرچ انجن بہترین بنانا اور مارکیٹنگ</translation>
 <translation id="2618206371527040026">اکیڈمک کانفرنسیں اور مطبوعات</translation>
@@ -1056,6 +1055,7 @@
 <translation id="2627847595568876492">‏‫PDF سے ٹیکسٹ نکالا جا رہا ہے...</translation>
 <translation id="2628025184666666186">‏یہ سرور ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے کیونکہ یہ ایک سیکیورٹی سرٹیفکیٹ استعمال کر رہا ہے جس پر Chrome یا آپ کے سسٹم کے کنفیگریشن کو ویب ٹریفک کی مرموز کاری کے لیے بھروسہ نہیں ہے۔ یہ غلط کنفیگریشن یا آپ کے کنکشن کو قطع کرنے والے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
 <translation id="2628224721443278970">‏‫Microsoft OneDrive میں سائن ان کریں</translation>
+<translation id="2631059741268498165">آپ کے منتظم نے اس آلہ کا پتا لگایا جب یہ غیر فعال تھا۔ اسے دوبارہ فعال کر دیا گیا ہے اور یہ استعمال کے لیے تیار ہے۔</translation>
 <translation id="2631387782019878060">توثیقی کوڈ: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">‏<ph name="HOST_NAME" /> کے سرور کا IP پتہ نہیں مل سکا۔</translation>
 <translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> میں تلاش کرنے کے لیے @ ٹائپ کریں</translation>
@@ -1097,7 +1097,6 @@
 <translation id="2696385693639654606">‏‫Chrome Enterprise Core آپ کو کلاؤڈ سے براؤزر کی پالیسیوں، ایپس اور ایکسٹینشنز کا نظم کرنے کی سہولت دیتا ہے</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> سے پوچھیں</translation>
 <translation id="2699273987028089219">ذیلی مینو دستیاب ہے، اضافی اختیارات پر نیویگیٹ کرنے کے لیے <ph name="SHORTCUT" /> استعمال کریں۔</translation>
-<translation id="2700335762333112350">بعد میں ادائیگی کریں</translation>
 <translation id="2701514975700770343">نیچے رکھیں</translation>
 <translation id="2702592986366989640">کم قیمت والا اختیار</translation>
 <translation id="2702801445560668637">پڑھنے کی فہرست</translation>
@@ -2447,7 +2446,6 @@
 <translation id="4832388034239846146">‏ٹیب گروپس کا اشتراک کرنے کے لیے، Chrome کو اپ ڈیٹ کریں</translation>
 <translation id="483241715238664915">وارننگز کو آن کریں</translation>
 <translation id="4832961164064927107">‏BBQ اور گرِلنگ</translation>
-<translation id="4839984801146463230">‏اپنی معلومات محفوظ کریں اور Google پروڈکٹس پر فارمز پُر کرنے جیسے کام تیزی سے کریں۔ آپ <ph name="ACCOUNT" /> کے لیے <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> میں <ph name="BEGIN_LINK" />اپنی معلومات کا نظم<ph name="END_LINK" /> کر سکتے ہیں</translation>
 <translation id="4840250757394056958">‏اپنے Chrome کی سرگزشت دیکھیں</translation>
 <translation id="484462545196658690">خودکار</translation>
 <translation id="4844937814014739139">اشتراک کردہ ٹیبز کو اسکرول اور زوم کرنا</translation>
@@ -2724,6 +2722,7 @@
 <translation id="5255833070095767006">‏‎350 x 460 ملی میٹر</translation>
 <translation id="5257739419779698609">{0,plural, =1{منتظم کی پالیسی اس فائل کو <ph name="DESTINATION_NAME" /> میں کاپی کرنے کی تجویز نہیں کرتی ہے}other{منتظم کی پالیسی ان فائلز کو <ph name="DESTINATION_NAME" /> میں کاپی کرنے کی تجویز نہیں کرتی ہے}}</translation>
 <translation id="5258473597674772367">‫"<ph name="GROUP_NAME" />" ٹیب گروپ اب دستیاب نہیں ہے</translation>
+<translation id="5262342527470539728">آپ کی معلومات <ph name="ACCOUNT" /> کیلئے <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> میں محفوظ کی گئی ہے</translation>
 <translation id="5263867360296733198">اپ لوڈ کرنے سے پہلے جائزہ لینا ضروری ہے</translation>
 <translation id="5266128565379329178">اوپر باندھیں</translation>
 <translation id="5269225904387178860">نیچے مستطیل سوراخ</translation>
@@ -2920,6 +2919,7 @@
 <translation id="5543564889050342791">چڑیا گھر، ماہی خانے اور ذخائر</translation>
 <translation id="5543722831081909240">180 ڈگریز</translation>
 <translation id="5544836308113951378">کروزز اور چارٹرز</translation>
+<translation id="5546252337258681768">آلہ غیر مقفل کر دیا گیا</translation>
 <translation id="5547939254150808298">پرنٹنگ اور اشاعت</translation>
 <translation id="554815783948612276">فورم اور چیٹ فراہم کنندگان</translation>
 <translation id="5548606607480005320">سیفٹی چیک</translation>
@@ -2961,6 +2961,7 @@
 <translation id="5600044805561809264">براؤز کرتے وقت آپ آسانی سے اپنے اشتراک کردہ ٹیبز کے بارے میں سوالات پوچھ سکتے ہیں۔</translation>
 <translation id="5603469469737324249">‫<ph name="ISSUER_1_NAME" /> یا <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">مینیجمنٹ تعاون یافتہ نہیں ہے</translation>
+<translation id="560431066250575003">{HOURS,plural, =1{‫1 گھنٹہ پہلے فعال}other{‫# گھنٹے قبل فعال}}</translation>
 <translation id="5605249000617390290">قیمت کی ٹریکنگ کے بارے میں مزید جانیں</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">کنکشن چیک کیا جا رہا ہے</translation>
@@ -3515,6 +3516,7 @@
 <translation id="6456955391422100996">اشتہار ہٹا دیا گیا۔</translation>
 <translation id="6457206614190510200">سیڈل سلائی</translation>
 <translation id="6457455098507772300">قیمت میں کمی کے الرٹس آپ کے ڈیسک ٹاپ پر پاپ اپ اطلاعات کے طور پر ظاہر ہوتے ہیں</translation>
+<translation id="6458519747993638565">ابھی فعال ہے</translation>
 <translation id="6458606150257356946">بہر حال پیسٹ کریں</translation>
 <translation id="6462438303393708881">اپ لوڈ منسوخ کریں</translation>
 <translation id="6464094930452079790">تصاویر</translation>
@@ -4771,6 +4773,7 @@
 اضافی معلومات:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">اس بار مائیکروفون کی اجازت ہے</translation>
+<translation id="8421746712901926961">‏اپنی معلومات کو <ph name="GOOGLE_WALLET_TITLE_1" /> محفوظ کریں اور Google پروڈکٹس پر فارمز پُر کرنے جیسے کام تیزی سے کریں۔ آپ <ph name="ACCOUNT" /> کیلئے <ph name="GOOGLE_WALLET_TITLE_2" /> میں <ph name="MANAGE_INFO_LINK" /> کر سکتے ہیں۔</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">تبدیل کریں</translation>
 <translation id="8426945547715537628">کی بورڈ اوور رائیڈ کی اجازت دیں؟</translation>
@@ -4827,6 +4830,7 @@
 <translation id="8521812709849134608">کاؤنٹرٹاپس</translation>
 <translation id="8522180136695974431">کریڈٹ رپورٹنگ اور مانیٹرنگ</translation>
 <translation id="8522552481199248698">‏Chrome آپ کی اپنا Google اکاؤنٹ محفوظ اور پاس ورڈ تبدیل کرنے میں مدد کر سکتا ہے۔</translation>
+<translation id="852450791482410042">ابھی ادائیگی کریں</translation>
 <translation id="8527228059738193856">اسپیکرز</translation>
 <translation id="8527681393107582734">زراعت اور علم جنگلات</translation>
 <translation id="8528149813106025610">بچوں کے لباس</translation>

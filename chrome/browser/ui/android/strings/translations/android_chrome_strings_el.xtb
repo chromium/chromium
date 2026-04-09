@@ -293,6 +293,7 @@
 <translation id="2251809247798634662">Νέο παράθυρο για ανώνυμη περιήγηση</translation>
 <translation id="2253927598983295051">Επιλέξτε τι περιεχόμενο θα κοινοποιείται στην εφαρμογή <ph name="APP_NAME" /></translation>
 <translation id="2261570557291037252">Περισσότερες πληροφορίες εφαρμογής</translation>
+<translation id="2270544918551255912">Για να επιστρέψετε, σύρετε από την άκρη</translation>
 <translation id="2276696007612801991">Συνδεθείτε στον Λογαριασμό σας Google για να ελέγξετε τους κωδικούς πρόσβασής σας.</translation>
 <translation id="2281243904606300427"><ph name="TAB_TITLE" />, Επιλεγμένη καρτέλα ανώνυμης περιήγησης</translation>
 <translation id="2286841657746966508">Διεύθυνση τιμολόγησης</translation>
@@ -480,6 +481,7 @@
 <translation id="2989523299700148168">Πραγματοποιήθηκε επίσκεψη πρόσφατα</translation>
 <translation id="2992473221983447149">Περιγραφές εικόνας</translation>
 <translation id="2996291259634659425">Δημιουργία φράσης πρόσβασης</translation>
+<translation id="2996682533106928201">Πατήστε για παράβλεψη</translation>
 <translation id="2996809686854298943">Απαιτείται διεύθυνση URL</translation>
 <translation id="3024215143424744261">Οι προτιμήσεις της λειτουργίας ανάγνωσης έκλεισαν</translation>
 <translation id="3026955690410463085">Συμπερίληψη συνδέσμου</translation>
@@ -640,6 +642,7 @@
 <translation id="3739455665973395693">Δεν υπάρχουν παραβιασμένοι κωδικοί πρόσβασης στον Λογαριασμό σας Google</translation>
 <translation id="3739899004075612870">Ο σελιδοδείκτης προστέθηκε στο <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Η Φωνητική αναζήτηση δεν είναι διαθέσιμη σε αυτή τη συσκευή.</translation>
+<translation id="3763110477555836428">Κατά την ολοκλήρωση αγορών με αυτή την κάρτα, θα συμπληρωθεί ένας αριθμός εικονικής κάρτας για την προστασία των πραγματικών στοιχείων σας. Διαχειριστείτε τη στο Πορτοφόλι Google. <ph name="BEGIN_LINK1" />Μάθετε περισσότερα σχετικά με τις εικονικές κάρτες<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Ορισμένα δεδομένα δεν έχουν αποθηκευτεί ακόμα</translation>
 <translation id="3770620323585347665">Ονομασία παραθύρου</translation>
 <translation id="3771033907050503522">Καρτ.αν.περιήγ.</translation>
@@ -683,6 +686,7 @@
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">τελευταίες 4 εβδομάδες</translation>
 <translation id="393697183122708255">Δεν έχει ενεργοποιηθεί φωνητ. αναζήτηση</translation>
+<translation id="3941718885865495207">Φύλλο κάτω μέρους για δήλωση συμμετοχής στα Ευρήματα Chrome</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, Καρφιτσωμένη καρτέλα Picture-in-Picture</translation>
 <translation id="3950820424414687140">Σύνδεση</translation>
 <translation id="395377504920307820">Χρήση χωρίς λογαριασμό</translation>
@@ -1188,6 +1192,7 @@
 <translation id="6011308810877101166">Βελτίωση των προτάσεων αναζήτησης</translation>
 <translation id="6013305291643746595">Ταξινόμηση κατά παλαιότερο</translation>
 <translation id="6022659036123304283">Προσαρμόστε το Chrome για εσάς</translation>
+<translation id="6023820583797130428">Ανοίξτε το μενού για επιστροφή</translation>
 <translation id="6026538407078977628">Ανάπτυξη σε πλήρη οθόνη</translation>
 <translation id="6030719887161080597">Διαχειριστείτε πληροφορίες που χρησιμοποιούνται από ιστοτόπους για τη μέτρηση της απόδοσης διαφημίσεων</translation>
 <translation id="6039379616847168523">Μετάβαση στην επόμενη καρτέλα</translation>
@@ -1632,6 +1637,7 @@
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> τυπική καρτέλα}other{<ph name="TABS_COUNT_MANY" /> τυπικές καρτέλες}}</translation>
 <translation id="7603168929588204083">Μη έγκυρη ημερομηνία</translation>
 <translation id="7605594153474022051">Ο συγχρονισμός δεν λειτουργεί</translation>
+<translation id="7608245556672190037">Το φύλλο δήλωσης συμμετοχής στα Ευρήματα Chrome άνοιξε σε πλήρες ύψος</translation>
 <translation id="7612619742409846846">Έχετε συνδεθεί στην Google ως</translation>
 <translation id="7612989789287281429">Γίνεται σύνδεση…</translation>
 <translation id="7619072057915878432">Η λήψη του αρχείου <ph name="FILE_NAME" /> απέτυχε λόγω προβλημάτων στο δίκτυο.</translation>
@@ -1639,6 +1645,7 @@
 <translation id="7628417132421583481">Μετάβαση στη Διαχείριση κωδικών πρόσβασης</translation>
 <translation id="7630202231528827509">URL παρόχου</translation>
 <translation id="7638584964844754484">Εσφαλμένη φράση πρόσβασης</translation>
+<translation id="764047009170754705">Το φύλλο δήλωσης συμμετοχής στα Ευρήματα Chrome έκλεισε</translation>
 <translation id="7646499124171960488">Σας προειδοποιεί για μη ασφαλείς δημόσιους ιστοτόπους</translation>
 <translation id="7646772052135772216">Ο συγχρονισμός κωδικών πρόσβασης δεν λειτουργεί</translation>
 <translation id="7655240423373329753">τελευταίες 7 ημέρες</translation>
@@ -1863,6 +1870,7 @@
 <translation id="8473863474539038330">Διευθύνσεις και άλλα</translation>
 <translation id="847433688444405067">Περιηγηθείτε σε διάφορες συσκευές</translation>
 <translation id="8477178913400731244">Διαγραφή δεδομένων</translation>
+<translation id="8481771036036087705">Το φύλλο δήλωσης συμμετοχής στα Ευρήματα Chrome άνοιξε στο μισό ύψος</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">Δεν υπάρχουν ανενεργά παράθυρα</translation>
 <translation id="8493948351860045254">Αποδεσμεύστε χώρο</translation>

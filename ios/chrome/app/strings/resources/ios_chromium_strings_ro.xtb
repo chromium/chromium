@@ -134,6 +134,7 @@ Așteaptă câteva minute înainte să schimbi contul. Dacă schimbi conturile a
 <translation id="377649297473651452">Afișare extinsă pentru completarea automată în Chromium</translation>
 <translation id="3780779443901618967">Te avertizează cu privire la site-uri periculoase, chiar și cele pe care Google nu le cunoștea înainte, analizând mai multe date din site-uri decât Protecția standard. Poți alege să omiți avertismentele din Chromium.</translation>
 <translation id="3805899903892079518">Chromium nu are acces la fotografii și videoclipuri. Activează accesul din Setări iOS &gt; Confidențialitate &gt; Fotografii.</translation>
+<translation id="3809591243528646631">Pentru a beneficia de funcții pentru siguranța copiilor, poți să folosești un Cont Google configurat pentru un copil sau să folosești Chromium fără cont. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="3816686541346279443">Chromium îți va oferi salvarea parolei.</translation>
 <translation id="3827545470516145620">Beneficiezi de protecție de securitate standard pe acest dispozitiv</translation>
 <translation id="3833326979834193417">Chromium rulează automat Verificarea de siguranță în fiecare zi pentru a te proteja împotriva încălcării securității datelor, a site-urilor nesigure și nu numai. Poți afla mai multe despre Verificarea de siguranță în Setări.</translation>
@@ -169,6 +170,7 @@ Datele tale sunt criptate cu expresia de acces. Introdu-o pentru a folosi și a 
 Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chromium din cont<ph name="END_LINK" />.</translation>
 <translation id="4578500311756617174">Sfat pentru Chromium: folosește Chromium în mod prestabilit</translation>
 <translation id="458786853569524949">Acum poți folosi Chromium oricând atingi linkuri din e-mailuri, documente și alte aplicații.</translation>
+<translation id="4625730353066900738">Învață noțiunile de bază utile despre Chromium pentru a începe</translation>
 <translation id="4633738821577273991">Obține și Navigare sigură îmbunătățită pentru acest profil Chromium</translation>
 <translation id="4654936625574199632">Pentru a contribui la îmbunătățirea aplicației, Chromium trimite la Google statistici de utilizare și rapoarte de blocare. <ph name="BEGIN_LINK" />Gestionează<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Activează scanerul din Chromium</translation>
@@ -179,7 +181,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chromi
 <translation id="4856138222358683580">Acțiuni în Chromium</translation>
 <translation id="4869706986935301458">Deschide instantaneu Chromium când folosești iPhone-ul</translation>
 <translation id="4904452304169763785">Alerte privind orice probleme de confidențialitate sau de securitate pe care Chromium le detectează pentru tine.</translation>
-<translation id="4908570938463711775">Învață noțiunile de bază utile despre Chromium pentru a începe</translation>
 <translation id="4962295957157529683">Termină ce făceai în cealaltă fereastră Chromium deschisă.</translation>
 <translation id="4985291216379576555">Offline, Chromium nu poate căuta actualizări</translation>
 <translation id="4996471330284142407">Poți să faci mai multe cu browserul Chromium, simplu, sigur și mai rapid ca oricând.</translation>
@@ -355,6 +356,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="8900052431807804054">Beneficiază de cel mai înalt nivel de securitate de la Chromium</translation>
 <translation id="8908791447256515663">Accesează Chromium mai rapid din bara de andocare a iPad-ului.</translation>
 <translation id="8925569192291721236">Rămâi la curent cu actualizările privind urmărirea prețurilor și sfaturile pentru Chromium.</translation>
+<translation id="8939412301975414416">Pentru a beneficia de funcții pentru siguranța copiilor în Chromium, poți să folosești un Cont Google configurat pentru un copil sau să folosești Chromium fără cont.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Acest lucru se întâmplă când Chromium nu este folosit timp de {THRESHOLD} minut}few{Acest lucru se întâmplă când Chromium nu este folosit timp de {THRESHOLD} minute}other{Acest lucru se întâmplă când Chromium nu este folosit timp de {THRESHOLD} de minute}}</translation>
 <translation id="8963279154877372067">Permite notificările Chromium ca să primești alerte privind scăderea prețurilor</translation>
 <translation id="8975812008711371178">Folosește Căutarea vocală în Chromium</translation>

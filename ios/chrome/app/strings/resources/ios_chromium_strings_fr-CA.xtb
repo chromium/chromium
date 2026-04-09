@@ -134,6 +134,7 @@ Essayez d'attendre quelques minutes avant de changer de compte. Si vous changez 
 <translation id="377649297473651452">Affichage développé du remplissage automatique de Chromium</translation>
 <translation id="3780779443901618967">Vous avertit des sites dangereux, même ceux que Google ne connaissait pas auparavant, en analysant plus de données provenant des sites que la protection standard. Vous pouvez choisir d'ignorer les avertissements de Chromium.</translation>
 <translation id="3805899903892079518">Chromium n'a pas accès à vos photos ou vidéos. Activez l'accès dans Réglages iOS &gt; Confidentialité &gt; Photos.</translation>
+<translation id="3809591243528646631">Pour bénéficier de fonctionnalités de sécurité pour les enfants, vous pouvez soit utiliser un compte Google configuré pour un enfant, soit utiliser Chromium sans compte. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3816686541346279443">Chromium vous proposera d'enregistrer votre mot de passe.</translation>
 <translation id="3827545470516145620">Vous bénéficiez d'une protection de sécurité standard sur cet appareil</translation>
 <translation id="3833326979834193417">Chromium exécute automatiquement la Vérification de sécurité tous les jours pour vous protéger, entre autres, contre les violations de données et les sites Web non sécuritaires. Vous trouverez plus d'information sur la Vérification de sécurité dans Paramètres.</translation>
@@ -169,6 +170,7 @@ Vos données sont chiffrées avec votre phrase de passe. Entrez-la pour utiliser
 Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chromium de votre compte<ph name="END_LINK" />.</translation>
 <translation id="4578500311756617174">Astuce Chromium : Utilisez Chromium par défaut</translation>
 <translation id="458786853569524949">Vous pouvez maintenant utiliser Chromium chaque fois que vous touchez des liens dans des courriels, des documents et d'autres applis.</translation>
+<translation id="4625730353066900738">Découvrez les notions de base utiles de Chromium pour commencer</translation>
 <translation id="4633738821577273991">Bénéficiez également de la navigation sécurisée améliorée pour ce profil Chromium</translation>
 <translation id="4654936625574199632">Aux fins d'amélioration de l'application, Chromium envoie des données relatives à l'utilisation et au plantage à Google. <ph name="BEGIN_LINK" />Gérer<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Activer le lecteur de Chromium</translation>
@@ -179,7 +181,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="4856138222358683580">Actions de Chromium</translation>
 <translation id="4869706986935301458">Ouvrez Chromium instantanément lorsque vous êtes sur votre iPhone</translation>
 <translation id="4904452304169763785">Alertes concernant tout problème de confidentialité ou de sécurité que Chromium détecte pour vous.</translation>
-<translation id="4908570938463711775">Découvrez les notions de base utiles de Chromium pour commencer</translation>
 <translation id="4962295957157529683">Terminez ce que vous faisiez dans votre autre fenêtre ouverte de Chromium.</translation>
 <translation id="4985291216379576555">Hors ligne, Chromium ne peut pas vérifier s'il y a des mises à jour</translation>
 <translation id="4996471330284142407">Faites-en plus avec le navigateur Chromium : simple, sécuritaire et plus rapide que jamais.</translation>
@@ -355,6 +356,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="8900052431807804054">Profiter de la sécurité la plus robuste de Chromium</translation>
 <translation id="8908791447256515663">Accédez à Chromium plus rapidement à partir du Dock de votre iPad.</translation>
 <translation id="8925569192291721236">Soyez au courant des mises à jour de suivi des prix et des astuces Chromium.</translation>
+<translation id="8939412301975414416">Pour bénéficier de fonctionnalités de sécurité pour les enfants dans Chromium, vous pouvez soit utiliser un compte Google configuré pour un enfant, soit utiliser Chromium sans compte.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Cela se produit lorsque Chromium n'est pas utilisé pendant {THRESHOLD} minute}one{Cela se produit lorsque Chromium n'est pas utilisé pendant {THRESHOLD} minute}other{Cela se produit lorsque Chromium n'est pas utilisé pendant {THRESHOLD} minutes}}</translation>
 <translation id="8963279154877372067">Autoriser les notifications de Chromium à vous envoyer des alertes relatives aux réductions de prix</translation>
 <translation id="8975812008711371178">Effectuer une recherche vocale dans Chromium</translation>

@@ -64,6 +64,7 @@ Megjegyzések:
 <translation id="2213327331203157297">Ha le szeretné tiltani a Lezárás módot a Chrome-ban, kapcsolja ki iPhone eszközén</translation>
 <translation id="2242467532204595597">Bármikor használhatja a Chrome-ot, amikor üzenetekben, dokumentumokban és más alkalmazásokban linkekre kattint.</translation>
 <translation id="2256384876478573507">Gyorsabban megnyithatja a Chrome-ot, amikor iPhone eszközén szeretne böngészni.</translation>
+<translation id="2270691132923135296">Kezdő lépésként ismerkedjen meg a Chrome hasznos alapfunkcióival</translation>
 <translation id="2311240109311056604">Megnyitja a Chrome dinós játékát.</translation>
 <translation id="2339201583852607431">Jelszavát a rendszer a Google-fiókjába (<ph name="EMAIL" />) menti.</translation>
 <translation id="2342919707875585281">A Chrome megosztja a tartózkodási helyét az Ön által engedélyezett webhelyekkel.</translation>
@@ -150,7 +151,6 @@ Megjegyzések:
 <translation id="4693084815234024320">A Chrome inkognitó módjában van</translation>
 <translation id="4708857722625759026">Gyorsabban hozzáférhet a Chrome-hoz az iPad Dockjáról.</translation>
 <translation id="4713740144985377441">A fájl feltöltéséhez térjen vissza a Chrome-hoz</translation>
-<translation id="4713907610796204963">Kezdő lépésként ismerkedjen meg a Chrome hasznos alapfunkcióival</translation>
 <translation id="4724297637870447613">A Chrome mindenhol használható</translation>
 <translation id="4738647308035481133">A Google Chrome oldala</translation>
 <translation id="4742795653798179840">Törölt Chrome-adatok</translation>
@@ -296,6 +296,7 @@ Az adatokat a Chrome-élmény javítására használó további beállításoké
 <translation id="7599894504325210080">A Chrome automatikus kitöltés funkciójának kibontott nézete</translation>
 <translation id="7617512710641355143">A Chrome felügyelet alatt áll</translation>
 <translation id="7626032353295482388">A Chrome üdvözli Önt!</translation>
+<translation id="7634397654061173327">A gyermekbiztonsági funkciók Chrome-ban való igénybevételéhez használhat gyermek számára beállított Google-fiókot, vagy használhatja a Chrome-ot fiók nélkül.</translation>
 <translation id="7641448682796883218">Chrome-tipp: Biztonságos Böngészés fokozott védelemmel</translation>
 <translation id="7642373780953416937">Értesítéseket kaphat a Chrome által automatikusan észlelt adatvédelmi és biztonsági problémákról.</translation>
 <translation id="7660356333829433649">Térjen vissza ide, ha további hasznos tippeket szeretne kapni arról, hogy miként hozhatja ki a legtöbbet a Chrome-ból.</translation>
@@ -328,6 +329,7 @@ Az adatokat a Chrome-élmény javítására használó további beállításoké
 <translation id="8245080522851805544">Az eszközhitelesítéssel megőrizheti böngészése privát jellegét, amikor bezárja a Chrome-ot.</translation>
 <translation id="8248887045858762645">Chrome-tipp</translation>
 <translation id="8265730590513812063">Chrome-menü megnyitása</translation>
+<translation id="8284376267694582021">A gyermekbiztonsági funkciók igénybevételéhez használhat gyermek számára beállított Google-fiókot, vagy használhatja a Chrome-ot fiók nélkül. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="8317674518145175158">A fizetési módok és a címek nem lesznek titkosítva. A Chrome böngészési előzményei nem lesznek szinkronizálva.
 
 Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titkosított adatait. Az összetett jelszót nem kapja meg, és nem is tárolja a Google. Ha elfelejti az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chrome-adatokat<ph name="END_LINK" />.</translation>

@@ -465,7 +465,6 @@
 <translation id="1717218214683051432">मोशन सेन्सर</translation>
 <translation id="1717494416764505390">मेलबॉक्स ३</translation>
 <translation id="1717688554309417925">डेबिट आणि तपासणी सेवा</translation>
-<translation id="1717882880162336471">AI मोड वापरून पहा</translation>
 <translation id="1719434663396780149">किमतीतील घट याच्याशी संबंधित सूचना सुरू आहेत. तुम्ही या <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> मध्ये हे बदलू शकता.</translation>
 <translation id="1719838434204287058">२४ x ३० इं</translation>
 <translation id="1720941539803966190">ट्यूटोरियल बंद करा</translation>
@@ -615,7 +614,6 @@
 <translation id="1960664692890490165">तुम्ही Chrome मध्ये खरेदी करता, तेव्हा पर्याय म्हणून कार्डचा समावेश नसलेल्या पेमेंट पद्धती पहा</translation>
 <translation id="196146181975453736">आणखी जलद पेमेंट करण्यासाठी एक वेळ सुरक्षा तपासणी पूर्ण करा</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> बुकमार्क</translation>
-<translation id="1966259577349514951">आता पैसे द्या</translation>
 <translation id="1973335181906896915">क्रमीकरण एरर</translation>
 <translation id="1973785048533660168">कारकुनी आणि प्रशासकीय नोकऱ्या</translation>
 <translation id="1974060860693918893">प्रगत</translation>
@@ -1057,6 +1055,7 @@
 <translation id="2627847595568876492">PDF मधून मजकूर काढत आहे...</translation>
 <translation id="2628025184666666186">या सर्व्हरला तो <ph name="DOMAIN" /> असल्याचे सिद्ध करता आले नाही, कारण तो Chrome द्वारे किंवा वेब ट्रॅफिक एन्क्रिप्शनसाठी तुमच्या सिस्टीम कॉन्फिगरेशनद्वारे विश्वसनीय नसलेले सुरक्षा प्रमाणपत्र वापरत आहे. हे चुकीच्या कॉन्फिगरेशनमुळे किंवा हल्लेखोरांनी तुमच्या कनेक्शनमध्ये आणलेल्या अडथळ्यांमुळे झालेले असू शकते.</translation>
 <translation id="2628224721443278970">Microsoft OneDrive मध्ये साइन इन करा</translation>
+<translation id="2631059741268498165">तुमचे डिव्हाइस बंद असताना तुमच्या अ‍ॅडमिनिस्ट्रेटरने ते शोधले आहे. ते पुन्हा सुरू केले गेले आहे आणि वापरण्यासाठी तयार आहे.</translation>
 <translation id="2631387782019878060">पडताळणी कोड: <ph name="OTP" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> चा सर्व्हर आयपी ॲड्रेस सापडला नाही.</translation>
 <translation id="2638567100095052009">संपूर्ण <ph name="FEATURED_SEARCH_LIST" /> मध्ये शोधण्यासाठी @ टाइप करा</translation>
@@ -1098,7 +1097,6 @@
 <translation id="2696385693639654606">Chrome Enterprise Core तुम्हाला ब्राउझर धोरणे, अ‍ॅप्स आणि क्लाउडवरील एक्स्टेंशन व्यवस्थापित करू देते</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> ला विचारा</translation>
 <translation id="2699273987028089219">सबमेनू उपलब्ध आहे, अतिरिक्त पर्यायांवर नेव्हिगेट करण्यासाठी <ph name="SHORTCUT" /> वापरा.</translation>
-<translation id="2700335762333112350">नंतर पेमेंट करा</translation>
 <translation id="2701514975700770343">फेस डाउन</translation>
 <translation id="2702592986366989640">कमी किमतीचे पर्याय</translation>
 <translation id="2702801445560668637">वाचन सूची</translation>
@@ -1306,6 +1304,7 @@
 <translation id="3041584414879052436">आता विकत घेऊन, नंतर पैसे देण्याची सुविधा देणाऱ्या जारीकर्त्यांची सूची बंद केली आहे.</translation>
 <translation id="3041612393474885105">सर्टिफिकेट माहिती</translation>
 <translation id="3045769629416806687">धोकादायक क्रीडा</translation>
+<translation id="3047054686095898948">तुमची माहिती <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> मध्ये सेव्ह करा आणि सर्व Google उत्पादनांवर फॉर्म भरणे यासारखी कामे अधिक जलद पूर्ण करा. तुम्ही <ph name="ACCOUNT" /> साठी <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> मध्ये <ph name="BEGIN_LINK" />तुमची माहिती व्यवस्थापित करणे<ph name="END_LINK" /> हे करू शकता</translation>
 <translation id="305162504811187366">टाइमस्टॅंप, होस्ट आणि क्लायंट सेशन आयडी यांच्या समावेशासह Chrome रिमोट डेस्कटॉप इतिहास</translation>
 <translation id="3052868890529250114">तुम्ही सामान्यपणे साइटशी सुरक्षितरीत्या कनेक्ट करता, पण Chrome ला या वेळी सुरक्षित कनेक्शन वापरता आले नाही. हल्लेखोर हा तुमच्या नेटवर्क कनेक्शनवरील माहिती चोरण्याचा किंवा त्यामध्ये फेरबदल करण्याचा प्रयत्न करत असू शकतो. <ph name="BEGIN_LEARN_MORE_LINK" />या चेतावणीबद्दल अधिक जाणून घ्या<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> पासून किमतीमध्ये <ph name="PRICE_DROP" /> घसरण</translation>
@@ -2446,7 +2445,6 @@
 <translation id="4832388034239846146">टॅब गट शेअर करण्यासाठी, Chrome अपडेट करा</translation>
 <translation id="483241715238664915">चेतावण्या सुरू करा</translation>
 <translation id="4832961164064927107">BBQ आणि ग्रिलिंग</translation>
-<translation id="4839984801146463230">तुमची माहिती सेव्ह करा आणि सर्व Google उत्पादनांवर फॉर्म भरणे यासारखी कामे अधिक जलद पूर्ण करा. तुम्ही <ph name="ACCOUNT" /> साठी <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> मध्ये <ph name="BEGIN_LINK" />तुमची माहिती व्यवस्थापित करणे<ph name="END_LINK" /> हे करू शकता</translation>
 <translation id="4840250757394056958">तुमचा Chrome इतिहास पहा</translation>
 <translation id="484462545196658690">ऑटो</translation>
 <translation id="4844937814014739139">शेअर केलेले टॅब स्क्रोल करा आणि झूम करा</translation>
@@ -2723,6 +2721,7 @@
 <translation id="5255833070095767006">३५० x ४६० मिमी</translation>
 <translation id="5257739419779698609">{0,plural, =1{अ‍ॅडमिनिस्ट्रेटर धोरण ही फाइल <ph name="DESTINATION_NAME" /> वर कॉपी करण्याची शिफारस करत नाही}other{अ‍ॅडमिनिस्ट्रेटर धोरण ही फाइल <ph name="DESTINATION_NAME" /> वर कॉपी करण्याची शिफारस करत नाही}}</translation>
 <translation id="5258473597674772367">"<ph name="GROUP_NAME" />" हा टॅब गट आता उपलब्ध नाही</translation>
+<translation id="5262342527470539728">तुमची माहिती <ph name="ACCOUNT" /> साठी<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> मध्ये सेव्ह केली आहे</translation>
 <translation id="5263867360296733198">अपलोड करण्यापूर्वी पुनरावलोकन करणे आवश्यक आहे</translation>
 <translation id="5266128565379329178">बाइंड टॉप</translation>
 <translation id="5269225904387178860">क्वाड पंच बॉटम</translation>
@@ -2919,6 +2918,7 @@
 <translation id="5543564889050342791">प्राणिसंग्रहालये, मत्स्यालये आणि अभयारण्ये</translation>
 <translation id="5543722831081909240">१८० अंश</translation>
 <translation id="5544836308113951378">क्रूझ आणि चार्टर</translation>
+<translation id="5546252337258681768">डिव्हाइस अनलॉक केले आहे</translation>
 <translation id="5547939254150808298">मुद्रण आणि प्रकाशन</translation>
 <translation id="554815783948612276">फोरम आणि चॅट पुरवठादार</translation>
 <translation id="5548606607480005320">सुरक्षा तपासणी</translation>
@@ -4773,6 +4773,7 @@
 अतिरिक्त तपशील:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">यावेळी मायक्रोफोनला अनुमती दिली आहे</translation>
+<translation id="8421746712901926961">तुमची माहिती <ph name="GOOGLE_WALLET_TITLE_1" /> मध्ये सेव्ह करा आणि सर्व Google उत्पादनांवर फॉर्म भरणे यासारखी कामे अधिक जलद पूर्ण करा. तुम्ही <ph name="GOOGLE_WALLET_TITLE_2" /> मध्ये <ph name="ACCOUNT" /> साठी <ph name="MANAGE_INFO_LINK" /> करू शकता.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">बदल करा</translation>
 <translation id="8426945547715537628">कीबोर्ड ओव्हरराइडला अनुमती द्यायची आहे का?</translation>
@@ -4829,6 +4830,7 @@
 <translation id="8521812709849134608">काउंटरटॉप</translation>
 <translation id="8522180136695974431">क्रेडिट रिपोर्टींग आणि मॉनिटरिंग</translation>
 <translation id="8522552481199248698">तुमच्या Google खात्याचे संरक्षण करण्यात आणि तुमचा पासवर्ड बदलण्यात Chrome तुम्हाला मदत करू शकते.</translation>
+<translation id="852450791482410042">आताच पेमेंट करा</translation>
 <translation id="8527228059738193856">स्पीकर</translation>
 <translation id="8527681393107582734">कृषिशास्त्र आणि वनशास्त्र</translation>
 <translation id="8528149813106025610">लहान मुलांचे कपडे</translation>

@@ -1696,6 +1696,7 @@ Ele foi removido no Chrome 145, e é recomendável usar o método requestStorage
 <translation id="2149957154942061013">Somente interna</translation>
 <translation id="2151831603578119302">Ativar atalhos de recursos de acessibilidade</translation>
 <translation id="2156132677421487971">"Configurar políticas para o <ph name="PRODUCT_NAME" />", um recurso que permite que os usuários enviem o conteúdo de guias, sites ou a área de trabalho do navegador para telas e sistemas de som remotos.</translation>
+<translation id="2156359411909638496">Configurações de descobertas do Chrome</translation>
 <translation id="2156755242840687300">Servidores de impressão externos ativados</translation>
 <translation id="2157842368188031417">Esta política se aplica apenas a sessões de visitante gerenciadas. Ela precisa ser ativada para que o modo de estação de trabalho compartilhada do Imprivata permita trocas de usuário dentro da sessão.
       Definir a política como verdadeira substituirá forçadamente certas políticas para recursos, que mantêm dados de usuários sensíveis e não são gerenciadas pelo mecanismo de limpeza usado para troca de usuários dentro da sessão com a estação de trabalho compartilhada do Imprivata.
@@ -4213,6 +4214,7 @@ A política do dispositivo é equivalente à política do usuário <ph name="PRE
 <translation id="3749511622128647337">Desativar saída de áudio</translation>
 <translation id="3750220015372671395">Bloquear a geração de chaves nesses sites</translation>
 <translation id="3753267109888284695">Lista de permissões de HTTP</translation>
+<translation id="3753514818525019935">Não permitir descobertas do Chrome.</translation>
 <translation id="3753959315989102457">Desativar relatórios de localização do dispositivo</translation>
 <translation id="3755237588083934849">Se a política for definida, a frequência do envio de uploads de status do dispositivo será determinada, em milissegundos. O mínimo permitido é 60 segundos.
 
@@ -6220,6 +6222,13 @@ Quando a política é desativada, o recurso também é.</translation>
 <translation id="4997074784107449343">Não usar "Imprimir como imagem" como padrão na visualização da impressão de documentos PDF quando a opção estiver disponível.</translation>
 <translation id="500149597848135831">Permitir todas as variações</translation>
 <translation id="5006222080181284191">Controlar a ativação do recurso "Me ajude a escrever" do ChromeOS</translation>
+<translation id="501542798290854504">Configura o login automático de usuários em contas protegidas por um provedor de identidade na nuvem da Microsoft® no <ph name="ANDROID_NAME" />.
+
+Se a política for definida como 1 (<ph name="POLICY_VALUE_ENABLED" />), os usuários que fizeram login em um aplicativo de produtividade da Microsoft® no dispositivo poderão fazer login automaticamente em propriedades da web da Microsoft® no <ph name="PRODUCT_NAME" />. Essa funcionalidade exige a presença de um aplicativo mediador de autenticação da Microsoft®, como <ph name="MS_AUTH_APP_NAME" />, <ph name="MS_ICP_NAME" /> ou <ph name="MS_LTW_NAME" />. Para facilitar o logon único, os dados de autenticação necessários são compartilhados com o provedor de identidade na nuvem da Microsoft®.
+
+Se ela for definida como 0 (<ph name="POLICY_VALUE_DISABLED" />) ou deixada sem definição, o login automático, conforme descrito acima, vai ser desativado, e os usuários vão precisar fornecer credenciais manualmente para as propriedades da web da Microsoft®.
+
+Observação: esta política não se aplica aos modos de navegação anônima ou de visitante.</translation>
 <translation id="5017157692744444035">Esta política controla a permissão de fornecimento de informações que podem ser usadas para identificar máquinas, como o nome da máquina e o endereço da rede.
 
 Quando a <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> não for definida ou for desativada, esta política será ignorada.
@@ -7493,6 +7502,7 @@ Quando ela está desativada ou é deixada sem definição, os Glanceables não s
 <translation id="5776485039795852974">Perguntar cada vez que um site quiser exibir notificações da área de trabalho</translation>
 <translation id="5776508475264864949">Não permitir que o app do Gemini realize ações nas páginas da Web.</translation>
 <translation id="5783009211970309878">Imprimir cabeçalhos e rodapés</translation>
+<translation id="5786913136266632175">Permitir descobertas do Chrome e melhorar os modelos de IA.</translation>
 <translation id="5789288985554424301">Permite definir se os sites têm permissão para usar a API Idle Detection.
 
 Quando essa política é definida como 1 (<ph name="ALLOW_IDLE_DETECTION_VALUE_NAME" />), os sites podem usar a API sem a permissão ao usuário.
@@ -9088,6 +9098,17 @@ Se ela for definida como falsa ou deixada sem definição, o comportamento padr�
 
       Se não for definido, nenhum outro dado de telemetria vai ser informado nos eventos de mudança da intensidade do sinal.</translation>
 <translation id="6751612743847158732">Sempre restaurar a última sessão.</translation>
+<translation id="6751882390104737961">As descobertas do Chrome são um recurso baseado em IA que ajuda os usuários a pesquisar e entender o conteúdo na página da web atual.
+
+Se a política for definida como 0, o recurso será habilitado, e os dados relevantes poderão ser usados pelo Google para melhorar os modelos de IA. Esses dados podem incluir comandos, entradas, saídas, materiais de fonte e feedback por escrito, dependendo do recurso. Eles também podem ser analisados por humanos para melhorar os modelos de IA. O valor padrão é 0, exceto quando indicado de outra forma abaixo.
+
+Se a política for definida como 1, o recurso será habilitado, mas o Google não poderá usar o conteúdo dos usuários (incluindo comandos, entradas, saídas, materiais de fonte e feedback por escrito) para melhorar os modelos. 1 é o valor padrão para usuários corporativos gerenciados pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e contas de ensino gerenciadas pelo <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Se ela for definida como 2, o recurso não será habilitado.
+
+Se for deixada sem definição, o comportamento será determinado pela política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para mais informações sobre como tratar dados de recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6752711782954612641">Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estiver ativada, definir <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> especificará os parâmetros ao pesquisar um URL com POST. Ela consiste em pares de nome-valor separados por vírgula. Se o valor for um parâmetro modelo, como <ph name="SEARCH_TERM_MARKER" />, ele será substituído pelos dados dos termos de pesquisa reais.
 
       Se a <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> não for definida, as solicitações de pesquisa serão enviadas usando o método get.</translation>
@@ -10322,6 +10343,7 @@ a leitura em voz alta será ativada.</translation>
 <translation id="7481702249684965639">A lixeira está ativada para o usuário.</translation>
 <translation id="7482768039644066614">Ativar a busca de metadados para carregamento de página e dos modelos de aprendizado de máquina para melhorar a experiência de navegação</translation>
 <translation id="748292668225669178">Configura a instalação do <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
+<translation id="7483786326602801858">Permitir login automático nos provedores de identidade na nuvem da Microsoft® no <ph name="ANDROID_NAME" /></translation>
 <translation id="7485481791539008776">Regras de seleção de impressora padrão</translation>
 <translation id="7486205887492534734">Pedir quando houver várias correspondências de certificado na tela de login</translation>
 <translation id="748873163367340515">Usa apenas dados e cookies essenciais na pesquisa.</translation>
@@ -12266,6 +12288,7 @@ Se a opção <ph name="LIVE_CAPTION_ENABLED_POLICY_NAME" /> estiver desativada, 
 haverá um URL do tipo "saiba mais" no instalador. Se estiver presente, ela precisará usar
 o esquema https.</translation>
 <translation id="8715885991031124968">Permitir caixas de diálogo de JavaScript acionadas por um subframe de origem diferente.</translation>
+<translation id="8720288018555457355">Permitir descobertas do Chrome sem melhorar os modelos de IA.</translation>
 <translation id="8720547069538712402">Permitir que o usuário ative ou desative a verificação ortográfica</translation>
 <translation id="8721685661759544418">Ativar a leitura em voz alta (destilação de texto e síntese de conversão de texto em voz) para páginas da Web</translation>
 <translation id="8726080977639508431">Esta política controla como o <ph name="PRODUCT_NAME" /> interpreta políticas de lista de sites/lista cinza no recurso Suporte a navegadores legados. Ela afeta as políticas <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> e <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.

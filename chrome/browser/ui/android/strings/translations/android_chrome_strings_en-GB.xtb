@@ -684,6 +684,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">last 4 weeks</translation>
 <translation id="393697183122708255">No enabled voice search available</translation>
+<translation id="3941718885865495207">Chrome finds opt-in bottom sheet</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, pinned picture-in-picture tab</translation>
 <translation id="3950820424414687140">Sign in</translation>
 <translation id="395377504920307820">Use without an account</translation>
@@ -1189,6 +1190,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="6011308810877101166">Improve search suggestions</translation>
 <translation id="6013305291643746595">Sorting by oldest</translation>
 <translation id="6022659036123304283">Make Chrome your own</translation>
+<translation id="6023820583797130428">Open the menu to go back</translation>
 <translation id="6026538407078977628">Expand to full screen</translation>
 <translation id="6030719887161080597">Manage info used by sites to measure ad performance</translation>
 <translation id="6039379616847168523">Jump to the next tab</translation>
@@ -1633,6 +1635,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standard tab}other{<ph name="TABS_COUNT_MANY" /> standard tabs}}</translation>
 <translation id="7603168929588204083">Invalid date</translation>
 <translation id="7605594153474022051">Sync isn't working</translation>
+<translation id="7608245556672190037">Chrome finds opt-in opened at full height</translation>
 <translation id="7612619742409846846">Signed in to Google as</translation>
 <translation id="7612989789287281429">Signing you in…</translation>
 <translation id="7619072057915878432"><ph name="FILE_NAME" /> download failed due to network failures.</translation>
@@ -1640,6 +1643,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7628417132421583481">Go to Password Manager</translation>
 <translation id="7630202231528827509">Provider URL</translation>
 <translation id="7638584964844754484">Incorrect passphrase</translation>
+<translation id="764047009170754705">Chrome finds opt-in closed</translation>
 <translation id="7646499124171960488">Warns you for insecure public sites</translation>
 <translation id="7646772052135772216">Password sync isn't working</translation>
 <translation id="7655240423373329753">last seven days</translation>
@@ -1864,6 +1868,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8473863474539038330">Addresses and more</translation>
 <translation id="847433688444405067">Browse across devices</translation>
 <translation id="8477178913400731244">Delete data</translation>
+<translation id="8481771036036087705">Chrome finds opt-in opened at half height</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">No inactive windows</translation>
 <translation id="8493948351860045254">Free up space</translation>

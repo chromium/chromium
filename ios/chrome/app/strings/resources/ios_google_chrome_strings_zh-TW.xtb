@@ -64,6 +64,7 @@
 <translation id="2213327331203157297">如要停用 Chrome 的鎖定模式，請在 iPhone 上將該模式關閉。</translation>
 <translation id="2242467532204595597">隨時可以使用 Chrome 開啟訊息、文件和其他應用程式中的連結。</translation>
 <translation id="2256384876478573507">用 iPhone 上網時，可以更快開啟 Chrome。</translation>
+<translation id="2270691132923135296">Chrome 基本操作一次上手</translation>
 <translation id="2311240109311056604">開啟 Chrome 恐龍遊戲。</translation>
 <translation id="2339201583852607431">密碼會儲存至你的 Google 帳戶 (<ph name="EMAIL" />)。</translation>
 <translation id="2342919707875585281">Chrome 會與你允許的網站分享位置資訊。</translation>
@@ -148,7 +149,6 @@
 <translation id="4693084815234024320">目前使用 Chrome 無痕模式</translation>
 <translation id="4708857722625759026">從 iPad Dock 更快存取 Chrome。</translation>
 <translation id="4713740144985377441">返回 Chrome 上傳檔案</translation>
-<translation id="4713907610796204963">瞭解 Chrome 的基本實用功能，協助你快速上手</translation>
 <translation id="4724297637870447613">在所有裝置上使用 Chrome</translation>
 <translation id="4738647308035481133">Google Chrome 頁面</translation>
 <translation id="4742795653798179840">已刪除 Chrome 資料</translation>
@@ -294,6 +294,7 @@
 <translation id="7599894504325210080">Chrome 的自動填入檢視畫面已展開</translation>
 <translation id="7617512710641355143">Chrome 是受管理的應用程式</translation>
 <translation id="7626032353295482388">歡迎使用 Chrome</translation>
+<translation id="7634397654061173327">如要在 Chrome 中使用兒童安全功能，可以使用為孩子設定的 Google 帳戶，也可以不登入帳戶直接使用 Chrome。</translation>
 <translation id="7641448682796883218">Chrome 提示：安全瀏覽強化防護功能</translation>
 <translation id="7642373780953416937">接收 Chrome 自動偵測到的任何隱私權或安全性問題警示。</translation>
 <translation id="7660356333829433649">歡迎返回這裡查看更多實用提示，瞭解如何充分發揮 Chrome 的效用。</translation>
@@ -327,6 +328,7 @@
 <translation id="8245080522851805544">關閉 Chrome 時進行裝置驗證，確保瀏覽活動不外洩</translation>
 <translation id="8248887045858762645">Chrome 實用訣竅</translation>
 <translation id="8265730590513812063">開啟 Chrome 選單</translation>
+<translation id="8284376267694582021">如要使用兒童安全功能，可以使用為孩子設定的 Google 帳戶，也可以不登入帳戶直接使用 Chrome。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">系統不會加密保護付款方式和地址，也不會同步處理 Chrome 中的瀏覽記錄。
 
 只有知道通關密語的人才能讀取你的加密資料。系統不會將通關密語傳送給 Google，Google 也不會儲存通關密語。如果忘記通關密語或想變更這項設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>

@@ -293,6 +293,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2251809247798634662">Bagong Incognito window</translation>
 <translation id="2253927598983295051">Piliin kung ano ang ise-share sa <ph name="APP_NAME" /></translation>
 <translation id="2261570557291037252">Higit pang impormasyon ng app</translation>
+<translation id="2270544918551255912">Mag-swipe mula sa gilid para bumalik</translation>
 <translation id="2276696007612801991">Mag-sign in sa iyong Google account para masuri ang mga password mo</translation>
 <translation id="2281243904606300427"><ph name="TAB_TITLE" />, Napiling Tab na Incognito</translation>
 <translation id="2286841657746966508">Billing address</translation>
@@ -480,6 +481,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2989523299700148168">Mga kamakailang binisita</translation>
 <translation id="2992473221983447149">Mga paglalarawan ng larawan</translation>
 <translation id="2996291259634659425">Gumawa ng passphrase</translation>
+<translation id="2996682533106928201">I-tap para i-dismiss</translation>
 <translation id="2996809686854298943">Kinakailangan ang URL</translation>
 <translation id="3024215143424744261">Nakasara ang mga preference sa Reading mode</translation>
 <translation id="3026955690410463085">Kasama ang link</translation>
@@ -684,6 +686,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">nakalipas na 4 na linggo</translation>
 <translation id="393697183122708255">Walang available na naka-enable na paghahanap gamit ang boses</translation>
+<translation id="3941718885865495207">Bottom sheet ng pag-opt in sa mga nahanap ng Chrome</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, Naka-pin na Picture-in-Picture na Tab</translation>
 <translation id="3950820424414687140">Mag-sign in</translation>
 <translation id="395377504920307820">Gamitin nang walang account</translation>
@@ -1189,6 +1192,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="6011308810877101166">Pahusayin ang mga suhestyon sa paghahanap</translation>
 <translation id="6013305291643746595">Ibinubukod-bukod ayon sa pinakaluma</translation>
 <translation id="6022659036123304283">Gawing iyo ang Chrome</translation>
+<translation id="6023820583797130428">Buksan ang menu para bumalik</translation>
 <translation id="6026538407078977628">I-expand sa full screen</translation>
 <translation id="6030719887161080597">Pamahalaan ang impormasyong ginagamit ng mga site para sukatin ang performance ng ad</translation>
 <translation id="6039379616847168523">Pumunta sa susunod na tab</translation>
@@ -1633,6 +1637,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> karaniwang tab}one{<ph name="TABS_COUNT_MANY" /> karaniwang tab}other{<ph name="TABS_COUNT_MANY" /> na karaniwang tab}}</translation>
 <translation id="7603168929588204083">Invalid na petsa</translation>
 <translation id="7605594153474022051">Hindi gumagana ang pag-sync</translation>
+<translation id="7608245556672190037">Binuksan nang buo ang pag-opt in sa mga nahanap ng Chrome</translation>
 <translation id="7612619742409846846">Naka-sign in sa Google bilang</translation>
 <translation id="7612989789287281429">Sina-sign in ka…</translation>
 <translation id="7619072057915878432">Hindi na-download ang <ph name="FILE_NAME" /> dahil sa mga problema sa network.</translation>
@@ -1640,6 +1645,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7628417132421583481">Pumunta sa Password Manager</translation>
 <translation id="7630202231528827509">URL ng provider</translation>
 <translation id="7638584964844754484">Maling passphrase</translation>
+<translation id="764047009170754705">Nakasara ang pag-opt in sa mga nahanap ng Chrome</translation>
 <translation id="7646499124171960488">Binabalaan ka para sa mga hindi secure na pampublikong site</translation>
 <translation id="7646772052135772216">Hindi gumagana ang pag-sync ng password</translation>
 <translation id="7655240423373329753">nakaraang 7 araw</translation>
@@ -1864,6 +1870,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8473863474539038330">Mga address at higit pa</translation>
 <translation id="847433688444405067">Mag-browse sa lahat ng device</translation>
 <translation id="8477178913400731244">Mag-delete ng data</translation>
+<translation id="8481771036036087705">Binuksan nang kalahati ang pag-opt in sa mga nahanap ng Chrome</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">Walang hindi aktibong window</translation>
 <translation id="8493948351860045254">Magbakante ng espasyo</translation>

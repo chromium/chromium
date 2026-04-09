@@ -134,6 +134,7 @@ Pabandykite palaukti kelias minutes prieš perjungdami paskyras. Jei dabar perju
 <translation id="377649297473651452">„Chromium“ automatinio pildymo išplėstinis rodinys</translation>
 <translation id="3780779443901618967">Įspėjama apie pavojingas svetaines, net ir apie tas, apie kurias anksčiau „Google“ nežinojo, analizuojant daugiau duomenų iš svetainių, nei taikant įprastą apsaugą. Galite pasirinkti praleisti „Chromium“ įspėjimus.</translation>
 <translation id="3805899903892079518">„Chromium“ nepasiekia nuotraukų ar vaizdo įr. Įgalinkite prieigą apsil. „iOS“ nustatymai“ &gt; „Privatumas“ &gt; „Nuotraukos“.</translation>
+<translation id="3809591243528646631">Jei norite gauti vaikų saugos funkcijas, galite naudoti vaikui nustatytą „Google“ paskyrą arba naudoti „Chromium“ be paskyros. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="3816686541346279443">„Chromium“ pasiūlys išsaugoti slaptažodį.</translation>
 <translation id="3827545470516145620">Šiame įrenginyje naudojate įprastos apsaugos funkciją</translation>
 <translation id="3833326979834193417">„Chromium“ kasdien automatiškai vykdo saugos patikrą, kad būtumėte apsaugoti nuo duomenų saugos pažeidimų, nesaugių svetainių ir kt. Daugiau apie saugos patikrą rasite skiltyje „Nustatymai“.</translation>
@@ -169,6 +170,7 @@ Duomenys užšifruoti naudojant slaptafrazę. Įveskite ją, kad galėtumėte na
 Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chromium“ duomenis paskyroje<ph name="END_LINK" />.</translation>
 <translation id="4578500311756617174">„Chromium“ patarimas: naudokite „Chromium“ pagal numatytuosius nustatymus</translation>
 <translation id="458786853569524949">Dabar galite naudoti „Chromium“ bet kada palietę nuorodas el. laiškuose, dokumentuose ir kitose programose.</translation>
+<translation id="4625730353066900738">Sužinokite naudingų dalykų apie „Chromium“, kad būtų lengviau pradėti</translation>
 <translation id="4633738821577273991">Taip pat naudokite Sustiprintą saugų naršymą šiame „Chromium“ profilyje</translation>
 <translation id="4654936625574199632">Kad padėtų tobulinti programą, „Chromium“ siunčia naudojimo ir strigčių duomenis sistemai „Google“. <ph name="BEGIN_LINK" />Tvarkyti<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Įjunkite „Chromium“ skaitytuvą</translation>
@@ -179,7 +181,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="4856138222358683580">„Chromium“ veiksmai</translation>
 <translation id="4869706986935301458">Akimirksniu atidarykite „Chromium“ „iPhone“ įrenginyje</translation>
 <translation id="4904452304169763785">Įspėjama apie bet kokias privatumo ar saugos problemas, kurias „Chromium“ aptinka.</translation>
-<translation id="4908570938463711775">Sužinokite naudingų dalykų apie „Chromium“, kad būtų lengviau pradėti</translation>
 <translation id="4962295957157529683">Pabaikite tai, ką darėte, kitame atidarytame „Chromium“ lange.</translation>
 <translation id="4985291216379576555">Neprisijungta, todėl „Chromium“ nepavyko patikrinti, ar yra naujinių</translation>
 <translation id="4996471330284142407">Nuveikite daugiau naudodami paprastą, saugią ir spartesnę nei bet kada anksčiau „Chromium“.</translation>
@@ -355,6 +356,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="8900052431807804054">Gaukite patikimiausią „Chromium“ apsaugą</translation>
 <translation id="8908791447256515663">Greičiau pasiekite „Chromium“ naudodami „iPad“ doką.</translation>
 <translation id="8925569192291721236">Nepraleiskite kainų stebėjimo atnaujinimų ir „Chromium“ patarimų.</translation>
+<translation id="8939412301975414416">Jei norite gauti vaikų saugos funkcijas naršyklėje „Chromium“, galite naudoti vaikui nustatytą „Google“ paskyrą arba naudoti „Chromium“ be paskyros.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Taip nutinka, kai „Chromium“ nenaudojama {THRESHOLD} minutę}one{Taip nutinka, kai „Chromium“ nenaudojama {THRESHOLD} minutę}few{Taip nutinka, kai „Chromium“ nenaudojama {THRESHOLD} minutes}many{Taip nutinka, kai „Chromium“ nenaudojama {THRESHOLD} minutės}other{Taip nutinka, kai „Chromium“ nenaudojama {THRESHOLD} minučių}}</translation>
 <translation id="8963279154877372067">Leiskite „Chromium“ pranešimams gauti įspėjimus apie sumažintas kainas</translation>
 <translation id="8975812008711371178">Paieška balsu naršyklėje „Chromium“</translation>

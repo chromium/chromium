@@ -64,6 +64,7 @@
 <translation id="2213327331203157297">ቆልፍ እና ዝጋ ሁነታን በChrome ውስጥ ለማሰናከል በእርስዎ iPhone ላይ ያጥፉት።</translation>
 <translation id="2242467532204595597">በመልዕክቶች፣ ሰነዶች እና ሌሎች መተግበሪያዎች ውስጥ አገናኞች ላይ መታ በሚያደርጉበት በማንኛውም ጊዜ Chromeን ይጠቀሙ።</translation>
 <translation id="2256384876478573507">በእርስዎ iPhone ላይ ለማሰስ ዝግጁ ሲሆኑ Chromeን ይበልጥ በፍጥነት ይክፈቱ።</translation>
+<translation id="2270691132923135296">ለመጀመር አጋዥ የሆኑትን የChrome መሠረታዊ ነገሮች ይወቁ</translation>
 <translation id="2311240109311056604">የChrome Dino ጨዋታውን ይከፍታል።</translation>
 <translation id="2339201583852607431">የይለፍ ቃልዎ በGoogle መለያዎ (<ph name="EMAIL" />) ላይ ይቀመጣል።</translation>
 <translation id="2342919707875585281">Chrome እርስዎ ከሚፈቅዷቸው ጣቢያዎች ጋር አካባቢዎን ያጋራል።</translation>
@@ -150,7 +151,6 @@
 <translation id="4693084815234024320">Chrome ማንነት የማያሳውቅ ውስጥ ነዎት</translation>
 <translation id="4708857722625759026">ከእርስዎ iPad መትከያ ላይ Chromeን ይበልጥ በፍጥነት ይድረሱ።</translation>
 <translation id="4713740144985377441">ፋይልዎን ለመስቀል ወደ Chrome ይመለሱ</translation>
-<translation id="4713907610796204963">ለመጀመር አጋዥ የሆኑትን የChrome መሠረታዊ ነገሮች ይወቁ</translation>
 <translation id="4724297637870447613">በየትኛውም ቦታ Chrome ይጠቀሙ</translation>
 <translation id="4738647308035481133">የGoogle Chrome ገፅ</translation>
 <translation id="4742795653798179840">የተሰረዘ የChrome ውሂብ</translation>
@@ -296,6 +296,7 @@
 <translation id="7599894504325210080">Chrome ራስ-ሙላ የተዘረጋ ዕይታ</translation>
 <translation id="7617512710641355143">Chrome ይተዳደራል</translation>
 <translation id="7626032353295482388">ወደ Chrome እንኳን ደህና መጡ</translation>
+<translation id="7634397654061173327">Chrome ውስጥ የልጅ ደኅንነት ባህሪያትን ለማግኘት፣ ለልጅ የተዋቀረ የGoogle መለያ መጠቀም ወይም Chromeን ያለ መለያ መጠቀም ይችላሉ።</translation>
 <translation id="7641448682796883218">የChrome ጠቃሚ ምክር፦ የተሻሻለ የደህንነት አሰሳ</translation>
 <translation id="7642373780953416937">Chrome ለእርስዎ በራስ-ሰር በሚያገኛቸው ማናቸውም የግላዊነት ወይም የደህንነት ችግሮች ላይ ማንቂያዎችን ይቀበሉ።</translation>
 <translation id="7660356333829433649">ከChrome ምርጡን ለማግኘት ለተጨማሪ ጠቃሚ ምክሮች ተመልሰው እዚህ ይምጡ።</translation>
@@ -328,6 +329,7 @@
 <translation id="8245080522851805544">Chrome በሚዘጉበት ጊዜ በመሣሪያ ማረጋገጫ አሰሳዎን በመሣሪያ ማረጋገጫ ግላዊ አድርገው ይቆዩ</translation>
 <translation id="8248887045858762645">የChrome ጠቃሚ ምክር</translation>
 <translation id="8265730590513812063">የChrome ምናሌን ይክፈቱ</translation>
+<translation id="8284376267694582021">የልጅ ደኅንነት ባህሪያትን ለማግኘት፣ ለልጅ የተዋቀረ የGoogle መለያ መጠቀም ወይም Chromeን ያለ መለያ መጠቀም ይችላሉ። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">የመክፈያ ዘዴዎች እና አድራሻዎች አይመሰጠሩም። የChrome የአሰሳ ታሪክ አይሰምርም።
 
 የእርስዎን የተመሰጠረ ውሂብ ማንበብ የሚችለው የይለፍ ሐረግዎ ያለው ሰው ብቻ ነው። የይለፍ ሐረጉ ወደ Google አይላክም ወይም በGoogle አይከማችም። የይለፍ ሐረግዎን ከረሱ ወይም ይህን ቅንብር መለወጥ ከፈለጉ <ph name="BEGIN_LINK" />በመለያዎ ውስጥ ያለውን የChrome ውሂብ ይሰርዙ<ph name="END_LINK" />።</translation>

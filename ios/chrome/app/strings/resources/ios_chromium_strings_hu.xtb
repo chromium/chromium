@@ -134,6 +134,7 @@ A fiókváltás előtt várjon néhány percet. Ha most vált fiókot, akkor eze
 <translation id="377649297473651452">A Chromium automatikus kitöltés funkciójának kibontott nézete</translation>
 <translation id="3780779443901618967">Figyelmezteti Önt a veszélyes webhelyekre (még azokra is, amelyekről a Google korábban nem tudott), azáltal hogy több, webhelyekről származó adatot elemez, mint a normál védelem. Beállíthatja a Chromium figyelmeztetéseinek kihagyását.</translation>
 <translation id="3805899903892079518">A Chromium nem fér hozzá az Ön képeihez és videóihoz. Engedélyezés iOS-en: Beállítások &gt; Adatvédelem &gt; Fényképek.</translation>
+<translation id="3809591243528646631">A gyermekbiztonsági funkciók igénybevételéhez használhat gyermek számára beállított Google-fiókot, vagy használhatja a Chromiumot fiók nélkül. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="3816686541346279443">A Chromium felkínálja a jelszó mentését.</translation>
 <translation id="3827545470516145620">Normál biztonsági védelemben részesül ezen az eszközön</translation>
 <translation id="3833326979834193417">A Chromium automatikusan futtat egy biztonsági ellenőrzést mindennap, hogy megvédje Önt az adatvédelmi incidensektől, a nem biztonságos webhelyektől és még sok mástól. A biztonsági ellenőrzésről a Beállításokban találhat további információt.</translation>
@@ -169,6 +170,7 @@ Adatai az összetett jelszavával vannak titkosítva. Adja meg, ha Google-fiókj
 A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chromium-adatokat<ph name="END_LINK" />.</translation>
 <translation id="4578500311756617174">Chromium-tipp: Használja a Chromiumot alapértelmezett böngészőként</translation>
 <translation id="458786853569524949">Mostantól bármikor használhatja a Chromiumot, amikor e-mailekben, dokumentumokban és más alkalmazásokban linkekre kattint.</translation>
+<translation id="4625730353066900738">Kezdő lépésként ismerkedjen meg a Chromium hasznos alapfunkcióival</translation>
 <translation id="4633738821577273991">A Biztonságos Böngészés fokozott védelemmel funkciót kapja ehhez a Chromium-profilhoz is</translation>
 <translation id="4654936625574199632">Az alkalmazás továbbfejlesztése érdekében a Chromium elküldi a használati és az összeomlási adatokat a Google-nak. <ph name="BEGIN_LINK" />Kezelés<ph name="END_LINK" />.</translation>
 <translation id="4681781466797808448">Kapcsolja be a Chromium szkennerét</translation>
@@ -179,7 +181,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="4856138222358683580">Chromium-műveletek</translation>
 <translation id="4869706986935301458">A Chromium azonnali megnyitása iPhone eszközön</translation>
 <translation id="4904452304169763785">Értesítéseket kap a Chromium által észlelt adatvédelmi és biztonsági problémákról.</translation>
-<translation id="4908570938463711775">Kezdő lépésként ismerkedjen meg a Chromium hasznos alapfunkcióival</translation>
 <translation id="4962295957157529683">A másik megnyitott Chromium-ablakban fejezze be, amit csinál.</translation>
 <translation id="4985291216379576555">Offline állapotban van, ezért a Chromium nem tud frissítéseket keresni</translation>
 <translation id="4996471330284142407">Még több mindent elvégezhet az egyszerű, biztonságos és minden eddiginél gyorsabb Chromium segítségével.</translation>
@@ -355,6 +356,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="8900052431807804054">A Chromium legerősebb védelmét használhatja</translation>
 <translation id="8908791447256515663">Gyorsabban hozzáférhet a Chromiumhoz az iPad Dockjáról.</translation>
 <translation id="8925569192291721236">Kövesse az árfigyeléssel kapcsolatos friss információkat és a Chromium-tippeket.</translation>
+<translation id="8939412301975414416">A gyermekbiztonsági funkciók Chromiumban való igénybevételéhez használhat gyermek számára beállított Google-fiókot, vagy használhatja a Chromiumot fiók nélkül.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Erre akkor kerül sor, ha a Chromium {THRESHOLD} percig nincs használatban.}other{Erre akkor kerül sor, ha a Chromium {THRESHOLD} percig nincs használatban.}}</translation>
 <translation id="8963279154877372067">Annak engedélyezése a Chromium-értesítések számára, hogy értesítést küldjenek az árcsökkenésekről</translation>
 <translation id="8975812008711371178">Hangalapú keresés a Chromiumban.</translation>

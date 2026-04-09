@@ -64,6 +64,7 @@ Dinge om in ag te neem:
 <translation id="2213327331203157297">Skakel snelsluitmodus op jou iPhone af as jy dit in Chrome wil deaktiveer.</translation>
 <translation id="2242467532204595597">Gebruik Chrome enige tyd wanneer jy op skakels in boodskappe, dokumente en ander apps tik.</translation>
 <translation id="2256384876478573507">Maak Chrome vinniger oop wanneer jy gereed is om op jou iPhone te blaai.</translation>
+<translation id="2270691132923135296">Leer die nuttige basiese beginsels van Chrome om jou aan die gang te kry</translation>
 <translation id="2311240109311056604">Maak die Chrome Dino-speletjie oop.</translation>
 <translation id="2339201583852607431">Jou wagwoord sal in jou Google-rekening (<ph name="EMAIL" />) gestoor word.</translation>
 <translation id="2342919707875585281">Chrome deel jou ligging met werwe wat jy toelaat.</translation>
@@ -150,7 +151,6 @@ Nuwe boekmerke kan nie in jou rekening gestoor word totdat jy sommige boekmerke 
 <translation id="4693084815234024320">Jy is in Chrome Incognito</translation>
 <translation id="4708857722625759026">Kry vinniger toegang tot Chrome vanaf jou iPad se dok.</translation>
 <translation id="4713740144985377441">Gaan terug na Chrome om jou lêer op te laai</translation>
-<translation id="4713907610796204963">Leer die nuttige basiese beginsels van Chrome om jou aan die gang te kry</translation>
 <translation id="4724297637870447613">Gebruik Chrome oral</translation>
 <translation id="4738647308035481133">Google Chrome-bladsy</translation>
 <translation id="4742795653798179840">Chrome-data is uitgevee</translation>
@@ -296,6 +296,7 @@ Gaan na <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> vir meer in
 <translation id="7599894504325210080">Chrome-outovulaansig is uitgevou</translation>
 <translation id="7617512710641355143">Chrome is bestuur</translation>
 <translation id="7626032353295482388">Welkom by Chrome</translation>
+<translation id="7634397654061173327">Om kinderveiligheidkenmerke in Chrome te kry, kan jy óf ’n Google-rekening gebruik wat vir ’n kind opgestel is, óf Chrome sonder ’n rekening gebruik.</translation>
 <translation id="7641448682796883218">Chrome-wenk: Verbeterde Veiligblaai</translation>
 <translation id="7642373780953416937">Ontvang waarskuwings oor enige privaatheid- of sekuriteitkwessies wat Chrome outomaties vir jou bespeur.</translation>
 <translation id="7660356333829433649">Kom kyk hier vir meer nuttige wenke om Chrome ten beste te benut.</translation>
@@ -328,6 +329,7 @@ Gaan na <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> vir meer in
 <translation id="8245080522851805544">Hou jou blaaiery privaat met toestelstawing wanneer jy Chrome toemaak</translation>
 <translation id="8248887045858762645">Chrome-wenk</translation>
 <translation id="8265730590513812063">Maak die Chrome-kieslys oop</translation>
+<translation id="8284376267694582021">Om kinderveiligheidkenmerke te kry, kan jy óf ’n Google-rekening gebruik wat vir ’n kind opgestel is, óf Chrome sonder ’n rekening gebruik. <ph name="BEGIN_LINK" />Vind meer uit<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">Betaalmetodes en adresse sal nie geënkripteer word nie. Blaaigeskiedenis van Chrome af sal nie sinkroniseer nie.
 
 Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word nie na Google toe gestuur of deur Google geberg nie. <ph name="BEGIN_LINK" />Vee die Chrome-data in jou rekening uit<ph name="END_LINK" /> indien jy jou wagfrase vergeet of hierdie instelling wil verander.</translation>

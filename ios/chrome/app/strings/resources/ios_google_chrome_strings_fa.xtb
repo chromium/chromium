@@ -64,6 +64,7 @@
 <translation id="2213327331203157297">‏برای غیرفعال کردن حالت «قفل همه» در Chrome، آن را در iPhone خود خاموش کنید.</translation>
 <translation id="2242467532204595597">‏با ضربه زدن روی پیوندهای موجود در پیام‌ها، اسناد و دیگر برنامه‌ها، از Chrome استفاده کنید.</translation>
 <translation id="2256384876478573507">‏هر لحظه خواستید در iPhone شروع به مرور کنید، Chrome را سریع‌تر باز کنید.</translation>
+<translation id="2270691132923135296">‏برای شروع، با مفاهیم پایه و مفید Chrome آشنا شوید</translation>
 <translation id="2311240109311056604">‏بازی «دایناسور Chrome» را باز می‌کند.</translation>
 <translation id="2339201583852607431">‏گذرواژه در «حساب Google» خودتان (<ph name="EMAIL" />) ذخیره خواهد شد.</translation>
 <translation id="2342919707875585281">‏Chrome مکانتان را با سایت‌هایی که مجاز کرده‌اید هم‌رسانی می‌کند.</translation>
@@ -150,7 +151,6 @@
 <translation id="4693084815234024320">‏در حالت «ناشناس» Chrome هستید</translation>
 <translation id="4708857722625759026">‏از «سکوی برنامه‌ها» در iPad، سریع‌تر به Chrome دسترسی داشته باشید.</translation>
 <translation id="4713740144985377441">‏برای بارگذاری فایلتان به Chrome برگردید</translation>
-<translation id="4713907610796204963">‏برای شروع، با مفاهیم پایه و مفید Chrome آشنا شوید</translation>
 <translation id="4724297637870447613">‏استفاده از Chrome در همه‌جا</translation>
 <translation id="4738647308035481133">‏صفحه Google Chrome</translation>
 <translation id="4742795653798179840">‏داده‌های Chrome حذف شد</translation>
@@ -296,6 +296,7 @@
 <translation id="7599894504325210080">‏نمای ازهم بازشده تکمیل خودکار Chrome</translation>
 <translation id="7617512710641355143">‏‫Chrome تحت‌مدیریت است</translation>
 <translation id="7626032353295482388">‏به Chrome خوش آمدید</translation>
+<translation id="7634397654061173327">‏برای دریافت ویژگی‌های ایمنی کودک در Chrome، می‌توانید از «حساب Google» که برای کودک راه‌اندازی شده است استفاده کنید یا بدون حساب از Chrome استفاده کنید.</translation>
 <translation id="7641448682796883218">‏نکته Chrome: «مرور ایمن پیشرفته»</translation>
 <translation id="7642373780953416937">‏برای هر مشکل حریم خصوصی یا امنیتی که Chrome به‌طور خودکار تشخیص می‌دهد هشدار دریافت کنید.</translation>
 <translation id="7660356333829433649">‏برای دریافت نکته‌های مفید بیشتر درباره استفاده حداکثری از Chrome، دوباره به اینجا سر بزنید.</translation>
@@ -328,6 +329,7 @@
 <translation id="8245080522851805544">‏وقتی Chrome را می‌بندید، مرورتان را با اصالت‌سنجی دستگاه خصوصی نگه دارید</translation>
 <translation id="8248887045858762645">‏نکات Chrome</translation>
 <translation id="8265730590513812063">‏باز کردن منو Chrome</translation>
+<translation id="8284376267694582021">‏برای دریافت ویژگی‌های ایمنی کودک، می‌توانید از «حساب Google» که برای کودک راه‌اندازی شده است استفاده کنید یا بدون حساب از Chrome استفاده کنید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">‏روش‌های پرداخت و نشانی‌ها رمزگذاری نخواهند شد. سابقه مرور Chrome همگام‌سازی نخواهد شد.
 
 فقط شخصی که گذرعبارت شما را دراختیار داشته باشد می‌تواند داده‌های رمزگذاری‌شده‌تان را بخواند. گذرعبارت به Google ارسال نمی‌شود یا توسط آن ذخیره نمی‌شود. اگر گذرعبارت را فراموش کردید یا می‌خواهید این تنظیم را تغییر دهید، <ph name="BEGIN_LINK" />داده‌های Chrome ذخیره‌شده در حسابتان را حذف کنید<ph name="END_LINK" />.</translation>

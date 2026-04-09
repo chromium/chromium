@@ -133,6 +133,7 @@ Warte einige Minuten, bevor du das Konto wechselst. Wenn du jetzt das Konto wech
 <translation id="377649297473651452">Autofill-Ansicht in Chromium erweitert</translation>
 <translation id="3780779443901618967">Warnt dich vor schädlichen Websites, auch solchen, die Google vorher nicht bekannt waren, indem mehr Daten von Websites analysiert werden als beim Standardschutz. Du kannst Warnungen von Chromium überspringen.</translation>
 <translation id="3805899903892079518">Chromium hat keinen Zugriff auf deine Fotos und Videos. Aktiviere den Zugriff unter "iOS-Einstellungen &gt; Datenschutz &gt; Fotos".</translation>
+<translation id="3809591243528646631">Wenn du Funktionen zum Schutz von Kindern nutzen möchtest, kannst du entweder ein Google-Konto verwenden, das für ein Kind eingerichtet ist, oder Chromium ohne Konto verwenden. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="3816686541346279443">Chromium bietet an, dein Passwort zu speichern.</translation>
 <translation id="3827545470516145620">Dieses Gerät wird durch die standardmäßigen Sicherheitsfunktionen geschützt</translation>
 <translation id="3833326979834193417">Chromium führt jeden Tag automatisch einen Sicherheitscheck durch, um dich unter anderem vor Datenpannen und unsicheren Websites zu schützen. Weitere Informationen zum Sicherheitscheck findest du in den Einstellungen.</translation>
@@ -168,6 +169,7 @@ Deine Daten werden mit deiner Passphrase verschlüsselt. Gib sie ein, um Chromiu
 Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chromium-Daten in deinem Konto<ph name="END_LINK" />.</translation>
 <translation id="4578500311756617174">Chromium-Tipp: Standardmäßig Chromium verwenden</translation>
 <translation id="458786853569524949">Du kannst jetzt Chromium jederzeit nutzen, wenn du in E‑Mails, Dokumenten und anderen Apps auf Links tippst.</translation>
+<translation id="4625730353066900738">Hier findest du hilfreiche Chromium-Grundlagen für den Einstieg</translation>
 <translation id="4633738821577273991">Hol dir für dieses Chromium-Profil auch erweitertes Safe Browsing</translation>
 <translation id="4654936625574199632">Chromium sendet Nutzungsstatistiken und Absturzdaten an Google, damit wir die App verbessern können. <ph name="BEGIN_LINK" />Verwalten<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Chromium-Scanner aktivieren</translation>
@@ -178,7 +180,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="4856138222358683580">Chromium-Aktionen</translation>
 <translation id="4869706986935301458">Chromium sofort öffnen, wenn du dein iPhone verwendest</translation>
 <translation id="4904452304169763785">Benachrichtigungen bei Datenschutz- oder Sicherheitsproblemen, die Chromium für dich erkennt.</translation>
-<translation id="4908570938463711775">Hier erfährst du mehr über hilfreiche Chromium-Grundlagen für den Einstieg</translation>
 <translation id="4962295957157529683">Schließe zuerst deine vorherige Aktion in deinem anderen offenen Chromium-Fenster ab.</translation>
 <translation id="4985291216379576555">Offline, Chromium kann nicht nach Aktualisierungen suchen</translation>
 <translation id="4996471330284142407">Jetzt mit dem neuen ultraschnellen Chromium ganz einfach und sicherer noch mehr erledigen.</translation>
@@ -354,6 +355,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="8900052431807804054">Die stärksten Sicherheitsfunktionen von Chromium nutzen</translation>
 <translation id="8908791447256515663">Über das Dock deines iPads kannst du schneller auf Chromium zugreifen.</translation>
 <translation id="8925569192291721236">Lass dich über Neuigkeiten zum Preis-Tracking und Chromium-Tipps informieren.</translation>
+<translation id="8939412301975414416">Wenn du in Chromium Funktionen zum Schutz von Kindern nutzen möchtest, kannst du entweder ein Google-Konto verwenden, das für ein Kind eingerichtet ist, oder Chromium ohne Konto verwenden.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Das passiert, wenn Chromium {THRESHOLD} Minute lang nicht verwendet wird}other{Das passiert, wenn Chromium {THRESHOLD} Minuten lang nicht verwendet wird}}</translation>
 <translation id="8963279154877372067">Chromium-Benachrichtigungen erlauben, Benachrichtigungen zu Preisnachlässen abzurufen</translation>
 <translation id="8975812008711371178">Sprachsuche in Chromium</translation>

@@ -134,6 +134,7 @@ Tunggu beberapa minit sebelum menukar akaun. Jika anda menukar akaun sekarang, d
 <translation id="377649297473651452">Paparan Autolengkap Chromium dikembangkan</translation>
 <translation id="3780779443901618967">Memberikan amaran kepada anda tentang laman berbahaya, termasuk laman yang tidak diketahui oleh Google sebelum ini, dengan menganalisis lebih banyak data daripada laman berbanding perlindungan standard. Anda boleh memilih untuk melangkau amaran Chromium.</translation>
 <translation id="3805899903892079518">Chromium tidak mempunyai akses kepada foto atau video anda. Dayakan akses dalam Tetapan iOS &gt; Privasi &gt; Foto.</translation>
+<translation id="3809591243528646631">Untuk mendapatkan ciri keselamatan kanak-kanak, anda boleh menggunakan Google Account yang disediakan untuk kanak-kanak atau menggunakan Chromium tanpa akaun. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="3816686541346279443">Chromium akan menawarkan untuk menyimpan kata laluan anda.</translation>
 <translation id="3827545470516145620">Anda mendapat perlindungan keselamatan standard pada peranti ini</translation>
 <translation id="3833326979834193417">Chromium menjalankan Pemeriksaan Keselamatan secara automatik setiap hari untuk memastikan anda selamat daripada pelanggaran data, laman web yang tidak selamat dan pelbagai lagi. Anda boleh mendapatkan maklumat lanjut tentang Pemeriksaan Keselamatan dalam Tetapan.</translation>
@@ -169,6 +170,7 @@ Data anda telah disulitkan dengan ungkapan laluan anda. Masukkan ungkapan laluan
 Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chromium dalam akaun anda<ph name="END_LINK" />.</translation>
 <translation id="4578500311756617174">Petua Chromium: gunakan Chromium secara lalai</translation>
 <translation id="458786853569524949">Kini anda boleh menggunakan Chromium pada bila-bila masa anda mengetik pautan dalam e-mel, dokumen dan apl lain.</translation>
+<translation id="4625730353066900738">Ketahui perkara asas Chromium yang membantu anda untuk bermula</translation>
 <translation id="4633738821577273991">Dapatkan juga Penyemakan Imbas Selamat Dipertingkat untuk profil Chromium ini</translation>
 <translation id="4654936625574199632">Untuk membantu dalam usaha meningkatkan apl, Chromium menghantar data penggunaan dan ranap sistem kepada Google. <ph name="BEGIN_LINK" />Urus<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Hidupkan pengimbas Chromium</translation>
@@ -179,7 +181,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chromium dalam 
 <translation id="4856138222358683580">Tindakan Chromium</translation>
 <translation id="4869706986935301458">Buka Chromium dengan serta-merta apabila anda menggunakan iPhone anda</translation>
 <translation id="4904452304169763785">Makluman tentang sebarang masalah privasi atau keselamatan yang dikesan oleh Chromium untuk anda.</translation>
-<translation id="4908570938463711775">Ketahui perkara asas Chromium yang membantu anda untuk bermula</translation>
 <translation id="4962295957157529683">Selesaikan perkara yang anda lakukan pada tetingkap Chromium lain yang terbuka.</translation>
 <translation id="4985291216379576555">Luar Talian, Chromium tidak dapat menyemak kemaskinian</translation>
 <translation id="4996471330284142407">Selesaikan lebih banyak tugas dengan Chromium yang mudah, selamat dan lebih pantas berbanding dahulu.</translation>
@@ -355,6 +356,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="8900052431807804054">Dapatkan Keselamatan Chromium Yang Paling Kukuh</translation>
 <translation id="8908791447256515663">Akses Chromium dengan lebih pantas pada Dok iPad anda.</translation>
 <translation id="8925569192291721236">Ikuti kemaskinian penjejakan harga dan petua Chromium.</translation>
+<translation id="8939412301975414416">Untuk mendapatkan ciri keselamatan kanak-kanak dalam Chromium, anda boleh menggunakan Google Account yang disediakan untuk kanak-kanak atau menggunakan Chromium tanpa akaun.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Perkara ini berlaku apabila Chromium tidak digunakan selama {THRESHOLD} minit}other{Perkara ini berlaku apabila Chromium tidak digunakan selama {THRESHOLD} minit}}</translation>
 <translation id="8963279154877372067">Benarkan pemberitahuan Chromium untuk menerima makluman penurunan harga</translation>
 <translation id="8975812008711371178">Cari dengan suara dalam Chromium</translation>

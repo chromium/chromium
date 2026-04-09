@@ -64,6 +64,7 @@ Mambo ya kuzingatia:
 <translation id="2213327331203157297">Ili uzime Hali ya Kufunga katika Chrome, izime kwenye iPhone yako.</translation>
 <translation id="2242467532204595597">Tumia Chrome wakati wowote unapogusa viungo kwenye ujumbe, hati na programu zingine.</translation>
 <translation id="2256384876478573507">Fungua Chrome haraka zaidi ukiwa tayari kuvinjari kwenye iPhone yako.</translation>
+<translation id="2270691132923135296">Fahamu mambo ya msingi yanayofaa kuhusu Chrome ili uanze</translation>
 <translation id="2311240109311056604">Hufungua Mchezo wa Dinosau wa Chrome.</translation>
 <translation id="2339201583852607431">Nenosiri lako litahifadhiwa katika Akaunti yako ya Google (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome hushiriki maelezo ya mahali ulipo na tovuti unazoruhusu.</translation>
@@ -150,7 +151,6 @@ Huwezi kuhifadhi alamisho mpya kwenye akaunti yako hadi ufute baadhi ya alamisho
 <translation id="4693084815234024320">Unatumia Chrome katika hali ya Faraghani</translation>
 <translation id="4708857722625759026">Fikia Chrome kwa haraka zaidi katika Sehemu ya kupachika kwenye iPad yako.</translation>
 <translation id="4713740144985377441">Rudi kwenye Chrome ili upakie faili yako</translation>
-<translation id="4713907610796204963">Fahamu mambo ya msingi yanayofaa kuhusu Chrome ili uanze</translation>
 <translation id="4724297637870447613">Tumia Chrome kila mahali</translation>
 <translation id="4738647308035481133">Ukurasa wa Google Chrome</translation>
 <translation id="4742795653798179840">Umefuta data ya Chrome</translation>
@@ -296,6 +296,7 @@ Kwa mipangilio zaidi inayotumia data kuboresha hali yako ya utumiaji wa Chrome, 
 <translation id="7599894504325210080">Mwonekano uliopanuliwa wa Kipengele cha Kujaza Kiotomatiki cha Chrome</translation>
 <translation id="7617512710641355143">Chrome inadhibitiwa</translation>
 <translation id="7626032353295482388">Karibu kwenye Chrome</translation>
+<translation id="7634397654061173327">Ili upate vipengele vya usalama kwa watoto kwenye Chrome, unaweza kutumia Akaunti ya Google iliyowekewa mipangilio ili itumiwe na mtoto au utumie Chrome bila kuingia katika akaunti.</translation>
 <translation id="7641448682796883218">Kidokezo cha Chrome: Kipengele cha Kuvinjari Salama Kilichoboreshwa</translation>
 <translation id="7642373780953416937">Pokea arifa kuhusu matatizo yoyote ya faragha au ya usalama ambayo Chrome itatambua kiotomatiki kuwa yanakuathiri.</translation>
 <translation id="7660356333829433649">Angalia hapa tena ili upate vidokezo muhimu zaidi na unufaike zaidi kutokana na Chrome.</translation>
@@ -328,6 +329,7 @@ Kwa mipangilio zaidi inayotumia data kuboresha hali yako ya utumiaji wa Chrome, 
 <translation id="8245080522851805544">Weka hali yako ya kuvinjari iwe ya faragha ukitumia uthibitishaji wa kifaa unapofunga Chrome</translation>
 <translation id="8248887045858762645">Kidokezo cha Chrome</translation>
 <translation id="8265730590513812063">Fungua menyu ya Chrome</translation>
+<translation id="8284376267694582021">Ili upate vipengele vya usalama kwa watoto, unaweza kutumia Akaunti ya Google iliyowekewa mipangilio ili itumiwe na mtoto au utumie Chrome bila kuingia katika akaunti. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">Njia za kulipa na anwani hazitasimbwa kwa njia fiche. Historia ya kuvinjari kwenye Chrome haitasawazishwa.
 
 Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa kwa njia fiche. Kauli ya siri haitumwi kwa au kuhifadhiwa na Google. Ukisahau kauli yako ya siri au ukitaka kubadilisha mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kwenye akaunti yako<ph name="END_LINK" />.</translation>

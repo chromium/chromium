@@ -134,6 +134,7 @@ Hãy thử đợi ít phút rồi chuyển đổi tài khoản. Nếu bạn chuy
 <translation id="377649297473651452">Chế độ xem mở rộng về tính năng Tự động điền của Chromium</translation>
 <translation id="3780779443901618967">Cảnh báo cho bạn về các trang web nguy hiểm, kể cả trang web mà Google chưa từng biết, bằng cách phân tích nhiều dữ liệu trên các trang web hơn so với chế độ bảo vệ tiêu chuẩn. Bạn có thể chọn bỏ qua cảnh báo của Chromium.</translation>
 <translation id="3805899903892079518">Chromium không có quyền truy cập ảnh hoặc video của bạn. Hãy cho phép truy cập Cài đặt iOS &gt; Bảo mật &gt; Ảnh.</translation>
+<translation id="3809591243528646631">Để sử dụng các tính năng đảm bảo an toàn cho trẻ, bạn có thể dùng một Tài khoản Google được thiết lập cho trẻ hoặc dùng Chromium mà không cần tài khoản. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="3816686541346279443">Chromium sẽ đề xuất lưu mật khẩu của bạn.</translation>
 <translation id="3827545470516145620">Bạn đang sử dụng biện pháp bảo mật tiêu chuẩn trên thiết bị này</translation>
 <translation id="3833326979834193417">Chromium tự động chạy tính năng Kiểm tra an toàn hằng ngày để bảo vệ bạn trước các sự cố rò rỉ dữ liệu, trang web không an toàn và những vấn đề khác. Bạn có thể tìm thêm thông tin về tính năng Kiểm tra an toàn trong phần Cài đặt.</translation>
@@ -169,6 +170,7 @@ Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụ
 Để thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu Chromium khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
 <translation id="4578500311756617174">Mẹo khi dùng Chromium: dùng Chromium làm trình duyệt mặc định</translation>
 <translation id="458786853569524949">Giờ đây, bạn có thể dùng Chromium mỗi khi nhấn vào các đường liên kết trong email, tài liệu và các ứng dụng khác.</translation>
+<translation id="4625730353066900738">Tìm hiểu những thông tin cơ bản hữu ích về Chromium để bắt đầu</translation>
 <translation id="4633738821577273991">Bạn có thể dùng tính năng Duyệt web an toàn có tăng cường bảo vệ cho cả hồ sơ Chromium này</translation>
 <translation id="4654936625574199632">Để giúp cải thiện ứng dụng, Chromium sẽ gửi dữ liệu về sự cố và mức sử dụng cho Google. <ph name="BEGIN_LINK" />Quản lý<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Bật trình quét của Chromium</translation>
@@ -179,7 +181,6 @@ Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụ
 <translation id="4856138222358683580">Thao tác trên Chromium</translation>
 <translation id="4869706986935301458">Mở Chromium ngay lập tức khi bạn dùng iPhone</translation>
 <translation id="4904452304169763785">Cảnh báo về mọi vấn đề liên quan đến quyền riêng tư hoặc bảo mật mà Chromium phát hiện ra.</translation>
-<translation id="4908570938463711775">Tìm hiểu những thông tin cơ bản hữu ích về Chromium để bắt đầu</translation>
 <translation id="4962295957157529683">Hoàn thành những việc bạn đang làm trong cửa sổ Chromium đang mở khác.</translation>
 <translation id="4985291216379576555">Không có kết nối mạng, Chromium không thể kiểm tra xem có bản cập nhật mới nào không</translation>
 <translation id="4996471330284142407">Với phiên bản Chromium đơn giản, an toàn và nhanh nhất từ trước đến nay, bạn sẽ làm được nhiều việc hơn.</translation>
@@ -355,6 +356,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="8900052431807804054">Sở hữu chế độ bảo mật mạnh nhất của Chromium</translation>
 <translation id="8908791447256515663">Truy cập Chromium nhanh hơn từ thanh dock trên iPad.</translation>
 <translation id="8925569192291721236">Luôn cập nhật thông tin theo dõi giá và các mẹo sử dụng Chromium.</translation>
+<translation id="8939412301975414416">Để sử dụng các tính năng đảm bảo an toàn cho trẻ trong Chromium, bạn có thể dùng một Tài khoản Google được thiết lập cho trẻ hoặc dùng Chromium mà không cần tài khoản.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Thao tác này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chromium}other{Thao tác này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chromium}}</translation>
 <translation id="8963279154877372067">Cho phép thông báo của Chromium để nhận thông báo giảm giá</translation>
 <translation id="8975812008711371178">Tìm kiếm bằng giọng nói trong Chromium.</translation>

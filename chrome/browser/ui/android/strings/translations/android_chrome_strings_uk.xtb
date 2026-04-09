@@ -640,6 +640,7 @@
 <translation id="3739455665973395693">В обліковому записі Google немає зламаних паролів</translation>
 <translation id="3739899004075612870">Створено закладку в продукті <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Голосовий пошук недоступний на цьому пристрої</translation>
+<translation id="3763110477555836428">Щоб захистити дані справжньої картки, під час оплати за її допомогою натомість заповнюватиметься номер віртуальної картки. Ви можете керувати цим налаштуванням у Google Гаманці. <ph name="BEGIN_LINK1" />Докладніше про віртуальні картки<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Деякі дані ще не збережено</translation>
 <translation id="3770620323585347665">Введіть назву вікна</translation>
 <translation id="3771033907050503522">Анонімні вкладки</translation>
@@ -683,6 +684,7 @@
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">останні 4 тижні</translation>
 <translation id="393697183122708255">Голосовий пошук вимкнено</translation>
+<translation id="3941718885865495207">Нижній екран "Увімкнути Знахідки в Chrome"</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" /> (закріплена вкладка в режимі "картинка в картинці")</translation>
 <translation id="3950820424414687140">Вхід</translation>
 <translation id="395377504920307820">Використовувати без облікового запису</translation>
@@ -1188,6 +1190,7 @@
 <translation id="6011308810877101166">Покращувати підказки в пошуку</translation>
 <translation id="6013305291643746595">Сортування за найстарішими</translation>
 <translation id="6022659036123304283">Ваш персональний Chrome</translation>
+<translation id="6023820583797130428">Щоб повернутися, відкрийте меню</translation>
 <translation id="6026538407078977628">Розгорнути на весь екран</translation>
 <translation id="6030719887161080597">Керуйте інформацією, яку сайти використовують для вимірювання ефективності оголошень</translation>
 <translation id="6039379616847168523">Перейти до наступної вкладки</translation>
@@ -1632,6 +1635,7 @@
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> стандартна вкладка}one{<ph name="TABS_COUNT_MANY" /> стандартна вкладка}few{<ph name="TABS_COUNT_MANY" /> стандартні вкладки}many{<ph name="TABS_COUNT_MANY" /> стандартних вкладок}other{<ph name="TABS_COUNT_MANY" /> стандартної вкладки}}</translation>
 <translation id="7603168929588204083">Недійсна дата</translation>
 <translation id="7605594153474022051">Синхронізація не працює</translation>
+<translation id="7608245556672190037">Екран "Увімкнути Знахідки в Chrome" відкрито на всю висоту</translation>
 <translation id="7612619742409846846">Ви ввійшли в обліковий запис Google як</translation>
 <translation id="7612989789287281429">Виконується вхід…</translation>
 <translation id="7619072057915878432">Не вдалося завантажити файл <ph name="FILE_NAME" />. Помилка мережі.</translation>
@@ -1639,6 +1643,7 @@
 <translation id="7628417132421583481">Перейти в Менеджер паролів</translation>
 <translation id="7630202231528827509">URL-адреса постачальника</translation>
 <translation id="7638584964844754484">Неправильна парольна фраза</translation>
+<translation id="764047009170754705">Екран "Увімкнути Знахідки в Chrome" закрито</translation>
 <translation id="7646499124171960488">Попереджати про небезпечні загальнодоступні сайти</translation>
 <translation id="7646772052135772216">Синхронізація паролів не працює</translation>
 <translation id="7655240423373329753">останні 7 днів</translation>
@@ -1863,6 +1868,7 @@
 <translation id="8473863474539038330">Адреси й інше</translation>
 <translation id="847433688444405067">Переглядайте на різних пристроях</translation>
 <translation id="8477178913400731244">Видалити дані</translation>
+<translation id="8481771036036087705">Екран "Увімкнути Знахідки в Chrome" відкрито на половину висоти</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">Немає неактивних вікон</translation>
 <translation id="8493948351860045254">Звільнити місце</translation>

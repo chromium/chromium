@@ -1697,6 +1697,7 @@ Metode ini akan dihapus di Chrome 145, dan sebaiknya Anda menggunakan metode req
 <translation id="2149957154942061013">Khusus Internal</translation>
 <translation id="2151831603578119302">Mengaktifkan pintasan fitur aksesibilitas</translation>
 <translation id="2156132677421487971">Mengonfigurasi kebijakan untuk <ph name="PRODUCT_NAME" />, fitur yang memungkinkan pengguna mengirim konten tab, situs, atau desktop dari browser ke sistem suara dan layar jarak jauh.</translation>
+<translation id="2156359411909638496">Setelan untuk Chrome Finds</translation>
 <translation id="2156755242840687300">Server cetak eksternal diaktifkan</translation>
 <translation id="2157842368188031417">Kebijakan ini hanya berlaku untuk sesi tamu terkelola. Kebijakan ini harus diaktifkan untuk mode workstation bersama Imprivata guna memungkinkan pengalihan pengguna dalam sesi.
       Menyetel kebijakan ke Benar (True) akan memaksa penggantian kebijakan tertentu untuk fitur, yang mempertahankan data pengguna sensitif dan tidak ditangani oleh mekanisme pembersihan yang digunakan untuk pengalihan pengguna dalam sesi dengan mode workstation bersama Imprivata.
@@ -4225,6 +4226,7 @@ Kebijakan perangkat ini setara dengan kebijakan pengguna, <ph name="PREFER_SLOW_
 <translation id="3749511622128647337">Nonaktifkan output audio</translation>
 <translation id="3750220015372671395">Blokir pembuatan kunci di situs ini</translation>
 <translation id="3753267109888284695">Daftar HTTP yang Diizinkan</translation>
+<translation id="3753514818525019935">Jangan izinkan Chrome Finds.</translation>
 <translation id="3753959315989102457">Nonaktifkan pelaporan lokasi perangkat</translation>
 <translation id="3755237588083934849">Menyetel kebijakan akan menentukan frekuensi pengiriman upload status perangkat, dalam milidetik. Batas minimum yang diizinkan adalah 60 detik.
 
@@ -6235,6 +6237,13 @@ Jika kebijakan ini dinonaktifkan, fitur ini akan dinonaktifkan.</translation>
 <translation id="4997074784107449343">Opsi Cetak sebagai gambar tidak akan disetel sebagai default untuk pratinjau cetak dokumen PDF jika tersedia.</translation>
 <translation id="500149597848135831">Aktifkan semua variasi</translation>
 <translation id="5006222080181284191">Mengontrol pengaktifan fitur "Bantu tulis" ChromeOS</translation>
+<translation id="501542798290854504">Mengonfigurasi login otomatis pengguna untuk akun yang didukung oleh penyedia identitas cloud Microsoft® di <ph name="ANDROID_NAME" />.
+
+Jika kebijakan ini disetel ke 1 (<ph name="POLICY_VALUE_ENABLED" />), pengguna yang telah login ke aplikasi produktivitas Microsoft® di perangkat mereka dapat login secara otomatis ke properti web Microsoft® dalam <ph name="PRODUCT_NAME" />. Fungsi ini memerlukan aplikasi broker autentikasi Microsoft®, seperti <ph name="MS_AUTH_APP_NAME" />, <ph name="MS_ICP_NAME" />, atau <ph name="MS_LTW_NAME" />. Untuk memfasilitasi single sign-on, data autentikasi yang diperlukan dibagikan kepada penyedia identitas cloud Microsoft®.
+
+Jika kebijakan ini disetel ke 0 (<ph name="POLICY_VALUE_DISABLED" />) atau tidak disetel, login otomatis seperti yang dijelaskan di atas akan dinonaktifkan, dan pengguna harus memberikan kredensial secara manual untuk properti web Microsoft®.
+
+Catatan: Kebijakan ini tidak berlaku untuk mode Tamu atau Samaran.</translation>
 <translation id="5017157692744444035">Kebijakan ini mengontrol apakah informasi yang dapat digunakan untuk mengidentifikasi perangkat akan dilaporkan atau tidak, misalnya nama perangkat dan alamat jaringan.
 
 Jika kebijakan <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> tidak disetel atau disetel ke nonaktif, kebijakan ini akan diabaikan.
@@ -6724,6 +6733,22 @@ Jika tidak disetel, nilai default adalah 0 derajat dan pengguna dapat mengubahny
 <translation id="5293285950307241933">Hapus semua data pengguna lokal</translation>
 <translation id="5293619885162445352">Izinkan <ph name="PEPPER_NAME" /> menggunakan dekoder video baru.</translation>
 <translation id="529457411593078576">Menampilkan Persyaratan Layanan (ToS) saat CCT pertama kali dijalankan</translation>
+<translation id="529718811410033393">Jika kebijakan ini disetel, jumlah maksimal koneksi simultan per server proxy untuk permintaan non-WebSocket akan ditentukan.
+
+Untuk mengubah batas permintaan WebSocket, lihat <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
+
+Jika kebijakan ini tidak disetel, nilai default 32 akan digunakan.
+
+Beberapa aplikasi web diketahui memakai banyak koneksi dengan GET yang macet. Jadi, jika Anda menetapkan nilai lebih rendah dari 32, jaringan browser akan macet ketika ada terlalu banyak aplikasi web yang terbuka dengan jaringan macet.
+Beberapa server proxy tidak dapat menangani koneksi serentak per klien dalam jumlah besar. Masalah ini dapat diselesaikan dengan menyetel kebijakan ini ke nilai lebih rendah.
+
+Nilai ini harus sama dengan atau lebih tinggi dari 6.
+Jika nilai yang ditetapkan di bawah batas tersebut, nilai 6 akan digunakan.
+Jika menurunkan nilai di bawah nilai default (32), Anda harus menanggung sendiri risikonya.
+
+Nilai ini harus sama dengan atau lebih rendah dari 256 (99 di <ph name="PRODUCT_NAME" /> 147 dan versi sebelumnya).
+Jika nilai yang ditetapkan di atas batas tersebut, nilai yang akan digunakan adalah 256 (99 di <ph name="PRODUCT_NAME" /> 147 dan versi sebelumnya).
+Jika menaikkan nilai di atas nilai default (32), Anda harus menanggung sendiri risikonya.</translation>
 <translation id="5297873769621042075">Menyetel kebijakan akan menentukan daftar nama host atau pola nama host (seperti
 '[*.]example.com') yang tidak akan diupgrade ke HTTPS dan tidak akan menampilkan
 error interstisial jika Mode HTTPS-First diaktifkan. Organisasi dapat menggunakan
@@ -7485,6 +7510,7 @@ Jika kebijakan ini disetel ke nonaktif atau tidak disetel, widget Sekilas Info t
       Data Produk Vital (VPD) adalah kumpulan data konfigurasi dan informatif (seperti nomor suku cadang dan nomor seri) yang terkait dengan perangkat.</translation>
 <translation id="5760861224093391268">Nonaktifkan autentikasi pihak pertama saat melaporkan sinyal keamanan pengguna</translation>
 <translation id="5762969307102447459">Nonaktifkan Isi Otomatis untuk alamat</translation>
+<translation id="5763723496957591166">Jumlah maksimal koneksi serentak per server proxy untuk permintaan WebSocket</translation>
 <translation id="5765780083710877561">Deskripsi:</translation>
 <translation id="5766438888216077649">Tidak menyetel <ph name="WINDOW_OPENER_PROPERTY" /> untuk link yang menargetkan <ph name="BLANK_PAGE_NAME" /></translation>
 <translation id="5767776869128458023">Nonaktifkan halaman error alternatif</translation>
@@ -7497,6 +7523,7 @@ Jika kebijakan ini disetel ke nonaktif atau tidak disetel, widget Sekilas Info t
 <translation id="5776485039795852974">Tanyakan setiap kali situs ingin menampilkan pemberitahuan desktop</translation>
 <translation id="5776508475264864949">Jangan izinkan aplikasi Gemini mengambil tindakan di halaman web.</translation>
 <translation id="5783009211970309878">Cetak Header dan Footer</translation>
+<translation id="5786913136266632175">Izinkan Chrome Finds dan tingkatkan kualitas model AI.</translation>
 <translation id="5789288985554424301">Memungkinkan Anda menetapkan apakah situs diizinkan menggunakan Idle Detection API.
 
 Jika kebijakan ini disetel ke 1 - <ph name="ALLOW_IDLE_DETECTION_VALUE_NAME" />, situs dapat menggunakan API tanpa meminta izin kepada pengguna.
@@ -9097,6 +9124,17 @@ Jika kebijakan ini disetel ke Salah (False) atau tidak disetel, perilaku default
 
       Jika tidak disetel, tidak ada data telemetri tambahan yang akan dilaporkan saat peristiwa perubahan kekuatan sinyal terjadi.</translation>
 <translation id="6751612743847158732">Selalu pulihkan sesi terakhir.</translation>
+<translation id="6751882390104737961">Chrome Finds adalah fitur berbasis AI yang membantu pengguna menelusuri dan memahami konten di halaman web saat ini.
+
+Nilai 0 = Mengizinkan penggunaan fitur ini, sekaligus mengizinkan Google menggunakan data yang relevan untuk meningkatkan kualitas model AI-nya. Data yang relevan mungkin mencakup perintah, input, output, materi referensi, dan masukan tertulis, bergantung pada fiturnya. Data ini juga mungkin ditinjau secara manual untuk meningkatkan kualitas model AI. Nilai 0 adalah nilai default, kecuali jika dinyatakan lain di bawah.
+
+Nilai 1 = Mengizinkan penggunaan fitur ini, tetapi tidak mengizinkan Google meningkatkan kualitas model menggunakan konten pengguna (termasuk perintah, input, output, materi referensi, dan masukan tertulis). Nilai 1 adalah nilai default untuk pengguna Enterprise yang dikelola oleh <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> dan untuk akun Education yang dikelola oleh <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Nilai 2 = Tidak mengizinkan penggunaan fitur ini.
+
+Jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6752711782954612641">Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktif, menyetel <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> akan menentukan parameter saat menelusuri URL dengan POST. Kebijakan terdiri dari pasangan nama kunci yang dipisahkan koma. Jika nilai adalah parameter template seperti <ph name="SEARCH_TERM_MARKER" />, data istilah penelusuran nyata akan menggantikannya.
 
       Jika <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> tidak disetel, permintaan penelusuran akan dikirimkan menggunakan metode GET.</translation>
@@ -10014,6 +10052,7 @@ Error yang sesuai ditampilkan jika pengguna mencoba untuk menyetel akun utama br
 
 Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Google apa pun sebagai akun utama browser di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="723103540848640830">Setel panjang minimum PIN layar kunci.</translation>
+<translation id="7231449913899026849">Jumlah maksimal koneksi serentak per server proxy untuk permintaan non-WebSocket</translation>
 <translation id="7234280155140786597">Nama hosting perpesanan asli yang dilarang (atau * untuk semua)</translation>
 <translation id="723621412149834592">Jika kebijakan ini disetel ke <ph name="BLOCK_WINDOW_PLACEMENT_POLICY_NAME" /> (nilai 2), izin penempatan jendela untuk situs akan otomatis ditolak secara default. Hal ini akan membatasi kemampuan situs untuk melihat informasi tentang layar perangkat dan menggunakan informasi tersebut untuk membuka dan menempatkan jendela atau meminta mode layar penuh pada layar tertentu.
 
@@ -10335,6 +10374,7 @@ baca lisan akan diaktifkan.</translation>
 <translation id="7481702249684965639">Sampah diaktifkan untuk pengguna.</translation>
 <translation id="7482768039644066614">Aktifkan pengambilan metadata pemuatan halaman dan model machine learning yang meningkatkan pengalaman penjelajahan</translation>
 <translation id="748292668225669178">Mengonfigurasi pemasangan <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
+<translation id="7483786326602801858">Izinkan login otomatis ke penyedia identitas cloud Microsoft® di <ph name="ANDROID_NAME" /></translation>
 <translation id="7485481791539008776">Aturan pemilihan printer default</translation>
 <translation id="7486205887492534734">Tampilkan dialog saat ada beberapa sertifikat yang cocok pada layar login</translation>
 <translation id="748873163367340515">Hanya gunakan cookie dan data penting di penelusuran.</translation>
@@ -10481,6 +10521,22 @@ Jika kebijakan ini dikosongkan, tidak akan ada pengecualian untuk <ph name="FLOA
 
       Jika perangkat pengguna tidak dikelola, kemampuan untuk menyetel kebijakan ini akan tergantung pada apakah pengguna merupakan pemilik perangkat atau bukan.</translation>
 <translation id="7570291542739287032">Khusus Cloud</translation>
+<translation id="7571158727244273239">Jika kebijakan ini disetel, jumlah maksimal koneksi simultan per server proxy untuk permintaan WebSocket akan ditentukan.
+
+Untuk mengubah batas permintaan non-WebSocket, lihat <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" />.
+
+Jika kebijakan ini tidak disetel, nilai default 32 akan digunakan.
+
+Beberapa aplikasi web diketahui memakai banyak koneksi dengan GET yang macet. Jadi, jika Anda menetapkan nilai lebih rendah dari 32, jaringan browser akan macet ketika ada terlalu banyak aplikasi web yang terbuka dengan jaringan macet.
+Beberapa server proxy tidak dapat menangani koneksi serentak per klien dalam jumlah besar. Masalah ini dapat diselesaikan dengan menyetel kebijakan ini ke nilai lebih rendah.
+
+Nilai ini harus sama dengan atau lebih tinggi dari 6.
+Jika nilai yang ditetapkan di bawah batas tersebut, nilai 6 akan digunakan.
+Jika menurunkan nilai di bawah nilai default (32), Anda harus menanggung sendiri risikonya.
+
+Nilai ini harus sama dengan atau lebih rendah dari 256.
+Jika nilai yang ditetapkan melebihi batas tersebut, nilai yang akan digunakan adalah 256.
+Jika menaikkan nilai di atas nilai default (32), Anda harus menanggung sendiri risikonya.</translation>
 <translation id="7572641760104970905">Tidak Ada Kompleksitas</translation>
 <translation id="757395965347379751">Jika setelan ini diaktifkan, <ph name="PRODUCT_NAME" /> mengizinkan sertifikat bertanda tangan SHA-1 selama sertifikat tersebut berhasil memvalidasi dan mengarah ke sertifikat CA yang terpasang secara lokal.
 
@@ -12260,6 +12316,7 @@ Jika <ph name="LIVE_CAPTION_ENABLED_POLICY_NAME" /> disetel ke Nonaktif, Terjema
 tidak akan ada URL "pelajari lebih lanjut" di penginstal. Jika ada, URL harus menggunakan
 skema HTTPS.</translation>
 <translation id="8715885991031124968">Izinkan dialog JavaScript yang dipicu dari subframe asal yang berbeda.</translation>
+<translation id="8720288018555457355">Izinkan Chrome Finds tanpa meningkatkan kualitas model AI.</translation>
 <translation id="8720547069538712402">Izinkan pengguna mengaktifkan atau menonaktifkan periksa ejaan</translation>
 <translation id="8721685661759544418">Mengaktifkan fitur baca lisan (distilasi teks dan sintesis text-to-speech) untuk halaman web</translation>
 <translation id="8726080977639508431">Kebijakan ini mengontrol cara <ph name="PRODUCT_NAME" /> menafsirkan kebijakan sitelist/daftar abu-abu untuk fitur Dukungan Browser Lama. Kebijakan ini akan memengaruhi kebijakan berikut: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" />, dan <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.

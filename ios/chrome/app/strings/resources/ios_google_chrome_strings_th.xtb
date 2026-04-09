@@ -64,6 +64,7 @@
 <translation id="2213327331203157297">หากต้องการปิดใช้โหมดปิดล็อกใน Chrome ให้ปิดโหมดนี้ใน iPhone ของคุณ</translation>
 <translation id="2242467532204595597">ใช้ Chrome ทุกครั้งที่คุณแตะลิงก์ในข้อความ เอกสาร และแอปอื่นๆ</translation>
 <translation id="2256384876478573507">เปิด Chrome ได้เร็วขึ้นเมื่อคุณพร้อมท่องเว็บใน iPhone</translation>
+<translation id="2270691132923135296">ดูข้อมูลพื้นฐานที่เป็นประโยชน์เกี่ยวกับ Chrome เพื่อเริ่มต้นใช้งาน</translation>
 <translation id="2311240109311056604">เปิดเกมไดโนเสาร์ของ Chrome</translation>
 <translation id="2339201583852607431">ระบบจะบันทึกรหัสผ่านไว้ในบัญชี Google (<ph name="EMAIL" />)</translation>
 <translation id="2342919707875585281">Chrome แชร์ตำแหน่งกับเว็บไซต์ที่คุณอนุญาต</translation>
@@ -150,7 +151,6 @@
 <translation id="4693084815234024320">คุณอยู่ในโหมดไม่ระบุตัวตนของ Chrome</translation>
 <translation id="4708857722625759026">เข้าถึง Chrome ได้เร็วขึ้นจากแถบแอปของ iPad</translation>
 <translation id="4713740144985377441">กลับไปที่ Chrome เพื่ออัปโหลดไฟล์</translation>
-<translation id="4713907610796204963">ดูข้อมูลพื้นฐานที่เป็นประโยชน์เกี่ยวกับ Chrome เพื่อเริ่มต้นใช้งาน</translation>
 <translation id="4724297637870447613">ใช้ Chrome ได้ทุกที่</translation>
 <translation id="4738647308035481133">หน้า Google Chrome</translation>
 <translation id="4742795653798179840">ลบข้อมูลใน Chrome แล้ว</translation>
@@ -296,6 +296,7 @@
 <translation id="7599894504325210080">ขยายมุมมองการป้อนข้อความอัตโนมัติของ Chrome อยู่</translation>
 <translation id="7617512710641355143">Chrome ได้รับการจัดการ</translation>
 <translation id="7626032353295482388">ยินดีต้อนรับสู่ Chrome</translation>
+<translation id="7634397654061173327">หากต้องการใช้ฟีเจอร์ความปลอดภัยสำหรับเด็กใน Chrome คุณสามารถใช้บัญชี Google ที่ตั้งค่าไว้สำหรับเด็ก หรือใช้ Chrome โดยไม่มีบัญชี</translation>
 <translation id="7641448682796883218">เคล็ดลับสำหรับ Chrome: Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้น</translation>
 <translation id="7642373780953416937">รับการแจ้งเตือนเกี่ยวกับปัญหาความเป็นส่วนตัวหรือความปลอดภัยที่ Chrome ตรวจหาให้คุณโดยอัตโนมัติ</translation>
 <translation id="7660356333829433649">กลับมาที่นี่เพื่อดูเคล็ดลับที่มีประโยชน์เพิ่มเติมในการใช้ประโยชน์สูงสุดจาก Chrome</translation>
@@ -328,6 +329,7 @@
 <translation id="8245080522851805544">รักษาความเป็นส่วนตัวในการท่องเว็บด้วยการตรวจสอบสิทธิ์อุปกรณ์เมื่อคุณปิด Chrome</translation>
 <translation id="8248887045858762645">เคล็ดลับสำหรับ Chrome</translation>
 <translation id="8265730590513812063">เปิดเมนู Chrome</translation>
+<translation id="8284376267694582021">หากต้องการใช้ฟีเจอร์ความปลอดภัยสำหรับเด็ก คุณสามารถใช้บัญชี Google ที่ตั้งค่าไว้สำหรับเด็ก หรือใช้ Chrome โดยไม่มีบัญชี <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">จะไม่มีการเข้ารหัสวิธีการชำระเงินและที่อยู่ ประวัติการท่องเว็บจาก Chrome จะไม่ซิงค์
 
 เฉพาะผู้ที่มีพาสเฟรสของคุณเท่านั้นที่จะอ่านข้อมูลที่เข้ารหัสได้ Google จะไม่ได้รับหรือจัดเก็บพาสเฟรสดังกล่าว หากลืมพาสเฟรสหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ลบข้อมูล Chrome ในบัญชี<ph name="END_LINK" /></translation>

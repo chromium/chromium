@@ -293,6 +293,7 @@
 <translation id="2251809247798634662">కొత్త అజ్ఞాత విండో</translation>
 <translation id="2253927598983295051"><ph name="APP_NAME" /> యాప్‌తో ఏమి షేర్ చేయాలో ఎంచుకోండి</translation>
 <translation id="2261570557291037252">యాప్‌నకు సంబంధించి మరింత సమాచారం</translation>
+<translation id="2270544918551255912">వెనుకకు వెళ్లడానికి అంచు నుండి స్వైప్ చేయండి</translation>
 <translation id="2276696007612801991">మీ పాస్‌వర్డ్‌లను చెక్ చేయడానికి Google ఖాతాకు సైన్ ఇన్ చేయండి</translation>
 <translation id="2281243904606300427"><ph name="TAB_TITLE" />, ఎంచుకున్న అజ్ఞాత ట్యాబ్</translation>
 <translation id="2286841657746966508">బిల్లింగ్ అడ్రస్‌</translation>
@@ -480,6 +481,7 @@
 <translation id="2989523299700148168">ఇటీవల సందర్శించినవి</translation>
 <translation id="2992473221983447149">ఇమేజ్ వివరణలు</translation>
 <translation id="2996291259634659425">రహస్య పదబంధాన్ని క్రియేట్ చేయండి</translation>
+<translation id="2996682533106928201">విస్మరించడానికి ట్యాప్ చేయండి</translation>
 <translation id="2996809686854298943">URL అవసరం</translation>
 <translation id="3024215143424744261">రీడింగ్ మోడ్ ప్రాధాన్యతలు మూసివేయబడ్డాయి</translation>
 <translation id="3026955690410463085">లింక్‌ను చేర్చండి</translation>
@@ -684,6 +686,7 @@
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">గత 4 వారాలు</translation>
 <translation id="393697183122708255">ప్రారంభించిన వాయిస్ శోధన అందుబాటులో లేదు</translation>
+<translation id="3941718885865495207">Chrome ఫైండ్స్ సమ్మతి దిగువున ఉన్న షీట్</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, పిన్ చేసిన పిక్చర్-ఇన్-పిక్చర్ ట్యాబ్</translation>
 <translation id="3950820424414687140">సైన్ ఇన్</translation>
 <translation id="395377504920307820">ఖాతా లేకుండా ఉపయోగించండి</translation>
@@ -1189,6 +1192,7 @@
 <translation id="6011308810877101166">సెర్చ్ సూచనలను మెరుగుపరుస్తుంది</translation>
 <translation id="6013305291643746595">పాత వాటి ఆధారంగా క్రమపద్ధతిలో అమర్చుతున్నారు</translation>
 <translation id="6022659036123304283">Chromeని మీకు నచ్చినట్లు తయారు చేసుకోండి</translation>
+<translation id="6023820583797130428">వెనుకకు వెళ్లడానికి మెనూను తెరవండి</translation>
 <translation id="6026538407078977628">ఫుల్ స్క్రీన్‌కు విస్తరింపజేయండి</translation>
 <translation id="6030719887161080597">యాడ్ పనితీరును అంచనా వేయడానికి సైట్‌లు ఉపయోగించే సమాచారాన్ని మేనేజ్ చేయండి</translation>
 <translation id="6039379616847168523">తదుపరి ట్యాబ్‌కు వెళ్లండి</translation>
@@ -1631,6 +1635,7 @@
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> స్టాండర్డ్ ట్యాబ్}other{<ph name="TABS_COUNT_MANY" /> స్టాండర్డ్ ట్యాబ్‌లు}}</translation>
 <translation id="7603168929588204083">చెల్లని తేదీ</translation>
 <translation id="7605594153474022051">సింక్‌ పని చేయడం లేదు</translation>
+<translation id="7608245556672190037">Chrome ఫైండ్స్ సమ్మతి ఫుల్ స్క్రీన్‌లో తెరుచుకుంది</translation>
 <translation id="7612619742409846846">Googleకు ఇలా సైన్ ఇన్ చేశారు</translation>
 <translation id="7612989789287281429">మిమ్మల్ని సైన్ ఇన్ చేస్తోంది…</translation>
 <translation id="7619072057915878432">నెట్‌వర్క్ వైఫల్యాల కారణంగా <ph name="FILE_NAME" /> డౌన్‌లోడ్ విఫలమైంది.</translation>
@@ -1638,6 +1643,7 @@
 <translation id="7628417132421583481">Password Managerకు వెళ్లండి</translation>
 <translation id="7630202231528827509">ప్రొవైడర్ URL</translation>
 <translation id="7638584964844754484">రహస్య పదబంధం చెల్లదు</translation>
+<translation id="764047009170754705">Chrome ఫైండ్స్ సమ్మతి మూసివేయబడింది</translation>
 <translation id="7646499124171960488">సురక్షితం కాని పబ్లిక్ సైట్‌ల విషయంలో మిమ్మల్ని హెచ్చరిస్తుంది</translation>
 <translation id="7646772052135772216">పాస్‌వర్డ్ సింక్ పనిచేయడం లేదు</translation>
 <translation id="7655240423373329753">గత 7 రోజులు</translation>
@@ -1862,6 +1868,7 @@
 <translation id="8473863474539038330">అడ్రస్‌లు, మరికొన్ని వివరాలు</translation>
 <translation id="847433688444405067">పరికరాలన్నింటిలో బ్రౌజ్ చేయండి</translation>
 <translation id="8477178913400731244">డేటాను తొలగించండి</translation>
+<translation id="8481771036036087705">Chrome ఫైండ్స్ సమ్మతి సగం మాత్రమే తెరుచుకుంది</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">ఇన్‌యాక్టివ్ విండోలు ఏవీ లేవు</translation>
 <translation id="8493948351860045254">స్థలాన్ని ఖాళీ చేయి</translation>

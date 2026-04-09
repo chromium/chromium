@@ -64,6 +64,7 @@ Tänk på detta:
 <translation id="2213327331203157297">Om du vill inaktivera låsningsläget i Chrome kan du stänga av det på din iPhone.</translation>
 <translation id="2242467532204595597">Använd Chrome varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>
 <translation id="2256384876478573507">Öppna Chrome snabbare när du vill surfa på din iPhone.</translation>
+<translation id="2270691132923135296">Lär dig grunderna i Chrome för att komma igång</translation>
 <translation id="2311240109311056604">Öppnar spelet Chrome Dino.</translation>
 <translation id="2339201583852607431">Lösenordet sparas i Google-kontot (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome delar din plats med webbplatser du tillåter.</translation>
@@ -150,7 +151,6 @@ Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om d
 <translation id="4693084815234024320">Du använder Chromes inkognitoläge</translation>
 <translation id="4708857722625759026">Kom åt Chrome snabbare från dockan på iPad.</translation>
 <translation id="4713740144985377441">Återgå till Chrome för att ladda upp filen</translation>
-<translation id="4713907610796204963">Lär dig grunderna i Chrome för att komma igång</translation>
 <translation id="4724297637870447613">Använd Chrome överallt</translation>
 <translation id="4738647308035481133">Google Chrome-sida</translation>
 <translation id="4742795653798179840">Data i Chrome har raderats</translation>
@@ -296,6 +296,7 @@ Du hittar fler inställningar som använder data för att förbättra Chrome-upp
 <translation id="7599894504325210080">Utökad vy för Autofyll i Chrome</translation>
 <translation id="7617512710641355143">Chrome hanteras</translation>
 <translation id="7626032353295482388">Välkommen till Chrome</translation>
+<translation id="7634397654061173327">Om du vill få säkerhetsfunktioner för barn i Chrome kan du antingen använda ett Google-konto som har konfigurerats för ett barn eller använda Chrome utan ett konto.</translation>
 <translation id="7641448682796883218">Tips för Chrome: Förbättrad säker webbsökning</translation>
 <translation id="7642373780953416937">Få varningar om integritets- eller säkerhetsproblem som identifieras automatiskt av Chrome.</translation>
 <translation id="7660356333829433649">Kom tillbaka hit för fler användbara tips på hur du får ut mesta möjliga av Chrome.</translation>
@@ -328,6 +329,7 @@ Du hittar fler inställningar som använder data för att förbättra Chrome-upp
 <translation id="8245080522851805544">Håll webbinformationen privat med enhetsautentisering när du stänger Chrome</translation>
 <translation id="8248887045858762645">Tips för Chrome</translation>
 <translation id="8265730590513812063">Öppna Chrome-menyn</translation>
+<translation id="8284376267694582021">Om du vill få säkerhetsfunktioner för barn kan du antingen använda ett Google-konto som har konfigurerats för ett barn eller använda Chrome utan ett konto. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" />.</translation>
 <translation id="8317674518145175158">Betalningsmetoder och adresser krypteras inte. Webbhistorik från Chrome synkroniseras inte.
 
 Din krypterade data kan endast läsas av en person som har din lösenfras. Lösenfrasen varken skickas till eller lagras av Google. Om du glömmer lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>

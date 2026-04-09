@@ -465,7 +465,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1717218214683051432">Sensores de movimiento</translation>
 <translation id="1717494416764505390">Buzón de correo 3</translation>
 <translation id="1717688554309417925">Servicios de débito y cheques</translation>
-<translation id="1717882880162336471">Prueba el Modo IA</translation>
 <translation id="1719434663396780149">Las alertas de bajadas de precio están activadas. Puedes cambiar esta opción en <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24x30 pulgadas</translation>
 <translation id="1720941539803966190">Cerrar tutorial</translation>
@@ -615,7 +614,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1960664692890490165">Cuando hagas compras en Chrome, verás métodos de pago sin tarjeta como opción</translation>
 <translation id="196146181975453736">Completa una comprobación de seguridad única para pagar más rápido</translation>
 <translation id="1962204205936693436">Marcadores de <ph name="DOMAIN" /></translation>
-<translation id="1966259577349514951">Pagar ahora</translation>
 <translation id="1973335181906896915">Error de serialización</translation>
 <translation id="1973785048533660168">Trabajos de oficinista y administrativo</translation>
 <translation id="1974060860693918893">Avanzado</translation>
@@ -1045,6 +1043,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2610561535971892504">Haz clic para copiar</translation>
 <translation id="2612676031748830579">Número de tarjeta</translation>
 <translation id="2612993535136743634">Se eliminarán todos los códigos de seguridad guardados en tu dispositivo y en tu cuenta de Google</translation>
+<translation id="2613758321247965174">{MINUTES,plural, =1{Activo hace 1 minuto}other{Activo hace # minutos}}</translation>
 <translation id="2614835674900828050">No disponible para esta compra</translation>
 <translation id="2616412942031748191">Marketing y optimización en buscadores</translation>
 <translation id="2618206371527040026">Conferencias y publicaciones académicas</translation>
@@ -1056,6 +1055,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2627847595568876492">Extrayendo texto del PDF...</translation>
 <translation id="2628025184666666186">Este servidor no ha podido demostrar que es <ph name="DOMAIN" /> porque está usando un certificado de seguridad en el que Chrome o la configuración de tu sistema no confían para el cifrado del tráfico web. Este problema puede deberse a una configuración incorrecta o a que un atacante ha interceptado la conexión.</translation>
 <translation id="2628224721443278970">Iniciar sesión en Microsoft OneDrive</translation>
+<translation id="2631059741268498165">Tu administrador ha localizado este dispositivo mientras estaba inhabilitado. Se ha vuelto a habilitar y está listo para usarse.</translation>
 <translation id="2631387782019878060">Código de verificación: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">No se ha podido encontrar la dirección IP del servidor de <ph name="HOST_NAME" />.</translation>
 <translation id="2638567100095052009">Escribe @ para buscar en <ph name="FEATURED_SEARCH_LIST" /></translation>
@@ -1097,7 +1097,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2696385693639654606">Chrome Enterprise Core te permite gestionar políticas, apps y extensiones del navegador desde la nube</translation>
 <translation id="2697248912349197812">Preguntar a <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Submenú disponible. Usa <ph name="SHORTCUT" /> para desplazarte hasta otras opciones.</translation>
-<translation id="2700335762333112350">Pagar más adelante</translation>
 <translation id="2701514975700770343">Boca abajo</translation>
 <translation id="2702592986366989640">Opción de precio bajo</translation>
 <translation id="2702801445560668637">Lista de lectura</translation>
@@ -1305,6 +1304,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3041584414879052436">La lista de emisores de pago aplazado está cerrada.</translation>
 <translation id="3041612393474885105">Datos del certificado</translation>
 <translation id="3045769629416806687">Deportes de riesgo</translation>
+<translation id="3047054686095898948">Guarda tu información en <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> y realiza tareas más rápido, como rellenar formularios en los productos de Google. Puedes <ph name="BEGIN_LINK" />gestionar tu información<ph name="END_LINK" /> en el <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> de <ph name="ACCOUNT" />.</translation>
 <translation id="305162504811187366">Historial de Escritorio Remoto de Chrome, incluidas las marcas de tiempo, los hosts y los IDs de sesión del cliente</translation>
 <translation id="3052868890529250114">Sueles conectarte a sitios de forma segura, pero Chrome no ha podido usar una conexión segura esta vez. Puede que un atacante esté intentando espiar o modificar tu conexión de red. <ph name="BEGIN_LEARN_MORE_LINK" />Más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Bajada de precio de <ph name="PRICE_DROP" /> en <ph name="PRODUCT_NAME" /></translation>
@@ -2446,7 +2446,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4832388034239846146">Para compartir grupos de pestañas, actualiza Chrome</translation>
 <translation id="483241715238664915">Activar advertencias</translation>
 <translation id="4832961164064927107">Barbacoas y parrilladas</translation>
-<translation id="4839984801146463230">Guarda tu información y realiza tareas más rápido, como rellenar formularios en los productos de Google. Puedes <ph name="BEGIN_LINK" />gestionar tu información<ph name="END_LINK" /> en <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> para <ph name="ACCOUNT" /></translation>
 <translation id="4840250757394056958">Ver tu historial de Chrome</translation>
 <translation id="484462545196658690">Automático</translation>
 <translation id="4844937814014739139">Desplazarse por pestañas compartidas y ampliarlas</translation>
@@ -2723,6 +2722,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5255833070095767006">350x460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{La política del administrador no recomienda copiar este archivo en <ph name="DESTINATION_NAME" />}other{La política del administrador no recomienda copiar estos archivos en <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">El grupo de pestañas <ph name="GROUP_NAME" /> ya no está disponible</translation>
+<translation id="5262342527470539728">Tu información se guarda en <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> para <ph name="ACCOUNT" /></translation>
 <translation id="5263867360296733198">Los archivos deben revisarse antes de subirse</translation>
 <translation id="5266128565379329178">Encuadernar por la parte superior</translation>
 <translation id="5269225904387178860">Perforado cuádruple en la parte inferior</translation>
@@ -2919,6 +2919,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5543564889050342791">Zoológicos, acuarios y reservas naturales</translation>
 <translation id="5543722831081909240">180 grados</translation>
 <translation id="5544836308113951378">Cruceros y chárteres</translation>
+<translation id="5546252337258681768">Dispositivo desbloqueado</translation>
 <translation id="5547939254150808298">Impresión y edición</translation>
 <translation id="554815783948612276">Proveedores de chat y de foros</translation>
 <translation id="5548606607480005320">Comprobación de seguridad</translation>
@@ -2960,6 +2961,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5600044805561809264">Puedes hacer preguntas fácilmente sobre las pestañas que compartes mientras navegas.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> o <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Administración no admitida</translation>
+<translation id="560431066250575003">{HOURS,plural, =1{Activo hace 1 hora}other{Activo hace # horas}}</translation>
 <translation id="5605249000617390290">Más información sobre el seguimiento de precios</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">Comprobar la conexión</translation>
@@ -3513,6 +3515,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6456955391422100996">Se ha retirado el anuncio.</translation>
 <translation id="6457206614190510200">Grapado en el pliegue central</translation>
 <translation id="6457455098507772300">Las alertas de bajada de precio se muestran en forma de notificaciones emergentes en el ordenador</translation>
+<translation id="6458519747993638565">Activo ahora</translation>
 <translation id="6458606150257356946">Pegar de todos modos</translation>
 <translation id="6462438303393708881">Cancelar subida</translation>
 <translation id="6464094930452079790">imágenes</translation>
@@ -4770,6 +4773,7 @@ Más información:
 Más información:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Micrófono permitido esta vez</translation>
+<translation id="8421746712901926961">Guarda tu información en <ph name="GOOGLE_WALLET_TITLE_1" /> y realiza tareas más rápido, como rellenar formularios en los productos de Google. Puedes <ph name="MANAGE_INFO_LINK" /> en <ph name="GOOGLE_WALLET_TITLE_2" /> de <ph name="ACCOUNT" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Cambiar</translation>
 <translation id="8426945547715537628">¿Permitir la anulación del teclado?</translation>
@@ -4826,6 +4830,7 @@ Más información:
 <translation id="8521812709849134608">Encimeras</translation>
 <translation id="8522180136695974431">Informes y supervisión crediticios</translation>
 <translation id="8522552481199248698">Chrome puede ayudarte a proteger tu cuenta de Google y a cambiar tu contraseña.</translation>
+<translation id="852450791482410042">Pagar ahora</translation>
 <translation id="8527228059738193856">Altavoces</translation>
 <translation id="8527681393107582734">Agricultura e ingeniería forestal</translation>
 <translation id="8528149813106025610">Ropa para niños</translation>

@@ -465,7 +465,6 @@
 <translation id="1717218214683051432">Capteurs de mouvements</translation>
 <translation id="1717494416764505390">Boîte aux lettres 3</translation>
 <translation id="1717688554309417925">Services liés aux comptes courants</translation>
-<translation id="1717882880162336471">Essayer le mode IA</translation>
 <translation id="1719434663396780149">Les alertes de réduction sont activées. Vous pouvez modifier ce paramètre dans <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 po x 30 po</translation>
 <translation id="1720941539803966190">Fermer le tutoriel</translation>
@@ -615,7 +614,6 @@
 <translation id="1960664692890490165">Lorsque vous effectuerez des achats dans Chrome, vous verrez les modes de paiement autres que les cartes comme option</translation>
 <translation id="196146181975453736">Effectuez une vérification de sécurité unique pour payer plus rapidement</translation>
 <translation id="1962204205936693436">Favoris <ph name="DOMAIN" /></translation>
-<translation id="1966259577349514951">Payer maintenant</translation>
 <translation id="1973335181906896915">Erreur de sérialisation.</translation>
 <translation id="1973785048533660168">Emplois de bureau et administratifs</translation>
 <translation id="1974060860693918893">Options avancées</translation>
@@ -1045,6 +1043,7 @@
 <translation id="2610561535971892504">Cliquer pour copier</translation>
 <translation id="2612676031748830579">Numéro de la carte</translation>
 <translation id="2612993535136743634">Tous les codes de sécurité enregistrés sur votre appareil et dans le compte Google seront supprimés</translation>
+<translation id="2613758321247965174">{MINUTES,plural, =1{Actif il y a 1 minute}one{Actif il y a # minute}other{Actif il y a # minutes}}</translation>
 <translation id="2614835674900828050">Non disponible pour cet achat</translation>
 <translation id="2616412942031748191">Référencement et marketing</translation>
 <translation id="2618206371527040026">Conférences et publications universitaires</translation>
@@ -1056,6 +1055,7 @@
 <translation id="2627847595568876492">Extraction de texte à partir d'un fichier PDF en cours…</translation>
 <translation id="2628025184666666186">Ce serveur n'a pas pu prouver qu'il s'agit bien de <ph name="DOMAIN" /> parce qu'il utilise un certificat de sécurité qui n'est pas approuvé par Chrome ni par la configuration de votre système pour le chiffrement du trafic Web. Cela peut être dû à une mauvaise configuration ou à l'interception de votre connexion par un pirate informatique.</translation>
 <translation id="2628224721443278970">Se connecter à Microsoft OneDrive</translation>
+<translation id="2631059741268498165">Votre administrateur a localisé cet appareil pendant qu'il était désactivé. Il a été réactivé et est prêt à être utilisé.</translation>
 <translation id="2631387782019878060">Code de validation : <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Impossible de trouver l'adresse IP du serveur de <ph name="HOST_NAME" />.</translation>
 <translation id="2638567100095052009">Tapez @ pour effectuer une recherche dans <ph name="FEATURED_SEARCH_LIST" /></translation>
@@ -1097,7 +1097,6 @@
 <translation id="2696385693639654606">Chrome Enterprise Core vous permet de gérer les politiques, les applis et les extensions du navigateur à partir du nuage</translation>
 <translation id="2697248912349197812">Demander à <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Sous-menu accessible, utilisez <ph name="SHORTCUT" /> pour accéder à des options supplémentaires.</translation>
-<translation id="2700335762333112350">Payer plus tard</translation>
 <translation id="2701514975700770343">Face vers le bas</translation>
 <translation id="2702592986366989640">Option à bas prix</translation>
 <translation id="2702801445560668637">Liste de lecture</translation>
@@ -2446,7 +2445,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4832388034239846146">Pour partager des groupes d'onglets, mettez à jour Chrome</translation>
 <translation id="483241715238664915">Activer les avertissements</translation>
 <translation id="4832961164064927107">Barbecue et grillade</translation>
-<translation id="4839984801146463230">Enregistrez vos renseignements et effectuez des tâches plus rapidement, comme remplir des formulaires dans les produits Google. Vous pouvez <ph name="BEGIN_LINK" />gérer vos renseignements<ph name="END_LINK" /> dans <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> pour <ph name="ACCOUNT" /></translation>
 <translation id="4840250757394056958">Afficher votre historique de Chrome</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4844937814014739139">Zoomer et faire défiler les onglets partagés</translation>
@@ -2723,6 +2721,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5255833070095767006">350 mm x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{La politique de l'administrateur ne recommande pas de transférer ce fichier vers <ph name="DESTINATION_NAME" />}one{La politique de l'administrateur ne recommande pas de transférer ce fichier vers <ph name="DESTINATION_NAME" />}other{La politique de l'administrateur ne recommande pas de transférer ces fichiers vers <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">Le groupe d'onglets « <ph name="GROUP_NAME" /> » n'est plus accessible</translation>
+<translation id="5262342527470539728">Vos informations sont enregistrées dans <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> pour <ph name="ACCOUNT" /></translation>
 <translation id="5263867360296733198">Examen requis avant le téléversement</translation>
 <translation id="5266128565379329178">Reliure en haut</translation>
 <translation id="5269225904387178860">Quadruple perforation en bas</translation>
@@ -2919,6 +2918,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5543564889050342791">Zoos, aquariums et réserves naturelles</translation>
 <translation id="5543722831081909240">180 degrés</translation>
 <translation id="5544836308113951378">Croisières et voyages organisés</translation>
+<translation id="5546252337258681768">Appareil déverrouillé</translation>
 <translation id="5547939254150808298">Impression et édition</translation>
 <translation id="554815783948612276">Fournisseurs de forum et de clavardage</translation>
 <translation id="5548606607480005320">Vérification de sécurité</translation>
@@ -2960,6 +2960,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5600044805561809264">Vous pouvez facilement poser des questions sur les onglets que vous partagez pendant que vous naviguez.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> ou <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">La gestion n'est pas prise en charge</translation>
+<translation id="560431066250575003">{HOURS,plural, =1{Actif il y a 1 heure}one{Actif il y a # heure}other{Actif il y a # heures}}</translation>
 <translation id="5605249000617390290">En savoir plus sur le suivi des prix</translation>
 <translation id="5605670050355397069">Grand livre</translation>
 <translation id="5610142619324316209">De vérifier la connexion</translation>
@@ -3513,6 +3514,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6456955391422100996">Annonce supprimée.</translation>
 <translation id="6457206614190510200">Agrafage à cheval</translation>
 <translation id="6457455098507772300">Les alertes de réduction s'affichent sous forme de notifications en fenêtre contextuelle sur votre bureau</translation>
+<translation id="6458519747993638565">Actif maintenant</translation>
 <translation id="6458606150257356946">Coller quand même</translation>
 <translation id="6462438303393708881">Annuler le téléversement</translation>
 <translation id="6464094930452079790">Images</translation>
@@ -4769,6 +4771,7 @@ Détails supplémentaires :
 Détails supplémentaires :
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Le microphone est autorisé cette fois</translation>
+<translation id="8421746712901926961">Enregistrez vos informations dans <ph name="GOOGLE_WALLET_TITLE_1" /> et effectuez des tâches plus rapidement, comme remplir des formulaires dans les produits Google. Vous pouvez <ph name="MANAGE_INFO_LINK" /> dans <ph name="GOOGLE_WALLET_TITLE_2" /> pour <ph name="ACCOUNT" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Modifier</translation>
 <translation id="8426945547715537628">Autoriser le remplacement des entrées du clavier?</translation>
@@ -4825,6 +4828,7 @@ Détails supplémentaires :
 <translation id="8521812709849134608">Comptoirs</translation>
 <translation id="8522180136695974431">Rapports et suivi de crédit</translation>
 <translation id="8522552481199248698">Chrome peut vous aider à protéger votre compte Google et à changer votre mot de passe.</translation>
+<translation id="852450791482410042">Payer maintenant</translation>
 <translation id="8527228059738193856">Haut-parleurs</translation>
 <translation id="8527681393107582734">Agriculture et foresterie</translation>
 <translation id="8528149813106025610">Vêtements pour enfants</translation>

@@ -640,6 +640,7 @@
 <translation id="3739455665973395693">Таны Google Бүртгэлээс алдагдсан ямар ч нууц үг байхгүй</translation>
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" />-д хавчуулсан</translation>
 <translation id="3740525748616366977">Энэ төхөөрөмж дээр дуут хайлт боломжгүй</translation>
+<translation id="3763110477555836428">Таныг энэ картаар тооцоо хийхэд таны бодит дэлгэрэнгүй мэдээллийг хамгаалахын тулд виртуал картын дугаарыг бөглөнө. Google Wallet-с удирдана уу. <ph name="BEGIN_LINK1" />Виртуал картын талаар нэмэлт мэдээлэл авах<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Зарим өгөгдлийг одоогоор хадгалаагүй байна</translation>
 <translation id="3770620323585347665">Цонхонд нэр өгөх</translation>
 <translation id="3771033907050503522">Мэдээний нууцлалтай цонх</translation>
@@ -683,6 +684,7 @@
 <translation id="3927692899758076493">Санс сериф</translation>
 <translation id="3931947361983910192">сүүлийн 4 долоо хоног</translation>
 <translation id="393697183122708255">Идэвхжүүлсэн дуут хайлт байхгүй байна</translation>
+<translation id="3941718885865495207">Chrome-р зөвлөмж олуулахад нэгдэх доод хүснэгт</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, Бэхэлсэн Дэлгэц доторх дэлгэц таб</translation>
 <translation id="3950820424414687140">Нэвтрэх</translation>
 <translation id="395377504920307820">Бүртгэлгүйгээр ашиглах</translation>
@@ -1188,6 +1190,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6011308810877101166">Хайлтын зөвлөмжийг сайжруулах</translation>
 <translation id="6013305291643746595">Хамгийн хуучнаар нь эрэмбэлж байна</translation>
 <translation id="6022659036123304283">Chrome-г хүссэнээрээ тохируулаарай</translation>
+<translation id="6023820583797130428">Буцаж очихын тулд цэсийг нээнэ үү</translation>
 <translation id="6026538407078977628">Бүтэн дэлгэц рүү дэлгэх</translation>
 <translation id="6030719887161080597">Сайтуудын зарын гүйцэтгэлийг хэмжихдээ ашигладаг мэдээллийг удирдах</translation>
 <translation id="6039379616847168523">Дараагийн табад очих</translation>
@@ -1632,6 +1635,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> стандарт таб}other{<ph name="TABS_COUNT_MANY" /> стандарт таб}}</translation>
 <translation id="7603168929588204083">Буруу огноо</translation>
 <translation id="7605594153474022051">Синк ажиллахгүй байна</translation>
+<translation id="7608245556672190037">Chrome-р зөвлөмж олуулахад нэгдэх сонголтыг бүтэн өндрөөр нээсэн</translation>
 <translation id="7612619742409846846">Google-д дараахаар нэвтэрсэн</translation>
 <translation id="7612989789287281429">Та нэвтэрч байна…</translation>
 <translation id="7619072057915878432">Сүлжээний доголдлоос болж <ph name="FILE_NAME" />-г татаж чадсангүй.</translation>
@@ -1639,6 +1643,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7628417132421583481">Нууц үгний менежер рүү очих</translation>
 <translation id="7630202231528827509">Үйлчилгээ үзүүлэгчийн URL</translation>
 <translation id="7638584964844754484">Нэвтрэх хэллэг буруу байна</translation>
+<translation id="764047009170754705">Chrome-р зөвлөмж олуулахад нэгдэх сонголтыг хаасан</translation>
 <translation id="7646499124171960488">Танд аюултай, олон нийтийн сайтуудын талаар сануулна</translation>
 <translation id="7646772052135772216">Нууц үгийг синк хийх ажиллахгүй байна</translation>
 <translation id="7655240423373329753">сүүлийн 7 хоног</translation>
@@ -1863,6 +1868,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8473863474539038330">Хаяг болон бусад</translation>
 <translation id="847433688444405067">Төхөөрөмжүүдэд үзэх</translation>
 <translation id="8477178913400731244">Өгөгдлийг устгах</translation>
+<translation id="8481771036036087705">Chrome-р зөвлөмж олуулахад нэгдэх сонголтыг тал өндрөөр нээсэн</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">Ямар ч идэвхгүй цонх байхгүй</translation>
 <translation id="8493948351860045254">Зай гаргах</translation>

@@ -640,6 +640,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3739455665973395693">Google аккаунтуңузда сырсөздөр уурдалган эмес</translation>
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> кызматына жаңы кыстарма кошулду</translation>
 <translation id="3740525748616366977">Бул түзмөктө айтып издөө мүмкүнчүлүгү жок</translation>
+<translation id="3763110477555836428">Чыныгы маалыматыңызды коргоо үчүн бул карта менен төлөгөнүңүздө виртуалдык картанын номери толтурулат. Параметрлерди Google Капчыктан өзгөртө аласыз. <ph name="BEGIN_LINK1" />Виртуалдык карталар жөнүндө кеңири маалымат алыңыз<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Айрым маалымат азырынча сактала элек</translation>
 <translation id="3770620323585347665">Терезене аталыш коюу</translation>
 <translation id="3771033907050503522">Жашыруун өтмөктөр</translation>
@@ -683,6 +684,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">акыркы 4 аптадагы</translation>
 <translation id="393697183122708255">Иштетилген айтып издөө мүмкүнчлгү жок</translation>
+<translation id="3941718885865495207">Chrome Finds'ка кошулуунун ылдыйкы экраны</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, Кадалган сүрөттөгү сүрөт өтмөгү</translation>
 <translation id="3950820424414687140">Кирүү</translation>
 <translation id="395377504920307820">Аккаунтсуз пайдалануу</translation>
@@ -1188,6 +1190,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6011308810877101166">Издөө сунуштарын жакшыртуу</translation>
 <translation id="6013305291643746595">Эскилери боюнча иреттелүүдө</translation>
 <translation id="6022659036123304283">Chrome'ду каалагандай ыңгайлаштырып алыңыз</translation>
+<translation id="6023820583797130428">Артка кайтуу үчүн менюну ачыңыз</translation>
 <translation id="6026538407078977628">Толук экранга жайып көрсөтүү</translation>
 <translation id="6030719887161080597">Сайттар жарнаманын майнаптуулугун талдоо үчүн колдонгон нерселерди тескейсиз</translation>
 <translation id="6039379616847168523">Кийинки өтмөккө секирүү</translation>
@@ -1632,6 +1635,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> стандарттуу өтмөк}other{<ph name="TABS_COUNT_MANY" /> стандарттуу өтмөк}}</translation>
 <translation id="7603168929588204083">Күн туура эмес көрсөтүлдү</translation>
 <translation id="7605594153474022051">Шайкештирүү иштебей жатат</translation>
+<translation id="7608245556672190037">Chrome'догу Издөө функциясын күйгүзүүчү ылдыйкы экран толугу менен ачылды</translation>
 <translation id="7612619742409846846">Google'га төмөнкү аркылуу кирип турасыз</translation>
 <translation id="7612989789287281429">Кирип жатасыз…</translation>
 <translation id="7619072057915878432"><ph name="FILE_NAME" /> тармак жөндөмсүздүгүнө байланыштуу жүктөлбөй калды.</translation>
@@ -1639,6 +1643,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7628417132421583481">Сырсөздөрдү башкаргычка өтүү</translation>
 <translation id="7630202231528827509">Провайдердин URL дареги</translation>
 <translation id="7638584964844754484">Туура эмес купуя сөз айкашы</translation>
+<translation id="764047009170754705">Chrome Finds'ка кошулуу экраны жабылды</translation>
 <translation id="7646499124171960488">Корголбогон жалпыга ачык сайттар жөнүндө эскертет</translation>
 <translation id="7646772052135772216">Сырсөздү шайкештирүү иштеген жок</translation>
 <translation id="7655240423373329753">акыркы 7 күндө</translation>
@@ -1863,6 +1868,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8473863474539038330">Даректер жана башкалар</translation>
 <translation id="847433688444405067">Түзмөктөрдү карап чыгуу</translation>
 <translation id="8477178913400731244">Колдонмодогу нерселер өчүрүлөт</translation>
+<translation id="8481771036036087705">Chrome Finds'ка кошулуу экраны жарым-жартылай ачылды</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">Жигерсиз терезелер жок</translation>
 <translation id="8493948351860045254">Орун бошотуу</translation>

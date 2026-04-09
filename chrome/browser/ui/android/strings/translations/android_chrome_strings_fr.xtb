@@ -640,6 +640,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3739455665973395693">Aucun mot de passe compromis dans votre compte Google</translation>
 <translation id="3739899004075612870">Favori ajouté dans <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">La recherche vocale n'est pas disponible sur cet appareil</translation>
+<translation id="3763110477555836428">Un numéro de carte virtuelle sera renseigné lorsque vous paierez avec cette carte pour protéger vos informations réelles. Gérez-la dans Google Wallet. <ph name="BEGIN_LINK1" />En savoir plus sur les cartes virtuelles<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Certaines données ne sont pas encore enregistrées</translation>
 <translation id="3770620323585347665">Nommer la fenêtre</translation>
 <translation id="3771033907050503522">Ongl. navig. priv.</translation>
@@ -683,6 +684,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">des quatre dernières semaines</translation>
 <translation id="393697183122708255">Aucune recherche vocale activée dispo.</translation>
+<translation id="3941718885865495207">Bottom sheet d'activation de Chrome Finds</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, onglet épinglé en Picture-in-picture</translation>
 <translation id="3950820424414687140">Se connecter</translation>
 <translation id="395377504920307820">Utiliser l'appli sans compte</translation>
@@ -1188,6 +1190,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="6011308810877101166">Améliorer les suggestions de recherche</translation>
 <translation id="6013305291643746595">Tri par les plus anciens</translation>
 <translation id="6022659036123304283">Personnalisez Chrome</translation>
+<translation id="6023820583797130428">Ouvrir le menu pour revenir en arrière</translation>
 <translation id="6026538407078977628">Afficher en plein écran</translation>
 <translation id="6030719887161080597">Gérer les informations utilisées par les sites pour mesurer les performances des annonces</translation>
 <translation id="6039379616847168523">Accéder à l'onglet suivant</translation>
@@ -1632,6 +1635,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> onglet standard}one{<ph name="TABS_COUNT_MANY" /> onglet standard}other{<ph name="TABS_COUNT_MANY" /> onglets standards}}</translation>
 <translation id="7603168929588204083">Date incorrecte</translation>
 <translation id="7605594153474022051">La synchronisation ne fonctionne pas</translation>
+<translation id="7608245556672190037">Activation de Chrome Finds ouverte à pleine hauteur</translation>
 <translation id="7612619742409846846">Connecté à Google en tant que</translation>
 <translation id="7612989789287281429">Connexion…</translation>
 <translation id="7619072057915878432">Échec du téléchargement du fichier "<ph name="FILE_NAME" />" en raison de l'échec du réseau.</translation>
@@ -1639,6 +1643,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7628417132421583481">Accéder au Gestionnaire de mots de passe</translation>
 <translation id="7630202231528827509">URL du fournisseur</translation>
 <translation id="7638584964844754484">Phrase secrète incorrecte.</translation>
+<translation id="764047009170754705">Activation de Chrome Finds fermée</translation>
 <translation id="7646499124171960488">Vous avertit pour les sites publics non sécurisés</translation>
 <translation id="7646772052135772216">La synchronisation du mot de passe ne fonctionne pas</translation>
 <translation id="7655240423373329753">sept derniers jours</translation>
@@ -1863,6 +1868,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8473863474539038330">Adresses et autres</translation>
 <translation id="847433688444405067">Naviguez sur tous vos appareils</translation>
 <translation id="8477178913400731244">Supprimer les données</translation>
+<translation id="8481771036036087705">Activation de Chrome Finds ouverte à mi-hauteur</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">Aucune fenêtre inactive</translation>
 <translation id="8493948351860045254">Libérer de l'espace</translation>

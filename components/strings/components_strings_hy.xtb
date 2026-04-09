@@ -469,7 +469,6 @@
 <translation id="1717218214683051432">Շարժման տվիչներ</translation>
 <translation id="1717494416764505390">Փոստարկղ 3</translation>
 <translation id="1717688554309417925">Դեբետային և ստուգման ծառայություններ</translation>
-<translation id="1717882880162336471">Փորձեք ԱԲ ռեժիմը</translation>
 <translation id="1719434663396780149">Գների իջեցման մասին ծանուցումները միացված են։ Այս պարամետրը փոխելու համար անցեք <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />։</translation>
 <translation id="1719838434204287058">24 x 30 դյույմ</translation>
 <translation id="1720941539803966190">Փակել ուղեցույցը</translation>
@@ -619,7 +618,6 @@
 <translation id="1960664692890490165">Chrome-ում գնումներ կատարելիս որպես տարբերակ դիտարկեք առանց քարտի վճարման եղանակները</translation>
 <translation id="196146181975453736">Անցեք անվտանգության մեկանգամյա ստուգում՝ ավելի արագ վճարելու համար</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> տիրույթի էջանիշներ</translation>
-<translation id="1966259577349514951">Վճարել հիմա</translation>
 <translation id="1973335181906896915">Serialization error</translation>
 <translation id="1973785048533660168">Աշխատանք սպասարկման և վարչական ոլորտում</translation>
 <translation id="1974060860693918893">Լրացուցիչ</translation>
@@ -1061,6 +1059,7 @@
 <translation id="2627847595568876492">Տեքստի արտահանում PDF-ից...</translation>
 <translation id="2628025184666666186">Մենք չկարողացանք ստուգել <ph name="DOMAIN" /> սերվերի իսկությունը, քանի որ Chrome դիտարկիչը կամ վեբ թրաֆիկի գաղտնագրման համակարգը անվտանգության տրամադրված վկայականն անվստահելի է համարում։ Հնարավոր է՝ սերվերը սխալ է կարգավորված, կամ ինչ-որ մեկը փորձում է հափշտակել ձեր տվյալները։</translation>
 <translation id="2628224721443278970">Մուտք գործել Microsoft OneDrive</translation>
+<translation id="2631059741268498165">Ձեր ադմինիստրատորը տեղորոշել է այս սարքը անջատված ժամանակ։ Այն նորից միացված է և պատրաստ է օգտագործման։</translation>
 <translation id="2631387782019878060">Հաստատման կոդ՝ <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Չհաջողվեց գտնել <ph name="HOST_NAME" /> տիրույթի սերվերի IP հասցեն։</translation>
 <translation id="2638567100095052009">Մուտքագրեք @ նշանը՝ <ph name="FEATURED_SEARCH_LIST" /> համակարգ(եր)ում որոնելու համար</translation>
@@ -1102,7 +1101,6 @@
 <translation id="2696385693639654606">Chrome Enterprise Core-ը թույլ է տալիս ձեզ ամպից կառավարել դիտարկիչի կանոնները, հավելվածները և ընդլայնումները</translation>
 <translation id="2697248912349197812">Հարցրեք <ph name="KEYWORD_SHORT_NAME" />-ին</translation>
 <translation id="2699273987028089219">Ենթացանկը հասանելի է, օգտագործեք <ph name="SHORTCUT" /> դյուրանցումը՝ լրացուցիչ ընտրանքներին անցնելու համար։</translation>
-<translation id="2700335762333112350">Վճարել ավելի ուշ</translation>
 <translation id="2701514975700770343">Երեսի կողմով ներքև</translation>
 <translation id="2702592986366989640">Ցածր գնով տարբերակ</translation>
 <translation id="2702801445560668637">Ընթերցանության ցանկ</translation>
@@ -2453,7 +2451,6 @@
 <translation id="4832388034239846146">Ներդիրների խմբերով կիսվելու համար թարմացրեք Chrome-ը</translation>
 <translation id="483241715238664915">Միացնել զգուշացումները</translation>
 <translation id="4832961164064927107">Խորոված և գրիլ</translation>
-<translation id="4839984801146463230">Պահեք ձեր տեղեկությունները, որպեսզի ավելի արագ կատարեք տարբեր գործողություններ, օրինակ՝ լրացնեք ձևերը Google-ի պրոդուկտներում։ Դուք կարող եք <ph name="BEGIN_LINK" />կառավարել ձեր տեղեկությունները<ph name="END_LINK" /> <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />-ում՝ <ph name="ACCOUNT" /> հաշվի համար</translation>
 <translation id="4840250757394056958">Դիտել Chrome-ի պատմությունը</translation>
 <translation id="484462545196658690">Ավտոմատ</translation>
 <translation id="4844937814014739139">Ոլորել և խոշորացնել ընդհանուր ներդիրները</translation>
@@ -2731,6 +2728,7 @@
 <translation id="5255833070095767006">350 x 460 մմ</translation>
 <translation id="5257739419779698609">{0,plural, =1{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը պատճենել այստեղ՝ <ph name="DESTINATION_NAME" />}one{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը պատճենել այստեղ՝ <ph name="DESTINATION_NAME" />}other{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլերը պատճենել այստեղ՝ <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">«<ph name="GROUP_NAME" />» ներդիրների խումբն այլևս հասանելի չէ</translation>
+<translation id="5262342527470539728">Ձեր տեղեկությունները պահվել են <ph name="ACCOUNT" /> հաշվի համար՝ <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />-ում</translation>
 <translation id="5263867360296733198">Նախքան վերբեռնելը ստուգեք ֆայլերը</translation>
 <translation id="5266128565379329178">Ամրակար վերևում</translation>
 <translation id="5269225904387178860">Չորս անցք ներքևում</translation>
@@ -2929,6 +2927,7 @@
 <translation id="5543564889050342791">Կենդանաբանական այգիներ, ակվարիումներ և արգելոցներ</translation>
 <translation id="5543722831081909240">180 աստիճան</translation>
 <translation id="5544836308113951378">Կրուիզներ և չարտերային թռիչքներ</translation>
+<translation id="5546252337258681768">Սարքն ապակողպված է</translation>
 <translation id="5547939254150808298">Տպագրություն և հրատարակություն</translation>
 <translation id="554815783948612276">Ֆորումների և զրույցների ծառայությունների մատակարարներ</translation>
 <translation id="5548606607480005320">Անվտանգության ստուգում</translation>
@@ -4781,6 +4780,7 @@
 Լրացուցիչ տեղեկություններ՝
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Տրվել է խոսափողն օգտագործելու մեկանգամյա թույլտվություն</translation>
+<translation id="8421746712901926961">Պահեք ձեր տեղեկությունները <ph name="GOOGLE_WALLET_TITLE_1" />-ում, որպեսզի ավելի արագ կատարեք տարբեր գործողություններ, օրինակ՝ ձևեր լրացնեք Google-ի պրոդուկտներում։ Դուք կարող եք <ph name="MANAGE_INFO_LINK" /> <ph name="ACCOUNT" /> հաշվի համար՝ <ph name="GOOGLE_WALLET_TITLE_2" />-ում։</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Փոխել</translation>
 <translation id="8426945547715537628">Թույլատրե՞լ ստեղնաշարի փոխարինումը</translation>
@@ -4837,6 +4837,7 @@
 <translation id="8521812709849134608">Սեղանածածկեր</translation>
 <translation id="8522180136695974431">Վարկային հաշվետվություններ և մոնիտորինգ</translation>
 <translation id="8522552481199248698">Chrome-ը կօգնի պաշտպանել ձեր Google հաշիվը և փոխել գաղտնաբառը։</translation>
+<translation id="852450791482410042">Վճարել հիմա</translation>
 <translation id="8527228059738193856">Բարձրախոսներ</translation>
 <translation id="8527681393107582734">Գյուղատնտեսություն և անտառային տնտեսություն</translation>
 <translation id="8528149813106025610">Մանկական հագուստ</translation>

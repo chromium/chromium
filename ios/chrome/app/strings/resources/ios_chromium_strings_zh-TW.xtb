@@ -132,6 +132,7 @@
 <translation id="377649297473651452">Chromium 的自動填入檢視畫面已展開</translation>
 <translation id="3780779443901618967">這項防護機制分析的網站資料比標準防護來得多，因此即使是 Google 不知道的網站，這項防護機制也能提供危險網站警告。你可以選擇略過 Chromium 的警告。</translation>
 <translation id="3805899903892079518">Chromium 無法存取您的相片或影片，請前往「iOS 設定」中的 [隱私權] &gt; [相片] 啟用存取權。</translation>
+<translation id="3809591243528646631">如要使用兒童安全功能，可以使用為孩子設定的 Google 帳戶，也可以不登入帳戶直接使用 Chromium。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3816686541346279443">Chromium 會詢問你是否要儲存密碼。</translation>
 <translation id="3827545470516145620">這部裝置即將啟用標準安全防護機制</translation>
 <translation id="3833326979834193417">Chromium 每天都會自動執行安全檢查，防範資料侵害或不安全網站等等。你可以前往「設定」進一步瞭解安全檢查功能。</translation>
@@ -167,6 +168,7 @@
 如要變更這項設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chromium 資料<ph name="END_LINK" />。</translation>
 <translation id="4578500311756617174">Chromium 提示：將 Chromium 設為預設瀏覽器</translation>
 <translation id="458786853569524949">現在隨時可以使用 Chromium 開啟電子郵件、文件和其他應用程式中的連結。</translation>
+<translation id="4625730353066900738">Chromium 基本操作一次上手</translation>
 <translation id="4633738821577273991">一併為這個 Chromium 設定檔啟用安全瀏覽強化防護功能</translation>
 <translation id="4654936625574199632">為協助改善應用程式，Chromium 會將使用情形和當機報告傳送給 Google。<ph name="BEGIN_LINK" />管理設定<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">開啟 Chromium 掃描器</translation>
@@ -177,7 +179,6 @@
 <translation id="4856138222358683580">Chromium 快捷操作</translation>
 <translation id="4869706986935301458">在 iPhone 上秒開 Chromium</translation>
 <translation id="4904452304169763785">Chromium 偵測到任何隱私權或安全性問題，都會發出警示。</translation>
-<translation id="4908570938463711775">瞭解 Chromium 的基本實用功能，協助你快速上手</translation>
 <translation id="4962295957157529683">請先完成正在其他已開啟的 Chromium 視窗中執行的動作。</translation>
 <translation id="4985291216379576555">目前處於離線狀態，因此 Chromium 無法檢查更新</translation>
 <translation id="4996471330284142407">Chromium 操作簡便、安全且速度遠勝以往，讓你事半功倍。</translation>
@@ -353,6 +354,7 @@
 <translation id="8900052431807804054">取得 Chromium 最強大的安全防護機制</translation>
 <translation id="8908791447256515663">從 iPad Dock 更快存取 Chromium。</translation>
 <translation id="8925569192291721236">隨時掌握價格追蹤動態和 Chromium 提示。</translation>
+<translation id="8939412301975414416">如要在 Chromium 中使用兒童安全功能，可以使用為孩子設定的 Google 帳戶，也可以不登入帳戶直接使用 Chromium。</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{如果 Chromium 閒置 {THRESHOLD} 分鐘，就會執行這些動作}other{如果 Chromium 閒置 {THRESHOLD} 分鐘，就會執行這些動作}}</translation>
 <translation id="8963279154877372067">允許 Chromium 顯示通知才能接收降價快訊</translation>
 <translation id="8975812008711371178">在 Chromium 中使用語音搜尋</translation>

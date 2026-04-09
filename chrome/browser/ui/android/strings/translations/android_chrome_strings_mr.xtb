@@ -293,6 +293,7 @@
 <translation id="2251809247798634662">नवीन गुप्त विंडो</translation>
 <translation id="2253927598983295051"><ph name="APP_NAME" /> सोबत काय शेअर करायचे ते निवडा</translation>
 <translation id="2261570557291037252">अधिक ॲप माहिती</translation>
+<translation id="2270544918551255912">मागे जाण्यासाठी कडेवरून स्वाइप करा</translation>
 <translation id="2276696007612801991">तुमचे पासवर्ड तपासण्यासाठी तुमच्या Google खात्यामध्ये साइन इन करा</translation>
 <translation id="2281243904606300427"><ph name="TAB_TITLE" />, निवडलेला गुप्त टॅब</translation>
 <translation id="2286841657746966508">बिलिंग पत्ता</translation>
@@ -480,6 +481,7 @@
 <translation id="2989523299700148168">अलीकडे भेट दिलेले</translation>
 <translation id="2992473221983447149">इमेजची वर्णने</translation>
 <translation id="2996291259634659425">सांकेतिक पासफ्रेझ तयार करा</translation>
+<translation id="2996682533106928201">डिसमिस करण्यासाठी टॅप करा</translation>
 <translation id="2996809686854298943">URL आवश्यक आहे</translation>
 <translation id="3024215143424744261">वाचन मोड प्राधान्ये बंद केली आहेत</translation>
 <translation id="3026955690410463085">लिंकचा समावेश करा</translation>
@@ -684,6 +686,7 @@
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">मागील 4 आठवड्याचा</translation>
 <translation id="393697183122708255">सक्षम केलेला कोणताही व्हॉइस शोध उपलब्ध नाही</translation>
+<translation id="3941718885865495207">Chrome Finds ची तळाशी असलेली निवड शीट</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, पिन केलेला चित्रात-चित्र टॅब</translation>
 <translation id="3950820424414687140">साइन इन करा</translation>
 <translation id="395377504920307820">खात्याशिवाय वापरा</translation>
@@ -1189,6 +1192,7 @@
 <translation id="6011308810877101166">शोध सूचनांमध्ये सुधारणा करा</translation>
 <translation id="6013305291643746595">सर्वात जुनेनुसार क्रमाने लावत आहे</translation>
 <translation id="6022659036123304283">Chrome ला तुमच्या आवडीनुसार बनवा</translation>
+<translation id="6023820583797130428">मागे जाण्यासाठी मेनू उघडा</translation>
 <translation id="6026538407078977628">फुलस्क्रीनवर विस्तार करा</translation>
 <translation id="6030719887161080597">जाहिरातीच्या परफॉर्मन्सचे मापन करण्यासाठी साइट वापरत असलेल्या माहितीचे व्यवस्थापन करा</translation>
 <translation id="6039379616847168523">पुढील टॅबवर जा</translation>
@@ -1633,6 +1637,7 @@
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> साधारण टॅब}other{<ph name="TABS_COUNT_MANY" /> साधारण टॅब}}</translation>
 <translation id="7603168929588204083">चुकीची तारीख</translation>
 <translation id="7605594153474022051">सिंक कार्य करत नाही</translation>
+<translation id="7608245556672190037">Chrome Finds ची निवड पूर्ण उंचीवर उघडली आहे</translation>
 <translation id="7612619742409846846">Google मध्ये हे म्हणून साइन इन केले</translation>
 <translation id="7612989789287281429">तुम्हाला साइन इन करत आहे…</translation>
 <translation id="7619072057915878432">नेटवर्क बिघाडामुळे <ph name="FILE_NAME" /> डाउनलोड अयशस्वी झाले.</translation>
@@ -1640,6 +1645,7 @@
 <translation id="7628417132421583481">Password Manager वर जा</translation>
 <translation id="7630202231528827509">पुरवठादाराची URL</translation>
 <translation id="7638584964844754484">अयोग्य सांकेतिक पासफ्रेझ</translation>
+<translation id="764047009170754705">Chrome Finds ची निवड बंद केली आहे</translation>
 <translation id="7646499124171960488">तुम्हाला असुरक्षित सार्वजनिक साइटसाठी चेतावणी देते</translation>
 <translation id="7646772052135772216">पासवर्ड सिंक काम करत नाही</translation>
 <translation id="7655240423373329753">मागील ७ दिवसांमधील</translation>
@@ -1864,6 +1870,7 @@
 <translation id="8473863474539038330">अ‍ॅड्रेस आणि बरेच काही</translation>
 <translation id="847433688444405067">सर्व डिव्हाइसवर ब्राउझ करा</translation>
 <translation id="8477178913400731244">डेटा हटवा</translation>
+<translation id="8481771036036087705">Chrome Finds ची निवड अर्ध्या उंचीवर उघडली आहे</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">कोणत्याही इनॅक्टिव्ह विंडो नाहीत</translation>
 <translation id="8493948351860045254">जागा मोकळी करा</translation>

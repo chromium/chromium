@@ -134,6 +134,7 @@ Pirms kontu pārslēgšanas uzgaidiet dažas minūtes. Ja pārslēgsiet kontus t
 <translation id="377649297473651452">Chromium automātiskās aizpildes izvērstais skats</translation>
 <translation id="3780779443901618967">Tiek rādīts brīdinājums par bīstamām vietnēm (pat ja Google par tām iepriekš nezināja), analizējot vairāk datu no vietnēm, nekā analizē standarta aizsardzība. Varat izlaist Chromium brīdinājumus.</translation>
 <translation id="3805899903892079518">Chromium nevar piekļūt jūsu fotoattēliem un videoklipiem. Iespējojiet piekļuvi: iOS Settings &gt; Privacy &gt; Photos.</translation>
+<translation id="3809591243528646631">Lai iegūtu bērnu drošības funkcijas, varat izmantot Google kontu, kas ir iestatīts bērnam, vai izmantot pārlūku Chromium bez konta. <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
 <translation id="3816686541346279443">Pārlūkā Chromium tiks piedāvāts saglabāt jūsu paroli.</translation>
 <translation id="3827545470516145620">Jūs saņemat standarta drošības aizsardzību šajā ierīcē.</translation>
 <translation id="3833326979834193417">Pārlūkā Chromium katru dienu tiek automātiski veikta drošības pārbaude, lai pasargātu jūs no datu aizsardzības pārkāpumiem, nedrošām vietnēm un citiem apdraudējumiem. Plašāka informācija par drošības pārbaudi ir pieejama sadaļā Iestatījumi.</translation>
@@ -169,6 +170,7 @@ Jūsu dati ir šifrēti, izmantojot ieejas frāzi. Ievadiet ieejas frāzi, lai i
 Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chromium datus savā kontā<ph name="END_LINK" />.</translation>
 <translation id="4578500311756617174">Chromium padoms: pārlūka Chromium izmantošana pēc noklusējuma</translation>
 <translation id="458786853569524949">Tagad varat izmantot Chromium ikreiz, kad pieskaraties saitēm e-pasta ziņojumos, dokumentos un citās lietotnēs.</translation>
+<translation id="4625730353066900738">Lai sāktu darbu, uzziniet noderīgu Chromium pamatinformāciju</translation>
 <translation id="4633738821577273991">Iegūstiet šim Chromium profilam arī drošu pārlūkošanu ar papildu aizsardzību</translation>
 <translation id="4654936625574199632">Lai palīdzētu uzlabot lietotni, uzņēmumam Google tiek sūtīti lietojuma un avāriju dati no pārlūka Chromium. <ph name="BEGIN_LINK" />Pārvaldīt<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Ieslēgt Chromium skeneri</translation>
@@ -179,7 +181,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chromium datus
 <translation id="4856138222358683580">Darbības pārlūkā Chromium</translation>
 <translation id="4869706986935301458">Atveriet pārlūku Chromium uzreiz, kad izmantojat iPhone tālruni</translation>
 <translation id="4904452304169763785">Brīdinājumi par visām ar konfidencialitāti vai drošību saistītām problēmām, kas konstatētas pārlūkā Chromium</translation>
-<translation id="4908570938463711775">Lai sāktu darbu, uzziniet noderīgu Chromium pamatinformāciju</translation>
 <translation id="4962295957157529683">Pabeidziet citā atvērtā Chromium logā iesākto darbu.</translation>
 <translation id="4985291216379576555">Bezsaistē, pārlūkā Chromium nevar pārbaudīt atjauninājumu pieejamību.</translation>
 <translation id="4996471330284142407">Izmantojiet vairāk iespēju vienkāršajā un drošajā pārlūkā Chromium, kas tagad ir vēl ātrāks.</translation>
@@ -355,6 +356,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="8900052431807804054">Iegūstiet visaugstāko Chromium drošības līmeni</translation>
 <translation id="8908791447256515663">Varat ātrāk piekļūt pārlūkam Chromium no iPad planšetdatora lietotņu sadaļas.</translation>
 <translation id="8925569192291721236">Sekojiet līdzi cenu izsekošanas jaunumiem un Chromium padomiem.</translation>
+<translation id="8939412301975414416">Lai pārlūkā Chromium iegūtu bērnu drošības funkcijas, varat izmantot Google kontu, kas ir iestatīts bērnam, vai izmantot pārlūku Chromium bez konta.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Tas notiek, ja pārlūks Chromium nav izmantots {THRESHOLD} minūti.}zero{Tas notiek, ja pārlūks Chromium nav izmantots {THRESHOLD} minūtes.}one{Tas notiek, ja pārlūks Chromium nav izmantots {THRESHOLD} minūti.}other{Tas notiek, ja pārlūks Chromium nav izmantots {THRESHOLD} minūtes.}}</translation>
 <translation id="8963279154877372067">Atļaujiet Chromium paziņojumus, lai saņemtu brīdinājumus par cenu kritumu</translation>
 <translation id="8975812008711371178">Meklēt ar balsi pārlūkā Chromium</translation>

@@ -64,6 +64,7 @@
 <translation id="2213327331203157297">‏لإيقاف "وضع التأمين" (Lockdown Mode) في Chrome، عليك إيقافه على جهاز iPhone.</translation>
 <translation id="2242467532204595597">‏يمكنك فتح Chrome عند النقر على الروابط في الرسائل والمستندات والتطبيقات الأخرى.</translation>
 <translation id="2256384876478573507">‏أصبح فتح Chrome على هاتف iPhone أسرع متى أردت تصفُّح الإنترنت.</translation>
+<translation id="2270691132923135296">‏مزيد من المعلومات عن أساسيات Chrome المفيدة لبدء استخدامه</translation>
 <translation id="2311240109311056604">‏يؤدي هذا الاختصار إلى فتح لعبة الديناصور في Chrome.</translation>
 <translation id="2339201583852607431">‏سيتم حفظ كلمة المرور في حسابك على Google (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">‏يشارك Chrome موقعك الجغرافي مع المواقع الإلكترونية التي تسمح بها.</translation>
@@ -150,7 +151,6 @@
 <translation id="4693084815234024320">‏أنت تستخدم وضع التصفُّح المتخفي في Chrome</translation>
 <translation id="4708857722625759026">‏يمكنك الوصول إلى Chrome بشكل أسرع من خلال "شريط التطبيقات" على iPad.</translation>
 <translation id="4713740144985377441">‏ارجع إلى Chrome لتحميل الملف</translation>
-<translation id="4713907610796204963">‏مزيد من المعلومات عن أساسيات Chrome المفيدة لبدء استخدامه</translation>
 <translation id="4724297637870447613">‏استخدام Chrome في كل مكان</translation>
 <translation id="4738647308035481133">‏صفحة Google Chrome</translation>
 <translation id="4742795653798179840">‏تم حذف بيانات Chrome</translation>
@@ -296,6 +296,7 @@
 <translation id="7599894504325210080">‏عرض موسَّع لميزة "الملء التلقائي" في Chrome</translation>
 <translation id="7617512710641355143">‏متصفِّح Chrome مُدار</translation>
 <translation id="7626032353295482388">‏مرحبًا بك في Chrome‏</translation>
+<translation id="7634397654061173327">‏للاستفادة من ميزات أمان الأطفال في Chrome، يمكنك إما استخدام حساب Google تم إعداده لطفل أو استخدام Chrome بدون حساب.</translation>
 <translation id="7641448682796883218">‏نصيحة من Chrome: حان وقت "الحماية المحسّنة للتصفّح الآمن"</translation>
 <translation id="7642373780953416937">‏يمكنك تلقّي تنبيهات بشأن أي مشاكل تتعلّق بالخصوصية أو الأمان يرصدها Chrome تلقائيًا.</translation>
 <translation id="7660356333829433649">‏يمكنك الرجوع إلى هذه الصفحة للحصول على المزيد من النصائح المفيدة للاستفادة إلى أقصى حدّ من Chrome.</translation>
@@ -328,6 +329,7 @@
 <translation id="8245080522851805544">‏للحفاظ على خصوصية بيانات التصفُّح المتخفي، ننصحك بتفعيل خيار مصادقة الجهاز عند إغلاق Chrome</translation>
 <translation id="8248887045858762645">‏معلومة مفيدة عن Chrome</translation>
 <translation id="8265730590513812063">‏افتح قائمة Chrome</translation>
+<translation id="8284376267694582021">‏للحصول على ميزات أمان الأطفال، يمكنك إما استخدام حساب Google تم إعداده لطفل أو استخدام Chrome بدون حساب. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">‏لن يتم تشفير طُرق الدفع والعناوين. ولن تتم مزامنة سجلّ التصفُّح من Chrome.
 
 ولا يمكن لأحد الوصول إلى بياناتك المشفّرة بدون استخدام عبارة المرور الخاصة بك. ولا تحصل Google على عبارة المرور هذه أو تخزّنها. في حال نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="BEGIN_LINK" />حذف بيانات Chrome في حسابك<ph name="END_LINK" />.</translation>

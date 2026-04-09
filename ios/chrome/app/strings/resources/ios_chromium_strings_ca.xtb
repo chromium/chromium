@@ -134,6 +134,7 @@ Espera uns quants minuts abans de canviar de compte. Si canvies de compte ara, a
 <translation id="377649297473651452">Visualització ampliada de la funció Emplenament automàtic de Chromium</translation>
 <translation id="3780779443901618967">T'avisa de llocs web perillosos, fins i tot dels que Google no coneixia abans, ja que analitza més dades dels llocs web que la protecció estàndard. Pots optar per ometre els advertiments de Chromium.</translation>
 <translation id="3805899903892079518">Chromium no té accés als vostres vídeos o fotos. Permeteu-li l'accés a iOS, a Configuració &gt; Privadesa &gt; Fotos.</translation>
+<translation id="3809591243528646631">Per obtenir funcions de seguretat infantil, pots utilitzar un Compte de Google que estigui configurat per a un infant o utilitzar Chromium sense cap compte. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="3816686541346279443">Chromium t'oferirà desar la contrasenya.</translation>
 <translation id="3827545470516145620">Tindràs protecció de seguretat estàndard en aquest dispositiu</translation>
 <translation id="3833326979834193417">Chromium executa automàticament la funció Comprovació de seguretat cada dia per protegir-te de violacions de les dades, de llocs web no segurs i més. Pots obtenir més informació sobre Comprovació de seguretat a Configuració.</translation>
@@ -169,6 +170,7 @@ Les teves dades s'encripten amb la teva frase de contrasenya. Per utilitzar i de
 Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix les dades de Chromium del compte<ph name="END_LINK" />.</translation>
 <translation id="4578500311756617174">Consell de Chromium: fes servir Chromium de manera predeterminada</translation>
 <translation id="458786853569524949">Ara pots utilitzar Chromium cada vegada que toquis enllaços en correus electrònics, documents i altres aplicacions.</translation>
+<translation id="4625730353066900738">Aprèn els conceptes bàsics útils sobre Chromium per començar</translation>
 <translation id="4633738821577273991">Obtén també Navegació segura millorada per a aquest perfil de Chromium</translation>
 <translation id="4654936625574199632">Per ajudar a millorar l'aplicació, Chromium envia dades d'ús i de bloqueig a Google. <ph name="BEGIN_LINK" />Gestiona<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Activa l'escàner de Chromium</translation>
@@ -179,7 +181,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="4856138222358683580">Accions de Chromium</translation>
 <translation id="4869706986935301458">Obre Chromium a l'instant quan siguis a l'iPhone</translation>
 <translation id="4904452304169763785">Alertes sobre qualsevol problema de privadesa o de seguretat que Chromium detecti.</translation>
-<translation id="4908570938463711775">Aprèn els conceptes bàsics útils sobre Chromium per començar</translation>
 <translation id="4962295957157529683">Acaba el que estaves fent a l'altra finestra de Chromium oberta.</translation>
 <translation id="4985291216379576555">Sense connexió; Chromium no pot cercar actualitzacions</translation>
 <translation id="4996471330284142407">Augmenta la teva productivitat amb un Chromium senzill, segur i més ràpid que mai.</translation>
@@ -355,6 +356,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="8900052431807804054">Obtén la seguretat més efectiva de Chromium</translation>
 <translation id="8908791447256515663">Accedeix a Chromium més ràpidament des del Dock de l'iPad.</translation>
 <translation id="8925569192291721236">Estigues al dia de les actualitzacions del seguiment de preus i dels consells de Chromium.</translation>
+<translation id="8939412301975414416">Per obtenir funcions de seguretat infantil a Chromium, pots utilitzar un Compte de Google que estigui configurat per a un infant o utilitzar Chromium sense cap compte.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Es produeix quan Chromium no s'utilitza durant {THRESHOLD} minut}other{Es produeix quan Chromium no s'utilitza durant {THRESHOLD} minuts}}</translation>
 <translation id="8963279154877372067">Permet que les notificacions de Chromium incloguin alertes de baixada de preu</translation>
 <translation id="8975812008711371178">Cerca amb la veu a Chromium.</translation>

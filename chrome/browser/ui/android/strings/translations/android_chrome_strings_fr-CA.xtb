@@ -640,6 +640,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3739455665973395693">Aucun mot de passe compromis dans votre compte Google</translation>
 <translation id="3739899004075612870">Ajouté aux favoris dans <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Cet appareil ne prend pas en charge la recherche vocale</translation>
+<translation id="3763110477555836428">Un numéro de carte virtuelle sera rempli lorsque vous paierez avec cette carte pour protéger vos informations. Gérez cela dans Google Portefeuille. <ph name="BEGIN_LINK1" />En savoir plus sur les cartes virtuelles<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Certaines données ne sont pas encore enregistrées</translation>
 <translation id="3770620323585347665">Nommer la fenêtre</translation>
 <translation id="3771033907050503522">Onglets nav. priv.</translation>
@@ -683,6 +684,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3927692899758076493">Sans empattement</translation>
 <translation id="3931947361983910192">des 4 dernières semaines</translation>
 <translation id="393697183122708255">Aucune recherche vocale activée</translation>
+<translation id="3941718885865495207">Zone de contenu dans le bas de l'écran concernant l'activation des résultats de Chrome</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, onglet épinglé en mode Incrustation d'image</translation>
 <translation id="3950820424414687140">Connexion</translation>
 <translation id="395377504920307820">Utiliser sans compte</translation>
@@ -1188,6 +1190,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="6011308810877101166">Améliorer les suggestions de recherche</translation>
 <translation id="6013305291643746595">Tri par le plus ancien</translation>
 <translation id="6022659036123304283">Appropriez-vous Chrome</translation>
+<translation id="6023820583797130428">Ouvrir le menu pour revenir en arrière</translation>
 <translation id="6026538407078977628">Ouvrir la fenêtre en plein écran</translation>
 <translation id="6030719887161080597">Gérer les informations utilisées par les sites pour mesurer les performances des annonces</translation>
 <translation id="6039379616847168523">Accéder à l'onglet suivant</translation>
@@ -1632,6 +1635,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> onglet standard}one{<ph name="TABS_COUNT_MANY" /> onglet standard}other{<ph name="TABS_COUNT_MANY" /> onglets standards}}</translation>
 <translation id="7603168929588204083">Date incorrecte</translation>
 <translation id="7605594153474022051">La synchronisation ne fonctionne pas</translation>
+<translation id="7608245556672190037">La fenêtre d'activation des résultats de Chrome est ouverte à pleine hauteur</translation>
 <translation id="7612619742409846846">Connecté(e) à Google en tant que</translation>
 <translation id="7612989789287281429">Connexion en cours…</translation>
 <translation id="7619072057915878432">Échec du téléchargement de <ph name="FILE_NAME" /> en raison de défaillances du réseau.</translation>
@@ -1639,6 +1643,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7628417132421583481">Accéder au gestionnaire de mots de passe</translation>
 <translation id="7630202231528827509">URL du fournisseur</translation>
 <translation id="7638584964844754484">Mot de passe multiterme incorrect</translation>
+<translation id="764047009170754705">La fenêtre d'activation des résultats de Chrome est fermée</translation>
 <translation id="7646499124171960488">Vous avertit des sites publics non sécurisés</translation>
 <translation id="7646772052135772216">La synchronisation des mots de passe ne fonctionne pas</translation>
 <translation id="7655240423373329753">Sept derniers jours</translation>
@@ -1863,6 +1868,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8473863474539038330">Adresses et plus</translation>
 <translation id="847433688444405067">Passez d'un appareil à l'autre</translation>
 <translation id="8477178913400731244">Supprimer les données</translation>
+<translation id="8481771036036087705">La fenêtre d'activation des résultats de Chrome est ouverte à mi-hauteur</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">Aucune fenêtre inactive</translation>
 <translation id="8493948351860045254">Libérer de l'espace</translation>

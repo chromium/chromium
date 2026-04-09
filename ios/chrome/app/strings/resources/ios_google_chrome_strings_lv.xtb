@@ -64,6 +64,7 @@ Svarīga informācija
 <translation id="2213327331203157297">Lai pārlūkā Chrome atspējotu funkciju Lockdown Mode, izslēdziet to savā iPhone tālrunī.</translation>
 <translation id="2242467532204595597">Izmantojiet pārlūku Chrome ikreiz, kad pieskaraties saitēm ziņojumos, dokumentos un citās lietotnēs.</translation>
 <translation id="2256384876478573507">Varat ātrāk atvērt pārlūku Chrome, kad vēlaties pārlūkot saturu savā iPhone tālrunī.</translation>
+<translation id="2270691132923135296">Lai sāktu darbu, uzziniet noderīgu Chrome pamatinformāciju</translation>
 <translation id="2311240109311056604">Tiek atvērta Chrome dinozaura spēle.</translation>
 <translation id="2339201583852607431">Jūsu parole tiks saglabāta jūsu Google kontā (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome kopīgo jūsu atrašanās vietu ar vietnēm, kam atļaujat saņemt šo informāciju.</translation>
@@ -150,7 +151,6 @@ Jaunas grāmatzīmes nevarēs saglabāt jūsu kontā, kamēr neizdzēsīsiet da�
 <translation id="4693084815234024320">Jūs izmantojat Chrome inkognito režīmu</translation>
 <translation id="4708857722625759026">Varat ātrāk piekļūt pārlūkam Chrome no iPad planšetdatora lietotņu sadaļas.</translation>
 <translation id="4713740144985377441">Atgriezieties pārlūkā Chrome, lai augšupielādētu failu.</translation>
-<translation id="4713907610796204963">Lai sāktu darbu, uzziniet noderīgu Chrome pamatinformāciju</translation>
 <translation id="4724297637870447613">Chrome izmantošana visur</translation>
 <translation id="4738647308035481133">Pārlūka Google Chrome lapa</translation>
 <translation id="4742795653798179840">Chrome dati ir izdzēsti</translation>
@@ -296,6 +296,7 @@ Lai skatītu citus iestatījumus, kuros dati tiek izmantoti Chrome lietošanas i
 <translation id="7599894504325210080">Chrome automātiskās aizpildes izvērstais skats</translation>
 <translation id="7617512710641355143">Pārlūks Chrome tiek pārvaldīts</translation>
 <translation id="7626032353295482388">Laipni lūdzam pārlūkā Chrome</translation>
+<translation id="7634397654061173327">Lai pārlūkā Chrome iegūtu bērnu drošības funkcijas, varat izmantot Google kontu, kas ir iestatīts bērnam, vai izmantot pārlūku Chrome bez konta.</translation>
 <translation id="7641448682796883218">Chrome padoms: funkcija “Droša pārlūkošana ar papildu aizsardzību”</translation>
 <translation id="7642373780953416937">Saņemiet brīdinājumus par visām ar konfidencialitāti vai drošību saistītām problēmām, kas tiek automātiski noteiktas pārlūkā Chrome.</translation>
 <translation id="7660356333829433649">Atgriezieties šeit, lai skatītu citus noderīgus padomus par pilnvērtīgu Chrome izmantošanu.</translation>
@@ -328,6 +329,7 @@ Lai skatītu citus iestatījumus, kuros dati tiek izmantoti Chrome lietošanas i
 <translation id="8245080522851805544">Nodrošiniet pārlūkošanas konfidencialitāti, izmantojot ierīces autentifikāciju, kad aizverat pārlūku Chrome.</translation>
 <translation id="8248887045858762645">Chrome padoms</translation>
 <translation id="8265730590513812063">Atveriet Chrome izvēlni</translation>
+<translation id="8284376267694582021">Lai iegūtu bērnu drošības funkcijas, varat izmantot Google kontu, kas ir iestatīts bērnam, vai izmantot pārlūku Chrome bez konta. <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">Maksājumu veidi un adreses netiks šifrētas. Pārlūkā Chrome saglabātā pārlūkošanas vēsture netiks sinhronizēta.
 
 Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze. Ieejas frāze netiek sūtīta uzņēmumam Google, un uzņēmums Google to neuzglabā. Ja aizmirstat ieejas frāzi vai vēlaties mainīt šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus savā kontā<ph name="END_LINK" />.</translation>

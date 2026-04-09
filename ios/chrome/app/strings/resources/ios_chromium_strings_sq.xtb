@@ -134,6 +134,7 @@ Provo të presësh për disa minuta para se të ndërrosh llogaritë. Nëse i nd
 <translation id="377649297473651452">Pamja e zgjeruar për plotësimin automatik në Chromium</translation>
 <translation id="3780779443901618967">Të paralajmëron për sajtet e rrezikshme, edhe ato që Google nuk i ka njohur më parë, duke analizuar më shumë të dhëna nga sajtet sesa nga mbrojtja standarde. Mund të zgjedhësh që t'i kapërcesh paralajmërimet e Chromium.</translation>
 <translation id="3805899903892079518">Chromium nuk ka qasje te fotografitë apo videot e tua. Aktivizo qasjen te Cilësimet e iOS &gt; Privatësia &gt; Fotografitë.</translation>
+<translation id="3809591243528646631">Për të marrë veçoritë e sigurisë së fëmijëve, mund të përdorësh një "Llogari të Google" që është konfiguruar për një fëmijë ose mund të përdorësh Chromium pa një llogari. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="3816686541346279443">Chromium do të ofrojë që të ruajë fjalëkalimin.</translation>
 <translation id="3827545470516145620">Po merr mbrojtjen standarde të sigurisë në këtë pajisje</translation>
 <translation id="3833326979834193417">Chromium ekzekuton automatikisht "Kontrollin e sigurisë" çdo ditë për t'i mbajtur të dhënat e tua të sigurta nga shkeljet, uebsajtet e pasigurta dhe të tjera. Mund të zbulosh më shumë për "Kontrollin e sigurisë" te "Cilësimet".</translation>
@@ -169,6 +170,7 @@ Të dhënat e tua janë të enkriptuara me frazën tënde të kalimit. Fute atë
 Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Chromium në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="4578500311756617174">Këshillë për Chromium: Përdor Chromium si parazgjedhje</translation>
 <translation id="458786853569524949">Tani mund të përdorësh Chromium sa herë që troket te lidhjet në email-e, dokumente dhe aplikacione të tjera.</translation>
+<translation id="4625730353066900738">Mëso bazat e dobishme për Chromium për të filluar</translation>
 <translation id="4633738821577273991">Merr gjithashtu "Shfletimin e sigurt të përmirësuar" për këtë profil të Chromium</translation>
 <translation id="4654936625574199632">Për të ndihmuar në përmirësimin e aplikacionit, Chromium dërgon të dhëna të përdorimit dhe të ndërprerjeve aksidentale te Google. <ph name="BEGIN_LINK" />Menaxho<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Aktivizo skanerin e Chromium</translation>
@@ -179,7 +181,6 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="4856138222358683580">Veprimet në Chromium</translation>
 <translation id="4869706986935301458">Hap Chromium menjëherë kur je në iPhone</translation>
 <translation id="4904452304169763785">Sinjalizimet për çdo problem të privatësisë ose sigurisë që Chromium zbulon për ty.</translation>
-<translation id="4908570938463711775">Mëso bazat e dobishme për Chromium për të filluar</translation>
 <translation id="4962295957157529683">Përfundo atë që po bën në dritaren tjetër të hapur të Chromium.</translation>
 <translation id="4985291216379576555">Offline. Chromium nuk mund të kontrollojë për përditësime</translation>
 <translation id="4996471330284142407">Bëj më shumë me një Chromium të thjeshtë, të sigurt dhe më të shpejtë se kurrë.</translation>
@@ -354,6 +355,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="8900052431807804054">Merr sigurinë më të fortë të Chromium</translation>
 <translation id="8908791447256515663">Qasu më shpejt në Chromium nga stacioni i pajisjes sate iPad.</translation>
 <translation id="8925569192291721236">Qëndro i informuar me përditësimet e monitorimit të çmimeve dhe këshillat për Chromium.</translation>
+<translation id="8939412301975414416">Për të marrë veçoritë e sigurisë së fëmijëve në Chromium, mund të përdorësh një "Llogari të Google" që është konfiguruar për një fëmijë ose mund të përdorësh Chromium pa një llogari.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Kjo ndodh kur Chromium nuk përdoret për {THRESHOLD} minutë}other{Kjo ndodh kur Chromium nuk përdoret për {THRESHOLD} minuta}}</translation>
 <translation id="8963279154877372067">Lejo që njoftimet e Chromium të shfaqin sinjalizime për uljen e çmimeve</translation>
 <translation id="8975812008711371178">Kërko me zë në Chromium</translation>

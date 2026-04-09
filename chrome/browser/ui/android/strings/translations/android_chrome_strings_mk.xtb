@@ -293,6 +293,7 @@
 <translation id="2251809247798634662">Нов прозорец „Инкогнито“</translation>
 <translation id="2253927598983295051">Изберете што да се споделува со <ph name="APP_NAME" /></translation>
 <translation id="2261570557291037252">Повеќе информации за апликацијата</translation>
+<translation id="2270544918551255912">Повлечете од работ за да се вратите назад</translation>
 <translation id="2276696007612801991">Најавете се на сметката на Google за да ги проверите лозинките</translation>
 <translation id="2281243904606300427"><ph name="TAB_TITLE" />, избрана картичка „Инкогнито“</translation>
 <translation id="2286841657746966508">Адреса за наплата</translation>
@@ -480,6 +481,7 @@
 <translation id="2989523299700148168">Неодамна посетени</translation>
 <translation id="2992473221983447149">Описи на слики</translation>
 <translation id="2996291259634659425">Создајте лозинка</translation>
+<translation id="2996682533106928201">Допрете за да отфрлите</translation>
 <translation id="2996809686854298943">Потребен е URL</translation>
 <translation id="3024215143424744261">Поставките за „Режим за читање“ се затворени</translation>
 <translation id="3026955690410463085">Вклучи линк</translation>
@@ -684,6 +686,7 @@
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">последните 4 недели</translation>
 <translation id="393697183122708255">Нема достапно овозможено гласовно барање</translation>
+<translation id="3941718885865495207">Долен лист за прифаќање на препораките што ги наоѓа Chrome</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, закачена картичка „Слика во слика“</translation>
 <translation id="3950820424414687140">Најавете се</translation>
 <translation id="395377504920307820">Користи без сметка</translation>
@@ -1189,6 +1192,7 @@
 <translation id="6011308810877101166">Подобрување на предлозите за пребарување</translation>
 <translation id="6013305291643746595">Се подредува според најстари</translation>
 <translation id="6022659036123304283">Направете го Chrome свој</translation>
+<translation id="6023820583797130428">Отворете го менито за да се вратите назад</translation>
 <translation id="6026538407078977628">Прошири на цел екран</translation>
 <translation id="6030719887161080597">Управувајте со податоците што ги користат сајтовите за мерење на перформансите на рекламите</translation>
 <translation id="6039379616847168523">Скокнете на следната картичка</translation>
@@ -1633,6 +1637,7 @@
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> стандардна картичка}one{<ph name="TABS_COUNT_MANY" /> стандардна картичка}other{<ph name="TABS_COUNT_MANY" /> стандардни картички}}</translation>
 <translation id="7603168929588204083">Погрешен датум</translation>
 <translation id="7605594153474022051">Синхронизацијата не функционира</translation>
+<translation id="7608245556672190037">Долниот лист за прифаќање на препораките што ги наоѓа Chrome е отворен на цел екран</translation>
 <translation id="7612619742409846846">Најавени на Google како</translation>
 <translation id="7612989789287281429">Ве најавуваме…</translation>
 <translation id="7619072057915878432">Преземањето на <ph name="FILE_NAME" /> не успеа поради прекини на мрежата.</translation>
@@ -1640,6 +1645,7 @@
 <translation id="7628417132421583481">Одете во Password Manager</translation>
 <translation id="7630202231528827509">URL на операторот</translation>
 <translation id="7638584964844754484">Погрешна лозинка-фраза</translation>
+<translation id="764047009170754705">Долниот лист за прифаќање на препораките што ги наоѓа Chrome е затворен</translation>
 <translation id="7646499124171960488">Ве предупредува за небезбедни јавни сајтови</translation>
 <translation id="7646772052135772216">Синхронизацијата на лозинките не работи</translation>
 <translation id="7655240423373329753">минатите 7 дена</translation>
@@ -1864,6 +1870,7 @@
 <translation id="8473863474539038330">Адреси и друго</translation>
 <translation id="847433688444405067">Прелистување на уредите</translation>
 <translation id="8477178913400731244">Избришете ги податоците</translation>
+<translation id="8481771036036087705">Долниот лист за прифаќање на препораките што ги наоѓа Chrome е отворен на половина екран</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">Нема неактивни прозорци</translation>
 <translation id="8493948351860045254">Ослободете простор</translation>

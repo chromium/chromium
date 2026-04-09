@@ -640,6 +640,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3739455665973395693">V účtu Google nemáte žádná prolomená hesla</translation>
 <translation id="3739899004075612870">Přidáno do záložek (<ph name="PRODUCT_NAME" />)</translation>
 <translation id="3740525748616366977">Hlasové vyhledávání není v tomto zařízení k dispozici</translation>
+<translation id="3763110477555836428">Při placení touto kartou se vyplní číslo virtuální karty, aby byly vaše skutečné údaje chráněny. Tuto funkci můžete spravovat v Peněžence Google. <ph name="BEGIN_LINK1" />Další informace o virtuálních kartách<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Některá data ještě nejsou uložena</translation>
 <translation id="3770620323585347665">Pojmenovat okno</translation>
 <translation id="3771033907050503522">Anonymní karty</translation>
@@ -683,6 +684,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3927692899758076493">Bezpatková</translation>
 <translation id="3931947361983910192">z posledních 4 týdnů</translation>
 <translation id="393697183122708255">Hlasové vyhledávání není k dispozici</translation>
+<translation id="3941718885865495207">Spodní panel přihlášení k funkci Chrome Finds</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, připnutá karta s obrazem v obraze</translation>
 <translation id="3950820424414687140">Přihlaste se</translation>
 <translation id="395377504920307820">Používat bez účtu</translation>
@@ -1188,6 +1190,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="6011308810877101166">Vylepšovat návrhy ve vyhledávání</translation>
 <translation id="6013305291643746595">Řazení od nejstarších</translation>
 <translation id="6022659036123304283">Přizpůsobte si Chrome</translation>
+<translation id="6023820583797130428">Otevřít nabídku a vrátit se zpět</translation>
 <translation id="6026538407078977628">Rozbalit na celou obrazovku</translation>
 <translation id="6030719887161080597">Spravovat informace, pomocí nichž weby měří výkon reklam</translation>
 <translation id="6039379616847168523">Přejít na další kartu</translation>
@@ -1632,6 +1635,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standardní karta}few{<ph name="TABS_COUNT_MANY" /> standardní karty}many{<ph name="TABS_COUNT_MANY" /> standardní karty}other{<ph name="TABS_COUNT_MANY" /> standardních karet}}</translation>
 <translation id="7603168929588204083">Neplatné datum</translation>
 <translation id="7605594153474022051">Synchronizace nefunguje</translation>
+<translation id="7608245556672190037">Přihlášení k funkci Chrome Finds je otevřené na celou výšku</translation>
 <translation id="7612619742409846846">Jste přihlášeni do Googlu jako</translation>
 <translation id="7612989789287281429">Přihlašování…</translation>
 <translation id="7619072057915878432">Stahování souboru <ph name="FILE_NAME" /> se nezdařilo z důvodu selhání sítě.</translation>
@@ -1639,6 +1643,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7628417132421583481">Přejít do Správce hesel</translation>
 <translation id="7630202231528827509">Adresa URL poskytovatele</translation>
 <translation id="7638584964844754484">Nesprávná heslová fráze</translation>
+<translation id="764047009170754705">Přihlášení k funkci Chrome Finds bylo zavřeno</translation>
 <translation id="7646499124171960488">Varuje vás před nezabezpečenými veřejnými weby</translation>
 <translation id="7646772052135772216">Synchronizace hesel nefunguje</translation>
 <translation id="7655240423373329753">posledních 7 dní</translation>
@@ -1863,6 +1868,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8473863474539038330">Adresy a další</translation>
 <translation id="847433688444405067">Synchronizujte své procházení</translation>
 <translation id="8477178913400731244">Vymazat data</translation>
+<translation id="8481771036036087705">Přihlášení k funkci Chrome Finds je otevřené na polovinu výšky</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">Žádná neaktivní okna</translation>
 <translation id="8493948351860045254">Uvolnit místo</translation>

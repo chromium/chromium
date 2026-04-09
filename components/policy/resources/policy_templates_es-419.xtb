@@ -1696,6 +1696,7 @@ Se quitó en Chrome 145 y, en su lugar, se recomienda usar el método requestSto
 <translation id="2149957154942061013">Solo para uso interno</translation>
 <translation id="2151831603578119302">Habilita las combinaciones de teclas para las funciones de accesibilidad</translation>
 <translation id="2156132677421487971">Configura las políticas para <ph name="PRODUCT_NAME" />, una función que permite que los usuarios envíen el contenido de las pestañas, los sitios o el escritorio del navegador a pantallas y sistemas de sonido remotos.</translation>
+<translation id="2156359411909638496">Configuración de Chrome Finds</translation>
 <translation id="2156755242840687300">Habilita los servidores de impresión externos</translation>
 <translation id="2157842368188031417">La política solo se aplica a sesiones de invitado administradas. Debe habilitarse para que se pueda cambiar de usuario durante la sesión en el modo de estación de trabajo compartida de Imprivata.
       Si estableces la política como verdadera, se anularán de manera automática algunas políticas de funciones, las cuales conservan datos sensibles del usuario y no se controlan mediante el mecanismo de limpieza utilizado para cambiar de usuario durante la sesión con el modo de estación de trabajo compartida de Imprivata.
@@ -4216,6 +4217,7 @@ Esta política de dispositivo es equivalente a la política del usuario <ph name
 <translation id="3749511622128647337">Inhabilitar la salida de audio</translation>
 <translation id="3750220015372671395">Bloquear generación de claves en estos sitios</translation>
 <translation id="3753267109888284695">Lista de entidades permitidas de HTTP</translation>
+<translation id="3753514818525019935">No permitir Chrome Finds.</translation>
 <translation id="3753959315989102457">Inhabilitar los informes de ubicación del dispositivo</translation>
 <translation id="3755237588083934849">Si estableces la política, se determinará la frecuencia con la que se envían las cargas de estado del dispositivo (expresado en milisegundos). El mínimo permitido es 60 segundos.
 
@@ -6222,6 +6224,13 @@ Si inhabilitas la política, se inhabilitará esta función.</translation>
 <translation id="4997074784107449343">Cuando la opción Imprimir como imagen está disponible, no se establece como opción predeterminada en las vistas previas de impresión de documentos PDF.</translation>
 <translation id="500149597848135831">Habilitar todas las variaciones</translation>
 <translation id="5006222080181284191">Controlar la habilitación de la función "Ayúdame a escribir" de ChromeOS</translation>
+<translation id="501542798290854504">Configura el acceso automático para los usuarios cuyas cuentas están respaldadas por un proveedor de identidad en la nube de Microsoft® en <ph name="ANDROID_NAME" />.
+
+Si estableces esta política en 1 (<ph name="POLICY_VALUE_ENABLED" />), los usuarios que accedieron a una aplicación de productividad de Microsoft® en su dispositivo pueden acceder automáticamente a las propiedades web de Microsoft® en <ph name="PRODUCT_NAME" />. Esta función requiere la presencia de una app de agente de autenticación de Microsoft®, como <ph name="MS_AUTH_APP_NAME" />, <ph name="MS_ICP_NAME" /> o <ph name="MS_LTW_NAME" />. Para facilitar el acceso único, se comparten los datos de autenticación necesarios con el proveedor de identidad en la nube de Microsoft®.
+
+Si estableces esta política en 0 (<ph name="POLICY_VALUE_DISABLED" />) o no la estableces, se inhabilitará el acceso automático, tal como se describió anteriormente, y los usuarios deberán proporcionar manualmente las credenciales para las propiedades web de Microsoft®.
+
+Nota: Esta política no se aplica a los modos Incógnito ni de invitado.</translation>
 <translation id="5017157692744444035">Esta política controla el envío de datos que permiten identificar las máquinas, como sus nombres y las direcciones de red.
 
 Si no estableces la política <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> o la inhabilitas, se ignorará.
@@ -6711,6 +6720,22 @@ Si no la estableces, el valor predeterminado será 0 grados y los usuarios podr�
 <translation id="5293285950307241933">Borrar todos los datos locales del usuario</translation>
 <translation id="5293619885162445352">Permitir que <ph name="PEPPER_NAME" /> use el nuevo decodificador de video</translation>
 <translation id="529457411593078576">Habilita las Condiciones del Servicio en la primera ejecución para CCT</translation>
+<translation id="529718811410033393">Si estableces la política, se especificará la cantidad máxima de conexiones en simultáneo por servidor proxy para solicitudes que no sean de WebSocket.
+
+Para modificar los límites de solicitudes de WebSocket, consulta <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
+
+Si no estableces la política, se usará el valor predeterminado de 32.
+
+Algunas apps web son conocidas por utilizar muchas conexiones con solicitudes GET pendientes. Por lo tanto, si estableces un valor menor a 32 es posible que la red del navegador quede pendiente si hay demasiadas apps web con conexiones pendientes abiertas.
+Algunos servidores proxy no pueden soportar una gran cantidad de conexiones en simultáneo por cliente. Para solucionar este problema, establece un valor más bajo para esta política.
+
+El valor debe ser igual o superior a 6.
+Si estableces un valor por debajo de ese límite, se usará 6.
+Usa un valor menor al valor predeterminado (32) bajo tu responsabilidad.
+
+El valor debe ser igual o inferior a 256 (99 en <ph name="PRODUCT_NAME" /> 147 y versiones anteriores).
+Si estableces un valor superior a ese límite, se usará 256 (99 en <ph name="PRODUCT_NAME" /> 147 y versiones anteriores).
+Usa un valor mayor al valor predeterminado (32) bajo tu responsabilidad.</translation>
 <translation id="5297873769621042075">Si estableces la política, se especificará una lista de nombres de host o patrones de nombres de host (como
 "[*.]example.com") que no se actualizarán a HTTPS y no mostrarán un
 intersticial de error si se habilita el modo HTTPS primero. Las organizaciones pueden usar esta
@@ -7473,6 +7498,7 @@ Si la inhabilitas o no la estableces, no se habilitarán los widgets de consulta
       Los datos vitales del producto (VPD) son un conjunto de datos informativos y de configuración (como números de serie y piezas) asociados al dispositivo.</translation>
 <translation id="5760861224093391268">Inhabilitar la autenticación propia cuando se informen los indicadores de seguridad del usuario</translation>
 <translation id="5762969307102447459">Inhabilitar Autocompletar para las direcciones</translation>
+<translation id="5763723496957591166">Cantidad máxima de conexiones simultáneas por servidor proxy para solicitudes de WebSocket</translation>
 <translation id="5765780083710877561">Descripción:</translation>
 <translation id="5766438888216077649">No configurar <ph name="WINDOW_OPENER_PROPERTY" /> para los vínculos destinados a <ph name="BLANK_PAGE_NAME" /></translation>
 <translation id="5767776869128458023">Inhabilitar páginas de error alternativas</translation>
@@ -7485,6 +7511,7 @@ Si la inhabilitas o no la estableces, no se habilitarán los widgets de consulta
 <translation id="5776485039795852974">Preguntar siempre que un sitio quiera mostrar notificaciones de escritorio.</translation>
 <translation id="5776508475264864949">Impide que la app de Gemini realice acciones en las páginas web.</translation>
 <translation id="5783009211970309878">Imprimir encabezados y pies de página</translation>
+<translation id="5786913136266632175">Permitir Chrome Finds y mejorar los modelos de IA.</translation>
 <translation id="5789288985554424301">Te permite establecer si los sitios web pueden usar la API de Idle Detection.
 
 Cuando esta política se establece en 1 (<ph name="ALLOW_IDLE_DETECTION_VALUE_NAME" />), los sitios web pueden usar la API sin pedir permiso al usuario.
@@ -9087,6 +9114,17 @@ Si la estableces como falsa o no la estableces, se usará el comportamiento pred
 
       Si no la estableces, no se informarán datos de telemetría adicionales sobre los eventos de cambio de intensidad de la señal.</translation>
 <translation id="6751612743847158732">Restablecer siempre la última sesión</translation>
+<translation id="6751882390104737961">Chrome Finds es una función basada en IA que ayuda a los usuarios a buscar y comprender contenido en la página web actual.
+
+0 = Permite que se use la función y que Google use datos pertinentes para mejorar sus modelos de IA. Los datos pertinentes pueden incluir instrucciones, entradas, resultados, materiales de referencia y comentarios escritos, según la función. Es posible que personas revisen los datos para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los siguientes casos.
+
+1 = Permite que se use la función, pero no permite que Google mejore los modelos con el contenido de los usuarios (lo que incluye las instrucciones, las entradas, los resultados, los materiales de referencia y los comentarios escritos). 1 es el valor predeterminado para los usuarios empresariales que administra <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y las cuentas de institución educativa que administra <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = No permite la función.
+
+Si no estableces la política, su comportamiento se determina según la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para obtener más información sobre el manejo de datos de las funciones potenciadas por IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6752711782954612641">Si activas <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, establecer <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> especificará los parámetros para la búsqueda de una URL con POST. Se compone de pares de nombre y valor separados por comas. Si un valor es un parámetro de plantilla, como <ph name="SEARCH_TERM_MARKER" />, se reemplazará por datos de términos de búsqueda reales.
 
       Si no estableces <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" />, se enviarán solicitudes de búsqueda con el método GET.</translation>
@@ -10004,6 +10042,7 @@ La compatibilidad con este parámetro de configuración de política finalizará
 
       Si no se establece esta política o se deja en blanco, el usuario podrá establecer cualquier Cuenta de Google como la principal del navegador en <ph name="PRODUCT_NAME" />.</translation>
 <translation id="723103540848640830">Establecer la longitud mínima del PIN de la pantalla bloqueada</translation>
+<translation id="7231449913899026849">Cantidad máxima de conexiones simultáneas por servidor proxy para solicitudes que no son de WebSocket</translation>
 <translation id="7234280155140786597">Nombres de los hosts de mensajería nativa prohibidos (o * para todos)</translation>
 <translation id="723621412149834592">Si estableces la política como <ph name="BLOCK_WINDOW_PLACEMENT_POLICY_NAME" /> (valor 2), se rechazará automáticamente el permiso de ubicación de ventanas para todos los sitios de forma predeterminada. Esto limitará la capacidad de los sitios para ver la información sobre las pantallas del dispositivo y utilizarla para abrir y ubicar ventanas o solicitar el modo pantalla completa en pantallas específicas.
 
@@ -10326,6 +10365,7 @@ la lectura en voz alta estará habilitada.</translation>
 <translation id="7481702249684965639">Habilitar la Papelera para el usuario</translation>
 <translation id="7482768039644066614">Habilitar la recuperación de metadatos de la carga de páginas y de modelos de aprendizaje automático para mejorar la experiencia de navegación</translation>
 <translation id="748292668225669178">Configurar la activación de <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
+<translation id="7483786326602801858">Permitir el acceso automático a los proveedores de identidad en la nube de Microsoft® en <ph name="ANDROID_NAME" /></translation>
 <translation id="7485481791539008776">Normas de selección de la impresora predeterminada</translation>
 <translation id="7486205887492534734">Notificar cuando coinciden varios certificados en la pantalla de acceso</translation>
 <translation id="748873163367340515">Usar solo las cookies y los datos esenciales en la búsqueda</translation>
@@ -10472,6 +10512,22 @@ Si dejas la política vacía, no se permitirán excepciones a <ph name="FLOATING
 
       Si el dispositivo no está administrado, la disponibilidad de esta funcionalidad también depende de si el usuario es el propietario del dispositivo.</translation>
 <translation id="7570291542739287032">Solo en la nube</translation>
+<translation id="7571158727244273239">Si estableces la política, se especificará la cantidad máxima de conexiones en simultáneo por servidor proxy para las solicitudes de WebSocket.
+
+Para modificar los límites de solicitudes que no son de WebSocket, consulta <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" />.
+
+Si no estableces la política, se usará el valor predeterminado de 32.
+
+Algunas apps web son conocidas por utilizar muchas conexiones con solicitudes GET pendientes. Por lo tanto, si estableces un valor menor a 32 es posible que la red del navegador quede pendiente si hay demasiadas apps web con conexiones pendientes abiertas.
+Algunos servidores proxy no pueden soportar una gran cantidad de conexiones en simultáneo por cliente. Para solucionar este problema, establece un valor más bajo para esta política.
+
+El valor debe ser igual o superior a 6.
+Si estableces un valor por debajo de ese límite, se usará 6.
+Usa un valor menor al valor predeterminado (32) bajo tu responsabilidad.
+
+El valor debe ser igual o inferior a 256.
+Si estableces un valor superior a ese límite, se usará 256.
+Usa un valor mayor al valor predeterminado (32) bajo tu responsabilidad.</translation>
 <translation id="7572641760104970905">Sin complejidad</translation>
 <translation id="757395965347379751">Cuando se habilita esta configuración, <ph name="PRODUCT_NAME" /> permite los certificados firmados por SHA-1 siempre que estén validados correctamente y vinculados a certificados de CA instalados de forma local.
 
@@ -12277,6 +12333,7 @@ Si inhabilitas <ph name="LIVE_CAPTION_ENABLED_POLICY_NAME" />, se inhabilitará 
 ninguna URL de "más información" en el instalador. Si está presente, debe usar
 el esquema https.</translation>
 <translation id="8715885991031124968">Permite los diálogos de JavaScript que se envían desde un submarco de otro origen</translation>
+<translation id="8720288018555457355">Permitir Chrome Finds sin mejorar los modelos de IA.</translation>
 <translation id="8720547069538712402">Permitir que el usuario habilite o inhabilite el corrector ortográfico</translation>
 <translation id="8721685661759544418">Habilitar la lectura en voz alta (destilación de texto y síntesis de texto a voz) para páginas web</translation>
 <translation id="8726080977639508431">Esta política controla la manera en la que <ph name="PRODUCT_NAME" /> interpreta las políticas de listas de sitios o listas grises para la función Compatibilidad con navegadores heredados. Afecta las siguientes políticas: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> y <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.

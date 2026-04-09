@@ -64,6 +64,7 @@
 <translation id="2213327331203157297">Da biste onemogućili režim zaključavanja u Chrome-u, isključite ga na iPhone-u.</translation>
 <translation id="2242467532204595597">Koristite Chrome svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="2256384876478573507">Brže otvarajte Chrome kada ste spremni za pregledanje na iPhone-u.</translation>
+<translation id="2270691132923135296">Saznajte korisne osnove Chrome-a da biste započeli</translation>
 <translation id="2311240109311056604">Otvara igru Chrome dinosaurus.</translation>
 <translation id="2339201583852607431">Lozinka se čuva na vašem Google nalogu (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome deli lokaciju sa sajtovima koje dozvolite.</translation>
@@ -150,7 +151,6 @@ Ne možete da sačuvate nove obeleživače na nalogu dok neke ne izbrišete. Ako
 <translation id="4693084815234024320">Koristite Chrome režim bez arhiviranja</translation>
 <translation id="4708857722625759026">Brže pristupajte Chrome-u sa trake s aplikacijama na iPad-u.</translation>
 <translation id="4713740144985377441">Vratite se u Chrome da biste otpremili fajl</translation>
-<translation id="4713907610796204963">Saznajte korisne osnove Chrome-a da biste započeli</translation>
 <translation id="4724297637870447613">Koristite Chrome svuda</translation>
 <translation id="4738647308035481133">Google Chrome stranica</translation>
 <translation id="4742795653798179840">Izbrisani Chrome podaci</translation>
@@ -296,6 +296,7 @@ Još podešavanja koja koriste podatke za poboljšanje doživljaja Chrome-a potr
 <translation id="7599894504325210080">Prošireni prikaz Chrome automatskog popunjavanja</translation>
 <translation id="7617512710641355143">Chrome-om se upravlja</translation>
 <translation id="7626032353295482388">Dobro došli u Chrome</translation>
+<translation id="7634397654061173327">Da biste dobili funkcije za bezbednost dece u Chrome-u, možete da koristite Google nalog koji je podešen za dete ili da koristite Chrome bez naloga.</translation>
 <translation id="7641448682796883218">Napomena za Chrome: Poboljšano bezbedno pregledanje</translation>
 <translation id="7642373780953416937">Primajte obaveštenja o svim problemima u vezi sa privatnošću ili bezbednošću koje Chrome automatski otkrije.</translation>
 <translation id="7660356333829433649">Vratite se ovde za još korisnih saveta o tome kako da iskoristite Chrome na najbolji način.</translation>
@@ -328,6 +329,7 @@ Još podešavanja koja koriste podatke za poboljšanje doživljaja Chrome-a potr
 <translation id="8245080522851805544">Zaštitite privatnost pregledanja pomoću verifikacije uređaja kada zatvorite Chrome</translation>
 <translation id="8248887045858762645">Savet za Chrome</translation>
 <translation id="8265730590513812063">Otvorite Chrome meni</translation>
+<translation id="8284376267694582021">Da biste dobili funkcije za bezbednost dece, možete da koristite Google nalog koji je podešen za dete ili Chrome bez naloga. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">Načini plaćanja i adrese neće biti šifrovani. Istorija pregledanja iz Chrome-a se neće sinhronizovati.
 
 Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fraza se ne šalje Google-u niti se čuva na Google-u. Ako zaboravite pristupnu frazu ili želite da promenite ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome podatke na nalogu<ph name="END_LINK" />.</translation>

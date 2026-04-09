@@ -64,6 +64,7 @@ Dikkate alınması gereken noktalar:
 <translation id="2213327331203157297">Chrome'da Tam Gizlilik Modu'nu devre dışı bırakmak için bu ayarı iPhone'unuzda kapatın.</translation>
 <translation id="2242467532204595597">Mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantılara her dokunduğunuzda Chrome'u kullanın.</translation>
 <translation id="2256384876478573507">iPhone'unuzda internette gezinmeye hazır olduğunuzda Chrome'u daha hızlı açın.</translation>
+<translation id="2270691132923135296">Chrome'un faydalı temel özelliklerini öğrenin ve bunları kullanmaya başlayın</translation>
 <translation id="2311240109311056604">Chrome Dinozor oyununu açar.</translation>
 <translation id="2339201583852607431">Şifreniz, Google Hesabınıza (<ph name="EMAIL" />) kaydedilir.</translation>
 <translation id="2342919707875585281">Chrome, konumunuzu izin verdiğiniz sitelerle paylaşır.</translation>
@@ -150,7 +151,6 @@ Bazı yer işaretlerini silene kadar hesabınıza yeni yer işaretleri kaydedile
 <translation id="4693084815234024320">Chrome'un Gizli modundasınız</translation>
 <translation id="4708857722625759026">iPad'inizin Dock bölümünden Chrome'a daha hızlı erişin.</translation>
 <translation id="4713740144985377441">Dosyanızı yüklemek için Chrome'a dönün</translation>
-<translation id="4713907610796204963">Chrome'un faydalı temel özelliklerini öğrenin ve bunları kullanmaya başlayın</translation>
 <translation id="4724297637870447613">Chrome'u her yerde kullanın</translation>
 <translation id="4738647308035481133">Google Chrome sayfası</translation>
 <translation id="4742795653798179840">Chrome verileri silindi</translation>
@@ -296,6 +296,7 @@ Veri kullanarak Chrome deneyiminizi iyileştiren daha fazla ayar görmek için <
 <translation id="7599894504325210080">Chrome otomatik doldurma genişletilmiş görünümü</translation>
 <translation id="7617512710641355143">Chrome yönetiliyor</translation>
 <translation id="7626032353295482388">Chrome'a Hoş Geldiniz</translation>
+<translation id="7634397654061173327">Chrome'da çocuk güvenliği özelliklerinden yararlanmak için çocuğunuz için oluşturulmuş bir Google Hesabı kullanabilir veya Chrome'u hesap olmadan kullanabilirsiniz.</translation>
 <translation id="7641448682796883218">Chrome İpucu: Gelişmiş Güvenli Tarama</translation>
 <translation id="7642373780953416937">Chrome'un sizin için otomatik olarak tespit ettiği tüm gizlilik veya güvenlik sorunlarıyla ilgili uyarılar alabilirsiniz.</translation>
 <translation id="7660356333829433649">Chrome'u en iyi şekilde kullanmanıza yardımcı olacak daha fazla ipucu için daha sonra burayı tekrar kontrol edin.</translation>
@@ -328,6 +329,7 @@ Veri kullanarak Chrome deneyiminizi iyileştiren daha fazla ayar görmek için <
 <translation id="8245080522851805544">Chrome'u kapattığınızda cihaz kimlik doğrulama özelliğiyle tarama işlemlerinizi gizli tutun</translation>
 <translation id="8248887045858762645">Chrome ipucu</translation>
 <translation id="8265730590513812063">Chrome menüsünü açın.</translation>
+<translation id="8284376267694582021">Çocuk için güvenlik özelliklerinden yararlanmak amacıyla çocuğunuz için ayarlanmış bir Google Hesabı kullanabilir veya Chrome'u hesap olmadan kullanabilirsiniz. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="8317674518145175158">Ödeme yöntemleri ve adresler şifrelenmez. Chrome'daki tarama geçmişi senkronize edilmez.
 
 Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Parola Google'a gönderilmez veya Google tarafından saklanmaz. Parolanızı unutursanız veya bu ayarı değiştirmek isterseniz <ph name="BEGIN_LINK" />hesabınızdaki Chrome verilerini silin<ph name="END_LINK" />.</translation>

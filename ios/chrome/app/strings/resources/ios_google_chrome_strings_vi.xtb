@@ -64,6 +64,7 @@ Những yếu tố cần xem xét:
 <translation id="2213327331203157297">Để vô hiệu hoá Chế độ khoá trong Chrome, hãy tắt chế độ này trên iPhone của bạn.</translation>
 <translation id="2242467532204595597">Dùng Chrome bất cứ lúc nào bạn nhấn vào đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác.</translation>
 <translation id="2256384876478573507">Mở Chrome nhanh hơn khi bạn muốn duyệt web trên iPhone.</translation>
+<translation id="2270691132923135296">Tìm hiểu những thông tin cơ bản hữu ích về Chrome để bắt đầu</translation>
 <translation id="2311240109311056604">Mở trò chơi khủng long trên Chrome.</translation>
 <translation id="2339201583852607431">Mật khẩu của bạn sẽ được lưu trong Tài khoản Google (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome chia sẻ thông tin vị trí của bạn với những trang web mà bạn cho phép.</translation>
@@ -150,7 +151,6 @@ Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu t
 <translation id="4693084815234024320">Bạn đang ở chế độ ẩn danh của Chrome</translation>
 <translation id="4708857722625759026">Truy cập Chrome nhanh hơn từ thanh dock trên iPad.</translation>
 <translation id="4713740144985377441">Quay lại Chrome để tải tệp lên</translation>
-<translation id="4713907610796204963">Tìm hiểu những thông tin cơ bản hữu ích về Chrome để bắt đầu</translation>
 <translation id="4724297637870447613">Sử dụng Chrome ở mọi nơi</translation>
 <translation id="4738647308035481133">Trang Google Chrome</translation>
 <translation id="4742795653798179840">Đã xoá dữ liệu Chrome</translation>
@@ -296,6 +296,7 @@ Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụ
 <translation id="7599894504325210080">Chế độ xem mở rộng về tính năng tự động điền của Chrome</translation>
 <translation id="7617512710641355143">Chrome được quản lý</translation>
 <translation id="7626032353295482388">Chào mừng bạn đến với Chrome</translation>
+<translation id="7634397654061173327">Để sử dụng các tính năng đảm bảo an toàn cho trẻ trong Chrome, bạn có thể dùng một Tài khoản Google được thiết lập cho trẻ hoặc dùng Chrome mà không cần tài khoản.</translation>
 <translation id="7641448682796883218">Mẹo khi dùng Chrome: Duyệt web an toàn có tăng cường bảo vệ</translation>
 <translation id="7642373780953416937">Nhận cảnh báo về mọi vấn đề liên quan đến quyền riêng tư hoặc bảo mật mà Chrome tự động phát hiện ra.</translation>
 <translation id="7660356333829433649">Quay lại đây để xem thêm các mẹo hữu ích giúp khai thác tối đa Chrome.</translation>
@@ -328,6 +329,7 @@ Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụ
 <translation id="8245080522851805544">Giữ cho hoạt động duyệt web ở chế độ riêng tư bằng tính năng xác thực thiết bị khi bạn đóng Chrome</translation>
 <translation id="8248887045858762645">Mẹo dùng Chrome</translation>
 <translation id="8265730590513812063">Mở trình đơn Chrome</translation>
+<translation id="8284376267694582021">Để sử dụng các tính năng đảm bảo an toàn cho trẻ, bạn có thể dùng một Tài khoản Google được thiết lập cho trẻ hoặc dùng Chrome mà không cần tài khoản. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">Địa chỉ và phương thức thanh toán sẽ không được mã hoá. Nhật ký duyệt web trên Chrome sẽ không đồng bộ hoá.
 
 Chỉ những người có cụm mật khẩu mới đọc được dữ liệu đã mã hoá của bạn. Cụm mật khẩu không được gửi tới Google hay được Google lưu trữ. Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu trên Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>

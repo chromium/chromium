@@ -64,6 +64,7 @@
 <translation id="2213327331203157297">Chrome තුළ අගුළු දැමීමේ ප්‍රකාරය අබල කිරීම සඳහා එය ඔබේ iPhone මත ක්‍රියාවිරහිත කරන්න.</translation>
 <translation id="2242467532204595597">ඔබ පණිවිඩ, ලේඛන, සහ වෙනත් යෙදුම්වල සබැඳි තට්ටු කරන ඕනෑම වේලාවක Chrome භාවිතා කරන්න.</translation>
 <translation id="2256384876478573507">ඔබ ඔබේ iPhone හි බ්‍රවුස් කිරීමට සූදානම් වූ විට Chrome වේගයෙන් විවෘත කරන්න.</translation>
+<translation id="2270691132923135296">පටන් ගැනීමට ප්‍රයෝජනවත් Chrome මූලික කරුණු ඉගෙන ගන්න</translation>
 <translation id="2311240109311056604">Chrome Dino ක්‍රීඩාව විවෘත කරයි.</translation>
 <translation id="2339201583852607431">ඔබගේ මුරපදය ඔබගේ Google ගිණුම තුළ සුරකිනු ඇත (<ph name="EMAIL" />)</translation>
 <translation id="2342919707875585281">Chrome ඔබ ඉඩ දෙන අඩවි සමඟ ඔබගේ ස්ථානය බෙදා ගනී.</translation>
@@ -150,7 +151,6 @@
 <translation id="4693084815234024320">ඔබ Chrome අප්‍රසිද්ධව සිටී</translation>
 <translation id="4708857722625759026">ඔබේ iPad හි ඩොක් එකෙන් Chrome වෙත වේගයෙන් ප්‍රවේශ වන්න.</translation>
 <translation id="4713740144985377441">ඔබේ ගොනුව උඩුගත කිරීමට Chrome වෙත ආපසු යන්න</translation>
-<translation id="4713907610796204963">පටන් ගැනීමට ප්‍රයෝජනවත් Chrome මූලික කරුණු ඉගෙන ගන්න</translation>
 <translation id="4724297637870447613">සෑම තැනකම Chrome භාවිතා කරන්න</translation>
 <translation id="4738647308035481133">Google Chrome පිටුව</translation>
 <translation id="4742795653798179840">මකන ලද Chrome දත්ත</translation>
@@ -296,6 +296,7 @@
 <translation id="7599894504325210080">Chrome ස්වයං පිරවුම් පුළුල් කළ දසුන</translation>
 <translation id="7617512710641355143">Chrome කළමනාකරණය කරයි</translation>
 <translation id="7626032353295482388">Chrome වෙත පිළිගනිමු</translation>
+<translation id="7634397654061173327">Chrome හි ළමා ආරක්ෂණ විශේෂාංග ලබා ගැනීමට, ඔබට දරුවෙකු සඳහා පිහිටුවා ඇති Google ගිණුමක් භාවිත කළ හැක හෝ ගිණුමක් නොමැතිව Chrome භාවිත කළ හැක.</translation>
 <translation id="7641448682796883218">Chrome ඉඟිය: ඉහළ නැංවූ සුරක්ෂිත පිරික්සුම</translation>
 <translation id="7642373780953416937">Chrome ඔබ වෙනුවෙන් ස්වයංක්‍රීයව අනාවරණය කරන ඕනෑම පෞද්ගලිකත්ව හෝ ආරක්ෂක ගැටලු පිළිබඳ ඇඟවීම් ලබා ගන්න.</translation>
 <translation id="7660356333829433649">Chrome වලින් උපරිම ප්‍රයෝජන ලබා ගැනීමට තවත් ප්‍රයෝජනවත් උපදෙස් සඳහා මෙතැනින් නැවත පරීක්ෂා කරන්න.</translation>
@@ -328,6 +329,7 @@
 <translation id="8245080522851805544">ඔබ Chrome වසා දැමූ විට උපාංග සත්‍යාපනය සමග ඔබේ බ්‍රවුස් කිරීම පුද්ගලිකව තබා ගන්න</translation>
 <translation id="8248887045858762645">Chrome ඉඟිය</translation>
 <translation id="8265730590513812063">Chrome මෙනුව විවෘත කරන්න</translation>
+<translation id="8284376267694582021">ළමා ආරක්ෂණ විශේෂාංග ලබා ගැනීමට, ඔබට දරුවෙකු සඳහා පිහිටුවා ඇති Google ගිණුමක් භාවිතා කළ හැක හෝ ගිණුමක් නොමැතිව Chrome භාවිතා කළ හැක. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">ගෙවීමේ ක්‍රම සහ ලිපින සංකේතන නොකෙරේ Chrome වෙතින් ලැබෙන බ්‍රවුස් කිරීමේ ඉතිහාසය සමමුහූර්ත නොවේ.
 
 ඔබේ සංකේතිත දත්ත කියවිය හැක්කේ ඔබේ මුර වැකිකඩ සහිත කෙනෙකුට පමණි. මුර වැකිකඩ Google වෙත යවන්නේ හෝ ගබඩා කරන්නේ නැත. ඔබට ඔබේ මුර-වැකිකඩ අමතක වුවහොත් හෝ මෙම සැකසීම වෙනස් කිරීමට අවශ්‍ය නම්, <ph name="BEGIN_LINK" />ඔබේ ගිණුමේ ඇති Chrome දත්ත මකන්න<ph name="END_LINK" />.</translation>

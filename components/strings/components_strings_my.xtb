@@ -465,7 +465,6 @@
 <translation id="1717218214683051432">လှုပ်ရှားမှု အာရုံခံစနစ်များ</translation>
 <translation id="1717494416764505390">စာတိုက်ပုံး ၃</translation>
 <translation id="1717688554309417925">ဒက်ဘစ်နှင့် ချက်လုပ်သည့် ဝန်ဆောင်မှု</translation>
-<translation id="1717882880162336471">AI မုဒ် စမ်းကြည့်ရန်</translation>
 <translation id="1719434663396780149">ကျစျေး သတိပေးချက် ဖွင့်ထားသည်။ ၎င်းကို <ph name="BEGIN_LINK" /> <ph name="NOTIFICATION_SETTINGS" /> <ph name="END_LINK" />တွင် ပြောင်းနိုင်သည်။</translation>
 <translation id="1719838434204287058">၂၄ x ၃၀ လက်မ</translation>
 <translation id="1720941539803966190">ရှင်းလင်းပို့ချချက်ကို ပိတ်ရန်</translation>
@@ -616,7 +615,6 @@
 <translation id="1960664692890490165">Chrome တွင် ဝယ်ယူမှုများ ပြုလုပ်သောအခါ ကတ်မပါသော ငွေပေးချေနည်းလမ်းများကို ရွေးစရာများအနေနှင့် ကြည့်နိုင်သည်</translation>
 <translation id="196146181975453736">ပိုမိုမြန်ဆန်စွာ ငွေပေးချေရန် တစ်ကြိမ် လုံခြုံရေးစစ်ဆေးခြင်းကို အပြီးသတ်ပါ</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> စာညှပ်များ</translation>
-<translation id="1966259577349514951">ယခုပေးရန်</translation>
 <translation id="1973335181906896915">နံပါတ်စဉ်စီမှု အမှား</translation>
 <translation id="1973785048533660168">စာရေးစာချီနှင့် စီမံခန့်ခွဲရေးအလုပ်</translation>
 <translation id="1974060860693918893">အဆင့်မြင့်</translation>
@@ -1062,6 +1060,7 @@
 <translation id="2627847595568876492">PDF မှ စာသားကို ထုတ်ယူနေသည်…</translation>
 <translation id="2628025184666666186">ဤဆာဗာသည် Chrome က မယုံကြည်ရသော လုံခြုံရေးဆိုင်ရာ အသိအမှတ်ပြုလက်မှတ်ကို သုံးနေသောကြောင့် (သို့) ဝဘ်ဒေတာစီးဆင်းမှု အသွင်ဝှက်ခြင်းအတွက် သင့်စနစ်စီစဉ်သတ်မှတ်ချက်ကြောင့် <ph name="DOMAIN" /> ဖြစ်ကြောင်း သက်သေမပြနိုင်ပါ။ ၎င်းသည် စီစဉ်သတ်မှတ်ချက်အမှားကြောင့် (သို့) သင့်ချိတ်ဆက်မှုကို ကြားဖြတ်တိုက်ခိုက်သူကြောင့် ဖြစ်နိုင်သည်။</translation>
 <translation id="2628224721443278970">Microsoft OneDrive သို့ လက်မှတ်ထိုးဝင်ရန်</translation>
+<translation id="2631059741268498165">သင့်စီမံခန့်ခွဲသူသည် ဤစက်ကို ပိတ်ထားစဉ် ရှာတွေ့ထားသည်။ ၎င်းကို ပြန်ဖွင့်ထားပြီး သုံးရန်အသင့်ဖြစ်ပါပြီ။</translation>
 <translation id="2631387782019878060">စိစစ်ခြင်းကုဒ်- <ph name="OTP" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> ၏ ဆာဗာ IP လိပ်စာကို မတွေ့ပါ။</translation>
 <translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> တွင် ရှာဖွေရန် @ ကို ရိုက်ပါ</translation>
@@ -1103,7 +1102,6 @@
 <translation id="2696385693639654606">Chrome Enterprise Core သည် သင့်အား ဘရောင်ဇာမူဝါဒ၊ အက်ပ်များ၊ cloud မှ နောက်ဆက်တွဲများကို စီမံခွင့်ပြုသည်</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> ကို မေးပါ</translation>
 <translation id="2699273987028089219">မီနူးခွဲရနိုင်သည်။ ထပ်ဆောင်းရွေးစရာများသို့ သွားရန် <ph name="SHORTCUT" /> သုံးပါ။</translation>
-<translation id="2700335762333112350">နောက်မှပေးရန်</translation>
 <translation id="2701514975700770343">မှောက်ထားရန်</translation>
 <translation id="2702592986366989640">ဈေးနည်းသော ရွေးစရာ</translation>
 <translation id="2702801445560668637">ဖတ်ရန် စာရင်း</translation>
@@ -2448,7 +2446,6 @@
 <translation id="4832388034239846146">တဘ်အုပ်စုများ မျှဝေရန် Chrome ကို အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="483241715238664915">သတိပေးချက်များ ဖွင့်ရန်</translation>
 <translation id="4832961164064927107">BBQ၊ အသားကင်ခြင်း</translation>
-<translation id="4839984801146463230">Google ထုတ်ကုန်များတွင် ဖောင်ဖြည့်ခြင်းကဲ့သို့ ကိစ္စများအမြန်ပြီးမြောက်ရန် သင့်အချက်အလက်ကို သိမ်းနိုင်သည်။ <ph name="ACCOUNT" /> အတွက် <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> တွင် <ph name="BEGIN_LINK" />သင့်အချက်အလက်ကို စီမံ<ph name="END_LINK" /> နိုင်သည်</translation>
 <translation id="4840250757394056958">သင့် ‘Chrome မှတ်တမ်း’ ကို ကြည့်ရန်</translation>
 <translation id="484462545196658690">အော်တို</translation>
 <translation id="4844937814014739139">မျှဝေထားသော တဘ်များကို လှိမ့်ခြင်းနှင့် ဇူးမ်ဆွဲခြင်း</translation>
@@ -2725,6 +2722,7 @@
 <translation id="5255833070095767006">၃၅၀ x ၄၆၀ မီလီမီတာ</translation>
 <translation id="5257739419779698609">{0,plural, =1{ဤဖိုင်အား <ph name="DESTINATION_NAME" /> သို့ မိတ္တူကူးခြင်းကို စီမံခန့်ခွဲသူ မူဝါဒက အကြံမပြုပါ}other{ဤဖိုင်များအား <ph name="DESTINATION_NAME" /> သို့ မိတ္တူကူးခြင်းကို စီမံခန့်ခွဲသူ မူဝါဒက အကြံမပြုပါ}}</translation>
 <translation id="5258473597674772367">“<ph name="GROUP_NAME" />” တဘ်အုပ်စုကို မရနိုင်တော့ပါ</translation>
+<translation id="5262342527470539728">သင့်အချက်အလက်ကို <ph name="ACCOUNT" /> အတွက် <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> တွင် သိမ်းထားသည်</translation>
 <translation id="5263867360296733198">အပ်လုဒ်လုပ်ခြင်းမပြုမီ စိစစ်ရန်လိုအပ်သည်</translation>
 <translation id="5266128565379329178">ထိပ်တွင် တွဲချုပ်ရန်</translation>
 <translation id="5269225904387178860">အောက်ခြေတွင် လေးချက်ဖောက်ရန်</translation>
@@ -2921,6 +2919,7 @@
 <translation id="5543564889050342791">တိရစ္ဆာန်ရုံ၊ ငါးပြတိုက်၊ ထိန်းသိမ်းထားရှိမှု</translation>
 <translation id="5543722831081909240">၁၈၀ ဒီဂရီ</translation>
 <translation id="5544836308113951378">အပျော်စီးသင်္ဘော၊ စင်းလုံးငှားယာဉ်</translation>
+<translation id="5546252337258681768">စက်ကို လော့ခ်ဖွင့်ထားသည်</translation>
 <translation id="5547939254150808298">ပုံနှိပ်ထုတ်ဝေခြင်း</translation>
 <translation id="554815783948612276">ဖိုရမ်၊ ချတ် ဝန်ဆောင်မှုပေးသူ</translation>
 <translation id="5548606607480005320">လုံခြုံရေး စစ်ဆေးမှု</translation>
@@ -4774,6 +4773,7 @@
 နောက်ထပ်အသေးစိတ်များ−
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">ဤတစ်ကြိမ်အတွက် မိုက်ခရိုဖုန်း ခွင့်ပြုထားသည်</translation>
+<translation id="8421746712901926961">Google ထုတ်ကုန်များတွင် ဖောင်ဖြည့်ခြင်းကဲ့သို့သော ကိစ္စများအမြန်ပြီးမြောက်ရန် သင့်အချက်အလက်ကို <ph name="GOOGLE_WALLET_TITLE_1" /> တွင် သိမ်းနိုင်သည်။ <ph name="ACCOUNT" /> ဖြင့် <ph name="GOOGLE_WALLET_TITLE_2" /> တွင် <ph name="MANAGE_INFO_LINK" /> နိုင်သည်။</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">ပြောင်းရန်</translation>
 <translation id="8426945547715537628">ကီးဘုတ် အစားထိုးခွင့်ပြုမလား။</translation>
@@ -4830,6 +4830,7 @@
 <translation id="8521812709849134608">အလုပ်စားပွဲ</translation>
 <translation id="8522180136695974431">အစီရင်ခံခြင်းနှင့် စောင့်ကြည့်ခြင်းကို ခရက်ဒစ်ပေးရန်</translation>
 <translation id="8522552481199248698">Chrome က သင်၏ Google အကောင့်ကို ကာကွယ်ရန်နှင့် စကားဝှက်ပြောင်းရန် ကူညီနိုင်ပါသည်။</translation>
+<translation id="852450791482410042">ယခုပေးချေမည်</translation>
 <translation id="8527228059738193856">စပီကာများ</translation>
 <translation id="8527681393107582734">စိုက်ပျိုးရေး၊ သစ်တောလုပ်ငန်း</translation>
 <translation id="8528149813106025610">ကလေးအဝတ်အထည်</translation>

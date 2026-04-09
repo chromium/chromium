@@ -684,6 +684,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="3927692899758076493">Be užraitų</translation>
 <translation id="3931947361983910192">pastarosios 4 savaitės</translation>
 <translation id="393697183122708255">Neįgalinta paieška balsu</translation>
+<translation id="3941718885865495207">Apatinis „Chrome“ radinių pasirinkimo lapas</translation>
 <translation id="3943322906274039960">„<ph name="TAB_TITLE" />“, prisegtas vaizdo vaizde skirtukas</translation>
 <translation id="3950820424414687140">Prisijungti</translation>
 <translation id="395377504920307820">Naudoti be paskyros</translation>
@@ -1189,6 +1190,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="6011308810877101166">Paieškos pasiūlymų tobulinimas</translation>
 <translation id="6013305291643746595">Rūšiuojama pagal seniausią</translation>
 <translation id="6022659036123304283">Suasmeninkite „Chrome“</translation>
+<translation id="6023820583797130428">Atidarykite meniu, kad grįžtumėte</translation>
 <translation id="6026538407078977628">Išskleisti viso ekrano režimu</translation>
 <translation id="6030719887161080597">Tvarkykite svetainių naudojamą informaciją skelbimų našumui įvertinti</translation>
 <translation id="6039379616847168523">Pereiti prie kito skirtuko</translation>
@@ -1633,6 +1635,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> įprastas skirtukas}one{<ph name="TABS_COUNT_MANY" /> įprastas skirtukas}few{<ph name="TABS_COUNT_MANY" /> įprasti skirtukai}many{<ph name="TABS_COUNT_MANY" /> įprasto skirtuko}other{<ph name="TABS_COUNT_MANY" /> įprastų skirtukų}}</translation>
 <translation id="7603168929588204083">Netinkama data</translation>
 <translation id="7605594153474022051">Sinchronizavimas neveikia</translation>
+<translation id="7608245556672190037">„Chrome“ radinių pasirinkimo langas atidarytas per visą ekrano aukštį</translation>
 <translation id="7612619742409846846">Prisijungta prie „Google“ kaip</translation>
 <translation id="7612989789287281429">Prisijungiama…</translation>
 <translation id="7619072057915878432">Nepavyko atsisiųsti „<ph name="FILE_NAME" />“ dėl tinklo trikčių.</translation>
@@ -1640,6 +1643,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="7628417132421583481">Eiti į Slaptažodžių tvarkyklę</translation>
 <translation id="7630202231528827509">Tiekėjo URL</translation>
 <translation id="7638584964844754484">Neteisinga slaptafrazė</translation>
+<translation id="764047009170754705">„Chrome“ radinių pasirinkimo langas uždarytas</translation>
 <translation id="7646499124171960488">Įspėja apie nesaugias viešas svetaines</translation>
 <translation id="7646772052135772216">Slaptažodžio sinchronizavimas neveikia</translation>
 <translation id="7655240423373329753">pastarosios septynios dienos</translation>
@@ -1864,6 +1868,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="8473863474539038330">Adresai ir dar daugiau</translation>
 <translation id="847433688444405067">Naršymas įrenginiuose</translation>
 <translation id="8477178913400731244">Ištrinti duomenis</translation>
+<translation id="8481771036036087705">„Chrome“ radinių pasirinkimo langas atidarytas iki pusės ekrano aukščio</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">Nėra neaktyvių langų</translation>
 <translation id="8493948351860045254">Atlaisvinti vietos</translation>

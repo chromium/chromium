@@ -64,6 +64,7 @@ Co je třeba zvážit:
 <translation id="2213327331203157297">Pokud chcete v Chromu deaktivovat režim blokování, vypněte ho na svém iPhonu.</translation>
 <translation id="2242467532204595597">Používejte Chrome, kdykoli klepnete na odkazy ve zprávách, dokumentech a dalších aplikacích.</translation>
 <translation id="2256384876478573507">Až budete chtít na iPhonu brouzdat po internetu, otevřete Chrome rychleji.</translation>
+<translation id="2270691132923135296">Seznamte se s užitečnými základy Chromu, které vám pomůžou začít</translation>
 <translation id="2311240109311056604">Otevře dinosauří hru v Chromu.</translation>
 <translation id="2339201583852607431">Heslo bude uloženo do vašeho účtu Google (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome sdílí vaši polohu s weby, u kterých to povolíte.</translation>
@@ -150,7 +151,6 @@ Nové záložky nebude možné do účtu uložit, dokud některé nesmažete. Po
 <translation id="4693084815234024320">Jste v anonymním režimu prohlížeče Chrome</translation>
 <translation id="4708857722625759026">Otevírejte Chrome rychleji přímo z Docku iPadu.</translation>
 <translation id="4713740144985377441">Vraťte se do Chromu a soubor nahrajte</translation>
-<translation id="4713907610796204963">Seznamte se s užitečnými základy Chromu, které vám pomůžou začít</translation>
 <translation id="4724297637870447613">Používejte Chrome všude</translation>
 <translation id="4738647308035481133">Stránka prohlížeče Google Chrome</translation>
 <translation id="4742795653798179840">Data Chromu byla smazána</translation>
@@ -296,6 +296,7 @@ Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chro
 <translation id="7599894504325210080">Rozbalené zobrazení automatického vyplňování prohlížeče Chrome</translation>
 <translation id="7617512710641355143">Chrome je spravován</translation>
 <translation id="7626032353295482388">Vítá vás Chrome</translation>
+<translation id="7634397654061173327">Pokud chcete mít v Chromu funkce pro ochranu dětí, můžete buď použít účet Google nastavený pro dítě, nebo Chrome používat bez účtu.</translation>
 <translation id="7641448682796883218">Tip pro Chrome: Vylepšené bezpečné prohlížení</translation>
 <translation id="7642373780953416937">Nechte si zasílat upozornění na jakékoli problémy s ochranou soukromí nebo zabezpečením, které u vás Chrome automaticky zjistí.</translation>
 <translation id="7660356333829433649">Vraťte se sem pro další užitečné tipy, jak Chrome využít na maximum.</translation>
@@ -328,6 +329,7 @@ Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chro
 <translation id="8245080522851805544">Po zavření Chromu můžete soukromí svého prohlížení ochránit ověřením zařízení</translation>
 <translation id="8248887045858762645">Tip pro Chrome</translation>
 <translation id="8265730590513812063">Otevřít nabídku Chrome</translation>
+<translation id="8284376267694582021">Pokud chcete mít aktivované funkce pro ochranu dětí, můžete buď použít účet Google nastavený pro dítě, nebo Chrome používat bez účtu. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">Platební metody a adresy nebudou šifrovány. Historie prohlížení v Chromu se nebude synchronizovat.
 
 Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslovou frázi. Heslová fráze se neodesílá do Googlu a není na Googlu uložena. Pokud heslovou frázi zapomenete nebo toto nastavení budete chtít změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chrome ve svém účtu<ph name="END_LINK" />.</translation>

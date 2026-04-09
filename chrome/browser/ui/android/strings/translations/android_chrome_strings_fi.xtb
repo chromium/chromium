@@ -293,6 +293,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2251809247798634662">Uusi incognito-ikkuna</translation>
 <translation id="2253927598983295051">Valitse, mitä sisältöä <ph name="APP_NAME" /> saa</translation>
 <translation id="2261570557291037252">Lisätietoa sovelluksesta</translation>
+<translation id="2270544918551255912">Palaa takaisin pyyhkäisemällä reunasta</translation>
 <translation id="2276696007612801991">Kirjaudu Google-tilillesi tarkistaaksesi salasanasi</translation>
 <translation id="2281243904606300427"><ph name="TAB_TITLE" />, valittu incognito-välilehti</translation>
 <translation id="2286841657746966508">Laskutusosoite</translation>
@@ -480,6 +481,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2989523299700148168">Viimeksi käytetyt</translation>
 <translation id="2992473221983447149">Kuvien kuvaukset</translation>
 <translation id="2996291259634659425">Luo tunnuslause</translation>
+<translation id="2996682533106928201">Hylkää napauttamalla</translation>
 <translation id="2996809686854298943">URL-osoite vaaditaan</translation>
 <translation id="3024215143424744261">Lukutilan asetukset suljettu</translation>
 <translation id="3026955690410463085">Sisällytä linkki</translation>
@@ -684,6 +686,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">viimeisten neljän viikon ajalta</translation>
 <translation id="393697183122708255">Puhehaku ei ole käytössä</translation>
+<translation id="3941718885865495207">Chrome Finds ‑käyttöönoton alapaneeli</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, kiinnitetty kuva kuvassa ‑välilehti</translation>
 <translation id="3950820424414687140">Kirjaudu sisään</translation>
 <translation id="395377504920307820">Käytä ilman tiliä</translation>
@@ -1189,6 +1192,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="6011308810877101166">Paranna hakuehdotuksia</translation>
 <translation id="6013305291643746595">Lajitellaan vanhimman mukaan</translation>
 <translation id="6022659036123304283">Tee Chromesta näköisesi</translation>
+<translation id="6023820583797130428">Avaa valikko, niin voit palata takaisin</translation>
 <translation id="6026538407078977628">Laajenna koko näytölle</translation>
 <translation id="6030719887161080597">Ylläpidä tietoja, joita sivustot käyttävät mainostulosten mittaamiseen</translation>
 <translation id="6039379616847168523">Siirry seuraavalle välilehdelle</translation>
@@ -1633,6 +1637,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tavallinen välilehti}other{<ph name="TABS_COUNT_MANY" /> tavallista välilehteä}}</translation>
 <translation id="7603168929588204083">Virheellinen päivämäärä</translation>
 <translation id="7605594153474022051">Synkronointi ei toimi</translation>
+<translation id="7608245556672190037">Chrome Finds ‑käyttöönotto avattu kokonaan</translation>
 <translation id="7612619742409846846">Olet kirjautunut Googleen käyttäjänä</translation>
 <translation id="7612989789287281429">Kirjaudutaan sisään…</translation>
 <translation id="7619072057915878432">Tiedoston <ph name="FILE_NAME" /> lataus epäonnistui verkkovirheen vuoksi.</translation>
@@ -1640,6 +1645,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7628417132421583481">Avaa Salasanat</translation>
 <translation id="7630202231528827509">Palvelun URL-osoite</translation>
 <translation id="7638584964844754484">Väärä tunnuslause.</translation>
+<translation id="764047009170754705">Chrome Finds ‑käyttöönotto suljettu</translation>
 <translation id="7646499124171960488">Varoittaa suojaamattomista julkisista sivustoista</translation>
 <translation id="7646772052135772216">Salasanojen synkronointi ei toimi</translation>
 <translation id="7655240423373329753">seitsemän viime päivää</translation>
@@ -1864,6 +1870,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8473863474539038330">Osoitteet ja muita tietoja</translation>
 <translation id="847433688444405067">Selaa eri laitteilla</translation>
 <translation id="8477178913400731244">Poista data</translation>
+<translation id="8481771036036087705">Chrome Finds ‑käyttöönotto avattu puoliksi</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">Ei ei-aktiivisia ikkunoita</translation>
 <translation id="8493948351860045254">Vapauta tilaa</translation>

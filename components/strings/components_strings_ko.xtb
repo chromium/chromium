@@ -465,7 +465,6 @@
 <translation id="1717218214683051432">움직임 감지 센서</translation>
 <translation id="1717494416764505390">메일박스 3</translation>
 <translation id="1717688554309417925">체크카드 서비스</translation>
-<translation id="1717882880162336471">AI 모드 사용해 보기</translation>
 <translation id="1719434663396780149">가격 인하 알림이 사용 설정되었습니다. <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />에서 설정을 변경할 수 있습니다.</translation>
 <translation id="1719838434204287058">24x30인치</translation>
 <translation id="1720941539803966190">튜토리얼 닫기</translation>
@@ -615,7 +614,6 @@
 <translation id="1960664692890490165">Chrome에서 구매할 때 카드 이외의 결제 수단이 옵션으로 표시됩니다.</translation>
 <translation id="196146181975453736">일회성 보안 확인을 완료하여 더 빠르게 결제하세요</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> 북마크</translation>
-<translation id="1966259577349514951">지금 결제</translation>
 <translation id="1973335181906896915">일련화 오류</translation>
 <translation id="1973785048533660168">사무 관리직</translation>
 <translation id="1974060860693918893">고급</translation>
@@ -1045,6 +1043,7 @@
 <translation id="2610561535971892504">클릭하여 복사</translation>
 <translation id="2612676031748830579">카드 번호</translation>
 <translation id="2612993535136743634">기기 및 Google 계정에 저장된 모든 보안 코드가 삭제됩니다.</translation>
+<translation id="2613758321247965174">{MINUTES,plural, =1{마지막 사용 시간: 1분 전}other{마지막 사용 시간: #분 전}}</translation>
 <translation id="2614835674900828050">이 구매에 사용할 수 없음</translation>
 <translation id="2616412942031748191">검색엔진 최적화 및 마케팅</translation>
 <translation id="2618206371527040026">학술 회의 및 간행물</translation>
@@ -1056,6 +1055,7 @@
 <translation id="2627847595568876492">PDF에서 텍스트를 추출하는 중…</translation>
 <translation id="2628025184666666186">이 서버가 Chrome이나 웹 트래픽 암호화를 위한 시스템 구성에서 신뢰하지 않는 보안 인증서를 사용하고 있기 때문에 <ph name="DOMAIN" />임을 입증할 수 없습니다. 설정이 잘못되었거나 공격자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
 <translation id="2628224721443278970">Microsoft OneDrive에 로그인</translation>
+<translation id="2631059741268498165">이 기기가 사용 중지된 상태에서 관리자가 이 기기를 찾았습니다. 기기가 다시 사용 설정되었으며, 사용할 준비가 되었습니다.</translation>
 <translation id="2631387782019878060">인증 코드: <ph name="OTP" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />의 서버 IP 주소를 찾을 수 없습니다.</translation>
 <translation id="2638567100095052009">@을 입력하여 <ph name="FEATURED_SEARCH_LIST" />에서 검색하세요.</translation>
@@ -1097,7 +1097,6 @@
 <translation id="2696385693639654606">Chrome Enterprise Core를 사용하면 클라우드에서 브라우저 정책, 앱, 확장 프로그램을 관리할 수 있습니다.</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> 질문하기</translation>
 <translation id="2699273987028089219">하위 메뉴를 사용할 수 있습니다. 추가 옵션으로 이동하려면 <ph name="SHORTCUT" />를 사용하세요.</translation>
-<translation id="2700335762333112350">나중에 결제</translation>
 <translation id="2701514975700770343">인쇄면이 아래로</translation>
 <translation id="2702592986366989640">저렴한 가격 옵션</translation>
 <translation id="2702801445560668637">읽기 목록</translation>
@@ -2446,7 +2445,6 @@
 <translation id="4832388034239846146">탭 그룹을 공유하려면 Chrome을 업데이트하세요.</translation>
 <translation id="483241715238664915">경고 켜기</translation>
 <translation id="4832961164064927107">BBQ 및 그릴</translation>
-<translation id="4839984801146463230">정보를 저장해 두면 Google 제품 전반에서 양식 작성과 같은 작업을 더 빠르게 완료할 수 있습니다. <ph name="ACCOUNT" />의 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />에서 <ph name="BEGIN_LINK" />정보를 관리<ph name="END_LINK" />할 수 있습니다.</translation>
 <translation id="4840250757394056958">Chrome 방문 기록 보기</translation>
 <translation id="484462545196658690">자동</translation>
 <translation id="4844937814014739139">공유 탭 스크롤 및 확대/축소</translation>
@@ -2723,6 +2721,7 @@
 <translation id="5255833070095767006">350x460mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{관리자 정책에 따라 이 파일을 <ph name="DESTINATION_NAME" />에 복사하지 않는 것이 좋습니다.}other{관리자 정책에 따라 이 파일을 <ph name="DESTINATION_NAME" />에 복사하지 않는 것이 좋습니다.}}</translation>
 <translation id="5258473597674772367">"<ph name="GROUP_NAME" />" 탭 그룹을 더 이상 사용할 수 없습니다.</translation>
+<translation id="5262342527470539728">정보가 <ph name="ACCOUNT" />의 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />에 저장됩니다.</translation>
 <translation id="5263867360296733198">업로드하기 전에 검토 필요</translation>
 <translation id="5266128565379329178">상단 바인드</translation>
 <translation id="5269225904387178860">하단 4공 펀칭</translation>
@@ -2919,6 +2918,7 @@
 <translation id="5543564889050342791">동물원, 수족관 및 보호구역</translation>
 <translation id="5543722831081909240">180도</translation>
 <translation id="5544836308113951378">크루즈 및 전세기</translation>
+<translation id="5546252337258681768">기기가 잠금 해제됨</translation>
 <translation id="5547939254150808298">인쇄 및 출판</translation>
 <translation id="554815783948612276">포럼 및 채팅 공급업체</translation>
 <translation id="5548606607480005320">안전 확인</translation>
@@ -2960,6 +2960,7 @@
 <translation id="5600044805561809264">웹 탐색 중에도 공유 탭에 대한 질문을 쉽게 할 수 있습니다.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> 또는 <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">관리가 지원되지 않음</translation>
+<translation id="560431066250575003">{HOURS,plural, =1{마지막 사용 시간: 1시간 전}other{마지막 사용 시간: #시간 전}}</translation>
 <translation id="5605249000617390290">가격 추적 자세히 알아보기</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">연결 확인</translation>
@@ -3513,6 +3514,7 @@
 <translation id="6456955391422100996">광고가 삭제되었습니다.</translation>
 <translation id="6457206614190510200">새들 스티치</translation>
 <translation id="6457455098507772300">가격 인하 알림이 바탕화면에 팝업 알림으로 표시됩니다.</translation>
+<translation id="6458519747993638565">지금 사용 중</translation>
 <translation id="6458606150257356946">무시하고 붙여넣기</translation>
 <translation id="6462438303393708881">업로드 취소</translation>
 <translation id="6464094930452079790">이미지</translation>
@@ -4769,6 +4771,7 @@
 추가 세부정보:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">현재 마이크 허용됨</translation>
+<translation id="8421746712901926961">정보를 <ph name="GOOGLE_WALLET_TITLE_1" />에 저장해 두면 Google 제품 전반에서 양식 작성과 같은 작업을 더 빠르게 완료할 수 있습니다. <ph name="ACCOUNT" />의 <ph name="GOOGLE_WALLET_TITLE_2" />에서 <ph name="MANAGE_INFO_LINK" />할 수 있습니다.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">변경</translation>
 <translation id="8426945547715537628">키보드 재정의를 허용하시겠습니까?</translation>
@@ -4825,6 +4828,7 @@
 <translation id="8521812709849134608">조리대</translation>
 <translation id="8522180136695974431">신용 보고 및 모니터링</translation>
 <translation id="8522552481199248698">Chrome을 통해 Google 계정을 보호하고 비밀번호를 변경할 수 있습니다.</translation>
+<translation id="852450791482410042">지금 결제</translation>
 <translation id="8527228059738193856">스피커</translation>
 <translation id="8527681393107582734">농업 및 임업</translation>
 <translation id="8528149813106025610">아동 의류</translation>

@@ -293,6 +293,7 @@
 <translation id="2251809247798634662">Nové okno inkognito</translation>
 <translation id="2253927598983295051">Vyberte, čo sa má s aplikáciou <ph name="APP_NAME" /> zdieľať</translation>
 <translation id="2261570557291037252">Ďalšie informácie o aplikácii</translation>
+<translation id="2270544918551255912">Vrátite sa potiahnutím z okraja</translation>
 <translation id="2276696007612801991">Ak si chcete skontrolovať heslá, prihláste sa do svojho účtu Google</translation>
 <translation id="2281243904606300427"><ph name="TAB_TITLE" />, vybraná karta inkognito</translation>
 <translation id="2286841657746966508">Fakturačná adresa</translation>
@@ -480,6 +481,7 @@
 <translation id="2989523299700148168">Nedávno navštívené</translation>
 <translation id="2992473221983447149">Popisy obrázkov</translation>
 <translation id="2996291259634659425">Vytvorenie prístupovej frázy</translation>
+<translation id="2996682533106928201">Klepnutím zavriete</translation>
 <translation id="2996809686854298943">Vyžaduje sa webová adresa</translation>
 <translation id="3024215143424744261">Režim čítania: predvoľby sú zavreté</translation>
 <translation id="3026955690410463085">Zahŕňať odkaz</translation>
@@ -640,6 +642,7 @@
 <translation id="3739455665973395693">Vo svojom účte Google nemáte žiadne odhalené heslá</translation>
 <translation id="3739899004075612870">Pridané do záložiek <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Hlasové vyhľadávanie nie je k dispozícii v tomto zariadení</translation>
+<translation id="3763110477555836428">Pri platbe touto kartou sa vyplní číslo virtuálnej karty, aby boli vaše skutočné údaje chránené. Môžete to spravovať v Peňaženke Google. <ph name="BEGIN_LINK1" />Ďalšie informácie o virtuálnych kartách<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Niektoré údaje ešte nie sú uložené</translation>
 <translation id="3770620323585347665">Pomenovať okno</translation>
 <translation id="3771033907050503522">Karty inkognito</translation>
@@ -683,6 +686,7 @@
 <translation id="3927692899758076493">Bezpätkové</translation>
 <translation id="3931947361983910192">posledných štyroch týždňov</translation>
 <translation id="393697183122708255">Žiadne povol. hlas. vyhľad. k dispozícii</translation>
+<translation id="3941718885865495207">Dolný hárok s prihlásením na používanie funkcie Chrome Finds</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, pripnutá karta s obrazom v obraze</translation>
 <translation id="3950820424414687140">Prihlásiť sa</translation>
 <translation id="395377504920307820">Použiť bez účtu</translation>
@@ -1188,6 +1192,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="6011308810877101166">Zlepšovať návrhy vyhľadávania</translation>
 <translation id="6013305291643746595">Zoraďuje sa od najstarších</translation>
 <translation id="6022659036123304283">Upravte si Chrome podľa seba</translation>
+<translation id="6023820583797130428">Ak sa chcete vrátiť, otvorte ponuku</translation>
 <translation id="6026538407078977628">Rozbaliť na celú obrazovku</translation>
 <translation id="6030719887161080597">Správa informácií, pomocou ktorých merajú weby výkonnosť reklám</translation>
 <translation id="6039379616847168523">Prechod na ďalšiu kartu</translation>
@@ -1632,6 +1637,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> štandardná karta}few{<ph name="TABS_COUNT_MANY" /> štandardné karty}many{<ph name="TABS_COUNT_MANY" /> standard tabs}other{<ph name="TABS_COUNT_MANY" /> štandardných kariet}}</translation>
 <translation id="7603168929588204083">Neplatný dátum</translation>
 <translation id="7605594153474022051">Synchronizácia nefunguje</translation>
+<translation id="7608245556672190037">Prihlásenie na používanie funkcie Chrome Finds je otvorené na celú výšku</translation>
 <translation id="7612619742409846846">Prihlásený účet Google</translation>
 <translation id="7612989789287281429">Prihlasuje sa…</translation>
 <translation id="7619072057915878432">Súbor <ph name="FILE_NAME" /> sa nepodarilo stiahnuť z dôvodu problémov so sieťou.</translation>
@@ -1639,6 +1645,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7628417132421583481">Prejsť do Správcu hesiel</translation>
 <translation id="7630202231528827509">Webová adresa poskytovateľa</translation>
 <translation id="7638584964844754484">Nesprávna prístupová fráza</translation>
+<translation id="764047009170754705">Prihlásenie na používanie funkcie Chrome Finds je zavreté</translation>
 <translation id="7646499124171960488">Upozorňuje vás na nezabezpečené verejné weby</translation>
 <translation id="7646772052135772216">Synchronizácia hesiel nefunguje</translation>
 <translation id="7655240423373329753">posledných 7 dní</translation>
@@ -1863,6 +1870,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8473863474539038330">Adresy a ďalšie údaje</translation>
 <translation id="847433688444405067">Prehliadajte rôzne zariadenia</translation>
 <translation id="8477178913400731244">Odstrániť dáta</translation>
+<translation id="8481771036036087705">Prihlásenie na používanie funkcie Chrome Finds je otvorené na polovičnú výšku</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">Žiadne neaktívne okná</translation>
 <translation id="8493948351860045254">Uvoľniť miesto</translation>

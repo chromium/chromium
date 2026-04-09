@@ -640,6 +640,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3739455665973395693">Tidak ada sandi yang telah dibobol di Akun Google Anda</translation>
 <translation id="3739899004075612870">Dibookmark di <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Penelusuran suara tidak tersedia di perangkat ini</translation>
+<translation id="3763110477555836428">Nomor kartu virtual akan diisi saat Anda melakukan check out dengan kartu ini untuk melindungi detail kartu Anda yang sebenarnya. Kelola di Google Wallet. <ph name="BEGIN_LINK1" />Pelajari lebih lanjut kartu virtual<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Beberapa data belum disimpan</translation>
 <translation id="3770620323585347665">Beri nama jendela</translation>
 <translation id="3771033907050503522">Tab Samaran</translation>
@@ -683,6 +684,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">4 minggu terakhir</translation>
 <translation id="393697183122708255">Tidak ada penelusuran suara yang aktif</translation>
+<translation id="3941718885865495207">Panel bawah untuk mengaktifkan Chrome Finds</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, Tab Picture-in-Picture yang Disematkan</translation>
 <translation id="3950820424414687140">Login</translation>
 <translation id="395377504920307820">Gunakan tanpa akun</translation>
@@ -1188,6 +1190,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="6011308810877101166">Tingkatkan saran penelusuran</translation>
 <translation id="6013305291643746595">Mengurutkan berdasarkan yang terlama</translation>
 <translation id="6022659036123304283">Sesuaikan Chrome dengan selera Anda</translation>
+<translation id="6023820583797130428">Buka menu untuk kembali</translation>
 <translation id="6026538407078977628">Luaskan ke layar penuh</translation>
 <translation id="6030719887161080597">Mengelola info yang digunakan situs untuk mengukur performa iklan</translation>
 <translation id="6039379616847168523">Beralih ke tab berikutnya</translation>
@@ -1632,6 +1635,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tab standar}other{<ph name="TABS_COUNT_MANY" /> tab standar}}</translation>
 <translation id="7603168929588204083">Tanggal tidak valid</translation>
 <translation id="7605594153474022051">Sinkronisasi tidak berfungsi</translation>
+<translation id="7608245556672190037">Pilihan untuk mengaktifkan Chrome Finds terbuka sepenuhnya</translation>
 <translation id="7612619742409846846">Login ke Google sebagai</translation>
 <translation id="7612989789287281429">Memproses login Anda…</translation>
 <translation id="7619072057915878432">Download <ph name="FILE_NAME" /> gagal karena kesalahan jaringan.</translation>
@@ -1639,6 +1643,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7628417132421583481">Buka Pengelola Sandi</translation>
 <translation id="7630202231528827509">URL Penyedia</translation>
 <translation id="7638584964844754484">Frasa sandi salah</translation>
+<translation id="764047009170754705">Pilihan untuk mengaktifkan Chrome Finds tertutup</translation>
 <translation id="7646499124171960488">Memperingatkan Anda tentang situs publik yang tidak aman</translation>
 <translation id="7646772052135772216">Sinkronisasi sandi tidak berfungsi</translation>
 <translation id="7655240423373329753">7 hari terakhir</translation>
@@ -1863,6 +1868,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8473863474539038330">Alamat dan lain-lain</translation>
 <translation id="847433688444405067">Menjelajah di berbagai perangkat</translation>
 <translation id="8477178913400731244">Hapus data</translation>
+<translation id="8481771036036087705">Pilihan untuk mengaktifkan Chrome Finds terbuka setengah</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">Tidak ada jendela yang tidak aktif</translation>
 <translation id="8493948351860045254">Kosongkan ruang</translation>

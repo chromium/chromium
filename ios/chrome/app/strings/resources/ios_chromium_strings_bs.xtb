@@ -134,6 +134,7 @@ Pričekajte nekoliko minuta prije nego što promijenite račun. Ako promijenite 
 <translation id="377649297473651452">Prošireni prikaz automatskog popunjavanja u Chromiumu</translation>
 <translation id="3780779443901618967">Upozorava vas o opasnim web lokacijama, čak i onim za koje Google nije ranije znao, analizirajući više podataka s web lokacija nego što se analizira standardnom zaštitom. Možete odabrati preskakanje Chromiumovih upozorenja.</translation>
 <translation id="3805899903892079518">Chromium nema pristup vašim fotografijama ili videozapisima. Omogućite pristup u meniju iOS postavke &gt; Privatnost &gt; Fotografije.</translation>
+<translation id="3809591243528646631">Da dobijete funkcije za sigurnost djece, možete koristiti Google račun koji je postavljen za dijete ili koristiti Chromium bez računa. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3816686541346279443">Chromium će ponuditi opciju da sačuva lozinku.</translation>
 <translation id="3827545470516145620">Dobijate standardnu sigurnosnu zaštitu na ovom uređaju</translation>
 <translation id="3833326979834193417">Chromium automatski pokreće sigurnosnu provjeru svakog dana da vas zaštiti od narušavanja podataka, nesigurnih web lokacija i drugog. U Postavkama možete pronaći više informacija o sigurnosnoj provjeri.</translation>
@@ -169,6 +170,7 @@ Vaši podaci su šifrirani pristupnim izrazom. Unesite ga da koristite i sačuva
 Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromiuma na računu<ph name="END_LINK" />.</translation>
 <translation id="4578500311756617174">Savjet za Chromium: koristite Chromium prema zadanim postavkama</translation>
 <translation id="458786853569524949">Sada možete koristiti Chromium svaki put kada dodirnete linkove u e-porukama, dokumentima i drugim aplikacijama.</translation>
+<translation id="4625730353066900738">Da započnete, saznajte korisne osnove o Chromiumu</translation>
 <translation id="4633738821577273991">Preuzmite i poboljšano Sigurno pregledanje za ovaj Chromium profil</translation>
 <translation id="4654936625574199632">Radi poboljšanja aplikacije, Chromium šalje Googleu izvještaje o korištenju i padovima. <ph name="BEGIN_LINK" />Upravljajte<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Uključite Chromium skener</translation>
@@ -179,7 +181,6 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromium
 <translation id="4856138222358683580">Radnje u Chromiumu</translation>
 <translation id="4869706986935301458">U trenu otvorite Chromium kada ste na iPhoneu</translation>
 <translation id="4904452304169763785">Upozorenja o problemima s privatnošću ili sigurnošću koje Chromium otkrije za vas.</translation>
-<translation id="4908570938463711775">Da započnete, saznajte korisne osnove o Chromiumu</translation>
 <translation id="4962295957157529683">Završite započetu radnju u drugom otvorenom prozoru Chromiuma.</translation>
 <translation id="4985291216379576555">Van mreže, Chromium ne može provjeravati ima li ažuriranja</translation>
 <translation id="4996471330284142407">Obavite više s jednostavnim i sigurnim Chromiumom koji je brži nego ikad.</translation>
@@ -355,6 +356,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="8900052431807804054">Dobijte Chromiumovu najjaču zaštitu</translation>
 <translation id="8908791447256515663">Brže pristupajte Chromiumu s donje trake iPada.</translation>
 <translation id="8925569192291721236">Pratite novosti o praćenju cijena i savjete za Chromium.</translation>
+<translation id="8939412301975414416">Da dobijete funkcije za sigurnost djece u Chromiumu, možete koristiti Google račun koji je postavljen za dijete ili koristiti Chromium bez računa.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Ovo se dešava kad se Chromium ne koristi {THRESHOLD} minutu}one{Ovo se dešava kad se Chromium ne koristi {THRESHOLD} minutu}few{Ovo se dešava kad se Chromium ne koristi {THRESHOLD} minute}other{Ovo se dešava kad se Chromium ne koristi {THRESHOLD} minuta}}</translation>
 <translation id="8963279154877372067">Dozvolite obavještenja Chromiuma da dobijate obavještenja o padu cijena</translation>
 <translation id="8975812008711371178">Pretraživanje glasovnim komandama u Chromiumu</translation>

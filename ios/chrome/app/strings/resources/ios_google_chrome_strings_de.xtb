@@ -64,6 +64,7 @@ Wichtige Hinweise:
 <translation id="2213327331203157297">Um den Blockierungsmodus in Chrome zu deaktivieren, musst du ihn auf deinem iPhone ausschalten.</translation>
 <translation id="2242467532204595597">Du kannst Chrome jederzeit nutzen, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst.</translation>
 <translation id="2256384876478573507">Du kannst Chrome schneller öffnen, wenn du auf deinem iPhone surfen möchtest.</translation>
+<translation id="2270691132923135296">Hier findest du hilfreiche Chrome-Grundlagen für den Einstieg</translation>
 <translation id="2311240109311056604">Öffnet Chrome Dino.</translation>
 <translation id="2339201583852607431">Dein Passwort wird in deinem Google-Konto (<ph name="EMAIL" />) gespeichert.</translation>
 <translation id="2342919707875585281">Chrome teilt deinen Standort mit Websites, für die du das zulässt.</translation>
@@ -150,7 +151,6 @@ Du kannst erst neue Lesezeichen in deinem Konto speichern, wenn du einige gelös
 <translation id="4693084815234024320">Chrome befindet sich im Inkognitomodus</translation>
 <translation id="4708857722625759026">Über das Dock deines iPads kannst du schneller auf Chrome zugreifen.</translation>
 <translation id="4713740144985377441">Kehre zu Chrome zurück, um die Datei hochzuladen</translation>
-<translation id="4713907610796204963">Hier erfährst du mehr über hilfreiche Chrome-Grundlagen für den Einstieg</translation>
 <translation id="4724297637870447613">Chrome überall nutzen</translation>
 <translation id="4738647308035481133">Google Chrome-Seite</translation>
 <translation id="4742795653798179840">Chrome-Daten gelöscht</translation>
@@ -296,6 +296,7 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet wer
 <translation id="7599894504325210080">Autofill-Ansicht in Chrome erweitert</translation>
 <translation id="7617512710641355143">Chrome wird verwaltet</translation>
 <translation id="7626032353295482388">Willkommen bei Chrome</translation>
+<translation id="7634397654061173327">Wenn du in Chrome Funktionen zum Schutz von Kindern nutzen möchtest, kannst du entweder ein Google-Konto verwenden, das für ein Kind eingerichtet ist, oder Chrome ohne Konto nutzen.</translation>
 <translation id="7641448682796883218">Chrome-Tipp: erweitertes Safe Browsing</translation>
 <translation id="7642373780953416937">Du erhältst Benachrichtigungen bei Problemen mit dem Datenschutz oder der Sicherheit, die Chrome automatisch für dich erkennt.</translation>
 <translation id="7660356333829433649">Schaue später noch einmal hier vorbei, um weitere nützliche Tipps zu erhalten, wie du Chrome optimal nutzen kannst.</translation>
@@ -328,6 +329,7 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet wer
 <translation id="8245080522851805544">Mit der Geräteauthentifizierung bleiben deine Browsing-Aktivitäten privat, wenn du Chrome schließt</translation>
 <translation id="8248887045858762645">Chrome-Tipp</translation>
 <translation id="8265730590513812063">Öffne das Chrome-Menü</translation>
+<translation id="8284376267694582021">Wenn du Funktionen zum Schutz von Kindern nutzen möchtest, kannst du entweder ein Google-Konto verwenden, das für ein Kind eingerichtet wurde, oder Chrome ohne Konto verwenden. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">Zahlungsmethoden und Adressen werden nicht verschlüsselt. Der Chrome-Browserverlauf wird nicht synchronisiert.
 
 Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten lesen. Die Passphrase wird nicht an Google gesendet oder von Google gespeichert. Falls du deine Passphrase vergessen hast oder diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chrome-Daten in deinem Konto<ph name="END_LINK" />.</translation>

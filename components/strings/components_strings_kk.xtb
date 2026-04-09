@@ -465,7 +465,6 @@
 <translation id="1717218214683051432">Қозғалыс датчиктері</translation>
 <translation id="1717494416764505390">3-ші пошта жәшігі</translation>
 <translation id="1717688554309417925">Дебеттік және чектік қызметтер</translation>
-<translation id="1717882880162336471">AI режимін қолданып көру</translation>
 <translation id="1719434663396780149">Бағаның төмендегенін хабарлайтын хабарландырулар қосулы. Мұны <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> бөлімінен өзгертуге болады.</translation>
 <translation id="1719838434204287058">24 x 30 дюйм</translation>
 <translation id="1720941539803966190">Оқулықты жабу</translation>
@@ -615,7 +614,6 @@
 <translation id="1960664692890490165">Chrome-да тауар сатып алатын кезде, картадан басқа төлеу әдістері опция ретінде көрсетіледі.</translation>
 <translation id="196146181975453736">Жылдам төлеу үшін бір реттік қауіпсіздік тексерісінен өтіңіз.</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> бетбелгілері</translation>
-<translation id="1966259577349514951">Қазір төлеу</translation>
 <translation id="1973335181906896915">Сериалау қатесі</translation>
 <translation id="1973785048533660168">Діни және әкімшілік жұмыс орындары</translation>
 <translation id="1974060860693918893">Қосымша</translation>
@@ -1045,6 +1043,7 @@
 <translation id="2610561535971892504">Басып көшіру</translation>
 <translation id="2612676031748830579">Карта нөмірі</translation>
 <translation id="2612993535136743634">Құрылғы мен Google аккаунтында сақталған барлық қауіпсіздік коды жойылады.</translation>
+<translation id="2613758321247965174">{MINUTES,plural, =1{1 минут бұрын белсенді болды.}other{# минут бұрын белсенді болды.}}</translation>
 <translation id="2614835674900828050">Бұл тауар үшін қолжетімді емес</translation>
 <translation id="2616412942031748191">Іздеу жүйесін оңтайландыру және маркетинг</translation>
 <translation id="2618206371527040026">Ғылыми конференциялар мен мақалалар</translation>
@@ -1056,6 +1055,7 @@
 <translation id="2627847595568876492">PDF-тен мәтін алынып жатыр...</translation>
 <translation id="2628025184666666186">Бұл сервер өзінің <ph name="DOMAIN" /> екенін дәлелдей алмады, себебі ол интернет трафигін шифрлау үшін Chrome сенімді деп санамайтын қауіпсіздік сертификатын немесе жүйе конфигурациясын пайдаланып жатыр. Мұның себебі конфигурацияның қате болуынан не шабуылдаушының қосылымға тосқауыл жасауынан болуы мүмкін.</translation>
 <translation id="2628224721443278970">Microsoft OneDrive аккаунтына кіру</translation>
+<translation id="2631059741268498165">Әкімшіңіз бұл құрылғыны өшірулі күйінде тапты. Ол қайта қосылды және пайдалануға дайын.</translation>
 <translation id="2631387782019878060">Растау коды: <ph name="OTP" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> серверінің IP мекенжайын табу мүмкін емес.</translation>
 <translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> арқылы іздеу үшін @ деп теріңіз.</translation>
@@ -1097,7 +1097,6 @@
 <translation id="2696385693639654606">Chrome Enterprise Core браузер саясаттарын, қолданбалар мен кеңейтімдерді бұлттан басқаруға мүмкіндік береді.</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> көмекшісінен сұрау</translation>
 <translation id="2699273987028089219">Ішкі мәзір бар. Қосымша опцияларға өту үшін <ph name="SHORTCUT" /> пайдаланыңыз.</translation>
-<translation id="2700335762333112350">Кейінірек төлеу</translation>
 <translation id="2701514975700770343">Төмен қарату</translation>
 <translation id="2702592986366989640">Бағасы төмен опция</translation>
 <translation id="2702801445560668637">Оқу тізімі</translation>
@@ -2445,7 +2444,6 @@
 <translation id="4832388034239846146">Қойындылар топтарын бөлісу үшін Chrome-ды жаңартыңыз.</translation>
 <translation id="483241715238664915">Хабарландыруларды қосу</translation>
 <translation id="4832961164064927107">Гриль және барбекю</translation>
-<translation id="4839984801146463230">Ақпаратыңызды сақтау арқылы үлгілерді толтыру секілді Google өнімдеріндегі әрекеттерді жылдам орындай аласыз. <ph name="ACCOUNT" /> аккаунтыңызға арналған <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> қызметінде <ph name="BEGIN_LINK" />ақпаратыңызды басқара<ph name="END_LINK" /> аласыз.</translation>
 <translation id="4840250757394056958">Chrome тарихын көру</translation>
 <translation id="484462545196658690">Авто</translation>
 <translation id="4844937814014739139">Ортақ қойындыларды айналдыру және масштабтау</translation>
@@ -2722,6 +2720,7 @@
 <translation id="5255833070095767006">350 x 460 мм</translation>
 <translation id="5257739419779698609">{0,plural, =1{Әкімші саясатына сәйкес бұл файлды <ph name="DESTINATION_NAME" /> қалтасына көшірмеген жөн.}other{Әкімші саясатына сәйкес бұл файлдарды <ph name="DESTINATION_NAME" /> қалтасына көшірмеген жөн.}}</translation>
 <translation id="5258473597674772367">"<ph name="GROUP_NAME" />" қойындылар тобына енді кіре алмайсыз.</translation>
+<translation id="5262342527470539728">Ақпаратыңыз <ph name="ACCOUNT" /> аккаунтына арналған <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> қызметіне сақталады.</translation>
 <translation id="5263867360296733198">Жүктеп салу алдында қарап шығу қажет</translation>
 <translation id="5266128565379329178">Жоғарғы жағын байлау</translation>
 <translation id="5269225904387178860">Төменгі жағын төрт рет тесу</translation>
@@ -2918,6 +2917,7 @@
 <translation id="5543564889050342791">Хайуанаттар бағы, аквариумдер мен қорықтар</translation>
 <translation id="5543722831081909240">180 градус</translation>
 <translation id="5544836308113951378">Круиздер мен чартерлер</translation>
+<translation id="5546252337258681768">Құрылғы құлпы ашылды</translation>
 <translation id="5547939254150808298">Баспалар</translation>
 <translation id="554815783948612276">Форум және чат провайдерлері</translation>
 <translation id="5548606607480005320">Қауіпсіздік тексерісі</translation>
@@ -2959,6 +2959,7 @@
 <translation id="5600044805561809264">Шолған кезде, бөлісіп жатқан қойындылар туралы сұрақ қойған оңай.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> немесе <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Басқаруға қолдау көрсетілмеген</translation>
+<translation id="560431066250575003">{HOURS,plural, =1{1 сағат бұрын белсенді болды.}other{# сағат бұрын белсенді болды.}}</translation>
 <translation id="5605249000617390290">Бағаларды бақылау туралы толық ақпарат</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">Байланысты тексеру</translation>
@@ -3512,6 +3513,7 @@
 <translation id="6456955391422100996">Жарнама өшірілді.</translation>
 <translation id="6457206614190510200">Толқын тәрізді тігу</translation>
 <translation id="6457455098507772300">Бағаның төмендеуі туралы хабарландырулар компьютеріңізде қалқымалы хабарландыру түрінде көрсетіледі.</translation>
+<translation id="6458519747993638565">Қазір белсенді.</translation>
 <translation id="6458606150257356946">Бәрібір қою</translation>
 <translation id="6462438303393708881">Жүктеп салуды тоқтату</translation>
 <translation id="6464094930452079790">суреттер</translation>
@@ -4768,6 +4770,7 @@
 Қосымша мәліметтер:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Бұл жолы микрофонға рұқсат берілген.</translation>
+<translation id="8421746712901926961">Ақпаратыңызды <ph name="GOOGLE_WALLET_TITLE_1" /> қызметіне сақтау арқылы үлгілерді толтыру секілді Google өнімдеріндегі әрекеттерді жылдам орындай аласыз. <ph name="ACCOUNT" /> аккаунтына арналған <ph name="GOOGLE_WALLET_TITLE_2" /> қызметінде келесі әрекетті орындай аласыз: <ph name="MANAGE_INFO_LINK" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Өзгерту</translation>
 <translation id="8426945547715537628">Пернетақтаны қайта анықтауға рұқсат беру қажет пе?</translation>
@@ -4824,6 +4827,7 @@
 <translation id="8521812709849134608">Үстелдің үстіңгі тақтайлары</translation>
 <translation id="8522180136695974431">Кредиттік есеп және мониторинг</translation>
 <translation id="8522552481199248698">Chrome браузері Google аккаунтыңызды қорғауға және құпия сөзіңізді өзгертуге көмектеседі.</translation>
+<translation id="852450791482410042">Қазір төлеу</translation>
 <translation id="8527228059738193856">Динамиктер</translation>
 <translation id="8527681393107582734">Ауыл және орман шаруашылығы</translation>
 <translation id="8528149813106025610">Балалар киімі</translation>

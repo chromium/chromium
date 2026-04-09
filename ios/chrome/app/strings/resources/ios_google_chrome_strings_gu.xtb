@@ -64,6 +64,7 @@
 <translation id="2213327331203157297">Chromeમાં લૉકડાઉન મોડ બંધ કરવા માટે, તેને તમારા iPhone પર બંધ કરો.</translation>
 <translation id="2242467532204595597">જ્યારે પણ તમે મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર ટૅપ કરો, ત્યારે Chromeનો ઉપયોગ કરો.</translation>
 <translation id="2256384876478573507">જ્યારે તમે તમારા iPhone પર બ્રાઉઝ કરવા માટે તૈયાર હો, ત્યારે Chromeને વધુ ઝડપથી ખોલો.</translation>
+<translation id="2270691132923135296">તમે શરૂ કરી શકો તે માટે Chromeની મદદરૂપ મૂળભૂત બાબતો વિશે જાણો</translation>
 <translation id="2311240109311056604">Chrome Dino ગેમ ખોલે છે.</translation>
 <translation id="2339201583852607431">તમારો પાસવર્ડ તમારા Google એકાઉન્ટ (<ph name="EMAIL" />)માં સાચવવામાં આવશે.</translation>
 <translation id="2342919707875585281">Chrome તમે મંજૂરી આપો છો તે સાઇટ સાથે તમારા સ્થાનની માહિતી શેર કરે છે.</translation>
@@ -150,7 +151,6 @@
 <translation id="4693084815234024320">તમે Chromeના છૂપા મોડમાં છે</translation>
 <translation id="4708857722625759026">તમારા iPadના ડૉકમાંથી Chrome વધુ ઝડપથી ઍક્સેસ કરો.</translation>
 <translation id="4713740144985377441">તમારી ફાઇલ અપલોડ કરવા માટે, Chrome પર પાછા ફરો</translation>
-<translation id="4713907610796204963">તમે શરૂ કરી શકો તે માટે Chromeની સહાયરૂપ મૂળભૂત બાબતો વિશે જાણો</translation>
 <translation id="4724297637870447613">સર્વત્ર Chromeનો ઉપયોગ કરો</translation>
 <translation id="4738647308035481133">Google Chrome પેજ</translation>
 <translation id="4742795653798179840">Chromeનો ડેટા ડિલીટ કર્યો</translation>
@@ -296,6 +296,7 @@
 <translation id="7599894504325210080">Chrome પર ઑટોમૅટિક રીતે ભરવાની સુવિધાનો મોટો કરેલો વ્યૂ</translation>
 <translation id="7617512710641355143">Chromeને મેનેજ કરવામાં આવે છે</translation>
 <translation id="7626032353295482388">Chrome પર આપનું સ્વાગત છે</translation>
+<translation id="7634397654061173327">Chromeમાં બાળકની સલામતી સંબંધિત સુવિધાઓ મેળવવા માટે, તમે બાળક માટે સેટઅપ કરેલા Google એકાઉન્ટનો ઉપયોગ કરી શકો છો અથવા એકાઉન્ટ વિના Chromeનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="7641448682796883218">Chrome ટિપ: Safe Browsingમાં વધારેલી સુરક્ષા</translation>
 <translation id="7642373780953416937">તમારા માટે Chrome ઑટોમૅટિક રીતે ભાળ મેળવે તેવી પ્રાઇવસી કે સુરક્ષા સંબંધિત કોઈપણ સમસ્યાઓ માટે અલર્ટ મેળવો.</translation>
 <translation id="7660356333829433649">Chromeનો વધુમાં વધુ લાભ મેળવવા અંગેની વધુ ઉપયોગી ટિપ માટે અહીં ફરી ચેક કરો.</translation>
@@ -328,6 +329,7 @@
 <translation id="8245080522851805544">જ્યારે તમે Chrome બંધ કરો, ત્યારે ડિવાઇસના પ્રમાણીકરણ વડે તમારા બ્રાઉઝિંગને ખાનગી રાખો</translation>
 <translation id="8248887045858762645">Chrome વિશેની ટિપ</translation>
 <translation id="8265730590513812063">Chrome મેનૂ ખોલો</translation>
+<translation id="8284376267694582021">બાળકની સલામતી સંબંધિત સુવિધાઓ મેળવવા માટે, તમે બાળક માટે સેટઅપ કરેલા Google એકાઉન્ટનો ઉપયોગ કરી શકો છો અથવા એકાઉન્ટ વિના Chromeનો ઉપયોગ કરી શકો છો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">ચુકવણી પદ્ધતિઓ અને સરનામા એન્ક્રિપ્ટ કરવામાં આવશે નહીં. Chromeમાંથી બ્રાઉઝિંગ ઇતિહાસ સિંક થશે નહીં.
 
 તમારો પાસફ્રેઝ ધરાવતી કોઈ વ્યક્તિ જ તમારો એન્ક્રિપ્ટેડ ડેટા વાંચી શકે છે. Googleને પાસફ્રેઝ મોકલવામાં આવતો નથી કે તેમાં સ્ટોર કરવામાં આવતો નથી. જો તમે તમારો પાસફ્રેઝ ભૂલી જાઓ અથવા આ સેટિંગ બદલવા માગતા હો, તો <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાંનો Chromeનો ડેટા ડિલીટ કરો<ph name="END_LINK" />.</translation>

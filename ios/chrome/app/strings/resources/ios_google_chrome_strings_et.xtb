@@ -64,6 +64,7 @@ Tasub teada
 <translation id="2213327331203157297">Chrome'is lukustamisrežiimi keelamiseks lülitage see iPhone'is välja.</translation>
 <translation id="2242467532204595597">Saate Chrome'i kasutada igal ajal, kui puudutate sõnumites, dokumentides ja muudes rakendustes linke.</translation>
 <translation id="2256384876478573507">Avage Chrome kiiremini, kui olete valmis oma iPhone'is sirvima.</translation>
+<translation id="2270691132923135296">Alustamiseks õppige tundma Chrome’i kasulikke põhialuseid.</translation>
 <translation id="2311240109311056604">Avab Chrome'i dinosaurusemängu.</translation>
 <translation id="2339201583852607431">Parool salvestatakse teie Google'i kontole (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome jagab teie asukohateavet saitidega, millele olete loa andnud.</translation>
@@ -150,7 +151,6 @@ Uusi järjehoidjaid ei saa teie kontole salvestada, enne kui mõned kustutate. K
 <translation id="4693084815234024320">Olete Chrome'i inkognito režiimis</translation>
 <translation id="4708857722625759026">Avage Chrome kiiremini oma iPadi doki kaudu.</translation>
 <translation id="4713740144985377441">Minge oma faili üleslaadimiseks tagasi Chrome'i</translation>
-<translation id="4713907610796204963">Alustamiseks õppige tundma Chrome’i kasulikke põhialuseid</translation>
 <translation id="4724297637870447613">Chrome'i kasutamine kõikjal</translation>
 <translation id="4738647308035481133">Google Chrome'i leht</translation>
 <translation id="4742795653798179840">Chrome'i andmed on kustutatud</translation>
@@ -296,6 +296,7 @@ Kui soovite näha veel seadeid, mis kasutavad andmeid, et parandada teie Chrome'
 <translation id="7599894504325210080">Chrome'i automaattäite laiendatud vaade</translation>
 <translation id="7617512710641355143">Chrome’i hallatakse</translation>
 <translation id="7626032353295482388">Tere tulemast Chrome'i</translation>
+<translation id="7634397654061173327">Laste ohutuse funktsioonide rakendamiseks Chrome'is võite kasutada lapse jaoks seadistatud Google'i kontot või kasutada Chrome'i ilma kontota.</translation>
 <translation id="7641448682796883218">Chrome'i nõuanne: täiustatud ohutu sirvimine</translation>
 <translation id="7642373780953416937">Saate hoiatusi mis tahes privaatsus- ja turvaprobleemide kohta, mille Chrome automaatselt teie eest tuvastab.</translation>
 <translation id="7660356333829433649">Siit leiate veel kasulikke näpunäiteid, kuidas Chrome’ist maksimumi võtta.</translation>
@@ -328,6 +329,7 @@ Kui soovite näha veel seadeid, mis kasutavad andmeid, et parandada teie Chrome'
 <translation id="8245080522851805544">Hoidke Chrome'i sulgemisel oma sirvimine privaatsena seadme autentimise abil</translation>
 <translation id="8248887045858762645">Chrome'i nõuanne</translation>
 <translation id="8265730590513812063">Avage Chrome'i menüü</translation>
+<translation id="8284376267694582021">Laste ohutuse funktsioonide rakendamiseks võite kasutada lapse jaoks seadistatud Google'i kontot või kasutada Chrome'i ilma kontota. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">Makseviise ja aadresse ei krüpteerita. Chrome’i sirvimisajalugu ei sünkroonita.
 
 Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Parooli ei saadeta Google’ile ja Google ei salvesta seda. Kui parooli unustate või soovite seda seadet muuta, <ph name="BEGIN_LINK" />kustutage oma kontol Chrome’i andmed<ph name="END_LINK" />.</translation>

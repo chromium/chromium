@@ -63,6 +63,7 @@ Gjëra për të pasur parasysh:
 <translation id="2213327331203157297">Për të çaktivizuar Lockdown Mode në Chrome, çaktivizoje atë në iPhone.</translation>
 <translation id="2242467532204595597">Përdore Chrome sa herë që troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>
 <translation id="2256384876478573507">Hape Chrome më shpejt kur të jesh gati të shfletosh në iPhone.</translation>
+<translation id="2270691132923135296">Mëso bazat e dobishme për Chrome për të filluar</translation>
 <translation id="2311240109311056604">Hap lojën Chrome Dino.</translation>
 <translation id="2339201583852607431">Fjalëkalimi yt do të ruhet në "Llogarinë tënde të Google" (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome e ndan vendndodhjen tënde me sajtet që lejon ti.</translation>
@@ -149,7 +150,6 @@ Faqeshënuesit e rinj nuk mund të ruhen në llogarinë tënde derisa të fshish
 <translation id="4693084815234024320">Je në modalitetin "I fshehtë" të Chrome</translation>
 <translation id="4708857722625759026">Qasu më shpejt në Chrome nga stacioni i pajisjes sate iPad.</translation>
 <translation id="4713740144985377441">Kthehu në Chrome për të ngarkuar skedarin</translation>
-<translation id="4713907610796204963">Mëso bazat e dobishme për Chrome për të filluar</translation>
 <translation id="4724297637870447613">Përdor Chrome kudo</translation>
 <translation id="4738647308035481133">Faqe e Google Chrome</translation>
 <translation id="4742795653798179840">Të dhënat e Chrome u fshinë</translation>
@@ -295,6 +295,7 @@ Për më shumë cilësime që përdorin të dhënat për të përmirësuar përv
 <translation id="7599894504325210080">Pamja e zgjeruar për plotësimin automatik në Chrome</translation>
 <translation id="7617512710641355143">Chrome po menaxhohet</translation>
 <translation id="7626032353295482388">Mirë se vjen në Chrome</translation>
+<translation id="7634397654061173327">Për të marrë veçoritë e sigurisë së fëmijëve në Chrome, mund të përdorësh një "Llogari të Google" që është konfiguruar për një fëmijë ose mund të përdorësh Chrome pa një llogari.</translation>
 <translation id="7641448682796883218">Këshillë për Chrome: "Shfletimi i sigurt i përmirësuar"</translation>
 <translation id="7642373780953416937">Merr sinjalizime për çdo problem të privatësisë ose sigurisë që Chrome zbulon automatikisht për ty.</translation>
 <translation id="7660356333829433649">Kontrollo përsëri këtu për më shumë këshilla të dobishme për të përfituar sa më shumë nga Chrome.</translation>
@@ -327,6 +328,7 @@ Për më shumë cilësime që përdorin të dhënat për të përmirësuar përv
 <translation id="8245080522851805544">Mbaje shfletimin privat me vërtetimin e pajisjes kur mbyll Chrome</translation>
 <translation id="8248887045858762645">Këshillë për Chrome</translation>
 <translation id="8265730590513812063">Hap menynë e Chrome</translation>
+<translation id="8284376267694582021">Për të marrë veçoritë e sigurisë së fëmijëve, mund të përdorësh një "Llogari të Google" që është konfiguruar për një fëmijë ose mund të përdorësh Chrome pa një llogari. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">Mënyrat e pagesës dhe adresat nuk do të enkriptohen. Historiku i shfletimit nga Chrome nuk do të sinkronizohet.
 
 Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua të enkriptuara. Fraza e kalimit nuk dërgohet apo ruhet nga Google. Nëse e harron frazën tënde të kalimit apo dëshiron ta ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Chrome në llogarinë tënde<ph name="END_LINK" />.</translation>

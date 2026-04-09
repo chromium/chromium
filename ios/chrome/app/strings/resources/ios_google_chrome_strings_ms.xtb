@@ -64,6 +64,7 @@ Perkara yang perlu dipertimbangkan:
 <translation id="2213327331203157297">Untuk melumpuhkan Mod Kunci Semua dalam Chrome, matikan mod tersebut pada iPhone anda.</translation>
 <translation id="2242467532204595597">Gunakan Chrome pada bila-bila masa anda mengetik pautan dalam mesej, dokumen dan apl lain.</translation>
 <translation id="2256384876478573507">Buka Chrome dengan lebih pantas apabila anda bersedia untuk menyemak imbas pada iPhone anda.</translation>
+<translation id="2270691132923135296">Ketahui perkara asas Chrome yang membantu anda untuk bermula</translation>
 <translation id="2311240109311056604">Buka Permainan Dino Chrome.</translation>
 <translation id="2339201583852607431">Kata laluan anda akan disimpan dalam Google Account anda (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome berkongsi lokasi anda dengan laman yang anda benarkan.</translation>
@@ -150,7 +151,6 @@ Penanda halaman baharu tidak boleh disimpan dalam akaun anda sehingga anda memad
 <translation id="4693084815234024320">Anda dalam Inkognito Chrome</translation>
 <translation id="4708857722625759026">Akses Chrome dengan lebih pantas pada Dok iPad anda.</translation>
 <translation id="4713740144985377441">Kembali kepada Chrome untuk memuat naik fail anda</translation>
-<translation id="4713907610796204963">Ketahui perkara asas Chrome yang membantu anda untuk bermula</translation>
 <translation id="4724297637870447613">Gunakan Chrome di mana-mana sahaja</translation>
 <translation id="4738647308035481133">Halaman Google Chrome</translation>
 <translation id="4742795653798179840">Data Chrome yang dipadamkan</translation>
@@ -296,6 +296,7 @@ Untuk mendapatkan lebih banyak tetapan yang menggunakan data untuk meningkatkan 
 <translation id="7599894504325210080">Paparan Autolengkap Chrome dikembangkan</translation>
 <translation id="7617512710641355143">Chrome diurus</translation>
 <translation id="7626032353295482388">Selamat Datang ke Chrome</translation>
+<translation id="7634397654061173327">Untuk mendapatkan ciri keselamatan kanak-kanak dalam Chrome, anda boleh menggunakan Google Account yang disediakan untuk kanak-kanak atau menggunakan Chrome tanpa akaun.</translation>
 <translation id="7641448682796883218">Petua Chrome: Penyemakan Imbas Selamat Dipertingkat</translation>
 <translation id="7642373780953416937">Terima makluman tentang sebarang masalah privasi atau keselamatan yang dikesan secara automatik oleh Chrome untuk anda.</translation>
 <translation id="7660356333829433649">Kembali ke sini semula untuk lebih banyak petua berguna bagi memanfaatkan Chrome sepenuhnya.</translation>
@@ -328,6 +329,7 @@ Untuk mendapatkan lebih banyak tetapan yang menggunakan data untuk meningkatkan 
 <translation id="8245080522851805544">Pastikan penyemakan imbas anda sulit dengan pengesahan peranti apabila anda menutup Chrome</translation>
 <translation id="8248887045858762645">Petua Chrome</translation>
 <translation id="8265730590513812063">Buka menu Chrome</translation>
+<translation id="8284376267694582021">Untuk mendapatkan ciri keselamatan kanak-kanak, anda boleh menggunakan Google Account yang disediakan untuk kanak-kanak atau menggunakan Chrome tanpa akaun. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">Kaedah pembayaran dan alamat tidak akan disulitkan. Sejarah penyemakan imbas daripada Chrome tidak akan disegerakkan.
 
 Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda yang disulitkan. Ungkapan laluan tidak dihantar kepada atau disimpan oleh Google. Jika anda terlupa ungkapan laluan anda atau mahu menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam akaun anda<ph name="END_LINK" />.</translation>

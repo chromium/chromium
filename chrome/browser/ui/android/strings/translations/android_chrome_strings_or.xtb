@@ -293,6 +293,7 @@
 <translation id="2251809247798634662">ନୂଆ ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋ</translation>
 <translation id="2253927598983295051"><ph name="APP_NAME" /> ସହ କଣ ସେୟାର କରିବେ ତାହା ବାଛନ୍ତୁ</translation>
 <translation id="2261570557291037252">ଅଧିକ ଆପ ସୂଚନା</translation>
+<translation id="2270544918551255912">ପଛକୁ ଫେରିବା ପାଇଁ ଧାରରୁ ସ୍ୱାଇପ କରନ୍ତୁ</translation>
 <translation id="2276696007612801991">ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିବା ପାଇଁ ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="2281243904606300427"><ph name="TAB_TITLE" />, ଚୟନିତ ଇନକଗ୍ନିଟୋ ଟାବ</translation>
 <translation id="2286841657746966508">ବିଲିଂ ଠିକଣା</translation>
@@ -480,6 +481,7 @@
 <translation id="2989523299700148168">ନିକଟରେ ଯାଇଥିବା</translation>
 <translation id="2992473221983447149">ଛବିର ବର୍ଣ୍ଣନା</translation>
 <translation id="2996291259634659425">ପାସ୍‌ଫ୍ରେଜ୍ ତିଆରି କରନ୍ତୁ</translation>
+<translation id="2996682533106928201">ଖାରଜ କରିବାକୁ ଟାପ କରନ୍ତୁ</translation>
 <translation id="2996809686854298943">URL ଆବଶ୍ୟକ</translation>
 <translation id="3024215143424744261">ରିଡିଂ ମୋଡର ପସନ୍ଦଗୁଡ଼ିକୁ ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="3026955690410463085">ଲିଙ୍କ୍ ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ</translation>
@@ -684,6 +686,7 @@
 <translation id="3927692899758076493">ସାନ୍ସ-ସେରିଫ୍‌</translation>
 <translation id="3931947361983910192">ଗତ 4 ସପ୍ତାହ</translation>
 <translation id="393697183122708255">କୌଣସି ସକ୍ଷମ ଭଏସ ସର୍ଚ୍ଚ ଉପଲବ୍ଧ ନାହିଁ</translation>
+<translation id="3941718885865495207">Chrome ଫାଇଣ୍ଡ୍ସ ଅପ୍ଟ-ଇନ ବଟମ ସିଟ</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, ପିନ କରାଯାଇଥିବା ପିକଚର-ଇନ-ପିକଚର ଟାବ</translation>
 <translation id="3950820424414687140">ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="395377504920307820">କୌଣସି ଆକାଉଣ୍ଟ ବିନା ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -1189,6 +1192,7 @@
 <translation id="6011308810877101166">ସର୍ଚ୍ଚ ପରାମର୍ଶଗୁଡ଼ିକୁ ଉନ୍ନତ କରନ୍ତୁ</translation>
 <translation id="6013305291643746595">ସବୁଠାରୁ ପୁରୁଣା ଅନୁସାରେ ସର୍ଟ କରାଯାଉଛି</translation>
 <translation id="6022659036123304283">Chromeକୁ ନିଜ ପସନ୍ଦରେ ତିଆରି କରନ୍ତୁ</translation>
+<translation id="6023820583797130428">ପଛକୁ ଫେରିବାକୁ ମେନୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="6026538407078977628">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନକୁ ବିସ୍ତାର କରନ୍ତୁ</translation>
 <translation id="6030719887161080597">ବିଜ୍ଞାପନ ପରଫରମାନ୍ସ ମାପିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକ ଦ୍ୱାରା ବ୍ୟବହୃତ ସୂଚନାକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="6039379616847168523">ପରବର୍ତ୍ତୀ ଟାବ୍‌କୁ ଯାଆନ୍ତୁ</translation>
@@ -1633,6 +1637,7 @@
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ଷ୍ଟାଣ୍ଡାର୍ଡ ଟାବ}other{<ph name="TABS_COUNT_MANY" /> ଷ୍ଟାଣ୍ଡାର୍ଡ ଟାବ}}</translation>
 <translation id="7603168929588204083">ଅବୈଧ ତାରିଖ</translation>
 <translation id="7605594153474022051">ସିଙ୍କ୍‌ କାର୍ଯ୍ୟ କରୁନାହିଁ</translation>
+<translation id="7608245556672190037">Chrome ଫାଇଣ୍ଡ୍ସ ଅପ୍ଟ-ଇନକୁ ସମ୍ପୂର୍ଣ୍ଣ ଭାବେ ଖୋଲାଯାଇଛି</translation>
 <translation id="7612619742409846846">ଏପରି Googleରେ ସାଇନ୍ ଇନ୍ ହୋଇଛି</translation>
 <translation id="7612989789287281429">ଆପଣଙ୍କୁ ସାଇନ ଇନ କରାଯାଉଛି…</translation>
 <translation id="7619072057915878432">ନେଟ୍‌ୱାର୍କ ନଥିବା ଯୋଗୁଁ <ph name="FILE_NAME" /> ଡାଉନ୍‌ଲୋଡ୍ ହୋଇପାରିଲା ନାହିଁ।</translation>
@@ -1640,6 +1645,7 @@
 <translation id="7628417132421583481">Password Managerକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="7630202231528827509">ପ୍ରଦାନକାରୀ URL</translation>
 <translation id="7638584964844754484">ଭୁଲ ପାସ୍‍‍ଫ୍ରେଜ୍</translation>
+<translation id="764047009170754705">Chrome ଫାଇଣ୍ଡ୍ସ ଅପ୍ଟ-ଇନ ବନ୍ଦ ଅଛି</translation>
 <translation id="7646499124171960488">ଏହା ଅସୁରକ୍ଷିତ ପବ୍ଲିକ ସାଇଟ ପାଇଁ ଆପଣଙ୍କୁ ଚେତାବନୀ ଦିଏ</translation>
 <translation id="7646772052135772216">ପାସ୍‍ୱାର୍ଡ ସିଙ୍କ୍ କାମ କରୁ ନାହିଁ</translation>
 <translation id="7655240423373329753">ଗତ 7 ଦିନ</translation>
@@ -1864,6 +1870,7 @@
 <translation id="8473863474539038330">ଠିକଣାଗୁଡ଼ିକ ଏବଂ ଅଧିକ</translation>
 <translation id="847433688444405067">ସମଗ୍ର ଡିଭାଇସରେ ବ୍ରାଉଜ କରନ୍ତୁ</translation>
 <translation id="8477178913400731244">ଡାଟାକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
+<translation id="8481771036036087705">Chrome ଫାଇଣ୍ଡ୍ସ ଅପ୍ଟ-ଇନକୁ ଅଧା ଖୋଲାଯାଇଛି</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">କୌଣସି ନିଷ୍କ୍ରିୟ ୱିଣ୍ଡୋ ନାହିଁ</translation>
 <translation id="8493948351860045254">ଜାଗା ଖାଲି କରନ୍ତୁ</translation>

@@ -64,6 +64,7 @@ Notas importantes:
 <translation id="2213327331203157297">Para inhabilitar el modo Bloqueo de seguridad en Chrome, desactívalo en tu iPhone.</translation>
 <translation id="2242467532204595597">Utiliza Chrome cada vez que toques enlaces de mensajes, documentos y otras aplicaciones.</translation>
 <translation id="2256384876478573507">Abre Chrome más rápido al navegar en tu iPhone.</translation>
+<translation id="2270691132923135296">Aprende conceptos básicos útiles de Chrome para empezar</translation>
 <translation id="2311240109311056604">Abre el juego El dinosaurio de Chrome.</translation>
 <translation id="2339201583852607431">Tu contraseña se guardará en tu cuenta de Google (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome compartirá tu ubicación con los sitios que permitas.</translation>
@@ -150,7 +151,6 @@ No podrás guardar marcadores nuevos en tu cuenta hasta que elimines algunos. Si
 <translation id="4693084815234024320">Estás en el modo Incógnito de Chrome</translation>
 <translation id="4708857722625759026">Accede más rápido a Chrome desde el Dock de tu iPad.</translation>
 <translation id="4713740144985377441">Vuelve a Chrome para subir tu archivo</translation>
-<translation id="4713907610796204963">Aprende los conceptos básicos de Chrome para empezar</translation>
 <translation id="4724297637870447613">Usa Chrome estés donde estés</translation>
 <translation id="4738647308035481133">Página de Google Chrome</translation>
 <translation id="4742795653798179840">Datos de Chrome eliminados</translation>
@@ -296,6 +296,7 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="7599894504325210080">Vista ampliada de la función Autocompletar de Chrome</translation>
 <translation id="7617512710641355143">Chrome está gestionado</translation>
 <translation id="7626032353295482388">Te damos la bienvenida a Chrome</translation>
+<translation id="7634397654061173327">Para disfrutar de funciones de seguridad infantil en Chrome, puedes usar una cuenta de Google configurada para un menor o usar Chrome sin cuenta.</translation>
 <translation id="7641448682796883218">Consejo de Chrome: Navegación segura mejorada</translation>
 <translation id="7642373780953416937">Recibe alertas sobre los problemas de privacidad o seguridad detectados automáticamente por Chrome.</translation>
 <translation id="7660356333829433649">Vuelve a esta página para ver más consejos útiles que te ayudarán a sacar el máximo partido a Chrome.</translation>
@@ -328,6 +329,7 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="8245080522851805544">Mantén tu navegación privada con la autenticación del dispositivo al cerrar Chrome</translation>
 <translation id="8248887045858762645">Consejo de Chrome</translation>
 <translation id="8265730590513812063">Abre el menú de Chrome</translation>
+<translation id="8284376267694582021">Para disfrutar de funciones de seguridad infantil, puedes usar una cuenta de Google configurada para un menor o usar Chrome sin cuenta. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">Los métodos de pago y las direcciones no se cifrarán. El historial de navegación de Chrome no se sincronizará.
 
 Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifrados. La frase de contraseña no se enviará a Google, que tampoco la almacenará. Si olvidas tu frase de contraseña o quieres cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>

@@ -134,6 +134,7 @@ Coba tunggu beberapa menit sebelum beralih akun. Jika Anda beralih akun sekarang
 <translation id="377649297473651452">Tampilan Isi Otomatis Chromium diperluas</translation>
 <translation id="3780779443901618967">Memperingatkan Anda tentang situs berbahaya, bahkan situs yang tidak diketahui Google sebelumnya, dengan menganalisis lebih banyak data dari situs dibandingkan perlindungan standar. Anda dapat memilih untuk melewati peringatan Chromium.</translation>
 <translation id="3805899903892079518">Chromium tidak memiliki akses ke foto atau video Anda. Izinkan akses di iOS Settings &gt; Privacy &gt; Photos.</translation>
+<translation id="3809591243528646631">Untuk mendapatkan fitur keamanan anak, Anda dapat menggunakan Akun Google yang disiapkan untuk anak atau menggunakan Chromium tanpa akun. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="3816686541346279443">Chromium akan menawarkan penyimpanan sandi Anda.</translation>
 <translation id="3827545470516145620">Anda mendapatkan perlindungan keamanan standar di perangkat ini</translation>
 <translation id="3833326979834193417">Chromium otomatis menjalankan Pemeriksaan Keamanan setiap hari untuk membuat Anda tetap aman dari pelanggaran data, situs yang tidak aman, dan lainnya. Anda dapat menemukan informasi selengkapnya tentang Pemeriksaan Keamanan di Setelan.</translation>
@@ -169,6 +170,7 @@ Data Anda dienkripsi dengan frasa sandi. Masukkan frasa sandi untuk menggunakan 
 Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chromium di akun Anda<ph name="END_LINK" />.</translation>
 <translation id="4578500311756617174">Tips Chromium: gunakan Chromium secara default</translation>
 <translation id="458786853569524949">Anda sekarang dapat menggunakan Chromium kapan saja dengan mengetuk link di email, dokumen, dan aplikasi lainnya.</translation>
+<translation id="4625730353066900738">Pelajari dasar-dasar Chromium yang bermanfaat untuk membantu Anda memulai</translation>
 <translation id="4633738821577273991">Dapatkan juga Safe Browsing yang Disempurnakan untuk profil Chromium ini</translation>
 <translation id="4654936625574199632">Untuk membantu meningkatkan kualitas aplikasi, Chromium akan mengirimkan data penggunaan dan error ke Google. <ph name="BEGIN_LINK" />Kelola<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Aktifkan pemindai Chromium</translation>
@@ -179,7 +181,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chromium di akun 
 <translation id="4856138222358683580">Tindakan Chromium</translation>
 <translation id="4869706986935301458">Buka Chromium secara instan saat Anda menggunakan iPhone</translation>
 <translation id="4904452304169763785">Notifikasi terkait masalah privasi atau keamanan apa pun yang dideteksi oleh Chromium untuk Anda.</translation>
-<translation id="4908570938463711775">Pelajari dasar-dasar Chromium yang bermanfaat untuk membantu Anda memulai</translation>
 <translation id="4962295957157529683">Selesaikan yang Anda kerjakan di jendela Chromium lain yang terbuka.</translation>
 <translation id="4985291216379576555">Offline, Chromium tidak dapat memeriksa update</translation>
 <translation id="4996471330284142407">Tingkatkan produktivitas dengan Chromium yang lebih praktis, aman, dan cepat.</translation>
@@ -355,6 +356,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="8900052431807804054">Dapatkan Keamanan Terkuat Chromium</translation>
 <translation id="8908791447256515663">Akses Chromium lebih cepat dari Dok iPad Anda.</translation>
 <translation id="8925569192291721236">Dapatkan info terbaru terkait pemantauan harga dan tips Chromium.</translation>
+<translation id="8939412301975414416">Untuk mendapatkan fitur keamanan anak di Chromium, Anda dapat menggunakan Akun Google yang disiapkan untuk anak atau menggunakan Chromium tanpa akun.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Hal ini terjadi jika Chromium tidak digunakan selama {THRESHOLD} menit}other{Hal ini terjadi jika Chromium tidak digunakan selama {THRESHOLD} menit}}</translation>
 <translation id="8963279154877372067">Izinkan notifikasi Chromium mendapatkan notifikasi diskon</translation>
 <translation id="8975812008711371178">Telusuri dengan suara di Chromium</translation>
