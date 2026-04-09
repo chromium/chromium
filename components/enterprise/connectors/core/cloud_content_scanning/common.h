@@ -52,7 +52,10 @@ enum class ScanRequestUploadResult {
   // The server did not return all the results for the synchronous requests
   kIncompleteResponse = 10,
 
-  kMaxValue = kIncompleteResponse,
+  // The user cancelled the request.
+  kUserCancelled = 11,
+
+  kMaxValue = kUserCancelled,
 };
 
 std::string ScanRequestUploadResultToString(ScanRequestUploadResult result);

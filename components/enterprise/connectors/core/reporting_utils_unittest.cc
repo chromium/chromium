@@ -256,6 +256,24 @@ TEST(ReportingUtilsTest, GetUnscannedFileEvent) {
             chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED);
 }
 
+TEST(ReportingUtilsTest, GetUnscannedFileEventUserCancelled) {
+  auto event = GetUnscannedFileEvent(
+      /*url=*/GURL("https://google.com/"), /*tab_url=*/GURL("about:blank"),
+      /*source=*/"source", /*destination=*/"destination",
+      /*file_name=*/"encrypted.zip",
+      /*download_digest_sha256=*/"sha256_of_data",
+      /*mime_type=*/"application/zip", /*trigger=*/"FILE_UPLOAD",
+      /*scan_id=*/"123",
+      /*reason=*/"USER_CANCELLED",
+      /*content_transfer_method=*/"CONTENT_TRANSFER_METHOD_DRAG_AND_DROP",
+      /*profile_identifier=*/"identifier",
+      /*profile_username=*/"profile_username", /*content_size=*/-1,
+      /*event_result=*/EventResult::ALLOWED);
+
+  ASSERT_EQ(event.unscanned_reason(),
+            chrome::cros::reporting::proto::UnscannedFileEvent::USER_CANCELLED);
+}
+
 TEST(ReportingUtilsTest, GetDlpSensitiveDataEvent) {
   ReferrerChain referrer_chain;
   referrer_chain.Add(test::MakeReferrerChainEntry());

@@ -73,6 +73,7 @@ inline constexpr char kServiceUnavailableUnscannedReason[] =
     "SERVICE_UNAVAILABLE";
 inline constexpr char kTooManyRequestsUnscannedReason[] = "TOO_MANY_REQUESTS";
 inline constexpr char kTimeoutUnscannedReason[] = "TIMEOUT";
+inline constexpr char kUserCancelledUnscannedReason[] = "USER_CANCELLED";
 
 inline constexpr char kFileDownloadDataTransferEventTrigger[] = "FILE_DOWNLOAD";
 inline constexpr char kFileUploadDataTransferEventTrigger[] = "FILE_UPLOAD";

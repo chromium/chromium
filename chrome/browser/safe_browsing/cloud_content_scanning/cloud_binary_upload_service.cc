@@ -306,6 +306,37 @@ void CloudBinaryUploadService::MaybeCancelRequests(
   if (user_action_data_.contains(action_id)) {
     user_action_data_[action_id].cancelled_time = base::TimeTicks::Now();
   }
+
+  if (!base::FeatureList::IsEnabled(
+          enterprise_connectors::kEnableCancelUploadOnContentAnalysis)) {
+    return;
+  }
+
+  base::EraseIf(
+      request_queue_,
+      [&cancel](const std::unique_ptr<BinaryUploadRequest>& request) {
+        if (request->user_action_id() == cancel->get_user_action_id()) {
+          request->FinishRequest(
+              enterprise_connectors::ScanRequestUploadResult::kUserCancelled,
+              enterprise_connectors::ContentAnalysisResponse());
+          return true;
+        }
+        return false;
+      });
+
+  // Also cancel active requests.
+  std::vector<BinaryUploadRequest::Id> ids_to_cancel;
+  for (const auto& it : active_requests_) {
+    if (it.second->user_action_id() == cancel->get_user_action_id()) {
+      ids_to_cancel.push_back(it.first);
+    }
+  }
+
+  for (const auto& id : ids_to_cancel) {
+    FinishIfActive(
+        id, enterprise_connectors::ScanRequestUploadResult::kUserCancelled,
+        enterprise_connectors::ContentAnalysisResponse());
+  }
 }
 
 base::WeakPtr<enterprise_connectors::BinaryUploadService>

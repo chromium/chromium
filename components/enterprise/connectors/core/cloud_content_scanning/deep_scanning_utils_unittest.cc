@@ -186,6 +186,27 @@ TEST_P(EnterpriseConnectorsResultShouldAllowDataUseTest, BlockUploadFailure) {
                                      ScanRequestUploadResult::kUploadFailure));
 }
 
+// Tests request result should not be allowed a data use if user cancelled.
+TEST_P(EnterpriseConnectorsResultShouldAllowDataUseTest, BlockUserCancelled) {
+  EXPECT_TRUE(ResultIsFailClosed(ScanRequestUploadResult::kUserCancelled));
+  EXPECT_EQ("UserCancelled",
+            BinaryUploadServiceResultToString(
+                ScanRequestUploadResult::kUserCancelled, false));
+  auto pref = base::StringPrintf(R"(
+    {
+      "service_provider": "google",
+      "enable": [{"url_list": ["*"], "tags": ["dlp"]}],
+      "default_action": "%s"
+    })",
+                                 default_action_setting());
+  test::SetAnalysisConnectorsPrefs(connectors_service_->GetPrefs(),
+                                   FILE_DOWNLOADED, {pref}, true);
+
+  EXPECT_FALSE(
+      ResultShouldAllowDataUse(settings(connectors_service_.get()),
+                               ScanRequestUploadResult::kUserCancelled));
+}
+
 class ContentAnalysisResponseCustomMessageTest
     : public BaseTest,
       public testing::WithParamInterface<
@@ -321,5 +342,32 @@ INSTANTIATE_TEST_SUITE_P(
                 {.action = TriggeredRule::BLOCK,
                  .message = kTestEscapedHtmlMessage}},
             /*expected_message=*/kTestUnescapedHtmlMessage)));
+
+TEST(DeepScanningUtilsTest, BinaryUploadServiceResultToString) {
+  EXPECT_EQ("UserCancelled",
+            enterprise_connectors::BinaryUploadServiceResultToString(
+                enterprise_connectors::ScanRequestUploadResult::kUserCancelled,
+                false));
+}
+
+class CalculateRequestHandlerResultTest : public BaseTest {};
+
+TEST_F(CalculateRequestHandlerResultTest, UserCancelled) {
+  test::SetAnalysisConnectorsPrefs(connectors_service_->GetPrefs(),
+                                   FILE_DOWNLOADED, {kGoogleServiceProvider},
+                                   true);
+
+  ContentAnalysisResponse response;
+  auto* result = response.add_results();
+  result->set_status(ContentAnalysisResponse::Result::SUCCESS);
+
+  RequestHandlerResult handler_result = CalculateRequestHandlerResult(
+      settings(connectors_service_.get()),
+      ScanRequestUploadResult::kUserCancelled, response);
+
+  EXPECT_FALSE(handler_result.complies);
+  EXPECT_EQ(FinalContentAnalysisResult::FAIL_CLOSED,
+            handler_result.final_result);
+}
 
 }  // namespace enterprise_connectors

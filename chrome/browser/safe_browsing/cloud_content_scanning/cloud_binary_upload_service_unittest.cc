@@ -1388,6 +1388,123 @@ TEST_F(CloudBinaryUploadServiceTest, VerifyBlockingSet) {
   ASSERT_FALSE(request->blocking());
 }
 
+TEST_F(CloudBinaryUploadServiceTest, CancelUploadFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_connectors::kEnableCancelUploadOnContentAnalysis);
+
+  enterprise_connectors::ScanRequestUploadResult scanning_result =
+      enterprise_connectors::ScanRequestUploadResult::kUnknown;
+  enterprise_connectors::ContentAnalysisResponse scanning_response;
+  std::unique_ptr<MockRequest> request = MakeRequest(
+      &scanning_result, &scanning_response, /*is_advanced_protection*/ false);
+
+  std::string user_action_id = "test_action_id";
+  request->set_user_action_id(user_action_id);
+  request->set_analysis_connector(enterprise_connectors::FILE_ATTACHED);
+
+  // We don't want the upload to complete immediately, but wait for
+  // cancellation.
+  ExpectNetworkResponse(true, std::nullopt);
+
+  UploadForDeepScanning(std::move(request));
+
+  auto cancel_request =
+      std::make_unique<enterprise_connectors::BinaryUploadCancelRequests>(
+          enterprise_connectors::CloudOrLocalAnalysisSettings(
+              enterprise_connectors::CloudAnalysisSettings()));
+  cancel_request->set_user_action_id(user_action_id);
+  service_->MaybeCancelRequests(std::move(cancel_request));
+
+  content::RunAllTasksUntilIdle();
+
+  EXPECT_EQ(scanning_result,
+            enterprise_connectors::ScanRequestUploadResult::kUserCancelled);
+}
+
+TEST_F(CloudBinaryUploadServiceTest,
+       CancelUploadFeatureEnabledMultipleRequests) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_connectors::kEnableCancelUploadOnContentAnalysis);
+
+  std::vector<enterprise_connectors::ScanRequestUploadResult> scanning_results;
+  std::vector<enterprise_connectors::ContentAnalysisResponse>
+      scanning_responses;
+
+  std::string user_action_id = "test_action_id";
+
+  // Create enough requests to fill the active queue and spill over into the
+  // pending queue
+  size_t num_requests =
+      CloudBinaryUploadService::GetParallelActiveRequestsMax() + 5;
+  scanning_results.resize(
+      num_requests, enterprise_connectors::ScanRequestUploadResult::kUnknown);
+  scanning_responses.resize(num_requests);
+
+  // We don't want the upload to complete immediately, but wait for
+  // cancellation.
+  ExpectNetworkResponse(true, std::nullopt);
+
+  for (size_t i = 0; i < num_requests; ++i) {
+    std::unique_ptr<MockRequest> request =
+        MakeRequest(&scanning_results[i], &scanning_responses[i],
+                    /*is_advanced_protection*/ false);
+    request->set_user_action_id(user_action_id);
+    request->set_analysis_connector(enterprise_connectors::FILE_ATTACHED);
+    UploadForDeepScanning(std::move(request));
+  }
+
+  auto cancel_request =
+      std::make_unique<enterprise_connectors::BinaryUploadCancelRequests>(
+          enterprise_connectors::CloudOrLocalAnalysisSettings(
+              enterprise_connectors::CloudAnalysisSettings()));
+  cancel_request->set_user_action_id(user_action_id);
+  service_->MaybeCancelRequests(std::move(cancel_request));
+
+  content::RunAllTasksUntilIdle();
+
+  // All requests should have been cancelled, both active and pending.
+  for (size_t i = 0; i < num_requests; ++i) {
+    EXPECT_EQ(scanning_results[i],
+              enterprise_connectors::ScanRequestUploadResult::kUserCancelled);
+  }
+}
+
+TEST_F(CloudBinaryUploadServiceTest, CancelUploadFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      enterprise_connectors::kEnableCancelUploadOnContentAnalysis);
+
+  enterprise_connectors::ScanRequestUploadResult scanning_result =
+      enterprise_connectors::ScanRequestUploadResult::kUnknown;
+  enterprise_connectors::ContentAnalysisResponse scanning_response;
+  std::unique_ptr<MockRequest> request = MakeRequest(
+      &scanning_result, &scanning_response, /*is_advanced_protection*/ false);
+
+  std::string user_action_id = "test_action_id";
+  request->set_user_action_id(user_action_id);
+  request->set_analysis_connector(enterprise_connectors::FILE_ATTACHED);
+
+  // No response is returned from the server.
+  ExpectNetworkResponse(true, std::nullopt);
+
+  UploadForDeepScanning(std::move(request));
+
+  auto cancel_request =
+      std::make_unique<enterprise_connectors::BinaryUploadCancelRequests>(
+          enterprise_connectors::CloudOrLocalAnalysisSettings(
+              enterprise_connectors::CloudAnalysisSettings()));
+  cancel_request->set_user_action_id(user_action_id);
+  service_->MaybeCancelRequests(std::move(cancel_request));
+
+  content::RunAllTasksUntilIdle();
+
+  // The request is not cancelled, so it should still be pending/unknown.
+  EXPECT_EQ(scanning_result,
+            enterprise_connectors::ScanRequestUploadResult::kUnknown);
+}
+
 TEST_F(CloudBinaryUploadServiceTest, TrackUserCancellation) {
   base::HistogramTester histogram_tester;
   enterprise_connectors::ScanRequestUploadResult scanning_result =

@@ -37,6 +37,7 @@ constexpr enterprise_connectors::ScanRequestUploadResult
         enterprise_connectors::ScanRequestUploadResult::kFailedToGetToken,
         enterprise_connectors::ScanRequestUploadResult::kUnauthorized,
         enterprise_connectors::ScanRequestUploadResult::kFileEncrypted,
+        enterprise_connectors::ScanRequestUploadResult::kUserCancelled,
     };
 
 #if !BUILDFLAG(USE_CRASH_KEY_STUBS)

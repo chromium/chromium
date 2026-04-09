@@ -40,6 +40,8 @@ std::string MaybeGetUnscannedReason(ScanRequestUploadResult result) {
     case ScanRequestUploadResult::kFailedToGetToken:
     case ScanRequestUploadResult::kIncompleteResponse:
       return kServiceUnavailableUnscannedReason;
+    case ScanRequestUploadResult::kUserCancelled:
+      return kUserCancelledUnscannedReason;
   }
 }
 
@@ -363,6 +365,7 @@ bool ResultIsFailClosed(ScanRequestUploadResult result) {
     case ScanRequestUploadResult::kTooManyRequests:
     case ScanRequestUploadResult::kUnknown:
     case ScanRequestUploadResult::kIncompleteResponse:
+    case ScanRequestUploadResult::kUserCancelled:
       return true;
     case ScanRequestUploadResult::kSuccess:
     case ScanRequestUploadResult::kFileTooLarge:
@@ -405,6 +408,8 @@ bool ResultShouldAllowDataUse(const AnalysisSettings& settings,
 
     case ScanRequestUploadResult::kFileEncrypted:
       return !settings.block_password_protected_files;
+    case ScanRequestUploadResult::kUserCancelled:
+      return false;
   }
 }
 
@@ -560,6 +565,8 @@ std::string BinaryUploadServiceResultToString(
       return "TooManyRequests";
     case ScanRequestUploadResult::kIncompleteResponse:
       return "IncompleteResponse";
+    case ScanRequestUploadResult::kUserCancelled:
+      return "UserCancelled";
   }
 }
 

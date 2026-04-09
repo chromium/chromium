@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -227,14 +228,20 @@ void ContentAnalysisDelegate::Cancel(bool warning) {
         "CancelledByUser", false);
   }
 
-  // Ask the binary upload service to cancel requests if it can.
-  auto cancel = std::make_unique<BinaryUploadCancelRequests>(
-      data_.settings.cloud_or_local_settings);
-  cancel->set_user_action_id(user_action_id_);
-
   BinaryUploadService* upload_service = GetBinaryUploadService();
+
+  // This will cancel requests if there are any, on the closure, and ensure that
+  // callbacks are not called twice.
+  base::ScopedClosureRunner cancel_requests;
   if (upload_service) {
-    upload_service->MaybeCancelRequests(std::move(cancel));
+    // Ask the binary upload service to cancel requests if it can.
+    auto cancel = std::make_unique<BinaryUploadCancelRequests>(
+        data_.settings.cloud_or_local_settings);
+    cancel->set_user_action_id(user_action_id_);
+
+    cancel_requests.ReplaceClosure(
+        base::BindOnce(&BinaryUploadService::MaybeCancelRequests,
+                       upload_service->AsWeakPtr(), std::move(cancel)));
   }
 
   // Make sure to reject everything.

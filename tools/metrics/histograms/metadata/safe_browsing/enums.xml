@@ -327,6 +327,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Unsupported file type"/>
   <int value="9" label="Too many requests"/>
   <int value="10" label="Incomplete response"/>
+  <int value="11" label="Cancelled"/>
 </enum>
 
 <enum name="SafeBrowsingCheckUrlAction">
