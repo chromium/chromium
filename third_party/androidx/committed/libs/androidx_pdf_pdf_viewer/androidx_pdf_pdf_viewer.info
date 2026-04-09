@@ -2,18 +2,12 @@
 # To regenerate, use "update_android_aar_prebuilts = true" and run "gn gen".
 
 aidl = [
-  "aidl/androidx/pdf/models/LinkRects.aidl",
-  "aidl/androidx/pdf/models/MatchRects.aidl",
-  "aidl/androidx/pdf/models/Dimensions.aidl",
-  "aidl/androidx/pdf/models/GotoLinkDestination.aidl",
-  "aidl/androidx/pdf/models/SelectionBoundary.aidl",
-  "aidl/androidx/pdf/models/GotoLink.aidl",
-  "aidl/androidx/pdf/models/PageSelection.aidl"
+  "aidl/androidx/pdf/models/Dimensions.aidl"
 ]
 assets = []
 has_classes_jar = true
 has_native_libraries = false
-has_proguard_flags = true
+has_proguard_flags = false
 has_r_text_file = true
 is_manifest_empty = false
 manifest_package = "androidx.pdf"
@@ -105,16 +99,12 @@ resources = [
   "res/values-bs/values-bs.xml",
   "res/values-kn/values-kn.xml",
   "res/values-am/values-am.xml",
-  "res/layout/pdf_viewer_container.xml",
-  "res/layout/file_viewer_pdf.xml",
   "res/layout/find_in_file.xml",
   "res/layout/pdf_search_view.xml",
-  "res/layout/search.xml",
   "res/layout/tool_box_view.xml",
   "res/layout/pdf_content_layout.xml",
   "res/layout/dialog_password.xml",
   "res/layout/page_indicator.xml",
-  "res/layout/pdf_view_container.xml",
   "res/layout/loading_view.xml",
   "res/layout/loading_animation.xml",
   "res/layout/fastscroll_handle.xml",
