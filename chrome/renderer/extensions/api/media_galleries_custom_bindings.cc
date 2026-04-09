@@ -53,7 +53,7 @@ void MediaGalleriesCustomBindings::GetMediaFileSystemObject(
       storage::GetExternalFileSystemRootURIString(origin, fs_mount));
   args.GetReturnValue().Set(blink::WebDOMFileSystem::Create(
                                 webframe, blink::kWebFileSystemTypeExternal,
-                                blink::WebString::FromUTF8(fs_name), root_url)
+                                blink::WebString::FromUtf8(fs_name), root_url)
                                 .ToV8Value(args.GetIsolate()));
 }
 

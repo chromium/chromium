@@ -553,7 +553,7 @@ void ChromeContentRendererClient::RenderThreadStarted() {
 
 #if BUILDFLAG(IS_ANDROID)
   WebSecurityPolicy::RegisterURLSchemeAsAllowedForReferrer(
-      WebString::FromUTF8(content::kAndroidAppScheme));
+      WebString::FromUtf8(content::kAndroidAppScheme));
 #endif
 
   // chrome-search: pages should not be accessible by bookmarklets
@@ -998,7 +998,7 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
       // actual mime type via ChromeViewHostMsg_GetPluginInfo. In that case
       // we should use what we know since WebpluginDelegateProxy does some
       // specific initializations based on this information.
-      params.mime_type = WebString::FromUTF8(actual_mime_type);
+      params.mime_type = WebString::FromUtf8(actual_mime_type);
     }
 
     auto* content_settings_agent =
@@ -1628,7 +1628,7 @@ void ChromeContentRendererClient::AppendContentSecurityPolicy(
   if (!default_csp)
     return;
 
-  csp->push_back({blink::WebString::FromUTF8(*default_csp),
+  csp->push_back({blink::WebString::FromUtf8(*default_csp),
                   network::mojom::ContentSecurityPolicyType::kEnforce,
                   network::mojom::ContentSecurityPolicySource::kHTTP});
 #endif

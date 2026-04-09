@@ -94,8 +94,8 @@ void ScriptTool::Execute(ToolFinishedCallback callback) {
   auto weak_this = weak_ptr_factory_.GetWeakPtr();
   std::optional<base::UnguessableToken> execution_id =
       frame_->GetWebFrame()->GetDocument().ExecuteScriptTool(
-          blink::WebString::FromUTF8(action_->name),
-          blink::WebString::FromUTF8(action_->input_arguments),
+          blink::WebString::FromUtf8(action_->name),
+          blink::WebString::FromUtf8(action_->input_arguments),
           base::BindOnce(&OnToolExecuted, action_->name,
                          action_->input_arguments)
               .Then(std::move(callback)));

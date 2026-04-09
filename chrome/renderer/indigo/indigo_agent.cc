@@ -152,7 +152,7 @@ void IndigoAgent::InjectScript(
   info.security_origin = blink::WebSecurityOrigin(origin);
   blink::SetIsolatedWorldInfo(ISOLATED_WORLD_ID_INDIGO, info);
 
-  blink::WebScriptSource source(blink::WebString::FromUTF8(script_content),
+  blink::WebScriptSource source(blink::WebString::FromUtf8(script_content),
                                 script_url);
   render_frame()->GetWebFrame()->ExecuteScriptInIsolatedWorld(
       ISOLATED_WORLD_ID_INDIGO, source, blink::BackForwardCacheAware::kAllow);

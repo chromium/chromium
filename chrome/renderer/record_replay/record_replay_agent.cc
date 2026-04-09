@@ -125,7 +125,7 @@ void RecordReplayAgent::GetMatchingElements(
     return;
   }
   const std::vector<blink::WebElement> matches =
-      document.QuerySelectorAll(blink::WebString::FromUTF8(*element_selector));
+      document.QuerySelectorAll(blink::WebString::FromUtf8(*element_selector));
   std::move(cb).Run(
       base::ToVector(matches, [](const blink::WebElement& e) -> DomNodeId {
         return DomNodeId(e.GetDomNodeId());
@@ -154,7 +154,7 @@ void RecordReplayAgent::DoPaste(DomNodeId dom_node_id,
     std::move(cb).Run(false);
     return;
   }
-  element.PasteText(blink::WebString::FromUTF8(*text), /*replace_all=*/false);
+  element.PasteText(blink::WebString::FromUtf8(*text), /*replace_all=*/false);
   std::move(cb).Run(true);
 }
 
@@ -169,7 +169,7 @@ void RecordReplayAgent::DoSelect(DomNodeId dom_node_id,
     std::move(cb).Run(false);
     return;
   }
-  element.SetValue(blink::WebString::FromUTF8(*value), /*send_events=*/true);
+  element.SetValue(blink::WebString::FromUtf8(*value), /*send_events=*/true);
   std::move(cb).Run(true);
 }
 

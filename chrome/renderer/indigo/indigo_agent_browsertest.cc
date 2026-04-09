@@ -95,7 +95,7 @@ class IndigoAgentBrowserTest : public ChromeRenderViewTest {
         frame->ExecuteScriptInIsolatedWorldAndReturnValue(
             ISOLATED_WORLD_ID_INDIGO,
             blink::WebScriptSource(
-                blink::WebString::FromUTF8(std::string(script))),
+                blink::WebString::FromUtf8(std::string(script))),
             blink::BackForwardCacheAware::kAllow);
     if (result.IsEmpty()) {
       return std::nullopt;
@@ -134,9 +134,8 @@ TEST_F(IndigoAgentBrowserTest, InjectScriptInIsolatedWorld) {
   blink::WebLocalFrame* frame = GetMainRenderFrame()->GetWebFrame();
   v8::Isolate* isolate = frame->GetAgentGroupScheduler()->Isolate();
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Value> main_result =
-      frame->ExecuteScriptAndReturnValue(blink::WebScriptSource(
-          blink::WebString::FromUTF8("window.indigo_test_var")));
+  v8::Local<v8::Value> main_result = frame->ExecuteScriptAndReturnValue(
+      blink::WebScriptSource(blink::WebString("window.indigo_test_var")));
   EXPECT_TRUE(main_result->IsUndefined());
 }
 

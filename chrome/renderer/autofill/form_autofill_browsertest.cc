@@ -259,7 +259,7 @@ std::string RetrievalMethodToString(
 
 bool ClickElement(const WebDocument& document,
                   const WebElementDescriptor& element_descriptor) {
-  WebString web_descriptor = WebString::FromUTF8(element_descriptor.descriptor);
+  WebString web_descriptor = WebString::FromUtf8(element_descriptor.descriptor);
   blink::WebElement element;
 
   switch (element_descriptor.retrieval_method) {
@@ -4567,7 +4567,7 @@ TEST_F(FormAutofillTest, SelectOneAsText) {
   // Set the value of the select-one.
   WebSelectElement select_element =
       frame->GetDocument().GetElementById("country").To<WebSelectElement>();
-  select_element.SetValue(WebString::FromUTF8("AL"));
+  select_element.SetValue(WebString("AL"));
 
   std::vector<WebFormElement> forms = frame->GetDocument().GetTopLevelForms();
   ASSERT_EQ(1U, forms.size());

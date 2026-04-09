@@ -129,7 +129,7 @@ class LoadTimesExtensionWrapper : public v8::Extension {
       v8::Local<v8::Name> name,
       const v8::PropertyCallbackInfo<v8::Value>& info) {
     if (WebLocalFrame* frame = WebLocalFrame::FrameForCurrentContext()) {
-      frame->UsageCountChromeLoadTimes(blink::WebString::FromUTF8(
+      frame->UsageCountChromeLoadTimes(blink::WebString::FromUtf8(
           *v8::String::Utf8Value(info.GetIsolate(), name)));
     }
     info.GetReturnValue().Set(info.Data());
@@ -274,7 +274,7 @@ class LoadTimesExtensionWrapper : public v8::Extension {
   static void CSIGetter(v8::Local<v8::Name> name,
                         const v8::PropertyCallbackInfo<v8::Value>& info) {
     if (WebLocalFrame* frame = WebLocalFrame::FrameForCurrentContext()) {
-      frame->UsageCountChromeCSI(blink::WebString::FromUTF8(
+      frame->UsageCountChromeCSI(blink::WebString::FromUtf8(
           *v8::String::Utf8Value(info.GetIsolate(), name)));
     }
     info.GetReturnValue().Set(info.Data());

@@ -77,8 +77,8 @@ void FileBrowserHandlerCustomBindings::GetExternalFileEntry(
   args.GetReturnValue().Set(
       blink::WebDOMFileSystem::Create(
           webframe, blink::kWebFileSystemTypeExternal,
-          blink::WebString::FromUTF8(file_system_name), file_system_root)
-          .CreateV8Entry(blink::WebString::FromUTF8(file_full_path), entry_type,
+          blink::WebString::FromUtf8(file_system_name), file_system_root)
+          .CreateV8Entry(blink::WebString::FromUtf8(file_full_path), entry_type,
                          isolate));
 #endif
 }

@@ -79,7 +79,7 @@ class RecordReplayAgentTest : public ChromeRenderViewTest {
   blink::WebDocument GetDocument() { return GetMainFrame()->GetDocument(); }
 
   blink::WebElement GetWebElementById(const std::string& id) {
-    return GetDocument().GetElementById(blink::WebString::FromUTF8(id));
+    return GetDocument().GetElementById(blink::WebString::FromUtf8(id));
   }
 
   DomNodeId GetDomNodeId(const std::string& element_id) {

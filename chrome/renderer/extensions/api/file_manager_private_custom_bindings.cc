@@ -51,7 +51,7 @@ void FileManagerPrivateCustomBindings::GetFileSystem(
   DCHECK(webframe);
   args.GetReturnValue().Set(blink::WebDOMFileSystem::Create(
                                 webframe, blink::kWebFileSystemTypeExternal,
-                                blink::WebString::FromUTF8(name),
+                                blink::WebString::FromUtf8(name),
                                 GURL(root_url))
                                 .ToV8Value(isolate));
 }

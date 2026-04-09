@@ -251,7 +251,7 @@ const absl::flat_hash_map<char16_t, char16_t>& GetAltGrMap() {
 bool PrepareTargetForMode(WebLocalFrame& frame, mojom::TypeAction::Mode mode) {
   // TODO(crbug.com/409570203): Use DELETE_EXISTING regardless of `mode` but
   // we'll have to implement the different insertion modes.
-  frame.ExecuteCommand(WebString::FromUTF8("SelectAll"));
+  frame.ExecuteCommand(WebString("SelectAll"));
   return true;
 }
 
@@ -612,7 +612,7 @@ void TypeTool::OnFocusingClickComplete(ToolFinishedCallback callback,
                       .Add("text", action_->text)
                       .Add("focus", focused_element)
                       .Build());
-    focused_element.PasteText(WebString::FromUTF8(action_->text),
+    focused_element.PasteText(WebString::FromUtf8(action_->text),
                               /*replace_all=*/false);
     std::move(callback).Run(MakeOkResult());
   } else {

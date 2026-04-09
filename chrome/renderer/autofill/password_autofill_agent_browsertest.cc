@@ -357,8 +357,8 @@ constexpr std::string_view kUnownedFieldsWithPasswordDisabled =
 
 // Sets the "readonly" attribute of `element` to the value given by `read_only`.
 void SetElementReadOnly(WebInputElement& element, bool read_only) {
-  element.SetAttribute(WebString::FromUTF8("readonly"),
-                       read_only ? WebString::FromUTF8("true") : WebString());
+  element.SetAttribute(WebString("readonly"),
+                       read_only ? WebString("true") : WebString());
 }
 
 bool FormHasFieldWithValue(const autofill::FormData& form,
@@ -747,8 +747,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
 
   WebElement GetElementByID(const std::string& id) {
     WebDocument document = GetMainFrame()->GetDocument();
-    WebElement element =
-        document.GetElementById(WebString::FromUTF8(id.c_str()));
+    WebElement element = document.GetElementById(WebString::FromUtf8(id));
     EXPECT_TRUE(element);
     return element;
   }
@@ -937,7 +936,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
       WebInputElement* element,
       const std::string& value = std::string(),
       blink::WebAutofillState is_autofilled = WebAutofillState::kNotFilled) {
-    element->SetValue(WebString::FromUTF8(value));
+    element->SetValue(WebString::FromUtf8(value));
     element->SetSuggestedValue(WebString());
     element->SetAutofillState(is_autofilled);
     element->SetSelectionRange(value.size(), value.size());
@@ -1315,8 +1314,7 @@ TEST_F(PasswordAutofillAgentTest, NoFillingOnSignupForm_NoMetrics) {
   LoadHTML(kSignupFormHTML);
 
   WebDocument document = GetMainFrame()->GetDocument();
-  WebElement element =
-      document.GetElementById(WebString::FromUTF8("random_info"));
+  WebElement element = document.GetElementById(WebString("random_info"));
   ASSERT_TRUE(element);
   username_element_ = element.To<WebInputElement>();
 
@@ -1368,7 +1366,7 @@ TEST_F(
 // If a username field is empty and readonly, don't autofill.
 TEST_F(PasswordAutofillAgentTest,
        NoAutocompletePasswordForReadonlyUsernameUnmatched) {
-  username_element_.SetValue(WebString::FromUTF8(""));
+  username_element_.SetValue(WebString(""));
   SetElementReadOnly(username_element_, true);
 
   SimulateOnFillPasswordForm(fill_data_);
@@ -1380,7 +1378,7 @@ TEST_F(PasswordAutofillAgentTest,
 
 // Tests that having a non-matching username precludes the autocomplete.
 TEST_F(PasswordAutofillAgentTest, NoAutocompleteForFilledFieldUnmatched) {
-  username_element_.SetValue(WebString::FromUTF8("bogus"));
+  username_element_.SetValue(WebString("bogus"));
 
   // Simulate the browser sending back the login info, it triggers the
   // autocomplete.
@@ -1398,7 +1396,7 @@ TEST_F(PasswordAutofillAgentTest, NoAutocompleteForFilledFieldUnmatched) {
 // to a username if the prefilled value isn't on the list of known values
 // used as placeholders.
 TEST_F(PasswordAutofillAgentTest, NoPartialMatchForPrefilledUsername) {
-  username_element_.SetValue(WebString::FromUTF8("ali"));
+  username_element_.SetValue(WebString("ali"));
 
   SimulateOnFillPasswordForm(fill_data_);
 
@@ -1953,7 +1951,7 @@ TEST_F(PasswordAutofillAgentTest, FillSuggestionWithDynamicUsernameField) {
 // when interacting with the password field.
 TEST_F(PasswordAutofillAgentTest,
        FillSuggestionFromPasswordFieldWithUsernameManuallyFilled) {
-  username_element_.SetValue(WebString::FromUTF8("user1"));
+  username_element_.SetValue(WebString("user1"));
 
   // Simulate the browser sending the login info, but set `wait_for_username` to
   // prevent the form from being immediately filled.
@@ -2096,7 +2094,7 @@ TEST_F(PasswordAutofillAgentTest, PreviewSuggestionOnPasswordField) {
 // username when previewing autofills on interacting with the password field.
 TEST_F(PasswordAutofillAgentTest,
        PreviewSuggestionFromPasswordFieldWithUsernameManuallyFilled) {
-  username_element_.SetValue(WebString::FromUTF8("user1"));
+  username_element_.SetValue(WebString("user1"));
 
   // Simulate the browser sending the login info, but set `wait_for_username` to
   // prevent the form from being immediately filled.
@@ -2961,7 +2959,7 @@ TEST_F(PasswordAutofillAgentTest, FixEmptyFieldPropertiesOnSubmit) {
   ExecuteJavaScriptForTests(kJavaScript);
   auto form_element = GetMainFrame()
                           ->GetDocument()
-                          .GetElementById(WebString::FromUTF8("LoginTestForm"))
+                          .GetElementById(WebString("LoginTestForm"))
                           .To<WebFormElement>();
   SaveAndSubmitForm(form_element);
 
@@ -3443,7 +3441,7 @@ TEST_F(PasswordAutofillAgentTest,
 
   // The password field shouldn't reveal the value on focusing.
   WebDocument document = GetMainFrame()->GetDocument();
-  WebElement element = document.GetElementById(WebString::FromUTF8("password"));
+  WebElement element = document.GetElementById(WebString("password"));
   ASSERT_TRUE(element);
   WebInputElement password_element = element.To<WebInputElement>();
   EXPECT_FALSE(password_element.ShouldRevealPassword());
@@ -3477,8 +3475,7 @@ TEST_F(PasswordAutofillAgentTest, PasswordGenerationSupersedesAutofill) {
 
   // Update password_element_;
   WebDocument document = GetMainFrame()->GetDocument();
-  WebElement element =
-      document.GetElementById(WebString::FromUTF8("new_password"));
+  WebElement element = document.GetElementById(WebString("new_password"));
   ASSERT_TRUE(element);
   password_element_ = element.To<WebInputElement>();
 
@@ -3755,8 +3752,8 @@ TEST_F(PasswordAutofillAgentTest,
   LoadHTML(kNoFormHTMLWithHiddenField);
 
   UpdateUsernameAndPasswordElements();
-  WebElement captcha_element = GetMainFrame()->GetDocument().GetElementById(
-      WebString::FromUTF8("captcha"));
+  WebElement captcha_element =
+      GetMainFrame()->GetDocument().GetElementById(WebString("captcha"));
   ASSERT_TRUE(captcha_element);
 
   SimulateUsernameTyping("Bob");
@@ -3784,8 +3781,8 @@ TEST_F(PasswordAutofillAgentTest,
   LoadHTML(kNoFormHTMLWithHiddenField);
 
   UpdateUsernameAndPasswordElements();
-  WebElement captcha_element = GetMainFrame()->GetDocument().GetElementById(
-      WebString::FromUTF8("captcha"));
+  WebElement captcha_element =
+      GetMainFrame()->GetDocument().GetElementById(WebString("captcha"));
   ASSERT_TRUE(captcha_element);
 
   SimulateUsernameTyping("Bob");
@@ -3820,8 +3817,8 @@ TEST_F(PasswordAutofillAgentTest,
   LoadHTMLWithUrlOverride(kHTMLWithHiddenField, "https://www.example.com");
 
   UpdateUsernameAndPasswordElements();
-  WebElement captcha_element = GetMainFrame()->GetDocument().GetElementById(
-      WebString::FromUTF8("captcha"));
+  WebElement captcha_element =
+      GetMainFrame()->GetDocument().GetElementById(WebString("captcha"));
   ASSERT_TRUE(captcha_element);
 
   SimulateUsernameTyping("Bob");
@@ -3851,8 +3848,8 @@ TEST_F(PasswordAutofillAgentTest,
   LoadHTMLWithUrlOverride(kHTMLWithHiddenField, "https://www.example.com");
 
   UpdateUsernameAndPasswordElements();
-  WebElement captcha_element = GetMainFrame()->GetDocument().GetElementById(
-      WebString::FromUTF8("captcha"));
+  WebElement captcha_element =
+      GetMainFrame()->GetDocument().GetElementById(WebString("captcha"));
   ASSERT_TRUE(captcha_element);
 
   SimulateUsernameTyping("Bob");
@@ -4642,7 +4639,7 @@ TEST_F(PasswordAutofillAgentTest, FillOnLoadNoUsername) {
 }
 
 TEST_F(PasswordAutofillAgentTest, FormToFillIsPrefilled) {
-  username_element_.SetValue(WebString::FromUTF8("prefilled_placeholder"));
+  username_element_.SetValue(WebString("prefilled_placeholder"));
   SimulateOnFillPasswordForm(fill_data_);
 
   // Check that the prefilled value was not overwritten.
@@ -5013,13 +5010,13 @@ TEST_F(PasswordAutofillAgentTest,
 
   // Simulate user modifying field values and ensure they are propagated to the
   // browser.
-  username_element_.SetValue(WebString::FromUTF8(kAliceUsername));
+  username_element_.SetValue(WebString::FromUtf8(kAliceUsername));
   password_autofill_agent_->UpdatePasswordStateForTextChange(username_element_,
                                                              /*form_cache=*/{});
   fake_driver_.Flush();
   EXPECT_EQ(called_inform_about_user_input_count_, 1);
 
-  password_element_.SetValue(WebString::FromUTF8(kAlicePassword));
+  password_element_.SetValue(WebString::FromUtf8(kAlicePassword));
   password_autofill_agent_->UpdatePasswordStateForTextChange(password_element_,
                                                              /*form_cache=*/{});
   fake_driver_.Flush();

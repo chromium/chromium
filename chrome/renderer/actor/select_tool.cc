@@ -98,7 +98,7 @@ ValidationResult SelectTool::Validate() {
                    absl::StrFormat("Element [%s]", base::ToString(select))));
   }
 
-  WebString value(WebString::FromUTF8(action_->value));
+  WebString value(WebString::FromUtf8(action_->value));
   for (const auto& e : select.GetListItems()) {
     auto option = e.DynamicTo<WebOptionElement>();
     if (option && option.Value() == value) {

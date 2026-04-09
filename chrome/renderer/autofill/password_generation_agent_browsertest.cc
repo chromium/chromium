@@ -378,7 +378,7 @@ WebElement PasswordGenerationAgentTest::GetElementById(
     std::string_view element_id) {
   WebDocument document = GetMainFrame()->GetDocument();
   WebElement element =
-      document.GetElementById(blink::WebString::FromUTF8(element_id));
+      document.GetElementById(blink::WebString::FromUtf8(element_id));
   CHECK(element);
   return element;
 }
@@ -464,7 +464,7 @@ void PasswordGenerationAgentTest::ExpectAttribute(
     std::string_view attribute,
     std::string_view expected_value) {
   WebString actual_value =
-      element.GetAttribute(blink::WebString::FromUTF8(attribute));
+      element.GetAttribute(blink::WebString::FromUtf8(attribute));
   ASSERT_FALSE(actual_value.IsNull());
   EXPECT_EQ(expected_value, actual_value.Ascii());
 }

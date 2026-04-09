@@ -34,7 +34,7 @@ const char* const kEvents[] = {"focus",  "keydown", "input",
 // Returns renderer id of WebInput element with id attribute `input_id`.
 autofill::FieldRendererId GetRendererId(WebDocument document,
                                         const char* input_id) {
-  WebElement element = document.GetElementById(WebString::FromUTF8(input_id));
+  WebElement element = document.GetElementById(WebString::FromUtf8(input_id));
   blink::WebInputElement input = element.To<blink::WebInputElement>();
   return autofill::form_util::GetFieldRendererId(input);
 }

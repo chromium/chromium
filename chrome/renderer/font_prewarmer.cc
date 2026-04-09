@@ -23,7 +23,7 @@ void FontPrewarmer::PrewarmFonts(const std::vector<std::string>& font_names) {
     return;
 
   for (const std::string& font_name : font_names) {
-    prewarmer->PrewarmFamily(blink::WebString::FromUTF8(font_name));
+    prewarmer->PrewarmFamily(blink::WebString::FromUtf8(font_name));
   }
 }
 

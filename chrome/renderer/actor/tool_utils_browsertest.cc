@@ -37,7 +37,7 @@ class ToolUtilsTest : public ChromeRenderViewTest {
   blink::WebNode GetNodeByHtmlId(const std::string& html_id) {
     blink::WebElement element =
         GetMainRenderFrame()->GetWebFrame()->GetDocument().GetElementById(
-            blink::WebString::FromUTF8(html_id));
+            blink::WebString::FromUtf8(html_id));
     if (element.IsNull()) {
       return blink::WebNode();
     }
@@ -48,13 +48,13 @@ class ToolUtilsTest : public ChromeRenderViewTest {
                                        const std::string& html_id_str) {
     const blink::WebElement iframe_element =
         GetMainRenderFrame()->GetWebFrame()->GetDocument().GetElementById(
-            blink::WebString::FromUTF8(iframe_id_str));
+            blink::WebString::FromUtf8(iframe_id_str));
 
     const blink::WebElement child_element =
         blink::WebFrame::FromFrameOwnerElement(iframe_element)
             ->ToWebLocalFrame()
             ->GetDocument()
-            .GetElementById(blink::WebString::FromUTF8(html_id_str));
+            .GetElementById(blink::WebString::FromUtf8(html_id_str));
     if (child_element.IsNull()) {
       return blink::WebNode();
     }

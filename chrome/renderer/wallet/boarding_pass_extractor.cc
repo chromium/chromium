@@ -144,7 +144,7 @@ void BoardingPassExtractor::ExtractBoardingPassWithScript(
   blink::WebLocalFrame* main_frame = render_frame()->GetWebFrame();
   v8::HandleScope handle_scope(main_frame->GetAgentGroupScheduler()->Isolate());
   blink::WebScriptSource source =
-      blink::WebScriptSource(blink::WebString::FromUTF8(script));
+      blink::WebScriptSource(blink::WebString::FromUtf8(script));
 
   main_frame->RequestExecuteScript(
       ISOLATED_WORLD_ID_CHROME_INTERNAL, base::span_from_ref(source),
