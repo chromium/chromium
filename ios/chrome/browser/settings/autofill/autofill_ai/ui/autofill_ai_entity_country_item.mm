@@ -44,7 +44,7 @@ constexpr NSInteger kTrailingSymbolImagePointSize = 18;
   contentConfig.hasAccessoryView = YES;
   contentConfig.trailingTextColor = [UIColor colorNamed:kTextPrimaryColor];
 
-  NSString* text = self.detailText.length ? self.detailText : @"-";
+  NSString* text = self.detailText;
   if (!self.hasValidValueStatus) {
     contentConfig.attributedTrailingText = [self attributedErrorText:text];
   } else {
