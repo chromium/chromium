@@ -2453,13 +2453,11 @@ GlicPageHandler::GlicPageHandler(
   GetGlicService()->host_manager().WebUIPageHandlerAdded(this, host_.get());
   host_->AddPanelStateObserver(this);
   UpdatePageState(host_->GetPanelState(web_client_handler_.get()).kind);
-  if (!base::FeatureList::IsEnabled(features::kGlicWebContentsWarming)) {
-    subscriptions_.push_back(
-        GetGlicService()->enabling().RegisterProfileReadyStateChanged(
-            base::BindRepeating(&GlicPageHandler::UpdateProfileReadyState,
-                                base::Unretained(this))));
-    UpdateProfileReadyState();
-  }
+  subscriptions_.push_back(
+      GetGlicService()->enabling().RegisterProfileReadyStateChanged(
+          base::BindRepeating(&GlicPageHandler::UpdateProfileReadyState,
+                              base::Unretained(this))));
+  UpdateProfileReadyState();
 }
 
 GlicPageHandler::~GlicPageHandler() {

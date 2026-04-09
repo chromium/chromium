@@ -159,7 +159,6 @@ GlicInstanceCoordinatorImpl::~GlicInstanceCoordinatorImpl() {
   last_active_instance_ = nullptr;
   auto instances = std::exchange(instances_, {});
   instances.clear();
-  warmed_instance_.reset();
 }
 
 void GlicInstanceCoordinatorImpl::OnInstanceActivationChanged(
@@ -240,9 +239,6 @@ GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceImplForTab(
 
 std::vector<GlicInstance*> GlicInstanceCoordinatorImpl::GetInstances() {
   std::vector<GlicInstance*> instances;
-  if (warmed_instance_) {
-    instances.push_back(warmed_instance_.get());
-  }
   for (auto& entry : instances_) {
     instances.push_back(entry.second.get());
   }
@@ -456,15 +452,6 @@ GlicInstanceCoordinatorImpl::AddGlobalShowHideCallback(
   return global_show_hide_callback_list_.Add(std::move(callback));
 }
 
-void GlicInstanceCoordinatorImpl::Preload() {
-  if (!base::FeatureList::IsEnabled(features::kGlicWebContentsWarming)) {
-    CreateWarmedInstance();
-    warmed_instance_->metrics()->OnWarmedInstanceCreated();
-  } else {
-    VLOG(1) << "WebContents warming is enabled, skipping GlicInstance warming";
-  }
-}
-
 void GlicInstanceCoordinatorImpl::Reload(
     content::RenderFrameHost* render_frame_host) {
   for (auto& [id, instance] : instances_) {
@@ -656,36 +643,12 @@ GlicInstanceImpl* GlicInstanceCoordinatorImpl::CreateGlicInstance(
     std::optional<InstanceId> instance_id) {
   ApplyMaxAwakeInstancesLimit();
 
-  if (!base::FeatureList::IsEnabled(features::kGlicWebContentsWarming)) {
-    if (!warmed_instance_) {
-      CreateWarmedInstance();
-      // Records a just-in-time instance creation when warming is disabled or
-      // failed.
-      warmed_instance_->metrics()->OnInstanceCreatedWithoutWarming();
-    }
-    auto* instance_ptr = warmed_instance_.get();
-    if (instance_id) {
-      instance_ptr->SetIdForRestoration(*instance_id);
-    }
-    instances_[instance_ptr->id()] = std::move(warmed_instance_);
-    // Records the promotion of an instance to an active one.
-    instance_ptr->metrics()->OnInstancePromoted();
-    if (warming_enabled_) {
-      CreateWarmedInstance();
-      // Records the creation of a new warmed instance to replace the promoted
-      // one.
-      warmed_instance_->metrics()->OnWarmedInstanceCreated();
-    } else {
-      VLOG(1) << "Warming is disabled, skipping warming";
-    }
-    return instance_ptr;
-  } else {
-    auto instance = CreateInstanceImpl(instance_id);
-    auto* instance_ptr = instance.get();
-    instances_[instance->id()] = std::move(instance);
-    instance_ptr->metrics()->OnInstanceCreatedWithoutWarming();
-    return instance_ptr;
-  }
+  auto instance = CreateInstanceImpl(instance_id);
+  auto* instance_ptr = instance.get();
+  instances_[instance->id()] = std::move(instance);
+  // TODO(harringtond): Figure out what to do about this metric.
+  instance_ptr->metrics()->OnInstanceCreatedWithoutWarming();
+  return instance_ptr;
 }
 
 std::unique_ptr<GlicInstanceImpl>
@@ -696,10 +659,6 @@ GlicInstanceCoordinatorImpl::CreateInstanceImpl(std::optional<InstanceId> id) {
       profile_, instance_id, weak_ptr_factory_.GetWeakPtr(),
       GlicKeyedServiceFactory::GetGlicKeyedService(profile_)->metrics(),
       contextual_cueing_service_);
-}
-
-void GlicInstanceCoordinatorImpl::CreateWarmedInstance() {
-  warmed_instance_ = CreateInstanceImpl();
 }
 
 void GlicInstanceCoordinatorImpl::ShowInstanceForTabs(
@@ -929,9 +888,6 @@ void GlicInstanceCoordinatorImpl::ContextAccessIndicatorChanged(
 void GlicInstanceCoordinatorImpl::SetWarmingEnabledForTesting(
     bool warming_enabled) {
   warming_enabled_ = warming_enabled;
-  if (!warming_enabled_) {
-    warmed_instance_.reset();
-  }
 }
 
 GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceWithFloaty() const {
@@ -1032,8 +988,6 @@ void GlicInstanceCoordinatorImpl::OnMemoryPressure(
   service_->web_contents_warming_pool().Clear();
 
   if (base::FeatureList::IsEnabled(kGlicHibernateAllOnMemoryPressure)) {
-    warmed_instance_.reset();
-
     // Iterate over a copy of instances to avoid issues with modification during
     // iteration.
     std::vector<GlicInstanceImpl*> instances_to_process;
@@ -1221,10 +1175,6 @@ std::string GlicInstanceCoordinatorImpl::DescribeForTesting() {
   std::stringstream ss;
   for (auto& inst : instances_) {
     ss << inst.second->DescribeForTesting();  // IN-TEST
-  }
-  if (warmed_instance_) {
-    ss << "(Warming instance) "
-       << warmed_instance_->DescribeForTesting();  // IN-TEST
   }
   return ss.str();
 }

@@ -321,9 +321,6 @@ GlicUI::GlicUI(content::WebUI* web_ui)
   source->AddBoolean(
       "glicPopupWindowsEnabled",
       base::FeatureList::IsEnabled(features::kGlicPopupWindowsEnabled));
-  source->AddBoolean(
-      "glicWebContentsWarming",
-      base::FeatureList::IsEnabled(features::kGlicWebContentsWarming));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(GlicUI)

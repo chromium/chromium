@@ -11,6 +11,7 @@
 #include "base/feature.h"
 #include "base/memory/post_delayed_memory_reduction_task.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 
 class Profile;
@@ -81,6 +82,8 @@ class GlicWebContentsWarmingPool {
   base::OneShotDelayedBackgroundTimer expiry_timer_;
   std::unique_ptr<Metrics> metrics_;
   int reload_count_ = 0;
+  base::TimeDelta expiry_delay_ = base::Hours(23);
+  base::TimeDelta warming_delay_ = base::Seconds(20);
 };
 
 }  // namespace glic

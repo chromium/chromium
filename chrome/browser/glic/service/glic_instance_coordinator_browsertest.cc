@@ -1623,8 +1623,5 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorNoWarmingTest,
 
   EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
   EXPECT_FALSE(warming_pool.GetDelayTimerForTesting().IsRunning());
-
-  // This should never be true. We're going to end up deleting it soon anyway.
-  EXPECT_FALSE(coordinator().HasWarmedInstanceForTesting());
 }
 }  // namespace glic

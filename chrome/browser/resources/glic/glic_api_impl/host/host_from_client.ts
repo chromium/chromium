@@ -83,9 +83,7 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
     this.host.detailedWebClientState =
         DetailedWebClientState.WEB_CLIENT_NOT_INITIALIZED;
 
-    if (loadTimeData.getBoolean('glicWebContentsWarming')) {
-      this.embedder.webClientWarmed();
-    }
+    this.embedder.webClientWarmed();
 
     const webClientImpl = new WebClientImpl(this.host, this.embedder);
     this.receiver = new WebClientReceiver(webClientImpl);
@@ -486,7 +484,6 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
     size: {width: number, height: number},
     options?: {durationMs?: number},
   }) {
-    this.embedder.onGuestResizeRequest(request.size);
     return await this.handler.resizeWidget(
         request.size, timeDeltaFromClient(request.options?.durationMs));
   }

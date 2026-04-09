@@ -85,7 +85,12 @@ class GlicWebContentsWarmingPool::Metrics {
 };
 
 GlicWebContentsWarmingPool::GlicWebContentsWarmingPool(Profile* profile)
-    : profile_(profile), metrics_(std::make_unique<Metrics>()) {}
+    : profile_(profile), metrics_(std::make_unique<Metrics>()) {
+  if (base::FeatureList::IsEnabled(features::kGlicWebContentsWarming)) {
+    expiry_delay_ = features::kGlicWebContentsWarmingPoolExpiryDelay.Get();
+    warming_delay_ = features::kGlicWebContentsWarmingDelay.Get();
+  }
+}
 
 GlicWebContentsWarmingPool::~GlicWebContentsWarmingPool() = default;
 
@@ -105,7 +110,6 @@ GlicWebContentsWarmingPool::TakeContainer() {
 }
 
 void GlicWebContentsWarmingPool::EnsurePreload() {
-  CHECK(base::FeatureList::IsEnabled(features::kGlicWebContentsWarming));
   if (warmed_container_ && warmed_container_->web_contents()->IsCrashed()) {
     warmed_container_ = nullptr;
   }
@@ -113,7 +117,7 @@ void GlicWebContentsWarmingPool::EnsurePreload() {
   if (!warmed_container_) {
     warmed_container_ = CreateContainer();
     expiry_timer_.Start(
-        FROM_HERE, features::kGlicWebContentsWarmingPoolExpiryDelay.Get(),
+        FROM_HERE, expiry_delay_,
         base::BindOnce(&GlicWebContentsWarmingPool::OnContainerExpired,
                        base::Unretained(this)));
     metrics_->OnWarmedContentCreated();
@@ -163,7 +167,7 @@ void GlicWebContentsWarmingPool::EnsurePreloadDelayed() {
   if (delay_timer_.IsRunning()) {
     return;
   }
-  auto delay = features::kGlicWebContentsWarmingDelay.Get();
+  auto delay = warming_delay_;
   if (delay >= kDelayTooLong) {
     return;
   }

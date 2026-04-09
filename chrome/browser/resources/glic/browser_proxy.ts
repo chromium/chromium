@@ -18,8 +18,6 @@ export interface BrowserProxy {
 // Whether to enable PageHandler debug logging. Can be enabled with the
 // --enable-features=GlicDebugWebview command-line flag.
 const kEnableDebug = loadTimeData.getBoolean('enableDebug');
-const kGlicWebContentsWarming =
-    loadTimeData.getBoolean('glicWebContentsWarming');
 
 export class BrowserProxyImpl implements BrowserProxy {
   pageHandler: PageHandlerRemote;
@@ -62,12 +60,10 @@ export class BrowserProxyImpl implements BrowserProxy {
           this.instanceId.assignAndSignal(instanceId);
         });
 
-    if (kGlicWebContentsWarming) {
-      const preloadHandlerRemote = new GlicPreloadHandlerRemote();
-      this.glicPreloadHandler = preloadHandlerRemote;
-      GlicPreloadHandlerFactory.getRemote().createPreloadHandler(
-          this.glicPreloadHandler.$.bindNewPipeAndPassReceiver(),
-          this.preloadPageCallbackRouter.$.bindNewPipeAndPassRemote());
-    }
+    const preloadHandlerRemote = new GlicPreloadHandlerRemote();
+    this.glicPreloadHandler = preloadHandlerRemote;
+    GlicPreloadHandlerFactory.getRemote().createPreloadHandler(
+        this.glicPreloadHandler.$.bindNewPipeAndPassReceiver(),
+        this.preloadPageCallbackRouter.$.bindNewPipeAndPassRemote());
   }
 }

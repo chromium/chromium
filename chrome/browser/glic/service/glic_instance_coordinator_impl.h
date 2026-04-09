@@ -157,7 +157,6 @@ class GlicInstanceCoordinatorImpl
 
   base::CallbackListSubscription AddGlobalShowHideCallback(
       base::RepeatingClosure callback) override;
-  void Preload() override;
   void Reload(content::RenderFrameHost* render_frame_host) override;
   base::WeakPtr<GlicInstanceCoordinatorImpl> GetWeakPtr();
 
@@ -180,12 +179,6 @@ class GlicInstanceCoordinatorImpl
 
   // Testing support.
   void SetWarmingEnabledForTesting(bool warming_enabled);
-  bool HasWarmedInstanceForTesting() const {
-    return warmed_instance_ != nullptr;
-  }
-  GlicInstanceImpl* GetWarmedInstanceForTesting() {
-    return warmed_instance_.get();
-  }
   std::string DescribeForTesting();
 
   // Testing support. These methods should not be added to the public interface.
@@ -271,8 +264,6 @@ class GlicInstanceCoordinatorImpl
 
   base::flat_map<GlicInstance*, std::unique_ptr<GlicInvokeHandler>>
       invoke_handlers_;
-
-  std::unique_ptr<GlicInstanceImpl> warmed_instance_;
 
   std::unique_ptr<HostManager> host_manager_;
 

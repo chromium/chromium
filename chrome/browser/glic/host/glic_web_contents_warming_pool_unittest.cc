@@ -54,8 +54,6 @@ class GlicWebContentsWarmingPoolTest : public testing::Test {
  public:
   GlicWebContentsWarmingPoolTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kGlicWebContentsWarming);
   }
 
  protected:

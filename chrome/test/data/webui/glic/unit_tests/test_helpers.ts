@@ -45,7 +45,6 @@ export class FakeWebviewDelegate implements WebviewDelegate {
 }
 
 export class FakeApiHostEmbedder implements ApiHostEmbedder {
-  onGuestResizeRequest(_size: {width: number, height: number}) {}
   enableDragResize(_enabled: boolean) {}
   webClientReady() {}
   webClientWarmed() {}

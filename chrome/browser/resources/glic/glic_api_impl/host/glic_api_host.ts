@@ -60,9 +60,6 @@ export enum DetailedWebClientState {
 
 // Implemented by the embedder of GlicApiHost.
 export interface ApiHostEmbedder {
-  // Called when the guest requests resize.
-  onGuestResizeRequest(size: {width: number, height: number}): void;
-
   // Called when the guest requests to enable manual drag resize.
   enableDragResize(enabled: boolean): void;
 

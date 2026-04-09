@@ -14,10 +14,6 @@ import {WebClientState} from './glic_api_impl/host/glic_api_host.js';
 import type {PageType, WebviewDelegate} from './webview.js';
 import {WebviewController, WebviewPersistentState} from './webview.js';
 
-const transitionDuration = {
-  microseconds: BigInt(100000),
-};
-
 // Time to wait before showing loading panel.
 const kPreHoldLoadingTimeMs = loadTimeData.getInteger('preLoadingTimeMs');
 
@@ -106,17 +102,6 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
       loadTimeData.getBoolean('simulateNoConnection');
 
   private guestResizeEnabled: boolean = false;
-
-  // Width and height for non-resizable panel.
-  private defaultWidth: number = 400;
-  private defaultHeight: number = 252;
-
-  // Height for floating loading panel.
-  private floatingLoadingHeight: number = 80;
-
-  // Last seen width and height of guest panel.
-  private lastWidth: number = 400;
-  private lastHeight: number = 80;
 
   // Present only when loading or after loading is finished. Removed on error.
   private webview?: WebviewController;
@@ -240,8 +225,6 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
   webviewPageCommit(type: PageType) {
     switch (type) {
       case 'login':
-        this.lastWidth = 400;
-        this.lastHeight = 800;
         this.cancelTimeout();
         $.guestPanel.classList.toggle('show-header', true);
         this.showPanel('guestPanel');
@@ -400,8 +383,6 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
         reloadOnOpen: true,
         onEnter:
             () => {
-              this.lastWidth = 400;
-              this.lastHeight = 800;
               $.guestPanel.classList.toggle('show-header', true);
               this.showPanel('guestPanel');
             },
@@ -536,8 +517,7 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
     // `kMaxWaitTimeMs`. Switch to error state at that time unless interrupted
     // by `webClientReady`.
     this.loadingTimer = setTimeout(() => {
-      if (!loadTimeData.getBoolean('glicWebContentsWarming') &&
-          this.webview?.waitingOnPanelWillOpen()) {
+      if (this.webview?.waitingOnPanelWillOpen()) {
         console.warn('Exceeded timeout waiting for notifyPanelWillOpen');
         this.setState(WebUiState.kError);
       } else if (
@@ -576,36 +556,6 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
     // display: none or HTML hidden attribute).
     if (id === 'guestPanel') {
       this.webview?.focus();
-    }
-
-    if (loadTimeData.getBoolean('glicWebContentsWarming')) {
-      // These resizes really aren't needed at all for multi-instance, but in
-      // instance warming mode they get dropped most of the time. In the move to
-      // webContentsWarming, they're causing unwanted size changes on
-      // conversation switching in floaty. They can be deleted as part of single
-      // instance cleanup.
-      return;
-    }
-    // Resize widget to size of new panel.
-    if (id === 'guestPanel') {
-      // For the guest webview, use the most recently requested size.
-      this.browserProxy.pageHandler.resizeWidget(
-          {width: this.lastWidth, height: this.lastHeight}, transitionDuration);
-    }
-    if (id === 'loadingPanel') {
-      this.browserProxy.pageHandler.resizeWidget(
-          {
-            width: this.defaultWidth,
-            height: this.floatingLoadingHeight,
-          },
-          transitionDuration);
-    } else {
-      this.browserProxy.pageHandler.resizeWidget(
-          {
-            width: this.defaultWidth,
-            height: this.defaultHeight,
-          },
-          transitionDuration);
     }
   }
 
@@ -652,13 +602,6 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
   }
 
   // ApiHostEmbedder implementation.
-
-  // Called when the web client requests that the window size be changed.
-  onGuestResizeRequest(request: {width: number, height: number}) {
-    // Save most recently requested guest window size.
-    this.lastWidth = request.width;
-    this.lastHeight = request.height;
-  }
 
   // Called when the web client requests to enable manual drag resize.
   enableDragResize(enabled: boolean) {
@@ -743,8 +686,6 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
 
   // TODO: Make this a proper state.
   showDebug(): void {
-    this.lastWidth = 400;
-    this.lastHeight = 800;
     this.setState(WebUiState.kReady);
     $.guestPanel.classList.toggle('show-header', true);
     $.guestPanel.classList.toggle('debug', true);

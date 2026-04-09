@@ -460,7 +460,8 @@ BASE_FEATURE(kGlicDetached, base::FEATURE_ENABLED_BY_DEFAULT);
 // Controls whether the Glic feature uses multiple instances or not.
 BASE_FEATURE(kGlicMultiInstance, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether Glic warms up WebContents instead of a full instance.
+// Glic WebContentsWarming is now always enabled. This feature is kept around
+// for now to allow configuring params.
 BASE_FEATURE(kGlicWebContentsWarming, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls the delay before the WebContents is warmed. A large delay will

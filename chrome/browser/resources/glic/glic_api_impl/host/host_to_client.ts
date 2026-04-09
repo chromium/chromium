@@ -57,7 +57,6 @@ export class WebClientImpl implements WebClientInterface {
         width: result.openPanelInfo?.resizeParams?.width,
         height: result.openPanelInfo?.resizeParams?.height,
       };
-      this.embedder.onGuestResizeRequest(size);
       openPanelInfoMojo.panelSize = size;
     }
     return {openPanelInfo: openPanelInfoMojo};

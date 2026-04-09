@@ -271,10 +271,6 @@ GlicInstanceImpl::GlicInstanceImpl(
   browser_collection_observation_.Observe(
       GlobalBrowserCollection::GetInstance());
   host_.SetDelegate(&empty_embedder_delegate_);
-  if (!base::FeatureList::IsEnabled(features::kGlicWebContentsWarming)) {
-    // Start warming the contents.
-    host_.CreateContents(/*initially_hidden=*/false);
-  }
   host_observation_.Observe(&host_);
   if (base::FeatureList::IsEnabled(features::kGlicBindPinnedUnboundTab)) {
     pinned_tabs_change_subscription_ =
