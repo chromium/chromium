@@ -99,7 +99,7 @@ class FlushForImageListener {
 
  private:
   friend class ThreadSpecific<FlushForImageListener>;
-  base::ObserverList<CanvasResourceProviderSharedImage> observers_;
+  base::ReentrantObserverList<CanvasResourceProviderSharedImage> observers_;
 };
 
 static FlushForImageListener* GetFlushForImageListener() {
