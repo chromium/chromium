@@ -12,110 +12,9 @@
 #include "base/functional/callback_helpers.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 
-namespace {
-
-using autofill::mojom::SubmissionReadinessState;
-
-// Infers whether a form should be submitted based on the feature's state and
-// the form's structure (submission_readiness).
-bool CalculateTriggerSubmission(SubmissionReadinessState submission_readiness) {
-  switch (submission_readiness) {
-    case SubmissionReadinessState::kNoInformation:
-    case SubmissionReadinessState::kError:
-    case SubmissionReadinessState::kNoUsernameField:
-    case SubmissionReadinessState::kNoPasswordField:
-    case SubmissionReadinessState::kFieldBetweenUsernameAndPassword:
-    case SubmissionReadinessState::kFieldAfterPasswordField:
-    case SubmissionReadinessState::kLikelyHasCaptcha:
-      return false;
-
-    case SubmissionReadinessState::kEmptyFields:
-    case SubmissionReadinessState::kMoreThanTwoFields:
-    case SubmissionReadinessState::kTwoFields:
-      return true;
-  }
-}
-
-// Returns a prediction whether the form that contains |username_element| and
-// |password_element| will be ready for submission after filling these two
-// elements.
-// TODO(crbug.com/40274966): This is a replication of the logic in
-// password_autofill_agent.cc. Remove the logic in the agent when
-// PasswordSuggestionBottomSheetV2 is launched.
-SubmissionReadinessState CalculateSubmissionReadiness(
-    const autofill::PasswordSuggestionRequest& request) {
-  const autofill::FormData& form_data = request.form_data;
-  uint64_t username_index = request.username_field_index;
-  uint64_t password_index = request.password_field_index;
-  size_t number_of_elements = form_data.fields().size();
-  CHECK(username_index <= number_of_elements &&
-        password_index <= number_of_elements);
-  if (form_data.fields().empty() || ((username_index == number_of_elements) &&
-                                     (password_index == number_of_elements))) {
-    // This is unexpected. |form| is supposed to contain username or
-    // password elements.
-    return SubmissionReadinessState::kError;
-  }
-  if ((username_index == number_of_elements) &&
-      (password_index != number_of_elements)) {
-    return SubmissionReadinessState::kNoUsernameField;
-  }
-  if (password_index == number_of_elements) {
-    return SubmissionReadinessState::kNoPasswordField;
-  }
-
-  auto ShouldIgnoreField = [](const autofill::FormFieldData& field) {
-    if (!field.is_focusable()) {
-      return true;
-    }
-    // Don't treat a checkbox (e.g. "remember me") as an input field that may
-    // block a form submission. Note: Don't use |check_status !=
-    // kNotCheckable|, a radio button is considered a "checkable" element too,
-    // but it should block a submission.
-    return field.form_control_type() ==
-           autofill::FormControlType::kInputCheckbox;
-  };
-
-  for (size_t i = username_index + 1; i < password_index; ++i) {
-    if (!ShouldIgnoreField(form_data.fields()[i])) {
-      return SubmissionReadinessState::kFieldBetweenUsernameAndPassword;
-    }
-  }
-
-  for (size_t i = password_index + 1; i < number_of_elements; ++i) {
-    if (!ShouldIgnoreField(form_data.fields()[i])) {
-      return SubmissionReadinessState::kFieldAfterPasswordField;
-    }
-  }
-
-  // There is likely a CAPTCHA in the child frame.
-  if (form_data.likely_contains_captcha()) {
-    return SubmissionReadinessState::kLikelyHasCaptcha;
-  }
-
-  size_t number_of_visible_elements = 0;
-  for (size_t i = 0; i < number_of_elements; ++i) {
-    if (ShouldIgnoreField(form_data.fields()[i])) {
-      continue;
-    }
-
-    if (username_index != i && password_index != i &&
-        form_data.fields()[i].value().empty()) {
-      return SubmissionReadinessState::kEmptyFields;
-    }
-    number_of_visible_elements++;
-  }
-
-  if (number_of_visible_elements > 2) {
-    return SubmissionReadinessState::kMoreThanTwoFields;
-  }
-
-  return SubmissionReadinessState::kTwoFields;
-}
-
-}  // namespace
 
 namespace password_manager {
 
@@ -123,7 +22,10 @@ PasswordCredentialFillerImpl::PasswordCredentialFillerImpl(
     base::WeakPtr<PasswordManagerDriver> driver,
     const autofill::PasswordSuggestionRequest& request)
     : driver_(driver),
-      submission_readiness_(CalculateSubmissionReadiness(request)),
+      submission_readiness_(
+          CalculateSubmissionReadiness(request.form_data,
+                                       request.username_field_index,
+                                       request.password_field_index)),
       trigger_submission_(CalculateTriggerSubmission(submission_readiness_)) {}
 
 PasswordCredentialFillerImpl::~PasswordCredentialFillerImpl() = default;

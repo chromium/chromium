@@ -24,8 +24,8 @@ namespace {
 
 using autofill::FormData;
 using autofill::FormFieldData;
-using autofill::mojom::SubmissionReadinessState;
 using password_manager::PasswordCredentialFillerImpl;
+using password_manager::SubmissionReadinessState;
 using testing ::_;
 using testing::ReturnRefOfCopy;
 
@@ -206,7 +206,7 @@ TEST_F(PasswordCredentialFillerBaseTest, FillingFailed) {
           /*password_field_index=*/1));
 
   ASSERT_EQ(filler.GetSubmissionReadinessState(),
-            autofill::mojom::SubmissionReadinessState::kTwoFields);
+            SubmissionReadinessState::kTwoFields);
   EXPECT_CALL(driver(), FillSuggestion(kUsername, kPassword, _))
       .WillOnce(
           base::test::RunOnceCallback<2>(/*was_filling_successful=*/false));

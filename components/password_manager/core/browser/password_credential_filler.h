@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
+#include "components/password_manager/core/browser/password_ui_utils.h"
 #include "url/gurl.h"
 
 namespace password_manager {
@@ -18,7 +18,6 @@ namespace password_manager {
 // passwords) using a PasswordManagerDriver. It can also submit the form.
 class PasswordCredentialFiller {
  public:
-  using SubmissionReadinessState = autofill::mojom::SubmissionReadinessState;
 
   // The destructor of the implementation should make sure the class is cleaned
   // (i.e. by checking !IsReadyToFill())
