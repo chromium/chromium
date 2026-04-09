@@ -8,6 +8,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -18,6 +19,7 @@ import org.chromium.components.prefs.PrefService;
 @NullMarked
 public class LocalStatePrefs {
     private static boolean sIsNativeReady;
+    private static final ObserverList<Runnable> sObservers = new ObserverList<>();
 
     /** Returns the {@link PrefService} associated with local state. */
     public static @Nullable PrefService get() {
@@ -30,14 +32,32 @@ public class LocalStatePrefs {
         return sIsNativeReady;
     }
 
+    /** Adds an observer to be notified when the local state prefs are ready. */
+    public static void addObserver(Runnable observer) {
+        sObservers.addObserver(observer);
+    }
+
+    /** Removes an observer. */
+    public static void removeObserver(Runnable observer) {
+        sObservers.removeObserver(observer);
+    }
+
     @CalledByNative
     private static void setNativePrefsLoaded() {
         sIsNativeReady = true;
+        for (Runnable observer : sObservers) {
+            observer.run();
+        }
     }
 
     public static void setNativePrefsLoadedForTesting(boolean state) {
         boolean oldState = sIsNativeReady;
         sIsNativeReady = state;
+        if (sIsNativeReady) {
+            for (Runnable observer : sObservers) {
+                observer.run();
+            }
+        }
         ResettersForTesting.register(
                 () -> {
                     sIsNativeReady = oldState;

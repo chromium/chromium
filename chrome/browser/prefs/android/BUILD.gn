@@ -16,6 +16,7 @@ android_library("java") {
       [ "java/src/org/chromium/chrome/browser/prefs/LocalStatePrefs.java" ]
   deps = [
     "//base:resetters_java",
+    "//base:tasks_java",
     "//build/android:build_java",
     "//components/prefs/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",

@@ -22,6 +22,8 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.prefs.PrefService;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /** Tests for {@link LocalStatePrefs}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -61,5 +63,38 @@ public class LocalStatePrefsTest {
                             .that(prefService.getString(TEST_PREF_KEY))
                             .isEqualTo(existingValue);
                 });
+    }
+
+    @Test
+    @SmallTest
+    public void testObserver() {
+        AtomicBoolean called = new AtomicBoolean(false);
+        Runnable observer = () -> called.set(true);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    LocalStatePrefs.setNativePrefsLoadedForTesting(false);
+                    LocalStatePrefs.addObserver(observer);
+                });
+
+        assertWithMessage("Observer should not be called yet").that(called.get()).isFalse();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    LocalStatePrefs.setNativePrefsLoadedForTesting(true);
+                });
+
+        assertWithMessage("Observer should be called").that(called.get()).isTrue();
+
+        called.set(false);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    LocalStatePrefs.removeObserver(observer);
+                    LocalStatePrefs.setNativePrefsLoadedForTesting(false);
+                    LocalStatePrefs.setNativePrefsLoadedForTesting(true);
+                });
+        assertWithMessage("Observer should not be called after removal")
+                .that(called.get())
+                .isFalse();
     }
 }
