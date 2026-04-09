@@ -156,12 +156,12 @@ void HeaderView::UpdateCaptionButtons() {
   DeprecatedLayoutImmediately();
 }
 
-void HeaderView::SetWidthInPixels(int width_in_pixels) {
+void HeaderView::SetWidthInPixels(std::optional<int> width_in_pixels) {
   frame_header_->SetWidthInPixels(width_in_pixels);
   // If the width is given in pixels, use uniform scaling
   // so that UndoDeviceScaleFactor can correctly undo the scaling.
   header_content_view_->SetScaleType(
-      width_in_pixels > 0
+      width_in_pixels.has_value()
           ? views::PaintInfo::ScaleType::kUniformScaling
           : views::PaintInfo::ScaleType::kScaleWithEdgeSnapping);
 }
