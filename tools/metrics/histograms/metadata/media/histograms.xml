@@ -8424,6 +8424,18 @@ chromium-metrics-reviews@google.com.
   <token key="VideoCodec" variants="VideoCodec"/>
 </histogram>
 
+<histogram name="Media.VideoEncoder.NDKVEA.TemporalLayerEncodingEnabled"
+    enum="BooleanEnabled" expires_after="2027-04-02">
+  <owner>philyan@google.com</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records the underlying platform capability for temporal layer encoding on
+    Android, independent of Finch experiment flags or strict OS version
+    enforcement in the NDK VEA. Logged during encoder initialization if multiple
+    temporal layers are requested.
+  </summary>
+</histogram>
+
 <histogram name="Media.VideoEncoder.{Impl}.EncodingLatency.{VideoCodec}"
     units="ms" expires_after="2026-10-04">
   <owner>eugene@chromium.org</owner>

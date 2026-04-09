@@ -14,15 +14,14 @@
 
 namespace media {
 
-namespace {
-bool IsTemporalLayerEncodingEnabled() {
+// static
+bool NdkVideoEncodeAcceleratorSvcApi::IsTemporalLayerEncodingEnabled() {
   static bool enabled = []() {
     JNIEnv* env = base::android::AttachCurrentThread();
     return Java_VideoAcceleratorUtil_isTemporalLayerEncodingEnabled(env);
   }();
   return enabled;
 }
-}  // namespace
 
 // static
 const NdkVideoEncodeAcceleratorSvcApi* NdkVideoEncodeAcceleratorSvcApi::Get() {

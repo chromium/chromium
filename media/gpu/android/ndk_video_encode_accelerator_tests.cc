@@ -420,6 +420,21 @@ class NdkVideoEncoderAcceleratorTest
     return config;
   }
 
+  VideoEncodeAccelerator::Config GetDefaultSvcConfig(
+      size_t num_temporal_layers) {
+    auto config = GetDefaultConfig();
+    config.spatial_layers.clear();
+    config.spatial_layers.emplace_back();
+    auto& layer = config.spatial_layers.back();
+    layer.width = config.input_visible_size.width();
+    layer.height = config.input_visible_size.height();
+    layer.bitrate_bps = config.bitrate.target_bps();
+    layer.framerate = config.framerate;
+    layer.max_qp = 30;
+    layer.num_of_temporal_layers = num_temporal_layers;
+    return config;
+  }
+
   void Run() {
     loop_->Run();
     loop_ = std::make_unique<base::RunLoop>();
@@ -825,15 +840,7 @@ TEST_P(NdkVideoEncoderAcceleratorTest, EncodeWithTemporalLayers) {
     GTEST_SKIP() << "SVC is only supported for H.264, VP9 and AV1.";
   }
 
-  auto config = GetDefaultConfig();
-  // Set 2 temporal layers
-  config.spatial_layers.emplace_back();
-  config.spatial_layers[0].width = config.input_visible_size.width();
-  config.spatial_layers[0].height = config.input_visible_size.height();
-  config.spatial_layers[0].bitrate_bps = config.bitrate.target_bps();
-  config.spatial_layers[0].framerate = config.framerate;
-  config.spatial_layers[0].max_qp = 30;
-  config.spatial_layers[0].num_of_temporal_layers = 2;
+  auto config = GetDefaultSvcConfig(/*num_temporal_layers=*/2);
 
   const size_t total_frames_count = 10;
   accelerator_ = MakeNdkAccelerator();
@@ -1026,6 +1033,25 @@ TEST_P(NdkVideoEncoderAcceleratorTest, Histograms) {
   }
   EXPECT_LE(latency_samples, total_frames_count);
   EXPECT_GT(latency_samples, 1u);
+}
+
+TEST_P(NdkVideoEncoderAcceleratorTest, SvcHistograms) {
+  if (codec_ != VideoCodec::kH264 && codec_ != VideoCodec::kVP9 &&
+      codec_ != VideoCodec::kAV1) {
+    GTEST_SKIP() << "SVC is only supported for H.264, VP9 and AV1.";
+  }
+
+  auto config = GetDefaultSvcConfig(/*num_temporal_layers=*/2);
+
+  accelerator_ = MakeNdkAccelerator();
+
+  base::HistogramTester histogram_tester;
+  std::ignore = accelerator_->Initialize(config, this, NullLog());
+  // We don't care if initialization fails; the capability histograms are logged
+  // before the hardware encoder configuration is actually attempted.
+
+  histogram_tester.ExpectTotalCount(
+      "Media.VideoEncoder.NDKVEA.TemporalLayerEncodingEnabled", 1);
 }
 
 std::vector<VideoParams> GenerateVariants(

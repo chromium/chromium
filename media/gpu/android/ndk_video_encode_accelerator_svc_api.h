@@ -49,6 +49,7 @@ class MEDIA_GPU_EXPORT NdkVideoEncodeAcceleratorSvcApi {
 
   static bool IsTemporalLayerIdSupported();
   static bool IsBitrateLayeringSupported();
+  static bool IsTemporalLayerEncodingEnabled();
 
   static constexpr const char* AMEDIAFORMAT_KEY_TEMPORAL_LAYER_ID =
       "temporal-layer-id";

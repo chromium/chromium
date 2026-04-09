@@ -767,6 +767,11 @@ EncoderStatus NdkVideoEncodeAccelerator::Initialize(
   if (num_temporal_layers_ > 1) {
     svc_parser_ = std::make_unique<TemporalScalabilityIdExtractor>(
         codec, num_temporal_layers_);
+
+    // Log platform capabilities for SVC once per initialization.
+    base::UmaHistogramBoolean(
+        "Media.VideoEncoder.NDKVEA.TemporalLayerEncodingEnabled",
+        NdkVideoEncodeAcceleratorSvcApi::IsTemporalLayerEncodingEnabled());
   }
 
   const EncoderStatus status = ResetMediaCodec();
