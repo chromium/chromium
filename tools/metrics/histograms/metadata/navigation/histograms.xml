@@ -1131,6 +1131,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.DuplicateNavigationsIgnoredCountPerNavigation"
+    units="count" expires_after="2026-09-20">
+  <owner>annasato@chromium.org</owner>
+  <owner>chrome-navigation@google.com</owner>
+  <summary>
+    Records the number of subsequent duplicate navigation requests that were
+    ignored in favor of an ongoing navigation. This is recorded at the time the
+    navigation successfully commits.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.DuringGesture.NavStarted{NavigationMode}"
     enum="Boolean" expires_after="2026-09-20">
   <owner>lazzzis@google.com</owner>

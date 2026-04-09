@@ -3687,6 +3687,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
           renderer_cancellation_listener,
       mojo::PendingReceiver<
+          mojom::NavigationRendererIgnoreDuplicateNavigationListener>
+          renderer_ignore_duplicate_navigation_listener,
+      mojo::PendingReceiver<
           blink::mojom::NavigationResumeDeferredCommitListener>
           deferred_commit_resume_listener) override;
   void SubresourceResponseStarted(const url::SchemeHostPort& final_response_url,

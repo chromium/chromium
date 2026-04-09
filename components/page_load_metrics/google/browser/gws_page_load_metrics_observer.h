@@ -97,6 +97,7 @@ extern const char kHistogramGWSActivationToLargestContentfulPaint[];
 
 extern const char kHistogramPrerenderSuffix[];
 extern const char kHistogramNonPrerenderSuffix[];
+extern const char kHistogramDuplicateIgnoredSuffix[];
 
 }  // namespace internal
 
@@ -253,6 +254,10 @@ class GWSPageLoadMetricsObserver
   // Indicates if the navigation was started from the context menu, for checking
   // the percentage of context menu triggered navigations.
   bool was_started_from_context_menu_ = false;
+
+  // Indicates if this navigation caused a subsequent duplicate request to be
+  // ignored.
+  bool did_ignore_duplicate_navigation_ = false;
 
   NavigationSourceType source_type_ = kUnknown;
   net::HttpConnectionInfoCoarse http_connection_info_ =

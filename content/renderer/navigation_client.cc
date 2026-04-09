@@ -160,13 +160,19 @@ void NavigationClient::MoveOwnershipToCommitTargetIfNeeded(
 
 void NavigationClient::SetUpRendererInitiatedNavigation(
     mojo::PendingRemote<mojom::NavigationRendererCancellationListener>
-        renderer_cancellation_listener_remote) {
+        renderer_cancellation_listener_remote,
+    mojo::PendingRemote<mojom::NavigationRendererIgnoreDuplicateNavigationListener>
+        renderer_ignore_duplicate_navigation_listener_remote) {
   DCHECK(!was_initiated_in_this_frame_);
   was_initiated_in_this_frame_ = true;
   renderer_cancellation_listener_remote_.Bind(
       std::move(renderer_cancellation_listener_remote),
       render_frame_->GetTaskRunner(
           blink::TaskType::kInternalNavigationCancellation));
+  renderer_ignore_duplicate_navigation_listener_remote_.Bind(
+      std::move(renderer_ignore_duplicate_navigation_listener_remote),
+      render_frame_->GetTaskRunner(
+          blink::TaskType::kInternalNavigationAssociated));
 
   // Renderer-initiated navigations can be canceled from the JS task it was
   // initiated from. If we post a task here, the task will run after the JS task
@@ -202,6 +208,11 @@ void NavigationClient::ResetForAbort() {
       std::to_underlying(
           mojom::NavigationClientDisconnectReason::kResetForAbort),
       "");
+}
+
+void NavigationClient::DidIgnoreDuplicateNavigation() {
+  renderer_ignore_duplicate_navigation_listener_remote_
+      ->DidIgnoreDuplicateNavigation();
 }
 
 void NavigationClient::NotifyNavigationCancellationWindowEnded() {
