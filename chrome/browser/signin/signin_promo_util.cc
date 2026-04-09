@@ -517,13 +517,14 @@ bool ShouldShowPromoBasedOnImpressionOrDismissalCount(Profile& profile,
          dismiss_count < kSigninPromoDismissedThreshold;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-bool ShouldShowSyncPromo(Profile& profile) {
-#if BUILDFLAG(IS_CHROMEOS)
-  // There's no need to show the sign in promo on cros since cros users are
-  // already logged in.
-  return false;
-#else
+// Performs base checks for whether the sign in promos should be shown.
+// Needs additional checks depending on the type of the promo (see
+// `ShouldShowAddressSignInPromo` and `ShouldShowPasswordSignInPromo`).
+// `profile` is the profile of the tab the promo would be shown on.
+bool ShouldShowSignInPromoCommon(Profile& profile, SignInPromoType type) {
+  if (profile.IsOffTheRecord()) {
+    return false;
+  }
 
   // Don't bother if we don't have any kind of network connection.
   if (net::NetworkChangeNotifier::IsOffline()) {
@@ -543,9 +544,7 @@ bool ShouldShowSyncPromo(Profile& profile) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(original_profile);
   AccountInfo promo_account =
-      profile.IsOffTheRecord()
-          ? AccountInfo()  // Incognito profiles do not personalize promos.
-          : signin_ui_util::GetSingleAccountForPromos(identity_manager);
+      signin_ui_util::GetSingleAccountForPromos(identity_manager);
 
   // Don't show if sign in can't be offered (ex: signin disallowed).
   if (!CanOfferSignin(original_profile, promo_account.gaia, promo_account.email,
@@ -554,36 +553,10 @@ bool ShouldShowSyncPromo(Profile& profile) {
     return false;
   }
 
-  // No promo if the user is already syncing.
-  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    return false;
-  }
-
   syncer::SyncPrefs prefs(profile.GetPrefs());
   // Don't show if sync is not allowed to start or is running in local mode.
   if (!SyncServiceFactory::IsSyncAllowed(&profile) ||
       prefs.IsLocalSyncEnabled()) {
-    return false;
-  }
-
-  // Verified the base checks. Depending on whether the promo should be for sync
-  // or signin, additional checks are necessary.
-  return true;
-#endif
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-// Performs base checks for whether the sign in promos should be shown.
-// Needs additional checks depending on the type of the promo (see
-// `ShouldShowAddressSignInPromo` and `ShouldShowPasswordSignInPromo`).
-// `profile` is the profile of the tab the promo would be shown on.
-bool ShouldShowSignInPromoCommon(Profile& profile, SignInPromoType type) {
-  if (profile.IsOffTheRecord()) {
-    return false;
-  }
-
-  // Don't show the promo if it does not pass the sync base checks.
-  if (!signin::ShouldShowSyncPromo(profile)) {
     return false;
   }
 
@@ -633,19 +606,14 @@ bool ShouldShowSignInPromoCommon(Profile& profile, SignInPromoType type) {
 bool ShouldShowExtensionSignInPromo(Profile& profile,
                                     const extensions::Extension& extension) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Don't show the promo if it does not pass the sync base checks.
-  if (!signin::ShouldShowSyncPromo(profile)) {
-    return false;
-  }
-
   if (!extensions::sync_util::ShouldSync(&profile, &extension)) {
     return false;
   }
 
   if (!base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)) {
-    // `ShouldShowSyncPromo()` does not check if extensions are syncing in
-    // transport mode. That's why `IsSyncingExtensionsEnabled()` is added so the
-    // sign in promo is not shown in that case.
+    // `ShouldShowSignInPromoCommon()` does not check if extensions are syncing
+    // in transport mode. That's why `IsSyncingExtensionsEnabled()` is added so
+    // the sign in promo is not shown in that case.
     if (extensions::sync_util::IsSyncingExtensionsEnabled(&profile)) {
       return false;
     }
