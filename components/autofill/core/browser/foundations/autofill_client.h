@@ -546,7 +546,7 @@ class AutofillClient {
       base::span<const SelectOption> datalist) = 0;
 
   // Returns the identifier of the suggestion UI that is currently showing or
-  // `std::nullopt` is there is none.
+  // `std::nullopt` if there is none.
   virtual std::optional<SuggestionUiSessionId>
   GetSessionIdForCurrentAutofillSuggestions() const;
 

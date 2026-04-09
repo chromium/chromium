@@ -893,9 +893,8 @@ BrowserAutofillManager::MetricsState::~MetricsState() {
 
 BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver)
     : AutofillManager(driver),
-      otp_manager_(new OtpManagerImpl(
-          *this,
-          driver->GetAutofillClient().GetOneTimeTokenService())),
+      otp_manager_(
+          new OtpManagerImpl(*this, client().GetOneTimeTokenService())),
       account_name_email_strike_manager_(
           std::make_unique<AccountNameEmailStrikeManager>(*this)),
       address_on_typing_manager_(client()) {}
@@ -2953,7 +2952,7 @@ void BrowserAutofillManager::Reset() {
   // Forget stored data (e.g. active subscriptions and pending callbacks) after
   // a navigation.
   otp_manager_ = std::make_unique<OtpManagerImpl>(
-      *this, driver().GetAutofillClient().GetOneTimeTokenService());
+      *this, client().GetOneTimeTokenService());
   account_name_email_strike_manager_ =
       std::make_unique<AccountNameEmailStrikeManager>(*this);
   metrics_.reset();
