@@ -18,9 +18,10 @@ from contextlib import AbstractContextManager
 # pylint: disable=import-error, wrong-import-position
 REPO_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))
-MEASURES_ROOT = os.path.join(REPO_ROOT, 'build', 'util', 'lib', 'proto')
-sys.path.append(MEASURES_ROOT)
-import measures  # pylint: disable=unused-import
+BUILD_UTIL_ROOT = os.path.join(REPO_ROOT, 'build', 'util')
+sys.path.append(BUILD_UTIL_ROOT)
+from lib.proto import measures
+from lib.results import result_sink
 
 CHROME_FUCHSIA_ROOT = os.path.join(REPO_ROOT, 'fuchsia_web', 'av_testing')
 sys.path.append(CHROME_FUCHSIA_ROOT)
@@ -562,3 +563,27 @@ def teardown_test_environment(driver, tunnel_proc, args):
     send_ssh_command(args.sender, args.username,
                      cleanup_command[args.sender_os])
     logging.info("Cleaned up tmp files on remote machine.")
+
+
+def finalize_results():
+    """Dumps metrics and uploads to ResultDB if available."""
+    log_dir = os.environ.get('ISOLATED_OUTDIR', '/tmp')
+    invocations_dir = os.path.join(log_dir, 'invocations')
+
+    # Dump metrics to the expected location for the result_adapter or
+    # other infra tools to find.
+    logging.info("Dumping metrics to: %s", invocations_dir)
+    measures.dump(invocations_dir)
+
+    # If running in a LUCI environment, try to upload immediately.
+    client = result_sink.TryInitClient()
+    if client:
+        logging.info("LUCI ResultSink detected. Uploading extended properties.")
+        try:
+            records = {
+                measures.TEST_SCRIPT_METRICS_KEY: measures.to_dict()
+            }
+            client.UpdateInvocationExtendedProperties(records)
+            logging.info("Metrics uploaded successfully.")
+        except Exception as e:
+            logging.error("Failed to upload metrics to ResultSink: %s", e)

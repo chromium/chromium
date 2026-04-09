@@ -389,6 +389,7 @@ def main():
             finally:
                 common.teardown_recording_process(rec_proc)
     finally:
+        common.finalize_results()
         common.teardown_test_environment(driver, tunnel_proc, args)
 
 if __name__ == '__main__':
