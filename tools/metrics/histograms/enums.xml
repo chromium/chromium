@@ -12727,6 +12727,8 @@ from previous Chrome versions.
   <int value="-444758854" label="CellularCarrierLock:disabled"/>
   <int value="-444307785" label="WebAppEnableAppTitle:disabled"/>
   <int value="-444098682" label="AutofillUploadCardRequestTimeout:enabled"/>
+  <int value="-443940686"
+      label="MigrateEnhancedSbUserToEnhancedBundle:enabled"/>
   <int value="-442384327" label="RubyShortHeuristics:enabled"/>
   <int value="-442352394" label="IframeOneGoogleBar:disabled"/>
   <int value="-441972413" label="OobeJellyModal:disabled"/>
@@ -19366,6 +19368,8 @@ from previous Chrome versions.
   <int value="1777695562" label="SendTabToSelfShowSendingUI:disabled"/>
   <int value="1777806335" label="UsePasswordSeparatedSigninFlow:disabled"/>
   <int value="1779095819" label="BatchUploadDesktop:disabled"/>
+  <int value="1779112232"
+      label="MigrateEnhancedSbUserToEnhancedBundle:disabled"/>
   <int value="1779297415" label="SaasUsageReporting:enabled"/>
   <int value="1779530254"
       label="AccessibilityInternalsPageImprovements:disabled"/>

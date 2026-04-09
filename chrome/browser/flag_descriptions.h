@@ -2893,6 +2893,12 @@ inline constexpr char kMediaRouterCastAllowAllIPsDescription[] =
     "Have the Media Router connect to Cast devices on all IP addresses, not "
     "just RFC1918/RFC4193 private addresses.";
 
+inline constexpr char kMigrateEnhancedSbUserToEnhancedBundleName[] =
+    "Migrate Enhanced Safe Browsing User to Enhanced Bundle";
+inline constexpr char kMigrateEnhancedSbUserToEnhancedBundleDescription[] =
+    "Enables the migration of enhanced Safe Browsing users to the enhanced "
+    "bundle. Requires chrome://flags#bundled-security-settings to be enabled.";
+
 inline constexpr char kMigrateSyncingUserToSignedInName[] =
     "Migrate syncing user to signed in state";
 inline constexpr char kMigrateSyncingUserToSignedInDescription[] =

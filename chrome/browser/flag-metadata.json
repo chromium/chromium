@@ -6390,6 +6390,11 @@
     "expiry_milestone":150
   },
   {
+    "name": "migrate-enhanced-sb-user-to-enhanced-bundle",
+    "owners": [ "jacastro@chromium.org", "chrome-counter-abuse-alerts@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "migrate-ios-keychain-accessibility",
     "owners": [ "marq@chromium.org", "fedegermi@google.com" ],
     "expiry_milestone": 150
