@@ -651,9 +651,14 @@ void ChromeCaptureModeDelegate::GetDriveFsFreeSpaceBytes(
 }
 
 bool ChromeCaptureModeDelegate::IsCameraDisabledByPolicy() const {
-  return policy::SystemFeaturesDisableListPolicyHandler::
-      IsSystemFeatureDisabled(policy::SystemFeature::kCamera,
-                              &local_state_.get());
+  if (policy::SystemFeaturesDisableListPolicyHandler::IsSystemFeatureDisabled(
+          policy::SystemFeature::kCamera, &local_state_.get())) {
+    return true;
+  }
+
+  auto* profile = ProfileManager::GetActiveUserProfile();
+  return profile &&
+         !profile->GetPrefs()->GetBoolean(prefs::kVideoCaptureAllowed);
 }
 
 bool ChromeCaptureModeDelegate::IsAudioCaptureDisabledByPolicy() const {
