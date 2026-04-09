@@ -76,6 +76,9 @@ constexpr CGFloat kLocationBarMaxWidth = 600;
   UIView* _locationBarContainer;
   // The background for the location bar, which is a pill-shaped view.
   UIView* _locationBarBackground;
+  // The target for the fake omnibox, which replaces the location bar when the
+  // location bar is not visible.
+  UIView* _fakeOmniboxTarget;
   // The stack views that hold the buttons on the trailing side.
   UIStackView* _trailingStackView;
 
@@ -149,8 +152,14 @@ constexpr CGFloat kLocationBarMaxWidth = 600;
 
   _locationBarContainer.transform = targetTransform;
   _locationBarContainer.alpha = progress;
-  /// TODO(crbug.com/498602138): Add fake omnibox target when
-  /// the location bar container is fully hidden.
+
+  // When the location bar is fully hidden, activate the fake omnibox
+  // target in its place.
+  if (_locationBarContainer.alpha == 0.0 && _fakeOmniboxTarget.hidden) {
+    _fakeOmniboxTarget.hidden = NO;
+  } else if (_locationBarContainer.alpha > 0.0 && !_fakeOmniboxTarget.hidden) {
+    _fakeOmniboxTarget.hidden = YES;
+  }
 }
 
 - (UIView*)locationBarContainerCopy {
@@ -476,6 +485,11 @@ constexpr CGFloat kLocationBarMaxWidth = 600;
   _locationBarBackground = [self createLocationBarBackground];
   _locationBarContainer =
       [self createLocationBarContainerWithBackground:_locationBarBackground];
+
+  if (CanShowTabStrip(self)) {
+    _fakeOmniboxTarget = [self createFakeOmniboxTarget];
+  }
+
   _backButton = [self.buttonFactory makeBackButton];
   _backButton.menu = _backButtonMenu;
   [_backButton addTarget:self
@@ -542,6 +556,12 @@ constexpr CGFloat kLocationBarMaxWidth = 600;
 
   [self.view addSubview:_leadingStackView];
   [self.view addSubview:_locationBarContainer];
+
+  if (CanShowTabStrip(self)) {
+    [self.view addSubview:_fakeOmniboxTarget];
+    AddSameConstraints(_locationBarContainer, _fakeOmniboxTarget);
+  }
+
   [self.view addSubview:_trailingStackView];
 
   _locationBarHeightConstraint = [_locationBarContainer.heightAnchor
@@ -650,6 +670,23 @@ constexpr CGFloat kLocationBarMaxWidth = 600;
     _trailingStackTrailingConstraint.constant = kStackViewMarginPortrait;
     [NSLayoutConstraint activateConstraints:_portraitOrientationConstraints];
   }
+}
+
+// Creates a fake omnibox target to activate when the location bar is not
+// visible (iPad only).
+- (UIView*)createFakeOmniboxTarget {
+  CHECK_EQ(ui::GetDeviceFormFactor(), ui::DEVICE_FORM_FACTOR_TABLET);
+
+  UIView* fakeOmniboxTarget = [[UIView alloc] init];
+
+  fakeOmniboxTarget.translatesAutoresizingMaskIntoConstraints = NO;
+  fakeOmniboxTarget.hidden = YES;
+
+  UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
+      initWithTarget:self.browserCoordinatorHandler
+              action:@selector(showComposebox)];
+  [fakeOmniboxTarget addGestureRecognizer:tapRecognizer];
+  return fakeOmniboxTarget;
 }
 
 // Handles back button tap.

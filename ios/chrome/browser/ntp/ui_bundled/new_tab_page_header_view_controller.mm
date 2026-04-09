@@ -205,7 +205,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
         }
 
         // Ensure omnibox is reset when not a regular tablet.
-        if (isSplitToolbarMode) {
+        if (isSplitToolbarMode && !CanShowTabStrip(newCollection)) {
           [strongSelf.toolbarDelegate setScrollProgressForTabletOmnibox:1];
         }
         // Fake Tap button only needs to work in portrait. Disable the button
