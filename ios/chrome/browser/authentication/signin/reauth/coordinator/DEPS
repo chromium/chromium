@@ -1,0 +1,8 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/signin/model/signin_util.h",
+  "+ios/chrome/browser/signin/model/system_identity.h",
+  "+ios/chrome/browser/signin/model/system_identity_interaction_manager.h",
+  "+ios/chrome/browser/signin/model/system_identity_manager.h",
+  # keep-sorted end
+]

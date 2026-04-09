@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_REAUTH_SIGNIN_REAUTH_COORDINATOR_H_
-#define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_REAUTH_SIGNIN_REAUTH_COORDINATOR_H_
+#ifndef IOS_CHROME_BROWSER_AUTHENTICATION_SIGNIN_REAUTH_COORDINATOR_SIGNIN_REAUTH_COORDINATOR_H_
+#define IOS_CHROME_BROWSER_AUTHENTICATION_SIGNIN_REAUTH_COORDINATOR_SIGNIN_REAUTH_COORDINATOR_H_
 
 #import "components/signin/public/identity_manager/account_info.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/buggy_authentication_view_owner.h"
@@ -28,7 +28,10 @@ enum class ReauthResult : int {
 // The delegate for the reauth flow.
 @protocol SigninReauthCoordinatorDelegate
 
-// The reauth flow has completed with `result`.
+// The result of the reauth process. If the result is success, `gaiaID` must be
+// the id of the account passed to the init method. `gaiaID` may be a distinct
+// ID than the one used in the init method if the user authentified with a
+// different account.
 - (void)reauthFinishedWithResult:(ReauthResult)result
                           gaiaID:(const GaiaId*)gaiaID;
 
@@ -51,7 +54,7 @@ enum class ReauthResult : int {
 
 // Designated initializer for SigninReauthCoordinator started from an explicit
 // reauthentication UI.
-// `identity` - the identity for which the reauthentication flow should be
+// `account` - the account for which the reauthentication flow should be
 //            shown.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
@@ -61,8 +64,8 @@ enum class ReauthResult : int {
     NS_DESIGNATED_INITIALIZER;
 
 // Designated initializer for SigninReauthCoordinator started from a sign-in
-// flow. `identity` - the identity for which the reauthentication flow should be
-//            shown.
+// flow.
+// `account` - the account for which the reauthentication flow should be shown.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                    account:(const CoreAccountInfo&)account
@@ -75,4 +78,4 @@ enum class ReauthResult : int {
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_REAUTH_SIGNIN_REAUTH_COORDINATOR_H_
+#endif  // IOS_CHROME_BROWSER_AUTHENTICATION_SIGNIN_REAUTH_COORDINATOR_SIGNIN_REAUTH_COORDINATOR_H_
