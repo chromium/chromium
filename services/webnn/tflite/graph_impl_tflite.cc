@@ -532,7 +532,8 @@ GraphImplTflite::CreateAndBuildOnBackgroundThread(
       GraphBuilderTflite::CreateAndBuild(
           context_properties, *graph_info, std::move(constant_operands),
           std::move(operand_to_dependent_operations),
-          std::move(operand_to_producing_operation), std::move(weights_file)),
+          std::move(operand_to_producing_operation), std::move(weights_file),
+          /*use_external_buffer=*/false),
       [](std::string error) {
         return mojom::Error::New(mojom::Error::Code::kNotSupportedError,
                                  std::move(error));

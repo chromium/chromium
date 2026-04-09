@@ -20,6 +20,7 @@
 #include "base/types/expected.h"
 #include "base/types/fixed_array.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "services/webnn/buildflags.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
@@ -29,6 +30,10 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 #include "third_party/tflite/src/tensorflow/compiler/mlir/lite/schema/schema_generated.h"
+
+#if BUILDFLAG(WEBNN_USE_LITERT)
+#include "third_party/litert/src/litert/cc/litert_options.h"
+#endif
 
 namespace webnn {
 
@@ -86,7 +91,12 @@ class GraphBuilderTflite final {
            std::vector<std::pair<std::string, TensorDescriptor>>
                output_name_to_descriptor,
            base::File weights_file,
-           bool graph_requires_fp32_precision);
+           bool graph_requires_fp32_precision
+#if BUILDFLAG(WEBNN_USE_LITERT)
+           ,
+           ::litert::Options::ScopedWeightSectionMap weights_section_map
+#endif
+    );
     Result(const Result&) = delete;
     Result& operator=(const Result&) = delete;
     Result(Result&&);
@@ -100,6 +110,9 @@ class GraphBuilderTflite final {
         output_name_to_descriptor;
     base::File weights_file;
     bool graph_requires_fp32_precision;
+#if BUILDFLAG(WEBNN_USE_LITERT)
+    ::litert::Options::ScopedWeightSectionMap weights_section_map;
+#endif
   };
 
   GraphBuilderTflite(const GraphBuilderTflite&) = delete;
@@ -116,7 +129,8 @@ class GraphBuilderTflite final {
           operand_to_dependent_operations,
       const base::flat_map<OperandId, OperationId>
           operand_to_producing_operation,
-      base::File weights_file);
+      base::File weights_file,
+      bool use_external_buffer);
 
   static ContextProperties GetContextProperties();
 
@@ -127,9 +141,10 @@ class GraphBuilderTflite final {
   using BufferOffset = flatbuffers::Offset<::tflite::Buffer>;
   using TensorOffset = flatbuffers::Offset<::tflite::Tensor>;
   using StringOffset = flatbuffers::Offset<flatbuffers::String>;
+  using ShapeOffset = flatbuffers::Offset<flatbuffers::Vector<int32_t>>;
+  using ExternalBufferOffset = flatbuffers::Offset<::tflite::ExternalBuffer>;
   using QuantizateParametersOffset =
       flatbuffers::Offset<::tflite::QuantizationParameters>;
-  using BufferIndex = uint32_t;
   using OperatorCodeIndex = uint32_t;
 
   GraphBuilderTflite(
@@ -141,8 +156,17 @@ class GraphBuilderTflite final {
           operand_to_dependent_operations,
       const base::flat_map<OperandId, OperationId>&
           operand_to_producing_operation,
-      base::File weights_file);
+      base::File weights_file,
+      bool use_external_buffer);
   ~GraphBuilderTflite();
+
+  struct BufferInfo {
+    uint32_t index;
+
+    // Remains false for the mandatory TFLite empty buffer and non-constant
+    // tensors, even when external buffers are enabled.
+    bool is_external;
+  };
 
   // Maps to WebNN operand information.
   struct TensorInfo {
@@ -217,7 +241,7 @@ class GraphBuilderTflite final {
   // The `Buffer` in TFLite schema is the table of raw data buffers, it is used
   // for WebNN constant operations. Referenced by tensors with the index of
   // buffer.
-  base::expected<BufferIndex, std::string> SerializeBuffer(
+  base::expected<BufferInfo, std::string> SerializeBuffer(
       base::span<const uint8_t> buffer);
 
   // Serializes `buffer` as a tensor with the given `dimensions` and `type `to
@@ -930,6 +954,13 @@ class GraphBuilderTflite final {
   bool AreConstantOperandsEqual(OperandId lhs_operand_id,
                                 OperandId rhs_operand_id);
 
+  flatbuffers::Offset<::tflite::Tensor> CreateTensor(
+      const BufferInfo& buffer_info,
+      ShapeOffset shape,
+      ::tflite::TensorType tensor_type,
+      StringOffset name = 0,
+      QuantizateParametersOffset quantize_params = 0);
+
   // No further methods may be called on this class after calling this method
   // because the buffer of `buffer_` is now owned by the detached buffer.
   base::expected<Result, std::string> FinishAndTakeResult(
@@ -990,9 +1021,14 @@ class GraphBuilderTflite final {
   // and `SubGraph`.
   std::vector<BufferOffset> buffers_;
   std::vector<TensorOffset> tensors_;
+  std::vector<ExternalBufferOffset> external_buffers_;
 
   // A temporary file created in browser process to hold all weights.
   base::File weights_file_;
+
+  // If true, tensors are serialized using `external_buffer`. If false, tensors
+  // are serialized using the standard `buffer`.
+  const bool use_external_buffer_;
 
   // The following std::vector<Offset<tflite:XXX>>> stores all operator
   // information including operator type, the index of input output tensor to

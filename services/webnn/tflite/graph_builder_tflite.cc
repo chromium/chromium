@@ -22,6 +22,7 @@
 #include "base/files/file_util.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -43,6 +44,10 @@
 #include "third_party/tflite/src/tensorflow/compiler/mlir/lite/schema/schema_utils.h"
 #include "third_party/tflite/src/tensorflow/compiler/mlir/lite/tools/optimize/reduced_precision_metadata.h"
 
+#if BUILDFLAG(WEBNN_USE_LITERT)
+#include "third_party/litert/src/litert/cc/litert_options.h"
+#endif
+
 namespace webnn::tflite {
 
 namespace {
@@ -56,7 +61,8 @@ BASE_FEATURE(kApplyQDQFusion, base::FEATURE_ENABLED_BY_DEFAULT);
 // entry in the new tflite root so that we can see that version is not 1.
 #define TFLITE_SCHEMA_VERSION (3)
 
-constexpr size_t kWeightsAlignment = 8;
+// Align weights to match default LITERT_HOST_MEMORY_BUFFER_ALIGNMENT.
+constexpr size_t kWeightsAlignment = 64;
 
 // Flatbuffers cannot be larger than 2 GiB however the library does not provide
 // feedback when this limit is exceeded and can instead encounter integer
@@ -75,6 +81,10 @@ base::CheckedNumeric<int32_t> RoundUp(base::CheckedNumeric<int32_t> value,
                                       int32_t block_size) {
   return (value + block_size - 1) / block_size * block_size;
 }
+
+// The name of the external buffer group for weights. This is used by the LiteRT
+// runtime to identify which external buffers contain weights data.
+constexpr base::cstring_view kWeightsGroupName = "webnn_weights";
 
 // Maps a DataType to a `::tflite::TensorType`. Other `TensorTypeMap` overloads
 // may be declared below as needed.
@@ -553,12 +563,23 @@ GraphBuilderTflite::Result::Result(
     std::vector<std::pair<std::string, TensorDescriptor>>
         output_name_to_descriptor,
     base::File weights_file,
-    bool graph_requires_fp32_precision)
+    bool graph_requires_fp32_precision
+#if BUILDFLAG(WEBNN_USE_LITERT)
+    ,
+    ::litert::Options::ScopedWeightSectionMap weights_section_map
+#endif
+    )
     : buffer(std::move(buffer)),
       input_name_to_descriptor(std::move(input_name_to_descriptor)),
       output_name_to_descriptor(std::move(output_name_to_descriptor)),
       weights_file(std::move(weights_file)),
-      graph_requires_fp32_precision(graph_requires_fp32_precision) {}
+      graph_requires_fp32_precision(graph_requires_fp32_precision)
+#if BUILDFLAG(WEBNN_USE_LITERT)
+      ,
+      weights_section_map(std::move(weights_section_map))
+#endif
+{
+}
 
 GraphBuilderTflite::Result::Result(Result&&) = default;
 
@@ -576,11 +597,13 @@ auto GraphBuilderTflite::CreateAndBuild(
     const base::flat_map<OperandId, base::flat_set<OperationId>>
         operand_to_dependent_operations,
     const base::flat_map<OperandId, OperationId> operand_to_producing_operation,
-    base::File weights_file) -> base::expected<Result, std::string> {
-  GraphBuilderTflite builder(
-      std::move(context_properties), graph_info, constant_operands,
-      std::move(operand_to_dependent_operations),
-      std::move(operand_to_producing_operation), std::move(weights_file));
+    base::File weights_file,
+    bool use_external_buffer) -> base::expected<Result, std::string> {
+  GraphBuilderTflite builder(std::move(context_properties), graph_info,
+                             constant_operands,
+                             std::move(operand_to_dependent_operations),
+                             std::move(operand_to_producing_operation),
+                             std::move(weights_file), use_external_buffer);
 
   bool graph_requires_fp32_precision = false;
   for (size_t i = 0; i < graph_info.operations.size(); ++i) {
@@ -996,13 +1019,15 @@ GraphBuilderTflite::GraphBuilderTflite(
         operand_to_dependent_operations,
     const base::flat_map<OperandId, OperationId>&
         operand_to_producing_operation,
-    base::File weights_file)
+    base::File weights_file,
+    bool use_external_buffer)
     : context_properties_(std::move(context_properties)),
       graph_info_(graph_info),
       constant_operands_(constant_operands),
       operand_to_dependent_operations_(operand_to_dependent_operations),
       operand_to_producing_operation_(operand_to_producing_operation),
-      weights_file_(std::move(weights_file)) {
+      weights_file_(std::move(weights_file)),
+      use_external_buffer_(use_external_buffer) {
   // TFLite requires the first entry in FlatBuffer to be an empty buffer.
   buffers_.push_back(
       ::tflite::CreateBuffer(builder_, builder_.CreateVector({})));
@@ -1051,14 +1076,14 @@ auto GraphBuilderTflite::SerializeOperand(
 
   // The buffer index 0 represents input and output operand because there is no
   // data buffer associated.
-  BufferIndex buffer_index = 0;
+  BufferInfo buffer_info = {/*index=*/0, /*is_external=*/false};
   const mojom::Operand& operand = GetOperand(operand_id);
   if (operand.kind == mojom::Operand::Kind::kConstant) {
     // Serialize buffer and return buffer index which starts from 1, it is
     // used to create the constant's tensor.
     auto it = constant_operands_->find(operand_id);
     CHECK(it != constant_operands_->end());
-    ASSIGN_OR_RETURN(buffer_index, SerializeBuffer(it->second->ByteSpan()));
+    ASSIGN_OR_RETURN(buffer_info, SerializeBuffer(it->second->ByteSpan()));
   }
 
   // Create `Tensor` with operand shape, the index of buffer and the name.
@@ -1073,9 +1098,9 @@ auto GraphBuilderTflite::SerializeOperand(
       OperandDataTypeToTFLite(operand.descriptor.data_type()));
   const StringOffset operand_name =
       operand.name.has_value() ? builder_.CreateString(*operand.name) : 0;
-  tensors_.emplace_back(::tflite::CreateTensor(builder_, std::move(dimensions),
-                                               operand_type, buffer_index,
-                                               operand_name, quantize_params));
+  tensors_.emplace_back(CreateTensor(buffer_info, std::move(dimensions),
+                                     operand_type, operand_name,
+                                     quantize_params));
   TensorInfo tensor_info(tensor_index, operand_type, *signed_operand_dimensions,
                          operand.name, quantize_params);
   operand_to_tensor_info_map_.insert({operand_id, tensor_info});
@@ -2985,6 +3010,25 @@ bool GraphBuilderTflite::AreConstantOperandsEqual(OperandId lhs_operand_id,
          rhs_operand_id_constant_it->second->ByteSpan();
 }
 
+flatbuffers::Offset<::tflite::Tensor> GraphBuilderTflite::CreateTensor(
+    const BufferInfo& buffer_info,
+    ShapeOffset shape,
+    ::tflite::TensorType type,
+    StringOffset name,
+    QuantizateParametersOffset quantize_params) {
+  if (buffer_info.is_external) {
+    return ::tflite::CreateTensor(
+        builder_, shape, type, /*buffer=*/0, name, quantize_params,
+        /*is_variable=*/false,
+        /*sparsity=*/0,
+        /*shape_signature=*/0,
+        /*has_rank=*/false,
+        /*variant_tensors=*/0, /*external_buffer=*/buffer_info.index);
+  }
+  return ::tflite::CreateTensor(builder_, shape, type, buffer_info.index, name,
+                                quantize_params);
+}
+
 auto GraphBuilderTflite::FinishAndTakeResult(
     base::span<const OperandId> input_operands,
     base::span<const OperandId> output_operands,
@@ -3079,19 +3123,44 @@ auto GraphBuilderTflite::FinishAndTakeResult(
       builder_.CreateVector(&subgraph, 1), description,
       builder_.CreateVector(buffers_.data(), buffers_.size()),
       /*metadata_buffer=*/0,  // deprecated, metadata buffer is in `buffers_`.
-      builder_.CreateVector(metadata));
+      builder_.CreateVector(metadata), /*signature_defs=*/0,
+      /*external_buffer_groups=*/
+      builder_.CreateVector(
+          std::vector<flatbuffers::Offset<::tflite::ExternalBufferGroup>>{
+              // Group id 0 is reserved by the runtime, insert a dummy group
+              // with empty name to fill the first entry.
+              ::tflite::CreateExternalBufferGroupDirect(builder_, ""),
+              ::tflite::CreateExternalBufferGroupDirect(
+                  builder_, kWeightsGroupName.c_str())}),
+      builder_.CreateVector(external_buffers_));
 
   ::tflite::FinishModelBuffer(builder_, model_buffer);
   is_created_model_ = true;
 
+#if BUILDFLAG(WEBNN_USE_LITERT)
+  ::litert::Options::ScopedWeightSectionMap weights_section_map;
+  if (use_external_buffer_ && weights_file_.IsValid()) {
+    weights_section_map.emplace(
+        tflite::kWeightsGroupName,
+        ::litert::ScopedWeightSection{
+            .offset = 0,
+            .length = base::checked_cast<size_t>(weights_file_.GetLength())});
+  }
+#endif
   return Result(builder_.Release(), std::move(input_name_to_descriptor),
                 std::move(output_name_to_descriptor), std::move(weights_file_),
-                graph_requires_fp32_precision);
+                graph_requires_fp32_precision
+#if BUILDFLAG(WEBNN_USE_LITERT)
+                ,
+                std::move(weights_section_map)
+#endif
+  );
 }
 
 auto GraphBuilderTflite::SerializeBuffer(base::span<const uint8_t> buffer)
-    -> base::expected<BufferIndex, std::string> {
-  const auto buffer_index = base::checked_cast<BufferIndex>(buffers_.size());
+    -> base::expected<BufferInfo, std::string> {
+  BufferInfo buffer_info = {base::checked_cast<uint32_t>(buffers_.size()),
+                            /*is_external=*/false};
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kWebNNTfliteDumpModel) ||
       !weights_file_.IsValid()) {
@@ -3119,12 +3188,23 @@ auto GraphBuilderTflite::SerializeBuffer(base::span<const uint8_t> buffer)
     if (!weights_file_.WriteAtCurrentPosAndCheck(buffer)) {
       return base::unexpected("Failed to write weights file.");
     }
-    buffers_.emplace_back(
-        ::tflite::CreateBuffer(builder_, /*data=*/0, offset, buffer.size()));
+
+    if (use_external_buffer_) {
+      // The external buffer id 0 is reserved by the runtime, so start with 1.
+      buffer_info.index =
+          base::checked_cast<uint32_t>(external_buffers_.size() + 1);
+      buffer_info.is_external = true;
+      external_buffers_.emplace_back(::tflite::CreateExternalBufferDirect(
+          builder_, /*id=*/buffer_info.index, /*group=*/1, offset,
+          buffer.size()));
+    } else {
+      buffers_.emplace_back(
+          ::tflite::CreateBuffer(builder_, /*data=*/0, offset, buffer.size()));
+    }
   }
 
   // The index of buffer is referenced by tensors.
-  return buffer_index;
+  return buffer_info;
 }
 
 template <typename DataType>
@@ -3141,15 +3221,14 @@ auto GraphBuilderTflite::SerializeTensorWithBuffer(
   } else {
     buffer_span = base::as_byte_span(buffer);
   }
-  ASSIGN_OR_RETURN(const BufferIndex buffer_index,
-                   SerializeBuffer(buffer_span));
+  ASSIGN_OR_RETURN(const BufferInfo buffer_info, SerializeBuffer(buffer_span));
 
   // Create `tflite::Tensor` with the dimensions and the index of buffer.
   const TensorIndex tensor_index =
       base::checked_cast<TensorIndex>(tensors_.size());
-  tensors_.emplace_back(::tflite::CreateTensor(
-      builder_, builder_.CreateVector<int32_t>(dimensions),
-      TensorTypeMap<DataType>::value, buffer_index));
+  tensors_.emplace_back(CreateTensor(buffer_info,
+                                     builder_.CreateVector<int32_t>(dimensions),
+                                     TensorTypeMap<DataType>::value));
 
   return tensor_index;
 }

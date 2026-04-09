@@ -41,6 +41,7 @@
 #include "services/webnn/webnn_switches.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
+#include "third_party/litert/buildflags.h"
 #include "third_party/litert/src/litert/c/litert_common.h"
 #include "third_party/litert/src/litert/cc/litert_compiled_model.h"
 #include "third_party/litert/src/litert/cc/litert_element_type.h"
@@ -52,11 +53,8 @@
 #include "third_party/litert/src/litert/cc/litert_ranked_tensor_type.h"
 #include "third_party/litert/src/litert/cc/litert_tensor_buffer.h"
 #include "third_party/litert/src/litert/cc/options/litert_gpu_options.h"
-// TODO(crbug.com/454732289): Create new build flags for litert instead of
-// reusing tflite build flags.
-#include "third_party/tflite/buildflags.h"
 
-#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
+#if BUILDFLAG(BUILD_LITERT_WITH_XNNPACK)
 #include "third_party/litert/src/tflite/delegates/xnnpack/xnnpack_delegate.h"
 #include "third_party/xnnpack/src/include/xnnpack.h"  // nogncheck
 #endif
@@ -167,15 +165,12 @@ class GraphImplLiteRt::ComputeResources {
         self->GetCompilationOptions(
             context_device, build_graph_result.graph_requires_fp32_precision));
 
-    // TODO(crbug.com/454732289): Update to use ScopedFile and
-    // ScopedWeightSectionMap once external weight loader is fully supported in
-    // LiteRT.
-    // TODO(Update):lyjiang
-    // self->weights_file_ = std::make_unique<::litert::ScopedFile>(
-    //     build_graph_result.weights_file.TakePlatformFile());
-    // compilation_options.SetExternalWeightScopedFile(
-    //     *self->weights_file_,
-    //     std::move(build_graph_result.weights_section_map));
+    self->weights_file_ = std::make_unique<::litert::ScopedFile>(
+        build_graph_result.weights_file.TakePlatformFile());
+
+    compilation_options.SetExternalWeightScopedFile(
+        *self->weights_file_,
+        std::move(build_graph_result.weights_section_map));
 
     ASSIGN_OR_RETURN(self->env_,
                      AsBaseExpected(::litert::Environment::Create({})));
@@ -420,7 +415,7 @@ class GraphImplLiteRt::ComputeResources {
                                     ? ::litert::GpuOptions::Precision::kFp32
                                     : ::litert::GpuOptions::Precision::kFp16);
     }
-#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
+#if BUILDFLAG(BUILD_LITERT_WITH_XNNPACK)
     accelerators |= ::litert::HwAccelerators::kCpu;
     auto cpu_options = options->GetCpuOptions();
     if (!cpu_options) {
@@ -458,9 +453,7 @@ class GraphImplLiteRt::ComputeResources {
     return std::move(*options);
   }
 
-  // TODO(crbug.com/454732289): Re-enable the once external weight loader is
-  // fully supported in LiteRT. std::unique_ptr<::litert::ScopedFile>
-  // weights_file_;
+  std::unique_ptr<::litert::ScopedFile> weights_file_;
   flatbuffers::DetachedBuffer model_content_;
   std::optional<::litert::Environment> env_;
   std::optional<::litert::CompiledModel> model_;
@@ -491,16 +484,12 @@ void GraphImplLiteRt::CreateAndBuild(
       FROM_HERE,
       {base::TaskPriority::USER_BLOCKING,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
-      base::BindOnce(
-          &GraphImplLiteRt::CreateAndBuildOnBackgroundThread,
-          context.properties(), context.options().device, std::move(graph_info),
-          std::move(constant_operands),
-          std::move(operand_to_dependent_operations),
-          std::move(operand_to_producing_operation),
-          // TODO(crbug.com/454732289): Explicitly pass an invalid file before
-          // LiteRT external weight loader support is ready. This will force the
-          // builder to store the weights in the flatbuffer.
-          base::File(base::File::FILE_ERROR_NOT_FOUND)),
+      base::BindOnce(&GraphImplLiteRt::CreateAndBuildOnBackgroundThread,
+                     context.properties(), context.options().device,
+                     std::move(graph_info), std::move(constant_operands),
+                     std::move(operand_to_dependent_operations),
+                     std::move(operand_to_producing_operation),
+                     std::move(weights_file)),
       base::BindOnce(&GraphImplLiteRt::DidCreateAndBuild, std::move(receiver),
                      context.AsWeakPtr(), std::move(compute_resource_info),
                      std::move(callback)));
@@ -524,7 +513,8 @@ GraphImplLiteRt::CreateAndBuildOnBackgroundThread(
       tflite::GraphBuilderTflite::CreateAndBuild(
           context_properties, *graph_info, std::move(constant_operands),
           std::move(operand_to_dependent_operations),
-          std::move(operand_to_producing_operation), std::move(weights_file)),
+          std::move(operand_to_producing_operation), std::move(weights_file),
+          /*use_external_buffer=*/true),
       [](std::string error) {
         return mojom::Error::New(mojom::Error::Code::kNotSupportedError,
                                  std::move(error));

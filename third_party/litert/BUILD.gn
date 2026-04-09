@@ -70,9 +70,12 @@ config("litert_config") {
     "LITERT_DISABLE_OPENCL_SUPPORT",
     "LITERT_DISABLE_OPENGL_SUPPORT",
     "LITERT_HAS_OPENCL_SUPPORT=0",
+    "LITERT_WITH_EXTERNAL_WEIGHT_LOADER",
   ]
 
-  if (!build_litert_with_xnnpack) {
+  if (build_litert_with_xnnpack) {
+    defines += [ "LITERT_USE_XNNPACK" ]
+  } else {
     defines += [ "LITERT_DISABLE_CPU" ]
   }
 
