@@ -347,8 +347,26 @@ CGFloat const kSheetCornerRadius = 30;
       menuPage = self.mainViewController;
 
       __weak __typeof(self) weakSelf = self;
+
+      // On iPad, use a single expanded detent so the sheet opens at full
+      // content height and cannot be resized shorter. The presenting view
+      // controller has compact traits inside a form sheet, so check the
+      // window's traits.
+      UITraitCollection* windowTraits =
+          self.baseViewController.view.window.traitCollection;
+      BOOL isRegularWidth =
+          windowTraits.horizontalSizeClass == UIUserInterfaceSizeClassRegular;
+
       auto expandedDetentResolver = ^CGFloat(
           id<UISheetPresentationControllerDetentResolutionContext> context) {
+        if (isRegularWidth) {
+          CGFloat height = weakSelf.mainViewController.viewContentHeight;
+          // Before layout completes, content height may be too small.
+          // Fall back to the maximum available height.
+          return (height < kBottomSheetDetentHeight)
+                     ? context.maximumDetentValue
+                     : height;
+        }
         return [weakSelf detentHeightForMainViewControllerExpanded];
       };
 
@@ -356,6 +374,10 @@ CGFloat const kSheetCornerRadius = 30;
           [UISheetPresentationControllerDetent
               customDetentWithIdentifier:kBottomSheetExpandedDetentIdentifier
                                 resolver:expandedDetentResolver];
+
+      if (isRegularWidth) {
+        [detents removeAllObjects];
+      }
       [detents addObject:expandedDetent];
 
       // Opening the Home Customization main page marks the
@@ -409,10 +431,16 @@ CGFloat const kSheetCornerRadius = 30;
 
   presentationController.detents = detents;
   presentationController.prefersScrollingExpandsWhenScrolledToEdge = NO;
-  presentationController.selectedDetentIdentifier =
-      kBottomSheetDetentIdentifier;
-  presentationController.largestUndimmedDetentIdentifier =
-      [self currentLargestUndimmedDetentIdentifier];
+
+  // Only set the initial detent and undimmed identifier when the custom
+  // detents are in use (iPhone). On iPad with large-only detent, these
+  // identifiers don't exist in the detents array.
+  if (presentationController.detents.count > 1) {
+    presentationController.selectedDetentIdentifier =
+        kBottomSheetDetentIdentifier;
+    presentationController.largestUndimmedDetentIdentifier =
+        [self currentLargestUndimmedDetentIdentifier];
+  }
 
   return navigationController;
 }

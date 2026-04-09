@@ -284,18 +284,29 @@ CGFloat const kSheetCornerRadius = 30;
 
   NSMutableArray<UISheetPresentationControllerDetent*>* detents =
       [NSMutableArray array];
-  [detents addObject:initialDetent];
 
-  // The preset gallery can be expanded full screen and therefore a grabber is
-  // shown.
-  if (_pickerStyle == HomeCustomizationBackgroundStyle::kPreset) {
-    presentationController.prefersGrabberVisible = YES;
+  // On iPad, use large detent only for the preset gallery so the sheet opens
+  // at full height and cannot be resized shorter. The base view controller is
+  // a form sheet with compact horizontal size class, so check the window's
+  // traits instead.
+  UITraitCollection* windowTraits =
+      self.baseViewController.view.window.traitCollection;
+  if (windowTraits.horizontalSizeClass == UIUserInterfaceSizeClassRegular &&
+      _pickerStyle == HomeCustomizationBackgroundStyle::kPreset) {
     [detents addObject:[UISheetPresentationControllerDetent largeDetent]];
+  } else {
+    [detents addObject:initialDetent];
+
+    // The preset gallery can be expanded full screen and therefore a grabber
+    // is shown.
+    if (_pickerStyle == HomeCustomizationBackgroundStyle::kPreset) {
+      presentationController.prefersGrabberVisible = YES;
+      [detents addObject:[UISheetPresentationControllerDetent largeDetent]];
+    }
+    presentationController.largestUndimmedDetentIdentifier =
+        kBottomSheetDetentIdentifier;
   }
   presentationController.detents = detents;
-
-  presentationController.largestUndimmedDetentIdentifier =
-      kBottomSheetDetentIdentifier;
 
   [self.baseViewController presentViewController:navigationController
                                         animated:YES
