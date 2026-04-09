@@ -537,10 +537,10 @@ void AlignmentOffsetForOutOfFlow(AxisEdge inline_axis_edge,
 LayoutUnit CalculateIntrinsicMinimumContribution(
     bool is_parallel_with_track_direction,
     bool special_spanning_criteria,
-    const LayoutUnit min_content_contribution,
-    const LayoutUnit max_content_contribution,
+    base::FunctionRef<LayoutUnit()> min_content_contribution,
+    base::FunctionRef<LayoutUnit()> max_content_contribution,
+    base::FunctionRef<MinMaxSizesResult()> subgrid_minmax_sizes,
     const ConstraintSpace& space,
-    const MinMaxSizesResult& subgrid_minmax_sizes,
     const GridItemData* grid_item,
     bool& maybe_clamp) {
   CHECK(grid_item);
@@ -593,7 +593,7 @@ LayoutUnit CalculateIntrinsicMinimumContribution(
         if (is_parallel_with_track_direction) {
           auto MinMaxSizesFunc = [&](SizeType type) -> MinMaxSizesResult {
             if (grid_item->IsSubgrid()) {
-              return subgrid_minmax_sizes;
+              return subgrid_minmax_sizes();
             }
             return node.ComputeMinMaxSizes(item_style.GetWritingMode(), type,
                                            space);
@@ -607,7 +607,7 @@ LayoutUnit CalculateIntrinsicMinimumContribution(
       }
 
       maybe_clamp = true;
-      return min_content_contribution;
+      return min_content_contribution();
     }
     case Length::kMinContent:
     case Length::kMaxContent:
@@ -615,8 +615,8 @@ LayoutUnit CalculateIntrinsicMinimumContribution(
       // All of the above lengths are "definite" (non-auto), and don't need
       // the special min-size treatment above. (They will all end up being
       // the specified size).
-      return main_length.IsMaxContent() ? max_content_contribution
-                                        : min_content_contribution;
+      return main_length.IsMaxContent() ? max_content_contribution()
+                                        : min_content_contribution();
     }
     case Length::kMinIntrinsic:
     case Length::kFlex:

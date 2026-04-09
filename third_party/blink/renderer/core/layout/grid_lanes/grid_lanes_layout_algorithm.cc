@@ -951,10 +951,11 @@ GridItems* GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
       LayoutUnit contribution_assuming_tracks =
           CalculateIntrinsicMinimumContribution(
               use_item_inline_contribution,
-              /*special_spanning_criteria=*/true, min_max_contribution.min_size,
-              min_max_contribution.max_size, space,
-              /*subgrid_minmax_sizes=*/MinMaxSizesResult(), &item_data,
-              maybe_clamp);
+              /*special_spanning_criteria=*/true,
+              [&]() { return min_max_contribution.min_size; },
+              [&]() { return min_max_contribution.max_size; },
+              /*subgrid_minmax_sizes=*/[]() { return MinMaxSizesResult(); },
+              space, &item_data, maybe_clamp);
       // If we assume we are spanning tracks that force us to use the automatic
       // min size, we will never need to clamp the value returned here. As such,
       // `maybe_clamp` should never be true if `special_spanning_criteria` is
@@ -968,9 +969,10 @@ GridItems* GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
           CalculateIntrinsicMinimumContribution(
               use_item_inline_contribution,
               /*special_spanning_criteria=*/false,
-              min_max_contribution.min_size, min_max_contribution.max_size,
-              space, /*subgrid_minmax_sizes=*/MinMaxSizesResult(), &item_data,
-              maybe_clamp);
+              [&]() { return min_max_contribution.min_size; },
+              [&]() { return min_max_contribution.max_size; },
+              /*subgrid_minmax_sizes=*/[]() { return MinMaxSizesResult(); },
+              space, &item_data, maybe_clamp);
 
       // Add the margin sum to all contribution sizes.
       auto AdjustItemContribution = [&](LayoutUnit& contribution_size) {

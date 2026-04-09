@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_LAYOUT_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_LAYOUT_UTILS_H_
 
+#include "base/functional/function_ref.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_sizing_tree.h"
 #include "third_party/blink/renderer/core/style/grid_enums.h"
@@ -111,10 +112,12 @@ void AlignmentOffsetForOutOfFlow(AxisEdge inline_axis_edge,
 // force this to both true and false to get both potential contributions for use
 // later when more information is known about the tracks a virtual item spans.
 //
-// `min_content_contribution` and `max_content_contribution` are the content
-// based min and maximums for the provided `grid_item` respectively. If the item
-// is a subgrid, `subgrid_minmax_sizes` will be the min/max size result for the
-// subgrid.
+// `min_content_contribution`, `max_content_contribution`, and
+// `subgrid_minmax_sizes` are callbacks that lazily compute expensive layout
+// values only when actually needed. `min_content_contribution` and
+// `max_content_contribution` compute the content based min and maximum
+// contributions for the provided `grid_item` respectively.
+// `subgrid_minmax_sizes` computes the min/max size result for a subgrid item.
 //
 // This method will set `maybe_clamp` to true if the content based contribution
 // was returned and should be considered for clamping. Otherwise, it will be set
@@ -124,10 +127,10 @@ void AlignmentOffsetForOutOfFlow(AxisEdge inline_axis_edge,
 LayoutUnit CalculateIntrinsicMinimumContribution(
     bool is_parallel_with_track_direction,
     bool special_spanning_criteria,
-    const LayoutUnit min_content_contribution,
-    const LayoutUnit max_content_contribution,
+    base::FunctionRef<LayoutUnit()> min_content_contribution,
+    base::FunctionRef<LayoutUnit()> max_content_contribution,
+    base::FunctionRef<MinMaxSizesResult()> subgrid_minmax_sizes,
     const ConstraintSpace& space,
-    const MinMaxSizesResult& subgrid_minmax_sizes,
     const GridItemData* grid_item,
     bool& maybe_clamp);
 

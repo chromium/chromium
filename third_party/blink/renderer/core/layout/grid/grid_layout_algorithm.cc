@@ -739,29 +739,34 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
           (grid_item->IsSpanningFlexibleTrack(track_direction) &&
            grid_item->SpanSize(track_direction) > 1);
 
-      const LayoutUnit min_content_contribution =
-          is_parallel_with_track_direction ? MinContentSize()
-                                           : BlockContributionSize();
-      const LayoutUnit max_content_contribution =
-          is_parallel_with_track_direction ? MaxContentSize()
-                                           : min_content_contribution;
+      auto min_content_contribution = [&]() -> LayoutUnit {
+        return is_parallel_with_track_direction ? MinContentSize()
+                                                : BlockContributionSize();
+      };
+      auto max_content_contribution = [&]() -> LayoutUnit {
+        return is_parallel_with_track_direction ? MaxContentSize()
+                                                : BlockContributionSize();
+      };
 
-      MinMaxSizesResult subgrid_minmax_sizes;
-      if (grid_item->IsSubgrid()) {
+      auto subgrid_minmax_sizes = [&]() -> MinMaxSizesResult {
+        if (!grid_item->IsSubgrid()) {
+          return MinMaxSizesResult();
+        }
         const GridSizingSubtree& subgrid_sizing_subtree =
             sizing_subtree.SubgridSizingSubtree(*grid_item);
         if (subgrid_sizing_subtree.LayoutData().IsSubgridWithStandaloneAxis(
                 kForColumns)) {
-          subgrid_minmax_sizes = To<GridNode>(node).ComputeSubgridMinMaxSizes(
+          return To<GridNode>(node).ComputeSubgridMinMaxSizes(
               subgrid_sizing_subtree, space);
         }
-      }
+        return MinMaxSizesResult();
+      };
 
       bool maybe_clamp = false;
       contribution = CalculateIntrinsicMinimumContribution(
           is_parallel_with_track_direction, special_spanning_criteria,
-          min_content_contribution, max_content_contribution, space,
-          subgrid_minmax_sizes, grid_item, maybe_clamp);
+          min_content_contribution, max_content_contribution,
+          subgrid_minmax_sizes, space, grid_item, maybe_clamp);
 
       if (!maybe_clamp) {
         break;
