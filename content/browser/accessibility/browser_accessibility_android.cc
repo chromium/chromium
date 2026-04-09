@@ -501,8 +501,23 @@ bool BrowserAccessibilityAndroid::IsTextSelectable() const {
   // https://developer.android.com/reference/android/view/accessibility/AccessibilityNodeInfo#isTextSelectable%28%29
   // TODO(crbug.com/498376490): Update the above comment after Selection API
   // with offset type is released.
-  return IsText() || IsAndroidTextView() || IsTextField() ||
-         !GetTextContentUTF16().empty();
+  if (IsText() || IsAndroidTextView() || IsTextField()) {
+    return true;
+  }
+  // Apart from text and editable nodes, if a node has text, but does not have
+  // any text selectable children, mark it as text selectable since otherwise
+  // its text cannot be selectable.
+  if (GetTextContentUTF16().empty()) {
+    return false;
+  }
+  for (const auto& child : PlatformChildren()) {
+    if (static_cast<const BrowserAccessibilityAndroid*>(&child)
+            ->IsTextSelectable()) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 bool BrowserAccessibilityAndroid::IsVisibleToUser() const {
