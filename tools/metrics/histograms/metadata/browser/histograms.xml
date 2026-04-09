@@ -345,6 +345,7 @@ chromium-metrics-reviews@google.com.
   <token key="Destination">
     <variant name="ADDED_REMOVED_EVENTS"/>
     <variant name="ARC_INSTALL"/>
+    <variant name="BROWSER_LAUNCH"/>
     <variant name="CHROME_BROWSER_ENTERPRISE"/>
     <variant name="CRASH_EVENTS"/>
     <variant name="CRD_EVENTS"/>

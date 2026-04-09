@@ -1453,3 +1453,14 @@ message TelomereEvent {
   // List of telomere events.
   repeated TelomereLog logs = 1;
 }
+
+// Event sent when a browser is launched.
+// Next ID: 3.
+message BrowserLaunchEvent {
+  // Timestamp of the browser launch in milliseconds since Unix epoch.
+  int64 launch_time_millis = 1;
+
+  // List of CLI switch keys used to launch the browser.
+  repeated string command_line_switch_keys = 2;
+}
+

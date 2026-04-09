@@ -149,6 +149,9 @@ enum Destination {
   // |SAAS_USAGE| is for reporting SaaS domain usage.
   SAAS_USAGE = 39;
 
+  // |BROWSER_LAUNCH| is for reporting browser launch events.
+  BROWSER_LAUNCH = 40;
+
   reserved 8;
 }
 
