@@ -45,6 +45,10 @@ suite('SkillsEmojiPicker', function() {
 
     // Wait for the data to be "loaded" (it should be immediate).
     await microtasksFinished();
+
+    // Wait for a frame to ensure the component's rAF-delayed setup
+    // (like document click listeners) is complete.
+    await microtasksFinished();
   });
 
   test('EmojiPickerLoadsData', function() {
