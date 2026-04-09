@@ -594,6 +594,10 @@
 #pragma mark - NewTabPageControllerDelegate
 
 - (void)setScrollProgressForTabletOmnibox:(CGFloat)progress {
+  if (IsChromeNextIaEnabled() && CanShowTabStrip(self.traitEnvironment)) {
+    [_topToolbarViewController setScrollProgressForTabletOmnibox:progress];
+    return;
+  }
   for (id<NewTabPageControllerDelegate> coordinator in self.coordinators) {
     [coordinator setScrollProgressForTabletOmnibox:progress];
   }

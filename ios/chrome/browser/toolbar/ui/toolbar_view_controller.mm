@@ -28,6 +28,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
+#import "ui/base/device_form_factor.h"
 
 namespace {
 
@@ -119,6 +120,37 @@ constexpr CGFloat kLocationBarMaxWidth = 600;
 
 - (void)setLocationBarHidden:(BOOL)hidden {
   _locationBarContainer.hidden = hidden;
+}
+
+- (void)setScrollProgressForTabletOmnibox:(CGFloat)progress {
+  CHECK_EQ(ui::GetDeviceFormFactor(), ui::DEVICE_FORM_FACTOR_TABLET);
+
+  if (!_NTPVisible) {
+    // While browsing (not on the NTP), the location bar will always be visible
+    // in the expanded toolbar.
+    progress = 1.0;
+  }
+
+  CGAffineTransform targetTransform;
+
+  if (progress == 1) {
+    targetTransform = CGAffineTransformIdentity;
+  } else {
+    targetTransform =
+        CGAffineTransformMakeTranslation(0, kToolbarPadding * (1 - progress));
+  }
+
+  if (_locationBarContainer.alpha == progress &&
+      CGAffineTransformEqualToTransform(_locationBarContainer.transform,
+                                        targetTransform)) {
+    // No changes.
+    return;
+  }
+
+  _locationBarContainer.transform = targetTransform;
+  _locationBarContainer.alpha = progress;
+  /// TODO(crbug.com/498602138): Add fake omnibox target when
+  /// the location bar container is fully hidden.
 }
 
 - (UIView*)locationBarContainerCopy {
@@ -671,7 +703,26 @@ constexpr CGFloat kLocationBarMaxWidth = 600;
 - (void)updateToolbarVisibility {
   BOOL hideToolbar = _NTPVisible && !_incognito && !CanShowTabStrip(self) &&
                      IsSplitToolbarMode(self);
+  BOOL visibilityChanged = hideToolbar != self.view.hidden;
+  BOOL needsLocationBarReset =
+      !_NTPVisible &&
+      (!CGAffineTransformIsIdentity(_locationBarContainer.transform) ||
+       _locationBarContainer.alpha != 1.0);
+
+  if (!visibilityChanged && !needsLocationBarReset) {
+    // No change.
+    return;
+  }
+
   self.view.hidden = hideToolbar;
+
+  // Resets the position and alpha of the location bar. Away from the NTP,
+  // the location bar will become fully visible.
+  if (needsLocationBarReset) {
+    _locationBarContainer.transform = CGAffineTransformIdentity;
+    _locationBarContainer.alpha = 1.0;
+  }
+
   [self.toolbarHeightDelegate toolbarsHeightChanged];
 }
 
