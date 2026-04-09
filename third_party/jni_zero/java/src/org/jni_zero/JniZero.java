@@ -5,8 +5,6 @@
 package org.jni_zero;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 /** Core APIs. */
 @JNINamespace("jni_zero")
@@ -66,27 +64,6 @@ public class JniZero {
             // since it's likely fine.
             assert false : "JNI multiplexing hash lookup failed with " + e.getMessage();
         }
-    }
-
-    @CalledByNative
-    private static Object[] mapToArray(Map<Object, Object> map) {
-        Object[] ret = new Object[map.size() * 2];
-        int i = 0;
-        for (var entry : map.entrySet()) {
-            ret[i++] = entry.getKey();
-            ret[i++] = entry.getValue();
-        }
-        return ret;
-    }
-
-    @CalledByNative
-    private static Map<Object, Object> arrayToMap(Object[] array) {
-        int len = array.length;
-        Map<Object, Object> ret = new HashMap<>(len / 2);
-        for (int i = 0; i < len; i += 2) {
-            ret.put(array[i], array[i + 1]);
-        }
-        return ret;
     }
 
     @NativeMethods

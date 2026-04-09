@@ -85,13 +85,13 @@ jclass GetClassGlobalRef(JNIEnv* env, jobject obj) {
   return static_cast<jclass>(env->NewGlobalRef(env->GetObjectClass(obj)));
 }
 
+}  // namespace
+
 void JNI_JniZero_SetJniClassLoader(
     JNIEnv* env,
-    const jni_zero::JavaRef<JClassLoader>& classLoader) {
+    const jni_zero::JavaRef<jobject>& classLoader) {
   SetClassLoader(env, classLoader);
 }
-
-}  // namespace
 
 jclass g_class_loader_class = nullptr;
 jclass g_list_class = nullptr;
