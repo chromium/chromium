@@ -165,6 +165,18 @@ class AudioFileReaderTest : public testing::TestWithParam<bool> {
   bool packet_verification_disabled_ = false;
 };
 
+// Note: When adding new test files it's important to double check the total
+// number of samples emitted in comparison to the corresponding reference
+// decoder. I.e.,
+//   * For opus, get opus-tools, and use the opusdec command line tool.
+//   * For vorbis, get ogg-tools, and use the oggdec command line tool.
+//
+// These will each decode to a wave file. Given a wave file you can run:
+//   * ffprobe -show_packets $wave_file | tail -10
+//
+// Adding the last `pts` and `duration` values together will give you an
+// official total sample count.
+
 TEST_P(AudioFileReaderTest, WithoutOpen) {
   Initialize("bear.ogv");
 }
@@ -179,6 +191,7 @@ TEST_P(AudioFileReaderTest, UnknownDuration) {
 }
 
 TEST_P(AudioFileReaderTest, WithVideo) {
+  // TODO(crbug.com/485920243): The total samples should be 45568.
   RunTest("bear.ogv", "-0.73,0.92,0.48,-0.07,-0.92,-0.88,", 2, 44100,
           base::Microseconds(1011520), 44609, 45632);
 }
@@ -189,6 +202,7 @@ TEST_P(AudioFileReaderTest, FLAC) {
 }
 
 TEST_P(AudioFileReaderTest, Vorbis) {
+  // TODO(crbug.com/485920243): The total samples should be 15435.
   RunTest("sfx.ogg", "2.17,3.31,5.15,6.33,5.97,4.35,", 1, 44100,
           base::Microseconds(350001), 15436, 15936);
 }
@@ -262,18 +276,30 @@ TEST_P(AudioFileReaderTest, ReadPartialMP3) {
 }
 
 TEST_P(AudioFileReaderTest, OpusOutputsF32Samples) {
-  RunTest("bear-opus.ogg", "2.72,1.22,1.47,0.24,1.20,0.55,", 2, 48000,
-          base::Microseconds(2767022), 132818, 131857);
+  RunTest("bear-opus.ogg", "3.64,0.30,0.34,-0.25,1.70,1.68,", 2, 48000,
+          base::Microseconds(2767022), 132818, 132169);
 }
 
-TEST_P(AudioFileReaderTest, OpusTrimmingTest) {
+TEST_P(AudioFileReaderTest, OpusTrimmingTestMp4) {
   RunTest("opus-trimming-test.mp4", "-7.27,-6.96,-5.99,-5.58,-5.66,-6.27,", 1,
           48000, base::Microseconds(12840001), 616321, 550785);
 }
 
+TEST_P(AudioFileReaderTest, OpusTrimmingTestOgg) {
+  // Hash should match PipelineIntegrationTest::kOpusEndTrimmingHash_1
+  RunTest("opus-trimming-test.ogg", "-4.57,-5.67,-6.52,-6.28,-4.34,-3.58,", 1,
+          48000, base::Microseconds(12720022), 610562, 545026);
+}
+
+TEST_P(AudioFileReaderTest, OpusTrimmingTestWebm) {
+  // Hash should match PipelineIntegrationTest::kOpusEndTrimmingHash_1
+  RunTest("opus-trimming-test.webm", "-4.57,-5.67,-6.52,-6.28,-4.34,-3.58,", 1,
+          48000, base::Microseconds(12720001), 610561, 545026);
+}
+
 TEST_P(AudioFileReaderTest, OpusDecodeTest) {
-  RunTest("opus-test.opus", "1.35,-1.25,3.07,0.87,3.91,0.09,", 2, 48000,
-          base::Microseconds(1016480), 48792, 48167);
+  RunTest("opus-test.opus", "0.67,-0.92,4.13,1.95,4.16,-1.02,", 2, 48000,
+          base::Microseconds(1016480), 48792, 48479);
 }
 
 // If Symphonia build support is enabled, test with both the Symphonia
