@@ -254,9 +254,12 @@ RequestResult::RequestResult(RequestResult&&) = default;
 RequestResult& RequestResult::operator=(RequestResult&&) = default;
 
 WebUIContentsPreloadManager::WebUIContentsPreloadManager()
-    : memory_pressure_listener_registration_(
-          base::MemoryPressureListenerTag::kWebUIContentsPreloadManager,
-          this) {
+    : memory_consumer_registration_(
+          /*consumer_name=*/"WebUIContentsPreloadManager",
+          /*traits=*/std::nullopt,  // TODO(crbug.com/489671163): Fill traits.
+          this,
+          base::MemoryConsumerRegistration::CheckUnregister::kDisabled,
+          base::MemoryConsumerRegistration::CheckRegistryExists::kDisabled) {
   preload_mode_ =
       static_cast<PreloadMode>(features::kPreloadTopChromeWebUIMode.Get());
   webui_controller_embedder_stub_ =
@@ -566,7 +569,7 @@ bool WebUIContentsPreloadManager::ShouldPreloadForBrowserContext(
   }
 
   // Don't preload if under heavy memory pressure.
-  if (GetMemoryLimit() <= base::kModerateMemoryPressureThreshold) {
+  if (memory_limit() <= base::kModerateMemoryPressureThreshold) {
     return false;
   }
 

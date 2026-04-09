@@ -89,9 +89,12 @@ PaintPreviewTabService::PaintPreviewTabService(
                               std::move(policy),
                               is_off_the_record),
       cache_ready_(false),
-      memory_pressure_listener_registration_(
-          base::MemoryPressureListenerTag::kPaintPreviewTabService,
-          this) {
+      memory_consumer_registration_(
+          /*consumer_name=*/"PaintPreviewTabService",
+          /*traits=*/std::nullopt,  // TODO(crbug.com/489671163): Fill traits.
+          this,
+          base::MemoryConsumerRegistration::CheckUnregister::kDisabled,
+          base::MemoryConsumerRegistration::CheckRegistryExists::kDisabled) {
   GetFileMixin()->GetTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&FileManager::ListUsedKeys,
@@ -134,7 +137,7 @@ void PaintPreviewTabService::CaptureTab(int tab_id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // If the system is under memory pressure don't try to capture.
-  if (GetMemoryLimit() <= base::kModerateMemoryPressureThreshold) {
+  if (memory_limit() <= base::kModerateMemoryPressureThreshold) {
     return;
   }
 

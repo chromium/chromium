@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_GLIC_GLIC_PROFILE_MANAGER_H_
 #define CHROME_BROWSER_GLIC_GLIC_PROFILE_MANAGER_H_
 
-#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory_coordinator/memory_consumer.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -25,7 +25,7 @@ enum class GlicPrewarmingChecksResult;
 // OS Entry point and ensuring that just one panel is shown across all profiles.
 class GlicProfileManager : public ProfileManagerObserver,
                            public ProfileObserver,
-                           public base::MemoryPressureListener {
+                           public base::PassiveMemoryConsumer {
  public:
   GlicProfileManager();
   ~GlicProfileManager() override;
@@ -90,9 +90,6 @@ class GlicProfileManager : public ProfileManagerObserver,
   void OnOffTheRecordProfileCreated(Profile* profile) override;
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
-  // base::MemoryPressureListener:
-  void OnMemoryPressure(base::MemoryPressureLevel level) override;
-
   // Static in order to permit setting forced values before the manager is
   // constructed.
   static void SetPrewarmingEnabledForTesting(bool enabled);
@@ -128,8 +125,7 @@ class GlicProfileManager : public ProfileManagerObserver,
   base::WeakPtr<GlicKeyedService> current_detached_glic_;
   bool did_auto_open_ = false;
 
-  base::MemoryPressureListenerRegistration
-      memory_pressure_listener_registration_;
+  base::MemoryConsumerRegistration memory_consumer_registration_;
 
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       profile_observations_{this};

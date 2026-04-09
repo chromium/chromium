@@ -12,9 +12,9 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/memory_coordinator/memory_consumer.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "components/paint_preview/browser/paint_preview_base_service.h"
@@ -37,7 +37,7 @@ namespace paint_preview {
 // using Tab IDs as the key such that the data can be accessed even if the
 // browser is restarted.
 class PaintPreviewTabService : public PaintPreviewBaseService,
-                               public base::MemoryPressureListener {
+                               public base::PassiveMemoryConsumer {
  public:
   PaintPreviewTabService(std::unique_ptr<PaintPreviewFileMixin> file_mixin,
                          std::unique_ptr<PaintPreviewPolicy> policy,
@@ -104,12 +104,6 @@ class PaintPreviewTabService : public PaintPreviewBaseService,
 
   base::android::ScopedJavaGlobalRef<jobject> GetJavaRef() { return java_ref_; }
 #endif  // BUILDFLAG(IS_ANDROID)
-
-  // base::MemoryPressureListener:
-  // Note: This class only cares about querying the current level, so no need to
-  // actually react on memory pressure level change.
-  void OnMemoryPressure(
-      base::MemoryPressureLevel memory_pressure_level) override {}
 
  private:
   class TabServiceTask {
@@ -216,8 +210,7 @@ class PaintPreviewTabService : public PaintPreviewBaseService,
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  base::MemoryPressureListenerRegistration
-      memory_pressure_listener_registration_;
+  base::MemoryConsumerRegistration memory_consumer_registration_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<PaintPreviewTabService> weak_ptr_factory_{this};

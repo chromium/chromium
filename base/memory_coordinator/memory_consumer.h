@@ -114,6 +114,16 @@ class BASE_EXPORT MemoryConsumer {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
+// A PassiveMemoryConsumer is a MemoryConsumer that does not react to memory
+// pressure. It is intended for consumers that only need to query the current
+// memory limit.
+class BASE_EXPORT PassiveMemoryConsumer : public MemoryConsumer {
+ public:
+  // MemoryConsumer:
+  void OnReleaseMemory() final {}
+  void OnUpdateMemoryLimit() final {}
+};
+
 // Similar to ScopedObservation, registers a MemoryConsumer with the global
 // MemoryConsumerRegistry.
 //

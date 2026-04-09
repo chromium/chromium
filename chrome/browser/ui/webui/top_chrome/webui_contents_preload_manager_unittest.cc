@@ -8,7 +8,7 @@
 #include <optional>
 #include <vector>
 
-#include "base/memory/memory_pressure_listener_registry.h"
+#include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -98,8 +98,9 @@ class WebUIContentsPreloadManagerTest : public ChromeRenderViewHostTestHarness {
 
   WebUIContentsPreloadManagerTestAPI& test_api() { return test_api_; }
 
+  base::TestMemoryConsumerRegistry test_memory_consumer_registry_;
+
  private:
-  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
   base::test::ScopedFeatureList enabled_feature_{
       features::kPreloadTopChromeWebUI};
   WebUIContentsPreloadManagerTestAPI test_api_;
@@ -119,8 +120,8 @@ TEST_F(WebUIContentsPreloadManagerTest, PreloadedContentsIsNotNullAfterWarmup) {
 
 TEST_F(WebUIContentsPreloadManagerTest, NoPreloadUnderHeavyMemoryPressure) {
   // Don't preload if the memory pressure is moderate or higher.
-  base::MemoryPressureListenerRegistry::SimulatePressureNotification(
-      base::MEMORY_PRESSURE_LEVEL_MODERATE);
+  preload_manager();
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(50);
   std::unique_ptr<content::BrowserContext> browser_context =
       std::make_unique<TestingProfile>();
   test_api().MaybePreloadForBrowserContext(browser_context.get());

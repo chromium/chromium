@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "base/memory/memory_pressure_listener.h"
+#include "base/memory_coordinator/memory_consumer.h"
 #include "base/no_destructor.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -29,7 +29,7 @@ class PerProfileWebUITracker;
 // See comments in TopChromeWebUIConfig for making a WebUI preloadable.
 class WebUIContentsPreloadManager : public ProfileObserver,
                                     public PerProfileWebUITracker::Observer,
-                                    public base::MemoryPressureListener {
+                                    public base::PassiveMemoryConsumer {
  public:
   enum class PreloadMode {
     // Preloads on calling `WarmupForBrowser()` and after every WebUI
@@ -188,12 +188,6 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   void OnWebContentsPrimaryPageChanged(
       content::WebContents* web_contents) override;
 
-  // base::MemoryPressureListener:
-  // Note: This class only cares about querying the current level, so no need
-  // to actually react on memory pressure level change.
-  void OnMemoryPressure(
-      base::MemoryPressureLevel memory_pressure_level) override {}
-
   PreloadMode preload_mode_ = PreloadMode::kPreloadOnMakeContents;
 
   // Disable navigations for views unittests because they don't initialize
@@ -229,8 +223,7 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   // Observation of destroy of preload content's profile.
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
-  base::MemoryPressureListenerRegistration
-      memory_pressure_listener_registration_;
+  base::MemoryConsumerRegistration memory_consumer_registration_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_TOP_CHROME_WEBUI_CONTENTS_PRELOAD_MANAGER_H_
