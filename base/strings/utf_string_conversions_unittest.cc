@@ -53,9 +53,9 @@ TEST(UTFStringConversionsTest, ConvertUTF8AndWide) {
     std::ostringstream utf8;
     utf8 << WideToUTF8(i);
     std::wostringstream wide;
-    wide << UTF8ToWide(utf8.str());
+    wide << UTF8ToWide(utf8.view());
 
-    EXPECT_EQ(i, wide.str());
+    EXPECT_EQ(i, wide.view());
   }
 }
 

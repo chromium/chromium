@@ -86,13 +86,13 @@ TEST_F(CrashLoggingTest, Basic) {
   EXPECT_THAT(data(), ElementsAre(Pair("test", "value")));
   std::ostringstream stream;
   OutputCrashKeysToStream(stream);
-  EXPECT_EQ("Got 1 crash keys.", stream.str());
+  EXPECT_EQ("Got 1 crash keys.", stream.view());
 
   ClearCrashKeyString(crash_key);
   EXPECT_THAT(data(), IsEmpty());
   std::ostringstream stream2;
   OutputCrashKeysToStream(stream2);
-  EXPECT_EQ("Got 0 crash keys.", stream2.str());
+  EXPECT_EQ("Got 0 crash keys.", stream2.view());
 }
 
 // Verify that the macros are properly setting crash keys.
@@ -149,7 +149,7 @@ TEST_F(CrashLoggingTest, MultipleCrashKeysInSameScope) {
 
   std::ostringstream stream;
   OutputCrashKeysToStream(stream);
-  EXPECT_EQ("Got 2 crash keys.", stream.str());
+  EXPECT_EQ("Got 2 crash keys.", stream.view());
 }
 
 }  // namespace base::debug

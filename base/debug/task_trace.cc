@@ -89,7 +89,7 @@ void TaskTrace::OutputToStream(std::ostream* os) const {
 std::string TaskTrace::ToString() const {
   std::stringstream stream;
   OutputToStream(&stream);
-  return stream.str();
+  return std::move(stream).str();
 }
 
 size_t TaskTrace::GetAddresses(span<const void*> addresses) const {

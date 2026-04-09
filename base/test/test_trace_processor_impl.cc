@@ -48,11 +48,11 @@ QueryResultOrError TestTraceProcessorImpl::ExecuteQuery(
       switch (sql_value.type) {
         case perfetto::trace_processor::SqlValue::Type::kLong:
           ss << sql_value.AsLong();
-          row.push_back(ss.str());
+          row.push_back(std::move(ss).str());
           break;
         case perfetto::trace_processor::SqlValue::Type::kDouble:
           ss << sql_value.AsDouble();
-          row.push_back(ss.str());
+          row.push_back(std::move(ss).str());
           break;
         case perfetto::trace_processor::SqlValue::Type::kString:
           row.push_back(sql_value.AsString());

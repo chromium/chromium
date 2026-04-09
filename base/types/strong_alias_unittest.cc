@@ -48,7 +48,7 @@ bool StreamOutputSame(const T& a, const U& b) {
   ssa << a;
   std::stringstream ssb;
   ssb << b;
-  return ssa.str() == ssb.str();
+  return ssa.view() == ssb.view();
 }
 
 }  // namespace

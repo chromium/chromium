@@ -135,7 +135,7 @@ std::string ToString(const T& value) {
   std::ostringstream ss;
   internal::ToStringHelper<std::remove_cvref_t<decltype(value)>>::Stringify(
       value, ss);
-  return ss.str();
+  return std::move(ss).str();
 }
 
 BASE_EXPORT std::string ToString(std::string_view sv);

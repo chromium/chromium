@@ -67,9 +67,9 @@ void RawPtrAsanEvent::PrintEvent(bool print_stack = false) const {
 
   std::stringstream ss_for_thread_id;
   ss_for_thread_id << thread_id;
-  debug::AsanService::GetInstance()->Log("[0x%zx:%zu] (%s) %s", address, size,
-                                         ss_for_thread_id.str().c_str(),
-                                         type_string);
+  debug::AsanService::GetInstance()->Log(
+      "[0x%zx:%zu] (%s) %s", address, size,
+      std::move(ss_for_thread_id).str().c_str(), type_string);
 
   if (print_stack) {
     PrintEventStack();

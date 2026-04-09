@@ -114,7 +114,7 @@ TEST(UnguessableTokenTest, VerifyToString1) {
   std::string expected_stream = "(1234567890ABCDEFFEDCBA0987654321)";
   std::stringstream stream;
   stream << token;
-  EXPECT_EQ(expected_stream, stream.str());
+  EXPECT_EQ(expected_stream, stream.view());
 }
 
 // Less common case - leading zeroes in high_ or low_ (testing with both).
@@ -127,7 +127,7 @@ TEST(UnguessableTokenTest, VerifyToString2) {
   std::string expected_stream = "(00000000000001230000000000000ABC)";
   std::stringstream stream;
   stream << token;
-  EXPECT_EQ(expected_stream, stream.str());
+  EXPECT_EQ(expected_stream, stream.view());
 }
 
 TEST(UnguessableTokenTest, VerifyToStringUniqueness) {

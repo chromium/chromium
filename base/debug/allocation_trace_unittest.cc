@@ -44,7 +44,7 @@ std::string MakeString(Iterator begin, Iterator end) {
   }
   oss << ']';
 
-  return oss.str();
+  return std::move(oss).str();
 }
 
 template <typename C>

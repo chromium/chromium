@@ -128,7 +128,7 @@ std::string GetExpectedTimeoutMessage(const Location& from,
   oss << "RunLoop::Run() timed out. Timeout set at " << from.function_name()
       << "@" << from.file_name() << ":" << from.line_number() << ".\n"
       << expected_message;
-  return oss.str();
+  return std::move(oss).str();
 }
 
 }  // namespace

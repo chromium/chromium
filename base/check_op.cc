@@ -95,7 +95,7 @@ char* StreamValToStr(const void* v,
                      void (*stream_func)(std::ostream&, const void*)) {
   std::stringstream ss;
   stream_func(ss, v);
-  return UNSAFE_TODO(strdup(ss.str().c_str()));
+  return UNSAFE_TODO(strdup(std::move(ss).str().c_str()));
 }
 
 char* CreateCheckOpLogMessageString(const char* expr_str,
@@ -105,7 +105,7 @@ char* CreateCheckOpLogMessageString(const char* expr_str,
   ss << expr_str << " (" << v1_str << " vs. " << v2_str << ")";
   free(v1_str);
   free(v2_str);
-  return UNSAFE_TODO(strdup(ss.str().c_str()));
+  return UNSAFE_TODO(strdup(std::move(ss).str().c_str()));
 }
 
 }  // namespace logging

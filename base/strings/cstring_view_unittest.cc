@@ -907,12 +907,12 @@ TEST(CStringViewTest, ToString) {
   // Streaming support like std::string_view.
   std::ostringstream s;
   s << cstring_view("hello");
-  EXPECT_EQ(s.str(), "hello");
+  EXPECT_EQ(s.view(), "hello");
 
 #if BUILDFLAG(IS_WIN)
   std::wostringstream sw;
   sw << wcstring_view(L"hello");
-  EXPECT_EQ(sw.str(), L"hello");
+  EXPECT_EQ(sw.view(), L"hello");
 #endif
 
   // Gtest printing support.

@@ -745,7 +745,7 @@ TEST_F(LoggingTest, StreamingWstringFindsCorrectOperator) {
   std::wstring wstr = L"Hello World";
   std::ostringstream ostr;
   ostr << wstr;
-  EXPECT_EQ("Hello World", ostr.str());
+  EXPECT_EQ("Hello World", ostr.view());
 }
 }  // namespace nested_test
 
@@ -853,7 +853,7 @@ TEST_F(LoggingTest, String16) {
     std::ostringstream stream;
     stream << "Empty '" << std::u16string() << "' standard '"
            << std::u16string(u"Hello, world") << "'";
-    EXPECT_STREQ("Empty '' standard 'Hello, world'", stream.str().c_str());
+    EXPECT_EQ("Empty '' standard 'Hello, world'", stream.view());
   }
 
   // Interesting edge cases.
@@ -879,8 +879,8 @@ TEST_F(LoggingTest, String16) {
     stream << initial_surrogate << "," << final_surrogate << ","
            << surrogate_pair << "," << unterminated_surrogate;
 
-    EXPECT_STREQ("\xef\xbf\xbd,\xef\xbf\xbd,\xf0\x90\x8c\x80z,\xef\xbf\xbds",
-                 stream.str().c_str());
+    EXPECT_EQ("\xef\xbf\xbd,\xef\xbf\xbd,\xf0\x90\x8c\x80z,\xef\xbf\xbds",
+              stream.view());
   }
 }
 

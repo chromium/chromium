@@ -12,7 +12,6 @@
 #include <atomic>
 #include <cstdio>
 #include <cstring>
-#include <sstream>
 #include <string>
 #include <thread>
 #include <vector>
@@ -89,7 +88,6 @@ class OrderfileMemoryDumpHook : public base::trace_event::MemoryDumpProvider {
     if (!Disable()) {
       return true;  // A dump has already been started.
     }
-    std::stringstream process_type_str;
     Dump(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
         kProcessTypeSwitch));
     return true;  // If something goes awry, a fatal error will be created

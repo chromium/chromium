@@ -52,7 +52,7 @@ TEST_F(StackTraceTest, OutputToStream) {
   // Dump the trace into a string.
   std::ostringstream os;
   trace.OutputToStream(&os);
-  std::string backtrace_message = os.str();
+  std::string backtrace_message = std::move(os).str();
 
   // ToString() should produce the same output.
   EXPECT_EQ(backtrace_message, trace.ToString());
@@ -119,7 +119,7 @@ TEST_F(StackTraceTest, DebugOutputToStream) {
   StackTrace trace;
   std::ostringstream os;
   trace.OutputToStream(&os);
-  VLOG(1) << os.str();
+  VLOG(1) << os.view();
 }
 
 // The test is used for manual testing, e.g., to see the raw output.
@@ -145,7 +145,7 @@ TEST_F(StackTraceTest, DebugOutputToStreamWithPrefix) {
   cstring_view prefix_string = "[test]";
   std::ostringstream os;
   trace.OutputToStreamWithPrefix(&os, prefix_string);
-  std::string backtrace_message = os.str();
+  std::string backtrace_message = std::move(os).str();
 
   // ToStringWithPrefix() should produce the same output.
   EXPECT_EQ(backtrace_message, trace.ToStringWithPrefix(prefix_string));

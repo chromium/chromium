@@ -902,7 +902,7 @@ TEST(ByteSizeTest, StreamOperator) {
   for (const auto& test_value : kTestValues) {
     std::stringstream ss;
     ss << ByteSize(test_value.bytes);
-    EXPECT_EQ(test_value.expected, ss.str());
+    EXPECT_EQ(test_value.expected, ss.view());
   }
 }
 
@@ -2178,7 +2178,7 @@ TEST(ByteSizeDeltaTest, StreamOperator) {
   for (const auto& test_value : kTestValues) {
     std::stringstream ss;
     ss << ByteSizeDelta(test_value.bytes);
-    EXPECT_EQ(test_value.expected, ss.str());
+    EXPECT_EQ(test_value.expected, ss.view());
   }
 }
 

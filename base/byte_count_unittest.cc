@@ -300,7 +300,7 @@ TEST(ByteCount, StreamOperator) {
   for (const auto& test_value : kTestValues) {
     std::stringstream ss;
     ss << ByteCount(test_value.bytes);
-    EXPECT_EQ(test_value.expected, ss.str());
+    EXPECT_EQ(test_value.expected, ss.view());
   }
 }
 

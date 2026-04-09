@@ -372,7 +372,7 @@ std::string StackTrace::ToStringWithPrefix(cstring_view prefix_string) const {
 #if !defined(__UCLIBC__) && !defined(_AIX)
   OutputToStreamWithPrefix(&stream, prefix_string);
 #endif
-  return stream.str();
+  return std::move(stream).str();
 }
 
 // static

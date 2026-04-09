@@ -814,7 +814,7 @@ TEST_F(AllocatorShimTest, InterceptCLibraryFunctions) {
   counts_before = counts_after;
   std::stringstream stream;
   stream << std::setprecision(1) << std::showpoint << std::fixed << 1.e38;
-  EXPECT_GT(stream.str().size(), 30u);
+  EXPECT_GT(stream.view().size(), 30u);
   counts_after = total_counts(allocs_intercepted_by_size);
   EXPECT_GT(counts_after, counts_before);
 #endif  // COMPONENT_BUILD
@@ -829,7 +829,7 @@ TEST_F(AllocatorShimTest, InterceptVasprintf) {
   // libc, which we should intercept.
   std::stringstream stream;
   stream << std::setprecision(1) << std::showpoint << std::fixed << 1.e38;
-  EXPECT_GT(stream.str().size(), 30u);
+  EXPECT_GT(stream.view().size(), 30u);
   // Should not crash.
 }
 

@@ -1652,7 +1652,7 @@ TEST_F(FilePathTest, PrintToOstream) {
   std::stringstream ss;
   FilePath fp(FPL("foo"));
   ss << fp;
-  EXPECT_EQ("foo", ss.str());
+  EXPECT_EQ("foo", ss.view());
 }
 
 TEST_F(FilePathTest, TracedValueSupport) {
