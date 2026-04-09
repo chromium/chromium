@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_permission_service.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -71,7 +72,9 @@ ActorLoginPermissionsManagerImpl::ActorLoginPermissionsManagerImpl(
                  std::move(profile_store),
                  std::move(account_store)),
       actor_login_permission_service_(actor_login_permission_service) {
-  presenter_.Init();
+  presenter_.Init(base::BindOnce(
+      &ActorLoginPermissionsManagerImpl::OnSavedPasswordsPresenterInitialized,
+      weak_ptr_factory_.GetWeakPtr()));
   presenter_.AddObserver(this);
 }
 
@@ -106,16 +109,36 @@ void ActorLoginPermissionsManagerImpl::RevokePermission(
 void ActorLoginPermissionsManagerImpl::GetAllPermissions(
     const syncer::SyncService* sync_service,
     GetAllPermissionsResult callback) {
-  base::flat_set<password_manager::ActorLoginPermission>
-      saved_passwords_permissions =
-          presenter_.GetActorLoginPermissions(sync_service);
   // The service is constructed via a factory that returns a nullptr for
   // incognito and guest profiles. The settings page is not accessible for those
   // profiles, so we can assert that the service is valid.
   CHECK(actor_login_permission_service_);
-  actor_login_permission_service_->ListAllPermissions(
-      base::BindOnce(&MergePermissions, std::move(saved_passwords_permissions))
-          .Then(std::move(callback)));
+  actor_login_permission_service_->ListAllPermissions(base::BindOnce(
+      &ActorLoginPermissionsManagerImpl::OnFederatedPermissionsReceived,
+      weak_ptr_factory_.GetWeakPtr(), sync_service, std::move(callback)));
+}
+
+void ActorLoginPermissionsManagerImpl::OnFederatedPermissionsReceived(
+    const syncer::SyncService* sync_service,
+    GetAllPermissionsResult callback,
+    std::vector<FederatedPermission> federated_permissions) {
+  if (presenter_.IsWaitingForPasswordStore()) {
+    pending_get_permissions_callback_ =
+        std::move(pending_get_permissions_callback_)
+            .Then(base::BindOnce(&ActorLoginPermissionsManagerImpl::
+                                     OnFederatedPermissionsReceived,
+                                 weak_ptr_factory_.GetWeakPtr(), sync_service,
+                                 std::move(callback),
+                                 std::move(federated_permissions)));
+    return;
+  }
+
+  base::flat_set<password_manager::ActorLoginPermission>
+      saved_passwords_permissions =
+          presenter_.GetActorLoginPermissions(sync_service);
+  std::move(callback).Run(
+      MergePermissions(std::move(saved_passwords_permissions),
+                       std::move(federated_permissions)));
 }
 
 void ActorLoginPermissionsManagerImpl::NotifyObservers() {
@@ -127,6 +150,12 @@ void ActorLoginPermissionsManagerImpl::NotifyObservers() {
 void ActorLoginPermissionsManagerImpl::OnPermissionDeleted(bool success) {
   if (success) {
     NotifyObservers();
+  }
+}
+
+void ActorLoginPermissionsManagerImpl::OnSavedPasswordsPresenterInitialized() {
+  if (pending_get_permissions_callback_) {
+    std::move(pending_get_permissions_callback_).Run();
   }
 }
 

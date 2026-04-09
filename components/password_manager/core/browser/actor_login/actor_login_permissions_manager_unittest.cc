@@ -8,6 +8,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_permissions_manager_impl.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_permission_service_impl.h"
@@ -309,6 +310,129 @@ TEST_F(ActorLoginPermissionsManagerTest,
   EXPECT_CALL(observer, OnPermissionsChanged).Times(0);
 
   permissions_manager_->RevokePermission("https://example.com/", "user");
+}
+
+class ActorLoginPermissionsManagerInitializationTest : public ::testing::Test {
+ protected:
+  ActorLoginPermissionsManagerInitializationTest() {
+    profile_store_ = base::MakeRefCounted<password_manager::PasswordStore>(
+        std::make_unique<password_manager::FakePasswordStoreBackend>(
+            IsAccountStore(false), profile_store_backend_runner()));
+    profile_store_->Init(/*affiliated_match_helper=*/nullptr);
+
+    account_store_ = base::MakeRefCounted<password_manager::PasswordStore>(
+        std::make_unique<password_manager::FakePasswordStoreBackend>(
+            IsAccountStore(true), account_store_backend_runner()));
+    account_store_->Init(/*affiliated_match_helper=*/nullptr);
+
+    ON_CALL(actor_login_permission_service(), ListAllPermissions)
+        .WillByDefault(base::test::RunOnceCallbackRepeatedly<0>(
+            std::vector<FederatedPermission>()));
+  }
+
+  ~ActorLoginPermissionsManagerInitializationTest() override {
+    account_store_->ShutdownOnUIThread();
+    profile_store_->ShutdownOnUIThread();
+
+    ProcessBackendTasks(account_store_backend_runner());
+    ProcessBackendTasks(profile_store_backend_runner());
+  }
+
+  void ProcessBackendTasks(scoped_refptr<base::TestMockTimeTaskRunner> runner) {
+    runner->RunUntilIdle();
+    task_env_.RunUntilIdle();
+  }
+
+  scoped_refptr<password_manager::PasswordStore> profile_store() {
+    return profile_store_;
+  }
+  scoped_refptr<password_manager::PasswordStore> account_store() {
+    return account_store_;
+  }
+  affiliations::FakeAffiliationService& affiliation_service() {
+    return affiliation_service_;
+  }
+
+  const scoped_refptr<base::TestMockTimeTaskRunner>&
+  profile_store_backend_runner() {
+    return profile_store_backend_runner_;
+  }
+  const scoped_refptr<base::TestMockTimeTaskRunner>&
+  account_store_backend_runner() {
+    return account_store_backend_runner_;
+  }
+
+  syncer::TestSyncService* GetSyncService() { return &test_sync_service_; }
+  MockActorLoginPermissionService& actor_login_permission_service() {
+    return actor_login_permission_service_;
+  }
+
+ private:
+  base::test::SingleThreadTaskEnvironment task_env_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  scoped_refptr<base::TestMockTimeTaskRunner> profile_store_backend_runner_ =
+      base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  scoped_refptr<base::TestMockTimeTaskRunner> account_store_backend_runner_ =
+      base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+
+  affiliations::FakeAffiliationService affiliation_service_;
+  scoped_refptr<password_manager::PasswordStore> profile_store_ = nullptr;
+  scoped_refptr<password_manager::PasswordStore> account_store_ = nullptr;
+  syncer::TestSyncService test_sync_service_;
+  testing::NiceMock<MockActorLoginPermissionService>
+      actor_login_permission_service_;
+};
+
+TEST_F(ActorLoginPermissionsManagerInitializationTest,
+       GetAllPermissions_WaitsForPasswordStore) {
+  ActorLoginPermissionsManagerImpl manager(&affiliation_service(),
+                                           &actor_login_permission_service(),
+                                           profile_store(), account_store());
+
+  base::test::TestFuture<base::flat_set<password_manager::ActorLoginPermission>>
+      future;
+
+  manager.GetAllPermissions(GetSyncService(), future.GetCallback());
+
+  EXPECT_TRUE(manager.IsWaitingForPasswordStore());
+  EXPECT_FALSE(future.IsReady());
+
+  ProcessBackendTasks(profile_store_backend_runner());
+  EXPECT_TRUE(manager.IsWaitingForPasswordStore());
+  EXPECT_FALSE(future.IsReady());
+
+  ProcessBackendTasks(account_store_backend_runner());
+  EXPECT_FALSE(manager.IsWaitingForPasswordStore());
+  EXPECT_TRUE(future.IsReady());
+}
+
+TEST_F(ActorLoginPermissionsManagerInitializationTest,
+       GetAllPermissions_QueuesMultipleRequests) {
+  ActorLoginPermissionsManagerImpl manager(&affiliation_service(),
+                                           &actor_login_permission_service(),
+                                           profile_store(), account_store());
+
+  base::test::TestFuture<base::flat_set<password_manager::ActorLoginPermission>>
+      future1;
+  base::test::TestFuture<base::flat_set<password_manager::ActorLoginPermission>>
+      future2;
+
+  manager.GetAllPermissions(GetSyncService(), future1.GetCallback());
+  manager.GetAllPermissions(GetSyncService(), future2.GetCallback());
+
+  EXPECT_TRUE(manager.IsWaitingForPasswordStore());
+  EXPECT_FALSE(future1.IsReady());
+  EXPECT_FALSE(future2.IsReady());
+
+  ProcessBackendTasks(profile_store_backend_runner());
+  EXPECT_TRUE(manager.IsWaitingForPasswordStore());
+  EXPECT_FALSE(future1.IsReady());
+  EXPECT_FALSE(future2.IsReady());
+
+  ProcessBackendTasks(account_store_backend_runner());
+  EXPECT_FALSE(manager.IsWaitingForPasswordStore());
+  EXPECT_TRUE(future1.IsReady());
+  EXPECT_TRUE(future2.IsReady());
 }
 
 }  // namespace actor_login
