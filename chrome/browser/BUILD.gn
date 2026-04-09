@@ -209,10 +209,6 @@ static_library("browser") {
     "accessibility/accessibility_labels_service.h",
     "accessibility/accessibility_labels_service_factory.cc",
     "accessibility/accessibility_labels_service_factory.h",
-    "accessibility/page_colors_controller.cc",
-    "accessibility/page_colors_controller.h",
-    "accessibility/page_colors_controller_factory.cc",
-    "accessibility/page_colors_controller_factory.h",
     "accessibility/prefers_default_scrollbar_styles_prefs.cc",
     "accessibility/prefers_default_scrollbar_styles_prefs.h",
     "after_startup_task_utils.cc",
@@ -932,6 +928,15 @@ static_library("browser") {
     "webauthn/webauthn_metrics_util.cc",
     "webauthn/webauthn_switches.cc",
   ]
+
+  if (!is_android) {
+    sources += [
+      "accessibility/page_colors_controller.cc",
+      "accessibility/page_colors_controller.h",
+      "accessibility/page_colors_controller_factory.cc",
+      "accessibility/page_colors_controller_factory.h",
+    ]
+  }
 
   configs += [
     "//build/config/compiler:wexit_time_destructors",

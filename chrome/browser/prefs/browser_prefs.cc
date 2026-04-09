@@ -1737,7 +1737,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
   optimization_guide::prefs::RegisterProfilePrefs(registry);
   optimization_guide::model_execution::prefs::RegisterProfilePrefs(registry);
+#if !BUILDFLAG(IS_ANDROID)
   PageColorsController::RegisterProfilePrefs(registry);
+#endif
   password_manager::PasswordManager::RegisterProfilePrefs(registry);
   payments::RegisterProfilePrefs(registry);
   performance_manager::user_tuning::prefs::RegisterProfilePrefs(registry);
@@ -2551,7 +2553,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Added 09/2025.
+#if !BUILDFLAG(IS_ANDROID)
   PageColorsController::MigrateObsoleteProfilePrefs(profile_prefs);
+#endif
   profile_prefs->ClearPref(kGaiaCookieLastListAccountsData);
 
   // Added 09/2025.
