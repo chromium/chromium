@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/webauthn/core/browser/immediate_request_rate_limiter.h"
+#include "components/webauthn/content/browser/immediate_request_rate_limiter.h"
 
 #include <memory>
 #include <string>
 
 #include "base/time/time.h"
 #include "components/webauthn/core/browser/rate_limiter_slide_window.h"
+#include "content/public/browser/render_frame_host.h"
 #include "device/fido/public/features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/origin.h"
@@ -35,7 +36,7 @@ bool AcquireFromRateLimiter(
   }
   return it->second->Acquire(1);
 }
-}
+}  // namespace
 
 namespace webauthn {
 
@@ -44,11 +45,14 @@ ImmediateRequestRateLimiter::ImmediateRequestRateLimiter() = default;
 ImmediateRequestRateLimiter::~ImmediateRequestRateLimiter() = default;
 
 bool ImmediateRequestRateLimiter::IsRequestAllowed(
-    const url::Origin& top_frame_origin) {
+    content::RenderFrameHost& render_frame_host) {
   if (!base::FeatureList::IsEnabled(
           device::kWebAuthnImmediateRequestRateLimit)) {
     return true;
   }
+
+  const url::Origin top_frame_origin =
+      render_frame_host.GetMainFrame()->GetLastCommittedOrigin();
   if (top_frame_origin.host() == "localhost") {
     return true;
   }

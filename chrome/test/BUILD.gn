@@ -8583,6 +8583,7 @@ test("unit_tests") {
       "//components/tab_groups",
       "//components/webapps/isolated_web_apps",
       "//components/webapps/isolated_web_apps/test_support",
+      "//components/webauthn/content/browser",
     ]
 
     # TODO(crbug.com/437811373): Remove this dependency when

@@ -5,7 +5,7 @@
 #include "chrome/browser/webauthn/immediate_request_rate_limiter_factory.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "components/webauthn/core/browser/immediate_request_rate_limiter.h"
+#include "components/webauthn/content/browser/immediate_request_rate_limiter.h"
 
 // static
 webauthn::ImmediateRequestRateLimiter*

@@ -7,22 +7,30 @@ static_library("browser") {
     check_includes = false
   }
   sources = [
+    "immediate_request_rate_limiter.cc",
+    "immediate_request_rate_limiter.h",
     "internal_authenticator_impl.cc",
     "internal_authenticator_impl.h",
   ]
   deps = [
+    "//components/keyed_service/core",
     "//components/webauthn/core/browser",
     "//content/public/browser",
+    "//net",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
   if (!is_android) {
-    sources = [ "internal_authenticator_impl_unittest.cc" ]
+    sources = [
+      "immediate_request_rate_limiter_unittest.cc",
+      "internal_authenticator_impl_unittest.cc",
+    ]
     deps = [
       ":browser",
       "//base/test:test_support",
+      "//components/keyed_service/core",
       "//components/webauthn/core/browser",
       "//content/public/browser",
       "//content/test:test_support",

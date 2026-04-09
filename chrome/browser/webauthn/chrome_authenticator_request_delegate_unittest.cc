@@ -44,7 +44,7 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/sync/test/test_sync_service.h"
-#include "components/webauthn/core/browser/immediate_request_rate_limiter.h"
+#include "components/webauthn/content/browser/immediate_request_rate_limiter.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/test_passkey_model.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"

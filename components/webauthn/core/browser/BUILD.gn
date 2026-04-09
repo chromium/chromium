@@ -20,8 +20,6 @@ source_set("browser") {
 
   if (!is_android && !is_ios) {
     sources += [
-      "immediate_request_rate_limiter.cc",
-      "immediate_request_rate_limiter.h",
       "passkey_change_quota_tracker.cc",
       "passkey_change_quota_tracker.h",
       "rate_limiter_slide_window.cc",
@@ -115,7 +113,6 @@ source_set("unit_tests") {
     sources += [ "passkey_model_utils_unittest.cc" ]
     if (!is_ios) {
       sources += [
-        "immediate_request_rate_limiter_unittest.cc",
         "passkey_change_quota_tracker_unittest.cc",
         "rate_limiter_slide_window_unittest.cc",
       ]
