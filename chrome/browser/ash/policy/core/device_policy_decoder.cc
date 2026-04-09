@@ -1650,6 +1650,18 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
   }
 
+  if (policy.has_devicemetricsreportinglevel()) {
+    const em::IntegerPolicyProto& container(
+        policy.devicemetricsreportinglevel());
+    if (container.has_value()) {
+      if (auto value = DecodeIntegerValue(container.value())) {
+        policies->Set(key::kDeviceMetricsReportingLevel, POLICY_LEVEL_MANDATORY,
+                      POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                      std::move(*value), nullptr);
+      }
+    }
+  }
+
   if (policy.has_device_login_screen_geolocation_access_level() &&
       policy.device_login_screen_geolocation_access_level()
           .has_geolocation_access_level()) {

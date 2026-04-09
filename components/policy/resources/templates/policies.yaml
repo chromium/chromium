@@ -1438,6 +1438,8 @@ policies:
   1437: KrispNoiseCancellationEnabled
   1438: AndroidEntraSsoEnabled
   1439: FindsSettings
+  1440: MetricsReportingLevel
+  1441: DeviceMetricsReportingLevel
 
 atomic_groups:
   1: Homepage

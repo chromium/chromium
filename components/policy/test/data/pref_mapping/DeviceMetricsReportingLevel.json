@@ -1,0 +1,44 @@
+[
+  {
+    "can_be_recommended": true,
+    "official_only": true,
+    "os": [
+      "chromeos"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DeviceMetricsReportingLevel": 0
+        },
+        "prefs": {
+          "user_experience_metrics.reporting_level": {
+            "location": "local_state",
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceMetricsReportingLevel": 1
+        },
+        "prefs": {
+          "user_experience_metrics.reporting_level": {
+            "location": "local_state",
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceMetricsReportingLevel": 2
+        },
+        "prefs": {
+          "user_experience_metrics.reporting_level": {
+            "location": "local_state",
+            "value": 2
+          }
+        }
+      }
+    ]
+  }
+]

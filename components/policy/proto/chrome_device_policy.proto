@@ -2131,4 +2131,6 @@ message ChromeDeviceSettingsProto {
       1385;
   optional StringPolicyProto DeviceLoginScreenPreferSlowKexAlgorithms = 1414;
   optional StringPolicyProto DeviceLoginScreenPreferSlowCiphers = 1415;
+  // Specifies the device metrics reporting level.
+  optional IntegerPolicyProto DeviceMetricsReportingLevel = 1441;
 }

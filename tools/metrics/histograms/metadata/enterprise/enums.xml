@@ -2390,6 +2390,8 @@ chromium-metrics-reviews@google.com.
   <int value="1437" label="KrispNoiseCancellationEnabled"/>
   <int value="1438" label="AndroidEntraSsoEnabled"/>
   <int value="1439" label="FindsSettings"/>
+  <int value="1440" label="MetricsReportingLevel"/>
+  <int value="1441" label="DeviceMetricsReportingLevel"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

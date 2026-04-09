@@ -60,6 +60,7 @@
 //ios/chrome/test/data/policy/pref_mapping/LensOverlaySettings.json
 //ios/chrome/test/data/policy/pref_mapping/ManagedBookmarks.json
 //ios/chrome/test/data/policy/pref_mapping/MetricsReportingEnabled.json
+//ios/chrome/test/data/policy/pref_mapping/MetricsReportingLevel.json
 //ios/chrome/test/data/policy/pref_mapping/NTPContentSuggestionsEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/NTPCustomBackgroundEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/NewTabPageLocation.json
