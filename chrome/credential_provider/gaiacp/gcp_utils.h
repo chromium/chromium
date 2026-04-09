@@ -24,6 +24,7 @@
 #include "chrome/credential_provider/gaiacp/internet_availability_checker.h"
 #include "chrome/credential_provider/gaiacp/scoped_lsa_policy.h"
 #include "chrome/credential_provider/gaiacp/win_http_url_fetcher.h"
+#include "services/device/public/proto/hid_gcpw.pb.h"
 #include "url/gurl.h"
 
 // These define are documented in
@@ -223,6 +224,7 @@ enum class CommDirection {
 };
 HRESULT InitializeStdHandles(CommDirection direction,
                              StdHandlesToCreate to_create,
+                             bool create_named_pipe_for_stdin,
                              ScopedStartupInfo* startupinfo,
                              StdParentHandles* parent_handles);
 
@@ -429,6 +431,20 @@ std::unique_ptr<base::File> GetOpenedFileForUser(const std::wstring& sid,
 // stores the last fetch time.
 base::TimeDelta GetTimeDeltaSinceLastFetch(const std::wstring& sid,
                                            const std::wstring& flag);
+
+// Reads a single message from the pipe. The message is expected to be prefixed
+// with a 32-bit size.
+HRESULT ReadMessageFromPipe(base::win::ScopedHandle& pipe,
+                            std::vector<uint8_t>* buffer);
+
+// Writes a single message to the pipe. The message is prefixed with a 32-bit
+// size.
+HRESULT WriteMessageToPipe(base::win::ScopedHandle& pipe,
+                           const std::vector<uint8_t>& buffer);
+
+device::gcpw::HidOpenDeviceGcpwResponse ProcessHidOpenDeviceRequest(
+    const device::gcpw::HidOpenDeviceGcpwRequest& request,
+    HANDLE logon_ui_process);
 
 }  // namespace credential_provider
 

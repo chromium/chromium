@@ -36,6 +36,7 @@
 #include "base/json/json_writer.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/strcat_win.h"
 #include "base/strings/string_number_conversions.h"
@@ -51,6 +52,7 @@
 #include "base/win/wbemidl_shim.h"
 #include "base/win/win_util.h"
 #include "base/win/wincred_shim.h"
+#include "base/win/windows_handle_util.h"
 #include "base/win/wmi.h"
 #include "build/branding_buildflags.h"
 #include "chrome/common/chrome_version.h"
@@ -58,12 +60,14 @@
 #include "chrome/credential_provider/gaiacp/gaia_resources.h"
 #include "chrome/credential_provider/gaiacp/gcpw_strings.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
+#include "chrome/credential_provider/gaiacp/os_device_manager.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 #include "chrome/credential_provider/gaiacp/token_generator.h"
 #include "chrome/installer/launcher_support/chrome_launcher_support.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "services/device/public/mojom/hid.mojom.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace credential_provider {
@@ -640,8 +644,43 @@ HRESULT CreatePipeForChildProcess(bool child_reads,
   return S_OK;
 }
 
+HRESULT CreateNamedPipeForChildProcess(base::win::ScopedHandle* server_handle,
+                                       base::win::ScopedHandle* client_handle) {
+  std::wstring pipe_name =
+      base::StrCat({L"\\\\.\\pipe\\gcpw-stdin-",
+                    base::NumberToWString(::GetCurrentProcessId()), L"-",
+                    base::NumberToWString(::GetCurrentThreadId()), L"-",
+                    base::NumberToWString(base::RandUint64())});
+
+  SECURITY_ATTRIBUTES sa_server = {};
+  sa_server.nLength = sizeof(sa_server);
+  sa_server.bInheritHandle = TRUE;
+  sa_server.lpSecurityDescriptor = nullptr;
+
+  server_handle->Set(
+      ::CreateNamedPipeW(pipe_name.c_str(), PIPE_ACCESS_DUPLEX,
+                         PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT, 1,
+                         4096, 4096, 0, &sa_server));
+  if (!server_handle->is_valid()) {
+    HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+    LOGFN(ERROR) << "CreateNamedPipeW(stdin) hr=" << putHR(hr);
+    return hr;
+  }
+
+  client_handle->Set(::CreateFileW(pipe_name.c_str(),
+                                   GENERIC_READ | GENERIC_WRITE, 0, nullptr,
+                                   OPEN_EXISTING, 0, nullptr));
+  if (!client_handle->is_valid()) {
+    HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+    LOGFN(ERROR) << "CreateFileW(stdin) hr=" << putHR(hr);
+    return hr;
+  }
+  return S_OK;
+}
+
 HRESULT InitializeStdHandles(CommDirection direction,
                              StdHandlesToCreate to_create,
+                             bool create_named_pipe_for_stdin,
                              ScopedStartupInfo* startupinfo,
                              StdParentHandles* parent_handles) {
   LOGFN(VERBOSE);
@@ -651,13 +690,20 @@ HRESULT InitializeStdHandles(CommDirection direction,
   base::win::ScopedHandle hstdin_read;
   base::win::ScopedHandle hstdin_write;
   if ((to_create & kStdInput) != 0) {
-    HRESULT hr = CreatePipeForChildProcess(
-        true,                                            // child reads
-        direction == CommDirection::kChildToParentOnly,  // use nul
-        &hstdin_read, &hstdin_write);
-    if (FAILED(hr)) {
-      LOGFN(ERROR) << "CreatePipeForChildProcess(stdin) hr=" << putHR(hr);
-      return hr;
+    if (create_named_pipe_for_stdin) {
+      HRESULT hr = CreateNamedPipeForChildProcess(&hstdin_read, &hstdin_write);
+      if (FAILED(hr)) {
+        return hr;
+      }
+    } else {
+      HRESULT hr = CreatePipeForChildProcess(
+          true,                                            // child reads
+          direction == CommDirection::kChildToParentOnly,  // use nul
+          &hstdin_read, &hstdin_write);
+      if (FAILED(hr)) {
+        LOGFN(ERROR) << "CreatePipeForChildProcess(stdin) hr=" << putHR(hr);
+        return hr;
+      }
     }
   }
 
@@ -1410,6 +1456,95 @@ base::TimeDelta GetTimeDeltaSinceLastFetch(const std::wstring& sid,
       last_fetch_millis_int64;
 
   return base::Milliseconds(time_delta_from_last_fetch_ms);
+}
+
+device::gcpw::HidOpenDeviceGcpwResponse ProcessHidOpenDeviceRequest(
+    const device::gcpw::HidOpenDeviceGcpwRequest& request,
+    HANDLE logon_ui_process) {
+  LOGFN(VERBOSE) << L"Received hid open request for: \""
+                 << base::UTF8ToWide(request.device_path()) << L"\"";
+
+  device::gcpw::HidOpenDeviceGcpwResponse response;
+
+  OSDeviceManager* os_device_manager = OSDeviceManager::Get();
+  base::win::ScopedHandle device_handle =
+      os_device_manager->OpenDevice(base::UTF8ToWide(request.device_path()));
+
+  if (!device_handle.is_valid()) {
+    LOGFN(ERROR) << "Failed to open device: " << request.device_path();
+    return response;
+  }
+
+  // LINT.IfChange
+  uint16_t usage_page = os_device_manager->GetUsagePage(device_handle.Get());
+  if (usage_page != device::mojom::kPageFido) {
+    LOGFN(ERROR) << "Device is not a FIDO device. " << usage_page;
+    return response;
+  }
+  // LINT.ThenChange(//services/device/hid/hid_service_win.cc)
+
+  HANDLE duplicated_handle;
+  if (!::DuplicateHandle(GetCurrentProcess(), device_handle.Get(),
+                         logon_ui_process, &duplicated_handle, 0, FALSE,
+                         DUPLICATE_SAME_ACCESS)) {
+    LOGFN(ERROR) << "Failed to duplicate handle: " << GetLastError();
+  } else {
+    LOGFN(VERBOSE) << "Going to send successfully duplicated device handle ";
+    if (duplicated_handle != INVALID_HANDLE_VALUE) {
+      response.set_device_handle(base::win::HandleToUint32(duplicated_handle));
+    }
+  }
+
+  return response;
+}
+
+HRESULT ReadMessageFromPipe(base::win::ScopedHandle& pipe,
+                            std::vector<uint8_t>* buffer) {
+  DWORD message_size;
+  DWORD bytes_read;
+  if (!::ReadFile(pipe.Get(), &message_size, sizeof(message_size), &bytes_read,
+                  nullptr) ||
+      bytes_read != sizeof(message_size)) {
+    return HRESULT_FROM_WIN32(::GetLastError());
+  }
+
+  // Enforce a maximum message size to prevent excessive memory allocation.
+  constexpr DWORD kMaxMessageSize = 64 * 1024;  // 64KB
+  if (message_size > kMaxMessageSize) {
+    LOGFN(ERROR) << "Message size " << message_size
+                 << " exceeds maximum allowed size " << kMaxMessageSize;
+    return E_FAIL;
+  }
+
+  buffer->resize(message_size);
+  if (message_size > 0) {
+    if (!::ReadFile(pipe.Get(), buffer->data(), buffer->size(), &bytes_read,
+                    nullptr) ||
+        bytes_read != message_size) {
+      return HRESULT_FROM_WIN32(::GetLastError());
+    }
+  }
+  return S_OK;
+}
+
+HRESULT WriteMessageToPipe(base::win::ScopedHandle& pipe,
+                           const std::vector<uint8_t>& buffer) {
+  DWORD message_size = buffer.size();
+  DWORD bytes_written;
+  if (!::WriteFile(pipe.Get(), &message_size, sizeof(message_size),
+                   &bytes_written, nullptr) ||
+      bytes_written != sizeof(message_size)) {
+    return HRESULT_FROM_WIN32(::GetLastError());
+  }
+
+  if (message_size > 0) {
+    if (!::WriteFile(pipe.Get(), buffer.data(), message_size, &bytes_written,
+                     nullptr) ||
+        bytes_written != message_size) {
+      return HRESULT_FROM_WIN32(::GetLastError());
+    }
+  }
+  return S_OK;
 }
 
 }  // namespace credential_provider

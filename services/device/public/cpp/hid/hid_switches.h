@@ -8,6 +8,7 @@
 namespace switches {
 
 extern const char kDisableHidBlocklist[];
+extern const char kGcpwSigninSwitch[];
 
 }  // namespace switches
 

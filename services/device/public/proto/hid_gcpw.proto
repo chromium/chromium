@@ -1,0 +1,13 @@
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package device.gcpw;
+
+message HidOpenDeviceGcpwRequest {
+  optional string device_path = 1;
+}
+
+message HidOpenDeviceGcpwResponse {
+  optional fixed32 device_handle = 1;
+}

@@ -1,0 +1,5 @@
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("hid_gcpw_proto") {
+  sources = [ "hid_gcpw.proto" ]
+}

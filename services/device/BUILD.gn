@@ -207,6 +207,11 @@ source_set("tests") {
       "battery/battery_status_manager_win_unittest.cc",
       "generic_sensor/platform_sensor_and_provider_unittest_win.cc",
       "geolocation/wifi_data_provider_win_unittest.cc",
+      "hid/hid_service_win_unittest.cc",
+    ]
+    deps += [
+      "//services/device/public/proto:hid_gcpw_proto",
+      "//third_party/protobuf:protobuf_lite",
     ]
   }
 

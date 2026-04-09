@@ -32,6 +32,8 @@ source_set("hid") {
     "//services/device:utility",
     "//services/device/public/cpp/hid",
     "//services/device/public/mojom",
+    "//services/device/public/proto:hid_gcpw_proto",
+    "//third_party/protobuf:protobuf_lite",
   ]
 
   if ((is_linux || is_chromeos) && use_udev) {

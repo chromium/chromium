@@ -1,0 +1,2 @@
+per-file *.proto=set noparent
+per-file *.proto=file://ipc/SECURITY_OWNERS
