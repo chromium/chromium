@@ -34,7 +34,7 @@ enum Command {
   kOpenGlic = 16,
   kOpenGlicSettings = 17,
   kPrewarmGlicFre = 18,
-  // kOpenSplitView = 19 - deprecated
+  kOpenSplitView = 19,
   kOpenAutofillSettings = 20,
   kEnableVerticalTabs = 21,
 };
