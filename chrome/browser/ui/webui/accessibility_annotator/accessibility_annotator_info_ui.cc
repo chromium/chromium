@@ -43,6 +43,8 @@ AccessibilityAnnotatorInfoUI::AccessibilityAnnotatorInfoUI(
   webui::SetupWebUIDataSource(
       source, kAccessibilityAnnotatorInfoResources,
       IDR_ACCESSIBILITY_ANNOTATOR_INFO_ACCESSIBILITY_ANNOTATOR_INFO_HTML);
+  // TODO(crbug.com/500663691): Update strings.
+  source->AddLocalizedString("privacyPageTitle", IDS_SETTINGS_PRIVACY);
 }
 
 AccessibilityAnnotatorInfoUI::~AccessibilityAnnotatorInfoUI() = default;

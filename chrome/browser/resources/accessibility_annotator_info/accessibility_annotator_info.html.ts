@@ -10,8 +10,23 @@ export function getHtml(this: AccessibilityAnnotatorInfoElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div id="container">
-  <h1>Accessibility annotator Info</h1>
-  <p>This is a test page for the accessibility annotator info dialog.</p>
+  <div class="canvasDiv">
+    <!-- TODO(crbug.com/488321731): Add illustration here. -->
+  </div>
+    <!-- TODO(crbug.com/500663691): Update strings below. -->
+  <h1 class="title">$i18n{privacyPageTitle}</h1>
+  <div class="description">
+    $i18n{privacyPageTitle}
+  </div>
+
+  <div class="actions">
+    <cr-button id="manageSettings" @click="${this.onManageSettingsClick_}">
+      $i18n{privacyPageTitle}
+    </cr-button>
+    <cr-button id="gotIt" class="action-button" @click="${this.onGotItClick_}">
+      $i18n{privacyPageTitle}
+    </cr-button>
+  </div>
 </div>
 <!--_html_template_end_-->`;
   // clang-format on

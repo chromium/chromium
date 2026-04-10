@@ -7,10 +7,42 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
+:host {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 24px;
+  align-items: center;
+  text-align: center;
+  font-family: Roboto, Arial, sans-serif;
+  color: var(--cr-primary-text-color);
+}
+
 #container {
   display: flex;
   flex-direction: column;
   padding: 16px;
   width: 100%;
   box-sizing: border-box;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 0 0 16px;
+  line-height: 1.3;
+}
+
+.description {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--cr-secondary-text-color);
+  margin-bottom: 24px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  width: 100%;
 }
