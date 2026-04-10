@@ -3035,27 +3035,6 @@ chromium-metrics-reviews@google.com.
   <token key="BatteryState" variants="BatteryState"/>
 </histogram>
 
-<histogram name="Tabs.TabOffsetOfSwitch{TabOffsetOfSwitchComponentList}"
-    units="units" expires_after="M85">
-  <owner>yusufo@chromium.org</owner>
-  <summary>
-    How many tabs a user moved forward or backward in the Android tab switcher.
-    {TabOffsetOfSwitchComponentList}
-
-    Logged by the Android tab switcher when a user switches tabs (other than by
-    opening a new tab). If the user switches to an earlier tab in the stack, we
-    log a positive offset value indicating how many tabs back they moved. If the
-    user switches to a later tab, we log a negative offset value. If the user
-    stays on the same tab, we log 0. If the user switches to a tab in a
-    different stack (i.e. they switch from normal to incognito or vice-versa),
-    we don't log a value.
-  </summary>
-  <token key="TabOffsetOfSwitchComponentList">
-    <variant name=".GridTabSwitcher" summary="Tab switcher in grid layout"/>
-    <variant name=".TabStrip" summary="The TabStrip componets"/>
-  </token>
-</histogram>
-
 <histogram name="Tabs.TabPersistentStore.ActiveTabLoaded.{ActiveTabType}"
     units="ms" expires_after="2026-08-23">
   <owner>mfiaz@google.com</owner>

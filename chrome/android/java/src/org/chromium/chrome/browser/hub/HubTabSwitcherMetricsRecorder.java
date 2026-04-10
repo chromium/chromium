@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.hub;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.base.Callback;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -82,7 +81,6 @@ public class HubTabSwitcherMetricsRecorder {
                 RecordUserAction.record("MobileTabReturnedToCurrentTab.TabGrid");
 
                 RecordUserAction.record("MobileTabReturnedToCurrentTab");
-                RecordHistogram.recordSparseHistogram("Tabs.TabOffsetOfSwitch.GridTabSwitcher", 0);
             } else {
                 TabGroupModelFilter filter = mTabModelSelector.getCurrentTabGroupModelFilter();
                 assumeNonNull(filter);
@@ -92,10 +90,6 @@ public class HubTabSwitcherMetricsRecorder {
                     if (!filter.isTabInTabGroup(tab)) {
                         RecordUserAction.record("MobileTabSwitched.GridTabSwitcher");
                     }
-                    // The sign on this metric is inverted from the direction of travel in the tab
-                    // switcher and tab model. This was a pre-existing issue in TabSwitcherMediator.
-                    RecordHistogram.recordSparseHistogram(
-                            "Tabs.TabOffsetOfSwitch.GridTabSwitcher", previousIndex - currentIndex);
                 }
             }
         } else {

@@ -415,26 +415,18 @@ class TabListMediator implements TabListNotificationHandler {
 
                     TabModel tabModel = getCurrentTabModelChecked();
                     if (!mActionsOnAllRelatedTabs) {
-                        Tab currentTab = TabModelUtils.getCurrentTab(tabModel);
-                        assumeNonNull(currentTab);
-                        Tab newlySelectedTab = tabModel.getTabById(tabId);
-                        assumeNonNull(newlySelectedTab);
-
                         // We filtered the tab switching related metric for components that takes
                         // actions on all related tabs (e.g. GTS) because that component can
                         // switch to different TabModel before switching tabs, while this class
                         // only contains information for all tabs that are in the same TabModel,
                         // more specifically:
-                        //   * For Tabs.TabOffsetOfSwitch, we do not want to log anything if the
-                        // user
-                        //     switched from normal to incognito or vice-versa.
                         //   * For MobileTabSwitched, as compared to the VTS, we need to account for
                         //     MobileTabReturnedToCurrentTab action. This action is defined as
                         // return to the
                         //     same tab as before entering the component, and we don't have this
                         // information
                         //     here.
-                        recordUserSwitchedTab(currentTab, newlySelectedTab);
+                        recordUserSwitchedTab();
                     }
                     if (mGridCardOnClickListenerProvider != null) {
                         mGridCardOnClickListenerProvider.onTabSelecting(
@@ -453,28 +445,11 @@ class TabListMediator implements TabListNotificationHandler {
                 }
 
                 /**
-                 * Records MobileTabSwitched for the component. Also, records Tabs.TabOffsetOfSwitch
-                 * but only when fromTab and toTab are within the same group. This method only
-                 * records UMA for components other than TabSwitcher.
-                 *
-                 * @param fromTab The previous selected tab.
-                 * @param toTab The new selected tab.
+                 * Records MobileTabSwitched for the component. This method only records UMA for
+                 * components other than TabSwitcher.
                  */
-                private void recordUserSwitchedTab(Tab fromTab, Tab toTab) {
-                    TabGroupModelFilter filter = getCurrentFilterChecked();
-                    int fromFilterIndex = filter.representativeIndexOf(fromTab);
-                    int toFilterIndex = filter.representativeIndexOf(toTab);
-
+                private void recordUserSwitchedTab() {
                     RecordUserAction.record("MobileTabSwitched." + mComponentName);
-
-                    if (fromFilterIndex != toFilterIndex) return;
-
-                    TabModel tabModel = filter.getTabModel();
-                    int fromIndex = TabModelUtils.getTabIndexById(tabModel, fromTab.getId());
-                    int toIndex = TabModelUtils.getTabIndexById(tabModel, toTab.getId());
-
-                    RecordHistogram.recordSparseHistogram(
-                            "Tabs.TabOffsetOfSwitch." + mComponentName, fromIndex - toIndex);
                 }
             };
 

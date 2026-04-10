@@ -31,7 +31,6 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -163,14 +162,10 @@ public class HubTabSwitcherMetricsRecorderUnitTest {
         mHubVisibilitySupplier.set(true);
         RobolectricUtil.runAllBackgroundAndUi();
 
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Tabs.TabOffsetOfSwitch.GridTabSwitcher", 0);
         mRegularTabModel.setIndex(REGULAR_TAB_0_INDEX, FROM_USER);
 
         assertEquals(1, mActionTester.getActionCount("MobileTabReturnedToCurrentTab.TabGrid"));
         assertEquals(1, mActionTester.getActionCount("MobileTabReturnedToCurrentTab"));
-        watcher.assertExpected();
     }
 
     @Test
@@ -181,13 +176,9 @@ public class HubTabSwitcherMetricsRecorderUnitTest {
         mHubVisibilitySupplier.set(true);
         RobolectricUtil.runAllBackgroundAndUi();
 
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Tabs.TabOffsetOfSwitch.GridTabSwitcher", -1);
         mRegularTabModel.setIndex(REGULAR_TAB_1_INDEX, FROM_USER);
 
         assertEquals(0, mActionTester.getActionCount("MobileTabSwitched.GridTabSwitcher"));
-        watcher.assertExpected();
     }
 
     @Test
@@ -196,13 +187,9 @@ public class HubTabSwitcherMetricsRecorderUnitTest {
         mHubVisibilitySupplier.set(true);
         RobolectricUtil.runAllBackgroundAndUi();
 
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Tabs.TabOffsetOfSwitch.GridTabSwitcher", -1);
         mRegularTabModel.setIndex(REGULAR_TAB_1_INDEX, FROM_USER);
 
         assertEquals(1, mActionTester.getActionCount("MobileTabSwitched.GridTabSwitcher"));
-        watcher.assertExpected();
     }
 
     @Test
