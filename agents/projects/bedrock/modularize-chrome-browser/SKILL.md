@@ -183,12 +183,19 @@ source_set("browser_tests") {
 }
 ```
 
-**Key rules:** - Omit targets that have no files (e.g., skip `::browser_tests`
-if there are no browser test files). - `::browser_tests` always sets
-`defines = ["HAS_OUT_OF_PROC_TEST_RUNNER"]`. - Preserve all platform-specific
-`if (is_android)`, `if (is_chromeos)`, `if (enable_extensions)` guards exactly
-as they appear in the original `chrome/browser/BUILD.gn`. - Factory `.h` files
-belong in the interface/public target even when the `.cc` is in `::impl`.
+**Key rules:**
+
+- Omit targets that have no files (e.g., skip `::browser_tests` if there are no
+  browser test files).
+- `::browser_tests` always sets `defines = ["HAS_OUT_OF_PROC_TEST_RUNNER"]`.
+- Preserve all platform-specific `if (is_android)`, `if (is_chromeos)`,
+  `if (enable_extensions)` guards exactly as they appear in the original
+  `chrome/browser/BUILD.gn`.
+- Factory `.h` files belong in the interface/public target even when the `.cc`
+  is in `::impl`.
+- **Platform-specific dependencies:** Ensure that dependencies are wrapped in
+  the same platform conditional blocks (e.g., `if (is_chromeos)`) as the files
+  that use them.
 
 ### Platform-agnostic interface design
 
@@ -227,6 +234,19 @@ Remove `*_browsertest.cc` files from browser test sources and add:
 ## Phase 5: Fix GN include errors
 
 Run build verification first (Phase 6), then resolve any errors.
+
+### Strict Rules
+
+- **Never use `// nogncheck`** to bypass header check failures. Fix the
+  dependency graph instead.
+  - *Exception*: The only acceptable case for `nogncheck` is to bypass
+    conditional includes that are not currently supported by GN. In such cases,
+    the added pragma MUST be exactly `// nogncheck crbug.com/40147906`.
+- **Headers in Monolithic Targets:** If a file in your new module includes a
+  header from another folder that is still part of a monolithic target (like
+  `//chrome/test:unit_tests`), you cannot move that file to the module without
+  violating header checks. In this case, leave the file in the monolith until
+  the other folder is also modularized.
 
 ### Error type 1: "Include not allowed" — header not reachable at all
 
