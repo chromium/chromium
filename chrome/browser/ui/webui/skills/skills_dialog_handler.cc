@@ -145,12 +145,14 @@ void SkillsDialogHandler::GetInitialState(GetInitialStateCallback callback) {
 
 void SkillsDialogHandler::OnRefineSkillResponse(
     DialogHandler::RefineSkillCallback callback,
+    base::TimeTicks start_time,
     OptimizationGuideModelExecutionResult result,
     std::unique_ptr<ModelQualityLogEntry> log_entry) {
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), std::nullopt);
 
   if (!result.response.has_value()) {
+    RecordSkillsRefineLatency(base::TimeTicks::Now() - start_time);
     RecordSkillsRefineResult(SkillsRefineResult::kModelExecutionFailed);
     return;
   }
@@ -160,10 +162,12 @@ void SkillsDialogHandler::OnRefineSkillResponse(
       result.response.value());
 
   if (!response) {
+    RecordSkillsRefineLatency(base::TimeTicks::Now() - start_time);
     RecordSkillsRefineResult(SkillsRefineResult::kParseError);
     return;
   }
   if (response->suggestions_size() == 0) {
+    RecordSkillsRefineLatency(base::TimeTicks::Now() - start_time);
     RecordSkillsRefineResult(SkillsRefineResult::kNoSuggestions);
     return;
   }
@@ -177,6 +181,7 @@ void SkillsDialogHandler::OnRefineSkillResponse(
   refined_skill.name = suggestion.name();      // Suggested name
   refined_skill.icon = suggestion.icon();      // Suggested icon/emoji
 
+  RecordSkillsRefineLatency(base::TimeTicks::Now() - start_time);
   RecordSkillsRefineResult(SkillsRefineResult::kSuccess);
   std::move(wrapped_callback).Run(std::move(refined_skill));
 }
@@ -211,7 +216,7 @@ void SkillsDialogHandler::RefineSkill(
       ModelExecutionOptions(),
       base::BindOnce(&SkillsDialogHandler::OnRefineSkillResponse,
                      weak_ptr_factory_.GetWeakPtr(),
-                     std::move(wrapped_callback)));
+                     std::move(wrapped_callback), base::TimeTicks::Now()));
 }
 
 void SkillsDialogHandler::GenerateNameAndEmoji(

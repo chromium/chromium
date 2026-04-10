@@ -174,6 +174,7 @@ TEST_F(SkillsDialogHandlerTest, RefineSkillSuccess) {
 
   histogram_tester_.ExpectUniqueSample("Skills.Refine.Result",
                                        skills::SkillsRefineResult::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount("Skills.Refine.Latency", 1);
 }
 
 TEST_F(SkillsDialogHandlerTest, RefineSkill_EmptyPrompt_LogsInvalidRequest) {
@@ -200,12 +201,14 @@ TEST_F(SkillsDialogHandlerTest,
   RunRefineSkillAndExpectError(
       handler_.get(), "test prompt",
       skills::SkillsRefineResult::kModelExecutionFailed);
+  histogram_tester_.ExpectTotalCount("Skills.Refine.Latency", 1);
 }
 
 TEST_F(SkillsDialogHandlerTest, RefineSkill_BadProto_LogsParseError) {
   SetModelResponse("garbage data", "type.googleapis.com/WrongType");
   RunRefineSkillAndExpectError(handler_.get(), "test prompt",
                                skills::SkillsRefineResult::kParseError);
+  histogram_tester_.ExpectTotalCount("Skills.Refine.Latency", 1);
 }
 
 TEST_F(SkillsDialogHandlerTest,

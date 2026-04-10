@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/ui/webui/skills/skills.mojom.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
@@ -66,6 +67,7 @@ class SkillsDialogHandler : public skills::mojom::DialogHandler {
   // Callback for the model execution result for `RefineSkill`.
   void OnRefineSkillResponse(
       skills::mojom::DialogHandler::RefineSkillCallback callback,
+      base::TimeTicks start_time,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 

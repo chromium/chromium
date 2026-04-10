@@ -152,6 +152,19 @@ chromium-metrics-reviews@google.com.
   <token key="Page" variants="Page"/>
 </histogram>
 
+<histogram name="Skills.Refine.Latency" units="ms" expires_after="2027-02-01">
+  <owner>howardcha@google.com</owner>
+  <owner>skills-eng@google.com</owner>
+  <summary>
+    Records the end-to-end latency (in milliseconds) of a Skills prompt
+    refinement request, from initiation to result parsing.
+
+    This metric is recorded for both successful model executions and
+    asynchronous model failures, but not for synchronous local validation
+    failures.
+  </summary>
+</histogram>
+
 <histogram name="Skills.Refine.Result" enum="SkillsRefineResult"
     expires_after="2027-02-01">
   <owner>michelleabreo@google.com</owner>

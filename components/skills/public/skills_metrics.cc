@@ -141,6 +141,10 @@ void RecordSkillsRefineResult(SkillsRefineResult result) {
   base::UmaHistogramEnumeration("Skills.Refine.Result", result);
 }
 
+void RecordSkillsRefineLatency(base::TimeDelta latency) {
+  base::UmaHistogramMediumTimes("Skills.Refine.Latency", latency);
+}
+
 void RecordUserSkillCount(size_t skill_count) {
   base::UmaHistogramCounts1000("Skills.UserSkills.Count",
                                base::checked_cast<int>(skill_count));

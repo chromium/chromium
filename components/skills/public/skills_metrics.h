@@ -7,6 +7,7 @@
 
 #include <cstddef>
 
+#include "base/time/time.h"
 #include "components/skills/public/skill.h"
 namespace skills {
 
@@ -163,6 +164,9 @@ void RecordSkillsSaveResult(SkillsSaveResult result);
 // captures the success or failure of the Optimization Guide ML model
 // execution and response parsing.
 void RecordSkillsRefineResult(SkillsRefineResult result);
+
+// Records the end-to-end latency of a skill prompt refinement request.
+void RecordSkillsRefineLatency(base::TimeDelta latency);
 
 // Records the current total number of skills the user possesses.
 // This is called periodically by the SkillsMetricsProvider to capture
