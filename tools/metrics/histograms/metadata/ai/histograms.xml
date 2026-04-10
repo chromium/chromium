@@ -22,6 +22,21 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="AiOverlayToolName">
+  <variant name="CloseCurrentTab"/>
+  <variant name="FindAndHighlight"/>
+  <variant name="GoBack"/>
+  <variant name="GoForward"/>
+  <variant name="OpenUrl"/>
+  <variant name="PauseVideo"/>
+  <variant name="PerformSearch"/>
+  <variant name="PlayVideo"/>
+  <variant name="ReloadPage"/>
+  <variant name="Scroll"/>
+  <variant name="SeekToTimestamp"/>
+  <variant name="SwitchTab"/>
+</variants>
+
 <!-- LINT.IfChange(LanguageModelExpectedInputOrOutput) -->
 
 <variants name="LanguageModelExpectedInputOrOutput">
@@ -158,6 +173,17 @@ chromium-metrics-reviews@google.com.
   <token key="LanguageModelFunctionName" variants="LanguageModelFunctionName"/>
   <token key="LanguageModelExpectedInputOrOutput"
       variants="LanguageModelExpectedInputOrOutput"/>
+</histogram>
+
+<histogram name="AI.OverlayDialog.ToolCallInvoked.{ToolName}" enum="BooleanHit"
+    expires_after="2027-04-03">
+  <owner>gklassen@chromium.org</owner>
+  <owner>bokan@chromium.org</owner>
+  <summary>
+    Records when the {ToolName} tool call is invoked in a conversation turn in
+    the AI overlay dialog.
+  </summary>
+  <token key="ToolName" variants="AiOverlayToolName"/>
 </histogram>
 
 <histogram name="AI.Session.{SessionType}.ContextTime" units="ms"

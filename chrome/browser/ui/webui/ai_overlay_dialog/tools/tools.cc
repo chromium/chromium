@@ -8,6 +8,8 @@
 #include <optional>
 #include <vector>
 
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -42,6 +44,11 @@
 #include "url/url_util.h"
 
 namespace {
+
+void RecordToolCallInvoked(std::string_view tool_name) {
+  base::UmaHistogramBoolean(
+      base::StrCat({"AI.OverlayDialog.ToolCallInvoked.", tool_name}), true);
+}
 
 std::optional<base::TimeDelta> ParseTimecode(const std::string& timecode) {
   std::vector<std::string> parts = base::SplitString(
@@ -80,6 +87,7 @@ AiOverlayTools::~AiOverlayTools() = default;
 void AiOverlayTools::OpenUrl(const std::string& url_string,
                              bool new_tab,
                              OpenUrlCallback callback) {
+  RecordToolCallInvoked("OpenUrl");
   GURL url(url_string);
   if (!url.is_valid()) {
     std::move(callback).Run(base::unexpected("Invalid URL"));
@@ -96,6 +104,7 @@ void AiOverlayTools::OpenUrl(const std::string& url_string,
 void AiOverlayTools::PerformSearch(const std::string& query,
                                    bool new_tab,
                                    PerformSearchCallback callback) {
+  RecordToolCallInvoked("PerformSearch");
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(browser_->GetProfile());
   if (!template_url_service) {
@@ -117,6 +126,7 @@ void AiOverlayTools::PerformSearch(const std::string& query,
 
 void AiOverlayTools::SwitchTab(const std::string& query,
                                SwitchTabCallback callback) {
+  RecordToolCallInvoked("SwitchTab");
   std::string query_lower = base::ToLowerASCII(query);
   TabStripModel* tab_strip_model = browser_->GetTabStripModel();
   for (int i = 0; i < tab_strip_model->count(); ++i) {
@@ -142,6 +152,7 @@ void AiOverlayTools::SwitchTab(const std::string& query,
 }
 
 void AiOverlayTools::CloseCurrentTab(CloseCurrentTabCallback callback) {
+  RecordToolCallInvoked("CloseCurrentTab");
   if (browser_->GetTabStripModel()->count() > 0) {
     browser_->GetTabStripModel()->CloseSelectedTabs();
     std::move(callback).Run(true);
@@ -151,6 +162,7 @@ void AiOverlayTools::CloseCurrentTab(CloseCurrentTabCallback callback) {
 }
 
 void AiOverlayTools::GoBack(GoBackCallback callback) {
+  RecordToolCallInvoked("GoBack");
   content::WebContents* contents =
       browser_->GetTabStripModel()->GetActiveWebContents();
   if (contents && contents->GetController().CanGoBack()) {
@@ -162,6 +174,7 @@ void AiOverlayTools::GoBack(GoBackCallback callback) {
 }
 
 void AiOverlayTools::GoForward(GoForwardCallback callback) {
+  RecordToolCallInvoked("GoForward");
   content::WebContents* contents =
       browser_->GetTabStripModel()->GetActiveWebContents();
   if (contents && contents->GetController().CanGoForward()) {
@@ -173,6 +186,7 @@ void AiOverlayTools::GoForward(GoForwardCallback callback) {
 }
 
 void AiOverlayTools::ReloadPage(ReloadPageCallback callback) {
+  RecordToolCallInvoked("ReloadPage");
   content::WebContents* contents =
       browser_->GetTabStripModel()->GetActiveWebContents();
   if (contents) {
@@ -218,6 +232,7 @@ void AiOverlayTools::OnAnnotationAgentDisconnected() {
 
 void AiOverlayTools::FindAndHighlight(const std::string& query,
                                       FindAndHighlightCallback callback) {
+  RecordToolCallInvoked("FindAndHighlight");
   content::WebContents* contents =
       browser_->GetTabStripModel()->GetActiveWebContents();
   if (!contents) {
@@ -256,6 +271,7 @@ void AiOverlayTools::Scroll(
     ai_overlay_dialog::mojom::ScrollGranularity granularity,
     double magnitude,
     ScrollCallback callback) {
+  RecordToolCallInvoked("Scroll");
   content::WebContents* contents =
       browser_->GetTabStripModel()->GetActiveWebContents();
   if (!contents || !contents->GetRenderWidgetHostView()) {
@@ -293,6 +309,7 @@ void AiOverlayTools::Scroll(
 }
 
 void AiOverlayTools::PlayVideo(PlayVideoCallback callback) {
+  RecordToolCallInvoked("PlayVideo");
   content::WebContents* contents =
       browser_->GetTabStripModel()->GetActiveWebContents();
   if (!contents) {
@@ -311,6 +328,7 @@ void AiOverlayTools::PlayVideo(PlayVideoCallback callback) {
 }
 
 void AiOverlayTools::PauseVideo(PauseVideoCallback callback) {
+  RecordToolCallInvoked("PauseVideo");
   content::WebContents* contents =
       browser_->GetTabStripModel()->GetActiveWebContents();
   if (!contents) {
@@ -330,6 +348,7 @@ void AiOverlayTools::PauseVideo(PauseVideoCallback callback) {
 
 void AiOverlayTools::SeekToTimestamp(const std::string& timecode,
                                      SeekToTimestampCallback callback) {
+  RecordToolCallInvoked("SeekToTimestamp");
   content::WebContents* contents =
       browser_->GetTabStripModel()->GetActiveWebContents();
   if (!contents) {
