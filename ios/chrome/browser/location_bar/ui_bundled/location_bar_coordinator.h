@@ -86,6 +86,10 @@
 // Sets whether this location bar is active or not.
 - (void)setLocationBarActive:(BOOL)active;
 
+// Sets whether the location bar is at the top or bottom position. Only set when
+// `kChromeNextIa` is enabled.
+- (void)setTopPosition:(BOOL)topPosition;
+
 // Highlights or un-highlights the entry point for page action menu.
 - (void)togglePageActionMenuEntryPointHighlight:(BOOL)highlight;
 

@@ -198,7 +198,8 @@
 
   if (IsChromeNextIaEnabled()) {
     _topLocationBarCoordinator =
-        [self createLocationBarCoordinatorActive:!isOmniboxInBottomPosition];
+        [self createLocationBarCoordinatorActive:!isOmniboxInBottomPosition
+                                     topPosition:YES];
     _topToolbarMediator = [self createToolbarMediatorTopPosition:YES];
     _topToolbarViewController = [self
         createToolbarViewControllerForMediator:_topToolbarMediator
@@ -208,7 +209,8 @@
         FullscreenController::FromBrowser(browser), _topToolbarViewController);
 
     _bottomLocationBarCoordinator =
-        [self createLocationBarCoordinatorActive:isOmniboxInBottomPosition];
+        [self createLocationBarCoordinatorActive:isOmniboxInBottomPosition
+                                     topPosition:NO];
     _bottomToolbarMediator = [self createToolbarMediatorTopPosition:NO];
     _bottomToolbarViewController = [self
         createToolbarViewControllerForMediator:_bottomToolbarMediator
@@ -1164,10 +1166,13 @@
 }
 
 // Creates a new location bar coordinator.
-- (LocationBarCoordinator*)createLocationBarCoordinatorActive:(BOOL)active {
+- (LocationBarCoordinator*)createLocationBarCoordinatorActive:(BOOL)active
+                                                  topPosition:
+                                                      (BOOL)topPosition {
   LocationBarCoordinator* coordinator =
       [[LocationBarCoordinator alloc] initWithBrowser:self.browser];
   [coordinator start];
+  [coordinator setTopPosition:topPosition];
   [coordinator setLocationBarActive:active];
 
   return coordinator;

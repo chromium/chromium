@@ -7,9 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer_bridge.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_mutator.h"
 
 @protocol LocationBarConsumer;
+class OmniboxPositionBrowserAgent;
 class PlaceholderService;
 class TemplateURLService;
 class UrlLoadingBrowserAgent;
@@ -18,7 +21,8 @@ class WebStateList;
 // A mediator object that updates location bar state not relating to the
 // LocationBarSteadyView. In practice, this is any state not relating to the
 // WebState.
-@interface LocationBarMediator : NSObject <LocationBarMutator>
+@interface LocationBarMediator
+    : NSObject <LocationBarMutator, FullscreenBrowserAgentObserving>
 
 - (instancetype)initWithURLLoadingBrowsingAgent:
                     (UrlLoadingBrowserAgent*)URLLoadingBrowserAgent
@@ -40,6 +44,21 @@ class WebStateList;
 // The WebStateList that this mediator listens for any changes on the active web
 // state.
 @property(nonatomic, assign) WebStateList* webStateList;
+
+// The OmniboxPositionBrowserAgent used to query the position of the omnibox.
+@property(nonatomic, assign)
+    OmniboxPositionBrowserAgent* omniboxPositionBrowserAgent;
+
+// Whether the location bar is the active one. Only set when `kChromeNextIa` is
+// enabled.
+@property(nonatomic, assign) BOOL active;
+
+// Whether the location bar is at the top or bottom position. Only set when
+// `kChromeNextIa` is enabled.
+@property(nonatomic, assign) BOOL topPosition;
+
+// Adds a fullscreen UI element to be notified of fullscreen progress.
+- (void)addFullscreenUIElement:(id<FullscreenUIElement>)element;
 
 // Stops observing all objects.
 - (void)disconnect;
