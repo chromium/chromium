@@ -1842,7 +1842,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method setMetadata
 [Worker]     method toString
 [Worker]     setter data
-[Worker] interface RTCRtpScriptTransformer : EventTarget
+[Worker] interface RTCRtpScriptTransformer
 [Worker]     attribute @@toStringTag
 [Worker]     getter options
 [Worker]     getter readable

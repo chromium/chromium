@@ -6,7 +6,7 @@
 
 // TODO(crbug.com/354881878): implement the rest of the spec
 [Exposed=DedicatedWorker, RuntimeEnabled=RTCRtpScriptTransform]
-interface RTCRtpScriptTransformer : EventTarget {
+interface RTCRtpScriptTransformer {
     readonly attribute ReadableStream readable;
     [CallWith=ScriptState] Promise<undefined> sendKeyFrameRequest();
     readonly attribute WritableStream writable;
