@@ -11,12 +11,15 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "net/http/http_status_code.h"
 #include "remoting/base/http_status.h"
@@ -29,6 +32,7 @@
 #include "remoting/protocol/authenticator_test_base.h"
 #include "remoting/protocol/connection_tester.h"
 #include "remoting/protocol/credentials_type.h"
+#include "remoting/protocol/protocol_mock_objects.h"
 #include "remoting/protocol/spake2_authenticator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,6 +42,7 @@ namespace {
 
 using testing::_;
 using testing::ByMove;
+using testing::NiceMock;
 using testing::Return;
 
 constexpr std::string_view kFakeHostToken = "fake_host_token";
@@ -479,6 +484,147 @@ TEST_F(SessionAuthzAuthenticatorTest, ReauthorizationFailed_Rejected) {
   ASSERT_EQ(host_->state(), Authenticator::REJECTED);
   ASSERT_EQ(host_->rejection_reason(),
             Authenticator::RejectionReason::REAUTHZ_POLICY_CHECK_FAILED);
+}
+
+class SessionAuthzAuthenticatorTeardownTest : public AuthenticatorTestBase {
+ protected:
+  void SetUp() override {
+    AuthenticatorTestBase::SetUp();
+    // Do not call ConfigureAuthenticators() here. We manually configure the
+    // host authenticator with a mock in each test case to simulate synchronous
+    // teardown. This simplifies the test by avoiding the need to pull in the
+    // additional dependencies required for a full session teardown cascade
+    // (e.g., JingleSession, ClientSession, and ChromotingHost).
+  }
+};
+
+TEST_F(SessionAuthzAuthenticatorTeardownTest,
+       UnderlyingAuthenticator_InvalidIncomingMessage_SynchronousTeardown) {
+  // Use a mock underlying authenticator.
+  auto mock_underlying_owned = std::make_unique<NiceMock<MockAuthenticator>>();
+  MockAuthenticator* mock_underlying = mock_underlying_owned.get();
+
+  auto mock_service_client = std::make_unique<MockSessionAuthzServiceClient>();
+  MockSessionAuthzServiceClient* mock_service_client_ptr =
+      mock_service_client.get();
+
+  EXPECT_CALL(*mock_service_client_ptr, GenerateHostToken(_))
+      .WillOnce(RespondGenerateHostToken());
+  EXPECT_CALL(*mock_service_client_ptr, VerifySessionToken(_, _))
+      .WillOnce(RespondVerifySessionToken());
+
+  auto mock_underlying_holder = base::MakeRefCounted<
+      base::RefCountedData<std::unique_ptr<Authenticator>>>(
+      std::move(mock_underlying_owned));
+  auto host_authenticator = std::make_unique<SessionAuthzAuthenticator>(
+      CredentialsType::CORP_SESSION_AUTHZ, std::move(mock_service_client),
+      base::BindRepeating(
+          [](scoped_refptr<base::RefCountedData<std::unique_ptr<Authenticator>>>
+                 holder,
+             const std::string& secret,
+             Authenticator::State state) { return std::move(holder->data); },
+          mock_underlying_holder));
+  SessionAuthzAuthenticator* host_authenticator_ptr = host_authenticator.get();
+  host_ = std::move(host_authenticator);
+
+  base::test::TestFuture<void> start_future;
+  host_authenticator_ptr->Start(start_future.GetCallback());
+  EXPECT_TRUE(start_future.Wait());
+
+  // Transition to WAITING_FOR_SESSION_TOKEN state.
+  std::ignore = host_->GetNextMessage();
+
+  // First ProcessMessage triggers VerifySessionToken, which then triggers
+  // underlying_->ProcessMessage.
+  JingleAuthentication message;
+  message.session_authz_session_token = std::string(kFakeSessionToken);
+
+  // We want underlying_->ProcessMessage to synchronously run the callback
+  // and we want to destroy host_ inside that callback.
+  EXPECT_CALL(*mock_underlying, ProcessMessage(_, _))
+      .WillOnce([&](const JingleAuthentication&, base::OnceClosure callback) {
+        std::move(callback).Run();
+      });
+
+  // Also need to mock state() because StartReauthorizerIfNecessary calls it.
+  ON_CALL(*mock_underlying, state())
+      .WillByDefault(Return(Authenticator::REJECTED));
+
+  host_->ProcessMessage(
+      message,
+      base::BindOnce(
+          [](std::unique_ptr<Authenticator>* host) { host->reset(); }, &host_));
+
+  ASSERT_EQ(host_, nullptr);
+}
+
+TEST_F(SessionAuthzAuthenticatorTeardownTest,
+       UnderlyingAuthenticator_SubsequentMessage_SynchronousTeardown) {
+  // Use a mock underlying authenticator.
+  auto mock_underlying_owned = std::make_unique<NiceMock<MockAuthenticator>>();
+  MockAuthenticator* mock_underlying = mock_underlying_owned.get();
+
+  auto mock_service_client = std::make_unique<MockSessionAuthzServiceClient>();
+  MockSessionAuthzServiceClient* mock_service_client_ptr =
+      mock_service_client.get();
+
+  EXPECT_CALL(*mock_service_client_ptr, GenerateHostToken(_))
+      .WillOnce(RespondGenerateHostToken());
+  EXPECT_CALL(*mock_service_client_ptr, VerifySessionToken(_, _))
+      .WillOnce(RespondVerifySessionToken());
+
+  // Use a ref-counted holder to allow the repeating callback to return the
+  // unique_ptr once.
+  auto mock_underlying_holder = base::MakeRefCounted<
+      base::RefCountedData<std::unique_ptr<Authenticator>>>(
+      std::move(mock_underlying_owned));
+  host_ = std::make_unique<SessionAuthzAuthenticator>(
+      CredentialsType::CORP_SESSION_AUTHZ, std::move(mock_service_client),
+      base::BindRepeating(
+          [](scoped_refptr<base::RefCountedData<std::unique_ptr<Authenticator>>>
+                 holder,
+             const std::string& secret,
+             Authenticator::State state) { return std::move(holder->data); },
+          mock_underlying_holder));
+
+  base::test::TestFuture<void> start_future;
+  static_cast<SessionAuthzAuthenticator*>(host_.get())
+      ->Start(start_future.GetCallback());
+  EXPECT_TRUE(start_future.Wait());
+
+  std::ignore = host_->GetNextMessage();
+  JingleAuthentication message;
+  message.session_authz_session_token = std::string(kFakeSessionToken);
+
+  // First ProcessMessage triggers VerifySessionToken, which then triggers
+  // underlying_->ProcessMessage.
+  // This time we DON'T destroy it yet.
+  EXPECT_CALL(*mock_underlying, ProcessMessage(_, _))
+      .WillOnce([&](const JingleAuthentication&, base::OnceClosure callback) {
+        std::move(callback).Run();
+      });
+  EXPECT_CALL(*mock_underlying, state())
+      .WillRepeatedly(Return(Authenticator::WAITING_MESSAGE));
+
+  host_->ProcessMessage(message, base::DoNothing());
+
+  // Now the state should be SHARED_SECRET_FETCHED.
+  // Call ProcessMessage again with a callback that destroys host_.
+  EXPECT_CALL(*mock_underlying, ProcessMessage(_, _))
+      .WillOnce([&](const JingleAuthentication&, base::OnceClosure callback) {
+        std::move(callback).Run();
+      });
+
+  host_->ProcessMessage(message,
+                        base::BindOnce(
+                            [](std::unique_ptr<Authenticator>* host,
+                               MockSessionAuthzServiceClient** client_ptr) {
+                              *client_ptr = nullptr;
+                              host->reset();
+                            },
+                            &host_, &mock_service_client_ptr));
+
+  ASSERT_EQ(host_, nullptr);
 }
 
 }  // namespace remoting::protocol

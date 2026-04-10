@@ -11,6 +11,7 @@
 #include <string_view>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/http_status.h"
@@ -148,6 +149,8 @@ class SessionAuthzAuthenticator : public Authenticator {
 
   std::string session_id_;
   std::string host_token_;
+
+  base::WeakPtrFactory<SessionAuthzAuthenticator> weak_factory_{this};
 };
 
 }  // namespace remoting::protocol

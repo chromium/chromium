@@ -118,11 +118,15 @@ void SessionAuthzAuthenticator::ProcessMessage(
     case SessionAuthzState::WAITING_FOR_SESSION_TOKEN:
       VerifySessionToken(message, std::move(resume_callback));
       break;
-    case SessionAuthzState::SHARED_SECRET_FETCHED:
+    case SessionAuthzState::SHARED_SECRET_FETCHED: {
       DCHECK_EQ(underlying_->state(), WAITING_MESSAGE);
+      auto self = weak_factory_.GetWeakPtr();
       underlying_->ProcessMessage(message, std::move(resume_callback));
-      StartReauthorizerIfNecessary();
+      if (self) {
+        StartReauthorizerIfNecessary();
+      }
       break;
+    }
     default:
       NOTREACHED() << "Unexpected SessionAuthz state: "
                    << static_cast<int>(session_authz_state_);
@@ -245,8 +249,11 @@ void SessionAuthzAuthenticator::OnVerifiedSessionToken(
                                                         WAITING_MESSAGE);
   session_policies_ = std::move(response->session_policies);
   verify_token_response_ = std::move(response);
+  auto self = weak_factory_.GetWeakPtr();
   underlying_->ProcessMessage(message, std::move(resume_callback));
-  StartReauthorizerIfNecessary();
+  if (self) {
+    StartReauthorizerIfNecessary();
+  }
 }
 
 void SessionAuthzAuthenticator::HandleSessionAuthzError(
