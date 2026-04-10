@@ -664,6 +664,10 @@ BASE_FEATURE(kServiceWorkerSuppressTimeoutWhenPaymentWindowOpen,
 BASE_FEATURE(kServiceWorkerClientUrlIsCreationUrl,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Kill switch for crbug.com/499449324.
+BASE_FEATURE(kServiceWorkerOptionalTimeoutIterator,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables skipping the early call to CommitPending when navigating away from a
 // crashed frame.
 BASE_FEATURE(kSkipEarlyCommitPendingForCrashedFrame,

@@ -209,6 +209,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kServiceWorkerSuppressTimeoutWhenPaymentWindowOpen);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerClientUrlIsCreationUrl);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerOptionalTimeoutIterator);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSkipEarlyCommitPendingForCrashedFrame);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSkipRedundantNavigationStateNotification);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSkipRendererCancellationThrottle);
