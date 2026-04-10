@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.contextual_tasks.fusebox;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.view.View;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
-import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -59,17 +61,18 @@ public class ContextualTasksFusebox {
 
     public ContextualTasksFusebox(
             Activity activity,
+            View contentView,
             ContextualTasksFuseboxConfig config,
-            NonNullObservableSupplier<Profile> profileSupplier,
+            MonotonicObservableSupplier<Profile> profileSupplier,
             WindowAndroid windowAndroid,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             Callback<String> loadUrlCallback,
             SnackbarManager snackbarManager) {
 
         mDataProvider = new ContextualTasksFuseboxDataProvider();
-        mDataProvider.initialize(activity, profileSupplier.get().isOffTheRecord());
+        mDataProvider.initialize(activity, assumeNonNull(profileSupplier.get()).isOffTheRecord());
 
-        mContentView = config.contentView;
+        mContentView = contentView;
         View locationBarLayout = config.locationBarLayout;
         View anchorView = config.anchorView;
         View controlContainer = config.controlContainer;
@@ -132,7 +135,7 @@ public class ContextualTasksFusebox {
         mDataProvider.destroy();
     }
 
-    /* Returns the fusebox view */
+    /** Returns the fusebox view. */
     public View getFuseboxView() {
         return mContentView;
     }

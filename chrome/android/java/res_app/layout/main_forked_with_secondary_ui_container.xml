@@ -193,6 +193,14 @@ TODO(http://crbug.com/485940935): Delete this.
                 such as the GTS, so they can be placed in this ConstraintLayout,
                 while effectively being unconstrained. -->
             <ViewStub
+                android:id="@+id/contextual_tasks_fusebox_stub"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout="@layout/search_activity"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <ViewStub
                 android:id="@+id/tab_switcher_view_holder_stub"
                 android:layout_width="0dp"
                 android:layout_height="0dp"

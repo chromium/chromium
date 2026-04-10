@@ -16,7 +16,6 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -84,6 +83,7 @@ import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.contextual_tasks.ContextualTasksBridge;
 import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFusebox.ContextualTasksFuseboxConfig;
+import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFuseboxManager;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.data_sharing.DataSharingNotificationManager;
@@ -338,6 +338,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable BookmarkOpener mBookmarkOpener;
     private @Nullable TabBottomSheetManager mTabBottomSheetManager;
     private @Nullable Callback<ReadAloudController> mTabBottomSheetReadAloudControllerCallback;
+    private @Nullable ContextualTasksFuseboxManager mContextualTasksFuseboxManager;
     private @Nullable CoBrowseViewFactory mCoBrowseViewFactory;
     private final MonotonicObservableSupplier<BookmarkManagerOpener> mBookmarkManagerOpenerSupplier;
     private AdvancedProtectionCoordinator mAdvancedProtectionCoordinator;
@@ -852,6 +853,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mTabBottomSheetManager = null;
         }
 
+        if (mContextualTasksFuseboxManager != null) {
+            mContextualTasksFuseboxManager.destroy();
+            mContextualTasksFuseboxManager = null;
+        }
+
         if (mCoBrowseViewFactory != null) {
             mCoBrowseViewFactory.destroy();
             mCoBrowseViewFactory = null;
@@ -1264,6 +1270,22 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     .onFinishNativeInitialization(currentlySelectedProfile);
         }
         NewTabPageLocationPolicyManager.getInstance().onFinishNativeInitialization(originalProfile);
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TASKS)) {
+            mContextualTasksFuseboxManager =
+                    new ContextualTasksFuseboxManager(
+                            mActivity,
+                            () -> {
+                                ViewStub stub =
+                                        mActivity.findViewById(R.id.contextual_tasks_fusebox_stub);
+                                return createContextualTasksFuseboxConfig(stub.inflate());
+                            },
+                            mActivityTabProvider.asObservable(),
+                            mWindowAndroid,
+                            mActivityLifecycleDispatcher,
+                            mProfileSupplier,
+                            mSnackbarManagerSupplier);
+        }
     }
 
     /** Creates an instance of {@link IncognitoReauthCoordinatorFactory} for tabbed activity. */
@@ -1354,6 +1376,26 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     // Private class methods
+    private ContextualTasksFuseboxConfig createContextualTasksFuseboxConfig(View contentView) {
+        var omniboxActionDelegate =
+                new OmniboxActionDelegateImpl(
+                        mActivity,
+                        /* tabSupplier= */ () -> null,
+                        /* openUrlInExistingTabElseNewTabCb= */ (url) -> {},
+                        /* openIncognitoTabCb= */ CallbackUtils.emptyRunnable(),
+                        /* openPasswordSettingsCb= */ CallbackUtils.emptyRunnable(),
+                        /* openQuickDeleteCb= */ CallbackUtils.emptyRunnable(),
+                        /* tabWindowManagerSupplier= */ TabWindowManagerSingleton::getInstance,
+                        /* bringTabToFrontCallback= */ (tabInfo, url) -> {});
+        return new ContextualTasksFuseboxConfig(
+                contentView,
+                contentView.findViewById(R.id.search_location_bar),
+                contentView.findViewById(R.id.toolbar),
+                contentView.findViewById(R.id.control_container),
+                contentView.findViewById(R.id.bottom_container),
+                omniboxActionDelegate);
+    }
+
     private void initializeIph(Profile profile, boolean intentWithEffect) {
         if (mActivity == null) return;
         mToolbarButtonInProductHelpController =
@@ -1739,25 +1781,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private void initiateTabBottomSheetManagers() {
         if (TabBottomSheetUtils.isTabBottomSheetEnabled()) {
             View contentView =
-                    LayoutInflater.from(mActivity).inflate(R.layout.search_activity, null);
-            var omniboxActionDelegate =
-                    new OmniboxActionDelegateImpl(
-                            mActivity,
-                            () -> null,
-                            /* openUrlInExistingTabElseNewTabCb= */ (url) -> {},
-                            /* openIncognitoTabCb= */ CallbackUtils.emptyRunnable(),
-                            /* openPasswordSettingsCb= */ CallbackUtils.emptyRunnable(),
-                            /* openQuickDeleteCb= */ CallbackUtils.emptyRunnable(),
-                            /* tabWindowManagerSupplier= */ SupplierUtils.ofNull(),
-                            /* bringTabToFrontCallback= */ (tabInfo, url) -> {});
+                    mActivity.getLayoutInflater().inflate(R.layout.search_activity, null);
             ContextualTasksFuseboxConfig fuseboxConfig =
-                    new ContextualTasksFuseboxConfig(
-                            contentView,
-                            contentView.findViewById(R.id.search_location_bar),
-                            contentView.findViewById(R.id.toolbar),
-                            contentView.findViewById(R.id.control_container),
-                            contentView.findViewById(R.id.bottom_container),
-                            omniboxActionDelegate);
+                    createContextualTasksFuseboxConfig(contentView);
             ContextMenuPopulatorFactory contextMenuPopulatorFactory =
                     new ChromeContextMenuPopulatorFactory(
                             /* itemDelegate= */ null,

@@ -152,6 +152,13 @@ found in the LICENSE file.
             app:layout_anchorGravity="bottom"/>
 
         <ViewStub
+            android:id="@+id/contextual_tasks_fusebox_stub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout="@layout/search_activity" />
+
+        <ViewStub
             android:id="@+id/tab_switcher_view_holder_stub"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

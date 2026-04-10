@@ -88,11 +88,12 @@ public class CoBrowseViewFactory {
                 showFusebox || TabBottomSheetUtils.shouldShowFusebox()
                         ? new ContextualTasksFusebox(
                                 mActivity,
+                                mFuseboxConfig.contentView,
                                 mFuseboxConfig,
                                 mProfileSupplier,
                                 mWindowAndroid,
                                 mLifecycleDispatcher,
-                                CallbackUtils.emptyCallback(),
+                                /* loadUrlCallback= */ CallbackUtils.emptyCallback(),
                                 mSnackbarManager)
                         : null;
 
