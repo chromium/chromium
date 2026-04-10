@@ -50,7 +50,7 @@ export function resetDataManagersAndProviders(): void {
  * resolve fetch.
  */
 export function waitForInitialDestinationSet(
-    mockTimer: MockTimer|null = null, delay = 0): Promise<void> {
+    mockTimer: MockTimer|null = null, delay = 0): Promise<Event> {
   const destinationManager = DestinationManager.getInstance();
   const activeDestEvent = eventToPromise(
       DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, destinationManager);
@@ -71,7 +71,7 @@ export function waitForInitialDestinationSet(
  * resolve fetch.
  */
 export function waitForSendPrintRequestFinished(
-    mockTimer: MockTimer|null = null, delay = 0): Promise<void> {
+    mockTimer: MockTimer|null = null, delay = 0): Promise<Event> {
   const printTicketManager = PrintTicketManager.getInstance();
   assert(printTicketManager.isSessionInitialized());
   assert(!printTicketManager.isPrintRequestInProgress());
@@ -91,7 +91,7 @@ export function waitForSendPrintRequestFinished(
  * Initializes print ticket manager and returns a promise for the
  * PRINT_TICKET_MANAGER_SESSION_INITIALIZED event.
  */
-export function waitForPrintTicketManagerInitialized(): Promise<void> {
+export function waitForPrintTicketManagerInitialized(): Promise<Event> {
   const printTicketManager = PrintTicketManager.getInstance();
   const initEvent = eventToPromise(
       PRINT_TICKET_MANAGER_SESSION_INITIALIZED, printTicketManager);

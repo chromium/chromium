@@ -93,7 +93,8 @@ suite('ModelTest', function() {
      */
     const testStickySetting = function(
         setting: keyof Settings, field: string): Promise<void> {
-      const promise = eventToPromise('sticky-setting-changed', model);
+      const promise =
+          eventToPromise<CustomEvent<string>>('sticky-setting-changed', model);
       model.setSetting(setting, stickySettingsChange[field]);
       settingsSet.push(field);
       return promise.then(
@@ -112,10 +113,10 @@ suite('ModelTest', function() {
                 assertDeepEquals(toCompare[settingName], settings[settingName]);
               }
             });
-            const restorePromise =
-                eventToPromise('sticky-setting-changed', model);
+            const restorePromise = eventToPromise<CustomEvent<string>>(
+                'sticky-setting-changed', model);
             model.setSetting(setting, stickySettingsDefault[field]);
-            return restorePromise;
+            return restorePromise.then(() => {});
           });
     };
 

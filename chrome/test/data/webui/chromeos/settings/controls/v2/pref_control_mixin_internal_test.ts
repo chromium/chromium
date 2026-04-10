@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {CrSettingsPrefs, PrefControlMixinInternal} from 'chrome://os-settings/os_settings.js';
+import type {UserActionSettingPrefChangeEvent} from 'chrome://os-settings/os_settings.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -153,8 +154,8 @@ suite('PrefControlMixinInternal', () => {
       testElement.pref = {...fakePrefObject};
 
       const expectedValue = 'newValue9001';
-      const eventPromise =
-          eventToPromise('user-action-setting-pref-change', window);
+      const eventPromise = eventToPromise<UserActionSettingPrefChangeEvent>(
+          'user-action-setting-pref-change', window);
       testElement.updatePrefValueFromUserAction(expectedValue);
 
       const event = await eventPromise;

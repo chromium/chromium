@@ -688,7 +688,8 @@ suite('<settings-internet-detail-subpage>', () => {
           removeDialog.shadowRoot!.querySelector<HTMLButtonElement>(
               '#confirmButton');
       assertTrue(!!confirmButton);
-      const showDetailPromise = eventToPromise('show-passpoint-detail', window);
+      const showDetailPromise = eventToPromise<CustomEvent<{id: string}>>(
+          'show-passpoint-detail', window);
       confirmButton.click();
       await flushTasks();
       const showDetailEvent = await showDetailPromise;
@@ -750,7 +751,8 @@ suite('<settings-internet-detail-subpage>', () => {
       // The row is present only when Passpoint is enabled.
       assertTrue(!!row);
 
-      const showDetailPromise = eventToPromise('show-passpoint-detail', window);
+      const showDetailPromise = eventToPromise<CustomEvent<{id: string}>>(
+          'show-passpoint-detail', window);
       assertTrue(!!row);
       row.click();
       const showDetailEvent = await showDetailPromise;

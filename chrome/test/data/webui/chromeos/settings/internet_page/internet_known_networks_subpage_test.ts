@@ -338,7 +338,8 @@ suite('<settings-internet-known-networks-subpage>', () => {
       // Check a click on the row sends to the details page.
       const row = items[0]!.querySelector('cr-link-row');
       assertTrue(!!row);
-      const showDetailPromise = eventToPromise('show-passpoint-detail', window);
+      const showDetailPromise = eventToPromise<CustomEvent<{id: string}>>(
+          'show-passpoint-detail', window);
       row.click();
       const showDetailEvent = await showDetailPromise;
       assertEquals(firstSubId, showDetailEvent.detail.id);

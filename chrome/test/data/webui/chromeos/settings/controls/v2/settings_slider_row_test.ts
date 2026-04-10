@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import type {SettingsRowElement, SettingsSliderV2Element} from 'chrome://os-settings/os_settings.js';
+import type {SettingsRowElement, SettingsSliderV2Element, UserActionSettingPrefChangeEvent} from 'chrome://os-settings/os_settings.js';
 import {SettingsSliderRowElement} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -155,7 +155,8 @@ suite(SettingsSliderRowElement.is, () => {
     test('updating pref value dispatches pref change event', () => {
       ticks.forEach(async (tickValue, index) => {
         const prefChangeEventPromise =
-            eventToPromise('user-action-setting-pref-change', window);
+            eventToPromise<UserActionSettingPrefChangeEvent>(
+                'user-action-setting-pref-change', window);
         sliderRow.set('pref.value', tickValue);
         assertSliderValueByTick(index);
 

@@ -5,6 +5,7 @@
 import 'chrome://os-settings/os_settings.js';
 
 import {CrToggleElement, SettingsToggleV2Element} from 'chrome://os-settings/os_settings.js';
+import type {UserActionSettingPrefChangeEvent} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assertEquals, assertFalse, assertNotEquals, assertNotReached, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -228,7 +229,8 @@ suite(SettingsToggleV2Element.is, () => {
 
     test('toggling dispatches pref change event', async () => {
       const prefChangeEventPromise =
-          eventToPromise('user-action-setting-pref-change', window);
+          eventToPromise<UserActionSettingPrefChangeEvent>(
+              'user-action-setting-pref-change', window);
 
       internalToggleElement.click();
       assertTrue(toggleElement.checked);
@@ -328,7 +330,8 @@ suite(SettingsToggleV2Element.is, () => {
             assertFalse(toggleElement.pref!.value);
 
             const prefChangeEventPromise =
-                eventToPromise('user-action-setting-pref-change', window);
+                eventToPromise<UserActionSettingPrefChangeEvent>(
+                    'user-action-setting-pref-change', window);
             toggleElement.commitPrefChange();
             assertTrue(toggleElement.checked);
 
@@ -369,7 +372,8 @@ suite(SettingsToggleV2Element.is, () => {
           'clicking on the toggle changes the pref value to the opposite of the toggle',
           async () => {
             const prefChangeEventPromise =
-                eventToPromise('user-action-setting-pref-change', window);
+                eventToPromise<UserActionSettingPrefChangeEvent>(
+                    'user-action-setting-pref-change', window);
 
             internalToggleElement.click();
             await flushTasks();

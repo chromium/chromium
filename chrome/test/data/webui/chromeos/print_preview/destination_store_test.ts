@@ -253,7 +253,8 @@ suite('DestinationStoreTest', function() {
         return Promise
             .all([
               setInitialSettings(true),
-              eventToPromise(DestinationStoreEventType.ERROR, destinationStore),
+              eventToPromise<CustomEvent<DestinationErrorType>>(
+                  DestinationStoreEventType.ERROR, destinationStore),
             ])
             .then(function(argsArray) {
               const errorEvent = argsArray[1];
@@ -497,9 +498,10 @@ suite('DestinationStoreTest', function() {
           // Add a printer status then trigger the event again. The printer
           // status should be parsed and appended to the existing destination.
           printer1.printerStatus = expectedPrinterStatus;
-          const onPrinterStatusUpdatePromise = eventToPromise(
-              DestinationStoreEventType.DESTINATION_PRINTER_STATUS_UPDATE,
-              destinationStore);
+          const onPrinterStatusUpdatePromise =
+              eventToPromise<CustomEvent<{nowOnline: boolean}>>(
+                  DestinationStoreEventType.DESTINATION_PRINTER_STATUS_UPDATE,
+                  destinationStore);
           webUIListenerCallback('local-printers-updated', [printer1]);
           return onPrinterStatusUpdatePromise;
         })
@@ -534,9 +536,10 @@ suite('DestinationStoreTest', function() {
             }],
           };
 
-          const onPrinterStatusUpdatePromise = eventToPromise(
-              DestinationStoreEventType.DESTINATION_PRINTER_STATUS_UPDATE,
-              destinationStore);
+          const onPrinterStatusUpdatePromise =
+              eventToPromise<CustomEvent<{nowOnline: boolean}>>(
+                  DestinationStoreEventType.DESTINATION_PRINTER_STATUS_UPDATE,
+                  destinationStore);
           webUIListenerCallback('local-printers-updated', [printer1]);
           return onPrinterStatusUpdatePromise;
         })
@@ -553,9 +556,10 @@ suite('DestinationStoreTest', function() {
             }],
           };
 
-          const onPrinterStatusUpdatePromise = eventToPromise(
-              DestinationStoreEventType.DESTINATION_PRINTER_STATUS_UPDATE,
-              destinationStore);
+          const onPrinterStatusUpdatePromise =
+              eventToPromise<CustomEvent<{nowOnline: boolean}>>(
+                  DestinationStoreEventType.DESTINATION_PRINTER_STATUS_UPDATE,
+                  destinationStore);
           webUIListenerCallback('local-printers-updated', [printer1]);
           return onPrinterStatusUpdatePromise;
         })
@@ -572,9 +576,10 @@ suite('DestinationStoreTest', function() {
             }],
           };
 
-          const onPrinterStatusUpdatePromise = eventToPromise(
-              DestinationStoreEventType.DESTINATION_PRINTER_STATUS_UPDATE,
-              destinationStore);
+          const onPrinterStatusUpdatePromise =
+              eventToPromise<CustomEvent<{nowOnline: boolean}>>(
+                  DestinationStoreEventType.DESTINATION_PRINTER_STATUS_UPDATE,
+                  destinationStore);
           webUIListenerCallback('local-printers-updated', [printer1]);
           return onPrinterStatusUpdatePromise;
         })

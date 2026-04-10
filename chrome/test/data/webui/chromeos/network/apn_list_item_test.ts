@@ -312,7 +312,8 @@ suite('ApnListItemTest', function() {
                   '#detailsButton')!;
 
           let apnDetailsClickedEvent =
-              eventToPromise('show-apn-detail-dialog', window);
+              eventToPromise<CustomEvent<ApnEventData>>(
+                  'show-apn-detail-dialog', window);
           assertTrue(!!getDetailsButton());
           assertEquals(
               apnListItem.i18n('apnMenuDetails'),
@@ -334,8 +335,8 @@ suite('ApnListItemTest', function() {
               apnListItem.i18n('apnMenuEdit'),
               getDetailsButton().innerText.trim());
 
-          apnDetailsClickedEvent =
-              eventToPromise('show-apn-detail-dialog', window);
+          apnDetailsClickedEvent = eventToPromise<CustomEvent<ApnEventData>>(
+              'show-apn-detail-dialog', window);
           getDetailsButton().click();
           eventData = await apnDetailsClickedEvent;
           assertEquals(TEST_APN_EVENT_DATA.apn.name, eventData.detail.apn.name);
@@ -351,8 +352,8 @@ suite('ApnListItemTest', function() {
                 apnListItem.i18n('apnMenuDetails'),
                 getDetailsButton().innerText.trim());
 
-            apnDetailsClickedEvent =
-                eventToPromise('show-apn-detail-dialog', window);
+            apnDetailsClickedEvent = eventToPromise<CustomEvent<ApnEventData>>(
+                'show-apn-detail-dialog', window);
             getDetailsButton().click();
             eventData = await apnDetailsClickedEvent;
             assertEquals(
@@ -366,7 +367,8 @@ suite('ApnListItemTest', function() {
   test('Test if disable/remove warning event is fired.', async () => {
     await init();
     const guid = 'cellular_guid';
-    let promptShowEvent = eventToPromise('show-error-toast', window);
+    let promptShowEvent =
+        eventToPromise<CustomEvent<string>>('show-error-toast', window);
     await openThreeDotMenu();
     const getDisableButton = () =>
         getThreeDotsMenu().querySelector<HTMLButtonElement>('#disableButton')!;
@@ -397,7 +399,8 @@ suite('ApnListItemTest', function() {
         apnListItem.i18n('apnWarningPromptForDisableRemove'), eventData.detail);
     assertFalse(getThreeDotsMenu().open);
 
-    promptShowEvent = eventToPromise('show-error-toast', window);
+    promptShowEvent =
+        eventToPromise<CustomEvent<string>>('show-error-toast', window);
     getRemoveButton().click();
     eventData = await promptShowEvent;
     managedProps = await mojoApi_.getManagedProperties(guid);
@@ -411,7 +414,8 @@ suite('ApnListItemTest', function() {
   test('Test if enable warning event is fired.', async () => {
     await init();
     const guid = 'cellular_guid';
-    const promptShowEvent = eventToPromise('show-error-toast', window);
+    const promptShowEvent =
+        eventToPromise<CustomEvent<string>>('show-error-toast', window);
     await openThreeDotMenu();
     const getEnableButton = () =>
         getThreeDotsMenu().querySelector<HTMLButtonElement>('#enableButton')!;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {PrintPreviewDestinationListElement} from 'chrome://print/print_preview.js';
+import type {PrintPreviewDestinationListElement, PrintPreviewDestinationListItemElement} from 'chrome://print/print_preview.js';
 import {Destination, DestinationOrigin, getTrustedHTML} from 'chrome://print/print_preview.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -125,13 +125,15 @@ suite('DestinationListTest', function() {
         const items = list.shadowRoot!.querySelectorAll(
             'print-preview-destination-list-item');
         let whenDestinationSelected =
-            eventToPromise('destination-selected', list);
+            eventToPromise<CustomEvent<PrintPreviewDestinationListItemElement>>(
+                'destination-selected', list);
         items[0]!.click();
         return whenDestinationSelected
             .then(event => {
               assertEquals(items[0]!, event.detail);
-              whenDestinationSelected =
-                  eventToPromise('destination-selected', list);
+              whenDestinationSelected = eventToPromise<
+                  CustomEvent<PrintPreviewDestinationListItemElement>>(
+                  'destination-selected', list);
               keyEventOn(items[1]!, 'keydown', 13, undefined, 'Enter');
               return whenDestinationSelected;
             })

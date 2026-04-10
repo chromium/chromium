@@ -85,7 +85,7 @@ export type {AppManagementPageState} from './common/app_management/store.js';
 export {AppManagementStore} from './common/app_management/store.js';
 export {AppManagementStoreMixin} from './common/app_management/store_mixin.js';
 export {resetGlobalScrollTargetForTesting, setGlobalScrollTarget as setGlobalScrollTargetForTesting} from './common/global_scroll_target_mixin.js';
-export type {PrefsState} from './common/types.js';
+export type {PrefsState, UserActionSettingPrefChangeEvent} from './common/types.js';
 export {ControlledButtonElement} from './controls/controlled_button.js';
 export {ControlledRadioButtonElement} from './controls/controlled_radio_button.js';
 export {ExtensionControlledIndicatorElement} from './controls/extension_controlled_indicator.js';

@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import type {CrSliderElement} from 'chrome://os-settings/os_settings.js';
+import type {CrSliderElement, UserActionSettingPrefChangeEvent} from 'chrome://os-settings/os_settings.js';
 import {SettingsSliderV2Element} from 'chrome://os-settings/os_settings.js';
 import {keyDownOn, keyUpOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -262,7 +262,8 @@ suite(SettingsSliderV2Element.is, () => {
           updateSliderValue(/*hasPref=*/ true, /*newValue=*/ 32);
 
           const prefChangeEventPromise =
-              eventToPromise('user-action-setting-pref-change', window);
+              eventToPromise<UserActionSettingPrefChangeEvent>(
+                  'user-action-setting-pref-change', window);
           // Drag the knob on slider to the right. The next value on the right
           // should be 64.
           press('ArrowRight');

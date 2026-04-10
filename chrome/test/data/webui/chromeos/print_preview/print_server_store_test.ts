@@ -65,7 +65,8 @@ suite('PrintServerStoreTest', function() {
           {id: 'server1', name: 'Print Server 1'},
           {id: 'server2', name: 'Print Server 2'},
         ];
-        const whenPrintServersChangedEvent = eventToPromise(
+        const whenPrintServersChangedEvent = eventToPromise<CustomEvent<
+            {printServerNames: string[], isSingleServerFetchingMode: boolean}>>(
             PrintServerStoreEventType.PRINT_SERVERS_CHANGED, printServerStore);
 
         const printServersConfig = {
@@ -111,7 +112,7 @@ suite('PrintServerStoreTest', function() {
   // Tests that an event is dispatched are updated when SERVER_PRINTERS_LOADING
   // is called.
   test('ServerPrintersLoading', async () => {
-    const whenServerPrintersLoadedEvent = eventToPromise(
+    const whenServerPrintersLoadedEvent = eventToPromise<CustomEvent<boolean>>(
         PrintServerStoreEventType.SERVER_PRINTERS_LOADING, printServerStore);
 
     webUIListenerCallback('server-printers-loading', true);

@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import type {SettingsDropdownV2Element, SettingsRowElement} from 'chrome://os-settings/os_settings.js';
+import type {SettingsDropdownV2Element, SettingsRowElement, UserActionSettingPrefChangeEvent} from 'chrome://os-settings/os_settings.js';
 import {SettingsDropdownRowElement} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
@@ -163,7 +163,8 @@ suite(SettingsDropdownRowElement.is, () => {
     test('selecting an option dispatches pref change event', async () => {
       for (const testOption of testOptions) {
         const prefChangeEventPromise =
-            eventToPromise('user-action-setting-pref-change', window);
+            eventToPromise<UserActionSettingPrefChangeEvent>(
+                'user-action-setting-pref-change', window);
         const value = testOption.value;
         simulateSelectAction(value);
         assertOptionSelected(value);

@@ -36,47 +36,54 @@ suite('PdfZoomToolbarTest', function() {
     assertTrue(button.ironIcon!.endsWith(fitPageIcon));
 
     // Tap 1: Fire fit-to-changed(FIT_TO_PAGE), show fit-to-width.
-    let fitToChanged = eventToPromise('fit-to-changed', zoomToolbar);
+    let fitToChanged =
+        eventToPromise<CustomEvent<FittingType>>('fit-to-changed', zoomToolbar);
     button.click();
     let result = await fitToChanged;
     assertEquals(FittingType.FIT_TO_PAGE, result.detail);
     assertTrue(button.ironIcon!.endsWith(fitWidthIcon));
 
     // Tap 2: Fire fit-to-changed(FIT_TO_WIDTH), show fit-to-page.
-    fitToChanged = eventToPromise('fit-to-changed', zoomToolbar);
+    fitToChanged =
+        eventToPromise<CustomEvent<FittingType>>('fit-to-changed', zoomToolbar);
     button.click();
     result = await fitToChanged;
     assertEquals(FittingType.FIT_TO_WIDTH, result.detail);
     assertTrue(button.ironIcon!.endsWith(fitPageIcon));
 
     // Tap 3: Fire fit-to-changed(FIT_TO_PAGE) again.
-    fitToChanged = eventToPromise('fit-to-changed', zoomToolbar);
+    fitToChanged =
+        eventToPromise<CustomEvent<FittingType>>('fit-to-changed', zoomToolbar);
     button.click();
     result = await fitToChanged;
     assertEquals(FittingType.FIT_TO_PAGE, result.detail);
     assertTrue(button.ironIcon!.endsWith(fitWidthIcon));
 
     // Do the same as above, but with fitToggleFromHotKey().
-    fitToChanged = eventToPromise('fit-to-changed', zoomToolbar);
+    fitToChanged =
+        eventToPromise<CustomEvent<FittingType>>('fit-to-changed', zoomToolbar);
     zoomToolbar.fitToggleFromHotKey();
     result = await fitToChanged;
     assertEquals(FittingType.FIT_TO_WIDTH, result.detail);
     assertTrue(button.ironIcon!.endsWith(fitPageIcon));
 
-    fitToChanged = eventToPromise('fit-to-changed', zoomToolbar);
+    fitToChanged =
+        eventToPromise<CustomEvent<FittingType>>('fit-to-changed', zoomToolbar);
     zoomToolbar.fitToggleFromHotKey();
     result = await fitToChanged;
     assertEquals(FittingType.FIT_TO_PAGE, result.detail);
     assertTrue(button.ironIcon!.endsWith(fitWidthIcon));
 
-    fitToChanged = eventToPromise('fit-to-changed', zoomToolbar);
+    fitToChanged =
+        eventToPromise<CustomEvent<FittingType>>('fit-to-changed', zoomToolbar);
     zoomToolbar.fitToggleFromHotKey();
     result = await fitToChanged;
     assertEquals(FittingType.FIT_TO_WIDTH, result.detail);
     assertTrue(button.ironIcon!.endsWith(fitPageIcon));
 
     // Tap 4: Fire fit-to-changed(FIT_TO_PAGE) again.
-    fitToChanged = eventToPromise('fit-to-changed', zoomToolbar);
+    fitToChanged =
+        eventToPromise<CustomEvent<FittingType>>('fit-to-changed', zoomToolbar);
     button.click();
     result = await fitToChanged;
     assertEquals(FittingType.FIT_TO_PAGE, result.detail);
@@ -93,7 +100,8 @@ suite('PdfZoomToolbarTest', function() {
     assertTrue(button.ironIcon!.endsWith(fitWidthIcon));
 
     // Tap 1: Fire fit-to-changed(FIT_TO_WIDTH).
-    let fitToChanged = eventToPromise('fit-to-changed', zoomToolbar);
+    let fitToChanged =
+        eventToPromise<CustomEvent<FittingType>>('fit-to-changed', zoomToolbar);
     button.click();
     let result = await fitToChanged;
     assertEquals(FittingType.FIT_TO_WIDTH, result.detail);
@@ -110,7 +118,8 @@ suite('PdfZoomToolbarTest', function() {
     assertTrue(button.ironIcon!.endsWith(fitWidthIcon));
 
     // Tap 2: Fire fit-to-changed(FIT_TO_WIDTH).
-    fitToChanged = eventToPromise('fit-to-changed', zoomToolbar);
+    fitToChanged =
+        eventToPromise<CustomEvent<FittingType>>('fit-to-changed', zoomToolbar);
     button.click();
     result = await fitToChanged;
     assertEquals(FittingType.FIT_TO_WIDTH, result.detail);

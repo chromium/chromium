@@ -5,6 +5,7 @@
 import 'chrome://os-settings/os_settings.js';
 
 import {SettingsDropdownV2Element} from 'chrome://os-settings/os_settings.js';
+import type {UserActionSettingPrefChangeEvent} from 'chrome://os-settings/os_settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
@@ -238,7 +239,8 @@ suite(SettingsDropdownV2Element.is, () => {
     test('Selecting an option dispatches pref change event', async () => {
       for (const testOption of testOptions) {
         const prefChangeEventPromise =
-            eventToPromise('user-action-setting-pref-change', window);
+            eventToPromise<UserActionSettingPrefChangeEvent>(
+                'user-action-setting-pref-change', window);
         const value = testOption.value;
         simulateSelectAction(value);
         assertOptionSelected(value);

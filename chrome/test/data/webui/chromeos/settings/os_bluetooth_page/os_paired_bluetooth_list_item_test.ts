@@ -314,20 +314,22 @@ suite('<os-settings-paired-bluetooth-list-item>', () => {
     assertTrue(!!getManagedIcon());
 
     // Simulate hovering over the icon.
-    const showTooltipPromise =
-        eventToPromise('managed-tooltip-state-change', pairedBluetoothListItem);
+    const showTooltipPromise = eventToPromise<CustomEvent<
+        {show: boolean, element: Element | undefined, address: string}>>(
+        'managed-tooltip-state-change', pairedBluetoothListItem);
     getManagedIcon()!.dispatchEvent(new Event('mouseenter'));
 
     // The managed-tooltip-state-changed event should have been fired.
     const showTooltipEvent = await showTooltipPromise;
-    assertEquals(true, showTooltipEvent.detail.show);
+    assertTrue(showTooltipEvent.detail.show);
     assertEquals(getManagedIcon(), showTooltipEvent.detail.element);
     assertEquals(
         device.deviceProperties.address, showTooltipEvent.detail.address);
 
     // Simulate the device being unblocked by policy.
-    const hideTooltipPromise =
-        eventToPromise('managed-tooltip-state-change', pairedBluetoothListItem);
+    const hideTooltipPromise = eventToPromise<CustomEvent<
+        {show: boolean, element: Element | undefined, address: string}>>(
+        'managed-tooltip-state-change', pairedBluetoothListItem);
     const device1 = {...device};
     device1.deviceProperties.isBlockedByPolicy = false;
     pairedBluetoothListItem.set('device', device1);

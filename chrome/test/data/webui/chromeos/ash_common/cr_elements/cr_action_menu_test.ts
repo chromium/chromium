@@ -73,12 +73,14 @@ suite('CrActionMenu', function() {
   }
 
   test('open-changed event fires', async function() {
-    let whenFired = eventToPromise('open-changed', menu);
+    let whenFired =
+        eventToPromise<CustomEvent<{value: boolean}>>('open-changed', menu);
     menu.showAt(dots);
     let event = await whenFired;
     assertTrue(event.detail.value);
 
-    whenFired = eventToPromise('open-changed', menu);
+    whenFired =
+        eventToPromise<CustomEvent<{value: boolean}>>('open-changed', menu);
     menu.close();
     event = await whenFired;
     assertFalse(event.detail.value);

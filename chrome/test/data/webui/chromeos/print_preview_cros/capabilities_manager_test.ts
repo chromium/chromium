@@ -39,7 +39,7 @@ suite('CapabilitiesManager', () => {
   });
 
   // Initialize the DestinationManager and wait for it to send all events.
-  async function waitForDestinationManagerLoad(): Promise<void> {
+  async function waitForDestinationManagerLoad(): Promise<Event> {
     const destinationManager = DestinationManager.getInstance();
     destinationManager.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
     const activeDestinationChangedEvent = eventToPromise(

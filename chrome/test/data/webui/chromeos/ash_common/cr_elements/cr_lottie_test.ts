@@ -168,7 +168,8 @@ suite('cr_lottie_test', function() {
 
     // First resize event after loading the animation.
     const firstResizeEventAfterLoad =
-        eventToPromise('cr-lottie-resized', crLottieElement);
+        eventToPromise<CustomEvent<{height: number, width: number}>>(
+            'cr-lottie-resized', crLottieElement);
     const firstResizeEvent = await firstResizeEventAfterLoad;
     assertEquals(firstResizeEvent.detail.height, defaultHeight);
     assertEquals(firstResizeEvent.detail.width, defaultWidth);
@@ -179,7 +180,8 @@ suite('cr_lottie_test', function() {
     container.style.width = newWidth + 'px';
     container.style.height = newHeight + 'px';
     const resizeEventAfterExplicitResize =
-        eventToPromise('cr-lottie-resized', crLottieElement);
+        eventToPromise<CustomEvent<{height: number, width: number}>>(
+            'cr-lottie-resized', crLottieElement);
     const resizeEvent = await resizeEventAfterExplicitResize;
 
     assertEquals(resizeEvent.detail.height, newHeight);
@@ -196,7 +198,8 @@ suite('cr_lottie_test', function() {
     const newHeight = 300;
     const newWidth = 400;
     const waitForResizeEvent =
-        eventToPromise('cr-lottie-resized', crLottieElement);
+        eventToPromise<CustomEvent<{height: number, width: number}>>(
+            'cr-lottie-resized', crLottieElement);
     // Update size of parent div container to see if the canvas is resized.
     container.style.width = newWidth + 'px';
     container.style.height = newHeight + 'px';

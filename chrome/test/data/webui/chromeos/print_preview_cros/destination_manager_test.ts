@@ -50,7 +50,7 @@ suite('DestinationManager', () => {
     mockController.reset();
   });
 
-  function waitForInitialActiveDestinationSet(): Promise<void> {
+  function waitForInitialActiveDestinationSet(): Promise<Event> {
     const activeDestChanged = eventToPromise(
         DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, instance);
     instance.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
@@ -58,7 +58,7 @@ suite('DestinationManager', () => {
     return activeDestChanged;
   }
 
-  function waitForPrintTicketManagerInitialized(): Promise<void> {
+  function waitForPrintTicketManagerInitialized(): Promise<Event> {
     const printTicketManager = PrintTicketManager.getInstance();
     const initEvent = eventToPromise(
         PRINT_TICKET_MANAGER_SESSION_INITIALIZED, printTicketManager);
