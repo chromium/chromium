@@ -1411,6 +1411,11 @@ const char kPhoneNumberDescription[] =
     "When enabled, one tapping or long pressing on a phone number will trigger "
     "the phone number experience.";
 
+const char kPlusButtonInFakeboxName[] = "Enable plus button in fakebox NTP";
+const char kPlusButtonInFakeboxDescription[] =
+    "When enabled, the fakebox NTP can contain a plus button for multimodal "
+    "actions";
+
 const char kPriceTrackingPromoName[] =
     "Enables price tracking notification promo card";
 const char kPriceTrackingPromoDescription[] =

@@ -865,6 +865,9 @@ extern const char kPersistentDefaultBrowserPromoDescription[];
 extern const char kPhoneNumberName[];
 extern const char kPhoneNumberDescription[];
 
+extern const char kPlusButtonInFakeboxName[];
+extern const char kPlusButtonInFakeboxDescription[];
+
 extern const char kPriceTrackingPromoName[];
 extern const char kPriceTrackingPromoDescription[];
 

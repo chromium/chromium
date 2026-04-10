@@ -952,4 +952,10 @@ BASE_DECLARE_FEATURE(kSyncedGroupColor);
 // Returns true if the SyncedGroupColor feature is enabled.
 bool IsSyncedGroupColorEnabled();
 
+// Enables the plus button in NTP fakebox.
+BASE_DECLARE_FEATURE(kPlusButtonInFakebox);
+
+// Returns true if the plus button in NTP fakebox is enabled
+bool IsPlusButtonInFakeboxEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

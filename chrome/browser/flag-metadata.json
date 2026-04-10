@@ -7523,6 +7523,11 @@
     "expiry_milestone": 149
   },
   {
+    "name": "plus-button-in-fakebox",
+    "owners": [ "radunitescu@google.com", "bling-search@google.com" ],
+    "expiry_milestone": 153
+  },
+  {
     "name": "policy-registration-delay",
     "owners": ["ydago@chromium.org", "zmin@google.com"],
     "expiry_milestone": 148

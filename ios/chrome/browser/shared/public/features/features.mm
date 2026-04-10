@@ -1154,3 +1154,11 @@ BASE_FEATURE(kSyncedGroupColor, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsSyncedGroupColorEnabled() {
   return base::FeatureList::IsEnabled(kSyncedGroupColor);
 }
+
+// Enables the plus button in NTP fakebox.
+BASE_FEATURE(kPlusButtonInFakebox, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Returns true if the plus button in NTP fakebox is enabled
+bool IsPlusButtonInFakeboxEnabled() {
+  return base::FeatureList::IsEnabled(kPlusButtonInFakebox);
+}
