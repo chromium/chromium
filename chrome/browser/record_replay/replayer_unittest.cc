@@ -7,6 +7,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/record_replay/content_record_replay_driver_factory.h"
 #include "chrome/browser/record_replay/record_replay_client.h"
 #include "chrome/browser/record_replay/record_replay_driver.h"
 #include "chrome/browser/record_replay/record_replay_driver_factory.h"
@@ -17,6 +18,7 @@
 #include "chrome/common/record_replay/record_replay_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -97,7 +99,7 @@ class MockRecordReplayClient : public RecordReplayClient,
 
   RecordReplayManager manager_{this};
   MockRecordReplayAgent agent_;
-  RecordReplayDriverFactory driver_factory_{*this};
+  ContentRecordReplayDriverFactory driver_factory_{*this};
 };
 
 class ReplayerTest : public ChromeRenderViewHostTestHarness {

@@ -5,63 +5,40 @@
 #ifndef CHROME_BROWSER_RECORD_REPLAY_RECORD_REPLAY_DRIVER_FACTORY_H_
 #define CHROME_BROWSER_RECORD_REPLAY_RECORD_REPLAY_DRIVER_FACTORY_H_
 
-#include <memory>
+#include <vector>
 
-#include "base/memory/raw_ref.h"
+#include "base/functional/function_ref.h"
 #include "chrome/browser/record_replay/element_id.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "content/public/browser/web_contents_observer.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
-#include "third_party/blink/public/common/tokens/tokens.h"
+#include "content/public/browser/render_frame_host.h"
 
 namespace record_replay {
 
-class RecordReplayClient;
 class RecordReplayDriver;
 
 // This class manages the lifecycle of RecordReplayDriver instances within a
-// tab. It is a WebContentsObserver that automatically creates drivers for new
-// frames.
-//
-// Owned by `RecordReplayClient` (1 per tab) and runs on the UI thread.
-class RecordReplayDriverFactory : public content::WebContentsObserver {
+// tab.
+class RecordReplayDriverFactory {
  public:
-  explicit RecordReplayDriverFactory(RecordReplayClient& client);
-  RecordReplayDriverFactory(const RecordReplayDriverFactory&) = delete;
-  RecordReplayDriverFactory& operator=(const RecordReplayDriverFactory&) =
-      delete;
-  ~RecordReplayDriverFactory() override;
+  virtual ~RecordReplayDriverFactory() = 0;
 
-  using content::WebContentsObserver::Observe;
-
-  RecordReplayDriver* GetOrCreateDriver(content::RenderFrameHost* rfh);
-  // DEPRECATED — Use `element_id` or `field_id` instead of frame_token.
-  RecordReplayDriver* GetDriver(const blink::LocalFrameToken& frame_token);
-  RecordReplayDriver* GetDriver(const ElementId& element_id);
-  RecordReplayDriver* GetDriver(const autofill::FieldGlobalId& field_id);
+  virtual RecordReplayDriver* GetDriver(const ElementId& element_id) = 0;
+  virtual RecordReplayDriver* GetDriver(
+      const autofill::FieldGlobalId& field_id) = 0;
 
   // Returns all drivers whose frame is active. That is, it does not include
   // drivers whose frame is bfcached or prerendered.
-  std::vector<RecordReplayDriver*> GetActiveDrivers();
+  virtual std::vector<RecordReplayDriver*> GetActiveDrivers() = 0;
 
   // Calls `fun` for all drivers, including inactive ones.
-  void ForEachDriver(base::FunctionRef<void(RecordReplayDriver&)> fun);
+  virtual void ForEachDriver(
+      base::FunctionRef<void(RecordReplayDriver&)> fun) = 0;
 
   // Enables or disables recording for all drivers that will be created from on.
-  void SetRecordForFutureDrivers(bool enable);
-
- private:
-  // content::WebContentsObserver implementation.
-  void RenderFrameCreated(content::RenderFrameHost* rfh) override;
-  void RenderFrameDeleted(content::RenderFrameHost* rfh) override;
-
-  const raw_ref<RecordReplayClient> client_;
-  absl::flat_hash_map<blink::LocalFrameToken,
-                      std::unique_ptr<RecordReplayDriver>>
-      drivers_;
-  // If true, `StartRecording()` will be called on newly created drivers.
-  bool record_future_drivers_ = false;
+  virtual void SetRecordForFutureDrivers(bool enable) = 0;
 };
+
+inline RecordReplayDriverFactory::~RecordReplayDriverFactory() {}
 
 }  // namespace record_replay
 

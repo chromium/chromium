@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/record_replay/record_replay_driver_factory.h"
+#include "chrome/browser/record_replay/content_record_replay_driver_factory.h"
 
 #include <memory>
 #include <optional>
@@ -11,9 +11,12 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/record_replay/content_element_id.h"
 #include "chrome/browser/record_replay/record_replay_client.h"
 #include "chrome/browser/record_replay/record_replay_driver.h"
+#include "chrome/browser/record_replay/record_replay_driver_factory.h"
 #include "chrome/browser/record_replay/record_replay_manager.h"
+#include "chrome/common/record_replay/aliases.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -61,7 +64,7 @@ class MockRecordReplayClient : public RecordReplayClient {
 
  private:
   RecordReplayManager manager_{this};
-  RecordReplayDriverFactory driver_factory_{*this};
+  ContentRecordReplayDriverFactory driver_factory_{*this};
 };
 
 }  // namespace
@@ -82,7 +85,10 @@ class RecordReplayDriverFactoryTest : public ChromeRenderViewHostTestHarness {
   }
 
   MockRecordReplayClient& client() { return *client_; }
-  RecordReplayDriverFactory& factory() { return client().GetDriverFactory(); }
+  ContentRecordReplayDriverFactory& factory() {
+    return static_cast<ContentRecordReplayDriverFactory&>(
+        client().GetDriverFactory());
+  }
 
   content::RenderFrameHost* CreateChildFrame() {
     return content::NavigationSimulator::NavigateAndCommitFromDocument(
@@ -112,19 +118,25 @@ class RecordReplayDriverFactoryTest : public ChromeRenderViewHostTestHarness {
 
 // Tests that a GetOrCreateDriver() creates a driver.
 TEST_F(RecordReplayDriverFactoryTest, CreateAndGetDriver) {
-  EXPECT_EQ(factory().GetDriver(blink::LocalFrameToken()), nullptr);
+  EXPECT_EQ(factory().GetDriver(
+                ContentElementId(blink::LocalFrameToken(), DomNodeId(0))),
+            nullptr);
   content::RenderFrameHost* child_rfh = CreateChildFrame();
   ASSERT_TRUE(child_rfh);
   RecordReplayDriver* driver = factory().GetOrCreateDriver(child_rfh);
   EXPECT_EQ(factory().GetOrCreateDriver(child_rfh), driver);
-  EXPECT_EQ(factory().GetDriver(child_rfh->GetFrameToken()), driver);
+  EXPECT_EQ(factory().GetDriver(
+                ContentElementId(child_rfh->GetFrameToken(), DomNodeId(0))),
+            driver);
 }
 
 // Tests that a driver is created in RenderFrameCreated().
 TEST_F(RecordReplayDriverFactoryTest, RenderFrameCreated) {
   content::RenderFrameHost* child_rfh = CreateChildFrame();
   ASSERT_TRUE(child_rfh);
-  EXPECT_NE(factory().GetDriver(child_rfh->GetFrameToken()), nullptr);
+  EXPECT_NE(factory().GetDriver(
+                ContentElementId(child_rfh->GetFrameToken(), DomNodeId(0))),
+            nullptr);
 }
 
 TEST_F(RecordReplayDriverFactoryTest, RenderFrameDeleted) {
@@ -132,9 +144,11 @@ TEST_F(RecordReplayDriverFactoryTest, RenderFrameDeleted) {
   ASSERT_TRUE(child_rfh);
   blink::LocalFrameToken token = child_rfh->GetFrameToken();
 
-  EXPECT_NE(factory().GetDriver(token), nullptr);
+  EXPECT_NE(factory().GetDriver(ContentElementId(token, DomNodeId(0))),
+            nullptr);
   content::RenderFrameHostTester::For(child_rfh)->Detach();
-  EXPECT_EQ(factory().GetDriver(token), nullptr);
+  EXPECT_EQ(factory().GetDriver(ContentElementId(token, DomNodeId(0))),
+            nullptr);
 }
 
 // Tests that GetActiveDrivers() (only) returns the active drivers.

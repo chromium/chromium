@@ -8,7 +8,8 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/types/optional_ref.h"
-#include "chrome/browser/record_replay/record_replay_client.h"
+#include "chrome/browser/record_replay/chrome_record_replay_client.h"
+#include "chrome/browser/record_replay/content_record_replay_driver_factory.h"
 #include "chrome/browser/record_replay/record_replay_driver_factory.h"
 #include "chrome/browser/record_replay/recording_data_manager.h"
 #include "chrome/common/record_replay/record_replay_features.h"
@@ -64,7 +65,7 @@ class MockRecordReplayClient : public RecordReplayClient {
  private:
   MockRecordingDataManager data_manager_;
   RecordReplayManager manager_{this};
-  RecordReplayDriverFactory driver_factory_{*this};
+  ContentRecordReplayDriverFactory driver_factory_{*this};
 };
 
 class RecordReplayManagerTest : public ChromeRenderViewHostTestHarness {

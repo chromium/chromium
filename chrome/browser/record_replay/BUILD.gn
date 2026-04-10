@@ -14,12 +14,13 @@ static_library("record_replay") {
     "content_element_id.h",
     "content_record_replay_driver.cc",
     "content_record_replay_driver.h",
+    "content_record_replay_driver_factory.cc",
+    "content_record_replay_driver_factory.h",
     "element_id.cc",
     "element_id.h",
     "record_replay_client.cc",
     "record_replay_client.h",
     "record_replay_driver.h",
-    "record_replay_driver_factory.cc",
     "record_replay_driver_factory.h",
     "record_replay_manager.cc",
     "record_replay_manager.h",
@@ -76,7 +77,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "chrome_record_replay_client_unittest.cc",
-    "record_replay_driver_factory_unittest.cc",
+    "content_record_replay_driver_factory_unittest.cc",
     "record_replay_manager_unittest.cc",
     "recording_data_manager_impl_unittest.cc",
     "replayer_unittest.cc",

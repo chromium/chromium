@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_RECORD_REPLAY_CHROME_RECORD_REPLAY_CLIENT_H_
 #define CHROME_BROWSER_RECORD_REPLAY_CHROME_RECORD_REPLAY_CLIENT_H_
 
+#include "chrome/browser/record_replay/content_record_replay_driver_factory.h"
 #include "chrome/browser/record_replay/record_replay_client.h"
-#include "chrome/browser/record_replay/record_replay_driver_factory.h"
 #include "chrome/browser/record_replay/record_replay_manager.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "chrome/common/record_replay/record_replay.mojom.h"
@@ -59,7 +59,7 @@ class ChromeRecordReplayClient : public record_replay::RecordReplayClient,
                          content::WebContents* old_contents,
                          content::WebContents* new_contents) override;
 
-  record_replay::RecordReplayDriverFactory driver_factory_{*this};
+  record_replay::ContentRecordReplayDriverFactory driver_factory_{*this};
   record_replay::RecordReplayManager manager_{this};
 };
 

@@ -8,8 +8,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/record_replay/content_record_replay_driver.h"
+#include "chrome/browser/record_replay/content_record_replay_driver_factory.h"
 #include "chrome/browser/record_replay/record_replay_driver.h"
-#include "chrome/browser/record_replay/record_replay_driver_factory.h"
 #include "chrome/browser/record_replay/recording_data_manager.h"
 #include "chrome/browser/record_replay/recording_data_manager_factory.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
@@ -63,8 +63,10 @@ void ChromeRecordReplayClient::BindRecordReplayDriver(
   if (!client) {
     return;
   }
-  record_replay::RecordReplayDriver* driver =
-      client->GetDriverFactory().GetOrCreateDriver(rfh);
+  record_replay::ContentRecordReplayDriverFactory& driver_factory =
+      static_cast<ChromeRecordReplayClient*>(client)->driver_factory_;
+  record_replay::ContentRecordReplayDriver* driver =
+      driver_factory.GetOrCreateDriver(rfh);
   if (!driver) {
     return;
   }
