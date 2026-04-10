@@ -13,7 +13,7 @@ import type {AutocompleteMatch, AutocompleteResult, PageHandlerRemote as Searchb
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {ComposeboxFile, ComposeboxFileValidationError, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, isContextUploadStatusTerminal, ProcessFilesError, recordContextualElementClickedMetric, recordEnumerationValue, recordModelModeSelection, recordToolModeSelection, recordUserAction} from './common.js';
+import {ComposeboxFile, ComposeboxFileValidationError, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, isContextUploadStatusTerminal, ProcessFilesError, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordToolModeSelection, recordUserAction} from './common.js';
 import type {ComposeboxState} from './common.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
@@ -1072,6 +1072,24 @@ export const ComposeboxEmbedderMixin =
           }
           const {tabs} = await this.getSearchboxHandler().getRecentTabs();
           this.tabSuggestions = [...tabs];
+
+          if (this.inputState) {
+            const {allowedInputTypes, disabledInputTypes} = this.inputState;
+            if (allowedInputTypes.includes(InputType.kBrowserTab) &&
+                !disabledInputTypes.includes(InputType.kBrowserTab)) {
+              // Get the set of IDs of tabs currently added as context.
+              const addedTabIdsSet = new Set(this.addedTabsIds.keys());
+
+              // Filter out suggestions that are already added as context.
+              const filteredSuggestions = this.tabSuggestions.filter(
+                  tab => !addedTabIdsSet.has(tab.tabId));
+
+              if (filteredSuggestions.length > 0) {
+                recordInputTypeShown(
+                    InputType.kBrowserTab, this.composeboxSource, 'AimPopup');
+              }
+            }
+          }
         }
 
         async onGetTabPreview(e: CustomEvent<{
