@@ -135,6 +135,34 @@ TEST(TypeConversionsTest, ToAuthenticatorMakeCredentialResponse) {
   }
 }
 
+TEST(TypeConversionsTest, ToAuthenticatorMakeCredentialResponseVersion8) {
+  // With VERSION_8, dwTransports (multi-transport bitmask) should be used
+  // instead of inferring from dwUsedTransport alone.
+  auto auth_data =
+      fido_parsing_utils::Materialize(test_data::kTestSignAuthenticatorData);
+  auto att_stmt = fido_parsing_utils::Materialize(
+      test_data::kPackedAttestationStatementCBOR);
+  WEBAUTHN_CREDENTIAL_ATTESTATION attestation = {};
+  attestation.dwVersion = WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_8;
+  attestation.pwszFormatType = L"packed";
+  attestation.cbAuthenticatorData = base::checked_cast<DWORD>(auth_data.size());
+  attestation.pbAuthenticatorData = auth_data.data();
+  attestation.cbAttestation = base::checked_cast<DWORD>(att_stmt.size());
+  attestation.pbAttestation = att_stmt.data();
+  attestation.dwAttestationDecodeType = WEBAUTHN_ATTESTATION_DECODE_NONE;
+  attestation.dwUsedTransport = WEBAUTHN_CTAP_TRANSPORT_INTERNAL;
+  attestation.dwTransports =
+      WEBAUTHN_CTAP_TRANSPORT_INTERNAL | WEBAUTHN_CTAP_TRANSPORT_HYBRID;
+
+  auto response = ToAuthenticatorMakeCredentialResponse(attestation);
+  ASSERT_TRUE(response);
+  EXPECT_EQ(response->transport_used, FidoTransportProtocol::kInternal);
+  ASSERT_TRUE(response->transports);
+  EXPECT_THAT(*response->transports,
+              testing::UnorderedElementsAre(FidoTransportProtocol::kInternal,
+                                            FidoTransportProtocol::kHybrid));
+}
+
 TEST(TypeConversionsTest, Transports) {
   for (int i = 0; i < 16; i++) {
     const uint32_t mask = 1u << i;

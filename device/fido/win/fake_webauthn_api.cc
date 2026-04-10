@@ -341,7 +341,9 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorMakeCredential(
       *cbor::Writer::Write(NoneAttestationStatement().AsCBOR());
 
   attestation->win_attestation.dwVersion =
-      WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_7;
+      version_ >= WEBAUTHN_API_VERSION_9
+          ? WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_8
+          : WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_7;
   attestation->win_attestation.pwszFormatType = WEBAUTHN_ATTESTATION_TYPE_NONE;
   attestation->win_attestation.cbAuthenticatorData =
       attestation->authenticator_data.size();
@@ -357,6 +359,12 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorMakeCredential(
     attestation->win_attestation.dwUsedTransport =
         attachment == WEBAUTHN_AUTHENTICATOR_ATTACHMENT_PLATFORM
             ? WEBAUTHN_CTAP_TRANSPORT_INTERNAL
+            : transport_;
+  }
+  if (version_ >= WEBAUTHN_API_VERSION_9) {
+    attestation->win_attestation.dwTransports =
+        attachment == WEBAUTHN_AUTHENTICATOR_ATTACHMENT_PLATFORM
+            ? WEBAUTHN_CTAP_TRANSPORT_INTERNAL | WEBAUTHN_CTAP_TRANSPORT_HYBRID
             : transport_;
   }
 

@@ -1620,6 +1620,35 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest, WinMakeCredential) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
+                       WinMakeCredentialTransports) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), GetHttpsURL("www.acme.com", "/title1.html")));
+
+  device::FakeWinWebAuthnApi fake_api;
+  fake_api.set_is_uvpaa(true);
+  fake_api.set_version(WEBAUTHN_API_VERSION_9);
+  device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override(&fake_api);
+
+  ASSERT_EQ("hybrid,internal",
+            EvalJs(shell()->web_contents(),
+                   "navigator.credentials.create({ publicKey: {"
+                   "  challenge: new TextEncoder().encode('climb a mountain'),"
+                   "  rp: { id: 'acme.com', name: 'Acme' },"
+                   "  user: { "
+                   "    id: new TextEncoder().encode('1098237235409872'),"
+                   "    name: 'avery.a.jones@example.com',"
+                   "    displayName: 'Avery A. Jones' },"
+                   "  pubKeyCredParams: [{ type: 'public-key', alg: -257 }],"
+                   "  timeout: 10000,"
+                   "  authenticatorSelection: {"
+                   "     userVerification: 'preferred',"
+                   "     authenticatorAttachment: 'platform',"
+                   "  },"
+                   "}}).then(c => c.response.getTransports().sort().join(','),"
+                   "         e => e.toString())"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
                        WinMakeCredentialReturnCodeFailure) {
   EXPECT_TRUE(
       NavigateToURL(shell(), GetHttpsURL("www.acme.com", "/title1.html")));
