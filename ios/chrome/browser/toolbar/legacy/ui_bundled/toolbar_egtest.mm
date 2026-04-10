@@ -324,14 +324,7 @@ void WaitForEmpyOmnibox() {
 }
 
 // Types JavaScript into Omnibox and verify that an alert is displayed.
-// TODO(crbug.com/483956342): Re-enable test on asan bot.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_testTypeJavaScriptIntoOmnibox \
-  DISABLED_testTypeJavaScriptIntoOmnibox
-#else
-#define MAYBE_testTypeJavaScriptIntoOmnibox testTypeJavaScriptIntoOmnibox
-#endif
-- (void)MAYBE_testTypeJavaScriptIntoOmnibox {
+- (void)testTypeJavaScriptIntoOmnibox {
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
 
