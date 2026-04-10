@@ -243,4 +243,96 @@ TEST_F(NavigatorWebInstallTest, BlockedWithoutUserActivation) {
   EXPECT_TRUE(promise.IsEmpty());
 }
 
+TEST_F(NavigatorWebInstallTest, EmptyInstallUrl) {
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::UserActivationNotificationType::kTest);
+
+  DummyExceptionStateForTesting exception_state;
+  auto promise = NavigatorWebInstall::install(GetScriptState(), *GetNavigator(),
+                                              String(""), exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  ScriptPromiseTester tester(GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
+}
+
+TEST_F(NavigatorWebInstallTest, InvalidInstallUrl) {
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::UserActivationNotificationType::kTest);
+
+  DummyExceptionStateForTesting exception_state;
+  auto promise = NavigatorWebInstall::install(
+      GetScriptState(), *GetNavigator(), String("://invalid"), exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  ScriptPromiseTester tester(GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
+}
+
+TEST_F(NavigatorWebInstallTest, WhitespaceOnlyInstallUrl) {
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::UserActivationNotificationType::kTest);
+
+  DummyExceptionStateForTesting exception_state;
+  auto promise = NavigatorWebInstall::install(GetScriptState(), *GetNavigator(),
+                                              String("   "), exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  ScriptPromiseTester tester(GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
+}
+
+TEST_F(NavigatorWebInstallTest, EmptyManifestId) {
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::UserActivationNotificationType::kTest);
+
+  DummyExceptionStateForTesting exception_state;
+  auto promise = NavigatorWebInstall::install(GetScriptState(), *GetNavigator(),
+                                              String("https://example.com"),
+                                              String(""), exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  ScriptPromiseTester tester(GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
+}
+
+TEST_F(NavigatorWebInstallTest, NullManifestId) {
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::UserActivationNotificationType::kTest);
+
+  DummyExceptionStateForTesting exception_state;
+  // When JavaScript passes null as a USVString argument, the WebIDL binding
+  // converts it via ToString(null) which produces the literal string "null".
+  auto promise = NavigatorWebInstall::install(GetScriptState(), *GetNavigator(),
+                                              String("https://example.com"),
+                                              String("null"), exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  ScriptPromiseTester tester(GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
+}
+
+TEST_F(NavigatorWebInstallTest, UndefinedManifestId) {
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::UserActivationNotificationType::kTest);
+
+  DummyExceptionStateForTesting exception_state;
+  // When JavaScript passes undefined as a USVString argument, the WebIDL
+  // binding converts it via ToString(undefined) which produces the literal
+  // string "undefined".
+  auto promise = NavigatorWebInstall::install(
+      GetScriptState(), *GetNavigator(), String("https://example.com"),
+      String("undefined"), exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  ScriptPromiseTester tester(GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
+}
+
 }  // namespace blink

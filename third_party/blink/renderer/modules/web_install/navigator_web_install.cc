@@ -108,11 +108,10 @@ ScriptPromise<WebInstallResult> NavigatorWebInstall::InstallImpl(
           script_state);
   ScriptPromise<WebInstallResult> promise = resolver->Promise();
 
-  CHECK(GetService());
-
   // `navigator.install()` was called.
   // Initiate installation of the current document.
   if (!manifest_id && !install_url) {
+    CHECK(GetService());
     GetService()->Install(
         /*options=*/nullptr,
         BindOnce(&blink::OnInstallResponse, WrapPersistent(resolver)));
@@ -141,6 +140,7 @@ ScriptPromise<WebInstallResult> NavigatorWebInstall::InstallImpl(
     options->manifest_id = resolved_id;
   }
 
+  CHECK(GetService());
   GetService()->Install(std::move(options), BindOnce(&blink::OnInstallResponse,
                                                      WrapPersistent(resolver)));
   return promise;

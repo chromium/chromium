@@ -5203,6 +5203,26 @@
     ],
     "expires": "Jan 1, 2027"
   },
+  {
+    "prefix": "web-install",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/web-install"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=WebAppInstallation"
+    ],
+    "owners": [
+      "pwa-team@google.com",
+      "liahiscock@microsoft.com"
+    ],
+    "expires": "Jan 1, 2028"
+  },
   "--webauthn-remote-desktop-support can be toggled with enterprise policies, ",
   "so we need to support this long term.",
   {
