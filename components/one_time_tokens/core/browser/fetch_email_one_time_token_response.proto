@@ -8,16 +8,6 @@ package google.internal.chrome.passwords.onetimetoken.v1;
 
 option optimize_for = LITE_RUNTIME;
 
-// A copy of google/protobuf/timestamp.proto, because we cannot import it.
-// This message must be wire-compatible with google/protobuf/timestamp.proto,
-// Do not edit this unless the original message has changed.
-message Timestamp {
-  // Seconds part of the timestamp.
-  int64 seconds = 1;
-  // Nanoseconds part of the timestamp.
-  int32 nanos = 2;
-}
-
 // Response message for FetchEmailOneTimeToken.
 message FetchEmailOneTimeTokenResponse {
   // The address of the sender specified in standard email format.
@@ -26,12 +16,6 @@ message FetchEmailOneTimeTokenResponse {
   // The email address that the message was sent to. In many cases this will be
   // the Gmail address of the user, but it's not guaranteed.
   string recipient_address = 2;
-
-  // Time when the OTP message was created on the sender's side.
-  Timestamp created_timestamp = 3;
-
-  // Time when the OTP message was received by the Gmail SMTP servers.
-  Timestamp received_timestamp = 4;
 
   // A holder for potentially different types of OneTimeTokens.
   oneof value {
@@ -44,4 +28,6 @@ message FetchEmailOneTimeTokenResponse {
     // The actual value of the one time password.
     string one_time_password = 1;
   }
+
+  reserved 3, 4;
 }

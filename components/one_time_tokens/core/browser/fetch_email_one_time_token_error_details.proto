@@ -50,6 +50,11 @@ message FetchEmailOneTimeTokenErrorDetails {
     // subsequent request by clients.
     // Canonical code: NOT_FOUND
     ONE_TIME_TOKEN_EXPIRED = 7;
+
+    // Indicates that the message was found, but the specific attribute
+    // containing the OTP was not present on the message.
+    // Canonical code: NOT_FOUND
+    OTP_ATTRIBUTE_NOT_FOUND = 8;
   }
 
   // A set of reasons for RPC failure.
