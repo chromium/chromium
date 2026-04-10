@@ -213,7 +213,10 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
   connector->RenderProcessGone();
   connector->FirstSurfaceActivation(viz::SurfaceInfo());
   connector->SendIntrinsicSizingInfoToParent(nullptr);
-  connector->SynchronizeVisualProperties(blink::FrameVisualProperties(), false);
+
+  blink::FrameVisualProperties visual_properties;
+  visual_properties.screen_infos = display::ScreenInfos(display::ScreenInfo());
+  connector->SynchronizeVisualProperties(visual_properties, false);
   connector->UpdateCursor(ui::Cursor());
 
   EXPECT_EQ(connector->HasFocus(),
@@ -228,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
 
   connector->UnlockPointer();  // void
 
-  EXPECT_FALSE(connector->HasSize());
+  EXPECT_TRUE(connector->HasSize());
 
   // Just check they return valid references/values
   connector->GetScreenInfos();
@@ -260,7 +263,10 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
   connector->OnVisibilityChanged(
       blink::mojom::FrameVisibility::kRenderedInViewport);  // void
 
-  EXPECT_TRUE(connector->IsVisible());
+  // IsVisible() currently returns false here because
+  // GetIntersectionState().viewport_intersection.IsEmpty() is true
+  // by default in this test environment.
+  EXPECT_FALSE(connector->IsVisible());
 
   connector->DelegateWasShown();  // void
 

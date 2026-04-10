@@ -31,6 +31,7 @@ class RenderWidgetHostInputEventRouter;
 namespace content {
 
 class DummySurfaceProvider;
+class RenderFrameHostImpl;
 class RenderViewHostDelegateView;
 class RenderWidgetHostViewChildFrame;
 class TextInputManager;
@@ -143,6 +144,8 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
   // unguessable surface ID is not reused after a navigation.
   void ResetRectInParentView();
 
+  RenderFrameHostImpl* current_child_frame_host() const;
+
   // Observes the child web contents to send notifications to the connector.
   std::unique_ptr<WCObserver> wc_observer_;
 
@@ -172,6 +175,16 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
 
   gfx::Size last_received_local_frame_size_;
   double last_received_css_zoom_factor_ = 1;
+  double last_received_zoom_level_ = 0.0;
+  bool has_size_ = false;
+
+  // TODO(crbug.com/493315755): Update the properties as appropriate. (Currently
+  // they are not updated after initialization.)
+  bool is_inert_ = false;
+  cc::TouchAction inherited_effective_touch_action_ = cc::TouchAction::kAuto;
+  bool is_throttled_ = false;
+  bool subtree_throttled_ = false;
+  bool display_locked_ = false;
 };
 
 }  // namespace content
