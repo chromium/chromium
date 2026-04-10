@@ -61,7 +61,6 @@ class AutofillObserverImplTest
 
   void SetUp() override {
     InitAutofillClient();
-    autofill_client().SetPrefs(autofill::test::PrefServiceForTesting());
     CreateAutofillDriver();
   }
 
@@ -116,7 +115,6 @@ class TabInteractionRecorderAndroidTest
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     InitAutofillClient();
-    autofill_client().SetPrefs(autofill::test::PrefServiceForTesting());
     CreateAutofillDriver();
   }
 

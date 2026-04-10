@@ -149,7 +149,6 @@ class AutofillManagerTest
  public:
   void SetUp() override {
     InitAutofillClient();
-    autofill_client().SetPrefs(test::PrefServiceForTesting());
     CreateAutofillDriver();
   }
 
@@ -313,7 +312,6 @@ class AutofillManagerTest_ObserverCalls
  public:
   void SetUp() override {
     InitAutofillClient();
-    autofill_client().SetPrefs(test::PrefServiceForTesting());
     CreateAutofillDriver();
     ON_CALL(autofill_manager(), ShouldParseForms).WillByDefault(Return(true));
     observation_.Observe(&autofill_manager());

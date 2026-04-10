@@ -48,7 +48,6 @@ class AutofillVotesUploaderTest : public testing::Test,
 
   void SetUp() override {
     InitAutofillClient();
-    autofill_client().SetPrefs(test::PrefServiceForTesting());
     AddTestProfile();
     feature_list_.InitWithFeatures(
         {features::kAutofillSmsOtpCrowdsourcing,

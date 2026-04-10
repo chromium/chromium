@@ -93,7 +93,6 @@ MATCHER(ContainsAddressFooterSuggestions, "") {
 class AddressSuggestionGeneratorTest : public testing::Test {
  public:
   void SetUp() override {
-    autofill_client_.SetPrefs(test::PrefServiceForTesting());
     address_data().SetPrefService(autofill_client_.GetPrefs());
     address_data().SetSyncServiceForTest(&sync_service_);
   }

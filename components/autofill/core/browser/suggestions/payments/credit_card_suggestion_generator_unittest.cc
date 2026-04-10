@@ -244,7 +244,6 @@ class PaymentsSuggestionGeneratorTest
  public:
   void SetUp() override {
     InitAutofillClient();
-    autofill_client().SetPrefs(test::PrefServiceForTesting());
     payments_data().SetPrefService(autofill_client().GetPrefs());
     payments_data().SetSyncServiceForTest(&sync_service_);
     auto mock_payments_autofill_client =

@@ -225,9 +225,6 @@ class TestAutofillClientTemplate : public T {
   }
 
   test::AutofillTestingPrefService* GetPrefs() override {
-    if (!prefs_) {
-      prefs_ = autofill::test::PrefServiceForTesting();
-    }
     return prefs_.get();
   }
 
@@ -471,10 +468,6 @@ class TestAutofillClientTemplate : public T {
 
   base::span<const AutofillProfile> GetTestAddresses() const override {
     return test_addresses_;
-  }
-
-  void SetPrefs(std::unique_ptr<test::AutofillTestingPrefService> prefs) {
-    prefs_ = std::move(prefs);
   }
 
   void SetAutofillProfileEnabled(bool autofill_profile_enabled) {
@@ -722,8 +715,8 @@ class TestAutofillClientTemplate : public T {
   bool autofill_profile_enabled_ = true;
   bool wallet_public_pass_storage_enabled_ = true;
 
-  // NULL by default.
-  std::unique_ptr<test::AutofillTestingPrefService> prefs_;
+  std::unique_ptr<test::AutofillTestingPrefService> prefs_ =
+      autofill::test::PrefServiceForTesting();
   std::unique_ptr<TestStrikeDatabase> test_strike_database_;
 
   std::unique_ptr<TestPersonalDataManager> test_personal_data_manager_;

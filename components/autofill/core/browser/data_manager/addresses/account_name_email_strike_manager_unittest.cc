@@ -41,7 +41,6 @@ class AccountNameEmailStrikeManagerTest
  public:
   void SetUp() override {
     InitAutofillClient();
-    autofill_client().SetPrefs(test::PrefServiceForTesting());
     CreateAutofillDriver();
   }
 
