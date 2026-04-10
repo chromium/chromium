@@ -5059,14 +5059,6 @@
       },
     },
     {
-      // Replicates old behavior which removes selectedness from option
-      // elements when they are all removed from a select at the same time.
-      // https://issues.chromium.org/issues/444330901
-      // Enabled in M142, can be removed in M145.
-      name: "SelectChildrenRemovedFix",
-      status: "stable",
-    },
-    {
       // The selectedcontentelement attribute is for connecting select elements
       // to arbitrary <selectedcontent> elements.
       // https://github.com/openui/open-ui/issues/1063

@@ -592,8 +592,7 @@ void HTMLOptionElement::RemovedFrom(ContainerNode& insertion_point) {
     CHECK(old_ancestor_select);
     const bool should_skip_option_removed =
         !parentNode() && insertion_point == old_ancestor_select;
-    if (!RuntimeEnabledFeatures::SelectChildrenRemovedFixEnabled() ||
-        !should_skip_option_removed) {
+    if (!should_skip_option_removed) {
       // If this option was removed from a select element as a direct child,
       // then let HTMLSelectElement::ChildrenChanged make the call to
       // OptionRemoved in order to avoid
