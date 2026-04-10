@@ -119,28 +119,6 @@ void DeviceDisablingManager::CheckWhetherDeviceDisabledDuringOOBE(
     return;
   }
 
-  if (browser_policy_connector_ash_->GetDeviceMode() ==
-      policy::DEVICE_MODE_PENDING) {
-    // If the device mode is not known yet, request to be called back once it
-    // becomes known.
-    browser_policy_connector_ash_->GetInstallAttributes()
-        ->ReadImmutableAttributes(base::BindOnce(
-            &DeviceDisablingManager::CheckWhetherDeviceDisabledDuringOOBE,
-            weak_factory_.GetWeakPtr(), std::move(callback)));
-    return;
-  }
-
-  if (browser_policy_connector_ash_->GetDeviceMode() !=
-      policy::DEVICE_MODE_NOT_SET) {
-    // If the device is owned already, this method must have been called after
-    // OOBE, which is an error. Indicate that the device is not disabled to
-    // prevent spurious disabling. Actual device disabling after OOBE will be
-    // handled elsewhere, by checking for disabled state in cros settings.
-    LOG(ERROR) << "CheckWhetherDeviceDisabledDuringOOBE() called after OOBE.";
-    std::move(callback).Run(false);
-    return;
-  }
-
   // The device is marked as disabled in local state (based on the device state
   // retrieved early during OOBE). Since device disabling has not been turned
   // off by flag and the device is still unowned, we honor the information in

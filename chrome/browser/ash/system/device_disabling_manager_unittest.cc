@@ -252,24 +252,6 @@ TEST_F(DeviceDisablingManagerOOBETest, NotDisabledWhenTurnedOffBySwitch) {
   EXPECT_FALSE(device_disabled());
 }
 
-// Verifies that the device is not considered disabled during OOBE when it is
-// already enterprise enrolled, even if the device is marked as disabled.
-TEST_F(DeviceDisablingManagerOOBETest, NotDisabledWhenEnterpriseOwned) {
-  SetEnterpriseOwned();
-  SetDeviceDisabled(true);
-  CheckWhetherDeviceDisabledDuringOOBE();
-  EXPECT_FALSE(device_disabled());
-}
-
-// Verifies that the device is not considered disabled during OOBE when it is
-// already owned by a consumer, even if the device is marked as disabled.
-TEST_F(DeviceDisablingManagerOOBETest, NotDisabledWhenConsumerOwned) {
-  SetConsumerOwned();
-  SetDeviceDisabled(true);
-  CheckWhetherDeviceDisabledDuringOOBE();
-  EXPECT_FALSE(device_disabled());
-}
-
 // Verifies that the device is considered disabled during OOBE when it is marked
 // as disabled, device disabling is not turned off by flag and the device is not
 // owned yet.
