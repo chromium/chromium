@@ -48,6 +48,10 @@ TabBottomSheetBridge::~TabBottomSheetBridge() {
 }
 
 void TabBottomSheetBridge::SetWebContents(content::WebContents* web_contents) {
+  if (web_contents) {
+    web_contents->SetIgnoreZoomGestures(true);
+  }
+
   if (!co_browse_views_) {
     CreateCoBrowseViews(web_contents);
     return;
