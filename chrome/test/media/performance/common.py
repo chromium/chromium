@@ -277,7 +277,7 @@ def download_cft_urls(platform_name, version=None):
             if chrome_url and driver_url:
                 logging.info("Found URLs for version %s on platform %s",
                              v['version'], platform_name)
-                return chrome_url, driver_url
+                return v['version'], chrome_url, driver_url
 
     raise RuntimeError(
         f"Could not find downloads for version {version} on {platform_name}")
@@ -310,7 +310,8 @@ def install_and_setup_chrome(args, chrome_version):
             f"Unsupported OS/Arch: {args.sender_os}/{arch}")
 
     platform_name = platform_map[args.sender_os][arch]
-    chrome_url, driver_url = download_cft_urls(platform_name, chrome_version)
+    chrome_version_actual, chrome_url, driver_url = download_cft_urls(
+        platform_name, chrome_version)
     remote_app_path = None
 
     # --- Download and Unzip on Remote ---
@@ -430,7 +431,7 @@ def install_and_setup_chrome(args, chrome_version):
             f"Unsupported sender_os for install: {args.sender_os}")
 
     logging.info("Finished chromedriver setup attempt.")
-    return remote_app_path
+    return remote_app_path, chrome_version_actual
 
 
 def dump_remote_logs(args):
@@ -565,8 +566,12 @@ def teardown_test_environment(driver, tunnel_proc, args):
     logging.info("Cleaned up tmp files on remote machine.")
 
 
-def finalize_results():
+def finalize_results(chrome_version=None):
     """Dumps metrics and uploads to ResultDB if available."""
+    if chrome_version:
+        # Tag results with the chrome version for easier tracking in dashboards.
+        measures.tag(chrome_version)
+
     log_dir = os.environ.get('ISOLATED_OUTDIR', '/tmp')
     invocations_dir = os.path.join(log_dir, 'invocations')
 

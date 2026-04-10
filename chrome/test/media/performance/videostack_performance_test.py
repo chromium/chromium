@@ -74,10 +74,12 @@ def setup_test_environment(args, chrome_version):
     connects a WebDriver instance to the tunnel and enables Cast discovery.
 
     Returns:
-        tuple: A tuple containing the WebDriver and the tunnel process.
+        tuple: A tuple containing the WebDriver, the tunnel process, and the
+               actual chrome version used.
     """
     common.terminate_old_chromedriver(args)
-    remote_app_path = common.install_and_setup_chrome(args, chrome_version)
+    remote_app_path, actual_version = common.install_and_setup_chrome(
+        args, chrome_version)
     common.wait_for_chromedriver(args)
     tunnel_proc = common.start_ssh_tunnel(args)
 
@@ -101,7 +103,7 @@ def setup_test_environment(args, chrome_version):
     chrome_options.binary_location = binary_path
     driver = connect_to_remote_driver(chrome_options, binary_path)
 
-    return driver, tunnel_proc
+    return driver, tunnel_proc, actual_version
 
 # pylint: disable=too-many-locals
 def run_performance_test(video_file: str, driver: webdriver):
@@ -261,9 +263,10 @@ def main():
 
     driver = None
     tunnel_proc = None
+    actual_version = None
 
     try:
-        driver, tunnel_proc = setup_test_environment(args, cv)
+        driver, tunnel_proc, actual_version = setup_test_environment(args, cv)
         for video in common.VIDEOS:
             logging.info("Starting test for video: %s", video['name'])
             rec_proc = None
@@ -275,7 +278,7 @@ def main():
             finally:
                 common.teardown_recording_process(rec_proc)
     finally:
-        common.finalize_results()
+        common.finalize_results(actual_version)
         common.teardown_test_environment(driver, tunnel_proc, args)
 
 if __name__ == '__main__':
