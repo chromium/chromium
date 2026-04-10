@@ -198,7 +198,7 @@ class OnDeviceTranslationInstallerImpl::Notifier {
     auto manager = std::make_unique<
         optimization_guide::OnDeviceModelDownloadProgressManager>(
         g_browser_process->component_updater(), component_ids,
-        /*enable_unloadable_progress=*/false);
+        /*enable_unloadable_progress*/ false);
 
     auto tracker = std::make_unique<ProgressTracker>(
         language_pack,

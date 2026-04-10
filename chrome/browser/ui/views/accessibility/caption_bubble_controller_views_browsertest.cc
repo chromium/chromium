@@ -28,12 +28,6 @@
 #include "components/live_caption/caption_util.h"
 #include "components/live_caption/live_caption_bubble_settings.h"
 #include "components/live_caption/pref_names.h"
-#include "components/on_device_translation/buildflags/buildflags.h"
-
-#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
-#include "components/on_device_translation/public/language_pack.h"
-#endif
-
 #include "components/live_caption/views/caption_bubble.h"
 #include "components/live_caption/views/translation_view_wrapper.h"
 #include "components/soda/soda_installer.h"
@@ -136,21 +130,6 @@ class CaptionBubbleControllerViewsTest
     }
     return controller_.get();
   }
-
-#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
-  void SimulateLanguagePackProgress(on_device_translation::LanguagePackKey key,
-                                    int progress) {
-    controller_->OnLanguagePackProgress(key, progress);
-  }
-  void SimulateLanguagePackInstalled(
-      on_device_translation::LanguagePackKey key) {
-    controller_->OnLanguagePackInstalled(key);
-  }
-  void SimulateLanguagePackInstallationChanged(
-      on_device_translation::LanguagePackKey key) {
-    controller_->OnLanguagePackInstallationChanged(key);
-  }
-#endif
 
   CaptionBubbleContext* GetCaptionBubbleContext() {
     if (!caption_bubble_context_) {
@@ -1504,129 +1483,6 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, LiveTranslateLabel) {
   ASSERT_TRUE(GetSourceLanguageButton()->GetVisible());
 }
 
-#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
-IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
-                       DownloadProgressLabelTranslation) {
-  GetController();
-
-  EXPECT_FALSE(IsWidgetVisible());
-  ASSERT_FALSE(GetDownloadProgressLabel()->GetVisible());
-
-  OnPartialTranscription(
-      "Quokkas, known for their cute smiles, are also skilled tree climbers, "
-      "able to scale up to 2 meters high!");
-  EXPECT_TRUE(IsWidgetVisible());
-  ASSERT_TRUE(GetLabel()->GetVisible());
-  ASSERT_FALSE(GetDownloadProgressLabel()->GetVisible());
-
-  SimulateLanguagePackProgress(on_device_translation::LanguagePackKey::kEn_Fr,
-                               45);
-  ASSERT_FALSE(GetLabel()->GetVisible());
-  ASSERT_TRUE(GetDownloadProgressLabel()->GetVisible());
-  ASSERT_EQ(u"Downloading French language pack\u2026 45%",
-            GetDownloadProgressLabel()->GetText());
-
-  SimulateLanguagePackInstalled(on_device_translation::LanguagePackKey::kEn_Fr);
-  ASSERT_TRUE(GetLabel()->GetVisible());
-  ASSERT_FALSE(GetDownloadProgressLabel()->GetVisible());
-
-  SimulateLanguagePackProgress(on_device_translation::LanguagePackKey::kAr_En,
-                               30);
-  ASSERT_FALSE(GetLabel()->GetVisible());
-  ASSERT_TRUE(GetDownloadProgressLabel()->GetVisible());
-  ASSERT_EQ(u"Downloading Arabic language pack\u2026 30%",
-            GetDownloadProgressLabel()->GetText());
-
-  SimulateLanguagePackInstalled(on_device_translation::LanguagePackKey::kAr_En);
-  ASSERT_TRUE(GetLabel()->GetVisible());
-  ASSERT_FALSE(GetDownloadProgressLabel()->GetVisible());
-}
-
-IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
-                       DownloadProgressLabelTranslationCancellation) {
-  GetController();
-
-  OnPartialTranscription(
-      "Tasmanian devils hold the chomping champ title for mammals.");
-  EXPECT_TRUE(IsWidgetVisible());
-
-  SimulateLanguagePackProgress(on_device_translation::LanguagePackKey::kEn_Fr,
-                               12);
-  ASSERT_TRUE(GetDownloadProgressLabel()->GetVisible());
-
-  // By default, the pack is not registered or installed in the test
-  // environment. So OnLanguagePackInstallationChanged should detect it as
-  // cancelled/failed and clear progress.
-  SimulateLanguagePackInstallationChanged(
-      on_device_translation::LanguagePackKey::kEn_Fr);
-
-  ASSERT_TRUE(GetLabel()->GetVisible());
-  ASSERT_FALSE(GetDownloadProgressLabel()->GetVisible());
-}
-
-IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
-                       DownloadProgressLabelMultipleDownloads) {
-  GetController();
-
-  OnPartialTranscription(
-      "Quokkas, known for their cute smiles, are also skilled tree climbers.");
-  EXPECT_TRUE(IsWidgetVisible());
-
-  SimulateLanguagePackProgress(on_device_translation::LanguagePackKey::kEn_Fr,
-                               40);
-  ASSERT_TRUE(GetDownloadProgressLabel()->GetVisible());
-
-  SimulateLanguagePackProgress(on_device_translation::LanguagePackKey::kAr_En,
-                               60);
-
-  ASSERT_EQ(u"Downloading language packages\u2026 50%",
-            GetDownloadProgressLabel()->GetText());
-
-  SimulateLanguagePackInstalled(on_device_translation::LanguagePackKey::kEn_Fr);
-
-  ASSERT_EQ(u"Downloading Arabic language pack\u2026 60%",
-            GetDownloadProgressLabel()->GetText());
-}
-
-IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
-                       DownloadProgressLabelMultipleInstalling) {
-  GetController();
-
-  OnPartialTranscription(
-      "Quokkas, known for their cute smiles, are also skilled tree climbers.");
-  EXPECT_TRUE(IsWidgetVisible());
-
-  SimulateLanguagePackProgress(on_device_translation::LanguagePackKey::kEn_Fr,
-                               100);
-  ASSERT_TRUE(GetDownloadProgressLabel()->GetVisible());
-
-  SimulateLanguagePackProgress(on_device_translation::LanguagePackKey::kAr_En,
-                               100);
-
-  ASSERT_EQ(u"Installing language packages\u2026",
-            GetDownloadProgressLabel()->GetText());
-}
-
-IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
-                       DownloadProgressLabelDownloadingAndInstalling) {
-  GetController();
-
-  OnPartialTranscription(
-      "Quokkas, known for their cute smiles, are also skilled tree climbers.");
-  EXPECT_TRUE(IsWidgetVisible());
-
-  SimulateLanguagePackProgress(on_device_translation::LanguagePackKey::kEn_Fr,
-                               100);
-  ASSERT_TRUE(GetDownloadProgressLabel()->GetVisible());
-
-  SimulateLanguagePackProgress(on_device_translation::LanguagePackKey::kAr_En,
-                               50);
-
-  ASSERT_EQ(u"Downloading Arabic language pack\u2026 50%",
-            GetDownloadProgressLabel()->GetText());
-}
-#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
-
 IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, HeaderView) {
   OnPartialTranscription(
       "Stoats are able to change their fur color from brown to white in the "
@@ -1829,45 +1685,6 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
   ASSERT_EQ(48, GetDownloadProgressLabel()->GetPreferredSize().height());
 
   OnSodaInstalled();
-  ASSERT_TRUE(GetLabel()->GetVisible());
-  ASSERT_FALSE(GetDownloadProgressLabel()->GetVisible());
-}
-
-IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
-                       DownloadProgressLabelSodaInstalling) {
-  speech::SodaInstaller::GetInstance()->NeverDownloadSodaForTesting();
-  GetController();
-
-  OnPartialTranscription(
-      "Quokkas, known for their cute smiles, are also skilled tree climbers.");
-  EXPECT_TRUE(IsWidgetVisible());
-
-  OnSodaProgress(100);
-  ASSERT_TRUE(GetDownloadProgressLabel()->GetVisible());
-  ASSERT_EQ(u"Installing French\u2026", GetDownloadProgressLabel()->GetText());
-}
-
-IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
-                       DownloadProgressLabelSodaInstalledWhenModelNull) {
-  speech::SodaInstaller::GetInstance()->NeverDownloadSodaForTesting();
-  GetController();
-
-  OnSodaProgress(100);
-  OnSodaInstalled();
-
-  OnPartialTranscription(
-      "Quokkas, known for their cute smiles, are also skilled tree climbers.");
-  EXPECT_TRUE(IsWidgetVisible());
-
-  SimulateLanguagePackProgress(on_device_translation::LanguagePackKey::kEn_Fr,
-                               50);
-  ASSERT_TRUE(GetDownloadProgressLabel()->GetVisible());
-  ASSERT_EQ(u"Downloading French language pack\u2026 50%",
-            GetDownloadProgressLabel()->GetText());
-
-  SimulateLanguagePackInstallationChanged(
-      on_device_translation::LanguagePackKey::kEn_Fr);
-
   ASSERT_TRUE(GetLabel()->GetVisible());
   ASSERT_FALSE(GetDownloadProgressLabel()->GetVisible());
 }

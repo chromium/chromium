@@ -57,7 +57,6 @@ if (!is_android && !is_ios) {
 
       deps += [
         "//components/language/core/common",
-        "//components/on_device_translation/buildflags",
         "//components/strings",
         "//components/translate/core/browser",
         "//components/vector_icons",
@@ -70,10 +69,6 @@ if (!is_android && !is_ios) {
         "//ui/strings:ui_strings_grit",
         "//ui/views",
       ]
-
-      if (enable_on_device_translation) {
-        deps += [ "//components/on_device_translation:installer" ]
-      }
     }  # toolkit_views
   }
 
