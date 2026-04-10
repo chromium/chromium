@@ -5,6 +5,7 @@
 #include "remoting/host/ftl_echo_message_listener.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/logging.h"
 #include "remoting/base/logging.h"
@@ -51,10 +52,10 @@ bool FtlEchoMessageListener::OnIncomingFtlMessage(
     return false;
   }
 
-  std::string request_message_payload(message.echo().message());
+  std::string_view request_message_payload = message.echo().message();
   HOST_LOG << "Handling echo message: '" << request_message_payload << "'";
 
-  std::string response_message_payload =
+  std::string_view response_message_payload =
       request_message_payload.substr(0, kMaxEchoMessageLength);
   ftl::ChromotingMessage response_message;
   response_message.mutable_echo()->set_message(response_message_payload);
