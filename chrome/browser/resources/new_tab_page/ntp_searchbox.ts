@@ -87,6 +87,22 @@ export class NtpSearchboxElement extends SearchboxElement implements
         type: String,
       },
 
+      colorSourceIsBaseline: {
+        type: Boolean,
+        reflect: true,
+      },
+
+      /** Whether the theme is dark. */
+      isDark: {
+        type: Boolean,
+        reflect: true,
+      },
+
+      searchboxLayoutMode: {
+        type: String,
+        reflect: true,
+      },
+
       //========================================================================
       // Protected properties
       //========================================================================
@@ -103,6 +119,9 @@ export class NtpSearchboxElement extends SearchboxElement implements
   accessor contextMenuGlifAnimationState: GlifAnimationState =
       GlifAnimationState.INELIGIBLE;
   accessor animationState: GlowAnimationState = GlowAnimationState.NONE;
+  accessor colorSourceIsBaseline: boolean = false;
+  accessor isDark: boolean = false;
+  accessor searchboxLayoutMode: string = '';
   protected accessor tabSuggestions_: TabInfo[] = [];
   protected accessor inputState_: InputState|null = null;
   protected dragAndDropHandler: DragAndDropHandler|null = null;
@@ -382,6 +401,10 @@ export class NtpSearchboxElement extends SearchboxElement implements
     chrome.histograms.recordBoolean(
         'NewTabPage.ComposeEntrypoint.Click.UserTextPresent',
         !this.isInputEmpty());
+  }
+
+  protected useCompactLayout_(): boolean {
+    return this.searchboxLayoutMode === 'Compact';
   }
 
   protected override openComposebox_(
