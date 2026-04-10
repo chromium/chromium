@@ -2689,12 +2689,6 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Both read and wrote cookies"/>
 </enum>
 
-<enum name="CopylessCacheHit">
-  <int value="0" label="Cache hit with entity"/>
-  <int value="1" label="Cache hit without entity"/>
-  <int value="2" label="Cache miss"/>
-</enum>
-
 <enum name="CpuTimeMetricsThreadType">
   <summary>Thread types used for CPU time metric breakdowns.</summary>
   <int value="0" label="UnattributedThread">
@@ -4694,13 +4688,6 @@ Called by update_net_error_codes.py.-->
 <enum name="HandleValidity">
   <int value="0" label="Invalid Handle"/>
   <int value="1" label="Valid Handle"/>
-</enum>
-
-<enum name="HappinessTrackingSurveyDesktopBubbleUsage">
-  <int value="0" label="Accepted"/>
-  <int value="1" label="No Thanks"/>
-  <int value="2" label="Closed Intentionally"/>
-  <int value="3" label="Ignored"/>
 </enum>
 
 <enum name="HappinessTrackingSurveyShouldShowSurveyReasons">
@@ -21072,11 +21059,6 @@ from previous Chrome versions.
   <int value="5" label="ApplicationTask"/>
   <int value="6" label="IdleWork"/>
   <int value="7" label="Nested"/>
-</enum>
-
-<enum name="MistSwitchResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Failure"/>
 </enum>
 
 <enum name="ModuleTypeOnStartAndNTP">

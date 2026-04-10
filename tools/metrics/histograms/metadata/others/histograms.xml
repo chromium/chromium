@@ -3205,14 +3205,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CopylessPaste.CacheHit" enum="CopylessCacheHit"
-    expires_after="2020-03-01">
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    The cache hit status of metadata extraction for AppIndexing.
-  </summary>
-</histogram>
-
 <histogram name="DirectSockets.TCPNetworkFailures" enum="NetErrorCodes"
     expires_after="2026-09-27">
   <owner>greengrape@google.com</owner>
@@ -3982,17 +3974,6 @@ chromium-metrics-reviews@google.com.
     request submitted by a user and the report has been added to the send queue.
     Fires during the process of sending a feedback report on Chrome or Chrome
     OS.
-  </summary>
-</histogram>
-
-<histogram name="Feedback.HappinessTrackingSurvey.BubbleUsage"
-    enum="HappinessTrackingSurveyDesktopBubbleUsage" expires_after="M82">
-  <owner>weili@chromium.org</owner>
-  <owner>robliao@chromium.org</owner>
-  <summary>
-    Records how user interacts with Happiness Tracking Surveys (HaTS) bubble
-    prompt which is shown for a subset of users. Each time when the bubble is
-    shown, there should be one and only one enum type is recorded.
   </summary>
 </histogram>
 
@@ -5129,15 +5110,6 @@ chromium-metrics-reviews@google.com.
   <owner>phillis@chromium.org</owner>
   <owner>pwa-team@chromium.org</owner>
   <summary>Tracks the result of parsing id field in the Manifest.</summary>
-</histogram>
-
-<histogram name="Mist.SwitchResult" enum="MistSwitchResult" expires_after="M77">
-  <owner>akhouderchah@chromium.org</owner>
-  <owner>benchan@chromium.org</owner>
-  <summary>
-    The result (e.g. success or the type of failure) of a modem interface switch
-    operation performed by mist on Chrome OS.
-  </summary>
 </histogram>
 
 <histogram name="Mojo.Channel.ChannelInitPauseToFlushTime" units="ms"
