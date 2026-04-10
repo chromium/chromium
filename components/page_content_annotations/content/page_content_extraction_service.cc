@@ -153,8 +153,7 @@ std::optional<ExtractedPageContentResult>
 PageContentExtractionService::GetExtractedPageContentAndEligibilityForPage(
     content::Page& page) {
   AnnotatedPageContentRequest* request =
-      GetAnnotatedPageContentRequestFromWebContents(
-          content::WebContents::FromRenderFrameHost(&page.GetMainDocument()));
+      GetAnnotatedPageContentRequestFromPage(page);
   return request ? request->GetCachedContentAndEligibility() : std::nullopt;
 }
 
@@ -163,16 +162,24 @@ void PageContentExtractionService::
         content::Page& page,
         GetExtractedPageContentAndEligibilityCallback callback) {
   AnnotatedPageContentRequest* request =
-      GetAnnotatedPageContentRequestFromWebContents(
-          content::WebContents::FromRenderFrameHost(&page.GetMainDocument()));
+      GetAnnotatedPageContentRequestFromPage(page);
   if (request) {
     request->RefreshExtractedPageContentAndEligibilityForPage(
         std::move(callback));
   } else {
-    // TODO(b/490161242): Improve this behavior: allow for constructing an
-    // AnnotatedPageContentRequest if one doesn't already exist, and, if not
-    // constructible, return the reason why via a base::expected. For now, we
-    // just match the behavior of the other calls.
+    std::move(callback).Run(std::nullopt);
+  }
+}
+
+void PageContentExtractionService::
+    GetExtractedPageContentAndEligibilityForPageAsync(
+        content::Page& page,
+        GetExtractedPageContentAndEligibilityCallback callback) {
+  AnnotatedPageContentRequest* request =
+      GetAnnotatedPageContentRequestFromPage(page);
+  if (request) {
+    request->GetCachedContentAndEligibilityAsync(std::move(callback));
+  } else {
     std::move(callback).Run(std::nullopt);
   }
 }
@@ -181,9 +188,20 @@ std::optional<bool>
 PageContentExtractionService::GetServerUploadEligibilityForPage(
     content::Page& page) {
   AnnotatedPageContentRequest* request =
-      GetAnnotatedPageContentRequestFromWebContents(
-          content::WebContents::FromRenderFrameHost(&page.GetMainDocument()));
+      GetAnnotatedPageContentRequestFromPage(page);
   return request ? request->GetServerUploadEligibility() : std::nullopt;
+}
+
+void PageContentExtractionService::GetServerUploadEligibilityForPageAsync(
+    content::Page& page,
+    GetServerUploadEligibilityCallback callback) {
+  AnnotatedPageContentRequest* request =
+      GetAnnotatedPageContentRequestFromPage(page);
+  if (request) {
+    request->GetServerUploadEligibilityAsync(std::move(callback));
+  } else {
+    std::move(callback).Run(std::nullopt);
+  }
 }
 
 void PageContentExtractionService::OnTabClosed(int64_t tab_id) {
@@ -255,6 +273,13 @@ PageContentExtractionService::GetAnnotatedPageContentRequestFromWebContents(
   PageContentAnnotationsWebContentsObserver* observer =
       PageContentAnnotationsWebContentsObserver::FromWebContents(web_contents);
   return observer ? observer->GetAnnotatedPageContentRequest() : nullptr;
+}
+
+AnnotatedPageContentRequest*
+PageContentExtractionService::GetAnnotatedPageContentRequestFromPage(
+    content::Page& page) {
+  return GetAnnotatedPageContentRequestFromWebContents(
+      content::WebContents::FromRenderFrameHost(&page.GetMainDocument()));
 }
 
 }  // namespace page_content_annotations

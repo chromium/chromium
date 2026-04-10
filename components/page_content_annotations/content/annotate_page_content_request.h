@@ -8,7 +8,7 @@
 #include <optional>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/types/expected.h"
@@ -29,6 +29,8 @@ namespace page_content_annotations {
 
 using GetExtractedPageContentAndEligibilityCallback =
     PageContentExtractionService::GetExtractedPageContentAndEligibilityCallback;
+using GetServerUploadEligibilityCallback =
+    PageContentExtractionService::GetServerUploadEligibilityCallback;
 
 using FetchPageContextCallback =
     base::RepeatingCallback<void(content::WebContents&,
@@ -80,6 +82,16 @@ class AnnotatedPageContentRequest {
   // Will return nullopt if not available.
   std::optional<bool> GetServerUploadEligibility();
 
+  // Asynchronous versions of the getter methods above.
+  // These methods will resolve synchronously if the extraction is already
+  // complete, or wait for the initial extraction to finish if there is one
+  // pending. If the extraction request is cleared or reset (e.g. from a
+  // navigation or destruction), the callbacks will resolve with std::nullopt.
+  void GetCachedContentAndEligibilityAsync(
+      GetExtractedPageContentAndEligibilityCallback callback);
+  void GetServerUploadEligibilityAsync(
+      GetServerUploadEligibilityCallback callback);
+
   // Extracts a new APC for `page` and computes its eligibility for server
   // upload, and caches the new result. It will wait for the initial
   // extraction to complete if there is one pending. For PDFs, it will return
@@ -91,6 +103,12 @@ class AnnotatedPageContentRequest {
       GetExtractedPageContentAndEligibilityCallback callback);
 
  private:
+  bool IsPdf() const;
+
+  // Returns true if the async getter should wait for the extraction to
+  // complete, or false if it should return immediately (with cached content or
+  // nullopt).
+  bool ShouldAsyncWaitForExtraction() const;
   void ResetForNewNavigation();
 
   // `on_hide` should be true iff this extraction is being triggered
@@ -162,6 +180,10 @@ class AnnotatedPageContentRequest {
 
   std::vector<GetExtractedPageContentAndEligibilityCallback>
       on_demand_callbacks_;
+  std::vector<GetExtractedPageContentAndEligibilityCallback>
+      pending_content_callbacks_;
+  std::vector<GetServerUploadEligibilityCallback>
+      pending_eligibility_callbacks_;
 
   FetchPageContextCallback fetch_page_context_callback_;
   GetTabIdCallback get_tab_id_callback_;

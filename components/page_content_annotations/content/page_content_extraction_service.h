@@ -56,6 +56,8 @@ class PageContentExtractionService : public KeyedService,
  public:
   using GetExtractedPageContentAndEligibilityCallback =
       base::OnceCallback<void(std::optional<ExtractedPageContentResult>)>;
+  using GetServerUploadEligibilityCallback =
+      base::OnceCallback<void(std::optional<bool>)>;
 
   class Observer : public base::CheckedObserver {
    public:
@@ -85,18 +87,39 @@ class PageContentExtractionService : public KeyedService,
   // content.
   bool ShouldEnablePageContentExtraction() const;
 
+  // TODO(b/490161242): Improve the behavior in these functions: allow for
+  // constructing an AnnotatedPageContentRequest if one doesn't already exist,
+  // and, if not constructible, return the reason why via a base::expected.
+
   // Returns the cached APC for `page` and whether it is eligible for
-  // server upload. Will return nullopt if not available or not supported (e.g.
-  // for PDFs).
+  // server upload. Will return nullopt if not available or not supported. E.g.
+  // for PDFs, when initial extraction is not complete, the triggering mode is
+  // 'on hidden' and the page is still visible, or the request object lacks
+  // observers.
   // Virtual for testing.
   virtual std::optional<ExtractedPageContentResult>
   GetExtractedPageContentAndEligibilityForPage(content::Page& page);
 
   // Returns whether the cached APC for `page` is eligible for server upload.
-  // Will return nullopt if not available.
+  // Will return nullopt if not available. See
+  // `GetExtractedPageContentAndEligibilityForPage` for possible causes.
   // Virtual for testing.
   virtual std::optional<bool> GetServerUploadEligibilityForPage(
       content::Page& page);
+
+  // Asynchronous versions of the getter methods above.
+  // These methods will resolve immediately if the extraction is already
+  // complete, or wait for the initial extraction to finish if there is one
+  // pending, or is not scheduled to occur. If the extraction request is
+  // cleared or reset (e.g. from a navigation or destruction), the callbacks
+  // will resolve with std::nullopt.
+  // Virtual for testing.
+  virtual void GetExtractedPageContentAndEligibilityForPageAsync(
+      content::Page& page,
+      GetExtractedPageContentAndEligibilityCallback callback);
+  virtual void GetServerUploadEligibilityForPageAsync(
+      content::Page& page,
+      GetServerUploadEligibilityCallback callback);
 
   // Extracts a new APC for `page` and computes its eligibility for server
   // upload, and caches the new result. It will wait for the initial
@@ -146,6 +169,8 @@ class PageContentExtractionService : public KeyedService,
 
   AnnotatedPageContentRequest* GetAnnotatedPageContentRequestFromWebContents(
       content::WebContents* web_contents);
+  AnnotatedPageContentRequest* GetAnnotatedPageContentRequestFromPage(
+      content::Page& page);
 
   base::ObserverList<Observer> observers_;
 
