@@ -1428,10 +1428,12 @@ H264Parser::Result H264Parser::ParseSliceHeader(const H264NALU& nalu,
   // VASliceParameterBufferH264.first_mb_in_slice and is used by the VA-API
   // driver as a write offset into the decode surface.
   {
-    const int frame_height_in_mbs = (2 - sps->frame_mbs_only_flag) *
-                                    (sps->pic_height_in_map_units_minus1 + 1);
-    base::CheckedNumeric<int> pic_size = sps->pic_width_in_mbs_minus1 + 1;
-    pic_size *= frame_height_in_mbs;
+    base::CheckedNumeric<int> height = sps->pic_height_in_map_units_minus1;
+    height += 1;
+    height *= (2 - sps->frame_mbs_only_flag);
+    base::CheckedNumeric<int> pic_size = sps->pic_width_in_mbs_minus1;
+    pic_size += 1;
+    pic_size *= height;
     TRUE_OR_RETURN(pic_size.IsValid());
     const int pic_size_in_mbs = pic_size.ValueOrDie();
     IN_RANGE_OR_RETURN(shdr->first_mb_in_slice, 0, pic_size_in_mbs - 1);
