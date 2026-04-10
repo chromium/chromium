@@ -338,6 +338,7 @@ class UnitTest(unittest.TestCase):
             textwrap.dedent('import("c:/some/args/file.gni")'))
         parser.ReplaceImports()
 
+  @mock.patch.dict(os.environ, {"SWARMING_BOT_ID": ""})
   def test_CreateBuildCommand(self):
     with tempfile.TemporaryDirectory() as temp_dir:
       suffix = '.bat' if sys.platform.startswith('win32') else ''

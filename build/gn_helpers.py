@@ -584,6 +584,11 @@ def CreateBuildCommand(output_directory):
     ninja_cmd = [f'{ninja_prefix}ninja{suffix}']
     siso_cmd = [f'{siso_prefix}siso{suffix}', 'ninja']
   else:
+    # Use '.py' suffix when using autoninja and in a swarming bot, otherwise
+    # it would try using depot_tools's venv setup, which the bots skip.
+    if os.getenv('SWARMING_BOT_ID'):
+      suffix = '.py'
+
     ninja_cmd = [f'autoninja{suffix}']
     siso_cmd = list(ninja_cmd)
 
