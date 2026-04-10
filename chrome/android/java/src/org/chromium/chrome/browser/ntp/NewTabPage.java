@@ -25,7 +25,6 @@ import androidx.core.view.ViewCompat;
 import org.chromium.base.CallbackController;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.Log;
-import org.chromium.base.ObserverList;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
@@ -145,7 +144,6 @@ public class NewTabPage
     protected final TileGroup.Delegate mTileGroupDelegate;
     private final boolean mIsTablet;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
-    private final ObserverList<MostVisitedTileClickObserver> mMostVisitedTileClickObservers;
     private final BottomSheetController mBottomSheetController;
     private final NewTabPageLayout mNewTabPageLayout;
     private final NewTabPageCoordinator mNewTabPageCoordinator;
@@ -356,9 +354,6 @@ public class NewTabPage
             if (mIsDestroyed) return;
 
             super.openMostVisitedItem(windowDisposition, tile);
-            for (MostVisitedTileClickObserver observer : mMostVisitedTileClickObservers) {
-                observer.onMostVisitedTileClicked(tile, mTab);
-            }
         }
     }
 
@@ -423,7 +418,6 @@ public class NewTabPage
         mActivityLifecycleDispatcher = lifecycleDispatcher;
         mTab = tab;
         mToolbarSupplier = toolbarSupplier;
-        mMostVisitedTileClickObservers = new ObserverList<>();
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mBottomSheetController = bottomSheetController;
         mIsInNightMode = isInNightMode;
@@ -961,16 +955,6 @@ public class NewTabPage
     @Override
     public SnackbarManager getSnackbarManager() {
         return mNewTabPageManager.getSnackbarManager();
-    }
-
-    /** Adds an observer to be notified on most visited tile clicks. */
-    public void addMostVisitedTileClickObserver(MostVisitedTileClickObserver observer) {
-        mMostVisitedTileClickObservers.addObserver(observer);
-    }
-
-    /** Removes the observer. */
-    public void removeMostVisitedTileClickObserver(MostVisitedTileClickObserver observer) {
-        mMostVisitedTileClickObservers.removeObserver(observer);
     }
 
     /**
