@@ -73,18 +73,18 @@ class PLATFORM_EXPORT PushPullFIFO final {
   //    the request from the consumer without causing error, but with a glitch.
   size_t Pull(AudioBus* output_bus, uint32_t frames_requested);
 
-  // Pull and update `earmark_frames_` to make the dual thread rendering mode
+  // Pull and update `earmarked_frames_` to make the dual thread rendering mode
   // (i.e. AudioWorklet) more smooth. (The single thread rendering does not need
   // this treatment.) Returns the number of frames which are pulled (guaranteed
   // to not exceed `frames_requested`) and the number of frames to be rendered
   // by the source (i.e. WebAudio graph).
-  PullResult PullAndUpdateEarmark(AudioBus* output_bus,
-                                  uint32_t frames_requested);
+  PullResult PullAndUpdateEarmarkedFrames(AudioBus* output_bus,
+                                          uint32_t frames_requested);
 
-  void SetEarmarkFrames(size_t earmark_frames) {
+  void SetEarmarkedFrames(size_t earmarked_frames) {
     DCHECK(IsMainThread());
     base::AutoLock locker(lock_);
-    earmark_frames_ = earmark_frames;
+    earmarked_frames_ = earmarked_frames;
   }
 
   uint32_t length() const { return fifo_length_; }
@@ -103,9 +103,9 @@ class PLATFORM_EXPORT PushPullFIFO final {
     return fifo_bus_.get();
   }
 
-  size_t EarmarkFramesForTest() {
+  size_t EarmarkedFramesForTest() {
     base::AutoLock locker(lock_);
-    return earmark_frames_;
+    return earmarked_frames_;
   }
 
   // For single thread unit test only. Get the current configuration that
@@ -128,8 +128,8 @@ class PLATFORM_EXPORT PushPullFIFO final {
   base::Lock lock_;
 
   // To adapt the unstable callback timing. Every buffer underrun from
-  // PullAndUpdateEarmark() will increase this number.
-  size_t earmark_frames_ GUARDED_BY(lock_) = 0;
+  // PullAndUpdateEarmarkedFrames() will increase this number.
+  size_t earmarked_frames_ GUARDED_BY(lock_) = 0;
 
   // The number of frames in the FIFO actually available for pulling.
   uint32_t frames_available_ GUARDED_BY(lock_) = 0;

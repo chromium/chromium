@@ -220,8 +220,8 @@ int AudioDestination::Render(base::TimeDelta delay,
   // Fill the FIFO.
   if (worklet_task_runner_) {
     // Use the dual-thread rendering if the AudioWorklet is activated.
-    auto result =
-        fifo_->PullAndUpdateEarmark(output_bus_.get(), number_of_frames);
+    auto result = fifo_->PullAndUpdateEarmarkedFrames(output_bus_.get(),
+                                                      number_of_frames);
     // The audio that we just pulled from the fifo will be played before the
     // audio that we are about to request, so we add that duration to the
     // delay of the audio we request. Note that it doesn't matter if there was
@@ -338,7 +338,7 @@ void AudioDestination::SetWorkletTaskRunner(
 
   // The dual-thread rendering kicks off, so update the earmark frames
   // accordingly.
-  fifo_->SetEarmarkFrames(callback_buffer_size_);
+  fifo_->SetEarmarkedFrames(callback_buffer_size_);
   worklet_task_runner_ = std::move(worklet_task_runner);
 
   uma_reporter_.UpdateMetricNameForDualThreadMode();
