@@ -323,7 +323,10 @@ class SimpleFeature : public Feature {
   // to perform the override availability check.
   DelegatedAvailabilityCheckHandler delegated_availability_check_handler_;
 
-  bool component_extensions_auto_granted_{false};
+  // Whether access to the feature is automatically granted to component
+  // extensions. This defaults to true to maintain backward compatibility and
+  // the expectation that component extensions are trusted.
+  bool component_extensions_auto_granted_{true};
   bool is_internal_;
   bool requires_delegated_availability_check_{false};
   bool developer_mode_only_{false};

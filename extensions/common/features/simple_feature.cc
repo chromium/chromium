@@ -226,9 +226,7 @@ SimpleFeature::ScopedThreadUnsafeAllowlistForTest::
 }
 
 SimpleFeature::SimpleFeature()
-    : component_extensions_auto_granted_(true),
-      is_internal_(false),
-      disallow_for_service_workers_(false) {}
+    : is_internal_(false), disallow_for_service_workers_(false) {}
 
 SimpleFeature::~SimpleFeature() = default;
 
