@@ -568,10 +568,6 @@ void HTMLMetaElement::NameRemoved(const AtomicString& name_value) {
   } else if (RuntimeEnabledFeatures::AppTitleEnabled(GetExecutionContext()) &&
              EqualIgnoringAsciiCase(name_value, "application-title")) {
     GetDocument().UpdateApplicationTitle();
-  } else if (RuntimeEnabledFeatures::ResponsiveIframesEnabled() &&
-             EqualIgnoringAsciiCase(name_value,
-                                    keywords::kResponsiveEmbeddedSizing)) {
-    GetDocument().ResponsiveEmbeddedSizingChanged();
   } else if (EqualIgnoringAsciiCase(name_value, "text-scale")) {
     GetDocument().TextScaleMetaChanged();
   }

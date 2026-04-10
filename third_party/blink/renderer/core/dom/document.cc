@@ -8266,20 +8266,6 @@ void Document::RequestResizeResponsiveIframe(ExceptionState* exception_state) {
   }
 }
 
-void Document::ResponsiveEmbeddedSizingChanged() {
-  DCHECK(RuntimeEnabledFeatures::ResponsiveIframesEnabled());
-  responsive_embedded_sizing_ = false;
-  if (const auto* root_element = documentElement()) {
-    for (const HTMLMetaElement& meta_element :
-         Traversal<HTMLMetaElement>::DescendantsOf(*root_element)) {
-      if (EqualIgnoringAsciiCase(meta_element.GetName(),
-                                 keywords::kResponsiveEmbeddedSizing)) {
-        responsive_embedded_sizing_ = true;
-        break;
-      }
-    }
-  }
-}
 
 bool Document::TextScaleMetaTagPresent() const {
   return RuntimeEnabledFeatures::TextScaleMetaTagEnabled() &&
