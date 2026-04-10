@@ -360,8 +360,8 @@ should be able to be added at any place in this file.
   <variant name="_ExplicitBrowserSigninPreferenceRemembered"
       summary="For Explicit Browser Signin Preference Remembered feature."/>
   <variant name="_ExploreSitesTile" summary="For Explore Sites feature."/>
-  <variant name="_ExtensionsManageMainMenuFeature"
-      summary="For managing your extensions from the main menu feature."/>
+  <variant name="_ExtensionsManageAppMenuFeature"
+      summary="For managing your extensions from the app menu feature."/>
   <variant name="_ExtensionsManageToolbarFeature"
       summary="For managing your extension feature in the toolbar."/>
   <variant name="_ExtensionsMenu" summary="For Extensions menu opening."/>

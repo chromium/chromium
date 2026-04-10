@@ -215,9 +215,9 @@ chromium-metrics-reviews@google.com.
       summary="Confirmation message that the explicit browser signin
                preference was remembered"/>
   <variant name="IPH_ExploreSitesTile" summary="Explore Sites feature"/>
-  <variant name="IPH_ExtensionsManageMainMenuFeature"
+  <variant name="IPH_ExtensionsManageAppMenuFeature"
       summary="message shown informing users they can manage their extensions
-               in the main menu."/>
+               in the app menu."/>
   <variant name="IPH_ExtensionsManageToolbarFeature"
       summary="message shown informing users they can manage their extensions
                in the extensions menu found in the toolbar."/>

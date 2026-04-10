@@ -4141,6 +4141,11 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 currentTab.loadUrl(params);
             }
             RecordUserAction.record("MobileMenuManageExtensions");
+            Profile profile = mTabModelProfileSupplier.get();
+            if (profile != null) {
+                TrackerFactory.getTrackerForProfile(profile)
+                        .notifyEvent(EventConstants.EXTENSIONS_ROW_IN_APP_MENU_CLICKED);
+            }
         } else if (id == R.id.extensions_webstore_menu_id) {
             LoadUrlParams params =
                     new LoadUrlParams(

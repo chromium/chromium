@@ -70,7 +70,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.GLIC_PROMO_ANDROID_FEATURE,
     FeatureConstants.IDENTITY_DISC_FEATURE,
     FeatureConstants.INSTANCE_SWITCHER,
-    FeatureConstants.IPH_EXTENSIONS_MANAGE_MAIN_MENU_FEATURE,
+    FeatureConstants.IPH_EXTENSIONS_MANAGE_APP_MENU_FEATURE,
     FeatureConstants.IPH_EXTENSIONS_MANAGE_TOOLBAR_FEATURE,
     FeatureConstants.IPH_MIC_TOOLBAR_FEATURE,
     FeatureConstants.IPH_PDF_PAGE_DOWNLOAD,
@@ -294,9 +294,9 @@ public @interface FeatureConstants {
 
     /**
      * An IPH feature that shows after the extensions menu is uninstalled to inform users to manage
-     * their extensions in the main menu.
+     * their extensions in the app menu.
      */
-    String IPH_EXTENSIONS_MANAGE_MAIN_MENU_FEATURE = "IPH_ExtensionsManageMainMenu";
+    String IPH_EXTENSIONS_MANAGE_APP_MENU_FEATURE = "IPH_ExtensionsManageAppMenu";
 
     /**
      * An IPH feature that shows after the first extension is installed to inform users to manage

@@ -753,12 +753,12 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-  if (kIPHExtensionsManageMainMenuFeature.name == feature->name) {
+  if (kIPHExtensionsManageAppMenuFeature.name == feature->name) {
     // Allows an IPH to be shown after a user unpins the extensions menu to
     // inform them where it can be managed.
     // Constraints:
     // - Show at most once per year (360 days).
-    // - Only show if the user hasn't already clicked open the Chrome main menu
+    // - Only show if the user hasn't already clicked open the Chrome app menu
     //   button on their own.
     // - session_rate is set to EQUAL, 0 to ensure we don't show this if another
     //   IPH was already shown in the same session.
@@ -766,11 +766,11 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(EQUAL, 0);
-    config->trigger = EventConfig("manage_extensions_main_menu_iph_triggered",
+    config->trigger = EventConfig("manage_extensions_app_menu_iph_triggered",
                                   Comparator(LESS_THAN, 1), 360, 360);
     // Only show if the user hasn't already clicked the "Extensions" section in
-    // the Chrome main menu.
-    config->used = EventConfig("extensions_row_in_main_menu_clicked",
+    // the Chrome app menu.
+    config->used = EventConfig("extensions_row_in_app_menu_clicked",
                                Comparator(EQUAL, 0), 360, 360);
     return config;
   }

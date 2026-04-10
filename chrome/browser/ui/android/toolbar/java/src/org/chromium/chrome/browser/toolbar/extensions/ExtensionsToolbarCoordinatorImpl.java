@@ -44,7 +44,6 @@ import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
-import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuButton;
@@ -93,7 +92,7 @@ public class ExtensionsToolbarCoordinatorImpl
             new MenuButtonPinningDelegate();
     private View.@Nullable OnLayoutChangeListener mLayoutChangeListener;
     private boolean mWasWindowCompact;
-    private ChromeAndroidTask mTask;
+    private WindowAndroid mWindowAndroid;
     private Profile mProfile;
     private PrefService mPrefService;
     private PrefChangeRegistrar mPrefChangeRegistrar;
@@ -113,7 +112,7 @@ public class ExtensionsToolbarCoordinatorImpl
             @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
             TabModelSelector tabModelSelector) {
         mBridge = new ExtensionActionsBridge(task, profile);
-        mTask = task;
+        mWindowAndroid = windowAndroid;
         mProfile = profile;
 
         extensionsToolbarStub.setLayoutResource(R.layout.extensions_toolbar_container);
@@ -150,6 +149,7 @@ public class ExtensionsToolbarCoordinatorImpl
                         mContainer.findViewById(R.id.extensions_menu_button),
                         themeColorProvider,
                         task,
+                        windowAndroid,
                         profile,
                         currentTabSupplier,
                         tabCreator,
@@ -253,9 +253,7 @@ public class ExtensionsToolbarCoordinatorImpl
     private void showIphInternal() {
         if (mProfile.shutdownStarted()) return;
 
-        ActivityWindowAndroid activityWindowAndroid = mTask.getTopActivityWindowAndroid();
-        if (activityWindowAndroid == null) return;
-        Activity activity = activityWindowAndroid.getActivity().get();
+        Activity activity = mWindowAndroid.getActivity().get();
         if (activity == null) return;
 
         View anchorView = mContainer.findViewById(R.id.extensions_menu_button);

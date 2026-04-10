@@ -50,8 +50,10 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuHost;
 
@@ -76,6 +78,7 @@ public class ExtensionsMenuCoordinatorTest {
     @Mock private ExtensionsMenuBridge.Natives mExtensionsMenuBridgeJniMock;
     @Mock private MenuButtonPinningDelegate mMenuButtonPinningDelegate;
     @Mock private Tracker mTracker;
+    @Mock private WindowAndroid mWindowAndroid;
 
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
@@ -104,7 +107,11 @@ public class ExtensionsMenuCoordinatorTest {
         activity.setContentView(mExtensionsMenuButton);
 
         when(mTask.getOrCreateNativeBrowserWindowPtr(mProfile)).thenReturn(BROWSER_WINDOW_POINTER);
+        java.lang.ref.WeakReference<Activity> mockActivityRef =
+                new java.lang.ref.WeakReference<>(mContext);
+        when(mWindowAndroid.getActivity()).thenReturn(mockActivityRef);
         when(mTab.getProfile()).thenReturn(mProfile);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
 
         // Mock {@link ExtensionsMenuBridge}.
         ExtensionsMenuBridgeJni.setInstanceForTesting(mExtensionsMenuBridgeJniMock);
@@ -133,6 +140,7 @@ public class ExtensionsMenuCoordinatorTest {
                         mExtensionsMenuButton,
                         mThemeColorProvider,
                         mTask,
+                        mWindowAndroid,
                         mProfile,
                         mCurrentTabSupplier,
                         mTabCreator,
@@ -300,6 +308,42 @@ public class ExtensionsMenuCoordinatorTest {
         // the native model is initialized.
         assertNotNull("Bridge should have been initialized by the click", mCapturedMenuBridge);
         mCapturedMenuBridge.onReady();
+    }
+
+    @Test
+    public void testMenuUnpinned_ShowsManageAppMenuIph() {
+        when(mTracker.isInitialized()).thenReturn(true);
+        doAnswer(
+                        invocation -> {
+                            org.chromium.base.Callback<Boolean> callback =
+                                    invocation.getArgument(0);
+                            callback.onResult(true);
+                            return null;
+                        })
+                .when(mTracker)
+                .addOnInitializedCallback(any());
+
+        // Mock that the button is initially pinned.
+        when(mMenuButtonPinningDelegate.isMenuButtonPinned()).thenReturn(true);
+
+        // Activity is already mocked in setUp().
+        View anchorView = new View(mContext);
+        anchorView.setId(org.chromium.chrome.browser.toolbar.R.id.menu_button_wrapper);
+        mContext.setContentView(anchorView);
+
+        // Unpin the extensions menu button.
+        mExtensionsMenuCoordinator
+                .getContentView()
+                .findViewById(
+                        org.chromium.chrome.browser.ui.extensions.R.id
+                                .extensions_menu_pin_menu_icon_button)
+                .performClick();
+
+        org.robolectric.shadows.ShadowLooper.idleMainLooper();
+
+        // Verify the IPH tracker was notified with the correct feature.
+        verify(mTracker)
+                .shouldTriggerHelpUi(FeatureConstants.IPH_EXTENSIONS_MANAGE_APP_MENU_FEATURE);
     }
 
     @Test

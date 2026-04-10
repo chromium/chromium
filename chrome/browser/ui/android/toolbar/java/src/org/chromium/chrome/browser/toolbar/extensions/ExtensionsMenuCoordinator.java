@@ -4,8 +4,12 @@
 
 package org.chromium.chrome.browser.toolbar.extensions;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Rect;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -30,11 +34,15 @@ import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuDelegate;
@@ -44,6 +52,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.RectProvider;
 
 /**
@@ -69,6 +78,7 @@ public class ExtensionsMenuCoordinator
     private final PropertyModelChangeProcessor mSitePermissionsPageChangeProcessor;
     private final ModelList mExtensionModels;
     private final ChromeAndroidTask mTask;
+    private final WindowAndroid mWindowAndroid;
     private final ExtensionsToolbarBridge mExtensionsToolbarBridge;
     private final MenuButtonPinningDelegate mMenuButtonPinningDelegate;
     private final ThemeColorProvider.TintObserver mTintObserver = this::onTintChanged;
@@ -82,6 +92,7 @@ public class ExtensionsMenuCoordinator
      * @param extensionsMenuButton The puzzle icon in the toolbar.
      * @param themeColorProvider The provider for theme colors.
      * @param task Supplies the {@link ChromeAndroidTask}.
+     * @param windowAndroid The {@link WindowAndroid} for the current activity.
      * @param profile The current profile.
      * @param currentTabSupplier Supplies the current {@link Tab}.
      * @param tabCreator {@link TabCreator} to handle a new tab creation.
@@ -94,6 +105,7 @@ public class ExtensionsMenuCoordinator
             ListMenuButton extensionsMenuButton,
             ThemeColorProvider themeColorProvider,
             ChromeAndroidTask task,
+            WindowAndroid windowAndroid,
             Profile profile,
             NullableObservableSupplier<Tab> currentTabSupplier,
             TabCreator tabCreator,
@@ -104,6 +116,7 @@ public class ExtensionsMenuCoordinator
         mProfile = profile;
         mTabCreator = tabCreator;
         mTask = task;
+        mWindowAndroid = windowAndroid;
         mExtensionsToolbarBridge = extensionsToolbarBridge;
         mMenuButtonPinningDelegate = menuButtonPinningDelegate;
 
@@ -279,8 +292,11 @@ public class ExtensionsMenuCoordinator
         mMainPageModel.set(
                 ExtensionsMenuProperties.MENU_BUTTON_PINNING_CLICK_LISTENER,
                 (view) -> {
-                    mMenuButtonPinningDelegate.setMenuButtonPinned(
-                            !mMenuButtonPinningDelegate.isMenuButtonPinned());
+                    boolean willBePinned = !mMenuButtonPinningDelegate.isMenuButtonPinned();
+                    mMenuButtonPinningDelegate.setMenuButtonPinned(willBePinned);
+                    if (!willBePinned) {
+                        showManageExtensionsAppMenuIph();
+                    }
                 });
         mMainPageModel.set(
                 ExtensionsMenuProperties.MENU_BUTTON_PINNED,
@@ -322,6 +338,34 @@ public class ExtensionsMenuCoordinator
                         mMediator.onReloadPageButtonClicked();
                     }
                 });
+    }
+
+    private void showManageExtensionsAppMenuIph() {
+        if (mProfile.shutdownStarted()) return;
+
+        Activity activity = mWindowAndroid.getActivity().get();
+        if (activity == null) return;
+
+        View anchorView =
+                activity.findViewById(org.chromium.chrome.browser.toolbar.R.id.menu_button_wrapper);
+        if (anchorView == null) return;
+
+        UserEducationHelper userEducationHelper =
+                new UserEducationHelper(activity, mProfile, new Handler(Looper.getMainLooper()));
+
+        userEducationHelper.requestShowIph(
+                new IphCommandBuilder(
+                                activity.getResources(),
+                                FeatureConstants.IPH_EXTENSIONS_MANAGE_APP_MENU_FEATURE,
+                                R.string.extensions_menu_manage_app_menu_iph,
+                                R.string.extensions_menu_manage_app_menu_iph)
+                        .setAnchorView(anchorView)
+                        .setPreferredHorizontalOrientation(
+                                HorizontalOrientation.MAX_AVAILABLE_SPACE)
+                        .setHorizontalOverlapAnchor(true)
+                        .setRemoveArrow(true)
+                        .setInsetRect(new Rect())
+                        .build());
     }
 
     private void setupSitePermissionsPageModel() {
