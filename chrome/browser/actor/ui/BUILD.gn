@@ -25,7 +25,10 @@ source_set("states") {
     "states/tab_indicator_state.h",
   ]
 
-  public_deps = [ "//chrome/browser/actor:types" ]
+  public_deps = [
+    "//chrome/browser/actor:types",
+    "//components/actor/core:core",
+  ]
 }
 
 source_set("dom_node_geometry_types") {
@@ -56,6 +59,7 @@ source_set("dom_node_geometry") {
     ":metrics",
     "//chrome/browser/actor:types",
     "//chrome/common:chrome_features",
+    "//components/actor/core:core",
     "//components/optimization_guide/proto:optimization_guide_proto",
   ]
 }

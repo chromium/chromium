@@ -6,12 +6,18 @@ source_set("core") {
   sources = [
     "actor_features.cc",
     "actor_features.h",
+    "actor_metrics.cc",
+    "actor_metrics.h",
     "actor_switches.cc",
     "actor_switches.h",
     "actor_util.cc",
     "actor_util.h",
+    "origin_checker.cc",
+    "origin_checker.h",
     "safety_list_manager.cc",
     "safety_list_manager.h",
+    "shared_types.cc",
+    "shared_types.h",
     "task_source_info.cc",
     "task_source_info.h",
   ]
@@ -20,12 +26,19 @@ source_set("core") {
     "//base",
     "//components/content_settings/core/common",
     "//components/page_content_annotations/core",
+    "//url",
   ]
+
+  deps = [ "//net" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "safety_list_manager_unittest.cc" ]
+  sources = [
+    "origin_checker_unittest.cc",
+    "safety_list_manager_unittest.cc",
+    "shared_types_unittest.cc",
+  ]
   deps = [
     ":core",
     "//base",
@@ -34,4 +47,5 @@ source_set("unit_tests") {
     "//url",
   ]
 }
+
 

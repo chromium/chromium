@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACTOR_ORIGIN_CHECKER_H_
-#define CHROME_BROWSER_ACTOR_ORIGIN_CHECKER_H_
+#ifndef COMPONENTS_ACTOR_CORE_ORIGIN_CHECKER_H_
+#define COMPONENTS_ACTOR_CORE_ORIGIN_CHECKER_H_
 
 #include "base/types/optional_ref.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -61,4 +61,4 @@ class OriginChecker {
 
 }  // namespace actor
 
-#endif  // CHROME_BROWSER_ACTOR_ORIGIN_CHECKER_H_
+#endif  // COMPONENTS_ACTOR_CORE_ORIGIN_CHECKER_H_

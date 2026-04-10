@@ -6,8 +6,8 @@
 
 #include "base/strings/to_string.h"
 #include "chrome/browser/actor/actor_test_util.h"
-#include "chrome/browser/actor/shared_types.h"
 #include "chrome/common/actor/journal_details_builder.h"
+#include "components/actor/core/shared_types.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"

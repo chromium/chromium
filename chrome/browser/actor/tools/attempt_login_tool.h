@@ -13,12 +13,12 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "chrome/browser/actor/shared_types.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_quality_logger.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
 #include "chrome/common/actor_webui.mojom-forward.h"
+#include "components/actor/core/shared_types.h"
 #include "components/tabs/public/tab_interface.h"
 
 class GURL;

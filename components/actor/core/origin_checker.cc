@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/actor/origin_checker.h"
+#include "components/actor/core/origin_checker.h"
 
 #include <algorithm>
 
 #include "base/containers/map_util.h"
-#include "chrome/browser/actor/actor_metrics.h"
 #include "components/actor/core/actor_features.h"
+#include "components/actor/core/actor_metrics.h"
 #include "components/actor/core/actor_util.h"
 #include "net/base/schemeful_site.h"
 #include "url/origin.h"

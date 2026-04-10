@@ -75,11 +75,6 @@ void RecordDirectDownloadTriggered(bool success);
 // Recorded when a 'save as' download dialog is triggered by an ActorTask.
 void RecordDownloadSaveAsDialogTriggered(bool success);
 
-// Records the the size of the allow list and confirmed list (blocklist) of
-// origins for navigation gating.
-void RecordActorNavigationGatingListSize(size_t allow_list_size,
-                                         size_t confirmed_list_size);
-
 // Records script tool specific metrics.
 void RecordScriptToolActionResultCode(
     actor::mojom::ActionResultCode action_result_code);

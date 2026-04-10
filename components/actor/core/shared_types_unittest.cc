@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/actor/shared_types.h"
+#include "components/actor/core/shared_types.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 

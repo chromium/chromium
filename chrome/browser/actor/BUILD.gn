@@ -31,7 +31,6 @@ source_set("actor") {
     "aggregated_journal_serializer.h",
     "enterprise_policy_checker.h",
     "execution_engine.h",
-    "origin_checker.h",
     "site_policy.h",
     "tools/attempt_form_filling_tool_request.h",
     "tools/attempt_login_tool_request.h",
@@ -114,7 +113,6 @@ source_set("impl") {
     "aggregated_journal_in_memory_serializer.cc",
     "aggregated_journal_serializer.cc",
     "execution_engine.cc",
-    "origin_checker.cc",
     "site_policy.cc",
     "tools/attempt_form_filling_tool.cc",
     "tools/attempt_form_filling_tool.h",
@@ -258,8 +256,6 @@ source_set("types") {
   sources = [
     "actor_task_delegate.h",
     "autofill_selection_dialog_event_handler.h",
-    "shared_types.cc",
-    "shared_types.h",
   ]
   public_deps = [
     "//base",
@@ -322,8 +318,6 @@ source_set("unit_tests") {
     "actor_test_util_unittest.cc",
     "aggregated_journal_unittest.cc",
     "execution_engine_unittest.cc",
-    "origin_checker_unittest.cc",
-    "shared_types_unittest.cc",
     "site_policy_unittest.cc",
     "tools/attempt_form_filling_tool_request_unittest.cc",
   ]

@@ -8,8 +8,8 @@
 #include <variant>
 
 #include "base/strings/strcat.h"
-#include "chrome/browser/actor/shared_types.h"
 #include "chrome/common/actor.mojom-shared.h"
+#include "components/actor/core/shared_types.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 

@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "chrome/browser/actor/shared_types.h"
+#include "components/actor/core/shared_types.h"
 
 namespace actor::ui {
 

@@ -8,7 +8,7 @@
 #include <optional>
 #include <string_view>
 
-#include "chrome/browser/actor/shared_types.h"
+#include "components/actor/core/shared_types.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/tabs/public/tab_interface.h"

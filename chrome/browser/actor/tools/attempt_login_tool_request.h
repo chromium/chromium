@@ -9,8 +9,8 @@
 #include <optional>
 #include <string>
 
-#include "chrome/browser/actor/shared_types.h"
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "components/actor/core/shared_types.h"
 
 namespace actor {
 

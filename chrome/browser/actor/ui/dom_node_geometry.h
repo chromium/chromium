@@ -7,8 +7,8 @@
 
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/actor/shared_types.h"
 #include "chrome/browser/actor/ui/dom_node_geometry_types.h"
+#include "components/actor/core/shared_types.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/gfx/geometry/point.h"

@@ -7,7 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_test_util.h"
-#include "chrome/browser/actor/shared_types.h"
+#include "components/actor/core/shared_types.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/tabs/public/tab_interface.h"

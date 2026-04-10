@@ -133,14 +133,6 @@ void RecordDownloadSaveAsDialogTriggered(bool success) {
   base::UmaHistogramBoolean("Actor.Download.SaveAsDialogTriggered", success);
 }
 
-void RecordActorNavigationGatingListSize(size_t allow_list_size,
-                                         size_t confirmed_list_size) {
-  base::UmaHistogramCounts1000("Actor.NavigationGating.AllowListSize",
-                               allow_list_size);
-  base::UmaHistogramCounts1000("Actor.NavigationGating.ConfirmedListSize2",
-                               confirmed_list_size);
-}
-
 void RecordScriptToolActionResultCode(
     actor::mojom::ActionResultCode action_result_code) {
   base::UmaHistogramSparse("Actor.Tools.ScriptTool.ActionResultCode",

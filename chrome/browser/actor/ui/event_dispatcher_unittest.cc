@@ -16,7 +16,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_test_util.h"
-#include "chrome/browser/actor/shared_types.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/move_mouse_tool_request.h"
 #include "chrome/browser/actor/tools/type_tool_request.h"
@@ -28,6 +27,7 @@
 #include "chrome/common/actor.mojom-shared.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
+#include "components/actor/core/shared_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace actor::ui {

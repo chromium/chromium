@@ -10,8 +10,8 @@
 #include <string>
 #include <vector>
 
-#include "chrome/browser/actor/shared_types.h"
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "components/actor/core/shared_types.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 
 namespace actor {

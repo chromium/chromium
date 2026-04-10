@@ -1,10 +1,12 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACTOR_SHARED_TYPES_H_
-#define CHROME_BROWSER_ACTOR_SHARED_TYPES_H_
+#ifndef COMPONENTS_ACTOR_CORE_SHARED_TYPES_H_
+#define COMPONENTS_ACTOR_CORE_SHARED_TYPES_H_
 
+#include <ostream>
+#include <string>
 #include <variant>
 
 #include "ui/gfx/geometry/point.h"
@@ -37,4 +39,4 @@ std::ostream& operator<<(std::ostream& os, const PageTarget& t);
 
 }  // namespace actor
 
-#endif  // CHROME_BROWSER_ACTOR_SHARED_TYPES_H_
+#endif  // COMPONENTS_ACTOR_CORE_SHARED_TYPES_H_
