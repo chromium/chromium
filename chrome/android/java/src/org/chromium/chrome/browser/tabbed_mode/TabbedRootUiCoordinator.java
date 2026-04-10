@@ -157,6 +157,7 @@ import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandbox3pcdRollbackMessageController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadLaterIphController;
+import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.readaloud.ReadAloudIphController;
 import org.chromium.chrome.browser.safe_browsing.AdvancedProtectionCoordinator;
 import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogCoordinator;
@@ -335,6 +336,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable LoadingFullscreenCoordinator mLoadingFullscreenCoordinator;
     private @Nullable BookmarkOpener mBookmarkOpener;
     private @Nullable TabBottomSheetManager mTabBottomSheetManager;
+    private @Nullable Callback<ReadAloudController> mTabBottomSheetReadAloudControllerCallback;
     private @Nullable CoBrowseViewFactory mCoBrowseViewFactory;
     private final MonotonicObservableSupplier<BookmarkManagerOpener> mBookmarkManagerOpenerSupplier;
     private AdvancedProtectionCoordinator mAdvancedProtectionCoordinator;
@@ -837,6 +839,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (mNtpSyncedThemeManager != null) {
             mNtpSyncedThemeManager.destroy();
+        }
+
+        if (mTabBottomSheetReadAloudControllerCallback != null) {
+            mReadAloudControllerSupplier.removeObserver(mTabBottomSheetReadAloudControllerCallback);
+            mTabBottomSheetReadAloudControllerCallback = null;
         }
 
         if (mTabBottomSheetManager != null) {
@@ -1772,6 +1779,19 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             getBottomSheetController(),
                             mLayoutStateProviderOneShotSupplier,
                             assertNonNull(mCompositorViewHolderSupplier.get()));
+            mTabBottomSheetReadAloudControllerCallback =
+                    mCallbackController.makeCancelable(
+                            (readAloudController) -> {
+                                if (mTabBottomSheetManager != null) {
+                                    mTabBottomSheetManager.setReadAloudActivePlaybackTabSupplier(
+                                            readAloudController.getActivePlaybackTabSupplier());
+                                }
+                                mReadAloudControllerSupplier.removeObserver(
+                                        mTabBottomSheetReadAloudControllerCallback);
+                                mTabBottomSheetReadAloudControllerCallback = null;
+                            });
+            mReadAloudControllerSupplier.addSyncObserverAndCallIfNonNull(
+                    mTabBottomSheetReadAloudControllerCallback);
         }
     }
 

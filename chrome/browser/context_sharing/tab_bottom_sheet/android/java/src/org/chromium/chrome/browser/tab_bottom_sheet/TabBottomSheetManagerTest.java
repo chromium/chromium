@@ -17,6 +17,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -24,11 +26,14 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager.NativeInterfaceDelegate;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content.browser.input.ImeAdapterImpl;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -44,6 +49,7 @@ public class TabBottomSheetManagerTest {
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
+    private WebPageStation mInitialStation;
     private CoBrowseViews mCoBrowseViews;
     private ChromeTabbedActivity mActivity;
     private WindowAndroid mWindowAndroid;
@@ -52,7 +58,7 @@ public class TabBottomSheetManagerTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        mActivityTestRule.startOnBlankPage();
+        mInitialStation = mActivityTestRule.startOnBlankPage();
 
         mActivity = mActivityTestRule.getActivity();
 
@@ -129,5 +135,62 @@ public class TabBottomSheetManagerTest {
                 () -> {
                     coBrowseViews.destroy();
                 });
+    }
+
+    @Test
+    @SmallTest
+    public void testBottomSheetHiddenOnTabSwitcher() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.tryToShowBottomSheet(
+                            NativeInterfaceDelegate.getInstance(),
+                            mCoBrowseViews,
+                            /* animate= */ false,
+                            /* startsExpanded= */ true);
+                });
+        CriteriaHelper.pollUiThread(() -> mManager.isSheetShowing());
+
+        // Open tab switcher
+        RegularTabSwitcherStation tabSwitcher = mInitialStation.openRegularTabSwitcher();
+
+        CriteriaHelper.pollUiThread(() -> !mManager.isSheetShowing());
+
+        // Close tab switcher
+        tabSwitcher.leaveHubToPreviousTabViaBack(WebPageStation.newBuilder());
+
+        CriteriaHelper.pollUiThread(() -> mManager.isSheetShowing());
+    }
+
+    @Test
+    @SmallTest
+    public void testBottomSheetHiddenOnReadAloud() {
+        SettableNullableObservableSupplier<Tab> readAloudTabSupplier =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            SettableNullableObservableSupplier<Tab> supplier =
+                                    ObservableSuppliers.createNullable();
+                            return supplier;
+                        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.setReadAloudActivePlaybackTabSupplierForTesting(readAloudTabSupplier);
+                    mManager.tryToShowBottomSheet(
+                            NativeInterfaceDelegate.getInstance(),
+                            mCoBrowseViews,
+                            /* animate= */ false,
+                            /* startsExpanded= */ true);
+                });
+        CriteriaHelper.pollUiThread(() -> mManager.isSheetShowing());
+
+        // Fake start read aloud
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> readAloudTabSupplier.set(mActivity.getActivityTab()));
+
+        CriteriaHelper.pollUiThread(() -> !mManager.isSheetShowing());
+
+        // Stop read aloud
+        ThreadUtils.runOnUiThreadBlocking(() -> readAloudTabSupplier.set(null));
+
+        CriteriaHelper.pollUiThread(() -> mManager.isSheetShowing());
     }
 }
