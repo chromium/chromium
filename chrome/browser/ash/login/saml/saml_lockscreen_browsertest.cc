@@ -20,6 +20,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
@@ -729,9 +730,18 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest, ProxyAuthCanBeCancelled) {
   reauth_dialog_helper->WaitForReauthDialogToClose();
 }
 
-class AutoStartTest : public LockscreenWebUiTest {
+class AutoStartTest : public LockscreenWebUiTest,
+                      public testing::WithParamInterface<bool> {
  public:
-  AutoStartTest() = default;
+  AutoStartTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kManagedLocalPinAndPassword);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kManagedLocalPinAndPassword);
+    }
+  }
   AutoStartTest(const AutoStartTest&) = delete;
   AutoStartTest& operator=(const AutoStartTest&) = delete;
   ~AutoStartTest() override = default;
@@ -752,17 +762,26 @@ class AutoStartTest : public LockscreenWebUiTest {
   }
 
   void ForceOnlineReauthOnLockScreen() {
+    base::test::TestFuture<void> test_future;
     Profile* profile = ProfileHelper::Get()->GetProfileByUser(
         user_manager::UserManager::Get()->GetActiveUser());
     ASSERT_TRUE(profile);
     LockScreenReauthManager* lock_screen_reauth_manager =
         LockScreenReauthManagerFactory::GetForProfile(profile);
     ASSERT_TRUE(lock_screen_reauth_manager);
+    lock_screen_reauth_manager
+        ->SetGetAuthfactorsConfigurationCallbackForTesting(
+            test_future.GetRepeatingCallback());
     // Force online reauth on the lock screen as if SAML time limit
     // policy demands it. For auto start it is important to just have
     // reauth forced, specific reason doesn't matter.
     lock_screen_reauth_manager->MaybeForceReauthOnLockScreen(
         ReauthReason::kSamlLockScreenReauthPolicy);
+    if (features::IsManagedLocalPinAndPasswordEnabled()) {
+      ASSERT_TRUE(test_future.Wait())
+          << "Failed to wait for the auth confiugration exit callback";
+      test_future.Clear();
+    }
   }
 
   void ExpectSuccessfulAutoStart() {
@@ -779,11 +798,14 @@ class AutoStartTest : public LockscreenWebUiTest {
   }
 
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verify that online reauth dialog is shown automatically after user locks the
 // screen if online reauth is required.
-IN_PROC_BROWSER_TEST_F(AutoStartTest, DialogShownOnLock) {
+IN_PROC_BROWSER_TEST_P(AutoStartTest, DialogShownOnLock) {
   Login();
   ForceOnlineReauthOnLockScreen();
   ScreenLockerTester().Lock();
@@ -792,7 +814,7 @@ IN_PROC_BROWSER_TEST_F(AutoStartTest, DialogShownOnLock) {
 
 // Verify that online reauth dialog is shown automatically when online reauth
 // becomes required while the screen is locked.
-IN_PROC_BROWSER_TEST_F(AutoStartTest, DialogShownOnReauthEnforcement) {
+IN_PROC_BROWSER_TEST_P(AutoStartTest, DialogShownOnReauthEnforcement) {
   Login();
   ScreenLockerTester().Lock();
 
@@ -805,7 +827,7 @@ IN_PROC_BROWSER_TEST_F(AutoStartTest, DialogShownOnReauthEnforcement) {
 
 // Verify that the "Enter Google Account Info" is shown during
 // AutoStart flow and pressing it initiates the standard reauth flow.
-IN_PROC_BROWSER_TEST_F(AutoStartTest, ChangeIdPButtonPresence) {
+IN_PROC_BROWSER_TEST_P(AutoStartTest, ChangeIdPButtonPresence) {
   base::HistogramTester histogram_tester;
   Login();
   ForceOnlineReauthOnLockScreen();
@@ -841,6 +863,8 @@ IN_PROC_BROWSER_TEST_F(AutoStartTest, ChangeIdPButtonPresence) {
   new_saml_waiter->Wait();
   reauth_dialog_helper->ExpectChangeIdPButtonHidden();
 }
+
+INSTANTIATE_TEST_SUITE_P(All, AutoStartTest, testing::Bool());
 
 class SamlUnlockTest : public LockscreenWebUiTest {
  public:
