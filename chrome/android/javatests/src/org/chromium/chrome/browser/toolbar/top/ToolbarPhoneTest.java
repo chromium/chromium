@@ -102,7 +102,6 @@ import org.chromium.components.signin.SigninFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.ViewUtils;
-import org.chromium.url.GURL;
 
 /** Instrumentation tests for {@link ToolbarPhone}. */
 @RunWith(ParameterizedRunner.class)
@@ -126,7 +125,6 @@ public class ToolbarPhoneTest {
     @Mock OptionalButtonCoordinator mOptionalButtonCoordinator;
     @Mock SigninButtonCoordinator mSigninButtonCoordinator;
     @Mock private SearchEngineUtils mSearchEngineUtils;
-    @Mock private Tab mTab;
 
     private final Canvas mCanvas = new Canvas();
     private ToolbarPhone mToolbar;
@@ -490,11 +488,12 @@ public class ToolbarPhoneTest {
     @EnableFeatures(SigninFeatures.SIGNIN_LEVEL_UP_BUTTON)
     public void testSigninButton_DrawnWhenVisible() {
         // Inflate the real view using the real coordinator.
-        doReturn(new GURL("chrome://newtab/")).when(mTab).getUrl();
-        doReturn(false).when(mTab).isOffTheRecord();
+        mActivityTestRule.loadUrl(getOriginalNativeNtpUrl());
+        Tab tab = mActivityTestRule.getActivityTab();
+        NewTabPageTestUtils.waitForNtpLoaded(tab);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mToolbar.getSigninButtonCoordinatorForTesting().updateButtonVisibility(mTab);
+                    mToolbar.getSigninButtonCoordinatorForTesting().updateButtonVisibility();
                 });
 
         mToolbar.setSigninButtonCoordinatorForTesting(mSigninButtonCoordinator);
@@ -515,11 +514,12 @@ public class ToolbarPhoneTest {
     @EnableFeatures(SigninFeatures.SIGNIN_LEVEL_UP_BUTTON)
     public void testSigninButton_NotDrawnWhenNotVisible() {
         // Inflate the real view using the real coordinator.
-        doReturn(new GURL("chrome://newtab/")).when(mTab).getUrl();
-        doReturn(false).when(mTab).isOffTheRecord();
+        mActivityTestRule.loadUrl(getOriginalNativeNtpUrl());
+        Tab tab = mActivityTestRule.getActivityTab();
+        NewTabPageTestUtils.waitForNtpLoaded(tab);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mToolbar.getSigninButtonCoordinatorForTesting().updateButtonVisibility(mTab);
+                    mToolbar.getSigninButtonCoordinatorForTesting().updateButtonVisibility();
                 });
 
         mToolbar.setSigninButtonCoordinatorForTesting(mSigninButtonCoordinator);

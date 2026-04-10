@@ -52,11 +52,13 @@ import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
+import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -401,6 +403,27 @@ public class SigninButtonCoordinatorTest {
                         SettingsActivity.class,
                         () -> onView(withId(R.id.signin_button)).perform(click()));
         ApplicationTestUtils.finishActivity(settingsActivity);
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.PHONE)
+    public void testSigninButtonHiddenOnUrlFocus() {
+        // Initially visible on NTP.
+        ViewUtils.waitForVisibleView(withId(R.id.signin_button));
+
+        // Focus the URL bar.
+        OmniboxTestUtils omniboxTestUtils = new OmniboxTestUtils(mActivityTestRule.getActivity());
+        omniboxTestUtils.requestFocus();
+
+        // Signin button should be hidden when URL bar is focused.
+        onView(withId(R.id.signin_button)).check(matches(not(isDisplayed())));
+
+        // Clear focus from the URL bar.
+        omniboxTestUtils.clearFocus();
+
+        // Signin button should be visible again.
+        ViewUtils.waitForVisibleView(withId(R.id.signin_button));
     }
 
     private void setSigninAllowed(boolean allowed) {
