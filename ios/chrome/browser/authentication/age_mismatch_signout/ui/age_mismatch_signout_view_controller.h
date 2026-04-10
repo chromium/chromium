@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SIGNIN_UI_AGE_MISMATCH_SIGNOUT_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_SIGNIN_UI_AGE_MISMATCH_SIGNOUT_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_AUTHENTICATION_AGE_MISMATCH_SIGNOUT_UI_AGE_MISMATCH_SIGNOUT_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_AUTHENTICATION_AGE_MISMATCH_SIGNOUT_UI_AGE_MISMATCH_SIGNOUT_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/signin/ui/age_mismatch_prompt_mode.h"
-#import "ios/chrome/browser/signin/ui/age_mismatch_signout_consumer.h"
+#import "ios/chrome/browser/authentication/age_mismatch_signout/ui/age_mismatch_prompt_mode.h"
+#import "ios/chrome/browser/authentication/age_mismatch_signout/ui/age_mismatch_signout_consumer.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
 // View controller for the Age Mismatch prompt.
@@ -26,4 +26,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SIGNIN_UI_AGE_MISMATCH_SIGNOUT_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_AUTHENTICATION_AGE_MISMATCH_SIGNOUT_UI_AGE_MISMATCH_SIGNOUT_VIEW_CONTROLLER_H_

@@ -5,5 +5,6 @@ include_rules = [
   "+ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h",
   "+ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h",
   "+ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h",
+  "+ios/chrome/browser/signin/model",
   "+ios/web/web_state/crw_web_view.h",
 ]

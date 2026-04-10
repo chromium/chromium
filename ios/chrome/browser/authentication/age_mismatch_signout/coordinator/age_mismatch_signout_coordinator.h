@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SIGNIN_COORDINATOR_AGE_MISMATCH_SIGNOUT_COORDINATOR_H_
-#define IOS_CHROME_BROWSER_SIGNIN_COORDINATOR_AGE_MISMATCH_SIGNOUT_COORDINATOR_H_
+#ifndef IOS_CHROME_BROWSER_AUTHENTICATION_AGE_MISMATCH_SIGNOUT_COORDINATOR_AGE_MISMATCH_SIGNOUT_COORDINATOR_H_
+#define IOS_CHROME_BROWSER_AUTHENTICATION_AGE_MISMATCH_SIGNOUT_COORDINATOR_AGE_MISMATCH_SIGNOUT_COORDINATOR_H_
 
+#import "ios/chrome/browser/authentication/age_mismatch_signout/ui/age_mismatch_prompt_mode.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
-#import "ios/chrome/browser/signin/ui/age_mismatch_prompt_mode.h"
 
 @protocol SystemIdentity;
 @class AgeMismatchSignoutCoordinator;
@@ -43,4 +43,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SIGNIN_COORDINATOR_AGE_MISMATCH_SIGNOUT_COORDINATOR_H_
+#endif  // IOS_CHROME_BROWSER_AUTHENTICATION_AGE_MISMATCH_SIGNOUT_COORDINATOR_AGE_MISMATCH_SIGNOUT_COORDINATOR_H_

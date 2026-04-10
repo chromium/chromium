@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/signin/ui/age_mismatch_signout_view_controller.h"
+#import "ios/chrome/browser/authentication/age_mismatch_signout/ui/age_mismatch_signout_view_controller.h"
 
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
+#import "ios/chrome/browser/authentication/age_mismatch_signout/ui/age_mismatch_prompt_mode.h"
 #import "ios/chrome/browser/shared/ui/elements/home_waiting_view.h"
-#import "ios/chrome/browser/signin/ui/age_mismatch_prompt_mode.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 

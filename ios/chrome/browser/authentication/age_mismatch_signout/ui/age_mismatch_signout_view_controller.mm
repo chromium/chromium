@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/signin/ui/age_mismatch_signout_view_controller.h"
+#import "ios/chrome/browser/authentication/age_mismatch_signout/ui/age_mismatch_signout_view_controller.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"

@@ -2,19 +2,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("signin_account_capabilities_scene_agent") {
+source_set("scene_agent") {
   sources = [
     "signin_account_capabilities_scene_agent.h",
     "signin_account_capabilities_scene_agent.mm",
   ]
   deps = [
-    ":age_mismatch_signout_coordinator",
+    ":coordinator",
     "//base",
     "//components/signin/internal/identity_manager:capabilities",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager/objc",
     "//google_apis",
     "//ios/chrome/app/profile",
+    "//ios/chrome/browser/authentication/age_mismatch_signout/ui:prompt_mode",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
@@ -26,11 +27,10 @@ source_set("signin_account_capabilities_scene_agent") {
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/signin/model:system_identity_manager",
-    "//ios/chrome/browser/signin/ui:prompt_mode",
   ]
 }
 
-source_set("age_mismatch_signout_coordinator") {
+source_set("coordinator") {
   sources = [
     "age_mismatch_signout_coordinator.h",
     "age_mismatch_signout_coordinator.mm",
@@ -43,6 +43,9 @@ source_set("age_mismatch_signout_coordinator") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/age_mismatch_learn_more/coordinator",
+    "//ios/chrome/browser/authentication/age_mismatch_signout/ui",
+    "//ios/chrome/browser/authentication/age_mismatch_signout/ui:prompt_mode",
+    "//ios/chrome/browser/authentication/age_mismatch_signout/ui/resources",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
     "//ios/chrome/browser/shared/coordinator/alert",
@@ -58,9 +61,6 @@ source_set("age_mismatch_signout_coordinator") {
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/signin/model:system_identity_manager",
     "//ios/chrome/browser/signin/model/avatar",
-    "//ios/chrome/browser/signin/ui",
-    "//ios/chrome/browser/signin/ui:prompt_mode",
-    "//ios/chrome/browser/signin/ui/resources",
     "//ios/chrome/common/ui/promo_style",
     "//ios/web/common:web_view_creation_util",
     "//ios/web/web_state:web_view_internal_creation_util",
@@ -71,8 +71,8 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "signin_account_capabilities_scene_agent_unittest.mm" ]
   deps = [
-    ":age_mismatch_signout_coordinator",
-    ":signin_account_capabilities_scene_agent",
+    ":coordinator",
+    ":scene_agent",
     "//base",
     "//base/test:test_support",
     "//components/signin/internal/identity_manager:capabilities",
@@ -89,7 +89,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
-    "//ios/chrome/browser/signin/coordinator:age_mismatch_signout_coordinator",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",

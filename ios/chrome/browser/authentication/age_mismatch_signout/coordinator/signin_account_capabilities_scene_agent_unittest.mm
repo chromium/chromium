@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/signin/coordinator/signin_account_capabilities_scene_agent.h"
+#import "ios/chrome/browser/authentication/age_mismatch_signout/coordinator/signin_account_capabilities_scene_agent.h"
 
 #import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
@@ -20,6 +20,7 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_test_utils.h"
+#import "ios/chrome/browser/authentication/age_mismatch_signout/coordinator/age_mismatch_signout_coordinator.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/ui_blocker_manager.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/ui_blocker_target.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -31,7 +32,6 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
-#import "ios/chrome/browser/signin/coordinator/age_mismatch_signout_coordinator.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
@@ -261,8 +261,6 @@ TEST_F(SigninAccountCapabilitiesSceneAgentTest, TestIdentityRemoval) {
   EXPECT_EQ(build_context_calls, 2);
 }
 
-
-
 // Tests that the agent fetches capabilities when a UI blocker is removed.
 TEST_F(SigninAccountCapabilitiesSceneAgentTest, TestFetchOnUIBlockerRemoved) {
   FakeSystemIdentity* identity1 = [FakeSystemIdentity fakeIdentity1];
@@ -338,5 +336,8 @@ TEST_F(SigninAccountCapabilitiesSceneAgentTest,
       signin::ConsentLevel::kSignin));
 
   // Wait for the sign-out completion block to finish.
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  task_environment_.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                        run_loop.QuitClosure());
+  run_loop.Run();
 }
