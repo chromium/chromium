@@ -158,8 +158,8 @@ void ParseData(const base::Value& data_node_val, ProtocolParser::App* result) {
   }
   const base::DictValue& data_node = data_node_val.GetDict();
 
-  result->data.emplace_back(
-      GetValueString(data_node, "index"), GetValueString(data_node, "#text"));
+  result->data.emplace_back(GetValueString(data_node, "index"),
+                            GetValueString(data_node, "#text"));
 }
 
 bool ParseUpdateCheck(const base::Value* node_val,
@@ -274,9 +274,8 @@ bool ProtocolParserJSON::DoParse(std::string_view response_json,
     ParseError("Missing secure JSON prefix.");
     return false;
   }
-  const auto doc =
-      base::JSONReader::ReadDict(response_json.substr(kJSONPrefix.size()),
-                                 base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  const auto doc = base::JSONReader::ReadDict(
+      response_json.substr(kJSONPrefix.size()), base::JSON_PARSE_RFC);
   if (!doc) {
     ParseError("JSON read error.");
     return false;
