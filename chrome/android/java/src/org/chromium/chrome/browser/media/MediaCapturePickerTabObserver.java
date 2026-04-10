@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
-import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
@@ -95,8 +94,7 @@ public class MediaCapturePickerTabObserver implements AllTabObserver.Observer {
                 }
 
                 @Override
-                public void onDidFinishNavigationInPrimaryMainFrame(
-                        Tab tab, NavigationHandle navigation) {
+                public void onPageLoadFinished(Tab tab, GURL url) {
                     maybeUpdatePickableTab(tab, mObserverDelegate::onTabContentUpdated);
                 }
             };

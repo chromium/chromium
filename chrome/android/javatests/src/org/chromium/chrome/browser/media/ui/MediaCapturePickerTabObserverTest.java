@@ -210,7 +210,7 @@ public class MediaCapturePickerTabObserverTest {
         tabObserver.onContentChanged(tab);
         verify(mObserverDelegate, times(2)).onTabContentUpdated(tab);
 
-        tabObserver.onDidFinishNavigationInPrimaryMainFrame(tab, null);
+        tabObserver.onPageLoadFinished(tab, GURL.emptyGURL());
         verify(mObserverDelegate, times(3)).onTabContentUpdated(tab);
     }
 }
