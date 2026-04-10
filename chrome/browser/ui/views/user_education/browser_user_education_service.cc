@@ -1813,6 +1813,22 @@ void MaybeRegisterChromeFeaturePromos(
               "Triggered when there are enough tabs in the tabstrip and"
               "the size of the tabs are shrunk significantly compared to their "
               "ideal width.")));
+
+  // kIPHVerticalTabsExpandOnHoverFeature:
+  const auto expand_on_hover_iph_body_string_id =
+      tabs::kVerticalTabsExpandOnHoverDefaultEnabled.Get()
+          ? IDS_VERTICAL_TABS_EXPAND_ON_HOVER_DEFAULT_ENABLED_IPH_BODY
+          : IDS_VERTICAL_TABS_EXPAND_ON_HOVER_DEFAULT_DISABLED_IPH_BODY;
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForSnoozePromo(
+          feature_engagement::kIPHVerticalTabsExpandOnHoverFeature,
+          kVerticalTabStripCollapseButtonElementId,
+          expand_on_hover_iph_body_string_id)
+          .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
+          .SetBubbleIcon(kLightbulbOutlineIcon)
+          .SetMetadata(148, "charlesmeng@chromium.org",
+                       "Triggered when the vertical tabs is enabled and the "
+                       "user has not enabled expand on hover before.")));
 }
 
 void MaybeRegisterChromeFeaturePromos(

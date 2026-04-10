@@ -11,6 +11,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
+#include "base/timer/timer.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_service.h"
@@ -21,9 +22,11 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/session_id.h"
@@ -96,6 +99,16 @@ VerticalTabStripStateController::VerticalTabStripStateController(
       browser_collection_observation_.Observe(
           GlobalBrowserCollection::GetInstance());
     }
+  }
+
+  // Wait before attempting to show the expand on hover IPH on startup. This is
+  // an anti-pattern and is generally discouraged for snooze promos.
+  if (base::SequencedTaskRunner::HasCurrentDefault()) {
+    expand_on_hover_iph_collapse_timer_.Start(
+        FROM_HERE, base::Minutes(10),
+        base::BindOnce(
+            &VerticalTabStripStateController::MaybeShowExpandOnHoverIPH,
+            base::Unretained(this)));
   }
 }
 
@@ -187,6 +200,16 @@ void VerticalTabStripStateController::RequestCollapse(bool collapse) {
 
   if (delegate_->IsCollapsing()) {
     NotifyCollapseChanged();
+  }
+
+  // Wait a short duration before attempting to show the expand on hover IPH
+  // after collapsing.
+  if (base::SequencedTaskRunner::HasCurrentDefault()) {
+    expand_on_hover_iph_startup_timer_.Start(
+        FROM_HERE, base::Seconds(3),
+        base::BindOnce(
+            &VerticalTabStripStateController::MaybeShowExpandOnHoverIPH,
+            base::Unretained(this)));
   }
 }
 
@@ -372,6 +395,18 @@ void VerticalTabStripStateController::OnBrowserCreated(
     browser_collection_observation_.Reset();
     UpdateSessionService();
     UpdatePrefService();
+  }
+}
+
+void VerticalTabStripStateController::MaybeShowExpandOnHoverIPH() {
+  if (tabs::IsVerticalTabsExpandOnHoverFeatureEnabled() &&
+      ShouldDisplayVerticalTabs() &&
+      GetCollapseState() != VerticalTabStripCollapseState::kExpanded &&
+      pref_service_->FindPreference(prefs::kVerticalTabsExpandOnHoverEnabled)
+          ->IsDefaultValue()) {
+    BrowserUserEducationInterface::From(browser_window_)
+        ->MaybeShowFeaturePromo(
+            feature_engagement::kIPHVerticalTabsExpandOnHoverFeature);
   }
 }
 

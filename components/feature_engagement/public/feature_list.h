@@ -483,6 +483,8 @@ DEFINE_VARIATION_PARAM(kIPHSideSearchAutoTriggeringFeature,
 DEFINE_VARIATION_PARAM(kIPHSideSearchPageActionLabelFeature,
                        "IPH_SideSearchPageActionLabel");
 
+DEFINE_VARIATION_PARAM(kIPHVerticalTabsExpandOnHoverFeature,
+                       "IPH_VerticalTabsExpandOnHoverFeature");
 DEFINE_VARIATION_PARAM(kIPHVerticalTabstripTutorialFeature,
                        "IPH_VerticalTabstripTutorialFeature");
 
