@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
+
 namespace autofill {
 struct FormActivityParams;
 }  // namespace autofill
@@ -17,14 +19,21 @@ class WebStateList;
 
 @interface PaymentsScanSaveAndFillOfferBottomSheetMediator : NSObject
 // Designated initializer. `webStateList` must not be nil.
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                              params:(autofill::FormActivityParams)params
+- (instancetype)initWithParams:(autofill::FormActivityParams)params
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 @property(nonatomic, weak) id<PaymentsScanSaveAndFillOfferBottomSheetConsumer>
     consumer;
+
+- (void)didAcceptScanCardSuggestion;
+
+// Disconnects the mediator.
+- (void)disconnect;
+
+// Replaces the object in charge of providing suggestions.
+- (void)setProvider:(id<FormInputSuggestionsProvider>)provider;
 
 @end
 

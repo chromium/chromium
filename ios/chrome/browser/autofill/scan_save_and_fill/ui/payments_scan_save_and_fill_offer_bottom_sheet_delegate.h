@@ -9,9 +9,6 @@
 
 @protocol PaymentsScanSaveAndFillOfferBottomSheetDelegate
 
-// Called when the view appeared.
-- (void)paymentsBottomSheetViewDidAppear;
-
 // Called when the view disappeared.
 - (void)paymentsBottomSheetDidDisappear;
 

@@ -66,18 +66,25 @@ CGFloat const kTitleLogoHeight = 32;
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
+
+  UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
+                                  self.imageViewAccessibilityLabel);
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
   [super viewDidDisappear:animated];
+
+  [self.delegate paymentsBottomSheetDidDisappear];
 }
 
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
+  [self.delegate didTapScanCardButton];
 }
 
 - (void)confirmationAlertSecondaryAction {
+  [self.delegate didTapOnCancelButton];
 }
 
 #pragma mark - TableViewBottomSheetViewController

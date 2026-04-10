@@ -17,6 +17,7 @@ source_set("coordinator") {
     "//components/autofill/ios/form_util",
     "//components/infobars/core",
     "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/autofill/model/bottom_sheet",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
@@ -44,5 +45,34 @@ source_set("ui") {
     "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "coordinator/payments_scan_save_and_fill_offer_bottom_sheet_coordinator_unittest.mm",
+    "coordinator/payments_scan_save_and_fill_offer_bottom_sheet_mediator_unittest.mm",
+  ]
+  deps = [
+    ":coordinator",
+    ":ui",
+    "//base/test:test_support",
+    "//components/autofill/core/browser",
+    "//components/autofill/ios/browser",
+    "//components/autofill/ios/form_util",
+    "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/autofill/model/bottom_sheet",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/tabs/model",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }
