@@ -430,7 +430,7 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
       // TODO(crbug.com/492115056): Add implementation.
       break;
     case UserActivityType::kOpenNewTab:
-      // TODO(crbug.com/492115056): Add implementation.
+      webpageGURLs.push_back(GURL(kChromeUINewTabURL));
       break;
     case UserActivityType::kPlayDinoGame:
       webpageGURLs.push_back(GURL(kChromeDinoGameURL));
