@@ -62,7 +62,9 @@ enum class ContextualCueingDecision {
   kNoPageActions = 12,
   // The cue couldn't be shown because the tab for the cue was no longer active.
   kNoLongerActiveTabAfterModelExecution = 13,
-  kMaxValue = kNoLongerActiveTabAfterModelExecution,
+  // The cue couldn't be shown because there was a feature promo active.
+  kFeaturePromoActive = 14,
+  kMaxValue = kFeaturePromoActive,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_cueing/enums.xml:ContextualCueingDecision)
 

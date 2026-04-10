@@ -134,11 +134,14 @@ class BrowserFeaturePromoControllerUiTestBase
 
   auto UseFeature(const base::Feature& iph_feature) {
     return Steps(Do(base::BindLambdaForTesting([this, &iph_feature]() {
+      auto* const interface = BrowserUserEducationInterface::From(browser());
       EXPECT_TRUE(promo_controller()->IsPromoActive(iph_feature));
+      EXPECT_TRUE(interface->IsAnyFeaturePromoActive());
       promo_controller()->EndPromo(iph_feature,
                                    EndFeaturePromoReason::kFeatureEngaged);
 
       EXPECT_FALSE(promo_controller()->IsPromoActive(iph_feature));
+      EXPECT_FALSE(interface->IsAnyFeaturePromoActive());
     })));
   }
 

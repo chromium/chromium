@@ -31,6 +31,7 @@ class BrowserUserEducationInterfaceImpl : public BrowserUserEducationInterface {
   // BrowserUserEducationInterface:
   bool IsFeaturePromoQueued(const base::Feature& iph_feature) const override;
   bool IsFeaturePromoActive(const base::Feature& iph_feature) const override;
+  bool IsAnyFeaturePromoActive() const override;
   bool HasFeaturePromoBeenDismissed(
       const base::Feature& iph_feature) const override;
   bool MaybeShowFeaturePromo(

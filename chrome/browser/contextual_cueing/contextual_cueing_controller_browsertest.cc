@@ -4,8 +4,11 @@
 
 #include "chrome/browser/contextual_cueing/contextual_cueing_controller.h"
 
+#include "base/functional/bind.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/contextual_cueing/features.h"
@@ -16,16 +19,21 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/user_education/mock_browser_user_education_interface.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/actions/actions.h"
 #include "ui/base/window_open_disposition.h"
 
 namespace contextual_cueing {
 namespace {
+
+using ::testing::Return;
 
 class ContextualCueingControllerBrowserTest : public InProcessBrowserTest {
  public:
@@ -43,10 +51,31 @@ class ContextualCueingControllerBrowserTest : public InProcessBrowserTest {
         ->RegisterCueTarget(CueTargetType::kGlic, std::move(test_cue_target));
   }
 
-  void TearDownOnMainThread() override { cue_target_ = nullptr; }
+  void SetUpInProcessBrowserTestFixture() override {
+    // Override the creation of BrowserUserEducationInterface to
+    // use the mock.
+    user_ed_override_ =
+        BrowserWindowFeatures::GetUserDataFactoryForTesting()
+            .AddOverrideForTesting(
+                base::BindRepeating([](BrowserWindowInterface& window) {
+                  return std::make_unique<
+                      testing::NiceMock<MockBrowserUserEducationInterface>>(
+                      &window);
+                }));
+  }
+
+  void TearDownOnMainThread() override {
+    cue_target_ = nullptr;
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
 
   ContextualCueingController* contextual_cueing_controller() {
     return browser()->GetFeatures().contextual_cueing_controller();
+  }
+
+  MockBrowserUserEducationInterface* mock_user_education_interface() {
+    return static_cast<MockBrowserUserEducationInterface*>(
+        BrowserUserEducationInterface::From(browser()));
   }
 
   void SeedExecutionResult(
@@ -93,6 +122,7 @@ class ContextualCueingControllerBrowserTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  ui::UserDataFactory::ScopedOverride user_ed_override_;
 };
 
 optimization_guide::proto::ContextualCueingResponse MakeCompleteResponse() {
@@ -204,8 +234,12 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("https://www.someurl.com")));
 
-  // Create a new tab (will be in the background in final state).
-  chrome::NewTab(browser());
+  // Create a new tab that is specifically a URL that would normally be skipped
+  // (will be in the background in final state).
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("chrome://settings"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   // Navigate to a new eligible tab to be in the foreground (current active
   // tab).
@@ -329,13 +363,33 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   SimulateFilterPassed();
 
   // Open new tab in foreground right away.
-  chrome::NewTab(browser());
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.example.com"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   optimization_guide::RetryForHistogramUntilCountReached(
       &histogram_tester, "ContextualCueing.V2.Decision", 1);
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.V2.Decision",
       ContextualCueingDecision::kNoLongerActiveTabAfterModelExecution, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
+                       FeaturePromoActive) {
+  base::HistogramTester histogram_tester;
+  SeedExecutionResult(MakeCompleteResponse());
+  SimulateFilterPassed();
+
+  // Simulate feature promo showing.
+  EXPECT_CALL(*mock_user_education_interface(), IsAnyFeaturePromoActive())
+      .WillOnce(Return(true));
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.V2.Decision",
+      ContextualCueingDecision::kFeaturePromoActive, 1);
 }
 
 }  // namespace

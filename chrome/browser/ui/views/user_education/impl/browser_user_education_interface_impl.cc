@@ -133,6 +133,11 @@ bool BrowserUserEducationInterfaceImpl::IsFeaturePromoActive(
              iph_feature, user_education::FeaturePromoStatus::kContinued);
 }
 
+bool BrowserUserEducationInterfaceImpl::IsAnyFeaturePromoActive() const {
+  auto* const controller = GetFeaturePromoController();
+  return controller && controller->GetCurrentPromoFeature();
+}
+
 user_education::FeaturePromoResult
 BrowserUserEducationInterfaceImpl::WouldShowFeaturePromoImpl(
     const base::Feature& iph_feature) const {

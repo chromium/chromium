@@ -84,6 +84,12 @@ class BrowserUserEducationInterface {
   // background.
   virtual bool IsFeaturePromoActive(const base::Feature& iph_feature) const = 0;
 
+  // Returns whether any feature promo is running.
+  //
+  // See `IsFeaturePromoActive()` for details for what is considered for a
+  // feature promo to be active.
+  virtual bool IsAnyFeaturePromoActive() const = 0;
+
   // Returns whether `MaybeShowFeaturePromo()` would succeed immediately if
   // called right now.
   //

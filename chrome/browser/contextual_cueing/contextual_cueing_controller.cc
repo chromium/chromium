@@ -31,6 +31,7 @@
 #include "ui/actions/actions.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #endif
 
@@ -292,14 +293,17 @@ void ContextualCueingController::ShowCue(
   NOTIMPLEMENTED()
       << "Contextual cueing anchored message UI is not implemented for Android";
 #else
-  // TODO: b/496000131 - Ensure we are still on the same tab that we requested
-  // for.
-
-  tabs::TabInterface* tab = tab_list_interface_->GetActiveTab();
-  if (!tab || !tab->GetTabFeatures()) {
-    RecordContextualCueingDecision(ContextualCueingDecision::kNoActiveTab);
+  auto* browser_user_education_interface =
+      BrowserUserEducationInterface::From(browser_window_interface_);
+  if (browser_user_education_interface &&
+      browser_user_education_interface->IsAnyFeaturePromoActive()) {
+    RecordContextualCueingDecision(
+        ContextualCueingDecision::kFeaturePromoActive);
     return;
   }
+
+  tabs::TabInterface* tab = tab_list_interface_->GetActiveTab();
+  CHECK(tab);
 
   auto* action =
       actions::ActionManager::Get().FindAction(kActionAnchoredContextualCue);
