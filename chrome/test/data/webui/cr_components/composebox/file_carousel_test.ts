@@ -135,6 +135,33 @@ suite('FileCarouselTest', function() {
     assertEquals(0, event.detail.height);
   });
 
+  test('elides www from tab chip url', async () => {
+    const tabFile: ComposeboxFile = {
+      uuid: {high: 0n, low: 1n} as any,
+      name: 'Example Tab Title',
+      dataUrl: null,
+      objectUrl: null,
+      type: 'tab',
+      inputType: InputType.kLensFile,
+      status: ContextUploadStatus.kUploadStarted,
+      url: 'https://www.example.com/path' as any,
+      tabId: 1,
+      isDeletable: true,
+      iconName: null,
+      supportsUnimodal: true,
+    };
+    fileCarousel.files = [tabFile];
+    await microtasksFinished();
+
+    const thumbnail =
+        fileCarousel.shadowRoot.querySelector('cr-composebox-file-thumbnail');
+    assertTrue(!!thumbnail);
+
+    const urlDiv = thumbnail.shadowRoot.querySelector('.url');
+    assertTrue(!!urlDiv);
+    assertEquals('example.com/path', urlDiv.textContent.trim());
+  });
+
   test('disconnects resize observer on disconnectedCallback', async () => {
     fileCarousel.remove();
     await microtasksFinished();
