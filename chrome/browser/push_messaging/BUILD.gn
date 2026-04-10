@@ -2,7 +2,178 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
+
+source_set("push_messaging") {
+  sources = [
+    "budget_database.h",
+    "push_messaging_app_identifier.h",
+    "push_messaging_notification_manager.h",
+    "push_messaging_refresher.h",
+    "push_messaging_service_factory.h",
+    "push_messaging_unsubscribed_entry.h",
+  ]
+
+  public_deps = [
+    ":budget_proto",
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//components/content_settings/core/browser",
+    "//components/gcm_driver",
+    "//components/gcm_driver/common",
+    "//components/gcm_driver/crypto",
+    "//components/gcm_driver/instance_id",
+    "//components/keyed_service/core",
+    "//components/leveldb_proto",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/push_messaging",
+    "//components/site_engagement/content",
+    "//content/public/browser",
+    "//content/public/common",
+    "//url",
+  ]
+}
+
+# Header-only target for push_messaging_service_impl.h, separated from :impl so
+# that external targets like chrome/browser/prefs:impl can depend on it without
+# pulling in targets that would create a dependency cycle.
+source_set("service_impl_public") {
+  sources = [ "push_messaging_service_impl.h" ]
+  public_deps = [
+    ":push_messaging",
+    "//chrome/browser/permissions",
+    "//chrome/browser/safe_browsing",
+    "//chrome/common:buildflags",
+    "//components/safe_browsing/core/browser/db:database_manager",
+  ]
+
+  # safe_browsing includes push_messaging_service_impl.h.
+  # This is needed until safe_browsing is modularized.
+  allow_circular_includes_from = [ "//chrome/browser/safe_browsing" ]
+}
+
+source_set("impl") {
+  sources = [
+    "budget_database.cc",
+    "push_messaging_app_identifier.cc",
+    "push_messaging_notification_manager.cc",
+    "push_messaging_refresher.cc",
+    "push_messaging_service_factory.cc",
+    "push_messaging_service_impl.cc",
+    "push_messaging_unsubscribed_entry.cc",
+  ]
+
+  public_deps = [
+    ":service_impl_public",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    ":push_messaging",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/engagement",
+    "//chrome/browser/gcm",
+    "//chrome/browser/lifetime:termination_notification",
+    "//chrome/browser/notifications",
+    "//chrome/browser/profiles/keep_alive",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/common:channel_info",
+    "//chrome/common:chrome_features",
+    "//components/permissions",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/url_formatter",
+    "//extensions/buildflags",
+    "//net",
+    "//ui/base",
+    "//ui/message_center",
+  ]
+
+  if (!is_android) {
+    deps += [
+      "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_list",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//components/keep_alive_registry",
+    ]
+  }
+
+  if (is_android) {
+    deps += [
+      "//chrome/android:chrome_jni_headers",
+      "//chrome/browser/profiles",
+      "//chrome/browser/ui/android/tab_model",
+    ]
+  }
+
+  if (enable_extensions) {
+    deps += [
+      "//extensions/browser",
+      "//extensions/common",
+    ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    sources = [ "push_messaging_browsertest.cc" ]
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    deps = [
+      ":budget_proto",
+      ":impl",
+      ":push_messaging",
+      "//base/test:test_support",
+      "//chrome/browser/browsing_data:constants",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/gcm",
+      "//chrome/browser/permissions",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support",
+      "//components/browsing_data/content",
+      "//components/push_messaging:test_support",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "budget_database_unittest.cc",
+    "push_messaging_app_identifier_unittest.cc",
+    "push_messaging_notification_manager_unittest.cc",
+    "push_messaging_refresher_unittest.cc",
+    "push_messaging_service_unittest.cc",
+    "push_messaging_unsubscribed_entry_unittest.cc",
+  ]
+  deps = [
+    ":budget_proto",
+    ":impl",
+    ":push_messaging",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser:global_features",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/gcm",
+    "//chrome/browser/history",
+    "//chrome/browser/permissions",
+    "//chrome/test:test_support",
+    "//components/gcm_driver:test_support",
+    "//components/leveldb_proto:test_support",
+    "//components/push_messaging:test_support",
+    "//components/site_engagement/content",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
 
 proto_library("budget_proto") {
   sources = [ "budget.proto" ]

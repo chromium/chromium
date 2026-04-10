@@ -89,6 +89,8 @@ source_set("impl") {
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",
+    "//chrome/browser/push_messaging",
+    "//chrome/browser/push_messaging:service_impl_public",
     "//chrome/browser/search",
     "//chrome/browser/search/background",
     "//chrome/browser/serial",

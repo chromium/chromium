@@ -734,20 +734,6 @@ static_library("browser") {
     "profiles/renderer_updater_factory.cc",
     "profiles/renderer_updater_factory.h",
     "profiles/storage_partition_descriptor.h",
-    "push_messaging/budget_database.cc",
-    "push_messaging/budget_database.h",
-    "push_messaging/push_messaging_app_identifier.cc",
-    "push_messaging/push_messaging_app_identifier.h",
-    "push_messaging/push_messaging_notification_manager.cc",
-    "push_messaging/push_messaging_notification_manager.h",
-    "push_messaging/push_messaging_refresher.cc",
-    "push_messaging/push_messaging_refresher.h",
-    "push_messaging/push_messaging_service_factory.cc",
-    "push_messaging/push_messaging_service_factory.h",
-    "push_messaging/push_messaging_service_impl.cc",
-    "push_messaging/push_messaging_service_impl.h",
-    "push_messaging/push_messaging_unsubscribed_entry.cc",
-    "push_messaging/push_messaging_unsubscribed_entry.h",
     "renderer_preferences_util.cc",
     "renderer_preferences_util.h",
     "resource_coordinator/resource_coordinator_parts.cc",
@@ -1207,6 +1193,10 @@ static_library("browser") {
     # //chrome/browser/download:impl sources include headers from //chrome/browser
     # and //chrome/browser/ui.
     "//chrome/browser/download:impl",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency when
+    # chrome/browser/notifications is modularized.
+    "//chrome/browser/push_messaging:impl",
   ]
 
   if (is_android) {
@@ -1493,6 +1483,8 @@ static_library("browser") {
     "//chrome/browser/profiles:profiles_extra_parts_impl",
     "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/profiling_host",
+    "//chrome/browser/push_messaging",
+    "//chrome/browser/push_messaging:impl",
     "//chrome/browser/reading_list",
     "//chrome/browser/reduce_accept_language",
     "//chrome/browser/reduce_accept_language:impl",
@@ -7117,7 +7109,6 @@ group("browser_generated_files") {
     "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
     "//chrome/browser/predictors:resource_prefetch_predictor_proto",
     "//chrome/browser/predictors/lcp_critical_path_predictor:lcp_critical_path_predictor_proto",
-    "//chrome/browser/push_messaging:budget_proto",
     "//chrome/browser/regional_capabilities",
     "//chrome/browser/resource_coordinator:mojo_bindings",
     "//chrome/browser/sharing:buildflags",
