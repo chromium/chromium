@@ -11,12 +11,14 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/load_timing_info.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_headers.h"
@@ -38,6 +40,10 @@ namespace {
 
 bool ValidateStatus(const HttpResponseHeaders* headers) {
   return headers->GetStatusLine() == "HTTP/1.1 200";
+}
+
+void LogMissingSessionAccess(std::string_view method_name) {
+  LOG(DFATAL) << method_name << "() called without a QUIC session handle";
 }
 
 }  // namespace
@@ -217,18 +223,33 @@ bool WebSocketHttp3HandshakeStream::GetAlternativeService(
   return false;
 }
 
-// TODO(momoka): Implement this.
 bool WebSocketHttp3HandshakeStream::GetLoadTimingInfo(
     LoadTimingInfo* load_timing_info) const {
-  return false;
+  if (!session_) {
+    LogMissingSessionAccess("GetLoadTimingInfo");
+    return false;
+  }
+
+  load_timing_info->socket_reused = false;
+  load_timing_info->socket_log_id = session_->net_log().source().id;
+  load_timing_info->connect_timing = session_->GetConnectTiming();
+  return true;
 }
 
-// TODO(momoka): Implement this.
-void WebSocketHttp3HandshakeStream::GetSSLInfo(SSLInfo* ssl_info) {}
+void WebSocketHttp3HandshakeStream::GetSSLInfo(SSLInfo* ssl_info) {
+  if (!session_) {
+    LogMissingSessionAccess("GetSSLInfo");
+    return;
+  }
+  session_->GetSSLInfo(ssl_info);
+}
 
-// TODO(momoka): Implement this.
 int WebSocketHttp3HandshakeStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
-  return 0;
+  if (!session_) {
+    LogMissingSessionAccess("GetRemoteEndpoint");
+    return ERR_SOCKET_NOT_CONNECTED;
+  }
+  return session_->GetRemoteEndpoint(endpoint);
 }
 
 // Not reachable for WebSocket streams, but delegate to `Close()` for safety.

@@ -24,6 +24,7 @@
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_flags.h"
+#include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_handle.h"
@@ -136,6 +137,11 @@ enum HandshakeStreamType {
   HTTP3_HANDSHAKE_STREAM
 };
 
+constexpr char kPath[] = "/";
+constexpr char kHost[] = "www.example.org";
+constexpr char kOrigin[] = "http://origin.example.org";
+const GURL kUrl("wss://www.example.org/");
+
 // This class encapsulates the details of creating a mock ClientSocketHandle.
 class MockClientSocketHandleFactory {
  public:
@@ -160,7 +166,10 @@ class MockClientSocketHandleFactory {
             /*application_settings=*/nullptr,
             /*ignore_certificate_errors=*/nullptr,
             /*early_data_enabled=*/nullptr),
-        pool_(1, 1, &common_connect_job_params_) {}
+        pool_(1, 1, &common_connect_job_params_) {
+    ssl_data_.ssl_info.cert =
+        ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem");
+  }
 
   MockClientSocketHandleFactory(const MockClientSocketHandleFactory&) = delete;
   MockClientSocketHandleFactory& operator=(
@@ -184,6 +193,16 @@ class MockClientSocketHandleFactory {
         std::nullopt /* proxy_annotation_tag */, MEDIUM, SocketTag(),
         ClientSocketPool::RespectLimits::ENABLED, CompletionOnceCallback(),
         ClientSocketPool::ProxyAuthCallback(), &pool_, NetLogWithSource());
+
+    // Wrap the transport socket with an SSL layer so that GetSSLInfo() returns
+    // valid certificate information.
+    std::unique_ptr<StreamSocket> transport = socket_handle->PassSocket();
+    auto ssl_socket = std::make_unique<MockSSLClientSocket>(
+        std::move(transport), HostPortPair(kHost, 443), SSLConfig(),
+        &ssl_data_);
+    EXPECT_THAT(ssl_socket->Connect(CompletionOnceCallback()), IsOk());
+    socket_handle->SetSocket(std::move(ssl_socket));
+
     return socket_handle;
   }
 
@@ -191,6 +210,7 @@ class MockClientSocketHandleFactory {
   WebSocketMockClientSocketFactoryMaker socket_factory_maker_;
   const CommonConnectJobParams common_connect_job_params_;
   MockTransportClientSocketPool pool_;
+  SSLSocketDataProvider ssl_data_{SYNCHRONOUS, OK};
 };
 
 class TestConnectDelegate : public WebSocketStream::ConnectDelegate {
@@ -243,403 +263,487 @@ class MockWebSocketStreamRequestAPI : public WebSocketStreamRequestAPI {
                     std::optional<int> response_code));
 };
 
+// Interface for stream-type-specific handshake test setup. Implementations
+// provide mock data, session creation, and handshake logic for each transport.
+class HandshakeStreamTestSetup {
+ public:
+  virtual ~HandshakeStreamTestSetup() = default;
+
+  // Sets up EXPECT_CALLs on the stream request mock.
+  virtual void SetUpExpectations(
+      MockWebSocketStreamRequestAPI& stream_request) = 0;
+
+  // Sets up mock data and creates the handshake stream.
+  virtual std::unique_ptr<WebSocketHandshakeStreamBase> CreateStream(
+      WebSocketHandshakeStreamCreateHelper& create_helper,
+      const WebSocketExtraHeaders& extra_request_headers,
+      const WebSocketExtraHeaders& extra_response_headers,
+      std::optional<RequestPriority> request_priority) = 0;
+
+  // Performs the SendRequest + ReadResponseHeaders handshake steps,
+  // handling sync/async differences per stream type.
+  virtual void DoHandshake(WebSocketHandshakeStreamBase* handshake,
+                           const HttpRequestHeaders& headers,
+                           HttpResponseInfo* response) = 0;
+};
+
+class BasicHandshakeStreamTestSetup : public HandshakeStreamTestSetup {
+ public:
+  void SetUpExpectations(
+      MockWebSocketStreamRequestAPI& stream_request) override {
+    EXPECT_CALL(stream_request, OnBasicHandshakeStreamCreated(_)).Times(1);
+  }
+
+  std::unique_ptr<WebSocketHandshakeStreamBase> CreateStream(
+      WebSocketHandshakeStreamCreateHelper& create_helper,
+      const WebSocketExtraHeaders& extra_request_headers,
+      const WebSocketExtraHeaders& extra_response_headers,
+      std::optional<RequestPriority> request_priority) override {
+    std::unique_ptr<ClientSocketHandle> socket_handle =
+        socket_handle_factory_.CreateClientSocketHandle(
+            WebSocketStandardRequest(
+                kPath, kHost, url::Origin::Create(GURL(kOrigin)),
+                /*send_additional_request_headers=*/{}, extra_request_headers),
+            WebSocketStandardResponse(
+                WebSocketExtraHeadersToString(extra_response_headers)));
+
+    std::unique_ptr<WebSocketHandshakeStreamBase> handshake =
+        create_helper.CreateBasicStream(std::move(socket_handle), false,
+                                        &websocket_endpoint_lock_manager_);
+
+    // If in future the implementation type returned by CreateBasicStream()
+    // changes, this static_cast will be wrong. However, in that case the
+    // test will fail and AddressSanitizer should identify the issue.
+    static_cast<WebSocketBasicHandshakeStream*>(handshake.get())
+        ->SetWebSocketKeyForTesting("dGhlIHNhbXBsZSBub25jZQ==");
+
+    return handshake;
+  }
+
+  void DoHandshake(WebSocketHandshakeStreamBase* handshake,
+                   const HttpRequestHeaders& headers,
+                   HttpResponseInfo* response) override {
+    TestCompletionCallback request_callback;
+    int rv =
+        handshake->SendRequest(headers, response, request_callback.callback());
+    EXPECT_THAT(rv, IsOk());
+
+    TestCompletionCallback response_callback;
+    rv = handshake->ReadResponseHeaders(response_callback.callback());
+    EXPECT_THAT(rv, IsOk());
+    EXPECT_EQ(101, response->headers->response_code());
+    EXPECT_TRUE(response->headers->HasHeaderValue("Connection", "Upgrade"));
+    EXPECT_TRUE(response->headers->HasHeaderValue("Upgrade", "websocket"));
+  }
+
+ private:
+  MockClientSocketHandleFactory socket_handle_factory_;
+  WebSocketEndpointLockManager websocket_endpoint_lock_manager_;
+};
+
+class Http2HandshakeStreamTestSetup : public HandshakeStreamTestSetup {
+ public:
+  void SetUpExpectations(
+      MockWebSocketStreamRequestAPI& stream_request) override {
+    EXPECT_CALL(stream_request, OnHttp2HandshakeStreamCreated(_)).Times(1);
+  }
+
+  std::unique_ptr<WebSocketHandshakeStreamBase> CreateStream(
+      WebSocketHandshakeStreamCreateHelper& create_helper,
+      const WebSocketExtraHeaders& extra_request_headers,
+      const WebSocketExtraHeaders& extra_response_headers,
+      std::optional<RequestPriority> request_priority) override {
+    SpdyTestUtil spdy_util;
+    quiche::HttpHeaderBlock request_header_block =
+        WebSocketHttp2Request(kPath, kHost, kOrigin, extra_request_headers);
+    request_headers_frame_ = spdy_util.ConstructSpdyHeaders(
+        1, std::move(request_header_block), DEFAULT_PRIORITY, false);
+
+    quiche::HttpHeaderBlock response_header_block =
+        WebSocketHttp2Response(extra_response_headers);
+    response_headers_frame_ = spdy_util.ConstructSpdyResponseHeaders(
+        1, std::move(response_header_block), false);
+
+    writes_.push_back(CreateMockWrite(request_headers_frame_, 0));
+    reads_.push_back(CreateMockRead(response_headers_frame_, 1));
+    reads_.emplace_back(ASYNC, 0, 2);
+
+    data_ = std::make_unique<SequencedSocketData>(reads_, writes_);
+    ssl_ = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+    ssl_->ssl_info.cert =
+        ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem");
+
+    session_deps_ = std::make_unique<SpdySessionDependencies>();
+    session_deps_->socket_factory->AddSocketDataProvider(data_.get());
+    session_deps_->socket_factory->AddSSLSocketDataProvider(ssl_.get());
+
+    http_network_session_ =
+        SpdySessionDependencies::SpdyCreateSession(session_deps_.get());
+    const SpdySessionKey key(
+        HostPortPair::FromURL(kUrl), PRIVACY_MODE_DISABLED,
+        ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
+        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+        /*disable_cert_verification_network_fetches=*/false);
+    spdy_session_ =
+        CreateSpdySession(http_network_session_.get(), key, NetLogWithSource());
+
+    return create_helper.CreateHttp2Stream(spdy_session_, {} /* dns_aliases */);
+  }
+
+  void DoHandshake(WebSocketHandshakeStreamBase* handshake,
+                   const HttpRequestHeaders& headers,
+                   HttpResponseInfo* response) override {
+    TestCompletionCallback request_callback;
+    int rv =
+        handshake->SendRequest(headers, response, request_callback.callback());
+    EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+    rv = request_callback.WaitForResult();
+    EXPECT_THAT(rv, IsOk());
+
+    TestCompletionCallback response_callback;
+    rv = handshake->ReadResponseHeaders(response_callback.callback());
+    EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+    rv = response_callback.WaitForResult();
+    EXPECT_THAT(rv, IsOk());
+
+    EXPECT_EQ(200, response->headers->response_code());
+  }
+
+ private:
+  spdy::SpdySerializedFrame request_headers_frame_;
+  spdy::SpdySerializedFrame response_headers_frame_;
+  std::vector<MockWrite> writes_;
+  std::vector<MockRead> reads_;
+  std::unique_ptr<SequencedSocketData> data_;
+  std::unique_ptr<SSLSocketDataProvider> ssl_;
+  std::unique_ptr<SpdySessionDependencies> session_deps_;
+  std::unique_ptr<HttpNetworkSession> http_network_session_;
+  base::WeakPtr<SpdySession> spdy_session_;
+};
+
+class Http3HandshakeStreamTestSetup : public HandshakeStreamTestSetup {
+ public:
+  Http3HandshakeStreamTestSetup()
+      : quic_version_(quic::QuicTransportVersion::QUIC_VERSION_IETF_RFC_V1),
+        mock_quic_data_(quic_version_) {}
+
+  void SetUpExpectations(
+      MockWebSocketStreamRequestAPI& stream_request) override {
+    EXPECT_CALL(stream_request, OnHttp3HandshakeStreamCreated(_)).Times(1);
+  }
+
+  std::unique_ptr<WebSocketHandshakeStreamBase> CreateStream(
+      WebSocketHandshakeStreamCreateHelper& create_helper,
+      const WebSocketExtraHeaders& extra_request_headers,
+      const WebSocketExtraHeaders& extra_response_headers,
+      std::optional<RequestPriority> request_priority) override {
+    SetUpMockQuicData(extra_request_headers, extra_response_headers,
+                      request_priority);
+    InitializeQuicSession();
+
+    std::unique_ptr<QuicChromiumClientSession::Handle> session_handle =
+        session_->CreateHandle(
+            url::SchemeHostPort(url::kHttpsScheme, "mail.example.org", 80));
+
+    return create_helper.CreateHttp3Stream(std::move(session_handle),
+                                           {} /* dns_aliases */);
+  }
+
+  void DoHandshake(WebSocketHandshakeStreamBase* handshake,
+                   const HttpRequestHeaders& headers,
+                   HttpResponseInfo* response) override {
+    TestCompletionCallback request_callback;
+    int rv =
+        handshake->SendRequest(headers, response, request_callback.callback());
+    EXPECT_THAT(rv, IsOk());
+
+    session_->StartReading();
+
+    TestCompletionCallback response_callback;
+    rv = handshake->ReadResponseHeaders(response_callback.callback());
+    EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+    rv = response_callback.WaitForResult();
+    EXPECT_THAT(rv, IsOk());
+
+    EXPECT_EQ(200, response->headers->response_code());
+
+    // After the handshake, byte counts should reflect the HEADERS
+    // frames exchanged over the QUIC stream.
+    EXPECT_GT(handshake->GetTotalReceivedBytes().InBytes(), 0);
+    EXPECT_GT(handshake->GetTotalSentBytes().InBytes(), 0);
+  }
+
+ private:
+  // Configures the mock QUIC packet sequence: initial settings, request
+  // headers, response headers, and ACK/cleanup frames.
+  void SetUpMockQuicData(const WebSocketExtraHeaders& extra_request_headers,
+                         const WebSocketExtraHeaders& extra_response_headers,
+                         std::optional<RequestPriority> request_priority) {
+    const quic::QuicStreamId client_data_stream_id(
+        quic::QuicUtils::GetFirstBidirectionalStreamId(
+            quic_version_.transport_version, quic::Perspective::IS_CLIENT));
+
+    const quic::QuicConnectionId connection_id(quic::test::TestConnectionId(2));
+    test::QuicTestPacketMaker client_maker(
+        quic_version_, connection_id, &clock_, "mail.example.org",
+        quic::Perspective::IS_CLIENT,
+        /*client_priority_uses_incremental=*/false);
+    test::QuicTestPacketMaker server_maker(
+        quic_version_, connection_id, &clock_, "mail.example.org",
+        quic::Perspective::IS_SERVER,
+        /*client_priority_uses_incremental=*/false);
+
+    FLAGS_quic_enable_http3_grease_randomness = false;
+    clock_.AdvanceTime(quic::QuicTime::Delta::FromMilliseconds(20));
+    quic::QuicEnableVersion(quic_version_);
+
+    quiche::HttpHeaderBlock request_header_block =
+        WebSocketHttp2Request(kPath, kHost, kOrigin, extra_request_headers);
+
+    int packet_number = 1;
+    mock_quic_data_.AddWrite(
+        SYNCHRONOUS, client_maker.MakeInitialSettingsPacket(packet_number++));
+
+    mock_quic_data_.AddWrite(
+        ASYNC, client_maker.MakeRequestHeadersPacket(
+                   packet_number++, client_data_stream_id,
+                   /*fin=*/false, ConvertRequestPriorityToQuicPriority(LOWEST),
+                   std::move(request_header_block), nullptr));
+
+    quiche::HttpHeaderBlock response_header_block =
+        WebSocketHttp2Response(extra_response_headers);
+
+    mock_quic_data_.AddRead(ASYNC,
+                            server_maker.MakeResponseHeadersPacket(
+                                /*packet_number=*/1, client_data_stream_id,
+                                /*fin=*/false, std::move(response_header_block),
+                                /*spdy_headers_frame_length=*/nullptr));
+
+    mock_quic_data_.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+
+    if (request_priority.has_value()) {
+      // `SetPriority()` sends a PRIORITY_UPDATE frame bundled with the
+      // ACK, followed by a separate cleanup packet.
+      quic::PriorityUpdateFrame priority_update;
+      priority_update.prioritized_element_id = client_data_stream_id;
+      priority_update.priority_field_value = quic::SerializePriorityFieldValue(
+          {ConvertRequestPriorityToQuicPriority(*request_priority),
+           quic::HttpStreamPriority::kDefaultIncremental});
+      std::string priority_data =
+          quic::HttpEncoder::SerializePriorityUpdateFrame(priority_update);
+      mock_quic_data_.AddWrite(
+          SYNCHRONOUS,
+          client_maker.Packet(packet_number++)
+              .AddAckFrame(/*first_received=*/1, /*largest_received=*/1,
+                           /*smallest_received=*/0)
+              .AddStreamFrame(2, false, priority_data)
+              .Build());
+
+      mock_quic_data_.AddWrite(
+          SYNCHRONOUS, client_maker.Packet(packet_number++)
+                           .AddStopSendingFrame(client_data_stream_id,
+                                                quic::QUIC_STREAM_CANCELLED)
+                           .AddRstStreamFrame(client_data_stream_id,
+                                              quic::QUIC_STREAM_CANCELLED)
+                           .Build());
+    } else {
+      // ACK and cleanup are sent in a single packet.
+      mock_quic_data_.AddWrite(
+          SYNCHRONOUS,
+          client_maker.Packet(packet_number++)
+              .AddAckFrame(/*first_received=*/1, /*largest_received=*/1,
+                           /*smallest_received=*/0)
+              .AddStopSendingFrame(client_data_stream_id,
+                                   quic::QUIC_STREAM_CANCELLED)
+              .AddRstStreamFrame(client_data_stream_id,
+                                 quic::QUIC_STREAM_CANCELLED)
+              .Build());
+    }
+  }
+
+  // Creates the QUIC connection, session, and performs the crypto handshake.
+  void InitializeQuicSession() {
+    const quic::QuicConnectionId connection_id(quic::test::TestConnectionId(2));
+    IPEndPoint peer_addr(IPAddress(192, 0, 2, 23), 443);
+
+    auto socket = std::make_unique<MockUDPClientSocket>(
+        mock_quic_data_.InitializeAndGetSequencedSocketData(), NetLog::Get());
+    socket->Connect(peer_addr);
+
+    runner_ = base::MakeRefCounted<test::TestTaskRunner>(&clock_);
+    helper_ = std::make_unique<QuicChromiumConnectionHelper>(
+        &clock_, &random_generator_);
+    alarm_factory_ =
+        std::make_unique<QuicChromiumAlarmFactory>(runner_.get(), &clock_);
+    auto writer = std::make_unique<QuicChromiumPacketWriter>(
+        socket.get(), base::SingleThreadTaskRunner::GetCurrentDefault().get());
+    auto connection = std::make_unique<quic::QuicConnection>(
+        connection_id, quic::QuicSocketAddress(),
+        net::ToQuicSocketAddress(peer_addr), helper_.get(),
+        alarm_factory_.get(), writer.release(), true /* owns_writer */,
+        quic::Perspective::IS_CLIENT,
+        quic::test::SupportedVersions(quic_version_), connection_id_generator_);
+    connection->set_visitor(&visitor_);
+
+    // Load a certificate that is valid for *.example.org
+    scoped_refptr<X509Certificate> test_cert(
+        ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem"));
+    EXPECT_TRUE(test_cert.get());
+
+    verify_details_.cert_verify_result.verified_cert = test_cert;
+    verify_details_.cert_verify_result.is_issued_by_known_root = true;
+    crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details_);
+
+    base::TimeTicks dns_end = base::TimeTicks::Now();
+    base::TimeTicks dns_start = dns_end - base::Milliseconds(1);
+
+    session_ = std::make_unique<QuicChromiumClientSession>(
+        connection.release(), std::move(socket),
+        /*stream_factory=*/nullptr, &crypto_client_stream_factory_, &clock_,
+        &transport_security_state_, &ssl_config_service_,
+        /*server_info=*/nullptr,
+        QuicSessionAliasKey(
+            url::SchemeHostPort(),
+            QuicSessionKey(
+                "mail.example.org", 80, PRIVACY_MODE_DISABLED,
+                ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
+                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*require_dns_https_alpn=*/false,
+                /*disable_cert_verification_network_fetches=*/false)),
+        /*require_confirmation=*/false,
+        /*migrate_session_early_v2=*/false,
+        /*migrate_session_on_network_change_v2=*/false,
+        /*default_network=*/handles::kInvalidNetworkHandle,
+        quic::QuicTime::Delta::FromMilliseconds(
+            kDefaultRetransmittableOnWireTimeout.InMilliseconds()),
+        /*migrate_idle_session=*/true, /*allow_port_migration=*/false,
+        kDefaultIdleSessionMigrationPeriod,
+        /*multi_port_probing_interval=*/0, kMaxTimeOnNonDefaultNetwork,
+        kMaxMigrationsToNonDefaultNetworkOnWriteError,
+        kMaxMigrationsToNonDefaultNetworkOnPathDegrading,
+        kQuicYieldAfterPacketsRead,
+        quic::QuicTime::Delta::FromMilliseconds(
+            kQuicYieldAfterDurationMilliseconds),
+        /*cert_verify_flags=*/0, quic::test::DefaultQuicConfig(),
+        std::make_unique<TestQuicCryptoClientConfigHandle>(&crypto_config_),
+        "CONNECTION_UNKNOWN", dns_start, dns_end,
+        /*resolution_details=*/std::nullopt,
+        base::DefaultTickClock::GetInstance(),
+        base::SingleThreadTaskRunner::GetCurrentDefault().get(),
+        /*socket_performance_watcher=*/nullptr, ConnectionEndpointMetadata(),
+        /*enable_origin_frame=*/true,
+        /*allow_server_preferred_address=*/true,
+        MultiplexedSessionCreationInitiator::kUnknown,
+        NetLogWithSource::Make(NetLogSourceType::NONE));
+
+    session_->Initialize();
+
+    // Enable extended CONNECT protocol (required for WebSocket over HTTP/3).
+    session_->OnSetting(quic::SETTINGS_ENABLE_CONNECT_PROTOCOL, 1);
+
+    // Blackhole QPACK decoder stream instead of constructing mock writes.
+    session_->qpack_decoder()->set_qpack_stream_sender_delegate(
+        &noop_qpack_stream_sender_delegate_);
+    TestCompletionCallback callback;
+    EXPECT_THAT(session_->CryptoConnect(callback.callback()), IsOk());
+    EXPECT_TRUE(session_->OneRttKeysAvailable());
+  }
+
+  quic::ParsedQuicVersion quic_version_;
+  quic::MockClock clock_;
+  quic::test::MockRandom random_generator_{0};
+  quic::test::MockConnectionIdGenerator connection_id_generator_;
+  testing::StrictMock<quic::test::MockQuicConnectionVisitor> visitor_;
+  quic::QuicCryptoClientConfig crypto_config_{
+      quic::test::crypto_test_utils::ProofVerifierForTesting()};
+  ProofVerifyDetailsChromium verify_details_;
+  MockCryptoClientStreamFactory crypto_client_stream_factory_;
+  TransportSecurityState transport_security_state_;
+  SSLConfigServiceDefaults ssl_config_service_;
+  scoped_refptr<test::TestTaskRunner> runner_;
+  std::unique_ptr<QuicChromiumConnectionHelper> helper_;
+  std::unique_ptr<QuicChromiumAlarmFactory> alarm_factory_;
+  // session_ must be declared after all objects it holds pointers to.
+  std::unique_ptr<QuicChromiumClientSession> session_;
+  test::MockQuicData mock_quic_data_;
+  quic::test::NoopQpackStreamSenderDelegate noop_qpack_stream_sender_delegate_;
+};
+
 class WebSocketHandshakeStreamCreateHelperTest
     : public TestWithParam<HandshakeStreamType>,
       public WithTaskEnvironment {
  protected:
-  WebSocketHandshakeStreamCreateHelperTest()
-      : quic_version_(quic::QuicTransportVersion::QUIC_VERSION_IETF_RFC_V1),
-        mock_quic_data_(quic_version_) {}
-  std::unique_ptr<WebSocketStream> CreateAndInitializeStream(
+  // Performs the handshake without calling Upgrade(), returning the stream
+  // for testing HttpStream-level methods.
+  std::unique_ptr<WebSocketHandshakeStreamBase> CreateHandshakeStream(
       const std::vector<std::string>& sub_protocols,
       const WebSocketExtraHeaders& extra_request_headers,
       const WebSocketExtraHeaders& extra_response_headers,
       std::optional<RequestPriority> request_priority = std::nullopt) {
-    constexpr char kPath[] = "/";
-    constexpr char kOrigin[] = "http://origin.example.org";
-    const GURL url("wss://www.example.org/");
     NetLogWithSource net_log;
 
     WebSocketHandshakeStreamCreateHelper create_helper(
         &connect_delegate_, sub_protocols, &stream_request_);
 
-    switch (GetParam()) {
-      case BASIC_HANDSHAKE_STREAM:
-        EXPECT_CALL(stream_request_, OnBasicHandshakeStreamCreated(_)).Times(1);
-        break;
-
-      case HTTP2_HANDSHAKE_STREAM:
-        EXPECT_CALL(stream_request_, OnHttp2HandshakeStreamCreated(_)).Times(1);
-        break;
-
-      case HTTP3_HANDSHAKE_STREAM:
-        EXPECT_CALL(stream_request_, OnHttp3HandshakeStreamCreated(_)).Times(1);
-        break;
-
-      default:
-        NOTREACHED();
-    }
-
+    setup_ = CreateSetup();
+    setup_->SetUpExpectations(stream_request_);
     EXPECT_CALL(stream_request_, OnFailure(_, _, _)).Times(0);
 
-    HttpRequestInfo request_info;
-    request_info.url = url;
-    request_info.method = "GET";
-    request_info.load_flags = LOAD_DISABLE_CACHE;
-    request_info.traffic_annotation =
+    request_info_.url = kUrl;
+    request_info_.method = "GET";
+    request_info_.load_flags = LOAD_DISABLE_CACHE;
+    request_info_.traffic_annotation =
         MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
     auto headers = WebSocketCommonTestHeaders();
 
+    auto handshake =
+        setup_->CreateStream(create_helper, extra_request_headers,
+                             extra_response_headers, request_priority);
+
+    handshake->RegisterRequest(&request_info_);
+    int rv = handshake->InitializeStream(true, DEFAULT_PRIORITY, net_log,
+                                         CompletionOnceCallback());
+    EXPECT_THAT(rv, IsOk());
+
+    setup_->DoHandshake(handshake.get(), headers, &response_);
+
+    if (request_priority.has_value()) {
+      handshake->SetPriority(*request_priority);
+    }
+
+    return handshake;
+  }
+
+  std::unique_ptr<WebSocketStream> CreateAndInitializeStream(
+      const std::vector<std::string>& sub_protocols,
+      const WebSocketExtraHeaders& extra_request_headers,
+      const WebSocketExtraHeaders& extra_response_headers,
+      std::optional<RequestPriority> request_priority = std::nullopt) {
+    return CreateHandshakeStream(sub_protocols, extra_request_headers,
+                                 extra_response_headers, request_priority)
+        ->Upgrade();
+  }
+
+ private:
+  std::unique_ptr<HandshakeStreamTestSetup> CreateSetup() {
     switch (GetParam()) {
-      case BASIC_HANDSHAKE_STREAM: {
-        std::unique_ptr<ClientSocketHandle> socket_handle =
-            socket_handle_factory_.CreateClientSocketHandle(
-                WebSocketStandardRequest(kPath, "www.example.org",
-                                         url::Origin::Create(GURL(kOrigin)),
-                                         /*send_additional_request_headers=*/{},
-                                         extra_request_headers),
-                WebSocketStandardResponse(
-                    WebSocketExtraHeadersToString(extra_response_headers)));
-
-        std::unique_ptr<WebSocketHandshakeStreamBase> handshake =
-            create_helper.CreateBasicStream(std::move(socket_handle), false,
-                                            &websocket_endpoint_lock_manager_);
-
-        // If in future the implementation type returned by CreateBasicStream()
-        // changes, this static_cast will be wrong. However, in that case the
-        // test will fail and AddressSanitizer should identify the issue.
-        static_cast<WebSocketBasicHandshakeStream*>(handshake.get())
-            ->SetWebSocketKeyForTesting("dGhlIHNhbXBsZSBub25jZQ==");
-
-        handshake->RegisterRequest(&request_info);
-        int rv = handshake->InitializeStream(true, DEFAULT_PRIORITY, net_log,
-                                             CompletionOnceCallback());
-        EXPECT_THAT(rv, IsOk());
-
-        HttpResponseInfo response;
-        TestCompletionCallback request_callback;
-        rv = handshake->SendRequest(headers, &response,
-                                    request_callback.callback());
-        EXPECT_THAT(rv, IsOk());
-
-        TestCompletionCallback response_callback;
-        rv = handshake->ReadResponseHeaders(response_callback.callback());
-        EXPECT_THAT(rv, IsOk());
-        EXPECT_EQ(101, response.headers->response_code());
-        EXPECT_TRUE(response.headers->HasHeaderValue("Connection", "Upgrade"));
-        EXPECT_TRUE(response.headers->HasHeaderValue("Upgrade", "websocket"));
-        if (request_priority.has_value()) {
-          handshake->SetPriority(*request_priority);
-        }
-        return handshake->Upgrade();
-      }
-      case HTTP2_HANDSHAKE_STREAM: {
-        SpdyTestUtil spdy_util;
-        quiche::HttpHeaderBlock request_header_block = WebSocketHttp2Request(
-            kPath, "www.example.org", kOrigin, extra_request_headers);
-        spdy::SpdySerializedFrame request_headers(
-            spdy_util.ConstructSpdyHeaders(1, std::move(request_header_block),
-                                           DEFAULT_PRIORITY, false));
-        MockWrite writes[] = {CreateMockWrite(request_headers, 0)};
-
-        quiche::HttpHeaderBlock response_header_block =
-            WebSocketHttp2Response(extra_response_headers);
-        spdy::SpdySerializedFrame response_headers(
-            spdy_util.ConstructSpdyResponseHeaders(
-                1, std::move(response_header_block), false));
-        MockRead reads[] = {CreateMockRead(response_headers, 1),
-                            MockRead(ASYNC, 0, 2)};
-
-        SequencedSocketData data(reads, writes);
-
-        SSLSocketDataProvider ssl(ASYNC, OK);
-        ssl.ssl_info.cert =
-            ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem");
-
-        SpdySessionDependencies session_deps;
-        session_deps.socket_factory->AddSocketDataProvider(&data);
-        session_deps.socket_factory->AddSSLSocketDataProvider(&ssl);
-
-        std::unique_ptr<HttpNetworkSession> http_network_session =
-            SpdySessionDependencies::SpdyCreateSession(&session_deps);
-        const SpdySessionKey key(
-            HostPortPair::FromURL(url), PRIVACY_MODE_DISABLED,
-            ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
-            NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-            /*disable_cert_verification_network_fetches=*/false);
-        base::WeakPtr<SpdySession> spdy_session =
-            CreateSpdySession(http_network_session.get(), key, net_log);
-        std::unique_ptr<WebSocketHandshakeStreamBase> handshake =
-            create_helper.CreateHttp2Stream(spdy_session, {} /* dns_aliases */);
-
-        handshake->RegisterRequest(&request_info);
-        int rv = handshake->InitializeStream(true, DEFAULT_PRIORITY,
-                                             NetLogWithSource(),
-                                             CompletionOnceCallback());
-        EXPECT_THAT(rv, IsOk());
-
-        HttpResponseInfo response;
-        TestCompletionCallback request_callback;
-        rv = handshake->SendRequest(headers, &response,
-                                    request_callback.callback());
-        EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
-        rv = request_callback.WaitForResult();
-        EXPECT_THAT(rv, IsOk());
-
-        TestCompletionCallback response_callback;
-        rv = handshake->ReadResponseHeaders(response_callback.callback());
-        EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
-        rv = response_callback.WaitForResult();
-        EXPECT_THAT(rv, IsOk());
-
-        EXPECT_EQ(200, response.headers->response_code());
-        if (request_priority.has_value()) {
-          handshake->SetPriority(*request_priority);
-        }
-        return handshake->Upgrade();
-      }
-      case HTTP3_HANDSHAKE_STREAM: {
-        const quic::QuicStreamId client_data_stream_id(
-            quic::QuicUtils::GetFirstBidirectionalStreamId(
-                quic_version_.transport_version, quic::Perspective::IS_CLIENT));
-        quic::QuicCryptoClientConfig crypto_config(
-            quic::test::crypto_test_utils::ProofVerifierForTesting());
-
-        const quic::QuicConnectionId connection_id(
-            quic::test::TestConnectionId(2));
-        test::QuicTestPacketMaker client_maker(
-            quic_version_, connection_id, &clock_, "mail.example.org",
-            quic::Perspective::IS_CLIENT,
-            /*client_headers_include_h2_stream_dependency_=*/false);
-        test::QuicTestPacketMaker server_maker(
-            quic_version_, connection_id, &clock_, "mail.example.org",
-            quic::Perspective::IS_SERVER,
-            /*client_headers_include_h2_stream_dependency_=*/false);
-        IPEndPoint peer_addr(IPAddress(192, 0, 2, 23), 443);
-        quic::test::MockConnectionIdGenerator connection_id_generator;
-
-        testing::StrictMock<quic::test::MockQuicConnectionVisitor> visitor;
-        ProofVerifyDetailsChromium verify_details;
-        MockCryptoClientStreamFactory crypto_client_stream_factory;
-        TransportSecurityState transport_security_state;
-        SSLConfigServiceDefaults ssl_config_service;
-
-        FLAGS_quic_enable_http3_grease_randomness = false;
-        clock_.AdvanceTime(quic::QuicTime::Delta::FromMilliseconds(20));
-        quic::QuicEnableVersion(quic_version_);
-        quic::test::MockRandom random_generator{0};
-
-        quiche::HttpHeaderBlock request_header_block = WebSocketHttp2Request(
-            kPath, "www.example.org", kOrigin, extra_request_headers);
-
-        int packet_number = 1;
-        mock_quic_data_.AddWrite(
-            SYNCHRONOUS,
-            client_maker.MakeInitialSettingsPacket(packet_number++));
-
-        mock_quic_data_.AddWrite(
-            ASYNC,
-            client_maker.MakeRequestHeadersPacket(
-                packet_number++, client_data_stream_id,
-                /*fin=*/false, ConvertRequestPriorityToQuicPriority(LOWEST),
-                std::move(request_header_block), nullptr));
-
-        quiche::HttpHeaderBlock response_header_block =
-            WebSocketHttp2Response(extra_response_headers);
-
-        mock_quic_data_.AddRead(
-            ASYNC, server_maker.MakeResponseHeadersPacket(
-                       /*packet_number=*/1, client_data_stream_id,
-                       /*fin=*/false, std::move(response_header_block),
-                       /*spdy_headers_frame_length=*/nullptr));
-
-        mock_quic_data_.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
-
-        if (request_priority.has_value()) {
-          // `SetPriority()` sends a PRIORITY_UPDATE frame bundled with the
-          // ACK, followed by a separate cleanup packet.
-          quic::PriorityUpdateFrame priority_update;
-          priority_update.prioritized_element_id = client_data_stream_id;
-          priority_update.priority_field_value =
-              quic::SerializePriorityFieldValue(
-                  {ConvertRequestPriorityToQuicPriority(*request_priority),
-                   quic::HttpStreamPriority::kDefaultIncremental});
-          std::string priority_data =
-              quic::HttpEncoder::SerializePriorityUpdateFrame(priority_update);
-          mock_quic_data_.AddWrite(
-              SYNCHRONOUS,
-              client_maker.Packet(packet_number++)
-                  .AddAckFrame(/*first_received=*/1, /*largest_received=*/1,
-                               /*smallest_received=*/0)
-                  .AddStreamFrame(2, false, priority_data)
-                  .Build());
-
-          mock_quic_data_.AddWrite(
-              SYNCHRONOUS, client_maker.Packet(packet_number++)
-                               .AddStopSendingFrame(client_data_stream_id,
-                                                    quic::QUIC_STREAM_CANCELLED)
-                               .AddRstStreamFrame(client_data_stream_id,
-                                                  quic::QUIC_STREAM_CANCELLED)
-                               .Build());
-        } else {
-          // ACK and cleanup are sent in a single packet.
-          mock_quic_data_.AddWrite(
-              SYNCHRONOUS,
-              client_maker.Packet(packet_number++)
-                  .AddAckFrame(/*first_received=*/1, /*largest_received=*/1,
-                               /*smallest_received=*/0)
-                  .AddStopSendingFrame(client_data_stream_id,
-                                       quic::QUIC_STREAM_CANCELLED)
-                  .AddRstStreamFrame(client_data_stream_id,
-                                     quic::QUIC_STREAM_CANCELLED)
-                  .Build());
-        }
-        auto socket = std::make_unique<MockUDPClientSocket>(
-            mock_quic_data_.InitializeAndGetSequencedSocketData(),
-            NetLog::Get());
-        socket->Connect(peer_addr);
-
-        scoped_refptr<test::TestTaskRunner> runner =
-            base::MakeRefCounted<test::TestTaskRunner>(&clock_);
-        auto helper = std::make_unique<QuicChromiumConnectionHelper>(
-            &clock_, &random_generator);
-        auto alarm_factory =
-            std::make_unique<QuicChromiumAlarmFactory>(runner.get(), &clock_);
-        // Ownership of 'writer' is passed to 'QuicConnection'.
-        QuicChromiumPacketWriter* writer = new QuicChromiumPacketWriter(
-            socket.get(),
-            base::SingleThreadTaskRunner::GetCurrentDefault().get());
-        quic::QuicConnection* connection = new quic::QuicConnection(
-            connection_id, quic::QuicSocketAddress(),
-            net::ToQuicSocketAddress(peer_addr), helper.get(),
-            alarm_factory.get(), writer, true /* owns_writer */,
-            quic::Perspective::IS_CLIENT,
-            quic::test::SupportedVersions(quic_version_),
-            connection_id_generator);
-        connection->set_visitor(&visitor);
-
-        // Load a certificate that is valid for *.example.org
-        scoped_refptr<X509Certificate> test_cert(
-            ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem"));
-        EXPECT_TRUE(test_cert.get());
-
-        verify_details.cert_verify_result.verified_cert = test_cert;
-        verify_details.cert_verify_result.is_issued_by_known_root = true;
-        crypto_client_stream_factory.AddProofVerifyDetails(&verify_details);
-
-        base::TimeTicks dns_end = base::TimeTicks::Now();
-        base::TimeTicks dns_start = dns_end - base::Milliseconds(1);
-
-        session_ = std::make_unique<QuicChromiumClientSession>(
-            connection, std::move(socket),
-            /*stream_factory=*/nullptr, &crypto_client_stream_factory, &clock_,
-            &transport_security_state, &ssl_config_service,
-            /*server_info=*/nullptr,
-            QuicSessionAliasKey(
-                url::SchemeHostPort(),
-                QuicSessionKey(
-                    "mail.example.org", 80, PRIVACY_MODE_DISABLED,
-                    ProxyChain::Direct(), SessionUsage::kDestination,
-                    SocketTag(), NetworkAnonymizationKey(),
-                    SecureDnsPolicy::kAllow,
-                    /*require_dns_https_alpn=*/false,
-                    /*disable_cert_verification_network_fetches=*/false)),
-            /*require_confirmation=*/false,
-            /*migrate_session_early_v2=*/false,
-            /*migrate_session_on_network_change_v2=*/false,
-            /*default_network=*/handles::kInvalidNetworkHandle,
-            quic::QuicTime::Delta::FromMilliseconds(
-                kDefaultRetransmittableOnWireTimeout.InMilliseconds()),
-            /*migrate_idle_session=*/true, /*allow_port_migration=*/false,
-            kDefaultIdleSessionMigrationPeriod,
-            /*multi_port_probing_interval=*/0, kMaxTimeOnNonDefaultNetwork,
-            kMaxMigrationsToNonDefaultNetworkOnWriteError,
-            kMaxMigrationsToNonDefaultNetworkOnPathDegrading,
-            kQuicYieldAfterPacketsRead,
-            quic::QuicTime::Delta::FromMilliseconds(
-                kQuicYieldAfterDurationMilliseconds),
-            /*cert_verify_flags=*/0, quic::test::DefaultQuicConfig(),
-            std::make_unique<TestQuicCryptoClientConfigHandle>(&crypto_config),
-            "CONNECTION_UNKNOWN", dns_start, dns_end,
-            /*resolution_details=*/std::nullopt,
-            base::DefaultTickClock::GetInstance(),
-            base::SingleThreadTaskRunner::GetCurrentDefault().get(),
-            /*socket_performance_watcher=*/nullptr,
-            ConnectionEndpointMetadata(), /*enable_origin_frame=*/true,
-            /*allow_server_preferred_address=*/true,
-            MultiplexedSessionCreationInitiator::kUnknown,
-            NetLogWithSource::Make(NetLogSourceType::NONE));
-
-        session_->Initialize();
-
-        // Enable extended CONNECT protocol (required for WebSocket over
-        // HTTP/3).
-        session_->OnSetting(quic::SETTINGS_ENABLE_CONNECT_PROTOCOL, 1);
-
-        // Blackhole QPACK decoder stream instead of constructing mock writes.
-        session_->qpack_decoder()->set_qpack_stream_sender_delegate(
-            &noop_qpack_stream_sender_delegate_);
-        TestCompletionCallback callback;
-        EXPECT_THAT(session_->CryptoConnect(callback.callback()), IsOk());
-        EXPECT_TRUE(session_->OneRttKeysAvailable());
-        std::unique_ptr<QuicChromiumClientSession::Handle> session_handle =
-            session_->CreateHandle(
-                url::SchemeHostPort(url::kHttpsScheme, "mail.example.org", 80));
-
-        std::unique_ptr<WebSocketHandshakeStreamBase> handshake =
-            create_helper.CreateHttp3Stream(std::move(session_handle),
-                                            {} /* dns_aliases */);
-
-        handshake->RegisterRequest(&request_info);
-        int rv = handshake->InitializeStream(true, DEFAULT_PRIORITY, net_log,
-                                             CompletionOnceCallback());
-        EXPECT_THAT(rv, IsOk());
-
-        HttpResponseInfo response;
-        TestCompletionCallback request_callback;
-        rv = handshake->SendRequest(headers, &response,
-                                    request_callback.callback());
-        EXPECT_THAT(rv, IsOk());
-
-        session_->StartReading();
-
-        TestCompletionCallback response_callback;
-        rv = handshake->ReadResponseHeaders(response_callback.callback());
-        EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
-        rv = response_callback.WaitForResult();
-        EXPECT_THAT(rv, IsOk());
-
-        EXPECT_EQ(200, response.headers->response_code());
-
-        // After the handshake, byte counts should reflect the HEADERS
-        // frames exchanged over the QUIC stream.
-        EXPECT_GT(handshake->GetTotalReceivedBytes().InBytes(), 0);
-        EXPECT_GT(handshake->GetTotalSentBytes().InBytes(), 0);
-
-        if (request_priority.has_value()) {
-          handshake->SetPriority(*request_priority);
-        }
-
-        return handshake->Upgrade();
-      }
+      case BASIC_HANDSHAKE_STREAM:
+        return std::make_unique<BasicHandshakeStreamTestSetup>();
+      case HTTP2_HANDSHAKE_STREAM:
+        return std::make_unique<Http2HandshakeStreamTestSetup>();
+      case HTTP3_HANDSHAKE_STREAM:
+        return std::make_unique<Http3HandshakeStreamTestSetup>();
       default:
         NOTREACHED();
     }
   }
 
- private:
-  MockClientSocketHandleFactory socket_handle_factory_;
   TestConnectDelegate connect_delegate_;
   StrictMock<MockWebSocketStreamRequestAPI> stream_request_;
-  WebSocketEndpointLockManager websocket_endpoint_lock_manager_;
-
-  // For HTTP3_HANDSHAKE_STREAM
-  quic::ParsedQuicVersion quic_version_;
-  quic::MockClock clock_;
-  std::unique_ptr<QuicChromiumClientSession> session_;
-  test::MockQuicData mock_quic_data_;
-  quic::test::NoopQpackStreamSenderDelegate noop_qpack_stream_sender_delegate_;
+  std::unique_ptr<HandshakeStreamTestSetup> setup_;
+  HttpRequestInfo request_info_;
+  HttpResponseInfo response_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -699,6 +803,28 @@ TEST_P(WebSocketHandshakeStreamCreateHelperTest, BasicStreamWithPriority) {
   EXPECT_EQ("", stream->GetExtensions());
   EXPECT_EQ("", stream->GetSubProtocol());
   EXPECT_TRUE(stream);
+}
+
+// Verify that GetLoadTimingInfo, GetSSLInfo, and GetRemoteEndpoint return
+// correct results for WebSocket handshake streams.
+TEST_P(WebSocketHandshakeStreamCreateHelperTest, GetConnectionDetails) {
+  std::unique_ptr<WebSocketHandshakeStreamBase> handshake =
+      CreateHandshakeStream({}, {}, {});
+
+  LoadTimingInfo load_timing_info;
+  EXPECT_TRUE(handshake->GetLoadTimingInfo(&load_timing_info));
+
+  EXPECT_FALSE(load_timing_info.connect_timing.connect_start.is_null());
+  EXPECT_FALSE(load_timing_info.connect_timing.connect_end.is_null());
+  EXPECT_LE(load_timing_info.connect_timing.connect_start,
+            load_timing_info.connect_timing.connect_end);
+
+  SSLInfo ssl_info;
+  handshake->GetSSLInfo(&ssl_info);
+  EXPECT_TRUE(ssl_info.is_valid());
+
+  IPEndPoint endpoint;
+  EXPECT_THAT(handshake->GetRemoteEndpoint(&endpoint), IsOk());
 }
 
 }  // namespace

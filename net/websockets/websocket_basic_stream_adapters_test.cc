@@ -1443,9 +1443,10 @@ TEST_P(WebSocketQuicStreamAdapterTest, Disconnect) {
   EXPECT_EQ(0u, session_->GetNumActiveStreams());
 
   // `Read()` after `Disconnect()` should return `ERR_UNEXPECTED`.
-  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(1024);
-  EXPECT_EQ(ERR_UNEXPECTED,
-            adapter->Read(read_buf.get(), 1024, CompletionOnceCallback()));
+  constexpr int kReadBufSize = 1024;
+  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
+  EXPECT_EQ(ERR_UNEXPECTED, adapter->Read(read_buf.get(), kReadBufSize,
+                                          CompletionOnceCallback()));
 
   // Session should still be valid after stream disconnect (only the stream is
   // closed, not the connection).
@@ -1583,8 +1584,10 @@ TEST_P(WebSocketQuicStreamAdapterTest, DisconnectDropsPendingWriteCallback) {
   // (A) Pause reading so the test can block flow control and issue a `Write()`.
   mock_quic_data_.AddRead(ASYNC, ERR_IO_PENDING);
 
-  // When flow control is blocked and we try to write, QUIC sends a BLOCKED
-  // frame.
+  // When flow control is blocked, QUIC sends a STREAM_BLOCKED frame. The
+  // blocked offset is 170 because `WriteHeaders()` already wrote 170 bytes on
+  // this stream: a 3-byte HTTP/3 HEADERS frame header and 167 bytes of
+  // QPACK-encoded WebSocket CONNECT request headers.
   mock_quic_data_.AddWrite(
       ASYNC, client_maker_.Packet(client_packet_number++)
                  .AddAckFrame(1, 1, 1)
