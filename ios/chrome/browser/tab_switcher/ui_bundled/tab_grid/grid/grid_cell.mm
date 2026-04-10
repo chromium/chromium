@@ -748,8 +748,6 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
 // selected.
 - (void)setupSelectedBackgroundView {
   self.selectedBackgroundView = [[UIView alloc] init];
-  self.selectedBackgroundView.backgroundColor =
-      [UIColor colorNamed:kGridBackgroundColor];
   UIView* border = [[UIView alloc] init];
   border.hidden = self.isInSelectionMode;
   border.translatesAutoresizingMaskIntoConstraints = NO;
