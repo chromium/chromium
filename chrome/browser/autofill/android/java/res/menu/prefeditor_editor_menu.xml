@@ -9,6 +9,11 @@ found in the LICENSE file.
     xmlns:app="http://schemas.android.com/apk/res-auto" >
 
     <item
+        android:id="@+id/branding_icon_id"
+        android:title="@string/ok"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/delete_menu_id"
         android:icon="@drawable/ic_delete_white_24dp"
         android:title="@string/delete"

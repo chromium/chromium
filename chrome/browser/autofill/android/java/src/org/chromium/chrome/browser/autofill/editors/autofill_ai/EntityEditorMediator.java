@@ -15,6 +15,8 @@ import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEdi
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.EDITOR_FIELDS;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.EDITOR_TITLE;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.OPEN_HELP_CALLBACK;
+import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.TOOLBAR_BRANDING_ICON_ID;
+import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.TOOLBAR_BRANDING_ICON_TITLE;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.VALIDATE_ON_SHOW;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.DATE;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.DROPDOWN;
@@ -108,6 +110,8 @@ class EntityEditorMediator {
 
     private PropertyModel buildEditorModel() {
         final boolean isNewEntity = TextUtils.isEmpty(mEntityInstance.getGUID());
+        final boolean isNewWalletEntity =
+                isNewEntity && mEntityInstance.getRecordType() == RecordType.SERVER_WALLET;
         String editorTitle =
                 isNewEntity
                         ? mEntityInstance.getEntityType().getAddEntityTypeString()
@@ -133,6 +137,12 @@ class EntityEditorMediator {
                 .with(VALIDATE_ON_SHOW, false)
                 .with(EDITOR_FIELDS, getEditorFields())
                 .with(OPEN_HELP_CALLBACK, this::onOpenHelpAndFeedback)
+                .with(
+                        TOOLBAR_BRANDING_ICON_ID,
+                        isNewWalletEntity ? R.drawable.google_wallet_24dp : 0)
+                .with(
+                        TOOLBAR_BRANDING_ICON_TITLE,
+                        isNewWalletEntity ? R.string.autofill_google_wallet_title : 0)
                 .build();
     }
 
