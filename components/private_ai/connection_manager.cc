@@ -15,6 +15,7 @@
 #include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/connection.h"
 #include "components/private_ai/connection_factory.h"
+#include "components/private_ai/status_code.h"
 
 namespace private_ai {
 
@@ -50,8 +51,10 @@ void ConnectionManager::OnConnectionDisconnected(int connection_id,
 
   logger_->LogInfo(
       FROM_HERE,
-      "Connection disconnected. Destroying connection with status: " +
-          base::ToString(status_code));
+      status_code == StatusCode::kUnusedConnection
+          ? "Closing unused connection"
+          : "Connection disconnected. Destroying connection with status: " +
+                base::ToString(status_code));
 
   // Move the active connection to the pending destruction list and call
   // `OnDestroy()` to ensure status is propagated to all pending callbacks.
