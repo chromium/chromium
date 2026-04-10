@@ -87,7 +87,17 @@ class ProfileBrowserCollectionTest
       browser = CreateBrowserWindow(
           BrowserWindowCreateParams(*profile, /*from_user_gesture=*/true));
     }
+#if !BUILDFLAG(IS_ANDROID)
+    {
+      BrowserEventWaiter activation_waiter(BrowserEventWaiter::Event::ACTIVATED,
+                                           browser);
+      browser->GetWindow()->Activate();
+    }
+#else
+    // TODO(crbug.com/477251911): Activation tracking is not implemented on
+    // Android yet, so we cannot wait for the ACTIVATED event.
     browser->GetWindow()->Activate();
+#endif
     return browser;
   }
 
