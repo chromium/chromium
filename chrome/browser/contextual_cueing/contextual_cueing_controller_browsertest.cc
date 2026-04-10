@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
@@ -390,6 +391,31 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.V2.Decision",
       ContextualCueingDecision::kFeaturePromoActive, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
+                       OnlySendsTopMaxBackgroundTabs) {
+  // Create 15 tabs.
+  for (int i = 0; i < kMaxNumBackgroundTabs.Get() + 1; ++i) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GURL(base::StringPrintf("https://www.google.com/%d", i)),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  }
+
+  base::HistogramTester histogram_tester;
+  SeedExecutionResult(MakeCompleteResponse());
+
+  SimulateFilterPassed();
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+
+  // 15 background tabs + 1 active tab.
+  // We expect only the max allowed background tabs to be requested.
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.V2.NumRequestedBackgroundTabs",
+      kMaxNumBackgroundTabs.Get(), 1);
 }
 
 }  // namespace

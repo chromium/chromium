@@ -13,6 +13,7 @@ namespace contextual_cueing {
 BASE_DECLARE_FEATURE(kContextualCueingV2);
 extern const base::FeatureParam<double> kEduClassifierThreshold;
 extern const base::FeatureParam<double> kShoppingClassifierThreshold;
+extern const base::FeatureParam<int> kMaxNumBackgroundTabs;
 
 }  // namespace contextual_cueing
 

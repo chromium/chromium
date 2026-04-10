@@ -18,4 +18,9 @@ const base::FeatureParam<double> kShoppingClassifierThreshold(
     "ContextualCueingV2ShoppingClassifierThreshold",
     0.5);
 
+const base::FeatureParam<int> kMaxNumBackgroundTabs(
+    &kContextualCueingV2,
+    "ContextualCueingV2MaxNumBackgroundTabs",
+    10);
+
 }  // namespace contextual_cueing

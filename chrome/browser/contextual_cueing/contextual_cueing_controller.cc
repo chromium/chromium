@@ -4,14 +4,18 @@
 
 #include "chrome/browser/contextual_cueing/contextual_cueing_controller.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
+#include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/notimplemented.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/contextual_cueing/features.h"
@@ -184,6 +188,12 @@ void ContextualCueingController::InitiateModelExecutionRequest() {
       active_web_contents->GetLastCommittedURL().spec());
   request.mutable_active_tab_page_context()->set_title(
       base::UTF16ToUTF8(active_web_contents->GetTitle()));
+
+  struct BackgroundTabInfo {
+    base::Time last_active_time;
+    raw_ptr<content::WebContents> contents;
+  };
+  std::vector<BackgroundTabInfo> background_tabs;
   for (int i = 0; i < tab_list_interface_->GetTabCount(); ++i) {
     tabs::TabInterface* tab = tab_list_interface_->GetTab(i);
     if (tab == tab_list_interface_->GetActiveTab()) {
@@ -197,8 +207,23 @@ void ContextualCueingController::InitiateModelExecutionRequest() {
     if (!tab_contents->GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
       continue;
     }
-    *request.add_background_tabs() = GetTabProtoFromWebContents(tab_contents);
+    background_tabs.push_back(
+        {.last_active_time = tab_contents->GetLastActiveTime(),
+         .contents = tab_contents});
   }
+
+  std::sort(background_tabs.begin(), background_tabs.end(),
+            [](const BackgroundTabInfo& a, const BackgroundTabInfo& b) {
+              return a.last_active_time > b.last_active_time;
+            });
+
+  for (size_t i = 0; i < std::min<size_t>(background_tabs.size(),
+                                          kMaxNumBackgroundTabs.Get());
+       ++i) {
+    *request.add_background_tabs() =
+        GetTabProtoFromWebContents(background_tabs[i].contents);
+  }
+
   LOCAL_HISTOGRAM_COUNTS_100("ContextualCueing.V2.NumRequestedBackgroundTabs",
                              request.background_tabs_size());
   optimization_guide_keyed_service_->ExecuteModel(
