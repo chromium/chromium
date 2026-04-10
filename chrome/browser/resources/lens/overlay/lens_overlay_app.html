@@ -497,6 +497,7 @@
    * searchbox is focused.
    */
   :host([enable-csb-motion-tweaks][show-ghost-loader])
+      #searchboxContainer:has(cr-lens-searchbox:not([dropdown-is-visible]))
       cr-searchbox-ghost-loader {
     display: block;
   }

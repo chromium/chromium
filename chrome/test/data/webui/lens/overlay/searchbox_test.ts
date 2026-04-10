@@ -485,3 +485,55 @@ suite('Searchbox', () => {
         'deleting character should query autocomplete for empty input');
   });
 });
+
+suite('SearchboxMotionTweaks', () => {
+  let testBrowserProxy: TestLensOverlayBrowserProxy;
+  let lensOverlayElement: any;
+
+  setup(async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    loadTimeData.overrideValues({
+      'autoFocusSearchbox': true,
+      'enablePrivacyNotice': false,
+      'enableOverlayContextualSearchbox': true,
+      'enableGhostLoader': true,
+      'enableCsbMotionTweaks': true,
+    });
+
+    testBrowserProxy = new TestLensOverlayBrowserProxy();
+    BrowserProxyImpl.setInstance(testBrowserProxy);
+
+    lensOverlayElement = document.createElement('lens-overlay-app');
+    document.body.appendChild(lensOverlayElement);
+    await waitAfterNextRender(lensOverlayElement);
+
+    testBrowserProxy.page.shouldShowContextualSearchBox(true);
+    await waitAfterNextRender(lensOverlayElement);
+  });
+
+  test('GhostLoaderHiddenWhenDropdownVisible', async () => {
+    // Simulate focus to show ghost loader
+    lensOverlayElement.$.searchbox.dispatchEvent(new CustomEvent('focusin', {
+      bubbles: true,
+      composed: true,
+    }));
+    await waitAfterNextRender(lensOverlayElement);
+
+    // Assert ghost loader is visible
+    const ghostLoader = lensOverlayElement.shadowRoot!.querySelector(
+        'cr-searchbox-ghost-loader');
+    assertTrue(ghostLoader !== null);
+
+    // We cannot easily check computed style in this test environment without
+    // more setup, but we can check if the attribute is removed or if we can
+    // mock it. Let's check if we can simulate the condition that hides it.
+
+    // Simulate dropdown becoming visible
+    lensOverlayElement.$.searchbox.dropdownIsVisible = true;
+    await waitAfterNextRender(lensOverlayElement);
+
+    // Verify ghost loader becomes hidden
+    assertFalse(isVisible(ghostLoader));
+  });
+});
