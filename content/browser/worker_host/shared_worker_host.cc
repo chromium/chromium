@@ -743,8 +743,10 @@ void SharedWorkerHost::CreateBlobUrlStoreProvider(
       base::BindRepeating([]() -> bool { return false; }),
       !(GetContentClient()->browser()->IsBlobUrlPartitioningEnabled(
           GetProcessHost()->GetBrowserContext())),
-      storage::BlobURLValidityCheckBehavior::
-          ALLOW_OPAQUE_ORIGIN_STORAGE_KEY_MISMATCH);
+      base::FeatureList::IsEnabled(blink::features::kDataUrlWorkerOpaqueOrigin)
+          ? storage::BlobURLValidityCheckBehavior::DEFAULT
+          : storage::BlobURLValidityCheckBehavior::
+                ALLOW_OPAQUE_ORIGIN_STORAGE_KEY_MISMATCH);
 }
 
 void SharedWorkerHost::CreateBucketManagerHost(
