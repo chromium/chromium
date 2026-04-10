@@ -104,7 +104,7 @@
 #include "content/public/test/browser_test_utils.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "extensions/browser/api/extensions_api_client.h"
@@ -118,7 +118,7 @@
 #include "extensions/browser/unpacked_installer.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/test/extension_test_message_listener.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(IS_WIN)
 #include "base/base_paths_win.h"
@@ -1328,7 +1328,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolScreenshotTest, ScreenshotInactiveTab) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 class ExtensionProtocolTest : public DevToolsProtocolTest {
  protected:
   void SetUpOnMainThread() override {
@@ -1380,6 +1380,8 @@ class ExtensionProtocolTest : public DevToolsProtocolTest {
     return extension;
   }
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Android does not support Chrome Apps.
   void LaunchApp(const std::string& app_id) {
     apps::AppLaunchParams params(
         app_id, apps::LaunchContainer::kLaunchContainerNone,
@@ -1389,6 +1391,7 @@ class ExtensionProtocolTest : public DevToolsProtocolTest {
         ->BrowserAppLauncher()
         ->LaunchAppWithParamsForTesting(std::move(params));
   }
+#endif
 
   void ReloadExtension(const std::string& extension_id) {
     extensions::TestExtensionRegistryObserver observer(extension_registry_);
@@ -1481,6 +1484,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionProtocolTest,
   auto detached = WaitForNotification("Target.detachedFromTarget", true);
   EXPECT_THAT(*detached.FindString("sessionId"), Eq("sessionId"));
 }
+
+// TODO(https://crbug.com/501442926): The following tests use guest view, which
+// is not yet supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
 
 // Accepts a list of URL predicates and allows awaiting for all matching
 // WebContents to load.
@@ -1787,7 +1794,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionProtocolTestWithGuestViewMPArch,
       *frame_id,
       guest_view->GetGuestMainFrame()->GetDevToolsFrameToken().ToString());
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 class PrerenderDataSaverProtocolTest : public DevToolsProtocolTest {
  public:
