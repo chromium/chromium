@@ -350,10 +350,11 @@ void SelectionOverlayController::NotifyTabForegrounded() {}
 
 void SelectionOverlayController::NotifyTabWillEnterBackground() {}
 
-OverlayBaseController::PreselectionBubbleResources
-SelectionOverlayController::GetPreselectionBubbleResources() {
-  return {.message_string_id =
-              IDS_GLIC_SELECTION_OVERLAY_PRESELECTION_BUBBLE_TEXT};
+OverlayBaseController::PreselectionUIConfig
+SelectionOverlayController::GetPreselectionBubbleConfig() {
+  return {
+      .message_string_id = IDS_GLIC_SELECTION_OVERLAY_PRESELECTION_BUBBLE_TEXT,
+      .show_cancel_button = true};
 }
 
 bool SelectionOverlayController::IsOverlayViewShared() const {

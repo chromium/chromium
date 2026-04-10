@@ -19,6 +19,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/lens/lens_features.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -55,12 +56,14 @@ LensPreselectionBubble::LensPreselectionBubble(
     tabs::TabHandle tab_handle,
     views::View* anchor_view,
     bool offline,
+    bool show_cancel_button,
     ExitClickedCallback exit_clicked_callback,
     base::OnceClosure on_cancel_callback)
     : BubbleDialogDelegateView(anchor_view,
                                views::BubbleBorder::NONE,
                                views::BubbleBorder::NO_SHADOW),
       tab_handle_(tab_handle),
+      show_cancel_button_(show_cancel_button),
       offline_(offline),
       exit_clicked_callback_(std::move(exit_clicked_callback)) {
   SetShowCloseButton(false);
@@ -119,14 +122,16 @@ void LensPreselectionBubble::Init() {
         std::make_unique<views::CircleHighlightPathGenerator>(gfx::Insets()));
     button->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_LENS_OVERLAY_MORE_OPTIONS_BUTTON_LABEL));
-    more_info_button_ = AddChildView(std::move(button));
-    more_info_button_->SetButtonController(
-        std::make_unique<views::MenuButtonController>(
-            more_info_button_,
-            base::BindRepeating(&LensPreselectionBubble::OpenMoreInfoMenu,
-                                base::Unretained(this)),
-            std::make_unique<views::Button::DefaultButtonControllerDelegate>(
-                more_info_button_)));
+    if (!show_cancel_button_) {
+      more_info_button_ = AddChildView(std::move(button));
+      more_info_button_->SetButtonController(
+          std::make_unique<views::MenuButtonController>(
+              more_info_button_,
+              base::BindRepeating(&LensPreselectionBubble::OpenMoreInfoMenu,
+                                  base::Unretained(this)),
+              std::make_unique<views::Button::DefaultButtonControllerDelegate>(
+                  more_info_button_)));
+    }
   }
   layout->set_between_child_spacing(8);
   // Need to set this false so label color token doesn't get changed by
@@ -143,6 +148,19 @@ void LensPreselectionBubble::Init() {
     exit_button_->SetStyle(ui::ButtonStyle::kProminent);
     exit_button_->SetProperty(views::kElementIdentifierKey,
                               kLensPreselectionBubbleExitButtonElementId);
+  }
+  if (show_cancel_button_) {
+    cancel_button_ = AddChildView(std::make_unique<views::MdTextButton>(
+        base::BindRepeating(&LensPreselectionBubble::CancelDialog,
+                            // Safe to unretain since this class (and its
+                            // underlying Widget) is self-owned.
+                            base::Unretained(this)),
+        l10n_util::GetStringUTF16(IDS_CANCEL)));
+    cancel_button_->SetProperty(views::kMarginsKey,
+                                gfx::Insets::TLBR(0, 8, 0, 0));
+    cancel_button_->SetStyle(ui::ButtonStyle::kProminent);
+    cancel_button_->SetProperty(views::kElementIdentifierKey,
+                                kLensPreselectionBubbleCancelButtonElementId);
   }
   NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
 }
@@ -203,6 +221,15 @@ void LensPreselectionBubble::OnThemeChanged() {
     exit_button_->SetBorder(views::CreateRoundedRectBorder(
         1, 48, color_provider->GetColor(kColorLensOverlayToastButtonBorder)));
     exit_button_->SetBgColorIdOverride(kColorLensOverlayToastBackground);
+  }
+
+  if (show_cancel_button_) {
+    CHECK(cancel_button_);
+    cancel_button_->SetEnabledTextColors(
+        color_provider->GetColor(kColorLensOverlayToastForeground));
+    cancel_button_->SetBorder(views::CreateRoundedRectBorder(
+        1, 48, color_provider->GetColor(kColorLensOverlayToastButtonBorder)));
+    cancel_button_->SetBgColorIdOverride(kColorLensOverlayToastBackground);
   }
 }
 

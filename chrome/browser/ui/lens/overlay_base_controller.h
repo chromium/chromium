@@ -234,12 +234,13 @@ class OverlayBaseController : public content::WebContentsDelegate,
   // Notification that the tab was foregrounded.
   virtual void NotifyTabWillEnterBackground() = 0;
 
-  struct PreselectionBubbleResources {
+  struct PreselectionUIConfig {
     int message_string_id;
+    bool show_cancel_button = false;
   };
 
   // Returns the resources for the preselection bubble.
-  virtual PreselectionBubbleResources GetPreselectionBubbleResources() = 0;
+  virtual PreselectionUIConfig GetPreselectionBubbleConfig() = 0;
 
   // Returns if the overlay view can be shared between multiple tabs.
   virtual bool IsOverlayViewShared() const = 0;
