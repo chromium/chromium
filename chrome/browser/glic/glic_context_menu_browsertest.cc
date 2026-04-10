@@ -59,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(GlicContextMenuBrowserTest, GlicInvokeStandard) {
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_GLIC, 0);
 
   // Now Glic should be open.
-  ASSERT_TRUE(WaitForGlicOpen());
+  ASSERT_OK(WaitForGlicOpen());
   EXPECT_NE(nullptr, GetOnlyGlicInstance());
 }
 
@@ -105,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(GlicContextMenuArm2BrowserTest, GlicInvokeArm2) {
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_GLIC, 0);
 
   // Now Glic should be open.
-  ASSERT_TRUE(WaitForGlicOpen());
+  ASSERT_OK(WaitForGlicOpen());
   EXPECT_NE(nullptr, GetOnlyGlicInstance());
 }
 

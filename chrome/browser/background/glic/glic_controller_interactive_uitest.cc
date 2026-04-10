@@ -31,10 +31,10 @@ IN_PROC_BROWSER_TEST_F(GlicControllerUiTest, Toggle) {
   ASSERT_FALSE(glic_service()->IsWindowShowing());
 
   glic_controller().Toggle(mojom::InvocationSource::kOsButton);
-  ASSERT_TRUE(WaitForGlicOpen());
+  ASSERT_OK(WaitForGlicOpen());
 
   glic_controller().Toggle(mojom::InvocationSource::kOsButton);
-  ASSERT_TRUE(WaitForGlicClose());
+  ASSERT_OK(WaitForGlicClose());
 }
 
 // TODO (crbug.com/450563739): Re-enable when the test is fixed on Windows.
@@ -47,10 +47,10 @@ IN_PROC_BROWSER_TEST_F(GlicControllerUiTest, MAYBE_Show) {
   ASSERT_FALSE(glic_service()->IsWindowShowing());
 
   glic_controller().Show(mojom::InvocationSource::kOsButton);
-  ASSERT_TRUE(WaitForGlicOpen());
+  ASSERT_OK(WaitForGlicOpen());
 
   glic_controller().Show(mojom::InvocationSource::kOsButton);
-  ASSERT_TRUE(WaitForGlicOpen());
+  ASSERT_OK(WaitForGlicOpen());
 }
 
 }  // namespace glic

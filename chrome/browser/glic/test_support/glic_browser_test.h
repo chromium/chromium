@@ -16,8 +16,11 @@
 #include "base/command_line.h"
 #include "base/functional/function_ref.h"
 #include "base/path_service.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
@@ -28,6 +31,7 @@
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
+#include "chrome/browser/glic/test_support/test_result.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_switches.h"
@@ -68,16 +72,16 @@ namespace glic {
 #endif
 
 // Runs `get_value` until it returns `expected_value`. Returns a
-// testing::AssertionResult indicating success or failure.
+// TestResult<> indicating success or failure.
 // Note, `type_identity_t` ensures T's type is inferred from `expected_value`.
 template <typename T>
-[[nodiscard]] testing::AssertionResult RunUntilEqual(
+[[nodiscard]] TestResult<> RunUntilEqual(
     base::FunctionRef<std::type_identity_t<T>()> get_value,
     const T& expected_value,
     std::string_view message = std::string_view()) {
   using ValueType = std::remove_reference_t<T>;
   if (get_value() == expected_value) {
-    return testing::AssertionSuccess();
+    return base::ok();
   }
   std::vector<ValueType> ignored_values;
   if (base::test::RunUntil([get_value, expected_value, &ignored_values]() {
@@ -90,15 +94,15 @@ template <typename T>
         }
         return false;
       })) {
-    return testing::AssertionSuccess();
+    return base::ok();
   }
-  auto failure = testing::AssertionFailure();
-  failure << message << " Expected: " << expected_value << ", saw values: {";
+  std::stringstream ss;
+  ss << message << " Expected: " << expected_value << ", saw values: {";
   for (const auto& value : ignored_values) {
-    failure << value << ", ";
+    ss << value << ", ";
   }
-  failure << "}";
-  return failure;
+  ss << "}";
+  return base::unexpected(ss.str());
 }
 
 template <typename Trigger>
@@ -175,14 +179,9 @@ class GlicBrowserTestMixin : public T {
   }
 
   // Opens the Glic UI on the active tab and returns it.
-  [[nodiscard]] GlicInstanceImpl* OpenGlicForActiveTab() {
+  [[nodiscard]] TestResult<GlicInstanceImpl*> OpenGlicForActiveTab() {
     ToggleGlicForActiveTab(/*prevent_close=*/true);
-    GlicInstanceImpl* instance =
-        WaitForGlicOpen(T::GetTabListInterface()->GetActiveTab());
-    if (!instance) {
-      LOG(ERROR) << "Failed to open Glic for active tab";
-    }
-    return instance;
+    return WaitForGlicOpen(T::GetTabListInterface()->GetActiveTab());
   }
 
   // Registers a conversation and submits input to prevent the instance from
@@ -213,11 +212,8 @@ class GlicBrowserTestMixin : public T {
   }
 
   // Opens the Glic UI on the active tab and detaches it.
-  [[nodiscard]] GlicInstanceImpl* OpenGlicForActiveTabAndDetach() {
-    GlicInstanceImpl* instance = OpenGlicForActiveTab();
-    if (!instance) {
-      return nullptr;
-    }
+  [[nodiscard]] TestResult<GlicInstanceImpl*> OpenGlicForActiveTabAndDetach() {
+    ASSIGN_OR_RETURN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
     if (instance->IsDetached()) {
       return instance;
     }
@@ -225,7 +221,7 @@ class GlicBrowserTestMixin : public T {
     bool success = RunUntil([instance]() { return instance->IsDetached(); },
                             "Failed to wait for Glic to detach");
     if (!success) {
-      return nullptr;
+      return base::unexpected("Failed to wait for Glic to detach");
     }
     return instance;
   }
@@ -233,7 +229,7 @@ class GlicBrowserTestMixin : public T {
   // Waits for the Glic UI to be open and visible. Defaults to the only glic
   // instance, but can be specified. Returns the opened instance or nullptr if
   // it fails to open.
-  [[nodiscard]] GlicInstanceImpl* WaitForGlicOpen(
+  [[nodiscard]] TestResult<GlicInstanceImpl*> WaitForGlicOpen(
       GlicInstance* instance = nullptr) {
     std::optional<InstanceId> id =
         instance ? std::make_optional(instance->id()) : std::nullopt;
@@ -245,14 +241,19 @@ class GlicBrowserTestMixin : public T {
         },
         "Failed to wait for Glic to open");
     if (!success) {
-      return nullptr;
+      return base::unexpected("Failed to wait for Glic to open");
     }
-    return id ? GetInstanceById(*id) : GetOnlyGlicInstance();
+    auto* result = id ? GetInstanceById(*id) : GetOnlyGlicInstance();
+    if (!result) {
+      return base::unexpected("Glic instance not found after opening");
+    }
+    return result;
   }
 
   // Waits for the Glic UI to be open and visible for a specific tab. Returns
   // the opened instance or nullptr if it fails to open.
-  [[nodiscard]] GlicInstanceImpl* WaitForGlicOpen(tabs::TabInterface* tab) {
+  [[nodiscard]] TestResult<GlicInstanceImpl*> WaitForGlicOpen(
+      tabs::TabInterface* tab) {
     bool success = RunUntil(
         [this, tab]() {
           GlicInstance* instance = GetInstanceForTab(tab);
@@ -260,45 +261,50 @@ class GlicBrowserTestMixin : public T {
         },
         "Failed to wait for Glic to open for tab");
     if (!success) {
-      return nullptr;
+      return base::unexpected("Failed to wait for Glic to open for tab");
     }
-    return GetInstanceForTab(tab);
+    auto* instance = GetInstanceForTab(tab);
+    if (!instance) {
+      return base::unexpected("Glic instance not found for tab after opening");
+    }
+    return instance;
   }
 
   // Waits for the Glic UI to be closed. Defaults to the only glic instance,
   // but can be specified.
-  [[nodiscard]] bool WaitForGlicClose(GlicInstance* instance = nullptr) {
+  TestResult<> WaitForGlicClose(GlicInstance* instance = nullptr) {
     std::optional<InstanceId> id =
         instance ? std::make_optional(instance->id()) : std::nullopt;
-    return RunUntil(
+    bool success = RunUntil(
         [this, id]() {
           GlicInstance* target =
               id ? GetInstanceById(*id) : GetOnlyGlicInstance();
           return !target || !target->IsShowing();
         },
         "Failed to close Glic UI");
+    if (!success) {
+      return base::unexpected("Failed to close Glic UI");
+    }
+    return base::ok();
   }
 
   // Closes Glic for a given tab and waits for it to close.
-  [[nodiscard]] bool CloseGlicForTabAndWait(tabs::TabInterface* tab) {
+  TestResult<> CloseGlicForTabAndWait(tabs::TabInterface* tab) {
     GlicInstanceImpl* instance = GetInstanceForTab(tab);
     if (!instance) {
-      return false;
+      return base::unexpected("No Glic instance found for tab to close");
     }
     instance->Close(tab);
     return WaitForGlicClose(instance);
   }
 
-  [[nodiscard]] GlicInstanceImpl* WaitForGlicInstanceBoundToTab(
+  [[nodiscard]] TestResult<GlicInstanceImpl*> WaitForGlicInstanceBoundToTab(
       tabs::TabInterface* tab) {
-    bool success = RunUntil(
-        [this, tab]() {
-          GlicInstanceImpl* instance = GetInstanceForTab(tab);
-          return instance;
-        },
-        "Failed to wait for Glic to be bound to tab");
+    bool success =
+        RunUntil([this, tab]() { return GetInstanceForTab(tab) != nullptr; },
+                 "Failed to wait for Glic to be bound to tab");
     if (!success) {
-      return nullptr;
+      return base::unexpected("Failed to wait for Glic to be bound to tab");
     }
     return GetInstanceForTab(tab);
   }
@@ -335,8 +341,7 @@ class GlicBrowserTestMixin : public T {
     return new_tab;
   }
 
-  [[nodiscard]] testing::AssertionResult WaitForWebUiState(
-      mojom::WebUiState state) {
+  [[nodiscard]] TestResult<> WaitForWebUiState(mojom::WebUiState state) {
     auto state_to_string = [](mojom::WebUiState state) -> std::string {
       std::stringstream ss;
       ss << state;

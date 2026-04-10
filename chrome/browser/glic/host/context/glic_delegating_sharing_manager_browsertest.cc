@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/host/context/glic_delegating_sharing_manager.h"
 
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/gtest_util.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/glic/host/context/glic_empty_focused_browser_manager.h"
@@ -111,8 +112,7 @@ IN_PROC_BROWSER_TEST_F(GlicDelegatingSharingManagerBrowserTest,
   tabs::TabInterface* tab = handle.Get();
   ASSERT_TRUE(tab);
 
-  auto* instance = OpenGlicForActiveTab();
-  ASSERT_TRUE(instance);
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
 
   // Use the real sharing manager as delegation target.
   auto& real_manager = instance->host().sharing_manager();
@@ -165,8 +165,7 @@ IN_PROC_BROWSER_TEST_F(GlicDelegatingSharingManagerBrowserTest,
   tabs::TabInterface* tab = handle.Get();
   ASSERT_TRUE(tab);
 
-  auto* instance = OpenGlicForActiveTab();
-  ASSERT_TRUE(instance);
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
 
   // Use the real sharing manager as delegation target.
   auto& real_manager = instance->host().sharing_manager();
@@ -253,8 +252,7 @@ IN_PROC_BROWSER_TEST_F(GlicDelegatingSharingManagerBrowserTest,
   tabs::TabInterface* tab1 = handle1.Get();
   ASSERT_TRUE(tab1);
 
-  GlicInstance* instance = OpenGlicForActiveTab();
-  ASSERT_TRUE(instance);
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
   auto& real_manager = instance->host().sharing_manager();
 
   // Ensure clean state.
@@ -366,8 +364,7 @@ IN_PROC_BROWSER_TEST_F(GlicDelegatingSharingManagerBrowserTest,
 
   // Setup manager 1.
   GetTabListInterface()->ActivateTab(handles[0]);
-  auto* instance1 = OpenGlicForActiveTab();
-  ASSERT_TRUE(instance1);
+  ASSERT_OK_AND_ASSIGN(auto* instance1, OpenGlicForActiveTab());
   GlicSharingManager& manager1 = instance1->host().sharing_manager();
 
   // Pin tabs 0, 1, 2.
@@ -379,8 +376,7 @@ IN_PROC_BROWSER_TEST_F(GlicDelegatingSharingManagerBrowserTest,
 
   // Setup manager 2.
   GetTabListInterface()->ActivateTab(handles[3]);
-  auto* instance2 = OpenGlicForActiveTab();
-  ASSERT_TRUE(instance2);
+  ASSERT_OK_AND_ASSIGN(auto* instance2, OpenGlicForActiveTab());
   GlicSharingManager& manager2 = instance2->host().sharing_manager();
 
   // Ensure separate instances.
@@ -456,8 +452,7 @@ IN_PROC_BROWSER_TEST_F(GlicDelegatingSharingManagerBrowserTest,
   ASSERT_EQ(handles.size(), 3u);
 
   // Setup manager.
-  auto* instance = OpenGlicForActiveTab();
-  ASSERT_TRUE(instance);
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
   GlicSharingManager& manager = instance->host().sharing_manager();
 
   // Pin tabs 0, 1.

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_TEST_SUPPORT_NEW_GLIC_API_TEST_H_
 #define CHROME_BROWSER_GLIC_TEST_SUPPORT_NEW_GLIC_API_TEST_H_
 
+#include "base/test/gmock_expected_support.h"
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
@@ -226,7 +227,7 @@ class GlicApiBrowserTestMixin : public GlicBrowserTestMixin<T> {
     defined(MEMORY_SANITIZER)
     GTEST_SKIP() << "AssertAllTestsRegistered not processed for slow binaries.";
 #else
-    ASSERT_TRUE(Base::OpenGlicForActiveTab());
+    ASSERT_OK(Base::OpenGlicForActiveTab());
     ExecuteJsTest();
     ASSERT_TRUE(step_data());
     ASSERT_TRUE(step_data()->is_list());
