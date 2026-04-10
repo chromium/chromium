@@ -1804,6 +1804,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.DefaultBrowserPromo.Outcome.FRE"
+    enum="AndroidDefaultBrowserPromoOutcomeType" expires_after="2027-04-09">
+  <owner>eleanorlee@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    The final default browser state (outcome) after the user has been prompted
+    to set Chrome as the default via the First Run Experience. Recorded when the
+    Role Manager Dialog is dismissed.
+  </summary>
+</histogram>
+
 <histogram name="Android.DefaultBrowserPromo.Outcome.{CurrentState}"
     enum="AndroidDefaultBrowserPromoOutcomeType" expires_after="2026-08-30">
   <owner>lazzzis@google.com</owner>

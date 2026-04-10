@@ -47,6 +47,8 @@ public class DefaultBrowserPromoMetrics {
             return "AppMenu";
         } else if (source == DefaultBrowserPromoEntryPoint.SETTINGS) {
             return "Settings";
+        } else if (source == DefaultBrowserPromoEntryPoint.FRE) {
+            return "FRE";
         }
         return "";
     }

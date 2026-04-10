@@ -144,15 +144,25 @@ public class DefaultBrowserPromoManagerTest {
     @EnableFeatures({
         ChromeFeatureList.DEFAULT_BROWSER_PROMO_ENTRY_POINT + ":show_app_menu_item/true"
     })
-    public void testRecordOutcomeWithSource() {
-        // Create a Manager with a specific source ("AppMenu").
+    public void testRecordOutcomeWithAppMenuSource() {
+        runOutcomeTest(
+                DefaultBrowserPromoEntryPoint.APP_MENU,
+                "Android.DefaultBrowserPromo.Outcome.AppMenu");
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.DEFAULT_BROWSER_PROMO_FRE})
+    public void testRecordOutcomeWithFRESource() {
+        runOutcomeTest(
+                DefaultBrowserPromoEntryPoint.FRE, "Android.DefaultBrowserPromo.Outcome.FRE");
+    }
+
+    /** Helper to run outcome tests for different entry points. */
+    private void runOutcomeTest(
+            @DefaultBrowserPromoEntryPoint int source, String expectedHistogram) {
         var manager =
                 new DefaultBrowserPromoManager(
-                        mActivity,
-                        mWindowAndroid,
-                        mImpressionCounter,
-                        mStateProvider,
-                        DefaultBrowserPromoEntryPoint.APP_MENU);
+                        mActivity, mWindowAndroid, mImpressionCounter, mStateProvider, source);
 
         int currentState = DefaultBrowserState.OTHER_DEFAULT;
         int outcomeState = DefaultBrowserState.CHROME_DEFAULT;
@@ -164,23 +174,23 @@ public class DefaultBrowserPromoManagerTest {
 
         var histogram =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                "Android.DefaultBrowserPromo.Outcome.AppMenu", outcomeState)
+                        .expectIntRecord(expectedHistogram, outcomeState)
                         .build();
 
         // Trigger the promo.
         manager.promoByRoleManager();
 
-        // 6. Capture the callback.
+        // Capture the callback passed to WindowAndroid.
         ArgumentCaptor<IntentCallback> onShowCallbackCaptor =
                 ArgumentCaptor.forClass(IntentCallback.class);
         verify(mWindowAndroid)
                 .showCancelableIntent(eq(mIntent), onShowCallbackCaptor.capture(), any());
 
-        // Trigger the callback. We close the dialog and the histogram records the outcome.
+        // Trigger the callback since mWindowAndroid is a mock. We close the dialog and the
+        // histogram records the outcome.
         onShowCallbackCaptor.getValue().onIntentCompleted(1, null);
 
-        histogram.assertExpected("AppMenu specific outcome should be recorded");
+        histogram.assertExpected(expectedHistogram + " should be recorded.");
     }
 
     private void testRecord(
