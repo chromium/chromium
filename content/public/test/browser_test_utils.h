@@ -657,6 +657,11 @@ void SimulateEndOfPaintHoldingOnPrimaryMainFrame(WebContents* web_contents);
 std::optional<uint64_t> GetVisitedLinkSaltForNavigation(
     NavigationHandle* navigation_handle);
 
+// Return the value set for internal_scroll_to_text_fragment in the navigation's
+// commit_params.
+std::optional<std::string> GetInternalScrollToTextFragmentForNavigation(
+    NavigationHandle* navigation_handle);
+
 // Holds down modifier keys for the duration of its lifetime and releases them
 // upon destruction. This allows simulating multiple input events without
 // simulating modifier key releases in between.

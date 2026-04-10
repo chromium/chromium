@@ -36,12 +36,9 @@ namespace send_tab_to_self {
 SendTabToSelfToolbarBubbleView* SendTabToSelfToolbarBubbleView::CreateBubble(
     BrowserWindowInterface& browser,
     views::BubbleAnchor anchor,
-    const SendTabToSelfEntry& entry,
-    base::OnceCallback<base::WeakPtr<content::NavigationHandle>(
-        NavigateParams*)> navigate_callback) {
+    const SendTabToSelfEntry& entry) {
   SendTabToSelfToolbarBubbleView* bubble_view =
-      new SendTabToSelfToolbarBubbleView(browser, anchor, entry,
-                                         std::move(navigate_callback));
+      new SendTabToSelfToolbarBubbleView(browser, anchor, entry);
   // The widget is owned by the views system.
   views::Widget* widget =
       views::BubbleDialogDelegateView::CreateBubble(bubble_view);
@@ -54,11 +51,8 @@ SendTabToSelfToolbarBubbleView::~SendTabToSelfToolbarBubbleView() = default;
 SendTabToSelfToolbarBubbleView::SendTabToSelfToolbarBubbleView(
     BrowserWindowInterface& browser,
     views::BubbleAnchor anchor,
-    const SendTabToSelfEntry& entry,
-    base::OnceCallback<base::WeakPtr<content::NavigationHandle>(
-        NavigateParams*)> navigate_callback)
+    const SendTabToSelfEntry& entry)
     : views::BubbleDialogDelegateView(anchor, views::BubbleBorder::TOP_RIGHT),
-      navigate_callback_(std::move(navigate_callback)),
       browser_(browser),
       entry_(entry) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
@@ -132,8 +126,7 @@ SendTabToSelfToolbarBubbleView::SendTabToSelfToolbarBubbleView(
 void SendTabToSelfToolbarBubbleView::OpenInNewTab() {
   opened_ = true;
   send_tab_to_self::RecordNotificationOpened();
-  OpenEntryInNewTabWithNavigationCallback(browser_->GetProfile(), entry_,
-                                          std::move(navigate_callback_));
+  OpenEntryInNewTab(browser_->GetProfile(), entry_);
   GetWidget()->Close();
 }
 

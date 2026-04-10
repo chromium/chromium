@@ -4,46 +4,27 @@
 
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_view.h"
 
-#include <optional>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "base/test/bind.h"
-#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/test_send_tab_to_self_model.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/navigation_simulator.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/test/widget_test.h"
 
 namespace send_tab_to_self {
 
 namespace {
-
-using MockNavigateCallback = base::MockCallback<base::OnceCallback<
-    base::WeakPtr<content::NavigationHandle>(NavigateParams*)>>;
-
-MATCHER_P3(NavParamsMatch, url, disposition, window_action, "") {
-  return arg && arg->url == url && arg->disposition == disposition &&
-         arg->window_action == window_action;
-}
-
-MATCHER_P(NavParamsScrollToTextMatch, expected_text, "") {
-  return arg && arg->internal_scroll_to_text_fragment == expected_text;
-}
 
 class StubSendTabToSelfSyncService : public SendTabToSelfSyncService {
  public:
@@ -145,18 +126,17 @@ TEST_F(SendTabToSelfToolbarBubbleViewTest, ButtonNavigatesToPage) {
                            "Example Device", "sync_guid", PageContext(),
                            NavigationHistory());
 
-  MockNavigateCallback mock_callback;
-  EXPECT_CALL(mock_callback,
-              Run(NavParamsMatch(url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                 NavigateParams::WindowAction::kShowWindow)));
-
   SendTabToSelfToolbarBubbleView* bubble =
       SendTabToSelfToolbarBubbleView::CreateBubble(
           *browser(), views::BubbleAnchor(anchor_widget()->GetContentsView()),
-          entry, mock_callback.Get());
+          entry);
   views::test::WidgetDestroyedWaiter waiter(bubble->GetWidget());
   bubble->OpenInNewTab();
   waiter.Wait();
+
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  ASSERT_EQ(1, tab_strip->count());
+  EXPECT_EQ(url, tab_strip->GetActiveWebContents()->GetVisibleURL());
 }
 
 TEST_F(SendTabToSelfToolbarBubbleViewTest, ButtonNavigatesWithScrollPosition) {
@@ -167,16 +147,27 @@ TEST_F(SendTabToSelfToolbarBubbleViewTest, ButtonNavigatesWithScrollPosition) {
                            "Example Device", "sync_guid", page_context,
                            NavigationHistory());
 
-  MockNavigateCallback mock_callback;
-  EXPECT_CALL(mock_callback, Run(NavParamsScrollToTextMatch("target%20text")));
-
   SendTabToSelfToolbarBubbleView* bubble =
       SendTabToSelfToolbarBubbleView::CreateBubble(
           *browser(), views::BubbleAnchor(anchor_widget()->GetContentsView()),
-          entry, mock_callback.Get());
+          entry);
   views::test::WidgetDestroyedWaiter waiter(bubble->GetWidget());
   bubble->OpenInNewTab();
   waiter.Wait();
+
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  ASSERT_EQ(1, tab_strip->count());
+  content::WebContents* web_contents = tab_strip->GetWebContentsAt(0);
+  EXPECT_EQ(url, web_contents->GetVisibleURL());
+
+  auto simulator = content::NavigationSimulator::CreateFromPending(
+      web_contents->GetController());
+  // Text fragment for scroll position syncing gets converted according to URL
+  // Fragment Text Directive spec
+  // (https://wicg.github.io/scroll-to-text-fragment/).
+  EXPECT_EQ("target%20text",
+            content::GetInternalScrollToTextFragmentForNavigation(
+                simulator->GetNavigationHandle()));
 }
 
 TEST_F(SendTabToSelfToolbarBubbleViewScrollPositionDisabledTest,
@@ -188,16 +179,23 @@ TEST_F(SendTabToSelfToolbarBubbleViewScrollPositionDisabledTest,
                            "Example Device", "sync_guid", page_context,
                            NavigationHistory());
 
-  MockNavigateCallback mock_callback;
-  EXPECT_CALL(mock_callback, Run(NavParamsScrollToTextMatch(std::nullopt)));
-
   SendTabToSelfToolbarBubbleView* bubble =
       SendTabToSelfToolbarBubbleView::CreateBubble(
           *browser(), views::BubbleAnchor(anchor_widget()->GetContentsView()),
-          entry, mock_callback.Get());
+          entry);
   views::test::WidgetDestroyedWaiter waiter(bubble->GetWidget());
   bubble->OpenInNewTab();
   waiter.Wait();
+
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  ASSERT_EQ(1, tab_strip->count());
+  content::WebContents* web_contents = tab_strip->GetWebContentsAt(0);
+  EXPECT_EQ(url, web_contents->GetVisibleURL());
+
+  auto simulator = content::NavigationSimulator::CreateFromPending(
+      web_contents->GetController());
+  EXPECT_FALSE(content::GetInternalScrollToTextFragmentForNavigation(
+      simulator->GetNavigationHandle()));
 }
 
 }  // namespace send_tab_to_self

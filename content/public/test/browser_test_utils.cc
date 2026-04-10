@@ -832,9 +832,16 @@ void SimulateActiveStateForWidget(RenderFrameHost* frame, bool active) {
 
 std::optional<uint64_t> GetVisitedLinkSaltForNavigation(
     NavigationHandle* navigation_handle) {
-  return static_cast<NavigationRequest*>(navigation_handle)
+  return NavigationRequest::From(navigation_handle)
       ->commit_params()
       .visited_link_salt;
+}
+
+std::optional<std::string> GetInternalScrollToTextFragmentForNavigation(
+    NavigationHandle* navigation_handle) {
+  return NavigationRequest::From(navigation_handle)
+      ->commit_params()
+      .internal_scroll_to_text_fragment;
 }
 
 void WaitForLoadStopWithoutSuccessCheck(WebContents* web_contents) {
