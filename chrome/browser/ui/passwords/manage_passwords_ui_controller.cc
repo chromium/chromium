@@ -49,7 +49,6 @@
 #include "chrome/browser/ui/passwords/credential_leak_dialog_controller_impl.h"
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller_impl.h"
 #include "chrome/browser/ui/passwords/manage_passwords_auto_signin_toast_delegate.h"
-#include "chrome/browser/ui/passwords/manage_passwords_icon_view.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_leak_dialog_delegate.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
@@ -703,30 +702,6 @@ void ManagePasswordsUIController::OnLoginsRetained(
     const std::vector<password_manager::PasswordForm>& /*retained_passwords*/) {
 }
 
-void ManagePasswordsUIController::UpdateIconAndBubbleState(
-    ManagePasswordsIconView* icon) {
-  const bool is_blocklisted = IsExplicitlyBlocklisted();
-  if (IsAutomaticallyOpeningBubble() ||
-      bubble_status_ == BubbleStatus::SHOULD_POP_UP_WITH_FOCUS) {
-    // This will detach any existing bubble so OnBubbleHidden() isn't called.
-    weak_ptr_factory_.InvalidateWeakPtrs();
-    // We must display the icon before showing the bubble, as the bubble would
-    // be otherwise unanchored.
-    icon->SetState(GetState(), is_blocklisted);
-    ShowBubbleWithoutUserInteraction();
-    // If the bubble appeared then the status is updated in OnBubbleShown().
-    ClearPopUpFlagForBubble();
-  } else {
-    password_manager::ui::State state = GetState();
-    // The dialog should hide the icon.
-    if (dialog_controller_ &&
-        state == password_manager::ui::CREDENTIAL_REQUEST_STATE) {
-      state = password_manager::ui::INACTIVE_STATE;
-    }
-    icon->SetState(state, is_blocklisted);
-  }
-}
-
 void ManagePasswordsUIController::OnPasswordChangeFinishedSuccessfully() {
   // If the password change finished successfully, don't show save/update
   // bubble.
@@ -1249,29 +1224,25 @@ void ManagePasswordsUIController::UpdateBubbleAndIconVisibility() {
   if (!browser) {
     return;
   }
-  if (IsPageActionMigrated(PageActionIconType::kManagePasswords)) {
-    tabs::TabInterface* const tab_interface =
-        tabs::TabInterface::MaybeGetFromContents(web_contents());
-    // The tab interface can be null if the web contents is not a tab.
-    if (!tab_interface) {
-      return;
-    }
-    auto* const tab_features = tab_interface->GetTabFeatures();
-    CHECK(tab_features);
-    // Retrieve the controller responsible for managing the page action's
-    // visibility and state.
-    auto* const controller =
-        tab_features->manage_passwords_page_action_controller();
-    // Get the action item associated with the passwords UI.
-    actions::ActionItem* passwords_action_item =
-        actions::ActionManager::Get().FindAction(
-            kActionShowPasswordsBubbleOrPage,
-            browser->GetActions()->root_action_item());
-    UpdatePasswordIconAndBubbleState(controller, passwords_action_item);
-  } else {
-    browser->GetBrowserForMigrationOnly()->window()->UpdatePageActionIcon(
-        PageActionIconType::kManagePasswords);
+
+  tabs::TabInterface* const tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  // The tab interface can be null if the web contents is not a tab.
+  if (!tab_interface) {
+    return;
   }
+  auto* const tab_features = tab_interface->GetTabFeatures();
+  CHECK(tab_features);
+  // Retrieve the controller responsible for managing the page action's
+  // visibility and state.
+  auto* const controller =
+      tab_features->manage_passwords_page_action_controller();
+  // Get the action item associated with the passwords UI.
+  actions::ActionItem* passwords_action_item =
+      actions::ActionManager::Get().FindAction(
+          kActionShowPasswordsBubbleOrPage,
+          browser->GetActions()->root_action_item());
+  UpdatePasswordIconAndBubbleState(controller, passwords_action_item);
 }
 
 void ManagePasswordsUIController::UpdatePasswordIconAndBubbleState(

@@ -91,9 +91,7 @@ ManagePasswordsPageActionController::GetManagePasswordsTooltipText(
 
 ManagePasswordsPageActionController::ManagePasswordsPageActionController(
     page_actions::PageActionController& page_action_controller)
-    : page_action_controller_(page_action_controller) {
-  CHECK(IsPageActionMigrated(PageActionIconType::kManagePasswords));
-}
+    : page_action_controller_(page_action_controller) {}
 
 ManagePasswordsPageActionController::~ManagePasswordsPageActionController() =
     default;

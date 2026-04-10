@@ -18,8 +18,6 @@ const base::FeatureParam<bool>* GetPageActionsMigrationParam(
       return &features::kPageActionsMigrationZoom;
     case PageActionIconType::kFileSystemAccess:
       return &features::kPageActionsMigrationFileSystemAccess;
-    case PageActionIconType::kManagePasswords:
-      return &features::kPageActionsMigrationManagePasswords;
     case PageActionIconType::kCookieControls:
       return &features::kPageActionsMigrationCookieControls;
     case PageActionIconType::kMandatoryReauth:
@@ -72,6 +70,7 @@ bool IsPageActionMigrated(PageActionIconType page_action) {
     case PageActionIconType::kPriceInsights:
     case PageActionIconType::kDiscounts:
     case PageActionIconType::kFederation:
+    case PageActionIconType::kManagePasswords:
       return true;
     default:
       break;

@@ -32,7 +32,6 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_params.h"
 #include "chrome/browser/ui/views/page_action/zoom_view.h"
-#include "chrome/browser/ui/views/passwords/manage_passwords_icon_views.h"
 #include "chrome/browser/ui/views/sharing/sharing_dialog_view.h"
 #include "chrome/browser/ui/views/sharing/sharing_icon_view.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_icon_view.h"
@@ -114,13 +113,6 @@ void PageActionIconController::Init(const PageActionIconParams& params,
             type, std::make_unique<IntentPickerView>(
                       params.browser, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate));
-        break;
-      case PageActionIconType::kManagePasswords:
-        DCHECK(params.command_updater);
-        add_page_action_icon(
-            type, std::make_unique<ManagePasswordsIconViews>(
-                      params.command_updater, params.icon_label_bubble_delegate,
-                      params.page_action_icon_delegate, params.browser));
         break;
       case PageActionIconType::kMandatoryReauth:
         add_page_action_icon(

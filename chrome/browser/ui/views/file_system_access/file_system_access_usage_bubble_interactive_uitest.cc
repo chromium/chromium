@@ -24,9 +24,7 @@
 class FileSystemAccessUsageBubbleInteractiveUiTest : public DialogBrowserTest {
  public:
   FileSystemAccessUsageBubbleInteractiveUiTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPageActionsMigration,
-        {{features::kPageActionsMigrationManagePasswords.name, "true"}});
+    scoped_feature_list_.InitAndEnableFeature(features::kPageActionsMigration);
   }
 
   ~FileSystemAccessUsageBubbleInteractiveUiTest() override = default;

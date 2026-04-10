@@ -54,7 +54,6 @@ inline constexpr int kMaxNumberOfTimesBiometricAuthForFillingPromoWillBeShown =
 class AccountChooserPrompt;
 class AutoSigninFirstRunPrompt;
 class CredentialLeakPrompt;
-class ManagePasswordsIconView;
 class CredentialLeakDialogController;
 class CredentialManagerDialogController;
 class PasswordBaseDialogController;
@@ -135,10 +134,6 @@ class ManagePasswordsUIController
   void OnLoginsRetained(password_manager::PasswordStoreInterface* store,
                         const std::vector<password_manager::PasswordForm>&
                             retained_passwords) override;
-
-  // Set the state of the Omnibox icon, and possibly show the associated bubble
-  // without user interaction.
-  virtual void UpdateIconAndBubbleState(ManagePasswordsIconView* icon);
 
   // Called if the password change flow finishes successfully. It ensures the
   // correct state after the flow.

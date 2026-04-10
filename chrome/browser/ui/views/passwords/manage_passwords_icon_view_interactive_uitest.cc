@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
-#include "chrome/browser/ui/views/passwords/manage_passwords_icon_views.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -32,14 +31,10 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"
 
-class ManagePasswordsIconViewTest : public ManagePasswordsTest,
-                                    public ::testing::WithParamInterface<bool> {
+class ManagePasswordsIconViewTest : public ManagePasswordsTest {
  public:
   ManagePasswordsIconViewTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPageActionsMigration,
-        {{features::kPageActionsMigrationManagePasswords.name,
-          IsMigrationEnabled() ? "true" : "false"}});
+    scoped_feature_list_.InitAndEnableFeature(features::kPageActionsMigration);
   }
 
   ManagePasswordsIconViewTest(const ManagePasswordsIconViewTest&) = delete;
@@ -61,12 +56,6 @@ class ManagePasswordsIconViewTest : public ManagePasswordsTest,
 
   std::u16string GetTooltipText() { return GetIcon()->GetTooltipText(); }
 
-  bool IsMigrationEnabled() const { return GetParam(); }
-
-  static std::string GetTestSuffix(const testing::TestParamInfo<bool>& info) {
-    return info.param ? "MigrationOn" : "MigrationOff";
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -85,12 +74,12 @@ class ManagePasswordsIconViewTestToolbarPinningOnly
   }
 };
 
-IN_PROC_BROWSER_TEST_P(ManagePasswordsIconViewTest, DefaultStateIsInactive) {
+IN_PROC_BROWSER_TEST_F(ManagePasswordsIconViewTest, DefaultStateIsInactive) {
   EXPECT_EQ(password_manager::ui::INACTIVE_STATE, ViewState());
   EXPECT_FALSE(GetIcon()->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_P(ManagePasswordsIconViewTest, PendingState) {
+IN_PROC_BROWSER_TEST_F(ManagePasswordsIconViewTest, PendingState) {
   SetupPendingPassword();
   EXPECT_EQ(password_manager::ui::PENDING_PASSWORD_STATE, ViewState());
   EXPECT_TRUE(GetIcon()->GetVisible());
@@ -98,7 +87,7 @@ IN_PROC_BROWSER_TEST_P(ManagePasswordsIconViewTest, PendingState) {
   EXPECT_EQ(std::u16string(), GetTooltipText());
 }
 
-IN_PROC_BROWSER_TEST_P(ManagePasswordsIconViewTest, ManageState) {
+IN_PROC_BROWSER_TEST_F(ManagePasswordsIconViewTest, ManageState) {
   SetupManagingPasswords();
   EXPECT_EQ(password_manager::ui::MANAGE_STATE, ViewState());
   EXPECT_TRUE(GetIcon()->GetVisible());
@@ -106,7 +95,7 @@ IN_PROC_BROWSER_TEST_P(ManagePasswordsIconViewTest, ManageState) {
             GetTooltipText());
 }
 
-IN_PROC_BROWSER_TEST_P(ManagePasswordsIconViewTest, CloseOnClick) {
+IN_PROC_BROWSER_TEST_F(ManagePasswordsIconViewTest, CloseOnClick) {
   SetupPendingPassword();
   EXPECT_TRUE(GetIcon()->GetVisible());
   views::test::InteractionTestUtilSimulatorViews::PressButton(
@@ -116,7 +105,7 @@ IN_PROC_BROWSER_TEST_P(ManagePasswordsIconViewTest, CloseOnClick) {
   content::RunAllPendingInMessageLoop();
 }
 
-IN_PROC_BROWSER_TEST_P(ManagePasswordsIconViewTestToolbarPinningOnly,
+IN_PROC_BROWSER_TEST_F(ManagePasswordsIconViewTestToolbarPinningOnly,
                        ShowPasswordsBubbleOrPage) {
   const GURL passwords_url = GURL("chrome://password-manager/");
   PinnedToolbarActionsModel::Get(browser()->profile())
@@ -149,13 +138,3 @@ IN_PROC_BROWSER_TEST_P(ManagePasswordsIconViewTestToolbarPinningOnly,
       button, ui::test::InteractionTestUtil::InputType::kDontCare);
   EXPECT_EQ(GetActiveWebContents()->GetVisibleURL(), passwords_url);
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ManagePasswordsIconViewTest,
-                         ::testing::Bool(),
-                         &ManagePasswordsIconViewTest::GetTestSuffix);
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ManagePasswordsIconViewTestToolbarPinningOnly,
-                         ::testing::Bool(),
-                         &ManagePasswordsIconViewTest::GetTestSuffix);

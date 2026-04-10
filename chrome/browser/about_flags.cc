@@ -1114,7 +1114,6 @@ const FeatureEntry::FeatureParam kPageActionsMigrationParams[] = {
     {"filled_card_information", "true"},
     {"intent_picker", "true"},
     {"lens_overlay_homework", "true"},
-    {"manage_passwords", "true"},
     {"mandatory_reauth", "true"},
     {"reading_mode", "true"},
     {"save_payments", "true"},

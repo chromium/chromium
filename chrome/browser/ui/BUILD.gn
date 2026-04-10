@@ -4190,8 +4190,6 @@ static_library("ui") {
       "views/passwords/credentials_item_view.h",
       "views/passwords/manage_passwords_details_view.cc",
       "views/passwords/manage_passwords_details_view.h",
-      "views/passwords/manage_passwords_icon_views.cc",
-      "views/passwords/manage_passwords_icon_views.h",
       "views/passwords/manage_passwords_list_view.cc",
       "views/passwords/manage_passwords_list_view.h",
       "views/passwords/manage_passwords_page_action_controller.cc",
