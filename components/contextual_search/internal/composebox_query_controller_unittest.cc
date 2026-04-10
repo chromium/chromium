@@ -4989,6 +4989,45 @@ TEST_F(ComposeboxQueryControllerTest, CreateSearchUrl_IncludesUnresolvedUrl) {
 }
 
 TEST_F(ComposeboxQueryControllerTest,
+       UnresolvedUrl_GeneratesNewUuidAndContextId) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow (PDF).
+  const base::UnguessableToken file_token_1 = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token_1,
+                         /*file_data=*/std::vector<uint8_t>());
+  WaitForFileUpload(file_token_1, lens::MimeType::kPdf);
+
+  // Act: Start the file upload flow (URL).
+  const base::UnguessableToken file_token_2 = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kUnknown;
+  input_data->page_url = GURL("https://example.com");
+  controller().StartFileUploadFlow(file_token_2, std::move(input_data),
+                                   /*image_options=*/std::nullopt);
+
+  WaitForFileUpload(file_token_2, lens::MimeType::kUnknown);
+
+  // Assert: Verify that request IDs have different UUIDs and context IDs.
+  auto* file_info_1 = controller().GetFileInfoForTesting(file_token_1);
+  auto* file_info_2 = controller().GetFileInfoForTesting(file_token_2);
+
+  ASSERT_TRUE(file_info_1);
+  ASSERT_TRUE(file_info_2);
+  ASSERT_TRUE(file_info_1->request_id.has_value());
+  ASSERT_TRUE(file_info_2->request_id.has_value());
+
+  EXPECT_NE(file_info_1->request_id->uuid(), file_info_2->request_id->uuid());
+  EXPECT_NE(file_info_1->request_id->context_id(),
+            file_info_2->request_id->context_id());
+  EXPECT_FALSE(file_info_2->request_id->has_chrome_tab_data());
+  EXPECT_TRUE(file_info_2->request_id->is_implicit_upload());
+}
+
+TEST_F(ComposeboxQueryControllerTest,
        CreateSearchUrl_IncludesMultipleUnresolvedUrls) {
   // Act: Start the session.
   controller().InitializeIfNeeded();
@@ -5052,6 +5091,57 @@ TEST_F(ComposeboxQueryControllerTest,
             "https://example2.com/");
   EXPECT_EQ(added_inputs->turn_title_thumbnail(1).icon().type(),
             lens::AimIconType::ICON_TYPE_LINK);
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       CreateSearchUrl_IncludesTabAndUnresolvedUrl) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow (PDF).
+  const base::UnguessableToken file_token_1 = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token_1,
+                         /*file_data=*/std::vector<uint8_t>());
+  WaitForFileUpload(file_token_1, lens::MimeType::kPdf);
+
+  // Act: Start the file upload flow (URL).
+  const base::UnguessableToken file_token_2 = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kUnknown;
+  input_data->page_url = GURL("https://example.com");
+  controller().StartFileUploadFlow(file_token_2, std::move(input_data),
+                                   /*image_options=*/std::nullopt);
+
+  WaitForFileUpload(file_token_2, lens::MimeType::kUnknown);
+
+  // Act: Create search URL.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "hello";
+  search_url_request_info->file_tokens.push_back(file_token_1);
+  search_url_request_info->file_tokens.push_back(file_token_2);
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL search_url = url_future.Take();
+
+  // Verify cinpts param.
+  lens::LensOverlayContextualInputs contextual_inputs =
+      GetContextualInputsFromUrl(search_url.spec());
+  EXPECT_EQ(contextual_inputs.inputs_size(), 2);
+
+  // Verify AddedInputs param.
+  std::optional<lens::AddedInputs> added_inputs =
+      GetAddedInputsFromUrl(search_url);
+  ASSERT_TRUE(added_inputs.has_value());
+  EXPECT_EQ(added_inputs->added_inputs_size(), 1);
+  EXPECT_EQ(added_inputs->turn_title_thumbnail_size(), 1);
+  EXPECT_EQ(added_inputs->turn_title_thumbnail(0).title(),
+            "https://example.com/");
 }
 
 TEST_F(ComposeboxQueryControllerTest,
