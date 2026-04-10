@@ -478,6 +478,34 @@ IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, CommandDuplicateSelected) {
             GetTabStripStateString(tab_strip_model));
 }
 
+IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest,
+                       TestCloseTabDuringMoveOperation) {
+  TabStripModel* const tab_strip_model = browser()->tab_strip_model();
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tab_strip_model, 2, 0, {0}));
+  ASSERT_EQ(2, tab_strip_model->count());
+
+  class TabStripModelCloseWebContentsOnChangeObserver
+      : public TabStripModelObserver {
+   public:
+    void OnTabStripModelChanged(
+        TabStripModel* tab_strip_model,
+        const TabStripModelChange& change,
+        const TabStripSelectionChange& selection) override {
+      if (change.type() == TabStripModelChange::Type::kMoved) {
+        tab_strip_model->CloseWebContentsAt(1,
+                                            TabCloseTypes::CLOSE_USER_GESTURE);
+      }
+    }
+  };
+  TabStripModelCloseWebContentsOnChangeObserver close_tab_observer;
+  tab_strip_model->AddObserver(&close_tab_observer);
+
+  EXPECT_DEATH_IF_SUPPORTED(tab_strip_model->MoveWebContentsAt(0, 1, false),
+                            "Check failed");
+  tab_strip_model->RemoveObserver(&close_tab_observer);
+}
+
 class TabStripModelTestTabGroupEntryPointsEnabled
     : public TabStripModelBrowserTest {
  public:
