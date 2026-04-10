@@ -8180,6 +8180,7 @@ data/manifest/sample-manifest.json
 data/manifest/sandboxed.html
 data/manifest/sandboxed.html.mock-http-headers
 data/manifest/script.js
+data/media/aaudio_freezer_test.html
 data/media/autoplay/autoplay-disabled.html
 data/media/autoplay/autoplay-enabled.html
 data/media/bear-320x240-audio-only.webm

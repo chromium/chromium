@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AAudio Freezer Test</title>
+</head>
+<body>
+    <h1>AAudio Freezer Test</h1>
+    <p>This page automatically starts WebAudio to trigger MmapPlayback wake lock.</p>
+    <script>
+        window.onload = function() {
+            var context = new AudioContext();
+            var oscillator = context.createOscillator();
+            oscillator.connect(context.destination);
+            oscillator.start();
+            context.resume().then(() => {
+                console.log("AudioContext state: " + context.state);
+                document.title = "Playing";
+            });
+        };
+    </script>
+</body>
+</html>

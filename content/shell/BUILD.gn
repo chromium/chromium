@@ -1093,6 +1093,20 @@ mojom("content_browsertests_mojom") {
   ]
 }
 
+if (is_android) {
+  script_test("content_shell_freeze_test") {
+    testonly = true
+    script = "//content/shell/tools/aaudio_freezer_integration_test.py"
+    data_deps = [
+      ":content_shell",
+      "//testing:test_scripts_shared",
+      "//build/android:devil_chromium_py",
+      "//build/android:test_runner_py",
+      "//tools/android/forwarder2",
+    ]
+  }
+}
+
 group("content_shell_crash_test") {
   testonly = true
   data_deps = [
