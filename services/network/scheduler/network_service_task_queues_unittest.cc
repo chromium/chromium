@@ -35,7 +35,7 @@ class NetworkServiceTaskQueuesTest : public testing::Test {
                             CreateNetworkServiceTaskPrioritySettings())
                         .Build())),
         queues_(sequence_manager_.get()) {
-    sequence_manager_->SetDefaultTaskRunner(queues_.GetDefaultTaskRunner());
+    sequence_manager_->SetDefaultTaskQueue(queues_.GetDefaultTaskQueue());
   }
 
   std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager_;

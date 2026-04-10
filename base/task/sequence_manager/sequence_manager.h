@@ -217,10 +217,17 @@ class BASE_EXPORT SequenceManager {
   // returns nullopt.
   virtual std::optional<WakeUp> GetNextDelayedWakeUp() const = 0;
 
-  // Sets the SingleThreadTaskRunner that will be returned by
+  // Sets the TaskQueue whose task runner will be returned by
   // SingleThreadTaskRunner::GetCurrentDefault on the main thread.
+  virtual void SetDefaultTaskQueue(TaskQueue* task_queue) = 0;
+
+  // Directly sets the SingleThreadTaskRunner that will be returned by
+  // SingleThreadTaskRunner::GetCurrentDefault on the main thread. Use this only
+  // when setting a task runner that's not a TaskQueue's default, e.g. one with
+  // a custom task type.
   virtual void SetDefaultTaskRunner(
-      scoped_refptr<SingleThreadTaskRunner> task_runner) = 0;
+      scoped_refptr<SingleThreadTaskRunner> task_runner,
+      TaskQueue::QueuePriority priority) = 0;
 
   // Removes all canceled delayed tasks, and considers resizing to fit all
   // internal queues.

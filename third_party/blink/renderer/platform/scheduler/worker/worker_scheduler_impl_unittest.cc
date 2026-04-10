@@ -141,7 +141,7 @@ class TaskEnvironmentWithWorkerThreadScheduler
         ThreadType::kTestThread, sequence_manager(), nullptr /* proxy */);
     scheduler_->Init();
     scheduler_->AttachToCurrentThread();
-    DeferredInitFromSubclass(scheduler_->DefaultTaskRunner());
+    DeferredInitFromSubclass(scheduler_->DefaultTaskQueue()->GetTaskQueue());
   }
 
   std::unique_ptr<WorkerThreadSchedulerForTest> scheduler_;

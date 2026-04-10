@@ -217,6 +217,7 @@ class FixtureWithMockMessagePump : public Fixture {
 
     auto pump = std::make_unique<MockTimeMessagePump>(&mock_clock_);
     pump_ = pump.get();
+    auto default_priority = priority_settings.default_priority();
     auto settings = SequenceManager::Settings::Builder()
                         .SetMessagePumpType(MessagePumpType::DEFAULT)
                         .SetTickClock(mock_tick_clock())
@@ -226,7 +227,8 @@ class FixtureWithMockMessagePump : public Fixture {
         std::move(pump), std::move(settings));
     MessagePump::InitializeFeatures();
     ThreadControllerWithMessagePumpImpl::InitializeFeatures();
-    sequence_manager_->SetDefaultTaskRunner(MakeRefCounted<NullTaskRunner>());
+    sequence_manager_->SetDefaultTaskRunner(MakeRefCounted<NullTaskRunner>(),
+                                            default_priority);
     start_time_ = mock_clock_.NowTicks();
 
     // The SequenceManager constructor calls Now() once for setting up
@@ -5233,7 +5235,7 @@ class SequenceManagerRunOrPostTaskTest : public testing::Test {
         sequence_manager_->CreateTaskQueue(TaskQueue::Spec(QueueName::TEST_TQ));
     other_queue_ =
         sequence_manager_->CreateTaskQueue(TaskQueue::Spec(QueueName::TEST_TQ));
-    sequence_manager_->SetDefaultTaskRunner(queue_->task_runner());
+    sequence_manager_->SetDefaultTaskQueue(queue_.get());
 
     thread_.Start();
   }
@@ -5755,7 +5757,7 @@ TEST(
           MessagePump::Create(MessagePumpType::DEFAULT));
   auto queue = sequence_manager->CreateTaskQueue(
       sequence_manager::TaskQueue::Spec(QueueName::DEFAULT_TQ));
-  sequence_manager->SetDefaultTaskRunner(queue->task_runner());
+  sequence_manager->SetDefaultTaskQueue(queue.get());
 
   scoped_refptr<SingleThreadTaskRunner> expected_task_runner =
       SingleThreadTaskRunner::GetCurrentDefault();

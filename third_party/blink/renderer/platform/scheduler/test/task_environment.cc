@@ -18,7 +18,8 @@ TaskEnvironmentWithNonMainThreadSchedulerHelper::
   scheduler_helper_ = std::make_unique<scheduler::NonMainThreadSchedulerHelper>(
       sequence_manager(), nullptr, TaskType::kInternalTest);
   scheduler_helper_->AttachToCurrentThread();
-  DeferredInitFromSubclass(scheduler_helper_->DefaultTaskRunner());
+  DeferredInitFromSubclass(
+      scheduler_helper_->DefaultNonMainThreadTaskQueue()->GetTaskQueue());
 }
 
 }  // namespace blink::test

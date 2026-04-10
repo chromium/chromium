@@ -37,7 +37,8 @@ class PLATFORM_EXPORT SchedulerHelper
   ~SchedulerHelper() override;
 
   // Must be called before invoking AttachToCurrentThread().
-  void InitDefaultTaskRunner(
+  void InitDefaultTaskQueue(
+      base::sequence_manager::TaskQueue* queue,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // Must be invoked before running any task from the scheduler, on the thread

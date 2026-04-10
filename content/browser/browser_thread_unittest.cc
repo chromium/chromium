@@ -49,7 +49,8 @@ class SequenceManagerThreadDelegate : public base::Thread::Delegate {
     default_task_runner_ =
         browser_ui_thread_scheduler->GetHandle()->GetDefaultTaskRunner();
 
-    ui_sequence_manager_->SetDefaultTaskRunner(default_task_runner_);
+    ui_sequence_manager_->SetDefaultTaskQueue(
+        browser_ui_thread_scheduler->GetDefaultTaskQueue());
 
     BrowserTaskExecutor::CreateForTesting(
         std::move(browser_ui_thread_scheduler),
@@ -267,8 +268,7 @@ class BrowserThreadWithCustomSchedulerTest : public testing::Test {
       std::unique_ptr<BrowserUIThreadScheduler> browser_ui_thread_scheduler =
           BrowserUIThreadScheduler::CreateForTesting(sequence_manager());
       DeferredInitFromSubclass(
-          browser_ui_thread_scheduler->GetHandle()->GetBrowserTaskRunner(
-              QueueType::kDefault));
+          browser_ui_thread_scheduler->GetDefaultTaskQueue());
       BrowserTaskExecutor::CreateForTesting(
           std::move(browser_ui_thread_scheduler),
           std::make_unique<BrowserIOThreadDelegate>());

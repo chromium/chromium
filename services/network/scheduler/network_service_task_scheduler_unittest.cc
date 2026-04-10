@@ -47,7 +47,7 @@ class NetworkServiceTaskEnvironment : public base::test::TaskEnvironment {
       : base::test::TaskEnvironment(std::move(scoped_task_environment)) {
     scheduler_ =
         NetworkServiceTaskScheduler::CreateForTesting(sequence_manager());
-    DeferredInitFromSubclass(scheduler_->GetDefaultTaskRunner());
+    DeferredInitFromSubclass(scheduler_->GetDefaultTaskQueue());
   }
 
   std::unique_ptr<NetworkServiceTaskScheduler> scheduler_;

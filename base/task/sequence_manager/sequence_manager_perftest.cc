@@ -159,7 +159,7 @@ class SequenceManagerWithMessagePumpPerfTestDelegate
     // runner.
     default_task_queue_ =
         GetManager()->CreateTaskQueue(TaskQueue::Spec(QueueName::DEFAULT_TQ));
-    GetManager()->SetDefaultTaskRunner(default_task_queue_->task_runner());
+    GetManager()->SetDefaultTaskQueue(default_task_queue_.get());
   }
 
   ~SequenceManagerWithMessagePumpPerfTestDelegate() override { ShutDown(); }

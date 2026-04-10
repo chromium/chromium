@@ -27,8 +27,9 @@ MainThreadSchedulerHelper::MainThreadSchedulerHelper(
                            MainThreadTaskQueue::QueueType::kControl)
                            .SetShouldNotifyObservers(false))) {
   control_task_queue_->SetQueuePriority(TaskPriority::kControlPriority);
-  InitDefaultTaskRunner(default_task_queue_->CreateTaskRunner(
-      TaskType::kMainThreadTaskQueueDefault));
+  InitDefaultTaskQueue(default_task_queue_->GetTaskQueue(),
+                       default_task_queue_->CreateTaskRunner(
+                           TaskType::kMainThreadTaskQueueDefault));
 
   sequence_manager_->EnableCrashKeys("blink_scheduler_async_stack");
 }

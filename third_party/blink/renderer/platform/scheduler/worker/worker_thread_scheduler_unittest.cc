@@ -150,7 +150,7 @@ class TaskEnvironmentWithWorkerThreadScheduler
         sequence_manager(), GetMockTickClock(), timeline_);
     scheduler_->Init();
     scheduler_->AttachToCurrentThread();
-    DeferredInitFromSubclass(scheduler_->DefaultTaskRunner());
+    DeferredInitFromSubclass(scheduler_->DefaultTaskQueue()->GetTaskQueue());
   }
 
   ~TaskEnvironmentWithWorkerThreadScheduler() override {

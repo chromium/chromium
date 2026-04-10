@@ -1007,9 +1007,15 @@ SequenceManagerImpl::GetCurrentBestEffortTaskRunner(
   return nullptr;
 }
 
+void SequenceManagerImpl::SetDefaultTaskQueue(TaskQueue* task_queue) {
+  SetDefaultTaskRunner(task_queue->task_runner(),
+                       task_queue->GetQueuePriority());
+}
+
 void SequenceManagerImpl::SetDefaultTaskRunner(
-    scoped_refptr<SingleThreadTaskRunner> task_runner) {
-  controller_->SetDefaultTaskRunner(task_runner);
+    scoped_refptr<SingleThreadTaskRunner> task_runner,
+    TaskQueue::QueuePriority priority) {
+  controller_->SetDefaultTaskRunner(std::move(task_runner));
 }
 
 const TickClock* SequenceManagerImpl::GetTickClock() const {
@@ -1091,12 +1097,8 @@ CallbackListSubscription SequenceManagerImpl::RegisterOnNextIdleCallback(
       std::move(on_next_idle_callback));
 }
 
-void SequenceManagerImpl::SetTaskRunner(
-    scoped_refptr<SingleThreadTaskRunner> task_runner) {
-  controller_->SetDefaultTaskRunner(task_runner);
-}
-
-scoped_refptr<SingleThreadTaskRunner> SequenceManagerImpl::GetTaskRunner() {
+scoped_refptr<SingleThreadTaskRunner>
+SequenceManagerImpl::GetDefaultTaskRunner() {
   return controller_->GetDefaultTaskRunner();
 }
 

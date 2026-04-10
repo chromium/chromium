@@ -66,7 +66,7 @@ ThreadManager::ThreadManager(SequenceManagerFuzzerProcessor* processor)
   TaskQueue::Spec spec = TaskQueue::Spec(QueueName::DEFAULT_TQ);
   task_queues_.emplace_back(
       MakeRefCounted<TaskQueueWithVoters>(manager_->CreateTaskQueue(spec)));
-  manager_->SetDefaultTaskRunner(task_queues_.back()->queue->task_runner());
+  manager_->SetDefaultTaskQueue(task_queues_.back()->queue.get());
 }
 
 ThreadManager::~ThreadManager() {

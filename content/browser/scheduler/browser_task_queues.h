@@ -176,6 +176,10 @@ class CONTENT_EXPORT BrowserTaskQueues {
 
   void AddTaskObserver(base::TaskObserver* task_observer);
 
+  base::sequence_manager::TaskQueue* GetDefaultTaskQueue() const {
+    return GetBrowserTaskQueue(QueueType::kDefault);
+  }
+
  private:
   struct QueueData {
    public:
@@ -200,10 +204,6 @@ class CONTENT_EXPORT BrowserTaskQueues {
 
   base::sequence_manager::TaskQueue* GetBrowserTaskQueue(QueueType type) const {
     return queue_data_[static_cast<size_t>(type)].task_queue.get();
-  }
-
-  base::sequence_manager::TaskQueue* GetDefaultTaskQueue() const {
-    return GetBrowserTaskQueue(QueueType::kDefault);
   }
 
   std::array<scoped_refptr<base::SingleThreadTaskRunner>, kNumQueueTypes>

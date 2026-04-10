@@ -132,7 +132,7 @@ bool TaskQueueImpl::GuardedTaskPoster::RunOrPostTask(PostedTask task) {
   // `IsQueueEnabledFromAnyThread()`. That won't prevent the task from running.
   if (sync_work_auth.IsValid() && outer_->IsQueueEnabledFromAnyThread()) {
     RunTaskSynchronously(outer_->associated_thread_.get(),
-                         outer_->sequence_manager_->GetTaskRunner(),
+                         outer_->sequence_manager_->GetDefaultTaskRunner(),
                          std::move(task.callback));
     return true;
   }

@@ -53,7 +53,7 @@ void BrowserIOThreadDelegate::BindToCurrentThread() {
   DCHECK(sequence_manager_);
   sequence_manager_->BindToMessagePump(
       base::MessagePump::Create(base::MessagePumpType::IO));
-  sequence_manager_->SetDefaultTaskRunner(GetDefaultTaskRunner());
+  sequence_manager_->SetDefaultTaskQueue(task_queues_->GetDefaultTaskQueue());
   sequence_manager_->EnableCrashKeys("io_scheduler_async_stack");
 }
 

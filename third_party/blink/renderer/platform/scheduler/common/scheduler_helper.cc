@@ -26,7 +26,8 @@ SchedulerHelper::SchedulerHelper(SequenceManager* sequence_manager)
   sequence_manager_->SetWorkBatchSize(4);
 }
 
-void SchedulerHelper::InitDefaultTaskRunner(
+void SchedulerHelper::InitDefaultTaskQueue(
+    base::sequence_manager::TaskQueue* queue,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   default_task_runner_ = std::move(task_runner);
 
@@ -34,7 +35,8 @@ void SchedulerHelper::InitDefaultTaskRunner(
   // SchedulerHelper to a thread is fine. The default TaskRunner will be stored
   // in TLS by the ThreadController before tasks are executed.
   DCHECK(sequence_manager_);
-  sequence_manager_->SetDefaultTaskRunner(default_task_runner_);
+  sequence_manager_->SetDefaultTaskRunner(default_task_runner_,
+                                          queue->GetQueuePriority());
 }
 
 void SchedulerHelper::AttachToCurrentThread() {

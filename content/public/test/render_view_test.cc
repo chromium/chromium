@@ -279,8 +279,7 @@ void RenderViewTest::CustomTaskEnvironment::SetUp() {
       std::make_unique<RendererBlinkPlatformImplTestOverrideImpl>(
           main_thread_scheduler_.get());
 
-  DeferredInitFromSubclass(
-      main_thread_scheduler_->DeprecatedDefaultTaskRunner());
+  DeferredInitFromSubclass(nullptr);
 }
 
 void RenderViewTest::CustomTaskEnvironment::TearDown() {

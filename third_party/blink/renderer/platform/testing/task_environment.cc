@@ -36,7 +36,7 @@ TaskEnvironment::TaskEnvironment(
   CHECK(IsMainThread());
   scheduler_ =
       std::make_unique<scheduler::MainThreadSchedulerImpl>(sequence_manager());
-  DeferredInitFromSubclass(scheduler_->DefaultTaskRunner());
+  DeferredInitFromSubclass(scheduler_->DefaultTaskQueue()->GetTaskQueue());
 
   main_thread_isolate_.emplace();
 

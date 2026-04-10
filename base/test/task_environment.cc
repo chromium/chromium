@@ -479,7 +479,7 @@ TaskEnvironment::TaskEnvironment(
         sequence_manager_->CreateTaskQueue(sequence_manager::TaskQueue::Spec(
             sequence_manager::QueueName::TASK_ENVIRONMENT_DEFAULT_TQ));
     task_runner_ = task_queue_->task_runner();
-    sequence_manager_->SetDefaultTaskRunner(task_runner_);
+    sequence_manager_->SetDefaultTaskQueue(task_queue_.get());
     CHECK(base::SingleThreadTaskRunner::HasCurrentDefault())
         << "SingleThreadTaskRunner::CurrentDefaultHandle should've been set "
            "now.";
@@ -646,11 +646,13 @@ sequence_manager::SequenceManager* TaskEnvironment::sequence_manager() const {
 }
 
 void TaskEnvironment::DeferredInitFromSubclass(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    sequence_manager::TaskQueue* task_queue) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
-  task_runner_ = std::move(task_runner);
-  sequence_manager_->SetDefaultTaskRunner(task_runner_);
+  if (task_queue) {
+    task_runner_ = task_queue->task_runner();
+    sequence_manager_->SetDefaultTaskQueue(task_queue);
+  }
   CompleteInitialization();
 }
 
@@ -1177,8 +1179,7 @@ void TaskEnvironmentWithMainThreadPriorities::InitTaskQueues() {
         sequence_manager::TaskQueue::Spec(queue_name));
     task_queues_[queue_priority]->SetQueuePriority(queue_priority);
   }
-  DeferredInitFromSubclass(
-      task_queues_[GetDefaultQueuePriority()]->task_runner());
+  DeferredInitFromSubclass(task_queues_[GetDefaultQueuePriority()].get());
 }
 
 }  // namespace base::test

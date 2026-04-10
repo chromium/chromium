@@ -462,8 +462,7 @@ class TaskEnvironment {
 
   sequence_manager::SequenceManager* sequence_manager() const;
 
-  void DeferredInitFromSubclass(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  void DeferredInitFromSubclass(sequence_manager::TaskQueue* task_queue);
 
   // Derived classes may need to control when the task environment goes away
   // (e.g. ~FooTaskEnvironment() may want to effectively trigger

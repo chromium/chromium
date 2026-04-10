@@ -51,6 +51,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceTaskQueues {
       const {
     return GetTaskRunner(net::RequestPriority::DEFAULT_PRIORITY);
   }
+  base::sequence_manager::TaskQueue* GetDefaultTaskQueue() const {
+    return GetTaskQueue(net::RequestPriority::DEFAULT_PRIORITY);
+  }
 
   // Returns the task runner for the specified `RequestPriority`.
   const scoped_refptr<base::SingleThreadTaskRunner>& GetTaskRunner(

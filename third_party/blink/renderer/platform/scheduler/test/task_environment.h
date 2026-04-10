@@ -45,7 +45,7 @@ class TaskEnvironmentWithPrioritySettings : public base::test::TaskEnvironment {
     task_queue_ = sequence_manager()->CreateTaskQueue(
         base::sequence_manager::TaskQueue::Spec(
             base::sequence_manager::QueueName::TASK_ENVIRONMENT_DEFAULT_TQ));
-    DeferredInitFromSubclass(task_queue_->task_runner());
+    DeferredInitFromSubclass(task_queue_.get());
   }
 
   base::sequence_manager::TaskQueue::Handle CreateTaskQueue(
@@ -91,7 +91,7 @@ class TaskEnvironmentWithMainThreadSchedulerBase
       : base::test::TaskEnvironment(std::move(scoped_task_environment)) {
     CHECK(IsMainThread());
     scheduler_ = std::make_unique<MainThreadScheduler>(sequence_manager());
-    DeferredInitFromSubclass(scheduler_->DefaultTaskRunner());
+    DeferredInitFromSubclass(scheduler_->DefaultTaskQueue()->GetTaskQueue());
   }
 
   std::unique_ptr<MainThreadScheduler> scheduler_;

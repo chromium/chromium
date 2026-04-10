@@ -82,7 +82,7 @@ NetworkServiceTaskScheduler::NetworkServiceTaskScheduler(
   // crashes.
   sequence_manager->EnableCrashKeys("network_service_scheduler_async_stack");
   // Set the default task runner for the current thread.
-  sequence_manager->SetDefaultTaskRunner(GetDefaultTaskRunner());
+  sequence_manager->SetDefaultTaskQueue(task_queues_.GetDefaultTaskQueue());
 }
 
 void NetworkServiceTaskScheduler::OnTaskCompleted(
@@ -140,6 +140,11 @@ NetworkServiceTaskScheduler::GetTaskRunner(
 const scoped_refptr<base::SingleThreadTaskRunner>&
 NetworkServiceTaskScheduler::GetDefaultTaskRunner() const {
   return task_queues_.GetDefaultTaskRunner();
+}
+
+base::sequence_manager::TaskQueue*
+NetworkServiceTaskScheduler::GetDefaultTaskQueue() {
+  return task_queues_.GetDefaultTaskQueue();
 }
 
 }  // namespace network

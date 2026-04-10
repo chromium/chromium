@@ -45,7 +45,7 @@ class BrowserTaskQueuesTest : public testing::Test {
         queues_(std::make_unique<BrowserTaskQueues>(BrowserThread::UI,
                                                     sequence_manager_.get())),
         handle_(queues_->GetHandle()) {
-    sequence_manager_->SetDefaultTaskRunner(handle_->GetDefaultTaskRunner());
+    sequence_manager_->SetDefaultTaskQueue(queues_->GetDefaultTaskQueue());
   }
 
   std::unique_ptr<SequenceManager> sequence_manager_;

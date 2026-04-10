@@ -102,7 +102,7 @@ class ScheduleWorkTest : public testing::Test {
     }
     UNSAFE_TODO(min_batch_times_[index]) = minimum;
     UNSAFE_TODO(max_batch_times_[index]) = maximum;
-    target_message_loop_base()->GetTaskRunner()->PostTask(
+    target_message_loop_base()->GetDefaultTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(&ScheduleWorkTest::Increment,
                                   base::Unretained(this), schedule_calls));
   }

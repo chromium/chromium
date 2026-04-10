@@ -32,7 +32,8 @@ NonMainThreadSchedulerHelper::NonMainThreadSchedulerHelper(
   control_task_queue_->SetQueuePriority(TaskPriority::kControlPriority);
   input_task_queue_->SetQueuePriority(TaskPriority::kHighestPriority);
 
-  InitDefaultTaskRunner(
+  InitDefaultTaskQueue(
+      default_task_queue_->GetTaskQueue(),
       default_task_queue_->CreateTaskRunner(default_task_type));
 }
 

@@ -73,7 +73,7 @@ int main() {
   // Get TaskRunners for both TaskQueues.
   scoped_refptr<base::SingleThreadTaskRunner> a_runner_1 =
       tq_a->CreateTaskRunner(static_cast<int>(TaskType::kSource1));
-  sequence_manager->SetDefaultTaskRunner(a_runner_1);
+  sequence_manager->SetDefaultTaskRunner(a_runner_1, tq_a->GetQueuePriority());
   scoped_refptr<base::SingleThreadTaskRunner> a_runner_2 =
       tq_a->CreateTaskRunner(static_cast<int>(TaskType::kSource2));
   scoped_refptr<base::SingleThreadTaskRunner> b_runner =

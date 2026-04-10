@@ -157,7 +157,10 @@ static void PrepareNetworkThreadOnNetworkThread(int64_t jcontext_adapter) {
               .Build())
           .release();
   g_sequence_manager->SetDefaultTaskRunner(
-      TestUtil::GetTaskRunner(jcontext_adapter));
+      TestUtil::GetTaskRunner(jcontext_adapter),
+      static_cast<base::sequence_manager::TaskQueue::QueuePriority>(
+          base::sequence_manager::TaskQueue::DefaultQueuePriority::
+              kNormalPriority));
 }
 
 // Tests need to call into libcronet.so code on libcronet.so threads.

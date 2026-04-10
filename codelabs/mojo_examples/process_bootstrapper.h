@@ -36,11 +36,10 @@ class ProcessBootstrapper {
             base::sequence_manager::SequenceManager::Settings::Builder()
                 .SetMessagePumpType(type)
                 .Build());
-    default_tq = std::make_unique<base::sequence_manager::TaskQueue::Handle>(
-        sequence_manager->CreateTaskQueue(
-            base::sequence_manager::TaskQueue::Spec(
-                base::sequence_manager::QueueName::DEFAULT_TQ)));
-    sequence_manager->SetDefaultTaskRunner((*default_tq)->task_runner());
+    default_tq = sequence_manager->CreateTaskQueue(
+        base::sequence_manager::TaskQueue::Spec(
+            base::sequence_manager::QueueName::DEFAULT_TQ));
+    sequence_manager->SetDefaultTaskQueue(default_tq.get());
 
     if (type == base::MessagePumpType::DEFAULT) {
       InitDedicatedIOThread();
@@ -75,11 +74,11 @@ class ProcessBootstrapper {
     // be the IO thread. This means preferring `io_task_runner` when it is
     // non-null, and the default task runner otherwise.
     mojo::core::ScopedIPCSupport ipc_support(
-        io_task_runner ? io_task_runner : (*default_tq)->task_runner(),
+        io_task_runner ? io_task_runner : default_tq->task_runner(),
         mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST);
   }
 
-  std::unique_ptr<base::sequence_manager::TaskQueue::Handle> default_tq;
+  base::sequence_manager::TaskQueue::Handle default_tq;
   std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner;
 

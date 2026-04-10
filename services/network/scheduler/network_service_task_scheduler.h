@@ -67,6 +67,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceTaskScheduler {
   const scoped_refptr<base::SingleThreadTaskRunner>& GetDefaultTaskRunner()
       const;
 
+  base::sequence_manager::TaskQueue* GetDefaultTaskQueue();
+
   // Sets up the global `net` task runners to point to this scheduler's task
   // runners. This test-only version saves the original global task runners
   // and restores them upon this scheduler's destruction to prevent side-effects

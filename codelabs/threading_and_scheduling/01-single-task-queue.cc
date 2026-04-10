@@ -64,7 +64,8 @@ int main() {
   // and get other interesting information about them.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       default_task_queue->CreateTaskRunner(static_cast<int>(TaskType::kMain));
-  sequence_manager->SetDefaultTaskRunner(task_runner);
+  sequence_manager->SetDefaultTaskRunner(
+      task_runner, default_task_queue->GetQueuePriority());
 
   // Now that this thread has a bound sequence manager set up, we can:
   //   1.) Start posting tasks to its queues which are not yet being processed

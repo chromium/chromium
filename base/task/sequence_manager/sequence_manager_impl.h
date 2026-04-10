@@ -118,8 +118,9 @@ class BASE_EXPORT SequenceManagerImpl
   void ResetTimeDomain() override;
   const TickClock* GetTickClock() const override;
   TimeTicks NowTicks() const override;
-  void SetDefaultTaskRunner(
-      scoped_refptr<SingleThreadTaskRunner> task_runner) override;
+  void SetDefaultTaskQueue(TaskQueue* task_queue) override;
+  void SetDefaultTaskRunner(scoped_refptr<SingleThreadTaskRunner> task_runner,
+                            TaskQueue::QueuePriority priority) override;
   void ReclaimMemory() override;
   bool GetAndClearSystemIsQuiescentBit() override;
   void SetWorkBatchSize(int work_batch_size) override;
@@ -159,9 +160,7 @@ class BASE_EXPORT SequenceManagerImpl
   [[nodiscard]] CallbackListSubscription RegisterOnNextIdleCallback(
       OnceClosure on_next_idle_callback);
 
-  // Sets / returns the default TaskRunner. Thread-safe.
-  void SetTaskRunner(scoped_refptr<SingleThreadTaskRunner> task_runner);
-  scoped_refptr<SingleThreadTaskRunner> GetTaskRunner();
+  scoped_refptr<SingleThreadTaskRunner> GetDefaultTaskRunner();
 
   bool IsBoundToCurrentThread() const;
   MessagePump* GetMessagePump() const override;

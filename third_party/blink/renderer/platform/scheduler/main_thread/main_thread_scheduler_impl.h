@@ -313,6 +313,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner();
+  scoped_refptr<MainThreadTaskQueue> DefaultTaskQueue();
 
   scoped_refptr<SingleThreadIdleTaskRunner> IdleTaskRunner();
   base::TimeTicks NowTicks() const;
@@ -438,7 +439,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   Vector<base::OnceClosure>& GetOnTaskCompletionCallbacks() override;
 
   scoped_refptr<MainThreadTaskQueue> ControlTaskQueue();
-  scoped_refptr<MainThreadTaskQueue> DefaultTaskQueue();
   scoped_refptr<MainThreadTaskQueue> V8TaskQueue();
 
   virtual void PerformMicrotaskCheckpoint();

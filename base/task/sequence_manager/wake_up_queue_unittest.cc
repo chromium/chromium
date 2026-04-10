@@ -445,7 +445,7 @@ TEST_F(WakeUpQueueTest, SetNextWakeUpForQueueInThePast) {
       sequence_manager->CreateTaskQueue(TaskQueue::Spec(QueueName::TEST2_TQ));
   low_prio_queue->SetQueuePriority(kLowestPriority);
   auto low_prio_runner = low_prio_queue->CreateTaskRunner(kTaskTypeNone);
-  sequence_manager->SetDefaultTaskRunner(high_prio_runner);
+  sequence_manager->SetDefaultTaskQueue(high_prio_queue.get());
   base::MockCallback<base::OnceCallback<void()>> task_1, task_2;
 
   testing::Sequence s;

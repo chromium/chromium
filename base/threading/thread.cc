@@ -73,7 +73,7 @@ class SequenceManagerThreadDelegate : public Thread::Delegate {
             sequence_manager::TaskQueue::Spec(
                 sequence_manager::QueueName::DEFAULT_TQ))),
         message_pump_factory_(std::move(message_pump_factory)) {
-    sequence_manager_->SetDefaultTaskRunner(default_task_queue_->task_runner());
+    sequence_manager_->SetDefaultTaskQueue(default_task_queue_.get());
   }
 
   ~SequenceManagerThreadDelegate() override = default;
@@ -94,7 +94,7 @@ class SequenceManagerThreadDelegate : public Thread::Delegate {
     // could happen far away from where the Thread is created. We should
     // consider getting rid of StartWithOptions, and pass them as a constructor
     // argument instead.
-    return sequence_manager_->GetTaskRunner();
+    return sequence_manager_->GetDefaultTaskRunner();
   }
 
   void BindToCurrentThread() override {

@@ -73,8 +73,8 @@ BrowserUIThreadScheduler::BrowserUIThreadScheduler()
   task_queues_.SetOnTaskCompletedHandler(base::BindRepeating(
       &BrowserUIThreadScheduler::OnTaskCompleted, base::Unretained(this)));
   CommonSequenceManagerSetup(owned_sequence_manager_.get());
-  owned_sequence_manager_->SetDefaultTaskRunner(
-      handle_->GetDefaultTaskRunner());
+  owned_sequence_manager_->SetDefaultTaskQueue(
+      task_queues_.GetDefaultTaskQueue());
 
   owned_sequence_manager_->BindToMessagePump(
       base::MessagePump::Create(base::MessagePumpType::UI));
@@ -87,6 +87,11 @@ BrowserUIThreadScheduler::BrowserUIThreadScheduler(
       handle_(task_queues_.GetHandle()) {
   CommonSequenceManagerSetup(sequence_manager);
   g_browser_ui_thread_scheduler = this;
+}
+
+base::sequence_manager::TaskQueue*
+BrowserUIThreadScheduler::GetDefaultTaskQueue() const {
+  return task_queues_.GetDefaultTaskQueue();
 }
 
 void BrowserUIThreadScheduler::CommonSequenceManagerSetup(

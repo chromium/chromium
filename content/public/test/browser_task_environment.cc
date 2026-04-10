@@ -181,8 +181,8 @@ void BrowserTaskEnvironment::Init() {
 
   auto browser_ui_thread_scheduler =
       BrowserUIThreadScheduler::CreateForTesting(sequence_manager());
-  auto default_ui_task_runner =
-      browser_ui_thread_scheduler->GetHandle()->GetDefaultTaskRunner();
+  auto* default_ui_task_queue =
+      browser_ui_thread_scheduler->GetDefaultTaskQueue();
   auto browser_io_thread_delegate =
       real_io_thread_
           ? std::make_unique<BrowserIOThreadDelegate>()
@@ -191,7 +191,7 @@ void BrowserTaskEnvironment::Init() {
 
   BrowserTaskExecutor::CreateForTesting(std::move(browser_ui_thread_scheduler),
                                         std::move(browser_io_thread_delegate));
-  DeferredInitFromSubclass(std::move(default_ui_task_runner));
+  DeferredInitFromSubclass(default_ui_task_queue);
 
   if (HasIOMainLoop()) {
     CHECK(base::CurrentIOThread::IsSet());
