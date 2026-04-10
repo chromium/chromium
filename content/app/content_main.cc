@@ -54,7 +54,6 @@
 #include "base/win/process_startup_helper.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
-#include "ui/base/win/atl_module.h"
 #include "ui/gfx/switches.h"
 #endif
 
@@ -246,7 +245,6 @@ NO_STACK_PROTECTOR int RunContentProcess(
 
 #if BUILDFLAG(IS_WIN)
     base::win::RegisterInvalidParamHandler();
-    ui::win::CreateATLModuleIfNeeded();
 #endif  // BUILDFLAG(IS_WIN)
 
 #if !BUILDFLAG(IS_ANDROID)
