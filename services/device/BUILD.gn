@@ -208,6 +208,7 @@ source_set("tests") {
       "generic_sensor/platform_sensor_and_provider_unittest_win.cc",
       "geolocation/wifi_data_provider_win_unittest.cc",
       "hid/hid_service_win_unittest.cc",
+      "public/cpp/geolocation/system_geolocation_source_win_unittest.cc",
     ]
     deps += [
       "//services/device/public/proto:hid_gcpw_proto",

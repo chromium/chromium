@@ -48,6 +48,10 @@ BASE_FEATURE(kWebHidAttributeAllowsBackForwardCache,
 #if BUILDFLAG(IS_WIN)
 // Enable integration with the Windows system-level location permission.
 BASE_FEATURE(kWinSystemLocationPermission, base::FEATURE_ENABLED_BY_DEFAULT);
+// Enables the event-based approach for monitoring the Windows system-level
+// location permission. If disabled, the polling approach is used.
+BASE_FEATURE(kWinSystemLocationPermissionEventBased,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables a fix for a HID issue where feature reports read from devices that
 // do not use report IDs would incorrectly include an extra zero byte at the
 // start of the report and truncate the last byte of the report.

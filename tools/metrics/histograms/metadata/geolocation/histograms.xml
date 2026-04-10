@@ -355,6 +355,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Geolocation.SystemGeolocationSourceWin.AddAccessChangedError"
+    enum="Hresult" expires_after="2026-09-28">
+  <owner>mattreynolds@chromium.org</owner>
+  <owner>device-dev@chromium.org</owner>
+  <summary>
+    Records the HRESULT error code encountered while adding a location access
+    changed listener on Windows.
+  </summary>
+</histogram>
+
 <histogram name="Geolocation.SystemGeolocationSourceWin.CheckAccessError"
     enum="Hresult" expires_after="2026-09-28">
   <owner>mattreynolds@chromium.org</owner>

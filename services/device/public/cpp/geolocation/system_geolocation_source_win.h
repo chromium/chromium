@@ -27,6 +27,11 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSourceWin
   static std::unique_ptr<GeolocationSystemPermissionManager>
   CreateGeolocationSystemPermissionManager();
 
+  using AppCapabilityFactory = base::RepeatingCallback<Microsoft::WRL::ComPtr<
+      ABI::Windows::Security::Authorization::AppCapabilityAccess::
+          IAppCapability>(std::string_view)>;
+  static void SetAppCapabilityFactoryForTesting(AppCapabilityFactory factory);
+
   SystemGeolocationSourceWin();
   SystemGeolocationSourceWin(const SystemGeolocationSourceWin&) = delete;
   SystemGeolocationSourceWin& operator=(const SystemGeolocationSourceWin&) =
@@ -39,11 +44,11 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSourceWin
   void OpenSystemPermissionSetting() override;
   void RequestPermission() override;
 
-  // Handles system permission update from `AccessCheckHelper`.
+  // Handles system permission update from `AccessListenerHelper`.
   void OnPermissionStatusUpdated(LocationSystemPermissionStatus status);
 
  private:
-  class AccessCheckHelper;
+  class AccessListenerHelper;
 
   void OnLaunchUriSuccess(uint8_t launched);
   void OnLaunchUriFailure(HRESULT result);
@@ -77,7 +82,7 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSourceWin
 
   // Helper for checking location permission status on a dedicated COM STA
   // thread.
-  base::SequenceBound<AccessCheckHelper> access_check_helper_;
+  base::SequenceBound<AccessListenerHelper> access_listener_helper_;
 
   base::WeakPtrFactory<SystemGeolocationSourceWin> weak_factory_{this};
 };
