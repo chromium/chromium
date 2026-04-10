@@ -352,18 +352,6 @@ class NtpRealboxUiTestBase
     return enabled_features;
   }
 
-  void SetUpOnMainThread() override {
-    SearchboxInteractiveTestMixin<
-        WebUiInteractiveTestMixin<InteractiveBrowserTest>>::SetUpOnMainThread();
-    SetUpUrlLoaderInterceptor();
-  }
-
-  void TearDownOnMainThread() override {
-    TearDownUrlLoaderInterceptor();
-    SearchboxInteractiveTestMixin<WebUiInteractiveTestMixin<
-        InteractiveBrowserTest>>::TearDownOnMainThread();
-  }
-
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
     InteractiveBrowserTest::SetUpBrowserContextKeyedServices(context);
