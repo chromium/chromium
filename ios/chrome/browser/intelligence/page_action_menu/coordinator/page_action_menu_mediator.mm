@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_consumer.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_content_entry_point.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_feature.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_metrics.h"
@@ -159,12 +160,14 @@ const CGFloat kFeatureRowIconSize = 20;
       _geminiService->GeminiIneligibilityForProfile();
 
   if (result.has_value()) {
-    // TODO(crbug.com/485297147): Add footer item when the footer UI gets
-    // implemented.
-    return result.value().chrome_enterprise
-               ? [[PageActionMenuContentEntryPoint alloc] initWithEnabled:NO
-                                                               footerItem:nil]
-               : [[PageActionMenuContentEntryPoint alloc] initWithEnabled:NO];
+    if (result.value().chrome_enterprise) {
+      return [[PageActionMenuContentEntryPoint alloc]
+          initWithEnabled:NO
+               footerItem:[ContentEntryPointUnavailabilityItem
+                              geminiEnterprise]];
+    }
+
+    return [[PageActionMenuContentEntryPoint alloc] initWithEnabled:NO];
   }
 
   return [[PageActionMenuContentEntryPoint alloc]
@@ -182,17 +185,15 @@ const CGFloat kFeatureRowIconSize = 20;
   }
 
   if (!featureAvailable) {
-    // TODO(crbug.com/485297147): Add footer item when the footer UI gets
-    // implemented.
-    return [[PageActionMenuContentEntryPoint alloc] initWithEnabled:NO
-                                                         footerItem:nil];
+    return [[PageActionMenuContentEntryPoint alloc]
+        initWithEnabled:NO
+             footerItem:[ContentEntryPointUnavailabilityItem lensEnterprise]];
   }
 
   if (!hasDefaultSearchEngine) {
-    // TODO(crbug.com/485297147): Add footer item when the footer UI gets
-    // implemented.
-    return [[PageActionMenuContentEntryPoint alloc] initWithEnabled:NO
-                                                         footerItem:nil];
+    return [[PageActionMenuContentEntryPoint alloc]
+        initWithEnabled:NO
+             footerItem:[ContentEntryPointUnavailabilityItem lensSearchEngine]];
   }
 
   // Disabled without disclaimer.
@@ -209,6 +210,23 @@ const CGFloat kFeatureRowIconSize = 20;
       _readerModeTabHelper->CurrentPageIsEligibleForReaderMode();
   // There are no readerMode non eligibility disclaimers.
   return [[PageActionMenuContentEntryPoint alloc] initWithEnabled:eligible];
+}
+
+- (NSArray<ContentEntryPointUnavailabilityItem*>*)
+    unavailabilityItemsForTraitCollection:(UITraitCollection*)traitCollection {
+  NSMutableArray<ContentEntryPointUnavailabilityItem*>* items =
+      [NSMutableArray array];
+  NSArray<PageActionMenuContentEntryPoint*>* mainEntryPoints = @[
+    [self lensEntryPointForTraitCollection:traitCollection],
+    [self readerModeEntryPoint], [self geminiEntryPoint]
+  ];
+  for (PageActionMenuContentEntryPoint* entryPoint in mainEntryPoints) {
+    if (entryPoint.unavailabilityItem) {
+      [items addObject:entryPoint.unavailabilityItem];
+    }
+  }
+
+  return items;
 }
 
 - (BOOL)isFeatureAvailable:(PageActionMenuFeatureType)featureType {

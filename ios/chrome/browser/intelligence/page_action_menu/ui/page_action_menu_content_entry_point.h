@@ -22,6 +22,8 @@
 - (instancetype)init NS_UNAVAILABLE;
 // Convenience initializer for texts without associated icons nor links.
 - (instancetype)initWithText:(NSString*)text;
+// Convenience initializer for texts and icon without associated links.
+- (instancetype)initWithText:(NSString*)text icon:(UIImage*)icon;
 // Designated initializer that minimally requires the text. The icon and action
 // identifier are optional.
 - (instancetype)initWithText:(NSString*)text
@@ -29,6 +31,12 @@
             actionIdentifier:(NSString*)actionIdentifier
     NS_DESIGNATED_INITIALIZER;
 
+// Factory for an item linked to enterprise policies with Gemini.
++ (instancetype)geminiEnterprise;
+// Factory for an item linked to enterprise policies with Lens.
++ (instancetype)lensEnterprise;
+// Factory for an item linked to the default search engine with Lens.
++ (instancetype)lensSearchEngine;
 @end
 
 // Model class for a main entry point in the page tools menu. When not enabled,

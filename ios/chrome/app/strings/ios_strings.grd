@@ -353,6 +353,9 @@
       <message name="IDS_IOS_AI_HUB_GEMINI_LABEL" desc="The button label for the Gemini entry point of the AI hub.">
         Ask Gemini
       </message>
+      <message name="IDS_IOS_AI_HUB_GEMINI_UNAVAILABLE_ENTERPRISE_LABEL" desc="The message displayed in the footer for the Gemini entry point of the AI hub whenever it is unavailable because of enterprise policies.">
+        Gemini is turned off for your account. Contact your admin for more information.
+      </message>
       <message name="IDS_IOS_AI_HUB_HIDE_BUTTON_LABEL" desc="The button label for hiding feature entry points in the AI hub.">
         Turn off
       </message>
@@ -361,6 +364,12 @@
       </message>
       <message name="IDS_IOS_AI_HUB_LENS_LABEL" desc="The button label for the Lens entry point of the AI hub.">
         Search screen
+      </message>
+      <message name="IDS_IOS_AI_HUB_LENS_UNAVAILABLE_ENTERPRISE_LABEL" desc="The message displayed in the footer for the Lens entry point of the AI hub whenever it is unavailable because of enterprise policies.">
+        Search screen is turned off for your account. Contact your admin for more information.
+      </message>
+      <message name="IDS_IOS_AI_HUB_LENS_UNAVAILABLE_SEARCH_ENGINE_LABEL" desc="The message displayed in the footer for the Lens entry point of the AI hub whenever it is unavailable because Google is not set as the default search engine.">
+        Search screen is only available when Google is set as your default search engine. You can change your default search engine in <ph name="BEGIN_LINK">BEGIN_LINK</ph>Settings<ph name="END_LINK">END_LINK</ph>.
       </message>
       <message name="IDS_IOS_AI_HUB_MICROPHONE_PERMISSION_LABEL" desc="The button label for the Microphone permission feature of the AI hub.">
         Microphone

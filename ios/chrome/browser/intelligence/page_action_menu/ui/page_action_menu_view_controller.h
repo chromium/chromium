@@ -19,7 +19,9 @@
 
 // The view controller representing the presented page action menu UI.
 @interface PageActionMenuViewController
-    : UIViewController <PageActionMenuConsumer, ReaderModeOptionsConsumer>
+    : UIViewController <PageActionMenuConsumer,
+                        ReaderModeOptionsConsumer,
+                        UITextViewDelegate>
 
 // The delegate for this view controller.
 @property(nonatomic, weak) id<PageActionMenuViewControllerDelegate> delegate;

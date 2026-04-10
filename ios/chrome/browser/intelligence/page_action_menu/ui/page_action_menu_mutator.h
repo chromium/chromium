@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+@class ContentEntryPointUnavailabilityItem;
 @class PageActionMenuFeature;
 @class PageActionMenuContentEntryPoint;
 
@@ -28,6 +29,10 @@ typedef NS_ENUM(NSInteger, PageActionMenuFeatureType);
 
 // Returns Reader mode entry point configuration item.
 - (PageActionMenuContentEntryPoint*)readerModeEntryPoint;
+
+// Returns the ordered list of unavalability items to display in the footer.
+- (NSArray<ContentEntryPointUnavailabilityItem*>*)
+    unavailabilityItemsForTraitCollection:(UITraitCollection*)traitCollection;
 
 // Returns whether a page action menu feature is currently available.
 - (BOOL)isFeatureAvailable:(PageActionMenuFeatureType)featureType;
