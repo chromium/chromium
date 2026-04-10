@@ -59,6 +59,7 @@ using signin_metrics::PromoAction;
     _accessPoint = accessPoint;
     _creationTimeTicks = base::TimeTicks::Now();
     _signinInProgress = [self.sceneState createSigninInProgress];
+    CHECK(_signinInProgress, base::NotFatalUntil::M156);
   }
   return self;
 }

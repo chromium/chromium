@@ -8,12 +8,15 @@ source_set("coordinator") {
     "personalize_google_services_coordinator.mm",
   ]
   deps = [
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/authentication/signin/reauth/coordinator",
     "//ios/chrome/browser/settings/google_services/personalize_google_services/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:system_identity_manager",

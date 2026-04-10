@@ -6,6 +6,8 @@
 
 #import "base/check_op.h"
 #import "base/feature_list.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
 #import "base/metrics/user_metrics.h"
@@ -82,6 +84,20 @@ using signin_metrics::AccessPoint;
 using signin_metrics::PromoAction;
 using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
+namespace {
+
+// What to do once the user reauth is done.
+enum class ActionAfterReauth {
+  // Do nothing.
+  kNone,
+  //  Show "manage your google account" page.
+  kShowManageYourGoogleAccount,
+  // Opens "account storage" page.
+  kOpenAccountStorage,
+};
+
+}  // namespace
+
 @interface ManageSyncSettingsCoordinator () <
     AccountMenuCoordinatorDelegate,
     BulkUploadCoordinatorDelegate,
@@ -138,6 +154,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   // TODO(crbug.com/471207686): Remove after kIdentityInAuthErrorFollowUps is
   // launched.
   SigninCoordinator* _addAccountCoordinator;
+  // What to do once the user reauth is done.
+  ActionAfterReauth _actionAfterReauth;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -520,6 +538,13 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 }
 
 - (void)showManageYourGoogleAccount {
+  id<SystemIdentity> identity =
+      self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  if (!identity.hasValidAuth) {
+    [self openPrimaryAccountReauthDialogWithAction:
+              ActionAfterReauth::kShowManageYourGoogleAccount];
+    return;
+  }
   __weak __typeof(self) weakself = self;
   _accountDetailsControllerDismissCallback =
       GetApplicationContext()
@@ -556,6 +581,19 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 - (void)reauthFinishedWithResult:(ReauthResult)result
                           gaiaID:(const GaiaId*)gaiaID {
   [self stopReauthCoordinator];
+  if (result != ReauthResult::kSuccess) {
+    return;
+  }
+  switch (_actionAfterReauth) {
+    case ActionAfterReauth::kShowManageYourGoogleAccount:
+      [self showManageYourGoogleAccount];
+      break;
+    case ActionAfterReauth::kOpenAccountStorage:
+      [self openAccountStorage];
+      break;
+    case ActionAfterReauth::kNone:
+      break;
+  }
 }
 
 #pragma mark - SignoutActionSheetCoordinatorDelegate
@@ -683,6 +721,13 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 }
 
 - (void)openPrimaryAccountReauthDialog {
+  [self openPrimaryAccountReauthDialogWithAction:ActionAfterReauth::kNone];
+}
+
+#pragma mark - Private
+
+- (void)openPrimaryAccountReauthDialogWithAction:
+    (ActionAfterReauth)actionAfterReauth {
   if (!base::FeatureList::IsEnabled(switches::kIdentityInAuthErrorFollowUps)) {
     [self openPrimaryAccountReauthDialogLegacy];
     return;
@@ -691,6 +736,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
     return;
   }
   [self stopReauthCoordinator];
+  _actionAfterReauth = actionAfterReauth;
 
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(self.profile);
@@ -739,6 +785,11 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 - (void)openAccountStorage {
   id<SystemIdentity> identity =
       self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  if (!identity.hasValidAuth) {
+    [self openPrimaryAccountReauthDialogWithAction:ActionAfterReauth::
+                                                       kOpenAccountStorage];
+    return;
+  }
   id<GoogleOneCommands> googleOneCommands = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), GoogleOneCommands);
   [googleOneCommands showGoogleOneForIdentity:identity

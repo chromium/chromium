@@ -5,8 +5,13 @@
 #import "ios/chrome/browser/settings/google_services/personalize_google_services/coordinator/personalize_google_services_coordinator.h"
 
 #import "base/check_op.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/metrics/user_metrics.h"
+#import "components/signin/public/identity_manager/account_info.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/authentication/signin/reauth/coordinator/signin_reauth_coordinator.h"
 #import "ios/chrome/browser/settings/google_services/personalize_google_services/ui/personalize_google_services_command_handler.h"
 #import "ios/chrome/browser/settings/google_services/personalize_google_services/ui/personalize_google_services_view_controller.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -15,13 +20,28 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 
 using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
+namespace {
+
+enum class ActionAfterReauth {
+  // Do nothing.
+  kNone,
+  // Open the web app activity dialog.
+  kOpenWebAppAcvityDialog,
+  // Open the linked google service dialog.
+  kOpenLinkedGoogleServicesDialog,
+};
+
+}  // namespace
+
 @interface PersonalizeGoogleServicesCoordinator () <
     PersonalizeGoogleServicesViewControllerPresentationDelegate,
-    PersonalizeGoogleServicesCommandHandler>
+    PersonalizeGoogleServicesCommandHandler,
+    SigninReauthCoordinatorDelegate>
 @end
 
 @implementation PersonalizeGoogleServicesCoordinator {
@@ -30,6 +50,9 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   DismissViewCallback _dismissWebAndAppSettingDetailsCallback;
   // Dismiss callback for Linked Google services settings details view.
   DismissViewCallback _dismissLinkedGoogleServicesSettingsDetailsCallback;
+  SigninReauthCoordinator* _reauthCoordinator;
+  // What to do after a successful signin reauth.
+  ActionAfterReauth _actionAfterReauth;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -59,6 +82,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 - (void)stop {
   _viewController = nil;
 
+  [self stopReauthCoordinator];
+
   if (!_dismissLinkedGoogleServicesSettingsDetailsCallback.is_null()) {
     std::move(_dismissLinkedGoogleServicesSettingsDetailsCallback)
         .Run(/*animated*/ false);
@@ -82,11 +107,16 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 - (void)openWebAppActivityDialog {
   base::RecordAction(base::UserMetricsAction(
       "Signin_AccountSettings_GoogleActivityControlsClicked"));
-
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForProfile(self.profile);
   id<SystemIdentity> identity =
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  if (!identity.hasValidAuth) {
+    [self openReauthCoordinatorWithAction:ActionAfterReauth::
+                                              kOpenWebAppAcvityDialog];
+    return;
+  }
+
   _dismissWebAndAppSettingDetailsCallback =
       GetApplicationContext()
           ->GetSystemIdentityManager()
@@ -98,16 +128,74 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 - (void)openLinkedGoogleServicesDialog {
   base::RecordAction(base::UserMetricsAction(
       "Signin_AccountSettings_LinkedGoogleServicesClicked"));
-
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForProfile(self.profile);
   id<SystemIdentity> identity =
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  if (!identity.hasValidAuth) {
+    [self openReauthCoordinatorWithAction:ActionAfterReauth::
+                                              kOpenLinkedGoogleServicesDialog];
+    return;
+  }
+
   _dismissLinkedGoogleServicesSettingsDetailsCallback =
       GetApplicationContext()
           ->GetSystemIdentityManager()
           ->PresentLinkedServicesSettingsDetailsController(
               identity, _viewController, /*animated=*/YES, base::DoNothing());
+}
+
+#pragma mark - Private
+
+- (void)stopReauthCoordinator {
+  [_reauthCoordinator stop];
+  _reauthCoordinator.delegate = nil;
+  _reauthCoordinator = nil;
+}
+
+- (void)openReauthCoordinatorWithAction:(ActionAfterReauth)action {
+  if (_reauthCoordinator.viewWillPersist) {
+    return;
+  }
+  [self stopReauthCoordinator];
+  _actionAfterReauth = action;
+
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(self.profile);
+  CoreAccountInfo account =
+      identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  if (account.IsEmpty()) {
+    // A sign-out was triggered in the meantime, don't do anything.
+    return;
+  }
+  _reauthCoordinator = [[SigninReauthCoordinator alloc]
+      initWithBaseViewController:_viewController
+                         browser:self.browser
+                         account:account
+               reauthAccessPoint:signin_metrics::ReauthAccessPoint::
+                                     kAccountSettings];
+  _reauthCoordinator.delegate = self;
+  [_reauthCoordinator start];
+}
+
+#pragma mark - SigninReauthCoordinatorDelegate
+
+- (void)reauthFinishedWithResult:(ReauthResult)result
+                          gaiaID:(const GaiaId*)gaiaID {
+  [self stopReauthCoordinator];
+  if (result != ReauthResult::kSuccess) {
+    return;
+  }
+  switch (_actionAfterReauth) {
+    case ActionAfterReauth::kOpenWebAppAcvityDialog:
+      [self openWebAppActivityDialog];
+      break;
+    case ActionAfterReauth::kOpenLinkedGoogleServicesDialog:
+      [self openLinkedGoogleServicesDialog];
+      break;
+    case ActionAfterReauth::kNone:
+      break;
+  }
 }
 
 @end
