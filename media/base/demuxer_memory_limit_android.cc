@@ -23,9 +23,7 @@ base::ByteCount SelectLimit(base::ByteCount default_limit,
                : default_limit;
   }
   // Use very low limit on 512MiB Android Go devices only.
-  if (base::android::android_info::sdk_int() >=
-          base::android::android_info::SDK_VERSION_OREO &&
-      base::SysInfo::AmountOfPhysicalMemory().InMiB() <= 512) {
+  if (base::SysInfo::AmountOfPhysicalMemory().InMiB() <= 512) {
     return very_low_limit;
   }
   return low_limit;
