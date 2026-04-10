@@ -569,6 +569,13 @@ bool ReadAnythingAppController::IsUpdateProcessingPaused() const {
     return true;
   }
 
+  // Don't trigger distillation if reading mode isn't shown.
+  if (IsImmersiveEnabled() &&
+      model_.active_presentation_state() ==
+          read_anything::mojom::ReadAnythingPresentationState::kInactive) {
+    return true;
+  }
+
   // Update processing should also be considered paused when Readability
   // is in the process of distilling the page.
   if (model_.is_readability_next_distillation_method() &&
