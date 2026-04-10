@@ -91,6 +91,10 @@ std::string GetModelSelector(omnibox::ModelMode model) {
 const DeepQuery kRealbox = {"ntp-app", "ntp-searchbox", "#inputWrapper"};
 const DeepQuery kRealboxInput = {"ntp-app", "ntp-searchbox", "#input",
                                  "#input"};
+const DeepQuery kVoiceSearchButton = {"ntp-app", "ntp-searchbox",
+                                      "#voiceSearchButton"};
+const DeepQuery kLensSearchButton = {"ntp-app", "ntp-searchbox",
+                                     "#lensSearchButton"};
 const DeepQuery kComposeButton = {"ntp-app", "ntp-searchbox", "#composeButton",
                                   "#composeButton"};
 const DeepQuery kComposeboxVoiceSearchButton = {"ntp-app", "cr-composebox",
@@ -298,36 +302,24 @@ class NtpRealboxUiTestBase
   }
 
   auto WaitForDialogStateChange(const DeepQuery& where, bool expected_open) {
-    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kEvent);
-    WebContentsInteractionTestUtil::StateChange state_change;
-    state_change.event = kEvent;
-    state_change.where = where;
-    state_change.test_function =
-        expected_open ? "(el) => el && el.open" : "(el) => el && !el.open";
-    return WaitForStateChange(kNtpElementId, state_change);
+    return WaitForJsConditionAt(
+        kNtpElementId, where,
+        expected_open ? "(el) => el && el.open" : "(el) => el && !el.open");
   }
 
   auto WaitForElementVisibilityChange(const DeepQuery& where,
                                       bool expected_visible) {
-    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kEvent);
-    WebContentsInteractionTestUtil::StateChange state_change;
-    state_change.event = kEvent;
-    state_change.where = where;
-    state_change.test_function =
+    return WaitForJsConditionAt(
+        kNtpElementId, where,
         expected_visible ? "(el) => el && !el.hasAttribute('hidden')"
-                         : "(el) => el && el.hasAttribute('hidden')";
-    return WaitForStateChange(kNtpElementId, state_change);
+                         : "(el) => el && el.hasAttribute('hidden')");
   }
 
   auto WaitForSubmitEnabled() {
-    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kSubmitEnabledEvent);
-    WebContentsInteractionTestUtil::StateChange submit_enabled;
-    submit_enabled.event = kSubmitEnabledEvent;
-    submit_enabled.where = kComposeboxSubmitButton;
-    submit_enabled.test_function =
+    return WaitForJsConditionAt(
+        kNtpElementId, kComposeboxSubmitButton,
         "(el) => el && el.querySelector('#submitIcon') && "
-        "!el.querySelector('#submitIcon').hasAttribute('disabled')";
-    return WaitForStateChange(kNtpElementId, submit_enabled);
+        "!el.querySelector('#submitIcon').hasAttribute('disabled')");
   }
 
  protected:
@@ -528,13 +520,7 @@ IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest, RealboxMultilineInputTest) {
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/496928186): Re-enable after de-flaking.
   GTEST_SKIP() << "Flaky on ChromeOS";
-#endif
-  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kMultilineInputEvent);
-  WebContentsInteractionTestUtil::StateChange multiline_input;
-  multiline_input.event = kMultilineInputEvent;
-  multiline_input.where = kRealboxInput;
-  multiline_input.test_function = "(el) => el && el.value === 'a\\nb'";
-
+#else
   RunTestSequence(
       // Load NTP.
       AddInstrumentedTab(kNtpElementId, GURL(chrome::kChromeUINewTabURL)),
@@ -549,7 +535,9 @@ IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest, RealboxMultilineInputTest) {
       // Type 'b' into Realbox input.
       SendKeyPress(kNtpElementId, ui::VKEY_B),
       // Wait for Realbox input to have a newline between 'a' and 'b'.
-      WaitForStateChange(kNtpElementId, multiline_input));
+      WaitForJsConditionAt(kNtpElementId, kRealboxInput,
+                           "(el) => el && el.value === 'a\\nb'"));
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest,
@@ -942,13 +930,8 @@ class NtpComposeboxDismissTest : public NtpRealboxUiTestBase,
   bool CloseViaEscButton() const { return GetParam(); }
 
   auto WaitForComposeboxInputCleared() {
-    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kComposeboxInputClearedEvent);
-    WebContentsInteractionTestUtil::StateChange composebox_input_cleared;
-    composebox_input_cleared.event = kComposeboxInputClearedEvent;
-    composebox_input_cleared.where = kComposeboxInput;
-    composebox_input_cleared.test_function = "(el) => el && el.value === ''";
-
-    return WaitForStateChange(kNtpElementId, composebox_input_cleared);
+    return WaitForJsConditionAt(kNtpElementId, kComposeboxInput,
+                                "(el) => el && el.value === ''");
   }
 
   auto WaitForComposeboxDialogClosed() {
@@ -970,7 +953,6 @@ INSTANTIATE_TEST_SUITE_P(, NtpComposeboxDismissTest, testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(NtpComposeboxDismissTest,
                        ClearsInputAndClosesComposebox) {
-
   auto TriggerDismissAction = [this]() {
     if (CloseViaEscButton()) {
       return Steps(SendKeyPress(kNtpElementId, ui::VKEY_ESCAPE));
@@ -1036,20 +1018,14 @@ class NtpRealboxCyclingPlaceholderInteractiveTest
 
 IN_PROC_BROWSER_TEST_F(NtpRealboxCyclingPlaceholderInteractiveTest,
                        PlaceholderCycles) {
-  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kPlaceholderCyclingEvent);
-  WebContentsInteractionTestUtil::StateChange placeholder_cycling;
-  placeholder_cycling.event = kPlaceholderCyclingEvent;
-  placeholder_cycling.where = kRealboxInput;
-  placeholder_cycling.test_function =
-      "(el) => el && el.getAnimations().length > 0";
-
   RunTestSequence(
       // Load NTP.
       AddInstrumentedTab(kNtpElementId, GURL(chrome::kChromeUINewTabURL)),
       // Wait for Realbox to render.
       WaitForElementToRender(kNtpElementId, kRealboxInput),
       // Wait and verify if placeholder text cycles.
-      WaitForStateChange(kNtpElementId, placeholder_cycling));
+      WaitForJsConditionAt(kNtpElementId, kRealboxInput,
+                           "(el) => el && el.getAnimations().length > 0"));
 }
 
 IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest,
@@ -1104,3 +1080,30 @@ class NtpRealboxDefaultExperienceInteractiveTest : public NtpRealboxUiTestBase {
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+IN_PROC_BROWSER_TEST_F(NtpRealboxDefaultExperienceInteractiveTest,
+                       DefaultExperienceRealboxUI) {
+  RunTestSequence(
+      // Load NTP.
+      AddInstrumentedTab(kNtpElementId, GURL(chrome::kChromeUINewTabURL)),
+      // Wait for Realbox to render.
+      WaitForElementToRender(kNtpElementId, kRealbox),
+      // Wait for Voice Search, Lens, and AI Mode buttons to render.
+      WaitForElementToRender(kNtpElementId, kVoiceSearchButton),
+      WaitForElementToRender(kNtpElementId, kLensSearchButton),
+      WaitForElementToRender(kNtpElementId, kComposeButton),
+      // Verify the placeholder text is steady.
+      WaitForJsConditionAt(kNtpElementId, kRealboxInput,
+                           "(el) => el && el.getAnimations().length === 0"),
+      // Click into the Searchbox.
+      ClickElement(kNtpElementId, kRealboxInput),
+      // Verify that the placeholder text disappears.
+      WaitForJsConditionAt(kNtpElementId, kRealboxInput,
+                           "(el) => el && window.getComputedStyle(el, "
+                           "'::placeholder').visibility === 'hidden'"),
+      // Type text into Realbox and click AIM Button.
+      SendKeyPress(kNtpElementId, ui::VKEY_T),
+      ClickElement(kNtpElementId, kComposeButton),
+      // Wait for the page to navigate to Google SRP.
+      WaitForGoogleSearch(kNtpElementId, {{"q", "t"}, {"udm", "50"}}));
+}
