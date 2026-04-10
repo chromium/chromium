@@ -554,7 +554,6 @@
     return;
   }
 
-  optimization_guide::proto::Action action;
   NSString* jsonString = params[@"json"];
   if (jsonString.length == 0) {
     [self.consumer updateQueryResult:@"Error: No JSON provided."
@@ -564,37 +563,85 @@
   std::optional<base::Value> jsonVal = base::JSONReader::Read(
       base::SysNSStringToUTF8(jsonString), base::JSON_ALLOW_TRAILING_COMMAS);
 
-  if (!jsonVal || !jsonVal->is_dict()) {
+  if (!jsonVal) {
     [self.consumer updateQueryResult:@"Error: Invalid JSON."
                           forFeature:AIPrototypingFeature::kActorTools];
     return;
   }
 
-  // Try to parse the JSON to a known action optimization_guide::proto::Action.
-  if (!ai_prototyping::ParseActionFromDict(jsonVal->GetDict(), &action)) {
-    [self.consumer updateQueryResult:@"Error: Unknown action type in JSON."
-                          forFeature:AIPrototypingFeature::kActorTools];
+  std::vector<optimization_guide::proto::Action> actions;
+  if (jsonVal->is_dict()) {
+    optimization_guide::proto::Action action;
+    if (!ai_prototyping::ParseActionFromDict(jsonVal->GetDict(), &action)) {
+      [self.consumer updateQueryResult:@"Error: Unknown action type in JSON."
+                            forFeature:AIPrototypingFeature::kActorTools];
+      return;
+    }
+    actions.push_back(std::move(action));
+  } else if (jsonVal->is_list()) {
+    for (const auto& item : jsonVal->GetList()) {
+      if (!item.is_dict()) {
+        [self.consumer updateQueryResult:@"Error: Invalid JSON array element."
+                              forFeature:AIPrototypingFeature::kActorTools];
+        return;
+      }
+      optimization_guide::proto::Action action;
+      if (!ai_prototyping::ParseActionFromDict(item.GetDict(), &action)) {
+        [self.consumer
+            updateQueryResult:@"Error: Unknown action type in JSON array."
+                   forFeature:AIPrototypingFeature::kActorTools];
+        return;
+      }
+      actions.push_back(std::move(action));
+    }
+  } else {
+    [self.consumer
+        updateQueryResult:@"Error: JSON must be a dictionary or list."
+               forFeature:AIPrototypingFeature::kActorTools];
     return;
   }
 
   __weak __typeof(self) weakSelf = self;
-  actorService->ExecuteAction(
-      action, base::BindOnce(^(actor::ActorTool::ToolExecutionResult result) {
-        NSLog(@"[AIPrototypingMediator] Actor callback executed.");
-        if (result.has_value()) {
-          [weakSelf.consumer
-              updateQueryResult:@"Action executed successfully."
-                     forFeature:AIPrototypingFeature::kActorTools];
-        } else {
-          NSString* errorMsg = base::SysUTF8ToNSString(base::StringPrintf(
-              "Action failed: %s",
-              actor::GetActorToolErrorMessage(result.error()).c_str()));
-          NSLog(@"[AIPrototypingMediator] %@", errorMsg);
-          [weakSelf.consumer
-              updateQueryResult:errorMsg
-                     forFeature:AIPrototypingFeature::kActorTools];
-        }
-      }));
+  auto remaining_actions =
+      std::make_shared<std::vector<optimization_guide::proto::Action>>(
+          std::move(actions));
+  __block void (^executeNextAction)(void) = nil;
+
+  void (^executeNextActionBlock)(void) = ^void() {
+    if (remaining_actions->empty()) {
+      [weakSelf.consumer updateQueryResult:@"Action(s) executed successfully."
+                                forFeature:AIPrototypingFeature::kActorTools];
+      executeNextAction = nil;
+      return;
+    }
+    optimization_guide::proto::Action next_action =
+        std::move(remaining_actions->front());
+    remaining_actions->erase(remaining_actions->begin());
+
+    actorService->ExecuteAction(
+        next_action,
+        base::BindOnce(^(actor::ActorTool::ToolExecutionResult result) {
+          NSLog(@"[AIPrototypingMediator] Actor callback executed.");
+          if (result.has_value()) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+              if (executeNextAction) {
+                executeNextAction();
+              }
+            });
+          } else {
+            NSString* errorMsg = base::SysUTF8ToNSString(base::StringPrintf(
+                "Action failed: %s",
+                actor::GetActorToolErrorMessage(result.error()).c_str()));
+            NSLog(@"[AIPrototypingMediator] %@", errorMsg);
+            [weakSelf.consumer
+                updateQueryResult:errorMsg
+                       forFeature:AIPrototypingFeature::kActorTools];
+            executeNextAction = nil;
+          }
+        }));
+  };
+  executeNextAction = executeNextActionBlock;
+  executeNextAction();
 }
 
 - (void)listTabs {
