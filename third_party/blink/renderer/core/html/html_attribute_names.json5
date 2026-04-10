@@ -291,6 +291,7 @@
     "onscrollsnapchanging",
     "onstalled",
     "onstorage",
+    "onstream",
     "onsuspend",
     "onsubmit",
     "ontimeupdate",
