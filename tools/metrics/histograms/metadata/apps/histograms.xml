@@ -127,14 +127,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ash/public/cpp/app_list/app_list_metrics.cc:SearchSessionConclusion) -->
 
-<variants name="LauncherUISurface">
-  <variant name=".AppsSearch" summary="App tiles search"/>
-  <variant name=".AppsZeroState" summary="App tiles zero-state"/>
-  <variant name=".Chip" summary="Suggestion chips"/>
-  <variant name=".ListSearch" summary="Results list search"/>
-  <variant name=".ListZeroState" summary="Results list zero-state"/>
-</variants>
-
 <variants name="SearchAction">
   <variant name="Abandon" summary="abandon"/>
   <variant name="Ignore" summary="ignore"/>
@@ -402,15 +394,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.AppList.AggregatedSearchRankerError"
-    enum="AggregatedSearchRankerError" expires_after="2020-12-01">
-  <owner>thanhdng@chromium.org</owner>
-  <summary>
-    The type of errors that occur during the inference of Search Ranking
-    aggregated model.
-  </summary>
-</histogram>
-
 <histogram name="Apps.AppList.AnnotationStorage.DatabaseSize" units="MB"
     expires_after="2026-12-01">
   <owner>chenjih@google.com</owner>
@@ -525,27 +508,6 @@ chromium-metrics-reviews@google.com.
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     The type of errors that occur in storage. Logged once per error.
-  </summary>
-</histogram>
-
-<histogram name="Apps.AppList.AnswerCardSearchProvider.SearchAnswerLoadingTime"
-    units="ms" expires_after="2021-03-15">
-  <owner>jennyz@chromium.org</owner>
-  <owner>newcomer@chromium.org</owner>
-  <summary>
-    The time between sending an answer card request and receiving the
-    notification that answer card has finished loading.
-  </summary>
-</histogram>
-
-<histogram
-    name="Apps.AppList.AnswerCardSearchProvider.SearchAnswerNavigationTime"
-    units="ms" expires_after="2021-04-04">
-  <owner>jennyz@chromium.org</owner>
-  <owner>newcomer@chromium.org</owner>
-  <summary>
-    The time between sending an answer card request and receiving the
-    notification navigation has been finished with a valid answer card.
   </summary>
 </histogram>
 
@@ -1522,93 +1484,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.AppList.UserEvent.Query" enum="Boolean"
-    expires_after="2023-07-31">
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
-  <summary>
-    Emits true when the user enters a query into the Chrome OS launcher search
-    box. Entering any number of characters is considered only one query, but
-    deleting the contents of the search box and starting again is recorded as a
-    new query.
-
-    This metric stopped collecting data in November 2021, but has not yet been
-    marked obsolete because the historical data is still being used for
-    analysis.
-  </summary>
-</histogram>
-
-<histogram name="Apps.AppList.UserEvent.TypeAbandon{LauncherUISurface}"
-    enum="AppListSearchResult" expires_after="2023-07-31">
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
-  <summary>
-    Emitted after an impression, if the user then closes the launcher or moves
-    to a different view without launching any search result. This is emitted
-    once per abandon, per displayed result. Records the displayed result's type.
-    See Apps.AppList.UserEvent.TypeImpression for more details.
-
-    This metric is completed by a histogram suffix describing which UI surface
-    the results are recorded from. {LauncherUISurface}
-
-    This metric stopped collecting data in November 2021, but has not yet been
-    marked obsolete because the historical data is still being used for
-    analysis.
-  </summary>
-  <token key="LauncherUISurface" variants="LauncherUISurface">
-    <variant name=""/>
-  </token>
-</histogram>
-
-<histogram name="Apps.AppList.UserEvent.TypeImpression{LauncherUISurface}"
-    enum="AppListSearchResult" expires_after="2023-07-31">
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
-  <summary>
-    When a set of results is displayed for 2 seconds and the user has probably
-    seen it, or the user interacted with the results and has definitely seen it,
-    we consider it an impression.
-
-    Emitted once per impression for each displayed result. Records the type of
-    the displayed result, eg. native app or omnibox bookmark.
-
-    The Apps.AppList.UserEvent.Type* metrics are directly comparable
-    per-result-type. So, for example, (launches / impressions) for a result type
-    gives an accurate CTR.
-
-    This metric is completed by a histogram suffix describing which UI surface
-    the results are recorded from. {LauncherUISurface}
-
-    This metric stopped collecting data in November 2021, but has not yet been
-    marked obsolete because the historical data is still being used for
-    analysis.
-  </summary>
-  <token key="LauncherUISurface" variants="LauncherUISurface">
-    <variant name=""/>
-  </token>
-</histogram>
-
-<histogram name="Apps.AppList.UserEvent.TypeLaunch{LauncherUISurface}"
-    enum="AppListSearchResult" expires_after="2023-07-31">
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
-  <summary>
-    Emitted after an impression, if the user launches a result. Records the type
-    of the launched result. See Apps.AppList.UserEvent.TypeImpression for more
-    details.
-
-    This metric is completed by a histogram suffix describing which UI surface
-    the results are recorded from. {LauncherUISurface}
-
-    This metric stopped collecting data in November 2021, but has not yet been
-    marked obsolete because the historical data is still being used for
-    analysis.
-  </summary>
-  <token key="LauncherUISurface" variants="LauncherUISurface">
-    <variant name=""/>
-  </token>
-</histogram>
-
 <histogram name="Apps.AppList.ZeroStateDriveProvider.Relevance" units="score"
     expires_after="2027-03-01">
   <owner>chenjih@google.com</owner>
@@ -1694,16 +1569,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The different ways to move an app in app list's apps grid. Logged when the
     app moving succeeds.
-  </summary>
-</histogram>
-
-<histogram name="Apps.AppListAppTypeClicked" enum="AppListAppType"
-    expires_after="2023-04-24">
-  <owner>charleszhao@chromium.org</owner>
-  <owner>pdyson@chromium.org</owner>
-  <summary>
-    The type of app clicked in the launcher on ChromeOS, recorded after the icon
-    is clicked, before it is launched.
   </summary>
 </histogram>
 
@@ -2006,39 +1871,6 @@ chromium-metrics-reviews@google.com.
   <owner>tby@chromium.org</owner>
   <owner>chrome-knowledge-eng@google.com</owner>
   <summary>The state of a Play Store app search request.</summary>
-</histogram>
-
-<histogram name="Apps.AppListRecommendedResponse"
-    enum="ReinstallResponseParseResult" expires_after="2022-01-02">
-  <owner>napper@chromium.org</owner>
-  <owner>robsc@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
-  <summary>
-    Response when parsing the recommended app list from Play Store for candidate
-    app list, recorded every time a response from the play store is parsed in
-    client.
-  </summary>
-</histogram>
-
-<histogram name="Apps.AppListRecommendedResponse.Count" units="units"
-    expires_after="2022-02-20">
-  <owner>napper@chromium.org</owner>
-  <owner>robsc@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
-  <summary>
-    Number of responses from server in Apps.AppListRecommendedResponse.count
-    when fetching appListRecommendded GetAppReinstallCandidates.
-  </summary>
-</histogram>
-
-<histogram name="Apps.AppListRecommendedResponse.Latency" units="ms"
-    expires_after="2022-02-27">
-  <owner>napper@chromium.org</owner>
-  <owner>robsc@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
-  <summary>
-    Milliseconds elapsed to fetch appListRecommended GetAppReinstallCandidates.
-  </summary>
 </histogram>
 
 <histogram name="Apps.AppListSearchAutocomplete" enum="SearchBoxTextMatch"

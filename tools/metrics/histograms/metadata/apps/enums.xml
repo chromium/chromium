@@ -26,15 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="AggregatedSearchRankerError">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="LoadModelFailed"/>
-  <int value="2" label="CreateGraphFailed"/>
-  <int value="3" label="LoadExamplePreprocessorConfigFailed"/>
-  <int value="4" label="VectorizeFeaturesFailed"/>
-  <int value="5" label="InferenceExecutionFailed"/>
-</enum>
-
 <enum name="AnnotationStorageStatus">
   <int value="0" label="Ok"/>
   <int value="1" label="Failed to create new schema"/>
@@ -83,13 +74,6 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="REORDER_BY_KEYBOARD_IN_TOP_LEVEL"/>
   <int value="7" label="MOVE_BY_KEYBOARD_INTO_FOLDER"/>
   <int value="8" label="MOVE_BY_KEYBOARD_OUT_OF_FOLDER"/>
-</enum>
-
-<enum name="AppListAppType">
-  <int value="0" label="Other"/>
-  <int value="1" label="Chrome"/>
-  <int value="2" label="Play"/>
-  <int value="3" label="PWA"/>
 </enum>
 
 <enum name="AppListContinueFileSuggestionType">
@@ -681,15 +665,6 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Unknown"/>
   <int value="1" label="Arc"/>
   <int value="2" label="Twa"/>
-</enum>
-
-<enum name="ReinstallResponseParseResult">
-  <int value="0" label="Good result."/>
-  <int value="1" label="Timeout."/>
-  <int value="2" label="No acccount"/>
-  <int value="3" label="Null data"/>
-  <int value="4" label="Bundle error."/>
-  <int value="5" label="Unknown error."/>
 </enum>
 
 <enum name="RestoreSetting">
