@@ -818,7 +818,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                 .setEphemeralTabCoordinatorSupplier(
                         mRootUiCoordinator.getEphemeralTabCoordinatorSupplier());
 
-        new CustomTabDownloadObserver(this, getTabObserverRegistrar());
+        new CustomTabDownloadObserver(this, getTabObserverRegistrar(), getLifecycleDispatcher());
 
         if (mIntentDataProvider.isTrustedWebActivity()) {
             new TrustedWebActivityOpenTimeRecorder(

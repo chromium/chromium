@@ -33,7 +33,7 @@ import java.util.Set;
  */
 @NullMarked
 public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
-    private CustomTabActivityTabProvider mTabProvider;
+    private @Nullable CustomTabActivityTabProvider mTabProvider;
     private final Set<PageLoadMetrics.Observer> mPageLoadMetricsObservers = new HashSet<>();
     private final Set<TabObserver> mTabObservers = new HashSet<>();
 
@@ -109,12 +109,13 @@ public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
     }
 
     /**
-     * Registers a TabObserver for the CustomTabActivity's active tab. Changes the Tab that is
-     * being observed when the CustomTabActivity's active tab changes.
-     * Differs from {@link #registerTabObserver} which observes all newly created tabs.
+     * Registers a TabObserver for the CustomTabActivity's active tab. Changes the Tab that is being
+     * observed when the CustomTabActivity's active tab changes. Differs from {@link
+     * #registerTabObserver} which observes all newly created tabs.
      */
     public void registerActivityTabObserver(CustomTabTabObserver observer) {
         mActivityTabObservers.addObserver(observer);
+        if (mTabProvider == null) return;
         Tab activeTab = mTabProvider.getTab();
         if (activeTab != null) {
             activeTab.addObserver(observer);
@@ -125,6 +126,7 @@ public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
     public void unregisterActivityTabObserver(@Nullable CustomTabTabObserver observer) {
         if (observer == null) return;
         mActivityTabObservers.removeObserver(observer);
+        if (mTabProvider == null) return;
         Tab activeTab = mTabProvider.getTab();
         if (activeTab != null) {
             activeTab.removeObserver(observer);
@@ -169,6 +171,7 @@ public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
         for (PageLoadMetrics.Observer observer : mPageLoadMetricsObservers) {
             PageLoadMetrics.removeObserver(observer);
         }
+        mPageLoadMetricsObservers.clear();
     }
 
     /** Called when the {@link CustomTabActivityTabProvider}'s active tab has changed. */
@@ -176,6 +179,7 @@ public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
         if (mTabProviderTab != null) {
             removeTabObservers(mTabProviderTab, mActivityTabObservers.iterator());
         }
+        if (mTabProvider == null) return;
         mTabProviderTab = mTabProvider.getTab();
         if (mTabProviderTab != null) {
             addTabObservers(mTabProviderTab, mActivityTabObservers.iterator());
@@ -197,6 +201,16 @@ public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
     @Override
     public void onDestroy() {
         removePageLoadMetricsObservers();
+        if (mTabProviderTab != null) {
+            removeTabObservers(mTabProviderTab, mActivityTabObservers.iterator());
+            mTabProviderTab = null;
+        }
+        if (mTabProvider != null) {
+            mTabProvider.removeObserver(mActivityTabProviderObserver);
+            mTabProvider = null;
+        }
+        mActivityTabObservers.clear();
+        mTabObservers.clear();
     }
 
     /**

@@ -14,6 +14,8 @@ import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.interstitial.DownloadInterstitialCoordinator;
 import org.chromium.chrome.browser.download.interstitial.DownloadInterstitialCoordinatorFactory;
 import org.chromium.chrome.browser.download.interstitial.NewDownloadTab;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.pdf.PdfUtils;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -27,14 +29,25 @@ import org.chromium.ui.base.PageTransition;
  * download UI.
  */
 @NullMarked
-public class CustomTabDownloadObserver extends EmptyTabObserver {
+public class CustomTabDownloadObserver extends EmptyTabObserver implements DestroyObserver {
     private final Activity mActivity;
     private final TabObserverRegistrar mTabObserverRegistrar;
+    private final ActivityLifecycleDispatcher mLifecycleDispatcher;
 
-    public CustomTabDownloadObserver(Activity activity, TabObserverRegistrar tabObserverRegistrar) {
+    public CustomTabDownloadObserver(
+            Activity activity,
+            TabObserverRegistrar tabObserverRegistrar,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
         mActivity = activity;
         mTabObserverRegistrar = tabObserverRegistrar;
+        mLifecycleDispatcher = lifecycleDispatcher;
+        mLifecycleDispatcher.register(this);
         mTabObserverRegistrar.registerTabObserver(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        unregister();
     }
 
     @Override
@@ -89,5 +102,6 @@ public class CustomTabDownloadObserver extends EmptyTabObserver {
 
     private void unregister() {
         mTabObserverRegistrar.unregisterTabObserver(this);
+        mLifecycleDispatcher.unregister(this);
     }
 }
