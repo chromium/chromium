@@ -5,9 +5,14 @@
 #include "components/optimization_guide/core/model_execution/model_execution_manager.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 
-#include "base/files/file_path.h"
-#include "base/functional/callback_helpers.h"
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
@@ -15,29 +20,26 @@
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
 #include "base/test/test_future.h"
-#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
-#include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
+#include "base/time/time.h"
 #include "components/optimization_guide/core/model_execution/model_execution_fetcher.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
-#include "components/optimization_guide/core/model_execution/test/fake_model_broker.h"
 #include "components/optimization_guide/core/model_execution/test/request_builder.h"
-#include "components/optimization_guide/core/model_execution/test/response_holder.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/forms_classifications.pb.h"
-#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/variations/scoped_variations_ids_provider.h"
+#include "net/http/http_status_code.h"
+#include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace optimization_guide {
 
@@ -65,6 +67,44 @@ class MockDelegate : public ModelExecutionManager::Delegate {
               CreatePrivateAiFetcher,
               (),
               (override));
+};
+
+class RemoteResponseHolder {
+ public:
+  RemoteResponseHolder() = default;
+  ~RemoteResponseHolder() = default;
+
+  OptimizationGuideModelExecutionResultCallback GetCallback() {
+    CHECK(!weak_ptr_factory_.HasWeakPtrs());  // Shouldn't be reused.
+    return base::BindRepeating(&RemoteResponseHolder::OnResponse,
+                               weak_ptr_factory_.GetWeakPtr());
+  }
+
+  bool GetFinalStatus() { return future_.Get(); }
+
+  template <typename T>
+  T GetOutput() const {
+    return *ParsedAnyMetadata<T>(result_->response.value());
+  }
+
+  OptimizationGuideModelExecutionError::ModelExecutionError error() const {
+    return result_->response.error().error();
+  }
+
+  ModelQualityLogEntry* log_entry() { return log_entry_.get(); }
+
+ private:
+  void OnResponse(OptimizationGuideModelExecutionResult result,
+                  std::unique_ptr<ModelQualityLogEntry> log_entry) {
+    log_entry_ = std::move(log_entry);
+    result_.emplace(std::move(result));
+    future_.SetValue(result_->response.has_value());
+  }
+
+  base::test::TestFuture<bool> future_;
+  std::optional<OptimizationGuideModelExecutionResult> result_;
+  std::unique_ptr<ModelQualityLogEntry> log_entry_;
+  base::WeakPtrFactory<RemoteResponseHolder> weak_ptr_factory_{this};
 };
 
 proto::ExecuteResponse BuildComposeResponse(const std::string& output) {

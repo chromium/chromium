@@ -10,41 +10,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/test_future.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
-#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
-#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
-#include "components/optimization_guide/core/optimization_guide_util.h"
 
 namespace optimization_guide {
-
-class RemoteResponseHolder {
- public:
-  RemoteResponseHolder();
-  ~RemoteResponseHolder();
-
-  OptimizationGuideModelExecutionResultCallback GetCallback();
-
-  bool GetFinalStatus() { return future_.Get(); }
-
-  template <typename T>
-  T GetOutput() const {
-    return *ParsedAnyMetadata<T>(result_->response.value());
-  }
-
-  OptimizationGuideModelExecutionError::ModelExecutionError error() const {
-    return result_->response.error().error();
-  }
-
-  ModelQualityLogEntry* log_entry() { return log_entry_.get(); }
-
- private:
-  void OnResponse(OptimizationGuideModelExecutionResult result,
-                  std::unique_ptr<ModelQualityLogEntry> log_entry);
-
-  base::test::TestFuture<bool> future_;
-  std::optional<OptimizationGuideModelExecutionResult> result_;
-  std::unique_ptr<ModelQualityLogEntry> log_entry_;
-  base::WeakPtrFactory<RemoteResponseHolder> weak_ptr_factory_{this};
-};
 
 class ResponseHolder {
  public:

@@ -21,24 +21,6 @@ std::string GetComposeOutput(const StreamingResponse& response) {
 
 }  // namespace
 
-RemoteResponseHolder::RemoteResponseHolder() = default;
-RemoteResponseHolder::~RemoteResponseHolder() = default;
-
-OptimizationGuideModelExecutionResultCallback
-RemoteResponseHolder::GetCallback() {
-  CHECK(!weak_ptr_factory_.HasWeakPtrs());  // Shouldn't be reused.
-  return base::BindRepeating(&RemoteResponseHolder::OnResponse,
-                             weak_ptr_factory_.GetWeakPtr());
-}
-
-void RemoteResponseHolder::OnResponse(
-    OptimizationGuideModelExecutionResult result,
-    std::unique_ptr<ModelQualityLogEntry> log_entry) {
-  log_entry_ = std::move(log_entry);
-  result_.emplace(std::move(result));
-  future_.SetValue(result_->response.has_value());
-}
-
 ResponseHolder::ResponseHolder() : weak_ptr_factory_(this) {}
 ResponseHolder::~ResponseHolder() = default;
 
