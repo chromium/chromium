@@ -167,7 +167,7 @@ SiteInfo SiteInfo::CreateForErrorPage(
     WebExposedIsolationLevel web_exposed_isolation_level,
     const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
         cross_origin_isolation_key,
-    const std::string& browser_context_id) {
+    const base::UnguessableToken& browser_context_id) {
   AgentClusterKey agent_cluster_key;
   if (cross_origin_isolation_key.has_value()) {
     agent_cluster_key = AgentClusterKey::CreateWithCrossOriginIsolationKey(
@@ -228,7 +228,7 @@ SiteInfo SiteInfo::CreateForDefaultSiteInstance(
                   /*does_site_request_dedicated_process_for_coop=*/false,
                   is_jit_disabled, are_v8_optimizations_disabled,
                   /*is_pdf=*/false, isolation_context.is_fenced(),
-                  browser_context->UniqueId());
+                  browser_context->UniqueToken());
 }
 
 // static
@@ -251,7 +251,7 @@ SiteInfo SiteInfo::CreateForGuest(
       /*is_guest=*/true,
       /*does_site_request_dedicated_process_for_coop=*/false,
       /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
-      /*is_pdf=*/false, /*is_fenced=*/false, browser_context->UniqueId());
+      /*is_pdf=*/false, /*is_fenced=*/false, browser_context->UniqueToken());
 }
 
 // static
@@ -353,7 +353,7 @@ SiteInfo SiteInfo::Create(const IsolationContext& isolation_context,
         /*is_guest=*/isolation_context.is_guest(),
         /*is_fenced=*/isolation_context.is_fenced(), web_exposed_isolation_info,
         web_exposed_isolation_level, url_info.cross_origin_isolation_key,
-        isolation_context.browser_context()->UniqueId());
+        isolation_context.browser_context()->UniqueToken());
   }
 
   // If there is a COOP isolation request, propagate it to SiteInfo.
@@ -369,7 +369,7 @@ SiteInfo SiteInfo::Create(const IsolationContext& isolation_context,
                   does_site_request_dedicated_process_for_coop, is_jitless,
                   are_v8_optimizations_disabled, url_info.is_pdf,
                   isolation_context.is_fenced(),
-                  isolation_context.browser_context()->UniqueId());
+                  isolation_context.browser_context()->UniqueToken());
 }
 
 // static
@@ -391,7 +391,7 @@ SiteInfo::SiteInfo(const AgentClusterKey& agent_cluster_key,
                    bool are_v8_optimizations_disabled,
                    bool is_pdf,
                    bool is_fenced,
-                   const std::string& browser_context_id)
+                   const base::UnguessableToken& browser_context_id)
     : site_url_(site_url),
       agent_cluster_key_(agent_cluster_key),
       is_sandboxed_(is_sandboxed),
@@ -431,7 +431,7 @@ SiteInfo::SiteInfo(BrowserContext* browser_context)
                /*are_v8_optimizations_disabled=*/false,
                /*is_pdf=*/false,
                /*is_fenced=*/false,
-               browser_context->UniqueId()) {}
+               browser_context->UniqueToken()) {}
 
 // static
 auto SiteInfo::MakeSecurityPrincipalKey(const SiteInfo& site_info) {

@@ -20,7 +20,7 @@ ProcessLock ProcessLock::CreateAllowAnySite(
     const WebExposedIsolationInfo& web_exposed_isolation_info,
     const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
         cross_origin_isolation_key,
-    const std::string& browser_context_id) {
+    const base::UnguessableToken& browser_context_id) {
   WebExposedIsolationLevel web_exposed_isolation_level =
       SiteInfo::ComputeWebExposedIsolationLevelForEmptySite(
           web_exposed_isolation_info);

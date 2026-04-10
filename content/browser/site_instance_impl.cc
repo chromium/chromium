@@ -1504,7 +1504,7 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
       auto new_process_lock = ProcessLock::CreateAllowAnySite(
           storage_partition->GetConfig(), GetWebExposedIsolationInfo(),
           /*cross_origin_isolation_key=*/std::nullopt,
-          GetBrowserContext()->UniqueId());
+          GetBrowserContext()->UniqueToken());
       process->SetProcessLock(GetIsolationContext(), new_process_lock);
     } else {
       CHECK(process_lock.AllowsAnySite())
@@ -1562,7 +1562,7 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
       auto new_process_lock = ProcessLock::CreateAllowAnySite(
           storage_partition->GetConfig(), GetWebExposedIsolationInfo(),
           /*cross_origin_isolation_key=*/std::nullopt,
-          GetBrowserContext()->UniqueId());
+          GetBrowserContext()->UniqueToken());
       process->SetProcessLock(GetIsolationContext(), new_process_lock);
     } else {
       CHECK(process_lock.AllowsAnySite())

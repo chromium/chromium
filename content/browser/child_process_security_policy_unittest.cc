@@ -3296,13 +3296,13 @@ TEST_P(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_UnlockedProcess) {
     // This is important when this test is run with other tests, as then
     // BrowsingInstanceId will not be '1' in general.
     p->Add(kRendererProcess, &context);
-    p->LockProcess(
-        foo_instance->GetIsolationContext(), kRendererProcess,
-        /*is_process_used=*/false,
-        ProcessLock::CreateAllowAnySite(
-            StoragePartitionConfig::CreateDefault(&context),
-            WebExposedIsolationInfo::CreateNonIsolated(),
-            /*cross_origin_isolation_key=*/std::nullopt, context.UniqueId()));
+    p->LockProcess(foo_instance->GetIsolationContext(), kRendererProcess,
+                   /*is_process_used=*/false,
+                   ProcessLock::CreateAllowAnySite(
+                       StoragePartitionConfig::CreateDefault(&context),
+                       WebExposedIsolationInfo::CreateNonIsolated(),
+                       /*cross_origin_isolation_key=*/std::nullopt,
+                       context.UniqueToken()));
 
     EXPECT_TRUE(foo_instance->HasSite());
     if (ShouldUseDefaultSiteInstanceGroup()) {
@@ -3354,7 +3354,7 @@ TEST_P(ChildProcessSecurityPolicyTest, CannotLockUsedProcessToSite) {
       ProcessLock::CreateAllowAnySite(
           StoragePartitionConfig::CreateDefault(&context),
           WebExposedIsolationInfo::CreateNonIsolated(),
-          /*cross_origin_isolation_key=*/std::nullopt, context.UniqueId()));
+          /*cross_origin_isolation_key=*/std::nullopt, context.UniqueToken()));
   EXPECT_TRUE(p->GetProcessLock(kRendererProcess).AllowsAnySite());
   EXPECT_FALSE(p->GetProcessLock(kRendererProcess).IsLockedToSite());
 

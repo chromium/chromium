@@ -1193,7 +1193,7 @@ void ChildProcessSecurityPolicyImpl::AddForTesting(
                   StoragePartitionConfig::CreateDefault(browser_context),
                   WebExposedIsolationInfo::CreateNonIsolated(),
                   /*cross_origin_isolation_key=*/std::nullopt,
-                  browser_context->UniqueId()));
+                  browser_context->UniqueToken()));
 }
 
 void ChildProcessSecurityPolicyImpl::Remove(ChildProcessId child_id) {

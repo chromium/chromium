@@ -19,6 +19,7 @@
 #include "base/test/mock_log.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/unguessable_token.h"
 #include "content/browser/browsing_instance.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/isolated_origin_util.h"
@@ -68,9 +69,10 @@ bool DoesURLRequireDedicatedProcess(const IsolationContext& isolation_context,
       .RequiresDedicatedProcess(isolation_context);
 }
 
-SiteInfo CreateSimpleSiteInfo(const GURL& process_lock_url,
-                              bool requires_origin_keyed_process,
-                              const std::string& browser_context_id) {
+SiteInfo CreateSimpleSiteInfo(
+    const GURL& process_lock_url,
+    bool requires_origin_keyed_process,
+    const base::UnguessableToken& browser_context_id) {
   AgentClusterKey agent_cluster_key =
       requires_origin_keyed_process
           ? AgentClusterKey::CreateOriginKeyed(
@@ -95,7 +97,8 @@ SiteInfo CreateSimpleSiteInfo(const GURL& process_lock_url,
 
 const char kPrivilegedScheme[] = "privileged";
 const char kCustomStandardScheme[] = "custom-standard";
-const char kBrowserContextId[] = "browser_context_id";
+const base::UnguessableToken kBrowserContextId =
+    base::UnguessableToken::CreateForTesting(0, 1);
 
 class SiteInstanceTestBrowserClient : public TestContentBrowserClient {
  public:
@@ -278,7 +281,7 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
 
   auto site_info_1_other_context = CreateSimpleSiteInfo(
       GURL("https://foo.com"), false /* requires_origin_keyed_process */,
-      "other_context");
+      base::UnguessableToken::CreateForTesting(0, 2));
 
   // Test IsSamePrincipalWith.
   EXPECT_TRUE(site_info_1.IsSamePrincipalWith(site_info_1));
@@ -913,7 +916,7 @@ TEST_F(SiteInstanceTest, GetSiteForURL) {
       /*is_guest=*/false, /*is_fenced=*/false,
       WebExposedIsolationInfo::CreateNonIsolated(),
       WebExposedIsolationLevel::kNotIsolated,
-      /*cross_origin_isolation_key=*/std::nullopt, context.UniqueId());
+      /*cross_origin_isolation_key=*/std::nullopt, context.UniqueToken());
   test_url = GURL(kUnreachableWebDataURL);
   site_url = GetSiteForURL(test_url);
   EXPECT_EQ(error_site_info.site_url(), site_url);
@@ -980,7 +983,7 @@ TEST_F(SiteInstanceTest, ProcessLockDoesNotUseEffectiveURL) {
       WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
       /*does_site_request_dedicated_process_for_coop=*/false,
       /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
-      /*is_pdf=*/false, /*is_fenced=*/false, browser_context->UniqueId());
+      /*is_pdf=*/false, /*is_fenced=*/false, browser_context->UniqueToken());
 
   // New SiteInstance in a new BrowsingInstance with a predetermined URL.
   {
@@ -1784,7 +1787,7 @@ TEST_F(SiteInstanceTest, OriginalURL) {
       WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
       /*does_site_request_dedicated_process_for_coop=*/false,
       /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
-      /*is_pdf=*/false, /*is_fenced=*/false, browser_context->UniqueId());
+      /*is_pdf=*/false, /*is_fenced=*/false, browser_context->UniqueToken());
 
   // New SiteInstance in a new BrowsingInstance with a predetermined URL.  In
   // this and subsequent cases, the site URL should consist of the effective
@@ -2221,7 +2224,7 @@ TEST_F(SiteInstanceTest, ErrorPage) {
       /*is_guest=*/false, /*is_fenced=*/false,
       WebExposedIsolationInfo::CreateNonIsolated(),
       WebExposedIsolationLevel::kNotIsolated,
-      /*cross_origin_isolation_key=*/std::nullopt, context()->UniqueId());
+      /*cross_origin_isolation_key=*/std::nullopt, context()->UniqueToken());
   EXPECT_TRUE(error_site_info.is_error_page());
   EXPECT_FALSE(error_site_info.web_exposed_isolation_info().is_isolated());
   EXPECT_FALSE(error_site_info.IsGuest());

@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_SITE_INFO_H_
 #define CONTENT_BROWSER_SITE_INFO_H_
 
+#include "base/unguessable_token.h"
 #include "content/browser/agent_cluster_key.h"
 #include "content/browser/url_info.h"
 #include "content/browser/web_exposed_isolation_info.h"
@@ -72,7 +73,7 @@ class CONTENT_EXPORT SiteInfo : public SecurityPrincipal {
       WebExposedIsolationLevel web_exposed_isolation_level,
       const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
           cross_origin_isolation_key,
-      const std::string& browser_context_id);
+      const base::UnguessableToken& browser_context_id);
 
   // Helper to create a SiteInfo for default SiteInstances.  Default
   // SiteInstances are used for non-isolated sites on platforms without strict
@@ -203,7 +204,7 @@ class CONTENT_EXPORT SiteInfo : public SecurityPrincipal {
            bool are_v8_optimizations_disabled,
            bool is_pdf,
            bool is_fenced,
-           const std::string& browser_context_id);
+           const base::UnguessableToken& browser_context_id);
   SiteInfo() = delete;
   SiteInfo(const SiteInfo& rhs);
 
@@ -544,10 +545,7 @@ class CONTENT_EXPORT SiteInfo : public SecurityPrincipal {
 
   // Unique id of the BrowserContext. SiteInfos associated with different
   // BrowserContexts should be considered distinct security principals.
-  // This is a string, because it is initialized from
-  // BrowserContext::UniqueId() which returns string.
-  // TODO(crbug.com/466132514): use UnguessableToken instead.
-  std::string browser_context_id_;
+  base::UnguessableToken browser_context_id_;
 };
 
 CONTENT_EXPORT std::ostream& operator<<(std::ostream& out,
