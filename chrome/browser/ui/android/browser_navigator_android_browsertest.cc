@@ -62,6 +62,23 @@ class TabAdditionObserver : public TabListInterfaceObserver {
   std::unique_ptr<NavigationCounter> counter_;
 };
 
+class NavigationUIDataObserver : public content::WebContentsObserver {
+ public:
+  explicit NavigationUIDataObserver(content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {}
+
+  void DidFinishNavigation(content::NavigationHandle* handle) override {
+    last_navigation_ui_data_ = handle->GetNavigationUIData();
+  }
+
+  content::NavigationUIData* last_navigation_ui_data() {
+    return last_navigation_ui_data_;
+  }
+
+ private:
+  raw_ptr<content::NavigationUIData> last_navigation_ui_data_ = nullptr;
+};
+
 }  // namespace
 
 class NavigateAndroidBrowserTest : public BrowserWindowAndroidBrowserTestBase {
@@ -940,4 +957,24 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
   // Verify the new tab used the existing WebContents.
   EXPECT_EQ(params.navigated_or_inserted_contents,
             tab_list_->GetTab(1)->GetContents());
+}
+
+IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest, AttachNavigationUIData) {
+  const GURL url1 = StartAtURL("/title1.html");
+
+  // Prepare and execute a CURRENT_TAB navigation.
+  const GURL url2 = embedded_test_server()->GetURL("/title2.html");
+  NavigateParams params(browser_window_, url2, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::CURRENT_TAB;
+  params.source_contents = web_contents_;
+
+  NavigationUIDataObserver ui_data_observer(web_contents_);
+  content::TestNavigationObserver navigation_observer(web_contents_);
+
+  base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
+  ASSERT_TRUE(handle);
+  navigation_observer.Wait();
+
+  // Verify that NavigationUIData is attached on Android.
+  EXPECT_TRUE(ui_data_observer.last_navigation_ui_data());
 }

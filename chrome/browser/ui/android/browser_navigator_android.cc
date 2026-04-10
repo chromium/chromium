@@ -252,7 +252,8 @@ base::WeakPtr<content::NavigationHandle> GetTabAndPerformNavigation(
 
   // Perform navigation.
   content::NavigationController::LoadURLParams load_url_params =
-      LoadURLParamsFromNavigateParams(params);
+      LoadURLParamsFromNavigateParams(params->navigated_or_inserted_contents,
+                                      params);
   return params->navigated_or_inserted_contents->GetController()
       .LoadURLWithParams(load_url_params);
 }

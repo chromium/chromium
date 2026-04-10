@@ -18,11 +18,9 @@ struct NavigateParams;
 content::NavigationController::LoadURLParams LoadURLParamsFromNavigateParams(
     NavigateParams* params);
 
-#if !BUILDFLAG(IS_ANDROID)
 // Same as previous but sets navigation UI data for main frame navigations.
 content::NavigationController::LoadURLParams LoadURLParamsFromNavigateParams(
     content::WebContents* target_contents,
     NavigateParams* params);
-#endif
 
 #endif  // CHROME_BROWSER_UI_BROWSER_NAVIGATOR_PARAMS_UTILS_H_
