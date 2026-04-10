@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager.NativeInterfaceDelegate;
+import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -58,24 +59,19 @@ public class TabBottomSheetManagerTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mWindowAndroid = mActivity.getWindowAndroid();
-                    mBottomSheetController =
-                            mActivity.getRootUiCoordinatorForTesting().getBottomSheetController();
+                    TabbedRootUiCoordinator tabbedRootUiCoordinator =
+                            (TabbedRootUiCoordinator) mActivity.getRootUiCoordinatorForTesting();
+                    mBottomSheetController = tabbedRootUiCoordinator.getBottomSheetController();
                     var compositorViewHolder = mActivity.getCompositorViewHolderSupplier().get();
                     mCoBrowseViews = new CoBrowseViews(mActivity, null, null, null);
-                    mManager =
-                            new TabBottomSheetManager(
-                                    mActivity,
-                                    mWindowAndroid,
-                                    mBottomSheetController,
-                                    mActivity.getLayoutStateProviderSupplier(),
-                                    compositorViewHolder);
+                    mManager = tabbedRootUiCoordinator.getTabBottomSheetManagerForTesting();
                 });
     }
 
     @After
     public void tearDown() {
         if (mManager != null) {
-            ThreadUtils.runOnUiThreadBlocking(() -> mManager.destroy());
+            ThreadUtils.runOnUiThreadBlocking(() -> mManager.tryToCloseBottomSheet());
         }
     }
 

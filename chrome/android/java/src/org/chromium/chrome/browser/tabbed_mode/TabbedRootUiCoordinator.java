@@ -2077,6 +2077,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         return mActorOverlayCoordinator;
     }
 
+    public @Nullable TabBottomSheetManager getTabBottomSheetManagerForTesting() {
+        return mTabBottomSheetManager;
+    }
+
     /** Called when a link is copied through context menu. */
     public void onContextMenuCopyLink() {
         // The iph controller will be null before tracker fully initialized.
