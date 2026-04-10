@@ -9518,6 +9518,7 @@ from previous Chrome versions.
   <int value="-1520630395" label="DefaultPassthroughCommandDecoder:disabled"/>
   <int value="-1520542714" label="AccessibilityManifestV3GoogleTts:enabled"/>
   <int value="-1520207616" label="GlicPrintMenuItem:enabled"/>
+  <int value="-1520009044" label="EnableAndroidSidePanelLogs:disabled"/>
   <int value="-1519741393"
       label="AutofillEnableBuyNowPayLaterForExternallyLinkedKlarna:enabled"/>
   <int value="-1519536015" label="enable-hls-playback:disabled"/>
@@ -11055,6 +11056,7 @@ from previous Chrome versions.
   <int value="-1010851157" label="DataSharing:disabled"/>
   <int value="-1010590882" label="MutationEvents:enabled"/>
   <int value="-1010588306" label="SlideTopChromeWithPageScrolls:disabled"/>
+  <int value="-1010095039" label="EnableAndroidSidePanelLogs:enabled"/>
   <int value="-1010024405"
       label="AutofillAiBasedAmountExtractionIgnoreSeenTermsForTesting:disabled"/>
   <int value="-1009727449" label="HelpAppWelcomeTips:enabled"/>

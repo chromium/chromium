@@ -445,6 +445,7 @@ public abstract class ChromeFeatureList {
     public static final String ENABLE_ANDROID_SIDE_PANEL = "EnableAndroidSidePanel";
     public static final String ENABLE_ANDROID_SIDE_PANEL_DEV_FEATURE =
             "EnableAndroidSidePanelDevFeature";
+    public static final String ENABLE_ANDROID_SIDE_PANEL_LOGS = "EnableAndroidSidePanelLogs";
     public static final String ENABLE_BROWSER_WINDOW_INTERFACE_FOR_CUSTOM_TAB_ACTIVITY =
             "EnableBrowserWindowInterfaceForCustomTabActivity";
     public static final String ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID =
@@ -984,6 +985,8 @@ public abstract class ChromeFeatureList {
                     /* defaultValueInTests= */ BuildConfig.IS_FOR_TEST);
     public static final CachedFlag sEnableAndroidSidePanelDevFeature =
             newCachedFlag(ENABLE_ANDROID_SIDE_PANEL_DEV_FEATURE, false);
+    public static final CachedFlag sEnableAndroidSidePanelLogs =
+            newCachedFlag(ENABLE_ANDROID_SIDE_PANEL_LOGS, false);
     public static final CachedFlag sEnableBrowserWindowInterfaceForCustomTabActivity =
             newCachedFlag(
                     ENABLE_BROWSER_WINDOW_INTERFACE_FOR_CUSTOM_TAB_ACTIVITY,
@@ -1311,6 +1314,7 @@ public abstract class ChromeFeatureList {
                     sEducationalTipDefaultBrowserPromoCard,
                     sEnableAndroidSidePanel,
                     sEnableAndroidSidePanelDevFeature,
+                    sEnableAndroidSidePanelLogs,
                     sEnableBrowserWindowInterfaceForCustomTabActivity,
                     sEnableExclusiveAccessManager,
                     sEnableFullscreenToAnyScreenAndroid,

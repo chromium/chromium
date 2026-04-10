@@ -176,6 +176,7 @@ BASE_DECLARE_FEATURE(kEducationalTipDefaultBrowserPromoCard);
 BASE_DECLARE_FEATURE(kEmptyTabListAnimationKillSwitch);
 BASE_DECLARE_FEATURE(kEnableAndroidSidePanel);
 BASE_DECLARE_FEATURE(kEnableAndroidSidePanelDevFeature);
+BASE_DECLARE_FEATURE(kEnableAndroidSidePanelLogs);
 BASE_DECLARE_FEATURE(kEnableBrowserWindowInterfaceForCustomTabActivity);
 BASE_DECLARE_FEATURE(kEnableContextMenuForPreviewTab);
 BASE_DECLARE_FEATURE(kEnableEscapeHandlingForSecondaryActivities);

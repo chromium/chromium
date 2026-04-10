@@ -2791,6 +2791,11 @@
     "expiry_milestone": 152
   },
   {
+    "name": "enable-android-side-panel-logs",
+    "owners": ["mschillaci@google.com", "linyuh@google.com", "sinansahin@google.com"],
+    "expiry_milestone": 158
+  },
+  {
     "name": "enable-android-spellcheck-full-api-blink",
     "owners": [
       "jhtin@google.com",

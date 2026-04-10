@@ -5595,6 +5595,12 @@ inline constexpr char kEnableAndroidSidePanelDevFeatureDescription[] =
     "container. For this flag to take effect, the 'enable-android-side-panel' "
     "flag should also be enabled.";
 
+inline constexpr char kEnableAndroidSidePanelLogsName[] =
+    "Enable Android Side Panel Logs";
+inline constexpr char kEnableAndroidSidePanelLogsDescription[] =
+    "When enabled, includes detailed logging for the Android Side Panel "
+    "feature.";
+
 inline constexpr char kEnableChromeOSIsolatedWebAppSetShapeName[] =
     "Enable ChromeOS Isolated Web App setShape API";
 inline constexpr char kEnableChromeOSIsolatedWebAppSetShapeDescription[] =
