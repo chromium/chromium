@@ -26,11 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="BooleanStale">
-  <int value="0" label="Fresh"/>
-  <int value="1" label="Stale"/>
-</enum>
-
 <enum name="FirstRunCloudPolicyStoreState">
   <int value="0" label="Loaded before initialization">
     The cloud policy store was already loaded when the FRE intro was first

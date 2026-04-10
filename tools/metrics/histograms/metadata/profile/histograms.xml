@@ -170,16 +170,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.DiceUI.GaiaAccountsStale" enum="BooleanStale"
-    expires_after="M80">
-  <owner>msarda@chromium.org</owner>
-  <owner>tangltom@chromium.org</owner>
-  <summary>
-    This histogram tracks whether the accounts cached in the GAIA cookie service
-    manager are stale when presenting the user menu when DICE is enabled.
-  </summary>
-</histogram>
-
 <histogram name="Profile.DidDestroyProfileBeforeShutdown" enum="Boolean"
     expires_after="2026-07-01">
   <owner>nicolaso@chromium.org</owner>
