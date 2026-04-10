@@ -276,14 +276,19 @@ auto AnyConv2dParams() {
 auto AnyGemmParams() {
   return fuzztest::StructOf<GemmParams>(
       AnyOperandDataType(),
-      AnyDimSize(),                  // m
-      AnyDimSize(),                  // k
-      AnyDimSize(),                  // n
-      fuzztest::Arbitrary<float>(),  // alpha
-      fuzztest::Arbitrary<float>(),  // beta
-      fuzztest::Arbitrary<bool>(),   // a_transpose
-      fuzztest::Arbitrary<bool>(),   // b_transpose
-      fuzztest::Arbitrary<bool>(),   // has_c
+      AnyDimSize(),  // m
+      AnyDimSize(),  // k
+      AnyDimSize(),  // n
+      // The 1.0f values are used to exercise the fusiable path for TFLite
+      // backend:
+      // https://source.chromium.org/chromium/chromium/src/+/main:services/webnn/tflite/graph_builder_tflite.cc;l=2083;drc=ec4ff4bae24916aaad3186ce4bc1339313b6fb5a
+      fuzztest::OneOf(fuzztest::Just(1.0f),
+                      fuzztest::Arbitrary<float>()),  // alpha
+      fuzztest::OneOf(fuzztest::Just(1.0f),
+                      fuzztest::Arbitrary<float>()),  // beta
+      fuzztest::Arbitrary<bool>(),                    // a_transpose
+      fuzztest::Arbitrary<bool>(),                    // b_transpose
+      fuzztest::Arbitrary<bool>(),                    // has_c
       fuzztest::ElementOf<GemmCShapeKind>(
           {GemmCShapeKind::kScalar, GemmCShapeKind::k1D,
            GemmCShapeKind::k2D_1xN, GemmCShapeKind::k2D_MxN}),  // c_shape_kind
@@ -581,6 +586,72 @@ std::optional<Pool2dDescriptors> SetUpPool2dDescriptors(
   };
 }
 
+struct GemmDescriptors {
+  OperandDescriptor a_desc;
+  OperandDescriptor b_desc;
+  std::optional<OperandDescriptor> c_desc;
+  OperandDescriptor output_desc;
+};
+
+// Helper to set up GemmDescriptors. Returns nullopt if any validation fails.
+std::optional<GemmDescriptors> SetUpGemmDescriptors(
+    const ContextProperties& context_properties,
+    const GemmParams& params) {
+  std::vector<uint32_t> a_dims =
+      params.a_transpose ? std::vector<uint32_t>{params.k, params.m}
+                         : std::vector<uint32_t>{params.m, params.k};
+  std::vector<uint32_t> b_dims =
+      params.b_transpose ? std::vector<uint32_t>{params.n, params.k}
+                         : std::vector<uint32_t>{params.k, params.n};
+
+  ASSIGN_OR_RETURN_NULLOPT(
+      auto a_desc, OperandDescriptor::Create(context_properties,
+                                             params.data_type, a_dims, ""));
+  ASSIGN_OR_RETURN_NULLOPT(
+      auto b_desc, OperandDescriptor::Create(context_properties,
+                                             params.data_type, b_dims, ""));
+
+  GemmAttributes attr;
+  attr.alpha = params.alpha;
+  attr.beta = params.beta;
+  attr.a_transpose = params.a_transpose;
+  attr.b_transpose = params.b_transpose;
+
+  std::optional<OperandDescriptor> c_desc;
+  if (params.has_c) {
+    std::vector<uint32_t> c_dims;
+    switch (params.c_shape_kind) {
+      case GemmCShapeKind::kScalar:
+        c_dims = {1};
+        break;
+      case GemmCShapeKind::k1D:
+        c_dims = {params.n};
+        break;
+      case GemmCShapeKind::k2D_1xN:
+        c_dims = {1, params.n};
+        break;
+      case GemmCShapeKind::k2D_MxN:
+        c_dims = {params.m, params.n};
+        break;
+    }
+    ASSIGN_OR_RETURN_NULLOPT(
+        c_desc, OperandDescriptor::Create(context_properties, params.data_type,
+                                          c_dims, ""));
+    attr.c_operand = c_desc;
+  }
+
+  ASSIGN_OR_RETURN_NULLOPT(
+      auto output_desc,
+      ValidateGemmAndInferOutput(context_properties, a_desc, b_desc, attr));
+
+  return GemmDescriptors{
+      .a_desc = std::move(a_desc),
+      .b_desc = std::move(b_desc),
+      .c_desc = std::move(c_desc),
+      .output_desc = std::move(output_desc),
+  };
+}
+
 void MaybeIncreaseTestTimeouts() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
@@ -838,6 +909,9 @@ class WebNNGraphImplFuzzerImpl
   void SubgraphDQConv2dQ(Conv2dParams conv2d_params,
                          QuantizationParams quantization_params,
                          uint8_t seed_for_data);
+  void SubgraphDQGemmQ(GemmParams gemm_params,
+                       QuantizationParams quantization_params,
+                       uint8_t seed_for_data);
   void SubgraphDQPool2dQ(Pool2dParams pool2d_params,
                          QuantizationParams quantization_params,
                          uint8_t seed_for_data);
@@ -865,11 +939,9 @@ template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpConv2d(
     Conv2dParams params,
     uint8_t seed_for_data) {
-  auto conv2d_descs =
-      SetUpConv2dDescriptors(this->context_properties(), params);
-  if (!conv2d_descs) {
-    return;
-  }
+  ASSIGN_OR_RETURN_VOID(
+      auto conv2d_descs,
+      SetUpConv2dDescriptors(this->context_properties(), params));
 
   mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
       this->BindNewGraphBuilderRemote();
@@ -878,45 +950,45 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpConv2d(
   OperandId input_id;
   OperandId filter_id;
   OperandId bias_id;
-  std::vector<uint8_t> input_data(conv2d_descs->input_desc.PackedByteLength(),
+  std::vector<uint8_t> input_data(conv2d_descs.input_desc.PackedByteLength(),
                                   seed_for_data);
-  std::vector<uint8_t> filter_data(conv2d_descs->filter_desc.PackedByteLength(),
+  std::vector<uint8_t> filter_data(conv2d_descs.filter_desc.PackedByteLength(),
                                    seed_for_data);
-  std::vector<uint8_t> bias_data(conv2d_descs->bias_desc.PackedByteLength(),
+  std::vector<uint8_t> bias_data(conv2d_descs.bias_desc.PackedByteLength(),
                                  seed_for_data);
 
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
   if (params.is_input_constant) {
-    input_id = builder.BuildConstant(conv2d_descs->input_desc.shape(),
-                                     conv2d_descs->input_desc.data_type(),
+    input_id = builder.BuildConstant(conv2d_descs.input_desc.shape(),
+                                     conv2d_descs.input_desc.data_type(),
                                      base::as_byte_span(input_data));
   } else {
-    input_id = builder.BuildInput("input", conv2d_descs->input_desc.shape(),
-                                  conv2d_descs->input_desc.data_type());
+    input_id = builder.BuildInput("input", conv2d_descs.input_desc.shape(),
+                                  conv2d_descs.input_desc.data_type());
     named_inputs.insert({"input", input_data});
   }
   if (params.is_filter_constant) {
-    filter_id = builder.BuildConstant(conv2d_descs->filter_desc.shape(),
-                                      conv2d_descs->filter_desc.data_type(),
+    filter_id = builder.BuildConstant(conv2d_descs.filter_desc.shape(),
+                                      conv2d_descs.filter_desc.data_type(),
                                       base::as_byte_span(filter_data));
   } else {
-    filter_id = builder.BuildInput("filter", conv2d_descs->filter_desc.shape(),
-                                   conv2d_descs->filter_desc.data_type());
+    filter_id = builder.BuildInput("filter", conv2d_descs.filter_desc.shape(),
+                                   conv2d_descs.filter_desc.data_type());
     named_inputs.insert({"filter", filter_data});
   }
   if (params.is_bias_constant) {
-    bias_id = builder.BuildConstant(conv2d_descs->bias_desc.shape(),
-                                    conv2d_descs->bias_desc.data_type(),
+    bias_id = builder.BuildConstant(conv2d_descs.bias_desc.shape(),
+                                    conv2d_descs.bias_desc.data_type(),
                                     base::as_byte_span(bias_data));
   } else {
-    bias_id = builder.BuildInput("bias", conv2d_descs->bias_desc.shape(),
-                                 conv2d_descs->bias_desc.data_type());
+    bias_id = builder.BuildInput("bias", conv2d_descs.bias_desc.shape(),
+                                 conv2d_descs.bias_desc.data_type());
     named_inputs.insert({"bias", bias_data});
   }
 
   OperandId output_id =
-      builder.BuildOutput("output", conv2d_descs->output_desc.shape(),
-                          conv2d_descs->output_desc.data_type());
+      builder.BuildOutput("output", conv2d_descs.output_desc.shape(),
+                          conv2d_descs.output_desc.data_type());
 
   BuildConv2dAttributes conv2d_attr;
   conv2d_attr.padding = {params.beginning_pad_height, params.ending_pad_height,
@@ -940,55 +1012,9 @@ template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpGemm(
     GemmParams params,
     uint8_t seed_for_data) {
-  std::vector<uint32_t> a_dims =
-      params.a_transpose ? std::vector<uint32_t>{params.k, params.m}
-                         : std::vector<uint32_t>{params.m, params.k};
-  std::vector<uint32_t> b_dims =
-      params.b_transpose ? std::vector<uint32_t>{params.n, params.k}
-                         : std::vector<uint32_t>{params.k, params.n};
-
   ASSIGN_OR_RETURN_VOID(
-      auto a_desc, OperandDescriptor::Create(this->context_properties(),
-                                             params.data_type, a_dims, ""));
-  ASSIGN_OR_RETURN_VOID(
-      auto b_desc, OperandDescriptor::Create(this->context_properties(),
-                                             params.data_type, b_dims, ""));
-
-  GemmAttributes attr;
-  attr.alpha = params.alpha;
-  attr.beta = params.beta;
-  attr.a_transpose = params.a_transpose;
-  attr.b_transpose = params.b_transpose;
-
-  std::optional<OperandDescriptor> c_desc;
-  if (params.has_c) {
-    std::vector<uint32_t> c_dims;
-    switch (params.c_shape_kind) {
-      case GemmCShapeKind::kScalar:
-        c_dims = {1};
-        break;
-      case GemmCShapeKind::k1D:
-        c_dims = {params.n};
-        break;
-      case GemmCShapeKind::k2D_1xN:
-        c_dims = {1, params.n};
-        break;
-      case GemmCShapeKind::k2D_MxN:
-        c_dims = {params.m, params.n};
-        break;
-    }
-    ASSIGN_OR_RETURN_VOID(
-        c_desc, OperandDescriptor::Create(this->context_properties(),
-                                          params.data_type, c_dims, ""));
-    attr.c_operand = c_desc;
-  }
-
-  auto output_desc_result = ValidateGemmAndInferOutput(
-      this->context_properties(), a_desc, b_desc, attr);
-  if (!output_desc_result.has_value()) {
-    return;
-  }
-  auto& output_desc = output_desc_result.value();
+      auto gemm_descs,
+      SetUpGemmDescriptors(this->context_properties(), params));
 
   mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
       this->BindNewGraphBuilderRemote();
@@ -996,22 +1022,28 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpGemm(
 
   OperandId a_id;
   OperandId b_id;
-  std::vector<uint8_t> a_data(a_desc.PackedByteLength(), seed_for_data);
-  std::vector<uint8_t> b_data(b_desc.PackedByteLength(), seed_for_data);
+  std::vector<uint8_t> a_data(gemm_descs.a_desc.PackedByteLength(),
+                              seed_for_data);
+  std::vector<uint8_t> b_data(gemm_descs.b_desc.PackedByteLength(),
+                              seed_for_data);
 
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
   if (params.is_a_constant) {
-    a_id = builder.BuildConstant(a_desc.shape(), a_desc.data_type(),
+    a_id = builder.BuildConstant(gemm_descs.a_desc.shape(),
+                                 gemm_descs.a_desc.data_type(),
                                  base::as_byte_span(a_data));
   } else {
-    a_id = builder.BuildInput("a", a_desc.shape(), a_desc.data_type());
+    a_id = builder.BuildInput("a", gemm_descs.a_desc.shape(),
+                              gemm_descs.a_desc.data_type());
     named_inputs.insert({"a", a_data});
   }
   if (params.is_b_constant) {
-    b_id = builder.BuildConstant(b_desc.shape(), b_desc.data_type(),
+    b_id = builder.BuildConstant(gemm_descs.b_desc.shape(),
+                                 gemm_descs.b_desc.data_type(),
                                  base::as_byte_span(b_data));
   } else {
-    b_id = builder.BuildInput("b", b_desc.shape(), b_desc.data_type());
+    b_id = builder.BuildInput("b", gemm_descs.b_desc.shape(),
+                              gemm_descs.b_desc.data_type());
     named_inputs.insert({"b", b_data});
   }
 
@@ -1023,21 +1055,23 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpGemm(
 
   std::vector<uint8_t> c_data;
   if (params.has_c) {
-    c_data.assign(c_desc->PackedByteLength(), seed_for_data);
+    c_data.assign(gemm_descs.c_desc->PackedByteLength(), seed_for_data);
     if (params.is_c_constant) {
-      OperandId c_id = builder.BuildConstant(
-          c_desc->shape(), c_desc->data_type(), base::as_byte_span(c_data));
+      OperandId c_id = builder.BuildConstant(gemm_descs.c_desc->shape(),
+                                             gemm_descs.c_desc->data_type(),
+                                             base::as_byte_span(c_data));
       gemm_attr.c_operand_id = c_id;
     } else {
-      OperandId c_id =
-          builder.BuildInput("c", c_desc->shape(), c_desc->data_type());
+      OperandId c_id = builder.BuildInput("c", gemm_descs.c_desc->shape(),
+                                          gemm_descs.c_desc->data_type());
       named_inputs.insert({"c", c_data});
       gemm_attr.c_operand_id = c_id;
     }
   }
 
-  OperandId output_id = builder.BuildOutput("output", output_desc.shape(),
-                                            output_desc.data_type());
+  OperandId output_id =
+      builder.BuildOutput("output", gemm_descs.output_desc.shape(),
+                          gemm_descs.output_desc.data_type());
 
   builder.BuildGemm(a_id, b_id, output_id, gemm_attr);
 
@@ -1054,34 +1088,32 @@ template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpPool2d(
     Pool2dParams params,
     uint8_t seed_for_data) {
-  auto pool2d_descs =
-      SetUpPool2dDescriptors(this->context_properties(), params);
-  if (!pool2d_descs) {
-    return;
-  }
+  ASSIGN_OR_RETURN_VOID(
+      auto pool2d_descs,
+      SetUpPool2dDescriptors(this->context_properties(), params));
 
   mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
       this->BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
 
   OperandId input_id;
-  std::vector<uint8_t> input_data(pool2d_descs->input_desc.PackedByteLength(),
+  std::vector<uint8_t> input_data(pool2d_descs.input_desc.PackedByteLength(),
                                   seed_for_data);
 
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
   if (params.is_input_constant) {
-    input_id = builder.BuildConstant(pool2d_descs->input_desc.shape(),
-                                     pool2d_descs->input_desc.data_type(),
+    input_id = builder.BuildConstant(pool2d_descs.input_desc.shape(),
+                                     pool2d_descs.input_desc.data_type(),
                                      base::as_byte_span(input_data));
   } else {
-    input_id = builder.BuildInput("input", pool2d_descs->input_desc.shape(),
-                                  pool2d_descs->input_desc.data_type());
+    input_id = builder.BuildInput("input", pool2d_descs.input_desc.shape(),
+                                  pool2d_descs.input_desc.data_type());
     named_inputs.insert({"input", input_data});
   }
 
   OperandId output_id =
-      builder.BuildOutput("output", pool2d_descs->output_desc.shape(),
-                          pool2d_descs->output_desc.data_type());
+      builder.BuildOutput("output", pool2d_descs.output_desc.shape(),
+                          pool2d_descs.output_desc.data_type());
 
   BuildPool2dAttributes pool2d_attr;
   pool2d_attr.window_dimensions = {params.window_height, params.window_width};
@@ -1105,11 +1137,9 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQConv2dQ(
     Conv2dParams conv2d_params,
     QuantizationParams quantization_params,
     uint8_t seed_for_data) {
-  auto conv2d_descs =
-      SetUpConv2dDescriptors(this->context_properties(), conv2d_params);
-  if (!conv2d_descs) {
-    return;
-  }
+  ASSIGN_OR_RETURN_VOID(
+      auto conv2d_descs,
+      SetUpConv2dDescriptors(this->context_properties(), conv2d_params));
 
   OperandDataType quantized_type = quantization_params.quantized_type;
   InputOperandLayout input_layout =
@@ -1124,19 +1154,18 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQConv2dQ(
           : 0u;
   const uint32_t bias_channel_axis = 0u;
 
-  auto input_scale_shape =
-      ComputeQuantizationScaleShape(conv2d_descs->input_desc.shape(),
-                                    input_channel_axis, quantization_params);
+  auto input_scale_shape = ComputeQuantizationScaleShape(
+      conv2d_descs.input_desc.shape(), input_channel_axis, quantization_params);
   auto filter_scale_shape =
-      ComputeQuantizationScaleShape(conv2d_descs->filter_desc.shape(),
+      ComputeQuantizationScaleShape(conv2d_descs.filter_desc.shape(),
                                     filter_channel_axis, quantization_params);
   auto bias_scale_shape = ComputeQuantizationScaleShape(
-      conv2d_descs->bias_desc.shape(), bias_channel_axis, quantization_params);
+      conv2d_descs.bias_desc.shape(), bias_channel_axis, quantization_params);
 
   ASSIGN_OR_RETURN_VOID(
       auto input_dq_desc,
       OperandDescriptor::Create(this->context_properties(), quantized_type,
-                                conv2d_descs->input_desc.shape(), ""));
+                                conv2d_descs.input_desc.shape(), ""));
   ASSIGN_OR_RETURN_VOID(auto input_scale_desc,
                         OperandDescriptor::Create(this->context_properties(),
                                                   conv2d_params.data_type,
@@ -1148,7 +1177,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQConv2dQ(
   ASSIGN_OR_RETURN_VOID(
       auto filter_dq_desc,
       OperandDescriptor::Create(this->context_properties(), quantized_type,
-                                conv2d_descs->filter_desc.shape(), ""));
+                                conv2d_descs.filter_desc.shape(), ""));
   ASSIGN_OR_RETURN_VOID(auto filter_scale_desc,
                         OperandDescriptor::Create(this->context_properties(),
                                                   conv2d_params.data_type,
@@ -1164,7 +1193,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQConv2dQ(
   ASSIGN_OR_RETURN_VOID(auto bias_dq_desc,
                         OperandDescriptor::Create(
                             this->context_properties(), OperandDataType::kInt32,
-                            conv2d_descs->bias_desc.shape(), ""));
+                            conv2d_descs.bias_desc.shape(), ""));
   ASSIGN_OR_RETURN_VOID(
       auto bias_scale_desc,
       OperandDescriptor::Create(this->context_properties(),
@@ -1188,7 +1217,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQConv2dQ(
                             bias_scale_desc, bias_zero_desc, ""));
 
   auto output_scale_shape =
-      ComputeQuantizationScaleShape(conv2d_descs->output_desc.shape(),
+      ComputeQuantizationScaleShape(conv2d_descs.output_desc.shape(),
                                     output_channel_axis, quantization_params);
 
   ASSIGN_OR_RETURN_VOID(auto output_scale_desc,
@@ -1203,7 +1232,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQConv2dQ(
   ASSIGN_OR_RETURN_VOID(
       auto quantized_output_desc,
       ValidateQuantizeLinearAndInferOutput(
-          this->context_properties(), conv2d_descs->output_desc,
+          this->context_properties(), conv2d_descs.output_desc,
           output_scale_desc, output_zero_desc, ""));
 
   std::vector<uint8_t> input_dq_data(input_dq_desc.PackedByteLength(),
@@ -1289,11 +1318,11 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQConv2dQ(
       base::as_byte_span(output_zero_data));
 
   OperandId conv2d_input_id = builder.BuildIntermediateOperand(
-      conv2d_descs->input_desc.shape(), conv2d_descs->input_desc.data_type());
+      conv2d_descs.input_desc.shape(), conv2d_descs.input_desc.data_type());
   OperandId conv2d_filter_id = builder.BuildIntermediateOperand(
-      conv2d_descs->filter_desc.shape(), conv2d_descs->filter_desc.data_type());
+      conv2d_descs.filter_desc.shape(), conv2d_descs.filter_desc.data_type());
   OperandId conv2d_bias_id = builder.BuildIntermediateOperand(
-      conv2d_descs->bias_desc.shape(), conv2d_descs->bias_desc.data_type());
+      conv2d_descs.bias_desc.shape(), conv2d_descs.bias_desc.data_type());
 
   builder.BuildDequantizeLinear(input_dq_id, input_scale_id, input_zero_id,
                                 conv2d_input_id);
@@ -1303,7 +1332,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQConv2dQ(
                                 conv2d_bias_id);
 
   OperandId conv_output_id = builder.BuildIntermediateOperand(
-      conv2d_descs->output_desc.shape(), conv2d_descs->output_desc.data_type());
+      conv2d_descs.output_desc.shape(), conv2d_descs.output_desc.data_type());
 
   BuildConv2dAttributes conv2d_attr;
   conv2d_attr.padding = {
@@ -1335,15 +1364,241 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQConv2dQ(
 }
 
 template <typename BaseFixture>
+void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQGemmQ(
+    GemmParams gemm_params,
+    QuantizationParams quantization_params,
+    uint8_t seed_for_data) {
+  // A(input) and output use per-tensor quantization, B(weights) and C(bias)
+  // use per-channel or per-tensor quantization.
+  QuantizationParams per_tensor_quantization_params = quantization_params;
+  per_tensor_quantization_params.quantization_kind =
+      QuantizationKind::kPerTensor;
+
+  ASSIGN_OR_RETURN_VOID(
+      auto gemm_descs,
+      SetUpGemmDescriptors(this->context_properties(), gemm_params));
+
+  OperandDataType quantized_type = quantization_params.quantized_type;
+  const uint32_t a_channel_axis = gemm_params.a_transpose ? 1u : 0u;
+  const uint32_t b_channel_axis = gemm_params.b_transpose ? 0u : 1u;
+  const uint32_t output_channel_axis = 1u;
+
+  auto a_scale_shape =
+      ComputeQuantizationScaleShape(gemm_descs.a_desc.shape(), a_channel_axis,
+                                    per_tensor_quantization_params);
+  auto b_scale_shape = ComputeQuantizationScaleShape(
+      gemm_descs.b_desc.shape(), b_channel_axis, quantization_params);
+
+  ASSIGN_OR_RETURN_VOID(
+      auto a_dq_desc,
+      OperandDescriptor::Create(this->context_properties(), quantized_type,
+                                gemm_descs.a_desc.shape(), ""));
+  ASSIGN_OR_RETURN_VOID(
+      auto a_scale_desc,
+      OperandDescriptor::Create(this->context_properties(),
+                                gemm_params.data_type, a_scale_shape, ""));
+  ASSIGN_OR_RETURN_VOID(
+      auto a_zero_desc,
+      OperandDescriptor::Create(this->context_properties(), quantized_type,
+                                a_scale_shape, ""));
+
+  ASSIGN_OR_RETURN_VOID(
+      auto b_dq_desc,
+      OperandDescriptor::Create(this->context_properties(), quantized_type,
+                                gemm_descs.b_desc.shape(), ""));
+  ASSIGN_OR_RETURN_VOID(
+      auto b_scale_desc,
+      OperandDescriptor::Create(this->context_properties(),
+                                gemm_params.data_type, b_scale_shape, ""));
+  ASSIGN_OR_RETURN_VOID(
+      auto b_zero_desc,
+      OperandDescriptor::Create(this->context_properties(), quantized_type,
+                                b_scale_shape, ""));
+
+  ASSIGN_OR_RETURN_VOID(auto a_desc_result,
+                        ValidateDequantizeLinearAndInferOutput(
+                            this->context_properties(), a_dq_desc, a_scale_desc,
+                            a_zero_desc, ""));
+  ASSIGN_OR_RETURN_VOID(auto b_desc_result,
+                        ValidateDequantizeLinearAndInferOutput(
+                            this->context_properties(), b_dq_desc, b_scale_desc,
+                            b_zero_desc, ""));
+
+  std::optional<OperandDescriptor> c_dq_desc;
+  std::optional<OperandDescriptor> c_scale_desc;
+  std::optional<OperandDescriptor> c_zero_desc;
+  if (gemm_params.has_c) {
+    // C shape is {1}, {N}, {1, N}, or {M, N}. For 1D shapes, axis 0 is the only
+    // option. For 2D shapes, quantize along the N dimension at axis 1.
+    const uint32_t c_channel_axis =
+        gemm_descs.c_desc->shape().size() == 1 ? 0u : 1u;
+    auto c_scale_shape = ComputeQuantizationScaleShape(
+        gemm_descs.c_desc->shape(), c_channel_axis, quantization_params);
+
+    // The specific values and data types in this test are used to exercise the
+    // fusiable path for TFLite backend:
+    // https://source.chromium.org/chromium/chromium/src/+/main:services/webnn/tflite/graph_builder_tflite.cc;l=2079;drc=ec4ff4bae24916aaad3186ce4bc1339313b6fb5a
+    // TODO(crbug.com/498987226): Remove these restrictions to increase test
+    // coverage.
+    ASSIGN_OR_RETURN_VOID(
+        c_dq_desc, OperandDescriptor::Create(this->context_properties(),
+                                             OperandDataType::kInt32,
+                                             gemm_descs.c_desc->shape(), ""));
+    ASSIGN_OR_RETURN_VOID(
+        c_scale_desc,
+        OperandDescriptor::Create(this->context_properties(),
+                                  gemm_params.data_type, c_scale_shape, ""));
+    ASSIGN_OR_RETURN_VOID(
+        c_zero_desc,
+        OperandDescriptor::Create(this->context_properties(),
+                                  OperandDataType::kInt32, c_scale_shape, ""));
+
+    ASSIGN_OR_RETURN_VOID(auto c_desc_result,
+                          ValidateDequantizeLinearAndInferOutput(
+                              this->context_properties(), *c_dq_desc,
+                              *c_scale_desc, *c_zero_desc, ""));
+  }
+
+  auto output_scale_shape = ComputeQuantizationScaleShape(
+      gemm_descs.output_desc.shape(), output_channel_axis,
+      per_tensor_quantization_params);
+
+  ASSIGN_OR_RETURN_VOID(
+      auto output_scale_desc,
+      OperandDescriptor::Create(this->context_properties(),
+                                gemm_params.data_type, output_scale_shape, ""));
+  ASSIGN_OR_RETURN_VOID(
+      auto output_zero_desc,
+      OperandDescriptor::Create(this->context_properties(), quantized_type,
+                                output_scale_shape, ""));
+
+  ASSIGN_OR_RETURN_VOID(auto quantized_output_desc,
+                        ValidateQuantizeLinearAndInferOutput(
+                            this->context_properties(), gemm_descs.output_desc,
+                            output_scale_desc, output_zero_desc, ""));
+
+  std::vector<uint8_t> a_dq_data(a_dq_desc.PackedByteLength(), seed_for_data);
+  std::vector<uint8_t> b_dq_data(b_dq_desc.PackedByteLength(), seed_for_data);
+  std::vector<float> a_scale_data(a_scale_desc.NumberOfElements(), 0.5f);
+  std::vector<float> b_scale_data(b_scale_desc.NumberOfElements(), 0.25f);
+  std::vector<float> output_scale_data(output_scale_desc.NumberOfElements(),
+                                       0.125f);
+  std::vector<uint8_t> a_zero_data(a_zero_desc.PackedByteLength(), 0);
+  std::vector<uint8_t> b_zero_data(b_zero_desc.PackedByteLength(), 0);
+  std::vector<uint8_t> output_zero_data(output_zero_desc.PackedByteLength(), 0);
+
+  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
+      this->BindNewGraphBuilderRemote();
+  GraphInfoBuilder builder(remote);
+
+  OperandId a_dq_id;
+  OperandId b_dq_id;
+  base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
+
+  if (gemm_params.is_a_constant) {
+    a_dq_id = builder.BuildConstant(a_dq_desc.shape(), a_dq_desc.data_type(),
+                                    base::as_byte_span(a_dq_data));
+  } else {
+    a_dq_id = builder.BuildInput("a", a_dq_desc.shape(), a_dq_desc.data_type());
+    named_inputs.insert({"a", a_dq_data});
+  }
+  if (gemm_params.is_b_constant) {
+    b_dq_id = builder.BuildConstant(b_dq_desc.shape(), b_dq_desc.data_type(),
+                                    base::as_byte_span(b_dq_data));
+  } else {
+    b_dq_id = builder.BuildInput("b", b_dq_desc.shape(), b_dq_desc.data_type());
+    named_inputs.insert({"b", b_dq_data});
+  }
+
+  OperandId a_scale_id =
+      BuildFloatConstant(builder, a_scale_desc, a_scale_data);
+  OperandId a_zero_id =
+      builder.BuildConstant(a_zero_desc.shape(), a_zero_desc.data_type(),
+                            base::as_byte_span(a_zero_data));
+  OperandId b_scale_id =
+      BuildFloatConstant(builder, b_scale_desc, b_scale_data);
+  OperandId b_zero_id =
+      builder.BuildConstant(b_zero_desc.shape(), b_zero_desc.data_type(),
+                            base::as_byte_span(b_zero_data));
+  OperandId output_scale_id =
+      BuildFloatConstant(builder, output_scale_desc, output_scale_data);
+  OperandId output_zero_id = builder.BuildConstant(
+      output_zero_desc.shape(), output_zero_desc.data_type(),
+      base::as_byte_span(output_zero_data));
+
+  OperandId gemm_a_id = builder.BuildIntermediateOperand(
+      gemm_descs.a_desc.shape(), gemm_descs.a_desc.data_type());
+  OperandId gemm_b_id = builder.BuildIntermediateOperand(
+      gemm_descs.b_desc.shape(), gemm_descs.b_desc.data_type());
+
+  builder.BuildDequantizeLinear(a_dq_id, a_scale_id, a_zero_id, gemm_a_id);
+  builder.BuildDequantizeLinear(b_dq_id, b_scale_id, b_zero_id, gemm_b_id);
+
+  BuildGemmAttributes gemm_attr;
+  gemm_attr.alpha = gemm_params.alpha;
+  gemm_attr.beta = gemm_params.beta;
+  gemm_attr.a_transpose = gemm_params.a_transpose;
+  gemm_attr.b_transpose = gemm_params.b_transpose;
+
+  std::vector<uint8_t> c_dq_data;
+  std::vector<float> c_scale_data;
+  std::vector<uint8_t> c_zero_data;
+  if (gemm_params.has_c) {
+    c_dq_data.assign(c_dq_desc->PackedByteLength(), seed_for_data);
+    c_scale_data.assign(c_scale_desc->NumberOfElements(), 0.125f);
+    c_zero_data.assign(c_zero_desc->PackedByteLength(), 0);
+
+    OperandId c_dq_id;
+    if (gemm_params.is_c_constant) {
+      c_dq_id =
+          builder.BuildConstant(c_dq_desc->shape(), c_dq_desc->data_type(),
+                                base::as_byte_span(c_dq_data));
+    } else {
+      c_dq_id =
+          builder.BuildInput("c", c_dq_desc->shape(), c_dq_desc->data_type());
+      named_inputs.insert({"c", c_dq_data});
+    }
+
+    OperandId c_scale_id =
+        BuildFloatConstant(builder, *c_scale_desc, c_scale_data);
+    OperandId c_zero_id =
+        builder.BuildConstant(c_zero_desc->shape(), c_zero_desc->data_type(),
+                              base::as_byte_span(c_zero_data));
+
+    OperandId gemm_c_id = builder.BuildIntermediateOperand(
+        gemm_descs.c_desc->shape(), gemm_descs.c_desc->data_type());
+    builder.BuildDequantizeLinear(c_dq_id, c_scale_id, c_zero_id, gemm_c_id);
+    gemm_attr.c_operand_id = gemm_c_id;
+  }
+
+  OperandId gemm_output_id = builder.BuildIntermediateOperand(
+      gemm_descs.output_desc.shape(), gemm_descs.output_desc.data_type());
+  builder.BuildGemm(gemm_a_id, gemm_b_id, gemm_output_id, gemm_attr);
+
+  OperandId quantize_output_id =
+      builder.BuildOutput("output", quantized_output_desc.shape(),
+                          quantized_output_desc.data_type());
+  builder.BuildQuantizeLinear(gemm_output_id, output_scale_id, output_zero_id,
+                              quantize_output_id);
+
+  if (!builder.IsValidGraphForTesting(this->context_properties())) {
+    return;
+  }
+
+  BuildAndCompute(this->context_, std::move(remote), builder.TakeGraphInfo(),
+                  std::move(named_inputs));
+
+  GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
+}
+
+template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQPool2dQ(
     Pool2dParams pool2d_params,
     QuantizationParams quantization_params,
     uint8_t seed_for_data) {
-  auto pool2d_descs =
-      SetUpPool2dDescriptors(this->context_properties(), pool2d_params);
-  if (!pool2d_descs) {
-    return;
-  }
+  ASSIGN_OR_RETURN_VOID(
+      auto pool2d_descs,
+      SetUpPool2dDescriptors(this->context_properties(), pool2d_params));
 
   OperandDataType quantized_type = quantization_params.quantized_type;
   InputOperandLayout input_layout =
@@ -1352,14 +1607,13 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQPool2dQ(
       input_layout == InputOperandLayout::kNchw ? 1u : 3u;
   const uint32_t output_channel_axis = input_channel_axis;
 
-  auto input_scale_shape =
-      ComputeQuantizationScaleShape(pool2d_descs->input_desc.shape(),
-                                    input_channel_axis, quantization_params);
+  auto input_scale_shape = ComputeQuantizationScaleShape(
+      pool2d_descs.input_desc.shape(), input_channel_axis, quantization_params);
 
   ASSIGN_OR_RETURN_VOID(
       auto input_dq_desc,
       OperandDescriptor::Create(this->context_properties(), quantized_type,
-                                pool2d_descs->input_desc.shape(), ""));
+                                pool2d_descs.input_desc.shape(), ""));
   ASSIGN_OR_RETURN_VOID(auto input_scale_desc,
                         OperandDescriptor::Create(this->context_properties(),
                                                   pool2d_params.data_type,
@@ -1375,7 +1629,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQPool2dQ(
                             input_scale_desc, input_zero_desc, ""));
 
   auto output_scale_shape =
-      ComputeQuantizationScaleShape(pool2d_descs->output_desc.shape(),
+      ComputeQuantizationScaleShape(pool2d_descs.output_desc.shape(),
                                     output_channel_axis, quantization_params);
 
   ASSIGN_OR_RETURN_VOID(auto output_scale_desc,
@@ -1390,7 +1644,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQPool2dQ(
   ASSIGN_OR_RETURN_VOID(
       auto quantized_output_desc_result,
       ValidateQuantizeLinearAndInferOutput(
-          this->context_properties(), pool2d_descs->output_desc,
+          this->context_properties(), pool2d_descs.output_desc,
           output_scale_desc, output_zero_desc, ""));
 
   std::vector<uint8_t> input_dq_data(input_dq_desc.PackedByteLength(),
@@ -1436,13 +1690,13 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQPool2dQ(
       base::as_byte_span(output_zero_data));
 
   OperandId pool2d_input_id = builder.BuildIntermediateOperand(
-      pool2d_descs->input_desc.shape(), pool2d_descs->input_desc.data_type());
+      pool2d_descs.input_desc.shape(), pool2d_descs.input_desc.data_type());
 
   builder.BuildDequantizeLinear(input_dq_id, input_scale_id, input_zero_id,
                                 pool2d_input_id);
 
   OperandId pool_output_id = builder.BuildIntermediateOperand(
-      pool2d_descs->output_desc.shape(), pool2d_descs->output_desc.data_type());
+      pool2d_descs.output_desc.shape(), pool2d_descs.output_desc.data_type());
 
   BuildPool2dAttributes pool2d_attr;
   pool2d_attr.window_dimensions = {pool2d_params.window_height,
@@ -1581,6 +1835,31 @@ WEBNN_FUZZ_TEST_F(
                          // This is unused for per tensor quantization.
                          /*channel_block_size=*/1},
                      /*seed_for_data=*/1}}));
+
+WEBNN_FUZZ_TEST_F(
+    SubgraphDQGemmQ,
+    .WithDomains(AnyGemmParams(),
+                 AnyQuantizationParams(),
+                 fuzztest::Arbitrary<uint8_t>())
+        .WithSeeds({{GemmParams{OperandDataType::kFloat32,
+                                /*m=*/3,
+                                /*k=*/4,
+                                /*n=*/5,
+                                /*alpha=*/1.0f,
+                                /*beta=*/1.0f,
+                                /*a_transpose=*/false,
+                                /*b_transpose=*/true,
+                                /*has_c=*/true,
+                                /*c_shape_kind=*/GemmCShapeKind::k2D_MxN,
+                                /*is_a_constant=*/false,
+                                /*is_b_constant=*/true,
+                                /*is_c_constant=*/true},
+                     QuantizationParams{
+                         /*quantized_type=*/OperandDataType::kInt8,
+                         QuantizationKind::kPerChannel,
+                         // This is unused for per channel quantization.
+                         /*channel_block_size=*/1},
+                     /*seed_for_data=*/3}}));
 
 WEBNN_FUZZ_TEST_F(
     SubgraphDQPool2dQ,
