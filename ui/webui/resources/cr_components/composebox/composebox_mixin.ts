@@ -439,7 +439,6 @@ export const ComposeboxEmbedderMixin =
               this.submitQuery(e);
             }
           }
-          this.finalizeMatchSelection(e);
         }
 
         protected handleEscape_(e: KeyboardEvent) {
