@@ -62,6 +62,14 @@ class WebContentsTags {
   static void CreateForNoStatePrefetchContents(
       content::WebContents* web_contents);
 
+  // Tags a WebContents created by PrerenderNewTabHandle for prerendering in a
+  // new tab so that it shows up in the task manager. Calling this function
+  // creates a PrerenderNewTabTag, and attaches it to |web_contents|. If an
+  // instance is already attached, this does nothing. The resulting tag does not
+  // have to be cleaned up by the caller, as it is owned by |web_contents|.
+  static void CreateForPrerenderNewTabContents(
+      content::WebContents* web_contents);
+
   // Tags a WebContents owned by the TabStripModel so that it shows up in the
   // task manager. Calling this function creates a TabContentsTag, and attaches
   // it to |web_contents|. If an instance is already attached, this does

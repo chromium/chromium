@@ -172,6 +172,7 @@ PrerenderNewTabHandle::TakeWebContentsIfAvailable(
   // handled here with an approach similar to SameSizeAsDocumentLoader.
 
   CHECK(web_contents_);
+  web_contents_delegate_->PrerenderWebContentsReleased(web_contents_.get());
   web_contents_->SetDelegate(nullptr);
   return std::move(web_contents_);
 }

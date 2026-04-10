@@ -18,6 +18,8 @@ class PrerenderWebContentsDelegateImpl
   // content::WebContentsDelegate overrides.
   void PrerenderWebContentsCreated(
       content::WebContents* prerender_web_contents) override;
+  void PrerenderWebContentsReleased(
+      content::WebContents* prerender_web_contents) override;
 };
 
 #endif  // CHROME_BROWSER_PRELOADING_PRERENDER_PRERENDER_WEB_CONTENTS_DELEGATE_H_

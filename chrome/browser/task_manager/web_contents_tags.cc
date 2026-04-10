@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/task_manager/providers/web_contents/devtools_tag.h"
 #include "chrome/browser/task_manager/providers/web_contents/no_state_prefetch_tag.h"
+#include "chrome/browser/task_manager/providers/web_contents/prerender_new_tab_tag.h"
 #include "chrome/browser/task_manager/providers/web_contents/printing_tag.h"
 #include "chrome/browser/task_manager/providers/web_contents/tab_contents_tag.h"
 #include "chrome/browser/task_manager/providers/web_contents/tool_tag.h"
@@ -107,6 +108,16 @@ void WebContentsTags::CreateForNoStatePrefetchContents(
   if (!WebContentsTag::FromWebContents(web_contents)) {
     TagWebContents(web_contents,
                    base::WrapUnique(new NoStatePrefetchTag(web_contents)),
+                   WebContentsTag::kTagKey);
+  }
+}
+
+// static
+void WebContentsTags::CreateForPrerenderNewTabContents(
+    content::WebContents* web_contents) {
+  if (!WebContentsTag::FromWebContents(web_contents)) {
+    TagWebContents(web_contents,
+                   base::WrapUnique(new PrerenderNewTabTag(web_contents)),
                    WebContentsTag::kTagKey);
   }
 }

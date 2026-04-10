@@ -423,6 +423,12 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual void PrerenderWebContentsCreated(
       WebContents* prerender_web_contents) {}
 
+  // Called when a prerendered WebContents is about to be released from a
+  // PrerenderNewTabHandle for activation. This gives the delegate a chance to
+  // clean up any prerender-specific state.
+  virtual void PrerenderWebContentsReleased(
+      WebContents* prerender_web_contents) {}
+
   // Notification that one of the frames in the WebContents is hung. |source| is
   // the WebContents that is hung, and |render_widget_host| is the
   // RenderWidgetHost that, while routing events to it, discovered the hang.
