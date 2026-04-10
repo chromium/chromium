@@ -4,14 +4,15 @@
 
 #include "components/javascript_dialogs/app_modal_dialog_queue.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 
 namespace javascript_dialogs {
 
 // static
 AppModalDialogQueue* AppModalDialogQueue::GetInstance() {
-  return base::Singleton<AppModalDialogQueue>::get();
+  static base::NoDestructor<AppModalDialogQueue> instance;
+  return instance.get();
 }
 
 void AppModalDialogQueue::CancelAllDialogs() {

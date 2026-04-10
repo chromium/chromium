@@ -7,11 +7,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
-
-namespace base {
-template <typename T>
-struct DefaultSingletonTraits;
-}
+#include "base/no_destructor.h"
 
 namespace javascript_dialogs {
 
@@ -71,7 +67,7 @@ class AppModalDialogQueue {
   iterator end() { return app_modal_dialog_queue_.end(); }
 
  private:
-  friend struct base::DefaultSingletonTraits<AppModalDialogQueue>;
+  friend class base::NoDestructor<AppModalDialogQueue>;
 
   AppModalDialogQueue();
   ~AppModalDialogQueue();
