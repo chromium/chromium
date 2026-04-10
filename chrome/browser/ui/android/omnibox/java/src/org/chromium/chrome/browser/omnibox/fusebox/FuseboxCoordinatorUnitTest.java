@@ -26,10 +26,12 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.view.LayoutInflater;
+import android.view.View;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -296,5 +298,15 @@ public class FuseboxCoordinatorUnitTest {
         mCoordinator.notifyOmniboxSessionEnded(false);
 
         verify(mMetrics).notifyOmniboxSessionEnded(eq(false), anyInt(), anyInt());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testPopupDismissed() {
+        mCoordinator.beginInput(createSession());
+        mCoordinator.setMediatorForTesting(mMediator);
+        mCoordinator.getViewHolderForTesting().addButton.setVisibility(View.VISIBLE);
+        mCoordinator.onContextPopupDismissed();
+        Assert.assertTrue(mCoordinator.getViewHolderForTesting().addButton.isFocused());
     }
 }
