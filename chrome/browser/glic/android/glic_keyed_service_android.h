@@ -41,7 +41,11 @@ class GlicKeyedServiceAndroid : public base::SupportsUserData::Data {
 
   bool IsPanelShowingForBrowser(JNIEnv* env, int64_t browser_window_ptr);
 
+  bool GetUserEnabledActuationOnWeb(JNIEnv* env);
+  void SetUserEnabledActuationOnWeb(JNIEnv* env, bool enabled);
+
   void OnGlobalShowHide();
+  void OnUserEnabledActuationOnWebChanged();
 
   // Returns the GlicKeyedServiceImpl java object.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
@@ -55,6 +59,7 @@ class GlicKeyedServiceAndroid : public base::SupportsUserData::Data {
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
 
   base::CallbackListSubscription global_show_hide_subscription_;
+  base::CallbackListSubscription web_actuation_pref_subscription_;
 };
 
 }  // namespace glic

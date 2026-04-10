@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/fre/glic_fre_controller.h"
+#include "glic_fre_controller.h"
 
 #include <memory>
 
@@ -12,12 +12,17 @@
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/test/glic_user_session_test_helper.h"
+#endif
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
@@ -26,18 +31,20 @@
 namespace glic {
 class GlicFreControllerTest : public testing::Test {
  public:
-  GlicFreControllerTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlic},
-        /*disabled_features=*/{});
-  }
+  GlicFreControllerTest()
+      : glic_test_env_({.fre_status = prefs::FreStatus::kNotStarted}) {}
 
   void SetUp() override {
     raw_ptr<TestingProfileManager> testing_profile_manager =
         TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
             /*profile_manager=*/true);
+#if BUILDFLAG(IS_CHROMEOS)
+    glic_user_session_test_helper_.PreProfileSetUp(
+        testing_profile_manager->profile_manager());
+#endif
     identity_env_ = std::make_unique<signin::IdentityTestEnvironment>();
     profile_ = testing_profile_manager->CreateTestingProfile("profile");
+    glic_test_env_.SetupProfile(profile_);
 
     glic_fre_controller_ = std::make_unique<GlicFreController>(
         profile_, identity_env_->identity_manager());
@@ -48,6 +55,10 @@ class GlicFreControllerTest : public testing::Test {
     profile_ = nullptr;
 
     TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
+
+#if BUILDFLAG(IS_CHROMEOS)
+    glic_user_session_test_helper_.PostProfileTearDown();
+#endif
   }
 
   Profile* profile() { return profile_; }
@@ -64,11 +75,14 @@ class GlicFreControllerTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_env_;
   std::unique_ptr<GlicFreController> glic_fre_controller_;
   raw_ptr<Profile> profile_ = nullptr;
+  GlicUnitTestEnvironment glic_test_env_;
+#if BUILDFLAG(IS_CHROMEOS)
+  ash::GlicUserSessionTestHelper glic_user_session_test_helper_;
+#endif
 };
 
 TEST_F(GlicFreControllerTest, AcceptFre) {
@@ -78,10 +92,10 @@ TEST_F(GlicFreControllerTest, AcceptFre) {
   // Likely a problem with the test environment configuration.
   g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
                                                false);
-  PrefService* const profile_pref_service = profile()->GetPrefs();
   glic_fre_controller().AcceptFre(/*handler=*/nullptr);
-  EXPECT_EQ(profile_pref_service->GetInteger(prefs::kGlicCompletedFre),
-            static_cast<int>(prefs::FreStatus::kCompleted));
+  EXPECT_EQ(
+      glic::GlicKeyedService::Get(profile())->enabling().GetCompletedFre(),
+      prefs::FreStatus::kCompleted);
   EXPECT_EQ(tester.GetActionCount("Glic.Fre.Accept"), 1);
   EXPECT_EQ(tester.GetActionCount("Glic.Fre.NoThanks"), 0);
 }
@@ -90,10 +104,10 @@ TEST_F(GlicFreControllerTest, RejectFre) {
   base::UserActionTester tester;
   g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
                                                false);
-  PrefService* const profile_pref_service = profile()->GetPrefs();
   glic_fre_controller().RejectFre();
-  EXPECT_EQ(profile_pref_service->GetInteger(prefs::kGlicCompletedFre),
-            static_cast<int>(prefs::FreStatus::kNotStarted));
+  EXPECT_EQ(
+      glic::GlicKeyedService::Get(profile())->enabling().GetCompletedFre(),
+      prefs::FreStatus::kNotStarted);
   EXPECT_EQ(tester.GetActionCount("Glic.Fre.NoThanks"), 1);
   EXPECT_EQ(tester.GetActionCount("Glic.Fre.Accept"), 0);
 }

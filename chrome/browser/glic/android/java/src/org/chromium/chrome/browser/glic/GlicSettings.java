@@ -66,6 +66,8 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
             ObservableSuppliers.createMonotonic();
 
     private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
+    private GlicKeyedService.@Nullable UserEnabledActuationOnWebObserver
+            mUserEnabledActuationOnWebObserver;
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
@@ -75,6 +77,7 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
 
         PrefService prefService = UserPrefs.get(getProfile());
         mPrefChangeRegistrar = new PrefChangeRegistrar(prefService);
+        GlicKeyedService glicService = GlicKeyedServiceFactory.getForProfile(getProfile());
 
         setupSwitchPreference(
                 PREFERENCE_BUTTON,
@@ -114,11 +117,30 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                 SpanApplier.applySpans(summary, getLearnMoreSpanInfo(LEARN_MORE_AI_URL)));
 
         ChromeExpandableSwitchPreference autoBrowsePref =
-                setupSwitchPreference(
-                        PERMISSION_AUTO_BROWSE,
-                        ChromePreferenceKeys.GLIC_AUTO_BROWSE_SETTING_ENABLED,
-                        GlicPrefNames.GLIC_USER_ENABLED_ACTUATION_ON_WEB,
-                        /* extraListener= */ null);
+                assertNonNull(findPreference(PERMISSION_AUTO_BROWSE));
+        if (glicService != null) {
+            boolean value = glicService.getUserEnabledActuationOnWeb();
+            mSharedPreferencesManager.writeBoolean(
+                    ChromePreferenceKeys.GLIC_AUTO_BROWSE_SETTING_ENABLED, value);
+            autoBrowsePref.setChecked(value);
+            autoBrowsePref.setOnPreferenceChangeListener(
+                    (pref, newValue) -> {
+                        boolean boolValue = (boolean) newValue;
+                        mSharedPreferencesManager.writeBoolean(
+                                ChromePreferenceKeys.GLIC_AUTO_BROWSE_SETTING_ENABLED, boolValue);
+                        glicService.setUserEnabledActuationOnWeb(boolValue);
+                        return true;
+                    });
+            mUserEnabledActuationOnWebObserver =
+                    enabled -> {
+                        if (autoBrowsePref.isChecked() != enabled) {
+                            autoBrowsePref.setChecked(enabled);
+                            mSharedPreferencesManager.writeBoolean(
+                                    ChromePreferenceKeys.GLIC_AUTO_BROWSE_SETTING_ENABLED, enabled);
+                        }
+                    };
+            glicService.addUserEnabledActuationOnWebObserver(mUserEnabledActuationOnWebObserver);
+        }
 
         String autoBrowseSummary =
                 getString(R.string.settings_glic_permissions_chrome_web_actuation_toggle_sublabel);
@@ -160,6 +182,14 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
         if (mPrefChangeRegistrar != null) {
             mPrefChangeRegistrar.destroy();
             mPrefChangeRegistrar = null;
+        }
+        if (mUserEnabledActuationOnWebObserver != null) {
+            GlicKeyedService glicService = GlicKeyedServiceFactory.getForProfile(getProfile());
+            if (glicService != null) {
+                glicService.removeUserEnabledActuationOnWebObserver(
+                        mUserEnabledActuationOnWebObserver);
+            }
+            mUserEnabledActuationOnWebObserver = null;
         }
         super.onDestroy();
     }

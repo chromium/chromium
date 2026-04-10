@@ -10,6 +10,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -439,6 +441,11 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, GlicSubpageExperimentalTriggeringToggle) {
           "runMochaSuite('GlicSubpage ExperimentalTriggeringToggle')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, GlicSubpageWebActuation) {
+  RunTest("settings/glic_subpage_test.js",
+          "runMochaSuite('GlicSubpage WebActuationSettingFeatureEnabled')");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, GlicLoginPermissionsPage) {
   RunTest("settings/glic_login_permissions_page_test.js", "mocha.run()");
 }
@@ -743,12 +750,9 @@ class SettingsGlicSubPageWebActuationTableTest
 
     SetUserTier(p.user_tier);
     if (p.consent_pref_set) {
-      GetProfile()->GetPrefs()->SetBoolean(
-          glic::prefs::kGlicUserEnabledActuationOnWeb, true);
-    } else {
-      // For "No Pref" branch, clear the pref so IsDefaultValue() returns true.
-      GetProfile()->GetPrefs()->ClearPref(
-          glic::prefs::kGlicUserEnabledActuationOnWeb);
+      glic::GlicKeyedService::Get(GetProfile())
+          ->enabling()
+          .SetUserEnabledActuationOnWeb(true);
     }
     if (p.is_dogfooder) {
       auto* variations_service = g_browser_process->variations_service();

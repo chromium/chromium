@@ -14,6 +14,7 @@
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -526,34 +527,31 @@ class GlicEnablingStandardFreTest
 };
 
 TEST_F(GlicEnablingTrustFirstOnboardingTest, NotConsented_ReturnsReady) {
-  profile()->GetPrefs()->SetInteger(
-      prefs::kGlicCompletedFre,
-      static_cast<int>(prefs::FreStatus::kIncomplete));
+  glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
+      prefs::FreStatus::kIncomplete);
 
   EXPECT_EQ(GlicEnabling::GetProfileReadyState(profile()),
             mojom::ProfileReadyState::kReady);
 }
 
 TEST_F(GlicEnablingTrustFirstOnboardingTest, Consented_ReturnsFalse) {
-  profile()->GetPrefs()->SetInteger(
-      prefs::kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kCompleted));
+  glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
+      prefs::FreStatus::kCompleted);
 
   EXPECT_FALSE(
       GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile()));
 }
 
 TEST_F(GlicEnablingTrustFirstOnboardingTest, NotConsented_ReturnsTrue) {
-  profile()->GetPrefs()->SetInteger(
-      prefs::kGlicCompletedFre,
-      static_cast<int>(prefs::FreStatus::kIncomplete));
+  glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
+      prefs::FreStatus::kIncomplete);
 
   EXPECT_TRUE(GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile()));
 }
 
 TEST_F(GlicEnablingStandardFreTest, NotConsented_ReturnsIneligible) {
-  profile()->GetPrefs()->SetInteger(
-      prefs::kGlicCompletedFre,
-      static_cast<int>(prefs::FreStatus::kIncomplete));
+  glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
+      prefs::FreStatus::kIncomplete);
 
   EXPECT_EQ(GlicEnabling::GetProfileReadyState(profile()),
             mojom::ProfileReadyState::kIneligible);
@@ -581,8 +579,8 @@ class GlicEnablingAnyFreModeTest : public GlicEnablingProfileReadyStateTestBase,
 };
 
 TEST_P(GlicEnablingAnyFreModeTest, Consented_ReturnsReady) {
-  profile()->GetPrefs()->SetInteger(
-      prefs::kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kCompleted));
+  glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
+      prefs::FreStatus::kCompleted);
 
   EXPECT_EQ(GlicEnabling::GetProfileReadyState(profile()),
             mojom::ProfileReadyState::kReady);
@@ -590,9 +588,8 @@ TEST_P(GlicEnablingAnyFreModeTest, Consented_ReturnsReady) {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST_P(GlicEnablingAnyFreModeTest, NotSignedIn_ReturnsIneligible) {
-  profile()->GetPrefs()->SetInteger(
-      prefs::kGlicCompletedFre,
-      static_cast<int>(prefs::FreStatus::kIncomplete));
+  glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
+      prefs::FreStatus::kIncomplete);
 
   // Simulate "Not signed in" by removing the primary account.
   signin::IdentityManager* identity_manager =
@@ -606,17 +603,16 @@ TEST_P(GlicEnablingAnyFreModeTest, NotSignedIn_ReturnsIneligible) {
 
 TEST_P(GlicEnablingAnyFreModeTest,
        IsEnabledAndConsentForProfile_NotConsented_ReturnsFalse) {
-  profile()->GetPrefs()->SetInteger(
-      prefs::kGlicCompletedFre,
-      static_cast<int>(prefs::FreStatus::kIncomplete));
+  glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
+      prefs::FreStatus::kIncomplete);
 
   EXPECT_FALSE(GlicEnabling::IsEnabledAndConsentForProfile(profile()));
 }
 
 TEST_P(GlicEnablingAnyFreModeTest,
        IsEnabledAndConsentForProfile_Consented_ReturnsTrue) {
-  profile()->GetPrefs()->SetInteger(
-      prefs::kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kCompleted));
+  glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
+      prefs::FreStatus::kCompleted);
 
   EXPECT_TRUE(GlicEnabling::IsEnabledAndConsentForProfile(profile()));
 }
@@ -673,8 +669,8 @@ class GlicEnablingGatedFeatureTest
   void SetConsent(bool has_consent) {
     const auto fre_status = has_consent ? prefs::FreStatus::kCompleted
                                         : prefs::FreStatus::kIncomplete;
-    profile()->GetPrefs()->SetInteger(prefs::kGlicCompletedFre,
-                                      static_cast<int>(fre_status));
+    glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
+        fre_status);
   }
 
  private:
@@ -773,8 +769,8 @@ class GlicEnablingContextMenuTest
   void SetConsent(bool has_consent) {
     const auto fre_status = has_consent ? prefs::FreStatus::kCompleted
                                         : prefs::FreStatus::kIncomplete;
-    profile()->GetPrefs()->SetInteger(prefs::kGlicCompletedFre,
-                                      static_cast<int>(fre_status));
+    glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
+        fre_status);
   }
 
  private:
@@ -816,5 +812,44 @@ INSTANTIATE_TEST_SUITE_P(
         ContextMenuFeatureParams{.name = "FeatureEnabledNoTrustFirstNoConsent",
                                  .is_feature_enabled = true,
                                  .expected_result = false}));
+
+TEST_F(GlicEnablingProfileEligibilityTest,
+       UserEnabledActuationOnWebChangedCallback) {
+  bool callback_called = false;
+  auto subscription =
+      glic::GlicKeyedService::Get(profile())
+          ->enabling()
+          .RegisterOnUserEnabledActuationOnWebChanged(
+              base::BindLambdaForTesting([&]() { callback_called = true; }));
+
+  glic::GlicKeyedService::Get(profile())
+      ->enabling()
+      .SetUserEnabledActuationOnWeb(true);
+  EXPECT_TRUE(callback_called);
+
+  callback_called = false;
+  glic::GlicKeyedService::Get(profile())
+      ->enabling()
+      .SetUserEnabledActuationOnWeb(false);
+  EXPECT_TRUE(callback_called);
+}
+
+TEST_F(GlicEnablingProfileEligibilityTest, ConsentChangedCallback) {
+  bool callback_called = false;
+  auto subscription = glic::GlicKeyedService::Get(profile())
+                          ->enabling()
+                          .RegisterOnConsentChanged(base::BindLambdaForTesting(
+                              [&]() { callback_called = true; }));
+
+  glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
+      prefs::FreStatus::kCompleted);
+  EXPECT_TRUE(callback_called);
+
+  callback_called = false;
+  glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
+      prefs::FreStatus::kIncomplete);
+  EXPECT_TRUE(callback_called);
+}
+
 }  // namespace
 }  // namespace glic

@@ -37,6 +37,17 @@ public interface GlicKeyedService {
     /** Removes an observer for global show/hide events. */
     void removeGlobalShowHideObserver(GlobalShowHideObserver observer);
 
+    /** Observer for user enabled actuation on web changes. */
+    interface UserEnabledActuationOnWebObserver {
+        void onUserEnabledActuationOnWebChanged(boolean enabled);
+    }
+
+    /** Adds an observer for user enabled actuation on web changes. */
+    void addUserEnabledActuationOnWebObserver(UserEnabledActuationOnWebObserver observer);
+
+    /** Removes an observer for user enabled actuation on web changes. */
+    void removeUserEnabledActuationOnWebObserver(UserEnabledActuationOnWebObserver observer);
+
     /**
      * Checks if the panel is showing for a specific browser window.
      *
@@ -44,4 +55,18 @@ public interface GlicKeyedService {
      * @return true if the panel is showing for the specified browser window.
      */
     boolean isPanelShowingForBrowser(long browserWindowPtr);
+
+    /**
+     * Checks if the user has enabled actuation on web.
+     *
+     * @return true if actuation on web is enabled.
+     */
+    boolean getUserEnabledActuationOnWeb();
+
+    /**
+     * Sets whether the user has enabled actuation on web.
+     *
+     * @param enabled true to enable actuation on web.
+     */
+    void setUserEnabledActuationOnWeb(boolean enabled);
 }

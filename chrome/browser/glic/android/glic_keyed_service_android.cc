@@ -51,6 +51,11 @@ GlicKeyedServiceAndroid::GlicKeyedServiceAndroid(GlicKeyedService* service)
       service_->instance_coordinator().AddGlobalShowHideCallback(
           base::BindRepeating(&GlicKeyedServiceAndroid::OnGlobalShowHide,
                               base::Unretained(this)));
+  web_actuation_pref_subscription_ =
+      service_->enabling().RegisterOnUserEnabledActuationOnWebChanged(
+          base::BindRepeating(
+              &GlicKeyedServiceAndroid::OnUserEnabledActuationOnWebChanged,
+              base::Unretained(this)));
 }
 
 GlicKeyedServiceAndroid::~GlicKeyedServiceAndroid() {
@@ -83,11 +88,27 @@ bool GlicKeyedServiceAndroid::IsPanelShowingForBrowser(
   return service_->IsPanelShowingForBrowser(*window);
 }
 
+bool GlicKeyedServiceAndroid::GetUserEnabledActuationOnWeb(JNIEnv* env) {
+  return service_->enabling().GetUserEnabledActuationOnWeb();
+}
+
+void GlicKeyedServiceAndroid::SetUserEnabledActuationOnWeb(JNIEnv* env,
+                                                           bool enabled) {
+  service_->enabling().SetUserEnabledActuationOnWeb(enabled);
+}
+
 void GlicKeyedServiceAndroid::OnGlobalShowHide() {
   JNIEnv* env = base::android::AttachCurrentThread();
   bool is_opened = service_->instance_coordinator().state() !=
                    GlicInstanceCoordinator::State::kClosed;
   Java_GlicKeyedServiceImpl_onGlobalShowHide(env, java_obj_, is_opened);
+}
+
+void GlicKeyedServiceAndroid::OnUserEnabledActuationOnWebChanged() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  bool enabled = service_->enabling().GetUserEnabledActuationOnWeb();
+  Java_GlicKeyedServiceImpl_onUserEnabledActuationOnWebChanged(env, java_obj_,
+                                                               enabled);
 }
 
 }  // namespace glic

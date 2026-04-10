@@ -249,8 +249,7 @@ void SetGlicCapability(AccountCapabilitiesTestMutator& mutator, bool enabled) {
 }
 
 void SetFRECompletion(Profile* profile, prefs::FreStatus fre_status) {
-  profile->GetPrefs()->SetInteger(prefs::kGlicCompletedFre,
-                                  static_cast<int>(fre_status));
+  glic::GlicKeyedService::Get(profile)->enabling().SetCompletedFre(fre_status);
 }
 
 void InvalidateAccount(Profile* profile) {

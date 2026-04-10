@@ -589,9 +589,8 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerDidSelectProfileTest,
   SigninWithPrimaryAccount(profile);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   SetGlicCapability(profile, true);
-  profile->GetPrefs()->SetInteger(
-      glic::prefs::kGlicCompletedFre,
-      static_cast<int>(glic::prefs::FreStatus::kNotStarted));
+  glic::GlicKeyedService::Get(profile)->enabling().SetCompletedFre(
+      glic::prefs::FreStatus::kNotStarted);
   ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile));
   ASSERT_FALSE(GlicEnabling::HasConsentedForProfile(profile));
 
@@ -619,9 +618,8 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerDidSelectProfileTest,
 #else
       CreateNewProfile(/*signin_and_allow_glic=*/true);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  profile->GetPrefs()->SetInteger(
-      glic::prefs::kGlicCompletedFre,
-      static_cast<int>(glic::prefs::FreStatus::kCompleted));
+  glic::GlicKeyedService::Get(profile)->enabling().SetCompletedFre(
+      glic::prefs::FreStatus::kCompleted);
   ASSERT_TRUE(GlicEnabling::IsEnabledAndConsentForProfile(profile));
 
   auto* service = GetMockGlicKeyedService(profile);

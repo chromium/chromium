@@ -111,10 +111,6 @@ inline constexpr char kGlicRolloutEligibility[] =
 // Dict pref that records user status.
 inline constexpr char kGlicUserStatus[] = "glic.user_status";
 
-// Integer pref that determines the FRE status for the user profile. Values are
-// from the FreStatus enum.
-inline constexpr char kGlicCompletedFre[] = "glic.completed_fre";
-
 // Time pref that records the last time a user dismissed the Glic window.
 inline constexpr char kGlicWindowLastDismissedTime[] =
     "glic.window.last_dimissed_time";
@@ -141,10 +137,6 @@ inline constexpr char kGlicActuationOnWebAllowedForURLs[] =
     "glic.actuation_on_web_allowed_for_urls";
 inline constexpr char kGlicActuationOnWebBlockedForURLs[] =
     "glic.actuation_on_web_blocked_for_urls";
-
-// Boolean pref for the user-enabled actuation on web setting.
-inline constexpr char kGlicUserEnabledActuationOnWeb[] =
-    "glic.user_enabled_actuation_on_web";
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);

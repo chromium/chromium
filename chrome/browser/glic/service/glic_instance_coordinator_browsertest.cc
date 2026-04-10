@@ -588,9 +588,9 @@ IN_PROC_BROWSER_TEST_F(
     GlicInstanceCoordinatorTrustFirstOnboardingArm1BrowserTest,
     DISABLED_TabContentsDaisyChainingNotSuppressedWhenTrustFirstArm1Shown) {
   // Open FRE.
-  GetProfile()->GetPrefs()->SetInteger(
-      prefs::kGlicCompletedFre,
-      static_cast<int>(prefs::FreStatus::kNotStarted));
+  glic::GlicKeyedService::Get(GetProfile())
+      ->enabling()
+      .SetCompletedFre(glic::prefs::FreStatus::kNotStarted);
 
   ASSERT_OK(OpenGlicForActiveTab());
   tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
@@ -627,8 +627,9 @@ IN_PROC_BROWSER_TEST_F(
     GlicInstanceCoordinatorTrustFirstOnboardingArm1BrowserTest,
     AutoSubmitNotDivertedWhenFreCompleted) {
   // Simulate FRE completion.
-  GetProfile()->GetPrefs()->SetInteger(
-      prefs::kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kCompleted));
+  glic::GlicKeyedService::Get(GetProfile())
+      ->enabling()
+      .SetCompletedFre(glic::prefs::FreStatus::kCompleted);
 
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
 

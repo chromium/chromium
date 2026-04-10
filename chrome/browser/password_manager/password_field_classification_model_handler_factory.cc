@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/autofill/ml_log_router_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
@@ -83,10 +84,8 @@ PasswordFieldClassificationModelHandlerFactory::GetBrowserContextToUse(
 
 #if !BUILDFLAG(IS_ANDROID)
   // Special case for ActorLogin which uses a model in a very limited scope.
-  if (profile->GetPrefs()->HasPrefPath(
-          glic::prefs::kGlicUserEnabledActuationOnWeb) &&
-      profile->GetPrefs()->GetBoolean(
-          glic::prefs::kGlicUserEnabledActuationOnWeb) &&
+  auto* glic_service = glic::GlicKeyedService::Get(profile);
+  if (glic_service && glic_service->enabling().GetUserEnabledActuationOnWeb() &&
       base::FeatureList::IsEnabled(
           password_manager::features::kActorLoginLocalClassificationModel)) {
     return context;

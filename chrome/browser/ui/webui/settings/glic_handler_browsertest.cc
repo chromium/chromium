@@ -14,6 +14,8 @@
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_prefs.h"
@@ -210,10 +212,49 @@ IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, RevokeActorLoginPermission) {
   glic_handler()->HandleRevokeActorLoginPermission(args);
 }
 
+IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, GetWebActuationEnabled) {
+  glic_handler()->AllowJavascriptForTesting();
+
+  glic::GlicKeyedService::Get(browser()->profile())
+      ->enabling()
+      .SetUserEnabledActuationOnWeb(true);
+
+  base::ListValue args;
+  args.Append("callback-id");
+  glic_handler()->HandleGetWebActuationEnabled(args);
+
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIResponse", data.function_name());
+  EXPECT_EQ("callback-id", data.arg1()->GetString());
+  EXPECT_TRUE(data.arg2()->GetBool());
+  EXPECT_TRUE(data.arg3()->GetBool());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, SetWebActuationEnabled) {
+  glic_handler()->AllowJavascriptForTesting();
+
+  base::ListValue args;
+  args.Append(true);
+  glic_handler()->HandleSetWebActuationEnabled(args);
+
+  EXPECT_TRUE(glic::GlicKeyedService::Get(browser()->profile())
+                  ->enabling()
+                  .GetUserEnabledActuationOnWeb());
+
+  base::ListValue args2;
+  args2.Append(false);
+  glic_handler()->HandleSetWebActuationEnabled(args2);
+
+  EXPECT_FALSE(glic::GlicKeyedService::Get(browser()->profile())
+                   ->enabling()
+                   .GetUserEnabledActuationOnWeb());
+}
+
 IN_PROC_BROWSER_TEST_F(GlicHandlerConsentBrowserTest,
                        GetWebActuationToggleVisibility_ConsentAccepted) {
-  browser()->profile()->GetPrefs()->SetBoolean(
-      glic::prefs::kGlicUserEnabledActuationOnWeb, true);
+  glic::GlicKeyedService::Get(browser()->profile())
+      ->enabling()
+      .SetUserEnabledActuationOnWeb(true);
 
   glic_handler()->HandleGetWebActuationToggleVisibility(
       base::ListValue().Append("callback_id"));
@@ -226,9 +267,6 @@ IN_PROC_BROWSER_TEST_F(GlicHandlerConsentBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GlicHandlerConsentBrowserTest,
                        GetWebActuationToggleVisibility_ConsentNotAccepted) {
-  browser()->profile()->GetPrefs()->ClearPref(
-      glic::prefs::kGlicUserEnabledActuationOnWeb);
-
   glic_handler()->HandleGetWebActuationToggleVisibility(
       base::ListValue().Append("callback_id"));
 
@@ -293,12 +331,14 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     GlicHandlerConsentBrowserTest,
     FireWebActuationToggleVisibilityChanged_ConsentAccepted) {
-  browser()->profile()->GetPrefs()->ClearPref(
-      glic::prefs::kGlicUserEnabledActuationOnWeb);
+  glic::GlicKeyedService::Get(browser()->profile())
+      ->enabling()
+      .SetUserEnabledActuationOnWeb(false);
   glic_handler()->AllowJavascript();
   web_ui()->ClearTrackedCalls();
-  browser()->profile()->GetPrefs()->SetBoolean(
-      glic::prefs::kGlicUserEnabledActuationOnWeb, true);
+  glic::GlicKeyedService::Get(browser()->profile())
+      ->enabling()
+      .SetUserEnabledActuationOnWeb(true);
 
   glic_handler()->FireWebActuationToggleVisibilityChanged();
 

@@ -814,12 +814,14 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithWebActuationSettingDisabled,
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithWebActuationSettingEnabled,
                        testGetWebActuationSetting) {
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kGlicUserEnabledActuationOnWeb, false);
+  glic::GlicKeyedService::Get(browser()->profile())
+      ->enabling()
+      .SetUserEnabledActuationOnWeb(false);
   ExecuteJsTest();
 
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kGlicUserEnabledActuationOnWeb, true);
+  glic::GlicKeyedService::Get(browser()->profile())
+      ->enabling()
+      .SetUserEnabledActuationOnWeb(true);
   ContinueJsTest();
 }
 

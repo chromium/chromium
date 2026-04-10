@@ -66,5 +66,8 @@ if (!is_android) {
       "//testing/gmock",
       "//testing/gtest",
     ]
+    if (is_chromeos) {
+      deps += [ "//chrome/browser/ash/test:test_support" ]
+    }
   }
 }

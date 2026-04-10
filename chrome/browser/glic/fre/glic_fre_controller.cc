@@ -150,8 +150,8 @@ void GlicFreController::AcceptFre(GlicFrePageHandler* handler) {
   }
   base::RecordAction(base::UserMetricsAction("Glic.Fre.Accept"));
   // Update FRE related preferences.
-  profile_->GetPrefs()->SetInteger(
-      prefs::kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kCompleted));
+  GlicKeyedService::Get(profile_)->enabling().SetCompletedFre(
+      prefs::FreStatus::kCompleted);
 
 #if !BUILDFLAG(IS_ANDROID)
   GlicLauncherConfiguration::CheckDefaultBrowserToEnableLauncher();

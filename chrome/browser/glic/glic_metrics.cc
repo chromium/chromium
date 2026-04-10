@@ -19,6 +19,7 @@
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "chrome/browser/metrics/profile_metrics_service_factory.h"
@@ -53,9 +54,8 @@ namespace glic {
 
 namespace {
 
-bool CheckFreStatus(Profile* profile, prefs::FreStatus status) {
-  return profile->GetPrefs()->GetInteger(prefs::kGlicCompletedFre) ==
-         static_cast<int>(status);
+bool CheckFreStatus(GlicEnabling* enabling, prefs::FreStatus status) {
+  return enabling->GetCompletedFre() == status;
 }
 
 class DummyDelegateImpl : public GlicMetrics::Delegate {
@@ -261,11 +261,10 @@ GlicMetrics::GlicMetrics(Profile* profile, GlicEnabling* enabling)
   is_enabled_ = enabling_->IsEnabledAndConsentForProfile(profile_);
   is_pinned_ = profile_->GetPrefs()->GetBoolean(prefs::kGlicPinnedToTabstrip);
   pref_registrar_.Init(profile_->GetPrefs());
-  pref_registrar_.Add(
-      prefs::kGlicCompletedFre,
-      base::BindRepeating(
+  subscriptions_.push_back(
+      enabling_->RegisterOnConsentChanged(base::BindRepeating(
           &GlicMetrics::OnMaybeEnabledAndConsentForProfileChanged,
-          base::Unretained(this)));
+          base::Unretained(this))));
   pref_registrar_.Add(prefs::kGlicPinnedToTabstrip,
                       base::BindRepeating(&GlicMetrics::OnPinningPrefChanged,
                                           base::Unretained(this)));
@@ -295,9 +294,8 @@ void GlicMetrics::RecordGlicProfilePreferences() {
   base::UmaHistogramBoolean(
       "Glic.Preferences.DefaultTabContextEnabled",
       profile_prefs->GetBoolean(prefs::kGlicDefaultTabContextEnabled));
-  base::UmaHistogramBoolean(
-      "Glic.Preferences.ActuationOnWeb",
-      profile_prefs->GetBoolean(prefs::kGlicUserEnabledActuationOnWeb));
+  base::UmaHistogramBoolean("Glic.Preferences.ActuationOnWeb",
+                            enabling_->GetUserEnabledActuationOnWeb());
 }
 
 void GlicMetrics::OnTrustFirstOnboardingAccept() {
@@ -321,7 +319,7 @@ void GlicMetrics::OnInstanceOpened() {
     return;
   }
 
-  if (GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile_)) {
+  if (enabling_->IsTrustFirstOnboardingEnabled()) {
     base::RecordAction(base::UserMetricsAction("Glic.Fre.Shown"));
     base::RecordAction(base::UserMetricsAction("Glic.Fre.Shown.Onboarding"));
     base::UmaHistogramEnumeration(
@@ -840,10 +838,10 @@ void GlicMetrics::SetWebClientMode(mojom::WebClientMode mode) {
 void GlicMetrics::OnImpressionTimerFired() {
   if (!enabling_->IsAllowed()) {
     EntryPointStatus impression;
-    if (CheckFreStatus(profile_, prefs::FreStatus::kNotStarted)) {
+    if (CheckFreStatus(enabling_, prefs::FreStatus::kNotStarted)) {
       // Profile not eligible, and not started FRE
       impression = EntryPointStatus::kBeforeFreNotEligible;
-    } else if (CheckFreStatus(profile_, prefs::FreStatus::kIncomplete)) {
+    } else if (CheckFreStatus(enabling_, prefs::FreStatus::kIncomplete)) {
       // Profile not eligible, started but not completed FRE
       impression = EntryPointStatus::kIncompleteFreNotEligible;
     } else {
@@ -855,14 +853,14 @@ void GlicMetrics::OnImpressionTimerFired() {
   }
 
   // Profile eligible, has not started FRE
-  if (CheckFreStatus(profile_, prefs::FreStatus::kNotStarted)) {
+  if (CheckFreStatus(enabling_, prefs::FreStatus::kNotStarted)) {
     base::UmaHistogramEnumeration("Glic.EntryPoint.Status",
                                   EntryPointStatus::kBeforeFreAndEligible);
     return;
   }
 
   // Profile eligible, started but not completed FRE
-  if (CheckFreStatus(profile_, prefs::FreStatus::kIncomplete)) {
+  if (CheckFreStatus(enabling_, prefs::FreStatus::kIncomplete)) {
     base::UmaHistogramEnumeration("Glic.EntryPoint.Status",
                                   EntryPointStatus::kIncompleteFreAndEligible);
     return;

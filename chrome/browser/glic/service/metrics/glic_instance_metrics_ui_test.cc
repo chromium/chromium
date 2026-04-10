@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/browser/glic/service/metrics/glic_metrics_session_manager.h"
@@ -137,9 +138,9 @@ class GlicFreMetricsTest : public test::InteractiveGlicTest {
 
   void SetUpOnMainThread() override {
     test::InteractiveGlicTest::SetUpOnMainThread();
-    browser()->profile()->GetPrefs()->SetInteger(
-        glic::prefs::kGlicCompletedFre,
-        static_cast<int>(glic::prefs::FreStatus::kNotStarted));
+    glic::GlicKeyedService::Get(browser()->profile())
+        ->enabling()
+        .SetCompletedFre(glic::prefs::FreStatus::kNotStarted);
   }
 
  protected:

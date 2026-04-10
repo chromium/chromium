@@ -107,9 +107,9 @@ class GlicTabSubMenuModelTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     GlicEnabling::SetBypassEnablementChecksForTesting(true);
-    browser()->profile()->GetPrefs()->SetInteger(
-        prefs::kGlicCompletedFre,
-        static_cast<int>(glic::prefs::FreStatus::kCompleted));
+    glic::GlicKeyedService::Get(browser()->profile())
+        ->enabling()
+        .SetCompletedFre(glic::prefs::FreStatus::kCompleted);
   }
 
   void TearDownOnMainThread() override {

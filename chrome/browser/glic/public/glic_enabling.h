@@ -28,6 +28,7 @@ class ProfileAttributesStorage;
 namespace glic {
 namespace prefs {
 enum class SettingsPolicyState;
+enum class FreStatus;
 }
 namespace mojom {
 // TODO(crbug.com/406500707): This forward declaration is needed because we use
@@ -325,6 +326,22 @@ class GlicEnabling : public signin::IdentityManager::Observer,
   // otherwise.
   bool HasConsented();
 
+  // Returns true if Trust-First Onboarding is enabled for this profile.
+  bool IsTrustFirstOnboardingEnabled() const;
+
+  // Returns the FRE status.
+  prefs::FreStatus GetCompletedFre() const;
+  // Sets the FRE status.
+  void SetCompletedFre(prefs::FreStatus status);
+
+  // Returns whether user enabled actuation on web.
+  bool GetUserEnabledActuationOnWeb() const;
+  // Returns true if the user enabled actuation on web pref is at its default
+  // value.
+  bool IsUserEnabledActuationOnWebDefault() const;
+  // Sets whether user enabled actuation on web.
+  void SetUserEnabledActuationOnWeb(bool enabled);
+
   // Checks if startup metrics have already been recorded, and if not, records
   // them.
   void MaybeRecordStartupMetrics();
@@ -362,6 +379,10 @@ class GlicEnabling : public signin::IdentityManager::Observer,
   base::CallbackListSubscription RegisterOnConsentChanged(
       ConsentChangedCallback callback);
 
+  using UserEnabledActuationOnWebChangedCallback = base::RepeatingClosure;
+  base::CallbackListSubscription RegisterOnUserEnabledActuationOnWebChanged(
+      UserEnabledActuationOnWebChangedCallback callback);
+
   // This is called anytime ShouldShowSettingsPage() might return a different
   // value.
   using ShowSettingsPageChangedCallback = base::RepeatingClosure;
@@ -374,6 +395,7 @@ class GlicEnabling : public signin::IdentityManager::Observer,
 
  private:
   void OnGlicSettingsPolicyChanged();
+  void OnUserEnabledActuationOnWebChanged();
 
   // IdentityManagerObserver:
   void OnPrimaryAccountChanged(
@@ -419,6 +441,10 @@ class GlicEnabling : public signin::IdentityManager::Observer,
   EnableChangedCallbackList enable_changed_callback_list_;
   using OnConsentChangeCallbackList = base::RepeatingCallbackList<void()>;
   OnConsentChangeCallbackList consent_changed_callback_list_;
+  using UserEnabledActuationOnWebChangedCallbackList =
+      base::RepeatingCallbackList<void()>;
+  UserEnabledActuationOnWebChangedCallbackList
+      user_enabled_actuation_on_web_changed_callback_list_;
   using OnShowSettingsPageChangeCallbackList =
       base::RepeatingCallbackList<void()>;
   OnShowSettingsPageChangeCallbackList

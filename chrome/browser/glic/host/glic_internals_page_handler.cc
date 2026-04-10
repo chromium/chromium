@@ -51,9 +51,9 @@ mojom::ProfileEnablementPtr BuildProfileEnablement(
   result->disallowed_by_locale_filter = enablement.disallowed_by_locale_filter;
   result->live_disallowed = enablement.live_disallowed;
   result->share_image_disallowed = enablement.share_image_disallowed;
+  auto* service = GlicKeyedService::Get(profile);
   result->actuation_not_consented =
-      profile->GetPrefs()->GetBoolean(prefs::kGlicUserEnabledActuationOnWeb) ==
-      false;
+      !(service && service->enabling().GetUserEnabledActuationOnWeb());
 
   using CannotActReason = ::glic::CannotActReason;
   if (actor_policy_checker) {

@@ -219,15 +219,11 @@ GlicKeyedService::GlicKeyedService(
   // is shown for testing convenience.
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(::switches::kGlicAlwaysOpenFre)) {
-    profile_->GetPrefs()->SetInteger(
-        prefs::kGlicCompletedFre,
-        static_cast<int>(prefs::FreStatus::kNotStarted));
+    enabling_->SetCompletedFre(prefs::FreStatus::kNotStarted);
     // or if automation is enabled, skip FRE
   } else if (command_line->HasSwitch(::switches::kGlicAutomation) ||
              command_line->HasSwitch(::switches::kGlicAlwaysSkipFre)) {
-    profile_->GetPrefs()->SetInteger(
-        prefs::kGlicCompletedFre,
-        static_cast<int>(prefs::FreStatus::kCompleted));
+    enabling_->SetCompletedFre(prefs::FreStatus::kCompleted);
   }
 
   // Sets up prefs storing manually configured glic guest URLs. Intended for

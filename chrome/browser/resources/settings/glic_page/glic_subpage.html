@@ -386,7 +386,8 @@
                   if="[[!isWebActuationDisabledForEnterprise_]]" restamp>
           <settings-toggle-button
               id="webActuationToggle"
-              pref="{{prefs.glic.user_enabled_actuation_on_web}}"
+              pref="{{webActuationEnabledPref_}}"
+              no-set-pref
               label="$i18n{glicWebActuationToggle}"
               sub-label-with-link="[[webActuationSubLabel_]]"
               on-sub-label-link-clicked="onWebActuationToggleLearnMoreClick_"

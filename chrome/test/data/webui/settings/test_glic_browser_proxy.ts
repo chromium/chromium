@@ -16,6 +16,7 @@ export class TestGlicBrowserProxy extends TestBrowserProxy implements
   private glicFocusToggleShortcutResponse_: string = '';
   private glicDisallowedByAdmin_: boolean = false;
   private webActuationToggleVisibilityResponse_: boolean = false;
+  private webActuationEnabledResponse_: boolean = false;
   private actorLoginPermissions_: LoginPermission[] = [];
 
   constructor() {
@@ -32,6 +33,8 @@ export class TestGlicBrowserProxy extends TestBrowserProxy implements
       'getWebActuationToggleVisibility',
       'getGlicSelectionShortcut',
       'setGlicSelectionShortcut',
+      'getWebActuationEnabled',
+      'setWebActuationEnabled',
     ]);
   }
 
@@ -108,6 +111,19 @@ export class TestGlicBrowserProxy extends TestBrowserProxy implements
 
   setWebActuationToggleVisibilityResponse(visible: boolean) {
     this.webActuationToggleVisibilityResponse_ = visible;
+  }
+
+  getWebActuationEnabled() {
+    this.methodCalled('getWebActuationEnabled');
+    return Promise.resolve(this.webActuationEnabledResponse_);
+  }
+
+  setWebActuationEnabled(enabled: boolean) {
+    this.methodCalled('setWebActuationEnabled', enabled);
+  }
+
+  setWebActuationEnabledResponse(enabled: boolean) {
+    this.webActuationEnabledResponse_ = enabled;
   }
   getActorLoginPermissions() {
     this.methodCalled('getActorLoginPermissions');

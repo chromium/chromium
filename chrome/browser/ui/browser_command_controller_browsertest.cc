@@ -756,9 +756,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
       ::prefs::kGeminiSettings,
       static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
   // Bypass fre.
-  profile_prefs->SetInteger(
-      glic::prefs::kGlicCompletedFre,
-      static_cast<int>(glic::prefs::FreStatus::kCompleted));
+  glic::GlicKeyedService::Get(browser()->profile())
+      ->enabling()
+      .SetCompletedFre(glic::prefs::FreStatus::kCompleted);
 
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_OPEN_GLIC));
   ASSERT_TRUE(

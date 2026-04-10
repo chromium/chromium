@@ -66,12 +66,18 @@ public class GlicSettingsUnitTest {
     @Mock private PrefService mPrefServiceMock;
     @Mock private SettingsCustomTabLauncher mCustomTabLauncher;
     @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarJniMock;
+    @Mock private GlicKeyedServiceFactory.Natives mGlicKeyedServiceFactoryJniMock;
+    @Mock private GlicKeyedService mGlicKeyedServiceMock;
 
     @Before
     public void setUp() {
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarJniMock);
+        GlicKeyedServiceFactoryJni.setInstanceForTesting(mGlicKeyedServiceFactoryJniMock);
+
         when(mUserPrefsJniMock.get(mProfileMock)).thenReturn(mPrefServiceMock);
+        when(mGlicKeyedServiceFactoryJniMock.getForProfile(mProfileMock))
+                .thenReturn(mGlicKeyedServiceMock);
         doNothing().when(mCustomTabLauncher).openUrlInCct(any(Context.class), anyString());
 
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
@@ -187,26 +193,39 @@ public class GlicSettingsUnitTest {
 
     @Test
     public void testAutoBrowsePermissionInitialState_Enabled() {
-        doTestInitialState(
-                GlicPrefNames.GLIC_USER_ENABLED_ACTUATION_ON_WEB,
-                "glic_permissions_auto_browse",
-                true);
+        when(mGlicKeyedServiceMock.getUserEnabledActuationOnWeb()).thenReturn(true);
+        GlicSettings fragment = launchFragment();
+        ChromeSwitchPreference preference = fragment.findPreference("glic_permissions_auto_browse");
+        assertTrue(preference.isChecked());
     }
 
     @Test
     public void testAutoBrowsePermissionInitialState_Disabled() {
-        doTestInitialState(
-                GlicPrefNames.GLIC_USER_ENABLED_ACTUATION_ON_WEB,
-                "glic_permissions_auto_browse",
-                false);
+        when(mGlicKeyedServiceMock.getUserEnabledActuationOnWeb()).thenReturn(false);
+        GlicSettings fragment = launchFragment();
+        ChromeSwitchPreference preference = fragment.findPreference("glic_permissions_auto_browse");
+        assertFalse(preference.isChecked());
     }
 
     @Test
     public void testAutoBrowsePermissionToggle() {
-        doTestToggle(
-                GLIC_AUTO_BROWSE_SETTING_ENABLED,
-                GlicPrefNames.GLIC_USER_ENABLED_ACTUATION_ON_WEB,
-                "glic_permissions_auto_browse");
+        when(mGlicKeyedServiceMock.getUserEnabledActuationOnWeb()).thenReturn(false);
+        GlicSettings fragment = launchFragment();
+        ChromeSwitchPreference preference = fragment.findPreference("glic_permissions_auto_browse");
+
+        // Test toggling on
+        preference.getOnPreferenceChangeListener().onPreferenceChange(preference, true);
+        assertTrue(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(GLIC_AUTO_BROWSE_SETTING_ENABLED, false));
+        verify(mGlicKeyedServiceMock).setUserEnabledActuationOnWeb(true);
+
+        // Test toggling off
+        preference.getOnPreferenceChangeListener().onPreferenceChange(preference, false);
+        assertFalse(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(GLIC_AUTO_BROWSE_SETTING_ENABLED, true));
+        verify(mGlicKeyedServiceMock).setUserEnabledActuationOnWeb(false);
     }
 
     private void doTestToggle(String sharedPrefKey, String profilePrefKey, String viewId) {

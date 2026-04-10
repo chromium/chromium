@@ -25,6 +25,8 @@ import org.chromium.components.feature_engagement.Tracker;
 public class GlicKeyedServiceImpl implements GlicKeyedService {
     private long mNativePtr;
     private final ObserverList<GlobalShowHideObserver> mObservers = new ObserverList<>();
+    private final ObserverList<UserEnabledActuationOnWebObserver>
+            mUserEnabledActuationOnWebObservers = new ObserverList<>();
 
     @CalledByNative
     private static GlicKeyedServiceImpl create(long nativePtr) {
@@ -53,6 +55,18 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
         return GlicKeyedServiceImplJni.get().isPanelShowingForBrowser(mNativePtr, browserWindowPtr);
     }
 
+    @Override
+    public boolean getUserEnabledActuationOnWeb() {
+        if (mNativePtr == 0) return false;
+        return GlicKeyedServiceImplJni.get().getUserEnabledActuationOnWeb(mNativePtr);
+    }
+
+    @Override
+    public void setUserEnabledActuationOnWeb(boolean enabled) {
+        if (mNativePtr == 0) return;
+        GlicKeyedServiceImplJni.get().setUserEnabledActuationOnWeb(mNativePtr, enabled);
+    }
+
     @CalledByNative
     private void onNativeDestroyed() {
         mNativePtr = 0;
@@ -75,6 +89,24 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
         }
     }
 
+    @Override
+    public void addUserEnabledActuationOnWebObserver(UserEnabledActuationOnWebObserver observer) {
+        mUserEnabledActuationOnWebObservers.addObserver(observer);
+    }
+
+    @Override
+    public void removeUserEnabledActuationOnWebObserver(
+            UserEnabledActuationOnWebObserver observer) {
+        mUserEnabledActuationOnWebObservers.removeObserver(observer);
+    }
+
+    @CalledByNative
+    private void onUserEnabledActuationOnWebChanged(boolean enabled) {
+        for (UserEnabledActuationOnWebObserver observer : mUserEnabledActuationOnWebObservers) {
+            observer.onUserEnabledActuationOnWebChanged(enabled);
+        }
+    }
+
     @NativeMethods
     interface Natives {
         void toggleUI(
@@ -85,5 +117,9 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
                 int source);
 
         boolean isPanelShowingForBrowser(long nativeGlicKeyedServiceAndroid, long browserWindowPtr);
+
+        boolean getUserEnabledActuationOnWeb(long nativeGlicKeyedServiceAndroid);
+
+        void setUserEnabledActuationOnWeb(long nativeGlicKeyedServiceAndroid, boolean enabled);
     }
 }
