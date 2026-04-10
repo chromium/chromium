@@ -315,6 +315,19 @@ class FindTestTargetsTest(TestCase):
                                                  ['foo.cc'])
       self.assertEqual(['chrome/test:unit_tests'], targets)
       mock_pick.assert_called_once()
+      self.assertEqual(mock_pick.call_args[0][0], None)
+
+  def test_target_ambiguity_prompt_gemini_cli(self):
+    self.mock_run_command.return_value = """
+//chrome/test:unit_tests
+//chrome/test:browser_tests
+"""
+    with mock.patch('utils.IsGeminiCli', return_value=True) as mock_pick:
+      orig_paths = ['foo.cc']
+      with self.assertRaises(SystemExit):
+        target_finder.FindTestTargets(self.mock_cache,
+                                      self.out_dir, ['foo.cc'],
+                                      orig_paths=orig_paths)
 
   def test_target_index(self):
     self.mock_run_command.return_value = """

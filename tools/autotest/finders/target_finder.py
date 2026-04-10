@@ -80,12 +80,14 @@ def _ParseRefsOutput(output: str) -> list[str]:
   return targets
 
 
-def FindTestTargets(target_cache: TargetCache,
-                    out_dir: str,
-                    paths: list[str],
-                    run_all: bool = False,
-                    run_changed: bool = False,
-                    target_index: int | None = None) -> tuple[list[str], bool]:
+def FindTestTargets(
+    target_cache: TargetCache,
+    out_dir: str,
+    paths: list[str],
+    run_all: bool = False,
+    run_changed: bool = False,
+    target_index: int | None = None,
+    orig_paths: list[str] | None = None) -> tuple[list[str], bool]:
   run_all: bool = run_all or run_changed
 
   # Normalize paths, so they can be cached.
@@ -164,7 +166,7 @@ def FindTestTargets(target_cache: TargetCache,
     elif target_index is not None and 0 <= target_index < len(test_targets):
       test_targets = [test_targets[target_index]]
     else:
-      test_targets = [command.HaveUserPickTarget(paths, test_targets)]
+      test_targets = [command.HaveUserPickTarget(orig_paths, test_targets)]
 
   # Remove the // prefix to turn GN label into ninja target.
   test_targets_gn: list[str] = [t[2:] for t in test_targets]

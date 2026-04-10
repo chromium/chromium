@@ -3,13 +3,15 @@
 # found in the LICENSE file.
 
 import locale
+import os
 import shlex
 import subprocess
+import sys
 import tempfile
 
 from . import constants as const
-
 from . import telemetry
+import utils
 
 from .command_error import CommandError, AutotestError
 from .test_summary import ParseTests, TestSummary
@@ -76,7 +78,11 @@ def RunCommand(cmd: list[str], **kwargs: int) -> str:
 
 def _ChooseByIndex(msg: str, options: list[str]) -> str:
   while True:
-    user_input: str = input(msg)
+    try:
+      user_input: str = input(msg)
+    except EOFError:
+      # Non-interactive, or user enter Ctrl-D.
+      sys.exit(1)
     try:
       return options[int(user_input)]
     except (ValueError, IndexError):
@@ -87,25 +93,43 @@ def HaveUserPickFile(paths: list[str]) -> str:
   paths = sorted(paths, key=lambda p: (len(p), p))[:20]
   path_list: str = '\n'.join(f'{i}. {t}' for i, t in enumerate(paths))
 
-  msg: str = f"""\
+  print(f"""\
 Found multiple paths with that name.
-Hint: Avoid this in subsequent runs using --path-index=$INDEX, or --run-all.
+Hint: Avoid this in subsequent runs using --target=$TARGET_NAME, or --run-all.l
 
 {path_list}
-
-Pick the path that you want by its index: """
+""")
+  msg = 'Pick the path that you want by its index: '
   return _ChooseByIndex(msg, paths)
 
 
-def HaveUserPickTarget(paths: list[str], targets: list[str]) -> str:
+def HaveUserPickTarget(orig_paths: list[str], targets: list[str]) -> str:
   targets = targets[:20]
   target_list: str = '\n'.join(f'{i}. {t}' for i, t in enumerate(targets))
 
-  msg: str = f"""\
+  fail_fast = False
+  hint = """
+Hint: To avoid this in subsequent runs:
+ * Provide full paths (not just file names)
+ * Add --run-all (to run all of them)
+ * Add --target-index=$INDEX (to pick by index)
+ * Add --target=foo_tests (to pick by name)
+"""
+  if orig_paths and not all(os.path.sep in p for p in orig_paths):
+    if utils.IsGeminiCli():
+      # Get agents to use full paths to resolve multiple targets.
+      fail_fast = True
+      hint = 'Try again with full paths (not just base names).\n'
+    else:
+      hint += ' * Use full paths (not just base names)\n'
+
+  print(f"""\
 Path(s) belong to multiple test targets.
-Hint: Avoid this in subsequent runs using --target-index=$INDEX, or --run-all.
 
 {target_list}
 
-Pick a target by its index: """
+{hint}""")
+  if fail_fast:
+    sys.exit(1)
+  msg = 'Pick a target by its index: '
   return _ChooseByIndex(msg, targets)

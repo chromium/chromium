@@ -164,7 +164,7 @@ def main(ctx, **kwargs) -> int:
     if filenames:
       targets, used_cache = target_finder.FindTestTargets(
           target_cache, out_dir, filenames, config.run_all, config.run_changed
-          or config.run_related, config.target_index)
+          or config.run_related, config.target_index, config.files)
 
   # Add any direct suites
   for suite in direct_suites:

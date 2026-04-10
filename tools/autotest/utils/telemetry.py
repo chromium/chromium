@@ -6,6 +6,7 @@ import os
 import sys
 import json
 
+import utils
 from . import constants
 
 from .test_summary import TestSummary
@@ -38,7 +39,7 @@ def RecordMainAttributes(targets: list[str], gtest_filter: str,
   if not span.is_recording():
     return
 
-  is_gemini_cli = os.getenv("GEMINI_CLI", "") == "1"
+  is_gemini_cli = utils.IsGeminiCli()
 
   span.set_attribute('main.is_gemini_cli', is_gemini_cli)
   span.set_attribute('main.targets', str(targets))
