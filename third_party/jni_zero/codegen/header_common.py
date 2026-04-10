@@ -37,10 +37,6 @@ inline jclass {escaped_name}_clazz(JNIEnv* env) {{
 def class_accessor_expression(java_class):
   if java_class == java_types.CLASS_LOADER_CLASS:
     return 'jni_zero::g_class_loader_class'
-  if java_class == java_types.LIST_CLASS:
-    return 'jni_zero::g_list_class'
-  if java_class == java_types.MAP_CLASS:
-    return 'jni_zero::g_map_class'
   if java_class == java_types.OBJECT_CLASS:
     return 'jni_zero::g_object_class'
   if java_class == java_types.STRING_CLASS:

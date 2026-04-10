@@ -36,7 +36,7 @@ namespace JNI_List {
     const ::jni_zero::JavaRef<jobject>& obj,
     const ::jni_zero::JavaRef<jobject>& p0) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, false);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -55,7 +55,7 @@ namespace JNI_List {
     JniIntWrapper p0,
     const ::jni_zero::JavaRef<jobject>& p1) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -73,7 +73,7 @@ namespace JNI_List {
     JniIntWrapper p0,
     const ::jni_zero::JavaRef<jobject>& p1) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, false);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -91,7 +91,7 @@ namespace JNI_List {
     const ::jni_zero::JavaRef<jobject>& obj,
     const ::jni_zero::JavaRef<jobject>& p0) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, false);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -109,7 +109,7 @@ namespace JNI_List {
     const ::jni_zero::JavaRef<jobject>& obj,
     const ::jni_zero::JavaRef<jobject>& p0) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -126,7 +126,7 @@ namespace JNI_List {
     const ::jni_zero::JavaRef<jobject>& obj,
     const ::jni_zero::JavaRef<jobject>& p0) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -140,7 +140,7 @@ namespace JNI_List {
 
 [[maybe_unused]] static void Java_List_clear(JNIEnv* env, const ::jni_zero::JavaRef<jobject>& obj) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -157,7 +157,7 @@ namespace JNI_List {
     const ::jni_zero::JavaRef<jobject>& obj,
     const ::jni_zero::JavaRef<jobject>& p0) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, false);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -175,7 +175,7 @@ namespace JNI_List {
     const ::jni_zero::JavaRef<jobject>& obj,
     const ::jni_zero::JavaRef<jobject>& p0) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, false);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -193,7 +193,7 @@ namespace JNI_List {
     const ::jni_zero::JavaRef<jobject>& obj,
     const ::jni_zero::JavaRef<jobject>& p0) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, false);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -211,7 +211,7 @@ namespace JNI_List {
     const ::jni_zero::JavaRef<jobject>& obj,
     JniIntWrapper p0) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -228,7 +228,7 @@ namespace JNI_List {
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& obj) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -245,7 +245,7 @@ namespace JNI_List {
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& obj) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -262,7 +262,7 @@ namespace JNI_List {
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& obj) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, 0);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -280,7 +280,7 @@ namespace JNI_List {
     const ::jni_zero::JavaRef<jobject>& obj,
     const ::jni_zero::JavaRef<jobject>& p0) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, 0);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -297,7 +297,7 @@ namespace JNI_List {
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& obj) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, false);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -314,7 +314,7 @@ namespace JNI_List {
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& obj) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -332,7 +332,7 @@ namespace JNI_List {
     const ::jni_zero::JavaRef<jobject>& obj,
     const ::jni_zero::JavaRef<jobject>& p0) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, 0);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -349,7 +349,7 @@ namespace JNI_List {
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& obj) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -367,7 +367,7 @@ namespace JNI_List {
     const ::jni_zero::JavaRef<jobject>& obj,
     JniIntWrapper p0) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -385,7 +385,7 @@ namespace JNI_List {
     const ::jni_zero::JavaRef<jobject>& obj,
     const ::jni_zero::JavaRef<jobject>& p0) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, false);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -403,7 +403,7 @@ namespace JNI_List {
     const ::jni_zero::JavaRef<jobject>& obj,
     JniIntWrapper p0) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -421,7 +421,7 @@ namespace JNI_List {
     const ::jni_zero::JavaRef<jobject>& obj,
     const ::jni_zero::JavaRef<jobject>& p0) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, false);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -438,7 +438,7 @@ namespace JNI_List {
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& obj) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -455,7 +455,7 @@ namespace JNI_List {
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& obj) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -473,7 +473,7 @@ namespace JNI_List {
     const ::jni_zero::JavaRef<jobject>& obj,
     const ::jni_zero::JavaRef<jobject>& p0) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -490,7 +490,7 @@ namespace JNI_List {
     const ::jni_zero::JavaRef<jobject>& obj,
     const ::jni_zero::JavaRef<jobject>& p0) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, false);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -507,7 +507,7 @@ namespace JNI_List {
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& obj) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -526,7 +526,7 @@ namespace JNI_List {
     JniIntWrapper p0,
     const ::jni_zero::JavaRef<jobject>& p1) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -543,7 +543,7 @@ namespace JNI_List {
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& obj) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, 0);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -561,7 +561,7 @@ namespace JNI_List {
     const ::jni_zero::JavaRef<jobject>& obj,
     const ::jni_zero::JavaRef<jobject>& p0) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -577,7 +577,7 @@ namespace JNI_List {
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& obj) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -596,7 +596,7 @@ namespace JNI_List {
     JniIntWrapper p0,
     JniIntWrapper p1) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -614,7 +614,7 @@ namespace JNI_List {
     const ::jni_zero::JavaRef<jobject>& obj,
     const ::jni_zero::JavaRef<jobjectArray>& p0) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -632,7 +632,7 @@ namespace JNI_List {
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& obj) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
@@ -650,7 +650,7 @@ namespace JNI_List {
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& p0) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_STATIC>(
@@ -665,7 +665,7 @@ namespace JNI_List {
 
 [[maybe_unused]] static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(JNIEnv* env) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_STATIC>(
@@ -682,7 +682,7 @@ namespace JNI_List {
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& p0) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_STATIC>(
@@ -700,7 +700,7 @@ namespace JNI_List {
     const ::jni_zero::JavaRef<jobject>& p0,
     const ::jni_zero::JavaRef<jobject>& p1) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_STATIC>(
@@ -719,7 +719,7 @@ namespace JNI_List {
     const ::jni_zero::JavaRef<jobject>& p1,
     const ::jni_zero::JavaRef<jobject>& p2) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_STATIC>(
@@ -744,7 +744,7 @@ namespace JNI_List {
     const ::jni_zero::JavaRef<jobject>& p2,
     const ::jni_zero::JavaRef<jobject>& p3) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_STATIC>(
@@ -771,7 +771,7 @@ namespace JNI_List {
     const ::jni_zero::JavaRef<jobject>& p3,
     const ::jni_zero::JavaRef<jobject>& p4) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_STATIC>(
@@ -800,7 +800,7 @@ namespace JNI_List {
     const ::jni_zero::JavaRef<jobject>& p4,
     const ::jni_zero::JavaRef<jobject>& p5) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_STATIC>(
@@ -831,7 +831,7 @@ namespace JNI_List {
     const ::jni_zero::JavaRef<jobject>& p5,
     const ::jni_zero::JavaRef<jobject>& p6) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_STATIC>(
@@ -864,7 +864,7 @@ namespace JNI_List {
     const ::jni_zero::JavaRef<jobject>& p6,
     const ::jni_zero::JavaRef<jobject>& p7) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_STATIC>(
@@ -899,7 +899,7 @@ namespace JNI_List {
     const ::jni_zero::JavaRef<jobject>& p7,
     const ::jni_zero::JavaRef<jobject>& p8) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_STATIC>(
@@ -936,7 +936,7 @@ namespace JNI_List {
     const ::jni_zero::JavaRef<jobject>& p8,
     const ::jni_zero::JavaRef<jobject>& p9) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_STATIC>(
@@ -965,7 +965,7 @@ namespace JNI_List {
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobjectArray>& p0) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = jni_zero::g_list_class;
+  jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
   ::jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<::jni_zero::MethodID::TYPE_STATIC>(

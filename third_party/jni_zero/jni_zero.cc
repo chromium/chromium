@@ -94,8 +94,6 @@ void JNI_JniZero_SetJniClassLoader(
 }
 
 jclass g_class_loader_class = nullptr;
-jclass g_list_class = nullptr;
-jclass g_map_class = nullptr;
 jclass g_object_class = nullptr;
 jclass g_string_class = nullptr;
 LeakedJavaGlobalRef<jstring> g_empty_string = nullptr;
@@ -180,8 +178,6 @@ void InitVM(JavaVM* vm) {
   g_empty_string.Reset(env,
                        JavaRef<>::CreateLeaky(env, env->NewString(nullptr, 0)));
 
-  g_list_class = GetClassGlobalRef(env, empty_list);
-  g_map_class = GetClassGlobalRef(env, empty_map);
   g_string_class = GetClassGlobalRef(env, g_empty_string.obj());
   g_class_loader_class = GetClassGlobalRef(env, jni_class_loader);
   g_object_class = static_cast<jclass>(

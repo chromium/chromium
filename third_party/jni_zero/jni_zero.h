@@ -24,8 +24,6 @@ namespace jni_zero {
 
 // Commonly needed jclasses:
 extern JNI_ZERO_COMPONENT_BUILD_EXPORT jclass g_class_loader_class;
-extern JNI_ZERO_COMPONENT_BUILD_EXPORT jclass g_list_class;
-extern JNI_ZERO_COMPONENT_BUILD_EXPORT jclass g_map_class;
 extern JNI_ZERO_COMPONENT_BUILD_EXPORT jclass g_object_class;
 extern JNI_ZERO_COMPONENT_BUILD_EXPORT jclass g_string_class;
 // Singletons for empty things.
