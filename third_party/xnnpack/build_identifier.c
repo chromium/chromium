@@ -11,6 +11,10 @@
 // The following inputs were used to generate this file.
 // - external/xnnpack+/src/bf16-f32-gemm/gen/bf16-f32-gemm-11x32c2-minmax-asm-amd64-avx512bf16-broadcast.S
 // - external/xnnpack+/src/bf16-f32-gemm/gen/bf16-f32-gemm-1x32c2-minmax-asm-amd64-avx512bf16-broadcast.S
+// - external/xnnpack+/src/bf16-f32-vcvt/gen/bf16-f32-vcvt-scalar-u2.c
+// - external/xnnpack+/src/bf16-rminmax/gen/bf16-rmax-scalar-u2-acc2.c
+// - external/xnnpack+/src/bf16-rminmax/gen/bf16-rmin-scalar-u2-acc2.c
+// - external/xnnpack+/src/bf16-rminmax/gen/bf16-rminmax-scalar-u2-acc2.c
 // - external/xnnpack+/src/configs/hardware-config.c
 // - external/xnnpack+/src/enums/allocation-type.c
 // - external/xnnpack+/src/enums/datatype-strings.c
@@ -124,6 +128,7 @@
 // - external/xnnpack+/src/f32-avgpool/gen/f32-avgpool-9p-minmax-avx512f-u16.c
 // - external/xnnpack+/src/f32-avgpool/gen/f32-avgpool-9p-minmax-scalar-u1.c
 // - external/xnnpack+/src/f32-avgpool/gen/f32-avgpool-9p-minmax-sse2-u4.c
+// - external/xnnpack+/src/f32-bf16-vcvt/gen/f32-bf16-vcvt-scalar-u2.c
 // - external/xnnpack+/src/f32-conv-hwc2chw/f32-conv-hwc2chw-3x3s2p1c3x4-scalar-1x1.c
 // - external/xnnpack+/src/f32-conv-hwc2chw/f32-conv-hwc2chw-3x3s2p1c3x4-sse-2x2.c
 // - external/xnnpack+/src/f32-dwconv/gen/f32-dwconv-25p16c-minmax-avx.c
@@ -182,7 +187,6 @@
 // - external/xnnpack+/src/f32-gemm/gen/f32-gemm-1x32-minmax-avx512f-broadcast.c
 // - external/xnnpack+/src/f32-gemm/gen/f32-gemm-1x32c2-minmax-asm-amd64-avx512f-broadcast.S
 // - external/xnnpack+/src/f32-gemm/gen/f32-gemm-1x4-minmax-scalar.c
-// - external/xnnpack+/src/f32-gemm/gen/f32-gemm-1x4-relu-scalar.c
 // - external/xnnpack+/src/f32-gemm/gen/f32-gemm-1x4-scalar.c
 // - external/xnnpack+/src/f32-gemm/gen/f32-gemm-1x8-minmax-avx-broadcast.c
 // - external/xnnpack+/src/f32-gemm/gen/f32-gemm-1x8-minmax-fma3-broadcast.c
@@ -194,7 +198,6 @@
 // - external/xnnpack+/src/f32-gemm/gen/f32-gemm-4x2-scalar.c
 // - external/xnnpack+/src/f32-gemm/gen/f32-gemm-4x2c4-minmax-sse.c
 // - external/xnnpack+/src/f32-gemm/gen/f32-gemm-4x4-minmax-scalar.c
-// - external/xnnpack+/src/f32-gemm/gen/f32-gemm-4x4-relu-scalar.c
 // - external/xnnpack+/src/f32-gemm/gen/f32-gemm-4x4-scalar.c
 // - external/xnnpack+/src/f32-gemm/gen/f32-gemm-4x8-minmax-fma3-broadcast.c
 // - external/xnnpack+/src/f32-gemm/gen/f32-gemm-4x8-minmax-sse-load1.c
@@ -217,7 +220,6 @@
 // - external/xnnpack+/src/f32-igemm/gen/f32-igemm-1x16s4-minmax-fma3-broadcast.c
 // - external/xnnpack+/src/f32-igemm/gen/f32-igemm-1x32-minmax-avx512f-broadcast.c
 // - external/xnnpack+/src/f32-igemm/gen/f32-igemm-1x4-minmax-scalar.c
-// - external/xnnpack+/src/f32-igemm/gen/f32-igemm-1x4-relu-scalar.c
 // - external/xnnpack+/src/f32-igemm/gen/f32-igemm-1x4-scalar.c
 // - external/xnnpack+/src/f32-igemm/gen/f32-igemm-1x8-minmax-avx-broadcast.c
 // - external/xnnpack+/src/f32-igemm/gen/f32-igemm-1x8-minmax-fma3-broadcast.c
@@ -227,7 +229,6 @@
 // - external/xnnpack+/src/f32-igemm/gen/f32-igemm-4x2-scalar.c
 // - external/xnnpack+/src/f32-igemm/gen/f32-igemm-4x2c4-minmax-sse.c
 // - external/xnnpack+/src/f32-igemm/gen/f32-igemm-4x4-minmax-scalar.c
-// - external/xnnpack+/src/f32-igemm/gen/f32-igemm-4x4-relu-scalar.c
 // - external/xnnpack+/src/f32-igemm/gen/f32-igemm-4x4-scalar.c
 // - external/xnnpack+/src/f32-igemm/gen/f32-igemm-4x8-minmax-fma3-broadcast.c
 // - external/xnnpack+/src/f32-igemm/gen/f32-igemm-4x8-minmax-sse-load1.c
@@ -494,7 +495,6 @@
 // - external/xnnpack+/src/f32-vrsqrt/gen/f32-vrsqrt-sse2-rsqrt.c
 // - external/xnnpack+/src/f32-vrsqrt/gen/f32-vrsqrt-sse2-sqrt.c
 // - external/xnnpack+/src/f32-vsigmoid/gen/f32-vsigmoid-avx-rr2-p5-div-u16.c
-// - external/xnnpack+/src/f32-vsigmoid/gen/f32-vsigmoid-avx-rr2-p5-nr2-u16.c
 // - external/xnnpack+/src/f32-vsigmoid/gen/f32-vsigmoid-avx2-rr1-p5-div-u16.c
 // - external/xnnpack+/src/f32-vsigmoid/gen/f32-vsigmoid-avx512f-rr2-lut32-p2-perm2-scalef-div-u64.c
 // - external/xnnpack+/src/f32-vsigmoid/gen/f32-vsigmoid-scalar-rr2-lut64-p2-div-u2.c
@@ -1028,10 +1028,10 @@
 #include <string.h>
 
 static const uint8_t xnn_build_identifier[] = {
-  141, 132, 219, 205, 253, 156, 132, 206,
-  162, 250,  49, 186, 203, 178,  43, 149,
-  144, 213, 189, 116,  47, 201, 167, 150,
-   62, 130, 234,  32,  54, 163, 117,  26
+  131, 202, 236, 233,  56,  66, 123,  15,
+  117, 142, 231, 151, 144,   3,  39, 223,
+   53, 134, 240,   0, 218,  49,  88,  37,
+   38, 168,  17, 204,  31, 141, 157,   1
 };
 
 size_t xnn_experimental_get_build_identifier_size() {
