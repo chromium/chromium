@@ -72,6 +72,12 @@ ContextualSearchMetricsRecorder::ContextualSearchMetricsRecorder(
       metrics_suffix_(ContextualSearchSourceToString(source)),
       session_metrics_(std::make_unique<SessionMetrics>()) {}
 
+void ContextualSearchMetricsRecorder::UpdateContextualSearchSource(
+    ContextualSearchSource source) {
+  source_ = source;
+  metrics_suffix_ = ContextualSearchSourceToString(source);
+}
+
 ContextualSearchMetricsRecorder::~ContextualSearchMetricsRecorder() {
   // Record session abandonments and completions.
   if (session_state_ == SessionState::kSessionStarted) {

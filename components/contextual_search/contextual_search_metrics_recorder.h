@@ -184,6 +184,11 @@ class ContextualSearchMetricsRecorder {
   // resulted in a successful navigation or was abandoned.
   virtual void RecordNavigationResult(bool navigated);
 
+  // Updates the source of the contextual search session. This is needed when
+  // a session is transferred over from another source so that the metrics
+  // are recorded for the correct source.
+  void UpdateContextualSearchSource(ContextualSearchSource source);
+
   // Records tool mode and model mode on query submission.
   virtual void RecordModesOnSubmission(omnibox::ToolMode tool_mode,
                                        omnibox::ModelMode model_mode);
