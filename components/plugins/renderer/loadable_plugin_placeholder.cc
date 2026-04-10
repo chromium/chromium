@@ -88,7 +88,7 @@ void LoadablePluginPlaceholder::UpdateMessage() {
   std::string script =
       "window.setMessage(" + base::GetQuotedJSONString(message_) + ")";
   plugin()->main_frame()->ExecuteScript(
-      blink::WebScriptSource(blink::WebString::FromUTF8(script)));
+      blink::WebScriptSource(blink::WebString::FromUtf8(script)));
 }
 
 bool LoadablePluginPlaceholder::IsErrorPlaceholder() {

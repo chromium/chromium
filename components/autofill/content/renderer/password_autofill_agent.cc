@@ -301,8 +301,8 @@ std::string GetAlternativeFormSignatureAsString(const FormData& form_data) {
 void SetAttributeInternal(WebElement target,
                           const std::string& attribute_utf8,
                           const std::string& value_utf8) {
-  target.SetAttribute(WebString::FromUTF8(attribute_utf8),
-                      WebString::FromUTF8(value_utf8));
+  target.SetAttribute(WebString::FromUtf8(attribute_utf8),
+                      WebString::FromUtf8(value_utf8));
 }
 
 // Posts an async task to call SetAttributeInternal.
@@ -452,7 +452,7 @@ void AnnotateFieldWithParsingResult(
 
   element.SetAttribute(
       kHtmlAttributeForAutofillTooltip,
-      WebString::FromUTF8(
+      WebString::FromUtf8(
           base::StrCat({element.GetAttribute(kDebugAttributeForAutofill).Utf8(),
                         "\n", kDebugAttributeForParserAnnotations, ": ",
                         password_managers_annotation})));

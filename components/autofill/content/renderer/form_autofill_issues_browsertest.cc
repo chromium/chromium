@@ -150,7 +150,7 @@ TEST_F(
         <input id=t>
       </form>)");
   GetElementById(GetDocument(), "t")
-      .SetAttribute("autocomplete", WebString::FromUTF8(std::string(100, 'a') +
+      .SetAttribute("autocomplete", WebString::FromUtf8(std::string(100, 'a') +
                                                         "address-line-1"));
   MockEmit emit;
   EXPECT_CALL(emit,

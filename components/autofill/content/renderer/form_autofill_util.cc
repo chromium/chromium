@@ -190,7 +190,7 @@ constexpr std::string_view kValue = "value";
 template <const std::string_view& string>
 const WebString& GetWebString() {
   static const base::NoDestructor<WebString> web_string(
-      WebString::FromUTF8(string));
+      WebString::FromUtf8(string));
   return *web_string;
 }
 
@@ -2982,14 +2982,14 @@ std::string ExtractFinalCheckoutAmountFromDom(
     std::string_view label_regex,
     size_t number_of_ancestor_levels_to_search) {
   std::vector<WebNode> price_nodes =
-      document.FindAllTextNodesMatchingRegex(WebString::FromUTF8(price_regex));
+      document.FindAllTextNodesMatchingRegex(WebString::FromUtf8(price_regex));
 
   if (price_nodes.empty()) {
     return "";
   }
 
   std::vector<WebNode> label_nodes =
-      document.FindAllTextNodesMatchingRegex(WebString::FromUTF8(label_regex));
+      document.FindAllTextNodesMatchingRegex(WebString::FromUtf8(label_regex));
 
   if (label_nodes.empty()) {
     return "";

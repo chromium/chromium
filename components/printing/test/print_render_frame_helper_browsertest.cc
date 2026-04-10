@@ -570,7 +570,7 @@ class PrintRenderFrameHelperTestBase : public content::RenderViewTest {
 
   void OnPrintPagesInFrame(std::string_view frame_name) {
     blink::WebFrame* frame =
-        GetMainFrame()->FindFrameByName(blink::WebString::FromUTF8(frame_name));
+        GetMainFrame()->FindFrameByName(blink::WebString::FromUtf8(frame_name));
     ASSERT_TRUE(frame);
     content::RenderFrame* render_frame =
         content::RenderFrame::FromWebFrame(frame->ToWebLocalFrame());
@@ -1685,7 +1685,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, PrintWithIframe) {
   // the printout should only contain the contents of that frame.
   WebFrame* sub1_frame =
       web_view_->MainFrame()->ToWebLocalFrame()->FindFrameByName(
-          WebString::FromUTF8("sub1"));
+          WebString("sub1"));
   ASSERT_TRUE(sub1_frame);
   web_view_->SetFocusedFrame(sub1_frame);
   ASSERT_NE(web_view_->FocusedFrame(), web_view_->MainFrame());

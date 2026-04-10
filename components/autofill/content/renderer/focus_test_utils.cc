@@ -40,7 +40,7 @@ void FocusTestUtils::FocusElement(std::string_view element_id) {
 
 std::string FocusTestUtils::GetFocusLog(const blink::WebDocument& document) {
   blink::WebElement element =
-      document.GetElementById(blink::WebString::FromUTF8("event_log"));
+      document.GetElementById(blink::WebString("event_log"));
   if (!element) {
     return "event_log_element_id not found";
   }

@@ -110,7 +110,7 @@ void CompleteWithError(const Status& status, blink::WebCryptoResult* result) {
   DCHECK(status.IsError());
 
   result->CompleteWithError(status.error_type(),
-                            blink::WebString::FromUTF8(status.error_details()));
+                            blink::WebString::FromUtf8(status.error_details()));
 }
 
 void CompleteWithBufferOrError(const Status& status,

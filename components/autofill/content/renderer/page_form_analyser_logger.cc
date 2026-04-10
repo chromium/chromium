@@ -66,7 +66,7 @@ void PageFormAnalyserLogger::Flush() {
         }
       }
 
-      blink::WebConsoleMessage message(level, blink::WebString::FromUTF8(text));
+      blink::WebConsoleMessage message(level, blink::WebString::FromUtf8(text));
       message.nodes = std::move(nodes_to_log);  // avoids copying node vectors.
       frame_->AddMessageToConsole(message);
     }

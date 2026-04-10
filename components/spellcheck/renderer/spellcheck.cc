@@ -70,7 +70,7 @@ bool UpdateSpellcheckEnabled::Visit(content::RenderFrame* render_frame) {
 
 std::vector<WebString> ConvertToWebStringFromUtf8(
     const std::set<std::string>& words) {
-  return base::ToVector(words, &WebString::FromUTF8);
+  return base::ToVector(words, &WebString::FromUtf8);
 }
 
 bool IsApostrophe(char16_t c) {

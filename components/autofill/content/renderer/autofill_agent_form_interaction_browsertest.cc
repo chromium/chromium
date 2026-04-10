@@ -105,7 +105,7 @@ class AutofillAgentFormInteractionTest : public test::AutofillRendererTest {
   FieldRendererId GetFieldRendererIdById(std::string_view id) {
     return form_util::GetFieldRendererId(
         GetMainFrame()->GetDocument().GetElementById(
-            blink::WebString::FromUTF8(id)));
+            blink::WebString::FromUtf8(id)));
   }
 
   // Makes sure the next AskForValuesToFill() event is not throttled in

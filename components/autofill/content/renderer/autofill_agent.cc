@@ -275,7 +275,7 @@ bool ShowPredictions(const WebDocument& document,
     // Google Translate is triggered for the site. This is useful for
     // automated processing of the data.
     element.SetAttribute("autofill-information",
-                         WebString::FromUTF8(autofill_info));
+                         WebString::FromUtf8(autofill_info));
 
     //  If the field has password manager's annotation, add it as well.
     if (element.HasAttribute("pm_parser_annotation")) {
@@ -290,11 +290,11 @@ bool ShowPredictions(const WebDocument& document,
     bool title_parameter_on =
         features::debug::kAutofillShowTypePredictionsAsTitleParam.Get();
     if (title_parameter_on) {
-      element.SetAttribute("title", WebString::FromUTF8(autofill_info));
+      element.SetAttribute("title", WebString::FromUtf8(autofill_info));
     }
 
     element.SetAttribute("autofill-prediction",
-                         WebString::FromUTF8(field.overall_type));
+                         WebString::FromUtf8(field.overall_type));
   }
   return true;
 }
@@ -1166,7 +1166,7 @@ void AutofillAgent::ExposeDomNodeIds() {
        element = all.NextItem()) {
     element.SetAttribute(
         "dom-node-id",
-        WebString::FromUTF8(base::NumberToString(element.GetDomNodeId())));
+        WebString::FromUtf8(base::NumberToString(element.GetDomNodeId())));
   }
 }
 
@@ -1203,8 +1203,7 @@ void AutofillAgent::FindPotentialSiwgButtons(
     return;
   }
 
-  for (const WebElement& element :
-       document.QuerySelectorAll(WebString::FromUTF8(
+  for (const WebElement& element : document.QuerySelectorAll(WebString(
            R"(button, a, [role="button"], div#g_id_onload, div.g-signin2)"))) {
     auto button_data = mojom::SiwgButtonData::New();
     button_data->dom_node_id = element.GetDomNodeId();
@@ -1628,7 +1627,7 @@ void AutofillAgent::DispatchEmailVerifiedEvent(
     const std::string& presentation_token) {
   if (WebFormControlElement element =
           form_util::GetFormControlByRendererId(field_id)) {
-    element.DispatchEmailVerifiedEvent(WebString::FromUTF8(presentation_token));
+    element.DispatchEmailVerifiedEvent(WebString::FromUtf8(presentation_token));
   }
 }
 

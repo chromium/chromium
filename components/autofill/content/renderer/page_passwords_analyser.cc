@@ -244,7 +244,7 @@ std::vector<FormInputCollection> ExtractFormsForAnalysis(
   std::string selector = "input:not([type])";
   for (const char* text_type : kTypeTextAttributes)
     base::StrAppend(&selector, {", input[type=\"", text_type, "\"]"});
-  auto text_inputs = document.QuerySelectorAll(WebString::FromUTF8(selector));
+  auto text_inputs = document.QuerySelectorAll(WebString::FromUtf8(selector));
   for (const WebElement& text_input : text_inputs) {
     const WebInputElement input_element =
         text_input.DynamicTo<WebInputElement>();

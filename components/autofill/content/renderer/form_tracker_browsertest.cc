@@ -69,7 +69,7 @@ class FormTrackerTest : public test::AutofillRendererTest,
   blink::WebFormControlElement GetFormControlById(const std::string& id) {
     return GetMainFrame()
         ->GetDocument()
-        .GetElementById(blink::WebString::FromUTF8(id))
+        .GetElementById(blink::WebString::FromUtf8(id))
         .DynamicTo<blink::WebFormControlElement>();
   }
 

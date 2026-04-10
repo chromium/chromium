@@ -56,7 +56,7 @@ void SpellCheckPanel::AdvanceToNextMisspelling() {
   DCHECK(render_frame->GetWebFrame());
 
   render_frame->GetWebFrame()->ExecuteCommand(
-      blink::WebString::FromUTF8("AdvanceToNextMisspelling"));
+      blink::WebString("AdvanceToNextMisspelling"));
 }
 
 void SpellCheckPanel::ToggleSpellPanel(bool visible) {
@@ -68,7 +68,7 @@ void SpellCheckPanel::ToggleSpellPanel(bool visible) {
   spelling_panel_visible_ = visible;
 
   render_frame->GetWebFrame()->ExecuteCommand(
-      blink::WebString::FromUTF8("ToggleSpellPanel"));
+      blink::WebString("ToggleSpellPanel"));
 }
 
 mojo::Remote<spellcheck::mojom::SpellCheckPanelHost>

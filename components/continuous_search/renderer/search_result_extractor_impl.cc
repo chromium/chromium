@@ -121,7 +121,7 @@ bool ExtractRelatedSearches(blink::WebDocument document,
   group->type = mojom::ResultType::kRelatedSearches;
 
   blink::WebElement related_searches_container = document.GetElementById(
-      blink::WebString::FromUTF8(GetConfig().related_searches_id));
+      blink::WebString::FromUtf8(GetConfig().related_searches_id));
   if (related_searches_container.IsNull()) {
     return false;
   }

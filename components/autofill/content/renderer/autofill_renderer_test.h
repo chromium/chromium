@@ -122,7 +122,7 @@ class AutofillRendererTest : public content::RenderViewTest {
   blink::WebDocument GetDocument() { return GetMainFrame()->GetDocument(); }
 
   blink::WebElement GetWebElementById(std::string_view id) {
-    return GetDocument().GetElementById(blink::WebString::FromUTF8(id));
+    return GetDocument().GetElementById(blink::WebString::FromUtf8(id));
   }
 
   blink::WebFormControlElement GetFormControlElementById(std::string_view id) {
