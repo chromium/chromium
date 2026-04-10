@@ -208,10 +208,11 @@ void HTMLDialogElement::close(const String& return_value,
     Element* previously_focused_element = previously_focused_element_;
     previously_focused_element_ = nullptr;
 
-    bool descendant_is_focused = GetDocument().FocusedElement() &&
-                                 FlatTreeTraversal::IsDescendantOf(
-                                     *GetDocument().FocusedElement(), *this);
-    if (previously_focused_element && (was_modal || descendant_is_focused)) {
+    bool descendant_or_self_is_focused =
+        GetDocument().FocusedElement() &&
+        FlatTreeTraversal::Contains(*this, *GetDocument().FocusedElement());
+    if (previously_focused_element &&
+        (was_modal || descendant_or_self_is_focused)) {
       FocusOptions* focus_options = FocusOptions::Create();
       focus_options->setPreventScroll(true);
       previously_focused_element->Focus(FocusParams(
