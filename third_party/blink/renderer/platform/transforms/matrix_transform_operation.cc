@@ -71,6 +71,9 @@ TransformOperation* MatrixTransformOperation::Blend(
   if (!to_t.Blend(from_t, progress))
     return nullptr;
 
+  if (!to_t.Is2dTransform()) {
+    return MakeGarbageCollected<Matrix3DTransformOperation>(to_t);
+  }
   return MakeGarbageCollected<MatrixTransformOperation>(to_t);
 }
 

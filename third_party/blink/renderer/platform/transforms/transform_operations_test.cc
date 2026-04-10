@@ -1197,4 +1197,14 @@ TEST(TransformOperationsTest, AccumulateNMatrix2D) {
   }
 }
 
+TEST(TransformOperationsTest, BlendWithVeryLargeMatrixShouldNotCrash) {
+  TransformOperations from_ops;
+  TransformOperations to_ops;
+
+  from_ops.Operations().push_back(
+      MakeGarbageCollected<MatrixTransformOperation>(1.8e+300, 1.8e+300, 0, -1,
+                                                     0, -1));
+  to_ops.Blend(from_ops, 0.5);
+}
+
 }  // namespace blink
