@@ -62,7 +62,7 @@ BookmarkContextMenu::BookmarkContextMenu(
           opened_from,
           selection,
           can_paste)),
-      parent_widget_(parent_widget),
+      parent_widget_(parent_widget ? parent_widget->GetWeakPtr() : nullptr),
       menu_(new views::MenuItemView(this)),
       close_on_remove_(close_on_remove) {
   menu_runner_ = std::make_unique<views::MenuRunner>(
@@ -89,12 +89,16 @@ void BookmarkContextMenu::RunMenuAt(const gfx::Point& point,
     return;
   }
 
+  if (!parent_widget_) {
+    return;
+  }
+
   if (!PreRunCallback().is_null()) {
     std::move(PreRunCallback()).Run();
   }
 
   // width/height don't matter here.
-  menu_runner_->RunMenuAt(parent_widget_, nullptr,
+  menu_runner_->RunMenuAt(parent_widget_.get(), nullptr,
                           gfx::Rect(point.x(), point.y(), 0, 0),
                           views::MenuAnchorPosition::kTopLeft, source_type);
 }

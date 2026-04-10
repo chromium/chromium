@@ -44,10 +44,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/test/scoped_views_test_helper.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
@@ -511,6 +513,33 @@ TEST_P(BookmarkContextMenuTest, ShowManagedBookmarks) {
   EXPECT_TRUE(menu->GetMenuItemByID(IDC_BOOKMARK_BAR_NEW_FOLDER)->GetVisible());
   EXPECT_TRUE(menu->GetMenuItemByID(IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS)
                   ->GetVisible());
+}
+
+// Regression test: parent widget destroyed before BookmarkContextMenu should
+// not cause a dangling pointer crash.
+TEST_P(BookmarkContextMenuTest, ParentWidgetDestroyedBeforeMenu) {
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
+  params.context = views_test_helper_.GetContext();
+  auto widget = std::make_unique<views::Widget>();
+  widget->Init(std::move(params));
+
+  const BookmarkNode* bb_node = model_->bookmark_bar_node();
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
+      bb_node->children().front().get(),
+  };
+
+  auto controller = std::make_unique<BookmarkContextMenu>(
+      widget.get(), nullptr, profile_.get(),
+      BookmarkLaunchLocation::kAttachedBar, nodes, false, false);
+
+  // Destroy the widget first, then verify RunMenuAt and destruction are safe.
+  widget->CloseNow();
+  widget.reset();
+
+  controller->RunMenuAt(gfx::Point(), ui::mojom::MenuSourceType::kNone);
+  controller.reset();
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(BookmarkContextMenuTest);

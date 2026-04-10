@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/bookmarks/bookmark_context_menu_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
@@ -89,8 +90,11 @@ class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
  private:
   std::unique_ptr<BookmarkContextMenuController> controller_;
 
-  // The parent of dialog boxes opened from the context menu.
-  const raw_ptr<views::Widget> parent_widget_;
+  // The parent of dialog boxes opened from the context menu. Uses a WeakPtr
+  // because on macOS immersive fullscreen, the parent widget may be an
+  // OverlayWidgetMac that is destroyed before this menu during browser
+  // shutdown.
+  base::WeakPtr<views::Widget> parent_widget_;
 
   // Responsible for running the menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;
