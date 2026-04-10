@@ -77,7 +77,7 @@ AtomicString AtomicString::FromUtf8(base::span<const uint8_t> bytes) {
   if (bytes.empty()) {
     return g_empty_atom;
   }
-  return AtomicString(AtomicStringTable::Instance().AddUTF8(bytes));
+  return AtomicString(AtomicStringTable::Instance().AddUtf8(bytes));
 }
 
 AtomicString AtomicString::ToAsciiLower(AtomicString source) {

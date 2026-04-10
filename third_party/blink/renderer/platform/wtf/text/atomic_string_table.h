@@ -46,9 +46,9 @@ class WTF_EXPORT AtomicStringTable final {
   String Add(base::span<const UChar> chars, AtomicStringUCharEncoding encoding);
   String Add(const StringView& string_view);
 
-  // Adding UTF8.
-  // Returns the null string if the characters contain invalid utf8 sequences.
-  String AddUTF8(base::span<const uint8_t> characters_span);
+  // Adding a UTF-8 string.
+  // Returns the null string if the characters contain invalid UTF-8 sequences.
+  String AddUtf8(base::span<const uint8_t> characters_span);
 
   // Returned as part of the WeakFind*() APIs below. Represents the result of
   // the non-creating lookup within the AtomicStringTable. See the WeakFind*()

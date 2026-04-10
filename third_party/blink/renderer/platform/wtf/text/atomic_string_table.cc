@@ -501,7 +501,7 @@ String AtomicStringTable::Add(String&& string) {
   return base::WrapRefCounted(entry);
 }
 
-String AtomicStringTable::AddUTF8(base::span<const uint8_t> characters_span) {
+String AtomicStringTable::AddUtf8(base::span<const uint8_t> characters_span) {
   bool seen_non_ascii = false;
   bool seen_non_latin1 = false;
 

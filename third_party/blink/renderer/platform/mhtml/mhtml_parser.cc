@@ -150,7 +150,7 @@ static KeyValueMap RetrieveKeyValuePairs(SharedBufferChunkReader* buffer) {
   String line;
   String key;
   StringBuilder value;
-  while (!(line = buffer->NextChunkAsUTF8StringWithLatin1Fallback()).IsNull()) {
+  while (!(line = buffer->NextChunkAsUtf8StringWithLatin1Fallback()).IsNull()) {
     if (line.empty())
       break;  // Empty line means end of key/value section.
     // RFC822 continuation: A line that starts with LWSP is a continuation of
@@ -262,7 +262,7 @@ MIMEHeader::MIMEHeader() : content_transfer_encoding_(Encoding::kUnknown) {}
 static bool SkipLinesUntilBoundaryFound(SharedBufferChunkReader& line_reader,
                                         const String& boundary) {
   String line;
-  while (!(line = line_reader.NextChunkAsUTF8StringWithLatin1Fallback())
+  while (!(line = line_reader.NextChunkAsUtf8StringWithLatin1Fallback())
               .IsNull()) {
     if (line == boundary)
       return true;
@@ -402,7 +402,7 @@ ArchiveResource* MHTMLParser::ParseNextPart(
     DCHECK(next_chars.size() == 2);
     end_of_archive_reached = (next_chars[0] == '-' && next_chars[1] == '-');
     if (!end_of_archive_reached) {
-      String line = line_reader_.NextChunkAsUTF8StringWithLatin1Fallback();
+      String line = line_reader_.NextChunkAsUtf8StringWithLatin1Fallback();
       if (!line.empty()) {
         DVLOG(1) << "No CRLF at end of binary section.";
         return nullptr;
@@ -410,7 +410,7 @@ ArchiveResource* MHTMLParser::ParseNextPart(
     }
   } else {
     String line;
-    while (!(line = line_reader_.NextChunkAsUTF8StringWithLatin1Fallback())
+    while (!(line = line_reader_.NextChunkAsUtf8StringWithLatin1Fallback())
                 .IsNull()) {
       end_of_archive_reached = (line == end_of_document_boundary);
       if (check_boundary &&

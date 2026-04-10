@@ -52,7 +52,7 @@ class SharedBufferChunkReader final {
   bool NextChunk(Vector<char>& data, bool include_separator = false);
 
   // Returns a null string when the end of the buffer has been reached.
-  String NextChunkAsUTF8StringWithLatin1Fallback(
+  String NextChunkAsUtf8StringWithLatin1Fallback(
       bool include_separator = false);
 
   // Reads size bytes at the current location in the buffer, without changing

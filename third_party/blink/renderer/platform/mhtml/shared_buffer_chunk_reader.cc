@@ -94,7 +94,7 @@ bool SharedBufferChunkReader::NextChunk(Vector<char>& chunk,
   NOTREACHED();
 }
 
-String SharedBufferChunkReader::NextChunkAsUTF8StringWithLatin1Fallback(
+String SharedBufferChunkReader::NextChunkAsUtf8StringWithLatin1Fallback(
     bool include_separator) {
   Vector<char> data;
   if (!NextChunk(data, include_separator))
