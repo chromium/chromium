@@ -162,6 +162,7 @@ android_library("javatests") {
     "//content/public/test/android:content_java_test_support",
     "//net/android:net_java_test_support",
     "//third_party/androidx:androidx_test_espresso_espresso_core_java",
+    "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/hamcrest:hamcrest_library_java",

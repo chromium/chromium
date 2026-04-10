@@ -77,6 +77,11 @@ static void JNI_ExtensionTestUtils_SetExtensionActionVisible(
   ToolbarActionsModel::Get(profile)->SetActionVisibility(extension_id, visible);
 }
 
+static std::vector<ToolbarActionsModel::ActionId>
+JNI_ExtensionTestUtils_GetPinnedActionIds(JNIEnv* env, Profile* profile) {
+  return ToolbarActionsModel::Get(profile)->pinned_action_ids();
+}
+
 static jint JNI_ExtensionTestUtils_GetRenderFrameHostCount(
     JNIEnv* env,
     Profile* profile,

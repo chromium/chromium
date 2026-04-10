@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.extensions;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.PositionAssertions.isLeftOf;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
@@ -14,6 +15,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -25,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.test.filters.LargeTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Before;
@@ -53,6 +56,7 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.extensions.common.ExtensionFeatures;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -676,5 +680,97 @@ public class ExtensionsToolbarTest {
         // Verify the action automatically reappears on the toolbar without needing to be re-pinned.
         ViewUtils.onViewWaiting(withContentDescription("Test Action"))
                 .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @LargeTest
+    public void testDragReorderExtensions() throws IOException {
+        String alphaId = loadBasicExtension("alpha", "Alpha Extension", "Alpha Action");
+        String betaId = loadBasicExtension("beta", "Beta Extension", "Beta Action");
+        String gammaId = loadBasicExtension("gamma", "Gamma Extension", "Gamma Action");
+
+        // Pin all extensions.
+        ExtensionTestUtils.setExtensionActionVisible(mProfile, alphaId, true);
+        ExtensionTestUtils.setExtensionActionVisible(mProfile, betaId, true);
+        ExtensionTestUtils.setExtensionActionVisible(mProfile, gammaId, true);
+        ViewUtils.onViewWaiting(withContentDescription("Alpha Action"))
+                .check(matches(isDisplayed()));
+        ViewUtils.onViewWaiting(withContentDescription("Beta Action"))
+                .check(matches(isDisplayed()));
+        ViewUtils.onViewWaiting(withContentDescription("Gamma Action"))
+                .check(matches(isDisplayed()));
+
+        View root =
+                mActivityTestRule
+                        .getActivity()
+                        .getWindow()
+                        .getDecorView()
+                        .findViewById(android.R.id.content);
+
+        View alphaIcon =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> findViewWithContentDescription(root, "Alpha Action"));
+        View betaIcon =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> findViewWithContentDescription(root, "Beta Action"));
+        View gammaIcon =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> findViewWithContentDescription(root, "Gamma Action"));
+
+        // The order should be [A] [B] [G].
+        onView(withContentDescription("Alpha Action"))
+                .check(isLeftOf(withContentDescription("Beta Action")));
+        onView(withContentDescription("Beta Action"))
+                .check(isLeftOf(withContentDescription("Gamma Action")));
+        assertArrayEquals(
+                "The data order should match Views.",
+                new String[] {alphaId, betaId, gammaId},
+                ExtensionTestUtils.getPinnedActionIds(mProfile));
+
+        int iconWidth = alphaIcon.getWidth();
+        int iconHeight = alphaIcon.getHeight();
+
+        // We need to drag a bit further than our intended final position for the items to swap.
+        int dragOverrun = iconWidth / 3;
+
+        // Drag [A] to the position of [B].
+        TestTouchUtils.dragCompleteView(
+                InstrumentationRegistry.getInstrumentation(),
+                alphaIcon,
+                iconWidth / 2,
+                iconWidth / 2 + (int) (betaIcon.getX() - alphaIcon.getX()) + dragOverrun,
+                iconHeight / 2,
+                iconHeight / 2,
+                /* stepCount= */ 5);
+
+        // The order now should be [B] [A] [G].
+        onView(withContentDescription("Beta Action"))
+                .check(isLeftOf(withContentDescription("Alpha Action")));
+        onView(withContentDescription("Alpha Action"))
+                .check(isLeftOf(withContentDescription("Gamma Action")));
+        assertArrayEquals(
+                "The data order should match Views.",
+                new String[] {betaId, alphaId, gammaId},
+                ExtensionTestUtils.getPinnedActionIds(mProfile));
+
+        // Drag [G] to the position of [B].
+        TestTouchUtils.dragCompleteView(
+                InstrumentationRegistry.getInstrumentation(),
+                gammaIcon,
+                iconWidth / 2,
+                iconWidth / 2 - (int) (gammaIcon.getX() - betaIcon.getX()) - dragOverrun,
+                iconHeight / 2,
+                iconHeight / 2,
+                /* stepCount= */ 5);
+
+        // The order now should be [G] [B] [A].
+        onView(withContentDescription("Gamma Action"))
+                .check(isLeftOf(withContentDescription("Beta Action")));
+        onView(withContentDescription("Beta Action"))
+                .check(isLeftOf(withContentDescription("Alpha Action")));
+        assertArrayEquals(
+                "The data order should match Views.",
+                new String[] {gammaId, betaId, alphaId},
+                ExtensionTestUtils.getPinnedActionIds(mProfile));
     }
 }

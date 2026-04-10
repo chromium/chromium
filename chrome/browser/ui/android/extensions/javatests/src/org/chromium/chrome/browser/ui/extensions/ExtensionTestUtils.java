@@ -115,6 +115,17 @@ public class ExtensionTestUtils {
     }
 
     /**
+     * Returns the list of pinned actions.
+     *
+     * @param profile The profile that the extension belongs to.
+     * @return The list of IDs of pinned actions.
+     */
+    public static String[] getPinnedActionIds(Profile profile) {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> ExtensionTestUtilsJni.get().getPinnedActionIds(profile));
+    }
+
+    /**
      * Returns the number of active RenderFrameHosts for the given extension.
      *
      * @param profile The profile the extension belongs to.
@@ -311,6 +322,9 @@ public class ExtensionTestUtils {
                 @JniType("Profile*") Profile profile,
                 @JniType("std::string") String extensionId,
                 boolean visible);
+
+        @JniType("std::vector<std::string>")
+        String[] getPinnedActionIds(@JniType("Profile*") Profile profile);
 
         int getRenderFrameHostCount(
                 @JniType("Profile*") Profile profile, @JniType("std::string") String extensionId);
