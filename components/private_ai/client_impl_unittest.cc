@@ -15,8 +15,8 @@
 #include "base/time/time.h"
 #include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/connection.h"
-#include "components/private_ai/error_code.h"
 #include "components/private_ai/proto/private_ai.pb.h"
+#include "components/private_ai/status_code.h"
 #include "components/private_ai/testing/fake_connection.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,7 +31,7 @@ class FakeConnectionFactory : public ConnectionFactory {
   ~FakeConnectionFactory() override = default;
 
   std::unique_ptr<Connection> Create(
-      base::RepeatingCallback<void(ErrorCode)> on_disconnect) override {
+      base::RepeatingCallback<void(StatusCode)> on_disconnect) override {
     total_connections_created_++;
     auto connection = std::make_unique<FakeConnection>(
         std::move(on_disconnect),
@@ -72,7 +72,7 @@ class FakeConnectionFactory : public ConnectionFactory {
 
 void ResolvePendingRequest(
     FakeConnection* connection,
-    base::expected<proto::PrivateAiResponse, ErrorCode> result) {
+    base::expected<proto::PrivateAiResponse, StatusCode> result) {
   CHECK(connection);
   CHECK(!connection->pending_requests().empty());
   auto pending_request = std::move(connection->pending_requests().front());
@@ -116,7 +116,7 @@ TEST_F(ClientImplTest, SendTextRequestSuccess) {
     part->set_text(kExpectedResponseText);
   }
 
-  base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
+  base::test::TestFuture<base::expected<std::string, StatusCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
                            "some text", future.GetCallback(), /*options=*/{});
 
@@ -133,7 +133,7 @@ TEST_F(ClientImplTest, SendPaicRequestSuccess) {
   proto::PrivateAiResponse private_ai_response;
   private_ai_response.mutable_paic_response();
 
-  base::test::TestFuture<base::expected<proto::PaicMessage, ErrorCode>> future;
+  base::test::TestFuture<base::expected<proto::PaicMessage, StatusCode>> future;
   client_->SendPaicRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
                            proto::PaicMessage(), future.GetCallback(),
                            /*options=*/{});
@@ -147,7 +147,7 @@ TEST_F(ClientImplTest, SendPaicRequestSuccess) {
 
 // Test that the connection is recreated after a disconnect.
 TEST_F(ClientImplTest, ConnectionRecreation) {
-  base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
+  base::test::TestFuture<base::expected<std::string, StatusCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
                            "some text", future.GetCallback(), /*options=*/{});
 
@@ -158,7 +158,7 @@ TEST_F(ClientImplTest, ConnectionRecreation) {
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), ErrorCode::kNetworkError);
+  EXPECT_EQ(result.error(), StatusCode::kNetworkError);
 
   // A subsequent request should succeed on the new connection.
   const std::string kExpectedResponseText = "response text";
@@ -169,7 +169,7 @@ TEST_F(ClientImplTest, ConnectionRecreation) {
       ->add_parts()
       ->set_text(kExpectedResponseText);
 
-  base::test::TestFuture<base::expected<std::string, ErrorCode>> second_future;
+  base::test::TestFuture<base::expected<std::string, StatusCode>> second_future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
                            "some other text", second_future.GetCallback(),
                            /*options=*/{});
@@ -186,17 +186,17 @@ TEST_F(ClientImplTest, ConnectionRecreation) {
 
 // Test that a request times out correctly.
 TEST_F(ClientImplTest, SendTextRequestTimeout) {
-  base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
+  base::test::TestFuture<base::expected<std::string, StatusCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
                            "some text", future.GetCallback(),
                            /*options=*/{.timeout = base::Seconds(10)});
 
   ResolvePendingRequest(factory_->last_connection(),
-                        base::unexpected(ErrorCode::kTimeout));
+                        base::unexpected(StatusCode::kTimeout));
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), ErrorCode::kTimeout);
+  EXPECT_EQ(result.error(), StatusCode::kTimeout);
 }
 
 // Test that an empty response from the server is handled correctly.
@@ -204,7 +204,7 @@ TEST_F(ClientImplTest, SendTextRequestEmptyResponse) {
   proto::PrivateAiResponse private_ai_response;
   private_ai_response.mutable_generate_content_response();
 
-  base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
+  base::test::TestFuture<base::expected<std::string, StatusCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
                            "some text", future.GetCallback(), /*options=*/{});
 
@@ -213,13 +213,13 @@ TEST_F(ClientImplTest, SendTextRequestEmptyResponse) {
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), ErrorCode::kNoContent);
+  EXPECT_EQ(result.error(), StatusCode::kNoContent);
 }
 
 // Test that a malformed response from the server is handled correctly.
 TEST_F(ClientImplTest, SendGenerateContentRequestMalformedResponse) {
   base::test::TestFuture<
-      base::expected<proto::GenerateContentResponse, ErrorCode>>
+      base::expected<proto::GenerateContentResponse, StatusCode>>
       future;
   client_->SendGenerateContentRequest(
       proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
@@ -231,7 +231,7 @@ TEST_F(ClientImplTest, SendGenerateContentRequestMalformedResponse) {
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), ErrorCode::kNoResponse);
+  EXPECT_EQ(result.error(), StatusCode::kNoResponse);
 }
 
 // Test that the connection is destroyed asynchronously after a disconnect.
@@ -239,7 +239,7 @@ TEST_F(ClientImplTest, AsyncDisconnect) {
   base::test::TestFuture<void> destroyed_future;
   factory_->set_on_destruction(destroyed_future.GetCallback());
 
-  base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
+  base::test::TestFuture<base::expected<std::string, StatusCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
                            "some text", future.GetCallback(), /*options=*/{});
 

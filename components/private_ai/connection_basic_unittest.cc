@@ -14,10 +14,10 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
-#include "components/private_ai/error_code.h"
 #include "components/private_ai/private_ai_common.h"
 #include "components/private_ai/proto/private_ai.pb.h"
 #include "components/private_ai/secure_channel.h"
+#include "components/private_ai/status_code.h"
 #include "components/private_ai/testing/fake_secure_channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -56,9 +56,9 @@ class ConnectionBasicTest : public testing::Test {
     }
   }
 
-  void on_disconnect(ErrorCode error_code) {
+  void on_disconnect(StatusCode status_code) {
     on_disconnect_counter_++;
-    connection_->OnDestroy(error_code);
+    connection_->OnDestroy(status_code);
   }
 
  protected:
@@ -72,7 +72,7 @@ class ConnectionBasicTest : public testing::Test {
 };
 
 TEST_F(ConnectionBasicTest, Success) {
-  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, StatusCode>>
       future;
 
   // Prepare request and send it.
@@ -102,7 +102,7 @@ TEST_F(ConnectionBasicTest, Success) {
 // Tests that two requests are sent and the responses are received out of order,
 // they are correctly matched to their callbacks.
 TEST_F(ConnectionBasicTest, SuccessWithTwoRequests) {
-  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, StatusCode>>
       future1;
 
   // Prepare request1 and send it.
@@ -118,7 +118,7 @@ TEST_F(ConnectionBasicTest, SuccessWithTwoRequests) {
   EXPECT_EQ(secure_channel_->last_written_request().feature_name(),
             proto::FeatureName::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION);
 
-  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, StatusCode>>
       future2;
 
   // Prepare request2 and send it.
@@ -169,7 +169,7 @@ TEST_F(ConnectionBasicTest, SuccessWithTwoRequests) {
 // Tests that if the secure channel returns an error, the request fails and
 // the connection is disconnected.
 TEST_F(ConnectionBasicTest, SecureChannelError) {
-  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, StatusCode>>
       future;
 
   // Prepare request and send it.
@@ -184,7 +184,7 @@ TEST_F(ConnectionBasicTest, SecureChannelError) {
             proto::FeatureName::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION);
 
   // Send back an error.
-  secure_channel_->send_back_error(ErrorCode::kError);
+  secure_channel_->send_back_error(StatusCode::kError);
 
   // Verify that received response is expected.
   auto result = future.Get();
@@ -197,7 +197,7 @@ TEST_F(ConnectionBasicTest, SecureChannelError) {
 // Tests that if SecureChannel::Write returns false, the request fails and
 // the connection is disconnected.
 TEST_F(ConnectionBasicTest, SecureChannelWriteFails) {
-  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, StatusCode>>
       future;
 
   // Prepare secure channel to fail Write operation.
@@ -225,7 +225,7 @@ TEST_F(ConnectionBasicTest, SecureChannelWriteFails) {
 // Tests that when connection is disconnected, it does not send requests over
 // the wire even if Send() function called with another request.
 TEST_F(ConnectionBasicTest, SendOneMoreRequestAfterSecureChannelError) {
-  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, StatusCode>>
       future;
 
   // Prepare request and send it.
@@ -242,7 +242,7 @@ TEST_F(ConnectionBasicTest, SendOneMoreRequestAfterSecureChannelError) {
             proto::FeatureName::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION);
 
   // Send back an error.
-  secure_channel_->send_back_error(ErrorCode::kError);
+  secure_channel_->send_back_error(StatusCode::kError);
 
   // Verify that received response is expected.
   {
@@ -256,7 +256,7 @@ TEST_F(ConnectionBasicTest, SendOneMoreRequestAfterSecureChannelError) {
   // Prepare 2nd request and send it even though secure channel is not valid
   // anymore.
 
-  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, StatusCode>>
       future2;
 
   {
@@ -290,7 +290,7 @@ TEST_F(ConnectionBasicTest, SecureChannelUnknownRequestId) {
   response_unknown_request_id.set_request_id(777);
   secure_channel_->send_back_response(response_unknown_request_id);
 
-  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, StatusCode>>
       future;
 
   // Prepare request and send it.

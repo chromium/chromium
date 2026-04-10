@@ -11,8 +11,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/private_ai/error_code.h"
 #include "components/private_ai/proto/private_ai.pb.h"
+#include "components/private_ai/status_code.h"
 #include "components/private_ai/testing/fake_connection.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,7 +51,7 @@ TEST_F(ConnectionMetricsTest, Success) {
   const size_t request_size = request.ByteSizeLong();
 
   // Send request.
-  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, StatusCode>>
       future;
   connection_metrics_->Send(std::move(request), base::Seconds(10),
                             future.GetCallback());
@@ -85,12 +85,13 @@ TEST_F(ConnectionMetricsTest, Success) {
                                        response_size, 1);
   histogram_tester_.ExpectUniqueTimeSample(
       "PrivateAi.Client.RequestLatency.Success", base::Milliseconds(500), 1);
-  histogram_tester_.ExpectTotalCount("PrivateAi.Client.RequestErrorCode", 0);
+  histogram_tester_.ExpectUniqueSample("PrivateAi.Client.RequestStatusCode",
+                                       StatusCode::kSuccess, 1);
 }
 
 TEST_F(ConnectionMetricsTest, Timeout) {
   // Send request.
-  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, StatusCode>>
       future;
   connection_metrics_->Send(proto::PrivateAiRequest(), base::Seconds(10),
                             future.GetCallback());
@@ -100,16 +101,16 @@ TEST_F(ConnectionMetricsTest, Timeout) {
 
   ASSERT_EQ(fake_connection_->pending_requests().size(), 1u);
   std::move(fake_connection_->pending_requests()[0].callback)
-      .Run(base::unexpected(ErrorCode::kTimeout));
+      .Run(base::unexpected(StatusCode::kTimeout));
 
   // Receive result.
   auto result = future.Get();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), ErrorCode::kTimeout);
+  EXPECT_EQ(result.error(), StatusCode::kTimeout);
 
   // Verify response related metrics.
-  histogram_tester_.ExpectUniqueSample("PrivateAi.Client.RequestErrorCode",
-                                       ErrorCode::kTimeout, 1);
+  histogram_tester_.ExpectUniqueSample("PrivateAi.Client.RequestStatusCode",
+                                       StatusCode::kTimeout, 1);
   histogram_tester_.ExpectUniqueTimeSample(
       "PrivateAi.Client.RequestLatency.Timeout", base::Seconds(10), 1);
   histogram_tester_.ExpectTotalCount("PrivateAi.Client.RequestLatency.Success",
@@ -120,7 +121,7 @@ TEST_F(ConnectionMetricsTest, Timeout) {
 
 TEST_F(ConnectionMetricsTest, Error) {
   // Send request.
-  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, StatusCode>>
       future;
   connection_metrics_->Send(proto::PrivateAiRequest(), base::Seconds(10),
                             future.GetCallback());
@@ -131,16 +132,16 @@ TEST_F(ConnectionMetricsTest, Error) {
 
   ASSERT_EQ(fake_connection_->pending_requests().size(), 1u);
   std::move(fake_connection_->pending_requests()[0].callback)
-      .Run(base::unexpected(ErrorCode::kNetworkError));
+      .Run(base::unexpected(StatusCode::kNetworkError));
 
   // Receive result.
   auto result = future.Get();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), ErrorCode::kNetworkError);
+  EXPECT_EQ(result.error(), StatusCode::kNetworkError);
 
   // Verify response related metrics.
-  histogram_tester_.ExpectUniqueSample("PrivateAi.Client.RequestErrorCode",
-                                       ErrorCode::kNetworkError, 1);
+  histogram_tester_.ExpectUniqueSample("PrivateAi.Client.RequestStatusCode",
+                                       StatusCode::kNetworkError, 1);
   histogram_tester_.ExpectUniqueTimeSample(
       "PrivateAi.Client.RequestLatency.Error", base::Milliseconds(200), 1);
   histogram_tester_.ExpectTotalCount("PrivateAi.Client.RequestLatency.Success",

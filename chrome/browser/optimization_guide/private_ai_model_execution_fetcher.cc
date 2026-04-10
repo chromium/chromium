@@ -16,8 +16,8 @@
 #include "components/optimization_guide/proto/features/zero_state_suggestions.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/private_ai/client.h"
-#include "components/private_ai/error_code.h"
 #include "components/private_ai/proto/private_ai.pb.h"
+#include "components/private_ai/status_code.h"
 
 namespace optimization_guide {
 namespace {
@@ -37,16 +37,16 @@ private_ai::proto::FeatureName ToPrivateAiFeatureName(
 }
 
 OptimizationGuideModelExecutionError ToModelExecutionError(
-    private_ai::ErrorCode error) {
+    private_ai::StatusCode error) {
   switch (error) {
-    case private_ai::ErrorCode::kAuthenticationFailed:
-    case private_ai::ErrorCode::kClientAttestationFailed:
+    case private_ai::StatusCode::kAuthenticationFailed:
+    case private_ai::StatusCode::kClientAttestationFailed:
       return OptimizationGuideModelExecutionError::FromModelExecutionError(
           ModelExecutionError::kPermissionDenied);
-    case private_ai::ErrorCode::kTimeout:
+    case private_ai::StatusCode::kTimeout:
       return OptimizationGuideModelExecutionError::FromModelExecutionError(
           ModelExecutionError::kRetryableError);
-    case private_ai::ErrorCode::kDestroyed:
+    case private_ai::StatusCode::kDestroyed:
       return OptimizationGuideModelExecutionError::FromModelExecutionError(
           ModelExecutionError::kCancelled);
     default:
@@ -89,7 +89,7 @@ void PrivateAiModelExecutionFetcher::ExecuteModel(
           [](ModelBasedCapabilityKey feature,
              ModelExecuteResponseCallback callback,
              base::expected<private_ai::proto::PaicMessage,
-                            private_ai::ErrorCode> result) {
+                            private_ai::StatusCode> result) {
             if (!result.has_value()) {
               RecordRequestStatusHistogram(
                   feature, FetcherRequestStatus::kResponseError);

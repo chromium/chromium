@@ -11,8 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/private_ai/error_code.h"
 #include "components/private_ai/proto/private_ai.pb.h"
+#include "components/private_ai/status_code.h"
 #include "components/private_ai/testing/fake_connection.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -40,7 +40,7 @@ class ConnectionTimeoutTest : public testing::Test {
 };
 
 TEST_F(ConnectionTimeoutTest, Success) {
-  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, StatusCode>>
       future;
 
   connection_timeout_->Send(proto::PrivateAiRequest(), base::Seconds(10),
@@ -56,7 +56,7 @@ TEST_F(ConnectionTimeoutTest, Success) {
 }
 
 TEST_F(ConnectionTimeoutTest, Timeout) {
-  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, StatusCode>>
       future;
 
   proto::PrivateAiRequest request;
@@ -70,7 +70,7 @@ TEST_F(ConnectionTimeoutTest, Timeout) {
 
   auto result = future.Get();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), ErrorCode::kTimeout);
+  EXPECT_EQ(result.error(), StatusCode::kTimeout);
 
   // Ensure that late response is ignored.
   std::move(fake_connection_->pending_requests()[0].callback)
@@ -80,7 +80,7 @@ TEST_F(ConnectionTimeoutTest, Timeout) {
 // Tests that multiple requests are handled correctly, including timeout for one
 // request and successful response for another one.
 TEST_F(ConnectionTimeoutTest, MultipleRequests) {
-  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, StatusCode>>
       future1, future2;
 
   connection_timeout_->Send(proto::PrivateAiRequest(), base::Seconds(10),
@@ -95,7 +95,7 @@ TEST_F(ConnectionTimeoutTest, MultipleRequests) {
 
   auto result1 = future1.Get();
   ASSERT_FALSE(result1.has_value());
-  EXPECT_EQ(result1.error(), ErrorCode::kTimeout);
+  EXPECT_EQ(result1.error(), StatusCode::kTimeout);
 
   // Second request should still be pending.
   ASSERT_FALSE(future2.IsReady());

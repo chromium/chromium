@@ -7,8 +7,8 @@
 
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
-#include "components/private_ai/error_code.h"
 #include "components/private_ai/private_ai_common.h"
+#include "components/private_ai/status_code.h"
 
 namespace private_ai {
 
@@ -19,7 +19,7 @@ namespace private_ai {
 class SecureChannel {
  public:
   using ResponseCallback =
-      base::RepeatingCallback<void(base::expected<Response, ErrorCode>)>;
+      base::RepeatingCallback<void(base::expected<Response, StatusCode>)>;
 
   class Factory {
    public:

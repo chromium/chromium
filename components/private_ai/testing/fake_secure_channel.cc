@@ -45,9 +45,9 @@ void FakeSecureChannel::send_back_response(
   response_callback_.Run(std::move(response_bytes));
 }
 
-void FakeSecureChannel::send_back_error(ErrorCode error) {
+void FakeSecureChannel::send_back_error(StatusCode status_code) {
   CHECK(response_callback_);
-  response_callback_.Run(base::unexpected(error));
+  response_callback_.Run(base::unexpected(status_code));
 }
 
 FakeSecureChannelFactory::FakeSecureChannelFactory(

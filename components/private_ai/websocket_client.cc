@@ -301,7 +301,7 @@ void WebSocketClient::OnDropChannel(bool was_clean,
   // If there is a reason, it indicates an error from the server.
   if (!reason.empty()) {
     base::UmaHistogramEnumeration(
-        "PrivateAi.Client.ServerErrorCode", ParseGoogleRpcCode(reason),
+        "PrivateAi.Client.ServerStatusCode", ParseGoogleRpcCode(reason),
         static_cast<rpc::GoogleRpcCode>(rpc::GoogleRpcCode_MAX + 1));
   }
   ClosePipe(TransportError::kSocketClosed);

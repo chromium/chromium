@@ -11,9 +11,9 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "components/private_ai/connection.h"
-#include "components/private_ai/error_code.h"
 #include "components/private_ai/private_ai_common.h"
 #include "components/private_ai/secure_channel.h"
+#include "components/private_ai/status_code.h"
 
 namespace private_ai {
 
@@ -26,7 +26,7 @@ class ConnectionBasic : public Connection {
   // fail immediately without attempting to send a request over the wire.
   ConnectionBasic(
       std::unique_ptr<SecureChannel::Factory> secure_channel_factory,
-      base::OnceCallback<void(ErrorCode)> on_disconnect);
+      base::OnceCallback<void(StatusCode)> on_disconnect);
   ~ConnectionBasic() override;
 
   ConnectionBasic(const ConnectionBasic&) = delete;
@@ -41,20 +41,20 @@ class ConnectionBasic : public Connection {
             base::TimeDelta timeout,
             OnRequestCallback callback) override;
 
-  void OnDestroy(ErrorCode error) override;
+  void OnDestroy(StatusCode status_code) override;
 
  private:
   // Handles responses from the secure channel.
-  void OnResponseReceived(base::expected<Response, ErrorCode> result);
+  void OnResponseReceived(base::expected<Response, StatusCode> result);
 
   // Handles disconnect by resolving all `pending_request_callbacks_` with
-  // `error_code` and resolves `on_disconnect_` callback if not yet resolved.
-  void CallOnDisconnect(ErrorCode error_code);
+  // `status` and resolves `on_disconnect_` callback if not yet resolved.
+  void CallOnDisconnect(StatusCode status_code);
 
   std::unique_ptr<SecureChannel> secure_channel_;
 
   // Called to trigger a disconnect and destruction of the connection.
-  base::OnceCallback<void(ErrorCode)> on_disconnect_;
+  base::OnceCallback<void(StatusCode)> on_disconnect_;
 
   int32_t next_request_id_{1};
 

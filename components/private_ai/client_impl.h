@@ -53,9 +53,9 @@ class ClientImpl : public Client {
  private:
   // Callback for when a `SendRequest` operation completes.
   // If the operation is successful, the result will contain the server's
-  // response. Otherwise, it will contain an `ErrorCode` error.
+  // response. Otherwise, it will contain an `StatusCode` error.
   using OnRequestCompletedCallback = base::OnceCallback<void(
-      base::expected<proto::PrivateAiResponse, ErrorCode> result)>;
+      base::expected<proto::PrivateAiResponse, StatusCode> result)>;
 
   void SendRequest(proto::FeatureName feature_name,
                    proto::PrivateAiRequest private_ai_request,
@@ -64,7 +64,7 @@ class ClientImpl : public Client {
 
   void OnReponseReceived(
       OnRequestCompletedCallback cb,
-      base::expected<proto::PrivateAiResponse, ErrorCode> private_ai_response);
+      base::expected<proto::PrivateAiResponse, StatusCode> private_ai_response);
 
   raw_ptr<PrivateAiLogger> logger_;
 

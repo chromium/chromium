@@ -9,7 +9,7 @@
 namespace private_ai {
 namespace {
 
-TEST(ParseGoogleRpcCodeTest, ValidErrorCode) {
+TEST(ParseGoogleRpcCodeTest, ValidStatusCode) {
   const std::string reason =
       "[ORIGINAL ERROR] generic::unavailable: Fail to do something";
   EXPECT_EQ(ParseGoogleRpcCode(reason), rpc::GoogleRpcCode::UNAVAILABLE);

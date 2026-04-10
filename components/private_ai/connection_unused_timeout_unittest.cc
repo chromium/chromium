@@ -12,8 +12,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/private_ai/error_code.h"
 #include "components/private_ai/proto/private_ai.pb.h"
+#include "components/private_ai/status_code.h"
 #include "components/private_ai/testing/fake_connection.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -37,8 +37,8 @@ class ConnectionUnusedTimeoutTest : public testing::Test {
 
   ~ConnectionUnusedTimeoutTest() override = default;
 
-  void OnDisconnect(ErrorCode error_code) {
-    disconnect_error_ = error_code;
+  void OnDisconnect(StatusCode status_code) {
+    disconnect_error_ = status_code;
     is_disconnected_ = true;
   }
 
@@ -50,7 +50,7 @@ class ConnectionUnusedTimeoutTest : public testing::Test {
   raw_ptr<FakeConnection> fake_connection_;
 
   bool is_disconnected_ = false;
-  std::optional<ErrorCode> disconnect_error_;
+  std::optional<StatusCode> disconnect_error_;
 };
 
 TEST_F(ConnectionUnusedTimeoutTest, TimeoutFires) {
@@ -61,7 +61,7 @@ TEST_F(ConnectionUnusedTimeoutTest, TimeoutFires) {
   // Advance time to trigger unused timeout.
   task_environment_.FastForwardBy(base::Milliseconds(1));
   EXPECT_TRUE(is_disconnected_);
-  EXPECT_EQ(disconnect_error_, ErrorCode::kUnusedConnection);
+  EXPECT_EQ(disconnect_error_, StatusCode::kUnusedConnection);
 }
 
 TEST_F(ConnectionUnusedTimeoutTest, SendResetsTimeout) {
@@ -80,11 +80,11 @@ TEST_F(ConnectionUnusedTimeoutTest, SendResetsTimeout) {
   // Advance time by 1ms to trigger the reset timeout.
   task_environment_.FastForwardBy(base::Milliseconds(1));
   EXPECT_TRUE(is_disconnected_);
-  EXPECT_EQ(disconnect_error_, ErrorCode::kUnusedConnection);
+  EXPECT_EQ(disconnect_error_, StatusCode::kUnusedConnection);
 }
 
 TEST_F(ConnectionUnusedTimeoutTest, OnDestroyStopsTimeout) {
-  connection_unused_timeout_->OnDestroy(ErrorCode::kDestroyed);
+  connection_unused_timeout_->OnDestroy(StatusCode::kDestroyed);
 
   // Advance time. The Timeout should have been stopped, so no disconnect
   // callback from unused timeout.

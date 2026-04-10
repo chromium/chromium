@@ -22,10 +22,10 @@
 #include "components/private_ai/connection_metrics.h"
 #include "components/private_ai/connection_timeout.h"
 #include "components/private_ai/connection_token_attestation.h"
-#include "components/private_ai/error_code.h"
 #include "components/private_ai/private_ai_common.h"
 #include "components/private_ai/proto/private_ai.pb.h"
 #include "components/private_ai/secure_channel.h"
+#include "components/private_ai/status_code.h"
 #include "components/private_ai/testing/fake_secure_channel.h"
 #include "components/private_ai/testing/fake_token_manager.h"
 #include "services/network/network_service.h"
@@ -104,7 +104,7 @@ class ClientImplIntegrationTest : public testing::Test {
 };
 
 TEST_F(ClientImplIntegrationTest, FullStackSuccess) {
-  base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
+  base::test::TestFuture<base::expected<std::string, StatusCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
                            "hello", future.GetCallback(), /*options=*/{});
 
@@ -140,7 +140,7 @@ TEST_F(ClientImplIntegrationTest, FullStackSuccess) {
 }
 
 TEST_F(ClientImplIntegrationTest, AttestationFailure) {
-  base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
+  base::test::TestFuture<base::expected<std::string, StatusCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
                            "hello", future.GetCallback(), /*options=*/{});
 
@@ -151,11 +151,11 @@ TEST_F(ClientImplIntegrationTest, AttestationFailure) {
   // 2. Client should receive an error.
   auto result = future.Get();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), ErrorCode::kClientAttestationFailed);
+  EXPECT_EQ(result.error(), StatusCode::kClientAttestationFailed);
 }
 
 TEST_F(ClientImplIntegrationTest, Timeout) {
-  base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
+  base::test::TestFuture<base::expected<std::string, StatusCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
                            "hello", future.GetCallback(),
                            {.timeout = base::Seconds(5)});
@@ -178,12 +178,12 @@ TEST_F(ClientImplIntegrationTest, Timeout) {
   // Verify timeout error.
   auto result = future.Get();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), ErrorCode::kTimeout);
+  EXPECT_EQ(result.error(), StatusCode::kTimeout);
 }
 
 TEST_F(ClientImplIntegrationTest, ConcurrentRequestsDuringAttestation) {
-  base::test::TestFuture<base::expected<std::string, ErrorCode>> future1;
-  base::test::TestFuture<base::expected<std::string, ErrorCode>> future2;
+  base::test::TestFuture<base::expected<std::string, StatusCode>> future1;
+  base::test::TestFuture<base::expected<std::string, StatusCode>> future2;
 
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
                            "request1", future1.GetCallback(), /*options=*/{});
@@ -242,7 +242,7 @@ TEST_F(ClientImplIntegrationTest, ConcurrentRequestsDuringAttestation) {
 }
 
 TEST_F(ClientImplIntegrationTest, DisconnectDuringAttestation) {
-  base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
+  base::test::TestFuture<base::expected<std::string, StatusCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
                            "hello", future.GetCallback(), /*options=*/{});
 
@@ -252,7 +252,7 @@ TEST_F(ClientImplIntegrationTest, DisconnectDuringAttestation) {
   ASSERT_TRUE(channel);
 
   // 2. Simulate channel disconnect before responding to attestation.
-  channel->send_back_error(ErrorCode::kNetworkError);
+  channel->send_back_error(StatusCode::kNetworkError);
 
   // 3. The original request should fail with the disconnect error.
   ASSERT_TRUE(future.IsReady());
@@ -260,11 +260,11 @@ TEST_F(ClientImplIntegrationTest, DisconnectDuringAttestation) {
   ASSERT_FALSE(result.has_value());
   // Our heuristic correctly rewrites this early error (before first successful
   // response) into kClientAttestationFailed.
-  EXPECT_EQ(result.error(), ErrorCode::kClientAttestationFailed);
+  EXPECT_EQ(result.error(), StatusCode::kClientAttestationFailed);
 }
 
 TEST_F(ClientImplIntegrationTest, ClientDestroyedDuringAttestation) {
-  base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
+  base::test::TestFuture<base::expected<std::string, StatusCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
                            "hello", future.GetCallback(), /*options=*/{});
 
@@ -279,11 +279,11 @@ TEST_F(ClientImplIntegrationTest, ClientDestroyedDuringAttestation) {
   ASSERT_TRUE(future.IsReady());
   auto result = future.Get();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), ErrorCode::kDestroyed);
+  EXPECT_EQ(result.error(), StatusCode::kDestroyed);
 }
 
 TEST_F(ClientImplIntegrationTest, AttestationTimedOut) {
-  base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
+  base::test::TestFuture<base::expected<std::string, StatusCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
                            "hello", future.GetCallback(),
                            {.timeout = base::Seconds(5)});
@@ -300,7 +300,7 @@ TEST_F(ClientImplIntegrationTest, AttestationTimedOut) {
   ASSERT_TRUE(future.IsReady());
   auto result = future.Get();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), ErrorCode::kTimeout);
+  EXPECT_EQ(result.error(), StatusCode::kTimeout);
 }
 
 TEST_F(ClientImplIntegrationTest, ProxySuccess) {
@@ -309,7 +309,7 @@ TEST_F(ClientImplIntegrationTest, ProxySuccess) {
   factory_ptr_->EnableProxy(GURL("https://proxy.example.com"),
                             network_service_.get());
 
-  base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
+  base::test::TestFuture<base::expected<std::string, StatusCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
                            "hello", future.GetCallback(), /*options=*/{});
 
@@ -351,7 +351,7 @@ TEST_F(ClientImplIntegrationTest, ProxyConfigFailure) {
   factory_ptr_->EnableProxy(GURL("https://proxy.example.com"),
                             network_service_.get());
 
-  base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
+  base::test::TestFuture<base::expected<std::string, StatusCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
                            "hello", future.GetCallback(), /*options=*/{});
 
@@ -364,7 +364,7 @@ TEST_F(ClientImplIntegrationTest, ProxyConfigFailure) {
   ASSERT_TRUE(future.IsReady());
   auto result = future.Get();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), ErrorCode::kProxyConfigFailed);
+  EXPECT_EQ(result.error(), StatusCode::kProxyConfigFailed);
 }
 
 }  // namespace private_ai

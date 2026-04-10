@@ -29,12 +29,12 @@ class ConnectionMetrics : public Connection {
             base::TimeDelta timeout,
             OnRequestCallback callback) override;
 
-  void OnDestroy(ErrorCode error) override;
+  void OnDestroy(StatusCode status_code) override;
 
  private:
   void OnResponse(base::TimeTicks start_time,
                   OnRequestCallback callback,
-                  base::expected<proto::PrivateAiResponse, ErrorCode> result);
+                  base::expected<proto::PrivateAiResponse, StatusCode> result);
 
   std::unique_ptr<Connection> inner_connection_;
 

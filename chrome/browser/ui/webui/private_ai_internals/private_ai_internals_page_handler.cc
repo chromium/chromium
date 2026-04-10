@@ -101,7 +101,7 @@ void PrivateAiInternalsPageHandler::SendRequest(const std::string& feature_name,
       feature_name_proto, request,
       base::BindOnce(
           [](SendRequestCallback callback,
-             base::expected<std::string, ErrorCode> response) {
+             base::expected<std::string, StatusCode> response) {
             auto result = private_ai_internals::mojom::PrivateAiResponse::New();
             if (response.has_value()) {
               result->response = *response;
@@ -147,7 +147,7 @@ void PrivateAiInternalsPageHandler::SendZssRequest(
       base::BindOnce(
           [](SendZssRequestCallback callback,
              base::expected<private_ai::proto::PaicMessage,
-                            private_ai::ErrorCode> response) {
+                            private_ai::StatusCode> response) {
             auto result = private_ai_internals::mojom::PrivateAiResponse::New();
             if (!response.has_value()) {
               result->error =

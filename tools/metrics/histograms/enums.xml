@@ -23570,31 +23570,6 @@ Called by update_net_error_codes.py.-->
   <int value="11" label="No RenderFrame"/>
 </enum>
 
-<!-- LINT.IfChange(PrivateAiErrorCode) -->
-
-<enum name="PrivateAiErrorCode">
-  <summary>
-    Client-side errors that can occur during a Private AI request.
-  </summary>
-  <int value="0" label="Error"/>
-  <int value="1" label="AuthenticationFailed"/>
-  <int value="2" label="NetworkError"/>
-  <int value="3" label="AttestationFailed"/>
-  <int value="4" label="HandshakeFailed"/>
-  <int value="5" label="EncryptionFailed"/>
-  <int value="6" label="DecryptionFailed"/>
-  <int value="7" label="ResponseParseError"/>
-  <int value="8" label="NoContent"/>
-  <int value="9" label="NoResponse"/>
-  <int value="10" label="Timeout"/>
-  <int value="11" label="ClientAttestationFailed"/>
-  <int value="12" label="Destroyed"/>
-  <int value="13" label="UnusedConnection"/>
-  <int value="14" label="ProxyConfigFailed"/>
-</enum>
-
-<!-- LINT.ThenChange(//components/private_ai/error_code.h:ErrorCode) -->
-
 <!-- LINT.IfChange(PrivateAiFeatureName) -->
 
 <enum name="PrivateAiFeatureName">
@@ -23624,6 +23599,30 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <!-- LINT.ThenChange(//components/private_ai/phosphor/data_types.h:GetAuthnTokensResult) -->
+
+<!-- LINT.IfChange(StatusCode) -->
+
+<enum name="PrivateAiStatusCode">
+  <summary>Private AI request status code.</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Error"/>
+  <int value="2" label="AuthenticationFailed"/>
+  <int value="3" label="NetworkError"/>
+  <int value="4" label="AttestationFailed"/>
+  <int value="5" label="HandshakeFailed"/>
+  <int value="6" label="EncryptionFailed"/>
+  <int value="7" label="DecryptionFailed"/>
+  <int value="8" label="ResponseParseError"/>
+  <int value="9" label="NoContent"/>
+  <int value="10" label="NoResponse"/>
+  <int value="11" label="Timeout"/>
+  <int value="12" label="ClientAttestationFailed"/>
+  <int value="13" label="Destroyed"/>
+  <int value="14" label="UnusedConnection"/>
+  <int value="15" label="ProxyConfigFailed"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/private_ai/status_code.h:StatusCode) -->
 
 <enum name="ProbeResult">
   <int value="0" label="No internet"/>

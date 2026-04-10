@@ -45,7 +45,7 @@ ConnectionTokenAttestation::ConnectionTokenAttestation(
     std::unique_ptr<Connection> inner_connection,
     phosphor::TokenManager* token_manager,
     PrivateAiLogger* logger,
-    base::OnceCallback<void(ErrorCode)> on_disconnect)
+    base::OnceCallback<void(StatusCode)> on_disconnect)
     : inner_connection_(std::move(inner_connection)),
       token_manager_(token_manager),
       logger_(logger),
@@ -78,7 +78,7 @@ void ConnectionTokenAttestation::Send(proto::PrivateAiRequest request,
 
   if (attestation_state_ == AttestationState::kTokenFailed) {
     std::move(callback).Run(
-        base::unexpected(ErrorCode::kClientAttestationFailed));
+        base::unexpected(StatusCode::kClientAttestationFailed));
     return;
   }
 
@@ -96,7 +96,7 @@ void ConnectionTokenAttestation::OnTokenFetched(
     std::optional<phosphor::BlindSignedAuthToken> auth_token) {
   if (!auth_token.has_value()) {
     logger_->LogError(FROM_HERE, "Failed to get anonymous auth token");
-    CallOnDisconnect(ErrorCode::kClientAttestationFailed);
+    CallOnDisconnect(StatusCode::kClientAttestationFailed);
     return;
   }
 
@@ -111,7 +111,7 @@ void ConnectionTokenAttestation::OnTokenFetched(
 
   if (!token_str || !extensions_str) {
     logger_->LogError(FROM_HERE, "Failed to decode anonymous auth token");
-    CallOnDisconnect(ErrorCode::kClientAttestationFailed);
+    CallOnDisconnect(StatusCode::kClientAttestationFailed);
     return;
   }
 
@@ -154,7 +154,7 @@ void ConnectionTokenAttestation::OnTokenFetched(
 
 void ConnectionTokenAttestation::OnInnerConnectionResponse(
     OnRequestCallback original_callback,
-    base::expected<proto::PrivateAiResponse, ErrorCode> result) {
+    base::expected<proto::PrivateAiResponse, StatusCode> result) {
   if (attestation_state_ == AttestationState::kTokenSent) {
     if (!result.has_value()) {
       // If *any* error occurs before we receive the first successful response
@@ -168,9 +168,9 @@ void ConnectionTokenAttestation::OnInnerConnectionResponse(
                         ", assuming token rejection."}));
       attestation_state_ = AttestationState::kTokenFailed;
       std::move(original_callback)
-          .Run(base::unexpected(ErrorCode::kClientAttestationFailed));
+          .Run(base::unexpected(StatusCode::kClientAttestationFailed));
       // The connection is now considered broken due to failed attestation.
-      CallOnDisconnect(ErrorCode::kClientAttestationFailed);
+      CallOnDisconnect(StatusCode::kClientAttestationFailed);
       return;
     } else {
       // If we reach here with result.has_value() and we were in kTokenSent
@@ -183,25 +183,25 @@ void ConnectionTokenAttestation::OnInnerConnectionResponse(
   std::move(original_callback).Run(std::move(result));
 }
 
-void ConnectionTokenAttestation::OnDestroy(ErrorCode error) {
+void ConnectionTokenAttestation::OnDestroy(StatusCode status_code) {
   attestation_state_ = AttestationState::kTokenFailed;
   on_disconnect_.Reset();
 
   auto pending_requests = std::move(pending_requests_);
   for (auto& pending_request : pending_requests) {
-    std::move(pending_request.callback).Run(base::unexpected(error));
+    std::move(pending_request.callback).Run(base::unexpected(status_code));
   }
 
-  inner_connection_->OnDestroy(error);
+  inner_connection_->OnDestroy(status_code);
 
   token_manager_ = nullptr;
   logger_ = nullptr;
   weak_factory_.InvalidateWeakPtrsAndDoom();
 }
 
-void ConnectionTokenAttestation::CallOnDisconnect(ErrorCode error_code) {
+void ConnectionTokenAttestation::CallOnDisconnect(StatusCode status_code) {
   if (on_disconnect_) {
-    std::move(on_disconnect_).Run(error_code);
+    std::move(on_disconnect_).Run(status_code);
   }
 }
 

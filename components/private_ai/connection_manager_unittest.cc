@@ -13,7 +13,7 @@
 #include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/connection.h"
 #include "components/private_ai/connection_factory.h"
-#include "components/private_ai/error_code.h"
+#include "components/private_ai/status_code.h"
 #include "components/private_ai/testing/fake_connection.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -27,7 +27,7 @@ class FakeConnectionFactory : public ConnectionFactory {
   ~FakeConnectionFactory() override = default;
 
   std::unique_ptr<Connection> Create(
-      base::RepeatingCallback<void(ErrorCode)> on_disconnect) override {
+      base::RepeatingCallback<void(StatusCode)> on_disconnect) override {
     auto connection = std::make_unique<FakeConnection>(
         base::BindRepeating(&FakeConnectionFactory::on_disconnect,
                             base::Unretained(this), on_disconnect),
@@ -39,9 +39,9 @@ class FakeConnectionFactory : public ConnectionFactory {
 
   FakeConnection* last_connection() { return last_connection_; }
 
-  void on_disconnect(base::RepeatingCallback<void(ErrorCode)> callback,
-                     ErrorCode error_code) {
-    callback.Run(error_code);
+  void on_disconnect(base::RepeatingCallback<void(StatusCode)> callback,
+                     StatusCode status_code) {
+    callback.Run(status_code);
 
     // Execute internal on_disconnect callback as well.
     if (on_disconnect_callback_) {

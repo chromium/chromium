@@ -12,7 +12,7 @@ namespace private_ai {
 
 ConnectionUnusedTimeout::ConnectionUnusedTimeout(
     std::unique_ptr<Connection> inner_connection,
-    base::OnceCallback<void(ErrorCode)> on_disconnect,
+    base::OnceCallback<void(StatusCode)> on_disconnect,
     base::TimeDelta unused_timeout)
     : inner_connection_(std::move(inner_connection)),
       on_disconnect_(std::move(on_disconnect)) {
@@ -30,14 +30,14 @@ void ConnectionUnusedTimeout::Send(proto::PrivateAiRequest request,
   inner_connection_->Send(std::move(request), timeout, std::move(callback));
 }
 
-void ConnectionUnusedTimeout::OnDestroy(ErrorCode error) {
+void ConnectionUnusedTimeout::OnDestroy(StatusCode status_code) {
   unused_timer_.Stop();
-  inner_connection_->OnDestroy(error);
+  inner_connection_->OnDestroy(status_code);
 }
 
 void ConnectionUnusedTimeout::OnUnusedTimeout() {
   if (on_disconnect_) {
-    std::move(on_disconnect_).Run(ErrorCode::kUnusedConnection);
+    std::move(on_disconnect_).Run(StatusCode::kUnusedConnection);
   }
 }
 

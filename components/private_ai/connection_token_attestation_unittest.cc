@@ -12,8 +12,8 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/private_ai/common/private_ai_logger.h"
-#include "components/private_ai/error_code.h"
 #include "components/private_ai/proto/private_ai.pb.h"
+#include "components/private_ai/status_code.h"
 #include "components/private_ai/testing/fake_connection.h"
 #include "components/private_ai/testing/fake_token_manager.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.pb.h"
@@ -37,9 +37,9 @@ class ConnectionTokenAttestationTest : public testing::Test {
                        base::Unretained(this)));
   }
 
-  void OnDisconnect(ErrorCode error_code) {
+  void OnDisconnect(StatusCode status_code) {
     on_disconnect_counter_++;
-    connection_attestation_->OnDestroy(error_code);
+    connection_attestation_->OnDestroy(status_code);
   }
 
  protected:
@@ -62,7 +62,7 @@ TEST_F(ConnectionTokenAttestationTest, Success) {
   EXPECT_EQ(fake_connection_->pending_requests().size(), 0u);
 
   // Buffer a request.
-  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, StatusCode>>
       future;
   proto::PrivateAiRequest request;
   request.set_request_id(123);
@@ -110,7 +110,7 @@ TEST_F(ConnectionTokenAttestationTest, NoToken) {
   token_manager_.SetReturnToken(false);
   CreateConnectionAttestation();
 
-  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, StatusCode>>
       future;
   connection_attestation_->Send(proto::PrivateAiRequest(), base::Seconds(1),
                                 future.GetCallback());
@@ -124,7 +124,7 @@ TEST_F(ConnectionTokenAttestationTest, NoToken) {
   // Pending request should fail.
   auto result = future.Get();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), ErrorCode::kClientAttestationFailed);
+  EXPECT_EQ(result.error(), StatusCode::kClientAttestationFailed);
 
   // No requests were ever sent to the inner connection.
   EXPECT_EQ(fake_connection_->pending_requests().size(), 0u);
@@ -135,7 +135,7 @@ TEST_F(ConnectionTokenAttestationTest, NoToken) {
 TEST_F(ConnectionTokenAttestationTest, ErrorBeforeFirstResponse) {
   CreateConnectionAttestation();
 
-  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, StatusCode>>
       future;
   proto::PrivateAiRequest request;
   request.set_request_id(123);
@@ -150,12 +150,12 @@ TEST_F(ConnectionTokenAttestationTest, ErrorBeforeFirstResponse) {
   // Simulate any error before a successful response.
   auto cb = std::move(fake_connection_->pending_requests()[1].callback);
   fake_connection_->pending_requests()[1].callback = base::DoNothing();
-  std::move(cb).Run(base::unexpected(ErrorCode::kNetworkError));
+  std::move(cb).Run(base::unexpected(StatusCode::kNetworkError));
 
   auto result = future.Get();
   ASSERT_FALSE(result.has_value());
   // The error should be rewritten to kClientAttestationFailed
-  EXPECT_EQ(result.error(), ErrorCode::kClientAttestationFailed);
+  EXPECT_EQ(result.error(), StatusCode::kClientAttestationFailed);
 
   // We expect a disconnect to be requested.
   EXPECT_EQ(on_disconnect_counter_, 1);
@@ -164,7 +164,7 @@ TEST_F(ConnectionTokenAttestationTest, ErrorBeforeFirstResponse) {
 TEST_F(ConnectionTokenAttestationTest, ErrorAfterFirstResponse) {
   CreateConnectionAttestation();
 
-  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, StatusCode>>
       future1;
   proto::PrivateAiRequest request1;
   request1.set_request_id(1);
@@ -187,7 +187,7 @@ TEST_F(ConnectionTokenAttestationTest, ErrorAfterFirstResponse) {
   ASSERT_TRUE(result1.has_value());
 
   // Send a second request.
-  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, StatusCode>>
       future2;
   proto::PrivateAiRequest request2;
   request2.set_request_id(2);
@@ -199,13 +199,13 @@ TEST_F(ConnectionTokenAttestationTest, ErrorAfterFirstResponse) {
   ASSERT_EQ(fake_connection_->pending_requests().size(), 3u);
   auto cb2 = std::move(fake_connection_->pending_requests()[2].callback);
   fake_connection_->pending_requests()[2].callback = base::DoNothing();
-  std::move(cb2).Run(base::unexpected(ErrorCode::kError));
+  std::move(cb2).Run(base::unexpected(StatusCode::kError));
 
   auto result2 = future2.Get();
   ASSERT_FALSE(result2.has_value());
   // Since we already had a successful response, the error should NOT be
   // rewritten.
-  EXPECT_EQ(result2.error(), ErrorCode::kError);
+  EXPECT_EQ(result2.error(), StatusCode::kError);
 
   // No new disconnect call expected directly from attestation heuristic.
   EXPECT_EQ(on_disconnect_counter_, 0);

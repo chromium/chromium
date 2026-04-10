@@ -8,8 +8,8 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "components/private_ai/error_code.h"
 #include "components/private_ai/proto/private_ai.pb.h"
+#include "components/private_ai/status_code.h"
 
 namespace private_ai {
 
@@ -24,7 +24,7 @@ namespace private_ai {
 class Connection {
  public:
   using OnRequestCallback = base::OnceCallback<void(
-      base::expected<proto::PrivateAiResponse, ErrorCode> result)>;
+      base::expected<proto::PrivateAiResponse, StatusCode> result)>;
 
   virtual ~Connection() = default;
 
@@ -38,9 +38,9 @@ class Connection {
                     OnRequestCallback callback) = 0;
 
   // Invoked when the connection is being destroyed. Implementations should
-  // resolve all pending requests with `error`, call OnDestroy() on the inner
+  // resolve all pending requests with `status`, call OnDestroy() on the inner
   // connection, reset all un-owned pointers and invalidate weakptrs.
-  virtual void OnDestroy(ErrorCode error) = 0;
+  virtual void OnDestroy(StatusCode status_code) = 0;
 };
 
 }  // namespace private_ai

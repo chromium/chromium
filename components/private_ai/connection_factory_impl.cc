@@ -34,7 +34,7 @@ std::unique_ptr<Connection> CreateConnectionStack(
     PrivateAiLogger* logger,
     phosphor::TokenManager* token_manager,
     ConnectionFactoryImpl::SecureChannelFactoryOverride secure_channel_override,
-    base::RepeatingCallback<void(ErrorCode)> on_disconnect,
+    base::RepeatingCallback<void(StatusCode)> on_disconnect,
     network::mojom::NetworkContext* network_context) {
   std::unique_ptr<SecureChannel::Factory> secure_channel_factory;
   if (secure_channel_override) {
@@ -92,7 +92,7 @@ void ConnectionFactoryImpl::EnableProxy(
 }
 
 std::unique_ptr<Connection> ConnectionFactoryImpl::Create(
-    base::RepeatingCallback<void(ErrorCode)> on_disconnect) {
+    base::RepeatingCallback<void(StatusCode)> on_disconnect) {
   std::unique_ptr<Connection> connection;
   if (!proxy_url_.is_valid()) {
     logger_->LogInfo(FROM_HERE,

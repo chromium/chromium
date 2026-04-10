@@ -28,7 +28,7 @@ ConnectionManager::ConnectionManager(
 
 ConnectionManager::~ConnectionManager() {
   if (connection_) {
-    connection_->OnDestroy(ErrorCode::kDestroyed);
+    connection_->OnDestroy(StatusCode::kDestroyed);
   }
 }
 
@@ -43,19 +43,20 @@ Connection* ConnectionManager::GetConnection() {
 }
 
 void ConnectionManager::OnConnectionDisconnected(int connection_id,
-                                                 ErrorCode error_code) {
+                                                 StatusCode status_code) {
   if (connection_id != connection_id_ || !connection_) {
     return;
   }
 
   logger_->LogInfo(
-      FROM_HERE, "Connection disconnected. Destroying connection with error: " +
-                     base::ToString(error_code));
+      FROM_HERE,
+      "Connection disconnected. Destroying connection with status: " +
+          base::ToString(status_code));
 
   // Move the active connection to the pending destruction list and call
-  // `OnDestroy()` to ensure error_code is propagated to all pending callbacks.
+  // `OnDestroy()` to ensure status is propagated to all pending callbacks.
   Connection* connection_ptr = connection_.get();
-  connection_ptr->OnDestroy(error_code);
+  connection_ptr->OnDestroy(status_code);
   connections_pending_destruction_.emplace(connection_ptr,
                                            std::move(connection_));
 

@@ -87,7 +87,7 @@ ConnectionProxy::ConnectionProxy(
     phosphor::TokenManager* token_manager,
     network::mojom::NetworkService* network_service,
     InnerConnectionFactory inner_connection_factory,
-    base::OnceCallback<void(ErrorCode)> on_disconnect)
+    base::OnceCallback<void(StatusCode)> on_disconnect)
     : proxy_url_(proxy_url),
       logger_(logger),
       token_manager_(token_manager),
@@ -119,23 +119,23 @@ void ConnectionProxy::Send(proto::PrivateAiRequest request,
 
   if (!inner_connection_) {
     // Initialization failed or connection disconnected.
-    std::move(callback).Run(base::unexpected(ErrorCode::kError));
+    std::move(callback).Run(base::unexpected(StatusCode::kError));
     return;
   }
 
   inner_connection_->Send(std::move(request), timeout, std::move(callback));
 }
 
-void ConnectionProxy::OnDestroy(ErrorCode error) {
+void ConnectionProxy::OnDestroy(StatusCode status_code) {
   on_disconnect_.Reset();
 
   auto pending_requests = std::move(pending_requests_);
   for (auto& pending : pending_requests) {
-    std::move(pending.callback).Run(base::unexpected(error));
+    std::move(pending.callback).Run(base::unexpected(status_code));
   }
 
   if (inner_connection_) {
-    inner_connection_->OnDestroy(error);
+    inner_connection_->OnDestroy(status_code);
   }
 
   token_manager_ = nullptr;
@@ -144,9 +144,9 @@ void ConnectionProxy::OnDestroy(ErrorCode error) {
   weak_factory_.InvalidateWeakPtrsAndDoom();
 }
 
-void ConnectionProxy::CallOnDisconnect(ErrorCode error_code) {
+void ConnectionProxy::CallOnDisconnect(StatusCode status_code) {
   if (on_disconnect_) {
-    std::move(on_disconnect_).Run(error_code);
+    std::move(on_disconnect_).Run(status_code);
   }
 }
 
@@ -161,7 +161,7 @@ void ConnectionProxy::OnProxyToken(
 
   if (!auth_token) {
     logger_->LogError(FROM_HERE, "Failed to get auth token for proxy.");
-    CallOnDisconnect(ErrorCode::kError);
+    CallOnDisconnect(StatusCode::kError);
     return;
   }
 
@@ -173,7 +173,7 @@ void ConnectionProxy::OnProxyToken(
       internal::CreateCustomProxyConfig(proxy_url_, *auth_token, logger_);
 
   if (!context_params->initial_custom_proxy_config) {
-    CallOnDisconnect(ErrorCode::kProxyConfigFailed);
+    CallOnDisconnect(StatusCode::kProxyConfigFailed);
     return;
   }
 

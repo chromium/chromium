@@ -62,7 +62,7 @@ IN_PROC_BROWSER_TEST_F(PrivateAiWebSocketClientBrowserTest, MANUAL_Client) {
   auto* client = private_ai_service->GetClient();
   ASSERT_TRUE(client);
 
-  base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
+  base::test::TestFuture<base::expected<std::string, StatusCode>> future;
   client->SendTextRequest(feature_name, text, future.GetCallback(),
                           /*options=*/{});
 

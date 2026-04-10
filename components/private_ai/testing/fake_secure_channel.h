@@ -37,7 +37,7 @@ class FakeSecureChannel : public SecureChannel {
   }
 
   void send_back_response(const proto::PrivateAiResponse& response);
-  void send_back_error(ErrorCode error);
+  void send_back_error(StatusCode status_code);
 
  private:
   ResponseCallback response_callback_;

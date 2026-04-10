@@ -9,8 +9,8 @@
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
-#include "components/private_ai/error_code.h"
 #include "components/private_ai/proto/private_ai.pb.h"
+#include "components/private_ai/status_code.h"
 
 namespace private_ai {
 
@@ -24,7 +24,7 @@ FakeConnection::PendingRequest& FakeConnection::PendingRequest::operator=(
 FakeConnection::PendingRequest::~PendingRequest() = default;
 
 FakeConnection::FakeConnection(
-    base::RepeatingCallback<void(ErrorCode)> on_disconnect,
+    base::RepeatingCallback<void(StatusCode)> on_disconnect,
     base::OnceClosure on_destruction)
     : on_disconnect_(std::move(on_disconnect)),
       on_destruction_(std::move(on_destruction)) {}
@@ -47,15 +47,15 @@ void FakeConnection::Send(proto::PrivateAiRequest request,
   pending_requests_.push_back(std::move(pending_request));
 }
 
-void FakeConnection::OnDestroy(ErrorCode error) {
+void FakeConnection::OnDestroy(StatusCode status_code) {
   auto callbacks = std::move(pending_requests_);
   for (auto& pending_request : callbacks) {
-    std::move(pending_request.callback).Run(base::unexpected(error));
+    std::move(pending_request.callback).Run(base::unexpected(status_code));
   }
 }
 
 void FakeConnection::SimulateDisconnect() {
-  on_disconnect_.Run(ErrorCode::kNetworkError);
+  on_disconnect_.Run(StatusCode::kNetworkError);
 }
 
 }  // namespace private_ai

@@ -31,10 +31,11 @@ class ConnectionTokenAttestation : public Connection {
  public:
   // When `on_disconnect` callback is invoked, all follow-up `Send()` calls will
   // fail immediately without attempting to send a request over the wire.
-  ConnectionTokenAttestation(std::unique_ptr<Connection> inner_connection,
-                             phosphor::TokenManager* token_manager,
-                             PrivateAiLogger* logger,
-                             base::OnceCallback<void(ErrorCode)> on_disconnect);
+  ConnectionTokenAttestation(
+      std::unique_ptr<Connection> inner_connection,
+      phosphor::TokenManager* token_manager,
+      PrivateAiLogger* logger,
+      base::OnceCallback<void(StatusCode)> on_disconnect);
   ~ConnectionTokenAttestation() override;
 
   ConnectionTokenAttestation(const ConnectionTokenAttestation&) = delete;
@@ -46,7 +47,7 @@ class ConnectionTokenAttestation : public Connection {
             base::TimeDelta timeout,
             OnRequestCallback callback) override;
 
-  void OnDestroy(ErrorCode error) override;
+  void OnDestroy(StatusCode status_code) override;
 
  private:
   struct PendingRequest {
@@ -76,15 +77,15 @@ class ConnectionTokenAttestation : public Connection {
   void OnTokenFetched(std::optional<phosphor::BlindSignedAuthToken> auth_token);
   void OnInnerConnectionResponse(
       OnRequestCallback original_callback,
-      base::expected<proto::PrivateAiResponse, ErrorCode> result);
-  void CallOnDisconnect(ErrorCode error_code);
+      base::expected<proto::PrivateAiResponse, StatusCode> result);
+  void CallOnDisconnect(StatusCode status_code);
 
   const std::unique_ptr<Connection> inner_connection_;
   raw_ptr<phosphor::TokenManager> token_manager_;
   raw_ptr<PrivateAiLogger> logger_;
 
   // Called to trigger a disconnect and destruction of the connection.
-  base::OnceCallback<void(ErrorCode)> on_disconnect_;
+  base::OnceCallback<void(StatusCode)> on_disconnect_;
 
   AttestationState attestation_state_ = AttestationState::kFetchingToken;
   std::vector<PendingRequest> pending_requests_;

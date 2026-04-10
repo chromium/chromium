@@ -36,8 +36,8 @@ void ConnectionMetrics::Send(proto::PrivateAiRequest request,
                      base::TimeTicks::Now(), std::move(callback)));
 }
 
-void ConnectionMetrics::OnDestroy(ErrorCode error) {
-  inner_connection_->OnDestroy(error);
+void ConnectionMetrics::OnDestroy(StatusCode status_code) {
+  inner_connection_->OnDestroy(status_code);
 
   weak_factory_.InvalidateWeakPtrsAndDoom();
 }
@@ -45,25 +45,28 @@ void ConnectionMetrics::OnDestroy(ErrorCode error) {
 void ConnectionMetrics::OnResponse(
     base::TimeTicks start_time,
     OnRequestCallback callback,
-    base::expected<proto::PrivateAiResponse, ErrorCode> result) {
+    base::expected<proto::PrivateAiResponse, StatusCode> result) {
   const auto latency = base::TimeTicks::Now() - start_time;
 
   if (result.has_value()) {
+    base::UmaHistogramEnumeration("PrivateAi.Client.RequestStatusCode",
+                                  StatusCode::kSuccess);
     // Records the response size in bytes. The max value is 1M bytes.
     base::UmaHistogramCounts1M("PrivateAi.Client.ResponseSize.Success",
                                result->ByteSizeLong());
     base::UmaHistogramMediumTimes("PrivateAi.Client.RequestLatency.Success",
                                   latency);
-  } else if (result.error() == ErrorCode::kTimeout) {
-    base::UmaHistogramEnumeration("PrivateAi.Client.RequestErrorCode",
-                                  ErrorCode::kTimeout);
-    base::UmaHistogramMediumTimes("PrivateAi.Client.RequestLatency.Timeout",
-                                  latency);
   } else {
-    base::UmaHistogramEnumeration("PrivateAi.Client.RequestErrorCode",
+    base::UmaHistogramEnumeration("PrivateAi.Client.RequestStatusCode",
                                   result.error());
-    base::UmaHistogramMediumTimes("PrivateAi.Client.RequestLatency.Error",
-                                  latency);
+
+    if (result.error() == StatusCode::kTimeout) {
+      base::UmaHistogramMediumTimes("PrivateAi.Client.RequestLatency.Timeout",
+                                    latency);
+    } else {
+      base::UmaHistogramMediumTimes("PrivateAi.Client.RequestLatency.Error",
+                                    latency);
+    }
   }
 
   std::move(callback).Run(std::move(result));

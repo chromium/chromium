@@ -10,7 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/private_ai/error_code.h"
+#include "components/private_ai/status_code.h"
 
 namespace private_ai {
 
@@ -33,7 +33,7 @@ class ConnectionManager {
   Connection* GetConnection();
 
  private:
-  void OnConnectionDisconnected(int connection_id, ErrorCode error_code);
+  void OnConnectionDisconnected(int connection_id, StatusCode status_code);
 
   // Destroy a connection that is pending destruction.
   //

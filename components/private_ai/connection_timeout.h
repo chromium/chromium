@@ -16,7 +16,7 @@ namespace private_ai {
 
 // A decorator for `Connection` that adds timeout handling to `Send` calls.
 // It wraps the provided `inner_connection` and ensures that the callback
-// is invoked with `ErrorCode::kTimeout` if the response is not received
+// is invoked with `StatusCode::kTimeout` if the response is not received
 // within the specified timeout.
 class ConnectionTimeout : public Connection {
  public:
@@ -31,11 +31,11 @@ class ConnectionTimeout : public Connection {
             base::TimeDelta timeout,
             OnRequestCallback callback) override;
 
-  void OnDestroy(ErrorCode error) override;
+  void OnDestroy(StatusCode status_code) override;
 
  private:
   void OnResponse(int32_t internal_request_id,
-                  base::expected<proto::PrivateAiResponse, ErrorCode> result);
+                  base::expected<proto::PrivateAiResponse, StatusCode> result);
 
   std::unique_ptr<Connection> inner_connection_;
 

@@ -32,19 +32,6 @@ reviewer.
   </summary>
 </histogram>
 
-<histogram name="PrivateAi.Client.RequestErrorCode" enum="PrivateAiErrorCode"
-    expires_after="2026-11-25">
-  <owner>nikhiljakhar@google.com</owner>
-  <owner>arabm@google.com</owner>
-  <owner>dullweber@chromium.org</owner>
-  <owner>lamzin@google.com</owner>
-  <owner>saeideid@google.com</owner>
-  <summary>
-    Records the client-side errors that occur during the request lifecycle.
-    Recorded for every failed request.
-  </summary>
-</histogram>
-
 <histogram name="PrivateAi.Client.RequestLatency.{Status}" units="ms"
     expires_after="2026-11-25">
   <owner>nikhiljakhar@google.com</owner>
@@ -75,6 +62,19 @@ reviewer.
   <summary>
     Records the size of the request payload sent from the Private AI Client.
     Recorded for every request.
+  </summary>
+</histogram>
+
+<histogram name="PrivateAi.Client.RequestStatusCode" enum="PrivateAiStatusCode"
+    expires_after="2026-11-25">
+  <owner>nikhiljakhar@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <owner>saeideid@google.com</owner>
+  <summary>
+    Records the outcome of a Private AI request. Recorded for every request that
+    expects a response.
   </summary>
 </histogram>
 

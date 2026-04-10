@@ -12,7 +12,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/private_ai/connection.h"
-#include "components/private_ai/error_code.h"
+#include "components/private_ai/status_code.h"
 
 namespace private_ai {
 
@@ -23,7 +23,7 @@ namespace private_ai {
 class ConnectionUnusedTimeout : public Connection {
  public:
   ConnectionUnusedTimeout(std::unique_ptr<Connection> inner_connection,
-                          base::OnceCallback<void(ErrorCode)> on_disconnect,
+                          base::OnceCallback<void(StatusCode)> on_disconnect,
                           base::TimeDelta unused_timeout);
   ~ConnectionUnusedTimeout() override;
 
@@ -35,7 +35,7 @@ class ConnectionUnusedTimeout : public Connection {
             base::TimeDelta timeout,
             OnRequestCallback callback) override;
 
-  void OnDestroy(ErrorCode error) override;
+  void OnDestroy(StatusCode status_code) override;
 
  private:
   void OnUnusedTimeout();
@@ -43,7 +43,7 @@ class ConnectionUnusedTimeout : public Connection {
   base::OneShotTimer unused_timer_;
 
   std::unique_ptr<Connection> inner_connection_;
-  base::OnceCallback<void(ErrorCode)> on_disconnect_;
+  base::OnceCallback<void(StatusCode)> on_disconnect_;
 
   base::WeakPtrFactory<ConnectionUnusedTimeout> weak_factory_{this};
 };

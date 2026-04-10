@@ -40,24 +40,24 @@ void ConnectionTimeout::Send(proto::PrivateAiRequest request,
       FROM_HERE,
       base::BindOnce(&ConnectionTimeout::OnResponse, weak_factory_.GetWeakPtr(),
                      internal_request_id,
-                     base::unexpected(ErrorCode::kTimeout)),
+                     base::unexpected(StatusCode::kTimeout)),
       timeout);
 }
 
-void ConnectionTimeout::OnDestroy(ErrorCode error) {
+void ConnectionTimeout::OnDestroy(StatusCode status_code) {
   auto pending = std::move(pending_callbacks_);
   for (auto& entry : pending) {
-    std::move(entry.second).Run(base::unexpected(error));
+    std::move(entry.second).Run(base::unexpected(status_code));
   }
 
-  inner_connection_->OnDestroy(error);
+  inner_connection_->OnDestroy(status_code);
 
   weak_factory_.InvalidateWeakPtrsAndDoom();
 }
 
 void ConnectionTimeout::OnResponse(
     int32_t internal_request_id,
-    base::expected<proto::PrivateAiResponse, ErrorCode> result) {
+    base::expected<proto::PrivateAiResponse, StatusCode> result) {
   auto it = pending_callbacks_.find(internal_request_id);
   if (it == pending_callbacks_.end()) {
     return;

@@ -71,8 +71,8 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "components/private_ai/client.h"
-#include "components/private_ai/error_code.h"
 #include "components/private_ai/features.h"
+#include "components/private_ai/status_code.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {

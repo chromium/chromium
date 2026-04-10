@@ -11,8 +11,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "components/private_ai/connection.h"
-#include "components/private_ai/error_code.h"
 #include "components/private_ai/proto/private_ai.pb.h"
+#include "components/private_ai/status_code.h"
 
 namespace private_ai {
 
@@ -35,7 +35,7 @@ class FakeConnection : public Connection {
   };
 
   explicit FakeConnection(
-      base::RepeatingCallback<void(ErrorCode)> on_disconnect,
+      base::RepeatingCallback<void(StatusCode)> on_disconnect,
       base::OnceClosure on_destruction = {});
   ~FakeConnection() override;
 
@@ -44,16 +44,16 @@ class FakeConnection : public Connection {
             base::TimeDelta timeout,
             OnRequestCallback callback) override;
 
-  void OnDestroy(ErrorCode error) override;
+  void OnDestroy(StatusCode status_code) override;
 
-  // Resolves all pending callbacks with ErrorCode::kNetworkError and runs the
+  // Resolves all pending callbacks with StatusCode::kNetworkError and runs the
   // on_disconnect callback.
   void SimulateDisconnect();
 
   std::vector<PendingRequest>& pending_requests() { return pending_requests_; }
 
  private:
-  base::RepeatingCallback<void(ErrorCode)> on_disconnect_;
+  base::RepeatingCallback<void(StatusCode)> on_disconnect_;
   base::OnceClosure on_destruction_;
   std::vector<PendingRequest> pending_requests_;
 };
