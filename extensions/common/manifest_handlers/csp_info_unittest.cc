@@ -14,6 +14,7 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/manifest_handlers/sandboxed_page_info.h"
 #include "extensions/common/manifest_test.h"
 
 namespace extensions {
@@ -389,9 +390,9 @@ TEST_F(CSPInfoUnitTest, CSPDictionaryMandatoryForV3) {
     EXPECT_EQ(kDefaultSecureCSP,
               CSPInfo::GetExtensionPagesCSP(extension.get()));
 
-    EXPECT_EQ(
-        CSPHandler::GetMinimumMV3CSPForTesting(),
-        *CSPInfo::GetMinimumCSPToAppend(*extension, "not_sandboxed.html"));
+    EXPECT_EQ(CSPHandler::GetMinimumMV3CSPForTesting(),
+              *CSPInfo::GetMinimumCSPToAppend(*extension, "not_sandboxed.html",
+                                              /*is_service_worker=*/false));
   }
 
   // Repeat the test, loading the extensions as unpacked extensions.
@@ -417,9 +418,9 @@ TEST_F(CSPInfoUnitTest, CSPDictionaryMandatoryForV3) {
     EXPECT_EQ(kDefaultSecureCSP,
               CSPInfo::GetExtensionPagesCSP(extension.get()));
 
-    EXPECT_EQ(
-        CSPHandler::GetMinimumUnpackedMV3CSPForTesting(),
-        *CSPInfo::GetMinimumCSPToAppend(*extension, "not_sandboxed.html"));
+    EXPECT_EQ(CSPHandler::GetMinimumUnpackedMV3CSPForTesting(),
+              *CSPInfo::GetMinimumCSPToAppend(*extension, "not_sandboxed.html",
+                                              /*is_service_worker=*/false));
   }
 }
 
@@ -427,6 +428,79 @@ TEST_F(CSPInfoUnitTest, CSPDictionaryMandatoryForV3) {
 TEST_F(CSPInfoUnitTest, CSPDictionaryDisallowedForV2) {
   LoadAndExpectError("csp_dictionary_mv2.json",
                      GetInvalidManifestKeyError(keys::kContentSecurityPolicy));
+}
+
+// Ensure that service workers ignore the sandbox.pages CSP and instead use the
+// stricter extension CSP.
+TEST_F(CSPInfoUnitTest, ServiceWorkerSandboxIgnored) {
+  scoped_refptr<Extension> extension =
+      LoadAndExpectSuccess("sandboxed_pages_valid_1.json");
+  ASSERT_TRUE(extension);
+
+  static constexpr char kSandboxedPath[] = "/test";
+  ASSERT_TRUE(
+      SandboxedPageInfo::IsSandboxedPage(extension.get(), kSandboxedPath));
+
+  // If not a service worker, the sandboxed page CSP should be returned.
+  EXPECT_EQ(kDefaultSandboxedPageCSP,
+            *CSPInfo::GetMinimumCSPToAppend(*extension, kSandboxedPath,
+                                            /*is_service_worker=*/false));
+
+  // If a service worker, the extension pages CSP should be returned (even if
+  // the path is sandboxed). For MV2, this is the default extension pages CSP.
+  EXPECT_EQ(kDefaultExtensionPagesCSP,
+            *CSPInfo::GetMinimumCSPToAppend(*extension, kSandboxedPath,
+                                            /*is_service_worker=*/true));
+}
+
+// Ensure that MV3 service workers ignore the sandbox.pages CSP even if they are
+// explicitly listed there.
+TEST_F(CSPInfoUnitTest, ServiceWorkerSandboxIgnoredMV3) {
+  scoped_refptr<Extension> extension =
+      LoadAndExpectSuccess("sandboxed_sw_mv3.json");
+  ASSERT_TRUE(extension);
+
+  static constexpr char kSandboxedPath[] = "/sw.js";
+  ASSERT_TRUE(
+      SandboxedPageInfo::IsSandboxedPage(extension.get(), kSandboxedPath));
+
+  // If not a service worker, the sandboxed page CSP should be returned.
+  EXPECT_EQ(kDefaultSandboxedPageCSP,
+            *CSPInfo::GetMinimumCSPToAppend(*extension, kSandboxedPath,
+                                            /*is_service_worker=*/false));
+
+  // If a service worker, the extension pages CSP should be returned (even if
+  // the path is sandboxed).
+  EXPECT_EQ(CSPHandler::GetMinimumMV3CSPForTesting(),
+            *CSPInfo::GetMinimumCSPToAppend(*extension, kSandboxedPath,
+                                            /*is_service_worker=*/true));
+}
+
+// Ensure that even with a custom sandbox CSP (which may be insecure), the
+// service worker still gets the strict MV3 CSP.
+TEST_F(CSPInfoUnitTest, ServiceWorkerSandboxIgnoredWithCustomCSP) {
+  scoped_refptr<Extension> extension =
+      LoadAndExpectSuccess("sandboxed_sw_mv3_with_csp.json");
+  ASSERT_TRUE(extension);
+
+  static constexpr char kSandboxedPath[] = "/sw.js";
+  ASSERT_TRUE(
+      SandboxedPageInfo::IsSandboxedPage(extension.get(), kSandboxedPath));
+
+  // If not a service worker, the sandboxed page CSP should be returned.
+  // Note: kDefaultSandboxedPageCSP is not used here because we provided a
+  // custom one.
+  const std::string& custom_sandbox_csp =
+      CSPInfo::GetSandboxContentSecurityPolicy(extension.get());
+  EXPECT_EQ(custom_sandbox_csp,
+            *CSPInfo::GetMinimumCSPToAppend(*extension, kSandboxedPath,
+                                            /*is_service_worker=*/false));
+
+  // If a service worker, the extension pages CSP should be returned (even if
+  // the path is sandboxed).
+  EXPECT_EQ(CSPHandler::GetMinimumMV3CSPForTesting(),
+            *CSPInfo::GetMinimumCSPToAppend(*extension, kSandboxedPath,
+                                            /*is_service_worker=*/true));
 }
 
 }  // namespace extensions

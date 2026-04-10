@@ -251,4 +251,39 @@ IN_PROC_BROWSER_TEST_F(ExtensionCspApiTestWithPageNavigation,
       << message_;
 }
 
+// Verifies that a service worker that is listed in sandbox.pages is still
+// subject to the strict MV3 CSP.
+IN_PROC_BROWSER_TEST_F(ExtensionCspApiTest,
+                       ServiceWorkerIsConstrainedByMV3CSPEvenIfSandboxed) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Sandboxed Service Worker",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": {"service_worker": "sw.js"},
+           "content_security_policy": {
+             "sandbox": "sandbox allow-scripts; script-src 'self' 'unsafe-eval';"
+           },
+           "sandbox": { "pages": ["sw.js"] }
+         })";
+  // The service worker attempts to use eval(), which is allowed by the
+  // sandbox CSP but disallowed by the strict MV3 extension CSP.
+  static constexpr char kServiceWorkerJs[] =
+      R"(chrome.test.runTests([
+           function testEvalIsDisallowed() {
+             try {
+               eval('1 + 1');
+               chrome.test.fail('eval() should have been disallowed by CSP.');
+             } catch (e) {
+               chrome.test.succeed();
+             }
+           }]);)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("sw.js"), kServiceWorkerJs);
+
+  ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
+}
+
 }  // namespace extensions

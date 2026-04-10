@@ -136,6 +136,7 @@
 #include "content/public/common/webplugininfo.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_visitor.h"
+#include "content/public/renderer/worker_thread.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/renderer/extensions_renderer_api_provider.h"
 #include "media/base/media_switches.h"
@@ -1623,8 +1624,9 @@ void ChromeContentRendererClient::AppendContentSecurityPolicy(
 
   // Append a minimum CSP to ensure the extension can't relax the default
   // applied CSP through means like Service Worker.
-  const std::string* default_csp =
-      extensions::CSPInfo::GetMinimumCSPToAppend(*extension, gurl.GetPath());
+  const std::string* default_csp = extensions::CSPInfo::GetMinimumCSPToAppend(
+      *extension, gurl.GetPath(),
+      /*is_service_worker=*/content::WorkerThread::GetCurrentId() != 0);
   if (!default_csp)
     return;
 

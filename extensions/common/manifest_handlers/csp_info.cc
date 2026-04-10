@@ -179,7 +179,8 @@ const std::string& CSPInfo::GetExtensionPagesCSP(const Extension* extension) {
 // static
 const std::string* CSPInfo::GetMinimumCSPToAppend(
     const Extension& extension,
-    const std::string& relative_path) {
+    const std::string& relative_path,
+    bool is_service_worker) {
   if (!extension.is_extension()) {
     return nullptr;
   }
@@ -187,7 +188,10 @@ const std::string* CSPInfo::GetMinimumCSPToAppend(
   // For sandboxed pages and manifest V2 extensions, append the parsed CSP. This
   // helps ensure that extension's can't get around our parsing rules by CSP
   // modifications through, say service workers.
-  if (SandboxedPageInfo::IsSandboxedPage(&extension, relative_path)) {
+  // We ignore the sandboxed page CSP for service workers, since they should
+  // always be subject to the stricter extension CSP.
+  if (!is_service_worker &&
+      SandboxedPageInfo::IsSandboxedPage(&extension, relative_path)) {
     return &GetSandboxContentSecurityPolicy(&extension);
   }
 

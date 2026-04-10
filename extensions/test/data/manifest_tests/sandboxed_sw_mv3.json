@@ -1,0 +1,11 @@
+{
+  "name": "Sandboxed Service Worker MV3",
+  "version": "0.1",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "sw.js"
+  },
+  "sandbox": {
+    "pages": ["sw.js"]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "Sandboxed Service Worker MV3 with CSP",
+  "version": "0.1",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "sw.js"
+  },
+  "content_security_policy": {
+    "sandbox": "sandbox allow-scripts; script-src 'self' https://example.com; child-src 'self';"
+  },
+  "sandbox": {
+    "pages": ["sw.js"]
+  }
+}
