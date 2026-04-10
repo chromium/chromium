@@ -18,6 +18,7 @@ per-file settings_localized_strings_provider*=rainhard@chromium.org,sideyilmaz@c
 per-file settings_media_devices_selection_handler*=file://chrome/browser/ui/views/media_preview/OWNERS
 per-file settings_secure_dns_handler.*=awillia@chromium.org,ericorth@chromium.org
 per-file settings_security_key_handler*=file://device/fido/OWNERS
+per-file glic_*=file://chrome/browser/resources/settings/glic_page/OWNERS
 
 per-file performance_*=file://chrome/browser/ui/performance_controls/OWNERS
 per-file captions_handler*=evliu@google.com
