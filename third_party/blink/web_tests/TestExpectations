@@ -7397,10 +7397,6 @@ crbug.com/1404951 [ Win ] external/wpt/fedcm/fedcm-nonce-is-optional.https.html 
 
 crbug.com/1480054 [ Win ] external/wpt/fedcm/fedcm-loginhint.https.html [ Pass Timeout ]
 
-# Temporarily disabled to change to the new behavior in V8.
-crbug.com/336347912 external/wpt/wasm/jsapi/exception/constructor.tentative.any.html [ Failure Pass ]
-crbug.com/336347912 external/wpt/wasm/jsapi/exception/constructor.tentative.any.worker.html [ Failure Pass ]
-
 # WebAssembly ESM integration is not yet implemented.
 crbug.com/40575658 external/wpt/wasm/webapi/esm-integration/exported-names.tentative.html [ Timeout ]
 crbug.com/40575658 external/wpt/wasm/webapi/esm-integration/js-wasm-cycle.tentative.html [ Timeout ]
@@ -9573,12 +9569,6 @@ crbug.com/40516274 [ Win11-arm64 ] images/color-profile-reflection.html [ Failur
 
 # Gardener 2025-11-14
 crbug.com/460545299 [ Mac ] webaudio/codec-tests/webm/webm-decode.html [ Failure Pass ]
-
-# Temporarily disable failing Wasm RAB IDL harness tests.
-# Other RAB/GSAB WPTs now pass with the feature enabled; only IDL harness tests remain blocked
-# (see crbug.com/42202693).
-crbug.com/42202693 external/wpt/wasm/jsapi/idlharness.any.html [ Failure Pass ]
-crbug.com/42202693 external/wpt/wasm/jsapi/idlharness.any.worker.html [ Failure Pass ]
 
 # Gardener 2025-11-25
 crbug.com/463661453 [ Mac ] virtual/threaded/wpt_internal/scheduler/integration_tests/rendering-starvation.html [ Failure Pass ]
