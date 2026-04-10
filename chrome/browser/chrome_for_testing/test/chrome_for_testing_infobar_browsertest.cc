@@ -20,8 +20,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace infobars {
+using infobars::ContentInfoBarManager;
+using infobars::InfoBarDelegate;
 
+namespace chrome_for_testing {
 namespace {
 
 // TODO (crbug.com/469533286): fix ChromeForTestingInfoBarTest for win-cft
@@ -184,5 +186,4 @@ IN_PROC_BROWSER_TEST_F(ChromeForTestingInfoBarDisabledTest,
 }
 
 }  // namespace
-
-}  // namespace infobars
+}  // namespace chrome_for_testing

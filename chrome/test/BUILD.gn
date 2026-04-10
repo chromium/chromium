@@ -4072,7 +4072,6 @@ if (!is_android) {
     }
 
     if (is_chrome_for_testing) {
-      sources += [ "../browser/chrome_for_testing/chrome_for_testing_info_bar_browsertest.cc" ]
       deps += [ "//chrome/browser/chrome_for_testing:browser_tests" ]
     }
 
