@@ -64,6 +64,7 @@ source_set("unit_tests") {
     "image_content_configuration_unittest.mm",
     "info_button_content_configuration_unittest.mm",
     "switch_content_configuration_unittest.mm",
+    "table_view_cell_content_configuration_unittest.mm",
   ]
   deps = [
     ":content_configuration",
