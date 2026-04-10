@@ -266,7 +266,7 @@ TEST_P(LeakDetectionCheckImplTest, GetAccessTokenFailure) {
 
   EXPECT_CALL(delegate(), OnError(LeakDetectionError::kTokenRequestFailure));
   identity_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+      GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
 
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.LeakDetection.ObtainAccessTokenTime", kMockElapsedTime,
