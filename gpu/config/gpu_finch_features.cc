@@ -116,6 +116,16 @@ BASE_FEATURE(kRemoveGPULegacyIPC, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSharedImageStubHighPriority, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// Disables hardware YUV conversion on NVIDIA + Wayland to workaround a driver
+// bug.
+BASE_FEATURE(kNvidiaWaylandYuvHardwareConversionWorkaround,
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
 // Enable GPU Rasterization by default. This can still be overridden by
 // --enable-gpu-rasterization or --disable-gpu-rasterization.
 // DefaultEnableGpuRasterization has launched on Mac, Windows, ChromeOS,

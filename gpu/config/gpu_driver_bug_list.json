@@ -3761,6 +3761,18 @@
       "features": [
         "disable_vaapi"
       ]
+    },
+    {
+      "id": 474,
+      "description": "Disable RGB to YUV hardware conversion on NVIDIA Linux",
+      "cr_bugs": [447709687],
+      "os": {
+        "type": "linux"
+      },
+      "gl_vendor": "NVIDIA.*",
+      "features": [
+        "disable_rgb_to_yuv_conversion"
+      ]
     }
   ]
 }
