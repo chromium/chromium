@@ -3,6 +3,24 @@
 # found in the LICENSE file.
 
 
+import logging
+
+from pylib.utils import logging_utils
+
+
+def ShowDisabledTestsHint(count=None):
+  color = (logging_utils.BACK.YELLOW, logging_utils.FORE.BLACK)
+  with logging_utils.OverrideColor(logging.WARNING, color):
+    if count:
+      if count > 1:
+        count_msg = f'{count} disabled tests'
+      else:
+        count_msg = '1 disabled test'
+    else:
+      count_msg = 'one or more disabled tests'
+    logging.warning('Excluded %s. Consider adding: --run-disabled', count_msg)
+
+
 class TestRun:
   """An execution of a particular test on a particular device.
 

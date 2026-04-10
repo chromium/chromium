@@ -13,6 +13,7 @@ from pylib import constants
 from pylib.base import base_test_result
 from pylib.base import test_exception
 from pylib.base import test_instance
+from pylib.base import test_run
 from pylib.constants import host_paths
 from pylib.instrumentation import instrumentation_parser
 from pylib.instrumentation import test_result
@@ -20,7 +21,6 @@ from pylib.symbols import deobfuscator
 from pylib.symbols import stack_symbolizer
 from pylib.utils import dexdump
 from pylib.utils import gold_utils
-from pylib.utils import logging_utils
 from pylib.utils import test_filter
 
 with host_paths.SysPath(host_paths.BUILD_UTIL_PATH):
@@ -1133,11 +1133,9 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     filtered_tests_with_excluded = FilterTests(inflated_tests,
                                                self._test_filters,
                                                self._annotations, [])
-    if len(filtered_tests_with_excluded) != len(filtered_tests):
-      color = (logging_utils.BACK.YELLOW, logging_utils.FORE.BLACK)
-      with logging_utils.OverrideColor(logging.WARNING, color):
-        logging.warning('Excluded one or more disabled tests. '
-                        'Consider adding: --gtest_also_run_disabled_tests')
+    num_disabled = len(filtered_tests_with_excluded) - len(filtered_tests)
+    if num_disabled:
+      test_run.ShowDisabledTestsHint(count=num_disabled)
     return filtered_tests
 
   def IsApkForceQueryable(self, apk):

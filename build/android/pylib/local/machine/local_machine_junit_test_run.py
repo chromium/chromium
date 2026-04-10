@@ -136,6 +136,8 @@ class LocalMachineJunitTestRun(test_run.TestRun):
         '-Drobolectric.logging=stdout',
         '-Djava.library.path=%s' % self._test_instance.native_libs_dir,
     ]
+    if self._test_instance.run_disabled:
+      jvm_args += ['-Dchromium.run_disabled=1']
     if self._test_instance.debug_socket and allow_debugging:
       jvm_args += [
           '-Dchromium.jdwp_active=true',
@@ -270,6 +272,9 @@ class LocalMachineJunitTestRun(test_run.TestRun):
     for config in json_config['configs'].values():
       for class_name, methods in config.items():
         ret.extend(f'{class_name}.{method}' for method in methods)
+    for config in json_config.get('disabled', {}).values():
+      for class_name, methods in config.items():
+        ret.extend(f'{class_name}.{method} (disabled)' for method in methods)
     ret.sort()
     return ret
 
@@ -289,6 +294,16 @@ class LocalMachineJunitTestRun(test_run.TestRun):
         results.append(_MakeUnknownFailureResult('Filter matched no tests'))
         return
     json_config = self._ApplyExternalSharding(json_config)
+
+    # Disabled tests are nested in a top-level "disabled" key.
+    # Merge them into the main "configs".
+    if self._test_instance.run_disabled:
+      for config, classes in json_config.get('disabled', {}).items():
+        target_classes = json_config['configs'].setdefault(config, {})
+        for class_name, methods in classes.items():
+          target_methods = target_classes.setdefault(class_name, [])
+          target_methods.extend(methods)
+
     test_groups = GroupTests(json_config, _MAX_TESTS_PER_JOB)
 
     shard_list = list(range(len(test_groups)))
@@ -393,6 +408,13 @@ class LocalMachineJunitTestRun(test_run.TestRun):
 
     test_run_results = base_test_result.TestRunResults()
     test_run_results.AddResults(results_list)
+
+    if json_config.get('disabled') and not self._test_instance.run_disabled:
+      num_disabled = sum(
+          len(methods) for classes in json_config['disabled'].values()
+          for methods in classes.values())
+      test_run.ShowDisabledTestsHint(count=num_disabled)
+
     results.append(test_run_results)
 
   # override

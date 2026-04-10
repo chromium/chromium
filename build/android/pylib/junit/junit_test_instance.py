@@ -22,6 +22,7 @@ class JunitTestInstance(test_instance.TestInstance):
     self._runner_filter = args.runner_filter
     self._json_config = args.json_config
     self._shadows_allowlist = args.shadows_allowlist
+    self._run_disabled = args.run_disabled
     self._shards = args.shards
     self._shard_filter = None
     if args.shard_filter:
@@ -100,6 +101,10 @@ class JunitTestInstance(test_instance.TestInstance):
   @property
   def json_config(self):
     return self._json_config
+
+  @property
+  def run_disabled(self):
+    return self._run_disabled
 
   @property
   def shards(self):

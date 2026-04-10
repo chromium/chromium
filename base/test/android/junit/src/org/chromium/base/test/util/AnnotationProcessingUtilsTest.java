@@ -22,6 +22,7 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 
+import org.chromium.base.test.BaseJvmTestRunner;
 import org.chromium.base.test.util.AnnotationProcessingUtils.AnnotationExtractor;
 
 import java.lang.annotation.Annotation;
@@ -34,7 +35,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /** Test for {@link AnnotationProcessingUtils}. */
-@RunWith(BlockJUnit4ClassRunner.class)
+@RunWith(BaseJvmTestRunner.class)
 @SuppressWarnings("UnusedMethod")
 public class AnnotationProcessingUtilsTest {
     @Test

@@ -13,8 +13,6 @@ import org.robolectric.TestLifecycle;
 import org.robolectric.internal.SandboxTestRunner;
 import org.robolectric.internal.bytecode.Sandbox;
 
-import org.chromium.base.test.util.DisabledTest;
-
 import java.lang.reflect.Method;
 
 /**
@@ -112,10 +110,6 @@ public class BaseRobolectricTestRunner extends RobolectricTestRunner {
 
     @Override
     protected boolean isIgnored(FrameworkMethod method) {
-        if (super.isIgnored(method) || method.getAnnotation(DisabledTest.class) != null) {
-            return true;
-        }
-        Class<?> testSuiteClass = method.getDeclaringClass();
-        return testSuiteClass.getAnnotation(DisabledTest.class) != null;
+        return !BaseJvmTestRunner.shouldRun(method);
     }
 }

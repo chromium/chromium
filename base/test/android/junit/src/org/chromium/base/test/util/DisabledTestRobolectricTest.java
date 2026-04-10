@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.test.BaseJvmTestRunner;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for the DisabledTest annotation in Robolectric tests. */
@@ -18,6 +19,8 @@ public class DisabledTestRobolectricTest {
     @Test
     @DisabledTest(message = "This test should be disabled")
     public void testDisabledTestAreNotExecuted() {
-        Assert.fail("Tests marked with @DisabledTest annotation should not be executed!");
+        Assert.assertTrue(
+                "Tests marked with @DisabledTest annotation should not be executed!",
+                BaseJvmTestRunner.sRunDisabled);
     }
 }

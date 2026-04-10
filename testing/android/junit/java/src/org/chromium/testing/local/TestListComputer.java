@@ -7,6 +7,7 @@ package org.chromium.testing.local;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Ignore;
 import org.junit.runner.Computer;
 import org.junit.runner.Description;
 import org.junit.runner.Runner;
@@ -22,6 +23,8 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.internal.bytecode.SandboxConfig;
 
+import org.chromium.build.annotations.Nullable;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -36,6 +39,17 @@ import java.util.TreeSet;
 class TestListComputer extends Computer {
     private final List<Description> mDescriptions = new ArrayList<>();
     private final Allowlist mShadowsAllowlist;
+
+    private static final @Nullable Class<Annotation> CHROME_DISABLED_ANNOTATION = initAnnotation();
+
+    @SuppressWarnings("unchecked")
+    private static Class<Annotation> initAnnotation() {
+        try {
+            return (Class<Annotation>) Class.forName("org.chromium.base.test.util.DisabledTest");
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
+    }
 
     TestListComputer(Allowlist shadowsAllowlist) {
         mShadowsAllowlist = shadowsAllowlist;
@@ -98,15 +112,36 @@ class TestListComputer extends Computer {
         String msg =
                 """
 
-            Found non-allowlisted Robolectric shadow: %s (shadowing %s).
-            Please limit usage of shadows to non-application code by adding explicit test stubbing \
-            logic via set*ForTesting() methods.
+                Found non-allowlisted Robolectric shadow: %s (shadowing %s).
+                Please limit usage of shadows to non-application code by adding explicit test stubbing \
+                logic via set*ForTesting() methods.
 
-            See: https://chromium.googlesource.com/chromium/src/+/main/styleguide/java/java.md#testing
-            Used allowlist: %s
-            """
+                See: https://chromium.googlesource.com/chromium/src/+/main/styleguide/java/java.md#testing
+                Used allowlist: %s
+                """
                         .formatted(shadowClass, shadowingClass, mShadowsAllowlist.getFilename());
         throw new RuntimeException(msg);
+    }
+
+    private static boolean isDisabled(Description description) {
+        if (description.getAnnotation(Ignore.class) != null) {
+            return true;
+        }
+        if (CHROME_DISABLED_ANNOTATION != null
+                && description.getAnnotation(CHROME_DISABLED_ANNOTATION) != null) {
+            return true;
+        }
+        Class<?> testClass = description.getTestClass();
+        if (testClass != null) {
+            if (testClass.getAnnotation(Ignore.class) != null) {
+                return true;
+            }
+            if (CHROME_DISABLED_ANNOTATION != null
+                    && testClass.getAnnotation(CHROME_DISABLED_ANNOTATION) != null) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private class TestListRunner extends Runner implements Filterable {
@@ -187,9 +222,14 @@ class TestListComputer extends Computer {
 
         JSONObject configsObj = new JSONObject();
         root.put("configs", configsObj);
+        JSONObject disabledObj = new JSONObject();
+        root.put("disabled", disabledObj);
+
         for (Description d : mDescriptions) {
+            boolean isDisabled = isDisabled(d);
             String config = computeConfig(d, instrumentedPackages, instrumentedClasses);
-            JSONObject configObj = getOrNewObject(configsObj, config);
+            JSONObject targetConfigsObj = isDisabled ? disabledObj : configsObj;
+            JSONObject configObj = getOrNewObject(targetConfigsObj, config);
             JSONArray methodsArr = getOrNewArray(configObj, d.getClassName());
             methodsArr.put(d.getMethodName());
         }
