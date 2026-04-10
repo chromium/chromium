@@ -1372,4 +1372,12 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, OnTypedQuery) {
+  NotifyEmbedderMetadata();
+
+  EXPECT_CALL(*page_embeddings_service(), ProcessEmbeddingsOnDemand()).Times(1);
+
+  service()->OnTypedQuery();
+}
+
 }  // namespace contextual_tasks

@@ -804,6 +804,16 @@ void ContextualSearchboxHandler::OnDriveDisclaimerAccepted() {
                                    true);
 }
 
+void ContextualSearchboxHandler::QueryAutocomplete(
+    const std::u16string& input,
+    bool prevent_inline_autocomplete) {
+  if (contextual_tasks_context_service_) {
+    contextual_tasks_context_service_->OnTypedQuery();
+  }
+
+  SearchboxHandler::QueryAutocomplete(input, prevent_inline_autocomplete);
+}
+
 void ContextualSearchboxHandler::OnContextUploadStatusChanged(
     const base::UnguessableToken& context_token,
     lens::MimeType mime_type,
