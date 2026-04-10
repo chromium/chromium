@@ -158,7 +158,8 @@ const CGFloat kPromoMaxImpressionCount = 3;
   _FREWrapperViewController = [[GeminiFREWrapperViewController alloc]
          initWithPromo:showPromo
       isAccountManaged:[self isManagedAccount]
-               FREType:GeminiFREType::kNewUser];
+               FREType:GeminiFREType::kNewUser
+               country:nil];
   _FREWrapperViewController.sheetPresentationController.delegate = self;
   _FREWrapperViewController.mutator = _mediator;
 

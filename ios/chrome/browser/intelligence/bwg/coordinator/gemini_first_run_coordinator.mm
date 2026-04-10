@@ -4,9 +4,12 @@
 
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_first_run_coordinator.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
+#import "components/variations/service/variations_service.h"
+#import "components/variations/service/variations_service_utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_first_run_mediator.h"
@@ -17,6 +20,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_fre_wrapper_view_controller.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -112,10 +116,18 @@
 
   [self prepareAIHubIPH];
 
+  variations::VariationsService* variations_service =
+      GetApplicationContext()->GetVariationsService();
+  std::string country =
+      variations_service
+          ? base::ToLowerASCII(variations_service->GetStoredPermanentCountry())
+          : "";
+  NSString* nsCountry = base::SysUTF8ToNSString(country);
   _viewController = [[GeminiFREWrapperViewController alloc]
          initWithPromo:_mediator.shouldShowPromo
       isAccountManaged:[self isManagedAccount]
-               FREType:_FREType];
+               FREType:_FREType
+               country:nsCountry];
   _viewController.sheetPresentationController.delegate = self;
   _viewController.mutator = _mediator;
 

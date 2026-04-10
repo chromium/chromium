@@ -54,6 +54,8 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
   BOOL _isAccountManaged;
   // Type of Gemini FRE.
   GeminiFREType _FREType;
+  // The country of the FRE.
+  NSString* _country;
   // The main stack view containing the logos.
   UIStackView* _mainStackView;
   // Scroll view that contains the horizontal stack view for transitions.
@@ -72,12 +74,14 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
 
 - (instancetype)initWithPromo:(BOOL)showPromo
              isAccountManaged:(BOOL)isAccountManaged
-                      FREType:(GeminiFREType)FREType {
+                      FREType:(GeminiFREType)FREType
+                      country:(NSString*)country {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _showPromo = showPromo;
     _isAccountManaged = isAccountManaged;
     _FREType = FREType;
+    _country = country;
   }
   return self;
 }
@@ -320,7 +324,8 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
 
   _consentViewController = [[GeminiConsentViewController alloc]
       initWithIsAccountManaged:_isAccountManaged
-                       FREType:_FREType];
+                       FREType:_FREType
+                       country:_country];
   _consentViewController.mutator = self.mutator;
 }
 

@@ -22,7 +22,8 @@
 // `freType` specifies the type of Gemini FRE being shown.
 - (instancetype)initWithPromo:(BOOL)showPromo
              isAccountManaged:(BOOL)isAccountManaged
-                      FREType:(GeminiFREType)FREType NS_DESIGNATED_INITIALIZER;
+                      FREType:(GeminiFREType)FREType
+                      country:(NSString*)country NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithRootViewController:(UIViewController*)rootViewController
