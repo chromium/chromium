@@ -12,6 +12,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/common/chrome_features.h"
@@ -95,7 +96,7 @@ void GlicInvokeHandler::MaybeWaitForPanelOpen() {
   if (options_.wait_for_panel_open) {
     MaybeWaitForStableWidth();
   } else {
-    SendToClient();
+    MaybeWaitForFreCompletion();
   }
 }
 
@@ -117,7 +118,7 @@ void GlicInvokeHandler::PrimaryMainFrameWasResized(bool width_changed) {
 
 void GlicInvokeHandler::OnStabilized() {
   Observe(nullptr);
-  SendToClient();
+  MaybeWaitForFreCompletion();
 }
 
 bool GlicInvokeHandler::RequiresAutoSubmitIncompatibleFre() const {
@@ -139,6 +140,43 @@ bool GlicInvokeHandler::RequiresOverrideIncompatibleFre() const {
   }
   return !GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(
       instance_->profile());
+}
+
+bool GlicInvokeHandler::ShouldWaitForFreCompletion() const {
+  if (GlicEnabling::HasConsentedForProfile(instance_->profile())) {
+    return false;
+  }
+  if (options_.fre_override == mojom::FreOverride::kTrustFirstClick) {
+    return true;
+  }
+  if (options_.fre_override == mojom::FreOverride::kUnspecified) {
+    return GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(
+               instance_->profile()) &&
+           features::kGlicTrustFirstOnboardingArmParam.Get() == 2;
+  }
+  return false;
+}
+
+void GlicInvokeHandler::MaybeWaitForFreCompletion() {
+  if (ShouldWaitForFreCompletion()) {
+    if (!profile_ready_state_subscription_) {
+      profile_ready_state_subscription_ =
+          GlicKeyedService::Get(instance_->profile())
+              ->enabling()
+              .RegisterProfileReadyStateChanged(base::BindRepeating(
+                  &GlicInvokeHandler::OnProfileReadyStateChanged,
+                  weak_ptr_factory_.GetWeakPtr()));
+    }
+    return;
+  }
+  SendToClient();
+}
+
+void GlicInvokeHandler::OnProfileReadyStateChanged() {
+  if (GlicEnabling::HasConsentedForProfile(instance_->profile())) {
+    profile_ready_state_subscription_ = {};
+    SendToClient();
+  }
 }
 
 void GlicInvokeHandler::SendToClient() {

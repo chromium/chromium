@@ -1482,6 +1482,62 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   EXPECT_EQ(error_future.Get(), GlicInvokeError::kInvalidConfiguration);
 }
 
+class GlicInstanceCoordinatorArm2Test
+    : public GlicInstanceCoordinatorBrowserTest {
+ public:
+  GlicInstanceCoordinatorArm2Test() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicTrustFirstOnboarding,
+        {{features::kGlicTrustFirstOnboardingArmParam.name, "2"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorArm2Test,
+                       InvokeWaitsForFreCompletion_Arm2) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  SetFRECompletion(GetProfile(), prefs::FreStatus::kNotStarted);
+
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
+  options.on_success = success_future.GetCallback();
+
+  coordinator().Invoke(tab, std::move(options));
+
+  // The success callback should NOT be called yet because FRE is not completed.
+  EXPECT_FALSE(success_future.IsReady());
+
+  // Complete FRE.
+  SetFRECompletion(GetProfile(), prefs::FreStatus::kCompleted);
+
+  // Now the success callback should be called.
+  EXPECT_TRUE(success_future.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       InvokeWaitsForFreCompletion_Override) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  SetFRECompletion(GetProfile(), prefs::FreStatus::kNotStarted);
+
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
+  options.fre_override = mojom::FreOverride::kTrustFirstClick;
+  options.on_success = success_future.GetCallback();
+
+  coordinator().Invoke(tab, std::move(options));
+
+  // The success callback should NOT be called yet because FRE is not completed.
+  EXPECT_FALSE(success_future.IsReady());
+
+  // Complete FRE.
+  SetFRECompletion(GetProfile(), prefs::FreStatus::kCompleted);
+
+  // Now the success callback should be called.
+  EXPECT_TRUE(success_future.Wait());
+}
+
 class GlicInstanceCoordinatorDefaultToLastActiveBrowserTest
     : public GlicInstanceCoordinatorBrowserTest {
  public:

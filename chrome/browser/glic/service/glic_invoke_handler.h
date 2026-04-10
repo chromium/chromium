@@ -66,6 +66,9 @@ class GlicInvokeHandler : public Host::Observer,
   void OnStabilized();
 
   void SendToClient();
+  bool ShouldWaitForFreCompletion() const;
+  void MaybeWaitForFreCompletion();
+  void OnProfileReadyStateChanged();
   mojom::InvokeOptionsPtr CreateMojoOptions();
   bool RequiresAutoSubmitIncompatibleFre() const;
   bool RequiresOverrideIncompatibleFre() const;
@@ -85,6 +88,7 @@ class GlicInvokeHandler : public Host::Observer,
   base::OneShotTimer timeout_timer_;
 
   base::OneShotTimer stabilization_timer_;
+  base::CallbackListSubscription profile_ready_state_subscription_;
 
   base::WeakPtrFactory<GlicInvokeHandler> weak_ptr_factory_{this};
 };
