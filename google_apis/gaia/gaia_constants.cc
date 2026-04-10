@@ -40,9 +40,6 @@ const char kContactsOAuth2Scope[] = "https://www.googleapis.com/auth/contacts";
 const char kFCMOAuthScope[] =
     "https://www.googleapis.com/auth/firebase.messaging";
 
-// OAuth2 scope for access to Tachyon api.
-const char kTachyonOAuthScope[] = "https://www.googleapis.com/auth/tachyon";
-
 // OAuth2 scope for access to the SecureConnect API.
 extern const char kSecureConnectOAuth2Scope[] =
     "https://www.googleapis.com/auth/bce.secureconnect";

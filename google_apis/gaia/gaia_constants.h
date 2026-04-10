@@ -30,7 +30,6 @@ COMPONENT_EXPORT(GOOGLE_APIS) extern const char kGoogleUserInfoProfile[];
 COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kContactsOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kFCMOAuthScope[];
-COMPONENT_EXPORT(GOOGLE_APIS) extern const char kTachyonOAuthScope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kDriveOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kDriveReadOnlyOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS)

@@ -173,6 +173,8 @@ constexpr char kSchoolToolsAuthScope[] =
     "https://www.googleapis.com/auth/chromeosschooltools";
 constexpr char kSearchResultsOAuth2Scope[] =
     "https://www.googleapis.com/auth/searchresults";
+// OAuth2 scope for access to Tachyon api.
+constexpr char kTachyonOAuthScope[] = "https://www.googleapis.com/auth/tachyon";
 // OAuth 2 scopes for Google Tasks API.
 // https://developers.google.com/identity/protocols/oauth2/scopes#tasks
 constexpr char kTasksOAuth2Scope[] = "https://www.googleapis.com/auth/tasks";
@@ -360,7 +362,7 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
     case OAuthConsumerId::kNearbySharing:
       return OAuthConsumer(
           /*name=*/kNearbySharingName,
-          /*scopes=*/{GaiaConstants::kTachyonOAuthScope});
+          /*scopes=*/{kTachyonOAuthScope});
     case OAuthConsumerId::kProjectorTokenFetcher:
       return OAuthConsumer(
           /*name=*/kProjectorTokenFetcherName,
@@ -630,7 +632,7 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
     case OAuthConsumerId::kChromeOsBabelOrca:
       return OAuthConsumer(
           /*name=*/kChromeOsBabelOrcaName,
-          /*scopes=*/{GaiaConstants::kTachyonOAuthScope});
+          /*scopes=*/{kTachyonOAuthScope});
     case signin::OAuthConsumerId::kChromeOsBocaSchoolToolsAuth:
       return OAuthConsumer(
           /*name=*/kChromeOsBocaSchoolToolsAuthName,
