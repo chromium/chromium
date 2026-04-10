@@ -13,7 +13,7 @@ declare_args() {
   if (use_blink) {
     ios_deployment_target = "26.0"
   } else {
-    ios_deployment_target = "17.0"
+    ios_deployment_target = "18.0"
   }
 }
 
