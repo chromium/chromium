@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/signin/two_screens_signin/two_screens_signin_coordinator.h"
+#import "ios/chrome/browser/authentication/two_screens_signin/coordinator/two_screens_signin_coordinator.h"
 
 #import <UIKit/UIKit.h>
 

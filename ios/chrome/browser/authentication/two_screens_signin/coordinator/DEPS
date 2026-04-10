@@ -1,0 +1,9 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/first_run/public/first_run_screen_delegate.h",
+  "+ios/chrome/browser/first_run/public/first_run_util.h",
+  "+ios/chrome/browser/screen/ui_bundled/screen_provider.h",
+  "+ios/chrome/browser/screen/ui_bundled/screen_type.h",
+  "+ios/chrome/browser/signin/model",
+  # keep-sorted end
+]
