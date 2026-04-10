@@ -950,9 +950,19 @@ void OneTimeMessageHandler::OnOneTimeMessageResponse(
 
   ScriptContext* script_context = GetScriptContextFromV8Context(context);
 
-  // With the message port closing callbacks aren't allowed to be called after
-  // this point so try to proactively clean them up.
-  CHECK(script_context->is_valid());
+  // `script_context` can be null or invalid if the V8 context outlives it. A
+  // suspected example is when a service worker as a message receiver *begins*
+  // shutting down. In this case `script_context` is unregistered (from
+  // `WorkerThreadDispatcher`) causing `GetScriptContextFromV8Context()` to no
+  // longer find it. But V8 may still execute pending microtasks (like this
+  // response callback) before the thread fully terminates so we get here. In
+  // this case, we cannot proceed with sending the response, but we should still
+  // clean up the callback data since `script_context` is now gone.
+  if (!script_context || !script_context->is_valid()) {
+    data->pending_receiver_callbacks.erase(port_id);
+    return;
+  }
+
   callback_manager_->ClearCallbackDataForPortId(script_context, port_id);
 
   std::string message_creation_error;
@@ -1133,7 +1143,6 @@ void OneTimeMessageHandler::OnPromiseRejectedResponse(
   v8::Isolate* isolate = arguments->isolate();
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   ScriptContext* script_context = GetScriptContextFromV8Context(context);
-  CHECK(IsMessagePolyfillSupportEnabled(script_context));
 
   // The promise may reject after the context or the channel has been closed.
   // Fail gracefully.
@@ -1160,9 +1169,19 @@ void OneTimeMessageHandler::OnPromiseRejectedResponse(
   CHECK(arguments->Length() > 0);
   CHECK(arguments->GetNext(&promise_reject_value));
 
-  // With the message port closing callbacks aren't allowed to be called after
-  // this point so try to proactively clean them up.
-  CHECK(script_context->is_valid());
+  // `script_context` can be null or invalid if the V8 context outlives it. A
+  // suspected example is when a service worker as a message receiver *begins*
+  // shutting down. In this case `script_context` is unregistered (from
+  // `WorkerThreadDispatcher`) causing `GetScriptContextFromV8Context()` to no
+  // longer find it. But V8 may still execute pending microtasks (like this
+  // response callback) before the thread fully terminates so we get here.
+  if (!script_context || !script_context->is_valid()) {
+    data->pending_receiver_callbacks.erase(port_id);
+    return;
+  }
+
+  CHECK(IsMessagePolyfillSupportEnabled(script_context));
+
   callback_manager_->ClearCallbackDataForPortId(script_context, port_id);
 
   // If promise rejection reason is a JS Error type then close the message port
