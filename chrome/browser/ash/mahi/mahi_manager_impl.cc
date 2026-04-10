@@ -40,7 +40,7 @@
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
@@ -610,8 +610,9 @@ void MahiManagerImpl::OpenFeedbackDialog() {
   ai_metadata.Set(feedback::kMahiMetadataKey, "true");
 
   chrome::ShowFeedbackPage(
-      /*browser=*/chrome::FindBrowserWithProfile(
-          ProfileManager::GetActiveUserProfile()),
+      /*browser=*/ProfileBrowserCollection::GetForProfile(
+          ProfileManager::GetActiveUserProfile())
+          ->GetLastActiveBrowser(),
       /*source=*/feedback::kFeedbackSourceAI, description_template,
       /*description_placeholder_text=*/
       base::UTF16ToUTF8(

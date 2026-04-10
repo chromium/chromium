@@ -9,12 +9,12 @@
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
 #include "content/public/browser/browser_thread.h"
+#include "ui/base/base_window.h"
 
 ProfileLaunchObserver::ProfileLaunchObserver() {
   browser_collection_observation_.Observe(
@@ -82,7 +82,8 @@ void ProfileLaunchObserver::AddLaunchedInternal(Profile* profile) {
     observed_profiles_.AddObservation(profile);
   }
   launched_profiles_.insert(profile);
-  if (chrome::FindBrowserWithProfile(profile)) {
+  if (ProfileBrowserCollection::GetForProfile(profile)
+          ->GetLastActiveBrowser()) {
     // A browser may get opened before we get initialized (e.g., in tests),
     // so we never see the OnBrowserAdded() for it.
     opened_profiles_.insert(profile);
@@ -118,7 +119,8 @@ void ProfileLaunchObserver::MaybeActivateProfile() {
     if (opened_profiles_.find(*i) == opened_profiles_.end()) {
       return;
     }
-    BrowserWindowInterface* browser = chrome::FindBrowserWithProfile(*i);
+    BrowserWindowInterface* browser =
+        ProfileBrowserCollection::GetForProfile(*i)->GetLastActiveBrowser();
     // Defer the profile activation if the initial WebUI is pending.
     if (browser && InitialWebUIManager::From(browser) &&
         InitialWebUIManager::From(browser)->RequestDeferShow(
@@ -141,7 +143,8 @@ void ProfileLaunchObserver::ActivateProfile() {
   // We need to test again, in case the profile got deleted in the mean time.
   if (profile_to_activate_) {
     BrowserWindowInterface* browser =
-        chrome::FindBrowserWithProfile(profile_to_activate_);
+        ProfileBrowserCollection::GetForProfile(profile_to_activate_)
+            ->GetLastActiveBrowser();
     // |profile| may never get launched, e.g., if it only had
     // incognito Windows and one of them was used to exit Chrome.
     // So it won't have a browser in that case.

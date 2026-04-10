@@ -22,10 +22,9 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/customize_chrome/side_panel_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -282,7 +281,8 @@ void BrowserCommandHandler::OnTutorialStarted(
 }
 
 void BrowserCommandHandler::StartTutorial(StartTutorialInPage::Params params) {
-  BrowserWindowInterface* browser = chrome::FindBrowserWithProfile(profile_);
+  BrowserWindowInterface* browser =
+      ProfileBrowserCollection::GetForProfile(profile_)->GetLastActiveBrowser();
   StartTutorialInPage::Start(browser->GetBrowserForMigrationOnly(),
                              std::move(params));
 }
@@ -294,7 +294,8 @@ bool BrowserCommandHandler::TutorialServiceExists() {
 }
 
 bool BrowserCommandHandler::BrowserSupportsTabGroups() {
-  BrowserWindowInterface* browser = chrome::FindBrowserWithProfile(profile_);
+  BrowserWindowInterface* browser =
+      ProfileBrowserCollection::GetForProfile(profile_)->GetLastActiveBrowser();
   return browser->GetTabStripModel()->SupportsTabGroups();
 }
 
@@ -312,17 +313,19 @@ void BrowserCommandHandler::StartTabGroupTutorial() {
 
 void BrowserCommandHandler::NavigateToEnhancedProtectionSetting() {
   chrome::ShowSafeBrowsingEnhancedProtectionWithIph(
-      chrome::FindBrowserWithProfile(profile_),
+      ProfileBrowserCollection::GetForProfile(profile_)->GetLastActiveBrowser(),
       safe_browsing::SafeBrowsingSettingReferralMethod::kPromoSlingerReferral);
 }
 
 void BrowserCommandHandler::OpenPasswordManager() {
-  chrome::ShowPasswordManager(chrome::FindBrowserWithProfile(profile_));
+  chrome::ShowPasswordManager(ProfileBrowserCollection::GetForProfile(profile_)
+                                  ->GetLastActiveBrowser());
 }
 
 void BrowserCommandHandler::OpenAISettings() {
-  chrome::ShowSettingsSubPage(chrome::FindBrowserWithProfile(profile_),
-                              chrome::kExperimentalAISettingsSubPage);
+  chrome::ShowSettingsSubPage(
+      ProfileBrowserCollection::GetForProfile(profile_)->GetLastActiveBrowser(),
+      chrome::kExperimentalAISettingsSubPage);
 }
 
 bool BrowserCommandHandler::DefaultSearchProviderIsGoogle() {
@@ -330,7 +333,8 @@ bool BrowserCommandHandler::DefaultSearchProviderIsGoogle() {
 }
 
 bool BrowserCommandHandler::BrowserSupportsSavedTabGroups() {
-  BrowserWindowInterface* browser = chrome::FindBrowserWithProfile(profile_);
+  BrowserWindowInterface* browser =
+      ProfileBrowserCollection::GetForProfile(profile_)->GetLastActiveBrowser();
 
   // Duplicated from chrome/browser/ui/views/bookmarks/bookmark_bar_view.cc
   // Which cannot be included here

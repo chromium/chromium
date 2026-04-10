@@ -20,7 +20,7 @@ include_rules = [
   "+chrome/browser/manta",
   "+chrome/browser/policy/profile_policy_connector.h",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/browser_finder.h",
+  "+chrome/browser/ui/browser_window/public/profile_browser_collection.h",
   "+chrome/test/base",
 ]
 

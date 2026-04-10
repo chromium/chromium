@@ -53,8 +53,8 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
@@ -1478,7 +1478,8 @@ void DiceWebSigninInterceptor::OnNewBrowserCreated(bool is_new_profile) {
     return;
   }
 
-  BrowserWindowInterface* browser = chrome::FindBrowserWithProfile(profile_);
+  BrowserWindowInterface* browser =
+      ProfileBrowserCollection::GetForProfile(profile_)->GetLastActiveBrowser();
   DCHECK(browser);
   delegate_->ShowFirstRunExperienceInNewProfile(
       browser->GetBrowserForMigrationOnly(), state_->account_id_,

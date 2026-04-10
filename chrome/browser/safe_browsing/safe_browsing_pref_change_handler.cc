@@ -20,8 +20,9 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_MAC)
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -113,7 +114,10 @@ void SafeBrowsingPrefChangeHandler::
   if (safe_browsing::IsSafeBrowsingPolicyManaged(*profile_->GetPrefs())) {
     return;
   }
-  Browser* const browser = chrome::FindBrowserWithProfile(profile_);
+  ProfileBrowserCollection* const collection =
+      ProfileBrowserCollection::GetForProfile(profile_);
+  BrowserWindowInterface* const browser =
+      collection ? collection->GetLastActiveBrowser() : nullptr;
   if (!browser) {
     return;
   }
@@ -124,7 +128,7 @@ void SafeBrowsingPrefChangeHandler::
   ToastController* const controller =
       toast_controller_for_testing_
           ? static_cast<ToastController*>(toast_controller_for_testing_)
-          : browser->browser_window_features()->toast_controller();
+          : browser->GetFeatures().toast_controller();
   if (!controller) {
     return;
   }

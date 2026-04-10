@@ -58,6 +58,7 @@ include_rules = [
   "+chrome/browser/ui/browser_navigator_params.h",
   "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
+  "+chrome/browser/ui/browser_window/public/profile_browser_collection.h",
   "+chrome/browser/ui/chrome_pages.h",
   "+chrome/browser/ui/web_applications",
   "+chrome/browser/ui/webui/ash/settings/app_management",

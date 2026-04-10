@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_service.h"
@@ -67,7 +68,8 @@ DiceTabHelper::GetEnableSyncCallbackForBrowser() {
     DCHECK(profile);
     BrowserWindowInterface* browser =
         web_contents ? chrome::FindBrowserWithTab(web_contents)
-                     : chrome::FindBrowserWithProfile(profile);
+                     : ProfileBrowserCollection::GetForProfile(profile)
+                           ->GetLastActiveBrowser();
     if (!browser) {
       return;
     }
@@ -101,7 +103,8 @@ DiceTabHelper::GetHistorySyncOptinCallbackForBrowser() {
 
     BrowserWindowInterface* browser =
         web_contents ? chrome::FindBrowserWithTab(web_contents)
-                     : chrome::FindBrowserWithProfile(profile);
+                     : ProfileBrowserCollection::GetForProfile(profile)
+                           ->GetLastActiveBrowser();
     if (!browser) {
       return;
     }
@@ -139,7 +142,8 @@ DiceTabHelper::GetShowSigninErrorCallbackForBrowser() {
     }
     BrowserWindowInterface* browser =
         web_contents ? chrome::FindBrowserWithTab(web_contents)
-                     : chrome::FindBrowserWithProfile(profile);
+                     : ProfileBrowserCollection::GetForProfile(profile)
+                           ->GetLastActiveBrowser();
     if (!browser) {
       return;
     }

@@ -78,6 +78,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/cocoa/apps/quit_with_apps_controller_mac.h"
 #import "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_bridge.h"
@@ -1366,7 +1367,8 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
         // Create a new browser window (if necessary) and navigate to the
         // downloads page if the user chooses to wait.
         BrowserWindowInterface* browser =
-            chrome::FindBrowserWithProfile(profile);
+            ProfileBrowserCollection::GetForProfile(profile)
+                ->GetLastActiveBrowser();
         if (!browser) {
           browser = Browser::Create(Browser::CreateParams(profile, true));
           browser->GetWindow()->Show();

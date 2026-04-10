@@ -11,9 +11,9 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -130,7 +130,9 @@ bool DiceMigrationService::ForceMigrateUserIfEligible() {
 
   // Trigger the timer to show the toast.
   auto show_toast = [](Profile* profile) {
-    BrowserWindowInterface* browser = chrome::FindBrowserWithProfile(profile);
+    BrowserWindowInterface* browser =
+        ProfileBrowserCollection::GetForProfile(profile)
+            ->GetLastActiveBrowser();
     base::UmaHistogramBoolean(
         kForcedSigninBrowserInstanceAvailableAfterTimerHistogram, browser);
     if (browser) {

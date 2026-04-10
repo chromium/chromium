@@ -70,6 +70,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -2416,7 +2417,9 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreAllBrowsers) {
   removed_observer.Wait();
 
   // The second profile should have no browsers anymore at this point.
-  ASSERT_EQ(chrome::FindBrowserWithProfile(second_profile), nullptr);
+  ASSERT_EQ(ProfileBrowserCollection::GetForProfile(second_profile)
+                ->GetLastActiveBrowser(),
+            nullptr);
   ASSERT_EQ(chrome::GetTotalBrowserCount(), 2u);
 
   // Clean up now stale pointers.
