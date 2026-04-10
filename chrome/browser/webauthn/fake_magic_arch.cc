@@ -16,11 +16,11 @@
 #include "components/trusted_vault/proto/recovery_key_store.pb.h"
 #include "components/trusted_vault/proto/vault.pb.h"
 #include "components/trusted_vault/securebox.h"
+#include "crypto/hash.h"
 #include "crypto/hmac.h"
 #include "third_party/boringssl/src/include/openssl/aead.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/hmac.h"
-#include "third_party/boringssl/src/include/openssl/sha.h"
 
 namespace {
 
@@ -55,15 +55,14 @@ std::array<uint8_t, 32> HashPIN(std::string_view pin,
   return hashed;
 }
 
-std::array<uint8_t, SHA256_DIGEST_LENGTH> SHA256Spans(
+std::array<uint8_t, crypto::hash::kSha256Size> SHA256Spans(
     base::span<const uint8_t> a,
     base::span<const uint8_t> b) {
-  SHA256_CTX ctx;
-  SHA256_Init(&ctx);
-  SHA256_Update(&ctx, a.data(), a.size());
-  SHA256_Update(&ctx, b.data(), b.size());
-  std::array<uint8_t, SHA256_DIGEST_LENGTH> ret;
-  SHA256_Final(ret.data(), &ctx);
+  crypto::hash::Hasher hasher(crypto::hash::kSha256);
+  hasher.Update(a);
+  hasher.Update(b);
+  std::array<uint8_t, crypto::hash::kSha256Size> ret;
+  hasher.Finish(ret);
   return ret;
 }
 
@@ -117,7 +116,7 @@ std::optional<std::vector<uint8_t>> FakeMagicArch::RecoverWithPIN(
     return std::nullopt;
   }
 
-  const std::array<uint8_t, SHA256_DIGEST_LENGTH> pin_hash =
+  const std::array<uint8_t, crypto::hash::kSha256Size> pin_hash =
       HashPIN(pin, *vault_it);
   const auto thm_kf_hash =
       SHA256Spans(base::byte_span_from_cstring("THM_KF_hash"), pin_hash);
