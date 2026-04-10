@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.toolbar.incognito;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -178,7 +177,6 @@ public class IncognitoIndicatorCoordinatorUnitTest {
                 mCoordinator.updateVisibility(500));
         assertNotNull("Indicator should be inflated.", mCoordinator.getIncognitoIndicatorView());
         verify(mIncognitoIndicatorView).setVisibility(View.VISIBLE);
-        assertTrue(mCoordinator.needsUpdateBeforeShowing());
         clearInvocations(mIncognitoIndicatorView);
 
         assertEquals(
@@ -186,12 +184,10 @@ public class IncognitoIndicatorCoordinatorUnitTest {
                 120,
                 mCoordinator.updateVisibility(500));
         verify(mIncognitoIndicatorView).setVisibility(View.VISIBLE);
-        assertTrue(mCoordinator.needsUpdateBeforeShowing());
         clearInvocations(mIncognitoIndicatorView);
 
         // Update the indicator's width measured width.
         doReturn(100).when(mIncognitoIndicatorView).getMeasuredWidth();
-        assertTrue(mCoordinator.needsUpdateBeforeShowing());
 
         assertEquals(
                 "The coordinator should now consume the previously measured width of the"
@@ -199,7 +195,6 @@ public class IncognitoIndicatorCoordinatorUnitTest {
                 100,
                 mCoordinator.updateVisibility(500));
         verify(mIncognitoIndicatorView).setVisibility(View.VISIBLE);
-        assertFalse(mCoordinator.needsUpdateBeforeShowing());
         clearInvocations(mIncognitoIndicatorView);
 
         // Hide the indicator when there isn't enough available width.
@@ -208,7 +203,6 @@ public class IncognitoIndicatorCoordinatorUnitTest {
                 50,
                 mCoordinator.updateVisibility(50));
         verify(mIncognitoIndicatorView).setVisibility(View.GONE);
-        assertFalse(mCoordinator.needsUpdateBeforeShowing());
         clearInvocations(mIncognitoIndicatorView);
     }
 

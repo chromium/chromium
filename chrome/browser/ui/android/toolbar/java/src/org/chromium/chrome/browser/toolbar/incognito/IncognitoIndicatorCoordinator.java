@@ -130,7 +130,7 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
 
     @Override
     public int updateVisibility(int availableWidth) {
-        return updateVisibilityInternal(
+        return updateVisibility(
                 availableWidth,
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
@@ -138,11 +138,6 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
 
     @Override
     public int updateVisibility(int availableWidth, int widthMeasureSpec, int heightMeasureSpec) {
-        return updateVisibilityInternal(availableWidth, widthMeasureSpec, heightMeasureSpec);
-    }
-
-    private int updateVisibilityInternal(
-            int availableWidth, int widthMeasureSpec, int heightMeasureSpec) {
         assert ToolbarUtils.isToolbarTabletResizeRefactorEnabled();
         // Hide and consume no width if the desktop-like incognito window feature is not enabled,
         // or if the device is not in incognito mode. Do not cache the width of the indicator.
@@ -186,15 +181,10 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
         return Math.min(availableWidth, mCachedWidth);
     }
 
-    /**
-     * Returns whether the incognito indicator has a current measured width that is different from
-     * its allocated width, and therefore needs another allocation update before being shown.
-     */
-    public boolean needsUpdateBeforeShowing() {
-        if (!mVisible || Boolean.FALSE.equals(mIsIncognitoBranded) || mIncognitoIndicator == null) {
-            return false;
-        }
-        return mCachedWidth != mIncognitoIndicator.getMeasuredWidth();
+    @Override
+    public int updateVisibilityWithAnimation(
+            int availableWidth, java.util.Collection<android.animation.Animator> animators) {
+        return updateVisibility(availableWidth);
     }
 
     public @Nullable View getIncognitoIndicatorView() {

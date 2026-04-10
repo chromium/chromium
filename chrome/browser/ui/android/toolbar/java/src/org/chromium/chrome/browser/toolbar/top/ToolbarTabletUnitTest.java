@@ -291,7 +291,6 @@ public final class ToolbarTabletUnitTest {
         doReturn(buttonWidth * 3)
                 .when(mIncognitoIndicatorCoordinator)
                 .updateVisibility(anyInt(), anyInt(), anyInt());
-        doReturn(false).when(mIncognitoIndicatorCoordinator).needsUpdateBeforeShowing();
 
         mockToolbarWidthConsumer(mLocationBarBookmarkButtonWidthConsumer, buttonWidth);
         mockToolbarWidthConsumer(mLocationBarInstallButtonWidthConsumer, buttonWidth);

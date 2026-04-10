@@ -515,17 +515,6 @@ public class ToolbarTablet extends ToolbarLayout {
                     width >= DeviceFormFactor.getNonMultiDisplayMinimumTabletWidthPx(getContext()));
         }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-        // Trigger a second update if the incognito indicator was measured at a different width than
-        // originally expected, requiring another pass at allocating toolbar width.
-        // TODO(crbug.com/444068280): Revisit this approach to re-allocating width for variable
-        //  width components.
-        if (isToolbarTabletResizeRefactorEnabled()
-                && mIncognitoIndicatorCoordinator.needsUpdateBeforeShowing()) {
-            allocateAvailableToolbarWidth(
-                    mToolbarWidthConsumers, width, widthMeasureSpec, heightMeasureSpec);
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        }
     }
 
     @Override
