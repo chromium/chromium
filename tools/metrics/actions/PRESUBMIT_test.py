@@ -42,7 +42,8 @@ class PresubmitTest(unittest.TestCase):
     mock_output_api.PresubmitError.return_value = mock_error
 
     mock_file = MagicMock()
-    mock_file.LocalPath.return_value = 'tools/metrics/actions/actions.xml'
+    mock_file.LocalPath.return_value = os.path.join('tools', 'metrics',
+                                                    'actions', 'actions.xml')
     mock_input_api.AffectedFiles.return_value = [mock_file]
 
     # Mock the imported module

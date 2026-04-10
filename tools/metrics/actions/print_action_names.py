@@ -34,16 +34,29 @@ def _get_actions_xml_path():
   return os.path.join(os.path.dirname(__file__), 'actions.xml')
 
 
-def get_action_diff(revision):
-  """Returns the added / removed action names relative to git revision
+def get_action_diff(prev_content, current_content):
+  """Returns the added / removed action names relative to old version of file.
 
   Args:
-    revision: A git revision as described in
-      https://git-scm.com/docs/gitrevisions
+    prev_content: A string containing actions.xml definitions for the previous
+      revision.
+    current_content: A string containing actions.xml definitions for the
+      current revision.
   Returns:
     A tuple of (added names, removed names), where each entry is sorted in
     ascending order.
   """
+
+  current_action_names = get_names(current_content)
+  prev_action_names = get_names(prev_content)
+
+  added_names = sorted(list(current_action_names - prev_action_names))
+  removed_names = sorted(list(prev_action_names - current_action_names))
+  return (added_names, removed_names)
+
+
+def _print_diff_names(revision):
+  """Prints the added / removed action names relative to provided revision."""
   actions_xml_path = _get_actions_xml_path()
   actions_xml_path_relative = os.path.join('tools', 'metrics', 'actions',
                                            'actions.xml')
@@ -59,16 +72,7 @@ def get_action_diff(revision):
   with open(actions_xml_path, 'r', encoding='utf-8') as f:
     current_content = f.read()
 
-  current_action_names = get_names(current_content)
-  prev_action_names = get_names(prev_content)
-
-  added_names = sorted(list(current_action_names - prev_action_names))
-  removed_names = sorted(list(prev_action_names - current_action_names))
-  return (added_names, removed_names)
-
-
-def _print_diff_names(revision):
-  added_names, removed_names = get_action_diff(revision)
+  added_names, removed_names = get_action_diff(prev_content, current_content)
   print("%d actions added:" % len(added_names))
   for name in added_names:
     print(name)
