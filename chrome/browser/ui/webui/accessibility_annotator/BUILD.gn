@@ -22,10 +22,13 @@ source_set("accessibility_annotator") {
     "//chrome/app:generated_resources",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/accessibility_annotator_info:resources",
+    "//chrome/browser/signin",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/signin:signin_utils",
     "//chrome/browser/ui/webui/top_chrome",
     "//components/accessibility_annotator/core",
+    "//components/signin/public/identity_manager",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//ui/webui",
@@ -38,9 +41,9 @@ source_set("unit_tests") {
   deps = [
     ":accessibility_annotator",
     "//base/test:test_support",
-    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:test_support",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//components/accessibility_annotator/core",
@@ -50,4 +53,3 @@ source_set("unit_tests") {
     "//url",
   ]
 }
-
