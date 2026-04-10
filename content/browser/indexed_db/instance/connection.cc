@@ -605,7 +605,7 @@ void Connection::CreateIndex(int64_t transaction_id,
                  Transaction& transaction) {
                 const std::map<int64_t, blink::IndexedDBObjectStoreMetadata>&
                     object_stores = transaction.connection()
-                                        ->database()
+                                        .database()
                                         ->metadata()
                                         .object_stores;
                 auto obj_store_iter = object_stores.find(object_store_id);

@@ -170,7 +170,7 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   }
   int64_t id() const { return id_; }
 
-  Connection* connection() const { return connection_.get(); }
+  Connection& connection() const { return connection_.get(); }
   bool is_commit_pending() const { return is_commit_pending_; }
   int64_t num_errors_sent() const { return num_errors_sent_; }
   int64_t num_errors_handled() const { return num_errors_handled_; }
@@ -294,9 +294,9 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   // for transaction commit (phase one + phase two).
   base::TimeDelta commit_synchronous_duration_;
 
-  // We are owned by the connection object, but during force closes sometimes
-  // there are issues if there is a pending OpenRequest. So use a WeakPtr.
-  base::WeakPtr<Connection> connection_;
+  // Owns `this`.
+  raw_ref<Connection> connection_;
+
   base::WeakPtr<Database> database_;
 
   raw_ptr<BucketContext> bucket_context_;

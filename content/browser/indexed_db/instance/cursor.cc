@@ -392,7 +392,7 @@ void Cursor::PrefetchReset(int used_prefetches) {
     // transaction task queue. Resetting `cursor_` is not necessary because
     // `this` will be destroyed.
     transaction_->bucket_context().OnDatabaseError(
-        transaction_->connection()->database().get(), status, {});
+        transaction_->connection().database().get(), status, {});
   };
 
   // First prefetched result is always used.

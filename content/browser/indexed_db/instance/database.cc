@@ -272,7 +272,7 @@ void Database::RequireBlockingTransactionClientsToBeActive(
 
   for (Connection* connection : connections_) {
     if (connection->client_token() ==
-        current_transaction->connection()->client_token()) {
+        current_transaction->connection().client_token()) {
       continue;
     }
 
@@ -614,7 +614,7 @@ Database::GetAllResultSinkWrapper::~GetAllResultSinkWrapper() {
     // See crbug.com/346955148.
     // TODO(crbug.com/347047640): remove this workaround when 347047640 is
     // fixed.
-    if (!transaction_->connection()->is_shutting_down()) {
+    if (!transaction_->connection().is_shutting_down()) {
       SendError(blink::mojom::IDBError::New(
           blink::mojom::IDBException::kIgnorableAbortError,
           u"Backend aborted error"));
