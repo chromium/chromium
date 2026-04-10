@@ -1304,21 +1304,6 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    public void testSetAndGetNtpCustomizationBottomSheetShownFromSharedPreference() {
-        assertFalse(
-                NtpCustomizationUtils.getNtpCustomizationBottomSheetShownFromSharedPreference());
-
-        NtpCustomizationUtils.setNtpCustomizationBottomSheetShownToSharedPreferences(
-                /* hasShown= */ true);
-        assertTrue(NtpCustomizationUtils.getNtpCustomizationBottomSheetShownFromSharedPreference());
-
-        NtpCustomizationUtils.setNtpCustomizationBottomSheetShownToSharedPreferences(
-                /* hasShown= */ false);
-        assertFalse(
-                NtpCustomizationUtils.getNtpCustomizationBottomSheetShownFromSharedPreference());
-    }
-
-    @Test
     public void testGetSearchBoxHeight() {
         // Mock dimension values.
         int searchBoxHeightTall =

@@ -90,8 +90,6 @@ public class NtpCustomizationCoordinatorUnitTest {
                         .inflate(
                                 R.layout.ntp_customization_ntp_cards_bottom_sheet,
                                 /* root= */ null);
-        NtpCustomizationUtils.setNtpCustomizationBottomSheetShownToSharedPreferences(
-                /* hasShown= */ false);
 
         mProfileSupplier.set(mMockProfile);
         when(mMockProfile.getOriginalProfile()).thenReturn(mMockProfile);
@@ -117,7 +115,6 @@ public class NtpCustomizationCoordinatorUnitTest {
     public void testShowBottomSheet() {
         mNtpCustomizationCoordinator.showBottomSheet();
         verify(mMediator).showBottomSheet(eq(MAIN));
-        assertTrue(NtpCustomizationUtils.getNtpCustomizationBottomSheetShownFromSharedPreference());
     }
 
     @Test
