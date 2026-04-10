@@ -793,6 +793,8 @@ void VerticalTabStripRegionView::OnResize(int resize_amount,
   }
 
   if (done_resizing) {
+    resize_area_->SetVisible(!state_controller_->IsCollapsed() ||
+                             !state_controller_->IsExpandOnHoverEnabled());
     base::RecordAction(base::UserMetricsAction(
         new_state.collapsed ? "VerticalTabs_TabStrip_ResizeToCollapsed"
                             : "VerticalTabs_TabStrip_ResizeToUncollapsed"));
@@ -928,6 +930,10 @@ void VerticalTabStripRegionView::OnCollapseStateChanged(
   // the collapsing state.
   bool collapsed = state != tabs::VerticalTabStripCollapseState::kExpanded;
 
+  resize_area_->SetVisible(!collapsed ||
+                           !state_controller_->IsExpandOnHoverEnabled() ||
+                           resize_area_->is_resizing());
+
   // Immediately apply the padding at the start of the collapsing animation.
   const int padding = GetLayoutConstant(
       collapsed ? LayoutConstant::kVerticalTabStripCollapsedHorizontalPadding
@@ -1018,6 +1024,8 @@ void VerticalTabStripRegionView::OnChildMoved() {
 }
 
 void VerticalTabStripRegionView::OnExpandOnHoverEnabledChanged(bool enabled) {
+  resize_area_->SetVisible(!state_controller_->IsCollapsed() || !enabled ||
+                           resize_area_->is_resizing());
   UpdateExpandOnHoverState();
 }
 
@@ -1032,7 +1040,6 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState(
     }
     hover_card_animation_lock_.reset();
     is_expanded_on_hover_ = false;
-    resize_area_->SetVisible(true);
     return;
   }
   // If expand on hover is locked (e.g. omnibox popup is open), then we
@@ -1066,7 +1073,6 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState(
       }
       hover_card_animation_lock_.reset();
       is_expanded_on_hover_ = false;
-      resize_area_->SetVisible(true);
     }
   }
 
@@ -1099,8 +1105,6 @@ void VerticalTabStripRegionView::RestartExpandOnHoverTimer(
 
 void VerticalTabStripRegionView::AnimateExpandOnHover(bool expand) {
   is_expanded_on_hover_ = expand;
-  // The resize area should not be visible when in the expand on hover state.
-  resize_area_->SetVisible(!expand);
 
   if (expand) {
     base::RecordAction(
