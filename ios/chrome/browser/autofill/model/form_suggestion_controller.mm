@@ -461,7 +461,8 @@ bool IsRequestDedupingAllowed() {
 #pragma mark - FormSuggestionClient
 
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
-                    atIndex:(NSInteger)index {
+                    atIndex:(NSInteger)index
+                 completion:(ProceduralBlock)completion {
   if (IsStateless()) {
     // Check that there are always params attached to the suggestion when no
     // params are provided by the -didSelectSuggestion caller itself.
@@ -469,24 +470,35 @@ bool IsRequestDedupingAllowed() {
     if (!suggestion.params) {
       // Just skip if the check isn't triggered. This is to handle the absence
       // of params when the CHECK isn't fatal.
+      if (completion) {
+        completion();
+      }
       return;
     }
 
     [self didSelectSuggestion:suggestion
                       atIndex:index
-                        state:AutofillSuggestionState(*suggestion.params)];
+                        state:AutofillSuggestionState(*suggestion.params)
+                   completion:completion];
   } else if (_suggestionState) {
     [self didSelectSuggestion:suggestion
                       atIndex:index
-                        state:(*_suggestionState)];
+                        state:*_suggestionState
+                   completion:completion];
+  } else if (completion) {
+    completion();
   }
 }
 
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
                     atIndex:(NSInteger)index
-                     params:(const autofill::FormActivityParams&)params {
+                     params:(const autofill::FormActivityParams&)params
+                 completion:(ProceduralBlock)completion {
   AutofillSuggestionState suggestionState(params);
-  [self didSelectSuggestion:suggestion atIndex:index state:suggestionState];
+  [self didSelectSuggestion:suggestion
+                    atIndex:index
+                      state:suggestionState
+                 completion:completion];
 }
 
 #pragma mark - FormInputSuggestionsProvider
@@ -550,7 +562,8 @@ bool IsRequestDedupingAllowed() {
 // provided `suggestionState`.
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
                     atIndex:(NSInteger)index
-                      state:(const AutofillSuggestionState&)suggestionState {
+                      state:(const AutofillSuggestionState&)suggestionState
+                 completion:(ProceduralBlock)completion {
   id<FormSuggestionProvider> provider = suggestion.provider ?: _provider;
 
   // If a password related suggestion was selected, reset the credential bottom
@@ -574,6 +587,9 @@ bool IsRequestDedupingAllowed() {
                               suggestionState.frame_identifier)
         completionHandler:^{
           [[weakSelf formInputNavigator] closeKeyboardWithoutButtonPress];
+          if (completion) {
+            completion();
+          }
         }];
 }
 

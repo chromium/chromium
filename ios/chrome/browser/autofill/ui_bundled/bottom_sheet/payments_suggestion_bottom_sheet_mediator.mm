@@ -332,7 +332,10 @@ bool IsV3() {
                          andSetParams:_params
                              provider:autofillProvider];
   }
-  [crossProvider didSelectSuggestion:suggestion atIndex:index params:_params];
+  [crossProvider didSelectSuggestion:suggestion
+                             atIndex:index
+                              params:_params
+                          completion:nil];
 }
 
 - (void)disableBottomSheetAndRefocus:(BOOL)shouldRefocus {

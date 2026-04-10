@@ -226,10 +226,12 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
                 andSetParams:std::nullopt
                     provider:[self providerForSuggestion:formSuggestion]];
     [self.formSuggestionClient didSelectSuggestion:decoratedSuggestion
-                                           atIndex:index];
+                                           atIndex:index
+                                        completion:nil];
   } else {
     [self.formSuggestionClient didSelectSuggestion:formSuggestion
-                                           atIndex:index];
+                                           atIndex:index
+                                        completion:nil];
   }
 }
 

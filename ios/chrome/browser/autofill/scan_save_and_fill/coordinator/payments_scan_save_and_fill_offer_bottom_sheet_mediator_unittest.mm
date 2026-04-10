@@ -76,7 +76,8 @@ TEST_F(PaymentsScanSaveAndFillOfferBottomSheetMediatorTest,
                autofill::SuggestionType::kSaveAndFillCreditCardEntry;
       }]
                   atIndex:0
-                   params:dummy_params];
+                   params:dummy_params
+               completion:nil];
 
   [mediator_ didAcceptScanCardSuggestion];
 

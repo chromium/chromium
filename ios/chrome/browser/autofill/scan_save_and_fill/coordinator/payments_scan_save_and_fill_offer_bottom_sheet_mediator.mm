@@ -52,7 +52,10 @@
                    requiresReauth:NO
        acceptanceA11yAnnouncement:nil];
 
-  [_provider didSelectSuggestion:suggestion atIndex:0 params:_params];
+  [_provider didSelectSuggestion:suggestion
+                         atIndex:0
+                          params:_params
+                      completion:nil];
 }
 
 - (void)disconnect {

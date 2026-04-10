@@ -429,11 +429,13 @@ TEST_F(FormInputAccessoryMediatorTest, DidSelectSuggestion_NoReauth) {
 
   const NSInteger suggestionIndex = 0;
 
-  OCMExpect([formInputSuggestionProviderMock
-      didSelectSuggestion:[OCMArg any]
-                  atIndex:suggestionIndex]);
+  OCMExpect([formInputSuggestionProviderMock didSelectSuggestion:[OCMArg any]
+                                                         atIndex:suggestionIndex
+                                                      completion:[OCMArg any]]);
 
-  [mediator_ didSelectSuggestion:suggestion atIndex:suggestionIndex];
+  [mediator_ didSelectSuggestion:suggestion
+                         atIndex:suggestionIndex
+                      completion:nil];
 
   // Look the authentication metrics associated with the type of the selected
   // provided are correctly recorded.
