@@ -1304,6 +1304,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3041584414879052436">Epekako ordainketen jaulkitzaileen zerrenda itxita dago.</translation>
 <translation id="3041612393474885105">Ziurtagiriari buruzko informazioa</translation>
 <translation id="3045769629416806687">Muturreko kirolak</translation>
+<translation id="3047054686095898948">Gorde informazioa <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> zerbitzuan gauzak bizkorrago egiteko, hala nola Google-ren zerbitzuetan inprimakiak betetzeko. <ph name="ACCOUNT" /> kontuaren <ph name="BEGIN_LINK" />informazioa kudea<ph name="END_LINK" /> dezakezu <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> zerbitzuan</translation>
 <translation id="305162504811187366">Chrome-ren Urruneko pantaila aplikazioko historia, denbora-zigiluak, ostalariak eta bezero-saioen IDak barne</translation>
 <translation id="3052868890529250114">Normalean, modu seguruan konektatzen zara webguneetara, baina oraingoan Chrome-k ezin izan du erabili konexio segururik. Baliteke erasotzaile bat zure sareko konexioa zelatatzen edo aldatzen saiatzea. <ph name="BEGIN_LEARN_MORE_LINK" />Lortu abisu honi buruzko informazio gehiago<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> merkeagoa da <ph name="PRODUCT_NAME" /> produktua</translation>

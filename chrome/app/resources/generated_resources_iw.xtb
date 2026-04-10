@@ -1982,6 +1982,7 @@
 <translation id="2332742915001411729">איפוס לברירת המחדל</translation>
 <translation id="2333166365943957309">היררכיה של ממשק המשתמש</translation>
 <translation id="233375395665273385">מחיקה ויציאה מהחשבון</translation>
+<translation id="2333766266387181994">מצב הקריאה נפתח, בתצוגה של דף מלא</translation>
 <translation id="2334384018887664164">בהגדרות התוכן אפשר להוסיף אתרים מהימנים לרשימת ההיתרים</translation>
 <translation id="233471714539944337">תוכן רגיש</translation>
 <translation id="2335758110242123814">פתיחת קבוצה</translation>
@@ -5996,6 +5997,7 @@
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">לא ניתן היה להוריד את הפרופיל. יש לנסות שוב מאוחר יותר או לפנות לספק לקבלת עזרה.</translation>
 <translation id="5131591206283983824">לחיצה וגרירה בלוח מגע</translation>
+<translation id="5132606575454082197">‏הגישה לתוכן שלך ב-Google Drive מתבצעת רק כדי לספק את תכונת החיפוש הזו של קבצים. היא לא משמשת לשיפור חיפוש Google. ‫Google לא תיגש לתוכן שלך ב-Google Drive אלא אם העלית קובץ באופן מפורש.</translation>
 <translation id="5133035646508467110">אם המכשיר הזה משותף עם אחרים, יש לך אפשרות להשתמש בטביעת האצבע כדי לאמת את זהותך בכל שימוש בסיסמה שמורה</translation>
 <translation id="5135533361271311778">לא ניתן ליצור פריט סימנייה.</translation>
 <translation id="513555878193063507">‏הוספה של APN חדש</translation>
@@ -6764,6 +6766,7 @@
 <translation id="5678955352098267522">קריאת הנתונים שלך באתר <ph name="WEBSITE_1" /></translation>
 <translation id="5680050361008726776">להסיר את "<ph name="ESIM_PROFILE_NAME" />"?</translation>
 <translation id="5681586175480958839">הקובץ כבר נפתח</translation>
+<translation id="5684110242705861346">התוסף <ph name="NAME" /> נוסף על ידי המדיניות של הארגון שלך והוא קובע את ההגדרה הזו. <ph name="BEGIN_LINK" />לפרטים<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">‏פרטי Wi-Fi</translation>
 <translation id="5684661240348539843">מזהה נכסים</translation>
 <translation id="5684950556880280580">הסיסמה שלך עודכנה</translation>
@@ -9294,6 +9297,7 @@
 <translation id="7465778193084373987">‏כתובת אתר לביטול אישור של Netscape</translation>
 <translation id="7466431077154602932">תצוגה קומפקטית</translation>
 <translation id="7466861475611330213">סגנון פיסוק</translation>
+<translation id="7467547999067230412">‏אפשר לשפר את החיפוש באמצעות כרטיסיות, קבצים או כלי AI</translation>
 <translation id="746861123368584540">התוסף נטען</translation>
 <translation id="7470131554696493512">‏חסימת האפשרות של אביזרים של Thunderbolt או USB4 לגשת לזיכרון (RAM) ולשתף אותו</translation>
 <translation id="7470274830728993952">הצטרפות לקבוצת כרטיסיות</translation>
@@ -11781,6 +11785,7 @@
 <translation id="914031120300235526">לא ניתן לבטל את הנעילה של הפרופיל</translation>
 <translation id="9143298529634201539">האם להסיר את ההצעה?</translation>
 <translation id="9143922477019434797">הגנה על הסיסמאות</translation>
+<translation id="914621365454686586">‏רוצה לתת לחיפוש Google גישה לתוכן ב-Drive?</translation>
 <translation id="9147392381910171771">&amp;אפשרויות</translation>
 <translation id="9148058034647219655">יציאה</translation>
 <translation id="9148126808321036104">כניסה חוזרת</translation>

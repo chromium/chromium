@@ -1304,6 +1304,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3041584414879052436">La liste des émetteurs Acheter maintenant, payer plus tard est fermée.</translation>
 <translation id="3041612393474885105">Informations relatives au certificat</translation>
 <translation id="3045769629416806687">Sports extrêmes</translation>
+<translation id="3047054686095898948">Enregistrez vos informations dans <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> pour gagner du temps, par exemple en remplissant des formulaires dans les produits Google. Vous pouvez <ph name="BEGIN_LINK" />gérer vos informations<ph name="END_LINK" /> dans <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> pour <ph name="ACCOUNT" />.</translation>
 <translation id="305162504811187366">Historique du Bureau à distance Chrome, y compris les horodatages, les hôtes et les ID de sessions client</translation>
 <translation id="3052868890529250114">La connexion aux sites est généralement sécurisée, mais Chrome n'a pas pu utiliser de connexion sécurisée cette fois-ci. Il est possible qu'un pirate informatique tente d'espionner vos activités en ligne ou de modifier votre connexion réseau. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus sur cet avertissement<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> : prix en baisse (-<ph name="PRICE_DROP" />)</translation>

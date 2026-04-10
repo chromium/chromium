@@ -1304,6 +1304,7 @@
 <translation id="3041584414879052436">‏רשימת המנפיקים של האפשרות "קונים עכשיו, משלמים אחר כך (BNPL)" סגורה.</translation>
 <translation id="3041612393474885105">פרטי אישור</translation>
 <translation id="3045769629416806687">ספורט אקסטרים</translation>
+<translation id="3047054686095898948">‏כדי לבצע פעולות כמו מילוי טפסים מהר יותר בכל מוצרי Google, צריך לשמור את הפרטים ב-<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />. אפשר <ph name="BEGIN_LINK" />לערוך את הפרטים<ph name="END_LINK" /> האלה ב-<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> בחשבון <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">‏ההיסטוריה של Chrome Remote Desktop, כולל חותמות זמן, מארחים ומזהי סשנים של לקוחות</translation>
 <translation id="3052868890529250114">‏לרוב החיבור לאתרים מאובטח, אבל הפעם ל-Chrome אין אפשרות להשתמש בחיבור מאובטח. יכול להיות שתוקף מנסה לצותת לחיבור לרשת או לשנות אותו. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף על האזהרה הזו<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">הנחה בסך <ph name="PRICE_DROP" /> על <ph name="PRODUCT_NAME" /></translation>
@@ -4834,6 +4835,7 @@ Del</translation>
 <translation id="8521812709849134608">דלפקים</translation>
 <translation id="8522180136695974431">מעקב ודיווח אשראי</translation>
 <translation id="8522552481199248698">‏בעזרת Chrome אפשר להגן על חשבון Google ולשנות את הסיסמה.</translation>
+<translation id="852450791482410042">לביצוע התשלום</translation>
 <translation id="8527228059738193856">רמקולים</translation>
 <translation id="8527681393107582734">חקלאות ויערנות</translation>
 <translation id="8528149813106025610">בגדי ילדים</translation>

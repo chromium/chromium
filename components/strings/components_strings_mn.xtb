@@ -1304,6 +1304,7 @@
 <translation id="3041584414879052436">"Одоо ав, дараа төл" төлбөрийн хэрэгсэл гаргагчдын жагсаалтыг хаасан.</translation>
 <translation id="3041612393474885105">Гэрчилгээний мэдээлэл</translation>
 <translation id="3045769629416806687">Экстрим спортууд</translation>
+<translation id="3047054686095898948">Мэдээллээ <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />-д хадгалаад, Google-н бүтээгдэхүүнүүд дээрх маягтыг бөглөх зэрэг зүйлсийг илүү хурдан хийгээрэй. Та <ph name="ACCOUNT" />-н <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" />-д байгаа <ph name="BEGIN_LINK" />мэдээллээ удирдах<ph name="END_LINK" /> боломжтой</translation>
 <translation id="305162504811187366">Хугацаа тэмдэглэгч, хост болон клиентийн харилцан үйлдлийн ID зэргийг багтаасан Chrome Remote Desktop-н түүх</translation>
 <translation id="3052868890529250114">Та сайтуудад ихэвчлэн аюулгүй холбогддог ч Chrome энэ удаад аюулгүй холболт ашиглаж чадсангүй. Халдагч таны сүлжээний холболтыг чагнах эсвэл өөрчлөхөөр оролдож байж магадгүй. <ph name="BEGIN_LEARN_MORE_LINK" />Энэ сануулгын талаар нэмэлт мэдээлэл авах<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />-н үнэ <ph name="PRICE_DROP" />-р буурсан</translation>

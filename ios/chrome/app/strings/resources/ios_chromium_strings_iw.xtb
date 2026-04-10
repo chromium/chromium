@@ -134,6 +134,7 @@
 <translation id="377649297473651452">‏תצוגה מורחבת של המילוי האוטומטי ב-Chromium</translation>
 <translation id="3780779443901618967">‏מקבלים אזהרות לגבי אתרים מסוכנים, גם כאלה שלא היו ידועים ל-Google לפני כן, בעזרת ניתוח של יותר נתונים מאתרים בהשוואה להגנה הרגילה. אפשר לדלג על האזהרות מ-Chromium.</translation>
 <translation id="3805899903892079518">‏ל-Chromium אין גישה לתמונות או לסרטונים שלך. יש להפעיל את הגישה ב'הגדרות iOS' &gt; 'פרטיות' &gt; 'תמונות'.</translation>
+<translation id="3809591243528646631">‏כדי להפעיל תכונות בטיחות ילדים, אפשר להשתמש בחשבון Google שהוגדר לילד או ילדה או ב-Chromium ללא חשבון. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="3816686541346279443">‏‫Chromium יציע לשמור את הסיסמה.</translation>
 <translation id="3827545470516145620">במכשיר הזה יש אבטחה ברמה רגילה</translation>
 <translation id="3833326979834193417">‏Chromium מפעיל בדיקת אבטחה באופן אוטומטי מדי יום כדי להגן עליך מפני פרצות באבטחת מידע, אתרים לא בטוחים ועוד. מידע נוסף על בדיקת האבטחה זמין בהגדרות.</translation>
@@ -355,6 +356,7 @@
 <translation id="8900052431807804054">‏רוצה להשיג את רמת האבטחה הגבוהה ביותר של Chromium?</translation>
 <translation id="8908791447256515663">‏אפשר לגשת מהר יותר ל-Chromium דרך ה-Dock של האייפד.</translation>
 <translation id="8925569192291721236">‏אפשר לקבל עדכונים לגבי מעקב אחר מחירים וטיפים לגבי Chromium.</translation>
+<translation id="8939412301975414416">‏כדי להפעיל תכונות בטיחות ילדים ב-Chromium, אפשר להשתמש בחשבון Google שהוגדר לילד או ילדה או להשתמש ב-Chromium ללא חשבון.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך דקה ({THRESHOLD})}one{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך {THRESHOLD} דקות}two{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך {THRESHOLD} דקות}other{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך {THRESHOLD} דקות}}</translation>
 <translation id="8963279154877372067">‏אישור לקבלת התראות על הנחות ב-Chromium</translation>
 <translation id="8975812008711371178">‏חיפוש קולי ב-Chromium</translation>

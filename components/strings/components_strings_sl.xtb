@@ -1304,6 +1304,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3041584414879052436">Seznam izdajateljev za »Kupi zdaj, plačaj pozneje« je zaprt.</translation>
 <translation id="3041612393474885105">Informacije o potrdilu</translation>
 <translation id="3045769629416806687">Ekstremni športi</translation>
+<translation id="3047054686095898948">Shranite podatke v storitvi <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> in hitreje opravite delo, na primer izpolnite obrazce v Googlovih izdelkih. <ph name="BEGIN_LINK" />Podatke lahko upravljate<ph name="END_LINK" /> v denarnici <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> za račun <ph name="ACCOUNT" />.</translation>
 <translation id="305162504811187366">Zgodovina Oddaljenega namizja Chrome, vključno s časovnimi žigi, gostitelji in ID-ji sej odjemalca</translation>
 <translation id="3052868890529250114">S temi spletnimi mesti se običajno varno povežete, vendar Chrome varne povezave tokrat ni mogel uporabiti. Napadalec morda poskuša prisluškovati ali spremeniti vašo omrežno povezavo. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem opozorilu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" />-odstotno znižanje cene izdelka <ph name="PRODUCT_NAME" /></translation>

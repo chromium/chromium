@@ -1304,6 +1304,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3041584414879052436">"Şimdi al sonra öde" sağlayıcıları listesi kapatıldı.</translation>
 <translation id="3041612393474885105">Sertifika Bilgileri</translation>
 <translation id="3045769629416806687">Ekstrem Sporlar</translation>
+<translation id="3047054686095898948">Google ürünlerinde form doldurma gibi işlemleri daha hızlı yapmak için bilgilerinizi <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />'a kaydedin. <ph name="ACCOUNT" /> hesabına ait <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" />'da <ph name="BEGIN_LINK" />bilgilerinizi yönetebilirsiniz<ph name="END_LINK" />.</translation>
 <translation id="305162504811187366">Zaman damgaları, ana makine ve istemci oturum kimlikleri dahil olmak üzere Chrome Uzaktan Masaüstü geçmişi</translation>
 <translation id="3052868890529250114">Sitelere genelde güvenli bir şekilde bağlanıyorsunuz, ancak Chrome bu kez güvenli bir bağlantı kuramadı. Bir saldırgan, ağ bağlantınızı gizlice izlemeye veya değiştirmeye çalışıyor olabilir. <ph name="BEGIN_LEARN_MORE_LINK" />Bu uyarı hakkında daha fazla bilgi edinin<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> ürünün fiyatı <ph name="PRICE_DROP" /> düştü</translation>
