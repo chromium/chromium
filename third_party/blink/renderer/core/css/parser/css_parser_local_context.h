@@ -119,7 +119,7 @@ class CORE_EXPORT CSSParserLocalContext {
     return unresolved_property_name_;
   }
 
-  const AtomicString PropertyNameAndRandomCount() const;
+  const AtomicString PropertyName() const;
 
   wtf_size_t RandomValueCount() const { return random_value_count_; }
 

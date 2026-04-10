@@ -99,7 +99,7 @@ CSSMathExpressionNode* CSSMathRandom::ToCalcExpressionNode() const {
     operands.push_back(operand);
   }
   return CSSMathExpressionRandomFunction::Create(
-      RandomValueSharing::Fixed(random_base_value_), std::move(operands),
+      RandomCacheKey::Fixed(random_base_value_), std::move(operands),
       /*percentages_depend_on_used_value=*/false);
 }
 

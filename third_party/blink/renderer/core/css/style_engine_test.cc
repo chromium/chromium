@@ -7710,13 +7710,14 @@ TEST_F(StyleEngineTest, TestRandomValueCacheCleanedWhenElementIsGone) {
 
   Element* element = GetDocument().getElementById(AtomicString("test"));
 
-  RandomValueSharing* random_value_sharing =
-      MakeGarbageCollected<RandomValueSharing>(
-          AtomicString("--ident"), RandomValueSharing::ElementShared(false));
+  RandomCacheKey* random_value_sharing = MakeGarbageCollected<RandomCacheKey>(
+      AtomicString("--ident"), RandomCacheKey::ElementScoped(false),
+      g_null_atom, -1);
   GetStyleEngine().GetCachedRandomBaseValue(*random_value_sharing, element);
-  RandomValueSharing* random_value_sharing_element_shared =
-      MakeGarbageCollected<RandomValueSharing>(
-          AtomicString("--ident"), RandomValueSharing::ElementShared(true));
+  RandomCacheKey* random_value_sharing_element_shared =
+      MakeGarbageCollected<RandomCacheKey>(AtomicString("--ident"),
+                                           RandomCacheKey::ElementScoped(true),
+                                           g_null_atom, -1);
   GetStyleEngine().GetCachedRandomBaseValue(
       *random_value_sharing_element_shared, element);
 

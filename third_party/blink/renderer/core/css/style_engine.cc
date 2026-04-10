@@ -5025,12 +5025,12 @@ void StyleEngine::NavigationsMayHaveChanged() {
 }
 
 double StyleEngine::GetCachedRandomBaseValue(
-    const RandomValueSharing& random_value_sharing,
+    const RandomCacheKey& random_cache_key,
     const Element* element) {
-  if (random_value_sharing.IsElementShared()) {
+  if (!random_cache_key.IsElementScoped()) {
     ElementSharedRandomValueCache::AddResult element_shared_cache_result =
         element_shared_random_base_value_cache_.insert(
-            random_value_sharing.Name(), 0);
+            random_cache_key.RandomNameForCaching(), 0);
     if (element_shared_cache_result.is_new_entry) {
       element_shared_cache_result.stored_value->value = base::RandDouble();
     }
@@ -5038,7 +5038,7 @@ double StyleEngine::GetCachedRandomBaseValue(
   }
 
   RandomCachingKey* random_caching_key =
-      RandomCachingKey::Create(random_value_sharing, element);
+      RandomCachingKey::Create(random_cache_key, element);
 
   const RandomCachingKeyLifetimeCache::AddResult&
       random_caching_key_lifetime_cache_result =

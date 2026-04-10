@@ -161,13 +161,13 @@ CSSNumericValue* CalcToNumericValue(const CSSMathExpressionNode& root) {
   if (root.IsRandomFunction() &&
       RuntimeEnabledFeatures::CSSRandomFunctionTypedOMEnabled()) {
     const auto& node = To<CSSMathExpressionRandomFunction>(root);
-    DCHECK(node.GetRandomValueSharing()->IsFixed());
+    DCHECK(node.GetRandomCacheKey()->IsFixed());
     CSSNumericValue* min = CalcToNumericValue(*node.Min());
     CSSNumericValue* max = CalcToNumericValue(*node.Max());
     // TODO(crbug.com/475807587): Use correct random_base_value instead of 0 if
     // it's not calculated.
     double random_base_value =
-        node.GetRandomValueSharing()->GetFixed()->GetValueIfKnown().value_or(0);
+        node.GetRandomCacheKey()->GetFixed()->GetValueIfKnown().value_or(0);
     if (!node.Step()) {
       return CSSMathRandom::Create(random_base_value, std::move(min),
                                    std::move(max));

@@ -797,20 +797,19 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void NavigationsMayHaveChanged();
 
   // Returns a random base value for CSS random() function.
-  // @param random_value_sharing <random-value-sharing> parameter of CSS
+  // @param random_cache_key <random-cache-key> parameter of CSS
   // random() function.
   // https://drafts.csswg.org/css-values-5/#typedef-random-value-sharing
   // @param element Pointer to the Element on which CSS random() function is
-  // used. Only used if RandomValueSharing is not element shared.
+  // used. Only used if RandomCacheKey is not element shared.
   // @param property_name Name of the property CSS random() function is used.
-  // Only used if RandomValueSharing::isAuto() returns true.
+  // Only used if RandomCacheKey::isAuto() returns true.
   // @param property_value_index Index of the random function among other random
   // functions in the same property value. Only used if
-  // RandomValueSharing::isAuto() returns true.
+  // RandomCacheKey::isAuto() returns true.
   // https://drafts.csswg.org/css-values-5/#random-caching
-  double GetCachedRandomBaseValue(
-      const RandomValueSharing& random_value_sharing,
-      const Element* element);
+  double GetCachedRandomBaseValue(const RandomCacheKey& random_cache_key,
+                                  const Element* element);
 
  private:
   void UpdateCounters(const Element& element,

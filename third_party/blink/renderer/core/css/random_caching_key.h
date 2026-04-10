@@ -12,7 +12,7 @@
 
 namespace blink {
 
-class RandomValueSharing;
+class RandomCacheKey;
 
 // RandomCachingKey serves as the key for random base value cache stored in the
 // StyleEngine.
@@ -23,9 +23,8 @@ class RandomCachingKey : public GarbageCollected<RandomCachingKey> {
                    AtomicString name,
                    const Element* element)
       : name_(name), element_(element) {}
-  static RandomCachingKey* Create(
-      const RandomValueSharing& random_value_sharing,
-      const Element* element);
+  static RandomCachingKey* Create(const RandomCacheKey& random_cache_key,
+                                  const Element* element);
   bool operator==(const RandomCachingKey& other) const;
   unsigned GetHash() const;
   void Trace(Visitor* visitor) const;

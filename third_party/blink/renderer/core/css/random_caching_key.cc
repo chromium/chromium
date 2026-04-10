@@ -16,11 +16,11 @@
 namespace blink {
 
 RandomCachingKey* RandomCachingKey::Create(
-    const RandomValueSharing& random_value_sharing,
+    const RandomCacheKey& random_cache_key,
     const Element* element) {
-  DCHECK(!random_value_sharing.IsFixed());
-  DCHECK(!random_value_sharing.IsElementShared());
-  AtomicString name = random_value_sharing.Name();
+  DCHECK(!random_cache_key.IsFixed());
+  DCHECK(random_cache_key.IsElementScoped());
+  AtomicString name = random_cache_key.RandomNameForCaching();
   DCHECK(!name.IsNull());
   return MakeGarbageCollected<RandomCachingKey>(
       base::PassKey<RandomCachingKey>(), name, element);

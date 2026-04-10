@@ -113,21 +113,13 @@ void CSSParserLocalContext::CheckPercentagesFlagSetOnProperty() const {
 }
 #endif
 
-const AtomicString CSSParserLocalContext::PropertyNameAndRandomCount() const {
+const AtomicString CSSParserLocalContext::PropertyName() const {
   StringBuilder str;
   if (unresolved_property_name_.has_value() &&
       unresolved_property_name_->Id() != CSSPropertyID::kInvalid) {
-    // Use string of form "PROPERTY {property_name} {property_value_index}"
-    // as name, this is later used for caching random values [0]. The prefix
-    // "PROPERTY" is needed since we need to make distinguish between custom
-    // property name and random value identifier, i.e. <dashed-ident> value in
-    // <random-value-sharing> [1]
-    // [0] https://drafts.csswg.org/css-values-5/#random-caching-key
-    // [1] https://drafts.csswg.org/css-values-5/#typedef-random-value-sharing
-    str.Append("PROPERTY ");
     if (custom_function_name_) {
       str.Append(custom_function_name_);
-      str.Append(" ");
+      str.Append(";");
     }
     CSSPropertyName resolved_property_name = *unresolved_property_name_;
     if (current_shorthand_ != CSSPropertyID::kInvalid) {
@@ -137,8 +129,6 @@ const AtomicString CSSParserLocalContext::PropertyNameAndRandomCount() const {
           ResolveCSSPropertyID(unresolved_property_name_->Id()));
     }
     str.Append(resolved_property_name.ToAtomicString());
-    str.Append(" ");
-    str.AppendNumber(random_value_count_);
   }
   return str.ToAtomicString();
 }
