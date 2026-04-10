@@ -149,6 +149,17 @@ LRESULT ProgressWnd::OnEraseBkgnd(UINT msg,
                                   WPARAM wparam,
                                   LPARAM lparam,
                                   BOOL& handled) {
+  const HDC hdc = reinterpret_cast<HDC>(wparam);
+  CRect rect;
+  GetClientRect(&rect);
+
+  // Fill the entire client area with solid white first to clear any previous
+  // artifacts.
+  ::FillRect(hdc, &rect, static_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
+
+  const int width = rect.Width();
+  const int height = rect.Height();
+
   // Configuration for the rainbow geometry.
   static constexpr size_t kNumStops = 7;
   static constexpr size_t kNumSegments = kNumStops - 1;
@@ -173,23 +184,11 @@ LRESULT ProgressWnd::OnEraseBkgnd(UINT msg,
       RGB(220, 255, 255)   // Light Aqua
   };
 
-  const HDC hdc = reinterpret_cast<HDC>(wparam);
-  CRect rect;
-  GetClientRect(&rect);
-
-  const int width = rect.right - rect.left;
-  const int height = rect.bottom - rect.top;
-
   // Define the curve parameters:
   // y_edge: The height where the rainbow starts at the left/right edges.
   // y_center: The height where the rainbow is thinnest at the center.
   const int y_edge = static_cast<int>(height * kYEdgeRatio);
   const int y_center = static_cast<int>(height * kYCenterRatio);
-
-  // Fill the top area with solid white.
-  CRect top_rect = {rect.left, rect.top, rect.right, y_edge};
-  ::FillRect(hdc, &top_rect,
-             static_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
 
   // Define the rainbow mesh vertices.
   std::array<TRIVERTEX, kNumVertices> vertices;
@@ -208,7 +207,10 @@ LRESULT ProgressWnd::OnEraseBkgnd(UINT msg,
 
   for (size_t i = 0; i < kNumStops; ++i) {
     const double stop = kStops[i];
-    const int x = static_cast<int>(width * stop);
+
+    // Use the width of the rect to ensure we hit the right edge perfectly.
+    const int x =
+        (i == kNumStops - 1) ? rect.right : static_cast<int>(width * stop);
 
     // Calculate the concave (U-shaped) boundary using a parabola.
     const double factor = (2.0 * stop - 1.0);
@@ -218,8 +220,9 @@ LRESULT ProgressWnd::OnEraseBkgnd(UINT msg,
     // Top row of the mesh (White boundary following the curve).
     set_vertex(v_span, i, x, y_boundary, RGB(255, 255, 255));
 
-    // Bottom row of the mesh (Light rainbow colors).
-    set_vertex(v_span, i + kNumStops, x, height, kColors[i]);
+    // Bottom row of the mesh (Light rainbow colors). Stretch to the very
+    // bottom.
+    set_vertex(v_span, i + kNumStops, x, rect.bottom, kColors[i]);
   }
 
   // Create the triangles, 2 triangles per segment.

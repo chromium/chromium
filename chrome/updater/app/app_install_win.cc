@@ -47,6 +47,7 @@
 #include "base/win/elevation_util.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_com_initializer.h"
+#include "base/win/win_util.h"
 #include "chrome/updater/app/app_install_progress.h"
 #include "chrome/updater/app/app_install_util_win.h"
 #include "chrome/updater/app/app_install_win_internal.h"
@@ -1098,6 +1099,10 @@ std::wstring GetTextForStartupError(int error_code, const std::wstring& lang) {
 }
 
 scoped_refptr<App> MakeAppInstall(bool is_silent_install) {
+  if (!is_silent_install) {
+    base::win::EnableHighDPISupport();
+  }
+
   if (IsSystemInstall()) {
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(kOemSwitch)) {
       const bool success = SetOemInstallState();

@@ -160,6 +160,26 @@ LRESULT OmahaWnd::OnNCDestroy(UINT, WPARAM, LPARAM, BOOL& handled) {
   return 0;
 }
 
+LRESULT OmahaWnd::OnDpiChanged(UINT msg,
+                               WPARAM wparam,
+                               LPARAM lparam,
+                               BOOL& handled) {
+  // Resize window to the OS-suggested rect.
+  SetWindowPos(NULL, /*new_rect=*/reinterpret_cast<RECT*>(lparam),
+               SWP_NOZORDER | SWP_NOACTIVATE);
+
+  // Re-render text/graphics for the new DPI.
+  ApplyDpiScaling(/*new_dpi=*/HIWORD(wparam));
+
+  // 3. Resize the title bar.
+  RecalcLayout(m_hWnd, GetDlgItem(IDC_TITLE_BAR_SPACER));
+
+  // Force a full redraw of everything.
+  RedrawWindow(nullptr, nullptr,
+               RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_UPDATENOW);
+  return 0;
+}
+
 // Called when ESC key is pressed.
 LRESULT OmahaWnd::OnCancel(WORD, WORD id, HWND, BOOL& handled) {
   CHECK_EQ(id, IDCANCEL);
@@ -185,6 +205,41 @@ void OmahaWnd::Show() {
   if (!::SetForegroundWindow(*this)) {
     PLOG(WARNING) << __func__ << ": ::SetForegroundWindow failed";
   }
+}
+
+void OmahaWnd::ApplyDpiScaling(int dpi) {
+  // Calculate new font height: (DesiredPointSize * dpi) / 72.
+  // Standard formula for font height in pixels:
+  //   Height = -(PointSize * DPI / 72).
+  // Use a negative number for height to request the character height.
+  const int font_height = -::MulDiv(9, dpi, 72);
+
+  if (default_font_.m_hFont) {
+    default_font_.DeleteObject();
+  }
+
+  // Recreate the WTL font. Using `CreateFont` gives explicit control over the
+  // height calculated from the per-monitor DPI.
+  default_font_.CreateFont(font_height,          // nHeight
+                           0,                    // nWidth
+                           0,                    // nEscapement
+                           0,                    // nOrientation
+                           FW_NORMAL,            // nWeight
+                           FALSE,                // bItalic
+                           FALSE,                // bUnderline
+                           0,                    // cStrikeOut
+                           DEFAULT_CHARSET,      // nCharSet
+                           OUT_DEFAULT_PRECIS,   // nOutPrecision
+                           CLIP_DEFAULT_PRECIS,  // nClipPrecision
+                           CLEARTYPE_QUALITY,    // nQuality (Forces ClearType)
+                           DEFAULT_PITCH | FF_DONTCARE,  // nPitchAndFamily
+                           kDialogFont                   // lpszFacename
+  );
+
+  // Tell all child controls to use the new font.
+  SendMessageToDescendants(
+      WM_SETFONT, reinterpret_cast<WPARAM>(static_cast<HFONT>(default_font_)),
+      TRUE);
 }
 
 bool OmahaWnd::OnComplete() {
@@ -235,7 +290,7 @@ HRESULT OmahaWnd::EnableSystemCloseButton(bool enable) {
   }
   ::EnableMenuItem(menu, SC_CLOSE,
                    MF_BYCOMMAND | (enable ? MF_ENABLED : MF_GRAYED));
-  RecalcLayout();
+  RecalcLayout(m_hWnd, GetDlgItem(IDC_TITLE_BAR_SPACER));
   return S_OK;
 }
 

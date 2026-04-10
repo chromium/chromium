@@ -149,6 +149,7 @@ class OwnerDrawTitleBarWindow : public CWindowImpl<OwnerDrawTitleBarWindow> {
     MESSAGE_HANDLER(WM_LBUTTONDOWN, OnLButtonDown)
     MESSAGE_HANDLER(WM_LBUTTONUP, OnLButtonUp)
     MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkgnd)
+    MESSAGE_HANDLER(WM_SIZE, OnSize)
     COMMAND_ID_HANDLER(kButtonClose, OnClose)
     COMMAND_ID_HANDLER(kButtonMaximize, OnMaximize)
     COMMAND_ID_HANDLER(kButtonMinimize, OnMinimize)
@@ -198,6 +199,7 @@ class OwnerDrawTitleBarWindow : public CWindowImpl<OwnerDrawTitleBarWindow> {
                        WPARAM wparam,
                        LPARAM lparam,
                        BOOL& handled);  // NOLINT
+  LRESULT OnSize(UINT, WPARAM, LPARAM, BOOL& handled);  // NOLINT
   LRESULT OnClose(WORD notify_code,
                   WORD id,
                   HWND hwnd_ctrl,
@@ -229,7 +231,7 @@ class OwnerDrawTitleBar {
                                HWND title_bar_spacer_hwnd,
                                COLORREF bk_color);
 
-  void RecalcLayout();
+  void RecalcLayout(HWND parent_hwnd, HWND title_bar_spacer_hwnd);
 
   BEGIN_MSG_MAP(OwnerDrawTitleBar)
   END_MSG_MAP()

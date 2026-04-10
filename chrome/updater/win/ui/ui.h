@@ -59,6 +59,7 @@ class OmahaWnd : public CAxDialogImpl<OmahaWnd>,
   BEGIN_MSG_MAP(OmahaWnd)
     MESSAGE_HANDLER(WM_CLOSE, OnClose)
     MESSAGE_HANDLER(WM_NCDESTROY, OnNCDestroy)
+    MESSAGE_HANDLER(WM_DPICHANGED, OnDpiChanged)
     COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
     CHAIN_MSG_MAP(Base)
     CHAIN_MSG_MAP(OwnerDrawTitleBar)
@@ -88,10 +89,16 @@ class OmahaWnd : public CAxDialogImpl<OmahaWnd>,
                       WPARAM wparam,
                       LPARAM lparam,
                       BOOL& handled);  // NOLINT
+  LRESULT OnDpiChanged(UINT msg,
+                       WPARAM wparam,
+                       LPARAM lparam,
+                       BOOL& handled);  // NOLINT
   LRESULT OnCancel(WORD notify_code,
                    WORD id,
                    HWND wnd_ctl,
                    BOOL& handled);  // NOLINT
+
+  void ApplyDpiScaling(int dpi);
 
   // Returns true if the window is closed.
   virtual bool MaybeCloseWindow() = 0;

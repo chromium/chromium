@@ -335,6 +335,17 @@ LRESULT OwnerDrawTitleBarWindow::OnEraseBkgnd(UINT,
   return 1;
 }
 
+LRESULT OwnerDrawTitleBarWindow::OnSize(UINT, WPARAM, LPARAM, BOOL& handled) {
+  // Recalculate button positions based on new height/width.
+  RecalcLayout();
+
+  // Force a redraw to clear artifacts.
+  Invalidate();
+
+  handled = false;
+  return 0;
+}
+
 LRESULT OwnerDrawTitleBarWindow::OnClose(WORD, WORD, HWND, BOOL& handled) {
   handled = false;
 
@@ -360,8 +371,12 @@ void OwnerDrawTitleBarWindow::CreateCaptionButtons() {
   close_button_.set_bk_color(bk_color_);
   minimize_button_.set_bk_color(bk_color_);
 
-  CRect button_rect(0, 0, ::GetSystemMetrics(SM_CXSIZE),
-                    ::GetSystemMetrics(SM_CYSIZE));
+  // Get the DPI for this specific window
+  const int dpi = GetDpiForWindow(m_hWnd);
+
+  // Use the DPI-aware version of system metrics.
+  CRect button_rect(0, 0, ::GetSystemMetricsForDpi(SM_CXSIZE, dpi),
+                    ::GetSystemMetricsForDpi(SM_CYSIZE, dpi));
 
   minimize_button_.Create(m_hWnd, button_rect, nullptr,
                           WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 0,
@@ -470,8 +485,22 @@ void OwnerDrawTitleBar::CreateOwnerDrawTitleBar(HWND parent_hwnd,
       WS_VISIBLE | WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
 }
 
-void OwnerDrawTitleBar::RecalcLayout() {
-  CHECK(title_bar_window_.IsWindow());
+void OwnerDrawTitleBar::RecalcLayout(HWND parent_hwnd,
+                                     HWND title_bar_spacer_hwnd) {
+  if (!title_bar_window_.IsWindow()) {
+    return;
+  }
+
+  // Re-compute where the title bar window should be based on the spacer. The
+  // spacer was already resized by the OS Dialog Manager.
+  CRect new_rect =
+      ComputeTitleBarClientRect(parent_hwnd, title_bar_spacer_hwnd);
+
+  // Resize the title bar window itself.
+  title_bar_window_.SetWindowPos(nullptr, &new_rect,
+                                 SWP_NOZORDER | SWP_NOACTIVATE);
+
+  // Now tell the window to reposition its internal buttons.
   title_bar_window_.RecalcLayout();
 }
 
