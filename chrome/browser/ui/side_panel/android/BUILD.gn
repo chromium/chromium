@@ -28,6 +28,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/side_panel/AndroidSidePanelEnabledFn.java",
     "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelCoordinatorAndroid.java",
+    "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelUtils.java",
     "java/src/org/chromium/chrome/browser/ui/side_panel/WindowScopedSidePanelRegistryBridge.java",
   ]
   deps = [

@@ -10,6 +10,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
@@ -42,6 +43,16 @@ class SidePanelUIBase : public SidePanelUI {
     std::optional<tabs::TabHandle> tab_handle;
     SidePanelEntry::Key key;
     friend bool operator==(const UniqueKey&, const UniqueKey&) = default;
+    friend std::ostream& operator<<(std::ostream& os,
+                                    const UniqueKey& unique_key) {
+      os << "UniqueKey{tab_handle: "
+         << (unique_key.tab_handle
+                 ? ("TabHandle@" +
+                    base::NumberToString(unique_key.tab_handle->raw_value()))
+                 : "null")
+         << ", key: " << unique_key.key.ToString() << "}";
+      return os;
+    }
   };
 
   // SidePanelUI:

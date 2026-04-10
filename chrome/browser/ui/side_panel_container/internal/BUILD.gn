@@ -20,6 +20,7 @@ android_library("java") {
 
   deps = [
     ":java_resources",
+    "//base:log_java",
     "//base:supplier_java",
     "//base:tasks_java",
     "//base/version_info/android:version_constants_java",

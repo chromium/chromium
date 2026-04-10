@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.side_panel_container;
 
+import static org.chromium.chrome.browser.ui.side_panel.SidePanelUtils.log;
+
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +28,7 @@ import org.chromium.ui.base.ViewUtils;
 @NullMarked
 final class SidePanelContainerCoordinatorImpl
         implements SidePanelContainerCoordinator, SideUiContainer {
+    private static final String TAG = "SidePanelContainerCoordinatorImpl";
 
     @VisibleForTesting static final int SIDE_PANEL_MIN_WIDTH_DP = 360;
 
@@ -39,6 +42,7 @@ final class SidePanelContainerCoordinatorImpl
 
     SidePanelContainerCoordinatorImpl(
             Activity parentActivity, SideUiCoordinator sideUiCoordinator) {
+        log(TAG, "constructor", parentActivity, sideUiCoordinator);
         mParentActivity = parentActivity;
         mSideUiCoordinator = sideUiCoordinator;
         mContainerView =
@@ -49,12 +53,14 @@ final class SidePanelContainerCoordinatorImpl
 
     @Override
     public void init() {
+        log(TAG, "init");
         ThreadUtils.assertOnUiThread();
         mSideUiCoordinator.registerSideUiContainer(this);
     }
 
     @Override
     public void populateContent(SidePanelContent content) {
+        log(TAG, "populateContent", content);
         ThreadUtils.assertOnUiThread();
         mCurrentContent = content;
 
@@ -69,6 +75,7 @@ final class SidePanelContainerCoordinatorImpl
 
     @Override
     public void removeContent() {
+        log(TAG, "removeContent");
         ThreadUtils.assertOnUiThread();
         mContainerView.removeAllViews();
         mSideUiCoordinator.requestUpdateContainer(
@@ -79,18 +86,21 @@ final class SidePanelContainerCoordinatorImpl
 
     @Override
     public boolean isShowing(SidePanelContent sidePanelContent) {
+        log(TAG, "isShowing", sidePanelContent);
         ThreadUtils.assertOnUiThread();
         return sidePanelContent == mCurrentContent;
     }
 
     @Override
     public void destroy() {
+        log(TAG, "destroy");
         ThreadUtils.assertOnUiThread();
         mSideUiCoordinator.unregisterSideUiContainer(this);
     }
 
     @Override
     public View getView() {
+        log(TAG, "getView");
         ThreadUtils.assertOnUiThread();
         return mContainerView;
     }
@@ -98,6 +108,7 @@ final class SidePanelContainerCoordinatorImpl
     @Override
     @Px
     public int determineContainerWidth(@Px int availableWidth, @Px int windowWidth) {
+        log(TAG, "determineContainerWidth", availableWidth, windowWidth);
         ThreadUtils.assertOnUiThread();
 
         // TODO(http://crbug.com/487414343): Refine the implementation.
@@ -108,12 +119,14 @@ final class SidePanelContainerCoordinatorImpl
     @Override
     @Px
     public int getCurrentWidth() {
+        log(TAG, "getCurrentWidth");
         ThreadUtils.assertOnUiThread();
         return mContainerView.getWidth();
     }
 
     @Override
     public void setWidth(@Px int width) {
+        log(TAG, "setWidth", width);
         ThreadUtils.assertOnUiThread();
 
         LayoutParams layoutParams = mContainerView.getLayoutParams();

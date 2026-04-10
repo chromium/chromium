@@ -4,12 +4,16 @@
 
 package org.chromium.chrome.browser.ui.side_panel;
 
+import static org.chromium.chrome.browser.ui.side_panel.SidePanelUtils.log;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 /** Factory for creating JNI bridges that own a native {@code SidePanelRegistry}. */
 @NullMarked
 public final class SidePanelRegistryBridgeFactory {
+    private static final String TAG = "SidePanelRegistryBridgeFactory";
+
     private SidePanelRegistryBridgeFactory() {}
 
     /**
@@ -23,6 +27,7 @@ public final class SidePanelRegistryBridgeFactory {
      */
     @Nullable
     public static WindowScopedSidePanelRegistryBridge createWindowScopedBridge() {
+        log(TAG, "createWindowScopedBridge");
         if (!AndroidSidePanelEnabledFn.isEnabled()) {
             return null;
         }

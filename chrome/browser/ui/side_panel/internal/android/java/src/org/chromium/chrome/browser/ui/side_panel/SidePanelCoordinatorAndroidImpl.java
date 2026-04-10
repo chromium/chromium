@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.side_panel;
 
+import static org.chromium.chrome.browser.ui.side_panel.SidePanelUtils.log;
+
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
@@ -18,6 +20,7 @@ import org.chromium.chrome.browser.ui.side_panel_container.SidePanelContent;
 /** Implements {@code SidePanelCoordinatorAndroid}. */
 @NullMarked
 public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinatorAndroid {
+    private static final String TAG = "SidePanelCoordinatorAndroidImpl";
 
     private final SidePanelContainerCoordinator mSidePanelContainerCoordinator;
 
@@ -26,21 +29,25 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
 
     public SidePanelCoordinatorAndroidImpl(
             SidePanelContainerCoordinator sidePanelContainerCoordinator) {
+        log(TAG, "constructor", sidePanelContainerCoordinator);
         mSidePanelContainerCoordinator = sidePanelContainerCoordinator;
     }
 
     @Override
     public void onAddedToTask(long nativeBrowserWindowPtr) {
+        log(TAG, "onAddedToTask", nativeBrowserWindowPtr);
         createNativePtr(nativeBrowserWindowPtr);
     }
 
     @Override
     public void onFeatureRemoved() {
+        log(TAG, "onFeatureRemoved");
         destroyNativePtr();
     }
 
     @VisibleForTesting
     void createNativePtr(long nativeBrowserWindowPtr) {
+        log(TAG, "createNativePtr", nativeBrowserWindowPtr);
         assert nativeBrowserWindowPtr != 0
                 : "Native BrowserWindowInterface pointer shouldn't be null. Is the"
                         + " ChromeAndroidTaskFeatureKey correct?";
@@ -52,6 +59,7 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
 
     @VisibleForTesting
     void destroyNativePtr() {
+        log(TAG, "destroyNativePtr");
         if (mNativeSidePanelCoordinatorAndroid != 0) {
             SidePanelCoordinatorAndroidImplJni.get().destroy(mNativeSidePanelCoordinatorAndroid);
         }
@@ -63,16 +71,19 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
 
     @CalledByNative
     private void clearNativePtr() {
+        log(TAG, "clearNativePtr");
         mNativeSidePanelCoordinatorAndroid = 0;
     }
 
     @CalledByNative
     private void populateSidePanel(View sidePanelNativeView) {
+        log(TAG, "populateSidePanel", sidePanelNativeView);
         mSidePanelContainerCoordinator.populateContent(new SidePanelContent(sidePanelNativeView));
     }
 
     @CalledByNative
     private void removeContent() {
+        log(TAG, "removeContent");
         mSidePanelContainerCoordinator.removeContent();
     }
 

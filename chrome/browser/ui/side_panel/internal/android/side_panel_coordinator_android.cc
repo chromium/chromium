@@ -10,12 +10,21 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/internal/android/jni_headers/SidePanelCoordinatorAndroidImpl_jni.h"
 #include "chrome/browser/ui/side_panel/internal/android/side_panel_tab_list_observer_android.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_waiter.h"
+
+#define LOG_TAG "SidePanelCoordinatorAndroid"
+#define SPLOG(message)                                     \
+  if (base::FeatureList::IsEnabled(                        \
+          chrome::android::kEnableAndroidSidePanelLogs)) { \
+    LOG(ERROR) << LOG_TAG << ": " << message;              \
+  }
 
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
@@ -33,6 +42,8 @@ static int64_t JNI_SidePanelCoordinatorAndroidImpl_Create(
     JNIEnv* env,
     const JavaRef<jobject>& caller,
     int64_t nativeBrowserWindowPtr) {
+  SPLOG("JNI_SidePanelCoordinatorAndroidImpl_Create - ptr: "
+        << nativeBrowserWindowPtr);
   return reinterpret_cast<intptr_t>(new SidePanelCoordinatorAndroid(
       env, caller,
       reinterpret_cast<BrowserWindowInterface*>(nativeBrowserWindowPtr)));
@@ -45,26 +56,37 @@ SidePanelCoordinatorAndroid::SidePanelCoordinatorAndroid(
     : SidePanelUIBase(browser),
       java_coordinator_(env, java_coordinator),
       scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this),
-      tab_list_observer_(TabListInterface::From(browser), this) {}
+      tab_list_observer_(TabListInterface::From(browser), this) {
+  SPLOG("SidePanelCoordinatorAndroid Constructor - browser: " << browser);
+}
 
 SidePanelCoordinatorAndroid::~SidePanelCoordinatorAndroid() {
+  SPLOG("SidePanelCoordinatorAndroid Destructor");
   Java_SidePanelCoordinatorAndroidImpl_clearNativePtr(
       base::android::AttachCurrentThread(), java_coordinator());
 }
 
 void SidePanelCoordinatorAndroid::Destroy(JNIEnv* env) {
+  SPLOG("Destroy");
   delete this;
 }
 
 void SidePanelCoordinatorAndroid::ShowFrom(
     SidePanelEntryKey entry_key,
     gfx::Rect starting_bounds_in_browser_coordinates) {
+  SPLOG("ShowFrom - entry_key: "
+        << entry_key.ToString() << ", starting_bounds: "
+        << starting_bounds_in_browser_coordinates.ToString());
   // TODO(crbug.com/494001629): Implement this.
 }
 
 void SidePanelCoordinatorAndroid::Close(SidePanelType panel_type,
                                         SidePanelEntryHideReason hide_reason,
                                         bool suppress_animations) {
+  SPLOG("Close - panel_type: "
+        << static_cast<int>(panel_type)
+        << ", hide_reason: " << static_cast<int>(hide_reason)
+        << ", suppress_animations: " << suppress_animations);
   if (!IsSidePanelShowing(panel_type)) {
     return;
   }
@@ -88,6 +110,9 @@ void SidePanelCoordinatorAndroid::Close(SidePanelType panel_type,
 
 void SidePanelCoordinatorAndroid::Toggle(SidePanelEntryKey key,
                                          SidePanelOpenTrigger open_trigger) {
+  SPLOG("Toggle - key: " << key.ToString() << ", open_trigger: "
+                         << static_cast<int>(open_trigger));
+
   // TODO(crbug.com/493931022): Implement this.
 }
 
@@ -113,6 +138,9 @@ void SidePanelCoordinatorAndroid::Show(
     const UniqueKey& key,
     std::optional<SidePanelOpenTrigger> open_trigger,
     bool suppress_animations) {
+  SPLOG("Show - key: " << key << ", open_trigger: "
+                       << (open_trigger ? static_cast<int>(*open_trigger) : -1)
+                       << ", suppress_animations: " << suppress_animations);
   SidePanelEntry* entry = GetEntryForUniqueKey(key);
   if (!entry) {
     return;
@@ -131,6 +159,8 @@ void SidePanelCoordinatorAndroid::PopulateSidePanel(
     std::optional<SidePanelOpenTrigger> open_trigger,
     SidePanelEntry* entry,
     std::optional<SidePanelNativeView> content_view) {
+  SPLOG("PopulateSidePanel - unique_key: "
+        << unique_key << ", suppress_animations: " << suppress_animations);
   std::unique_ptr<SidePanelNativeViewAndroid> native_view =
       content_view ? std::move(*content_view) : entry->GetContent();
   if (!native_view) {
@@ -177,6 +207,9 @@ void SidePanelCoordinatorAndroid::PopulateSidePanel(
 void SidePanelCoordinatorAndroid::MaybeShowEntryOnTabStripModelChanged(
     SidePanelRegistry* old_contextual_registry,
     SidePanelRegistry* new_contextual_registry) {
+  SPLOG("MaybeShowEntryOnTabStripModelChanged - old_contextual_registry: "
+        << old_contextual_registry
+        << ", new_contextual_registry: " << new_contextual_registry);
   // TODO(crbug.com/494002625): Complete the full implementation.
   // The full implementation will need to:
   // consider all SidePanelTypes,
@@ -225,6 +258,7 @@ void SidePanelCoordinatorAndroid::MaybeShowEntryOnTabStripModelChanged(
 
 ScopedJavaLocalRef<jobject> SidePanelCoordinatorAndroid::java_coordinator()
     const {
+  SPLOG("java_coordinator()");
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> local_ref = java_coordinator_.get(env);
 

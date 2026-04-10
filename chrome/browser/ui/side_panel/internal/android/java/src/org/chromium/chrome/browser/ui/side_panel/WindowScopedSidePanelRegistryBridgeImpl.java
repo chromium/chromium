@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.side_panel;
 
+import static org.chromium.chrome.browser.ui.side_panel.SidePanelUtils.log;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -14,23 +16,29 @@ import org.chromium.build.annotations.NullMarked;
 /** Implements {@link WindowScopedSidePanelRegistryBridge}. */
 @NullMarked
 final class WindowScopedSidePanelRegistryBridgeImpl implements WindowScopedSidePanelRegistryBridge {
+    private static final String TAG = "WindowScopedSidePanelRegistryBridgeImpl";
 
     private long mNativeWindowScopedSidePanelRegistryBridge;
 
-    WindowScopedSidePanelRegistryBridgeImpl() {}
+    WindowScopedSidePanelRegistryBridgeImpl() {
+        log(TAG, "constructor");
+    }
 
     @Override
     public void onAddedToTask(long nativeBrowserWindowPtr) {
+        log(TAG, "onAddedToTask", nativeBrowserWindowPtr);
         createNativePtr(nativeBrowserWindowPtr);
     }
 
     @Override
     public void onFeatureRemoved() {
+        log(TAG, "onFeatureRemoved");
         destroyNativePtr();
     }
 
     @VisibleForTesting
     long createNativePtr(long nativeBrowserWindowPtr) {
+        log(TAG, "createNativePtr", nativeBrowserWindowPtr);
         assert nativeBrowserWindowPtr != 0
                 : "Native BrowserWindowInterface pointer shouldn't be null. Is the"
                         + " ChromeAndroidTaskFeatureKey correct?";
@@ -45,6 +53,7 @@ final class WindowScopedSidePanelRegistryBridgeImpl implements WindowScopedSideP
 
     @VisibleForTesting
     void destroyNativePtr() {
+        log(TAG, "destroyNativePtr");
         if (mNativeWindowScopedSidePanelRegistryBridge != 0) {
             WindowScopedSidePanelRegistryBridgeImplJni.get()
                     .destroy(mNativeWindowScopedSidePanelRegistryBridge);
@@ -57,6 +66,7 @@ final class WindowScopedSidePanelRegistryBridgeImpl implements WindowScopedSideP
 
     @CalledByNative
     private void clearNativePtr() {
+        log(TAG, "clearNativePtr");
         mNativeWindowScopedSidePanelRegistryBridge = 0;
     }
 
