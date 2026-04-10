@@ -222,16 +222,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="V8.ErrorsThrownPerContext" units="errors"
-    expires_after="2020-02-23">
-  <owner>hablich@chromium.org</owner>
-  <summary>
-    The amount of JavaScript errors thrown by V8 per context. It does not count
-    custom errors and ignores catched errors thrown by V8. This is collected
-    after the context is detached.
-  </summary>
-</histogram>
-
 <histogram name="V8.ExecuteMicroSeconds" units="microseconds"
     expires_after="2028-07-01">
   <owner>cbruni@chromium.org</owner>
@@ -1346,52 +1336,11 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="V8.MemoryExternalFragmentationCodeSpace" units="%"
-    expires_after="2020-03-01">
-  <owner>hpayer@chromium.org</owner>
-  <summary>
-    External memory fragmentation in the code space after each GC in percent.
-  </summary>
-</histogram>
-
-<histogram name="V8.MemoryExternalFragmentationLoSpace" units="%"
-    expires_after="2020-06-01">
-  <owner>hpayer@chromium.org</owner>
-  <summary>
-    External memory fragmentation in the large object space after each GC in
-    percent.
-  </summary>
-</histogram>
-
-<histogram name="V8.MemoryExternalFragmentationMapSpace" units="%"
-    expires_after="2020-02-23">
-  <owner>hpayer@chromium.org</owner>
-  <summary>
-    External memory fragmentation in the map space after each GC in percent.
-  </summary>
-</histogram>
-
-<histogram name="V8.MemoryExternalFragmentationOldSpace" units="%"
-    expires_after="2020-03-01">
-  <owner>hpayer@chromium.org</owner>
-  <summary>
-    External memory fragmentation in the old space after each GC in percent.
-  </summary>
-</histogram>
-
 <histogram name="V8.MemoryHeapSampleCodeSpaceCommitted" units="KB"
     expires_after="M77">
   <owner>hpayer@chromium.org</owner>
   <summary>
     The size of committed memory in the code space after each GC in KB.
-  </summary>
-</histogram>
-
-<histogram name="V8.MemoryHeapSampleMapSpaceCommitted" units="KB"
-    expires_after="2020-03-01">
-  <owner>hpayer@chromium.org</owner>
-  <summary>
-    The size of committed memory in the map space after each GC in KB.
   </summary>
 </histogram>
 
@@ -1524,15 +1473,6 @@ chromium-metrics-reviews@google.com.
     (i.e. insecure) sandbox, this value will be smaller than the sandbox size.
 
     Recorded during initialization of V8.
-  </summary>
-</histogram>
-
-<histogram name="V8.SharedArrayAllocationSizes" units="MB"
-    expires_after="2020-12-02">
-  <owner>gdeepti@chromium.org</owner>
-  <owner>ulan@chromium.org</owner>
-  <summary>
-    Number of megabytes requested in shared array buffer allocations.
   </summary>
 </histogram>
 
