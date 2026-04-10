@@ -17,7 +17,6 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -54,12 +53,10 @@ import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.browser.WebSigninTrackerResult;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -198,11 +195,11 @@ final class SigninBridge {
     private static void waitForCookiesAndRedirect(
             Tab tab, @Nullable String prefilledEmail, GURL continueUrl, GURL initialTabURL) {
         assert prefilledEmail != null;
-        new WebSigninBridge.Factory()
-                .createWithEmail(
-                        tab.getProfile(),
-                        prefilledEmail,
-                        createWebSigninBridgeCallback(tab, continueUrl, initialTabURL));
+        @Nullable WindowAndroid windowAndroid = tab.getWindowAndroid();
+        if (windowAndroid == null) return;
+        WebSigninRedirectCoordinator coordinator =
+                WebSigninRedirectCoordinatorSupplier.getOrCreateCoordinatorFrom(windowAndroid);
+        coordinator.initializeWebSigninAndRedirect(tab, prefilledEmail, continueUrl, initialTabURL);
     }
 
     /**
@@ -223,30 +220,12 @@ final class SigninBridge {
      */
     private static void waitForCookiesAndRedirect(
             Tab tab, CoreAccountId selectedAccountId, GURL continueUrl, GURL initialTabURL) {
-        new WebSigninBridge.Factory()
-                .createWithCoreAccountId(
-                        tab.getProfile(),
-                        selectedAccountId,
-                        createWebSigninBridgeCallback(tab, continueUrl, initialTabURL));
-    }
-
-    private static Callback<@WebSigninTrackerResult Integer> createWebSigninBridgeCallback(
-            Tab tab, GURL continueUrl, GURL initialTabURL) {
-        return (result) -> {
-            ThreadUtils.assertOnUiThread();
-            switch (result) {
-                case WebSigninTrackerResult.SUCCESS:
-                    if (!tab.isDestroyed() && tab.getUrl().equals(initialTabURL)) {
-                        tab.loadUrl(new LoadUrlParams(continueUrl));
-                    }
-                    break;
-                // TODO(crbug.com/456445865): Handle cases where WebSigninTracker returns an error.
-                case WebSigninTrackerResult.AUTH_ERROR:
-                    break;
-                case WebSigninTrackerResult.OTHER_ERROR:
-                    break;
-            }
-        };
+        @Nullable WindowAndroid windowAndroid = tab.getWindowAndroid();
+        if (windowAndroid == null) return;
+        WebSigninRedirectCoordinator coordinator =
+                WebSigninRedirectCoordinatorSupplier.getOrCreateCoordinatorFrom(windowAndroid);
+        coordinator.initializeWebSigninAndRedirect(
+                tab, selectedAccountId, continueUrl, initialTabURL);
     }
 
     /** Opens account management screen. */

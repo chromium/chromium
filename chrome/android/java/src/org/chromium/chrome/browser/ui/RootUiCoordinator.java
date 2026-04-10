@@ -150,6 +150,8 @@ import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.share.qrcode.QrCodeDialog;
 import org.chromium.chrome.browser.share.scroll_capture.ScrollCaptureManager;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
+import org.chromium.chrome.browser.signin.WebSigninRedirectCoordinator;
+import org.chromium.chrome.browser.signin.WebSigninRedirectCoordinatorSupplier;
 import org.chromium.chrome.browser.signin.services.WebSigninBridge;
 import org.chromium.chrome.browser.tab.AccessibilityVisibilityHandler;
 import org.chromium.chrome.browser.tab.AutofillSessionLifetimeController;
@@ -290,6 +292,9 @@ public class RootUiCoordinator
 
     private final SettableMonotonicObservableSupplier<BottomSheetSigninAndHistorySyncCoordinator>
             mWebSigninAndHistorySyncCoordinatorSupplier = ObservableSuppliers.createMonotonic();
+
+    private final SettableMonotonicObservableSupplier<WebSigninRedirectCoordinator>
+            mWebSigninRedirectCoordinatorSupplier = ObservableSuppliers.createMonotonic();
 
     protected final SettableMonotonicObservableSupplier<ReadAloudController>
             mReadAloudControllerSupplier = ObservableSuppliers.createMonotonic();
@@ -985,6 +990,13 @@ public class RootUiCoordinator
             signinAndHistorySyncCoordinator.destroy();
         }
 
+        WebSigninRedirectCoordinator webSigninRedirectCoordinator =
+                mWebSigninRedirectCoordinatorSupplier.get();
+        mWebSigninRedirectCoordinatorSupplier.destroy();
+        if (webSigninRedirectCoordinator != null) {
+            webSigninRedirectCoordinator.destroy();
+        }
+
         if (mEdgeToEdgeController != null) {
             mEdgeToEdgeController.destroy();
             mEdgeToEdgeController = null;
@@ -1049,6 +1061,8 @@ public class RootUiCoordinator
         ReadAloudControllerSupplier.attach(userDataHost, mReadAloudControllerSupplier);
         WebSigninAndHistorySyncCoordinatorSupplier.attach(
                 userDataHost, mWebSigninAndHistorySyncCoordinatorSupplier);
+        WebSigninRedirectCoordinatorSupplier.attach(
+                userDataHost, mWebSigninRedirectCoordinatorSupplier);
     }
 
     private void destroyUnownedUserDataSuppliers() {
@@ -1059,6 +1073,7 @@ public class RootUiCoordinator
         ReadAloudControllerSupplier.destroy(mReadAloudControllerSupplier);
         WebSigninAndHistorySyncCoordinatorSupplier.destroy(
                 mWebSigninAndHistorySyncCoordinatorSupplier);
+        WebSigninRedirectCoordinatorSupplier.destroy(mWebSigninRedirectCoordinatorSupplier);
     }
 
     @Override
