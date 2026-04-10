@@ -286,6 +286,7 @@ export class SlimWebviewElement extends CrLitElement {
       minheight: {type: Number, reflect: true},
       maxheight: {type: Number, reflect: true},
       partition: {type: String, reflect: true},
+      allowedOrigins: {type: Array},
     };
   }
 
@@ -296,6 +297,7 @@ export class SlimWebviewElement extends CrLitElement {
   accessor minheight: number = 0;
   accessor maxheight: number = 0;
   accessor partition: string = '';
+  accessor allowedOrigins: string[] = [];
 
   private contentWindow_: WindowProxy|null = null;
 
@@ -347,6 +349,15 @@ export class SlimWebviewElement extends CrLitElement {
         changedProperties.delete('partition');
       }
     }
+    if (changedProperties.has('allowedOrigins')) {
+      if (this.guestInstanceId !== null) {
+        this.allowedOrigins =
+            changedProperties.get('allowedOrigins') as string[] || [];
+        console.error(
+            'allowedOrigins can\'t be changed after the guest was created');
+        changedProperties.delete('allowedOrigins');
+      }
+    }
     return super.shouldUpdate(changedProperties);
   }
 
@@ -391,6 +402,11 @@ export class SlimWebviewElement extends CrLitElement {
         minheight: {intValue: this.minheight},
         maxheight: {intValue: this.maxheight},
         partition: {stringValue: this.partition},
+        allowedOrigins: {
+          listValue: {
+            storage: this.allowedOrigins.map(o => ({stringValue: o})),
+          },
+        },
       },
     };
     if (this.onBeforeSendHeadersParams !== null) {

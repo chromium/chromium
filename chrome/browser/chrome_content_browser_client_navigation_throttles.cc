@@ -126,9 +126,13 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if BUILDFLAG(ENABLE_GUEST_VIEW) && BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
-#endif  // BUILDFLAG(ENABLE_GUEST_VIEW) && BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#else   // !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "components/guest_view/browser/slim_web_view/slim_web_view_navigation_throttle.h"  // nogncheck
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/pdf/chrome_pdf_stream_delegate.h"
@@ -384,6 +388,12 @@ void CreateAndAddChromeThrottlesForNavigation(
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   extensions::WebViewGuest::MaybeCreateAndAddNavigationThrottle(registry);
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
+
+#else  // !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+  guest_view::MaybeCreateAndAddSlimWebViewNavigationThrottle(registry);
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)

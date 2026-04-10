@@ -16,6 +16,8 @@ static_library("slim_web_view") {
     "slim_web_view_constants.h",
     "slim_web_view_guest.cc",
     "slim_web_view_guest.h",
+    "slim_web_view_navigation_throttle.cc",
+    "slim_web_view_navigation_throttle.h",
     "slim_web_view_permission_helper.cc",
     "slim_web_view_permission_helper.h",
     "slim_web_view_url_loader_factory_interceptor.cc",
@@ -27,10 +29,10 @@ static_library("slim_web_view") {
     ":strings",
     "//base",
     "//components/guest_view/browser",
+    "//components/url_pattern",
     "//content/public/browser",
     "//content/public/common",
     "//net",
-    "//third_party/abseil-cpp:absl",
     "//third_party/blink/public:blink_headers",
   ]
 }

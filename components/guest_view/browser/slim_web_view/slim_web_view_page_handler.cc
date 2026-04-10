@@ -69,6 +69,10 @@ void SlimWebViewPageHandler::Navigate(int32_t guest_instance_id,
     mojo::ReportBadMessage("URL must be https, http, or about:blank.");
     return;
   }
+  if (!guest->IsUrlAllowed(url)) {
+    mojo::ReportBadMessage("URL does not match allowed origins.");
+    return;
+  }
   guest->Navigate(url);
 }
 

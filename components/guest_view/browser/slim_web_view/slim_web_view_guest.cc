@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "components/guest_view/browser/guest_view_event.h"
@@ -18,6 +19,7 @@
 #include "components/guest_view/browser/slim_web_view/grit/slim_web_view_strings.h"
 #include "components/guest_view/browser/slim_web_view/request_utils.h"
 #include "components/guest_view/browser/slim_web_view/slim_web_view_constants.h"
+#include "components/url_pattern/simple_url_pattern_matcher.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
@@ -35,6 +37,8 @@ namespace guest_view {
 namespace {
 
 const char kStoragePartitionId[] = "partition";
+const char kAllowedOrigins[] = "allowedOrigins";
+
 const char kPersistPrefix[] = "persist:";
 
 void ParsePartitionParam(const base::DictValue& create_params,
@@ -215,6 +219,22 @@ void SlimWebViewGuest::Navigate(const GURL& url) {
   // header overrides.
   content::NavigationController::LoadURLParams load_url_params(url);
   GetController().LoadURLWithParams(load_url_params);
+}
+
+bool SlimWebViewGuest::HasAllowedOrigins() const {
+  return !allowed_origin_matchers_.empty();
+}
+
+bool SlimWebViewGuest::IsUrlAllowed(const GURL& url) const {
+  if (allowed_origin_matchers_.empty()) {
+    return true;
+  }
+  for (const auto& matcher : allowed_origin_matchers_) {
+    if (matcher->Match(url)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 SlimWebViewGuest::SlimWebViewGuest(
@@ -433,6 +453,24 @@ void SlimWebViewGuest::CreateInnerPage(
     return;
   }
   before_send_headers_params_ = std::move(parse_result.value());
+
+  // Parse the origin allowlist if provided.
+  if (const base::ListValue* origins =
+          create_params.FindList(kAllowedOrigins)) {
+    for (const auto& origin_value : *origins) {
+      if (!origin_value.is_string()) {
+        RejectGuestCreation(std::move(owned_this), std::move(callback));
+        return;
+      }
+      auto matcher = url_pattern::SimpleUrlPatternMatcher::Create(
+          origin_value.GetString(), /*base_url=*/nullptr);
+      if (!matcher.has_value()) {
+        RejectGuestCreation(std::move(owned_this), std::move(callback));
+        return;
+      }
+      allowed_origin_matchers_.push_back(std::move(matcher.value()));
+    }
+  }
 
   std::string storage_partition_id;
   bool persist_storage = false;

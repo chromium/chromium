@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/url_pattern",
   "+net/http",
   "+services/network/public",
 ]
