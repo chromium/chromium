@@ -357,6 +357,15 @@ class OmniboxAimWebUiInteractiveTestBase
                  InAnyContext(WaitForHide(
                      OmniboxPopupPresenterBase::kRoundedResultsFrame)));
   }
+
+  auto TriggerAimVoiceSearch(const std::string& result) {
+    return Steps(InSameContext(ExecuteJsAt(
+        kAimPopupWebView, kVoiceSearch,
+        base::StringPrintf("el => el.dispatchEvent(new CustomEvent("
+                           "'voice-search-final-result', "
+                           "{detail: '%s', bubbles: true, composed: true}))",
+                           result.c_str()))));
+  }
 };
 
 class OmniboxAimWebUiInteractiveTest
@@ -517,9 +526,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxAimSearchFulfillmentTest,
       // Open the AIM popup.
       OpenAimPopup(),
       // Write something into the input field.
-      param.is_voice
-          ? TriggerAimVoiceSearch(kAimPopupWebView, kVoiceSearch, query)
-          : InputAimPopupText(query),
+      param.is_voice ? TriggerAimVoiceSearch(query) : InputAimPopupText(query),
       // Submit query by pressing enter key or by clicking the submit button.
       // Skip this step if voice search auto-submits.
       If([&]() { return !param.is_voice; },

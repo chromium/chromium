@@ -81,19 +81,6 @@ class SearchboxInteractiveTestMixin : public T {
         T::WaitForElementToRender(contents_id, match_text),
         T::WaitForStateChange(contents_id, verbatim_match_ready)));
   }
-
-  // Triggers a voice search with the final result matching `result`.
-  auto TriggerAimVoiceSearch(
-      const ui::ElementIdentifier& contents_id,
-      const WebContentsInteractionTestUtil::DeepQuery& voice_search_element,
-      const std::string& result) {
-    return T::Steps(T::InSameContext(T::ExecuteJsAt(
-        contents_id, voice_search_element,
-        base::StringPrintf("el => el.dispatchEvent(new CustomEvent("
-                           "'voice-search-final-result', "
-                           "{detail: '%s', bubbles: true, composed: true}))",
-                           result.c_str()))));
-  }
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SEARCHBOX_SEARCHBOX_INTERACTIVE_TEST_MIXIN_H_
