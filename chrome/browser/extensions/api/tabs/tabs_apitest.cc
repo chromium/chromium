@@ -197,14 +197,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, CrashBrowser) {
 // TODO(https://crbug.com/371432155): Enable these tests.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
+// Crashes on desktop Android with invalid tab index and ID.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, Opener) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/opener")) << message_;
 }
 
+// Times out on desktop Android.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, Remove) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/remove")) << message_;
 }
 
+// Times out on desktop Android.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, RemoveMultiple) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/remove_multiple")) << message_;
 }
@@ -220,14 +223,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, DISABLED_Connect) {
   ASSERT_TRUE(RunExtensionTest("tabs/connect")) << message_;
 }
 
-// TODO(https://crbug.com/371432155): Enable these tests.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
-// Crashes on desktop Android because it can't find a WindowController for a
-// window while querying tabs.
+// NOTE: Window OnRemoved testing is skipped in JavaScript due to apparently
+// invalid window IDs.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, OnRemoved) {
   ASSERT_TRUE(RunExtensionTest("tabs/on_removed")) << message_;
 }
+
+// TODO(https://crbug.com/371432155): Enable these tests.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 // TODO(crbug.com/499307054): Flaky on desktop Android. Crashes during test
 // shutdown with a Java exception. See bug.
