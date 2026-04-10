@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_CONTEXT_SERVICE_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_CONTEXT_SERVICE_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <utility>
@@ -20,6 +21,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_types.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/page_content_annotations/content/page_embeddings_service.h"
+#include "components/page_content_annotations/core/page_embeddings_common.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 

@@ -52,6 +52,7 @@ source_set("contextual_tasks") {
     "//components/lens",
     "//components/lens:lens_url_utils",
     "//components/page_content_annotations/content:page_embeddings",
+    "//components/page_content_annotations/core",
     "//components/passage_embeddings/core:passage_embeddings_types",
     "//content/public/browser",
     "//third_party/abseil-cpp:absl",

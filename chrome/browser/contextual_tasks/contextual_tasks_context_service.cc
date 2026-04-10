@@ -5,14 +5,27 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 
 #include <algorithm>
+#include <iterator>
 #include <memory>
+#include <optional>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
 
+#include "base/check.h"
+#include "base/containers/flat_set.h"
+#include "base/containers/span.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_scoring_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_signal_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
@@ -26,11 +39,13 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/prefs.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/contextual_tasks_context.pb.h"
 #include "components/page_content_annotations/content/page_content_annotations_web_contents_observer.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/content/page_embeddings_service.h"
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
+#include "components/page_content_annotations/core/page_embeddings_common.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
