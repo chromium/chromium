@@ -445,6 +445,8 @@ public class StatusMediator
         mModel.set(StatusProperties.STATUS_ICON_RESOURCE, icon);
         mModel.set(StatusProperties.STATUS_ICON_DESCRIPTION_RES, icon.getContentDescriptionRes());
         mModel.set(StatusProperties.STATUS_CLICK_LISTENER, this::onClickOpenPageInfo);
+
+        updateStatusViewVisibility();
     }
 
     /** Update selection of icon presented on the location bar. */
@@ -488,9 +490,8 @@ public class StatusMediator
         } else if (mPermissionStatusHandler.isClapperQuietIconShowing()) {
             return;
         } else if (mSecurityIconRes != 0) {
-            if (isPageInfoMovedToAppMenu()
-                    && mPageSecurityLevel == ConnectionSecurityLevel.SECURE
-                    && !mShowStatusIconForSecureOrigins) {
+            if (mPageSecurityLevel == ConnectionSecurityLevel.SECURE
+                    && (isPageInfoMovedToAppMenu() || !mShowStatusIconForSecureOrigins)) {
                 mIsSecurityViewShown = false;
             } else {
                 mIsSecurityViewShown = true;
@@ -516,6 +517,8 @@ public class StatusMediator
                 StatusProperties.STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES,
                 doubleTapDescriptionRes);
         mModel.set(StatusProperties.STATUS_CLICK_LISTENER, clickListener);
+
+        updateStatusViewVisibility();
     }
 
     void onFuseboxStateChanged(int state) {
@@ -682,6 +685,8 @@ public class StatusMediator
     public void resetCustomIconsStatus() {
         mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ true);
         resetEmbeddedIconHandlers();
+
+        updateLocationBarIcon(IconTransitionType.CROSSFADE);
     }
 
     private void openPageInfo(Tab tab) {
@@ -796,7 +801,7 @@ public class StatusMediator
     private void applyStatusIconAndTooltipProperties(
             boolean showIcon, boolean verboseStatusTextVisible) {
         mModel.set(StatusProperties.SHOW_STATUS_ICON, showIcon);
-        if (showIcon && !isHubSearch()) {
+        if ((showIcon || verboseStatusTextVisible) && !isHubSearch()) {
             Drawable background;
             if (mLocationBarDataProvider.isIncognitoBranded()) {
                 background =
@@ -848,8 +853,14 @@ public class StatusMediator
                 mUrlHasFocus
                         || isHubSearch()
                         || mShowStatusIconForSecureOrigins
-                        || mPageSecurityLevel != ConnectionSecurityLevel.SECURE
+                        || mIsSecurityViewShown
+                        || hasStatusIconResource()
+                        || shouldShowVerboseStatusText()
                         || mIsStoreIconShowing);
+    }
+
+    private boolean hasStatusIconResource() {
+        return mModel.get(StatusProperties.STATUS_ICON_RESOURCE) != null;
     }
 
     private void onClickOpenPageInfo(View view) {

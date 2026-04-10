@@ -55,7 +55,7 @@ public class StatusProperties {
         }
 
         /** Constructor for a custom drawable with identifier. */
-        public StatusIconResource(Drawable drawable, String iconIdentifier) {
+        public StatusIconResource(@Nullable Drawable drawable, String iconIdentifier) {
             mDrawable = drawable;
             mIconIdentifier = iconIdentifier;
         }
@@ -192,7 +192,8 @@ public class StatusProperties {
             mContentDescriptionRes = contentDescriptionRes;
         }
 
-        PermissionIconResource(Drawable drawable, boolean isIncognito, String iconIdentifier) {
+        PermissionIconResource(
+                @Nullable Drawable drawable, boolean isIncognito, String iconIdentifier) {
             super(drawable, iconIdentifier);
             mIsIncognito = isIncognito;
             mContentDescriptionRes = 0;
