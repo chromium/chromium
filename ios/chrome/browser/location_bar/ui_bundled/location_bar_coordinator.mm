@@ -8,6 +8,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/supports_user_data.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/omnibox/browser/location_bar_model_impl.h"
 #import "components/omnibox/browser/omnibox_text_util.h"
@@ -111,6 +112,14 @@
 
 namespace {
 const size_t kMaxURLDisplayChars = 32 * 1024;
+
+// Tracks the number of active windows for which the AI Hub new feature badge
+// has been shown. Avoids calling ShouldTriggerHelpUI more than once when the
+// IPH is already showing.
+struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
+  int activeWindows = 0;
+  static constexpr char key[] = "AIHubBadgeActiveWindowsData";
+};
 }  // namespace
 
 @interface LocationBarCoordinator () <
@@ -147,6 +156,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
+// Whether this coordinator triggered the AI Hub new badge in the FET.
+@property(nonatomic, assign) BOOL hasTriggeredAIHubNewBadge;
 // Mediator for the badges displayed in the LocationBar.
 @property(nonatomic, strong) BadgeMediator* badgeMediator;
 // ViewController for the badges displayed in the LocationBar.
@@ -464,6 +475,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   if (!self.started) {
     return;
   }
+  [self decrementAIHubNewBadgeActiveWindowCount];
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
   [self.browser->GetCommandDispatcher()
       stopDispatchingToTarget:self.viewController
@@ -739,16 +751,37 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
 - (void)locationBarDidTapAIHubNewBadge {
-  _tracker->Dismissed(feature_engagement::kIPHiOSAIHubNewBadge);
-  _tracker->NotifyUsedEvent(feature_engagement::kIPHiOSAIHubNewBadge);
+  [self decrementAIHubNewBadgeActiveWindowCount];
+  if (_tracker) {
+    _tracker->NotifyUsedEvent(feature_engagement::kIPHiOSAIHubNewBadge);
+  }
 }
 
 - (BOOL)shouldShowAIHubNewFeatureBadge {
   if (!IsAIHubNewBadgeEnabled()) {
     return NO;
   }
-  return _tracker->ShouldTriggerHelpUI(
-      feature_engagement::kIPHiOSAIHubNewBadge);
+  if (self.hasTriggeredAIHubNewBadge) {
+    return YES;
+  }
+
+  if (!_tracker) {
+    return NO;
+  }
+
+  AIHubBadgeActiveWindowsData* data = static_cast<AIHubBadgeActiveWindowsData*>(
+      _tracker->GetUserData(AIHubBadgeActiveWindowsData::key));
+  if (data && data->activeWindows > 0) {
+    [self incrementAIHubNewBadgeActiveWindowCount];
+    return YES;
+  }
+
+  if (_tracker->ShouldTriggerHelpUI(feature_engagement::kIPHiOSAIHubNewBadge)) {
+    [self incrementAIHubNewBadgeActiveWindowCount];
+    return YES;
+  }
+
+  return NO;
 }
 
 - (void)locationBarHideToolbarTapped {
@@ -863,6 +896,43 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
 #pragma mark - Private
+
+// Increments the active window count for the AI Hub new feature badge.
+- (void)incrementAIHubNewBadgeActiveWindowCount {
+  if (!_tracker) {
+    return;
+  }
+
+  AIHubBadgeActiveWindowsData* data = static_cast<AIHubBadgeActiveWindowsData*>(
+      _tracker->GetUserData(AIHubBadgeActiveWindowsData::key));
+  if (!data) {
+    std::unique_ptr<AIHubBadgeActiveWindowsData> new_data =
+        std::make_unique<AIHubBadgeActiveWindowsData>();
+    data = new_data.get();
+    _tracker->SetUserData(AIHubBadgeActiveWindowsData::key,
+                          std::move(new_data));
+  }
+
+  data->activeWindows++;
+  self.hasTriggeredAIHubNewBadge = YES;
+}
+
+// Decrements the active window count for the AI Hub new feature badge and
+// informs the tracker if the count drops to zero.
+- (void)decrementAIHubNewBadgeActiveWindowCount {
+  if (self.hasTriggeredAIHubNewBadge && _tracker) {
+    AIHubBadgeActiveWindowsData* data =
+        static_cast<AIHubBadgeActiveWindowsData*>(
+            _tracker->GetUserData(AIHubBadgeActiveWindowsData::key));
+    if (data && data->activeWindows > 0) {
+      data->activeWindows--;
+      if (data->activeWindows == 0) {
+        _tracker->Dismissed(feature_engagement::kIPHiOSAIHubNewBadge);
+      }
+    }
+    self.hasTriggeredAIHubNewBadge = NO;
+  }
+}
 
 - (metrics::OmniboxEventProto::PageClassification)getPageClassification:
     (BOOL)isPrefetch {

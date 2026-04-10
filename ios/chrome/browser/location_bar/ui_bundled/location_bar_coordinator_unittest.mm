@@ -8,6 +8,10 @@
 #import <string>
 #import <vector>
 
+#import "base/test/scoped_feature_list.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/public/tracker.h"
+#import "components/feature_engagement/test/mock_tracker.h"
 #import "components/omnibox/browser/test_location_bar_model.h"
 #import "components/variations/scoped_variations_ids_provider.h"
 #import "components/variations/variations_ids_provider.h"
@@ -16,8 +20,12 @@
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_view_controller.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -75,7 +83,17 @@ using variations::VariationsIdsProvider;
 
 @end
 
+@interface LocationBarCoordinator (Testing)
+- (BOOL)shouldShowAIHubNewFeatureBadge;
+- (void)locationBarDidTapAIHubNewBadge;
+@end
+
 namespace {
+
+std::unique_ptr<KeyedService> CreateTestTracker(ProfileIOS* context) {
+  return std::make_unique<
+      testing::NiceMock<feature_engagement::test::MockTracker>>();
+}
 
 class LocationBarCoordinatorTest : public PlatformTest {
  protected:
@@ -85,6 +103,15 @@ class LocationBarCoordinatorTest : public PlatformTest {
     PlatformTest::SetUp();
 
     TestProfileIOS::Builder test_profile_builder;
+
+    test_profile_builder.AddTestingFactory(
+        feature_engagement::TrackerFactory::GetInstance(),
+        base::BindRepeating(&CreateTestTracker));
+    test_profile_builder.AddTestingFactory(
+        GeminiServiceFactory::GetInstance(),
+        base::BindRepeating([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
+          return nullptr;
+        }));
 
     test_profile_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
@@ -282,6 +309,72 @@ TEST_F(LocationBarCoordinatorTest, LoadNonGoogleUrl) {
   EXPECT_FALSE(url_loader->last_params.web_params.is_renderer_initiated);
   ASSERT_EQ(0U, url_loader->last_params.web_params.extra_headers.count);
   EXPECT_EQ(disposition, url_loader->last_params.disposition);
+}
+
+// Tests that invoking delegate calls triggers the proper interaction with the
+// feature_engagement::Tracker for displaying and dismissing the AI Hub badge.
+TEST_F(LocationBarCoordinatorTest, TriggersAIHubNewBadge) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kAIHubNewBadge, kPageActionMenu}, {});
+
+  feature_engagement::test::MockTracker* tracker =
+      static_cast<feature_engagement::test::MockTracker*>(
+          feature_engagement::TrackerFactory::GetForProfile(profile_.get()));
+
+  [coordinator_ start];
+
+  // Checking if the badge should show should trigger the help UI.
+  EXPECT_CALL(*tracker, ShouldTriggerHelpUI(testing::_))
+      .WillOnce(testing::Return(true));
+  EXPECT_TRUE([coordinator_ shouldShowAIHubNewFeatureBadge]);
+
+  // Tapping the badge should dismiss the IPH and log the event.
+  EXPECT_CALL(*tracker,
+              Dismissed(testing::Ref(feature_engagement::kIPHiOSAIHubNewBadge)))
+      .Times(1);
+  EXPECT_CALL(
+      *tracker,
+      NotifyUsedEvent(testing::Ref(feature_engagement::kIPHiOSAIHubNewBadge)))
+      .Times(1);
+  [coordinator_ locationBarDidTapAIHubNewBadge];
+
+  [coordinator_ stop];
+}
+
+// Tests that calling shouldShowAIHubNewFeatureBadge multiple times only calls
+// ShouldTriggerHelpUI once, and locationBarDidTapAIHubNewBadge only dismisses
+// the badge once all active window counts are decremented.
+TEST_F(LocationBarCoordinatorTest, MultipleTriggersAIHubNewBadge) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kAIHubNewBadge, kPageActionMenu}, {});
+
+  feature_engagement::test::MockTracker* tracker =
+      static_cast<feature_engagement::test::MockTracker*>(
+          feature_engagement::TrackerFactory::GetForProfile(profile_.get()));
+
+  [coordinator_ start];
+
+  // First call should trigger the help UI.
+  EXPECT_CALL(*tracker, ShouldTriggerHelpUI(testing::_))
+      .Times(1)
+      .WillOnce(testing::Return(true));
+  EXPECT_TRUE([coordinator_ shouldShowAIHubNewFeatureBadge]);
+
+  // Second call should return YES immediately without hitting the tracker again
+  // because hasTriggeredAIHubNewBadge is now YES.
+  EXPECT_TRUE([coordinator_ shouldShowAIHubNewFeatureBadge]);
+
+  // Tapping the badge should dismiss the IPH and log the event.
+  EXPECT_CALL(*tracker,
+              Dismissed(testing::Ref(feature_engagement::kIPHiOSAIHubNewBadge)))
+      .Times(1);
+  EXPECT_CALL(
+      *tracker,
+      NotifyUsedEvent(testing::Ref(feature_engagement::kIPHiOSAIHubNewBadge)))
+      .Times(1);
+  [coordinator_ locationBarDidTapAIHubNewBadge];
+
+  [coordinator_ stop];
 }
 
 }  // namespace
