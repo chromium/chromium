@@ -4,6 +4,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -85,10 +86,7 @@ class SyncAuthTestBase : public SyncTest {
 
   ~SyncAuthTestBase() override = default;
 
-  // Helper function that adds a reading list entry and waits for either an auth
-  // error, or for the entry to be committed. Returns true if it detects an
-  // auth error, false if the entry is committed successfully.
-  bool AttemptToTriggerAuthError() {
+  void AddReadingListEntry() {
     int index = GetNextEntryIndex();
     std::string title = base::StringPrintf("Entry %d", index);
     GURL url = GURL(base::StringPrintf("http://www.foo%d.com", index));
@@ -98,6 +96,13 @@ class SyncAuthTestBase : public SyncTest {
     model->AddOrReplaceEntry(url, title, reading_list::ADDED_VIA_CURRENT_APP,
                              /*estimated_read_time=*/std::nullopt,
                              /*creation_time=*/std::nullopt);
+  }
+
+  // Helper function that adds a reading list entry and waits for either an auth
+  // error, or for the entry to be committed. Returns true if it detects an
+  // auth error, false if the entry is committed successfully.
+  bool AttemptToTriggerAuthError() {
+    AddReadingListEntry();
 
     // Run until the entry is committed or an auth error is encountered.
     TestForAuthError(GetSyncService(0)).Wait();
@@ -366,33 +371,35 @@ IN_PROC_BROWSER_TEST_P(SyncAuthTest, RetryInitialSetupWithTransientError) {
 IN_PROC_BROWSER_TEST_P(SyncAuthTest, TokenExpiry) {
   // Initial sync succeeds with a short lived OAuth2 Token.
   ASSERT_TRUE(SetupClients());
-  GetFakeServer()->ClearHttpError();
-  DisableTokenFetchRetries();
   SetOAuth2TokenResponse(gaia::FakeOAuth2TokenResponse::Success(
       "short_lived_access_token", base::Seconds(5)));
   ASSERT_TRUE(GetClient(0)->SetupSync());
-  std::string old_token = GetSyncService(0)->GetAccessTokenForTest();
+  ASSERT_EQ(GetSyncService(0)->GetAccessTokenForTest(),
+            "short_lived_access_token");
+
+  SetOAuth2TokenResponse(
+      gaia::FakeOAuth2TokenResponse::Success("new_access_token"));
 
   // Wait until the token has expired.
   base::PlatformThread::Sleep(base::Seconds(5));
 
-  // Trigger an auth error on the server so PSS requests OA2TS for a new token
-  // during the next sync cycle.
+  // Trigger an auth error and wait until a new token is fetched. Note that the
+  // server error is not necessary when token expiry is checked on the client,
+  // but still set it here in case there is a request made to the server for
+  // consistency.
   GetFakeServer()->SetHttpError(net::HTTP_UNAUTHORIZED);
-  SetOAuth2TokenResponse(gaia::FakeOAuth2TokenResponse::OAuth2Error(
-      OAuth2Response::kInternalFailure));
-  ASSERT_TRUE(AttemptToTriggerAuthError());
-  ASSERT_TRUE(GetSyncService(0)->IsRetryingAccessTokenFetchForTest());
 
-  // Trigger an auth success state and set up a new valid OAuth2 token.
+  // Trigger a sync cycle to trigger an auth error.
+  AddReadingListEntry();
+
+  // Wait until a new token is fetched.
+  ASSERT_TRUE(base::test::RunUntil([this]() {
+    return GetSyncService(0)->GetAccessTokenForTest() == "new_access_token";
+  }));
+
+  // Verify that the next sync cycle is successful.
   GetFakeServer()->ClearHttpError();
-  SetOAuth2TokenResponse(
-      gaia::FakeOAuth2TokenResponse::Success("new_access_token"));
-
-  // Verify that the next sync cycle is successful, and uses the new auth token.
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
-  std::string new_token = GetSyncService(0)->GetAccessTokenForTest();
-  EXPECT_NE(old_token, new_token);
 }
 
 class NoAuthErrorChecker : public SingleClientStatusChangeChecker {
