@@ -1619,7 +1619,7 @@ class CORE_EXPORT Document : public ContainerNode,
   void EnqueueOverscrollEvent(const AtomicString& type,
                               Node* target,
                               Element* overscroll_target,
-                              bool overscrolling = false);
+                              bool overscrolling);
 
   void DispatchMediaQueryListEvents();
 

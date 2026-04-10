@@ -114,6 +114,10 @@ struct CORE_EXPORT PaintLayerScrollableAreaRareData final
 
   // True if an overscroll gesture is currently in progress.
   bool in_active_overscroll_ = false;
+  // True if we're targeting an "open" snap point state for the overscroll.
+  // Note that this is only updated at overscrollchanging timing, meaning that
+  // it (correctly) has the opposite value at overscrollstart event.
+  bool is_currently_overscrolling_ = false;
 };
 
 // PaintLayerScrollableArea represents the scrollable area of a LayoutBox.
@@ -832,7 +836,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   // Overscroll events.
   void EnqueueOverscrollStartEventIfNeeded();
-  void EnqueueOverscrollChangingEventIfNeeded(bool overscrolling);
+  void EnqueueOverscrollChangingEventIfNeeded();
   void EnqueueOverscrollFinishedEventIfNeeded(bool snap_changed);
 
   // PaintLayer is destructed before PaintLayerScrollable area, during this

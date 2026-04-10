@@ -16,8 +16,7 @@ OverscrollEvent::OverscrollEvent(const AtomicString& event_type,
             init->bubbles() ? Bubbles::kYes : Bubbles::kNo,
             Cancelable::kNo),
       overscroll_target_(init->overscrollTarget()),
-      overscrolling_(init->hasOverscrolling() ? init->overscrolling()
-                                              : std::nullopt) {}
+      overscrolling_(init->overscrolling()) {}
 
 OverscrollEvent::~OverscrollEvent() = default;
 
@@ -34,7 +33,7 @@ Element* OverscrollEvent::overscrollTarget() const {
   return overscroll_target_;
 }
 
-std::optional<bool> OverscrollEvent::overscrolling() const {
+bool OverscrollEvent::overscrolling() const {
   return overscrolling_;
 }
 

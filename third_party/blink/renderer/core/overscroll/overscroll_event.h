@@ -30,11 +30,11 @@ class OverscrollEvent final : public Event {
 
   Element* overscrollTarget() const;
 
-  std::optional<bool> overscrolling() const;
+  bool overscrolling() const;
 
  private:
   Member<Element> overscroll_target_;
-  std::optional<bool> overscrolling_;
+  bool overscrolling_;
 };
 
 }  // namespace blink

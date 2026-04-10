@@ -8,6 +8,6 @@
 ] interface OverscrollEvent : Event {
   constructor(DOMString type, optional OverscrollEventInit eventInitDict = {});
   readonly attribute Element overscrollTarget;
-  readonly attribute boolean? overscrolling;
+  readonly attribute boolean overscrolling;
 };
 

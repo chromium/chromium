@@ -6545,11 +6545,9 @@ void Document::EnqueueOverscrollEvent(const AtomicString& type,
                                       bool overscrolling) {
   OverscrollEventInit* init = OverscrollEventInit::Create();
   init->setOverscrollTarget(overscroll_target);
+  init->setOverscrolling(overscrolling);
   // We bubble if we're on the document.
   init->setBubbles(target->IsDocumentNode());
-  if (type == event_type_names::kOverscrollchanging) {
-    init->setOverscrolling(overscrolling);
-  }
   Event* overscroll_event = OverscrollEvent::Create(type, init);
   overscroll_event->SetTarget(target);
   scripted_animation_controller_->EnqueuePerFrameEvent(overscroll_event);

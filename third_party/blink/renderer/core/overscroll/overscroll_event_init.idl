@@ -4,5 +4,5 @@
 
 dictionary OverscrollEventInit : EventInit {
   Element? overscrollTarget = null;
-  boolean? overscrolling;
+  boolean overscrolling;
 };

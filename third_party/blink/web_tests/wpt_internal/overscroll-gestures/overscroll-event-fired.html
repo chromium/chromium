@@ -53,15 +53,17 @@ promise_test(async () => {
   let changing_event = events[1];
   let end_event = events[2];
 
-  assert_equals(start_event.target, container, "Event target should be the container");
-  assert_equals(start_event.overscrollTarget, menu, "overscrollTarget should be the menu");
+  assert_equals(start_event.target, container, "start1: Event target should be the container");
+  assert_equals(start_event.overscrollTarget, menu, "start1: overscrollTarget should be the menu");
+  assert_false(start_event.overscrolling, "start1: overscrolling should be false");
 
-  assert_equals(changing_event.target, container, "Event target should be the container");
-  assert_equals(changing_event.overscrollTarget, menu, "overscrollTarget should be the menu");
-  assert_true(changing_event.overscrolling, "overscrolling should be true");
+  assert_equals(changing_event.target, container, "changing1: Event target should be the container");
+  assert_equals(changing_event.overscrollTarget, menu, "changing1: overscrollTarget should be the menu");
+  assert_true(changing_event.overscrolling, "changing1: overscrolling should be true");
 
-  assert_equals(end_event.target, container, "Event target should be the container");
-  assert_equals(end_event.overscrollTarget, menu, "overscrollTarget should be the menu");
+  assert_equals(end_event.target, container, "end1: Event target should be the container");
+  assert_equals(end_event.overscrollTarget, menu, "end1: overscrollTarget should be the menu");
+  assert_true(end_event.overscrolling, "end1: overscrolling should be true");
 
   // Now close the menu
   let event_promises2 = [
@@ -77,15 +79,17 @@ promise_test(async () => {
   let changing_event2 = events2[1];
   let end_event2 = events2[2];
 
-  assert_equals(start_event2.target, container, "Event target should be the container");
-  assert_equals(start_event2.overscrollTarget, menu, "overscrollTarget should be the menu");
+  assert_equals(start_event2.target, container, "start2: Event target should be the container");
+  assert_equals(start_event2.overscrollTarget, menu, "start2: overscrollTarget should be the menu");
+  assert_true(start_event2.overscrolling, "start2: overscrolling should be true");
 
-  assert_equals(changing_event2.target, container, "Event target should be the container");
-  assert_equals(changing_event2.overscrollTarget, menu, "overscrollTarget should be the menu");
-  assert_false(changing_event2.overscrolling, "overscrolling should be false");
+  assert_equals(changing_event2.target, container, "changing2: Event target should be the container");
+  assert_equals(changing_event2.overscrollTarget, menu, "changing2: overscrollTarget should be the menu");
+  assert_false(changing_event2.overscrolling, "changing2: overscrolling should be false");
 
-  assert_equals(end_event2.target, container, "Event target should be the container");
-  assert_equals(end_event2.overscrollTarget, menu, "overscrollTarget should be the menu");
+  assert_equals(end_event2.target, container, "end2: Event target should be the container");
+  assert_equals(end_event2.overscrollTarget, menu, "end2: overscrollTarget should be the menu");
+  assert_false(end_event2.overscrolling, "end2: overscrolling should be false");
 
 }, "Toggle overscroll fires overscrollstart, overscrollchanging, overscrollend events with correct overscrollTarget");
 </script>

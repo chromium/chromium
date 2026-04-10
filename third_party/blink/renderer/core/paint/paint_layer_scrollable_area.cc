@@ -3534,12 +3534,7 @@ void PaintLayerScrollableArea::
     EnqueueOverscrollStartEventIfNeeded();
 
     if (GetLayoutBox()->IsOverscrollAreaParent()) {
-      CHECK_EQ(container_data->size(), 2u);
-      const auto& first_data = container_data->at(0);
-
-      EnqueueOverscrollChangingEventIfNeeded(
-          new_target_ids.x != first_data.element_id ||
-          new_target_ids.y != first_data.element_id);
+      EnqueueOverscrollChangingEventIfNeeded();
     }
   }
 }
@@ -3722,11 +3717,10 @@ void PaintLayerScrollableArea::EnqueueOverscrollStartEventIfNeeded() {
   EnsureRareData().in_active_overscroll_ = true;
   GetLayoutBox()->GetDocument().EnqueueOverscrollEvent(
       event_type_names::kOverscrollstart, overscroll_container,
-      &overscroll_element);
+      &overscroll_element, RareData()->is_currently_overscrolling_);
 }
 
-void PaintLayerScrollableArea::EnqueueOverscrollChangingEventIfNeeded(
-    bool overscrolling) {
+void PaintLayerScrollableArea::EnqueueOverscrollChangingEventIfNeeded() {
   if (!GetLayoutBox()->IsOverscrollAreaParent() || !RareData() ||
       !RareData()->in_active_overscroll_) {
     return;
@@ -3736,9 +3730,25 @@ void PaintLayerScrollableArea::EnqueueOverscrollChangingEventIfNeeded(
                                     ->UltimateOriginatingElement();
   Element* overscroll_container = overscroll_element.GetOverscrollContainer();
 
+  // We should update the overscrolling value now, so that this and the "end"
+  // event get the new value. This will also remain updated for the next
+  // "start" event.
+  RareData()->is_currently_overscrolling_ = [this]() {
+    const cc::SnapContainerData* container_data = GetSnapContainerData();
+    CHECK(container_data);
+    CHECK_EQ(container_data->size(), 2u);
+
+    cc::TargetSnapAreaElementIds target_snap_areas =
+        container_data->GetTargetSnapAreaElementIds();
+    const auto& first_target = container_data->at(0);
+
+    return target_snap_areas.x != first_target.element_id ||
+           target_snap_areas.y != first_target.element_id;
+  }();
+
   GetLayoutBox()->GetDocument().EnqueueOverscrollEvent(
       event_type_names::kOverscrollchanging, overscroll_container,
-      &overscroll_element, overscrolling);
+      &overscroll_element, RareData()->is_currently_overscrolling_);
 }
 
 void PaintLayerScrollableArea::EnqueueOverscrollFinishedEventIfNeeded(
@@ -3756,7 +3766,8 @@ void PaintLayerScrollableArea::EnqueueOverscrollFinishedEventIfNeeded(
   GetLayoutBox()->GetDocument().EnqueueOverscrollEvent(
       snap_changed ? event_type_names::kOverscrollend
                    : event_type_names::kOverscrollcancel,
-      overscroll_container, &overscroll_element);
+      overscroll_container, &overscroll_element,
+      RareData()->is_currently_overscrolling_);
 }
 
 }  // namespace blink
