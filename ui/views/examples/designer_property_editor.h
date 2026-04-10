@@ -64,6 +64,15 @@ class DesignerPropertyEditor {
   // For kCustomDialog. Launches a specialized editor relative to |anchor_view|.
   virtual void ShowCustomDialog(views::View* anchor_view);
 
+  // --------------------------------------------------------------------------
+  // Hierarchy & Expansion
+  // --------------------------------------------------------------------------
+  virtual bool IsExpandable() const;
+  virtual bool IsExpanded() const;
+  virtual void SetExpanded(bool expanded);
+  virtual size_t GetLevel() const;
+  virtual std::vector<DesignerPropertyEditor*> GetSubEditors();
+
   void SetPropertyChangedCallback(PropertyChangedCallback callback) {
     callback_ = std::move(callback);
   }

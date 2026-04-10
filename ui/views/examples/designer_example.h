@@ -45,6 +45,7 @@ class TableView;
 namespace examples {
 
 class DesignerSurface;
+class InPlaceEditor;
 
 class BaseClassRegistration {
  public:
@@ -177,7 +178,9 @@ class VIEWS_EXAMPLES_EXPORT DesignerExample : public ExampleBase,
   raw_ptr<View> dragging_ = nullptr;
   gfx::Point last_mouse_pos_;
   std::vector<std::unique_ptr<DesignerPropertyEditor>> active_editors_;
-  raw_ptr<View> active_inplace_editor_ = nullptr;
+  std::vector<raw_ptr<DesignerPropertyEditor, VectorExperimental>>
+      display_list_;
+  raw_ptr<InPlaceEditor> active_inplace_editor_ = nullptr;
 
   GrabHandles grab_handles_;
 
@@ -185,6 +188,8 @@ class VIEWS_EXAMPLES_EXPORT DesignerExample : public ExampleBase,
   std::set<View*> designer_views_;
 
   views::ViewTracker tracker_;
+
+  void RefreshDisplayList();
 };
 
 }  // namespace examples

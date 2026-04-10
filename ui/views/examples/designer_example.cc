@@ -307,16 +307,20 @@ View* GetDesignerChild(View* child_view,
   return child_view;
 }
 
+}  // namespace
+
 // InPlaceEditor provides a base for editing properties within the TableView.
-class InPlaceEditor : public View,
-                      public TextfieldController,
-                      public ViewObserver {
+class InPlaceEditor : public View, public TextfieldController {
   METADATA_HEADER(InPlaceEditor, View)
 
  public:
   explicit InPlaceEditor(DesignerPropertyEditor* editor,
                          base::OnceClosure on_commit)
-      : editor_(editor), on_commit_(std::move(on_commit)) {}
+      : editor_(editor), on_commit_(std::move(on_commit)) {
+    SetFocusBehavior(FocusBehavior::ALWAYS);
+    GetViewAccessibility().SetRole(ax::mojom::Role::kGenericContainer);
+    GetViewAccessibility().SetName(editor->GetPropertyName());
+  }
 
   ~InPlaceEditor() override = default;
 
@@ -325,9 +329,6 @@ class InPlaceEditor : public View,
       std::move(on_commit_).Run();
     }
   }
-
-  // ViewObserver:
-  void OnViewBlurred(View* observed_view) override { Commit(); }
 
  protected:
   raw_ptr<DesignerPropertyEditor> editor_;
@@ -343,18 +344,24 @@ class TextInPlaceEditor : public InPlaceEditor {
  public:
   TextInPlaceEditor(DesignerPropertyEditor* editor, base::OnceClosure on_commit)
       : InPlaceEditor(editor, std::move(on_commit)) {
-    SetUseDefaultFillLayout(true);
-    textfield_ = AddChildView(std::make_unique<Textfield>());
-    textfield_->GetViewAccessibility().SetName(editor->GetPropertyName());
-    textfield_->SetText(editor->GetValueAsString());
-    textfield_->set_controller(this);
-    if (editor->IsReadOnly()) {
-      textfield_->SetReadOnly(true);
-    }
-    observation_.Observe(textfield_.get());
+    Builder<View>(this)
+        .SetUseDefaultFillLayout(true)
+        .AddChildren(Builder<Textfield>()
+                         .CopyAddressTo(&textfield_)
+                         .SetAccessibleName(editor->GetPropertyName())
+                         .SetText(editor->GetValueAsString())
+                         .SetController(this)
+                         .SetReadOnly(editor->IsReadOnly()))
+        .BuildChildren();
   }
 
-  void RequestFocus() override { textfield_->RequestFocus(); }
+  void RequestFocus() override {
+    if (textfield_->GetEnabled()) {
+      textfield_->RequestFocus();
+    } else {
+      InPlaceEditor::RequestFocus();
+    }
+  }
 
   void Commit() override {
     if (!on_commit_.is_null() && !editor_->IsReadOnly()) {
@@ -384,7 +391,6 @@ class TextInPlaceEditor : public InPlaceEditor {
 
  private:
   raw_ptr<Textfield> textfield_;
-  base::ScopedObservation<View, ViewObserver> observation_{this};
 };
 
 BEGIN_METADATA(TextInPlaceEditor)
@@ -413,11 +419,14 @@ class ComboInPlaceEditor : public InPlaceEditor {
     if (editor->IsReadOnly()) {
       combobox_->SetEnabled(false);
     }
-    observation_.Observe(combobox_.get());
   }
 
   void RequestFocus() override {
-    static_cast<View*>(combobox_)->RequestFocus();
+    if (combobox_->GetEnabled()) {
+      static_cast<View*>(combobox_)->RequestFocus();
+    } else {
+      InPlaceEditor::RequestFocus();
+    }
   }
 
   void Commit() override {
@@ -475,24 +484,70 @@ class ComboInPlaceEditor : public InPlaceEditor {
     }
   }
 
-  // ViewObserver:
-  void OnViewBlurred(View* observed_view) override {
-    if (!editor_->IsReadOnly()) {
-      editor_->SetValueFromString(std::u16string(combobox_->GetText()));
-    }
-    Commit();
-  }
-
  private:
   raw_ptr<EditableCombobox> combobox_;
   size_t last_text_length_ = 0;
-  base::ScopedObservation<View, ViewObserver> observation_{this};
 };
 
 BEGIN_METADATA(ComboInPlaceEditor)
 END_METADATA
 
-}  // namespace
+class CheckboxInPlaceEditor : public InPlaceEditor {
+  METADATA_HEADER(CheckboxInPlaceEditor, InPlaceEditor)
+
+ public:
+  CheckboxInPlaceEditor(DesignerPropertyEditor* editor,
+                        base::OnceClosure on_commit)
+      : InPlaceEditor(editor, std::move(on_commit)) {
+    Builder<View>(this)
+        .SetLayoutManager(std::make_unique<BoxLayout>(
+            BoxLayout::Orientation::kHorizontal, gfx::Insets(), 0))
+        .CustomConfigure(base::BindOnce([](View* editor_view) {
+          auto* layout =
+              static_cast<BoxLayout*>(editor_view->GetLayoutManager());
+          layout->set_main_axis_alignment(
+              BoxLayout::MainAxisAlignment::kCenter);
+          layout->set_cross_axis_alignment(
+              BoxLayout::CrossAxisAlignment::kCenter);
+        }))
+        .AddChildren(
+            Builder<Checkbox>()
+                .CopyAddressTo(&checkbox_)
+                .SetAccessibleName(editor->GetPropertyName())
+                .SetChecked(editor->GetValueAsString() == u"true")
+                .SetCallback(base::BindRepeating(
+                    &CheckboxInPlaceEditor::OnToggled, base::Unretained(this)))
+                .SetEnabled(!editor->IsReadOnly()))
+        .BuildChildren();
+  }
+
+  void RequestFocus() override {
+    if (checkbox_->GetEnabled()) {
+      checkbox_->RequestFocus();
+    } else {
+      InPlaceEditor::RequestFocus();
+    }
+  }
+
+  void Commit() override {
+    if (!on_commit_.is_null() && !editor_->IsReadOnly()) {
+      editor_->SetValueFromString(checkbox_->GetChecked() ? u"true" : u"false");
+    }
+    InPlaceEditor::Commit();
+  }
+
+ private:
+  void OnToggled() {
+    if (!editor_->IsReadOnly()) {
+      editor_->SetValueFromString(checkbox_->GetChecked() ? u"true" : u"false");
+    }
+  }
+
+  raw_ptr<Checkbox> checkbox_;
+};
+
+BEGIN_METADATA(CheckboxInPlaceEditor)
+END_METADATA
 
 BaseClassRegistration::~BaseClassRegistration() = default;
 
@@ -753,6 +808,13 @@ void DesignerExample::CreateExampleView(View* container) {
                       .SetOrientation(BoxLayout::Orientation::kVertical)
                       .SetInsideBorderInsets(gfx::Insets::TLBR(0, 3, 0, 0))
                       .SetBetweenChildSpacing(3)
+                      .CustomConfigure(base::BindOnce(
+                          [](DesignerExample* designer_example,
+                             BoxLayoutView* palette_panel) {
+                            palette_panel->AddPreTargetHandler(
+                                designer_example);
+                          },
+                          base::Unretained(this)))
                       .AddChildren(
                           Builder<Combobox>()
                               .CopyAddressTo(&view_type_)
@@ -805,7 +867,7 @@ void DesignerExample::OnEvent(ui::Event* event) {
         key_event->key_code() == ui::VKEY_DELETE && selected_ &&
         selected_ != designer_panel_) {
       if (active_inplace_editor_) {
-        static_cast<InPlaceEditor*>(active_inplace_editor_.get())->Commit();
+        active_inplace_editor_->Commit();
       }
 
       View* to_delete = selected_;
@@ -840,9 +902,76 @@ void DesignerExample::OnEvent(ui::Event* event) {
       event->SetHandled();
       return;
     }
+    if (key_event->type() == ui::EventType::kKeyPressed &&
+        (key_event->key_code() == ui::VKEY_UP ||
+         key_event->key_code() == ui::VKEY_DOWN) &&
+        active_inplace_editor_) {
+      if (key_event->key_code() == ui::VKEY_DOWN && key_event->IsAltDown()) {
+        // Let it pass through to open the combobox.
+      } else {
+        std::optional<size_t> row = inspector_->GetFirstSelectedRow();
+        if (row.has_value()) {
+          int delta = (key_event->key_code() == ui::VKEY_UP) ? -1 : 1;
+          int next_row = static_cast<int>(row.value()) + delta;
+          if (next_row >= 0 &&
+              next_row < static_cast<int>(inspector_->GetRowCount())) {
+            active_inplace_editor_->Commit();
+            inspector_->Select(static_cast<size_t>(next_row));
+            event->SetHandled();
+            return;
+          }
+        }
+      }
+    }
+    if (key_event->type() == ui::EventType::kKeyPressed &&
+        (key_event->key_code() == ui::VKEY_LEFT ||
+         key_event->key_code() == ui::VKEY_RIGHT)) {
+      std::optional<size_t> row = inspector_->GetFirstSelectedRow();
+      if (row.has_value()) {
+        auto editor = display_list_[row.value()];
+        if (editor->IsExpandable()) {
+          bool expand = key_event->key_code() == ui::VKEY_RIGHT;
+          if (editor->IsExpanded() != expand) {
+            editor->SetExpanded(expand);
+            RefreshDisplayList();
+            if (model_observer_) {
+              model_observer_->OnModelChanged();
+            }
+            inspector_->Select(row.value());
+            event->SetHandled();
+            return;
+          }
+        }
+      }
+    }
   }
   if (event->IsMouseEvent() && event->target()) {
     View* view = static_cast<View*>(event->target());
+    if (view == inspector_) {
+      ui::MouseEvent* mouse_event = event->AsMouseEvent();
+      if (mouse_event->type() == ui::EventType::kMousePressed &&
+          mouse_event->IsOnlyLeftMouseButton()) {
+        gfx::Point point = mouse_event->location();
+        int row = point.y() / inspector_->GetRowHeight();
+        if (row >= 0 && row < static_cast<int>(display_list_.size())) {
+          // Check if clicking in the first column (Name)
+          const auto& visible_columns = inspector_->visible_columns();
+          if (point.x() < visible_columns[0].width) {
+            auto editor = display_list_[row];
+            if (editor->IsExpandable()) {
+              editor->SetExpanded(!editor->IsExpanded());
+              RefreshDisplayList();
+              if (model_observer_) {
+                model_observer_->OnModelChanged();
+              }
+              inspector_->Select(row);
+              event->SetHandled();
+              return;
+            }
+          }
+        }
+      }
+    }
     if (IsViewParent(designer_panel_, view->parent()) ||
         view == designer_panel_) {
       HandleDesignerMouseEvent(event);
@@ -926,7 +1055,7 @@ void DesignerExample::HandleDesignerMouseEvent(ui::Event* event) {
 void DesignerExample::SelectView(View* view) {
   if (view != selected_) {
     if (active_inplace_editor_) {
-      static_cast<InPlaceEditor*>(active_inplace_editor_.get())->Commit();
+      active_inplace_editor_->Commit();
     }
     selected_ = view;
     active_editors_.clear();
@@ -935,9 +1064,27 @@ void DesignerExample::SelectView(View* view) {
         active_editors_.push_back(CreatePropertyEditor(selected_, member));
       }
     }
+    RefreshDisplayList();
     if (model_observer_) {
       model_observer_->OnModelChanged();
     }
+  }
+}
+
+void DesignerExample::RefreshDisplayList() {
+  display_list_.clear();
+  auto add_to_list = [this](auto& self,
+                            DesignerPropertyEditor* editor) -> void {
+    display_list_.push_back(editor);
+    if (editor->IsExpandable() && editor->IsExpanded()) {
+      for (auto* sub : editor->GetSubEditors()) {
+        self(self, sub);
+      }
+    }
+  };
+
+  for (const auto& editor : active_editors_) {
+    add_to_list(add_to_list, editor.get());
   }
 }
 
@@ -946,14 +1093,14 @@ void DesignerExample::OnSelectionChanged() {
 
   if (active_inplace_editor_) {
     // Commit and remove previous editor.
-    static_cast<InPlaceEditor*>(active_inplace_editor_.get())->Commit();
+    active_inplace_editor_->Commit();
   }
 
   if (!row.has_value() || !selected_) {
     return;
   }
 
-  auto& editor = active_editors_[row.value()];
+  auto editor = display_list_[row.value()];
   std::unique_ptr<InPlaceEditor> inplace_editor;
 
   size_t current_row = row.value();
@@ -977,11 +1124,15 @@ void DesignerExample::OnSelectionChanged() {
 
   if (editor->GetEditorType() ==
       DesignerPropertyEditor::EditorType::kCombobox) {
-    inplace_editor = std::make_unique<ComboInPlaceEditor>(editor.get(),
-                                                          std::move(on_commit));
+    inplace_editor =
+        std::make_unique<ComboInPlaceEditor>(editor, std::move(on_commit));
+  } else if (editor->GetEditorType() ==
+             DesignerPropertyEditor::EditorType::kCheckbox) {
+    inplace_editor =
+        std::make_unique<CheckboxInPlaceEditor>(editor, std::move(on_commit));
   } else {
     inplace_editor =
-        std::make_unique<TextInPlaceEditor>(editor.get(), std::move(on_commit));
+        std::make_unique<TextInPlaceEditor>(editor, std::move(on_commit));
   }
 
   size_t view_row = inspector_->ModelToView(row.value());
@@ -1032,14 +1183,18 @@ void DesignerExample::CreateView(const ui::Event& event) {
 }
 
 size_t DesignerExample::RowCount() {
-  return selected_ ? active_editors_.size() : 0;
+  return selected_ ? display_list_.size() : 0;
 }
 
 std::u16string DesignerExample::GetText(size_t row, int column_id) {
   if (selected_) {
-    const auto& editor = active_editors_[row];
+    const auto editor = display_list_[row];
     if (column_id == 0) {
-      return editor->GetPropertyName();
+      std::u16string name = editor->GetPropertyName();
+      if (editor->IsExpandable()) {
+        name = (editor->IsExpanded() ? u"[-] " : u"[+] ") + name;
+      }
+      return std::u16string(editor->GetLevel() * 2, ' ') + name;
     }
     return editor->GetValueAsString();
   }
