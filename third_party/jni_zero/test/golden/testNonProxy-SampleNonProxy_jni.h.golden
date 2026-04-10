@@ -246,7 +246,7 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleNonProxy() {}
             title_ref,                                                                             \
             visits_ref);                                                                           \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleNonProxy_AddBookmarkFromAPI() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (int32_t, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<::java::lang::JLong>&, const jni_zero::JavaRef<::java::lang::JBoolean>&, const jni_zero::JavaRef<::java::lang::JLong>&, const jni_zero::JavaRef<JArray<int8_t>>&, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<::java::lang::JInteger>&)\nSee SampleNonProxy_jni.h for an example."); \
+        static_assert(false, "JNI_SampleNonProxy_AddBookmarkFromAPI() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (int32_t, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<JLong>&, const jni_zero::JavaRef<JBoolean>&, const jni_zero::JavaRef<JLong>&, const jni_zero::JavaRef<JArray<int8_t>>&, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<JInteger>&)\nSee SampleNonProxy_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -338,7 +338,7 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleNonProxy() {}
           view_ref); }) {                                                                          \
         return func_wrapper(jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller), view_ref);      \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleNonProxy_GetStateAsByteArray() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<::android::view::JView>&)\nSee SampleNonProxy_jni.h for an example."); \
+        static_assert(false, "JNI_SampleNonProxy_GetStateAsByteArray() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<JView>&)\nSee SampleNonProxy_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \

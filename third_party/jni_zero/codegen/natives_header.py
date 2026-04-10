@@ -117,7 +117,7 @@ def _param_type_for_assert_message(param):
     return param_type.converted_type
   if param_type.is_primitive():
     return param_type.to_cpp()
-  jtype = param_type.to_mirror_cpp()
+  jtype = param_type.to_mirror_cpp(fully_qualified=False)
   return f'const jni_zero::JavaRef<{jtype}>&'
 
 

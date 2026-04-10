@@ -94,7 +94,7 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleProxyEdgeCases() {}
       } else if constexpr (requires { func_wrapper(caller_ref, b_ref); }) {                        \
         return func_wrapper(caller_ref, b_ref);                                                    \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleProxyEdgeCases_AddStructB() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<::org::jni_zero::JSampleForTests>&, const jni_zero::JavaRef<::org::jni_zero::JSampleForTests_InnerStructB>&)\nSee SampleProxyEdgeCases_jni.h for an example."); \
+        static_assert(false, "JNI_SampleProxyEdgeCases_AddStructB() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<JSampleForTests>&, const jni_zero::JavaRef<JSampleForTests_InnerStructB>&)\nSee SampleProxyEdgeCases_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -192,7 +192,7 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleProxyEdgeCases() {}
       } else if constexpr (requires { func_wrapper(arg_ref); }) {                                  \
         return func_wrapper(arg_ref);                                                              \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleProxyEdgeCases_GenericsWithNestedClassArray() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<JArray<::java::util::JMap<::org::jni_zero::JSampleProxyEdgeCases_OtherInnerClass, JArray<::org::jni_zero::JSampleProxyEdgeCases_OtherInnerClass>>>>&)\nSee SampleProxyEdgeCases_jni.h for an example."); \
+        static_assert(false, "JNI_SampleProxyEdgeCases_GenericsWithNestedClassArray() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<JArray<JMap<JSampleProxyEdgeCases_OtherInnerClass, JArray<JSampleProxyEdgeCases_OtherInnerClass>>>>&)\nSee SampleProxyEdgeCases_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -219,7 +219,7 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleProxyEdgeCases() {}
       } else if constexpr (requires { func_wrapper(b_ref, i_ref); }) {                             \
         return func_wrapper(b_ref, i_ref);                                                         \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleProxyEdgeCases_SetBool() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<::org::jni_zero::internal::JBoolean>&, const jni_zero::JavaRef<::org::jni_zero::JSampleProxyEdgeCases_Integer>&)\nSee SampleProxyEdgeCases_jni.h for an example."); \
+        static_assert(false, "JNI_SampleProxyEdgeCases_SetBool() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<JBoolean>&, const jni_zero::JavaRef<JSampleProxyEdgeCases_Integer>&)\nSee SampleProxyEdgeCases_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     dependent_context(0);                                                                          \
@@ -242,7 +242,7 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleProxyEdgeCases() {}
       } else if constexpr (requires { func_wrapper(sb_ref); }) {                                   \
         return func_wrapper(sb_ref);                                                               \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleProxyEdgeCases_SetStringBuilder() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<::java::lang::JStringBuilder>&)\nSee SampleProxyEdgeCases_jni.h for an example."); \
+        static_assert(false, "JNI_SampleProxyEdgeCases_SetStringBuilder() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<JStringBuilder>&)\nSee SampleProxyEdgeCases_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \

@@ -195,10 +195,8 @@ class JavaClass:
   def enable_mirror(self):
     return self.full_name_with_slashes not in CPP_TYPE_BY_JAVA_TYPE
 
-  def to_mirror_cpp(self):
-    if self.upper_bound_type is not None:
-      return self._fqn
-    if not self.enable_mirror():
+  def to_mirror_cpp(self, fully_qualified=True):
+    if not fully_qualified or self.upper_bound_type or not self.enable_mirror():
       return self.jobject_name
     return f'::{self.mirror_namespace}::{self.jobject_name}'
 
@@ -350,14 +348,16 @@ class JavaType:
       ret += '[]' * self.array_dimensions
     return ret
 
-  def to_mirror_cpp(self):
+  def to_mirror_cpp(self, fully_qualified=True):
     if not self.enable_mirror():
       return self.to_cpp()
     dim = self.array_dimensions
     if self.java_class:
-      ret = self.java_class.to_mirror_cpp()
+      ret = self.java_class.to_mirror_cpp(fully_qualified=fully_qualified)
       if self.generics:
-        ret += '<%s>' % ', '.join(g.to_mirror_cpp() for g in self.generics)
+        ret += '<%s>' % ', '.join(
+            g.to_mirror_cpp(fully_qualified=fully_qualified)
+            for g in self.generics)
     else:
       ret = CPP_UNDERLYING_TYPE_BY_JAVA_TYPE.get(
           self.non_array_full_name_with_slashes, 'jobject')

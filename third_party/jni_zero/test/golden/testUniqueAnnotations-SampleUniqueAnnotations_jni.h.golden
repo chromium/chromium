@@ -84,7 +84,7 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleUniqueAnnotations() {}
       } else if constexpr (requires { func_wrapper(handle_ref); }) {                               \
         return func_wrapper(handle_ref);                                                           \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleUniqueAnnotations_Baz() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<::org::jni_zero::JSampleUniqueAnnotations_Handle>&)\nSee SampleUniqueAnnotations_jni.h for an example."); \
+        static_assert(false, "JNI_SampleUniqueAnnotations_Baz() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<JSampleUniqueAnnotations_Handle>&)\nSee SampleUniqueAnnotations_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     dependent_context(0);                                                                          \

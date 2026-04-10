@@ -60,7 +60,7 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleGenerics() {}
       } else if constexpr (requires { func_wrapper(arg_ref); }) {                                  \
         return func_wrapper(arg_ref);                                                              \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleGenerics_MethodWithGenericParam() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<::java::util::JList<jstring>>&)\nSee SampleGenerics_jni.h for an example."); \
+        static_assert(false, "JNI_SampleGenerics_MethodWithGenericParam() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<JList<jstring>>&)\nSee SampleGenerics_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     dependent_context(0);                                                                          \
@@ -87,7 +87,7 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleGenerics() {}
       } else if constexpr (requires { func_wrapper(arg_ref, arg2_ref); }) {                        \
         return func_wrapper(arg_ref, arg2_ref);                                                    \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleGenerics_SomeMethod() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<::org::jni_zero::JSampleGenerics<::java::util::JList<jstring>>>&, const jni_zero::JavaRef<::java::util::JList<jstring>>&)\nSee SampleGenerics_jni.h for an example."); \
+        static_assert(false, "JNI_SampleGenerics_SomeMethod() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<JSampleGenerics<JList<jstring>>>&, const jni_zero::JavaRef<JList<jstring>>&)\nSee SampleGenerics_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
