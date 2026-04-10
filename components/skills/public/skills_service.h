@@ -18,6 +18,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/skills/internal/skills_downloader.h"
 #include "components/skills/proto/skill.pb.h"
+#include "components/skills/public/skills_types.h"
 #include "components/sync/protocol/skill_specifics.pb.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
@@ -68,10 +69,6 @@ class SkillsService : public KeyedService {
     kReshown,
   };
 
-  // Map of id to skill.
-  using SkillsMap = absl::flat_hash_map<std::string, skills::proto::Skill>;
-  using SkillObjectsMap = absl::flat_hash_map<std::string, Skill>;
-
   // Observer for the service notifications.
   class Observer : public base::CheckedObserver {
    public:
@@ -95,8 +92,8 @@ class SkillsService : public KeyedService {
 
     // Called when the service has completed a download of 1P skills. Receives
     // new map or nullptr if map has not changed.
-    virtual void OnDiscoverySkillsUpdated(
-        const SkillsService::SkillsMap* skills_map) {}
+    virtual void OnDiscoverySkillsUpdated(const SkillIdToProtoMap* skills_map) {
+    }
 
     // Called when the service is shutting down. Observers should remove
     // themselves.
@@ -165,7 +162,7 @@ class SkillsService : public KeyedService {
   // Returns a const reference to the currently loaded 1p skills. If skills have
   // not been loaded yet, returns an empty map. The service does not have to be
   // in a kReady state since these skills are loaded from a SCS file.
-  virtual const SkillsMap& Get1PSkills() const = 0;
+  virtual const SkillIdToProtoMap& Get1PSkills() const = 0;
 
   // Registers an observer for the service notifications.
   virtual void AddObserver(Observer* observer) = 0;
@@ -186,7 +183,8 @@ class SkillsService : public KeyedService {
 
   // Called on download complete of 1p skills. If the download fails or the file
   // has not been modified skills_map is null. Notifies observers.
-  virtual void Handle1pSkillsMap(std::unique_ptr<SkillsMap> skills_map) = 0;
+  virtual void Handle1pSkillsMap(
+      std::unique_ptr<SkillIdToProtoMap> skills_map) = 0;
 
   // Returns controller delegate for the sync service.
   virtual base::WeakPtr<syncer::DataTypeControllerDelegate>

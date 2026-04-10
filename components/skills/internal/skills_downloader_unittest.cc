@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "components/skills/proto/skill.pb.h"
 #include "components/skills/public/skills_metrics.h"
+#include "components/skills/public/skills_types.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -47,11 +48,11 @@ class SkillsDownloaderTest : public testing::Test {
 
  protected:
   // Helper to execute the async fetch synchronously for testing.
-  std::unique_ptr<SkillsDownloader::SkillsMap> FetchDiscoverySkillsSync() {
-    std::unique_ptr<SkillsDownloader::SkillsMap> result_map;
+  std::unique_ptr<SkillIdToProtoMap> FetchDiscoverySkillsSync() {
+    std::unique_ptr<SkillIdToProtoMap> result_map;
     base::RunLoop run_loop;
     downloader_.FetchDiscoverySkills(base::BindLambdaForTesting(
-        [&](std::unique_ptr<SkillsDownloader::SkillsMap> skills_map) {
+        [&](std::unique_ptr<SkillIdToProtoMap> skills_map) {
           result_map = std::move(skills_map);
           run_loop.Quit();
         }));

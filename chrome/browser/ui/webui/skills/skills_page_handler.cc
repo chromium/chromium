@@ -13,6 +13,7 @@
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skill.mojom.h"
 #include "components/skills/public/skills_metrics.h"
+#include "components/skills/public/skills_types.h"
 #include "components/sync/protocol/skill_specifics.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -21,14 +22,12 @@
 
 namespace skills {
 namespace {
-using FirstPartySkillsMap =
-    base::flat_map</*category=*/std::string, std::vector<skills::Skill>>;
 
-FirstPartySkillsMap Translate1PSkillsMap(
-    const SkillsService::SkillsMap& skills_map) {
-  FirstPartySkillsMap translated_map;
+SkillCategoryToSkillMap Translate1PSkillsMap(
+    const SkillIdToProtoMap& skills_map) {
+  SkillCategoryToSkillMap translated_map;
   for (const auto& [id, skill] : skills_map) {
-    skills::Skill translated_skill;
+    Skill translated_skill;
     translated_skill.id = skill.id();
     translated_skill.name = skill.name();
     translated_skill.icon = skill.icon();
@@ -218,14 +217,14 @@ void SkillsPageHandler::Request1PSkills() {
 void SkillsPageHandler::GetInitial1PSkills(
     GetInitial1PSkillsCallback callback) {
   auto scoped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-      std::move(callback), FirstPartySkillsMap());
+      std::move(callback), SkillCategoryToSkillMap());
   auto* service =
       SkillsServiceFactory::GetForProfile(base::to_address(profile_));
   std::move(scoped_callback).Run(Translate1PSkillsMap(service->Get1PSkills()));
 }
 
 void SkillsPageHandler::OnDiscoverySkillsUpdated(
-    const SkillsService::SkillsMap* skills_map) {
+    const SkillIdToProtoMap* skills_map) {
   first_party_download_timer_.Stop();
   RecordSkillsDownloadRequestStatus(
       SkillsDownloadRequestStatus::kResponseReceived);

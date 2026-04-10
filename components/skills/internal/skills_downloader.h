@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/skills/proto/skill.pb.h"
+#include "components/skills/public/skills_types.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -25,15 +26,12 @@ inline constexpr char kSkillsDownloaderGstaticUrl[] =
 // users via chrome://skills/discover-skills.
 class SkillsDownloader {
  public:
-  // Map of id to skill.
-  using SkillsMap = absl::flat_hash_map<std::string, skills::proto::Skill>;
-
   explicit SkillsDownloader(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~SkillsDownloader();
 
   using OnFetchCompleteCallback =
-      base::OnceCallback<void(std::unique_ptr<SkillsMap>)>;
+      base::OnceCallback<void(std::unique_ptr<SkillIdToProtoMap>)>;
 
   // Initiates async download process that calls callback on fetch complete.
   // Called on chrome://skills/discover-skills page load or attempt to save a
