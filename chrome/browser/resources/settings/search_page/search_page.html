@@ -49,18 +49,18 @@
             $i18n{learnMore}
           </a>
         </div>
-        <template is="dom-if" if="[[isDefaultSearchControlledByPolicy_(
-            prefs.default_search_provider_data.template_url_data)]]">
-          <cr-policy-pref-indicator pref="[[
-              prefs.default_search_provider_data.template_url_data]]">
-          </cr-policy-pref-indicator>
-        </template>
         <div class="cr-row first">
           <site-favicon favicon-url="[[defaultSearchEngine_.iconURL]]"
               url="[[defaultSearchEngine_.url]]"
               icon-path="[[defaultSearchEngine_.iconPath]]">
           </site-favicon>
           <div class="search-engine-name">[[defaultSearchEngine_.name]]</div>
+          <template is="dom-if" if="[[isDefaultSearchControlledByPolicy_(
+              prefs.default_search_provider_data.template_url_data)]]">
+            <cr-policy-pref-indicator pref="[[
+                prefs.default_search_provider_data.template_url_data]]">
+            </cr-policy-pref-indicator>
+          </template>
           <cr-button id="openDialogButton"
               on-click="onOpenDialogButtonClick_"
               disabled$="[[isDefaultSearchEngineEnforced_(
