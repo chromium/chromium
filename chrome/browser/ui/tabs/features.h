@@ -35,6 +35,9 @@ BASE_DECLARE_FEATURE(kVerticalTabsNewBadge);
 
 BASE_DECLARE_FEATURE(kVerticalTabsExpandOnHover);
 
+extern const base::FeatureParam<base::TimeDelta>
+    kVerticalTabsExpandOnHoverDelay;
+
 BASE_DECLARE_FEATURE(kTabSelectionByPointer);
 
 BASE_DECLARE_FEATURE(kBackToOpener);

@@ -90,10 +90,6 @@ constexpr ShadowFrameView::ShadowAlpha kExpandOnHoverShadowAlpha(
      .light_ambient = 0.0,
      .dark_key = 0.6,
      .dark_ambient = 0.0});
-
-// TODO(crbug.com/493593208): This value was chosen arbitrarily and should be
-// updated based on ux feedback.
-constexpr base::TimeDelta kExpandOnHoverDelay = base::Milliseconds(500);
 }  // namespace
 
 DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(VerticalTabStripRegionView,
@@ -1052,7 +1048,7 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState(std::optional<bool> ho
   if (!is_expanded_on_hover_ && should_expand) {
     hover_card_animation_lock_ = hover_card_controller_->GetHoverCardHideLock();
     expand_on_hover_timer_.Start(
-        FROM_HERE, kExpandOnHoverDelay,
+        FROM_HERE, tabs::kVerticalTabsExpandOnHoverDelay.Get(),
         base::BindOnce(&VerticalTabStripRegionView::AnimateExpandOnHover,
                        base::Unretained(this),
                        /*expand=*/true));

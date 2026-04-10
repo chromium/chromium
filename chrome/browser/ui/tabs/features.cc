@@ -29,6 +29,9 @@ BASE_FEATURE(kVerticalTabsPreviewBadge, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kVerticalTabsNewBadge, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kVerticalTabsExpandOnHover, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<base::TimeDelta> kVerticalTabsExpandOnHoverDelay{
+    &kVerticalTabsExpandOnHover, "expand_on_hover_delay",
+    base::Milliseconds(500)};
 
 BASE_FEATURE(kTabSelectionByPointer, base::FEATURE_ENABLED_BY_DEFAULT);
 
