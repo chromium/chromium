@@ -195,7 +195,7 @@ void FakeProfileOAuth2TokenServiceDelegate::IssueRefreshTokenForUser(
             ? GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
                   GoogleServiceAuthError::InvalidGaiaCredentialsReason::
                       CREDENTIALS_REJECTED_BY_CLIENT)
-            : GoogleServiceAuthError(GoogleServiceAuthError::NONE);
+            : GoogleServiceAuthError::AuthErrorNone();
 
     UpdateAuthError(account_id, error,
                     /*fire_auth_error_changed=*/false);

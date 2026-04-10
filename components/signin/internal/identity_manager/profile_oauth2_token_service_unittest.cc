@@ -113,9 +113,10 @@ class FakeProfileOAuth2TokenServiceDelegateDesktop
   }
   void InvalidateTokenForMultilogin(
       const CoreAccountId& failed_account) override {
-    UpdateAuthError(failed_account,
-                    GoogleServiceAuthError(
-                        GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+    UpdateAuthError(
+        failed_account,
+        GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   }
 };
 
@@ -468,10 +469,9 @@ TEST_F(ProfileOAuth2TokenServiceTest, NotificationOrderOnRefreshTokenRevoked) {
     EXPECT_CALL(*observer, OnRefreshTokenRevoked(account_id_));
   }
   // Then, all ongoing requests get cancelled.
-  EXPECT_CALL(consumer,
-              OnGetTokenFailure(::testing::_,
-                                GoogleServiceAuthError(
-                                    GoogleServiceAuthError::ACCOUNT_NOT_FOUND)))
+  EXPECT_CALL(consumer, OnGetTokenFailure(
+                            ::testing::_,
+                            GoogleServiceAuthError::CreateAccountNotFound()))
       .Times(1);
   // Finally, `OnEndBatchChanges()` is called.
   for (auto& observer : observers) {
@@ -538,7 +538,8 @@ TEST_F(ProfileOAuth2TokenServiceTest, StartRequestForMultiloginDesktop) {
   token_service.GetDelegate()->UpdateCredentials(account_id_2, "refreshToken");
   token_service.GetDelegate()->UpdateAuthError(
       account_id_2,
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
 
   {
     base::test::TestFuture<const signin::OAuthMultiloginTokenRequest*,
@@ -566,9 +567,10 @@ TEST_F(ProfileOAuth2TokenServiceTest, StartRequestForMultiloginDesktop) {
     EXPECT_FALSE(future.IsReady());
     EXPECT_EQ(future.Get<0>(), &request);
     ASSERT_FALSE(future.Get<1>().has_value());
-    EXPECT_EQ(future.Get<1>().error(),
-              GoogleServiceAuthError(
-                  GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+    EXPECT_EQ(
+        future.Get<1>().error(),
+        GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   }
 
   {
@@ -582,9 +584,8 @@ TEST_F(ProfileOAuth2TokenServiceTest, StartRequestForMultiloginDesktop) {
     EXPECT_FALSE(future.IsReady());
     EXPECT_EQ(future.Get<0>(), &request);
     ASSERT_FALSE(future.Get<1>().has_value());
-    EXPECT_EQ(
-        future.Get<1>().error(),
-        GoogleServiceAuthError(GoogleServiceAuthError::ACCOUNT_NOT_FOUND));
+    EXPECT_EQ(future.Get<1>().error(),
+              GoogleServiceAuthError::CreateAccountNotFound());
   }
 }
 
@@ -650,7 +651,8 @@ TEST_F(ProfileOAuth2TokenServiceTest,
                                /*mtls_token_binding=*/false));
   token_service.GetDelegate()->UpdateAuthError(
       account_id_,
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
 
   base::test::TestFuture<const signin::OAuthMultiloginTokenRequest*,
                          signin::OAuthMultiloginTokenRequest::Result>
@@ -662,9 +664,9 @@ TEST_F(ProfileOAuth2TokenServiceTest,
   EXPECT_FALSE(future.IsReady());
   EXPECT_EQ(future.Get<0>(), &request);
   ASSERT_FALSE(future.Get<1>().has_value());
-  EXPECT_EQ(
-      future.Get<1>().error(),
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+  EXPECT_EQ(future.Get<1>().error(),
+            GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
 }
 
 class FakeProfileOAuth2TokenServiceDelegateDesktopFailsBindingAssertion
@@ -783,12 +785,13 @@ TEST_F(ProfileOAuth2TokenServiceTest, InvalidateTokensForMultiloginDesktop) {
       signin_metrics::SourceForRefreshTokenOperation::
           kDiceResponseHandler_Signin);
 
-  EXPECT_CALL(observer,
-              OnAuthErrorChanged(
-                  account_id_,
-                  GoogleServiceAuthError(
-                      GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS),
-                  signin_metrics::SourceForRefreshTokenOperation::kUnknown))
+  EXPECT_CALL(
+      observer,
+      OnAuthErrorChanged(
+          account_id_,
+          GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+              GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN),
+          signin_metrics::SourceForRefreshTokenOperation::kUnknown))
       .Times(1);
   token_service.InvalidateTokenForMultilogin(account_id_, "refreshToken");
   // Check that refresh tokens for failed accounts are set in error.
@@ -810,10 +813,11 @@ TEST_F(ProfileOAuth2TokenServiceTest, InvalidateTokensForMultiloginMobile) {
 
   EXPECT_CALL(
       observer,
-      OnAuthErrorChanged(account_id_,
-                         GoogleServiceAuthError(
-                             GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS),
-                         testing::_))
+      OnAuthErrorChanged(
+          account_id_,
+          GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+              GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN),
+          testing::_))
       .Times(0);
   oauth2_service_->InvalidateTokenForMultilogin(account_id_, "refreshToken");
   // Check that refresh tokens are not affected.

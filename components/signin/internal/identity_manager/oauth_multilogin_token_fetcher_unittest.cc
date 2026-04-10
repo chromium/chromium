@@ -147,7 +147,8 @@ TEST_F(OAuthMultiloginTokenFetcherTest, OneAccountPersistentError) {
   EXPECT_EQ(FetchStatus::kPending, GetFetchStatus());
   token_service().IssueErrorForAllPendingRequestsForAccount(
       kAccountId,
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   EXPECT_EQ(FetchStatus::kFailure, GetFetchStatus());
   EXPECT_EQ(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS, error().state());
 }
@@ -158,8 +159,7 @@ TEST_F(OAuthMultiloginTokenFetcherTest, OneAccountTransientError) {
       CreateFetcher({{.account_id = kAccountId}});
   // Connection failure will be retried.
   token_service().IssueErrorForAllPendingRequestsForAccount(
-      kAccountId,
-      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+      kAccountId, GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
   EXPECT_EQ(FetchStatus::kPending, GetFetchStatus());
   // Success on retry.
   OAuth2AccessTokenConsumer::TokenResponse success_response;
@@ -178,12 +178,10 @@ TEST_F(OAuthMultiloginTokenFetcherTest, OneAccountTransientErrorMaxRetries) {
       CreateFetcher({{.account_id = kAccountId}});
   // Repeated connection failures.
   token_service().IssueErrorForAllPendingRequestsForAccount(
-      kAccountId,
-      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+      kAccountId, GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
   EXPECT_EQ(FetchStatus::kPending, GetFetchStatus());
   token_service().IssueErrorForAllPendingRequestsForAccount(
-      kAccountId,
-      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+      kAccountId, GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
   // Stop retrying, and fail.
   EXPECT_EQ(FetchStatus::kFailure, GetFetchStatus());
   EXPECT_EQ(GoogleServiceAuthError::CONNECTION_FAILED, error().state());
@@ -237,14 +235,11 @@ TEST_F(OAuthMultiloginTokenFetcherTest, MultipleAccountsTransientError) {
                      {.account_id = account_3}});
   // Connection failures will be retried.
   token_service().IssueErrorForAllPendingRequestsForAccount(
-      account_1,
-      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+      account_1, GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
   token_service().IssueErrorForAllPendingRequestsForAccount(
-      account_2,
-      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+      account_2, GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
   token_service().IssueErrorForAllPendingRequestsForAccount(
-      account_3,
-      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+      account_3, GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
   // Success on retry.
   OAuth2AccessTokenConsumer::TokenResponse success_response;
   success_response.access_token = kAccessToken;
@@ -281,7 +276,8 @@ TEST_F(OAuthMultiloginTokenFetcherTest, MultipleAccountsPersistentError) {
   EXPECT_EQ(FetchStatus::kPending, GetFetchStatus());
   token_service().IssueErrorForAllPendingRequestsForAccount(
       account_2,
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   // Fail as soon as one of the accounts is in error.
   EXPECT_EQ(FetchStatus::kFailure, GetFetchStatus());
   EXPECT_EQ(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS, error().state());

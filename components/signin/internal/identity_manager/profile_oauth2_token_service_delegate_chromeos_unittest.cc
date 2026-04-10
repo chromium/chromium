@@ -384,8 +384,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
        ObserversAreNotifiedOnAuthErrorChange) {
   UpsertAccountAndWaitForCompletion(gaia_account_key(), kUserEmail, kGaiaToken);
   TestOAuth2TokenServiceObserver observer(delegate_.get());
-  auto error =
-      GoogleServiceAuthError(GoogleServiceAuthError::State::SERVICE_ERROR);
+  auto error = GoogleServiceAuthError::FromServiceError(std::string());
 
   delegate_->UpdateAuthError(account_info_.account_id, error);
   EXPECT_EQ(error, delegate_->GetAuthError(account_info_.account_id));
@@ -431,8 +430,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
        ObserversAreNotNotifiedIfErrorDidntChange) {
   UpsertAccountAndWaitForCompletion(gaia_account_key(), kUserEmail, kGaiaToken);
   TestOAuth2TokenServiceObserver observer(delegate_.get());
-  auto error =
-      GoogleServiceAuthError(GoogleServiceAuthError::State::SERVICE_ERROR);
+  auto error = GoogleServiceAuthError::FromServiceError(std::string());
 
   delegate_->UpdateAuthError(account_info_.account_id, error);
   EXPECT_EQ(1, observer.on_auth_error_changed_calls_);
@@ -447,13 +445,13 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
   TestOAuth2TokenServiceObserver observer(delegate_.get());
   delegate_->UpdateAuthError(
       account_info_.account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::State::SERVICE_ERROR));
+      GoogleServiceAuthError::FromServiceError(std::string()));
   EXPECT_EQ(1, observer.on_auth_error_changed_calls_);
 
   delegate_->UpdateAuthError(
       account_info_.account_id,
-      GoogleServiceAuthError(
-          GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   EXPECT_EQ(2, observer.on_auth_error_changed_calls_);
 }
 
@@ -475,8 +473,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
                                     kGaiaToken);
 
   // Deliberately add an error.
-  auto error =
-      GoogleServiceAuthError(GoogleServiceAuthError::State::SERVICE_ERROR);
+  auto error = GoogleServiceAuthError::FromServiceError(std::string());
   delegate_->UpdateAuthError(account_info_.account_id, error);
 
   // Update credentials. The delegate will check if see cached errors.
@@ -486,8 +483,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
 
 TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
        ObserversDoNotSeeCachedErrorsOnAccountRemoval) {
-  auto error =
-      GoogleServiceAuthError(GoogleServiceAuthError::State::SERVICE_ERROR);
+  auto error = GoogleServiceAuthError::FromServiceError(std::string());
   UpsertAccountAndWaitForCompletion(gaia_account_key(), account_info_.email,
                                     kGaiaToken);
   // Deliberately add an error.
@@ -684,8 +680,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
 TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
        SigninErrorObserversAreNotifiedOnAuthErrorChange) {
   UpsertAccountAndWaitForCompletion(gaia_account_key(), kUserEmail, kGaiaToken);
-  auto error =
-      GoogleServiceAuthError(GoogleServiceAuthError::State::SERVICE_ERROR);
+  auto error = GoogleServiceAuthError::FromServiceError(std::string());
 
   delegate_->UpdateAuthError(account_info_.account_id, error);
 
@@ -695,8 +690,8 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
 TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
        TransientErrorsAreNotShown) {
   UpsertAccountAndWaitForCompletion(gaia_account_key(), kUserEmail, kGaiaToken);
-  auto transient_error = GoogleServiceAuthError(
-      GoogleServiceAuthError::State::SERVICE_UNAVAILABLE);
+  auto transient_error =
+      GoogleServiceAuthError::FromServiceUnavailable(std::string());
   EXPECT_EQ(GoogleServiceAuthError::AuthErrorNone(),
             delegate_->GetAuthError(account_info_.account_id));
 
@@ -710,8 +705,8 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
        BackOffIsTriggerredForTransientErrors) {
   UpsertAccountAndWaitForCompletion(gaia_account_key(), account_info_.email,
                                     kGaiaToken);
-  auto transient_error = GoogleServiceAuthError(
-      GoogleServiceAuthError::State::SERVICE_UNAVAILABLE);
+  auto transient_error =
+      GoogleServiceAuthError::FromServiceUnavailable(std::string());
   delegate_->UpdateAuthError(account_info_.account_id, transient_error);
   // Add a dummy success response. The actual network call has not been made
   // yet.
@@ -750,8 +745,8 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
        BackOffIsResetOnNetworkChange) {
   UpsertAccountAndWaitForCompletion(gaia_account_key(), account_info_.email,
                                     kGaiaToken);
-  auto transient_error = GoogleServiceAuthError(
-      GoogleServiceAuthError::State::SERVICE_UNAVAILABLE);
+  auto transient_error =
+      GoogleServiceAuthError::FromServiceUnavailable(std::string());
   delegate_->UpdateAuthError(account_info_.account_id, transient_error);
   // Add a dummy success response. The actual network call has not been made
   // yet.

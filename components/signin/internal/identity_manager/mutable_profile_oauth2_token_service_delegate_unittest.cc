@@ -911,10 +911,9 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, UpdateInvalidToken) {
   ExpectOneTokenAvailableNotification();
 
   // The account is in authentication error.
-  EXPECT_EQ(GoogleServiceAuthError(
-                GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-                    GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                        CREDENTIALS_REJECTED_BY_CLIENT)),
+  EXPECT_EQ(GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                    CREDENTIALS_REJECTED_BY_CLIENT),
             oauth2_service_delegate_->GetAuthError(account_id));
 
   // Update the token: authentication error is fixed, no actual server
@@ -1065,10 +1064,9 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, LoadInvalidToken) {
             oauth2_service_delegate_->GetRefreshTokenForTest(account_id));
 
   // The account is in authentication error.
-  EXPECT_EQ(GoogleServiceAuthError(
-                GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-                    GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                        CREDENTIALS_REJECTED_BY_CLIENT)),
+  EXPECT_EQ(GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                    CREDENTIALS_REJECTED_BY_CLIENT),
             oauth2_service_delegate_->GetAuthError(account_id));
 }
 
@@ -1156,7 +1154,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, GetTokenForMultilogin) {
   oauth2_service_delegate_->UpdateCredentials(account_id2, "refresh_token2");
   oauth2_service_delegate_->UpdateAuthError(
       account_id2,
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
 
   EXPECT_EQ(oauth2_service_delegate_->GetTokenForMultilogin(account_id1),
             "refresh_token1");
@@ -1256,8 +1255,9 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, FetchPersistentError) {
   EXPECT_EQ(GoogleServiceAuthError::AuthErrorNone(),
             oauth2_service_delegate_->GetAuthError(account_id));
 
-  GoogleServiceAuthError authfail(
-      GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
+  GoogleServiceAuthError authfail =
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN);
   oauth2_service_delegate_->UpdateAuthError(account_id, authfail);
   EXPECT_NE(GoogleServiceAuthError::AuthErrorNone(),
             oauth2_service_delegate_->GetAuthError(account_id));
@@ -1287,7 +1287,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, RetryBackoff) {
   EXPECT_EQ(GoogleServiceAuthError::AuthErrorNone(),
             oauth2_service_delegate_->GetAuthError(account_id));
 
-  GoogleServiceAuthError authfail(GoogleServiceAuthError::SERVICE_UNAVAILABLE);
+  GoogleServiceAuthError authfail =
+      GoogleServiceAuthError::FromServiceUnavailable(std::string());
   oauth2_service_delegate_->UpdateAuthError(account_id, authfail);
   EXPECT_EQ(GoogleServiceAuthError::AuthErrorNone(),
             oauth2_service_delegate_->GetAuthError(account_id));
@@ -1333,7 +1334,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ResetBackoff) {
   EXPECT_EQ(GoogleServiceAuthError::AuthErrorNone(),
             oauth2_service_delegate_->GetAuthError(account_id));
 
-  GoogleServiceAuthError authfail(GoogleServiceAuthError::SERVICE_UNAVAILABLE);
+  GoogleServiceAuthError authfail =
+      GoogleServiceAuthError::FromServiceUnavailable(std::string());
   oauth2_service_delegate_->UpdateAuthError(account_id, authfail);
   EXPECT_EQ(GoogleServiceAuthError::AuthErrorNone(),
             oauth2_service_delegate_->GetAuthError(account_id));

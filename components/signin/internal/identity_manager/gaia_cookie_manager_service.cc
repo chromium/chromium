@@ -557,7 +557,7 @@ void GaiaCookieManagerService::LogOutAllAccounts(
   if (std::ranges::contains(requests_, GaiaCookieRequestType::LOG_OUT,
                             &GaiaCookieRequest::request_type)) {
     std::move(completion_callback)
-        .Run(GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
+        .Run(GoogleServiceAuthError::CreateRequestCanceled());
     return;
   }
 

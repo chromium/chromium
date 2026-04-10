@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "google_apis/gaia/fake_oauth2_access_token_manager.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 
 // Helper class to simplify writing unittests that depend on an instance of
 // ProfileOAuth2TokenService.
@@ -31,7 +32,8 @@
 // IssueTokenForScope(scopes, "access_token", base::Time()::Max());
 // ...
 // // ...or make them fail...
-// IssueErrorForScope(scopes, GoogleServiceAuthError(INVALID_GAIA_CREDENTIALS));
+// IssueErrorForScope(scopes,
+//   GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(InvalidGaiaCredentialsReason::UNKNOWN));
 //
 class FakeProfileOAuth2TokenService : public ProfileOAuth2TokenService {
  public:

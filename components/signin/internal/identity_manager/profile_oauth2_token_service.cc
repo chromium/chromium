@@ -384,8 +384,7 @@ OAuth2AccessTokenManager* ProfileOAuth2TokenService::GetAccessTokenManager() {
 void ProfileOAuth2TokenService::OnRefreshTokenAvailable(
     const CoreAccountId& account_id) {
   token_manager_->CancelRequestsForAccount(
-      account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
+      account_id, GoogleServiceAuthError::CreateRequestCanceled());
   token_manager_->ClearCacheForAccount(account_id);
 }
 
@@ -400,8 +399,7 @@ void ProfileOAuth2TokenService::OnRefreshTokenRevoked(
 void ProfileOAuth2TokenService::OnRefreshTokenRevokedNotified(
     const CoreAccountId& account_id) {
   token_manager_->CancelRequestsForAccount(
-      account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::ACCOUNT_NOT_FOUND));
+      account_id, GoogleServiceAuthError::CreateAccountNotFound());
 }
 
 void ProfileOAuth2TokenService::OnRefreshTokensLoaded() {

@@ -759,7 +759,8 @@ TEST_F(OAuthMultiloginHelperTest, OneAccountAccessTokenFailure) {
 
   token_service()->IssueErrorForAllPendingRequestsForAccount(
       kAccountId,
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   EXPECT_EQ(result_, SetAccountsInCookieResult::kPersistentError);
 }
 
@@ -901,7 +902,8 @@ TEST_F(OAuthMultiloginHelperTest, InvalidTokenErrorWithRefreshTokens) {
   // because the refresh token was revoked.
   token_service()->IssueErrorForAllPendingRequestsForAccount(
       kAccountId,
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
   EXPECT_NE(token_service()->GetAuthError(kAccountId),
             GoogleServiceAuthError::AuthErrorNone());
@@ -1127,7 +1129,8 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenFailureChallengedTwice) {
   // the refresh token was invalidated.
   token_service()->IssueErrorForAllPendingRequestsForAccount(
       kAccountId,
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
   EXPECT_NE(token_service()->GetAuthError(kAccountId),
             GoogleServiceAuthError::AuthErrorNone());
