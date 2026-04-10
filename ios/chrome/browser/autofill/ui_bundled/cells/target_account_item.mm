@@ -73,7 +73,7 @@ const CGFloat kAccountCellSpacing = 7;
   UIImageView* googlePayBadge = [[UIImageView alloc] init];
   googlePayBadge.translatesAutoresizingMaskIntoConstraints = NO;
   googlePayBadge.contentMode = UIViewContentModeScaleAspectFit;
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   googlePayBadge.image = MakeSymbolMulticolor(
       CustomSymbolWithPointSize(kGooglePaySymbol, kAccountCellBadgeSize));
 #else

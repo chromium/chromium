@@ -55,7 +55,7 @@ const CGFloat kEstimatedFooterHeight = 50.0;
 // Height of the header view containing the logo.
 const CGFloat kHeaderHeight = 56.0;
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 // Height of the Google Wallet logo.
 const CGFloat kGoogleWalletLogoHeight = 32.0;
 #endif
@@ -355,7 +355,7 @@ const CGFloat kGoogleWalletLogoHeight = 32.0;
 
 // Returns the image to be used above the title of the bottomsheet.
 - (UIImage*)aboveTitleImage {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   // Use the optimized high-resolution iOS symbol for branded builds.
   return MakeSymbolMulticolor(CustomSymbolWithPointSize(
       base::FeatureList::IsEnabled(

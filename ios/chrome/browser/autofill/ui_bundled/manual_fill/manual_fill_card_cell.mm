@@ -152,7 +152,7 @@ bool ShouldShowGPayIcon(autofill::CreditCard::RecordType card_record_type) {
 // GPay icon as there's some empty space above and under the icon on official
 // builds.
 CGFloat GPayIconTopAnchorOffset() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   return -15;
 #else
   return 0;
@@ -285,7 +285,7 @@ CGFloat GPayIconTopAnchorOffset() {
   NSString* accessibilityLabel =
       [NSString stringWithFormat:@"%@, %@", cellIndexAccessibilityLabel,
                                  self.cardLabel.attributedText.string];
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   if (ShouldShowGPayIcon(self.card.recordType)) {
     accessibilityLabel =
         [NSString stringWithFormat:@"%@, %@", accessibilityLabel,
@@ -815,7 +815,7 @@ CGFloat GPayIconTopAnchorOffset() {
 - (UIImageView*)createGPayIcon {
   UIImage* icon;
   // `kGooglePaySymbol` only exists in official builds.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   icon = MakeSymbolMulticolor(
       CustomSymbolWithPointSize(kGooglePaySymbol, kGPayIconWidth));
 #else

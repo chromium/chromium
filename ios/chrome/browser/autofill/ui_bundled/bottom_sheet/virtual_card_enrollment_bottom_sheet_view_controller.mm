@@ -188,7 +188,7 @@ CGFloat const kCreditCardCellHeight = 64;
   UIImageView* logoImageTitleView =
       [[UIImageView alloc] initWithImage:[self googlePayBadgeImage]];
   logoImageTitleView.contentMode = UIViewContentModeCenter;
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   logoImageTitleView.isAccessibilityElement = YES;
   logoImageTitleView.accessibilityLabel =
       l10n_util::GetNSString(IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME);
@@ -203,7 +203,7 @@ CGFloat const kCreditCardCellHeight = 64;
 // Returns the google pay badge image corresponding to the current
 // UIUserInterfaceStyle (light/dark mode).
 - (UIImage*)googlePayBadgeImage {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   return MakeSymbolMulticolor(CustomSymbolWithPointSize(
       kGooglePaySymbol, kCreditCardCellHeight - 2 * kLogoPadding));
 #else
