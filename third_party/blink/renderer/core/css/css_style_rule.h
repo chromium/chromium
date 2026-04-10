@@ -96,9 +96,9 @@ class CORE_EXPORT CSSStyleRule final : public CSSRule {
   mutable Member<StyleRuleCSSStyleDeclaration> properties_cssom_wrapper_;
   Member<StylePropertyMap> style_map_;
 
-  // Used to faster localize the rule in the parent style sheet.
-  // May be wrong if indexes have moved around or the rule has been
-  // deleted from the style sheet.
+  // Used to faster localize the rule in the parent rule or parent
+  // style sheet. May be wrong if indexes have moved around or the rule
+  // has been deleted from its parent.
   wtf_size_t position_hint_;
 
   mutable HeapVector<Member<CSSRule>> child_rule_cssom_wrappers_;

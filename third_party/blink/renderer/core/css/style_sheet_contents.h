@@ -136,9 +136,9 @@ class CORE_EXPORT StyleSheetContents final
   // call on the same (new) rule. The position_hint is not capable of describing
   // rules nested within other rules; the result will still be correct, but the
   // search will be slow for such rules.
-  wtf_size_t ReplaceRuleIfExists(StyleRuleBase* old_rule,
-                                 StyleRuleBase* new_rule,
-                                 wtf_size_t position_hint);
+  wtf_size_t ReplaceChildRuleIfExists(StyleRuleBase* old_rule,
+                                      StyleRuleBase* new_rule,
+                                      wtf_size_t position_hint);
 
   // Notify the style sheet that a rule has changed externally, for diff
   // purposes (see RuleSetDiff). In particular, if a rule changes selector

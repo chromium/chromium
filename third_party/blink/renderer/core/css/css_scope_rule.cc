@@ -115,10 +115,11 @@ void CSSScopeRule::SetPreludeText(const ExecutionContext* execution_context,
   StyleRuleScope* new_group_rule = MakeGarbageCollected<StyleRuleScope>(
       *new_style_scope, std::move(new_child_rules));
 
-  if (parentStyleSheet()) {
-    parentStyleSheet()->Contents()->ReplaceRuleIfExists(group_rule_,
-                                                        new_group_rule,
-                                                        /*position_hint=*/0);
+  ReplaceChildRuleInParentIfExists(
+      /*old_rule=*/group_rule_, new_group_rule, /*position_hint=*/0);
+
+  if (contents) {
+    contents->NotifyDiffUnrepresentable();
   }
 
   Reattach(new_group_rule);

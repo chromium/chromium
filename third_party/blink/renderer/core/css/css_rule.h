@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -144,6 +145,16 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
   const CSSParserContext* ParserContext(SecureContextMode) const;
 
   void CountUse(WebFeature) const;
+
+  // Replaces a StyleRuleBase in the child vector of the parent.
+  // The "parent" may be another rule, a stylesheet, or null (if the
+  // rule tree has been detached from the stylesheet).
+  //
+  // See StyleSheetContents::ReplaceRuleIfExists() for an explanation
+  // of `position_hint` and the return value.
+  wtf_size_t ReplaceChildRuleInParentIfExists(StyleRuleBase* old_rule,
+                                              StyleRuleBase* new_rule,
+                                              wtf_size_t position_hint);
 
  private:
   bool VerifyParentIsCSSRule() const;

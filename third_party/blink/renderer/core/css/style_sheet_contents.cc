@@ -267,21 +267,12 @@ void StyleSheetContents::ClearRules() {
   child_rules_.clear();
 }
 
-wtf_size_t StyleSheetContents::ReplaceRuleIfExists(StyleRuleBase* old_rule,
-                                                   StyleRuleBase* new_rule,
-                                                   wtf_size_t position_hint) {
-  if (rule_set_diff_) {
-    rule_set_diff_->AddDiff(old_rule);
-    rule_set_diff_->AddDiff(new_rule);
-  }
-
-  if (position_hint < child_rules_.size() &&
-      child_rules_[position_hint] == old_rule) {
-    child_rules_[position_hint] = new_rule;
-    return position_hint;
-  }
-
-  return ReplaceStyleRuleInVector(old_rule, new_rule, child_rules_);
+wtf_size_t StyleSheetContents::ReplaceChildRuleIfExists(
+    StyleRuleBase* old_rule,
+    StyleRuleBase* new_rule,
+    wtf_size_t position_hint) {
+  return ReplaceStyleRuleInVector(old_rule, new_rule, position_hint,
+                                  child_rules_);
 }
 
 bool StyleSheetContents::WrapperInsertRule(StyleRuleBase* rule,

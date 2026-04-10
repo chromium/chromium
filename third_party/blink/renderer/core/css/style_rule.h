@@ -297,7 +297,11 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
   GCedHeapVector<Member<StyleRuleBase>>* ChildRules() {
     return child_rules_.Get();
   }
-  void ReplaceRuleIfExists(StyleRuleBase* old_rule, StyleRuleBase* new_rule);
+  // See StyleSheetContents::ReplaceRuleIfExists() for an explanation
+  // of `position_hint` and the return value.
+  wtf_size_t ReplaceChildRuleIfExists(StyleRuleBase* old_rule,
+                                      StyleRuleBase* new_rule,
+                                      wtf_size_t position_hint);
   const MixinParameterBindings* GetMixinParameterBindings() const {
     return mixin_parameter_bindings_;
   }
@@ -381,7 +385,11 @@ class CORE_EXPORT StyleRuleGroup : public StyleRuleBase {
   }
   HeapVector<Member<StyleRuleBase>>& ChildRules() { return child_rules_; }
 
-  void ReplaceRuleIfExists(StyleRuleBase* old_rule, StyleRuleBase* new_rule);
+  // See StyleSheetContents::ReplaceRuleIfExists() for an explanation
+  // of `position_hint` and the return value.
+  wtf_size_t ReplaceChildRuleIfExists(StyleRuleBase* old_rule,
+                                      StyleRuleBase* new_rule,
+                                      wtf_size_t position_hint);
   void WrapperInsertRule(CSSStyleSheet*, unsigned, StyleRuleBase*);
   void WrapperRemoveRule(CSSStyleSheet*, unsigned);
 
@@ -782,26 +790,19 @@ class CORE_EXPORT StyleRuleCustomMedia : public StyleRuleBase {
 template <typename ChildRulesType>
 static wtf_size_t ReplaceStyleRuleInVector(const StyleRuleBase* old_rule,
                                            StyleRuleBase* new_rule,
+                                           wtf_size_t position_hint,
                                            ChildRulesType& child_rules) {
+  if (position_hint < child_rules.size() &&
+      child_rules[position_hint] == old_rule) {
+    child_rules[position_hint] = new_rule;
+    return position_hint;
+  }
+
   for (wtf_size_t i = 0; i < child_rules.size(); ++i) {
     StyleRuleBase* rule = child_rules[i].Get();
     if (rule == old_rule) {
       child_rules[i] = new_rule;
       return i;
-    }
-    if (auto* style_rule_group = DynamicTo<StyleRuleGroup>(rule)) {
-      if (ReplaceStyleRuleInVector(old_rule, new_rule,
-                                   style_rule_group->ChildRules()) !=
-          std::numeric_limits<wtf_size_t>::max()) {
-        return 0;  // Dummy non-failure value.
-      }
-    } else if (auto* style_rule = DynamicTo<StyleRule>(rule);
-               style_rule && style_rule->ChildRules()) {
-      if (ReplaceStyleRuleInVector(old_rule, new_rule,
-                                   *style_rule->ChildRules()) !=
-          std::numeric_limits<wtf_size_t>::max()) {
-        return 0;  // Dummy non-failure value.
-      }
     }
   }
 

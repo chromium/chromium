@@ -370,6 +370,41 @@ TEST_F(StyleRuleTest, SetPreludeTextUnexpectedTrailingTokens) {
   EXPECT_EQ(after_rule, before_rule);
 }
 
+TEST_F(StyleRuleTest, SetPreludeTextOnDetachedNested) {
+  CSSStyleSheet* sheet = css_test_helpers::CreateStyleSheet(GetDocument());
+  sheet->SetText(R"CSS(
+      .a {
+        @scope (.b) { }
+      }
+    )CSS",
+                 CSSImportRules::kIgnoreWithWarning);
+
+  DummyExceptionStateForTesting exception_state;
+  CSSRuleList* rules = sheet->rules(exception_state);
+  ASSERT_TRUE(rules && rules->length() == 1u);
+  auto* style_rule = DynamicTo<CSSStyleRule>(rules->item(0));
+  ASSERT_TRUE(style_rule);
+  ASSERT_EQ(1u, style_rule->length());
+  auto* scope_rule = DynamicTo<CSSScopeRule>(style_rule->ItemInternal(0));
+  ASSERT_TRUE(scope_rule);
+
+  StyleRuleScope* before = &scope_rule->GetStyleRuleScope();
+
+  // Detach wrappers from the stylesheet.
+  sheet->SetText("", CSSImportRules::kIgnoreWithWarning);
+
+  scope_rule->SetPreludeText(GetDocument().GetExecutionContext(), "(.c)");
+
+  // Setting the prelude text should have created a new StyleRuleScope.
+  StyleRuleScope* after = &scope_rule->GetStyleRuleScope();
+  EXPECT_NE(before, after);
+
+  // The child rule vector of the parent rule should also have been updated.
+  ASSERT_TRUE(style_rule->GetStyleRule());
+  ASSERT_TRUE(style_rule->GetStyleRule()->ChildRules());
+  EXPECT_EQ(after, (*style_rule->GetStyleRule()->ChildRules())[0]);
+}
+
 TEST_F(StyleRuleTest, CloneStyleRule) {
   auto* a = To<StyleRule>(css_test_helpers::ParseRule(GetDocument(), ".a {}"));
   auto* b = To<StyleRule>(css_test_helpers::ParseRule(GetDocument(), ".b {}"));
