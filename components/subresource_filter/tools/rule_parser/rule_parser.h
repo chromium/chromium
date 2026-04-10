@@ -89,8 +89,8 @@ class RuleParser {
   const UrlRule& url_rule() const { return url_rule_; }
 
   // Gets the last parsed CSS element hiding rule. The result is undefined if
-  // rule_type() != RULE_TYPE_CSS.
-  const CssRule& css_rule() const { return css_rule_; }
+  // rule_type() != RULE_TYPE_STYLE.
+  const StyleRule& style_rule() const { return style_rule_; }
 
  private:
   // Parses the |part| and saves parsed URL filtering rule to the |url_rule_|
@@ -104,13 +104,13 @@ class RuleParser {
   // correctly. Otherwise sets an error in |parse_error_| and returns false.
   bool ParseUrlRuleOptions(std::string_view origin, std::string_view options);
 
-  // Parses the |part| and saves parsed CSS rule to the |css_rule_| member.
+  // Parses the |part| and saves parsed CSS rule to the |style_rule_| member.
   // |css_section_start| denotes a position of '#' in the |part|, used to
   // separate a CSS selector. Returns true iff the line is a well-formed CSS
   // rule. Sets |parse_error_| on error.
-  RuleType ParseCssRule(std::string_view origin,
-                        std::string_view part,
-                        size_t css_section_start);
+  RuleType ParseStyleRule(std::string_view origin,
+                          std::string_view part,
+                          size_t css_section_start);
 
   // Sets |parse_error_| to contain specific error, starting at |error_begin|.
   void SetParseError(ParseError::ErrorCode code,
@@ -120,7 +120,7 @@ class RuleParser {
   ParseError parse_error_;
   RuleType rule_type_;
   UrlRule url_rule_;
-  CssRule css_rule_;
+  StyleRule style_rule_;
 };
 
 // Pretty-prints the parsing |error| to |out|, e.g. like this:

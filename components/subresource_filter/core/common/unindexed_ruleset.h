@@ -80,7 +80,7 @@ class UnindexedRulesetWriter {
   // Places the |rule| to the current chunk, and serializes the chunk if it has
   // grown up to |max_rules_per_chunk|.
   bool AddUrlRule(const url_pattern_index::proto::UrlRule& rule);
-  // TODO(pkalinnikov): Implement AddCssRule when needed.
+  // TODO(pkalinnikov): Implement AddStyleRule when needed.
 
   // Finalizes the serialization of the unindexed ruleset, i.e., writes the
   // final chunk of rules, if there are any still pending. This method *should*

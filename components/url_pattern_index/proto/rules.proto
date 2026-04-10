@@ -14,7 +14,7 @@ enum RuleType {
 
   RULE_TYPE_COMMENT = 1;  // Comment rule.
   RULE_TYPE_URL = 2;      // Network level filtering rule based on URL pattern.
-  RULE_TYPE_CSS = 3;      // Element hiding rule based on a CSS selector.
+  RULE_TYPE_STYLE = 3;    // Element hiding rule based on a CSS selector.
 };
 
 // The format of a URL pattern.
@@ -174,8 +174,8 @@ message UrlRule {
   repeated DomainListItem request_domains = 11;
 }
 
-// Element hiding rule based on a CSS selector. Corresponds to RULE_TYPE_CSS.
-message CssRule {
+// Element hiding rule based on a CSS selector. Corresponds to RULE_TYPE_STYLE.
+message StyleRule {
   // The semantics of the rule.
   optional RuleSemantics semantics = 1;
 
@@ -183,7 +183,7 @@ message CssRule {
   repeated DomainListItem domains = 2;
 
   // A CSS selector as specified in http://www.w3.org/TR/css3-selectors.
-  optional string css_selector = 3;
+  optional string style_selector = 3;
 }
 
 // A comment line.
@@ -199,5 +199,5 @@ message Comment {
 // A container for lists of non-comment rules collated by RuleType.
 message FilteringRules {
   repeated UrlRule url_rules = 1;
-  repeated CssRule css_rules = 2;
+  repeated StyleRule style_rules = 2;
 }

@@ -45,7 +45,7 @@ UnindexedRulesetWriter::UnindexedRulesetWriter(
 
 UnindexedRulesetWriter::~UnindexedRulesetWriter() {
   CHECK_EQ(pending_chunk_.url_rules_size(), 0);
-  CHECK_EQ(pending_chunk_.css_rules_size(), 0);
+  CHECK_EQ(pending_chunk_.style_rules_size(), 0);
 }
 
 bool UnindexedRulesetWriter::AddUrlRule(const proto::UrlRule& rule) {

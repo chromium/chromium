@@ -25,7 +25,7 @@ struct TestRulesetContents {
   ~TestRulesetContents();
 
   std::vector<url_pattern_index::proto::UrlRule> url_rules;
-  std::vector<url_pattern_index::proto::CssRule> css_rules;
+  std::vector<url_pattern_index::proto::StyleRule> style_rules;
 
   // Parses |text_rules| and appends them to the |ruleset|.
   void AppendRules(const std::vector<std::string>& text_rules,
@@ -77,8 +77,8 @@ class ScopedTempRulesetFile {
 bool AreUrlRulesEqual(const url_pattern_index::proto::UrlRule& first,
                       const url_pattern_index::proto::UrlRule& second);
 
-bool AreCssRulesEqual(const url_pattern_index::proto::CssRule& first,
-                      const url_pattern_index::proto::CssRule& second);
+bool AreStyleRulesEqual(const url_pattern_index::proto::StyleRule& first,
+                        const url_pattern_index::proto::StyleRule& second);
 
 }  // namespace subresource_filter
 

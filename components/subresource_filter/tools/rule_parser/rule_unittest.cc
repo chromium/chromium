@@ -178,11 +178,11 @@ TEST(RuleTest, UrlRuleToString) {
   EXPECT_EQ("example.com$image,~image", ToString(rule.ToProtobuf()));
 }
 
-TEST(RuleTest, CssRuleToString) {
-  CssRule rule;
+TEST(RuleTest, StyleRuleToString) {
+  StyleRule rule;
   rule.is_allowlist = true;
   rule.domains = {"example.com", "~exception.example.com"};
-  rule.css_selector = "#example-id";
+  rule.style_selector = "#example-id";
 
   EXPECT_EQ("example.com,~exception.example.com#@##example-id",
             ToString(rule.ToProtobuf()));

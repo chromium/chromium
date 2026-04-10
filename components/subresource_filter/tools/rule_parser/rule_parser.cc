@@ -254,7 +254,7 @@ RuleType RuleParser::Parse(std::string_view line) {
   }
 
   if (css_separator_pos != std::string_view::npos) {
-    return rule_type_ = ParseCssRule(line, part, css_separator_pos);
+    return rule_type_ = ParseStyleRule(line, part, css_separator_pos);
   }
   // Else assume we read a URL filtering rule.
   return rule_type_ = ParseUrlRule(line, part);
@@ -420,11 +420,11 @@ bool RuleParser::ParseUrlRuleOptions(std::string_view origin,
   return true;
 }
 
-RuleType RuleParser::ParseCssRule(std::string_view origin,
-                                  std::string_view part,
-                                  size_t css_section_start) {
+RuleType RuleParser::ParseStyleRule(std::string_view origin,
+                                    std::string_view part,
+                                    size_t css_section_start) {
   CHECK(part.data() >= origin.data());
-  css_rule_ = CssRule();
+  style_rule_ = StyleRule();
 
   // Check for a list of domains.
   if (css_section_start) {
@@ -434,7 +434,7 @@ RuleType RuleParser::ParseCssRule(std::string_view origin,
                                          base::SPLIT_WANT_NONEMPTY);
     for (std::string_view domain : pieces) {
       CHECK(!domain.empty());
-      css_rule_.domains.push_back(std::string(domain));
+      style_rule_.domains.push_back(std::string(domain));
     }
   }
 
@@ -444,7 +444,7 @@ RuleType RuleParser::ParseCssRule(std::string_view origin,
     return url_pattern_index::proto::RULE_TYPE_UNSPECIFIED;
   }
   if (part[0] == '@') {
-    css_rule_.is_allowlist = true;
+    style_rule_.is_allowlist = true;
     part.remove_prefix(1);
   }
   if (part.empty() || part[0] != '#') {
@@ -458,9 +458,9 @@ RuleType RuleParser::ParseCssRule(std::string_view origin,
     return url_pattern_index::proto::RULE_TYPE_UNSPECIFIED;
   }
 
-  css_rule_.css_selector = std::string(part);
-  css_rule_.Canonicalize();
-  return url_pattern_index::proto::RULE_TYPE_CSS;
+  style_rule_.style_selector = std::string(part);
+  style_rule_.Canonicalize();
+  return url_pattern_index::proto::RULE_TYPE_STYLE;
 }
 
 void RuleParser::SetParseError(ParseError::ErrorCode code,

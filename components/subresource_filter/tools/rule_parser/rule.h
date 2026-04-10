@@ -93,18 +93,18 @@ struct UrlRule {
 };
 
 // A single CSS element hiding rule as parsed from EasyList.
-struct CssRule {
+struct StyleRule {
   // Constructs a default empty blocklist rule (no domains, empty selector).
-  CssRule();
+  StyleRule();
 
-  CssRule(const CssRule&);
-  ~CssRule();
-  CssRule& operator=(const CssRule&);
+  StyleRule(const StyleRule&);
+  ~StyleRule();
+  StyleRule& operator=(const StyleRule&);
 
-  friend bool operator==(const CssRule&, const CssRule&) = default;
+  friend bool operator==(const StyleRule&, const StyleRule&) = default;
 
   // Returns a protobuf representation of the rule.
-  url_pattern_index::proto::CssRule ToProtobuf() const;
+  url_pattern_index::proto::StyleRule ToProtobuf() const;
 
   // Canonicalizes the rule, i.e. orders the |domains| list properly.
   void Canonicalize();
@@ -114,7 +114,7 @@ struct CssRule {
   // The list of domains, same as UrlRule::domains.
   std::vector<std::string> domains;
   // A CSS selector as specified in http://www.w3.org/TR/css3-selectors.
-  std::string css_selector;
+  std::string style_selector;
 };
 
 // Sorts domain patterns in decreasing order of length (and alphabetically
@@ -123,11 +123,11 @@ void CanonicalizeDomainList(std::vector<std::string>* domains);
 
 // Converts protobuf |rule| into its canonical EasyList string representation.
 std::string ToString(const url_pattern_index::proto::UrlRule& rule);
-std::string ToString(const url_pattern_index::proto::CssRule& rule);
+std::string ToString(const url_pattern_index::proto::StyleRule& rule);
 
 // For testing.
 std::ostream& operator<<(std::ostream& os, const UrlRule& rule);
-std::ostream& operator<<(std::ostream& os, const CssRule& rule);
+std::ostream& operator<<(std::ostream& os, const StyleRule& rule);
 
 }  // namespace subresource_filter
 

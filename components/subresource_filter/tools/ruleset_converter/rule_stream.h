@@ -33,7 +33,7 @@ class RuleInputStream {
   virtual url_pattern_index::proto::UrlRule GetUrlRule() = 0;
 
   // Same as above, but for CSS rules.
-  virtual url_pattern_index::proto::CssRule GetCssRule() = 0;
+  virtual url_pattern_index::proto::StyleRule GetStyleRule() = 0;
 
   // Factory method to produce a RuleInputStream reading rules from |input| in
   // the specified |format|. If the |format| is not supported, then returns
@@ -51,7 +51,8 @@ class RuleOutputStream {
   // The following methods are used to write rules into the stream. Return false
   // iff an error occurred.
   virtual bool PutUrlRule(const url_pattern_index::proto::UrlRule& rule) = 0;
-  virtual bool PutCssRule(const url_pattern_index::proto::CssRule& rule) = 0;
+  virtual bool PutStyleRule(
+      const url_pattern_index::proto::StyleRule& rule) = 0;
 
   // Finalizes the serialization. Returns false on error.
   virtual bool Finish() = 0;
@@ -64,7 +65,7 @@ class RuleOutputStream {
 };
 
 // Reads rules from the |input| stream, puts URL rules to |url_rules_output|,
-// and CSS rules to |css_rules_output|. Returns false iff an error occurred
+// and CSS rules to |style_rules_output|. Returns false iff an error occurred
 // either in the input or one of the output streams.
 //
 // If one of the output streams is nullptr, the corresponding rules are
@@ -79,7 +80,7 @@ class RuleOutputStream {
 // ruleset should remain intact.
 bool TransferRules(RuleInputStream* input,
                    RuleOutputStream* url_rules_output,
-                   RuleOutputStream* css_rules_output,
+                   RuleOutputStream* style_rules_output,
                    int chrome_version = 0);
 
 // This function is used by TransferRules to amend a stream of UrlRules

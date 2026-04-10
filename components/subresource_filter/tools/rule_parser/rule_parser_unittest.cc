@@ -34,9 +34,9 @@ void ParseAndExpectUrlRule(std::string_view line,
   EXPECT_EQ(canonicalized_rule, parser.url_rule());
 }
 
-void ParseAndExpectCssRule(std::string_view line,
-                           const CssRule& expected_rule) {
-  CssRule canonicalized_rule = expected_rule;
+void ParseAndExpectStyleRule(std::string_view line,
+                             const StyleRule& expected_rule) {
+  StyleRule canonicalized_rule = expected_rule;
   canonicalized_rule.Canonicalize();
 
   RuleParser parser;
@@ -46,8 +46,8 @@ void ParseAndExpectCssRule(std::string_view line,
   EXPECT_TRUE(parser.parse_error().line.empty());
   EXPECT_EQ(std::string::npos, parser.parse_error().error_index);
 
-  EXPECT_EQ(url_pattern_index::proto::RULE_TYPE_CSS, parser.rule_type());
-  EXPECT_EQ(canonicalized_rule, parser.css_rule());
+  EXPECT_EQ(url_pattern_index::proto::RULE_TYPE_STYLE, parser.rule_type());
+  EXPECT_EQ(canonicalized_rule, parser.style_rule());
 }
 
 }  // namespace
@@ -314,31 +314,31 @@ TEST(RuleParserTest, ParseUrlRuleWithRegexp) {
   }
 }
 
-TEST(RuleParserTest, ParseCssRules) {
+TEST(RuleParserTest, ParseStyleRules) {
   static const std::string kCssSelector = "div.blocked_class";
   static const std::string kTestDomain = "example.com";
   static const std::string kTestSubDomain = "however.example.com";
 
-  CssRule expected_rule;
-  expected_rule.css_selector = kCssSelector;
+  StyleRule expected_rule;
+  expected_rule.style_selector = kCssSelector;
 
-  ParseAndExpectCssRule("##" + kCssSelector, expected_rule);
-  ParseAndExpectCssRule(" ##" + kCssSelector, expected_rule);
-  ParseAndExpectCssRule(" \t\t##" + kCssSelector, expected_rule);
+  ParseAndExpectStyleRule("##" + kCssSelector, expected_rule);
+  ParseAndExpectStyleRule(" ##" + kCssSelector, expected_rule);
+  ParseAndExpectStyleRule(" \t\t##" + kCssSelector, expected_rule);
 
   expected_rule.domains.push_back(kTestDomain);
-  ParseAndExpectCssRule(kTestDomain + "##" + kCssSelector, expected_rule);
+  ParseAndExpectStyleRule(kTestDomain + "##" + kCssSelector, expected_rule);
 
   expected_rule.is_allowlist = true;
-  ParseAndExpectCssRule(kTestDomain + "#@#" + kCssSelector, expected_rule);
+  ParseAndExpectStyleRule(kTestDomain + "#@#" + kCssSelector, expected_rule);
 
   expected_rule.is_allowlist = false;
   expected_rule.domains.push_back("~" + kTestSubDomain);
-  ParseAndExpectCssRule(
+  ParseAndExpectStyleRule(
       kTestDomain + ",~" + kTestSubDomain + "##" + kCssSelector, expected_rule);
 
   expected_rule.is_allowlist = true;
-  ParseAndExpectCssRule(
+  ParseAndExpectStyleRule(
       kTestDomain + ",~" + kTestSubDomain + "#@#" + kCssSelector,
       expected_rule);
 }

@@ -494,8 +494,8 @@ class DNRJsonRuleOutputStream : public subresource_filter::RuleOutputStream {
     return true;
   }
 
-  bool PutCssRule(const proto::CssRule& rule) override {
-    // Ignore CSS rules.
+  bool PutStyleRule(const proto::StyleRule& rule) override {
+    // Ignore style rules.
     return true;
   }
 
@@ -544,7 +544,7 @@ bool ConvertRuleset(const std::vector<base::FilePath>& filter_list_inputs,
     CHECK(rule_input_stream);
     CHECK(subresource_filter::TransferRules(rule_input_stream.get(),
                                             &rule_output_stream,
-                                            nullptr /* css_rule_output */));
+                                            nullptr /* style_rule_output */));
   }
 
   return rule_output_stream.Finish();

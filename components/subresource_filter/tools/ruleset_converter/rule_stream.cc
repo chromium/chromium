@@ -45,11 +45,11 @@ class ProtobufRuleInputStreamImpl {
       is_reading_url_rules_ = false;
       rule_index_ = 0;
     }
-    if (!is_reading_url_rules_ && rule_index_ >= rules_.css_rules_size()) {
+    if (!is_reading_url_rules_ && rule_index_ >= rules_.style_rules_size()) {
       return url_pattern_index::proto::RULE_TYPE_UNSPECIFIED;
     }
     return is_reading_url_rules_ ? url_pattern_index::proto::RULE_TYPE_URL
-                                 : url_pattern_index::proto::RULE_TYPE_CSS;
+                                 : url_pattern_index::proto::RULE_TYPE_STYLE;
   }
 
   const url_pattern_index::proto::UrlRule& GetUrlRule() {
@@ -57,9 +57,9 @@ class ProtobufRuleInputStreamImpl {
     return rules_.url_rules(rule_index_);
   }
 
-  const url_pattern_index::proto::CssRule& GetCssRule() {
-    CHECK(!is_reading_url_rules_ && rule_index_ < rules_.css_rules_size());
-    return rules_.css_rules(rule_index_);
+  const url_pattern_index::proto::StyleRule& GetStyleRule() {
+    CHECK(!is_reading_url_rules_ && rule_index_ < rules_.style_rules_size());
+    return rules_.style_rules(rule_index_);
   }
 
  private:
@@ -100,9 +100,9 @@ class FilterListRuleInputStream : public RuleInputStream {
     return parser_.url_rule().ToProtobuf();
   }
 
-  url_pattern_index::proto::CssRule GetCssRule() override {
-    CHECK_EQ(url_pattern_index::proto::RULE_TYPE_CSS, parser_.rule_type());
-    return parser_.css_rule().ToProtobuf();
+  url_pattern_index::proto::StyleRule GetStyleRule() override {
+    CHECK_EQ(url_pattern_index::proto::RULE_TYPE_STYLE, parser_.rule_type());
+    return parser_.style_rule().ToProtobuf();
   }
 
  private:
@@ -125,7 +125,7 @@ class FilterListRuleOutputStream : public RuleOutputStream {
     return !output_->bad();
   }
 
-  bool PutCssRule(const url_pattern_index::proto::CssRule& rule) override {
+  bool PutStyleRule(const url_pattern_index::proto::StyleRule& rule) override {
     std::string line = ToString(rule) + '\n';
     output_->write(line.data(), line.size());
     return !output_->bad();
@@ -160,8 +160,8 @@ class ProtobufRuleInputStream : public RuleInputStream {
   url_pattern_index::proto::UrlRule GetUrlRule() override {
     return impl_->GetUrlRule();
   }
-  url_pattern_index::proto::CssRule GetCssRule() override {
-    return impl_->GetCssRule();
+  url_pattern_index::proto::StyleRule GetStyleRule() override {
+    return impl_->GetStyleRule();
   }
 
  private:
@@ -184,8 +184,8 @@ class ProtobufRuleOutputStream : public RuleOutputStream {
     return true;
   }
 
-  bool PutCssRule(const url_pattern_index::proto::CssRule& rule) override {
-    *all_rules_.add_css_rules() = rule;
+  bool PutStyleRule(const url_pattern_index::proto::StyleRule& rule) override {
+    *all_rules_.add_style_rules() = rule;
     return true;
   }
 
@@ -236,8 +236,8 @@ class UnindexedRulesetRuleInputStream : public RuleInputStream {
   url_pattern_index::proto::UrlRule GetUrlRule() override {
     return impl_->GetUrlRule();
   }
-  url_pattern_index::proto::CssRule GetCssRule() override {
-    return impl_->GetCssRule();
+  url_pattern_index::proto::StyleRule GetStyleRule() override {
+    return impl_->GetStyleRule();
   }
 
  private:
@@ -275,7 +275,7 @@ class UnindexedRulesetRuleOutputStream : public RuleOutputStream {
     return ruleset_writer_.AddUrlRule(rule);
   }
 
-  bool PutCssRule(const url_pattern_index::proto::CssRule& rule) override {
+  bool PutStyleRule(const url_pattern_index::proto::StyleRule& rule) override {
     return true;
   }
 
@@ -379,7 +379,7 @@ static_assert(!(kChrome54To58ElementTypes &
 
 bool TransferRules(RuleInputStream* input,
                    RuleOutputStream* url_rules_output,
-                   RuleOutputStream* css_rules_output,
+                   RuleOutputStream* style_rules_output,
                    int chrome_version) {
   while (true) {
     auto rule_type = input->FetchNextRule();
@@ -397,9 +397,9 @@ bool TransferRules(RuleInputStream* input,
         }
         break;
       }
-      case url_pattern_index::proto::RULE_TYPE_CSS:
-        if (css_rules_output) {
-          css_rules_output->PutCssRule(input->GetCssRule());
+      case url_pattern_index::proto::RULE_TYPE_STYLE:
+        if (style_rules_output) {
+          style_rules_output->PutStyleRule(input->GetStyleRule());
         }
         break;
       case url_pattern_index::proto::RULE_TYPE_COMMENT:

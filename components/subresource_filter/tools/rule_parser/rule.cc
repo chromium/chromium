@@ -140,16 +140,16 @@ void UrlRule::Canonicalize() {
   CanonicalizeDomainList(&domains);
 }
 
-CssRule::CssRule() = default;
+StyleRule::StyleRule() = default;
 
-CssRule::CssRule(const CssRule&) = default;
+StyleRule::StyleRule(const StyleRule&) = default;
 
-CssRule::~CssRule() = default;
+StyleRule::~StyleRule() = default;
 
-CssRule& CssRule::operator=(const CssRule&) = default;
+StyleRule& StyleRule::operator=(const StyleRule&) = default;
 
-url_pattern_index::proto::CssRule CssRule::ToProtobuf() const {
-  url_pattern_index::proto::CssRule result;
+url_pattern_index::proto::StyleRule StyleRule::ToProtobuf() const {
+  url_pattern_index::proto::StyleRule result;
 
   result.set_semantics(
       is_allowlist ? url_pattern_index::proto::RULE_SEMANTICS_ALLOWLIST
@@ -168,14 +168,14 @@ url_pattern_index::proto::CssRule CssRule::ToProtobuf() const {
     }
   }
 
-  if (!css_selector.empty()) {
-    result.set_css_selector(css_selector);
+  if (!style_selector.empty()) {
+    result.set_style_selector(style_selector);
   }
 
   return result;
 }
 
-void CssRule::Canonicalize() {
+void StyleRule::Canonicalize() {
   CanonicalizeDomainList(&domains);
 }
 
@@ -330,7 +330,7 @@ std::string ToString(const url_pattern_index::proto::UrlRule& rule) {
   return result;
 }
 
-std::string ToString(const url_pattern_index::proto::CssRule& rule) {
+std::string ToString(const url_pattern_index::proto::StyleRule& rule) {
   std::string result;
   if (rule.domains_size()) {
     DomainListJoin(rule.domains(), ',', &result);
@@ -347,15 +347,15 @@ std::string ToString(const url_pattern_index::proto::CssRule& rule) {
       LOG(FATAL);
   }
 
-  return result += rule.css_selector();
+  return result += rule.style_selector();
 }
 
 std::ostream& operator<<(std::ostream& os, const UrlRule& rule) {
   return os << "UrlRule(" << ToString(rule.ToProtobuf()) << ")";
 }
 
-std::ostream& operator<<(std::ostream& os, const CssRule& rule) {
-  return os << "CssRule(" << ToString(rule.ToProtobuf()) << ")";
+std::ostream& operator<<(std::ostream& os, const StyleRule& rule) {
+  return os << "StyleRule(" << ToString(rule.ToProtobuf()) << ")";
 }
 
 }  // namespace subresource_filter

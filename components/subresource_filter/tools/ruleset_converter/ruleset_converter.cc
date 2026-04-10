@@ -31,7 +31,7 @@ bool RulesetConverter::Convert() {
 
   std::unique_ptr<RuleOutputStream> primary_output;
   std::unique_ptr<RuleOutputStream> secondary_output;
-  subresource_filter::RuleOutputStream* css_rules_output = nullptr;
+  subresource_filter::RuleOutputStream* style_rules_output = nullptr;
 
   auto make_output = [](const base::FilePath& path, RulesetFormat format) {
     return RuleOutputStream::Create(
@@ -42,16 +42,16 @@ bool RulesetConverter::Convert() {
 
   if (!output_file_.empty()) {
     primary_output = make_output(output_file_, output_format_);
-    css_rules_output = primary_output.get();
+    style_rules_output = primary_output.get();
   } else {
     if (!output_url_.empty()) {
       primary_output = make_output(output_url_, output_format_);
     }
     if (output_css_ == output_url_) {
-      css_rules_output = primary_output.get();
+      style_rules_output = primary_output.get();
     } else if (!output_css_.empty()) {
       secondary_output = make_output(output_css_, output_format_);
-      css_rules_output = secondary_output.get();
+      style_rules_output = secondary_output.get();
     }
   }
 
@@ -70,7 +70,7 @@ bool RulesetConverter::Convert() {
         input_format_);
     CHECK(input_stream);
     CHECK(TransferRules(input_stream.get(), primary_output.get(),
-                        css_rules_output, chrome_version_));
+                        style_rules_output, chrome_version_));
   }
 
   if (primary_output) {

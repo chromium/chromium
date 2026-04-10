@@ -65,7 +65,7 @@ std::vector<std::string> GetSomeChromeUnfriendlyRules() {
 // Generates and returns many rules in text format.
 std::vector<std::string> GetManyRules() {
   constexpr size_t kNumberOfUrlRules = 10123;
-  constexpr size_t kNumberOfCssRules = 5321;
+  constexpr size_t kNumberOfStyleRules = 5321;
 
   std::vector<std::string> text_rules;
 
@@ -86,7 +86,7 @@ std::vector<std::string> GetManyRules() {
     text_rules.push_back(text_rule);
   }
 
-  for (size_t i = 0; i != kNumberOfCssRules; ++i) {
+  for (size_t i = 0; i != kNumberOfStyleRules; ++i) {
     std::string text_rule = "domain.com";
     if (i & 1) {
       text_rule += ",~but_not.domain.com";
@@ -110,7 +110,7 @@ void ReadHalfRulesOfTestRulesetAndExpectContents(
   TestRulesetContents contents;
 
   bool take_url_rule = true;
-  bool take_css_rule = true;
+  bool take_style_rule = true;
   url_pattern_index::proto::RuleType rule_type =
       url_pattern_index::proto::RULE_TYPE_UNSPECIFIED;
   while ((rule_type = input->FetchNextRule()) !=
@@ -121,11 +121,11 @@ void ReadHalfRulesOfTestRulesetAndExpectContents(
       }
       take_url_rule = !take_url_rule;
     } else {
-      ASSERT_EQ(url_pattern_index::proto::RULE_TYPE_CSS, rule_type);
-      if (take_css_rule) {
-        contents.css_rules.push_back(input->GetCssRule());
+      ASSERT_EQ(url_pattern_index::proto::RULE_TYPE_STYLE, rule_type);
+      if (take_style_rule) {
+        contents.style_rules.push_back(input->GetStyleRule());
       }
-      take_css_rule = !take_css_rule;
+      take_style_rule = !take_style_rule;
     }
   }
 
@@ -166,8 +166,8 @@ TEST(RuleStreamTest, WriteAndReadHalfRuleset) {
   for (size_t i = 0, size = contents.url_rules.size(); i < size; i += 2) {
     half_contents.url_rules.push_back(contents.url_rules[i]);
   }
-  for (size_t i = 0, size = contents.css_rules.size(); i < size; i += 2) {
-    half_contents.css_rules.push_back(contents.css_rules[i]);
+  for (size_t i = 0, size = contents.style_rules.size(); i < size; i += 2) {
+    half_contents.style_rules.push_back(contents.style_rules[i]);
   }
 
   TestRulesetContents half_url_rules;
@@ -218,11 +218,11 @@ TEST(RuleStreamTest, TransferUrlRulesToOneStream) {
   input.reset();
   output.reset();
 
-  contents.css_rules.clear();
+  contents.style_rules.clear();
   EXPECT_EQ(target_ruleset.ReadContents(), contents);
 }
 
-TEST(RuleStreamTest, TransferCssRulesToOneStream) {
+TEST(RuleStreamTest, TransferStyleRulesToOneStream) {
   TestRulesetContents contents;
   contents.AppendRules(GetManyRules());
 
@@ -290,7 +290,7 @@ TEST(RuleStreamTest, TransferRulesAndDiscardRegexpRules) {
                   return rule.url_pattern_type() ==
                          url_pattern_index::proto::URL_PATTERN_TYPE_REGEXP;
                 });
-  contents.css_rules.clear();
+  contents.style_rules.clear();
   EXPECT_EQ(target_ruleset.ReadContents(), contents);
 }
 
@@ -353,7 +353,7 @@ TEST(RuleStreamTest, TransferRulesFromFilterListWithUnsupportedOptions) {
   }
 
   EXPECT_EQ(number_of_correct_rules,
-            contents.url_rules.size() + contents.css_rules.size());
+            contents.url_rules.size() + contents.style_rules.size());
   EXPECT_EQ(target_ruleset.ReadContents(), contents);
 }
 
