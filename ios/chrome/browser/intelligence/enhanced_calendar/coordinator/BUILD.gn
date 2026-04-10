@@ -26,3 +26,23 @@ source_set("coordinator") {
     "//ios/web/public",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "enhanced_calendar_mediator_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//base/test:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/enhanced_calendar/constants",
+    "//ios/chrome/browser/intelligence/enhanced_calendar/model:config",
+    "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/optimization_guide/mojom",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+  ]
+}
