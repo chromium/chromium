@@ -817,6 +817,17 @@ class CrossbenchTest(object):
                         action='store_true',
                         default=False,
                         help=f'Use {ALUM_RUNNER} to run web tests')
+    parser.add_argument('--wpr', help='The WPR archive file name')
+    parser.add_argument('--skip-wpr-script-injection',
+                        action='store_true',
+                        default=False,
+                        help='Whether to skip WPR script injection')
+    parser.add_argument('--wpr-http-port',
+                        type=int,
+                        help='The HTTP port for WPR')
+    parser.add_argument('--wpr-https-port',
+                        type=int,
+                        help='The HTTPS port for WPR')
     self.cb_options, self.options.passthrough_args = parser.parse_known_args(
         self.options.passthrough_args)
 
@@ -825,8 +836,8 @@ class CrossbenchTest(object):
       return [_arg]
     if _arg := _get_arg(args, '--fileserver'):
       return self._create_fileserver_network(_arg)
-    if _get_arg(args, '--wpr'):
-      return self._create_wpr_network(args)
+    if self.cb_options.wpr:
+      return self._create_wpr_network()
     if self.options.benchmarks.startswith('motionmark') and not self.is_android:
       # TODO(crbug.com/413452730): Enable local file server in all platforms.
       return []
@@ -874,27 +885,19 @@ class CrossbenchTest(object):
                              url='http://localhost:0')
     ]
 
-  def _create_wpr_network(self, args):
-    wpr_arg = _get_arg(args, '--wpr')
-    if wpr_arg and '=' in wpr_arg:
-      wpr_name = wpr_arg.split('=', 1)[1]
-    else:
-      raise ValueError('The archive file path is missing!')
-    archive = str(PAGE_SETS_DATA / wpr_name)
+  def _create_wpr_network(self):
+    archive = str(PAGE_SETS_DATA / self.cb_options.wpr)
     if (wpr_go := fetch_binary_path('wpr_go')) is None:
       raise ValueError(f'wpr_go not found: {wpr_go}')
-    if wpr_arg:
-      # Replacing --wpr with --network.
-      self.options.passthrough_args.remove(wpr_arg)
-    skip_injection_arg = '--skip-wpr-script-injection'
-    skip_injection = _get_arg(args, skip_injection_arg)
-    if skip_injection:
-      self.options.passthrough_args.remove(skip_injection_arg)
+
     return [
-        _create_network_json('wpr',
-                             path=archive,
-                             wpr_go_bin=wpr_go,
-                             skip_injection=bool(skip_injection))
+        _create_network_json(
+            'wpr',
+            path=archive,
+            wpr_go_bin=wpr_go,
+            skip_injection=self.cb_options.skip_wpr_script_injection,
+            http_port=self.cb_options.wpr_http_port,
+            https_port=self.cb_options.wpr_https_port)
     ]
 
   def _check_for_embedder_arg(self):
@@ -1101,7 +1104,9 @@ def _create_network_json(config_type,
                          path,
                          url=None,
                          wpr_go_bin=None,
-                         skip_injection=False):
+                         skip_injection=False,
+                         http_port=None,
+                         https_port=None):
   network_dict = {'type': config_type}
   network_dict['path'] = path
   if url:
@@ -1110,6 +1115,10 @@ def _create_network_json(config_type,
     network_dict['wpr_go_bin'] = wpr_go_bin
   if skip_injection:
     network_dict['skip_deterministic_script_injection'] = True
+  if http_port:
+    network_dict['http_port'] = http_port
+  if https_port:
+    network_dict['https_port'] = https_port
   network_json = json.dumps(network_dict)
   return f'--network={network_json}'
 

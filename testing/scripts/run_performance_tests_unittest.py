@@ -443,6 +443,28 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     network_dict = json.loads(crosebench_test.network[0].split('=', 1)[1])
     self.assertDictEqual(network_dict, expected_dict)
 
+  @mock.patch.object(binary_manager, 'FetchPath')
+  def testCrossbenchWprCustomPorts(self, mock_fetch_path):
+    mock_fetch_path.return_value = 'wpr_go_path'
+    fake_args = _create_crossbench_args() + [
+        '--wpr=fake.wprgo', '--wpr-http-port=8080', '--wpr-https-port=8081'
+    ]
+    options = run_performance_tests.parse_arguments(fake_args)
+    data_dir = run_performance_tests.PAGE_SETS_DATA
+    archive = str(data_dir / 'fake.wprgo')
+    expected_dict = {
+        'type': 'wpr',
+        'path': archive,
+        'wpr_go_bin': 'wpr_go_path',
+        'http_port': 8080,
+        'https_port': 8081
+    }
+
+    crossbench_test = run_performance_tests.CrossbenchTest(options, 'dir')
+
+    network_dict = json.loads(crossbench_test.network[0].split('=', 1)[1])
+    self.assertDictEqual(network_dict, expected_dict)
+
   @mock.patch.object(run_performance_tests.browser_finder, 'FindBrowser')
   def testCrossbenchFindBrowserFromEmbedder(self, _):
     fake_args = (
