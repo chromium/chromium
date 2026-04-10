@@ -32,6 +32,7 @@ source_set("extensions") {
       "extensions_dialogs.h",
       "extensions_menu_view_model.h",
       "extensions_toolbar_view_model.h",
+      "icon_with_badge_image_source.h",
       "reload_page_dialog_controller.h",
       "settings_overridden_dialog.h",
     ]
@@ -53,10 +54,13 @@ source_set("extensions") {
       "//chrome/browser/ui/toolbar",
       "//extensions/browser",
       "//extensions/common",
+      "//skia",
       "//ui/base:types",
       "//ui/base/interaction",
       "//ui/base/mojom:ui_base_types",
       "//ui/base/unowned_user_data",
+      "//ui/gfx",
+      "//ui/gfx/geometry",
     ]
   }
 
@@ -70,7 +74,6 @@ source_set("extensions") {
       "extension_side_panel_utils.h",
       "extensions_overrides/simple_overrides.h",
       "hosted_app_browser_controller.h",
-      "icon_with_badge_image_source.h",
       "installation_error_infobar_delegate.h",
       "mv2_disabled_dialog_controller.h",
       "settings_api_bubble_helpers.h",
@@ -145,6 +148,7 @@ source_set("impl") {
       "extensions_container.cc",
       "extensions_menu_view_model.cc",
       "extensions_toolbar_view_model.cc",
+      "icon_with_badge_image_source.cc",
       "reload_page_dialog_controller.cc",
       "settings_overridden_dialog.cc",
       "upload_extension_to_account_dialog.cc",
@@ -159,6 +163,7 @@ source_set("impl") {
       "//chrome/browser/signin",
       "//chrome/browser/tab_list",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/dialogs",
       "//chrome/browser/ui/toolbar",
       "//components/image_fetcher/core",
@@ -214,7 +219,6 @@ source_set("impl") {
       "extension_settings_overridden_dialog.cc",
       "extensions_overrides/simple_overrides.cc",
       "hosted_app_browser_controller.cc",
-      "icon_with_badge_image_source.cc",
       "installation_error_infobar_delegate.cc",
       "mv2_disabled_dialog_controller.cc",
       "settings_api_bubble_helpers.cc",
