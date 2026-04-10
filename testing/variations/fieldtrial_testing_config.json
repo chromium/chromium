@@ -15085,29 +15085,6 @@
             ]
         }
     ],
-    "MetricsDataQuality": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "TrimmingAndSchedulerEnabled_20260220",
-                    "params": {
-                        "initial_log_count_trim_threshold": "40",
-                        "log_bytes_trim_threshold": "614400",
-                        "max_initial_log_size_bytes": "0",
-                        "max_ongoing_log_size_bytes": "204800",
-                        "ongoing_log_count_trim_threshold": "16"
-                    },
-                    "enable_features": [
-                        "MetricsLogJobSchedulerUpload",
-                        "MetricsLogTrimming"
-                    ]
-                }
-            ]
-        }
-    ],
     "MigrateAccountManagerDelegate": [
         {
             "platforms": [

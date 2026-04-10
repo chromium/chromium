@@ -23,6 +23,14 @@ namespace metrics {
 
 namespace {
 
+// We use raised limits for Android Chrome per experiment results that show
+// these reduce data loss. We could consider raising limits for other platforms
+// as well, but that would require additional experimentation.
+//
+// Note: Android WebView does not use these limits, per the implementation in
+// android_webview/browser/metrics/aw_metrics_service_client.cc.
+constexpr bool use_android_limits = BUILDFLAG(IS_ANDROID);
+
 // The number of initial/ongoing logs to persist in the queue before logs are
 // dropped.
 // Note: Both the count threshold and the bytes threshold (see
@@ -42,10 +50,12 @@ namespace {
 //
 // Refer to //components/metrics/unsent_log_store.h for more details on when
 // logs are dropped.
-const base::FeatureParam<int> kInitialLogCountTrimThreshold{
-    &features::kMetricsLogTrimming, "initial_log_count_trim_threshold", 20};
-const base::FeatureParam<int> kOngoingLogCountTrimThreshold{
-    &features::kMetricsLogTrimming, "ongoing_log_count_trim_threshold", 8};
+const base::FeatureParam<size_t> kInitialLogCountTrimThreshold{
+    &features::kMetricsLogTrimming, "initial_log_count_trim_threshold",
+    use_android_limits ? 40 : 20};
+const base::FeatureParam<size_t> kOngoingLogCountTrimThreshold{
+    &features::kMetricsLogTrimming, "ongoing_log_count_trim_threshold",
+    use_android_limits ? 16 : 8};
 
 // The number bytes of the queue to be persisted before logs are dropped. This
 // will be applied to both log queues (initial/ongoing). This ensures that a
@@ -57,26 +67,28 @@ const base::FeatureParam<int> kOngoingLogCountTrimThreshold{
 //
 // Refer to //components/metrics/unsent_log_store.h for more details on when
 // logs are dropped.
-const base::FeatureParam<int> kLogBytesTrimThreshold{
+const base::FeatureParam<size_t> kLogBytesTrimThreshold{
     &features::kMetricsLogTrimming, "log_bytes_trim_threshold",
-    300 * 1024  // 300 KiB
+    use_android_limits ? 600 * 1024  // 600 KiB
+                       : 300 * 1024  // 300 KiB
 };
 
 // If an initial/ongoing metrics log upload fails, and the transmission is over
 // this byte count, then we will discard the log, and not try to retransmit it.
 // We also don't persist the log to the prefs for transmission during the next
 // chrome session if this limit is exceeded.
-const base::FeatureParam<int> kMaxInitialLogSizeBytes{
+const base::FeatureParam<size_t> kMaxInitialLogSizeBytes{
     &features::kMetricsLogTrimming, "max_initial_log_size_bytes",
     0  // Initial logs can be of any size.
 };
-const base::FeatureParam<int> kMaxOngoingLogSizeBytes{
+const base::FeatureParam<size_t> kMaxOngoingLogSizeBytes{
     &features::kMetricsLogTrimming, "max_ongoing_log_size_bytes",
 #if BUILDFLAG(IS_CHROMEOS)
     // Increase CrOS limit to accommodate SampledProfile data (crbug/1210595).
     1024 * 1024  // 1 MiB
 #else
-    100 * 1024  // 100 KiB
+    use_android_limits ? 200 * 1024  // 200 KiB
+                       : 100 * 1024  // 100 KiB
 #endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
@@ -216,21 +228,15 @@ MetricsLogStore::StorageLimits MetricsServiceClient::GetStorageLimits() const {
   return {
       .initial_log_queue_limits =
           UnsentLogStore::UnsentLogStoreLimits{
-              .min_log_count =
-                  static_cast<size_t>(kInitialLogCountTrimThreshold.Get()),
-              .min_queue_size_bytes =
-                  static_cast<size_t>(kLogBytesTrimThreshold.Get()),
-              .max_log_size_bytes =
-                  static_cast<size_t>(kMaxInitialLogSizeBytes.Get()),
+              .min_log_count = kInitialLogCountTrimThreshold.Get(),
+              .min_queue_size_bytes = kLogBytesTrimThreshold.Get(),
+              .max_log_size_bytes = kMaxInitialLogSizeBytes.Get(),
           },
       .ongoing_log_queue_limits =
           UnsentLogStore::UnsentLogStoreLimits{
-              .min_log_count =
-                  static_cast<size_t>(kOngoingLogCountTrimThreshold.Get()),
-              .min_queue_size_bytes =
-                  static_cast<size_t>(kLogBytesTrimThreshold.Get()),
-              .max_log_size_bytes =
-                  static_cast<size_t>(kMaxOngoingLogSizeBytes.Get()),
+              .min_log_count = kOngoingLogCountTrimThreshold.Get(),
+              .min_queue_size_bytes = kLogBytesTrimThreshold.Get(),
+              .max_log_size_bytes = kMaxOngoingLogSizeBytes.Get(),
           },
   };
 }

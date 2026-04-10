@@ -186,6 +186,7 @@ class AwMetricsServiceClient
   bool IsJobSchedulerSupported() const override;
   base::TimeDelta GetStandardUploadInterval() override;
   bool ShouldStartUpFast() const override;
+  metrics::MetricsLogStore::StorageLimits GetStorageLimits() const override;
 
   // Gets the embedding app's package name if it's OK to log. Otherwise, this
   // returns the empty string.

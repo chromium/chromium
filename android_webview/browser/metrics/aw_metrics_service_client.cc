@@ -75,6 +75,44 @@ using InstallerPackageType = AwMetricsServiceClient::InstallerPackageType;
 
 namespace {
 
+// Note: This feature and params parallel the ones in metrics_service_client.cc
+// to provide AW-specific limits for the thresholds.
+BASE_FEATURE(kAwMetricsLogTrimming, base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<size_t> kInitialLogCountTrimThreshold{
+    &kAwMetricsLogTrimming, "initial_log_count_trim_threshold", 20};
+const base::FeatureParam<size_t> kOngoingLogCountTrimThreshold{
+    &kAwMetricsLogTrimming, "ongoing_log_count_trim_threshold", 8};
+const base::FeatureParam<size_t> kLogBytesTrimThreshold{
+    &kAwMetricsLogTrimming, "log_bytes_trim_threshold",
+    300 * 1024  // 300 KiB
+};
+const base::FeatureParam<size_t> kMaxInitialLogSizeBytes{
+    &kAwMetricsLogTrimming, "max_initial_log_size_bytes",
+    0  // Initial logs can be of any size.
+};
+const base::FeatureParam<size_t> kMaxOngoingLogSizeBytes{
+    &kAwMetricsLogTrimming, "max_ongoing_log_size_bytes",
+    100 * 1024  // 100 KiB
+};
+
+metrics::MetricsLogStore::StorageLimits GetStorageLimitsImpl() {
+  return {
+      .initial_log_queue_limits =
+          metrics::UnsentLogStore::UnsentLogStoreLimits{
+              .min_log_count = kInitialLogCountTrimThreshold.Get(),
+              .min_queue_size_bytes = kLogBytesTrimThreshold.Get(),
+              .max_log_size_bytes = kMaxInitialLogSizeBytes.Get(),
+          },
+      .ongoing_log_queue_limits =
+          metrics::UnsentLogStore::UnsentLogStoreLimits{
+              .min_log_count = kOngoingLogCountTrimThreshold.Get(),
+              .min_queue_size_bytes = kLogBytesTrimThreshold.Get(),
+              .max_log_size_bytes = kMaxOngoingLogSizeBytes.Get(),
+          },
+  };
+}
+
 // This specifies the amount of time to wait for all renderers to send their
 // data.
 const int kMaxHistogramGatheringWaitDuration = 60000;  // 60 seconds.
@@ -588,6 +626,11 @@ base::TimeDelta AwMetricsServiceClient::GetStandardUploadInterval() {
 bool AwMetricsServiceClient::ShouldStartUpFast() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return fast_startup_for_testing_;
+}
+
+metrics::MetricsLogStore::StorageLimits AwMetricsServiceClient::GetStorageLimits()
+    const {
+  return GetStorageLimitsImpl();
 }
 
 void AwMetricsServiceClient::OnRenderProcessHostCreated(

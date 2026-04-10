@@ -27,6 +27,10 @@ BASE_DECLARE_FEATURE(kReportingServiceAlwaysFlush);
 // trimming behaviour via serverside parameters. Do not remove. See
 // components/metrics/metrics_service_client.cc and
 // components/metrics/unsent_log_store.cc.
+// Note: On Android WebView, while this feature still controls whether trimming
+// is enabled, a separate feature controls the trimming parameters themselves,
+// as they have different defaults than Android Chrome.
+// See: android_webview/browser/metrics/aw_metrics_service_client.cc
 BASE_DECLARE_FEATURE(kMetricsLogTrimming);
 
 #if BUILDFLAG(IS_ANDROID)
