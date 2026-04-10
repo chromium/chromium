@@ -89,6 +89,22 @@ if (!is_android) {
     ]
   }
 
+  source_set("headless_extra_parts") {
+    sources = [
+      "chrome_browser_main_extra_parts_headless.cc",
+      "chrome_browser_main_extra_parts_headless.h",
+    ]
+
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+    deps = [
+      ":headless",
+      "//base",
+      "//chrome/browser:main_extra_parts",
+      "//components/headless/clipboard",
+    ]
+  }
+
   source_set("browser_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -129,6 +145,7 @@ if (!is_android) {
       "//chrome/browser",
       "//chrome/browser/infobars",
       "//chrome/test:test_support",
+      "//components/headless/clipboard",
       "//content/test:test_support",
       "//pdf",
       "//testing/gmock",
@@ -138,12 +155,10 @@ if (!is_android) {
 
     if (is_linux || is_win || is_mac) {
       deps += [
-        "//chrome/browser/infobars",
         "//chrome/browser/profiles",
         "//chrome/browser/ui",
         "//chrome/browser/ui/views/frame:toolbar_button_provider",
         "//components/devtools/simple_devtools_protocol_client",
-        "//components/headless/clipboard",
         "//components/headless/command_handler",
         "//components/headless/command_handler:switches",
         "//components/headless/select_file_dialog",

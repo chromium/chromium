@@ -10,12 +10,11 @@
 // More platforms will be added later, so avoid function level clutter by
 // providing a compile time condition over the entire file.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-
 #include <string>
 
 #include "base/check_deref.h"
 #include "base/command_line.h"
-#include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -27,7 +26,6 @@
 #include "chrome/browser/headless/headless_mode_browsertest_utils.h"
 #include "chrome/browser/headless/headless_mode_init.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
-#include "chrome/browser/process_singleton.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -36,8 +34,8 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
-#include "components/headless/clipboard/headless_clipboard.h"     // nogncheck
-#include "components/infobars/content/content_infobar_manager.h"  // nogncheck
+#include "components/headless/clipboard/headless_clipboard.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobars_switches.h"
@@ -441,5 +439,4 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, HeadlessBubbleSize) {
 }  // namespace
 
 }  // namespace headless
-
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

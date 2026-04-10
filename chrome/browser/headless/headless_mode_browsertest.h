@@ -19,6 +19,8 @@ namespace content {
 class WebContents;
 }
 
+class Browser;
+
 namespace headless {
 class HeadlessModeHandle;
 
