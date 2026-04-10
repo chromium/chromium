@@ -818,8 +818,10 @@ void VideoCaptureDeviceFactoryWin::GetDevicesInfo(
     devices_info = GetDevicesInfoDirectShow(devices_info);
   }
 
-  com_thread_.init_com_with_mta(true);
-  com_thread_.Start();
+  if (!com_thread_.IsRunning()) {
+    com_thread_.init_com_with_mta(true);
+    com_thread_.Start();
+  }
   com_thread_data_ =
       base::MakeRefCounted<VideoCaptureDeviceFactoryWin::ComThreadData>(
           weak_ptr_factory_.GetWeakPtr(), com_thread_.task_runner(),
@@ -984,10 +986,6 @@ void VideoCaptureDeviceFactoryWin::UpdateDevicesInfoAvailability(
 void VideoCaptureDeviceFactoryWin::DeviceInfoReady(
     std::vector<VideoCaptureDeviceInfo> devices_info,
     GetDevicesInfoCallback result_callback) {
-  if (com_thread_.IsRunning()) {
-    com_thread_.Stop();
-    com_thread_data_.reset();
-  }
   UpdateDevicesInfoAvailability(&devices_info);
 
   std::move(result_callback).Run(std::move(devices_info));
