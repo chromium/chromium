@@ -232,8 +232,6 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   // Protects concurrent setting and using |frameReceiver_|. Note that the
   // GUARDED_BY decoration below does not have any effect.
   base::Lock _lock;
-  // Used to avoid UAF in -captureOutput.
-  base::Lock _destructionLock;
   base::Lock _metadataLock;
   raw_ptr<media::VideoCaptureDeviceAVFoundationFrameReceiver> _frameReceiver
       GUARDED_BY(_lock);  // weak.
@@ -365,45 +363,36 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   // inside stopCapture() below which would deadlock, we ensure that the photo
   // output is already stopped before taking `_lock`.
   [self stopPhotoOutput];
-  {
-    // To avoid races with concurrent callbacks, grab the lock before stopping
-    // capture and clearing all the variables.
-    base::AutoLock lock(_lock);
 
-    // Cleanup AVCaptureSession
-    // 1. Stop the AVCaptureSession
-    [self stopCapture];
-    // 2. Remove AVCaptureInputs and AVCaptureOutputs
-    for (AVCaptureInput* input in _captureSession.inputs) {
-      [_captureSession removeInput:input];
-    }
-    for (AVCaptureOutput* output in _captureSession.outputs) {
-      [_captureSession removeOutput:output];
-    }
-    // 3. Set the AVCaptureSession to nil to remove strong references
-    _captureSession = nil;
+  // To avoid races with concurrent callbacks, grab the lock before stopping
+  // capture and clearing all the variables.
+  base::AutoLock lock(_lock);
 
-    // Cleanup AVCaptureDevice
-    // 1. Unlock any configuration (if locked)
-    [_captureDevice unlockForConfiguration];
-    // 2. Remove observer
-    [_captureDevice removeObserver:self forKeyPath:@"portraitEffectActive"];
-    // 3. Release and deallocate the capture device
-    _captureDevice = nil;
-
-    _frameReceiver = nullptr;
-    _sampleBufferTransformer.reset();
-    _mainThreadTaskRunner = nullptr;
-    _sampleQueue = nil;
+  // Cleanup AVCaptureSession
+  // 1. Stop the AVCaptureSession
+  [self stopCapture];
+  // 2. Remove AVCaptureInputs and AVCaptureOutputs
+  for (AVCaptureInput* input in _captureSession.inputs) {
+    [_captureSession removeInput:input];
   }
-  {
-    // Ensures -captureOutput has finished before we continue the destruction
-    // steps. If -captureOutput grabbed the destruction lock before us this
-    // prevents UAF. If -captureOutput grabbed the destruction lock after us
-    // it will exit early because |_frameReceiver| is already null at this
-    // point.
-    base::AutoLock destructionLock(_destructionLock);
+  for (AVCaptureOutput* output in _captureSession.outputs) {
+    [_captureSession removeOutput:output];
   }
+  // 3. Set the AVCaptureSession to nil to remove strong references
+  _captureSession = nil;
+
+  // Cleanup AVCaptureDevice
+  // 1. Unlock any configuration (if locked)
+  [_captureDevice unlockForConfiguration];
+  // 2. Remove observer
+  [_captureDevice removeObserver:self forKeyPath:@"portraitEffectActive"];
+  // 3. Release and deallocate the capture device
+  _captureDevice = nil;
+
+  _frameReceiver = nullptr;
+  _sampleBufferTransformer.reset();
+  _mainThreadTaskRunner = nullptr;
+  _sampleQueue = nil;
 }
 
 - (void)setFrameReceiver:
@@ -1082,10 +1071,6 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
            fromConnection:(AVCaptureConnection*)connection {
   VLOG(3) << __func__;
 
-  // Concurrent calls into |_frameReceiver| are not supported, so take |_lock|
-  // before any of the subsequent paths. The |_destructionLock| must be grabbed
-  // first to avoid races with -dealloc.
-  base::AutoLock destructionLock(_destructionLock);
   base::AutoLock lock(_lock);
   _capturedFrameSinceLastStallCheck = YES;
   if (!_frameReceiver || !_sampleBufferTransformer) {
