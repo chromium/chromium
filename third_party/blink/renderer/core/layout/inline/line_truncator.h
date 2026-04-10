@@ -5,14 +5,20 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_LINE_TRUNCATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_LINE_TRUNCATOR_H_
 
+#include <unicode/ubidi.h>
+
 #include <optional>
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/inline/line_box_fragment_builder.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
+class ComputedStyle;
 class InlineLayoutStateStack;
 class LineInfo;
 class LogicalLineItems;

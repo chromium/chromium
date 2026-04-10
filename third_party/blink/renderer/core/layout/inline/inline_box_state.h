@@ -10,22 +10,22 @@
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
-#include "third_party/blink/renderer/core/layout/inline/fit_text_scale.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_result.h"
-#include "third_party/blink/renderer/core/layout/inline/line_box_fragment_builder.h"
-#include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/font_height.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
-#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
 
 namespace blink {
 
+class ConstraintSpace;
 class InlineItem;
+class InlineNode;
 class LogicalLineItems;
 class ShapeResultView;
-struct InlineItemResult;
+struct FitTextBlockScale;
 struct LogicalRubyColumn;
 
 // Fragments that require the layout position/size of ancestor are packed in
@@ -175,7 +175,7 @@ class CORE_EXPORT InlineLayoutStateStack {
 
   // Initialize the box state stack for a new line.
   // @return The initial box state for the line.
-  InlineBoxState* OnBeginPlaceItems(const InlineNode node,
+  InlineBoxState* OnBeginPlaceItems(const InlineNode& node,
                                     const ComputedStyle&,
                                     const InlineItemResults& line_items,
                                     FontBaseline,

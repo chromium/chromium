@@ -292,7 +292,7 @@ void InlineLayoutStateStack::Trace(Visitor* visitor) const {
 }
 
 InlineBoxState* InlineLayoutStateStack::OnBeginPlaceItems(
-    const InlineNode node,
+    const InlineNode& node,
     const ComputedStyle& line_style,
     const InlineItemResults& line_items,
     FontBaseline baseline_type,
