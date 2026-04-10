@@ -1339,6 +1339,16 @@ GridLayoutSubtree* GridLanesLayoutAlgorithm::ComputeGridLanesGeometry(
         InitializeTrackSizes(&sizing_tree);
         CompleteTrackSizingAlgorithm(sizing_constraint, &sizing_tree,
                                      /*needs_intrinsic_track_size=*/false);
+      } else if (container_style.AlignContent() !=
+                 ComputedStyleInitialValues::InitialAlignContent()) {
+        // After resolving the block-size, if we don't need to rerun the track
+        // sizing algorithm, simply apply any content alignment to its rows.
+        auto first_set_geometry =
+            GridTrackSizingAlgorithm::ComputeFirstSetGeometry(
+                track_collection, container_style, grid_lanes_available_size_,
+                BorderScrollbarPadding());
+        track_collection.FinalizeSetsGeometry(first_set_geometry.start_offset,
+                                              first_set_geometry.gutter_size);
       }
     }
   }
