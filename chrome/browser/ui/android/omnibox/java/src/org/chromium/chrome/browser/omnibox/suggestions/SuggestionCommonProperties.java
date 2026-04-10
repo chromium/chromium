@@ -10,6 +10,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -47,6 +48,9 @@ public @interface SuggestionCommonProperties {
     /** Whether to show a gap from the previous suggestion group. */
     WritableBooleanPropertyKey SHOW_GROUP_SEPARATOR = new WritableBooleanPropertyKey();
 
+    /** The title text of the header above this item. */
+    WritableObjectPropertyKey<String> HEADER_TITLE = new WritableObjectPropertyKey<>();
+
     PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 COLOR_SCHEME,
@@ -55,6 +59,7 @@ public @interface SuggestionCommonProperties {
                 BG_TOP_CORNER_ROUNDED,
                 BG_BOTTOM_CORNER_ROUNDED,
                 SHOW_DIVIDER,
-                SHOW_GROUP_SEPARATOR
+                SHOW_GROUP_SEPARATOR,
+                HEADER_TITLE
             };
 }
