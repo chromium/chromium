@@ -663,6 +663,14 @@ void TrackerImpl::MaybePostInitializedCallbacks() {
   if (!IsInitializationFinished())
     return;
 
+  if (!initialization_time_recorded_) {
+    // TODO(crbug.com/500891039): Re-evaluate the range of this histogram after
+    // gathering initial data.
+    base::UmaHistogramTimes("InProductHelp.InitializationTime.Total",
+                            init_timer_.Elapsed());
+    initialization_time_recorded_ = true;
+  }
+
   DVLOG(2) << "Initialization finished.";
 
   for (auto& callback : on_initialized_callbacks_) {
