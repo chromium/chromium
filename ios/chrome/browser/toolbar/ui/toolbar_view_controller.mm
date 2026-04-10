@@ -394,6 +394,24 @@ constexpr CGFloat kLocationBarMaxWidth = 600;
       forFullscreenProgress:progress];
   [self updateButtons:_trailingStackView.arrangedSubviews
       forFullscreenProgress:progress];
+
+  CGFloat offset = 0;
+  if (!IsRegularXRegularSizeClass(self.traitCollection) &&
+      !IsIPhoneLandscape(self.traitCollection)) {
+    // The location bar is not centered in iPhone landscape when forward is
+    // visible. Add a translation in those cases to have the location bar
+    // centered in fullscreen.
+    offset = (_leadingStackView.bounds.size.width -
+              _trailingStackView.bounds.size.width) /
+             2.0;
+  }
+  CGFloat translation = (progress - 1) * offset;
+
+  CGAffineTransform translationTransform =
+      CGAffineTransformMakeTranslation(translation, 0);
+  _locationBarContainer.transform = translationTransform;
+  _leadingStackView.transform = translationTransform;
+  _trailingStackView.transform = translationTransform;
 }
 
 #pragma mark - Private
