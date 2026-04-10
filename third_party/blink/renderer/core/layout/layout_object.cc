@@ -1301,8 +1301,8 @@ LayoutBox* LayoutObject::ContainingNGBox() const {
     if (parent->IsMedia()) {
       return To<LayoutBox>(parent);
     }
-    if (parent->IsCanvas() &&
-        RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
+    if (parent->IsCanvas() && RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+                                  GetDocument().GetExecutionContext())) {
       return To<LayoutBox>(parent);
     }
   }

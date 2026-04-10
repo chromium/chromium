@@ -2802,8 +2802,9 @@ bool PaintLayerScrollableArea::PrefersNonCompositedScrolling() const {
         return true;
       }
     }
-    if (RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
-      if (auto* element = DynamicTo<Element>(node)) {
+    if (auto* element = DynamicTo<Element>(node)) {
+      if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+              element->GetExecutionContext())) {
         if (element->IsInCanvasSubtree()) {
           return true;
         }

@@ -844,7 +844,8 @@ void GPUQueue::CopyElementImageToTextureInternal(
     std::optional<uint32_t> height,
     GPUImageCopyTextureTagged* destination,
     ExceptionState& exception_state) {
-  CHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled());
+  CHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+      device_->GetExecutionContext()));
   CHECK(!swidth.has_value() || !width.has_value());
   CHECK(!sheight.has_value() || !height.has_value());
 

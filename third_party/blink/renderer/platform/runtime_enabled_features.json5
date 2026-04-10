@@ -982,7 +982,8 @@
       // https://github.com/WICG/html-in-canvas/blob/main/README.md
       // Note the API name has changed to `drawElementImage`.
       name: "CanvasDrawElement",
-      status: "test",
+      origin_trial_feature_name: "HTMLInCanvas",
+      status: "experimental",
     },
     {
       name: "CanvasFloatingPoint",

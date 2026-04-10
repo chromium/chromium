@@ -147,7 +147,8 @@ VisibilityInfo ComputeVisibilityInfo(const LayoutObject* target,
           mojom::blink::FrameOcclusionState::kGuaranteedNotOccluded) {
     return {false, kInvalidDOMNodeId};
   }
-  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+          target->GetDocument().GetExecutionContext()) &&
       IsA<Element>(target->GetNode()) &&
       To<Element>(target->GetNode())->IsInCanvasSubtree()) {
     return {false, kInvalidDOMNodeId};

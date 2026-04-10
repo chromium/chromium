@@ -716,7 +716,9 @@ void StyleAdjuster::AdjustOverflow(ComputedStyleBuilder& builder,
 // to have a stacking context and become a containing block for all descendants.
 static bool ForceStackingAndContainingBlockForCanvasLayoutSubtree(
     const Element* element) {
-  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() && element &&
+  if (element &&
+      RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+          element->GetExecutionContext()) &&
       element->IsCanvasOrInCanvasSubtree()) {
     if (const auto* canvas =
             DynamicTo<HTMLCanvasElement>(element->parentElement())) {
@@ -728,7 +730,8 @@ static bool ForceStackingAndContainingBlockForCanvasLayoutSubtree(
 }
 
 static bool IsCanvasWithDrawElements(const Element* element) {
-  if (!RuntimeEnabledFeatures::CanvasDrawElementEnabled() || !element) {
+  if (!element || !RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+                      element->GetExecutionContext())) {
     return false;
   }
 

@@ -370,7 +370,8 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
   CompositingReasons reasons = CompositingReason::kNone;
 
   auto* element = DynamicTo<Element>(object.GetNode());
-  if (element && RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
+  if (element && RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+                     object.GetDocument().GetExecutionContext())) {
     if (element->IsInCanvasSubtree()) [[unlikely]] {
       auto* canvas_parent =
           DynamicTo<HTMLCanvasElement>(element->parentElement());
@@ -467,7 +468,8 @@ bool CompositingReasonFinder::ShouldForcePreferCompositingToLCDText(
     CompositingReasons reasons) {
   DCHECK_EQ(reasons, DirectReasonsForPaintProperties(object));
 
-  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+          object.GetDocument().GetExecutionContext())) {
     const auto* element = DynamicTo<Element>(object.GetNode());
     if (element && element->IsInCanvasSubtree()) {
       return false;

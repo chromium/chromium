@@ -1850,7 +1850,8 @@ PaintLayer* PaintLayer::HitTestChildren(
   }
 
   if (GetLayoutObject().IsCanvas()) {
-    if (!RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
+    if (!RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+            GetLayoutObject().GetDocument().GetExecutionContext())) {
       return nullptr;
     }
     if (!To<HTMLCanvasElement>(GetLayoutObject().GetNode())->layoutSubtree()) {

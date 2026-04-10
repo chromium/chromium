@@ -1627,7 +1627,8 @@ DOMMatrix* BaseRenderingContext2D::DrawElementInternal(
     std::optional<double> dwidth,
     std::optional<double> dheight,
     ExceptionState& exception_state) {
-  CHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled());
+  CHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+      GetCanvasRenderingContextHost()->GetTopExecutionContext()));
 
   if (!GetOrCreatePaintCanvas()) {
     return DOMMatrix::Create();

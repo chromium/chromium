@@ -446,12 +446,13 @@ void HTMLCanvasElement::ParseAttribute(
 void HTMLCanvasElement::AttributeChanged(
     const AttributeModificationParams& params) {
   HTMLElement::AttributeChanged(params);
-  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(GetExecutionContext()) &&
       params.name == html_names::kLayoutsubtreeAttr) {
     bool had_layoutsubtree = !params.old_value.IsNull();
     bool has_layoutsubtree = !params.new_value.IsNull();
     if (had_layoutsubtree != has_layoutsubtree) {
       setLayoutSubtree(has_layoutsubtree);
+      UseCounter::Count(GetDocument(), WebFeature::kHTMLInCanvas);
     }
   }
 }
@@ -918,7 +919,9 @@ void HTMLCanvasElement::OnWidthOrHeightAssigned() {
       layout_object->SetShouldDoFullPaintInvalidation();
     }
 
-    if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() && layoutSubtree()) {
+    if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+            GetExecutionContext()) &&
+        layoutSubtree()) {
       // Invalidate the child's paint properties so that its cached
       // CanvasChildPaintState is updated with the new canvas size.
       for (LayoutObject* child = layout_object->SlowFirstChild(); child;
@@ -1634,7 +1637,7 @@ cc::TextureLayer* HTMLCanvasElement::GetOrCreateCcLayerForCanvas2DIfNeeded() {
   if (!cc_layer_) [[unlikely]] {
     cc_layer_ = cc::TextureLayer::Create(
         this,
-        RuntimeEnabledFeatures::CanvasDrawElementEnabled()
+        RuntimeEnabledFeatures::CanvasDrawElementEnabled(GetExecutionContext())
             ? cc::TextureLayer::PrepareResourceBehavior::kAfterPaintEvent
             : cc::TextureLayer::PrepareResourceBehavior::kDuringLayerUpdate);
     InitializeLayerWithCSSProperties(cc_layer_.get());
@@ -1810,7 +1813,8 @@ void HTMLCanvasElement::RemovedFrom(ContainerNode& insertion_point) {
 }
 
 bool HTMLCanvasElement::ChildrenChangedAllChildrenRemovedNeedsList() const {
-  return RuntimeEnabledFeatures::CanvasDrawElementEnabled();
+  return RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+      GetExecutionContext());
 }
 
 void HTMLCanvasElement::ChildrenChanged(const ChildrenChange& change) {
@@ -1823,7 +1827,7 @@ void HTMLCanvasElement::ChildrenChanged(const ChildrenChange& change) {
     }
   }
 
-  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(GetExecutionContext())) {
     if (change.type == ChildrenChangeType::kElementRemoved) {
       if (auto* element = DynamicTo<Element>(change.sibling_changed)) {
         ChildElementRemoved(*element);
