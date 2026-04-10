@@ -9106,6 +9106,21 @@
             ]
         }
     ],
+    "EnableAppBackgroundRefresh": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableAppBackgroundRefresh"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableBestEffortTaskInhibitingPolicy": [
         {
             "platforms": [
