@@ -29,6 +29,9 @@ class AccessibilityAnnotatorEnablementServiceImplTest : public testing::Test {
 
     accessibility_annotator::prefs::RegisterProfilePrefs(
         pref_service_.registry());
+    pref_service_.SetBoolean(
+        accessibility_annotator::prefs::kShouldShowRemoteAnnotatorFirstRunInfo,
+        false);
     CreateService("us");
     SignIn("test@gmail.com");
   }
@@ -125,6 +128,16 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
        EnabledWhenAllFeaturesAreOn) {
   EXPECT_EQ(service().GetEnablementState(),
             RemoteAnnotatorEnablementState::kEnabled);
+}
+
+TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
+       DisabledPendingInfoWhenInfoNotAcknowledged) {
+  pref_service_.SetBoolean(
+      accessibility_annotator::prefs::kShouldShowRemoteAnnotatorFirstRunInfo,
+      true);
+
+  EXPECT_EQ(service().GetEnablementState(),
+            RemoteAnnotatorEnablementState::kDisabledPendingInfo);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)  // Signing out does not work on ChromeOS.

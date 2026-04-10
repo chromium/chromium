@@ -111,7 +111,12 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     MaybeOutputReason(debug_message, "Prefs are not available.");
     return kDisabledNotEligible;
   }
-  // TODO(crbug.com/494149753): Implement preference checks.
+
+  if (pref_service->GetBoolean(prefs::kShouldShowRemoteAnnotatorFirstRunInfo)) {
+    MaybeOutputReason(debug_message, "Info not yet acknowledged.");
+    return kDisabledPendingInfo;
+  }
+
   return kEnabled;
 }
 }  // namespace
