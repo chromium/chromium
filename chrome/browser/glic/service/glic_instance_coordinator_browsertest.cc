@@ -822,10 +822,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest, TabRestoration) {
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
   auto instance_id = instance->id();
 
-  // Simulates a user closing the active tab (Ctrl+W).
-  // This ensures the generic "create historical tab" flag is set, which is
-  // required for LiveTabContext to pick it up for session restore.
-  chrome::CloseTab(browser());
+  GetTabListInterface()->CloseTab(tab->GetHandle());
 
   // Restore the tab.
   GlicTestTabAddedWaiter waiter(GetProfile());
@@ -888,7 +885,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   GetTabListInterface()->ActivateTab(tab2->GetHandle());
 
   // Close Tab 2.
-  chrome::CloseTab(browser());
+  GetTabListInterface()->CloseTab(tab2->GetHandle());
 
   // Restore Tab 2.
   GlicTestTabAddedWaiter waiter(GetProfile());
@@ -931,7 +928,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   ASSERT_EQ(coordinator().GetInstanceForTab(tab2), instance);
 
   // Close Tab 2.
-  chrome::CloseTab(browser());
+  GetTabListInterface()->CloseTab(tab2->GetHandle());
 
   // The instance should still exist because Tab 1 keeps it alive.
   ASSERT_EQ(coordinator().GetInstanceImplFor(instance_id), instance);
@@ -977,7 +974,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
       WaitForSidePanelState(tab, GlicSidePanelCoordinator::State::kClosed));
 
   // Close the tab.
-  chrome::CloseTab(browser());
+  GetTabListInterface()->CloseTab(tab->GetHandle());
 
   // Restore the tab.
   GlicTestTabAddedWaiter waiter(GetProfile());

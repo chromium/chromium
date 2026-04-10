@@ -704,15 +704,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedMaxResults) {
     // Close the tab we just opened (at index 1).
     int tab_index = 1;
     content::WebContents* tab = GetWebContentsAt(tab_index);
-    // On Android, historical tabs are automatically created when a tab is
-    // closed via the HistoricalTabSaver; there is no need to manually create
-    // them like on desktop.
-#if !BUILDFLAG(IS_ANDROID)
-    // Our cross-platform utility function to close a tab doesn't allow
-    // requesting the creation of a historical tab, so do it manually.
-    service->CreateHistoricalTab(
-        sessions::ContentLiveTab::GetOrCreateForWebContents(tab), tab_index);
-#endif  // !BUILDFLAG(IS_ANDROID)
     // Close the tab (and wait for its destruction internally).
     CloseTabForWebContents(tab);
   }
@@ -762,16 +753,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest,
   // Prepare to close the tab we just opened (at index 1).
   const int tab_index = 1;
   content::WebContents* tab = GetWebContentsAt(tab_index);
-
-  // On Android, historical tabs are automatically created when a tab is
-  // closed via the HistoricalTabSaver; there is no need to manually create
-  // them like on desktop.
-#if !BUILDFLAG(IS_ANDROID)
-  // Our cross-platform utility function to close a tab doesn't allow
-  // requesting the creation of a historical tab, so do it manually.
-  service->CreateHistoricalTab(
-      sessions::ContentLiveTab::GetOrCreateForWebContents(tab), tab_index);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Close the tab (and wait for its destruction internally).
   CloseTabForWebContents(tab);

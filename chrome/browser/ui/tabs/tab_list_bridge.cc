@@ -268,7 +268,8 @@ void TabListBridge::CloseTab(tabs::TabHandle tab) {
   const int index = GetIndexOfTab(tab);
   CHECK_NE(index, TabStripModel::kNoTab)
       << "Trying to close a tab that doesn't exist in this tab list.";
-  tab_strip_->CloseWebContentsAt(index, TabCloseTypes::CLOSE_NONE);
+  tab_strip_->CloseWebContentsAt(index,
+                                 TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
 }
 
 std::unique_ptr<content::WebContents> TabListBridge::DetachWebContents(
