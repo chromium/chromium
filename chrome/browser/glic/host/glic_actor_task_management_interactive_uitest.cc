@@ -371,7 +371,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest, CreateTaskNoTitle) {
 }
 
 // Flaky timeout on ASAN.
-#if defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/498409892): Flaky on linux-chromeos-dbg.
+#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ForegroundActorTaskTab DISABLED_ForegroundActorTaskTab
 #else
 #define MAYBE_ForegroundActorTaskTab ForegroundActorTaskTab
