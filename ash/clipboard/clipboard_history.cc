@@ -205,7 +205,7 @@ void ClipboardHistory::SyncClipboardToClipboardHistory() {
           ui::ClipboardBuffer::kCopyPaste);
     }
   } else if (const auto& top_of_history_data = history_list_.front().data();
-             top_of_history_data != *clipboard_data) {
+             !clipboard_data || top_of_history_data != *clipboard_data) {
     clipboard->WriteClipboardData(
         std::make_unique<ui::ClipboardData>(top_of_history_data));
   }
