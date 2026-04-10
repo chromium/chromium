@@ -13,6 +13,7 @@ namespace lorgnette {
 class CancelScanResponse;
 class CloseScannerResponse;
 class GetCurrentConfigResponse;
+class ReadScanDataResponse;
 enum OperationResult : int;
 }  // namespace lorgnette
 
@@ -29,6 +30,9 @@ CloseScannerResponse ConvertLorgnetteCloseScannerResponse(
 
 GetOptionGroupsResponse ConvertLorgnetteGetCurrentConfigResponse(
     const lorgnette::GetCurrentConfigResponse& response);
+
+ReadScanDataResponse ConvertLorgnetteReadScanDataResponse(
+    const lorgnette::ReadScanDataResponse& response);
 
 }  // namespace extensions::api::document_scan
 
@@ -95,13 +99,6 @@ struct TypeConverter<extensions::api::document_scan::StartScanResponse,
                      crosapi::mojom::StartPreparedScanResponsePtr> {
   static extensions::api::document_scan::StartScanResponse Convert(
       const crosapi::mojom::StartPreparedScanResponsePtr& input);
-};
-
-template <>
-struct TypeConverter<extensions::api::document_scan::ReadScanDataResponse,
-                     crosapi::mojom::ReadScanDataResponsePtr> {
-  static extensions::api::document_scan::ReadScanDataResponse Convert(
-      const crosapi::mojom::ReadScanDataResponsePtr& input);
 };
 
 // Test wrappers for type conversions that don't need to be done explicitly.

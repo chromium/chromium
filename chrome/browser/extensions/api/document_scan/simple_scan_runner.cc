@@ -228,19 +228,23 @@ void SimpleScanRunner::OnStartPreparedScanResponse(
 }
 
 void SimpleScanRunner::ReadScanData() {
-  document_scan_->ReadScanData(
-      job_handle_, base::BindOnce(&SimpleScanRunner::OnReadScanDataResponse,
-                                  weak_ptr_factory_.GetWeakPtr()));
+  lorgnette::ReadScanDataRequest request;
+  request.mutable_job_handle()->set_token(job_handle_);
+  ash::LorgnetteScannerManagerFactory::GetForBrowserContext(browser_context_)
+      ->ReadScanData(request,
+                     base::BindOnce(&SimpleScanRunner::OnReadScanDataResponse,
+                                    weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SimpleScanRunner::OnReadScanDataResponse(
-    crosapi::mojom::ReadScanDataResponsePtr response) {
+    const std::optional<lorgnette::ReadScanDataResponse>& response) {
   // Success means to keep going.  If data was ready, append it to what we got
   // so far.
-  if (response->result == crosapi::mojom::ScannerOperationResult::kSuccess) {
-    if (response->data.has_value() && response->data->size() > 0) {
-      scan_data_.insert(scan_data_.end(), response->data->begin(),
-                        response->data->end());
+  if (response.has_value() &&
+      response->result() == lorgnette::OPERATION_RESULT_SUCCESS) {
+    if (response->has_data() && response->data().size() > 0) {
+      scan_data_.insert(scan_data_.end(), response->data().begin(),
+                        response->data().end());
     }
 
     // Once the first byte after the image headers is received, poll the scanner
@@ -256,10 +260,11 @@ void SimpleScanRunner::OnReadScanDataResponse(
   }
 
   // EOF means no more data is available.  There might be a final data chunk.
-  if (response->result == crosapi::mojom::ScannerOperationResult::kEndOfData) {
-    if (response->data.has_value() && response->data->size() > 0) {
-      scan_data_.insert(scan_data_.end(), response->data->begin(),
-                        response->data->end());
+  if (response.has_value() &&
+      response->result() == lorgnette::OPERATION_RESULT_EOF) {
+    if (response->has_data() && response->data().size() > 0) {
+      scan_data_.insert(scan_data_.end(), response->data().begin(),
+                        response->data().end());
     }
 
     scan_result_ = crosapi::mojom::ScanFailureMode::kNoFailure;

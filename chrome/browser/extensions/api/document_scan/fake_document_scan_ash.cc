@@ -105,47 +105,6 @@ void FakeDocumentScanAsh::StartPreparedScan(
   std::move(callback).Run(std::move(response));
 }
 
-void FakeDocumentScanAsh::ReadScanData(const std::string& job_handle,
-                                       ReadScanDataCallback callback) {
-  // Return each chunk of scan data with a success code.  Once the last chunk is
-  // reached, return the final status.  If the job has been cancelled or is
-  // invalid, report cancelled.
-  auto response = crosapi::mojom::ReadScanDataResponse::New();
-  response->job_handle = job_handle;
-  response->result = crosapi::mojom::ScannerOperationResult::kCancelled;
-  for (auto& [scanner_handle, state] : open_scanners_) {
-    if (state.job_handle.value_or("") != job_handle) {
-      continue;
-    }
-
-    if (state.cancelled) {
-      response->result = crosapi::mojom::ScannerOperationResult::kCancelled;
-      break;
-    }
-
-    response->result = crosapi::mojom::ScannerOperationResult::kSuccess;
-    if (!scan_data_.has_value()) {
-      response->result = scan_data_result_;
-    } else {
-      if (scan_data_->size()) {
-        std::string chunk = scan_data_->front();
-        scan_data_->erase(scan_data_->begin());
-        if (chunk.size()) {
-          response->data.emplace();
-          response->data->insert(response->data->end(), chunk.begin(),
-                                 chunk.end());
-        }
-      }
-      response->result = scan_data_->size()
-                             ? crosapi::mojom::ScannerOperationResult::kSuccess
-                             : scan_data_result_;
-    }
-    response->estimated_completion = 12;
-    break;
-  }
-  std::move(callback).Run(std::move(response));
-}
-
 void FakeDocumentScanAsh::SetOptions(
     const std::string& scanner_handle,
     std::vector<crosapi::mojom::OptionSettingPtr> options,
@@ -280,13 +239,6 @@ void FakeDocumentScanAsh::CancelScan(const std::string& job_handle) {
       break;
     }
   }
-}
-
-void FakeDocumentScanAsh::SetReadScanDataResponses(
-    const std::optional<std::vector<std::string>>& scan_data,
-    crosapi::mojom::ScannerOperationResult final_result) {
-  scan_data_ = scan_data;
-  scan_data_result_ = final_result;
 }
 
 void FakeDocumentScanAsh::SetOpenScannerResponse(

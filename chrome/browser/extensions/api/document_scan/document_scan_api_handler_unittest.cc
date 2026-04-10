@@ -118,8 +118,12 @@ class DocumentScanAPIHandlerTest : public testing::Test {
         testing_profile_, &document_scan_);
     GetLorgnetteScannerManager()->SetCloseScannerCallback(base::BindRepeating(
         &FakeDocumentScanAsh::CloseScanner, base::Unretained(&document_scan_)));
-    GetLorgnetteScannerManager()->SetCancelScanCallback(base::BindRepeating(
-        &FakeDocumentScanAsh::CancelScan, base::Unretained(&document_scan_)));
+    GetLorgnetteScannerManager()->SetCloseScannerResult(
+        lorgnette::OPERATION_RESULT_SUCCESS);
+    GetLorgnetteScannerManager()->SetCancelScanResult(
+        lorgnette::OPERATION_RESULT_SUCCESS);
+    GetLorgnetteScannerManager()->ConfigureReadScanDataResponse(
+        lorgnette::OPERATION_RESULT_SUCCESS);
   }
 
   void TearDown() override {
@@ -358,8 +362,8 @@ TEST_F(DocumentScanAPIHandlerTest, SimpleScan_StartScanFails) {
 
 TEST_F(DocumentScanAPIHandlerTest, SimpleScan_ScanImageError) {
   AddScanners({CreateTestScannerInfo()});
-  GetDocumentScan().SetReadScanDataResponses(
-      std::nullopt, crosapi::mojom::ScannerOperationResult::kIoError);
+  GetLorgnetteScannerManager()->ConfigureReadScanDataResponse(
+      lorgnette::OPERATION_RESULT_IO_ERROR);
   SimpleScanFuture future;
   document_scan_api_handler_->SimpleScan(extension_, {"image/png"},
                                          future.GetCallback());
@@ -373,8 +377,8 @@ TEST_F(DocumentScanAPIHandlerTest, SimpleScan_Success) {
   const std::string data = kScanDataItem;
   const std::vector<std::string> scan_data = {"", data.substr(0, 5),
                                               data.substr(5)};
-  GetDocumentScan().SetReadScanDataResponses(
-      scan_data, crosapi::mojom::ScannerOperationResult::kEndOfData);
+  GetLorgnetteScannerManager()->ConfigureReadScanDataResponse(
+      lorgnette::OPERATION_RESULT_EOF, scan_data);
   SimpleScanFuture future;
   document_scan_api_handler_->SimpleScan(extension_, {"image/png"},
                                          future.GetCallback());
@@ -405,8 +409,8 @@ TEST_F(DocumentScanAPIHandlerTest, SimpleScan_TestingMIMETypeSuccess) {
   test_scanner.set_display_name(kVirtualUSBPrinterName);
   AddScanners({CreateTestScannerInfo(), std::move(test_scanner)});
   const std::vector<std::string> scan_data = {kScanDataItem};
-  GetDocumentScan().SetReadScanDataResponses(
-      scan_data, crosapi::mojom::ScannerOperationResult::kEndOfData);
+  GetLorgnetteScannerManager()->ConfigureReadScanDataResponse(
+      lorgnette::OPERATION_RESULT_EOF, scan_data);
   SimpleScanFuture future;
   document_scan_api_handler_->SimpleScan(extension_, {"image/png", "testing"},
                                          future.GetCallback());
@@ -1594,6 +1598,23 @@ TEST_F(DocumentScanAPIHandlerTest, ReadScanData_ReadBeforeStartFails) {
   EXPECT_FALSE(response.estimated_completion.has_value());
 }
 
+TEST_F(DocumentScanAPIHandlerTest, ReadScanData_DBusFailure) {
+  std::string job_handle = StartScanForExtension(extension_);
+  EXPECT_FALSE(job_handle.empty());
+
+  GetLorgnetteScannerManager()->ConfigureReadScanDataResponse(std::nullopt);
+
+  ReadScanDataFuture future;
+  document_scan_api_handler_->ReadScanData(extension_, job_handle,
+                                           future.GetCallback());
+
+  const api::document_scan::ReadScanDataResponse& response = future.Get();
+  EXPECT_EQ(response.result,
+            api::document_scan::OperationResult::kInternalError);
+  EXPECT_EQ(response.job, job_handle);
+  EXPECT_FALSE(response.data.has_value());
+}
+
 TEST_F(DocumentScanAPIHandlerTest, ReadScanData_ReadFromOpenHandleSucceeds) {
   MarkExtensionTrusted(kExtensionId);
 
@@ -1604,8 +1625,8 @@ TEST_F(DocumentScanAPIHandlerTest, ReadScanData_ReadFromOpenHandleSucceeds) {
   EXPECT_FALSE(job_handle.empty());
 
   const std::vector<std::string> scan_data = {kScanDataItem, kScanDataItem, ""};
-  GetDocumentScan().SetReadScanDataResponses(
-      scan_data, crosapi::mojom::ScannerOperationResult::kEndOfData);
+  GetLorgnetteScannerManager()->ConfigureReadScanDataResponse(
+      lorgnette::OPERATION_RESULT_EOF, scan_data);
 
   // First read succeeds because the job is open.
   ReadScanDataFuture read_future1;
@@ -1613,7 +1634,6 @@ TEST_F(DocumentScanAPIHandlerTest, ReadScanData_ReadFromOpenHandleSucceeds) {
                                            read_future1.GetCallback());
   const api::document_scan::ReadScanDataResponse& read_response1 =
       read_future1.Get();
-
   EXPECT_EQ(read_response1.result,
             api::document_scan::OperationResult::kSuccess);
   EXPECT_EQ(read_response1.job, job_handle);
@@ -1634,8 +1654,11 @@ TEST_F(DocumentScanAPIHandlerTest, ReadScanData_ReadFromOpenHandleSucceeds) {
   EXPECT_TRUE(read_response2.estimated_completion.has_value());
 
   // Canceling the job closes the handle.
+  base::test::TestFuture<api::document_scan::CancelScanResponse> cancel_future;
   document_scan_api_handler_->CancelScan(extension_, job_handle,
-                                         base::DoNothing());
+                                         cancel_future.GetCallback());
+  EXPECT_EQ(cancel_future.Get().result,
+            api::document_scan::OperationResult::kSuccess);
 
   // Third read gets a cancelled status because the job is cancelled but still
   // valid.
@@ -1662,8 +1685,8 @@ TEST_F(DocumentScanAPIHandlerTest, ReadScanData_ReadFromClosedScannerFails) {
   EXPECT_FALSE(job_handle.empty());
 
   const std::vector<std::string> scan_data = {kScanDataItem, kScanDataItem, ""};
-  GetDocumentScan().SetReadScanDataResponses(
-      scan_data, crosapi::mojom::ScannerOperationResult::kEndOfData);
+  GetLorgnetteScannerManager()->ConfigureReadScanDataResponse(
+      lorgnette::OPERATION_RESULT_EOF, scan_data);
 
   // First read succeeds because the job is open.
   ReadScanDataFuture read_future1;
@@ -1678,8 +1701,11 @@ TEST_F(DocumentScanAPIHandlerTest, ReadScanData_ReadFromClosedScannerFails) {
   EXPECT_TRUE(read_response1.estimated_completion.has_value());
 
   // Closing the scanner handle also invalidates the job handle.
+  base::test::TestFuture<api::document_scan::CloseScannerResponse> close_future;
   document_scan_api_handler_->CloseScanner(extension_, scanner_handle,
-                                           base::DoNothing());
+                                           close_future.GetCallback());
+  EXPECT_EQ(close_future.Get().result,
+            api::document_scan::OperationResult::kSuccess);
 
   // Second read fails because the job is no longer valid.
   ReadScanDataFuture read_future2;
@@ -1701,8 +1727,8 @@ TEST_F(DocumentScanAPIHandlerTest, ReadScanData_ReadFromReopenedScannerFails) {
   ASSERT_FALSE(scanner_id.empty());
 
   const std::vector<std::string> scan_data = {kScanDataItem, kScanDataItem, ""};
-  GetDocumentScan().SetReadScanDataResponses(
-      scan_data, crosapi::mojom::ScannerOperationResult::kEndOfData);
+  GetLorgnetteScannerManager()->ConfigureReadScanDataResponse(
+      lorgnette::OPERATION_RESULT_EOF, scan_data);
 
   // The first open succeeds because the scanner is not open.
   OpenScannerFuture open_future1;

@@ -372,24 +372,6 @@ struct StartPreparedScanResponse {
   string? job_handle@2;
 };
 
-// The response from calling `ReadScanData()`.
-struct ReadScanDataResponse {
-  // The same job handle that was passed to `ReadScanData()`.
-  string job_handle@0;
-
-  // The backend's read result.
-  ScannerOperationResult result@1;
-
-  // If result is kSuccess, this contains the next chunk of data that was read.
-  // If result is kEof, this may contain the final chunk of data or may be
-  // empty.
-  array<int8>? data@2;
-
-  // If result is kSuccess, this contains the estimate of how much of the total
-  // scan data has been delivered so far, in the range 0-100.
-  uint32? estimated_completion@3;
-};
-
 // Used to set an option from `ScannerOption`.
 struct OptionSetting {
   // The name of the option.
@@ -457,6 +439,7 @@ interface DocumentScan {
   // CancelScan@9 was removed.
   // GetOptionGroups@8 was removed.
   // CloseScanner@4 was removed.
+  // ReadScanData@6 was removed.
 
   // Open an exclusive handle to a scanner returned from `GetScannerList()`.
   [MinVersion=2]
@@ -470,10 +453,6 @@ interface DocumentScan {
   [MinVersion=3]
   StartPreparedScan@5(string scanner_handle, StartScanOptions options)
       => (StartPreparedScanResponse response);
-
-  // Reads the next chunk of scan data for a specific scan job.
-  [MinVersion=3]
-  ReadScanData@6(string job_handle) => (ReadScanDataResponse response);
 
   // Sets the options for a scanner opened by `OpenScanner()`.
   [MinVersion=4]

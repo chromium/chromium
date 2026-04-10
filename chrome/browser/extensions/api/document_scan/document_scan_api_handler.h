@@ -259,8 +259,6 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI,
       std::unique_ptr<StartScanRunner> runner,
       StartScanCallback callback,
       crosapi::mojom::StartPreparedScanResponsePtr response);
-  void OnReadScanDataResponse(ReadScanDataCallback callback,
-                              crosapi::mojom::ReadScanDataResponsePtr response);
 
   raw_ptr<content::BrowserContext> browser_context_;
   raw_ptr<crosapi::mojom::DocumentScan> document_scan_;

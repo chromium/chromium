@@ -82,12 +82,6 @@ class DocumentScanAshTest : public testing::Test {
     return future.Take();
   }
 
-  mojom::ReadScanDataResponsePtr ReadScanData(const std::string& job_handle) {
-    base::test::TestFuture<mojom::ReadScanDataResponsePtr> future;
-    document_scan_ash().ReadScanData(job_handle, future.GetCallback());
-    return future.Take();
-  }
-
   mojom::SetOptionsResponsePtr SetOptions(
       const std::string& scanner_handle,
       std::vector<mojom::OptionSettingPtr> options) {
@@ -171,33 +165,6 @@ TEST_F(DocumentScanAshTest, StartPreparedScan_GoodResponse) {
   EXPECT_EQ(response->scanner_handle, "scanner-handle");
   ASSERT_TRUE(response->job_handle.has_value());
   EXPECT_EQ(response->job_handle.value(), "job-handle");
-}
-
-TEST_F(DocumentScanAshTest, ReadScanData_BadResponse) {
-  GetLorgnetteScannerManager()->SetReadScanDataResponse(std::nullopt);
-  const mojom::ReadScanDataResponsePtr response = ReadScanData("job-handle");
-
-  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kInternalError);
-  EXPECT_EQ(response->job_handle, "job-handle");
-  EXPECT_FALSE(response->data.has_value());
-}
-
-TEST_F(DocumentScanAshTest, ReadScanData_GoodResponse) {
-  lorgnette::ReadScanDataResponse fake_response;
-  fake_response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
-  fake_response.mutable_job_handle()->set_token("job-handle");
-  fake_response.set_data("data");
-  fake_response.set_estimated_completion(24);
-  GetLorgnetteScannerManager()->SetReadScanDataResponse(
-      std::move(fake_response));
-  const mojom::ReadScanDataResponsePtr response = ReadScanData("job-handle");
-
-  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kSuccess);
-  EXPECT_EQ(response->job_handle, "job-handle");
-  ASSERT_TRUE(response->data.has_value());
-  EXPECT_THAT(response->data.value(), ElementsAre('d', 'a', 't', 'a'));
-  ASSERT_TRUE(response->estimated_completion.has_value());
-  EXPECT_EQ(response->estimated_completion.value(), 24U);
 }
 
 TEST_F(DocumentScanAshTest, SetOptions_BadResponse) {

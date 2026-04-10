@@ -88,6 +88,20 @@ GetOptionGroupsResponse ConvertLorgnetteGetCurrentConfigResponse(
   return output;
 }
 
+ReadScanDataResponse ConvertLorgnetteReadScanDataResponse(
+    const lorgnette::ReadScanDataResponse& input) {
+  ReadScanDataResponse output;
+  output.job = input.job_handle().token();
+  output.result = ConvertLorgnetteOperationResult(input.result());
+  if (input.has_data()) {
+    output.data.emplace(input.data().begin(), input.data().end());
+  }
+  if (input.has_estimated_completion()) {
+    output.estimated_completion = input.estimated_completion();
+  }
+  return output;
+}
+
 }  // namespace extensions::api::document_scan
 
 namespace mojo {
@@ -587,22 +601,6 @@ TypeConverter<extensions::api::document_scan::StartScanResponse,
   output.result = ConvertTo<document_scan::OperationResult>(input->result);
   if (input->job_handle.has_value()) {
     output.job = input->job_handle.value();
-  }
-  return output;
-}
-
-extensions::api::document_scan::ReadScanDataResponse
-TypeConverter<extensions::api::document_scan::ReadScanDataResponse,
-              crosapi::mojom::ReadScanDataResponsePtr>::
-    Convert(const crosapi::mojom::ReadScanDataResponsePtr& input) {
-  document_scan::ReadScanDataResponse output;
-  output.job = input->job_handle;
-  output.result = ConvertTo<document_scan::OperationResult>(input->result);
-  if (input->data.has_value()) {
-    output.data.emplace(input->data->begin(), input->data->end());
-  }
-  if (input->estimated_completion.has_value()) {
-    output.estimated_completion = input->estimated_completion.value();
   }
   return output;
 }

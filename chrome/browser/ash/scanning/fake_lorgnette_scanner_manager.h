@@ -16,6 +16,15 @@
 namespace ash {
 
 // Fake implementation of LorgnetteScannerManager for tests.
+//
+// It keeps track of cancelled scan jobs, which affects the behavior of
+// ReadScanData (fails with OPERATION_RESULT_CANCELLED for cancelled jobs) and
+// CancelScan (fails with OPERATION_RESULT_UNKNOWN for already cancelled jobs).
+// Other than that, tests are free to configure the various operations's
+// responses.
+//
+// TODO(crbug.com/479031241): Revisit the design (setters vs fake behavior) once
+// the document service has been fully migrated away from crosapi.
 class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
  public:
   FakeLorgnetteScannerManager();
@@ -93,9 +102,17 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   void SetStartPreparedScanResponse(
       const std::optional<lorgnette::StartPreparedScanResponse>& response);
 
-  // Sets the response returned by ReadScanData().
-  void SetReadScanDataResponse(
-      const std::optional<lorgnette::ReadScanDataResponse>& response);
+  // Configures the response returned by ReadScanData().
+  // - If `result` has no value, the response will be nullopt (that's the
+  //   default).
+  // - Otherwise, each response will contain a chunk of `chunks` with
+  //   OPERATION_RESULT_SUCCESS, and the given `result` is used for the final
+  //   response after all chunks have been returned.
+  //   Note: After cancelling a job, ReadScanData will always respond with
+  //   OPERATION_RESULT_CANCELLED for that job.
+  void ConfigureReadScanDataResponse(
+      std::optional<lorgnette::OperationResult> result,
+      std::vector<std::string> data_chunks = {});
 
   // Sets the response returned by Scan().
   void SetScanResponse(
@@ -104,6 +121,7 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   // Sets the result field of the response returned by the two-parameter version
   // of CancelScan(). If this is std::nullopt, the callback is passed
   // std::nullopt. The default is OPERATION_RESULT_ADF_JAMMED.
+  // Note: This does not apply to cancelled jobs, see the class documentation.
   void SetCancelScanResult(std::optional<lorgnette::OperationResult> result);
 
   // Sets a callback that is invoked by CloseScanner().
@@ -111,12 +129,6 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   void SetCloseScannerCallback(
       base::RepeatingCallback<void(const std::string& scanner_handle)>
           callback);
-
-  // Sets a callback that is invoked by the two-parameter version of
-  // CancelScan().
-  // TODO(crbug.com/479031241): Remove once FakeDocumentAsh is gone.
-  void SetCancelScanCallback(
-      base::RepeatingCallback<void(const std::string& job_handle)> callback);
 
   // Optionally sets `scan_data` if a matching set of scan settings is found.
   void MaybeSetScanDataBasedOnSettings(const lorgnette::ScanSettings& settings);
@@ -133,14 +145,14 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   std::optional<lorgnette::ScannerConfig> get_current_config_config_;
   std::optional<lorgnette::StartPreparedScanResponse>
       start_prepared_scan_response_;
-  std::optional<lorgnette::ReadScanDataResponse> read_scan_data_response_;
+  std::optional<lorgnette::OperationResult> read_scan_data_result_;
+  std::vector<std::string> read_scan_data_chunks_;
   std::optional<lorgnette::OperationResult> cancel_scan_result_ =
       lorgnette::OPERATION_RESULT_ADF_JAMMED;
   base::RepeatingCallback<void(const std::string& scanner_handle)>
       close_scanner_callback_;
-  base::RepeatingCallback<void(const std::string& job_handle)>
-      cancel_scan_callback_;
   std::optional<std::vector<std::string>> scan_data_;
+  std::vector<std::string> cancelled_jobs_;
 };
 
 }  // namespace ash

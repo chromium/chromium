@@ -61,6 +61,22 @@ void OnGetOptionGroupsResponse(
   std::move(callback).Run(std::move(api_response));
 }
 
+void OnReadScanDataResponse(
+    const std::string& job_handle,
+    DocumentScanAPIHandler::ReadScanDataCallback callback,
+    const std::optional<lorgnette::ReadScanDataResponse>& response) {
+  api::document_scan::ReadScanDataResponse api_response;
+  if (response.has_value()) {
+    api_response =
+        api::document_scan::ConvertLorgnetteReadScanDataResponse(*response);
+  } else {
+    api_response.job = job_handle;
+    api_response.result = api::document_scan::OperationResult::kInternalError;
+  }
+
+  std::move(callback).Run(std::move(api_response));
+}
+
 void OnCancelScanResponse(
     const std::string& job_handle,
     DocumentScanAPIHandler::CancelScanCallback callback,
@@ -570,24 +586,18 @@ void DocumentScanAPIHandler::ReadScanData(
   // Ensure this job is allocated to this extension.
   ExtensionState& state = extension_state_[extension->id()];
   if (!state.active_job_handles.contains(job_handle)) {
-    auto response = crosapi::mojom::ReadScanDataResponse::New();
-    response->job_handle = job_handle;
-    response->result = crosapi::mojom::ScannerOperationResult::kInvalid;
-    OnReadScanDataResponse(std::move(callback), std::move(response));
+    api::document_scan::ReadScanDataResponse response;
+    response.job = job_handle;
+    response.result = api::document_scan::OperationResult::kInvalid;
+    std::move(callback).Run(std::move(response));
     return;
   }
 
-  document_scan_->ReadScanData(
-      job_handle,
-      base::BindOnce(&DocumentScanAPIHandler::OnReadScanDataResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void DocumentScanAPIHandler::OnReadScanDataResponse(
-    ReadScanDataCallback callback,
-    crosapi::mojom::ReadScanDataResponsePtr response) {
-  std::move(callback).Run(
-      response.To<api::document_scan::ReadScanDataResponse>());
+  lorgnette::ReadScanDataRequest request;
+  request.mutable_job_handle()->set_token(job_handle);
+  ash::LorgnetteScannerManagerFactory::GetForBrowserContext(browser_context_)
+      ->ReadScanData(request, base::BindOnce(&OnReadScanDataResponse,
+                                             job_handle, std::move(callback)));
 }
 
 template <>

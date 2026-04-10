@@ -121,8 +121,6 @@ class DocumentScanApiTest : public ExtensionApiTest,
         ash::LorgnetteScannerManagerFactory::GetForBrowserContext(profile()));
 
     // Set up Lorgnette's CancelScan response.
-    lorgnette_manager->SetCancelScanCallback(base::BindRepeating(
-        &FakeDocumentScanAsh::CancelScan, base::Unretained(document_scan())));
     lorgnette_manager->SetCancelScanResult(lorgnette::OPERATION_RESULT_SUCCESS);
 
     // Set up Lorgnette's CloseScanner response.
@@ -187,6 +185,11 @@ class DocumentScanApiTest : public ExtensionApiTest,
 
   FakeDocumentScanAsh* document_scan() { return &document_scan_ash_; }
 
+  ash::FakeLorgnetteScannerManager* lorgnette_manager() {
+    return static_cast<ash::FakeLorgnetteScannerManager*>(
+        ash::LorgnetteScannerManagerFactory::GetForBrowserContext(profile()));
+  }
+
  private:
   FakeDocumentScanAsh document_scan_ash_;
 };
@@ -220,8 +223,8 @@ IN_PROC_BROWSER_TEST_P(DocumentScanApiTest, PerformScan_PermissionAllowed) {
       StartScanRunner::SetStartScanConfirmationResultForTesting(true);
   SetScannerInfoList({CreateTestScannerInfo()});
   const std::vector<std::string> scan_data = {"img", "data", "img", "data", ""};
-  document_scan()->SetReadScanDataResponses(
-      scan_data, crosapi::mojom::ScannerOperationResult::kEndOfData);
+  lorgnette_manager()->ConfigureReadScanDataResponse(
+      lorgnette::OPERATION_RESULT_EOF, scan_data);
   RunTest("perform_scan.html");
   // TODO(b/313494616): Load a second extension to verify (lack of)
   // cross-extension handle sharing.
@@ -236,8 +239,8 @@ IN_PROC_BROWSER_TEST_P(DocumentScanApiTest, PerformScan_ExtensionTrusted) {
       StartScanRunner::SetStartScanConfirmationResultForTesting(false);
   SetScannerInfoList({CreateTestScannerInfo()});
   const std::vector<std::string> scan_data = {"img", "data", "img", "data", ""};
-  document_scan()->SetReadScanDataResponses(
-      scan_data, crosapi::mojom::ScannerOperationResult::kEndOfData);
+  lorgnette_manager()->ConfigureReadScanDataResponse(
+      lorgnette::OPERATION_RESULT_EOF, scan_data);
   RunTest("perform_scan.html");
 }
 

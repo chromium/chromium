@@ -30,8 +30,6 @@ class FakeDocumentScanAsh : public crosapi::mojom::DocumentScan {
   void StartPreparedScan(const std::string& scanner_handle,
                          crosapi::mojom::StartScanOptionsPtr options,
                          StartPreparedScanCallback callback) override;
-  void ReadScanData(const std::string& job_handle,
-                    ReadScanDataCallback callback) override;
   void SetOptions(const std::string& scanner_handle,
                   std::vector<crosapi::mojom::OptionSettingPtr> options,
                   SetOptionsCallback callback) override;
@@ -42,9 +40,6 @@ class FakeDocumentScanAsh : public crosapi::mojom::DocumentScan {
   void SetOpenScannerResponse(const std::string& connection_string,
                               crosapi::mojom::OpenScannerResponsePtr response);
   void SetSmallestMaxReadSize(size_t max_size);
-  void SetReadScanDataResponses(
-      const std::optional<std::vector<std::string>>& scan_data,
-      crosapi::mojom::ScannerOperationResult final_result);
   void SetStartPreparedScanResponse(
       const std::string& connection_string,
       crosapi::mojom::StartPreparedScanResponsePtr response);
@@ -63,9 +58,6 @@ class FakeDocumentScanAsh : public crosapi::mojom::DocumentScan {
   };
 
   size_t handle_count_ = 0;  // How many times a handle has been issued.
-  std::optional<std::vector<std::string>> scan_data_;
-  crosapi::mojom::ScannerOperationResult scan_data_result_ =
-      crosapi::mojom::ScannerOperationResult::kUnknown;
   size_t smallest_max_read_ = 0;
 
   // Map from connection strings to the OpenScannerResponsePtr that should be

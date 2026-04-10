@@ -276,8 +276,8 @@ chrome.test.runTests([
 
     // Cancelling the job invalidates the handle.
     const cancelResponse = await cancelScan(jobHandle);
-    chrome.test.assertEq(jobHandle, readResponse1.job);
-    chrome.test.assertEq(OperationResult.SUCCESS, readResponse1.result);
+    chrome.test.assertEq(jobHandle, cancelResponse.job);
+    chrome.test.assertEq(OperationResult.SUCCESS, cancelResponse.result);
 
     // Second read reports cancelled because the job handle is valid but no
     // longer active.

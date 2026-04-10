@@ -28,8 +28,6 @@ class DocumentScanAsh : public mojom::DocumentScan {
   void StartPreparedScan(const std::string& scanner_handle,
                          mojom::StartScanOptionsPtr options,
                          StartPreparedScanCallback callback) override;
-  void ReadScanData(const std::string& job_handle,
-                    ReadScanDataCallback callback) override;
   void SetOptions(const std::string& scanner_handle,
                   std::vector<mojom::OptionSettingPtr> options,
                   SetOptionsCallback callback) override;
