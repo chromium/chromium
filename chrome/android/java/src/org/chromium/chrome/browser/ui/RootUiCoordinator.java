@@ -50,6 +50,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.R;
@@ -272,6 +273,7 @@ import java.util.function.Supplier;
  * <p>The specific things this component will manage and how it will hook into Chrome*Activity are
  * still being discussed See https://crbug.com/931496.
  */
+@NullMarked
 public class RootUiCoordinator
         implements DestroyObserver,
                 InflationObserver,
