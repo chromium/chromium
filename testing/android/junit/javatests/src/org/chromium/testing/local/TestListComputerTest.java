@@ -50,7 +50,7 @@ public class TestListComputerTest {
         core.run(Request.classes(computer, classes));
         String expected =
                 """
-                {"configs":{"PAUSED.sw600dp":{"org.chromium.testing.local.TestListComputerTest$FakeTestClass":\
+                {"configs":{"LEGACY\\/PAUSED.sw600dp":{"org.chromium.testing.local.TestListComputerTest$FakeTestClass":\
                 ["someTest"]}},"disabled":{},"instrumentedPackages":[],"instrumentedClasses":\
                 ["org.chromium.testing.local.TestListComputerTest"]}\
                 """;
@@ -71,8 +71,9 @@ public class TestListComputerTest {
         core.run(Request.classes(computer, classes));
         String expected =
                 """
-                {"configs":{},"disabled":{"PAUSED":{"org.chromium.testing.local.TestListComputerTest$DisabledTestClass":\
-                ["ignoredTest"]}},"instrumentedPackages":[],"instrumentedClasses":[]}\
+                {"configs":{},"disabled":{"LEGACY\\/PAUSED":{"org.chromium.testing.local.\
+                TestListComputerTest$DisabledTestClass":["ignoredTest"]}},"instrumentedPackages":[],\
+                "instrumentedClasses":[]}\
                 """;
         Assert.assertEquals(expected, computer.createJson().toString());
     }

@@ -18,6 +18,7 @@ import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.RunnerBuilder;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.GraphicsMode;
 import org.robolectric.annotation.Implements;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
@@ -63,6 +64,7 @@ class TestListComputer extends Computer {
         // https://cs.android.com/android/platform/superproject/main/+/main:external/robolectric-shadows/robolectric/src/main/java/org/robolectric/internal/SandboxFactory.java?q=symbol%3A%5Cborg.robolectric.internal.SandboxFactory.getSdkEnvironment%5Cb%20case%3Ayes
         List<Class<?>> shadows = new ArrayList<>();
         LooperMode.Mode looperMode = Mode.PAUSED;
+        GraphicsMode.Mode graphicsMode = GraphicsMode.Mode.LEGACY;
         String qualifiers = "";
         ArrayList<Annotation> allAnnotations = new ArrayList<>();
         allAnnotations.addAll(Arrays.asList(description.getTestClass().getAnnotations()));
@@ -76,6 +78,8 @@ class TestListComputer extends Computer {
                 qualifiers = config.qualifiers();
             } else if (annotation instanceof LooperMode mode) {
                 looperMode = mode.value();
+            } else if (annotation instanceof GraphicsMode mode) {
+                graphicsMode = mode.value();
             }
         }
         for (var clazz : shadows) {
@@ -105,7 +109,7 @@ class TestListComputer extends Computer {
         if (!qualifiers.isEmpty()) {
             qualifiers = "." + qualifiers;
         }
-        return looperMode + qualifiers + sdkSuffix;
+        return graphicsMode + "/" + looperMode + qualifiers + sdkSuffix;
     }
 
     private void throwShadowException(String shadowClass, String shadowingClass) {
