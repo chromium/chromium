@@ -8,6 +8,7 @@ After=network.target gdm.service
 [Service]
 Type=simple
 ExecStart=/opt/google/chrome-remote-desktop/chrome-remote-desktop-host --type=daemon
+SyslogIdentifier=chrome-remote-desktop
 # Restart service if the process exits with an unclean signal (e.g. crashes),
 # but don't restart otherwise. The daemon process has its own restart logic.
 Restart=on-abnormal
