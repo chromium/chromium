@@ -13,67 +13,6 @@ namespace blink {
 
 class LayoutSVGViewportContainerTest : public RenderingTest {};
 
-
-TEST_F(LayoutSVGViewportContainerTest, NestedSvgCssSizingPropertiesUseCounterWithStyleSheets) {
-  // Test when the feature is DISABLED - this is when the use counter triggers
-  ScopedWidthAndHeightAsPresentationAttributesOnNestedSvgForTest scoped_feature(
-      false);
-
-  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kNestedSvgCssSizingProperties));
-
-  SetHtmlInnerHTML(R"HTML(
-    <style>
-    svg{
-      width:100%;
-      height:auto;
-    }
-    </style>
-    <svg width="400px" height="300px">
-      <svg width="200px" height="150px">
-        <rect width="50px" height="50px"/>
-      </svg>
-    </svg>
-  )HTML");
-
-  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kNestedSvgCssSizingProperties));
-}
-
-TEST_F(LayoutSVGViewportContainerTest, NestedSvgCssSizingPropertiesUseCounterWithInlineStyles) {
-  // Test when the feature is DISABLED - this is when the use counter triggers
-  ScopedWidthAndHeightAsPresentationAttributesOnNestedSvgForTest scoped_feature(
-      false);
-
-  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kNestedSvgCssSizingProperties));
-
-  SetBodyInnerHTML(R"HTML(
-    <svg width="400px" height="300px">
-      <svg style="width: 100px; height: 100px;">
-        <rect width="50px" height="50px"/>
-      </svg>
-    </svg>
-  )HTML");
-
-  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kNestedSvgCssSizingProperties));
-}
-
-TEST_F(LayoutSVGViewportContainerTest, NestedSvgCssSizingPropertiesUseCounterNotTriggered) {
-  // Test when the feature is DISABLED but sizes match - no use counter
-  ScopedWidthAndHeightAsPresentationAttributesOnNestedSvgForTest scoped_feature(
-      false);
-
-  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kNestedSvgCssSizingProperties));
-
-  SetBodyInnerHTML(R"HTML(
-    <svg width="400px" height="300px">
-      <svg width="200px" height="150px">
-        <rect width="50px" height="50px"/>
-      </svg>
-    </svg>
-  )HTML");
-
-  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kNestedSvgCssSizingProperties));
-}
-
 TEST_F(LayoutSVGViewportContainerTest, GetBBoxUseCounterForZeroHeight) {
   EXPECT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kGetBBoxForNestedSVGElementWithZeroWidthOrHeight));

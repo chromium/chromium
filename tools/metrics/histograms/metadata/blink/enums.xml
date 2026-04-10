@@ -6301,7 +6301,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5674" label="SmartCardConnect"/>
   <int value="5675" label="NavigatorCPUPerformance"/>
   <int value="5676" label="OBSOLETE_SelectionRemoveRangeNotFoundWouldThrow"/>
-  <int value="5677" label="NestedSvgCssSizingProperties"/>
+  <int value="5677" label="OBSOLETE_NestedSvgCssSizingProperties"/>
   <int value="5678" label="CryptoAlgorithmChaCha20Poly1305"/>
   <int value="5679" label="CryptoAlgorithmMlDsa44"/>
   <int value="5680" label="CryptoAlgorithmMlDsa65"/>

@@ -1171,10 +1171,6 @@
       status: "stable",
     },
     {
-      name: "CollectWidthAndHeightAsStylesForNestedSvg",
-      status: "stable",
-    },
-    {
       // Allows <input type=color> to accept any valid CSS color value
       // (named colors, rgb(), hsl(), system colors, etc.) in addition to
       // the legacy 7-character hex format (#rrggbb).
@@ -6721,11 +6717,6 @@
       name: "WebXRVisibilityMask",
       depends_on: ["WebXR"],
       status: "stable",
-    },
-    {
-      name: "WidthAndHeightAsPresentationAttributesOnNestedSvg",
-      // Disabled due to web compat issues, see https://crbug.com/449170647.
-      status: "experimental",
     },
     {
       name: "WindowControlsOverlay",

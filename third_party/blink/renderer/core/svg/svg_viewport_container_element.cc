@@ -116,9 +116,6 @@ void SVGViewportContainerElement::SvgAttributeChanged(
         if (layout_object) {
           To<LayoutSVGRoot>(layout_object)->IntrinsicSizingInfoChanged();
         }
-      } else if (RuntimeEnabledFeatures::
-                     CollectWidthAndHeightAsStylesForNestedSvgEnabled()) {
-        UpdatePresentationAttributeStyle(params.property);
       }
     } else {
       UpdatePresentationAttributeStyle(params.property);

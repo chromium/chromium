@@ -113,9 +113,6 @@ class SVGSVGElement final : public SVGViewportContainerElement,
 
   bool ZoomAndPanEnabled() const;
 
-  CSSPropertyValueSet* CreateWidthAndHeightPresentationAttributeStyleIfNeeded(
-      const Element& original_element);
-
   SVGAnimatedLength* x() const { return x_.Get(); }
   SVGAnimatedLength* y() const { return y_.Get(); }
   SVGAnimatedLength* width() const { return width_.Get(); }
