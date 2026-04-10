@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_RESOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_RESOURCE_H_
 
+#include "third_party/blink/renderer/core/css/css_url_data.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_observer.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_document_observer.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -153,7 +154,9 @@ class ExternalSVGResourceDocumentContent final
     : public SVGResource,
       public SVGResourceDocumentObserver {
  public:
-  explicit ExternalSVGResourceDocumentContent(const KURL&);
+  explicit ExternalSVGResourceDocumentContent(
+      const KURL&,
+      const CSSUrlRequestModifiers& modifiers);
 
   void Load(Document&, CrossOriginAttributeValue) override;
   void LoadWithoutCSP(Document&) override;
@@ -170,6 +173,7 @@ class ExternalSVGResourceDocumentContent final
 
   Member<SVGResourceDocumentContent> document_content_;
   KURL url_;
+  CSSUrlRequestModifiers modifiers_;
 };
 
 // External resource reference (see SVGResource) with an ImageResourceContent

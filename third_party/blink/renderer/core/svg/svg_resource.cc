@@ -19,7 +19,9 @@
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
+#include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
+#include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 
 namespace blink {
 
@@ -225,8 +227,9 @@ void LocalSVGResource::Trace(Visitor* visitor) const {
 }
 
 ExternalSVGResourceDocumentContent::ExternalSVGResourceDocumentContent(
-    const KURL& url)
-    : url_(url) {}
+    const KURL& url,
+    const CSSUrlRequestModifiers& modifiers)
+    : url_(url), modifiers_(modifiers) {}
 
 void ExternalSVGResourceDocumentContent::Load(
     Document& document,
@@ -241,13 +244,33 @@ void ExternalSVGResourceDocumentContent::Load(
   ResourceLoaderOptions options(execution_context->GetCurrentWorld());
   options.initiator_info.name = fetch_initiator_type_names::kCSS;
   FetchParameters params(ResourceRequest(url_), options);
-  if (cross_origin == kCrossOriginAttributeNotSet) {
+
+  if (modifiers_.referrer_policy) {
+    params.MutableResourceRequest().SetReferrerPolicy(
+        *modifiers_.referrer_policy);
+  }
+
+  CrossOriginAttributeValue effective_cross_origin =
+      modifiers_.cross_origin != kCrossOriginAttributeNotSet
+          ? modifiers_.cross_origin
+          : cross_origin;
+  if (effective_cross_origin == kCrossOriginAttributeNotSet) {
     params.MutableResourceRequest().SetMode(
         network::mojom::blink::RequestMode::kSameOrigin);
   } else {
     params.SetCrossOriginAccessControl(execution_context->GetSecurityOrigin(),
-                                       cross_origin);
+                                       effective_cross_origin);
   }
+
+  if (!modifiers_.integrity.IsNull()) {
+    IntegrityMetadataSet metadata_set;
+    SubresourceIntegrity::ParseIntegrityAttribute(
+        modifiers_.integrity, metadata_set, execution_context);
+    params.SetIntegrityMetadata(metadata_set);
+    params.MutableResourceRequest().SetFetchIntegrity(modifiers_.integrity,
+                                                      execution_context);
+  }
+
   document_content_ = SVGResourceDocumentContent::Fetch(params, document);
   if (!document_content_) {
     return;
