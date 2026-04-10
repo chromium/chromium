@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -99,14 +100,17 @@ void ShowSearchEngineResetNotification(
   dialog_builder
       .SetTitle(l10n_util::GetStringUTF16(
           IDS_DEFAULT_SEARCH_ENGINE_RESET_NOTIFICATION_TITLE))
-      .AddParagraph(ui::DialogModelLabel(
-                        l10n_util::GetStringUTF16(
-                            IDS_DEFAULT_SEARCH_ENGINE_RESET_NOTIFICATION_BODY))
-                        .set_is_secondary())
-      .AddExtraButton(
-          base::BindRepeating(&OpenLearnMoreLink, browser),
+      .AddParagraph(
+          ui::DialogModelLabel::CreateWithReplacement(
+              IDS_DEFAULT_SEARCH_ENGINE_RESET_NOTIFICATION_BODY,
+              ui::DialogModelLabel::CreateLink(
+                  IDS_DEFAULT_SEARCH_ENGINE_RESET_NOTIFICATION_LEARN_MORE_BUTTON,
+                  base::BindRepeating(&OpenLearnMoreLink, browser)))
+              .set_is_secondary())
+      .AddCancelButton(
+          base::BindOnce(&chrome::ShowSearchEngineSettings, browser),
           ui::DialogModel::Button::Params().SetLabel(l10n_util::GetStringUTF16(
-              IDS_DEFAULT_SEARCH_ENGINE_RESET_NOTIFICATION_LEARN_MORE_BUTTON)))
+              IDS_DEFAULT_SEARCH_ENGINE_RESET_NOTIFICATION_SEARCH_SETTINGS_BUTTON)))
       .AddOkButton(
           base::DoNothing(),
           ui::DialogModel::Button::Params()

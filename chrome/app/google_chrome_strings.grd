@@ -3234,15 +3234,19 @@ Google Chrome is unable to recover your settings.
       </message>
       <message name="IDS_DEFAULT_SEARCH_ENGINE_RESET_NOTIFICATION_BODY"
          desc="Body text of the notification shown when Chrome resets the default search engine, explaining that a change from outside Chrome was detected.">
-        Your default search engine was changed from outside of Chrome. To protect you, Chrome reset it.
+        Your search engine was changed from outside of Chrome. To protect you, Chrome reset it to its original default. <ph name="LEARN_MORE_LINK">$1<ex>Learn more</ex></ph>
       </message>
       <message name="IDS_DEFAULT_SEARCH_ENGINE_RESET_NOTIFICATION_GOT_IT_BUTTON"
          desc="Label for the 'Got it' button in the default search engine reset notification, which dismisses the UI.">
         Got it
       </message>
       <message name="IDS_DEFAULT_SEARCH_ENGINE_RESET_NOTIFICATION_LEARN_MORE_BUTTON"
-         desc="Label for the 'Learn more' button in the default search engine reset notification, which opens a help center article.">
+         desc="Label for the 'Learn more' link in the default search engine reset notification, which opens a help center article.">
         Learn more
+      </message>
+      <message name="IDS_DEFAULT_SEARCH_ENGINE_RESET_NOTIFICATION_SEARCH_SETTINGS_BUTTON"
+         desc="Label for the 'Search settings' button in the default search engine reset notification, which opens the search engine settings page.">
+        Search settings
       </message>
 
       <!--Report-unsafe-site Dialog (accessed from Help menu)-->
