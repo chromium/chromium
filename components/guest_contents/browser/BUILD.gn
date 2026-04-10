@@ -2,10 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import("//components/guest_contents/common/buildflags.gni")
-import("//components/surface_embed/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
-
-assert(enable_guest_contents || enable_surface_embed)
 
 static_library("browser") {
   sources = [

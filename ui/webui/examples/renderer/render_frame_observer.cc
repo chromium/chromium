@@ -7,7 +7,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "components/guest_contents/renderer/swap_render_frame.h"
-#include "components/surface_embed/buildflags/buildflags.h"
+#include "components/surface_embed/common/features.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_thread.h"
@@ -22,10 +22,6 @@
 #include "v8/include/v8-function.h"
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-local-handle.h"
-
-#if BUILDFLAG(ENABLE_SURFACE_EMBED)
-#include "components/surface_embed/common/features.h"
-#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
 namespace webui_examples {
 
@@ -142,12 +138,8 @@ void RenderFrameObserver::ReadyToCommitNavigation(
       render_frame()->GetWebFrame()->MainWorldScriptContext();
   v8::Context::Scope context_scope(context);
 
-#if BUILDFLAG(ENABLE_SURFACE_EMBED)
   const bool surface_embed_enabled =
       base::FeatureList::IsEnabled(surface_embed::features::kSurfaceEmbed);
-#else
-  const bool surface_embed_enabled = false;
-#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
   v8::Local<v8::ObjectTemplate> webshell_template =
       gin::ObjectTemplateBuilder(isolate)

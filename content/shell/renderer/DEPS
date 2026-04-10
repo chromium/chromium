@@ -1,7 +1,6 @@
 include_rules = [
   "+components/cdm",
   "+components/network_hints/renderer",
-  "+components/surface_embed/buildflags",
   "+components/surface_embed/renderer",
   "+components/web_cache/renderer",
 ]

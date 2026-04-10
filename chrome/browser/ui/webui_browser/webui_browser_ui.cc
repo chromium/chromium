@@ -32,20 +32,16 @@
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/guest_contents/browser/guest_contents_host_impl.h"
-#include "components/surface_embed/buildflags/buildflags.h"
+#include "components/surface_embed/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 #include "ui/webui/webui_util.h"
-
-#if BUILDFLAG(ENABLE_SURFACE_EMBED)
-#include "components/surface_embed/common/features.h"
-#include "services/network/public/mojom/content_security_policy.mojom.h"
-#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
@@ -123,7 +119,6 @@ WebUIBrowserUI::WebUIBrowserUI(content::WebUI* web_ui)
   source->AddLocalizedStrings(
       SearchboxHandler::GetWebUIDataSourceDict(profile));
 
-#if BUILDFLAG(ENABLE_SURFACE_EMBED)
   source->AddBoolean(
       "enableSurfaceEmbed",
       base::FeatureList::IsEnabled(surface_embed::features::kSurfaceEmbed));
@@ -133,9 +128,6 @@ WebUIBrowserUI::WebUIBrowserUI(content::WebUI* web_ui)
     source->OverrideContentSecurityPolicy(
         network::mojom::CSPDirectiveName::ObjectSrc, "object-src 'self';");
   }
-#else
-  source->AddBoolean("enableSurfaceEmbed", false);
-#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
   // TODO(crbug.com/445510209): Uncomment after installing WebUIOmniboxHandler.
   // source->AddBoolean("reportMetrics", true);

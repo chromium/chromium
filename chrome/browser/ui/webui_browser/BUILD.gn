@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/surface_embed/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(!is_android)
@@ -103,8 +102,9 @@ source_set("impl") {
     "//components/input",
     "//components/omnibox/browser:vector_icons",
     "//components/sharing_message",
-    "//components/surface_embed/buildflags",
+    "//components/surface_embed/common",
     "//content/public/browser",
+    "//services/network/public/mojom",
     "//ui/base",
     "//ui/content_accelerators",
     "//ui/views",
@@ -122,13 +122,6 @@ source_set("impl") {
       "//chrome/browser/ui/cocoa",
       "//components/remote_cocoa/app_shim",
       "//ui/base/accelerators/global_accelerator_listener",
-    ]
-  }
-
-  if (enable_surface_embed) {
-    deps += [
-      "//components/surface_embed/common",
-      "//services/network/public/mojom",
     ]
   }
 
@@ -166,17 +159,11 @@ source_set("browser_tests") {
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
     "//components/bookmarks/browser",
-    "//components/surface_embed/buildflags",
+    "//components/surface_embed/common",
+    "//components/viz/common",
+    "//content/public/browser",
     "//content/test:test_support",
+    "//skia",
+    "//ui/gfx/geometry",
   ]
-
-  if (enable_surface_embed) {
-    deps += [
-      "//components/surface_embed/common",
-      "//components/viz/common",
-      "//content/public/browser",
-      "//skia",
-      "//ui/gfx/geometry",
-    ]
-  }
 }

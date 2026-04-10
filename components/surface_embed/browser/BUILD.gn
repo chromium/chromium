@@ -2,10 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/surface_embed/buildflags/buildflags.gni")
-
-assert(enable_surface_embed)
-
 # This is a static_library instead of a component.
 # The `mojom` target generated code is linked into this target. If this were a
 # component (shared library), the mojom symbols would be hidden within it

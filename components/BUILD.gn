@@ -15,7 +15,6 @@ import("//components/on_device_translation/buildflags/features.gni")
 import("//components/optimization_guide/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//components/supervised_user/buildflags.gni")
-import("//components/surface_embed/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
 import("//pdf/features.gni")
@@ -782,7 +781,7 @@ test("components_unittests") {
     ]
   }
 
-  if ((enable_guest_contents || enable_surface_embed) && use_blink) {
+  if (use_blink) {
     # guest_contents is a supporting component for any solution that embeds
     # unowned inner WebContents. As it is for embedding WebContents, only
     # add the deps when use_blink is true.
@@ -1191,6 +1190,7 @@ if (use_blink) {
       "//components/security_state/core",
       "//components/shared_highlighting/core/common",
       "//components/strings",
+      "//components/surface_embed/browser:browser_tests",
       "//components/ukm:test_support",
       "//components/ukm/content",
       "//components/url_rewrite/browser",
@@ -1273,10 +1273,6 @@ if (use_blink) {
         "//services/screen_ai/public/mojom",
         "//skia",
       ]
-    }
-
-    if (enable_surface_embed) {
-      deps += [ "//components/surface_embed/browser:browser_tests" ]
     }
 
     if (is_android) {

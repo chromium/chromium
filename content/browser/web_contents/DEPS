@@ -11,11 +11,5 @@ specific_include_rules = {
   ],
   "web_contents_impl.*\.cc": [
     "+components/fingerprinting_protection_filter/interventions/common/interventions_features.h",
-    # TODO(crbug.com/493534957): move surface_embed buildflags into //content
-    "+components/surface_embed/buildflags/buildflags.h",
-  ],
-  "web_contents_view_child_frame.cc": [
-    # TODO(crbug.com/493534957): move surface_embed buildflags into //content
-    "+components/surface_embed/buildflags/buildflags.h",
   ],
 }

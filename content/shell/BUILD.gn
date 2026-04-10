@@ -10,7 +10,6 @@ import("//build/config/ui.gni")
 import("//build/config/win/console_app.gni")
 import("//build/config/win/manifest.gni")
 import("//build/rust/rust_static_library.gni")
-import("//components/surface_embed/buildflags/buildflags.gni")
 import("//content/public/common/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//gpu/vulkan/features.gni")
@@ -350,7 +349,7 @@ static_library("content_shell_lib") {
     "//components/permissions",
     "//components/prefs",
     "//components/services/storage/test_api",
-    "//components/surface_embed/buildflags",
+    "//components/surface_embed/renderer",
     "//components/url_formatter",
     "//components/variations/service",
     "//components/web_cache/renderer",
@@ -407,10 +406,6 @@ static_library("content_shell_lib") {
 
   if (enable_cast_renderer) {
     deps += [ "//media/mojo/services" ]
-  }
-
-  if (enable_surface_embed) {
-    deps += [ "//components/surface_embed/renderer" ]
   }
 
   if (is_win) {

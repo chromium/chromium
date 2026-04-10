@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/ui.gni")
-import("//components/surface_embed/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
@@ -56,6 +55,9 @@ static_library("webui_examples_lib") {
     "//components/embedder_support:user_agent",
     "//components/guest_contents/browser",
     "//components/guest_contents/renderer",
+    "//components/surface_embed/browser",
+    "//components/surface_embed/common",
+    "//components/surface_embed/renderer",
     "//content/public/app",
     "//content/public/browser",
     "//content/public/renderer",
@@ -63,6 +65,7 @@ static_library("webui_examples_lib") {
     "//ipc",
     "//mojo/public/cpp/bindings",
     "//net",
+    "//services/network/public/mojom:mojom_content_security_policy",
     "//third_party/blink/public:blink",
     "//ui/base",
     "//ui/display",
@@ -89,16 +92,6 @@ static_library("webui_examples_lib") {
       "//ui/aura:test_support",
       "//ui/wm",
       "//ui/wm/public",
-    ]
-  }
-
-  deps += [ "//components/surface_embed/buildflags" ]
-  if (enable_surface_embed) {
-    deps += [
-      "//components/surface_embed/browser",
-      "//components/surface_embed/common",
-      "//components/surface_embed/renderer",
-      "//services/network/public/mojom:mojom_content_security_policy",
     ]
   }
 

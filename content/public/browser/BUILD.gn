@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/ui.gni")
-import("//components/surface_embed/buildflags/buildflags.gni")
 import("//content/common/features.gni")
 import("//content/public/common/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
@@ -458,6 +457,7 @@ source_set("browser_sources") {
     "stored_payment_app.h",
     "supported_delegations.cc",
     "supported_delegations.h",
+    "surface_embed_connector.h",
     "swap_metrics_driver.h",
     "synthetic_trial_syncer.h",
     "touch_selection_controller_client_manager.h",
@@ -569,7 +569,6 @@ source_set("browser_sources") {
     "//components/file_access",
     "//components/services/storage/privileged/mojom",
     "//components/services/storage/public/mojom",
-    "//components/surface_embed/buildflags",
     "//content/public/common:buildflags",
     "//content/public/common:common_sources",
     "//device/vr/buildflags",
@@ -648,10 +647,6 @@ source_set("browser_sources") {
       "plugin_service.h",
       "plugin_service_filter.h",
     ]
-  }
-
-  if (enable_surface_embed) {
-    sources += [ "surface_embed_connector.h" ]
   }
 
   if (is_posix || is_fuchsia) {

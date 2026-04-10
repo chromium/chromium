@@ -10,7 +10,6 @@ import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//build/nocompile.gni")
 import("//components/guest_view/buildflags/buildflags.gni")
-import("//components/surface_embed/buildflags/buildflags.gni")
 import("//components/viz/common/debugger/viz_debugger.gni")
 import("//content/common/features.gni")
 import("//content/public/common/features.gni")
@@ -1780,6 +1779,7 @@ test("content_browsertests") {
     "../browser/snapshot_browsertest.cc",
     "../browser/storage_access/storage_access_browsertest.cc",
     "../browser/storage_partition_impl_browsertest.cc",
+    "../browser/surface_embed/surface_embed_connector_impl_browsertest.cc",
     "../browser/system_dns_resolution/system_dns_resolver_browsertest.cc",
     "../browser/text_fragment_browsertest.cc",
     "../browser/tracing/background_tracing_manager_browsertest.cc",
@@ -1909,12 +1909,6 @@ test("content_browsertests") {
     ]
   }
 
-  if (enable_surface_embed) {
-    sources += [
-      "../browser/surface_embed/surface_embed_connector_impl_browsertest.cc",
-    ]
-  }
-
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   configs += [ "//build/config:precompiled_headers" ]
@@ -1959,7 +1953,6 @@ test("content_browsertests") {
     "//components/services/storage",
     "//components/services/storage/public/cpp",
     "//components/services/storage/public/mojom:test_api",
-    "//components/surface_embed/buildflags",
     "//components/ukm:test_support",
     "//components/ukm/content",
     "//components/url_formatter",

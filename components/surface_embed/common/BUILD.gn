@@ -2,10 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/surface_embed/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
-
-assert(enable_surface_embed)
 
 component("common") {
   defines = [ "IS_SURFACE_EMBED_COMMON_IMPL" ]

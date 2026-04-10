@@ -4,7 +4,9 @@
 
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -18,14 +20,17 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui_browser/bookmark_bar.mojom.h"
 #include "chrome/browser/ui/webui_browser/bookmark_bar_page_handler.h"
+#include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
-#include "components/surface_embed/buildflags/buildflags.h"
+#include "components/surface_embed/common/features.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -34,19 +39,10 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/dns/mock_host_resolver.h"
-
-#if BUILDFLAG(ENABLE_SURFACE_EMBED)
-#include "base/functional/bind.h"
-#include "base/run_loop.h"
-#include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
-#include "components/surface_embed/common/features.h"
-#include "components/viz/common/frame_sinks/copy_output_result.h"
-#include "content/public/browser/render_widget_host_view.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
 // Use an anonymous namespace here to avoid colliding with the other
 // WebUIBrowserTest defined in chrome/test/base/ash/web_ui_browser_test.h
@@ -94,7 +90,6 @@ class FakeBookmarkBarPage : public bookmark_bar::mojom::Page {
   mojo::Receiver<bookmark_bar::mojom::Page> receiver_{this};
 };
 
-#if BUILDFLAG(ENABLE_SURFACE_EMBED)
 // A WebUIBrowserTest with the SurfaceEmbed feature enabled and pixel output
 // enabled for visual verification.
 class WebUIBrowserSurfaceEmbedPixelTest : public InProcessBrowserTest {
@@ -117,7 +112,6 @@ class WebUIBrowserSurfaceEmbedPixelTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
 }  // namespace
 
@@ -374,7 +368,6 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, BookmarkNodeFaviconChangedRegression) {
   }
 }
 
-#if BUILDFLAG(ENABLE_SURFACE_EMBED)
 #if BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/451876195): Enable this test for CrOS.
 #define MAYBE_SurfaceEmbedRendersRedRect DISABLED_SurfaceEmbedRendersRedRect
@@ -429,4 +422,3 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserSurfaceEmbedPixelTest,
     return found_expected_color;
   }));
 }
-#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)

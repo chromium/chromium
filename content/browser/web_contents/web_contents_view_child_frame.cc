@@ -8,9 +8,9 @@
 
 #include "base/notimplemented.h"
 #include "build/build_config.h"
-#include "components/surface_embed/buildflags/buildflags.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
+#include "content/browser/surface_embed/surface_embed_connector_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/common/buildflags.h"
@@ -23,10 +23,6 @@
 #if BUILDFLAG(IS_MAC)
 #include "content/browser/renderer_host/popup_menu_helper_mac.h"
 #endif
-
-#if BUILDFLAG(ENABLE_SURFACE_EMBED)
-#include "content/browser/surface_embed/surface_embed_connector_impl.h"
-#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
 using blink::DragOperationsMask;
 
@@ -59,13 +55,11 @@ WebContentsView* WebContentsViewChildFrame::GetOuterView() {
     return outer_web_contents->GetView();
   }
 
-#if BUILDFLAG(ENABLE_SURFACE_EMBED)
   if (auto* surface_embed_connector =
           web_contents_->GetSurfaceEmbedConnector()) {
     return static_cast<SurfaceEmbedConnectorImpl*>(surface_embed_connector)
         ->GetParentWebContentsView();
   }
-#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
   return nullptr;
 }
@@ -82,13 +76,11 @@ RenderViewHostDelegateView* WebContentsViewChildFrame::GetOuterDelegateView() {
     return outer_rvh->GetDelegate()->GetDelegateView();
   }
 
-#if BUILDFLAG(ENABLE_SURFACE_EMBED)
   if (auto* surface_embed_connector =
           web_contents_->GetSurfaceEmbedConnector()) {
     return static_cast<SurfaceEmbedConnectorImpl*>(surface_embed_connector)
         ->GetParentRenderViewHostDelegateView();
   }
-#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
   NOTREACHED();
 }

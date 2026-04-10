@@ -128,6 +128,7 @@
 #include "content/browser/screen_orientation/screen_orientation_provider.h"
 #include "content/browser/shared_storage/shared_storage_budget_charger.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/browser/surface_embed/surface_embed_connector_impl.h"
 #include "content/browser/wake_lock/wake_lock_context_host.h"
 #include "content/browser/web_contents/file_chooser_impl.h"
 #include "content/browser/web_contents/java_script_dialog_commit_deferring_condition.h"
@@ -277,10 +278,6 @@
 #if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
 #include "content/browser/ios/nfc_host.h"
 #endif
-
-#if BUILDFLAG(ENABLE_SURFACE_EMBED)
-#include "content/browser/surface_embed/surface_embed_connector_impl.h"
-#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
 namespace content {
 
@@ -1430,11 +1427,9 @@ WebContentsImpl::~WebContentsImpl() {
     GetOuterWebContents()->DetachUnownedInnerWebContents(this);
   }
 
-#if BUILDFLAG(ENABLE_SURFACE_EMBED)
   if (surface_embed_connector_) {
     ClearSurfaceEmbedConnector();
   }
-#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
   if (pointer_lock_widget_) {
     pointer_lock_widget_->RejectPointerLockOrUnlockIfNecessary(
@@ -3470,7 +3465,6 @@ void WebContentsImpl::DetachUnownedInnerWebContents(
   inner_main_frame->UpdateAXTreeData();
 }
 
-#if BUILDFLAG(ENABLE_SURFACE_EMBED)
 SurfaceEmbedConnector* WebContentsImpl::GetSurfaceEmbedConnector() const {
   return surface_embed_connector_.get();
 }
@@ -3576,7 +3570,6 @@ void WebContentsImpl::ClearSurfaceEmbedConnector() {
     RecursivelyRegisterRenderWidgetHostViews();
   }
 }
-#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
 void WebContentsImpl::AttachGuestPage(
     std::unique_ptr<GuestPageHolder> guest_page,
@@ -4696,11 +4689,9 @@ WebContentsImpl::GetInputEventRouter() {
       return GetOuterWebContents()->GetInputEventRouter();
     }
 
-#if BUILDFLAG(ENABLE_SURFACE_EMBED)
     if (surface_embed_connector_) {
       return surface_embed_connector_->GetInputEventRouter();
     }
-#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
     if (!rwh_input_event_router_.get()) {
       rwh_input_event_router_ =
@@ -6323,11 +6314,9 @@ TextInputManager* WebContentsImpl::GetTextInputManager() {
     return GetOuterWebContents()->GetTextInputManager();
   }
 
-#if BUILDFLAG(ENABLE_SURFACE_EMBED)
   if (surface_embed_connector_) {
     return surface_embed_connector_->GetTextInputManager();
   }
-#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
   if (!text_input_manager_ && !browser_plugin_guest_) {
     text_input_manager_ = std::make_unique<TextInputManager>();

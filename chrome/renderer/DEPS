@@ -73,7 +73,6 @@ include_rules = [
   "+components/subresource_filter/content/renderer",
   "+components/subresource_filter/core/common",
   "+components/supervised_user/core/common",
-  "+components/surface_embed/buildflags",
   "+components/surface_embed/common",
   "+components/surface_embed/renderer",
   "+components/sync/base/features.h",
