@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_debug_features.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
+#include "components/accessibility_annotator/core/prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -26,6 +27,8 @@ class AccessibilityAnnotatorEnablementServiceImplTest : public testing::Test {
                               features::kAccessibilityAnnotatorDatabaseStorage},
         /*disabled_features=*/{});
 
+    accessibility_annotator::prefs::RegisterProfilePrefs(
+        pref_service_.registry());
     CreateService("us");
     SignIn("test@gmail.com");
   }
@@ -129,6 +132,14 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest, DisabledWhenSignedOut) {
   identity_test_env_.ClearPrimaryAccount();
   EXPECT_EQ(service().GetEnablementState(),
             RemoteAnnotatorEnablementState::kDisabledNotEligible);
+}
+
+TEST_F(AccessibilityAnnotatorEnablementServiceImplTest, ClearsPrefOnSignout) {
+  pref_service_.SetBoolean(prefs::kShouldShowRemoteAnnotatorFirstRunInfo,
+                           false);
+  identity_test_env_.ClearPrimaryAccount();
+  EXPECT_TRUE(
+      pref_service_.GetBoolean(prefs::kShouldShowRemoteAnnotatorFirstRunInfo));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

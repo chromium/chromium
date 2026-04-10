@@ -18,6 +18,8 @@ source_set("core") {
     "direct_server_entity_provider.cc",
     "direct_server_entity_provider.h",
     "entity_data_provider.h",
+    "prefs.cc",
+    "prefs.h",
     "url_constants.h",
   ]
 
@@ -31,6 +33,7 @@ source_set("core") {
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
+    "//components/prefs",
     "//components/signin/public/identity_manager",
     "//url",
   ]

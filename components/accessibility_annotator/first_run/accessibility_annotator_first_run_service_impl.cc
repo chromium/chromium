@@ -8,13 +8,18 @@
 
 #include "base/functional/bind.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_enablement_service.h"
+#include "components/accessibility_annotator/core/prefs.h"
+#include "components/prefs/pref_service.h"
 
 namespace accessibility_annotator {
 AccessibilityAnnotatorFirstRunServiceImpl::
     AccessibilityAnnotatorFirstRunServiceImpl(
         std::unique_ptr<AccessibilityAnnotatorFirstRunClient> client,
-        AccessibilityAnnotatorEnablementService* enablement_service)
-    : client_(std::move(client)), enablement_service_(enablement_service) {}
+        AccessibilityAnnotatorEnablementService* enablement_service,
+        PrefService* pref_service)
+    : client_(std::move(client)),
+      enablement_service_(enablement_service),
+      pref_service_(pref_service) {}
 
 AccessibilityAnnotatorFirstRunServiceImpl::
     ~AccessibilityAnnotatorFirstRunServiceImpl() = default;
@@ -56,8 +61,11 @@ void AccessibilityAnnotatorFirstRunServiceImpl::MaybeTriggerFirstRun(
 void AccessibilityAnnotatorFirstRunServiceImpl::OnInfoDialogCompleted(
     base::OnceCallback<void(FirstRunTriggerResult)> callback,
     InfoResult result) {
-  // TODO(b/489414512): Update prefs when Info is acknowledged.
   if (result == InfoResult::kAcknowledged) {
+    if (pref_service_) {
+      pref_service_->SetBoolean(prefs::kShouldShowRemoteAnnotatorFirstRunInfo,
+                                false);
+    }
   }
   std::move(callback).Run(FirstRunTriggerResult::kSuccess);
 }

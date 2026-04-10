@@ -13,6 +13,8 @@
 #include "components/accessibility_annotator/first_run/accessibility_annotator_first_run_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+class PrefService;
+
 namespace content {
 class WebContents;
 }
@@ -25,7 +27,8 @@ class AccessibilityAnnotatorFirstRunServiceImpl
  public:
   AccessibilityAnnotatorFirstRunServiceImpl(
       std::unique_ptr<AccessibilityAnnotatorFirstRunClient> client,
-      AccessibilityAnnotatorEnablementService* enablement_service);
+      AccessibilityAnnotatorEnablementService* enablement_service,
+      PrefService* pref_service);
   AccessibilityAnnotatorFirstRunServiceImpl(
       const AccessibilityAnnotatorFirstRunServiceImpl&) = delete;
   AccessibilityAnnotatorFirstRunServiceImpl& operator=(
@@ -44,6 +47,7 @@ class AccessibilityAnnotatorFirstRunServiceImpl
 
   std::unique_ptr<AccessibilityAnnotatorFirstRunClient> client_;
   raw_ptr<AccessibilityAnnotatorEnablementService> enablement_service_;
+  raw_ptr<PrefService> pref_service_;
 
   base::WeakPtrFactory<AccessibilityAnnotatorFirstRunServiceImpl>
       weak_ptr_factory_{this};

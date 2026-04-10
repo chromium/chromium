@@ -1,5 +1,8 @@
 import("//build/config/features.gni")
 
+# TODO(b/501061536): The necessity of this assert it being investigated.
+assert(use_blink)
+
 static_library("first_run") {
   sources = [
     "accessibility_annotator_first_run_client.h",
@@ -24,6 +27,8 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/accessibility_annotator/core",
+    "//components/accessibility_annotator/core:features",
+    "//components/prefs:test_support",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

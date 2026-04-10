@@ -58,5 +58,6 @@ std::unique_ptr<KeyedService> AccessibilityAnnotatorFirstRunServiceFactory::
   return std::make_unique<
       accessibility_annotator::AccessibilityAnnotatorFirstRunServiceImpl>(
       std::move(client),
-      AccessibilityAnnotatorEnablementServiceFactory::GetForProfile(profile));
+      AccessibilityAnnotatorEnablementServiceFactory::GetForProfile(profile),
+      profile->GetPrefs());
 }

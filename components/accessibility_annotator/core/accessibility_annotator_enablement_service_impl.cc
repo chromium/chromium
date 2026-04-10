@@ -12,6 +12,7 @@
 #include "components/accessibility_annotator/core/accessibility_annotator_debug_features.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/accessibility_annotator/core/country_type.h"
+#include "components/accessibility_annotator/core/prefs.h"
 #include "components/account_settings/account_setting_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -124,18 +125,22 @@ AccessibilityAnnotatorEnablementServiceImpl::
     : account_settings_service_(account_settings_service),
       identity_manager_(identity_manager),
       pref_service_(pref_service),
-      country_code_(std::move(country_code)) {}
+      country_code_(std::move(country_code)) {
+  if (identity_manager) {
+    identity_manager_observer_.Observe(identity_manager);
+  }
+}
 
 AccessibilityAnnotatorEnablementServiceImpl::
     ~AccessibilityAnnotatorEnablementServiceImpl() = default;
 
 void AccessibilityAnnotatorEnablementServiceImpl::AddObserver(
-    Observer* observer) {
+    AccessibilityAnnotatorEnablementService::Observer* observer) {
   observers_.AddObserver(observer);
 }
 
 void AccessibilityAnnotatorEnablementServiceImpl::RemoveObserver(
-    Observer* observer) {
+    AccessibilityAnnotatorEnablementService::Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
@@ -166,6 +171,21 @@ AccessibilityAnnotatorEnablementServiceImpl::GetEnablementState() {
   }
 
   return SatisfiesPreferenceRequirements(pref_service_.get());
+}
+
+void AccessibilityAnnotatorEnablementServiceImpl::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
+      signin::PrimaryAccountChangeEvent::Type::kCleared) {
+    if (pref_service_) {
+      pref_service_->ClearPref(prefs::kShouldShowRemoteAnnotatorFirstRunInfo);
+    }
+  }
+}
+
+void AccessibilityAnnotatorEnablementServiceImpl::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  identity_manager_observer_.Reset();
 }
 
 }  // namespace accessibility_annotator

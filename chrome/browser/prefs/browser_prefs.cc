@@ -103,6 +103,7 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/secure_origin_allowlist.h"
+#include "components/accessibility_annotator/core/prefs.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/blocked_content/safe_browsing_triggered_popup_blocker.h"
 #include "components/breadcrumbs/core/breadcrumbs_status.h"
@@ -1685,6 +1686,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   // User prefs. Please keep this list alphabetized.
   AccessibilityLabelsService::RegisterProfilePrefs(registry);
   AccessibilityUIMessageHandler::RegisterProfilePrefs(registry);
+  accessibility_annotator::prefs::RegisterProfilePrefs(registry);
   AimEligibilityService::RegisterProfilePrefs(registry);
   AnnouncementNotificationService::RegisterProfilePrefs(registry);
   autofill::prefs::RegisterProfilePrefs(registry);
