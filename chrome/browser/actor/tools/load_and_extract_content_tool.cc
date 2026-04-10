@@ -325,6 +325,8 @@ LoadAndExtractContentTool::~LoadAndExtractContentTool() {
 void LoadAndExtractContentTool::Validate(ToolCallback overall_callback) {
   // TODO(b/478282022): Consider imposing a limit on the number of URLs.
   if (urls_.empty()) {
+    journal().Log(GURL::EmptyGURL(), task_id(),
+                  "LoadAndExtractContentTool::EmptyUrlsFailedValidation", {});
     PostResponseTask(std::move(overall_callback),
                      MakeResult(mojom::ActionResultCode::kArgumentsInvalid));
     return;
@@ -358,6 +360,8 @@ void LoadAndExtractContentTool::Invoke(ToolCallback callback) {
       BrowserWindowInterface::FromSessionID(window_id_);
 
   if (!browser_window_interface) {
+    journal().Log(GURL::EmptyGURL(), task_id(),
+                  "LoadAndExtractContentTool::WindowWentAway", {});
     PostResponseTask(std::move(invoke_callback_),
                      MakeResult(mojom::ActionResultCode::kWindowWentAway));
     return;
@@ -521,10 +525,17 @@ void LoadAndExtractContentTool::OnAllUrlsCompleted() {
 
   for (auto& [index, per_tab_state] : per_tab_state_) {
     CHECK(per_tab_state.result_code.has_value());
+    GURL url = urls_[index.value()];
+    journal().Log(url, task_id(), "LoadAndExtractContentTool::PerTabResult",
+                  JournalDetailsBuilder()
+                      .Add("url_index", index.value())
+                      .Add("per_tab_result_code",
+                           static_cast<int>(per_tab_state.result_code.value()))
+                      .Build());
+
     mojom::ActionResultCode action_result_code =
         ToActionResultCode(per_tab_state.result_code.value());
     if (!IsOk(action_result_code)) {
-      GURL url = urls_[index.value()];
       journal().Log(
           url, task_id(), "LoadAndExtractContentTool::OnAllUrlsCompleted",
           JournalDetailsBuilder()
