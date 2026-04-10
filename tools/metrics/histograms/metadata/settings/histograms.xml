@@ -179,16 +179,6 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   </summary>
 </histogram>
 
-<histogram name="Settings.AllSites.DeprecatedRedirect" enum="BooleanRedirected"
-    expires_after="M101">
-  <owner>sauski@google.com</owner>
-  <owner>chrome-friendly-settings@google.com</owner>
-  <summary>
-    Whether or not navigations to the All Sites page occured because the user
-    was redirected from the deprecated Site Data page.
-  </summary>
-</histogram>
-
 <histogram name="Settings.AutocompleteSearches.OnStartup2"
     enum="BooleanEnabled" expires_after="2025-12-28">
   <owner>harrisonsean@chromium.org</owner>
@@ -1441,15 +1431,6 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
     To be explicit: not logged when an Incognito profile is opened because that
     inherits the settings from its parent profile. As such, it's not necessary
     to log the Incognito profile's settings.
-  </summary>
-</histogram>
-
-<histogram name="Settings.TimeToFirstSearch" units="ms" expires_after="M85">
-  <owner>dschuyler@chromium.org</owner>
-  <summary>
-    The time between when the chrome://settings page is opened to the first time
-    a search is done within that page. This is intended to evaluate how long a
-    user looks for a setting before giving up and searching for it.
   </summary>
 </histogram>
 

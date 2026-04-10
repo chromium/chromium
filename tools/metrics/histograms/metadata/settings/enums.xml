@@ -128,11 +128,6 @@ chromium-metrics-reviews@google.com.
       label="(Obsolete) IncognitoTrackingProtectionsFragment"/>
 </enum>
 
-<enum name="BooleanRedirected">
-  <int value="0" label="Not redirected"/>
-  <int value="1" label="Redirected"/>
-</enum>
-
 <enum name="ClearBrowsingDataMyActivityNavigation">
   <int value="0" label="Top level MyActivity URL"/>
   <int value="1" label="Search history in MyActivity"/>
