@@ -1836,7 +1836,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.FedCm.HasNonceOutsideParamsOnly" enum="BooleanHit"
     expires_after="2026-09-01">
-  <owner>yigu@chromium.org</owner>
+  <owner>npm@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records a 1 whenever a FedCM API call includes the nonce parameter, but does
@@ -2498,6 +2498,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether the WebContents is visible when the browser is ready to show
     the accounts dialog to the user. Records at most one sample per API call.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.WellKnownInvalidDueToClientMetadata"
+    enum="BooleanHit" expires_after="2026-08-23">
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records a 1 whenever a FedCM API call includes a well-known file without
+    accounts or login_url but where the config file has client_metadata. Records
+    when the config and well-known files have been fetched.
   </summary>
 </histogram>
 

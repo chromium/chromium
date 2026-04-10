@@ -4630,6 +4630,14 @@ be describing additional metrics about the same event.
       call is immediately rejected.
     </summary>
   </metric>
+  <metric name="HasNonceOutsideParamsOnly" enum="BooleanHit">
+    <summary>
+      Records a 1 whenever a FedCM API call includes the nonce parameter, but
+      does not include it inside the params JSON blob. Records towards the
+      beginning of the call, except for some cases where the call is immediately
+      rejected.
+    </summary>
+  </metric>
   <metric name="HasSigninAccount" enum="Boolean">
     <summary>
       Records whether a user is signing up with the API. Records once per
@@ -4880,6 +4888,13 @@ be describing additional metrics about the same event.
       Blink.FedCm.Status.RequestIdToken.
     </summary>
   </metric>
+  <metric name="WellKnownInvalidDueToClientMetadata" enum="BooleanHit">
+    <summary>
+      Records a 1 whenever a FedCM API call includes a well-known file without
+      `accounts` or `login_url` but where the config file has `client_metadata`.
+      Records when the config and well-known files have been fetched.
+    </summary>
+  </metric>
 </event>
 
 <event name="Blink.FedCmIdp">
@@ -4966,6 +4981,14 @@ be describing additional metrics about the same event.
       Records a 1 whenever a FedCM API call includes the nonce parameter.
       Records towards the beginning of the call, except for some cases where the
       call is immediately rejected.
+    </summary>
+  </metric>
+  <metric name="HasNonceOutsideParamsOnly" enum="BooleanHit">
+    <summary>
+      Records a 1 whenever a FedCM API call includes the nonce parameter, but
+      does not include it inside the params JSON blob. Records towards the
+      beginning of the call, except for some cases where the call is immediately
+      rejected.
     </summary>
   </metric>
   <metric name="HasSigninAccount" enum="Boolean">
@@ -5129,6 +5152,13 @@ be describing additional metrics about the same event.
       Records the outcome of the verifying dialog. Recorded once per verifying
       dialog shown when the FedCM call is completed, i.e. at the same time as
       Blink.FedCm.Status.RequestIdToken.
+    </summary>
+  </metric>
+  <metric name="WellKnownInvalidDueToClientMetadata" enum="BooleanHit">
+    <summary>
+      Records a 1 whenever a FedCM API call includes a well-known file without
+      `accounts` or `login_url` but where the config file has `client_metadata`.
+      Records when the config and well-known files have been fetched.
     </summary>
   </metric>
 </event>

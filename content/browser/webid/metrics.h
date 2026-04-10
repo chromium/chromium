@@ -469,6 +469,10 @@ class CONTENT_EXPORT Metrics {
   void RecordHasNonceOutsideParamsOnly(
       const std::set<GURL>& idps_with_nonce_outside_params_only);
 
+  // Records when the well-known file does not have the required endpoints due
+  // to client_metadata being used.
+  void RecordWellKnownInvalidDueToClientMetadata(const GURL& provider);
+
   // Records whether user sign-in states between IDP and browser match.
   void RecordSignInStateMatchStatus(const GURL& provider,
                                     SignInStateMatchStatus status);

@@ -289,9 +289,22 @@ void Metrics::RecordHasNonce(const std::set<GURL>& idps_with_nonce) {
 
 void Metrics::RecordHasNonceOutsideParamsOnly(
     const std::set<GURL>& idps_with_nonce_outside_params_only) {
-  if (!idps_with_nonce_outside_params_only.empty()) {
-    base::UmaHistogramBoolean("Blink.FedCm.HasNonceOutsideParamsOnly", true);
+  if (idps_with_nonce_outside_params_only.empty()) {
+    return;
   }
+  base::UmaHistogramBoolean("Blink.FedCm.HasNonceOutsideParamsOnly", true);
+  GetOrCreateFedCmBuilder()->SetHasNonceOutsideParamsOnly(true);
+  for (const GURL& idp : idps_with_nonce_outside_params_only) {
+    GetOrCreateFedCmIdpBuilder(idp)->SetHasNonceOutsideParamsOnly(true);
+  }
+}
+
+void Metrics::RecordWellKnownInvalidDueToClientMetadata(const GURL& provider) {
+  base::UmaHistogramBoolean("Blink.FedCm.WellKnownInvalidDueToClientMetadata",
+                            true);
+  GetOrCreateFedCmBuilder()->SetWellKnownInvalidDueToClientMetadata(true);
+  GetOrCreateFedCmIdpBuilder(provider)->SetWellKnownInvalidDueToClientMetadata(
+      true);
 }
 
 void Metrics::RecordRequestTokenStatus(

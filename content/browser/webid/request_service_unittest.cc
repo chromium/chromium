@@ -1398,8 +1398,8 @@ class RequestServiceTest : public RenderViewHostImplTestHarness {
     // removed. Filter out known deprecation warnings
     std::vector<std::string> filtered_messages;
     for (const auto& message : messages) {
-      if (message.find("Top-level nonce support will be removed") ==
-              std::string::npos &&
+      if (message.find("The \'nonce\' parameter should be passed within the "
+                       "\'params\' object") == std::string::npos &&
           message.find("The FedCM configuration uses client_metadata") ==
               std::string::npos) {
         filtered_messages.push_back(message);
@@ -8604,6 +8604,7 @@ TEST_F(RequestServiceTest, HasNonceOutsideParamsOnly_ParamsWithNonce) {
   histogram_tester_.ExpectTotalCount("Blink.FedCm.HasNonceOutsideParamsOnly",
                                      0);
   ExpectUkmValue("HasNonce", true);
+  ExpectNoUKMPresence("HasNonceOutsideParamsOnly");
 }
 
 // Test that Blink.FedCm.HasNonceOutsideParamsOnly is not recorded when a nonce
@@ -8616,6 +8617,7 @@ TEST_F(RequestServiceTest, HasNonceOutsideParamsOnly_NoNonce) {
   histogram_tester_.ExpectTotalCount("Blink.FedCm.HasNonceOutsideParamsOnly",
                                      0);
   ExpectNoUKMPresence("HasNonce");
+  ExpectNoUKMPresence("HasNonceOutsideParamsOnly");
 }
 
 // Test that Blink.FedCm.HasNonceOutsideParamsOnly is not recorded when a nonce
@@ -8629,6 +8631,7 @@ TEST_F(RequestServiceTest, HasNonceOutsideParamsOnly_NonceOnlyInParams) {
   histogram_tester_.ExpectTotalCount("Blink.FedCm.HasNonceOutsideParamsOnly",
                                      0);
   ExpectNoUKMPresence("HasNonce");
+  ExpectNoUKMPresence("HasNonceOutsideParamsOnly");
 }
 
 TEST_F(RequestServiceTest, NonceAbsenceNoRecord) {
