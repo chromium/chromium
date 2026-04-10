@@ -27,6 +27,7 @@ fuzztest_add_configs = fuzzing_engine_add_configs + [
 
 config("fuzztest_internal_config") {
   cflags = [
+    "-Wno-unused-result",  #crbug.com/500385597
     "-Wno-unused-private-field",
     "-Wno-unreachable-code-return",
     "-Wno-unused-but-set-variable",
