@@ -287,6 +287,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
         if (OmniboxFeatures.sOmniboxItemDecoration.isEnabled()) {
             addItemDecoration(new GroupSeparatorDecoration(context));
+            addItemDecoration(new HeaderDecoration(context));
         }
 
         mLayoutScrollListener = suggestionLayoutScrollListener;

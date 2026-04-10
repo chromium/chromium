@@ -271,6 +271,7 @@ public class TabSwitcherSearchRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     @EnableFeatures({OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS})
+    @DisableFeatures({OmniboxFeatureList.OMNIBOX_ITEM_DECORATION})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testRenderTypedTabGroupSuggestions(boolean nightModeEnabled) throws IOException {
         Tab firstTab = mInitialPage.loadedTabElement.value();
@@ -315,6 +316,7 @@ public class TabSwitcherSearchRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     @EnableFeatures({OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS})
+    @DisableFeatures({OmniboxFeatureList.OMNIBOX_ITEM_DECORATION})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testRenderTypedTabGroupSuggestions_URLMatch(boolean nightModeEnabled)
             throws IOException {
@@ -360,6 +362,7 @@ public class TabSwitcherSearchRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     @EnableFeatures({OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS})
+    @DisableFeatures({OmniboxFeatureList.OMNIBOX_ITEM_DECORATION})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testRenderTypedTabGroupSuggestions_ChromePrefixedTabsOmmitted(
             boolean nightModeEnabled) throws IOException {
