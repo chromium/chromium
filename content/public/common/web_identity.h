@@ -21,8 +21,10 @@ enum class IdpSigninStatus;
 
 namespace content {
 
-typedef base::RepeatingCallback<void(const url::Origin&,
-                                     blink::mojom::IdpSigninStatus)>
+typedef base::RepeatingCallback<void(
+    const std::optional<url::Origin>& initiator,
+    const url::Origin& idp_origin,
+    blink::mojom::IdpSigninStatus status)>
     SetIdpStatusCallback;
 
 CONTENT_EXPORT std::unique_ptr<blink::URLLoaderThrottle>
