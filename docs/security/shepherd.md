@@ -122,7 +122,7 @@ which _are_ valid. As a rule:
     * Assign it to [the current v8 shepherd](https://goto.google.com/current-v8-sheriff)
     * Set it to High Severity (S1)
     * Set the OS field to all platforms we use v8 on (everything except iOS)
-    * Set FoundIn to the oldest [active
+    * Set Found In to the oldest [active
       branch](https://chromiumdash.appspot.com/branches)
     * Set the component to `Chromium > Blink > JavaScript`
     * You are now done triaging this bug, congratulations!
@@ -167,7 +167,7 @@ benefits a lot from judgment and experience!
 ### Attempt to reproduce Medium, High and Critical Bugs
 
 [ClusterFuzz](clusterfuzz-for-shepherds.md) is far quicker than manual
-reproduction, and will automatically do bisection and set FoundIn for you, so
+reproduction, and will automatically do bisection and set Found In for you, so
 you should use ClusterFuzz if at all possible. If you have to manually reproduce
 a bug instead:
 
@@ -194,7 +194,7 @@ a bug instead:
   again using a different job type with a more mature tool (e.g. ASan on Linux).
   It may give more complete information.
 
-### Assessing FoundIn and OS
+### Assessing Found In and OS
 
 At this point, you need the ability to know if a specific OS + version
 combination (up to the oldest [active
@@ -207,7 +207,7 @@ you need to either:
   for PoCs that work on and are safe to run on ClusterFuzz, or
 * Manually reproduce it yourself across OS + version combos to check
 
-In all cases, FoundIn should contain the _oldest_ milestone number which is
+In all cases, Found In should contain the _oldest_ milestone number which is
 still [active](https://chromiumdash.appspot.com/branches) and has the bug. This
 should be based on your investigation and the evidence in the bug, **not** on
 what versions the reporter reported the bug against - those are often just what
@@ -292,11 +292,11 @@ What do I do here?
 
 You are not responsible for handling merges or approving a fix for backmerge.
 If the issue is resolved and there is a landed CL, please ensure the bug is
-closed as Fixed. Please also make sure the bug has a severity and FoundIn set.
+closed as Fixed. Please also make sure the bug has a severity and Found In set.
 This will allow the bot (Sheriffbot) to add the appropriately update the Merge
 custom field with the appropriate request-MMM or review-MMM labels, where MMM =
 the milestones for backmerge consideration (based on rules driven by severity
-(and `Security_Impact`, derived from FoundIn). See
+(and `Security_Impact`, derived from Found In). See
 [security merge triage](../process/merge_request.md#Security-merge-triage)
 for more information.
 
