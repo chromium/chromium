@@ -1294,8 +1294,6 @@ bool ReadAnythingAppModel::SelectionNodesContainedInDistilledContent() const {
 }
 
 bool ReadAnythingAppModel::ProcessAXTreeAnchors() {
-  DUMP_WILL_BE_CHECK(
-      features::IsReadAnythingWithReadabilityAllowLinksEnabled());
   if (!should_extract_anchors_from_tree_for_readability_) {
     return false;
   }

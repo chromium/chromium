@@ -313,8 +313,7 @@ class ImmersiveReadAnythingWithReadabilityMochaTest
   ImmersiveReadAnythingWithReadabilityMochaTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kImmersiveReadAnything,
-         features::kReadAnythingWithReadability,
-         features::kReadAnythingWithReadabilityAllowLinks},
+         features::kReadAnythingWithReadability},
         {});
   }
 

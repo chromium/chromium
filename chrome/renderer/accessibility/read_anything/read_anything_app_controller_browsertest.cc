@@ -4959,9 +4959,7 @@ class ReadAnythingAppControllerReadabilityTest
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnythingWithReadability,
-         features::kReadAnythingWithReadabilityAllowLinks},
-        {});
+        {features::kReadAnythingWithReadability}, {});
 
     ChromeRenderViewTest::SetUp();
     content::RenderFrame* render_frame =

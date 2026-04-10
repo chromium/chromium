@@ -592,8 +592,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
   }
 
   protected onReadabilityAnchorsReady_() {
-    if (chrome.readingMode.isReadabilityEnabled &&
-        chrome.readingMode.isReadabilityWithLinksEnabled) {
+    if (chrome.readingMode.isReadabilityEnabled) {
       this.contentController_.updateAnchorsForReadability(this.shadowRoot);
     }
   }

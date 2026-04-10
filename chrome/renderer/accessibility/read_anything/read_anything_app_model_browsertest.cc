@@ -2029,9 +2029,7 @@ class ReadAnythingAppModelReadabilityTest : public ReadAnythingAppModelTest {
  public:
   ReadAnythingAppModelReadabilityTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnythingWithReadability,
-         features::kReadAnythingWithReadabilityAllowLinks},
-        {});
+        {features::kReadAnythingWithReadability}, {});
   }
   ~ReadAnythingAppModelReadabilityTest() override = default;
 

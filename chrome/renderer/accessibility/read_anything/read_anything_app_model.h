@@ -284,11 +284,8 @@ class ReadAnythingAppModel {
   }
   bool should_apply_accessibility_updates_for_readability_links() const {
     // Accessibility updates for Readability shouldn't be applied outside
-    // of the regular accessibility update process if Readability is disabled
-    // or ReadAnythingWithReadabilityAllowLinksEnabled is disabled, as these
-    // updates are only needed when links are supported.
-    if (!features::IsReadAnythingWithReadabilityEnabled() ||
-        !features::IsReadAnythingWithReadabilityAllowLinksEnabled()) {
+    // of the regular accessibility update process if Readability is disabled.
+    if (!features::IsReadAnythingWithReadabilityEnabled()) {
       return false;
     }
 
@@ -364,23 +361,12 @@ class ReadAnythingAppModel {
   }
 
   bool should_extract_anchors_from_tree_for_readability() const {
-    bool is_readability_with_links_enabled =
-        features::IsReadAnythingWithReadabilityAllowLinksEnabled();
-    DUMP_WILL_BE_CHECK(is_readability_with_links_enabled);
-
-    return is_readability_with_links_enabled
-               ? should_extract_anchors_from_tree_for_readability_
-               : false;
+    return should_extract_anchors_from_tree_for_readability_;
   }
   void set_should_extract_anchors_from_tree_for_readability(
       bool should_extract_anchors_from_tree_for_readability) {
-    bool is_readability_with_links_enabled =
-        features::IsReadAnythingWithReadabilityAllowLinksEnabled();
-    DUMP_WILL_BE_CHECK(is_readability_with_links_enabled);
     should_extract_anchors_from_tree_for_readability_ =
-        is_readability_with_links_enabled
-            ? should_extract_anchors_from_tree_for_readability
-            : false;
+        should_extract_anchors_from_tree_for_readability;
   }
 
   // Processes the tree anchors.

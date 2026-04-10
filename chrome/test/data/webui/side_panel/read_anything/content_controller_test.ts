@@ -793,7 +793,6 @@ suite('ContentController', () => {
           const url = 'https://www.google.com/';
           const text = 'best link ever';
           chrome.readingMode.isReadabilityEnabled = true;
-          chrome.readingMode.isReadabilityWithLinksEnabled = false;
           chrome.readingMode.activeDistillationMethod =
               chrome.readingMode.distillationTypeReadability;
           contentController.configureTrustedTypes();
@@ -820,12 +819,11 @@ suite('ContentController', () => {
         });
 
     test(
-        'honors links enabled preference on first open with Readability with links enabled',
+        'honors links enabled preference on first open with Readability',
         async () => {
           const url = 'https://www.google.com/';
           const text = 'best link ever';
           chrome.readingMode.isReadabilityEnabled = true;
-          chrome.readingMode.isReadabilityWithLinksEnabled = true;
           chrome.readingMode.activeDistillationMethod =
               chrome.readingMode.distillationTypeReadability;
           contentController.configureTrustedTypes();
@@ -848,38 +846,6 @@ suite('ContentController', () => {
           assertEquals(url, link.href);
           assertEquals(text, link.textContent);
         });
-
-    test('links are disabled when ReadabilityWithLinks is false', async () => {
-      const url = 'https://www.google.com/';
-      const text = 'best link ever';
-      chrome.readingMode.isReadabilityEnabled = true;
-      chrome.readingMode.isReadabilityWithLinksEnabled = false;
-      chrome.readingMode.activeDistillationMethod =
-          chrome.readingMode.distillationTypeReadability;
-      contentController.configureTrustedTypes();
-      readingMode.htmlContent = `<a href="${url}">${text}</a>`;
-      chrome.readingMode.linksEnabled = true;
-
-      const root = contentController.updateContent();
-      await microtasksFinished();
-
-      assertTrue(!!root);
-      const container = document.createElement('div');
-      document.body.appendChild(container);
-      const shadowRoot = container.attachShadow({mode: 'open'});
-      const contentDiv = (root as DocumentFragment).querySelector('div');
-      assertTrue(!!contentDiv);
-      shadowRoot.append(...contentDiv.childNodes);
-
-      // There should be no `<a>` tag.
-      const link = shadowRoot.querySelector('a');
-      assertFalse(!!link);
-      // Instead there should be a `<span>` tag.
-      const span = shadowRoot.querySelector<HTMLElement>('span[data-link]');
-      assertTrue(!!span);
-      assertEquals(url, span.dataset['link']);
-      assertEquals(text, span.textContent);
-    });
   });
 
   suite('updateLinks', () => {
@@ -1243,7 +1209,6 @@ suite('ContentController', () => {
       container.appendChild(anchor);
 
       chrome.readingMode.isReadabilityEnabled = true;
-      chrome.readingMode.isReadabilityWithLinksEnabled = true;
       chrome.readingMode.activeDistillationMethod =
           chrome.readingMode.distillationTypeReadability;
       chrome.readingMode.axTreeAnchors = {};
@@ -1396,15 +1361,6 @@ suite('ContentController', () => {
 
       assertFalse(!!nodeStore.getDomNode(axId));
     });
-
-    test(
-        'does nothing if Readability is enabled but links are disabled', () => {
-          chrome.readingMode.isReadabilityWithLinksEnabled = false;
-          chrome.readingMode.axTreeAnchors = {[url]: [{axId: axId}]};
-          contentController.updateAnchorsForReadability(container);
-
-          assertFalse(!!nodeStore.getDomNode(axId));
-        });
 
     test('logs link matches', () => {
       container.replaceChildren();

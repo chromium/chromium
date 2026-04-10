@@ -728,8 +728,7 @@ void ReadAnythingAppController::SetDistillationState(
   model_.set_distillation_state(state);
   // Ensure that we always clear the AXTree anchors when a new
   // distillation occurs.
-  if (IsReadabilityWithLinksEnabled() &&
-      state == read_anything::mojom::ReadAnythingDistillationState::
+  if (state == read_anything::mojom::ReadAnythingDistillationState::
                    kDistillationInProgress) {
     model_.set_should_extract_anchors_from_tree_for_readability(false);
     model_.ResetAXTreeAnchors();
@@ -1327,8 +1326,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                    &ReadAnythingAppController::GetDistillationMethod)
       .SetProperty("isLineFocusEnabled",
                    &ReadAnythingAppController::IsLineFocusEnabled)
-      .SetProperty("isReadabilityWithLinksEnabled",
-                   &ReadAnythingAppController::IsReadabilityWithLinksEnabled)
       .SetProperty("isChromeOsAsh", &ReadAnythingAppController::IsChromeOsAsh)
       .SetProperty("baseLanguageForSpeech",
                    &ReadAnythingAppController::GetLanguageCodeForSpeech)
@@ -1964,10 +1961,6 @@ bool ReadAnythingAppController::IsReadabilityEnabled() const {
 
 bool ReadAnythingAppController::IsLineFocusEnabled() const {
   return features::IsReadAnythingLineFocusEnabled();
-}
-
-bool ReadAnythingAppController::IsReadabilityWithLinksEnabled() const {
-  return features::IsReadAnythingWithReadabilityAllowLinksEnabled();
 }
 
 bool ReadAnythingAppController::IsChromeOsAsh() const {
@@ -2831,7 +2824,7 @@ std::string ReadAnythingAppController::GetDomDistillerContentHtml() const {
 
 v8::Local<v8::Value> ReadAnythingAppController::GetDomDistillerAnchors() const {
   v8::Isolate* isolate = v8::Isolate::GetCurrent();
-  if (!IsReadabilityEnabled() || !IsReadabilityWithLinksEnabled() || !isolate) {
+  if (!IsReadabilityEnabled() || !isolate) {
     return v8::Undefined(isolate);
   }
 
@@ -2919,12 +2912,10 @@ void ReadAnythingAppController::UpdateContent(const std::string& title,
       ReadAnythingAppModel::DistillationMethod::kReadability);
   ExecuteJavaScript("chrome.readingMode.updateContent();");
 
-  if (IsReadabilityWithLinksEnabled()) {
-    model_.set_should_extract_anchors_from_tree_for_readability(true);
-    bool didProcessAnchors = model_.ProcessAXTreeAnchors();
-    if (didProcessAnchors) {
-      ExecuteJavaScript("chrome.readingMode.onAnchorsReadyForReadability();");
-    }
+  model_.set_should_extract_anchors_from_tree_for_readability(true);
+  bool didProcessAnchors = model_.ProcessAXTreeAnchors();
+  if (didProcessAnchors) {
+    ExecuteJavaScript("chrome.readingMode.onAnchorsReadyForReadability();");
   }
 }
 
