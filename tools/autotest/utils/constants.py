@@ -140,7 +140,7 @@ GTEST_FILE_NAME_GLOB: str = '*{test,tests}*.{cc,mm,java}'
 
 # Regex version of `(PREF_MAPPING_FILE_GLOB) | (GTEST_FILE_GLOB)`
 TEST_FILE_NAME_REGEX: re.Pattern[str] = re.compile(
-    r'(.*tests?.*\.(cc|mm|java)$)' + r'|(' + PREF_MAPPING_FILE_PATTERN + r')',
+    r'.*(?:tests?.*\.(?:cc|mm)|Test\.java|' + PREF_MAPPING_FILE_PATTERN + ')$',
     flags=re.IGNORECASE)
 
 _PREF_MAPPING_GTEST_FILTER: str = '*PolicyPrefsTest.PolicyToPrefsMapping*'
