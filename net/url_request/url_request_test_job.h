@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/byte_size.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/load_timing_info.h"
@@ -126,7 +127,7 @@ class URLRequestTestJob : public URLRequestJob {
   bool GetMimeType(std::string* mime_type) const override;
   void GetResponseInfo(HttpResponseInfo* info) override;
   void GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const override;
-  int64_t GetTotalReceivedBytes() const override;
+  base::ByteSize GetTotalReceivedBytes() const override;
   bool IsRedirectResponse(GURL* location,
                           int* http_status_code,
                           bool* insecure_scheme_was_upgraded) override;
@@ -170,7 +171,7 @@ class URLRequestTestJob : public URLRequestJob {
   std::string response_data_;
 
   // current offset within response_data_
-  int offset_ = 0;
+  size_t offset_ = 0;
 
   // Holds the buffer for an asynchronous ReadRawData call
   scoped_refptr<IOBuffer> async_buf_;
@@ -184,7 +185,7 @@ class URLRequestTestJob : public URLRequestJob {
   scoped_refptr<HttpResponseHeaders> response_headers_;
 
   // Original size in bytes of the response headers before decoding.
-  int response_headers_length_;
+  base::ByteSize response_headers_length_;
 
   bool async_reads_ = false;
 

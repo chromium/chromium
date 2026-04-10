@@ -267,14 +267,14 @@ int64_t URLRequest::GetTotalReceivedBytes() const {
   if (!job_.get())
     return 0;
 
-  return job_->GetTotalReceivedBytes();
+  return job_->GetTotalReceivedBytes().InBytes();
 }
 
 int64_t URLRequest::GetTotalSentBytes() const {
   if (!job_.get())
     return 0;
 
-  return job_->GetTotalSentBytes();
+  return job_->GetTotalSentBytes().InBytes();
 }
 
 int64_t URLRequest::GetRawBodyBytes() const {
@@ -282,7 +282,7 @@ int64_t URLRequest::GetRawBodyBytes() const {
     return 0;
   }
 
-  if (int64_t bytes = job_->GetReceivedBodyBytes()) {
+  if (int64_t bytes = job_->GetReceivedBodyBytes().InBytes()) {
     return bytes;
   }
 
@@ -293,7 +293,7 @@ int64_t URLRequest::GetRawBodyBytes() const {
   // Note: For shared dictionary cached responses, the correct encoded body
   // size is stored in HttpResponseInfo::encoded_body_size and should be used
   // instead of this method when the total encoded size is needed.
-  return job_->prefilter_bytes_read();
+  return job_->prefilter_bytes_read().InBytes();
 }
 
 LoadStateWithParam URLRequest::GetLoadState() const {

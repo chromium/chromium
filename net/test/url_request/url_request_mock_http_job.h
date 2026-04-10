@@ -12,6 +12,7 @@
 #include <memory>
 #include <string>
 
+#include "base/byte_size.h"
 #include "net/test/url_request/url_request_test_job_backed_by_file.h"
 #include "url/gurl.h"
 
@@ -38,7 +39,7 @@ class URLRequestMockHTTPJob : public URLRequestTestJobBackedByFile {
 
   // URLRequestJob overrides.
   void Start() override;
-  int64_t GetTotalReceivedBytes() const override;
+  base::ByteSize GetTotalReceivedBytes() const override;
   bool GetMimeType(std::string* mime_type) const override;
   bool GetCharset(std::string* charset) override;
   void GetResponseInfo(HttpResponseInfo* info) override;
@@ -75,7 +76,7 @@ class URLRequestMockHTTPJob : public URLRequestTestJobBackedByFile {
   void SetHeadersAndStart(const std::string& raw_headers);
 
   std::string raw_headers_;
-  int64_t total_received_bytes_ = 0;
+  base::ByteSize total_received_bytes_;
 
   base::WeakPtrFactory<URLRequestMockHTTPJob> weak_ptr_factory_{this};
 };

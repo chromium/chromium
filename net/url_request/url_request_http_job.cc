@@ -643,9 +643,9 @@ void URLRequestHttpJob::DestroyTransaction() {
   DoneWithRequest(ABORTED);
 
   total_received_bytes_from_previous_transactions_ +=
-      transaction_->GetTotalReceivedBytes().InBytes();
+      transaction_->GetTotalReceivedBytes();
   total_sent_bytes_from_previous_transactions_ +=
-      transaction_->GetTotalSentBytes().InBytes();
+      transaction_->GetTotalSentBytes();
   response_info_ = nullptr;
   transaction_.reset();
   override_response_headers_ = nullptr;
@@ -1773,12 +1773,13 @@ bool URLRequestHttpJob::ShouldFixMismatchedContentLength(int rv) const {
     if (request_->response_headers()) {
       std::optional<base::ByteCount> content_length =
           request_->response_headers()->GetContentLength();
-      int expected_length = content_length ? content_length->InBytes() : -1;
+      base::ByteCount expected_length =
+          content_length.value_or(base::ByteCount(-1));
       VLOG(1) << __func__ << "() \"" << request_->url().spec() << "\""
               << " content-length = " << expected_length
               << " pre total = " << prefilter_bytes_read()
               << " post total = " << postfilter_bytes_read();
-      if (postfilter_bytes_read() == expected_length) {
+      if (postfilter_bytes_read().AsDeprecatedByteCount() == expected_length) {
         // Clear the error.
         return true;
       }
@@ -1811,28 +1812,29 @@ int URLRequestHttpJob::ReadRawData(IOBuffer* buf, int buf_size) {
   return rv;
 }
 
-int64_t URLRequestHttpJob::GetTotalReceivedBytes() const {
-  int64_t total_received_bytes =
+base::ByteSize URLRequestHttpJob::GetTotalReceivedBytes() const {
+  base::ByteSize total_received_bytes =
       total_received_bytes_from_previous_transactions_;
   if (transaction_) {
-    total_received_bytes += transaction_->GetTotalReceivedBytes().InBytes();
+    total_received_bytes += transaction_->GetTotalReceivedBytes();
   }
   return total_received_bytes;
 }
 
-int64_t URLRequestHttpJob::GetTotalSentBytes() const {
-  int64_t total_sent_bytes = total_sent_bytes_from_previous_transactions_;
+base::ByteSize URLRequestHttpJob::GetTotalSentBytes() const {
+  base::ByteSize total_sent_bytes =
+      total_sent_bytes_from_previous_transactions_;
   if (transaction_) {
-    total_sent_bytes += transaction_->GetTotalSentBytes().InBytes();
+    total_sent_bytes += transaction_->GetTotalSentBytes();
   }
   return total_sent_bytes;
 }
 
-int64_t URLRequestHttpJob::GetReceivedBodyBytes() const {
+base::ByteSize URLRequestHttpJob::GetReceivedBodyBytes() const {
   if (transaction_) {
-    return transaction_->GetReceivedBodyBytes().InBytes();
+    return transaction_->GetReceivedBodyBytes();
   }
-  return 0;
+  return base::ByteSize(0);
 }
 
 void URLRequestHttpJob::DoneReading() {
@@ -1972,13 +1974,15 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
   // content's length only.
   const bool bypassedNetwork = response_info_ && response_info_->was_cached &&
                                !response_info_->network_accessed &&
-                               GetTotalSentBytes() == 0 &&
-                               GetTotalReceivedBytes() == 0;
+                               GetTotalSentBytes().is_zero() &&
+                               GetTotalReceivedBytes().is_zero();
   if (!bypassedNetwork) {
     base::UmaHistogramCustomCounts("Net.HttpJob.BytesSent2",
-                                   GetTotalSentBytes(), 1, 50000000, 50);
+                                   GetTotalSentBytes().InBytes(), 1, 50000000,
+                                   50);
     base::UmaHistogramCustomCounts("Net.HttpJob.BytesReceived2",
-                                   GetTotalReceivedBytes(), 1, 50000000, 50);
+                                   GetTotalReceivedBytes().InBytes(), 1,
+                                   50000000, 50);
   }
 
   if (response_info_) {
@@ -2004,19 +2008,23 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
     }
 
     base::UmaHistogramCustomCounts("Net.HttpJob.PrefilterBytesRead",
-                                   prefilter_bytes_read(), 1, 50000000, 50);
+                                   prefilter_bytes_read().InBytes(), 1,
+                                   50000000, 50);
     if (response_info_->was_cached) {
       base::UmaHistogramTimes("Net.HttpJob.TotalTimeCached", total_time);
       base::UmaHistogramCustomCounts("Net.HttpJob.PrefilterBytesRead.Cache",
-                                     prefilter_bytes_read(), 1, 50000000, 50);
+                                     prefilter_bytes_read().InBytes(), 1,
+                                     50000000, 50);
     } else {
       base::UmaHistogramTimes("Net.HttpJob.TotalTimeNotCached", total_time);
       base::UmaHistogramCustomCounts("Net.HttpJob.PrefilterBytesRead.Net",
-                                     prefilter_bytes_read(), 1, 50000000, 50);
+                                     prefilter_bytes_read().InBytes(), 1,
+                                     50000000, 50);
 
       if (request_->ad_tagged()) {
         base::UmaHistogramCustomCounts("Net.HttpJob.PrefilterBytesRead.Ads.Net",
-                                       prefilter_bytes_read(), 1, 50000000, 50);
+                                       prefilter_bytes_read().InBytes(), 1,
+                                       50000000, 50);
       }
 
       if (is_https_google && used_quic) {
@@ -2051,7 +2059,8 @@ void URLRequestHttpJob::DoneWithRequest(CompletionCause reason) {
   }
 
   RecordCompletionHistograms(reason);
-  request()->set_received_response_content_length(prefilter_bytes_read());
+  request()->set_received_response_content_length(
+      prefilter_bytes_read().InBytes());
 }
 
 HttpResponseHeaders* URLRequestHttpJob::GetResponseHeaders() const {

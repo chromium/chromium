@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "net/url_request/url_request_job.h"
@@ -45,7 +46,7 @@ class URLRequestFailedJob : public URLRequestJob {
   int ReadRawData(IOBuffer* buf, int buf_size) override;
   void GetResponseInfo(HttpResponseInfo* info) override;
   void PopulateNetErrorDetails(NetErrorDetails* details) const override;
-  int64_t GetTotalReceivedBytes() const override;
+  base::ByteSize GetTotalReceivedBytes() const override;
 
   // Adds the testing URLs to the URLRequestFilter.
   static void AddUrlHandler();
@@ -80,7 +81,7 @@ class URLRequestFailedJob : public URLRequestJob {
   HttpResponseInfo response_info_;
   const FailurePhase phase_;
   const int net_error_;
-  int64_t total_received_bytes_ = 0;
+  base::ByteSize total_received_bytes_;
 
   base::WeakPtrFactory<URLRequestFailedJob> weak_factory_{this};
 };

@@ -122,7 +122,7 @@ void URLRequestFailedJob::PopulateNetErrorDetails(
   }
 }
 
-int64_t URLRequestFailedJob::GetTotalReceivedBytes() const {
+base::ByteSize URLRequestFailedJob::GetTotalReceivedBytes() const {
   return total_received_bytes_;
 }
 
@@ -183,7 +183,7 @@ void URLRequestFailedJob::StartAsync() {
   const std::string headers = "HTTP/1.1 200 OK";
   response_info_.headers =
       base::MakeRefCounted<net::HttpResponseHeaders>(headers);
-  total_received_bytes_ = headers.size();
+  total_received_bytes_ = base::ByteSize(headers.size());
   NotifyHeadersComplete();
 }
 

@@ -130,9 +130,7 @@ std::string URLRequestTestJob::test_error_headers() {
 }
 
 URLRequestTestJob::URLRequestTestJob(URLRequest* request, bool auto_advance)
-    : URLRequestJob(request),
-      auto_advance_(auto_advance),
-      response_headers_length_(0) {}
+    : URLRequestJob(request), auto_advance_(auto_advance) {}
 
 URLRequestTestJob::URLRequestTestJob(URLRequest* request,
                                      const std::string& response_headers,
@@ -206,23 +204,22 @@ void URLRequestTestJob::SetResponseHeaders(
     const std::string& response_headers) {
   response_headers_ = base::MakeRefCounted<HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(response_headers));
-  response_headers_length_ = response_headers.size();
+  response_headers_length_ = base::ByteSize(response_headers.size());
 }
 
 int URLRequestTestJob::CopyDataForRead(IOBuffer* buf, int buf_size) {
-  int bytes_read = 0;
-  if (offset_ < static_cast<int>(response_data_.length())) {
-    bytes_read = buf_size;
-    if (bytes_read + offset_ > static_cast<int>(response_data_.length()))
-      bytes_read = static_cast<int>(response_data_.length()) - offset_;
+  size_t bytes_read = 0;
+  if (offset_ < response_data_.length()) {
+    bytes_read = base::checked_cast<size_t>(buf_size);
+    if (bytes_read + offset_ > response_data_.length()) {
+      bytes_read = response_data_.length() - offset_;
+    }
 
     buf->span().copy_prefix_from(
-        base::as_byte_span(response_data_)
-            .subspan(base::checked_cast<size_t>(offset_),
-                     base::checked_cast<size_t>(bytes_read)));
+        base::as_byte_span(response_data_).subspan(offset_, bytes_read));
     offset_ += bytes_read;
   }
-  return bytes_read;
+  return base::checked_cast<int>(bytes_read);
 }
 
 int URLRequestTestJob::ReadRawData(IOBuffer* buf, int buf_size) {
@@ -257,8 +254,8 @@ void URLRequestTestJob::GetLoadTimingInfo(
   load_timing_info->request_start_time = request_start_time;
 }
 
-int64_t URLRequestTestJob::GetTotalReceivedBytes() const {
-  return response_headers_length_ + offset_;
+base::ByteSize URLRequestTestJob::GetTotalReceivedBytes() const {
+  return response_headers_length_ + base::ByteSize(offset_);
 }
 
 bool URLRequestTestJob::IsRedirectResponse(GURL* location,

@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -196,9 +197,9 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
       scoped_refptr<SSLPrivateKey> client_private_key) override;
   void ContinueDespiteLastError() override;
   int ReadRawData(IOBuffer* buf, int buf_size) override;
-  int64_t GetTotalReceivedBytes() const override;
-  int64_t GetTotalSentBytes() const override;
-  int64_t GetReceivedBodyBytes() const override;
+  base::ByteSize GetTotalReceivedBytes() const override;
+  base::ByteSize GetTotalSentBytes() const override;
+  base::ByteSize GetReceivedBodyBytes() const override;
   void DoneReading() override;
   void DoneReadingRedirectResponse() override;
   void DoneReadingRetryResponse() override;
@@ -323,10 +324,10 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
 
   // Keeps track of total received bytes over the network from transactions used
   // by this job that have already been destroyed.
-  int64_t total_received_bytes_from_previous_transactions_ = 0;
+  base::ByteSize total_received_bytes_from_previous_transactions_;
   // Keeps track of total sent bytes over the network from transactions used by
   // this job that have already been destroyed.
-  int64_t total_sent_bytes_from_previous_transactions_ = 0;
+  base::ByteSize total_sent_bytes_from_previous_transactions_;
 
   RequestHeadersCallback request_headers_callback_;
   ResponseHeadersCallback early_response_headers_callback_;
