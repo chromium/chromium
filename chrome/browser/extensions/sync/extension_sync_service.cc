@@ -42,6 +42,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/permissions/permission_message_provider.h"
+#include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -568,11 +569,17 @@ void ExtensionSyncService::ApplySyncData(
       // Only enable if the extension has all required permissions.
       // (Even if the version doesn't match - if the new version needs more
       // permissions, it'll get disabled after the update.)
+      std::unique_ptr<const extensions::PermissionSet> granted =
+          extension_prefs->GetGrantedPermissions(id);
+      // Use an empty PermissionSet when granted permissions are missing; this
+      // is safe as it conservatively treats nothing as granted.
+      if (!granted) {
+        granted = std::make_unique<extensions::PermissionSet>();
+      }
       bool has_all_permissions =
           grant_permissions ||
           !extensions::PermissionMessageProvider::Get()->IsPrivilegeIncrease(
-              *extension_prefs->GetGrantedPermissions(id),
-              extension->permissions_data()->active_permissions(),
+              *granted, extension->permissions_data()->active_permissions(),
               extension->GetType());
       if (has_all_permissions) {
         extension_registrar->EnableExtension(id);

@@ -376,6 +376,63 @@ TEST_F(ExtensionSyncServiceTest, ReenableDisabledExtensionFromSync) {
   EXPECT_TRUE(processor_raw->changes().empty());
 }
 
+// Regression test for crbug.com/500636349.
+//
+// Enabling an installed extension via sync should not crash when
+// GetGrantedPermissions() returns nullptr (e.g. because extension prefs were
+// deleted).
+TEST_F(ExtensionSyncServiceTest,
+       EnableFromSyncWithNullGrantedPermissionsDoesNotCrash) {
+  InitializeEmptyExtensionService();
+  service()->Init();
+
+  // Install an extension.
+  extensions::ChromeTestExtensionLoader extension_loader(profile());
+  extension_loader.set_pack_extension(true);
+  scoped_refptr<const Extension> extension = extension_loader.LoadExtension(
+      data_dir().AppendASCII("simple_with_file"));
+  ASSERT_TRUE(extension);
+  const std::string kExtensionId = extension->id();
+  ASSERT_TRUE(registry()->enabled_extensions().GetByID(kExtensionId));
+
+  // Start syncing.
+  extension_sync_service()->MergeDataAndStartSyncing(
+      syncer::EXTENSIONS, syncer::SyncDataList(),
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
+
+  // Disable the extension via sync.
+  DisableExtensionFromSync(*extension,
+                           extensions::disable_reason::DISABLE_USER_ACTION);
+  ASSERT_TRUE(registry()->disabled_extensions().GetByID(kExtensionId));
+
+  // Delete the extension's prefs so that GetGrantedPermissions() returns
+  // nullptr.
+  ExtensionPrefs::Get(profile())->DeleteExtensionPrefs(kExtensionId);
+  ASSERT_FALSE(
+      ExtensionPrefs::Get(profile())->GetGrantedPermissions(kExtensionId));
+
+  // Re-enable via sync with a newer version so that grant_permissions is false
+  // and IsPrivilegeIncrease() is actually called (with a matching version,
+  // grant_permissions would be true and short-circuit past the bug).
+  sync_pb::EntitySpecifics specifics;
+  sync_pb::ExtensionSpecifics* ext_specifics = specifics.mutable_extension();
+  ext_specifics->set_id(kExtensionId);
+  ext_specifics->set_version("9.9.9.9");
+  ext_specifics->set_enabled(true);
+
+  SyncChangeList list =
+      MakeSyncChangeList(kExtensionId, specifics, SyncChange::ACTION_UPDATE);
+  // Previously this dereferenced the null unique_ptr returned by
+  // GetGrantedPermissions(), crashing in
+  // PermissionSet::HasEffectiveAccessToAllHosts().
+  extension_sync_service()->ProcessSyncChanges(FROM_HERE, list);
+
+  // The process should not crash. simple_with_file has no host permissions,
+  // so IsPrivilegeIncrease() returns false with an empty granted set and the
+  // extension gets enabled.
+  EXPECT_TRUE(registry()->enabled_extensions().GetByID(kExtensionId));
+}
+
 // Tests that default-installed extensions won't be affected by incoming sync
 // data. (It's feasible to have a sync entry for an extension that could be
 // default installed, since one installation may be default-installed while
