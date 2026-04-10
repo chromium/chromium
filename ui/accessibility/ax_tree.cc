@@ -1195,8 +1195,9 @@ std::set<AXNodeID> AXTree::GetNodeIdsForChildTreeId(
 
 const std::set<AXTreeID> AXTree::GetAllChildTreeIds() const {
   std::set<AXTreeID> result;
-  for (auto entry : child_tree_id_reverse_map_)
-    result.insert(entry.first);
+  for (const auto& [child_tree_id, _] : child_tree_id_reverse_map_) {
+    result.insert(child_tree_id);
+  }
   return result;
 }
 
@@ -2884,8 +2885,8 @@ void AXTree::ComputeSetSizePosInSetAndCache(const AXNode& node,
   // Iterate over all items from OrderedSetItemsMap to compute and cache each
   // ordered set item's PosInSet and SetSize and corresponding ordered set
   // container's SetSize.
-  for (auto& element : items_map_to_be_populated.items_map_) {
-    for (const OrderedSetContent& ordered_set_content : element.second) {
+  for (const auto& [_, sets_list] : items_map_to_be_populated.items_map_) {
+    for (const OrderedSetContent& ordered_set_content : sets_list) {
       ComputeSetSizePosInSetAndCacheHelper(ordered_set_content);
     }
   }

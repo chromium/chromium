@@ -1144,7 +1144,7 @@ void AXEventGenerator::FireRelationSourceEvents(AXTree* tree,
   AXNodeID target_id = target_node->id();
   std::set<AXNode*> source_nodes;
   auto callback = [&](const auto& entry) {
-    const auto& target_to_sources = entry.second;
+    const auto& [_, target_to_sources] = entry;
     auto sources_it = target_to_sources.find(target_id);
     if (sources_it == target_to_sources.end())
       return;
@@ -1152,8 +1152,9 @@ void AXEventGenerator::FireRelationSourceEvents(AXTree* tree,
     std::ranges::for_each(sources_it->second, [&](AXNodeID source_id) {
       AXNode* source_node = tree->GetFromId(source_id);
 
-      if (!source_node || source_nodes.count(source_node) > 0)
+      if (!source_node || source_nodes.contains(source_node)) {
         return;
+      }
 
       source_nodes.insert(source_node);
 
@@ -1272,8 +1273,7 @@ void AXEventGenerator::PostprocessEvents() {
   std::set<AXNode*> removed_parent_changed_nodes;
 
   // First pass through |tree_events_|, remove events that we do not need.
-  for (auto& iter : tree_events_) {
-    AXNodeID node_id = iter.first;
+  for (auto& [node_id, node_events] : tree_events_) {
     AXNode* node = tree_->GetFromId(node_id);
 
     // TODO(http://crbug.com/2279799): remove all of the cases that could
@@ -1281,8 +1281,6 @@ void AXEventGenerator::PostprocessEvents() {
     DCHECK(node);
     if (!node)
       continue;
-
-    std::set<EventParams>& node_events = iter.second;
 
     // A newly created live region or alert should not *also* fire a
     // live region changed event.
@@ -1356,14 +1354,7 @@ void AXEventGenerator::PostprocessEvents() {
 
   // Second pass through |tree_events_|, remove nodes that do not have any
   // events left.
-  auto iter = tree_events_.begin();
-  while (iter != tree_events_.end()) {
-    std::set<EventParams>& node_events = iter->second;
-    if (node_events.empty())
-      iter = tree_events_.erase(iter);
-    else
-      ++iter;
-  }
+  std::erase_if(tree_events_, [](const auto& kv) { return kv.second.empty(); });
 }
 
 // static

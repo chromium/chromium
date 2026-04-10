@@ -1629,10 +1629,8 @@ std::string AXNodeData::ToString(bool verbose) const {
 
   bool_attributes.ForEach(process_bool_attribute);
 
-  for (const std::pair<ax::mojom::IntListAttribute, std::vector<int32_t>>&
-           intlist_attribute : intlist_attributes) {
-    const std::vector<int32_t>& values = intlist_attribute.second;
-    switch (intlist_attribute.first) {
+  for (const auto& [attribute, values] : intlist_attributes) {
+    switch (attribute) {
       case ax::mojom::IntListAttribute::kNone:
         break;
       case ax::mojom::IntListAttribute::kIndirectChildIds:
@@ -1801,11 +1799,8 @@ std::string AXNodeData::ToString(bool verbose) const {
     }
   }
 
-  for (const std::pair<ax::mojom::StringListAttribute,
-                       std::vector<std::string>>& stringlist_attribute :
-       stringlist_attributes) {
-    const std::vector<std::string>& values = stringlist_attribute.second;
-    switch (stringlist_attribute.first) {
+  for (const auto& [attribute, values] : stringlist_attributes) {
+    switch (attribute) {
       case ax::mojom::StringListAttribute::kAriaNotificationAnnouncements:
         base::StrAppend(&result, {" aria_notification_announcements=",
                                   base::JoinString(values, ",")});
@@ -1827,9 +1822,8 @@ std::string AXNodeData::ToString(bool verbose) const {
     }
   }
 
-  for (const std::pair<std::string, std::string>& string_pair :
-       html_attributes) {
-    base::StrAppend(&result, {" ", string_pair.first, "=", string_pair.second});
+  for (const auto& [name, value] : html_attributes) {
+    base::StrAppend(&result, {" ", name, "=", value});
   }
 
   if (actions) {
@@ -1861,28 +1855,27 @@ void AXNodeData::AccumulateSize(
   node_data_size.bool_attribute_size += sizeof(bool_attributes);
   node_data_size.child_ids_size = child_ids.size() * sizeof(int32_t);
 
-  for (const auto& pair : string_attributes) {
+  for (const auto& [_, str] : string_attributes) {
     node_data_size.string_attribute_size +=
-        sizeof(ax::mojom::StringAttribute) + pair.second.size() * sizeof(char);
+        sizeof(ax::mojom::StringAttribute) + str.size() * sizeof(char);
   }
 
-  for (const auto& pair : intlist_attributes) {
+  for (const auto& [_, values] : intlist_attributes) {
     node_data_size.int_list_attribhute_size +=
-        sizeof(ax::mojom::IntListAttribute) +
-        pair.second.size() * sizeof(int32_t);
+        sizeof(ax::mojom::IntListAttribute) + values.size() * sizeof(int32_t);
   }
 
-  for (const auto& pair : stringlist_attributes) {
+  for (const auto& [_, values] : stringlist_attributes) {
     node_data_size.string_list_attribute_size +=
         sizeof(ax::mojom::StringListAttribute);
-    for (const auto& value : pair.second) {
+    for (const auto& value : values) {
       node_data_size.string_list_attribute_size += value.size() * sizeof(char);
     }
   }
 
-  for (const auto& pair : html_attributes) {
+  for (const auto& [name, value] : html_attributes) {
     node_data_size.html_attribute_size +=
-        pair.first.size() * sizeof(char) + pair.second.size() * sizeof(char);
+        name.size() * sizeof(char) + value.size() * sizeof(char);
   }
 }
 

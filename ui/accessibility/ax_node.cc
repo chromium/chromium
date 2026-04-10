@@ -1161,11 +1161,11 @@ const std::u16string& AXNode::GetHypertext() const {
         hypertext_.hypertext += iter->GetTextContentUTF16();
       } else {
         int character_offset = static_cast<int>(hypertext_.hypertext.size());
-        auto inserted =
+        const auto [_, inserted] =
             hypertext_.hypertext_offset_to_hyperlink_child_index.emplace(
                 character_offset, static_cast<int>(std::distance(first, iter)));
-        DCHECK(inserted.second) << "An embedded object at " << character_offset
-                                << " has already been encountered.";
+        DCHECK(inserted) << "An embedded object at " << character_offset
+                         << " has already been encountered.";
         hypertext_.hypertext += *embedded_character_str;
       }
     }
