@@ -9,40 +9,40 @@
 #include "base/one_shot_event.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 SigninPolicyService::SigninPolicyService(
     const base::FilePath& profile_path,
     ProfileAttributesStorage* profile_attributes_storage
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     ,
     extensions::ExtensionSystem* extension_system,
     extensions::ExtensionRegistrar* extension_registrar
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     )
     : profile_path_(profile_path),
       profile_attributes_storage_(CHECK_DEREF(profile_attributes_storage))
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
       ,
       extension_registrar_(CHECK_DEREF(extension_registrar))
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   CHECK(extension_system);
   extension_system->ready().Post(
       FROM_HERE, base::BindOnce(&SigninPolicyService::OnExtensionSystemReady,
                                 weak_ptr_factory_.GetWeakPtr()));
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 
 SigninPolicyService::~SigninPolicyService() = default;
 
 void SigninPolicyService::OnProfileSigninRequiredChanged(
     const base::FilePath& profile_path) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (profile_path_ != profile_path) {
     return;
   }
@@ -59,7 +59,7 @@ void SigninPolicyService::OnProfileSigninRequiredChanged(
   // profile, extensions gets unblocked.
   entry->IsSigninRequired() ? extension_registrar_->BlockAllExtensions()
                             : extension_registrar_->UnblockAllExtensions();
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 
 void SigninPolicyService::OnExtensionSystemReady() {

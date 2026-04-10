@@ -11,13 +11,13 @@
 #include "chrome/browser/signin/signin_policy_service.h"
 #include "extensions/buildflags/buildflags.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/chrome_extension_system.h"
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registrar_factory.h"
 #include "extensions/browser/extensions_browser_client.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 // static
 SigninPolicyService* SigninPolicyServiceFactory::GetForProfile(
@@ -34,11 +34,11 @@ SigninPolicyServiceFactory* SigninPolicyServiceFactory::GetInstance() {
 
 SigninPolicyServiceFactory::SigninPolicyServiceFactory()
     : ProfileKeyedServiceFactory("SigninPolicyService") {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   DependsOn(
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
   DependsOn(extensions::ExtensionRegistrarFactory::GetInstance());
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 
 SigninPolicyServiceFactory::~SigninPolicyServiceFactory() = default;
@@ -54,12 +54,12 @@ SigninPolicyServiceFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<SigninPolicyService>(
       context->GetPath(),
       &g_browser_process->profile_manager()->GetProfileAttributesStorage()
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
           ,
       extensions::ChromeExtensionSystemFactory::GetInstance()
           ->GetForBrowserContext(context),
       extensions::ExtensionRegistrarFactory::GetForBrowserContext(context)
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   );
 }
 

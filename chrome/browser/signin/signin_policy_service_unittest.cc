@@ -15,15 +15,15 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registrar_factory.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 namespace {
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 TEST(SigninPolicyServiceTest, ForceSigninAndExtensionsBlocking) {
   content::BrowserTaskEnvironment task_environment;
@@ -71,6 +71,6 @@ TEST(SigninPolicyServiceTest, ForceSigninAndExtensionsBlocking) {
   EXPECT_TRUE(entry->IsSigninRequired());
   EXPECT_TRUE(extension_registrar->block_extensions());
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 }  // namespace

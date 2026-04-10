@@ -15,12 +15,12 @@
 
 class ProfileAttributesStorage;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 namespace extensions {
 class ExtensionRegistrar;
 class ExtensionSystem;
 }  // namespace extensions
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 // A keyed service responsible for managing sign-in related policies. May
 // redirect modifications effects to other services when policies values are
@@ -31,11 +31,11 @@ class SigninPolicyService : public KeyedService,
   explicit SigninPolicyService(
       const base::FilePath& profile_path,
       ProfileAttributesStorage* profile_attributes_storage
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
       ,
       extensions::ExtensionSystem* extension_system,
       extensions::ExtensionRegistrar* extension_registrar
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   );
 
   SigninPolicyService(const SigninPolicyService&) = delete;
@@ -53,9 +53,9 @@ class SigninPolicyService : public KeyedService,
 
   const base::FilePath profile_path_;
   const raw_ref<ProfileAttributesStorage> profile_attributes_storage_;
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   const raw_ref<extensions::ExtensionRegistrar> extension_registrar_;
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   base::ScopedObservation<ProfileAttributesStorage,
                           ProfileAttributesStorageObserver>
