@@ -1752,6 +1752,11 @@ inline constexpr char kLocalAuthFactorsComplexity[] =
 inline constexpr char kAllowedLocalAuthFactors[] =
     "ash.local_auth_factors.enabled_factors";
 
+// Tracks the complexity level the user last satisfied to determine if they need
+// to be prompted by the LocalAuthFactorsComplexity policy.
+inline constexpr char kLocalAuthFactorsVerifiedComplexity[] =
+    "ash.local_auth_factors.verified_complexity";
+
 // Dictionary prefs in local state that keeps information about detachable
 // bases - for example the last used base per user.
 inline constexpr char kDetachableBaseDevices[] = "ash.detachable_base.devices";
