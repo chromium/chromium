@@ -93,6 +93,46 @@ TEST(ModelBrokerClientTest, ReadyWithSetupClient) {
   ASSERT_TRUE(future.Take());
 }
 
+// Verify that CreateSession works when all the assets are provided using a
+// custom use case string.
+TEST(ModelBrokerClientTest, ReadyWithUseCaseClient) {
+  base::test::TaskEnvironment task_environment_;
+  OptimizationGuideLogger logger;
+  FakeAdaptationAsset fake_asset({
+      .config =
+          []() {
+            auto config = SimpleComposeConfig();
+            config.set_feature(proto::MODEL_EXECUTION_FEATURE_TEST);
+            config.set_can_skip_text_safety(true);
+            return config;
+          }(),
+  });
+  FakeModelBroker fake_broker({});
+  fake_broker.UpdateModelAdaptation(fake_asset);
+
+  ModelBrokerClient client(fake_broker.BindAndPassRemote(),
+                           logger.GetWeakPtr());
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
+
+  // Requesting the feature via its use case name "test" should succeed.
+  client.CreateSession("test", SessionConfigParams{}, future.GetCallback());
+  ASSERT_TRUE(future.Take());
+}
+
+TEST(ModelBrokerClientTest, GetConfigNulloptWhenNotSet) {
+  base::test::TaskEnvironment task_environment_;
+  OptimizationGuideLogger logger;
+  FakeModelBroker fake_broker({});
+
+  ModelBrokerClient client(fake_broker.BindAndPassRemote(),
+                           logger.GetWeakPtr());
+
+  base::test::TestFuture<std::optional<mojo_base::ProtoWrapper>> future;
+  client.GetConfig(mojom::OnDeviceFeature::kTest, future.GetCallback());
+  auto result = future.Take();
+  EXPECT_FALSE(result.has_value());
+}
+
 // Sometimes a feature is not supported for certain base models (e.g. EE model).
 // Attempts to create a Session for such features should fully resolve as
 // unavailable.

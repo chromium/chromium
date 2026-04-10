@@ -227,8 +227,8 @@ ModelBrokerAndroid::SolutionFactory::SolutionFactory(ModelBrokerAndroid& parent)
   parent_->usage_tracker_.AddObserver(this);
   // Start model downloads for recently used features
   for (auto feature : OnDeviceFeatureSet::All()) {
-    if (parent_->usage_tracker_.WasOnDeviceEligibleFeatureRecentlyUsed(
-            feature)) {
+    if (parent_->usage_tracker_.WasUseCaseRecentlyUsed(
+            ToUseCaseName(feature))) {
       MaybeStartDownload(feature);
     }
   }
@@ -286,8 +286,7 @@ void ModelBrokerAndroid::SolutionFactory::OnAICoreModelUpdated(
     base_model_specs_.insert_or_assign(feature, spec);
     loader_map_.MaybeRegisterModelDownload(
         feature, spec,
-        parent_->usage_tracker_.WasOnDeviceEligibleFeatureRecentlyUsed(
-            feature));
+        parent_->usage_tracker_.WasUseCaseRecentlyUsed(ToUseCaseName(feature)));
   } else {
     MaybeUpdateModelAdaptation(
         feature, base::unexpected(AdaptationUnavailability::kNotSupported));

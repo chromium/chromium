@@ -262,8 +262,8 @@ OnDeviceModelClassifierController::GetSolution() {
     return base::unexpected(error);
   }
 
-  if (!usage_tracker_->WasOnDeviceEligibleFeatureRecentlyUsed(
-          mojom::OnDeviceFeature::kClassifier)) {
+  if (!usage_tracker_->WasUseCaseRecentlyUsed(
+          ToUseCaseName(mojom::OnDeviceFeature::kClassifier))) {
     return base::unexpected(
         OnDeviceModelEligibilityReason::kNoOnDeviceFeatureUsed);
   }

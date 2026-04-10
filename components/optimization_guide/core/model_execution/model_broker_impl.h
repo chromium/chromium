@@ -55,7 +55,7 @@ class ModelBrokerImpl final : public mojom::ModelBroker {
   // Keeps subscribers updated with the current solution.
   class SolutionProvider final {
    public:
-    explicit SolutionProvider(mojom::OnDeviceFeature feature);
+    explicit SolutionProvider(const std::string& use_case);
     ~SolutionProvider();
 
     void AddSubscriber(mojo::PendingRemote<mojom::ModelSubscriber> pending,
@@ -78,7 +78,7 @@ class ModelBrokerImpl final : public mojom::ModelBroker {
         mojom::ModelSubscriber& subscriber,
         const on_device_model::Capabilities& capabilities);
 
-    mojom::OnDeviceFeature feature_;
+    std::string use_case_;
     mojo::RemoteSet<mojom::ModelSubscriber> subscribers_;
     base::ObserverList<OnDeviceModelAvailabilityObserver> observers_;
     ModelSubscriberImpl local_subscriber_;
@@ -96,14 +96,21 @@ class ModelBrokerImpl final : public mojom::ModelBroker {
   void BindBroker(mojo::PendingReceiver<mojom::ModelBroker> receiver);
 
   // Get (or construct) the solution provider for the feature.
+  SolutionProvider& GetSolutionProvider(const std::string& use_case);
   SolutionProvider& GetSolutionProvider(mojom::OnDeviceFeature feature);
+
+  // Set the feature configs for the current manifest.
+  void SetFeatureConfigs(
+      base::flat_map<mojom::OnDeviceFeature, proto::Any> feature_configs);
 
  private:
   // mojom::ModelBroker:
   void Subscribe(
       mojom::ModelSubscriptionOptionsPtr options,
       mojo::PendingRemote<mojom::ModelSubscriber> subscriber) override;
-  void RequestAssetsFor(mojom::OnDeviceFeature feature) override;
+  void GetConfig(mojom::OnDeviceFeature feature,
+                 GetConfigCallback callback) override;
+  void RequestAssetsFor(const std::string& use_case) override;
 
 #if !BUILDFLAG(IS_ANDROID)
   void AddModelDownloadProgressObserver(
@@ -114,16 +121,24 @@ class ModelBrokerImpl final : public mojom::ModelBroker {
   // Finishes Subscribe after initialization is finished.
   void SubscribeInternal(mojom::ModelSubscriptionOptionsPtr options,
                          mojo::PendingRemote<mojom::ModelSubscriber> subscriber,
+                         mojo::ReportBadMessageCallback bad_message_callback,
                          const on_device_model::Capabilities& capabilities);
   // Finishes `RequestAssetsFor` after initialization is finished.
   void RequestAssetsForInternal(
-      mojom::OnDeviceFeature feature,
+      const std::string& use_case,
+      mojo::ReportBadMessageCallback bad_message_callback,
       const on_device_model::Capabilities& capabilities);
+
+  // Finishes `GetConfig` after initialization is finished.
+  void GetConfigInternal(mojom::OnDeviceFeature feature,
+                         GetConfigCallback callback,
+                         const on_device_model::Capabilities& capabilities);
 
   raw_ref<UsageTracker> usage_tracker_;
   EnsureInitCallback ensure_init_callback_;
   AddDownloadProgressObserverCallback add_download_progress_observer_callback_;
-  std::map<mojom::OnDeviceFeature, SolutionProvider> solution_providers_;
+  base::flat_map<mojom::OnDeviceFeature, proto::Any> feature_configs_;
+  std::map<std::string, SolutionProvider> solution_providers_;
   mojo::ReceiverSet<mojom::ModelBroker> receivers_;
   base::WeakPtrFactory<ModelBrokerImpl> weak_ptr_factory_{this};
 };

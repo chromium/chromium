@@ -258,7 +258,7 @@ OnDeviceModelServiceController::GetSolution(mojom::OnDeviceFeature feature) {
   bool is_background_download_enabled_for_feature =
       features::IsOnDeviceModelBackgroundDownloadEnabledForFeature(feature);
 
-  if (!usage_tracker_->WasOnDeviceEligibleFeatureRecentlyUsed(feature) &&
+  if (!usage_tracker_->WasUseCaseRecentlyUsed(ToUseCaseName(feature)) &&
       !is_background_download_enabled_for_feature) {
     return base::unexpected(
         OnDeviceModelEligibilityReason::kNoOnDeviceFeatureUsed);

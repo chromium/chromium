@@ -263,36 +263,60 @@ ModelBrokerClient::ModelBrokerClient(
     : remote_(std::move(remote)), logger_(logger) {}
 ModelBrokerClient::~ModelBrokerClient() = default;
 
-ModelSubscriber& ModelBrokerClient::GetSubscriber(
-    mojom::OnDeviceFeature feature) {
-  std::unique_ptr<ModelSubscriber>& ptr = subscribers_[feature];
+ModelSubscriber& ModelBrokerClient::GetSubscriber(const std::string& use_case) {
+  std::unique_ptr<ModelSubscriber>& ptr = subscribers_[use_case];
   if (!ptr) {
     TRACE_EVENT("optimization_guide", "ModelBrokerClient::CreateSubscriber",
-                "feature", base::ToString(feature));
+                "use_case", use_case);
     mojo::PendingRemote<mojom::ModelSubscriber> pending;
     ptr = std::make_unique<ModelSubscriber>(
         pending.InitWithNewPipeAndPassReceiver());
-    remote_->Subscribe(mojom::ModelSubscriptionOptions::New(feature),
+    remote_->Subscribe(mojom::ModelSubscriptionOptions::New(use_case),
                        std::move(pending));
   }
   return *ptr;
 }
 
+ModelSubscriber& ModelBrokerClient::GetSubscriber(
+    mojom::OnDeviceFeature feature) {
+  return GetSubscriber(ToUseCaseName(feature));
+}
+
+void ModelBrokerClient::RequestAssetsFor(const std::string& use_case) {
+  remote_->RequestAssetsFor(use_case);
+}
+
 void ModelBrokerClient::RequestAssetsFor(mojom::OnDeviceFeature feature) {
   TRACE_EVENT("optimization_guide", "ModelBrokerClient::RequestAssetsFor");
-  remote_->RequestAssetsFor(feature);
+  RequestAssetsFor(ToUseCaseName(feature));
+}
+
+bool ModelBrokerClient::HasSubscriber(const std::string& use_case) {
+  return subscribers_.contains(use_case);
 }
 
 bool ModelBrokerClient::HasSubscriber(mojom::OnDeviceFeature feature) {
-  return subscribers_.contains(feature);
+  return HasSubscriber(ToUseCaseName(feature));
+}
+
+void ModelBrokerClient::CreateSession(const std::string& use_case,
+                                      const SessionConfigParams& config_params,
+                                      CreateSessionCallback callback) {
+  RequestAssetsFor(use_case);
+  GetSubscriber(use_case).CreateSession(std::move(config_params),
+                                        std::move(callback), logger_);
 }
 
 void ModelBrokerClient::CreateSession(mojom::OnDeviceFeature feature,
                                       const SessionConfigParams& config_params,
                                       CreateSessionCallback callback) {
-  RequestAssetsFor(feature);
-  GetSubscriber(feature).CreateSession(std::move(config_params),
-                                       std::move(callback), logger_);
+  CreateSession(ToUseCaseName(feature), std::move(config_params),
+                std::move(callback));
+}
+
+void ModelBrokerClient::GetConfig(mojom::OnDeviceFeature feature,
+                                  GetConfigCallback callback) {
+  remote_->GetConfig(feature, std::move(callback));
 }
 
 void ModelBrokerClient::AddModelDownloadProgressObserver(

@@ -131,7 +131,7 @@ void OnDeviceAssetManager::StateChanged(
   for (auto feature : OnDeviceFeatureSet::All()) {
     adaptation_loaders_.MaybeRegisterModelDownload(
         feature, new_spec,
-        usage_tracker_->WasOnDeviceEligibleFeatureRecentlyUsed(feature));
+        usage_tracker_->WasUseCaseRecentlyUsed(ToUseCaseName(feature)));
   }
 }
 
@@ -152,7 +152,7 @@ void OnDeviceAssetManager::OnDeviceEligibleUseCaseUsed(
       state ? std::make_optional(state->GetBaseModelSpec()) : std::nullopt;
   adaptation_loaders_.MaybeRegisterModelDownload(
       *feature, new_spec,
-      usage_tracker_->WasOnDeviceEligibleFeatureRecentlyUsed(*feature));
+      usage_tracker_->WasUseCaseRecentlyUsed(use_case_name));
 }
 
 }  // namespace optimization_guide

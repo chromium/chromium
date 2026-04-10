@@ -190,7 +190,7 @@ bool WasOnDeviceModelRecentlyUsed(UsageTracker* usage_tracker,
   return std::ranges::any_of(
       OnDeviceFeatureSet::All(), [&](mojom::OnDeviceFeature feature) {
         return GetOnDeviceModelType(feature) == model_type &&
-               usage_tracker->WasOnDeviceEligibleFeatureRecentlyUsed(feature);
+               usage_tracker->WasUseCaseRecentlyUsed(ToUseCaseName(feature));
       });
 }
 

@@ -175,18 +175,28 @@ class ModelBrokerClient final {
   using CreateSessionCallback = ModelSubscriber::CreateSessionCallback;
 
   // Get or create the subscriber for the given key.
+  ModelSubscriber& GetSubscriber(const std::string& use_case);
   ModelSubscriber& GetSubscriber(mojom::OnDeviceFeature feature);
 
   // Request that the model assets for this feature be made available.
+  void RequestAssetsFor(const std::string& use_case);
   void RequestAssetsFor(mojom::OnDeviceFeature feature);
 
   // Whether the subscriber for this key already exists.
+  bool HasSubscriber(const std::string& use_case);
   bool HasSubscriber(mojom::OnDeviceFeature feature);
 
   // Async session creation.
+  void CreateSession(const std::string& use_case,
+                     const SessionConfigParams& config_params,
+                     CreateSessionCallback callback);
   void CreateSession(mojom::OnDeviceFeature feature,
                      const SessionConfigParams& config_params,
                      CreateSessionCallback callback);
+
+  using GetConfigCallback =
+      base::OnceCallback<void(std::optional<mojo_base::ProtoWrapper>)>;
+  void GetConfig(mojom::OnDeviceFeature feature, GetConfigCallback callback);
 
   // Add DownloadProgressObserver.
   void AddModelDownloadProgressObserver(
@@ -196,7 +206,7 @@ class ModelBrokerClient final {
   mojo::Remote<mojom::ModelBroker> remote_;
   base::WeakPtr<OptimizationGuideLogger> logger_;
 
-  absl::flat_hash_map<mojom::OnDeviceFeature, std::unique_ptr<ModelSubscriber>>
+  absl::flat_hash_map<std::string, std::unique_ptr<ModelSubscriber>>
       subscribers_;
 };
 
