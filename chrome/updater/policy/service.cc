@@ -429,13 +429,13 @@ std::string PolicyService::GetAllPoliciesAsString() const {
                             base::JoinString(policies, "\n  ").c_str());
 }
 
-bool PolicyService::AreUpdatesSuppressedNow(base::Time now) const {
+bool PolicyService::AreUpdatesSuppressed(base::Time time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const PolicyStatus<UpdatesSuppressedTimes> suppression =
       GetUpdatesSuppressedTimes();
   return suppression
-             ? ::updater::AreUpdatesSuppressedNow(suppression.policy(), now)
+             ? ::updater::AreUpdatesSuppressed(suppression.policy(), time)
              : false;
 }
 
@@ -553,17 +553,18 @@ bool IsCloudManaged() {
                          !dm_storage->IsDeviceDeregistered()));
 }
 
-bool AreUpdatesSuppressedNow(UpdatesSuppressedTimes updates_suppressed_times,
-                             base::Time now) {
+bool AreUpdatesSuppressed(UpdatesSuppressedTimes updates_suppressed_times,
+                          base::Time time) {
   if (!updates_suppressed_times.valid()) {
     return false;
   }
-  base::Time::Exploded now_local;
-  now.LocalExplode(&now_local);
+  base::Time::Exploded time_local;
+  time.LocalExplode(&time_local);
   const bool are_updates_suppressed =
-      updates_suppressed_times.contains(now_local.hour, now_local.minute);
+      updates_suppressed_times.contains(time_local.hour, time_local.minute);
   VLOG(0) << __func__ << ": Updates are "
-          << (are_updates_suppressed ? "" : "not ") << "suppressed: now=" << now
+          << (are_updates_suppressed ? "" : "not ")
+          << "suppressed: time=" << time
           << ": UpdatesSuppressedTimes: start_hour_:"
           << updates_suppressed_times.start_hour_
           << ": start_minute_:" << updates_suppressed_times.start_minute_

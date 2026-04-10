@@ -1468,7 +1468,8 @@ STDMETHODIMP PolicyStatusImpl::get_updatesSuppressedTimes(
   *start_min = updates_suppressed_times->policy().start_minute_;
   *duration_min = updates_suppressed_times->policy().duration_minute_;
   *are_updates_suppressed =
-      AreUpdatesSuppressedNow(updates_suppressed_times->policy())
+      AreUpdatesSuppressed(updates_suppressed_times->policy(),
+                           base::Time::Now())
           ? VARIANT_TRUE
           : VARIANT_FALSE;
 
@@ -1717,9 +1718,10 @@ STDMETHODIMP PolicyStatusImpl::get_updatesSuppressedTimes(
   if (!updates_suppressed_times.valid()) {
     return E_FAIL;
   }
-  *are_updates_suppressed = AreUpdatesSuppressedNow(updates_suppressed_times)
-                                ? VARIANT_TRUE
-                                : VARIANT_FALSE;
+  *are_updates_suppressed =
+      AreUpdatesSuppressed(updates_suppressed_times, base::Time::Now())
+          ? VARIANT_TRUE
+          : VARIANT_FALSE;
   return PolicyStatusValueImpl::Create(*policy_status, value);
 }
 

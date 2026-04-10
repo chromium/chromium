@@ -272,7 +272,7 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   }
 
   std::string GetAllPoliciesAsString() const;
-  bool AreUpdatesSuppressedNow(base::Time now = base::Time::Now()) const;
+  bool AreUpdatesSuppressed(base::Time time) const;
 
   void SetManagersForTesting(
       std::vector<scoped_refptr<PolicyManagerInterface>> managers);
@@ -362,8 +362,8 @@ bool IsCloudManaged();
 
 // Determines whether `updates_suppressed_times` disallows updates from
 // occurring at the specified time.
-bool AreUpdatesSuppressedNow(UpdatesSuppressedTimes updates_suppressed_times,
-                             base::Time now = base::Time::Now());
+bool AreUpdatesSuppressed(UpdatesSuppressedTimes updates_suppressed_times,
+                          base::Time time);
 
 }  // namespace updater
 

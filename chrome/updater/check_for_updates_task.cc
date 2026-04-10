@@ -55,7 +55,7 @@ bool ShouldSkipCheck(scoped_refptr<Configurator> config,
   }
 
   // Skip if the updater is in the update suppression period.
-  return config->GetPolicyService()->AreUpdatesSuppressedNow();
+  return config->GetPolicyService()->AreUpdatesSuppressed(base::Time::Now());
 }
 
 }  // namespace

@@ -867,21 +867,21 @@ TEST_F(PolicyServiceTest, MultiplePolicyManagers_WithUnmanagedOnes) {
             "}\n");
 }
 
-struct PolicyServiceAreUpdatesSuppressedNowTestCase {
+struct PolicyServiceAreUpdatesSuppressedTestCase {
   const UpdatesSuppressedTimes updates_suppressed_times;
-  const std::string now_string;
+  const std::string time_string;
   const bool expect_updates_suppressed;
 };
 
-class PolicyServiceAreUpdatesSuppressedNowTest
+class PolicyServiceAreUpdatesSuppressedTest
     : public ::testing::WithParamInterface<
-          PolicyServiceAreUpdatesSuppressedNowTestCase>,
+          PolicyServiceAreUpdatesSuppressedTestCase>,
       public PolicyServiceTest {};
 
 INSTANTIATE_TEST_SUITE_P(
-    PolicyServiceAreUpdatesSuppressedNowTestCases,
-    PolicyServiceAreUpdatesSuppressedNowTest,
-    ValuesIn(std::vector<PolicyServiceAreUpdatesSuppressedNowTestCase>{
+    PolicyServiceAreUpdatesSuppressedTestCases,
+    PolicyServiceAreUpdatesSuppressedTest,
+    ValuesIn(std::vector<PolicyServiceAreUpdatesSuppressedTestCase>{
         // Suppress starting 12:00 for 959 minutes.
         {{12, 00, 959}, "Sat, 01 July 2023 01:15:00", true},
 
@@ -901,15 +901,15 @@ INSTANTIATE_TEST_SUITE_P(
         {{18, 00, 12 * 60}, "Sat, 01 July 2023 06:15:00", false},
     }));
 
-TEST_P(PolicyServiceAreUpdatesSuppressedNowTest, TestCases) {
+TEST_P(PolicyServiceAreUpdatesSuppressedTest, TestCases) {
   auto manager = base::MakeRefCounted<FakePolicyManager>(true, "Group Policy");
   manager->SetUpdatesSuppressedTimes(GetParam().updates_suppressed_times);
 
-  base::Time now;
-  ASSERT_TRUE(base::Time::FromString(GetParam().now_string.c_str(), &now));
+  base::Time time;
+  ASSERT_TRUE(base::Time::FromString(GetParam().time_string.c_str(), &time));
   EXPECT_EQ(GetParam().expect_updates_suppressed,
             CreatePolicyServiceForTesting({std::move(manager)})
-                ->AreUpdatesSuppressedNow(now));
+                ->AreUpdatesSuppressed(time));
 }
 
 TEST_F(PolicyServiceTest, PolicyServiceProxyConfiguration_Get) {
