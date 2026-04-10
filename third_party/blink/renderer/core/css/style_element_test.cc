@@ -31,7 +31,7 @@ TEST(StyleElementTest, CreateSheetUsesCache) {
 
   auto& style_element =
       To<HTMLStyleElement>(*document.getElementById(AtomicString("style")));
-  EXPECT_FALSE(style_element.IsModule());
+  EXPECT_FALSE(style_element.IsModule(document));
   StyleSheetContents* sheet = style_element.sheet()->Contents();
 
   Comment* comment = document.createComment("hello!");
@@ -54,7 +54,7 @@ TEST(StyleElementTest, CSSModule) {
   auto& style_element_module =
       To<HTMLStyleElement>(*document.getElementById(AtomicString("style")));
 
-  EXPECT_TRUE(style_element_module.IsModule());
+  EXPECT_TRUE(style_element_module.IsModule(document));
 
   // Modules do not have an associated CSSStyleSheet.
   EXPECT_EQ(style_element_module.sheet(), nullptr);
@@ -63,7 +63,7 @@ TEST(StyleElementTest, CSSModule) {
   // changing the "type" value.
   style_element_module.setAttribute(html_names::kTypeAttr,
                                     AtomicString("text/css"));
-  EXPECT_TRUE(style_element_module.IsModule());
+  EXPECT_TRUE(style_element_module.IsModule(document));
   EXPECT_EQ(style_element_module.sheet(), nullptr);
 
   // Likewise, a classic <style> tag cannot be converted to a module.
@@ -71,7 +71,7 @@ TEST(StyleElementTest, CSSModule) {
       "<style id='style'>a { top: 0; }</style>");
   auto& style_element_classic =
       To<HTMLStyleElement>(*document.getElementById(AtomicString("style")));
-  EXPECT_FALSE(style_element_classic.IsModule());
+  EXPECT_FALSE(style_element_classic.IsModule(document));
   EXPECT_NE(style_element_classic.sheet(), nullptr);
 
   // Attempting to convert a classic <style> tag to a module won't be a module,
@@ -79,13 +79,13 @@ TEST(StyleElementTest, CSSModule) {
   // allowed.
   style_element_classic.setAttribute(html_names::kTypeAttr,
                                      AtomicString("module"));
-  EXPECT_FALSE(style_element_classic.IsModule());
+  EXPECT_FALSE(style_element_classic.IsModule(document));
   EXPECT_EQ(style_element_classic.sheet(), nullptr);
 
   // Switching back to a valid type will create a stylesheet.
   style_element_classic.setAttribute(html_names::kTypeAttr,
                                      AtomicString("text/css"));
-  EXPECT_FALSE(style_element_classic.IsModule());
+  EXPECT_FALSE(style_element_classic.IsModule(document));
   EXPECT_NE(style_element_classic.sheet(), nullptr);
 
   // Test dynamically creating and inserting style elements.
@@ -98,22 +98,22 @@ TEST(StyleElementTest, CSSModule) {
                                              AtomicString("module"));
 
   // Module-ness doesn't get computed until an element is connected.
-  EXPECT_FALSE(style_element_dynamic_module->IsModule());
+  EXPECT_FALSE(style_element_dynamic_module->IsModule(document));
   EXPECT_EQ(style_element_dynamic_module->sheet(), nullptr);
 
   document.body()->AppendChild(style_element_dynamic_module);
-  EXPECT_TRUE(style_element_dynamic_module->IsModule());
+  EXPECT_TRUE(style_element_dynamic_module->IsModule(document));
   EXPECT_EQ(style_element_dynamic_module->sheet(), nullptr);
 
   // Once connected, module-ness is fixed.
   style_element_dynamic_module->setAttribute(html_names::kTypeAttr,
                                              AtomicString("text/css"));
-  EXPECT_TRUE(style_element_dynamic_module->IsModule());
+  EXPECT_TRUE(style_element_dynamic_module->IsModule(document));
   EXPECT_EQ(style_element_dynamic_module->sheet(), nullptr);
 
   // This behavior persists, even after being removed and re-inserted.
   document.body()->RemoveChild(style_element_dynamic_module);
-  EXPECT_TRUE(style_element_dynamic_module->IsModule());
+  EXPECT_TRUE(style_element_dynamic_module->IsModule(document));
   EXPECT_EQ(style_element_dynamic_module->sheet(), nullptr);
 
   // Module type is not passed along to clones.
@@ -123,11 +123,11 @@ TEST(StyleElementTest, CSSModule) {
   HTMLStyleElement* module_clone = static_cast<HTMLStyleElement*>(
       style_element_dynamic_module->cloneNode(/*deep=*/true));
   EXPECT_EQ(module_clone->sheet(), nullptr);
-  EXPECT_FALSE(module_clone->IsModule());
+  EXPECT_FALSE(module_clone->IsModule(document));
   EXPECT_EQ(module_clone->getAttribute(html_names::kTypeAttr),
             AtomicString("text/css"));
   document.body()->AppendChild(module_clone);
-  EXPECT_FALSE(module_clone->IsModule());
+  EXPECT_FALSE(module_clone->IsModule(document));
   EXPECT_NE(module_clone->sheet(), nullptr);
 
   // Test a dynamic classic style element.
@@ -136,16 +136,16 @@ TEST(StyleElementTest, CSSModule) {
   style_element_dynamic_classic->SetInnerHTMLWithoutTrustedTypes(
       "a { top: 0; }");
 
-  EXPECT_FALSE(style_element_dynamic_classic->IsModule());
+  EXPECT_FALSE(style_element_dynamic_classic->IsModule(document));
   EXPECT_EQ(style_element_dynamic_classic->sheet(), nullptr);
 
   document.body()->AppendChild(style_element_dynamic_classic);
-  EXPECT_FALSE(style_element_dynamic_classic->IsModule());
+  EXPECT_FALSE(style_element_dynamic_classic->IsModule(document));
   EXPECT_NE(style_element_dynamic_classic->sheet(), nullptr);
 
   style_element_dynamic_classic->setAttribute(html_names::kTypeAttr,
                                               AtomicString("module"));
-  EXPECT_FALSE(style_element_dynamic_classic->IsModule());
+  EXPECT_FALSE(style_element_dynamic_classic->IsModule(document));
 
   // Setting the "type" to anything but "text/css" clears the sheet immediately.
   EXPECT_EQ(style_element_dynamic_classic->sheet(), nullptr);
@@ -154,7 +154,7 @@ TEST(StyleElementTest, CSSModule) {
   // it will not convert it to a module, as it is fixed at first insertion time.
   document.body()->RemoveChild(style_element_dynamic_classic);
   document.body()->AppendChild(style_element_dynamic_classic);
-  EXPECT_FALSE(style_element_dynamic_classic->IsModule());
+  EXPECT_FALSE(style_element_dynamic_classic->IsModule(document));
   EXPECT_EQ(style_element_dynamic_classic->sheet(), nullptr);
 
   // Module type is not passed along to clones.
@@ -166,7 +166,7 @@ TEST(StyleElementTest, CSSModule) {
   EXPECT_EQ(classic_clone->getAttribute(html_names::kTypeAttr),
             AtomicString("module"));
   document.body()->AppendChild(classic_clone);
-  EXPECT_TRUE(classic_clone->IsModule());
+  EXPECT_TRUE(classic_clone->IsModule(document));
   EXPECT_EQ(classic_clone->sheet(), nullptr);
 
   // TODO(kschmi) - Updating the child contents shouldn't create a new Module

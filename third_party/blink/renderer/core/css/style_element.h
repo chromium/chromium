@@ -40,7 +40,7 @@ class CORE_EXPORT StyleElement : public GarbageCollectedMixin {
   virtual ~StyleElement();
   void Trace(Visitor*) const override;
 
-  bool IsModule() const;
+  bool IsModule(const Document&) const;
 
  protected:
   enum ProcessingResult { kProcessingSuccessful, kProcessingFatalError };
@@ -55,7 +55,7 @@ class CORE_EXPORT StyleElement : public GarbageCollectedMixin {
 
   CSSStyleSheet* sheet() const { return sheet_.Get(); }
 
-  bool IsLoading() const;
+  bool IsLoading(const Document&) const;
   bool SheetLoaded(Document&);
   void SetToPendingState(Document&, Element& element);
 

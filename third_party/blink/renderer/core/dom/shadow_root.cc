@@ -381,7 +381,8 @@ class PendingModuleEntry final : public SingleModuleClient {
 
 HeapVector<Member<CSSStyleSheet>> ShadowRoot::ResolveAdoptedStyleSheets(
     const AtomicString& shadowrootadoptedstylesheets_attribute_value) {
-  CHECK(RuntimeEnabledFeatures::ShadowRootAdoptedStyleSheetEnabled());
+  CHECK(RuntimeEnabledFeatures::ShadowRootAdoptedStyleSheetEnabled(
+      GetDocument().GetExecutionContext()));
 
   // Early exit if `domWindow` isn't available. This won't work in contexts such
   // as `Document.parseHTMLUnsafe`. This is probably fine, as adopted
@@ -469,7 +470,8 @@ HeapVector<Member<CSSStyleSheet>> ShadowRoot::ResolveAdoptedStyleSheets(
 
 void ShadowRoot::ProcessAdoptedStylesheetAttribute(
     AtomicString value) {
-  CHECK(RuntimeEnabledFeatures::ShadowRootAdoptedStyleSheetEnabled());
+  CHECK(RuntimeEnabledFeatures::ShadowRootAdoptedStyleSheetEnabled(
+      GetDocument().GetExecutionContext()));
   if (!value.empty()) {
     AppendAdoptedStyleSheets(ResolveAdoptedStyleSheets(value));
   }

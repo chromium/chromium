@@ -2064,11 +2064,13 @@
     {
       name: "DeclarativeCSSModules",
       status: "experimental",
+      origin_trial_feature_name: "DeclarativeCSSModules",
     },
     // https://crbug.com/448174611
     {
       name: "DeclarativeCSSModulesStyleTag",
       implied_by: ["DeclarativeCSSModules"],
+      origin_trial_feature_name: "DeclarativeCSSModules",
     },
     {
       // https://chromestatus.com/feature/5133099851317248
@@ -5240,6 +5242,7 @@
     {
       name: "ShadowRootAdoptedStyleSheet",
       implied_by: ["DeclarativeCSSModules"],
+      origin_trial_feature_name: "DeclarativeCSSModules",
     },
     {
       // Reference Target allows IDREF attributes to refer inside Shadow DOM.
