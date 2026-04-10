@@ -85,8 +85,7 @@ public class TabImplTest {
     public void testTabLoadIfNeededEnsuresBackingForMediaCapture() {
         TabImpl tab = createFrozenTab();
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> tab.loadIfNeeded(TabLoadIfNeededCaller.MEDIA_CAPTURE_PICKER));
+        ThreadUtils.runOnUiThreadBlocking(() -> tab.loadIfNeeded(/* forceBackingSize= */ true));
 
         ThreadUtils.runOnUiThreadBlocking(() -> assertTrue(tab.hasBacking()));
     }

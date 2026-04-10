@@ -963,7 +963,7 @@ class TabImpl implements Tab {
     }
 
     @Override
-    public boolean loadIfNeeded(@TabLoadIfNeededCaller int caller) {
+    public boolean loadIfNeeded(boolean forceBackingSize) {
         if (getActivity(/* withLogs= */ true) == null) {
             Log.e(
                     TAG,
@@ -989,9 +989,7 @@ class TabImpl implements Tab {
         // If we are trying to capture a tab, and it has never been loaded, then it will not have
         // its physical backing size set, which means it will never produce any frames. In this
         // case, set the physical backing size to an estimate of what it would be if it were shown.
-        if ((caller == TabLoadIfNeededCaller.MEDIA_CAPTURE_PICKER
-                        || caller == TabLoadIfNeededCaller.FUSEBOX_ATTACHMENT)
-                && !hasBacking()) {
+        if (forceBackingSize && !hasBacking()) {
             assumeNonNull(mWindowAndroid);
             var display = mWindowAndroid.getDisplay();
             assumeNonNull(mWebContents);
@@ -1116,7 +1114,7 @@ class TabImpl implements Tab {
     }
 
     @Override
-    public void show(@TabSelectionType int type, @TabLoadIfNeededCaller int caller) {
+    public void show(@TabSelectionType int type) {
         // Batch service binding updates for the tab including the subframes. TabImpl.show() is
         // triggered not only on tab switch, but also when the window is shown.
         try (ScopedServiceBindingBatch scope = ScopedServiceBindingBatch.scoped()) {
@@ -1127,7 +1125,7 @@ class TabImpl implements Tab {
             mIsHidden = false;
             updateInteractableState();
 
-            loadIfNeeded(caller);
+            loadIfNeeded(/* forceBackingSize= */ false);
 
             if (mNativeTabAndroid == 0) {
                 throw new IllegalStateException("TabImpl's native pointer is 0 when showing.");

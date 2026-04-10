@@ -303,10 +303,10 @@ public interface Tab extends TabLifecycle {
     /**
      * Loads the tab if it's not loaded (e.g. frozen, lazily loaded, it was background, etc.).
      *
-     * @param caller The caller of this method.
+     * @param forceBackingSize Whether to force setting the physical backing size.
      * @return true iff the Tab handled the request.
      */
-    boolean loadIfNeeded(int caller);
+    boolean loadIfNeeded(boolean forceBackingSize);
 
     /** Reloads the current page content. */
     void reload();

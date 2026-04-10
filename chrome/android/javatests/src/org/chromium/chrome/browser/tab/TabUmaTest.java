@@ -115,7 +115,7 @@ public class TabUmaTest {
                                     .setDelegateFactory(createTabDelegateFactory())
                                     .setInitiallyHidden(true)
                                     .build();
-                    if (show) bgTab.show(TabSelectionType.FROM_USER, TabLoadIfNeededCaller.OTHER);
+                    if (show) bgTab.show(TabSelectionType.FROM_USER);
                     return bgTab;
                 });
     }
@@ -136,7 +136,7 @@ public class TabUmaTest {
         // Show the tab and verify that one sample was recorded in the lazy load bucket.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    tab.show(TabSelectionType.FROM_USER, TabLoadIfNeededCaller.OTHER);
+                    tab.show(TabSelectionType.FROM_USER);
                 });
         statusHistogram.assertExpected();
 
@@ -144,7 +144,7 @@ public class TabUmaTest {
         statusHistogram = HistogramWatcher.newBuilder().expectNoRecords(histogram).build();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    tab.show(TabSelectionType.FROM_USER, TabLoadIfNeededCaller.OTHER);
+                    tab.show(TabSelectionType.FROM_USER);
                 });
         statusHistogram.assertExpected();
     }
@@ -170,8 +170,7 @@ public class TabUmaTest {
                                     .build();
                         });
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> tab.show(TabSelectionType.FROM_USER, TabLoadIfNeededCaller.OTHER));
+        ThreadUtils.runOnUiThreadBlocking(() -> tab.show(TabSelectionType.FROM_USER));
 
         // There should be no histogram changes.
         Assert.assertEquals(switchFgStatusOffset, getHistogram(switchFgStatus));

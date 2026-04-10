@@ -8,7 +8,6 @@ import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab
 import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedCardProperties.FAVICON;
 import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedCardProperties.TITLE;
 import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedCardProperties.URL;
-import static org.chromium.chrome.browser.tab.TabLoadIfNeededCaller.ON_ACTIVITY_SHOWN_THEN_SHOW;
 import static org.chromium.chrome.browser.tab.TabSelectionType.FROM_USER;
 
 import android.app.PictureInPictureParams;
@@ -342,7 +341,7 @@ public class CustomTabMinimizationManager
 
     private void updateTabForMaximization(@Nullable Tab tab) {
         if (tab == null) return;
-        tab.show(FROM_USER, ON_ACTIVITY_SHOWN_THEN_SHOW);
+        tab.show(FROM_USER);
         var webContents = tab.getWebContents();
         if (webContents != null) {
             webContents.setAudioMuted(false);

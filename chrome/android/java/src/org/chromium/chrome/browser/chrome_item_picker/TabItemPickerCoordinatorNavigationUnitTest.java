@@ -8,7 +8,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.inOrder;
@@ -46,7 +45,6 @@ import org.chromium.chrome.browser.chrome_item_picker.TabItemPickerCoordinator.I
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -241,7 +239,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         int tabId = 101;
         Tab tab = mockTabActiveState(tabId, false);
         when(tab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
-        when(tab.loadIfNeeded(anyInt())).thenReturn(true);
+        when(tab.loadIfNeeded(anyBoolean())).thenReturn(true);
         when(tab.isLoading()).thenReturn(true);
 
         captureAndSpyNavigationProvider();
@@ -252,7 +250,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
 
         mNavigationProvider.onSelectionStateChange(selection);
 
-        verify(tab).loadIfNeeded(TabLoadIfNeededCaller.FUSEBOX_ATTACHMENT);
+        verify(tab).loadIfNeeded(/* forceBackingSize= */ true);
         verify(mTabListEditorController).setThumbnailSpinnerVisibility(tab, true);
         verify(tab).addObserver(mTabObserverCaptor.capture());
     }
@@ -263,7 +261,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         int tabId = 101;
         Tab tab = mockTabActiveState(tabId, false);
         when(tab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
-        when(tab.loadIfNeeded(anyInt())).thenReturn(true);
+        when(tab.loadIfNeeded(anyBoolean())).thenReturn(true);
         when(tab.isLoading()).thenReturn(true);
 
         captureAndSpyNavigationProvider();
@@ -292,7 +290,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         int tabId = 101;
         Tab tab = mockTabActiveState(tabId, false);
         when(tab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
-        when(tab.loadIfNeeded(anyInt())).thenReturn(true);
+        when(tab.loadIfNeeded(anyBoolean())).thenReturn(true);
         when(tab.isLoading()).thenReturn(false);
 
         captureAndSpyNavigationProvider();
@@ -323,7 +321,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
 
         mNavigationProvider.onSelectionStateChange(selection);
 
-        verify(tab, never()).loadIfNeeded(anyInt());
+        verify(tab, never()).loadIfNeeded(anyBoolean());
     }
 
     @Test
@@ -332,7 +330,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         int tabId = 101;
         Tab tab = mockTabActiveState(tabId, false);
         when(tab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
-        when(tab.loadIfNeeded(anyInt())).thenReturn(true);
+        when(tab.loadIfNeeded(anyBoolean())).thenReturn(true);
         when(tab.isLoading()).thenReturn(true);
 
         captureAndSpyNavigationProvider();
@@ -344,7 +342,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         mNavigationProvider.onSelectionStateChange(selection);
         mNavigationProvider.onSelectionStateChange(selection);
 
-        verify(tab, times(2)).loadIfNeeded(anyInt());
+        verify(tab, times(2)).loadIfNeeded(anyBoolean());
     }
 
     @Test
@@ -353,7 +351,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         int tabId = 101;
         Tab tab = mockTabActiveState(tabId, false);
         when(tab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
-        when(tab.loadIfNeeded(anyInt())).thenReturn(true);
+        when(tab.loadIfNeeded(anyBoolean())).thenReturn(true);
         when(tab.isLoading()).thenReturn(true);
 
         captureAndSpyNavigationProvider();
@@ -374,7 +372,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         int tabId = 101;
         Tab tab = mockTabActiveState(tabId, false);
         when(tab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
-        when(tab.loadIfNeeded(anyInt())).thenReturn(true);
+        when(tab.loadIfNeeded(anyBoolean())).thenReturn(true);
         when(tab.isLoading()).thenReturn(true);
 
         captureAndSpyNavigationProvider();
@@ -395,7 +393,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         int tabId = 101;
         Tab tab = mockTabActiveState(tabId, false);
         when(tab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
-        when(tab.loadIfNeeded(anyInt())).thenReturn(true);
+        when(tab.loadIfNeeded(anyBoolean())).thenReturn(true);
         when(tab.isLoading()).thenReturn(true);
 
         captureAndSpyNavigationProvider();
@@ -407,7 +405,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         mNavigationProvider.onSelectionStateChange(selection);
         mNavigationProvider.onSelectionStateChange(selection);
 
-        verify(tab, times(2)).loadIfNeeded(anyInt());
+        verify(tab, times(2)).loadIfNeeded(anyBoolean());
         // cacheTabThumbnailWithCallback is not called yet because the tab is still loading.
         verify(mTabContentManager, never())
                 .cacheTabThumbnailWithCallback(any(), anyBoolean(), any());
@@ -431,7 +429,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
 
         mNavigationProvider.onSelectionStateChange(selection);
 
-        verify(tab, never()).loadIfNeeded(anyInt());
+        verify(tab, never()).loadIfNeeded(anyBoolean());
     }
 
     @Test
@@ -449,7 +447,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
 
         mNavigationProvider.onSelectionStateChange(selection);
 
-        verify(tab, never()).loadIfNeeded(anyInt());
+        verify(tab, never()).loadIfNeeded(anyBoolean());
     }
 
     @Test
@@ -467,6 +465,6 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
 
         mNavigationProvider.onSelectionStateChange(selection);
 
-        verify(tab, never()).loadIfNeeded(anyInt());
+        verify(tab, never()).loadIfNeeded(anyBoolean());
     }
 }

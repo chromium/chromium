@@ -71,7 +71,7 @@ public class SadTabTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Tab tab = mActivityTestRule.getActivity().getActivityTab();
-                    tab.show(TabSelectionType.FROM_USER, TabLoadIfNeededCaller.OTHER);
+                    tab.show(TabSelectionType.FROM_USER);
                     SadTab sadTab = SadTab.from(tab);
                     sadTab.removeIfPresent();
                 });

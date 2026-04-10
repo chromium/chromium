@@ -29,9 +29,8 @@ public interface TabLifecycle {
      * reloads the tab if its renderer has crashed.
      *
      * @param type Specifies how the tab was selected.
-     * @param caller The caller of this method.
      */
-    void show(@TabSelectionType int type, @TabLoadIfNeededCaller int caller);
+    void show(@TabSelectionType int type);
 
     /** Triggers the hiding logic for the view backing the tab. */
     void hide(@TabHidingType int type);

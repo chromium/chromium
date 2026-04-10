@@ -119,7 +119,7 @@ public class MockTab extends TabImpl {
     }
 
     @Override
-    public void show(@TabSelectionType int type, @TabLoadIfNeededCaller int caller) {
+    public void show(@TabSelectionType int type) {
         // Intentionally do nothing.
     }
 

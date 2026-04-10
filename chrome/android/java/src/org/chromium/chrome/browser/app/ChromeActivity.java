@@ -180,7 +180,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabImportanceManager;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
@@ -1170,13 +1169,11 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         Tab tab = getActivityTab();
         if (tab != null) {
             if (tab.isHidden() && shouldShowTabOnActivityShown()) {
-                tab.show(
-                        TabSelectionType.FROM_USER,
-                        TabLoadIfNeededCaller.ON_ACTIVITY_SHOWN_THEN_SHOW);
+                tab.show(TabSelectionType.FROM_USER);
             } else {
                 // The visible Tab's renderer process may have died after the activity was
                 // paused. Ensure that it's restored appropriately.
-                tab.loadIfNeeded(TabLoadIfNeededCaller.ON_ACTIVITY_SHOWN);
+                tab.loadIfNeeded(/* forceBackingSize= */ false);
             }
         }
         MultiWindowUtils.getInstance().recordMultiWindowStateUkm(this, tab);

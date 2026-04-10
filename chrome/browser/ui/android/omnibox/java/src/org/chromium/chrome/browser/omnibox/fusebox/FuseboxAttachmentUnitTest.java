@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -95,7 +95,7 @@ public class FuseboxAttachmentUnitTest {
         assertEquals(CAPTURE_TOKEN, attachment.getToken());
         verify(mBridge).addTabContext(mTab);
         verify(mBridge, never()).addTabContextFromCache(anyLong());
-        verify(mTab, never()).loadIfNeeded(anyInt());
+        verify(mTab, never()).loadIfNeeded(anyBoolean());
     }
 
     @Test

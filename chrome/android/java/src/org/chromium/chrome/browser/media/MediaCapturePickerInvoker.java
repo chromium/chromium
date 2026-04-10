@@ -18,7 +18,6 @@ import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.media.MediaCapturePickerHeadlessFragment.CaptureAction;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.media.capture.ScreenCapture;
 
@@ -92,7 +91,7 @@ public class MediaCapturePickerInvoker {
                         "PickerInvoker: Tab %d with title '%s' was picked",
                         tab.getId(),
                         tab.getTitle());
-                tab.loadIfNeeded(TabLoadIfNeededCaller.MEDIA_CAPTURE_PICKER);
+                tab.loadIfNeeded(/* forceBackingSize= */ true);
                 WebContents pickedTabwebContents = tab.getWebContents();
                 assert pickedTabwebContents != null;
 

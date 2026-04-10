@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.media.MediaCapturePickerHeadlessFragment.Capt
 import org.chromium.chrome.browser.media.MediaCapturePickerManager.Delegate;
 import org.chromium.chrome.browser.media.MediaCapturePickerManager.Params;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.media.capture.ScreenCapture;
 import org.chromium.ui.base.TestActivity;
@@ -142,7 +141,7 @@ public class MediaCapturePickerInvokerTest {
                 MediaCapturePickerHeadlessFragment.getInstance((FragmentActivity) mActivity);
         fragment.mNextDelegate.onPicked(
                 CaptureAction.CAPTURE_WINDOW, new ActivityResult(Activity.RESULT_OK, new Intent()));
-        verify(tab).loadIfNeeded(TabLoadIfNeededCaller.MEDIA_CAPTURE_PICKER);
+        verify(tab).loadIfNeeded(/* forceBackingSize= */ true);
         verify(mDelegate).onPickTab(mTabWebContents, true);
     }
 
@@ -160,7 +159,7 @@ public class MediaCapturePickerInvokerTest {
                 MediaCapturePickerHeadlessFragment.getInstance((FragmentActivity) mActivity);
         fragment.mNextDelegate.onPicked(
                 CaptureAction.CAPTURE_WINDOW, new ActivityResult(Activity.RESULT_OK, new Intent()));
-        verify(tab).loadIfNeeded(TabLoadIfNeededCaller.MEDIA_CAPTURE_PICKER);
+        verify(tab).loadIfNeeded(/* forceBackingSize= */ true);
         verify(mDelegate).onPickTab(mTabWebContents, false);
     }
 

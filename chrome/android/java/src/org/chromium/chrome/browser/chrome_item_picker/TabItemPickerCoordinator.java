@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.page_content_annotations.PageContentExtractio
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -454,7 +453,7 @@ public class TabItemPickerCoordinator {
             // If everything is working as expected the current tab should always be active
             // and therefore not loaded on demand, but just in case we still allow it to be
             // loaded here.
-            if (!tab.loadIfNeeded(TabLoadIfNeededCaller.FUSEBOX_ATTACHMENT)) return;
+            if (!tab.loadIfNeeded(/* forceBackingSize= */ true)) return;
 
             // If the tab finished loading immediately (e.g. it was already in memory),
             // exit immediately.

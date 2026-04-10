@@ -17,7 +17,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManager.KEY_IS_CCT_MINIMIZED;
-import static org.chromium.chrome.browser.tab.TabLoadIfNeededCaller.ON_ACTIVITY_SHOWN_THEN_SHOW;
 import static org.chromium.chrome.browser.tab.TabSelectionType.FROM_USER;
 
 import android.app.PictureInPictureParams;
@@ -160,7 +159,7 @@ public class CustomTabMinimizationManagerUnitTest {
         // Now, simulate Activity exiting PiP.
         mManager.accept(new PictureInPictureModeChangedInfo(false));
 
-        verify(mTab).show(eq(FROM_USER), eq(ON_ACTIVITY_SHOWN_THEN_SHOW));
+        verify(mTab).show(eq(FROM_USER));
         verify(mWebContents).setAudioMuted(false);
         verify(mConnection).onUnminimized(any());
         verify(mMinimizationObserver).onMinimizationChanged(false);
@@ -175,7 +174,7 @@ public class CustomTabMinimizationManagerUnitTest {
         mActivityScenarioRule.getScenario().moveToState(State.CREATED);
         mManager.accept(new PictureInPictureModeChangedInfo(false));
 
-        verify(mTab, never()).show(anyInt(), anyInt());
+        verify(mTab, never()).show(anyInt());
         verify(mCloseTabRunnable).run();
     }
 
@@ -230,7 +229,7 @@ public class CustomTabMinimizationManagerUnitTest {
         mManager.accept(new PictureInPictureModeChangedInfo(true));
         // Dismiss using #dismiss().
         mManager.dismiss();
-        verify(mTab, never()).show(anyInt(), anyInt());
+        verify(mTab, never()).show(anyInt());
         verify(mCloseTabRunnable).run();
     }
 

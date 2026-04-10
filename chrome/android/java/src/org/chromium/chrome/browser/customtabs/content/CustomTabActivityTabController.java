@@ -63,7 +63,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParams;
@@ -486,8 +485,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         initializeTab(tab, false);
 
         if (needsShow) {
-            tab.show(
-                    TabSelectionType.FROM_NEW, TabLoadIfNeededCaller.REQUEST_TO_SHOW_TAB_THEN_SHOW);
+            tab.show(TabSelectionType.FROM_NEW);
         }
 
         if (mIntentDataProvider.getTranslateLanguage() != null) {
