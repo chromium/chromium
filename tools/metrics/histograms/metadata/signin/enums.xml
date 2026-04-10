@@ -389,6 +389,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/signin/internal/identity_manager/oauth_multilogin_helper.h:DeviceBoundSessionCreateSessionsResult) -->
 
+<!-- LINT.IfChange(DiceLinkedAccountsMetaHeaderStatus) -->
+
+<enum name="DiceLinkedAccountsMetaHeaderStatus">
+  <int value="0" label="HeaderMissing"/>
+  <int value="1" label="Valid"/>
+  <int value="2" label="MissingInitiatorId"/>
+  <int value="3" label="MissingPrimaryIsConnected"/>
+  <int value="4" label="MissingBothParams"/>
+  <int value="5" label="InitiatorMismatch"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/signin/core/browser/dice_header_helper.h:DiceLinkedAccountsMetaHeaderStatus) -->
+
 <!-- LINT.IfChange(DiceTokenBindingOutcome) -->
 
 <enum name="DiceTokenBindingOutcome">

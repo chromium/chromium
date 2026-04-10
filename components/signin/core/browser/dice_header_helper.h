@@ -26,6 +26,20 @@ extern const char kGoogleSignoutResponseHeader[];
 // SigninHeaderHelper implementation managing the Dice header.
 class DiceHeaderHelper : public SigninHeaderHelper {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(DiceLinkedAccountsMetaHeaderStatus)
+  enum class DiceLinkedAccountsMetaHeaderStatus {
+    kHeaderMissing = 0,
+    kValid = 1,
+    kMissingInitiatorId = 2,
+    kMissingPrimaryIsConnected = 3,
+    kMissingBothParams = 4,
+    kInitiatorMismatch = 5,
+    kMaxValue = kInitiatorMismatch,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:DiceLinkedAccountsMetaHeaderStatus)
+
   explicit DiceHeaderHelper(AccountConsistencyMethod account_consistency);
 
   DiceHeaderHelper(const DiceHeaderHelper&) = delete;

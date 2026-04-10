@@ -140,6 +140,47 @@ DiceResponseParams::SigninInfo::SigninAccount BuildSigninAccount(
           mtls_token_binding};
 }
 
+void RecordDiceLinkedAccountsMetaHeaderMetrics(
+    const DiceResponseParams::SigninInfo* signin_info,
+    bool header_exists) {
+  if (!signin_info) {
+    return;
+  }
+
+  DiceHeaderHelper::DiceLinkedAccountsMetaHeaderStatus meta_status =
+      DiceHeaderHelper::DiceLinkedAccountsMetaHeaderStatus::kHeaderMissing;
+
+  if (header_exists) {
+    const auto& meta_header = signin_info->linked_accounts_metadata();
+
+    if (meta_header.initiator_id.empty() &&
+        meta_header.primary_is_connected == Tribool::kUnknown) {
+      meta_status = DiceHeaderHelper::DiceLinkedAccountsMetaHeaderStatus::
+          kMissingBothParams;
+    } else if (meta_header.initiator_id.empty()) {
+      meta_status = DiceHeaderHelper::DiceLinkedAccountsMetaHeaderStatus::
+          kMissingInitiatorId;
+    } else if (signin_info->GetInitiator() == nullptr) {
+      meta_status = DiceHeaderHelper::DiceLinkedAccountsMetaHeaderStatus::
+          kInitiatorMismatch;
+    } else if (meta_header.primary_is_connected == Tribool::kUnknown) {
+      meta_status = DiceHeaderHelper::DiceLinkedAccountsMetaHeaderStatus::
+          kMissingPrimaryIsConnected;
+    } else {
+      CHECK(meta_header.IsValid());
+      meta_status =
+          DiceHeaderHelper::DiceLinkedAccountsMetaHeaderStatus::kValid;
+    }
+  }
+
+  if (meta_status != DiceHeaderHelper::DiceLinkedAccountsMetaHeaderStatus::
+                         kHeaderMissing ||
+      signin_info->accounts().size() > 1) {
+    base::UmaHistogramEnumeration("Signin.DiceLinkedAccountsMetaHeaderStatus",
+                                  meta_status);
+  }
+}
+
 }  // namespace
 
 DiceHeaderHelper::DiceHeaderHelper(AccountConsistencyMethod account_consistency)
@@ -359,6 +400,9 @@ DiceResponseParams DiceHeaderHelper::CreateDiceResponseParams(
       DLOG(WARNING) << "Associated Meta header: " << *meta_header;
     }
   }
+
+  RecordDiceLinkedAccountsMetaHeaderMetrics(params.signin_info(),
+                                            meta_header.has_value());
 
   return params;
 }

@@ -1499,6 +1499,18 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.DiceLinkedAccountsMetaHeaderStatus"
+    enum="DiceLinkedAccountsMetaHeaderStatus" expires_after="2027-04-01">
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the parsing status of the
+    X-Chrome-ID-Consistency-Linked-Accounts-Meta header during a DICE web
+    sign-in request. Emitted once per sign-in if the header is present, or if
+    the response contains multiple accounts (even if the header is missing).
+  </summary>
+</histogram>
+
 <histogram name="Signin.DiceMigration.ForceMigrated" enum="Boolean"
     expires_after="2026-08-18">
   <owner>ankushkush@google.com</owner>
