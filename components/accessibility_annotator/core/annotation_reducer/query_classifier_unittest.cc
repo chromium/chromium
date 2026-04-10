@@ -399,10 +399,10 @@ class GeminiClassifierTest : public QueryClassifierTest {
 };
 
 // Tests that GeminiClassifier correctly handles a successful classification
-// with filter words.
+// with filter words and ensures that the filter words are lower cased.
 TEST_F(GeminiClassifierTest, SuccessWithFilterWords) {
   SetMockExecutionResponse(
-      R"({"intent": "kAddressFull", "filter_words": ["san", "diego"]})");
+      R"({"intent": "kAddressFull", "filter_words": ["San", "Diego"]})");
 
   ClassifiedQuery result =
       RunClassifier(classifier_, u"What's my address in San Diego");

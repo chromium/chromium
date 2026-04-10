@@ -13,6 +13,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/i18n/case_conversion.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
@@ -119,7 +120,7 @@ void KeywordQueryClassify(std::u16string_view query,
   // - removing common punctuation,
   // - removing stop words,
   // - trimming sequences of whitespaces.
-  std::u16string normalized_query = base::ToLowerASCII(query);
+  std::u16string normalized_query = base::i18n::ToLower(query);
   std::vector<std::u16string_view> all_words =
       base::SplitStringPiece(normalized_query, u" ;?,.'", base::TRIM_WHITESPACE,
                              base::SPLIT_WANT_NONEMPTY);
@@ -377,7 +378,8 @@ void OnGeminiClassificationComplete(
           dict->FindList(kFilterWordsKeyFromGemini)) {
     for (const auto& filter_word : *filter_words_list) {
       if (filter_word.is_string()) {
-        filter_words.push_back(base::UTF8ToUTF16(filter_word.GetString()));
+        filter_words.push_back(
+            base::i18n::ToLower(base::UTF8ToUTF16(filter_word.GetString())));
       }
     }
   }
