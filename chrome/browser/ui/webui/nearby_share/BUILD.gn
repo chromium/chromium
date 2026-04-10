@@ -16,7 +16,10 @@ static_library("nearby_share") {
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
+  allow_circular_includes_from = [ "//chrome/browser/nearby_sharing" ]
+
   deps = [
+    "//chrome/browser/nearby_sharing",
     "//chrome/browser/nearby_sharing:share_target",
     "//chrome/browser/nearby_sharing/common",
     "//chrome/browser/nearby_sharing/contacts",
