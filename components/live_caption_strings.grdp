@@ -58,6 +58,15 @@
   <message name="IDS_LIVE_CAPTION_DOWNLOAD_PROGRESS" desc="Download progress indicator after Live Caption is enabled. The user needs to download certain files for the feature to work.">
    Downloading <ph name="LANGUAGE">$1<ex>Spanish</ex></ph> language pack... <ph name="PERCENT">$2<ex>17</ex></ph>%
   </message>
+  <message name="IDS_LIVE_CAPTION_TRANSLATION_DOWNLOADING_LANGUAGE_PACKAGES_WITH_PROGRESS" desc="Progress indicator when multiple language or translation packages are downloading.">
+   Downloading language packages... <ph name="PERCENT">$1<ex>30</ex></ph>%
+  </message>
+  <message name="IDS_LIVE_CAPTION_INSTALLING" desc="Progress indicator when the language pack is installing.">
+   Installing <ph name="LANGUAGE">$1<ex>Spanish</ex></ph>...
+  </message>
+  <message name="IDS_LIVE_CAPTION_INSTALLING_LANGUAGE_PACKAGES" desc="Progress indicator when multiple language packages are installing.">
+   Installing language packages...
+  </message>
   <message name="IDS_LIVE_CAPTION_LANGUAGE_DOWNLOAD_FAILED" desc="TODO.">
    Failed to download <ph name="LANGUAGE">$1<ex>Spanish</ex></ph>
   </message>
