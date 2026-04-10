@@ -42,17 +42,14 @@ source_set("autocomplete") {
   if (enable_extensions_core) {
     sources += [
       "keyword_extensions_delegate_impl.h",
+      "shortcuts_extensions_manager.h",
       "unscoped_extension_provider_delegate_impl.h",
     ]
     public_deps += [
+      "//extensions/browser",
       "//extensions/buildflags",
       "//extensions/common",
     ]
-  }
-
-  if (enable_extensions) {
-    sources += [ "shortcuts_extensions_manager.h" ]
-    public_deps += [ "//extensions/browser" ]
   }
 }
 
@@ -145,6 +142,7 @@ source_set("impl") {
   if (enable_extensions_core) {
     sources += [
       "keyword_extensions_delegate_impl.cc",
+      "shortcuts_extensions_manager.cc",
       "unscoped_extension_provider_delegate_impl.cc",
     ]
     deps += [
@@ -153,10 +151,6 @@ source_set("impl") {
       "//chrome/browser/omnibox",
       "//extensions/browser",
     ]
-  }
-
-  if (enable_extensions) {
-    sources += [ "shortcuts_extensions_manager.cc" ]
   }
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -297,11 +291,8 @@ source_set("unit_tests") {
     "//url",
   ]
 
-  if (enable_extensions) {
-    sources += [ "keyword_extensions_delegate_impl_unittest.cc" ]
-  }
-
   if (enable_extensions_core) {
+    sources += [ "keyword_extensions_delegate_impl_unittest.cc" ]
     deps += [
       "//extensions:test_support",
       "//extensions/browser",

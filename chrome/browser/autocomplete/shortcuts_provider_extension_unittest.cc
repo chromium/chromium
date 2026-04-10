@@ -27,7 +27,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension.h"
@@ -94,7 +94,7 @@ void ShortcutsProviderExtensionTest::TearDown() {
 
 // Actual tests ---------------------------------------------------------------
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 TEST_F(ShortcutsProviderExtensionTest, Extension) {
   // Try an input string that matches an extension URL.
   std::u16string text(u"echo");
