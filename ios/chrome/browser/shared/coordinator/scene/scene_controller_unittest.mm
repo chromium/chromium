@@ -14,6 +14,8 @@
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
+#import "ios/chrome/browser/enterprise/data_protection/model/data_protection_scene_agent.h"
+#import "ios/chrome/browser/enterprise/data_protection/public/features.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
@@ -302,6 +304,40 @@ TEST_F(SceneControllerTest, TestOpenQRScannerForShortcutItem) {
             [scene_controller_ applicationMode]);
   EXPECT_EQ(START_QR_CODE_SCANNER,
             [connection_information_ startupParameters].postOpeningAction);
+}
+
+// Tests that DataProtectionSceneAgent is added to the scene state when the
+// feature flag is enabled.
+TEST_F(SceneControllerTest, TestDataProtectionSceneAgentEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnableScreenshotProtectionIOS);
+
+  SceneState* scene_state = [[SceneState alloc] initWithAppState:nil];
+  SceneController* scene_controller =
+      [[SceneController alloc] initWithSceneState:scene_state];
+
+  // The agents are added when the profile state is set.
+  scene_controller.profileState =
+      CreateMockProfileState(ProfileInitStage::kFinal);
+
+  EXPECT_NE(nil, [DataProtectionSceneAgent agentFromScene:scene_state]);
+}
+
+// Tests that DataProtectionSceneAgent is not added to the scene state when the
+// feature flag is disabled.
+TEST_F(SceneControllerTest, TestDataProtectionSceneAgentDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kEnableScreenshotProtectionIOS);
+
+  SceneState* scene_state = [[SceneState alloc] initWithAppState:nil];
+  SceneController* scene_controller =
+      [[SceneController alloc] initWithSceneState:scene_state];
+
+  // The agents are added when the profile state is set.
+  scene_controller.profileState =
+      CreateMockProfileState(ProfileInitStage::kFinal);
+
+  EXPECT_EQ(nil, [DataProtectionSceneAgent agentFromScene:scene_state]);
 }
 
 }  // namespace

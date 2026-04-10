@@ -59,6 +59,8 @@
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/promo/public/features.h"
 #import "ios/chrome/browser/docking_promo/model/docking_promo_scene_agent.h"
+#import "ios/chrome/browser/enterprise/data_protection/model/data_protection_scene_agent.h"
+#import "ios/chrome/browser/enterprise/data_protection/public/features.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -1466,6 +1468,9 @@ void InjectNTP(Browser* browser) {
   [_sceneState addAgent:[[SessionSavingSceneAgent alloc] init]];
   [_sceneState addAgent:[[LayoutGuideSceneAgent alloc] init]];
   [_sceneState addAgent:[[ShareExtensionSceneAgent alloc] init]];
+  if (IsEnableScreenshotProtectionIOSEnabled()) {
+    [_sceneState addAgent:[[DataProtectionSceneAgent alloc] init]];
+  }
 
   if (IsEnableNewStartupFlowEnabled()) {
     [_sceneState addAgent:[[TaskUpdaterSceneAgent alloc] init]];

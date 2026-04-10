@@ -4,6 +4,8 @@
 
 source_set("model") {
   sources = [
+    "data_protection_scene_agent.h",
+    "data_protection_scene_agent.mm",
     "data_protection_tab_helper.h",
     "data_protection_tab_helper.mm",
     "data_protection_tab_helper_observer.h",
@@ -21,7 +23,11 @@ source_set("model") {
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
     "//ios/chrome/browser/enterprise/connectors",
     "//ios/chrome/browser/enterprise/data_controls/model:ios_rules_service",
+    "//ios/chrome/browser/enterprise/data_protection/public:features",
     "//ios/chrome/browser/safe_browsing/model",
+    "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene/state",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/url:constants",
@@ -39,6 +45,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/enterprise:test_support",
     "//components/enterprise/connectors/core",
+    "//components/enterprise/connectors/core:constants",
     "//components/enterprise/data_controls/core/browser",
     "//components/enterprise/data_controls/core/browser:test_support",
     "//components/enterprise/data_protection",
