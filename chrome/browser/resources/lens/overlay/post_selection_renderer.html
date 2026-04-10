@@ -50,6 +50,7 @@
     left: var(--selection-left);
     margin: auto;
     opacity: 5%;
+    pointer-events: auto;
     position: absolute;
     top: var(--selection-top);
     transition: opacity 100ms cubic-bezier(0.3, 0, 1, 1);
@@ -236,7 +237,6 @@
     </canvas>
     <div class="static-region"
         data-id$="[[item.id]]"
-        on-pointerenter="onStaticRegionPointerEnter"
         style$="left: [[item.left]]; top: [[item.top]];
                 width: [[item.width]]; height: [[item.height]];">
     </div>
@@ -256,8 +256,9 @@
   <div
     style$="[[getPostSelectionStyles(height, width, selectionOverlayRect)]]"
     id="postSelection"
+    data-id$="[[activeRegionId]]"
   ></div>
-  <div id="selectionCorners">
+  <div id="selectionCorners" style="pointer-events: auto;">
     <template is="dom-if" if="[[multiRegionSelectionEnabled]]">
       <cr-icon-button class="close-button"
           on-click="onCloseActiveButtonClick"
