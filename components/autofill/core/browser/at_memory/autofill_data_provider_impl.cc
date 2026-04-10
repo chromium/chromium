@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/from_accessibility_annotator.h"
+#include "components/autofill/core/browser/data_model/form_group.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/data_model/usage_history_information.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -41,6 +42,31 @@ using ::accessibility_annotator::EntryType;
 using ::accessibility_annotator::MemoryEntrySource;
 using ::accessibility_annotator::MemoryEntrySourceType;
 using ::accessibility_annotator::MemorySearchResult;
+
+// Adds metadata from `form_group` to `entry` if `metadata_entry_type` maps to a
+// `FieldType` and differs from `primary_field_type`.
+void AddMetadataToResult(MemorySearchResult& entry,
+                         const FormGroup& form_group,
+                         EntryType metadata_entry_type,
+                         FieldType primary_field_type,
+                         const std::string& app_locale) {
+  std::optional<AtMemoryDataType> data_type =
+      ToAtMemoryDataType(metadata_entry_type);
+  if (!data_type || !std::holds_alternative<FieldType>(*data_type)) {
+    return;
+  }
+  FieldType other_field_type = std::get<FieldType>(*data_type);
+  if (other_field_type == primary_field_type) {
+    return;
+  }
+  std::u16string metadata_value =
+      form_group.GetInfo(other_field_type, app_locale);
+  if (!metadata_value.empty()) {
+    entry.metadata_list.emplace_back(
+        metadata_entry_type, GetEntryTypeNameForI18n(metadata_entry_type),
+        std::move(metadata_value));
+  }
+}
 
 // Calculates a ranking score for an entity, based on frequency and recency of
 // use.
@@ -92,28 +118,18 @@ MemorySearchResult CreateResultFromAddressProfile(
       profile.GetRankingScore(base::Time::Now()));
 
   // Add other address fields as metadata.
-  auto add_metadata = [&](EntryType other_entry_type) {
-    std::optional<AtMemoryDataType> data_type =
-        ToAtMemoryDataType(other_entry_type);
-    FieldType other_field_type = std::get<FieldType>(*data_type);
-    if (other_field_type == field_type) {
-      return;
-    }
-    std::u16string metadata_value =
-        profile.GetInfo(other_field_type, app_locale);
-    if (!metadata_value.empty()) {
-      entry.metadata_list.emplace_back(
-          other_entry_type, GetEntryTypeNameForI18n(other_entry_type),
-          std::move(metadata_value));
-    }
-  };
-
-  add_metadata(EntryType::kNameFull);
-  add_metadata(EntryType::kAddressStreetAddress);
-  add_metadata(EntryType::kAddressCity);
-  add_metadata(EntryType::kAddressState);
-  add_metadata(EntryType::kAddressZip);
-  add_metadata(EntryType::kAddressCountry);
+  AddMetadataToResult(entry, profile, EntryType::kNameFull, field_type,
+                      app_locale);
+  AddMetadataToResult(entry, profile, EntryType::kAddressStreetAddress, field_type,
+                      app_locale);
+  AddMetadataToResult(entry, profile, EntryType::kAddressCity, field_type,
+                      app_locale);
+  AddMetadataToResult(entry, profile, EntryType::kAddressState, field_type,
+                      app_locale);
+  AddMetadataToResult(entry, profile, EntryType::kAddressZip, field_type,
+                      app_locale);
+  AddMetadataToResult(entry, profile, EntryType::kAddressCountry, field_type,
+                      app_locale);
 
   entry.confidence_score = profile.GetRankingScore(base::Time::Now());
   return entry;
@@ -307,6 +323,10 @@ std::vector<MemorySearchResult> AutofillDataProviderImpl::GetAutofillData(
             if (field_type == ADDRESS_HOME_ADDRESS) {
               return FetchFullAddressData(*personal_data_manager_);
             }
+            if (GroupTypeOfFieldType(field_type) ==
+                FieldTypeGroup::kCreditCard) {
+              return FetchCreditCardData(field_type, entry_type);
+            }
             return FetchDataFromAddressProfiles(*personal_data_manager_,
                                                 field_type, entry_type);
           },
@@ -356,6 +376,46 @@ std::vector<MemorySearchResult> AutofillDataProviderImpl::FetchIbanData() {
     }
     entries.push_back(std::move(entry));
   }
+  return entries;
+}
+
+std::vector<MemorySearchResult> AutofillDataProviderImpl::FetchCreditCardData(
+    FieldType field_type,
+    EntryType entry_type) {
+  std::vector<MemorySearchResult> entries;
+  for (const CreditCard* credit_card : GetCreditCardsToSuggest(
+           personal_data_manager_->payments_data_manager())) {
+    std::u16string value = credit_card->GetInfo(
+        field_type,
+        personal_data_manager_->address_data_manager().app_locale());
+    if (value.empty()) {
+      continue;
+    }
+
+    if (field_type == CREDIT_CARD_NUMBER) {
+      value = credit_card->ObfuscatedNumberWithVisibleLastFourDigits();
+    } else if (field_type == CREDIT_CARD_VERIFICATION_CODE) {
+      value = std::u16string(3, kMidlineEllipsisPlainDot);
+    }
+
+    // TODO(crbug.com/497795513): Set `is_obfuscated` and `reveal_callback` for
+    // credit card number and CVV and use it to reveal the number after re-auth.
+    MemorySearchResult entry(
+        entry_type, GetEntryTypeNameForI18n(entry_type), std::move(value),
+        credit_card->usage_history().GetRankingScore(base::Time::Now()));
+
+    // TODO(crbug.com/497795513): Add obfuscated credit card number.
+    std::string app_locale =
+        personal_data_manager_->address_data_manager().app_locale();
+    AddMetadataToResult(entry, *credit_card, EntryType::kCreditCardNameOnCard,
+                        field_type, app_locale);
+    AddMetadataToResult(entry, *credit_card,
+                        EntryType::kCreditCardExpirationDate, field_type,
+                        app_locale);
+
+    entries.push_back(std::move(entry));
+  }
+
   return entries;
 }
 

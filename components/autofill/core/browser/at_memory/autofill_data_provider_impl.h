@@ -45,6 +45,11 @@ class AutofillDataProviderImpl
   // Fetches IBAN data from `personal_data_manager_`.
   std::vector<accessibility_annotator::MemorySearchResult> FetchIbanData();
 
+  // Fetches credit card data from `personal_data_manager_`.
+  std::vector<accessibility_annotator::MemorySearchResult> FetchCreditCardData(
+      FieldType field_type,
+      accessibility_annotator::EntryType entry_type);
+
   raw_ptr<const PersonalDataManager> personal_data_manager_;
   raw_ptr<const EntityDataManager> entity_data_manager_;
 };
