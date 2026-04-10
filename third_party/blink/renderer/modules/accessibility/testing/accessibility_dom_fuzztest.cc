@@ -273,6 +273,44 @@ class ValidTableAndAria : public DomScenarioDomainSpecification {
   }
 };
 
+class AnimationAndAria : public DomScenarioDomainSpecification {
+ public:
+  fuzztest::Domain<QualifiedName> AnyTag() override { return AnyHtmlTag(); }
+  fuzztest::Domain<std::pair<QualifiedName, std::string>>
+  AnyAttributeNameValuePair() override {
+    return fuzztest::OneOf(AnyHtmlAttributeNameValuePair(),
+                           AnyAriaAttributeNameValuePair());
+  }
+  fuzztest::Domain<std::string> AnyStyles() override {
+    auto animation_styles = fuzztest::Map(
+        [](const std::string& name, const std::string& duration,
+           const std::string& delay, const std::string& direction,
+           const std::string& fill_mode, const std::string& timing,
+           const std::string& count) {
+          return base::StrCat(
+              {"animation-name:", name, ";animation-duration:", duration,
+               ";animation-delay:", delay, ";animation-direction:", direction,
+               ";animation-fill-mode:", fill_mode,
+               ";animation-timing-function:", timing,
+               ";animation-iteration-count:", count});
+        },
+        AnyCSSAnimationNameValue(), AnyCSSAnimationDurationValue(),
+        AnyCSSAnimationDelayValue(), AnyCSSAnimationDirectionValue(),
+        AnyCSSAnimationFillModeValue(), AnyCSSAnimationTimingFunctionValue(),
+        AnyCSSAnimationIterationCountValue());
+    return animation_styles;
+  }
+  fuzztest::Domain<std::string> AnyText() override {
+    return fuzztest::PrintableAsciiString();
+  }
+  int GetMaxDomNodes() override { return 8; }
+  int GetMaxAttributesPerNode() override { return 3; }
+  fuzztest::Domain<QualifiedName> GetRootElementTag() override {
+    return fuzztest::Just<QualifiedName>(
+        html_names::TagToQualifiedName(html_names::HTMLTag::kBody));
+  }
+};
+
 class AccessibilityDomScenarioRunner : public DomScenarioRunner {
  public:
   AccessibilityDomScenarioRunner() = default;
@@ -283,6 +321,7 @@ class AccessibilityDomScenarioRunner : public DomScenarioRunner {
   void MathMLAndAria(const DomScenario& input) { RunTest(input); }
   void ProblematicMarkup(const DomScenario& input) { RunTest(input); }
   void ValidTableAndAria(const DomScenario& input) { RunTest(input); }
+  void AnimationAndAria(const DomScenario& input) { RunTest(input); }
 
  protected:
   // Observer hooks to add accessibility tree printing.
@@ -326,5 +365,8 @@ FUZZ_TEST_F(AccessibilityDomScenarioRunner, ProblematicMarkup)
 
 FUZZ_TEST_F(AccessibilityDomScenarioRunner, ValidTableAndAria)
     .WithDomains(BuildDomScenarios<ValidTableAndAria>());
+
+FUZZ_TEST_F(AccessibilityDomScenarioRunner, AnimationAndAria)
+    .WithDomains(BuildDomScenarios<AnimationAndAria>());
 
 }  // namespace blink

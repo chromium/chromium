@@ -192,6 +192,7 @@ test("blink_unittests") {
 
   fuzztests = [
     "BlinkAttributeFuzzTestFixture.NoElementAttributeCrashes",
+    "AccessibilityDomScenarioRunner.AnimationAndAria",
     "AccessibilityDomScenarioRunner.HtmlAndAria",
     "AccessibilityDomScenarioRunner.CanvasFallbackContent",
     "AccessibilityDomScenarioRunner.SvgAndAria",
