@@ -2960,6 +2960,51 @@ public class ChromeContextMenuPopulatorTest {
 
     @Test
     @SmallTest
+    public void testOnItemSelected_call_ThinWebView() {
+        ContextMenuParams params = getLinkParams("tel:1234567890");
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW, params);
+        mPopulator.onItemSelected(R.id.contextmenu_call);
+        verify(mItemDelegate).onCall(params.getLinkUrl());
+    }
+
+    @Test
+    @SmallTest
+    public void testOnItemSelected_sendMessage_email_ThinWebView() {
+        ContextMenuParams params = getLinkParams("mailto:fake@email.com");
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW, params);
+        mPopulator.onItemSelected(R.id.contextmenu_send_message);
+        verify(mItemDelegate).onSendEmailMessage(params.getLinkUrl());
+    }
+
+    @Test
+    @SmallTest
+    public void testOnItemSelected_sendMessage_text_ThinWebView() {
+        ContextMenuParams params = getLinkParams("tel:1234567890");
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW, params);
+        mPopulator.onItemSelected(R.id.contextmenu_send_message);
+        verify(mItemDelegate).onSendTextMessage(params.getLinkUrl());
+    }
+
+    @Test
+    @SmallTest
+    public void testOnItemSelected_addToContacts_ThinWebView() {
+        ContextMenuParams params = getLinkParams("tel:1234567890");
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW, params);
+        mPopulator.onItemSelected(R.id.contextmenu_add_to_contacts);
+        verify(mItemDelegate).onAddToContacts(params.getLinkUrl());
+    }
+
+    @Test
+    @SmallTest
+    public void testOnItemSelected_saveImage_ThinWebView() {
+        ContextMenuParams params = getImageParams();
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW, params);
+        mPopulator.onItemSelected(R.id.contextmenu_save_image);
+        verify(mItemDelegate).startDownload(params.getSrcUrl(), false);
+    }
+
+    @Test
+    @SmallTest
     public void testOnItemSelected_call() {
         ContextMenuParams params = getHttpLinkParams();
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
@@ -3105,5 +3150,51 @@ public class ChromeContextMenuPopulatorTest {
         items[index] = additionalItem;
         System.arraycopy(baseItems, index, items, index + 1, baseItems.length - index);
         return items;
+    }
+
+    private ContextMenuParams getLinkParams(String url) {
+        return new ContextMenuParams(
+                0,
+                mMenuModelBridge,
+                ContextMenuDataMediaType.NONE,
+                ContextMenuDataMediaFlags.MEDIA_NONE,
+                new GURL(PAGE_URL),
+                new GURL(url),
+                LINK_TEXT,
+                GURL.emptyGURL(),
+                GURL.emptyGURL(),
+                "",
+                null,
+                false,
+                0,
+                0,
+                MenuSourceType.TOUCH,
+                false,
+                /* openedFromInterestFor= */ false,
+                /* interestForNodeID= */ 0,
+                /* additionalNavigationParams= */ null);
+    }
+
+    private ContextMenuParams getImageParams() {
+        return new ContextMenuParams(
+                0,
+                mMenuModelBridge,
+                ContextMenuDataMediaType.IMAGE,
+                ContextMenuDataMediaFlags.MEDIA_NONE,
+                new GURL(PAGE_URL),
+                GURL.emptyGURL(),
+                "",
+                GURL.emptyGURL(),
+                new GURL("http://www.blah.com/image.jpg"),
+                "IMAGE!",
+                null,
+                true,
+                0,
+                0,
+                MenuSourceType.TOUCH,
+                false,
+                /* openedFromInterestFor= */ false,
+                /* interestForNodeID= */ 0,
+                /* additionalNavigationParams= */ null);
     }
 }

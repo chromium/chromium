@@ -42,6 +42,7 @@ android_library("internal_java") {
     "//base:base_java",
     "//build/android:build_java",
     "//components/embedder_support/android:context_menu_java",
+    "//components/embedder_support/android:util_java",
     "//components/embedder_support/android:web_contents_delegate_java",
     "//components/thin_webview:java",
     "//content/public/android:content_java",
