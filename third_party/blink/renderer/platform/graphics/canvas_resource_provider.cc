@@ -1031,7 +1031,36 @@ CanvasNon2DResourceProviderSharedImage::DoExternalDrawAndProduceResource(
     base::FunctionRef<void(cc::PaintCanvas&)> draw_callback) {
   cached_snapshot_.reset();
   draw_callback(recorder_->getRecordingCanvas());
-  return ProduceCanvasResource();
+
+  if (is_software_) {
+    DCHECK(GetSkSurface());
+    scoped_refptr<CanvasResource> output_resource = NewOrRecycledResource();
+    if (!output_resource) {
+      return nullptr;
+    }
+
+    FlushCanvas(/*is_overwrite=*/false);
+
+    // Note that the resource *must* be a CanvasResourceSharedImage as this
+    // class creates CanvasResourceSharedImage instances exclusively.
+    static_cast<CanvasResourceSharedImage*>(output_resource.get())
+        ->UploadSoftwareRenderingResults(GetSkSurface());
+
+    return output_resource;
+  }
+
+  if (IsGpuContextLost()) {
+    return nullptr;
+  }
+
+  // We are about to give the caller read access to this resource (and its
+  // backing SharedImage). Hence, we must make sure that the SI is updated to
+  // reflect the ops made in the current write access (if any) and give up any
+  // such write access.
+  FlushCanvas(/*is_overwrite=*/false);
+  EndWriteAccess();
+
+  return resource_;
 }
 
 scoped_refptr<StaticBitmapImage>
