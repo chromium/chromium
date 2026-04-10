@@ -50,15 +50,6 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
   return dateFormatter;
 }
 
-// Returns true if `attribute_type` is found in `required_fields`.
-bool IsFieldRequired(const EntityInstance& entity_instance,
-                     AttributeType attribute_type) {
-  return std::ranges::any_of(entity_instance.type().required_fields(),
-                             [&](const auto& required_set) {
-                               return required_set.contains(attribute_type);
-                             });
-}
-
 }  // namespace
 
 @implementation AutofillAIEntityEditMediator {
@@ -249,9 +240,25 @@ bool IsFieldRequired(const EntityInstance& entity_instance,
   item.detailText = [_dateFormatter stringFromDate:date];
 }
 
-- (BOOL)isFieldRequired:(autofill::AttributeTypeName)attributeTypeName {
-  return IsFieldRequired(*_entityInstance,
-                         autofill::AttributeType(attributeTypeName));
+- (autofill::DenseSet<autofill::AttributeType>)getMissingRequiredFieldsFor:
+    (const autofill::DenseSet<autofill::AttributeType>&)presentAttributes {
+  bool satisfied = std::ranges::any_of(
+      _entityInstance->type().required_fields(), [&](const auto& constraint) {
+        return presentAttributes.contains_all(constraint);
+      });
+  if (satisfied) {
+    return {};
+  }
+
+  autofill::DenseSet<autofill::AttributeType> missingTypes;
+  for (const auto& constraint : _entityInstance->type().required_fields()) {
+    for (auto type : constraint) {
+      if (!presentAttributes.contains(type)) {
+        missingTypes.insert(type);
+      }
+    }
+  }
+  return missingTypes;
 }
 
 - (void)requestEditingWithCompletion:
