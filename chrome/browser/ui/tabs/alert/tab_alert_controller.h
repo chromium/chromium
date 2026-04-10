@@ -105,6 +105,8 @@ class TabAlertController : public tabs::ContentsObservingTabFeature,
   void OnIsContentDisplayedInHeadsetChanged(bool state) override;
 
  private:
+  class ScopedAlertNotifier;
+
   void OnGlicSharingStateChange(bool is_sharing);
   void OnGlicAccessingStateChange(bool is_accessing);
 

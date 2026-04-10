@@ -65,6 +65,28 @@ bool CompareAlerts::operator()(TabAlert first, TabAlert second) const {
   return tab_alert_priority.at(first) > tab_alert_priority.at(second);
 }
 
+// Helper class that notifies subscribers if the alert state has changed when
+// the ScopedAlertNotifier is destroyed.
+class TabAlertController::ScopedAlertNotifier {
+ public:
+  explicit ScopedAlertNotifier(TabAlertController* tab_alert_controller)
+      : tab_alert_controller_(tab_alert_controller),
+        previous_alert_(tab_alert_controller->GetAlertToShow()) {}
+
+  ~ScopedAlertNotifier() {
+    std::optional<TabAlert> updated_alert =
+        tab_alert_controller_->GetAlertToShow();
+    if (previous_alert_ != updated_alert) {
+      tab_alert_controller_->alert_to_show_changed_callbacks_.Notify(
+          updated_alert);
+    }
+  }
+
+ private:
+  const raw_ptr<TabAlertController> tab_alert_controller_;
+  std::optional<TabAlert> previous_alert_;
+};
+
 TabAlertController::TabAlertController(TabInterface& tab)
     : tabs::ContentsObservingTabFeature(tab),
       scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
@@ -315,11 +337,13 @@ void TabAlertController::OnCapabilityTypesChanged(
   }
 
   const TabAlert alert = capability_type_to_alert.at(capability_type);
+  ScopedAlertNotifier notifier(this);
   UpdateAlertState(alert, used);
 }
 
 void TabAlertController::MediaPictureInPictureChanged(
     bool is_picture_in_picture) {
+  ScopedAlertNotifier notifier(this);
   UpdateAlertState(TabAlert::kPipPlaying, is_picture_in_picture);
 }
 
@@ -330,6 +354,7 @@ void TabAlertController::DidUpdateAudioMutingState(bool muted) {
   RecentlyAudibleHelper* const audible_helper =
       RecentlyAudibleHelper::FromWebContents(tab().GetContents());
   CHECK(audible_helper);
+  ScopedAlertNotifier notifier(this);
   UpdateAlertState(TabAlert::kAudioMuting,
                    audible_helper->WasRecentlyAudible() && muted);
 }
@@ -338,6 +363,7 @@ void TabAlertController::OnIsCapturingVideoChanged(
     content::WebContents* contents,
     bool is_capturing_video) {
   if (contents == web_contents()) {
+    ScopedAlertNotifier notifier(this);
     UpdateAlertState(TabAlert::kVideoRecording, is_capturing_video);
   }
 }
@@ -346,6 +372,7 @@ void TabAlertController::OnIsCapturingAudioChanged(
     content::WebContents* contents,
     bool is_capturing_audio) {
   if (contents == web_contents()) {
+    ScopedAlertNotifier notifier(this);
     UpdateAlertState(TabAlert::kAudioRecording, is_capturing_audio);
   }
 }
@@ -354,6 +381,7 @@ void TabAlertController::OnIsBeingMirroredChanged(
     content::WebContents* contents,
     bool is_being_mirrored) {
   if (contents == web_contents()) {
+    ScopedAlertNotifier notifier(this);
     UpdateAlertState(TabAlert::kTabCapturing, is_being_mirrored);
   }
 }
@@ -362,6 +390,7 @@ void TabAlertController::OnIsCapturingWindowChanged(
     content::WebContents* contents,
     bool is_capturing_window) {
   if (contents == web_contents()) {
+    ScopedAlertNotifier notifier(this);
     const bool is_desktop_capturing_active =
         is_capturing_window || MediaCaptureDevicesDispatcher::GetInstance()
                                    ->GetMediaStreamCaptureIndicator()
@@ -374,6 +403,7 @@ void TabAlertController::OnIsCapturingDisplayChanged(
     content::WebContents* contents,
     bool is_capturing_display) {
   if (contents == web_contents()) {
+    ScopedAlertNotifier notifier(this);
     const bool is_desktop_capturing_active =
         is_capturing_display || MediaCaptureDevicesDispatcher::GetInstance()
                                     ->GetMediaStreamCaptureIndicator()
@@ -383,19 +413,23 @@ void TabAlertController::OnIsCapturingDisplayChanged(
 }
 
 void TabAlertController::OnIsContentDisplayedInHeadsetChanged(bool state) {
+  ScopedAlertNotifier notifier(this);
   UpdateAlertState(TabAlert::kVrPresentingInHeadset, state);
 }
 
 void TabAlertController::OnGlicSharingStateChange(bool is_sharing) {
+  ScopedAlertNotifier notifier(this);
   UpdateAlertState(TabAlert::kGlicSharing, is_sharing);
 }
 
 void TabAlertController::OnGlicAccessingStateChange(bool is_accessing) {
+  ScopedAlertNotifier notifier(this);
   UpdateAlertState(TabAlert::kGlicAccessing, is_accessing);
 }
 
 void TabAlertController::OnActorTabIndicatorStateChanged(
     actor::ui::TabIndicatorStatus tab_indicator_status) {
+  ScopedAlertNotifier notifier(this);
   switch (tab_indicator_status) {
     case actor::ui::TabIndicatorStatus::kNone:
       UpdateAlertState(TabAlert::kActorWaitingOnUser, false);
@@ -416,13 +450,13 @@ void TabAlertController::OnRecentlyAudibleStateChanged(bool was_audible) {
   // Muted alert state also needs to update when audible state changes to ensure
   // that the muted alert becomes active if the tab is already muted but is
   // recently audible or inactive after the tab is no longer audible.
-  DidUpdateAudioMutingState(tab().GetContents()->IsAudioMuted());
+  ScopedAlertNotifier notifier(this);
   UpdateAlertState(TabAlert::kAudioPlaying, was_audible);
+  UpdateAlertState(TabAlert::kAudioMuting,
+                   was_audible && tab().GetContents()->IsAudioMuted());
 }
 
 void TabAlertController::UpdateAlertState(TabAlert alert, bool is_active) {
-  std::optional<TabAlert> previous_alert = GetAlertToShow();
-
   if (alert == TabAlert::kAudioRecording ||
       alert == TabAlert::kVideoRecording) {
     UpdateMediaAlert();
@@ -432,11 +466,6 @@ void TabAlertController::UpdateAlertState(TabAlert alert, bool is_active) {
     } else {
       active_alerts_.erase(alert);
     }
-  }
-
-  std::optional<TabAlert> updated_alert = GetAlertToShow();
-  if (previous_alert != updated_alert) {
-    alert_to_show_changed_callbacks_.Notify(updated_alert);
   }
 }
 
