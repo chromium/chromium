@@ -44,4 +44,12 @@ ChromeCoordinator* CreateCobaltAlertCoordinator(
   return nil;
 }
 
+ChromeCoordinator* CreateCobaltPopupCoordinator(
+    UIViewController* base_view_controller,
+    Browser* browser,
+    UIViewController* popup_view_controller,
+    CobaltPopupCompletion completion) {
+  return nil;
+}
+
 }  // namespace ios::provider

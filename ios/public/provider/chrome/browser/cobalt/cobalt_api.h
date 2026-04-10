@@ -24,6 +24,9 @@ class JavaScriptFeature;
 // user accepted the action, or false otherwise.
 typedef void (^CobaltAlertCompletion)(bool granted);
 
+// Completion block for Cobalt popups, called when the popup is fully presented.
+typedef void (^CobaltPopupCompletion)(NSError* error);
+
 namespace ios::provider {
 
 // Attaches the Cobalt tab helpers using the given `attacher`.
@@ -63,6 +66,13 @@ ChromeCoordinator* CreateCobaltAlertCoordinator(
     NSString* title,
     NSString* message,
     CobaltAlertCompletion completion);
+
+// Returns the coordinator for Cobalt popups.
+ChromeCoordinator* CreateCobaltPopupCoordinator(
+    UIViewController* base_view_controller,
+    Browser* browser,
+    UIViewController* popup_view_controller,
+    CobaltPopupCompletion completion);
 
 }  // namespace ios::provider
 
