@@ -14,6 +14,7 @@ ts_library("build_ts") {
     "lit_element_structure.ts",
     "lit_element_template_structure.ts",
     "lit_property_accessor.ts",
+    "lit_reactive_properties.ts",
     "no_assert_equals_boolean.ts",
     "no_mixed_type_and_value_imports.ts",
     "polymer_property_class_member.ts",

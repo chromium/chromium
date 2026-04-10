@@ -3,13 +3,12 @@
 // found in the LICENSE file.
 
 import {AST_NODE_TYPES as Node, ESLintUtils} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
-import type {TSESLint, TSESTree} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
-import esquery from '/third_party/node/node_modules/esquery/dist/esquery.esm.min.js';
+import type {TSESTree} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 import ts from '/third_party/node/node_modules/typescript/lib/typescript.js';
 import assert from 'node:assert';
 import path from 'node:path';
 
-import {dashCaseToCamelCase, extractClassImport, getLitPropertyType, isIdentifier, isLiteral, isType, LIT_IMPORT_REGEX} from './query_utils.js';
+import {dashCaseToCamelCase, extractClassImport, extractPropertiesFromClass, getLitPropertyType, isIdentifier, isLiteral, isType, LIT_IMPORT_REGEX} from './query_utils.js';
 
 type Options = [];
 type MessageIds = 'incorrectAttributeBinding'|'incorrectBooleanBinding'|
@@ -44,22 +43,6 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
   },
   defaultOptions: [],
   create(context) {
-    function extractPropertiesFromClass(
-        file: ts.SourceFile, className: string) {
-      const parser =
-          context.languageOptions.parser as TSESLint.Parser.ParserModule;
-      const parserOptions = context.languageOptions.parserOptions;
-      assert.ok(parser && 'parse' in parser);
-      const ast = parser.parse(file.text, {
-        ...parserOptions,
-        filePath: file.fileName,
-      }) as TSESTree.Program;
-      // Match on class name suffix as well because some UIs use aliasing.
-      const propertiesQuery = esquery.parse(`ClassDeclaration[id.name=/${
-          className}/] > ClassBody > MethodDefinition[key.name="properties"] > FunctionExpression > BlockStatement > ReturnStatement > ObjectExpression > Property`);
-      return esquery.match(ast, propertiesQuery);
-    }
-
     // Property binding validation: check that the bound property's type
     // is compatible with |expressionType|.
     function checkPropertyBinding(
@@ -238,7 +221,7 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
           return;
         }
 
-        extractPropertiesFromClass(classDefinitionFile, className);
+        extractPropertiesFromClass(classDefinitionFile, className, context);
 
         const bindingRegex =
             /(\s+(?<attrName>[a-z0-9\-]+)|\?(?<boolName>[a-z0-9-]+)|\.(?<propName>[a-zA-Z0-9-]+))="$/;

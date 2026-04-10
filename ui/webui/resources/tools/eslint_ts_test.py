@@ -609,6 +609,31 @@ class EslintTsTest(unittest.TestCase):
       self.assertFalse(
           e in str(context.exception), f'Found unexpected error: {e}')
 
+  def testWebUiEslintPlugin_LitReactiveProperties(self):
+    with self.assertRaises(RuntimeError) as context:
+      self._run_test([
+          "with_webui_plugin_lit_reactive_properties_violations.html.ts",
+          "with_webui_plugin_lit_reactive_properties_violations.ts",
+      ])
+
+    _EXPECTED_STRING = "@webui-eslint/lit-reactive-properties"
+    self.assertTrue(_EXPECTED_STRING in str(context.exception))
+
+    errors = [
+        "Missing Lit reactive property declaration for property 'propNotInProperties' in class 'SomeFooElement'",
+        "'get' syntax in Lit HTML templates is disallowed, encountered a getter for 'getterProp' in class 'SomeFooElement'",
+    ]
+    non_errors = [
+        "mixinString is referenced in the HTML template for SomeFooElement",
+        "propInProperties is referenced in the HTML template for SomeFooElement",
+    ]
+    for e in errors:
+      self.assertTrue(
+          e in str(context.exception), f'Didn\'t find expected error: {e}')
+    for e in non_errors:
+      self.assertFalse(
+          e in str(context.exception), f'Found unexpected error: {e}')
+
   def testWebUiEslintPlugin_LitElementInvalidInterface(self):
     with self.assertRaises(RuntimeError) as context:
       self._run_test([

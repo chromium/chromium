@@ -6,7 +6,7 @@
 
 import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {MyDummyElement} from './with_webui_plugin_logic_in_template_file_violations.js';
+import type {MyDummyElement} from './with_webui_plugin_lit_element_template_structure_violations.js';
 
 // Extra function declaration violation, belongs in a custom element or
 // inlined.

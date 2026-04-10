@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {TSESTree} from '/third_party/node/node_modules/@typescript-eslint/types/dist/index.js';
+import type {TSESLint, TSESTree} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 import {AST_NODE_TYPES as Node} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 import esquery from '/third_party/node/node_modules/esquery/dist/esquery.esm.min.js';
 import ts from '/third_party/node/node_modules/typescript/lib/typescript.js';
@@ -208,4 +208,20 @@ export function getLitPropertyType(
   }
 
   return null;
+}
+
+export function extractPropertiesFromClass(
+    file: ts.SourceFile, className: string,
+    context: TSESLint.RuleContext<string, readonly unknown[]>) {
+  const parser = context.languageOptions.parser as TSESLint.Parser.ParserModule;
+  const parserOptions = context.languageOptions.parserOptions;
+  assert.ok(parser && 'parse' in parser);
+  const ast = parser.parse(file.text, {
+    ...parserOptions,
+    filePath: file.fileName,
+  }) as TSESTree.Program;
+  // Match on class name suffix as well because some UIs use aliasing.
+  const propertiesQuery = esquery.parse(`ClassDeclaration[id.name=/${
+      className}/] > ClassBody > MethodDefinition[key.name="properties"] > FunctionExpression > BlockStatement > ReturnStatement > ObjectExpression > Property`);
+  return esquery.match(ast, propertiesQuery);
 }

@@ -5,7 +5,7 @@
 // Test file for @webui-eslint/lit-element-incorrect-interface
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {MyDummyElement} from './with_webui_plugin_lit_element_incorrect_interface_violations.js';
+import type {MyDummyElement} from './with_webui_plugin_lit_element_invalid_interface_violations.js';
 
 export function getHtml(this: MyDummyElement) {
   return html`
