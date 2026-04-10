@@ -121,6 +121,9 @@ fn parse_next_data_object(input: &str) -> Option<(Section<'_>, &str)> {
     //   99 characters.
     let (id, rest) = input.split_at_checked(2)?;
     let (length, rest) = rest.split_at_checked(2)?;
+    if length.starts_with('+') {
+        return None;
+    }
     let length: usize = length.parse().ok()?;
     let (value, rest) = rest.split_at_checked(length)?;
     Some((Section { id, value }, rest))

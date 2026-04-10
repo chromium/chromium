@@ -211,6 +211,15 @@ TEST_P(PixCodeValidatorTest, NoPixCodeIndicator) {
                            PixQrCodeResult::InvalidMerchantPresentedCode));
 }
 
+TEST_P(PixCodeValidatorTest, LengthWithLeadingPlus) {
+  // Code is invalid because the length of the static code section has a
+  // leading `+`. This is a regression test for the Rust validator, which uses
+  // `str::parse::<usize>()`, which allows a leading `+`.
+  EXPECT_TRUE(
+      CheckPixQrCodeResult("00020126270014br.gov.bcb.pix01+5ABCDE63041D3D",
+                           PixQrCodeResult::InvalidMerchantPresentedCode));
+}
+
 TEST(PixCodeValidatorCxxTest, ContainsPixCodeIdentifier) {
   constexpr char kPixCodeIndicatorLowercase[] = "0014br.gov.bcb.pix";
   EXPECT_TRUE(PixCodeValidator::ContainsPixIdentifier(
