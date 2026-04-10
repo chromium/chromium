@@ -100,30 +100,6 @@ void HTMLDataListElement::Prefinalize() {
   GetDocument().DecrementDataListCount();
 }
 
-void HTMLDataListElement::ShowPopoverInternal(Element* invoker,
-                                              ExceptionState* exception_state) {
-  HTMLElement::ShowPopoverInternal(invoker, exception_state);
-  if (!RuntimeEnabledFeatures::CustomizableComboboxEnabled()) {
-    return;
-  }
-
-  if (auto* input = DynamicTo<HTMLInputElement>(invoker)) {
-    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kPopover);
-    if (input->DataList() == this && input->IsAppearanceBase() &&
-        IsAppearanceBase()) {
-      for (Element* element_option : *options()) {
-        HTMLOptionElement* option = To<HTMLOptionElement>(element_option);
-        if (option->SupportsActiveOptionPseudo()) {
-          CHECK(!active_option_);
-          active_option_ = option;
-          active_option_->PseudoStateChanged(CSSSelector::kPseudoActiveOption);
-          break;
-        }
-      }
-    }
-  }
-}
-
 PopoverHideResult HTMLDataListElement::HidePopoverInternal(
     Element* invoker,
     HidePopoverFocusBehavior focus_behavior,
@@ -149,7 +125,19 @@ void HTMLDataListElement::Trace(Visitor* visitor) const {
 void HTMLDataListElement::MoveActiveOption(Direction direction) {
   CHECK(RuntimeEnabledFeatures::CustomizableComboboxEnabled());
   CHECK(IsAppearanceBase());
-  CHECK(active_option_);
+
+  if (!active_option_) {
+    for (Element* element_option : *options()) {
+      HTMLOptionElement* option = To<HTMLOptionElement>(element_option);
+      if (option->SupportsActiveOptionPseudo()) {
+        active_option_ = option;
+        active_option_->PseudoStateChanged(CSSSelector::kPseudoActiveOption);
+        active_option_->scrollIntoViewIfNeeded(/*center_if_needed=*/false);
+        break;
+      }
+    }
+    return;
+  }
 
   auto* option_list = options();
   unsigned active_option_index = 0;

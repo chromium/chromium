@@ -61,7 +61,6 @@ class CORE_EXPORT HTMLDataListElement final : public HTMLElement {
 
   HTMLOptionElement* ActiveOption() const { return active_option_; }
 
-  void ShowPopoverInternal(Element*, ExceptionState*) override;
   PopoverHideResult HidePopoverInternal(
       Element* invoker,
       HidePopoverFocusBehavior focus_behavior,
