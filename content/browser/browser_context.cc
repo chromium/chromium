@@ -383,6 +383,10 @@ const std::string& BrowserContext::UniqueId() const {
   return impl()->UniqueId();
 }
 
+const base::UnguessableToken& BrowserContext::UniqueToken() const {
+  return impl()->UniqueToken();
+}
+
 media::VideoDecodePerfHistory* BrowserContext::GetVideoDecodePerfHistory() {
   return impl()->GetVideoDecodePerfHistory();
 }

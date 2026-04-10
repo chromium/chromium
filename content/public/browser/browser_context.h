@@ -18,6 +18,7 @@
 #include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
+#include "base/unguessable_token.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/k_anonymity_service_delegate.h"
 #include "content/public/browser/pre_prefetch_handle.h"
@@ -335,7 +336,11 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   bool ShutdownStarted();
 
   // Returns a unique string associated with this browser context.
+  // DEPRECATED: Use UniqueToken() instead. See crbug.com/466132514.
   virtual const std::string& UniqueId() const;
+
+  // Returns a unique unguessable token associated with this browser context.
+  const base::UnguessableToken& UniqueToken() const;
 
   // Gets media service for storing/retrieving video decoding performance stats.
   // Exposed here rather than StoragePartition because all SiteInstances should

@@ -58,6 +58,7 @@ class CONTENT_EXPORT BrowserContextImpl {
   BrowserContextImpl& operator=(const BrowserContextImpl&) = delete;
 
   const std::string& UniqueId() const { return unique_id_; }
+  const base::UnguessableToken& UniqueToken() const { return unique_token_; }
 
   bool ShutdownStarted();
   void NotifyWillBeDestroyed();
@@ -141,7 +142,8 @@ class CONTENT_EXPORT BrowserContextImpl {
   explicit BrowserContextImpl(BrowserContext* self);
   raw_ptr<BrowserContext> self_;
 
-  const std::string unique_id_ = base::UnguessableToken::Create().ToString();
+  const base::UnguessableToken unique_token_ = base::UnguessableToken::Create();
+  const std::string unique_id_ = unique_token_.ToString();
   bool will_be_destroyed_soon_ = false;
 
   std::unique_ptr<StoragePartitionImplMap> storage_partition_map_;
