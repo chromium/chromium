@@ -53,7 +53,6 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'recordToolSelectionAction',
       'setActiveModelMode',
       'recordModelSelectionAction',
-      'setPage',
       'getInputState',
       'activateMetricsFunnel',
       'setPopupSelection',
@@ -65,10 +64,6 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
 
   setResultFor(methodName: string, result: any) {
     this.results_.set(methodName, result);
-  }
-
-  setPage(page: PageRemote) {
-    this.methodCalled('setPage', page);
   }
 
   onFocusChanged(focused: boolean) {

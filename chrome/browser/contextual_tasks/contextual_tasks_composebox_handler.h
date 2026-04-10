@@ -59,6 +59,7 @@ class ContextualTasksComposeboxHandler
       mojo::PendingRemote<composebox::mojom::Page> pending_page,
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
           pending_searchbox_handler,
+      mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
       GetSessionHandleCallback get_session_callback,
       ClearSessionHandleCallback clear_session_callback,
       TakeInputStateModelCallback take_input_model_callback);

@@ -35,6 +35,7 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
  public:
   WebuiOmniboxHandler(
       mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
+      mojo::PendingRemote<searchbox::mojom::Page> pending_page,
       MetricsReporter* metrics_reporter,
       OmniboxController* omnibox_controller,
       content::WebUI* web_ui,
@@ -60,10 +61,6 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
                      OmniboxPopupSelection::Step step);
   void OpenCurrentSelection(WindowOpenDisposition disposition);
   void SetAimButtonVisible(bool visible);
-
-  // ContextualSearchboxHandler:
-  void SetPage(
-      mojo::PendingRemote<searchbox::mojom::Page> pending_page) override;
 
   // SearchboxHandler:
   std::optional<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatch(

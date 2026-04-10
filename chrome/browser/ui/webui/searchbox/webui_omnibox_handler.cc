@@ -92,11 +92,13 @@ searchbox::mojom::SelectionLineState ConvertLineState(
 
 WebuiOmniboxHandler::WebuiOmniboxHandler(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
+    mojo::PendingRemote<searchbox::mojom::Page> pending_page,
     MetricsReporter* metrics_reporter,
     OmniboxController* omnibox_controller,
     content::WebUI* web_ui,
     GetSessionHandleCallback get_session_callback)
     : ContextualSearchboxHandler(std::move(pending_page_handler),
+                                 std::move(pending_page),
                                  Profile::FromWebUI(web_ui),
                                  web_ui->GetWebContents(),
                                  /*controller=*/nullptr,
@@ -127,6 +129,9 @@ WebuiOmniboxHandler::WebuiOmniboxHandler(
       contextual_search::kSearchContentSharingSettings,
       base::BindRepeating(&WebuiOmniboxHandler::OnContentSharingPolicyChanged,
                           base::Unretained(this)));
+
+  OnAimPopupEligibilityChanged();
+  OnContentSharingPolicyChanged();
 }
 
 WebuiOmniboxHandler::~WebuiOmniboxHandler() = default;
@@ -200,13 +205,6 @@ void WebuiOmniboxHandler::AddTabContext(int32_t tab_id,
 
   edit_model()->OpenAiMode(false, /*via_context_menu=*/false);
   std::move(callback).Run(base::ok(base::UnguessableToken::Create()));
-}
-
-void WebuiOmniboxHandler::SetPage(
-    mojo::PendingRemote<searchbox::mojom::Page> pending_page) {
-  ContextualSearchboxHandler::SetPage(std::move(pending_page));
-  OnAimPopupEligibilityChanged();
-  OnContentSharingPolicyChanged();
 }
 void WebuiOmniboxHandler::StepSelection(
     OmniboxPopupSelection::Direction direction,

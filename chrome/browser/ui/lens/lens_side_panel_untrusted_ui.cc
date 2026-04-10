@@ -276,14 +276,9 @@ void LensSidePanelUntrustedUI::BindInterface(
 }
 
 void LensSidePanelUntrustedUI::BindInterface(
-    mojo::PendingReceiver<searchbox::mojom::PageHandler> receiver) {
-  LensSearchboxController* controller =
-      GetLensSearchController().lens_searchbox_controller();
-
-  auto handler = std::make_unique<LensSearchboxHandler>(
-      std::move(receiver), Profile::FromWebUI(web_ui()),
-      web_ui()->GetWebContents(), /*lens_searchbox_client=*/controller);
-  controller->SetSidePanelSearchboxHandler(std::move(handler));
+    mojo::PendingReceiver<searchbox::mojom::PageHandlerFactory> receiver) {
+  searchbox_page_factory_receiver_.reset();
+  searchbox_page_factory_receiver_.Bind(std::move(receiver));
 }
 
 void LensSidePanelUntrustedUI::BindInterface(
@@ -299,6 +294,18 @@ void LensSidePanelUntrustedUI::BindInterface(
     mojo::PendingReceiver<composebox::mojom::PageHandlerFactory> receiver) {
   composebox_page_handler_factory_receiver_.reset();
   composebox_page_handler_factory_receiver_.Bind(std::move(receiver));
+}
+
+void LensSidePanelUntrustedUI::CreatePageHandler(
+    mojo::PendingRemote<searchbox::mojom::Page> page,
+    mojo::PendingReceiver<searchbox::mojom::PageHandler> receiver) {
+  LensSearchboxController* controller =
+      GetLensSearchController().lens_searchbox_controller();
+
+  auto handler = std::make_unique<LensSearchboxHandler>(
+      std::move(receiver), std::move(page), Profile::FromWebUI(web_ui()),
+      web_ui()->GetWebContents(), /*lens_searchbox_client=*/controller);
+  controller->SetSidePanelSearchboxHandler(std::move(handler));
 }
 
 void LensSidePanelUntrustedUI::CreatePageHandler(

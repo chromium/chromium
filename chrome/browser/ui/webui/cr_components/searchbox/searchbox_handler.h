@@ -85,8 +85,6 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
                        bool default_match_changed) override;
 
   // searchbox::mojom::PageHandler:
-  void SetPage(
-      mojo::PendingRemote<searchbox::mojom::Page> pending_page) override;
   void OnFocusChanged(bool focused) override;
   void QueryAutocomplete(const std::u16string& input,
                          bool prevent_inline_autocomplete) override;
@@ -171,6 +169,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
                            QueryAutocomplete_SkipsLensInputs_InToolModes);
   SearchboxHandler(
       mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
+      mojo::PendingRemote<searchbox::mojom::Page> pending_page,
       Profile* profile,
       content::WebContents* web_contents,
       std::unique_ptr<OmniboxController> controller);

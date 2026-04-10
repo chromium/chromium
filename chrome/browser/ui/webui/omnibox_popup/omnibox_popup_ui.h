@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/omnibox/browser/searchbox.mojom-forward.h"
+#include "components/omnibox/browser/searchbox.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -51,17 +51,18 @@ class OmniboxPopupUIConfig
 class OmniboxPopupUI : public TopChromeWebUIController,
                        public omnibox_popup::mojom::PageHandlerFactory,
                        public omnibox_popup_aim::mojom::PageHandlerFactory,
-                       public composebox::mojom::PageHandlerFactory {
+                       public composebox::mojom::PageHandlerFactory,
+                       public searchbox::mojom::PageHandlerFactory {
  public:
   explicit OmniboxPopupUI(content::WebUI* web_ui);
   OmniboxPopupUI(const OmniboxPopupUI&) = delete;
   OmniboxPopupUI& operator=(const OmniboxPopupUI&) = delete;
   ~OmniboxPopupUI() override;
 
-  // Instantiates the implementor of the searchbox::mojom::PageHandler mojo
-  // interface passing the pending receiver that will be internally bound.
+  // Instantiates the implementor of the searchbox::mojom::PageHandlerFactory
+  // mojo interface passing the pending receiver that will be internally bound.
   void BindInterface(content::RenderFrameHost* host,
-                     mojo::PendingReceiver<searchbox::mojom::PageHandler>
+                     mojo::PendingReceiver<searchbox::mojom::PageHandlerFactory>
                          pending_page_handler);
   WebuiOmniboxHandler* omnibox_handler() { return omnibox_handler_.get(); }
 
@@ -98,6 +99,11 @@ class OmniboxPopupUI : public TopChromeWebUIController,
           pending_searchbox_handler) override;
   ComposeboxHandler* composebox_handler() { return composebox_handler_.get(); }
 
+  // searchbox::mojom::PageHandlerFactory:
+  void CreatePageHandler(
+      mojo::PendingRemote<searchbox::mojom::Page> page,
+      mojo::PendingReceiver<searchbox::mojom::PageHandler> handler) override;
+
   static constexpr std::string_view GetWebUIName() { return "OmniboxPopup"; }
 
   // Lazily creates and returns a reference to the owned contextual search
@@ -126,6 +132,9 @@ class OmniboxPopupUI : public TopChromeWebUIController,
   std::unique_ptr<ComposeboxHandler> composebox_handler_;
   mojo::Receiver<composebox::mojom::PageHandlerFactory>
       composebox_page_factory_receiver_{this};
+
+  mojo::Receiver<searchbox::mojom::PageHandlerFactory>
+      searchbox_page_factory_receiver_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

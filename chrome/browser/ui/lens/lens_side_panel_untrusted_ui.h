@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/browser/ui/webui/top_chrome/untrusted_top_chrome_web_ui_controller.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/omnibox/browser/searchbox.mojom-forward.h"
+#include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -41,7 +41,8 @@ class LensSidePanelUntrustedUI
       public lens::mojom::LensSidePanelPageHandlerFactory,
       public lens::mojom::LensGhostLoaderPageHandlerFactory,
       public help_bubble::mojom::HelpBubbleHandlerFactory,
-      public composebox::mojom::PageHandlerFactory {
+      public composebox::mojom::PageHandlerFactory,
+      public searchbox::mojom::PageHandlerFactory {
  public:
   explicit LensSidePanelUntrustedUI(content::WebUI* web_ui);
 
@@ -62,10 +63,10 @@ class LensSidePanelUntrustedUI
       mojo::PendingReceiver<lens::mojom::LensGhostLoaderPageHandlerFactory>
           pending_receiver);
 
-  // Instantiates the implementor of the searchbox::mojom::PageHandler mojo
-  // interface passing the pending receiver that will be internally bound.
+  // Instantiates the implementor of the searchbox::mojom::PageHandlerFactory
+  // mojo interface passing the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<searchbox::mojom::PageHandler> receiver);
+      mojo::PendingReceiver<searchbox::mojom::PageHandlerFactory> receiver);
 
   // Instantiates the implementor of the
   // help_bubble::mojom::HelpBubbleHandlerFactory mojo interface passing the
@@ -104,6 +105,11 @@ class LensSidePanelUntrustedUI
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler)
       override;
 
+  // searchbox::mojom::PageHandlerFactory:
+  void CreatePageHandler(
+      mojo::PendingRemote<searchbox::mojom::Page> page,
+      mojo::PendingReceiver<searchbox::mojom::PageHandler> handler) override;
+
     // Instantiates the implementor of the composebox::mojom::PageHandler mojo
   // interface passing the pending receiver that will be internally bound.
   void CreatePageHandler(
@@ -126,6 +132,9 @@ class LensSidePanelUntrustedUI
 
   mojo::Receiver<composebox::mojom::PageHandlerFactory>
       composebox_page_handler_factory_receiver_{this};
+
+  mojo::Receiver<searchbox::mojom::PageHandlerFactory>
+      searchbox_page_factory_receiver_{this};
 
   base::WeakPtrFactory<LensSidePanelUntrustedUI> weak_factory_{this};
 

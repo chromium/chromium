@@ -25,10 +25,12 @@ class TestSearchboxHandler : public ContextualSearchboxHandler {
  public:
   TestSearchboxHandler(
       mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
+      mojo::PendingRemote<searchbox::mojom::Page> pending_page,
       Profile* profile,
       content::WebContents* web_contents,
       GetSessionHandleCallback get_session_callback)
       : ContextualSearchboxHandler(std::move(pending_page_handler),
+                                   std::move(pending_page),
                                    profile,
                                    web_contents,
                                    std::make_unique<OmniboxController>(
@@ -63,10 +65,9 @@ class ContextualSearchboxHandlerBrowserTest : public InProcessBrowserTest {
 
     handler_ = std::make_unique<TestSearchboxHandler>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
-        browser()->profile(),
+        page_.BindAndGetRemote(), browser()->profile(),
         /*web_contents=*/browser()->tab_strip_model()->GetActiveWebContents(),
         base::BindLambdaForTesting([&]() { return session_handle_.get(); }));
-    handler_->SetPage(page_.BindAndGetRemote());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

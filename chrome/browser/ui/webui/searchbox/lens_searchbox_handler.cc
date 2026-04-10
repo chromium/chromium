@@ -104,11 +104,13 @@ void LensOmniboxClient::OnAutocompleteAccept(
 
 LensSearchboxHandler::LensSearchboxHandler(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
+    mojo::PendingRemote<searchbox::mojom::Page> pending_page,
     Profile* profile,
     content::WebContents* web_contents,
     LensSearchboxClient* lens_searchbox_client)
     : SearchboxHandler(
           std::move(pending_page_handler),
+          std::move(pending_page),
           profile,
           web_contents,
           std::make_unique<OmniboxController>(
@@ -118,6 +120,11 @@ LensSearchboxHandler::LensSearchboxHandler(
               lens::features::GetLensSearchboxAutocompleteTimeout())),
       lens_searchbox_client_(lens_searchbox_client) {
   autocomplete_controller_observation_.Observe(autocomplete_controller());
+
+  // The client may have text waiting to be sent to the searchbox that it
+  // couldn't do earlier since the page binding was not set. So now we let the
+  // client know the binding is ready.
+  lens_searchbox_client_->OnPageBound();
 }
 
 LensSearchboxHandler::~LensSearchboxHandler() = default;
@@ -132,16 +139,6 @@ std::string LensSearchboxHandler::AutocompleteIconToResourceName(
   }
 
   return SearchboxHandler::AutocompleteIconToResourceName(icon);
-}
-
-void LensSearchboxHandler::SetPage(
-    mojo::PendingRemote<searchbox::mojom::Page> pending_page) {
-  SearchboxHandler::SetPage(std::move(pending_page));
-
-  // The client may have text waiting to be sent to the searchbox that it
-  // couldn't do earlier since the page binding was not set. So now we let the
-  // client know the binding is ready.
-  lens_searchbox_client_->OnPageBound();
 }
 
 void LensSearchboxHandler::OnFocusChanged(bool focused) {

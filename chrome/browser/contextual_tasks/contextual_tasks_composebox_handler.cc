@@ -157,6 +157,7 @@ ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
     mojo::PendingRemote<composebox::mojom::Page> pending_page,
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
         pending_searchbox_handler,
+    mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
     GetSessionHandleCallback get_session_callback,
     ClearSessionHandleCallback clear_session_callback,
     TakeInputStateModelCallback take_input_model_callback)
@@ -164,6 +165,7 @@ ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
           std::move(pending_handler),
           std::move(pending_page),
           std::move(pending_searchbox_handler),
+          std::move(pending_searchbox_page),
           profile,
           web_contents,
           std::make_unique<OmniboxController>(

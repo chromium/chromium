@@ -116,6 +116,7 @@ ComposeboxHandler::ComposeboxHandler(
     mojo::PendingRemote<composebox::mojom::Page> pending_page,
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
         pending_searchbox_handler,
+    mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
     Profile* profile,
     content::WebContents* web_contents,
     GetSessionHandleCallback get_session_callback,
@@ -124,6 +125,7 @@ ComposeboxHandler::ComposeboxHandler(
           std::move(pending_handler),
           std::move(pending_page),
           std::move(pending_searchbox_handler),
+          std::move(pending_searchbox_page),
           profile,
           web_contents,
           std::make_unique<OmniboxController>(
@@ -138,12 +140,14 @@ ComposeboxHandler::ComposeboxHandler(
     mojo::PendingRemote<composebox::mojom::Page> pending_page,
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
         pending_searchbox_handler,
+    mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
     Profile* profile,
     content::WebContents* web_contents,
     std::unique_ptr<OmniboxController> controller,
     GetSessionHandleCallback get_session_callback,
     ClearSessionHandleCallback clear_session_callback)
     : ContextualSearchboxHandler(std::move(pending_searchbox_handler),
+                                 std::move(pending_searchbox_page),
                                  profile,
                                  web_contents,
                                  std::move(controller),

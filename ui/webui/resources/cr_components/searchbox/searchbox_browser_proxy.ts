@@ -13,7 +13,7 @@
  */
 
 import type {AutocompleteMatch, AutocompleteResult, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {PageCallbackRouter, PageHandler} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 export function createAutocompleteMatch(
     modifiers: Partial<AutocompleteMatch> = {}): AutocompleteMatch {
@@ -95,10 +95,13 @@ export class SearchboxBrowserProxy {
   callbackRouter: PageCallbackRouter;
 
   constructor() {
-    this.handler = PageHandler.getRemote();
+    const handler = new PageHandlerRemote();
+    this.handler = handler;
     this.callbackRouter = new PageCallbackRouter();
 
-    this.handler.setPage(this.callbackRouter.$.bindNewPipeAndPassRemote());
+    PageHandlerFactory.getRemote().createPageHandler(
+        this.callbackRouter.$.bindNewPipeAndPassRemote(),
+        handler.$.bindNewPipeAndPassReceiver());
   }
 }
 
