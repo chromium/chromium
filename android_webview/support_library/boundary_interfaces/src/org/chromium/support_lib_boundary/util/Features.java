@@ -310,6 +310,7 @@ public class Features {
 
     // Profile.getMaxPrerenders
     // Profile.setMaxPrerenders
+    // Profile.clearMaxPrerenders
     public static final String SET_MAX_PRERENDERS = "SET_MAX_PRERENDERS_V1";
 
     // WebviewCompat.setDefaultTrafficStatsTag

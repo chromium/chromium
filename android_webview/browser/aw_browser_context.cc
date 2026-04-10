@@ -817,17 +817,17 @@ int AwBrowserContext::AllowedPrerenderingCount() const {
   return allowed_prerendering_count_;
 }
 
-void AwBrowserContext::SetAllowedPrerenderingCount(
-    JNIEnv* const env,
-    std::optional<int> allowed_count) {
+void AwBrowserContext::SetAllowedPrerenderingCount(JNIEnv* const env,
+                                                   int allowed_count) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  int sanitized_allowed_count =
-      allowed_count.value_or(kDefaultAllowedPrerenderingCount);
-  CHECK_GT(sanitized_allowed_count, 0);
-
+  CHECK_GT(allowed_count, 0);
   allowed_prerendering_count_ =
-      std::min(sanitized_allowed_count, kMaxAllowedPrerenderingCount);
+      std::min(allowed_count, kMaxAllowedPrerenderingCount);
+}
+
+void AwBrowserContext::ClearAllowedPrerenderingCount(JNIEnv* const env) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  allowed_prerendering_count_ = kDefaultAllowedPrerenderingCount;
 }
 
 void AwBrowserContext::WarmUpSpareRenderer(JNIEnv* const env) {

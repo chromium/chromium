@@ -44,20 +44,10 @@ public class AwBrowserContextTest extends AwParameterizedTest {
                     // android_webview/browser/aw_browser_context.h#kMaxAllowedPrerenderingCount
                     context.setMaxPrerenders(4);
                     Assert.assertEquals(3, context.getAllowedPrerenderingCount());
-                });
-    }
 
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    public void testSetMaxPrerendersNullDoesNotCrash() throws Throwable {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    AwBrowserContext context = AwBrowserContext.getDefault();
-                    // This should not crash when passing null.
-                    context.setMaxPrerenders(null);
-                    context.setMaxPrerenders(1);
-                    context.setMaxPrerenders(null);
+                    // Currently the maximum prerendering count is 2
+                    context.clearMaxPrerenders();
+                    Assert.assertEquals(2, context.getAllowedPrerenderingCount());
                 });
     }
 }

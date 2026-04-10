@@ -158,14 +158,24 @@ public class Profile {
     }
 
     /**
-     * @param maxPrerenders The maximum number of prerenders. If null, restores the default.
+     * Keeping this API since there are still versions hit it. setMaxPrerenders with int parameter
+     * should be used.
      */
     @UiThread
     public void setMaxPrerenders(@Nullable Integer maxPrerenders) {
-        if (maxPrerenders != null && maxPrerenders < 0) {
+        if (maxPrerenders == null) {
+            clearMaxPrerenders();
+        } else if (maxPrerenders >= 0) {
+            mBrowserContext.setMaxPrerenders(maxPrerenders);
+        } else {
             throw new IllegalArgumentException("Maximum prerenders can not be negative.");
         }
-        mBrowserContext.setMaxPrerenders(maxPrerenders);
+    }
+
+    /** Restores the default maxPrerenders */
+    @UiThread
+    public void clearMaxPrerenders() {
+        mBrowserContext.clearMaxPrerenders();
     }
 
     /**
@@ -174,6 +184,17 @@ public class Profile {
     @UiThread
     public int getMaxPrerenders() {
         return mBrowserContext.getAllowedPrerenderingCount();
+    }
+
+    /**
+     * @param maxPrerenders The maximum number of prerenders.
+     */
+    @UiThread
+    public void setMaxPrerenders(int maxPrerenders) {
+        if (maxPrerenders < 0) {
+            throw new IllegalArgumentException("Maximum prerenders can not be negative.");
+        }
+        mBrowserContext.setMaxPrerenders(maxPrerenders);
     }
 
     /**
@@ -188,35 +209,33 @@ public class Profile {
     }
 
     /**
-     * @param maxPrefetches The maximum number of prefetches. If null, restores the default.
+     * Keeping this API since there are still versions hit it. setMaxPrefetches with int parameter
+     * should be used.
      */
     @UiThread
     public void setMaxPrefetches(@Nullable Integer maxPrefetches) {
         if (maxPrefetches == null) {
             clearMaxPrefetches();
-        }
-
-        if (maxPrefetches < 0) {
+        } else if (maxPrefetches >= 0) {
+            mBrowserContext.getPrefetchManager().setMaxPrefetches(maxPrefetches);
+        } else {
             throw new IllegalArgumentException("Maximum prefetches can not be negative.");
         }
-
-        mBrowserContext.getPrefetchManager().setMaxPrefetches(maxPrefetches);
     }
 
     /**
-     * @param prefetchTTLSeconds Sets the TTL seconds for prefetch. If null, restores the default.
+     * Keeping this API since there are still versions hit it. setPrefetchTtlSeconds with int
+     * parameter should be used.
      */
     @UiThread
     public void setPrefetchTtlSeconds(@Nullable Integer prefetchTtlSeconds) {
         if (prefetchTtlSeconds == null) {
             clearPrefetchTtl();
-        }
-
-        if (prefetchTtlSeconds < 0) {
+        } else if (prefetchTtlSeconds >= 0) {
+            mBrowserContext.getPrefetchManager().setPrefetchTtlSeconds(prefetchTtlSeconds);
+        } else {
             throw new IllegalArgumentException("Prefetch TTL seconds can not be negative.");
         }
-
-        mBrowserContext.getPrefetchManager().setPrefetchTtlSeconds(prefetchTtlSeconds);
     }
 
     /**

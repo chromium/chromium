@@ -50,7 +50,12 @@ public interface ProfileBoundaryInterface {
             Executor callbackExecutor,
             /* PrefetchOperationCallback */ InvocationHandler callback);
 
+    void setMaxPrerenders(int maxPrerenders);
+
+    // Kept for compatibility. `int` version is going to be used moving forward.
     void setMaxPrerenders(@Nullable Integer maxPrerenders);
+
+    void clearMaxPrerenders();
 
     // Kept for compatibility. `int` version is going to be used moving forward.
     void setMaxPrefetches(@Nullable Integer maxPrefetches);

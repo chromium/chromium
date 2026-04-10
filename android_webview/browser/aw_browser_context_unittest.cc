@@ -87,8 +87,8 @@ TEST_F(AwBrowserContextTest, SetAllowedPrerenderingCount) {
   context.SetAllowedPrerenderingCount(nullptr, 4);
   EXPECT_EQ(context.AllowedPrerenderingCount(), kMaxAllowedPrerenderingCount);
 
-  // Reset to null (should go back to default 2).
-  context.SetAllowedPrerenderingCount(nullptr, std::nullopt);
+  // Clear the prerenders(should go back to default 2).
+  context.ClearAllowedPrerenderingCount(nullptr);
   EXPECT_EQ(context.AllowedPrerenderingCount(),
             kDefaultAllowedPrerenderingCount);
 
