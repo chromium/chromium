@@ -447,9 +447,18 @@ gfx::Insets BubbleSignInPromoView::GetBubbleSigninPromoMargins() {
 
 void BubbleSignInPromoView::SignIn() {
   std::optional<AccountInfo> account = signin_button_view_->account();
-  delegate_->OnSignIn(account.value_or(AccountInfo()));
+  // Take ownership of the delegate before closing the widget, as closing may
+  // result in the immediate destruction of `this`.
+  std::unique_ptr<BubbleSignInPromoDelegate> delegate = std::move(delegate_);
+
+  // `CloseWithReason()` must be called before `OnSignIn()` to ensure that the
+  // `kAcceptButtonClicked` reason is recorded. Otherwise, the focus loss
+  // triggered by opening the sign-in tab could cause the widget to close with
+  // `kLostFocus` instead.
   GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kAcceptButtonClicked);
+
+  delegate->OnSignIn(account.value_or(AccountInfo()));
 }
 
 void BubbleSignInPromoView::AddedToWidget() {
