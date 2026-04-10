@@ -225,6 +225,7 @@ public class CustomTabToolbarUnitTest {
                 null,
                 null,
                 /* homeButtonCoordinator= */ null,
+                /* signinButtonCoordinator= */ null,
                 mThemeColorProvider,
                 mIncognitoStateProvider,
                 /* incognitoWindowCountSupplier= */ null);

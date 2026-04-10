@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.toolbar.home_button.HomeButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.reload_button.ReloadButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.signin_button.SigninButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColorObserver;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator;
@@ -100,6 +101,8 @@ public abstract class ToolbarLayout extends FrameLayout
     private @Nullable AppMenuButtonHelper mAppMenuButtonHelper;
 
     private @Nullable ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
+
+    protected @Nullable SigninButtonCoordinator mSigninButtonCoordinator;
 
     private @Nullable TopToolbarOverlayCoordinator mOverlayCoordinator;
 
@@ -166,6 +169,7 @@ public abstract class ToolbarLayout extends FrameLayout
             @Nullable BackButtonCoordinator backButtonCoordinator,
             @Nullable ForwardButtonCoordinator forwardButtonCoordinator,
             HomeButtonCoordinator homeButtonCoordinator,
+            @Nullable SigninButtonCoordinator signinButtonCoordinator,
             ThemeColorProvider themeColorProvider,
             IncognitoStateProvider incognitoStateProvider,
             @Nullable Supplier<Integer> incognitoWindowCountSupplier) {
@@ -173,6 +177,7 @@ public abstract class ToolbarLayout extends FrameLayout
         mToolbarTabController = tabController;
         mMenuButtonCoordinator = menuButtonCoordinator;
         mTabSwitcherButtonCoordinator = tabSwitcherButtonCoordinator;
+        mSigninButtonCoordinator = signinButtonCoordinator;
         mProgressBar = progressBar;
 
         setThemeColorProvider(themeColorProvider);

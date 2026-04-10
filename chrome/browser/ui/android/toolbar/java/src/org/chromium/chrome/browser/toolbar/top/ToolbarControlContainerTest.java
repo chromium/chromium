@@ -656,6 +656,7 @@ public class ToolbarControlContainerTest {
                 mBackButtonCoordinator,
                 mForwardButtonCoordinator,
                 mHomeButtonCoordinator,
+                /* signinButtonCoordinator= */ null,
                 mThemeColorProvider,
                 mIncognitoStateProvider,
                 /* incognitoWindowCountSupplier= */ null);

@@ -263,7 +263,9 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                                 deviceLockActivityLauncher,
                                 bottomSheetController,
                                 modalDialogManager,
-                                snackbarManager);
+                                snackbarManager,
+                                normalThemeColorProvider,
+                                incognitoStateProvider);
             }
         }
         mResourceManagerSupplier = resourceManagerSupplier;
@@ -325,6 +327,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                 mBackButtonCoordinator,
                 forwardButtonCoordinator,
                 homeButtonCoordinator,
+                mSigninButtonCoordinator,
                 normalThemeColorProvider,
                 incognitoStateProvider,
                 incognitoWindowCountSupplier);

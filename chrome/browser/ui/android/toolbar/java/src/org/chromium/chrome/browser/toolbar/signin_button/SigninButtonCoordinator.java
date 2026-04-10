@@ -4,13 +4,20 @@
 
 package org.chromium.chrome.browser.toolbar.signin_button;
 
+import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.isToolbarTabletResizeRefactorEnabled;
+
 import android.content.Context;
+import android.view.View;
 import android.view.ViewStub;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.top.ToolbarChildButton;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -21,9 +28,10 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/** The coordinator for a signin button on the NTP toolbar. Owns the the SigninButton view. */
+/** The coordinator for a signin button on the NTP toolbar. Owns the SigninButton view. */
 @NullMarked
-public final class SigninButtonCoordinator {
+public class SigninButtonCoordinator extends ToolbarChildButton {
+    private final Context mContext;
     private final SigninButtonMediator mMediator;
     private final PropertyModel mModel;
     private final @Nullable ViewStub mViewStub;
@@ -40,7 +48,11 @@ public final class SigninButtonCoordinator {
             DeviceLockActivityLauncher deviceLockActivityLauncher,
             BottomSheetController bottomSheetController,
             ModalDialogManager modalDialogManager,
-            SnackbarManager snackbarManager) {
+            SnackbarManager snackbarManager,
+            ThemeColorProvider themeColorProvider,
+            IncognitoStateProvider incognitoStateProvider) {
+        super(context, themeColorProvider, incognitoStateProvider);
+        mContext = context;
         mModel = new PropertyModel.Builder(SigninButtonProperties.ALL_KEYS).build();
         mMediator =
                 new SigninButtonMediator(
@@ -59,10 +71,70 @@ public final class SigninButtonCoordinator {
         mViewStub = viewStub;
     }
 
-    /** Updates the button visibility and inflates SigninButton once it should be visible. */
-    public void updateButtonVisibility(Boolean showButton) {
-        mMediator.updateButtonVisibility(showButton);
-        if (mModel.get(SigninButtonProperties.SHOW_BUTTON) && mView == null && mViewStub != null) {
+    /**
+     * Sets whether the SigninButton has space to show and inflates SigninButton view if needed.
+     *
+     * @param hasSpaceToShow Whether the button has space to show.
+     */
+    @Override
+    public void setHasSpaceToShow(boolean hasSpaceToShow) {
+        mMediator.setHasSpaceToShow(hasSpaceToShow);
+        maybeInflateView();
+    }
+
+    /**
+     * @return Returns true if the SigninButton view is attached with its visibility set to VISIBLE.
+     */
+    @Override
+    public boolean isVisible() {
+        return mView != null && mView.getVisibility() == View.VISIBLE;
+    }
+
+    /**
+     * Updates whether the button has space to show based on available width.
+     *
+     * @param availableWidth The width available for this button.
+     * @return The width used by the button.
+     */
+    @Override
+    public int updateVisibility(int availableWidth) {
+        assert isToolbarTabletResizeRefactorEnabled();
+
+        // Cannot measure accurately if inflation has not happened yet.
+        maybeInflateView();
+
+        if (mView == null) {
+            return 0;
+        }
+
+        final int width;
+        if (mModel.get(SigninButtonProperties.USE_SIGNIN_TEXT_BUTTON)) {
+            mView.measure(
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+            width = mView.getMeasuredWidth();
+        } else {
+            width = mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
+        }
+        setHasSpaceToShow(availableWidth >= width);
+        return Math.min(availableWidth, width);
+    }
+
+    /**
+     * Called by the toolbar to set whether the button should be shown based on page state (e.g.
+     * only on the NTP) and inflates SigninButton view if needed.
+     *
+     * @param shouldShowOnPage Whether the button should be shown.
+     */
+    public void updateButtonVisibility(boolean shouldShowOnPage) {
+        mMediator.updateButtonVisibility(shouldShowOnPage);
+        maybeInflateView();
+    }
+
+    private void maybeInflateView() {
+        if (mModel.get(SigninButtonProperties.SHOULD_SHOW_ON_PAGE)
+                && mView == null
+                && mViewStub != null) {
 
             // Once the view initially is set to be visible, SigninButtonView should be inflated.
             mView = (SigninButtonView) mViewStub.inflate();
@@ -73,6 +145,7 @@ public final class SigninButtonCoordinator {
     }
 
     /** Call to tear down dependencies. */
+    @Override
     public void destroy() {
         if (mPropertyModelChangeProcessor != null) {
             mPropertyModelChangeProcessor.destroy();
