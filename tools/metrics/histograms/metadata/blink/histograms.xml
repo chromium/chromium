@@ -4375,20 +4375,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.MobileMetrics.BadTapTargetRatioTime"
-    units="microseconds" expires_after="2022-12-01">
-  <owner>kumagi@google.com</owner>
-  <owner>gaul@google.com</owner>
-  <owner>paint-dev@google.com</owner>
-  <summary>
-    The time taken in MobileFriendliness::ComputebadTapTargetsRatio evalution.
-    This metric recorded at 5 seconds after first MainFrame's commit and
-    periodically every 1 minutes after that.
-
-    The histogram does not record metric on machines with low-resolution clocks.
-  </summary>
-</histogram>
-
 <histogram name="Blink.ModelContext.DelayedToolCount" units="count"
     expires_after="2027-03-10">
   <owner>mfoltz@chromium.org</owner>
@@ -5162,15 +5148,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Blink.ScanPendingActivityDuration" units="ms"
-    expires_after="M85">
-  <owner>haraken@chromium.org</owner>
-  <summary>
-    Duration of time taken to scan pending activities of all V8 wrappers in a
-    worker thread.
-  </summary>
-</histogram>
-
 <histogram name="Blink.Script.AsyncScript.FromReadyToStartExecution.Time"
     units="ms" expires_after="2027-01-10">
   <owner>chikamune@chromium.org</owner>
@@ -5181,16 +5158,6 @@ chromium-metrics-reviews@google.com.
     Record when async scripts or dynamically inserted scripts run. Measures the
     duration between when a script is ready to run, to when the script is about
     to run.
-  </summary>
-</histogram>
-
-<histogram name="Blink.Script.AsyncScriptCount" units="count"
-    expires_after="2022-04-04">
-  <owner>dom@chromium.org</owner>
-  <owner>chrome-loading@google.com</owner>
-  <summary>
-    The total number of async scripts associated with a document at the time
-    parsing has finished.
   </summary>
 </histogram>
 
