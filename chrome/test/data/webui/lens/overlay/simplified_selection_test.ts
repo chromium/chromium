@@ -22,6 +22,12 @@ import {addEmptyRegionTextToPage, addEmptyTextToPage, addGenericRegionWordsToPag
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
 
+type SelectedRegionContextMenuEvent = CustomEvent<{
+  selectionStartIndex: number,
+  selectionEndIndex: number,
+  text?: string,
+}>;
+
 const TEXT_RECEIVED_TIMEOUT_MS = 1000000;
 const COPY_TEXT_TIMEOUT_MS = 1000001;
 const TRANSLATE_TEXT_TIMEOUT_MS = 1000002;
@@ -177,7 +183,8 @@ suite('SimplifiedSelection', function() {
     // When the detect text in region event is received, the context menu should
     // be shown without any detected text.
     const showSelectedRegionContextMenuEventPromise =
-        eventToPromise('show-selected-region-context-menu', document.body);
+        eventToPromise<SelectedRegionContextMenuEvent>(
+            'show-selected-region-context-menu', document.body);
 
     await dispatchDetectTextInRegionEvent();
 
@@ -325,7 +332,8 @@ suite('SimplifiedSelection', function() {
         // When the detect text in region event is received, the context menu
         // should be shown without any detected text.
         const showSelectedRegionContextMenuEventPromise =
-            eventToPromise('show-selected-region-context-menu', document.body);
+            eventToPromise<SelectedRegionContextMenuEvent>(
+                'show-selected-region-context-menu', document.body);
         await dispatchDetectTextInRegionEvent();
         const showSelectedRegionContextMenuEvent =
             await showSelectedRegionContextMenuEventPromise;
@@ -362,7 +370,8 @@ suite('SimplifiedSelection', function() {
     // When the detect text in region event is received, the context menu should
     // be shown without any detected text.
     const showSelectedRegionContextMenuEventPromise =
-        eventToPromise('show-selected-region-context-menu', document.body);
+        eventToPromise<SelectedRegionContextMenuEvent>(
+            'show-selected-region-context-menu', document.body);
     await dispatchDetectTextInRegionEvent();
     const showSelectedRegionContextMenuEvent =
         await showSelectedRegionContextMenuEventPromise;
@@ -378,7 +387,8 @@ suite('SimplifiedSelection', function() {
     // When the detect text in region event is received, the context menu should
     // be shown without any detected text.
     const showSelectedRegionContextMenuEventPromise =
-        eventToPromise('show-selected-region-context-menu', document.body);
+        eventToPromise<SelectedRegionContextMenuEvent>(
+            'show-selected-region-context-menu', document.body);
     await dispatchDetectTextInRegionEvent();
     const showSelectedRegionContextMenuEvent =
         await showSelectedRegionContextMenuEventPromise;
@@ -403,7 +413,8 @@ suite('SimplifiedSelection', function() {
     // When the detect text in region event is received, the context menu should
     // be shown without any detected text.
     const showSelectedRegionContextMenuEventPromise =
-        eventToPromise('show-selected-region-context-menu', document.body);
+        eventToPromise<SelectedRegionContextMenuEvent>(
+            'show-selected-region-context-menu', document.body);
     await dispatchDetectTextInRegionEvent();
     const showSelectedRegionContextMenuEvent =
         await showSelectedRegionContextMenuEventPromise;
@@ -690,12 +701,14 @@ suite('SimplifiedSelection', function() {
     await waitAfterNextRender(textLayerElement);
 
     const showSelectedRegionContextMenuEvent =
-        eventToPromise('show-selected-region-context-menu', document.body);
+        eventToPromise<SelectedRegionContextMenuEvent>(
+            'show-selected-region-context-menu', document.body);
     await dispatchDetectTextInRegionEvent();
     await showSelectedRegionContextMenuEvent;
 
     const updateSelectedRegionContextMenuEventPromise =
-        eventToPromise('update-selected-region-context-menu', document.body);
+        eventToPromise<SelectedRegionContextMenuEvent>(
+            'update-selected-region-context-menu', document.body);
     await dispatchDetectTextInRegionEvent();
     await updateSelectedRegionContextMenuEventPromise;
 
@@ -704,7 +717,8 @@ suite('SimplifiedSelection', function() {
     textLayerElement.onSelectionFinish();
 
     const showSelectedRegionContextMenuEvent2 =
-        eventToPromise('show-selected-region-context-menu', document.body);
+        eventToPromise<SelectedRegionContextMenuEvent>(
+            'show-selected-region-context-menu', document.body);
     await dispatchDetectTextInRegionEvent();
     await showSelectedRegionContextMenuEvent2;
   });
@@ -798,7 +812,8 @@ suite('SimplifiedSelection', function() {
     // Verify text responses are cleared by simulating a new selection and
     // asserting no text is detected.
     const showSelectedRegionContextMenuEventPromise =
-        eventToPromise('show-selected-region-context-menu', document.body);
+        eventToPromise<SelectedRegionContextMenuEvent>(
+            'show-selected-region-context-menu', document.body);
     callTextReceivedTimeout();
     await dispatchDetectTextInRegionEvent();
     const showSelectedRegionContextMenuEvent =

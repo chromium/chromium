@@ -11,6 +11,7 @@ import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, New
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import type {HoverButtonElement} from 'chrome://customize-chrome-side-panel.top-chrome/hover_button.js';
 import type {ManagedDialogElement} from 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
+import type {CrA11yAnnouncerMessagesSentEvent} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -101,7 +102,8 @@ suite('AppearanceTest', () => {
     document.body.addEventListener(
         'cr-a11y-announcer-messages-sent', updateAnnouncementCount);
     const announcementPromise =
-        eventToPromise('cr-a11y-announcer-messages-sent', document.body);
+        eventToPromise<CrA11yAnnouncerMessagesSentEvent>(
+            'cr-a11y-announcer-messages-sent', document.body);
 
     // Set non-classic chrome theme.
     let theme = createTheme();
@@ -140,7 +142,8 @@ suite('AppearanceTest', () => {
     document.body.addEventListener(
         'cr-a11y-announcer-messages-sent', updateAnnouncementCount);
     const announcementPromise =
-        eventToPromise('cr-a11y-announcer-messages-sent', document.body);
+        eventToPromise<CrA11yAnnouncerMessagesSentEvent>(
+            'cr-a11y-announcer-messages-sent', document.body);
 
     // Set initial classic chrome, which should not announce, since
     // it is the initial theme.

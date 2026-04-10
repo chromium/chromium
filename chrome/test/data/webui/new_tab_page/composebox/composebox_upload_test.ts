@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {CrA11yAnnouncerMessagesSentEvent} from 'chrome://new-tab-page/new_tab_page.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {ContextualSearchInputStateDeletionType} from 'chrome://resources/cr_components/composebox/common.js';
 import {ContextUploadErrorType, ContextUploadStatus, InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
@@ -158,7 +159,8 @@ suite('NewTabPageComposeboxUploadFileTest', () => {
           document.body.addEventListener(
               'cr-a11y-announcer-messages-sent', updateAnnouncementCount);
           let announcementPromise =
-              eventToPromise('cr-a11y-announcer-messages-sent', document.body);
+              eventToPromise<CrA11yAnnouncerMessagesSentEvent>(
+                  'cr-a11y-announcer-messages-sent', document.body);
 
           const id = testSupport.generateZeroId();
           await testSupport.uploadFileAndVerify(testProxy, id, file);
@@ -174,7 +176,8 @@ suite('NewTabPageComposeboxUploadFileTest', () => {
           await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
 
           announcementPromise =
-              eventToPromise('cr-a11y-announcer-messages-sent', document.body);
+              eventToPromise<CrA11yAnnouncerMessagesSentEvent>(
+                  'cr-a11y-announcer-messages-sent', document.body);
           announcement = await announcementPromise;
           assertEquals(announcementCount, 2);
           assertTrue(!!announcement);

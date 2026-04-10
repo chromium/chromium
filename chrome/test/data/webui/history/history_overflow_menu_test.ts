@@ -48,7 +48,8 @@ suite('#overflow-menu', function() {
     assertTrue(!!moreButton);
 
     // Ensure that the menu corresponds to the clicked item.
-    let whenChangeQueryFired = eventToPromise('change-query', listContainer);
+    let whenChangeQueryFired = eventToPromise<CustomEvent<{search: string}>>(
+        'change-query', listContainer);
     moreButton.click();
     let e = await whenChangeQueryFired;
 
@@ -69,7 +70,8 @@ suite('#overflow-menu', function() {
     assertTrue(sharedMenu.open);
 
     // Ensure that the menu corresponds to the newly clicked item.
-    whenChangeQueryFired = eventToPromise('change-query', listContainer);
+    whenChangeQueryFired = eventToPromise<CustomEvent<{search: string}>>(
+        'change-query', listContainer);
     moreButton.click();
     e = await whenChangeQueryFired;
     assertEquals('host:www.wikipedia.org', e.detail.search);

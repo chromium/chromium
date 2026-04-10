@@ -156,7 +156,8 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Close composebox.
     const whenCloseComposebox =
-        eventToPromise('close-composebox', testProxy.element);
+        eventToPromise<CustomEvent<{composeboxText: string}>>(
+            'close-composebox', testProxy.element);
     $$<HTMLElement>(
         testProxy.element.getInputElement(), '#cancelIcon')!.click();
     await whenCloseComposebox;
@@ -292,7 +293,8 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
 
     const whenCloseComposebox =
-        eventToPromise('close-composebox', testProxy.element);
+        eventToPromise<CustomEvent<{composeboxText: string}>>(
+            'close-composebox', testProxy.element);
 
     // Assert call occurs.
     testProxy.element.$.composebox.dispatchEvent(
@@ -311,7 +313,8 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Close composebox.
     const whenCloseComposebox =
-        eventToPromise('close-composebox', testProxy.element);
+        eventToPromise<CustomEvent<{composeboxText: string}>>(
+            'close-composebox', testProxy.element);
     const cancelIcon =
         $$<HTMLElement>(testProxy.element.getInputElement(), '#cancelIcon');
     cancelIcon!.click();

@@ -14,7 +14,7 @@ import {getTemplate} from './cr_a11y_announcer.html.js';
  * @fileoverview
  */
 
-type CrA11yAnnouncerMessagesSentEvent = CustomEvent<{
+export type CrA11yAnnouncerMessagesSentEvent = CustomEvent<{
   messages: string[],
 }>;
 

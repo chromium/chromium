@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {HistoryAppElement, HistoryEntry, HistoryItemElement, HistoryListElement, HistoryToolbarElement} from 'chrome://history/history.js';
+import type {CrA11yAnnouncerMessagesSentEvent, HistoryAppElement, HistoryEntry, HistoryItemElement, HistoryListElement, HistoryToolbarElement} from 'chrome://history/history.js';
 import {BrowserServiceImpl, CrRouter} from 'chrome://history/history.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -707,7 +707,8 @@ suite('HistoryListTest', function() {
     async function getMessagesForResults(
         term: string, results: HistoryEntry[]) {
       const a11yMessagesEventPromise =
-          eventToPromise('cr-a11y-announcer-messages-sent', document.body);
+          eventToPromise<CrA11yAnnouncerMessagesSentEvent>(
+              'cr-a11y-announcer-messages-sent', document.body);
       element.queryState.incremental = false;
       element.historyResult({finished: true, term}, results);
       return (await a11yMessagesEventPromise).detail.messages[0];

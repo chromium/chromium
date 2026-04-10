@@ -22,6 +22,13 @@ import {eventToPromise, isVisible} from 'chrome-untrusted://webui-test/test_util
 import {TestLanguageBrowserProxy} from './test_language_browser_proxy.js';
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
 
+type FocusRegionEvent = CustomEvent<{requester: ShimmerControlRequester}>;
+type TranslateModeStateChangeEvent = CustomEvent<{
+  shouldUnselectWords: boolean,
+  translateModeEnabled: boolean,
+  targetLanguage: string,
+}>;
+
 const TEST_FETCH_LANGUAGES = [
   {
     languageCode: 'es',
@@ -94,9 +101,10 @@ suite('OverlayTranslateButton', function() {
     const expectedTargetLanguage =
         await testLanguageBrowserProxy.getTranslateTargetLanguage();
     const focusRegionEventPromise =
-        eventToPromise('focus-region', document.body);
+        eventToPromise<FocusRegionEvent>('focus-region', document.body);
     let translateModeStateChangePromise =
-        eventToPromise('translate-mode-state-changed', document.body);
+        eventToPromise<TranslateModeStateChangeEvent>(
+            'translate-mode-state-changed', document.body);
     // Click the translate button to show the language picker.
     overlayTranslateButtonElement.$.translateEnableButton.click();
 
@@ -128,9 +136,10 @@ suite('OverlayTranslateButton', function() {
     // Clicking again should toggle the language picker and send a end
     // translate mode request.
     const unfocusRegionEventPromise =
-        eventToPromise('unfocus-region', document.body);
+        eventToPromise<FocusRegionEvent>('unfocus-region', document.body);
     translateModeStateChangePromise =
-        eventToPromise('translate-mode-state-changed', document.body);
+        eventToPromise<TranslateModeStateChangeEvent>(
+            'translate-mode-state-changed', document.body);
     overlayTranslateButtonElement.$.translateDisableButton.click();
     // Clicking the translate button again should unfocus the shimmer.
     await unfocusRegionEventPromise;
@@ -427,8 +436,10 @@ suite('OverlayTranslateButton', function() {
     const firstSourceLanguage = 'auto';
     const firstTargetLanguage = 'sw';
     let translateModeStateChangePromise =
-        eventToPromise('translate-mode-state-changed', document.body);
-    let focusRegionEventPromise = eventToPromise('focus-region', document.body);
+        eventToPromise<TranslateModeStateChangeEvent>(
+            'translate-mode-state-changed', document.body);
+    let focusRegionEventPromise =
+        eventToPromise<FocusRegionEvent>('focus-region', document.body);
     callbackRouterRemote.setTranslateMode(
         firstSourceLanguage, firstTargetLanguage);
     await waitAfterNextRender(overlayTranslateButtonElement);
@@ -464,7 +475,8 @@ suite('OverlayTranslateButton', function() {
     const secondSourceLanguage = 'sw';
     const secondTargetLanguage = 'en';
     translateModeStateChangePromise =
-        eventToPromise('translate-mode-state-changed', document.body);
+        eventToPromise<TranslateModeStateChangeEvent>(
+            'translate-mode-state-changed', document.body);
     callbackRouterRemote.setTranslateMode(
         secondSourceLanguage, secondTargetLanguage);
     await waitAfterNextRender(overlayTranslateButtonElement);
@@ -486,9 +498,10 @@ suite('OverlayTranslateButton', function() {
         secondTargetLanguage);
 
     let unfocusRegionEventPromise =
-        eventToPromise('unfocus-region', document.body);
+        eventToPromise<FocusRegionEvent>('unfocus-region', document.body);
     translateModeStateChangePromise =
-        eventToPromise('translate-mode-state-changed', document.body);
+        eventToPromise<TranslateModeStateChangeEvent>(
+            'translate-mode-state-changed', document.body);
     // `setTranslateMode` is called with empty languages when there is a
     // non-translate selection to go back to via back button. This means the
     // translate mode should be disabled.
@@ -516,9 +529,11 @@ suite('OverlayTranslateButton', function() {
 
     const thirdSourceLanguage = 'en';
     const thirdTargetLanguage = 'sw';
-    focusRegionEventPromise = eventToPromise('focus-region', document.body);
+    focusRegionEventPromise =
+        eventToPromise<FocusRegionEvent>('focus-region', document.body);
     translateModeStateChangePromise =
-        eventToPromise('translate-mode-state-changed', document.body);
+        eventToPromise<TranslateModeStateChangeEvent>(
+            'translate-mode-state-changed', document.body);
     callbackRouterRemote.setTranslateMode(
         thirdSourceLanguage, thirdTargetLanguage);
     await waitAfterNextRender(overlayTranslateButtonElement);
@@ -551,9 +566,11 @@ suite('OverlayTranslateButton', function() {
         translateModeStateChangeEvent.detail.targetLanguage,
         thirdTargetLanguage);
 
-    unfocusRegionEventPromise = eventToPromise('unfocus-region', document.body);
+    unfocusRegionEventPromise =
+        eventToPromise<FocusRegionEvent>('unfocus-region', document.body);
     translateModeStateChangePromise =
-        eventToPromise('translate-mode-state-changed', document.body);
+        eventToPromise<TranslateModeStateChangeEvent>(
+            'translate-mode-state-changed', document.body);
     callbackRouterRemote.setTranslateMode('', '');
     await waitAfterNextRender(overlayTranslateButtonElement);
     // Verify translate mode is disabled.
@@ -593,7 +610,7 @@ suite('OverlayTranslateButton', function() {
     const sourceLanguage = 'auto';
     const targetLanguage = 'sw';
     const focusRegionEventPromise =
-        eventToPromise('focus-region', document.body);
+        eventToPromise<FocusRegionEvent>('focus-region', document.body);
     callbackRouterRemote.setTranslateMode(sourceLanguage, targetLanguage);
     await waitAfterNextRender(overlayTranslateButtonElement);
 

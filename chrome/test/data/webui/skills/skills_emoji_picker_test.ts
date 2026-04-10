@@ -96,7 +96,8 @@ suite('SkillsEmojiPicker', function() {
         emojiPicker.shadowRoot.querySelector<HTMLElement>('.emoji-button');
     assertTrue(!!button);
 
-    const eventPromise = eventToPromise('emoji-selected', emojiPicker);
+    const eventPromise = eventToPromise<CustomEvent<{emoji: string}>>(
+        'emoji-selected', emojiPicker);
     button.click();
 
     const event = await eventPromise;

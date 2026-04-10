@@ -7,6 +7,7 @@ import 'chrome://new-tab-page/new_tab_page.js';
 import type {NtpSearchboxElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {BrowserProxyImpl, MetricsReporterImpl, SearchboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {ContextType} from 'chrome://resources/cr_components/composebox/common.js';
+import type {ComposeboxState, FileUpload, TabUpload} from 'chrome://resources/cr_components/composebox/common.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
@@ -198,7 +199,8 @@ suite('NewTabPageRealboxNextTest', () => {
     assertTrue(!!contextElement);
 
     // Act & Assert.
-    const whenOpenComposeBox = eventToPromise('open-composebox', realbox);
+    const whenOpenComposeBox = eventToPromise<CustomEvent<ComposeboxState>>(
+        'open-composebox', realbox);
     contextElement.dispatchEvent(new CustomEvent('add-tab-context', {
       detail: {id: 1, title: 'title'},
       bubbles: true,
@@ -206,8 +208,9 @@ suite('NewTabPageRealboxNextTest', () => {
     }));
     const event = await whenOpenComposeBox;
     assertEquals(event.detail.files.length, 1);
-    assertEquals(event.detail.files[0].tabId, 1);
-    assertEquals(event.detail.files[0].title, 'title');
+    const tabUpload = event.detail.files[0] as TabUpload;
+    assertEquals(tabUpload.tabId, 1);
+    assertEquals(tabUpload.title, 'title');
   });
 
   test('clicking deep search button opens composebox', async () => {
@@ -219,7 +222,8 @@ suite('NewTabPageRealboxNextTest', () => {
     assertTrue(!!contextMenuEntrypoint, 'contextual entrypoint button');
 
     // Act.
-    const whenOpenComposeBox = eventToPromise('open-composebox', realbox);
+    const whenOpenComposeBox = eventToPromise<CustomEvent<ComposeboxState>>(
+        'open-composebox', realbox);
 
     const entrypointButton =
         contextMenuEntrypoint.shadowRoot.querySelector<HTMLElement>(
@@ -256,7 +260,8 @@ suite('NewTabPageRealboxNextTest', () => {
     assertTrue(!!contextMenuEntrypoint, 'contextual-entrypoint-button');
 
     // Act.
-    const whenOpenComposeBox = eventToPromise('open-composebox', realbox);
+    const whenOpenComposeBox = eventToPromise<CustomEvent<ComposeboxState>>(
+        'open-composebox', realbox);
 
     const entrypointButton =
         contextMenuEntrypoint.shadowRoot.querySelector<HTMLElement>(
@@ -296,17 +301,18 @@ suite('NewTabPageRealboxNextTest', () => {
       composed: true,
     });
 
-    const whenOpenComposeBox = eventToPromise('open-composebox', realbox);
+    const whenOpenComposeBox = eventToPromise<CustomEvent<ComposeboxState>>(
+        'open-composebox', realbox);
     realbox.$.input.inputElement.dispatchEvent(pasteEvent);
     await microtasksFinished();
     const event = await whenOpenComposeBox;
 
     assertTrue(!!event);
     assertEquals(event.detail.files.length, 2);
-    const file1 = event.detail.files[0];
+    const file1 = event.detail.files[0] as FileUpload;
     assertEquals('pasted.png', file1.file.name);
     assertEquals('image/png', file1.file.type);
-    const file2 = event.detail.files[1];
+    const file2 = event.detail.files[1] as FileUpload;
     assertEquals('pasted.pdf', file2.file.name);
     assertEquals('application/pdf', file2.file.type);
     assertFalse((realbox.$.input as any).pastedInInput_);
@@ -367,7 +373,8 @@ suite('NewTabPageRealboxNextTest', () => {
   });
 
   test('clicking composebox button emits an event.', async () => {
-    const whenOpenComposeBox = eventToPromise('open-composebox', realbox);
+    const whenOpenComposeBox = eventToPromise<CustomEvent<ComposeboxState>>(
+        'open-composebox', realbox);
 
     const composeButton =
         realbox.shadowRoot.querySelector<HTMLElement>('#composeButton');

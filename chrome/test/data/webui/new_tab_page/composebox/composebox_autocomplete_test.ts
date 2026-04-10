@@ -1286,7 +1286,8 @@ suite('NewTabPageComposeboxAutocompleteVoiceSearchTest', () => {
         testProxy.searchboxHandler.reset();
 
         const voiceSearchActionPromise =
-            eventToPromise('voice-search-action', testProxy.element);
+            eventToPromise<CustomEvent<{value: VoiceSearchAction}>>(
+                'voice-search-action', testProxy.element);
         const voiceQuery = 'hello';
         const voiceSearchElement = $$<ComposeboxVoiceSearchElement>(
             testProxy.element, 'cr-composebox-voice-search');

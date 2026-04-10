@@ -39,7 +39,8 @@ suite('UrlItemElementTest', () => {
   });
 
   test('close button click fires', async () => {
-    const eventPromise = eventToPromise('close-button-click', urlItemElement);
+    const eventPromise = eventToPromise<CustomEvent<number>>(
+        'close-button-click', urlItemElement);
 
     const closeButton = urlItemElement.$.closeButton;
     closeButton.click();
