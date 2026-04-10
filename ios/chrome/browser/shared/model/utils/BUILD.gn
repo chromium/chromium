@@ -28,6 +28,17 @@ source_set("utils") {
   frameworks = [ "WebKit.framework" ]
 }
 
+source_set("web_state_deferred_executor") {
+  sources = [
+    "web_state_deferred_executor.h",
+    "web_state_deferred_executor.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/web/public",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
   sources = [

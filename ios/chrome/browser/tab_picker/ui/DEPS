@@ -1,0 +1,7 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/composebox/ui",
+  "+ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui",
+  "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid",
+  # keep-sorted end
+]

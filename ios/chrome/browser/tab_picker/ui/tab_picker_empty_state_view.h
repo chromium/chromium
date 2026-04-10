@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_TAB_PICKER_EMPTY_STATE_VIEW_H_
-#define IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_TAB_PICKER_EMPTY_STATE_VIEW_H_
+#ifndef IOS_CHROME_BROWSER_TAB_PICKER_UI_TAB_PICKER_EMPTY_STATE_VIEW_H_
+#define IOS_CHROME_BROWSER_TAB_PICKER_UI_TAB_PICKER_EMPTY_STATE_VIEW_H_
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_empty_view.h"
 
@@ -11,4 +11,4 @@
 @interface ComposeboxTabPickerEmptyStateView : UIView <GridEmptyView>
 @end
 
-#endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_TAB_PICKER_EMPTY_STATE_VIEW_H_
+#endif  // IOS_CHROME_BROWSER_TAB_PICKER_UI_TAB_PICKER_EMPTY_STATE_VIEW_H_

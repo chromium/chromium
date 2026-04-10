@@ -70,13 +70,7 @@ source_set("input_plate") {
     "composebox_omnibox_client.h",
     "composebox_omnibox_client.mm",
     "composebox_omnibox_client_delegate.h",
-    "composebox_tab_picker_coordinator.h",
-    "composebox_tab_picker_coordinator.mm",
-    "composebox_tab_picker_mediator.h",
-    "composebox_tab_picker_mediator.mm",
     "composebox_url_loader.h",
-    "web_state_deferred_executor.h",
-    "web_state_deferred_executor.mm",
   ]
   public_deps = [
     ":availability",
@@ -94,7 +88,6 @@ source_set("input_plate") {
     ":omnibox_deps",
     ":search_deps",
     ":shared_deps",
-    ":tab_switcher_deps",
     ":url_loading_deps",
     "//components/application_locale_storage",
     "//components/contextual_search:public",
@@ -118,8 +111,11 @@ source_set("input_plate") {
     "//ios/chrome/browser/https_upgrades/model",
     "//ios/chrome/browser/intents/model:model_donation_helper",
     "//ios/chrome/browser/prerender/model",
+    "//ios/chrome/browser/shared/model/utils:web_state_deferred_executor",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/tab_picker/coordinator",
+    "//ios/chrome/browser/tab_switcher/ui_bundled:utils",
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/variations/model/client",
     "//ios/chrome/browser/web/model",
@@ -203,21 +199,6 @@ group("common_deps") {
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/common/ui/util:image_util",
-  ]
-}
-
-group("tab_switcher_deps") {
-  visibility = [ ":*" ]
-  public_deps = [
-    "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator:mediator",
-    "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui",
-    "//ios/chrome/browser/tab_switcher/ui_bundled",
-    "//ios/chrome/browser/tab_switcher/ui_bundled:items",
-    "//ios/chrome/browser/tab_switcher/ui_bundled:utils",
-    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_mode",
-    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_item_identifier",
-    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_utils",
-    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:selected_grid_items",
   ]
 }
 

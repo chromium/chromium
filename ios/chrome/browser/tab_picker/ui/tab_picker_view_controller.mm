@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/composebox/ui/composebox_tab_picker_view_controller.h"
+#import "ios/chrome/browser/tab_picker/ui/tab_picker_view_controller.h"
 
-#import "ios/chrome/browser/composebox/ui/composebox_tab_picker_empty_state_view.h"
-#import "ios/chrome/browser/composebox/ui/composebox_tab_picker_mutator.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_constants.h"
-#import "ios/chrome/browser/shared/public/commands/composebox_tab_picker_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_picker_commands.h"
+#import "ios/chrome/browser/tab_picker/ui/tab_picker_empty_state_view.h"
+#import "ios/chrome/browser/tab_picker/ui/tab_picker_mutator.h"
 #import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui/base_grid_view_controller.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"

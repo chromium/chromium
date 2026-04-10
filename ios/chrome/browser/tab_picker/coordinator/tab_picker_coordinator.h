@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_COMPOSEBOX_COORDINATOR_COMPOSEBOX_TAB_PICKER_COORDINATOR_H_
-#define IOS_CHROME_BROWSER_COMPOSEBOX_COORDINATOR_COMPOSEBOX_TAB_PICKER_COORDINATOR_H_
+#ifndef IOS_CHROME_BROWSER_TAB_PICKER_COORDINATOR_TAB_PICKER_COORDINATOR_H_
+#define IOS_CHROME_BROWSER_TAB_PICKER_COORDINATOR_TAB_PICKER_COORDINATOR_H_
 
 #include <set>
 
-#import "ios/chrome/browser/composebox/coordinator/composebox_tab_picker_mediator.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "ios/chrome/browser/tab_picker/coordinator/tab_picker_mediator.h"
 #import "ios/web/public/web_state.h"
 
 @protocol ComposeboxTabPickerCommands;
@@ -60,4 +60,4 @@
     composeboxTabPickerHandler;
 
 @end
-#endif  // IOS_CHROME_BROWSER_COMPOSEBOX_COORDINATOR_COMPOSEBOX_TAB_PICKER_COORDINATOR_H_
+#endif  // IOS_CHROME_BROWSER_TAB_PICKER_COORDINATOR_TAB_PICKER_COORDINATOR_H_

@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_COMPOSEBOX_COORDINATOR_COMPOSEBOX_INPUT_PLATE_COORDINATOR_H_
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
-#import "ios/chrome/browser/shared/public/commands/composebox_tab_picker_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_picker_commands.h"
 
 @protocol ComposeboxDebuggerLogger;
 @class ComposeboxInputPlateViewController;
