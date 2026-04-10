@@ -10,6 +10,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_constants.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/utils/autofill_ai_date_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
@@ -95,6 +96,10 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
 }
 
 }  // namespace
+
+@interface AutofillAISaveEntityTableViewController () <
+    TableViewLinkHeaderFooterItemDelegate>
+@end
 
 @implementation AutofillAISaveEntityTableViewController {
   // New entity to save.
@@ -208,6 +213,12 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
   if (sectionIdentifier == SectionIdentifierFooter) {
     TableViewLinkHeaderFooterView* footer =
         DequeueTableViewHeaderFooter<TableViewLinkHeaderFooterView>(tableView);
+    footer.delegate = self;
+    if ([self isSaveToWallet]) {
+      GURL url = _oldEntity.has_value() ? autofill::GetGoogleWalletPassesURL()
+                                        : autofill::GetManageYourInfoURL();
+      footer.urls = @[ [[CrURL alloc] initWithGURL:url] ];
+    }
     [footer setText:[self footerText]
           withColor:[UIColor colorNamed:kTextSecondaryColor]];
     return footer;
@@ -257,11 +268,22 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
 
 - (NSString*)footerText {
   if ([self isSaveToWallet]) {
-    return l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_AI_FOOTER_SAVE_TO_WALLET,
-                                   _userEmail);
+    if (_oldEntity.has_value()) {
+      return autofill::GetUpdateEntitySavedInWalletFooterText(
+          base::SysUTF16ToNSString(_userEmail));
+    } else {
+      return autofill::GetSaveEntityToWalletFooterText(
+          base::SysUTF16ToNSString(_userEmail));
+    }
   } else {
     return l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_FOOTER_SAVE_TO_DEVICE);
   }
+}
+
+#pragma mark - TableViewLinkHeaderFooterItemDelegate
+
+- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
+  [self.delegate didTapLinkWithURL:URL];
 }
 
 @end

@@ -7,9 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
-@class AutofillAIEntityEditTableViewController;
-@class TableViewItem;
 @class AutofillAIEntityCountryItem;
+@class AutofillAIEntityEditTableViewController;
+@class CrURL;
+@class TableViewItem;
 
 // Delegate for the AutofillAIEntityEditTableViewController.
 @protocol AutofillAIEntityEditTableViewControllerDelegate
@@ -27,6 +28,9 @@
 
 // Called when the entity is saved locally and an alert needs to be shown.
 - (void)showLocalSaveFallbackAlert;
+
+// Called when the user taps on a link in the footer.
+- (void)didTapLinkWithURL:(CrURL*)url;
 
 @end
 

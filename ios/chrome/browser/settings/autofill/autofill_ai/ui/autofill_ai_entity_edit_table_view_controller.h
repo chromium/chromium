@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_consumer.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_date_item.h"
 #import "ios/chrome/browser/settings/autofill/ui/autofill_edit_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 
 @protocol AutofillAIEntityEditTableViewControllerDelegate;
 @protocol AutofillAIEntityEditMutator;
@@ -15,6 +16,7 @@
 @interface AutofillAIEntityEditTableViewController
     : AutofillEditTableViewController <AutofillAIEntityEditConsumer,
                                        AutofillAIEntityEditDateItemDelegate,
+                                       TableViewLinkHeaderFooterItemDelegate,
                                        UITextFieldDelegate>
 
 @property(nonatomic, weak) id<AutofillAIEntityEditTableViewControllerDelegate>

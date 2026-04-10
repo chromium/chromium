@@ -163,4 +163,38 @@ NSString* GetDialogTitleForEditEntity(EntityTypeName entity_type_name) {
   }
 }
 
+NSString* GetSaveEntityToWalletFooterText(NSString* user_email) {
+  NSString* googleWallet =
+      l10n_util::GetNSString(IDS_AUTOFILL_GOOGLE_WALLET_TITLE);
+  NSString* linkText =
+      l10n_util::GetNSString(IDS_AUTOFILL_MANAGE_YOUR_INFO_LINK);
+  NSString* formattedLink =
+      [NSString stringWithFormat:@"BEGIN_LINK%@END_LINK", linkText];
+  return l10n_util::GetNSStringF(
+      IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW,
+      base::SysNSStringToUTF16(googleWallet),
+      base::SysNSStringToUTF16(formattedLink),
+      base::SysNSStringToUTF16(googleWallet),
+      base::SysNSStringToUTF16(user_email));
+}
+
+NSString* GetUpdateEntitySavedInWalletFooterText(NSString* user_email) {
+  NSString* googleWallet =
+      l10n_util::GetNSString(IDS_AUTOFILL_GOOGLE_WALLET_TITLE);
+  NSString* formattedLink =
+      [NSString stringWithFormat:@"BEGIN_LINK%@END_LINK", googleWallet];
+  return l10n_util::GetNSStringF(
+      IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE,
+      base::SysNSStringToUTF16(formattedLink),
+      base::SysNSStringToUTF16(user_email));
+}
+
+GURL GetManageYourInfoURL() {
+  return GURL("https://support.google.com/wallet?p=private_use_across_google");
+}
+
+GURL GetGoogleWalletPassesURL() {
+  return GURL("https://wallet.google.com/wallet/passes");
+}
+
 }  // namespace autofill

@@ -21,6 +21,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/autofill/ui_bundled/address_editor:autofill_shared_ui",
     "//ios/chrome/browser/autofill/ui_bundled/address_editor/cells",
     "//ios/chrome/browser/device_reauth/model",
+    "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/settings/autofill/autofill_ai/ui",
     "//ios/chrome/browser/settings/autofill/autofill_ai/ui:edit_items",
     "//ios/chrome/browser/settings/autofill/autofill_ai/utils",

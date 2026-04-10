@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/country_item.h"
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/autofill_ai_entity_edit_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/autofill_ai_entity_edit_mediator.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_country_item.h"
@@ -183,6 +184,13 @@ autofill::EntityInstance GetEmptyEntityInstanceForType(
 - (void)dismissViewController:
     (AutofillAIEntityEditTableViewController*)viewController {
   [self.delegate autofillAIEntityEditCoordinatorDidFinish:self];
+}
+
+- (void)didTapLinkWithURL:(CrURL*)url {
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  [sceneHandler
+      openURLInNewTab:[OpenNewTabCommand commandWithURLFromChrome:url.gurl]];
 }
 
 - (void)didTapCountryItem:(AutofillAIEntityCountryItem*)item {

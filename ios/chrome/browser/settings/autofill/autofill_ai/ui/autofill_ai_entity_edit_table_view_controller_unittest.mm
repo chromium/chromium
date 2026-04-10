@@ -6,6 +6,8 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_country_item.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_item.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_mutator.h"
@@ -205,9 +207,8 @@ TEST_F(AutofillAIEntityEditTableViewControllerTest,
           [view_controller.tableViewModel footerForSectionIndex:0]);
 
   EXPECT_TRUE(footer);
-  EXPECT_NSEQ(footer.text, l10n_util::GetNSStringF(
-                               IDS_IOS_AUTOFILL_AI_SAVED_TO_WALLET_FOOTER,
-                               base::SysNSStringToUTF16(test_email)));
+  EXPECT_EQ(1U, footer.urls.count);
+  EXPECT_EQ(autofill::GetManageYourInfoURL(), footer.urls[0].gurl);
 }
 
 TEST_F(AutofillAIEntityEditTableViewControllerTest,
