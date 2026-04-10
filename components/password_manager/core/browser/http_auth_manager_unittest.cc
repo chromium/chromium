@@ -305,6 +305,146 @@ TEST_P(HttpAuthManagerTest, HttpAuthFillingReauthFailure) {
   httpauth_manager()->DetachObserver(&observer);
 }
 
+// Test autofill when biometric re-auth is required and successful but origin
+// mismatches.
+TEST_P(HttpAuthManagerTest, HttpAuthFillingReauthOriginMismatch) {
+  EXPECT_CALL(client_, IsFillingEnabled).WillRepeatedly(Return(true));
+  EXPECT_CALL(client_, IsReauthBeforeFillingRequired)
+      .WillRepeatedly(Return(true));
+  base::MockOnceClosure mock_callback;
+  EXPECT_CALL(client_, AutofillHttpAuth)
+      .WillOnce(
+          [&](const password_manager::PasswordForm& preferred_match,
+              const password_manager::PasswordFormManagerForUI* form_manager) {
+            // Modify the match to have a different origin.
+            PasswordForm mismatched_match = preferred_match;
+            mismatched_match.url = GURL("http://different.com/");
+            httpauth_manager()->Autofill(mismatched_match, form_manager,
+                                         mock_callback.Get());
+          });
+
+  auto mock_authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  EXPECT_CALL(*mock_authenticator, AuthenticateWithMessage)
+      .WillOnce(base::test::RunOnceCallback<1>(true));
+  EXPECT_CALL(*mock_authenticator, Cancel).Times(testing::AtLeast(1));
+  EXPECT_CALL(client_, GetDeviceAuthenticator)
+      .WillOnce(Return(testing::ByMove(std::move(mock_authenticator))));
+
+  PasswordForm observed_form;
+  observed_form.scheme = PasswordForm::Scheme::kBasic;
+  observed_form.url = GURL("http://proxy.com/");
+  observed_form.signon_realm = "proxy.com/realm";
+
+  PasswordForm stored_form = observed_form;
+  stored_form.username_value = u"user";
+  stored_form.password_value = u"1234";
+
+  MockHttpAuthObserver observer;
+
+  base::WeakPtr<PasswordStoreConsumer> consumer;
+  EXPECT_CALL(*store_, GetLogins).WillOnce(SaveArg<1>(&consumer));
+  httpauth_manager()->SetObserverAndDeliverCredentials(&observer,
+                                                       observed_form);
+  EXPECT_CALL(observer, OnAutofillDataAvailable).Times(0);
+  EXPECT_CALL(mock_callback, Run).Times(0);
+
+  ASSERT_TRUE(consumer);
+  std::vector<PasswordForm> result;
+  result.push_back(stored_form);
+  consumer->OnGetPasswordStoreResultsOrErrorFrom(store_.get(),
+                                                 std::move(result));
+  testing::Mock::VerifyAndClearExpectations(&store_);
+
+  httpauth_manager()->DetachObserver(&observer);
+}
+
+TEST_P(HttpAuthManagerTest, CrossOriginLeakViaStaleBiometricObserver) {
+  EXPECT_CALL(client_, IsFillingEnabled).WillRepeatedly(Return(true));
+  EXPECT_CALL(client_, IsReauthBeforeFillingRequired)
+      .WillRepeatedly(Return(true));
+
+  base::MockOnceClosure mock_filling_complete;
+  EXPECT_CALL(client_, AutofillHttpAuth)
+      .WillRepeatedly(
+          [&](const password_manager::PasswordForm& preferred_match,
+              const password_manager::PasswordFormManagerForUI* form_manager) {
+            httpauth_manager()->Autofill(preferred_match, form_manager,
+                                         mock_filling_complete.Get());
+          });
+
+  device_reauth::DeviceAuthenticator::AuthenticateCallback pending_auth_cb;
+  auto mock_authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  device_reauth::MockDeviceAuthenticator* authenticator_ptr =
+      mock_authenticator.get();
+  EXPECT_CALL(*authenticator_ptr, AuthenticateWithMessage)
+      .WillOnce(
+          [&](const std::u16string&,
+              device_reauth::DeviceAuthenticator::AuthenticateCallback cb) {
+            pending_auth_cb = std::move(cb);
+          });
+
+  // The pending authenticator MUST be cancelled when the observer changes.
+  EXPECT_CALL(*authenticator_ptr, Cancel).Times(testing::AtLeast(1));
+
+  EXPECT_CALL(client_, GetDeviceAuthenticator)
+      .WillOnce(Return(testing::ByMove(std::move(mock_authenticator))));
+
+  // Step 1: First HTTP-auth challenge from victim.com
+  PasswordForm victim_form;
+  victim_form.scheme = PasswordForm::Scheme::kBasic;
+  victim_form.url = GURL("https://victim.example/");
+  victim_form.signon_realm = "https://victim.example/realm";
+
+  PasswordForm victim_creds = victim_form;
+  victim_creds.username_value = u"victim_user";
+  victim_creds.password_value = u"victim_secret";
+
+  testing::StrictMock<MockHttpAuthObserver> victim_observer;
+
+  base::WeakPtr<PasswordStoreConsumer> victim_consumer;
+  EXPECT_CALL(*store_, GetLogins(PasswordFormDigest(victim_form), _))
+      .WillOnce(SaveArg<1>(&victim_consumer));
+  httpauth_manager()->SetObserverAndDeliverCredentials(&victim_observer,
+                                                       victim_form);
+  ASSERT_TRUE(victim_consumer);
+  std::vector<PasswordForm> victim_result;
+  victim_result.push_back(victim_creds);
+  victim_consumer->OnGetPasswordStoreResultsOrErrorFrom(
+      store_.get(), std::move(victim_result));
+  // Biometric prompt is now armed and pending.
+  ASSERT_FALSE(pending_auth_cb.is_null());
+
+  // Step 2: Second HTTP-auth challenge from evil.com
+  PasswordForm evil_form;
+  evil_form.scheme = PasswordForm::Scheme::kBasic;
+  evil_form.url = GURL("https://evil.example/");
+  evil_form.signon_realm = "https://evil.example/realm";
+
+  testing::StrictMock<MockHttpAuthObserver> evil_observer;
+
+  EXPECT_CALL(victim_observer, OnLoginModelDestroying);
+  EXPECT_CALL(*store_, GetLogins(PasswordFormDigest(evil_form), _))
+      .WillOnce(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
+
+  // This call should trigger Cancel() on the authenticator.
+  httpauth_manager()->SetObserverAndDeliverCredentials(&evil_observer,
+                                                       evil_form);
+
+  // Step 3: User completes the biometric prompt (simulated)
+  EXPECT_CALL(victim_observer, OnAutofillDataAvailable).Times(0);
+  EXPECT_CALL(evil_observer, OnAutofillDataAvailable).Times(0);
+  EXPECT_CALL(mock_filling_complete, Run).Times(0);
+
+  std::move(pending_auth_cb).Run(/*auth_result=*/true);
+
+  testing::Mock::VerifyAndClearExpectations(authenticator_ptr);
+  testing::Mock::VerifyAndClearExpectations(store_.get());
+  httpauth_manager()->DetachObserver(&evil_observer);
+  httpauth_manager_.reset();
+}
+
 TEST_P(HttpAuthManagerTest, HttpAuthSaving) {
   for (bool filling_and_saving_enabled : {true, false}) {
     SCOPED_TRACE(testing::Message("filling_and_saving_enabled=")

@@ -62,11 +62,15 @@ void HttpAuthManagerImpl::SetObserverAndDeliverCredentials(
   if (observer_) {
     observer_->OnLoginModelDestroying();
   }
+  if (authenticator_) {
+    authenticator_->Cancel();
+  }
   observer_ = observer;
 
   if (!client_->IsFillingEnabled(observed_form.url)) {
     return;
   }
+  observed_origin_ = url::Origin::Create(observed_form.url);
   // Initialize the form manager.
   form_manager_ = std::make_unique<PasswordFormManager>(
       client_, PasswordFormDigest(observed_form), nullptr /* form_fetcher */,
@@ -107,7 +111,7 @@ void HttpAuthManagerImpl::Autofill(const PasswordForm& preferred_match,
   auto filling_callback = base::BindOnce(
       &HttpAuthManagerImpl::OnReauthCompleted, weak_ptr_factory_.GetWeakPtr(),
       preferred_match.username_value, preferred_match.password_value,
-      std::move(on_filling_complete));
+      url::Origin::Create(preferred_match.url), std::move(on_filling_complete));
   if (authenticator_) {
     authenticator_->Cancel();
   }
@@ -126,9 +130,17 @@ void HttpAuthManagerImpl::Autofill(const PasswordForm& preferred_match,
 void HttpAuthManagerImpl::OnReauthCompleted(
     const std::u16string& username,
     const std::u16string& password,
+    const url::Origin& credential_origin,
     base::OnceClosure on_filling_complete,
     bool auth_result) {
   if (observer_ && auth_result) {
+    if (observed_origin_ != credential_origin) {
+      return;
+    }
+    if (form_manager_ &&
+        url::Origin::Create(form_manager_->GetURL()) != credential_origin) {
+      return;
+    }
     observer_->OnAutofillDataAvailable(username, password);
     std::move(on_filling_complete).Run();
   }

@@ -11,6 +11,7 @@
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/http_auth_manager.h"
 #include "components/password_manager/core/browser/http_auth_observer.h"
+#include "url/origin.h"
 
 namespace device_reauth {
 class DeviceAuthenticator;
@@ -68,6 +69,7 @@ class HttpAuthManagerImpl : public HttpAuthManager {
 
   void OnReauthCompleted(const std::u16string& username,
                          const std::u16string& password,
+                         const url::Origin& credential_origin,
                          base::OnceClosure on_filling_complete,
                          bool auth_result);
 
@@ -83,6 +85,9 @@ class HttpAuthManagerImpl : public HttpAuthManager {
   // When set to true, the password form has been dismissed and |form_manager_|
   // will be cleared on next navigation.
   bool form_dismissed_ = false;
+
+  // The origin of the observed form.
+  url::Origin observed_origin_;
 
   // The authenticator used to trigger a biometric re-auth before filling.
   std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator_;
