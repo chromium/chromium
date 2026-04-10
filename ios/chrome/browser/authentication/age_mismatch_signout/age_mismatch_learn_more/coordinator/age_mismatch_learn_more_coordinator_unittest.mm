@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/age_mismatch_learn_more/coordinator/age_mismatch_learn_more_coordinator.h"
+#import "ios/chrome/browser/authentication/age_mismatch_signout/age_mismatch_learn_more/coordinator/age_mismatch_learn_more_coordinator.h"
 
 #import <WebKit/WebKit.h>
 

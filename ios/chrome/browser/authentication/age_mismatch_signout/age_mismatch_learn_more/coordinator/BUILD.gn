@@ -12,7 +12,7 @@ source_set("coordinator") {
     "//components/signin/public/base",
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/authentication/age_mismatch_learn_more/ui",
+    "//ios/chrome/browser/authentication/age_mismatch_signout/age_mismatch_learn_more/ui",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",

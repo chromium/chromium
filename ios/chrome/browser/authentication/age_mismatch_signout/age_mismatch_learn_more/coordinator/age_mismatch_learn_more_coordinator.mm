@@ -11,7 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/authentication/age_mismatch_learn_more/ui/age_mismatch_learn_more_view_controller.h"
+#import "ios/chrome/browser/authentication/age_mismatch_signout/age_mismatch_learn_more/ui/age_mismatch_learn_more_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

@@ -1,5 +1,5 @@
 include_rules = [
-  "+ios/chrome/browser/authentication/age_mismatch_learn_more/coordinator/age_mismatch_learn_more_coordinator.h",
+  "+ios/chrome/browser/authentication/authentication/age_mismatch_signout/coordinator/age_mismatch_learn_more_coordinator.h",
   "+ios/chrome/browser/authentication/ui_bundled/continuation.h",
   "+ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h",
   "+ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h",
