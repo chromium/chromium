@@ -77,6 +77,7 @@ config("skia_config") {
     "SK_CODEC_ENCODES_PNG_WITH_RUST",
 
     "SK_CODEC_DECODES_BMP_WITH_RUST",
+    "SK_CODEC_COLOR_PROFILE_PARSE_WITH_RUST",
     "SK_EXIF_PARSE_WITH_RUST",
   ]
 
@@ -760,8 +761,8 @@ rust_static_library("rust_icc_ffi") {
 
 source_set("rust_icc_ffi_cpp") {
   visibility = [ ":*" ]
-  public = skia_rust_icc_ffi_cpp_hdrs
-  sources = skia_rust_icc_ffi_cpp_srcs
+  public = skia_rust_icc_ffi_cpp_hdrs + skia_codec_rust_icc_codec_hdrs
+  sources = skia_rust_icc_ffi_cpp_srcs + skia_codec_rust_icc_codec_srcs
   public_deps = [
     ":rust_common_ffi_cpp",
     ":skia_core_public_headers",
