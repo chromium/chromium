@@ -50,11 +50,6 @@ class TabWebContentsDelegateAndroid
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
-  void CreateSmsPrompt(content::RenderFrameHost*,
-                       const std::vector<url::Origin>&,
-                       const std::string& one_time_code,
-                       base::OnceClosure on_confirm,
-                       base::OnceClosure on_cancel) override;
   bool ShouldFocusLocationBarByDefault(content::WebContents* source) override;
   void FindReply(content::WebContents* web_contents,
                  int request_id,

@@ -53,7 +53,6 @@
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/blocked_content/popup_blocker.h"
 #include "components/blocked_content/popup_tracker.h"
-#include "components/browser_ui/sms/android/sms_infobar.h"
 #include "components/browser_ui/util/android/url_constants.h"
 #include "components/external_intents/android/external_intents_features.h"
 #include "components/find_in_page/find_notification_details.h"
@@ -180,22 +179,6 @@ void TabWebContentsDelegateAndroid::RunFileChooser(
     const FileChooserParams& params) {
   FileSelectHelper::RunFileChooser(render_frame_host, std::move(listener),
                                    params);
-}
-
-void TabWebContentsDelegateAndroid::CreateSmsPrompt(
-    content::RenderFrameHost* host,
-    const std::vector<url::Origin>& origin_list,
-    const std::string& one_time_code,
-    base::OnceClosure on_confirm,
-    base::OnceClosure on_cancel) {
-  DCHECK_EQ(host->GetLifecycleState(),
-            content::RenderFrameHost::LifecycleState::kActive);
-
-  auto* web_contents = content::WebContents::FromRenderFrameHost(host);
-  sms::SmsInfoBar::Create(
-      web_contents,
-      infobars::ContentInfoBarManager::FromWebContents(web_contents),
-      origin_list, one_time_code, std::move(on_confirm), std::move(on_cancel));
 }
 
 bool TabWebContentsDelegateAndroid::ShouldFocusLocationBarByDefault(
