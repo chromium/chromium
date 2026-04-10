@@ -4,6 +4,8 @@
 
 source_set("model") {
   sources = [
+    "files_request_handler_ios.h",
+    "files_request_handler_ios.mm",
     "ios_analysis_request_handler.h",
     "ios_analysis_request_handler.mm",
     "ios_cloud_binary_upload_service.h",
@@ -21,7 +23,10 @@ source_set("model") {
     "//components/prefs",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/enterprise/common",
+    "//ios/chrome/browser/enterprise/connectors",
+    "//ios/chrome/browser/enterprise/connectors:util",
     "//ios/chrome/browser/enterprise/connectors/analysis",
+    "//ios/chrome/browser/enterprise/connectors/reporting",
     "//ios/chrome/browser/enterprise/enterprise_dialog/model",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/application_context",
@@ -41,6 +46,7 @@ source_set("model") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "files_request_handler_ios_unittest.mm",
     "ios_content_analysis_request_unittest.mm",
     "scan_decision_helper_unittest.mm",
   ]
@@ -48,8 +54,13 @@ source_set("unit_tests") {
     ":model",
     "//base",
     "//base/test:test_support",
+    "//components/enterprise/connectors/core",
     "//components/enterprise/connectors/core:cloud_content_scanning",
+    "//components/sync_preferences:test_support",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/enterprise/common/test",
+    "//ios/chrome/browser/enterprise/connectors",
+    "//ios/chrome/browser/enterprise/connectors/reporting",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
@@ -57,6 +68,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/fakes",
+    "//ios/components/enterprise/analysis:features",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",

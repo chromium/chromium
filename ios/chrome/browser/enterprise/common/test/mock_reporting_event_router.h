@@ -20,11 +20,19 @@ class MockReportingEventRouter
   using ReferrerChain =
       google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>;
 
+  using FrameUrlChain = google::protobuf::RepeatedPtrField<std::string>;
+
  public:
   explicit MockReportingEventRouter(
       enterprise_connectors::IOSRealtimeReportingClient* reporting_client);
   ~MockReportingEventRouter() override;
 
+  MOCK_METHOD(
+      void,
+      OnSensitiveDataEvent,
+      (const enterprise_connectors::ReportingEventRouter::SensitiveDataEvent&
+           event),
+      (override));
   MOCK_METHOD(void,
               OnUrlFilteringInterstitial,
               (const GURL& url,

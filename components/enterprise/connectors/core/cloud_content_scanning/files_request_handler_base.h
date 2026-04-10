@@ -48,20 +48,22 @@ class FilesRequestHandlerBase : public RequestHandlerBase {
     Delegate& operator=(const Delegate&) = delete;
     virtual ~Delegate() = default;
 
-    // Prepares an upload request for the file at `index`. If the file
-    // cannot be uploaded, a failure verdict is added to the scanning
-    // result.
-    virtual enterprise_connectors::FileAnalysisRequestBase* PrepareFileRequest(
-        size_t index) = 0;
+    // Creates a platform-specific upload request for the file at `index`.
+    virtual std::unique_ptr<FileAnalysisRequestBase> CreateFileRequest(
+        size_t index,
+        const AnalysisSettings& settings,
+        base::OnceCallback<void(ScanRequestUploadResult,
+                                ContentAnalysisResponse)> callback) = 0;
 
-    // Called when a user bypasses a scanning warning. The delegate is
-    // responsible for sending any necessary reports related to this bypass.
+    // Called when a user bypasses a scanning warning.
     virtual void ReportWarningBypass(
-        std::optional<std::u16string> user_justification) = 0;
+        std::optional<std::u16string> user_justification,
+        const ContentAnalysisInfoBase& info,
+        const std::string& trigger,
+        const std::string& content_transfer_method) = 0;
 
-    // Implements the actual data upload. Returns true if the upload is
-    // happening asynchronously in the background, or false if there is no data
-    // to upload.
+    // Returns true if scanning should proceed for the files managed by this
+    // delegate.
     virtual bool UploadDataImpl() = 0;
 
     // Updates the file_info for a given `index`.
@@ -82,15 +84,21 @@ class FilesRequestHandlerBase : public RequestHandlerBase {
     // Returns the file_info for the given index.
     virtual const FileInfo& GetFileInfo(size_t index) = 0;
 
+    // Returns the number of files to be scanned.
+    virtual size_t GetFileCount() const = 0;
+
     // Returns the reporting event router.
     virtual ReportingEventRouter* GetReportingEventRouter() = 0;
 
+    // Notifies that a scan request might be complete.
     virtual void MaybeCompleteScanRequest() = 0;
 
-    // The source and destination string are only for chromeOS, for other
-    // platforms it should return "",
+    // The source and destination strings are only for ChromeOS.
     virtual std::string GetSource() = 0;
     virtual std::string GetDestination() = 0;
+
+    // Sets the handler for this delegate.
+    virtual void SetHandler(FilesRequestHandlerBase* handler) = 0;
   };
 
   // `content_analysis_info` and `upload_service` are used to manage the deep
@@ -115,8 +123,13 @@ class FilesRequestHandlerBase : public RequestHandlerBase {
   void ReportWarningBypass(
       std::optional<std::u16string> user_justification) override;
 
+  base::WeakPtr<FilesRequestHandlerBase> GetWeakPtr();
+
+  // Prepares an upload request for the file at `index`.
+  FileAnalysisRequestBase* PrepareFileRequest(size_t index);
+
  protected:
-  // This should only call the delegate_->UploadDataImpl().
+  // Initiates scanning for all files managed by the delegate.
   bool UploadDataImpl() override;
 
  private:
@@ -126,8 +139,6 @@ class FilesRequestHandlerBase : public RequestHandlerBase {
   FRIEND_TEST_ALL_PREFIXES(FilesRequestHandlerBaseTest, OnGotFileInfo_Failure);
   FRIEND_TEST_ALL_PREFIXES(FilesRequestHandlerBaseTest, FileRequestCallback);
 
-  // Called when the file info for `path` has been fetched. Also begins the
-  // upload process.
   void OnGotFileInfo(std::unique_ptr<BinaryUploadRequest> request,
                      size_t index,
                      ScanRequestUploadResult result,
@@ -162,6 +173,8 @@ class FilesRequestHandlerBase : public RequestHandlerBase {
 
   std::string content_transfer_method_;
   std::unique_ptr<Delegate> delegate_;
+
+  base::WeakPtrFactory<FilesRequestHandlerBase> weak_ptr_factory_{this};
 };
 
 }  // namespace enterprise_connectors

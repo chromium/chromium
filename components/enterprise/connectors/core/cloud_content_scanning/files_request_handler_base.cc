@@ -29,6 +29,7 @@ AnalysisConnector AccessPointToEnterpriseConnector(
       // dragNdrop event or using copy+paste.
       return enterprise_connectors::FILE_ATTACHED;
     case DeepScanAccessPoint::DOWNLOAD:
+      return enterprise_connectors::FILE_DOWNLOADED;
     case DeepScanAccessPoint::PRINT:
   }
   NOTREACHED();
@@ -41,6 +42,8 @@ std::string AccessPointToUmaHistogramPrefix(DeepScanAccessPoint access_point) {
       return "Enterprise.OnFileTransfer";
     case enterprise_connectors::FILE_ATTACHED:
       return "Enterprise.OnFileAttach";
+    case enterprise_connectors::FILE_DOWNLOADED:
+      return "Enterprise.OnFileDownload";
     default:
   }
   NOTREACHED();
@@ -53,6 +56,8 @@ std::string AccessPointToTriggerString(DeepScanAccessPoint access_point) {
       return kFileTransferDataTransferEventTrigger;
     case enterprise_connectors::FILE_ATTACHED:
       return kFileUploadDataTransferEventTrigger;
+    case enterprise_connectors::FILE_DOWNLOADED:
+      return kFileDownloadDataTransferEventTrigger;
     default:
   }
   NOTREACHED();
@@ -76,17 +81,48 @@ FilesRequestHandlerBase::FilesRequestHandlerBase(
                          url,
                          access_point),
       content_transfer_method_(content_transfer_method),
-      delegate_(std::move(delegate)) {}
+      delegate_(std::move(delegate)) {
+  if (delegate_) {
+    delegate_->SetHandler(this);
+  }
+}
 
 FilesRequestHandlerBase::~FilesRequestHandlerBase() = default;
 
 void FilesRequestHandlerBase::ReportWarningBypass(
     std::optional<std::u16string> user_justification) {
-  delegate_->ReportWarningBypass(user_justification);
+  delegate_->ReportWarningBypass(user_justification, *content_analysis_info_,
+                                 AccessPointToTriggerString(access_point_),
+                                 content_transfer_method_);
+}
+
+base::WeakPtr<FilesRequestHandlerBase> FilesRequestHandlerBase::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 bool FilesRequestHandlerBase::UploadDataImpl() {
   return delegate_->UploadDataImpl();
+}
+
+FileAnalysisRequestBase* FilesRequestHandlerBase::PrepareFileRequest(
+    size_t index) {
+  auto request = delegate_->CreateFileRequest(
+      index, content_analysis_info_->settings(),
+      base::BindOnce(&FilesRequestHandlerBase::FileRequestCallback,
+                     GetWeakPtr(), index));
+
+  FileAnalysisRequestBase* request_raw = request.get();
+  content_analysis_info_->InitializeRequest(
+      request_raw, /*include_enterprise_only_fields=*/true);
+  request_raw->set_analysis_connector(
+      AccessPointToEnterpriseConnector(access_point_));
+  request_raw->set_source(delegate_->GetSource());
+  request_raw->set_destination(delegate_->GetDestination());
+  request_raw->GetRequestData(
+      base::BindOnce(&FilesRequestHandlerBase::OnGotFileInfo, GetWeakPtr(),
+                     std::move(request), index));
+
+  return request_raw;
 }
 
 void FilesRequestHandlerBase::OnGotFileInfo(

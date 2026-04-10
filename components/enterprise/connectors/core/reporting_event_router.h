@@ -27,13 +27,13 @@ namespace enterprise_connectors {
 // An event router that collects safe browsing events and then sends
 // events to reporting server.
 class ReportingEventRouter : public KeyedService {
+ public:
   using ReferrerChain =
       google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>;
   using FrameUrlChain = google::protobuf::RepeatedPtrField<std::string>;
   using RegisterOnGotHashCallback =
       base::RepeatingCallback<void(OnGotHashCallback)>;
 
- public:
   explicit ReportingEventRouter(RealtimeReportingClientBase* reporting_client);
 
   ReportingEventRouter(const ReportingEventRouter&) = delete;
@@ -114,7 +114,34 @@ class ReportingEventRouter : public KeyedService {
                             const int64_t content_size,
                             EventResult event_result);
 
+  struct SensitiveDataEvent {
+    SensitiveDataEvent();
+    SensitiveDataEvent(const SensitiveDataEvent&);
+    ~SensitiveDataEvent();
+
+    GURL url;
+    GURL tab_url;
+    std::string source;
+    std::string destination;
+    std::string file_name;
+    enterprise_connectors::HashCallbackVariant sha256_or_cb;
+    std::string mime_type;
+    std::string trigger;
+    std::string scan_id;
+    std::string content_transfer_method;
+    std::string source_email;
+    std::string content_area_account_email;
+    std::optional<std::u16string> user_justification;
+    ContentAnalysisResponse::Result result;
+    int64_t content_size;
+    ReferrerChain referrer_chain;
+    FrameUrlChain frame_url_chain;
+    EventResult event_result;
+  };
+
   // Notifies listeners that the analysis connector detected a violation.
+  virtual void OnSensitiveDataEvent(const SensitiveDataEvent& event);
+
   void OnSensitiveDataEvent(const GURL& url,
                             const GURL& tab_url,
                             const std::string& source,

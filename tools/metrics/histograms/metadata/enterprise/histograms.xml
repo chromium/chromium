@@ -208,6 +208,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="FileUploadEvent">
   <variant name="OnFileAttach" summary="File upload event"/>
+  <variant name="OnFileDownload" summary="File download event"/>
   <variant name="OnFileTransfer" summary="File transfer event"/>
 </variants>
 

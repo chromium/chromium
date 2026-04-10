@@ -25,15 +25,22 @@ namespace {
 class MockFilesRequestHandlerBaseDelegate
     : public FilesRequestHandlerBase::Delegate {
  public:
-  MOCK_METHOD(FileAnalysisRequestBase*,
-              PrepareFileRequest,
-              (size_t index),
+  MOCK_METHOD(std::unique_ptr<FileAnalysisRequestBase>,
+              CreateFileRequest,
+              (size_t index,
+               const AnalysisSettings& settings,
+               base::OnceCallback<void(ScanRequestUploadResult,
+                                       ContentAnalysisResponse)> callback),
               (override));
   MOCK_METHOD(void,
               ReportWarningBypass,
-              (std::optional<std::u16string> user_justification),
+              (std::optional<std::u16string> user_justification,
+               const ContentAnalysisInfoBase& info,
+               const std::string& trigger,
+               const std::string& content_transfer_method),
               (override));
   MOCK_METHOD(bool, UploadDataImpl, (), (override));
+  MOCK_METHOD(size_t, GetFileCount, (), (const, override));
   MOCK_METHOD(void,
               UpdateFileInfo,
               (size_t index, BinaryUploadRequest::Data data),
@@ -56,6 +63,10 @@ class MockFilesRequestHandlerBaseDelegate
   MOCK_METHOD(void, MaybeCompleteScanRequest, (), (override));
   MOCK_METHOD(std::string, GetSource, (), (override));
   MOCK_METHOD(std::string, GetDestination, (), (override));
+  MOCK_METHOD(void,
+              SetHandler,
+              (FilesRequestHandlerBase * handler),
+              (override));
 };
 
 // Mock implementation of the BinaryUploadService.
@@ -145,8 +156,10 @@ TEST_F(FilesRequestHandlerBaseTest, ReportWarningBypass) {
 
   EXPECT_CALL(
       *delegate,
-      ReportWarningBypass(testing::Optional(std::u16string(u"justification"))))
+      ReportWarningBypass(testing::Optional(std::u16string(u"justification")),
+                          testing::_, testing::_, testing::_))
       .Times(1);
+  EXPECT_CALL(*delegate, SetHandler(testing::_)).Times(1);
 
   FilesRequestHandlerBase handler(&content_analysis_info_, &upload_service_,
                                   url_, "content_transfer_method",
@@ -163,6 +176,7 @@ TEST_F(FilesRequestHandlerBaseTest, UploadDataImpl) {
   EXPECT_CALL(*delegate, UploadDataImpl())
       .Times(1)
       .WillOnce(testing::Return(true));
+  EXPECT_CALL(*delegate, SetHandler(testing::_)).Times(1);
 
   FilesRequestHandlerBase handler(&content_analysis_info_, &upload_service_,
                                   url_, "content_transfer_method",
@@ -176,6 +190,7 @@ TEST_F(FilesRequestHandlerBaseTest, OnGotFileInfo_Success) {
   auto delegate_ptr = std::make_unique<MockFilesRequestHandlerBaseDelegate>();
   auto* delegate = delegate_ptr.get();
 
+  EXPECT_CALL(*delegate, SetHandler(testing::_)).Times(1);
   FilesRequestHandlerBase handler(&content_analysis_info_, &upload_service_,
                                   url_, "content_transfer_method",
                                   DeepScanAccessPoint::UPLOAD,
@@ -199,6 +214,7 @@ TEST_F(FilesRequestHandlerBaseTest, OnGotFileInfo_EmptyFile) {
   auto delegate_ptr = std::make_unique<MockFilesRequestHandlerBaseDelegate>();
   auto* delegate = delegate_ptr.get();
 
+  EXPECT_CALL(*delegate, SetHandler(testing::_)).Times(1);
   FilesRequestHandlerBase handler(&content_analysis_info_, &upload_service_,
                                   url_, "content_transfer_method",
                                   DeepScanAccessPoint::UPLOAD,
@@ -235,6 +251,7 @@ TEST_F(FilesRequestHandlerBaseTest, OnGotFileInfo_Failure) {
   auto delegate_ptr = std::make_unique<MockFilesRequestHandlerBaseDelegate>();
   auto* delegate = delegate_ptr.get();
 
+  EXPECT_CALL(*delegate, SetHandler(testing::_)).Times(1);
   FilesRequestHandlerBase handler(&content_analysis_info_, &upload_service_,
                                   url_, "content_transfer_method",
                                   DeepScanAccessPoint::UPLOAD,
@@ -283,6 +300,7 @@ TEST_F(FilesRequestHandlerBaseTest, FileRequestCallback) {
   EXPECT_CALL(*delegate, GetSource()).Times(2);
   EXPECT_CALL(*delegate, GetDestination()).Times(2);
   EXPECT_CALL(*delegate, MaybeCompleteScanRequest()).Times(2);
+  EXPECT_CALL(*delegate, SetHandler(testing::_)).Times(1);
 
   FilesRequestHandlerBase handler(&content_analysis_info_, &upload_service_,
                                   url_, "content_transfer_method",
