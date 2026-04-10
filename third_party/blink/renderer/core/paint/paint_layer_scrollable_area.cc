@@ -1480,7 +1480,9 @@ void PaintLayerScrollableArea::UpdateAfterStyleChange(
       old_style->ScrollbarThumbColorResolved() !=
           GetLayoutBox()->StyleRef().ScrollbarThumbColorResolved() ||
       old_style->ScrollbarTrackColorResolved() !=
-          GetLayoutBox()->StyleRef().ScrollbarTrackColorResolved()) {
+          GetLayoutBox()->StyleRef().ScrollbarTrackColorResolved() ||
+      old_style->UsedPointerEvents() !=
+          GetLayoutBox()->StyleRef().UsedPointerEvents()) {
     SetScrollControlsNeedFullPaintInvalidation();
   }
 }
@@ -3209,6 +3211,7 @@ void PaintLayerScrollableArea::InvalidatePaintOfScrollbarIfNeeded(
     const PaintInvalidatorContext& context,
     bool needs_paint_invalidation,
     Scrollbar* scrollbar,
+    bool force_invalidation_for_opaqueness,
     bool& previously_was_overlay,
     bool& previously_might_be_composited,
     gfx::Rect& visual_rect) {
@@ -3266,8 +3269,9 @@ void PaintLayerScrollableArea::InvalidatePaintOfScrollbarIfNeeded(
   }
 
   if (scrollbar &&
-      ScrollControlNeedsPaintInvalidation(new_visual_rect, visual_rect,
-                                          needs_paint_invalidation)) {
+      (force_invalidation_for_opaqueness ||
+       ScrollControlNeedsPaintInvalidation(new_visual_rect, visual_rect,
+                                           needs_paint_invalidation))) {
     context.painting_layer->SetNeedsRepaint();
     scrollbar->Invalidate(PaintInvalidationReason::kScrollControl);
     if (auto* custom_scrollbar = DynamicTo<CustomScrollbar>(scrollbar))
@@ -3282,13 +3286,20 @@ void PaintLayerScrollableArea::InvalidatePaintOfScrollControlsIfNeeded(
   if (context.subtree_flags & PaintInvalidatorContext::kSubtreeFullInvalidation)
     SetScrollControlsNeedFullPaintInvalidation();
 
+  auto new_used_pointer_events = GetLayoutBox()->StyleRef().UsedPointerEvents();
+  bool force_invalidation_for_opaqueness =
+      last_used_pointer_events_ != new_used_pointer_events;
+  last_used_pointer_events_ = new_used_pointer_events;
+
   InvalidatePaintOfScrollbarIfNeeded(
       context, HorizontalScrollbarNeedsPaintInvalidation(),
-      HorizontalScrollbar(), horizontal_scrollbar_previously_was_overlay_,
+      HorizontalScrollbar(), force_invalidation_for_opaqueness,
+      horizontal_scrollbar_previously_was_overlay_,
       horizontal_scrollbar_previously_might_be_composited_,
       horizontal_scrollbar_visual_rect_);
   InvalidatePaintOfScrollbarIfNeeded(
       context, VerticalScrollbarNeedsPaintInvalidation(), VerticalScrollbar(),
+      force_invalidation_for_opaqueness,
       vertical_scrollbar_previously_was_overlay_,
       vertical_scrollbar_previously_might_be_composited_,
       vertical_scrollbar_visual_rect_);
@@ -3299,7 +3310,8 @@ void PaintLayerScrollableArea::InvalidatePaintOfScrollControlsIfNeeded(
   // consider subpixel accumulation when painting scrollbars.
   new_scroll_corner_and_resizer_visual_rect.Offset(
       ToRoundedVector2d(context.fragment_data->PaintOffset()));
-  if (ScrollControlNeedsPaintInvalidation(
+  if (force_invalidation_for_opaqueness ||
+      ScrollControlNeedsPaintInvalidation(
           new_scroll_corner_and_resizer_visual_rect,
           scroll_corner_and_resizer_visual_rect_,
           ScrollCornerNeedsPaintInvalidation())) {

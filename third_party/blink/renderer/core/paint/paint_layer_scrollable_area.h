@@ -798,6 +798,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
   void InvalidatePaintOfScrollbarIfNeeded(const PaintInvalidatorContext&,
                                           bool needs_paint_invalidation,
                                           Scrollbar* scrollbar,
+                                          bool force_invalidate_for_opaqueness,
                                           bool& previously_was_overlay,
                                           bool& previously_might_be_composited,
                                           gfx::Rect& visual_rect);
@@ -912,6 +913,10 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   ContainerScrolled last_scrolled_horizontal_ = ContainerScrolled::kNone;
   ContainerScrolled last_scrolled_vertical_ = ContainerScrolled::kNone;
+
+  // The used pointer events value that was in effect at last paint
+  // invalidation. Used to invalidate paint!
+  EPointerEvents last_used_pointer_events_ = EPointerEvents::kAuto;
 
   class ScrollingBackgroundDisplayItemClient final
       : public GarbageCollected<ScrollingBackgroundDisplayItemClient>,
