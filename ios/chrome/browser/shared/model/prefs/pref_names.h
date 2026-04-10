@@ -396,6 +396,11 @@ inline constexpr char kIosSavedThemeSpecificsIos[] =
 inline constexpr char kIosUserUploadedBackground[] =
     "ios.user_uploaded_background";
 
+// Dictionary pref storing cached user-uploaded background image path and
+// framing data.
+inline constexpr char kIosCachedUserUploadedBackground[] =
+    "ios.cached_user_uploaded_background";
+
 // List pref storing recently used NTP backgrounds.
 inline constexpr char kIosRecentlyUsedBackgrounds[] =
     "ios.recently_used_backgrounds";

@@ -1140,6 +1140,163 @@ TEST_F(HomeBackgroundCustomizationServiceTest, DelegateCacheAndRestoreTheme) {
   EXPECT_EQ(initial_theme, service_->GetCurrentColorTheme().value());
 }
 
+// Tests that `RestoreCachedTheme` restores the user-uploaded background from
+// cache if the restored theme is empty and the active background is missing.
+TEST_F(HomeBackgroundCustomizationServiceTest,
+       RestoreUserUploadedBackgroundFromCache) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures(
+      {kNTPBackgroundCustomization, syncer::kSyncThemesIos}, {});
+  CreateService();
+
+  // Set a user-uploaded background.
+  HomeUserUploadedBackground user_background =
+      GenerateHomeUserUploadedBackground();
+  service_->SetCurrentUserUploadedBackground(
+      user_background.image_path, user_background.framing_coordinates);
+  service_->StoreCurrentTheme();
+
+  // Verify it was written to both prefs.
+  EXPECT_FALSE(
+      pref_service_->GetDict(prefs::kIosUserUploadedBackground).empty());
+  EXPECT_FALSE(
+      pref_service_->GetDict(prefs::kIosCachedUserUploadedBackground).empty());
+
+  // Simulate calling `RestoreCachedTheme` when `kIosSavedThemeSpecificsIos` is
+  // empty (no synced theme available).
+  pref_service_->SetString(prefs::kIosSavedThemeSpecificsIos, "");
+  pref_service_->ClearPref(prefs::kIosUserUploadedBackground);
+
+  observer_.on_background_changed_called = false;
+
+  service_->RestoreCachedTheme();
+
+  // Expect that the background was restored.
+  EXPECT_TRUE(observer_.on_background_changed_called);
+  ASSERT_TRUE(service_->GetCurrentCustomBackground().has_value());
+  HomeCustomBackground custom_bg =
+      service_->GetCurrentCustomBackground().value();
+  ASSERT_TRUE(std::holds_alternative<HomeUserUploadedBackground>(custom_bg));
+  HomeUserUploadedBackground restored_bg =
+      std::get<HomeUserUploadedBackground>(custom_bg);
+  EXPECT_EQ(user_background, restored_bg);
+
+  // Verify prefs are also correct.
+  EXPECT_FALSE(
+      pref_service_->GetDict(prefs::kIosUserUploadedBackground).empty());
+}
+
+// Tests that `RestoreCachedTheme` does NOT restore the user-uploaded background
+// if a valid synced theme exists.
+TEST_F(HomeBackgroundCustomizationServiceTest,
+       PreservesUserUploadedBackgroundEvenIfSyncThemeExists) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures(
+      {kNTPBackgroundCustomization, syncer::kSyncThemesIos}, {});
+  CreateService();
+
+  // Set a user-uploaded background.
+  HomeUserUploadedBackground user_background =
+      GenerateHomeUserUploadedBackground();
+  service_->SetCurrentUserUploadedBackground(
+      user_background.image_path, user_background.framing_coordinates);
+  service_->StoreCurrentTheme();
+
+  // Now simulate that a synced theme was saved.
+  sync_pb::UserColorTheme synced_theme = GenerateUserColorTheme(0xff00ff);
+  sync_pb::ThemeIosSpecifics specifics;
+  *specifics.mutable_user_color_theme() = synced_theme;
+
+  pref_service_->SetString(prefs::kIosSavedThemeSpecificsIos,
+                           EncodeThemeIosSpecifics(specifics));
+
+  observer_.on_background_changed_called = false;
+
+  service_->RestoreCachedTheme();
+
+  // Expect that observers are notified because the synced theme pref was
+  // cleared.
+  EXPECT_TRUE(observer_.on_background_changed_called);
+
+  ASSERT_TRUE(service_->GetCurrentCustomBackground().has_value());
+  EXPECT_FALSE(service_->GetCurrentColorTheme().has_value());
+
+  // Verify active user uploaded background is NOT cleared.
+  EXPECT_FALSE(
+      pref_service_->GetDict(prefs::kIosUserUploadedBackground).empty());
+  // And cache still exists.
+  EXPECT_FALSE(
+      pref_service_->GetDict(prefs::kIosCachedUserUploadedBackground).empty());
+}
+
+// Tests that `ApplyTheme` does not clear the cached user-uploaded background.
+TEST_F(HomeBackgroundCustomizationServiceTest,
+       ApplyThemeDoesNotClearCachedUserUploadedBackground) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures(
+      {kNTPBackgroundCustomization, syncer::kSyncThemesIos}, {});
+  CreateService();
+
+  // Set a user-uploaded background.
+  HomeUserUploadedBackground user_background =
+      GenerateHomeUserUploadedBackground();
+  service_->SetCurrentUserUploadedBackground(
+      user_background.image_path, user_background.framing_coordinates);
+  service_->StoreCurrentTheme();
+
+  // Verify it was written to both prefs.
+  EXPECT_FALSE(
+      pref_service_->GetDict(prefs::kIosUserUploadedBackground).empty());
+  EXPECT_FALSE(
+      pref_service_->GetDict(prefs::kIosCachedUserUploadedBackground).empty());
+
+  // Now apply a theme (simulating sync pushing a theme).
+  sync_pb::ThemeIosSpecifics specifics;
+  *specifics.mutable_user_color_theme() = GenerateUserColorTheme(0xff00ff);
+
+  service_->ApplyTheme(specifics);
+
+  // Verify active user uploaded background IS cleared.
+  EXPECT_TRUE(
+      pref_service_->GetDict(prefs::kIosUserUploadedBackground).empty());
+
+  // Verify cache STILL exists.
+  EXPECT_FALSE(
+      pref_service_->GetDict(prefs::kIosCachedUserUploadedBackground).empty());
+}
+
+// Tests that `DeleteRecentlyUsedBackground` clears the cache if it matches the
+// deleted background.
+TEST_F(HomeBackgroundCustomizationServiceTest,
+       DeleteRecentlyUsedBackgroundClearsCache) {
+  CreateService();
+
+  // Set a user-uploaded background.
+  HomeUserUploadedBackground user_background =
+      GenerateHomeUserUploadedBackground();
+  service_->SetCurrentUserUploadedBackground(
+      user_background.image_path, user_background.framing_coordinates);
+  service_->StoreCurrentTheme();
+
+  // Verify it was written to both prefs.
+  EXPECT_FALSE(
+      pref_service_->GetDict(prefs::kIosUserUploadedBackground).empty());
+  EXPECT_FALSE(
+      pref_service_->GetDict(prefs::kIosCachedUserUploadedBackground).empty());
+
+  // Clear the current background so it's no longer active.
+  service_->ClearCurrentBackground();
+
+  // Delete the background that was just created.
+  HomeCustomBackground custom_bg = user_background;
+  RecentlyUsedBackground bg_to_delete = custom_bg;
+  service_->DeleteRecentlyUsedBackground(bg_to_delete);
+
+  // Verify cache is now cleared.
+  EXPECT_TRUE(
+      pref_service_->GetDict(prefs::kIosCachedUserUploadedBackground).empty());
+}
+
 // Tests that `IsCurrentThemeSyncable()` prevents uploading custom user images.
 TEST_F(HomeBackgroundCustomizationServiceTest, DelegateIsThemeSyncable) {
   CreateService();

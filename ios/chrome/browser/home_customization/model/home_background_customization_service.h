@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_HOME_BACKGROUND_CUSTOMIZATION_SERVICE_H_
 
 #import <string>
+#import <variant>
 
 #import "base/base64.h"
 #import "base/containers/lru_cache.h"
@@ -270,6 +271,11 @@ class HomeBackgroundCustomizationService
   // Handles the loaded images.
   void DefaultRecentlyUsedBackgroundsLoaded(
       const HomeBackgroundImageService::CollectionImageMap& collection_map);
+
+  // Conditionally clears the cached user-uploaded background if
+  // `recent_background` matches it.
+  void ClearCachedUserUploadedBackground(
+      const RecentlyUsedBackground& recent_background);
 
   sync_pb::ThemeIosSpecifics current_theme_;
 

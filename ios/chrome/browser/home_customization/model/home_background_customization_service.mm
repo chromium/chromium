@@ -8,6 +8,7 @@
 
 #import <set>
 #import <string_view>
+#import <utility>
 
 #import "base/base64.h"
 #import "base/containers/adapters.h"
@@ -127,6 +128,11 @@ void SaveThemeSpecifics(PrefService* profile_pref_service,
   }
 }
 
+// Returns true if the theme has no relevant properties set.
+bool IsThemeEmpty(const sync_pb::ThemeIosSpecifics& theme) {
+  return !theme.has_ntp_background() && !theme.has_user_color_theme();
+}
+
 }  // namespace
 
 HomeBackgroundCustomizationService::HomeBackgroundCustomizationService(
@@ -240,13 +246,47 @@ void HomeBackgroundCustomizationService::CacheLocalTheme() {
 }
 
 void HomeBackgroundCustomizationService::RestoreCachedTheme() {
+  pref_service_->ClearPref(prefs::kIosNtpThemeSpecifics);
+
+  // If there's already a valid active user-uploaded background, don't clobber
+  // it.
+  const base::DictValue& active_background =
+      pref_service_->GetDict(prefs::kIosUserUploadedBackground);
+  if (!active_background.empty()) {
+    NotifyObserversOfBackgroundChange();
+    return;
+  }
+
   std::string saved_encoded_theme =
       pref_service_->GetString(prefs::kIosSavedThemeSpecificsIos);
-
   sync_pb::ThemeIosSpecifics cached_theme =
       DecodeThemeIosSpecifics(saved_encoded_theme);
 
-  ApplyTheme(cached_theme);
+  // A valid cached theme exists.
+  if (!IsThemeEmpty(cached_theme)) {
+    ApplyTheme(cached_theme);
+    return;
+  }
+
+  current_theme_ = cached_theme;
+
+  // No cached theme exists. Conditionally fallback to a local, non-syncing
+  // background if it exists.
+  const base::DictValue& cached_background =
+      pref_service_->GetDict(prefs::kIosCachedUserUploadedBackground);
+
+  if (cached_background.empty()) {
+    NotifyObserversOfBackgroundChange();
+    return;
+  }
+
+  pref_service_->SetDict(prefs::kIosUserUploadedBackground,
+                         cached_background.Clone());
+
+  current_user_uploaded_background_ =
+      HomeUserUploadedBackground::FromDict(cached_background);
+
+  NotifyObserversOfBackgroundChange();
 }
 
 bool HomeBackgroundCustomizationService::IsCurrentThemeSyncable() const {
@@ -267,6 +307,7 @@ void HomeBackgroundCustomizationService::RegisterProfilePrefs(
   registry->RegisterStringPref(prefs::kIosSavedThemeSpecificsIos,
                                std::string());
   registry->RegisterDictionaryPref(prefs::kIosUserUploadedBackground);
+  registry->RegisterDictionaryPref(prefs::kIosCachedUserUploadedBackground);
   // Use a simple list as a sentinel value to indicate "new user".
   registry->RegisterListPref(prefs::kIosRecentlyUsedBackgrounds,
                              base::ListValue().Append(true));
@@ -430,6 +471,37 @@ void HomeBackgroundCustomizationService::DeleteRecentlyUsedBackground(
     recently_used_backgrounds_.Erase(iterator);
   }
   StoreRecentlyUsedBackgroundsList();
+
+  ClearCachedUserUploadedBackground(recent_background);
+}
+
+void HomeBackgroundCustomizationService::ClearCachedUserUploadedBackground(
+    const RecentlyUsedBackground& recent_background) {
+  const auto* custom_background =
+      std::get_if<HomeCustomBackground>(&recent_background);
+  if (!custom_background) {
+    return;
+  }
+
+  const auto* user_uploaded_background =
+      std::get_if<HomeUserUploadedBackground>(custom_background);
+  if (!user_uploaded_background) {
+    return;
+  }
+
+  const base::DictValue& cached_background =
+      pref_service_->GetDict(prefs::kIosCachedUserUploadedBackground);
+
+  std::optional<HomeUserUploadedBackground> cached_user_uploaded_background =
+      HomeUserUploadedBackground::FromDict(cached_background);
+
+  if (!cached_user_uploaded_background ||
+      cached_user_uploaded_background->image_path !=
+          user_uploaded_background->image_path) {
+    return;
+  }
+
+  pref_service_->ClearPref(prefs::kIosCachedUserUploadedBackground);
 }
 
 void HomeBackgroundCustomizationService::StoreCurrentTheme() {
@@ -458,6 +530,8 @@ void HomeBackgroundCustomizationService::StoreCurrentTheme() {
 
   if (current_user_uploaded_background_) {
     pref_service_->SetDict(prefs::kIosUserUploadedBackground,
+                           current_user_uploaded_background_->ToDict());
+    pref_service_->SetDict(prefs::kIosCachedUserUploadedBackground,
                            current_user_uploaded_background_->ToDict());
     new_recent_background = current_user_uploaded_background_.value();
   } else {
