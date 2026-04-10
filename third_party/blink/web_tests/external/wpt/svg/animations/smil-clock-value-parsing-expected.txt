@@ -1,5 +1,11 @@
 This is a testharness.js-based test.
-[FAIL] SMIL clock values: out-of-range minutes/seconds validation and fractional seconds support
+[FAIL] SMIL clock values: out-of-range minutes/seconds validation and fractional seconds support, dur="01:99:01"
   assert_equals: dur="01:99:01" should be invalid (minutes > 59 in HH:MM:SS) expected 0 but got 1.2577297687530518
+[FAIL] SMIL clock values: out-of-range minutes/seconds validation and fractional seconds support, dur="99:01"
+  assert_equals: dur="99:01" should be invalid (minutes > 59 in MM:SS) expected 0 but got 2.019861936569214
+[FAIL] SMIL clock values: out-of-range minutes/seconds validation and fractional seconds support, dur="01:30:99"
+  assert_equals: dur="01:30:99" should be invalid (seconds > 59 in HH:MM:SS) expected 0 but got 2.1822149753570557
+[FAIL] SMIL clock values: out-of-range minutes/seconds validation and fractional seconds support, dur="30:99"
+  assert_equals: dur="30:99" should be invalid (seconds > 59 in MM:SS) expected 0 but got 6.319115161895752
 Harness: the test ran to completion.
 
