@@ -69,6 +69,7 @@ source_set("unit_tests") {
 
   sources = [
     "background_long_task_scheduler_unittest.cc",
+    "unexportable_key_id_unittest.cc",
     "unexportable_key_loader_unittest.cc",
     "unexportable_key_service_impl_unittest.cc",
     "unexportable_key_task_manager_unittest.cc",
