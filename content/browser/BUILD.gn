@@ -2586,13 +2586,6 @@ source_set("browser") {
     ]
   }
 
-  if (is_linux || is_mac) {
-    sources += [
-      "media/cdm_helper_impl.cc",
-      "media/cdm_helper_impl.h",
-    ]
-  }
-
   if (enable_bluetooth_emulation) {
     deps += [
       "//device/bluetooth:fake_bluetooth",
