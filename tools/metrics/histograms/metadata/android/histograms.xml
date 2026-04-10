@@ -5198,21 +5198,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.PhotoPicker.DecoderHostVideoUnknownError" units="%"
-    expires_after="2024-06-01">
-  <owner>finnur@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The percentage of unknown decoding error failures, per batch of videos (not
-    photos) decoded. Intended to help identify if there are devices where
-    decoding fails 100% of the time. Be wary at looking at other numbers in the
-    histogram, as a value emitted at, say, 50% may represent one failure in a
-    two-item decoding or 50 failures in a hundred-item decoding. These are
-    qualitatively different experiences for a user. Note: This metric was not
-    logged in June 2023.
-  </summary>
-</histogram>
-
 <histogram name="Android.PhotoPicker.DialogAction"
     enum="PhotoPickerDialogAction" expires_after="2025-04-13">
   <owner>finnur@chromium.org</owner>

@@ -75,9 +75,6 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
     // The number of io failures during video decoding, per batch.
     private int mFailedVideoDecodesIo;
 
-    // The number of io failures during video decoding, per batch.
-    private int mFailedVideoDecodesUnknown;
-
     // A worker task for asynchronously handling video decode requests.
     private @Nullable DecodeVideoTask mWorkerTask;
 
@@ -336,8 +333,7 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
                 mSuccessfulVideoDecodes
                         + mFailedVideoDecodesFile
                         + mFailedVideoDecodesRuntime
-                        + mFailedVideoDecodesIo
-                        + mFailedVideoDecodesUnknown;
+                        + mFailedVideoDecodesIo;
         if (totalVideoRequests > 0) {
             // Calculate and transmit UMA for video decoding.
             int videoFileFailures = 100 * mFailedVideoDecodesFile / totalVideoRequests;
@@ -352,15 +348,10 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
             RecordHistogram.recordPercentageHistogram(
                     "Android.PhotoPicker.DecoderHostVideoIoError", videoIoFailures);
 
-            int videoUnknownFailures = 100 * mFailedVideoDecodesUnknown / totalVideoRequests;
-            RecordHistogram.recordPercentageHistogram(
-                    "Android.PhotoPicker.DecoderHostVideoUnknownError", videoUnknownFailures);
-
             mSuccessfulVideoDecodes = 0;
             mFailedVideoDecodesFile = 0;
             mFailedVideoDecodesRuntime = 0;
             mFailedVideoDecodesIo = 0;
-            mFailedVideoDecodesUnknown = 0;
         }
 
         for (DecoderStatusCallback callback : mCallbacks) {
@@ -389,9 +380,7 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
             float ratio) {
         switch (decodingResult) {
             case DecodeVideoTask.DecodingResult.SUCCESS:
-                if (bitmaps == null || bitmaps.size() == 0) {
-                    mFailedVideoDecodesUnknown++;
-                } else {
+                if (bitmaps != null && bitmaps.size() > 0) {
                     mSuccessfulVideoDecodes++;
                 }
                 break;
