@@ -3248,8 +3248,10 @@ bool StyleEngine::EvaluateFunctionalMediaQuery(const MediaQuerySet& query_set) {
 }
 
 void StyleEngine::InvalidateFunctionalMediaDependentStylesIfNeeded() {
-  if (!EnsureMediaQueryEvaluator().DidResultsChange(
-          functional_media_query_results_)) {
+  if (!media_query_evaluator_ || !media_query_evaluator_->DidResultsChange(
+                                     functional_media_query_results_)) {
+    // A null evaluator here means we have not evaluated media queries before,
+    // or the Document/StyleEngine has been detached.
     return;
   }
   functional_media_query_results_.clear();
