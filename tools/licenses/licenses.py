@@ -1135,7 +1135,7 @@ def GenerateLicenseFile(args, metadatas):
   else:
     raise ValueError(f'Unknown license format: {args.format}')
 
-  pathlib.Path(args.output_file).write_text(license_txt, 'utf-8')
+  _WriteIfChanged(pathlib.Path(args.output_file), license_txt)
 
 
 def GenerateLicenseFileCsv(metadatas: List[Dict[str, Any]], ) -> str:
