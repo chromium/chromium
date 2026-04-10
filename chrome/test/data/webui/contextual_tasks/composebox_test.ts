@@ -1489,4 +1489,37 @@ suite('ContextualTasksComposeboxTest', () => {
     // Verify state reset.
     assertFalse(contextualTasksApp.$.composebox.isCanvasQuerySubmitted);
   });
+
+  test('SidePanelComposeboxAlignsStart', async () => {
+    const composeboxElement = contextualTasksApp.$.composebox;
+    const innerComposebox = composeboxElement.$.composebox;
+
+    // Force side panel mode and display
+    composeboxElement.isSidePanel = true;
+    innerComposebox.style.display = 'block';
+    await composeboxElement.updateComplete;
+    await innerComposebox.updateComplete;
+    await microtasksFinished();
+
+    // Mock specific container bounds to guarantee enough space
+    const container = composeboxElement.shadowRoot.querySelector<HTMLElement>(
+        '#composeboxContainer');
+    assertTrue(container !== null);
+    container.style.width = '800px';
+    innerComposebox.style.width = '400px';
+
+    MockResizeObserver.instances.forEach(obs => obs.trigger());
+    await microtasksFinished();
+
+    // Mathematically assert that the inner composebox aligns to the start
+    const containerRect = container.getBoundingClientRect();
+    const boxRect = innerComposebox.getBoundingClientRect();
+
+    const leftSpace = boxRect.left - containerRect.left;
+
+    // If it is aligned left, the space on the left should be 0.
+    assertEquals(
+        0, leftSpace,
+        'Composebox should align to the left side of the side panel container');
+  });
 });
