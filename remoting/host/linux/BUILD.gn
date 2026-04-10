@@ -3,7 +3,10 @@
 # found in the LICENSE file.
 
 import("//build/config/c++/c++.gni")
+import("//build/config/linux/pkg_config.gni")
 import("//remoting/build/config/remoting_build.gni")
+import("//third_party/webrtc/webrtc.gni")
+import("//tools/generate_stubs/rules.gni")
 
 group("all_tests") {
   testonly = true
@@ -88,6 +91,35 @@ source_set("gvariant") {
     "//remoting/base",
     "//remoting/host/base",
   ]
+}
+
+group("pipewire") {
+  public_configs = [ ":pipewire_config" ]
+  deps = []
+  if (!rtc_link_pipewire) {
+    deps += [ ":pipewire_stubs" ]
+  }
+}
+
+pkg_config("pipewire_config") {
+  packages = [ "libpipewire-0.3" ]
+  if (!rtc_link_pipewire) {
+    # Dynamically loading the library.
+    ignore_libs = true
+    defines = [ "REMOTING_DLOPEN_PIPEWIRE" ]
+  }
+}
+
+if (!rtc_link_pipewire) {
+  generate_stubs("pipewire_stubs") {
+    configs = [ ":pipewire_config" ]
+    extra_header = "pipewire_stub_header.fragment"
+    logging_function = "VLOG(1)"
+    logging_include = "base/logging.h"
+    output_name = "pipewire_stubs"
+    path_from_source = "remoting/host/linux"
+    sigs = [ "pipewire.sigs" ]
+  }
 }
 
 source_set("utils") {
@@ -222,6 +254,7 @@ source_set("platform_impls") {
   ]
   deps = [
     ":gvariant",
+    ":pipewire",
     ":remote_session_info_main_headers",
     ":utils",
     ":x11",
