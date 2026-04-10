@@ -74,7 +74,7 @@ bool IsComposeboxCompactModeEnabled() {
   return base::FeatureList::IsEnabled(kComposeboxCompactMode);
 }
 
-BASE_FEATURE(kComposeboxForceTop, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kComposeboxForceTop, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsComposeboxForceTopEnabled() {
   return base::FeatureList::IsEnabled(kComposeboxForceTop);

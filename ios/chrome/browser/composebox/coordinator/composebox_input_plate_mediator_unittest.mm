@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -358,6 +359,8 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
     } else {
       disabled_features.push_back(kComposeboxDeepSearch);
     }
+
+    disabled_features.push_back(kComposeboxAIMDisabled);
 
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);

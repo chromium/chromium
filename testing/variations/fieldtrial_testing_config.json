@@ -15,7 +15,7 @@
             ]
         }
     ],
-    "AIFuseboxIOS": [
+    "AIFuseboxIOSTablet": [
         {
             "platforms": [
                 "ios"
@@ -25,15 +25,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AIMNTPEntrypointTablet",
-                        "ComposeboxCompactMode",
-                        "ComposeboxForceTop",
-                        "ComposeboxIOS",
                         "ComposeboxIpad"
-                    ],
-                    "disable_features": [
-                        "ComposeboxAIMDisabled",
-                        "ComposeboxAIMNudge",
-                        "ComposeboxMenuTitle"
                     ]
                 }
             ]
