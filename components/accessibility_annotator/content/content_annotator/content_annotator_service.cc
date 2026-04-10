@@ -161,6 +161,7 @@ void ContentAnnotatorService::OnPageContentAnnotated(
   // Invert the visibility score to get a sensitivity score.
   it->second.sensitivity_score = 1.0 - result.GetContentVisibilityScore();
   it->second.navigation_timestamp = visit.nav_entry_timestamp;
+  it->second.visit_id = visit.visit_id;
   MaybeAnnotate(it);
 }
 

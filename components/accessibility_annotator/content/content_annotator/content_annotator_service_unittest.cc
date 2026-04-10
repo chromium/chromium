@@ -224,10 +224,11 @@ class ContentAnnotatorServiceTest : public content::RenderViewHostTestHarness {
   // Helper to trigger all necessary inputs for MaybeAnnotate.
   void TriggerClassification(const GURL& url, base::Time base_time) {
     // 1. Send PageContentAnnotated
+    page_content_annotations::HistoryVisit visit(base_time, url);
+    visit.visit_id = 1;
     service_->OnPageContentAnnotated(
-        page_content_annotations::HistoryVisit(base_time, url),
-        page_content_annotations::PageContentAnnotationsResult::
-            CreateContentVisibilityScoreResult(0.5f));
+        visit, page_content_annotations::PageContentAnnotationsResult::
+                   CreateContentVisibilityScoreResult(0.5f));
 
     // 2. Send LanguageDetermined
     translate::LanguageDetectionDetails details;
@@ -308,6 +309,8 @@ TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_TwoUrlsOnlyOneCompletes) {
   EXPECT_CALL(*mock_classifier_,
               Classify(testing::AllOf(
                   Field(&ContentClassificationInput::url, url2),
+                  Field(&ContentClassificationInput::visit_id,
+                        Optional(history::VisitID(2))),
                   Field(&ContentClassificationInput::sensitivity_score,
                         Optional(testing::FloatEq(0.7f))),
                   Field(&ContentClassificationInput::navigation_timestamp,
@@ -329,16 +332,18 @@ TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_TwoUrlsOnlyOneCompletes) {
       .Times(0);
 
   // 1. Send partial data for URL 1.
+  page_content_annotations::HistoryVisit visit1(base_time, url1);
+  visit1.visit_id = 1;
   service_->OnPageContentAnnotated(
-      page_content_annotations::HistoryVisit(base_time, url1),
-      page_content_annotations::PageContentAnnotationsResult::
-          CreateContentVisibilityScoreResult(0.5f));
+      visit1, page_content_annotations::PageContentAnnotationsResult::
+                  CreateContentVisibilityScoreResult(0.5f));
 
   // 2. Send all data for URL 2.
+  page_content_annotations::HistoryVisit visit2(nav_time2, url2);
+  visit2.visit_id = 2;
   service_->OnPageContentAnnotated(
-      page_content_annotations::HistoryVisit(nav_time2, url2),
-      page_content_annotations::PageContentAnnotationsResult::
-          CreateContentVisibilityScoreResult(0.3f));
+      visit2, page_content_annotations::PageContentAnnotationsResult::
+                  CreateContentVisibilityScoreResult(0.3f));
 
   translate::LanguageDetectionDetails details2;
   details2.url = url2;
@@ -485,6 +490,9 @@ TEST_F(ContentAnnotatorServiceTest,
   // URL1 is missing everything except adopted_language.
   histogram_tester.ExpectBucketCount(
       "AccessibilityAnnotator.ContentAnnotator.DependentInformationMissing",
+      ContentAnnotatorMissingDependentInformation::kVisitIdMissing, 1);
+  histogram_tester.ExpectBucketCount(
+      "AccessibilityAnnotator.ContentAnnotator.DependentInformationMissing",
       ContentAnnotatorMissingDependentInformation::kSensitivityScoreMissing, 1);
   histogram_tester.ExpectBucketCount(
       "AccessibilityAnnotator.ContentAnnotator.DependentInformationMissing",
@@ -505,7 +513,7 @@ TEST_F(ContentAnnotatorServiceTest,
       ContentAnnotatorMissingDependentInformation::kPageTitleEmbeddingMissing,
       1);
   histogram_tester.ExpectTotalCount(
-      "AccessibilityAnnotator.ContentAnnotator.DependentInformationMissing", 5);
+      "AccessibilityAnnotator.ContentAnnotator.DependentInformationMissing", 6);
 }
 
 TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_FullAnnotationReached) {

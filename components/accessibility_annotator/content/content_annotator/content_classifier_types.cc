@@ -23,10 +23,16 @@ ContentClassificationInput::~ContentClassificationInput() = default;
 bool ContentClassificationInput::IsComplete() const {
   return sensitivity_score.has_value() && navigation_timestamp.has_value() &&
          adopted_language.has_value() && page_title.has_value() &&
-         annotated_page_content && page_title_embedding.has_value();
+         annotated_page_content && page_title_embedding.has_value() &&
+         visit_id.has_value();
 }
 
 void ContentClassificationInput::LogMissingFields() const {
+  if (!visit_id.has_value()) {
+    base::UmaHistogramEnumeration(
+        "AccessibilityAnnotator.ContentAnnotator.DependentInformationMissing",
+        ContentAnnotatorMissingDependentInformation::kVisitIdMissing);
+  }
   if (!sensitivity_score.has_value()) {
     base::UmaHistogramEnumeration(
         "AccessibilityAnnotator.ContentAnnotator.DependentInformationMissing",

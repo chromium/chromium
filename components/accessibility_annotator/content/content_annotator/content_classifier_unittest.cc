@@ -33,6 +33,7 @@ using ClassifierResultStatus = ContentClassifier::ClassifierResultStatus;
 
 TEST(ContentClassificationInputTest, IsComplete) {
   ContentClassificationInput complete_input(GURL("https://www.example.com"));
+  complete_input.visit_id = 123;
   complete_input.sensitivity_score = 0.1f;
   complete_input.navigation_timestamp = base::Time::Now();
   complete_input.adopted_language = "en";
@@ -48,6 +49,11 @@ TEST(ContentClassificationInputTest, IsComplete) {
       passage_embeddings::Embedding({1.0f, 2.0f, 3.0f});
   EXPECT_TRUE(complete_input.IsComplete());
 
+  {
+    ContentClassificationInput input = complete_input;
+    input.visit_id.reset();
+    EXPECT_FALSE(input.IsComplete());
+  }
   {
     ContentClassificationInput input = complete_input;
     input.sensitivity_score.reset();
@@ -138,6 +144,7 @@ class ContentClassifierTest : public testing::Test {
 
   static ContentClassificationInput CreateDefaultInput() {
     ContentClassificationInput input(GURL("https://www.example.com"));
+    input.visit_id = 123;
     input.page_title = "Default Title";
     input.adopted_language = "en";
     input.sensitivity_score = 0.1f;

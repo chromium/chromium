@@ -67,6 +67,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="PageTitleMissing"/>
   <int value="4" label="AnnotatedPageContentMissing"/>
   <int value="5" label="PageTitleEmbeddingMissing"/>
+  <int value="6" label="VisitIdMissing"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/accessibility_annotator/content/content_annotator/content_classifier_types.h:ContentAnnotatorMissingDependentInformation) -->
