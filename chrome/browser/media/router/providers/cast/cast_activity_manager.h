@@ -149,6 +149,9 @@ class CastActivityManager : public CastActivityManagerBase,
 
  private:
   friend class CastActivityManagerTest;
+  FRIEND_TEST_ALL_PREFIXES(CastActivityManagerTest, AddAppActivityCollision);
+  FRIEND_TEST_ALL_PREFIXES(CastActivityManagerTest,
+                           AddMirroringActivityCollision);
   FRIEND_TEST_ALL_PREFIXES(CastActivityManagerWithTerminatingTest,
                            LaunchSessionTerminatesExistingSessionOnSink);
   FRIEND_TEST_ALL_PREFIXES(CastActivityManagerTest,
