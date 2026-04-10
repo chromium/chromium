@@ -890,6 +890,42 @@ TEST_P(SubresourceIntegritySignatureTest, CheckValidSignature) {
       << "Resource variant";
 }
 
+TEST_P(SubresourceIntegritySignatureTest,
+       CheckValidSignatureButEmptyUnencodedDigest) {
+  // Known-good message signature constants:
+  String kPublicKey = "JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";
+  // Use an unsupported algorithm (sha-384).
+  String kUnsupportedDigestHeader =
+      "sha-384=:uU0nuZNNPgilLlLX2n2r+sSE7+N6U4DukIj3rOLvzek=:";
+  String kValidSignatureInputHeader =
+      "signature=(\"unencoded-digest\";sf);"
+      "keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";tag=\"sri\"";
+  String kValidSignatureHeader =
+      "signature=:gHim9e5Pk2H7c9BStOmxSmkyc8+ioZgoxynu3d4INAT4dwfj5LhvaV9DFnEQ9"
+      "p7C0hzW4o4Qpkm5aApd6WLLCw==:";
+
+  String raw_headers =
+      "HTTP/1.1 200 OK\r\n"
+      "Unencoded-Digest: " +
+      kUnsupportedDigestHeader +
+      "\r\n"
+      "Signature-Input: " +
+      kValidSignatureInputHeader +
+      "\r\n"
+      "Signature: " +
+      kValidSignatureHeader + "\r\n\r\n";
+
+  IntegrityReport integrity_report;
+  IntegrityMetadataSet metadata_set;
+  metadata_set.public_keys = {
+      CreateIntegrityMetadata(kPublicKey, IntegrityAlgorithm::kEd25519)};
+
+  // This should now FAIL because unencoded-digest algorithm is unsupported.
+  EXPECT_FALSE(SubresourceIntegrity::CheckSubresourceIntegrity(
+      metadata_set, /*buffer=*/nullptr, sec_url, FetchResponseType::kCors,
+      raw_headers, /*feature_context=*/nullptr, integrity_report));
+}
+
 TEST_P(SubresourceIntegritySignatureTest, Inline_NoSignatures) {
   String kIntegrity = "ed25519-JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";
   String kSource = "alert(1);";

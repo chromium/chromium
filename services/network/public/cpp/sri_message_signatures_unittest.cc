@@ -21,6 +21,7 @@
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/unencoded_digests.h"
 #include "services/network/public/mojom/sri_message_signature.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1634,6 +1635,7 @@ class SRIMessageSignatureEnforcementTest
                                          std::string_view input) {
     auto head = mojom::URLResponseHead::New();
     head->headers = Headers(digest, signature, input);
+    head->unencoded_digests = ParseUnencodedDigestsFromHeaders(*head->headers);
     return head;
   }
 };
@@ -1693,6 +1695,26 @@ TEST_F(SRIMessageSignatureEnforcementTest,
 
   // Regardless of the feature-flag's state, integrity requirements are
   // enforced.
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch,
+            result.value());
+}
+
+TEST_F(SRIMessageSignatureEnforcementTest,
+       ValidHeadersButEmptyUnencodedDigestsFailOpen) {
+  const std::vector<uint8_t> public_key = *base::Base64Decode(kPublicKey);
+
+  auto head = ResponseHead(kValidDigestHeader, kValidSignatureHeader,
+                           kValidSignatureInputHeader);
+
+  // Manually clear the digests to simulate a header that was present but
+  // didn't contain any supported algorithms.
+  head->unencoded_digests->digests.clear();
+
+  auto result =
+      MaybeBlockResponseForSRIMessageSignature(request(), *head, {public_key});
+
+  // This should now be blocked.
   EXPECT_TRUE(result.has_value());
   EXPECT_EQ(mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch,
             result.value());

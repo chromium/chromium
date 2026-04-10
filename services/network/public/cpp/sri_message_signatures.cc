@@ -862,6 +862,16 @@ MaybeBlockResponseForSRIMessageSignature(
   }
 
   if (passed_validation) {
+    // If we have signatures that matched expected keys, they MUST have a
+    // usable unencoded-digest. ParseSRIMessageSignaturesFromHeaders enforces
+    // that all parsed signatures cover `unencoded-digest`. If we don't have
+    // any supported digests, we can't verify the body, so we must fail.
+    if (!expected_public_keys.empty() &&
+        parsed_headers->signatures.size() > 0 &&
+        (!response.unencoded_digests ||
+         response.unencoded_digests->digests.empty())) {
+      return mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch;
+    }
     return std::nullopt;
   }
   return mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch;

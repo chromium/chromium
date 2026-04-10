@@ -42,6 +42,7 @@
 #include "services/network/public/mojom/parsed_headers.mojom-blink-forward.h"
 #include "services/network/public/mojom/sri_message_signature.mojom-blink-forward.h"
 #include "services/network/public/mojom/timing_allow_origin.mojom-blink.h"
+#include "services/network/public/mojom/unencoded_digest.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_response_headers.h"
 #include "third_party/blink/renderer/platform/network/parsed_content_type.h"
 #include "third_party/blink/renderer/platform/network/server_timing_header.h"
@@ -191,6 +192,10 @@ ParseContentSecurityPolicyHeaders(
 PLATFORM_EXPORT
 network::mojom::blink::SRIMessageSignaturesPtr
 ParseSRIMessageSignaturesFromHeaders(const String& raw_headers);
+
+PLATFORM_EXPORT
+network::mojom::blink::UnencodedDigestsPtr ParseUnencodedDigestsFromHeaders(
+    const String& raw_headers);
 
 PLATFORM_EXPORT
 network::mojom::blink::TimingAllowOriginPtr ParseTimingAllowOrigin(

@@ -9,6 +9,7 @@
 #include "base/strings/string_view_util.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "services/network/public/mojom/sri_message_signature.mojom-blink.h"
+#include "services/network/public/mojom/unencoded_digest.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/web_crypto.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
@@ -360,6 +361,22 @@ bool SubresourceIntegrity::CheckSignaturesImpl(
   //       least one of the signatures we parsed from |raw_headers|.)
   Vector<network::mojom::blink::SRIMessageSignaturePtr> signatures =
       std::move(ParseSRIMessageSignaturesFromHeaders(raw_headers)->signatures);
+
+  // Any SRI signature MUST cover `unencoded-digest`. If we have signatures,
+  // but we don't have any usable `unencoded-digest` assertions, we must fail.
+  if (!signatures.empty()) {
+    network::mojom::blink::UnencodedDigestsPtr unencoded_digests =
+        ParseUnencodedDigestsFromHeaders(raw_headers);
+    if (unencoded_digests->digests.empty()) {
+      integrity_report.AddConsoleErrorMessage(
+          StrCat({"Subresource Integrity: The resource at `",
+                  resource_url.ElidedString(),
+                  "` was signed, but did not provide any supported "
+                  "`unencoded-digest` assertions. The resource has been "
+                  "blocked."}));
+      return false;
+    }
+  }
 
   // This would be caught below, but we'll exit early for unsigned resources
   // so we can provide a better error message in the console.
