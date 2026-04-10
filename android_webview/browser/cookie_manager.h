@@ -13,6 +13,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/circular_deque.h"
 #include "base/files/file_path.h"
+#include "base/gtest_prod_util.h"
 #include "base/no_destructor.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread.h"
@@ -171,6 +172,9 @@ class CookieManager {
   }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(CookieManagerTest,
+                           DeferredProvisionalStoreCloseInInvokeQueue);
+
   // Returns the CookieStore, creating it if necessary. This must only be called
   // on the CookieStore TaskRunner.
   net::CookieStore* GetCookieStore();

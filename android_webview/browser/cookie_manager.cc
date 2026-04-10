@@ -531,13 +531,22 @@ void CookieManager::OnProvisionalStoreOperationComplete() {
   pending_provisional_store_operations_--;
 
   // If we're waiting to close the provisional store and this was the last
-  // pending operation, proceed with closing.
+  // pending operation, proceed with closing. Post as a separate task to avoid
+  // destroying the CookieMonster from within its own InvokeQueue() method.
+  // This callback can be invoked from within CookieMonster::InvokeQueue()
+  // (when a queued cookie operation completes and fires its callback chain).
+  // Calling DoCloseProvisionalStoreAndSignalReady synchronously would call
+  // cookie_store_.reset(), destroying the CookieMonster while InvokeQueue()
+  // is still on the call stack -- a use-after-free.
   if (waiting_to_close_provisional_store_ &&
       pending_provisional_store_operations_ == 0) {
     waiting_to_close_provisional_store_ = false;
-    DoCloseProvisionalStoreAndSignalReady(
-        std::move(deferred_cookie_manager_remote_),
-        std::move(deferred_ready_callback_));
+    cookie_store_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&CookieManager::DoCloseProvisionalStoreAndSignalReady,
+                       base::Unretained(this),
+                       std::move(deferred_cookie_manager_remote_),
+                       std::move(deferred_ready_callback_)));
   }
 }
 
