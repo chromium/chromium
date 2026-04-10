@@ -639,7 +639,8 @@ This builder measures build performance for Android developer builds, by simulat
     ),
     reclient_jobs = 5120,
     siso_profile_mode = "local",
-    siso_remote_jobs = 5120,
+    # Setting -1 makes siso use the default remote concurrency.
+    siso_remote_jobs = -1,
 )
 
 developer_build_perf_builder(
@@ -674,7 +675,8 @@ This builder measures build performance for Linux developer builds, by simulatin
     ),
     reclient_jobs = 5120,
     siso_profile_mode = "local",
-    siso_remote_jobs = 5120,
+    # Setting -1 makes siso use the default remote concurrency.
+    siso_remote_jobs = -1,
 )
 
 developer_build_perf_builder(
@@ -710,7 +712,8 @@ This builder measures build performance for Windows developer builds, by simulat
     reclient_jobs = 1000,
     # Enabling local profiler hangs windows builders (http://b/476821630). So set cloud explicitly here.
     siso_profile_mode = "cloud",
-    siso_remote_jobs = 5120,  # Siso doesn't set remote limit for Window builds.
+    # Setting -1 makes siso use the default remote concurrency.
+    siso_remote_jobs = -1,
 )
 
 developer_build_perf_builder(
@@ -747,7 +750,8 @@ This builder measures build performance for Mac developer builds, by simulating 
     reclient_jobs = 640,
     siso_configs = [],
     siso_profile_mode = "local",
-    siso_remote_jobs = 5120,  # Siso doesn't set remote limit for Mac builds.
+    # Setting -1 makes siso use the default remote concurrency.
+    siso_remote_jobs = -1,
 )
 
 developer_build_perf_builder(
@@ -787,7 +791,8 @@ This builder measures build performance for iOS developer builds, by simulating 
     reclient_jobs = 640,
     siso_configs = [],
     siso_profile_mode = "local",
-    siso_remote_jobs = 5120,  # Siso doesn't set remote limit for iOS builds.
+    # Setting -1 makes siso use the default remote concurrency.
+    siso_remote_jobs = -1,
     xcode = xcode.xcode_default,
 )
 

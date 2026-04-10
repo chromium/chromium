@@ -65,7 +65,7 @@
     ],
     "profile_mode": "local",
     "project": "rbe-chromium-untrusted",
-    "remote_jobs": 5120
+    "remote_jobs": -1
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
