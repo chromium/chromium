@@ -13,6 +13,7 @@
 #include "components/media_router/browser/media_router_debugger.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 
 namespace media_router {
 
@@ -42,6 +43,8 @@ class MediaRouterInternalsWebUIMessageHandler
   void HandleGetMirroringStats(const base::ListValue& args);
   void HandleSetMirroringStatsEnabled(const base::ListValue& args);
   void HandleIsMirroringStatsEnabled(const base::ListValue& args);
+  void HandleStartTracing(const base::ListValue& args);
+  void HandleStopTracing(const base::ListValue& args);
 
   // MirroringStatsObserver implementation.
   void OnMirroringStatsUpdated(const base::DictValue& json_logs) override;
@@ -54,6 +57,8 @@ class MediaRouterInternalsWebUIMessageHandler
   // Pointer to the MediaRouter.
   const raw_ptr<MediaRouter> router_;
   const raw_ref<MediaRouterDebugger> debugger_;
+
+  std::unique_ptr<perfetto::TracingSession> tracing_session_;
 
   base::WeakPtrFactory<MediaRouterInternalsWebUIMessageHandler> weak_factory_{
       this};

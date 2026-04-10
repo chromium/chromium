@@ -4,12 +4,30 @@
 
 #include "chrome/browser/ui/webui/media_router/media_router_internals_webui_message_handler.h"
 
+#include "base/base64.h"
 #include "base/functional/bind.h"
+#include "base/memory/ref_counted.h"
+#include "base/trace_event/trace_config.h"
 #include "components/media_router/browser/media_router.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/tracing_controller.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_config.h"
+#include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
 
 namespace media_router {
 
 namespace {
+
+struct TraceReader : public base::RefCountedThreadSafe<TraceReader> {
+  explicit TraceReader(std::unique_ptr<perfetto::TracingSession> session)
+      : session(std::move(session)) {}
+  std::unique_ptr<perfetto::TracingSession> session;
+
+ private:
+  friend class base::RefCountedThreadSafe<TraceReader>;
+  ~TraceReader() = default;
+};
 
 base::ListValue CastProviderStateToValue(
     const mojom::CastProviderState& state) {
@@ -82,6 +100,16 @@ void MediaRouterInternalsWebUIMessageHandler::RegisterMessages() {
       base::BindRepeating(&MediaRouterInternalsWebUIMessageHandler::
                               HandleIsMirroringStatsEnabled,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "startTracing",
+      base::BindRepeating(
+          &MediaRouterInternalsWebUIMessageHandler::HandleStartTracing,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "stopTracing",
+      base::BindRepeating(
+          &MediaRouterInternalsWebUIMessageHandler::HandleStopTracing,
+          base::Unretained(this)));
 }
 
 void MediaRouterInternalsWebUIMessageHandler::HandleGetState(
@@ -168,6 +196,117 @@ void MediaRouterInternalsWebUIMessageHandler::HandleIsMirroringStatsEnabled(
 
   ResolveJavascriptCallback(callback_id,
                             debugger_->ShouldFetchMirroringStats());
+}
+
+void MediaRouterInternalsWebUIMessageHandler::HandleStartTracing(
+    const base::ListValue& args) {
+  AllowJavascript();
+  const base::Value& callback_id = args[0];
+
+  if (tracing_session_) {
+    ResolveJavascriptCallback(callback_id, base::Value(false));
+    return;
+  }
+
+  const base::trace_event::TraceConfig trace_config(
+      "media.cast,openscreen,gpu,media,base,toplevel", "record-until-full");
+
+  tracing_session_ =
+      perfetto::Tracing::NewTrace(perfetto::BackendType::kCustomBackend);
+
+  auto perfetto_config = tracing::GetDefaultPerfettoConfig(
+      trace_config, /*privacy_filtering_enabled=*/false);
+  tracing_session_->Setup(perfetto_config);
+
+  // base::Value is move-only, but std::function requires copyable arguments.
+  // Since we only need the string callback_id, we can extract it.
+  std::string callback_id_str;
+  if (callback_id.is_string()) {
+    callback_id_str = callback_id.GetString();
+  }
+
+  tracing_session_->SetOnStartCallback([weak_this = weak_factory_.GetWeakPtr(),
+                                        callback_id_str]() {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](base::WeakPtr<MediaRouterInternalsWebUIMessageHandler> weak_this,
+               std::string callback_id_str) {
+              if (weak_this) {
+                weak_this->ResolveJavascriptCallback(
+                    base::Value(callback_id_str), base::Value(true));
+              }
+            },
+            std::move(weak_this), std::move(callback_id_str)));
+  });
+  tracing_session_->Start();
+}
+
+void MediaRouterInternalsWebUIMessageHandler::HandleStopTracing(
+    const base::ListValue& args) {
+  AllowJavascript();
+  const base::Value& callback_id = args[0];
+
+  if (!tracing_session_) {
+    ResolveJavascriptCallback(callback_id, base::Value(false));
+    return;
+  }
+
+  std::string callback_id_str;
+  if (callback_id.is_string()) {
+    callback_id_str = callback_id.GetString();
+  }
+
+  // Wrap the tracing session in a ref-counted struct so it can be safely
+  // captured by copy into the std::function callbacks used by Perfetto,
+  // matching Chromium's idiomatic approach for these APIs.
+  auto trace_reader =
+      base::MakeRefCounted<TraceReader>(std::move(tracing_session_));
+
+  trace_reader->session->SetOnStopCallback([trace_reader,
+                                            weak_this =
+                                                weak_factory_.GetWeakPtr(),
+                                            callback_id_str]() {
+    trace_reader->session->SetOnStopCallback([]() {});
+    trace_reader->session->ReadTrace(
+        [trace_reader, weak_this, callback_id_str](
+            perfetto::TracingSession::ReadTraceCallbackArgs args) {
+          if (args.size > 0) {
+            std::string base64_chunk =
+                base::Base64Encode(std::string_view(args.data, args.size));
+            content::GetUIThreadTaskRunner({})->PostTask(
+                FROM_HERE,
+                base::BindOnce(
+                    [](base::WeakPtr<MediaRouterInternalsWebUIMessageHandler>
+                           weak_this,
+                       std::string base64_chunk) {
+                      if (weak_this) {
+                        weak_this->FireWebUIListener("on-trace-chunk",
+                                                     base::Value(base64_chunk));
+                      }
+                    },
+                    weak_this, std::move(base64_chunk)));
+          }
+
+          if (args.has_more) {
+            return;
+          }
+
+          content::GetUIThreadTaskRunner({})->PostTask(
+              FROM_HERE,
+              base::BindOnce(
+                  [](base::WeakPtr<MediaRouterInternalsWebUIMessageHandler>
+                         weak_this,
+                     std::string callback_id_str) {
+                    if (weak_this) {
+                      weak_this->ResolveJavascriptCallback(
+                          base::Value(callback_id_str), base::Value(true));
+                    }
+                  },
+                  std::move(weak_this), std::move(callback_id_str)));
+        });
+  });
+  trace_reader->session->Stop();
 }
 
 void MediaRouterInternalsWebUIMessageHandler::OnMirroringStatsUpdated(
