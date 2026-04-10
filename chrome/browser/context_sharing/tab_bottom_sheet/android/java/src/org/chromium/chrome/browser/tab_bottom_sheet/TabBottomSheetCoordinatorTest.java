@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -42,6 +43,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.ResizingState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -339,28 +341,16 @@ public class TabBottomSheetCoordinatorTest {
     }
 
     @Test
-    public void testOnContainerSizeChanged_withKeyboard() {
+    public void testOnContainerSizeChanged() {
         BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
 
-        int containerHeight = 1000;
+        int containerHeight = 1234;
+        when(mMockBottomSheetController.getMaxOffset()).thenReturn(containerHeight);
         when(mKeyboardDelegate.isKeyboardShowing(eq(mView))).thenReturn(true);
 
         observer.onContainerSizeChanged(500, containerHeight);
 
-        int expectedHeight = Math.round(containerHeight * 0.9f);
-        assertTrue(expectedHeight == mCoordinatorModel.get(TabBottomSheetProperties.SHEET_HEIGHT));
-    }
-
-    @Test
-    public void testOnContainerSizeChanged_withoutKeyboard() {
-        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
-
-        int containerHeight = 1000;
-        when(mKeyboardDelegate.isKeyboardShowing(eq(mView))).thenReturn(false);
-
-        observer.onContainerSizeChanged(500, containerHeight);
-
-        int expectedHeight = Math.round(containerHeight * 0.7f);
-        assertTrue(expectedHeight == mCoordinatorModel.get(TabBottomSheetProperties.SHEET_HEIGHT));
+        ResizingState state = mCoordinatorModel.get(TabBottomSheetProperties.RESIZING_STATE);
+        assertEquals(containerHeight, state.webUiContainerHeight);
     }
 }

@@ -33,6 +33,10 @@ public class TabBottomSheetCoordinator {
     private static final float FLING_VELOCITY_THRESHOLD_DP = 50f;
     private static final float SCROLL_DISTANCE_THRESHOLD_DP = 100f;
 
+    // Can be modified later to be set dynamically based on device
+    private static final float FULL_HEIGHT_RATIO = 0.7f;
+    private static final float KEYBOARD_SHOWING_HEIGHT_RATIO = 0.9f;
+
     private final ComponentCallbacks mComponentsCallbacks =
             new ComponentCallbacks() {
                 @Override
@@ -159,7 +163,13 @@ public class TabBottomSheetCoordinator {
 
         mModel = TabBottomSheetProperties.createDefaultModel(coBrowseViews);
 
-        mMediator = new TabBottomSheetMediator(mContext, mModel, coBrowseViews);
+        mMediator =
+                new TabBottomSheetMediator(
+                        mContext,
+                        mModel,
+                        coBrowseViews,
+                        FULL_HEIGHT_RATIO,
+                        KEYBOARD_SHOWING_HEIGHT_RATIO);
 
         coBrowseViews.setWebUiTouchHandler(mMediator.getWebUiTouchHandler());
     }
@@ -170,7 +180,7 @@ public class TabBottomSheetCoordinator {
             return false;
         }
         mContentView = mCoBrowseViews.getView();
-        mSheetContent = new TabBottomSheetContent(mContentView);
+        mSheetContent = new TabBottomSheetContent(mContentView, getDefaultHeightRatio());
         mViewBinder =
                 PropertyModelChangeProcessor.create(
                         mModel, mContentView, TabBottomSheetViewBinder::bind);
@@ -183,9 +193,7 @@ public class TabBottomSheetCoordinator {
             // We set it here, and if it changes later, we will update it in the observer.
             mContentView.post(
                     () -> {
-                        boolean isKeyboard = isKeyboardShowing();
-                        mMediator.setMaxSheetHeight(
-                                mBottomSheetController.getContainerHeight(), isKeyboard);
+                        updateResizingStateWithFixedHeight();
 
                         boolean isSheetHeightSufficient =
                                 mMediator.isSheetHeightSufficient(
@@ -319,7 +327,7 @@ public class TabBottomSheetCoordinator {
                     mBottomSheetController.collapseSheet(/* animate= */ true);
                     mExpectingLayoutChange = false;
                 }
-                mMediator.setMaxSheetHeight(containerHeight, isKeyboardShowing());
+                updateResizingStateWithFixedHeight();
             }
         };
     }
@@ -359,5 +367,18 @@ public class TabBottomSheetCoordinator {
 
     GestureDetector.SimpleOnGestureListener getGestureListenerForTesting() {
         return mGestureListener;
+    }
+
+    private void updateResizingStateWithFixedHeight() {
+        float defaultHeightRatio = getDefaultHeightRatio();
+        mMediator.updateResizingState(
+                defaultHeightRatio,
+                defaultHeightRatio,
+                mBottomSheetController.getCurrentOffset(),
+                mBottomSheetController.getMaxOffset());
+    }
+
+    private float getDefaultHeightRatio() {
+        return isKeyboardShowing() ? KEYBOARD_SHOWING_HEIGHT_RATIO : FULL_HEIGHT_RATIO;
     }
 }

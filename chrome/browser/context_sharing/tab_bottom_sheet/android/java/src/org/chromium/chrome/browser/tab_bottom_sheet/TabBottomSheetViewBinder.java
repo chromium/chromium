@@ -11,6 +11,7 @@ import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.context_sharing.R;
+import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.ResizingState;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -25,10 +26,10 @@ public class TabBottomSheetViewBinder {
      * @param propertyKey The {@link PropertyKey} that changed.
      */
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (propertyKey == TabBottomSheetProperties.SHEET_HEIGHT) {
-            int sheetHeight = model.get(TabBottomSheetProperties.SHEET_HEIGHT);
+        if (propertyKey == TabBottomSheetProperties.RESIZING_STATE) {
+            ResizingState resizingState = model.get(TabBottomSheetProperties.RESIZING_STATE);
             CoBrowseViews coBrowseViews = model.get(TabBottomSheetProperties.BOTTOM_SHEET_VIEWS);
-            coBrowseViews.setSheetHeight(sheetHeight);
+            coBrowseViews.setSheetHeight(resizingState.webUiContainerHeight);
         } else if (PEEK_VIEW_AND_EXPANDED_CONTENT_ALPHA == propertyKey) {
             View peekContainer = view.findViewById(R.id.actor_control_container);
             peekContainer.setAlpha(model.get(PEEK_VIEW_AND_EXPANDED_CONTENT_ALPHA));

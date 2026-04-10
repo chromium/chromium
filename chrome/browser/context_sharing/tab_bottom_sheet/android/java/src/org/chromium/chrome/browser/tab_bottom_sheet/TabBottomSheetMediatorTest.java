@@ -29,6 +29,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.ResizingState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -56,26 +57,7 @@ public class TabBottomSheetMediatorTest {
         when(mView.getParent()).thenReturn(mParent);
 
         mModel = TabBottomSheetProperties.createDefaultModel(mCoBrowseViews);
-        mMediator = new TabBottomSheetMediator(mContext, mModel, mCoBrowseViews);
-    }
-
-    @Test
-    @SmallTest
-    public void testSetMaxSheetHeight_setsSheetHeight() {
-        int maxHeight = 1000;
-        int expectedHeight = Math.round(maxHeight * mMediator.getFullHeightRatioForTesting());
-        mMediator.setMaxSheetHeight(maxHeight, /* isKeyboardShowing= */ false);
-        assertEquals(expectedHeight, mModel.get(TabBottomSheetProperties.SHEET_HEIGHT));
-    }
-
-    @Test
-    @SmallTest
-    public void testSetMaxSheetHeight_keyboardShowing() {
-        int maxHeight = 1000;
-        int expectedHeight =
-                Math.round(maxHeight * mMediator.getKeyboardShowingHeightRatioForTesting());
-        mMediator.setMaxSheetHeight(maxHeight, /* isKeyboardShowing= */ true);
-        assertEquals(expectedHeight, mModel.get(TabBottomSheetProperties.SHEET_HEIGHT));
+        mMediator = new TabBottomSheetMediator(mContext, mModel, mCoBrowseViews, 0.7f, 0.9f);
     }
 
     @Test
@@ -201,5 +183,21 @@ public class TabBottomSheetMediatorTest {
 
         mMediator.onSheetStateChanged(SheetState.FULL, false);
         Assert.assertTrue(mMediator.isMaximized());
+    }
+
+    @Test
+    @SmallTest
+    public void testUpdateResizingState() {
+        float defaultHeightRatio = mMediator.getFullHeightRatioForTesting();
+        float heightFraction = defaultHeightRatio + 0.1f;
+        int maxOffset = 1000;
+        int offsetHeight = (int) (maxOffset * heightFraction);
+
+        mMediator.updateResizingState(
+                defaultHeightRatio, heightFraction, offsetHeight, maxOffset);
+
+        ResizingState state = mModel.get(TabBottomSheetProperties.RESIZING_STATE);
+        assertEquals(maxOffset, state.webUiContainerHeight);
+        assertEquals(1.0f, state.heightFraction, 0.01f);
     }
 }

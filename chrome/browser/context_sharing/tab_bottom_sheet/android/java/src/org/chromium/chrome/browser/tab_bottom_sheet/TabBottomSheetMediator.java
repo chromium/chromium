@@ -11,6 +11,7 @@ import android.view.View;
 import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.ResizingState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.content_public.browser.GestureStateListener;
@@ -33,13 +34,16 @@ public class TabBottomSheetMediator extends GestureStateListener {
     private int mPeekHeight;
 
     public TabBottomSheetMediator(
-            Context context, PropertyModel model, CoBrowseViews coBrowseViews) {
+            Context context,
+            PropertyModel model,
+            CoBrowseViews coBrowseViews,
+            float fullheightRatio,
+            float keyboardShowingHeightRatio) {
         mContext = context;
         mModel = model;
         mTouchArbitrator = new TouchArbitrator();
-        // Setting statically right now, can be modified later to be set dynamically based on device
-        mFullheightRatio = 0.7f;
-        mKeyboardShowingHeightRatio = 0.9f;
+        mFullheightRatio = fullheightRatio;
+        mKeyboardShowingHeightRatio = keyboardShowingHeightRatio;
     }
 
     void onSheetStateChanged(@SheetState int state, boolean hasPeekView) {
@@ -70,28 +74,10 @@ public class TabBottomSheetMediator extends GestureStateListener {
         mPeekHeight = peekHeight;
     }
 
-    /**
-     * Sets the sheets height to a ratio of the bottom sheet container height. If the bottom sheet
-     * had never been called before, BottomSheetController.getContainerHeight() returns 0. To avoid
-     * this we set the height after the sheet has been initialized. TODO(crbug.com/486916366):
-     * Temporary fix until bottom sheet resizing is implemented.
-     *
-     * @param maxSheetHeight The maximum height of the bottom sheet container.
-     * @param isKeyboardShowing Whether the keyboard is currently showing, which determines the
-     *     height ratio.
-     */
-    void setMaxSheetHeight(int maxSheetHeight, boolean isKeyboardShowing) {
-        float ratio = isKeyboardShowing ? mKeyboardShowingHeightRatio : mFullheightRatio;
-        int sheetHeight = Math.round(maxSheetHeight * ratio);
-        mModel.set(TabBottomSheetProperties.SHEET_HEIGHT, sheetHeight);
-    }
-
     boolean isSheetHeightSufficient(@Px int maxSheetOffset) {
-        int sheetHeightPx = (int) (maxSheetOffset * mFullheightRatio);
-        int webUiHeightDp =
-                DisplayUtil.pxToDp(DisplayAndroid.getNonMultiDisplay(mContext), sheetHeightPx);
-
-        return webUiHeightDp >= MIN_SHEET_HEIGHT_DP;
+        int maxSheetOffsetDp =
+                DisplayUtil.pxToDp(DisplayAndroid.getNonMultiDisplay(mContext), maxSheetOffset);
+        return maxSheetOffsetDp >= MIN_SHEET_HEIGHT_DP;
     }
 
     /** Returns the touch handler for the WebUI container. */
@@ -142,6 +128,26 @@ public class TabBottomSheetMediator extends GestureStateListener {
             v.dispatchTouchEvent(e);
             return true;
         }
+    }
+
+    /**
+     * Updates the state used for resizing the sheet.
+     *
+     * @param defaultHeightRatio The default height ratio for the sheet.
+     * @param heightFraction The current height fraction for the sheet.
+     * @param offsetHeight The current offset height for the sheet.
+     * @param maxOffset The maximum offset height for the sheet.
+     */
+    @SuppressWarnings("unused")
+    public void updateResizingState(
+            float defaultHeightRatio,
+            float heightFraction,
+            @Px int offsetHeight,
+            @Px int maxOffset) {
+        // Use the maxOffset since the sheet content should always assume full height.
+        ResizingState resizingState = new ResizingState(maxOffset, 1.0f);
+
+        mModel.set(TabBottomSheetProperties.RESIZING_STATE, resizingState);
     }
 
     @SheetState

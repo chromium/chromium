@@ -21,15 +21,18 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.GlowSpe
 @NullMarked
 public class TabBottomSheetContent implements BottomSheetContent {
     private final View mContentView;
+    private final float mFullHeightRatio;
     private final GlowSpec mGlowSpec;
 
     /**
      * Constructor.
      *
      * @param contentView The inflated view for the bottom sheet.
+     * @param fullHeightRatio The full height ratio for the bottom sheet.
      */
-    public TabBottomSheetContent(View contentView) {
+    public TabBottomSheetContent(View contentView, float fullHeightRatio) {
         mContentView = contentView;
+        mFullHeightRatio = fullHeightRatio;
         mGlowSpec =
                 new GlowSpec(
                         mContentView.getContext().getColor(R.color.default_bg_color_blue),
@@ -105,7 +108,7 @@ public class TabBottomSheetContent implements BottomSheetContent {
 
     @Override
     public float getFullHeightRatio() {
-        return HeightMode.WRAP_CONTENT;
+        return mFullHeightRatio;
     }
 
     @Override
