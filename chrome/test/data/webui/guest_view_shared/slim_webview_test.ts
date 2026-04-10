@@ -147,6 +147,60 @@ suite('Loading', function() {
         loadAbortEvent.reason));
     assertEquals(webviewUrl, loadCommitEvent.url);
   });
+
+  // NOTE: We do not test navigation to a disallowed origin here.
+  // In slim_web_view_page_handler.cc, a disallowed navigation triggers
+  // mojo::ReportBadMessage, which terminates the renderer process.
+  // In WebUI unit tests, this would cause the test itself to fail due to
+  // process crash, making it difficult to test directly in this suite.
+
+  test('AllowedOriginNavigation', async function() {
+    const webviewUrl = getTestUrl('/simple.html');
+    const origin = getOrigin(webviewUrl);
+
+    const webview = document.createElement('webview');
+    webview.allowedOrigins = [origin];
+    document.body.appendChild(webview);
+
+    const loadStartPromise = eventToPromise<LoadEvent>('loadstart', webview);
+    const loadCommitPromise = eventToPromise<LoadEvent>('loadcommit', webview);
+    const contentLoadPromise = eventToPromise('contentload', webview);
+    const loadStopPromise = eventToPromise('loadstop', webview);
+
+    webview.src = webviewUrl;
+
+    const [loadStartEvent, loadCommitEvent] = await Promise.all([
+      loadStartPromise,
+      loadCommitPromise,
+      contentLoadPromise,
+      loadStopPromise,
+    ]);
+
+    assertEquals(webviewUrl, loadStartEvent.url);
+    assertEquals(webviewUrl, loadCommitEvent.url);
+  });
+
+  test('InvalidAllowedOriginPatternFailsCreation', async function() {
+    const webview = document.createElement('webview');
+    // An invalid pattern that should fail parsing in SimpleUrlPatternMatcher.
+    webview.allowedOrigins = ['invalid pattern'];
+
+    const failurePromise = new Promise<void>((resolve) => {
+      window.addEventListener('unhandledrejection', function listener(e) {
+        if (e.reason.message &&
+            e.reason.message.includes('Failed to create guest')) {
+          e.preventDefault();
+          window.removeEventListener('unhandledrejection', listener);
+          resolve();
+        }
+      });
+    });
+
+    document.body.appendChild(webview);
+    webview.src = getTestUrl('/simple.html');
+
+    await failurePromise;
+  });
 });
 
 suite('Operations', function() {
@@ -219,7 +273,30 @@ suite('Operations', function() {
   });
 });
 
-suite('Headers', function() {
+suite('Requests', function() {
+  test('NavigateToDisallowedOriginFails', async function() {
+    const webview = document.createElement('webview');
+    const origin = getOrigin(getTestUrl('/'));
+    // Only allow the test origin.
+    webview.allowedOrigins = [origin];
+    document.body.appendChild(webview);
+
+    await navigateAndWaitForContentLoad(
+        webview, getTestUrl('/webui/guest_view_shared/eval_post_message.html'));
+
+    const loadAbortPromise =
+        eventToPromise<LoadAbortEvent>('loadabort', webview);
+
+    // Trigger a navigation to a DISALLOWED origin via window.location.
+    evalOnWebview(webview, () => {
+      window.location.href = 'https://www.google.com/';
+    });
+
+    const loadAbortEvent = await loadAbortPromise;
+
+    assertEquals('ERR_BLOCKED_BY_CLIENT', loadAbortEvent.reason);
+  });
+
   test('HeadersConfigured', async function() {
     const webviewUrl =
         getTestUrl('/webui/guest_view_shared/eval_post_message.html');
@@ -251,7 +328,7 @@ suite('Headers', function() {
     assertEquals('test-value', fetchHeaders['X-Test-Header']);
   });
 
-  test('UnsecureHeadersFail', async function() {
+  test('InsecureHeadersFail', async function() {
     const webview = document.createElement('webview');
 
     webview.onBeforeSendHeadersParams = new OnBeforeSendHeadersParams(

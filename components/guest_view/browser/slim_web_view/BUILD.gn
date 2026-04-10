@@ -29,11 +29,11 @@ static_library("slim_web_view") {
     ":strings",
     "//base",
     "//components/guest_view/browser",
-    "//components/url_pattern",
     "//content/public/browser",
     "//content/public/common",
     "//net",
     "//third_party/blink/public:blink_headers",
+    "//url",
   ]
 }
 

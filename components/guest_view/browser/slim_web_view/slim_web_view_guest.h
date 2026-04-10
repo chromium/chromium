@@ -15,12 +15,9 @@
 #include "components/guest_view/browser/slim_web_view/request_utils.h"
 #include "components/guest_view/browser/slim_web_view/slim_web_view_permission_helper.h"
 #include "net/base/net_errors.h"
+#include "url/origin.h"
 
 class GURL;
-
-namespace url_pattern {
-class SimpleUrlPatternMatcher;
-}
 
 namespace guest_view {
 
@@ -126,8 +123,7 @@ class SlimWebViewGuest : public GuestView<SlimWebViewGuest> {
 
   SlimWebViewPermissionHelper permission_helper_{this};
 
-  std::vector<std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>>
-      allowed_origin_matchers_;
+  std::vector<url::Origin> allowed_origins_;
 
   base::WeakPtrFactory<SlimWebViewGuest> weak_ptr_factory_{this};
 };

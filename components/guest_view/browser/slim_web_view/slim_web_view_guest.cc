@@ -19,7 +19,6 @@
 #include "components/guest_view/browser/slim_web_view/grit/slim_web_view_strings.h"
 #include "components/guest_view/browser/slim_web_view/request_utils.h"
 #include "components/guest_view/browser/slim_web_view/slim_web_view_constants.h"
-#include "components/url_pattern/simple_url_pattern_matcher.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
@@ -30,6 +29,7 @@
 #include "net/http/http_util.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 #include "url/url_constants.h"
 
 namespace guest_view {
@@ -215,22 +215,21 @@ base::WeakPtr<SlimWebViewGuest> SlimWebViewGuest::GetWeakPtr() {
 void SlimWebViewGuest::Navigate(const GURL& url) {
   TRACE_EVENT_INSTANT("content", "SlimWebViewGuest::Navigate",
                       perfetto::Flow::FromPointer(this));
-  // TODO(acondor): Implement other security and navigation params, such as
-  // header overrides.
   content::NavigationController::LoadURLParams load_url_params(url);
   GetController().LoadURLWithParams(load_url_params);
 }
 
 bool SlimWebViewGuest::HasAllowedOrigins() const {
-  return !allowed_origin_matchers_.empty();
+  return !allowed_origins_.empty();
 }
 
 bool SlimWebViewGuest::IsUrlAllowed(const GURL& url) const {
-  if (allowed_origin_matchers_.empty()) {
+  if (allowed_origins_.empty()) {
     return true;
   }
-  for (const auto& matcher : allowed_origin_matchers_) {
-    if (matcher->Match(url)) {
+  url::Origin candidate_origin = url::Origin::Create(url);
+  for (const auto& origin : allowed_origins_) {
+    if (origin.IsSameOriginWith(candidate_origin)) {
       return true;
     }
   }
@@ -462,13 +461,12 @@ void SlimWebViewGuest::CreateInnerPage(
         RejectGuestCreation(std::move(owned_this), std::move(callback));
         return;
       }
-      auto matcher = url_pattern::SimpleUrlPatternMatcher::Create(
-          origin_value.GetString(), /*base_url=*/nullptr);
-      if (!matcher.has_value()) {
+      GURL allowed_origin_url(origin_value.GetString());
+      if (!allowed_origin_url.is_valid()) {
         RejectGuestCreation(std::move(owned_this), std::move(callback));
         return;
       }
-      allowed_origin_matchers_.push_back(std::move(matcher.value()));
+      allowed_origins_.push_back(url::Origin::Create(allowed_origin_url));
     }
   }
 
