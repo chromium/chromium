@@ -92,6 +92,22 @@ Status AlgorithmImplementation::ExportKey(blink::WebCryptoKeyFormat format,
   return Status::ErrorUnsupported();
 }
 
+Status AlgorithmImplementation::Encapsulate(
+    const blink::WebCryptoAlgorithm& algorithm,
+    const blink::WebCryptoKey& encapsulation_key,
+    std::vector<uint8_t>* out_shared_secret,
+    std::vector<uint8_t>* out_ciphertext) const {
+  return Status::ErrorUnsupported();
+}
+
+Status AlgorithmImplementation::Decapsulate(
+    const blink::WebCryptoAlgorithm& algorithm,
+    const blink::WebCryptoKey& decapsulation_key,
+    base::span<const uint8_t> ciphertext,
+    std::vector<uint8_t>* out_shared_secret) const {
+  return Status::ErrorUnsupported();
+}
+
 Status AlgorithmImplementation::SerializeKeyForClone(
     const blink::WebCryptoKey& key,
     std::vector<uint8_t>* key_data) const {

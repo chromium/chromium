@@ -134,6 +134,16 @@ class AlgorithmImplementation {
                            const blink::WebCryptoKey& key,
                            std::vector<uint8_t>* buffer) const;
 
+  virtual Status Encapsulate(const blink::WebCryptoAlgorithm& algorithm,
+                             const blink::WebCryptoKey& encapsulation_key,
+                             std::vector<uint8_t>* out_shared_secret,
+                             std::vector<uint8_t>* out_ciphertext) const;
+
+  virtual Status Decapsulate(const blink::WebCryptoAlgorithm& algorithm,
+                             const blink::WebCryptoKey& decapsulation_key,
+                             base::span<const uint8_t> ciphertext,
+                             std::vector<uint8_t>* out_shared_secret) const;
+
   // -----------------------------------------------
   // Structured clone
   // -----------------------------------------------

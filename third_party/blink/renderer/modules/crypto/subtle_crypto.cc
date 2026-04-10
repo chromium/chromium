@@ -821,55 +821,265 @@ ScriptPromise<IDLAny> SubtleCrypto::deriveKey(
   return promise;
 }
 
-// TODO(crbug.com/450627019): implement encapsulate/decapsulate functions
 ScriptPromise<EncapsulatedKey> SubtleCrypto::encapsulateKey(
     ScriptState* script_state,
-    const V8AlgorithmIdentifier* encapsulation_algorithm,
+    const V8AlgorithmIdentifier* raw_encapsulation_algorithm,
     CryptoKey* encapsulation_key,
-    const V8AlgorithmIdentifier* shared_key_algorithm,
+    const V8AlgorithmIdentifier* raw_shared_key_algorithm,
     bool extractable,
     const Vector<String>& raw_key_usages,
     ExceptionState& exception_state) {
+  // Method described by:
+  // https://wicg.github.io/webcrypto-modern-algos/#SubtleCrypto-method-encapsulateKey
+
   WebCryptoKeyUsageMask key_usages;
   if (!CryptoKey::ParseUsageMask(raw_key_usages, key_usages, exception_state)) {
     return EmptyPromise();
   }
 
-  return EmptyPromise();
+  // 3.2.1.2: Let normalizedEncapsulationAlgorithm be the result of normalizing
+  //          an algorithm, with alg set to algorithm and op set to
+  //          "encapsulate".
+  WebCryptoAlgorithm normalized_encapsulation_algorithm;
+  if (!NormalizeAlgorithm(
+          script_state->GetIsolate(), raw_encapsulation_algorithm,
+          kWebCryptoOperationEncapsulate, normalized_encapsulation_algorithm,
+          exception_state)) {
+    return EmptyPromise();
+  }
+
+  // 3.2.1.4: Let normalizedSharedKeyAlgorithm be the result of normalizing an
+  //          algorithm, with alg set to sharedKeyAlgorithm and op set to
+  //          "importKey".
+  WebCryptoAlgorithm normalized_shared_key_algorithm;
+  if (!NormalizeAlgorithm(script_state->GetIsolate(), raw_shared_key_algorithm,
+                          kWebCryptoOperationImportKey,
+                          normalized_shared_key_algorithm, exception_state)) {
+    return EmptyPromise();
+  }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<EncapsulatedKey>>(
+      script_state);
+  auto* result = MakeGarbageCollected<CryptoResultImpl>(script_state, resolver);
+  auto promise = resolver->Promise();
+
+  // 3.2.1.10: If the name member of normalizedEncapsulationAlgorithm is not
+  //           equal to the name attribute of the algorithm internal slot of
+  //           encapsulationKey then throw an InvalidAccessError.
+  //
+  // 3.2.1.11: If the usages internal slot of encapsulationKey does not contain
+  //           an entry that is "encapsulateKey", then throw an
+  //           InvalidAccessError.
+  if (!encapsulation_key->CanBeUsedForAlgorithm(
+          normalized_encapsulation_algorithm, kWebCryptoKeyUsageEncapsulateKey,
+          result)) {
+    return promise;
+  }
+
+  auto* execution_context = ExecutionContext::From(script_state);
+  HistogramAlgorithmAndKey(execution_context,
+                           normalized_encapsulation_algorithm,
+                           encapsulation_key->Key());
+  HistogramAlgorithm(execution_context, normalized_shared_key_algorithm);
+
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      execution_context->GetTaskRunner(blink::TaskType::kInternalWebCrypto);
+
+  Platform::Current()->Crypto()->EncapsulateKey(
+      normalized_encapsulation_algorithm, encapsulation_key->Key(),
+      normalized_shared_key_algorithm, extractable, key_usages,
+      result->Result(), std::move(task_runner));
+
+  return promise;
 }
 
 ScriptPromise<EncapsulatedBits> SubtleCrypto::encapsulateBits(
     ScriptState* script_state,
-    const V8AlgorithmIdentifier* encapsulation_algorithm,
+    const V8AlgorithmIdentifier* raw_encapsulation_algorithm,
     CryptoKey* encapsulation_key,
     ExceptionState& exception_state) {
-  return EmptyPromise();
+  // Method described by:
+  // https://wicg.github.io/webcrypto-modern-algos/#SubtleCrypto-method-encapsulateBits
+
+  // 3.2.2.2: Let normalizedEncapsulationAlgorithm be the result of normalizing
+  //          an algorithm, with alg set to encapsulationAlgorithm and op set to
+  //          "encapsulate".
+  WebCryptoAlgorithm normalized_encapsulation_algorithm;
+  if (!NormalizeAlgorithm(
+          script_state->GetIsolate(), raw_encapsulation_algorithm,
+          kWebCryptoOperationEncapsulate, normalized_encapsulation_algorithm,
+          exception_state)) {
+    return EmptyPromise();
+  }
+
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<EncapsulatedBits>>(
+          script_state);
+  auto* result = MakeGarbageCollected<CryptoResultImpl>(script_state, resolver);
+  auto promise = resolver->Promise();
+
+  // 3.2.2.8: If the name member of normalizedEncapsulationAlgorithm is not
+  //          equal to the name attribute of the algorithm internal slot of
+  //          encapsulationKey then throw an InvalidAccessError.
+  //
+  // 3.2.2.9: If the usages internal slot of encapsulationKey does not contain
+  //          an entry that is "encapsulateBits", then throw an
+  //          InvalidAccessError.
+  if (!encapsulation_key->CanBeUsedForAlgorithm(
+          normalized_encapsulation_algorithm, kWebCryptoKeyUsageEncapsulateBits,
+          result)) {
+    return promise;
+  }
+
+  auto* execution_context = ExecutionContext::From(script_state);
+  HistogramAlgorithmAndKey(execution_context,
+                           normalized_encapsulation_algorithm,
+                           encapsulation_key->Key());
+
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      execution_context->GetTaskRunner(blink::TaskType::kInternalWebCrypto);
+
+  Platform::Current()->Crypto()->EncapsulateBits(
+      normalized_encapsulation_algorithm, encapsulation_key->Key(),
+      result->Result(), std::move(task_runner));
+
+  return promise;
 }
 
 ScriptPromise<CryptoKey> SubtleCrypto::decapsulateKey(
     ScriptState* script_state,
-    const V8AlgorithmIdentifier* decapsulation_algorithm,
+    const V8AlgorithmIdentifier* raw_decapsulation_algorithm,
     CryptoKey* decapsulation_key,
-    const V8BufferSource* ciphertext,
-    const V8AlgorithmIdentifier* shared_key_algorithm,
+    const V8BufferSource* raw_ciphertext,
+    const V8AlgorithmIdentifier* raw_shared_key_algorithm,
     bool extractable,
     const Vector<String>& raw_key_usages,
     ExceptionState& exception_state) {
+  // Method described by:
+  // https://wicg.github.io/webcrypto-modern-algos/#SubtleCrypto-method-decapsulateKey
+
   WebCryptoKeyUsageMask key_usages;
   if (!CryptoKey::ParseUsageMask(raw_key_usages, key_usages, exception_state)) {
     return EmptyPromise();
   }
 
-  return EmptyPromise();
+  // 3.2.3.2: Let ciphertext be the result of getting a copy of the bytes held
+  //          by the ciphertext parameter passed to the decapsulateKey() method.
+  std::vector<uint8_t> ciphertext = CopyBytes(raw_ciphertext);
+
+  // 3.2.3.3: Let normalizedAlgorithm be the result of normalizing an
+  //          algorithm, with alg set to algorithm and op set to
+  //          "decapsulate".
+  WebCryptoAlgorithm normalized_decapsulation_algorithm;
+  if (!NormalizeAlgorithm(
+          script_state->GetIsolate(), raw_decapsulation_algorithm,
+          kWebCryptoOperationDecapsulate, normalized_decapsulation_algorithm,
+          exception_state)) {
+    return EmptyPromise();
+  }
+
+  // 3.2.3.5: Let normalizedSharedKeyAlgorithm be the result of normalizing an
+  //          algorithm, with alg set to sharedKeyAlgorithm and op set to
+  //          "importKey".
+  WebCryptoAlgorithm normalized_shared_key_algorithm;
+  if (!NormalizeAlgorithm(script_state->GetIsolate(), raw_shared_key_algorithm,
+                          kWebCryptoOperationImportKey,
+                          normalized_shared_key_algorithm, exception_state)) {
+    return EmptyPromise();
+  }
+
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<CryptoKey>>(script_state);
+  auto* result = MakeGarbageCollected<CryptoResultImpl>(script_state, resolver);
+  auto promise = resolver->Promise();
+
+  // 3.2.3.11: If the name member of normalizedDecapsulationAlgorithm is not
+  //           equal to the name attribute of the algorithm internal slot of
+  //           decapsulationKey then throw an InvalidAccessError.
+  //
+  //
+  // 3.2.3.12: If the usages internal slot of decapsulationKey does not contain
+  //           an entry that is "decapsulateKey", then throw an
+  //           InvalidAccessError.
+  if (!decapsulation_key->CanBeUsedForAlgorithm(
+          normalized_decapsulation_algorithm, kWebCryptoKeyUsageDecapsulateKey,
+          result)) {
+    return promise;
+  }
+
+  auto* execution_context = ExecutionContext::From(script_state);
+  HistogramAlgorithmAndKey(execution_context,
+                           normalized_decapsulation_algorithm,
+                           decapsulation_key->Key());
+  HistogramAlgorithm(execution_context, normalized_shared_key_algorithm);
+
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      execution_context->GetTaskRunner(blink::TaskType::kInternalWebCrypto);
+
+  Platform::Current()->Crypto()->DecapsulateKey(
+      normalized_decapsulation_algorithm, decapsulation_key->Key(),
+      std::move(ciphertext), normalized_shared_key_algorithm, extractable,
+      key_usages, result->Result(), std::move(task_runner));
+
+  return promise;
 }
 
 ScriptPromise<DOMArrayBuffer> SubtleCrypto::decapsulateBits(
     ScriptState* script_state,
-    const V8AlgorithmIdentifier* decapsulation_algorithm,
+    const V8AlgorithmIdentifier* raw_decapsulation_algorithm,
     CryptoKey* decapsulation_key,
-    const V8BufferSource* ciphertext,
+    const V8BufferSource* raw_ciphertext,
     ExceptionState& exception_state) {
-  return EmptyPromise();
+  // Method described by:
+  // https://wicg.github.io/webcrypto-modern-algos/#SubtleCrypto-method-decapsulateBits
+
+  // 3.2.4.2: Let ciphertext be the result of getting a copy of the bytes held
+  //          by the ciphertext parameter passed to the decapsulateBits()
+  //          method.
+  std::vector<uint8_t> ciphertext = CopyBytes(raw_ciphertext);
+
+  // 3.2.4.3: Let normalizedDecapsulationAlgorithm be the result of normalizing
+  //          an algorithm, with alg set to decapsulationAlgorithm and op set to
+  //          "decapsulate".
+  WebCryptoAlgorithm normalized_decapsulation_algorithm;
+  if (!NormalizeAlgorithm(
+          script_state->GetIsolate(), raw_decapsulation_algorithm,
+          kWebCryptoOperationDecapsulate, normalized_decapsulation_algorithm,
+          exception_state)) {
+    return EmptyPromise();
+  }
+
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<DOMArrayBuffer>>(script_state);
+  auto* result = MakeGarbageCollected<CryptoResultImpl>(script_state, resolver);
+  auto promise = resolver->Promise();
+
+  // 3.2.4.9:  If the name member of normalizedDecapsulationAlgorithm is not
+  //           equal to the name attribute of the [[algorithm]] internal slot of
+  //           decapsulationKey then throw an InvalidAccessError.
+  //
+  // 3.2.4.10: If the usages internal slot of decapsulationKey does not
+  //           contain an entry that is "decapsulateBits", then throw an
+  //           InvalidAccessError.
+  if (!decapsulation_key->CanBeUsedForAlgorithm(
+          normalized_decapsulation_algorithm, kWebCryptoKeyUsageDecapsulateBits,
+          result)) {
+    return promise;
+  }
+
+  auto* execution_context = ExecutionContext::From(script_state);
+  HistogramAlgorithmAndKey(execution_context,
+                           normalized_decapsulation_algorithm,
+                           decapsulation_key->Key());
+
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      execution_context->GetTaskRunner(blink::TaskType::kInternalWebCrypto);
+
+  Platform::Current()->Crypto()->DecapsulateBits(
+      normalized_decapsulation_algorithm, decapsulation_key->Key(),
+      std::move(ciphertext), result->Result(), std::move(task_runner));
+
+  return promise;
 }
 
 }  // namespace blink

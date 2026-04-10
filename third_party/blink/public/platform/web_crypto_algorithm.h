@@ -217,6 +217,8 @@ class BLINK_PLATFORM_EXPORT WebCryptoAlgorithm {
   static bool IsKdf(WebCryptoAlgorithmId);
   // Returns true if the provided algorithm ID is for a ML-DSA algorithm
   static bool IsMlDsa(WebCryptoAlgorithmId);
+  // Returns true if the provided algorithm ID is for a ML-KEM algorithm
+  static bool IsMlKem(WebCryptoAlgorithmId);
 
  private:
   void Assign(const WebCryptoAlgorithm& other);

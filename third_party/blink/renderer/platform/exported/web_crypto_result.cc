@@ -77,6 +77,25 @@ void WebCryptoResult::CompleteWithKeyPair(const WebCryptoKey& public_key,
   Reset();
 }
 
+void WebCryptoResult::CompleteWithEncapsulatedKey(
+    const WebCryptoKey& shared_key,
+    base::span<const uint8_t> ciphertext) {
+  DCHECK(!shared_key.IsNull());
+  if (!Cancelled()) {
+    impl_->CompleteWithEncapsulatedKey(shared_key, ciphertext);
+  }
+  Reset();
+}
+
+void WebCryptoResult::CompleteWithEncapsulatedBits(
+    base::span<const uint8_t> shared_key,
+    base::span<const uint8_t> ciphertext) {
+  if (!Cancelled()) {
+    impl_->CompleteWithEncapsulatedBits(shared_key, ciphertext);
+  }
+  Reset();
+}
+
 bool WebCryptoResult::Cancelled() const {
   return cancel_->Cancelled();
 }

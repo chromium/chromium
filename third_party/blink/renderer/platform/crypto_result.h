@@ -62,6 +62,12 @@ class PLATFORM_EXPORT CryptoResult : public GarbageCollected<CryptoResult> {
   virtual void CompleteWithKey(const WebCryptoKey&) = 0;
   virtual void CompleteWithKeyPair(const WebCryptoKey& public_key,
                                    const WebCryptoKey& private_key) = 0;
+  virtual void CompleteWithEncapsulatedKey(
+      const WebCryptoKey& shared_key,
+      base::span<const uint8_t> ciphertext) = 0;
+  virtual void CompleteWithEncapsulatedBits(
+      base::span<const uint8_t> shared_key,
+      base::span<const uint8_t> ciphertext) = 0;
 
   virtual WebCryptoWarningType GetWarning() = 0;
   virtual void SetWarning(WebCryptoWarningType code) = 0;

@@ -22,6 +22,7 @@
 #include "base/threading/thread.h"
 #include "base/trace_event/trace_event.h"
 #include "components/webcrypto/algorithm_dispatch.h"
+#include "components/webcrypto/encapsulate_result.h"
 #include "components/webcrypto/generate_key_result.h"
 #include "components/webcrypto/status.h"
 #include "third_party/blink/public/platform/web_crypto_key_algorithm.h"
@@ -672,6 +673,120 @@ void WebCryptoImpl::DeriveKey(
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                  "DoDeriveKeyReply");
     CompleteWithKeyOrError(status, derived_key, &result);
+  }
+}
+
+void WebCryptoImpl::EncapsulateKey(
+    const blink::WebCryptoAlgorithm& encapsulation_algorithm,
+    const blink::WebCryptoKey& encapsulation_key,
+    const blink::WebCryptoAlgorithm& shared_key_algorithm,
+    bool extractable,
+    blink::WebCryptoKeyUsageMask usages,
+    blink::WebCryptoResult result,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  if (result.Cancelled()) {
+    return;
+  }
+
+  webcrypto::Status status;
+  webcrypto::EncapsulateKeyResult encapsulate_key_result;
+  {
+    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                 "DoEncapsulateKey");
+    status = webcrypto::EncapsulateKey(
+        encapsulation_algorithm, encapsulation_key, shared_key_algorithm,
+        extractable, usages, &encapsulate_key_result);
+  }
+  {
+    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                 "DoEncapsulateKeyReply");
+    if (status.IsError()) {
+      CompleteWithError(status, &result);
+    } else {
+      encapsulate_key_result.Complete(&result);
+    }
+  }
+}
+
+void WebCryptoImpl::EncapsulateBits(
+    const blink::WebCryptoAlgorithm& encapsulation_algorithm,
+    const blink::WebCryptoKey& encapsulation_key,
+    blink::WebCryptoResult result,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  if (result.Cancelled()) {
+    return;
+  }
+
+  webcrypto::Status status;
+  webcrypto::EncapsulateBitsResult encapsulate_bits_result;
+  {
+    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                 "DoEncapsulateBits");
+    status = webcrypto::EncapsulateBits(
+        encapsulation_algorithm, encapsulation_key, &encapsulate_bits_result);
+  }
+  {
+    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                 "DoEncapsulateBitsReply");
+    if (status.IsError()) {
+      CompleteWithError(status, &result);
+    } else {
+      encapsulate_bits_result.Complete(&result);
+    }
+  }
+}
+
+void WebCryptoImpl::DecapsulateKey(
+    const blink::WebCryptoAlgorithm& decapsulation_algorithm,
+    const blink::WebCryptoKey& decapsulation_key,
+    std::vector<uint8_t> ciphertext,
+    const blink::WebCryptoAlgorithm& shared_key_algorithm,
+    bool extractable,
+    blink::WebCryptoKeyUsageMask usages,
+    blink::WebCryptoResult result,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  if (result.Cancelled()) {
+    return;
+  }
+
+  webcrypto::Status status;
+  blink::WebCryptoKey shared_key;
+  {
+    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                 "DoDecapsulateKey");
+    status = webcrypto::DecapsulateKey(
+        decapsulation_algorithm, decapsulation_key, ciphertext,
+        shared_key_algorithm, extractable, usages, &shared_key);
+  }
+  {
+    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                 "DoDecapsulateKeyReply");
+    CompleteWithKeyOrError(status, shared_key, &result);
+  }
+}
+
+void WebCryptoImpl::DecapsulateBits(
+    const blink::WebCryptoAlgorithm& decapsulation_algorithm,
+    const blink::WebCryptoKey& decapsulation_key,
+    std::vector<uint8_t> ciphertext,
+    blink::WebCryptoResult result,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  if (result.Cancelled()) {
+    return;
+  }
+
+  webcrypto::Status status;
+  std::vector<uint8_t> shared_bits;
+  {
+    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                 "DoDecapsulateBits");
+    status = webcrypto::DecapsulateBits(
+        decapsulation_algorithm, decapsulation_key, ciphertext, &shared_bits);
+  }
+  {
+    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                 "DoDecapsulateBitsReply");
+    CompleteWithBufferOrError(status, shared_bits, &result);
   }
 }
 

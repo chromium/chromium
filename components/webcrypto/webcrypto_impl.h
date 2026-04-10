@@ -111,6 +111,38 @@ class WebCryptoImpl : public blink::WebCrypto {
       blink::WebCryptoResult result,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
 
+  void EncapsulateKey(
+      const blink::WebCryptoAlgorithm& encapsulation_algorithm,
+      const blink::WebCryptoKey& encapsulation_key,
+      const blink::WebCryptoAlgorithm& shared_key_algorithm,
+      bool extractable,
+      blink::WebCryptoKeyUsageMask usages,
+      blink::WebCryptoResult result,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
+
+  void EncapsulateBits(
+      const blink::WebCryptoAlgorithm& encapsulation_algorithm,
+      const blink::WebCryptoKey& encapsulation_key,
+      blink::WebCryptoResult result,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
+
+  void DecapsulateKey(
+      const blink::WebCryptoAlgorithm& decapsulation_algorithm,
+      const blink::WebCryptoKey& decapsulation_key,
+      std::vector<uint8_t> ciphertext,
+      const blink::WebCryptoAlgorithm& shared_key_algorithm,
+      bool extractable,
+      blink::WebCryptoKeyUsageMask usages,
+      blink::WebCryptoResult result,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
+
+  void DecapsulateBits(
+      const blink::WebCryptoAlgorithm& decapsulation_algorithm,
+      const blink::WebCryptoKey& decapsulation_key,
+      std::vector<uint8_t> ciphertext,
+      blink::WebCryptoResult result,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
+
   bool DeserializeKeyForClone(const blink::WebCryptoKeyAlgorithm& algorithm,
                               blink::WebCryptoKeyType type,
                               bool extractable,

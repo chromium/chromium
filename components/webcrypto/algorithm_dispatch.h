@@ -16,6 +16,8 @@
 namespace webcrypto {
 
 class GenerateKeyResult;
+class EncapsulateKeyResult;
+class EncapsulateBitsResult;
 class Status;
 
 // These functions provide an entry point for synchronous webcrypto operations.
@@ -113,6 +115,33 @@ Status DeriveKey(const blink::WebCryptoAlgorithm& algorithm,
                  bool extractable,
                  blink::WebCryptoKeyUsageMask usages,
                  blink::WebCryptoKey* derived_key);
+
+// Encapsulate and Decapsulate functions are implemented by calling the
+// underlying encapsulate/decapsulate/importKey operations, as per the spec
+// (https://wicg.github.io/webcrypto-modern-algos/).
+Status EncapsulateKey(const blink::WebCryptoAlgorithm& algorithm,
+                      const blink::WebCryptoKey& encapsulation_key,
+                      const blink::WebCryptoAlgorithm& shared_key_algorithm,
+                      bool extractable,
+                      blink::WebCryptoKeyUsageMask usages,
+                      EncapsulateKeyResult* result);
+
+Status EncapsulateBits(const blink::WebCryptoAlgorithm& algorithm,
+                       const blink::WebCryptoKey& encapsulation_key,
+                       EncapsulateBitsResult* result);
+
+Status DecapsulateKey(const blink::WebCryptoAlgorithm& algorithm,
+                      const blink::WebCryptoKey& decapsulation_key,
+                      base::span<const uint8_t> ciphertext,
+                      const blink::WebCryptoAlgorithm& shared_key_algorithm,
+                      bool extractable,
+                      blink::WebCryptoKeyUsageMask usages,
+                      blink::WebCryptoKey* shared_key);
+
+Status DecapsulateBits(const blink::WebCryptoAlgorithm& algorithm,
+                       const blink::WebCryptoKey& decapsulation_key,
+                       base::span<const uint8_t> ciphertext,
+                       std::vector<uint8_t>* shared_bits);
 
 bool SerializeKeyForClone(const blink::WebCryptoKey& key,
                           std::vector<uint8_t>* key_data);

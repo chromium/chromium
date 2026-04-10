@@ -431,7 +431,6 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
     {// Index 22
      // TODO(crbug.com/450627019): ML-KEM-768 is experimental behind
      // a flag. See https://chromestatus.com/feature/5198951632470016
-     // TODO(crbug.com/450627019): Fix params for methods
      "ML-KEM-768",
      {
          WebCryptoAlgorithmInfo::kUndefined,  // Encrypt
@@ -439,19 +438,16 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,  // Sign
          WebCryptoAlgorithmInfo::kUndefined,  // Verify
          WebCryptoAlgorithmInfo::kUndefined,  // Digest
-         WebCryptoAlgorithmInfo::kUndefined,  // GenerateKey
-         WebCryptoAlgorithmInfo::kUndefined,  // ImportKey
+         kWebCryptoAlgorithmParamsTypeNone,   // GenerateKey
+         kWebCryptoAlgorithmParamsTypeNone,   // ImportKey
          WebCryptoAlgorithmInfo::kUndefined,  // GetKeyLength
          WebCryptoAlgorithmInfo::kUndefined,  // DeriveBits
          WebCryptoAlgorithmInfo::kUndefined,  // WrapKey
          WebCryptoAlgorithmInfo::kUndefined,  // UnwrapKey
-         WebCryptoAlgorithmInfo::kUndefined,  // Encapsulate
-         WebCryptoAlgorithmInfo::kUndefined,  // Decapsulate
+         kWebCryptoAlgorithmParamsTypeNone,   // Encapsulate
+         kWebCryptoAlgorithmParamsTypeNone,   // Decapsulate
      }},
     {// Index 23
-     // TODO(crbug.com/450627019): ML-KEM-1024 is experimental behind
-     // a flag. See https://chromestatus.com/feature/5198951632470016
-     // TODO(crbug.com/450627019): Fix params for methods
      "ML-KEM-1024",
      {
          WebCryptoAlgorithmInfo::kUndefined,  // Encrypt
@@ -459,14 +455,14 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,  // Sign
          WebCryptoAlgorithmInfo::kUndefined,  // Verify
          WebCryptoAlgorithmInfo::kUndefined,  // Digest
-         WebCryptoAlgorithmInfo::kUndefined,  // GenerateKey
-         WebCryptoAlgorithmInfo::kUndefined,  // ImportKey
+         kWebCryptoAlgorithmParamsTypeNone,   // GenerateKey
+         kWebCryptoAlgorithmParamsTypeNone,   // ImportKey
          WebCryptoAlgorithmInfo::kUndefined,  // GetKeyLength
          WebCryptoAlgorithmInfo::kUndefined,  // DeriveBits
          WebCryptoAlgorithmInfo::kUndefined,  // WrapKey
          WebCryptoAlgorithmInfo::kUndefined,  // UnwrapKey
-         WebCryptoAlgorithmInfo::kUndefined,  // Encapsulate
-         WebCryptoAlgorithmInfo::kUndefined,  // Decapsulate
+         kWebCryptoAlgorithmParamsTypeNone,   // Encapsulate
+         kWebCryptoAlgorithmParamsTypeNone,   // Decapsulate
      }},
 });
 
@@ -779,6 +775,16 @@ bool WebCryptoAlgorithm::IsMlDsa(WebCryptoAlgorithmId id) {
     case kWebCryptoAlgorithmIdChaCha20Poly1305:
     case kWebCryptoAlgorithmIdMlKem768:
     case kWebCryptoAlgorithmIdMlKem1024:
+      return false;
+  }
+}
+
+bool WebCryptoAlgorithm::IsMlKem(WebCryptoAlgorithmId id) {
+  switch (id) {
+    case kWebCryptoAlgorithmIdMlKem768:
+    case kWebCryptoAlgorithmIdMlKem1024:
+      return true;
+    default:
       return false;
   }
 }
