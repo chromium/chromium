@@ -5918,16 +5918,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.StrictMode.ThumbnailCacheDir" units="ms"
-    expires_after="M85">
-  <owner>wnwen@chromium.org</owner>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Measures the amount of time due to a StrictMode violation from fetching for
-    the thumbnail cache directory.
-  </summary>
-</histogram>
-
 <histogram name="Android.Survey.DownloadRequested2" enum="BooleanRequested"
     expires_after="2026-04-19">
   <owner>wenyufu@chromium.org</owner>
