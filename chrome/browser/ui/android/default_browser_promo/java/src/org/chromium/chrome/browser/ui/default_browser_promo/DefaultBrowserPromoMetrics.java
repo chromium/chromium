@@ -27,15 +27,17 @@ public class DefaultBrowserPromoMetrics {
     @IntDef({
         DefaultBrowserPromoSourceType.MESSAGES_PROMO,
         DefaultBrowserPromoSourceType.SETTING_CARD_PROMO,
-        DefaultBrowserPromoSourceType.EDUCATIONAL_TIP_PROMO
+        DefaultBrowserPromoSourceType.EDUCATIONAL_TIP_PROMO,
+        DefaultBrowserPromoSourceType.FRE_PROMO
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface DefaultBrowserPromoSourceType {
         int MESSAGES_PROMO = 0;
         int SETTING_CARD_PROMO = 1;
         int EDUCATIONAL_TIP_PROMO = 2;
+        int FRE_PROMO = 3;
 
-        int NUM_ENTRIES = 3;
+        int NUM_ENTRIES = 4;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:DefaultBrowserPromoSourceType)

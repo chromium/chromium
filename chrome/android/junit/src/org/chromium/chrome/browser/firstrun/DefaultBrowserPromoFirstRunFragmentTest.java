@@ -36,11 +36,13 @@ import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoMetrics;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoEntryPoint;
 import org.chromium.components.feature_engagement.Tracker;
@@ -78,6 +80,11 @@ public class DefaultBrowserPromoFirstRunFragmentTest {
     @Mock private Profile mMockProfile;
     @Mock private Tracker mMockTracker;
     @Mock private WindowAndroid mMockWindow;
+
+    private static final String DEFAULT_BROWSER_PROMO_CLICK_HISTOGRAM =
+            "Android.DefaultBrowserPromo.Click";
+    private static final int FRE_PROMO_SOURCE_TYPE =
+            DefaultBrowserPromoMetrics.DefaultBrowserPromoSourceType.FRE_PROMO;
 
     private FragmentScenario<CustomDefaultBrowserPromoFirstRunFragment> mScenario;
 
@@ -208,6 +215,12 @@ public class DefaultBrowserPromoFirstRunFragmentTest {
                 // For the second onResume when the RMD is dismissed.
                 .thenReturn(true);
 
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                DEFAULT_BROWSER_PROMO_CLICK_HISTOGRAM, FRE_PROMO_SOURCE_TYPE)
+                        .build();
+
         launchFragment(DefaultBrowserPromoFirstRunFragment.PRIMER_NO_INSTRUCTIONS);
 
         mScenario.onFragment(
@@ -227,6 +240,15 @@ public class DefaultBrowserPromoFirstRunFragmentTest {
 
                     // Click the Continue button.
                     continueButton.performClick();
+
+                    // Verify the Fragment told the delegate to record the ACCEPTED metric.
+                    verify(mMockDelegate)
+                            .recordFreProgressHistogram(
+                                    MobileFreProgress.DEFAULT_BROWSER_PROMO_ACCEPTED);
+
+                    watcher.assertExpected(
+                            "The FRE_PROMO click should be recorded in the volume comparison"
+                                + " histogram.");
 
                     // Verify RMD was triggered.
                     verify(mMockUtils, times(1))
@@ -261,6 +283,11 @@ public class DefaultBrowserPromoFirstRunFragmentTest {
 
                     // Click the Dismiss button.
                     dismissButton.performClick();
+
+                    // Verify the Fragment told the delegate to record the REJECTED metric.
+                    verify(mMockDelegate)
+                            .recordFreProgressHistogram(
+                                    MobileFreProgress.DEFAULT_BROWSER_PROMO_REJECTED);
 
                     // Verify that we advance to the next page immediately without triggering the
                     // RMD.

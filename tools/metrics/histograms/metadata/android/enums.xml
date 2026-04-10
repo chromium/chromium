@@ -1056,6 +1056,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Messages Promo"/>
   <int value="1" label="Setting Card Promo"/>
   <int value="2" label="Educational Tip Promo"/>
+  <int value="3" label="FRE Promo"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/android/default_browser_promo/java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserPromoMetrics.java:DefaultBrowserPromoSourceType) -->
