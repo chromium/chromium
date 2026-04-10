@@ -25,10 +25,10 @@ message GlicExperimentalTriggering {
     // Monotonically increasing sequence number to ensure we can sort messages.
     // Since messages can arrive out of order, the sequence number enables an
     // ordered reconstruction of the stream.
-    optional uint64 sender_sequence_number = 3;
+    optional int64 sender_sequence_number = 3;
 
     // For this message, this was the last previously seen sequence number.
-    optional uint64 last_seen_sequence_number = 4;
+    optional int64 last_seen_sequence_number = 4;
   }
   // If the task is already running, this contains the metadata about it.
   optional TaskMetadata task_metadata = 1;
@@ -39,8 +39,15 @@ message GlicExperimentalTriggering {
       optional string initial_prompt = 1;
     }
 
+    message StopActuationRequest {
+      // The reason for stopping. This may be surfaced to the user, so it should
+      // be human readable.
+      optional string stop_reason = 1;
+    }
+
     oneof payload {
       TriggerActuationRequest trigger_actuation_request = 1;
+      StopActuationRequest stop_actuation_request = 2;
     }
   }
 
