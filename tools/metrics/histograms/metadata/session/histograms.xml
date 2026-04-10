@@ -293,15 +293,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Session.TimeSpentInFocusMode" units="s" expires_after="M80">
-  <owner>yiningwang@google.com</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <summary>
-    Time spent in focus mode browser. This is recorded when the focus mode
-    window closes. This metric is only recorded on Win/Mac/Linux/ChromeOS.
-  </summary>
-</histogram>
-
 <histogram name="Session.TotalDuration" units="ms" expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
 
