@@ -116,6 +116,7 @@
 <translation id="138692594145659985">Options d'enregistrement de la carte</translation>
 <translation id="1396260204083880024">Connecté en tant que <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ouvrez le menu du compte.</translation>
 <translation id="1397144142234474689">Masquer l'historique</translation>
+<translation id="1399268420835656394">Si vous n'êtes pas un enfant, vous pouvez vérifier l'âge indiqué dans le compte Apple sur cet appareil. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="1407135791313364759">Tout ouvrir</translation>
 <translation id="1408847409015257906">Touchez « Confidentialité et sécurité ».</translation>
 <translation id="1411386976162024013">Recherche visuelle de Lentille</translation>
@@ -255,6 +256,7 @@
 <translation id="1861067954551502701">{count,plural, =1{{position} mot de passe sur {count}}one{{position} mot de passe sur {count}}other{{position} mots de passe sur {count}}}</translation>
 <translation id="1861262398884155592">Ce dossier est vide</translation>
 <translation id="1864266050569350424">Sur un site sur lequel vous avez enregistré un mot de passe, touchez le champ du mot de passe de connexion.</translation>
+<translation id="1866700949421703765">Masquer l'option Activer le mode Lecture</translation>
 <translation id="1872096359983322073">Lampe de poche</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Inviter des membres de la famille</translation>
@@ -353,6 +355,7 @@
 <translation id="2214453882118345682">Magasinez, traduisez et identifiez ce que vous voyez avec votre appareil photo.</translation>
 <translation id="2215819824168709130">Masquer la carte Suivre le prix</translation>
 <translation id="2216366330550244277">Accédez à la page d'un produit</translation>
+<translation id="2219935992754556187">Chrome protège vos données sensibles avec Face ID</translation>
 <translation id="2220529011494928058">Signaler un problème</translation>
 <translation id="2223461067862937305">Créer un code QR</translation>
 <translation id="2225701818156393674">Produit ajouté à votre liste de produits suivis.</translation>
@@ -459,6 +462,7 @@
 <translation id="2583688836549072561">Nouvelle activité dans le groupe d'onglets <ph name="GROUP_TITLE" /> comprenant <ph name="TABS_NUMBER" /> onglets.</translation>
 <translation id="2593272815202181319">Espace simple</translation>
 <translation id="2601778637777010194">Suivez les baisses de prix des produits</translation>
+<translation id="2602372807870028932">Cette action supprime les infos sélectionnées enregistrées sur cet appareil</translation>
 <translation id="260378315836159338">En haut de l'écran, touchez +</translation>
 <translation id="2612676031748830579">Numéro de la carte</translation>
 <translation id="261305050785128654">Indiquez aux sites Web les langues que vous parlez. Le contenu s'affichera dans ces langues, lorsque c'est possible.</translation>
@@ -552,6 +556,7 @@
 <translation id="2922210239002704889">Accédez à votre page d'accueil ou à votre clavier</translation>
 <translation id="2924940770243654951">Ouvrir dans un nouvel onglet de navigation privée</translation>
 <translation id="2952278131021475699">Recherche avec Lentille Google au moyen de l'appareil photo</translation>
+<translation id="2953821385349876107">Choisir un autre compte Google</translation>
 <translation id="2962516096219646456">Voir toutes les données de remplissage automatique</translation>
 <translation id="2965594942405840553">Cette action est irréversible</translation>
 <translation id="2969979262385602596">Échec de connexion. Veuillez réessayer plus tard.</translation>
@@ -960,6 +965,7 @@
 <translation id="4469324811108161144">Les notes peuvent contenir jusqu'à <ph name="CHARACTER_LIMIT" /> caractères.</translation>
 <translation id="4471472356135655769">Impossible d'exporter les mots de passe</translation>
 <translation id="4472575034687746823">Premiers pas</translation>
+<translation id="4473565697543262065">Cette action supprime les infos sélectionnées enregistrées sur cet appareil et dans votre compte Google <ph name="USER_EMAIL" /></translation>
 <translation id="4473608001744970767">Masquer Suivre le prix</translation>
 <translation id="4474142134969976028">Aucun résultat correspondant</translation>
 <translation id="4474494258097106883">Conçu pour votre iPhone</translation>
@@ -1435,6 +1441,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6090760257419195752">Avertissements ignorés</translation>
 <translation id="6094325891006032858">Activez la navigation sécurisée améliorée</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> trouvé(s)</translation>
+<translation id="6099466082815574659">Cet iPad est configuré pour un enfant</translation>
 <translation id="6100617279104942061">Connecté en tant que <ph name="USER_EMAIL" />. Ouvre les paramètres.</translation>
 <translation id="6100676328067737810">Vos données seront enregistrées dans votre compte Google, <ph name="USER_EMAIL" /></translation>
 <translation id="610083648014322104">Obtenez des réponses pertinentes en fonction du contenu de la page sur laquelle vous vous trouvez</translation>
@@ -1492,7 +1499,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6259928806013786178">Échec du mode Lecture</translation>
 <translation id="6268773951964630964">Rechercher l'image copiée</translation>
 <translation id="6271462272606946663">Masquer Voir le site pour appareil mobile</translation>
-<translation id="6271556257184622612">Poser une question à Google à propos des onglets et plus encore</translation>
 <translation id="6271824294945464304">Partage du mot de passe en cours…</translation>
 <translation id="628251768213143684">Vous pouvez toujours gérer ce qui est enregistré dans votre compte Google</translation>
 <translation id="6284652193729350524">Offrir de traduire du <ph name="LANGUAGE" /></translation>
@@ -1529,6 +1535,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6368102751067608420">Pour supprimer toutes les données du gestionnaire de mots de passe</translation>
 <translation id="6372558618707314581">Accédez à la page de votre choix</translation>
 <translation id="6374469231428023295">Réessayer</translation>
+<translation id="6374514103145916800">Demander</translation>
 <translation id="6383719166112032471">Ouvrir un emplacement…</translation>
 <translation id="6387994324662817823">Les mots de passe sont enregistrés dans le gestionnaire de mots de passe Google sur cet appareil uniquement.</translation>
 <translation id="6393156038355142111">Suggérer un mot de passe fort</translation>
@@ -1577,6 +1584,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6532106788206463496">Enregistrer les modifications</translation>
 <translation id="6536759809440150308">Ouvrir <ph name="GROUP_TITLE" />, groupe de <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6538776393003671043">Chrome vous proposera de l'enregistrer dans Google Portefeuille la prochaine fois que vous l'utiliserez</translation>
 <translation id="6543899060872618437">Payer plus rapidement grâce au remplissage automatique sur vos appareils</translation>
 <translation id="6550675742724504774">Options</translation>
 <translation id="6550891580932862748">Ne vous protège pas contre les téléchargements, les extensions, ou les sites Web dangereux. Vos paramètres de navigation sécurisée dans les autres produits Google ne seront pas affectés.</translation>
@@ -1595,6 +1603,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6596481460663245319">Rechercher l'image avec Google</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 mot de passe}one{# mot de passe}other{# mots de passe}}</translation>
 <translation id="6601302169302852717">Image enregistrée dans Google Photos pour <ph name="USER_EMAIL" /></translation>
+<translation id="6602173570135186741">Remplissage automatique et mots de passe</translation>
 <translation id="6603393121510733479">Votre organisation a désactivé la navigation privée.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="6606914854592108404">La vérification de sécurité est en cours d'exécution…</translation>
@@ -1960,6 +1969,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="7888562068293422208">Tout fermer?</translation>
 <translation id="7889910613639381518">Accès facile et sécurisé avec le widget Gestionnaire de mots de passe Google.</translation>
 <translation id="7899199123054742721">Tout marquer comme non lu</translation>
+<translation id="7909005666376403847">Cet iPhone est configuré pour un enfant</translation>
 <translation id="7911190106180361398">Votre organisation ne vous autorise pas à tout synchroniser.</translation>
 <translation id="7918999344502274923">Masquer les détails de <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="7921559948846049514">Choisissez un thème, une couleur ou plus pour votre arrière-plan</translation>
@@ -1977,6 +1987,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="7952670906562503188">Vous êtes sur le point de supprimer {passkey_count} clés d'accès et la liste des sites et des applis pour lesquels vous avez choisi de ne jamais enregistrer les renseignements de connexion. Tout compte que vous avez créé pour des sites ou des applis ne sera pas supprimé.</translation>
 <translation id="7958575506592576831">Information sur la sécurité de la page</translation>
 <translation id="7961015016161918242">Jamais</translation>
+<translation id="7971651328518569075">Masquer l'option Désactiver le mode Lecture</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Essayer</translation>
 <translation id="797588153137233716">Menu → Historique → Supprimer les données de navigation</translation>
@@ -1993,6 +2004,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="8005666035647241369">Dans le gestionnaire de mots de passe Google sur cet appareil</translation>
 <translation id="8010488806779226127">Découvrez des fonctionnalités qui peuvent vous aider à en faire plus lorsque vous naviguez</translation>
 <translation id="8011489434346330032">Inspecteur Web</translation>
+<translation id="8014007212279733632">Confirmer qu'il s'agit bien de vous pour remplir automatiquement les infos sensibles</translation>
 <translation id="8015826420689927262">Supprimer la pièce jointe</translation>
 <translation id="8017015647846870183">À partir du gestionnaire de mots de passe Google, y compris les mots de passe et les clés d'accès</translation>
 <translation id="802154636333426148">Échec du téléchargement</translation>
@@ -2379,6 +2391,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="984275831282074731">Modes de paiement</translation>
 <translation id="985379595344853742">Fermer tous les onglets de navigation privée</translation>
 <translation id="988141524645182168">Autr appar</translation>
+<translation id="994184244350700431">Dans le portefeuille Google de <ph name="USER_EMAIL" /></translation>
 <translation id="995174784802614337">{count,plural, =1{{count} clé d'accès importée}one{{count} clé d'accès importée}other{{count} clés d'accès importées}}</translation>
 <translation id="999768147936949692">Pour l'instant, vous ne pouvez partager les mots de passe qu'avec les membres de la famille. <ph name="BEGIN_LINK" />Invitez des membres de la famille<ph name="END_LINK" /> à se joindre à votre groupe et profitez davantage de vos produits et de vos abonnements sur Google.</translation>
 </translationbundle>

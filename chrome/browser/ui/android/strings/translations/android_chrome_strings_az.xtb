@@ -293,6 +293,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="2251809247798634662">Yeni Anonim pəncərə</translation>
 <translation id="2253927598983295051"><ph name="APP_NAME" /> ilə paylaşılacaq kontenti seçin</translation>
 <translation id="2261570557291037252">Əlavə tətbiq məlumatı</translation>
+<translation id="2270544918551255912">Geri qayıtmaq üçün kənardan çəkin</translation>
 <translation id="2276696007612801991">Parollarınızı yoxlamaq üçün Google hesabınıza daxil olun</translation>
 <translation id="2281243904606300427"><ph name="TAB_TITLE" />, seçilmiş anonim tab</translation>
 <translation id="2286841657746966508">Faktura ünvanı</translation>
@@ -480,6 +481,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="2989523299700148168">Son ziyarət</translation>
 <translation id="2992473221983447149">Şəkil təsvirləri</translation>
 <translation id="2996291259634659425">Parol söz yaradın</translation>
+<translation id="2996682533106928201">Bağlamaq üçün toxunun</translation>
 <translation id="2996809686854298943">URL tələb olunur</translation>
 <translation id="3024215143424744261">Oxu rejimi tərcihləri bağlandı</translation>
 <translation id="3026955690410463085">Keçid daxil edin</translation>
@@ -684,6 +686,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">son 4 həftə</translation>
 <translation id="393697183122708255">Aktiv səsli axtarış əlçatan deyil</translation>
+<translation id="3941718885865495207">Chrome Finds seçimi üzrə aşağıdakı vərəq</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, Bərkidilmiş şəkildə şəkil tabı</translation>
 <translation id="3950820424414687140">Giriş</translation>
 <translation id="395377504920307820">Hesab olmadan istifadə edin</translation>
@@ -1189,6 +1192,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="6011308810877101166">Axtarış təkliflərini təkmilləşdirin</translation>
 <translation id="6013305291643746595">Ən köhnə əsasında çeşidlənir</translation>
 <translation id="6022659036123304283">Chrome'u özünüzküləşdirin</translation>
+<translation id="6023820583797130428">Geri qayıtmaq üçün menyunu açın</translation>
 <translation id="6026538407078977628">Tam ekrana genişləndirin</translation>
 <translation id="6030719887161080597">Reklam performansını ölçmək üçün saytların istifadə etdiyi məlumatları idarə edin</translation>
 <translation id="6039379616847168523">Növbəti panelə keşin</translation>
@@ -1631,6 +1635,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standart tab}other{<ph name="TABS_COUNT_MANY" /> standart tab}}</translation>
 <translation id="7603168929588204083">Yanlış tarix</translation>
 <translation id="7605594153474022051">Sinxronizasiya işləmir</translation>
+<translation id="7608245556672190037">Chrome Finds seçimi üzrə pəncərə tam hündürlükdə açıldı</translation>
 <translation id="7612619742409846846">Google'a bu cür daxil olunub</translation>
 <translation id="7612989789287281429">Daxil olursunuz…</translation>
 <translation id="7619072057915878432">Şəbəkə problemi səbəbi ilə <ph name="FILE_NAME" /> faylının yüklənməsi uğursuz oldu.</translation>
@@ -1638,6 +1643,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="7628417132421583481">Parol Menecerinə keçin</translation>
 <translation id="7630202231528827509">Provayder URL-i</translation>
 <translation id="7638584964844754484">Yanlış parol</translation>
+<translation id="764047009170754705">Chrome Finds seçimi bağlandı</translation>
 <translation id="7646499124171960488">Güvənsiz ictimai saytlar barədə xəbərdarlıq edir</translation>
 <translation id="7646772052135772216">Parol sinxronizasiyası işləmir</translation>
 <translation id="7655240423373329753">son 7 gün</translation>
@@ -1862,6 +1868,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="8473863474539038330">Ünvanlar və s.</translation>
 <translation id="847433688444405067">Cihazlarda axtarın</translation>
 <translation id="8477178913400731244">Datanı silin</translation>
+<translation id="8481771036036087705">Chrome Finds seçimi üzrə pəncərə yarım hündürlükdə açıldı</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">Qeyri-aktiv pəncərə yoxdur</translation>
 <translation id="8493948351860045254">Yaddaşı boşaldın</translation>

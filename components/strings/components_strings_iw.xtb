@@ -1300,10 +1300,12 @@
 <translation id="3037177537145227281">המחיר במעקב</translation>
 <translation id="3037605927509011580">אוי, לא!</translation>
 <translation id="3039406992698062762">נסיעות משפחתיות</translation>
+<translation id="3040435070100611531">‏הכרטיסים שלך ב-Google Wallet</translation>
 <translation id="3041176923638368519">לעיון בתנאי ההטבה של הכרטיס</translation>
 <translation id="3041584414879052436">‏רשימת המנפיקים של האפשרות "קונים עכשיו, משלמים אחר כך (BNPL)" סגורה.</translation>
 <translation id="3041612393474885105">פרטי אישור</translation>
 <translation id="3045769629416806687">ספורט אקסטרים</translation>
+<translation id="3047054686095898948">‏כדי לבצע פעולות כמו מילוי טפסים מהר יותר בכל מוצרי Google, צריך לשמור את הפרטים ב-<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />. אפשר <ph name="BEGIN_LINK" />לערוך את הפרטים<ph name="END_LINK" /> האלה ב-<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> בחשבון <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">‏ההיסטוריה של Chrome Remote Desktop, כולל חותמות זמן, מארחים ומזהי סשנים של לקוחות</translation>
 <translation id="3052868890529250114">‏לרוב החיבור לאתרים מאובטח, אבל הפעם ל-Chrome אין אפשרות להשתמש בחיבור מאובטח. יכול להיות שתוקף מנסה לצותת לחיבור לרשת או לשנות אותו. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף על האזהרה הזו<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">הנחה בסך <ph name="PRICE_DROP" /> על <ph name="PRODUCT_NAME" /></translation>
@@ -2725,6 +2727,7 @@ Del</translation>
 <translation id="5255833070095767006">‏350x460 מ"מ</translation>
 <translation id="5257739419779698609">{0,plural, =1{בהתאם למדיניות האדמין, לא מומלץ להעתיק את הקובץ הזה אל <ph name="DESTINATION_NAME" />}one{בהתאם למדיניות האדמין, לא מומלץ להעתיק את הקבצים האלה אל <ph name="DESTINATION_NAME" />}two{בהתאם למדיניות האדמין, לא מומלץ להעתיק את הקבצים האלה אל <ph name="DESTINATION_NAME" />}other{בהתאם למדיניות האדמין, לא מומלץ להעתיק את הקבצים האלה אל <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">קבוצת הכרטיסיות "<ph name="GROUP_NAME" />" לא זמינה יותר</translation>
+<translation id="5262342527470539728">הפרטים שלך נשמרו ב-<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> של <ph name="ACCOUNT" /></translation>
 <translation id="5263867360296733198">נדרשת בדיקה לפני ההעלאה</translation>
 <translation id="5266128565379329178">כריכה בקצה העליון</translation>
 <translation id="5269225904387178860">4 ניקובים בחלק התחתון</translation>
@@ -2803,7 +2806,6 @@ Del</translation>
 <translation id="5381952079334035181">הכרטיסייה "<ph name="WEBSITE_TITLE" />" עודכנה על ידי <ph name="MEMBER_FIRST_NAME" /></translation>
 <translation id="5383478552402031184">ריצוף</translation>
 <translation id="5385857628869214740">הומור</translation>
-<translation id="5385966243497224160">‏לא ניתן להציג כתובת URL שאינה מסוג HTTPS בתצוגה מקדימה</translation>
 <translation id="5386426401304769735">‏שרשרת האישורים של האתר הזה כוללת אישור שנחתם באמצעות SHA-1.</translation>
 <translation id="5391010642126249196">ביקרת כאן</translation>
 <translation id="5391306025131596142">&amp;פתיחת דף ההיסטוריה</translation>
@@ -3854,7 +3856,6 @@ Del</translation>
 <translation id="7003322000677139268">חלקי חילוף ואביזרים לרכב</translation>
 <translation id="7004499039102548441">כרטיסיות אחרונות</translation>
 <translation id="7004562620237466965">פענוח בלבד</translation>
-<translation id="700483187606163535">‏הפרטים נשמרים ב-<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> בחשבון <ph name="ACCOUNT" />. כדי למלא טפסים מהר יותר, אפשר להשתמש בפרטים האלה בכל המוצרים של Google.</translation>
 <translation id="7006930604109697472">לשליחה בכל זאת</translation>
 <translation id="7009364359744329733">הכרטיס הזה לא זמין כרגע. אפשר לנסות שוב אחר כך.</translation>
 <translation id="7010658264061801199">אוכל ומשקאות</translation>
@@ -4628,7 +4629,6 @@ Del</translation>
 <translation id="8194956568907463262">משחקי יריות</translation>
 <translation id="8198379961710069585">אפשר להפעיל את הכפתור "היסטוריית חיפושים" כדי לחפש בהיסטוריה</translation>
 <translation id="8199437620497683918">Optical Disc (Glossy)</translation>
-<translation id="8199730148066603000">‏אין הרשאה להציג כתובת URL שאינה מסוג HTTPS בתצוגה מקדימה.</translation>
 <translation id="8200772114523450471">חידוש</translation>
 <translation id="8202097416529803614">סיכום הזמנה</translation>
 <translation id="8202370299023114387">התנגשות</translation>
@@ -4776,6 +4776,7 @@ Del</translation>
 פרטים נוספים:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">יש אישור לשימוש חד-פעמי במיקרופון</translation>
+<translation id="8421746712901926961">‏כדי לבצע פעולות כמו מילוי טפסים מהר יותר בכל מוצרי Google, כדאי לשמור את הפרטים ב-<ph name="GOOGLE_WALLET_TITLE_1" />. ניתן <ph name="MANAGE_INFO_LINK" /> של <ph name="ACCOUNT" /> ב-<ph name="GOOGLE_WALLET_TITLE_2" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">שינוי</translation>
 <translation id="8426945547715537628">לאפשר שינוי ממקלדת ברירת המחדל?</translation>
@@ -4832,6 +4833,7 @@ Del</translation>
 <translation id="8521812709849134608">דלפקים</translation>
 <translation id="8522180136695974431">מעקב ודיווח אשראי</translation>
 <translation id="8522552481199248698">‏בעזרת Chrome אפשר להגן על חשבון Google ולשנות את הסיסמה.</translation>
+<translation id="852450791482410042">לביצוע התשלום</translation>
 <translation id="8527228059738193856">רמקולים</translation>
 <translation id="8527681393107582734">חקלאות ויערנות</translation>
 <translation id="8528149813106025610">בגדי ילדים</translation>
@@ -5199,7 +5201,7 @@ Del</translation>
 <translation id="9140198744651252040">‏דפדפן Chrome רוצה להשתמש בטביעת אצבע למילוי אוטומטי של סיסמאות</translation>
 <translation id="9141013498910525015">ניהול כתובות</translation>
 <translation id="9141435142213469335">רוצה לשמור את הכתובת עם מידע נוסף?</translation>
-<translation id="9141510259469546089">סכום רכישה מינימלי: <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>
+<translation id="9141510259469546089">סכום הרכישה המינימלי הוא <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>
 <translation id="9141672681283222114">‏יש אישור לשימוש חד-פעמי ב-AR</translation>
 <translation id="9143898823728499852">‏אפשר למלא את הפרטים של הכרטיס הזה באופן אוטומטי כי החשבון ב-<ph name="CARD_ISSUER_NAME" /> מקושר ל-Google Pay</translation>
 <translation id="9144951720726881238">תאריך תפוגה:</translation>
@@ -5273,7 +5275,7 @@ Del</translation>
 <translation id="937885410143139026">‏הנתונים נשלחו אל מסוף Admin</translation>
 <translation id="939736085109172342">תיקייה חדשה</translation>
 <translation id="940524522703752213">העלאת הקובץ אל <ph name="CLOUD_PROVIDER" /> תתחיל בעוד <ph name="MINUTES" /> דקות</translation>
-<translation id="943185096918807504">סכום רכישה מקסימלי: <ph name="CHECKOUT_AMOUNT_MAXIMUM" /></translation>
+<translation id="943185096918807504">סכום הרכישה המקסימלי הוא <ph name="CHECKOUT_AMOUNT_MAXIMUM" /></translation>
 <translation id="944578681290094302">הצגת הפרסים וההטבות שזמינים לכרטיסים שלך בקופה. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />מידע על ההטבות בכרטיסים<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945673208656386843">‏אפשר למלא באופן אוטומטי את פרטי הכרטיס הזה לביצוע רכישות ב-Chromium כששומרים אותו במכשיר הזה</translation>
 <translation id="947370374845726940">‏<ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי ליצור במהירות אתר חדש ב-Google Sites</translation>

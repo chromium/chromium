@@ -134,6 +134,7 @@ Hesabları dəyişməzdən əvvəl bir neçə dəqiqə gözləyin. İndi hesabla
 <translation id="377649297473651452">Chromium avtodoldurma üzrə genişləndirilmiş görünüş</translation>
 <translation id="3780779443901618967">Standart qoruma ilə müqayisədə saytlardan daha çox data təhlil edərək təhlükəli, hətta Google-un bilmədiyi saytlar haqqında xəbərdar edir. Chromium xəbərdarlıqlarını ötürə bilərsiniz.</translation>
 <translation id="3805899903892079518">Chromium məhsulunun foto və videolarınıza girişi yoxdur. iOS Ayarları &gt; Məxfilik &gt; Fotolar bölməsindən girişi aktiv edin.</translation>
+<translation id="3809591243528646631">Uşaq təhlükəsizliyi funksiyalarını əldə etmək üçün uşaq üçün ayarlanmış Google Hesabından istifadə edə və ya hesab olmadan Chromium-dan istifadə edə bilərsiniz. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="3816686541346279443">Chromium parolu yadda saxlamağı təklif edəcək.</translation>
 <translation id="3827545470516145620">Bu cihazda standart təhlükəsizlik qoruması əldə edirsiniz</translation>
 <translation id="3833326979834193417">Chromium sizi verilənlərin pozulması, güvənsiz veb-sayt və s. təhlükələrdən qorumaq üçün hər gün avtomatik Təhlükəsizlik yoxlanışı icra edir. Ayarlarda Təhlükəsizlik yoxlanışı haqqında ətraflı məlumat əldə edə bilərsiniz.</translation>
@@ -169,6 +170,7 @@ Data parol ifadəsi ilə şifrələnib. Google Hesabında Chromium datasını is
 Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chromium datasını silin<ph name="END_LINK" />.</translation>
 <translation id="4578500311756617174">Chromium məsləhəti: Defolt olaraq Chromium istifadə edin</translation>
 <translation id="458786853569524949">E-məktub, sənəd və digər tətbiqlərdə linklərə toxunduqda Chromium istifadə edə bilərsiniz.</translation>
+<translation id="4625730353066900738">Başlamaq üçün Chromium barədə faydalı məlumatları öyrənin</translation>
 <translation id="4633738821577273991">Bu Chromium profili üçün də Qabaqcıl Güvənli Baxış əldə edin</translation>
 <translation id="4654936625574199632">Tətbiqi təkmilləşdirməyə kömək etmək üçün Chrome istifadə və qəza datasını Google'a göndərir. <ph name="BEGIN_LINK" />İdarə edin<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Chromium skanerini aktiv edin</translation>
@@ -354,6 +356,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="8900052431807804054">Chromium-un ən güclü güvənlik sistemini əldə edin</translation>
 <translation id="8908791447256515663">iPad-in Dokundan Chromium-a daha tez daxil olun.</translation>
 <translation id="8925569192291721236">Qiymət izləmə yeniləmələri və Chromium məsləhətləri ilə belə də davam edin.</translation>
+<translation id="8939412301975414416">Chromium-da uşaq təhlükəsizliyi funksiyalarını əldə etmək üçün uşaq üçün ayarlanmış Google Hesabından istifadə edə və ya hesab olmadan Chromium-dan istifadə edə bilərsiniz.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Chromium {THRESHOLD} dəqiqə istifadə edilmədikdə belə olur}other{Chromium {THRESHOLD} dəqiqə istifadə edilmədikdə belə olur}}</translation>
 <translation id="8963279154877372067">Chromium bildirişlərinə qiymətin düşməsi ilə bağlı xəbərdarlıq almaq icazəsi verin</translation>
 <translation id="8975812008711371178">Chromium-da səs ilə axtarın.</translation>

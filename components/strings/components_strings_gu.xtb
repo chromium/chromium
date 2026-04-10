@@ -1300,10 +1300,12 @@
 <translation id="3037177537145227281">કિંમત ટ્રૅક કરી રહ્યાં છીએ</translation>
 <translation id="3037605927509011580">અરર કંઇક ભુલ થઇ!</translation>
 <translation id="3039406992698062762">કુટુંબ સાથે મુસાફરી</translation>
+<translation id="3040435070100611531">Google Walletમાંના તમારા પાસ</translation>
 <translation id="3041176923638368519">કાર્ડના લાભ સંબંધિત શરતો જુઓ</translation>
 <translation id="3041584414879052436">હમણાં ખરીદો, પછીથી ચુકવો વિકલ્પના જારીકર્તાઓની સૂચિ બંધ છે.</translation>
 <translation id="3041612393474885105">પ્રમાણપત્ર માહિતી</translation>
 <translation id="3045769629416806687">જોખમવાળી રમતો</translation>
+<translation id="3047054686095898948"><ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />માં તમારી માહિતી સાચવો અને Googleની તમામ પ્રોડક્ટ પર ફોર્મ ભરવા જેવી બાબતો વધુ ઝડપથી કરો. તમે <ph name="ACCOUNT" /> માટે <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" />માં <ph name="BEGIN_LINK" />તમારી માહિતી મેનેજ<ph name="END_LINK" /> કરી શકો છો</translation>
 <translation id="305162504811187366">ટાઇમસ્ટેમ્પ, હોસ્ટ અને ક્લાયન્ટ સત્ર ids સહિત Chrome રીમોટ ડેસ્કટૉપનો ઇતિહાસ</translation>
 <translation id="3052868890529250114">સામાન્ય રીતે તમને સુરક્ષિત રીતે બધી સાઇટ સાથે કનેક્ટ કરવામાં આવે છે, પરંતુ આ વખતે Chrome સુરક્ષિત કનેક્શનનો ઉપયોગ કરી શક્યું નથી. કોઈ હુમલાખોર તમારા નેટવર્ક કનેક્શનમાં છુપાઈને પ્રવેશ કરવાનો અથવા તેમાં ફેરફાર કરવાનો પ્રયાસ કરી રહ્યો હોઈ શકે છે. <ph name="BEGIN_LEARN_MORE_LINK" />આ ચેતવણી વિશે વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />ની કિંમતમાં <ph name="PRICE_DROP" />નો ઘટાડો થયો</translation>
@@ -2800,7 +2802,6 @@
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" />એ ટૅબ “<ph name="WEBSITE_TITLE" />” અપડેટ કરી</translation>
 <translation id="5383478552402031184">ફ્લોરિંગ</translation>
 <translation id="5385857628869214740">વિનોદ</translation>
-<translation id="5385966243497224160">HTTPS વિનાના URLનો પ્રીવ્યૂ કરી શકાતો નથી</translation>
 <translation id="5386426401304769735">આ સાઇટ માટેની પ્રમાણપત્ર શ્રૃંખલા SHA-1 નો ઉપયોગ કરીને સહી કરેલ પ્રમાણપત્ર ધરાવે છે.</translation>
 <translation id="5391010642126249196">તમે મુલાકાત લીધેલી સાઇટ</translation>
 <translation id="5391306025131596142">&amp;ઇતિહાસનું પેજ ખોલો</translation>
@@ -3850,7 +3851,6 @@
 <translation id="7003322000677139268">વાહનના પાર્ટ અને ઍક્સેસરી</translation>
 <translation id="7004499039102548441">તાજેતરના ટૅબ્સ</translation>
 <translation id="7004562620237466965">માત્ર ડેસિફર</translation>
-<translation id="700483187606163535"><ph name="ACCOUNT" /> સંબંધિત તમારી માહિતી <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />માં સાચવવામાં આવી છે. તમે વધુ ઝડપથી ફોર્મ ભરવા માટે Googleની બધી પ્રોડક્ટ પર તેનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="7006930604109697472">કોઈપણ રીતે મોકલો</translation>
 <translation id="7009364359744329733">આ કાર્ડ અત્યારે ઉપલબ્ધ નથી. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો.</translation>
 <translation id="7010658264061801199">ભોજન અને પીણાં</translation>
@@ -4624,7 +4624,6 @@
 <translation id="8194956568907463262">શૂટર ગેમ</translation>
 <translation id="8198379961710069585">શોધ ઇતિહાસ બટન, શોધ ઇતિહાસ માટે ઍક્ટિવેટ કરો</translation>
 <translation id="8199437620497683918">ઓપ્ટિકલ ડિસ્ક (ગ્લોસી)</translation>
-<translation id="8199730148066603000">HTTPS વિનાના URLનો પ્રીવ્યૂ કરવાની મંજૂરી આપવામાં આવતી નથી.</translation>
 <translation id="8200772114523450471">રિઝ્યુમે</translation>
 <translation id="8202097416529803614">ઓર્ડરનો સારાંશ</translation>
 <translation id="8202370299023114387">વિરોધ</translation>
@@ -4829,6 +4828,7 @@
 <translation id="8521812709849134608">કાઉન્ટરટૉપ</translation>
 <translation id="8522180136695974431">ક્રેડિટ રિપોર્ટિંગ અને મૉનિટરિંગ</translation>
 <translation id="8522552481199248698">Chrome તમારા Google એકાઉન્ટને સુરક્ષિત કરવામાં અને તમારો પાસવર્ડ બદલવામાં તમારી સહાય કરી શકે છે.</translation>
+<translation id="852450791482410042">હમણાં ચુકવણી કરો</translation>
 <translation id="8527228059738193856">સ્પીકર</translation>
 <translation id="8527681393107582734">કૃષિ અને વનસંવર્ધન</translation>
 <translation id="8528149813106025610">બાળકોના કપડાં</translation>

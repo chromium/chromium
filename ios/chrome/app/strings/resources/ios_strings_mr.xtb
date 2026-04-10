@@ -1499,7 +1499,6 @@
 <translation id="6259928806013786178">वाचन मोड सुरू करता आला नाही</translation>
 <translation id="6268773951964630964">कॉपी केलेली इमेज शोधा</translation>
 <translation id="6271462272606946663">मोबाइल साइट ची विनंती करा हे लपवा</translation>
-<translation id="6271556257184622612">Google ला टॅब आणि आणखी बऱ्याच गोष्टींबद्दल विचारा</translation>
 <translation id="6271824294945464304">पासवर्ड शेअर करत आहे</translation>
 <translation id="628251768213143684">तुमच्या Google खाते मध्ये सेव्ह केलेल्या गोष्टी तुम्ही कधीही व्यवस्थापित करू शकता</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> भाषांतरित करण्यासाठी ऑफर</translation>
@@ -1537,6 +1536,7 @@
 <translation id="6368102751067608420">सर्व पासवर्ड व्यवस्थापक डेटा हटवण्यासाठी</translation>
 <translation id="6372558618707314581">तुम्हाला आवडत असलेल्या कोणत्याही पेजवर जा</translation>
 <translation id="6374469231428023295">पुन्हा प्रयत्न करा</translation>
+<translation id="6374514103145916800">विचारा</translation>
 <translation id="6383719166112032471">स्थान उघडा…</translation>
 <translation id="6387994324662817823">पासवर्ड फक्त या डिव्हाइसवर Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केले जातात.</translation>
 <translation id="6393156038355142111">क्लिष्ट पासवर्ड सुचवा</translation>
@@ -1604,6 +1604,7 @@
 <translation id="6596481460663245319">Google वापरून इमेज शोधा</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{१ पासवर्ड}other{# पासवर्ड}}</translation>
 <translation id="6601302169302852717"><ph name="USER_EMAIL" /> साठी Google Photos मध्ये इमेज सेव्ह केली आहे</translation>
+<translation id="6602173570135186741">ऑटोफिल आणि पासवर्ड</translation>
 <translation id="6603393121510733479">तुमच्या संस्थेने खाजगी ब्राउझिंग बंद केले आहे.
 <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="6606914854592108404">सुरक्षितता तपासणी रन करत आहे…</translation>
@@ -1855,6 +1856,7 @@
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">तुमचे गुप्त टॅब लॉक करण्यासाठी, टच आयडी, फेस आयडी किंवा पासकोड सेट करा.</translation>
 <translation id="750886945254958667">नंतर टॅब जोडण्यासाठी हा गट कायम ठेवा किंवा तुम्हाला यापुढे त्याचा अ‍ॅक्सेस नको असल्यास, त्यामधून बाहेर पडा</translation>
+<translation id="7511099437872594216">टॅब</translation>
 <translation id="7511727374778217603">{COUNT,plural, =1{कमाल १ टॅब जोडा}other{कमाल {COUNT} टॅब जोडा}}</translation>
 <translation id="7512909159512473473">पासफ्रेझ एंटर करा…</translation>
 <translation id="7514365320538308">डाउनलोड करा</translation>

@@ -133,6 +133,7 @@ Zkuste před přepnutím účtů pár minut počkat. Pokud teď přepnete účty
 <translation id="377649297473651452">Rozbalené zobrazení automatického vyplňování prohlížeče Chromium</translation>
 <translation id="3780779443901618967">Varuje vás před nebezpečnými weby (včetně těch, o kterých Google dříve nevěděl) tím, že analyzuje více dat z webů než standardní ochrana. Upozornění prohlížeče Chromium můžete přeskočit.</translation>
 <translation id="3805899903892079518">Chromium nemá přístup k vašim fotkám nebo videím. Povolte přístup v systému iOS v Nastavení &gt; Soukromí &gt; Fotky.</translation>
+<translation id="3809591243528646631">Pokud chcete mít aktivované funkce pro ochranu dětí, můžete buď použít účet Google nastavený pro dítě, nebo Chromium používat bez účtu. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="3816686541346279443">Chromium vám nabídne uložení hesla.</translation>
 <translation id="3827545470516145620">Na tomto zařízení máte standardní bezpečnostní ochranu</translation>
 <translation id="3833326979834193417">Prohlížeč Chromium každý den automaticky spouští bezpečnostní kontrolu, aby vás ochránil před porušením zabezpečení údajů, nebezpečnými weby a dalšími hrozbami. Další informace o bezpečnostní kontrole najdete v Nastavení.</translation>
@@ -168,6 +169,7 @@ Vaše data jsou šifrována pomocí heslové fráze. Pokud chcete používat a 
 Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chromium ve svém účtu<ph name="END_LINK" />.</translation>
 <translation id="4578500311756617174">Tip pro Chromium: Používejte Chromium jako výchozí prohlížeč</translation>
 <translation id="458786853569524949">Teď můžete Chromium použít pokaždé, když klepnete na odkazy v e‑mailech, dokumentech a jiných aplikacích.</translation>
+<translation id="4625730353066900738">Seznamte se s užitečnými základy prohlížeče Chromium, které vám pomůžou začít</translation>
 <translation id="4633738821577273991">Zapněte pro tento profil prohlížeče Chromium také Vylepšené Bezpečné prohlížení</translation>
 <translation id="4654936625574199632">Za účelem vylepšování aplikace odesílá Chromium do Googlu zprávy o selháních. <ph name="BEGIN_LINK" />Spravovat<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Zapněte čtečku prohlížeče Chromium</translation>
@@ -353,6 +355,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="8900052431807804054">Aktivujte si v prohlížeči Chromium maximální zabezpečení</translation>
 <translation id="8908791447256515663">Otevírejte Chromium rychleji přímo z Docku iPadu.</translation>
 <translation id="8925569192291721236">Sledujte aktuální informace o sledování cen a tipy pro Chromium.</translation>
+<translation id="8939412301975414416">Pokud chcete mít v Chromiu funkce pro ochranu dětí, můžete buď použít účet Google nastavený pro dítě, nebo Chromium používat bez účtu.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{K tomuto dochází, když Chromium {THRESHOLD} minutu nepoužíváte}few{K tomuto dochází, když Chromium {THRESHOLD} minuty nepoužíváte}many{K tomuto dochází, když Chromium {THRESHOLD} minuty nepoužíváte}other{K tomuto dochází, když Chromium {THRESHOLD} minut nepoužíváte}}</translation>
 <translation id="8963279154877372067">Pokud chcete dostávat upozornění na pokles ceny, povolte oznámení prohlížeče Chromium</translation>
 <translation id="8975812008711371178">Vyhledávat hlasem v prohlížeči Chromium</translation>

@@ -1300,10 +1300,12 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3037177537145227281">Jälgite hinda</translation>
 <translation id="3037605927509011580">Ups, ebaõnn!</translation>
 <translation id="3039406992698062762">Perereisid</translation>
+<translation id="3040435070100611531">Teie Google Walleti pääsmed</translation>
 <translation id="3041176923638368519">Kuva kaardi hüvede tingimused</translation>
 <translation id="3041584414879052436">Järelmaksu väljaandjate loend on suletud.</translation>
 <translation id="3041612393474885105">Sertifikaadi andmed</translation>
 <translation id="3045769629416806687">Ekstreemsport</translation>
+<translation id="3047054686095898948">Salvestage oma teave teenuses <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />, et Google’i teenustes kiiremini tegutseda, näiteks vorme täita. <ph name="BEGIN_LINK" />Oma teavet saate hallata<ph name="END_LINK" /> rakenduses <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> kontol <ph name="ACCOUNT" />.</translation>
 <translation id="305162504811187366">Chrome Remote Desktopi ajalugu, sh ajatemplid, hostid ja kliendiseansside ID-d</translation>
 <translation id="3052868890529250114">Tavaliselt loote saitidega turvaliselt ühenduse, kuid Chrome ei saanud seekord turvalist ühendust kasutada. Ründaja võib püüda teie võrguühendust pealt kuulata või seda muuta. <ph name="BEGIN_LEARN_MORE_LINK" />Lisateave selle hoiatuse kohta<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> hinnalangus teenuse <ph name="PRODUCT_NAME" /> puhul</translation>
@@ -2721,6 +2723,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="5255833070095767006">350 × 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Administraatori reegel ei soovita seda faili sihtkohta <ph name="DESTINATION_NAME" /> kopeerida}other{Administraatori reegel ei soovita neid faile sihtkohta <ph name="DESTINATION_NAME" /> kopeerida}}</translation>
 <translation id="5258473597674772367">Vahelehegrupp „<ph name="GROUP_NAME" />“ pole enam saadaval</translation>
+<translation id="5262342527470539728">Teie teave salvestatakse Walletis <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> kontole <ph name="ACCOUNT" /></translation>
 <translation id="5263867360296733198">Enne üleslaadimist on ülevaatus nõutav</translation>
 <translation id="5266128565379329178">Köide ülal</translation>
 <translation id="5269225904387178860">Neli auku all</translation>
@@ -2799,7 +2802,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> värskendas vahelehte „<ph name="WEBSITE_TITLE" />“</translation>
 <translation id="5383478552402031184">Põrandatööd</translation>
 <translation id="5385857628869214740">Huumor</translation>
-<translation id="5385966243497224160">Mitte-HTTPS-i URL-i eelvaadet ei saa kuvada</translation>
 <translation id="5386426401304769735">Selle saidi sertifikaadiahel sisaldab sertifikaati, mis on allkirjastatud SHA-1-ga.</translation>
 <translation id="5391010642126249196">Külastasite</translation>
 <translation id="5391306025131596142">&amp;Ava ajaloo leht</translation>
@@ -3849,7 +3851,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="7003322000677139268">Sõidukite osad ja tarvikud</translation>
 <translation id="7004499039102548441">Hiljutised vahelehed</translation>
 <translation id="7004562620237466965">Ainult dešifreerimine</translation>
-<translation id="700483187606163535">Teie teave salvestatakse rakenduses <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> kontole <ph name="ACCOUNT" />. Saate seda kasutada Google'i teenustes vormide kiiremini täitmiseks.</translation>
 <translation id="7006930604109697472">Saada ikkagi</translation>
 <translation id="7009364359744329733">See kaart pole praegu saadaval. Proovige hiljem uuesti.</translation>
 <translation id="7010658264061801199">Söök ja jook</translation>
@@ -4623,7 +4624,6 @@ Lisateave:
 <translation id="8194956568907463262">Tulistamismängud</translation>
 <translation id="8198379961710069585">Ajaloost otsimise nupp. Aktiveerige ajaloost otsimiseks</translation>
 <translation id="8199437620497683918">Optiline andmekandja (läikega)</translation>
-<translation id="8199730148066603000">Mitte-HTTPS-i URL-i eelvaade ei ole lubatud.</translation>
 <translation id="8200772114523450471">Taasta</translation>
 <translation id="8202097416529803614">Tellimuse kokkuvõte</translation>
 <translation id="8202370299023114387">Konflikt</translation>
@@ -4771,6 +4771,7 @@ Lisateave:
 Lisateave:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofon seekord lubatud</translation>
+<translation id="8421746712901926961">Salvestage oma teave Google Walletis <ph name="GOOGLE_WALLET_TITLE_1" />, et Google'i teenustes kiiremini tegutseda, näiteks vorme täita. Saate konto <ph name="ACCOUNT" /> <ph name="MANAGE_INFO_LINK" /> rakenduses <ph name="GOOGLE_WALLET_TITLE_2" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Muuda</translation>
 <translation id="8426945547715537628">Kas lubada klaviatuuri alistamine?</translation>
@@ -4827,6 +4828,7 @@ Lisateave:
 <translation id="8521812709849134608">Tööpinnad</translation>
 <translation id="8522180136695974431">Krediidi aruandlus ja -järelevalve</translation>
 <translation id="8522552481199248698">Chrome aitab teil oma Google'i kontot kaitsta ja parooli muuta.</translation>
+<translation id="852450791482410042">Kohe maksmine</translation>
 <translation id="8527228059738193856">Kõlarid</translation>
 <translation id="8527681393107582734">Põllumajandus ja metsandus</translation>
 <translation id="8528149813106025610">Lasteriided</translation>

@@ -116,6 +116,7 @@
 <translation id="138692594145659985">Kartītes saglabāšanas iespējas</translation>
 <translation id="1396260204083880024">Esat pierakstījies kā <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Atvērt konta izvēlni.</translation>
 <translation id="1397144142234474689">Paslēpt vienumu “Vēsture”</translation>
+<translation id="1399268420835656394">Ja neesat bērns, ieteicams pārbaudīt vecumu Apple kontā šajā ierīcē. <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
 <translation id="1407135791313364759">Atvērt visas</translation>
 <translation id="1408847409015257906">Pieskarieties vienumam “Konfidencialitāte un drošība”.</translation>
 <translation id="1411386976162024013">Lens vizuālā meklēšana</translation>
@@ -255,6 +256,7 @@
 <translation id="1861067954551502701">{count,plural, =1{Parole numur {position}, kopējais skaits ir {count}}zero{Parole numur {position}, kopējais skaits ir {count}}one{Parole numur {position}, kopējais skaits ir {count}}other{Parole numur {position}, kopējais skaits ir {count}}}</translation>
 <translation id="1861262398884155592">Šī mape ir tukša</translation>
 <translation id="1864266050569350424">Vietnē, kurā esat saglabājis paroli, pieskarieties pierakstīšanās paroles laukam.</translation>
+<translation id="1866700949421703765">Paslēpt “Ieslēgt lasīšanas režīmu”</translation>
 <translation id="1872096359983322073">Lukturītis</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Ģimenes locekļu uzaicināšana</translation>
@@ -353,6 +355,7 @@
 <translation id="2214453882118345682">Iepērcieties, tulkojiet un identificējiet redzamo saturu, izmantojot kameru.</translation>
 <translation id="2215819824168709130">Paslēpt kartīti “Cenas izsekošana”</translation>
 <translation id="2216366330550244277">Pārejiet uz produkta lapu.</translation>
+<translation id="2219935992754556187">Pārlūkā Chrome jūsu sensitīvie dati tiek aizsargāti, izmantojot Face ID.</translation>
 <translation id="2220529011494928058">Ziņot par problēmu</translation>
 <translation id="2223461067862937305">Izveidot kvadrātkodu</translation>
 <translation id="2225701818156393674">Produkts ir pievienots jūsu izsekoto produktu sarakstam.</translation>
@@ -459,6 +462,7 @@
 <translation id="2583688836549072561">Ciļņu grupa “<ph name="GROUP_TITLE" />”, ciļņu skaits: <ph name="TABS_NUMBER" />, jaunas darbības.</translation>
 <translation id="2593272815202181319">Vienplatuma</translation>
 <translation id="2601778637777010194">Izsekojiet produktu cenu samazinājumam</translation>
+<translation id="2602372807870028932">Tiks dzēsta atlasītā informācija, kas saglabāta šajā ierīcē</translation>
 <translation id="260378315836159338">Ekrāna augšdaļā pieskarieties ikonai “+”.</translation>
 <translation id="2612676031748830579">Kartes numurs</translation>
 <translation id="261305050785128654">Norādiet tīmekļa vietnēm, kurās valodās runājat. Kad vien iespējams, saturs tiks rādīts šajās valodās.</translation>
@@ -552,6 +556,7 @@
 <translation id="2922210239002704889">Atveriet sākumlapu vai tastatūru.</translation>
 <translation id="2924940770243654951">Atvērt jaunā inkognito cilnē</translation>
 <translation id="2952278131021475699">Meklēšana ar Lens kameru</translation>
+<translation id="2953821385349876107">Izvēlieties citu Google kontu</translation>
 <translation id="2962516096219646456">Skatīt visus automātiskās aizpildes datus</translation>
 <translation id="2965594942405840553">Šo darbību nevar atsaukt.</translation>
 <translation id="2969979262385602596">Neizdevās pierakstīties. Vēlāk mēģiniet vēlreiz.</translation>
@@ -960,6 +965,7 @@
 <translation id="4469324811108161144">Piezīmju garums nedrīkst pārsniegt <ph name="CHARACTER_LIMIT" /> rakstzīmes.</translation>
 <translation id="4471472356135655769">Neizdevusies paroļu eksportēšana</translation>
 <translation id="4472575034687746823">Sākt darbu</translation>
+<translation id="4473565697543262065">Tiks dzēsta atlasītā informācija, kas saglabāta šajā ierīcē un jūsu Google kontā <ph name="USER_EMAIL" /></translation>
 <translation id="4473608001744970767">Paslēpt vienumu “Izsekot cenu”</translation>
 <translation id="4474142134969976028">Nav atbilstošu rezultātu</translation>
 <translation id="4474494258097106883">Izstrādāts jūsu iPhone tālrunim</translation>
@@ -1435,6 +1441,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6090760257419195752">Noraidītie brīdinājumi</translation>
 <translation id="6094325891006032858">Ieslēdziet drošu pārlūkošanu ar papildu aizsardzību</translation>
 <translation id="6096965253650248286">Atrasta(-as) <ph name="COUNT" /> cilne(-es)</translation>
+<translation id="6099466082815574659">Šis iPad planšetdators ir iestatīts bērnam</translation>
 <translation id="6100617279104942061">Pierakstījies kā <ph name="USER_EMAIL" />. Tiek atvērti iestatījumi.</translation>
 <translation id="6100676328067737810">Jūsu dati tiks saglabāti jūsu Google kontā (<ph name="USER_EMAIL" />).</translation>
 <translation id="610083648014322104">Varat saņemt atvērtās lapas saturam atbilstošas atbildes</translation>
@@ -1492,7 +1499,6 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6259928806013786178">Neizdevās aktivizēt lasīšanas režīmu.</translation>
 <translation id="6268773951964630964">Meklēt kopēto attēlu</translation>
 <translation id="6271462272606946663">Paslēpt vienumu “Pieprasīt vietni mobilajām ierīcēm”</translation>
-<translation id="6271556257184622612">Jautājiet Google par cilnēm un citu saturu</translation>
 <translation id="6271824294945464304">Paroles kopīgošana</translation>
 <translation id="628251768213143684">Varat jebkurā laikā pārvaldīt savā Google kontā saglabāto informāciju.</translation>
 <translation id="6284652193729350524">Piedāvāt tulkot šādā valodā: <ph name="LANGUAGE" /></translation>
@@ -1529,6 +1535,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6368102751067608420">Lai dzēstu visus paroļu pārvaldnieka datus</translation>
 <translation id="6372558618707314581">Pārejiet uz jebkuru lapu.</translation>
 <translation id="6374469231428023295">Mēģināt vēlreiz</translation>
+<translation id="6374514103145916800">Jautāt</translation>
 <translation id="6383719166112032471">Atvērt atrašanās vietu…</translation>
 <translation id="6387994324662817823">Paroles tiek saglabātas tikai šīs ierīces Google paroļu pārvaldniekā.</translation>
 <translation id="6393156038355142111">Ieteikt drošu paroli</translation>
@@ -1577,6 +1584,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6532106788206463496">Saglabāt izmaiņas</translation>
 <translation id="6536759809440150308">Atvērt grupu “<ph name="GROUP_TITLE" />” ar šādu ciļņu skaitu: <ph name="NUMBER_OF_TABS" />; <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6538776393003671043">Pārlūkā Chrome tiks piedāvāts saglabāt šo informāciju lietotnē Google maks, kad nākamreiz to izmantosiet.</translation>
 <translation id="6543899060872618437">Ātrāka norēķināšanās, izmantojot automātisko aizpildi visās jūsu ierīcēs</translation>
 <translation id="6550675742724504774">Opcijas</translation>
 <translation id="6550891580932862748">Netiek nodrošināta aizsardzība pret bīstamām vietnēm, lejupielādēm un paplašinājumiem. Citos Google produktos izvēlētie drošās pārlūkošanas iestatījumi netiks ietekmēti.</translation>
@@ -1595,6 +1603,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6596481460663245319">Meklēt attēlu ar Google</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 parole}zero{# paroļu}one{# parole}other{# paroles}}</translation>
 <translation id="6601302169302852717">Attēls ir saglabāts pakalpojuma “Google fotoattēli” kontā <ph name="USER_EMAIL" />.</translation>
+<translation id="6602173570135186741">Automātiskā aizpilde un paroles</translation>
 <translation id="6603393121510733479">Jūsu organizācija izslēdza privātu pārlūkošanu.
 <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
 <translation id="6606914854592108404">Tiek veikta drošības pārbaude…</translation>
@@ -1960,6 +1969,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="7888562068293422208">Vai aizvērt visas?</translation>
 <translation id="7889910613639381518">Ērta un droša piekļuve ar Google paroļu pārvaldnieka logrīku.</translation>
 <translation id="7899199123054742721">Atzīmēt visu kā nelasītu</translation>
+<translation id="7909005666376403847">Šis iPhone tālrunis ir iestatīts bērnam</translation>
 <translation id="7911190106180361398">Jūsu organizācija neatļauj jums sinhronizēt visu.</translation>
 <translation id="7918999344502274923">Slēpt meklētājprogrammas <ph name="SEARCH_ENGINE_NAME" /> informāciju</translation>
 <translation id="7921559948846049514">Izvēlieties fonam motīvu, krāsu vai citus iestatījumus.</translation>
@@ -1977,6 +1987,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="7952670906562503188">Jūs gatavojaties dzēst piekļuves atslēgas ({passkey_count}) un to vietņu un lietotņu sarakstu, kurām izvēlējāties nekad nesaglabāt pierakstīšanās informāciju. Konti, kurus izveidojāt vietnēm un lietotnēm, netiks dzēsti.</translation>
 <translation id="7958575506592576831">Lapas drošības informācija</translation>
 <translation id="7961015016161918242">Nekad</translation>
+<translation id="7971651328518569075">Paslēpt “Izslēgt lasīšanas režīmu”</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Izmēģināt</translation>
 <translation id="797588153137233716">Izvēlne → Vēsture → Pārlūkošanas datu dzēšana</translation>
@@ -1993,6 +2004,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="8005666035647241369">Google paroļu pārvaldniekā šajā ierīcē</translation>
 <translation id="8010488806779226127">Izpētiet funkcijas, kas var palīdzēt jums paveikt vairāk pārlūkošanas laikā.</translation>
 <translation id="8011489434346330032">Tīmekļa inspektors</translation>
+<translation id="8014007212279733632">Verificēt identitāti, lai automātiski aizpildītu sensitīvu informāciju</translation>
 <translation id="8015826420689927262">Dzēst pielikumu</translation>
 <translation id="8017015647846870183">No Google paroļu pārvaldnieka, tostarp paroles un piekļuves atslēgas</translation>
 <translation id="802154636333426148">Lejupielāde neizdevās</translation>
@@ -2379,6 +2391,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="984275831282074731">Maksājumu veidi</translation>
 <translation id="985379595344853742">Aizvērt visas inkognito cilnes</translation>
 <translation id="988141524645182168">Citas ierīces</translation>
+<translation id="994184244350700431">Lietotnē Google maks kontam <ph name="USER_EMAIL" /></translation>
 <translation id="995174784802614337">{count,plural, =1{Importēta {count} piekļuves atslēga}zero{Importētas {count} piekļuves atslēgas}one{Importēta {count} piekļuves atslēga}other{Importētas {count} piekļuves atslēgas}}</translation>
 <translation id="999768147936949692">Šobrīd paroles varat kopīgot tikai ar ģimenes locekļiem. <ph name="BEGIN_LINK" />Uzaiciniet ģimenes locekļus<ph name="END_LINK" /> pievienoties savai grupai un pilnvērtīgāk izmantojiet Google produktu un abonementu iespējas.</translation>
 </translationbundle>

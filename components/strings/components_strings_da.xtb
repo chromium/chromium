@@ -1300,10 +1300,12 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3037177537145227281">Der holdes øje med prisen</translation>
 <translation id="3037605927509011580">Øv, surt!</translation>
 <translation id="3039406992698062762">Familierejser</translation>
+<translation id="3040435070100611531">Dine kort i Google Wallet</translation>
 <translation id="3041176923638368519">Se vilkårene for kortfordele</translation>
 <translation id="3041584414879052436">Listen over udstedere, der tilbyder betalingsmetoden Køb nu, betal senere, er lukket.</translation>
 <translation id="3041612393474885105">Certifikatoplysninger</translation>
 <translation id="3045769629416806687">Ekstremsport</translation>
+<translation id="3047054686095898948">Gem dine oplysninger i <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />, og få mere fra hånden hurtigere, f.eks. ved at udfylde formularer i Google-produkter. Du kan <ph name="BEGIN_LINK" />administrere dine oplysninger<ph name="END_LINK" /> i <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> for <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">Historik for Chrome Fjernskrivebord, herunder tidsstempler, hosts og id'er for klientsessioner</translation>
 <translation id="3052868890529250114">Du opretter normalt forbindelse til websites på en sikker måde, men Chrome kunne ikke anvende en sikker forbindelse denne gang. Det kan skyldes en hacker, der prøver at opfange eller ændre din netværksforbindelse. <ph name="BEGIN_LEARN_MORE_LINK" />Få flere oplysninger om denne advarsel<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Prisfald på <ph name="PRICE_DROP" /> på <ph name="PRODUCT_NAME" /></translation>
@@ -2721,6 +2723,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5255833070095767006">350 x 460 tommer</translation>
 <translation id="5257739419779698609">{0,plural, =1{Administratorpolitikken fraråder at flytte denne fil til <ph name="DESTINATION_NAME" />}one{Administratorpolitikken fraråder at flytte denne fil til <ph name="DESTINATION_NAME" />}other{Administratorpolitikken fraråder at flytte disse filer til <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">Fanegruppen "<ph name="GROUP_NAME" />" er ikke længere tilgængelig</translation>
+<translation id="5262342527470539728">Dine oplysninger gemmes i <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> for <ph name="ACCOUNT" /></translation>
 <translation id="5263867360296733198">Gennemgang er påkrævet før upload</translation>
 <translation id="5266128565379329178">Bind øverst</translation>
 <translation id="5269225904387178860">Fire huller nederst</translation>
@@ -2799,7 +2802,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> har opdateret fanen "<ph name="WEBSITE_TITLE" />"</translation>
 <translation id="5383478552402031184">Gulvlægning</translation>
 <translation id="5385857628869214740">Humor</translation>
-<translation id="5385966243497224160">Du kan ikke se en forhåndsvisning af en webadresse, der ikke er HTTPS</translation>
 <translation id="5386426401304769735">Certifikatkæden for dette website indeholder et certifikat, der er signeret med SHA-1.</translation>
 <translation id="5391010642126249196">Du besøgte indholdet</translation>
 <translation id="5391306025131596142">Åbn siden Historik</translation>
@@ -3849,7 +3851,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="7003322000677139268">Dele og tilbehør til køretøjer</translation>
 <translation id="7004499039102548441">Seneste faner</translation>
 <translation id="7004562620237466965">Kun dekryptering</translation>
-<translation id="700483187606163535">Dine oplysninger gemmes i <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> for <ph name="ACCOUNT" />. Du kan bruge oplysningerne i Google-produkter til hurtigere at udfylde formularer.</translation>
 <translation id="7006930604109697472">Send alligevel</translation>
 <translation id="7009364359744329733">Dette kort er ikke tilgængeligt lige nu. Prøv igen senere.</translation>
 <translation id="7010658264061801199">Mad og drikke</translation>
@@ -4623,7 +4624,6 @@ Yderligere oplysninger:
 <translation id="8194956568907463262">Skydespil</translation>
 <translation id="8198379961710069585">Knappen Søg i historik, aktivér for at søge i historik</translation>
 <translation id="8199437620497683918">Optisk disk (blank)</translation>
-<translation id="8199730148066603000">Det er ikke tilladt at se en forhåndsvisning af en webadresse, der ikke er HTTPS.</translation>
 <translation id="8200772114523450471">Genoptag</translation>
 <translation id="8202097416529803614">Ordreoversigt</translation>
 <translation id="8202370299023114387">Konflikt</translation>
@@ -4771,6 +4771,7 @@ Yderligere oplysninger:
 Yderligere oplysninger:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Der er givet adgang til mikrofonen denne gang</translation>
+<translation id="8421746712901926961">Gem dine oplysninger i <ph name="GOOGLE_WALLET_TITLE_1" />, og få mere fra hånden hurtigere, f.eks. ved at udfylde formularer i Google-produkter. Du kan <ph name="MANAGE_INFO_LINK" /> i <ph name="GOOGLE_WALLET_TITLE_2" /> for <ph name="ACCOUNT" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Skift</translation>
 <translation id="8426945547715537628">Vil du tillade tilsidesættelse af tastaturet?</translation>
@@ -4827,6 +4828,7 @@ Yderligere oplysninger:
 <translation id="8521812709849134608">Bordplader</translation>
 <translation id="8522180136695974431">Kreditrapportering og -overvågning</translation>
 <translation id="8522552481199248698">Chrome kan hjælpe dig med at beskytte din Google-konto og ændre din adgangskode.</translation>
+<translation id="852450791482410042">Betal nu</translation>
 <translation id="8527228059738193856">Højttalere</translation>
 <translation id="8527681393107582734">Landbrug og skovbrug</translation>
 <translation id="8528149813106025610">Børnetøj</translation>

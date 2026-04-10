@@ -1300,10 +1300,12 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3037177537145227281">Cena sledována</translation>
 <translation id="3037605927509011580">Aj, chyba!</translation>
 <translation id="3039406992698062762">Rodinné cestování</translation>
+<translation id="3040435070100611531">Vaše karty v Peněžence Google</translation>
 <translation id="3041176923638368519">Viz podmínky výhod karty</translation>
 <translation id="3041584414879052436">Seznam poskytovatelů financování na splátky je zavřený.</translation>
 <translation id="3041612393474885105">Informace o certifikátu</translation>
 <translation id="3045769629416806687">Extrémní sporty</translation>
+<translation id="3047054686095898948">Uložte si své údaje do služby <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />, ať můžete ve službách Google pracovat rychleji, například rychleji vyplňovat formuláře. Své údaje můžete <ph name="BEGIN_LINK" />spravovat<ph name="END_LINK" /> ve službě <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> pro účet <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">Historie Vzdálené plochy Chrome, včetně časových razítek, hostitelů a ID relací klientů</translation>
 <translation id="3052868890529250114">K webům se obvykle připojujete zabezpečeně, ale tentokrát Chrome zabezpečené připojení použít nemohl. Je možné, že se nějaký útočník pokouší sledovat nebo upravovat vaše připojení k síti. <ph name="BEGIN_LEARN_MORE_LINK" />Další informace o tomto upozornění<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">U produktu <ph name="PRODUCT_NAME" /> klesla cena o <ph name="PRICE_DROP" /></translation>
@@ -2717,6 +2719,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="5255833070095767006">350 × 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Zásady administrátora nedoporučují kopírovat tento soubor do následujícího cíle: <ph name="DESTINATION_NAME" />}few{Zásady administrátora nedoporučují kopírovat tyto soubory do následujícího cíle: <ph name="DESTINATION_NAME" />}many{Zásady administrátora nedoporučují kopírovat tyto soubory do následujícího cíle: <ph name="DESTINATION_NAME" />}other{Zásady administrátora nedoporučují kopírovat tyto soubory do následujícího cíle: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">Skupina karet „<ph name="GROUP_NAME" />“ už není k dispozici</translation>
+<translation id="5262342527470539728">Vaše údaje se ukládají do služby <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> účtu <ph name="ACCOUNT" /></translation>
 <translation id="5263867360296733198">Před nahráním je vyžadována kontrola</translation>
 <translation id="5266128565379329178">Vazba nahoře</translation>
 <translation id="5269225904387178860">Čtyři otvory dole</translation>
@@ -2795,7 +2798,6 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> aktualizoval(a) kartu „<ph name="WEBSITE_TITLE" />“</translation>
 <translation id="5383478552402031184">Podlahy</translation>
 <translation id="5385857628869214740">Humor</translation>
-<translation id="5385966243497224160">Náhled lze zobrazit pouze u adres protokolu HTTPS</translation>
 <translation id="5386426401304769735">Řetězec certifikátů tohoto webu obsahuje certifikát podepsaný algoritmem SHA-1.</translation>
 <translation id="5391010642126249196">Navštívili jste</translation>
 <translation id="5391306025131596142">&amp;Otevřít stránku historie</translation>
@@ -3844,7 +3846,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7003322000677139268">Náhradní díly a doplňky pro vozidla</translation>
 <translation id="7004499039102548441">Nedávno použité karty</translation>
 <translation id="7004562620237466965">Pouze dešifrovat</translation>
-<translation id="700483187606163535">Vaše informace se ukládají do služby <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> účtu <ph name="ACCOUNT" />. Můžete je používat k rychlejšímu vyplňování formulářů ve všech službách Google.</translation>
 <translation id="7006930604109697472">Přesto odeslat</translation>
 <translation id="7009364359744329733">Tato karta aktuálně není k dispozici. Zkuste to znovu později.</translation>
 <translation id="7010658264061801199">Jídlo a pití</translation>
@@ -4617,7 +4618,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8194956568907463262">Střílečky</translation>
 <translation id="8198379961710069585">Tlačítko Hledat v historii, aktivací můžete vyhledávat v historii</translation>
 <translation id="8199437620497683918">Optický disk (lesklý)</translation>
-<translation id="8199730148066603000">Zobrazení náhledu adresy URL jiného protokolu než HTTPS není povoleno.</translation>
 <translation id="8200772114523450471">Pokračovat</translation>
 <translation id="8202097416529803614">Shrnutí objednávky</translation>
 <translation id="8202370299023114387">Konflikt</translation>
@@ -4765,6 +4765,7 @@ Kontaktujte administrátora systému.</translation>
 Další podrobnosti:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Použití mikrofonu bylo pro tentokrát povoleno</translation>
+<translation id="8421746712901926961">Uložte si své údaje do služby <ph name="GOOGLE_WALLET_TITLE_1" />, ať můžete ve službách Google pracovat rychleji, například rychleji vyplňovat formuláře. <ph name="MANAGE_INFO_LINK" /> můžete v aplikaci <ph name="GOOGLE_WALLET_TITLE_2" /> pro účet <ph name="ACCOUNT" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Změnit</translation>
 <translation id="8426945547715537628">Povolit přepsání klávesnice?</translation>
@@ -4821,6 +4822,7 @@ Další podrobnosti:
 <translation id="8521812709849134608">Pracovní desky</translation>
 <translation id="8522180136695974431">Úvěrové hodnocení</translation>
 <translation id="8522552481199248698">Chrome vám může pomoci ochránit váš účet Google a změnit heslo.</translation>
+<translation id="852450791482410042">Zaplatit</translation>
 <translation id="8527228059738193856">Reproduktory</translation>
 <translation id="8527681393107582734">Zemědělství a lesnictví</translation>
 <translation id="8528149813106025610">Dětské oděvy</translation>

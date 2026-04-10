@@ -116,6 +116,7 @@
 <translation id="138692594145659985">A kártya mentésével kapcsolatos beállítások</translation>
 <translation id="1396260204083880024">Bejelentkezve a következőként: <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Fiókhoz tartozó menü megnyitása.</translation>
 <translation id="1397144142234474689">Előzmények elrejtése</translation>
+<translation id="1399268420835656394">Ha nem gyermek, érdemes lehet ellenőriznie az életkorát az Apple-fiókjában ezen az eszközön. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="1407135791313364759">Összes megnyitása</translation>
 <translation id="1408847409015257906">Koppintson az „Adatvédelem és biztonság” lehetőségre.</translation>
 <translation id="1411386976162024013">Lens vizuális keresés</translation>
@@ -555,6 +556,7 @@
 <translation id="2922210239002704889">Lépjen a kezdőlapra vagy a billentyűzethez.</translation>
 <translation id="2924940770243654951">Megnyitás új inkognitó lapon</translation>
 <translation id="2952278131021475699">Lens Kamerás kereső</translation>
+<translation id="2953821385349876107">Másik Google-fiók kiválasztása</translation>
 <translation id="2962516096219646456">Az automatikus kitöltés összes adatának megtekintése</translation>
 <translation id="2965594942405840553">A művelet nem vonható vissza</translation>
 <translation id="2969979262385602596">Nem sikerült bejelentkezni. Kérjük, próbálja újra később.</translation>
@@ -1439,6 +1441,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6090760257419195752">Elvetett figyelmeztetések</translation>
 <translation id="6094325891006032858">A Biztonságos Böngészés fokozott védelemmel funkció bekapcsolása</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> észlelve</translation>
+<translation id="6099466082815574659">Ez az iPad egy gyermek számára van beállítva</translation>
 <translation id="6100617279104942061">Bejelentkezve a következőként: <ph name="USER_EMAIL" />. Megnyitja a beállításokat.</translation>
 <translation id="6100676328067737810">Adatait a rendszer az Ön Google-fiókjába (<ph name="USER_EMAIL" />) menti</translation>
 <translation id="610083648014322104">Releváns válaszokat kaphat az aktuális oldal tartalmának megfelelően</translation>
@@ -1496,7 +1499,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6259928806013786178">Az Olvasási mód aktiválása sikertelen volt</translation>
 <translation id="6268773951964630964">Másolt kép keresése</translation>
 <translation id="6271462272606946663">A „Mobilwebhely kérése” művelet elrejtése</translation>
-<translation id="6271556257184622612">Kérdezhet a Google-tól a lapokról és egyebekről</translation>
 <translation id="6271824294945464304">A jelszó megosztása folyamatban van</translation>
 <translation id="628251768213143684">Bármikor kezelheti, hogy mit mentsen a rendszer a Google-fiókjába</translation>
 <translation id="6284652193729350524">A(z) <ph name="LANGUAGE" /> nyelvű oldalak lefordításának felajánlása</translation>
@@ -1533,6 +1535,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6368102751067608420">A jelszókezelő összes adatának törlése</translation>
 <translation id="6372558618707314581">Lépjen a kívánt oldalra.</translation>
 <translation id="6374469231428023295">Próbálja újra</translation>
+<translation id="6374514103145916800">Kérdezés</translation>
 <translation id="6383719166112032471">Hely megnyitása…</translation>
 <translation id="6387994324662817823">A jelszavakat csak ezen az eszközön menti a rendszer a Google Jelszókezelőbe.</translation>
 <translation id="6393156038355142111">Erős jelszó ajánlása</translation>
@@ -1600,6 +1603,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6596481460663245319">Kép keresése a Google-lal</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 jelszó}other{# jelszó}}</translation>
 <translation id="6601302169302852717">Kép mentve a Google Fotókba a(z) <ph name="USER_EMAIL" /> fiókba</translation>
+<translation id="6602173570135186741">Automatikus kitöltés és jelszavak</translation>
 <translation id="6603393121510733479">Szervezete kikapcsolta az inkognitó módban való böngészést.
 <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="6606914854592108404">A biztonsági ellenőrzés éppen fut…</translation>
@@ -1851,6 +1855,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Az inkognitó lapok bezárásához állítsa be a következőket: Touch ID, Face ID vagy jelkód.</translation>
 <translation id="750886945254958667">Megtarthatja a csoportot, ha később szeretne lapokat hozzáadni, de ki is léphet belőle, ha a továbbiakban nem kíván hozzáférni.</translation>
+<translation id="7511099437872594216">Lapok</translation>
 <translation id="7511727374778217603">{COUNT,plural, =1{Legfeljebb 1 lapot adhat hozzá}other{Legfeljebb {COUNT} lapot adhat hozzá}}</translation>
 <translation id="7512909159512473473">Összetett jelszó megadása…</translation>
 <translation id="7514365320538308">Letöltés</translation>
@@ -1965,6 +1970,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="7888562068293422208">Bezárja mind?</translation>
 <translation id="7889910613639381518">Egyszerű és biztonságos hozzáférés a Google Jelszókezelő modullal.</translation>
 <translation id="7899199123054742721">Az összes megjelölése olvasatlanként</translation>
+<translation id="7909005666376403847">Ez az iPhone egy gyermek számára van beállítva</translation>
 <translation id="7911190106180361398">Szervezete nem engedélyezi mindennek a szinkronizálását.</translation>
 <translation id="7918999344502274923"><ph name="SEARCH_ENGINE_NAME" /> részleteinek elrejtése</translation>
 <translation id="7921559948846049514">Válasszon témát, színt vagy egyebet a háttérhez</translation>

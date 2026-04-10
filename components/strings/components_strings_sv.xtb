@@ -1300,10 +1300,12 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3037177537145227281">Bevakar pris</translation>
 <translation id="3037605927509011580">Oj, ett fel har uppstått!</translation>
 <translation id="3039406992698062762">Familjeresor</translation>
+<translation id="3040435070100611531">Dina värdekort i Google Wallet</translation>
 <translation id="3041176923638368519">Se villkoren för kortförmåner</translation>
 <translation id="3041584414879052436">Listan över Köp nu, betala senare-utfärdare har stängts.</translation>
 <translation id="3041612393474885105">Certifikatinformation</translation>
 <translation id="3045769629416806687">Extremsporter</translation>
+<translation id="3047054686095898948">Spara dina uppgifter i <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> så att du kan få saker gjorda snabbare, till exempel fylla i formulär i Googles produkter. Du kan <ph name="BEGIN_LINK" />hantera dina uppgifter<ph name="END_LINK" /> i <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> för <ph name="ACCOUNT" />.</translation>
 <translation id="305162504811187366">Historik för Chrome Remote Desktop, bland annat tidsstämplar, värdar och id:n för klientsessioner</translation>
 <translation id="3052868890529250114">Du ansluter vanligtvis till webbplatser på ett säkert sätt, men den här gången kunde inte Chrome använda en säker anslutning. Det kan hända att en angripare försöker avlyssna eller ändra din nätverksanslutning. <ph name="BEGIN_LEARN_MORE_LINK" />Läs mer om den här varningen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Priset på <ph name="PRODUCT_NAME" /> sänkt med <ph name="PRICE_DROP" /></translation>
@@ -2721,6 +2723,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Enligt administratörspolicyn är det inte rekommenderat att kopiera den här filen till <ph name="DESTINATION_NAME" />}other{Enligt administratörspolicyn är det inte rekommenderat att kopiera dessa filer till <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">Flikgruppen <ph name="GROUP_NAME" /> är inte längre tillgänglig</translation>
+<translation id="5262342527470539728">Dina uppgifter sparas i <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> för <ph name="ACCOUNT" /></translation>
 <translation id="5263867360296733198">Granskning krävs innan du laddar upp</translation>
 <translation id="5266128565379329178">Bindning högst upp</translation>
 <translation id="5269225904387178860">Fyra hål längst ned</translation>
@@ -2799,7 +2802,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> har uppdaterat fliken <ph name="WEBSITE_TITLE" /></translation>
 <translation id="5383478552402031184">Golv</translation>
 <translation id="5385857628869214740">Humor</translation>
-<translation id="5385966243497224160">Det går inte att förhandsgranska webbadresser som inte använder HTTPS</translation>
 <translation id="5386426401304769735">Certifikatkedjan för den här webbplatsen innehåller ett certifikat som signerades med SHA-1.</translation>
 <translation id="5391010642126249196">Du besökte</translation>
 <translation id="5391306025131596142">&amp;Öppna sidan Historik</translation>
@@ -3849,7 +3851,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="7003322000677139268">Fordonsdelar och tillbehör</translation>
 <translation id="7004499039102548441">Senaste flikarna</translation>
 <translation id="7004562620237466965">Endast dechiffrering</translation>
-<translation id="700483187606163535">Din information sparas i <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> för <ph name="ACCOUNT" />. Du kan använda den i Googles produkter för att fylla i formulär snabbare.</translation>
 <translation id="7006930604109697472">Skicka ändå</translation>
 <translation id="7009364359744329733">Kortet är inte tillgängligt just nu. Försök igen senare.</translation>
 <translation id="7010658264061801199">Mat och dryck</translation>
@@ -4623,7 +4624,6 @@ Mer information.
 <translation id="8194956568907463262">Skjutspel</translation>
 <translation id="8198379961710069585">Knappen Sökhistorik – aktivera för att visa sökhistorik</translation>
 <translation id="8199437620497683918">Optisk skiva (blank)</translation>
-<translation id="8199730148066603000">Förhandsgranskning av webbadresser som inte använder HTTPS är inte tillåten.</translation>
 <translation id="8200772114523450471">Återuppta</translation>
 <translation id="8202097416529803614">Beställningsöversikt</translation>
 <translation id="8202370299023114387">Konflikt</translation>
@@ -4771,6 +4771,7 @@ Mer information.
 Mer information:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofon tillåts den här gången</translation>
+<translation id="8421746712901926961">Spara dina uppgifter i <ph name="GOOGLE_WALLET_TITLE_1" /> så att du kan få saker gjorda snabbare, till exempel fylla i formulär i Googles produkter. Du kan <ph name="MANAGE_INFO_LINK" /> i <ph name="GOOGLE_WALLET_TITLE_2" /> för <ph name="ACCOUNT" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Ändra</translation>
 <translation id="8426945547715537628">Vill du tillåta att tangentbordet åsidosätts?</translation>
@@ -4827,6 +4828,7 @@ Mer information:
 <translation id="8521812709849134608">Köksbänkar</translation>
 <translation id="8522180136695974431">Kreditrapporter och bevakning</translation>
 <translation id="8522552481199248698">Du kan skydda Google-kontot genom att byta lösenord.</translation>
+<translation id="852450791482410042">Betala nu</translation>
 <translation id="8527228059738193856">Högtalare</translation>
 <translation id="8527681393107582734">Lant- och skogsbruk</translation>
 <translation id="8528149813106025610">Barnkläder</translation>

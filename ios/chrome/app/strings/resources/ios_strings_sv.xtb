@@ -116,6 +116,7 @@
 <translation id="138692594145659985">Alternativ för att spara kort</translation>
 <translation id="1396260204083880024">Inloggad som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Öppna kontomenyn</translation>
 <translation id="1397144142234474689">Dölj historik</translation>
+<translation id="1399268420835656394">Om du inte är ett barn kan du kontrollera åldern i Apple-kontot på den här enheten. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" />.</translation>
 <translation id="1407135791313364759">Öppna alla</translation>
 <translation id="1408847409015257906">Tryck på Integritet och säkerhet.</translation>
 <translation id="1411386976162024013">Visuell sökning med Lens</translation>
@@ -555,6 +556,7 @@
 <translation id="2922210239002704889">Öppna startsidan eller tangentbordet</translation>
 <translation id="2924940770243654951">Öppna i ny inkognitoflik</translation>
 <translation id="2952278131021475699">Kamerasökning med Lens</translation>
+<translation id="2953821385349876107">Välj ett annat Google-konto</translation>
 <translation id="2962516096219646456">Se all data för Autofyll</translation>
 <translation id="2965594942405840553">Det går inte att ångra åtgärden</translation>
 <translation id="2969979262385602596">Det gick inte att logga in. Försök igen senare.</translation>
@@ -1439,6 +1441,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6090760257419195752">Ignorerade varningar</translation>
 <translation id="6094325891006032858">Aktivera Förbättrad säker webbsökning</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> hittades</translation>
+<translation id="6099466082815574659">Denna iPad har konfigurerats för ett barn</translation>
 <translation id="6100617279104942061">Inloggad som <ph name="USER_EMAIL" />. Öppnar inställningarna.</translation>
 <translation id="6100676328067737810">Din data sparas i Google-kontot <ph name="USER_EMAIL" /></translation>
 <translation id="610083648014322104">Få relevanta svar baserat på innehållet på sidan du besöker</translation>
@@ -1496,7 +1499,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6259928806013786178">Det gick inte att aktivera läsläget</translation>
 <translation id="6268773951964630964">Sök efter kopierad bild</translation>
 <translation id="6271462272606946663">Dölj Använd mobil webbplats</translation>
-<translation id="6271556257184622612">Fråga Google om flikar med mera</translation>
 <translation id="6271824294945464304">Lösenordet delas</translation>
 <translation id="628251768213143684">Du kan när som helst hantera vad som sparas i Google-kontot</translation>
 <translation id="6284652193729350524">Erbjud översättning från <ph name="LANGUAGE" /></translation>
@@ -1533,6 +1535,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6368102751067608420">Så här raderar du all lösenordshanteringsdata</translation>
 <translation id="6372558618707314581">Öppna valfri sida</translation>
 <translation id="6374469231428023295">Försök igen</translation>
+<translation id="6374514103145916800">Fråga</translation>
 <translation id="6383719166112032471">Öppna plats …</translation>
 <translation id="6387994324662817823">Lösenorden sparas med Google Lösenordshantering endast på den här enheten.</translation>
 <translation id="6393156038355142111">Föreslå ett starkt lösenord</translation>
@@ -1600,6 +1603,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6596481460663245319">Sök med bild på Google</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 lösenord}other{# lösenord}}</translation>
 <translation id="6601302169302852717">Bilden har sparats i Google Foto för <ph name="USER_EMAIL" /></translation>
+<translation id="6602173570135186741">Autofyll och lösenord</translation>
 <translation id="6603393121510733479">Organisationen har inaktiverat möjligheten att surfa privat.
 <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="6606914854592108404">Säkerhetskontrollen körs …</translation>
@@ -1965,6 +1969,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="7888562068293422208">Vill du stänga alla?</translation>
 <translation id="7889910613639381518">Enkel och säker åtkomst med widgeten för Google Lösenordshantering.</translation>
 <translation id="7899199123054742721">Markera alla som olästa</translation>
+<translation id="7909005666376403847">Denna iPhone har konfigurerats för ett barn</translation>
 <translation id="7911190106180361398">Organisationen tillåter inte att du synkroniserar allt.</translation>
 <translation id="7918999344502274923">Dölj information om <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="7921559948846049514">Välj ett tema, en färg eller annat för bakgrunden</translation>

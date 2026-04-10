@@ -1300,10 +1300,12 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3037177537145227281">Sporer prisen</translation>
 <translation id="3037605927509011580">Æsj!</translation>
 <translation id="3039406992698062762">Familiereise</translation>
+<translation id="3040435070100611531">Kortene og billettene dine i Google Wallet</translation>
 <translation id="3041176923638368519">Se vilkårene for kortfordeler</translation>
 <translation id="3041584414879052436">Listen over utstedere av «Kjøp nå, betal senere» er lukket.</translation>
 <translation id="3041612393474885105">Sertifikatinformasjon</translation>
 <translation id="3045769629416806687">Ekstremsport</translation>
+<translation id="3047054686095898948">Lagre informasjonen din i <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> for å få ting gjort raskere, for eksempel å fylle ut skjemaer i ulike Google-produkter. Du kan <ph name="BEGIN_LINK" />administrere informasjonen din<ph name="END_LINK" /> i <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> for <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">loggen for Chrome Eksternt skrivebord, inkludert tidsstempler, verter og klientøkt-ID-er</translation>
 <translation id="3052868890529250114">Du pleier å ha en sikker tilkobling til nettsteder, men Chrome kunne ikke bruke en sikker tilkobling denne gangen. Det kan hende at angripere prøver å tyvlytte på eller modifisere nettverkstilkoblingen din. <ph name="BEGIN_LEARN_MORE_LINK" />Finn ut mer om denne advarselen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> avslag på <ph name="PRODUCT_NAME" /></translation>
@@ -2800,7 +2802,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> oppdaterte fanen «<ph name="WEBSITE_TITLE" />»</translation>
 <translation id="5383478552402031184">Gulv</translation>
 <translation id="5385857628869214740">Humor</translation>
-<translation id="5385966243497224160">Kan ikke forhåndsvise ikke-HTTPS-nettadresser</translation>
 <translation id="5386426401304769735">Sertifikatkjeden for dette nettstedet inneholder et sertifikat som er signert med SHA-1.</translation>
 <translation id="5391010642126249196">Du besøkte nettstedet</translation>
 <translation id="5391306025131596142">&amp;Åpne loggsiden</translation>
@@ -3850,7 +3851,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="7003322000677139268">Bildeler og tilbehør</translation>
 <translation id="7004499039102548441">Nylige faner</translation>
 <translation id="7004562620237466965">Bare dechiffrering</translation>
-<translation id="700483187606163535">Informasjonen din er lagret i <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> for <ph name="ACCOUNT" />. Du kan bruke den på tvers av alle Google-produkter for å fylle ut skjemaer raskere.</translation>
 <translation id="7006930604109697472">Send likevel</translation>
 <translation id="7009364359744329733">Dette kortet er ikke tilgjengelig akkurat nå. Prøv igjen senere.</translation>
 <translation id="7010658264061801199">Mat og drikke</translation>
@@ -4623,7 +4623,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="8194956568907463262">Skytespill</translation>
 <translation id="8198379961710069585">Søkelogg-knapp – aktiver for å se søkeloggen</translation>
 <translation id="8199437620497683918">Optisk disk (glans)</translation>
-<translation id="8199730148066603000">Forhåndsvisning av ikke-HTTPS-nettadresser er ikke tillatt.</translation>
 <translation id="8200772114523450471">Fortsett</translation>
 <translation id="8202097416529803614">Bestillingssammendrag</translation>
 <translation id="8202370299023114387">Konflikt</translation>
@@ -4828,6 +4827,7 @@ Mer informasjon:
 <translation id="8521812709849134608">Benkeplater</translation>
 <translation id="8522180136695974431">Kredittrapportering og -overvåking</translation>
 <translation id="8522552481199248698">Chrome kan hjelpe deg med å beskytte Google-kontoen din og endre passordet ditt.</translation>
+<translation id="852450791482410042">Betal nå</translation>
 <translation id="8527228059738193856">Høyttalere</translation>
 <translation id="8527681393107582734">Jordbruk og skogbruk</translation>
 <translation id="8528149813106025610">Barneklær</translation>

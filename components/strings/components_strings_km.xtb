@@ -1303,10 +1303,12 @@
 <translation id="3037177537145227281">កំពុងតាមដាន​តម្លៃ</translation>
 <translation id="3037605927509011580">អូយ ទក់!</translation>
 <translation id="3039406992698062762">ការធ្វើដំណើរ​លក្ខណៈគ្រួសារ</translation>
+<translation id="3040435070100611531">កាត Google Wallet របស់អ្នក</translation>
 <translation id="3041176923638368519">មើលលក្ខខណ្ឌអត្ថប្រយោជន៍កាត</translation>
 <translation id="3041584414879052436">បញ្ជី​ស្ថាប័ន​ចេញ​កាត 'ទិញឥឡូវនេះ ទូទាត់ពេលក្រោយ' ត្រូវបានបិទ។</translation>
 <translation id="3041612393474885105">ព័ត៌មានវិញ្ញាបនប័ត្រ</translation>
 <translation id="3045769629416806687">កីឡា​គ្រោះថ្នាក់​ខ្លាំង</translation>
+<translation id="3047054686095898948">រក្សាទុក​ព័ត៌មាន​របស់អ្នក​នៅក្នុង <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> និង​បំពេញ​កិច្ចការ​បានកាន់តែ​លឿន ដូចជា​ការបំពេញ​ទម្រង់បែបបទ​នៅលើ​ផលិតផល Google ជាដើម។ អ្នកអាច<ph name="BEGIN_LINK" />គ្រប់គ្រង​ព័ត៌មាន​របស់អ្នក<ph name="END_LINK" />នៅក្នុង <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> សម្រាប់ <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">ប្រវត្តិ Chrome Remote Desktop រួមទាំង​លេខសម្គាល់វគ្គ​នៃកម្មវិធីភ្ញៀវ ម៉ាស៊ីន និងពេលវេលា</translation>
 <translation id="3052868890529250114">ជាធម្មតា អ្នកភ្ជាប់ទៅ​គេហទំព័រ​ដោយសុវត្ថិភាព ប៉ុន្តែ Chrome មិនអាចប្រើ​ការ​តភ្ជាប់ដែលមានសុវត្ថិភាព​នៅពេលនេះបានទេ។ អ្នកវាយ​ប្រហារ​ប្រហែលជា​កំពុង​ព្យាយាម​លួចស្ដាប់ ឬ​កែប្រែ​ការតភ្ជាប់បណ្ដាញ​របស់អ្នក។ <ph name="BEGIN_LEARN_MORE_LINK" />ស្វែងយល់បន្ថែមអំពីសារប្រុងប្រយ័ត្ននេះ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">ធ្លាក់ថ្លៃ <ph name="PRICE_DROP" /> សម្រាប់ <ph name="PRODUCT_NAME" /></translation>
@@ -2804,7 +2806,6 @@
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> បានធ្វើ​បច្ចុប្បន្នភាព​ផ្ទាំង “<ph name="WEBSITE_TITLE" />”</translation>
 <translation id="5383478552402031184">ការធ្វើ​កម្រាល</translation>
 <translation id="5385857628869214740">កំប្លែង</translation>
-<translation id="5385966243497224160">មិនអាចមើលសាកល្បងនូវ URL ដែលមិនមែនជា HTTPS បានទេ</translation>
 <translation id="5386426401304769735">ខ្សែ​វិញ្ញាបនបត្រ​សម្រាប់​ទំព័រ​នេះ​ផ្ទុក​វិញ្ញាបនបត្រ​មួយ​ដែល​ចុះហត្ថលេខា​ដោយប្រើ SHA-1 ។</translation>
 <translation id="5391010642126249196">អ្នកបានចូលមើល</translation>
 <translation id="5391306025131596142">&amp;បើកទំព័រប្រវត្តិ</translation>
@@ -3854,7 +3855,6 @@
 <translation id="7003322000677139268">គ្រឿងបន្លាស់ និងគ្រឿងតុបតែងយានជំនិះ</translation>
 <translation id="7004499039102548441">ផ្ទាំងថ្មីៗ</translation>
 <translation id="7004562620237466965">បម្លែងតែប៉ុណ្ណោះ</translation>
-<translation id="700483187606163535">ព័ត៌មាន​របស់អ្នក​ត្រូវបាន​រក្សាទុកទៅ <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> សម្រាប់ <ph name="ACCOUNT" />។ អ្នកអាចប្រើវាលើផលិតផល Google ផ្សេងៗ ដើម្បីបំពេញទម្រង់បែបបទបានកាន់តែលឿន។</translation>
 <translation id="7006930604109697472">មិនអីទេ ផ្ញើចុះ</translation>
 <translation id="7009364359744329733">មិនអាចប្រើ​កាតនេះ​នៅពេលនេះ​បានទេ។ សូមព្យាយាម​ម្ដងទៀត​នៅពេល​ក្រោយ។</translation>
 <translation id="7010658264061801199">អាហារ និង​ភេសជ្ជៈ</translation>
@@ -4629,7 +4629,6 @@
 <translation id="8194956568907463262">ហ្គេម​បាញ់​កាំភ្លើង</translation>
 <translation id="8198379961710069585">ប៊ូតុង​ស្វែងរក​ប្រវត្តិ, បើក​ដំណើរការ ដើម្បី​ស្វែងរក​ប្រវត្តិ</translation>
 <translation id="8199437620497683918">ឌីសអុបទិក (រលោង)</translation>
-<translation id="8199730148066603000">ការមើលសាកល្បងនូវ URL ដែលមិនមែនជា HTTPS មិនត្រូវបានអនុញ្ញាតទេ។</translation>
 <translation id="8200772114523450471">បន្ត</translation>
 <translation id="8202097416529803614">សង្ខេបនៃការបញ្ជាទិញ</translation>
 <translation id="8202370299023114387">​ជាន់​គ្នា</translation>
@@ -4834,6 +4833,7 @@
 <translation id="8521812709849134608">ផ្ទៃតុ</translation>
 <translation id="8522180136695974431">ការរាយការណ៍ និង​ការត្រួតពិនិត្យ​ឥណទាន</translation>
 <translation id="8522552481199248698">Chrome អាច​ជួយ​អ្នក​ក្នុងការការពារ​គណនី Google និង​ផ្លាស់ប្ដូរ​ពាក្យសម្ងាត់​របស់អ្នក​។</translation>
+<translation id="852450791482410042">បង់ប្រាក់ឥឡូវនេះ</translation>
 <translation id="8527228059738193856">ឧបករណ៍​បំពង​សំឡេង</translation>
 <translation id="8527681393107582734">កសិកម្ម និងព្រៃឈើ</translation>
 <translation id="8528149813106025610">សម្លៀកបំពាក់​កុមារ</translation>

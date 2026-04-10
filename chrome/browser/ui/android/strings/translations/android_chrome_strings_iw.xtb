@@ -686,6 +686,7 @@
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">מארבעת השבועות האחרונים</translation>
 <translation id="393697183122708255">חיפוש קולי מופעל לא זמין</translation>
+<translation id="3941718885865495207">‏הגיליון התחתון להצטרפות לממצאי Chrome</translation>
 <translation id="3943322906274039960">‫<ph name="TAB_TITLE" />, כרטיסייה מוצמדת במצב "תמונה בתוך תמונה"</translation>
 <translation id="3950820424414687140">כניסה</translation>
 <translation id="395377504920307820">שימוש ללא חשבון</translation>
@@ -1191,6 +1192,7 @@
 <translation id="6011308810877101166">שיפור של ההצעות לחיפוש</translation>
 <translation id="6013305291643746595">בתהליך מיון לפי הפריט הישן ביותר</translation>
 <translation id="6022659036123304283">‏אפשר להתאים אישית את Chrome בדרך שנוחה לך</translation>
+<translation id="6023820583797130428">כדי לחזור למסך הקודם צריך לפתוח את התפריט</translation>
 <translation id="6026538407078977628">הרחבה למסך מלא</translation>
 <translation id="6030719887161080597">ניהול המידע שמשמש אתרים למדידת ביצועי מודעות</translation>
 <translation id="6039379616847168523">מעבר לכרטיסייה הבאה</translation>
@@ -1635,6 +1637,7 @@
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{כרטיסייה רגילה אחת (<ph name="TABS_COUNT_ONE" />)}one{‫<ph name="TABS_COUNT_MANY" /> כרטיסיות רגילות}two{‫<ph name="TABS_COUNT_MANY" /> כרטיסיות רגילות}other{‫<ph name="TABS_COUNT_MANY" /> כרטיסיות רגילות}}</translation>
 <translation id="7603168929588204083">התאריך לא תקין</translation>
 <translation id="7605594153474022051">הסנכרון לא עובד</translation>
+<translation id="7608245556672190037">‏הגיליון התחתון להצטרפות לממצאי Chrome פתוח בגובה מלא</translation>
 <translation id="7612619742409846846">‏התחברת ל-Google בשם</translation>
 <translation id="7612989789287281429">מתבצעת כניסה לחשבון…</translation>
 <translation id="7619072057915878432">הורדת <ph name="FILE_NAME" /> נכשלה עקב כשלים ברשת.</translation>
@@ -1642,6 +1645,7 @@
 <translation id="7628417132421583481">מעבר למנהל הסיסמאות</translation>
 <translation id="7630202231528827509">‏כתובת ה-URL של הספק</translation>
 <translation id="7638584964844754484">ביטוי סיסמה שגוי</translation>
+<translation id="764047009170754705">‏הגיליון התחתון להצטרפות לממצאי Chrome סגור</translation>
 <translation id="7646499124171960488">מקבלים אזהרה לגבי אתרים ציבוריים לא מאובטחים</translation>
 <translation id="7646772052135772216">סנכרון הסיסמאות לא פועל</translation>
 <translation id="7655240423373329753">7 הימים האחרונים</translation>
@@ -1866,6 +1870,7 @@
 <translation id="8473863474539038330">כתובות ועוד</translation>
 <translation id="847433688444405067">גלישה בכמה מכשירים</translation>
 <translation id="8477178913400731244">מחיקת נתונים</translation>
+<translation id="8481771036036087705">‏הגיליון התחתון להצטרפות לממצאי Chrome פתוח בחצי גובה</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">אין חלונות לא פעילים</translation>
 <translation id="8493948351860045254">פינוי נפח אחסון</translation>

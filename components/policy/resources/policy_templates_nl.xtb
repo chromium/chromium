@@ -132,11 +132,6 @@ Let op: Lees meer informatie over het beleid voor procesbeperking (https://chrom
 <translation id="1077675271127011209">Rapportage van gebruiks- en crashgegevens uitzetten</translation>
 <translation id="1079498696402787191">Gebruik de standaardwaarde voor hashes die zijn toegestaan in TLS-handshakes.</translation>
 <translation id="1079801999187584280">Het gebruik van de hulpprogramma's voor ontwikkelaars niet toestaan</translation>
-<translation id="1081263326166769685">Als je het beleid toepast, rapporteert <ph name="PRODUCT_OS_NAME" /> gebruiksstatistieken en diagnostische gegevens, waaronder crashrapporten, aan Google. Als je het beleid niet toepast, worden er geen statistieken en diagnostische gegevens gerapporteerd.
-
-Voor beheerde apparaten wordt dit beleid standaard toegepast en worden statistieken naar Google gestuurd.
-
-Voor onbeheerde apparaten kan de gebruiker ervoor kiezen om de statistieken te sturen als het beleid niet is ingesteld.</translation>
 <translation id="1081470306474387129">Met de Controlled Frame API, die beschikbaar is voor bepaalde geïsoleerde contexten zoals geïsoleerde web-apps (GWA's), kan een app willekeurige content insluiten en manipuleren.
 Ga naar https://github.com/WICG/controlled-frame voor meer informatie.
 
@@ -368,6 +363,18 @@ Patronen voor overeenkomende herkomst voor dit beleid mogen geen '/path' or '@qu
 <translation id="1262993197422487260">De knop Wachtwoord bekijken niet tonen op het inlog- en vergrendelscherm</translation>
 <translation id="1265053460044691532">De offline inlogtijd beperken voor een gebruiker die is geverifieerd via SAML</translation>
 <translation id="1265076559723566171">Bepaalt instellingen voor EDU-gebruikers</translation>
+<translation id="1268782248484174352">Hiermee wordt het niveau van statistiekrapportage voor <ph name="PRODUCT_OS_NAME" /> aangegeven.
+
+Als je dit beleid instelt, bepaal je hoeveel gebruiks- en crashgegevens er aan Google worden gerapporteerd:
+* 0 = Rapportage uitzetten: er worden geen gebruiks- of crashgegevens naar Google gestuurd.
+* 1 = Eenvoudige rapportage: er wordt een beperkte set gebruiks- en crashgerelateerde gegevens naar Google gestuurd.
+* 2 = Geavanceerde rapportage: er wordt een uitgebreide set gebruiks- en crashgerelateerde gegevens naar Google gestuurd.
+
+Als je dit beleid niet instelt, kan de gebruiker het gedrag voor rapportage van statistieken kiezen tijdens de installatie of de eerste uitvoering en kan de gebruiker deze instelling later wijzigen.
+
+Dit beleid wordt alleen geëvalueerd als het experiment <ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" /> actief is op het apparaat.
+
+Als het experiment <ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" /> actief is op het apparaat en zowel dit beleid als het beleid <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" /> zijn ingesteld, heeft dit beleid voorrang.</translation>
 <translation id="1271811620059192171">Atomische beleidsgroepen aanzetten</translation>
 <translation id="127264587838521316">Hiermee worden installatieverzoeken voor <ph name="PRODUCT_NAME" />-extensies aangezet</translation>
 <translation id="1272798957154751008">De migratie van Chromad-apparatten naar cloudbeheer aanzetten</translation>
@@ -1794,6 +1801,18 @@ Als je het beleid niet toepast, hebben gebruikers geen toegang tot deze function
 
       Als je het beleid instelt, kunnen gebruikers het niet wijzigen in <ph name="PRODUCT_NAME" />. Als je het beleid niet instelt, is checken op gegevenslekken toegestaan, maar kan de gebruiker deze functie uitzetten.</translation>
 <translation id="2208976000652006649">Parameters voor zoek-URL die POST gebruikt</translation>
+<translation id="2211167090584042804">Hiermee wordt het niveau van statistiekrapportage voor <ph name="PRODUCT_NAME" /> aangegeven.
+
+Als je dit beleid instelt, bepaal je hoeveel gebruiks- en crashgegevens er aan Google worden gerapporteerd:
+* 0 = Rapportage uitzetten: er worden geen gebruiks- of crashgegevens naar Google gestuurd.
+* 1 = Eenvoudige rapportage: er wordt een beperkte set gebruiks- en crashgerelateerde gegevens naar Google gestuurd.
+* 2 = Geavanceerde rapportage: er wordt een uitgebreide set gebruiks- en crashgerelateerde gegevens naar Google gestuurd.
+
+Als je dit beleid niet instelt, kan de gebruiker het gedrag voor rapportage van statistieken kiezen tijdens de installatie of de eerste uitvoering en kan de gebruiker deze instelling later wijzigen.
+
+Dit beleid wordt alleen geëvalueerd als het experiment <ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" /> actief is op het apparaat.
+
+Als het experiment <ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" /> actief is op het apparaat en zowel dit beleid als het beleid <ph name="METRICS_REPORTING_ENABLED_POLICY_NAME" /> zijn ingesteld, heeft dit beleid voorrang.</translation>
 <translation id="2212011154693551439">Een Chrome-geschiedenispagina die is ingedeeld in groepen, is standaard zichtbaar op chrome://history/grouped.</translation>
 <translation id="2212207215880394506">Fotobewerking met generatieve AI niet toestaan.</translation>
 <translation id="221287948061571053">Uitgevouwen zakelijke werkbalkbadge verbergen</translation>
@@ -2797,10 +2816,6 @@ Dit beleid kan alleen worden ingesteld als cloudgebruikersbeleid.</translation>
 <translation id="288923520817177650">Toestaan dat <ph name="WEBXR_AR_SESSION_ENUM_VALUE" />-sessies van <ph name="WEBXR_API_NAME_SHORT" /> worden gemaakt</translation>
 <translation id="2889842394011108075">window.webkitStorageInfo wordt beschikbaar.</translation>
 <translation id="2890645751406497668">Automatisch rechten verlenen aan deze sites om verbinding te maken met USB-apparaten met de opgegeven leveranciers- en product-ID's.</translation>
-<translation id="2891049933730408118">Als je het beleid instelt, wordt gespecificeerd voor welke herkomsten alle HTTP-verificatieschema's worden toegestaan die <ph name="PRODUCT_NAME" /> ondersteunt, ongeacht het beleid <ph name="AUTH_SCHEMES_POLICY_NAME" />.
-
-      Maak het herkomstpatroon op volgens deze indeling (<ph name="URL_SCHEME_FORMAT_LINK" />). Je kunt maximaal 1000 uitzonderingen definiëren in <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" />.
-      Jokertekens zijn toegestaan voor de hele herkomst of delen van de herkomst, namelijk het schema, de host of de poort.</translation>
 <translation id="2893546967669465276">Systeemlogboeken naar de beheerserver verzenden</translation>
 <translation id="2893660462311365527">Snelheid voor verzameling van netwerktelemetrie in milliseconden.</translation>
 <translation id="2894914342151915910">Waarschuwingen onderdrukken als Chrome wordt uitgevoerd op een niet-ondersteund systeem</translation>
@@ -7394,6 +7409,7 @@ Als je het beleid instelt op EnabledFocusSoundsOnly, wordt de geluidsfunctie aan
 
 Als je het beleid niet toepast, worden geluiden in Focusmodus uitgezet.</translation>
 <translation id="5890063326284543943">Gebruik van de Serial API beheren</translation>
+<translation id="5893086678951790439">Rapportageniveau voor statistieken</translation>
 <translation id="5893303508158298667">Als je <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> hebt toegepast en <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> toepast of niet instelt, kunnen externe clients relayservers gebruiken om verbinding met dit apparaat te maken als er geen rechtstreekse verbinding beschikbaar is (bijvoorbeeld vanwege firewallbeperkingen).
 
       Als je het beleid niet toepast, wordt externe toegang niet uitgezet, maar zijn alleen verbindingen vanuit hetzelfde netwerk toegestaan (geen NAT-traversal of -relay).</translation>
@@ -7518,6 +7534,7 @@ Vanaf <ph name="PRODUCT_NAME" /> 147 wordt dit beleid beëindigd. IT-beheerders 
 
       Als je het beleid instelt, kunnen gebruikers het niet wijzigen. Als je het beleid niet instelt, bepalen gebruikers of kop- en voetteksten zichtbaar zijn.</translation>
 <translation id="5951418260805607969">Melding tonen bij weinig schrijfruimte</translation>
+<translation id="5952917461013988610">Eenvoudige rapportage</translation>
 <translation id="5958746038080720143">WPAD-optimalisaties (Web Proxy Auto-Discovery) aanzetten</translation>
 <translation id="5961137303188584693">MAC-adres van ingebouwde NIC van apparaat</translation>
 <translation id="5962271004971310788">Extensies die de gebruiker in de incognitomodus moet toestaan om te kunnen navigeren in de incognitomodus</translation>
@@ -8786,17 +8803,6 @@ Dit vervangt het beëindigde beleid <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_
 <translation id="6813263547126514821">Energiebeheer en uitzetten</translation>
 <translation id="681446116407619279">Ondersteunde authenticatieschema's</translation>
 <translation id="6815628711329903153">Moderne buffertoewijzing toestaan voor Graphics3D-API's in PPAPI-plug-in.</translation>
-<translation id="6819031008957510729">Als je dit beleid toepast, wordt aanbevolen dat anonieme rapportage van gebruiks- en crashgegevens over <ph name="PRODUCT_NAME" /> aan Google standaard aanstaat. Gebruikers kunnen deze instelling nog steeds wijzigen.
-
-Als je dit beleid niet toepast, staat anonieme rapportage uit en worden er geen gebruiks- of crashgegevens naar Google gestuurd. Gebruikers kunnen deze instelling niet wijzigen.
-
-Als dit beleid niet is ingesteld, kunnen gebruikers het gedrag voor anonieme rapportage kiezen tijdens de installatie of de eerste uitvoering. Ze kunnen deze instelling later wijzigen.
-
-(Zie <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" /> voor <ph name="PRODUCT_OS_NAME" />.)
-
-In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" /> of die zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="6819838337315703072">Als app-support voor <ph name="LINUX_OS_NAME" /> aanstaat en je dit beleid toepast, wordt de informatie over het gebruik van <ph name="LINUX_OS_NAME" />-apps teruggestuurd naar de server.
 
       Als je het beleid niet toepast of niet instelt, wordt er geen gebruiksinformatie gerapporteerd.</translation>
@@ -8875,6 +8881,7 @@ Als het beleid is ingesteld op False of niet is ingesteld, is de indeling niet b
 <translation id="686079137349561371">Microsoft Windows 7 of later</translation>
 <translation id="6863927303509860338">Snelkoppelingen instellen op de pagina Nieuw tabblad</translation>
 <translation id="6866755486434471318">Toestaan dat <ph name="PEPPER_NAME" /> gedeelde afbeeldingen gebruikt voor videodecodering.</translation>
+<translation id="6874461444739276423">Rapportageniveau voor apparaatstatistieken</translation>
 <translation id="6878757724611298427">Gebruikers toestaan Android-apps te gebruiken op niet-aangesloten apparaten</translation>
 <translation id="6881447940489194100">Hexadecimale gecodeerde SHA-256-hash van de gegevens.</translation>
 <translation id="68818134518270542">Als je het beleid instelt, geef je de apps op die gebruikers beschikbaar kunnen maken als notitie-app op het vergrendelscherm van <ph name="PRODUCT_OS_NAME" />.
@@ -10915,6 +10922,13 @@ Als dit beleid niet is ingesteld, wordt het privacyscherm in eerste instantie ui
 <translation id="8171262216089271568">Grote cursor op het inlogscherm aanzetten</translation>
 <translation id="8171924760436219650">De rechtermuisknop instellen als de primaire muisknop op het inlogscherm</translation>
 <translation id="81724933026241365">Gebruikers toestaan het apparaat uit te zetten met het icoon Uitzetten of de aan/uit-knop</translation>
+<translation id="8173338752620395043">Als je het beleid toepast, rapporteert <ph name="PRODUCT_OS_NAME" /> gebruiksstatistieken en diagnostische gegevens, waaronder crashrapporten, aan Google. Als je het beleid niet toepast, worden er geen statistieken en diagnostische gegevens gerapporteerd.
+
+Voor beheerde apparaten wordt dit beleid standaard toegepast en worden statistieken naar Google gestuurd.
+
+Voor onbeheerde apparaten kan de gebruiker ervoor kiezen om de statistieken te sturen als het beleid niet is ingesteld.
+
+Als het experiment <ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" /> actief is op het apparaat en zowel dit beleid als het beleid <ph name="DEVICE_METRICS_REPORTING_LEVEL_POLICY_NAME" /> zijn ingesteld, heeft het beleid <ph name="DEVICE_METRICS_REPORTING_LEVEL_POLICY_NAME" /> voorrang.</translation>
 <translation id="8173864651667424191">Als de optie Afdrukken als afbeelding beschikbaar is, wordt deze standaard ingesteld voor afdrukvoorbeelden van pdf-documenten.</translation>
 <translation id="8175922758834816585">Gesproken feedback op het inlogscherm aanzetten en de gebruiker toestaan dit tijdelijk uit te zetten</translation>
 <translation id="8176035528522326671">Toestaan dat Enterprise-gebruiker alleen primair gebruiker van meerdere profielen is (standaardgedrag voor beheerde Enterprise-gebruikers)</translation>
@@ -11506,6 +11520,7 @@ Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph nam
 Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="8566842294717252664">De Web Store verbergen op de pagina 'Nieuw tabblad' en in de App Launcher</translation>
 <translation id="8567697114274003779">Een aangepast bedrijfslabel instellen voor een beheerd profiel</translation>
+<translation id="8570976102224880079">Geavanceerde rapportage</translation>
 <translation id="8571069584826006598">Toestaan dat geïsoleerde web-app-oorsprongen de gebruiker om toegang vragen tot lokale printers via de WebPrinting API</translation>
 <translation id="8571119890730528225">Partitionering van opslag door derden uitzetten</translation>
 <translation id="8571314270766672278">Een rollback uitvoeren en het apparaat resetten bij een kanaaldowngrade en de inschrijving proberen te behouden</translation>
@@ -11702,6 +11717,7 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
 Dit beleid is beëindigd vanaf <ph name="PRODUCT_NAME" /> versie 144 met de beëindiging van de Topics API.</translation>
 <translation id="8672321184841719703">Doelversie voor automatische updates</translation>
 <translation id="867410340948518937">U2F (Universal Second Factor)</translation>
+<translation id="8675599659717867329">Rapportage uitzetten</translation>
 <translation id="8676959842615154675">Als je dit beleid toepast, vergelijkt de host voor externe toegang de naam van de lokale gebruiker waaraan de host is gekoppeld, met de naam van het Google-account dat is geregistreerd als eigenaar van de host (bijvoorbeeld 'jansmits' als de host eigendom is van het Google-account jansmits@example.com). Deze host wordt niet gestart als de naam van de hosteigenaar anders is dan de naam van de lokale gebruiker waaraan de host is gekoppeld. Als je wilt afdwingen dat het Google-account van de eigenaar wordt gekoppeld aan een specifiek domein, gebruik je het beleid met <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />.
 
       Als je het beleid niet toepast of niet instelt, kan de host voor externe toegang aan elke lokale gebruiker worden gekoppeld.</translation>
@@ -12512,6 +12528,19 @@ Bepaal of een gebruiker de hostnaam van het apparaat mag instellen.
 Als het beleid niet wordt toegepast, retourneren de API's voor opslagquotum meestal een dynamische waarde die evenredig is aan de totale beschikbare ruimte op het apparaat, ongeacht het gebruik.
 Als je dit beleid niet instelt, gebruiken de API's voor opslagquotum het standaardgedrag van Chrome.
 Deze instelling heeft geen invloed op sites met rechten voor onbeperkte opslag. Dit heeft ook geen invloed op het afgedwongen quotum.</translation>
+<translation id="975621145048605048">Als je dit beleid toepast, wordt aanbevolen dat anonieme rapportage van gebruiks- en crashgegevens over <ph name="PRODUCT_NAME" /> aan Google standaard aanstaat. Gebruikers kunnen deze instelling nog steeds wijzigen.
+
+Als je dit beleid niet toepast, staat anonieme rapportage uit en worden er geen gebruiks- of crashgegevens naar Google gestuurd. Gebruikers kunnen deze instelling niet wijzigen.
+
+Als dit beleid niet is ingesteld, kunnen gebruikers het gedrag voor anonieme rapportage kiezen tijdens de installatie of de eerste uitvoering. Ze kunnen deze instelling later wijzigen.
+
+(Voor <ph name="PRODUCT_OS_NAME" /> zie <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" />.)
+
+Als het experiment <ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" /> actief is op het apparaat en zowel dit beleid als het beleid <ph name="METRICS_REPORTING_LEVEL_POLICY_NAME" /> zijn ingesteld, heeft het beleid <ph name="METRICS_REPORTING_LEVEL_POLICY_NAME" /> voorrang.
+
+In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of die zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="976415389478739655">Vereisen dat de apparaten van gebruikers zich binnen een beheerd netwerk bevinden om deel uit te maken van de klas <ph name="CLASS_TOOLS_NAME" /></translation>
 <translation id="978619365985286086">Instellingen voor tools voor lesgroepbeheer</translation>
 <translation id="978658824596356870">24-uurs klok</translation>

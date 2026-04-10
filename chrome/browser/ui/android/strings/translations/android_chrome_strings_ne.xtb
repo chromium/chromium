@@ -293,6 +293,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2251809247798634662">नयाँ इन्कोग्निटो विन्डो</translation>
 <translation id="2253927598983295051"><ph name="APP_NAME" /> सँग सेयर गर्नु पर्ने कुरा छनौट गर्नुहोस्</translation>
 <translation id="2261570557291037252">एपसम्बन्धी थप जानकारी</translation>
+<translation id="2270544918551255912">पछि फर्कन किनाराबाट स्वाइप गर्नुहोस्</translation>
 <translation id="2276696007612801991">आफ्ना पासवर्डहरू जाँच गर्न आफ्नो Google खातामा साइन इन गर्नुहोस्</translation>
 <translation id="2281243904606300427"><ph name="TAB_TITLE" />, चयन गरिएको इन्कोग्निटो ट्याब</translation>
 <translation id="2286841657746966508">बिल पठाउने ठेगाना</translation>
@@ -480,6 +481,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2989523299700148168">भर्खरै हेरिएका</translation>
 <translation id="2992473221983447149">फोटोका वर्णन</translation>
 <translation id="2996291259634659425">पासफ्रेज सिर्जना गर्नुहोस्</translation>
+<translation id="2996682533106928201">हटाउन ट्याप गर्नुहोस्।</translation>
 <translation id="2996809686854298943">URL आवश्यक छ</translation>
 <translation id="3024215143424744261">रिडिङ मोडसम्बन्धी प्राथमिकताहरू बन्द गरिएका छन्</translation>
 <translation id="3026955690410463085">लिंक समावेश गर्नुहोस्</translation>
@@ -684,6 +686,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3927692899758076493">स्यान्स सेरिफ</translation>
 <translation id="3931947361983910192">पछिल्लो ४ हप्ता</translation>
 <translation id="393697183122708255">कुनैपनि सक्षम गरिएको आवाज खोजी उपलब्ध छैन</translation>
+<translation id="3941718885865495207">Chrome Finds अन गर्ने विकल्पको पुछारको पाना</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, पिन गरिएको Picture-in-Picture ट्याब</translation>
 <translation id="3950820424414687140">साइन इन गर्नुहोस्</translation>
 <translation id="395377504920307820">खातामा लग इन नगरिकन चलाउनुहोस्</translation>
@@ -1188,6 +1191,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6011308810877101166">खोजसम्बन्धी सुझावहरूको गुणस्तर सुधार गर्नुहोस्</translation>
 <translation id="6013305291643746595">सबैभन्दा पुरानो सुरुमा आउने गरी क्रमबद्ध गर्नुहोस्</translation>
 <translation id="6022659036123304283">Chrome लाई आफ्नै बनाउनुहोस्</translation>
+<translation id="6023820583797130428">पछाडि जान मेनु खोल्नुहोस्</translation>
 <translation id="6026538407078977628">एक्स्पान्ड गरी फुल स्क्रिनमा हेर्नुहोस्</translation>
 <translation id="6030719887161080597">विज्ञापनको पर्फर्मेन्स मापन गर्नका निम्ति साइटहरूले प्रयोग गर्ने जानकारी व्यवस्थित गर्नुहोस्</translation>
 <translation id="6039379616847168523">अर्को ट्याबमा जानुहोस्</translation>
@@ -1632,6 +1636,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> सामान्य ट्याब}other{<ph name="TABS_COUNT_MANY" /> वटा सामान्य ट्याब}}</translation>
 <translation id="7603168929588204083">मिति अवैध छ</translation>
 <translation id="7605594153474022051">सिंकले काम गरिरहेको छैन</translation>
+<translation id="7608245556672190037">Chrome Finds अन गर्ने विकल्प पूरै स्क्रिनमा खोलिएको छ</translation>
 <translation id="7612619742409846846">यस रूपमा Google मा साइन इन गरियो</translation>
 <translation id="7612989789287281429">साइन इन गरिँदै छ…</translation>
 <translation id="7619072057915878432"><ph name="FILE_NAME" /> डाउनलोड नेटवर्क असफलताका कारणले असफल भयो।</translation>
@@ -1639,6 +1644,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7628417132421583481">पासवर्ड म्यानेजरमा जानुहोस्</translation>
 <translation id="7630202231528827509">सेवा प्रदायकको URL</translation>
 <translation id="7638584964844754484">गलत पासफ्रेज</translation>
+<translation id="764047009170754705">Chrome Finds अन गर्ने विकल्प बन्द गरिएको छ</translation>
 <translation id="7646499124171960488">तपाईंलाई असुरक्षित सार्वजनिक साइटहरूका बारेमा चेतावनी दिन्छ</translation>
 <translation id="7646772052135772216">पासवर्ड सिंक गर्ने सुविधाले काम गर्दै छैन</translation>
 <translation id="7655240423373329753">पछिल्ला ७ दिन</translation>
@@ -1863,6 +1869,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8473863474539038330">ठेगाना र थप कुराहरू</translation>
 <translation id="847433688444405067">सबै डिभाइसहरूमा ब्राउज गर्नुहोस्</translation>
 <translation id="8477178913400731244">डेटा मेटाउनुहोस्</translation>
+<translation id="8481771036036087705">Chrome Finds अन गर्ने विकल्प आधा स्क्रिनमा खोलिएको छ</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">कुनै पनि निष्क्रिय विन्डो छैन</translation>
 <translation id="8493948351860045254">ठाउँ खाली गर्नुहोस्</translation>

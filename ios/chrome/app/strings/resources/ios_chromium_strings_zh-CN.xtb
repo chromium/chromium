@@ -134,6 +134,7 @@
 <translation id="377649297473651452">Chromium 自动填充视图已展开</translation>
 <translation id="3780779443901618967">通过比“标准保护”机制分析更多的网站数据，针对危险网站（甚至是 Google 未曾得知的网站）向您发出警告。您可以选择忽略 Chromium 警告。</translation>
 <translation id="3805899903892079518">Chromium 无权访问您的照片或视频。请依次点按 iOS 中的“设置”&gt;“隐私”&gt;“照片”，授予其访问权限。</translation>
+<translation id="3809591243528646631">如需使用儿童安全功能，您可以使用为孩子设置的 Google 账号，也可以不登录账号直接使用 Chromium。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="3816686541346279443">Chromium 会询问您是否保存密码。</translation>
 <translation id="3827545470516145620">此设备正在为您提供标准安全保护</translation>
 <translation id="3833326979834193417">Chromium 每天都会自动运行安全检查，以保护您免受数据泄露、不安全网站等问题的影响。您可在“设置”中详细了解安全检查。</translation>
@@ -169,6 +170,7 @@
 如要更改此设置，请<ph name="BEGIN_LINK" />删除您账号中的 Chromium 数据<ph name="END_LINK" />。</translation>
 <translation id="4578500311756617174">Chromium 提示：默认使用 Chromium</translation>
 <translation id="458786853569524949">现在，每当点按电子邮件、文档和其他应用中的链接时，您都可以使用 Chromium 打开链接。</translation>
+<translation id="4625730353066900738">了解有用的 Chromium 基础知识，帮助您快速上手</translation>
 <translation id="4633738821577273991">同时也为这份 Chromium 个人资料启用“增强型安全浏览”功能</translation>
 <translation id="4654936625574199632">为帮助改进该应用，Chromium 会向 Google 发送使用情况统计信息和崩溃数据。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">开启 Chromium 扫描器</translation>
@@ -354,6 +356,7 @@
 <translation id="8900052431807804054">获享 Chromium 的超强安全保护</translation>
 <translation id="8908791447256515663">从 iPad 程序坞更快地访问 Chromium。</translation>
 <translation id="8925569192291721236">及时了解价格跟踪资讯和 Chromium 提示。</translation>
+<translation id="8939412301975414416">如需在 Chromium 中使用儿童安全功能，您可以使用为孩子设置的 Google 账号，也可以不登录账号直接使用 Chromium。</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{当 Chromium 闲置 {THRESHOLD} 分钟后，就会发生这种情况}other{当 Chromium 闲置 {THRESHOLD} 分钟后，就会发生这种情况}}</translation>
 <translation id="8963279154877372067">开启 Chromium 通知功能后才能接收降价提醒</translation>
 <translation id="8975812008711371178">在 Chromium 中使用语音搜索</translation>

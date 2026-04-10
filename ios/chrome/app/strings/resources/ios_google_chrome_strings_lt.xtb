@@ -64,6 +64,7 @@
 <translation id="2213327331203157297">Jei norite išjungti užrakinimo režimą naršyklėje „Chrome“, išjunkite jį „iPhone“ įrenginyje.</translation>
 <translation id="2242467532204595597">Naudokite „Chrome“ bet kada palietę nuorodas pranešimuose, dokumentuose ir kitose programose.</translation>
 <translation id="2256384876478573507">Greičiau atidarykite „Chrome“, kai būsite pasirengę naršyti „iPhone“.</translation>
+<translation id="2270691132923135296">Sužinokite naudingų dalykų apie „Chrome“, kad būtų lengviau pradėti</translation>
 <translation id="2311240109311056604">Atidaromas „Chrome“ dinozauro žaidimas.</translation>
 <translation id="2339201583852607431">Slaptažodis bus išsaugotas „Google“ paskyroje (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">„Chrome“ bendrina jūsų vietovę su svetainėmis, kurioms leidžiate gauti tokius duomenis.</translation>
@@ -295,6 +296,7 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chrome“ fun
 <translation id="7599894504325210080">„Chrome“ automatinio pildymo išplėstinis rodinys</translation>
 <translation id="7617512710641355143">„Chrome“ tvarkoma</translation>
 <translation id="7626032353295482388">Sveiki, tai „Chrome“</translation>
+<translation id="7634397654061173327">Jei norite gauti vaikų saugos funkcijas naršyklėje „Chrome“, galite naudoti vaikui nustatytą „Google“ paskyrą arba naudoti „Chrome“ be paskyros.</translation>
 <translation id="7641448682796883218">„Chrome“ patarimas: Sustiprintas saugus naršymas</translation>
 <translation id="7642373780953416937">Gaukite įspėjimus apie bet kokias privatumo ar saugos problemas, kurias „Chrome“ automatiškai aptinka.</translation>
 <translation id="7660356333829433649">Čia rasite daugiau naudingų patarimų, kaip išnaudoti visas „Chrome“ galimybes.</translation>
@@ -327,6 +329,7 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chrome“ fun
 <translation id="8245080522851805544">Užtikrinkite privatų naršymą naudodami įrenginio autentifikavimą uždarę „Chrome“</translation>
 <translation id="8248887045858762645">„Chrome“ patarimas</translation>
 <translation id="8265730590513812063">Atidaryti „Chrome“ meniu</translation>
+<translation id="8284376267694582021">Jei norite gauti vaikų saugos funkcijas, galite naudoti vaikui nustatytą „Google“ paskyrą arba naudoti „Chrome“ be paskyros. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">Mokėjimo metodai ir adresai nebus šifruojami. Naršymo istorija iš „Chrome“ nebus sinchronizuojama.
 
 Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. Slaptafrazė nesiunčiama ir nesaugoma „Google“. Jei pamiršite slaptafrazę ar norėsite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chrome“ duomenis paskyroje<ph name="END_LINK" />.</translation>

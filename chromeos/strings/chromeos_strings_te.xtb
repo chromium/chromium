@@ -197,7 +197,7 @@
 <translation id="1731082422893354635">బ్లూటూత్ టచ్‌ప్యాడ్</translation>
 <translation id="1738949837603788263">జోన్ <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">ఇమేజ్‌లను లోడ్ చేయడం సాధ్యపడలేదు. మీ నెట్‌వర్క్ కనెక్షన్‌ను చెక్ చేయండి లేదా ఇమేజ్‌లను మళ్లీ లోడ్ చేయడానికి ట్రై చేయండి.</translation>
-<translation id="1751249301761991853">వ్యక్తిగతం</translation>
+<translation id="1751249301761991853">వ్యక్తిగతం (పర్సనల్)</translation>
 <translation id="1751335846119670066">చదవడంలో సహాయం పొందండి</translation>
 <translation id="1753496554272155572">వాల్‌పేపర్ ప్రివ్యూ నుండి నిష్క్రమించండి</translation>
 <translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" /> కోసం ఎడిట్ బటన్.</translation>
@@ -403,6 +403,7 @@
 <translation id="2618015542787108131">ఇసుక మేట</translation>
 <translation id="2619761439309613843">రోజూ రిఫ్రెష్ అవుతుంది</translation>
 <translation id="2620436844016719705">సిస్టమ్</translation>
+<translation id="2626848494898563581">Google సర్వీస్‌లను చేరుకోవడం సాధ్యపడలేదు</translation>
 <translation id="2637303424821734920">ఆఫ్‌లో ఉంది - స్థానిక వాతావరణాన్ని డిస్‌ప్లే చేయడానికి <ph name="BEGIN_LINK" />సిస్టమ్ లొకేషన్ యాక్సెస్‌ను ఆన్ చేయండి<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">సైన్ ఇన్ ఇమేజ్</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> ఆల్బమ్ ఎంచుకోబడింది</translation>

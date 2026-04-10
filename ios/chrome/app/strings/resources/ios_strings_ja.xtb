@@ -116,6 +116,7 @@
 <translation id="138692594145659985">カードの保存オプション</translation>
 <translation id="1396260204083880024"><ph name="USER_NAME" />（<ph name="USER_EMAIL" />）としてログインしています。アカウント メニューを開きます。</translation>
 <translation id="1397144142234474689">[履歴] を非表示</translation>
+<translation id="1399268420835656394">子どもでない場合は、このデバイスの Apple アカウントで年齢確認を行うことをおすすめします。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="1407135791313364759">すべて開く</translation>
 <translation id="1408847409015257906">[プライバシーとセキュリティ] をタップします。</translation>
 <translation id="1411386976162024013">Google レンズの画像検索</translation>
@@ -555,6 +556,7 @@
 <translation id="2922210239002704889">ホームページまたはキーボードに移動します</translation>
 <translation id="2924940770243654951">新しいシークレット タブで開く</translation>
 <translation id="2952278131021475699">レンズでカメラ検索</translation>
+<translation id="2953821385349876107">別の Google アカウントを選択</translation>
 <translation id="2962516096219646456">自動入力データをすべて表示</translation>
 <translation id="2965594942405840553">この操作は元に戻せません</translation>
 <translation id="2969979262385602596">ログインできません。後でもう一度お試しください。</translation>
@@ -1439,6 +1441,7 @@
 <translation id="6090760257419195752">閉じた警告</translation>
 <translation id="6094325891006032858">セーフ ブラウジング保護強化機能を有効化</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> 件見つかりました</translation>
+<translation id="6099466082815574659">この iPad は子ども向けに設定されています</translation>
 <translation id="6100617279104942061"><ph name="USER_EMAIL" /> としてログインしています。設定を開きます。</translation>
 <translation id="6100676328067737810">データは Google アカウント（<ph name="USER_EMAIL" />）に保存されます</translation>
 <translation id="610083648014322104">閲覧しているページの内容に基づいて関連性の高い回答が得られます</translation>
@@ -1496,7 +1499,6 @@
 <translation id="6259928806013786178">リーディング モードを有効にできませんでした</translation>
 <translation id="6268773951964630964">コピーした画像を検索</translation>
 <translation id="6271462272606946663">[モバイルサイトを見る] を非表示</translation>
-<translation id="6271556257184622612">タブなどについて Google に質問する</translation>
 <translation id="6271824294945464304">パスワードの共有</translation>
 <translation id="628251768213143684">Google アカウントに保存する情報はいつでも管理できます</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" />を翻訳するか尋ねる</translation>
@@ -1533,6 +1535,7 @@
 <translation id="6368102751067608420">パスワード マネージャーのすべてのデータを削除するには</translation>
 <translation id="6372558618707314581">好きなページを表示します</translation>
 <translation id="6374469231428023295">再試行</translation>
+<translation id="6374514103145916800">尋ねる</translation>
 <translation id="6383719166112032471">場所を開く…</translation>
 <translation id="6387994324662817823">パスワードは、このデバイスの Google パスワード マネージャーにのみ保存されます。</translation>
 <translation id="6393156038355142111">安全なパスワードを自動生成</translation>
@@ -1600,6 +1603,7 @@
 <translation id="6596481460663245319">Google で画像を検索</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 件のパスワード}other{# 件のパスワード}}</translation>
 <translation id="6601302169302852717"><ph name="USER_EMAIL" /> さんの Google フォトに画像を保存しました</translation>
+<translation id="6602173570135186741">自動入力とパスワード</translation>
 <translation id="6603393121510733479">シークレット ブラウジングは組織によって無効にされています。
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="6606914854592108404">安全チェックを行っています…</translation>
@@ -1851,6 +1855,7 @@
 <translation id="7506817096924591340"><ph name="FILENAME" />（<ph name="FILESIZE" />）。</translation>
 <translation id="7508728395076009983">シークレット タブをロックするには、Touch ID、Face ID、またはパスコードを設定してください。</translation>
 <translation id="750886945254958667">後でタブを追加できるようにこのグループを保持するか、今後使用しない場合は退出します</translation>
+<translation id="7511099437872594216">タブ</translation>
 <translation id="7511727374778217603">{COUNT,plural, =1{追加できるタブは 1 個までです}other{追加できるタブは {COUNT} 個までです}}</translation>
 <translation id="7512909159512473473">パスフレーズを入力…</translation>
 <translation id="7514365320538308">ダウンロード</translation>
@@ -1965,6 +1970,7 @@
 <translation id="7888562068293422208">すべて閉じますか？</translation>
 <translation id="7889910613639381518">Google パスワード マネージャー ウィジェットを使えば簡単かつ安全にアクセスできます。</translation>
 <translation id="7899199123054742721">すべて未読にする</translation>
+<translation id="7909005666376403847">この iPhone は子ども向けに設定されています</translation>
 <translation id="7911190106180361398">お客様の組織では、[すべてを同期する] の設定は許可されていません。</translation>
 <translation id="7918999344502274923"><ph name="SEARCH_ENGINE_NAME" /> の詳細を非表示</translation>
 <translation id="7921559948846049514">背景のテーマや色などを選択できます</translation>

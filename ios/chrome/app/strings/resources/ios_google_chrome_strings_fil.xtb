@@ -64,6 +64,7 @@ Mga bagay na dapat isaalang-alang:
 <translation id="2213327331203157297">Para i-disable ang Lockdown Mode sa Chrome, i-off ito sa iyong iPhone.</translation>
 <translation id="2242467532204595597">Gamitin ang Chrome sa tuwing magta-tap ka sa mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="2256384876478573507">Mas mabilis na buksan ang Chrome kapag handa ka nang mag-browse sa iyong iPhone.</translation>
+<translation id="2270691132923135296">Alamin ang mga kapaki-pakinabang na pangunahing kaalaman sa Chrome para makapagsimula ka</translation>
 <translation id="2311240109311056604">Mabubuksan ang Dino Game ng Chrome.</translation>
 <translation id="2339201583852607431">Ise-save sa iyong Google Account (<ph name="EMAIL" />) ang password mo.</translation>
 <translation id="2342919707875585281">Ibabahagi ng Chrome ang iyong lokasyon sa mga site na pinapayagan mo.</translation>
@@ -295,6 +296,7 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="7599894504325210080">Naka-expand na view ng Autofill ng Chrome</translation>
 <translation id="7617512710641355143">Pinapamahalaan ang Chrome</translation>
 <translation id="7626032353295482388">Welcome sa Chrome</translation>
+<translation id="7634397654061173327">Para makakuha ng mga feature sa kaligtasan ng bata sa Chrome, puwede kang gumamit ng Google Account na naka-set up para sa isang bata o gumait ng Chrome nang walang account.</translation>
 <translation id="7641448682796883218">Tip sa Chrome: Pinahusay na Ligtas na Pag-browse</translation>
 <translation id="7642373780953416937">Makatanggap ng mga alerto sa anumang isyu sa privacy o seguridad na awtomatikong dine-detect ng Chrome para sa iyo.</translation>
 <translation id="7660356333829433649">Bumalik dito para sa higit pang kapaki-pakinabang na tip para masulit ang Chrome.</translation>
@@ -327,6 +329,7 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="8245080522851805544">Panatilihing pribado ang iyong pag-browse gamit ang pag-authenticate ng device kapag isinara mo ang Chrome</translation>
 <translation id="8248887045858762645">Tip sa Chrome</translation>
 <translation id="8265730590513812063">Buksan ang menu ng Chrome</translation>
+<translation id="8284376267694582021">Para makakuha ng mga feature sa kaligtasan ng bata, puwede kang gumamit ng Google Account na naka-set up para sa isang bata o gumamit ng Chrome nang walang account. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">Hindi mae-encrypt ang mga paraan ng pagbabayad at address. Hindi masi-sync ang history ng pag-browse mula sa Chrome.
 
 Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data. Hindi ipinapadala sa o hindi sino-store ng Google ang passphrase. Kung makakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>

@@ -116,6 +116,7 @@
 <translation id="138692594145659985">Opciones para guardar una tarjeta</translation>
 <translation id="1396260204083880024">Accediste como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Abre el menú de la cuenta.</translation>
 <translation id="1397144142234474689">Ocultar Historial</translation>
+<translation id="1399268420835656394">Si no eres un niño o niña, es posible que quieras verificar la edad en la cuenta de Apple de este dispositivo. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="1408847409015257906">Presiona "Privacidad y seguridad".</translation>
 <translation id="1411386976162024013">Búsqueda visual de Lens</translation>
@@ -255,6 +256,7 @@
 <translation id="1861067954551502701">{count,plural, =1{{position} de {count} contraseña}other{{position} de {count} contraseñas}}</translation>
 <translation id="1861262398884155592">Esta carpeta está vacía</translation>
 <translation id="1864266050569350424">En un sitio en el que hayas guardado una contraseña, presiona el campo de contraseña de acceso.</translation>
+<translation id="1866700949421703765">Ocultar Activar el Modo de lectura</translation>
 <translation id="1872096359983322073">Linterna</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Invita a miembros de tu familia</translation>
@@ -353,6 +355,7 @@
 <translation id="2214453882118345682">Compra, identifica y traduce lo que ves con la cámara.</translation>
 <translation id="2215819824168709130">Ocultar la tarjeta Seguir precio</translation>
 <translation id="2216366330550244277">Ir a la página de un producto</translation>
+<translation id="2219935992754556187">Chrome protege tus datos sensibles con Face ID</translation>
 <translation id="2220529011494928058">Informar un problema</translation>
 <translation id="2223461067862937305">Crear un código QR</translation>
 <translation id="2225701818156393674">Se agregó el producto a tu lista de productos con seguimiento.</translation>
@@ -459,6 +462,7 @@
 <translation id="2583688836549072561">Grupo de pestañas, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> pestañas, actividad nueva.</translation>
 <translation id="2593272815202181319">Monoespaciada</translation>
 <translation id="2601778637777010194">Hacer un seguimiento de las reducciones de precio en los productos</translation>
+<translation id="2602372807870028932">Se borrará la información seleccionada guardada en este dispositivo</translation>
 <translation id="260378315836159338">En la parte superior de la pantalla, presiona +.</translation>
 <translation id="2612676031748830579">Número de tarjeta</translation>
 <translation id="261305050785128654">Permite que los sitios web sepan los idiomas en los que hablas. De ser posible, los sitios mostrarán contenido en esos idiomas.</translation>
@@ -552,6 +556,7 @@
 <translation id="2922210239002704889">Ve a la página principal o al teclado</translation>
 <translation id="2924940770243654951">Abrir en una pestaña de incógnito nueva</translation>
 <translation id="2952278131021475699">Búsqueda con cámara de Lens</translation>
+<translation id="2953821385349876107">Elige otra Cuenta de Google</translation>
 <translation id="2962516096219646456">Ver todos los datos de autocompletar</translation>
 <translation id="2965594942405840553">Esta acción no se puede deshacer</translation>
 <translation id="2969979262385602596">Error al iniciar la sesión. Inténtalo más tarde.</translation>
@@ -960,6 +965,7 @@
 <translation id="4469324811108161144">Las notas pueden ahorrar hasta <ph name="CHARACTER_LIMIT" /> caracteres.</translation>
 <translation id="4471472356135655769">No se pueden exportar las contraseñas</translation>
 <translation id="4472575034687746823">Comenzar</translation>
+<translation id="4473565697543262065">Se borrará la información seleccionada que se guardó en este dispositivo y en tu Cuenta de Google <ph name="USER_EMAIL" /></translation>
 <translation id="4473608001744970767">Ocultar la opción Seguir precio</translation>
 <translation id="4474142134969976028">No hay resultados que coincidan</translation>
 <translation id="4474494258097106883">Diseñado para tu iPhone</translation>
@@ -1435,6 +1441,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6090760257419195752">Advertencias descartadas</translation>
 <translation id="6094325891006032858">Activa la Navegación segura mejorada</translation>
 <translation id="6096965253650248286">Se encontraron <ph name="COUNT" /></translation>
+<translation id="6099466082815574659">Este iPad está configurado para un niño o una niña</translation>
 <translation id="6100617279104942061">Accediste como <ph name="USER_EMAIL" />. Abre la configuración.</translation>
 <translation id="6100676328067737810">Tus datos se guardarán en tu Cuenta de Google, <ph name="USER_EMAIL" /></translation>
 <translation id="610083648014322104">Obtén respuestas pertinentes basadas en el contenido de la página en la que te encuentras</translation>
@@ -1492,7 +1499,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6259928806013786178">No se pudo activar el Modo de lectura</translation>
 <translation id="6268773951964630964">Busca el texto copiado</translation>
 <translation id="6271462272606946663">Ocultar la opción Solicitar sitio para dispositivos móviles</translation>
-<translation id="6271556257184622612">Pregúntale a Google sobre pestañas y mucho más</translation>
 <translation id="6271824294945464304">Compartiendo contraseña</translation>
 <translation id="628251768213143684">Puedes administrar la información que se guarda en tu Cuenta de Google en cualquier momento</translation>
 <translation id="6284652193729350524">Ofrecer traducción al <ph name="LANGUAGE" /></translation>
@@ -1529,6 +1535,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6368102751067608420">Para borrar todos los datos del administrador de contraseñas</translation>
 <translation id="6372558618707314581">Ve a cualquier página que quieras</translation>
 <translation id="6374469231428023295">Volver a intentar</translation>
+<translation id="6374514103145916800">Preguntar</translation>
 <translation id="6383719166112032471">Abrir ubicación…</translation>
 <translation id="6387994324662817823">Las contraseñas se guardan en el Administrador de contraseñas de Google solo en este dispositivo.</translation>
 <translation id="6393156038355142111">Sugerir contraseña segura</translation>
@@ -1577,6 +1584,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6532106788206463496">Guardar cambios</translation>
 <translation id="6536759809440150308">Abrir <ph name="GROUP_TITLE" />, grupo de <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6538776393003671043">Chrome te ofrecerá guardarla en la Billetera de Google la próxima vez que la uses</translation>
 <translation id="6543899060872618437">Confirma compras más rápido con la función Autocompletar en todos tus dispositivos</translation>
 <translation id="6550675742724504774">Opciones</translation>
 <translation id="6550891580932862748">No te protege contra descargas, extensiones ni sitios web peligrosos. La configuración de la Navegación segura en otros productos de Google no se verá afectada.</translation>
@@ -1595,6 +1603,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6596481460663245319">Buscar imagen con Google</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 contraseña}other{# contraseñas}}</translation>
 <translation id="6601302169302852717">Se guardó la imagen en Google Fotos para <ph name="USER_EMAIL" /></translation>
+<translation id="6602173570135186741">Autocompletar y contraseñas</translation>
 <translation id="6603393121510733479">Tu organización desactivó la navegación privada.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="6606914854592108404">Se está ejecutando la Verificación de seguridad…</translation>
@@ -1960,6 +1969,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="7888562068293422208">¿Cerrar todo?</translation>
 <translation id="7889910613639381518">Accede de forma fácil y segura con el widget del Administrador de contraseñas de Google.</translation>
 <translation id="7899199123054742721">Marcar todas como no leídas</translation>
+<translation id="7909005666376403847">Este iPhone está configurado para un niño o una niña</translation>
 <translation id="7911190106180361398">Tu organización no te permite sincronizar todo el contenido.</translation>
 <translation id="7918999344502274923">Ocultar detalles de <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="7921559948846049514">Elige un tema, un color o más para tu fondo</translation>
@@ -1977,6 +1987,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="7952670906562503188">Estás a punto de borrar {passkey_count} llaves de acceso y la lista de sitios y apps para las que elegiste no guardar información de acceso. No se borrarán las cuentas que hayas creado para sitios y apps.</translation>
 <translation id="7958575506592576831">Información de seguridad de la página</translation>
 <translation id="7961015016161918242">Nunca</translation>
+<translation id="7971651328518569075">Ocultar Desactivar el Modo de lectura</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Probar</translation>
 <translation id="797588153137233716">Menú → Historial → Borrar datos de navegación</translation>
@@ -1993,6 +2004,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="8005666035647241369">En el Administrador de contraseñas de Google en este dispositivo</translation>
 <translation id="8010488806779226127">Explora funciones que pueden ayudarte a hacer más mientras navegas</translation>
 <translation id="8011489434346330032">Inspector web</translation>
+<translation id="8014007212279733632">Verificar tu identidad para autocompletar información sensible</translation>
 <translation id="8015826420689927262">Borrar archivo adjunto</translation>
 <translation id="8017015647846870183">Del Administrador de contraseñas de Google, incluidas las contraseñas y llaves de acceso</translation>
 <translation id="802154636333426148">Error en la descarga</translation>
@@ -2379,6 +2391,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="984275831282074731">Formas de pago</translation>
 <translation id="985379595344853742">Cerrar todas las pestañas de incógnito</translation>
 <translation id="988141524645182168">Otros dispositivos</translation>
+<translation id="994184244350700431">En la Billetera de Google para <ph name="USER_EMAIL" /></translation>
 <translation id="995174784802614337">{count,plural, =1{Se importó {count} llave de acceso}other{Se importaron {count} llaves de acceso}}</translation>
 <translation id="999768147936949692">Por el momento, solo puedes compartir contraseñas con miembros de la familia. <ph name="BEGIN_LINK" />Invita a miembros de la familia<ph name="END_LINK" /> a unirse a tu grupo y aprovecha al máximo tus productos y suscripciones en Google.</translation>
 </translationbundle>

@@ -1300,10 +1300,12 @@
 <translation id="3037177537145227281">ფასისთვის თვალის მიდევნება</translation>
 <translation id="3037605927509011580">უი, ხარვეზი!</translation>
 <translation id="3039406992698062762">ოჯახური მოგზაურობა</translation>
+<translation id="3040435070100611531">თქვენი Google საფულის საშვები</translation>
 <translation id="3041176923638368519">ბარათის უპირატესობებით სარგებლობის პირობების ნახვა</translation>
 <translation id="3041584414879052436">„იყიდეთ ახლა, გადაიხადეთ მოგვიანებით“ გამცემების სია დაიხურა.</translation>
 <translation id="3041612393474885105">სერტიფიკატის ინფორმაცია</translation>
 <translation id="3045769629416806687">ექსტრემალური სპორტი</translation>
+<translation id="3047054686095898948">შეინახეთ თქვენი ინფორმაცია <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />ში და უფრო სწრაფად შეასრულეთ ამოცანები, მაგალითად, შეავსეთ ფორმები Google პროდუქტებში. შეგიძლიათ <ph name="BEGIN_LINK" />მართოთ თქვენი ინფორმაცია<ph name="END_LINK" /> <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" />ში ამ ანგარიშისთვის: <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">Chrome-ის დისტანციური სამუშაო დაფის ისტორია, მათ შორის დროის ანაბეჭდები, ჰოსტები და კლიენტთა სესიების ID-ები</translation>
 <translation id="3052868890529250114">საიტებს, როგორც წესი, დაცულად უკავშირდებით, თუმცა Chrome-მა ამჯერად ვერ დაამყარა უსაფრთხო კავშირი. თავდამსხმელს შეეძლება თქვენს ქსელის კავშირზე თვალთვალი ან მისი შეცვლა. <ph name="BEGIN_LEARN_MORE_LINK" />შეიტყვეთ მეტი ამ გაფრთხილების შესახებ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />-ზე ფასის <ph name="PRICE_DROP" />-ით შემცირება</translation>
@@ -2800,7 +2802,6 @@
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" />-მა განაახლა „<ph name="WEBSITE_TITLE" />“</translation>
 <translation id="5383478552402031184">იატაკი</translation>
 <translation id="5385857628869214740">იუმორი</translation>
-<translation id="5385966243497224160">არა-HTTPS URL-ის გადახედვა ვერ მოხერხდება</translation>
 <translation id="5386426401304769735">ამ საიტის სერტიფიკატთა ჯაჭვი SHA-1-ის მეშვეობით ხელმოწერილ სერტიფიკატს შეიცავს.</translation>
 <translation id="5391010642126249196">თქვენ მოინახულეთ</translation>
 <translation id="5391306025131596142">ისტორიის გვერდის &amp;გახსნა</translation>
@@ -3850,7 +3851,6 @@
 <translation id="7003322000677139268">ავტონაწილები და აქსესუარები</translation>
 <translation id="7004499039102548441">ბოლო ჩანართები</translation>
 <translation id="7004562620237466965">მხოლოდ დეშიფრატორი</translation>
-<translation id="700483187606163535">თქვენს ინფორმაციას შეინახავს <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> შემდეგი ანგარიშისთვის: <ph name="ACCOUNT" />. მისი გამოყენება Google პროდუქტებში ფორმების უფრო სწრაფად შესავსებად შეგიძლიათ.</translation>
 <translation id="7006930604109697472">მაინც გაგზავნა</translation>
 <translation id="7009364359744329733">ეს ბარათი ამჟამად მიუწვდომელია, ცადეთ მოგვიანებით.</translation>
 <translation id="7010658264061801199">საჭმელი და სასმელი</translation>
@@ -4623,7 +4623,6 @@
 <translation id="8194956568907463262">სროლების ჟანრის თამაშები</translation>
 <translation id="8198379961710069585">ძიების ისტორიის ღილაკი, გაააქტიურეთ ძიების ისტორიის სანახავად</translation>
 <translation id="8199437620497683918">ოპტიკური დისკი (პრიალა)</translation>
-<translation id="8199730148066603000">არა-HTTPS URL-ების გადახედვა არ არის დაშვებული.</translation>
 <translation id="8200772114523450471">გაგრძელება</translation>
 <translation id="8202097416529803614">შეკვეთის რეზიუმე</translation>
 <translation id="8202370299023114387">კონფლიქტი</translation>

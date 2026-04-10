@@ -1300,10 +1300,12 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3037177537145227281">Monitoruję cenę</translation>
 <translation id="3037605927509011580">Kurza twarz!</translation>
 <translation id="3039406992698062762">Podróże z dziećmi</translation>
+<translation id="3040435070100611531">Twoje karty i bilety w Portfelu Google</translation>
 <translation id="3041176923638368519">Zobacz warunki korzystania z karty</translation>
 <translation id="3041584414879052436">Lista wydawców korzystających z opcji „Kup teraz, zapłać później” jest zamknięta.</translation>
 <translation id="3041612393474885105">Informacje o certyfikacie</translation>
 <translation id="3045769629416806687">Sporty ekstremalne</translation>
+<translation id="3047054686095898948">Wykorzystaj <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />, aby zapisać swoje dane i szybciej wykonywać zadania, np. wypełniać formularze w usługach Google. Możesz <ph name="BEGIN_LINK" />zarządzać swoimi informacjami<ph name="END_LINK" /> w usłudze <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> na koncie <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">Historię Pulpitu zdalnego Chrome, w tym sygnatury czasowe, hostów oraz identyfikatory sesji klientów</translation>
 <translation id="3052868890529250114">Zazwyczaj łączysz się z witrynami w bezpieczny sposób, ale tym razem w Chrome nie udało się użyć bezpiecznego połączenia. Osoba przeprowadzająca atak może próbować podsłuchać lub zmodyfikować Twoje połączenie sieciowe. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji o tym ostrzeżeniu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> taniej o <ph name="PRICE_DROP" /></translation>
@@ -2800,7 +2802,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> zaktualizował(a) kartę „<ph name="WEBSITE_TITLE" />”</translation>
 <translation id="5383478552402031184">Naprawa i kładzenie posadzek</translation>
 <translation id="5385857628869214740">Humor</translation>
-<translation id="5385966243497224160">Nie można wyświetlać podglądu adresu URL innego niż HTTPS</translation>
 <translation id="5386426401304769735">Łańcuch certyfikatów tej witryny zawiera certyfikat podpisany za pomocą SHA-1.</translation>
 <translation id="5391010642126249196">Odwiedzono</translation>
 <translation id="5391306025131596142">&amp;Otwórz stronę historii</translation>
@@ -3850,7 +3851,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7003322000677139268">Części i akcesoria motoryzacyjne</translation>
 <translation id="7004499039102548441">Ostatnie karty</translation>
 <translation id="7004562620237466965">Tylko odszyfrowywanie</translation>
-<translation id="700483187606163535">Twoje informacje są zapisane w usłudze <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> na koncie <ph name="ACCOUNT" />. Możesz ich używać w usługach Google, aby szybciej wypełniać formularze.</translation>
 <translation id="7006930604109697472">Wyślij mimo wszystko</translation>
 <translation id="7009364359744329733">Karta jest teraz niedostępna. Spróbuj ponownie później.</translation>
 <translation id="7010658264061801199">Kulinaria</translation>
@@ -4624,7 +4624,6 @@ Dodatkowe informacje:
 <translation id="8194956568907463262">Strzelanki</translation>
 <translation id="8198379961710069585">Przycisk historii wyszukiwania; aktywuj, aby wyświetlić historię wyszukiwania</translation>
 <translation id="8199437620497683918">Dysk optyczny (błyszczący)</translation>
-<translation id="8199730148066603000">Wyświetlanie podglądu adresu URL innego niż HTTPS jest niedozwolone.</translation>
 <translation id="8200772114523450471">Wznów</translation>
 <translation id="8202097416529803614">Podsumowanie zamówienia</translation>
 <translation id="8202370299023114387">Konflikt</translation>

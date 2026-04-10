@@ -134,6 +134,7 @@ Arhoswch ychydig funudau cyn newid cyfrif. Os byddwch yn newid cyfrif nawr, bydd
 <translation id="377649297473651452">Gwedd ehangedig Awtolenwi Chromium</translation>
 <translation id="3780779443901618967">Yn eich rhybuddio am wefannau peryglus, hyd yn oed rhai nad oedd Google yn gwybod amdanynt o'r blaen, trwy ddadansoddi mwy o ddata o wefannau na diogelwch safonol. Gallwch ddewis hepgor rhybuddion Chromium.</translation>
 <translation id="3805899903892079518">Nid oes gan Chromium fynediad at eich lluniau na'ch fideos. Galluogi mynediad yn Gosodiadau iOS &gt; Preifatrwydd &gt; Lluniau.</translation>
+<translation id="3809591243528646631">I gael nodweddion diogelwch plant, gallwch naill ai ddefnyddio Cyfrif Google sydd wedi'i osod ar gyfer plentyn neu ddefnyddio Chromium heb gyfrif. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="3816686541346279443">Bydd Chromium yn cynnig cadw eich cyfrinair.</translation>
 <translation id="3827545470516145620">Rydych yn cael diogelwch safonol ar y ddyfais hon</translation>
 <translation id="3833326979834193417">Mae Chromium yn cynnal Gwiriad Diogelwch yn awtomatig bob dydd i'ch cadw'n ddiogel rhag toriadau data, gwefannau anniogel a rhagor. Gallwch ddysgu rhagor am Wiriad Diogelwch yn y Gosodiadau.</translation>
@@ -169,6 +170,7 @@ Mae eich data wedi'u hamgryptio â'ch cyfrinymadrodd. Rhowch ef i ddefnyddio a c
 I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chromium yn eich cyfrif<ph name="END_LINK" />.</translation>
 <translation id="4578500311756617174">Awgrym Chromium: defnyddiwch Chromium yn ddiofyn</translation>
 <translation id="458786853569524949">Gallwch bellach ddefnyddio Chromium unrhyw bryd y byddwch yn tapio dolenni mewn e-byst, dogfennau ac apiau eraill.</translation>
+<translation id="4625730353066900738">Dysgwch hanfodion defnyddiol Chromium i ddechrau arni</translation>
 <translation id="4633738821577273991">Cael Gwell Pori'n Ddiogel ar gyfer y proffil Chromium hwn hefyd</translation>
 <translation id="4654936625574199632">Er mwyn helpu i wella'r ap, mae Chrome yn anfon adroddiadau defnydd a thoriadau at Google. <ph name="BEGIN_LINK" />Rheoli<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Troi sganydd Chromium ymlaen</translation>
@@ -354,6 +356,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="8900052431807804054">Cael Diogelwch Cryfaf Chromium</translation>
 <translation id="8908791447256515663">Cael mynediad at Chromium yn gyflymach o Ddoc eich iPad.</translation>
 <translation id="8925569192291721236">Cael y diweddaraf gyda diweddariadau olrhain prisiau ac awgrymiadau Chromium.</translation>
+<translation id="8939412301975414416">I gael nodweddion diogelwch plant yn Chromium, gallwch naill ai ddefnyddio Cyfrif Google sydd wedi'i osod ar gyfer plentyn neu ddefnyddio Chromium heb gyfrif.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Mae hyn yn digwydd pan nad yw Chromium yn cael ei ddefnyddio am {THRESHOLD} funud}zero{Mae hyn yn digwydd pan nad yw Chromium yn cael ei ddefnyddio am {THRESHOLD} munud}two{Mae hyn yn digwydd pan nad yw Chromium yn cael ei ddefnyddio am {THRESHOLD} funud}few{Mae hyn yn digwydd pan nad yw Chromium yn cael ei ddefnyddio am {THRESHOLD} munud}many{Mae hyn yn digwydd pan nad yw Chromium yn cael ei ddefnyddio am {THRESHOLD} munud}other{Mae hyn yn digwydd pan nad yw Chromium yn cael ei ddefnyddio am {THRESHOLD} munud}}</translation>
 <translation id="8963279154877372067">Caniatáu i hysbysiadau Chromium gael rhybuddion gostyngiad mewn prisiau</translation>
 <translation id="8975812008711371178">Chwilio â llais yn Chromium.</translation>

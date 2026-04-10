@@ -1305,10 +1305,12 @@
 <translation id="3037177537145227281">ဈေးနှုန်း စောင့်ကြည့်နေသည်</translation>
 <translation id="3037605927509011580">အော၊ လက်ဖျောက်!</translation>
 <translation id="3039406992698062762">မိသားစုခရီးသွားခြင်း</translation>
+<translation id="3040435070100611531">သင်၏ Google Wallet ပါ့စ်များ</translation>
 <translation id="3041176923638368519">ကတ်အကျိုးခံစားခွင့်ဆိုင်ရာ စည်းမျဉ်းများကို ကြည့်ရန်</translation>
 <translation id="3041584414879052436">‘အခုဝယ်-နောက်မှပေး’ ထုတ်ပေးသည့် အဖွဲ့အစည်းစာရင်းကို ပိတ်ထားသည်။</translation>
 <translation id="3041612393474885105">အသိမှတ်ပြု လက်မှတ် အချက်အလက်</translation>
 <translation id="3045769629416806687">ပြင်းထန်သော အားကစား</translation>
+<translation id="3047054686095898948">Google ထုတ်ကုန်များတွင် ဖောင်ဖြည့်ခြင်းကဲ့သို့သော ကိစ္စများအမြန်ပြီးမြောက်ရန် သင့်အချက်အလက်ကို <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> တွင် သိမ်းနိုင်သည်။ <ph name="ACCOUNT" /> အတွက် <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> တွင် <ph name="BEGIN_LINK" />သင့်အချက်အလက်ကို စီမံ<ph name="END_LINK" /> နိုင်သည်</translation>
 <translation id="305162504811187366">အချိန်ဖော်ပြချက်၊ ဆာဗာပင်ရင်းနှင့် ကလိုင်းယင့်စက်ရှင် id များအပါအဝင် ‘Chrome အဝေးထိန်း ဒက်စ်တော့’ မှတ်တမ်း</translation>
 <translation id="3052868890529250114">သင်သည် ပုံမှန်အားဖြင့် ဝဘ်ဆိုက်များသို့ လုံခြုံစွာ ချိတ်ဆက်သော်လည်း ဤတစ်ကြိမ်တွင် Chrome က လုံခြုံသော ချိတ်ဆက်မှုကို သုံးမထားပါ။ တိုက်ခိုက်သူက သင့်ကွန်ရက်ချိတ်ဆက်မှုကို ချောင်းနားထောင်ခြင်း (သို့) ပြောင်းလဲခြင်းတို့ ပြုလုပ်နိုင်သည်။ <ph name="BEGIN_LEARN_MORE_LINK" />ဤသတိပေးချက်အကြောင်း ပိုမိုလေ့လာရန်<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> သည် <ph name="PRICE_DROP" /> ဈေးကျသွားသည်</translation>
@@ -2801,7 +2803,6 @@
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> က တဘ် “<ph name="WEBSITE_TITLE" />” ကို အပ်ဒိတ်လုပ်လိုက်သည်</translation>
 <translation id="5383478552402031184">ကြမ်းခင်းခြင်း</translation>
 <translation id="5385857628869214740">ဟာသ</translation>
-<translation id="5385966243497224160">HTTPS မဟုတ်သည့် URL ကို အစမ်းမကြည့်ရှုနိုင်ပါ</translation>
 <translation id="5386426401304769735">ဤဆိုက်အတွက် အသိအမှတ်ပြုလက်မှတ်ကွင်းဆက်တွင် SHA-1 ကို အသုံးပြု၍ လက်မှတ်ထိုးထားသည့် အသိအမှတ်ပြုလက်မှတ်တစ်စောင် ပါဝင်ပါသည်။</translation>
 <translation id="5391010642126249196">သင်ဝင်ကြည့်ထားသည်</translation>
 <translation id="5391306025131596142">&amp;မှတ်တမ်းစာမျက်နှာ ဖွင့်ရန်</translation>
@@ -3850,7 +3851,6 @@
 <translation id="7003322000677139268">ယာဉ်အစိတ်အပိုင်း၊ အပိုပစ္စည်း</translation>
 <translation id="7004499039102548441">မကြာမီက တဲဘ်များ</translation>
 <translation id="7004562620237466965">ကုဒ်ဖွင့်မှု သာလျှင်</translation>
-<translation id="700483187606163535">သင့်အချက်အလက်ကို <ph name="ACCOUNT" /> အတွက် <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> သို့ သိမ်းလိုက်သည်။ ဖောင်များ ပိုမိုမြန်ဆန်စွာဖြည့်ရန် Google ထုတ်ကုန်များတွင် ၎င်းကို သုံးနိုင်သည်။</translation>
 <translation id="7006930604109697472">မည်သို့ပင်ဖြစ်စေ ပို့ရန်</translation>
 <translation id="7009364359744329733">ဤကတ်ကို ယခုမရနိုင်ပါ။ နောက်မှ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="7010658264061801199">အစားအသောက်</translation>
@@ -4625,7 +4625,6 @@
 <translation id="8194956568907463262">အပစ်အခတ်ဂိမ်း</translation>
 <translation id="8198379961710069585">မှတ်တမ်းရှာရန် ခလုတ်၊ မှတ်တမ်းကို ရှာရန် ဖွင့်ပါ</translation>
 <translation id="8199437620497683918">ဒစ်ခွေ (တောက်ပြောင်)</translation>
-<translation id="8199730148066603000">HTTPS မဟုတ်သည့် URL ကို အစမ်းကြည့်ရှုခွင့်မပြုပါ။</translation>
 <translation id="8200772114523450471">ပြန်ဆက်ရန်</translation>
 <translation id="8202097416529803614">မှာယူမှု စုစုပေါင်း</translation>
 <translation id="8202370299023114387">ပြဿနာ</translation>
@@ -4830,6 +4829,7 @@
 <translation id="8521812709849134608">အလုပ်စားပွဲ</translation>
 <translation id="8522180136695974431">အစီရင်ခံခြင်းနှင့် စောင့်ကြည့်ခြင်းကို ခရက်ဒစ်ပေးရန်</translation>
 <translation id="8522552481199248698">Chrome က သင်၏ Google အကောင့်ကို ကာကွယ်ရန်နှင့် စကားဝှက်ပြောင်းရန် ကူညီနိုင်ပါသည်။</translation>
+<translation id="852450791482410042">ယခုပေးချေမည်</translation>
 <translation id="8527228059738193856">စပီကာများ</translation>
 <translation id="8527681393107582734">စိုက်ပျိုးရေး၊ သစ်တောလုပ်ငန်း</translation>
 <translation id="8528149813106025610">ကလေးအဝတ်အထည်</translation>

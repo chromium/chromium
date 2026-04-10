@@ -116,6 +116,7 @@
 <translation id="138692594145659985">Параметры сохранения карты</translation>
 <translation id="1396260204083880024">Вы вошли как <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Открыть меню аккаунта.</translation>
 <translation id="1397144142234474689">Скрыть раздел "История"</translation>
+<translation id="1399268420835656394">Если возраст определяется неправильно, его можно проверить в аккаунте Apple на этом устройстве. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="1407135791313364759">Открыть все</translation>
 <translation id="1408847409015257906">Нажмите "Конфиденциальность и безопасность".</translation>
 <translation id="1411386976162024013">Визуальный поиск с помощью Объектива</translation>
@@ -555,6 +556,7 @@
 <translation id="2922210239002704889">Перейдите на главную страницу или используйте клавиатуру.</translation>
 <translation id="2924940770243654951">Открыть в новой вкладке инкогнито</translation>
 <translation id="2952278131021475699">Поиск через Объектив</translation>
+<translation id="2953821385349876107">Выберите другой аккаунт Google</translation>
 <translation id="2962516096219646456">Показать все данные автозаполнения</translation>
 <translation id="2965594942405840553">Это действие нельзя отменить.</translation>
 <translation id="2969979262385602596">Не удалось войти в аккаунт. Повторите попытку.</translation>
@@ -1439,6 +1441,7 @@
 <translation id="6090760257419195752">Закрытые предупреждения</translation>
 <translation id="6094325891006032858">Включите улучшенный Безопасный просмотр</translation>
 <translation id="6096965253650248286">Найдено: <ph name="COUNT" /></translation>
+<translation id="6099466082815574659">Это устройство iPad настроено для ребенка</translation>
 <translation id="6100617279104942061">Вы вошли как <ph name="USER_EMAIL" />. Открывает настройки.</translation>
 <translation id="6100676328067737810">Данные будут сохранены в вашем аккаунте Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="610083648014322104">Получайте ответы на вопросы с учетом контента открытой страницы.</translation>
@@ -1496,7 +1499,6 @@
 <translation id="6259928806013786178">Не удалось запустить Режим чтения.</translation>
 <translation id="6268773951964630964">Поиск по скопированному изображению</translation>
 <translation id="6271462272606946663">Скрыть пункт "Мобильная версия"</translation>
-<translation id="6271556257184622612">Спрашивайте Google о вкладках и не только</translation>
 <translation id="6271824294945464304">Общий доступ к паролю</translation>
 <translation id="628251768213143684">Вы можете в любое время изменить настройки сохранения данных в аккаунте Google</translation>
 <translation id="6284652193729350524">Предлагать перевести страницы на этом языке (<ph name="LANGUAGE" />)</translation>
@@ -1533,6 +1535,7 @@
 <translation id="6368102751067608420">Удаление всех данных менеджера паролей</translation>
 <translation id="6372558618707314581">Откройте любую страницу.</translation>
 <translation id="6374469231428023295">Повторить</translation>
+<translation id="6374514103145916800">Спросить</translation>
 <translation id="6383719166112032471">Открыть адрес</translation>
 <translation id="6387994324662817823">Пароли сохраняются в Google Менеджере паролей только на этом устройстве.</translation>
 <translation id="6393156038355142111">Сгенерировать надежный пароль</translation>
@@ -1600,6 +1603,7 @@
 <translation id="6596481460663245319">Искать по изображению в Google</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 пароль}one{# пароль}few{# пароля}many{# паролей}other{# пароля}}</translation>
 <translation id="6601302169302852717">Изображение сохранено в Google Фото в аккаунте <ph name="USER_EMAIL" />.</translation>
+<translation id="6602173570135186741">Автозаполнение и пароли</translation>
 <translation id="6603393121510733479">В вашей организации режим инкогнито отключен.
 <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="6606914854592108404">Выполняется проверка безопасности…</translation>
@@ -1851,6 +1855,7 @@
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Чтобы закреплять вкладки инкогнито, настройте Touch ID, Face ID или код доступа.</translation>
 <translation id="750886945254958667">Вы сможете пользоваться ей в дальнейшем и добавлять вкладки. Если группа больше не нужна, выйдите из нее.</translation>
+<translation id="7511099437872594216">Вкладки</translation>
 <translation id="7511727374778217603">{COUNT,plural, =1{Добавить можно не более 1 вкладки.}one{Добавить можно не более {COUNT} вкладки.}few{Добавить можно не более {COUNT} вкладок.}many{Добавить можно не более {COUNT} вкладок.}other{Добавить можно не более {COUNT} вкладки.}}</translation>
 <translation id="7512909159512473473">Ввести кодовую фразу</translation>
 <translation id="7514365320538308">Скачать</translation>
@@ -1965,6 +1970,7 @@
 <translation id="7888562068293422208">Закрыть все?</translation>
 <translation id="7889910613639381518">Просто и безопасно благодаря виджету Google Менеджера паролей.</translation>
 <translation id="7899199123054742721">Отметить все как непрочитанные</translation>
+<translation id="7909005666376403847">Это устройство iPhone настроено для ребенка</translation>
 <translation id="7911190106180361398">Синхронизация всех данных запрещена организацией</translation>
 <translation id="7918999344502274923">Скрыть сведения: <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="7921559948846049514">Выберите тему, цвет и другие параметры фона</translation>

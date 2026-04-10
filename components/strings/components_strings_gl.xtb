@@ -1300,10 +1300,12 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3037177537145227281">Estase facendo un seguimento do prezo</translation>
 <translation id="3037605927509011580">Vaia!</translation>
 <translation id="3039406992698062762">Viaxes en familia</translation>
+<translation id="3040435070100611531">Os teus pases de Google Wallet</translation>
 <translation id="3041176923638368519">Consultar as condicións das vantaxes da tarxeta</translation>
 <translation id="3041584414879052436">A lista de emisores de pago aprazado está pechada.</translation>
 <translation id="3041612393474885105">Información do certificado</translation>
 <translation id="3045769629416806687">Deportes de risco</translation>
+<translation id="3047054686095898948">Garda a túa información en <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> e realiza tarefas máis rápido, como completar formularios nos produtos de Google. Podes <ph name="BEGIN_LINK" />xestionar a túa información<ph name="END_LINK" /> en <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> para <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">O historial de Escritorio remoto de Chrome, incluso as marcas de tempo, os hosts e os códigos de identificación da sesión do cliente</translation>
 <translation id="3052868890529250114">Adoitas conectarte a este sitio web de maneira segura, pero desta vez Chrome non puido usar unha conexión segura. É posible que un atacante estea tentando espiar ou modificar a túa conexión de rede. <ph name="BEGIN_LEARN_MORE_LINK" />Máis información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Baixada de prezo de <ph name="PRICE_DROP" /> no seguinte produto: <ph name="PRODUCT_NAME" /></translation>
@@ -2721,6 +2723,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{A política do administrador non recomenda copiar este ficheiro neste destino: <ph name="DESTINATION_NAME" />}other{A política do administrador non recomenda copiar estes ficheiros neste destino: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">O grupo de pestanas "<ph name="GROUP_NAME" />" xa non está dispoñible</translation>
+<translation id="5262342527470539728">A túa información está gardada en <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> de <ph name="ACCOUNT" /></translation>
 <translation id="5263867360296733198">Cómpre revisar os ficheiros antes de cargalos</translation>
 <translation id="5266128565379329178">Encadernación na parte superior</translation>
 <translation id="5269225904387178860">Catro perforacións na parte inferior</translation>
@@ -2799,7 +2802,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> actualizou a pestana "<ph name="WEBSITE_TITLE" />"</translation>
 <translation id="5383478552402031184">Pavimentos</translation>
 <translation id="5385857628869214740">Humor</translation>
-<translation id="5385966243497224160">Os URL que non sexan HTTPS non se poden previsualizar</translation>
 <translation id="5386426401304769735">A cadea de certificados deste sitio contén un certificado que se asinou con SHA-1.</translation>
 <translation id="5391010642126249196">Acceso</translation>
 <translation id="5391306025131596142">&amp;Abrir páxina do historial</translation>
@@ -3849,7 +3851,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="7003322000677139268">Pezas e accesorios para vehículos</translation>
 <translation id="7004499039102548441">Pestanas recentes</translation>
 <translation id="7004562620237466965">Só descifrar</translation>
-<translation id="700483187606163535">A túa información está gardada en <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> (<ph name="ACCOUNT" />). Podes usala nos produtos de Google para completar formularios máis rápido.</translation>
 <translation id="7006930604109697472">Enviar de todas formas</translation>
 <translation id="7009364359744329733">A tarxeta non está dispoñible nestes intres. Téntao de novo máis tarde.</translation>
 <translation id="7010658264061801199">Comida e bebida</translation>
@@ -4622,7 +4623,6 @@ Detalles adicionais:
 <translation id="8194956568907463262">Xogos de disparos</translation>
 <translation id="8198379961710069585">Botón Historial de busca. Actívao para facer buscas no historial</translation>
 <translation id="8199437620497683918">Disco óptico (brillo)</translation>
-<translation id="8199730148066603000">Non se permite previsualizar os URL que non sexan HTTPS.</translation>
 <translation id="8200772114523450471">Retomar</translation>
 <translation id="8202097416529803614">Resumo do pedido</translation>
 <translation id="8202370299023114387">Conflito</translation>
@@ -4770,6 +4770,7 @@ Detalles adicionais:
 Detalles adicionais:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Permítese o uso do micrófono esta vez</translation>
+<translation id="8421746712901926961">Garda a túa información en <ph name="GOOGLE_WALLET_TITLE_1" /> e realiza tarefas máis rápido, como completar formularios nos produtos de Google. Podes <ph name="MANAGE_INFO_LINK" /> en <ph name="GOOGLE_WALLET_TITLE_2" /> para <ph name="ACCOUNT" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Cambiar</translation>
 <translation id="8426945547715537628">Queres permitir que se ignore o teclado?</translation>
@@ -4826,6 +4827,7 @@ Detalles adicionais:
 <translation id="8521812709849134608">Mesados</translation>
 <translation id="8522180136695974431">Informes de crédito e seguimento</translation>
 <translation id="8522552481199248698">Chrome pode axudarche a protexer a túa Conta de Google e a cambiar o teu contrasinal.</translation>
+<translation id="852450791482410042">Pagar agora</translation>
 <translation id="8527228059738193856">Altofalantes</translation>
 <translation id="8527681393107582734">Agricultura e enxeñaría forestal</translation>
 <translation id="8528149813106025610">Roupa infantil</translation>

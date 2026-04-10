@@ -64,6 +64,7 @@ Kaj je treba upoštevati:
 <translation id="2213327331203157297">Če želite onemogočiti način zaklepa v Chromu, ga izklopite v iPhonu.</translation>
 <translation id="2242467532204595597">Chrome lahko uporabljate, kadar koli se dotaknete povezav v sporočilih, dokumentih in drugih aplikacijah.</translation>
 <translation id="2256384876478573507">Hitreje odprite Chrome, ko ste pripravljeni na brskanje v iPhonu.</translation>
+<translation id="2270691132923135296">Osvojite uporabne osnove za Chrome in začnite</translation>
 <translation id="2311240109311056604">Odpre igro Dino za Chrome.</translation>
 <translation id="2339201583852607431">Geslo bo shranjeno v računu Google (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome vašo lokacijo deli s spletnimi mesti, ki jih dovolite.</translation>
@@ -295,6 +296,7 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chroma
 <translation id="7599894504325210080">Razširjen pogled samodejnega izpolnjevanja v Chromu</translation>
 <translation id="7617512710641355143">Chrome je upravljan</translation>
 <translation id="7626032353295482388">Dobrodošli v Chromu</translation>
+<translation id="7634397654061173327">Če želite v Chromu pridobiti funkcije za varnost otrok, lahko uporabite račun Google, ki je nastavljen za otroka, ali Chrome brez računa.</translation>
 <translation id="7641448682796883218">Nasvet za Chrome: Izboljšano varno brskanje</translation>
 <translation id="7642373780953416937">Prejemajte opozorila o težavah z zasebnostjo ali varnostjo, ki jih Chrome samodejno zazna.</translation>
 <translation id="7660356333829433649">Tukaj si lahko ogledate več uporabnih nasvetov o tem, kako najbolje izkoristiti Chrome.</translation>
@@ -327,6 +329,7 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chroma
 <translation id="8245080522851805544">Poskrbite za zasebno brskanje s preverjanjem pristnosti naprave, ko zaprete Chrome</translation>
 <translation id="8248887045858762645">Nasvet za Chrome</translation>
 <translation id="8265730590513812063">Odpiranje Chromovega menija</translation>
+<translation id="8284376267694582021">Če želite pridobiti funkcije za varnost otrok, lahko uporabite račun Google, ki je nastavljen za otroka, ali Chrome brez računa. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">Plačilna sredstva in naslovi ne bodo šifrirani. Zgodovina brskanja v Chromu se ne bo sinhronizirala.
 
 Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni poslano Googlu in ga Google ne hrani. Če pozabite geslo ali želite to nastavitev spremeniti, <ph name="BEGIN_LINK" />izbrišite podatke iz Chroma v računu<ph name="END_LINK" />.</translation>

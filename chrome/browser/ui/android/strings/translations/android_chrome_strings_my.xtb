@@ -115,7 +115,7 @@
 <translation id="1413446866325418126">သင့် Google Account တွင် ဒေတာသိမ်းခြင်း</translation>
 <translation id="1414919006379339073">လက်ရှိဝင်းဒိုး ပိတ်ရန်</translation>
 <translation id="1416550906796893042">အပလီကေးရှင်း ဗားရှင်း</translation>
-<translation id="1428770807407000502">စင့်ခ်လုပ်ခြင်းကို ပိတ်မလား။</translation>
+<translation id="1428770807407000502">စင့်ခ်လုပ်ခြင်းကို ပိတ်မလား</translation>
 <translation id="1430915738399379752">ပရင့်</translation>
 <translation id="1435593198351412143">PDF များကို အလိုအလျောက်ဖွင့်ခြင်း</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" /> တွင် ဖွင့်ထားသည်</translation>
@@ -293,6 +293,7 @@
 <translation id="2251809247798634662">ရုပ်ဖျက် ဝင်ဒိုးအသစ်</translation>
 <translation id="2253927598983295051"><ph name="APP_NAME" /> ဖြင့် မျှဝေလိုသည်များကို ရွေးပါ</translation>
 <translation id="2261570557291037252">နောက်ထပ် အက်ပ်အချက်အလက်</translation>
+<translation id="2270544918551255912">နောက်သို့ပြန်သွားရန် အစွန်းမှ ပွတ်ဆွဲပါ</translation>
 <translation id="2276696007612801991">သင့်စကားဝှက်များကိုစစ်ရန် သင့် Google အကောင့်သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="2281243904606300427"><ph name="TAB_TITLE" />၊ ရွေးချယ်ထားသည့် ရုပ်ဖျက်တဘ်</translation>
 <translation id="2286841657746966508">ငွေတောင်းခံလွှာပို့ရန် လိပ်စာ</translation>
@@ -480,6 +481,7 @@
 <translation id="2989523299700148168">လောလောလတ်လတ် ကြည့်ရှုခဲ့သော ဆိုက်များ</translation>
 <translation id="2992473221983447149">ပုံရှင်းလင်းချက်များ</translation>
 <translation id="2996291259634659425">စကားဝှက်ဖန်တီးပါ</translation>
+<translation id="2996682533106928201">ပယ်ရန် တို့ပါ</translation>
 <translation id="2996809686854298943">URL လိုအပ်သည်။</translation>
 <translation id="3024215143424744261">စာဖတ်မုဒ် သတ်မှတ်ချက်များ ပိတ်ထားသည်</translation>
 <translation id="3026955690410463085">လင့်ခ်ထည့်သွင်းပါ</translation>
@@ -640,7 +642,7 @@
 <translation id="3739455665973395693">သင့် Google Account တွင် ကျိုးပေါက်ထားသည့် စကားဝှက် မရှိပါ</translation>
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> တွင် လိပ်စာအဖြစ် သိမ်းဆည်းပါ</translation>
 <translation id="3740525748616366977">ဤစက်တွင် အသံဖြင့်ရှာဖွေမှု မရနိုင်ပါ</translation>
-<translation id="3763110477555836428">သင့်အချက်အလက်အစစ်များကို ကာကွယ်ရန် ဤကတ်ဖြင့် ငွေရှင်းသောအခါ ပကတိအသွင်ကတ် နံပါတ်ကို ဖြည့်ပါမည်။ Google Wallet တွင် စီမံသည်။ <ph name="BEGIN_LINK1" />ပကတိအသွင်ကတ်များအကြောင်း ပိုလေ့လာရန်<ph name="END_LINK1" /></translation>
+<translation id="3763110477555836428">သင့်အချက်အလက်အစစ်များကို ကာကွယ်ရန် ဤကတ်ဖြင့် ငွေရှင်းသောအခါ ပကတိအသွင်ကတ် နံပါတ်ကို ဖြည့်ပါမည်။ Google Wallet တွင် စီမံပါ။ <ph name="BEGIN_LINK1" />ပကတိအသွင်ကတ်များအကြောင်း ပိုလေ့လာရန်<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">ဒေတာအချို့ကို မသိမ်းရသေးပါ</translation>
 <translation id="3770620323585347665">ဝင်းဒိုးကို အမည်ပေးရန်</translation>
 <translation id="3771033907050503522">ကိုယ်ပျောက် တဲဘ်များ</translation>

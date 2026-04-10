@@ -1499,7 +1499,6 @@
 <translation id="6259928806013786178">無法使用閱讀模式</translation>
 <translation id="6268773951964630964">搜尋複製的圖片</translation>
 <translation id="6271462272606946663">隱藏「切換為行動版網站」</translation>
-<translation id="6271556257184622612">向 Google 詢問分頁或其他資訊</translation>
 <translation id="6271824294945464304">即將分享密碼</translation>
 <translation id="628251768213143684">你隨時可以管理儲存在 Google 帳戶中的內容</translation>
 <translation id="6284652193729350524">針對<ph name="LANGUAGE" />提供翻譯選項</translation>
@@ -1536,6 +1535,7 @@
 <translation id="6368102751067608420">刪除所有密碼管理工具資料</translation>
 <translation id="6372558618707314581">前往要瀏覽的頁面</translation>
 <translation id="6374469231428023295">再試一次</translation>
+<translation id="6374514103145916800">問問</translation>
 <translation id="6383719166112032471">開啟位置…</translation>
 <translation id="6387994324662817823">密碼只會儲存至這部裝置上的 Google 密碼管理工具。</translation>
 <translation id="6393156038355142111">建議高強度密碼</translation>
@@ -1603,6 +1603,7 @@
 <translation id="6596481460663245319">使用 Google 搜尋圖片</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 組密碼}other{# 組密碼}}</translation>
 <translation id="6601302169302852717">圖片已儲存至 <ph name="USER_EMAIL" /> 的 Google 相簿</translation>
+<translation id="6602173570135186741">自動填入和密碼</translation>
 <translation id="6603393121510733479">貴機構已關閉私密瀏覽功能。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6606914854592108404">正在執行安全檢查…</translation>

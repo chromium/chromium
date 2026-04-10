@@ -1300,10 +1300,12 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3037177537145227281">Ár nyomon követése…</translation>
 <translation id="3037605927509011580">A manóba!</translation>
 <translation id="3039406992698062762">Családi utazás</translation>
+<translation id="3040435070100611531">Az Ön Google Wallet-kártyái</translation>
 <translation id="3041176923638368519">A kártya előnyeire vonatkozó feltételek megtekintése</translation>
 <translation id="3041584414879052436">A Késleltetett fizetés fizetési módot biztosító szolgáltatók listája be van zárva</translation>
 <translation id="3041612393474885105">Tanúsítvány adatai</translation>
 <translation id="3045769629416806687">Extrém sportok</translation>
+<translation id="3047054686095898948">Mentse el adatait a(z) <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> szolgáltatásban, és végezze el gyorsabban a feladatait, például az űrlapok kitöltését a Google-termékekben. A(z) <ph name="ACCOUNT" /> fiókhoz tartozó <ph name="BEGIN_LINK" />adatait<ph name="END_LINK" /> a(z) <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> szolgáltatásban kezelheti.</translation>
 <translation id="305162504811187366">A Chrome távoliasztal-szolgáltatás előzményei, beleértve az időbélyegeket, a gazdagépeket és az ügyfelek munkamenet-azonosítóit is</translation>
 <translation id="3052868890529250114">Ön általában biztonságosan csatlakozik a webhelyekhez, de a Chrome ez alkalommal nem tudott biztonságos kapcsolatot használni. Előfordulhat, hogy egy támadó megpróbálja lehallgatni vagy módosítani az Ön hálózati kapcsolatát. <ph name="BEGIN_LEARN_MORE_LINK" />További információ erről a figyelmeztetésről<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> értékű árcsökkenés a következő terméknél: <ph name="PRODUCT_NAME" /></translation>
@@ -2797,7 +2799,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> módosította a(z) „<ph name="WEBSITE_TITLE" />” lapot</translation>
 <translation id="5383478552402031184">Padlóburkolás</translation>
 <translation id="5385857628869214740">Humor</translation>
-<translation id="5385966243497224160">Nem lehet megjeleníteni a nem HTTPS URL-ek előnézetét</translation>
 <translation id="5386426401304769735">A webhely tanúsítványlánca SHA-1 titkosítással aláírt tanúsítványt tartalmaz.</translation>
 <translation id="5391010642126249196">Ekkor járt itt:</translation>
 <translation id="5391306025131596142">Előzmények oldal &amp;megnyitása</translation>
@@ -3847,7 +3848,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="7003322000677139268">Járműalkatrészek és kiegészítők</translation>
 <translation id="7004499039102548441">Nemrég megnyitott lapok</translation>
 <translation id="7004562620237466965">Csak megfejtő</translation>
-<translation id="700483187606163535">Az adatokat a <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> szolgáltatásba menti a rendszer a következő fiókhoz: <ph name="ACCOUNT" />. A Google-termékekben használhatja őket az űrlapok gyorsabb kitöltéséhez.</translation>
 <translation id="7006930604109697472">Küldés mégis</translation>
 <translation id="7009364359744329733">Ez a kártya jelenleg nem áll rendelkezésre. Próbálja újra később.</translation>
 <translation id="7010658264061801199">Étel-ital</translation>
@@ -4621,7 +4621,6 @@ További részletek:
 <translation id="8194956568907463262">Lövöldözős játékok</translation>
 <translation id="8198379961710069585">Keresési előzmények gomb, nyomja meg a gombot az előzmények kereséséhez</translation>
 <translation id="8199437620497683918">Optikai lemez (fényes)</translation>
-<translation id="8199730148066603000">A nem HTTPS URL-ek előnézete nem engedélyezett.</translation>
 <translation id="8200772114523450471">Folytatás</translation>
 <translation id="8202097416529803614">Rendelés összegzése</translation>
 <translation id="8202370299023114387">Ütközés</translation>
@@ -4827,6 +4826,7 @@ További részletek:
 <translation id="8521812709849134608">Konyhai munkalapok</translation>
 <translation id="8522180136695974431">Hitelvizsgálat és monitoring</translation>
 <translation id="8522552481199248698">A Chrome segíthet a Google-fiók védelmében és a jelszó módosításában.</translation>
+<translation id="852450791482410042">Fizetés most</translation>
 <translation id="8527228059738193856">Hangfalak</translation>
 <translation id="8527681393107582734">Mezőgazdaság és erdészet</translation>
 <translation id="8528149813106025610">Gyermekruházat</translation>

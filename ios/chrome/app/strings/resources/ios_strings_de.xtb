@@ -116,6 +116,7 @@
 <translation id="138692594145659985">Optionen zum Speichern von Karten</translation>
 <translation id="1396260204083880024">Angemeldet als <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Öffne das Kontomenü.</translation>
 <translation id="1397144142234474689">Verlauf ausblenden</translation>
+<translation id="1399268420835656394">Wenn du kein Kind bist, überprüfe das angegebene Alter im Apple-Konto auf diesem Gerät. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="1407135791313364759">Alle öffnen</translation>
 <translation id="1408847409015257906">Tippe auf „Datenschutz und Sicherheit“.</translation>
 <translation id="1411386976162024013">Visuelle Suche mit Lens</translation>
@@ -182,6 +183,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622717322707146952">Wähle „Zu Google Kalender hinzufügen“ oder „Zu Apple Kalender hinzufügen“ aus.</translation>
 <translation id="1629162218487290695">Identität bestätigen…</translation>
+<translation id="1634520742547161889">MM/JJ</translation>
 <translation id="1636234353664774105">Mit der detaillierten Routenführung eine Wegbeschreibung zu deinem Ziel erhalten</translation>
 <translation id="1637811476055996098">Dateien auswählen</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
@@ -254,6 +256,7 @@
 <translation id="1861067954551502701">{count,plural, =1{{position} von {count} Passwort}other{{position} von {count} Passwörtern}}</translation>
 <translation id="1861262398884155592">Dieser Ordner ist leer</translation>
 <translation id="1864266050569350424">Tippe auf einer Website, für die du ein Passwort gespeichert hast, auf das Feld für das Anmeldepasswort.</translation>
+<translation id="1866700949421703765">„Lesemodus aktivieren“ ausblenden</translation>
 <translation id="1872096359983322073">Taschenlampe</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Familienmitglieder einladen</translation>
@@ -352,6 +355,7 @@
 <translation id="2214453882118345682">Nutze deine Kamera zum Einkaufen, Übersetzen und um mehr über Dinge zu erfahren, die du siehst.</translation>
 <translation id="2215819824168709130">Karte „Preis beobachten“ ausblenden</translation>
 <translation id="2216366330550244277">Zur Produktseite</translation>
+<translation id="2219935992754556187">Chrome trägt mit Face ID dazu bei, deine sensiblen Daten zu schützen</translation>
 <translation id="2220529011494928058">Problem melden</translation>
 <translation id="2223461067862937305">QR‑Code erstellen</translation>
 <translation id="2225701818156393674">Das Produkt wurde deiner Liste mit beobachteten Produkten hinzugefügt.</translation>
@@ -458,6 +462,7 @@
 <translation id="2583688836549072561">Tabgruppe, „<ph name="GROUP_TITLE" />“, <ph name="TABS_NUMBER" /> Tabs, neue Aktivität.</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Preissenkungen von Produkten beobachten</translation>
+<translation id="2602372807870028932">Dadurch werden ausgewählte Informationen gelöscht, die auf diesem Gerät gespeichert sind</translation>
 <translation id="260378315836159338">Tippe oben auf dem Bildschirm auf +</translation>
 <translation id="2612676031748830579">Kartennummer</translation>
 <translation id="261305050785128654">Gib für Websites an, welche Sprachen du sprichst. Sofern möglich, werden Inhalte in diesen Sprachen angezeigt.</translation>
@@ -551,6 +556,7 @@
 <translation id="2922210239002704889">Rufe die Startseite oder Tastatur auf</translation>
 <translation id="2924940770243654951">In neuem Inkognitotab öffnen</translation>
 <translation id="2952278131021475699">Lens-Kamerasuche</translation>
+<translation id="2953821385349876107">Anderes Google-Konto auswählen</translation>
 <translation id="2962516096219646456">Alle Autofill-Daten ansehen</translation>
 <translation id="2965594942405840553">Diese Aktion kann nicht rückgängig gemacht werden</translation>
 <translation id="2969979262385602596">Anmeldefehler, bitte später erneut versuchen</translation>
@@ -959,6 +965,7 @@
 <translation id="4469324811108161144">Notizen können bis zu <ph name="CHARACTER_LIMIT" /> Zeichen enthalten.</translation>
 <translation id="4471472356135655769">Passwörter können nicht exportiert werden</translation>
 <translation id="4472575034687746823">Jetzt starten</translation>
+<translation id="4473565697543262065">Dadurch werden ausgewählte Informationen gelöscht, die auf diesem Gerät und in deinem Google-Konto <ph name="USER_EMAIL" /> gespeichert sind</translation>
 <translation id="4473608001744970767">„Preis beobachten“ ausblenden</translation>
 <translation id="4474142134969976028">Keine passenden Ergebnisse</translation>
 <translation id="4474494258097106883">Für dein iPhone entwickelt</translation>
@@ -1434,6 +1441,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6090760257419195752">Geschlossene Warnungen</translation>
 <translation id="6094325891006032858">Erweitertes Safe Browsing aktivieren</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> gefunden</translation>
+<translation id="6099466082815574659">Dieses iPad ist für ein Kind eingerichtet</translation>
 <translation id="6100617279104942061">Angemeldet als <ph name="USER_EMAIL" />. Öffne die Einstellungen.</translation>
 <translation id="6100676328067737810">Deine Daten werden in deinem Google-Konto (<ph name="USER_EMAIL" />) gespeichert.</translation>
 <translation id="610083648014322104">Hol dir relevante Antworten basierend auf dem Inhalt der aktuellen Seite</translation>
@@ -1491,7 +1499,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6259928806013786178">Lesemodus konnte nicht aktiviert werden</translation>
 <translation id="6268773951964630964">Nach kopiertem Bild suchen</translation>
 <translation id="6271462272606946663">„Mobile Website anfordern“ ausblenden</translation>
-<translation id="6271556257184622612">Google zu Tabs und mehr fragen</translation>
 <translation id="6271824294945464304">Passwort teilen</translation>
 <translation id="628251768213143684">Du kannst jederzeit festlegen, was in deinem Google-Konto gespeichert werden soll</translation>
 <translation id="6284652193729350524">Übersetzung für <ph name="LANGUAGE" /> anbieten</translation>
@@ -1528,6 +1535,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6368102751067608420">So löschst du alle Daten im Passwortmanager</translation>
 <translation id="6372558618707314581">Rufe eine beliebige Seite auf</translation>
 <translation id="6374469231428023295">Erneut versuchen</translation>
+<translation id="6374514103145916800">Fragen</translation>
 <translation id="6383719166112032471">URL öffnen…</translation>
 <translation id="6387994324662817823">Passwörter werden nur auf diesem Gerät im Google Passwortmanager gespeichert.</translation>
 <translation id="6393156038355142111">Starkes Passwort vorschlagen</translation>
@@ -1576,6 +1584,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6532106788206463496">Änderungen speichern</translation>
 <translation id="6536759809440150308"><ph name="GROUP_TITLE" /> geöffnet, Gruppe mit <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">beispiel.de</translation>
+<translation id="6538776393003671043">Wenn du das nächste Mal auf die Daten zugreifst, wirst du von Chrome gefragt, ob sie in Google Wallet gespeichert werden sollen</translation>
 <translation id="6543899060872618437">Mit Autofill auf allen deinen Geräten schneller bezahlen</translation>
 <translation id="6550675742724504774">Optionen</translation>
 <translation id="6550891580932862748">Schützt dich nicht vor gefährlichen Websites, Downloads und Erweiterungen. Deine Safe Browsing-Einstellungen in anderen Google-Produkten sind davon nicht betroffen.</translation>
@@ -1594,6 +1603,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6596481460663245319">Google-Suche anhand des Bildes</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 Passwort}other{# Passwörter}}</translation>
 <translation id="6601302169302852717">Bild für <ph name="USER_EMAIL" /> in Google Fotos gespeichert</translation>
+<translation id="6602173570135186741">Autofill und Passwörter</translation>
 <translation id="6603393121510733479">Deine Organisation hat das private Surfen deaktiviert.
 <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="6606914854592108404">Sicherheitscheck wird ausgeführt…</translation>
@@ -1908,6 +1918,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="7729458878441927652">Wenn du Tabs von deinen anderen Geräten sehen möchtest, synchronisiere deine Tabs und den Verlauf.</translation>
 <translation id="7730020510075123961">Nein, Daten zusammenführen</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Nur auf diesem Gerät.</translation>
+<translation id="7737550920399185748">Fotos aus deiner Fotogalerie, die auf der Startseite angezeigt werden, werden nicht geräteübergreifend synchronisiert.</translation>
 <translation id="7738120385185846461">Problem melden…</translation>
 <translation id="7744192722284567281">Bei Datenpanne gefunden</translation>
 <translation id="7749790401023484470">Du hast keinen Text ausgewählt.</translation>
@@ -1958,6 +1969,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="7888562068293422208">Alle schließen?</translation>
 <translation id="7889910613639381518">Einfacher und sicherer Zugriff mit dem Google Passwortmanager-Widget.</translation>
 <translation id="7899199123054742721">Alle als ungelesen markieren</translation>
+<translation id="7909005666376403847">Dieses iPhone ist für ein Kind eingerichtet</translation>
 <translation id="7911190106180361398">Deine Organisation lässt nicht zu, dass du alles synchronisierst.</translation>
 <translation id="7918999344502274923">Details für <ph name="SEARCH_ENGINE_NAME" /> ausblenden</translation>
 <translation id="7921559948846049514">Wähle ein Design, eine Farbe oder eine andere Option für deinen Hintergrund aus</translation>
@@ -1975,6 +1987,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="7952670906562503188">Du bist im Begriff, {passkey_count} Passkeys und die Liste der Websites und Apps zu löschen, für die du festgelegt hast, dass Anmeldedaten nie gespeichert werden sollen. Konten, die du für Websites und Apps erstellt hast, werden nicht gelöscht.</translation>
 <translation id="7958575506592576831">Sicherheitsinformationen zur Seite</translation>
 <translation id="7961015016161918242">Nie</translation>
+<translation id="7971651328518569075">„Lesemodus deaktivieren“ ausblenden</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Testen</translation>
 <translation id="797588153137233716">„Menü“ → „Verlauf“ → „Browserdaten löschen“</translation>
@@ -1991,6 +2004,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8005666035647241369">Im Google Passwortmanager auf diesem Gerät</translation>
 <translation id="8010488806779226127">Entdecke Funktionen, die dich beim Surfen unterstützen</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
+<translation id="8014007212279733632">Identität bestätigen, um vertrauliche Daten automatisch ausfüllen zu lassen</translation>
 <translation id="8015826420689927262">Anhang löschen</translation>
 <translation id="8017015647846870183">Aus dem Google Passwortmanager, einschließlich Passwörter und Passkeys</translation>
 <translation id="802154636333426148">Downloadfehler</translation>
@@ -2377,6 +2391,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="984275831282074731">Zahlungsmethoden</translation>
 <translation id="985379595344853742">Alle Inkognitotabs schließen</translation>
 <translation id="988141524645182168">Andere Geräte</translation>
+<translation id="994184244350700431">In Google Wallet für <ph name="USER_EMAIL" /></translation>
 <translation id="995174784802614337">{count,plural, =1{{count} Passkey importiert}other{{count} Passkeys importiert}}</translation>
 <translation id="999768147936949692">Derzeit kannst du Passwörter nur mit Familienmitgliedern teilen. <ph name="BEGIN_LINK" />Lade Familienmitglieder in deine Gruppe ein<ph name="END_LINK" />, damit ihr eure Google-Produkte und ‑Abos gemeinsam nutzen könnt.</translation>
 </translationbundle>

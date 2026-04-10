@@ -134,11 +134,6 @@ Observação: leia mais sobre as políticas de mitigação de processos em https
 <translation id="1077675271127011209">Desativar relatórios de uso e dados relacionados a falhas</translation>
 <translation id="1079498696402787191">Use o valor padrão para hashes permitidos em handshakes do TLS.</translation>
 <translation id="1079801999187584280">Não permite o uso das Ferramentas para Desenvolvedores</translation>
-<translation id="1081263326166769685">Se a política for ativada, o <ph name="PRODUCT_OS_NAME" /> vai informar métricas de uso e dados de diagnóstico, incluindo relatórios de erros, para o Google. Se a política for desativada, os relatórios de métricas e dados de diagnóstico serão desativados.
-
-Em dispositivos gerenciados, essa política é ativada por padrão e envia métricas ao Google.
-
-Já para os não gerenciados, o usuário pode decidir enviar as métricas ou não quando a política for deixada sem definição.</translation>
 <translation id="1081470306474387129">A API Controlled Frame, disponível para determinados contextos isolados, como Apps Isolados da Web (AIWs, na sigla em inglês), permite que um app incorpore e manipule conteúdo arbitrário.
 Consulte https://github.com/WICG/controlled-frame (link em inglês) para saber mais.
 
@@ -376,6 +371,18 @@ instalação.</translation>
 <translation id="1262993197422487260">Não mostrar o botão de exibição de senha nas telas de login e de bloqueio</translation>
 <translation id="1265053460044691532">Limite o tempo pelo qual um usuário autenticado via SAML pode fazer login off-line</translation>
 <translation id="1265076559723566171">Controla as configurações para usuários de uma instituição educacional</translation>
+<translation id="1268782248484174352">Especifica o nível de relatórios de métricas para <ph name="PRODUCT_OS_NAME" />.
+
+Quando essa política é definida, ela determina a quantidade de dados de uso e de falhas que são relatados ao Google:
+* 0 = Relatórios desativados: nenhum dado de uso ou relacionado a falhas é enviado ao Google.
+* 1 = Relatórios básicos: um conjunto limitado de dados de uso e relacionados a falhas é enviado ao Google.
+* 2 = Relatórios avançados: um conjunto abrangente de dados de uso e relacionados a falhas é enviado ao Google.
+
+Se esta política não for definida, o usuário poderá escolher o comportamento dos relatórios de métricas durante a instalação ou a primeira execução. Essa configuração também poderá ser alterada posteriormente.
+
+Esta política só é avaliada se o experimento <ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" /> estiver ativo no dispositivo.
+
+Se o experimento <ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" /> estiver ativo no dispositivo e tanto esta política como a <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" /> estiverem definidas, esta política terá precedência.</translation>
 <translation id="1271811620059192171">Ativar grupos atômicos de política</translation>
 <translation id="127264587838521316">Ativa as solicitações de instalação de extensões do <ph name="PRODUCT_NAME" /></translation>
 <translation id="1272798957154751008">Ativar a migração de dispositivos Chromad no gerenciamento de nuvem.</translation>
@@ -1855,6 +1862,18 @@ Se a política for desativada, os usuários não terão acesso a essa funcionali
 
       Se a política for definida, os usuários não poderão mudá-la no <ph name="PRODUCT_NAME" />. Se ela for deixada sem definição, a verificação de vazamento de credenciais será permitida, mas os usuários poderão desativá-la.</translation>
 <translation id="2208976000652006649">Parâmetros para URL de pesquisa que usa POST</translation>
+<translation id="2211167090584042804">Especifica o nível de relatórios de métricas para <ph name="PRODUCT_NAME" />.
+
+Quando essa política é definida, ela determina a quantidade de dados de uso e de falhas que são relatados ao Google:
+* 0 = Relatórios desativados: nenhum dado de uso ou relacionado a falhas é enviado ao Google.
+* 1 = Relatórios básicos: um conjunto limitado de dados de uso e relacionados a falhas é enviado ao Google.
+* 2 = Relatórios avançados: um conjunto abrangente de dados de uso e relacionados a falhas é enviado ao Google.
+
+Se esta política não for definida, o usuário poderá escolher o comportamento dos relatórios de métricas durante a instalação ou a primeira execução. Essa configuração também poderá ser alterada posteriormente.
+
+Esta política só é avaliada se o experimento <ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" /> estiver ativo no dispositivo.
+
+Se o experimento <ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" /> estiver ativo no dispositivo e tanto esta política como a <ph name="METRICS_REPORTING_ENABLED_POLICY_NAME" /> estiverem definidas, esta política terá precedência.</translation>
 <translation id="2212011154693551439">Uma página do histórico do Chrome organizada em grupos ficará visível em chrome://history/grouped por padrão.</translation>
 <translation id="2212207215880394506">Não permitir a edição de fotos com IA generativa.</translation>
 <translation id="221287948061571053">Ocultar o ícone corporativo aberto na barra de tarefas</translation>
@@ -2911,10 +2930,6 @@ Esta política só pode ser definida como uma política do usuário em nuvem.</t
 <translation id="288923520817177650">Permitir a criação de sessões <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> da <ph name="WEBXR_API_NAME_SHORT" /></translation>
 <translation id="2889842394011108075">A window.webkitStorageInfo vai ficar disponível.</translation>
 <translation id="2890645751406497668">Conceder automaticamente permissão a esses sites para se conectarem a dispositivos USB com determinados IDs de fornecedores e produtos.</translation>
-<translation id="2891049933730408118">A definição da política especifica em quais origens permitir todos os esquemas de autenticação HTTP ao quais o <ph name="PRODUCT_NAME" /> oferece suporte, independentemente da política <ph name="AUTH_SCHEMES_POLICY_NAME" />.
-
-      Formate o padrão da origem de acordo com o formato apresentado em <ph name="URL_SCHEME_FORMAT_LINK" />. Até 1.000 exceções podem ser definidas na política <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" />.
-      O uso de caracteres curinga é permitido para toda a origem ou partes dela, seja o esquema, o host ou a porta.</translation>
 <translation id="2893546967669465276">Enviar registros do sistema ao servidor de gerenciamento</translation>
 <translation id="2893660462311365527">Frequência de coleta da telemetria de rede em milissegundos.</translation>
 <translation id="2894914342151915910">Suprimir avisos quando o Chrome for executado em um sistema sem suporte</translation>
@@ -7686,6 +7701,7 @@ Se for definida como "Ativar somente sons de foco", o recurso de som será ativa
 
 Se a política for desativada, os sons no "Modo sem distrações" também serão.</translation>
 <translation id="5890063326284543943">Controlar o uso da API Serial</translation>
+<translation id="5893086678951790439">Nível de relatório de métricas</translation>
 <translation id="5893303508158298667">Se a <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> for ativada, definir <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> como "Ativada" ou deixá-la sem definição permitirá que clientes remotos usem servidores de redirecionamento para se conectar a esta máquina quando uma conexão direta não estiver disponível (por exemplo, por conta de uma restrição de firewall).
 
       Se a política for desativada, o acesso remoto não será desativado, mas apenas conexões da mesma rede serão permitidas (e não conexões NAT transversal ou de redirecionamento).</translation>
@@ -7810,6 +7826,7 @@ A partir do <ph name="PRODUCT_NAME" /> 147, esta política será descontinuada. 
 
       Se você definir a política, os usuários não poderão mudá-la. Se ela não for definida, os usuários decidirão se os cabeçalhos e rodapés aparecem ou não.</translation>
 <translation id="5951418260805607969">Mostrar uma notificação quando houver pouco espaço em disco</translation>
+<translation id="5952917461013988610">Relatórios básicos</translation>
 <translation id="5958746038080720143">Permitir otimizações de descoberta automática de proxies da Web (WPAD, na sigla em inglês)</translation>
 <translation id="5961137303188584693">Endereço MAC da placa de rede integrada do dispositivo</translation>
 <translation id="5962271004971310788">Extensões que precisam ser executadas pelo usuário no modo de navegação anônima para navegar nesse modo</translation>
@@ -9173,17 +9190,6 @@ Isso substitui a política <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_NA
 <translation id="6813263547126514821">Ligar e desligar</translation>
 <translation id="681446116407619279">Esquemas de autenticação compatíveis</translation>
 <translation id="6815628711329903153">Permitir alocação moderna de buffer para o plug-in PPAPI de APIs Graphics3D.</translation>
-<translation id="6819031008957510729">Se esta política for ativada, será recomendado habilitar o envio de relatórios anônimos de uso e dados de falha do <ph name="PRODUCT_NAME" /> ao Google por padrão. Os usuários ainda poderão mudar essa configuração.
-
-Se a política ficar desativada, os relatórios anônimos também serão desativados e nenhum dado de uso ou falha será enviado ao Google. Os usuários não poderão mudar essa configuração.
-
-Se a polícia não for definida, será possível escolher o comportamento dos relatórios anônimos durante a instalação ou a primeira execução. Além disso, será possível mudar essa configuração mais tarde.
-
-Para <ph name="PRODUCT_OS_NAME" />, consulte <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" />.
-
-No <ph name="MS_WIN_NAME" />, esta política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-No <ph name="MAC_OS_NAME" />, esta política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="6819838337315703072">Se a compatibilidade com apps <ph name="LINUX_OS_NAME" /> estiver ativada, definir a política como "Ativada" enviará informações sobre o uso dos apps <ph name="LINUX_OS_NAME" /> ao servidor.
 
       Se a política for definida como "Desativada" ou deixada sem definição, as informações de uso não serão enviadas.</translation>
@@ -9270,6 +9276,7 @@ Se ela for definida como "false" ou deixada sem definição, o layout não ficar
 <translation id="686079137349561371">Microsoft Windows 7 ou versão posterior</translation>
 <translation id="6863927303509860338">Definir atalhos na página "Nova guia"</translation>
 <translation id="6866755486434471318">Permitir que <ph name="PEPPER_NAME" /> use imagens compartilhadas para decodificar vídeos.</translation>
+<translation id="6874461444739276423">Nível de relatório de métricas do dispositivo</translation>
 <translation id="6878757724611298427">Permite que os usuários usem apps Android em dispositivos não afiliados</translation>
 <translation id="6881447940489194100">Hash SHA-256 dos dados codificado em hexadecimal.</translation>
 <translation id="68818134518270542">A definição da política especifica os apps que os usuários podem ativar para fazer anotações na tela de bloqueio do <ph name="PRODUCT_OS_NAME" />.
@@ -10618,6 +10625,10 @@ As políticas que precisam ser mescladas também precisam ser definidas na <ph n
       Se ela for definida como falsa ou for deixada sem definição, os relatórios serão desativados.
       Em ambos os casos, as regras definidas com o nível de restrições ALLOW na DataLeakPreventionRulesList não criarão relatórios de eventos.</translation>
 <translation id="7648907905084499629">Use o comportamento <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> para cookies em todos os sites</translation>
+<translation id="7649831723389657756">A definição desta política especifica quais origens têm permissão para todos os esquemas de autenticação HTTP compatíveis com <ph name="PRODUCT_NAME" />, independentemente da política <ph name="AUTH_SCHEMES_POLICY_NAME" />.
+
+      Formate o padrão da origem de acordo com o formato apresentado em <ph name="URL_SCHEME_FORMAT_LINK" />. Até 1.000 exceções podem ser definidas na política <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" />.
+      É possível usar caracteres curingas para o componente de host (por exemplo, "*:8000" corresponde a todos os hosts na porta 8000). Para corresponder a todos os esquemas ou todas as portas, omita o componente por completo (ou seja, "exemplo.com" corresponde a qualquer esquema e qualquer porta). Um nome do host (no caso, "exemplo.com") também corresponde aos subdomínios dele. Para corresponder exatamente a um host e excluir os subdomínios dele, adicione um ponto antes (ou seja, ".exemplo.com"). Para corresponder a todas as origens, use um único asterisco ("*").</translation>
 <translation id="7657261947024629645">Otimiza o desempenho.</translation>
 <translation id="76580522298425324">Permitir captura de tela sem o gesto anterior do usuário</translation>
 <translation id="7661379728107156839">Baixa complexidade</translation>
@@ -11415,6 +11426,13 @@ Se a política não for definida, a tela de privacidade ficará inicialmente des
 <translation id="8171262216089271568">Ativar o cursor grande na tela de login</translation>
 <translation id="8171924760436219650">Usar o botão direito do mouse como o principal na tela de login</translation>
 <translation id="81724933026241365">Permitir que o dispositivo seja desligado com o ícone de encerramento ou o botão liga/desliga</translation>
+<translation id="8173338752620395043">Se a política for definida como Ativada, o <ph name="PRODUCT_OS_NAME" /> informará métricas de uso e dados de diagnóstico, incluindo relatórios de erros, para o Google. Se a política for definida como Desativada, os relatórios de métricas e dados de diagnóstico serão desativados.
+
+Em dispositivos gerenciados, essa política é ativada por padrão e envia métricas ao Google.
+
+Já para os que não são gerenciados, o usuário pode decidir se deseja enviar as métricas quando a política estiver sem definição.
+
+Se o experimento <ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" /> estiver ativo no dispositivo e tanto esta política como a <ph name="DEVICE_METRICS_REPORTING_LEVEL_POLICY_NAME" /> estiverem definidas, a <ph name="DEVICE_METRICS_REPORTING_LEVEL_POLICY_NAME" /> terá precedência.</translation>
 <translation id="8173864651667424191">Usar "Imprimir como imagem" como padrão na visualização da impressão de documentos PDF quando a opção estiver disponível</translation>
 <translation id="8175922758834816585">Ativar a resposta falada na tela de login e permitir que o usuário a desative temporariamente</translation>
 <translation id="8176035528522326671">Permitir que o usuário corporativo seja o usuário principal de diversos perfis (comportamento padrão para usuários gerenciados por empresa)</translation>
@@ -12024,6 +12042,7 @@ Se for deixada sem definição, o comportamento será determinado pela política
 Para mais informações sobre como tratar dados de recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8566842294717252664">Ocultar a loja on-line da página "Nova guia" e do Acesso rápido aos apps</translation>
 <translation id="8567697114274003779">Definir um rótulo corporativo personalizado para um perfil gerenciado</translation>
+<translation id="8570976102224880079">Relatórios avançados</translation>
 <translation id="8571069584826006598">Permitir que origens de Apps Isolados da Web peçam que o usuário conceda acesso a impressoras locais pela API WebPrinting</translation>
 <translation id="8571119890730528225">Desativar o particionamento de armazenamento de terceiros.</translation>
 <translation id="8571314270766672278">Reverter e redefinir o dispositivo no downgrade de canal, tentar preservar a inscrição</translation>
@@ -12229,6 +12248,7 @@ A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENAB
 Esta política foi descontinuada na versão 144 do <ph name="PRODUCT_NAME" /> com a desativação da API Topics.</translation>
 <translation id="8672321184841719703">Versão de atualização automática de destino</translation>
 <translation id="867410340948518937">Segundo fator universal (U2F, na sigla em inglês)</translation>
+<translation id="8675599659717867329">Desativar relatórios</translation>
 <translation id="8676959842615154675">Se a política for definida como "Ativada", o host de acesso remoto fará a comparação entre o nome do usuário local associado com o host e o nome da Conta do Google registrada como proprietária do host ("joaosilva", se o host for propriedade de "joaosilva@exemplo.com"). Este host não será iniciado se o nome do proprietário do host for diferente do nome do usuário local associado com o host. Use a política <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> para garantir que a Conta do Google do proprietário seja associada com um domínio específico.
 
       Se a política for definida como "Desativada" ou deixada sem definição, o host de acesso remoto poderá ser associado com qualquer usuário local.</translation>
@@ -13064,6 +13084,19 @@ Determine se um usuário tem permissão para configurar o nome do host do dispos
 Quando desativadas, as APIs de cota de armazenamento geralmente vão retornar um valor dinâmico proporcional ao espaço total disponível no dispositivo, não importando o uso.
 Se forem deixadas sem definição, as APIs de cota de armazenamento vão usar o comportamento padrão do Chrome.
 Os sites com permissões de armazenamento ilimitado não são afetados por essa configuração. A cota obrigatória também não é impactada.</translation>
+<translation id="975621145048605048">Se essa política for definida como Ativada, será recomendado habilitar o envio de relatórios anônimos de uso e dados de falha do <ph name="PRODUCT_NAME" /> ao Google por padrão. Os usuários ainda poderão mudar essa configuração.
+
+Se a política for definida como Desativada, os relatórios anônimos também serão desativados e nenhum dado de uso ou falha será enviado ao Google. Os usuários não poderão mudar essa configuração.
+
+Se a política for deixada sem definição, o usuário poderá escolher o comportamento dos relatórios anônimos durante a instalação ou a primeira execução. Essa configuração também poderá ser alterada posteriormente.
+
+(Para <ph name="PRODUCT_OS_NAME" />, consulte <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" />.)
+
+Se o experimento <ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" /> estiver ativo no dispositivo e tanto esta política como a <ph name="METRICS_REPORTING_LEVEL_POLICY_NAME" /> estiverem definidas, a política <ph name="METRICS_REPORTING_LEVEL_POLICY_NAME" /> terá precedência.
+
+No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="976415389478739655">Exigir que os dispositivos dos usuários estejam em uma rede gerenciada para fazer parte da turma de <ph name="CLASS_TOOLS_NAME" /></translation>
 <translation id="978619365985286086">Configurações das ferramentas de gerenciamento de turmas</translation>
 <translation id="978658824596356870">Formato de relógio de 24 horas</translation>

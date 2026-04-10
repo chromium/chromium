@@ -1300,10 +1300,12 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3037177537145227281">Unafuatilia bei</translation>
 <translation id="3037605927509011580">Lo!</translation>
 <translation id="3039406992698062762">Safari za Kifamilia</translation>
+<translation id="3040435070100611531">Pasi za Pochi yako ya Google</translation>
 <translation id="3041176923638368519">Angalia sheria na masharti ya manufaa ya kadi</translation>
 <translation id="3041584414879052436">Orodha ya watoaji wa huduma ya Nunua sasa, lipa baadaye imefungwa.</translation>
 <translation id="3041612393474885105">Maelezo ya Cheti</translation>
 <translation id="3045769629416806687">Michezo Iliyokithiri</translation>
+<translation id="3047054686095898948">Hifadhi taarifa zako kwenye <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> ili ukamilishe mambo kwa haraka, kama vile kujaza fomu kwenye bidhaa mbalimbali za Google. Unaweza <ph name="BEGIN_LINK" />kudhibiti taarifa zako<ph name="END_LINK" /> katika <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> kwenye <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">Historia ya Programu ya Chrome ya Ufikiaji wa Kompyuta kutoka Mbali, ikiwa ni pamoja na mihuri ya wakati, seva pangishi na vitambulisho vya vipindi vya programu teja</translation>
 <translation id="3052868890529250114">Kwa kawaida huwa unatembelea tovuti kwa usalama, lakini wakati huu, Chrome imeshindwa kutumia muunganisho salama. Huenda mvamizi anajaribu kufuatilia au kurekebisha muunganisho wako wa mtandao. <ph name="BEGIN_LEARN_MORE_LINK" />Pata maelezo zaidi kuhusu tahadhari hii<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Punguzo la bei la <ph name="PRICE_DROP" /> kwenye <ph name="PRODUCT_NAME" /></translation>
@@ -2800,7 +2802,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> amesasisha kichupo cha “<ph name="WEBSITE_TITLE" />”</translation>
 <translation id="5383478552402031184">Uwekaji Sakafu</translation>
 <translation id="5385857628869214740">Ucheshi</translation>
-<translation id="5385966243497224160">Imeshindwa kukagua URL isiyo ya HTTPS</translation>
 <translation id="5386426401304769735">Msururu wa cheti wa tovuti hii una cheti kilichotiwa sahihi kwa kutumia SHA-1.</translation>
 <translation id="5391010642126249196">Ulitembelea mwisho</translation>
 <translation id="5391306025131596142">Fungua ukurasa wa historia</translation>
@@ -3850,7 +3851,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="7003322000677139268">Vipuri na Vifuasi vya Magari</translation>
 <translation id="7004499039102548441">Vichupo vya Hivi Punde</translation>
 <translation id="7004562620237466965">Ugeuzaji wa Msimbo Pekee</translation>
-<translation id="700483187606163535">Taarifa zako za <ph name="ACCOUNT" /> zimehifadhiwa kwenye <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />. Unaweza kuzitumia kwenye bidhaa mbalimbali za Google ili ujaze fomu kwa haraka.</translation>
 <translation id="7006930604109697472">Tuma tu</translation>
 <translation id="7009364359744329733">Kadi hii haipatikani sasa hivi. Tafadhali jaribu tena baadaye.</translation>
 <translation id="7010658264061801199">Vyakula na Vinywaji</translation>
@@ -4622,7 +4622,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="8194956568907463262">Michezo ya Ulengaji Shabaha</translation>
 <translation id="8198379961710069585">Kitufe cha Historia ya mambo Uliyotafuta, washa ili utafute historia ya mambo uliyotafuta</translation>
 <translation id="8199437620497683918">Diski ya optiki (Mng'ao)</translation>
-<translation id="8199730148066603000">Huruhusiwi kukagua kwanza URL isiyo ya HTTPS.</translation>
 <translation id="8200772114523450471">Endelea</translation>
 <translation id="8202097416529803614">Muhtasari wa agizo</translation>
 <translation id="8202370299023114387">Mgogoro</translation>
@@ -4825,6 +4824,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="8521812709849134608">Kaunta</translation>
 <translation id="8522180136695974431">Kuripoti na Ufuatiliaji wa Mikopo</translation>
 <translation id="8522552481199248698">Chrome inaweza kukusaidia kulinda Akaunti yako ya Google na kubadilisha nenosiri lako.</translation>
+<translation id="852450791482410042">Lipa sasa</translation>
 <translation id="8527228059738193856">Spika</translation>
 <translation id="8527681393107582734">Kilimo na Elimu ya Misitu</translation>
 <translation id="8528149813106025610">Mavazi ya Watoto</translation>

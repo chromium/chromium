@@ -116,6 +116,7 @@
 <translation id="138692594145659985">કાર્ડ સાચવવા માટેના વિકલ્પો</translation>
 <translation id="1396260204083880024"><ph name="USER_NAME" /> તરીકે સાઇન ઇન થયા. <ph name="USER_EMAIL" />. એકાઉન્ટ મેનૂ ખોલો.</translation>
 <translation id="1397144142234474689">ઇતિહાસ છુપાવો</translation>
+<translation id="1399268420835656394">જો તમે બાળક ન હો, તો તમે આ ડિવાઇસ પર Apple એકાઉન્ટમાં ઉંમર ચેક કરી શકો છો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="1407135791313364759">બધું ખોલો</translation>
 <translation id="1408847409015257906">"પ્રાઇવસી અને સુરક્ષા" પર ટૅપ કરો.</translation>
 <translation id="1411386976162024013">Lens દ્વારા વિઝ્યુઅલ શોધ</translation>
@@ -555,6 +556,7 @@
 <translation id="2922210239002704889">તમારા હોમપેજ અથવા કીબોર્ડ પર જાઓ</translation>
 <translation id="2924940770243654951">નવા છૂપા ટૅબમાં ખોલો</translation>
 <translation id="2952278131021475699">Lens કૅમેરા વડે શોધની સુવિધા</translation>
+<translation id="2953821385349876107">કોઈ અલગ Google એકાઉન્ટ પસંદ કરો</translation>
 <translation id="2962516096219646456">ઑટોમૅટિક રીતે ભરવાની સુવિધાનો બધો ડેટા જુઓ</translation>
 <translation id="2965594942405840553">આ ક્રિયા રદ કરી શકાતી નથી</translation>
 <translation id="2969979262385602596">સાઇન ઇન કરવામાં નિષ્ફળ. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો.</translation>
@@ -1439,6 +1441,7 @@
 <translation id="6090760257419195752">છોડી દીધેલી ચેતવણીઓ</translation>
 <translation id="6094325891006032858">Safe Browsingમાં વધારેલી સુરક્ષા ચાલુ કરો</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> મળ્યું</translation>
+<translation id="6099466082815574659">આ iPadનું સેટઅપ બાળક માટે કરવામાં આવ્યું છે</translation>
 <translation id="6100617279104942061"><ph name="USER_EMAIL" /> તરીકે સાઇન ઇન થયાં. સેટિંગ ખોલે છે.</translation>
 <translation id="6100676328067737810">તમારો ડેટા તમારા Google એકાઉન્ટ, <ph name="USER_EMAIL" />માં સાચવવામાં આવશે</translation>
 <translation id="610083648014322104">તમે જે પેજ પર હો તેના કન્ટેન્ટ પર આધારિત સંબંધિત જવાબો મેળવો</translation>
@@ -1496,7 +1499,6 @@
 <translation id="6259928806013786178">વાંચન મોડ સક્રિય કરવામાં નિષ્ફળતા</translation>
 <translation id="6268773951964630964">કૉપિ કરેલી છબી શોધો</translation>
 <translation id="6271462272606946663">'મોબાઇલ સાઇટની વિનંતી કરો' છુપાવો</translation>
-<translation id="6271556257184622612">ટૅબ અને બીજું ઘણા વિશે Googleને પૂછો</translation>
 <translation id="6271824294945464304">પાસવર્ડ શેર કરી રહ્યાં છીએ</translation>
 <translation id="628251768213143684">તમારા Google એકાઉન્ટમાં સાચવેલી દરેક બાબતો તમે હંમેશાં મેનેજ કરી જ શકો છો</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" />નો અનુવાદ કરવાનું કહો</translation>
@@ -1533,6 +1535,7 @@
 <translation id="6368102751067608420">બધા પાસવર્ડ મેનેજરનો ડેટા ડિલીટ કરવા માટે</translation>
 <translation id="6372558618707314581">તમને ગમે તેવા કોઈપણ પેજ પર જાઓ</translation>
 <translation id="6374469231428023295">ફરી પ્રયાસ કરો</translation>
+<translation id="6374514103145916800">પૂછો</translation>
 <translation id="6383719166112032471">લોકેશન ખોલો…</translation>
 <translation id="6387994324662817823">આ ડિવાઇસના પાસવર્ડ માત્ર આ ડિવાઇસના Google પાસવર્ડ મેનેજરમાં સાચવવામાં આવે છે.</translation>
 <translation id="6393156038355142111">સશક્ત પાસવર્ડ સૂચવો</translation>
@@ -1600,6 +1603,7 @@
 <translation id="6596481460663245319">Google વડે છબી શોધો</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 પાસવર્ડ}one{# પાસવર્ડ}other{# પાસવર્ડ}}</translation>
 <translation id="6601302169302852717"><ph name="USER_EMAIL" /> માટે Google Photosમાં છબી સાચવી</translation>
+<translation id="6602173570135186741">ઑટોમૅટિક રીતે ભરવાની સુવિધા અને પાસવર્ડ</translation>
 <translation id="6603393121510733479">તમારી સંસ્થાએ ખાનગી બ્રાઉઝિંગ બંધ કર્યું છે.
 <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="6606914854592108404">સલામતી માટે તપાસની પ્રક્રિયા ચાલી રહી છે…</translation>
@@ -1851,6 +1855,7 @@
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">તમારી છુપી ટૅબને લૉક કરવા માટે, ટચ ID, ચહેરાના ID કે પાસકોડનું સેટઅપ કરો.</translation>
 <translation id="750886945254958667">પછીથી ટૅબ ઉમેરવા માટે આ ગ્રૂપ રાખો અથવા જો તમને હવે તેનો ઍક્સેસ ન જોઈતો હોય તો તેને છોડી દો</translation>
+<translation id="7511099437872594216">ટૅબ</translation>
 <translation id="7511727374778217603">{COUNT,plural, =1{વધુમાં વધુ 1 ટૅબ ઉમેરો}one{વધુમાં વધુ {COUNT} ટૅબ ઉમેરો}other{વધુમાં વધુ {COUNT} ટૅબ ઉમેરો}}</translation>
 <translation id="7512909159512473473">પાસફ્રેઝ દાખલ કરો…</translation>
 <translation id="7514365320538308">ડાઉનલોડ કરો</translation>
@@ -1965,6 +1970,7 @@
 <translation id="7888562068293422208">બધું બંધ કરીએ?</translation>
 <translation id="7889910613639381518">Google Password Manager વિજેટ વડે સરળ અને સુરક્ષિત ઍક્સેસ.</translation>
 <translation id="7899199123054742721">બધી વાંચ્યા વગરની તરીકે માર્ક કરો</translation>
+<translation id="7909005666376403847">આ iPhoneનું સેટઅપ બાળક માટે કરવામાં આવ્યું છે</translation>
 <translation id="7911190106180361398">તમારી સંસ્થા તમને બધું જ સિંક કરવાની મંજૂરી આપતી નથી.</translation>
 <translation id="7918999344502274923"><ph name="SEARCH_ENGINE_NAME" />ની વિગતો છુપાવો</translation>
 <translation id="7921559948846049514">તમારા બૅકગ્રાઉન્ડ માટે થીમ, રંગ કે બીજું ઘણું પસંદ કરો</translation>

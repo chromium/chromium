@@ -116,6 +116,7 @@
 <translation id="138692594145659985">ตัวเลือกในการบันทึกการ์ด</translation>
 <translation id="1396260204083880024">ลงชื่อเข้าใช้ด้วย <ph name="USER_NAME" /> <ph name="USER_EMAIL" /> เปิดเมนูบัญชี</translation>
 <translation id="1397144142234474689">ซ่อนประวัติการเข้าชม</translation>
+<translation id="1399268420835656394">หากคุณไม่ใช่เด็ก คุณอาจต้องตรวจสอบอายุในบัญชี Apple ในอุปกรณ์นี้ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="1407135791313364759">เปิดทั้งหมด</translation>
 <translation id="1408847409015257906">แตะ "ความเป็นส่วนตัวและความปลอดภัย"</translation>
 <translation id="1411386976162024013">การค้นหาภาพด้วย Lens</translation>
@@ -555,6 +556,7 @@
 <translation id="2922210239002704889">ไปที่หน้าแรกหรือแป้นพิมพ์</translation>
 <translation id="2924940770243654951">เปิดในแท็บใหม่ที่ไม่ระบุตัวตน</translation>
 <translation id="2952278131021475699">การค้นหาด้วยกล้องโดยใช้ Lens</translation>
+<translation id="2953821385349876107">เลือกบัญชี Google บัญชีอื่น</translation>
 <translation id="2962516096219646456">ดูข้อมูลการป้อนข้อความอัตโนมัติทั้งหมด</translation>
 <translation id="2965594942405840553">การดำเนินการนี้จะยกเลิกไม่ได้</translation>
 <translation id="2969979262385602596">ไม่สามารถลงชื่อเข้าใช้ได้ โปรดลองอีกครั้งในภายหลัง</translation>
@@ -1439,6 +1441,7 @@
 <translation id="6090760257419195752">คำเตือนที่ถูกปิด</translation>
 <translation id="6094325891006032858">เปิด Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้น</translation>
 <translation id="6096965253650248286">พบ <ph name="COUNT" /> แท็บ</translation>
+<translation id="6099466082815574659">iPad เครื่องนี้ตั้งค่าไว้สำหรับเด็ก</translation>
 <translation id="6100617279104942061">ลงชื่อเข้าใช้ด้วย <ph name="USER_EMAIL" /> เปิดการตั้งค่า</translation>
 <translation id="6100676328067737810">ระบบจะบันทึกข้อมูลของคุณไว้ในบัญชี Google ซึ่งก็คือ <ph name="USER_EMAIL" /></translation>
 <translation id="610083648014322104">รับคำตอบที่เกี่ยวข้องตามเนื้อหาของหน้าที่คุณดูอยู่</translation>
@@ -1496,7 +1499,6 @@
 <translation id="6259928806013786178">เปิดใช้โหมดการอ่านไม่สำเร็จ</translation>
 <translation id="6268773951964630964">ค้นหารูปภาพที่คัดลอก</translation>
 <translation id="6271462272606946663">ซ่อน "คำขอเว็บไซต์เวอร์ชันมือถือ"</translation>
-<translation id="6271556257184622612">ถาม Google เกี่ยวกับแท็บและอื่นๆ</translation>
 <translation id="6271824294945464304">การแชร์รหัสผ่าน</translation>
 <translation id="628251768213143684">คุณจัดการข้อมูลที่บันทึกไว้ในบัญชี Google ได้ทุกเมื่อ</translation>
 <translation id="6284652193729350524">เสนอการแปล <ph name="LANGUAGE" /></translation>
@@ -1533,6 +1535,7 @@
 <translation id="6368102751067608420">หากต้องการลบข้อมูลในเครื่องมือจัดการรหัสผ่านทั้งหมด</translation>
 <translation id="6372558618707314581">ไปที่หน้าใดก็ได้ที่คุณต้องการ</translation>
 <translation id="6374469231428023295">ลองอีกครั้ง</translation>
+<translation id="6374514103145916800">ถาม</translation>
 <translation id="6383719166112032471">เปิดตำแหน่ง…</translation>
 <translation id="6387994324662817823">รหัสผ่านจะบันทึกอยู่ในเครื่องมือจัดการรหัสผ่านบน Google ในอุปกรณ์นี้เท่านั้น</translation>
 <translation id="6393156038355142111">แนะนำรหัสผ่านที่รัดกุม</translation>
@@ -1600,6 +1603,7 @@
 <translation id="6596481460663245319">ค้นหารูปภาพด้วย Google</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{รหัสผ่าน 1 รายการ}other{รหัสผ่าน # รายการ}}</translation>
 <translation id="6601302169302852717">บันทึกรูปภาพสำหรับ <ph name="USER_EMAIL" /> ไว้ใน Google Photos แล้ว</translation>
+<translation id="6602173570135186741">การป้อนข้อความอัตโนมัติและรหัสผ่าน</translation>
 <translation id="6603393121510733479">องค์กรปิดการท่องเว็บแบบส่วนตัวไว้
 <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="6606914854592108404">กำลังดำเนินการตรวจสอบความปลอดภัย…</translation>
@@ -1851,6 +1855,7 @@
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7508728395076009983">หากต้องการล็อกแท็บที่ไม่ระบุตัวตน ให้ตั้งค่า Touch ID, Face ID หรือรหัสผ่าน</translation>
 <translation id="750886945254958667">เก็บกลุ่มนี้ไว้เพื่อเพิ่มแท็บในภายหลัง หรือออกจากกลุ่มหากคุณไม่ต้องการเข้าถึงกลุ่มแล้ว</translation>
+<translation id="7511099437872594216">แท็บ</translation>
 <translation id="7511727374778217603">{COUNT,plural, =1{เพิ่มแท็บได้สูงสุด 1 แท็บ}other{เพิ่มแท็บได้สูงสุด {COUNT} แท็บ}}</translation>
 <translation id="7512909159512473473">ป้อนพาสเฟรส…</translation>
 <translation id="7514365320538308">ดาวน์โหลด</translation>
@@ -1965,6 +1970,7 @@
 <translation id="7888562068293422208">ปิดทั้งหมดใช่ไหม</translation>
 <translation id="7889910613639381518">เข้าถึงได้ง่ายและปลอดภัยด้วยวิดเจ็ตเครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="7899199123054742721">ทำเครื่องหมายทั้งหมดว่ายังไม่ได้อ่าน</translation>
+<translation id="7909005666376403847">iPhone เครื่องนี้ตั้งค่าไว้สำหรับเด็ก</translation>
 <translation id="7911190106180361398">องค์กรของคุณไม่อนุญาตให้ซิงค์ทุกอย่าง</translation>
 <translation id="7918999344502274923">ซ่อนรายละเอียด <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="7921559948846049514">เลือกธีม สี หรืออื่นๆ สำหรับพื้นหลัง</translation>

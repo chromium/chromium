@@ -64,6 +64,7 @@ Kontuan hartu beharrekoak:
 <translation id="2213327331203157297">Chrome-n blokeo modua desgaitzeko, desaktiba ezazu iPhone-an.</translation>
 <translation id="2242467532204595597">Erabili Chrome mezuetako, dokumentuetako eta beste aplikazioetako estekak sakatzen dituzunean.</translation>
 <translation id="2256384876478573507">Ireki Chrome bizkorrago iPhone-an arakatzeko prest zaudenean.</translation>
+<translation id="2270691132923135296">Erabiltzen hasteko, lortu Chrome-ri buruzko oinarrizko ezagutza lagungarriak</translation>
 <translation id="2311240109311056604">Chrome-ko Dino jokoa irekitzen du.</translation>
 <translation id="2339201583852607431">Pasahitza Google-ko kontuan gordeko da (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Onartzen dituzun webguneekin partekatuko du kokapena Chrome-k.</translation>
@@ -295,6 +296,7 @@ Chrome-ren erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikuste
 <translation id="7599894504325210080">Chrome-ren betetze automatikoaren ikuspegi zabaldua</translation>
 <translation id="7617512710641355143">Chrome kudeatzen da</translation>
 <translation id="7626032353295482388">Ongi etorri Chrome-ra</translation>
+<translation id="7634397654061173327">Chrome-n haurren segurtasunerako eginbideak lortzeko, haurrentzat konfiguratutako Google-ko kontu bat erabil dezakezu, edo Chrome konturik gabe erabili.</translation>
 <translation id="7641448682796883218">Chrome-rako aholkua: arakatze seguru hobetua</translation>
 <translation id="7642373780953416937">Jaso Chrome-k zuretzat automatikoki hautematen dituen pribatutasun- edo segurtasun-arazoei buruzko alertak.</translation>
 <translation id="7660356333829433649">Itzuli hona Chrome-ri etekinik handiena ateratzeko aholku erabilgarri gehiago jasotzeko.</translation>
@@ -327,6 +329,7 @@ Chrome-ren erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikuste
 <translation id="8245080522851805544">Mantendu arakatzea pribatu gailuaren autentifikazioaren bidez Chrome ixten duzunean</translation>
 <translation id="8248887045858762645">Chrome-ri buruzko aholkua</translation>
 <translation id="8265730590513812063">Ireki Chrome-ko menua</translation>
+<translation id="8284376267694582021">Haurren segurtasunerako eginbideak lortzeko, haurrentzat konfiguratutako Google-ko kontu bat erabil dezakezu, edo Chrome konturik gabe erabili. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">Ordainketa-metodoak eta helbideak ez dira enkriptatuko. Chrome-ko arakatze-historia ez da sinkronizatuko.
 
 Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Google-k ez du jasoko pasaesaldia, ezta gordeko ere. Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak<ph name="END_LINK" />.</translation>

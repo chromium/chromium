@@ -293,6 +293,7 @@
 <translation id="2251809247798634662">Նոր ինկոգնիտո պատուհան</translation>
 <translation id="2253927598983295051">Ընտրեք՝ ինչ տվյալներով կիսվել <ph name="APP_NAME" /> հավելվածի հետ</translation>
 <translation id="2261570557291037252">Հավելվածի մասին այլ տեղեկություններ</translation>
+<translation id="2270544918551255912">Մատը սահեցրեք էկրանի եզրից՝ հետ գնալու համար</translation>
 <translation id="2276696007612801991">Մտեք Google հաշիվ՝ ձեր գաղտնաբառերը ստուգելու համար</translation>
 <translation id="2281243904606300427"><ph name="TAB_TITLE" />, ընտրված ինկոգնիտո ներդիր</translation>
 <translation id="2286841657746966508">Վճարային հասցե</translation>
@@ -480,6 +481,7 @@
 <translation id="2989523299700148168">Վերջերս այցելած</translation>
 <translation id="2992473221983447149">Պատկերների նկարագրություն</translation>
 <translation id="2996291259634659425">Անցաբառի ստեղծում</translation>
+<translation id="2996682533106928201">Փակելու համար հպեք</translation>
 <translation id="2996809686854298943">Պահանջվում է URL-ը</translation>
 <translation id="3024215143424744261">Ընթերցման ռեժիմի կարգավորումները փակված են</translation>
 <translation id="3026955690410463085">Ներառել հղումը</translation>
@@ -684,6 +686,7 @@
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">վերջին 4 շաբաթվա</translation>
 <translation id="393697183122708255">Մատչելի միացված ձայնային որոնում չկա</translation>
+<translation id="3941718885865495207">Chrome Finds-ը միացնելու առաջարկով ներքևի էկրան</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, ամրացված ներդիր, որում նկարը նկարի մեջ է</translation>
 <translation id="3950820424414687140">Մուտք գործել</translation>
 <translation id="395377504920307820">Օգտագործել առանց հաշվի</translation>
@@ -830,6 +833,7 @@
 <translation id="4521489764227272523">Ընտրված տվյալները հեռացվել են Chrome-ից և ձեր համաժամացված սարքերից:
 
 Այցելությունների պատմությունը կարող է պահվել նաև ձեր Google հաշվում, օրինակ՝ որոնումների և Google-ի ծառայություններում ձեր գործողությունների տեսքով: Այդ տվյալները կարող եք գտնել <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> էջում:</translation>
+<translation id="4521637321901000942">Կառավարեք ձեր ընդլայնումները գործիքագոտում</translation>
 <translation id="4523326818319942067">վերջին 1 ժամը</translation>
 <translation id="452750746583162491">Ստուգեք ձեր համաժամացված տվյալները</translation>
 <translation id="4532845899244822526">Պանակի ընտրություն</translation>
@@ -1189,6 +1193,7 @@
 <translation id="6011308810877101166">Բարելավել որոնման առաջարկները</translation>
 <translation id="6013305291643746595">Սկզբում հները</translation>
 <translation id="6022659036123304283">Անհատականացրեք Chrome դիտարկիչը</translation>
+<translation id="6023820583797130428">Բացեք ընտրացանկը՝ հետ գնալու համար</translation>
 <translation id="6026538407078977628">Ցուցադրել լիաէկրան ռեժիմում</translation>
 <translation id="6030719887161080597">Կառավարեք կայքերի կողմից օգտագործվող տեղեկությունները՝ գովազդի արդյունավետությունը գնահատելու համար</translation>
 <translation id="6039379616847168523">Անցնել հաջորդ ներդիր</translation>
@@ -1633,6 +1638,7 @@
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ստանդարտ ներդիր}one{<ph name="TABS_COUNT_MANY" /> ստանդարտ ներդիր}other{<ph name="TABS_COUNT_MANY" /> ստանդարտ ներդիր}}</translation>
 <translation id="7603168929588204083">Անվավեր ամսաթիվ</translation>
 <translation id="7605594153474022051">Համաժամացումը չի աշխատում</translation>
+<translation id="7608245556672190037">Chrome Finds-ը միացնելու առաջարկով ներքևի էկրանը բացված է ամբողջությամբ</translation>
 <translation id="7612619742409846846">Մուտք եք գործել Google որպես՝</translation>
 <translation id="7612989789287281429">Մուտք…</translation>
 <translation id="7619072057915878432"><ph name="FILE_NAME" /> ֆայլի ներբեռնումը ձախողվեց՝ ցանցային սխալների պատճառով:</translation>
@@ -1640,6 +1646,7 @@
 <translation id="7628417132421583481">Անցնել Գաղտնաբառերի կառավարիչ</translation>
 <translation id="7630202231528827509">Մատակարարի URL-ը</translation>
 <translation id="7638584964844754484">Սխալ անցաբառ</translation>
+<translation id="764047009170754705">Chrome Finds-ը միացնելու առաջարկով պատուհանը փակվեց</translation>
 <translation id="7646499124171960488">Նախազգուշացնում է ձեզ ոչ ապահով հանրային կայքերի մասին</translation>
 <translation id="7646772052135772216">Գաղտնաբառերի համաժամացումը չի աշխատում</translation>
 <translation id="7655240423373329753">վերջին 7 օրը</translation>
@@ -1864,6 +1871,7 @@
 <translation id="8473863474539038330">Հասցեներ և այլ տեղեկություններ</translation>
 <translation id="847433688444405067">Դիտարկեք տարբեր սարքերում</translation>
 <translation id="8477178913400731244">Ջնջել տվյալները</translation>
+<translation id="8481771036036087705">Chrome Finds-ը միացնելու առաջարկով ներքևի էկրանը բացված է կիսով չափ</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">Ոչ ակտիվ պատուհաններ չկան</translation>
 <translation id="8493948351860045254">Տարածք ազատել</translation>

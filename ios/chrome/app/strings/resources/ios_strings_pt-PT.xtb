@@ -1499,7 +1499,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6259928806013786178">Falha do modo de leitura</translation>
 <translation id="6268773951964630964">Pesquisar imagem copiada</translation>
 <translation id="6271462272606946663">Ocultar Pedir site para dispositivos móveis</translation>
-<translation id="6271556257184622612">Pergunte ao Google sobre os separadores e muito mais</translation>
 <translation id="6271824294945464304">A partilhar a palavra-passe</translation>
 <translation id="628251768213143684">Pode sempre gerir o que é guardado na sua Conta Google</translation>
 <translation id="6284652193729350524">Propor tradução de <ph name="LANGUAGE" /></translation>
@@ -1536,6 +1535,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6368102751067608420">Para eliminar todos os dados do Gestor de Palavras-passe</translation>
 <translation id="6372558618707314581">Aceda a qualquer página que queira</translation>
 <translation id="6374469231428023295">Tentar novamente</translation>
+<translation id="6374514103145916800">Pedir</translation>
 <translation id="6383719166112032471">Abrir localização…</translation>
 <translation id="6387994324662817823">As palavras-passe são guardadas no Gestor de palavras-passe da Google apenas neste dispositivo.</translation>
 <translation id="6393156038355142111">Sugerir palavra-passe forte</translation>
@@ -1603,6 +1603,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6596481460663245319">Pesquisar imagem com o Google</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 palavra-passe}other{# palavras-passe}}</translation>
 <translation id="6601302169302852717">Imagem guardada no Google Fotos de <ph name="USER_EMAIL" /></translation>
+<translation id="6602173570135186741">Preenchimento automático e palavras-passe</translation>
 <translation id="6603393121510733479">A sua entidade desativou a navegação anónima.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="6606914854592108404">A verificação de segurança está a ser executada…</translation>
@@ -1854,6 +1855,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Para bloquear os separadores de navegação anónima, configure o Touch ID, o Face ID ou um código secreto.</translation>
 <translation id="750886945254958667">Mantenha este grupo para adicionar separadores mais tarde ou saia do grupo se já não quiser aceder a este</translation>
+<translation id="7511099437872594216">Separadores</translation>
 <translation id="7511727374778217603">{COUNT,plural, =1{Adicione até 1 separador}other{Adicione até {COUNT} separadores}}</translation>
 <translation id="7512909159512473473">Introduzir frase de acesso…</translation>
 <translation id="7514365320538308">Transferir</translation>

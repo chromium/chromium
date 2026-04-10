@@ -1300,10 +1300,12 @@
 <translation id="3037177537145227281">Παρακολούθηση τιμής</translation>
 <translation id="3037605927509011580">Όπα! Κάτι πήγε στραβά!</translation>
 <translation id="3039406992698062762">Οικογενειακά ταξίδια</translation>
+<translation id="3040435070100611531">Τα πάσα σας στο Πορτοφόλι Google</translation>
 <translation id="3041176923638368519">Δείτε τους όρους για τα οφέλη κάρτας</translation>
 <translation id="3041584414879052436">Η λίστα με τους εκδότες που χρησιμοποιούν τον τρόπο πληρωμής Αγοράστε τώρα, πληρώστε αργότερα είναι κλειστή.</translation>
 <translation id="3041612393474885105">Πληροφορίες πιστοποιητικού</translation>
 <translation id="3045769629416806687">Επικίνδυνα σπορ</translation>
+<translation id="3047054686095898948">Αποθηκεύστε τις πληροφορίες σας στο <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> και ολοκληρώστε πιο γρήγορα εργασίες, όπως τη συμπλήρωση φορμών σε όλα τα προϊόντα Google. Μπορείτε να <ph name="BEGIN_LINK" />διαχειριστείτε τις πληροφορίες σας<ph name="END_LINK" /> στο <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> για τον λογαριασμό <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">Ιστορικό της Απομακρυσμένης επιφάνειας εργασίας Chrome, συμπεριλαμβανομένων χρονικών σημάνσεων, κεντρικών υπολογιστών και αναγνωριστικών περιόδου λειτουργίας εφαρμογών πελατών</translation>
 <translation id="3052868890529250114">Συνήθως συνδέεστε με ασφάλεια σε ιστοτόπους, αλλά το Chrome δεν μπόρεσε να χρησιμοποιήσει ασφαλή σύνδεση αυτή τη φορά. Ένας υπεύθυνος επίθεσης μπορεί να προσπαθεί να παρακολουθήσει ή να τροποποιήσει τη σύνδεση δικτύου σας. <ph name="BEGIN_LEARN_MORE_LINK" />Μάθετε περισσότερα σχετικά με αυτή την ειδοποίηση<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="3052964831964880138">Πτώση τιμής <ph name="PRICE_DROP" /> για <ph name="PRODUCT_NAME" /></translation>
@@ -2722,6 +2724,7 @@
 <translation id="5255833070095767006">350 x 460 χιλ.</translation>
 <translation id="5257739419779698609">{0,plural, =1{Η πολιτική διαχειριστή δεν συνιστά την αντιγραφή αυτού του αρχείου σε <ph name="DESTINATION_NAME" />.}other{Η πολιτική διαχειριστή δεν συνιστά την αντιγραφή αυτών των αρχείων σε <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="5258473597674772367">Η ομάδα καρτελών <ph name="GROUP_NAME" /> δεν είναι πλέον διαθέσιμη</translation>
+<translation id="5262342527470539728">Οι πληροφορίες σας αποθηκεύονται στο <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> για τον λογαριασμό <ph name="ACCOUNT" /></translation>
 <translation id="5263867360296733198">Απαιτείται έλεγχος πριν από τη μεταφόρτωση</translation>
 <translation id="5266128565379329178">Βιβλιοδεσία στο επάνω μέρος</translation>
 <translation id="5269225904387178860">Τετραπλό τρύπημα στο κάτω μέρος</translation>
@@ -2800,7 +2803,6 @@
 <translation id="5381952079334035181">Ο χρήστης <ph name="MEMBER_FIRST_NAME" /> ενημέρωσε την καρτέλα <ph name="WEBSITE_TITLE" /></translation>
 <translation id="5383478552402031184">Επισκευές δαπέδων</translation>
 <translation id="5385857628869214740">Χιούμορ</translation>
-<translation id="5385966243497224160">Δεν είναι δυνατή η προεπισκόπηση URL χωρίς HTTPS</translation>
 <translation id="5386426401304769735">Η αλυσίδα πιστοποιητικού για αυτόν τον ιστότοπο περιέχει ένα πιστοποιητικό το οποίο είναι υπογεγραμμένο με χρήση SHA-1.</translation>
 <translation id="5391010642126249196">Επισκεφτήκατε</translation>
 <translation id="5391306025131596142">&amp;Άνοιγμα σελίδας ιστορικού</translation>
@@ -3851,7 +3853,6 @@
 <translation id="7003322000677139268">Ανταλλακτικά και αξεσουάρ οχημάτων</translation>
 <translation id="7004499039102548441">Πρόσφατες καρτέλες</translation>
 <translation id="7004562620237466965">Μόνο αποκρυπτογράφηση</translation>
-<translation id="700483187606163535">Οι πληροφορίες σας αποθηκεύονται στο <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> για τον λογαριασμό <ph name="ACCOUNT" />. Μπορείτε να το χρησιμοποιείτε σε όλα τα προϊόντα Google, για να συμπληρώνετε φόρμες πιο γρήγορα.</translation>
 <translation id="7006930604109697472">Αποστολή ούτως ή άλλως</translation>
 <translation id="7009364359744329733">Αυτή η κάρτα δεν είναι διαθέσιμη αυτή τη στιγμή. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="7010658264061801199">Τρόφιμα και ποτά</translation>
@@ -4625,7 +4626,6 @@
 <translation id="8194956568907463262">Παιχνίδια σκοποβολής</translation>
 <translation id="8198379961710069585">Κουμπί Ιστορικό αναζήτησης, ενεργοποιήστε το για αναζήτηση στο ιστορικό</translation>
 <translation id="8199437620497683918">Οπτικός δίσκος (Γυαλιστερός)</translation>
-<translation id="8199730148066603000">Δεν επιτρέπεται η προεπισκόπηση URL χωρίς HTTPS.</translation>
 <translation id="8200772114523450471">Συνέχιση</translation>
 <translation id="8202097416529803614">Σύνοψη παραγγελίας</translation>
 <translation id="8202370299023114387">Διένεξη</translation>
@@ -4773,6 +4773,7 @@
 Πρόσθετες λεπτομέρειες:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Επιτράπηκε η χρήση του μικροφώνου για αυτήν τη φορά</translation>
+<translation id="8421746712901926961">Αποθηκεύστε τις πληροφορίες σας στο <ph name="GOOGLE_WALLET_TITLE_1" /> και ολοκληρώστε πιο γρήγορα εργασίες, όπως τη συμπλήρωση φορμών σε όλα τα προϊόντα Google. Μπορείτε να <ph name="MANAGE_INFO_LINK" /> στο <ph name="GOOGLE_WALLET_TITLE_2" /> για τον λογαριασμό <ph name="ACCOUNT" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Αλλαγή</translation>
 <translation id="8426945547715537628">Να επιτρέπεται η παράκαμψη πληκτρολογίου;</translation>
@@ -4829,6 +4830,7 @@
 <translation id="8521812709849134608">Πάγκοι</translation>
 <translation id="8522180136695974431">Αναφορά και παρακολούθηση πίστωσης</translation>
 <translation id="8522552481199248698">Το Chrome μπορεί να σας βοηθήσει να προστατεύσετε τον Λογαριασμό σας Google και να αλλάξετε τον κωδικό πρόσβασής σας.</translation>
+<translation id="852450791482410042">Πληρωμή τώρα</translation>
 <translation id="8527228059738193856">Ηχεία</translation>
 <translation id="8527681393107582734">Γεωργία και δασοπονία</translation>
 <translation id="8528149813106025610">Παιδική ένδυση</translation>

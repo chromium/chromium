@@ -1300,10 +1300,12 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3037177537145227281">Sinusubaybayan ang presyo</translation>
 <translation id="3037605927509011580">Ay, Naku!</translation>
 <translation id="3039406992698062762">Biyaheng Pampamilya</translation>
+<translation id="3040435070100611531">Ang iyong mga pass sa Google Wallet</translation>
 <translation id="3041176923638368519">Tingnan ang mga tuntunin sa benepisyo sa card</translation>
 <translation id="3041584414879052436">Nakasara ang Listahan ng mga Buy-Now-Pay-Later na issuer.</translation>
 <translation id="3041612393474885105">Impormasyon sa Certificate</translation>
 <translation id="3045769629416806687">Mga Extreme Sport</translation>
+<translation id="3047054686095898948">I-save ang iyong impormasyon sa <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> at mas mabilis na tapusin ang mga bagay, tulad ng pagsagot ng mga form sa mga produkto ng Google. Puwede mong <ph name="BEGIN_LINK" />pamahalaan ang iyong impormasyon<ph name="END_LINK" /> sa <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> para sa <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">History ng Remote na Desktop ng Chrome, kabilang ang mga timestamp, host, at client session id</translation>
 <translation id="3052868890529250114">Kadalasang secure kang nakakakonekta sa mga site, pero hindi makagamit ng secure na koneksyon ang Chrome sa ngayon. Posibleng may attacker na sumusubok na alamin o baguhin ang iyong koneksyon ng network. <ph name="BEGIN_LEARN_MORE_LINK" />Matuto pa tungkol sa babalang ito<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> pagbaba ng presyo ng <ph name="PRODUCT_NAME" /></translation>
@@ -2800,7 +2802,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5381952079334035181">Na-update ni <ph name="MEMBER_FIRST_NAME" /> ang tab na “<ph name="WEBSITE_TITLE" />”</translation>
 <translation id="5383478552402031184">Pag-aayos ng Sahig</translation>
 <translation id="5385857628869214740">Katatawanan</translation>
-<translation id="5385966243497224160">Hindi ma-preview ang non-HTTPS URL</translation>
 <translation id="5386426401304769735">Naglalaman ang chain ng certificate para sa site na ito ng certificate na naka-sign gamit ang SHA-1.</translation>
 <translation id="5391010642126249196">Binisita mo</translation>
 <translation id="5391306025131596142">&amp;Buksan ang page ng history</translation>
@@ -3850,7 +3851,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="7003322000677139268">Mga Piyesa at Accessory ng Sasakyan</translation>
 <translation id="7004499039102548441">Mga Kamakailang Tab</translation>
 <translation id="7004562620237466965">Decipher Lang</translation>
-<translation id="700483187606163535">Naka-save ang iyong impormasyon sa <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> para sa <ph name="ACCOUNT" />. Puwede mo itong gamitin sa lahat ng produkto ng Google para mas mabilis na mapunan ang mga form.</translation>
 <translation id="7006930604109697472">Ipadala pa rin</translation>
 <translation id="7009364359744329733">Hindi available ngayon ang card na ito. Pakisubukan ulit sa ibang pagkakataon.</translation>
 <translation id="7010658264061801199">Pagkain at Inumin</translation>
@@ -4624,7 +4624,6 @@ Mga karagdagang detalye:
 <translation id="8194956568907463262">Mga Larong Barilan</translation>
 <translation id="8198379961710069585">Button na Maghanap sa History, i-activate para maghanap sa history</translation>
 <translation id="8199437620497683918">Optical Disc (Glossy)</translation>
-<translation id="8199730148066603000">Hindi pinapayagan ang pag-preview ng non-HTTPS URL.</translation>
 <translation id="8200772114523450471">Resume</translation>
 <translation id="8202097416529803614">Buod ng order</translation>
 <translation id="8202370299023114387">Hindi pagkakasundo</translation>
@@ -4829,6 +4828,7 @@ Mga karagdagang detalye:
 <translation id="8521812709849134608">Mga Countertop</translation>
 <translation id="8522180136695974431">Pag-uulat at Pagsubaybay sa Credit</translation>
 <translation id="8522552481199248698">Matutulungan ka ng Chrome na protektahan ang iyong Google Account at palitan ang password mo.</translation>
+<translation id="852450791482410042">Bayaran ngayon</translation>
 <translation id="8527228059738193856">Mga Speaker</translation>
 <translation id="8527681393107582734">Agrikultura at Forestry</translation>
 <translation id="8528149813106025610">Damit na Pambata</translation>

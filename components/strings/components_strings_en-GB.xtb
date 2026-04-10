@@ -1300,10 +1300,12 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3037177537145227281">Tracking price</translation>
 <translation id="3037605927509011580">Aw, Snap!</translation>
 <translation id="3039406992698062762">Family travel</translation>
+<translation id="3040435070100611531">Your Google Wallet passes</translation>
 <translation id="3041176923638368519">See card benefit terms</translation>
 <translation id="3041584414879052436">List of buy-now, pay-later issuers is closed.</translation>
 <translation id="3041612393474885105">Certificate Information</translation>
 <translation id="3045769629416806687">Extreme sports</translation>
+<translation id="3047054686095898948">Save your info in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> and get things done faster, like filling forms across Google products. You can <ph name="BEGIN_LINK" />manage your info<ph name="END_LINK" /> in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> for <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">Chrome Remote Desktop history, including timestamps, hosts and client session ids</translation>
 <translation id="3052868890529250114">You usually connect to sites securely, but Chrome couldn't use a secure connection this time. An attacker might be trying to eavesdrop or modify your network connection. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more about this warning<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> price drop on <ph name="PRODUCT_NAME" /></translation>
@@ -2800,7 +2802,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> updated tab '<ph name="WEBSITE_TITLE" />'</translation>
 <translation id="5383478552402031184">Flooring</translation>
 <translation id="5385857628869214740">Humour</translation>
-<translation id="5385966243497224160">Can't preview non-HTTPS URL</translation>
 <translation id="5386426401304769735">The certificate chain for this site contains a certificate signed using SHA-1.</translation>
 <translation id="5391010642126249196">You visited</translation>
 <translation id="5391306025131596142">&amp;Open history page</translation>
@@ -3850,7 +3851,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="7003322000677139268">Vehicle parts and accessories</translation>
 <translation id="7004499039102548441">Recent tabs</translation>
 <translation id="7004562620237466965">Decipher Only</translation>
-<translation id="700483187606163535">Your info is saved to <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> for <ph name="ACCOUNT" />. You can use it across Google products to fill forms faster.</translation>
 <translation id="7006930604109697472">Send anyway</translation>
 <translation id="7009364359744329733">This card is not available at the moment. Please try again later.</translation>
 <translation id="7010658264061801199">Food and drink</translation>
@@ -4624,7 +4624,6 @@ Additional details:
 <translation id="8194956568907463262">Shooter Games</translation>
 <translation id="8198379961710069585">Search history button, activate to search history</translation>
 <translation id="8199437620497683918">Optical disc (glossy)</translation>
-<translation id="8199730148066603000">Previewing non-HTTPS URL is not allowed.</translation>
 <translation id="8200772114523450471">Resume</translation>
 <translation id="8202097416529803614">Order summary</translation>
 <translation id="8202370299023114387">Conflict</translation>
@@ -4829,6 +4828,7 @@ Additional details:
 <translation id="8521812709849134608">Worktops</translation>
 <translation id="8522180136695974431">Credit Reporting and Monitoring</translation>
 <translation id="8522552481199248698">Chrome can help you protect your Google account and change your password.</translation>
+<translation id="852450791482410042">Pay now</translation>
 <translation id="8527228059738193856">Speakers</translation>
 <translation id="8527681393107582734">Agriculture and forestry</translation>
 <translation id="8528149813106025610">Children's clothing</translation>

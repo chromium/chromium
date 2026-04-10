@@ -1306,10 +1306,12 @@
 <translation id="3037177537145227281">Դուք հետևում եք այս ապրանքի գնին</translation>
 <translation id="3037605927509011580">Վա՛յ</translation>
 <translation id="3039406992698062762">Ընտանեկան ճանապարհորդություն</translation>
+<translation id="3040435070100611531">Google Wallet-ի ձեր քարտերը</translation>
 <translation id="3041176923638368519">Տեսնել քարտի առավելությունների պայմանները</translation>
 <translation id="3041584414879052436">Ապառիկ գնման ծառայությունների ցանկով էկրանը փակված է։</translation>
 <translation id="3041612393474885105">Վկայագրի տեղեկությունները</translation>
 <translation id="3045769629416806687">Էքստրեմալ սպորտաձևեր</translation>
+<translation id="3047054686095898948">Պահեք ձեր տեղեկությունները <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />-ում, որպեսզի ավելի արագ կատարեք տարբեր գործողություններ, օրինակ՝ ձևեր լրացնեք Google-ի պրոդուկտներում։ Դուք կարող եք <ph name="BEGIN_LINK" />կառավարել ձեր տեղեկությունները<ph name="END_LINK" /> <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" />-ում՝ <ph name="ACCOUNT" /> հաշվի համար</translation>
 <translation id="305162504811187366">Chrome հեռակա աշխատասեղանի պատմությունը, այդ թվում՝ ժամադրոշմները, խնամորդները և սպասառուների աշխատաշրջանների նույնացուցիչները</translation>
 <translation id="3052868890529250114">Սովորաբար դուք անվտանգ եղանակով եք միանում այս կայքերին, սակայն այս անգամ Chrome-ին չհաջողվեց ապահով միացում օգտագործել։ Հաքերները կարող են փորձել լրտեսել ձեր կապը կամ փոփոխել այն։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին այս նախազգուշացման մասին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> գնիջեցում <ph name="PRODUCT_NAME" />-ի համար</translation>
@@ -2728,6 +2730,7 @@
 <translation id="5255833070095767006">350 x 460 մմ</translation>
 <translation id="5257739419779698609">{0,plural, =1{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը պատճենել այստեղ՝ <ph name="DESTINATION_NAME" />}one{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը պատճենել այստեղ՝ <ph name="DESTINATION_NAME" />}other{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլերը պատճենել այստեղ՝ <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">«<ph name="GROUP_NAME" />» ներդիրների խումբն այլևս հասանելի չէ</translation>
+<translation id="5262342527470539728">Ձեր տեղեկությունները պահվել են <ph name="ACCOUNT" /> հաշվի համար՝ <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />-ում</translation>
 <translation id="5263867360296733198">Նախքան վերբեռնելը ստուգեք ֆայլերը</translation>
 <translation id="5266128565379329178">Ամրակար վերևում</translation>
 <translation id="5269225904387178860">Չորս անցք ներքևում</translation>
@@ -2808,7 +2811,6 @@
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> թարմացված ներդիր «<ph name="WEBSITE_TITLE" />»</translation>
 <translation id="5383478552402031184">Հատակապատում</translation>
 <translation id="5385857628869214740">Հումոր</translation>
-<translation id="5385966243497224160">Հնարավոր չէ նախադիտել առանց HTTPS-ի URL-ը</translation>
 <translation id="5386426401304769735">Այս կայքի վկայագրերի շարքում առկա է մեկ վկայագիր` SHA-1 ստորագրությամբ:</translation>
 <translation id="5391010642126249196">Դուք այցելել եք</translation>
 <translation id="5391306025131596142">&amp;Բացել պատմության էջը</translation>
@@ -3858,7 +3860,6 @@
 <translation id="7003322000677139268">Մեքենաների պահեստամասեր և աքսեսուարներ</translation>
 <translation id="7004499039102548441">Վերջին բացած ներդիրները</translation>
 <translation id="7004562620237466965">Միայն վերծանում</translation>
-<translation id="700483187606163535">Տեղեկությունները պահվում են <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />-ում <ph name="ACCOUNT" /> հաշվի համար Դուք կարող եք օգտագործել այն Google-ի ծառայություններում՝ ձևերն ավելի արագ լրացնելու համար։</translation>
 <translation id="7006930604109697472">Ուղարկել</translation>
 <translation id="7009364359744329733">Այս քարտն այս պահին հասանելի չէ։ Փորձեք ավելի ուշ։</translation>
 <translation id="7010658264061801199">Սնունդ և խմիչք</translation>
@@ -4631,7 +4632,6 @@
 <translation id="8194956568907463262">Հրաձգային խաղեր</translation>
 <translation id="8198379961710069585">«Որոնել պատմության մեջ» կոճակ, սեղմեք կոճակը՝ պատմության մեջ որոնելու համար</translation>
 <translation id="8199437620497683918">Օպտիկական սկավառակ (փայլուն)</translation>
-<translation id="8199730148066603000">Առանց HTTPS-ի URL-ի նախադիտումը արգելված է։</translation>
 <translation id="8200772114523450471">Շարունակել</translation>
 <translation id="8202097416529803614">Պատվերի ամփոփագիրը</translation>
 <translation id="8202370299023114387">Հակասություն</translation>
@@ -4779,6 +4779,7 @@
 Լրացուցիչ տեղեկություններ՝
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Տրվել է խոսափողն օգտագործելու մեկանգամյա թույլտվություն</translation>
+<translation id="8421746712901926961">Պահեք ձեր տեղեկությունները <ph name="GOOGLE_WALLET_TITLE_1" />-ում, որպեսզի ավելի արագ կատարեք տարբեր գործողություններ, օրինակ՝ ձևեր լրացնեք Google-ի պրոդուկտներում։ Դուք կարող եք <ph name="MANAGE_INFO_LINK" /> <ph name="ACCOUNT" /> հաշվի համար՝ <ph name="GOOGLE_WALLET_TITLE_2" />-ում։</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Փոխել</translation>
 <translation id="8426945547715537628">Թույլատրե՞լ ստեղնաշարի փոխարինումը</translation>
@@ -4835,6 +4836,7 @@
 <translation id="8521812709849134608">Սեղանածածկեր</translation>
 <translation id="8522180136695974431">Վարկային հաշվետվություններ և մոնիտորինգ</translation>
 <translation id="8522552481199248698">Chrome-ը կօգնի պաշտպանել ձեր Google հաշիվը և փոխել գաղտնաբառը։</translation>
+<translation id="852450791482410042">Վճարել հիմա</translation>
 <translation id="8527228059738193856">Բարձրախոսներ</translation>
 <translation id="8527681393107582734">Գյուղատնտեսություն և անտառային տնտեսություն</translation>
 <translation id="8528149813106025610">Մանկական հագուստ</translation>

@@ -1300,10 +1300,12 @@
 <translation id="3037177537145227281">விலையைக் கண்காணிக்கிறது</translation>
 <translation id="3037605927509011580">அச்சச்சோ!</translation>
 <translation id="3039406992698062762">குடும்பப் பயணம்</translation>
+<translation id="3040435070100611531">உங்கள் Google Wallet பாஸ்கள்</translation>
 <translation id="3041176923638368519">கார்டு பலன் தொடர்பான விதிமுறைகளைக் காட்டு</translation>
 <translation id="3041584414879052436">'இப்போது வாங்குங்கள், பிறகு பணம் செலுத்துங்கள்' முறையை வழங்குநர்களின் பட்டியல் மூடப்பட்டுள்ளது.</translation>
 <translation id="3041612393474885105">சான்றிதழ் தகவல்</translation>
 <translation id="3045769629416806687">அபாயகரமான விளையாட்டுகள்</translation>
+<translation id="3047054686095898948">உங்கள் தகவல்களை <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> இல் சேமித்து Google தயாரிப்புகள் எல்லாவற்றிலும் படிவங்களை நிரப்புவது போன்ற செயல்களை விரைவாக மேற்கொள்ளலாம். <ph name="ACCOUNT" />க்கான <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> இல் <ph name="BEGIN_LINK" />உங்கள் தகவல்களை நிர்வகிக்கலாம்<ph name="END_LINK" /></translation>
 <translation id="305162504811187366">நேர முத்திரைகள், ஹோஸ்ட்டுகள், கிளையண்ட் அமர்வு ஐடிகள் உட்பட இதுவரையிலான Chrome தொலைநிலை டெஸ்க்டாப் நிகழ்வுகள்</translation>
 <translation id="3052868890529250114">வழக்கமாக, தளங்களுடன் பாதுகாப்பாக இணைக்கப்படுவீர்கள். ஆனால் இந்த முறை பாதுகாப்பான இணைப்பை Chrome உலாவியால் பயன்படுத்த முடியவில்லை. ஹேக்கர் உங்கள் நடவடிக்கைகளைக் கண்காணிக்கலாம் அல்லது உங்கள் நெட்வொர்க் இணைப்பை மாற்ற முயலலாம். <ph name="BEGIN_LEARN_MORE_LINK" />இந்த எச்சரிக்கை குறித்து மேலும் தெரிந்துகொள்ளுங்கள்<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> விலை <ph name="PRICE_DROP" /> குறைந்துள்ளது</translation>
@@ -2796,7 +2798,6 @@
 <translation id="5381952079334035181">“<ph name="WEBSITE_TITLE" />” பக்கத்தை <ph name="MEMBER_FIRST_NAME" /> மாற்றியுள்ளார்</translation>
 <translation id="5383478552402031184">ஃபுளோரிங்</translation>
 <translation id="5385857628869214740">நகைச்சுவை</translation>
-<translation id="5385966243497224160">HTTPS அல்லாத URLலின் மாதிரிக்காட்சியைப் பார்க்க முடியாது</translation>
 <translation id="5386426401304769735">இந்தச் சான்றிதழ் சங்கிலியில், SHA-1ஐப் பயன்படுத்தி கையொப்பமிடப்பட்ட சான்றிதழ் உள்ளது.</translation>
 <translation id="5391010642126249196">கடைசியாகப் பார்த்தது</translation>
 <translation id="5391306025131596142">&amp;பதிவுகள் பக்கத்தைத் திற</translation>
@@ -3845,7 +3846,6 @@
 <translation id="7003322000677139268">வாகன உதிரிபாகங்கள் மற்றும் துணைக்கருவிகள்</translation>
 <translation id="7004499039102548441">சமீபத்திய தாவல்கள்</translation>
 <translation id="7004562620237466965">விளக்கத்திற்காக மட்டும்</translation>
-<translation id="700483187606163535">உங்கள் தகவல் <ph name="ACCOUNT" /> கணக்கின் <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> இல் சேமிக்கப்படும். படிவங்களை விரைவாக நிரப்ப Google தயாரிப்புகள் அனைத்திலும் இதைப் பயன்படுத்தலாம்.</translation>
 <translation id="7006930604109697472">பரவாயில்லை அனுப்பு</translation>
 <translation id="7009364359744329733">இந்தக் கார்டைத் தற்போது பயன்படுத்த முடியாது. பிறகு முயலவும்.</translation>
 <translation id="7010658264061801199">உணவு மற்றும் பானம்</translation>
@@ -4619,7 +4619,6 @@
 <translation id="8194956568907463262">ஷூட்டர் கேம்கள்</translation>
 <translation id="8198379961710069585">பதிவுகளைத் தேடுவதற்கான பட்டன், பதிவுகளைத் தேட அதை அழுத்தவும்</translation>
 <translation id="8199437620497683918">க்ளாஸ்ஸி ஆப்டிகல் டிஸ்க்</translation>
-<translation id="8199730148066603000">HTTPS அல்லாத URLலின் மாதிரிக்காட்சியைப் பார்ப்பது தடுக்கப்பட்டுள்ளது.</translation>
 <translation id="8200772114523450471">மீண்டும் தொடங்கு</translation>
 <translation id="8202097416529803614">ஆர்டர் பற்றிய சுருக்கவிவரம்</translation>
 <translation id="8202370299023114387">முரண்பாடு</translation>
@@ -4824,6 +4823,7 @@
 <translation id="8521812709849134608">கவுண்டர்டாப்</translation>
 <translation id="8522180136695974431">கடன் அறிக்கையிடல் &amp; கண்காணித்தல்</translation>
 <translation id="8522552481199248698">உங்கள் Google கணக்கைப் பாதுகாக்கவும் கடவுச்சொல்லை மாற்றவும் Chrome உதவும்.</translation>
+<translation id="852450791482410042">இப்போதே செலுத்துதல்</translation>
 <translation id="8527228059738193856">ஸ்பீக்கர்கள்</translation>
 <translation id="8527681393107582734">வேளாண்மை மற்றும் வனவியல்</translation>
 <translation id="8528149813106025610">சிறுவர் ஆடைகள்</translation>

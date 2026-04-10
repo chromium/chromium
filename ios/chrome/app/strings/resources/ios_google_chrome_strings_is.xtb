@@ -64,6 +64,7 @@ Hafðu í huga:
 <translation id="2213327331203157297">Til að slökkva á Lockdown Mode í Chrome þarftu að slökkva á því í iPhone-símanum þínum.</translation>
 <translation id="2242467532204595597">Notaðu Chrome þegar þú ýtir á tengla í skilaboðum, skjölum og öðrum forritum.</translation>
 <translation id="2256384876478573507">Opnaðu Chrome hraðar þegar þú ert tilbúin(n) að vafra í iPhone.</translation>
+<translation id="2270691132923135296">Kynntu þér grunnatriði Chrome til að hefjast handa</translation>
 <translation id="2311240109311056604">Opnar Chrome Dino-leikinn.</translation>
 <translation id="2339201583852607431">Aðgangsorðið þitt verður vistað á Google reikningnum þínum (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome deilir staðsetningunni þinni með vefsvæðum sem þú veitir heimild.</translation>
@@ -295,6 +296,7 @@ Til að skoða fleiri stillingar sem nota gögn til að bæta Chrome-upplifunina
 <translation id="7599894504325210080">Stækkað yfirlit yfir sjálfvirka útfyllingu í Chrome</translation>
 <translation id="7617512710641355143">Chrome er stýrt</translation>
 <translation id="7626032353295482388">Velkomin(n) í Chrome</translation>
+<translation id="7634397654061173327">Til að fá aðgang að öryggiseiginleikum fyrir börn í Chrome geturðu annaðhvort notað Google-reikning sem er settur upp fyrir barn eða notað Chrome án reiknings.</translation>
 <translation id="7641448682796883218">Chrome-ráð: Enn öruggari vefskoðun</translation>
 <translation id="7642373780953416937">Fáðu viðvaranir varðandi öll persónuverndar- eða öryggismál sem Chrome greinir sjálfkrafa fyrir þig.</translation>
 <translation id="7660356333829433649">Komdu aftur hingað fyrir nytsamlegri ábendingar um að fá sem mest út úr Chrome.</translation>
@@ -327,6 +329,7 @@ Til að skoða fleiri stillingar sem nota gögn til að bæta Chrome-upplifunina
 <translation id="8245080522851805544">Haltu þinni vefskoðun leydnri með sannvottun tækis þegar þú lokar Chrome</translation>
 <translation id="8248887045858762645">Chrome ábending</translation>
 <translation id="8265730590513812063">Opnaðu Chrome-valmyndina</translation>
+<translation id="8284376267694582021">Til að fá aðgang að öryggiseiginleikum fyrir börn geturðu annaðhvort notað Google-reikning sem er settur upp fyrir barn eða notað Chrome án reiknings. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">Greiðslumátar og vefföng eru ekki dulkóðuð. Vafraferill Chrome samstillist ekki.
 
 Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuðu gögnin þín. Aðgangsorðið er hvorki sent til né vistað hjá Google. Ef þú gleymir aðgangsorðinu eða vilt breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-gögnunum á reikningnum þínum<ph name="END_LINK" />.</translation>

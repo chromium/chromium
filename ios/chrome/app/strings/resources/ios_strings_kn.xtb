@@ -1499,7 +1499,6 @@
 <translation id="6259928806013786178">ರೀಡಿಂಗ್ ಮೋಡ್ ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="6268773951964630964">ಕಾಪಿ ಮಾಡಿದ ಚಿತ್ರವನ್ನು ಹುಡುಕಿ</translation>
 <translation id="6271462272606946663">ವಿನಂತಿ ಮೊಬೈಲ್ ಸೈಟ್‌ ಅನ್ನು ಮರೆಮಾಡಿ</translation>
-<translation id="6271556257184622612">ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಹೆಚ್ಚಿನವುಗಳ ಕುರಿತು Google ಗೆ ಕೇಳಿ</translation>
 <translation id="6271824294945464304">ಪಾಸ್‌ವರ್ಡ್ ಹಂಚಿಕೊಳ್ಳುವಿಕೆ</translation>
 <translation id="628251768213143684">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಿರುವುದನ್ನು ನೀವು ಯಾವಾಗಲೂ ನಿರ್ವಹಿಸಬಹುದು</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> ಅನ್ನು ಅನುವಾದಿಸುವ ಕೊಡುಗೆ</translation>
@@ -1536,6 +1535,7 @@
 <translation id="6368102751067608420">ಎಲ್ಲಾ ಪಾಸ್‌ವರ್ಡ್‌ಗಳ ನಿರ್ವಾಹಕ ಡೇಟಾವನ್ನು ಅಳಿಸಲು</translation>
 <translation id="6372558618707314581">ನೀವು ಇಷ್ಟಪಡುವ ಯಾವುದೇ ಪುಟಕ್ಕೆ ಹೋಗಿ</translation>
 <translation id="6374469231428023295">ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ</translation>
+<translation id="6374514103145916800">ಕೇಳಿ</translation>
 <translation id="6383719166112032471">ಸ್ಥಳವನ್ನು ತೆರೆಯಿರಿ…</translation>
 <translation id="6387994324662817823">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಈ ಸಾಧನದಲ್ಲಿನ Google ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕದಲ್ಲಿ ಮಾತ್ರ ಉಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="6393156038355142111">ಸದೃಢವಾದ ಪಾಸ್‌ವರ್ಡ್ ಸೂಚಿಸಿ</translation>
@@ -1603,6 +1603,7 @@
 <translation id="6596481460663245319">Google ಬಳಸಿಕೊಂಡು ಚಿತ್ರವನ್ನು ಹುಡುಕಿ</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 ಪಾಸ್‌ವರ್ಡ್}one{# ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}other{# ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}}</translation>
 <translation id="6601302169302852717"><ph name="USER_EMAIL" /> ಗೆ ಸಂಬಂಧಿಸಿದ Google Photos ನಲ್ಲಿ ಚಿತ್ರವನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="6602173570135186741">ಆಟೋಫಿಲ್ ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="6603393121510733479">ನಿಮ್ಮ ಸಂಸ್ಥೆ ಖಾಸಗಿ ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಆಫ್ ಮಾಡಿದೆ.
 <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="6606914854592108404">ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆಯು ರನ್ ಆಗುತ್ತಿದೆ…</translation>
@@ -1854,6 +1855,7 @@
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">ನಿಮ್ಮ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಲಾಕ್ ಮಾಡಲು, Touch ID, Face ID ಅಥವಾ ಪಾಸ್‌ಕೋಡ್ ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿ.</translation>
 <translation id="750886945254958667">ಟ್ಯಾಬ್‌ಗಳನ್ನು ನಂತರ ಸೇರಿಸಲು ಈ ಗುಂಪನ್ನು ಇರಿಸಿಕೊಳ್ಳಿ ಅಥವಾ ನಿಮಗೆ ಇನ್ನು ಮುಂದೆ ಇದಕ್ಕೆ ಆ್ಯಕ್ಸೆಸ್ ಬೇಕಿಲ್ಲದಿದ್ದರೆ ಇದನ್ನು ತೊರೆಯಿರಿ</translation>
+<translation id="7511099437872594216">ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="7511727374778217603">{COUNT,plural, =1{ಗರಿಷ್ಠ 1 ಟ್ಯಾಬ್ ಸೇರಿಸಿ}one{ಗರಿಷ್ಠ {COUNT} ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}other{ಗರಿಷ್ಠ {COUNT} ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}}</translation>
 <translation id="7512909159512473473">ಪಾಸ್‌ಫ್ರೇಸ್‌ ಅನ್ನು ನಮೂದಿಸಿ…</translation>
 <translation id="7514365320538308">ಡೌನ್‌ಲೋಡ್</translation>

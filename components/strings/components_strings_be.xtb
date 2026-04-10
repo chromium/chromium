@@ -1301,10 +1301,12 @@
 <translation id="3037177537145227281">Цана адсочваецца</translation>
 <translation id="3037605927509011580">Якая неспадзяванка!</translation>
 <translation id="3039406992698062762">Сямейныя падарожжы</translation>
+<translation id="3040435070100611531">Вашы карткі ў Google Кашальку</translation>
 <translation id="3041176923638368519">Паглядзець умовы выкарыстання пераваг карткі</translation>
 <translation id="3041584414879052436">Спіс эмітэнтаў, якія прапануюць куплю ў растэрміноўку, закрыты.</translation>
 <translation id="3041612393474885105">Інфармацыя аб сертыфікаце</translation>
 <translation id="3045769629416806687">Экстрэмальныя віды спорту</translation>
+<translation id="3047054686095898948">Выкарыстоўвайце <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> для захавання сваіх звестак. Гэта паскорыць працу ў розных прадуктах Google, напрыклад запаўненне форм. Вы можаце <ph name="BEGIN_LINK" />кіраваць сваёй інфармацыяй<ph name="END_LINK" /> у сэрвісе "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" />" для ўліковага запісу <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">Гісторыю Аддаленага працоўнага стала Chrome, у тым ліку меткі часу, хосты і ідэнтыфікатары сеансаў кліентаў</translation>
 <translation id="3052868890529250114">Звычайна падключэнне да сайтаў абаронена, але ў гэты раз Chrome не ўдалося ўстанавіць бяспечнае падключэнне. Магчыма, зламыснік спрабуе перахапіць або змяніць ваша падключэнне да сеткі. <ph name="BEGIN_LEARN_MORE_LINK" />Даведацца больш пра гэта папярэджанне<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Зніжэнне цаны на <ph name="PRODUCT_NAME" /> на <ph name="PRICE_DROP" /></translation>
@@ -2720,6 +2722,7 @@
 <translation id="5255833070095767006">350 x 460 мм</translation>
 <translation id="5257739419779698609">{0,plural, =1{Палітыка адміністратара не рэкамендуе капіраваць гэты файл сюды: <ph name="DESTINATION_NAME" />}one{Палітыка адміністратара не рэкамендуе капіраваць гэтыя файлы сюды: <ph name="DESTINATION_NAME" />}few{Палітыка адміністратара не рэкамендуе капіраваць гэтыя файлы сюды: <ph name="DESTINATION_NAME" />}many{Палітыка адміністратара не рэкамендуе капіраваць гэтыя файлы сюды: <ph name="DESTINATION_NAME" />}other{Палітыка адміністратара не рэкамендуе капіраваць гэтыя файлы сюды: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">Група ўкладак "<ph name="GROUP_NAME" />" больш не даступная</translation>
+<translation id="5262342527470539728">Звесткі ўліковага запісу <ph name="ACCOUNT" /> захоўваюцца тут: <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /></translation>
 <translation id="5263867360296733198">Перш чым запампоўваць файлы, іх неабходна праверыць</translation>
 <translation id="5266128565379329178">Пераплёт зверху</translation>
 <translation id="5269225904387178860">Чатыры дзіркі знізу</translation>
@@ -2798,7 +2801,6 @@
 <translation id="5381952079334035181">Карыстальнік <ph name="MEMBER_FIRST_NAME" /> змяніў укладку "<ph name="WEBSITE_TITLE" />"</translation>
 <translation id="5383478552402031184">Матэрыял для падлог</translation>
 <translation id="5385857628869214740">Гумар</translation>
-<translation id="5385966243497224160">Для URL-адрасоў, якія не выкарыстоўваюць пратакол HTTPS, перадпрагляд не падтрымліваецца</translation>
 <translation id="5386426401304769735">Ланцужок сертыфікатаў для гэтага сайта змяшчае сертыфікат, падпісаны з выкарыстаннем алгарытму SHA-1.</translation>
 <translation id="5391010642126249196">Наведана</translation>
 <translation id="5391306025131596142">&amp;Адкрыць старонку гісторыі</translation>
@@ -3848,7 +3850,6 @@
 <translation id="7003322000677139268">Аўтазапчасткі і аксесуары</translation>
 <translation id="7004499039102548441">Нядаўнія ўкладкі</translation>
 <translation id="7004562620237466965">Толькі расшыфроўка</translation>
-<translation id="700483187606163535">Ваша інфармацыя захоўваецца ў сэрвісе "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />" уліковага запісу <ph name="ACCOUNT" />. Вы можаце выкарыстоўваць яе ў прадуктах Google, каб хутчэй запаўняць формы.</translation>
 <translation id="7006930604109697472">Усё роўна адправіць</translation>
 <translation id="7009364359744329733">Гэта картка пакуль што недаступная, паўтарыце спробу пазней.</translation>
 <translation id="7010658264061801199">Ежа і напіткі</translation>
@@ -4622,7 +4623,6 @@
 <translation id="8194956568907463262">Шутары</translation>
 <translation id="8198379961710069585">Кнопка "Пошук у гісторыі". Актывуйце, каб выканаць пошук у гісторыі.</translation>
 <translation id="8199437620497683918">Глянцавы аптычны дыск</translation>
-<translation id="8199730148066603000">Ажыццяўляць перадпрагляд змесціва па URL-адрасах, якія не выкарыстоўваюць пратакол HTTPS, забаронена.</translation>
 <translation id="8200772114523450471">Узнавіць</translation>
 <translation id="8202097416529803614">Зводка па заказе</translation>
 <translation id="8202370299023114387">Канфлікт</translation>
@@ -4770,6 +4770,7 @@
 Падрабязныя звесткі:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Гэтым разам доступ да мікрафона дазволены</translation>
+<translation id="8421746712901926961">Выкарыстоўвайце <ph name="GOOGLE_WALLET_TITLE_1" /> для захавання сваіх звестак. Гэта паскорыць працу ў розных прадуктах Google, напрыклад запаўненне форм. <ph name="MANAGE_INFO_LINK" /> для ўліковага запісу <ph name="ACCOUNT" /> можна ў праграме "<ph name="GOOGLE_WALLET_TITLE_2" />".</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Змяніць</translation>
 <translation id="8426945547715537628">Дазволіць перавызначэнне клавіятуры?</translation>
@@ -4826,6 +4827,7 @@
 <translation id="8521812709849134608">Стальніцы</translation>
 <translation id="8522180136695974431">Службы крэдытнай гісторыі</translation>
 <translation id="8522552481199248698">Chrome можа дапамагчы абараніць Уліковы запіс Google і змяніць ваш пароль.</translation>
+<translation id="852450791482410042">Аплаціць зараз</translation>
 <translation id="8527228059738193856">Дынамікі</translation>
 <translation id="8527681393107582734">Сельская і лясная гаспадарка</translation>
 <translation id="8528149813106025610">Дзіцячае адзенне</translation>

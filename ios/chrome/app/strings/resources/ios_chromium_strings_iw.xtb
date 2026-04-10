@@ -134,6 +134,7 @@
 <translation id="377649297473651452">‏תצוגה מורחבת של המילוי האוטומטי ב-Chromium</translation>
 <translation id="3780779443901618967">‏מקבלים אזהרות לגבי אתרים מסוכנים, גם כאלה שלא היו ידועים ל-Google לפני כן, בעזרת ניתוח של יותר נתונים מאתרים בהשוואה להגנה הרגילה. אפשר לדלג על האזהרות מ-Chromium.</translation>
 <translation id="3805899903892079518">‏ל-Chromium אין גישה לתמונות או לסרטונים שלך. יש להפעיל את הגישה ב'הגדרות iOS' &gt; 'פרטיות' &gt; 'תמונות'.</translation>
+<translation id="3809591243528646631">‏כדי להפעיל תכונות בטיחות ילדים, אפשר להשתמש בחשבון Google שהוגדר לילד או ילדה או ב-Chromium ללא חשבון. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="3816686541346279443">‏‫Chromium יציע לשמור את הסיסמה.</translation>
 <translation id="3827545470516145620">במכשיר הזה יש אבטחה ברמה רגילה</translation>
 <translation id="3833326979834193417">‏Chromium מפעיל בדיקת אבטחה באופן אוטומטי מדי יום כדי להגן עליך מפני פרצות באבטחת מידע, אתרים לא בטוחים ועוד. מידע נוסף על בדיקת האבטחה זמין בהגדרות.</translation>
@@ -169,6 +170,7 @@
 כדי לשנות את ההגדרה הזו, עליך <ph name="BEGIN_LINK" />למחוק את נתוני Chromium בחשבון<ph name="END_LINK" />.</translation>
 <translation id="4578500311756617174">‏טיפ ל-Chromium: כדאי להגדיר את Chromium כדפדפן ברירת המחדל</translation>
 <translation id="458786853569524949">‏עכשיו אפשר להשתמש ב-Chromium כשלוחצים על קישורים באימיילים, במסמכים ובאפליקציות אחרות.</translation>
+<translation id="4625730353066900738">‏מידע בסיסי על Chromium שיעזור לך להתחיל</translation>
 <translation id="4633738821577273991">‏אפשר לקבל את הגרסה המשופרת של הגלישה הבטוחה גם לפרופיל Chromium הזה</translation>
 <translation id="4654936625574199632">‏כדי לעזור בשיפור האפליקציה, Chromium ישלח נתוני שימוש וקריסות אל Google. <ph name="BEGIN_LINK" />ניהול<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">‏הפעלת הסורק של Chromium</translation>
@@ -354,6 +356,7 @@
 <translation id="8900052431807804054">‏רוצה להשיג את רמת האבטחה הגבוהה ביותר של Chromium?</translation>
 <translation id="8908791447256515663">‏אפשר לגשת מהר יותר ל-Chromium דרך ה-Dock של האייפד.</translation>
 <translation id="8925569192291721236">‏אפשר לקבל עדכונים לגבי מעקב אחר מחירים וטיפים לגבי Chromium.</translation>
+<translation id="8939412301975414416">‏כדי להפעיל תכונות בטיחות ילדים ב-Chromium, אפשר להשתמש בחשבון Google שהוגדר לילד או ילדה או להשתמש ב-Chromium ללא חשבון.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך דקה ({THRESHOLD})}one{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך {THRESHOLD} דקות}two{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך {THRESHOLD} דקות}other{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך {THRESHOLD} דקות}}</translation>
 <translation id="8963279154877372067">‏אישור לקבלת התראות על הנחות ב-Chromium</translation>
 <translation id="8975812008711371178">‏חיפוש קולי ב-Chromium</translation>

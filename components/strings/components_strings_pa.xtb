@@ -1300,10 +1300,12 @@
 <translation id="3037177537145227281">ਕੀਮਤ 'ਤੇ ਨਜ਼ਰ ਰੱਖੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="3037605927509011580">ਆਹ, ਸਨੈਪ!</translation>
 <translation id="3039406992698062762">ਪਰਿਵਾਰਕ ਯਾਤਰਾ</translation>
+<translation id="3040435070100611531">ਤੁਹਾਡੇ Google Wallet ਪਾਸ</translation>
 <translation id="3041176923638368519">ਕਾਰਡ ਦੇ ਲਾਭ ਸੰਬੰਧੀ ਨਿਯਮ ਦੇਖੋ</translation>
 <translation id="3041584414879052436">'ਹੁਣੇ ਖਰੀਦੋ, ਬਾਅਦ ਵਿੱਚ ਭੁਗਤਾਨ ਕਰੋ' ਦੀ ਸੁਵਿਧਾ ਦੇਣ ਵਾਲੇ ਜਾਰੀਕਰਤਾਵਾਂ ਦੀ ਸੂਚੀ ਬੰਦ ਹੈ।</translation>
 <translation id="3041612393474885105">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਬਾਰੇ ਜਾਣਕਾਰੀ</translation>
 <translation id="3045769629416806687">ਜੋਖਮ ਭਰੀਆਂ ਖੇਡਾਂ</translation>
+<translation id="3047054686095898948"><ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> ਵਿੱਚ ਆਪਣੀ ਜਾਣਕਾਰੀ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ ਅਤੇ Google ਉਤਪਾਦਾਂ ਵਿੱਚ ਫ਼ਾਰਮ ਭਰਨ ਵਰਗੇ ਕੰਮ ਤੇਜ਼ੀ ਨਾਲ ਕਰੋ। ਤੁਸੀਂ <ph name="ACCOUNT" /> ਲਈ <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> ਵਿੱਚ <ph name="BEGIN_LINK" />ਆਪਣੀ ਜਾਣਕਾਰੀ ਦਾ ਪ੍ਰਬੰਧਨ<ph name="END_LINK" /> ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="305162504811187366">ਟਾਈਮਸਟੈਂਪਾਂ, ਹੋਸਟਾਂ ਅਤੇ ਕਲਾਇੰਟ ਸੈਸ਼ਨ ਆਈਡੀਆਂ ਸਮੇਤ, Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ ਦਾ ਇਤਿਹਾਸ</translation>
 <translation id="3052868890529250114">ਤੁਸੀਂ ਆਮ ਤੌਰ 'ਤੇ ਸਾਈਟਾਂ ਨਾਲ ਸੁਰੱਖਿਅਤ ਤਰੀਕੇ ਨਾਲ ਕਨੈਕਟ ਕਰਦੇ ਹੋ, ਪਰ Chrome ਇਸ ਸਮੇਂ ਕੋਈ ਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨ ਨਹੀਂ ਵਰਤ ਸਕਿਆ। ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਕੋਈ ਹਮਲਾਵਰ ਤੁਹਾਡੇ ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਨੂੰ ਗੁਪਤ ਢੰਗ ਨਾਲ ਸੁਣਨ ਜਾਂ ਸੋਧਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਿਹਾ ਹੋਵੇ। <ph name="BEGIN_LEARN_MORE_LINK" />ਇਸ ਚਿਤਾਵਨੀ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> ਨੂੰ <ph name="PRICE_DROP" /> ਕੀਮਤ ਘਟੀ</translation>
@@ -2718,6 +2720,7 @@
 <translation id="5255833070095767006">350 x 460 ਮਿ.ਮੀ.</translation>
 <translation id="5257739419779698609">{0,plural, =1{ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਇਸ ਫ਼ਾਈਲ ਨੂੰ <ph name="DESTINATION_NAME" /> ਵਿੱਚ ਕਾਪੀ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕਰਦੀ ਹੈ}one{ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਇਸ ਫ਼ਾਈਲ ਨੂੰ <ph name="DESTINATION_NAME" /> ਵਿੱਚ ਕਾਪੀ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕਰਦੀ ਹੈ}other{ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਇਨ੍ਹਾਂ ਫ਼ਾਈਲਾਂ ਨੂੰ <ph name="DESTINATION_NAME" /> ਵਿੱਚ ਕਾਪੀ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕਰਦੀ ਹੈ}}</translation>
 <translation id="5258473597674772367">"<ph name="GROUP_NAME" />" ਟੈਬ ਗਰੁੱਪ ਹੁਣ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
+<translation id="5262342527470539728">ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ <ph name="ACCOUNT" /> ਲਈ <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੀ ਗਈ ਹੈ</translation>
 <translation id="5263867360296733198">ਅੱਪਲੋਡ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਸਮੀਖਿਆ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="5266128565379329178">ਉੱਪਰ ਜਿਲਦਬੰਦ</translation>
 <translation id="5269225904387178860">ਹੇਠਾਂ ਚਾਰ ਮੋਰੀਆਂ</translation>
@@ -2796,7 +2799,6 @@
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> ਨੇ ਟੈਬ “<ph name="WEBSITE_TITLE" />” ਨੂੰ ਅੱਪਡੇਟ ਕੀਤਾ</translation>
 <translation id="5383478552402031184">ਫਰਸ਼ ਲਗਾਉਣਾ</translation>
 <translation id="5385857628869214740">ਹਾਸਰਸ</translation>
-<translation id="5385966243497224160">ਗੈਰ-HTTPS URL ਦੀ ਪੂਰਵ-ਝਲਕ ਨਹੀਂ ਦਿਖਾਈ ਜਾ ਸਕਦੀ</translation>
 <translation id="5386426401304769735">ਇਸ ਸਾਈਟ ਲਈ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਲੜੀ ਵਿੱਚ SHA-1 ਦੀ ਵਰਤੋਂ ਕਰਕੇ ਹਸਤਾਖਰ ਕੀਤਾ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਸ਼ਾਮਲ ਹੈ।</translation>
 <translation id="5391010642126249196">ਤੁਸੀਂ ਦੇਖੀਆਂ</translation>
 <translation id="5391306025131596142">&amp;ਇਤਿਹਾਸ ਪੰਨਾ ਖੋਲ੍ਹੋ</translation>
@@ -3845,7 +3847,6 @@
 <translation id="7003322000677139268">ਵਾਹਨ ਦੇ ਪੁਰਜ਼ੇ ਅਤੇ ਐਕਸੈਸਰੀਆਂ</translation>
 <translation id="7004499039102548441">ਹਾਲੀਆ ਟੈਬਸ</translation>
 <translation id="7004562620237466965">ਕੇਵਲ ਡੈਸੀਫਰ</translation>
-<translation id="700483187606163535">ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ <ph name="ACCOUNT" /> ਲਈ <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੀ ਗਈ ਹੈ। ਤੁਸੀਂ ਇਸਦੀ ਵਰਤੋਂ Google ਉਤਪਾਦਾਂ ਵਿੱਚ ਫ਼ਾਰਮਾਂ ਨੂੰ ਤੇਜ਼ੀ ਨਾਲ ਭਰਨ ਲਈ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="7006930604109697472">ਫੇਰ ਵੀ ਭੇਜੋ</translation>
 <translation id="7009364359744329733">ਫ਼ਿਲਹਾਲ ਇਹ ਕਾਰਡ ਉਪਲਬਧ ਨਹੀਂ ਹੈ, ਕਿਰਪਾ ਕਰਕੇ ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="7010658264061801199">ਖਾਣ-ਪੀਣ</translation>
@@ -4618,7 +4619,6 @@
 <translation id="8194956568907463262">ਨਿਸ਼ਾਨੇਬਾਜ਼ੀ ਵਾਲੀਆਂ ਗੇਮਾਂ</translation>
 <translation id="8198379961710069585">'ਖੋਜ ਇਤਿਹਾਸ' ਬਟਨ, ਖੋਜ ਇਤਿਹਾਸ ਲਈ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
 <translation id="8199437620497683918">ਔਪਟੀਕਲ ਡਿਸਕ (ਗਲੋਸੀ)</translation>
-<translation id="8199730148066603000">ਗੈਰ-HTTPS URL ਦੀ ਪੂਰਵ-ਝਲਕ ਦਿਖਾਉਣ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ।</translation>
 <translation id="8200772114523450471">ਦੁਬਾਰਾ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="8202097416529803614">ਆਰਡਰ ਸਾਰਾਂਸ਼</translation>
 <translation id="8202370299023114387">ਵਿਵਾਦ</translation>
@@ -4766,6 +4766,7 @@
 ਵਧੀਕ ਵੇਰਵੇ:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">ਇਸ ਸਮੇਂ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਆਗਿਆ ਹੈ</translation>
+<translation id="8421746712901926961"><ph name="GOOGLE_WALLET_TITLE_1" /> ਵਿੱਚ ਆਪਣੀ ਜਾਣਕਾਰੀ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ ਅਤੇ Google ਉਤਪਾਦਾਂ ਵਿੱਚ ਫ਼ਾਰਮ ਭਰਨ ਵਰਗੇ ਕੰਮ ਤੇਜ਼ੀ ਨਾਲ ਕਰੋ। ਤੁਸੀਂ <ph name="ACCOUNT" /> ਲਈ <ph name="GOOGLE_WALLET_TITLE_2" /> ਵਿੱਚ <ph name="MANAGE_INFO_LINK" /> ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">ਬਦਲੋ</translation>
 <translation id="8426945547715537628">ਕੀ ਕੀ-ਬੋਰਡ ਓਵਰਰਾਈਡ ਨੂੰ ਆਗਿਆ ਦੇਣੀ ਹੈ?</translation>
@@ -4822,6 +4823,7 @@
 <translation id="8521812709849134608">ਕਾਊਂਟਰਟਾਪ</translation>
 <translation id="8522180136695974431">ਕ੍ਰੈਡਿਟ ਰਿਪੋਰਟਿੰਗ ਅਤੇ ਨਿਗਰਾਨੀ</translation>
 <translation id="8522552481199248698">Chrome ਤੁਹਾਡੇ Google ਖਾਤੇ ਦੀ ਸੁਰੱਖਿਆ ਕਰਨ ਅਤੇ ਪਾਸਵਰਡ ਬਦਲਣ ਵਿੱਚ ਤੁਹਾਡੀ ਮਦਦ ਕਰ ਸਕਦਾ ਹੈ।</translation>
+<translation id="852450791482410042">ਹੁਣੇ ਭੁਗਤਾਨ ਕਰੋ</translation>
 <translation id="8527228059738193856">ਸਪੀਕਰ</translation>
 <translation id="8527681393107582734">ਖੇਤੀਬਾੜੀ ਅਤੇ ਵਣ ਵਿਗਿਆਨ</translation>
 <translation id="8528149813106025610">ਬੱਚਿਆਂ ਦੇ ਕੱਪੜੇ</translation>

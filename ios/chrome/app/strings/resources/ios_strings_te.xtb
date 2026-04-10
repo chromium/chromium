@@ -116,6 +116,7 @@
 <translation id="138692594145659985">కార్డ్‌ను సేవ్ చేయడానికి ఆప్షన్‌లు</translation>
 <translation id="1396260204083880024"><ph name="USER_NAME" />‌గా సైన్ ఇన్ చేశారు. <ph name="USER_EMAIL" />. ఖాతా మెనూను తెరవండి.</translation>
 <translation id="1397144142234474689">హిస్టరీని దాచండి</translation>
+<translation id="1399268420835656394">మీరు చిన్నారి కాకపోతే, ఈ డివైజ్‌లోని Apple ఖాతాలో వయస్సును చెక్ చేసుకోవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="1407135791313364759">అన్నీ తెరువు</translation>
 <translation id="1408847409015257906">"గోప్యత &amp; సెక్యూరిటీ"ని ట్యాప్ చేయండి.</translation>
 <translation id="1411386976162024013">Lens విజువల్ సెర్చ్</translation>
@@ -555,6 +556,7 @@
 <translation id="2922210239002704889">మీ హోమ్ పేజీ లేదా కీబోర్డ్‌కు వెళ్లండి</translation>
 <translation id="2924940770243654951">కొత్త అజ్ఞాత ట్యాబ్‌ను తెరవండి</translation>
 <translation id="2952278131021475699">Lens కెమెరా సెర్చ్</translation>
+<translation id="2953821385349876107">వేరొక Google ఖాతాను ఎంచుకోండి</translation>
 <translation id="2962516096219646456">మొత్తం ఆటోఫిల్ డేటాను చూడండి</translation>
 <translation id="2965594942405840553">ఈ చర్యను రద్దు చేయలేరు</translation>
 <translation id="2969979262385602596">సైన్ ఇన్ చేయడం విఫలమైంది. దయచేసి తర్వాత మళ్లీ ట్రై చేయండి.</translation>
@@ -1439,6 +1441,7 @@
 <translation id="6090760257419195752">విస్మరించిన హెచ్చరికలు</translation>
 <translation id="6094325891006032858">మెరుగైన సురక్షిత బ్రౌజింగ్‌ను ఆన్ చేయండి</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> కనుగొనబడింది</translation>
+<translation id="6099466082815574659">ఈ iPad చిన్నారి కోసం సెటప్ చేయబడింది</translation>
 <translation id="6100617279104942061"><ph name="USER_EMAIL" />‌గా సైన్ ఇన్ చేశారు. సెట్టింగ్‌లను తెరుస్తుంది.</translation>
 <translation id="6100676328067737810">మీ డేటా మీ Google ఖాతా, <ph name="USER_EMAIL" />‌లో సేవ్ అవుతుంది</translation>
 <translation id="610083648014322104">మీరు ఉన్న పేజీ కంటెంట్ ఆధారంగా సంబంధిత సమాధానాలను పొందండి</translation>
@@ -1496,7 +1499,6 @@
 <translation id="6259928806013786178">రీడింగ్ మోడ్ విఫలమైంది</translation>
 <translation id="6268773951964630964">కాపీ చేయబడిన ఇమేజ్ కోసం సెర్చ్ చేయండి</translation>
 <translation id="6271462272606946663">'మొబైల్ సైట్‌ను రిక్వెస్ట్ చేయండి'ని దాచండి</translation>
-<translation id="6271556257184622612">ట్యాబ్‌లు, మరిన్నింటి గురించి Googleను అడగండి</translation>
 <translation id="6271824294945464304">పాస్‌వర్డ్‌లను షేర్ చేయడం</translation>
 <translation id="628251768213143684">మీ Google ఖాతాలో సేవ్ అయిన దానిని మీరు ఎప్పుడైనా మేనేజ్ చేయవచ్చు</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" />లోకి అనువాదం అందించే సూచన</translation>
@@ -1533,6 +1535,7 @@
 <translation id="6368102751067608420">పాస్‌వర్డ్ మేనేజర్ డేటాను అంతటినీ తొలగించడానికి</translation>
 <translation id="6372558618707314581">మీకు నచ్చిన ఏ పేజీకైనా వెళ్లండి</translation>
 <translation id="6374469231428023295">మళ్లీ ట్రై చేయండి</translation>
+<translation id="6374514103145916800">అడగండి</translation>
 <translation id="6383719166112032471">లొకేషన్‌ను తెరవండి…</translation>
 <translation id="6387994324662817823">పాస్‌వర్డ్‌లు ఈ పరికరంలోని Google Password Managerలో మాత్రమే సేవ్ చేయబడతాయి.</translation>
 <translation id="6393156038355142111">శక్తివంతమైన పాస్‌వర్డ్‌ని సూచించు</translation>
@@ -1600,6 +1603,7 @@
 <translation id="6596481460663245319">Google ద్వారా ఇమేజ్‌ను సెర్చ్ చేయండి</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 పాస్‌వర్డ్}other{# పాస్‌వర్డ్‌లు}}</translation>
 <translation id="6601302169302852717"><ph name="USER_EMAIL" /> కోసం Google Photosలో ఇమేజ్ సేవ్ అయింది</translation>
+<translation id="6602173570135186741">ఆటోఫిల్, పాస్‌వర్డ్‌లు</translation>
 <translation id="6603393121510733479">మీ సంస్థ, ప్రైవేట్ బ్రౌజింగ్‌ను ఆఫ్ చేసింది.
 <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="6606914854592108404">సేఫ్టీ చెక్ రన్ అవుతోంది…</translation>
@@ -1851,6 +1855,7 @@
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">మీ అజ్ఞాత ట్యాబ్‌లను లాక్ చేయడానికి, టచ్ ID, ఫేస్ ID లేదా పాస్‌కోడ్‌ను సెటప్ చేయండి.</translation>
 <translation id="750886945254958667">తర్వాత ట్యాబ్‌లను జోడించడానికి ఈ గ్రూప్‌ను అలాగే ఉంచుకోండి లేదా మీరు ఇకపై దీనికి యాక్సెస్ చేయకూడదనుకుంటే వదిలివేయండి</translation>
+<translation id="7511099437872594216">ట్యాబ్‌లు</translation>
 <translation id="7511727374778217603">{COUNT,plural, =1{గరిష్ఠంగా 1 ట్యాబ్‌ను జోడించండి}other{గరిష్ఠంగా {COUNT} ట్యాబ్‌లను జోడించండి}}</translation>
 <translation id="7512909159512473473">రహస్య పదబంధాన్ని ఎంటర్ చేయండి…</translation>
 <translation id="7514365320538308">డౌన్‌లోడ్ చేయండి</translation>
@@ -1965,6 +1970,7 @@
 <translation id="7888562068293422208">అన్నింటినీ మూసివేయాలా?</translation>
 <translation id="7889910613639381518">Google Password Manager విడ్జెట్‌తో సులభమైన, సురక్షితమైన యాక్సెస్.</translation>
 <translation id="7899199123054742721">అన్నీ చదవనివిగా మార్క్ చేయండి</translation>
+<translation id="7909005666376403847">ఈ iPhone చిన్నారి కోసం సెటప్ చేయబడింది</translation>
 <translation id="7911190106180361398">అన్నింటిని సింక్ చేయడానికి మీ సంస్థ మిమ్మల్ని అనుమతించదు.</translation>
 <translation id="7918999344502274923"><ph name="SEARCH_ENGINE_NAME" /> వివరాలను దాచండి</translation>
 <translation id="7921559948846049514">మీ బ్యాక్‌గ్రౌండ్ కోసం థీమ్, రంగు లేదా మరిన్నింటిని ఎంచుకోండి</translation>

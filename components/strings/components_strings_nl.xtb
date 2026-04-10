@@ -1300,10 +1300,12 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3037177537145227281">Prijs wordt gevolgd</translation>
 <translation id="3037605927509011580">Asjemenou!</translation>
 <translation id="3039406992698062762">Gezinsreizen</translation>
+<translation id="3040435070100611531">Je Google Wallet-kaarten</translation>
 <translation id="3041176923638368519">Voorwaarden voor kaartvoordelen bekijken</translation>
 <translation id="3041584414879052436">Lijst met aanbieders van Koop nu, betaal later is gesloten.</translation>
 <translation id="3041612393474885105">Certificaatgegevens</translation>
 <translation id="3045769629416806687">Extreme sporten</translation>
+<translation id="3047054686095898948">Sla je informatie op in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> en doe sneller dingen, zoals formulieren invullen in Google-producten. Je kunt <ph name="BEGIN_LINK" />je informatie beheren<ph name="END_LINK" /> voor <ph name="ACCOUNT" /> in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /></translation>
 <translation id="305162504811187366">Chrome Remote Desktop-geschiedenis, waaronder tijdstempels, hosts en clientsessie-ID's</translation>
 <translation id="3052868890529250114">Meestal maak je veilig verbinding met sites, maar Chrome kan op dit moment geen beveiligde verbinding gebruiken. Een aanvaller probeert je netwerkverbinding af te luisteren of aan te passen. <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie over deze waarschuwing<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Prijsdaling van <ph name="PRICE_DROP" /> voor <ph name="PRODUCT_NAME" /></translation>
@@ -2794,7 +2796,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> heeft het tabblad <ph name="WEBSITE_TITLE" /> geüpdatet</translation>
 <translation id="5383478552402031184">Vloeren</translation>
 <translation id="5385857628869214740">Humor</translation>
-<translation id="5385966243497224160">Kan geen voorbeeld van een niet-HTTPS-URL weergeven</translation>
 <translation id="5386426401304769735">De certificaatketen voor deze site bevat een certificaat dat is ondertekend met SHA-1.</translation>
 <translation id="5391010642126249196">Je bezocht deze website</translation>
 <translation id="5391306025131596142">Geschiedenispagina &amp;openen</translation>
@@ -3843,7 +3844,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="7003322000677139268">Voertuigonderdelen en -accessoires</translation>
 <translation id="7004499039102548441">Recente tabbladen</translation>
 <translation id="7004562620237466965">Alleen decoderen</translation>
-<translation id="700483187606163535">Je informatie wordt opgeslagen in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> voor <ph name="ACCOUNT" />. Je kunt deze gebruiken in Google-producten om formulieren sneller in te vullen.</translation>
 <translation id="7006930604109697472">Toch sturen</translation>
 <translation id="7009364359744329733">Deze kaart is op dit moment niet beschikbaar. Probeer het later opnieuw.</translation>
 <translation id="7010658264061801199">Eten en drinken</translation>
@@ -4617,7 +4617,6 @@ Aanvullende informatie:
 <translation id="8194956568907463262">Schietgames</translation>
 <translation id="8198379961710069585">Knop Geschiedenis doorzoeken, activeer deze om in de geschiedenis te zoeken</translation>
 <translation id="8199437620497683918">Optische schijf (glanzend)</translation>
-<translation id="8199730148066603000">Je kunt geen voorbeeld van een niet-HTTPS-URL weergeven.</translation>
 <translation id="8200772114523450471">Doorgaan</translation>
 <translation id="8202097416529803614">Besteloverzicht</translation>
 <translation id="8202370299023114387">Conflict</translation>
@@ -4822,6 +4821,7 @@ Aanvullende informatie:
 <translation id="8521812709849134608">Werkbladen</translation>
 <translation id="8522180136695974431">Kredietregistratie en -controle</translation>
 <translation id="8522552481199248698">Chrome kan je helpen je Google-account te beschermen en je wachtwoord te wijzigen.</translation>
+<translation id="852450791482410042">Nu betalen</translation>
 <translation id="8527228059738193856">Speakers</translation>
 <translation id="8527681393107582734">Landbouw en bosbouw</translation>
 <translation id="8528149813106025610">Kinderkleding</translation>

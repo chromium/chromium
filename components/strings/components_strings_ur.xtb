@@ -1300,10 +1300,12 @@
 <translation id="3037177537145227281">قیمت ٹریک کی جا رہی ہے</translation>
 <translation id="3037605927509011580">ارے، رکیں!</translation>
 <translation id="3039406992698062762">فیملی کے ساتھ سفر</translation>
+<translation id="3040435070100611531">‏آپ کے Google والٹ پاسز</translation>
 <translation id="3041176923638368519">کارڈ کے فوائد کی شرائط دیکھیں</translation>
 <translation id="3041584414879052436">ابھی خریدیں، ادائیگی بعد میں کریں جاری کنندگان کی فہرست بند ہے۔</translation>
 <translation id="3041612393474885105">سرٹیفکیٹ کی معلومات</translation>
 <translation id="3045769629416806687">خطرناک کھیل</translation>
+<translation id="3047054686095898948">‏اپنی معلومات کو <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> میں محفوظ کریں اور Google پروڈکٹس پر فارمز پُر کرنے جیسے کام تیزی سے کریں۔ آپ <ph name="ACCOUNT" /> کے لیے <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> میں <ph name="BEGIN_LINK" />اپنی معلومات کا نظم<ph name="END_LINK" /> کر سکتے ہیں</translation>
 <translation id="305162504811187366">‏بشمول ٹائم سٹیمپس، میزبانوں اور کلائنٹ سیشن IDs کے Chrome ریموٹ ڈیسک ٹاپ کی سرگزشت</translation>
 <translation id="3052868890529250114">‏آپ ان سائٹس سے عموماً محفوظ طریقے سے منسلک ہوتے ہیں لیکن اس مرتبہ Chrome محفوظ کنکشن کا استعمال نہیں کر سکا۔ کوئی حملہ آور آپ کے نیٹ ورک کنکشن کی جاسوسی یا اس میں ترمیم کرنے کی کوشش کر سکتا ہے۔ <ph name="BEGIN_LEARN_MORE_LINK" />اس وارننگ کے بارے میں مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> سے قیمت میں <ph name="PRICE_DROP" /> گراوٹ</translation>
@@ -2722,6 +2724,7 @@
 <translation id="5255833070095767006">‏‎350 x 460 ملی میٹر</translation>
 <translation id="5257739419779698609">{0,plural, =1{منتظم کی پالیسی اس فائل کو <ph name="DESTINATION_NAME" /> میں کاپی کرنے کی تجویز نہیں کرتی ہے}other{منتظم کی پالیسی ان فائلز کو <ph name="DESTINATION_NAME" /> میں کاپی کرنے کی تجویز نہیں کرتی ہے}}</translation>
 <translation id="5258473597674772367">‫"<ph name="GROUP_NAME" />" ٹیب گروپ اب دستیاب نہیں ہے</translation>
+<translation id="5262342527470539728">آپ کی معلومات <ph name="ACCOUNT" /> کیلئے <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> میں محفوظ کی گئی ہے</translation>
 <translation id="5263867360296733198">اپ لوڈ کرنے سے پہلے جائزہ لینا ضروری ہے</translation>
 <translation id="5266128565379329178">اوپر باندھیں</translation>
 <translation id="5269225904387178860">نیچے مستطیل سوراخ</translation>
@@ -2800,7 +2803,6 @@
 <translation id="5381952079334035181">‫<ph name="MEMBER_FIRST_NAME" /> نے ٹیب "<ph name="WEBSITE_TITLE" />" کو اپ ڈیٹ کر دیا</translation>
 <translation id="5383478552402031184">فرش سازی</translation>
 <translation id="5385857628869214740">مزاح</translation>
-<translation id="5385966243497224160">‏غیر HTTPS URL کا پیش منظر نہیں دیکھ سکتے</translation>
 <translation id="5386426401304769735">‏اس سائٹ کیلئے سرٹیفکیٹ چین میں SHA-1 کا استعمال کر کے دستخط کردہ سرٹیفکیٹ شامل ہے۔</translation>
 <translation id="5391010642126249196">آپ کے ملاحظہ کردہ ٹیبز</translation>
 <translation id="5391306025131596142">سرگزشت کا صفحہ &amp;کھولیں</translation>
@@ -3851,7 +3853,6 @@
 <translation id="7003322000677139268">گاڑی کے پرزے اور لوازمات</translation>
 <translation id="7004499039102548441">حالیہ ٹیبز</translation>
 <translation id="7004562620237466965">صرف ڈی سائفر</translation>
-<translation id="700483187606163535">‏آپ کی معلومات <ph name="ACCOUNT" /> کے <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> میں محفوظ کی گئی ہے۔ آپ فارمز کو تیزی سے پُر کرنے کے لیے اسے Google پروڈکٹس پر استعمال کر سکتے ہیں۔</translation>
 <translation id="7006930604109697472">بہر صورت بھیجیں</translation>
 <translation id="7009364359744329733">یہ کارڈ اس وقت دستیاب نہیں ہے۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="7010658264061801199">غذا اور مشروب</translation>
@@ -4624,7 +4625,6 @@
 <translation id="8194956568907463262">شوٹر گیمز</translation>
 <translation id="8198379961710069585">تلاش کی سرگزشت بٹن، تلاش کی سرگزشت کے لیے فعال کریں</translation>
 <translation id="8199437620497683918">آپٹیکل ڈسک (گلوسی)</translation>
-<translation id="8199730148066603000">‏غیر HTTPS URL کا پیش منظر دیکھنے کی اجازت نہیں ہے۔</translation>
 <translation id="8200772114523450471">دوبارہ شروع کریں</translation>
 <translation id="8202097416529803614">آرڈر کا خلاصہ</translation>
 <translation id="8202370299023114387">تصادم</translation>
@@ -4772,6 +4772,7 @@
 اضافی معلومات:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">اس بار مائیکروفون کی اجازت ہے</translation>
+<translation id="8421746712901926961">‏اپنی معلومات کو <ph name="GOOGLE_WALLET_TITLE_1" /> محفوظ کریں اور Google پروڈکٹس پر فارمز پُر کرنے جیسے کام تیزی سے کریں۔ آپ <ph name="ACCOUNT" /> کیلئے <ph name="GOOGLE_WALLET_TITLE_2" /> میں <ph name="MANAGE_INFO_LINK" /> کر سکتے ہیں۔</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">تبدیل کریں</translation>
 <translation id="8426945547715537628">کی بورڈ اوور رائیڈ کی اجازت دیں؟</translation>
@@ -4828,6 +4829,7 @@
 <translation id="8521812709849134608">کاؤنٹرٹاپس</translation>
 <translation id="8522180136695974431">کریڈٹ رپورٹنگ اور مانیٹرنگ</translation>
 <translation id="8522552481199248698">‏Chrome آپ کی اپنا Google اکاؤنٹ محفوظ اور پاس ورڈ تبدیل کرنے میں مدد کر سکتا ہے۔</translation>
+<translation id="852450791482410042">ابھی ادائیگی کریں</translation>
 <translation id="8527228059738193856">اسپیکرز</translation>
 <translation id="8527681393107582734">زراعت اور علم جنگلات</translation>
 <translation id="8528149813106025610">بچوں کے لباس</translation>

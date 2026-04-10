@@ -1300,10 +1300,12 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3037177537145227281">Fiyat takip ediliyor</translation>
 <translation id="3037605927509011580">Hay aksi!</translation>
 <translation id="3039406992698062762">Aile Gezisi</translation>
+<translation id="3040435070100611531">Google Cüzdan kartlarınız</translation>
 <translation id="3041176923638368519">Kart avantajı şartlarını inceleyin</translation>
 <translation id="3041584414879052436">"Şimdi al sonra öde" sağlayıcıları listesi kapatıldı.</translation>
 <translation id="3041612393474885105">Sertifika Bilgileri</translation>
 <translation id="3045769629416806687">Ekstrem Sporlar</translation>
+<translation id="3047054686095898948">Google ürünlerinde form doldurma gibi işlemleri daha hızlı yapmak için bilgilerinizi <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />'a kaydedin. <ph name="ACCOUNT" /> hesabına ait <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" />'da <ph name="BEGIN_LINK" />bilgilerinizi yönetebilirsiniz<ph name="END_LINK" />.</translation>
 <translation id="305162504811187366">Zaman damgaları, ana makine ve istemci oturum kimlikleri dahil olmak üzere Chrome Uzaktan Masaüstü geçmişi</translation>
 <translation id="3052868890529250114">Sitelere genelde güvenli bir şekilde bağlanıyorsunuz, ancak Chrome bu kez güvenli bir bağlantı kuramadı. Bir saldırgan, ağ bağlantınızı gizlice izlemeye veya değiştirmeye çalışıyor olabilir. <ph name="BEGIN_LEARN_MORE_LINK" />Bu uyarı hakkında daha fazla bilgi edinin<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> ürünün fiyatı <ph name="PRICE_DROP" /> düştü</translation>
@@ -2721,6 +2723,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Yönetici politikası bu dosyayı <ph name="DESTINATION_NAME" /> hedefine kopyalamanızı önermiyor}other{Yönetici politikası bu dosyaları <ph name="DESTINATION_NAME" /> hedefine kopyalamanızı önermiyor}}</translation>
 <translation id="5258473597674772367">"<ph name="GROUP_NAME" />" sekme grubu artık kullanılamıyor</translation>
+<translation id="5262342527470539728"><ph name="ACCOUNT" /> hesabı için bilgileriniz <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />'a kaydedilir</translation>
 <translation id="5263867360296733198">Yüklemeden önce dosyaların incelenmesi gerekir</translation>
 <translation id="5266128565379329178">Üstten bağlı</translation>
 <translation id="5269225904387178860">Altta dörtlü delik</translation>
@@ -2799,7 +2802,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" />, "<ph name="WEBSITE_TITLE" />" sekmesini güncelledi</translation>
 <translation id="5383478552402031184">Zemin Döşeme</translation>
 <translation id="5385857628869214740">Mizah</translation>
-<translation id="5385966243497224160">HTTPS olmayan URL önizlenemiyor</translation>
 <translation id="5386426401304769735">Bu sitenin sertifika zinciri, SHA-1 kullanılarak imzalanmış bir sertifika içeriyor.</translation>
 <translation id="5391010642126249196">Ziyaret ettiniz</translation>
 <translation id="5391306025131596142">&amp;Geçmiş sayfasını aç</translation>
@@ -3849,7 +3851,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="7003322000677139268">Araç Parçaları ve Aksesuarları</translation>
 <translation id="7004499039102548441">Son Sekmeler</translation>
 <translation id="7004562620237466965">Yalnızca Şifre Çözme</translation>
-<translation id="700483187606163535"><ph name="ACCOUNT" /> hesabı için bilgileriniz <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> uygulamasına kaydedilir. Formları daha hızlı doldurmak için bu özelliği Google hizmetlerinde kullanabilirsiniz.</translation>
 <translation id="7006930604109697472">Yine de gönder</translation>
 <translation id="7009364359744329733">Bu kart şu anda kullanılamıyor. Lütfen daha sonra tekrar deneyin.</translation>
 <translation id="7010658264061801199">Yiyecek ve İçecek</translation>
@@ -4623,7 +4624,6 @@ Ek ayrıntılar:
 <translation id="8194956568907463262">Nişan Oyunları</translation>
 <translation id="8198379961710069585">Arama Geçmişi düğmesi, geçmişte arama yapmak için etkinleştirin</translation>
 <translation id="8199437620497683918">Optik Disk (Parlak)</translation>
-<translation id="8199730148066603000">HTTPS olmayan URL'nin önizlenmesine izin verilmiyor.</translation>
 <translation id="8200772114523450471">Sürdür</translation>
 <translation id="8202097416529803614">Sipariş özeti</translation>
 <translation id="8202370299023114387">Çakışma</translation>
@@ -4771,6 +4771,7 @@ Ek ayrıntılar:
 Ek ayrıntılar:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Şu anda mikrofona izin veriliyor</translation>
+<translation id="8421746712901926961">Google ürünlerinde form doldurma gibi işlemleri daha hızlı yapmak için bilgilerinizi <ph name="GOOGLE_WALLET_TITLE_1" />'a kaydedin. <ph name="GOOGLE_WALLET_TITLE_2" />'da <ph name="ACCOUNT" /> ile ilgili <ph name="MANAGE_INFO_LINK" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Değiştir</translation>
 <translation id="8426945547715537628">Klavye geçersiz kılmaya izin verilsin mi?</translation>
@@ -4827,6 +4828,7 @@ Ek ayrıntılar:
 <translation id="8521812709849134608">Mutfak Tezgahları</translation>
 <translation id="8522180136695974431">Kredi Raporlama ve İzleme</translation>
 <translation id="8522552481199248698">Chrome, Google Hesabınızı korumanıza ve şifrenizi değiştirmenize yardımcı olabilir.</translation>
+<translation id="852450791482410042">Şimdi öde</translation>
 <translation id="8527228059738193856">Hoparlörler</translation>
 <translation id="8527681393107582734">Tarım Ve Ormancılık</translation>
 <translation id="8528149813106025610">Çocuk Giyim</translation>

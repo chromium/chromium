@@ -1300,10 +1300,12 @@
 <translation id="3037177537145227281">ກຳລັງຕິດຕາມລາຄາ</translation>
 <translation id="3037605927509011580">ອ່າ, ຖ່າຍຮູບ!</translation>
 <translation id="3039406992698062762">ການທ່ອງທ່ຽວແບບຄອບຄົວ</translation>
+<translation id="3040435070100611531">ບັດຮວມໃນ Google Wallet ຂອງທ່ານ</translation>
 <translation id="3041176923638368519">ເບິ່ງຂໍ້ກຳນົດສິດທິປະໂຫຍດບັດ</translation>
 <translation id="3041584414879052436">ລາຍຊື່ຂອງຜູ້ອອກບໍລິການຊື້ກ່ອນຈ່າຍນຳຫຼັງປິດແລ້ວ.</translation>
 <translation id="3041612393474885105">ຂໍ້ມູນໃບຢັ້ງຢືນ</translation>
 <translation id="3045769629416806687">ກິລາຜາດໂຜນ</translation>
+<translation id="3047054686095898948">ບັນທຶກຂໍ້ມູນຂອງທ່ານໃນ <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> ແລະ ເຮັດສິ່ງຕ່າງໆໃຫ້ສຳເລັດໄວຂຶ້ນ ເຊັ່ນ: ການຕື່ມຂໍ້ມູນໃສ່ແບບຟອມໃນຜະລິດຕະພັນຕ່າງໆຂອງ Google. ທ່ານສາມາດ <ph name="BEGIN_LINK" />ຈັດການຂໍ້ມູນຂອງທ່ານ<ph name="END_LINK" /> ໃນ <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> ສຳລັບ <ph name="ACCOUNT" /> ໄດ້</translation>
 <translation id="305162504811187366">ປະຫວັດ Chrome Remote Desktop, ຮວມທັງເວລາ, ID ເຊດຊັນຂອງໂຮສ ແລະ ລູກຂ່າຍ</translation>
 <translation id="3052868890529250114">ໂດຍປົກກະຕິແລ້ວທ່ານຈະເຊື່ອມຕໍ່ກັບເວັບໄຊຕ່າງໆຢ່າງປອດໄພ, ແຕ່ Chrome ບໍ່ສາມາດໃຊ້ການເຊື່ອມຕໍ່ທີ່ປອດໄພໄດ້ໃນເວລານີ້. ຜູ້ໂຈມຕີອາດກຳລັງພະຍາຍາມລັກຟັງ ຫຼື ແກ້ໄຂການເຊື່ອມຕໍ່ເຄືອຂ່າຍຂອງທ່ານ. <ph name="BEGIN_LEARN_MORE_LINK" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຄຳເຕືອນນີ້<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> ຫຼຸດລາຄາ <ph name="PRICE_DROP" /></translation>
@@ -2721,6 +2723,7 @@
 <translation id="5255833070095767006">350 x 460 ມມ</translation>
 <translation id="5257739419779698609">{0,plural, =1{ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳໃຫ້ສຳເນົາໄຟລ໌ນີ້ໄປໃສ່ <ph name="DESTINATION_NAME" />}other{ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳໃຫ້ສຳເນົາໄຟລ໌ເຫຼົ່ານີ້ໄປໃສ່ <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">ກຸ່ມແຖບ "<ph name="GROUP_NAME" />" ບໍ່ມີໃຫ້ອີກຕໍ່ໄປ</translation>
+<translation id="5262342527470539728">ລະບົບຈະບັນທຶກຂໍ້ມູນຂອງທ່ານໄວ້ໃນ <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> ສຳລັບ <ph name="ACCOUNT" /></translation>
 <translation id="5263867360296733198">ຕ້ອງກວດສອບກ່ອນທີ່ຈະອັບໂຫຼດ</translation>
 <translation id="5266128565379329178">ຫຍິບເຫຼັ້ມຢູ່ເທິງສຸດ</translation>
 <translation id="5269225904387178860">ເຈາະຮູຢູ່ລຸ່ມສຸດສີ່ຮູ</translation>
@@ -2799,7 +2802,6 @@
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> ໄດ້ອັບເດດແຖບ “<ph name="WEBSITE_TITLE" />”</translation>
 <translation id="5383478552402031184">ບໍລິການສ້ອມແປງພື້ນເຮືອນທີ່ຖືກນ້ຳສ້າງຄວາມເສຍຫາຍ</translation>
 <translation id="5385857628869214740">ເລື່ອງຕະຫລົກ</translation>
-<translation id="5385966243497224160">ບໍ່ສາມາດສະແດງຕົວຢ່າງ URL ທີ່ບໍ່ແມ່ນ HTTPS ໄດ້</translation>
 <translation id="5386426401304769735">ຕ່ອງໂສ້ໃບຮັບຮອງສຳລັບເວັບໄຊນີ້ປະກອບມີໃບຮັບຮອງທີ່ເຊັນຊື່ໂດຍໃຊ້ SHA-1.</translation>
 <translation id="5391010642126249196">ທ່ານເຂົ້າເບິ່ງ</translation>
 <translation id="5391306025131596142">&amp;ເປີດໜ້າປະຫວັດ</translation>
@@ -3849,7 +3851,6 @@
 <translation id="7003322000677139268">ອາໄຫຼ່ລົດ ແລະ ອຸປະກອນເສີມ</translation>
 <translation id="7004499039102548441">ແຖບບໍ່ດົນມານີ້</translation>
 <translation id="7004562620237466965">ໃສ່ລະຫັດເທົ່ານັ້ນ</translation>
-<translation id="700483187606163535">ລະບົບຈະບັນທຶກຂໍ້ມູນຂອງທ່ານໄວ້ໃນ <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> ສຳລັບ <ph name="ACCOUNT" />. ທ່ານສາມາດໃຊ້ຂໍ້ມູນນີ້ໃນທົ່ວບໍລິການ Google ເພື່ອຕື່ມຂໍ້ມູນໃສ່ແບບຟອມໄດ້ໄວຂຶ້ນ.</translation>
 <translation id="7006930604109697472">ຢືນຢັນການສົ່ງ</translation>
 <translation id="7009364359744329733">ບັດນີ້ບໍ່ພ້ອມນຳໃຊ້ໃນຕອນນີ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="7010658264061801199">ອາຫານ ແລະ ເຄື່ອງດື່ມ</translation>
@@ -4622,7 +4623,6 @@
 <translation id="8194956568907463262">ເກມຍິງກັນ</translation>
 <translation id="8198379961710069585">ເປີດນຳໃຊ້ປຸ່ມປະຫວັດການຊອກຫາ, ເພື່ອເບິ່ງປະຫວັດການຊອກຫາ</translation>
 <translation id="8199437620497683918">ອັອບຕິຄອລດິສ (ມັນວາວ)</translation>
-<translation id="8199730148066603000">ບໍ່ອະນຸຍາດໃຫ້ສະແດງຕົວຢ່າງ URL ທີ່ບໍ່ແມ່ນ HTTPS.</translation>
 <translation id="8200772114523450471">ເລີ່ມຕົ້ນປິດເປີດໃໝ່</translation>
 <translation id="8202097416529803614">ສະຫຼຸບຄຳສັ່ງຊື້</translation>
 <translation id="8202370299023114387">ຂັດແຍ່ງ</translation>
@@ -4770,6 +4770,7 @@
 ລາຍລະອຽດເພີ່ມເຕີມ:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">ຂະນະນີ້ອະນຸຍາດໄມໂຄຣໂຟນແລ້ວ</translation>
+<translation id="8421746712901926961">ບັນທຶກຂໍ້ມູນຂອງທ່ານໃນ <ph name="GOOGLE_WALLET_TITLE_1" /> ແລະ ເຮັດສິ່ງຕ່າງໆໃຫ້ສຳເລັດໄວຂຶ້ນ, ເຊັ່ນ: ການຕື່ມຂໍ້ມູນໃສ່ແບບຟອມໃນຜະລິດຕະພັນຕ່າງໆຂອງ Google. ທ່ານສາມາດ <ph name="MANAGE_INFO_LINK" /> ໃນ <ph name="GOOGLE_WALLET_TITLE_2" /> ສຳລັບ <ph name="ACCOUNT" /> ໄດ້.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">ປ່ຽນ​ແປງ</translation>
 <translation id="8426945547715537628">ອະນຸຍາດການຍົກເລີກແປ້ນພິມບໍ?</translation>
@@ -4826,6 +4827,7 @@
 <translation id="8521812709849134608">ການສ້ອມແປງ, ຕິດຕັ້ງ ຫຼື ສ້ອມແປງເຄົາເຕີ</translation>
 <translation id="8522180136695974431">ການລາຍງານການປ່ອຍສິນເຊື່ອ ແລະ ການຕິດຕາມກວດກາ</translation>
 <translation id="8522552481199248698">Chrome ສາມາດຊ່ວຍທ່ານປົກປ້ອງບັນຊີ Google ຂອງທ່ານ ແລະ ປ່ຽນລະຫັດຜ່ານຂອງທ່ານໄດ້.</translation>
+<translation id="852450791482410042">ຈ່າຍດຽວນີ້</translation>
 <translation id="8527228059738193856">ລຳໂພງ</translation>
 <translation id="8527681393107582734">ກະສິກໍາ ແລະ ປ່າໄມ້</translation>
 <translation id="8528149813106025610">ເສື້ອຜ້າເດັກນ້ອຍ</translation>

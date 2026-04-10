@@ -64,6 +64,7 @@
 <translation id="2213327331203157297">‏כדי להשבית את האפשרות 'ללא 'ביטול נעילה עם טביעת אצבע'' ב-Chrome, צריך להשבית אותה ב-iPhone.</translation>
 <translation id="2242467532204595597">‏שימוש ב-Chrome בכל פעם שלוחצים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="2256384876478573507">‏אפשר לפתוח את Chrome מהר יותר כשרוצים לגלוש באייפון.</translation>
+<translation id="2270691132923135296">‏מידע בסיסי על Chrome שיעזור לך להתחיל</translation>
 <translation id="2311240109311056604">‏פתיחת המשחק Chrome Dino.</translation>
 <translation id="2339201583852607431">‏הסיסמה שלך תישמר בחשבון Google‏ (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">‏המיקום שלך ישותף על ידי Chrome עם אתרים שיאושרו על ידך.</translation>
@@ -295,6 +296,7 @@
 <translation id="7599894504325210080">‏תצוגה מורחבת של המילוי האוטומטי ב-Chrome</translation>
 <translation id="7617512710641355143">‏‫Chrome מנוהל</translation>
 <translation id="7626032353295482388">‏ברוך בואך אל Chrome</translation>
+<translation id="7634397654061173327">‏כדי להפעיל תכונות בטיחות ילדים ב-Chrome, ניתן להשתמש בחשבון Google שהוגדר לילד או ילדה או להשתמש ב-Chrome ללא חשבון.</translation>
 <translation id="7641448682796883218">‏טיפ ל-Chrome: הגרסה המשופרת של הגלישה הבטוחה</translation>
 <translation id="7642373780953416937">‏אפשר לקבל התראות לגבי כל בעיה בפרטיות או באבטחה ש-Chromium מזהה באופן אוטומטי.</translation>
 <translation id="7660356333829433649">‏כדאי לחזור לכאן כדי לקבל עוד טיפים שימושיים שיעזרו לך להפיק את המירב מ-Chrome.</translation>
@@ -327,6 +329,7 @@
 <translation id="8245080522851805544">‏אפשר לשמור על פרטיות הגלישה באמצעות אימות המכשיר כשסוגרים את Chrome</translation>
 <translation id="8248887045858762645">‏טיפ ל-Chrome</translation>
 <translation id="8265730590513812063">‏פתיחת תפריט Chrome</translation>
+<translation id="8284376267694582021">‏כדי להפעיל תכונות בטיחות ילדים, אפשר להשתמש בחשבון Google שהוגדר לילד או ילדה או להשתמש ב-Chrome ללא חשבון. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">‏אמצעי תשלום וכתובות לא יוצפנו. היסטוריית הגלישה ב-Chrome לא תסונכרן.
 
 רק מי שיודע את ביטוי הסיסמה יכול לקרוא את הנתונים המוצפנים. ביטוי הסיסמה לא נשלח אל Google ולא מאוחסן ב-Google. אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />עליך למחוק את נתוני Chrome בחשבון<ph name="END_LINK" />.</translation>

@@ -1300,10 +1300,12 @@
 <translation id="3037177537145227281">Прати се цена</translation>
 <translation id="3037605927509011580">О, не!</translation>
 <translation id="3039406992698062762">Породична путовања</translation>
+<translation id="3040435070100611531">Карте у Google новчанику</translation>
 <translation id="3041176923638368519">Прикажи услове за предности картица</translation>
 <translation id="3041584414879052436">Листа издавалаца опције Купите одмах, платите касније је затворена.</translation>
 <translation id="3041612393474885105">Информације о сертификату</translation>
 <translation id="3045769629416806687">Екстремни спортови</translation>
+<translation id="3047054686095898948">Сачувајте информације у услузи <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> и брже обављајте ствари попут попуњавања образаца у Google производима. Можете да <ph name="BEGIN_LINK" />управљате информацијама<ph name="END_LINK" /> у услузи <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> за налог <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">Историја Chrome удаљеног рачунара, укључујући временске ознаке, ИД-еве сесија хостова и клијената</translation>
 <translation id="3052868890529250114">Обично се безбедно повезујете са сајтовима, али Chrome овог пута не може да користи безбедну везу. Нападач можда покушава да шпијунира или измени мрежну везу. <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више о овом упозорењу<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Снижење од <ph name="PRICE_DROP" /> за:<ph name="PRODUCT_NAME" /></translation>
@@ -2721,6 +2723,7 @@
 <translation id="5255833070095767006">350×460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Смернице администратора не препоручују копирање овог фајла на <ph name="DESTINATION_NAME" />}one{Смернице администратора не препоручују копирање ових фајлова на <ph name="DESTINATION_NAME" />}few{Смернице администратора не препоручују копирање ових фајлова на <ph name="DESTINATION_NAME" />}other{Смернице администратора не препоручују копирање ових фајлова на <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">Група картица <ph name="GROUP_NAME" /> више није доступна</translation>
+<translation id="5262342527470539728">Информације се чувају у услузи <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> за <ph name="ACCOUNT" /></translation>
 <translation id="5263867360296733198">Потребан је преглед пре отпремања</translation>
 <translation id="5266128565379329178">Повез на врху</translation>
 <translation id="5269225904387178860">Четвороструко бушење на дну</translation>
@@ -2799,7 +2802,6 @@
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> је ажурирао/ла картицу <ph name="WEBSITE_TITLE" /></translation>
 <translation id="5383478552402031184">Постављање подова</translation>
 <translation id="5385857628869214740">Хумор</translation>
-<translation id="5385966243497224160">Не можете да прегледате URL који није HTTPS</translation>
 <translation id="5386426401304769735">Ланац сертификата за овај сајт садржи сертификат потписан помоћу алгоритма SHA-1.</translation>
 <translation id="5391010642126249196">Посетили сте</translation>
 <translation id="5391306025131596142">&amp;Отвори страницу историје</translation>
@@ -3848,7 +3850,6 @@
 <translation id="7003322000677139268">Делови и опрема за возила</translation>
 <translation id="7004499039102548441">Недавне картице</translation>
 <translation id="7004562620237466965">Само дешифровање</translation>
-<translation id="700483187606163535">Информације се чувају у <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />-у за <ph name="ACCOUNT" />. Можете да их користите у свим Google производима да бисте брже попуњавали обрасце.</translation>
 <translation id="7006930604109697472">Ипак пошаљи</translation>
 <translation id="7009364359744329733">Ова картица тренутно није доступна. Пробајте поново касније.</translation>
 <translation id="7010658264061801199">Храна и пиће</translation>
@@ -4622,7 +4623,6 @@
 <translation id="8194956568907463262">Пуцачке игре</translation>
 <translation id="8198379961710069585">Дугме Историја претраге, активирајте га да бисте претражили историју</translation>
 <translation id="8199437620497683918">Оптички диск (сјајан)</translation>
-<translation id="8199730148066603000">Преглед URL-а који није HTTPS није дозвољен.</translation>
 <translation id="8200772114523450471">Настави</translation>
 <translation id="8202097416529803614">Резиме поруџбине</translation>
 <translation id="8202370299023114387">Неусаглашеност</translation>
@@ -4770,6 +4770,7 @@
 Додатни детаљи:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Микрофон је дозвољен овај пут</translation>
+<translation id="8421746712901926961">Сачувајте информације у услузи <ph name="GOOGLE_WALLET_TITLE_1" /> и брже обављајте ствари, попут попуњавања образаца у Google производима. Можете да <ph name="MANAGE_INFO_LINK" /> у услузи <ph name="GOOGLE_WALLET_TITLE_2" /> за <ph name="ACCOUNT" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Промени</translation>
 <translation id="8426945547715537628">Желите ли да дозволите замену уноса са тастатуре?</translation>
@@ -4826,6 +4827,7 @@
 <translation id="8521812709849134608">Радне плоче</translation>
 <translation id="8522180136695974431">Извештавање о кредитној способности и њено праћење</translation>
 <translation id="8522552481199248698">Chrome може да вам помогне да заштитите Google налог и промените лозинку.</translation>
+<translation id="852450791482410042">Плати</translation>
 <translation id="8527228059738193856">Звучници</translation>
 <translation id="8527681393107582734">Пољопривреда и шумарство</translation>
 <translation id="8528149813106025610">Дечја одећа</translation>

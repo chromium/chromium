@@ -1299,10 +1299,12 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3037177537145227281">Narxni kuzatyapsiz</translation>
 <translation id="3037605927509011580">Ana xolos!</translation>
 <translation id="3039406992698062762">Oilaviy sahoyat</translation>
+<translation id="3040435070100611531">Google Wallet kartalaringiz</translation>
 <translation id="3041176923638368519">Karta imtiyozlari va shartlari</translation>
 <translation id="3041584414879052436">Hozir olib, keyin toʻlash emitentlari roʻyxati yopildi.</translation>
 <translation id="3041612393474885105">Sertifikat haqida ma’lumot</translation>
 <translation id="3045769629416806687">Ekstremal sport turlari</translation>
+<translation id="3047054686095898948"><ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> orqali maʼlumotlaringizni saqlang va Google mahsulotlarida shakllarni toʻldirish kabi vazifalarni tezroq bajaring. <ph name="ACCOUNT" /> uchun <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> xizmatida <ph name="BEGIN_LINK" />axborotingizni boshqarishingiz<ph name="END_LINK" /> mumkin</translation>
 <translation id="305162504811187366">Chrome Remote Desktop tarixi, vaqt belgisi, hostlar va mijoz seansi identifikatorlari</translation>
 <translation id="3052868890529250114">Odatda saytlarga xavfsiz ulanasiz, lekin bu safar Chrome xavfsiz aloqa oʻrnata olmadi. Firibgar amallaringizni kuzatishga yoki tarmoq aloqasini oʻzgartirishga urinayotgan boʻlishi mumkin. <ph name="BEGIN_LEARN_MORE_LINK" />Bu ogohlantirish haqida batafsil<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> narxlari <ph name="PRICE_DROP" /> ga tushdi</translation>
@@ -2795,7 +2797,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> varaqni (“<ph name="WEBSITE_TITLE" />”) yangiladi</translation>
 <translation id="5383478552402031184">Pol qilish</translation>
 <translation id="5385857628869214740">Hazil-mutoyiba</translation>
-<translation id="5385966243497224160">Himoyasiz (non-HTTPS) URL manzilga razm solish imkonsiz</translation>
 <translation id="5386426401304769735">Bu veb-saytning sertifikatlari zanjiridagi sertifikat SHA-1 algoritmi asosida yozilgan.</translation>
 <translation id="5391010642126249196">Oxirgi tashrifingiz</translation>
 <translation id="5391306025131596142">Tarix sahifasini &amp;ochish</translation>
@@ -3844,7 +3845,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="7003322000677139268">Avtomobil qismlari va aksessuarlari</translation>
 <translation id="7004499039102548441">Oxirgi varaqlar</translation>
 <translation id="7004562620237466965">Faqat shifrni yechish</translation>
-<translation id="700483187606163535"><ph name="ACCOUNT" /> hisobingiz maʼlumotlari <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> xotirasida saqlanadi. Shakllarni tezroq toʻldirish uchun undan Google mahsulotlarida foydalanishingiz mumkin.</translation>
 <translation id="7006930604109697472">Baribir yuborilsin</translation>
 <translation id="7009364359744329733">Hozirda karta ishlamayapti. Keyinroq qayta urining.</translation>
 <translation id="7010658264061801199">Taom va ichimliklar</translation>
@@ -4617,7 +4617,6 @@ Batafsil axborot:
 <translation id="8194956568907463262">Otishma oʻyinlar</translation>
 <translation id="8198379961710069585">Tarixdan qidirish tugmasi, qidirish uchun faollashtiring</translation>
 <translation id="8199437620497683918">Optik disk (yaltiroq)</translation>
-<translation id="8199730148066603000">Himoyasiz (non-HTTPS) URL manzillarga razm solish mumkin emas.</translation>
 <translation id="8200772114523450471">Davom ettirish</translation>
 <translation id="8202097416529803614">Buyurtma ma’lumotlari</translation>
 <translation id="8202370299023114387">Ziddiyat</translation>

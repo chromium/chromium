@@ -64,6 +64,7 @@ Stvari za razmatranje:
 <translation id="2213327331203157297">Da onemogućite način rada sa zaključavanjem u Chromeu, isključite ga na iPhoneu.</translation>
 <translation id="2242467532204595597">Koristite Chrome svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="2256384876478573507">Brže otvorite Chrome kada ste spremni da pregledate na iPhoneu.</translation>
+<translation id="2270691132923135296">Da započnete, saznajte korisne osnove o Chromeu</translation>
 <translation id="2311240109311056604">Otvara igru Dinosaur na Chromeu.</translation>
 <translation id="2339201583852607431">Vaša lozinka će se sačuvati na vašem Google računu (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome dijeli vašu lokaciju s web lokacijama koje vi odobrite.</translation>
@@ -295,6 +296,7 @@ Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromeu idit
 <translation id="7599894504325210080">Prošireni prikaz automatskog popunjavanja u Chromeu</translation>
 <translation id="7617512710641355143">Chromeom se upravlja</translation>
 <translation id="7626032353295482388">Dobro došli u Chrome</translation>
+<translation id="7634397654061173327">Da dobijete funkcije za sigurnost djece u Chromeu, možete koristiti Google račun koji je postavljen za dijete ili koristiti Chrome bez računa.</translation>
 <translation id="7641448682796883218">Savjet za Chrome: poboljšano Sigurno pregledanje</translation>
 <translation id="7642373780953416937">Primajte upozorenja o problemima s privatnošću ili sigurnošću koje Chrome automatski otkrije za vas.</translation>
 <translation id="7660356333829433649">Provjerite ponovo ovdje za više korisnih savjeta za iskorištavanje svih prednosti Chromea.</translation>
@@ -327,6 +329,7 @@ Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromeu idit
 <translation id="8245080522851805544">Zadržite privatnost pregledanja pomoću autentifikacije uređaja prilikom zatvaranja Chromea</translation>
 <translation id="8248887045858762645">Savjet za Chrome</translation>
 <translation id="8265730590513812063">Otvorite Chrome meni.</translation>
+<translation id="8284376267694582021">Da dobijete funkcije za sigurnost djece, možete koristiti Google račun koji je postavljen za dijete ili koristiti Chrome bez računa. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">Načini plaćanja i adrese se neće šifrirati. Historija pregledanja iz Chromea se neće sinhronizirati.
 
 Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz. Pristupni izraz se ne šalje Googleu niti ga on pohranjuje. Ako zaboravite pristupni izraz ili želite promijeniti ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea na računu<ph name="END_LINK" />.</translation>

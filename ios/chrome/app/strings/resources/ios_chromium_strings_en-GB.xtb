@@ -134,6 +134,7 @@ Try waiting a few minutes before switching accounts. If you switch accounts now,
 <translation id="377649297473651452">Chromium autofill expanded view</translation>
 <translation id="3780779443901618967">Warns you about dangerous sites, even ones that Google didn't know about before, by analysing more data from sites than standard protection. You can choose to skip Chromium warnings.</translation>
 <translation id="3805899903892079518">Chromium does not have access to your photos or videos. Enable access in iOS Settings &gt; Privacy &gt; Photos.</translation>
+<translation id="3809591243528646631">To get child safety features, you can either use a Google Account that's set up for a child or use Chromium without an account. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="3816686541346279443">Chromium will offer to save your password.</translation>
 <translation id="3827545470516145620">You're getting standard security protection on this device</translation>
 <translation id="3833326979834193417">Chromium automatically runs Safety Check every day to keep you safe from data breaches, unsafe websites and more. You can find more about Safety Check in Settings.</translation>
@@ -355,6 +356,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="8900052431807804054">Get Chromium's strongest security</translation>
 <translation id="8908791447256515663">Access Chromium faster from your iPad's Dock.</translation>
 <translation id="8925569192291721236">Keep up with price tracking updates and Chromium tips.</translation>
+<translation id="8939412301975414416">To get child safety features in Chromium, you can either use a Google Account that's set up for a child or use Chromium without an account.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{This happens when Chromium isn't used for {THRESHOLD} minute}other{This happens when Chromium isn't used for {THRESHOLD} minutes}}</translation>
 <translation id="8963279154877372067">Allow Chromium notifications to get price drop alerts</translation>
 <translation id="8975812008711371178">Search with voice in Chromium</translation>

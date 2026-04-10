@@ -1300,10 +1300,12 @@
 <translation id="3037177537145227281">നിരക്ക് ട്രാക്ക് ചെയ്യുന്നു</translation>
 <translation id="3037605927509011580">കഷ്ടം!</translation>
 <translation id="3039406992698062762">കുടുംബത്തോടൊപ്പമുള്ള യാത്ര</translation>
+<translation id="3040435070100611531">നിങ്ങളുടെ Google Wallet പാസുകൾ</translation>
 <translation id="3041176923638368519">കാർഡ് ആനുകൂല്യ നിബന്ധനകൾ കാണുക</translation>
 <translation id="3041584414879052436">'ഇപ്പോൾ വാങ്ങി പിന്നീട് പണമടയ്ക്കുക' ഇഷ്യൂവർമാരുടെ ലിസ്റ്റ് അടച്ചു.</translation>
 <translation id="3041612393474885105">സര്‍‌ട്ടിഫിക്കറ്റ് വിവരങ്ങള്‍‌</translation>
 <translation id="3045769629416806687">എക്‌സ്ട്രീം സ്പോർട്‌സ്</translation>
+<translation id="3047054686095898948">Google ഉൽപ്പന്നങ്ങളിലുടനീളം ഫോമുകൾ പൂരിപ്പിക്കുന്നത് പോലെ, <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> എന്നതിൽ നിങ്ങളുടെ വിവരങ്ങൾ സംരക്ഷിച്ച് കാര്യങ്ങൾ വേഗത്തിൽ പൂർത്തിയാക്കുക. <ph name="ACCOUNT" /> എന്നതിനായി <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> എന്നതിൽ നിങ്ങൾക്ക് <ph name="BEGIN_LINK" />നിങ്ങളുടെ വിവരങ്ങൾ മാനേജ് ചെയ്യാം<ph name="END_LINK" /></translation>
 <translation id="305162504811187366">Chrome വിദൂര ഡെസ്‌ക്‌ടോപ്പ് ചരിത്രം, ടൈംസ്റ്റാമ്പുകളും ഹോസ്റ്റുകളും ക്ലയന്റ് സെഷൻ ഐഡികളും ഉൾപ്പെടെ</translation>
 <translation id="3052868890529250114">നിങ്ങൾ സാധാരണയായി സുരക്ഷിതമായാണ് സൈറ്റുകളിലേക്ക് കണക്റ്റ് ചെയ്യുന്നത്, എന്നാൽ ഇത്തവണ Chrome-ന് സുരക്ഷിതമായ കണക്ഷൻ ഉപയോഗിക്കാനായില്ല. ഒരു ആക്രമണകാരി നിങ്ങളുടെ നെറ്റ്‌വർക്ക് കണക്ഷൻ പരിഷ്‌കരിക്കാനോ അതിൽ നിന്നുള്ള വിവരങ്ങൾ ചോർത്താനോ ശ്രമിക്കുന്നുണ്ടാകാം. <ph name="BEGIN_LEARN_MORE_LINK" />ഈ മുന്നറിയിപ്പിനെ കുറിച്ച് കൂടുതലറിയുക<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> എന്നതിന് <ph name="PRICE_DROP" /> വിലക്കുറവ്</translation>
@@ -2799,7 +2801,6 @@
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" />,“<ph name="WEBSITE_TITLE" />” ടാബ് അപ്‌ഡേറ്റ് ചെയ്തു</translation>
 <translation id="5383478552402031184">ഫ്ലോറിംഗ്</translation>
 <translation id="5385857628869214740">ഹാസ്യം</translation>
-<translation id="5385966243497224160">HTTPS അല്ലാത്ത URL പ്രിവ്യൂ ചെയ്യാനാകില്ല</translation>
 <translation id="5386426401304769735">ഈ സൈറ്റിന്റെ സർട്ടിഫിക്കറ്റ് ചെയിനിൽ SHA-1 ഉപയോഗിച്ച് സൈൻ ചെയ്‌ത ഒരു സർട്ടിഫിക്കറ്റ് അടങ്ങിയിരിക്കുന്നു.</translation>
 <translation id="5391010642126249196">നിങ്ങൾ സന്ദർശിച്ചത്:</translation>
 <translation id="5391306025131596142">&amp;ചരിത്ര പേജ് തുറക്കുക</translation>
@@ -3849,7 +3850,6 @@
 <translation id="7003322000677139268">വാഹന ഭാഗങ്ങളും ആക്‌സസറികളും</translation>
 <translation id="7004499039102548441">സമീപകാല ടാബുകൾ</translation>
 <translation id="7004562620237466965">വ്യാഖ്യാനം മാത്രം</translation>
-<translation id="700483187606163535">നിങ്ങളുടെ വിവരങ്ങൾ <ph name="ACCOUNT" /> എന്ന അക്കൗണ്ടിനുള്ള <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> എന്നതിൽ സംരക്ഷിച്ചിരിക്കുന്നു. ഫോമുകൾ വേഗത്തിൽ പൂരിപ്പിക്കാൻ നിങ്ങൾക്ക് Google ഉൽപ്പന്നങ്ങളിലുടനീളം ഇത് ഉപയോഗിക്കാം.</translation>
 <translation id="7006930604109697472">എന്തായാലും അയയ്‌ക്കുക</translation>
 <translation id="7009364359744329733">ഈ കാർഡ് ഇപ്പോൾ ലഭ്യമല്ല, പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="7010658264061801199">ഭക്ഷണപാനീയങ്ങൾ</translation>
@@ -4621,7 +4621,6 @@
 <translation id="8194956568907463262">ഷൂട്ടർ ഗെയിമുകൾ</translation>
 <translation id="8198379961710069585">തിരയൽ ചരിത്ര ബട്ടൺ, തിരയൽ ചരിത്രത്തിനായി സജീവമാക്കുക</translation>
 <translation id="8199437620497683918">ഒപ്റ്റിക്കല്‍ ഡിസ്‌ക് (ഗ്ലോസി)</translation>
-<translation id="8199730148066603000">HTTPS അല്ലാത്ത URL പ്രിവ്യൂ ചെയ്യുന്നത് അനുവദനീയമല്ല.</translation>
 <translation id="8200772114523450471">പുനരാരംഭിക്കുക</translation>
 <translation id="8202097416529803614">ഓർഡർ സംഗ്രഹം</translation>
 <translation id="8202370299023114387">പൊരുത്തക്കേട്</translation>
@@ -4826,6 +4825,7 @@
 <translation id="8521812709849134608">കൗണ്ടർടോപ്പുകൾ</translation>
 <translation id="8522180136695974431">ക്രെഡിറ്റ് റിപ്പോർട്ട് ചെയ്യലും മോണിറ്ററിംഗും</translation>
 <translation id="8522552481199248698">നിങ്ങളുടെ Google Account പരിരക്ഷിക്കാനും പാസ്‌വേഡ് മാറ്റാനും Chrome സഹായിക്കും.</translation>
+<translation id="852450791482410042">ഇപ്പോൾ പേ ചെയ്യുക</translation>
 <translation id="8527228059738193856">സ്‌പീക്കറുകൾ</translation>
 <translation id="8527681393107582734">കൃഷിയും വനപരിപാലനവും</translation>
 <translation id="8528149813106025610">കുട്ടികൾക്കുള്ള വസ്‌ത്രം</translation>

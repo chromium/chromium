@@ -1300,10 +1300,12 @@
 <translation id="3037177537145227281">Ціна відстежується</translation>
 <translation id="3037605927509011580">От халепа!</translation>
 <translation id="3039406992698062762">Сімейні подорожі</translation>
+<translation id="3040435070100611531">Ваші картки в Google Гаманці</translation>
 <translation id="3041176923638368519">Переглянути умови використання переваг картки</translation>
 <translation id="3041584414879052436">Список емітентів, які пропонують придбання з оплатою пізніше, закрито.</translation>
 <translation id="3041612393474885105">Інформація про сертифікат</translation>
 <translation id="3045769629416806687">Екстремальні види спорту</translation>
+<translation id="3047054686095898948">Збережіть свою інформацію в сервісі <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />, щоб швидше виконувати завдання, наприклад заповнювати форми в продуктах Google. Ви можете <ph name="BEGIN_LINK" />керувати цією інформацією<ph name="END_LINK" /> в сервісі <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> для облікового запису <ph name="ACCOUNT" />.</translation>
 <translation id="305162504811187366">Історію Віддаленого керування Chrome, включно з позначками часу, хостами й ідентифікаторами сеансів клієнта</translation>
 <translation id="3052868890529250114">Зазвичай ви безпечно підключаєтеся до сайтів, проте цього разу Chrome не може застосувати захищене з’єднання. Можливо, зловмисник намагається підслухати або змінити ваше з’єднання з мережею. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше про це попередження<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Ціну на товар "<ph name="PRODUCT_NAME" />" знижено на <ph name="PRICE_DROP" /></translation>
@@ -2800,7 +2802,6 @@
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> оновлює вкладку "<ph name="WEBSITE_TITLE" />"</translation>
 <translation id="5383478552402031184">Покриття для підлоги</translation>
 <translation id="5385857628869214740">Гумор</translation>
-<translation id="5385966243497224160">Неможливо переглянути URL-адресу, яка не використовує протокол HTTPS</translation>
 <translation id="5386426401304769735">Ланцюжок сертифіката цього сайту містить сертифікат, підписаний за допомогою SHA-1.</translation>
 <translation id="5391010642126249196">Ви відвідали цей сайт</translation>
 <translation id="5391306025131596142">&amp;Відкрити сторінку "Історія"</translation>
@@ -3850,7 +3851,6 @@
 <translation id="7003322000677139268">Запасні частини й аксесуари для транспортних засобів</translation>
 <translation id="7004499039102548441">Останні вкладки</translation>
 <translation id="7004562620237466965">Лише розкодувати</translation>
-<translation id="700483187606163535">Вашу інформацію збережено в сервісі <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> для облікового запису <ph name="ACCOUNT" />. Ви можете використовувати її в продуктах Google, щоб швидше заповнювати форми.</translation>
 <translation id="7006930604109697472">Усе одно надіслати</translation>
 <translation id="7009364359744329733">Ця картка зараз недоступна. Повторіть спробу пізніше.</translation>
 <translation id="7010658264061801199">Їжа й напої</translation>
@@ -4624,7 +4624,6 @@
 <translation id="8194956568907463262">Стрілялки</translation>
 <translation id="8198379961710069585">Кнопка "Історія пошуку". Активуйте її, щоб знайти інформацію в історії пошуку.</translation>
 <translation id="8199437620497683918">Оптичний диск (глянцевий)</translation>
-<translation id="8199730148066603000">Попередній перегляд URL-адрес, які не використовують протокол HTTPS, заборонено.</translation>
 <translation id="8200772114523450471">Відновити</translation>
 <translation id="8202097416529803614">Підсумок замовлення</translation>
 <translation id="8202370299023114387">Конфлікт</translation>
@@ -4829,6 +4828,7 @@
 <translation id="8521812709849134608">Стільниці</translation>
 <translation id="8522180136695974431">Кредитна звітність і моніторинг</translation>
 <translation id="8522552481199248698">Chrome допоможе захистити обліковий запис Google і змінити пароль.</translation>
+<translation id="852450791482410042">Сплатити</translation>
 <translation id="8527228059738193856">Колонки</translation>
 <translation id="8527681393107582734">Сільське й лісове господарство</translation>
 <translation id="8528149813106025610">Дитячий одяг</translation>

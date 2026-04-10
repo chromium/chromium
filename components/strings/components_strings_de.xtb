@@ -1055,6 +1055,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2627847595568876492">Text wird aus PDF extrahiert…</translation>
 <translation id="2628025184666666186">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist, da er ein Sicherheitszertifikat verwendet, das von Chrome oder deiner Systemkonfiguration für die Verschlüsselung von Web-Traffic nicht als vertrauenswürdig eingestuft wird. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
 <translation id="2628224721443278970">In Microsoft OneDrive anmelden</translation>
+<translation id="2631059741268498165">Dein Administrator hat dieses Gerät gefunden, während es deaktiviert war. Es wurde wieder aktiviert und ist einsatzbereit.</translation>
 <translation id="2631387782019878060">Bestätigungscode: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Die Server-IP-Adresse von <ph name="HOST_NAME" /> wurde nicht gefunden.</translation>
 <translation id="2638567100095052009">Gib „@“ ein, um auf <ph name="FEATURED_SEARCH_LIST" /> zu suchen</translation>
@@ -1299,10 +1300,12 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3037177537145227281">Preis wird beobachtet</translation>
 <translation id="3037605927509011580">Oh nein!</translation>
 <translation id="3039406992698062762">Familienreisen</translation>
+<translation id="3040435070100611531">Karten und Tickets in Google Wallet öffnen</translation>
 <translation id="3041176923638368519">Nutzungsbedingungen für Kartenvorteile ansehen</translation>
 <translation id="3041584414879052436">Die Liste der Anbieter von „Jetzt kaufen, später bezahlen“ ist geschlossen.</translation>
 <translation id="3041612393474885105">Zertifikatinformationen</translation>
 <translation id="3045769629416806687">Extremsportarten</translation>
+<translation id="3047054686095898948">Wenn du deine Daten in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> speicherst, lassen sich viele Dinge schneller erledigen, z. B. das Ausfüllen von Formularen in Google-Produkten. <ph name="BEGIN_LINK" />Über diesen Link<ph name="END_LINK" /> kannst du deine Daten für <ph name="ACCOUNT" /> in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> verwalten.</translation>
 <translation id="305162504811187366">Chrome Remote Desktop-Verlauf, einschließlich Zeitstempeln, Hosts und Client-Sitzungs-IDs</translation>
 <translation id="3052868890529250114">Normalerweise verbindest du dich auf sichere Weise mit Websites, aber Chrome konnte dieses Mal keine verschlüsselte Verbindung herstellen. Möglicherweise versucht ein Angreifer, deine Onlineaktivitäten zu beobachten oder deine Netzwerkverbindung zu modifizieren. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen zu dieser Warnung<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> Preisnachlass auf das Produkt „<ph name="PRODUCT_NAME" />“</translation>
@@ -2718,6 +2721,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5255833070095767006">350 × 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Gemäß der Administratorrichtlinie wird nicht empfohlen, diese Datei nach <ph name="DESTINATION_NAME" /> zu kopieren}other{Gemäß der Administratorrichtlinie wird nicht empfohlen, diese Dateien nach <ph name="DESTINATION_NAME" /> zu kopieren}}</translation>
 <translation id="5258473597674772367">Die Tabgruppe „<ph name="GROUP_NAME" />“ ist nicht mehr verfügbar</translation>
+<translation id="5262342527470539728">Deine Informationen werden in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> für <ph name="ACCOUNT" /> gespeichert</translation>
 <translation id="5263867360296733198">Vor dem Upload ist eine Überprüfung erforderlich</translation>
 <translation id="5266128565379329178">Bindung oben</translation>
 <translation id="5269225904387178860">Vierfache Lochung unten</translation>
@@ -2796,7 +2800,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> hat den Tab „<ph name="WEBSITE_TITLE" />“ aktualisiert</translation>
 <translation id="5383478552402031184">Bodenbeläge</translation>
 <translation id="5385857628869214740">Humor</translation>
-<translation id="5385966243497224160">Vorschau von URL ohne HTTPS nicht möglich</translation>
 <translation id="5386426401304769735">Die Zertifikatskette für diese Website enthält ein Zertifikat mit SHA-1-Signatur.</translation>
 <translation id="5391010642126249196">Zuletzt aufgerufen</translation>
 <translation id="5391306025131596142">&amp;Verlaufsseite öffnen</translation>
@@ -2914,6 +2917,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5543564889050342791">Zoos, Aquarien und Parks</translation>
 <translation id="5543722831081909240">180°</translation>
 <translation id="5544836308113951378">Personenschifffahrt und Charterboote</translation>
+<translation id="5546252337258681768">Gerät entsperrt</translation>
 <translation id="5547939254150808298">Druckereien und Verlage</translation>
 <translation id="554815783948612276">Foren- und Chatbetreiber</translation>
 <translation id="5548606607480005320">Sicherheitscheck</translation>
@@ -3845,7 +3849,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="7003322000677139268">Ersatz- und Zubehörteile für Kraftfahrzeuge</translation>
 <translation id="7004499039102548441">Zuletzt geöffnete Tabs</translation>
 <translation id="7004562620237466965">Nur entschlüsseln</translation>
-<translation id="700483187606163535">Deine Informationen für <ph name="ACCOUNT" /> werden in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> gespeichert. Du kannst sie in allen Google-Produkten verwenden, um Formulare schneller auszufüllen.</translation>
 <translation id="7006930604109697472">Trotzdem senden</translation>
 <translation id="7009364359744329733">Diese Karte ist momentan nicht verfügbar. Bitte versuche es später noch einmal.</translation>
 <translation id="7010658264061801199">Essen und Trinken</translation>
@@ -4619,7 +4622,6 @@ Weitere Details:
 <translation id="8194956568907463262">Shooterspiele</translation>
 <translation id="8198379961710069585">„Suchverlauf“ – aktiviere diesen Button, wenn du im Verlauf suchen möchtest</translation>
 <translation id="8199437620497683918">Optische Disk (glänzend)</translation>
-<translation id="8199730148066603000">Vorschau von URLs ohne HTTPS sind nicht zulässig.</translation>
 <translation id="8200772114523450471">Fortsetzen</translation>
 <translation id="8202097416529803614">Zusammenfassung der Bestellung</translation>
 <translation id="8202370299023114387">Konflikt</translation>
@@ -4767,6 +4769,7 @@ Weitere Details:
 Weitere Details:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofonberechtigung einmal gewährt</translation>
+<translation id="8421746712901926961">Wenn du deine Daten in <ph name="GOOGLE_WALLET_TITLE_1" /> speicherst, lassen sich viele Dinge schneller erledigen, z. B. das Ausfüllen von Formularen in Google-Produkten. Du kannst in <ph name="GOOGLE_WALLET_TITLE_2" /> für <ph name="ACCOUNT" /> <ph name="MANAGE_INFO_LINK" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" />, <ph name="SECOND_LABEL" />, <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Ändern</translation>
 <translation id="8426945547715537628">Tastaturüberschreibung zulassen?</translation>
@@ -4823,6 +4826,7 @@ Weitere Details:
 <translation id="8521812709849134608">Arbeitsplatten</translation>
 <translation id="8522180136695974431">Kreditmeldungen und ‑überwachung</translation>
 <translation id="8522552481199248698">Mithilfe von Chrome kannst du dein Google-Konto schützen und dein Passwort ändern.</translation>
+<translation id="852450791482410042">Jetzt bezahlen</translation>
 <translation id="8527228059738193856">Lautsprecher</translation>
 <translation id="8527681393107582734">Land- und Forstwirtschaft</translation>
 <translation id="8528149813106025610">Kinderbekleidung</translation>

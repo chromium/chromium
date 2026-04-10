@@ -1300,10 +1300,12 @@
 <translation id="3037177537145227281">Se urmărește prețul</translation>
 <translation id="3037605927509011580">Of, nu mai merge!</translation>
 <translation id="3039406992698062762">Călătorii în familie</translation>
+<translation id="3040435070100611531">Permisele tale din Portofelul Google</translation>
 <translation id="3041176923638368519">Consultă condițiile pentru beneficiile cardului</translation>
 <translation id="3041584414879052436">Lista emitentelor Cumpără acum, plătește mai târziu este închisă.</translation>
 <translation id="3041612393474885105">Informații despre certificat</translation>
 <translation id="3045769629416806687">Sporturi extreme</translation>
+<translation id="3047054686095898948">Salvează informațiile în <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> și lucrează mai productiv, de exemplu, completează formulare în produsele Google. Poți să <ph name="BEGIN_LINK" />gestionezi informațiile<ph name="END_LINK" /> în <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> pentru <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">Istoricul Desktopului la distanță Chrome, inclusiv marcajele temporale, gazdele și ID-urile sesiunii de client</translation>
 <translation id="3052868890529250114">De obicei, te conectezi în siguranță la site-uri, dar Chrome nu a putut folosi o conexiune securizată de data aceasta. Un atacator ar putea încerca să intercepteze sau să modifice conexiunea la rețea. <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe despre acest mesaj de avertisment<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Scădere de preț de <ph name="PRICE_DROP" /> pentru <ph name="PRODUCT_NAME" /></translation>
@@ -2800,7 +2802,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> a actualizat fila <ph name="WEBSITE_TITLE" /></translation>
 <translation id="5383478552402031184">Montarea pardoselilor</translation>
 <translation id="5385857628869214740">Umor</translation>
-<translation id="5385966243497224160">Nu se poate previzualiza adresa URL non-HTTPS</translation>
 <translation id="5386426401304769735">Lanțul de certificate pentru acest site conține un certificat semnat folosind SHA-1.</translation>
 <translation id="5391010642126249196">Ai accesat</translation>
 <translation id="5391306025131596142">&amp;Deschide pagina Istoric</translation>
@@ -3850,7 +3851,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="7003322000677139268">Piese și accesorii pentru vehicule</translation>
 <translation id="7004499039102548441">File recente</translation>
 <translation id="7004562620237466965">Numai descifrare</translation>
-<translation id="700483187606163535">Informațiile tale sunt salvate în <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> pentru <ph name="ACCOUNT" />. Îl poți folosi în produsele Google pentru a completa mai rapid formulare.</translation>
 <translation id="7006930604109697472">Trimite oricum</translation>
 <translation id="7009364359744329733">Momentan, cardul nu este disponibil. Încearcă din nou mai târziu.</translation>
 <translation id="7010658264061801199">Mâncare și băutură</translation>
@@ -4624,7 +4624,6 @@ Detalii suplimentare:
 <translation id="8194956568907463262">Shootere</translation>
 <translation id="8198379961710069585">Butonul Istoricul căutărilor, activează pentru a căuta în istoric</translation>
 <translation id="8199437620497683918">Disc optic (lucios)</translation>
-<translation id="8199730148066603000">Previzualizarea adresei URL non-HTTPS nu este permisă.</translation>
 <translation id="8200772114523450471">Reia</translation>
 <translation id="8202097416529803614">Rezumatul comenzii</translation>
 <translation id="8202370299023114387">Conflict</translation>
@@ -4829,6 +4828,7 @@ Detalii suplimentare:
 <translation id="8521812709849134608">Blaturi</translation>
 <translation id="8522180136695974431">Monitorizarea și raportarea creditelor</translation>
 <translation id="8522552481199248698">Chrome te poate ajuta să îți protejezi Contul Google și să îți schimbi parola.</translation>
+<translation id="852450791482410042">Plătește acum</translation>
 <translation id="8527228059738193856">Difuzoare</translation>
 <translation id="8527681393107582734">Agricultură și silvicultură</translation>
 <translation id="8528149813106025610">Îmbrăcăminte pentru copii</translation>

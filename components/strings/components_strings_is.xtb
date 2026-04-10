@@ -1300,10 +1300,12 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3037177537145227281">Vaktar verð</translation>
 <translation id="3037605927509011580">Rækallinn!</translation>
 <translation id="3039406992698062762">Fjölskylduferðalög</translation>
+<translation id="3040435070100611531">Passarnir þínir í Google-veski</translation>
 <translation id="3041176923638368519">Sjá skilmála fyrir kortafríðindi</translation>
 <translation id="3041584414879052436">Listinn yfir útgefendur „kauptu núna, borgaðu síðar“ er lokaður.</translation>
 <translation id="3041612393474885105">Upplýsingar um vottorð</translation>
 <translation id="3045769629416806687">Jaðaríþróttir</translation>
+<translation id="3047054686095898948">Vistaðu upplýsingarnar þínar í <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> til að koma hlutum hraðar í verk, t.d. að fylla út eyðublöð í Google-vörum. Þú getur <ph name="BEGIN_LINK" />stjórnað upplýsingunum þínum<ph name="END_LINK" /> í <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> fyrir <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">Feril fjarstjórnunar tölvu í Chrome, þ.m.t. tímastimpla, hýsla og auðkenni biðlaralota</translation>
 <translation id="3052868890529250114">Yfirleitt tengistu vefsvæðum á öruggan hátt en Chrome gat ekki notað örugga tengingu í þetta sinn. Árásaraðili gæti verið að reyna að hlera eða breyta nettengingunni þinni. <ph name="BEGIN_LEARN_MORE_LINK" />Nánar um þessa viðvörun<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> verðlækkun á <ph name="PRODUCT_NAME" /></translation>
@@ -2800,7 +2802,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> uppfærði flipann „<ph name="WEBSITE_TITLE" />“</translation>
 <translation id="5383478552402031184">Gólfefni</translation>
 <translation id="5385857628869214740">Grín</translation>
-<translation id="5385966243497224160">Get ekki forskoðað vefslóðir sem eru ekki HTTPS</translation>
 <translation id="5386426401304769735">Vottorðskeðja þessa vefsvæðis inniheldur vottorð sem var undirritað með SHA-1.</translation>
 <translation id="5391010642126249196">Þú skoðaðir</translation>
 <translation id="5391306025131596142">&amp;Opna ferilssíðu</translation>
@@ -3850,7 +3851,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="7003322000677139268">Varahlutir og aukabúnaður fyrir bíla</translation>
 <translation id="7004499039102548441">Nýlegir flipar</translation>
 <translation id="7004562620237466965">Afkóða aðeins</translation>
-<translation id="700483187606163535">Upplýsingarnar þínar eru vistaðar í <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> fyrir <ph name="ACCOUNT" /> Þú getur notað þær í Google-þjónustum til að fylla eyðublöð út hraðar.</translation>
 <translation id="7006930604109697472">Senda samt</translation>
 <translation id="7009364359744329733">Þetta kort er ekki tiltækt sem stendur. Reyndu aftur síðar.</translation>
 <translation id="7010658264061801199">Matur og drykkur</translation>
@@ -4623,7 +4623,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="8194956568907463262">Skotleikir</translation>
 <translation id="8198379961710069585">Hnappurinn „Leita í ferli“: ýttu á hann til að leita í ferlinum</translation>
 <translation id="8199437620497683918">Geisladiskur (glans)</translation>
-<translation id="8199730148066603000">Ekki er leyft að forskoða vefslóðir sem eru ekki HTTPS.</translation>
 <translation id="8200772114523450471">Halda áfram</translation>
 <translation id="8202097416529803614">Yfirlit pöntunar</translation>
 <translation id="8202370299023114387">Skörun</translation>
@@ -4828,6 +4827,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="8521812709849134608">Borð og bekkir</translation>
 <translation id="8522180136695974431">Skýrslur um lánstraust og eftirlit</translation>
 <translation id="8522552481199248698">Chrome getur hjálpað þér að vernda Google reikninginn þinn og breyta aðgangsorðinu.</translation>
+<translation id="852450791482410042">Greiða núna</translation>
 <translation id="8527228059738193856">Hátalarar</translation>
 <translation id="8527681393107582734">Landbúnaður og skógrækt</translation>
 <translation id="8528149813106025610">Barnafatnaður</translation>

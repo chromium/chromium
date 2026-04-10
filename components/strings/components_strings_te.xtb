@@ -1295,10 +1295,12 @@
 <translation id="3037177537145227281">ధరను ట్రాక్ చేయడం</translation>
 <translation id="3037605927509011580">ఆవ్, స్నాప్!</translation>
 <translation id="3039406992698062762">ఫ్యామిలీ ట్రావెల్</translation>
+<translation id="3040435070100611531">మీ Google Wallet పాస్‌లు</translation>
 <translation id="3041176923638368519">కార్డ్ ప్రయోజన నియమాలను చూడండి</translation>
 <translation id="3041584414879052436">'ఇప్పుడు కొనండి, పేమెంట్ తర్వాత చేయండి'ని జారీ చేసే సంస్థల లిస్ట్ మూసివేయబడింది.</translation>
 <translation id="3041612393474885105">సర్టిఫికెట్ సమాచారం</translation>
 <translation id="3045769629416806687">ప్రమాదకర క్రీడలు</translation>
+<translation id="3047054686095898948">మీ సమాచారాన్ని <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />‌లో సేవ్ చేసి, Google ప్రోడక్ట్‌లలో ఫారమ్‌లను ఫిల్ చేయడం వంటి పనులను వేగంగా పూర్తి చేయండి. మీరు <ph name="ACCOUNT" /> కోసం <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" />‌లో <ph name="BEGIN_LINK" />మీ సమాచారాన్ని మేనేజ్ చేయవచ్చు<ph name="END_LINK" /></translation>
 <translation id="305162504811187366">టైమ్ స్టాంప్‌‌లు, హోస్ట్‌లు, క్లయింట్ సెషన్ idలతో సహా Chrome రిమోట్ డెస్క్‌టాప్ హిస్టరీ</translation>
 <translation id="3052868890529250114">మీరు సాధారణంగా సైట్‌లకు సురక్షితంగానే కనెక్ట్ అవుతారు, కానీ Chrome ఈ సమయంలో సురక్షితమైన కనెక్షన్‌ను ఉపయోగించలేకపోతోంది. అటాకర్ మీ నెట్‌వర్క్ కనెక్షన్‌ను రహస్యంగా గమనించడానికి లేదా మార్చడానికి ట్రై చేస్తూ ఉండవచ్చు. <ph name="BEGIN_LEARN_MORE_LINK" />ఈ హెచ్చరిక గురించి మరింత తెలుసుకోండి<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> పైన <ph name="PRICE_DROP" /> తగ్గింపు</translation>
@@ -2795,7 +2797,6 @@
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> “<ph name="WEBSITE_TITLE" />”ను అప్‌డేట్ చేశారు</translation>
 <translation id="5383478552402031184">ఫ్లోరింగ్</translation>
 <translation id="5385857628869214740">హాస్యం</translation>
-<translation id="5385966243497224160">HTTPS కాని URLను ప్రివ్యూ చేయడం సాధ్యపడదు</translation>
 <translation id="5386426401304769735">ఈ సైట్ సర్టిఫికెట్ గొలుసులో SHA-1 ఉపయోగించి సంతకం చేసిన సర్టిఫికెట్ ఉంది.</translation>
 <translation id="5391010642126249196">మీరు సందర్శించారు</translation>
 <translation id="5391306025131596142">&amp;హిస్టరీ పేజీని తెరవండి</translation>
@@ -3845,7 +3846,6 @@
 <translation id="7003322000677139268">వాహన భాగాలు &amp; యాక్సెసరీలు</translation>
 <translation id="7004499039102548441">ఇటీవలి ట్యాబ్‌లు</translation>
 <translation id="7004562620237466965">అవగతం కోసం మాత్రమే</translation>
-<translation id="700483187606163535">మీ సమాచారం, <ph name="ACCOUNT" /> కోసం <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />‌లో సేవ్ చేయబడుతుంది. ఫారమ్‌లను వేగంగా పూరించడానికి మీరు దీన్ని Google సర్వీస్‌లలో ఉపయోగించవచ్చు.</translation>
 <translation id="7006930604109697472">ఏదేమైనా పంపు</translation>
 <translation id="7009364359744329733">ప్రస్తుతానికి ఈ కార్డ్ అందుబాటులో లేదు. దయచేసి తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="7010658264061801199">ఫుడ్ &amp; డ్రింక్</translation>
@@ -4619,7 +4619,6 @@
 <translation id="8194956568907463262">షూటర్ గేమ్‌లు</translation>
 <translation id="8198379961710069585">'హిస్టరీని సెర్చ్ చేయండి' అనే బటన్, హిస్టరీని సెర్చ్ చేయడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="8199437620497683918">ఆప్టికల్ డిస్క్ (గ్లాసీ)</translation>
-<translation id="8199730148066603000">HTTPS కాని URLను ప్రివ్యూ చేయడం అనుమతించబడదు.</translation>
 <translation id="8200772114523450471">మ‌ళ్లీ ప్రారంభించండి</translation>
 <translation id="8202097416529803614">ఆర్డర్ సారాంశం</translation>
 <translation id="8202370299023114387">వైరుధ్యం</translation>
@@ -4824,6 +4823,7 @@
 <translation id="8521812709849134608">కౌంటర్‍టాప్‍లు</translation>
 <translation id="8522180136695974431">క్రెడిట్ రిపోర్టింగ్ &amp; మానిటరింగ్</translation>
 <translation id="8522552481199248698">మీ Google ఖాతాను సంరక్షించుకోవడంలో, మీ పాస్‌వర్డ్‌ను మార్చడంలో Chrome మీకు సహాయపడగలదు.</translation>
+<translation id="852450791482410042">ఇప్పుడే పేమెంట్ చేయండి</translation>
 <translation id="8527228059738193856">స్పీకర్‌లు</translation>
 <translation id="8527681393107582734">వ్యవసాయం &amp; అటవీశాఖ</translation>
 <translation id="8528149813106025610">పిల్లల దుస్తులు</translation>

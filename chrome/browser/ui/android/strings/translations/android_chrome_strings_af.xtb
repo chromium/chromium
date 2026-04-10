@@ -293,6 +293,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2251809247798634662">Nuwe Incognito-venster</translation>
 <translation id="2253927598983295051">Kies wat om met <ph name="APP_NAME" /> te deel</translation>
 <translation id="2261570557291037252">Meer appinligting</translation>
+<translation id="2270544918551255912">Swiep van die kant af om terug te gaan</translation>
 <translation id="2276696007612801991">Meld by jou Google-rekening aan om jou wagwoorde na te gaan</translation>
 <translation id="2281243904606300427"><ph name="TAB_TITLE" />, gekose Incognito-oortjie</translation>
 <translation id="2286841657746966508">Faktureringadres</translation>
@@ -480,6 +481,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2989523299700148168">Onlangs besoek</translation>
 <translation id="2992473221983447149">Prentbeskrywings</translation>
 <translation id="2996291259634659425">Skep wagfrase</translation>
+<translation id="2996682533106928201">Tik om toe te maak.</translation>
 <translation id="2996809686854298943">URL vereis</translation>
 <translation id="3024215143424744261">Leesmodusvoorkeure is toegemaak</translation>
 <translation id="3026955690410463085">Sluit skakel in</translation>
@@ -684,6 +686,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">afgelope 4 weke</translation>
 <translation id="393697183122708255">Geaktiveerde stemsoektog is onbeskikbaar</translation>
+<translation id="3941718885865495207">Onderste blad vir Chrome Finds-intekening</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, vasgespelde prent-in-prent-oortjie</translation>
 <translation id="3950820424414687140">Meld aan</translation>
 <translation id="395377504920307820">Gebruik sonder 'n rekening</translation>
@@ -1189,6 +1192,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="6011308810877101166">Verbeter soekvoorstelle</translation>
 <translation id="6013305291643746595">Sorteer volgens oudste</translation>
 <translation id="6022659036123304283">Maak Chrome jou eie</translation>
+<translation id="6023820583797130428">Maak die kieslys oop om terug te gaan</translation>
 <translation id="6026538407078977628">Vou uit na volskerm</translation>
 <translation id="6030719887161080597">Bestuur inligting wat deur werwe gebruik word om advertensieprestasie te meet</translation>
 <translation id="6039379616847168523">Spring na die volgende oortjie</translation>
@@ -1633,6 +1637,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standaardoortjie}other{<ph name="TABS_COUNT_MANY" /> standaardoortjies}}</translation>
 <translation id="7603168929588204083">Ongeldige datum</translation>
 <translation id="7605594153474022051">Sinkronisering werk nie</translation>
+<translation id="7608245556672190037">Chrome Finds-intekening is teen volle hoogte oopgemaak</translation>
 <translation id="7612619742409846846">By Google aangemeld as</translation>
 <translation id="7612989789287281429">Meld jou tans aan …</translation>
 <translation id="7619072057915878432">Kon <ph name="FILE_NAME" /> weens netwerkmislukkings nie aflaai nie.</translation>
@@ -1640,6 +1645,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7628417132421583481">Gaan na Wagwoordbestuurder</translation>
 <translation id="7630202231528827509">Verskaffer-URL</translation>
 <translation id="7638584964844754484">Verkeerde wagwoordfrase</translation>
+<translation id="764047009170754705">Chrome Finds-intekening is toegemaak</translation>
 <translation id="7646499124171960488">Waarsku jou oor onveilige publieke werwe</translation>
 <translation id="7646772052135772216">Wagwoordsinkronisering werk nie</translation>
 <translation id="7655240423373329753">afgelope 7 dae</translation>
@@ -1864,6 +1870,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8473863474539038330">Adresse en meer</translation>
 <translation id="847433688444405067">Blaai op verskillende toestelle</translation>
 <translation id="8477178913400731244">Vee data uit</translation>
+<translation id="8481771036036087705">Chrome Finds-intekening is teen halwe hoogte oopgemaak</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">Geen onaktiewe vensters nie</translation>
 <translation id="8493948351860045254">Maak spasie beskikbaar</translation>

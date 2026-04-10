@@ -1298,10 +1298,12 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3037177537145227281">Estàs fent un seguiment del preu</translation>
 <translation id="3037605927509011580">Vaja!</translation>
 <translation id="3039406992698062762">Viatges en família</translation>
+<translation id="3040435070100611531">Els teus passis de Google Wallet</translation>
 <translation id="3041176923638368519">Consulta les condicions de l'avantatge de la targeta</translation>
 <translation id="3041584414879052436">La llista d'emissors de Compra ara, paga després està tancada.</translation>
 <translation id="3041612393474885105">Informació del certificat</translation>
 <translation id="3045769629416806687">Esports de risc</translation>
+<translation id="3047054686095898948">Desa la informació a <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> i enllesteix més ràpidament les tasques, com ara emplenar formularis en tots els productes de Google. Pots <ph name="BEGIN_LINK" />gestionar la teva informació<ph name="END_LINK" /> a <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> per a <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">Historial de l'Escriptori remot de Chrome, inclosos els amfitrions, les marques de temps i els identificadors de sessió de client</translation>
 <translation id="3052868890529250114">Normalment et connectes a llocs web de manera segura, però aquesta vegada Chrome no ha pogut utilitzar una connexió segura. És possible que un atacant estigui provant d'escoltar clandestinament o de modificar la connexió de xarxa. <ph name="BEGIN_LEARN_MORE_LINK" />Més informació sobre aquest advertiment<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Baixada de preu de <ph name="PRICE_DROP" /> per a <ph name="PRODUCT_NAME" /></translation>
@@ -2797,7 +2799,6 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> ha actualitzat la pestanya "<ph name="WEBSITE_TITLE" />"</translation>
 <translation id="5383478552402031184">Terres</translation>
 <translation id="5385857628869214740">Humor</translation>
-<translation id="5385966243497224160">No es pot previsualitzar l'URL que no és HTTPS</translation>
 <translation id="5386426401304769735">La cadena de certificats d'aquest lloc conté un certificat que s'ha signat amb SHA-1.</translation>
 <translation id="5391010642126249196">Hi has accedit</translation>
 <translation id="5391306025131596142">&amp;Obre la pàgina de l'historial</translation>
@@ -3844,7 +3845,6 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="7003322000677139268">Peces i accessoris de vehicles</translation>
 <translation id="7004499039102548441">Pestanyes recents</translation>
 <translation id="7004562620237466965">Només per desxifrar</translation>
-<translation id="700483187606163535">La informació es desa a <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> per a <ph name="ACCOUNT" />. Pots utilitzar-la en tots els productes de Google per emplenar formularis més ràpidament.</translation>
 <translation id="7006930604109697472">Envia de totes maneres</translation>
 <translation id="7009364359744329733">La targeta no està disponible en aquest moment. Torna-ho a provar més tard.</translation>
 <translation id="7010658264061801199">Menjar i beguda</translation>
@@ -4618,7 +4618,6 @@ Detalls addicionals:
 <translation id="8194956568907463262">Jocs de trets</translation>
 <translation id="8198379961710069585">Botó Cerca a l'historial. Activa'l per cercar a l'historial.</translation>
 <translation id="8199437620497683918">Disc òptic (brillant)</translation>
-<translation id="8199730148066603000">No es permet previsualitzar l'URL que no és HTTPS.</translation>
 <translation id="8200772114523450471">Reprèn</translation>
 <translation id="8202097416529803614">Resum de la comanda</translation>
 <translation id="8202370299023114387">Conflicte</translation>
@@ -4822,6 +4821,7 @@ Detalls addicionals:
 <translation id="8521812709849134608">Taulells de cuina</translation>
 <translation id="8522180136695974431">Informes i supervisió de crèdits</translation>
 <translation id="8522552481199248698">Chrome et pot ajudar a protegir el Compte de Google i a canviar la contrasenya.</translation>
+<translation id="852450791482410042">Paga ara</translation>
 <translation id="8527228059738193856">Altaveus</translation>
 <translation id="8527681393107582734">Agricultura i silvicultura</translation>
 <translation id="8528149813106025610">Moda infantil</translation>

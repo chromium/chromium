@@ -293,6 +293,7 @@
 <translation id="2251809247798634662">নতুন ছদ্মবেশী উইন্ডো</translation>
 <translation id="2253927598983295051"><ph name="APP_NAME" />-এর সাথে কী শেয়ার করবেন তা বেছে নিন</translation>
 <translation id="2261570557291037252">অ্যাপ সম্পর্কিত আরও তথ্য</translation>
+<translation id="2270544918551255912">ফিরে যেতে স্ক্রিনের প্রান্ত থেকে সোয়াইপ করুন</translation>
 <translation id="2276696007612801991">আপনার পাসওয়ার্ড চেক করতে Google অ্যাকাউন্টে সাইন-ইন করুন</translation>
 <translation id="2281243904606300427"><ph name="TAB_TITLE" />, বেছে নেওয়া ছদ্মবেশী ট্যাব</translation>
 <translation id="2286841657746966508">বিলিং ঠিকানা</translation>
@@ -480,6 +481,7 @@
 <translation id="2989523299700148168">সাম্প্রতিক দেখা হয়েছে</translation>
 <translation id="2992473221983447149">ছবির বিবরণ</translation>
 <translation id="2996291259634659425">পাসফ্রেজ তৈরি করুন</translation>
+<translation id="2996682533106928201">বাতিল করতে ট্যাপ করুন</translation>
 <translation id="2996809686854298943">URL প্রয়োজন</translation>
 <translation id="3024215143424744261">রিডিং মোড সম্পর্কিত পছন্দ বন্ধ করা হয়েছে</translation>
 <translation id="3026955690410463085">লিঙ্ক যোগ করুন</translation>
@@ -684,6 +686,7 @@
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">গত ৪ সপ্তাহ</translation>
 <translation id="393697183122708255">কোনো সক্ষম ভয়েস সার্চ উপলব্ধ নেই</translation>
+<translation id="3941718885865495207">Chrome Finds অপ্ট-ইন করার জন্য স্ক্রিনের নিচে অ্যাটাচ করা শিট</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, পিন করা ছবির-মধ্যে-ছবি ট্যাব</translation>
 <translation id="3950820424414687140">সাইন-ইন করুন</translation>
 <translation id="395377504920307820">কোনও অ্যাকাউন্টে লগ-ইন না করেই ব্যবহার করুন</translation>
@@ -1189,6 +1192,7 @@
 <translation id="6011308810877101166">সার্চ সাজেশন উন্নত করুন</translation>
 <translation id="6013305291643746595">সবচেয়ে পুরনো অনুযায়ী সাজানো হচ্ছে</translation>
 <translation id="6022659036123304283">Chrome-কে আপনার করে নিন</translation>
+<translation id="6023820583797130428">ফিরে যেতে মেনু খুলুন</translation>
 <translation id="6026538407078977628">'ফুল-স্ক্রিন' মোডে পরিবর্তন করুন</translation>
 <translation id="6030719887161080597">বিজ্ঞাপন সংক্রান্ত পারফর্ম্যান্স পরিমাপ করতে সাইটের মাধ্যমে ব্যবহার করা তথ্য ম্যানেজ করুন</translation>
 <translation id="6039379616847168523">পরবর্তী ট্যাবে চলে যান</translation>
@@ -1633,6 +1637,7 @@
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />টি স্ট্যান্ডার্ড ট্যাব}one{<ph name="TABS_COUNT_MANY" />টি স্ট্যান্ডার্ড ট্যাব}other{<ph name="TABS_COUNT_MANY" />টি স্ট্যান্ডার্ড ট্যাব}}</translation>
 <translation id="7603168929588204083">ভুল তারিখ</translation>
 <translation id="7605594153474022051">সিঙ্ক কাজ করছে না</translation>
+<translation id="7608245556672190037">Chrome Finds অপ্ট-ইন সম্পূর্ণ স্ক্রিন জুড়ে খোলা হয়েছে</translation>
 <translation id="7612619742409846846">এই হিসেবে Google-এ সাইন-ইন করেছেন</translation>
 <translation id="7612989789287281429">আপনাকে সাইন-ইন করানো হচ্ছে…</translation>
 <translation id="7619072057915878432">নেটওয়ার্ক কানেক্ট হয়নি বলে <ph name="FILE_NAME" /> ডাউনলোড করা যায়নি।</translation>
@@ -1640,6 +1645,7 @@
 <translation id="7628417132421583481">Password Manager-এ যান</translation>
 <translation id="7630202231528827509">পরিষেবা প্রদানকারীর ইউআরএল</translation>
 <translation id="7638584964844754484">ত্রুটিপূর্ণ পাসফ্রেজ</translation>
+<translation id="764047009170754705">Chrome Finds অপ্ট-ইন বন্ধ করা হয়েছে</translation>
 <translation id="7646499124171960488">এর ফলে আপনি অসুরক্ষিত সাইট সম্পর্কে বিজ্ঞপ্তি পেতে পারেন</translation>
 <translation id="7646772052135772216">পাসওয়ার্ড সিঙ্ক ফিচার কাজ করছে না</translation>
 <translation id="7655240423373329753">গত ৭ দিনে</translation>
@@ -1864,6 +1870,7 @@
 <translation id="8473863474539038330">ঠিকানা ও আরও অনেককিছু</translation>
 <translation id="847433688444405067">ডিভাইস জুড়ে ব্রাউজ করা</translation>
 <translation id="8477178913400731244">ডেটা মুছুন</translation>
+<translation id="8481771036036087705">Chrome Finds অপ্ট-ইন অর্ধেক স্ক্রিন জুড়ে খোলা হয়েছে</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">কোনও ইনঅ্যাক্টিভ উইন্ডো নেই</translation>
 <translation id="8493948351860045254">জায়গা ফাঁকা করুন</translation>

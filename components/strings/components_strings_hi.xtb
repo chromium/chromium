@@ -1301,10 +1301,12 @@
 <translation id="3037177537145227281">कीमत ट्रैक की जा रही है</translation>
 <translation id="3037605927509011580">हे भगवान!</translation>
 <translation id="3039406992698062762">फ़ैमिली ट्रैवल</translation>
+<translation id="3040435070100611531">आपके Google Wallet में मौजूद पास</translation>
 <translation id="3041176923638368519">कार्ड पर मिलने वाले फ़ायदों से जुड़ी शर्तें देखें</translation>
 <translation id="3041584414879052436">'अभी खरीदें, बाद में पेमेंट करें' सुविधा देने वाली कंपनियों की सूची बंद है.</translation>
 <translation id="3041612393474885105">सर्टिफ़िकेट की जानकारी</translation>
 <translation id="3045769629416806687">जोखिम भरे खेल</translation>
+<translation id="3047054686095898948">अपनी जानकारी <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> में सेव करें और Google के सभी प्रॉडक्ट पर, फ़ॉर्म भरने जैसे काम तेज़ी से करें. <ph name="ACCOUNT" /> के लिए, <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> में जाकर <ph name="BEGIN_LINK" />अपनी जानकारी मैनेज<ph name="END_LINK" /> की जा सकती है</translation>
 <translation id="305162504811187366">Chrome रिमोट डेस्कटॉप का इतिहास, जिसमें टाइमस्टैंप, होस्ट, और क्लाइंट सेशन आईडी शामिल हैं</translation>
 <translation id="3052868890529250114">Chrome आम तौर पर आपको साइटों से सुरक्षित तरीके से कनेक्ट करता है, लेकिन इस बार इसे साइट पर सुरक्षित कनेक्शन नहीं मिला. ऐसा हो सकता है कि कोई हमलावर चोरी-छिपे आपके इंटरनेट पर नज़र रख रहा हो या उसमें बदलाव करने की कोशिश कर रहा हो. <ph name="BEGIN_LEARN_MORE_LINK" />इस चेतावनी के बारे में ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> की कीमत <ph name="PRICE_DROP" /> कम हुई है</translation>
@@ -2800,7 +2802,6 @@
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> ने “<ph name="WEBSITE_TITLE" />” टैब को अपडेट किया</translation>
 <translation id="5383478552402031184">फ़्लोरिंग</translation>
 <translation id="5385857628869214740">हास्य</translation>
-<translation id="5385966243497224160">बिना एचटीटीपीएस वाले यूआरएल की झलक नहीं दिखाई जा सकती</translation>
 <translation id="5386426401304769735">इस साइट की प्रमाणपत्र शृंखला में, SHA-1 का उपयोग करके हस्ताक्षर किया गया प्रमाणपत्र शामिल है.</translation>
 <translation id="5391010642126249196">आपके डिवाइस पर खोला गया टैब</translation>
 <translation id="5391306025131596142">और इतिहास वाला पेज खोलें</translation>
@@ -3850,7 +3851,6 @@
 <translation id="7003322000677139268">वाहनों के पुर्ज़े और ऐक्सेसरी</translation>
 <translation id="7004499039102548441">हाल के टैब</translation>
 <translation id="7004562620237466965">केवल Decipher</translation>
-<translation id="700483187606163535"><ph name="ACCOUNT" /> के लिए आपकी जानकारी <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> में सेव की गई है. इसका इस्तेमाल, Google की सभी सेवाओं में फ़ॉर्म तेज़ी से भरने के लिए किया जा सकता है.</translation>
 <translation id="7006930604109697472">फिर भी भेजें</translation>
 <translation id="7009364359744329733">फ़िलहाल, यह कार्ड उपलब्ध नहीं है. कृपया फिर से कोशिश करें.</translation>
 <translation id="7010658264061801199">खाने-पीने की चीज़ें</translation>
@@ -4624,7 +4624,6 @@
 <translation id="8194956568907463262">शूटर गेम</translation>
 <translation id="8198379961710069585">'इतिहास खोजें' बटन, इतिहास खोजने के लिए इसे चालू करें</translation>
 <translation id="8199437620497683918">ऑप्टिकल डिस्क (ग्लॉसी)</translation>
-<translation id="8199730148066603000">बिना एचटीटीपीएस वाले यूआरएल की झलक देखने की अनुमति नहीं है.</translation>
 <translation id="8200772114523450471">फिर से शुरू करें</translation>
 <translation id="8202097416529803614">ऑर्डर की जानकारी</translation>
 <translation id="8202370299023114387">विरोध</translation>
@@ -4829,6 +4828,7 @@
 <translation id="8521812709849134608">काउंटरटॉप</translation>
 <translation id="8522180136695974431">क्रेडिट रिपोर्टिंग और मॉनिटरिंग</translation>
 <translation id="8522552481199248698">Chrome से आप अपने Google खाते की सुरक्षा कर सकते हैं और अपना पासवर्ड बदल सकते हैं.</translation>
+<translation id="852450791482410042">अभी पेमेंट करें</translation>
 <translation id="8527228059738193856">स्पीकर</translation>
 <translation id="8527681393107582734">खेती और वन विज्ञान</translation>
 <translation id="8528149813106025610">बच्चों के कपड़े</translation>

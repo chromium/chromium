@@ -1300,10 +1300,12 @@
 <translation id="3037177537145227281">Вы отслеживаете цену на этот товар</translation>
 <translation id="3037605927509011580">Опаньки...</translation>
 <translation id="3039406992698062762">Семейные поездки</translation>
+<translation id="3040435070100611531">Ваши карты и билеты в Google Кошельке</translation>
 <translation id="3041176923638368519">Посмотреть условия использования преимуществ карты</translation>
 <translation id="3041584414879052436">Экран со списком сервисов рассрочки закрыт.</translation>
 <translation id="3041612393474885105">Данные сертификата</translation>
 <translation id="3045769629416806687">Экстремальные виды спорта</translation>
+<translation id="3047054686095898948">Сохраните информацию в сервисе "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />", чтобы быстрее выполнять действия, например заполнять формы в продуктах Google. Вы можете <ph name="BEGIN_LINK" />управлять своими данными<ph name="END_LINK" /> в сервисе "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" />" для аккаунта <ph name="ACCOUNT" />.</translation>
 <translation id="305162504811187366">историю Удаленного рабочего стола Chrome, в том числе временные метки, хосты и идентификаторы сеансов клиентов.</translation>
 <translation id="3052868890529250114">Обычно подключение к сайтам защищено, но в этот раз Chrome не удалось установить безопасное соединение. Возможно, злоумышленник пытается перехватить или изменить ваше сетевое подключение. Подробнее <ph name="BEGIN_LEARN_MORE_LINK" />об этом предупреждении<ph name="END_LEARN_MORE_LINK" />…</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />: скидка <ph name="PRICE_DROP" /></translation>
@@ -2799,7 +2801,6 @@
 <translation id="5381952079334035181">Пользователь <ph name="MEMBER_FIRST_NAME" /> обновил вкладку "<ph name="WEBSITE_TITLE" />".</translation>
 <translation id="5383478552402031184">Напольные покрытия</translation>
 <translation id="5385857628869214740">Юмор</translation>
-<translation id="5385966243497224160">Предпросмотр URL с протоколом, отличным от HTTPS, запрещен</translation>
 <translation id="5386426401304769735">В цепочке сертификатов этого сайта есть сертификат, подписанный с помощью алгоритма SHA-1.</translation>
 <translation id="5391010642126249196">Вы посещали</translation>
 <translation id="5391306025131596142">&amp;Открыть историю</translation>
@@ -3849,7 +3850,6 @@
 <translation id="7003322000677139268">Запчасти и аксессуары для транспортных средств</translation>
 <translation id="7004499039102548441">Недавние вкладки</translation>
 <translation id="7004562620237466965">Только расшифровка</translation>
-<translation id="700483187606163535">Ваши данные будут сохранены в сервисе "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />" для аккаунта <ph name="ACCOUNT" />. Вы можете использовать их во всех сервисах Google, чтобы быстрее заполнять формы.</translation>
 <translation id="7006930604109697472">Все равно отправить</translation>
 <translation id="7009364359744329733">Карта недоступна. Повторите попытку позже.</translation>
 <translation id="7010658264061801199">Еда и напитки</translation>
@@ -4623,7 +4623,6 @@
 <translation id="8194956568907463262">Шутеры</translation>
 <translation id="8198379961710069585">Кнопка "Искать в истории". Нажмите, чтобы выполнить поиск по истории.</translation>
 <translation id="8199437620497683918">Оптический диск (глянцевый)</translation>
-<translation id="8199730148066603000">Предварительный просмотр URL с протоколом, отличным от HTTPS, не поддерживается.</translation>
 <translation id="8200772114523450471">Возобновить</translation>
 <translation id="8202097416529803614">Информация о заказе</translation>
 <translation id="8202370299023114387">Конфликт</translation>
@@ -4828,6 +4827,7 @@
 <translation id="8521812709849134608">Столешницы</translation>
 <translation id="8522180136695974431">Службы кредитной истории</translation>
 <translation id="8522552481199248698">Защитите свой аккаунт Google и смените пароль с помощью Chrome.</translation>
+<translation id="852450791482410042">Оплатить сейчас</translation>
 <translation id="8527228059738193856">Колонки</translation>
 <translation id="8527681393107582734">Сельское хозяйство и лесоводство</translation>
 <translation id="8528149813106025610">Детская одежда</translation>

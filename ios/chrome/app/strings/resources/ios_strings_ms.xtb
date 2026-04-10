@@ -116,6 +116,7 @@
 <translation id="138692594145659985">Pilihan untuk menyimpan kad</translation>
 <translation id="1396260204083880024">Log masuk sebagai <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Buka menu akaun.</translation>
 <translation id="1397144142234474689">Sembunyikan Sejarah</translation>
+<translation id="1399268420835656394">Jika anda bukan kanak-kanak, anda mungkin mahu menyemak umur dalam Akaun Apple pada peranti ini. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="1407135791313364759">Buka semua</translation>
 <translation id="1408847409015257906">Ketik “Privasi &amp; Keselamatan”.</translation>
 <translation id="1411386976162024013">Carian visual Lens</translation>
@@ -555,6 +556,7 @@
 <translation id="2922210239002704889">Akses halaman utama atau papan kekunci anda</translation>
 <translation id="2924940770243654951">Buka dalam tab Inkognito baharu</translation>
 <translation id="2952278131021475699">Carian Kamera Lens</translation>
+<translation id="2953821385349876107">Pilih Google Account yang lain</translation>
 <translation id="2962516096219646456">Lihat semua data autolengkap</translation>
 <translation id="2965594942405840553">Tindakan ini tidak boleh dibuat asal</translation>
 <translation id="2969979262385602596">Gagal melog masuk. Sila cuba sebentar lagi.</translation>
@@ -1439,6 +1441,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6090760257419195752">Amaran yang diketepikan</translation>
 <translation id="6094325891006032858">Hidupkan Penyemakan Imbas Selamat Dipertingkat</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> ditemukan</translation>
+<translation id="6099466082815574659">iPad ini disediakan untuk kanak-kanak</translation>
 <translation id="6100617279104942061">Log masuk sebagai <ph name="USER_EMAIL" />. Membuka tetapan.</translation>
 <translation id="6100676328067737810">Data anda akan disimpan pada Google Account anda, <ph name="USER_EMAIL" /></translation>
 <translation id="610083648014322104">Dapatkan jawapan yang berkaitan berdasarkan kandungan halaman yang anda lihat</translation>
@@ -1496,7 +1499,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6259928806013786178">Mod membaca gagal</translation>
 <translation id="6268773951964630964">Cari imej yang disalin</translation>
 <translation id="6271462272606946663">Sembunyikan Minta Laman Mudah Alih</translation>
-<translation id="6271556257184622612">Tanya Google tentang tab dan pelbagai lagi</translation>
 <translation id="6271824294945464304">Berkongsi kata laluan</translation>
 <translation id="628251768213143684">Anda boleh mengurus data yang disimpan dalam Google Account anda pada bila-bila masa</translation>
 <translation id="6284652193729350524">Tawarkan untuk menterjemah <ph name="LANGUAGE" /></translation>
@@ -1533,6 +1535,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6368102751067608420">Untuk memadamkan semua data pengurus kata laluan</translation>
 <translation id="6372558618707314581">Akses mana-mana halaman yang anda sukai</translation>
 <translation id="6374469231428023295">Cuba Lagi</translation>
+<translation id="6374514103145916800">Tanya</translation>
 <translation id="6383719166112032471">Buka Lokasi…</translation>
 <translation id="6387994324662817823">Kata laluan disimpan pada Pengurus Kata Laluan Google pada peranti ini sahaja.</translation>
 <translation id="6393156038355142111">Cadangkan kata laluan yang kukuh</translation>
@@ -1600,6 +1603,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6596481460663245319">Cari Imej dengan Google</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 Kata laluan}other{# kata laluan}}</translation>
 <translation id="6601302169302852717">Imej disimpan dalam Google Photos untuk <ph name="USER_EMAIL" /></translation>
+<translation id="6602173570135186741">Autolengkap dan kata laluan</translation>
 <translation id="6603393121510733479">Organisasi anda telah mematikan penyemakan imbas peribadi.
 <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="6606914854592108404">Semakan Keselamatan sedang dijalankan…</translation>
@@ -1851,6 +1855,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Untuk mengunci tab Inkognito anda, sediakan Touch ID, Face ID atau Kod Laluan.</translation>
 <translation id="750886945254958667">Simpan kumpulan ini untuk menambahkan tab kemudian atau keluar daripada kumpulan ini jika anda tidak mahu akses kepada kumpulan ini lagi</translation>
+<translation id="7511099437872594216">Tab</translation>
 <translation id="7511727374778217603">{COUNT,plural, =1{Tambahkan hingga 1 tab}other{Tambahkan hingga {COUNT} tab}}</translation>
 <translation id="7512909159512473473">Masukkan ungkapan laluan…</translation>
 <translation id="7514365320538308">Muat Turun</translation>
@@ -1965,6 +1970,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="7888562068293422208">Tutup semua?</translation>
 <translation id="7889910613639381518">Akses mudah dan selamat dengan widget Google Password Manager.</translation>
 <translation id="7899199123054742721">Tandai semua sebagai belum dibaca</translation>
+<translation id="7909005666376403847">iPhone ini disediakan untuk kanak-kanak</translation>
 <translation id="7911190106180361398">Organisasi anda tidak membenarkan anda menyegerakkan semua.</translation>
 <translation id="7918999344502274923">Sembunyikan butiran <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="7921559948846049514">Pilih tema, warna atau pelbagai lagi untuk latar anda</translation>

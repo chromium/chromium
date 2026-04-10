@@ -1300,10 +1300,12 @@
 <translation id="3037177537145227281">মূল্য ট্ৰেক কৰি থকা হৈছে</translation>
 <translation id="3037605927509011580">আমি দুঃখিত!</translation>
 <translation id="3039406992698062762">পৰিয়ালৰ ভ্ৰমণ</translation>
+<translation id="3040435070100611531">আপোনাৰ Google Walletৰ পাছসমূহ</translation>
 <translation id="3041176923638368519">কাৰ্ডৰ লাভালাভৰ চৰ্তাৱলী চাওক</translation>
 <translation id="3041584414879052436">এতিয়া ক্ৰয় কৰি পাছত পৰিশোধ কৰক জাৰিকৰ্তাৰ সূচী বন্ধ কৰা হৈছে।</translation>
 <translation id="3041612393474885105">প্ৰমাণপত্ৰৰ তথ্য</translation>
 <translation id="3045769629416806687">দুঃসাহসিক খেল</translation>
+<translation id="3047054686095898948"><ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />ত আপোনাৰ তথ্য ছেভ কৰক আৰু Googleৰ সমগ্ৰ প্ৰ’ডাক্টত ফৰ্ম পূৰ কৰাৰ দৰে কামবোৰ দ্ৰুততাৰে কৰক। আপুনি <ph name="ACCOUNT" />ৰ বাবে <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" />ত <ph name="BEGIN_LINK" />আপোনাৰ তথ্য পৰিচালনা<ph name="END_LINK" /> কৰিব পাৰে</translation>
 <translation id="305162504811187366">টাইমষ্টাম্প, হ’ষ্ট আৰু ক্লায়েণ্টৰ ছেশ্বন আইডিকে ধৰি Chrome ৰিম’ট ডেস্কটপৰ ইতিহাস</translation>
 <translation id="3052868890529250114">আপুনি সচৰাচৰ ছাইটসমূহৰ সৈতে সুৰক্ষিতভাৱে সংযোগ কৰে, কিন্তু Chromeএ এইবাৰ এটা সুৰক্ষিত সংযোগ ব্যৱহাৰ কৰিব নোৱাৰিলে। কোনো আক্ৰমণকাৰীয়ে আপোনাৰ নেটৱৰ্ক সংযোগত গোপনে নজৰ ৰাখিবলৈ বা সেয়া সংশোধন কৰিবলৈ চেষ্টা কৰি থাকিব পাৰে। <ph name="BEGIN_LEARN_MORE_LINK" />এই সকীয়নিৰ বিষয়ে অধিক জানক<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />ৰ দাম <ph name="PRICE_DROP" /> কমিছে</translation>
@@ -2796,7 +2798,6 @@
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" />এ টেব “<ph name="WEBSITE_TITLE" />” আপডে’ট কৰিছে</translation>
 <translation id="5383478552402031184">ফ্ল’ৰিং</translation>
 <translation id="5385857628869214740">ব্যংগ কৌতুক</translation>
-<translation id="5385966243497224160">অনা-HTTPS URL পূৰ্বদৰ্শন কৰিব নোৱাৰি</translation>
 <translation id="5386426401304769735">এই ছাইটটোৰ প্ৰমাণপত্ৰৰ চ্চেইনত SHA-1 ব্যৱহাৰ কৰি ছাইন কৰা এখন প্ৰমাণপত্ৰ আছে।</translation>
 <translation id="5391010642126249196">আপুনি চাইছে</translation>
 <translation id="5391306025131596142">&amp;ইতিহাসৰ পৃষ্ঠা খোলক</translation>
@@ -3845,7 +3846,6 @@
 <translation id="7003322000677139268">বাহনৰ অংশ আৰু আনুষংগিক সামগ্ৰী</translation>
 <translation id="7004499039102548441">শেহতীয়া টেব</translation>
 <translation id="7004562620237466965">কেৱল সংকেতিক বাৰ্তাৰ অৰ্থ উলিয়াওক</translation>
-<translation id="700483187606163535">আপোনাৰ তথ্যখিনি <ph name="ACCOUNT" />ৰ বাবে <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />ত ছেভ কৰা হয়। আপুনি ফৰ্মসমূহ দ্ৰুতভাৱে পূৰ কৰিবলৈ Googleৰ সমগ্ৰ প্ৰ’ডাক্টত এইটো ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="7006930604109697472">তথাপি পঠিয়াওক</translation>
 <translation id="7009364359744329733">এই মুহূৰ্তত এই কাৰ্ডখন উপলব্ধ নহয়। অনুগ্ৰহ কৰি পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="7010658264061801199">খাদ্য আৰু পানীয়</translation>
@@ -4618,7 +4618,6 @@
 <translation id="8194956568907463262">শ্বুটাৰ গে’ম</translation>
 <translation id="8198379961710069585">ইতিহাস সন্ধান কৰাৰ বুটাম, ইতিহাস সন্ধান কৰিবলৈ সক্ৰিয় কৰক</translation>
 <translation id="8199437620497683918">অপ্টিকেল ডিস্ক (গ্লছযুক্ত)</translation>
-<translation id="8199730148066603000">অনা-HTTPS URL পূৰ্বদৰ্শন কৰাৰ অনুমতি নাই।</translation>
 <translation id="8200772114523450471">পুনৰ আৰম্ভ কৰক</translation>
 <translation id="8202097416529803614">অ’ৰ্ডাৰৰ সাৰাংশ</translation>
 <translation id="8202370299023114387">সংঘাত</translation>
@@ -4823,6 +4822,7 @@
 <translation id="8521812709849134608">কাউণ্টাৰটপ</translation>
 <translation id="8522180136695974431">ক্ৰেডিট ৰিপ’টিং আৰু নিৰীক্ষণ</translation>
 <translation id="8522552481199248698">Chromeএ আপোনাৰ Google একাউণ্ট সুৰক্ষিত কৰাত আৰু আপোনৰ পাছৱৰ্ড সলনি কৰাত সহায় কৰিব পাৰে।</translation>
+<translation id="852450791482410042">এতিয়াই পৰিশোধ কৰক</translation>
 <translation id="8527228059738193856">স্পীকাৰ</translation>
 <translation id="8527681393107582734">কৃষি আৰু বনপালন বিদ্যা</translation>
 <translation id="8528149813106025610">শিশুৰ পোছাক</translation>

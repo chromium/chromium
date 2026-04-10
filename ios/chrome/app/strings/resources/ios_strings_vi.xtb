@@ -116,6 +116,7 @@
 <translation id="138692594145659985">Các lựa chọn lưu thẻ</translation>
 <translation id="1396260204083880024">Đã đăng nhập bằng <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Mở trình đơn tài khoản.</translation>
 <translation id="1397144142234474689">Ẩn tuỳ chọn Nhật ký</translation>
+<translation id="1399268420835656394">Nếu không phải trẻ em, bạn nên kiểm tra tuổi trong Tài khoản Apple trên thiết bị này. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="1407135791313364759">Mở tất cả</translation>
 <translation id="1408847409015257906">Nhấn vào "Quyền riêng tư và bảo mật".</translation>
 <translation id="1411386976162024013">Tìm kiếm bằng hình ảnh qua Ống kính</translation>
@@ -255,6 +256,7 @@
 <translation id="1861067954551502701">{count,plural, =1{Mật khẩu {position}/{count}}other{Mật khẩu {position}/{count}}}</translation>
 <translation id="1861262398884155592">Thư mục này trống</translation>
 <translation id="1864266050569350424">Trên trang web mà bạn đã lưu mật khẩu, hãy nhấn vào trường mật khẩu đăng nhập.</translation>
+<translation id="1866700949421703765">Ẩn nút Bật Chế độ đọc</translation>
 <translation id="1872096359983322073">Đèn pin</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Mời thành viên gia đình</translation>
@@ -353,6 +355,7 @@
 <translation id="2214453882118345682">Mua sản phẩm, dịch văn bản và nhận dạng đối tượng mà bạn nhìn thấy bằng camera.</translation>
 <translation id="2215819824168709130">Ẩn thẻ theo dõi giá</translation>
 <translation id="2216366330550244277">Truy cập trang của một sản phẩm</translation>
+<translation id="2219935992754556187">Chrome bảo vệ dữ liệu nhạy cảm của bạn bằng Face ID</translation>
 <translation id="2220529011494928058">Báo cáo sự cố</translation>
 <translation id="2223461067862937305">Tạo mã QR</translation>
 <translation id="2225701818156393674">Sản phẩm đã được thêm vào danh sách sản phẩm bạn theo dõi.</translation>
@@ -459,6 +462,7 @@
 <translation id="2583688836549072561">Nhóm thẻ <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> thẻ, hoạt động mới.</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Theo dõi thông tin giảm giá sản phẩm</translation>
+<translation id="2602372807870028932">Thao tác này sẽ xoá thông tin đã chọn được lưu trên thiết bị này</translation>
 <translation id="260378315836159338">Ở đầu màn hình, nhấn vào biểu tượng +</translation>
 <translation id="2612676031748830579">Số thẻ</translation>
 <translation id="261305050785128654">Hãy cho các trang web biết ngôn ngữ mà bạn sử dụng. Các trang web sẽ hiển thị nội dung bằng những ngôn ngữ đó mỗi khi có thể.</translation>
@@ -552,6 +556,7 @@
 <translation id="2922210239002704889">Chuyển đến trang chủ hoặc bàn phím</translation>
 <translation id="2924940770243654951">Mở trong thẻ Ẩn danh mới</translation>
 <translation id="2952278131021475699">Tìm kiếm bằng máy ảnh thông qua Ống kính</translation>
+<translation id="2953821385349876107">Chọn một Tài khoản Google khác</translation>
 <translation id="2962516096219646456">Xem tất cả dữ liệu tự động điền</translation>
 <translation id="2965594942405840553">Bạn không thể huỷ thao tác này</translation>
 <translation id="2969979262385602596">Không đăng nhập được. Vui lòng thử lại sau.</translation>
@@ -960,6 +965,7 @@
 <translation id="4469324811108161144">Ghi chú có thể lưu tối đa <ph name="CHARACTER_LIMIT" /> ký tự.</translation>
 <translation id="4471472356135655769">Không xuất được mật khẩu</translation>
 <translation id="4472575034687746823">Bắt đầu</translation>
+<translation id="4473565697543262065">Thao tác này sẽ xoá thông tin đã chọn được lưu trên thiết bị này và trong Tài khoản Google <ph name="USER_EMAIL" /> của bạn</translation>
 <translation id="4473608001744970767">Ẩn tuỳ chọn Theo dõi giá</translation>
 <translation id="4474142134969976028">Không có kết quả nào phù hợp</translation>
 <translation id="4474494258097106883">Dành riêng cho iPhone của bạn</translation>
@@ -1435,6 +1441,7 @@
 <translation id="6090760257419195752">Cảnh báo đã đóng</translation>
 <translation id="6094325891006032858">Bật chế độ Duyệt web an toàn có tăng cường bảo vệ</translation>
 <translation id="6096965253650248286">Đã tìm thấy <ph name="COUNT" /> thẻ</translation>
+<translation id="6099466082815574659">iPad này được thiết lập cho trẻ em</translation>
 <translation id="6100617279104942061">Đã đăng nhập bằng <ph name="USER_EMAIL" />. Mở phần cài đặt.</translation>
 <translation id="6100676328067737810">Dữ liệu của bạn sẽ được lưu vào Tài khoản Google <ph name="USER_EMAIL" /></translation>
 <translation id="610083648014322104">Nhận câu trả lời phù hợp dựa trên nội dung của trang bạn đang truy cập</translation>
@@ -1492,7 +1499,6 @@
 <translation id="6259928806013786178">Không kích hoạt được chế độ đọc</translation>
 <translation id="6268773951964630964">Tìm kiếm hình ảnh đã sao chép</translation>
 <translation id="6271462272606946663">Ẩn tuỳ chọn Yêu cầu trang web dành cho thiết bị di động</translation>
-<translation id="6271556257184622612">Hỏi Google về các thẻ và nhiều nội dung khác</translation>
 <translation id="6271824294945464304">Chuẩn bị chia sẻ mật khẩu</translation>
 <translation id="628251768213143684">Bạn luôn có thể quản lý nội dung đã lưu trong Tài khoản Google của mình</translation>
 <translation id="6284652193729350524">Đề xuất dịch <ph name="LANGUAGE" /></translation>
@@ -1529,6 +1535,7 @@
 <translation id="6368102751067608420">Để xoá tất cả dữ liệu khỏi trình quản lý mật khẩu</translation>
 <translation id="6372558618707314581">Chuyển đến trang bất kỳ mà bạn muốn.</translation>
 <translation id="6374469231428023295">Thử lại</translation>
+<translation id="6374514103145916800">Đặt câu hỏi</translation>
 <translation id="6383719166112032471">Mở vị trí…</translation>
 <translation id="6387994324662817823">Mật khẩu sẽ chỉ được lưu vào Trình quản lý mật khẩu của Google trên thiết bị này.</translation>
 <translation id="6393156038355142111">Đề xuất mật khẩu mạnh</translation>
@@ -1577,6 +1584,7 @@
 <translation id="6532106788206463496">Lưu thay đổi</translation>
 <translation id="6536759809440150308">Mở <ph name="GROUP_TITLE" />, nhóm có <ph name="NUMBER_OF_TABS" /> thẻ, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">vidu.com</translation>
+<translation id="6538776393003671043">Lần tới khi bạn dùng thông tin này, Chrome sẽ hỏi bạn có muốn lưu vào Google Wallet hay không</translation>
 <translation id="6543899060872618437">Thanh toán nhanh hơn nhờ tính năng tự động điền trên các thiết bị</translation>
 <translation id="6550675742724504774">Tùy chọn</translation>
 <translation id="6550891580932862748">Không bảo vệ bạn trước các trang web, nội dung tải xuống và tiện ích nguy hiểm. Chế độ cài đặt Duyệt web an toàn của bạn trong các sản phẩm khác của Google sẽ không bị ảnh hưởng.</translation>
@@ -1595,6 +1603,7 @@
 <translation id="6596481460663245319">Tìm ảnh bằng Google</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 mật khẩu}other{# mật khẩu}}</translation>
 <translation id="6601302169302852717">Đã lưu hình ảnh vào Google Photos cho <ph name="USER_EMAIL" /></translation>
+<translation id="6602173570135186741">Tự động điền và mật khẩu</translation>
 <translation id="6603393121510733479">Tổ chức của bạn đã tắt tính năng duyệt web ở chế độ riêng tư.
 <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="6606914854592108404">Đang chạy tính năng Kiểm tra an toàn…</translation>
@@ -1838,7 +1847,7 @@
 <translation id="7476548258282096076">Thẻ này hiển thị các trang web bạn truy cập nhiều nhất.</translation>
 <translation id="7484645889979462775">Không bao giờ đối với trang web này</translation>
 <translation id="7486006552035434095">Đồng bộ hoá các thiết bị của bạn</translation>
-<translation id="7491131399623468277">Vào phần Cài đặt…</translation>
+<translation id="7491131399623468277">Chuyển đến phần Cài đặt…</translation>
 <translation id="7491161827858509164">Để xem các tệp bạn đã tải xuống, hãy mở <ph name="BEGIN_LINK" />Files<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Tiếp tục chỉnh sửa</translation>
 <translation id="7500244509706269886">Tự động điền biểu mẫu</translation>
@@ -1846,6 +1855,7 @@
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Để khóa các thẻ ẩn danh, hãy thiết lập Touch ID, Face ID hoặc mật mã.</translation>
 <translation id="750886945254958667">Giữ lại nhóm này để thêm thẻ sau hoặc rời khỏi nhóm nếu bạn không còn muốn truy cập vào nhóm</translation>
+<translation id="7511099437872594216">Thẻ</translation>
 <translation id="7511727374778217603">{COUNT,plural, =1{Thêm tối đa 1 thẻ}other{Thêm tối đa {COUNT} thẻ}}</translation>
 <translation id="7512909159512473473">Nhập cụm mật khẩu…</translation>
 <translation id="7514365320538308">Tải xuống</translation>
@@ -1960,6 +1970,7 @@
 <translation id="7888562068293422208">Đóng tất cả?</translation>
 <translation id="7889910613639381518">Truy cập dễ dàng và an toàn nhờ tiện ích Trình quản lý mật khẩu của Google.</translation>
 <translation id="7899199123054742721">Đánh dấu tất cả là chưa đọc</translation>
+<translation id="7909005666376403847">iPhone này được thiết lập cho trẻ em</translation>
 <translation id="7911190106180361398">Tổ chức của bạn không cho phép bạn đồng bộ hóa mọi thứ.</translation>
 <translation id="7918999344502274923">Ẩn thông tin chi tiết về <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="7921559948846049514">Chọn một giao diện, màu sắc hoặc các yếu tố khác cho nền</translation>
@@ -1977,6 +1988,7 @@
 <translation id="7952670906562503188">Bạn sắp xoá {passkey_count} khoá truy cập cũng như danh sách trang web và ứng dụng mà bạn chọn không bao giờ lưu thông tin đăng nhập. Mọi tài khoản bạn tạo cho các trang web và ứng dụng sẽ không bị xoá.</translation>
 <translation id="7958575506592576831">Thông tin bảo mật trang</translation>
 <translation id="7961015016161918242">Không bao giờ</translation>
+<translation id="7971651328518569075">Ẩn nút Tắt Chế độ đọc</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Thử</translation>
 <translation id="797588153137233716">Trình đơn → Nhật ký → Xoá dữ liệu duyệt web</translation>
@@ -1993,6 +2005,7 @@
 <translation id="8005666035647241369">Lưu mật khẩu vào Trình quản lý mật khẩu của Google trên thiết bị này</translation>
 <translation id="8010488806779226127">Khám phá các tính năng có thể giúp bạn làm được nhiều việc hơn khi duyệt web</translation>
 <translation id="8011489434346330032">Trình kiểm tra web</translation>
+<translation id="8014007212279733632">Xác minh danh tính của bạn để tự động điền thông tin nhạy cảm</translation>
 <translation id="8015826420689927262">Xoá tệp đính kèm</translation>
 <translation id="8017015647846870183">Có trong Trình quản lý mật khẩu của Google, bao gồm cả mật khẩu và khoá truy cập</translation>
 <translation id="802154636333426148">Tải xuống không thành công</translation>
@@ -2379,6 +2392,7 @@
 <translation id="984275831282074731">Phương thức thanh toán</translation>
 <translation id="985379595344853742">Đóng tất cả các thẻ ẩn danh</translation>
 <translation id="988141524645182168">Thiết bị khác</translation>
+<translation id="994184244350700431">Trong Google Wallet của tài khoản <ph name="USER_EMAIL" /></translation>
 <translation id="995174784802614337">{count,plural, =1{Đã nhập {count} khoá truy cập}other{Đã nhập {count} khoá truy cập}}</translation>
 <translation id="999768147936949692">Hiện tại, bạn chỉ có thể chia sẻ mật khẩu với các thành viên gia đình. <ph name="BEGIN_LINK" />Mời thành viên gia đình<ph name="END_LINK" /> tham gia nhóm của bạn để sử dụng các sản phẩm và gói thuê bao của bạn trên Google hiệu quả hơn.</translation>
 </translationbundle>

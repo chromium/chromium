@@ -1300,10 +1300,12 @@
 <translation id="3037177537145227281">किमतीचा माग ठेवत आहे</translation>
 <translation id="3037605927509011580">च्चक!</translation>
 <translation id="3039406992698062762">कुटुंबासोबत करता येईल असा प्रवास</translation>
+<translation id="3040435070100611531">तुमचे Google Wallet पास</translation>
 <translation id="3041176923638368519">कार्ड फायद्यासंबंधी अटी पहा</translation>
 <translation id="3041584414879052436">आता विकत घेऊन, नंतर पैसे देण्याची सुविधा देणाऱ्या जारीकर्त्यांची सूची बंद केली आहे.</translation>
 <translation id="3041612393474885105">सर्टिफिकेट माहिती</translation>
 <translation id="3045769629416806687">धोकादायक क्रीडा</translation>
+<translation id="3047054686095898948">तुमची माहिती <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> मध्ये सेव्ह करा आणि सर्व Google उत्पादनांवर फॉर्म भरणे यासारखी कामे अधिक जलद पूर्ण करा. तुम्ही <ph name="ACCOUNT" /> साठी <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> मध्ये <ph name="BEGIN_LINK" />तुमची माहिती व्यवस्थापित करणे<ph name="END_LINK" /> हे करू शकता</translation>
 <translation id="305162504811187366">टाइमस्टॅंप, होस्ट आणि क्लायंट सेशन आयडी यांच्या समावेशासह Chrome रिमोट डेस्कटॉप इतिहास</translation>
 <translation id="3052868890529250114">तुम्ही सामान्यपणे साइटशी सुरक्षितरीत्या कनेक्ट करता, पण Chrome ला या वेळी सुरक्षित कनेक्शन वापरता आले नाही. हल्लेखोर हा तुमच्या नेटवर्क कनेक्शनवरील माहिती चोरण्याचा किंवा त्यामध्ये फेरबदल करण्याचा प्रयत्न करत असू शकतो. <ph name="BEGIN_LEARN_MORE_LINK" />या चेतावणीबद्दल अधिक जाणून घ्या<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> पासून किमतीमध्ये <ph name="PRICE_DROP" /> घसरण</translation>
@@ -2799,7 +2801,6 @@
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> यांनी “<ph name="WEBSITE_TITLE" />” टॅब अपडेट केला आहे</translation>
 <translation id="5383478552402031184">फ्लोरिंग</translation>
 <translation id="5385857628869214740">विनोदी</translation>
-<translation id="5385966243497224160">HTTPS नसलेल्या URL चे पूर्वावलोकन करू शकत नाही</translation>
 <translation id="5386426401304769735">या साइटसाठी असलेल्या सर्टिफिकेट श्रृंखलेत SHA-1 वापरून स्वाक्षरी केलेले सर्टिफिकेट असते.</translation>
 <translation id="5391010642126249196">तुम्ही भेट दिली</translation>
 <translation id="5391306025131596142">&amp;इतिहास पेज उघडा</translation>
@@ -3850,7 +3851,6 @@
 <translation id="7003322000677139268">वाहनाचे भाग आणि ॲक्सेसरी</translation>
 <translation id="7004499039102548441">अलीकडील टॅब</translation>
 <translation id="7004562620237466965">केवळ अर्थ लावा</translation>
-<translation id="700483187606163535">तुमची माहिती <ph name="ACCOUNT" /> साठीच्या <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> मध्ये सेव्ह केली आहे. तुम्ही फॉर्म आणखी वेगाने भरण्यासाठी तो संपूर्ण Google उत्पादनांवर वापरू शकता.</translation>
 <translation id="7006930604109697472">तरीही पाठवा</translation>
 <translation id="7009364359744329733">हे कार्ड सध्या उपलब्ध नाही. कृपया नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="7010658264061801199">खाद्यपदार्थ आणि पेय</translation>
@@ -4624,7 +4624,6 @@
 <translation id="8194956568907463262">शूटर गेम</translation>
 <translation id="8198379961710069585">शोध इतिहास बटण, Search इतिहासासाठी अ‍ॅक्टिव्हेट करा</translation>
 <translation id="8199437620497683918">ऑप्टिकल डिस्क (ग्लॉसी)</translation>
-<translation id="8199730148066603000">HTTPS नसलेल्या URL चे पूर्वावलोकन करण्याची अनुमती नाही.</translation>
 <translation id="8200772114523450471">रेझ्युमे</translation>
 <translation id="8202097416529803614">ऑर्डर सारांश</translation>
 <translation id="8202370299023114387">विरोध</translation>

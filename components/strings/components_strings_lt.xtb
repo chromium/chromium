@@ -1300,10 +1300,12 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3037177537145227281">Kaina stebima</translation>
 <translation id="3037605927509011580">Oi!</translation>
 <translation id="3039406992698062762">Šeimos kelionės</translation>
+<translation id="3040435070100611531">„Google Wallet“ kortelės</translation>
 <translation id="3041176923638368519">Žr. kortelės privilegijų sąlygas</translation>
 <translation id="3041584414879052436">Paslaugos „Pirkite dabar, mokėkite vėliau“ išdavėjų sąrašas uždarytas.</translation>
 <translation id="3041612393474885105">Sertifikato informacija</translation>
 <translation id="3045769629416806687">Ekstremalusis sportas</translation>
+<translation id="3047054686095898948">Išsaugokite informaciją „<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />“ ir sparčiau atlikite užduotis, pvz., užpildykite formas „Google“ produktuose. Galite <ph name="BEGIN_LINK" />tvarkyti informaciją<ph name="END_LINK" /> sistemoje „<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" />“ (<ph name="ACCOUNT" />)</translation>
 <translation id="305162504811187366">„Chrome“ nuotolinio kompiuterio valdymo istorija, įskaitant laiko žymes, prieglobas ir klientų seansų ID</translation>
 <translation id="3052868890529250114">Paprastai saugiai prisijungiate prie svetainių, bet šį kartą „Chrome“ nepavyko naudoti saugaus ryšio. Atakos vykdytojas gali bandyti stebėti arba keisti tinklo ryšį. <ph name="BEGIN_LEARN_MORE_LINK" />Sužinokite daugiau apie šį perspėjimą<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="3052964831964880138">„<ph name="PRODUCT_NAME" />“ <ph name="PRICE_DROP" /> kainos sumažėjimas</translation>
@@ -2722,6 +2724,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Pagal administratoriaus politikos nuostatas nerekomenduojama kopijuoti šio failo į <ph name="DESTINATION_NAME" />}one{Pagal administratoriaus politikos nuostatas nerekomenduojama kopijuoti šių failų į <ph name="DESTINATION_NAME" />}few{Pagal administratoriaus politikos nuostatas nerekomenduojama kopijuoti šių failų į <ph name="DESTINATION_NAME" />}many{Pagal administratoriaus politikos nuostatas nerekomenduojama kopijuoti šių failų į <ph name="DESTINATION_NAME" />}other{Pagal administratoriaus politikos nuostatas nerekomenduojama kopijuoti šių failų į <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">Skirtukų grupė „<ph name="GROUP_NAME" />“ nebepasiekiama</translation>
+<translation id="5262342527470539728">Jūsų informacija išsaugota „<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />“ (<ph name="ACCOUNT" />)</translation>
 <translation id="5263867360296733198">Prieš įkeliant reikia peržiūrėti</translation>
 <translation id="5266128565379329178">Įrišimas viršuje</translation>
 <translation id="5269225904387178860">Keturios skylės apačioje</translation>
@@ -2800,7 +2803,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> atnaujino skirtuką „<ph name="WEBSITE_TITLE" />“</translation>
 <translation id="5383478552402031184">Grindų taisymas</translation>
 <translation id="5385857628869214740">Humoras</translation>
-<translation id="5385966243497224160">Negalima peržiūrėti ne HTTPS URL</translation>
 <translation id="5386426401304769735">Šios svetainės sertifikatų grandinėje yra sertifikatas, pasirašytas naudojant SHA-1.</translation>
 <translation id="5391010642126249196">Lankėtės</translation>
 <translation id="5391306025131596142">&amp;Atidaryti istorijos puslapį</translation>
@@ -3850,7 +3852,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="7003322000677139268">Transporto priemonių dalys ir priedai</translation>
 <translation id="7004499039102548441">Naujausi skirtukai</translation>
 <translation id="7004562620237466965">Tik iššifruoti</translation>
-<translation id="700483187606163535">Jūsų informacija išsaugota „<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />“ (<ph name="ACCOUNT" />). Galite ją naudoti „Google“ produktuose, kad greičiau užpildytumėte formas.</translation>
 <translation id="7006930604109697472">Vis tiek siųsti</translation>
 <translation id="7009364359744329733">Šiuo metu ši kortelė nepasiekiama. Vėliau bandykite dar kartą</translation>
 <translation id="7010658264061801199">Maistas ir gėrimai</translation>
@@ -4624,7 +4625,6 @@ Papildoma išsami informacija:
 <translation id="8194956568907463262">Šaudyklės žaidimai</translation>
 <translation id="8198379961710069585">Mygtukas „Ieškoti istorijoje“ mygtukas; suaktyvinkite, jei norite ieškoti istorijoje</translation>
 <translation id="8199437620497683918">Optinis diskas (blizgus)</translation>
-<translation id="8199730148066603000">Neleidžiama peržiūrėti ne HTTPS URL.</translation>
 <translation id="8200772114523450471">Atnaujinti</translation>
 <translation id="8202097416529803614">Užsakymo suvestinė</translation>
 <translation id="8202370299023114387">Konfliktas</translation>
@@ -4772,6 +4772,7 @@ Papildoma išsami informacija:
 Papildoma išsami informacija:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofonas leidžiamas šį kartą</translation>
+<translation id="8421746712901926961">Išsaugokite informaciją „<ph name="GOOGLE_WALLET_TITLE_1" />“ ir sparčiau atlikite užduotis, pvz., užpildykite formas „Google“ produktuose. Galite <ph name="MANAGE_INFO_LINK" /> „<ph name="GOOGLE_WALLET_TITLE_2" />“ (<ph name="ACCOUNT" />).</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Keisti</translation>
 <translation id="8426945547715537628">Leisti klaviatūros nepaisymą?</translation>
@@ -4828,6 +4829,7 @@ Papildoma išsami informacija:
 <translation id="8521812709849134608">Paviršiai valgiui ruošti</translation>
 <translation id="8522180136695974431">Kredito ataskaitų sudarymas ir stebėjimas</translation>
 <translation id="8522552481199248698">„Chrome“ gali padėti apsaugoti „Google“ paskyrą ir pakeisti slaptažodį.</translation>
+<translation id="852450791482410042">Mokėti dabar</translation>
 <translation id="8527228059738193856">Garsiakalbiai</translation>
 <translation id="8527681393107582734">Žemės ūkis ir miškininkystė</translation>
 <translation id="8528149813106025610">Vaikų apranga</translation>

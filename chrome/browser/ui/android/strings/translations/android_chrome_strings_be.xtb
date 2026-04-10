@@ -293,6 +293,7 @@
 <translation id="2251809247798634662">Новае акно ў рэжыме інкогніта</translation>
 <translation id="2253927598983295051">Выберыце даныя, якія трэба абагуліць з праграмай "<ph name="APP_NAME" />"</translation>
 <translation id="2261570557291037252">Дадатковыя звесткі пра праграму</translation>
+<translation id="2270544918551255912">Каб вярнуцца назад, правядзіце пальцам ад краю</translation>
 <translation id="2276696007612801991">Для праверкі пароляў увайдзіце ва Уліковы запіс Google</translation>
 <translation id="2281243904606300427"><ph name="TAB_TITLE" />, выбраная ўкладка ў рэжыме інкогніта</translation>
 <translation id="2286841657746966508">Адрас для выстаўлення рахункаў</translation>
@@ -480,6 +481,7 @@
 <translation id="2989523299700148168">Нядаўнія</translation>
 <translation id="2992473221983447149">Апісанні відарысаў</translation>
 <translation id="2996291259634659425">Стварыць фразу-пароль</translation>
+<translation id="2996682533106928201">Націсніце, каб закрыць</translation>
 <translation id="2996809686854298943">Патрабуецца URL-адрас</translation>
 <translation id="3024215143424744261">Налады рэжыму чытання закрыты</translation>
 <translation id="3026955690410463085">Абагуліць разам са спасылкай</translation>
@@ -684,6 +686,7 @@
 <translation id="3927692899758076493">Без засечак</translation>
 <translation id="3931947361983910192">апошнія 4 тыдні</translation>
 <translation id="393697183122708255">Уключаны галасавы пошук недаступны</translation>
+<translation id="3941718885865495207">Ніжні аркуш з прапановай уключыць Chrome Finds</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, замацаваная ўкладка "Відарыс у відарысе"</translation>
 <translation id="3950820424414687140">Увайсці</translation>
 <translation id="395377504920307820">Выкарыстоўваць без уліковага запісу</translation>
@@ -1189,6 +1192,7 @@
 <translation id="6011308810877101166">Паляпшаць прапановы пошуку</translation>
 <translation id="6013305291643746595">Адсартавана па самых старых</translation>
 <translation id="6022659036123304283">Наладзьце Chrome пад сябе</translation>
+<translation id="6023820583797130428">Адкрыйце меню, каб вярнуцца назад</translation>
 <translation id="6026538407078977628">Разгарнуць на поўны экран</translation>
 <translation id="6030719887161080597">Кіруйце інфармацыяй, якую выкарыстоўваюць сайты для вымярэння эфектыўнасці аб’явы</translation>
 <translation id="6039379616847168523">Перайсці на наступную ўкладку</translation>
@@ -1633,6 +1637,7 @@
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> стандартная ўкладка}one{<ph name="TABS_COUNT_MANY" /> стандартная ўкладка}few{<ph name="TABS_COUNT_MANY" /> стандартныя ўкладкі}many{<ph name="TABS_COUNT_MANY" /> стандартных укладак}other{<ph name="TABS_COUNT_MANY" /> стандартнай укладкі}}</translation>
 <translation id="7603168929588204083">Няправільная дата</translation>
 <translation id="7605594153474022051">Сінхранізацыя не працуе</translation>
+<translation id="7608245556672190037">Прапанова ўключыць Chrome Finds адкрыта на ўсю вышыню</translation>
 <translation id="7612619742409846846">Уваход у Google выкананы ад імя</translation>
 <translation id="7612989789287281429">Выконваецца ўваход…</translation>
 <translation id="7619072057915878432">Не ўдалося спампаваць файл "<ph name="FILE_NAME" />" з-за збояў сеткі.</translation>
@@ -1640,6 +1645,7 @@
 <translation id="7628417132421583481">Перайсці ў Менеджар пароляў</translation>
 <translation id="7630202231528827509">URL-адрас пастаўшчыка DNS</translation>
 <translation id="7638584964844754484">Няправільная фраза-пароль</translation>
+<translation id="764047009170754705">Прапанова ўключыць Chrome Finds закрыта</translation>
 <translation id="7646499124171960488">Папярэджвае пра небяспечныя агульнадаступныя сайты</translation>
 <translation id="7646772052135772216">Сінхранізацыя пароляў не працуе</translation>
 <translation id="7655240423373329753">апошнія 7 дзён</translation>
@@ -1864,6 +1870,7 @@
 <translation id="8473863474539038330">Адрасы і іншае</translation>
 <translation id="847433688444405067">Праглядайце на розных прыладах</translation>
 <translation id="8477178913400731244">Выдаліць даныя</translation>
+<translation id="8481771036036087705">Прапанова ўключыць Chrome Finds адкрыта на палову экрана</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">Няма неактыўных акон</translation>
 <translation id="8493948351860045254">Вызваліць месца</translation>

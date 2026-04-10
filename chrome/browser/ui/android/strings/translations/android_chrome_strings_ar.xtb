@@ -293,6 +293,7 @@
 <translation id="2251809247798634662">نافذة جديدة للتصفح المتخفي</translation>
 <translation id="2253927598983295051">اختيار المحتوى الذي تتم مشاركته مع "<ph name="APP_NAME" />"</translation>
 <translation id="2261570557291037252">مزيد من المعلومات حول التطبيق</translation>
+<translation id="2270544918551255912">يمكنك التمرير سريعًا من حافة الشاشة للرجوع</translation>
 <translation id="2276696007612801991">‏يُرجى تسجيل الدخول إلى حسابك على Google للتحقُّق من كلمات المرور</translation>
 <translation id="2281243904606300427">علامة التبويب "<ph name="TAB_TITLE" />" محددة في وضع التصفّح المتخفي</translation>
 <translation id="2286841657746966508">عنوان إرسال الفواتير</translation>
@@ -480,6 +481,7 @@
 <translation id="2989523299700148168">تم الانتقال إليها مؤخرًا</translation>
 <translation id="2992473221983447149">أوصاف الصور</translation>
 <translation id="2996291259634659425">إنشاء عبارة المرور</translation>
+<translation id="2996682533106928201">يمكنك النقر للإغلاق</translation>
 <translation id="2996809686854298943">‏عنوان URL المطلوب</translation>
 <translation id="3024215143424744261">تم إغلاق الإعدادات المفضّلة لـ "وضع القراءة"</translation>
 <translation id="3026955690410463085">تم تضمين الرابط في المشاركة</translation>
@@ -685,6 +687,7 @@
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">آخر 4 أسابيع</translation>
 <translation id="393697183122708255">لا يتوفر بحث صوتي تم تمكينه</translation>
+<translation id="3941718885865495207">‏البطاقة السفلية لتفعيل ميزة "البحث على Chrome"</translation>
 <translation id="3943322906274039960">‫"<ph name="TAB_TITLE" />"، علامة تبويب مثبَّتة في وضع "نافذة ضمن النافذة"</translation>
 <translation id="3950820424414687140">تسجيل الدخول</translation>
 <translation id="395377504920307820">الاستخدام بدون حساب</translation>
@@ -1190,6 +1193,7 @@
 <translation id="6011308810877101166">تحسين اقتراحات البحث</translation>
 <translation id="6013305291643746595">جارٍ الترتيب حسب الأقدم</translation>
 <translation id="6022659036123304283">‏اجعل Chrome متصفِّحك الدائم</translation>
+<translation id="6023820583797130428">يمكنك فتح القائمة للرجوع</translation>
 <translation id="6026538407078977628">التوسيع إلى وضع ملء الشاشة</translation>
 <translation id="6030719887161080597">إدارة المعلومات التي تستخدمها المواقع الإلكترونية لقياس أداء الإعلانات</translation>
 <translation id="6039379616847168523">الانتقال السريع إلى علامة التبويب التالية</translation>
@@ -1636,6 +1640,7 @@
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{علامة تبويب عادية واحدة (<ph name="TABS_COUNT_ONE" />)}zero{‫<ph name="TABS_COUNT_MANY" /> علامة تبويب عادية}two{علامتا تبويب عاديتان (<ph name="TABS_COUNT_MANY" />)}few{‫<ph name="TABS_COUNT_MANY" /> علامات تبويب عادية}many{‫<ph name="TABS_COUNT_MANY" /> علامة تبويب عادية}other{‫<ph name="TABS_COUNT_MANY" /> علامة تبويب عادية}}</translation>
 <translation id="7603168929588204083">التاريخ غير صالح</translation>
 <translation id="7605594153474022051">المزامنة لا تعمل</translation>
+<translation id="7608245556672190037">‏تم فتح البطاقة السفلية لتفعيل ميزة "البحث على Chrome" بطول الشاشة</translation>
 <translation id="7612619742409846846">‏أنت مسجّل الدخول إلى Google باستخدام</translation>
 <translation id="7612989789287281429">جارٍ تسجيل الدخول…</translation>
 <translation id="7619072057915878432">تعذّر تنزيل الملف <ph name="FILE_NAME" /> بسبب إخفاقات الشبكة.</translation>
@@ -1643,6 +1648,7 @@
 <translation id="7628417132421583481">‏الانتقال إلى "مدير كلمات المرور في Google"</translation>
 <translation id="7630202231528827509">‏عنوان URL خاص بمقدِّم الخدمة</translation>
 <translation id="7638584964844754484">عبارة مرور غير صحيحة</translation>
+<translation id="764047009170754705">‏تم إغلاق البطاقة السفلية لتفعيل ميزة "البحث على Chrome"</translation>
 <translation id="7646499124171960488">التحذير بشأن المواقع الإلكترونية العامة غير الآمنة</translation>
 <translation id="7646772052135772216">مزامنة كلمات المرور لا تعمل</translation>
 <translation id="7655240423373329753">آخر 7 أيام</translation>
@@ -1868,6 +1874,7 @@
 <translation id="8473863474539038330">العناوين والمزيد</translation>
 <translation id="847433688444405067">التصفّح على جميع الأجهزة</translation>
 <translation id="8477178913400731244">حذف البيانات</translation>
+<translation id="8481771036036087705">‏تم فتح البطاقة السفلية لتفعيل ميزة "البحث على Chrome" في نصف الشاشة</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">ما مِن نوافذ غير نشطة</translation>
 <translation id="8493948351860045254">تفريغ بعض المساحة</translation>

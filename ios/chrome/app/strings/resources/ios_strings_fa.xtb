@@ -116,6 +116,7 @@
 <translation id="138692594145659985">گزینه‌های ذخیره کردن کارت</translation>
 <translation id="1396260204083880024">با حساب <ph name="USER_NAME" /> به سیستم وارد شده‌اید. <ph name="USER_EMAIL" />. منوِ حساب را باز کنید.</translation>
 <translation id="1397144142234474689">پنهان کردن سابقه</translation>
+<translation id="1399268420835656394">‏اگر کودک نیستید، بهتر است سن ثبت‌شده در «حساب Apple» در این دستگاه را بررسی کنید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="1407135791313364759">باز کردن همه</translation>
 <translation id="1408847409015257906">روی «حریم خصوصی و امنیت» تک‌ضرب بزنید.</translation>
 <translation id="1411386976162024013">جستجوی تصویری «لنز»</translation>
@@ -555,6 +556,7 @@
 <translation id="2922210239002704889">به صفحه اصلی یا صفحه‌کلید بروید</translation>
 <translation id="2924940770243654951">باز کردن در زبانه «ناشناس» جدید</translation>
 <translation id="2952278131021475699">جستجوی دوربینی با «لنز»</translation>
+<translation id="2953821385349876107">‏انتخاب «حساب Google» دیگر</translation>
 <translation id="2962516096219646456">دیدن همه داده‌های تکمیل خودکار</translation>
 <translation id="2965594942405840553">این کنش واگردشدنی نیست</translation>
 <translation id="2969979262385602596">ورود به سیستم انجام نشد. بعداً دوباره امتحان کنید.</translation>
@@ -1439,6 +1441,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6090760257419195752">هشدارهای ردشده</translation>
 <translation id="6094325891006032858">«مرور ایمن پیشرفته» را روشن کنید</translation>
 <translation id="6096965253650248286">‫<ph name="COUNT" /> برگه پیدا شد</translation>
+<translation id="6099466082815574659">‏این iPad برای کودک راه‌اندازی شده است</translation>
 <translation id="6100617279104942061">به‌عنوان <ph name="USER_EMAIL" /> به سیستم وارد شده‌اید. تنظیمات را باز می‌کند.</translation>
 <translation id="6100676328067737810">‏داده‌هایتان در «حساب Google»،‏ <ph name="USER_EMAIL" />، ذخیره می‌شوند</translation>
 <translation id="610083648014322104">پاسخ‌های مربوط براساس محتوای صفحه‌ای که در آن هستید دریافت کنید</translation>
@@ -1496,7 +1499,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6259928806013786178">«حالت خواندن» فعال نشد</translation>
 <translation id="6268773951964630964">جستجوی تصویر کپی‌شده</translation>
 <translation id="6271462272606946663">پنهان کردن «درخواست سایت ویژه تلفن همراه»</translation>
-<translation id="6271556257184622612">‏پرسیدن از Google درباره زبانه‌ها و موارد دیگر</translation>
 <translation id="6271824294945464304">هم‌رسانی گذرواژه</translation>
 <translation id="628251768213143684">‏همواره می‌توانید آنچه را در «حساب Google» شما ذخیره می‌شود مدیریت کنید</translation>
 <translation id="6284652193729350524">پیشنهاد ترجمه <ph name="LANGUAGE" /></translation>
@@ -1533,6 +1535,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6368102751067608420">برای حذف کردن همه داده‌های مدیر گذرواژه</translation>
 <translation id="6372558618707314581">به صفحه موردنظرتان بروید</translation>
 <translation id="6374469231428023295">دوباره امتحان کنید</translation>
+<translation id="6374514103145916800">پرسیدن</translation>
 <translation id="6383719166112032471">باز کردن مکان…</translation>
 <translation id="6387994324662817823">‏گذرواژه‌ها فقط در «مدیر گذرواژه Google» در این دستگاه ذخیره می‌شوند.</translation>
 <translation id="6393156038355142111">پیشنهاد گذرواژه قوی</translation>
@@ -1600,6 +1603,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6596481460663245319">‏جستجوی تصویر با Google</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{‫۱ گذرواژه}one{‫# گذرواژه}other{‫# گذرواژه}}</translation>
 <translation id="6601302169302852717">‏تصویر در Google Photos برای <ph name="USER_EMAIL" /> ذخیره شد</translation>
+<translation id="6602173570135186741">تکمیل خودکار و گذرواژه‌ها</translation>
 <translation id="6603393121510733479">سازمانتان مرور خصوصی را خاموش کرده است.
 <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="6606914854592108404">«بررسی ایمنی» درحال اجرا است…</translation>
@@ -1851,6 +1855,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">برای قفل کردن برگه‌های ناشناس، راه‌اندازی شناسه لمسی، شناسه چهره، یا گذرنویسه.</translation>
 <translation id="750886945254958667">این گروه را نگه دارید تا بعداً به آن برگه اضافه کنید یا اگر دیگر نمی‌خواهید به آن دسترسی داشته باشید، آن را ترک کنید</translation>
+<translation id="7511099437872594216">زبانه‌ها</translation>
 <translation id="7511727374778217603">{COUNT,plural, =1{حداکثر تا یک زبانه اضافه کنید}one{حداکثر تا {COUNT} زبانه اضافه کنید}other{حداکثر تا {COUNT} زبانه اضافه کنید}}</translation>
 <translation id="7512909159512473473">وارد کردن گذرعبارت…</translation>
 <translation id="7514365320538308">بارگیری</translation>
@@ -1965,6 +1970,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7888562068293422208">بستن همه؟</translation>
 <translation id="7889910613639381518">‏دسترسی آسان و ایمن با ابزاره «مدیر گذرواژه Google».</translation>
 <translation id="7899199123054742721">علامت‌گذاری همه به‌عنوان خوانده‌نشده</translation>
+<translation id="7909005666376403847">‏این iPhone برای کودک راه‌اندازی شده است</translation>
 <translation id="7911190106180361398">سازمانتان به شما اجازه نمی‌دهد همه چیز را همگام‌سازی کنید.</translation>
 <translation id="7918999344502274923">پنهان کردن جزئیات <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="7921559948846049514">زمینه، رنگ، یا موارد دیگر را برای پس‌زمینه‌تان انتخاب کنید</translation>

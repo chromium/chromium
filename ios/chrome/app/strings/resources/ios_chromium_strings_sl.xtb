@@ -134,6 +134,7 @@ Počakajte nekaj minut, preden preklopite račun. Če zdaj preklopite med račun
 <translation id="377649297473651452">Razširjen pogled samodejnega izpolnjevanja v Chromiumu</translation>
 <translation id="3780779443901618967">Opozori vas o nevarnih spletnih mestih, celo tistih, za katere Google prej ni vedel, in sicer tako, da analizira več podatkov s spletnih mest kot standardna zaščita. Izberete lahko, da preskočite opozorila za Chromium.</translation>
 <translation id="3805899903892079518">Chromium nima dostopa do fotografij ali videoposnetkov. Omogočite dostop v sistemu iOS: Settings &gt; Privacy &gt; Photos.</translation>
+<translation id="3809591243528646631">Če želite pridobiti funkcije za varnost otrok, lahko uporabite račun Google, ki je nastavljen za otroka, ali Chromium brez računa. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="3816686541346279443">Chromium bo ponudil shranjevanje gesla.</translation>
 <translation id="3827545470516145620">V tej napravi uporabljate standardno varnostno zaščito</translation>
 <translation id="3833326979834193417">Chromium vsak dan samodejno izvede varnostno preverjanje, da vas varuje pred podatkovnimi kršitvami, spletnimi mesti, ki niso varna, in drugim. Več o varnostnem preverjanju lahko preberete v nastavitvah.</translation>
@@ -169,6 +170,7 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chromi
 Če želite spremeniti to nastavitev, <ph name="BEGIN_LINK" />izbrišite podatke iz Chromiuma v računu<ph name="END_LINK" />.</translation>
 <translation id="4578500311756617174">Nasvet za Chromium: Privzeto uporabljajte Chromium</translation>
 <translation id="458786853569524949">Zdaj lahko uporabljate Chromium, kadar koli se dotaknete povezav v e-poštnih sporočilih, dokumentih in drugih aplikacijah.</translation>
+<translation id="4625730353066900738">Osvojite uporabne osnove za Chromium in začnite</translation>
 <translation id="4633738821577273991">Zagotovite si izboljšano varno brskanje tudi za ta profil v Chromiumu.</translation>
 <translation id="4654936625574199632">Zaradi izboljšanja aplikacije Chromium Googlu pošlje poročila o uporabi in zrušitvah. <ph name="BEGIN_LINK" />Upravljanje<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Vklopite optični bralnik Chromium</translation>
@@ -354,6 +356,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="8900052431807804054">Prejmite Chromiumovo najmočnejšo varnost</translation>
 <translation id="8908791447256515663">Hitreje dostopajte do Chromiuma iz vrstice Dock v iPadu.</translation>
 <translation id="8925569192291721236">Bodite na tekočem z obvestili o spremljanju cen in nasveti za Chromium.</translation>
+<translation id="8939412301975414416">Če želite v Chromiumu pridobiti funkcije za varnost otrok, lahko uporabite račun Google, ki je nastavljen za otroka, ali Chromium brez računa.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{To se zgodi, če Chromiuma ne uporabljate {THRESHOLD} minuto}one{To se zgodi, če Chromiuma ne uporabljate {THRESHOLD} minuto}two{To se zgodi, če Chromiuma ne uporabljate {THRESHOLD} minuti}few{To se zgodi, če Chromiuma ne uporabljate {THRESHOLD} minute}other{To se zgodi, če Chromiuma ne uporabljate {THRESHOLD} minut}}</translation>
 <translation id="8963279154877372067">Dovolite obvestila za Chromium, če želite prejemati opozorila o znižanju cen</translation>
 <translation id="8975812008711371178">Iskanje z govorom v Chromiumu</translation>

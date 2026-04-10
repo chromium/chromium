@@ -115,7 +115,7 @@ Chromeni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <ph 
 <translation id="1413446866325418126">Maʼlumotlarni Google hisobingizda saqlang</translation>
 <translation id="1414919006379339073">Joriy oynani yopish</translation>
 <translation id="1416550906796893042">Ilova versiyasi</translation>
-<translation id="1428770807407000502">Sinxronizatsiya qilinsinmi?</translation>
+<translation id="1428770807407000502">Sinxronlash faolsizlantirilsinmi?</translation>
 <translation id="1430915738399379752">Chop etish</translation>
 <translation id="1435593198351412143">PDF fayllar avtomatik ochilsin</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" /> ilovasida ochilgan</translation>
@@ -833,6 +833,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="4521489764227272523">Tanlangan ma’lumotlar Chrome va sinxronlangan qurilmalardan o‘chirildi.
 
 Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va boshqa internetdagi faoliyatingizni <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> sahifasi orqali ko‘rishingiz mumkin.</translation>
+<translation id="4521637321901000942">Kengaytmalarni asbobolar panelida boshqaring</translation>
 <translation id="4523326818319942067">Oxirgi soat</translation>
 <translation id="452750746583162491">Sinxronlangan maʼlumotlaringizni tekshiring</translation>
 <translation id="4532845899244822526">Jildni tanlang</translation>

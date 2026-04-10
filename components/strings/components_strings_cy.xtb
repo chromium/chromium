@@ -1300,10 +1300,12 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3037177537145227281">Yn dilyn y pris</translation>
 <translation id="3037605927509011580">Damo!</translation>
 <translation id="3039406992698062762">Teithio Teuluol</translation>
+<translation id="3040435070100611531">Eich tocynnau Google Wallet</translation>
 <translation id="3041176923638368519">Gweler telerau buddion cerdyn</translation>
 <translation id="3041584414879052436">Rhestr o gyhoeddwyr Prynu-Nawr-Talu-Yn-Ddiweddarach wedi'i chau.</translation>
 <translation id="3041612393474885105">Gwybodaeth am y Dystysgrif</translation>
 <translation id="3045769629416806687">Chwaraeon Eithafol</translation>
+<translation id="3047054686095898948">Cadwch eich gwybodaeth yn <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> a chael pethau wedi'u gwneud yn gyflymach, megis llenwi ffurflenni ar draws cynhyrchion Google. Gallwch <ph name="BEGIN_LINK" />reoli eich gwybodaeth<ph name="END_LINK" /> yn <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> ar gyfer <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">Hanes Chrome Remote Desktop, gan gynnwys stampiau amser, gwesteiwyr a rhifau adnabod sesiynau cleient</translation>
 <translation id="3052868890529250114">Rydych chi fel arfer yn cysylltu â gwefannau yn ddiogel, ond ni allai Chrome ddefnyddio cysylltiad diogel y tro hwn. Mae'n bosib bod ymosodwr yn ceisio clustfeinio neu addasu eich cysylltiad rhwydwaith. <ph name="BEGIN_LEARN_MORE_LINK" />Dysgu rhagor am y rhybudd hwn<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Gostyngiad pris o <ph name="PRICE_DROP" /> ar <ph name="PRODUCT_NAME" /></translation>
@@ -2800,7 +2802,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="5381952079334035181">Mae <ph name="MEMBER_FIRST_NAME" /> wedi diweddaru'r tab “<ph name="WEBSITE_TITLE" />”</translation>
 <translation id="5383478552402031184">Lloriau</translation>
 <translation id="5385857628869214740">Hiwmor</translation>
-<translation id="5385966243497224160">Methu â chael rhagolwg URL nad yw'n HTTPS</translation>
 <translation id="5386426401304769735">Mae'r gadwyn tystysgrifau ar gyfer y wefan hon yn cynnwys tystysgrif sydd wedi'i llofnodi gan ddefnyddio SHA-1.</translation>
 <translation id="5391010642126249196">Gwnaethoch ymweld â</translation>
 <translation id="5391306025131596142">&amp;Agor tudalen hanes</translation>
@@ -3850,7 +3851,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="7003322000677139268">Rhannau ac Ategolion Cerbydau</translation>
 <translation id="7004499039102548441">Tabiau Diweddar</translation>
 <translation id="7004562620237466965">Datrys yn Unig</translation>
-<translation id="700483187606163535">Mae eich gwybodaeth wedi'i chadw i <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> ar gyfer <ph name="ACCOUNT" />. Gallwch ei ddefnyddio ar draws cynhyrchiol Google i lenwi ffurflenni'n gyflymach.</translation>
 <translation id="7006930604109697472">Anfon beth bynnag</translation>
 <translation id="7009364359744329733">Nid yw'r cerdyn hwn ar gael ar hyn o bryd. Rhowch gynnig arni'n nes ymlaen</translation>
 <translation id="7010658264061801199">Bwyd a Diod</translation>
@@ -4623,7 +4623,6 @@ Manylion ychwanegol:
 <translation id="8194956568907463262">Gemau Saethu</translation>
 <translation id="8198379961710069585">Botwm Chwilio Hanes, rhowch ar waith i chwilio hanes</translation>
 <translation id="8199437620497683918">Disg Optegol (Sglein)</translation>
-<translation id="8199730148066603000">Ni chaniateir cael rhagolwg URL nad yw'n HTTPS.</translation>
 <translation id="8200772114523450471">Parhau</translation>
 <translation id="8202097416529803614">Crynodeb o'r archeb</translation>
 <translation id="8202370299023114387">Gwrthdrawiad</translation>
@@ -4828,6 +4827,7 @@ Manylion ychwanegol:
 <translation id="8521812709849134608">Topiau</translation>
 <translation id="8522180136695974431">Adrodd Credyd a Monitro</translation>
 <translation id="8522552481199248698">Gall Chrome eich helpu i amddiffyn eich Cyfrif Google ac i newid eich cyfrinair.</translation>
+<translation id="852450791482410042">Talu nawr</translation>
 <translation id="8527228059738193856">Seinyddion</translation>
 <translation id="8527681393107582734">Amaethyddiaeth a Choedwigaeth</translation>
 <translation id="8528149813106025610">Dillad Plant</translation>

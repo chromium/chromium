@@ -1300,10 +1300,12 @@
 <translation id="3037177537145227281">यो उत्पादनको मूल्य ट्र्याक गरिँदै छ</translation>
 <translation id="3037605927509011580">हरे, स्न्याप!</translation>
 <translation id="3039406992698062762">पारिवारिक यात्रा</translation>
+<translation id="3040435070100611531">तपाईंका Google Wallet का पासहरू</translation>
 <translation id="3041176923638368519">कार्डसम्बन्धी लाभहरू प्राप्त गर्न पूरा गर्नु पर्ने सर्तहरू हेर्नुहोस्</translation>
 <translation id="3041584414879052436">"अहिले किन्नुहोस् पछि तिर्नुहोस्" सुविधा उपलब्ध गराउने संस्थाहरूको सूची बन्द गरिएको छ।</translation>
 <translation id="3041612393474885105">प्रमाणपत्र जानकारी</translation>
 <translation id="3045769629416806687">खतरनाक खेलकुद</translation>
+<translation id="3047054686095898948">आफ्नो जानकारी <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> मा सेभ गर्नुहोस् र Google का विभिन्न उत्पादनमा फाराम भर्ने जस्ता कामहरू अझ छिटो पूरा गर्नुहोस्। तपाईं <ph name="ACCOUNT" /> को <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> मा गई <ph name="BEGIN_LINK" />आफ्नो जानकारी व्यवस्थापन गर्न<ph name="END_LINK" /> सक्नुहुन्छ</translation>
 <translation id="305162504811187366">Chrome को रिमोट डेस्कटपसम्बन्धी इतिहास (जस्तै, टाइमस्ट्याम्प, होस्ट र क्लाइन्ट सेसन ID)</translation>
 <translation id="3052868890529250114">तपाईं प्रायः जसो साइटहरूमा सुरक्षित रूपमा कनेक्ट गर्नुहुन्छ तर Chrome ले अहिले सुरक्षित कनेक्सन प्रयोग गर्न सकेन। ह्याकरले तपाईंको नेटवर्क कनेक्सन निगरानी गर्न वा परिमार्जन गर्न खोजिरहेको हुन सक्छ। <ph name="BEGIN_LEARN_MORE_LINK" />यो चेतावनीका बारेमा थप जान्नुहोस्<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> को मूल्य <ph name="PRICE_DROP" /> घटेको छ</translation>
@@ -2719,6 +2721,7 @@
 <translation id="5255833070095767006">३५० x ४६० मिलिमिटर</translation>
 <translation id="5257739419779698609">{0,plural, =1{एड्मिनले तोकेको नीतिअनुसार यो फाइल <ph name="DESTINATION_NAME" /> मा कपी गर्न सिफारिस गरिँदैन}other{एड्मिनले तोकेको नीतिअनुसार यी फाइलहरू <ph name="DESTINATION_NAME" /> मा कपी गर्न सिफारिस गरिँदैन}}</translation>
 <translation id="5258473597674772367">"<ph name="GROUP_NAME" />" ट्याब समूह उपलब्ध हुन छाडेको छ</translation>
+<translation id="5262342527470539728">तपाईंको जानकारी <ph name="ACCOUNT" /> को <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> मा सेभ गरिन्छ</translation>
 <translation id="5263867360296733198">अपलोड गर्नुअघि समीक्षा गर्नु पर्ने हुन्छ</translation>
 <translation id="5266128565379329178">सिरानको बाइन्ड</translation>
 <translation id="5269225904387178860">फेदमा चार प्वाल</translation>
@@ -2797,7 +2800,6 @@
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> ले ट्याब “<ph name="WEBSITE_TITLE" />” परिवर्तन गर्नुभएको छ</translation>
 <translation id="5383478552402031184">भुइँमा टायल लगाउने काम</translation>
 <translation id="5385857628869214740">हास्य</translation>
-<translation id="5385966243497224160">गैर HTTPS URL प्रिभ्यू गर्न सकिएन</translation>
 <translation id="5386426401304769735">यस साइटको प्रमाणपत्र श्रृंखलामा SHA-१ प्रयोग गरी हस्ताक्षर गरिएको प्रमाणपत्र समावेश छ।</translation>
 <translation id="5391010642126249196">तपाईंले ट्याब खोलेको समय:</translation>
 <translation id="5391306025131596142">हिस्ट्री पेज खोल्नुहोस्</translation>
@@ -3847,7 +3849,6 @@
 <translation id="7003322000677139268">गाडीका पाटपुर्जा तथा सहायक उपकरणहरू</translation>
 <translation id="7004499039102548441">हालका ट्याबहरू</translation>
 <translation id="7004562620237466965">डिसाइफर मात्र</translation>
-<translation id="700483187606163535">तपाईंको जानकारी <ph name="ACCOUNT" /> को <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> मा सेभ गरिन्छ। तपाईं फारामहरू अझ छिटो भर्न Google का विभिन्न सेवाहरूमा यो जानकारी प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="7006930604109697472">जे भए पनि पठाउनुहोस्</translation>
 <translation id="7009364359744329733">यो कार्ड हाल उपलब्ध छैन। कृपया पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="7010658264061801199">खाना तथा पेय पदार्थ</translation>
@@ -4620,7 +4621,6 @@
 <translation id="8194956568907463262">सुटर गेमहरू</translation>
 <translation id="8198379961710069585">"सर्च हिस्ट्री" बटन, हिस्ट्री खोज्न यो बटन एक्टिभेट गर्नुहोस्</translation>
 <translation id="8199437620497683918">अप्टिकल डिस्क (ग्लसी)</translation>
-<translation id="8199730148066603000">गैर HTTPS URL प्रिभ्यू गर्न पाइँदैन।</translation>
 <translation id="8200772114523450471">रिजुमी</translation>
 <translation id="8202097416529803614">अर्डरको सारांश</translation>
 <translation id="8202370299023114387">बेमेल</translation>
@@ -4768,6 +4768,7 @@
 थप विवरणहरू:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">अहिले माइक्रोफोन प्रयोग गर्ने अनुमति दिइएको छ</translation>
+<translation id="8421746712901926961">आफ्नो जानकारी <ph name="GOOGLE_WALLET_TITLE_1" /> मा सेभ गर्नुहोस् र Google का विभिन्न उत्पादनमा फाराम भर्ने जस्ता कामहरू अझ छिटो पूरा गर्नुहोस्। तपाईं <ph name="ACCOUNT" /> को <ph name="GOOGLE_WALLET_TITLE_2" /> मा <ph name="MANAGE_INFO_LINK" /> सक्नुहुन्छ।</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">परिवर्तन गर्नुहोस्</translation>
 <translation id="8426945547715537628">किबोर्ड ओभरराइड गर्न दिने हो?</translation>
@@ -4824,6 +4825,7 @@
 <translation id="8521812709849134608">काउन्टरटप</translation>
 <translation id="8522180136695974431">क्रेडिट रिपोर्टिङ तथा मोनिटरिङ</translation>
 <translation id="8522552481199248698">Chrome ले तपाईंलाई आफ्नो Google खाता सुरक्षित गर्न र आफ्नो पासवर्ड बदल्न मद्दत गर्न सक्छ।</translation>
+<translation id="852450791482410042">अहिले नै भुक्तानी गर्नुहोस्</translation>
 <translation id="8527228059738193856">स्पिकरहरू</translation>
 <translation id="8527681393107582734">कृषि तथा वन विज्ञान</translation>
 <translation id="8528149813106025610">बालबालिकाका लुगा</translation>

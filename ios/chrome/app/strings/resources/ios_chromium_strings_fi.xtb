@@ -134,6 +134,7 @@ Odota muutama minuutti ennen tilin vaihtamista. Jos vaihdat tiliä nyt, tämä d
 <translation id="377649297473651452">Chromiumin automaattisen täytön laajennettu näkymä</translation>
 <translation id="3780779443901618967">Varoittaa vaarallisista sivustoista, myös niistä, joista Google ei ole tiennyt aiemmin, analysoimalla enemmän dataa sivustoilta kuin Perustason suojaus. Voit ohittaa Chromium-varoitukset.</translation>
 <translation id="3805899903892079518">Chromium ei voi käyttää kuviasi tai videoitasi. Anna käyttöoikeus kohdassa iOS-asetukset &gt; Tietosuoja &gt; Kuvat.</translation>
+<translation id="3809591243528646631">Jos haluat käyttää lapsille tarkoitettuja turvaominaisuuksia, voit käyttää lapselle luotua Google-tiliä tai Chromiumia ilman tiliä. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="3816686541346279443">Chromium tarjoutuu tallentamaan salasanasi.</translation>
 <translation id="3827545470516145620">Tällä laitteella on perustason suojaus</translation>
 <translation id="3833326979834193417">Chromium tekee turvatarkistuksen automaattisesti joka päivä suojatakseen sinua esimerkiksi tietosuojaloukkauksilta ja riskialttiilta verkkosivustoilta. Asetuksista löytyy lisätietoa turvatarkistuksesta.</translation>
@@ -355,6 +356,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="8900052431807804054">Ota Chromiumin tehokkain suojaus käyttöön</translation>
 <translation id="8908791447256515663">Avaa Chromium nopeammin iPadin alapalkista.</translation>
 <translation id="8925569192291721236">Pysy ajan tasalla hintaseurannan päivityksistä ja Chromium-vinkeistä.</translation>
+<translation id="8939412301975414416">Jos haluat käyttää Chromiumin lapsille tarkoitettuja turvaominaisuuksia, voit käyttää lapselle luotua Google-tiliä tai Chromiumia ilman tiliä.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Näin käy, kun Chromiumia ei ole käytetty {THRESHOLD} minuuttiin.}other{Näin käy, kun Chromiumia ei ole käytetty {THRESHOLD} minuuttiin.}}</translation>
 <translation id="8963279154877372067">Salli Chromium-ilmoitusten saada ilmoituksia hinnan laskusta</translation>
 <translation id="8975812008711371178">Hae puhumalla Chromiumista.</translation>

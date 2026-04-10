@@ -116,6 +116,7 @@
 <translation id="138692594145659985">Alternativer for lagring av kort</translation>
 <translation id="1396260204083880024">Logget på som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Åpne kontomenyen.</translation>
 <translation id="1397144142234474689">Skjul loggen</translation>
+<translation id="1399268420835656394">Hvis du ikke er et barn, kan du sjekke alderen i Apple-kontoen på denne enheten. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="1407135791313364759">Åpne alle</translation>
 <translation id="1408847409015257906">Trykk på «Personvern og sikkerhet».</translation>
 <translation id="1411386976162024013">Visuelt søk med Lens</translation>
@@ -255,6 +256,7 @@
 <translation id="1861067954551502701">{count,plural, =1{{position} av {count} passord}other{{position} av {count} passord}}</translation>
 <translation id="1861262398884155592">Denne mappen er tom</translation>
 <translation id="1864266050569350424">På et nettsted der du har lagret et passord, trykker du på feltet for påloggingspassord.</translation>
+<translation id="1866700949421703765">Skjul «Slå på lesemodus»</translation>
 <translation id="1872096359983322073">Lommelykt</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Inviter familiemedlemmer</translation>
@@ -353,6 +355,7 @@
 <translation id="2214453882118345682">Handle, oversett og identifiser det du ser, med kameraet.</translation>
 <translation id="2215819824168709130">Skjul «Spor prisen»-kortet</translation>
 <translation id="2216366330550244277">Gå til siden for et produkt</translation>
+<translation id="2219935992754556187">Chrome beskytter de sensitive dataene dine med Face ID.</translation>
 <translation id="2220529011494928058">Rapporter et problem</translation>
 <translation id="2223461067862937305">Lag en QR-kode</translation>
 <translation id="2225701818156393674">Produktet er lagt til på listen over sporede produkter.</translation>
@@ -459,6 +462,7 @@
 <translation id="2583688836549072561">Fanegruppe, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> faner, ny aktivitet.</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Spor avslag for produkter</translation>
+<translation id="2602372807870028932">Dette sletter den valgte informasjonen som er lagret på denne enheten</translation>
 <translation id="260378315836159338">Trykk på + øverst på skjermen</translation>
 <translation id="2612676031748830579">Kortnummer</translation>
 <translation id="261305050785128654">Gi nettsteder beskjed om hvilke språk du snakker. Nettsteder viser innhold på disse språkene når det er mulig.</translation>
@@ -552,6 +556,7 @@
 <translation id="2922210239002704889">Gå til startsiden eller tastaturet</translation>
 <translation id="2924940770243654951">Åpne på ny inkognitofane</translation>
 <translation id="2952278131021475699">Lens-kamerasøk</translation>
+<translation id="2953821385349876107">Velg en annen Google-konto</translation>
 <translation id="2962516096219646456">Se alle autofylldata</translation>
 <translation id="2965594942405840553">Du kan ikke angre denne handlingen</translation>
 <translation id="2969979262385602596">Kunne ikke logge på. Prøv på nytt senere.</translation>
@@ -960,6 +965,7 @@
 <translation id="4469324811108161144">Notater kan lagre opptil <ph name="CHARACTER_LIMIT" /> tegn.</translation>
 <translation id="4471472356135655769">Kan ikke eksportere passordene</translation>
 <translation id="4472575034687746823">Kom i gang</translation>
+<translation id="4473565697543262065">Dette sletter den valgte informasjonen som er lagret på denne enheten og i Google-kontoen din <ph name="USER_EMAIL" /></translation>
 <translation id="4473608001744970767">Skjul «Spor prisen»</translation>
 <translation id="4474142134969976028">Ingen treff</translation>
 <translation id="4474494258097106883">Laget for iPhonen din</translation>
@@ -1435,6 +1441,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6090760257419195752">Avviste varsler</translation>
 <translation id="6094325891006032858">Slå på Safe Browsing med økt beskyttelse</translation>
 <translation id="6096965253650248286">Fant <ph name="COUNT" /></translation>
+<translation id="6099466082815574659">Denne iPaden er konfigurert for et barn</translation>
 <translation id="6100617279104942061">Logget på som <ph name="USER_EMAIL" />. Åpner innstillinger.</translation>
 <translation id="6100676328067737810">Dataene dine lagres i Google-kontoen din, <ph name="USER_EMAIL" /></translation>
 <translation id="610083648014322104">Få relevante svar basert på innholdet på siden du er på</translation>
@@ -1492,7 +1499,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6259928806013786178">Lesemodus mislyktes</translation>
 <translation id="6268773951964630964">Søk etter bildet du kopierte</translation>
 <translation id="6271462272606946663">Skjul Be om mobilversjonen av nettstedet</translation>
-<translation id="6271556257184622612">Spør Google om faner med mer</translation>
 <translation id="6271824294945464304">Deler passordet</translation>
 <translation id="628251768213143684">Du kan når som helst administrere hva som lagres i Google-kontoen din</translation>
 <translation id="6284652193729350524">Tilby å oversette <ph name="LANGUAGE" /></translation>
@@ -1529,6 +1535,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6368102751067608420">For å slette alle dataene i passordlagringen</translation>
 <translation id="6372558618707314581">Gå til en hvilken som helst side</translation>
 <translation id="6374469231428023295">Prøv på nytt</translation>
+<translation id="6374514103145916800">Spør</translation>
 <translation id="6383719166112032471">Åpne plassering</translation>
 <translation id="6387994324662817823">Passord lagres i Google Passordlagring kun på denne enheten.</translation>
 <translation id="6393156038355142111">Foreslå et sterkt passord</translation>
@@ -1577,6 +1584,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6532106788206463496">Lagre endringene</translation>
 <translation id="6536759809440150308">Åpne <ph name="GROUP_TITLE" />, gruppe på <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">eteksempel.no</translation>
+<translation id="6538776393003671043">Chrome tilbyr å lagre den i Google Wallet neste gang du bruker den</translation>
 <translation id="6543899060872618437">Betal raskere med autofyll på alle enhetene dine</translation>
 <translation id="6550675742724504774">Alternativer</translation>
 <translation id="6550891580932862748">Beskytter deg ikke mot farlige nettsteder, nedlastinger eller utvidelser. Safe Browsing-innstillingene i andre Google-produkter påvirkes ikke.</translation>
@@ -1595,6 +1603,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6596481460663245319">Søk etter bildet med Google</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 passord}other{# passord}}</translation>
 <translation id="6601302169302852717">Bildet er lagret i Google Foto for <ph name="USER_EMAIL" /></translation>
+<translation id="6602173570135186741">Autofyll og passord</translation>
 <translation id="6603393121510733479">Organisasjonen din har slått av privat surfing.
 <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="6606914854592108404">Sikkerhetssjekken kjøres …</translation>
@@ -1846,6 +1855,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">For å låse inkognitofanene dine, konfigurer Touch ID, Face ID eller en sikkerhetskode.</translation>
 <translation id="750886945254958667">Behold denne gruppen for å legge til faner senere, eller forlat den hvis du ikke vil ha tilgang til den lenger</translation>
+<translation id="7511099437872594216">Faner</translation>
 <translation id="7511727374778217603">{COUNT,plural, =1{Legg til opptil 1 fane}other{Legg til opptil {COUNT} faner}}</translation>
 <translation id="7512909159512473473">Angi en passordfrase…</translation>
 <translation id="7514365320538308">Last ned</translation>
@@ -1960,6 +1970,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7888562068293422208">Vil du lukke alle?</translation>
 <translation id="7889910613639381518">Enkel og sikker tilgang med Google Passordlagring-modulen.</translation>
 <translation id="7899199123054742721">Merk alle som ulest</translation>
+<translation id="7909005666376403847">Denne iPhonen er konfigurert for et barn</translation>
 <translation id="7911190106180361398">Organisasjonen din lar deg ikke synkronisere alt.</translation>
 <translation id="7918999344502274923">Skjul <ph name="SEARCH_ENGINE_NAME" />-detaljer</translation>
 <translation id="7921559948846049514">Velg et tema, en farge eller noe annet for bakgrunnen</translation>
@@ -1977,6 +1988,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7952670906562503188">Du er i ferd med å slette {passkey_count} passnøkler samt listen over nettsteder og apper du har valgt å aldri lagre påloggingsinformasjon for. Eventuelle kontoer du har opprettet for nettsteder og apper, blir ikke slettet.</translation>
 <translation id="7958575506592576831">Sikkerhetsinformasjon for siden</translation>
 <translation id="7961015016161918242">Aldri</translation>
+<translation id="7971651328518569075">Skjul «Slå av lesemodus»</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Prøv</translation>
 <translation id="797588153137233716">Meny → Logg → Slett nettlesingsdata</translation>
@@ -1993,6 +2005,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="8005666035647241369">I Google Passordlagring på denne enheten</translation>
 <translation id="8010488806779226127">Utforsk funksjoner som kan hjelpe deg med å gjøre mer mens du surfer</translation>
 <translation id="8011489434346330032">Nettinspektør</translation>
+<translation id="8014007212279733632">Bekreft at det er deg, for å autofylle sensitiv informasjon</translation>
 <translation id="8015826420689927262">Slett vedlegg</translation>
 <translation id="8017015647846870183">Fra Google Passordlagring, inkludert passord og passnøkler</translation>
 <translation id="802154636333426148">Nedlastingen mislyktes</translation>
@@ -2379,6 +2392,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="984275831282074731">Betalingsmåter</translation>
 <translation id="985379595344853742">Lukk alle inkognitofaner</translation>
 <translation id="988141524645182168">Andre enheter</translation>
+<translation id="994184244350700431">I Google Wallet for <ph name="USER_EMAIL" /></translation>
 <translation id="995174784802614337">{count,plural, =1{Importerte {count} passnøkkel}other{Importerte {count} passnøkler}}</translation>
 <translation id="999768147936949692">Foreløpig kan du bare dele passord med familiemedlemmer. <ph name="BEGIN_LINK" />Inviter familiemedlemmer<ph name="END_LINK" /> til å bli med i gruppen, og få mer ut av Google-produktene og -abonnementene dine.</translation>
 </translationbundle>

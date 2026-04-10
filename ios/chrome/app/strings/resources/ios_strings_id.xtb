@@ -116,6 +116,7 @@
 <translation id="138692594145659985">Opsi untuk menyimpan kartu</translation>
 <translation id="1396260204083880024">Login sebagai <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Buka menu akun.</translation>
 <translation id="1397144142234474689">Sembunyikan Histori</translation>
+<translation id="1399268420835656394">Jika Anda bukan anak-anak, Anda mungkin perlu memeriksa usia di Akun Apple di perangkat ini. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="1407135791313364759">Buka semua</translation>
 <translation id="1408847409015257906">Ketuk “Privasi &amp; Keamanan”.</translation>
 <translation id="1411386976162024013">Penelusuran visual Lens</translation>
@@ -255,6 +256,7 @@
 <translation id="1861067954551502701">{count,plural, =1{{position} dari {count} sandi}other{{position} dari {count} sandi}}</translation>
 <translation id="1861262398884155592">Folder ini kosong</translation>
 <translation id="1864266050569350424">Di situs tempat Anda menyimpan sandi, ketuk kolom sandi login.</translation>
+<translation id="1866700949421703765">Sembunyikan Aktifkan Mode Baca</translation>
 <translation id="1872096359983322073">Senter</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Undang anggota keluarga</translation>
@@ -353,6 +355,7 @@
 <translation id="2214453882118345682">Belanja, terjemahkan, dan identifikasi hal yang Anda lihat dengan kamera.</translation>
 <translation id="2215819824168709130">Sembunyikan kartu pantau harga</translation>
 <translation id="2216366330550244277">Buka halaman produk</translation>
+<translation id="2219935992754556187">Chrome menjaga keamanan data sensitif Anda dengan Face ID</translation>
 <translation id="2220529011494928058">Laporkan masalah</translation>
 <translation id="2223461067862937305">Buat Kode QR</translation>
 <translation id="2225701818156393674">Produk ditambahkan ke daftar produk yang dipantau.</translation>
@@ -459,6 +462,7 @@
 <translation id="2583688836549072561">Grup tab, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> tab, aktivitas baru.</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Pantau penurunan harga produk</translation>
+<translation id="2602372807870028932">Tindakan ini akan menghapus info yang dipilih yang disimpan di perangkat ini</translation>
 <translation id="260378315836159338">Di bagian atas layar, ketuk +</translation>
 <translation id="2612676031748830579">Nomor kartu</translation>
 <translation id="261305050785128654">Izinkan situs mengetahui bahasa yang Anda gunakan. Situs akan menampilkan konten dalam bahasa tersebut, jika memungkinkan.</translation>
@@ -552,6 +556,7 @@
 <translation id="2922210239002704889">Buka halaman beranda atau keyboard Anda</translation>
 <translation id="2924940770243654951">Buka di tab Samaran baru</translation>
 <translation id="2952278131021475699">Penelusuran Kamera Lens</translation>
+<translation id="2953821385349876107">Pilih Akun Google lain</translation>
 <translation id="2962516096219646456">Lihat semua data isi otomatis</translation>
 <translation id="2965594942405840553">Tindakan ini tidak dapat diurungkan</translation>
 <translation id="2969979262385602596">Gagal masuk. Coba lagi nanti.</translation>
@@ -960,6 +965,7 @@
 <translation id="4469324811108161144">Catatan dapat menyimpan hingga <ph name="CHARACTER_LIMIT" /> karakter.</translation>
 <translation id="4471472356135655769">Tidak dapat mengekspor sandi</translation>
 <translation id="4472575034687746823">Memulai</translation>
+<translation id="4473565697543262065">Tindakan ini akan menghapus info yang dipilih yang disimpan di perangkat ini dan di Akun Google Anda <ph name="USER_EMAIL" /></translation>
 <translation id="4473608001744970767">Sembunyikan Pantau Harga</translation>
 <translation id="4474142134969976028">Tidak ada hasil yang cocok</translation>
 <translation id="4474494258097106883">Dibuat untuk iPhone Anda</translation>
@@ -1435,6 +1441,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6090760257419195752">Peringatan yang ditolak</translation>
 <translation id="6094325891006032858">Aktifkan Safe Browsing yang Disempurnakan</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> ditemukan</translation>
+<translation id="6099466082815574659">iPad ini disiapkan untuk anak</translation>
 <translation id="6100617279104942061">Login sebagai <ph name="USER_EMAIL" />. Membuka setelan.</translation>
 <translation id="6100676328067737810">Data Anda akan disimpan ke Akun Google Anda, <ph name="USER_EMAIL" /></translation>
 <translation id="610083648014322104">Dapatkan jawaban yang relevan berdasarkan konten halaman yang sedang Anda buka</translation>
@@ -1492,7 +1499,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6259928806013786178">Gagal mengaktifkan mode baca</translation>
 <translation id="6268773951964630964">Telusuri gambar yang disalin</translation>
 <translation id="6271462272606946663">Sembunyikan Minta Situs Seluler</translation>
-<translation id="6271556257184622612">Tanya Google tentang tab dan lainnya</translation>
 <translation id="6271824294945464304">Berbagi sandi</translation>
 <translation id="628251768213143684">Anda dapat mengelola data yang disimpan di Akun Google Anda kapan saja</translation>
 <translation id="6284652193729350524">Tawarkan untuk menerjemahkan bahasa <ph name="LANGUAGE" /></translation>
@@ -1529,6 +1535,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6368102751067608420">Untuk menghapus semua data pengelola sandi</translation>
 <translation id="6372558618707314581">Buka halaman apa pun yang Anda inginkan</translation>
 <translation id="6374469231428023295">Coba Lagi</translation>
+<translation id="6374514103145916800">Tanya</translation>
 <translation id="6383719166112032471">Buka Lokasi …</translation>
 <translation id="6387994324662817823">Sandi hanya disimpan ke Pengelola Sandi Google di perangkat ini.</translation>
 <translation id="6393156038355142111">Sarankan sandi yang kuat</translation>
@@ -1577,6 +1584,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6532106788206463496">Simpan perubahan</translation>
 <translation id="6536759809440150308">Buka <ph name="GROUP_TITLE" />, grup dari <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">contoh.com</translation>
+<translation id="6538776393003671043">Chrome akan menawarkan untuk menyimpannya di Google Wallet saat Anda menggunakannya lagi</translation>
 <translation id="6543899060872618437">Check out lebih cepat dengan isi otomatis di berbagai perangkat Anda</translation>
 <translation id="6550675742724504774">Opsi</translation>
 <translation id="6550891580932862748">Tidak melindungi Anda terhadap situs, download, dan ekstensi berbahaya. Setelan Safe Browsing Anda di produk Google lainnya tidak akan terpengaruh.</translation>
@@ -1595,6 +1603,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6596481460663245319">Telusuri Gambar dengan Google</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 sandi}other{# sandi}}</translation>
 <translation id="6601302169302852717">Gambar disimpan di Google Foto untuk <ph name="USER_EMAIL" /></translation>
+<translation id="6602173570135186741">Isi otomatis dan sandi</translation>
 <translation id="6603393121510733479">Organisasi Anda menonaktifkan penjelajahan rahasia.
 <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="6606914854592108404">Pemeriksaan Keamanan sedang berjalan…</translation>
@@ -1960,6 +1969,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="7888562068293422208">Tutup semua?</translation>
 <translation id="7889910613639381518">Akses mudah dan aman dengan widget Pengelola Sandi Google.</translation>
 <translation id="7899199123054742721">Tandai semua belum dibaca</translation>
+<translation id="7909005666376403847">iPhone ini disiapkan untuk anak</translation>
 <translation id="7911190106180361398">Organisasi tidak mengizinkan Anda menyinkronkan semuanya.</translation>
 <translation id="7918999344502274923">Sembunyikan detail <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="7921559948846049514">Pilih tema, warna, atau hal lainnya untuk latar belakang Anda</translation>
@@ -1977,6 +1987,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="7952670906562503188">Anda akan menghapus {passkey_count} kunci sandi dan daftar situs &amp; aplikasi yang Anda pilih agar tidak pernah menyimpan info login. Akun apa pun yang Anda buat untuk situs dan aplikasi tidak akan dihapus.</translation>
 <translation id="7958575506592576831">Informasi keamanan halaman</translation>
 <translation id="7961015016161918242">Jangan pernah</translation>
+<translation id="7971651328518569075">Sembunyikan Nonaktifkan Mode Baca</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Cobalah</translation>
 <translation id="797588153137233716">Menu → Histori → Hapus data penjelajahan</translation>
@@ -1993,6 +2004,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="8005666035647241369">Ke Pengelola Sandi Google di perangkat ini</translation>
 <translation id="8010488806779226127">Jelajahi fitur yang dapat membantu Anda melakukan lebih banyak hal saat menjelajah</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
+<translation id="8014007212279733632">Verifikasi diri Anda untuk mengisi otomatis info sensitif</translation>
 <translation id="8015826420689927262">Hapus lampiran</translation>
 <translation id="8017015647846870183">Dari Pengelola Sandi Google, termasuk sandi dan kunci sandi</translation>
 <translation id="802154636333426148">Download gagal</translation>
@@ -2379,6 +2391,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="984275831282074731">Metode pembayaran</translation>
 <translation id="985379595344853742">Tutup semua tab Samaran</translation>
 <translation id="988141524645182168">Perangkat Lainnya</translation>
+<translation id="994184244350700431">Di Google Wallet untuk <ph name="USER_EMAIL" /></translation>
 <translation id="995174784802614337">{count,plural, =1{{count} kunci sandi diimpor}other{{count} kunci sandi diimpor}}</translation>
 <translation id="999768147936949692">Untuk saat ini, Anda hanya dapat berbagi sandi dengan anggota keluarga. <ph name="BEGIN_LINK" />Undang anggota keluarga<ph name="END_LINK" /> untuk bergabung dengan grup Anda dan optimalkan produk serta langganan Anda di Google.</translation>
 </translationbundle>

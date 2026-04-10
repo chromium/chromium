@@ -1300,10 +1300,12 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3037177537145227281">Spremljanje cene</translation>
 <translation id="3037605927509011580">Ti šment!</translation>
 <translation id="3039406992698062762">Družinska potovanja</translation>
+<translation id="3040435070100611531">Vaše kartice v Google Denarnici</translation>
 <translation id="3041176923638368519">Oglejte si pogoje za ugodnosti kartice</translation>
 <translation id="3041584414879052436">Seznam izdajateljev za »Kupi zdaj, plačaj pozneje« je zaprt.</translation>
 <translation id="3041612393474885105">Informacije o potrdilu</translation>
 <translation id="3045769629416806687">Ekstremni športi</translation>
+<translation id="3047054686095898948">Shranite podatke v storitvi <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> in hitreje opravite delo, na primer izpolnite obrazce v Googlovih izdelkih. <ph name="BEGIN_LINK" />Podatke lahko upravljate<ph name="END_LINK" /> v denarnici <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> za račun <ph name="ACCOUNT" />.</translation>
 <translation id="305162504811187366">Zgodovina Oddaljenega namizja Chrome, vključno s časovnimi žigi, gostitelji in ID-ji sej odjemalca</translation>
 <translation id="3052868890529250114">S temi spletnimi mesti se običajno varno povežete, vendar Chrome varne povezave tokrat ni mogel uporabiti. Napadalec morda poskuša prisluškovati ali spremeniti vašo omrežno povezavo. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem opozorilu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" />-odstotno znižanje cene izdelka <ph name="PRODUCT_NAME" /></translation>
@@ -2800,7 +2802,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5381952079334035181">Oseba <ph name="MEMBER_FIRST_NAME" /> je posodobila zavihek »<ph name="WEBSITE_TITLE" />«</translation>
 <translation id="5383478552402031184">Storitve, povezane s talnimi oblogami</translation>
 <translation id="5385857628869214740">Humor</translation>
-<translation id="5385966243497224160">Predogleda URL-ja, ki ni HTTPS, ni mogoče prikazati</translation>
 <translation id="5386426401304769735">Veriga potrdil za to spletno mesto vsebuje potrdilo, podpisano z algoritmom SHA-1.</translation>
 <translation id="5391010642126249196">Obiskali ste</translation>
 <translation id="5391306025131596142">&amp;Odpri stran z zgodovino</translation>
@@ -3850,7 +3851,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7003322000677139268">Nadomestni deli in dodatna oprema za vozila</translation>
 <translation id="7004499039102548441">Nedavni zavihki</translation>
 <translation id="7004562620237466965">Samo dešifiranje</translation>
-<translation id="700483187606163535">Vaši podatki so shranjeni v aplikaciji <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> za <ph name="ACCOUNT" />. Uporabljate jih lahko v Googlovih izdelkih za hitrejše izpolnjevanje obrazcev.</translation>
 <translation id="7006930604109697472">Vseeno pošlji</translation>
 <translation id="7009364359744329733">Ta kartica trenutno ni na voljo. Poskusite znova pozneje.</translation>
 <translation id="7010658264061801199">Hrana in pijača</translation>
@@ -4624,7 +4624,6 @@ Dodatne podrobnosti:
 <translation id="8194956568907463262">Strelske igre</translation>
 <translation id="8198379961710069585">Gumb za zgodovino Iskanja, aktivirajte, če želite iskati po zgodovini</translation>
 <translation id="8199437620497683918">Optical Disc (Glossy)</translation>
-<translation id="8199730148066603000">Predogled URL-ja, ki ni HTTPS, ni dovoljen.</translation>
 <translation id="8200772114523450471">Nadaljuj</translation>
 <translation id="8202097416529803614">Povzetek naročila</translation>
 <translation id="8202370299023114387">Spor</translation>
@@ -4829,6 +4828,7 @@ Dodatne podrobnosti:
 <translation id="8521812709849134608">Kuhinjski pulti</translation>
 <translation id="8522180136695974431">Kreditno poročanje in spremljanje</translation>
 <translation id="8522552481199248698">Chrome vam lahko pomaga zaščititi račun za Google in spremeniti geslo.</translation>
+<translation id="852450791482410042">Plačajte zdaj</translation>
 <translation id="8527228059738193856">Zvočniki</translation>
 <translation id="8527681393107582734">Kmetijstvo in gozdarstvo</translation>
 <translation id="8528149813106025610">Otroška oblačila</translation>

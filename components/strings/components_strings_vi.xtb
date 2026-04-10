@@ -682,7 +682,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2090451897496479509">Liên hệ với nhà cung cấp để biết thêm thông tin</translation>
 <translation id="2090686487550343086">IBAN</translation>
 <translation id="2091887806945687916">Âm thanh</translation>
-<translation id="2093184051799735948">Tìm kiếm trên <ph name="ENGINE_NAME" /> hoặc nhập URL</translation>
+<translation id="2093184051799735948">Tìm trên <ph name="ENGINE_NAME" /> hoặc nhập URL</translation>
 <translation id="2093982008204312032">Google Chrome đang cố gắng tắt Windows Hello để điền mật khẩu.</translation>
 <translation id="2094505752054353250">Miền không khớp</translation>
 <translation id="2094704029599359040">Thông tin phiên bản</translation>
@@ -1300,10 +1300,12 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3037177537145227281">Đang theo dõi giá</translation>
 <translation id="3037605927509011580">Ôi, hỏng! </translation>
 <translation id="3039406992698062762">Du lịch gia đình</translation>
+<translation id="3040435070100611531">Thẻ và vé của bạn trong Google Wallet</translation>
 <translation id="3041176923638368519">Xem các điều khoản về lợi ích của thẻ</translation>
 <translation id="3041584414879052436">Danh sách các tổ chức phát hành dịch vụ Mua trước trả sau đang đóng.</translation>
 <translation id="3041612393474885105">Thông tin Chứng chỉ</translation>
 <translation id="3045769629416806687">Thể thao mạo hiểm</translation>
+<translation id="3047054686095898948">Lưu thông tin của bạn vào <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> để hoàn thành công việc nhanh hơn, chẳng hạn như điền vào biểu mẫu trên các sản phẩm của Google. Bạn có thể <ph name="BEGIN_LINK" />quản lý thông tin của mình<ph name="END_LINK" /> trong <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> cho <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">Nhật ký Chrome Remote Desktop, bao gồm cả dấu thời gian, mã phiên ứng dụng và máy chủ</translation>
 <translation id="3052868890529250114">Bạn thường kết nối an toàn với các trang web nhưng lần này Chrome không thể sử dụng kết nối bảo mật. Kẻ tấn công có thể đang tìm cách nghe trộm hoặc sửa đổi kết nối mạng của bạn. <ph name="BEGIN_LEARN_MORE_LINK" />Tìm hiểu thêm về cảnh báo này<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Giảm giá <ph name="PRICE_DROP" /> đối với <ph name="PRODUCT_NAME" /></translation>
@@ -2721,6 +2723,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Theo chính sách của quản trị viên, bạn không nên sao chép tệp này sang <ph name="DESTINATION_NAME" />}other{Theo chính sách của quản trị viên, bạn không nên sao chép các tệp này sang <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">Nhóm thẻ "<ph name="GROUP_NAME" />" không còn nữa</translation>
+<translation id="5262342527470539728">Thông tin của bạn được lưu vào <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> của tài khoản <ph name="ACCOUNT" /></translation>
 <translation id="5263867360296733198">Bạn cần xem xét trước khi tải lên</translation>
 <translation id="5266128565379329178">Đóng gáy trên cùng</translation>
 <translation id="5269225904387178860">Đục 4 lỗ dưới cùng</translation>
@@ -2799,7 +2802,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> đã cập nhật thẻ "<ph name="WEBSITE_TITLE" />"</translation>
 <translation id="5383478552402031184">Lát sàn</translation>
 <translation id="5385857628869214740">Hài hước</translation>
-<translation id="5385966243497224160">Không thể xem trước URL không thuộc loại HTTPS</translation>
 <translation id="5386426401304769735">Chuỗi chứng chỉ cho trang web này có chứa một chứng chỉ đã ký bằng SHA-1.</translation>
 <translation id="5391010642126249196">Bạn đã truy cập</translation>
 <translation id="5391306025131596142">&amp;Mở trang nhật ký</translation>
@@ -3849,7 +3851,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="7003322000677139268">Phụ tùng và phụ kiện xe cộ</translation>
 <translation id="7004499039102548441">Các thẻ gần đây</translation>
 <translation id="7004562620237466965">Chỉ giải mã</translation>
-<translation id="700483187606163535">Thông tin của bạn sẽ được lưu vào <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> của tài khoản <ph name="ACCOUNT" />. Bạn có thể dùng thông tin này để điền vào biểu mẫu nhanh hơn trên các sản phẩm của Google.</translation>
 <translation id="7006930604109697472">Vẫn gửi</translation>
 <translation id="7009364359744329733">Thẻ này hiện không dùng được. Vui lòng thử lại sau.</translation>
 <translation id="7010658264061801199">Thực phẩm và đồ uống</translation>
@@ -4623,7 +4624,6 @@ Thông tin chi tiết bổ sung:
 <translation id="8194956568907463262">Trò chơi bắn súng</translation>
 <translation id="8198379961710069585">Nút Tìm nhật ký, hãy nhấn nút này để tìm nhật ký</translation>
 <translation id="8199437620497683918">Đĩa quang (Bóng)</translation>
-<translation id="8199730148066603000">Không cho phép xem trước URL không thuộc loại HTTPS.</translation>
 <translation id="8200772114523450471">Tiếp tục</translation>
 <translation id="8202097416529803614">Tóm tắt đơn đặt hàng</translation>
 <translation id="8202370299023114387">Xung đột</translation>
@@ -4771,6 +4771,7 @@ Thông tin chi tiết bổ sung:
 Thông tin chi tiết bổ sung:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Đã cho phép sử dụng micrô cho lần này</translation>
+<translation id="8421746712901926961">Lưu thông tin của bạn vào <ph name="GOOGLE_WALLET_TITLE_1" /> để hoàn thành công việc nhanh hơn, chẳng hạn như điền vào biểu mẫu trên các sản phẩm của Google. Bạn có thể <ph name="MANAGE_INFO_LINK" /> trong <ph name="GOOGLE_WALLET_TITLE_2" /> của tài khoản <ph name="ACCOUNT" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Thay đổi</translation>
 <translation id="8426945547715537628">Cho phép ghi đè bàn phím?</translation>
@@ -4827,6 +4828,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8521812709849134608">Mặt bàn nhà bếp</translation>
 <translation id="8522180136695974431">Báo cáo và giám sát tín dụng</translation>
 <translation id="8522552481199248698">Chrome có thể giúp bạn bảo vệ Tài khoản Google của mình và đổi mật khẩu.</translation>
+<translation id="852450791482410042">Thanh toán ngay</translation>
 <translation id="8527228059738193856">Loa</translation>
 <translation id="8527681393107582734">Nông nghiệp và lâm nghiệp</translation>
 <translation id="8528149813106025610">Quần áo trẻ em</translation>

@@ -1499,7 +1499,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6259928806013786178">Nie udało się włączyć Trybu czytania</translation>
 <translation id="6268773951964630964">Wyszukaj skopiowany obraz</translation>
 <translation id="6271462272606946663">Ukryj opcję Wersja na telefon</translation>
-<translation id="6271556257184622612">Zapytaj Google o karty i inne informacje</translation>
 <translation id="6271824294945464304">Udostępnij hasło</translation>
 <translation id="628251768213143684">W każdej chwili możesz zarządzać informacjami, które są zapisywane na Twoim koncie Google</translation>
 <translation id="6284652193729350524">Proponuj tłumaczenie z języka: <ph name="LANGUAGE" /></translation>
@@ -1536,6 +1535,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6368102751067608420">Aby usunąć wszystkie dane menedżera haseł</translation>
 <translation id="6372558618707314581">Otwórz dowolną stronę</translation>
 <translation id="6374469231428023295">Spróbuj jeszcze raz</translation>
+<translation id="6374514103145916800">Zapytaj</translation>
 <translation id="6383719166112032471">Otwórz lokalizację…</translation>
 <translation id="6387994324662817823">Hasła są zapisywane w Menedżerze haseł Google tylko na tym urządzeniu.</translation>
 <translation id="6393156038355142111">Zaproponuj silne hasło</translation>
@@ -1603,6 +1603,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6596481460663245319">Szukaj grafiki z Google</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 hasło}few{# hasła}many{# haseł}other{# hasła}}</translation>
 <translation id="6601302169302852717">Obraz został zapisany w Zdjęciach Google użytkownika <ph name="USER_EMAIL" /></translation>
+<translation id="6602173570135186741">Autouzupełnianie i hasła</translation>
 <translation id="6603393121510733479">Twoja organizacja wyłączyła przeglądanie prywatne.
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="6606914854592108404">Trwa kontrola zabezpieczeń…</translation>
@@ -1854,6 +1855,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Aby zablokować karty incognito, skonfiguruj Touch ID, Face ID lub hasło.</translation>
 <translation id="750886945254958667">Zachowaj tę grupę, aby później dodać karty, lub opuść ją, jeśli nie chcesz już mieć do niej dostępu</translation>
+<translation id="7511099437872594216">Karty</translation>
 <translation id="7511727374778217603">{COUNT,plural, =1{Dodaj maksymalnie 1 kartę}few{Dodaj maksymalnie {COUNT} karty}many{Dodaj maksymalnie {COUNT} kart}other{Dodaj maksymalnie {COUNT} karty}}</translation>
 <translation id="7512909159512473473">Wpisz hasło wielowyrazowe…</translation>
 <translation id="7514365320538308">Pobierz</translation>

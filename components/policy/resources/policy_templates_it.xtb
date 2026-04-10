@@ -132,11 +132,6 @@ Nota: scopri di più sui criteri relativi alla mitigazione dei processi (https:/
 <translation id="1077675271127011209">Disattiva i report sull'utilizzo e sui dati relativi agli arresti anomali</translation>
 <translation id="1079498696402787191">Usa il valore predefinito per gli hash consentiti in handshake TLS.</translation>
 <translation id="1079801999187584280">Non consentire l'utilizzo degli Strumenti per sviluppatori</translation>
-<translation id="1081263326166769685">Se la policy viene impostata su Attivata, <ph name="PRODUCT_OS_NAME" /> segnala a Google metriche relative all'utilizzo e dati diagnostici, ad esempio report sugli arresti anomali. Se la policy viene impostata su Disattivata, la segnalazione di metriche e dati diagnostici viene disattivata.
-
-Per i dispositivi gestiti, questa policy è attiva per impostazione predefinita e invia le metriche a Google.
-
-Per i dispositivi non gestiti, l'utente può decidere di inviare le metriche se la policy non viene configurata.</translation>
 <translation id="1081470306474387129">L'API Controlled Frame, disponibile per determinati contesti isolati come le app web isolate (IWA), consente a un'app di incorporare e manipolare contenuti arbitrari.
 Per informazioni dettagliate, visita la pagina https://github.com/WICG/controlled-frame.
 
@@ -377,6 +372,18 @@ I pattern corrispondenti alle origini di questa policy non possono però contene
 <translation id="1262993197422487260">Non mostrare il pulsante di visualizzazione della password nella schermata di accesso e di blocco</translation>
 <translation id="1265053460044691532">Limita il tempo per cui un utente autenticato tramite SAML può eseguire l'accesso offline</translation>
 <translation id="1265076559723566171">Consente di gestire le impostazioni per gli utenti EDU</translation>
+<translation id="1268782248484174352">Specifica il livello di segnalazione di metriche per <ph name="PRODUCT_OS_NAME" />.
+
+Se viene impostata, questa policy determina la quantità di dati sull'utilizzo e sugli arresti anomali segnalati a Google:
+* 0 = Disattiva la segnalazione: non vengono inviati a Google dati sull'utilizzo o sugli arresti anomali.
+* 1 = Segnalazione di base: viene inviato a Google un insieme limitato di dati sull'utilizzo e sugli arresti anomali.
+* 2 = Segnalazione avanzata: viene inviato a Google un insieme completo di dati sull'utilizzo e sugli arresti anomali.
+
+Se questa policy non viene configurata, l'utente può scegliere il comportamento di segnalazione delle metriche al momento dell'installazione o della prima esecuzione e può modificare questa impostazione in un secondo momento.
+
+Questa policy viene valutata solo se l'esperimento <ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" /> è attivo sul dispositivo.
+
+Se l'esperimento <ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" /> è attivo sul dispositivo e vengono impostate sia questa policy sia la policy <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" />, questa policy ha la precedenza.</translation>
 <translation id="1271811620059192171">Attiva gruppi atomici di policy</translation>
 <translation id="127264587838521316">Attiva le richieste di installazione delle estensioni di <ph name="PRODUCT_NAME" /></translation>
 <translation id="1272798957154751008">Attiva la migrazione dei dispositivi Chromad nella gestione del cloud</translation>
@@ -1833,6 +1840,18 @@ Se viene impostata su Disattivata, gli utenti non possono utilizzare questa funz
 
       Se la policy viene configurata, gli utenti non possono modificarla in <ph name="PRODUCT_NAME" />. Se non viene configurata, è consentito il controllo della divulgazione delle credenziali, ma l'utente può disattivarlo.</translation>
 <translation id="2208976000652006649">Parametri per l'URL di ricerca che utilizza POST</translation>
+<translation id="2211167090584042804">Specifica il livello di segnalazione di metriche per <ph name="PRODUCT_NAME" />.
+
+Se viene impostata, questa policy determina la quantità di dati sull'utilizzo e sugli arresti anomali segnalati a Google:
+* 0 = Disattiva la segnalazione: non vengono inviati a Google dati sull'utilizzo o sugli arresti anomali.
+* 1 = Segnalazione di base: viene inviato a Google un insieme limitato di dati sull'utilizzo e sugli arresti anomali.
+* 2 = Segnalazione avanzata: viene inviato a Google un insieme completo di dati sull'utilizzo e sugli arresti anomali.
+
+Se questa policy non viene configurata, l'utente può scegliere il comportamento di segnalazione delle metriche al momento dell'installazione o della prima esecuzione e può modificare questa impostazione in un secondo momento.
+
+Questa policy viene valutata solo se l'esperimento <ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" /> è attivo sul dispositivo.
+
+Se l'esperimento <ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" /> è attivo sul dispositivo e vengono impostate sia questa policy sia la policy <ph name="METRICS_REPORTING_ENABLED_POLICY_NAME" />, questa policy ha la precedenza.</translation>
 <translation id="2212011154693551439">La pagina della cronologia di Chrome organizzata in gruppi sarà visibile all'indirizzo chrome://history/grouped per impostazione predefinita.</translation>
 <translation id="2212207215880394506">Non consentire l'editing di foto con AI generativa.</translation>
 <translation id="221287948061571053">Nascondi badge aziendale espanso nella barra degli strumenti</translation>
@@ -2845,10 +2864,6 @@ Questa policy può essere impostata soltanto come policy relativa agli utenti cl
 <translation id="288923520817177650">È consentita la creazione di sessioni <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> di <ph name="WEBXR_API_NAME_SHORT" /></translation>
 <translation id="2889842394011108075">window.webkitStorageInfo sarà disponibile.</translation>
 <translation id="2890645751406497668">Concede automaticamente a questi siti l'autorizzazione a connettersi a dispositivi USB usando gli ID fornitore e prodotto forniti.</translation>
-<translation id="2891049933730408118">La configurazione di questa policy consente di specificare per quali origini consentire tutti gli schemi di autenticazione HTTP supportati da <ph name="PRODUCT_NAME" /> indipendentemente dalla policy <ph name="AUTH_SCHEMES_POLICY_NAME" />.
-
-      Il pattern dell'URL deve avere il seguente formato (<ph name="URL_SCHEME_FORMAT_LINK" />). In <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> possono essere definite fino a 1000 eccezioni.
-      I caratteri jolly sono consentiti sia per l'intera origine sia per le sue parti, ovvero lo schema, l'host e la porta.</translation>
 <translation id="2893546967669465276">Consente di inviare log di sistema al server di gestione</translation>
 <translation id="2893660462311365527">Velocità di raccolta della telemetria di rete in millisecondi.</translation>
 <translation id="2894914342151915910">Elimina avvisi quando Chrome viene eseguito su un sistema non supportato</translation>
@@ -7527,6 +7542,7 @@ Se la policy viene impostata su EnabledFocusSoundsOnly, l'audio verrà attivato 
 
 Se la policy viene disattivata, l'audio verrà disattivato in modalità Niente distrazioni.</translation>
 <translation id="5890063326284543943">Controlla l'utilizzo dell'API Serial</translation>
+<translation id="5893086678951790439">Livello di segnalazione di metriche</translation>
 <translation id="5893303508158298667">Se la policy <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> è impostata su Attivata e la policy <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> viene impostata su Attivata o non viene configurata, viene consentito l'utilizzo di client remoti per usare relay server per collegarsi al computer quando non è disponibile una connessione diretta, ad esempio a causa di limitazioni del firewall.
 
       Se la policy viene impostata su Disattivata, non viene disattivato l'accesso remoto, ma sono consentite soltanto connessioni dalla stessa rete (non da NAT Traversal o relay).</translation>
@@ -7651,6 +7667,7 @@ A partire dalla versione 147 di <ph name="PRODUCT_NAME" />, questa policy verrà
 
       Se la policy viene configurata, gli utenti non possono modificarla. In caso contrario, gli utenti possono decidere se visualizzare o meno intestazioni e piè di pagina.</translation>
 <translation id="5951418260805607969">Mostra una notifica quando lo spazio sul disco è in esaurimento</translation>
+<translation id="5952917461013988610">Segnalazione di base</translation>
 <translation id="5958746038080720143">Attiva le ottimizzazioni WPAD (Web Proxy Auto-Discovery)</translation>
 <translation id="5961137303188584693">Indirizzo MAC NIC integrato del dispositivo</translation>
 <translation id="5962271004971310788">Estensioni di cui l'utente deve consentire l'esecuzione in incognito per poter navigare in questa modalità</translation>
@@ -8962,17 +8979,6 @@ In questo modo la policy <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_NAME
 <translation id="6813263547126514821">Alimentazione e spegnimento</translation>
 <translation id="681446116407619279">Schemi di autenticazione supportati</translation>
 <translation id="6815628711329903153">Consenti l'allocazione del buffer moderno per il plug-in PPAPI delle API Graphics3D.</translation>
-<translation id="6819031008957510729">Se questa policy viene attivata, si consiglia di attivare per impostazione predefinita la segnalazione anonima a Google dei dati sull'utilizzo e sugli arresti anomali di <ph name="PRODUCT_NAME" />. Gli utenti potranno comunque modificare questa impostazione.
-
-Se questa policy viene disattivata, viene disattivata la segnalazione anonima e non vengono inviati a Google dati sull'utilizzo o sugli arresti anomali. Gli utenti non possono modificare questa impostazione.
-
-Se questa policy non viene configurata, gli utenti possono scegliere il comportamento di segnalazione anonima al momento dell'installazione o della prima esecuzione e possono modificare questa impostazione in un secondo momento.
-
-(Per <ph name="PRODUCT_OS_NAME" />, vedi <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" />.)
-
-Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="6819838337315703072">Se le app <ph name="LINUX_OS_NAME" /> sono supportate, l'impostazione della policy su Attivata consente di inviare al server le informazioni relative all'utilizzo delle app <ph name="LINUX_OS_NAME" />.
 
       Se la policy viene impostata su Disattivata o se non viene configurata, non viene inviata alcuna informazione relativa all'utilizzo.</translation>
@@ -9051,6 +9057,7 @@ Se viene impostata su False o se non viene configurata, il layout non è disponi
 <translation id="686079137349561371">Microsoft Windows 7 o versioni successive</translation>
 <translation id="6863927303509860338">Impostazione delle scorciatoie nella pagina Nuova scheda</translation>
 <translation id="6866755486434471318">Consenti a <ph name="PEPPER_NAME" /> di usare immagini condivise per la decodifica video.</translation>
+<translation id="6874461444739276423">Livello di segnalazione di metriche del dispositivo</translation>
 <translation id="6878757724611298427">Consenti agli utenti di utilizzare app per Android su dispositivi non affiliati</translation>
 <translation id="6881447940489194100">Hash SHA-256 esadecimale codificato dei dati.</translation>
 <translation id="68818134518270542">La configurazione della policy consente di specificare le app che gli utenti possono attivare come app per scrivere note nella schermata di blocco di <ph name="PRODUCT_OS_NAME" />.
@@ -11139,6 +11146,13 @@ Se questa policy non viene impostata, la Schermata sulla privacy viene inizialme
 <translation id="8171262216089271568">Attiva il puntatore grande nella schermata di accesso</translation>
 <translation id="8171924760436219650">Imposta il tasto destro come tasto principale del mouse nella schermata di accesso</translation>
 <translation id="81724933026241365">Consenti agli utenti di spegnere il dispositivo con l'icona di arresto o il tasto di accensione fisico</translation>
+<translation id="8173338752620395043">Se la policy viene impostata su Attivata, <ph name="PRODUCT_OS_NAME" /> segnala a Google metriche relative all'utilizzo e dati diagnostici, ad esempio report sugli arresti anomali. Se la policy viene impostata su Disattivata, la segnalazione di metriche e dati diagnostici viene disattivata.
+
+Per i dispositivi gestiti, questa policy è attiva per impostazione predefinita e invia le metriche a Google.
+
+Per i dispositivi non gestiti, l'utente può decidere di inviare le metriche se la policy non è configurata.
+
+Se l'esperimento <ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" /> è attivo sul dispositivo e vengono configurate sia questa policy sia la policy <ph name="DEVICE_METRICS_REPORTING_LEVEL_POLICY_NAME" />, quest'ultima ha la precedenza.<ph name="DEVICE_METRICS_REPORTING_LEVEL_POLICY_NAME" /></translation>
 <translation id="8173864651667424191">L'opzione Stampa come immagine è impostata per impostazione predefinita per le anteprime di stampa dei documenti PDF quando è disponibile.</translation>
 <translation id="8175922758834816585">Attiva la funzione di lettura vocale nella schermata di accesso e consenti all'utente di disattivarla temporaneamente</translation>
 <translation id="8176035528522326671">Consenti all'utente aziendale di essere solo l'utente multiprofilo principale (comportamento predefinito per gli utenti gestiti dall'azienda)</translation>
@@ -11738,6 +11752,7 @@ Se la policy non viene configurata, il relativo comportamento viene determinato 
 Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8566842294717252664">Nascondi il Web Store nella pagina Nuova scheda e in Avvio applicazioni</translation>
 <translation id="8567697114274003779">Imposta un'etichetta aziendale personalizzata per un profilo gestito</translation>
+<translation id="8570976102224880079">Segnalazione avanzata</translation>
 <translation id="8571069584826006598">Consenti alle origini delle app web isolate di chiedere all'utente l'autorizzazione di accesso alle stampanti locali tramite l'API WebPrinting</translation>
 <translation id="8571119890730528225">Disattiva il partizionamento dello spazio di archiviazione di terze parti.</translation>
 <translation id="8571314270766672278">Esegui il rollback e il reset del dispositivo con un downgrade del canale, prova a mantenere la registrazione</translation>
@@ -11943,6 +11958,7 @@ Se configuri questa policy, la policy <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_P
 Questa policy è stata ritirata a partire dalla versione 144 di <ph name="PRODUCT_NAME" /> con il ritiro dell'API Topics.</translation>
 <translation id="8672321184841719703">Scegli versione target dell'aggiornamento automatico</translation>
 <translation id="867410340948518937">U2F (Universal Second Factor)</translation>
+<translation id="8675599659717867329">Disattiva segnalazione</translation>
 <translation id="8676959842615154675">Se la policy viene impostata su Attivata, l'host di accesso remoto confronta il nome dell'utente locale a cui è associato l'host con il nome dell'Account Google registrato come proprietario dell'host ("mariorossi" se l'host è di proprietà dell'Account Google "mariorossi@example.com"). Questo host non viene avviato se il nome del proprietario dell'host non coincide con quello dell'utente locale a cui è associato l'host. Per forzare l'associazione dell'Account Google del proprietario con un dominio specifico, usa la policy insieme a <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />.
 
       Se la policy viene impostata su Disattivata o se non viene configurata, l'host di accesso remoto può essere associato a qualsiasi utente locale.</translation>
@@ -12765,6 +12781,19 @@ Consente di determinare se un utente può configurare il nome host del dispositi
 Se la policy viene disattivata, le API per la quota di spazio di archiviazione in genere restituiranno un valore dinamico proporzionale allo spazio totale disponibile sul dispositivo, indipendentemente dall'utilizzo.
 Se la policy non viene configurata, le API per la quota di spazio di archiviazione utilizzeranno il comportamento predefinito di Chrome.
 Questa impostazione non influisce sui siti con autorizzazioni di spazio di archiviazione illimitato. Neanche la quota applicata è interessata.</translation>
+<translation id="975621145048605048">Se questa policy viene attivata, si consiglia di attivare per impostazione predefinita la segnalazione anonima a Google dei dati sull'utilizzo e sugli arresti anomali di <ph name="PRODUCT_NAME" />. Gli utenti potranno comunque modificare questa impostazione.
+
+Se questa policy viene disattivata, viene disattivata la segnalazione anonima e non vengono inviati a Google dati sull'utilizzo o sugli arresti anomali. Gli utenti non possono modificare questa impostazione.
+
+Se questa policy non viene configurata, gli utenti possono scegliere il comportamento di segnalazione anonima al momento dell'installazione o della prima esecuzione e possono modificare questa impostazione in un secondo momento.
+
+(Per <ph name="PRODUCT_OS_NAME" />, vedi <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" />.)
+
+Se l'esperimento <ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" /> è attivo sul dispositivo e vengono impostate sia questa policy sia la policy <ph name="METRICS_REPORTING_LEVEL_POLICY_NAME" />, la policy <ph name="METRICS_REPORTING_LEVEL_POLICY_NAME" /> ha la precedenza.
+
+Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="976415389478739655">Richiedi che i dispositivi degli utenti siano su una rete gestita per poter far parte del corso <ph name="CLASS_TOOLS_NAME" /></translation>
 <translation id="978619365985286086">Impostazioni degli strumenti di gestione dei corsi</translation>
 <translation id="978658824596356870">Formato dell'orologio di 24 ore</translation>

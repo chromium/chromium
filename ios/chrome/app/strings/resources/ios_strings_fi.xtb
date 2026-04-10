@@ -116,6 +116,7 @@
 <translation id="138692594145659985">Kortin tallentamisvaihtoehdot</translation>
 <translation id="1396260204083880024">Kirjautuneena käyttäjänä <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Avaa tilivalikko.</translation>
 <translation id="1397144142234474689">Piilota historia</translation>
+<translation id="1399268420835656394">Jos et ole lapsi, voit tarkistaa iän Apple-tililtä tällä laitteella. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="1407135791313364759">Avaa kaikki</translation>
 <translation id="1408847409015257906">Valitse "Yksityisyys ja turvallisuus".</translation>
 <translation id="1411386976162024013">Lensin visuaalinen haku</translation>
@@ -555,6 +556,7 @@
 <translation id="2922210239002704889">Siirry etusivulle tai näppäimistölle</translation>
 <translation id="2924940770243654951">Avaa incognito-tilassa</translation>
 <translation id="2952278131021475699">Lens-kamerahaku</translation>
+<translation id="2953821385349876107">Valitse toinen Google-tili</translation>
 <translation id="2962516096219646456">Näytä kaikki automaattisen täytön data</translation>
 <translation id="2965594942405840553">Tätä toimintoa ei voi kumota</translation>
 <translation id="2969979262385602596">Kirjautuminen epäonnistui. Yritä myöhemmin uudelleen.</translation>
@@ -1439,6 +1441,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6090760257419195752">Ohitetut varoitukset</translation>
 <translation id="6094325891006032858">Laita Parannettu selaussuoja päälle</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> löytyi</translation>
+<translation id="6099466082815574659">Tämä iPad on otettu käyttöön lapselle</translation>
 <translation id="6100617279104942061">Kirjautuneena käyttäjänä <ph name="USER_EMAIL" />. Avaa asetukset.</translation>
 <translation id="6100676328067737810">Data tallennetaan Google-tilillesi (<ph name="USER_EMAIL" />)</translation>
 <translation id="610083648014322104">Saat relevantteja vastauksia sivun sisällön perusteella</translation>
@@ -1496,7 +1499,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6259928806013786178">Lukutila ei käynnistynyt</translation>
 <translation id="6268773951964630964">Hae kopioitua kuvaa</translation>
 <translation id="6271462272606946663">Piilota "Käytä mobiiliversiota"</translation>
-<translation id="6271556257184622612">Kysy Googlelta välilehdistä ja muusta</translation>
 <translation id="6271824294945464304">Salasanan jakaminen</translation>
 <translation id="628251768213143684">Voit milloin tahansa valita, mitä Google-tilillesi tallennetaan</translation>
 <translation id="6284652193729350524">Tarjoudu kääntämään <ph name="LANGUAGE" /></translation>
@@ -1533,6 +1535,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6368102751067608420">Poista kaikki salasanojen hallintaohjelman data</translation>
 <translation id="6372558618707314581">Siirry mille tahansa sivulle</translation>
 <translation id="6374469231428023295">Yritä uudelleen</translation>
+<translation id="6374514103145916800">Kysy</translation>
 <translation id="6383719166112032471">Avaa sijainti…</translation>
 <translation id="6387994324662817823">Salasanat tallennetaan Googlen Salasanojen ylläpitoon vain tällä laitteella.</translation>
 <translation id="6393156038355142111">Ehdota vahvaa salasanaa</translation>
@@ -1600,6 +1603,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6596481460663245319">Hae kuvaa Googlesta</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 salasana}other{# salasanaa}}</translation>
 <translation id="6601302169302852717">Kuva tallennettu tilin <ph name="USER_EMAIL" /> Google Kuviin</translation>
+<translation id="6602173570135186741">Automaattinen täyttö ja salasanat</translation>
 <translation id="6603393121510733479">Organisaatiosi on laittanut yksityisen selaamisen pois päältä.
 <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="6606914854592108404">Turvatarkistus on käynnissä…</translation>
@@ -1965,6 +1969,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="7888562068293422208">Suljetaanko kaikki?</translation>
 <translation id="7889910613639381518">Helppo ja suojattu pääsy Google Salasanat ‑widgetillä</translation>
 <translation id="7899199123054742721">Merkitse kaikki lukemattomiksi</translation>
+<translation id="7909005666376403847">Tämä iPhone on otettu käyttöön lapselle</translation>
 <translation id="7911190106180361398">Organisaatiosi ei salli sinun synkronoida kaikkea.</translation>
 <translation id="7918999344502274923">Piilota tiedot: <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="7921559948846049514">Valitse taustalle esimerkiksi teema tai väri</translation>

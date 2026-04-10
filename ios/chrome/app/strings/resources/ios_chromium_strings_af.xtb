@@ -134,6 +134,7 @@ Probeer om ’n paar minute te wag voordat jy rekeninge wissel. As jy nou rekeni
 <translation id="377649297473651452">Chromium-outovulaansig is uitgevou</translation>
 <translation id="3780779443901618967">Waarsku jou oor gevaarlike werwe – selfs werwe waarvan Google nie voorheen geweet het nie – deur meer data van werwe te ontleed as standaardbeskerming. Jy kan kies om Chromium-waarskuwings oor te slaan.</translation>
 <translation id="3805899903892079518">Chromium het nie toegang tot jou foto's of video's nie. Aktiveer toegang in iOS-instellings &gt; Privacy &gt; Photos.</translation>
+<translation id="3809591243528646631">Om kinderveiligheidkenmerke te kry, kan jy óf ’n Google-rekening gebruik wat vir ’n kind opgestel is, óf Chromium sonder ’n rekening gebruik. <ph name="BEGIN_LINK" />Vind meer uit<ph name="END_LINK" /></translation>
 <translation id="3816686541346279443">Chromium sal aanbied om jou wagwoord te stoor.</translation>
 <translation id="3827545470516145620">Jy kry tans standaardsekuriteitbeskerming op hierdie toestel</translation>
 <translation id="3833326979834193417">Chromium laat elke dag veiligheidskontrole outomaties loop om jou veilig te hou teen dataskendings, onveilige webwerwe en meer. Jy kan meer oor veiligheidskontrole in instellings kry.</translation>
@@ -169,6 +170,7 @@ Jou data is met jou wagfrase geënkripteer. Voer dit in om Chromium-data in jou 
 <ph name="BEGIN_LINK" />Vee die Chrome-data in jou rekening uit<ph name="END_LINK" /> om hierdie instelling te verander.</translation>
 <translation id="4578500311756617174">Chromium-wenk: Gebruik Chromium by verstek</translation>
 <translation id="458786853569524949">Jy kan Chromium nou enige tyd gebruik wanneer jy op skakels in e-posse, dokumente en ander apps tik.</translation>
+<translation id="4625730353066900738">Leer die nuttige basiese beginsels van Chromium om jou aan die gang te kry</translation>
 <translation id="4633738821577273991">Kry Verbeterde Veiligblaai ook vir hierdie Chromium-profiel</translation>
 <translation id="4654936625574199632">Chromium stuur gebruik- en omvaldata na Google toe om te help om die app beter te maak. <ph name="BEGIN_LINK" />Bestuur<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Skakel Chromium-skandeerder aan</translation>
@@ -354,6 +356,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="8900052431807804054">Kry Chromium se sterkste sekuriteit</translation>
 <translation id="8908791447256515663">Kry vinniger toegang tot Chromium vanaf jou iPad se dok.</translation>
 <translation id="8925569192291721236">Bly op hoogte van prysnasporingopdaterings en Chromium-wenke.</translation>
+<translation id="8939412301975414416">Om kinderveiligheidkenmerke in Chromium te kry, kan jy óf ’n Google-rekening gebruik wat vir ’n kind opgestel is, óf Chromium sonder ’n rekening gebruik.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Dit gebeur wanneer Chromium vir {THRESHOLD} minuut nie gebruik word nie}other{Dit gebeur wanneer Chromium vir {THRESHOLD} minute nie gebruik word nie}}</translation>
 <translation id="8963279154877372067">Laat Chromium-kennisgewings toe om prysverlagingopletberigte te kry</translation>
 <translation id="8975812008711371178">Soek met stem in Chromium</translation>

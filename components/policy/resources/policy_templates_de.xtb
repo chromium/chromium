@@ -132,11 +132,6 @@ Hinweis: Weitere Informationen zu Prozessschutzrichtlinien findest du unter http
 <translation id="1077675271127011209">Berichte mit Nutzungs- und Absturzdaten deaktivieren</translation>
 <translation id="1079498696402787191">Standardwert für Hashes verwenden, die in TLS-Handshakes zulässig sind.</translation>
 <translation id="1079801999187584280">Nutzung der Entwicklertools nicht zulassen</translation>
-<translation id="1081263326166769685">Wenn die Richtlinie aktiviert ist, meldet <ph name="PRODUCT_OS_NAME" /> Messwerte zur Nutzung und Diagnosedaten wie Absturzberichte an Google. Ist die Richtlinie deaktiviert, werden Messwerte und Diagnosedaten nicht gemeldet.
-
-Bei verwalteten Geräten ist diese Richtlinie standardmäßig aktiviert und sendet Messwerte an Google.
-
-Bei nicht verwalteten Geräten kann der Nutzer entscheiden, ob Messwerte gesendet werden sollen, wenn die Richtlinie nicht konfiguriert ist.</translation>
 <translation id="1081470306474387129">Die Controlled Frame API, die für bestimmte isolierte Kontexte wie isolierte Web‑Apps (IWAs) verfügbar ist, ermöglicht es einer App, beliebige Inhalte einzubetten und zu manipulieren.
 Weitere Informationen findest du unter https://github.com/WICG/controlled-frame.
 
@@ -369,6 +364,18 @@ Die Muster für diese Richtlinie dürfen allerdings keine „/path“- oder „@
 <translation id="1262993197422487260">Button zum Anzeigen des Passworts nicht auf dem Anmelde- oder Sperrbildschirm anzeigen</translation>
 <translation id="1265053460044691532">Zeit beschränken, für die sich ein über SAML authentifizierter Nutzer offline anmelden kann</translation>
 <translation id="1265076559723566171">Für die Konfiguration der Einstellungen für EDU-Nutzer</translation>
+<translation id="1268782248484174352">Gibt die Ebene der Messwertberichte für <ph name="PRODUCT_OS_NAME" /> an.
+
+Mit dieser Richtlinie kann festgelegt werden, in welchem Umfang Nutzungs- und Absturzdaten an Google gesendet werden:
+* 0 = Berichte deaktivieren: Es werden keine Nutzungs- oder Absturzdaten an Google gesendet.
+* 1 = Grundlegende Berichte: Eine begrenzte Menge an Nutzungs- und Absturzdaten wird an Google gesendet.
+* 2 = Erweiterte Berichte: Umfangreiche Nutzungs- und Absturzdaten werden an Google gesendet.
+
+Wenn diese Richtlinie nicht konfiguriert ist, kann der Nutzer bei der Installation oder beim ersten Ausführen eine entsprechende Auswahl treffen und diese Einstellung später ändern.
+
+Diese Richtlinie wird nur ausgewertet, wenn der Test „<ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" />“ auf dem Gerät aktiv ist.
+
+Wenn der Test „<ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" />“ auf dem Gerät aktiv ist und sowohl diese Richtlinie als auch die Richtlinie „<ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" />“ festgelegt sind, hat diese Richtlinie Vorrang.</translation>
 <translation id="1271811620059192171">Gruppen aus Einzelrichtlinien aktivieren</translation>
 <translation id="127264587838521316">Mit dieser Richtlinie werden Anfragen für die Installation von Erweiterungen für <ph name="PRODUCT_NAME" /> aktiviert</translation>
 <translation id="1272798957154751008">Migration von Chromad-Geräten zur Cloud-Verwaltung aktivieren</translation>
@@ -1644,6 +1651,7 @@ Diese Richtlinie wurde in Chrome-Version 145 entfernt. Es wird empfohlen, statt
 <translation id="2149957154942061013">Nur intern</translation>
 <translation id="2151831603578119302">Tastenkombinationen für Bedienungshilfen aktivieren</translation>
 <translation id="2156132677421487971">Konfigurieren von Richtlinien für <ph name="PRODUCT_NAME" />, ein Tool, mit dem Nutzer Inhalte von Tabs, Websites oder dem Desktop von einem Browser auf andere Bildschirme und Soundsysteme übertragen können.</translation>
+<translation id="2156359411909638496">Einstellungen für Chrome Finds</translation>
 <translation id="2156755242840687300">Externe Druckserver aktiviert</translation>
 <translation id="2157842368188031417">Die Richtlinie wird nur auf verwaltete Gastsitzungen angewendet. Für den Modus für gemeinsam genutzte Arbeitsstationen von Imprivata muss sie aktiviert werden, um Benutzerwechsel bei laufender Sitzung zu ermöglichen.
       Ist die Richtlinie auf „True“ gesetzt, wird die Überschreibung bestimmter Richtlinien für Funktionen erzwungen, die sensible Benutzerdaten beibehalten und nicht durch den Bereinigungsmechanismus abgedeckt sind, der im Modus für gemeinsam genutzte Arbeitsstationen von Imprivata den Benutzerwechsel bei laufender Sitzung ermöglicht.
@@ -1792,6 +1800,18 @@ Ist die Richtlinie deaktiviert, können Nutzer diese Funktion nicht verwenden.
 
       Ist die Richtlinie konfiguriert, können Nutzer sie in <ph name="PRODUCT_NAME" /> nicht ändern. Ist die Richtlinie nicht konfiguriert, ist die Datenleckprüfung für Anmeldedaten zulässig, kann jedoch vom Nutzer deaktiviert werden.</translation>
 <translation id="2208976000652006649">Parameter für URL der Suche, die POST verwendet</translation>
+<translation id="2211167090584042804">Gibt die Ebene der Messwertberichte für <ph name="PRODUCT_NAME" /> an.
+
+Mit dieser Richtlinie kann festgelegt werden, in welchem Umfang Nutzungs- und Absturzdaten an Google gesendet werden:
+* 0 = Berichte deaktivieren: Es werden keine Nutzungs- oder Absturzdaten an Google gesendet.
+* 1 = Grundlegende Berichte: Eine begrenzte Menge an Nutzungs- und Absturzdaten wird an Google gesendet.
+* 2 = Erweiterte Berichte: Umfangreiche Nutzungs- und Absturzdaten werden an Google gesendet.
+
+Wenn diese Richtlinie nicht konfiguriert ist, kann der Nutzer bei der Installation oder beim ersten Ausführen eine entsprechende Auswahl treffen und diese Einstellung später ändern.
+
+Diese Richtlinie wird nur ausgewertet, wenn der Test „<ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" />“ auf dem Gerät aktiv ist.
+
+Wenn der Test „<ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" />“ auf dem Gerät aktiv ist und sowohl diese Richtlinie als auch die Richtlinie „<ph name="METRICS_REPORTING_ENABLED_POLICY_NAME" />“ festgelegt sind, hat diese Richtlinie Vorrang.</translation>
 <translation id="2212011154693551439">Die in Gruppen eingeteilte Chrome-Verlaufsseite ist standardmäßig unter chrome://history/grouped sichtbar.</translation>
 <translation id="2212207215880394506">Fotobearbeitung basierend auf generativer KI nicht zulassen.</translation>
 <translation id="221287948061571053">Maximiertes Unternehmenslogo auf der Symbolleiste ausblenden</translation>
@@ -2796,10 +2816,6 @@ Diese Richtlinie kann nur als Cloud-Nutzerrichtlinie konfiguriert werden.</trans
 <translation id="288923520817177650">Erstellen von <ph name="WEBXR_AR_SESSION_ENUM_VALUE" />-Sitzungen mit <ph name="WEBXR_API_NAME_SHORT" /> zulassen</translation>
 <translation id="2889842394011108075">window.webkitStorageInfo ist verfügbar.</translation>
 <translation id="2890645751406497668">Websites automatisch die Berechtigung erteilen, eine Verbindung zu USB-Geräten mit der angegebenen Anbieter-ID und Produkt-ID herzustellen.</translation>
-<translation id="2891049933730408118">Mit dieser Richtlinie wird festgelegt, für welche Ursprünge alle HTTP-Authentifizierungsschemas zulässig sind, die von <ph name="PRODUCT_NAME" /> unterstützt werden, unabhängig von der Richtlinie „<ph name="AUTH_SCHEMES_POLICY_NAME" />“.
-
-      Für das Ursprungsmuster muss folgendes Format verwendet werden: <ph name="URL_SCHEME_FORMAT_LINK" />. In „<ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" />“ können bis zu 1.000 Ausnahmen definiert werden.
-      Platzhalter sind für den gesamten Ursprung oder seine Bestandteile zulässig, also das Schema, den Host oder den Port.</translation>
 <translation id="2893546967669465276">Systemprotokolle an den Verwaltungsserver senden</translation>
 <translation id="2893660462311365527">Häufigkeit der Erhebung der Netzwerktelemetrie in Millisekunden.</translation>
 <translation id="2894914342151915910">Warnungen unterdrücken, wenn Chrome auf einem nicht unterstützten System ausgeführt wird</translation>
@@ -4057,6 +4073,7 @@ Ist diese Einstellung aktiviert oder nicht konfiguriert, kann der Nutzer selbst 
 <translation id="3749511622128647337">Audioausgabe deaktivieren</translation>
 <translation id="3750220015372671395">Schlüsselgenerierung auf diesen Websites blockieren</translation>
 <translation id="3753267109888284695">HTTP-Zulassungsliste</translation>
+<translation id="3753514818525019935">Chrome Finds nicht zulassen.</translation>
 <translation id="3753959315989102457">Melden des Standorts auf Geräten deaktivieren</translation>
 <translation id="3755237588083934849">Die Konfiguration der Richtlinie legt fest, wie oft Uploads mit dem Gerätestatus vorgenommen werden (in Millisekunden). Die geringste zulässige Häufigkeit beträgt 60 Sekunden.
 
@@ -5999,6 +6016,13 @@ Wenn die Richtlinie deaktiviert ist, ist diese Funktion nicht verfügbar.</trans
 <translation id="4997074784107449343">Die Option „Als Bild drucken“ ist für die Druckvorschau von PDF-Dokumenten standardmäßig nicht aktiviert, wenn sie verfügbar ist.</translation>
 <translation id="500149597848135831">Alle Variationen aktivieren</translation>
 <translation id="5006222080181284191">Aktivierung der ChromeOS-Funktion „Formuliere für mich“ steuern</translation>
+<translation id="501542798290854504">Mit dieser Richtlinie wird die automatische Nutzeranmeldung für Konten konfiguriert, die von einem Microsoft®-Cloud-Identitätsanbieter unter <ph name="ANDROID_NAME" /> bereitgestellt werden.
+
+Wenn diese Richtlinie auf 1 (<ph name="POLICY_VALUE_ENABLED" />) gesetzt ist, können Nutzer, die sich auf ihrem Gerät in einer Microsoft®-Produktivitätsanwendung angemeldet haben, innerhalb von <ph name="PRODUCT_NAME" /> automatisch in Microsoft®-Web-Properties angemeldet werden. Für diese Funktion ist eine Microsoft®-Authentifizierungs-Broker-App wie <ph name="MS_AUTH_APP_NAME" />, <ph name="MS_ICP_NAME" /> oder <ph name="MS_LTW_NAME" /> erforderlich. Zur Erleichterung der Einmalanmeldung werden die erforderlichen Authentifizierungsdaten an den Microsoft®-Cloud-Identitätsanbieter weitergegeben.
+
+Wenn die Richtlinie auf 0 (<ph name="POLICY_VALUE_DISABLED" />) gesetzt oder nicht konfiguriert ist, wird die automatische Anmeldung, wie oben beschrieben, deaktiviert und Nutzer müssen Anmeldedaten für Microsoft®-Web-Properties manuell eingeben.
+
+Hinweis: Diese Richtlinie gilt nicht für den Inkognito- oder Gastmodus.</translation>
 <translation id="5017157692744444035">Mit dieser Richtlinie wird festgelegt, ob Daten zur Identifizierung von Geräten gesendet werden, beispielsweise der Gerätename und Netzwerkadressen.
 
 Wenn die Richtlinie <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> deaktiviert oder nicht konfiguriert ist, wird diese Richtlinie ignoriert.
@@ -7236,6 +7260,7 @@ Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, sind Glanceables 
 <translation id="5776485039795852974">Nachfragen, wenn eine Website Desktop-Benachrichtigungen anzeigen will</translation>
 <translation id="5776508475264864949">Nicht zulassen, dass die Gemini App Aktionen auf Webseiten ausführt.</translation>
 <translation id="5783009211970309878">Kopf- und Fußzeilen drucken</translation>
+<translation id="5786913136266632175">Chrome Finds zulassen und KI‑Modelle verbessern.</translation>
 <translation id="5789288985554424301">Mit dieser Richtlinie kannst du festlegen, ob Websites die Idle Detection API verwenden dürfen.
 
 Wenn diese Richtlinie auf „1“ (<ph name="ALLOW_IDLE_DETECTION_VALUE_NAME" />) festgelegt ist, können Websites die API verwenden, ohne den Nutzer um Erlaubnis zu bitten.
@@ -7414,6 +7439,7 @@ Wenn die Richtlinie auf EnabledFocusSoundsOnly gesetzt ist, wird die Musikfunkti
 
 Wenn die Richtlinie deaktiviert ist, werden im Konzentrationsmodus keine Klänge abgespielt.</translation>
 <translation id="5890063326284543943">Verwendung der Serial API steuern</translation>
+<translation id="5893086678951790439">Berichtsebene für Messwerte</translation>
 <translation id="5893303508158298667">Wenn „<ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" />“ aktiviert ist, kann es Remote-Clients durch Aktivieren oder Nichtkonfigurieren von „<ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" />“ ermöglicht werden, über Relayserver eine Verbindung zu diesem Computer herzustellen, falls keine direkte Verbindung verfügbar ist, z. B. aufgrund von Firewallbeschränkungen.
 
       Ist diese Richtlinie deaktiviert, wird dadurch nicht der Remote-Zugriff deaktiviert. Stattdessen werden nur Verbindungen desselben Netzwerks zugelassen (nicht NAT-Traversal oder Relay).</translation>
@@ -7538,6 +7564,7 @@ Diese Richtlinie wird ab <ph name="PRODUCT_NAME" /> 147 nicht mehr unterstützt
 
       Wenn du diese Richtlinie konfigurierst, kann sie von Nutzern nicht geändert werden. Ist sie nicht konfiguriert, können die Nutzer festlegen, ob Kopf- und Fußzeilen angezeigt werden sollen.</translation>
 <translation id="5951418260805607969">Benachrichtigung anzeigen, wenn nur wenig Speicherplatz verfügbar ist</translation>
+<translation id="5952917461013988610">Grundlegende Berichte</translation>
 <translation id="5958746038080720143">Web Proxy Auto-Discovery (WPAD)-Optimierungen aktivieren</translation>
 <translation id="5961137303188584693">MAC-Adresse der im Gerät verbauten NIC</translation>
 <translation id="5962271004971310788">Erweiterungen, deren Ausführung im Inkognitomodus vom Nutzer erlaubt werden muss</translation>
@@ -8737,6 +8764,17 @@ Ist die Richtlinie auf „False“ gesetzt oder nicht konfiguriert, wird das Sta
 
       Wenn die Richtlinie nicht konfiguriert ist, werden keine zusätzlichen Telemetriedaten zu Änderungen der Signalstärke gesendet.</translation>
 <translation id="6751612743847158732">Letzte Sitzung immer wiederherstellen.</translation>
+<translation id="6751882390104737961">Chrome Finds ist eine KI‑basierte Funktion, die Nutzern hilft, Inhalte auf der aktuellen Webseite zu suchen und besser zu verstehen.
+
+„0“ = Die Funktion darf verwendet werden und Google darf relevante Daten nutzen, um seine KI‑Modelle zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftliches Feedback sein. Sie werden möglicherweise auch manuell überprüft, um KI‑Modelle zu verbessern. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
+
+„1“ = Die Funktion darf verwendet werden, Google darf aber keine Modelle mithilfe von Nutzerinhalten (einschließlich Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftlichen Feedbacks) verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, und für Konten einer Bildungseinrichtung, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion darf nicht verwendet werden.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6752711782954612641">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" />" die Parameter für die Suche nach einer URL mit POST an. Die Richtlinie besteht aus kommagetrennten Name/Wert-Paaren. Wenn ein Wert ein Vorlagenparameter wie <ph name="SEARCH_TERM_MARKER" /> ist, wird er durch echte Suchbegriffsdaten ersetzt.
 
       Ist "<ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" />" nicht konfiguriert, werden Suchanfragen mithilfe der GET-Methode gesendet.</translation>
@@ -8796,17 +8834,6 @@ Diese Richtlinie ersetzt die nicht mehr unterstützte Richtlinie „<ph name="WI
 <translation id="6813263547126514821">Energiesparmodus und Herunterfahren</translation>
 <translation id="681446116407619279">Unterstützte Authentifizierungsschemas</translation>
 <translation id="6815628711329903153">Moderne Zwischenspeicherzuweisung für Graphics3D-APIs im PPAPI-Plug-in zulassen.</translation>
-<translation id="6819031008957510729">Ist diese Richtlinie aktiviert, solltest du auch anonyme Berichte aktivieren. Nutzungs- und Absturzdaten für <ph name="PRODUCT_NAME" /> werden dann standardmäßig an Google gesendet. Nutzer können diese Einstellung weiterhin ändern.
-
-Ist diese Richtlinie deaktiviert, sind auch anonyme Berichte deaktiviert. Es werden keine Nutzungs- und Absturzdaten an Google gesendet. Nutzer können diese Einstellung nicht ändern.
-
-Wird diese Richtlinie nicht konfiguriert, können Nutzer die anonymen Berichte bei der Installation oder beim ersten Ausführen auswählen und diese Einstellung später ändern.
-
-(Für <ph name="PRODUCT_OS_NAME" /> siehe <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" />.)
-
-Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
-
-Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.</translation>
 <translation id="6819838337315703072">Wenn der Support für die <ph name="LINUX_OS_NAME" />-App und die Richtlinie aktiviert sind, werden Informationen zur Nutzung von <ph name="LINUX_OS_NAME" />-Apps an den Server zurückgesendet.
 
       Ist diese Richtlinie deaktiviert oder nicht konfiguriert, werden keine Informationen zur App-Nutzung gesendet.</translation>
@@ -8886,6 +8913,7 @@ Ist sie auf „false“ gesetzt oder nicht festgelegt, ist das Layout nicht verf
 <translation id="686079137349561371">Microsoft Windows 7 oder höher</translation>
 <translation id="6863927303509860338">Verknüpfungen auf der Seite „Neuer Tab“ einrichten</translation>
 <translation id="6866755486434471318">Zulassen, dass <ph name="PEPPER_NAME" /> freigegebene Bilder für die Videodecodierung verwendet.</translation>
+<translation id="6874461444739276423">Berichtsebene für Gerätemesswerte</translation>
 <translation id="6878757724611298427">Nutzern erlauben, Android-Apps auf nicht verbundenen Geräten zu verwenden</translation>
 <translation id="6881447940489194100">Hexadezimalcodierter SHA‑256-Hash der Daten.</translation>
 <translation id="68818134518270542">Mit der Konfiguration der Richtlinie werden die Apps festgelegt, die Nutzer als Notizen-App auf dem Sperrbildschirm von <ph name="PRODUCT_OS_NAME" /> aktivieren können.
@@ -9893,6 +9921,7 @@ Ist die Richtlinie nicht konfiguriert, entspricht dies der Einstellung „<ph na
 <translation id="7481702249684965639">Der Papierkorb ist für den Nutzer aktiviert.</translation>
 <translation id="7482768039644066614">Abruf von Metadaten zum Seitenaufbau und Modellen zum maschinellen Lernen zum Verbessern der Browsernutzung aktivieren</translation>
 <translation id="748292668225669178">Konfiguriert die Bereitstellung von <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
+<translation id="7483786326602801858">Automatische Anmeldung bei Microsoft®-Cloud-Identitätsanbietern unter <ph name="ANDROID_NAME" /> zulassen</translation>
 <translation id="7485481791539008776">Regeln zur Auswahl des Standarddruckers</translation>
 <translation id="7486205887492534734">Aufforderung auf dem Anmeldebildschirm, wenn mehrere Zertifikate passen</translation>
 <translation id="748873163367340515">Nur notwendige Cookies und Daten in der Suche verwenden.</translation>
@@ -10918,6 +10947,13 @@ Wird diese Richtlinie nicht konfiguriert, ist der Datenschutzbildschirm anfangs 
 <translation id="8171262216089271568">Großen Cursor auf der Anmeldeseite aktivieren</translation>
 <translation id="8171924760436219650">Mit dieser Richtlinie kann die rechte Maustaste auf dem Anmeldebildschirm als primäre Maustaste festgelegt werden</translation>
 <translation id="81724933026241365">Geräteausschaltung über das Symbol „Herunterfahren“ oder mit der physischen Ein-/Aus-Taste zulassen</translation>
+<translation id="8173338752620395043">Wenn die Richtlinie aktiviert ist, sendet <ph name="PRODUCT_OS_NAME" /> Messwerte zur Nutzung und Diagnosedaten wie Absturzberichte an Google. Ist die Richtlinie deaktiviert, werden keine Messwerte und Diagnosedaten gesendet.
+
+Bei verwalteten Geräten ist diese Richtlinie standardmäßig aktiviert und sendet Messwerte an Google.
+
+Bei nicht verwalteten Geräten kann der Nutzer entscheiden, ob Messwerte gesendet werden sollen, wenn die Richtlinie nicht konfiguriert ist.
+
+Wenn der Test „<ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" />“ auf dem Gerät aktiv ist und sowohl diese Richtlinie als auch die Richtlinie „<ph name="DEVICE_METRICS_REPORTING_LEVEL_POLICY_NAME" />“ festgelegt sind, hat die Richtlinie „<ph name="DEVICE_METRICS_REPORTING_LEVEL_POLICY_NAME" />“ Vorrang.</translation>
 <translation id="8173864651667424191">Die Option „Als Bild drucken“ ist die Standardeinstellung für die Druckvorschau von PDF-Dokumenten, wenn sie verfügbar ist.</translation>
 <translation id="8175922758834816585">Gesprochenes Feedback auf dem Anmeldebildschirm aktivieren und dem Nutzer erlauben, es vorübergehend zu deaktivieren</translation>
 <translation id="8176035528522326671">Unternehmensnutzer nur als primären Nutzer mehrerer Profile zulassen (Standardverhalten für von Unternehmen verwaltete Nutzer)</translation>
@@ -11514,6 +11550,7 @@ Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durc
 Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8566842294717252664">Web Store auf der "Neuer Tab"-Seite und im App Launcher ausblenden</translation>
 <translation id="8567697114274003779">Benutzerdefiniertes Unternehmenslabel für ein verwaltetes Profil festlegen</translation>
+<translation id="8570976102224880079">Erweiterte Berichte</translation>
 <translation id="8571069584826006598">Ursprüngen der isolierten Web-App erlauben, den Nutzer um Zugriff auf lokale Drucker über die WebPrinting API zu bitten</translation>
 <translation id="8571119890730528225">Drittanbieter-Speicherpartitionierung deaktivieren.</translation>
 <translation id="8571314270766672278">Bei Versionsdowngrade ein Rollback durchführen und das Gerät zurücksetzen; dabei die Registrierung möglichst erhalten</translation>
@@ -11710,6 +11747,7 @@ Wenn du diese Richtlinie konfigurieren möchtest, muss die Richtlinie „<ph nam
 Mit der Einstellung der Topics API wird diese Richtlinie ab Version 144 von <ph name="PRODUCT_NAME" /> nicht mehr unterstützt.</translation>
 <translation id="8672321184841719703">Automatische Aktualisierung auf Zielversion</translation>
 <translation id="867410340948518937">U2F (Universal Second Factor)</translation>
+<translation id="8675599659717867329">Berichte deaktivieren</translation>
 <translation id="8676959842615154675">Wenn diese Richtlinie aktiviert ist, vergleicht der Host für den Remote-Zugriff den Namen des mit dem Host verknüpften lokalen Nutzers mit dem Namen des Google-Kontos, das als Hosteigentümer registriert ist (z. B. „maxmustermann“, wenn der Hosteigentümer das Google-Konto „maxmustermann@beispiel.de“ ist). Dieser Host wird nicht gestartet, wenn der Name des Hosteigentümers vom Namen des mit dem Host verknüpften lokalen Nutzers abweicht. Wenn du erzwingen möchtest, dass das Google-Konto des Eigentümers mit einer bestimmten Domain verknüpft ist, verwende die Richtlinie mit <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />.
 
       Ist diese Richtlinie deaktiviert oder nicht konfiguriert, kann der Host für den Remote-Zugriff mit jedem lokalen Nutzer verknüpft sein.</translation>
@@ -11760,6 +11798,7 @@ Wenn die Richtlinie „<ph name="LIVE_CAPTION_ENABLED_POLICY_NAME" />“ deaktiv
 <translation id="8713535263782304771">Safe Browsing deaktivieren</translation>
 <translation id="8714556680280715750">Eine URL, über die Nutzer mehr erfahren können. Sofern nicht konfiguriert, gibt es im Installationsprogramm keine URL „Weitere Informationen“. Falls vorhanden, muss das HTTPS-Schema verwendet werden.</translation>
 <translation id="8715885991031124968">JavaScript-Dialogfelder zulassen, die von einem anderen Quell-Subframe ausgelöst wurden</translation>
+<translation id="8720288018555457355">Chrome Finds zulassen, ohne KI‑Modelle zu verbessern.</translation>
 <translation id="8720547069538712402">Zulassen, dass Nutzer die Rechtschreibprüfung aktivieren oder deaktivieren</translation>
 <translation id="8721685661759544418">Funktion „Vorlesen“ (Textanalyse und Sprachsynthese) für Webseiten aktivieren</translation>
 <translation id="8726080977639508431">Diese Richtlinie legt fest, wie <ph name="PRODUCT_NAME" /> Richtlinien zu Websitelisten/Greylists für die Funktion zur Unterstützung älterer Browser interpretiert. Die folgenden Richtlinien sind betroffen: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> und <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
@@ -12515,6 +12554,19 @@ Mit dieser Richtlinie wird festgelegt, ob ein Nutzer den Gerätehostnamen konfig
 Wenn diese Richtlinie deaktiviert ist, geben die Speicherkontingent-APIs in der Regel einen dynamischen Wert zurück, der proportional zum auf dem Gerät verfügbaren Gesamtspeicherplatz berechnet wird, unabhängig davon, wie viel Speicherplatz belegt ist.
 Ist diese Richtlinie nicht konfiguriert, verwenden die Speicherkontingent-APIs das Standardverhalten von Chrome.
 Websites mit der Berechtigung zur unbegrenzten Speicherung sind von dieser Einstellung nicht betroffen. Auch das erzwungene Kontingent ist davon nicht betroffen.</translation>
+<translation id="975621145048605048">Ist diese Richtlinie aktiviert, solltest du auch anonyme Berichte aktivieren. Nutzungs- und Absturzdaten für <ph name="PRODUCT_NAME" /> werden dann standardmäßig an Google gesendet. Nutzer können diese Einstellung weiterhin ändern.
+
+Ist diese Richtlinie deaktiviert, sind auch anonyme Berichte deaktiviert. Es werden keine Nutzungs- und Absturzdaten an Google gesendet. Nutzer können diese Einstellung nicht ändern.
+
+Wird diese Richtlinie nicht konfiguriert, können Nutzer die anonymen Berichte bei der Installation oder beim ersten Ausführen auswählen und diese Einstellung später ändern.
+
+(Informationen zu <ph name="PRODUCT_OS_NAME" /> findest du unter <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" />.)
+
+Wenn der Test „<ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" />“ auf dem Gerät aktiv ist und sowohl diese Richtlinie als auch die Richtlinie „<ph name="METRICS_REPORTING_LEVEL_POLICY_NAME" />“ festgelegt sind, hat die Richtlinie „<ph name="METRICS_REPORTING_LEVEL_POLICY_NAME" />“ Vorrang.
+
+Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
+
+Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.</translation>
 <translation id="976415389478739655">Verlangen, dass Geräte von Nutzern mit einem verwalteten Netzwerk verbunden sind, um einem <ph name="CLASS_TOOLS_NAME" />-Kurs beitreten zu können</translation>
 <translation id="978619365985286086">Einstellungen für die Tools zur Kursverwaltung</translation>
 <translation id="978658824596356870">24-Stunden-Format</translation>

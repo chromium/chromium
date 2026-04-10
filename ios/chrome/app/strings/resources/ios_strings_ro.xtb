@@ -116,6 +116,7 @@
 <translation id="138692594145659985">Opțiuni pentru salvarea cardului</translation>
 <translation id="1396260204083880024">Te-ai conectat ca <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Deschide meniul contului.</translation>
 <translation id="1397144142234474689">Ascunde istoricul</translation>
+<translation id="1399268420835656394">Dacă nu ești copil, îți recomandăm să-ți verifici vârsta din contul Apple pe acest dispozitiv. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="1407135791313364759">Deschideți-le pe toate</translation>
 <translation id="1408847409015257906">Atinge Confidențialitate și securitate.</translation>
 <translation id="1411386976162024013">Căutare vizuală cu Lens</translation>
@@ -255,6 +256,7 @@
 <translation id="1861067954551502701">{count,plural, =1{{position} din {count} parolă}few{{position} din {count} parole}other{{position} din {count} de parole}}</translation>
 <translation id="1861262398884155592">Acest dosar este gol</translation>
 <translation id="1864266050569350424">Pe un site unde ai salvat o parolă, atinge câmpul pentru parola de conectare.</translation>
+<translation id="1866700949421703765">Ascunde opțiunea Activează modul de lectură</translation>
 <translation id="1872096359983322073">Lanternă</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Invită membrii familiei</translation>
@@ -353,6 +355,7 @@
 <translation id="2214453882118345682">Cumpără, tradu și identifică ceea ce vezi cu camera foto.</translation>
 <translation id="2215819824168709130">Ascunde cardul de urmărire a prețului</translation>
 <translation id="2216366330550244277">Accesează pagina unui produs</translation>
+<translation id="2219935992754556187">Chrome îți păstrează în siguranță datele sensibile cu Face ID</translation>
 <translation id="2220529011494928058">Semnalați o problemă</translation>
 <translation id="2223461067862937305">Creează un cod QR</translation>
 <translation id="2225701818156393674">Produsul a fost adăugat la lista de produse urmărite.</translation>
@@ -459,6 +462,7 @@
 <translation id="2583688836549072561">Grup de file, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> file, activitate nouă.</translation>
 <translation id="2593272815202181319">Un singur spațiu</translation>
 <translation id="2601778637777010194">Urmărește scăderile de prețuri pentru produse</translation>
+<translation id="2602372807870028932">Astfel se șterg informațiile selectate salvate pe acest dispozitiv</translation>
 <translation id="260378315836159338">În partea de sus a ecranului, atinge +</translation>
 <translation id="2612676031748830579">Număr card</translation>
 <translation id="261305050785128654">Permite site-urilor să afle limbile pe care le vorbești. Acestea vor afișa conținutul în limbile respective, dacă este posibil.</translation>
@@ -552,6 +556,7 @@
 <translation id="2922210239002704889">Accesează pagina de pornire sau tastatura</translation>
 <translation id="2924940770243654951">Deschide într-o filă incognito nouă</translation>
 <translation id="2952278131021475699">Căutare cu camera Lens</translation>
+<translation id="2953821385349876107">Alege alt Cont Google</translation>
 <translation id="2962516096219646456">Vezi toate datele de completare automată</translation>
 <translation id="2965594942405840553">Această acțiune nu se poate anula</translation>
 <translation id="2969979262385602596">Nu te-ai conectat. Încearcă din nou mai târziu.</translation>
@@ -960,6 +965,7 @@
 <translation id="4469324811108161144">Notele pot conține până la <ph name="CHARACTER_LIMIT" /> caractere.</translation>
 <translation id="4471472356135655769">Nu se pot exporta parole</translation>
 <translation id="4472575034687746823">Începeți</translation>
+<translation id="4473565697543262065">Astfel se șterg informațiile selectate salvate pe acest dispozitiv și în Contul Google <ph name="USER_EMAIL" /></translation>
 <translation id="4473608001744970767">Ascunde urmărirea prețului</translation>
 <translation id="4474142134969976028">Niciun rezultat</translation>
 <translation id="4474494258097106883">Creat pentru iPhone</translation>
@@ -1435,6 +1441,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6090760257419195752">Avertismente respinse</translation>
 <translation id="6094325891006032858">Activează Navigarea sigură îmbunătățită</translation>
 <translation id="6096965253650248286">S-au găsit <ph name="COUNT" /></translation>
+<translation id="6099466082815574659">Acest iPad este configurat pentru un copil</translation>
 <translation id="6100617279104942061">Te-ai conectat ca <ph name="USER_EMAIL" />. Deschide setările.</translation>
 <translation id="6100676328067737810">Datele tale vor fi salvate în Contul Google, <ph name="USER_EMAIL" /></translation>
 <translation id="610083648014322104">Primește răspunsuri relevante în funcție de conținutul paginii pe care te afli</translation>
@@ -1492,7 +1499,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6259928806013786178">Modul de lectură nu a reușit</translation>
 <translation id="6268773951964630964">Caută imaginea copiată</translation>
 <translation id="6271462272606946663">Ascunde opțiunea Solicită versiunea site-ului mobil</translation>
-<translation id="6271556257184622612">Întreabă Google despre file și multe altele</translation>
 <translation id="6271824294945464304">Se permite accesul la parolă</translation>
 <translation id="628251768213143684">Poți gestiona oricând ce se salvează în Contul tău Google</translation>
 <translation id="6284652193729350524">Oferă traducerea din <ph name="LANGUAGE" /></translation>
@@ -1529,6 +1535,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6368102751067608420">Pentru a șterge toate datele din managerul de parole</translation>
 <translation id="6372558618707314581">Accesează orice pagină dorești</translation>
 <translation id="6374469231428023295">Încearcă din nou</translation>
+<translation id="6374514103145916800">Întreabă</translation>
 <translation id="6383719166112032471">Deschide locația…</translation>
 <translation id="6387994324662817823">Parolele sunt salvate în Managerul de parole Google numai pe acest dispozitiv.</translation>
 <translation id="6393156038355142111">Sugerează o parolă puternică</translation>
@@ -1577,6 +1584,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6532106788206463496">Salvează modificările</translation>
 <translation id="6536759809440150308">Deschide <ph name="GROUP_TITLE" />, grup de <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6538776393003671043">Chrome îți va oferi opțiunea de a le salva în Portofelul Google data viitoare când le folosești</translation>
 <translation id="6543899060872618437">Finalizează achiziția mai rapid folosind completarea automată pe toate dispozitivele</translation>
 <translation id="6550675742724504774">Opțiuni</translation>
 <translation id="6550891580932862748">Nu te protejează împotriva site-urilor, descărcărilor și extensiilor periculoase. Setările tale pentru Navigarea sigură din alte produse Google nu vor fi afectate.</translation>
@@ -1595,6 +1603,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6596481460663245319">Caută imaginea cu Google</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{O parolă}few{# parole}other{# de parole}}</translation>
 <translation id="6601302169302852717">Imaginea s-a salvat în Google Foto pentru <ph name="USER_EMAIL" /></translation>
+<translation id="6602173570135186741">Completarea automată și parolele</translation>
 <translation id="6603393121510733479">Organizația ta a dezactivat navigarea privată.
 <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="6606914854592108404">Verificarea de siguranță rulează…</translation>
@@ -1960,6 +1969,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="7888562068293422208">Le închizi pe toate?</translation>
 <translation id="7889910613639381518">Acces ușor și securizat cu widgetul Manager de parole Google.</translation>
 <translation id="7899199123054742721">Marchează-le pe toate ca necitite</translation>
+<translation id="7909005666376403847">Acest iPhone este configurat pentru un copil</translation>
 <translation id="7911190106180361398">Organizația ta nu îți permite să sincronizezi tot.</translation>
 <translation id="7918999344502274923">Ascunde detaliile despre <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="7921559948846049514">Alege o temă, o culoare sau altele pentru fundal</translation>
@@ -1977,6 +1987,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="7952670906562503188">Urmează să ștergi {passkey_count} chei de acces și lista de site-uri și aplicații pentru care ai ales să nu salvezi niciodată informațiile de conectare. Conturile pe care le-ai creat pentru site-uri și aplicații nu se vor șterge.</translation>
 <translation id="7958575506592576831">Informații privind securitatea paginii</translation>
 <translation id="7961015016161918242">Niciodată</translation>
+<translation id="7971651328518569075">Ascunde opțiunea Dezactivează Modul de lectură</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Încercați</translation>
 <translation id="797588153137233716">Meniu → Istoric → Șterge datele de navigare</translation>
@@ -1993,6 +2004,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="8005666035647241369">În Manager de parole Google pe acest dispozitiv</translation>
 <translation id="8010488806779226127">Explorează funcțiile care te pot ajuta să faci mai multe în timp ce navighezi</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
+<translation id="8014007212279733632">Confirmă-ți identitatea pentru a completa automat informații sensibile</translation>
 <translation id="8015826420689927262">Șterge atașamentul</translation>
 <translation id="8017015647846870183">Din Managerul de parole Google, inclusiv parole și chei de acces</translation>
 <translation id="802154636333426148">Descărcarea nu a reușit</translation>
@@ -2379,6 +2391,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="984275831282074731">Metode de plată</translation>
 <translation id="985379595344853742">Închide toate filele incognito</translation>
 <translation id="988141524645182168">Alte dispozitive</translation>
+<translation id="994184244350700431">În Portofelul Google pentru <ph name="USER_EMAIL" /></translation>
 <translation id="995174784802614337">{count,plural, =1{A fost importată {count} cheie de acces}few{Au fost importate {count} chei de acces}other{Au fost importate {count} de chei de acces}}</translation>
 <translation id="999768147936949692">Momentan, poți permite accesul la parole doar membrilor familiei. <ph name="BEGIN_LINK" />Invită membrii familiei<ph name="END_LINK" /> să se alăture grupului și profită la maximum de produsele și abonamentele tale de pe Google.</translation>
 </translationbundle>

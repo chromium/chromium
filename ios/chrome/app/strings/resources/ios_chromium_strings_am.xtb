@@ -133,6 +133,7 @@
 <translation id="377649297473651452">Chromium ራስ-ሙላ የተዘረጋ ዕይታ</translation>
 <translation id="3780779443901618967">ከመደበኛ ጥበቃ በላይ ተጨማሪ ውሂብ ከጣቢያዎች ትንታኔ በመስጠት Google እንኳን በፊት ስላላወቃቸው አደገኛ ጣቢያዎች ያስጠነቅቅዎታል። የChromium ማስጠንቀቂያዎችን ለመዝለል መምረጥ ይችላሉ።</translation>
 <translation id="3805899903892079518">Chromium የእርስዎ ፎቶዎች ወይም ቪዲዮዎች መዳረሻ የለውም። በiOS ቅንብሮች &gt; ግላዊነት &gt; ፎቶዎች ውስጥ መዳረሻን ያንቁ።</translation>
+<translation id="3809591243528646631">የልጅ ደኅንነት ባህሪያትን ለማግኘት፣ ለልጅ የተዋቀረ የGoogle መለያ መጠቀም ወይም Chromiumን ያለ መለያ መጠቀም ይችላሉ። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="3816686541346279443">Chromium የይለፍ ቃልዎን ለማስቀመጥ ጥያቄ ያቀርባል።</translation>
 <translation id="3827545470516145620">እርስዎ በዚህ መሣሪያ ላይ መደበኛ የደህንነት ጥበቃ እያገኙ ነው</translation>
 <translation id="3833326979834193417">Chromium እርስዎን ከውሂብ ጥሰቶች፣ ደህንነታቸው ካልተጠበቁ ድር ጣቢያዎች እና ሌሎችም ደህንነትዎ እንደተጠበቀ ለማቆየት በየቀኑ የደህንነት ፍተሻን በራስ-ሰር ያሄዳል። ስለ የደህንነት ፍተሻ በቅንብሮች ውስጥ የበለጠ ማግኘት ይችላሉ።</translation>
@@ -168,6 +169,7 @@
 ይህን ቅንብር ለመለወጥ <ph name="BEGIN_LINK" />በመለያዎ ውስጥ ያለውን የChromium ውሂብ ይሰርዙ<ph name="END_LINK" />።</translation>
 <translation id="4578500311756617174">የChromium ጠቃሚ ምክር፦ Chromium በነባሪ ይጠቀሙ</translation>
 <translation id="458786853569524949">አገናኞችን በኢሜይሎች፣ በሰነዶች እና በሌሎች መተግበሪያዎች ውስጥ መታ በሚያደርጉበት ጊዜ ሁሉ Chromiumን አሁን መጠቀም ይችላሉ።</translation>
+<translation id="4625730353066900738">ለመጀመር አጋዥ የሆኑትን የChromium መሠረታዊ ነገሮች ይወቁ</translation>
 <translation id="4633738821577273991">ለዚህ የChromium መገለጫ የተሻሻለ የደህንነት አሰሳንም ያግኙ</translation>
 <translation id="4654936625574199632">መተግበሪያውን ለማሻሻል ለማገዝ Chromium የአጠቃቀም እና የስንክል ውሂብን ወደ Google ይልካል። <ph name="BEGIN_LINK" />አቀናብር<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">የChromium ቃኚን ያብሩ</translation>
@@ -353,6 +355,7 @@
 <translation id="8900052431807804054">የChromium ጠንካራ ደህንነትን ያግኙ</translation>
 <translation id="8908791447256515663">ከእርስዎ iPad መትከያ ላይ Chromiumን ይበልጥ በፍጥነት ይድረሱ።</translation>
 <translation id="8925569192291721236">የዋጋ ክትትል ዝማኔዎችን እና የChromium ጠቃሚ ምክሮችን ይከታተሉ።</translation>
+<translation id="8939412301975414416">Chromium ውስጥ የልጅ ደኅንነት ባህሪያትን ለማግኘት፣ ለልጅ የተዋቀረ የGoogle መለያ መጠቀም ወይም Chromiumን ያለ መለያ መጠቀም ይችላሉ።</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{ይህ የሚሆነው Chromium ለ{THRESHOLD} ደቂቃ ጥቅም ላይ ሳይውል ሲቀር ነው}one{ይህ የሚሆነው Chromium ለ{THRESHOLD} ደቂቃዎች ጥቅም ላይ ሳይውል ሲቀር ነው}other{ይህ የሚሆነው Chromium ለ{THRESHOLD} ደቂቃዎች ጥቅም ላይ ሳይውል ሲቀር ነው}}</translation>
 <translation id="8963279154877372067">የዋጋ ቅናሽ ማንቂያዎችን ለማግኘት የChromium ማሳወቂያዎችን ይፍቀዱ</translation>
 <translation id="8975812008711371178">በChromium ውስጥ በድምፅ ይፈልጉ</translation>

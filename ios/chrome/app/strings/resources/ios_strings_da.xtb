@@ -116,6 +116,7 @@
 <translation id="138692594145659985">Valgmuligheder for at gemme kort</translation>
 <translation id="1396260204083880024">Logget ind som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Åbn kontomenu.</translation>
 <translation id="1397144142234474689">Skjul historik</translation>
+<translation id="1399268420835656394">Hvis du ikke er barn, kan du tjekke alderen på den Apple-konto, der er angivet på denne enhed. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="1407135791313364759">Åbn alle</translation>
 <translation id="1408847409015257906">Tryk på "Sikkerhed og privatliv".</translation>
 <translation id="1411386976162024013">Visuel søgning med Lens</translation>
@@ -255,6 +256,7 @@
 <translation id="1861067954551502701">{count,plural, =1{{position} af {count} adgangskode}one{{position} af {count} adgangskode}other{{position} af {count} adgangskoder}}</translation>
 <translation id="1861262398884155592">Denne mappe er tom</translation>
 <translation id="1864266050569350424">På et website, hvor du har gemt en adgangskode, skal du trykke på feltet til login med adgangskode.</translation>
+<translation id="1866700949421703765">Skjul Aktivér Læsetilstand</translation>
 <translation id="1872096359983322073">Lommelygte</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Inviter familiemedlemmer</translation>
@@ -353,6 +355,7 @@
 <translation id="2214453882118345682">Køb, oversæt og identificer det, du ser, ved hjælp af dit kamera.</translation>
 <translation id="2215819824168709130">Skjul kortet Overvåg pris</translation>
 <translation id="2216366330550244277">Gå til siden for et produkt</translation>
+<translation id="2219935992754556187">Chrome beskytter dine følsomme oplysninger med Face ID</translation>
 <translation id="2220529011494928058">Rapportér et problem</translation>
 <translation id="2223461067862937305">Opret en QR-kode</translation>
 <translation id="2225701818156393674">Produktet er føjet til din liste over produkter, du holder øje med.</translation>
@@ -459,6 +462,7 @@
 <translation id="2583688836549072561">Fanegruppe, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> faner, ny aktivitet.</translation>
 <translation id="2593272815202181319">Enkelt tegnafstand</translation>
 <translation id="2601778637777010194">Hold øje med prisfald på produkter</translation>
+<translation id="2602372807870028932">Denne handling sletter de valgte oplysninger, der er gemt på denne enhed</translation>
 <translation id="260378315836159338">Tryk på + øverst på skærmen</translation>
 <translation id="2612676031748830579">Kortnummer</translation>
 <translation id="261305050785128654">Angiv for websites, hvilke sprog du taler. Så viser de indhold på disse sprog, når det er muligt.</translation>
@@ -552,6 +556,7 @@
 <translation id="2922210239002704889">Gå til startsiden eller tastaturet</translation>
 <translation id="2924940770243654951">Åbn på ny inkognitofane</translation>
 <translation id="2952278131021475699">Lens-kamerasøgning</translation>
+<translation id="2953821385349876107">Vælg en anden Google-konto</translation>
 <translation id="2962516096219646456">Se alle Autofyld-data</translation>
 <translation id="2965594942405840553">Denne handling kan ikke fortrydes</translation>
 <translation id="2969979262385602596">Login mislykkedes. Prøv igen senere.</translation>
@@ -960,6 +965,7 @@
 <translation id="4469324811108161144">Noter kan indeholde op til <ph name="CHARACTER_LIMIT" /> tegn</translation>
 <translation id="4471472356135655769">Der kan ikke eksporteres adgangskoder</translation>
 <translation id="4472575034687746823">Kom godt i gang</translation>
+<translation id="4473565697543262065">Denne handling sletter de valgte oplysninger, der er gemt på denne enhed og på din Google-konto <ph name="USER_EMAIL" /></translation>
 <translation id="4473608001744970767">Skjul Overvåg pris</translation>
 <translation id="4474142134969976028">Der er ingen matchende resultater</translation>
 <translation id="4474494258097106883">Udviklet til din iPhone</translation>
@@ -1435,6 +1441,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6090760257419195752">Lukkede advarsler</translation>
 <translation id="6094325891006032858">Aktivér Udvidet beskyttet browsing</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> blev fundet</translation>
+<translation id="6099466082815574659">Denne iPad er konfigureret til et barn</translation>
 <translation id="6100617279104942061">Logget ind som <ph name="USER_EMAIL" />. Åbner indstillinger.</translation>
 <translation id="6100676328067737810">Dine data gemmes på din Google-konto, <ph name="USER_EMAIL" /></translation>
 <translation id="610083648014322104">Få relevante svar baseret på indholdet på den side, du er på</translation>
@@ -1492,7 +1499,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6259928806013786178">Læsetilstand mislykkedes</translation>
 <translation id="6268773951964630964">Søg efter kopieret billede</translation>
 <translation id="6271462272606946663">Skjul Anmod om mobilwebsite</translation>
-<translation id="6271556257184622612">Spørg Google om faner og meget mere</translation>
 <translation id="6271824294945464304">Deler adgangskode</translation>
 <translation id="628251768213143684">Du kan til altid administrere, hvad der gemmes på din Google-konto</translation>
 <translation id="6284652193729350524">Tilbyd at oversætte fra <ph name="LANGUAGE" /></translation>
@@ -1529,6 +1535,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6368102751067608420">Sådan sletter du alle data i Adgangskodeadministrator</translation>
 <translation id="6372558618707314581">Gå til en hvilken som helst side</translation>
 <translation id="6374469231428023295">Prøv igen</translation>
+<translation id="6374514103145916800">Spørg</translation>
 <translation id="6383719166112032471">Åbn lokation…</translation>
 <translation id="6387994324662817823">Adgangskoder gemmes kun i Adgangs­kode­admin­istrator på denne enhed.</translation>
 <translation id="6393156038355142111">Foreslå en stærk adgangskode</translation>
@@ -1577,6 +1584,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6532106788206463496">Gem ændringer</translation>
 <translation id="6536759809440150308">Åbn <ph name="GROUP_TITLE" />, gruppe med <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">eksempel.dk</translation>
+<translation id="6538776393003671043">Chrome tilbyder at gemme oplysningerne i Google Wallet, næste gang du bruger dem</translation>
 <translation id="6543899060872618437">Betal hurtigere med autofyld på alle dine enheder</translation>
 <translation id="6550675742724504774">Valgmuligheder</translation>
 <translation id="6550891580932862748">Beskytter dig ikke mod skadelige websites, downloads og udvidelser. Dine indstillinger for Beskyttet browsing i andre Google-produkter påvirkes ikke.</translation>
@@ -1595,6 +1603,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6596481460663245319">Søg efter billedet med Google</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 adgangskode}one{# adgangskode}other{# adgangskoder}}</translation>
 <translation id="6601302169302852717">Billedet er gemt i Google Fotos for <ph name="USER_EMAIL" /></translation>
+<translation id="6602173570135186741">Autofyld og adgangskoder</translation>
 <translation id="6603393121510733479">Din organisation har deaktiveret privat browsing.
 <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="6606914854592108404">Der udføres et sikkerhedstjek…</translation>
@@ -1960,6 +1969,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="7888562068293422208">Vil du lukke alle?</translation>
 <translation id="7889910613639381518">Nem og sikker adgang med widgetten Google Adgangs­kode­admin­istrator.</translation>
 <translation id="7899199123054742721">Markér alle som ulæste</translation>
+<translation id="7909005666376403847">Denne iPhone er konfigureret til et barn</translation>
 <translation id="7911190106180361398">Din organisation tillader ikke, at du synkroniserer alt.</translation>
 <translation id="7918999344502274923">Skjul oplysninger om <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="7921559948846049514">Vælg et tema, en farve eller andet til din baggrund</translation>
@@ -1977,6 +1987,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="7952670906562503188">Du er ved at slette {passkey_count} adgangsnøgler og listen over websites og apps, hvor du har valgt aldrig at gemme loginoplysninger. Alle konti, du har oprettet til websites og apps, slettes ikke.</translation>
 <translation id="7958575506592576831">Oplysninger om sidesikkerhed</translation>
 <translation id="7961015016161918242">Aldrig</translation>
+<translation id="7971651328518569075">Skjul Deaktiver Læsetilstand</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Prøv</translation>
 <translation id="797588153137233716">Menu → Historik → Slet browserdata</translation>
@@ -1993,6 +2004,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="8005666035647241369">I Google Adgangs­kode­admin­istrator på denne enhed</translation>
 <translation id="8010488806779226127">Prøv funktioner, der kan hjælpe dig med at gøre mere, mens du browser</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
+<translation id="8014007212279733632">Verificer din identitet for at bruge autofyld til følsomme oplysninger</translation>
 <translation id="8015826420689927262">Slet vedhæftet fil</translation>
 <translation id="8017015647846870183">Fra Google Adgangskodeadministrator, herunder adgangskoder og adgangsnøgler</translation>
 <translation id="802154636333426148">Download mislykkedes</translation>
@@ -2379,6 +2391,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="984275831282074731">Betalingsmetoder</translation>
 <translation id="985379595344853742">Luk alle inkognitofaner</translation>
 <translation id="988141524645182168">Andre enheder</translation>
+<translation id="994184244350700431">I Google Wallet for <ph name="USER_EMAIL" /></translation>
 <translation id="995174784802614337">{count,plural, =1{{count} adgangsnøgle er importeret}one{{count} adgangsnøgle er importeret}other{{count} adgangsnøgler er importeret}}</translation>
 <translation id="999768147936949692">Indtil videre kan du kun dele adgangskoder med familiemedlemmer. <ph name="BEGIN_LINK" />Inviter familiemedlemmer<ph name="END_LINK" /> til at deltage i din gruppe, og få mere ud af dine produkter og abonnementer fra Google.</translation>
 </translationbundle>

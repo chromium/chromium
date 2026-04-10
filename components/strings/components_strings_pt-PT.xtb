@@ -1300,10 +1300,12 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3037177537145227281">Monitorizar o preço</translation>
 <translation id="3037605927509011580">Ah, bolas!!</translation>
 <translation id="3039406992698062762">Viagens familiares</translation>
+<translation id="3040435070100611531">Os seus passes da Carteira do Google</translation>
 <translation id="3041176923638368519">Veja os termos das vantagens do cartão</translation>
 <translation id="3041584414879052436">A lista de emissores do método Comprar agora e pagar depois está fechada.</translation>
 <translation id="3041612393474885105">Informações do certificado</translation>
 <translation id="3045769629416806687">Desportos radicais</translation>
+<translation id="3047054686095898948">Guarde as suas informações na <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> e realize tarefas mais rapidamente, como preencher formulários nos produtos Google. Pode <ph name="BEGIN_LINK" />gerir as suas informações<ph name="END_LINK" /> na <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> de <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">Histórico do Ambiente de Trabalho Remoto do Chrome, incluindo datas/horas, anfitriões e IDs de sessão de cliente</translation>
 <translation id="3052868890529250114">Costuma estabelecer ligação aos sites em segurança, mas o Chrome não conseguiu usar uma ligação segura desta vez. Um atacante pode estar a tentar intercetar ou modificar a sua ligação de rede. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais acerca deste aviso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />: descida do preço de <ph name="PRICE_DROP" /></translation>
@@ -2800,7 +2802,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> atualizou o separador "<ph name="WEBSITE_TITLE" />"</translation>
 <translation id="5383478552402031184">Pavimentos</translation>
 <translation id="5385857628869214740">Humor</translation>
-<translation id="5385966243497224160">Não é possível pré-visualizar um URL não HTTPS</translation>
 <translation id="5386426401304769735">A cadeia de certificados inclui um certificado assinado através de SHA-1.</translation>
 <translation id="5391010642126249196">Visitou</translation>
 <translation id="5391306025131596142">&amp;Abrir a página Histórico</translation>
@@ -3850,7 +3851,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="7003322000677139268">Peças e acessórios para veículos</translation>
 <translation id="7004499039102548441">Separadores recentes</translation>
 <translation id="7004562620237466965">Só decifrar</translation>
-<translation id="700483187606163535">As suas informações são guardadas na <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> de <ph name="ACCOUNT" />. Pode usá-las nos produtos Google para preencher formulários mais rapidamente.</translation>
 <translation id="7006930604109697472">Enviar mesmo assim</translation>
 <translation id="7009364359744329733">O cartão não está disponível neste momento. Tente mais tarde.</translation>
 <translation id="7010658264061801199">Alimentos e bebidas</translation>
@@ -4623,7 +4623,6 @@ Detalhes adicionais:
 <translation id="8194956568907463262">Jogos de tiro</translation>
 <translation id="8198379961710069585">Botão Pesquisar histórico, ative para pesquisar no histórico</translation>
 <translation id="8199437620497683918">Disco ótico (brilhante)</translation>
-<translation id="8199730148066603000">Não é permitida a pré-visualização de URLs não HTTPS.</translation>
 <translation id="8200772114523450471">Continuar</translation>
 <translation id="8202097416529803614">Resumo da encomenda</translation>
 <translation id="8202370299023114387">Conflito</translation>

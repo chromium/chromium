@@ -1300,10 +1300,12 @@
 <translation id="3037177537145227281">ದರವನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3037605927509011580">ಓಹ್, ಹೋಯ್ತು!</translation>
 <translation id="3039406992698062762">ಕುಟುಂಬ ಪ್ರವಾಸ</translation>
+<translation id="3040435070100611531">ನಿಮ್ಮ Google Wallet ಪಾಸ್‌ಗಳು</translation>
 <translation id="3041176923638368519">ಕಾರ್ಡ್ ಪ್ರಯೋಜನದ ನಿಯಮಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="3041584414879052436">'ಈಗ ಖರೀದಿಸಿ, ನಂತರ ಪಾವತಿಸಿ' ವಿತರಕರ ಪಟ್ಟಿಯನ್ನು ಮುಚ್ಚಲಾಗಿದೆ.</translation>
 <translation id="3041612393474885105">ಪ್ರಮಾಣಪತ್ರ ಮಾಹಿತಿ</translation>
 <translation id="3045769629416806687">ಸಾಹಸಮಯ ಕ್ರೀಡೆಗಳು</translation>
+<translation id="3047054686095898948">ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> ನಲ್ಲಿ ಸೇವ್ ಮಾಡಿ ಮತ್ತು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಫಾರ್ಮ್‌ಗಳನ್ನು ಭರ್ತಿ ಮಾಡುವಂತಹ ಕೆಲಸಗಳನ್ನು ವೇಗವಾಗಿ ಮಾಡಿ. <ph name="ACCOUNT" /> ಗಾಗಿ <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> ನಲ್ಲಿ <ph name="BEGIN_LINK" />ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ನೀವು ನಿರ್ವಹಿಸಬಹುದು<ph name="END_LINK" /></translation>
 <translation id="305162504811187366">ಟೈಮ್‌ಸ್ಟ್ಯಾಂಪ್‌ಗಳು, ಹೋಸ್ಟ್‌ಗಳು ಮತ್ತು ಕ್ಲೈಂಟ್ ಸೆಷನ್ ಐಡಿಗಳು ಸೇರಿದಂತೆ Chrome ರಿಮೋಟ್ ಡೆಸ್ಕ್‌ಟಾಪ್ ಇತಿಹಾಸ</translation>
 <translation id="3052868890529250114">ನೀವು ಸಾಮಾನ್ಯವಾಗಿ ಸೈಟ್‌ಗಳಿಗೆ ಸುರಕ್ಷಿತವಾಗಿ ಕನೆಕ್ಟ್‌ ಆಗಿರುತ್ತೀರಿ, ಆದರೆ Chrome ಗೆ ಈ ಸಮಯದಲ್ಲಿ ಸುರಕ್ಷಿತ ಕನೆಕ್ಷನ್ ಅನ್ನು ಬಳಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಅಟ್ಯಾಕರ್‌ಗಳು ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್ ಕನೆಕ್ಷನ್ ಅನ್ನು ಕದ್ದಾಲಿಕೆ ಮಾಡಲು ಅಥವಾ ಮಾರ್ಪಡಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರಬಹುದು. <ph name="BEGIN_LEARN_MORE_LINK" />ಈ ಎಚ್ಚರಿಕೆಯ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> ಉತ್ಪನ್ನದ ಮೇಲೆ <ph name="PRICE_DROP" /> ದರ ಇಳಿಕೆ</translation>
@@ -2797,7 +2799,6 @@
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> ಅವರು ಟ್ಯಾಬ್ “<ph name="WEBSITE_TITLE" />” ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿದ್ದಾರೆ</translation>
 <translation id="5383478552402031184">ಫ್ಲೋರಿಂಗ್</translation>
 <translation id="5385857628869214740">ಹಾಸ್ಯ</translation>
-<translation id="5385966243497224160">HTTPS ಅಲ್ಲದ URL ಅನ್ನು ಪೂರ್ವವೀಕ್ಷಣೆ ಮಾಡಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="5386426401304769735">ಈ ಸೈಟ್‌ಗೆ ಪ್ರಮಾಣಪತ್ರ ಸರಣಿಯು SHA-1 ಬಳಸಿಕೊಂಡು ಸಹಿ ಮಾಡಲಾದ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಒಳಗೊಂಡಿರುತ್ತದೆ.</translation>
 <translation id="5391010642126249196">ನೀವು ಭೇಟಿ ನೀಡಿದ್ದೀರಿ</translation>
 <translation id="5391306025131596142">&amp;ಇತಿಹಾಸ ಪುಟವನ್ನು ತೆರೆಯಿರಿ</translation>
@@ -3847,7 +3848,6 @@
 <translation id="7003322000677139268">ವಾಹನದ ಬಿಡಿಭಾಗಗಳು ಮತ್ತು ಆ್ಯಕ್ಸೆಸ್ಸರಿಗಳು</translation>
 <translation id="7004499039102548441">ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="7004562620237466965">ರಹಸ್ಯಲಿಪಿ ಮಾತ್ರ</translation>
-<translation id="700483187606163535">ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು <ph name="ACCOUNT" /> ಗಾಗಿ <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> ಗೆ ಸೇವ್ ಮಾಡಲಾಗಿದೆ. ಫಾರ್ಮ್‌ಗಳನ್ನು ವೇಗವಾಗಿ ಭರ್ತಿ ಮಾಡಲು ನೀವು ಅದನ್ನು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಬಳಸಬಹುದು.</translation>
 <translation id="7006930604109697472">ಹೇಗಾದರೂ ಕಳುಹಿಸಿ</translation>
 <translation id="7009364359744329733">ಈ ಕಾರ್ಡ್ ಈಗ ಲಭ್ಯವಿಲ್ಲ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="7010658264061801199">ಆಹಾರ ಮತ್ತು ಪಾನೀಯ</translation>
@@ -4620,7 +4620,6 @@
 <translation id="8194956568907463262">ಶೂಟರ್ ಗೇಮ್‌ಗಳು</translation>
 <translation id="8198379961710069585">ಹುಡುಕಾಟ ಇತಿಹಾಸ ಬಟನ್, ಇತಿಹಾಸದ ಹುಡುಕಾಟಕ್ಕಾಗಿ ಅದನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="8199437620497683918">ಆಪ್ಟಿಕಲ್ ಡಿಸ್ಕ್ (ಹೊಳಪು)</translation>
-<translation id="8199730148066603000">HTTPS ಅಲ್ಲದ URL ಗಳನ್ನು ಪೂರ್ವವೀಕ್ಷಣೆ ಮಾಡುವುದನ್ನು ಅನುಮತಿಸಲಾಗಿಲ್ಲ.</translation>
 <translation id="8200772114523450471">ಪುನರಾರಂಭಿಸು</translation>
 <translation id="8202097416529803614">ಆರ್ಡರ್ ಸಾರಾಂಶ</translation>
 <translation id="8202370299023114387">ಸಂಘರ್ಷ</translation>

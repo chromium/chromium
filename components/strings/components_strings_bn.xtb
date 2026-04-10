@@ -1044,7 +1044,7 @@
 <translation id="2610561535971892504">কপি করতে ক্লিক করুন</translation>
 <translation id="2612676031748830579">কার্ড নম্বর</translation>
 <translation id="2612993535136743634">আপনার ডিভাইস ও Google অ্যাকাউন্টে সেভ করা সব নিরাপত্তা কোড মুছে যাবে</translation>
-<translation id="2613758321247965174">{MINUTES,plural, =1{১ মিনিট আগে অ্যাক্টিভ ছিল}one{# মিনিট আগে সক্রিয় ছিল}other{# মিনিট আগে সক্রিয় ছিল}}</translation>
+<translation id="2613758321247965174">{MINUTES,plural, =1{১ মিনিট আগে অ্যাক্টিভ ছিল}one{# মিনিট আগে অ্যাক্টিভ ছিল}other{# মিনিট আগে অ্যাক্টিভ ছিল}}</translation>
 <translation id="2614835674900828050">এই কেনাকাটার জন্য উপলভ্য নয়</translation>
 <translation id="2616412942031748191">সার্চ ইঞ্জিন অপ্টিমাইজেশান ও মার্কেটিং</translation>
 <translation id="2618206371527040026">শিক্ষামূলক সম্মেলন এবং প্রকাশনা</translation>
@@ -1301,10 +1301,12 @@
 <translation id="3037177537145227281">দাম ট্র্যাক করা হচ্ছে</translation>
 <translation id="3037605927509011580">ইস!</translation>
 <translation id="3039406992698062762">পারিবারিক ভ্রমণ</translation>
+<translation id="3040435070100611531">Google Wallet পাস</translation>
 <translation id="3041176923638368519">কার্ড সংক্রান্ত সুবিধার শর্তাবলী দেখুন</translation>
 <translation id="3041584414879052436">কিস্তিতে পেমেন্ট করার সুবিধার ক্ষেত্রে 'এখন কিনুন, পরে পেমেন্ট করুন' ইস্যুকারীর তালিকা বন্ধ আছে।</translation>
 <translation id="3041612393474885105">সার্টিফিকেট তথ্য</translation>
 <translation id="3045769629416806687">চরম উত্তেজনাপূর্ণ খেলাধুলা</translation>
+<translation id="3047054686095898948">আপনার তথ্য <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />-এ সেভ করুন এবং Google প্রোডাক্ট জুড়ে ফর্ম পূরণ করার মতো কাজগুলি আরও দ্রুত সেরে ফেলুন। আপনি <ph name="ACCOUNT" />-এর জন্য <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" />-এ <ph name="BEGIN_LINK" />আপনার তথ্য ম্যানেজ করতে<ph name="END_LINK" /> পারবেন</translation>
 <translation id="305162504811187366">টাইমস্ট্যাম্প, হোস্ট এবং ক্লায়েন্ট সেশন আইডি সহ Chrome রিমোট ডেস্কটপ ইতিহাস</translation>
 <translation id="3052868890529250114">সাধারণত আপনি এই সাইট নিরাপদে কানেক্ট করেন, তবে এখন Chrome কোনও সুরক্ষিত কানেকশন ব্যবহার করতে পারছে না। কোনও হ্যাকার হয়ত আপনার নেটওয়ার্ক কানেকশনে গোপনে আড়ি পাততে চাইছে বা সেটি পরিবর্তন করার চেষ্টা করছে। <ph name="BEGIN_LEARN_MORE_LINK" />এই সতর্কতা সম্পর্কে আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />-এ <ph name="PRICE_DROP" /> দাম কমে গেছে</translation>
@@ -2722,6 +2724,7 @@
 <translation id="5255833070095767006">৩৫০ x ৪৬০ মিমি</translation>
 <translation id="5257739419779698609">{0,plural, =1{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল কপি করা যাবে না}one{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল কপি করা যাবে না}other{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল কপি করা যাবে না}}</translation>
 <translation id="5258473597674772367">"<ph name="GROUP_NAME" />" ট্যাব গ্রুপটি আর উপলভ্য নেই</translation>
+<translation id="5262342527470539728"><ph name="ACCOUNT" />-এর জন্য <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />-এ আপনার তথ্য সেভ করা হয়</translation>
 <translation id="5263867360296733198">আপলোড করার আগে পর্যালোচনা করা প্রয়োজন</translation>
 <translation id="5266128565379329178">উপরে বাঁধাই</translation>
 <translation id="5269225904387178860">নিচে কোয়াড পাঞ্চ</translation>
@@ -2800,7 +2803,6 @@
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" />, “<ph name="WEBSITE_TITLE" />” ট্যাব আপডেট করেছেন</translation>
 <translation id="5383478552402031184">মেঝে নির্মাণ</translation>
 <translation id="5385857628869214740">হাস্যরস</translation>
-<translation id="5385966243497224160">HTTPS নেই এমন URL প্রিভিউ করা যাবে না</translation>
 <translation id="5386426401304769735">এই সাইটের সার্টিফিকেট শৃঙ্খলে SHA-1 ব্যবহার করে স্বাক্ষর করা একটি সার্টিফিকেট রয়েছে।</translation>
 <translation id="5391010642126249196">আপনি ভিজিট করেছেন</translation>
 <translation id="5391306025131596142">&amp;ইতিহাস পৃষ্ঠা খুলুন</translation>
@@ -3849,7 +3851,6 @@
 <translation id="7003322000677139268">যানবাহনের যন্ত্রাংশ ও অ্যাক্সেসরি</translation>
 <translation id="7004499039102548441">সাম্প্রতিক ট্যাবগুলি</translation>
 <translation id="7004562620237466965">শুধুমাত্র পাঠোদ্ধার</translation>
-<translation id="700483187606163535"><ph name="ACCOUNT" />-এর জন্য <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />-এ আপনার তথ্য সেভ করা আছে। Google পরিষেবা জুড়ে আরও দ্রুত ফর্ম পূরণ করার জন্য আপনি এটি ব্যবহার করতে পারবেন।</translation>
 <translation id="7006930604109697472">নিরাপদ না হলেও পাঠান</translation>
 <translation id="7009364359744329733">এখন এই কার্ড উপলভ্য নেই, পরে আবার চেষ্টা করুন।</translation>
 <translation id="7010658264061801199">খাদ্য ও পানীয়</translation>
@@ -4623,7 +4624,6 @@
 <translation id="8194956568907463262">শুটার গেম</translation>
 <translation id="8198379961710069585">'সার্চ ইতিহাস' বোতাম, ইতিহাস সার্চ করতে অ্যাক্টিভেট করুন</translation>
 <translation id="8199437620497683918">অপটিকাল ডিস্ক (গ্লসি)</translation>
-<translation id="8199730148066603000">HTTPS নেই এমন URL প্রিভিউ করার অনুমতি নেই।</translation>
 <translation id="8200772114523450471">আবার চালু করা</translation>
 <translation id="8202097416529803614">অর্ডারের সারসংক্ষেপ</translation>
 <translation id="8202370299023114387">দ্বন্দ্ব</translation>
@@ -4771,6 +4771,7 @@
 অতিরিক্ত বিবরণ:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">এই সময় মাইক্রোফোনের অনুমতি দেওয়া হয়েছে</translation>
+<translation id="8421746712901926961">আপনার তথ্য <ph name="GOOGLE_WALLET_TITLE_1" />-এ সেভ করুন এবং Google প্রোডাক্ট জুড়ে ফর্ম পূরণ করার মতো কাজগুলি আরও দ্রুত সেরে ফেলুন। আপনি <ph name="ACCOUNT" /> দিয়ে <ph name="GOOGLE_WALLET_TITLE_2" />-এ <ph name="MANAGE_INFO_LINK" /> করতে পারবেন।</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">পরিবর্তন</translation>
 <translation id="8426945547715537628">কীবোর্ড ওভাররাইড করার অনুমতি দেবেন?</translation>
@@ -4827,6 +4828,7 @@
 <translation id="8521812709849134608">কাউন্টারটপ</translation>
 <translation id="8522180136695974431">ক্রেডিট সম্পর্কে রিপোর্ট ও মনিটর করা</translation>
 <translation id="8522552481199248698">পাসওয়ার্ড পরিবর্তন করে আপনার Google অ্যাকাউন্ট সুরক্ষিত রাখতে Chrome সাহায্য করতে পারবে।</translation>
+<translation id="852450791482410042">এখনই পে করুন</translation>
 <translation id="8527228059738193856">স্পিকার</translation>
 <translation id="8527681393107582734">কৃষি ও বনজ</translation>
 <translation id="8528149813106025610">বাচ্চাদের পোশাক</translation>

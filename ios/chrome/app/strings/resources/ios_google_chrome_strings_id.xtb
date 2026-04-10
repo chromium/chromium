@@ -64,6 +64,7 @@ Hal-hal yang perlu dipertimbangkan:
 <translation id="2213327331203157297">Untuk menonaktifkan Mode Kunci Total di Chrome, nonaktifkan di iPhone Anda.</translation>
 <translation id="2242467532204595597">Gunakan Chrome kapan saja dengan mengetuk link di pesan, dokumen, dan aplikasi lainnya.</translation>
 <translation id="2256384876478573507">Buka Chrome lebih cepat saat Anda siap menjelajah di iPhone.</translation>
+<translation id="2270691132923135296">Pelajari dasar-dasar Chrome yang bermanfaat untuk membantu Anda memulai</translation>
 <translation id="2311240109311056604">Membuka Game Chrome Dino.</translation>
 <translation id="2339201583852607431">Sandi akan disimpan di Akun Google Anda (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome membagikan lokasi Anda ke situs yang diizinkan.</translation>
@@ -295,6 +296,7 @@ Untuk setelan lainnya yang menggunakan data guna meningkatkan pengalaman Chrome 
 <translation id="7599894504325210080">Tampilan Isi Otomatis Chrome diperluas</translation>
 <translation id="7617512710641355143">Chrome dikelola</translation>
 <translation id="7626032353295482388">Selamat Datang di Chrome</translation>
+<translation id="7634397654061173327">Untuk mendapatkan fitur keamanan anak di Chrome, Anda dapat menggunakan Akun Google yang disiapkan untuk anak atau menggunakan Chrome tanpa akun.</translation>
 <translation id="7641448682796883218">Tips Chrome: Safe Browsing yang Disempurnakan</translation>
 <translation id="7642373780953416937">Menerima notifikasi terkait masalah privasi atau keamanan apa pun yang otomatis dideteksi oleh Chrome untuk Anda.</translation>
 <translation id="7660356333829433649">Periksa kembali halaman ini untuk mendapatkan tips bermanfaat lainnya guna mengoptimalkan penggunaan Chrome.</translation>
@@ -327,6 +329,7 @@ Untuk setelan lainnya yang menggunakan data guna meningkatkan pengalaman Chrome 
 <translation id="8245080522851805544">Jaga privasi penjelajahan Anda dengan autentikasi perangkat saat Anda menutup Chrome</translation>
 <translation id="8248887045858762645">Tips Chrome</translation>
 <translation id="8265730590513812063">Buka menu Chrome</translation>
+<translation id="8284376267694582021">Untuk mendapatkan fitur keamanan anak, Anda dapat menggunakan Akun Google yang disiapkan untuk anak atau menggunakan Chrome tanpa akun. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">Metode pembayaran dan alamat tidak akan dienkripsi. Histori penjelajahan dari Chrome tidak akan disinkronkan.
 
 Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi Anda. Frasa sandi tidak dikirim ke atau disimpan oleh Google. Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun Anda<ph name="END_LINK" />.</translation>

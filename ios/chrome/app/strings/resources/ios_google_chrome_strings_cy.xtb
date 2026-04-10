@@ -64,6 +64,7 @@ Pethau i'w hystyried:
 <translation id="2213327331203157297">I analluogi Modd Cloi i Lawr yn Chrome trowch ef i ffwrdd ar eich dyfais</translation>
 <translation id="2242467532204595597">Defnyddiwch Chrome unrhyw bryd y byddwch yn tapio dolenni mewn negeseuon, dogfennau ac apiau eraill.</translation>
 <translation id="2256384876478573507">Agor Chrome yn gyflymach pan fyddwch yn barod i bori ar eich iPhone.</translation>
+<translation id="2270691132923135296">Dysgwch hanfodion defnyddiol Chrome i ddechrau arni</translation>
 <translation id="2311240109311056604">Yn agor Gêm Dino Chrome.</translation>
 <translation id="2339201583852607431">Bydd eich cyfrinair yn cael ei gadw yn eich Cyfrif Google (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Mae Chrome yn rhannu eich lleoliad â gwefannau rydych yn eu caniatáu.</translation>
@@ -295,6 +296,7 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chrome, ewch i <ph n
 <translation id="7599894504325210080">Gwedd ehangedig Awtolenwi Chrome</translation>
 <translation id="7617512710641355143">Rheolir Chrome</translation>
 <translation id="7626032353295482388">Croeso i Chrome</translation>
+<translation id="7634397654061173327">I gael nodweddion diogelwch plant yn Chrome, gallwch naill ai ddefnyddio Cyfrif Google sydd wedi'i osod ar gyfer plentyn neu ddefnyddio Chrome heb gyfrif.</translation>
 <translation id="7641448682796883218">Awgrym Chrome: Gwell Pori'n Ddiogel</translation>
 <translation id="7642373780953416937">Derbyn rhybuddion ar unrhyw faterion preifatrwydd neu ddiogelwch y mae Chrome yn eu canfod yn awtomatig i chi.</translation>
 <translation id="7660356333829433649">Dewch yn ôl yma am ragor o awgrymiadau defnyddiol i gael y gorau o Chrome.</translation>
@@ -327,6 +329,7 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chrome, ewch i <ph n
 <translation id="8245080522851805544">Cadwch eich pori yn breifat gyda dilysiad dyfais pan fyddwch yn cau Chrome</translation>
 <translation id="8248887045858762645">Awgrym Chrome</translation>
 <translation id="8265730590513812063">Agorwch y ddewislen Chrome</translation>
+<translation id="8284376267694582021">I gael nodweddion diogelwch plant, gallwch naill ai ddefnyddio Cyfrif Google sydd wedi'i osod ar gyfer plentyn neu ddefnyddio Chrome heb gyfrif. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">Ni fydd dulliau talu a chyfeiriadau yn cael eu hamgryptio. Ni fydd hanes pori o Chrome yn cysoni.
 
 Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamgryptio. Nid yw'r cyfrinymadrodd yn cael ei anfon at Google na'i storio. Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfrif<ph name="END_LINK" />.</translation>

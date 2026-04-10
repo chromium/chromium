@@ -1301,10 +1301,12 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3037177537145227281">Memantau harga</translation>
 <translation id="3037605927509011580">Yah!</translation>
 <translation id="3039406992698062762">Wisata Keluarga</translation>
+<translation id="3040435070100611531">Kartu Google Wallet Anda</translation>
 <translation id="3041176923638368519">Lihat persyaratan manfaat kartu</translation>
 <translation id="3041584414879052436">Daftar penerbit Beli Sekarang Bayar Nanti ditutup.</translation>
 <translation id="3041612393474885105">Informasi Sertifikat</translation>
 <translation id="3045769629416806687">Olahraga Ekstrem</translation>
+<translation id="3047054686095898948">Simpan info Anda di <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> dan selesaikan berbagai hal lebih cepat, seperti mengisi formulir di seluruh produk Google. Anda dapat <ph name="BEGIN_LINK" />mengelola info Anda<ph name="END_LINK" /> di <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> untuk <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">Histori Chrome Desktop Jarak Jauh, termasuk stempel waktu, host, dan ID sesi klien</translation>
 <translation id="3052868890529250114">Anda biasanya terhubung ke situs dengan aman, tetapi Chrome tidak dapat menggunakan koneksi yang aman untuk saat ini. Penyerang mungkin mencoba menyadap atau mengubah koneksi jaringan Anda. <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut peringatan ini<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Diskon <ph name="PRICE_DROP" /> untuk <ph name="PRODUCT_NAME" /></translation>
@@ -2800,7 +2802,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> memperbarui tab “<ph name="WEBSITE_TITLE" />”</translation>
 <translation id="5383478552402031184">Pekerjaan Lantai</translation>
 <translation id="5385857628869214740">Humor</translation>
-<translation id="5385966243497224160">Tidak dapat melihat pratinjau URL non-HTTPS</translation>
 <translation id="5386426401304769735">Rantai sertifikat untuk situs ini berisi sertifikat yang ditandatangani menggunakan SHA-1.</translation>
 <translation id="5391010642126249196">Anda membukanya</translation>
 <translation id="5391306025131596142">&amp;Buka halaman histori</translation>
@@ -3850,7 +3851,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7003322000677139268">Suku Cadang &amp; Aksesori Kendaraan</translation>
 <translation id="7004499039102548441">Tab Terbaru</translation>
 <translation id="7004562620237466965">Decipher Saja</translation>
-<translation id="700483187606163535">Info Anda disimpan ke <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> untuk <ph name="ACCOUNT" />. Anda dapat menggunakannya di berbagai produk Google untuk mempercepat pengisian formulir.</translation>
 <translation id="7006930604109697472">Tetap kirim</translation>
 <translation id="7009364359744329733">Kartu tidak tersedia untuk saat ini. Coba lagi nanti.</translation>
 <translation id="7010658264061801199">Makanan &amp; Minuman</translation>
@@ -4622,7 +4622,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8194956568907463262">Game Menembak</translation>
 <translation id="8198379961710069585">Tombol Histori Penelusuran, aktifkan untuk menelusuri histori</translation>
 <translation id="8199437620497683918">Cakram Optis (Mengilap)</translation>
-<translation id="8199730148066603000">Pratinjau URL non-HTTPS tidak diizinkan.</translation>
 <translation id="8200772114523450471">Lanjutkan</translation>
 <translation id="8202097416529803614">Ringkasan pesanan</translation>
 <translation id="8202370299023114387">Konflik</translation>
@@ -4825,6 +4824,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8521812709849134608">Meja Dapur</translation>
 <translation id="8522180136695974431">Pelaporan &amp; Pemantauan Kredit</translation>
 <translation id="8522552481199248698">Chrome dapat membantu Anda melindungi Akun Google dan mengubah sandi Anda.</translation>
+<translation id="852450791482410042">Bayar sekarang</translation>
 <translation id="8527228059738193856">Speaker</translation>
 <translation id="8527681393107582734">Pertanian &amp; Kehutanan</translation>
 <translation id="8528149813106025610">Pakaian Anak</translation>

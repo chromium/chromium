@@ -1300,10 +1300,12 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3037177537145227281">Hintaa seurataan</translation>
 <translation id="3037605927509011580">Harmin paikka!</translation>
 <translation id="3039406992698062762">Perhematkat</translation>
+<translation id="3040435070100611531">Google Wallet ‑kortit</translation>
 <translation id="3041176923638368519">Katso kortin etujen ehdot</translation>
 <translation id="3041584414879052436">"Osta nyt, maksa myöhemmin" ‐myöntäjien lista on suljettu.</translation>
 <translation id="3041612393474885105">Varmenteen tiedot</translation>
 <translation id="3045769629416806687">Extreme-urheilulajit</translation>
+<translation id="3047054686095898948">Tallenna tietosi <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> -palveluun, niin voit hoitaa asioita nopeammin, esimerkiksi täyttää lomakkeita Googlen tuotteissa. Voit <ph name="BEGIN_LINK" />ylläpitää tietojasi<ph name="END_LINK" /> täällä: <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> (<ph name="ACCOUNT" />).</translation>
 <translation id="305162504811187366">Chrome-etäkäytön historia, mukaan lukien aikaleimat, isännät ja käyttökertojen tunnukset</translation>
 <translation id="3052868890529250114">Muodostat yleensä yhteyden sivustoihin suojatusti, mutta Chrome ei voinut tällä kertaa käyttää turvallista yhteyttä. Hyökkääjä saattaa yrittää salakuunnella tai muokata verkkoyhteyttäsi. <ph name="BEGIN_LEARN_MORE_LINK" />Lisätietoja tästä varoituksesta<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" />:n hinnanalennus / <ph name="PRODUCT_NAME" /></translation>
@@ -2801,7 +2803,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> päivitti välilehden "<ph name="WEBSITE_TITLE" />"</translation>
 <translation id="5383478552402031184">Lattiatyöt</translation>
 <translation id="5385857628869214740">Huumori</translation>
-<translation id="5385966243497224160">Muita kuin HTTPS-URL-osoitteita ei voi esikatsella</translation>
 <translation id="5386426401304769735">Tämän sivuston varmenneketju sisältää varmenteen, joka on allekirjoitettu SHA-1:llä.</translation>
 <translation id="5391010642126249196">Kävit täällä</translation>
 <translation id="5391306025131596142">Avaa historiasivu</translation>
@@ -3851,7 +3852,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="7003322000677139268">Ajoneuvojen varaosat ja lisälaitteet</translation>
 <translation id="7004499039102548441">Hiljattain suljetut välilehdet</translation>
 <translation id="7004562620237466965">Vain tulkinta</translation>
-<translation id="700483187606163535">Tietosi tallennetaan tänne: <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> (<ph name="ACCOUNT" />). Voit käyttää niitä Googlen tuotteissa lomakkeiden nopeampaan täyttämiseen.</translation>
 <translation id="7006930604109697472">Lähetä silti</translation>
 <translation id="7009364359744329733">Virtuaalinen kortti ei ole juuri nyt käytettävissä. Yritä myöhemmin uudelleen.</translation>
 <translation id="7010658264061801199">Ruoka ja juoma</translation>
@@ -4625,7 +4625,6 @@ Lisätietoja:
 <translation id="8194956568907463262">Ammuntapelit</translation>
 <translation id="8198379961710069585">Hakuhistorian painike, aktivoi tehdäksesi hakuja historiasta</translation>
 <translation id="8199437620497683918">Optinen levy (kiiltävä)</translation>
-<translation id="8199730148066603000">Muiden kuin HTTPS-URL-osoitteiden esikatselua ei sallita.</translation>
 <translation id="8200772114523450471">Jatka</translation>
 <translation id="8202097416529803614">Tilauksen yhteenveto</translation>
 <translation id="8202370299023114387">Ristiriita</translation>
@@ -4830,6 +4829,7 @@ Lisätietoja:
 <translation id="8521812709849134608">Työtasot</translation>
 <translation id="8522180136695974431">Luottoraportointi ja -valvonta</translation>
 <translation id="8522552481199248698">Chrome voi auttaa suojaamaan Google-tiliäsi ja vaihtamaan salasanasi.</translation>
+<translation id="852450791482410042">Maksa nyt</translation>
 <translation id="8527228059738193856">Kaiuttimet</translation>
 <translation id="8527681393107582734">Maatalous ja metsänhoito</translation>
 <translation id="8528149813106025610">Lasten vaatteet</translation>

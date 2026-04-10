@@ -1300,10 +1300,12 @@
 <translation id="3037177537145227281">가격 추적</translation>
 <translation id="3037605927509011580">앗, 이런!</translation>
 <translation id="3039406992698062762">가족 여행</translation>
+<translation id="3040435070100611531">내 Google 월렛 패스</translation>
 <translation id="3041176923638368519">카드 혜택 약관 보기</translation>
 <translation id="3041584414879052436">선구매 후지불 발급기관 목록이 닫혔습니다.</translation>
 <translation id="3041612393474885105">인증서 정보</translation>
 <translation id="3045769629416806687">익스트림 스포츠</translation>
+<translation id="3047054686095898948">정보를 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />에 저장해 두면 Google 제품 전반에서 양식 작성과 같은 작업을 더 빠르게 완료할 수 있습니다. <ph name="ACCOUNT" />의 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" />에서 <ph name="BEGIN_LINK" />정보를 관리<ph name="END_LINK" />할 수 있습니다.</translation>
 <translation id="305162504811187366">타임스탬프, 호스트, 클라이언트 세션 ID를 포함한 Chrome 원격 데스크톱 기록</translation>
 <translation id="3052868890529250114">일반적으로 사이트에 안전하게 연결되지만, 이번에는 Chrome에서 보안 연결을 사용할 수 없습니다. 공격자가 네트워크 연결을 도청하거나 수정하려고 시도하는 것일 수 있습니다. <ph name="BEGIN_LEARN_MORE_LINK" />이 경고에 대해 자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> 가격 <ph name="PRICE_DROP" /> 인하</translation>
@@ -2800,7 +2802,6 @@
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" />님이 “<ph name="WEBSITE_TITLE" />” 탭을 업데이트했습니다.</translation>
 <translation id="5383478552402031184">바닥재</translation>
 <translation id="5385857628869214740">유머</translation>
-<translation id="5385966243497224160">HTTPS가 아닌 URL은 미리 볼 수 없음</translation>
 <translation id="5386426401304769735">이 사이트의 인증서 체인은 SHA-1을 사용하여 서명된 인증서를 포함합니다.</translation>
 <translation id="5391010642126249196">방문함</translation>
 <translation id="5391306025131596142">방문 기록 페이지 열기(&amp;O)</translation>
@@ -3850,7 +3851,6 @@
 <translation id="7003322000677139268">차량 부품 및 액세서리</translation>
 <translation id="7004499039102548441">최근 탭</translation>
 <translation id="7004562620237466965">해독 전용</translation>
-<translation id="700483187606163535">정보는 <ph name="ACCOUNT" />의 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />에 저장됩니다. 사용자는 Google 제품 전반에서 이 정보를 사용하여 양식을 더 빠르게 작성할 수 있습니다.</translation>
 <translation id="7006930604109697472">무시하고 보내기</translation>
 <translation id="7009364359744329733">현재 이 카드를 사용할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="7010658264061801199">식음료</translation>
@@ -4623,7 +4623,6 @@
 <translation id="8194956568907463262">슈팅 게임</translation>
 <translation id="8198379961710069585">검색 기록 버튼, 기록을 검색하려면 활성화하세요</translation>
 <translation id="8199437620497683918">광디스크(유광)</translation>
-<translation id="8199730148066603000">HTTPS가 아닌 URL은 미리 볼 수 없습니다.</translation>
 <translation id="8200772114523450471">다시 시작</translation>
 <translation id="8202097416529803614">주문 요약</translation>
 <translation id="8202370299023114387">충돌</translation>
@@ -4828,6 +4827,7 @@
 <translation id="8521812709849134608">조리대</translation>
 <translation id="8522180136695974431">신용 보고 및 모니터링</translation>
 <translation id="8522552481199248698">Chrome을 통해 Google 계정을 보호하고 비밀번호를 변경할 수 있습니다.</translation>
+<translation id="852450791482410042">지금 결제</translation>
 <translation id="8527228059738193856">스피커</translation>
 <translation id="8527681393107582734">농업 및 임업</translation>
 <translation id="8528149813106025610">아동 의류</translation>

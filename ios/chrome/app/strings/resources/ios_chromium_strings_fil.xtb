@@ -134,6 +134,7 @@ Subukang maghintay nang ilang minuto bago lumipat ng account. Kung lilipat ka ng
 <translation id="377649297473651452">Naka-expand na view ng Autofill ng Chromium</translation>
 <translation id="3780779443901618967">Babalaan ka tungkol sa mga mapanganib na site, kahit iyong mga hindi alam ng Google noon, sa pamamagitan ng pagsusuri sa higit pang data mula sa mga site kaysa sa karaniwang proteksyon. Puwede mong piliing laktawan ang mga babala ng Chromium.</translation>
 <translation id="3805899903892079518">Walang access ang Chromium sa mga larawan o video mo. I-enable ang access sa Mga Setting ng iOS &gt; Privacy &gt; Mga Larawan.</translation>
+<translation id="3809591243528646631">Para makakuha ng mga feature sa kaligtasan ng bata, puwede kang gumamit ng Google Account na naka-set up para sa isang bata o gumamit ng Chromium nang walang account. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="3816686541346279443">Mag-aalok ang Chromium na i-save ang iyong password.</translation>
 <translation id="3827545470516145620">Mayroon kang standard na proteksyon sa seguridad sa device na ito</translation>
 <translation id="3833326979834193417">Awtomatikong pinapatakbo ng Chromium ang Pag-check sa Kaligtasan araw-araw para panatilihin kang ligtas laban sa mga paglabag sa data, hindi ligtas na website, at higit pa. Makakakita ka ng higit pa tungkol sa Pag-check sa Kaligtasan sa Mga Setting.</translation>
@@ -169,6 +170,7 @@ Naka-encrypt ang iyong data gamit ang passphrase mo. Ilagay ito para magamit at 
 Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Chromium sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="4578500311756617174">Tip sa Chromium: gamitin ang Chromium bilang default</translation>
 <translation id="458786853569524949">Magagamit mo na ngayon ang Chromium sa tuwing magta-tap ka ng mga link sa mga email, dokumento, at iba pang app.</translation>
+<translation id="4625730353066900738">Alamin ang mga kapaki-pakinabang na pangunahing kaalaman sa Chromium para makapagsimula ka</translation>
 <translation id="4633738821577273991">Kunin din ang Pinahusay na Ligtas na Pag-browse para sa profile sa Chromium na ito</translation>
 <translation id="4654936625574199632">Para makatulong na mapaganda ang app, nagpapadala ang Chromium ng data ng paggamit at pag-crash sa Google. <ph name="BEGIN_LINK" />Pamahalaan<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">I-on ang scanner ng Chromium</translation>
@@ -354,6 +356,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="8900052431807804054">Kunin ang Pinakamaigting na Seguridad ng Chromium</translation>
 <translation id="8908791447256515663">Mas mabilis na i-access ang Chromium mula sa Dock ng iyong iPad.</translation>
 <translation id="8925569192291721236">Maging updated sa pagsubaybay sa presyo at mga tip sa Chromium.</translation>
+<translation id="8939412301975414416">Para makakuha ng mga feature sa kaligtasan ng bata sa Chromium, puwede kang gumamit ng Google Account na naka-set up para sa isang bata o gumamit ng Chromium nang walang account.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Nangyayari ito kapag hindi ginamit ang Chromium nang {THRESHOLD} minuto}one{Nangyayari ito kapag hindi ginamit ang Chromium nang {THRESHOLD} minuto}other{Nangyayari ito kapag hindi ginamit ang Chromium nang {THRESHOLD} na minuto}}</translation>
 <translation id="8963279154877372067">Payagan ang mga notification sa Chromium na makatanggap ng mga alerto sa pagbaba ng presyo</translation>
 <translation id="8975812008711371178">Maghanap gamit ang boses sa Chromium.</translation>

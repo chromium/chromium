@@ -134,6 +134,7 @@ Testa att vänta några minuter innan du byter konto. Om du byter konto nu rader
 <translation id="377649297473651452">Utökad vy för autofyll i Chromium</translation>
 <translation id="3780779443901618967">Varnar dig om farliga webbplatser, även sådana som Google inte kände till tidigare, genom att analysera mer data från webbplatser än standardskyddet. Du kan välja att hoppa över Chromium-varningar.</translation>
 <translation id="3805899903892079518">Chromium har inte åtkomst till dina foton eller videor. Aktivera åtkomst i iOS-inställningar &gt; Integritet &gt; Foton.</translation>
+<translation id="3809591243528646631">Om du vill få säkerhetsfunktioner för barn kan du antingen använda ett Google-konto som har konfigurerats för ett barn eller använda Chromium utan ett konto. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" />.</translation>
 <translation id="3816686541346279443">Chromium frågar om du vill spara lösenordet.</translation>
 <translation id="3827545470516145620">Du har standardsäkerhetsskydd på den här enheten</translation>
 <translation id="3833326979834193417">Chromium kör automatiskt en säkerhetskontroll varje dag för att skydda dig från dataintrång, osäkra webbplatser med mera. Du hittar mer information om säkerhetskontrollen i inställningarna.</translation>
@@ -355,6 +356,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="8900052431807804054">Få det bästa skyddet i Chromium</translation>
 <translation id="8908791447256515663">Kom åt Chromium snabbare från dockan på iPad.</translation>
 <translation id="8925569192291721236">Få uppdateringar om prisbevakningar och tips för Chromium.</translation>
+<translation id="8939412301975414416">Om du vill få säkerhetsfunktioner för barn i Chromium kan du antingen använda ett Google-konto som har konfigurerats för ett barn eller använda Chromium utan ett konto.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Detta händer när Chromium inte har använts på {THRESHOLD} minut}other{Detta händer när Chromium inte har använts på {THRESHOLD} minuter}}</translation>
 <translation id="8963279154877372067">Tillåt Chromium-aviseringar om sänkt pris</translation>
 <translation id="8975812008711371178">Sök med rösten i Chromium</translation>

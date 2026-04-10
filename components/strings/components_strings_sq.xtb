@@ -1300,10 +1300,12 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3037177537145227281">Çmimi po monitorohet</translation>
 <translation id="3037605927509011580">Ndërprerje aksidentale!</translation>
 <translation id="3039406992698062762">Udhëtime familjare</translation>
+<translation id="3040435070100611531">Dokumentet dixhitale të "Portofolit të Google"</translation>
 <translation id="3041176923638368519">Shiko kushtet për përfitimet për kartat</translation>
 <translation id="3041584414879052436">Lista e lëshuesve të "Bli tani, paguaj më vonë" është mbyllur.</translation>
 <translation id="3041612393474885105">Informacioni i certifikatës</translation>
 <translation id="3045769629416806687">Sporte ekstreme</translation>
+<translation id="3047054686095898948">Ruaj informacionet e tua në "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />" dhe bëji gjërat më shpejt, si p.sh. plotësimin e formularëve nëpër produktet e Google. Mund t'i <ph name="BEGIN_LINK" />menaxhosh informacionet e tua<ph name="END_LINK" /> te "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" />" për <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">Historiku i "Desktopit në distancë të Chrome", duke përfshirë vulat kohore, organizatorët dhe ID-të e seancës së klientit.</translation>
 <translation id="3052868890529250114">Zakonisht lidhesh me sajtet në mënyrë të sigurt, por Chrome nuk mund të përdorte një lidhje të sigurt në këtë moment. Një sulmues mund të jetë duke u përpjekur të përgjojë ose modifikojë lidhjen tënde të internetit. <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë për këtë paralajmërim<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> ulje çmimi në <ph name="PRODUCT_NAME" /></translation>
@@ -2721,6 +2723,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Politika e administratorit nuk rekomandon kopjimin e këtij skedari te: <ph name="DESTINATION_NAME" />}other{Politika e administratorit nuk rekomandon kopjimin e këtyre skedarëve te: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">Grupi i skedave "<ph name="GROUP_NAME" />" nuk ofrohet më</translation>
+<translation id="5262342527470539728">Informacionet e tua ruhen te <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> për <ph name="ACCOUNT" /></translation>
 <translation id="5263867360296733198">Kërkohet rishikimi përpara ngarkimit</translation>
 <translation id="5266128565379329178">Lidhje lart</translation>
 <translation id="5269225904387178860">Katër shpime poshtë</translation>
@@ -2799,7 +2802,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> përditësoi skedën “<ph name="WEBSITE_TITLE" />”</translation>
 <translation id="5383478552402031184">Dysheme</translation>
 <translation id="5385857628869214740">Humori</translation>
-<translation id="5385966243497224160">URL-të jo HTTPS nuk mund të shikohen paraprakisht</translation>
 <translation id="5386426401304769735">Zinxhiri i certifikatës për këtë sajt përmban një certifikatë të nënshkruar me SHA-1.</translation>
 <translation id="5391010642126249196">E ke vizituar</translation>
 <translation id="5391306025131596142">&amp;Hap faqen e historikut</translation>
@@ -3848,7 +3850,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="7003322000677139268">Pjesë dhe aksesorë për automjete</translation>
 <translation id="7004499039102548441">Skedat e fundit</translation>
 <translation id="7004562620237466965">Deshifro më shumë</translation>
-<translation id="700483187606163535">Informacionet e tua ruhen te <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> për <ph name="ACCOUNT" />. Mund t'i përdorësh ato nëpër produktet e Google për t'i plotësuar më shpejt formularët.</translation>
 <translation id="7006930604109697472">Dërgoje gjithsesi</translation>
 <translation id="7009364359744329733">Kjo kartë nuk ofrohet për momentin. Provo përsëri më vonë.</translation>
 <translation id="7010658264061801199">Ushqime dhe pije</translation>
@@ -4621,7 +4622,6 @@ Detaje shtesë:
 <translation id="8194956568907463262">Lojëra me qitje</translation>
 <translation id="8198379961710069585">Butoni "Kërko te historiku". Aktivizoje për të kërkuar te historiku</translation>
 <translation id="8199437620497683918">Disk optik (me shkëlqim)</translation>
-<translation id="8199730148066603000">Shikimi paraprak i URL-së jo HTTPS URL nuk lejohet.</translation>
 <translation id="8200772114523450471">Vazhdo</translation>
 <translation id="8202097416529803614">Përmbledhja e porosisë</translation>
 <translation id="8202370299023114387">Konflikt</translation>
@@ -4769,6 +4769,7 @@ Detaje shtesë:
 Detaje shtesë:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofoni lejohet këtë herë</translation>
+<translation id="8421746712901926961">Ruaj informacionet e tua në <ph name="GOOGLE_WALLET_TITLE_1" /> dhe bëji gjërat më shpejt, si p.sh. plotësimin e formularëve nëpër produktet e Google. Mund t'i <ph name="MANAGE_INFO_LINK" /> te <ph name="GOOGLE_WALLET_TITLE_2" /> për <ph name="ACCOUNT" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Ndrysho</translation>
 <translation id="8426945547715537628">Të lejohet zëvendësimi i tastierës?</translation>
@@ -4825,6 +4826,7 @@ Detaje shtesë:
 <translation id="8521812709849134608">Syprina</translation>
 <translation id="8522180136695974431">Raportimi dhe monitorimi i kreditit</translation>
 <translation id="8522552481199248698">Chrome mund të të ndihmojë ta mbrosh "Llogarinë tënde të Google" dhe të ndryshosh fjalëkalimin tënd.</translation>
+<translation id="852450791482410042">Paguaj tani</translation>
 <translation id="8527228059738193856">Altoparlantët</translation>
 <translation id="8527681393107582734">Agrikultura dhe pylltaria</translation>
 <translation id="8528149813106025610">Rroba për fëmijë</translation>

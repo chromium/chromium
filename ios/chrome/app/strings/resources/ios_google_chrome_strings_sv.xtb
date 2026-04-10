@@ -296,6 +296,7 @@ Du hittar fler inställningar som använder data för att förbättra Chrome-upp
 <translation id="7599894504325210080">Utökad vy för Autofyll i Chrome</translation>
 <translation id="7617512710641355143">Chrome hanteras</translation>
 <translation id="7626032353295482388">Välkommen till Chrome</translation>
+<translation id="7634397654061173327">Om du vill få säkerhetsfunktioner för barn i Chrome kan du antingen använda ett Google-konto som har konfigurerats för ett barn eller använda Chrome utan ett konto.</translation>
 <translation id="7641448682796883218">Tips för Chrome: Förbättrad säker webbsökning</translation>
 <translation id="7642373780953416937">Få varningar om integritets- eller säkerhetsproblem som identifieras automatiskt av Chrome.</translation>
 <translation id="7660356333829433649">Kom tillbaka hit för fler användbara tips på hur du får ut mesta möjliga av Chrome.</translation>
@@ -328,6 +329,7 @@ Du hittar fler inställningar som använder data för att förbättra Chrome-upp
 <translation id="8245080522851805544">Håll webbinformationen privat med enhetsautentisering när du stänger Chrome</translation>
 <translation id="8248887045858762645">Tips för Chrome</translation>
 <translation id="8265730590513812063">Öppna Chrome-menyn</translation>
+<translation id="8284376267694582021">Om du vill få säkerhetsfunktioner för barn kan du antingen använda ett Google-konto som har konfigurerats för ett barn eller använda Chrome utan ett konto. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" />.</translation>
 <translation id="8317674518145175158">Betalningsmetoder och adresser krypteras inte. Webbhistorik från Chrome synkroniseras inte.
 
 Din krypterade data kan endast läsas av en person som har din lösenfras. Lösenfrasen varken skickas till eller lagras av Google. Om du glömmer lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>

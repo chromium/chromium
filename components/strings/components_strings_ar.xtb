@@ -1300,10 +1300,12 @@
 <translation id="3037177537145227281">تتبُّع السعر</translation>
 <translation id="3037605927509011580">عذرًا!</translation>
 <translation id="3039406992698062762">سياحة عائلية</translation>
+<translation id="3040435070100611531">‏بطاقاتك في "محفظة Google"</translation>
 <translation id="3041176923638368519">الاطّلاع على أحكام مزايا البطاقة</translation>
 <translation id="3041584414879052436">‏تم إغلاق قائمة مقدّمي خدمة "الدفع الآجل" (BNPL).</translation>
 <translation id="3041612393474885105">معلومات الشهادة</translation>
 <translation id="3045769629416806687">رياضات خطرة</translation>
+<translation id="3047054686095898948">‏يمكنك حفظ معلوماتك في "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />" لإنجاز المهام بشكل أسرع، مثل ملء النماذج في جميع منتجات Google، ويمكنك أيضًا <ph name="BEGIN_LINK" />إدارة معلوماتك<ph name="END_LINK" /> في حساب <ph name="ACCOUNT" /> على "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" />"</translation>
 <translation id="305162504811187366">‏سجلّ الوصول إلى الكمبيوتر المكتبي عن بُعد من Chrome، بما في ذلك الطوابع الزمنية والمضيفين وأرقام تعريف جلسات العملاء</translation>
 <translation id="3052868890529250114">‏يمكنك عادةً الاتصال بالمواقع الإلكترونية بشكل آمن، ولكن تعذَّر على Chrome استخدام اتصال آمن في الوقت الحالي. قد يحاول أحد المهاجمين التجسس على اتصالك بالشبكة أو تعديله. <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات حول هذا التحذير<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">انخفاض في سعر <ph name="PRODUCT_NAME" /> بقيمة <ph name="PRICE_DROP" /></translation>
@@ -2721,6 +2723,7 @@
 <translation id="5255833070095767006">350 × 460 ملم</translation>
 <translation id="5257739419779698609">{0,plural, =1{لا تنصح سياسة المشرف بنسخ هذا الملف إلى <ph name="DESTINATION_NAME" />.}zero{لا تنصح سياسة المشرف بنسخ هذه الملفات إلى <ph name="DESTINATION_NAME" />.}two{لا تنصح سياسة المشرف بنسخ هذين الملفين إلى <ph name="DESTINATION_NAME" />.}few{لا تنصح سياسة المشرف بنسخ هذه الملفات إلى <ph name="DESTINATION_NAME" />.}many{لا تنصح سياسة المشرف بنسخ هذه الملفات إلى <ph name="DESTINATION_NAME" />.}other{لا تنصح سياسة المشرف بنسخ هذه الملفات إلى <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="5258473597674772367">لم تَعُد مجموعة علامات التبويب "<ph name="GROUP_NAME" />" متوفّرة</translation>
+<translation id="5262342527470539728">يتم حفظ معلوماتك في "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />" لحساب <ph name="ACCOUNT" /></translation>
 <translation id="5263867360296733198">يجب مراجعة الملفات قبل تحميلها</translation>
 <translation id="5266128565379329178">التجليد من الأعلى</translation>
 <translation id="5269225904387178860">عمل أربعة ثقوب بالأسفل</translation>
@@ -2799,7 +2802,6 @@
 <translation id="5381952079334035181">تم تعديل علامة التبويب "<ph name="WEBSITE_TITLE" />" من قِبل "<ph name="MEMBER_FIRST_NAME" />"</translation>
 <translation id="5383478552402031184">أرضيّات</translation>
 <translation id="5385857628869214740">طرائف</translation>
-<translation id="5385966243497224160">‏لا يمكن معاينة عنوان URL لا يستخدم HTTPS</translation>
 <translation id="5386426401304769735">‏تتضمن سلسلة الشهادات لهذا الموقع شهادة موقعة باستخدام SHA-1.</translation>
 <translation id="5391010642126249196">لقد زرت هذا الموقع الإلكتروني</translation>
 <translation id="5391306025131596142">&amp;فتح صفحة السجلّ</translation>
@@ -3849,7 +3851,6 @@
 <translation id="7003322000677139268">إكسسوارات وقطع غيار مركبات</translation>
 <translation id="7004499039102548441">علامات التبويب الأخيرة</translation>
 <translation id="7004562620237466965">حل الشفرة فقط</translation>
-<translation id="700483187606163535">‏يتم حفظ معلوماتك في "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />" ضِمن الحساب <ph name="ACCOUNT" />. ويمكنك استخدامها في جميع منتجات Google لملء النماذج بشكل أسرع.</translation>
 <translation id="7006930604109697472">إرسال على أيّ حال</translation>
 <translation id="7009364359744329733">هذه البطاقة غير متوفّرة حاليًا. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="7010658264061801199">أطعمة ومشروبات</translation>
@@ -4623,7 +4624,6 @@
 <translation id="8194956568907463262">ألعاب رماية</translation>
 <translation id="8198379961710069585">زر "سجلّ البحث": يمكنك تفعيله للبحث في السجلّ</translation>
 <translation id="8199437620497683918">قرص ضوئي (لامع)</translation>
-<translation id="8199730148066603000">‏لا يُسمح بمعاينة عنوان URL لا يستخدم HTTPS.</translation>
 <translation id="8200772114523450471">استئناف</translation>
 <translation id="8202097416529803614">ملخص الطلب</translation>
 <translation id="8202370299023114387">تعارض</translation>
@@ -4773,6 +4773,7 @@
 التفاصيل الإضافية:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">تم السماح باستخدام الميكروفون هذه المرّة.</translation>
+<translation id="8421746712901926961">‏يمكنك حفظ معلوماتك في "<ph name="GOOGLE_WALLET_TITLE_1" />" لإنجاز المهام بشكل أسرع، مثل ملء النماذج في جميع منتجات Google. وبإمكانك <ph name="MANAGE_INFO_LINK" /> في "<ph name="GOOGLE_WALLET_TITLE_2" />" لحساب <ph name="ACCOUNT" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">تغيير</translation>
 <translation id="8426945547715537628">هل المطلوب السماح بتجاوز لوحة المفاتيح؟</translation>
@@ -4829,6 +4830,7 @@
 <translation id="8521812709849134608">طاولات</translation>
 <translation id="8522180136695974431">تقارير ومراقبة الائتمان</translation>
 <translation id="8522552481199248698">‏يمكن أن يساعدك Chrome على حماية حسابك على Google وتغيير كلمة المرور.</translation>
+<translation id="852450791482410042">الدفع الآن</translation>
 <translation id="8527228059738193856">مكبّرات الصوت</translation>
 <translation id="8527681393107582734">زراعة وحراجة</translation>
 <translation id="8528149813106025610">ملابس أطفال</translation>

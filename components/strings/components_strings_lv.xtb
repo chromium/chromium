@@ -1300,10 +1300,12 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3037177537145227281">Notiek cenas izsekošana</translation>
 <translation id="3037605927509011580">Cilnes avārija.</translation>
 <translation id="3039406992698062762">Ceļojumi ģimenēm</translation>
+<translation id="3040435070100611531">Jūsu kartes lietotnē Google maks</translation>
 <translation id="3041176923638368519">Skatīt kartes priekšrocību noteikumus</translation>
 <translation id="3041584414879052436">Maksājumu veida “Pērciet tūlīt, maksājiet vēlāk” pakalpojumu sniedzēju saraksts ir aizvērts.</translation>
 <translation id="3041612393474885105">Sertifikāta informācija</translation>
 <translation id="3045769629416806687">Ekstrēmie sporta veidi</translation>
+<translation id="3047054686095898948">Saglabājiet savu informāciju lietotnē <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> un ātrāk paveiciet darbus, piemēram, aizpildiet veidlapas Google produktos. Varat <ph name="BEGIN_LINK" />pārvaldīt savu informāciju<ph name="END_LINK" /> lietotnē <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> kontam <ph name="ACCOUNT" />.</translation>
 <translation id="305162504811187366">Chrome attālās darbvirsmas vēsture, tostarp laikspiedoli, saimniekdatori un klientu sesiju identifikatori</translation>
 <translation id="3052868890529250114">Parasti jūs izveidojat drošu savienojumu ar vietnēm, taču šoreiz Chrome nevarēja izmantot drošu savienojumu. Iespējams, kāds uzbrucējs mēģina izsekot jūsu darbības vai mainīt jūsu tīkla savienojumu. <ph name="BEGIN_LEARN_MORE_LINK" />Uzzināt vairāk par šo brīdinājumu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> cenas kritums produktam “<ph name="PRODUCT_NAME" />”</translation>
@@ -2719,6 +2721,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Administratora politika nosaka, ka nav ieteicams kopēt šo failu šeit: <ph name="DESTINATION_NAME" />}zero{Administratora politika nosaka, ka nav ieteicams kopēt šos failus šeit: <ph name="DESTINATION_NAME" />}one{Administratora politika nosaka, ka nav ieteicams kopēt šos failus šeit: <ph name="DESTINATION_NAME" />}other{Administratora politika nosaka, ka nav ieteicams kopēt šos failus šeit: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">Ciļņu grupa “<ph name="GROUP_NAME" />” vairs nav pieejama</translation>
+<translation id="5262342527470539728">Jūsu informācija tiek saglabāta lietotnē <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> kontam <ph name="ACCOUNT" />.</translation>
 <translation id="5263867360296733198">Pirms augšupielādes jāveic pārskatīšana</translation>
 <translation id="5266128565379329178">Iesējums augšdaļā</translation>
 <translation id="5269225904387178860">Četri caurumi apakšdaļā</translation>
@@ -2797,7 +2800,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> atjaunināja cilni “<ph name="WEBSITE_TITLE" />”.</translation>
 <translation id="5383478552402031184">Grīdas segumi</translation>
 <translation id="5385857628869214740">Humors</translation>
-<translation id="5385966243497224160">Nevar priekšskatīt URL, kam netiek izmantots protokols HTTPS</translation>
 <translation id="5386426401304769735">Šīs vietnes sertifikātu ķēdē ir iekļauts sertifikāts, kas ir parakstīts, izmantojot SHA-1.</translation>
 <translation id="5391010642126249196">Jūs apmeklējāt</translation>
 <translation id="5391306025131596142">&amp;Atvērt lapu Vēsture</translation>
@@ -3847,7 +3849,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="7003322000677139268">Transportlīdzekļu daļas un piederumi</translation>
 <translation id="7004499039102548441">Nesen atvērtas cilnes</translation>
 <translation id="7004562620237466965">Tikai atšifrēt</translation>
-<translation id="700483187606163535">Jūsu informācija tiek saglabāta lietotnē <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> kontam <ph name="ACCOUNT" />. Varat to izmantot Google produktos, lai ātrāk aizpildītu veidlapas.</translation>
 <translation id="7006930604109697472">Tomēr sūtīt</translation>
 <translation id="7009364359744329733">Šī karte pašlaik nav pieejama. Lūdzu, vēlāk mēģiniet vēlreiz.</translation>
 <translation id="7010658264061801199">Pārtika un dzērieni</translation>
@@ -4621,7 +4622,6 @@ Papildu informācija:
 <translation id="8194956568907463262">Šaušanas spēles</translation>
 <translation id="8198379961710069585">Poga “Meklēt vēsturē”; aktivizējiet, lai meklētu vēsturē</translation>
 <translation id="8199437620497683918">Optiskais disks (glancēts)</translation>
-<translation id="8199730148066603000">Nav atļauts priekšskatīt URL, kam netiek izmantots protokols HTTPS.</translation>
 <translation id="8200772114523450471">Kopsavilkums</translation>
 <translation id="8202097416529803614">Pasūtījuma kopsavilkums</translation>
 <translation id="8202370299023114387">Konflikts</translation>
@@ -4769,6 +4769,7 @@ Papildu informācija:
 Papildu informācija:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Ir atļauts šoreiz izmantot mikrofonu</translation>
+<translation id="8421746712901926961">Saglabājiet savu informāciju lietotnē <ph name="GOOGLE_WALLET_TITLE_1" /> un ātrāk paveiciet darbus, piemēram, aizpildiet veidlapas Google produktos. Varat <ph name="MANAGE_INFO_LINK" /> lietotnē <ph name="GOOGLE_WALLET_TITLE_2" /> kontam <ph name="ACCOUNT" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" />, <ph name="SECOND_LABEL" />, <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Mainīt</translation>
 <translation id="8426945547715537628">Vai atļaut ignorēt tastatūru?</translation>
@@ -4825,6 +4826,7 @@ Papildu informācija:
 <translation id="8521812709849134608">Darbvirsmas</translation>
 <translation id="8522180136695974431">Informācija par kredītiem un to pārraudzība</translation>
 <translation id="8522552481199248698">Chrome var palīdzēt jums aizsargāt jūsu Google kontu un nomainīt paroli.</translation>
+<translation id="852450791482410042">Maksāt tūlīt</translation>
 <translation id="8527228059738193856">Skaļruņi</translation>
 <translation id="8527681393107582734">Lauksaimniecība un mežkopība</translation>
 <translation id="8528149813106025610">Bērnu apģērbs</translation>

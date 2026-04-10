@@ -134,6 +134,7 @@ Espera uns minutiños antes de cambiar de conta. Se a cambias agora, eliminarans
 <translation id="377649297473651452">Vista ampliada da función de autocompletar de Chromium</translation>
 <translation id="3780779443901618967">Analiza máis datos de sitios que a protección estándar para avisarte sobre os sitios perigosos (mesmo sobre os que Google non coñeza ata ese momento). Se queres, podes omitir as advertencias de Chromium.</translation>
 <translation id="3805899903892079518">Chromium non ten acceso ás túas fotos nin aos teus vídeos. Activa o acceso en Configuración de iOS &gt; Privacidade &gt; Fotos.</translation>
+<translation id="3809591243528646631">Para acceder ás funcións de seguranza infantil, podes usar unha Conta de Google configurada para menores ou usar Chromium sen conta. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="3816686541346279443">Chromium ofrecerache gardar o teu contrasinal.</translation>
 <translation id="3827545470516145620">Contas con protección de seguranza estándar neste dispositivo</translation>
 <translation id="3833326979834193417">Chromium executa automaticamente Comprobación de seguranza todos os días para protexerte das violacións da seguranza dos datos e dos sitios web pouco seguros, entre outras cousas. Podes consultar máis información sobre esta función en Configuración.</translation>
@@ -169,6 +170,7 @@ Os teus datos están encriptados coa túa frase de acceso. Introdúcea para usar
 Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os datos de Chromium da túa conta<ph name="END_LINK" />.</translation>
 <translation id="4578500311756617174">Consello de Chromium: Usa Chromium de forma predeterminada</translation>
 <translation id="458786853569524949">Xa podes utilizar Chromium sempre que toques ligazóns en correos electrónicos, en documentos e noutras aplicacións.</translation>
+<translation id="4625730353066900738">Aprende os conceptos básicos e útiles de Chromium para botar a andar</translation>
 <translation id="4633738821577273991">Activa tamén neste perfil de Chromium a función Navegación segura mellorada</translation>
 <translation id="4654936625574199632">Para contribuír a mellorar a aplicación, Chromium envíalle a Google datos de uso e de fallos. <ph name="BEGIN_LINK" />Xestionar<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Activar escáner de Chromium</translation>
@@ -354,6 +356,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="8900052431807804054">Goza da máxima seguranza de Chromium</translation>
 <translation id="8908791447256515663">Accede a Chromium máis rápido desde a barra de aplicacións do teu iPad.</translation>
 <translation id="8925569192291721236">Recibe novidades sobre o seguimento de prezos e consellos relacionados con Chromium.</translation>
+<translation id="8939412301975414416">Para acceder ás funcións de seguranza infantil en Chromium, podes usar unha Conta de Google configurada para menores ou usar Chromium sen conta.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Isto ocorre cando Chromium non se utiliza durante {THRESHOLD} minuto}other{Isto ocorre cando Chromium non se utiliza durante {THRESHOLD} minutos}}</translation>
 <translation id="8963279154877372067">Permitir que as notificacións de Chromium avisen sobre as baixadas de prezo</translation>
 <translation id="8975812008711371178">Fai buscas por voz en Chromium</translation>

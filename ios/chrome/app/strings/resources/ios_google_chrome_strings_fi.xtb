@@ -296,6 +296,7 @@ Siirry <ph name="BEGIN_LINK" />Googlen palveluihin<ph name="END_LINK" />, jos ha
 <translation id="7599894504325210080">Chromen automaattisen täytön laajennettu näkymä</translation>
 <translation id="7617512710641355143">Chrome on hallinnoitu</translation>
 <translation id="7626032353295482388">Tervetuloa Chromeen</translation>
+<translation id="7634397654061173327">Jos haluat käyttää Chromen lapsille tarkoitettuja turvaominaisuuksia, voit käyttää lapselle luotua Google-tiliä tai Chromea ilman tiliä.</translation>
 <translation id="7641448682796883218">Chrome-vinkki: Parannettu selaussuoja</translation>
 <translation id="7642373780953416937">Saat ilmoituksia kaikista yksityisyys- tai tietoturvaongelmista, jotka Chrome havaitsee automaattisesti puolestasi.</translation>
 <translation id="7660356333829433649">Jatkossa löydät lisää hyödyllisiä vinkkejä, joiden avulla saat parhaan hyödyn Chromesta.</translation>
@@ -328,6 +329,7 @@ Siirry <ph name="BEGIN_LINK" />Googlen palveluihin<ph name="END_LINK" />, jos ha
 <translation id="8245080522851805544">Pidä selaaminen yksityisenä laitteen todennuksella, kun suljet Chromen</translation>
 <translation id="8248887045858762645">Chrome-vinkki</translation>
 <translation id="8265730590513812063">Avaa Chrome-valikko</translation>
+<translation id="8284376267694582021">Jos haluat käyttää lapsille tarkoitettuja turvaominaisuuksia, voit käyttää lapselle luotua Google-tiliä tai Chromea ilman tiliä. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">Maksutapoja ja osoitteita ei salata. Chromen selaushistoriaa ei synkronoida.
 
 Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä Googlelle eikä Google tallenna sitä. Jos unohdat tunnuslauseen tai haluat muuttaa asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-data<ph name="END_LINK" />.</translation>

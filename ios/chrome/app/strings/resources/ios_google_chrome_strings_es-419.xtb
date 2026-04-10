@@ -64,6 +64,7 @@ Aspectos que debes tener en cuenta:
 <translation id="2213327331203157297">Para inhabilitar el modo hermético en Chrome, desactívalo en tu iPhone.</translation>
 <translation id="2242467532204595597">Usa Chrome cada vez que presiones vínculos que aparecen en mensajes, documentos y otras apps.</translation>
 <translation id="2256384876478573507">Abre Chrome más rápido cuando quieras navegar en tu iPhone.</translation>
+<translation id="2270691132923135296">Conoce los conceptos básicos de Chrome para comenzar</translation>
 <translation id="2311240109311056604">Abre el juego del dinosaurio de Chrome.</translation>
 <translation id="2339201583852607431">La contraseña se guardará en tu Cuenta de Google (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome comparte tu ubicación con los sitios en donde lo permites.</translation>
@@ -295,6 +296,7 @@ Si quieres ver más parámetros de configuración que usan datos para mejorar tu
 <translation id="7599894504325210080">Vista expandida de Autocompletar de Chrome</translation>
 <translation id="7617512710641355143">Chrome está administrado</translation>
 <translation id="7626032353295482388">Te damos la bienvenida a Chrome</translation>
+<translation id="7634397654061173327">Para obtener funciones de seguridad para niños en Chrome, puedes usar una Cuenta de Google configurada para un niño o una niña, o usar Chrome sin una cuenta.</translation>
 <translation id="7641448682796883218">Sugerencia de Chrome: Navegación segura mejorada</translation>
 <translation id="7642373780953416937">Recibe alertas sobre cualquier problema de privacidad o seguridad que Chrome detecte automáticamente.</translation>
 <translation id="7660356333829433649">Vuelve a consultar esta información para obtener más sugerencias útiles y aprovechar Chrome al máximo.</translation>
@@ -327,6 +329,7 @@ Si quieres ver más parámetros de configuración que usan datos para mejorar tu
 <translation id="8245080522851805544">Mantén la privacidad de tu navegación con la autenticación del dispositivo cuando cierres Chrome</translation>
 <translation id="8248887045858762645">Sugerencia para Chrome</translation>
 <translation id="8265730590513812063">Abre el Menú de Chrome.</translation>
+<translation id="8284376267694582021">Para obtener funciones de seguridad para niños, puedes usar una Cuenta de Google configurada para un niño o una niña, o usar Chrome sin una cuenta. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">No se encriptarán formas de pago ni direcciones. No se sincronizará el historial de navegación de Chrome.
 
 Solo alguien con tu frase de contraseña puede leer los datos encriptados. Google no envía ni almacena la frase de contraseña. Si olvidas tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>

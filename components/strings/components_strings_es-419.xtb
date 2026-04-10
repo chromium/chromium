@@ -1300,10 +1300,12 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3037177537145227281">Se está haciendo el seguimiento de precios</translation>
 <translation id="3037605927509011580">¡Oh, no!</translation>
 <translation id="3039406992698062762">Viajes familiares</translation>
+<translation id="3040435070100611531">Los pases de tu Billetera de Google</translation>
 <translation id="3041176923638368519">Ver condiciones de los beneficios de la tarjeta</translation>
 <translation id="3041584414879052436">Se cerró la lista de emisores de Compra ahora y paga después.</translation>
 <translation id="3041612393474885105">Información sobre el certificado</translation>
 <translation id="3045769629416806687">Deportes extremos</translation>
+<translation id="3047054686095898948">Guarda tu información en la <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> y completa tareas más rápido, como llenar formularios en los productos de Google. Puedes <ph name="BEGIN_LINK" />administrar tu información<ph name="END_LINK" /> en <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> para <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">El historial del Escritorio remoto de Chrome, incluidas las marcas de tiempo, los hosts y las ID de sesión de los clientes</translation>
 <translation id="3052868890529250114">Por lo general, te conectas a sitios de forma segura, pero Chrome no pudo usar una conexión segura esta vez. Es posible que un atacante esté intentando espiar o modificar tu conexión de red. <ph name="BEGIN_LEARN_MORE_LINK" />Obtén más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> de descuento en <ph name="PRODUCT_NAME" /></translation>
@@ -2722,6 +2724,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="5255833070095767006">350 × 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{La política del administrador no recomienda copiar este archivo a <ph name="DESTINATION_NAME" />.}other{La política del administrador no recomienda copiar estos archivos a <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="5258473597674772367">El grupo de pestañas "<ph name="GROUP_NAME" />" ya no está disponible</translation>
+<translation id="5262342527470539728">Tu información se guarda en la <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> para <ph name="ACCOUNT" /></translation>
 <translation id="5263867360296733198">Se debe revisar antes de subir los archivos</translation>
 <translation id="5266128565379329178">Encuadernado en la parte superior</translation>
 <translation id="5269225904387178860">Perforación cuádruple en la parte inferior</translation>
@@ -2800,7 +2803,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> actualizó la pestaña "<ph name="WEBSITE_TITLE" />"</translation>
 <translation id="5383478552402031184">Revestimiento para pisos</translation>
 <translation id="5385857628869214740">Humor</translation>
-<translation id="5385966243497224160">No se puede obtener una vista previa de URLs que no sean HTTPS</translation>
 <translation id="5386426401304769735">La cadena del certificado de este sitio web contiene un certificado que se firmó con SHA-1.</translation>
 <translation id="5391010642126249196">Lo visitaste</translation>
 <translation id="5391306025131596142">&amp;Abrir la página del historial</translation>
@@ -3850,7 +3852,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="7003322000677139268">Piezas y accesorios para vehículos</translation>
 <translation id="7004499039102548441">Pestañas recientes</translation>
 <translation id="7004562620237466965">Solo descifrar</translation>
-<translation id="700483187606163535">Tu información se guarda en <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> para <ph name="ACCOUNT" />. Puedes usarlo en todos los productos de Google para completar formularios más rápido.</translation>
 <translation id="7006930604109697472">Enviar de todas formas</translation>
 <translation id="7009364359744329733">Esta tarjeta no está disponible en este momento. Vuelve a intentarlo más tarde.</translation>
 <translation id="7010658264061801199">Comidas y bebidas</translation>
@@ -4624,7 +4625,6 @@ Detalles adicionales:
 <translation id="8194956568907463262">Juegos de disparos</translation>
 <translation id="8198379961710069585">Botón Historial de búsqueda, actívalo para ver el historial</translation>
 <translation id="8199437620497683918">Disco óptico (brillante)</translation>
-<translation id="8199730148066603000">No se permite obtener una vista previa de URLs que no sean HTTPS.</translation>
 <translation id="8200772114523450471">Reanudar</translation>
 <translation id="8202097416529803614">Resumen del pedido</translation>
 <translation id="8202370299023114387">Conflicto</translation>
@@ -4772,6 +4772,7 @@ Detalles adicionales:
 Detalles adicionales:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Se permite el micrófono esta vez</translation>
+<translation id="8421746712901926961">Guarda tu información en la <ph name="GOOGLE_WALLET_TITLE_1" /> y completa tareas más rápido, como llenar formularios en los productos de Google. Puedes <ph name="MANAGE_INFO_LINK" /> en la <ph name="GOOGLE_WALLET_TITLE_2" /> para <ph name="ACCOUNT" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Cambiar</translation>
 <translation id="8426945547715537628">¿Quieres permitir la anulación del teclado?</translation>
@@ -4828,6 +4829,7 @@ Detalles adicionales:
 <translation id="8521812709849134608">Mesadas</translation>
 <translation id="8522180136695974431">Informes de crédito y supervisión</translation>
 <translation id="8522552481199248698">Chrome puede ayudarte a proteger tu Cuenta de Google y cambiar tu contraseña.</translation>
+<translation id="852450791482410042">Pagar ahora</translation>
 <translation id="8527228059738193856">Bocinas</translation>
 <translation id="8527681393107582734">Agricultura y silvicultura</translation>
 <translation id="8528149813106025610">Indumentaria infantil</translation>

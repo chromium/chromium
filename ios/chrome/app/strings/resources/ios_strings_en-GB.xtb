@@ -116,6 +116,7 @@
 <translation id="138692594145659985">Options to save card</translation>
 <translation id="1396260204083880024">Signed in as <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Open account menu.</translation>
 <translation id="1397144142234474689">Hide history</translation>
+<translation id="1399268420835656394">If you're not a child, you may want to check the age in the Apple Account on this device. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="1407135791313364759">Open all</translation>
 <translation id="1408847409015257906">Tap Privacy and Security</translation>
 <translation id="1411386976162024013">Lens visual search</translation>
@@ -555,6 +556,7 @@
 <translation id="2922210239002704889">Go to your homepage or keyboard</translation>
 <translation id="2924940770243654951">Open in new Incognito tab</translation>
 <translation id="2952278131021475699">Lens Camera Search</translation>
+<translation id="2953821385349876107">Choose a different Google Account</translation>
 <translation id="2962516096219646456">See all autofill data</translation>
 <translation id="2965594942405840553">This action can't be undone</translation>
 <translation id="2969979262385602596">Failed to sign in. Please try again later.</translation>
@@ -1439,6 +1441,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6090760257419195752">Dismissed warnings</translation>
 <translation id="6094325891006032858">Turn On Enhanced Safe Browsing</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> found</translation>
+<translation id="6099466082815574659">This iPad is set up for a child</translation>
 <translation id="6100617279104942061">Signed in as <ph name="USER_EMAIL" />. Opens settings.</translation>
 <translation id="6100676328067737810">Your data will be saved to your Google Account, <ph name="USER_EMAIL" /></translation>
 <translation id="610083648014322104">Get relevant answers based on the content of the page that you're on</translation>
@@ -1496,7 +1499,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6259928806013786178">Reading mode failed</translation>
 <translation id="6268773951964630964">Search for copied image</translation>
 <translation id="6271462272606946663">Hide Request mobile site</translation>
-<translation id="6271556257184622612">Ask Google about tabs and more</translation>
 <translation id="6271824294945464304">Sharing password</translation>
 <translation id="628251768213143684">You can always manage what's saved in your Google Account</translation>
 <translation id="6284652193729350524">Offer to translate <ph name="LANGUAGE" /></translation>
@@ -1533,6 +1535,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6368102751067608420">To delete all passwords manager data</translation>
 <translation id="6372558618707314581">Go to any page that you like</translation>
 <translation id="6374469231428023295">Try Again</translation>
+<translation id="6374514103145916800">Ask</translation>
 <translation id="6383719166112032471">Open location…</translation>
 <translation id="6387994324662817823">Passwords are saved to Google Password Manager on this device only.</translation>
 <translation id="6393156038355142111">Suggest strong password</translation>
@@ -1600,6 +1603,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6596481460663245319">Search image with Google</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 password}other{# passwords}}</translation>
 <translation id="6601302169302852717">Image saved in Google Photos for <ph name="USER_EMAIL" /></translation>
+<translation id="6602173570135186741">Autofill and passwords</translation>
 <translation id="6603393121510733479">Your organisation turned off private browsing.
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="6606914854592108404">Safety Check is running…</translation>
@@ -1851,6 +1855,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">To lock your incognito tabs, set up touch ID, face ID or a passcode.</translation>
 <translation id="750886945254958667">Keep this group to add tabs later, or leave it if you no longer want access to it</translation>
+<translation id="7511099437872594216">Tabs</translation>
 <translation id="7511727374778217603">{COUNT,plural, =1{Add up to 1 tab}other{Add up to {COUNT} tabs}}</translation>
 <translation id="7512909159512473473">Enter passphrase…</translation>
 <translation id="7514365320538308">Download</translation>
@@ -1965,6 +1970,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7888562068293422208">Close all?</translation>
 <translation id="7889910613639381518">Easy and secure access with the Google Password Manager widget.</translation>
 <translation id="7899199123054742721">Mark all unread</translation>
+<translation id="7909005666376403847">This iPhone is set up for a child</translation>
 <translation id="7911190106180361398">Your organisation doesn't allow for you to sync everything.</translation>
 <translation id="7918999344502274923">Hide <ph name="SEARCH_ENGINE_NAME" /> details</translation>
 <translation id="7921559948846049514">Pick a theme, colour or more for your background</translation>
