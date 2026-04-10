@@ -71,6 +71,25 @@ suite('FileCarouselTest', function() {
     assertEquals(2, thumbnails.length);
   });
 
+  test('renders tab chip with title tooltip', async () => {
+    const tabFile: ComposeboxFile = {
+      ...createFile(1),
+      type: 'tab',
+      url: 'https://example.com' as any,
+      name: 'Example Tab Title',
+    };
+    fileCarousel.files = [tabFile];
+    await microtasksFinished();
+
+    const thumbnail =
+        fileCarousel.shadowRoot.querySelector('cr-composebox-file-thumbnail');
+    assertTrue(!!thumbnail);
+
+    const tabChip = thumbnail.shadowRoot.querySelector('#tabChip');
+    assertTrue(!!tabChip);
+    assertEquals('Example Tab Title', tabChip.getAttribute('title'));
+  });
+
   test('getThumbnailElementByUuid returns correct element', async () => {
     const uuid1 = {high: 0n, low: 1n} as any;
     const uuid2 = {high: 0n, low: 2n} as any;
