@@ -159,8 +159,9 @@
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(
           self.sceneState.profileState.profile);
-  if (info.account_id !=
-      identityManager->GetPrimaryAccountId(signin::ConsentLevel::kSignin)) {
+  CoreAccountInfo primaryAccountInfo =
+      identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  if (info.gaia != primaryAccountInfo.gaia) {
     return;
   }
 
