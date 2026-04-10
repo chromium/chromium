@@ -18,7 +18,8 @@
 #include "extensions/browser/extension_icon_image.h"
 #include "ui/views/controls/label.h"
 
-class Browser;
+class BrowserWindowInterface;
+class ZoomBubbleManager;
 
 namespace content {
 class WebContents;
@@ -39,7 +40,8 @@ class ZoomBubbleView : public LocationBarBubbleDelegateView,
   // not be nullptr. The bubble will auto-close when |reason| is AUTOMATIC. If
   // |immersive_mode_controller_| is present, the bubble will auto-close when
   // the top-of-window views are revealed.
-  ZoomBubbleView(Browser* browser,
+  ZoomBubbleView(BrowserWindowInterface* browser,
+                 ZoomBubbleManager* manager,
                  views::BubbleAnchor anchor,
                  content::WebContents* web_contents,
                  DisplayReason reason);
@@ -123,7 +125,9 @@ class ZoomBubbleView : public LocationBarBubbleDelegateView,
   // Called by ButtonPressed() when |image_button_| is pressed.
   void ImageButtonPressed();
 
-  raw_ptr<Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_ = nullptr;
+
+  raw_ptr<ZoomBubbleManager> manager_ = nullptr;
 
   ZoomBubbleExtensionInfo extension_info_;
 

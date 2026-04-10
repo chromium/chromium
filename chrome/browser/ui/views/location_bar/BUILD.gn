@@ -34,6 +34,7 @@ source_set("location_bar") {
       "webui_content_setting_image_control.h",
       "webui_location_bar.h",
       "zoom_bubble_coordinator.h",
+      "zoom_bubble_manager.h",
       "zoom_bubble_view.h",
     ]
 
@@ -97,6 +98,8 @@ source_set("impl") {
       "webui_content_setting_image_control.cc",
       "webui_location_bar.cc",
       "zoom_bubble_coordinator.cc",
+      "zoom_bubble_manager_views.cc",
+      "zoom_bubble_manager_views.h",
       "zoom_bubble_view.cc",
     ]
 

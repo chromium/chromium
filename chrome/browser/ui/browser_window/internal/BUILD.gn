@@ -104,6 +104,7 @@ source_set("internal") {
       "//chrome/browser/ui/views/contextual_tasks",
       "//chrome/browser/ui/views/download",
       "//chrome/browser/ui/views/interaction:impl",
+      "//chrome/browser/ui/views/location_bar:impl",
       "//chrome/browser/ui/views/location_bar/cookie_controls",
       "//chrome/browser/ui/views/new_tab_footer",
       "//chrome/browser/ui/views/send_tab_to_self",

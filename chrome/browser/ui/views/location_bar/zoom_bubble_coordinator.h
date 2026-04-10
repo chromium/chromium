@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_ZOOM_BUBBLE_COORDINATOR_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_ZOOM_BUBBLE_COORDINATOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
@@ -12,6 +13,7 @@
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/views/widget/widget_observer.h"
 
+class ZoomBubbleManager;
 class ZoomBubbleView;
 class BrowserWindowInterface;
 
@@ -27,7 +29,8 @@ class ZoomBubbleCoordinator : public views::WidgetObserver,
  public:
   DECLARE_USER_DATA(ZoomBubbleCoordinator);
 
-  explicit ZoomBubbleCoordinator(BrowserView& browser_view);
+  ZoomBubbleCoordinator(BrowserWindowInterface& browser,
+                        ZoomBubbleManager* manager);
   ZoomBubbleCoordinator(const ZoomBubbleCoordinator&) = delete;
   ZoomBubbleCoordinator& operator=(const ZoomBubbleCoordinator&) = delete;
   ~ZoomBubbleCoordinator() override;
@@ -78,8 +81,9 @@ class ZoomBubbleCoordinator : public views::WidgetObserver,
 
   ui::ScopedUnownedUserData<ZoomBubbleCoordinator> scoped_unowned_user_data_;
 
-  // Unowned reference to the browser view associated with this coordinator.
-  const raw_ref<BrowserView> browser_view_;
+  const raw_ref<BrowserWindowInterface> browser_;
+
+  raw_ptr<ZoomBubbleManager> manager_ = nullptr;
 
   // Observes the widget of the zoom bubble to be notified of its destruction.
   base::ScopedObservation<views::Widget, views::WidgetObserver>

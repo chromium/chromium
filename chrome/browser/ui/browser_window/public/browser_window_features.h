@@ -99,6 +99,7 @@ class VerticalTabIphController;
 class WebUIBrowserExclusiveAccessContext;
 class WebUIBrowserSidePanelUI;
 class ZoomBubbleCoordinator;
+class ZoomBubbleManager;
 
 #if BUILDFLAG(IS_WIN)
 class WindowsTaskbarIconUpdater;
@@ -600,6 +601,8 @@ class BrowserWindowFeatures {
 #if !BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<DownloadToolbarUIController> download_toolbar_ui_controller_;
 #endif
+
+  std::unique_ptr<ZoomBubbleManager> zoom_bubble_manager_;
 
   std::unique_ptr<ZoomBubbleCoordinator> zoom_bubble_coordinator_;
 

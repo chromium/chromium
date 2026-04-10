@@ -120,6 +120,7 @@
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_coordinator.h"
+#include "chrome/browser/ui/views/location_bar/zoom_bubble_manager_views.h"
 #include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_controller.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
@@ -957,9 +958,10 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
   }
 #endif
 
+  zoom_bubble_manager_ = std::make_unique<ZoomBubbleManagerViews>(browser_view);
   zoom_bubble_coordinator_ =
-      GetUserDataFactory().CreateInstance<ZoomBubbleCoordinator>(*browser_,
-                                                                 *browser_view);
+      GetUserDataFactory().CreateInstance<ZoomBubbleCoordinator>(
+          *browser_, *browser_, zoom_bubble_manager_.get());
 
   user_education_->Init(browser_view);
 
@@ -1013,6 +1015,7 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
 #endif
 
   zoom_bubble_coordinator_.reset();
+  zoom_bubble_manager_.reset();
 
   comments_side_panel_coordinator_.reset();
 
