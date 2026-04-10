@@ -130,15 +130,19 @@
                 [[turnOnLabel]]
               </button>
               <button class="dropdown-item" on-click="onDeactivateClick_"
-                  hidden$="[[!engine.canBeDeactivated]]" id="deactivateOption">
+                  hidden$="[[!showDeactivateOption_(engine)]]"
+                  disabled$="[[!engine.canBeDeactivated]]"
+                  id="deactivateOption">
                 [[turnOffLabel]]
               </button>
               <button class="dropdown-item" on-click="onDeleteClick_"
-                  hidden$="[[!showDeleteOption_(engine)]]" id="deleteOption">
+                  hidden$="[[!showDeleteOption_(engine)]]"
+                  disabled$="[[!engine.canBeRemoved]]" id="deleteOption">
                 $i18n{delete}
               </button>
               <button class="dropdown-item" on-click="onMakeDefaultClick_"
-                  hidden$="[[!engine.canBeDefault]]" id="makeDefaultOption">
+                  hidden$="[[!showMakeDefaultOption_(engine)]]"
+                  disabled$="[[!engine.canBeDefault]]" id="makeDefaultOption">
                 $i18n{searchEnginesMakeDefault}
               </button>
               <!-- Options only available for extensions -->
