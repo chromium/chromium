@@ -1415,11 +1415,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.OutputSurface.InsertRenderPassRecording" enum="Boolean"
-    expires_after="2026-04-12">
+    expires_after="2026-10-12">
   <owner>kylechar@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
-    Records if graphite::Recording to draw a render pass was succesfully
+    Records if graphite::Recording to draw a render pass was successfully
     inserted into the graphite::Context. Recorded for each insertRecording()
     call made with a render pass recording.
   </summary>
