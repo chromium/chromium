@@ -839,7 +839,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     gfx_color_space = client_shared_image->color_space();
     frame = media::VideoFrame::WrapSharedImage(
         format, std::move(client_shared_image), sbi->GetSyncToken(),
-        std::move(release_cb), coded_size, parsed_init.visible_rect,
+        std::move(release_cb), parsed_init.visible_rect,
         parsed_init.display_size, timestamp);
 
     // Note: We could add the StaticBitmapImage to the VideoFrameHandle so we
