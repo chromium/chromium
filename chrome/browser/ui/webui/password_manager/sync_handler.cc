@@ -20,8 +20,7 @@
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/browser_finder.h"
 #endif
 
 namespace password_manager {
@@ -192,10 +191,8 @@ void SyncHandler::HandleOpenBatchUploadDialog(const base::ListValue& args) {
   BatchUploadService* batch_upload =
       BatchUploadServiceFactory::GetForProfile(profile_);
   CHECK(batch_upload);
-  BrowserWindowInterface* browser =
-      ProfileBrowserCollection::GetForProfile(profile_)->GetLastActiveBrowser();
-  batch_upload->OpenBatchUpload(
-      browser ? browser->GetBrowserForMigrationOnly() : nullptr, entry_point);
+  batch_upload->OpenBatchUpload(chrome::FindBrowserWithProfile(profile_),
+                                entry_point);
 }
 #endif
 

@@ -61,8 +61,9 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/hats/survey_config.h"
@@ -2808,8 +2809,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebAppTest,
   Profile* second_profile = CreateAdditionalProfile();
   web_app::test::WaitUntilWebAppProviderAndSubsystemsReady(
       web_app::WebAppProvider::GetForTest(second_profile));
-  ASSERT_FALSE(ProfileBrowserCollection::GetForProfile(second_profile)
-                   ->GetLastActiveBrowser());
+  ASSERT_FALSE(chrome::FindBrowserWithProfile(second_profile));
 
   // Install and launch an application for the first profile.
   webapps::AppId app_id = toolbar_helper().InstallAndLaunchCustomWebApp(
@@ -2834,8 +2834,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebAppTest,
   content::WebContents* new_web_contents = waiter.Wait();
   ASSERT_TRUE(new_web_contents);
   BrowserWindowInterface* new_browser =
-      ProfileBrowserCollection::GetForProfile(second_profile)
-          ->GetLastActiveBrowser();
+      chrome::FindBrowserWithProfile(second_profile);
   ASSERT_TRUE(new_browser);
   EXPECT_TRUE(new_browser->GetType() == BrowserWindowInterface::TYPE_APP);
   EXPECT_EQ(new_browser->GetTabStripModel()->GetActiveWebContents(),
@@ -2858,8 +2857,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebAppTest, SelectingOtherProfile) {
   EXPECT_EQ(app_id,
             toolbar_helper().InstallWebApp(profile3, GURL("https://test.org")));
   SetTargetBrowser(toolbar_helper().app_browser());
-  EXPECT_FALSE(ProfileBrowserCollection::GetForProfile(profile3)
-                   ->GetLastActiveBrowser());
+  EXPECT_FALSE(chrome::FindBrowserWithProfile(profile3));
 
   // Open profile menu in first profile.
   auto* toolbar =
@@ -2877,10 +2875,9 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebAppTest, SelectingOtherProfile) {
   Click(focused_item);
   content::WebContents* new_web_contents = waiter.Wait();
   ASSERT_TRUE(new_web_contents);
-  EXPECT_FALSE(ProfileBrowserCollection::GetForProfile(profile2)
-                   ->GetLastActiveBrowser());
+  EXPECT_FALSE(chrome::FindBrowserWithProfile(profile2));
   BrowserWindowInterface* new_browser =
-      ProfileBrowserCollection::GetForProfile(profile3)->GetLastActiveBrowser();
+      chrome::FindBrowserWithProfile(profile3);
   ASSERT_TRUE(new_browser);
   EXPECT_TRUE(new_browser->GetType() == BrowserWindowInterface::TYPE_APP);
   EXPECT_EQ(new_browser->GetTabStripModel()->GetActiveWebContents(),

@@ -11,8 +11,7 @@
 #include "chrome/browser/safe_browsing/generated_security_settings_bundle_pref.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_notification_result.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_util.h"
@@ -133,10 +132,7 @@ void ChromeTailoredSecurityService::OnSyncNotificationMessageRequest(
                      base::Unretained(this)),
       /*is_requested_by_synced_esb=*/false);
 #else
-  ProfileBrowserCollection* const collection =
-      ProfileBrowserCollection::GetForProfile(profile_);
-  BrowserWindowInterface* browser =
-      collection ? collection->GetLastActiveBrowser() : nullptr;
+  BrowserWindowInterface* browser = chrome::FindBrowserWithProfile(profile_);
   if (!browser) {
     if (is_enabled) {
       RecordEnabledNotificationResult(
@@ -198,12 +194,7 @@ void ChromeTailoredSecurityService::TriggerDialogDisplay(
   } else {
     disabled_notice_handle_ = std::move(messaging_priority_handle);
   }
-  ProfileBrowserCollection* const collection =
-      ProfileBrowserCollection::GetForProfile(profile_);
-  BrowserWindowInterface* browser =
-      collection ? collection->GetLastActiveBrowser() : nullptr;
-  DisplayDesktopDialog(
-      browser ? browser->GetBrowserForMigrationOnly() : nullptr, is_enabled);
+  DisplayDesktopDialog(chrome::FindBrowserWithProfile(profile_), is_enabled);
 }
 
 void ChromeTailoredSecurityService::ReleaseEnabledQueueHandle() {

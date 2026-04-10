@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
@@ -249,8 +248,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorMultiUserTestChromeOS,
 
   ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   BrowserWindowInterface* browser =
-      ProfileBrowserCollection::GetForProfile(primary_user_profile)
-          ->GetLastActiveBrowser();
+      chrome::FindBrowserWithProfile(primary_user_profile);
   ASSERT_TRUE(browser);
 
   // Start multi-user sign-in.

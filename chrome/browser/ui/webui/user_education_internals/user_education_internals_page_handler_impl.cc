@@ -23,7 +23,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/webui/user_education_internals/user_education_internals.mojom-forward.h"
@@ -517,8 +516,7 @@ void UserEducationInternalsPageHandlerImpl::StartTutorial(
   std::string result;
   if (tutorial_service) {
     const ui::ElementContext context =
-        BrowserElements::From(ProfileBrowserCollection::GetForProfile(profile_)
-                                  ->GetLastActiveBrowser())
+        BrowserElements::From(chrome::FindBrowserWithProfile(profile_))
             ->GetContext();
     tutorial_service->StartTutorial(tutorial_id, context);
     if (!tutorial_service->IsRunningTutorial()) {

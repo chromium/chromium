@@ -82,7 +82,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -875,8 +874,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
             prefs->GetLastLaunchTime(app_constants::kChromeAppId));
 
   // Close the regular browser.
-  CloseBrowserSynchronously(
-      ProfileBrowserCollection::GetForProfile(profile)->GetLastActiveBrowser());
+  CloseBrowserSynchronously(chrome::FindBrowserWithProfile(profile));
   EXPECT_EQ(0U, chrome::GetBrowserCount(profile));
   // Recorded the launch time should not update.
   EXPECT_EQ(time_recorded1,

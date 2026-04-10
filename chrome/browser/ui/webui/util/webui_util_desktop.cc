@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/common/webui_url_utils.h"
 #include "content/public/common/url_constants.h"
@@ -125,8 +124,7 @@ const ui::ThemeProvider* GetThemeProviderDeprecated(
   // WebContents during navigation.
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  BrowserWindowInterface* browser =
-      ProfileBrowserCollection::GetForProfile(profile)->GetLastActiveBrowser();
+  BrowserWindowInterface* browser = chrome::FindBrowserWithProfile(profile);
   if (browser) {
     return browser->GetBrowserForMigrationOnly()->window()->GetThemeProvider();
   }
