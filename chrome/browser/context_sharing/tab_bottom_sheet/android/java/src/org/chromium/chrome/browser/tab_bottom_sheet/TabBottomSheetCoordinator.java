@@ -13,6 +13,7 @@ import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -327,7 +328,20 @@ public class TabBottomSheetCoordinator {
                     mBottomSheetController.collapseSheet(/* animate= */ true);
                     mExpectingLayoutChange = false;
                 }
-                updateResizingStateWithFixedHeight();
+                if (!ChromeFeatureList.sTabBottomSheetResizeWebview.getValue()) {
+                    updateResizingStateWithFixedHeight();
+                }
+            }
+
+            @Override
+            public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
+                if (ChromeFeatureList.sTabBottomSheetResizeWebview.getValue()) {
+                    mMediator.updateResizingState(
+                            getDefaultHeightRatio(),
+                            heightFraction,
+                            (int) offsetPx,
+                            mBottomSheetController.getMaxOffset());
+                }
             }
         };
     }

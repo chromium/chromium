@@ -14,6 +14,7 @@ import androidx.annotation.StringRes;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.context_sharing.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.GlowSpec;
 
@@ -103,12 +104,16 @@ public class TabBottomSheetContent implements BottomSheetContent {
 
     @Override
     public float getHalfHeightRatio() {
-        return HeightMode.DISABLED;
+        return ChromeFeatureList.sTabBottomSheetResizeWebview.getValue()
+                ? mFullHeightRatio
+                : HeightMode.DISABLED;
     }
 
     @Override
     public float getFullHeightRatio() {
-        return mFullHeightRatio;
+        return ChromeFeatureList.sTabBottomSheetResizeWebview.getValue()
+                ? HeightMode.DEFAULT
+                : mFullHeightRatio;
     }
 
     @Override

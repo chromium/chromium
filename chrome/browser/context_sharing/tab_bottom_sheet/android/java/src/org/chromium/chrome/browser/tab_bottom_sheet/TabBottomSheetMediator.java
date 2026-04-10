@@ -11,6 +11,7 @@ import android.view.View;
 import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.ResizingState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.widget.R;
@@ -138,16 +139,31 @@ public class TabBottomSheetMediator extends GestureStateListener {
      * @param offsetHeight The current offset height for the sheet.
      * @param maxOffset The maximum offset height for the sheet.
      */
-    @SuppressWarnings("unused")
     public void updateResizingState(
             float defaultHeightRatio,
             float heightFraction,
             @Px int offsetHeight,
             @Px int maxOffset) {
-        // Use the maxOffset since the sheet content should always assume full height.
-        ResizingState resizingState = new ResizingState(maxOffset, 1.0f);
+        if (!ChromeFeatureList.sTabBottomSheetResizeWebview.getValue()) {
+            // Use the maxOffset since the sheet content should always assume full height when the
+            // feature is off.
+            mModel.set(TabBottomSheetProperties.RESIZING_STATE, new ResizingState(maxOffset, 1.0f));
+            return;
+        }
 
-        mModel.set(TabBottomSheetProperties.RESIZING_STATE, resizingState);
+        int webUiHeight;
+        if (heightFraction <= defaultHeightRatio) {
+            // If the sheet offset is less than the default height ratio, lock the WebUi height to
+            // the default height ratio.
+            float lockedWebUiHeight = defaultHeightRatio * maxOffset;
+            webUiHeight = (int) lockedWebUiHeight;
+        } else {
+            webUiHeight = (int) offsetHeight;
+        }
+
+        mModel.set(
+                TabBottomSheetProperties.RESIZING_STATE,
+                new ResizingState(webUiHeight, heightFraction));
     }
 
     @SheetState
