@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] WebSocket in https: with connect-src 'self'
+  promise_test: Unhandled rejection with value: "timeout while waiting for report for https://web-platform.test:9444/echo"
+[FAIL] Reports match in https: with connect-src 'self'
+  assert_array_equals: Reports do not match expected property 1 to be "https://web-platform.test:9444/echo" but got "https://www.web-platform.test:8445/content-security-policy/support/resource.py?cross-origin-fetch" (expected array ["https://web-platform.test:8444/common/redirect-opt-in.py?status=307&location=https://www.web-platform.test:8445/content-security-policy/support/resource.py?cross-origin-fetch", "https://web-platform.test:9444/echo", "https://www.web-platform.test:8445/content-security-policy/support/resource.py?cross-origin-fetch"] got ["https://web-platform.test:8444/common/redirect-opt-in.py?status=307&location=https://www.web-platform.test:8445/content-security-policy/support/resource.py?cross-origin-fetch", "https://www.web-platform.test:8445/content-security-policy/support/resource.py?cross-origin-fetch", "wss://web-platform.test:9444/echo"])
+[FAIL] WebSocket in https: with default-src 'self'
+  promise_test: Unhandled rejection with value: "timeout while waiting for report for https://web-platform.test:9444/echo"
+[FAIL] Reports match in https: with default-src 'self'
+  assert_array_equals: Reports do not match expected property 1 to be "https://web-platform.test:9444/echo" but got "https://www.web-platform.test:8445/content-security-policy/support/resource.py?cross-origin-fetch" (expected array ["https://web-platform.test:8444/common/redirect-opt-in.py?status=307&location=https://www.web-platform.test:8445/content-security-policy/support/resource.py?cross-origin-fetch", "https://web-platform.test:9444/echo", "https://www.web-platform.test:8445/content-security-policy/support/resource.py?cross-origin-fetch"] got ["https://web-platform.test:8444/common/redirect-opt-in.py?status=307&location=https://www.web-platform.test:8445/content-security-policy/support/resource.py?cross-origin-fetch", "https://www.web-platform.test:8445/content-security-policy/support/resource.py?cross-origin-fetch", "wss://web-platform.test:9444/echo"])
+Harness: the test ran to completion.
+
