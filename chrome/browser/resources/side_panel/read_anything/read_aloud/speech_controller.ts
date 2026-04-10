@@ -207,6 +207,7 @@ export class SpeechController {
 
   onVoiceSelected(selectedVoice: SpeechSynthesisVoice) {
     const currentVoice = this.voiceLanguageController_.getCurrentVoice();
+    this.logger_.logVoiceLanguageChange(currentVoice, selectedVoice);
     this.voiceLanguageController_.setUserPreferredVoice(selectedVoice);
 
     // If the locales are identical, the voices are likely from the same

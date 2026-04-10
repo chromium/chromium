@@ -9,9 +9,10 @@ import type {VoiceLanguageListener, VoiceNotificationListener} from 'chrome-untr
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
-import {createAndSetVoices, createSpeechSynthesisVoice, setupBasicSpeech, setVoices} from './common.js';
+import {createAndSetVoices, createSpeechSynthesisVoice, mockMetrics, setupBasicSpeech, setVoices} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
+import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('VoiceLanguageController', () => {
@@ -25,6 +26,7 @@ suite('VoiceLanguageController', () => {
   let uninstalledLangs: string[];
   let requestInfoLangs: string[];
   let notificationType: NotificationType|null;
+  let metrics: TestMetricsBrowserProxy;
 
   const langForDefaultVoice = 'en';
   const lang1 = 'zh';
@@ -70,6 +72,7 @@ suite('VoiceLanguageController', () => {
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     speech = new TestSpeechBrowserProxy();
     SpeechBrowserProxyImpl.setInstance(speech);
+    metrics = mockMetrics();
     voiceLanguageController = new VoiceLanguageController();
     onEnabledLangsChange = false;
     onAvailableVoicesChange = false;
@@ -1427,4 +1430,24 @@ suite('VoiceLanguageController', () => {
 
         assertEquals(voice, voiceLanguageController.getCurrentVoice());
       });
+
+  test('autoswitching does not log voice language change', () => {
+    chrome.readingMode.getStoredVoice = () => '';
+    const voice =
+        createSpeechSynthesisVoice({lang: 'ja', name: 'Google Eagle'});
+    const naturalVoice = createSpeechSynthesisVoice(
+        {lang: 'ja', name: 'Google Horse (Natural)'});
+    speech.setVoices([voice, naturalVoice]);
+    voiceLanguageController.setUserPreferredVoice(voice);
+    chrome.readingMode.baseLanguageForSpeech = voice.lang;
+    voiceLanguageController.onPageLanguageChanged();
+
+    metrics.reset();
+
+    // This triggers autoswitching to the natural voice
+    voiceLanguageController.onVoicesChanged();
+
+    assertEquals(naturalVoice, voiceLanguageController.getCurrentVoice());
+    assertEquals(0, metrics.getCallCount('recordVoiceLanguageChange'));
+  });
 });

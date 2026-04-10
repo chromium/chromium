@@ -31,6 +31,7 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordTime',
       'recordVoiceSpeed',
       'recordVoiceType',
+      'recordVoiceLanguageChange',
       'recordCount',
     ]);
   }
@@ -73,6 +74,10 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   recordVoiceType(voiceType: ReadAnythingVoiceType) {
     this.methodCalled('recordVoiceType', voiceType);
+  }
+
+  recordVoiceLanguageChange() {
+    this.methodCalled('recordVoiceLanguageChange');
   }
 
   recordLanguage(lang: string) {

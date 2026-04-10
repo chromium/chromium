@@ -69,6 +69,32 @@ suite('Logger', () => {
     assertEquals(2, metrics.getCallCount('recordHighlightGranularity'));
   });
 
+  test('logVoiceLanguageChange', () => {
+    const voice1 = createSpeechSynthesisVoice({lang: 'en-US'});
+    const voice2 = createSpeechSynthesisVoice({lang: 'en-UK'});
+    const voice3 = createSpeechSynthesisVoice({lang: 'fr-FR'});
+
+    // Same language should not log
+    logger.logVoiceLanguageChange(voice1, voice1);
+    assertEquals(0, metrics.getCallCount('recordVoiceLanguageChange'));
+
+    // Different locale, same base language should log (e.g. en-US to en-UK)
+    logger.logVoiceLanguageChange(voice1, voice2);
+    assertEquals(1, metrics.getCallCount('recordVoiceLanguageChange'));
+    metrics.reset();
+
+    // Different language should log
+    logger.logVoiceLanguageChange(voice1, voice3);
+    assertEquals(1, metrics.getCallCount('recordVoiceLanguageChange'));
+    metrics.reset();
+
+    // Null voices should not log
+    logger.logVoiceLanguageChange(null, voice1);
+    logger.logVoiceLanguageChange(voice1, null);
+    logger.logVoiceLanguageChange(null, null);
+    assertEquals(0, metrics.getCallCount('recordVoiceLanguageChange'));
+  });
+
   test('text settings', async () => {
     logger.logTextSettingsChange(ReadAnythingSettingsChange.FONT_SIZE_CHANGE);
     assertEquals(
