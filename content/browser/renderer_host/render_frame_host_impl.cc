@@ -14672,7 +14672,9 @@ void RenderFrameHostImpl::BindRenderAccessibilityHost(
   // attempt to send updates once it has created one, which happens as part of
   // the commit which in turns updates the browser's token before this method
   // could be called.
-  CHECK(GetAXTreeID().token());
+  // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK once
+  // we are sure this isn't hit.
+  DCHECK(GetAXTreeID().token());
   // `render_accessibility_host_` is reset in `TearDownMojoConnection()`, but
   // this Mojo endpoint lives on another sequence and posts tasks back to this
   // `RenderFrameHostImpl` on the UI thread. After the reset, there may still be
