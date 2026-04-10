@@ -10,7 +10,14 @@
 // Consumer protocol for the Autofill and Passwords settings page.
 @protocol AutofillAndPasswordsConsumer <NSObject>
 
-// TODO(crbug.com/491409453): Add methods to populate UI.
+// Sets the passwords item with detail text.
+- (void)setPasswordsEnabled:(BOOL)enabled;
+
+// Sets the autofill credit card item with detail text.
+- (void)setAutofillCreditCardEnabled:(BOOL)enabled;
+
+// Sets the autofill profile item with detail text.
+- (void)setAutofillProfileEnabled:(BOOL)enabled;
 
 @end
 

@@ -500,6 +500,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/settings/autofill/autofill_ai/coordinator:unit_tests",
     "//ios/chrome/browser/settings/autofill/autofill_ai/ui:unit_tests",
     "//ios/chrome/browser/settings/autofill/autofill_ai/utils:unit_tests",
+    "//ios/chrome/browser/settings/autofill/autofill_and_passwords/ui:unit_tests",
     "//ios/chrome/browser/settings/clear_browsing_data/coordinator:unit_tests",
     "//ios/chrome/browser/settings/clear_browsing_data/quick_delete_other_data/coordinator:unit_tests",
     "//ios/chrome/browser/settings/google_services/manage_accounts/coordinator:unit_tests",

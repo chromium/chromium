@@ -11,9 +11,29 @@ source_set("autofill_and_passwords") {
   deps = [
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/settings/autofill/autofill_and_passwords/utils:autofill_and_passwords_item_utils",
+    "//ios/chrome/browser/settings/ui_bundled:constants",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "autofill_and_passwords_table_view_controller_unittest.mm" ]
+  deps = [
+    ":autofill_and_passwords",
+    "//base",
+    "//base/test:test_support",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/settings/ui_bundled:constants",
+    "//ios/chrome/browser/shared/ui/table_view:test_support",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//testing/gtest",
     "//ui/base",
   ]
 }

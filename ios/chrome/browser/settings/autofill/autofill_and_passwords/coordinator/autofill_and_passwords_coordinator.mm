@@ -57,4 +57,19 @@
   [self.delegate autofillAndPasswordsCoordinatorDidRemove:self];
 }
 
+- (void)autofillAndPasswordsTableViewControllerDidSelectPasswords:
+    (AutofillAndPasswordsTableViewController*)controller {
+  // TODO(crbug.com/491409453): Add method to navigate to passwords settings.
+}
+
+- (void)autofillAndPasswordsTableViewControllerDidSelectAutofillCreditCard:
+    (AutofillAndPasswordsTableViewController*)controller {
+  // TODO(crbug.com/491409453): Add method to navigate to payments settings.
+}
+
+- (void)autofillAndPasswordsTableViewControllerDidSelectAutofillProfile:
+    (AutofillAndPasswordsTableViewController*)controller {
+  // TODO(crbug.com/491409453): Add method to navigate to addresses settings.
+}
+
 @end
