@@ -911,7 +911,7 @@ PLATFORM_INFO = {
     },
     'android-pixel-fold-perf': {
         'description': 'Android U',
-        'num_shards': 10,
+        'num_shards': 8,
         'platform_os': 'android',
         'is_fyi': False
     },
