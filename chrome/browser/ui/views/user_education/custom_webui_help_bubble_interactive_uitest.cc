@@ -430,3 +430,14 @@ IN_PROC_BROWSER_TEST_F(CustomWebUIHelpBubbleUiTest, ShowPromo_FeatureUsed) {
       WaitForHide(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
       CheckIsDismissed(kCustomWebUIHelpBubbleTestFeature, true));
 }
+
+// Regression test for https://crbug.com/496456528
+IN_PROC_BROWSER_TEST_F(CustomWebUIHelpBubbleUiTest, ShowPromoAndCloseBrowser) {
+  RunTestSequence(
+      MaybeShowPromo(kCustomWebUIHelpBubbleTestFeature,
+                     CustomHelpBubbleShown{
+                         CustomWebUIHelpBubble::kHelpBubbleIdForTesting}),
+      Do([this] { browser()->window()->Close(); }),
+      WaitForHide(kBrowserViewElementId),
+      WaitForHide(CustomWebUIHelpBubble::kHelpBubbleIdForTesting));
+}
