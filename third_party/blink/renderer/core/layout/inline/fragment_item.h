@@ -99,6 +99,7 @@ class CORE_EXPORT FragmentItem final {
     void Trace(Visitor* visitor) const { visitor->Trace(line_box_fragment); }
     Member<const PhysicalLineBoxFragment> line_box_fragment;
     wtf_size_t descendants_count;
+    float text_fit_scale = 1.0f;
   };
   // Represents a box fragment appeared in a line. This includes inline boxes
   // (e.g., <span>text</span>) and atomic inlines.
@@ -559,6 +560,7 @@ class CORE_EXPORT FragmentItem final {
   // Returns a pair of text scaling factor and is_scaled_inline_only flag for
   // text-grow and text-shrink properties.
   std::pair<float, bool> GetFitTextScale() const;
+  void SetLineTextFitScale(float scale);
 
   // Get a description of |this| for the debug purposes.
   String ToString() const;

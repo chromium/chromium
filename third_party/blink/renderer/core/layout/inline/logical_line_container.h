@@ -42,6 +42,10 @@ class LogicalLineContainer : public GarbageCollected<LogicalLineContainer> {
   void AddAnnotation(FontHeight metrics, LogicalLineItems& line_items) {
     annotation_line_list_.push_back(AnnotationLine(metrics, line_items));
   }
+
+  void SetTextFitScale(float scale) { text_fit_scale_ = scale; }
+  float TextFitScale() const { return text_fit_scale_; }
+
   // Release all collection buffers.
   void Clear();
   // Set collection sizes to zero without releasing their buffers.
@@ -51,6 +55,7 @@ class LogicalLineContainer : public GarbageCollected<LogicalLineContainer> {
  private:
   Member<LogicalLineItems> base_line_;
   HeapVector<AnnotationLine> annotation_line_list_;
+  float text_fit_scale_ = 1.0f;
 };
 
 }  // namespace blink

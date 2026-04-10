@@ -22,6 +22,7 @@ void LogicalLineContainer::Clear() {
     line->clear();
   }
   annotation_line_list_.clear();
+  text_fit_scale_ = 1.0f;
 }
 
 void LogicalLineContainer::Shrink() {
@@ -30,6 +31,7 @@ void LogicalLineContainer::Shrink() {
     line->clear();
   }
   annotation_line_list_.Shrink(0);
+  text_fit_scale_ = 1.0f;
 }
 
 void LogicalLineContainer::MoveInBlockDirection(LayoutUnit delta) {

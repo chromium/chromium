@@ -830,8 +830,15 @@ std::pair<float, bool> FragmentItem::GetFitTextScale() const {
       DCHECK(!data->is_svg);
       return {data->length_adjust_scale, data->is_fit_text_inline};
     }
+  } else if (Type() == kLine) {
+    return {line_.text_fit_scale, false};
   }
   return {1.0f, false};
+}
+
+void FragmentItem::SetLineTextFitScale(float scale) {
+  DCHECK_EQ(Type(), kLine);
+  line_.text_fit_scale = scale;
 }
 
 FontHeight FragmentItem::AnnotationMetrics() const {

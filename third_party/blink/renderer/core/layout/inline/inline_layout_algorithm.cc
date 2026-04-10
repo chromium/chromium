@@ -601,6 +601,7 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
     line_container->MoveInBlockDirection(line_box_metrics.ascent);
   }
 
+  line_container->SetTextFitScale(line_info->TextFitScale());
   container_builder_.SetInlineSize(inline_size);
 }
 
