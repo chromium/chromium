@@ -246,6 +246,14 @@ void PasswordAutofillManager::OnSuggestionsHidden(
   metrics_util::LogPasswordDropdownHidden();
 }
 
+bool PasswordAutofillManager::OnFilterChanged(const std::u16string& filter) {
+  return false;
+}
+
+bool PasswordAutofillManager::OnSearchSubmitted(const std::u16string& filter) {
+  return false;
+}
+
 void PasswordAutofillManager::DidSelectSuggestion(
     const Suggestion& suggestion) {
   ClearPreviewedForm();

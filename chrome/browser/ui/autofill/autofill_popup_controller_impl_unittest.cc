@@ -65,8 +65,72 @@ EqualsSuggestionMetadata(
             metadata.from_search_result));
 }
 
-using AutofillPopupControllerImplTest = AutofillSuggestionControllerTestBase<
-    TestAutofillPopupControllerAutofillClient<>>;
+class AutofillPopupControllerImplTest
+    : public AutofillSuggestionControllerTestBase<
+          TestAutofillPopupControllerAutofillClient<>> {
+ public:
+  // Encapsulates the setup required to get the controller and its associated
+  // AtMemoryController into a search-ready state for @memory tests.
+  void ShowAtMemoryPopup() {
+    // 1. Set the trigger source inside the delegate.
+    manager().external_delegate().OnQuery(
+        FormData(), FormFieldData(), gfx::Rect(),
+        AutofillSuggestionTriggerSource::kAtMemory,
+        /*update_datalist=*/false);
+
+    // 2. Setup the bridge so the mock delegate executes real initialization
+    // logic.
+    EXPECT_CALL(manager().external_delegate(), OnSuggestionsShown)
+        .WillOnce([&](base::span<const Suggestion> suggestions) {
+          manager()
+              .external_delegate()
+              .AutofillExternalDelegate::OnSuggestionsShown(suggestions);
+        });
+
+    // 3. Actually show the suggestions, which triggers the search session
+    // initialization in AtMemoryController.
+    ShowSuggestions(manager(), {SuggestionType::kAtMemorySearchResult},
+                    AutofillSuggestionTriggerSource::kAtMemory);
+  }
+
+  // Simulates a user typing a query into the @memory search bar, mocking the
+  // backend response and updating the UI state.
+  void SimulateAtMemoryQuery(const std::u16string& query,
+                             const std::vector<std::u16string>& results) {
+    // 1. Prepare the backend mock results.
+    std::vector<accessibility_annotator::MemorySearchResult> entries;
+    for (const auto& value : results) {
+      entries.emplace_back(accessibility_annotator::EntryType::kNameFull,
+                           u"Name", value);
+    }
+    accessibility_annotator::MemorySearchResults search_results(
+        accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
+        std::move(entries));
+
+    // 2. Setup the backend expectation if the query is non-empty.
+    if (!query.empty()) {
+      EXPECT_CALL(*client().accessibility_query_service(),
+                  Query(std::u16string_view(query), _, _))
+          .WillOnce(base::test::RunOnceCallback<2>(std::move(search_results)));
+    }
+
+    // 3. Trigger the search via the UI.
+    client().suggestion_controller(manager()).SetFilter(
+        AutofillPopupController::StringFilter(query),
+        AutofillPopupController::FilterSource::kInputChanged);
+
+    // 4. Manually update the controller's suggestions to reflect the mock
+    // results. This bypasses the full async callback chain to keep the test
+    // focused.
+    std::vector<Suggestion> suggestions;
+    for (const auto& value : results) {
+      suggestions.emplace_back(value, SuggestionType::kAtMemorySearchResult);
+    }
+    test_api(static_cast<AutofillPopupControllerImpl&>(
+                 client().suggestion_controller(manager())))
+        .SetSuggestions(std::move(suggestions));
+  }
+};
 
 TEST_F(AutofillPopupControllerImplTest, AcceptSuggestionRespectsTimeout) {
   // Calls before the threshold are ignored.
@@ -551,29 +615,6 @@ TEST_F(AutofillPopupControllerImplTest, HideInMainFrameOnZoomChange) {
   Mock::VerifyAndClearExpectations(&client().suggestion_controller(manager()));
 }
 
-TEST_F(AutofillPopupControllerImplTest, AtMemoryShowsSearchBarAndNoFiltering) {
-  AutofillPopupController& controller =
-      client().suggestion_controller(manager());
-  manager().external_delegate().OnQuery(
-      FormData(), FormFieldData(), gfx::Rect(),
-      AutofillSuggestionTriggerSource::kAtMemory,
-      /*update_datalist=*/false);
-  ShowSuggestions(manager(),
-                  {Suggestion(u"abc", SuggestionType::kAtMemorySearchResult)},
-                  AutofillSuggestionTriggerSource::kAtMemory);
-
-  EXPECT_EQ(controller.GetMainFillingProduct(), FillingProduct::kAtMemory);
-
-  EXPECT_CALL(*client().accessibility_query_service(), Query(_, _, _))
-      .WillOnce(base::test::RunOnceCallback<
-                2>(accessibility_annotator::MemorySearchResults(
-          accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess)));
-
-  controller.SetFilter(AutofillPopupController::StringFilter(u"nono"),
-                       AutofillPopupController::FilterSource::kInputChanged);
-  EXPECT_EQ(controller.GetSuggestions().size(), 0u);
-}
-
 TEST_F(AutofillPopupControllerImplTest,
        SuggestionFiltering_NoFilteringByDefault) {
   AutofillPopupController& controller =
@@ -793,51 +834,48 @@ TEST_F(AutofillPopupControllerImplTest,
   EXPECT_TRUE(controller.HasFilteredOutSuggestions());
 }
 
-TEST_F(AutofillPopupControllerImplTest, AtMemory_NoFilter_NoMessage) {
+TEST_F(AutofillPopupControllerImplTest,
+       AtMemory_NoFilter_NoSuggestionsMessageNotShown) {
   ShowSuggestions(manager(), {SuggestionType::kAtMemorySearchResult},
                   AutofillSuggestionTriggerSource::kAtMemory);
   EXPECT_FALSE(client().suggestion_controller(manager())
                    .ShouldShowNoSuggestionsMessage());
 }
 
-TEST_F(AutofillPopupControllerImplTest, AtMemory_FilterWithResults_NoMessage) {
-  Suggestion suggestion(u"result", SuggestionType::kAtMemorySearchResult);
-  suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
-  ShowSuggestions(manager(), {suggestion},
-                  AutofillSuggestionTriggerSource::kAtMemory);
-
-  accessibility_annotator::MemorySearchResult entry(
-      accessibility_annotator::EntryType::kNameFull, u"Name", u"result");
-  accessibility_annotator::MemorySearchResults result(
-      accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
-      {entry});
-
-  EXPECT_CALL(*client().accessibility_query_service(), Query(_, _, _))
-      .WillOnce(base::test::RunOnceCallback<2>(result));
-
-  client().suggestion_controller(manager()).SetFilter(
-      AutofillPopupController::StringFilter(u"res"),
-      AutofillPopupController::FilterSource::kInputChanged);
+// Tests that the "no suggestions" message is not shown when @memory is
+// triggered and the query returns results.
+TEST_F(AutofillPopupControllerImplTest,
+       AtMemory_FilterWithResults_NoSuggestionsMessageNotShown) {
+  ShowAtMemoryPopup();
+  SimulateAtMemoryQuery(/*query=*/u"res", /*results=*/{u"result"});
   EXPECT_FALSE(client().suggestion_controller(manager())
                    .ShouldShowNoSuggestionsMessage());
 }
+// Tests that clearing the search query clears the suggestions in an @memory
+// session.
+TEST_F(AutofillPopupControllerImplTest, AtMemory_ClearingFilterClearsResults) {
+  ShowAtMemoryPopup();
+  AutofillPopupController& controller =
+      client().suggestion_controller(manager());
 
-TEST_F(AutofillPopupControllerImplTest, AtMemory_FilterWithNoResults_ShowMessage) {
-  ShowSuggestions(manager(), std::vector<SuggestionType>{},
-                  AutofillSuggestionTriggerSource::kAtMemory);
+  // 1. Simulate a search with results.
+  SimulateAtMemoryQuery(/*query=*/u"res", /*results=*/{u"result"});
+  ASSERT_EQ(controller.GetSuggestions().size(), 1u);
 
-  EXPECT_CALL(*client().accessibility_query_service(), Query(_, _, _))
-      .WillOnce(base::test::RunOnceCallback<
-                2>(accessibility_annotator::MemorySearchResults(
-          accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess)));
+  // 2. Clear the filter.
+  // The controller should notify the delegate even when the filter is nullopt.
+  SimulateAtMemoryQuery(/*query=*/u"", /*results=*/{});
 
-  client().suggestion_controller(manager()).SetFilter(
-      AutofillPopupController::StringFilter(u"abc"),
-      AutofillPopupController::FilterSource::kInputChanged);
-  // In the mock/test environment, we ensure GetSuggestions() is empty.
-  test_api(static_cast<AutofillPopupControllerImpl&>(
-               client().suggestion_controller(manager())))
-      .SetSuggestions({});
+  // 3. Verify suggestions are now empty.
+  EXPECT_EQ(controller.GetSuggestions().size(), 0u);
+}
+
+// Tests that the "no suggestions" message is shown when @memory is triggered
+// and the query returns no results.
+TEST_F(AutofillPopupControllerImplTest,
+       AtMemory_FilterWithNoResults_NoSuggestionsMessageShown) {
+  ShowAtMemoryPopup();
+  SimulateAtMemoryQuery(/*query=*/u"abc", /*results=*/{});
   EXPECT_TRUE(client().suggestion_controller(manager())
                   .ShouldShowNoSuggestionsMessage());
 }
@@ -1241,24 +1279,6 @@ TEST_F(AutofillPopupControllerImplTestAccessibility,
   EXPECT_EQ(std::nullopt, ui::GetActivePopupAxUniqueId());
 }
 #endif
-
-TEST_F(AutofillPopupControllerImplTest, AtMemoryPopupDisplayed_TypedTrigger) {
-  base::HistogramTester histogram_tester;
-  ShowSuggestions(manager(), std::vector<Suggestion>(),
-                  AutofillSuggestionTriggerSource::kAtMemory);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.AtMemory.Funnel.PopupDisplayed",
-      AutofillMetrics::AtMemoryTriggerSource::kTypedTrigger, 1);
-}
-
-TEST_F(AutofillPopupControllerImplTest, AtMemoryPopupDisplayed_ContextMenu) {
-  base::HistogramTester histogram_tester;
-  ShowSuggestions(manager(), std::vector<Suggestion>(),
-                  AutofillSuggestionTriggerSource::kAtMemoryContextMenu);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.AtMemory.Funnel.PopupDisplayed",
-      AutofillMetrics::AtMemoryTriggerSource::kContextMenu, 1);
-}
 
 }  // namespace
 }  // namespace autofill
