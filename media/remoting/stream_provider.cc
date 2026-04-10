@@ -546,6 +546,11 @@ void StreamProvider::OnAcquireDemuxer(
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(message->has_acquire_demuxer_rpc());
 
+  if (audio_stream_ || video_stream_) {
+    VLOG(1) << __func__ << " Demuxer streams already acquired, ignoring.";
+    return;
+  }
+
   int32_t audio_demuxer_handle =
       message->acquire_demuxer_rpc().audio_demuxer_handle();
   int32_t video_demuxer_handle =
