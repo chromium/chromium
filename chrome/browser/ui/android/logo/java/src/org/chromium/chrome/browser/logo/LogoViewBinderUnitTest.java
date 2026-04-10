@@ -21,6 +21,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.core.content.ContextCompat;
 import androidx.test.filters.SmallTest;
@@ -257,5 +258,29 @@ public class LogoViewBinderUnitTest {
 
         logoModel.set(LogoProperties.SHOW_DEFAULT_GOOGLE_LOGO, true);
         verify(mMockLogoView).maybeShowDefaultLogoDrawable();
+    }
+
+    @Test
+    @SmallTest
+    public void testSetLogoTopMargin() {
+        mLogoModel.set(LogoProperties.LOGO_TOP_MARGIN, 10);
+        MarginLayoutParams params = (MarginLayoutParams) mLogoView.getLayoutParams();
+        assertEquals(10, params.topMargin);
+    }
+
+    @Test
+    @SmallTest
+    public void testSetLogoBottomMargin() {
+        mLogoModel.set(LogoProperties.LOGO_BOTTOM_MARGIN, 20);
+        MarginLayoutParams params = (MarginLayoutParams) mLogoView.getLayoutParams();
+        assertEquals(20, params.bottomMargin);
+    }
+
+    @Test
+    @SmallTest
+    public void testSetLogoHeight() {
+        mLogoModel.set(LogoProperties.LOGO_HEIGHT, 50);
+        MarginLayoutParams params = (MarginLayoutParams) mLogoView.getLayoutParams();
+        assertEquals(50, params.height);
     }
 }

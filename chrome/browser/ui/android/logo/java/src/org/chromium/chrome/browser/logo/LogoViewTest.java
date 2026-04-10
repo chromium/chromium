@@ -217,4 +217,25 @@ public class LogoViewTest {
         Assert.assertEquals(doodleHeight, logoLayoutParams.height);
         Assert.assertEquals(doodleTopMargin, logoLayoutParams.topMargin);
     }
+
+    @Test
+    public void testSetLogoTopMargin() {
+        MarginLayoutParams params = (MarginLayoutParams) mView.getLayoutParams();
+        mView.setLogoTopMargin(100);
+        Assert.assertEquals(100, params.topMargin);
+    }
+
+    @Test
+    public void testSetLogoBottomMargin() {
+        MarginLayoutParams params = (MarginLayoutParams) mView.getLayoutParams();
+        mView.setLogoBottomMargin(50);
+        Assert.assertEquals(50, params.bottomMargin);
+    }
+
+    @Test
+    public void testSetLogoHeight() {
+        MarginLayoutParams params = (MarginLayoutParams) mView.getLayoutParams();
+        mView.setLogoHeight(200);
+        Assert.assertEquals(200, params.height);
+    }
 }

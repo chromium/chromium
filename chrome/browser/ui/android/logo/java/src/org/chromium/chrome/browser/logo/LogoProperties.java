@@ -24,6 +24,7 @@ interface LogoProperties {
     WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
     WritableIntPropertyKey LOGO_TOP_MARGIN = new WritableIntPropertyKey();
     WritableIntPropertyKey LOGO_BOTTOM_MARGIN = new WritableIntPropertyKey();
+    WritableIntPropertyKey LOGO_HEIGHT = new WritableIntPropertyKey();
     WritableObjectPropertyKey<Boolean> SET_END_FADE_ANIMATION =
             new WritableObjectPropertyKey<>(/* skipEquality= */ true);
     // TODO(crbug.com/40881870): Change the VISIBILITY properties to some sort of state
@@ -56,6 +57,7 @@ interface LogoProperties {
                 ALPHA,
                 LOGO_TOP_MARGIN,
                 LOGO_BOTTOM_MARGIN,
+                LOGO_HEIGHT,
                 SET_END_FADE_ANIMATION,
                 VISIBILITY,
                 ANIMATION_ENABLED,

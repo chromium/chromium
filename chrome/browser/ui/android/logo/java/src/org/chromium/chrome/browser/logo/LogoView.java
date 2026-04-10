@@ -152,6 +152,39 @@ public class LogoView extends FrameLayout implements OnClickListener {
         mDoodleSize = doodleSize;
     }
 
+    /**
+     * Sets the logo top margin.
+     *
+     * @param topMargin The top margin in pixels.
+     */
+    void setLogoTopMargin(int topMargin) {
+        MarginLayoutParams marginLayoutParams = (MarginLayoutParams) getLayoutParams();
+        marginLayoutParams.topMargin = topMargin;
+        setLayoutParams(marginLayoutParams);
+    }
+
+    /**
+     * Sets the logo bottom margin.
+     *
+     * @param bottomMargin The bottom margin in pixels.
+     */
+    void setLogoBottomMargin(int bottomMargin) {
+        MarginLayoutParams marginLayoutParams = (MarginLayoutParams) getLayoutParams();
+        marginLayoutParams.bottomMargin = bottomMargin;
+        setLayoutParams(marginLayoutParams);
+    }
+
+    /**
+     * Sets the logo height.
+     *
+     * @param height The height of the logo in pixels.
+     */
+    void setLogoHeight(int height) {
+        MarginLayoutParams marginLayoutParams = (MarginLayoutParams) getLayoutParams();
+        marginLayoutParams.height = height;
+        setLayoutParams(marginLayoutParams);
+    }
+
     /** Jumps to the end of the logo cross-fading animation, if any. */
     void endFadeAnimation() {
         if (mFadeAnimation != null) {

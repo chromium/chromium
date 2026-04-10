@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.logo;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
@@ -307,14 +308,12 @@ public class LogoCoordinatorUnitTest {
         mLogoCoordinator = createLogoCoordinator();
         verify(mLogoView).setDoodleSize(LogoUtils.DoodleSize.REGULAR);
 
-        ViewGroup.MarginLayoutParams layoutParams = new ViewGroup.MarginLayoutParams(0, 0);
-        when(mLogoView.getLayoutParams()).thenReturn(layoutParams);
-
         // Tablet transitions to multi-window mode.
         clearInvocations(mLogoView);
         when(mIsInMultiWindowModeSupplier.get()).thenReturn(true);
         mLogoCoordinator.updateDoodleOnTablet(/* showingNonStandardGoogleLogo= */ true);
-        verify(mLogoView).setLayoutParams(layoutParams);
+        verify(mLogoView).setLogoHeight(anyInt());
+        verify(mLogoView).setLogoTopMargin(anyInt());
     }
 
     @Test

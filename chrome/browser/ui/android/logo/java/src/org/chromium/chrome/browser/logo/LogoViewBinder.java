@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.logo;
 
 import android.view.View;
-import android.view.ViewGroup.MarginLayoutParams;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -23,13 +22,11 @@ class LogoViewBinder
         if (LogoProperties.ALPHA == propertyKey) {
             logoView.setAlpha(model.get(LogoProperties.ALPHA));
         } else if (LogoProperties.LOGO_TOP_MARGIN == propertyKey) {
-            MarginLayoutParams marginLayoutParams = (MarginLayoutParams) logoView.getLayoutParams();
-            marginLayoutParams.topMargin = model.get(LogoProperties.LOGO_TOP_MARGIN);
-            logoView.setLayoutParams(marginLayoutParams);
+            logoView.setLogoTopMargin(model.get(LogoProperties.LOGO_TOP_MARGIN));
         } else if (LogoProperties.LOGO_BOTTOM_MARGIN == propertyKey) {
-            MarginLayoutParams marginLayoutParams = (MarginLayoutParams) logoView.getLayoutParams();
-            marginLayoutParams.bottomMargin = model.get(LogoProperties.LOGO_BOTTOM_MARGIN);
-            logoView.setLayoutParams(marginLayoutParams);
+            logoView.setLogoBottomMargin(model.get(LogoProperties.LOGO_BOTTOM_MARGIN));
+        } else if (LogoProperties.LOGO_HEIGHT == propertyKey) {
+            logoView.setLogoHeight(model.get(LogoProperties.LOGO_HEIGHT));
         } else if (LogoProperties.SET_END_FADE_ANIMATION == propertyKey) {
             logoView.endFadeAnimation();
         } else if (LogoProperties.VISIBILITY == propertyKey) {

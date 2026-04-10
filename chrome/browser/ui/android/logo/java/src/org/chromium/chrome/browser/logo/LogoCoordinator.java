@@ -189,15 +189,11 @@ public class LogoCoordinator {
      */
     public void setLayoutWidth(int widthPx) {
         MarginLayoutParams layoutParams = (MarginLayoutParams) mLogoView.getLayoutParams();
-        if (layoutParams.width == widthPx
-                && layoutParams.leftMargin == 0
-                && layoutParams.rightMargin == 0) {
+        if (layoutParams.width == widthPx) {
             return;
         }
 
         layoutParams.width = widthPx;
-        layoutParams.leftMargin = 0;
-        layoutParams.rightMargin = 0;
     }
 
     /** Jumps to the end of the logo view's cross-fading animation, if any.*/
@@ -283,8 +279,11 @@ public class LogoCoordinator {
         setDoodleSize(doodleSize);
 
         if (showingNonStandardGoogleLogo) {
-            LogoUtils.setLogoViewLayoutParamsForDoodle(
-                    mLogoView, mContext.getResources(), doodleSize);
+            int[] logoParams =
+                    LogoUtils.getLogoViewLayoutParams(
+                            mContext.getResources(), /* isLogoDoodle= */ true, doodleSize);
+            mLogoModel.set(LogoProperties.LOGO_HEIGHT, logoParams[0]);
+            mLogoModel.set(LogoProperties.LOGO_TOP_MARGIN, logoParams[1]);
         }
     }
 

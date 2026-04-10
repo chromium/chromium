@@ -12,7 +12,5 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="@dimen/ntp_logo_height"
     android:layout_gravity="center_horizontal"
-    android:layout_marginStart="16dp"
-    android:layout_marginEnd="16dp"
     android:layout_marginTop="@dimen/ntp_logo_margin_top"
     android:layout_marginBottom="@dimen/ntp_logo_margin_bottom" />
