@@ -434,20 +434,9 @@ bool PolicyService::AreUpdatesSuppressedNow(base::Time now) const {
 
   const PolicyStatus<UpdatesSuppressedTimes> suppression =
       GetUpdatesSuppressedTimes();
-  if (!suppression || !suppression.policy().valid()) {
-    return false;
-  }
-  base::Time::Exploded now_local;
-  now.LocalExplode(&now_local);
-  const bool are_updates_suppressed =
-      suppression.policy().contains(now_local.hour, now_local.minute);
-  VLOG(0) << __func__ << ": Updates are "
-          << (are_updates_suppressed ? "" : "not ") << "suppressed: now=" << now
-          << ": UpdatesSuppressedTimes: start_hour_:"
-          << suppression.policy().start_hour_
-          << ": start_minute_:" << suppression.policy().start_minute_
-          << ": duration_minute_:" << suppression.policy().duration_minute_;
-  return are_updates_suppressed;
+  return suppression
+             ? ::updater::AreUpdatesSuppressedNow(suppression.policy(), now)
+             : false;
 }
 
 template <typename T, typename U>
@@ -562,6 +551,24 @@ bool IsCloudManaged() {
   return dm_storage && (dm_storage->IsValidDMToken() ||
                         (!dm_storage->GetEnrollmentToken().empty() &&
                          !dm_storage->IsDeviceDeregistered()));
+}
+
+bool AreUpdatesSuppressedNow(UpdatesSuppressedTimes updates_suppressed_times,
+                             base::Time now) {
+  if (!updates_suppressed_times.valid()) {
+    return false;
+  }
+  base::Time::Exploded now_local;
+  now.LocalExplode(&now_local);
+  const bool are_updates_suppressed =
+      updates_suppressed_times.contains(now_local.hour, now_local.minute);
+  VLOG(0) << __func__ << ": Updates are "
+          << (are_updates_suppressed ? "" : "not ") << "suppressed: now=" << now
+          << ": UpdatesSuppressedTimes: start_hour_:"
+          << updates_suppressed_times.start_hour_
+          << ": start_minute_:" << updates_suppressed_times.start_minute_
+          << ": duration_minute_:" << updates_suppressed_times.duration_minute_;
+  return are_updates_suppressed;
 }
 
 }  // namespace updater

@@ -360,6 +360,11 @@ struct PolicyServiceProxyConfiguration {
 // blocking IO.
 bool IsCloudManaged();
 
+// Determines whether `updates_suppressed_times` disallows updates from
+// occurring at the specified time.
+bool AreUpdatesSuppressedNow(UpdatesSuppressedTimes updates_suppressed_times,
+                             base::Time now = base::Time::Now());
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_POLICY_SERVICE_H_

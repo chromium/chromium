@@ -65,6 +65,8 @@
 #include "components/update_client/protocol_definition.h"
 #include "components/update_client/update_client.h"
 
+namespace updater {
+
 namespace {
 
 HRESULT OpenCallerProcessHandle(DWORD proc_id,
@@ -87,9 +89,42 @@ std::optional<std::wstring> StringFromVariant(const VARIANT& source) {
   return {};
 }
 
-}  // namespace
+// Holds the result of the IPC to retrieve PolicyService data.
+template <typename T>
+class PolicyStatusResult
+    : public base::RefCountedThreadSafe<PolicyStatusResult<T>> {
+ public:
+  using ValueGetter = base::RepeatingCallback<PolicyStatus<T>()>;
 
-namespace updater {
+  static auto Get(ValueGetter value_getter) {
+    auto result = base::WrapRefCounted(new PolicyStatusResult<T>(value_getter));
+    AppServerWin::PostRpcTask(
+        base::BindOnce(&PolicyStatusResult::GetValueOnSequence, result));
+    result->completion_event.TimedWait(base::Seconds(60));
+    return result->value;
+  }
+
+ private:
+  friend base::RefCountedThreadSafe<PolicyStatusResult<T>>;
+  virtual ~PolicyStatusResult() = default;
+
+  explicit PolicyStatusResult(ValueGetter value_getter)
+      : value_getter(value_getter) {}
+
+  void GetValueOnSequence() {
+    PolicyStatus<T> policy_status = value_getter.Run();
+    if (policy_status) {
+      value = policy_status;
+    }
+    completion_event.Signal();
+  }
+
+  ValueGetter value_getter;
+  std::optional<PolicyStatus<T>> value;
+  base::WaitableEvent completion_event;
+};
+
+}  // namespace
 
 // Implements `IAppVersionWeb`.
 class AppVersionWebImpl : public IDispatchImpl<IAppVersionWeb> {
@@ -1398,12 +1433,13 @@ STDMETHODIMP PolicyStatusImpl::get_lastCheckPeriodMinutes(DWORD* minutes) {
     return E_INVALIDARG;
   }
 
-  PolicyStatus<base::TimeDelta> period = policy_service_->GetLastCheckPeriod();
+  auto period = PolicyStatusResult<base::TimeDelta>::Get(
+      base::BindRepeating(&PolicyService::GetLastCheckPeriod, policy_service_));
   if (!period) {
     return E_FAIL;
   }
 
-  *minutes = period.policy().InMinutes();
+  *minutes = period->policy().InMinutes();
   return S_OK;
 }
 
@@ -1420,17 +1456,21 @@ STDMETHODIMP PolicyStatusImpl::get_updatesSuppressedTimes(
     return E_INVALIDARG;
   }
 
-  PolicyStatus<UpdatesSuppressedTimes> updates_suppressed_times =
-      policy_service_->GetUpdatesSuppressedTimes();
-  if (!updates_suppressed_times || !updates_suppressed_times.policy().valid()) {
+  auto updates_suppressed_times =
+      PolicyStatusResult<UpdatesSuppressedTimes>::Get(base::BindRepeating(
+          &PolicyService::GetUpdatesSuppressedTimes, policy_service_));
+  if (!updates_suppressed_times ||
+      !updates_suppressed_times->policy().valid()) {
     return E_FAIL;
   }
 
-  *start_hour = updates_suppressed_times.policy().start_hour_;
-  *start_min = updates_suppressed_times.policy().start_minute_;
-  *duration_min = updates_suppressed_times.policy().duration_minute_;
+  *start_hour = updates_suppressed_times->policy().start_hour_;
+  *start_min = updates_suppressed_times->policy().start_minute_;
+  *duration_min = updates_suppressed_times->policy().duration_minute_;
   *are_updates_suppressed =
-      policy_service_->AreUpdatesSuppressedNow() ? VARIANT_TRUE : VARIANT_FALSE;
+      AreUpdatesSuppressedNow(updates_suppressed_times->policy())
+          ? VARIANT_TRUE
+          : VARIANT_FALSE;
 
   return S_OK;
 }
@@ -1440,13 +1480,14 @@ STDMETHODIMP PolicyStatusImpl::get_downloadPreferenceGroupPolicy(BSTR* pref) {
     return E_INVALIDARG;
   }
 
-  PolicyStatus<std::string> download_preference =
-      policy_service_->GetDownloadPreference();
+  auto download_preference =
+      PolicyStatusResult<std::string>::Get(base::BindRepeating(
+          &PolicyService::GetDownloadPreference, policy_service_));
   if (!download_preference) {
     return E_FAIL;
   }
 
-  *pref = base::win::ScopedBstr(base::UTF8ToWide(download_preference.policy()))
+  *pref = base::win::ScopedBstr(base::UTF8ToWide(download_preference->policy()))
               .Release();
   return S_OK;
 }
@@ -1456,13 +1497,13 @@ STDMETHODIMP PolicyStatusImpl::get_packageCacheSizeLimitMBytes(DWORD* limit) {
     return E_INVALIDARG;
   }
 
-  PolicyStatus<int> cache_size_limit =
-      policy_service_->GetPackageCacheSizeLimitMBytes();
+  auto cache_size_limit = PolicyStatusResult<int>::Get(base::BindRepeating(
+      &PolicyService::GetPackageCacheSizeLimitMBytes, policy_service_));
   if (!cache_size_limit) {
     return E_FAIL;
   }
 
-  *limit = cache_size_limit.policy();
+  *limit = cache_size_limit->policy();
   return S_OK;
 }
 
@@ -1471,13 +1512,13 @@ STDMETHODIMP PolicyStatusImpl::get_packageCacheExpirationTimeDays(DWORD* days) {
     return E_INVALIDARG;
   }
 
-  PolicyStatus<int> cache_life_limit =
-      policy_service_->GetPackageCacheExpirationTimeDays();
+  auto cache_life_limit = PolicyStatusResult<int>::Get(base::BindRepeating(
+      &PolicyService::GetPackageCacheExpirationTimeDays, policy_service_));
   if (!cache_life_limit) {
     return E_FAIL;
   }
 
-  *days = cache_life_limit.policy();
+  *days = cache_life_limit->policy();
   return S_OK;
 }
 
@@ -1488,13 +1529,14 @@ STDMETHODIMP PolicyStatusImpl::get_effectivePolicyForAppInstalls(
     return E_INVALIDARG;
   }
 
-  PolicyStatus<int> install_policy =
-      policy_service_->GetPolicyForAppInstalls(base::WideToUTF8(app_id));
+  auto install_policy = PolicyStatusResult<int>::Get(
+      base::BindRepeating(&PolicyService::GetPolicyForAppInstalls,
+                          policy_service_, base::WideToUTF8(app_id)));
   if (!install_policy) {
     return E_FAIL;
   }
 
-  *policy = install_policy.policy();
+  *policy = install_policy->policy();
   return S_OK;
 }
 
@@ -1504,13 +1546,14 @@ STDMETHODIMP PolicyStatusImpl::get_effectivePolicyForAppUpdates(BSTR app_id,
     return E_INVALIDARG;
   }
 
-  PolicyStatus<int> update_policy =
-      policy_service_->GetPolicyForAppUpdates(base::WideToUTF8(app_id));
+  auto update_policy = PolicyStatusResult<int>::Get(
+      base::BindRepeating(&PolicyService::GetPolicyForAppUpdates,
+                          policy_service_, base::WideToUTF8(app_id)));
   if (!update_policy) {
     return E_FAIL;
   }
 
-  *policy = update_policy.policy();
+  *policy = update_policy->policy();
   return S_OK;
 }
 
@@ -1520,14 +1563,15 @@ STDMETHODIMP PolicyStatusImpl::get_targetVersionPrefix(BSTR app_id,
     return E_INVALIDARG;
   }
 
-  PolicyStatus<std::string> target_version_prefix =
-      policy_service_->GetTargetVersionPrefix(base::WideToUTF8(app_id));
+  auto target_version_prefix = PolicyStatusResult<std::string>::Get(
+      base::BindRepeating(&PolicyService::GetTargetVersionPrefix,
+                          policy_service_, base::WideToUTF8(app_id)));
   if (!target_version_prefix) {
     return E_FAIL;
   }
 
   *prefix =
-      base::win::ScopedBstr(base::UTF8ToWide(target_version_prefix.policy()))
+      base::win::ScopedBstr(base::UTF8ToWide(target_version_prefix->policy()))
           .Release();
   return S_OK;
 }
@@ -1539,15 +1583,15 @@ STDMETHODIMP PolicyStatusImpl::get_isRollbackToTargetVersionAllowed(
     return E_INVALIDARG;
   }
 
-  PolicyStatus<bool> is_rollback_allowed =
-      policy_service_->IsRollbackToTargetVersionAllowed(
-          base::WideToUTF8(app_id));
+  auto is_rollback_allowed = PolicyStatusResult<bool>::Get(
+      base::BindRepeating(&PolicyService::IsRollbackToTargetVersionAllowed,
+                          policy_service_, base::WideToUTF8(app_id)));
   if (!is_rollback_allowed) {
     return E_FAIL;
   }
 
   *rollback_allowed =
-      is_rollback_allowed.policy() ? VARIANT_TRUE : VARIANT_FALSE;
+      is_rollback_allowed->policy() ? VARIANT_TRUE : VARIANT_FALSE;
   return S_OK;
 }
 
@@ -1571,41 +1615,6 @@ struct LastCheckedTimeResult
  private:
   friend class base::RefCountedThreadSafe<LastCheckedTimeResult>;
   virtual ~LastCheckedTimeResult() = default;
-};
-
-// Holds the result of the IPC to retrieve PolicyService data.
-template <typename T>
-class PolicyStatusResult
-    : public base::RefCountedThreadSafe<PolicyStatusResult<T>> {
- public:
-  using ValueGetter = base::RepeatingCallback<PolicyStatus<T>()>;
-
-  static auto Get(ValueGetter value_getter) {
-    auto result = base::WrapRefCounted(new PolicyStatusResult<T>(value_getter));
-    AppServerWin::PostRpcTask(
-        base::BindOnce(&PolicyStatusResult::GetValueOnSequence, result));
-    result->completion_event.TimedWait(base::Seconds(60));
-    return result->value;
-  }
-
- private:
-  friend base::RefCountedThreadSafe<PolicyStatusResult<T>>;
-  virtual ~PolicyStatusResult() = default;
-
-  explicit PolicyStatusResult(ValueGetter value_getter)
-      : value_getter(value_getter) {}
-
-  void GetValueOnSequence() {
-    PolicyStatus<T> policy_status = value_getter.Run();
-    if (policy_status) {
-      value = policy_status;
-    }
-    completion_event.Signal();
-  }
-
-  ValueGetter value_getter;
-  std::optional<PolicyStatus<T>> value;
-  base::WaitableEvent completion_event;
 };
 
 }  // namespace
@@ -1704,12 +1713,13 @@ STDMETHODIMP PolicyStatusImpl::get_updatesSuppressedTimes(
     return E_FAIL;
   }
   const UpdatesSuppressedTimes updates_suppressed_times =
-      policy_status->effective_policy()->policy;
+      policy_status->policy();
   if (!updates_suppressed_times.valid()) {
     return E_FAIL;
   }
-  *are_updates_suppressed =
-      policy_service_->AreUpdatesSuppressedNow() ? VARIANT_TRUE : VARIANT_FALSE;
+  *are_updates_suppressed = AreUpdatesSuppressedNow(updates_suppressed_times)
+                                ? VARIANT_TRUE
+                                : VARIANT_FALSE;
   return PolicyStatusValueImpl::Create(*policy_status, value);
 }
 
