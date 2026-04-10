@@ -40,48 +40,44 @@ static inline float EllipseXIntercept(float y, float rx, float ry) {
 
 std::pair<float, float> EllipseShape::InlineAndBlockRadiiIncludingMargin()
     const {
-  float margin_radius_x = radius_x_ + ShapeMargin();
-  float margin_radius_y = radius_y_ + ShapeMargin();
-  if (IsHorizontalWritingMode(writing_mode_)) {
-    return {margin_radius_x, margin_radius_y};
-  }
-  return {margin_radius_y, margin_radius_x};
+  return {radius_inline_ + ShapeMargin(), radius_block_ + ShapeMargin()};
 }
 
 LogicalRect EllipseShape::ShapeMarginLogicalBoundingBox() const {
   DCHECK_GE(ShapeMargin(), 0);
-  auto [margin_radius_x, margin_radius_y] =
+  auto [margin_radius_inline, margin_radius_block] =
       InlineAndBlockRadiiIncludingMargin();
-  return LogicalRect(LayoutUnit(center_.x() - margin_radius_x),
-                     LayoutUnit(center_.y() - margin_radius_y),
-                     LayoutUnit(margin_radius_x * 2),
-                     LayoutUnit(margin_radius_y * 2));
+  return LogicalRect(LayoutUnit(center_.x() - margin_radius_inline),
+                     LayoutUnit(center_.y() - margin_radius_block),
+                     LayoutUnit(margin_radius_inline * 2),
+                     LayoutUnit(margin_radius_block * 2));
 }
 
 LineSegment EllipseShape::GetExcludedInterval(LayoutUnit logical_top,
                                               LayoutUnit logical_height) const {
-  auto [margin_radius_x, margin_radius_y] =
+  auto [margin_radius_inline, margin_radius_block] =
       InlineAndBlockRadiiIncludingMargin();
-  if (!margin_radius_x || !margin_radius_y)
+  if (!margin_radius_inline || !margin_radius_block) {
     return LineSegment();
+  }
 
   float y1 = logical_top.ToFloat();
   float y2 = (logical_top + logical_height).ToFloat();
 
-  float top = center_.y() - margin_radius_y;
-  float bottom = center_.y() + margin_radius_y;
+  float top = center_.y() - margin_radius_block;
+  float bottom = center_.y() + margin_radius_block;
   // The y interval doesn't intersect with the ellipse.
   if (y2 < top || y1 >= bottom)
     return LineSegment();
 
   // Assume the y interval covers the vertical center of the ellipse.
-  float x_intercept = margin_radius_x;
+  float x_intercept = margin_radius_inline;
   if (y1 > center_.y() || y2 < center_.y()) {
     // Recalculate x_intercept if the y interval only intersects the upper half
     // or the lower half of the ellipse.
     float y_intercept = y1 > center_.y() ? y1 - center_.y() : y2 - center_.y();
-    x_intercept =
-        EllipseXIntercept(y_intercept, margin_radius_x, margin_radius_y);
+    x_intercept = EllipseXIntercept(y_intercept, margin_radius_inline,
+                                    margin_radius_block);
   }
   return LineSegment(center_.x() - x_intercept, center_.x() + x_intercept);
 }
@@ -90,10 +86,12 @@ void EllipseShape::BuildDisplayPaths(DisplayPaths& paths) const {
   DCHECK(paths.shape.IsEmpty());
   DCHECK(paths.margin_shape.IsEmpty());
 
-  paths.shape = Path::MakeEllipse(center_, radius_x_, radius_y_);
+  paths.shape = Path::MakeEllipse(center_, radius_inline_, radius_block_);
   if (ShapeMargin()) {
-    paths.margin_shape = Path::MakeEllipse(center_, radius_x_ + ShapeMargin(),
-                                           radius_y_ + ShapeMargin());
+    auto [margin_radius_inline, margin_radius_block] =
+        InlineAndBlockRadiiIncludingMargin();
+    paths.margin_shape =
+        Path::MakeEllipse(center_, margin_radius_inline, margin_radius_block);
   }
 }
 

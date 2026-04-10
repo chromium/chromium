@@ -180,8 +180,13 @@ std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
           ellipse->RadiusY(), center.y(), box_height);
       gfx::PointF logical_center = converter.ToLogical(center);
 
-      shape = std::make_unique<EllipseShape>(logical_center, radius_x, radius_y,
-                                             writing_mode);
+      float inline_radius = radius_x;
+      float block_radius = radius_y;
+      if (!IsHorizontalWritingMode(writing_mode)) {
+        std::swap(inline_radius, block_radius);
+      }
+      shape = std::make_unique<EllipseShape>(logical_center, inline_radius,
+                                             block_radius);
       break;
     }
 

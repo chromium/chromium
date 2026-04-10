@@ -40,19 +40,17 @@ namespace blink {
 class CORE_EXPORT EllipseShape final : public Shape {
  public:
   EllipseShape(const gfx::PointF& center,
-               float radius_x,
-               float radius_y,
-               WritingMode writing_mode = WritingMode::kHorizontalTb)
+               float radius_inline,
+               float radius_block)
       : center_(center),
-        radius_x_(radius_x),
-        radius_y_(radius_y),
-        writing_mode_(writing_mode) {
-    DCHECK_GE(radius_x, 0);
-    DCHECK_GE(radius_y, 0);
+        radius_inline_(radius_inline),
+        radius_block_(radius_block) {
+    DCHECK_GE(radius_inline, 0);
+    DCHECK_GE(radius_block, 0);
   }
 
   LogicalRect ShapeMarginLogicalBoundingBox() const override;
-  bool IsEmpty() const override { return !radius_x_ || !radius_y_; }
+  bool IsEmpty() const override { return !radius_inline_ || !radius_block_; }
   LineSegment GetExcludedInterval(LayoutUnit logical_top,
                                   LayoutUnit logical_height) const override;
   void BuildDisplayPaths(DisplayPaths&) const override;
@@ -64,12 +62,10 @@ class CORE_EXPORT EllipseShape final : public Shape {
 
   // The center point in a logical coordinate.
   gfx::PointF center_;
-  // Horizontal radius.
-  float radius_x_;
-  // Vertical radius.
-  float radius_y_;
-
-  const WritingMode writing_mode_;
+  // Radius in the inline direction.
+  float radius_inline_;
+  // Radius in the block direction.
+  float radius_block_;
 };
 
 }  // namespace blink
