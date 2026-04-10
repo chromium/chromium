@@ -556,11 +556,9 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
             return content == mBottomSheet.getCurrentSheetContent();
         }
 
-        boolean shouldSwapForPriorityContent =
+        boolean shouldSwapContent =
                 mBottomSheet.getCurrentSheetContent() != null
-                        && content.getPriority()
-                                < mBottomSheet.getCurrentSheetContent().getPriority()
-                        && canBottomSheetSwitchContent();
+                        && canBottomSheetSwitchContent(content);
 
         // Always add the content to the queue, it will be handled after the sheet closes if
         // necessary. If already hidden, |showNextContent| will handle the request.
@@ -569,7 +567,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
         if (mBottomSheet.getCurrentSheetContent() == null && !mSuppressionTokens.hasTokens()) {
             showNextContent(animate);
             return true;
-        } else if (shouldSwapForPriorityContent) {
+        } else if (shouldSwapContent) {
             mIsSuppressingCurrentContent = true;
             mContentQueue.add(mBottomSheet.getCurrentSheetContent());
             if (!mSuppressionTokens.hasTokens()) {
@@ -780,14 +778,14 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
      *
      * @return Whether the sheet currently supports switching its content.
      */
-    private boolean canBottomSheetSwitchContent() {
+    private boolean canBottomSheetSwitchContent(BottomSheetContent nextContent) {
         BottomSheetContent currentContent = assumeNonNull(mBottomSheet).getCurrentSheetContent();
-        if (!mBottomSheet.isSheetOpen()) {
+        if (nextContent.getPriority() < assumeNonNull(currentContent).getPriority()
+                && !mBottomSheet.isSheetOpen()) {
             return true;
         }
 
-        if (currentContent != null && currentContent.canSuppressInAnyState()) {
-            assert currentContent.getPriority() == BottomSheetContent.ContentPriority.LOW;
+        if (assumeNonNull(currentContent).canBeSuppressed(nextContent)) {
             return true;
         }
 

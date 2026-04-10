@@ -221,8 +221,8 @@ public class ReaderModeBottomSheetCoordinator {
         }
 
         @Override
-        public boolean canSuppressInAnyState() {
-            return true;
+        public boolean canBeSuppressed(BottomSheetContent nextContent) {
+            return nextContent.getPriority() == ContentPriority.HIGH;
         }
 
         @Override

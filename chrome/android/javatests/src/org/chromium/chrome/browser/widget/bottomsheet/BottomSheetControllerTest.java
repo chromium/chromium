@@ -952,7 +952,7 @@ public class BottomSheetControllerTest {
     @MediumTest
     public void testReplaceLowPriorityContentWhileOpen() {
         // Allow the content to be replaced without first closing the sheet.
-        mLowPriorityContent.setCanSuppressInAnyState(true);
+        mLowPriorityContent.setCanBeSuppressed(true);
         requestContentInSheet(mLowPriorityContent, true);
 
         ThreadUtils.runOnUiThreadBlocking(

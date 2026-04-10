@@ -301,11 +301,10 @@ public interface BottomSheetContent {
     int getSheetClosedAccessibilityStringId();
 
     /**
-     * @return True if this content should hide when higher-priority content is requested to be
-     *     shown, even if the sheet is expanded. Otherwise the new content will only be shown after
-     *     the sheet is dismissed. If returning true here, this content's priority should be LOW.
+     * @param nextContent The content that is requesting to be shown.
+     * @return True if this content should hide when another content is requested to be shown.
      */
-    default boolean canSuppressInAnyState() {
+    default boolean canBeSuppressed(BottomSheetContent nextContent) {
         return false;
     }
 

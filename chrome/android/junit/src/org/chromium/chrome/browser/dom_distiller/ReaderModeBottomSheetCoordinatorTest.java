@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -98,8 +99,11 @@ public class ReaderModeBottomSheetCoordinatorTest {
         verify(mBottomSheetController).requestShowContent(any(), eq(true));
         BottomSheetContent bottomSheetContent = mCoordinator.getBottomSheetContentForTesting();
 
+        BottomSheetContent newContent = mock(BottomSheetContent.class);
+        when(newContent.getPriority()).thenReturn(BottomSheetContent.ContentPriority.HIGH);
+
         assertEquals(ContentPriority.LOW, bottomSheetContent.getPriority());
-        assertTrue(bottomSheetContent.canSuppressInAnyState());
+        assertTrue(bottomSheetContent.canBeSuppressed(newContent));
     }
 
     @Test

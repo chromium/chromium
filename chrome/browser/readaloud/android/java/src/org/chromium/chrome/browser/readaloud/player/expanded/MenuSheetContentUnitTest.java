@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.readaloud.player.expanded;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -165,7 +166,9 @@ public class MenuSheetContentUnitTest {
     }
 
     @Test
-    public void testCanSuppressInAnyState() {
-        assertTrue(mContent.canSuppressInAnyState());
+    public void testCanBeSuppressed() {
+        BottomSheetContent newContent = mock(BottomSheetContent.class);
+        when(newContent.getPriority()).thenReturn(BottomSheetContent.ContentPriority.HIGH);
+        assertTrue(mContent.canBeSuppressed(newContent));
     }
 }

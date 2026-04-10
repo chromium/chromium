@@ -239,11 +239,11 @@ public class TestBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public boolean canSuppressInAnyState() {
+    public boolean canBeSuppressed(BottomSheetContent nextContent) {
         return mCanSuppressInAnyState;
     }
 
-    public void setCanSuppressInAnyState(boolean value) {
+    public void setCanBeSuppressed(boolean value) {
         mCanSuppressInAnyState = value;
     }
 }

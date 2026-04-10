@@ -147,8 +147,8 @@ public class TabBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public boolean canSuppressInAnyState() {
-        return false;
+    public boolean canBeSuppressed(BottomSheetContent nextContent) {
+        return true;
     }
 
     @Override

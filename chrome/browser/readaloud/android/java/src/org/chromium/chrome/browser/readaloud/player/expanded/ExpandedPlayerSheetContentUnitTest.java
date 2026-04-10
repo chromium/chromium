@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.readaloud.player.expanded;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Context;
@@ -41,6 +43,7 @@ import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -301,8 +304,10 @@ public class ExpandedPlayerSheetContentUnitTest {
     }
 
     @Test
-    public void testCanSuppressInAnyState() {
-        assertTrue(mContent.canSuppressInAnyState());
+    public void testCanBeSuppressed() {
+        BottomSheetContent newContent = mock(BottomSheetContent.class);
+        when(newContent.getPriority()).thenReturn(BottomSheetContent.ContentPriority.HIGH);
+        assertTrue(mContent.canBeSuppressed(newContent));
     }
 
     @Test
