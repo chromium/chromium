@@ -4080,7 +4080,10 @@ TEST_P(PageContextWrapperTest,
   EXPECT_TRUE(fc_checkbox.is_checked());
 
   ASSERT_TRUE(select_node);
+  EXPECT_EQ(select_node->children_nodes_size(), 0);
   const auto& fc_select = select_node->content_attributes().form_control_data();
+  EXPECT_EQ(fc_select.form_control_type(),
+            optimization_guide::proto::FORM_CONTROL_TYPE_SELECT_ONE);
   EXPECT_EQ(fc_select.field_name(), "s1");
   ASSERT_EQ(fc_select.select_options_size(), 2);
   EXPECT_EQ(fc_select.select_options(0).value(), "o1");

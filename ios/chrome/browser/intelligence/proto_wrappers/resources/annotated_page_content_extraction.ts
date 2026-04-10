@@ -90,6 +90,9 @@ const TAG_H6 = 'H6';
 const TAG_DIALOG = 'DIALOG';
 const ATTRIBUTE_OPEN_DIALOG = 'open';
 
+// Tags whose subtrees should be skipped.
+const TAGS_TO_SKIP_SUBTREE = [TAG_SELECT, TAG_CANVAS];
+
 // Tags that should be rejected during the DOM tree walk.
 const TAGS_TO_REJECT = [
   TAG_STYLE,
@@ -2480,6 +2483,11 @@ function maybeGenerateContentNode(
  * Checks if a node should be accepted for extraction.
  */
 function shouldAcceptNode(node: Node): number {
+  const parent = node.parentElement;
+  if (parent && TAGS_TO_SKIP_SUBTREE.includes(getStandardTagName(parent))) {
+    return NodeFilter.FILTER_REJECT;
+  }
+
   if (node.nodeType === Node.ELEMENT_NODE) {
     const element = node as Element;
     const tagName = getStandardTagName(element);
@@ -2507,7 +2515,6 @@ function shouldAcceptNode(node: Node): number {
       return NodeFilter.FILTER_ACCEPT;
     }
   } else if (node.nodeType === Node.TEXT_NODE) {
-    const parent = node.parentElement;
     // Determine the text node visibility based on their parent since
     // this is the best proxy we have for that due to the lack of
     // `getComputedStyle()` for text element nodes as opposed to the
