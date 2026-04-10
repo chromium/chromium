@@ -273,6 +273,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (const std::u16string& submitted_username),
               (override));
   MOCK_METHOD(void, ResetSubmissionTrackingAfterTouchToFill, (), (override));
+  MOCK_METHOD(void, UpdateFormManagers, (), (override));
   MOCK_METHOD(void,
               AutomaticPasswordSave,
               (std::unique_ptr<PasswordFormManagerForUI>,
@@ -472,6 +473,9 @@ class PasswordManagerTestBase : public testing::Test {
         .WillByDefault(Return(&reuse_manager_));
 
     manager_ = std::make_unique<PasswordManager>(&client_);
+    ON_CALL(client_, UpdateFormManagers()).WillByDefault([this]() {
+      manager_->UpdateFormManagers();
+    });
     manager_->set_leak_factory(
         std::make_unique<testing::NiceMock<MockLeakDetectionCheckFactory>>());
     password_autofill_manager_ =
@@ -946,7 +950,9 @@ TEST_P(PasswordManagerTest, GeneratedPasswordFormSubmitEmptyStore) {
   // navigation occurs. The client will be informed that automatic saving has
   // occurred.
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword).Times(0);
-  EXPECT_CALL(client_, AutomaticPasswordSave);
+  EXPECT_CALL(client_, AutomaticPasswordSave)
+      .WillOnce([](std::unique_ptr<PasswordFormManagerForUI> form_manager,
+                   bool) { EXPECT_TRUE(form_manager->IsFetchCompleted()); });
 
   // Now the password manager waits for the navigation to complete.
   manager()->OnPasswordFormsParsed(&driver_, {});

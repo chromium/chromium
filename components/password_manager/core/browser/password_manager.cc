@@ -1689,7 +1689,10 @@ void PasswordManager::OnLoginSuccessful() {
     if (logger) {
       logger->LogMessage(Logger::STRING_DECISION_SAVE);
     }
-    submitted_manager->Save();
+    std::unique_ptr<PasswordFormManagerForUI> owned_submitted_manager =
+        MoveOwnedSubmittedManager();
+    CHECK_EQ(owned_submitted_manager.get(), submitted_manager);
+    owned_submitted_manager->Save();
 
     if (!submitted_manager->IsNewLogin()) {
       client_->NotifySuccessfulLoginWithExistingPassword(
@@ -1697,7 +1700,7 @@ void PasswordManager::OnLoginSuccessful() {
     }
 
     if (submitted_manager->HasGeneratedPassword()) {
-      client_->AutomaticPasswordSave(MoveOwnedSubmittedManager(),
+      client_->AutomaticPasswordSave(std::move(owned_submitted_manager),
                                      /*is_update_confirmation=*/false);
     }
   }
