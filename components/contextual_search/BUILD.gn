@@ -150,6 +150,7 @@ source_set("unit_tests") {
     "contextual_search_metrics_recorder_unittest.cc",
     "contextual_search_service_unittest.cc",
     "contextual_search_session_entry_unittest.cc",
+    "contextual_search_session_handle_unittest.cc",
     "input_state_model_unittest.cc",
   ]
 
