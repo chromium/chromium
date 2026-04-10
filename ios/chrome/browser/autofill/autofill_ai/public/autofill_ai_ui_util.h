@@ -52,6 +52,11 @@ GURL GetManageYourInfoURL();
 // Returns the URL for Google Wallet passes.
 GURL GetGoogleWalletPassesURL();
 
+// Returns a view for use as the title on surfaces where the user is about to
+// save (update, etc) an entity in Google Wallet. Should not be used for local
+// saves. `title` is the desired text to display (e.g., "Add Passport").
+UIView* CreateBrandedTitleForWalletSave(NSString* title);
+
 }  // namespace autofill
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_AUTOFILL_AI_PUBLIC_AUTOFILL_AI_UI_UTIL_H_

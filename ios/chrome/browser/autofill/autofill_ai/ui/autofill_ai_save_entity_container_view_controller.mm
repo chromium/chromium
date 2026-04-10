@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -43,8 +44,8 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
   // Button title.
   NSString* _buttonTitle;
 
-  // Denotes if the save is synchronous or not.
-  BOOL _saveIsSynchronous;
+  // Denotes if the save is local (synchronous).
+  BOOL _isLocalSave;
 }
 
 - (instancetype)init {
@@ -125,20 +126,27 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
 #pragma mark - AutofillAISaveEntityConsumer
 
 - (void)setNewEntity:(autofill::EntityInstance)newEntity
-            oldEntity:(std::optional<autofill::EntityInstance>)oldEntity
-            userEmail:(const std::u16string&)userEmail
-    saveIsSynchronous:(BOOL)saveIsSynchronous {
+           oldEntity:(std::optional<autofill::EntityInstance>)oldEntity
+           userEmail:(const std::u16string&)userEmail
+         isLocalSave:(BOOL)isLocalSave {
   // Forward the data to the table view controller for display.
   [_tableViewController setNewEntity:newEntity
                            oldEntity:oldEntity
                            userEmail:userEmail];
 
   autofill::EntityTypeName typeName = newEntity.type().name();
-  self.title = oldEntity.has_value()
-                   ? autofill::GetDialogTitleForUpdateEntity(typeName)
-                   : autofill::GetDialogTitleForSaveEntity(typeName);
+  NSString* titleString =
+      oldEntity.has_value() ? autofill::GetDialogTitleForUpdateEntity(typeName)
+                            : autofill::GetDialogTitleForSaveEntity(typeName);
 
-  _saveIsSynchronous = saveIsSynchronous;
+  if (isLocalSave) {
+    self.navigationItem.titleView = nil;
+    self.title = titleString;
+  } else {
+    self.navigationItem.titleView =
+        autofill::CreateBrandedTitleForWalletSave(titleString);
+  }
+  _isLocalSave = isLocalSave;
 
   // Update the button title based on whether it's an update or save.
   _buttonTitle = l10n_util::GetNSString(
@@ -182,7 +190,7 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
   // Only dismiss immediately if it's a synchronous local save.
   // Otherwise, the UI stays open to show the loading state. Once the async call
   // is completed, the UI is informed and the loading state is dismissed.
-  if (_saveIsSynchronous) {
+  if (_isLocalSave) {
     [self.autofillHandler dismissSaveEntityDialog];
   }
 }

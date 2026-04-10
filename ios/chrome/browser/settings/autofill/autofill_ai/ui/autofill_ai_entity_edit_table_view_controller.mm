@@ -54,6 +54,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   // The bottom save button displayed when creating a new entity.
   ChromeButton* _saveButton;
+
+  // The title text for the view.
+  NSString* _titleText;
 }
 
 #pragma mark - UIViewController
@@ -168,7 +171,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - AutofillAIEntityEditConsumer
 
 - (void)setTitle:(NSString*)title {
-  super.title = title;
+  // Store a copy to ensure we can regenerate the title if `_isServerWalletItem`
+  // is set after this method is called.
+  _titleText = [title copy];
+  BOOL shouldUseBrandedTitle =
+      _isServerWalletItem && self.mode == AutofillAIEntityEditMode::kCreate;
+  if (shouldUseBrandedTitle) {
+    self.navigationItem.titleView =
+        autofill::CreateBrandedTitleForWalletSave(title);
+  } else {
+    self.navigationItem.titleView = nil;
+    super.title = title;
+  }
 }
 
 - (void)setEditItems:(NSArray<TableViewItem*>*)items {
@@ -189,6 +203,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)setIsServerWalletItem:(BOOL)isServerWalletItem {
   _isServerWalletItem = isServerWalletItem;
+  if (_titleText.length > 0) {
+    [self setTitle:_titleText];
+  }
 }
 
 - (void)setUserEmail:(NSString*)userEmail {
@@ -329,6 +346,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
   [self loadModel];
   [self.tableView reloadData];
+
+  if (_titleText.length > 0) {
+    [self setTitle:_titleText];
+  }
 }
 
 #pragma mark - UITableViewDelegate

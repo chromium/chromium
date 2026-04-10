@@ -16,8 +16,10 @@ source_set("public") {
     "//components/autofill/core/browser",
     "//components/strings:components_strings__strings_grit",
     "//ios/chrome/app/strings:ios_strings__strings_grit",
+    "//ios/chrome/browser/shared/ui:buildflags",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
   ]
   frameworks = [ "Foundation.framework" ]
 }

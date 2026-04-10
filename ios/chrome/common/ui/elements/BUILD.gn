@@ -59,5 +59,8 @@ source_set("branded_navigation_item_title_view") {
 
   frameworks = [ "UIKit.framework" ]
 
-  deps = [ "//ios/chrome/common/ui/colors" ]
+  deps = [
+    "//base",
+    "//ios/chrome/common/ui/colors",
+  ]
 }
