@@ -251,47 +251,5 @@ TEST_F(SurfaceChooserHelperTest, PromotionHintsUpdateChooserStatePeriodically) {
   helper_->NotifyPromotionHintAndUpdateChooser(hint, false);
 }
 
-TEST_F(SurfaceChooserHelperTest, FrameInformationIsCorrectForL1) {
-  // Verify L1 cases.
-  helper_->SetSecureSurfaceMode(
-      SurfaceChooserHelper::SecureSurfaceMode::kRequired);
-
-  ASSERT_EQ(SurfaceChooserHelper::FrameInformation::OVERLAY_L1,
-            helper_->ComputeFrameInformation(true));
-  // We don't check the "not using overlay" case; it's unclear what we should be
-  // doing in this case anyway.
-}
-
-TEST_F(SurfaceChooserHelperTest, FrameInformationIsCorrectForL3) {
-  // Verify L3 cases.
-  helper_->SetSecureSurfaceMode(
-      SurfaceChooserHelper::SecureSurfaceMode::kRequested);
-
-  ASSERT_EQ(SurfaceChooserHelper::FrameInformation::OVERLAY_L3,
-            helper_->ComputeFrameInformation(true));
-  ASSERT_EQ(SurfaceChooserHelper::FrameInformation::NON_OVERLAY_L3,
-            helper_->ComputeFrameInformation(false));
-}
-
-TEST_F(SurfaceChooserHelperTest, FrameInformationIsCorrectForInsecure) {
-  // Verify insecure cases.
-  helper_->SetSecureSurfaceMode(
-      SurfaceChooserHelper::SecureSurfaceMode::kInsecure);
-
-  // Not using an overlay should be NON_OVERLAY_INSECURE
-  ASSERT_EQ(SurfaceChooserHelper::FrameInformation::NON_OVERLAY_INSECURE,
-            helper_->ComputeFrameInformation(false));
-
-  // Fullscreen state should affect the result, so that we can tell the
-  // difference between player-element-fs and div-fs (custom controls).
-  helper_->SetIsFullscreen(true);
-  ASSERT_EQ(SurfaceChooserHelper::FrameInformation::
-                OVERLAY_INSECURE_PLAYER_ELEMENT_FULLSCREEN,
-            helper_->ComputeFrameInformation(true));
-  helper_->SetIsFullscreen(false);
-  ASSERT_EQ(SurfaceChooserHelper::FrameInformation::
-                OVERLAY_INSECURE_NON_PLAYER_ELEMENT_FULLSCREEN,
-            helper_->ComputeFrameInformation(true));
-}
 
 }  // namespace media

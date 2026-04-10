@@ -271,15 +271,6 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="On stack + On page + Propagated"/>
 </enum>
 
-<enum name="AVDAFrameInformation">
-  <int value="0" label="Non Overlay Insecure"/>
-  <int value="1" label="Non Overlay L3"/>
-  <int value="2" label="Overlay L3"/>
-  <int value="3" label="Overlay L1"/>
-  <int value="4" label="Overlay Insecure Player-element Fullscreen"/>
-  <int value="5" label="Overlay Insecure Non-player-element Fullscreen"/>
-</enum>
-
 <enum name="BooleanAfterPowerOrDisplayChange">
   <int value="0" label="Not After Power or Display Change"/>
   <int value="1" label="After Power or Display Change"/>
@@ -303,11 +294,6 @@ chromium-metrics-reviews@google.com.
 <enum name="BooleanFocused">
   <int value="0" label="Unfocused"/>
   <int value="1" label="Focused"/>
-</enum>
-
-<enum name="BooleanFrameAsOverlay">
-  <int value="0" label="Frame was not allow_overlay"/>
-  <int value="1" label="Frame was allow_overlay"/>
 </enum>
 
 <enum name="BooleanHasPlayed">
@@ -1827,12 +1813,6 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Cast for Education"/>
   <int value="6" label="Wired Display"/>
   <int value="7" label="Generic"/>
-</enum>
-
-<enum name="MediaSourceExecutionContext">
-  <int value="0" label="Window"/>
-  <int value="1" label="Dedicated Worker"/>
-  <int value="2" label="Shared Worker"/>
 </enum>
 
 <enum name="MediaStatus">

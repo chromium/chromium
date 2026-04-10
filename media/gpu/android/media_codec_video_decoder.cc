@@ -674,7 +674,6 @@ void MediaCodecVideoDecoder::TransitionToTargetSurface() {
   }
 
   video_frame_factory_->SetSurfaceBundle(target_surface_bundle_);
-  CacheFrameInformation();
 }
 
 void MediaCodecVideoDecoder::CreateCodec() {
@@ -824,9 +823,6 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
   // |surface_chooser_| doesn't change the target surface.
   if (SurfaceTransitionPending())
     TransitionToTargetSurface();
-
-  // Cache the frame information that goes with this codec.
-  CacheFrameInformation();
 
   PumpCodec();
 }
@@ -1410,12 +1406,6 @@ void MediaCodecVideoDecoder::NotifyPromotionHint(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   surface_chooser_helper_.NotifyPromotionHintAndUpdateChooser(hint,
                                                               IsUsingOverlay());
-}
-
-void MediaCodecVideoDecoder::CacheFrameInformation() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  cached_frame_information_ =
-      surface_chooser_helper_.ComputeFrameInformation(IsUsingOverlay());
 }
 
 bool MediaCodecVideoDecoder::CodecNeedsReallocation(const gfx::Size& new_size) {

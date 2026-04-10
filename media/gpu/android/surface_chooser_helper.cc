@@ -148,24 +148,4 @@ void SurfaceChooserHelper::NotifyPromotionHintAndUpdateChooser(
   }
 }
 
-SurfaceChooserHelper::FrameInformation
-SurfaceChooserHelper::ComputeFrameInformation(bool is_using_overlay) {
-  if (!is_using_overlay) {
-    // Not an overlay.
-    return surface_chooser_state_.is_secure
-               ? FrameInformation::NON_OVERLAY_L3
-               : FrameInformation::NON_OVERLAY_INSECURE;
-  }
-
-  // Overlay.
-  if (surface_chooser_state_.is_secure) {
-    return surface_chooser_state_.is_required ? FrameInformation::OVERLAY_L1
-                                              : FrameInformation::OVERLAY_L3;
-  }
-
-  return surface_chooser_state_.is_fullscreen
-             ? FrameInformation::OVERLAY_INSECURE_PLAYER_ELEMENT_FULLSCREEN
-             : FrameInformation::OVERLAY_INSECURE_NON_PLAYER_ELEMENT_FULLSCREEN;
-}
-
 }  // namespace media

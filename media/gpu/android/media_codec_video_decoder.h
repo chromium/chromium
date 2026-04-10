@@ -225,9 +225,6 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
   // Notify us about a promotion hint.
   void NotifyPromotionHint(PromotionHintAggregator::Hint hint);
 
-  // Update |cached_frame_information_|.
-  void CacheFrameInformation();
-
   // Creates an overlay factory cb based on the value of overlay_info_.
   AndroidOverlayFactoryCB CreateOverlayFactoryCb();
 
@@ -311,11 +308,6 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
 
   raw_ptr<DeviceInfo> device_info_;
   bool enable_threaded_texture_mailboxes_;
-
-  // Most recently cached frame information, so that we can dispatch it without
-  // recomputing it on every frame.  It changes very rarely.
-  SurfaceChooserHelper::FrameInformation cached_frame_information_ =
-      SurfaceChooserHelper::FrameInformation::NON_OVERLAY_INSECURE;
 
   // CDM related stuff.
 

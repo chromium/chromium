@@ -2944,28 +2944,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.AVDA.FrameInformation" enum="AVDAFrameInformation"
-    expires_after="2020-09-05">
-  <owner>liberato@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Record a count for each frame sent to the client by AVDA, separated by what
-    type of frame it is: Non Overlay, secure overlay, etc.
-  </summary>
-</histogram>
-
-<histogram name="Media.AVDA.FrameSentAsOverlay" enum="BooleanFrameAsOverlay"
-    expires_after="M86">
-  <owner>liberato@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Record a count for each frame sent to the client by AVDA. True counts
-    indicate that the frame was an overlay (SurfaceView). False counts are for
-    Non Overlay frames. This will be deprecated in favor of
-    Media.AVDA.FrameInformation in M63.
-  </summary>
-</histogram>
-
 <histogram name="Media.BreakoutBox.Usage" enum="BreakoutBoxUsage"
     expires_after="2026-09-25">
   <owner>guidou@chromium.org</owner>
@@ -6252,26 +6230,6 @@ chromium-metrics-reviews@google.com.
     for reworking MSE codec histograms to record on each successfully parsed
     initialization segment (possibly filtered to record only when actual new
     codec configurations are parsed).
-  </summary>
-</histogram>
-
-<histogram name="Media.MSE.DemuxerDestructionTime" units="ms"
-    expires_after="2020-10-11">
-  <owner>wolenetz@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Amount of time taken to destroy one ChunkDemuxer object, not including
-    initial background task scheduling delay.
-  </summary>
-</histogram>
-
-<histogram name="Media.MSE.ExecutionContext" enum="MediaSourceExecutionContext"
-    expires_after="2020-10-11">
-  <owner>wolenetz@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    For each MediaSource instance, records the type of thread that created the
-    instance.
   </summary>
 </histogram>
 

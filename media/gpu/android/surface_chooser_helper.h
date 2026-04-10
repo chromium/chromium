@@ -59,20 +59,6 @@ class MEDIA_GPU_EXPORT SurfaceChooserHelper {
     kRequired,
   };
 
-  // Must match AVDAFrameInformation UMA enum.  Please do not remove or re-order
-  // values, only append new ones.
-  enum class FrameInformation {
-    NON_OVERLAY_INSECURE = 0,
-    NON_OVERLAY_L3 = 1,
-    OVERLAY_L3 = 2,
-    OVERLAY_L1 = 3,
-    OVERLAY_INSECURE_PLAYER_ELEMENT_FULLSCREEN = 4,
-    OVERLAY_INSECURE_NON_PLAYER_ELEMENT_FULLSCREEN = 5,
-
-    // Max enum value.
-    FRAME_INFORMATION_MAX = OVERLAY_INSECURE_NON_PLAYER_ELEMENT_FULLSCREEN
-  };
-
   // The setters do not update the chooser state, since pre-M requires us to be
   // careful about the first update, since we can't change it later.
 
@@ -99,11 +85,6 @@ class MEDIA_GPU_EXPORT SurfaceChooserHelper {
       bool is_using_overlay);
 
   AndroidVideoSurfaceChooser* chooser() const { return surface_chooser_.get(); }
-
-  // Return the FrameInformation bucket number that the config reflects, given
-  // that |is_using_overlay| reflects whether we're currently using an overlay
-  // or not.
-  FrameInformation ComputeFrameInformation(bool is_using_overlay);
 
  private:
   AndroidVideoSurfaceChooser::State surface_chooser_state_;
