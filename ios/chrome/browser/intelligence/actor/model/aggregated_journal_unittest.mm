@@ -22,7 +22,7 @@ class AggregatedJournalTest : public PlatformTest {
 
 TEST_F(AggregatedJournalTest, LogInstant) {
   AggregatedJournal journal;
-  ActorTaskId task_id(base::Token::CreateRandom());
+  ActorTaskId task_id(1);
   journal.Log(GURL("https://example.com"), task_id, "TestEvent",
               {{"key", "value"}});
 
@@ -38,7 +38,7 @@ TEST_F(AggregatedJournalTest, LogInstant) {
 
 TEST_F(AggregatedJournalTest, GetLogsAsJson) {
   AggregatedJournal journal;
-  ActorTaskId task_id(base::Token::CreateRandom());
+  ActorTaskId task_id(1);
   journal.Log(GURL("https://example.com"), task_id, "TestEvent",
               {{"key", "value"}});
 
@@ -52,7 +52,7 @@ TEST_F(AggregatedJournalTest, GetLogsAsJson) {
 
 TEST_F(AggregatedJournalTest, AsyncEntry) {
   AggregatedJournal journal;
-  ActorTaskId task_id(base::Token::CreateRandom());
+  ActorTaskId task_id(1);
   {
     auto pending =
         journal.CreatePendingAsyncEntry(GURL("https://example.com"), task_id,
@@ -77,7 +77,7 @@ TEST_F(AggregatedJournalTest, AsyncEntry) {
 
 TEST_F(AggregatedJournalTest, RingBuffer) {
   AggregatedJournal journal;
-  ActorTaskId task_id(base::Token::CreateRandom());
+  ActorTaskId task_id(1);
   for (int i = 0; i < 30; ++i) {
     journal.Log(GURL(), task_id, "Event " + base::NumberToString(i), {});
   }

@@ -10,16 +10,14 @@
 
 namespace actor {
 
-ActorTask::ActorTask(ActorTaskId task_id,
-                     const std::string& title,
-                     id<ActorTaskUIDelegate> delegate)
-    : task_id_(task_id), title_(title), delegate_(delegate) {
+ActorTask::ActorTask(ActorTaskId task_id, const std::string& title)
+    : task_id_(task_id), title_(title) {
   engine_ = std::make_unique<ActorEngine>();
 }
 
 ActorTask::~ActorTask() = default;
 
-ActorTask::State ActorTask::GetState() const {
+ActorTaskState ActorTask::GetState() const {
   return state_;
 }
 

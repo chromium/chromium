@@ -12,7 +12,6 @@
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 #import "ios/chrome/browser/intelligence/actor/model/aggregated_journal.h"
-#import "ios/chrome/browser/intelligence/actor/public/actor_task_ui_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_error.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
@@ -116,14 +115,9 @@ void ActorService::ExecuteAction(
 }
 
 ActorTaskId ActorService::CreateTask(const std::string& title,
-                                     id<ActorTaskUIDelegate> delegate,
                                      bool allow_incognito_web_states) {
-  ActorTaskId task_id(base::Token::CreateRandom());
-  while (active_tasks_.find(task_id) != active_tasks_.end()) {
-    task_id = ActorTaskId(base::Token::CreateRandom());
-  }
-  active_tasks_[task_id] =
-      std::make_unique<ActorTask>(task_id, title, delegate);
+  const ActorTaskId task_id = next_task_id_.GenerateNextId();
+  active_tasks_[task_id] = std::make_unique<ActorTask>(task_id, title);
   return task_id;
 }
 

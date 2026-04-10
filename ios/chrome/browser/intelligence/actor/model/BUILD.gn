@@ -19,7 +19,7 @@ source_set("model") {
     "//base",
     "//components/keyed_service/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
-    "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_delegate",
+    "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/tools/model:actor_interface",
     "//ios/chrome/browser/intelligence/actor/tools/model:actor_tool_error",

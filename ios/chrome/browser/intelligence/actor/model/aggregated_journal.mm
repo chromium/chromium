@@ -157,7 +157,7 @@ std::string AggregatedJournal::GetLogsAsJson() const {
         dict.Set("type", "Instant");
         break;
     }
-    dict.Set("task_id", entry.task_id.value().ToString());
+    dict.Set("task_id", base::NumberToString(entry.task_id.value()));
     dict.Set("event", entry.event);
     dict.Set("timestamp", entry.timestamp.InSecondsFSinceUnixEpoch());
     dict.Set("track_uuid", base::NumberToString(entry.track_uuid));

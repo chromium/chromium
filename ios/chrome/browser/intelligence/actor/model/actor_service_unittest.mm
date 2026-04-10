@@ -57,9 +57,9 @@ TEST_F(ActorServiceTest, CreateTaskGeneratesUniqueIds) {
   std::set<ActorTaskId> task_ids;
   for (int i = 0; i < 100; ++i) {
     ActorTaskId task_id =
-        service->CreateTask("Test Task", /*delegate=*/nil,
+        service->CreateTask("Test Task",
                             /*allow_incognito_web_states=*/false);
-    EXPECT_FALSE(task_id.value().is_zero());
+    EXPECT_FALSE(task_id.is_null());
     EXPECT_TRUE(task_ids.insert(task_id).second);
   }
 }

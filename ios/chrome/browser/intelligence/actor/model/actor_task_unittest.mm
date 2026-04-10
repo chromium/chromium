@@ -17,8 +17,7 @@ class ActorTaskTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    task_ = std::make_unique<ActorTask>(
-        ActorTaskId(base::Token::CreateRandom()), "Test Task", nil);
+    task_ = std::make_unique<ActorTask>(ActorTaskId(1), "Test Task");
   }
 
   void TearDown() override {

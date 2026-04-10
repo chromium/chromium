@@ -6,13 +6,35 @@
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_PUBLIC_ACTOR_TYPES_H_
 
 #import "base/functional/callback_forward.h"
-#import "base/token.h"
-#import "base/types/strong_alias.h"
+#import "base/types/id_type.h"
 
 namespace actor {
 
-// Strongly typed, performant unique token representing an ActorTask.
-using ActorTaskId = base::StrongAlias<class ActorTaskIdMarker, base::Token>;
+// Strongly typed, performant unique ID representing an ActorTask.
+using ActorTaskId = base::IdType32<class ActorTaskIdMarker>;
+static_assert(ActorTaskId(0).is_null(), "0 must be a null ActorTaskId");
+
+// Represents the high-level orchestration state of an ActorTask.
+enum class ActorTaskState {
+  // Task is initialized but has not started executing tools.
+  kInit = 0,
+  // Task is actively executing through its engine.
+  kActing = 1,
+  // Task is waiting for AI provider to reflect on next actions to execute.
+  kReflecting = 2,
+  // Task execution was paused by the actor.
+  kPausedByActor = 3,
+  // Task execution was paused by the user.
+  kPausedByUser = 4,
+  // Task execution was cancelled or aborted.
+  kCancelled = 5,
+  // Task successfully completed.
+  kFinished = 6,
+  // Task is currently waiting for input or confirmation from the user.
+  kWaitingOnUser = 7,
+  // Task execution encountered a terminal failure.
+  kFailed = 8
+};
 
 // Reasons why an ActorTask was stopped.
 enum class ActorTaskStoppedReason {

@@ -19,8 +19,6 @@
 
 class ProfileIOS;
 
-@protocol ActorTaskUIDelegate;
-
 namespace actor {
 
 class ActorTask;
@@ -48,7 +46,6 @@ class ActorService : public KeyedService {
 
   // Creates a new task.
   ActorTaskId CreateTask(const std::string& title,
-                         id<ActorTaskUIDelegate> delegate,
                          bool allow_incognito_web_states);
 
   // Submits tools to an active task with a task update string (a short blurb
@@ -83,6 +80,9 @@ class ActorService : public KeyedService {
 
   // Map of active tasks, keyed by their task ID.
   std::map<ActorTaskId, std::unique_ptr<ActorTask>> active_tasks_;
+
+  // Generator for unique task IDs.
+  ActorTaskId::Generator next_task_id_;
 
   // Weak pointer factory.
   base::WeakPtrFactory<ActorService> weak_ptr_factory_{this};

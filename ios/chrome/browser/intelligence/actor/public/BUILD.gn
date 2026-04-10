@@ -7,6 +7,18 @@ source_set("actor_types") {
   deps = [ "//base" ]
 }
 
-source_set("actor_task_ui_delegate") {
-  sources = [ "actor_task_ui_delegate.h" ]
+source_set("actor_task_ui_protocols") {
+  sources = [
+    "actor_task_intervention_delegate.h",
+    "actor_task_updates_observer.h",
+  ]
+  deps = [
+    ":actor_types",
+    "//ios/web/public",
+  ]
+}
+
+source_set("actor_task_controller") {
+  sources = [ "actor_task_controller.h" ]
+  deps = [ ":actor_types" ]
 }
