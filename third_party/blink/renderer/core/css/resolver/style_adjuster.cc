@@ -716,22 +716,21 @@ void StyleAdjuster::AdjustOverflow(ComputedStyleBuilder& builder,
 // to have a stacking context and become a containing block for all descendants.
 static bool ForceStackingAndContainingBlockForCanvasLayoutSubtree(
     const Element* element) {
-  if (element &&
+  if (element && element->IsCanvasOrInCanvasSubtree() &&
       RuntimeEnabledFeatures::CanvasDrawElementEnabled(
-          element->GetExecutionContext()) &&
-      element->IsCanvasOrInCanvasSubtree()) {
+          element->GetExecutionContext())) {
     if (const auto* canvas =
             DynamicTo<HTMLCanvasElement>(element->parentElement())) {
       return canvas->layoutSubtree();
     }
   }
-
   return false;
 }
 
 static bool IsCanvasWithDrawElements(const Element* element) {
-  if (!element || !RuntimeEnabledFeatures::CanvasDrawElementEnabled(
-                      element->GetExecutionContext())) {
+  if (!element || !element->IsCanvasOrInCanvasSubtree() ||
+      !RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+          element->GetExecutionContext())) {
     return false;
   }
 
@@ -1127,18 +1126,18 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   bool is_document_element =
       element && element->GetDocument().documentElement() == element;
   bool is_in_top_layer = false;
-  if (RuntimeEnabledFeatures::OverlayPropertyEnabled()) {
-    if (RuntimeEnabledFeatures::OverlayGlobalRuleRemovalEnabled()) {
-      is_in_top_layer = !is_document_element &&
-                        builder.Overlay() == EOverlay::kAuto && element &&
-                        element->IsInTopLayer();
+  if (!is_document_element && element) {
+    if (RuntimeEnabledFeatures::OverlayPropertyEnabled()) {
+      if (builder.Overlay() == EOverlay::kAuto) {
+        if (RuntimeEnabledFeatures::OverlayGlobalRuleRemovalEnabled()) {
+          is_in_top_layer = element->IsInTopLayer();
+        } else {
+          is_in_top_layer = true;
+        }
+      }
     } else {
-      is_in_top_layer =
-          !is_document_element && builder.Overlay() == EOverlay::kAuto;
+      is_in_top_layer = element->IsRenderedInTopLayer();
     }
-  } else {
-    is_in_top_layer =
-        !is_document_element && (element && element->IsRenderedInTopLayer());
   }
 
   if (builder.Display() != EDisplay::kNone) {
@@ -1207,14 +1206,12 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
           layout_parent_style.DisplayLayoutCustomName());
     }
 
-    bool is_in_main_frame = element && element->GetDocument().IsInMainFrame();
     // The root element of the main frame has no backdrop, so don't allow
     // it to have a backdrop filter either.
-    if (is_document_element && is_in_main_frame &&
-        builder.HasBackdropFilter()) {
+    if (is_document_element && builder.HasBackdropFilter() &&
+        element->GetDocument().IsInMainFrame()) {
       builder.SetBackdropFilter(FilterOperations());
     }
-
     if (is_transition_scope && !is_document_element) {
       builder.SetContain(builder.Contain() | kContainsLayout);
       builder.SetViewTransitionScope(EViewTransitionScope::kAll);
@@ -1345,29 +1342,32 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   AdjustEffectiveTouchAction(builder, parent_style, element,
                              IsOutermostSVGElement(element));
 
-  bool is_media_control = element && element->ShadowPseudoId().starts_with(
-                                         "-webkit-media-controls");
-  if (is_media_control && !builder.HasEffectiveAppearance()) {
-    // For compatibility reasons if the element is a media control and the
-    // -webkit-appearance is none then we should clear the background image.
-    builder.MutableBackgroundInternal().ClearImage();
-  }
-
-  if (element && !builder.TextOverflow().IsClip()) {
+  if (element && element->IsInShadowTree()) {
     const AtomicString& pseudo_id = element->ShadowPseudoId();
-    if (pseudo_id == shadow_element_names::kPseudoInputPlaceholder ||
-        pseudo_id == shadow_element_names::kPseudoInternalInputSuggested) {
-      TextControlElement* text_control =
-          ToTextControl(element->OwnerShadowHost());
-      DCHECK(text_control);
-      // TODO(futhark@chromium.org): We force clipping text overflow for focused
-      // input elements since we don't want to render ellipsis during editing.
-      // We should do this as a general solution which also includes
-      // contenteditable elements being edited. The computed style should not
-      // change, but LayoutBlockFlow::ShouldTruncateOverflowingText() should
-      // instead return false when text is being edited inside that block.
-      // https://crbug.com/814954
-      builder.SetTextOverflow(text_control->ValueForTextOverflow());
+    if (!pseudo_id.IsNull()) {
+      if (!builder.HasEffectiveAppearance() &&
+          pseudo_id.starts_with("-webkit-media-controls")) {
+        // For compatibility reasons if the element is a media control and the
+        // -webkit-appearance is none then we should clear the background
+        // image.
+        builder.MutableBackgroundInternal().ClearImage();
+      }
+      if (!builder.TextOverflow().IsClip() &&
+          (pseudo_id == shadow_element_names::kPseudoInputPlaceholder ||
+           pseudo_id == shadow_element_names::kPseudoInternalInputSuggested)) {
+        TextControlElement* text_control =
+            ToTextControl(element->OwnerShadowHost());
+        DCHECK(text_control);
+        // TODO(futhark@chromium.org): We force clipping text overflow for
+        // focused input elements since we don't want to render ellipsis
+        // during editing. We should do this as a general solution which also
+        // includes contenteditable elements being edited. The computed style
+        // should not change, but
+        // LayoutBlockFlow::ShouldTruncateOverflowingText() should instead
+        // return false when text is being edited inside that block.
+        // https://crbug.com/814954
+        builder.SetTextOverflow(text_control->ValueForTextOverflow());
+      }
     }
   }
 
