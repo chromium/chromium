@@ -27,7 +27,7 @@ class PLATFORM_EXPORT MemoryConsumerRegistration {
 
   MemoryConsumerRegistration(
       std::string_view consumer_id,
-      base::MemoryConsumerTraits traits,
+      std::optional<base::MemoryConsumerTraits> traits,
       base::MemoryConsumer* consumer,
       CheckUnregister check_unregister = CheckUnregister::kEnabled,
       CheckRegistryExists check_registry_exists =
