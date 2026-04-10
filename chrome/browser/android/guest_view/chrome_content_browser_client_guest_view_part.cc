@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/android/guest_view/chrome_guest_view.h"
 #include "chrome/common/chrome_features.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/guest_view/common/guest_view.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
@@ -22,7 +23,8 @@ void ChromeContentBrowserClientGuestViewPart::
     ExposeInterfacesToRendererForRenderFrameHost(
         content::RenderFrameHost& frame_host,
         blink::AssociatedInterfaceRegistry& associated_registry) {
-  if (base::FeatureList::IsEnabled(features::kGlic)) {
+  if (base::FeatureList::IsEnabled(features::kGlic) ||
+      base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
     associated_registry.AddInterface<guest_view::mojom::GuestViewHost>(
         base::BindRepeating(&ChromeGuestView::Create,
                             frame_host.GetGlobalId()));

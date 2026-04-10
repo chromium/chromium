@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/guest_view/buildflags/buildflags.gni")
+import("//extensions/buildflags/buildflags.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 
 if (is_chrome_branded) {
@@ -52,6 +54,7 @@ build_webui("build") {
     "top_toolbar.html.ts",
     "top_toolbar.ts",
     "utils/clip_path.ts",
+    "web_view_type.ts",
   ]
 
   if (!is_android) {
@@ -105,6 +108,7 @@ build_webui("build") {
   ]
 
   ts_deps = [
+    "//chrome/browser/resources/guest_view_shared:build_ts",
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
@@ -117,6 +121,11 @@ build_webui("build") {
       "//ui/webui/resources/cr_components/search:build_ts",
     ]
   }
+
+  ts_path_mappings =
+      [ "/shared/guest_view/*|" + rebase_path(
+            "$root_gen_dir/chrome/browser/resources/guest_view_shared/tsc/*",
+            target_gen_dir) ]
 
   webui_context_type = "trusted"
 }

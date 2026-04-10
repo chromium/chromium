@@ -7,6 +7,7 @@ import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
+import type {WebViewType} from './web_view_type.js';
 
 const HANDSHAKE_INTERVAL_MS = 10;
 // 3000 * 10ms = 30 seconds.
@@ -31,7 +32,7 @@ export interface InputPlateBoundsUpdateMessage {
  * A proxy class to control post messages sent to the webview.
  */
 export class PostMessageHandler {
-  private webview_: chrome.webviewTag.WebView;
+  private webview_: WebViewType;
   private targetOrigin_: string = '';
   private eventTracker_: EventTracker = new EventTracker();
   private browserProxy_: BrowserProxy;
@@ -45,7 +46,7 @@ export class PostMessageHandler {
       ((rect?: Rect, occluders?: Rect[]) => void)|null = null;
 
   constructor(
-      webview: chrome.webviewTag.WebView, browserProxy: BrowserProxy,
+      webview: WebViewType, browserProxy: BrowserProxy,
       // Allow overriding max attempts for testing.
       private readonly maxHandshakeAttempts_: number = MAX_HANDSHAKE_ATTEMPTS) {
     this.webview_ = webview;

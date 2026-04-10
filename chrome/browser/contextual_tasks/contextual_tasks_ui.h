@@ -35,6 +35,7 @@
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "contextual_tasks_composebox_handler_interface.h"
+#include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/backoff_entry.h"
@@ -44,6 +45,10 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
+#endif
+
+#if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "components/guest_view/browser/slim_web_view/slim_web_view_page_handler_factory.h"  // nogncheck
 #endif
 
 class BrowserWindowInterface;
@@ -71,6 +76,9 @@ class ContextualTasksPageHandler;
 class ContextualTasksUI
     : public contextual_tasks::ContextualTasksUIInterface,
       public ui::MojoWebUIController,
+#if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+      public guest_view::SlimWebViewPageHandlerFactory,
+#endif
       public contextual_tasks::mojom::PageHandlerFactory,
 #if !BUILDFLAG(IS_ANDROID)
       public composebox::mojom::PageHandlerFactory,
@@ -110,6 +118,10 @@ class ContextualTasksUI
   ContextualTasksUI(const ContextualTasksUI&) = delete;
   ContextualTasksUI& operator=(const ContextualTasksUI&) = delete;
   ~ContextualTasksUI() override;
+
+#if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  using SlimWebViewPageHandlerFactory::BindInterface;
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
   // composebox::mojom::PageHandlerFactory:
@@ -276,6 +288,10 @@ class ContextualTasksUI
     base::RepeatingCallback<void(content::WebContents*)> callback_;
     base::RepeatingClosure reset_callback_;
   };
+
+#if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  using SlimWebViewPageHandlerFactory::CreatePageHandler;
+#endif
 
   // Resets the embedded page and its observer.
   void ResetEmbeddedPage();

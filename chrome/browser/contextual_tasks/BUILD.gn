@@ -3,7 +3,9 @@
 # found in the LICENSE file.
 
 import("//build/config/android/config.gni")
+import("//components/guest_view/buildflags/buildflags.gni")
 import("//components/signin/features.gni")
+import("//extensions/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -185,6 +187,7 @@ source_set("ui") {
     "//components/tabs:public",
     "//content/public/browser",
     "//content/public/common",
+    "//extensions/buildflags",
     "//third_party/lens_server_proto:lens_overlay_proto",
     "//third_party/omnibox_proto",
     "//ui/base/unowned_user_data",
@@ -216,6 +219,11 @@ source_set("ui") {
       "//ui/webui/resources/cr_components/composebox:mojo_bindings",
       "//url",
     ]
+  }
+
+  if (enable_guest_view && !enable_extensions_core) {
+    public_deps +=
+        [ "//components/guest_view/browser/slim_web_view:page_handler" ]
   }
 }
 
@@ -323,6 +331,13 @@ source_set("ui_impl") {
       "//third_party/lens_server_proto:lens_overlay_proto",
       "//third_party/protobuf:protobuf_lite",
       "//url",
+    ]
+  }
+
+  if (enable_guest_view && !enable_extensions_core) {
+    deps += [
+      "//chrome/browser/resources/guest_view_shared:resources",
+      "//components/guest_view/browser/slim_web_view",
     ]
   }
 }
