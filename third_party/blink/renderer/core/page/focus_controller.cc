@@ -2123,9 +2123,9 @@ Element* FocusController::FindFocusableElementForImeAutofillAndTesting(
 Element* FocusController::NextFocusableElementForIme(
     Element* element,
     const mojom::blink::FocusType focus_type) {
-  // TODO(ajith.v) Due to crbug.com/781026 when next/previous element is far
-  // from current element in terms of tabindex, then it's signalling CPU load.
-  // Will investigate further for a proper solution later.
+  // TODO(crbug.com/40551209): Due to crbug.com/781026 when next/previous
+  // element is far from current element in terms of tabindex, then it's
+  // signalling CPU load. Will investigate further for a proper solution later.
   static const int kFocusTraversalThreshold = 50;
   element->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kFocus);
   auto* html_element = DynamicTo<HTMLElement>(element);
