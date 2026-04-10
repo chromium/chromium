@@ -3690,6 +3690,12 @@ deps = {
       'condition': 'checkout_src_internal',
   },
 
+  'src/components/accessibility_annotator/core/resources/internal': {
+      'url': Var('chrome_git') + '/chrome/components/accessibility_annotator/core/resources/internal.git' + '@' +
+        '1084787fcbc37b4998d9066b3c0fd294d50d9291',
+      'condition': 'checkout_src_internal',
+  },
+
   'src/components/activity_reporter/internal': {
     'url': Var('chrome_git') + '/activity_reporter_internal.git' + '@' +
         '0540703a9db51619739c3de547961dd2227d2f26',
