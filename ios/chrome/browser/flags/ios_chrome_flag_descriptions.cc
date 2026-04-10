@@ -636,6 +636,11 @@ const char kEnableTraitCollectionRegistrationDescription[] =
     "When enabled, UI elements will only observe and respond to the UITraits "
     "to which they have been registered.";
 
+const char kEnforceCanSignInToChromeCapabilityName[] =
+    "Fetch can_sign_in_to_chrome capability";
+const char kEnforceCanSignInToChromeCapabilityDescription[] =
+    "When enabled, can_sign_in_to_chrome is fetched.";
+
 const char kEnhancedCalendarName[] = "Enable Enhanced Calendar integration";
 const char kEnhancedCalendarDescription[] =
     "When enabled, the enhanced calendar flow will be available to eligible "

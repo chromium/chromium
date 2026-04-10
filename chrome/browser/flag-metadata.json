@@ -4311,6 +4311,16 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enforce-can-sign-in-to-chrome-capability",
+    "owners": [
+      "ddac@google.com",
+      "jlebel@google.com",
+      "ljjlee@google.com",
+      "chrome-regionalcapabilities@google.com"
+    ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "enforce-incognito-isolation",
     "owners": [ "shuyng@google.com", "clank-large-form-factors@google.com" ],
     "expiry_milestone": 152
