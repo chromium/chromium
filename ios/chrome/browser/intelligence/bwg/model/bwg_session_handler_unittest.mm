@@ -109,7 +109,7 @@ TEST_F(BWGSessionHandlerTest, TestResponseLatencyRecorded) {
   NSString* client_id = GetClientID();
 
   [session_handler_ UIDidAppearWithClientID:client_id serverID:kTestServerID];
-  [session_handler_ didSendQueryWithInputType:BWGInputTypeText
+  [session_handler_ didSendQueryWithInputType:gemini::InputType::kText
                      isNanoBananaToolSelected:NO
                           imagesAttachedCount:0
                                longPressImage:NO
@@ -128,7 +128,7 @@ TEST_F(BWGSessionHandlerTest, TestResponseLatencyRecorded) {
 
 // Tests that didSendQueryWithInputType records the correct metrics.
 TEST_F(BWGSessionHandlerTest, TestQueryMetricsRecorded) {
-  [session_handler_ didSendQueryWithInputType:BWGInputTypeText
+  [session_handler_ didSendQueryWithInputType:gemini::InputType::kText
                      isNanoBananaToolSelected:NO
                           imagesAttachedCount:0
                                longPressImage:NO
@@ -150,12 +150,13 @@ TEST_F(BWGSessionHandlerTest, TestQueryMetricsRecorded) {
 // Tests that Nano Banana metrics are recorded correctly.
 TEST_F(BWGSessionHandlerTest, TestQueryMetricsRecorded_WithNanoBanana) {
   // Use a Nano Banana input type.
-  [session_handler_ didSendQueryWithInputType:
-                        BWGInputTypeNanoBananaTurnThisPageIntoAComicStrip
-                     isNanoBananaToolSelected:YES
-                          imagesAttachedCount:1
-                               longPressImage:YES
-                          pageContextAttached:NO];
+  [session_handler_
+      didSendQueryWithInputType:gemini::InputType::
+                                    kNanoBananaTurnThisPageIntoAComicStrip
+       isNanoBananaToolSelected:YES
+            imagesAttachedCount:1
+                 longPressImage:YES
+            pageContextAttached:NO];
 
   histogram_tester_.ExpectUniqueSample(
       kFirstPromptSubmissionMethodHistogram,
@@ -178,7 +179,7 @@ TEST_F(BWGSessionHandlerTest, TestQueryMetricsRecorded_WithNanoBanana) {
 TEST_F(BWGSessionHandlerTest, TestResponseGeneratedImageRecorded) {
   NSString* client_id = GetClientID();
   [session_handler_ UIDidAppearWithClientID:client_id serverID:kTestServerID];
-  [session_handler_ didSendQueryWithInputType:BWGInputTypeText
+  [session_handler_ didSendQueryWithInputType:gemini::InputType::kText
                      isNanoBananaToolSelected:NO
                           imagesAttachedCount:0
                                longPressImage:NO
@@ -203,7 +204,7 @@ TEST_F(BWGSessionHandlerTest, TestFirstRunFlag) {
   tab_helper->SetIsFirstRun(true);
 
   [session_handler_ UIDidAppearWithClientID:client_id serverID:kTestServerID];
-  [session_handler_ didSendQueryWithInputType:BWGInputTypeText
+  [session_handler_ didSendQueryWithInputType:gemini::InputType::kText
                      isNanoBananaToolSelected:NO
                           imagesAttachedCount:0
                                longPressImage:NO
@@ -246,7 +247,7 @@ TEST_F(BWGSessionHandlerTest, TestDifferentInputTypes) {
   // Test Summarize input type.
   BWGSessionHandler* handler1 =
       [[BWGSessionHandler alloc] initWithWebStateList:web_state_list_];
-  [handler1 didSendQueryWithInputType:BWGInputTypeSummarize
+  [handler1 didSendQueryWithInputType:gemini::InputType::kSummarize
              isNanoBananaToolSelected:NO
                   imagesAttachedCount:0
                        longPressImage:NO
@@ -258,7 +259,7 @@ TEST_F(BWGSessionHandlerTest, TestDifferentInputTypes) {
   // Test CheckThisSite input type.
   BWGSessionHandler* handler2 =
       [[BWGSessionHandler alloc] initWithWebStateList:web_state_list_];
-  [handler2 didSendQueryWithInputType:BWGInputTypeCheckThisSite
+  [handler2 didSendQueryWithInputType:gemini::InputType::kCheckThisSite
              isNanoBananaToolSelected:NO
                   imagesAttachedCount:0
                        longPressImage:NO
@@ -270,7 +271,7 @@ TEST_F(BWGSessionHandlerTest, TestDifferentInputTypes) {
   // Test FindRelatedSites input type.
   BWGSessionHandler* handler3 =
       [[BWGSessionHandler alloc] initWithWebStateList:web_state_list_];
-  [handler3 didSendQueryWithInputType:BWGInputTypeFindRelatedSites
+  [handler3 didSendQueryWithInputType:gemini::InputType::kFindRelatedSites
              isNanoBananaToolSelected:NO
                   imagesAttachedCount:0
                        longPressImage:NO
@@ -282,7 +283,7 @@ TEST_F(BWGSessionHandlerTest, TestDifferentInputTypes) {
   // Test AskAboutPage input type.
   BWGSessionHandler* handler4 =
       [[BWGSessionHandler alloc] initWithWebStateList:web_state_list_];
-  [handler4 didSendQueryWithInputType:BWGInputTypeAskAboutPage
+  [handler4 didSendQueryWithInputType:gemini::InputType::kAskAboutPage
              isNanoBananaToolSelected:NO
                   imagesAttachedCount:0
                        longPressImage:NO
@@ -294,7 +295,7 @@ TEST_F(BWGSessionHandlerTest, TestDifferentInputTypes) {
   // Test CreateFaq input type.
   BWGSessionHandler* handler5 =
       [[BWGSessionHandler alloc] initWithWebStateList:web_state_list_];
-  [handler5 didSendQueryWithInputType:BWGInputTypeCreateFaq
+  [handler5 didSendQueryWithInputType:gemini::InputType::kCreateFaq
              isNanoBananaToolSelected:NO
                   imagesAttachedCount:0
                        longPressImage:NO
@@ -306,7 +307,7 @@ TEST_F(BWGSessionHandlerTest, TestDifferentInputTypes) {
   // Test Unknown input type.
   BWGSessionHandler* handler6 =
       [[BWGSessionHandler alloc] initWithWebStateList:web_state_list_];
-  [handler6 didSendQueryWithInputType:BWGInputTypeUnknown
+  [handler6 didSendQueryWithInputType:gemini::InputType::kUnknown
              isNanoBananaToolSelected:NO
                   imagesAttachedCount:0
                        longPressImage:NO

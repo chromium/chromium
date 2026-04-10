@@ -20,66 +20,66 @@
 namespace {
 
 // Returns an equivalent IOSGeminiFirstPromptSubmission enum value for a given
-// BWGInputType.
-IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
-    BWGInputType input_type) {
+// gemini::InputType.
+IOSGeminiFirstPromptSubmissionMethod ConvertInputTypeToHistogramEnum(
+    gemini::InputType input_type) {
   switch (input_type) {
-    case BWGInputTypeUnknown:
+    case gemini::InputType::kUnknown:
       return IOSGeminiFirstPromptSubmissionMethod::kUnknown;
-    case BWGInputTypeText:
+    case gemini::InputType::kText:
       return IOSGeminiFirstPromptSubmissionMethod::kText;
-    case BWGInputTypeSummarize:
+    case gemini::InputType::kSummarize:
       return IOSGeminiFirstPromptSubmissionMethod::kSummarize;
-    case BWGInputTypeCheckThisSite:
+    case gemini::InputType::kCheckThisSite:
       return IOSGeminiFirstPromptSubmissionMethod::kCheckThisSite;
-    case BWGInputTypeFindRelatedSites:
+    case gemini::InputType::kFindRelatedSites:
       return IOSGeminiFirstPromptSubmissionMethod::kFindRelatedSites;
-    case BWGInputTypeAskAboutPage:
+    case gemini::InputType::kAskAboutPage:
       return IOSGeminiFirstPromptSubmissionMethod::kAskAboutPage;
-    case BWGInputTypeCreateFaq:
+    case gemini::InputType::kCreateFaq:
       return IOSGeminiFirstPromptSubmissionMethod::kCreateFaq;
-    case BWGInputTypeZeroStateModelSuggestion:
+    case gemini::InputType::kZeroStateModelSuggestion:
       return IOSGeminiFirstPromptSubmissionMethod::kZeroStateSuggestions;
-    case BWGInputTypeWhatCanGeminiDo:
+    case gemini::InputType::kWhatCanGeminiDo:
       return IOSGeminiFirstPromptSubmissionMethod::kWhatCanGeminiDo;
-    case BWGInputTypeDiscoveryCard:
+    case gemini::InputType::kDiscoveryCard:
       return IOSGeminiFirstPromptSubmissionMethod::kDiscoveryCard;
-    case BWGInputTypeOmniboxSummarize:
+    case gemini::InputType::kOmniboxSummarize:
       return IOSGeminiFirstPromptSubmissionMethod::kOmniboxSummarize;
-    case BWGInputTypeOmniboxPrompt:
+    case gemini::InputType::kOmniboxPrompt:
       return IOSGeminiFirstPromptSubmissionMethod::kOmniboxPrompt;
-    case BWGInputTypeTransitionToLive:
+    case gemini::InputType::kTransitionToLive:
       return IOSGeminiFirstPromptSubmissionMethod::kTransitionToLive;
-    case BWGInputTypeOnboardingWhatCanGeminiDo:
+    case gemini::InputType::kOnboardingWhatCanGeminiDo:
       return IOSGeminiFirstPromptSubmissionMethod::kOnboardingWhatCanGeminiDo;
-    case BWGInputTypeOnboardingAskAboutPage:
+    case gemini::InputType::kOnboardingAskAboutPage:
       return IOSGeminiFirstPromptSubmissionMethod::kOnboardingAskAboutPage;
-    case BWGInputTypeOnboardingSummarize:
+    case gemini::InputType::kOnboardingSummarize:
       return IOSGeminiFirstPromptSubmissionMethod::kOnboardingSummarize;
-    case BWGInputTypeSuggestedReply:
+    case gemini::InputType::kSuggestedReply:
       return IOSGeminiFirstPromptSubmissionMethod::kSuggestedReply;
-    case BWGInputTypeNanoBananaTurnThisPageIntoAComicStrip:
+    case gemini::InputType::kNanoBananaTurnThisPageIntoAComicStrip:
       return IOSGeminiFirstPromptSubmissionMethod::
           kNanoBananaTurnThisPageIntoAComicStrip;
-    case BWGInputTypeNanoBananaMakeAFolkArtIllustration:
+    case gemini::InputType::kNanoBananaMakeAFolkArtIllustration:
       return IOSGeminiFirstPromptSubmissionMethod::
           kNanoBananaMakeAFolkArtIllustration;
-    case BWGInputTypeNanoBananaMakeACustomMiniFigure:
+    case gemini::InputType::kNanoBananaMakeACustomMiniFigure:
       return IOSGeminiFirstPromptSubmissionMethod::
           kNanoBananaMakeACustomMiniFigure;
-    case BWGInputTypeNanoBananaGiveMeAGrungeMakeover:
+    case gemini::InputType::kNanoBananaGiveMeAGrungeMakeover:
       return IOSGeminiFirstPromptSubmissionMethod::
           kNanoBananaGiveMeAGrungeMakeover;
-    case BWGInputTypeNanoBananaTurnThisImageIntoAVintagePostcard:
+    case gemini::InputType::kNanoBananaTurnThisImageIntoAVintagePostcard:
       return IOSGeminiFirstPromptSubmissionMethod::
           kNanoBananaTurnThisImageIntoAVintagePostcard;
-    case BWGInputTypeNanoBananaTurnThisImageIntoAWatercolorPainting:
+    case gemini::InputType::kNanoBananaTurnThisImageIntoAWatercolorPainting:
       return IOSGeminiFirstPromptSubmissionMethod::
           kNanoBananaTurnThisImageIntoAWatercolorPainting;
-    case BWGInputTypeNanoBananaMakeThisImageLookLikeInstantFilm:
+    case gemini::InputType::kNanoBananaMakeThisImageLookLikeInstantFilm:
       return IOSGeminiFirstPromptSubmissionMethod::
           kNanoBananaMakeThisImageLookLikeInstantFilm;
-    case BWGInputTypeEditMenuPrompt:
+    case gemini::InputType::kEditMenuPrompt:
       return IOSGeminiFirstPromptSubmissionMethod::kEditMenuPrompt;
   }
 }
@@ -241,7 +241,7 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
   [self.settingsHandler showGeminiSettings];
 }
 
-- (void)didSendQueryWithInputType:(BWGInputType)inputType
+- (void)didSendQueryWithInputType:(gemini::InputType)inputType
          isNanoBananaToolSelected:(BOOL)isNanoBananaToolSelected
               imagesAttachedCount:(NSUInteger)imagesAttachedCount
                    longPressImage:(BOOL)longPressImage
@@ -257,7 +257,7 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
   if (!_hasSubmittedFirstPrompt) {
     _hasSubmittedFirstPrompt = YES;
     IOSGeminiFirstPromptSubmissionMethod method =
-        ConvertBWGInputTypeToHistogramEnum(inputType);
+        ConvertInputTypeToHistogramEnum(inputType);
     RecordFirstPromptSubmission(method);
   }
   // Start latency tracking.

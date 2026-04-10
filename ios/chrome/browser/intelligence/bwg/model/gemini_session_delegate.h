@@ -11,67 +11,47 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 
-// TODO(crbug.com/481711842): Replace this enum and its gemini_metrics.h
-// equivalent with an enum in gemini_constants.h
-// Input type for BWG queries.
-// LINT.IfChange(BWGInputType)
-typedef NS_ENUM(NSInteger, BWGInputType) {
-  // Unknown input type.
-  BWGInputTypeUnknown = 0,
-  // Text input type.
-  BWGInputTypeText = 1,
-  // Summarize input type.
-  BWGInputTypeSummarize = 2,
-  // Check this site input type.
-  BWGInputTypeCheckThisSite = 3,
-  // Find related sites input type.
-  BWGInputTypeFindRelatedSites = 4,
-  // Ask about page input type.
-  BWGInputTypeAskAboutPage = 5,
-  // Create FAQ input type.
-  BWGInputTypeCreateFaq = 6,
-  // Zero state model suggestion input type.
-  BWGInputTypeZeroStateModelSuggestion = 7,
-  // 'What can Gemini do' input type.
-  BWGInputTypeWhatCanGeminiDo = 8,
-  // Discovery card input type.
-  BWGInputTypeDiscoveryCard = 9,
-  // Omnibox summarize input type.
-  BWGInputTypeOmniboxSummarize = 10,
-  // Omnibox prompt input type.
-  BWGInputTypeOmniboxPrompt = 11,
-  // Transition to live input type.
-  BWGInputTypeTransitionToLive = 12,
-  // Onboarding: what can gemini do input type.
-  BWGInputTypeOnboardingWhatCanGeminiDo = 13,
-  // Onboarding: ask about page input type.
-  BWGInputTypeOnboardingAskAboutPage = 14,
-  // Onboarding: summarize input type.
-  BWGInputTypeOnboardingSummarize = 15,
-  // Suggested reply input type.
-  BWGInputTypeSuggestedReply = 16,
-  // Nano Banana: turn this page into a comic strip input type.
-  BWGInputTypeNanoBananaTurnThisPageIntoAComicStrip = 17,
-  // Nano Banana: make a folk art illustration input type.
-  BWGInputTypeNanoBananaMakeAFolkArtIllustration = 18,
-  // Nano Banana: make a custom mini figure input type.
-  BWGInputTypeNanoBananaMakeACustomMiniFigure = 19,
-  // Nano Banana: give me a grunge makeover input type.
-  BWGInputTypeNanoBananaGiveMeAGrungeMakeover = 20,
-  // Nano Banana: turn this image into a vintage postcard input type.
-  BWGInputTypeNanoBananaTurnThisImageIntoAVintagePostcard = 21,
-  // Nano Banana: turn this image into a watercolor painting input type.
-  BWGInputTypeNanoBananaTurnThisImageIntoAWatercolorPainting = 22,
-  // Nano Banana: make this image look like instant film input type.
-  BWGInputTypeNanoBananaMakeThisImageLookLikeInstantFilm = 23,
-  // Input from Helios entry point on the Edit menu when user highlights text
-  // Something like: “Explain this to me: <selected text>”
-  BWGInputTypeEditMenuPrompt = 24,
-};
-// LINT.ThenChange(
-//   /ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiFirstPromptSubmissionMethod,
-//   /tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiFirstPromptSubmissionMethod
-// )
+// TODO(crbug.com/478258168): Remove this alias  once callers have migrated.
+// Temporary alias for BWGInputType until internal code is landed.
+typedef gemini::InputType BWGInputType;
+
+// TODO(crbug.com/478258168): Remove these aliases once callers have migrated.
+// Aliases for BWGInputType cases.
+#define BWGInputTypeUnknown gemini::InputType::kUnknown
+#define BWGInputTypeText gemini::InputType::kText
+#define BWGInputTypeSummarize gemini::InputType::kSummarize
+#define BWGInputTypeCheckThisSite gemini::InputType::kCheckThisSite
+#define BWGInputTypeFindRelatedSites gemini::InputType::kFindRelatedSites
+#define BWGInputTypeAskAboutPage gemini::InputType::kAskAboutPage
+#define BWGInputTypeCreateFaq gemini::InputType::kCreateFaq
+#define BWGInputTypeZeroStateModelSuggestion \
+  gemini::InputType::kZeroStateModelSuggestion
+#define BWGInputTypeWhatCanGeminiDo gemini::InputType::kWhatCanGeminiDo
+#define BWGInputTypeDiscoveryCard gemini::InputType::kDiscoveryCard
+#define BWGInputTypeOmniboxSummarize gemini::InputType::kOmniboxSummarize
+#define BWGInputTypeOmniboxPrompt gemini::InputType::kOmniboxPrompt
+#define BWGInputTypeTransitionToLive gemini::InputType::kTransitionToLive
+#define BWGInputTypeOnboardingWhatCanGeminiDo \
+  gemini::InputType::kOnboardingWhatCanGeminiDo
+#define BWGInputTypeOnboardingAskAboutPage \
+  gemini::InputType::kOnboardingAskAboutPage
+#define BWGInputTypeOnboardingSummarize gemini::InputType::kOnboardingSummarize
+#define BWGInputTypeSuggestedReply gemini::InputType::kSuggestedReply
+#define BWGInputTypeNanoBananaTurnThisPageIntoAComicStrip \
+  gemini::InputType::kNanoBananaTurnThisPageIntoAComicStrip
+#define BWGInputTypeNanoBananaMakeAFolkArtIllustration \
+  gemini::InputType::kNanoBananaMakeAFolkArtIllustration
+#define BWGInputTypeNanoBananaMakeACustomMiniFigure \
+  gemini::InputType::kNanoBananaMakeACustomMiniFigure
+#define BWGInputTypeNanoBananaGiveMeAGrungeMakeover \
+  gemini::InputType::kNanoBananaGiveMeAGrungeMakeover
+#define BWGInputTypeNanoBananaTurnThisImageIntoAVintagePostcard \
+  gemini::InputType::kNanoBananaTurnThisImageIntoAVintagePostcard
+#define BWGInputTypeNanoBananaTurnThisImageIntoAWatercolorPainting \
+  gemini::InputType::kNanoBananaTurnThisImageIntoAWatercolorPainting
+#define BWGInputTypeNanoBananaMakeThisImageLookLikeInstantFilm \
+  gemini::InputType::kNanoBananaMakeThisImageLookLikeInstantFilm
+#define BWGInputTypeEditMenuPrompt gemini::InputType::kEditMenuPrompt
 
 // TODO(crbug.com/481711842): Replace this enum and its gemini_metrics.h
 // equivalent with an enum in gemini_constants.h
@@ -141,7 +121,7 @@ typedef NS_ENUM(NSInteger, GeminiCancelType) {
 - (void)didTapGeminiSettingsButton;
 
 // Called when a query is sent to Gemini, including metadata about the query.
-- (void)didSendQueryWithInputType:(BWGInputType)inputType
+- (void)didSendQueryWithInputType:(gemini::InputType)inputType
          isNanoBananaToolSelected:(BOOL)isNanoBananaToolSelected
               imagesAttachedCount:(NSUInteger)imagesAttachedCount
                    longPressImage:(BOOL)longPressImage
