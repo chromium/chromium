@@ -1832,16 +1832,6 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   </summary>
 </histogram>
 
-<histogram name="Search.SearchWidgetUseAndDeviceInfo"
-    enum="SearchWidgetUseInfo" expires_after="2020-02-16">
-  <owner>yusufo@chromium.org</owner>
-  <summary>
-    The current state for search widget use and whether the device is a
-    partnership device related with the Android Search Widget. Collected on
-    every cold start.
-  </summary>
-</histogram>
-
 <histogram name="SearchAnswer.AnswerVisibleTime" units="ms"
     expires_after="2021-09-01">
   <owner>mmourgos@chromium.org</owner>

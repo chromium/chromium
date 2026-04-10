@@ -603,27 +603,6 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="tt"/>
 </enum>
 
-<enum name="SearchWidgetUseInfo">
-  <int value="0" label="defunct Present in partnership device"/>
-  <int value="1" label="defunct Not present in partnership device"/>
-  <int value="2" label="defunct Present in non-partnership device"/>
-  <int value="3" label="defunct Not present in non-partnership device"/>
-  <int value="4" label="Present in partnership device (Always available)"/>
-  <int value="5"
-      label="Present in partnership device (Added after first start)"/>
-  <int value="6" label="Not Present in partnership device (Never present)"/>
-  <int value="7"
-      label="Not Present in partnership device (Removed after first start)"/>
-  <int value="8" label="Present in non-partnership device (Always available)"/>
-  <int value="9"
-      label="Present in non-partnership device (Added after first start)"/>
-  <int value="10"
-      label="Not Present in non-partnership device (Never present)"/>
-  <int value="11"
-      label="Not Present in non-partnership device (Removed after first
-             start)"/>
-</enum>
-
 <enum name="TrendingTileEvent">
   <int value="0" label="Tile was shown"/>
   <int value="1" label="Tile was removed"/>
