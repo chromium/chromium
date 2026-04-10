@@ -121,6 +121,10 @@
   position: absolute;
 }
 
+#regionSelectionLayer[is-selecting] {
+  z-index: 2;
+}
+
 #cursor {
   align-items: center;
   background: var(--color-selection-element);
