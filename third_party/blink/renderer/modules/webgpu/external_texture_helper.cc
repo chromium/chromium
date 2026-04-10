@@ -455,7 +455,8 @@ ExternalTexture CreateExternalTexture(
         [&](cc::PaintCanvas& canvas) {
           video_renderer->Paint(media_video_frame.get(), &canvas, media_flags,
                                 params, raster_context_provider);
-        });
+        },
+        /*is_overwrite=*/false);
   }
 
   if (!canvas_resource) {

@@ -229,7 +229,8 @@ bool ImageBitmapRenderingContext::PushFrame() {
           [&](cc::PaintCanvas& canvas) {
             canvas.drawImage(image->PaintImageForCurrentFrame(), 0, 0,
                              SkSamplingOptions(), &paint_flags);
-          });
+          },
+          /*is_overwrite=*/false);
   Host()->PushFrame(std::move(resource));
   return true;
 }

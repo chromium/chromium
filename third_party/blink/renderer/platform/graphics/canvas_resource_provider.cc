@@ -1028,7 +1028,8 @@ CanvasResourceProviderSharedImage::GetSharedImageUsageFlags() const {
 
 scoped_refptr<CanvasResource>
 CanvasNon2DResourceProviderSharedImage::DoExternalDrawAndProduceResource(
-    base::FunctionRef<void(cc::PaintCanvas&)> draw_callback) {
+    base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
+    bool is_overwrite) {
   cached_snapshot_.reset();
   draw_callback(recorder_->getRecordingCanvas());
 
@@ -1039,7 +1040,7 @@ CanvasNon2DResourceProviderSharedImage::DoExternalDrawAndProduceResource(
       return nullptr;
     }
 
-    FlushCanvas(/*is_overwrite=*/false);
+    FlushCanvas(is_overwrite);
 
     // Note that the resource *must* be a CanvasResourceSharedImage as this
     // class creates CanvasResourceSharedImage instances exclusively.
@@ -1057,7 +1058,7 @@ CanvasNon2DResourceProviderSharedImage::DoExternalDrawAndProduceResource(
   // backing SharedImage). Hence, we must make sure that the SI is updated to
   // reflect the ops made in the current write access (if any) and give up any
   // such write access.
-  FlushCanvas(/*is_overwrite=*/false);
+  FlushCanvas(is_overwrite);
   EndWriteAccess();
 
   return resource_;

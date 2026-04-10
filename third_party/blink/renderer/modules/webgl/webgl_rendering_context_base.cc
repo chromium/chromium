@@ -2205,7 +2205,8 @@ WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBufferToResource(
       resource = resource_provider->DoExternalDrawAndProduceResource(
           [&image, dest_rect](cc::PaintCanvas& canvas) {
             DrawImageToCanvas(image.get(), canvas, dest_rect);
-          });
+          },
+          /*is_overwrite=*/false);
       copy_succeeded = true;
     }
   }
