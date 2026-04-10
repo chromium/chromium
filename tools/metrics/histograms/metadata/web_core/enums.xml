@@ -26,12 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="ActionUponResourceRequest">
-  <int value="0" label="Load resource"/>
-  <int value="1" label="Revalidate resource"/>
-  <int value="2" label="Use resource from cache"/>
-</enum>
-
 <enum name="BooleanStreamed">
   <int value="0" label="Not streamed"/>
   <int value="1" label="Streamed"/>
@@ -349,11 +343,6 @@ chromium-metrics-reviews@google.com.
   <int value="26" label="Script too small (background)"/>
   <int value="27" label="An error had occurred (background)"/>
   <int value="28" label="Encoding not supported (background)"/>
-</enum>
-
-<enum name="ResourceHasClient">
-  <int value="0" label="No client"/>
-  <int value="1" label="Has client"/>
 </enum>
 
 <enum name="V8CodeCacheGetMetadataType">

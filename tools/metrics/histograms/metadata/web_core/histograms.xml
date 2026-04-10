@@ -330,24 +330,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebCore.ResourceFetcher.ActionUponResourceRequest"
-    enum="ActionUponResourceRequest" expires_after="M85">
-  <owner>clamy@chromium.org</owner>
-  <summary>
-    The resulting action (e.g. load resource, use resource from in-memory
-    cache...) upon a resource request.
-  </summary>
-</histogram>
-
-<histogram name="WebCore.ResourceFetcher.ResourceHasClientUponCacheHit"
-    enum="ResourceHasClient" expires_after="M85">
-  <owner>clamy@chromium.org</owner>
-  <summary>
-    Whether the resource in the cache is being used by at least one client (live
-    resource) or not (dead resource) upon a cache hit.
-  </summary>
-</histogram>
-
 <histogram name="WebCore.Scripts.Async.NotStreamingReason"
     enum="NotStreamingReason" expires_after="2024-09-18">
   <owner>leszeks@chromium.org</owner>
