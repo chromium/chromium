@@ -7,6 +7,10 @@
 #include "base/functional/callback.h"
 #include "build/build_config.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/accessibility_annotator/first_run/android/accessibility_annotator_bottom_sheet_bridge.h"
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/views/accessibility_annotator/accessibility_annotator_info_dialog_controller.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -63,8 +67,21 @@ void ChromeAccessibilityAnnotatorFirstRunClient::ShowRemoteAnnotatorInfo(
   controller->ShowDialog(
       web_contents, base::BindOnce(&ToInfoResult).Then(std::move(callback)));
 #else
-  // TODO(b/488326606): Native UI implementation for Android is coming soon.
-  // We can just return kNotAcknowledged for now.
-  std::move(callback).Run(accessibility_annotator::InfoResult::kNotAcknowledged);
+  android_bridge_ = std::make_unique<
+      accessibility_annotator::AccessibilityAnnotatorBottomSheetBridge>(
+      web_contents,
+      base::BindOnce(&ChromeAccessibilityAnnotatorFirstRunClient::
+                         OnRemoteAnnotatorInfoResult,
+                     base::Unretained(this), std::move(callback)));
+  android_bridge_->Show();
 #endif
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void ChromeAccessibilityAnnotatorFirstRunClient::OnRemoteAnnotatorInfoResult(
+    base::OnceCallback<void(accessibility_annotator::InfoResult)> callback,
+    accessibility_annotator::InfoResult result) {
+  std::move(callback).Run(result);
+  android_bridge_.reset();
+}
+#endif

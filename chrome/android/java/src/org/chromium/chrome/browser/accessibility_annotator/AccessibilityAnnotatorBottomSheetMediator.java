@@ -15,20 +15,26 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 /*package*/ class AccessibilityAnnotatorBottomSheetMediator {
     private final BottomSheetController mBottomSheetController;
     private final AccessibilityAnnotatorBottomSheetContent mContent;
+    private final AccessibilityAnnotatorBottomSheetCoordinator.Delegate mDelegate;
 
     private final BottomSheetObserver mBottomSheetObserver =
             new EmptyBottomSheetObserver() {
                 @Override
                 public void onSheetClosed(@StateChangeReason int reason) {
+                    if (reason != StateChangeReason.INTERACTION_COMPLETE) {
+                        mDelegate.onInfoDismissed();
+                    }
                     mBottomSheetController.removeObserver(this);
                 }
             };
 
     AccessibilityAnnotatorBottomSheetMediator(
             BottomSheetController bottomSheetController,
-            AccessibilityAnnotatorBottomSheetContent content) {
+            AccessibilityAnnotatorBottomSheetContent content,
+            AccessibilityAnnotatorBottomSheetCoordinator.Delegate delegate) {
         mBottomSheetController = bottomSheetController;
         mContent = content;
+        mDelegate = delegate;
     }
 
     /** Requests to show the bottom sheet. */
@@ -36,22 +42,24 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
         mBottomSheetController.addObserver(mBottomSheetObserver);
         if (!mBottomSheetController.requestShowContent(mContent, /* animate= */ true)) {
             mBottomSheetController.removeObserver(mBottomSheetObserver);
+            mDelegate.onInfoDismissed();
         }
     }
 
-    /** Handles the primary button click. */
-    void onPrimaryButtonClicked() {
+    /** Handles the acknowledge action. */
+    void onAcknowledgeClicked() {
+        mDelegate.onInfoAcknowledged();
         hide(StateChangeReason.INTERACTION_COMPLETE);
     }
 
-    /** Handles the secondary button click. */
-    void onSecondaryButtonClicked() {
-        hide(StateChangeReason.INTERACTION_COMPLETE);
+    /** Handles the manage settings action. */
+    void onManageSettingsClicked() {
+        mDelegate.onManageSettingsClicked();
     }
 
     /** Handles the learn more link click. */
     void onLearnMoreClicked() {
-        hide(StateChangeReason.INTERACTION_COMPLETE);
+        mDelegate.onLearnMoreClicked();
     }
 
     /** Hides the bottom sheet. */

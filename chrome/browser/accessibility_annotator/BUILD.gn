@@ -65,6 +65,7 @@ source_set("unit_tests") {
     ":impl",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/accessibility_annotator/first_run:unit_tests",
     "//chrome/test:test_support",
     "//components/accessibility_annotator/core:features",
     "//components/autofill/core/browser:test_support",

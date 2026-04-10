@@ -20,12 +20,23 @@ import org.chromium.ui.text.SpanApplier;
 /** Coordinator for the Accessibility Annotator bottom sheet. */
 @NullMarked
 public class AccessibilityAnnotatorBottomSheetCoordinator {
+    /** Delegate interface for handling bottom sheet actions. */
+    public interface Delegate {
+        void onInfoAcknowledged();
+
+        void onManageSettingsClicked();
+
+        void onLearnMoreClicked();
+
+        void onInfoDismissed();
+    }
+
     private final AccessibilityAnnotatorBottomSheetViewHolder mView;
     private final AccessibilityAnnotatorBottomSheetMediator mMediator;
     private final PropertyModel mModel;
 
     public AccessibilityAnnotatorBottomSheetCoordinator(
-            Context context, BottomSheetController bottomSheetController) {
+            Context context, BottomSheetController bottomSheetController, Delegate delegate) {
         mView = new AccessibilityAnnotatorBottomSheetViewHolder(context);
         mModel =
                 new PropertyModel.Builder(AccessibilityAnnotatorBottomSheetProperties.ALL_KEYS)
@@ -67,10 +78,11 @@ public class AccessibilityAnnotatorBottomSheetCoordinator {
                 new AccessibilityAnnotatorBottomSheetMediator(
                         bottomSheetController,
                         new AccessibilityAnnotatorBottomSheetContent(
-                                mView.mContentView, mView.mScrollView));
+                                mView.mContentView, mView.mScrollView),
+                        delegate);
 
-        mView.mPrimaryButton.setOnClickListener(v -> mMediator.onPrimaryButtonClicked());
-        mView.mSecondaryButton.setOnClickListener(v -> mMediator.onSecondaryButtonClicked());
+        mView.mPrimaryButton.setOnClickListener(v -> mMediator.onAcknowledgeClicked());
+        mView.mSecondaryButton.setOnClickListener(v -> mMediator.onManageSettingsClicked());
 
         mView.setAnimation(R.raw.chrome_finds_opt_in_animation);
     }

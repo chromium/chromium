@@ -2,6 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
 source_set("first_run") {
   sources = [
     "accessibility_annotator_first_run_service_factory.cc",
@@ -9,6 +13,13 @@ source_set("first_run") {
     "chrome_accessibility_annotator_first_run_client.cc",
     "chrome_accessibility_annotator_first_run_client.h",
   ]
+
+  if (is_android) {
+    sources += [
+      "android/accessibility_annotator_bottom_sheet_bridge.cc",
+      "android/accessibility_annotator_bottom_sheet_bridge.h",
+    ]
+  }
 
   deps = [
     "//base",
@@ -20,9 +31,32 @@ source_set("first_run") {
     "//content/public/browser",
   ]
 
-  if (!is_android) {
+  if (is_android) {
     deps += [
-      "//chrome/browser/ui/views/accessibility_annotator",
+      "//chrome/android:jni_headers",
+      "//ui/android",
     ]
+  } else {
+    deps += [ "//chrome/browser/ui/views/accessibility_annotator" ]
   }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+
+  if (is_android) {
+    sources +=
+        [ "android/accessibility_annotator_bottom_sheet_bridge_unittest.cc" ]
+  }
+
+  deps = [
+    ":first_run",
+    "//base",
+    "//base/test:test_support",
+    "//components/accessibility_annotator/first_run",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }

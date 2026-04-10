@@ -5,12 +5,21 @@
 #ifndef CHROME_BROWSER_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_CHROME_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_CLIENT_H_
 #define CHROME_BROWSER_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_CHROME_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_CLIENT_H_
 
+#include <memory>
+
 #include "base/functional/callback.h"
+#include "build/build_config.h"
 #include "components/accessibility_annotator/first_run/accessibility_annotator_first_run_client.h"
 
 namespace content {
 class WebContents;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+namespace accessibility_annotator {
+class AccessibilityAnnotatorBottomSheetBridge;
+}
+#endif
 
 class ChromeAccessibilityAnnotatorFirstRunClient
     : public accessibility_annotator::AccessibilityAnnotatorFirstRunClient {
@@ -28,6 +37,17 @@ class ChromeAccessibilityAnnotatorFirstRunClient
       accessibility_annotator::FirstRunInvocationSource invocation_source,
       base::OnceCallback<void(accessibility_annotator::InfoResult)> callback)
       override;
+
+ private:
+#if BUILDFLAG(IS_ANDROID)
+  void OnRemoteAnnotatorInfoResult(
+      base::OnceCallback<void(accessibility_annotator::InfoResult)> callback,
+      accessibility_annotator::InfoResult result);
+
+  std::unique_ptr<
+      accessibility_annotator::AccessibilityAnnotatorBottomSheetBridge>
+      android_bridge_;
+#endif
 };
 
 #endif  // CHROME_BROWSER_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_CHROME_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_CLIENT_H_
