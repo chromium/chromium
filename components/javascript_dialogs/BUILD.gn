@@ -77,11 +77,15 @@ static_library("javascript_dialogs") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "app_modal_dialog_manager_unittest.cc" ]
+  sources = [
+    "app_modal_dialog_manager_unittest.cc",
+    "app_modal_dialog_queue_unittest.cc",
+  ]
 
   deps = [
     ":javascript_dialogs",
     "//base",
+    "//content/public/browser",
     "//testing/gtest",
     "//url",
   ]

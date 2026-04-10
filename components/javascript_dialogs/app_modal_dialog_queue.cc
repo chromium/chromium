@@ -14,7 +14,32 @@ AppModalDialogQueue* AppModalDialogQueue::GetInstance() {
   return base::Singleton<AppModalDialogQueue>::get();
 }
 
+void AppModalDialogQueue::CancelAllDialogs() {
+  shutting_down_ = true;
+  InvalidateAndDeleteQueuedDialogs();
+}
+
+void AppModalDialogQueue::ResetForTesting() {
+  active_dialog_ = nullptr;
+  shutting_down_ = false;
+  InvalidateAndDeleteQueuedDialogs();
+}
+
+void AppModalDialogQueue::InvalidateAndDeleteQueuedDialogs() {
+  while (!app_modal_dialog_queue_.empty()) {
+    AppModalDialogController* dialog = app_modal_dialog_queue_.front();
+    app_modal_dialog_queue_.pop_front();
+    dialog->Invalidate();
+    delete dialog;
+  }
+}
+
 void AppModalDialogQueue::AddDialog(AppModalDialogController* dialog) {
+  if (shutting_down_) {
+    dialog->Invalidate();
+    delete dialog;
+    return;
+  }
   if (!active_dialog_) {
     ShowModalDialog(dialog);
     return;
@@ -23,6 +48,11 @@ void AppModalDialogQueue::AddDialog(AppModalDialogController* dialog) {
 }
 
 void AppModalDialogQueue::ShowNextDialog() {
+  if (shutting_down_) {
+    active_dialog_ = nullptr;
+    InvalidateAndDeleteQueuedDialogs();
+    return;
+  }
   AppModalDialogController* dialog = GetNextDialog();
   if (dialog)
     ShowModalDialog(dialog);

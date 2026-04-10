@@ -112,6 +112,7 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 #include "components/gcm_driver/gcm_driver.h"
+#include "components/javascript_dialogs/app_modal_dialog_queue.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -1858,6 +1859,8 @@ void BrowserProcessImpl::Unpin() {
 
   DCHECK(!shutting_down_);
   shutting_down_ = true;
+
+  javascript_dialogs::AppModalDialogQueue::GetInstance()->CancelAllDialogs();
 
 #if !BUILDFLAG(IS_ANDROID)
   KeepAliveRegistry::GetInstance()->SetIsShuttingDown();
