@@ -13,7 +13,6 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -39,8 +38,6 @@ import java.util.Map;
 //                package whose visibility will be enforced via DEPS.
 @NullMarked
 /* package */ class NavigationControllerImpl implements NavigationController {
-    private static final String TAG = "NavigationController";
-
     // Using ScopedJavaGlobalRef in the owning C++ object to keep the Java object alive consumes an
     // entry per instance in the finite global ref table. This scales poorly with a large number of
     // WebContents. As a workaround, the C++ owner uses a JavaObjectWeakGlobalRef and an entry is
@@ -299,14 +296,6 @@ import java.util.Map;
     public void setUseDesktopUserAgent(
             boolean override, boolean reloadOnChange, boolean skipOnInitialNavigation) {
         if (mNativeNavigationControllerAndroid != 0) {
-            Log.i(
-                    TAG,
-                    "Thread dump for debugging, override: "
-                            + override
-                            + " reloadOnChange: "
-                            + reloadOnChange);
-            Thread.dumpStack();
-
             NavigationControllerImplJni.get()
                     .setUseDesktopUserAgent(
                             mNativeNavigationControllerAndroid,
