@@ -12,6 +12,9 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_util.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_service.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_view.h"
@@ -60,8 +63,15 @@ void SendTabToSelfToolbarIconController::DisplayNewEntries(
     // handler class.
     if (base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen)) {
       OpenEntryInNewTab(profile_, *new_entry);
+      // Show a toast.
+      ToastParams params(ToastId::kSendTabToSelfTabOpened);
+      params.body_string_replacement_params = {
+          base::UTF8ToUTF16(new_entry->GetDeviceName())};
+      browser->GetFeatures()
+          .toast_service()
+          ->toast_controller()
+          ->MaybeShowToast(std::move(params));
       RecordAutoOpenOutcome(AutoOpenOutcome::kSuccess);
-      // TODO(crbug.com/488072250): Show a toast.
     } else {
       ShowToolbarButton(*new_entry, browser);
     }
@@ -115,6 +125,7 @@ void SendTabToSelfToolbarIconController::OnBrowserActivated(
   if (CanShowOnBrowser(browser)) {
     if (base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen)) {
       OpenEntryInNewTab(profile_, *entry);
+      // TODO(crbug.com/488072250): Show a toast.
       RecordAutoOpenOutcome(AutoOpenOutcome::kOpenedPending);
     } else {
       ShowToolbarButton(*entry, browser);

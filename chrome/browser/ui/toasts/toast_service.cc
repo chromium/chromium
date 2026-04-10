@@ -472,4 +472,11 @@ void ToastService::RegisterToasts(
             .Build());
   }
 
+  toast_registry_->RegisterToast(
+      ToastId::kSendTabToSelfTabOpened,
+      ToastSpecification::Builder(
+          vector_icons::kDevicesIcon,
+          IDS_SEND_TAB_PUSH_NOTIFICATION_TITLE_USER_GIVEN_DEVICE_NAME)
+          .AddGlobalScoped()
+          .Build());
 }  // RegisterToasts() end.

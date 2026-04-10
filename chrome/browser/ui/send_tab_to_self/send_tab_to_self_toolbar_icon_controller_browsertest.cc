@@ -10,6 +10,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_service.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -177,6 +180,13 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerAutoOpenTest,
 
   histogram_tester.ExpectUniqueSample("Sharing.SendTabToSelf.AutoOpenOutcome",
                                       AutoOpenOutcome::kSuccess, 1);
+
+  EXPECT_EQ(browser()
+                ->browser_window_features()
+                ->toast_service()
+                ->toast_controller()
+                ->GetCurrentToastId(),
+            ToastId::kSendTabToSelfTabOpened);
 }
 
 // This test cannot work on Wayland because the platform does not allow clients
