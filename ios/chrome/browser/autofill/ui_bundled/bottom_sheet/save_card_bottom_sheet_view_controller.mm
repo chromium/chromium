@@ -30,7 +30,7 @@ CGFloat const kSpacingBeforeAboveTitleImage = 12;
 // Spacing after the logo in the bottom sheet.
 CGFloat const kSpacingAfterAboveTitleImage = 4;
 
-#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 //  Height of the Google Wallet logo used as the image above the title of the
 //  bottomsheet for upload save.
 CGFloat const kGoogleWalletLogoHeight = 32;
@@ -245,7 +245,7 @@ CGFloat const kChromeLogoHeight = 22;
 
 // Returns the image to be used above the title of the bottomsheet.
 - (UIImage*)aboveTitleImage {
-#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   //  iOS-specific symbol is used to get an optimized image with better
   //  resolution.
   switch ([self.dataSource logoType]) {
@@ -298,7 +298,7 @@ CGFloat const kChromeLogoHeight = 22;
 
   configuration.leadingConfiguration = imageConfiguration;
 
-#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // The GPay pill icon is used as a trailing image in the cell when the feature
   // kAutofillEnableWalletBrandingV2 is enabled and legal messages are present,
   // as it indicates that the card will be saved to Google Wallet.

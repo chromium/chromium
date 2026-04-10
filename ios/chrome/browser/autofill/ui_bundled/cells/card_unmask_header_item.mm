@@ -20,7 +20,7 @@ namespace {
 // Spacing between elements.
 const CGFloat kUISpacing = 5;
 
-#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Height of the Google pay badge.
 const CGFloat kGooglePayBadgeHeight = 16;
 #endif
@@ -164,7 +164,7 @@ const CGFloat kGooglePayBadgeHeight = 16;
   googlePayBadge.translatesAutoresizingMaskIntoConstraints = NO;
   googlePayBadge.contentMode = UIViewContentModeScaleAspectFit;
   googlePayBadge.image = [self googlePayBadgeImage];
-#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   googlePayBadge.isAccessibilityElement = YES;
   googlePayBadge.accessibilityLabel =
       l10n_util::GetNSString(IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME);
@@ -175,7 +175,7 @@ const CGFloat kGooglePayBadgeHeight = 16;
 // Returns the google pay badge image corresponding to the current
 // UIUserInterfaceStyle (light/dark mode).
 - (UIImage*)googlePayBadgeImage {
-#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return MakeSymbolMulticolor(
       CustomSymbolWithPointSize(kGooglePaySymbol, kGooglePayBadgeHeight));
 #else
