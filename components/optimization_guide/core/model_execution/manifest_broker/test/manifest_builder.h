@@ -110,6 +110,9 @@ class ManifestComponentDirectory {
   explicit ManifestComponentDirectory(const proto::Manifest& manifest);
   ~ManifestComponentDirectory();
 
+  // Replaces the manifest in the directory.
+  ManifestComponentDirectory& Add(const proto::Manifest& manifest);
+  // Adds a new solution config to the directory, overwriting existing ones.
   ManifestComponentDirectory& Add(const std::string& filename,
                                   const proto::SolutionConfig& config);
 

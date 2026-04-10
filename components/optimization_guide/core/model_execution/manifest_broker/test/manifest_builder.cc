@@ -156,10 +156,16 @@ proto::Manifest ManifestBuilder::Build() {
 ManifestComponentDirectory::ManifestComponentDirectory(
     const proto::Manifest& manifest) {
   CHECK(temp_dir_.CreateUniqueTempDir());
-  CHECK(base::WriteFile(temp_dir_.GetPath().Append(kManifestFileName),
-                        manifest.SerializeAsString()));
+  Add(manifest);
 }
 ManifestComponentDirectory::~ManifestComponentDirectory() = default;
+
+ManifestComponentDirectory& ManifestComponentDirectory::Add(
+    const proto::Manifest& manifest) {
+  CHECK(base::WriteFile(temp_dir_.GetPath().Append(kManifestFileName),
+                        manifest.SerializeAsString()));
+  return *this;
+}
 
 ManifestComponentDirectory& ManifestComponentDirectory::Add(
     const std::string& filename,
