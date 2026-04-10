@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/content_suggestions/set_up_list/public/set_up_list_constants.h"
 #import "ios/chrome/browser/content_suggestions/test/new_tab_page_app_interface.h"
+#import "ios/chrome/browser/default_browser/promo/public/features.h"
 #import "ios/chrome/browser/first_run/public/first_run_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
@@ -58,6 +60,11 @@ id<GREYMatcher> DefaultItemTitle() {
 
 // Returns a matcher to the Set Up List Default Browser promo default title.
 id<GREYMatcher> DefaultPromoTitle() {
+  if (@available(iOS 18.3, *)) {
+    return grey_text(
+        GetNSString(IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_TITLE_TEXT));
+  }
+
   return grey_allOf(
       grey_text(
           GetNSString([ChromeEarlGrey isIPadIdiom]
@@ -91,6 +98,11 @@ id<GREYMatcher> DefaultPromoSubtitle() {
   config.additional_args.push_back("1");
   // Relaunch app at each test to rewind the startup state.
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
+
+  config.features_enabled_and_params.push_back(
+      {kDefaultBrowserPictureInPicture,
+       {{kDefaultBrowserPictureInPictureParam,
+         kDefaultBrowserPictureInPictureParamDisabledDefaultApps}}});
 
   return config;
 }
@@ -127,8 +139,11 @@ id<GREYMatcher> DefaultPromoSubtitle() {
   [self openPromo];
   [[EarlGrey selectElementWithMatcher:DefaultPromoTitle()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:DefaultPromoSubtitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+
+  if (!@available(iOS 18.3, *)) {
+    [[EarlGrey selectElementWithMatcher:DefaultPromoSubtitle()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  }
 }
 
 #pragma mark - Helpers
@@ -151,6 +166,14 @@ id<GREYMatcher> DefaultPromoSubtitle() {
 - (void)openPromo {
   [[EarlGrey selectElementWithMatcher:DefaultItemTitle()]
       performAction:grey_tap()];
+
+  if (@available(iOS 18.3, *)) {
+    [ChromeEarlGrey
+        waitForUIElementToAppearWithMatcher:
+            grey_accessibilityID(kDefaultBrowserSettingsTableViewId)];
+    return;
+  }
+
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:
           grey_accessibilityID(
