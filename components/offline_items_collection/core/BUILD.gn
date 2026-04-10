@@ -111,12 +111,16 @@ if (is_android) {
       ":jni_headers",
     ]
 
+    resources_package = "org.chromium.components.browser_ui.strings"
+
     deps = [
       "//base:base_java",
       "//build/android:build_java",
+      "//components/browser_ui/strings/android:browser_ui_strings_grd",
       "//components/download/public/common:public_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
+      "//ui/android:ui_java",
       "//url:gurl_java",
     ]
   }

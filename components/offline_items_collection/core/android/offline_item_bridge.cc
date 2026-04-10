@@ -90,8 +90,23 @@ ScopedJavaLocalRef<jobject> OfflineItemBridge::CreateOfflineItemList(
     const std::vector<OfflineItem>& items) {
   ScopedJavaLocalRef<jobject> jlist =
       Java_OfflineItemBridge_createArrayList(env);
-  for (const auto& item : items)
-    JNI_OfflineItemBridge_createOfflineItemAndMaybeAddToList(env, jlist, item);
+
+  size_t loaded_count = 0;
+  for (const auto& item : items) {
+    ScopedJavaLocalRef<jobject> j_item =
+        JNI_OfflineItemBridge_createOfflineItemAndMaybeAddToList(env, jlist,
+                                                                  item);
+    // If OOM occurred, Java returns null. Stop creating more items and return
+    // what we have so far.
+    if (j_item.is_null()) {
+      Java_OfflineItemBridge_onItemsTruncated(env,
+                                               static_cast<int>(loaded_count),
+                                               static_cast<int>(items.size()));
+      break;
+    }
+    ++loaded_count;
+  }
+
   return jlist;
 }
 

@@ -6,10 +6,15 @@ package org.chromium.components.offline_items_collection.bridges;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import org.chromium.ui.widget.Toast;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.strings.R;
 import org.chromium.components.download.DownloadDangerType;
 import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.OfflineItem;
@@ -48,11 +53,17 @@ public final class OfflineItemBridge {
      * list of the members that will be populated. If {@code list} isn't {@code null}, the newly
      * created {@link OfflineItem} will be added to it.
      *
+     * <p>If an {@link OutOfMemoryError} occurs during item creation, this method catches it and
+     * returns null instead of crashing. The native caller checks for null return and stops loading
+     * further items, then calls onItemsTruncated() to notify the user that only partial results
+     * are shown.
+     *
      * @param list An {@link ArrayList} to optionally add the newly created {@link OfflineItem} to.
-     * @return The newly created {@link OfflineItem} based on the passed in parameters.
+     * @return The newly created {@link OfflineItem} based on the passed in parameters, or null if
+     *         OOM occurred.
      */
     @CalledByNative
-    private static OfflineItem createOfflineItemAndMaybeAddToList(
+    private static @Nullable OfflineItem createOfflineItemAndMaybeAddToList(
             ArrayList<OfflineItem> list,
             String nameSpace,
             String id,
@@ -92,48 +103,52 @@ public final class OfflineItemBridge {
             boolean canRename,
             boolean ignoreVisuals,
             double contentQualityScore) {
-        OfflineItem item = new OfflineItem();
-        assumeNonNull(item.id).namespace = nameSpace;
-        item.id.id = id;
-        item.title = title;
-        item.description = description;
-        item.filter = filter;
-        item.isTransient = isTransient;
-        item.isSuggested = isSuggested;
-        item.isAccelerated = isAccelerated;
-        item.promoteOrigin = promoteOrigin;
-        item.totalSizeBytes = totalSizeBytes;
-        item.externallyRemoved = externallyRemoved;
-        item.creationTimeMs = creationTimeMs;
-        item.completionTimeMs = completionTimeMs;
-        item.lastAccessedTimeMs = lastAccessedTimeMs;
-        item.isOpenable = isOpenable;
-        item.filePath = filePath;
-        item.mimeType = mimeType;
-        item.url = url;
-        item.originalUrl = originalUrl;
-        item.isOffTheRecord = isOffTheRecord;
-        item.otrProfileId = otrProfileId;
-        item.referrerUrl = referrerUrl;
-        item.hasUserGesture = hasUserGesture;
-        item.state = state;
-        item.failState = failState;
-        item.pendingState = pendingState;
-        item.isResumable = isResumable;
-        item.allowMetered = allowMetered;
-        item.receivedBytes = receivedBytes;
-        item.progress =
-                new OfflineItem.Progress(
-                        progressValue, progressMax == -1 ? null : progressMax, progressUnit);
-        item.timeRemainingMs = timeRemainingMs;
-        item.dangerType = dangerType;
-        item.isDangerous = isDangerous;
-        item.canRename = canRename;
-        item.ignoreVisuals = ignoreVisuals;
-        item.contentQualityScore = contentQualityScore;
+        try {
+            OfflineItem item = new OfflineItem();
+            assumeNonNull(item.id).namespace = nameSpace;
+            item.id.id = id;
+            item.title = title;
+            item.description = description;
+            item.filter = filter;
+            item.isTransient = isTransient;
+            item.isSuggested = isSuggested;
+            item.isAccelerated = isAccelerated;
+            item.promoteOrigin = promoteOrigin;
+            item.totalSizeBytes = totalSizeBytes;
+            item.externallyRemoved = externallyRemoved;
+            item.creationTimeMs = creationTimeMs;
+            item.completionTimeMs = completionTimeMs;
+            item.lastAccessedTimeMs = lastAccessedTimeMs;
+            item.isOpenable = isOpenable;
+            item.filePath = filePath;
+            item.mimeType = mimeType;
+            item.url = url;
+            item.originalUrl = originalUrl;
+            item.isOffTheRecord = isOffTheRecord;
+            item.otrProfileId = otrProfileId;
+            item.referrerUrl = referrerUrl;
+            item.hasUserGesture = hasUserGesture;
+            item.state = state;
+            item.failState = failState;
+            item.pendingState = pendingState;
+            item.isResumable = isResumable;
+            item.allowMetered = allowMetered;
+            item.receivedBytes = receivedBytes;
+            item.progress =
+                    new OfflineItem.Progress(
+                            progressValue, progressMax == -1 ? null : progressMax, progressUnit);
+            item.timeRemainingMs = timeRemainingMs;
+            item.dangerType = dangerType;
+            item.isDangerous = isDangerous;
+            item.canRename = canRename;
+            item.ignoreVisuals = ignoreVisuals;
+            item.contentQualityScore = contentQualityScore;
 
-        if (list != null) list.add(item);
-        return item;
+            if (list != null) list.add(item);
+            return item;
+        } catch (OutOfMemoryError e) {
+            return null;
+        }
     }
 
     /**
@@ -147,5 +162,23 @@ public final class OfflineItemBridge {
         updateDelta.stateChanged = stateChanged;
         updateDelta.visualsChanged = visualsChanged;
         return updateDelta;
+    }
+
+    /**
+     * Called when item loading was truncated due to low memory.
+     * @param loadedCount Number of items that were successfully loaded.
+     * @param totalCount Total number of items that were attempted to load.
+     */
+    @CalledByNative
+    private static void onItemsTruncated(int loadedCount, int totalCount) {
+        String message =
+                ContextUtils.getApplicationContext()
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.offline_items_truncated,
+                                loadedCount,
+                                loadedCount,
+                                totalCount);
+        Toast.makeText(ContextUtils.getApplicationContext(), message, Toast.LENGTH_LONG).show();
     }
 }

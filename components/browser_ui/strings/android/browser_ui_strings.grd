@@ -1669,6 +1669,11 @@
       <message name="IDS_JAVASCRIPT_OPTIMIZER_DISABLED_DUE_TO_ADVANCED_PROTECTION_SETTINGS_MESSAGE" desc="Message displayed in Javascript-Optimizer site-settings page to inform user that Javascript-Optimizer toggle is disabled because Android Advanced Protection was enabled in Android OS Settings.">
         This setting is disabled because you turned on Advanced Protection in Android Settings.
       </message>
+      <message name="IDS_OFFLINE_ITEMS_TRUNCATED" desc="Toast message shown when only some items could be loaded due to low memory. The first placeholder is the number of items shown, and the second is the total number of items. [ICU Syntax]">
+        {LOADED_COUNT, plural,
+          =1 {Showing 1 of {TOTAL_COUNT} items due to low memory}
+          other {Showing # of {TOTAL_COUNT} items due to low memory}}
+      </message>
     </messages>
   </release>
 </grit>
