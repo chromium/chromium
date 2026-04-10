@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
@@ -37,7 +38,8 @@ class FilterSuggestionGenerator {
 
   // Evaluates `url` to determine if a filter suggestion is applicable, and
   // invokes `callback` with a suggestion if one is generated, or with
-  // std::nullopt if no suggestion is applicable.
+  // std::nullopt if no suggestion is applicable. It is guaranteed that
+  // one of `[success|failure]_callback` will be called.
   //
   // The generation process follows these steps:
   // 1) Query the server via the `AnnotationIndexClient` to determine the
@@ -58,14 +60,20 @@ class FilterSuggestionGenerator {
   // See documentation of `GenerateSuggestion()` for more details.
   void OnSupportedTaskTypesFetched(
       const GURL& url,
-      base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback,
+      base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>
+          success_callback,
+      base::ScopedClosureRunner failure_callback,
       std::optional<std::vector<std::string>> supported_task_types);
   void OnAllAnnotationsFetched(
       const GURL& url,
-      base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback,
+      base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>
+          success_callback,
+      base::ScopedClosureRunner failure_callback,
       std::vector<std::vector<FilterAnnotation>> filter_annotations);
   void OnFilterSuggestionCandidatesFetched(
-      base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback,
+      base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>
+          success_callback,
+      base::ScopedClosureRunner failure_callback,
       std::vector<FilterAnnotation> annotations,
       std::optional<std::vector<FilterSuggestionCandidate>> candidates);
 

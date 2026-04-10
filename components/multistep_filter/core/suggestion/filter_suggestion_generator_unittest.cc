@@ -69,6 +69,7 @@ class FilterSuggestionGeneratorTest : public testing::Test {
   MockAnnotationIndexClient& mock_client() { return mock_client_; }
   FilterStore* store() { return store_.get(); }
   FilterSuggestionGenerator* generator() { return generator_.get(); }
+  void DestroyGenerator() { generator_.reset(); }
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -319,6 +320,58 @@ TEST_F(FilterSuggestionGeneratorTest,
   base::test::TestFuture<std::optional<UrlFilterSuggestion>> future;
   generator()->GenerateSuggestion(url, future.GetCallback());
 
+  EXPECT_EQ(future.Get(), std::nullopt);
+}
+
+// Tests that the callback is invoked with `std::nullopt` if the underlying
+// client drops the callback without running it.
+TEST_F(FilterSuggestionGeneratorTest,
+       GenerateSuggestion_CallbackInvokedWhenClientDropsIt) {
+  const GURL url(kTestUrl);
+  base::OnceCallback<void(std::optional<std::vector<std::string>>)> captured_cb;
+  EXPECT_CALL(mock_client(), GetSupportedTaskTypesForDomain(kTestDomain, _))
+      .WillOnce(
+          [&](std::string_view domain,
+              base::OnceCallback<void(std::optional<std::vector<std::string>>)>
+                  cb) { captured_cb = std::move(cb); });
+  base::test::TestFuture<std::optional<UrlFilterSuggestion>> future;
+
+  generator()->GenerateSuggestion(url, future.GetCallback());
+
+  ASSERT_FALSE(future.IsReady());
+
+  captured_cb.Reset();
+
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), std::nullopt);
+}
+
+// Tests that the callback is invoked with `std::nullopt` if the
+// `FilterSuggestionGenerator` is destroyed while a request is pending.
+TEST_F(FilterSuggestionGeneratorTest,
+       GenerateSuggestion_CallbackInvokedWhenGeneratorDestroyed) {
+  const GURL url(kTestUrl);
+  base::OnceCallback<void(std::optional<std::vector<std::string>>)> captured_cb;
+  EXPECT_CALL(mock_client(), GetSupportedTaskTypesForDomain(kTestDomain, _))
+      .WillOnce(
+          [&](std::string_view domain,
+              base::OnceCallback<void(std::optional<std::vector<std::string>>)>
+                  cb) {
+            // Capture the callback but do NOT run it.
+            captured_cb = std::move(cb);
+          });
+  base::test::TestFuture<std::optional<UrlFilterSuggestion>> future;
+
+  generator()->GenerateSuggestion(url, future.GetCallback());
+
+  ASSERT_FALSE(future.IsReady());
+
+  // The callback is bound to a `WeakPtr` of the generator, so the `WeakPtr` is
+  // now invalidated.
+  DestroyGenerator();
+  captured_cb.Reset();
+
+  ASSERT_TRUE(future.IsReady());
   EXPECT_EQ(future.Get(), std::nullopt);
 }
 
