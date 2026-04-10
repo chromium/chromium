@@ -20,27 +20,8 @@ class SequenceManagerForTest : public internal::SequenceManagerImpl {
  public:
   ~SequenceManagerForTest() override = default;
 
-  // Creates SequenceManagerForTest using ThreadControllerImpl constructed with
-  // the given arguments. ThreadControllerImpl is slightly overridden to skip
-  // nesting observers registration if message loop is absent.
-  static std::unique_ptr<SequenceManagerForTest> Create(
-      SequenceManagerImpl* funneled_sequence_manager,
-      scoped_refptr<SingleThreadTaskRunner> task_runner,
-      const TickClock* clock,
-      // Since most test calls are in Blink, randomised sampling is enabled
-      // by default in the test SequenceManager, as opposed to production code.
-      SequenceManager::Settings settings = SequenceManager::Settings::Builder()
-                                               .SetShouldSampleCPUTime(true)
-                                               .Build());
-
-  // Creates SequenceManagerForTest using the provided ThreadController.
-  static std::unique_ptr<SequenceManagerForTest> Create(
-      std::unique_ptr<internal::ThreadController> thread_controller,
-      SequenceManager::Settings settings = SequenceManager::Settings::Builder()
-                                               .SetShouldSampleCPUTime(true)
-                                               .Build());
-
   static std::unique_ptr<SequenceManagerForTest> CreateOnCurrentThread(
+      std::unique_ptr<MessagePump> message_pump,
       SequenceManager::Settings);
 
   size_t ActiveQueuesCount() const;
@@ -49,8 +30,6 @@ class SequenceManagerForTest : public internal::SequenceManagerImpl {
   size_t QueuesToDeleteCount() const;
   size_t QueuesToShutdownCount();
 
-  using internal::SequenceManagerImpl::
-      CreateThreadControllerImplForCurrentThread;
   using internal::SequenceManagerImpl::GetNextSequenceNumber;
   using internal::SequenceManagerImpl::MoveReadyDelayedTasksToWorkQueues;
   using internal::SequenceManagerImpl::ReloadEmptyWorkQueues;

@@ -259,10 +259,6 @@ ThreadControllerWithMessagePumpImpl::GetDefaultTaskRunner() {
   return task_runner_;
 }
 
-void ThreadControllerWithMessagePumpImpl::RestoreDefaultTaskRunner() {
-  // There is no default task runner (as opposed to ThreadControllerImpl).
-}
-
 void ThreadControllerWithMessagePumpImpl::AddNestingObserver(
     RunLoop::NestingObserver* observer) {
   DCHECK(!main_thread_only().nesting_observer);

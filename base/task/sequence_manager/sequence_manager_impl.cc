@@ -30,7 +30,6 @@
 #include "base/task/sequence_manager/enqueue_order.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/task/sequence_manager/task_time_observer.h"
-#include "base/task/sequence_manager/thread_controller_impl.h"
 #include "base/task/sequence_manager/thread_controller_with_message_pump_impl.h"
 #include "base/task/sequence_manager/time_domain.h"
 #include "base/task/sequence_manager/wake_up_queue.h"
@@ -73,12 +72,6 @@ class TracedBaseValue : public trace_event::ConvertableToTraceFormat {
 };
 
 }  // namespace
-
-std::unique_ptr<SequenceManager> CreateSequenceManagerOnCurrentThread(
-    SequenceManager::Settings settings) {
-  return internal::SequenceManagerImpl::CreateOnCurrentThread(
-      std::move(settings));
-}
 
 std::unique_ptr<SequenceManager> CreateSequenceManagerOnCurrentThreadWithPump(
     std::unique_ptr<MessagePump> message_pump,
@@ -197,22 +190,14 @@ SequenceManagerImpl::~SequenceManagerImpl() {
   }
 #endif
 
-  // Make sure no Task is running as given that RunLoop does not support the
-  // Delegate being destroyed from a Task and
   // ThreadControllerWithMessagePumpImpl does not support being destroyed from a
-  // Task. If we are using a ThreadControllerImpl (i.e. no pump) destruction is
-  // fine
-  DCHECK(!controller_->GetBoundMessagePump() ||
-         main_thread_only().task_execution_stack.empty());
+  // Task.
+  DCHECK(main_thread_only().task_execution_stack.empty());
 
   for (internal::TaskQueueImpl* queue : main_thread_only().active_queues) {
     main_thread_only().selector.RemoveQueue(queue);
     queue->UnregisterTaskQueue();
   }
-
-  // TODO(altimin): restore default task runner automatically when
-  // ThreadController is destroyed.
-  controller_->RestoreDefaultTaskRunner();
 
   main_thread_only().active_queues.clear();
   main_thread_only().selector.SetTaskQueueSelectorObserver(nullptr);
@@ -249,24 +234,6 @@ SequenceManagerImpl::MainThreadOnly::MainThreadOnly(
           std::make_unique<NonWakingWakeUpQueue>(associated_thread)) {}
 
 SequenceManagerImpl::MainThreadOnly::~MainThreadOnly() = default;
-
-// static
-std::unique_ptr<ThreadControllerImpl>
-SequenceManagerImpl::CreateThreadControllerImplForCurrentThread(
-    const TickClock* clock) {
-  return ThreadControllerImpl::Create(GetCurrent(), clock);
-}
-
-// static
-std::unique_ptr<SequenceManagerImpl> SequenceManagerImpl::CreateOnCurrentThread(
-    SequenceManager::Settings settings) {
-  auto thread_controller =
-      CreateThreadControllerImplForCurrentThread(settings.clock);
-  std::unique_ptr<SequenceManagerImpl> manager(new SequenceManagerImpl(
-      std::move(thread_controller), std::move(settings)));
-  manager->BindToCurrentThread();
-  return manager;
-}
 
 // static
 std::unique_ptr<SequenceManagerImpl> SequenceManagerImpl::CreateUnbound(

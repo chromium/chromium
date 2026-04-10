@@ -322,12 +322,6 @@ class BASE_EXPORT SequenceManager::Settings::Builder {
   Settings settings_;
 };
 
-// Create SequenceManager using MessageLoop on the current thread.
-// Implementation is located in sequence_manager_impl.cc.
-// TODO(scheduler-dev): Remove after every thread has a SequenceManager.
-BASE_EXPORT std::unique_ptr<SequenceManager>
-CreateSequenceManagerOnCurrentThread(SequenceManager::Settings settings);
-
 // Create a SequenceManager using the given MessagePump on the current thread.
 // MessagePump instances can be created with
 // MessagePump::CreateMessagePumpForType().

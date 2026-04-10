@@ -72,8 +72,6 @@ namespace internal {
 
 class TaskQueueImpl;
 class DefaultWakeUpQueue;
-class SequenceManagerImpl;
-class ThreadControllerImpl;
 
 // A private factory method for SequenceManagerThreadDelegate which is
 // equivalent to sequence_manager::CreateUnboundSequenceManager() but returns
@@ -208,9 +206,6 @@ class BASE_EXPORT SequenceManagerImpl
       PassKey<SingleThreadTaskRunner>);
 
  protected:
-  static std::unique_ptr<ThreadControllerImpl>
-  CreateThreadControllerImplForCurrentThread(const TickClock* clock);
-
   // Create a task queue manager where |controller| controls the thread
   // on which the tasks are eventually run.
   SequenceManagerImpl(std::unique_ptr<internal::ThreadController> controller,
@@ -235,9 +230,6 @@ class BASE_EXPORT SequenceManagerImpl
   friend class ::base::CurrentThread;
 
   // Factory friends to call into private creation methods.
-  friend std::unique_ptr<SequenceManager>
-      sequence_manager::CreateSequenceManagerOnCurrentThread(
-          SequenceManager::Settings);
   friend std::unique_ptr<SequenceManager>
   sequence_manager::CreateSequenceManagerOnCurrentThreadWithPump(
       std::unique_ptr<MessagePump> message_pump,

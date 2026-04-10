@@ -67,7 +67,6 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   void SetDefaultTaskRunner(
       scoped_refptr<SingleThreadTaskRunner> task_runner) override;
   scoped_refptr<SingleThreadTaskRunner> GetDefaultTaskRunner() override;
-  void RestoreDefaultTaskRunner() override;
   void AddNestingObserver(RunLoop::NestingObserver* observer) override;
   void RemoveNestingObserver(RunLoop::NestingObserver* observer) override;
   void SetTaskExecutionAllowedInNativeNestedLoop(bool allowed) override;

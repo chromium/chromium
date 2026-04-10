@@ -152,10 +152,8 @@ class SequenceManagerWithMessagePumpPerfTestDelegate
       bool randomised_sampling_enabled = false)
       : name_(name) {
     auto settings = SequenceManager::Settings::Builder().Build();
-    SetSequenceManager(SequenceManagerForTest::Create(
-        std::make_unique<internal::ThreadControllerWithMessagePumpImpl>(
-            MessagePump::Create(type), settings),
-        std::move(settings)));
+    SetSequenceManager(CreateSequenceManagerOnCurrentThreadWithPump(
+        MessagePump::Create(type), std::move(settings)));
 
     // ThreadControllerWithMessagePumpImpl doesn't provide a default task
     // runner.

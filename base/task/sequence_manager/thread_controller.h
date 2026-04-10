@@ -168,7 +168,6 @@ class BASE_EXPORT ThreadController {
   virtual bool RunsTasksInCurrentSequence() = 0;
   void SetTickClock(const TickClock* clock);
   virtual scoped_refptr<SingleThreadTaskRunner> GetDefaultTaskRunner() = 0;
-  virtual void RestoreDefaultTaskRunner() = 0;
   virtual void AddNestingObserver(RunLoop::NestingObserver* observer) = 0;
   virtual void RemoveNestingObserver(RunLoop::NestingObserver* observer) = 0;
 

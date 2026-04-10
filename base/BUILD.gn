@@ -764,8 +764,6 @@ component("base") {
     "task/sequence_manager/tasks.h",
     "task/sequence_manager/thread_controller.cc",
     "task/sequence_manager/thread_controller.h",
-    "task/sequence_manager/thread_controller_impl.cc",
-    "task/sequence_manager/thread_controller_impl.h",
     "task/sequence_manager/thread_controller_power_monitor.cc",
     "task/sequence_manager/thread_controller_power_monitor.h",
     "task/sequence_manager/thread_controller_with_message_pump_impl.cc",
