@@ -383,6 +383,13 @@ bool StructTraits<media::mojom::VideoFrameDataView,
       return false;
     }
 
+    if (coded_size != shared_image->size()) {
+      DLOG(ERROR) << "coded_size (" << coded_size.ToString()
+                  << ") does not match shared_image size ("
+                  << shared_image->size().ToString() << ")";
+      return false;
+    }
+
     bool is_mappable = shared_image_data.is_mappable();
     if (is_mappable) {
       // VideoFrame should have buffer usage if its SI is mappable.
@@ -398,8 +405,8 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     } else {
       frame = media::VideoFrame::WrapSharedImage(
           format, shared_image, sync_token,
-          media::VideoFrame::ReleaseMailboxCB(), coded_size, visible_rect,
-          natural_size, timestamp);
+          media::VideoFrame::ReleaseMailboxCB(), visible_rect, natural_size,
+          timestamp);
     }
 
 #if BUILDFLAG(IS_ANDROID)

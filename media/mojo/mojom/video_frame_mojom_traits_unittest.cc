@@ -296,7 +296,11 @@ TEST_F(VideoFrameStructTraitsTest, InvalidOffsets) {
 
   // Scan for the offsets array in the message body. It will start with an
   // array header and then have the three offsets matching our frame.
-  base::span<uint32_t> body = UNSAFE_TODO(base::span<uint32_t>(
+  // SAFETY: This is a unit test that deliberately patches the serialized
+  // message payload to test error handling for invalid data. The payload is
+  // guaranteed to be 8-byte aligned by Mojo, and its size is checked before
+  // creating the span.
+  base::span<uint32_t> body = UNSAFE_BUFFERS(base::span<uint32_t>(
       reinterpret_cast<uint32_t*>(message.mutable_payload()),
       message.payload_num_bytes() / sizeof(uint32_t)));
 
@@ -386,6 +390,63 @@ TEST_F(VideoFrameStructTraitsTest, SharedImageVideoFrame) {
   EXPECT_EQ(frame->timestamp(), base::Seconds(100));
   ASSERT_TRUE(frame->HasSharedImage());
   ASSERT_EQ(frame->shared_image()->mailbox(), shared_image->mailbox());
+}
+
+TEST_F(VideoFrameStructTraitsTest, SharedImageVideoFrameMismatchedSize) {
+  constexpr VideoPixelFormat kFormat = PIXEL_FORMAT_ARGB;
+
+  // This test works by patching the outgoing mojo message, so choose a size
+  // that's two primes to try and maximize the uniqueness of the values we're
+  // scanning for in the message.
+  constexpr gfx::Size kSize(127, 149);
+  constexpr gfx::Rect kVisibleRect(10, 10, 80, 80);
+  constexpr gfx::Size kNaturalSize(200, 100);
+  constexpr base::TimeDelta kTimestamp = base::Seconds(100);
+
+  gpu::SharedImageMetadata metadata;
+  metadata.format = viz::SinglePlaneFormat::kRGBA_8888;
+  metadata.size = kSize;
+  metadata.color_space = gfx::ColorSpace::CreateSRGB();
+  metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
+  metadata.alpha_type = kOpaque_SkAlphaType;
+  metadata.usage = gpu::SharedImageUsageSet();
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
+      gpu::ClientSharedImage::CreateForTesting(metadata);
+
+  scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
+      kFormat, shared_image, gpu::SyncToken(), VideoFrame::ReleaseMailboxCB(),
+      kSize, kVisibleRect, kNaturalSize, kTimestamp);
+
+  auto message = mojom::VideoFrame::SerializeAsMessage(&frame);
+
+  // Scan for the size in the message body.
+  // SAFETY: This is a unit test that deliberately patches the serialized
+  // message payload to test error handling for invalid data. The payload is
+  // guaranteed to be 8-byte aligned by Mojo, and its size is checked before
+  // creating the span.
+  base::span<uint32_t> body = UNSAFE_BUFFERS(base::span<uint32_t>(
+      reinterpret_cast<uint32_t*>(message.mutable_payload()),
+      message.payload_num_bytes() / sizeof(uint32_t)));
+
+  bool patched_size = false;
+  for (size_t i = 0; i + 1 < body.size(); ++i) {
+    if (body[i] == static_cast<uint32_t>(kSize.width()) &&
+        body[i + 1] == static_cast<uint32_t>(kSize.height())) {
+      body[i] = 200;  // Change width to 200
+      patched_size = true;
+      break;
+    }
+  }
+  ASSERT_TRUE(patched_size);
+
+  // Required to pass base deserialize checks.
+  mojo::ScopedMessageHandle handle = message.TakeMojoMessage();
+  message = mojo::Message::CreateFromMessageHandle(&handle);
+
+  // Ensure deserialization fails instead of crashing.
+  scoped_refptr<VideoFrame> new_frame;
+  EXPECT_FALSE(mojom::VideoFrame::DeserializeFromMessage(std::move(message),
+                                                         &new_frame));
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
