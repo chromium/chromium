@@ -359,11 +359,17 @@ void PageLoadMetricsTestWaiter::OnTimingUpdated(
 void PageLoadMetricsTestWaiter::OnSoftNavigation() {
   soft_navigation_count_updated_ = true;
   ++current_soft_navigation_count_;
+  if (ExpectationsSatisfied() && run_loop_) {
+    run_loop_->Quit();
+  }
 }
 
 void PageLoadMetricsTestWaiter::OnSoftNavigationLargestContentfulPaint(
     uint64_t num_soft_lcps) {
   current_num_soft_navigation_largest_contentful_paint_ += num_soft_lcps;
+  if (ExpectationsSatisfied() && run_loop_) {
+    run_loop_->Quit();
+  }
 }
 
 void PageLoadMetricsTestWaiter::OnPageEventTimingUpdated(
