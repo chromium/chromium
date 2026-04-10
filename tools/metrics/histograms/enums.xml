@@ -23545,6 +23545,7 @@ Called by update_net_error_codes.py.-->
   <int value="11" label="ClientAttestationFailed"/>
   <int value="12" label="Destroyed"/>
   <int value="13" label="UnusedConnection"/>
+  <int value="14" label="ProxyConfigFailed"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/private_ai/error_code.h:ErrorCode) -->

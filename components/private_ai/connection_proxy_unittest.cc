@@ -214,6 +214,50 @@ TEST_F(ConnectionProxyTest, ProxyTokenFailure) {
   EXPECT_EQ(result2.error(), ErrorCode::kError);
 }
 
+TEST_F(ConnectionProxyTest, ProxyConfigTokenFailure) {
+  CreateConnectionProxy();
+
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
+      future;
+  connection_proxy_->Send(proto::PrivateAiRequest(), base::Seconds(10),
+                          future.GetCallback());
+
+  // Provide an invalid token (not valid base64url if it has invalid chars).
+  // internal::CreateCustomProxyConfig will return nullptr.
+  token_manager_.RespondToGetAuthTokenForProxy(phosphor::BlindSignedAuthToken{
+      .token = "invalid base64!!!",
+      .encoded_extensions = "cHJveHlfZXh0ZW5zaW9ucw=="});
+
+  EXPECT_FALSE(inner_connection_);
+  EXPECT_TRUE(on_disconnect_called_);
+
+  auto result = future.Get();
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), ErrorCode::kProxyConfigFailed);
+}
+
+TEST_F(ConnectionProxyTest, ProxyConfigExtensionFailure) {
+  CreateConnectionProxy();
+
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
+      future;
+  connection_proxy_->Send(proto::PrivateAiRequest(), base::Seconds(10),
+                          future.GetCallback());
+
+  // Provide an invalid token (not valid base64url if it has invalid chars).
+  // internal::CreateCustomProxyConfig will return nullptr.
+  token_manager_.RespondToGetAuthTokenForProxy(phosphor::BlindSignedAuthToken{
+      .token = FakeTokenManager::kFakeProxyToken,
+      .encoded_extensions = "invalid base64!!!"});
+
+  EXPECT_FALSE(inner_connection_);
+  EXPECT_TRUE(on_disconnect_called_);
+
+  auto result = future.Get();
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), ErrorCode::kProxyConfigFailed);
+}
+
 }  // namespace
 
 }  // namespace private_ai
