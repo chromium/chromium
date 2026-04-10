@@ -17,21 +17,56 @@ def _CamelToSnake(name):
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
 
 
-def _ParseComments(comments_str):
+def _ToParagraphs(lines_array):
+    paragraphs = []
+    current_para = []
+    for line in lines_array:
+        if not line.strip():
+            if current_para:
+                paragraphs.append(" ".join(l.strip() for l in current_para))
+                current_para = []
+        else:
+            current_para.append(line)
+    if current_para:
+        paragraphs.append(" ".join(l.strip() for l in current_para))
+    return "\n\n".join(paragraphs)
+
+
+def _ParseComments(comments_str, param_names):
     lines = []
     for line in comments_str.splitlines():
         line = line.strip()
-        # Remove leading slashes and whitespace
-        line = re.sub(r'^//\s*', '', line)
-        if line:
-            lines.append(line)
-    return " ".join(lines)
+        # Remove leading slashes and at most one whitespace
+        line = re.sub(r'^//\s?', '', line)
+        lines.append(line)
+
+    main_desc_lines = []
+    param_lines = {}
+    current_param = None
+
+    for line in lines:
+        m = re.match(r'^(\w+):\s*(.*)', line)
+        if m and m.group(1) in param_names:
+            current_param = m.group(1)
+            param_lines[current_param] = [m.group(2)]
+        elif current_param is not None:
+            param_lines[current_param].append(line)
+        else:
+            main_desc_lines.append(line)
+
+    main_desc = _ToParagraphs(main_desc_lines)
+    param_descs = {p: _ToParagraphs(lines) for p, lines in param_lines.items()}
+
+    return main_desc, param_descs
 
 
 def _MojomTypeToGeminiType(mojom_type):
-    if 'string' in mojom_type: return 'STRING'
-    if 'bool' in mojom_type: return 'BOOLEAN'
-    if 'int' in mojom_type: return 'INTEGER'
+    if 'string' in mojom_type:
+        return 'STRING'
+    if 'bool' in mojom_type:
+        return 'BOOLEAN'
+    if 'int' in mojom_type:
+        return 'INTEGER'
     if 'double' in mojom_type or 'float' in mojom_type: return 'NUMBER'
     return 'STRING'
 
@@ -48,15 +83,18 @@ def ParseMojomFile(header_path):
 
     for m in pattern.finditer(text):
         comments, name, args_str = m.groups()
-        description = _ParseComments(comments)
-
-        decl = {
-            "name": _CamelToSnake(name),
-            "description": description,
-        }
 
         # Parse mojom arguments
         args = [arg.strip() for arg in args_str.split(',') if arg.strip()]
+        param_names = [arg.split()[-1] for arg in args] if args else []
+
+        main_desc, param_descs = _ParseComments(comments, param_names)
+
+        decl = {
+            "name": _CamelToSnake(name),
+            "description": main_desc,
+        }
+
         if len(args) > 0:
             decl["parameters"] = {
                 "type": "OBJECT",
@@ -69,9 +107,11 @@ def ParseMojomFile(header_path):
                 param_name = parts[-1]
                 mojom_type = " ".join(parts[:-1])
 
-                decl["parameters"]["properties"][param_name] = {
-                    "type": _MojomTypeToGeminiType(mojom_type)
-                }
+                param_schema = {"type": _MojomTypeToGeminiType(mojom_type)}
+                if param_name in param_descs:
+                    param_schema["description"] = param_descs[param_name]
+
+                decl["parameters"]["properties"][param_name] = param_schema
                 decl["parameters"]["required"].append(param_name)
 
             if not decl["parameters"]["required"]:

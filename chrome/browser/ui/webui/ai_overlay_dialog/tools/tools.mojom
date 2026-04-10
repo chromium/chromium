@@ -32,12 +32,16 @@ interface AiOverlayTools {
   // Browser tools
 
   // Open a URL.
+  //
+  // url: Exact URL. Use PerformSearch to find a page instead of guessing a URL.
   OpenUrl(string url, bool new_tab) => result<bool, string>;
 
   // Search using the default search engine.
   PerformSearch(string query, bool new_tab) => result<bool, string>;
 
   // Switch to another open tab by fuzzy matching name or URL.
+  //
+  // query: keyword from the tab name or URL.
   SwitchTab(string query) => result<SwitchTabResult, string>;
 
   // Close the current browser tab.
@@ -55,6 +59,8 @@ interface AiOverlayTools {
   // Page tools
 
   // Highlight and scroll to specific text on the page.
+  //
+  // query: A short phrase copied exactly as it appears in the page content.
   FindAndHighlight(string query) => result<bool, string>;
 
   // Scroll the viewport in a specific direction.
@@ -69,6 +75,8 @@ interface AiOverlayTools {
   // Pause video playback.
   PauseVideo() => result<bool, string>;
 
-  // Jump the video to a specific timecode (e.g. '1:45').
+  // Jump the video to a specific timecode.
+  //
+  // timecode: from the video transcript. Format: "1:45", "0:30", "1:02:15"
   SeekToTimestamp(string timecode) => result<bool, string>;
 };
