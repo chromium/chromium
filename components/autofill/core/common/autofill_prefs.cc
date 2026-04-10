@@ -44,6 +44,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       kAutofillAiIdentityEntitiesEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
+      kAutofillAiShoppingEntitiesEnabled, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
       kAutofillAiSyncedOptInStatus, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterIntegerPref(

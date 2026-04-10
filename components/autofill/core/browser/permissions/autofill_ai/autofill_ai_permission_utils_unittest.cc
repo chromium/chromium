@@ -793,11 +793,12 @@ TEST_F(AutofillAiPermissionUtilsTest,
 class AutofillAiMayPerformFillOrImportTest
     : public AutofillAiPermissionUtilsTest,
       public testing::WithParamInterface<
-          std::tuple<AutofillAiAction, bool, bool>> {
+          std::tuple<AutofillAiAction, bool, bool, bool>> {
  public:
   AutofillAiAction action() const { return std::get<0>(GetParam()); }
   bool identity_entities_enabled() const { return std::get<1>(GetParam()); }
   bool travel_entities_enabled() const { return std::get<2>(GetParam()); }
+  bool shopping_entities_enabled() const { return std::get<3>(GetParam()); }
 
   void SetUp() override {
     AutofillAiPermissionUtilsTest::SetUp();
@@ -805,6 +806,8 @@ class AutofillAiMayPerformFillOrImportTest
                                     identity_entities_enabled());
     client().GetPrefs()->SetBoolean(prefs::kAutofillAiTravelEntitiesEnabled,
                                     travel_entities_enabled());
+    client().GetPrefs()->SetBoolean(prefs::kAutofillAiShoppingEntitiesEnabled,
+                                    shopping_entities_enabled());
   }
 };
 
@@ -813,6 +816,7 @@ INSTANTIATE_TEST_SUITE_P(
     AutofillAiMayPerformFillOrImportTest,
     testing::Combine(testing::Values(AutofillAiAction::kFilling,
                                      AutofillAiAction::kImport),
+                     testing::Bool(),
                      testing::Bool(),
                      testing::Bool()));
 
@@ -826,6 +830,11 @@ TEST_P(AutofillAiMayPerformFillOrImportTest,
   EXPECT_EQ(
       MayPerformAutofillAiAction(client(), action(), EntityType(kVehicle)),
       travel_entities_enabled());
+  EXPECT_EQ(MayPerformAutofillAiAction(client(), action(), EntityType(kOrder)),
+            shopping_entities_enabled());
+  EXPECT_EQ(
+      MayPerformAutofillAiAction(client(), action(), EntityType(kShipment)),
+      shopping_entities_enabled());
 }
 
 class AutofillAiMayPerformImportToWalletTest

@@ -228,6 +228,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[autofill::prefs::kAutofillAiIdentityEntitiesEnabled] =
       settings_api::PrefType::kBoolean;
+  (*s_allowlist)[autofill::prefs::kAutofillAiShoppingEntitiesEnabled] =
+      settings_api::PrefType::kBoolean;
   (*s_allowlist)[autofill::prefs::kAutofillAiOptInStatus] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[autofill::prefs::kAutofillAiTravelEntitiesEnabled] =

@@ -161,6 +161,7 @@ enum {
   kIOSPromoReminder = 111,
   kAutofillAiReauthBeforeViewingSensitiveData = 112,
   kDriveDisclaimerAccepted = 113,
+  kAutofillAiShoppingEntitiesEnabled = 114,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -185,6 +186,9 @@ constexpr auto kCommonSyncablePrefsAllowlist =
           PrefSensitivity::kNone, MergeBehavior::kNone}},
         {autofill::prefs::kAutofillAiIdentityEntitiesEnabled,
          {syncable_prefs_ids::kAutofillAiIdentityEntitiesEnabled,
+          syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
+        {autofill::prefs::kAutofillAiShoppingEntitiesEnabled,
+         {syncable_prefs_ids::kAutofillAiShoppingEntitiesEnabled,
           syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
         {autofill::prefs::kAutofillAiLastVersionDeduped,
          {syncable_prefs_ids::kAutofillAiLastVersionDeduped,

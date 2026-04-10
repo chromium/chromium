@@ -31,6 +31,10 @@ inline constexpr std::string_view kAutofillAblationSeedPref =
 // Otherwise, saving and filling of these entities is disabled.
 inline constexpr char kAutofillAiIdentityEntitiesEnabled[] =
     "autofill.autofill_ai.identity_entities_enabled";
+// Boolean that is true if shopping-related entities of Autofill AI are enabled.
+// Otherwise, filling of these entities is disabled.
+inline constexpr char kAutofillAiShoppingEntitiesEnabled[] =
+    "autofill.autofill_ai.shopping_entities_enabled";
 // Boolean that is true if Autofill AI synced pref is enabled.
 // This pref supersedes the non-synced pref `kAutofillAiOptInStatus`, which is
 // in the process of being deprecated. Users who have previously interacted with
