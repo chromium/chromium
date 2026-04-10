@@ -208,4 +208,24 @@ iwa_access_control {
       }
     }
   }
+  # crbug.com/501328395
+  user_install_allowlist: {
+    key: "ov6jyjge37xqptadeo5e2n6ayoxdjqw62pgm4afavkqbnqfpesraaaic"
+    value: {
+      enterprise_name: "Citrix Systems"
+      entitlements {
+        version_range {
+          begin: "0.0.0"
+        }
+        entitlement: CONTROLLED_FRAME
+        entitlement: DIRECT_SOCKETS
+        entitlement: DIRECT_SOCKETS_MULTICAST
+        entitlement: DIRECT_SOCKETS_PRIVATE
+        entitlement: SMART_CARD
+        entitlement: SUB_APPS
+        entitlement: UNRESTRICTED_WEBUSB
+        entitlement: WEB_PRINTING
+      }
+    }
+  }
 }
