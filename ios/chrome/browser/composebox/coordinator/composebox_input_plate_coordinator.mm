@@ -216,6 +216,7 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
                    templateURLService:templateURLService
                 aimEligibilityService:_aimEligibilityService
                           prefService:self.profile->GetPrefs()
+                              profile:self.profile
                  cobrowseBrowserAgent:CobrowseBrowserAgent::FromBrowser(
                                           self.browser)
             browserCoordinatorHandler:HandlerForProtocol(
