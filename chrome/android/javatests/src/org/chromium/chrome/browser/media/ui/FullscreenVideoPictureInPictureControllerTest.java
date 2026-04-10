@@ -227,7 +227,7 @@ public class FullscreenVideoPictureInPictureControllerTest {
         triggerAutoPiPAndWait();
         exitPipAndFullscreenAndWait();
 
-        mActivityTestRule.resumeMainActivityFromLauncher();
+        mActivityTestRule.launchMainActivityFromLauncher();
 
         // Open a new tab and wait for it to load.
         mActivityTestRule.loadUrlInNewTab(mActivityTestRule.getTestServer().getURL(TEST_PATH));

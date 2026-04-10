@@ -153,6 +153,13 @@ public class BaseCtaTransitTestRule {
         mActivityTestRule.resumeMainActivityFromLauncher();
     }
 
+    /**
+     * @see ChromeTabbedActivityTestRule#launchMainActivityFromLauncher()
+     */
+    public void launchMainActivityFromLauncher() throws Exception {
+        mActivityTestRule.launchMainActivityFromLauncher();
+    }
+
     // TODO(crbug.com/406324209): Support finishing and restarting activity in Public Transit.
     public void restartMainActivityFromLauncher() throws Exception {
         mActivityTestRule.startMainActivityFromLauncher();
