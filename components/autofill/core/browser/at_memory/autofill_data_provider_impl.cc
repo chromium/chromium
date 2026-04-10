@@ -109,6 +109,7 @@ MemorySearchResult CreateResultFromAddressProfile(
   };
 
   add_metadata(EntryType::kNameFull);
+  add_metadata(EntryType::kAddressStreetAddress);
   add_metadata(EntryType::kAddressCity);
   add_metadata(EntryType::kAddressState);
   add_metadata(EntryType::kAddressZip);

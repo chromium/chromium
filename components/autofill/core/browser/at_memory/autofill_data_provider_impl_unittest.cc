@@ -134,6 +134,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressData) {
           u"Elysium", u"City",
           UnorderedElementsAre(
               IsMetadata(EntryType::kNameFull, u"John H. Doe"),
+              IsMetadata(EntryType::kAddressStreetAddress,
+                         u"666 Erebus St.\nApt 8"),
               IsMetadata(EntryType::kAddressState, u"CA"),
               IsMetadata(EntryType::kAddressZip, u"91111"),
               IsMetadata(EntryType::kAddressCountry, u"United States")))));
@@ -145,6 +147,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressData) {
           u"91111", u"Zip",
           UnorderedElementsAre(
               IsMetadata(EntryType::kNameFull, u"John H. Doe"),
+              IsMetadata(EntryType::kAddressStreetAddress,
+                         u"666 Erebus St.\nApt 8"),
               IsMetadata(EntryType::kAddressCity, u"Elysium"),
               IsMetadata(EntryType::kAddressState, u"CA"),
               IsMetadata(EntryType::kAddressCountry, u"United States")))));
@@ -156,6 +160,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressData) {
           u"CA", u"State",
           UnorderedElementsAre(
               IsMetadata(EntryType::kNameFull, u"John H. Doe"),
+              IsMetadata(EntryType::kAddressStreetAddress,
+                         u"666 Erebus St.\nApt 8"),
               IsMetadata(EntryType::kAddressCity, u"Elysium"),
               IsMetadata(EntryType::kAddressZip, u"91111"),
               IsMetadata(EntryType::kAddressCountry, u"United States")))));
@@ -166,6 +172,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressData) {
       UnorderedElementsAre(IsMemorySearchResult(
           u"United States", u"Country",
           UnorderedElementsAre(IsMetadata(EntryType::kNameFull, u"John H. Doe"),
+                               IsMetadata(EntryType::kAddressStreetAddress,
+                                          u"666 Erebus St.\nApt 8"),
                                IsMetadata(EntryType::kAddressCity, u"Elysium"),
                                IsMetadata(EntryType::kAddressState, u"CA"),
                                IsMetadata(EntryType::kAddressZip, u"91111")))));
@@ -176,6 +184,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressData) {
       UnorderedElementsAre(IsMemorySearchResult(
           u"John H. Doe", u"Name",
           UnorderedElementsAre(
+              IsMetadata(EntryType::kAddressStreetAddress,
+                         u"666 Erebus St.\nApt 8"),
               IsMetadata(EntryType::kAddressCity, u"Elysium"),
               IsMetadata(EntryType::kAddressState, u"CA"),
               IsMetadata(EntryType::kAddressZip, u"91111"),
@@ -188,6 +198,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressData) {
           u"johndoe@hades.com", u"Email",
           UnorderedElementsAre(
               IsMetadata(EntryType::kNameFull, u"John H. Doe"),
+              IsMetadata(EntryType::kAddressStreetAddress,
+                         u"666 Erebus St.\nApt 8"),
               IsMetadata(EntryType::kAddressCity, u"Elysium"),
               IsMetadata(EntryType::kAddressState, u"CA"),
               IsMetadata(EntryType::kAddressZip, u"91111"),
@@ -200,6 +212,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressData) {
           u"16502111111", u"Phone",
           UnorderedElementsAre(
               IsMetadata(EntryType::kNameFull, u"John H. Doe"),
+              IsMetadata(EntryType::kAddressStreetAddress,
+                         u"666 Erebus St.\nApt 8"),
               IsMetadata(EntryType::kAddressCity, u"Elysium"),
               IsMetadata(EntryType::kAddressState, u"CA"),
               IsMetadata(EntryType::kAddressZip, u"91111"),
@@ -215,6 +229,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressData) {
           u"Address",
           UnorderedElementsAre(
               IsMetadata(EntryType::kNameFull, u"John H. Doe"),
+              IsMetadata(EntryType::kAddressStreetAddress,
+                         u"666 Erebus St.\nApt 8"),
               IsMetadata(EntryType::kAddressCity, u"Elysium"),
               IsMetadata(EntryType::kAddressZip, u"91111"),
               IsMetadata(EntryType::kAddressState, u"CA"),
@@ -373,6 +389,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressFull_PartialAddress) {
           u"742 Evergreen Terrace, Springfield, United States", u"Address",
           UnorderedElementsAre(
               IsMetadata(EntryType::kNameFull, u"Homer Simpson"),
+              IsMetadata(EntryType::kAddressStreetAddress,
+                         u"742 Evergreen Terrace"),
               IsMetadata(EntryType::kAddressCity, u"Springfield"),
               IsMetadata(EntryType::kAddressCountry, u"United States")))));
 }
