@@ -648,7 +648,7 @@ error-page {
 
 :host(:not([is-shown-in-tab_])) .thread-header {
   font-size: 28px;
-  font-weight: 400;
+  font-weight: 500;
   line-height: 36px;
   margin: 0 8px 0 0;
 }
