@@ -9,6 +9,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_mutator.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_utils.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_view.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -186,6 +187,20 @@ UIFont* AssistantButtonFontSize(UITraitCollection* traitCollection) {
   [self.layoutGuideCenter referenceView:stackView underName:kAppBarGuide];
 }
 
+- (void)viewWillTransitionToSize:(CGSize)size
+       withTransitionCoordinator:
+           (id<UIViewControllerTransitionCoordinator>)coordinator {
+  [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+
+  __weak __typeof__(self) weakSelf = self;
+  [coordinator
+      animateAlongsideTransition:^(
+          id<UIViewControllerTransitionCoordinatorContext> context) {
+        [weakSelf updateUIForTransitionToSize:size];
+      }
+                      completion:nil];
+}
+
 #pragma mark - Public
 
 - (void)toggleSpotlightView:(BOOL)shouldShow {
@@ -274,6 +289,16 @@ UIFont* AssistantButtonFontSize(UITraitCollection* traitCollection) {
   [_tabGridButton setNeedsUpdateConfiguration];
 }
 
+#pragma mark - FullscreenBrowserAgentObserving
+
+- (void)fullscreenWillUpdateState:(FullscreenBrowserAgent*)agent {
+  if (AppBarPositionForView(self.view) != AppBarPosition::kBottom) {
+    return;
+  }
+
+  [self updateForFullscreenProgress:agent->bottom_progress()];
+}
+
 - (void)setAssistantButtonState:(AppBarAssistantButtonState)state
                          avatar:(UIImage*)avatar {
   _assistantButtonState = state;
@@ -283,6 +308,13 @@ UIFont* AssistantButtonFontSize(UITraitCollection* traitCollection) {
 }
 
 #pragma mark - Private
+
+// Handles updating the UI for a size transition.
+- (void)updateUIForTransitionToSize:(CGSize)size {
+  if (size.width > size.height) {
+    [self updateForFullscreenProgress:1.0];
+  }
+}
 
 - (void)viewWillLayoutSubviews {
   [super viewWillLayoutSubviews];

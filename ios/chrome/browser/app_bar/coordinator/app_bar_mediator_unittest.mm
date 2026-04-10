@@ -18,6 +18,8 @@
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service_impl.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
@@ -71,7 +73,9 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-@protocol TestAppBarConsumer <AppBarConsumer, FullscreenUIElement>
+@protocol TestAppBarConsumer <AppBarConsumer,
+                              FullscreenUIElement,
+                              FullscreenBrowserAgentObserving>
 @end
 
 namespace {
@@ -88,7 +92,8 @@ MenuScenarioHistogram kTestMenuScenario = kMenuScenarioHistogramToolbarMenu;
 class AppBarMediatorTest : public PlatformTest {
  protected:
   AppBarMediatorTest() {
-    scoped_feature_list_.InitAndEnableFeature(kChromeNextIa);
+    scoped_feature_list_.InitWithFeatures(
+        {kChromeNextIa, kFullscreenRefactoring}, {});
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
@@ -131,6 +136,9 @@ class AppBarMediatorTest : public PlatformTest {
     regular_browser_ = std::make_unique<TestBrowser>(regular_profile_.get());
     incognito_browser_ =
         std::make_unique<TestBrowser>(incognito_profile_.get());
+
+    FullscreenBrowserAgent::CreateForBrowser(regular_browser_.get());
+    FullscreenBrowserAgent::CreateForBrowser(incognito_browser_.get());
 
     mock_scene_handler_ = OCMProtocolMock(@protocol(SceneCommands));
     [regular_browser_->GetCommandDispatcher()
@@ -192,25 +200,30 @@ class AppBarMediatorTest : public PlatformTest {
         std::make_unique<FakeClipboardRecentContent>());
 
     mediator_ = [[AppBarMediator alloc]
-          initWithRegularWebStateList:regular_web_state_list_.get()
-                incognitoWebStateList:incognito_web_state_list_.get()
-          regularFullscreenController:TestFullscreenController::FromBrowser(
-                                          regular_browser_.get())
-        incognitoFullscreenController:TestFullscreenController::FromBrowser(
-                                          incognito_browser_.get())
-                 regularActionFactory:regular_action_factory_
-               incognitoActionFactory:incognito_action_factory_
-                          prefService:regular_profile_->GetTestingPrefService()
-                   templateURLService:search_engines_test_environment_
-                                          .template_url_service()
-                authenticationService:auth_service_
-                        geminiService:gemini_service_ptr_.get()
-                accountManagerService:account_manager_service_
-                      identityManager:IdentityManagerFactory::GetForProfile(
-                                          regular_profile_.get())
-                            URLLoader:url_loader_
-                         tabGridState:tab_grid_state_
-                       incognitoState:incognito_state_];
+            initWithRegularWebStateList:regular_web_state_list_.get()
+                  incognitoWebStateList:incognito_web_state_list_.get()
+            regularFullscreenController:TestFullscreenController::FromBrowser(
+                                            regular_browser_.get())
+          incognitoFullscreenController:TestFullscreenController::FromBrowser(
+                                            incognito_browser_.get())
+          regularFullscreenBrowserAgent:FullscreenBrowserAgent::FromBrowser(
+                                            regular_browser_.get())
+        incognitoFullscreenBrowserAgent:FullscreenBrowserAgent::FromBrowser(
+                                            incognito_browser_.get())
+                   regularActionFactory:regular_action_factory_
+                 incognitoActionFactory:incognito_action_factory_
+                            prefService:regular_profile_
+                                            ->GetTestingPrefService()
+                     templateURLService:search_engines_test_environment_
+                                            .template_url_service()
+                  authenticationService:auth_service_
+                          geminiService:gemini_service_ptr_.get()
+                  accountManagerService:account_manager_service_
+                        identityManager:IdentityManagerFactory::GetForProfile(
+                                            regular_profile_.get())
+                              URLLoader:url_loader_
+                           tabGridState:tab_grid_state_
+                         incognitoState:incognito_state_];
 
     consumer_ = OCMProtocolMock(@protocol(TestAppBarConsumer));
     mediator_.consumer = consumer_;
@@ -283,7 +296,7 @@ class AppBarMediatorTest : public PlatformTest {
   raw_ptr<AuthenticationService> auth_service_;
   std::unique_ptr<BwgService> gemini_service_ptr_;
   raw_ptr<ChromeAccountManagerService> account_manager_service_;
-  id<AppBarConsumer, FullscreenUIElement> consumer_;
+  id<TestAppBarConsumer> consumer_;
   id mock_scene_handler_;
   id mock_browser_coordinator_handler_;
   id mock_lens_handler_;
@@ -575,6 +588,20 @@ TEST_F(AppBarMediatorTest, TestIncognitoStateTabGrid) {
   // Switch to incognito page in tab grid.
   OCMExpect([consumer_ setIncognito:YES]);
   tab_grid_state_.currentPage = TabGridPageIncognitoTabs;
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the consumer receives fullscreen events.
+TEST_F(AppBarMediatorTest, TestFullscreenEvent) {
+  FullscreenBrowserAgent* agent =
+      FullscreenBrowserAgent::FromBrowser(regular_browser_.get());
+
+  // Expect the consumer to be notified.
+  OCMExpect([consumer_ fullscreenWillUpdateObscuredInsetRange:agent]);
+
+  // Simulate the event.
+  agent->InvalidateInsetRange();
+
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 

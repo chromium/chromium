@@ -4,9 +4,13 @@
 
 #import "ios/chrome/browser/app_bar/ui/app_bar_container_view_controller.h"
 
+#import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_container_view.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_container_view_delegate.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_utils.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_view_controller.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 @interface AppBarContainerViewController () <AppBarContainerViewDelegate>
 @property(nonatomic, strong) AppBarContainerView* view;
@@ -52,7 +56,7 @@
   [coordinator
       animateAlongsideTransition:^(
           id<UIViewControllerTransitionCoordinatorContext> context) {
-        [weakSelf updateLayout];
+        [weakSelf handleTransitionToSize:size];
       }
                       completion:nil];
 }
@@ -79,7 +83,45 @@
   [self updateLayout];
 }
 
+#pragma mark - FullscreenBrowserAgentObserving
+
+- (void)fullscreenWillUpdateObscuredInsetRange:(FullscreenBrowserAgent*)agent {
+  // TODO(crbug.com/501116431): Handle landscape edges to extend webview under
+  // app bar.
+  AppBarPosition position = AppBarPositionForView(self.view);
+  if (position == AppBarPosition::kBottom) {
+    agent->AddObscuredInsetRange(UIRectEdgeBottom, kAppBarHeightFullscreen,
+                                 kAppBarHeight);
+  }
+}
+
+- (void)fullscreenWillUpdateState:(FullscreenBrowserAgent*)agent {
+  // TODO(crbug.com/501116431): Handle landscape edges to extend webview under
+  // app bar.
+  AppBarPosition position = AppBarPositionForView(self.view);
+  if (position == AppBarPosition::kBottom) {
+    _fullscreenProgress = agent->bottom_progress();
+    CGFloat currentHeight =
+        kAppBarHeightFullscreen +
+        (kAppBarHeight - kAppBarHeightFullscreen) * agent->bottom_progress();
+    agent->AddObscuredInset(UIRectEdgeBottom, currentHeight);
+    [self updateLayout];
+  }
+}
+
 #pragma mark - Private
+
+// Handles updating the UI for a size transition.
+- (void)handleTransitionToSize:(CGSize)size {
+  if (IsFullscreenRefactoringEnabled() && size.width > size.height) {
+    [self setFullscreenProgress:1.0];
+  }
+  [self updateLayout];
+}
+
+- (void)setFullscreenProgress:(CGFloat)progress {
+  _fullscreenProgress = progress;
+}
 
 - (void)updateLayout {
   UIWindowScene* windowScene = self.view.window.windowScene;

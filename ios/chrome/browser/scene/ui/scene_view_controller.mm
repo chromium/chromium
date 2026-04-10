@@ -125,9 +125,6 @@
 
   [appBar didMoveToParentViewController:self];
 
-  UIView* appBarRealView =
-      [self.layoutGuideCenter referencedViewUnderName:kAppBarGuide];
-
   if (!IsFullscreenRefactoringEnabled()) {
     [self updateLayoutForViews];
     return;
@@ -138,14 +135,12 @@
     [_appContentView.leadingAnchor constraintEqualToAnchor:view.leadingAnchor],
     [_appContentView.trailingAnchor
         constraintEqualToAnchor:view.trailingAnchor],
-    [_appContentView.bottomAnchor
-        constraintEqualToAnchor:appBarRealView.topAnchor],
+    [_appContentView.bottomAnchor constraintEqualToAnchor:view.bottomAnchor],
   ];
   _landscapeLeftConstraints = @[
     [_appContentView.topAnchor constraintEqualToAnchor:view.topAnchor],
-    [_appContentView.leadingAnchor
-        constraintEqualToAnchor:view.leadingAnchor
-                       constant:kAppBarHeight - kAppBarCornerRadius],
+    [_appContentView.leadingAnchor constraintEqualToAnchor:view.leadingAnchor
+                                                  constant:kAppBarHeight],
     [_appContentView.trailingAnchor
         constraintEqualToAnchor:view.trailingAnchor],
     [_appContentView.bottomAnchor constraintEqualToAnchor:view.bottomAnchor],
@@ -153,9 +148,8 @@
   _landscapeRightConstraints = @[
     [_appContentView.topAnchor constraintEqualToAnchor:view.topAnchor],
     [_appContentView.leadingAnchor constraintEqualToAnchor:view.leadingAnchor],
-    [_appContentView.trailingAnchor
-        constraintEqualToAnchor:view.trailingAnchor
-                       constant:-(kAppBarHeight - kAppBarCornerRadius)],
+    [_appContentView.trailingAnchor constraintEqualToAnchor:view.trailingAnchor
+                                                   constant:-kAppBarHeight],
     [_appContentView.bottomAnchor constraintEqualToAnchor:view.bottomAnchor],
   ];
 
@@ -288,6 +282,7 @@
   [NSLayoutConstraint deactivateConstraints:_portraitConstraints];
   [NSLayoutConstraint deactivateConstraints:_landscapeLeftConstraints];
   [NSLayoutConstraint deactivateConstraints:_landscapeRightConstraints];
+  [NSLayoutConstraint deactivateConstraints:_baseAssistantConstraints];
 
   // Ensure default constraints are active to avoid leaving the view
   // unconstrained if `_appBar` is hidden or missing.

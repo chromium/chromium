@@ -11,6 +11,7 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/app_bar/ui",
     "//ios/chrome/browser/fullscreen/model",
     "//ios/chrome/browser/fullscreen/public:metrics",
     "//ios/chrome/browser/fullscreen/ui_bundled",
@@ -19,6 +20,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/web/model/web_view_proxy",
     "//ios/web/public",
   ]

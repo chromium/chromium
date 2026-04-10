@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
@@ -92,28 +93,38 @@
       initWithBrowser:_incognitoBrowser
              scenario:kMenuScenarioHistogramToolbarMenu];
 
+  FullscreenBrowserAgent* regularAgent = nullptr;
+  FullscreenBrowserAgent* incognitoAgent = nullptr;
+  if (IsFullscreenRefactoringEnabled()) {
+    regularAgent = FullscreenBrowserAgent::FromBrowser(_regularBrowser);
+    incognitoAgent = FullscreenBrowserAgent::FromBrowser(_incognitoBrowser);
+  }
+
   _mediator = [[AppBarMediator alloc]
-        initWithRegularWebStateList:_regularBrowser->GetWebStateList()
-              incognitoWebStateList:_incognitoBrowser->GetWebStateList()
-        regularFullscreenController:regularFullscreenController
-      incognitoFullscreenController:incognitoFullscreenController
-               regularActionFactory:regularActionFactory
-             incognitoActionFactory:incognitoActionFactory
-                        prefService:profile->GetPrefs()
-                 templateURLService:ios::TemplateURLServiceFactory::
-                                        GetForProfile(
-                                            _regularBrowser->GetProfile())
-              authenticationService:AuthenticationServiceFactory::GetForProfile(
-                                        profile)
-                      geminiService:GeminiServiceFactory::GetForProfile(profile)
-              accountManagerService:ChromeAccountManagerServiceFactory::
-                                        GetForProfile(profile)
-                    identityManager:IdentityManagerFactory::GetForProfile(
-                                        profile)
-                          URLLoader:UrlLoadingBrowserAgent::FromBrowser(
-                                        _regularBrowser)
-                       tabGridState:sceneState.tabGridState
-                     incognitoState:sceneState.incognitoState];
+          initWithRegularWebStateList:_regularBrowser->GetWebStateList()
+                incognitoWebStateList:_incognitoBrowser->GetWebStateList()
+          regularFullscreenController:regularFullscreenController
+        incognitoFullscreenController:incognitoFullscreenController
+        regularFullscreenBrowserAgent:regularAgent
+      incognitoFullscreenBrowserAgent:incognitoAgent
+                 regularActionFactory:regularActionFactory
+               incognitoActionFactory:incognitoActionFactory
+                          prefService:profile->GetPrefs()
+                   templateURLService:ios::TemplateURLServiceFactory::
+                                          GetForProfile(
+                                              _regularBrowser->GetProfile())
+                authenticationService:AuthenticationServiceFactory::
+                                          GetForProfile(profile)
+                        geminiService:GeminiServiceFactory::GetForProfile(
+                                          profile)
+                accountManagerService:ChromeAccountManagerServiceFactory::
+                                          GetForProfile(profile)
+                      identityManager:IdentityManagerFactory::GetForProfile(
+                                          profile)
+                            URLLoader:UrlLoadingBrowserAgent::FromBrowser(
+                                          _regularBrowser)
+                         tabGridState:sceneState.tabGridState
+                       incognitoState:sceneState.incognitoState];
   _mediator.sceneHandler = sceneHandler;
   _mediator.tabGridHandler = tabGridHandler;
   _mediator.settingsHandler =
@@ -133,7 +144,9 @@
 
   _containerMediator = [[AppBarContainerMediator alloc]
       initWithRegularFullscreenController:regularFullscreenController
-            incognitoFullscreenController:incognitoFullscreenController];
+            incognitoFullscreenController:incognitoFullscreenController
+            regularFullscreenBrowserAgent:regularAgent
+          incognitoFullscreenBrowserAgent:incognitoAgent];
   _containerMediator.consumer = _containerViewController;
 
   if (IsBestOfAppGuidedTourEnabled()) {
@@ -180,16 +193,7 @@
   [_mediator setIncognitoWebStateList:incognitoBrowser
                                           ? incognitoBrowser->GetWebStateList()
                                           : nullptr];
-  [_mediator
-      setIncognitoFullscreenController:incognitoBrowser
-                                           ? FullscreenController::FromBrowser(
-                                                 incognitoBrowser)
-                                           : nullptr];
-  [_containerMediator
-      setIncognitoFullscreenController:incognitoBrowser
-                                           ? FullscreenController::FromBrowser(
-                                                 incognitoBrowser)
-                                           : nullptr];
+
   [_mediator setIncognitoActionFactory:
                  incognitoBrowser
                      ? [[BrowserActionFactory alloc]
@@ -202,6 +206,21 @@
       incognitoDispatcher
           ? HandlerForProtocol(incognitoDispatcher, TabGroupsCommands)
           : nil;
+
+  if (IsFullscreenRefactoringEnabled()) {
+    FullscreenBrowserAgent* incognitoAgent =
+        incognitoBrowser ? FullscreenBrowserAgent::FromBrowser(incognitoBrowser)
+                         : nullptr;
+    [_mediator setIncognitoFullscreenBrowserAgent:incognitoAgent];
+    [_containerMediator setIncognitoFullscreenBrowserAgent:incognitoAgent];
+  } else {
+    FullscreenController* incognitoFullscreenController =
+        incognitoBrowser ? FullscreenController::FromBrowser(incognitoBrowser)
+                         : nullptr;
+    [_mediator setIncognitoFullscreenController:incognitoFullscreenController];
+    [_containerMediator
+        setIncognitoFullscreenController:incognitoFullscreenController];
+  }
 }
 
 #pragma mark - GuidedTourCommands

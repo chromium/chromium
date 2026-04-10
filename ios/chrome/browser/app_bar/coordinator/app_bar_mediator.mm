@@ -16,6 +16,8 @@
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
@@ -76,6 +78,12 @@
   std::unique_ptr<FullscreenUIUpdater> _regularFullscreenUIUpdater;
   raw_ptr<FullscreenController> _incognitoFullscreenController;
   std::unique_ptr<FullscreenUIUpdater> _incognitoFullscreenUIUpdater;
+  raw_ptr<FullscreenBrowserAgent> _regularFullscreenBrowserAgent;
+  std::unique_ptr<FullscreenBrowserAgentObserverBridge>
+      _regularFullscreenObserver;
+  raw_ptr<FullscreenBrowserAgent> _incognitoFullscreenBrowserAgent;
+  std::unique_ptr<FullscreenBrowserAgentObserverBridge>
+      _incognitoFullscreenObserver;
   raw_ptr<PrefService> _prefService;
   raw_ptr<AuthenticationService> _authenticationService;
   raw_ptr<BwgService> _geminiService;
@@ -91,24 +99,30 @@
 }
 
 - (instancetype)
-      initWithRegularWebStateList:(WebStateList*)regularWebStateList
-            incognitoWebStateList:(WebStateList*)incognitoWebStateList
-      regularFullscreenController:
-          (FullscreenController*)regularFullscreenController
-    incognitoFullscreenController:
-        (FullscreenController*)incognitoFullscreenController
-             regularActionFactory:(BrowserActionFactory*)regularActionFactory
-           incognitoActionFactory:(BrowserActionFactory*)incognitoActionFactory
-                      prefService:(PrefService*)prefService
-               templateURLService:(TemplateURLService*)templateURLService
-            authenticationService:(AuthenticationService*)authenticationService
-                    geminiService:(BwgService*)geminiService
-            accountManagerService:
-                (ChromeAccountManagerService*)accountManagerService
-                  identityManager:(signin::IdentityManager*)identityManager
-                        URLLoader:(UrlLoadingBrowserAgent*)URLLoader
-                     tabGridState:(TabGridState*)tabGridState
-                   incognitoState:(IncognitoState*)incognitoState {
+        initWithRegularWebStateList:(WebStateList*)regularWebStateList
+              incognitoWebStateList:(WebStateList*)incognitoWebStateList
+        regularFullscreenController:
+            (FullscreenController*)regularFullscreenController
+      incognitoFullscreenController:
+          (FullscreenController*)incognitoFullscreenController
+      regularFullscreenBrowserAgent:
+          (FullscreenBrowserAgent*)regularFullscreenBrowserAgent
+    incognitoFullscreenBrowserAgent:
+        (FullscreenBrowserAgent*)incognitoFullscreenBrowserAgent
+               regularActionFactory:(BrowserActionFactory*)regularActionFactory
+             incognitoActionFactory:
+                 (BrowserActionFactory*)incognitoActionFactory
+                        prefService:(PrefService*)prefService
+                 templateURLService:(TemplateURLService*)templateURLService
+              authenticationService:
+                  (AuthenticationService*)authenticationService
+                      geminiService:(BwgService*)geminiService
+              accountManagerService:
+                  (ChromeAccountManagerService*)accountManagerService
+                    identityManager:(signin::IdentityManager*)identityManager
+                          URLLoader:(UrlLoadingBrowserAgent*)URLLoader
+                       tabGridState:(TabGridState*)tabGridState
+                     incognitoState:(IncognitoState*)incognitoState {
   self = [super init];
   if (self) {
     _regularWebStateList = regularWebStateList;
@@ -117,6 +131,9 @@
 
     _regularFullscreenController = regularFullscreenController;
     _incognitoFullscreenController = incognitoFullscreenController;
+
+    _regularFullscreenBrowserAgent = regularFullscreenBrowserAgent;
+    _incognitoFullscreenBrowserAgent = incognitoFullscreenBrowserAgent;
 
     _URLLoader = URLLoader;
     _prefService = prefService;
@@ -165,20 +182,37 @@
   return self;
 }
 
-- (void)setConsumer:(id<AppBarConsumer, FullscreenUIElement>)consumer {
+- (void)setConsumer:
+    (id<AppBarConsumer, FullscreenUIElement, FullscreenBrowserAgentObserving>)
+        consumer {
   if (consumer == _consumer) {
     return;
   }
   _regularFullscreenUIUpdater.reset();
   _incognitoFullscreenUIUpdater.reset();
+  _regularFullscreenObserver.reset();
+  _incognitoFullscreenObserver.reset();
   _consumer = consumer;
   if (!_consumer) {
     return;
   }
-  _regularFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
-      _regularFullscreenController, _consumer);
-  _incognitoFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
-      _incognitoFullscreenController, _consumer);
+  if (IsFullscreenRefactoringEnabled()) {
+    _regularFullscreenObserver =
+        std::make_unique<FullscreenBrowserAgentObserverBridge>(
+            _consumer, _regularFullscreenBrowserAgent);
+    if (_incognitoFullscreenBrowserAgent) {
+      _incognitoFullscreenObserver =
+          std::make_unique<FullscreenBrowserAgentObserverBridge>(
+              _consumer, _incognitoFullscreenBrowserAgent);
+    }
+  } else {
+    _regularFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
+        _regularFullscreenController, _consumer);
+    if (_incognitoFullscreenController) {
+      _incognitoFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
+          _incognitoFullscreenController, _consumer);
+    }
+  }
   [self updateConsumer];
 }
 
@@ -200,6 +234,17 @@
   if (_incognitoFullscreenController && _consumer) {
     _incognitoFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
         _incognitoFullscreenController, _consumer);
+  }
+}
+
+- (void)setIncognitoFullscreenBrowserAgent:
+    (FullscreenBrowserAgent*)fullscreenBrowserAgent {
+  _incognitoFullscreenObserver.reset();
+  _incognitoFullscreenBrowserAgent = fullscreenBrowserAgent;
+  if (_incognitoFullscreenBrowserAgent && _consumer) {
+    _incognitoFullscreenObserver =
+        std::make_unique<FullscreenBrowserAgentObserverBridge>(
+            _consumer, _incognitoFullscreenBrowserAgent);
   }
 }
 
@@ -230,8 +275,12 @@
   }
   _regularFullscreenUIUpdater.reset();
   _incognitoFullscreenUIUpdater.reset();
+  _regularFullscreenObserver.reset();
+  _incognitoFullscreenObserver.reset();
   _regularFullscreenController = nullptr;
   _incognitoFullscreenController = nullptr;
+  _regularFullscreenBrowserAgent = nullptr;
+  _incognitoFullscreenBrowserAgent = nullptr;
   [_tabGridState removeObserver:self];
   [_incognitoState removeObserver:self];
   _identityManager = nullptr;
