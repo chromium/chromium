@@ -14971,6 +14971,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Glic.Fre.CheckAuthBeforeShowSync" not_user_triggered="true">
+  <obsolete>Feature removed April 2026.</obsolete>
   <owner>birnie@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <description>

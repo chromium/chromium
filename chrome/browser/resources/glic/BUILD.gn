@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 
-import("//components/guest_view/buildflags/buildflags.gni")
-import("//extensions/buildflags/buildflags.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 import("//ui/webui/resources/tools/optimize_webui.gni")
 
@@ -21,6 +19,8 @@ build_webui("build") {
   ts_files = [
     "app_router.ts",
     "browser_proxy.ts",
+    "fre/fre_app_controller.ts",
+    "fre/metrics_enums.ts",
     "glic_api/glic_api.ts",
     "glic_api_impl/client/glic_api_client.ts",
     "glic_api_impl/client/image_utils.ts",
@@ -42,14 +42,18 @@ build_webui("build") {
     "internals/glic_internals_app.ts",
     "main.ts",
     "observable.ts",
+    "shared/glic_request_headers.ts",
+    "shared/web_view_type.ts",
     "timer.ts",
     "webview.ts",
   ]
 
   webui_context_type = "trusted"
   ts_deps = [
-    "//chrome/browser/resources/glic/fre:build_ts",
-    "//chrome/browser/resources/glic/shared:build_ts",
+    # Include the guest_view_shared target in all cases, because the SlimWebView
+    # type definition is needed at compile time even when it's not loaded at
+    # runtime.
+    "//chrome/browser/resources/guest_view_shared:build_ts",
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
@@ -61,12 +65,14 @@ build_webui("build") {
 
   mojo_files_deps = [
     "//chrome/browser/glic:mojo_bindings_ts__generator",
+    "//chrome/browser/glic/fre:mojo_bindings_ts__generator",
     "//chrome/common:actor_webui_mojom_ts__generator",
     "//components/content_settings/core/common:content_settings_types_ts__generator",
     "//components/optimization_guide/content/mojom:mojo_interfaces_ts__generator",
     "//third_party/blink/public/mojom/content_extraction:content_extraction_ts__generator",
   ]
   mojo_files = [
+    "$root_gen_dir/chrome/browser/glic/fre/glic_fre.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/glic/host/glic.mojom-webui.ts",
     "$root_gen_dir/chrome/common/actor_webui.mojom-webui.ts",
     "$root_gen_dir/components/content_settings/core/common/content_settings_types.mojom-webui.ts",
@@ -83,19 +89,10 @@ build_webui("build") {
     "//tools/typescript/definitions/webview_tag.d.ts",
   ]
 
-  ts_path_mappings = [
-    "/shared/*|./shared/tsc/*",
-    "/fre/*|./fre/tsc/*",
-  ]
-
-  if (enable_guest_view && !enable_extensions_core) {
-    ts_deps += [ "//chrome/browser/resources/guest_view_shared:build_ts" ]
-
-    ts_path_mappings +=
-        [ "/shared/guest_view/*|" + rebase_path(
-              "$root_gen_dir/chrome/browser/resources/guest_view_shared/tsc/*",
-              target_gen_dir) ]
-  }
+  ts_path_mappings =
+      [ "/shared/guest_view/*|" + rebase_path(
+            "$root_gen_dir/chrome/browser/resources/guest_view_shared/tsc/*",
+            target_gen_dir) ]
 
   ts_composite = true
 }

@@ -19,23 +19,11 @@ source_set("fre") {
     "//chrome/browser:browser_process",
     "//chrome/browser/background/glic",
     "//chrome/browser/glic",
-    "//chrome/browser/glic/shared",
     "//chrome/browser/predictors",
     "//chrome/browser/resources/glic:resources",
-    "//chrome/browser/resources/glic/fre:resources_grit",
     "//components/language/core/common",
     "//ui/base/interaction",
   ]
-  if (!is_android) {
-    sources += [
-      "fre_webui_contents_container.cc",
-      "fre_webui_contents_container.h",
-      "glic_fre_dialog_view.cc",
-      "glic_fre_dialog_view.h",
-      "glic_fre_ui.cc",
-    ]
-    deps += [ "//chrome/browser/themes" ]
-  }
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 

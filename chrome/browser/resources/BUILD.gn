@@ -21,8 +21,6 @@ group("resources") {
   public_deps = [
     "contextual_tasks:resources",
     "glic:resources",
-    "glic/fre:resources",
-    "glic/shared:resources",
     "saved_tab_groups_unsupported:resources",
     "segmentation_internals:resources",
     "//components/enterprise/connectors/resources",

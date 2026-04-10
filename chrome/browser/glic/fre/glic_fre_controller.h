@@ -40,7 +40,6 @@ class Widget;
 
 namespace glic {
 
-class GlicFreDialogView;
 class GlicFrePageHandler;
 
 // This enum is used to record the reason for the FRE error state.
@@ -124,11 +123,6 @@ class GlicFreController {
   void OpenFreDialogInNewTab(base::WeakPtr<BrowserWindowInterface> bwi,
                              mojom::InvocationSource source);
 
-  // Shows the FRE dialog. This should only be called if `ShouldShowFreDialog`
-  // and `CanShowFreDialog` are both satisfied.
-  void ShowFreDialog(BrowserWindowInterface* browser,
-                     mojom::InvocationSource source);
-
   // Closes the FRE dialog if it is open on the active tab of `browser`.
   void DismissFreIfOpenOnActiveTab(BrowserWindowInterface* browser);
 #endif
@@ -154,13 +148,6 @@ class GlicFreController {
 
   // Notify FRE controller that the user clicked on a link.
   void OnLinkClicked(const GURL& url);
-
-  // Attempts to warm the FRE web contents.
-  void TryPreload();
-
-  // Returns true if the FRE web contents are loaded (either because it has been
-  // preloaded or because it is visible).
-  bool IsWarmed() const;
 
   // Returns the WebContents from the dialog view.
   content::WebContents* GetWebContents();
@@ -211,25 +198,14 @@ class GlicFreController {
   void MarkSidepanelFreShown();
 
  private:
-#if !BUILDFLAG(IS_ANDROID)
-  // Used when the native window is closed directly.
-  void CloseWithReason(views::Widget::ClosedReason reason);
-  void ShowFreDialogAfterAuthCheck(BrowserWindowInterface* browser,
-                                   mojom::InvocationSource source);
-#endif
-
   // Called when the tab showing the FRE dialog is detached.
   void OnTabShowingModalWillDetach(tabs::TabInterface* tab,
                                    tabs::TabInterface::DetachReason reason);
 
-#if !BUILDFLAG(IS_ANDROID)
-  void CreateView();
-#endif
-
   raw_ptr<Profile> const profile_;
+  // TODO(b:498255995): Clean up unused dialog variables and functions.
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<views::Widget> fre_widget_;
-  std::unique_ptr<GlicFreDialogView> fre_view_;
 #endif
   // This is owned by the GlicFreDialogView but we retain a pointer to it so
   // that we can continue to reference it even after `fre_view_` relinquishes

@@ -4,10 +4,10 @@
 
 import {assertNotReachedCase} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {FreAppController} from '/fre/fre_app_controller.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
+import {FreAppController} from './fre/fre_app_controller.js';
 import type {ZoomAction} from './glic.mojom-webui.js';
 import {PanelStateKind, ProfileReadyState} from './glic.mojom-webui.js';
 import {GlicAppController} from './glic_app_controller.js';

@@ -4,9 +4,6 @@
 
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {GlicRequestHeaderInjector} from '/shared/glic_request_headers.js';
-import {isFullWebView} from '/shared/web_view_type.js';
-import type {WebViewType} from '/shared/web_view_type.js';
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 // <if expr="not is_android">
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
@@ -20,6 +17,9 @@ import {DetailedWebClientState, GlicApiCommunicator, GlicApiHost, WebClientState
 import type {ApiHostEmbedder} from './glic_api_impl/host/glic_api_host.js';
 import {ObservableValue} from './observable.js';
 import type {ObservableValueReadOnly} from './observable.js';
+import {GlicRequestHeaderInjector} from './shared/glic_request_headers.js';
+import {isFullWebView} from './shared/web_view_type.js';
+import type {WebViewType} from './shared/web_view_type.js';
 import {OneShotTimer} from './timer.js';
 
 // LINT.IfChange(WebviewExitReason)

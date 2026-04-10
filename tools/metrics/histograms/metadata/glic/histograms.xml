@@ -520,16 +520,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.FRE.InvocationSource" enum="GlicInvocationSource"
-    expires_after="2026-07-26">
-  <owner>cuianthony@google.com</owner>
-  <owner>iwells@google.com</owner>
-  <summary>
-    Records the entry point used to trigger the opening of the glic FRE modal.
-    Recorded when the FRE is shown to the user.
-  </summary>
-</histogram>
-
 <histogram name="Glic.Fre.Shown.Entrypoint" enum="GlicEntrypoint"
     expires_after="2026-10-04">
   <owner>erikchen@chromium.org</owner>
@@ -652,17 +642,6 @@ chromium-metrics-reviews@google.com.
     to Glic.Fre.WidgetClosedReason and includes more detailed reasons related to
     tab movement and close in addition to the standard WidgetCloseReasons from
     before.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Fre.WidgetCreationTime" units="ms"
-    expires_after="2026-09-13">
-  <owner>birnie@google.com</owner>
-  <owner>carlosk@chromium.org</owner>
-  <summary>
-    Records the time taken to create and show the native Glic FRE dialog widget.
-    This measures the performance of the native UI code before the web content
-    begins to load.
   </summary>
 </histogram>
 

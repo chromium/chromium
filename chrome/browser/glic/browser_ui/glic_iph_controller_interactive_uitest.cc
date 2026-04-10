@@ -6,7 +6,6 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/browser_ui/glic_iph_controller.h"
-#include "chrome/browser/glic/fre/glic_fre_dialog_view.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
@@ -85,26 +84,6 @@ class GlicIphControllerTestBase : public TestBase {
     return glic_service()->fre_controller();
   }
 
-  auto WaitForAndInstrumentGlicFre() {
-    MultiStep steps =
-        Steps(UninstrumentWebContents(test::kGlicFreContentsElementId, false),
-              UninstrumentWebContents(test::kGlicFreHostElementId, false),
-              ObserveState(test::internal::kGlicFreShowingDialogState,
-                           std::ref(GetFreController())),
-              InAnyContext(Steps(
-                  InstrumentNonTabWebView(
-                      test::kGlicFreHostElementId,
-                      GlicFreDialogView::kWebViewElementIdForTesting),
-                  InstrumentInnerWebContents(test::kGlicFreContentsElementId,
-                                             test::kGlicFreHostElementId, 0),
-                  WaitForWebContentsReady(test::kGlicFreContentsElementId))),
-              WaitForState(test::internal::kGlicFreShowingDialogState, true),
-              StopObservingState(test::internal::kGlicFreShowingDialogState));
-
-    AddDescriptionPrefix(steps, "WaitForAndInstrumentGlicFre");
-    return steps;
-  }
-
   auto ShowPromoForTest() {
     return Do([&]() {
       browser()->GetFeatures().glic_iph_controller()->MaybeShowPromoForTest();
@@ -117,15 +96,6 @@ class GlicIphControllerTestBase : public TestBase {
                             WaitForWebContentsReady(kFirstTab),
                             ShowPromoForTest(), WaitForPromo(*feature));
     return steps;
-  }
-
-  auto ExpectWarmedFre(bool warm) {
-    return Do([this, warm]() {
-      EXPECT_EQ(warm, GlicKeyedServiceFactory::GetGlicKeyedService(
-                          browser()->profile())
-                          ->fre_controller()
-                          .IsWarmed());
-    });
   }
 
  protected:

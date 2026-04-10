@@ -68,7 +68,6 @@ source_set("glic") {
     # TODO(b/470059315): Make these work on Android, or move them to the
     # desktop-only section.
     sources += [
-      "fre/glic_fre_ui.h",
       "glic_tab_restore_data.h",
       "glic_tab_restore_helper.h",
       "host/context/glic_focused_tab_manager.h",
@@ -366,7 +365,6 @@ source_set("impl") {
     "//chrome/browser/glic/common",
     "//chrome/browser/glic/fre",
     "//chrome/browser/glic/media",
-    "//chrome/browser/glic/shared",
     "//chrome/browser/glic/suggestions",
     "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/media/webrtc",
@@ -375,7 +373,6 @@ source_set("impl") {
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/resources/glic:resources",
-    "//chrome/browser/resources/glic/fre:resources",
     "//chrome/browser/signin",
     "//chrome/browser/skills",
     "//chrome/browser/skills:public",

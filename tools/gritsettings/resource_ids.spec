@@ -458,14 +458,6 @@
     "META": {"sizes": {"includes": [60]}},
     "includes": [4010],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/glic/fre/resources.grd": {
-    "META": {"sizes": {"includes": [10]}},
-    "includes": [4020],
-  },
-    "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/glic/shared/resources.grd": {
-    "META": {"sizes": {"includes": [10]}},
-    "includes": [4030],
-  },
     "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/glic/selection_overlay/resources.grd": {
     "META": {"sizes": {"includes": [10]}},
     "includes": [4033],

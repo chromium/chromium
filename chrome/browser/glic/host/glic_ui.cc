@@ -27,7 +27,6 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/resources/glic_resources.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
-#include "chrome/browser/glic/shared/webui_shared.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/channel_info.h"
@@ -36,8 +35,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/grit/glic_fre_resources.h"
-#include "chrome/grit/glic_fre_resources_map.h"
 #include "chrome/grit/glic_resources.h"
 #include "chrome/grit/glic_resources_map.h"
 #include "components/prefs/pref_service.h"
@@ -191,7 +188,30 @@ GlicUI::GlicUI(content::WebUI* web_ui)
 
   // Add required resources.
   webui::SetupWebUIDataSource(source, kGlicResources, IDR_GLIC_GLIC_HTML);
-  ConfigureSharedWebUISource(*source);
+
+  source->AddString("chromeVersion", version_info::GetVersionNumber());
+  source->AddString("chromeChannel",
+                    version_info::GetChannelString(chrome::GetChannel()));
+
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  const bool is_glic_dev = command_line->HasSwitch(::switches::kGlicDev);
+
+  source->AddBoolean("devMode", is_glic_dev);
+
+  // Set up loading notice timeout values.
+  source->AddInteger("preLoadingTimeMs", features::kGlicPreLoadingTimeMs.Get());
+  source->AddInteger("minLoadingTimeMs", features::kGlicMinLoadingTimeMs.Get());
+  int max_loading_time_ms = features::kGlicMaxLoadingTimeMs.Get();
+  if (is_glic_dev) {
+    // Bump up timeout value, as dev server may be slow.
+    max_loading_time_ms *= 100;
+  }
+  source->AddInteger("maxLoadingTimeMs", max_loading_time_ms);
+
+  source->AddString("glicHeaderRequestTypes",
+                    base::FeatureList::IsEnabled(features::kGlicHeader)
+                        ? features::kGlicHeaderRequestTypes.Get()
+                        : "");
 
 #if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   auto bindings = web_ui->GetBindings();
@@ -199,10 +219,6 @@ GlicUI::GlicUI(content::WebUI* web_ui)
   web_ui->SetBindings(bindings);
   source->AddResourcePaths(kGuestViewSharedResources);
 #endif  // !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-
-  for (const auto& resource : kGlicFreResources) {
-    source->AddResourcePath(base::StrCat({"fre/", resource.path}), resource.id);
-  }
 
   // Setup chrome://glic/internals debug UI.
   source->AddResourcePath("internals/", IDR_GLIC_INTERNALS_GLIC_INTERNALS_HTML);
@@ -222,8 +238,6 @@ GlicUI::GlicUI(content::WebUI* web_ui)
   auto* allowlist = WebUIAllowlist::GetOrCreate(browser_context);
   allowlist->RegisterAutoGrantedPermission(source->GetOrigin(),
                                            ContentSettingsType::GEOLOCATION);
-
-  auto* command_line = base::CommandLine::ForCurrentProcess();
 
   source->AddBoolean("loggingEnabled",
                      command_line->HasSwitch(::switches::kGlicHostLogging));
