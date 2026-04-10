@@ -18,6 +18,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.side_panel.SidePanelType;
 import org.chromium.chrome.browser.ui.side_ui.SideUiContainer;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
@@ -37,14 +38,25 @@ final class SidePanelContainerCoordinatorImpl
     private final Activity mParentActivity;
     private final FrameLayout mContainerView;
     private final SideUiCoordinator mSideUiCoordinator;
+    private final @SidePanelType int mPanelType;
 
     private @Nullable SidePanelContent mCurrentContent;
 
+    /**
+     * Constructs a concrete implementation of the SidePanelContainerCoordinator interface.
+     *
+     * @param parentActivity Parent Activity that will own this instance.
+     * @param sideUiCoordinator Coordinator for the Side Panel UI anchoring view.
+     * @param panelType The type of panel that this coordinator is associated with.
+     */
     SidePanelContainerCoordinatorImpl(
-            Activity parentActivity, SideUiCoordinator sideUiCoordinator) {
-        log(TAG, "constructor", parentActivity, sideUiCoordinator);
+            Activity parentActivity,
+            SideUiCoordinator sideUiCoordinator,
+            @SidePanelType int panelType) {
+        log(TAG, "constructor", parentActivity, sideUiCoordinator, panelType);
         mParentActivity = parentActivity;
         mSideUiCoordinator = sideUiCoordinator;
+        mPanelType = panelType;
         mContainerView =
                 (FrameLayout)
                         LayoutInflater.from(mParentActivity)
@@ -89,6 +101,11 @@ final class SidePanelContainerCoordinatorImpl
         log(TAG, "isShowing", sidePanelContent);
         ThreadUtils.assertOnUiThread();
         return sidePanelContent == mCurrentContent;
+    }
+
+    @Override
+    public @SidePanelType int getPanelType() {
+        return mPanelType;
     }
 
     @Override

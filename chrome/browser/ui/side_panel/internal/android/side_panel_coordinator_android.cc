@@ -26,6 +26,7 @@
     LOG(ERROR) << LOG_TAG << ": " << message;              \
   }
 
+using base::android::AttachCurrentThread;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -35,18 +36,6 @@ DEFINE_USER_DATA(SidePanelCoordinatorAndroid);
 SidePanelCoordinatorAndroid* SidePanelCoordinatorAndroid::From(
     BrowserWindowInterface* browser) {
   return browser ? Get(browser->GetUnownedUserDataHost()) : nullptr;
-}
-
-// Implements Java `SidePanelCoordinatorAndroidImpl.Natives#create`.
-static int64_t JNI_SidePanelCoordinatorAndroidImpl_Create(
-    JNIEnv* env,
-    const JavaRef<jobject>& caller,
-    int64_t nativeBrowserWindowPtr) {
-  SPLOG("JNI_SidePanelCoordinatorAndroidImpl_Create - ptr: "
-        << nativeBrowserWindowPtr);
-  return reinterpret_cast<intptr_t>(new SidePanelCoordinatorAndroid(
-      env, caller,
-      reinterpret_cast<BrowserWindowInterface*>(nativeBrowserWindowPtr)));
 }
 
 SidePanelCoordinatorAndroid::SidePanelCoordinatorAndroid(
@@ -62,8 +51,8 @@ SidePanelCoordinatorAndroid::SidePanelCoordinatorAndroid(
 
 SidePanelCoordinatorAndroid::~SidePanelCoordinatorAndroid() {
   SPLOG("SidePanelCoordinatorAndroid Destructor");
-  Java_SidePanelCoordinatorAndroidImpl_clearNativePtr(
-      base::android::AttachCurrentThread(), java_coordinator());
+  Java_SidePanelCoordinatorAndroidImpl_clearNativePtr(AttachCurrentThread(),
+                                                      java_coordinator());
 }
 
 void SidePanelCoordinatorAndroid::Destroy(JNIEnv* env) {
@@ -98,8 +87,8 @@ void SidePanelCoordinatorAndroid::Close(SidePanelType panel_type,
   CHECK(entry) << "SidePanelEntry should exist when side panel is showing.";
 
   entry->OnEntryWillHide(hide_reason);
-  Java_SidePanelCoordinatorAndroidImpl_removeContent(
-      base::android::AttachCurrentThread(), java_coordinator());
+  Java_SidePanelCoordinatorAndroidImpl_removeContent(AttachCurrentThread(),
+                                                     java_coordinator());
 
   // TODO(crbug.com/493930383): Clear current key and trigger OnEntryHidden()
   // when animation ends.
@@ -170,8 +159,7 @@ void SidePanelCoordinatorAndroid::PopulateSidePanel(
   // If the side panel isn't shown, just show it.
   if (!IsSidePanelShowing(entry->type())) {
     Java_SidePanelCoordinatorAndroidImpl_populateSidePanel(
-        base::android::AttachCurrentThread(), java_coordinator(),
-        native_view->view());
+        AttachCurrentThread(), java_coordinator(), native_view->view());
     SetCurrentKey(entry->type(), unique_key);
     entry->OnEntryShown();
     return;
@@ -196,8 +184,7 @@ void SidePanelCoordinatorAndroid::PopulateSidePanel(
 
   previous_entry->OnEntryWillHide(previous_entry_hide_reason);
   Java_SidePanelCoordinatorAndroidImpl_populateSidePanel(
-      base::android::AttachCurrentThread(), java_coordinator(),
-      native_view->view());
+      AttachCurrentThread(), java_coordinator(), native_view->view());
   SetCurrentKey(entry->type(), unique_key);
   entry->OnEntryShown();
   previous_entry->OnEntryHidden();
@@ -259,13 +246,29 @@ void SidePanelCoordinatorAndroid::MaybeShowEntryOnTabStripModelChanged(
 ScopedJavaLocalRef<jobject> SidePanelCoordinatorAndroid::java_coordinator()
     const {
   SPLOG("java_coordinator()");
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> local_ref = java_coordinator_.get(env);
+  ScopedJavaLocalRef<jobject> local_ref =
+      java_coordinator_.get(AttachCurrentThread());
 
   CHECK(local_ref) << "Java SidePanelCoordinatorAndroid is the sole owner of "
                       "C++ SidePanelCoordinatorAndroid, so the Java object "
                       "shouldn't be destroyed before the C++ object";
   return local_ref;
+}
+
+// ----------------------------------------------------------------------------
+// Methods called from Java via SidePanelCoordinatorAndroidImpl.Natives:
+// ----------------------------------------------------------------------------
+
+// static
+static int64_t JNI_SidePanelCoordinatorAndroidImpl_Create(
+    JNIEnv* env,
+    const JavaRef<jobject>& caller,
+    int64_t nativeBrowserWindowPtr) {
+  SPLOG("JNI_SidePanelCoordinatorAndroidImpl_Create - ptr: "
+        << nativeBrowserWindowPtr);
+  return reinterpret_cast<intptr_t>(new SidePanelCoordinatorAndroid(
+      env, caller,
+      reinterpret_cast<BrowserWindowInterface*>(nativeBrowserWindowPtr)));
 }
 
 DEFINE_JNI(SidePanelCoordinatorAndroidImpl)

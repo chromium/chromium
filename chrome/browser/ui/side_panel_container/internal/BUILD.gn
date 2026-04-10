@@ -75,6 +75,7 @@ robolectric_library("junit") {
   deps = [
     ":java",
     "//base:base_junit_test_support",
+    "//chrome/browser/ui/side_panel/android:java",
     "//chrome/browser/ui/side_ui/public:java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",

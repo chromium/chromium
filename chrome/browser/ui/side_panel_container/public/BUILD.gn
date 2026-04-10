@@ -12,7 +12,10 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/ui/side_panel_container/SidePanelContent.java",
     "android/java/src/org/chromium/chrome/browser/ui/side_panel_container/dev/SidePanelDevFeature.java",
   ]
-  deps = [ "//build/android:build_java" ]
+  deps = [
+    "//build/android:build_java",
+    "//chrome/browser/ui/side_panel/android:java",
+  ]
 }
 
 # Public Java factory

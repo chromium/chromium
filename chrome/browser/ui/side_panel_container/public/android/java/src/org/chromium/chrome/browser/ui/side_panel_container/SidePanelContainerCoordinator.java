@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.side_panel_container;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.ui.side_panel.SidePanelType;
 
 /** Coordinator of the side panel container UI. */
 @NullMarked
@@ -44,6 +45,14 @@ public interface SidePanelContainerCoordinator {
 
     /** Returns whether the given {@link SidePanelContent} is shown in this side panel container. */
     boolean isShowing(SidePanelContent sidePanelContent);
+
+    /**
+     * Returns the panel type of the current instance (e.g. content or toolbar height).
+     *
+     * @return SidePanelType panel type.
+     */
+    @SidePanelType
+    int getPanelType();
 
     /** Destroys all objects owned by this coordinator. */
     void destroy();

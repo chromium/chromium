@@ -11,6 +11,7 @@ import android.app.Activity;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
+import org.chromium.chrome.browser.ui.side_panel.SidePanelType;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 
 /** Factory for creating a {@link SidePanelContainerCoordinator}. */
@@ -20,14 +21,24 @@ public final class SidePanelContainerCoordinatorFactory {
 
     private SidePanelContainerCoordinatorFactory() {}
 
+    /**
+     * Factory method to create a new SidePanelContainerCoordinator implementation.
+     *
+     * @param parentActivity Parent Activity that will own this instance.
+     * @param sideUiCoordinator Coordinator for the Side Panel UI anchoring view.
+     * @param panelType The type of panel that this coordinator is associated with.
+     * @return SidePanelContainerCoordinator implementation.
+     */
     @Nullable
     public static SidePanelContainerCoordinator create(
-            Activity parentActivity, SideUiCoordinator sideUiCoordinator) {
-        log(TAG, "create", parentActivity, sideUiCoordinator);
+            Activity parentActivity,
+            SideUiCoordinator sideUiCoordinator,
+            @SidePanelType int panelType) {
+        log(TAG, "create", parentActivity, sideUiCoordinator, panelType);
         if (!AndroidSidePanelEnabledFn.isEnabled()) {
             return null;
         }
 
-        return new SidePanelContainerCoordinatorImpl(parentActivity, sideUiCoordinator);
+        return new SidePanelContainerCoordinatorImpl(parentActivity, sideUiCoordinator, panelType);
     }
 }
