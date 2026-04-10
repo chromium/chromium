@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
+#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 
 namespace blink {
 
@@ -46,6 +47,8 @@ void DrawLineAsStroke(GraphicsContext& context,
   StyledStrokeData::GeometryInfo geometry_info;
   geometry_info.path_length = end.x() - start.x();
   geometry_info.dash_thickness = thickness;
+  const StrokeData stroke_data =
+      styled_stroke.ConvertToStrokeData(geometry_info);
 
   gfx::PointF p1 = gfx::PointF(start);
   gfx::PointF p2 = gfx::PointF(end);
@@ -64,9 +67,22 @@ void DrawLineAsStroke(GraphicsContext& context,
     p2.set_x(p2.x() - thickness / 2.f);
   }
 
-  cc::PaintFlags flags = paint_flags ? *paint_flags : context.StrokeFlags();
-  styled_stroke.SetupPaint(&flags, geometry_info);
-  context.DrawLine(p1, p2, flags, auto_dark_mode);
+  if (paint_flags && paint_flags->getStyle() == cc::PaintFlags::kStroke_Style) {
+    // Generate geometry based on `styled_stroke` and then paint that as a path
+    // with provided paint flags.
+    PathBuilder line_geometry;
+    line_geometry.MoveTo(p1);
+    line_geometry.LineTo(p2);
+    const AffineTransform identity;
+    const Path stroked_line =
+        line_geometry.Finalize().StrokePath(stroke_data, identity);
+    context.DrawPath(stroked_line.GetSkPath(), *paint_flags, auto_dark_mode);
+  } else {
+    // Transfer the line style to the paint.
+    cc::PaintFlags flags = paint_flags ? *paint_flags : context.StrokeFlags();
+    stroke_data.SetupPaint(&flags);
+    context.DrawLine(p1, p2, flags, auto_dark_mode);
+  }
 }
 
 void DrawLineAsRect(GraphicsContext& context,
