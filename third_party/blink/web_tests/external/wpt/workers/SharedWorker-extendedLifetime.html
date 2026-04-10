@@ -45,7 +45,7 @@ promise_test(async t => {
   popup.close();
 
   // Wait for a second.
-  await new Promise(resolve => setTimeout(resolve, 1));
+  await new Promise(resolve => setTimeout(resolve, 1000));
 
   const ctx2 = new RemoteContext(token());
   const popup2 = window.open(remoteExecutorUrl(ctx2.context_id));
