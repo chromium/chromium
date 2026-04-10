@@ -48,6 +48,8 @@ class DedicatedWorkerDevToolsAgentHost final
       const std::string& name,
       base::OnceCallback<void(DevToolsAgentHostImpl*)> callback);
 
+  bool child_worker_created() const { return child_worker_created_; }
+
  private:
   ~DedicatedWorkerDevToolsAgentHost() override;
 
