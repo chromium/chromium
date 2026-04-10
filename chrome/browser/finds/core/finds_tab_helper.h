@@ -36,6 +36,9 @@ class FindsTabHelper : public content::WebContentsObserver,
   FindsTabHelper& operator=(const FindsTabHelper&) = delete;
   ~FindsTabHelper() override;
 
+  // Determine whether the current platform is supported for the finds feature.
+  static bool IsSupportedPlatform();
+
  private:
   explicit FindsTabHelper(content::WebContents* web_contents,
                           FindsService* finds_service,

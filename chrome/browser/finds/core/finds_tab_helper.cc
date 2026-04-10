@@ -29,21 +29,9 @@ bool IsValidNavigation(content::NavigationHandle* navigation_handle) {
          navigation_handle->GetURL().SchemeIsHTTPOrHTTPS();
 }
 
-bool IsSupportedPlatform() {
-#if BUILDFLAG(IS_ANDROID)
-  if (base::android::device_info::is_desktop() ||
-      base::android::device_info::is_tv() ||
-      base::android::device_info::is_automotive() ||
-      base::android::device_info::is_xr()) {
-    return false;
-  }
-#endif
-  return true;
-}
-
 bool IsFindsOptInPromoCooldownPassed(const PrefService* pref_service) {
   const int64_t last_timestamp_value =
-      pref_service->GetInt64(prefs::kFindsOptInPromoLastInteractedTimestamp);
+      pref_service->GetInt64(prefs::kFindsOptInPromoLastShownTimestamp);
   if (last_timestamp_value == 0) {
     return true;
   }
@@ -55,7 +43,7 @@ bool IsFindsOptInPromoCooldownPassed(const PrefService* pref_service) {
 }
 
 bool IsFindsOptInPromoMaxCountExceeded(const PrefService* pref_service) {
-  return pref_service->GetInteger(prefs::kFindsOptInPromoInteractedCount) >=
+  return pref_service->GetInteger(prefs::kFindsOptInPromoShownCount) >=
          finds::features::kFindsOptInPromoMaxInteractedCount.Get();
 }
 
@@ -64,6 +52,19 @@ bool IsFindsOptInPromoAlreadyInteracted(const PrefService* pref_service) {
 }
 
 }  // namespace
+
+// static
+bool FindsTabHelper::IsSupportedPlatform() {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::device_info::is_desktop() ||
+      base::android::device_info::is_tv() ||
+      base::android::device_info::is_automotive() ||
+      base::android::device_info::is_xr()) {
+    return false;
+  }
+#endif
+  return true;
+}
 
 FindsTabHelper::FindsTabHelper(content::WebContents* web_contents,
                                FindsService* finds_service,

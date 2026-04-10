@@ -4,11 +4,15 @@
 
 #include "chrome/browser/finds/core/finds_tab_helper.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/finds/core/finds_features.h"
+#include "chrome/browser/finds/core/finds_pref_names.h"
 #include "chrome/browser/finds/core/finds_service.h"
 #include "chrome/browser/finds/finds_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -25,78 +29,125 @@ class MockFindsServiceObserver : public FindsService::Observer {
 
 class FindsTabHelperTest : public ChromeRenderViewHostTestHarness {
  public:
-  FindsTabHelperTest() = default;
+  FindsTabHelperTest() {
+    scoped_feature_list_.InitAndEnableFeature(finds::features::kChromeFinds);
+  }
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+
+    // Ensure that all unsupported platforms are skipped.
+    if (!FindsTabHelper::IsSupportedPlatform()) {
+      GTEST_SKIP() << "Unsupported platform for FindsTabHelper";
+    }
+
+    FindsService::RegisterProfilePrefs(pref_service_.registry());
 
     TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
         profile(),
         base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
     template_url_service_ = TemplateURLServiceFactory::GetForProfile(profile());
 
-    // WebContentsUserData requires using CreateForWebContents.
     FindsTabHelper::CreateForWebContents(
         web_contents(), finds::FindsServiceFactory::GetForProfile(profile()),
-        /*opt_guide_service=*/nullptr, template_url_service_,
-        /*pref_service=*/nullptr);
+        /*opt_guide_service=*/nullptr, template_url_service_, &pref_service_);
     tab_helper_ = FindsTabHelper::FromWebContents(web_contents());
+
+    finds_service_ = FindsServiceFactory::GetForProfile(profile());
+    ASSERT_NE(finds_service_, nullptr);
+    finds_service_->AddObserver(&finds_service_observer_);
+    srp_return_count_threshold_ =
+        finds::features::kSRPReturnCountThreshold.Get();
   }
 
   void TearDown() override {
+    if (finds_service_) {
+      finds_service_->RemoveObserver(&finds_service_observer_);
+    }
+    finds_service_ = nullptr;
     tab_helper_ = nullptr;
     template_url_service_ = nullptr;
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  // Wrapper methods to access private members of FindsTabHelper.
-  void CheckSRPReturnCountAndMaybeTriggerOptIn(
-      content::NavigationHandle* handle) {
-    tab_helper_->CheckSRPReturnCountAndMaybeTriggerOptIn(handle);
+  void CallDidFinishNavigation(content::NavigationHandle* handle) {
+    static_cast<content::WebContentsObserver*>(tab_helper_)
+        ->DidFinishNavigation(handle);
+  }
+
+  // Configures a minimal mock state that satisfies the IsValidNavigation check
+  // required to enter the tab helper's logic.
+  std::unique_ptr<content::MockNavigationHandle> CreateMockNavigationHandle(
+      const GURL& url,
+      ui::PageTransition transition) {
+    auto handle = std::make_unique<content::MockNavigationHandle>(
+        url, web_contents()->GetPrimaryMainFrame());
+    handle->set_has_committed(true);
+    handle->set_is_in_primary_main_frame(true);
+    handle->set_is_same_document(false);
+    handle->set_page_transition(transition);
+    return handle;
   }
 
   int srp_return_count() const { return tab_helper_->srp_return_count_; }
 
- protected:
-  raw_ptr<TemplateURLService> template_url_service_;
-  raw_ptr<FindsTabHelper> tab_helper_;
-};
-
-TEST_F(FindsTabHelperTest, TestThresholdMet) {
-  // Flow: 3 Forward/Back navigations to SRP.
-
-  GURL srp_url("https://www.google.com/search?q=test");
-
-  FindsService* service = FindsServiceFactory::GetForProfile(profile());
-  MockFindsServiceObserver observer;
-  service->AddObserver(&observer);
-
-  // Expect that the service is notified when the threshold (3) is met.
-  EXPECT_CALL(observer, OnOptInCriteriaFulfilled()).Times(1);
-
-  for (int i = 0; i < 3; ++i) {
-    auto handle = std::make_unique<content::MockNavigationHandle>(
-        srp_url, web_contents()->GetPrimaryMainFrame());
-    handle->set_page_transition(
-        static_cast<ui::PageTransition>(ui::PAGE_TRANSITION_FORWARD_BACK));
-    CheckSRPReturnCountAndMaybeTriggerOptIn(handle.get());
+  // Runs a sequence of navigations to simulate a user hitting the trigger
+  // threshold. This is used to ensure preferences override a state that would
+  // otherwise successfully trigger.
+  void SimulateSRPBackNavigations(int count) {
+    GURL srp_url("https://www.google.com/search?q=test");
+    for (int i = 0; i < count; ++i) {
+      auto handle = CreateMockNavigationHandle(
+          srp_url,
+          static_cast<ui::PageTransition>(ui::PAGE_TRANSITION_FORWARD_BACK));
+      CallDidFinishNavigation(handle.get());
+    }
   }
 
-  EXPECT_EQ(srp_return_count(), 3);
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  TestingPrefServiceSimple pref_service_;
+  MockFindsServiceObserver finds_service_observer_;
+  raw_ptr<TemplateURLService> template_url_service_ = nullptr;
+  raw_ptr<FindsService> finds_service_ = nullptr;
+  raw_ptr<FindsTabHelper> tab_helper_ = nullptr;
+  int srp_return_count_threshold_ = 0;
+};
 
-  service->RemoveObserver(&observer);
+TEST_F(FindsTabHelperTest, TestSRPBackNavigationThresholdMet) {
+  EXPECT_CALL(finds_service_observer_, OnOptInCriteriaFulfilled()).Times(1);
+  SimulateSRPBackNavigations(srp_return_count_threshold_);
+  EXPECT_EQ(srp_return_count(), srp_return_count_threshold_);
 }
 
 TEST_F(FindsTabHelperTest, TestNonForwardBackNavToSRPDoesNotCount) {
-  // Normal navigation (TYPED) to SRP does not count.
-
   GURL srp_url("https://www.google.com/search?q=test");
+  // Normal navigation (TYPED) to SRP does not count.
+  auto handle = CreateMockNavigationHandle(srp_url, ui::PAGE_TRANSITION_TYPED);
+  CallDidFinishNavigation(handle.get());
+  EXPECT_EQ(srp_return_count(), 0);
+}
 
-  auto handle = std::make_unique<content::MockNavigationHandle>(
-      srp_url, web_contents()->GetPrimaryMainFrame());
-  handle->set_page_transition(ui::PAGE_TRANSITION_TYPED);
-  CheckSRPReturnCountAndMaybeTriggerOptIn(handle.get());
+TEST_F(FindsTabHelperTest, TestOptInInteracted) {
+  pref_service_.SetBoolean(prefs::kFindsOptInPromoUserInteracted, true);
+  EXPECT_CALL(finds_service_observer_, OnOptInCriteriaFulfilled()).Times(0);
+  SimulateSRPBackNavigations(srp_return_count_threshold_);
+  EXPECT_EQ(srp_return_count(), 0);
+}
 
+TEST_F(FindsTabHelperTest, TestOptInMaxCountExceeded) {
+  pref_service_.SetInteger(prefs::kFindsOptInPromoShownCount, 100);
+  EXPECT_CALL(finds_service_observer_, OnOptInCriteriaFulfilled()).Times(0);
+  SimulateSRPBackNavigations(srp_return_count_threshold_);
+  EXPECT_EQ(srp_return_count(), 0);
+}
+
+TEST_F(FindsTabHelperTest, TestOptInCooldownNotPassed) {
+  pref_service_.SetInt64(
+      prefs::kFindsOptInPromoLastShownTimestamp,
+      (base::Time::Now() + base::Days(1)).InMillisecondsSinceUnixEpoch());
+  EXPECT_CALL(finds_service_observer_, OnOptInCriteriaFulfilled()).Times(0);
+  SimulateSRPBackNavigations(srp_return_count_threshold_);
   EXPECT_EQ(srp_return_count(), 0);
 }
 
