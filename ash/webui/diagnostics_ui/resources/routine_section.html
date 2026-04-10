@@ -83,11 +83,7 @@
     margin-inline-end: 8px;
   }
 
-  :host([hide-routine-status]) .container-spacing {
-    padding-inline: 20px;
-  }
-
-  :host(:not([hide-routine-status])) .container-spacing {
+  .container-spacing {
     margin-bottom: 16px;
     margin-top: 12px;
     padding-inline: 20px;
@@ -116,7 +112,7 @@
 <div class="routine-section-container container-spacing"
     hidden$="[[hideRoutineSection(routines.*)]]">
   <div id="routineSection" part="controls" class="routine-container">
-    <div class="routine-status-container" hidden$="[[hideRoutineStatus]]">
+    <div class="routine-status-container">
       <text-badge id="testStatusBadge" badge-type="[[badgeType]]"
           hidden$="[[isStatusHidden(executionStatus)]]"
           value="[[badgeText]]">
@@ -131,7 +127,7 @@
         </span>
       </span>
     </div>
-    <div class="button-container" hidden$="[[hideRoutineStatus]]">
+    <div class="button-container">
         <iron-icon id="messageIcon" icon="diagnostics:info"
             hidden$="[[isAdditionalMessageHidden(additionalMessage)]]">
         </iron-icon>
@@ -170,7 +166,7 @@
     </div>
     <cr-button id="learnMoreButton" class="learn-more-button"
         on-click="onLearnMoreClicked"
-        hidden$="[[isLearnMoreButtonHidden(isLoggedIn, hideRoutineStatus)]]">
+        hidden$="[[isLearnMoreButtonHidden(hideLearnMore, isLoggedIn)]]">
       [[i18n('learnMore')]]
     </cr-button>
   </iron-collapse>

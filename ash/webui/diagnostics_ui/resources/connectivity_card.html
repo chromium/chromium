@@ -7,6 +7,19 @@
   #icon {
     padding-inline-end: 12px;
   }
+
+  /* Section ordering: results first, then controls, then details. */
+  routine-section::part(results) {
+    order: 0;
+  }
+
+  routine-section::part(controls) {
+    order: 1;
+  }
+
+  routine-section::part(details) {
+    order: 2;
+  }
 </style>
 <diagnostics-card is-networking-card="true">
   <div id="cardTitle" slot="title" tabindex="0">
@@ -28,7 +41,9 @@
       test-suite-status="{{testSuiteStatus}}"
       routine-runtime="{{getEstimateRuntimeInMinutes(routineGroups)}}"
       is-active="[[isActive]]"
-      hide-routine-status
+      hide-report-button
+      hide-learn-more
+      show-routine-details
       opened>
   </routine-section>
   <ip-config-info-drawer id="ipConfigInfoDrawer" network="[[network]]"

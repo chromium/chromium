@@ -237,26 +237,12 @@ suite('routineSectionTestSuite', function() {
     return flushTasks();
   }
 
-  function setHideRoutineStatus(hideRoutineStatus: boolean): Promise<void> {
-    assert(routineSectionElement);
-    routineSectionElement.hideRoutineStatus = hideRoutineStatus;
-    return flushTasks();
-  }
-
   function setHideReportButton(hideReportButton: boolean): Promise<void> {
     assert(routineSectionElement);
     routineSectionElement.hideReportButton = hideReportButton;
     return flushTasks();
   }
 
-  function getLearnMoreButton(): CrButtonElement {
-    assert(routineSectionElement);
-    const learnMoreButton =
-        routineSectionElement.shadowRoot!.querySelector<CrButtonElement>(
-            '#learnMoreButton');
-    assert(learnMoreButton);
-    return learnMoreButton;
-  }
 
   test('ElementRenders', () => {
     return initializeRoutineSection([]).then(() => {
@@ -1051,20 +1037,6 @@ suite('routineSectionTestSuite', function() {
               ExecutionProgress.CANCELLED, getEntries()[0]!.item.progress);
         });
   });
-
-  test('RoutineStatusAndActionsHidden', () => {
-    return initializeRoutineSection([])
-        .then(() => setHideRoutineStatus(true))
-        .then(() => {
-          assert(routineSectionElement);
-          assertFalse(isVisible(getLearnMoreButton()));
-          assertFalse(isVisible(routineSectionElement.shadowRoot!.querySelector(
-              '.routine-status-container')));
-          assertFalse(isVisible(routineSectionElement.shadowRoot!.querySelector(
-              '.button-container')));
-        });
-  });
-
 
   test('StopAfterFirstBlockingFailureInRoutineGroup', () => {
     const localNetworkGroup = new RoutineGroup(

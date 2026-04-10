@@ -187,13 +187,12 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
         computed: 'getInitialButtonText(runTestsButtonText)',
       },
 
-      hideRoutineStatus: {
+      hideReportButton: {
         type: Boolean,
         value: false,
-        reflectToAttribute: true,
       },
 
-      hideReportButton: {
+      hideLearnMore: {
         type: Boolean,
         value: false,
       },
@@ -230,8 +229,8 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
   testSuiteStatus: TestSuiteStatus;
   isPowerRoutine: boolean;
   isActive: boolean;
-  hideRoutineStatus: boolean;
   hideReportButton: boolean;
+  hideLearnMore: boolean;
   showRoutineDetails: boolean;
   opened: boolean;
   hideVerticalLines: boolean;
@@ -672,7 +671,7 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
   }
 
   protected isLearnMoreButtonHidden(): boolean {
-    return !this.isLoggedIn || this.hideRoutineStatus;
+    return this.hideLearnMore || !this.isLoggedIn;
   }
 
   override disconnectedCallback(): void {

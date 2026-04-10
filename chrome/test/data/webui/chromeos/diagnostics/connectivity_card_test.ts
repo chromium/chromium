@@ -15,6 +15,7 @@ import {IpConfigInfoDrawerElement} from 'chrome://diagnostics/ip_config_info_dra
 import {setNetworkHealthProviderForTesting, setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {RoutineGroup} from 'chrome://diagnostics/routine_group.js';
 import {TestSuiteStatus} from 'chrome://diagnostics/routine_list_executor.js';
+import type {RoutineSectionElement} from 'chrome://diagnostics/routine_section.js';
 import {RoutineType, StandardRoutineResult} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -133,6 +134,11 @@ suite('connectivityCardTestSuite', function() {
     return flushTasks();
   }
 
+  function getRoutineSection(): RoutineSectionElement {
+    assert(connectivityCardElement);
+    return dx_utils.getRoutineSection(connectivityCardElement);
+  }
+
   test('CardTitleEthernetOnlineInitializedCorrectly', () => {
     return initializeConnectivityCard('ethernetGuid').then(() => {
       dx_utils.assertElementContainsText(
@@ -207,5 +213,65 @@ suite('connectivityCardTestSuite', function() {
             () => assertEquals(
                 TestSuiteStatus.RUNNING,
                 connectivityCardElement!.testSuiteStatus));
+  });
+
+  test('RoutineStatusBadgeIsVisible', async () => {
+    await initializeConnectivityCard('ethernetGuid');
+    const routineSection = getRoutineSection();
+    assert(routineSection);
+    // The routine-status-container should be visible. The text-badge within
+    // it has its own visibility logic based on executionStatus.
+    const container =
+        routineSection.shadowRoot!.querySelector('.routine-status-container');
+    assert(container);
+    assertTrue(isVisible(container));
+  });
+
+  test('ReportButtonHiddenOnConnectivityCard', async () => {
+    await initializeConnectivityCard('ethernetGuid');
+    const routineSection = getRoutineSection();
+    assert(routineSection);
+    // Verify hide-report-button attribute is set on the routine-section.
+    assertTrue(routineSection.hasAttribute('hide-report-button'));
+    assertTrue(routineSection.hideReportButton);
+  });
+
+  test('ShowRoutineDetailsEnabledOnConnectivityCard', async () => {
+    await initializeConnectivityCard('ethernetGuid');
+    const routineSection = getRoutineSection();
+    assert(routineSection);
+    // Verify show-routine-details attribute is set on the routine-section.
+    assertTrue(routineSection.hasAttribute('show-routine-details'));
+    assertTrue(routineSection.showRoutineDetails);
+  });
+
+  test('RoutineSectionPartsOrderedCorrectly', async () => {
+    await initializeConnectivityCard('ethernetGuid');
+    const routineSection = getRoutineSection();
+    assert(routineSection);
+
+    const results =
+        routineSection.shadowRoot!.querySelector('[part="results"]');
+    const controls =
+        routineSection.shadowRoot!.querySelector('[part="controls"]');
+    const details =
+        routineSection.shadowRoot!.querySelector('[part="details"]');
+
+    assert(results);
+    assert(controls);
+    assert(details);
+
+    // Verify CSS ordering from connectivity_card.html ::part() rules.
+    assertEquals('0', getComputedStyle(results).order);
+    assertEquals('1', getComputedStyle(controls).order);
+    assertEquals('2', getComputedStyle(details).order);
+  });
+
+  test('LearnMoreButtonHiddenOnConnectivityCard', async () => {
+    await initializeConnectivityCard('ethernetGuid');
+    const routineSection = getRoutineSection();
+    assert(routineSection);
+    assertTrue(routineSection.hasAttribute('hide-learn-more'));
+    assertTrue(routineSection.hideLearnMore);
   });
 });
