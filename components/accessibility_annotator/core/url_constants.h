@@ -7,6 +7,10 @@
 
 namespace accessibility_annotator {
 
+// TODO(b/501023130): Update the URL once the learn more page is available.
+inline constexpr char kAccessibilityAnnotatorLearnMoreURL[] =
+    "https://support.google.com/chrome";
+
 inline constexpr char kAccessibilityAnnotatorSettingsURL[] =
     "https://gemini.google.com/personalization-settings";
 

@@ -74,7 +74,19 @@ void AccessibilityAnnotatorInfoPageHandler::OnManageSettingsClicked() {
 }
 
 void AccessibilityAnnotatorInfoPageHandler::OnLearnMoreClicked() {
-  // TODO(b/488320942): Open learn more page and record metric.
+  base::RecordAction(base::UserMetricsAction(
+      "AccessibilityAnnotator.RemoteAnnotatorInfo.LearnMoreLinkClick"));
+
+  if (auto* browser_window_interface =
+          webui::GetBrowserWindowInterface(web_contents_)) {
+    browser_window_interface->OpenURL(
+        content::OpenURLParams(
+            GURL(accessibility_annotator::kAccessibilityAnnotatorLearnMoreURL),
+            content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            ui::PAGE_TRANSITION_LINK,
+            /*is_renderer_initiated=*/false),
+        /*navigation_handle_callback=*/base::DoNothing());
+  }
 }
 
 }  // namespace accessibility_annotator::info

@@ -57,6 +57,26 @@ class AccessibilityAnnotatorInfoPageHandlerTest
   content::TestWebUI test_web_ui_;
 };
 
+TEST_F(AccessibilityAnnotatorInfoPageHandlerTest, OnLearnMoreClicked) {
+  EXPECT_EQ(
+      0, user_action_tester_.GetActionCount(
+             "AccessibilityAnnotator.RemoteAnnotatorInfo.LearnMoreLinkClick"));
+
+  EXPECT_CALL(
+      mock_browser_interface_,
+      OpenURL(testing::Field(&content::OpenURLParams::url,
+                             GURL(accessibility_annotator::
+                                      kAccessibilityAnnotatorLearnMoreURL)),
+              testing::_))
+      .WillOnce(testing::Return(nullptr));
+
+  handler_->OnLearnMoreClicked();
+
+  EXPECT_EQ(
+      1, user_action_tester_.GetActionCount(
+             "AccessibilityAnnotator.RemoteAnnotatorInfo.LearnMoreLinkClick"));
+}
+
 TEST_F(AccessibilityAnnotatorInfoPageHandlerTest, OnManageSettingsClicked) {
   EXPECT_EQ(
       0, user_action_tester_.GetActionCount(
