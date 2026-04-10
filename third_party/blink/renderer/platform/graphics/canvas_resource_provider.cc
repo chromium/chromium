@@ -1069,12 +1069,12 @@ CanvasNon2DResourceProviderSharedImage::DoExternalDrawAndSnapshot(
     ImageOrientation orientation,
     bool is_overwrite) {
   cached_snapshot_.reset();
-  draw_callback(recorder_->getRecordingCanvas());
 
   if (!IsValid()) {
     return nullptr;
   }
 
+  draw_callback(recorder_->getRecordingCanvas());
   FlushCanvas(is_overwrite);
   return Snapshot(orientation);
 }
