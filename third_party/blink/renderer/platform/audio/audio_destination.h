@@ -71,8 +71,6 @@ class WebAudioSinkDescriptor;
 class PLATFORM_EXPORT AudioDestination final
     : public ThreadSafeRefCounted<AudioDestination>,
       public media::AudioRendererSink::RenderCallback {
-  USING_FAST_MALLOC(AudioDestination);
-
  public:
   // Represents the current state of the underlying `WebAudioDevice` object
   // (RendererWebAudioDeviceImpl).

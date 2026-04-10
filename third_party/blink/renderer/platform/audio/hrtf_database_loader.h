@@ -49,8 +49,6 @@ namespace blink {
 // thread.
 class PLATFORM_EXPORT HRTFDatabaseLoader final
     : public RefCounted<HRTFDatabaseLoader> {
-  USING_FAST_MALLOC(HRTFDatabaseLoader);
-
  public:
   // Lazily creates a HRTFDatabaseLoader (if not already created) for the given
   // sample-rate and starts loading asynchronously (when created the first
