@@ -40,6 +40,17 @@ FIRST_LOG_LINE = """\
 BUILD_ID_RE = re.compile(r'^#### Start of log for build: (?P<build_id>.+)')
 
 
+def _safe_write(obj: IO[str], data: str):
+  try:
+    obj.write(data)
+    obj.flush()
+  except BrokenPipeError:
+    pass
+  except OSError as e:
+    if e.errno != 5:
+      raise
+
+
 def server_log(msg: str):
   if OptionsManager.is_quiet():
     return
@@ -428,11 +439,7 @@ class BuildManager:
       builds = list(cls._builds_by_id.values())
     if OptionsManager.should_remote_print():
       for tty, _unused in ttys:
-        try:
-          tty.write(msg + '\n')
-          tty.flush()
-        except BrokenPipeError:
-          pass
+        _safe_write(tty, msg + '\n')
     for build in builds:
       build.log(msg)
     # Write to the current terminal if we have not written to it yet.
@@ -456,11 +463,7 @@ class BuildManager:
       ttys = list(cls._cached_ttys.values())
     for tty, isatty in ttys:
       if isatty:
-        try:
-          tty.write(f'\033]2;{new_title}\007')
-          tty.flush()
-        except BrokenPipeError:
-          pass
+        _safe_write(tty, f'\033]2;{new_title}\007')
 
   @classmethod
   def has_active_builds(cls):
@@ -689,8 +692,7 @@ class Task:
         remote_message = '\n'.join(preamble + [stdout])
         # Add a new line at start of message to clearly delineate from previous
         # output/text already on the remote tty we are printing to.
-        self.build.stdout.write(f'\n{remote_message}')
-        self.build.stdout.flush()
+        _safe_write(self.build.stdout, f'\n{remote_message}')
     if delete_stamp and self.stamp_file:
       # Force siso to consider failed targets as dirty.
       try:
