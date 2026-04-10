@@ -1692,9 +1692,15 @@ public class AutofillProfilesFragmentTest {
         onView(withText("Add Vehicle")).check(matches(isDisplayed()));
 
         Context context = sSettingsActivityTestRule.getFragment().getContext();
+        String walletTitle = context.getString(R.string.autofill_google_wallet_title);
         String expectedNoticeText =
-                context.getString(R.string.autofill_ai_wallet_entity_editor_source_notice)
-                        .replace("$1", TestAccounts.ACCOUNT1.getEmail());
+                context.getString(
+                                R.string.autofill_ai_save_or_update_entity_in_wallet_source_notice)
+                        .replace("$1", walletTitle)
+                        .replace("$2", walletTitle)
+                        .replace("$3", TestAccounts.ACCOUNT1.getEmail())
+                        .replace("<link>", "")
+                        .replace("</link>", "");
         onView(withText(expectedNoticeText)).check(matches(isDisplayed()));
     }
 
@@ -1988,6 +1994,38 @@ public class AutofillProfilesFragmentTest {
                     Criteria.checkThat(addVehicle, Matchers.notNullValue());
                     Criteria.checkThat(addVehicle.isEnabled(), Matchers.is(false));
                 });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Preferences"})
+    public void testOnOpenGoogleWallet_OpensWallet() {
+        intending(hasAction(Intent.ACTION_VIEW))
+                .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, null));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sSettingsActivityTestRule.getFragment().onOpenGoogleWalletForTesting(false);
+                });
+
+        intended(hasAction(Intent.ACTION_VIEW));
+        intended(hasData(GoogleWalletLauncher.GOOGLE_WALLET_PASSES_URL));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Preferences"})
+    public void testOnOpenGoogleWallet_OpensHelpCenterForPrivateEntity() {
+        intending(hasAction(Intent.ACTION_VIEW))
+                .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, null));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sSettingsActivityTestRule.getFragment().onOpenGoogleWalletForTesting(true);
+                });
+
+        intended(hasAction(Intent.ACTION_VIEW));
+        intended(hasData(GoogleWalletLauncher.GOOGLE_WALLET_PRIVATE_PASSES_HELP_CENTER));
     }
 
     private void checkPreferenceCount(int expectedPreferenceCount) {

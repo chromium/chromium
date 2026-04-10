@@ -66,6 +66,8 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.text.ChromeClickableSpan;
+import org.chromium.ui.text.SpanApplier;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -214,8 +216,12 @@ class EntityEditorMediator {
                                     + attributeType.getDataType();
             }
         }
+
         maybeAddRequiredFieldsNoticeItem(editorFields);
-        maybeAddEntitySourceNoticeItem(editorFields, mEntityInstance.getRecordType());
+        maybeAddEntitySourceNoticeItem(
+                editorFields,
+                mEntityInstance.getRecordType(),
+                mEntityInstance.isMaskedServerEntity());
         return editorFields;
     }
 
@@ -350,8 +356,10 @@ class EntityEditorMediator {
     }
 
     private void maybeAddEntitySourceNoticeItem(
-            ListModel<EditorItem> editorFields, @RecordType int recordType) {
-        String sourceNotice = getEntitySourceNotice(recordType);
+            ListModel<EditorItem> editorFields,
+            @RecordType int recordType,
+            boolean isPrivateEntity) {
+        CharSequence sourceNotice = getEntitySourceNotice(recordType, isPrivateEntity);
         if (TextUtils.isEmpty(sourceNotice)) {
             return;
         }
@@ -359,24 +367,39 @@ class EntityEditorMediator {
                 new EditorItem(
                         NOTICE,
                         new PropertyModel.Builder(NOTICE_ALL_KEYS)
-                                .with(NOTICE_TEXT, getEntitySourceNotice(recordType))
+                                .with(NOTICE_TEXT, sourceNotice)
                                 .with(SHOW_BACKGROUND, true)
                                 .with(IMPORTANT_FOR_ACCESSIBILITY, true)
                                 .build(),
                         /* isFullLine= */ true));
     }
 
-    private String getEntitySourceNotice(@RecordType int recordType) {
+    private CharSequence getEntitySourceNotice(
+            @RecordType int recordType, boolean isPrivateEntity) {
         switch (recordType) {
             case RecordType.LOCAL:
                 return mContext.getString(R.string.autofill_ai_local_entity_editor_source_notice);
             case RecordType.SERVER_WALLET:
                 String email = getUserEmail();
-                return email == null
-                        ? ""
-                        : mContext.getString(
-                                        R.string.autofill_ai_wallet_entity_editor_source_notice)
-                                .replace("$1", email);
+                if (email == null) {
+                    return "";
+                }
+                String walletTitle = mContext.getString(R.string.autofill_google_wallet_title);
+                String sourceNotice =
+                        mContext.getString(
+                                        R.string
+                                                .autofill_ai_save_or_update_entity_in_wallet_source_notice)
+                                .replace("$1", walletTitle)
+                                .replace("$2", walletTitle)
+                                .replace("$3", email);
+                return SpanApplier.applySpans(
+                        sourceNotice,
+                        new SpanApplier.SpanInfo(
+                                "<link>",
+                                "</link>",
+                                new ChromeClickableSpan(
+                                        mContext,
+                                        view -> mDelegate.onOpenGoogleWallet(isPrivateEntity))));
         }
         assert false : "Invalid entity record type: " + recordType;
         return "";

@@ -40,6 +40,13 @@ public class EntityEditorCoordinator {
          * @param entityInstance the initial entity instance with no user changes.
          */
         default void onDelete(EntityInstance entityInstance) {}
+
+        /**
+         * The user clicked the "manage your info" link in the source notice to open either the
+         * Google Wallet passes page (when the entity is a public pass) or the help center article
+         * (when the entity is a private pass).
+         */
+        default void onOpenGoogleWallet(boolean isPrivateEntity) {}
     }
 
     /**

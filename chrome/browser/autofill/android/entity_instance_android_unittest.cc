@@ -35,7 +35,8 @@ TEST_F(EntityInstanceAndroidTest, ToEntityInstance_BasicConversion) {
   EntityTypeAndroid entity_type_android(
       entity_type,
       /*is_enabled=*/true,
-      /*is_eligible_for_wallet_storage=*/false);
+      /*is_eligible_for_wallet_storage=*/false,
+      /*is_masked_storage_supported=*/true);
   AttributeType attribute_type(AttributeTypeName::kPassportName);
   AttributeTypeAndroid passport_name_attribute_type_android(attribute_type);
 
@@ -67,7 +68,8 @@ TEST_F(EntityInstanceAndroidTest, ToEntityInstance_ReuseExistingAttribute) {
   EntityTypeAndroid entity_type_android(
       entity_type,
       /*is_enabled=*/true,
-      /*is_eligible_for_wallet_storage=*/false);
+      /*is_eligible_for_wallet_storage=*/false,
+      /*is_masked_storage_supported=*/true);
   AttributeType attribute_type(AttributeTypeName::kPassportName);
   AttributeTypeAndroid password_name_attribute_type_android(attribute_type);
 
@@ -111,7 +113,8 @@ TEST_F(EntityInstanceAndroidTest, ToEntityInstance_UpdateExistingAttribute) {
   EntityTypeAndroid entity_type_android(
       entity_type,
       /*is_enabled=*/true,
-      /*is_eligible_for_wallet_storage=*/false);
+      /*is_eligible_for_wallet_storage=*/false,
+      /*is_masked_storage_supported=*/true);
 
   // First create an attribute for an existing entity with a
   // value differently from what is received from Java. Meaning it is different

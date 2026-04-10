@@ -95,7 +95,7 @@ public class EditorComponentsProperties {
 
     /** Properties specific for the notice fields. */
     public static class NoticeProperties {
-        public static final ReadableObjectPropertyKey<String> NOTICE_TEXT =
+        public static final ReadableObjectPropertyKey<CharSequence> NOTICE_TEXT =
                 new ReadableObjectPropertyKey<>("notice_text");
 
         public static final ReadableBooleanPropertyKey SHOW_BACKGROUND =

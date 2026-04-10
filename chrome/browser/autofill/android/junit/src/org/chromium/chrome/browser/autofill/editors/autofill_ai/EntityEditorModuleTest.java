@@ -33,7 +33,9 @@ import static org.chromium.chrome.browser.autofill.editors.common.text_field.Tex
 import static org.chromium.chrome.browser.autofill.editors.utils.TestUtils.setDropdownValue;
 
 import android.app.Activity;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.ClickableSpan;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -131,6 +133,7 @@ public class EntityEditorModuleTest {
                     /* isReadOnly= */ false,
                     /* isEnabled= */ true,
                     /* isEligibleForWalletStorage= */ false,
+                    /* isMaskedStorageSupported= */ true,
                     /* typeNameAsString= */ "Passport",
                     /* typeNameAsMetricsString= */ "Passport",
                     /* addEntityTypeString= */ "Add passport",
@@ -187,6 +190,15 @@ public class EntityEditorModuleTest {
                     .addAttribute(
                             new AttributeInstance(
                                     PASSPORT_COUNTRY_ATTRIBUTE_TYPE, /* value= */ "Germany"))
+                    .build();
+
+    private static final EntityInstance PRIVATE_WALLET_PASSPORT =
+            new EntityInstance.Builder(PASSPORT_TYPE)
+                    .setGUID("guid")
+                    .setRecordType(RecordType.SERVER_WALLET)
+                    .setIsMaskedServerEntity(true)
+                    .setModifiedDate(LocalDate.of(2026, 2, 15))
+                    .setUseCount(0)
                     .build();
 
     private final CoreAccountInfo mAccountInfo =
@@ -411,15 +423,45 @@ public class EntityEditorModuleTest {
         when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(mAccountInfo);
         showEditorDialog(WALLET_PASSPORT);
 
-        PropertyModel model = mCoordinator.getEditorModelForTest();
-        verifyRequiredFieldsItem(
-                model.get(EntityEditorProperties.EDITOR_FIELDS),
-                mActivity.getString(R.string.payments_required_field_message));
-        verifySourceNotice(
-                model.get(EntityEditorProperties.EDITOR_FIELDS),
+        String walletTitle = mActivity.getString(R.string.autofill_google_wallet_title);
+        String expectedNoticeText =
                 mActivity
-                        .getString(R.string.autofill_ai_wallet_entity_editor_source_notice)
-                        .replace("$1", USER_EMAIL));
+                        .getString(
+                                R.string.autofill_ai_save_or_update_entity_in_wallet_source_notice)
+                        .replace("$1", walletTitle)
+                        .replace("$2", walletTitle)
+                        .replace("$3", USER_EMAIL)
+                        .replace("<link>", "")
+                        .replace("</link>", "");
+
+        PropertyModel model = mCoordinator.getEditorModelForTest();
+        verifySourceNotice(model.get(EntityEditorProperties.EDITOR_FIELDS), expectedNoticeText);
+    }
+
+    @Test
+    @SmallTest
+    public void testWalletEntitySourceNotice_ClickLink() {
+        when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(mAccountInfo);
+        showEditorDialog(WALLET_PASSPORT);
+
+        PropertyModel model = mCoordinator.getEditorModelForTest();
+        ListModel<EditorItem> editorFields = model.get(EntityEditorProperties.EDITOR_FIELDS);
+
+        clickSourceNoticeLink();
+        verify(mDelegate).onOpenGoogleWallet(false);
+    }
+
+    @Test
+    @SmallTest
+    public void testPrivateWalletEntitySourceNotice_ClickLink() {
+        when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(mAccountInfo);
+        showEditorDialog(PRIVATE_WALLET_PASSPORT);
+
+        PropertyModel model = mCoordinator.getEditorModelForTest();
+        ListModel<EditorItem> editorFields = model.get(EntityEditorProperties.EDITOR_FIELDS);
+
+        clickSourceNoticeLink();
+        verify(mDelegate).onOpenGoogleWallet(true);
     }
 
     @Test
@@ -637,9 +679,31 @@ public class EntityEditorModuleTest {
 
     private void verifySourceNotice(ListModel<EditorItem> editorFields, String expectedNoticeText) {
         for (EditorItem item : editorFields) {
-            if (item.type == NOTICE && expectedNoticeText.equals(item.model.get(NOTICE_TEXT))) {
+            if (item.type == NOTICE
+                    && expectedNoticeText.equals(item.model.get(NOTICE_TEXT).toString())) {
                 assertTrue(item.model.get(SHOW_BACKGROUND));
                 assertTrue(item.model.get(IMPORTANT_FOR_ACCESSIBILITY));
+                return;
+            }
+        }
+        fail("Source notice not found");
+    }
+
+    private void clickClickableSpan(CharSequence text) {
+        Spanned spanned = (Spanned) text;
+        ClickableSpan[] spans = spanned.getSpans(0, text.length(), ClickableSpan.class);
+        assertEquals(1, spans.length);
+        spans[0].onClick(null);
+    }
+
+    private void clickSourceNoticeLink() {
+        PropertyModel model = mCoordinator.getEditorModelForTest();
+        ListModel<EditorItem> editorFields = model.get(EntityEditorProperties.EDITOR_FIELDS);
+
+        for (EditorItem item : editorFields) {
+            if (item.type == NOTICE && item.model.get(SHOW_BACKGROUND)) {
+                CharSequence noticeText = item.model.get(NOTICE_TEXT);
+                clickClickableSpan(noticeText);
                 return;
             }
         }

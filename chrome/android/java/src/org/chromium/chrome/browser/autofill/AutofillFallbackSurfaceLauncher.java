@@ -104,6 +104,16 @@ public class AutofillFallbackSurfaceLauncher {
         CustomTabActivity.showInfoPage(context, getPlusAddressManagementUrl());
     }
 
+    @CalledByNative
+    public static void openGoogleWalletPrivatePassHelpCenterPageInCct(WindowAndroid window) {
+        Context context = window.getActivity().get();
+
+        if (context == null) {
+            return;
+        }
+        GoogleWalletLauncher.openGoogleWalletPrivatePassHelpCenterPage(context);
+    }
+
     private static String getPlusAddressManagementUrl() {
         return AutofillFallbackSurfaceLauncherJni.get().getPlusAddressManagementUrl();
     }

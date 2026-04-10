@@ -22,7 +22,8 @@ base::android::ScopedJavaLocalRef<jobject> EntityTypeAndroid::Create(
       env, static_cast<int32_t>(entity_type.type_name),
       entity_type.is_read_only, entity_type.is_enabled,
       entity_type.is_eligible_for_wallet_storage,
-      entity_type.type_name_as_string, entity_type.type_name_as_metrics_string,
+      entity_type.is_masked_storage_supported, entity_type.type_name_as_string,
+      entity_type.type_name_as_metrics_string,
       entity_type.add_entity_type_string, entity_type.edit_entity_type_string,
       entity_type.delete_entity_type_string, entity_type.attribute_types,
       entity_type.required_types);
@@ -35,16 +36,19 @@ EntityTypeAndroid EntityTypeAndroid::FromJavaEntityType(
       EntityType(static_cast<EntityTypeName>(
           Java_EntityType_getTypeName(env, j_entity_type))),
       Java_EntityType_isEnabled(env, j_entity_type),
-      Java_EntityType_isEligibleForWalletStorage(env, j_entity_type));
+      Java_EntityType_isEligibleForWalletStorage(env, j_entity_type),
+      Java_EntityType_isMaskedStorageSupported(env, j_entity_type));
 }
 
 EntityTypeAndroid::EntityTypeAndroid(const EntityType& entity_type,
                                      bool is_enabled,
-                                     bool is_eligible_for_wallet_storage)
+                                     bool is_eligible_for_wallet_storage,
+                                     bool is_masked_storage_supported)
     : type_name(entity_type.name()),
       is_read_only(entity_type.read_only()),
       is_enabled(is_enabled),
       is_eligible_for_wallet_storage(is_eligible_for_wallet_storage),
+      is_masked_storage_supported(is_masked_storage_supported),
       type_name_as_string(entity_type.GetNameForI18n()),
       type_name_as_metrics_string(EntityTypeToMetricsString(entity_type)),
       add_entity_type_string(GetAddEntityTypeStringForI18n(entity_type)),

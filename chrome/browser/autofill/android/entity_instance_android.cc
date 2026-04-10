@@ -62,7 +62,9 @@ EntityInstanceAndroid::EntityInstanceAndroid(
     bool requires_reauth_to_see)
     : entity_type(entity_instance.type(),
                   is_enabled,
-                  is_eligible_for_wallet_storage),
+                  is_eligible_for_wallet_storage,
+                  IsMaskedStorageSupported(entity_instance.type(),
+                                           entity_instance.record_type())),
       guid(*entity_instance.guid()),
       record_type(entity_instance.record_type()),
       metadata(entity_instance.date_modified(),
