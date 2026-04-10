@@ -283,9 +283,19 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
     }
 
     bool should_uninstall() const {
-      return (is_already_installing &&
-              (is_running_out_of_disk_space() || out_of_retention ||
-               !enabled_by_enterprise_policy || !enabled_by_user_setting));
+      if (!is_already_installing) {
+        return false;
+      }
+      if (is_running_out_of_disk_space() || !enabled_by_enterprise_policy ||
+          !enabled_by_user_setting) {
+        return true;
+      }
+      if (out_of_retention &&
+          !base::FeatureList::IsEnabled(
+              features::kOnDeviceModelBackgroundDownload)) {
+        return true;
+      }
+      return false;
     }
   };
 
