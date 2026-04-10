@@ -865,6 +865,7 @@ public class ToolbarTablet extends ToolbarLayout {
         mToolbarWidthConsumers[ToolbarComponentId.BACK] = mBackButtonCoordinator;
     }
 
+    @Override
     void setSigninButtonCoordinatorForTesting(SigninButtonCoordinator coordinator) {
         mSigninButtonCoordinator = coordinator;
         mToolbarWidthConsumers[ToolbarComponentId.SIGNIN_BUTTON] = coordinator;

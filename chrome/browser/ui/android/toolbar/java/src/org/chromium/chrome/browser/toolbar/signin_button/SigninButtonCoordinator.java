@@ -14,6 +14,7 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
@@ -22,6 +23,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -35,6 +37,7 @@ public class SigninButtonCoordinator extends ToolbarChildButton {
     private final SigninButtonMediator mMediator;
     private final PropertyModel mModel;
     private final @Nullable ViewStub mViewStub;
+    private final Runnable mTransitionTrigger;
     private @Nullable SigninButtonView mView;
     private @Nullable PropertyModelChangeProcessor mPropertyModelChangeProcessor;
 
@@ -42,6 +45,7 @@ public class SigninButtonCoordinator extends ToolbarChildButton {
             Context context,
             WindowAndroid windowAndroid,
             ViewStub viewStub,
+            Runnable transitionTrigger,
             MonotonicObservableSupplier<Profile> profileSupplier,
             SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher,
             ActivityResultTracker activityResultTracker,
@@ -53,6 +57,7 @@ public class SigninButtonCoordinator extends ToolbarChildButton {
             IncognitoStateProvider incognitoStateProvider) {
         super(context, themeColorProvider, incognitoStateProvider);
         mContext = context;
+        mTransitionTrigger = transitionTrigger;
         mModel = new PropertyModel.Builder(SigninButtonProperties.ALL_KEYS).build();
         mMediator =
                 new SigninButtonMediator(
@@ -124,11 +129,19 @@ public class SigninButtonCoordinator extends ToolbarChildButton {
      * Called by the toolbar to set whether the button should be shown based on page state (e.g.
      * only on the NTP) and inflates SigninButton view if needed.
      *
-     * @param shouldShowOnPage Whether the button should be shown.
+     * @param tab The tab used to determine if the button should be shown.
      */
-    public void updateButtonVisibility(boolean shouldShowOnPage) {
-        mMediator.updateButtonVisibility(shouldShowOnPage);
-        maybeInflateView();
+    public void updateButtonVisibility(@Nullable Tab tab) {
+        // Should only show the signin button when on the NTP and not incognito.
+        boolean showSigninButtonOnNtp =
+                tab != null && UrlUtilities.isNtpUrl(tab.getUrl()) && !tab.isOffTheRecord();
+
+        // Only update signin button if it does not match the intended state.
+        if (showSigninButtonOnNtp != isShown()) {
+            mTransitionTrigger.run();
+            mMediator.updateButtonVisibility(showSigninButtonOnNtp);
+            maybeInflateView();
+        }
     }
 
     private void maybeInflateView() {
@@ -142,6 +155,16 @@ public class SigninButtonCoordinator extends ToolbarChildButton {
                     PropertyModelChangeProcessor.create(
                             mModel, mView, SigninButtonViewBinder::bind);
         }
+    }
+
+    /** Returns whether the signin button should be visible. */
+    public boolean isShown() {
+        return mModel.get(SigninButtonProperties.SHOULD_SHOW_ON_PAGE);
+    }
+
+    /** Returns the signin button view for drawing. */
+    public @Nullable View getViewForDrawing() {
+        return mView;
     }
 
     /** Call to tear down dependencies. */

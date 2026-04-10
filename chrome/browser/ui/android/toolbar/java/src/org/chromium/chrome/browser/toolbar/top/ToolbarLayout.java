@@ -240,6 +240,9 @@ public abstract class ToolbarLayout extends FrameLayout
         }
     }
 
+    /** Begins a transition for the toolbar buttons. */
+    public void beginButtonTransition() {}
+
     /**
      * @param toolbarColorObserver The observer that observes toolbar color change.
      */
@@ -915,4 +918,12 @@ public abstract class ToolbarLayout extends FrameLayout
      *     0.
      */
     public void onToEdgeChange(int newTopPadding) {}
+
+    @Nullable SigninButtonCoordinator getSigninButtonCoordinatorForTesting() {
+        return mSigninButtonCoordinator;
+    }
+
+    void setSigninButtonCoordinatorForTesting(SigninButtonCoordinator coordinator) {
+        mSigninButtonCoordinator = coordinator;
+    }
 }
