@@ -416,8 +416,10 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
     if (changedProperties.has('inputState')) {
       const oldInputState = changedProperties.get('inputState') as InputState | undefined;
-      if (this.inputState?.activeTool !== oldInputState?.activeTool) {
+      if (oldInputState &&
+          this.inputState?.activeTool !== oldInputState.activeTool) {
         this.focusInput();
+        this.queryAutocomplete(/* clearMatches= */ true);
       }
     }
 

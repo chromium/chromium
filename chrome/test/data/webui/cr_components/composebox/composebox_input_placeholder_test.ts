@@ -320,4 +320,70 @@ suite('ComposeboxInputPlaceholder', () => {
         !placeholder.includes('Ask about'),
         `Placeholder '${placeholder}' should not include 'Ask about'`);
   });
+
+  test(
+      'updates suggestions when inputState activeTool changes from unspecified',
+      async () => {
+        // 1. Set an initial tool mode state on the element.
+        const initialInputState: InputState = new MockInputState({
+          activeTool: ToolMode.kUnspecified,
+        });
+        await setupComposeboxWithInputState(initialInputState);
+
+        // 2. Override queryAutocomplete to track if it's called.
+        let queryAutocompleteCalledWithTrue = false;
+        composebox.queryAutocomplete = (clearMatches: boolean) => {
+          queryAutocompleteCalledWithTrue = clearMatches;
+        };
+
+        // 3. Simulate backend updating the activeTool.
+        const newInputState: InputState = new MockInputState({
+          activeTool: ToolMode.kDeepSearch,  // Different tool
+        });
+
+        // Trigger the onInputStateChanged listener.
+        searchboxPageRemote.onInputStateChanged(newInputState);
+
+        // 4. Wait for any potential flushes and element updates.
+        await searchboxPageRemote.$.flushForTesting();
+        await microtasksFinished();
+        await composebox.updateComplete;
+
+        // 5. Assertions.
+        assertEquals(ToolMode.kDeepSearch, composebox.inputState!.activeTool);
+        assertTrue(queryAutocompleteCalledWithTrue);
+      });
+
+  test(
+      'updates suggestions when inputState activeTool changes between tools',
+      async () => {
+        // 1. Set an initial tool mode state on the element.
+        const initialInputState: InputState = new MockInputState({
+          activeTool: ToolMode.kDeepSearch,
+        });
+        await setupComposeboxWithInputState(initialInputState);
+
+        // 2. Override queryAutocomplete to track if it's called.
+        let queryAutocompleteCalledWithTrue = false;
+        composebox.queryAutocomplete = (clearMatches: boolean) => {
+          queryAutocompleteCalledWithTrue = clearMatches;
+        };
+
+        // 3. Simulate backend updating the activeTool to another tool.
+        const newInputState: InputState = new MockInputState({
+          activeTool: ToolMode.kImageGen,
+        });
+
+        // Trigger the onInputStateChanged listener.
+        searchboxPageRemote.onInputStateChanged(newInputState);
+
+        // 4. Wait for any potential flushes and element updates.
+        await searchboxPageRemote.$.flushForTesting();
+        await microtasksFinished();
+        await composebox.updateComplete;
+
+        // 5. Assertions.
+        assertEquals(ToolMode.kImageGen, composebox.inputState!.activeTool);
+        assertTrue(queryAutocompleteCalledWithTrue);
+      });
 });
