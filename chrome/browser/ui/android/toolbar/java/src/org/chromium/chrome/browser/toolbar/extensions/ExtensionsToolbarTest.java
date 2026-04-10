@@ -23,6 +23,8 @@ import static org.chromium.ui.test.util.ViewUtils.VIEW_GONE;
 import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
 import static org.chromium.ui.test.util.ViewUtils.withEventualExpectedViewState;
 
+import android.os.SystemClock;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -312,7 +314,38 @@ public class ExtensionsToolbarTest {
         return installTestExtension(dir);
     }
 
-    /** Loads an extension with a content script that matches the given host. */
+    /** Creates and loads an extension with action that can be triggered with command. */
+    private String loadCommandExtension(
+            String dirName, String name, String actionTitle, String command, String message)
+            throws IOException {
+        File dir = mTempDir.newFolder(dirName);
+        writeFile(
+                new File(dir, "manifest.json"),
+                String.format(
+                        """
+                        {
+                          "name": "%s",
+                          "manifest_version": 3,
+                          "version": "0.1",
+                          "permissions": ["test"],
+                          "action": { "default_title": "%s", "default_popup": "popup.html" },
+                          "commands": {
+                            "_execute_action": {
+                              "suggested_key": { "default": "%s" },
+                              "description": "A test command"
+                            }
+                          }
+                        }
+                        """,
+                        name, actionTitle, command));
+        writeFile(new File(dir, "popup.html"), "<html><script src=\"popup.js\"></script></html>");
+        writeFile(
+                new File(dir, "popup.js"),
+                String.format("chrome.test.sendMessage('%s');", message));
+        return installTestExtension(dir);
+    }
+
+    /** Creates and loads an extension with a content script that matches the given host. */
     private String loadContentScriptExtension(
             String dirName, String name, String actionTitle, String host) throws IOException {
         File dir = mTempDir.newFolder(dirName);
@@ -336,7 +369,7 @@ public class ExtensionsToolbarTest {
         return installTestExtension(dir);
     }
 
-    /** Loads an extension that requests host permissions on a specific site. */
+    /** Creates and loads an extension that requests host permissions on a specific site. */
     private String loadHostPermissionsExtension(
             String dirName, String name, String actionTitle, String host) throws IOException {
         File dir = mTempDir.newFolder(dirName);
@@ -440,6 +473,23 @@ public class ExtensionsToolbarTest {
             }
         }
         return null;
+    }
+
+    /**
+     * Simulate keypresses. Unlike {@link KeyUtils.dispatchKeyEventToView}, this sends the key event
+     * to the focused window.
+     *
+     * @param code The key code to send.
+     * @param metaState The meta state to use alongside.
+     */
+    private void sendKeyEvent(int code, int metaState) {
+        long eventTime = SystemClock.uptimeMillis();
+        KeyEvent downEvent =
+                new KeyEvent(eventTime, eventTime, KeyEvent.ACTION_DOWN, code, 0, metaState);
+        KeyEvent upEvent =
+                new KeyEvent(eventTime, eventTime, KeyEvent.ACTION_UP, code, 0, metaState);
+        InstrumentationRegistry.getInstrumentation().sendKeySync(downEvent);
+        InstrumentationRegistry.getInstrumentation().sendKeySync(upEvent);
     }
 
     @Test
@@ -772,5 +822,87 @@ public class ExtensionsToolbarTest {
                 "The data order should match Views.",
                 new String[] {gammaId, betaId, alphaId},
                 ExtensionTestUtils.getPinnedActionIds(mProfile));
+    }
+
+    @Test
+    @LargeTest
+    public void testManifestSpecifiedExtensionCommand() throws IOException {
+        String extensionId =
+                loadCommandExtension(
+                        "extension", "Extension", "Action", "Ctrl+Shift+1", "popup opened");
+        ExtensionTestUtils.setExtensionActionVisible(mProfile, extensionId, true);
+
+        // Listen for the background script to echo the command back.
+        try (ExtensionTestMessageListener listener =
+                new ExtensionTestMessageListener("popup opened")) {
+            // Send key events to trigger extension action.
+            sendKeyEvent(KeyEvent.KEYCODE_1, KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON);
+            assertTrue(listener.waitUntilSatisfied());
+        }
+
+        // Ensure that the popup has opened.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> ExtensionTestUtils.getRenderFrameHostCount(mProfile, extensionId) == 1,
+                "Popup did not open.");
+    }
+
+    @Test
+    @LargeTest
+    public void testExtensionCommandClosesPopupIfOpen() throws IOException {
+        String extensionId =
+                loadCommandExtension(
+                        "extension", "Extension", "Action", "Ctrl+Shift+1", "popup opened");
+        ExtensionTestUtils.setExtensionActionVisible(mProfile, extensionId, true);
+
+        // Listen for the background script to echo the command back.
+        try (ExtensionTestMessageListener listener =
+                new ExtensionTestMessageListener("popup opened")) {
+            // Send key events to trigger extension action.
+            sendKeyEvent(KeyEvent.KEYCODE_1, KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON);
+            assertTrue(listener.waitUntilSatisfied());
+        }
+
+        // Ensure the popup is open.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> ExtensionTestUtils.getRenderFrameHostCount(mProfile, extensionId) == 1,
+                "Popup did not open");
+
+        // Send the same keypresses again.
+        sendKeyEvent(KeyEvent.KEYCODE_1, KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON);
+
+        // Confirm that the popup has closed.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> ExtensionTestUtils.getRenderFrameHostCount(mProfile, extensionId) == 0,
+                "Popup did not close.");
+    }
+
+    @Test
+    @LargeTest
+    public void testNonExtensionCommandIsSentToApplicationWindow() throws IOException {
+        String extensionId = loadPopupExtension("extension", "Extension", "Action", "popup opened");
+        ExtensionTestUtils.setExtensionActionVisible(mProfile, extensionId, true);
+        ViewUtils.onViewWaiting(withContentDescription("Action")).check(matches(isDisplayed()));
+
+        // Listen for the background script to echo the command back.
+        try (ExtensionTestMessageListener listener =
+                new ExtensionTestMessageListener("popup opened")) {
+            // Click on the icon to show the popup.
+            clickViewWithContentDescription("Action");
+            assertTrue(listener.waitUntilSatisfied());
+        }
+
+        // Ensure the popup is open before sending the key event.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> ExtensionTestUtils.getRenderFrameHostCount(mProfile, extensionId) == 1,
+                "Popup did not open");
+
+        // Send Ctrl+T.
+        sendKeyEvent(KeyEvent.KEYCODE_T, KeyEvent.META_CTRL_ON);
+
+        // The Ctrl+T command should be routed to the main window, causing a new tab to be created
+        // and the popup to be dismissed.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> ExtensionTestUtils.getRenderFrameHostCount(mProfile, extensionId) == 0,
+                "Popup should have closed after Ctrl+T was pressed and tab model has changed.");
     }
 }
