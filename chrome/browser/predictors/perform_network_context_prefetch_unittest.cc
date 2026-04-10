@@ -100,10 +100,11 @@ class DISABLED_PerformNetworkContextPrefetchRecorderTest
     test_server_handle_ = test_server_.StartAndReturnHandle();
     ASSERT_TRUE(test_server_handle_);
     // Treat 127.0.0.1 as "public" to avoid being blocked by local network
-    // access.
+    // access. Port number 0 is a wildcard. Each test case will use a different
+    // port number, but the command-line is only parsed once, so we need to make
+    // it work for all ports.
     command_line_.GetProcessCommandLine()->AppendSwitchASCII(
-        network::switches::kIpAddressSpaceOverrides,
-        base::StringPrintf("127.0.0.1:%d=public", test_server_.port()));
+        network::switches::kIpAddressSpaceOverrides, "127.0.0.1:0=public");
   }
 
   GURL PageURL(std::string_view hostname = kHostname) const {
