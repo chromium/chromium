@@ -3098,15 +3098,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.PolicyLoadStatus" enum="EnterprisePolicyLoadStatus"
-    expires_after="M82">
-  <owner>mnissler@chromium.org</owner>
-  <summary>
-    Load status from the policy loaders which pull policy settings from the
-    underlying platform, such as Windows Group Policy.
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.PolicyRefresh2" enum="EnterprisePolicyRefresh"
     expires_after="2026-10-06">
   <owner>asumaneev@google.com</owner>

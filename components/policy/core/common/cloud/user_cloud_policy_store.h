@@ -25,8 +25,6 @@ namespace policy {
 // Hence,
 //   (a) existing enumerated constants should never be deleted or reordered, and
 //   (b) new constants should only be appended at the end of the enumeration.
-//
-// Keep this in sync with EnterprisePolicyLoadStatus in histograms.xml.
 enum PolicyLoadStatusForUma {
   // Policy blob was successfully loaded and parsed.
   LOAD_RESULT_SUCCESS,

@@ -2442,38 +2442,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/policy/core/common/cloud/enterprise_metrics.h:PolicyInvalidationType) -->
 
-<enum name="EnterprisePolicyLoadStatus">
-  <summary>
-    Status codes produced by the policy loaders that pull policy settings from
-    the platform-specific management infrastructure, such as Windows Group
-    Policy. Defined as PolicyLoadStatus in
-    components/policy/core/common/policy_load_status.h.
-  </summary>
-  <int value="0" label="STARTED">
-    Policy load attempt started. This gets logged for each policy load attempt
-    to get a baseline on the number of requests, and an arbitrary number of the
-    below status codes may get added in addition.
-  </int>
-  <int value="1" label="QUERY_FAILED">
-    System failed to determine whether there's policy.
-  </int>
-  <int value="2" label="NO_POLICY">No policy present.</int>
-  <int value="3" label="INACCCESSIBLE">
-    Data inaccessible, such as non-local policy file.
-  </int>
-  <int value="4" label="MISSING">
-    Data missing, such as policy file not present.
-  </int>
-  <int value="5" label="WOW64_REDIRECTION_DISABLED">
-    Trying with Wow64 redirection disabled.
-  </int>
-  <int value="6" label="READ_ERROR">
-    Data read error, for example file reading errors.
-  </int>
-  <int value="7" label="TOO_BIG">Data too large to process.</int>
-  <int value="8" label="PARSE_ERROR">Parse error.</int>
-</enum>
-
 <!-- LINT.IfChange(EnterprisePolicyRefresh) -->
 
 <enum name="EnterprisePolicyRefresh">
