@@ -562,7 +562,12 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
 
   auto entries = test_ukm_recorder->GetMergedEntriesByName(
       ukm::builders::PageLoad::kEntryName);
-  EXPECT_EQ(1u, entries.size());
+  // Check that the UKM recorder is actually alive and capturing data.
+  // We use EXPECT_GE rather than EXPECT_EQ(1) because other browser
+  // features (e.g. InitialWebUI, WebUIReloadButton) might cause background
+  // navigations that result in extra PageLoad entries. The exact number
+  // doesn't matter, as long as we verify no clicks are logged below.
+  EXPECT_GE(entries.size(), 1u);
 
   // Make sure no click has been logged.
   entries = test_ukm_recorder->GetMergedEntriesByName(
