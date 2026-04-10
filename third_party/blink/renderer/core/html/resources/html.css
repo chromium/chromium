@@ -1041,7 +1041,7 @@ input[type="color" i] {
         block-size: -internal-auto-base(27px, auto);
         /* Same as native_theme_base when auto. */
         border: 1px solid -internal-auto-base(ButtonBorder, currentColor);
-        padding: -internal-auto-base(1px 2px, 0.25em 0.5em);
+        padding: -internal-auto-base(1px 2px, 0);
         cursor: -internal-auto-base(default, inherit);
         background-color: -internal-auto-base(ButtonFace, transparent);
         color: -internal-auto-base(ButtonText, inherit);
@@ -1052,6 +1052,7 @@ input[type="color" i] {
         display: -internal-auto-base(inline-block, inline-flex);
         gap: -internal-auto-base(unset, 0.5em);
         border-radius: -internal-auto-base(unset, 0.5em);
+        overflow: -internal-auto-base(revert-rule, clip);
     }
 }
 
@@ -1094,18 +1095,25 @@ input[type="color" i]::-webkit-color-swatch {
     /* The swatch should not be affected by color scheme. */
     color-scheme: only light;
     background-color: #000000;
-    flex: 1;
     -webkit-user-modify: read-only !important;
     @supports not blink-feature(AppearanceBase) {
         border: 1px solid #777777;
         min-width: 0;
+        flex: 1;
     }
 
     @supports blink-feature(AppearanceBase) {
-        border: 1px solid -internal-auto-base(#777777, currentColor);
-        min-width: -internal-auto-base(0, initial);
-        inline-size: -internal-auto-base(unset, 2em);
-        box-sizing: -internal-auto-base(unset, border-box);
+        border: -internal-auto-base(1px solid #777777, revert-rule);
+        min-width: -internal-auto-base(0, revert-rule);
+        flex: -internal-auto-base(1, revert-rule);
+
+        color: -internal-auto-base(revert-rule, inherit);
+        font: -internal-auto-base(revert-rule, inherit);
+        box-sizing: -internal-auto-base(revert-rule, border-box);
+
+        inline-size: -internal-auto-base(revert-rule, stretch);
+        block-size: -internal-auto-base(revert-rule, stretch);
+        forced-color-adjust: -internal-auto-base(revert-rule, none);
     }
 }
 

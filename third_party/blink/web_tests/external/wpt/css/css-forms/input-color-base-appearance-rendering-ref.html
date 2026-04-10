@@ -14,23 +14,21 @@ div {
 
     border: 1px solid green;
 
-    padding-block: 0.25em;
-    padding-inline: 0.5em;
-
     border-radius: 0.5em;
 
     min-block-size: 24px;
     min-inline-size: 24px;
 
     display: inline-flex;
+
+    overflow: clip;
 }
 
 span {
     background-color: #ff0000;
-    flex: 1;
     display: block;
-    border: 1px solid green;
-    inline-size: 2em;
+    inline-size: stretch;
+    block-size: stretch;
     box-sizing: border-box;
 }
 </style>
