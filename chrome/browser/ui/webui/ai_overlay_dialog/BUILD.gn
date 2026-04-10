@@ -58,10 +58,28 @@ source_set("ai_overlay_dialog") {
   ]
 }
 
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+  deps = [
+    ":ai_overlay_dialog",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "markdown_builder_browsertest.cc" ]
+  sources = [
+    "markdown_builder_browsertest.cc",
+    "tools/tools_browsertest.cc",
+  ]
   deps = [
     ":ai_overlay_dialog",
     "//base",
