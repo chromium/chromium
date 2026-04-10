@@ -56,7 +56,7 @@
       main.insertBefore(scroller, element1);
     }
 
-    promise_test(async () => {
+    promise_test(async (t) => {
       await waitForNextFrame();
 
       let events1 = [];
@@ -68,11 +68,11 @@
       //
       // https://drafts.csswg.org/scroll-animations-1/#avoiding-cycles
       assert_equals(getComputedStyle(element1).width, '1px');
-      (new ResizeObserver(entries => {
+      (new ResizeObserver(entries => t.step_func(() => {
         events1.push(entries);
         insertScroller('--timeline2');
         assert_equals(getComputedStyle(element2).height, '1px');
-      })).observe(element1);
+      }))).observe(element1);
 
       (new ResizeObserver(entries => {
         events2.push(entries);

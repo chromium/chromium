@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] non-focusable ARIA[role=button] nesting non-focusable ARIA[role=button]
+  assert_equals: <span role="button" class="ex-role" data-expectedrole="SPEC_AMBIGUOUS_LOG_VALUE" data-testname="non-focusable ARIA[role=button] nesting non-focusable ARIA[role=button]">Inner button</span> expected "SPEC_AMBIGUOUS_LOG_VALUE" but got "button"
+[FAIL] focusable ARIA[role=button] nesting non-focusable ARIA[role=button]
+  assert_equals: <span role="button" class="ex-role" data-expectedrole="SPEC_AMBIGUOUS_LOG_VALUE" data-testname="focusable ARIA[role=button] nesting non-focusable ARIA[role=button]">Inner button</span> expected "SPEC_AMBIGUOUS_LOG_VALUE" but got "button"
+[FAIL] non-focusable ARIA[role=button] nesting focusable ARIA[role=button]
+  assert_equals: <span role="button" class="ex-role" data-expectedrole="SPEC_AMBIGUOUS_LOG_VALUE" data-testname="non-focusable ARIA[role=button] nesting focusable ARIA[role=button]" tabindex="0">Inner button</span> expected "SPEC_AMBIGUOUS_LOG_VALUE" but got "button"
+[FAIL] focusable ARIA[role=button] nesting focusable ARIA[role=button]
+  assert_equals: <span role="button" class="ex-role" data-expectedrole="SPEC_AMBIGUOUS_LOG_VALUE" data-testname="focusable ARIA[role=button] nesting focusable ARIA[role=button]" tabindex="0">Inner button</span> expected "SPEC_AMBIGUOUS_LOG_VALUE" but got "button"
+[FAIL] JS injected HTML button within another HTML button
+  assert_equals: <button id="inner-button" class="ex-role" data-expectedrole="SPEC_AMBIGUOUS_LOG_VALUE" data-testname="JS injected HTML button within another HTML button"> (inner button)</button> expected "SPEC_AMBIGUOUS_LOG_VALUE" but got "button"
+Harness: the test ran to completion.
+

@@ -1,4 +1,10 @@
 This is a testharness.js-based test.
+[FAIL] ws
+  assert_equals: expected "http://web-platform.test:8001/path" but got "ws://web-platform.test:8001/path"
+[FAIL] wss
+  assert_equals: expected "https://web-platform.test:8001/path" but got "wss://web-platform.test:8001/path"
+[FAIL] cross-origin
+  assert_equals: expected "https://www1.web-platform.test:8001/path" but got "wss://www1.web-platform.test:8001/path"
 [FAIL] redirect
   promise_test: Unhandled rejection with value: "timeout"
 Harness: the test ran to completion.

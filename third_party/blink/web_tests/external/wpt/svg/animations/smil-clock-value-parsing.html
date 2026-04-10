@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>SMIL clock values with out-of-range minutes or seconds should be treated as invalid</title>
+<title>SMIL clock values: out-of-range minutes/seconds validation and fractional seconds support</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <link rel="help" href="https://www.w3.org/TR/SMIL/smil-timing.html#q22">
@@ -21,6 +21,22 @@
   </rect>
   <rect id="boundaryValid" fill="green" width="20" height="20">
     <animate attributeName="x" from="0" to="200" begin="0s" dur="00:59:59" fill="freeze"/>
+  </rect>
+  <!-- Fractional seconds: dur="00:00:01.50" is 1.5s, so at t=1s animation should be partway through -->
+  <rect id="fractionalSecHHMMSS" fill="green" width="20" height="20">
+    <animate attributeName="x" from="0" to="200" begin="0s" dur="00:00:01.50" fill="freeze"/>
+  </rect>
+  <!-- Fractional seconds in MM:SS form: dur="00:01.50" is 1.5s -->
+  <rect id="fractionalSecMMSS" fill="green" width="20" height="20">
+    <animate attributeName="x" from="0" to="200" begin="0s" dur="00:01.50" fill="freeze"/>
+  </rect>
+  <!-- Fractional seconds near 60 boundary: dur="00:00:59.50" should be valid (59.5s < 60) -->
+  <rect id="fractionalSecBoundaryHHMMSS" fill="green" width="20" height="20">
+    <animate attributeName="x" from="0" to="200" begin="0s" dur="00:00:59.50" fill="freeze"/>
+  </rect>
+  <!-- Fractional seconds near 60 boundary in MM:SS: dur="00:59.50" should be valid (59.5s < 60) -->
+  <rect id="fractionalSecBoundaryMMSS" fill="green" width="20" height="20">
+    <animate attributeName="x" from="0" to="200" begin="0s" dur="00:59.50" fill="freeze"/>
   </rect>
 </svg>
 <script>
@@ -54,6 +70,23 @@ async_test(t => {
       // Valid boundary dur="00:59:59". Should animate.
       assert_not_equals(document.getElementById("boundaryValid").x.animVal.value, 0,
         'dur="00:59:59" should be valid and animate');
+
+      // Fractional seconds in HH:MM:SS form: dur="00:00:01.50" is 1.5s.
+      // At t=60s, animation should be fully done (fill="freeze" at to=200).
+      assert_equals(document.getElementById("fractionalSecHHMMSS").x.animVal.value, 200,
+        'dur="00:00:01.50" should be valid and include fractional seconds');
+
+      // Fractional seconds in MM:SS form: dur="00:01.50" is 1.5s.
+      assert_equals(document.getElementById("fractionalSecMMSS").x.animVal.value, 200,
+        'dur="00:01.50" should be valid and include fractional seconds');
+
+      // Fractional seconds near 60 boundary in HH:MM:SS form: dur="00:00:59.50" is 59.5s.
+      assert_equals(document.getElementById("fractionalSecBoundaryHHMMSS").x.animVal.value, 200,
+        'dur="00:00:59.50" should be valid (59.5 < 60)');
+
+      // Fractional seconds near 60 boundary in MM:SS form: dur="00:59.50" is 59.5s.
+      assert_equals(document.getElementById("fractionalSecBoundaryMMSS").x.animVal.value, 200,
+        'dur="00:59.50" should be valid (59.5 < 60)');
     }));
   });
 });

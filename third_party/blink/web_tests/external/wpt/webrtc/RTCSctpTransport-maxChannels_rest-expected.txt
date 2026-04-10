@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Sctp transport has null maxChannels and maxMessageSize in have-local-offer after rollback
+  assert_true: pc.sctp in have-local-offer again expected true got false
+Harness: the test ran to completion.
+

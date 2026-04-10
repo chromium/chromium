@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Tone change event init optional parameters
-  Failed to construct 'RTCDTMFToneChangeEvent': 2 arguments required, but only 1 present.
-Harness: the test ran to completion.
-

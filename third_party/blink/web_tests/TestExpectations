@@ -641,7 +641,7 @@ crbug.com/499079828 virtual/off-main-thread-css-paint/external/wpt/css/css-paint
 crbug.com/499079828 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-imageSmoothingQuality.low.https.html [ Failure ]
 
 # Crashes due to marking paint worklet ready before loaded.
-crbug.com/496408113 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/parse-input-arguments-018.https.html [ Pass Timeout Skip ]
+crbug.com/496408113 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/parse-input-arguments-018.https.html [ Pass Skip Timeout ]
 
 crbug.com/1339051 [ Linux ] virtual/off-main-thread-css-paint/http/tests/csspaint/shadow-scale-with-page-zoom.html [ Failure ]
 
@@ -2778,7 +2778,41 @@ crbug.com/499074021 external/wpt/paint-timing/fcp-only/fcp-broken-image.html [ F
 # UUID in `*-expected.txt`
 crbug.com/499074020 external/wpt/fetch/metadata/text.https.html [ Failure ]
 
+external/wpt/domparsing/innerhtml-li-autoclosing.html [ Crash Failure ]
+external/wpt/visual-viewport/viewport-scale-clamped.html [ Failure ]
+
+external/wpt/webrtc/RTCDtlsTransport-state.html [ Failure Timeout ]
+external/wpt/webrtc/RTCDTMFSender-ontonechange.https.html [ Failure Timeout ]
+external/wpt/webrtc/rtp-stats-lifetime.https.html [ Failure ]
+
 # ====== New tests from wpt-importer added here ======
+external/wpt/content-security-policy/inside-worker/dedicatedworker-connect-src.html [ Timeout ]
+external/wpt/content-security-policy/inside-worker/dedicatedworker-report-only.html [ Timeout ]
+external/wpt/content-security-policy/inside-worker/serviceworker-connect-src.https.sub.html [ Timeout ]
+external/wpt/content-security-policy/inside-worker/serviceworker-report-only.https.sub.html [ Timeout ]
+external/wpt/content-security-policy/inside-worker/sharedworker-connect-src.sub.html [ Timeout ]
+external/wpt/content-security-policy/inside-worker/sharedworker-report-only.sub.html [ Timeout ]
+external/wpt/css/css-masking/clip-path/clip-path-inset-round-rendering.html [ Failure ]
+external/wpt/css/css-overflow/overflow-clip-margin-016.html [ Failure ]
+external/wpt/css/css-overflow/overflow-clip-margin-017.html [ Failure ]
+external/wpt/css/css-overflow/overflow-clip-margin-018.html [ Failure ]
+external/wpt/css/css-overflow/overflow-clip-margin-019.html [ Failure ]
+external/wpt/css/css-overflow/overflow-clip-margin-020.html [ Failure ]
+external/wpt/css/css-pseudo/first-letter-capitalize-supplementary-char.html [ Failure ]
+external/wpt/css/css-ruby/ruby-overhang-spaces-001.html [ Failure ]
+external/wpt/css/css-ruby/ruby-overhang-spaces-002.html [ Failure ]
+external/wpt/css/css-ruby/ruby-overhang-spaces-004.html [ Failure ]
+[ Win ] external/wpt/css/css-ruby/ruby-overhang-spaces-005.html [ Failure ]
+[ Win ] external/wpt/shadow-dom/build-deep-detached-shadow-then-append-text.html [ Crash ]
+external/wpt/svg/animations/syncbase-escaped-dots.html [ Timeout ]
+[ Mac ] external/wpt/webrtc/RTCDataChannel-GC.html [ Skip Timeout ]
+[ Mac ] external/wpt/webrtc/RTCRtpSender-replaceTrack.https.html [ Skip Timeout ]
+virtual/preload-link-rel-dataurls-disabled/external/wpt/content-security-policy/inside-worker/dedicatedworker-connect-src.html [ Timeout ]
+virtual/preload-link-rel-dataurls-disabled/external/wpt/content-security-policy/inside-worker/dedicatedworker-report-only.html [ Timeout ]
+virtual/preload-link-rel-dataurls-disabled/external/wpt/content-security-policy/inside-worker/serviceworker-connect-src.https.sub.html [ Timeout ]
+virtual/preload-link-rel-dataurls-disabled/external/wpt/content-security-policy/inside-worker/serviceworker-report-only.https.sub.html [ Timeout ]
+virtual/preload-link-rel-dataurls-disabled/external/wpt/content-security-policy/inside-worker/sharedworker-connect-src.sub.html [ Timeout ]
+virtual/preload-link-rel-dataurls-disabled/external/wpt/content-security-policy/inside-worker/sharedworker-report-only.sub.html [ Timeout ]
 crbug.com/499073686 external/wpt/content-security-policy/connect-src/connect-src-text-import-blocked.sub.html [ Timeout ]
 crbug.com/499073784 external/wpt/css/css-anchor-position/position-area-alignment-inset-001.html [ Failure ]
 crbug.com/499073688 external/wpt/css/css-transforms/animation/rotate-explicit-and-implicit-keyframes.html [ Failure ]

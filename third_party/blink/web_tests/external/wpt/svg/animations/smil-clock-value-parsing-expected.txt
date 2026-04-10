@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-[FAIL] SMIL clock values with out-of-range minutes or seconds should be treated as invalid
+[FAIL] SMIL clock values: out-of-range minutes/seconds validation and fractional seconds support
   assert_equals: dur="01:99:01" should be invalid (minutes > 59 in HH:MM:SS) expected 0 but got 1.2577297687530518
 Harness: the test ran to completion.
 
