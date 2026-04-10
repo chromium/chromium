@@ -21,6 +21,9 @@
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Adds a spinner on the screen and blocks all UI interactions.
+- (void)blockUI;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_UI_AGE_MISMATCH_SIGNOUT_VIEW_CONTROLLER_H_

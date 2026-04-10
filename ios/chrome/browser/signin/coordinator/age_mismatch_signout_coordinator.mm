@@ -97,6 +97,7 @@
 #pragma mark - PromoStyleViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
+  [_viewController blockUI];
   [_viewController.presentingViewController dismissViewControllerAnimated:YES
                                                                completion:nil];
   _viewController.delegate = nil;
@@ -121,6 +122,7 @@
 }
 
 - (void)didTapSecondaryActionButton {
+  [_viewController blockUI];
   [self notifyDelegateToDismiss];
 }
 

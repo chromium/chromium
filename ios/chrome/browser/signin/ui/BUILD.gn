@@ -15,6 +15,7 @@ source_set("ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/authentication/ui_bundled/views",
+    "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/image",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common:string_util",
@@ -22,10 +23,23 @@ source_set("ui") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/promo_style",
     "//ios/chrome/common/ui/promo_style:constants",
+    "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
 }
 
 source_set("prompt_mode") {
   sources = [ "age_mismatch_prompt_mode.h" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "age_mismatch_signout_view_controller_unittest.mm" ]
+  deps = [
+    ":prompt_mode",
+    ":ui",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//testing/gtest",
+  ]
 }

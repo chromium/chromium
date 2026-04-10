@@ -7,10 +7,12 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/views/identity_view.h"
+#import "ios/chrome/browser/shared/ui/elements/home_waiting_view.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/device_form_factor.h"
@@ -34,6 +36,8 @@ constexpr CGFloat kDefaultSubtitleBottomMargin = 22.0;
 
 @implementation AgeMismatchSignoutViewController {
   AgeMismatchPromptMode _mode;
+  // Waiting view displayed when blocking the UI.
+  HomeWaitingView* _waitingView;
 }
 
 - (instancetype)initWithMode:(AgeMismatchPromptMode)mode {
@@ -226,6 +230,17 @@ constexpr CGFloat kDefaultSubtitleBottomMargin = 22.0;
                      subtitle:name ? email : nil
                       managed:managed];
   [self.identityView setAvatar:avatar];
+}
+
+- (void)blockUI {
+  CHECK(!_waitingView);
+  _waitingView = [[HomeWaitingView alloc] initWithFrame:self.view.bounds
+                                        backgroundColor:UIColor.clearColor];
+  _waitingView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:_waitingView];
+  AddSameConstraints(_waitingView, self.view);
+  [_waitingView startWaiting];
+  self.view.userInteractionEnabled = NO;
 }
 
 @end

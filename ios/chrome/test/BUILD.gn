@@ -565,6 +565,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/signin/model:signin_util_internal_unit_tests",
     "//ios/chrome/browser/signin/model:unit_tests",
     "//ios/chrome/browser/signin/model/avatar:unit_tests",
+    "//ios/chrome/browser/signin/ui:unit_tests",
     "//ios/chrome/browser/snapshots/model:unit_tests",
     "//ios/chrome/browser/ssl/model:unit_tests",
     "//ios/chrome/browser/start_surface/ui_bundled:unit_tests",
