@@ -826,6 +826,10 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 - (void)didFetchManagedStatus:(NSString*)hostedDomain {
   DCHECK_EQ(AuthenticationState::kFetchManagedStatus, _state);
   _identityToSignInHostedDomain = hostedDomain;
+  if ([self.delegate respondsToSelector:@selector
+                     (authenticationFlowDidFetchHostedDomain:)]) {
+    [self.delegate authenticationFlowDidFetchHostedDomain:hostedDomain];
+  }
   [self continueFlow];
 }
 

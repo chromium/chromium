@@ -441,7 +441,11 @@ enum class AccountConsistencyPromoAction : int {
   CONFIRM_MANAGEMENT_SHOWN = 24,
   // User accepted management on signin.
   CONFIRM_MANAGEMENT_ACCEPTED = 25,
-  kMaxValue = CONFIRM_MANAGEMENT_ACCEPTED,
+  // User started sign-in with a managed account in the consistency promo.
+  SIGNIN_STARTED_WITH_MANAGED_ACCOUNT = 26,
+  // User started sign-in with a non-managed account in the consistency promo.
+  SIGNIN_STARTED_WITH_NON_MANAGED_ACCOUNT = 27,
+  kMaxValue = SIGNIN_STARTED_WITH_NON_MANAGED_ACCOUNT,
 };
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 

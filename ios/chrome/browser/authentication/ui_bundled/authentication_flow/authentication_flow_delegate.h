@@ -39,6 +39,11 @@ using ReadyForProfileSwitchingCompletion =
 - (void)authenticationFlowWillSwitchProfileWithReadyCompletion:
     (ReadyForProfileSwitchingCompletion)readyCompletion;
 
+@optional
+
+// Called when the managed status of the account is known.
+- (void)authenticationFlowDidFetchHostedDomain:(NSString*)hostedDomain;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_AUTHENTICATION_FLOW_AUTHENTICATION_FLOW_DELEGATE_H_

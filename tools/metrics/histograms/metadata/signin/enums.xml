@@ -132,6 +132,12 @@ chromium-metrics-reviews@google.com.
   <int value="25" label="ConfirmManagementAccepted">
     User accepted management on signin.
   </int>
+  <int value="26" label="SigninStartedWithManagedAccount">
+    User started sign-in with a managed account in the consistency promo.
+  </int>
+  <int value="27" label="SigninStartedWithNonManagedAccount">
+    User started sign-in with a non-managed account in the consistency promo.
+  </int>
 </enum>
 
 <!-- LINT.IfChange(AccountExtensionsSignoutChoice) -->
