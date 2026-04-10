@@ -372,8 +372,14 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
           false));
 }
 
+// TODO(crbug.com/500937645): Re-enable the test
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_DragAndDropDisabled DISABLED_DragAndDropDisabled
+#else
+#define MAYBE_DragAndDropDisabled DragAndDropDisabled
+#endif
 IN_PROC_BROWSER_TEST_F(MultiContentsViewTabDragEntrypointsUiTest,
-                       DragAndDropDisabled) {
+                       MAYBE_DragAndDropDisabled) {
   BrowserView& browser_view = GetBrowserView();
 
   // Disable drag and drop.
