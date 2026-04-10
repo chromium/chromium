@@ -721,6 +721,17 @@ void WebstorePrivateBeginInstallWithManifest3Function::
 
 void WebstorePrivateBeginInstallWithManifest3Function::OnExtensionApprovalDone(
     SupervisedExtensionApprovalResult result) {
+#if BUILDFLAG(IS_ANDROID)
+  if (result != SupervisedExtensionApprovalResult::kApproved &&
+      supervised_user::AreExtensionsPermissionsEnabled(profile_) &&
+      !supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
+          profile_)) {
+    supervised_user_extensions_metrics_recorder_.RecordEnablementUmaMetrics(
+        SupervisedUserExtensionsMetricsRecorder::EnablementState::
+            kFailedToEnable);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   switch (result) {
     case SupervisedExtensionApprovalResult::kApproved:
       OnExtensionApprovalApproved();

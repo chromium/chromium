@@ -925,6 +925,16 @@ IN_PROC_BROWSER_TEST_F(
       SupervisedUserExtensionsMetricsRecorder::kAskParentDialogHistogramName,
       SupervisedUserExtensionsMetricsRecorder::AskParentDialogState::kApproved,
       1);
+
+  // Verify the Enablement metrics.
+  EXPECT_EQ(
+      1,
+      user_action_tester.GetActionCount(
+          SupervisedUserExtensionsMetricsRecorder::kFailedToEnableActionName));
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserExtensionsMetricsRecorder::kEnablementHistogramName,
+      SupervisedUserExtensionsMetricsRecorder::EnablementState::kFailedToEnable,
+      1);
 }
 
 // Tests that the parent approval install dialog is shown when the parent
@@ -993,6 +1003,16 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserExtensionWebstorePrivateApiTestAndroid,
           kExtensionInstallDialogHistogramName,
       SupervisedUserExtensionsMetricsRecorder::ExtensionInstallDialogState::
           kChildCanceled,
+      1);
+
+  // Verify the Enablement metrics.
+  EXPECT_EQ(
+      1,
+      user_action_tester.GetActionCount(
+          SupervisedUserExtensionsMetricsRecorder::kFailedToEnableActionName));
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserExtensionsMetricsRecorder::kEnablementHistogramName,
+      SupervisedUserExtensionsMetricsRecorder::EnablementState::kFailedToEnable,
       1);
 }
 
