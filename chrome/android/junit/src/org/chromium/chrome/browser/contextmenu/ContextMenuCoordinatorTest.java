@@ -352,7 +352,6 @@ public class ContextMenuCoordinatorTest {
                 0,
                 0,
                 webContentView,
-                null,
                 new Rect(0, 0, 0, 0),
                 null);
     }

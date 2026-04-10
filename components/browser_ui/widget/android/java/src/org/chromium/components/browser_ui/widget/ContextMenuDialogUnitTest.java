@@ -281,10 +281,9 @@ public class ContextMenuDialogUnitTest {
                 /* popupMargin= */ 0,
                 /* desiredPopupContentWidth= */ 0,
                 mSpyDragDispatchingDestinationView,
-                /* rootView= */ null,
                 new Rect(0, 0, 0, 0),
                 /* shouldPadForWindowInsets= */ true,
-                /* onDismissCallback */ null);
+                /* onDismissCallback= */ null);
     }
 
     private void requestLayoutForRootView() {
