@@ -502,7 +502,7 @@ void HorizontalTabStripRegionView::Layout(PassKey) {
             GetLayoutConstant(LayoutConstant::kTabStripPadding) +
             GetLayoutConstant(LayoutConstant::kNewTabButtonLeadingMargin);
 
-    gfx::Point button_new_position = gfx::Point(x, 0);
+    gfx::Point button_new_position = gfx::Point(x, GetInsets().top());
     gfx::Rect button_new_bounds = gfx::Rect(button_new_position, button_size);
 
     // If the tabsearch button is before the tabstrip container, then manually
@@ -835,7 +835,8 @@ void HorizontalTabStripRegionView::AdjustViewBoundsRect(View* view,
   const int x = tab_strip_->x() + TabStyle::Get()->GetBottomCornerRadius() -
                 GetLayoutConstant(LayoutConstant::kTabStripPadding) -
                 view_size.width() - offset;
-  const gfx::Rect new_bounds = gfx::Rect(gfx::Point(x, 0), view_size);
+  const gfx::Rect new_bounds =
+      gfx::Rect(gfx::Point(x, GetInsets().top()), view_size);
   view->SetBoundsRect(new_bounds);
 }
 
