@@ -3646,6 +3646,14 @@ inline constexpr char kAuxiliarySearchLastDonatedHistoryEntryVisitTime[] =
 inline constexpr char kAppRatingPromptShown[] = "app_rating_prompt_shown";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// Integer value for overriding the CPU performance tier.
+// Controlled by enterprise policy.
+inline constexpr char kCpuPerformanceTierPolicyOverride[] =
+    "cpu_performance_tier_policy_override";
+
+// Value indicating that the CPU performance tier has not been overridden.
+inline constexpr int kCpuPerformanceTierOverrideNone = -1;
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

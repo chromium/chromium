@@ -173,4 +173,15 @@ TEST_F(CpuPerformanceTest, Initialize) {
   EXPECT_EQ(tier_accurate, cpu_performance::GetTier());
 }
 
+TEST_F(CpuPerformanceTest, TierFromInt) {
+  EXPECT_EQ(Tier::kUnknown, cpu_performance::TierFromInt(0));
+  EXPECT_EQ(Tier::kLow, cpu_performance::TierFromInt(1));
+  EXPECT_EQ(Tier::kMid, cpu_performance::TierFromInt(2));
+  EXPECT_EQ(Tier::kHigh, cpu_performance::TierFromInt(3));
+  EXPECT_EQ(Tier::kUltra, cpu_performance::TierFromInt(4));
+
+  EXPECT_DEATH_IF_SUPPORTED(cpu_performance::TierFromInt(-1), "");
+  EXPECT_DEATH_IF_SUPPORTED(cpu_performance::TierFromInt(5), "");
+}
+
 }  // namespace content

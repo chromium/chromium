@@ -97,6 +97,7 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/compositor/surface_utils.h"
+#include "content/browser/cpu_performance/cpu_performance.h"
 #include "content/browser/field_trial_recorder.h"
 #include "content/browser/field_trial_synchronizer.h"
 #include "content/browser/file_system/file_system_manager_impl.h"
@@ -1932,6 +1933,16 @@ bool RenderProcessHostImpl::Init() {
   RegisterMojoInterfaces();
   CreateMetricsAllocator();
 
+  // Calculate the CPU performance tier, allowing for overrides.
+  content::cpu_performance::Tier cpu_tier;
+  if (std::optional<int> override =
+          GetContentClient()->browser()->GetCpuPerformanceTierOverride(
+              GetBrowserContext())) {
+    cpu_tier = content::cpu_performance::TierFromInt(*override);
+  } else {
+    cpu_tier = content::cpu_performance::GetTier();
+  }
+
   // Call this now and not in OnProcessLaunched in case any mojo calls get
   // dispatched before this.
   uint64_t trace_id = base::Token::CreateRandom().high();
@@ -1941,8 +1952,8 @@ bool RenderProcessHostImpl::Init() {
       GetContentClient()->browser()->GetUserAgent(),
       GetContentClient()->browser()->GetUserAgentMetadata(),
       storage_partition_impl_->cors_exempt_header_list(),
-      GetContentClient()->browser()->GetOriginTrialsSettings(),
-      GetContentClient()->browser()->GetCpuPerformanceTier(), trace_id);
+      GetContentClient()->browser()->GetOriginTrialsSettings(), cpu_tier,
+      trace_id);
 
   if (run_renderer_in_process()) {
     DCHECK(g_renderer_main_thread_factory);

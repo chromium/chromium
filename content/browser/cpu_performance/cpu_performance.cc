@@ -4,10 +4,12 @@
 
 #include "content/browser/cpu_performance/cpu_performance.h"
 
-#include <atomic>
+#include <optional>
 
 #include "base/functional/bind.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
+#include "base/synchronization/lock.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "third_party/blink/public/common/features.h"
@@ -44,8 +46,6 @@ void TrimAndCollapseWhitespace(std::string* text) {
   Replace(text, "[\\s\\p{Z}\\x1C\\x1F]+", " ");
 }
 
-}  // anonymous namespace
-
 // Returns the manufacturer.
 Manufacturer GetManufacturer(std::string_view cpu_model) {
   if (Search(cpu_model, "(?i)\\bAMD\\b")) {
@@ -64,6 +64,14 @@ Manufacturer GetManufacturer(std::string_view cpu_model) {
     return Manufacturer::kSamsung;
   }
   return Manufacturer::kUnknown;
+}
+
+}  // anonymous namespace
+
+Tier TierFromInt(int value) {
+  CHECK_LE(static_cast<int>(Tier::kUnknown), value);
+  CHECK_GE(static_cast<int>(Tier::kUltra), value);
+  return static_cast<Tier>(value);
 }
 
 std::pair<Manufacturer, std::string> SplitCpuModel(std::string_view cpu_model) {
@@ -145,32 +153,78 @@ std::pair<Manufacturer, std::string> SplitCpuModel(std::string_view cpu_model) {
   return {manufacturer, text};
 }
 
+namespace cached_cpu_info {
+
 namespace {
-std::atomic<Tier> g_tier_cached{Tier::kUnknown};
+struct CpuInfoState {
+  base::Lock lock;
+  Tier tier = Tier::kUnknown;
+  std::string model;
+  int cores = 0;
+};
+
+CpuInfoState& GetCpuInfoState() {
+  static base::NoDestructor<CpuInfoState> state;
+  return *state;
+}
 }  // anonymous namespace
+
+void InitializeFromCores() {
+  int cores = base::SysInfo::NumberOfProcessors();
+  Tier tier = GetTierFromCores(cores);
+
+  base::AutoLock auto_lock(GetCpuInfoState().lock);
+  GetCpuInfoState().cores = cores;
+  GetCpuInfoState().tier = tier;
+}
+
+void InitializeFromCpuInfo() {
+  std::string model = base::SysInfo::CPUModelName();
+  int cores = base::SysInfo::NumberOfProcessors();
+  Tier tier = GetTierFromCpuInfo(model, cores);
+
+  base::AutoLock auto_lock(GetCpuInfoState().lock);
+  GetCpuInfoState().model = std::move(model);
+  GetCpuInfoState().cores = cores;
+  GetCpuInfoState().tier = tier;
+}
+
+Tier GetTier() {
+  base::AutoLock auto_lock(GetCpuInfoState().lock);
+  return GetCpuInfoState().tier;
+}
+
+std::string GetModel() {
+  base::AutoLock auto_lock(GetCpuInfoState().lock);
+  return GetCpuInfoState().model;
+}
+
+int GetCores() {
+  base::AutoLock auto_lock(GetCpuInfoState().lock);
+  return GetCpuInfoState().cores;
+}
+
+}  // namespace cached_cpu_info
 
 void Initialize() {
   if (base::FeatureList::IsEnabled(blink::features::kCpuPerformance)) {
     // Use a simple, default implementation which is non-blocking, so that we
     // have a reasonable computed value in the unlikely case that the tier is
     // fetched by renderer initialization before the task executes.
-    g_tier_cached.store(GetTierFromCores(base::SysInfo::NumberOfProcessors()));
+    cached_cpu_info::InitializeFromCores();
+
     // Post the task that will update the tier asynchronously, using the more
     // accurate (but potentially blocking) implementation. Note that this task
     // is a "MayBlock" because of base::SysInfo::CPUModelName(), which on Linux
     // reads /proc/cpuinfo.
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce([]() {
-          Tier tier = GetTierFromCpuInfo(base::SysInfo::CPUModelName(),
-                                         base::SysInfo::NumberOfProcessors());
-          g_tier_cached.store(tier);
-        }));
+        base::BindOnce(&cached_cpu_info::InitializeFromCpuInfo));
   }
 }
 
 Tier GetTier() {
-  return g_tier_cached.load();
+  return cached_cpu_info::GetTier();
 }
 
 Tier GetTierFromCores(int cores) {

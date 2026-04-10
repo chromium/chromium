@@ -1,0 +1,37 @@
+caption: Override for the CPU performance tier
+desc: |-
+  Setting this policy allows enterprises to override the value returned by the
+  <ph name="CPU_PERFORMANCE_API_NAME">CPU Performance API</ph> (i.e.,
+  <ph name="CPU_PERFORMANCE_GETTER_NAME">navigator.cpuPerformance</ph>,
+  please see https://github.com/WICG/cpu-performance for details).
+
+  If this policy is set, the value of
+  <ph name="CPU_PERFORMANCE_GETTER_NAME">navigator.cpuPerformance</ph>
+  will be overridden to the specified value. If the policy is not set, then
+  the default performance tier calculation is used.
+
+  The possible values for this policy are 0 to 4.
+
+example_value: 4
+
+features:
+  dynamic_refresh: true
+  per_profile: true
+
+owners:
+- nikolaos@chromium.org
+- file://content/browser/cpu_performance/OWNERS
+
+schema:
+  maximum: 4
+  minimum: 0
+  type: integer
+
+future_on:
+- chrome.*
+- chrome_os
+- android
+- webview_android
+
+tags: []
+type: int

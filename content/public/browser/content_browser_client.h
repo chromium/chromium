@@ -87,7 +87,6 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/browsing_topics/browsing_topics.mojom-forward.h"
-#include "third_party/blink/public/mojom/cpu_performance.mojom-forward.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_cloud_identifier.mojom-forward.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
@@ -3287,9 +3286,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   // the destination.
   virtual bool ShouldAnimateBackForwardTransitions();
 
-  // Returns the CPU performance tier, which exposes some information about how
-  // powerful the user device is.
-  virtual blink::mojom::PerformanceTier GetCpuPerformanceTier();
+  // Returns the enterprise policy override for the CPU performance tier,
+  // if one is configured.
+  virtual std::optional<int> GetCpuPerformanceTierOverride(
+      BrowserContext* browser_context);
 
   // Describes the type of logins assisted by the browser via passkeys or
   // federation.

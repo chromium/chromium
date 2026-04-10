@@ -1440,6 +1440,7 @@ policies:
   1439: FindsSettings
   1440: MetricsReportingLevel
   1441: DeviceMetricsReportingLevel
+  1442: CpuPerformanceTierOverride
 
 atomic_groups:
   1: Homepage

@@ -14,6 +14,10 @@ namespace content::cpu_performance {
 
 using Tier = blink::mojom::PerformanceTier;
 
+// Returns the CPU performance tier from an integer. The value must be
+// within the valid range of PerformanceTier.
+CONTENT_EXPORT Tier TierFromInt(int value);
+
 // Returns the CPU performance tier, which exposes some information about
 // how powerful the user device is. This function contains the default
 // implementation for //content, which can be overridden by embedders.
@@ -31,7 +35,6 @@ enum class Manufacturer {
   kSamsung,
 };
 
-CONTENT_EXPORT Manufacturer GetManufacturer(std::string_view cpu_model);
 CONTENT_EXPORT std::pair<Manufacturer, std::string> SplitCpuModel(
     std::string_view cpu_model);
 

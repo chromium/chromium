@@ -1201,6 +1201,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void UpdateCorsExemptHeaderForPrefetch(
       network::mojom::NetworkContextParams* params) override;
 
+  std::optional<int> GetCpuPerformanceTierOverride(
+      content::BrowserContext* browser_context) override;
+
   void RecordAssistedLogin(
       content::ContentBrowserClient::AssistedLoginType login_type) override;
 
