@@ -323,8 +323,11 @@ NSString* const kDefaultScheme = @"https";
       detectPatternsForPatterns:urlPattern
               completionHandler:^(NSSet<UIPasteboardDetectionPattern>* patterns,
                                   NSError* error) {
-                callback([patterns
-                    containsObject:UIPasteboardDetectionPatternProbableWebURL]);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                  callback([patterns
+                      containsObject:
+                          UIPasteboardDetectionPatternProbableWebURL]);
+                });
               }];
 }
 
@@ -347,9 +350,11 @@ NSString* const kDefaultScheme = @"https";
       detectPatternsForPatterns:textPattern
               completionHandler:^(NSSet<UIPasteboardDetectionPattern>* patterns,
                                   NSError* error) {
-                callback([patterns
-                    containsObject:
-                        UIPasteboardDetectionPatternProbableWebSearch]);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                  callback([patterns
+                      containsObject:
+                          UIPasteboardDetectionPatternProbableWebSearch]);
+                });
               }];
 }
 
@@ -393,9 +398,11 @@ NSString* const kDefaultScheme = @"https";
                     completionHandler:^(
                         NSDictionary<UIPasteboardDetectionPattern, id>* values,
                         NSError* error) {
-                      [weakSelf callCompletionHandlerWithValues:values
-                                                       callback:callback
-                                                          error:error];
+                      dispatch_async(dispatch_get_main_queue(), ^{
+                        [weakSelf callCompletionHandlerWithValues:values
+                                                         callback:callback
+                                                            error:error];
+                      });
                     }];
 }
 
@@ -451,16 +458,19 @@ NSString* const kDefaultScheme = @"https";
   __weak __typeof(self) weakSelf = self;
   NSSet<UIPasteboardDetectionPattern>* textPattern =
       [NSSet setWithObject:UIPasteboardDetectionPatternProbableWebSearch];
-  [pasteboard detectValuesForPatterns:textPattern
-                    completionHandler:^(
-                        NSDictionary<UIPasteboardDetectionPattern, id>* values,
-                        NSError* error) {
-                      NSString* text =
-                          values[UIPasteboardDetectionPatternProbableWebSearch];
-                      weakSelf.cachedText = text;
+  [pasteboard
+      detectValuesForPatterns:textPattern
+            completionHandler:^(
+                NSDictionary<UIPasteboardDetectionPattern, id>* values,
+                NSError* error) {
+              dispatch_async(dispatch_get_main_queue(), ^{
+                NSString* text =
+                    values[UIPasteboardDetectionPatternProbableWebSearch];
+                weakSelf.cachedText = text;
 
-                      callback(text);
-                    }];
+                callback(text);
+              });
+            }];
 }
 
 // The underlying logic to check the recent image, with the addition of a
