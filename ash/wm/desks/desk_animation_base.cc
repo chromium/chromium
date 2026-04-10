@@ -21,7 +21,7 @@ DeskAnimationBase::DeskAnimationBase(DesksController* controller,
       ending_desk_index_(ending_desk_index),
       is_continuous_gesture_animation_(is_continuous_gesture_animation) {
   DCHECK(controller_);
-  DCHECK_LE(ending_desk_index_, static_cast<int>(controller_->desks().size()));
+  DCHECK_LT(ending_desk_index_, static_cast<int>(controller_->desks().size()));
   DCHECK_GE(ending_desk_index_, 0);
 }
 
