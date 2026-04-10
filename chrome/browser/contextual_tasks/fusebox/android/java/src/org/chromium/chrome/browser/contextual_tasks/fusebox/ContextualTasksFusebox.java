@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tab_bottom_sheet;
+package org.chromium.chrome.browser.contextual_tasks.fusebox;
 
 import android.app.Activity;
 import android.view.View;
@@ -23,11 +23,11 @@ import org.chromium.chrome.browser.ui.edge_to_edge.NoOpTopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.ui.base.WindowAndroid;
 
-/** The fusebox (omnibox) component for the tab bottom sheet. */
+/** The fusebox (omnibox) component for contextual tasks. */
 @NullMarked
-public class TabBottomSheetFusebox {
-    /** Delegate for the tab bottom sheet fusebox. */
-    public static class TabBottomSheetFuseboxConfig {
+public class ContextualTasksFusebox {
+    /** Delegate for the contextual tasks fusebox. */
+    public static class ContextualTasksFuseboxConfig {
         public final View contentView;
         public final View locationBarLayout;
         public final View anchorView;
@@ -35,7 +35,7 @@ public class TabBottomSheetFusebox {
         public final View bottomContainer;
         public final OmniboxActionDelegateImpl omniboxActionDelegate;
 
-        public TabBottomSheetFuseboxConfig(
+        public ContextualTasksFuseboxConfig(
                 View contentView,
                 View locationBarLayout,
                 View anchorView,
@@ -55,18 +55,18 @@ public class TabBottomSheetFusebox {
             new BackKeyBehaviorDelegate() {};
     private final LocationBarCoordinator mLocationBarCoordinator;
     private final View mContentView;
-    private final TabBottomSheetFuseboxDataProvider mDataProvider;
+    private final ContextualTasksFuseboxDataProvider mDataProvider;
 
-    TabBottomSheetFusebox(
+    public ContextualTasksFusebox(
             Activity activity,
-            TabBottomSheetFuseboxConfig config,
+            ContextualTasksFuseboxConfig config,
             NonNullObservableSupplier<Profile> profileSupplier,
             WindowAndroid windowAndroid,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             Callback<String> loadUrlCallback,
             SnackbarManager snackbarManager) {
 
-        mDataProvider = new TabBottomSheetFuseboxDataProvider();
+        mDataProvider = new ContextualTasksFuseboxDataProvider();
         mDataProvider.initialize(activity, profileSupplier.get().isOffTheRecord());
 
         mContentView = config.contentView;
@@ -127,13 +127,13 @@ public class TabBottomSheetFusebox {
         mLocationBarCoordinator.onFinishNativeInitialization();
     }
 
-    void destroy() {
+    public void destroy() {
         mLocationBarCoordinator.destroy();
         mDataProvider.destroy();
     }
 
     /* Returns the fusebox view */
-    View getFuseboxView() {
+    public View getFuseboxView() {
         return mContentView;
     }
 }

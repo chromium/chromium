@@ -374,6 +374,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/context_sharing/tab_bottom_sheet/android:java",
       "//chrome/browser/contextmenu:java",
       "//chrome/browser/contextual_tasks:java",
+      "//chrome/browser/contextual_tasks/fusebox/android:java",
       "//chrome/browser/creator/android:java",
       "//chrome/browser/data_sharing:factory_java",
       "//chrome/browser/data_sharing:instant_message_delegate_factory_java",

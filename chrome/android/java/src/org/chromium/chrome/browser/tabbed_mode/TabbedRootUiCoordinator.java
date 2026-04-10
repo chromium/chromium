@@ -83,6 +83,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperMa
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.contextual_tasks.ContextualTasksBridge;
+import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFusebox.ContextualTasksFuseboxConfig;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.data_sharing.DataSharingNotificationManager;
@@ -173,7 +174,6 @@ import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_bottom_sheet.CoBrowseViewFactory;
-import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetFusebox.TabBottomSheetFuseboxConfig;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils;
 import org.chromium.chrome.browser.tab_group_suggestion.toolbar.GroupSuggestionsButtonController;
@@ -1742,8 +1742,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             /* openQuickDeleteCb= */ CallbackUtils.emptyRunnable(),
                             /* tabWindowManagerSupplier= */ SupplierUtils.ofNull(),
                             /* bringTabToFrontCallback= */ (tabInfo, url) -> {});
-            TabBottomSheetFuseboxConfig fuseboxConfig =
-                    new TabBottomSheetFuseboxConfig(
+            ContextualTasksFuseboxConfig fuseboxConfig =
+                    new ContextualTasksFuseboxConfig(
                             contentView,
                             contentView.findViewById(R.id.search_location_bar),
                             contentView.findViewById(R.id.toolbar),

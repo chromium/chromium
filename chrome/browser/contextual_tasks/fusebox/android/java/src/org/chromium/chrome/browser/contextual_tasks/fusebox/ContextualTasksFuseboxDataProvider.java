@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tab_bottom_sheet;
+package org.chromium.chrome.browser.contextual_tasks.fusebox;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -30,7 +30,7 @@ import org.chromium.url.GURL;
 
 /** Implementing {@link LocationBarDataProvider} to provide state to the fusebox. */
 @NullMarked
-public class TabBottomSheetFuseboxDataProvider implements LocationBarDataProvider {
+public class ContextualTasksFuseboxDataProvider implements LocationBarDataProvider {
     private final NonNullObservableSupplier<@ControlsPosition Integer> mToolbarPosition =
             ObservableSuppliers.createNonNull(ControlsPosition.TOP);
     private final UserDataHost mUserDataHost = new UserDataHost();

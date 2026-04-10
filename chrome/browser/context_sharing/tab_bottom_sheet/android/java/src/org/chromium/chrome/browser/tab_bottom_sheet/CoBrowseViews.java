@@ -19,6 +19,7 @@ import org.jni_zero.JniType;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.context_sharing.R;
+import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFusebox;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -29,7 +30,7 @@ import org.chromium.content_public.browser.WebContents;
 public class CoBrowseViews {
     private final @Nullable TabBottomSheetToolbar mToolbar;
     private final @Nullable TabBottomSheetWebUi mWebUi;
-    private final @Nullable TabBottomSheetFusebox mFusebox;
+    private final @Nullable ContextualTasksFusebox mFusebox;
     private final View mView;
     private @Nullable View mPeekView;
 
@@ -45,7 +46,7 @@ public class CoBrowseViews {
             Context context,
             @Nullable TabBottomSheetToolbar toolbar,
             @Nullable TabBottomSheetWebUi webUi,
-            @Nullable TabBottomSheetFusebox fusebox) {
+            @Nullable ContextualTasksFusebox fusebox) {
         mToolbar = toolbar;
         mWebUi = webUi;
         mFusebox = fusebox;
