@@ -10,7 +10,20 @@
     Country: <input type="text" id="passportCountryCode" name="passportCountryCode" autocomplete="passport-country-code"><br>
     Issue Date: <input type="text" id="passportIssueDate" name="passportIssueDate" autocomplete="passport-issue-date"><br>
     Expiration Date: <input type="text" id="passportExpirationDate" name="passportExpirationDate" autocomplete="passport-expiration-date"><br>
-    <input type="submit" value="Submit">
+    <input type="submit" id="submit-button" value="Submit">
   </form>
+  <button type="button" onclick="FillPassportForm()" id="fill_passport_form">
+    Fill Form (Passport)
+  </button>
+  <script>
+    var FillPassportForm = function() {
+      var form = document.forms['passport_form'];
+      form['passportNumber'].value = 'LR1234567';
+      form['passportOwnerName'].value = 'autofilltestuser';
+      form['passportCountryCode'].value = 'Sweden';
+      form['passportIssueDate'].value = '2010-09-01';
+      form['passportExpirationDate'].value = '2019-08-30';
+    }
+  </script>
 </body>
 </html>
