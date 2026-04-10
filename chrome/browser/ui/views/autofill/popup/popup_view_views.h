@@ -100,6 +100,9 @@ class PopupViewViews : public PopupBaseView,
   // The maximum width of the popup.
   static constexpr int kAutofillPopupMaxWidth = 456;
 
+  // The width of the @memory popup.
+  static constexpr int kAtMemoryPopupWidth = 320;
+
   // The time it takes for a selected cell to open a sub-popup if it has one.
   static constexpr base::TimeDelta kMouseOpenSubPopupDelay =
       base::Milliseconds(250);

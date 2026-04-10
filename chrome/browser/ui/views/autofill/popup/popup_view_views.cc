@@ -1322,7 +1322,7 @@ gfx::Size PopupViewViews::CalculatePreferredSize(
 
   if (controller_ &&
       controller_->GetMainFillingProduct() == FillingProduct::kAtMemory) {
-    size.set_width(std::max(size.width(), kAutofillPopupMaxWidth));
+    size.set_width(kAtMemoryPopupWidth);
   }
 
   // This popup height limiting for popups with a search bar addresses a minor

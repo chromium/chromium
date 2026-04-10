@@ -2802,9 +2802,9 @@ TEST_F(PopupViewViewsTest, AtMemory_KeyboardNavigation) {
                         .placeholder = u"Recall from memory",
                         .no_results_message = u"No results found"});
 
-  // The width should be at least kAutofillPopupMaxWidth.
-  EXPECT_GE(view().GetPreferredSize().width(),
-            PopupViewViews::kAutofillPopupMaxWidth);
+  // The width should be kAtMemoryPopupWidth.
+  EXPECT_EQ(view().GetPreferredSize().width(),
+            PopupViewViews::kAtMemoryPopupWidth);
 
   // Allow Hide(kSearchBarFocusLost) which happens during teardown.
   testing::Mock::VerifyAndClearExpectations(&controller());
