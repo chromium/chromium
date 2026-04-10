@@ -19,6 +19,7 @@
 #include "base/memory/aligned_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/rand_util.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -44,6 +45,17 @@ namespace {
 // PCM specific property for the maximum number of frames per packet. This
 // value covers up to ~85ms of audio per chunk.
 constexpr int kDefaultMaxFramesPerPcmPacket = 4096;
+
+// We sample 1% of Symphonia related errors for dumping.
+static constexpr double kSampleRate = 0.01;
+
+void MaybeDumpError(const DecoderStatus& status) {
+  // TODO(crbug.com/491162892): remove temporary DUMP_WILL_BE_CHECK once
+  // Symphonia is sufficiently stable.
+  if (base::RandDouble() < kSampleRate) {
+    DUMP_WILL_BE_CHECK(false) << status << ": " << status.message();
+  }
+}
 
 SymphoniaAudioCodec ToSymphoniaCodec(AudioCodec codec,
                                      SampleFormat sample_format) {
@@ -176,6 +188,76 @@ SampleFormat ToSampleFormat(SymphoniaSampleFormat value) {
   NOTREACHED();
 }
 
+constexpr DecoderStatus::Codes ToStatusCode(SymphoniaInitStatus status) {
+  switch (status) {
+    case SymphoniaInitStatus::Ok:
+      return DecoderStatus::Codes::kOk;
+    case SymphoniaInitStatus::InvalidConfig:
+      return DecoderStatus::Codes::kUnsupportedConfig;
+    case SymphoniaInitStatus::DecoderError:
+      return DecoderStatus::Codes::kFailedToCreateDecoder;
+    case SymphoniaInitStatus::UnsupportedCodec:
+      return DecoderStatus::Codes::kUnsupportedCodec;
+    case SymphoniaInitStatus::XiphVorbisUnpackError:
+      return DecoderStatus::Codes::kUnsupportedConfig;
+    case SymphoniaInitStatus::SymphoniaUnsupported:
+      return DecoderStatus::Codes::kUnsupportedCodec;
+    case SymphoniaInitStatus::SymphoniaDecodeError:
+      return DecoderStatus::Codes::kMalformedBitstream;
+    case SymphoniaInitStatus::SymphoniaIoError:
+      return DecoderStatus::Codes::kDecoderStreamDemuxerError;
+    case SymphoniaInitStatus::SymphoniaLimitError:
+      return DecoderStatus::Codes::kFailed;
+    case SymphoniaInitStatus::kMaxValue:
+      NOTREACHED();
+  }
+}
+
+DecoderStatus ToDecoderStatus(SymphoniaInitResult& result) {
+  DecoderStatus status(ToStatusCode(result.status), result.error_str.c_str());
+  if (result.status != SymphoniaInitStatus::Ok) {
+    MaybeDumpError(status);
+  }
+  return status;
+}
+
+constexpr DecoderStatus::Codes ToStatusCode(SymphoniaDecodeStatus status) {
+  switch (status) {
+    case SymphoniaDecodeStatus::Ok:
+      return DecoderStatus::Codes::kOk;
+    case SymphoniaDecodeStatus::UnexpectedEndOfStream:
+      return DecoderStatus::Codes::kFailed;
+    case SymphoniaDecodeStatus::InvalidDecoderState:
+      return DecoderStatus::Codes::kNotInitialized;
+    case SymphoniaDecodeStatus::Error:
+      return DecoderStatus::Codes::kFailed;
+    case SymphoniaDecodeStatus::DecodeError:
+      return DecoderStatus::Codes::kMalformedBitstream;
+    case SymphoniaDecodeStatus::IoError:
+      return DecoderStatus::Codes::kDecoderStreamDemuxerError;
+    case SymphoniaDecodeStatus::ResetRequired:
+      return DecoderStatus::Codes::kFailed;
+    case SymphoniaDecodeStatus::SeekError:
+      return DecoderStatus::Codes::kFailed;
+    case SymphoniaDecodeStatus::Unsupported:
+      return DecoderStatus::Codes::kUnsupportedCodec;
+    case SymphoniaDecodeStatus::InsufficentData:
+      return DecoderStatus::Codes::kFailed;
+    case SymphoniaDecodeStatus::InvalidDecodedBufferSampleFormat:
+      return DecoderStatus::Codes::kFailed;
+    case SymphoniaDecodeStatus::kMaxValue:
+      NOTREACHED();
+  }
+}
+
+DecoderStatus ToDecoderStatus(SymphoniaDecodeResult& result) {
+  DecoderStatus status(ToStatusCode(result.status), result.error_str.c_str());
+  if (result.status != SymphoniaDecodeStatus::Ok) {
+    MaybeDumpError(status);
+  }
+  return status;
+}
+
 }  // namespace
 
 SymphoniaAudioDecoder::SymphoniaAudioDecoder(
@@ -229,9 +311,9 @@ void SymphoniaAudioDecoder::Initialize(const AudioDecoderConfig& config,
     return;
   }
 
-  if (!ConfigureDecoder(config)) {
-    // ConfigureDecoder logs the specific error.
-    std::move(bound_init_cb).Run(DecoderStatus::Codes::kUnsupportedConfig);
+  const auto configure_result = ConfigureDecoder(config);
+  if (!configure_result.is_ok()) {
+    std::move(bound_init_cb).Run(std::move(configure_result));
     return;
   }
 
@@ -306,10 +388,10 @@ void SymphoniaAudioDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer,
   }
 
   // Pass the buffer to the Symphonia decoder.
-  if (!SymphoniaDecode(*buffer)) {
-    // SymphoniaDecode logs the error.
+  const DecoderStatus status = SymphoniaDecode(*buffer);
+  if (!status.is_ok()) {
     state_ = DecoderState::kError;
-    std::move(decode_cb_bound).Run(DecoderStatus::Codes::kFailed);
+    std::move(decode_cb_bound).Run(std::move(status));
     return;
   }
 
@@ -354,7 +436,8 @@ bool SymphoniaAudioDecoder::IsCodecSupported(AudioCodec codec) {
   return false;
 }
 
-bool SymphoniaAudioDecoder::SymphoniaDecode(const DecoderBuffer& buffer) {
+DecoderStatus SymphoniaAudioDecoder::SymphoniaDecode(
+    const DecoderBuffer& buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // The first frame only has a valid timestamp if it is not EOS.
@@ -387,7 +470,7 @@ bool SymphoniaAudioDecoder::SymphoniaDecode(const DecoderBuffer& buffer) {
       DCHECK(!processed);
     }
 
-    return true;
+    return DecoderStatus::Codes::kOk;
   }
   // Sanity check: if Symphonia thinks things are OK and returned a valid
   // buffer, then the input buffer should definitely not have been end of
@@ -397,7 +480,7 @@ bool SymphoniaAudioDecoder::SymphoniaDecode(const DecoderBuffer& buffer) {
   if (result.status != SymphoniaDecodeStatus::Ok) {
     MEDIA_LOG(ERROR, media_log_)
         << "Symphonia error occurred: " << result.error_str.c_str();
-    return false;
+    return ToDecoderStatus(result);
   }
 
   // TODO(crbug.com/40074653): similar to FFMPEG audio decoder, add support
@@ -421,7 +504,7 @@ bool SymphoniaAudioDecoder::SymphoniaDecode(const DecoderBuffer& buffer) {
     output_cb_.Run(std::move(decoded_audio));
   }
 
-  return true;
+  return DecoderStatus::Codes::kOk;
 }
 
 scoped_refptr<AudioBuffer> SymphoniaAudioDecoder::ToMediaAudioBuffer(
@@ -451,7 +534,8 @@ void SymphoniaAudioDecoder::ReleaseSymphoniaResources() {
   symphonia_decoder_.reset();
 }
 
-bool SymphoniaAudioDecoder::ConfigureDecoder(const AudioDecoderConfig& config) {
+DecoderStatus SymphoniaAudioDecoder::ConfigureDecoder(
+    const AudioDecoderConfig& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(config.IsValidConfig());
   CHECK(!config.is_encrypted());
@@ -471,12 +555,12 @@ bool SymphoniaAudioDecoder::ConfigureDecoder(const AudioDecoderConfig& config) {
         << "Could not initialize Symphonia audio decoder: "
         << result.error_str.c_str();
     state_ = DecoderState::kUninitialized;
-    return false;
+    return ToDecoderStatus(result);
   }
 
   ResetTimestampState(config);
   symphonia_decoder_ = std::move(result.decoder);
-  return true;
+  return DecoderStatus::Codes::kOk;
 }
 
 // The Symphonia audio decoder implementation currently needs the same discard

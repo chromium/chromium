@@ -95,10 +95,10 @@ class MEDIA_EXPORT SymphoniaAudioDecoder : public AudioDecoder {
   void DecodeBuffer(scoped_refptr<DecoderBuffer> buffer,
                     DecodeCB decode_cb_bound);
 
-  // Passes the encoded buffer to the Symphonia decoder instance. Returns true
-  // on success, false otherwise. May result in zero or more calls to
-  // output_cb_.
-  bool SymphoniaDecode(const DecoderBuffer& buffer);
+  // Passes the encoded buffer to the Symphonia decoder instance. Returns
+  // DecoderStatus::Codes::kOk on success, or an error code otherwise.
+  // May result in zero or more calls to output_cb_.
+  DecoderStatus SymphoniaDecode(const DecoderBuffer& buffer);
 
   // Creates a media::AudioBuffer from the decoded SymphoniaAudioBuffer.
   scoped_refptr<AudioBuffer> ToMediaAudioBuffer(
@@ -106,8 +106,8 @@ class MEDIA_EXPORT SymphoniaAudioDecoder : public AudioDecoder {
       base::TimeDelta timestamp);
 
   // Handles (re-)initializing the decoder with a (new) config.
-  // Returns true if initialization was successful.
-  bool ConfigureDecoder(const AudioDecoderConfig& config);
+  // Returns DecoderStatus::Codes::kOk if initialization was successful.
+  DecoderStatus ConfigureDecoder(const AudioDecoderConfig& config);
 
   // Releases resources associated with |symphonia_decoder_|.
   void ReleaseSymphoniaResources();
