@@ -524,6 +524,7 @@ source_set("extensions") {
     "//chrome/browser/signin",
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/tab_list",
+    "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/autofill",
@@ -660,6 +661,7 @@ source_set("extensions") {
       "//components/app_icon_loader",
     ]
     deps += [
+      "//chrome/browser/ui/interaction",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/web_applications:launch_utils",
     ]

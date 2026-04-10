@@ -14,10 +14,14 @@ BASE_DECLARE_FEATURE(kCriticalUserJourneyService);
 // Dedicated feature flags for each journey.
 BASE_DECLARE_FEATURE(kViewDownloadedFileJourney);
 BASE_DECLARE_FEATURE(kViewDownloadedFileFromAppMenuJourney);
+BASE_DECLARE_FEATURE(kPinExtensionJourney);
 
 // HaTS Survey feature flags.
 BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForDownloadJourney);
 extern const char kHatsSurveyTriggerDownloadJourney[];
+
+BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForPinExtensionJourney);
+extern const char kHatsSurveyTriggerPinExtensionJourney[];
 
 }  // namespace metrics
 

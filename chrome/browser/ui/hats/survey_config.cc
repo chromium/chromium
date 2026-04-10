@@ -800,6 +800,11 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       metrics::kHatsSurveyTriggerDownloadJourney,
       /*presupplied_trigger_id=*/"Y2We4jMf70ugnJ3q1cK0QFVzpBEr");
 
+  survey_configs.emplace_back(
+      &metrics::kHappinessTrackingSurveysForPinExtensionJourney,
+      metrics::kHatsSurveyTriggerPinExtensionJourney,
+      /*presupplied_trigger_id=*/"ZPGYEfdNz0ugnJ3q1cK0WdJNwYC3");
+
   // Lens overlay surveys.
   survey_configs.emplace_back(
       &lens::features::kLensOverlaySurvey, kHatsSurveyTriggerLensOverlayResults,

@@ -14,11 +14,15 @@ BASE_FEATURE(kCriticalUserJourneyService, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kViewDownloadedFileJourney, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kViewDownloadedFileFromAppMenuJourney,
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPinExtensionJourney, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // HaTS.
 BASE_FEATURE(kHappinessTrackingSurveysForDownloadJourney,
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kHappinessTrackingSurveysForPinExtensionJourney,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kHatsSurveyTriggerDownloadJourney[] = "download-journey";
+const char kHatsSurveyTriggerPinExtensionJourney[] = "pin-extension-journey";
 
 }  // namespace metrics
