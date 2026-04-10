@@ -267,9 +267,10 @@ UIStackView* PageControl(BubblePageControlPage page) {
         initWithImage:DefaultSymbolWithConfiguration(kCircleBadgeFill,
                                                      symbolConfiguration)];
     BOOL shouldBeHighlighted = i == page - 1;
-    circleImageView.tintColor = shouldBeHighlighted
-                                    ? [UIColor whiteColor]
-                                    : [UIColor colorWithWhite:1 alpha:0.45];
+    UIColor* baseCircleColor = [UIColor colorNamed:kSolidButtonTextColor];
+    circleImageView.tintColor =
+        shouldBeHighlighted ? baseCircleColor
+                            : [baseCircleColor colorWithAlphaComponent:0.45];
     [container addArrangedSubview:circleImageView];
   }
   return container;
