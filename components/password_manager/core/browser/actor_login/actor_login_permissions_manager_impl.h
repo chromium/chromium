@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_permissions_manager.h"
+#include "components/password_manager/core/browser/actor_login/federated_permission.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 
 namespace affiliations {
@@ -52,6 +53,12 @@ class ActorLoginPermissionsManagerImpl
   void GetAllPermissions(const syncer::SyncService* sync_service,
                          GetAllPermissionsResult callback) override;
 
+#if defined(UNIT_TEST)
+  bool IsWaitingForPasswordStore() const {
+    return presenter_.IsWaitingForPasswordStore();
+  }
+#endif
+
  private:
   // SavedPasswordsPresenter::Observer:
   void OnSavedPasswordsChanged(
@@ -59,9 +66,19 @@ class ActorLoginPermissionsManagerImpl
 
   void NotifyObservers();
   void OnPermissionDeleted(bool success);
+  void OnSavedPasswordsPresenterInitialized();
+  void OnFederatedPermissionsReceived(
+      const syncer::SyncService* sync_service,
+      GetAllPermissionsResult callback,
+      std::vector<FederatedPermission> federated_permissions);
 
   password_manager::SavedPasswordsPresenter presenter_;
   base::ObserverList<ActorLoginPermissionsManager::Observer> observers_;
+  // Any calls to `GetAllPermissions()` made before password store
+  // initialization is complete are preserved here to be executed afterwards by
+  // chaining in FIFO order. Callback is invoked inside
+  // `OnSavedPasswordsPresenterInitialized()`.
+  base::OnceClosure pending_get_permissions_callback_ = base::DoNothing();
   raw_ptr<ActorLoginPermissionService> actor_login_permission_service_ =
       nullptr;
 
