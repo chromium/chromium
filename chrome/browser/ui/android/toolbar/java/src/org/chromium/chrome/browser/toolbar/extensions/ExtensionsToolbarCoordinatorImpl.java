@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.preferences.PrefServiceUtil;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge;
@@ -109,7 +110,8 @@ public class ExtensionsToolbarCoordinatorImpl
             ThemeColorProvider themeColorProvider,
             ViewGroup rootView,
             @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory,
-            @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate) {
+            @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
+            TabModelSelector tabModelSelector) {
         mBridge = new ExtensionActionsBridge(task, profile);
         mTask = task;
         mProfile = profile;
@@ -133,7 +135,8 @@ public class ExtensionsToolbarCoordinatorImpl
                         mExtensionsToolbarBridge,
                         rootView,
                         contextMenuPopulatorFactory,
-                        selectionDropdownMenuDelegate);
+                        selectionDropdownMenuDelegate,
+                        tabModelSelector);
         mToolbarModel = new PropertyModel.Builder(ExtensionsToolbarProperties.ALL_KEYS).build();
         mMenuButtonChangeProcessor =
                 PropertyModelChangeProcessor.create(

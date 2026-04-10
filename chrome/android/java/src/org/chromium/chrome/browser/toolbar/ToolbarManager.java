@@ -2505,7 +2505,8 @@ public class ToolbarManager
                                 getBrowsingModeThemeColorProvider(),
                                 (ToolbarTablet) mToolbarLayout,
                                 contextMenuPopulatorFactory,
-                                selectionDropdownMenuDelegate);
+                                selectionDropdownMenuDelegate,
+                                mTabModelSelector);
                 if (mExtensionsToolbarCoordinator != null) {
                     mToolbar.setExtensionsToolbarCoordinator(mExtensionsToolbarCoordinator);
                 }

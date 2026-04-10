@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.layouts.toolbar.ToolbarWidthConsumer;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
@@ -53,7 +54,8 @@ public interface ExtensionsToolbarCoordinator extends Destroyable {
             ThemeColorProvider themeColorProvider,
             ViewGroup rootView,
             @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory,
-            @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate) {
+            @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
+            TabModelSelector tabModelSelector) {
         // Check if the extension UI is enabled first.
         if (!ExtensionUi.isEnabled(profile)) {
             return null;
@@ -75,7 +77,8 @@ public interface ExtensionsToolbarCoordinator extends Destroyable {
                 themeColorProvider,
                 rootView,
                 contextMenuPopulatorFactory,
-                selectionDropdownMenuDelegate);
+                selectionDropdownMenuDelegate,
+                tabModelSelector);
         return coordinator;
     }
 
@@ -97,7 +100,8 @@ public interface ExtensionsToolbarCoordinator extends Destroyable {
             ThemeColorProvider themeColorProvider,
             ViewGroup rootView,
             @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory,
-            @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate);
+            @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
+            TabModelSelector tabModelSelector);
 
     /**
      * Dispatches the key event to trigger the corresponding extension action if any.

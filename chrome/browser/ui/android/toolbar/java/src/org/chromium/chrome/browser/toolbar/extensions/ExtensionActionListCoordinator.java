@@ -19,6 +19,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionButtonProperties.ListItemType;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
@@ -62,7 +63,8 @@ public class ExtensionActionListCoordinator implements Destroyable {
             ExtensionsToolbarBridge extensionsToolbarBridge,
             ViewGroup rootView,
             @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory,
-            @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate) {
+            @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
+            TabModelSelector tabModelSelector) {
         mContext = context;
         mContainer = container;
 
@@ -78,7 +80,8 @@ public class ExtensionActionListCoordinator implements Destroyable {
                         mRecyclerViewDelegate,
                         extensionsToolbarBridge,
                         contextMenuPopulatorFactory,
-                        selectionDropdownMenuDelegate);
+                        selectionDropdownMenuDelegate,
+                        tabModelSelector);
 
         ExtensionsToolbarDragTouchHandler dragTouchHandler =
                 new ExtensionsToolbarDragTouchHandler(context, mModels);
