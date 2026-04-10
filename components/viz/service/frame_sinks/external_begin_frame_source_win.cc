@@ -86,8 +86,7 @@ BeginFrameArgs ExternalBeginFrameSourceWin::GetMissedBeginFrameArgs(
   if (!last_begin_frame_args_.IsValid() ||
       frame_time > last_begin_frame_args_.frame_time) {
     last_begin_frame_args_ = begin_frame_args_generator_.GenerateBeginFrameArgs(
-        source_id(), frame_time, frame_time + interval, interval,
-        vsync_interval_);
+        source_id(), frame_time, frame_time + interval, interval, interval);
   }
 
   return ExternalBeginFrameSource::GetMissedBeginFrameArgs(obs);
