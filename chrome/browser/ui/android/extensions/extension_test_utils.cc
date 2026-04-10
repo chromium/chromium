@@ -46,6 +46,13 @@ static void JNI_ExtensionTestUtils_LoadUnpackedExtensionAsync(
           base::android::ScopedJavaGlobalRef<jobject>(callback)));
 }
 
+static void JNI_ExtensionTestUtils_EnableExtension(
+    JNIEnv* env,
+    Profile* profile,
+    const std::string& extension_id) {
+  extensions::ExtensionRegistrar::Get(profile)->EnableExtension(extension_id);
+}
+
 static void JNI_ExtensionTestUtils_DisableExtension(
     JNIEnv* env,
     Profile* profile,

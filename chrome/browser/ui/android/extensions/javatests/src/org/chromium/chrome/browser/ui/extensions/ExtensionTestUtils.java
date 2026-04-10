@@ -60,6 +60,19 @@ public class ExtensionTestUtils {
     }
 
     /**
+     * Enable the extension with the given ID.
+     *
+     * @param profile The profile to enable the extension for.
+     * @param extensionId The ID of the extension to disable.
+     */
+    public static void enableExtension(Profile profile, String extensionId) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ExtensionTestUtilsJni.get().enableExtension(profile, extensionId);
+                });
+    }
+
+    /**
      * Disables the extension with the given ID.
      *
      * @param profile The profile to disable the extension for.
@@ -284,6 +297,9 @@ public class ExtensionTestUtils {
                 @JniType("Profile*") Profile profile,
                 @JniType("std::string") String rootDir,
                 Callback<String> callback);
+
+        void enableExtension(
+                @JniType("Profile*") Profile profile, @JniType("std::string") String extensionId);
 
         void disableExtension(
                 @JniType("Profile*") Profile profile, @JniType("std::string") String extensionId);

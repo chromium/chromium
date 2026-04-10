@@ -620,4 +620,61 @@ public class ExtensionsToolbarTest {
         org.junit.Assert.assertTrue(
                 ExtensionTestUtils.hasGrantedHostPermission(mProfile, extensionId, url));
     }
+
+    @Test
+    @LargeTest
+    public void testPinAndUnpinExtensionVisibility() throws IOException {
+        String extensionId = loadBasicExtension("extension1", "Test Extension", "Test Action");
+
+        // Verify the extension is not visible on the toolbar initially.
+        onView(isRoot())
+                .check(
+                        withEventualExpectedViewState(
+                                withContentDescription("Test Action"), VIEW_GONE | VIEW_NULL));
+
+        // Pin the extension programmatically.
+        ExtensionTestUtils.setExtensionActionVisible(mProfile, extensionId, true);
+
+        // Verify the action appears on the toolbar.
+        ViewUtils.onViewWaiting(withContentDescription("Test Action"))
+                .check(matches(isDisplayed()));
+
+        // Unpin the extension programmatically.
+        ExtensionTestUtils.setExtensionActionVisible(mProfile, extensionId, false);
+
+        // Verify the action disappears from the toolbar.
+        onView(isRoot())
+                .check(
+                        withEventualExpectedViewState(
+                                withContentDescription("Test Action"), VIEW_GONE | VIEW_NULL));
+    }
+
+    @Test
+    @LargeTest
+    public void testPinStateRetainedAfterDisableAndEnable() throws IOException {
+        String extensionId = loadBasicExtension("extension1", "Test Extension", "Test Action");
+
+        // Pin the extension programmatically.
+        ExtensionTestUtils.setExtensionActionVisible(mProfile, extensionId, true);
+
+        // Verify the action appears on the toolbar.
+        ViewUtils.onViewWaiting(withContentDescription("Test Action"))
+                .check(matches(isDisplayed()));
+
+        // Disable the extension.
+        ExtensionTestUtils.disableExtension(mProfile, extensionId);
+
+        // Verify the action disappears from the toolbar.
+        onView(isRoot())
+                .check(
+                        withEventualExpectedViewState(
+                                withContentDescription("Test Action"), VIEW_GONE | VIEW_NULL));
+
+        // Re-enable the extension.
+        ExtensionTestUtils.enableExtension(mProfile, extensionId);
+
+        // Verify the action automatically reappears on the toolbar without needing to be re-pinned.
+        ViewUtils.onViewWaiting(withContentDescription("Test Action"))
+                .check(matches(isDisplayed()));
+    }
 }
