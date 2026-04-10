@@ -7,9 +7,15 @@
 
 namespace content {
 
-// Common utility code for skia initialization done in the renderer process, and
-// also in the GPU process for viz/oop-r which runs skia in the GPU process.
+// Full Skia initialization for processes that do heavy Skia work (renderer,
+// GPU, in-process-GPU browser). Configures kill-switches, font caches, etc.
 void InitializeSkia();
+
+// Lightweight Skia initialization for processes that don't need full Skia setup
+// but still need kill-switches and diagnostics (e.g. browser process with
+// out-of-process GPU). Configures ICC/EXIF kill-switches, event tracing, and
+// memory dump providers.
+void InitializeSkiaLite();
 
 }  // namespace content
 

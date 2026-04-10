@@ -15,7 +15,10 @@
 #include "skia/ext/event_tracer_impl.h"
 #include "skia/ext/font_utils.h"
 #include "skia/ext/skia_memory_dump_provider.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkGraphics.h"
+#include "third_party/skia/include/private/chromium/SkCodecsICCProfileChromium.h"
+#include "third_party/skia/include/private/chromium/SkExifChromium.h"
 
 namespace content {
 namespace {
@@ -28,7 +31,38 @@ constexpr size_t kImageCacheSingleAllocationByteLimit = 64 * 1024 * 1024;
 
 }  // namespace
 
+namespace {
+
+void ConfigureSkiaKillSwitches() {
+  // Configure the ICC profile parser kill-switch early, before any image
+  // decoding occurs. When the feature is enabled, this forces skcms to be
+  // used instead of the Rust-based ICC parser.
+  // TODO(crbug.com/463653726): Remove this once the feature is validated in
+  // Stable.
+  SkCodecs::ICCProfileChromium::ForceSkcms(
+      base::FeatureList::IsEnabled(blink::features::kForceSkcmsICCParsing));
+
+  // Configure the EXIF parser kill-switch early, before any image decoding
+  // occurs. When the feature is enabled, this forces the C++ SkExif parser to
+  // be used instead of the Rust-based EXIF parser.
+  // TODO(crbug.com/463653726): Remove this once the feature is validated in
+  // Stable.
+  SkExif::ForceSkExif(
+      base::FeatureList::IsEnabled(blink::features::kForceSkExifCppParsing));
+}
+
+}  // namespace
+
+void InitializeSkiaLite() {
+  ConfigureSkiaKillSwitches();
+  InitSkiaEventTracer();
+  base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+      skia::SkiaMemoryDumpProvider::GetInstance(), "Skia", nullptr);
+}
+
 void InitializeSkia() {
+  ConfigureSkiaKillSwitches();
+
   // Make sure that any switches used here are propagated to the renderer and
   // GPU processes.
   const base::CommandLine& cmd = *base::CommandLine::ForCurrentProcess();

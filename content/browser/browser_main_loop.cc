@@ -746,9 +746,7 @@ void BrowserMainLoop::PostCreateMainMessageLoop() {
     InitializeSkia();
   } else {
     // Just enable memory-infra dump providers
-    InitSkiaEventTracer();
-    base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-        skia::SkiaMemoryDumpProvider::GetInstance(), "Skia", nullptr);
+    InitializeSkiaLite();
   }
 
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
