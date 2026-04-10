@@ -3511,17 +3511,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.JavascriptContentBlockFailure"
-    enum="IOSJavascriptContentBlockType" expires_after="2020-12-31">
-  <owner>rkgibson@google.com</owner>
-  <owner>gambard@chromium.org</owner>
-  <summary>
-    IOS Content Blocking uses special injected Javascript to block access to
-    things like cookies and local storage. Future changes to iOS/WebKit could
-    cause these blocks to break. This logs that occurrence.
-  </summary>
-</histogram>
-
 <histogram name="IOS.LaunchSource" enum="IOSLaunchSource" expires_after="never">
 <!-- expires-never: Core metric to track how Chrome is launched -->
 
