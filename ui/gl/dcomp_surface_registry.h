@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
+#include "base/synchronization/lock.h"
 #include "base/unguessable_token.h"
 #include "base/win/scoped_handle.h"
 #include "ui/gl/gl_export.h"
@@ -44,7 +45,9 @@ class GL_EXPORT DCOMPSurfaceRegistry {
   ~DCOMPSurfaceRegistry();
 
   base::flat_map<base::UnguessableToken, base::win::ScopedHandle>
-      surface_handle_map_;
+      surface_handle_map_ GUARDED_BY(lock_);
+
+  base::Lock lock_;
 };
 
 }  // namespace gl
