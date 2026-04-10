@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_HEADER_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_HEADER_H_
 
+#include <memory>
 #include <string_view>
 
+#include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -29,6 +31,10 @@ class TabGroupStyle;
 struct TabSizeInfo;
 class TabStyle;
 
+namespace tabs {
+class TabGroupDataObserver;
+}
+
 namespace views {
 class ImageView;
 class Label;
@@ -41,7 +47,6 @@ class View;
 class TabGroupHeader : public TabSlotView,
                        public views::ContextMenuController,
                        public views::ViewTargeterDelegate,
-                       public TabGroupAttentionIndicator::Observer,
                        public HoverCardAnchorTarget {
   METADATA_HEADER(TabGroupHeader, TabSlotView)
 
@@ -54,9 +59,6 @@ class TabGroupHeader : public TabSlotView,
   ~TabGroupHeader() override;
 
   void Init(const tab_groups::TabGroupId& group);
-
-  // TabGroupAttentionIndicator::Observer:
-  void OnAttentionStateChanged() override;
 
   // TabSlotView:
   bool OnKeyPressed(const ui::KeyEvent& event) override;
@@ -138,6 +140,8 @@ class TabGroupHeader : public TabSlotView,
 
   void UpdateAccessibleName();
 
+  void OnTabGroupDataChanged();
+
   const raw_ref<TabSlotController> tab_slot_controller_;
 
   // The title chip for the tab group header which comprises of title text if
@@ -174,15 +178,17 @@ class TabGroupHeader : public TabSlotView,
   // changed in the model and we need to react to that.
   bool is_collapsed_;
 
+  // Determines whether the header UI should show the attention indicator needed
+  // for collaboration messaging.
+  bool needs_attention_ = false;
+
   base::CallbackListSubscription title_text_changed_subscription_;
 
   TabGroupEditorBubbleTracker editor_bubble_tracker_;
   base::CallbackListSubscription editor_bubble_opened_subscription_;
   base::CallbackListSubscription editor_bubble_closed_subscription_;
-
-  base::ScopedObservation<TabGroupAttentionIndicator,
-                          TabGroupAttentionIndicator::Observer>
-      attention_indicator_observation_{this};
+  std::unique_ptr<tabs::TabGroupDataObserver> tab_group_data_observer_;
+  base::CallbackListSubscription tab_group_data_observer_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_HEADER_H_

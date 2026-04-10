@@ -15,9 +15,9 @@
 
 namespace tabs {
 struct TabData;
-}
+struct TabGroupData;
+}  // namespace tabs
 
-class TabGroup;
 class TabResourceUsage;
 
 struct TabCardData {
@@ -79,7 +79,7 @@ class HoverCardAnchorTarget {
 
  protected:
   void SetHoverCardDataFrom(const tabs::TabData& data);
-  void SetHoverCardDataFrom(const TabGroup& data);
+  void SetHoverCardDataFrom(const tabs::TabGroupData& group_data);
 
  private:
   raw_ptr<views::View> anchor_view_ = nullptr;

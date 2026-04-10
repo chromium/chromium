@@ -23,7 +23,7 @@
 
 namespace {
 
-FadeLabelViewData GetTabTitleLabel(const tabs::TabData& tab_data) {
+FadeLabelViewData GetTabTitleLabel(const tabs::TabGroupTabData& tab_data) {
   std::u16string title;
   GURL domain_url;
 
@@ -54,6 +54,16 @@ FadeLabelViewData GetTabTitleLabel(const tabs::TabData& tab_data) {
   }
 
   return {title, is_filename};
+}
+
+FadeLabelViewData GetTabTitleLabel(const tabs::TabData& tab_data) {
+  tabs::TabGroupTabData tab_group_tab_data;
+  tab_group_tab_data.last_committed_url = tab_data.last_committed_url;
+  tab_group_tab_data.visible_url = tab_data.visible_url;
+  tab_group_tab_data.title = tab_data.title;
+  tab_group_tab_data.is_crashed = tab_data.is_crashed;
+  tab_group_tab_data.should_display_url = tab_data.should_display_url;
+  return GetTabTitleLabel(tab_group_tab_data);
 }
 }  // namespace
 
@@ -153,44 +163,19 @@ void HoverCardAnchorTarget::SetHoverCardDataFrom(
   card_data.is_crashed = tab_data.is_crashed;
 }
 
-void HoverCardAnchorTarget::SetHoverCardDataFrom(const TabGroup& group_data) {
+void HoverCardAnchorTarget::SetHoverCardDataFrom(
+    const tabs::TabGroupData& group_data) {
   hover_card_data_.emplace<GroupCardData>();
   GroupCardData& card_data = std::get<GroupCardData>(hover_card_data_);
 
-  if (group_data.tab_count() == 0) {
-    return;
-  }
-
-  // Iterate through the tabs and obtain the strings for their titles.
-  tabs::TabInterface* first_tab = group_data.GetFirstTab();
-  CHECK(first_tab);
-
-  BrowserWindowInterface* browser_window_interface =
-      first_tab->GetBrowserWindowInterface();
-
-  if (!browser_window_interface) {
-    return;
-  }
-
-  TabStripModel* tab_strip_model = browser_window_interface->GetTabStripModel();
-  if (!tab_strip_model) {
+  if (group_data.num_tabs_in_group == 0) {
     return;
   }
 
   card_data.tab_title_data.clear();
 
-  std::vector<tabs::TabInterface*> tabs =
-      tab_strip_model->GetTabsAtIndices(group_data.ListTabs().ToIntVector());
-  CHECK(tabs.size() > 0u);
-
-  for (tabs::TabInterface* tab : tabs) {
-    if (card_data.tab_title_data.size() >= tabs::TabGroupData::kMaxTabs) {
-      break;
-    }
-
-    FadeLabelViewData tab_title_label =
-        GetTabTitleLabel(tabs::TabData::FromTabInterface(tab));
-
+  for (tabs::TabGroupTabData tab_data : group_data.tab_data) {
+    FadeLabelViewData tab_title_label = GetTabTitleLabel(tab_data);
     tab_title_label.text =
         l10n_util::GetStringFUTF16(IDS_LIST_BULLET, tab_title_label.text);
     card_data.tab_title_data.push_back(tab_title_label);
@@ -198,26 +183,25 @@ void HoverCardAnchorTarget::SetHoverCardDataFrom(const TabGroup& group_data) {
 
   // Now set the data for the title of the group. We need the number of
   // tabs in the group for this.
-  const tab_groups::TabGroupVisualData* visual_data = group_data.visual_data();
-
-  std::u16string group_title = visual_data ? visual_data->title() : u"";
-
+  std::u16string group_title = group_data.visual_data.title();
   if (group_title.empty()) {
     group_title = l10n_util::GetPluralStringFUTF16(
-        IDS_TAB_GROUPS_UNNAMED_GROUP_HOVER_CARD_HEADER, tabs.size());
+        IDS_TAB_GROUPS_UNNAMED_GROUP_HOVER_CARD_HEADER,
+        group_data.num_tabs_in_group);
   } else {
     group_title = l10n_util::FormatString(
         l10n_util::GetPluralStringFUTF16(IDS_TAB_GROUPS_HOVER_CARD_HEADER,
-                                         tabs.size()),
+                                         group_data.num_tabs_in_group),
         {group_title}, nullptr);
   }
 
   // Set the data for the number of tabs not shown in the hover card.
   card_data.group_title_data = {group_title, false};
 
-  if (tabs.size() > tabs::TabGroupData::kMaxTabs) {
-    std::u16string num_excess_str =
-        base::NumberToString16(tabs.size() - tabs::TabGroupData::kMaxTabs);
+  if (static_cast<size_t>(group_data.num_tabs_in_group) >
+      tabs::TabGroupData::kMaxTabs) {
+    std::u16string num_excess_str = base::NumberToString16(
+        group_data.num_tabs_in_group - tabs::TabGroupData::kMaxTabs);
     card_data.excess_tab_data = {l10n_util::GetStringFUTF16(
         IDS_TAB_GROUPS_HOVER_CARD_FOOTER, num_excess_str)};
   } else {

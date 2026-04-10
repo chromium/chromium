@@ -18,6 +18,8 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/flex_layout_view.h"
 
+class TabGroup;
+
 namespace tabs {
 class VerticalTabStripStateController;
 }

@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_attention_indicator.h"
+#include "chrome/browser/ui/tabs/tab_group_data.h"
 #include "chrome/browser/ui/tabs/tab_group_features.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
@@ -142,8 +143,12 @@ TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
 
   TabGroup* tab_group = tab_slot_controller_->GetTabGroup(group);
   if (tab_group) {
-    attention_indicator_observation_.Observe(
-        tab_group->GetTabGroupFeatures()->attention_indicator());
+    tab_group_data_observer_ =
+        std::make_unique<tabs::TabGroupDataObserver>(tab_group);
+    tab_group_data_observer_subscription_ =
+        tab_group_data_observer_->RegisterTabGroupDataChangedCallback(
+            base::BindRepeating(&TabGroupHeader::OnTabGroupDataChanged,
+                                base::Unretained(this)));
   }
 }
 
@@ -196,10 +201,6 @@ void TabGroupHeader::Init(const tab_groups::TabGroupId& group) {
           &TabGroupHeader::UpdateTooltipText, base::Unretained(this)));
 
   UpdateTooltipText();
-}
-
-void TabGroupHeader::OnAttentionStateChanged() {
-  VisualsChanged();
 }
 
 bool TabGroupHeader::OnKeyPressed(const ui::KeyEvent& event) {
@@ -293,8 +294,6 @@ void TabGroupHeader::OnMouseReleased(const ui::MouseEvent& event) {
 
 void TabGroupHeader::OnMouseEntered(const ui::MouseEvent& event) {
   if (features::IsTabGroupHoverCardsEnabled()) {
-    TabGroup* tab_group = tab_slot_controller_->GetTabGroup(group().value());
-    SetHoverCardDataFrom(*tab_group);
     tab_slot_controller_->UpdateHoverCard(
         this, TabSlotController::HoverCardUpdateType::kHover);
   } else {
@@ -335,8 +334,6 @@ void TabGroupHeader::OnFocus() {
   View::OnFocus();
 
   if (features::IsTabGroupHoverCardsEnabled()) {
-    TabGroup* tab_group = tab_slot_controller_->GetTabGroup(group().value());
-    SetHoverCardDataFrom(*tab_group);
     tab_slot_controller_->UpdateHoverCard(
         this, TabSlotController::HoverCardUpdateType::kFocus);
   } else {
@@ -802,6 +799,13 @@ void TabGroupHeader::UpdateAccessibleName() {
                                    shared_state, title, contents, group_status);
   }
   GetViewAccessibility().SetName(final_name);
+}
+
+void TabGroupHeader::OnTabGroupDataChanged() {
+  const tabs::TabGroupData& tab_group_data =
+      tab_group_data_observer_->tab_group_data();
+  SetHoverCardDataFrom(tab_group_data);
+  UpdateAttentionIndicatorView();
 }
 
 BEGIN_METADATA(TabGroupHeader)
