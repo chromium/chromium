@@ -1,0 +1,33 @@
+description: Verify the Chrome Code Health Hub and Histogram Cleanup orchestration
+owner: agazal@
+prompts:
+  - "{{query}}"
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 600
+      skills:
+        - code-health-hub
+        - code-health-histogram-cleanup
+tests:
+  - description: "Hub correctly triages a cleanup request"
+    vars:
+      query: "I want to help with code health. Show me what I can do."
+    assert:
+      - type: icontains
+        value: "Routine Cleanup"
+      - type: icontains
+        value: "Histogram Cleanup"
+    metadata:
+      tags: ['integration']
+      pass_k_threshold: 1
+      runs_per_test: 1
+
+  - description: "Hub correctly hands off to Histogram Cleanup"
+    vars:
+      query: "I want to do a Histogram Cleanup."
+    assert:
+      - type: icontains
+        value: "Phase 1: Discovery"
+      - type: icontains
+        value: "Select Histogram"
