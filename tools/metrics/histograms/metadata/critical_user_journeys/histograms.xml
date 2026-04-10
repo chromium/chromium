@@ -27,6 +27,15 @@ chromium-metrics-reviews@google.com.
   <variant name="StepReached" summary="reached"/>
 </variants>
 
+<variants name="JourneyNames">
+  <variant name="ClearBrowsingHistoryJourney"/>
+  <variant name="PinExtensionJourney"/>
+  <variant name="ViewDownloadedFileFromAppMenuJourney"/>
+  <variant name="ViewDownloadedFileJourney"/>
+<!-- Add new journeys here! -->
+
+</variants>
+
 <histogram name="CriticalUserJourney.ClearBrowsingHistoryJourney.{StepAction}"
     enum="ClearBrowsingHistoryJourneySteps" expires_after="2027-01-01">
   <owner>stluong@chromium.org</owner>
@@ -69,6 +78,17 @@ chromium-metrics-reviews@google.com.
   <token key="StepAction" variants="CriticalUserJourneyStepAction"/>
 </histogram>
 
+<histogram name="CriticalUserJourney.{JourneyName}.OverallDuration" units="ms"
+    expires_after="2027-01-01">
+  <owner>dljames@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the total time taken to complete the {JourneyName} critical user
+    journey.
+  </summary>
+  <token key="JourneyName" variants="JourneyNames"/>
+</histogram>
+
 <histogram name="CriticalUserJourney.{JourneyName}.Result"
     enum="CriticalUserJourneyResult" expires_after="2027-01-01">
   <owner>dljames@chromium.org</owner>
@@ -77,13 +97,30 @@ chromium-metrics-reviews@google.com.
     Records the final outcome (Completed, Aborted, or Timed out) of the
     {JourneyName} critical user journey.
   </summary>
-  <token key="JourneyName">
-    <variant name="ClearBrowsingHistoryJourney"/>
-    <variant name="PinExtensionJourney"/>
-    <variant name="ViewDownloadedFileFromAppMenuJourney"/>
-    <variant name="ViewDownloadedFileJourney"/>
-<!-- Add new journeys here! -->
+  <token key="JourneyName" variants="JourneyNames"/>
+</histogram>
 
+<histogram
+    name="CriticalUserJourney.{JourneyName}.Step{FromStep}ToStep{ToStep}Duration"
+    units="ms" expires_after="2027-01-01">
+  <owner>dljames@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the time taken by the user to transition from step {FromStep} to
+    step {ToStep} in the {JourneyName} journey.
+  </summary>
+  <token key="JourneyName" variants="JourneyNames"/>
+  <token key="FromStep">
+    <variant name="1"/>
+    <variant name="2"/>
+    <variant name="3"/>
+    <variant name="4"/>
+  </token>
+  <token key="ToStep">
+    <variant name="2"/>
+    <variant name="3"/>
+    <variant name="4"/>
+    <variant name="5"/>
   </token>
 </histogram>
 
