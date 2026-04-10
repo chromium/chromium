@@ -384,4 +384,34 @@ TEST(VideoFrameLayout, FitsInContiguousBufferOfSize) {
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+TEST(VideoFrameLayout, FitsInContiguousBufferOfSize_MJPEG) {
+  auto coded_size = gfx::Size(320, 180);
+
+  std::vector<ColorPlaneLayout> planes(1);
+  planes[0].stride =
+      0;  // Stride does not matter for MJPEG layout footprint check.
+  planes[0].offset = 1000;
+  planes[0].size = 50000;
+
+  auto layout = VideoFrameLayout::CreateWithPlanes(PIXEL_FORMAT_MJPEG,
+                                                   coded_size, planes);
+  ASSERT_TRUE(layout.has_value());
+
+  // Exactly fits
+  EXPECT_TRUE(layout->FitsInContiguousBufferOfSize(51000));
+  // Fits with extra
+  EXPECT_TRUE(layout->FitsInContiguousBufferOfSize(52000));
+  // Too small
+  EXPECT_FALSE(layout->FitsInContiguousBufferOfSize(50999));
+
+  // Multi-planar MJPEG is invalid for contiguous buffer fit.
+  planes.push_back(ColorPlaneLayout(0, 0, 0));
+  layout = VideoFrameLayout::CreateWithPlanes(PIXEL_FORMAT_MJPEG, coded_size,
+                                              planes);
+  ASSERT_TRUE(layout.has_value());
+  EXPECT_FALSE(layout->FitsInContiguousBufferOfSize(51000));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace media

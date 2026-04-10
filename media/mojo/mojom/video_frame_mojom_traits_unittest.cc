@@ -195,6 +195,71 @@ TEST_F(VideoFrameStructTraitsTest, MappableVideoFrame) {
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(VideoFrameStructTraitsTest, MappableVideoFrameMJPEG) {
+  constexpr VideoPixelFormat format = PIXEL_FORMAT_MJPEG;
+  constexpr gfx::Size kCodedSize(100, 100);
+  constexpr gfx::Rect kVisibleRect(kCodedSize);
+  constexpr gfx::Size kNaturalSize = kCodedSize;
+  constexpr base::TimeDelta kTimestamp = base::Seconds(100);
+
+  const size_t kPlaneOffset = 1024;
+  const size_t kPlaneSize = 50000;
+  const size_t kAggregateSize = kPlaneOffset + kPlaneSize;
+
+  auto region = base::ReadOnlySharedMemoryRegion::Create(kAggregateSize);
+  ASSERT_TRUE(region.IsValid());
+
+  std::vector<ColorPlaneLayout> planes = {{0, kPlaneOffset, kPlaneSize}};
+
+  auto layout = VideoFrameLayout::CreateWithPlanes(format, kCodedSize, planes);
+  ASSERT_TRUE(layout.has_value());
+
+  auto mapping_span = region.mapping.GetMemoryAsSpan<uint8_t>();
+  auto frame = media::VideoFrame::WrapExternalDataWithLayout(
+      *layout, kVisibleRect, kNaturalSize, mapping_span, kTimestamp);
+  ASSERT_TRUE(frame);
+
+  frame->BackWithSharedMemory(&region.region);
+
+  ASSERT_TRUE(RoundTrip(&frame));
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(frame->format(), format);
+  ASSERT_EQ(frame->storage_type(), VideoFrame::STORAGE_SHMEM);
+  EXPECT_TRUE(frame->shm_region()->IsValid());
+}
+#else
+TEST_F(VideoFrameStructTraitsTest, MappableVideoFrameMJPEG) {
+  constexpr VideoPixelFormat format = PIXEL_FORMAT_MJPEG;
+  constexpr gfx::Size kCodedSize(100, 100);
+  constexpr gfx::Rect kVisibleRect(kCodedSize);
+  constexpr gfx::Size kNaturalSize = kCodedSize;
+  constexpr base::TimeDelta kTimestamp = base::Seconds(100);
+
+  const size_t kPlaneOffset = 1024;
+  const size_t kPlaneSize = 50000;
+  const size_t kAggregateSize = kPlaneOffset + kPlaneSize;
+
+  auto region = base::ReadOnlySharedMemoryRegion::Create(kAggregateSize);
+  ASSERT_TRUE(region.IsValid());
+
+  std::vector<ColorPlaneLayout> planes = {ColorPlaneLayout(
+      /*stride=*/0, /*offset=*/kPlaneOffset, /*size=*/kPlaneSize)};
+
+  auto layout = VideoFrameLayout::CreateWithPlanes(format, kCodedSize, planes);
+  ASSERT_TRUE(layout.has_value());
+
+  auto mapping_span = region.mapping.GetMemoryAsSpan<uint8_t>();
+  auto frame = media::VideoFrame::WrapExternalDataWithLayout(
+      *layout, kVisibleRect, kNaturalSize, mapping_span, kTimestamp);
+  ASSERT_TRUE(frame);
+
+  frame->BackWithSharedMemory(&region.region);
+
+  EXPECT_TRUE(RoundTripFails(std::move(frame)));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 TEST_F(VideoFrameStructTraitsTest, InvalidOffsets) {
   constexpr auto kFormat = PIXEL_FORMAT_I420;
 
