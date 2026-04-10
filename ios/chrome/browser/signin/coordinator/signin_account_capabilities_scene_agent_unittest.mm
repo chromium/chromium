@@ -28,6 +28,10 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/signin/coordinator/age_mismatch_signout_coordinator.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
@@ -136,6 +140,41 @@ class SigninAccountCapabilitiesSceneAgentTest : public PlatformTest {
   SigninAccountCapabilitiesSceneAgent* agent_;
   raw_ptr<FakeSystemIdentityManager> fake_system_identity_manager_;
 };
+
+// Tests that the agent handles the sign-in request from the coordinator.
+TEST_F(SigninAccountCapabilitiesSceneAgentTest, TestWantsToSignIn) {
+  // Mock the SceneCommands handler.
+  id<SceneCommands> scene_commands_mock =
+      OCMProtocolMock(@protocol(SceneCommands));
+  [browser_->GetCommandDispatcher()
+      startDispatchingToTarget:scene_commands_mock
+                   forProtocol:@protocol(SceneCommands)];
+
+  // Create a mock coordinator.
+  id coordinator_mock = OCMClassMock([AgeMismatchSignoutCoordinator class]);
+  [agent_ setValue:coordinator_mock forKey:@"ageMismatchSignoutCoordinator"];
+
+  // Expect the sign-in command to be shown.
+  OCMExpect([scene_commands_mock showSignin:[OCMArg any]
+                         baseViewController:[OCMArg any]]);
+
+  // Call the delegate method.
+  id<AgeMismatchSignoutCoordinatorDelegate> delegate =
+      (id<AgeMismatchSignoutCoordinatorDelegate>)agent_;
+  [delegate ageMismatchSignoutCoordinatorWantsToSignIn:coordinator_mock];
+
+  base::RunLoop run_loop;
+  task_environment_.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                        run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Clean up.
+  [agent_ setValue:nil forKey:@"ageMismatchSignoutCoordinator"];
+
+  // Verify that the sign-in command was shown.
+  EXPECT_OCMOCK_VERIFY((id)scene_commands_mock);
+  EXPECT_OCMOCK_VERIFY(coordinator_mock);
+}
 
 // Tests that the agent fetches capabilities for all identities on activation.
 TEST_F(SigninAccountCapabilitiesSceneAgentTest, TestFetchOnActivation) {

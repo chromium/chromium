@@ -12,9 +12,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
-#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/coordinator/age_mismatch_signout_mediator.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -84,13 +81,10 @@
   [super stop];
   [_mediator disconnect];
   _mediator = nil;
-  if (_viewController) {
-    [_viewController.presentingViewController
-        dismissViewControllerAnimated:YES
-                           completion:nil];
-    _viewController.delegate = nil;
-    _viewController = nil;
-  }
+  [_viewController.presentingViewController dismissViewControllerAnimated:YES
+                                                               completion:nil];
+  _viewController.delegate = nil;
+  _viewController = nil;
   _applicationUIBlocker.reset();
 }
 
@@ -98,32 +92,12 @@
 
 - (void)didTapPrimaryActionButton {
   [_viewController blockUI];
-  [_viewController.presentingViewController dismissViewControllerAnimated:YES
-                                                               completion:nil];
-  _viewController.delegate = nil;
-  _viewController = nil;
-
-  // TODO(crbug.com/481654850): update the access point.
-  ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperation::kSigninOnly
-            accessPoint:signin_metrics::AccessPoint::kSettings];
-
-  __weak __typeof(self) weakSelf = self;
-  [command addSigninCompletion:^(SigninCoordinator* coordinator,
-                                 SigninCoordinatorResult result,
-                                 id<SystemIdentity> completionIdentity) {
-    [weakSelf notifyDelegateToDismiss];
-  }];
-
-  id<SceneCommands> sceneCommandsHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
-  [sceneCommandsHandler showSignin:command
-                baseViewController:self.baseViewController];
+  [self.delegate ageMismatchSignoutCoordinatorWantsToSignIn:self];
 }
 
 - (void)didTapSecondaryActionButton {
   [_viewController blockUI];
-  [self notifyDelegateToDismiss];
+  [self.delegate ageMismatchSignoutCoordinatorWantsToBeStopped:self];
 }
 
 - (void)didTapURLInDisclaimer:(NSURL*)URL {
@@ -144,12 +118,6 @@
     (AgeMismatchLearnMoreCoordinator*)coordinator {
   [coordinator stop];
   [self.childCoordinators removeObject:coordinator];
-}
-
-#pragma mark - Private
-
-- (void)notifyDelegateToDismiss {
-  [self.delegate ageMismatchSignoutCoordinatorWantsToBeStopped:self];
 }
 
 @end

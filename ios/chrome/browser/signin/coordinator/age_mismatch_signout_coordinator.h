@@ -18,6 +18,11 @@
 - (void)ageMismatchSignoutCoordinatorWantsToBeStopped:
     (AgeMismatchSignoutCoordinator*)coordinator;
 
+// Called when the user wants to sign in. The view controller is not dismissed
+// when this method is called.
+- (void)ageMismatchSignoutCoordinatorWantsToSignIn:
+    (AgeMismatchSignoutCoordinator*)coordinator;
+
 @end
 
 // Coordinator for the Age Mismatch Prompt.
