@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
 #include <cstdint>
 #include <limits>
 #include <memory>
@@ -12,9 +13,12 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/debug/asan_service.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/test/allow_check_is_test_for_testing.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
@@ -32,6 +36,7 @@
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/features.mojom-features.h"
 #include "services/webnn/public/mojom/webnn_context.mojom.h"
@@ -70,35 +75,32 @@ namespace {
   FUZZ_TEST_F(WebNNGraphImplFuzzer_GPU, func) __VA_ARGS__; \
   FUZZ_TEST_F(WebNNGraphImplFuzzer_NPU, func) __VA_ARGS__
 
-auto AnyOperandDataType() {
-  return fuzztest::ElementOf<OperandDataType>(
-      {OperandDataType::kFloat32, OperandDataType::kFloat16,
-       OperandDataType::kInt32, OperandDataType::kUint32,
-       OperandDataType::kInt64, OperandDataType::kUint64,
-       OperandDataType::kInt8, OperandDataType::kUint8, OperandDataType::kUint4,
-       OperandDataType::kInt4});
+template <typename T>
+std::vector<uint8_t> CreateBufferAs(size_t buffer_size, int64_t fill_value) {
+  std::vector<uint8_t> buffer(buffer_size, 0);
+  // SAFETY: The span is only used for filling values, and the size is
+  // divided by the size of the element type.
+  std::ranges::fill(
+      UNSAFE_BUFFERS(base::span(reinterpret_cast<T*>(buffer.data()),
+                                buffer.size() / sizeof(T))),
+      static_cast<T>(fill_value));
+  return buffer;
 }
 
-auto AnyFloatDataType() {
-  return fuzztest::ElementOf<OperandDataType>(
-      {OperandDataType::kFloat32, OperandDataType::kFloat16});
-}
-
-auto AnyQuantizedDataType() {
-  return fuzztest::ElementOf<OperandDataType>(
-      {OperandDataType::kInt8, OperandDataType::kUint8});
-}
-
-enum class QuantizationKind : uint32_t {
-  kPerTensor = 0,
-  kPerChannel = 1,
-  kPerBlock = 2,
-};
-
-auto AnyQuantizationKind() {
-  return fuzztest::ElementOf<QuantizationKind>({QuantizationKind::kPerTensor,
-                                                QuantizationKind::kPerChannel,
-                                                QuantizationKind::kPerBlock});
+std::vector<uint8_t> CreateBufferAsIndicesType(
+    size_t buffer_size,
+    OperandDataType indices_data_type,
+    int64_t fill_value) {
+  switch (indices_data_type) {
+    case OperandDataType::kInt32:
+      return CreateBufferAs<int32_t>(buffer_size, fill_value);
+    case OperandDataType::kUint32:
+      return CreateBufferAs<uint32_t>(buffer_size, fill_value);
+    case OperandDataType::kInt64:
+      return CreateBufferAs<int64_t>(buffer_size, fill_value);
+    default:
+      NOTREACHED();
+  }
 }
 
 struct BuildConv2dAttributes {
@@ -128,6 +130,12 @@ enum class GemmCShapeKind : uint8_t {
   k1D = 1,
   k2D_1xN = 2,
   k2D_MxN = 3,
+};
+
+enum class QuantizationKind : uint32_t {
+  kPerTensor = 0,
+  kPerChannel = 1,
+  kPerBlock = 2,
 };
 
 struct Conv2dParams {
@@ -199,6 +207,20 @@ struct QuantizationParams {
   uint32_t channel_block_size;
 };
 
+struct ScatterElementsParams {
+  OperandDataType input_data_type;
+  OperandDataType indices_data_type;
+  uint32_t rank;
+  uint32_t axis;
+  std::array<uint32_t, 8> input_dims;
+  // Dimension size of the indices tensor along `axis`.
+  uint32_t indices_axis_dim_size;
+  int64_t indices_fill_value;
+  bool is_input_constant;
+  bool is_indices_constant;
+  bool is_updates_constant;
+};
+
 auto AnyConv2dKind() {
   return fuzztest::ElementOf<mojom::Conv2d::Kind>(
       {mojom::Conv2d::Kind::kDirect, mojom::Conv2d::Kind::kTransposed});
@@ -208,6 +230,12 @@ auto AnyPool2dKind() {
   return fuzztest::ElementOf<mojom::Pool2d::Kind>(
       {mojom::Pool2d::Kind::kMaxPool2d, mojom::Pool2d::Kind::kAveragePool2d,
        mojom::Pool2d::Kind::kL2Pool2d});
+}
+
+auto AnyQuantizationKind() {
+  return fuzztest::ElementOf<QuantizationKind>({QuantizationKind::kPerTensor,
+                                                QuantizationKind::kPerChannel,
+                                                QuantizationKind::kPerBlock});
 }
 
 auto AnyRoundingType() {
@@ -246,9 +274,22 @@ auto AnyDimSizeOrZero() {
                                      std::numeric_limits<int32_t>::max()}));
 }
 
+auto AnyQuantizedDataType() {
+  return fuzztest::ElementOf<OperandDataType>(
+      {OperandDataType::kInt8, OperandDataType::kUint8});
+}
+
+// Returns a domain of OperandDataType values filtered by the given
+// SupportedDataTypes.
+auto AnyOperandDataTypeFor(SupportedDataTypes supported) {
+  std::vector<OperandDataType> types(supported.begin(), supported.end());
+  return fuzztest::ElementOf<OperandDataType>(std::move(types));
+}
+
 auto AnyConv2dParams() {
+  const auto& limits = GetContextPropertiesForTesting().data_type_limits;
   return fuzztest::StructOf<Conv2dParams>(
-      AnyFloatDataType(), AnyConv2dKind(),
+      AnyOperandDataTypeFor(limits.conv2d_input.data_types), AnyConv2dKind(),
       AnyDimSize(),                 // batch
       AnyDimSize(),                 // input_channels
       AnyDimSize(),                 // input_height
@@ -274,8 +315,9 @@ auto AnyConv2dParams() {
 }
 
 auto AnyGemmParams() {
+  const auto& limits = GetContextPropertiesForTesting().data_type_limits;
   return fuzztest::StructOf<GemmParams>(
-      AnyOperandDataType(),
+      AnyOperandDataTypeFor(limits.gemm_a.data_types),
       AnyDimSize(),  // m
       AnyDimSize(),  // k
       AnyDimSize(),  // n
@@ -299,8 +341,14 @@ auto AnyGemmParams() {
 }
 
 auto AnyPool2dParams() {
+  const auto& limits = GetContextPropertiesForTesting().data_type_limits;
+  SupportedDataTypes pool2d_data_types = limits.average_pool2d_input.data_types;
+  pool2d_data_types.PutAll(limits.l2_pool2d_input.data_types);
+  pool2d_data_types.PutAll(limits.max_pool2d_input.data_types);
+
   return fuzztest::StructOf<Pool2dParams>(
-      AnyOperandDataType(), AnyPool2dKind(), AnyRoundingType(),
+      AnyOperandDataTypeFor(pool2d_data_types), AnyPool2dKind(),
+      AnyRoundingType(),
       AnyDimSize(),                // batch
       AnyDimSize(),                // channels
       AnyDimSize(),                // input_height
@@ -324,6 +372,23 @@ auto AnyQuantizationParams() {
       AnyQuantizedDataType(), AnyQuantizationKind(),
       fuzztest::InRange<uint32_t>(  // channel_block_size
           1, std::numeric_limits<int16_t>::max()));
+}
+
+auto AnyScatterElementsParams() {
+  const auto& limits = GetContextPropertiesForTesting().data_type_limits;
+  return fuzztest::StructOf<ScatterElementsParams>(
+      AnyOperandDataTypeFor(limits.scatter_elements_input.data_types),
+      AnyOperandDataTypeFor(limits.scatter_elements_indices.data_types),
+      fuzztest::InRange<uint32_t>(1, 8),   // rank
+      fuzztest::InRange<uint32_t>(0, 7),   // axis
+      fuzztest::ArrayOf<8>(AnyDimSize()),  // input_dims
+      AnyDimSize(),                        // indices_axis_dim_size
+      fuzztest::OneOf(fuzztest::InRange<int64_t>(-10, 10),
+                      fuzztest::Arbitrary<int64_t>()),  // indices_fill_value
+      fuzztest::Arbitrary<bool>(),                      // is_input_constant
+      fuzztest::Arbitrary<bool>(),                      // is_indices_constant
+      fuzztest::Arbitrary<bool>()                       // is_updates_constant
+  );
 }
 
 void PopulateConv2dAttributesBase(Conv2dAttributesBase& attributes,
@@ -906,6 +971,8 @@ class WebNNGraphImplFuzzerImpl
   void SingleOpConv2d(Conv2dParams params, uint8_t seed_for_data);
   void SingleOpGemm(GemmParams params, uint8_t seed_for_data);
   void SingleOpPool2d(Pool2dParams params, uint8_t seed_for_data);
+  void SingleOpScatterElements(ScatterElementsParams params,
+                               uint8_t seed_for_data);
   void SubgraphDQConv2dQ(Conv2dParams conv2d_params,
                          QuantizationParams quantization_params,
                          uint8_t seed_for_data);
@@ -1122,6 +1189,94 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpPool2d(
   pool2d_attr.strides = {params.stride_height, params.stride_width};
   pool2d_attr.dilations = {params.dilation_height, params.dilation_width};
   builder.BuildPool2d(params.pool2d_kind, input_id, output_id, pool2d_attr);
+
+  if (!builder.IsValidGraphForTesting(this->context_properties())) {
+    return;
+  }
+  BuildAndCompute(this->context_, std::move(remote), builder.TakeGraphInfo(),
+                  std::move(named_inputs));
+
+  GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
+}
+
+template <typename BaseFixture>
+void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpScatterElements(
+    ScatterElementsParams params,
+    uint8_t seed_for_data) {
+  std::vector<uint32_t> input_dims(params.input_dims.begin(),
+                                   params.input_dims.begin() + params.rank);
+
+  std::vector<uint32_t> indices_dims = input_dims;
+  params.axis %= params.rank;
+  indices_dims[params.axis] = params.indices_axis_dim_size;
+
+  ASSIGN_OR_RETURN_VOID(
+      auto input_desc,
+      OperandDescriptor::Create(this->context_properties(),
+                                params.input_data_type, input_dims, ""));
+  ASSIGN_OR_RETURN_VOID(
+      auto indices_desc,
+      OperandDescriptor::Create(this->context_properties(),
+                                params.indices_data_type, indices_dims, ""));
+  ASSIGN_OR_RETURN_VOID(
+      auto updates_desc,
+      OperandDescriptor::Create(this->context_properties(),
+                                params.input_data_type, indices_dims, ""));
+
+  ASSIGN_OR_RETURN_VOID(auto output_desc,
+                        ValidateScatterElementsAndInferOutput(
+                            this->context_properties(), input_desc,
+                            indices_desc, updates_desc, params.axis, ""));
+
+  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
+      this->BindNewGraphBuilderRemote();
+  GraphInfoBuilder builder(remote);
+
+  std::vector<uint8_t> input_data(input_desc.PackedByteLength(), seed_for_data);
+  std::vector<uint8_t> updates_data(updates_desc.PackedByteLength(),
+                                    seed_for_data);
+
+  std::vector<uint8_t> indices_data = CreateBufferAsIndicesType(
+      indices_desc.PackedByteLength(), params.indices_data_type,
+      params.indices_fill_value);
+
+  OperandId input_id;
+  OperandId indices_id;
+  OperandId updates_id;
+
+  base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
+  if (params.is_input_constant) {
+    input_id = builder.BuildConstant(input_desc.shape(), input_desc.data_type(),
+                                     base::as_byte_span(input_data));
+  } else {
+    input_id =
+        builder.BuildInput("input", input_desc.shape(), input_desc.data_type());
+    named_inputs.insert({"input", input_data});
+  }
+  if (params.is_indices_constant) {
+    indices_id =
+        builder.BuildConstant(indices_desc.shape(), indices_desc.data_type(),
+                              base::as_byte_span(indices_data));
+  } else {
+    indices_id = builder.BuildInput("indices", indices_desc.shape(),
+                                    indices_desc.data_type());
+    named_inputs.insert({"indices", indices_data});
+  }
+  if (params.is_updates_constant) {
+    updates_id =
+        builder.BuildConstant(updates_desc.shape(), updates_desc.data_type(),
+                              base::as_byte_span(updates_data));
+  } else {
+    updates_id = builder.BuildInput("updates", updates_desc.shape(),
+                                    updates_desc.data_type());
+    named_inputs.insert({"updates", updates_data});
+  }
+
+  OperandId output_id = builder.BuildOutput("output", output_desc.shape(),
+                                            output_desc.data_type());
+
+  builder.BuildScatterElements(input_id, indices_id, updates_id, output_id,
+                               params.axis);
 
   if (!builder.IsValidGraphForTesting(this->context_properties())) {
     return;
@@ -1800,6 +1955,23 @@ WEBNN_FUZZ_TEST_F(SingleOpPool2d,
                                        /*is_input_constant=*/false,
                                    },
                                    /*seed_for_data=*/2}}));
+
+WEBNN_FUZZ_TEST_F(
+    SingleOpScatterElements,
+    .WithDomains(AnyScatterElementsParams(), fuzztest::Arbitrary<uint8_t>())
+        .WithSeeds({{ScatterElementsParams{
+                         /*input_data_type=*/OperandDataType::kFloat32,
+                         /*indices_data_type=*/OperandDataType::kInt32,
+                         /*rank=*/2,
+                         /*axis=*/1,
+                         /*input_dims=*/{6, 5, 1, 1, 1, 1, 1, 1},
+                         /*indices_axis_dim_size=*/2,
+                         /*indices_fill_value=*/0,
+                         /*is_input_constant=*/false,
+                         /*is_indices_constant=*/false,
+                         /*is_updates_constant=*/false,
+                     },
+                     /*seed_for_data=*/4}}));
 
 WEBNN_FUZZ_TEST_F(
     SubgraphDQConv2dQ,
