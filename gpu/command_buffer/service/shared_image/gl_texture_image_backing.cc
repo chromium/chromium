@@ -353,7 +353,6 @@ bool GLTextureImageBacking::UploadFromMemory(
     const std::vector<SkPixmap>& pixmaps) {
   DCHECK_EQ(pixmaps.size(), textures_.size());
   DCHECK(SupportsPixelUploadWithFormat(format()));
-  DCHECK(gl::GLContext::GetCurrent());
 
   for (size_t i = 0; i < textures_.size(); ++i) {
     if (!textures_[i].UploadFromMemory(pixmaps[i])) {
@@ -366,7 +365,6 @@ bool GLTextureImageBacking::UploadFromMemory(
 bool GLTextureImageBacking::ReadbackToMemory(
     const std::vector<SkPixmap>& pixmaps) {
   DCHECK_EQ(pixmaps.size(), textures_.size());
-  DCHECK(gl::GLContext::GetCurrent());
 
   // TODO(kylechar): Ideally there would be a usage that stated readback was
   // required so support could be verified at creation time and then asserted

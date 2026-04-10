@@ -468,8 +468,6 @@ crbug.com/402989074 [ win amd-0x7480 angle-d3d9 passthrough ] conformance/unifor
 # crbug.com/402989074 [ win amd-0x1900 angle-d3d9 passthrough ] conformance/uniforms/uniform-values-per-program.html [ Failure ]
 # crbug.com/402989074 [ win amd-0x150e angle-d3d9 passthrough ] conformance/uniforms/uniform-values-per-program.html [ Failure ]
 
-crbug.com/496618638 [ win angle-swiftshader arch-x86_64 passthrough ] conformance/extensions/oes-texture-float-linear.html [ RetryOnFailure ]
-
 ## win10 / angle-d3d11 / Passthrough command decoder failures ##
 crbug.com/40167934 [ angle-d3d11 arch-x86_64 debug-x64 no-clang-coverage nvidia passthrough target-cpu-64 win10 ] conformance/extensions/khr-parallel-shader-compile.html [ RetryOnFailure ]
 

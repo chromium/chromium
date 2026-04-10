@@ -81,6 +81,12 @@ class GLTextureHolder {
 
   raw_ptr<gles2::Texture> texture_ = nullptr;
   scoped_refptr<gles2::TexturePassthrough> passthrough_texture_;
+
+  // The GL context that was current when this holder was
+  // initialized. This is used to ensure the correct GL context is current
+  // during GL operations (e.g. UploadFromMemory, ReadbackToMemory).
+  scoped_refptr<gl::GLContext> context_;
+
   GLFormatDesc format_desc_;
   raw_ptr<gl::ProgressReporter> progress_reporter_ = nullptr;
 };
