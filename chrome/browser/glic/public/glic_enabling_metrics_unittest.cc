@@ -97,4 +97,61 @@ TEST(GlicProfileEnablementTest, RecordMetrics) {
       1);
 }
 
+TEST(GlicProfileEnablementTest, RecordFeatureDisabledReason) {
+  base::HistogramTester histograms;
+  GlicEnabling::ProfileEnablement enablement;
+
+  enablement.feature_disabled = true;
+  enablement.feature_flag_disabled = true;
+  enablement.disallowed_by_country_filter = true;
+  enablement.disallowed_by_locale_filter = true;
+  enablement.system_requirement_not_met = true;
+
+  enablement.RecordStartupMetrics();
+
+  histograms.ExpectBucketCount(
+      "Glic.GlobalEnabling.FeatureDisabledReason.Startup",
+      GlicEnabling::ProfileEnablement::FeatureDisabledReason::
+          kFeatureFlagDisabled,
+      1);
+  histograms.ExpectBucketCount(
+      "Glic.GlobalEnabling.FeatureDisabledReason.Startup",
+      GlicEnabling::ProfileEnablement::FeatureDisabledReason::kCountryDisabled,
+      1);
+  histograms.ExpectBucketCount(
+      "Glic.GlobalEnabling.FeatureDisabledReason.Startup",
+      GlicEnabling::ProfileEnablement::FeatureDisabledReason::kLocaleDisabled,
+      1);
+  histograms.ExpectBucketCount(
+      "Glic.GlobalEnabling.FeatureDisabledReason.Startup",
+      GlicEnabling::ProfileEnablement::FeatureDisabledReason::
+          kSystemRequirementNotMet,
+      1);
+  histograms.ExpectTotalCount(
+      "Glic.GlobalEnabling.FeatureDisabledReason.Startup", 4);
+
+  enablement.RecordSteadyStateMetrics();
+
+  histograms.ExpectBucketCount(
+      "Glic.GlobalEnabling.FeatureDisabledReason.SteadyState",
+      GlicEnabling::ProfileEnablement::FeatureDisabledReason::
+          kFeatureFlagDisabled,
+      1);
+  histograms.ExpectBucketCount(
+      "Glic.GlobalEnabling.FeatureDisabledReason.SteadyState",
+      GlicEnabling::ProfileEnablement::FeatureDisabledReason::kCountryDisabled,
+      1);
+  histograms.ExpectBucketCount(
+      "Glic.GlobalEnabling.FeatureDisabledReason.SteadyState",
+      GlicEnabling::ProfileEnablement::FeatureDisabledReason::kLocaleDisabled,
+      1);
+  histograms.ExpectBucketCount(
+      "Glic.GlobalEnabling.FeatureDisabledReason.SteadyState",
+      GlicEnabling::ProfileEnablement::FeatureDisabledReason::
+          kSystemRequirementNotMet,
+      1);
+  histograms.ExpectTotalCount(
+      "Glic.GlobalEnabling.FeatureDisabledReason.SteadyState", 4);
+}
+
 }  // namespace glic
