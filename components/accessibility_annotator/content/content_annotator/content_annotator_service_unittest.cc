@@ -310,7 +310,7 @@ TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_TwoUrlsOnlyOneCompletes) {
               Classify(testing::AllOf(
                   Field(&ContentClassificationInput::url, url2),
                   Field(&ContentClassificationInput::visit_id,
-                        Optional(history::VisitID(2))),
+                        Optional(static_cast<history::VisitID>(2))),
                   Field(&ContentClassificationInput::sensitivity_score,
                         Optional(testing::FloatEq(0.7f))),
                   Field(&ContentClassificationInput::navigation_timestamp,
@@ -605,6 +605,8 @@ TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_FullAnnotationReached) {
   EXPECT_EQ(cached_data->annotations,
             base::JSONReader::Read(data, base::JSON_PARSE_RFC)->GetDict());
   EXPECT_EQ(cached_data->page_title, "Test Title");
+  EXPECT_EQ(cached_data->navigation_timestamp, base_time);
+  EXPECT_EQ(cached_data->visit_id, static_cast<history::VisitID>(1));
 
   base::DictValue expected_classifier_results;
   expected_classifier_results.Set("title_keyword_result", "test category");
@@ -700,6 +702,8 @@ TEST_F(ContentAnnotatorServiceTest,
   EXPECT_EQ(cached_data->content_annotation->structured_data().orders(0).id(),
             "order_123");
   EXPECT_EQ(cached_data->page_title, "Test Title");
+  EXPECT_EQ(cached_data->navigation_timestamp, base_time);
+  EXPECT_EQ(cached_data->visit_id, static_cast<history::VisitID>(1));
 
   base::DictValue expected_classifier_results;
   expected_classifier_results.Set("title_keyword_result", "test category");

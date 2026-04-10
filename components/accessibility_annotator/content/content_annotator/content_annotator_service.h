@@ -123,17 +123,15 @@ class ContentAnnotatorService
 
   // Generates annotations for the given URL based on the provided
   // `page_context`.
-  void GenerateAnnotations(optimization_guide::proto::PageContext page_context,
-                           const GURL& url,
-                           std::optional<int> tab_id,
-                           base::DictValue classifier_results);
+  void GenerateAnnotations(
+      optimization_guide::proto::PageContext page_context,
+      const GURL& url,
+      AccessibilityAnnotatorBackend::ContentAnnotationsData data);
 
   // Handles the result of the model execution from `GenerateAnnotations`.
   void HandleModelExecutionResult(
       const GURL& url,
-      std::optional<int> tab_id,
-      std::string page_title,
-      base::DictValue classifier_results,
+      AccessibilityAnnotatorBackend::ContentAnnotationsData data,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 

@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string_view>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
 #include "base/types/optional_ref.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend_impl.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/optimization_guide/proto/features/content_annotation.pb.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -19,6 +21,16 @@ namespace accessibility_annotator {
 namespace {
 
 using ::base::test::DictionaryHasValues;
+
+AccessibilityAnnotatorBackend::ContentAnnotationsData
+CreateContentAnnotationsData(std::string_view page_title) {
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data;
+  data.page_title = std::string(page_title);
+  data.navigation_timestamp = base::Time::Now();
+  data.visit_id = static_cast<history::VisitID>(123);
+  data.tab_id = 123;
+  return data;
+}
 
 class MockBackendObserver : public AccessibilityAnnotatorBackend::Observer {
  public:
@@ -55,10 +67,11 @@ TEST_F(AccessibilityAnnotatorBackendTest, GetContentAnnotationsCacheData) {
   // Cache should be empty initially.
   ASSERT_FALSE(backend_->GetContentAnnotationsCacheData(url).has_value());
 
-  AccessibilityAnnotatorBackend::ContentAnnotationsData data;
-  data.page_title = page_title;
-  data.tab_id = 123;
+  base::Time now = base::Time::Now();
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data =
+      CreateContentAnnotationsData(page_title);
   data.annotations = annotations.Clone();
+  data.navigation_timestamp = now;
   data.classifier_results = classifier_results.Clone();
   backend_->SetContentAnnotationsCacheData(url, std::move(data));
 
@@ -71,6 +84,8 @@ TEST_F(AccessibilityAnnotatorBackendTest, GetContentAnnotationsCacheData) {
   EXPECT_EQ(*cached_data->tab_id, 123);
   EXPECT_EQ(cached_data->annotations, annotations);
   EXPECT_EQ(cached_data->classifier_results, classifier_results);
+  EXPECT_EQ(cached_data->visit_id, static_cast<history::VisitID>(123));
+  EXPECT_EQ(cached_data->navigation_timestamp, now);
 }
 
 TEST_F(AccessibilityAnnotatorBackendTest, GetDebugUICacheDataEmpty) {
@@ -88,9 +103,8 @@ TEST_F(AccessibilityAnnotatorBackendTest, GetDebugUICacheDataWithEntries) {
   base::DictValue classifier_results;
   classifier_results.Set("url_match_result", "test category");
 
-  AccessibilityAnnotatorBackend::ContentAnnotationsData data;
-  data.page_title = page_title;
-  data.tab_id = 123;
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data =
+      CreateContentAnnotationsData(page_title);
   data.annotations = annotations.Clone();
   data.classifier_results = classifier_results.Clone();
   backend_->SetContentAnnotationsCacheData(url, std::move(data));
@@ -124,8 +138,8 @@ TEST_F(AccessibilityAnnotatorBackendTest, GetDebugUICacheDataWithProtoEntries) {
   base::DictValue classifier_results;
   classifier_results.Set("url_match_result", "test category");
 
-  AccessibilityAnnotatorBackend::ContentAnnotationsData data;
-  data.page_title = page_title;
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data =
+      CreateContentAnnotationsData(page_title);
   data.classifier_results = classifier_results.Clone();
   data.content_annotation = content_annotation;
   backend_->SetContentAnnotationsCacheData(url, std::move(data));
@@ -165,8 +179,10 @@ TEST_F(AccessibilityAnnotatorBackendTest,
   content_annotation.mutable_structured_data()->add_orders()->set_id(
       "order_123");
 
-  AccessibilityAnnotatorBackend::ContentAnnotationsData data;
-  data.page_title = page_title;
+  base::Time now = base::Time::Now();
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data =
+      CreateContentAnnotationsData(page_title);
+  data.navigation_timestamp = now;
   data.content_annotation = content_annotation;
   backend_->SetContentAnnotationsCacheData(url, std::move(data));
 
@@ -185,6 +201,8 @@ TEST_F(AccessibilityAnnotatorBackendTest,
             1);
   EXPECT_EQ(cached_data->content_annotation->structured_data().orders(0).id(),
             "order_123");
+  EXPECT_EQ(cached_data->visit_id, static_cast<history::VisitID>(123));
+  EXPECT_EQ(cached_data->navigation_timestamp, now);
 }
 
 TEST_F(AccessibilityAnnotatorBackendTest, RemoveContentAnnotationsCacheData) {
@@ -192,17 +210,12 @@ TEST_F(AccessibilityAnnotatorBackendTest, RemoveContentAnnotationsCacheData) {
   GURL url2("https://example.com/2");
   GURL url3("https://example.com/3");
 
-  AccessibilityAnnotatorBackend::ContentAnnotationsData data1;
-  data1.page_title = "Page 1";
-  backend_->SetContentAnnotationsCacheData(url1, std::move(data1));
-
-  AccessibilityAnnotatorBackend::ContentAnnotationsData data2;
-  data2.page_title = "Page 2";
-  backend_->SetContentAnnotationsCacheData(url2, std::move(data2));
-
-  AccessibilityAnnotatorBackend::ContentAnnotationsData data3;
-  data3.page_title = "Page 3";
-  backend_->SetContentAnnotationsCacheData(url3, std::move(data3));
+  backend_->SetContentAnnotationsCacheData(
+      url1, CreateContentAnnotationsData("Page 1"));
+  backend_->SetContentAnnotationsCacheData(
+      url2, CreateContentAnnotationsData("Page 2"));
+  backend_->SetContentAnnotationsCacheData(
+      url3, CreateContentAnnotationsData("Page 3"));
 
   ASSERT_TRUE(backend_->GetContentAnnotationsCacheData(url1).has_value());
   ASSERT_TRUE(backend_->GetContentAnnotationsCacheData(url2).has_value());
@@ -221,13 +234,10 @@ TEST_F(AccessibilityAnnotatorBackendTest, ClearContentAnnotationsCache) {
   GURL url1("https://example.com/1");
   GURL url2("https://example.com/2");
 
-  AccessibilityAnnotatorBackend::ContentAnnotationsData data1;
-  data1.page_title = "Page 1";
-  backend_->SetContentAnnotationsCacheData(url1, std::move(data1));
-
-  AccessibilityAnnotatorBackend::ContentAnnotationsData data2;
-  data2.page_title = "Page 2";
-  backend_->SetContentAnnotationsCacheData(url2, std::move(data2));
+  backend_->SetContentAnnotationsCacheData(
+      url1, CreateContentAnnotationsData("Page 1"));
+  backend_->SetContentAnnotationsCacheData(
+      url2, CreateContentAnnotationsData("Page 2"));
 
   ASSERT_TRUE(backend_->GetContentAnnotationsCacheData(url1).has_value());
   ASSERT_TRUE(backend_->GetContentAnnotationsCacheData(url2).has_value());

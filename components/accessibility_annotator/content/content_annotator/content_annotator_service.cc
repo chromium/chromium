@@ -291,17 +291,23 @@ void ContentAnnotatorService::MaybeAnnotate(CacheIterator it) {
     page_context.set_title(complete_data.page_title.value());
     *page_context.mutable_annotated_page_content() =
         complete_data.annotated_page_content->data;
+
+    AccessibilityAnnotatorBackend::ContentAnnotationsData data;
+    data.page_title = complete_data.page_title.value();
+    data.tab_id = complete_data.tab_id;
+    data.navigation_timestamp = complete_data.navigation_timestamp.value();
+    data.classifier_results = std::move(classifier_values);
+    data.visit_id = complete_data.visit_id.value();
+
     GenerateAnnotations(std::move(page_context), complete_data.url,
-                        complete_data.tab_id, std::move(classifier_values));
+                        std::move(data));
   }
 }
 
 void ContentAnnotatorService::GenerateAnnotations(
     optimization_guide::proto::PageContext page_context,
     const GURL& url,
-    std::optional<int> tab_id,
-    base::DictValue classifier_results) {
-  std::string page_title = page_context.title();
+    AccessibilityAnnotatorBackend::ContentAnnotationsData data) {
   optimization_guide::proto::ContentAnnotationRequest request;
   *request.mutable_page_context() = std::move(page_context);
 
@@ -310,15 +316,12 @@ void ContentAnnotatorService::GenerateAnnotations(
       std::move(request),
       {.execution_timeout = features::kContentAnnotatorAnnotationTimeout.Get()},
       base::BindOnce(&ContentAnnotatorService::HandleModelExecutionResult,
-                     weak_ptr_factory_.GetWeakPtr(), url, tab_id,
-                     std::move(page_title), std::move(classifier_results)));
+                     weak_ptr_factory_.GetWeakPtr(), url, std::move(data)));
 }
 
 void ContentAnnotatorService::HandleModelExecutionResult(
     const GURL& url,
-    std::optional<int> tab_id,
-    std::string page_title,
-    base::DictValue classifier_results,
+    AccessibilityAnnotatorBackend::ContentAnnotationsData data,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   if (url.is_empty() || !url.is_valid()) {
@@ -336,10 +339,6 @@ void ContentAnnotatorService::HandleModelExecutionResult(
     return;
   }
 
-  AccessibilityAnnotatorBackend::ContentAnnotationsData data;
-  data.page_title = std::move(page_title);
-  data.tab_id = tab_id;
-  data.classifier_results = std::move(classifier_results);
   if (response->has_content_annotation()) {
     // Store ContentAnnotation if the response has one.
     std::optional<optimization_guide::proto::ContentAnnotation>
