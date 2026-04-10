@@ -522,7 +522,7 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
   per_user_topic_subscription_manager->UpdateSubscribedTopics(
       topics, kFakeInstanceIdToken);
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+      GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
   testing::Mock::VerifyAndClearExpectations(&identity_observer);
 
   // Initial backoff is 2 seconds with 20% jitter, so the minimum possible delay
