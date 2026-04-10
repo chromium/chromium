@@ -11,6 +11,7 @@
 #include "components/security_interstitials/content/captive_portal_blocking_page.h"
 #include "components/security_interstitials/content/https_only_mode_blocking_page.h"
 #include "components/security_interstitials/content/insecure_form_blocking_page.h"
+#include "components/security_interstitials/content/local_self_signed_blocking_page.h"
 #include "components/security_interstitials/content/mitm_software_blocking_page.h"
 #include "components/security_interstitials/content/security_blocking_page_factory.h"
 #include "components/security_interstitials/content/ssl_blocking_page.h"
@@ -40,6 +41,14 @@ class ChromeSecurityBlockingPageFactory : public SecurityBlockingPageFactory {
       int options_mask,
       const base::Time& time_triggered,
       const GURL& support_url) override;
+  std::unique_ptr<LocalSelfSignedBlockingPage>
+  CreateLocalSelfSignedBlockingPage(content::WebContents* web_contents,
+                                    net::Error cert_error,
+                                    const net::SSLInfo& ssl_info,
+                                    const GURL& request_url,
+                                    int options_mask,
+                                    const base::Time& time_triggered,
+                                    const GURL& support_url) override;
   std::unique_ptr<CaptivePortalBlockingPage> CreateCaptivePortalBlockingPage(
       content::WebContents* web_contents,
       const GURL& request_url,

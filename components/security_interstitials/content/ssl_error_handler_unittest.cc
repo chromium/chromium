@@ -152,19 +152,7 @@ class TestSSLErrorHandler : public SSLErrorHandler {
 class TestSSLErrorHandlerDelegate : public SSLErrorHandler::Delegate {
  public:
   TestSSLErrorHandlerDelegate(content::WebContents* web_contents,
-                              const net::SSLInfo& ssl_info)
-      : captive_portal_checked_(false),
-        os_reports_captive_portal_(false),
-        suggested_url_exists_(false),
-        suggested_url_checked_(false),
-        ssl_interstitial_shown_(false),
-        bad_clock_interstitial_shown_(false),
-        captive_portal_interstitial_shown_(false),
-        mitm_software_interstitial_shown_(false),
-        blocked_interception_interstitial_shown_(false),
-        redirected_to_suggested_url_(false),
-        is_overridable_error_(true),
-        has_blocked_interception_(false) {}
+                              const net::SSLInfo& ssl_info) {}
 
   TestSSLErrorHandlerDelegate(const TestSSLErrorHandlerDelegate&) = delete;
   TestSSLErrorHandlerDelegate& operator=(const TestSSLErrorHandlerDelegate&) =
@@ -190,6 +178,9 @@ class TestSSLErrorHandlerDelegate : public SSLErrorHandler::Delegate {
   bool blocked_interception_interstitial_shown() const {
     return blocked_interception_interstitial_shown_;
   }
+  bool local_self_signed_interstitial_shown() const {
+    return local_self_signed_interstitial_shown_;
+  }
   bool suggested_url_checked() const { return suggested_url_checked_; }
   bool redirected_to_suggested_url() const {
     return redirected_to_suggested_url_;
@@ -209,6 +200,7 @@ class TestSSLErrorHandlerDelegate : public SSLErrorHandler::Delegate {
     bad_clock_interstitial_shown_ = false;
     captive_portal_interstitial_shown_ = false;
     mitm_software_interstitial_shown_ = false;
+    local_self_signed_interstitial_shown_ = false;
     redirected_to_suggested_url_ = false;
     has_blocked_interception_ = false;
   }
@@ -250,6 +242,10 @@ class TestSSLErrorHandlerDelegate : public SSLErrorHandler::Delegate {
     blocked_interception_interstitial_shown_ = true;
   }
 
+  void ShowLocalSelfSignedInterstitial() override {
+    local_self_signed_interstitial_shown_ = true;
+  }
+
   void CheckSuggestedUrl(
       const GURL& suggested_url,
       CommonNameMismatchHandler::CheckUrlCallback callback) override {
@@ -270,18 +266,19 @@ class TestSSLErrorHandlerDelegate : public SSLErrorHandler::Delegate {
     return has_blocked_interception_;
   }
 
-  bool captive_portal_checked_;
-  bool os_reports_captive_portal_;
-  bool suggested_url_exists_;
-  bool suggested_url_checked_;
-  bool ssl_interstitial_shown_;
-  bool bad_clock_interstitial_shown_;
-  bool captive_portal_interstitial_shown_;
-  bool mitm_software_interstitial_shown_;
-  bool blocked_interception_interstitial_shown_;
-  bool redirected_to_suggested_url_;
-  bool is_overridable_error_;
-  bool has_blocked_interception_;
+  bool captive_portal_checked_ = false;
+  bool os_reports_captive_portal_ = false;
+  bool suggested_url_exists_ = false;
+  bool suggested_url_checked_ = false;
+  bool ssl_interstitial_shown_ = false;
+  bool bad_clock_interstitial_shown_ = false;
+  bool captive_portal_interstitial_shown_ = false;
+  bool mitm_software_interstitial_shown_ = false;
+  bool blocked_interception_interstitial_shown_ = false;
+  bool local_self_signed_interstitial_shown_ = false;
+  bool redirected_to_suggested_url_ = false;
+  bool is_overridable_error_ = true;
+  bool has_blocked_interception_ = false;
   CommonNameMismatchHandler::CheckUrlCallback suggested_url_callback_;
 };
 
@@ -1482,4 +1479,33 @@ TEST_F(SSLErrorHandlerTest, NonPrimaryMainframeShouldNotAffectSSLErrorHandler) {
   error_handler_ptr->DidStartNavigation(handle.get());
   // Make sure that the |SSLErrorHandler| is deleted.
   EXPECT_FALSE(SSLErrorHandler::FromWebContents(web_contents()));
+}
+
+TEST_F(SSLErrorHandlerTest, LocalSelfSignedInterstitial) {
+  base::HistogramTester histograms;
+  net::SSLInfo ssl_info;
+  ssl_info.cert = net::ImportCertFromFile(net::GetTestCertsDirectory(),
+                                          "subjectAltName_www_example_com.pem");
+  ssl_info.cert_status = net::CERT_STATUS_COMMON_NAME_INVALID;
+  ssl_info.public_key_hashes.push_back(kCertPublicKeyHashValue);
+
+  // Recreate error handler with the specific error.
+  std::unique_ptr<TestSSLErrorHandlerDelegate> delegate(
+      new TestSSLErrorHandlerDelegate(web_contents(), ssl_info));
+  TestSSLErrorHandlerDelegate* delegate_ptr = delegate.get();
+
+  auto error_handler = std::make_unique<TestSSLErrorHandler>(
+      std::move(delegate), web_contents(),
+      net::ERR_CERT_SELF_SIGNED_LOCAL_NETWORK, ssl_info,
+      /*network_time_tracker=*/nullptr, GURL() /*request_url*/, nullptr);
+
+  error_handler->StartHandlingError();
+  EXPECT_FALSE(delegate_ptr->ssl_interstitial_shown());
+  EXPECT_TRUE(delegate_ptr->local_self_signed_interstitial_shown());
+  histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 2);
+  histograms.ExpectBucketCount(SSLErrorHandler::GetHistogramNameForTesting(),
+                               SSLErrorHandler::HANDLE_ALL, 1);
+  histograms.ExpectBucketCount(
+      SSLErrorHandler::GetHistogramNameForTesting(),
+      SSLErrorHandler::SHOW_LOCAL_SELF_SIGNED_INTERSTITIAL, 1);
 }

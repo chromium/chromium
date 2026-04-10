@@ -14,6 +14,7 @@
 #include "components/security_interstitials/content/captive_portal_blocking_page.h"
 #include "components/security_interstitials/content/https_only_mode_blocking_page.h"
 #include "components/security_interstitials/content/insecure_form_blocking_page.h"
+#include "components/security_interstitials/content/local_self_signed_blocking_page.h"
 #include "components/security_interstitials/content/mitm_software_blocking_page.h"
 #include "components/security_interstitials/content/ssl_blocking_page.h"
 #include "components/security_interstitials/content/ssl_blocking_page_base.h"
@@ -43,6 +44,16 @@ class SecurityBlockingPageFactory {
       int options_mask,
       const base::Time& time_triggered,
       const GURL& support_url) = 0;
+
+  // Creates a local self-signed blocking page.
+  virtual std::unique_ptr<LocalSelfSignedBlockingPage>
+  CreateLocalSelfSignedBlockingPage(content::WebContents* web_contents,
+                                    net::Error cert_error,
+                                    const net::SSLInfo& ssl_info,
+                                    const GURL& request_url,
+                                    int options_mask,
+                                    const base::Time& time_triggered,
+                                    const GURL& support_url) = 0;
 
   // Creates a captive portal blocking page.
   virtual std::unique_ptr<CaptivePortalBlockingPage>

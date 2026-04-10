@@ -387,6 +387,7 @@ class SSLErrorHandlerDelegateImpl : public SSLErrorHandler::Delegate {
   void ShowBadClockInterstitial(const base::Time& now,
                                 ssl_errors::ClockState clock_state) override;
   void ShowBlockedInterceptionInterstitial() override;
+  void ShowLocalSelfSignedInterstitial() override;
   void ReportNetworkConnectivity(base::OnceClosure callback) override;
   bool HasBlockedInterception() const override;
 
@@ -500,6 +501,12 @@ void SSLErrorHandlerDelegateImpl::ShowBlockedInterceptionInterstitial() {
   OnBlockingPageReady(
       blocking_page_factory_->CreateBlockedInterceptionBlockingPage(
           web_contents_, cert_error_, request_url_, ssl_info_));
+}
+
+void SSLErrorHandlerDelegateImpl::ShowLocalSelfSignedInterstitial() {
+  OnBlockingPageReady(blocking_page_factory_->CreateLocalSelfSignedBlockingPage(
+      web_contents_, cert_error_, ssl_info_, request_url_, options_mask_,
+      base::Time::NowFromSystemTime(), GURL()));
 }
 
 void SSLErrorHandlerDelegateImpl::ReportNetworkConnectivity(
@@ -669,6 +676,10 @@ void SSLErrorHandler::StartHandlingError() {
 
   if (delegate_->HasBlockedInterception()) {
     return ShowBlockedInterceptionInterstitial();
+  }
+
+  if (cert_error_ == net::ERR_CERT_SELF_SIGNED_LOCAL_NETWORK) {
+    return ShowLocalSelfSignedInterstitial();
   }
 
   if (ssl_errors::ErrorInfo::NetErrorToErrorType(cert_error_) ==
@@ -896,6 +907,14 @@ void SSLErrorHandler::ShowBlockedInterceptionInterstitial() {
   // Show a blocking page. The interstitial owns the blocking page.
   RecordUMA(SHOW_BLOCKED_INTERCEPTION_INTERSTITIAL);
   delegate_->ShowBlockedInterceptionInterstitial();
+  // Once an interstitial is displayed, no need to keep the handler around.
+  // This is the equivalent of "delete this".
+  web_contents()->RemoveUserData(UserDataKey());
+}
+
+void SSLErrorHandler::ShowLocalSelfSignedInterstitial() {
+  RecordUMA(SHOW_LOCAL_SELF_SIGNED_INTERSTITIAL);
+  delegate_->ShowLocalSelfSignedInterstitial();
   // Once an interstitial is displayed, no need to keep the handler around.
   // This is the equivalent of "delete this".
   web_contents()->RemoveUserData(UserDataKey());

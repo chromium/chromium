@@ -104,6 +104,7 @@ class SSLErrorHandler : public content::WebContentsUserData<SSLErrorHandler>,
     OS_REPORTS_CAPTIVE_PORTAL = 12,
     SHOW_BLOCKED_INTERCEPTION_INTERSTITIAL = 13,
     SHOW_LEGACY_TLS_INTERSTITIAL = 14,  // Deprecated in M98.
+    SHOW_LOCAL_SELF_SIGNED_INTERSTITIAL = 15,
     SSL_ERROR_HANDLER_EVENT_COUNT
   };
 
@@ -129,6 +130,7 @@ class SSLErrorHandler : public content::WebContentsUserData<SSLErrorHandler>,
         const base::Time& now,
         ssl_errors::ClockState clock_state) = 0;
     virtual void ShowBlockedInterceptionInterstitial() = 0;
+    virtual void ShowLocalSelfSignedInterstitial() = 0;
     virtual void ReportNetworkConnectivity(base::OnceClosure callback) = 0;
     virtual bool HasBlockedInterception() const = 0;
   };
@@ -219,6 +221,7 @@ class SSLErrorHandler : public content::WebContentsUserData<SSLErrorHandler>,
                                 ssl_errors::ClockState clock_state);
   void ShowDynamicInterstitial(const DynamicInterstitialInfo interstitial);
   void ShowBlockedInterceptionInterstitial();
+  void ShowLocalSelfSignedInterstitial();
 
   // Gets the result of whether the suggested URL is valid. Displays
   // common name mismatch interstitial or ssl interstitial accordingly.

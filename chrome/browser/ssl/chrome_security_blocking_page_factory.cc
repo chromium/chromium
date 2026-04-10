@@ -169,6 +169,38 @@ ChromeSecurityBlockingPageFactory::CreateSSLPage(
   return page;
 }
 
+std::unique_ptr<LocalSelfSignedBlockingPage>
+ChromeSecurityBlockingPageFactory::CreateLocalSelfSignedBlockingPage(
+    content::WebContents* web_contents,
+    net::Error cert_error,
+    const net::SSLInfo& ssl_info,
+    const GURL& request_url,
+    int options_mask,
+    const base::Time& time_triggered,
+    const GURL& support_url) {
+  bool overridable = SSLBlockingPage::IsOverridable(options_mask);
+  std::unique_ptr<ContentMetricsHelper> metrics_helper(
+      CreateMetricsHelperAndStartRecording(
+          web_contents, request_url,
+          overridable ? "ssl_overridable" : "ssl_nonoverridable", overridable));
+
+  LogSafeBrowsingSecuritySensitiveAction(
+      safe_browsing::SafeBrowsingMetricsCollectorFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext())));
+
+  auto controller_client = std::make_unique<SSLErrorControllerClient>(
+      web_contents, ssl_info, cert_error, request_url,
+      std::move(metrics_helper), CreateSettingsPageHelper());
+
+  auto page = std::make_unique<LocalSelfSignedBlockingPage>(
+      web_contents, cert_error, ssl_info, request_url, options_mask,
+      time_triggered, support_url, overridable,
+      /*can_show_enhanced_protection_message=*/true,
+      std::move(controller_client));
+
+  return page;
+}
+
 std::unique_ptr<CaptivePortalBlockingPage>
 ChromeSecurityBlockingPageFactory::CreateCaptivePortalBlockingPage(
     content::WebContents* web_contents,

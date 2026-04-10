@@ -30,6 +30,8 @@ static_library("security_interstitial_page") {
     "insecure_form_tab_storage.h",
     "known_interception_disclosure_ui.cc",
     "known_interception_disclosure_ui.h",
+    "local_self_signed_blocking_page.cc",
+    "local_self_signed_blocking_page.h",
     "mitm_software_blocking_page.cc",
     "mitm_software_blocking_page.h",
     "security_blocking_page_factory.h",

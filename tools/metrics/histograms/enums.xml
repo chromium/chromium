@@ -25849,6 +25849,7 @@ Called by update_net_error_codes.py.-->
   <int value="12" label="OS_REPORTS_CAPTIVE_PORTAL"/>
   <int value="13" label="SHOW_BLOCKED_INTERCEPTION_INTERSTITIAL"/>
   <int value="14" label="SHOW_LEGACY_TLS_INTERSTITIAL"/>
+  <int value="15" label="SHOW_LOCAL_SELF_SIGNED_INTERSTITIAL"/>
 </enum>
 
 <enum name="SSLErrorTypes">
