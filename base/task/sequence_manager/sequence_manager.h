@@ -174,10 +174,6 @@ class BASE_EXPORT SequenceManager {
   // performs this initialization automatically.
   virtual void BindToCurrentThread() = 0;
 
-  // Returns the task runner the current task was posted on. Returns null if no
-  // task is currently running. Must be called on the bound thread.
-  virtual scoped_refptr<SequencedTaskRunner> GetTaskRunnerForCurrentTask() = 0;
-
   // Finishes the initialization for a SequenceManager created via
   // CreateUnboundSequenceManager(). Must not be called in any other
   // circumstances. The ownership of the pump is transferred to SequenceManager.

@@ -280,17 +280,6 @@ void SequenceManagerImpl::BindToCurrentThread() {
   CompleteInitializationOnBoundThread();
 }
 
-scoped_refptr<SequencedTaskRunner>
-SequenceManagerImpl::GetTaskRunnerForCurrentTask() {
-  DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  if (main_thread_only().task_execution_stack.empty()) {
-    return nullptr;
-  }
-  return main_thread_only()
-      .task_execution_stack.back()
-      .pending_task.task_runner;
-}
-
 void SequenceManagerImpl::CompleteInitializationOnBoundThread() {
   controller_->AddNestingObserver(this);
   main_thread_only().nesting_observer_registered_ = true;

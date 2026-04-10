@@ -113,7 +113,7 @@ TimeTicks WakeUp::latest_time() const {
 
 namespace internal {
 PostedTask::PostedTask(
-    scoped_refptr<SequencedTaskRunner> task_runner,
+    scoped_refptr<SingleThreadTaskRunner> task_runner,
     OnceClosure callback,
     Location location,
     TimeDelta delay,
@@ -129,7 +129,7 @@ PostedTask::PostedTask(
       delayed_task_handle_delegate(std::move(delayed_task_handle_delegate)) {}
 
 PostedTask::PostedTask(
-    scoped_refptr<SequencedTaskRunner> task_runner,
+    scoped_refptr<SingleThreadTaskRunner> task_runner,
     OnceClosure callback,
     Location location,
     TimeTicks delayed_run_time,

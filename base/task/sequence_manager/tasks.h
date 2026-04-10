@@ -16,7 +16,7 @@
 #include "base/task/delay_policy.h"
 #include "base/task/sequence_manager/delayed_task_handle_delegate.h"
 #include "base/task/sequence_manager/enqueue_order.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace base {
 namespace sequence_manager {
@@ -31,7 +31,7 @@ namespace internal {
 // Wrapper around PostTask method arguments and the assigned task type.
 // Eventually it becomes a PendingTask once accepted by a TaskQueueImpl.
 struct BASE_EXPORT PostedTask {
-  PostedTask(scoped_refptr<SequencedTaskRunner> task_runner,
+  PostedTask(scoped_refptr<SingleThreadTaskRunner> task_runner,
              OnceClosure callback,
              Location location,
              TimeDelta delay = base::TimeDelta(),
@@ -39,7 +39,7 @@ struct BASE_EXPORT PostedTask {
              TaskType task_type = kTaskTypeNone,
              WeakPtr<DelayedTaskHandleDelegate> delayed_task_handle_delegate =
                  nullptr);
-  PostedTask(scoped_refptr<SequencedTaskRunner> task_runner,
+  PostedTask(scoped_refptr<SingleThreadTaskRunner> task_runner,
              OnceClosure callback,
              Location location,
              TimeTicks delayed_run_time,
@@ -67,7 +67,7 @@ struct BASE_EXPORT PostedTask {
   subtle::DelayPolicy delay_policy = subtle::DelayPolicy::kFlexibleNoSooner;
   // The task runner this task is running on. Can be used by task runners that
   // support posting back to the "current sequence".
-  scoped_refptr<SequencedTaskRunner> task_runner;
+  scoped_refptr<SingleThreadTaskRunner> task_runner;
   // The delegate for the DelayedTaskHandle, if this task was posted through
   // PostCancelableDelayedTask(), nullptr otherwise.
   WeakPtr<DelayedTaskHandleDelegate> delayed_task_handle_delegate;
@@ -125,7 +125,7 @@ struct BASE_EXPORT Task : public PendingTask {
 
   // The task runner this task is running on. Can be used by task runners that
   // support posting back to the "current sequence".
-  scoped_refptr<SequencedTaskRunner> task_runner;
+  scoped_refptr<SingleThreadTaskRunner> task_runner;
 
   // Implement the intrusive heap contract.
   void SetHeapHandle(HeapHandle heap_handle);

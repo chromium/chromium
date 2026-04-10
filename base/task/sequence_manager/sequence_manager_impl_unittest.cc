@@ -498,18 +498,6 @@ class QueueTimeTaskObserver : public TaskObserver {
 
 }  // namespace
 
-TEST_P(SequenceManagerTest, GetCorrectTaskRunnerForCurrentTask) {
-  auto queue = CreateTaskQueue();
-
-  queue->task_runner()->PostTask(
-      FROM_HERE, BindLambdaForTesting([&] {
-        EXPECT_EQ(queue->task_runner(),
-                  sequence_manager()->GetTaskRunnerForCurrentTask());
-      }));
-
-  RunLoop().RunUntilIdle();
-}
-
 TEST_P(SequenceManagerTest, NowNotCalledIfUnneeded) {
   sequence_manager()->SetWorkBatchSize(6);
 
