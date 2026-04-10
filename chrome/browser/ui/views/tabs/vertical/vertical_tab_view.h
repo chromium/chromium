@@ -189,7 +189,10 @@ class VerticalTabView : public views::View,
   TabStyle::TabSelectionState GetSelectionState() const;
 
   bool IsDragging() const;
-  bool IsCollapsedWidth(int width) const;
+
+  static int UncollapsedMinWidth();
+  static int CollapsedWidth();
+
   bool IsInExpandOnHover(int width) const;
 
   const tabs::TabInterface* GetTabInterface() const;

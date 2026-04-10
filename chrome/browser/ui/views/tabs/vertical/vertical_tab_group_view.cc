@@ -55,7 +55,6 @@ constexpr int kGroupLineCollapsedLeadingPadding = 6;
 constexpr int kGroupLineCornerRadius = 4;
 constexpr int kGroupHeaderHeight = 26;
 constexpr int kGroupHeaderVerticalMargin = 4;
-constexpr int kTabLeadingPadding = 10;
 
 const TabGroup* GetTabGroupFromNode(TabCollectionNode* node) {
   CHECK(node);
@@ -163,7 +162,8 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
   // aligned with the header.
   if (tab_strip_collapse_state ==
       tabs::VerticalTabStripCollapseState::kExpanded) {
-    group_line_bounds.set_x((kTabLeadingPadding - kGroupLineWidth) / 2);
+    group_line_bounds.set_x(
+        (VerticalTabGroupView::kTabLeadingPadding - kGroupLineWidth) / 2);
     group_line_bounds.set_y(height);
   }
 
@@ -186,7 +186,7 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
                 tabs::VerticalTabStripCollapseState::kExpanded
             ? GetLayoutConstant(
                   LayoutConstant::kVerticalTabStripCollapsedHorizontalPadding)
-            : kTabLeadingPadding);
+            : VerticalTabGroupView::kTabLeadingPadding);
     // If width is bounded, child views should respect the width constraints
     // and take up the available width excluding trailing horizontal padding.
     if (size_bounds.width().is_bounded()) {
