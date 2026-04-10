@@ -2442,7 +2442,7 @@ config("chromium_code") {
       # with the sysroot where support is guaranteed. Clang is also required since
       # the system gcc is often patched to add _FORTIFY_SOURCE=2 which would conflict
       # with our definition.
-      if (use_sysroot && is_clang) {
+      if (use_sysroot && is_clang && !is_android) {
         fortify_level = "3"
       }
       defines += [ "_FORTIFY_SOURCE=" + fortify_level ]
