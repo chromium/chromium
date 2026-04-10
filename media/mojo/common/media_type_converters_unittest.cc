@@ -212,7 +212,7 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_CbcsEncryptedBuffer) {
   subsamples.push_back(SubsampleEntry(30, 40));
   subsamples.push_back(SubsampleEntry(50, 60));
 
-  EncryptionPattern pattern{1, 2};
+  auto pattern = EncryptionPattern::Create(1, 2);
 
   // Original.
   scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::CopyFrom(kData));

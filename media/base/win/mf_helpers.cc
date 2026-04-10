@@ -820,7 +820,12 @@ HRESULT CreateDecryptConfigFromSample(
             MFSampleExtension_Encryption_CryptByteBlock, &crypt_byte_block)) &&
         SUCCEEDED(mf_sample->GetUINT32(
             MFSampleExtension_Encryption_SkipByteBlock, &skip_byte_block))) {
-      encryption_pattern = EncryptionPattern(crypt_byte_block, skip_byte_block);
+      auto pattern =
+          EncryptionPattern::Create(crypt_byte_block, skip_byte_block);
+      if (!pattern) {
+        return MF_E_INVALID_STREAM_DATA;
+      }
+      encryption_pattern = *pattern;
     }
 
     DVLOG(3) << __func__ << ": encryption_pattern=" << encryption_pattern;

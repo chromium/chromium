@@ -151,8 +151,12 @@ scoped_refptr<DecoderBuffer> DecryptBitstreamBuffer(
   }
   std::optional<EncryptionPattern> pattern = std::nullopt;
   if (buffer_proto.has_pattern()) {
-    pattern.emplace(buffer_proto.pattern().cypher_bytes(),
-                    buffer_proto.pattern().clear_bytes());
+    pattern = EncryptionPattern::Create(buffer_proto.pattern().cypher_bytes(),
+                                        buffer_proto.pattern().clear_bytes());
+    if (!pattern) {
+      DVLOG(2) << "Invalid encryption pattern";
+      return nullptr;
+    }
   }
   // Now create the DecryptConfig and set it in the decoder buffer.
   scoped_refptr<DecoderBuffer> buffer = bitstream_buffer.ToDecoderBuffer(

@@ -108,10 +108,14 @@ static scoped_refptr<media::DecoderBuffer> DecoderBufferFrom(
         key_id_string, iv_string, subsamples));
   } else {
     DCHECK_EQ(input_buffer.encryption_scheme, cdm::EncryptionScheme::kCbcs);
+    auto pattern =
+        media::EncryptionPattern::Create(input_buffer.pattern.crypt_byte_block,
+                                         input_buffer.pattern.skip_byte_block);
+    if (!pattern) {
+      return nullptr;
+    }
     output_buffer->set_decrypt_config(media::DecryptConfig::CreateCbcsConfig(
-        key_id_string, iv_string, subsamples,
-        media::EncryptionPattern(input_buffer.pattern.crypt_byte_block,
-                                 input_buffer.pattern.skip_byte_block)));
+        key_id_string, iv_string, subsamples, *pattern));
   }
 
   return output_buffer;

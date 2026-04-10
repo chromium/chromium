@@ -78,8 +78,12 @@ bool StructTraits<chromeos::cdm::mojom::EncryptionPatternDataView,
                   media::EncryptionPattern>::
     Read(chromeos::cdm::mojom::EncryptionPatternDataView input,
          media::EncryptionPattern* output) {
-  *output = media::EncryptionPattern(input.crypt_byte_block(),
-                                     input.skip_byte_block());
+  auto pattern = media::EncryptionPattern::Create(input.crypt_byte_block(),
+                                                  input.skip_byte_block());
+  if (!pattern) {
+    return false;
+  }
+  *output = *pattern;
   return true;
 }
 

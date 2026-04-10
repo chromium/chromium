@@ -129,7 +129,7 @@ TEST(MojoDecoderBufferConverterTest, ConvertDecoderBuffer_EncryptedBuffer) {
 
   // Test 'cbcs'.
   buffer->set_decrypt_config(DecryptConfig::CreateCbcsConfig(
-      kKeyId, kIv, subsamples, EncryptionPattern(5, 6)));
+      kKeyId, kIv, subsamples, EncryptionPattern::Create(5, 6)));
   {
     MojoDecoderBufferConverter converter;
     converter.ConvertAndVerify(buffer);

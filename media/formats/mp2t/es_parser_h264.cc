@@ -463,8 +463,8 @@ bool EsParserH264::EmitFrame(int64_t access_unit_pos,
             DecryptConfig::CreateCbcsConfig(
                 base_decrypt_config->key_id(), base_decrypt_config->iv(),
                 subsamples,
-                EncryptionPattern(kSampleAESEncryptBlocks,
-                                  kSampleAESSkipBlocks)));
+                EncryptionPattern::Create(kSampleAESEncryptBlocks,
+                                          kSampleAESSkipBlocks)));
         break;
     }
   }

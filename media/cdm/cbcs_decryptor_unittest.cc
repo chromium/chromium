@@ -12,10 +12,12 @@
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/strings/string_view_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "crypto/aes_cbc.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"
+#include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -121,7 +123,7 @@ TEST(CbcsDecryptorTest, OneBlock) {
       {0, static_cast<uint32_t>(encrypted_block.size())}};
 
   auto encrypted_buffer = CreateEncryptedBuffer(
-      encrypted_block, kIv, subsamples, EncryptionPattern(1, 9));
+      encrypted_block, kIv, subsamples, EncryptionPattern::Create(1, 9));
   EXPECT_EQ(kOneBlock,
             base::as_byte_span(DecryptWithKey(encrypted_buffer, kKey)));
 }
@@ -135,7 +137,7 @@ TEST(CbcsDecryptorTest, AdditionalData) {
       {0, static_cast<uint32_t>(encrypted_block.size())}};
 
   auto encrypted_buffer = CreateEncryptedBuffer(
-      encrypted_block, kIv, subsamples, EncryptionPattern(1, 9));
+      encrypted_block, kIv, subsamples, EncryptionPattern::Create(1, 9));
   encrypted_buffer->set_timestamp(base::Days(2));
   encrypted_buffer->set_duration(base::Minutes(5));
   encrypted_buffer->set_is_key_frame(true);
@@ -162,7 +164,7 @@ TEST(CbcsDecryptorTest, DifferentPattern) {
       {0, static_cast<uint32_t>(encrypted_block.size())}};
 
   auto encrypted_buffer = CreateEncryptedBuffer(
-      encrypted_block, kIv, subsamples, EncryptionPattern(1, 0));
+      encrypted_block, kIv, subsamples, EncryptionPattern::Create(1, 0));
   EXPECT_EQ(kOneBlock,
             base::as_byte_span(DecryptWithKey(encrypted_buffer, kKey)));
 }
@@ -177,12 +179,15 @@ TEST(CbcsDecryptorTest, EmptyPattern) {
 
   // Pattern 0:0 treats the buffer as all encrypted.
   auto encrypted_buffer = CreateEncryptedBuffer(
-      encrypted_block, kIv, subsamples, EncryptionPattern(0, 0));
+      encrypted_block, kIv, subsamples, EncryptionPattern::Create(0, 0));
   EXPECT_EQ(kOneBlock,
             base::as_byte_span(DecryptWithKey(encrypted_buffer, kKey)));
 }
 
 TEST(CbcsDecryptorTest, PatternTooLarge) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kValidateEncryptionPatternSize);
+
   auto encrypted_block = Encrypt(kOneBlock, kKey, kIv);
   DCHECK_EQ(kBlockSize, encrypted_block.size());
 
@@ -192,7 +197,7 @@ TEST(CbcsDecryptorTest, PatternTooLarge) {
 
   // Pattern 100:0 is too large, so decryption will fail.
   auto encrypted_buffer = CreateEncryptedBuffer(
-      encrypted_block, kIv, subsamples, EncryptionPattern(100, 0));
+      encrypted_block, kIv, subsamples, EncryptionPattern::Create(100, 0));
   EXPECT_EQ(std::vector<uint8_t>(), DecryptWithKey(encrypted_buffer, kKey));
 }
 
@@ -203,7 +208,7 @@ TEST(CbcsDecryptorTest, NoSubsamples) {
   std::vector<SubsampleEntry> subsamples = {};
 
   auto encrypted_buffer = CreateEncryptedBuffer(
-      encrypted_block, kIv, subsamples, EncryptionPattern(1, 9));
+      encrypted_block, kIv, subsamples, EncryptionPattern::Create(1, 9));
   EXPECT_EQ(kOneBlock,
             base::as_byte_span(DecryptWithKey(encrypted_buffer, kKey)));
 }
@@ -216,7 +221,7 @@ TEST(CbcsDecryptorTest, BadSubsamples) {
       {0, static_cast<uint32_t>(encrypted_block.size() + 1)}};
 
   auto encrypted_buffer = CreateEncryptedBuffer(
-      encrypted_block, kIv, subsamples, EncryptionPattern(1, 0));
+      encrypted_block, kIv, subsamples, EncryptionPattern::Create(1, 0));
   EXPECT_EQ(std::vector<uint8_t>(), DecryptWithKey(encrypted_buffer, kKey));
 }
 
@@ -235,7 +240,7 @@ TEST(CbcsDecryptorTest, InvalidIv) {
   });
   // clang-format on
   auto encrypted_buffer = CreateEncryptedBuffer(
-      encrypted_block, kBadIv, subsamples, EncryptionPattern(1, 0));
+      encrypted_block, kBadIv, subsamples, EncryptionPattern::Create(1, 0));
   EXPECT_NE(kOneBlock,
             base::as_byte_span(DecryptWithKey(encrypted_buffer, kKey)));
 }
@@ -255,7 +260,7 @@ TEST(CbcsDecryptorTest, InvalidKey) {
   });
   // clang-format on
   auto encrypted_buffer = CreateEncryptedBuffer(
-      encrypted_block, kIv, subsamples, EncryptionPattern(1, 0));
+      encrypted_block, kIv, subsamples, EncryptionPattern::Create(1, 0));
   EXPECT_NE(kOneBlock,
             base::as_byte_span(DecryptWithKey(encrypted_buffer, kBadKey)));
 }
@@ -266,8 +271,8 @@ TEST(CbcsDecryptorTest, PartialBlock) {
   std::vector<SubsampleEntry> subsamples = {
       {0, static_cast<uint32_t>(kPartialBlock.size())}};
 
-  auto encrypted_buffer = CreateEncryptedBuffer(kPartialBlock, kIv, subsamples,
-                                                EncryptionPattern(1, 0));
+  auto encrypted_buffer = CreateEncryptedBuffer(
+      kPartialBlock, kIv, subsamples, EncryptionPattern::Create(1, 0));
   EXPECT_EQ(kPartialBlock,
             base::as_byte_span(DecryptWithKey(encrypted_buffer, kKey)));
 }
@@ -284,7 +289,7 @@ TEST(CbcsDecryptorTest, SingleBlockWithExtraData) {
       {0, static_cast<uint32_t>(encrypted_block.size())}};
 
   auto encrypted_buffer = CreateEncryptedBuffer(
-      encrypted_block, kIv, subsamples, EncryptionPattern(1, 0));
+      encrypted_block, kIv, subsamples, EncryptionPattern::Create(1, 0));
   EXPECT_EQ(expected_result, DecryptWithKey(encrypted_buffer, kKey));
 }
 
@@ -293,8 +298,8 @@ TEST(CbcsDecryptorTest, SkipBlock) {
   std::vector<SubsampleEntry> subsamples = {
       {static_cast<uint32_t>(kOneBlock.size()), 0}};
 
-  auto encrypted_buffer = CreateEncryptedBuffer(kOneBlock, kIv, subsamples,
-                                                EncryptionPattern(1, 0));
+  auto encrypted_buffer = CreateEncryptedBuffer(
+      kOneBlock, kIv, subsamples, EncryptionPattern::Create(1, 0));
   EXPECT_EQ(kOneBlock,
             base::as_byte_span(DecryptWithKey(encrypted_buffer, kKey)));
 }
@@ -314,8 +319,8 @@ TEST(CbcsDecryptorTest, MultipleBlocks) {
   auto expected_result = Repeat(kOneBlock, 4);
   std::vector<SubsampleEntry> subsamples = {{0, 4 * kBlockSize}};
 
-  auto encrypted_buffer = CreateEncryptedBuffer(input_data, kIv, subsamples,
-                                                EncryptionPattern(1, 1));
+  auto encrypted_buffer = CreateEncryptedBuffer(
+      input_data, kIv, subsamples, EncryptionPattern::Create(1, 1));
   EXPECT_EQ(expected_result,
             base::as_byte_span(DecryptWithKey(encrypted_buffer, kKey)));
 }
@@ -331,7 +336,7 @@ TEST(CbcsDecryptorTest, PartialPattern) {
   std::vector<SubsampleEntry> subsamples = {{0, 4 * kBlockSize}};
 
   auto encrypted_buffer = CreateEncryptedBuffer(
-      encrypted_block, kIv, subsamples, EncryptionPattern(8, 2));
+      encrypted_block, kIv, subsamples, EncryptionPattern::Create(8, 2));
   EXPECT_EQ(expected_result,
             base::as_byte_span(DecryptWithKey(encrypted_buffer, kKey)));
 }
@@ -353,8 +358,8 @@ TEST(CbcsDecryptorTest, SkipBlocks) {
   auto expected_result = Repeat(kOneBlock, 8);
   std::vector<SubsampleEntry> subsamples = {{kBlockSize, 7 * kBlockSize}};
 
-  auto encrypted_buffer = CreateEncryptedBuffer(input_data, kIv, subsamples,
-                                                EncryptionPattern(2, 1));
+  auto encrypted_buffer = CreateEncryptedBuffer(
+      input_data, kIv, subsamples, EncryptionPattern::Create(2, 1));
   EXPECT_EQ(expected_result,
             base::as_byte_span(DecryptWithKey(encrypted_buffer, kKey)));
 }
@@ -373,8 +378,8 @@ TEST(CbcsDecryptorTest, MultipleSubsamples) {
   std::vector<SubsampleEntry> subsamples = {
       {0, kBlockSize}, {0, kBlockSize}, {0, kBlockSize}};
 
-  auto encrypted_buffer = CreateEncryptedBuffer(input_data, kIv, subsamples,
-                                                EncryptionPattern(1, 0));
+  auto encrypted_buffer = CreateEncryptedBuffer(
+      input_data, kIv, subsamples, EncryptionPattern::Create(1, 0));
   EXPECT_EQ(expected_result,
             base::as_byte_span(DecryptWithKey(encrypted_buffer, kKey)));
 }
@@ -397,8 +402,8 @@ TEST(CbcsDecryptorTest, MultipleSubsamplesWithClearBytes) {
                                             {kBlockSize - 1, kBlockSize + 10},
                                             {kBlockSize - 10, kBlockSize}};
 
-  auto encrypted_buffer = CreateEncryptedBuffer(input_data, kIv, subsamples,
-                                                EncryptionPattern(1, 0));
+  auto encrypted_buffer = CreateEncryptedBuffer(
+      input_data, kIv, subsamples, EncryptionPattern::Create(1, 0));
   EXPECT_EQ(expected_result,
             base::as_byte_span(DecryptWithKey(encrypted_buffer, kKey)));
 }

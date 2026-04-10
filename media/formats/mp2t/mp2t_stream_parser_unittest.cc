@@ -126,8 +126,8 @@ std::string DecryptBuffer(const StreamParserBuffer& buffer,
   // so only the video stream uses pattern decryption. |has_pattern| is only
   // used by DecryptSampleAES(), which assumes a {1,9} pattern if
   // |has_pattern| = true.
-  bool has_pattern =
-      buffer.decrypt_config()->encryption_pattern() == EncryptionPattern(1, 9);
+  bool has_pattern = buffer.decrypt_config()->encryption_pattern() ==
+                     EncryptionPattern::Create(1, 9);
 
   std::string key;
   EXPECT_TRUE(

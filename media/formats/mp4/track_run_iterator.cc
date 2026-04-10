@@ -374,9 +374,12 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
         tri.encryption_scheme = sinf->IsCbcsEncryptionScheme()
                                     ? EncryptionScheme::kCbcs
                                     : EncryptionScheme::kCenc;
-        tri.encryption_pattern =
-            EncryptionPattern(track_encryption->default_crypt_byte_block,
-                              track_encryption->default_skip_byte_block);
+        auto pattern = EncryptionPattern::Create(
+            track_encryption->default_crypt_byte_block,
+            track_encryption->default_skip_byte_block);
+        RCHECK_MEDIA_LOGGED(pattern.has_value(), media_log_,
+                            "Invalid encryption pattern.");
+        tri.encryption_pattern = *pattern;
       }
 
       // Initialize aux_info variables only if no sample encryption entries.
@@ -771,9 +774,13 @@ std::unique_ptr<DecryptConfig> TrackRunIterator::GetDecryptConfig() {
         (index == 0)
             ? track_encryption().default_skip_byte_block
             : GetSampleEncryptionInfoEntry(*run_itr_, index)->skip_byte_block;
+    auto pattern = EncryptionPattern::Create(encrypt_blocks, skip_blocks);
+    if (!pattern) {
+      MEDIA_LOG(ERROR, media_log_) << "Invalid encryption pattern.";
+      return nullptr;
+    }
     return DecryptConfig::CreateCbcsConfig(
-        key_id, iv, sample_encryption_entry.subsamples,
-        EncryptionPattern(encrypt_blocks, skip_blocks));
+        key_id, iv, sample_encryption_entry.subsamples, *pattern);
   }
 
   return DecryptConfig::CreateCencConfig(key_id, iv,

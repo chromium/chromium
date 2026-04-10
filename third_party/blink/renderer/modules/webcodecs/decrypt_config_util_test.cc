@@ -56,7 +56,7 @@ TEST(DecryptConfigUtilTest, CreateCbcsWithoutPattern) {
 
 TEST(DecryptConfigUtilTest, CreateCbcsWithPattern) {
   test::TaskEnvironment task_environment;
-  const media::EncryptionPattern kPattern(1, 2);
+  const auto kPattern = media::EncryptionPattern::Create(1, 2);
 
   auto expected_media_config =
       CreateTestDecryptConfig(media::EncryptionScheme::kCbcs, kPattern);

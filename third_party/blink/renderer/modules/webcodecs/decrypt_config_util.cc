@@ -41,8 +41,13 @@ std::unique_ptr<media::DecryptConfig> CreateMediaDecryptConfig(
   DCHECK_EQ(scheme, "cbcs");
   std::optional<media::EncryptionPattern> encryption_pattern;
   if (js_config.hasEncryptionPattern()) {
-    encryption_pattern.emplace(js_config.encryptionPattern()->cryptByteBlock(),
-                               js_config.encryptionPattern()->skipByteBlock());
+    auto pattern = media::EncryptionPattern::Create(
+        js_config.encryptionPattern()->cryptByteBlock(),
+        js_config.encryptionPattern()->skipByteBlock());
+    if (!pattern) {
+      return nullptr;
+    }
+    encryption_pattern = pattern;
   }
   return media::DecryptConfig::CreateCbcsConfig(
       std::move(key_id_str), std::move(iv_str), subsamples, encryption_pattern);

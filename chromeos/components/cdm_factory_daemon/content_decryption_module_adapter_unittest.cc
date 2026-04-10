@@ -518,7 +518,7 @@ TEST_F(ContentDecryptionModuleAdapterTest, Decrypt_Failure) {
   scoped_refptr<media::DecoderBuffer> encrypted_buffer =
       CreateDecoderBuffer(kFakeEncryptedData);
   encrypted_buffer->set_decrypt_config(media::DecryptConfig::CreateCbcsConfig(
-      kFakeKeyId, kFakeIv, {}, media::EncryptionPattern(6, 9)));
+      kFakeKeyId, kFakeIv, {}, media::EncryptionPattern::Create(6, 9)));
   cdm_adapter_->Decrypt(media::Decryptor::kVideo, encrypted_buffer,
                         callback.Get());
   base::RunLoop().RunUntilIdle();
@@ -537,7 +537,7 @@ TEST_F(ContentDecryptionModuleAdapterTest, Decrypt_NoKey) {
   scoped_refptr<media::DecoderBuffer> encrypted_buffer =
       CreateDecoderBuffer(kFakeEncryptedData);
   encrypted_buffer->set_decrypt_config(media::DecryptConfig::CreateCbcsConfig(
-      kFakeKeyId, kFakeIv, {}, media::EncryptionPattern(6, 9)));
+      kFakeKeyId, kFakeIv, {}, media::EncryptionPattern::Create(6, 9)));
   cdm_adapter_->Decrypt(media::Decryptor::kVideo, encrypted_buffer,
                         callback.Get());
   base::RunLoop().RunUntilIdle();
@@ -558,8 +558,8 @@ TEST_F(ContentDecryptionModuleAdapterTest, Decrypt_MismatchedSubsamples) {
 
 TEST_F(ContentDecryptionModuleAdapterTest, Decrypt_Success) {
   std::unique_ptr<media::DecryptConfig> expected_decrypt_config =
-      media::DecryptConfig::CreateCbcsConfig(kFakeKeyId, kFakeIv, {},
-                                             media::EncryptionPattern(6, 9));
+      media::DecryptConfig::CreateCbcsConfig(
+          kFakeKeyId, kFakeIv, {}, media::EncryptionPattern::Create(6, 9));
   EXPECT_CALL(
       *mock_daemon_cdm_,
       Decrypt(kFakeEncryptedData,
@@ -587,7 +587,7 @@ TEST_F(ContentDecryptionModuleAdapterTest, Decrypt_Success) {
       CreateDecoderBuffer(kFakeEncryptedData);
   encrypted_buffer->set_is_key_frame(true);
   encrypted_buffer->set_decrypt_config(media::DecryptConfig::CreateCbcsConfig(
-      kFakeKeyId, kFakeIv, {}, media::EncryptionPattern(6, 9)));
+      kFakeKeyId, kFakeIv, {}, media::EncryptionPattern::Create(6, 9)));
   cdm_adapter_->Decrypt(media::Decryptor::kVideo, encrypted_buffer,
                         callback.Get());
   base::RunLoop().RunUntilIdle();
@@ -619,8 +619,8 @@ TEST_F(ContentDecryptionModuleAdapterTest, Decrypt_SecureHandleUnencrypted) {
 
 TEST_F(ContentDecryptionModuleAdapterTest, Decrypt_SecureHandleEncrypted) {
   std::unique_ptr<media::DecryptConfig> expected_decrypt_config =
-      media::DecryptConfig::CreateCbcsConfig(kFakeKeyId, kFakeIv, {},
-                                             media::EncryptionPattern(6, 9));
+      media::DecryptConfig::CreateCbcsConfig(
+          kFakeKeyId, kFakeIv, {}, media::EncryptionPattern::Create(6, 9));
   EXPECT_CALL(*mock_daemon_cdm_,
               Decrypt(kFakeEncryptedData,
                       MatchesDecryptConfig(&expected_decrypt_config), true,
@@ -637,7 +637,7 @@ TEST_F(ContentDecryptionModuleAdapterTest, Decrypt_SecureHandleEncrypted) {
       CreateDecoderBuffer(kFakeEncryptedData);
   encrypted_buffer->set_is_key_frame(true);
   encrypted_buffer->set_decrypt_config(media::DecryptConfig::CreateCbcsConfig(
-      kFakeKeyId, kFakeIv, {}, media::EncryptionPattern(6, 9)));
+      kFakeKeyId, kFakeIv, {}, media::EncryptionPattern::Create(6, 9)));
   encrypted_buffer->WritableSideData().secure_handle = kFakeSecureHandle;
   base::MockCallback<media::Decryptor::DecryptCB> callback;
   EXPECT_CALL(callback, Run(media::Decryptor::kSuccess,

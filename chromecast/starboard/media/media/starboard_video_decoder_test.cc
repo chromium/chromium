@@ -298,9 +298,9 @@ TEST_F(StarboardVideoDecoderTest, PopulatesDrmInfoInSamples) {
   EXPECT_EQ(actual_drm_info.encryption_scheme,
             kStarboardDrmEncryptionSchemeAesCbc);
   EXPECT_EQ(actual_drm_info.encryption_pattern.crypt_byte_block,
-            encryption_pattern.crypt_byte_block());
+            encryption_pattern->crypt_byte_block());
   EXPECT_EQ(actual_drm_info.encryption_pattern.skip_byte_block,
-            encryption_pattern.skip_byte_block());
+            encryption_pattern->skip_byte_block());
   EXPECT_THAT(std::string(reinterpret_cast<const char*>(
                               actual_drm_info.initialization_vector),
                           actual_drm_info.initialization_vector_size),
@@ -437,9 +437,9 @@ TEST_F(StarboardVideoDecoderTest,
   EXPECT_EQ(actual_drm_info.encryption_scheme,
             kStarboardDrmEncryptionSchemeAesCbc);
   EXPECT_EQ(actual_drm_info.encryption_pattern.crypt_byte_block,
-            encryption_pattern.crypt_byte_block());
+            encryption_pattern->crypt_byte_block());
   EXPECT_EQ(actual_drm_info.encryption_pattern.skip_byte_block,
-            encryption_pattern.skip_byte_block());
+            encryption_pattern->skip_byte_block());
   EXPECT_THAT(std::string(reinterpret_cast<const char*>(
                               actual_drm_info.initialization_vector),
                           actual_drm_info.initialization_vector_size),

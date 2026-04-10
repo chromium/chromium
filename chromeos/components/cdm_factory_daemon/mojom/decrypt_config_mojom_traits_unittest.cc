@@ -11,7 +11,9 @@
 namespace chromeos {
 
 TEST(DecryptConfigStructTraitsTest, ConvertEncryptionPattern) {
-  auto input = media::EncryptionPattern(22, 42);
+  auto pattern_opt = media::EncryptionPattern::Create(1, 2);
+  ASSERT_TRUE(pattern_opt.has_value());
+  auto input = *pattern_opt;
   std::vector<uint8_t> data =
       chromeos::cdm::mojom::EncryptionPattern::Serialize(&input);
 
@@ -40,7 +42,7 @@ TEST(DecryptConfigStructTraitsTest, ConvertDecryptConfig) {
           media::EncryptionScheme::kCbcs, "FAKEKEY",
           std::string(media::DecryptConfig::kDecryptionKeySize, '1'),
           std::vector<media::SubsampleEntry>({media::SubsampleEntry(1, 3)}),
-          std::make_optional<media::EncryptionPattern>(22, 42));
+          media::EncryptionPattern::Create(1, 2));
 
   std::vector<uint8_t> data =
       chromeos::cdm::mojom::DecryptConfig::Serialize(&input);

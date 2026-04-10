@@ -50,8 +50,8 @@ TEST(DecryptConfigTest, CencConstruction) {
 }
 
 TEST(DecryptConfigTest, CbcsConstruction) {
-  auto config = DecryptConfig::CreateCbcsConfig(kDefaultKeyId, kDefaultIV, {},
-                                                EncryptionPattern(1, 2));
+  auto config = DecryptConfig::CreateCbcsConfig(
+      kDefaultKeyId, kDefaultIV, {}, EncryptionPattern::Create(1, 2));
   EXPECT_EQ(config->key_id(), kDefaultKeyId);
   EXPECT_EQ(config->iv(), kDefaultIV);
   EXPECT_EQ(config->subsamples().size(), 0u);
@@ -63,7 +63,7 @@ TEST(DecryptConfigTest, CbcsConstruction) {
   // Now with multiple subsample entries.
   config = DecryptConfig::CreateCbcsConfig(kDefaultKeyId, kAlternateIV,
                                            {{1, 2}, {3, 4}, {5, 6}, {7, 8}},
-                                           EncryptionPattern(1, 0));
+                                           EncryptionPattern::Create(1, 0));
   EXPECT_EQ(config->key_id(), kDefaultKeyId);
   EXPECT_EQ(config->iv(), kAlternateIV);
   EXPECT_EQ(config->subsamples().size(), 4u);
@@ -92,8 +92,8 @@ TEST(DecryptConfigTest, Matches) {
   auto config1 = DecryptConfig::CreateCencConfig(kDefaultKeyId, kDefaultIV, {});
   EXPECT_TRUE(config1->Matches(*config1));
 
-  auto config2 = DecryptConfig::CreateCbcsConfig(kDefaultKeyId, kDefaultIV, {},
-                                                 EncryptionPattern(1, 2));
+  auto config2 = DecryptConfig::CreateCbcsConfig(
+      kDefaultKeyId, kDefaultIV, {}, EncryptionPattern::Create(1, 2));
   EXPECT_TRUE(config2->Matches(*config2));
 
   EXPECT_FALSE(config1->Matches(*config2));
@@ -130,28 +130,28 @@ TEST(DecryptConfigTest, CencMatches) {
 }
 
 TEST(DecryptConfigTest, CbcsMatches) {
-  auto config1 = DecryptConfig::CreateCbcsConfig(kDefaultKeyId, kDefaultIV, {},
-                                                 EncryptionPattern(1, 2));
+  auto config1 = DecryptConfig::CreateCbcsConfig(
+      kDefaultKeyId, kDefaultIV, {}, EncryptionPattern::Create(1, 2));
   EXPECT_TRUE(config1->Matches(*config1));
 
   // Different key_id.
-  auto config2 = DecryptConfig::CreateCbcsConfig(kAlternateKeyId, kDefaultIV,
-                                                 {}, EncryptionPattern(1, 2));
+  auto config2 = DecryptConfig::CreateCbcsConfig(
+      kAlternateKeyId, kDefaultIV, {}, EncryptionPattern::Create(1, 2));
   EXPECT_FALSE(config1->Matches(*config2));
   EXPECT_FALSE(config2->Matches(*config1));
 
   // Different IV.
-  auto config3 = DecryptConfig::CreateCbcsConfig(kDefaultKeyId, kAlternateIV,
-                                                 {}, EncryptionPattern(1, 2));
+  auto config3 = DecryptConfig::CreateCbcsConfig(
+      kDefaultKeyId, kAlternateIV, {}, EncryptionPattern::Create(1, 2));
   EXPECT_FALSE(config1->Matches(*config3));
   EXPECT_FALSE(config2->Matches(*config3));
   EXPECT_FALSE(config3->Matches(*config1));
   EXPECT_FALSE(config3->Matches(*config2));
 
   // Different subsamples.
-  auto config4 = DecryptConfig::CreateCbcsConfig(kDefaultKeyId, kDefaultIV,
-                                                 {{1, 2}, {3, 4}, {5, 6}},
-                                                 EncryptionPattern(1, 2));
+  auto config4 = DecryptConfig::CreateCbcsConfig(
+      kDefaultKeyId, kDefaultIV, {{1, 2}, {3, 4}, {5, 6}},
+      EncryptionPattern::Create(1, 2));
   EXPECT_FALSE(config1->Matches(*config4));
   EXPECT_FALSE(config2->Matches(*config4));
   EXPECT_FALSE(config3->Matches(*config4));
@@ -160,8 +160,8 @@ TEST(DecryptConfigTest, CbcsMatches) {
   EXPECT_FALSE(config4->Matches(*config3));
 
   // Different pattern.
-  auto config5 = DecryptConfig::CreateCbcsConfig(kDefaultKeyId, kDefaultIV, {},
-                                                 EncryptionPattern(5, 6));
+  auto config5 = DecryptConfig::CreateCbcsConfig(
+      kDefaultKeyId, kDefaultIV, {}, EncryptionPattern::Create(5, 6));
   EXPECT_FALSE(config1->Matches(*config5));
   EXPECT_FALSE(config2->Matches(*config5));
   EXPECT_FALSE(config3->Matches(*config5));
@@ -197,7 +197,7 @@ TEST(DecryptConfigTest, Output) {
   // 'cbcs' config with subsamples and pattern.
   stream << *DecryptConfig::CreateCbcsConfig(kAlternateKeyId, kAlternateIV,
                                              {{1, 2}, {3, 4}, {5, 6}, {7, 8}},
-                                             EncryptionPattern(1, 2));
+                                             EncryptionPattern::Create(1, 2));
 }
 
 }  // namespace media

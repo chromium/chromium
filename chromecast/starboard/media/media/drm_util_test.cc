@@ -109,7 +109,8 @@ TEST(DrmUtilTest, CreatesCbcsDrmInfo) {
   constexpr std::string_view kIv = "abcdefghijklmnop";
   CHECK_EQ(kIv.size(),
            static_cast<size_t>(::media::DecryptConfig::kDecryptionKeySize));
-  const ::media::EncryptionPattern encryption_pattern(10, 20);
+  const auto encryption_pattern = ::media::EncryptionPattern::Create(10, 5);
+  CHECK(encryption_pattern.has_value());
   const ::media::SubsampleEntry subsample(1, 6);
   StarboardDrmSubSampleMapping sb_subsample;
   sb_subsample.clear_byte_count = subsample.clear_bytes;

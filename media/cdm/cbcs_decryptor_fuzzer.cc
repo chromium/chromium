@@ -64,7 +64,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data_ptr, size_t size) {
   // |encryption_pattern| is used to determine the encryption pattern. Since
   // |crypt_byte_block| must be > 0, use 1 for it. |skip_byte_block| can be 0.
   // This will try patterns (1,0), (1,1), ... (1,9), which should be sufficient.
-  media::EncryptionPattern pattern(1, encryption_pattern % 10);
+  auto pattern = media::EncryptionPattern::Create(1, encryption_pattern % 10);
 
   auto encrypted_buffer = media::DecoderBuffer::CopyFrom(data);
 
