@@ -84,6 +84,7 @@ class MockAutofillClient : public TestAutofillClient {
               GetRemoteModelExecutor,
               (),
               (override));
+  MOCK_METHOD(bool, IsOffTheRecord, (), (const override));
 };
 
 class MockAmountExtractionManager : public AmountExtractionManager {
@@ -320,6 +321,8 @@ TEST_F(AmountExtractionManagerTest,
       IsEmpty());
 }
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 TEST_F(
     AmountExtractionManagerTest,
     PayLaterTabs_AiBasedAmountExtractionShouldNotTriggerWhenNoBnplSuggestionAndNoLoadingThrobber) {
@@ -378,6 +381,76 @@ TEST_F(
           /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
       ElementsAre(AmountExtractionManager::EligibleFeature::kBnpl));
 }
+
+TEST_F(AmountExtractionManagerTest,
+       PayLaterTabs_AiBasedAmountExtractionNotTriggeredInOffTheRecord) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableAiBasedAmountExtraction,
+                            features::kAutofillEnablePayNowPayLaterTabs},
+      /*disabled_features=*/{});
+  ON_CALL(autofill_client(), IsOffTheRecord).WillByDefault(Return(true));
+  EXPECT_THAT(
+      amount_extraction_manager_->GetEligibleFeatures(
+          /*is_autofill_payments_enabled=*/true,
+          /*should_suppress_suggestions=*/false,
+          /*suggestions=*/
+          std::vector<Suggestion>{Suggestion(SuggestionType::kCreditCardEntry),
+                                  Suggestion(SuggestionType::kBnplEntry)},
+          /*filling_product=*/FillingProduct::kCreditCard,
+          /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
+      IsEmpty());
+}
+
+TEST_F(
+    AmountExtractionManagerTest,
+    PayLaterTabs_AiBasedAmountExtractionNotTriggeredWhenMerchantNotEligible) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableAiBasedAmountExtraction,
+                            features::kAutofillEnablePayNowPayLaterTabs},
+      /*disabled_features=*/{});
+  ON_CALL(
+      *static_cast<MockAutofillOptimizationGuideDecider*>(
+          autofill_manager().client().GetAutofillOptimizationGuideDecider()),
+      IsUrlEligibleForBnplIssuer)
+      .WillByDefault(Return(false));
+  EXPECT_THAT(
+      amount_extraction_manager_->GetEligibleFeatures(
+          /*is_autofill_payments_enabled=*/true,
+          /*should_suppress_suggestions=*/false,
+          /*suggestions=*/
+          std::vector<Suggestion>{Suggestion(SuggestionType::kCreditCardEntry),
+                                  Suggestion(SuggestionType::kBnplEntry)},
+          /*filling_product=*/FillingProduct::kCreditCard,
+          /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
+      IsEmpty());
+}
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_LINUX) && \
+    !BUILDFLAG(IS_CHROMEOS)
+TEST_F(AmountExtractionManagerTest,
+       PayLaterTabs_AiBasedAmountExtractionNotTriggeredOnNonDesktop) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableAiBasedAmountExtraction,
+                            features::kAutofillEnablePayNowPayLaterTabs},
+      /*disabled_features=*/{});
+  EXPECT_THAT(
+      amount_extraction_manager_->GetEligibleFeatures(
+          /*is_autofill_payments_enabled=*/true,
+          /*should_suppress_suggestions=*/false,
+          /*suggestions=*/
+          std::vector<Suggestion>{Suggestion(SuggestionType::kCreditCardEntry),
+                                  Suggestion(SuggestionType::kBnplEntry)},
+          /*filling_product=*/FillingProduct::kCreditCard,
+          /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
+      IsEmpty());
+}
+#endif  // #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_LINUX)
+        // && !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(AmountExtractionManagerTest,
        AiBasedAmountExtractionShouldNotTriggerWhenAutofillDisabled) {
@@ -483,7 +556,7 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerInIncognitoMode) {
   std::vector<FieldType> field_types = {FieldType::CREDIT_CARD_NUMBER,
                                         FieldType::CREDIT_CARD_NAME_FULL,
                                         FieldType::CREDIT_CARD_EXP_MONTH};
-  autofill_client().set_is_off_the_record(/*is_off_the_record=*/true);
+  ON_CALL(autofill_client(), IsOffTheRecord).WillByDefault(Return(true));
 
   for (FieldType field_type : field_types) {
     EXPECT_THAT(amount_extraction_manager_->GetEligibleFeatures(
