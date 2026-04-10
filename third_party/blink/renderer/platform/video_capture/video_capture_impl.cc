@@ -348,12 +348,16 @@ bool VideoCaptureImpl::ProcessBuffer(
     }
     case VideoFrameBufferHandleType::kSharedImageHandle: {
       CHECK(buffer_context->shared_image());
+      if (buffer_context->shared_image()->size() !=
+          gfx::Size(video_frame_init_data.ready_buffer->info->coded_size)) {
+        DLOG(ERROR) << "SharedImage size does not match coded_size";
+        return false;
+      }
       video_frame_init_data.frame = media::VideoFrame::WrapSharedImage(
           video_frame_init_data.ready_buffer->info->pixel_format,
           buffer_context->shared_image(),
           buffer_context->shared_image_sync_token(),
           media::VideoFrame::ReleaseMailboxCB(),
-          gfx::Size(video_frame_init_data.ready_buffer->info->coded_size),
           gfx::Rect(video_frame_init_data.ready_buffer->info->visible_rect),
           video_frame_init_data.ready_buffer->info->visible_rect.size(),
           video_frame_init_data.ready_buffer->info->timestamp);
