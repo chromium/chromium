@@ -204,7 +204,7 @@ public class ModelListAdapter extends BaseAdapter implements MVCListAdapter {
             PropertyModel newModel,
             @Nullable PropertyModel oldModel,
             View view,
-            PropertyModelChangeProcessor.ViewBinder binder) {
+            PropertyModelChangeProcessor.ViewBinder<PropertyModel, View, PropertyKey> binder) {
         Collection<PropertyKey> setProperties = newModel.getAllSetProperties();
         for (PropertyKey key : newModel.getAllProperties()) {
             if (oldModel != null) {

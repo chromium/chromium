@@ -515,6 +515,7 @@ public class RenderTestRule extends TestWatcher {
             return self();
         }
 
+        @SuppressWarnings("unchecked") // Self-type cast for builder pattern.
         protected B self() {
             return (B) this;
         }

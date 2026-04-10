@@ -42,7 +42,7 @@ public class ChromeSelectionDropdownMenuDelegate
         implements SelectionDropdownMenuDelegate, FlyoutHandler<AnchoredPopupWindow> {
     private @Nullable ItemClickListener mClickListener;
     private @Nullable View mRootView;
-    private @Nullable HierarchicalMenuController mHierarchicalMenuController;
+    private @Nullable HierarchicalMenuController<AnchoredPopupWindow> mHierarchicalMenuController;
 
     @Override
     public void show(
@@ -50,12 +50,14 @@ public class ChromeSelectionDropdownMenuDelegate
             View rootView,
             MVCListAdapter.ModelList items,
             ItemClickListener clickListener,
-            HierarchicalMenuController hierarchicalMenuController,
+            Runnable dismissMenuCallback,
             int x,
             int y) {
         mRootView = rootView;
         mClickListener = clickListener;
-        mHierarchicalMenuController = hierarchicalMenuController;
+        mHierarchicalMenuController = ListMenuUtils.createHierarchicalMenuController(context);
+        mHierarchicalMenuController.setupCallbacksRecursively(
+                /* headerModelList= */ null, items, dismissMenuCallback);
 
         Rect dropdownRect = new Rect(x, y, x + 1, y + 1);
         BasicListMenu menu =

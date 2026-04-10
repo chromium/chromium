@@ -256,6 +256,7 @@ public class ViewGroupAdapter implements Destroyable {
          *
          * @param model The {@link PropertyModel} to attach.
          */
+        @SuppressWarnings("unchecked") // mViewBinder is missing generics.
         public void attachToModel(PropertyModel model) {
             detachFromModel();
             mModelChangeProcessor =

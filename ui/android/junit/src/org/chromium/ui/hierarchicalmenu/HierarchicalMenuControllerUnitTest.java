@@ -81,7 +81,7 @@ public class HierarchicalMenuControllerUnitTest {
     private ListItem mSubmenu0Child1;
     private ListItem mSubmenuLevel0;
     private ListItem mListItemWithoutModelClickCallback;
-    private HierarchicalMenuController mController;
+    private HierarchicalMenuController<Object> mController;
 
     @Before
     public void setUp() {
@@ -97,7 +97,7 @@ public class HierarchicalMenuControllerUnitTest {
                     return new ListItem(MENU_ITEM_SUBMENU_HEADER, builder.build());
                 };
 
-        mController = new HierarchicalMenuController(context, keyProvider, headerFactory);
+        mController = new HierarchicalMenuController<>(context, keyProvider, headerFactory);
 
         mListItemWithModelClickCallback =
                 new ListItem(

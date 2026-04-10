@@ -194,13 +194,13 @@ public class PropertyModelTest {
 
     @Test
     public void transformingObjectUpdates() {
-        Function identityFunction = o -> o;
-        Function duplicateStringFunction =
+        Function<Object, Object> identityFunction = o -> o;
+        Function<String, Object> duplicateStringFunction =
                 o -> {
                     if (o == null) return "really_null";
                     return o.toString() + o.toString();
                 };
-        Function listLengthFunction = o -> ((List) o).size();
+        Function<List<Integer>, Object> listLengthFunction = o -> ((List<?>) o).size();
         PropertyModel model =
                 new PropertyModel.Builder()
                         .withTransformingKey(TRANSFORMING_OBJECT_PROPERTY_A, identityFunction)
@@ -406,6 +406,7 @@ public class PropertyModelTest {
                 model1.compareValue(model2, OBJECT_PROPERTY_SKIP_EQUALITY));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testCompareValue_TransformingObject() {
         Object sharedObject = new Object();

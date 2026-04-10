@@ -59,7 +59,7 @@ public class ActivityAndroidPermissionDelegateTest {
                         activity -> {
                             AndroidPermissionDelegate permissionDelegate =
                                     new ActivityAndroidPermissionDelegate(
-                                            new WeakReference(activity));
+                                            new WeakReference<>(activity));
 
                             boolean hasPermission =
                                     permissionDelegate.hasPermission(
@@ -81,7 +81,7 @@ public class ActivityAndroidPermissionDelegateTest {
                                     .grantPermissions(android.Manifest.permission.INTERNET);
                             AndroidPermissionDelegate permissionDelegate =
                                     new ActivityAndroidPermissionDelegate(
-                                            new WeakReference(activity));
+                                            new WeakReference<>(activity));
 
                             boolean hasPermission =
                                     permissionDelegate.hasPermission(
@@ -101,7 +101,7 @@ public class ActivityAndroidPermissionDelegateTest {
                         activity -> {
                             AndroidPermissionDelegate permissionDelegate =
                                     new ActivityAndroidPermissionDelegate(
-                                            new WeakReference(activity));
+                                            new WeakReference<>(activity));
 
                             boolean canRequest =
                                     permissionDelegate.canRequestPermission(
@@ -121,7 +121,7 @@ public class ActivityAndroidPermissionDelegateTest {
                         activity -> {
                             AndroidPermissionDelegate permissionDelegate =
                                     new ActivityAndroidPermissionDelegate(
-                                            new WeakReference(activity));
+                                            new WeakReference<>(activity));
                             PermissionCallback callback = Mockito.mock(PermissionCallback.class);
 
                             // Request permission
@@ -161,7 +161,7 @@ public class ActivityAndroidPermissionDelegateTest {
                         activity -> {
                             AndroidPermissionDelegate permissionDelegate =
                                     new ActivityAndroidPermissionDelegate(
-                                            new WeakReference(activity));
+                                            new WeakReference<>(activity));
                             PermissionCallback callback = Mockito.mock(PermissionCallback.class);
 
                             // Request permission
@@ -201,7 +201,7 @@ public class ActivityAndroidPermissionDelegateTest {
                         activity -> {
                             AndroidPermissionDelegate permissionDelegate =
                                     new ActivityAndroidPermissionDelegate(
-                                            new WeakReference(activity));
+                                            new WeakReference<>(activity));
                             performRequestPermission(
                                     permissionDelegate,
                                     Shadows.shadowOf(activity),
@@ -228,7 +228,7 @@ public class ActivityAndroidPermissionDelegateTest {
                         activity -> {
                             AndroidPermissionDelegate permissionDelegate =
                                     new ActivityAndroidPermissionDelegate(
-                                            new WeakReference(activity));
+                                            new WeakReference<>(activity));
                             Shadows.shadowOf(activity.getPackageManager())
                                     .setShouldShowRequestPermissionRationale(
                                             android.Manifest.permission.INTERNET, true);
@@ -261,7 +261,7 @@ public class ActivityAndroidPermissionDelegateTest {
                         activity -> {
                             AndroidPermissionDelegate permissionDelegate =
                                     new ActivityAndroidPermissionDelegate(
-                                            new WeakReference(activity));
+                                            new WeakReference<>(activity));
                             Shadows.shadowOf(activity.getPackageManager())
                                     .setShouldShowRequestPermissionRationale(
                                             android.Manifest.permission.INTERNET, false);
@@ -304,7 +304,7 @@ public class ActivityAndroidPermissionDelegateTest {
                         activity -> {
                             AndroidPermissionDelegate permissionDelegate =
                                     new ActivityAndroidPermissionDelegate(
-                                            new WeakReference(activity));
+                                            new WeakReference<>(activity));
                             performRequestPermission(
                                     permissionDelegate,
                                     Shadows.shadowOf(activity),
@@ -333,7 +333,7 @@ public class ActivityAndroidPermissionDelegateTest {
                         activity -> {
                             AndroidPermissionDelegate permissionDelegate =
                                     new ActivityAndroidPermissionDelegate(
-                                            new WeakReference(activity));
+                                            new WeakReference<>(activity));
                             performRequestPermission(
                                     permissionDelegate,
                                     Shadows.shadowOf(activity),
@@ -365,7 +365,7 @@ public class ActivityAndroidPermissionDelegateTest {
                         activity -> {
                             AndroidPermissionDelegate permissionDelegate =
                                     new ActivityAndroidPermissionDelegate(
-                                            new WeakReference(activity));
+                                            new WeakReference<>(activity));
                             performRequestPermission(
                                     permissionDelegate,
                                     Shadows.shadowOf(activity),

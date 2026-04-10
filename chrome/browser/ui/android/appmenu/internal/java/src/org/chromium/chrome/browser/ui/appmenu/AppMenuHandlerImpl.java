@@ -113,7 +113,7 @@ class AppMenuHandlerImpl
     private final WindowAndroid mWindowAndroid;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private @Nullable ModelList mModelList;
-    private @Nullable HierarchicalMenuController mHierarchicalMenuController;
+    private @Nullable HierarchicalMenuController<AppMenuPopup> mHierarchicalMenuController;
     private final SubmenuHeaderFactory mSubmenuHeaderFactory;
     private final ListObserver<Void> mListObserver;
     private @Nullable Callback<Integer> mTestOptionsItemSelectedListener;
@@ -321,7 +321,7 @@ class AppMenuHandlerImpl
 
         if (mHierarchicalMenuController == null) {
             mHierarchicalMenuController =
-                    new HierarchicalMenuController(
+                    new HierarchicalMenuController<>(
                             mContext, new AppMenuUtil.AppMenuKeyProvider(), mSubmenuHeaderFactory);
         }
 

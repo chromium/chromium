@@ -16,7 +16,6 @@ import androidx.annotation.Px;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.SelectionMenuItem;
-import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -45,8 +44,8 @@ public interface SelectionDropdownMenuDelegate {
      * @param rootView The root view of the dropdown menu.
      * @param items The items that will be shown inside the dropdown menu.
      * @param clickListener The click listener for the items in the dropdown menu.
-     * @param hierarchicalMenuController The {@code HierarchicalMenuController} to use to display
-     *     nested menus.
+     * @param dismissMenuCallback The callback to run when the menu is dismissed, allowing the
+     *     caller to perform additional cleanup.
      * @param x The x offset of the dropdown menu relative to the container View.
      * @param y The y offset of the dropdown menu relative to the container View.
      */
@@ -55,7 +54,7 @@ public interface SelectionDropdownMenuDelegate {
             View rootView,
             MVCListAdapter.ModelList items,
             ItemClickListener clickListener,
-            HierarchicalMenuController hierarchicalMenuController,
+            Runnable dismissMenuCallback,
             @Px int x,
             @Px int y);
 

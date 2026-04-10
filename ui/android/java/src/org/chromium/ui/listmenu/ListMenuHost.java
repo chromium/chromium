@@ -70,7 +70,7 @@ public class ListMenuHost
 
     private int mMenuMaxWidth;
 
-    private final HierarchicalMenuController mHierarchicalMenuController;
+    private final HierarchicalMenuController<AnchoredPopupWindow> mHierarchicalMenuController;
 
     private @Nullable ListMenuDelegate mDelegate;
     private final ObserverList<PopupMenuShownListener> mPopupListeners = new ObserverList<>();
@@ -247,7 +247,8 @@ public class ListMenuHost
         if (sPopupMenuHelperForTesting != null) {
             AnchoredPopupWindow spiedPopupMenu =
                     sPopupMenuHelperForTesting.injectPopupMenu(popupMenu);
-            FlyoutController flyoutController = mHierarchicalMenuController.getFlyoutController();
+            FlyoutController<AnchoredPopupWindow> flyoutController =
+                    mHierarchicalMenuController.getFlyoutController();
             assert flyoutController != null;
             flyoutController.setMainPopupForTest(spiedPopupMenu);
         }

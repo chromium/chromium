@@ -96,7 +96,7 @@ public abstract class TabOverflowMenuCoordinator<T>
     private final @LayoutRes int mMenuLayout;
     private final @LayoutRes int mFlyoutMenuLayout;
     private final OnItemClickedCallback<T> mOnItemClickedCallback;
-    private final HierarchicalMenuController mHierarchicalMenuController;
+    private final HierarchicalMenuController<TabOverflowMenuHolder<T>> mHierarchicalMenuController;
 
     private boolean mIsIncognito;
     private @Nullable String mCollaborationId;
@@ -323,7 +323,7 @@ public abstract class TabOverflowMenuCoordinator<T>
      * adding collaboration items for {@link TabGroupContextMenuCoordinator}.
      */
     protected void resizeMenu() {
-        FlyoutController<TabOverflowMenuHolder> controller =
+        FlyoutController<TabOverflowMenuHolder<T>> controller =
                 mHierarchicalMenuController.getFlyoutController();
         if (controller != null) {
             controller.getMainPopup().resize();
@@ -342,7 +342,7 @@ public abstract class TabOverflowMenuCoordinator<T>
 
     /** Returns true if the menu is currently showing. */
     public boolean isMenuShowing() {
-        FlyoutController<TabOverflowMenuHolder> controller =
+        FlyoutController<TabOverflowMenuHolder<T>> controller =
                 mHierarchicalMenuController.getFlyoutController();
         if (controller == null) {
             return false;
@@ -416,7 +416,7 @@ public abstract class TabOverflowMenuCoordinator<T>
      * @param focusable True if the menu is focusable, false otherwise.
      */
     public void setMenuFocusable(boolean focusable) {
-        FlyoutController<TabOverflowMenuHolder> controller =
+        FlyoutController<TabOverflowMenuHolder<T>> controller =
                 mHierarchicalMenuController.getFlyoutController();
         if (controller != null) {
             controller.getMainPopup().getMenuWindow().setFocusable(focusable);
@@ -424,7 +424,7 @@ public abstract class TabOverflowMenuCoordinator<T>
     }
 
     public @Nullable ModelList getModelListForTesting() {
-        FlyoutController<TabOverflowMenuHolder> controller =
+        FlyoutController<TabOverflowMenuHolder<T>> controller =
                 mHierarchicalMenuController.getFlyoutController();
         if (controller == null) {
             return null;
@@ -434,7 +434,7 @@ public abstract class TabOverflowMenuCoordinator<T>
     }
 
     public @Nullable View getContentViewForTesting() {
-        FlyoutController<TabOverflowMenuHolder> controller =
+        FlyoutController<TabOverflowMenuHolder<T>> controller =
                 mHierarchicalMenuController.getFlyoutController();
         if (controller == null) {
             return null;

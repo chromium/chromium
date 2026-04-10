@@ -42,14 +42,15 @@ public class ModelListAdapterTest {
             new PropertyModel.WritableFloatPropertyKey();
     private static final PropertyModel.WritableIntPropertyKey INT_PROPERTY =
             new PropertyModel.WritableIntPropertyKey();
-    private static final PropertyModel.WritableObjectPropertyKey OBJECT_PROPERTY =
-            new PropertyModel.WritableObjectPropertyKey();
+    private static final PropertyModel.WritableObjectPropertyKey<TestObject> OBJECT_PROPERTY =
+            new PropertyModel.WritableObjectPropertyKey<>();
     private static final PropertyModel.ReadableBooleanPropertyKey READONLY_BOOLEAN_PROPERTY =
             new PropertyModel.ReadableBooleanPropertyKey();
 
-    private class TestViewBinder implements PropertyModelChangeProcessor.ViewBinder {
+    private class TestViewBinder
+            implements PropertyModelChangeProcessor.ViewBinder<PropertyModel, View, PropertyKey> {
         @Override
-        public void bind(Object model, Object view, Object propertyKey) {
+        public void bind(PropertyModel model, View view, PropertyKey propertyKey) {
             if (propertyKey.equals(BOOLEAN_PROPERTY)) {
                 mBindBooleanCallbackHelper.notifyCalled();
             } else if (propertyKey.equals(FLOAT_PROPERTY)) {

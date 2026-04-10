@@ -70,7 +70,10 @@ public class SimpleRecyclerViewAdapter
     /** The observer that watches the data for changes. */
     private final ListObserver<Void> mListObserver;
 
-    /** A map of view types to view binders. */
+    /**
+     * A map of view types to view binders. ViewBinder intentionally omits generic params since
+     * different view types use different params.
+     */
     private final SparseArray<Pair<ViewBuilder, ViewBinder>> mViewBuilderMap = new SparseArray<>();
 
     public SimpleRecyclerViewAdapter(ModelList data) {
@@ -142,6 +145,7 @@ public class SimpleRecyclerViewAdapter
         return assumeNonNull(mViewBuilderMap.get(typeId)).first.buildView(parent);
     }
 
+    @SuppressWarnings("unchecked") // .second is missing generics.
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new ViewHolder(

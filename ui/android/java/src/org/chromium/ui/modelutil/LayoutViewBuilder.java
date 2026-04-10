@@ -33,6 +33,7 @@ public class LayoutViewBuilder<T extends View> implements ViewBuilder<T> {
      * @param parent Parent view.
      * @return Newly inflated view.
      */
+    @SuppressWarnings("unchecked") // inflate() returns View, not T.
     @Override
     public final T buildView(ViewGroup parent) {
         if (mInflater == null) {

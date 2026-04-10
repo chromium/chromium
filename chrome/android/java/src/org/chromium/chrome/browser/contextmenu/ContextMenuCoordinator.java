@@ -83,7 +83,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
     private final List<ContextMenuListView> mListViews;
     private final float mTopContentOffsetPx;
 
-    private final HierarchicalMenuController mHierarchicalMenuController;
+    private final HierarchicalMenuController<ContextMenuDialog> mHierarchicalMenuController;
 
     private Runnable mOnMenuClosed;
     private final ContextMenuNativeDelegate mNativeDelegate;
@@ -610,7 +610,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
         return adapter;
     }
 
-    public HierarchicalMenuController getHierarchicalMenuControllerForTest() {
+    public HierarchicalMenuController<ContextMenuDialog> getHierarchicalMenuControllerForTest() {
         return mHierarchicalMenuController;
     }
 

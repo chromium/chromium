@@ -85,7 +85,7 @@ public class ContextMenuMediatorTest {
     private ListItem mSubmenuLevel0;
     private ListItem mListItemWithoutModelClickCallback;
 
-    private HierarchicalMenuController mHierarchicalMenuController;
+    private HierarchicalMenuController<?> mHierarchicalMenuController;
 
     @Before
     public void setup() {

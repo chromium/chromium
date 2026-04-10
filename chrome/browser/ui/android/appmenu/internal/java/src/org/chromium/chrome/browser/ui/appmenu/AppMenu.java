@@ -266,7 +266,7 @@ class AppMenu implements OnKeyListener {
     private boolean mSelectedItemBeforeDismiss;
     private InitialSizingHelper mInitialSizingHelper;
     private @Nullable MenuSpec mMenuSpec;
-    private final HierarchicalMenuController mHierarchicalMenuController;
+    private final HierarchicalMenuController<AppMenuPopup> mHierarchicalMenuController;
     private @Nullable ValueAnimator mHeightAnimator;
 
     /**
@@ -278,7 +278,7 @@ class AppMenu implements OnKeyListener {
     AppMenu(
             AppMenuVisibilityDelegate visibilityDelegate,
             Resources res,
-            HierarchicalMenuController hierarchicalMenuController,
+            HierarchicalMenuController<AppMenuPopup> hierarchicalMenuController,
             boolean disableVerticalScrollbar) {
         mVisibilityDelegate = visibilityDelegate;
         mDisableVerticalScrollbar = disableVerticalScrollbar;

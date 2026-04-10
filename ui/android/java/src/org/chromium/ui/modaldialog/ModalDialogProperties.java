@@ -333,7 +333,7 @@ public class ModalDialogProperties {
      * dismisses the dialog.
      */
     public static final WritableObjectPropertyKey<OnBackPressedCallback>
-            APP_MODAL_DIALOG_BACK_PRESS_HANDLER = new WritableObjectPropertyKey();
+            APP_MODAL_DIALOG_BACK_PRESS_HANDLER = new WritableObjectPropertyKey<>();
 
     /**
      * Duration of initial tap protection period after dialog is displayed to user. During this
@@ -366,7 +366,7 @@ public class ModalDialogProperties {
     public static final WritableIntPropertyKey MAX_HEIGHT = new WritableIntPropertyKey();
 
     /** The padding used by the dialog content view. */
-    public static final WritableObjectPropertyKey<Rect> PADDING = new WritableObjectPropertyKey();
+    public static final WritableObjectPropertyKey<Rect> PADDING = new WritableObjectPropertyKey<>();
 
     /**
      * Block all inputs on the rest of the dialog view. Note that this does not override any

@@ -85,9 +85,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.ViewAndroidDelegate.ContainerViewObserver;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
-import org.chromium.ui.listmenu.ListMenuUtils;
 import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -737,15 +735,11 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         }
 
         assumeNonNull(mContext);
-        HierarchicalMenuController hierarchicalMenuController =
-                ListMenuUtils.createHierarchicalMenuController(mContext);
-        hierarchicalMenuController.setupCallbacksRecursively(
-                /* headerModelList= */ null, items, this::dismissMenu);
 
         SelectionDropdownMenuDelegate.ItemClickListener itemClickListener =
                 getDropdownItemClickListener(mDropdownMenuDelegate);
         mDropdownMenuDelegate.show(
-                mContext, mView, items, itemClickListener, hierarchicalMenuController, x, y);
+                mContext, mView, items, itemClickListener, this::dismissMenu, x, y);
     }
 
     // HideablePopup implementation

@@ -43,6 +43,7 @@ public class MockitoHelper {
         return Mockito.doAnswer(
                 (Answer<Void>)
                         invocation -> {
+                            @SuppressWarnings("unchecked") // Mockito args are Object[].
                             T arg = (T) invocation.getArguments()[index];
                             callback.onResult(arg);
                             return null;

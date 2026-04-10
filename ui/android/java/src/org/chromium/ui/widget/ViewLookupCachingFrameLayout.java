@@ -94,6 +94,7 @@ public class ViewLookupCachingFrameLayout extends OptimizedFrameLayout {
      * @param id The ID of the view to lookup.
      * @return The view if it exists.
      */
+    @SuppressWarnings("unchecked") // Cache stores View, must cast to T.
     public <T extends @Nullable View> T fastFindViewById(@IdRes int id) {
         WeakReference<View> ref = mCachedViews.get(id);
         T view = null;

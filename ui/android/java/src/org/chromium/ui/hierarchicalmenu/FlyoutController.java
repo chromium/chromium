@@ -29,7 +29,7 @@ import java.util.List;
 @NullMarked
 public class FlyoutController<T> implements Destroyable {
 
-    private final HierarchicalMenuController mMenuController;
+    private final HierarchicalMenuController<T> mMenuController;
     private final HierarchicalMenuKeyProvider mKeyProvider;
     private final FlyoutHandler<T> mFlyoutHandler;
 
@@ -104,17 +104,26 @@ public class FlyoutController<T> implements Destroyable {
         default void afterFlyoutPopupsRemoved(int removeFromIndex) {}
     }
 
+    /**
+     * Constructs a {@link FlyoutController} instance.
+     *
+     * @param flyoutHandler The handler responsible for manipulating windows of type T.
+     * @param keyProvider The {@link HierarchicalMenuKeyProvider} to use.
+     * @param mainPopup The main, first level window of type T.
+     * @param menuController The {@link HierarchicalMenuController} coordinating the nesting of
+     *     windows of type T.
+     */
     public FlyoutController(
             FlyoutHandler<T> flyoutHandler,
             HierarchicalMenuKeyProvider keyProvider,
             T mainPopup,
-            HierarchicalMenuController menuController) {
+            HierarchicalMenuController<T> menuController) {
         mFlyoutHandler = flyoutHandler;
         mKeyProvider = keyProvider;
         mMenuController = menuController;
 
-        mPopups = new ArrayList();
-        mPopups.add(new FlyoutPopupEntry(null, mainPopup));
+        mPopups = new ArrayList<>();
+        mPopups.add(new FlyoutPopupEntry<>(null, mainPopup));
     }
 
     /**
@@ -333,7 +342,7 @@ public class FlyoutController<T> implements Destroyable {
     }
 
     public void setMainPopupForTest(T popupWindow) {
-        mPopups.set(0, new FlyoutPopupEntry(null, popupWindow));
+        mPopups.set(0, new FlyoutPopupEntry<>(null, popupWindow));
     }
 
     public List<T> getPopupsForTest() {

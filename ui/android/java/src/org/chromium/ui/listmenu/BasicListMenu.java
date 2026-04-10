@@ -30,7 +30,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
-import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController.AccessibilityListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
@@ -244,8 +243,8 @@ public class BasicListMenu implements ListMenu {
      * @param hierarchicalMenuController The {@link HierarchicalMenuController} to use.
      */
     public void setupCallbacksRecursively(
-            Runnable dismissDialog, HierarchicalMenuController hierarchicalMenuController) {
-        AccessibilityListObserver observer =
+            Runnable dismissDialog, HierarchicalMenuController<?> hierarchicalMenuController) {
+        HierarchicalMenuController<?>.AccessibilityListObserver observer =
                 hierarchicalMenuController
                 .new AccessibilityListObserver(
                         mListMenuLayout,

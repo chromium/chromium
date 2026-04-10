@@ -65,14 +65,14 @@ public class FlyoutControllerUnitTest {
     @Mock private ListView mListView;
     @Mock private FlyoutHandler<Object> mFlyoutHandler;
 
-    private FlyoutController mFlyoutController;
+    private FlyoutController<Object> mFlyoutController;
 
     private ListItem mListItemWithModelClickCallback;
     private ListItem mSubmenuLevel1;
     private ListItem mSubmenu0Child1;
     private ListItem mSubmenuLevel0;
     private ListItem mListItemWithoutModelClickCallback;
-    private HierarchicalMenuController mHierarchicalMenuController;
+    private HierarchicalMenuController<Object> mHierarchicalMenuController;
 
     private Context mContext;
 
@@ -91,10 +91,10 @@ public class FlyoutControllerUnitTest {
                 };
 
         mHierarchicalMenuController =
-                new HierarchicalMenuController(mContext, keyProvider, headerFactory);
+                new HierarchicalMenuController<>(mContext, keyProvider, headerFactory);
 
         mFlyoutController =
-                new FlyoutController(
+                new FlyoutController<>(
                         mFlyoutHandler,
                         HierarchicalMenuTestUtils.createKeyProvider(),
                         new Object(),

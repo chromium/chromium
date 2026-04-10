@@ -27,6 +27,7 @@ import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelega
 import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.listmenu.BasicListMenu;
+import org.chromium.ui.listmenu.ListMenuUtils;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 
@@ -50,13 +51,18 @@ public class AwSelectionDropdownMenuDelegate implements SelectionDropdownMenuDel
             View rootView,
             MVCListAdapter.ModelList items,
             ItemClickListener clickListener,
-            HierarchicalMenuController hierarchicalMenuController,
+            Runnable dismissMenuCallback,
             int x,
             int y) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             // WebView text selection drop-down menu is only supported on Android U+.
             return;
         }
+
+        HierarchicalMenuController<Object> hierarchicalMenuController =
+                ListMenuUtils.createHierarchicalMenuController(context);
+        hierarchicalMenuController.setupCallbacksRecursively(
+                /* headerModelList= */ null, items, dismissMenuCallback);
 
         // Dismiss the previous popup window if it's showing.
         dismiss();
