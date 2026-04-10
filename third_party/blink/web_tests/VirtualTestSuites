@@ -3029,7 +3029,7 @@
     ],
     "bases": [
       "external/wpt/html/semantics/forms/the-select-element/customizable-select/selectedcontent-in-option-crash.html",
-      "external/wpt/html/semantics/forms/the-select-element/customizable-select/selectedcontent-restore.html",
+      "external/wpt/html/semantics/forms/the-select-element/customizable-select/selectedcontent-restore.optional.html",
       "external/wpt/html/semantics/forms/the-select-element/customizable-select/selectedcontent-color.html",
       "external/wpt/html/semantics/forms/the-select-element/customizable-select/selectedcontent-nested.html",
       "external/wpt/html/semantics/forms/the-select-element/customizable-select/selectedcontentelement-attr.tentative.html"
