@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(!is_android)
-
 source_set("one_time_tokens") {
   public = [ "one_time_token_sharing_handler.h" ]
   sources = [ "one_time_token_sharing_handler.cc" ]

@@ -12,27 +12,74 @@ buildflag_header("buildflags") {
 
 source_set("sharing") {
   sources = [
-    "sharing_message_bridge_factory.cc",
+    "sharing_device_registration_impl.h",
+    "sharing_handler_registry_impl.h",
     "sharing_message_bridge_factory.h",
     "sharing_service_factory.h",
   ]
   public_deps = [
     "//base",
+    "//chrome/browser/notifications",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/page_action:icon_type",
+    "//components/gcm_driver/instance_id",
     "//components/keyed_service/core",
-  ]
-  deps = [
-    "//chrome/common:channel_info",
     "//components/sharing_message",
-    "//components/sync/base",
-    "//components/sync/model",
+    "//components/sharing_message/proto",
+    "//components/sync_device_info",
   ]
 
   if (!is_android) {
-    sources += [ "sharing_ui_controller.h" ]
+    sources += [
+      "sharing_notification_handler.h",
+      "sharing_ui_controller.h",
+    ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "sharing_device_registration_impl.cc",
+    "sharing_handler_registry_impl.cc",
+    "sharing_message_bridge_factory.cc",
+    "sharing_service_factory.cc",
+  ]
+  deps = [
+    ":sharing",
+    "//chrome/browser/autofill",
+    "//chrome/browser/gcm",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/sharing/click_to_call",
+    "//chrome/browser/sharing/one_time_tokens",
+    "//chrome/browser/sharing/optimization_guide",
+    "//chrome/browser/sharing/shared_clipboard",
+    "//chrome/browser/sync",
+    "//chrome/common:channel_info",
+    "//components/gcm_driver/crypto",
+    "//components/optimization_guide/core:features",
+    "//components/send_tab_to_self",
+    "//components/sharing_message:buildflags",
+    "//components/sharing_message/ios_push",
+    "//components/sync/base",
+    "//components/sync/model",
+    "//components/sync/service",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "sharing_notification_handler.cc",
+      "sharing_ui_controller.cc",
+    ]
     deps += [
-      "//chrome/browser/ui/page_action:icon_type",
+      "//chrome/browser/sync:factories",
+      "//chrome/browser/ui",
+      "//components/send_tab_to_self:features",
       "//components/sharing_message/proto",
+    ]
+  } else {
+    deps += [
+      "//chrome/android:jni_headers",
+      "//chrome/browser/sharing/sms",
     ]
   }
 }
