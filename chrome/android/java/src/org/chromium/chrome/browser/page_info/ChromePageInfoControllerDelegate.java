@@ -23,6 +23,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -91,7 +92,8 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
             mEphemeralTabCoordinatorSupplier;
     private final Context mContext;
     private final Profile mProfile;
-    private final @Nullable Supplier<StoreInfoActionHandler> mStoreInfoActionHandlerSupplier;
+    private final @Nullable MonotonicObservableSupplier<StoreInfoActionHandler>
+            mStoreInfoActionHandlerSupplier;
     private final ChromePageInfoHighlight mPageInfoHighlight;
     private final OfflinePageLoadUrlDelegate mOfflinePageLoadUrlDelegate;
     private @Nullable String mOfflinePageCreationDate;
@@ -106,7 +108,8 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
             WebContents webContents,
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             OfflinePageLoadUrlDelegate offlinePageLoadUrlDelegate,
-            @Nullable Supplier<StoreInfoActionHandler> storeInfoActionHandlerSupplier,
+            @Nullable MonotonicObservableSupplier<StoreInfoActionHandler>
+                    storeInfoActionHandlerSupplier,
             @Nullable Supplier<@Nullable EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             ChromePageInfoHighlight pageInfoHighlight,
             @Nullable TabCreator tabCreator,

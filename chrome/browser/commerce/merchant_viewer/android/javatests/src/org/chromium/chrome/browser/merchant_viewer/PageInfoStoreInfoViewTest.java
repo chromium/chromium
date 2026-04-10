@@ -33,6 +33,7 @@ import org.mockito.stubbing.Answer;
 
 import org.chromium.base.JavaUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -107,7 +108,8 @@ public class PageInfoStoreInfoViewTest {
                                     activity.getModalDialogManagerSupplier(),
                                     null,
                                     PageInfoController.OpenedFromSource.TOOLBAR,
-                                    () -> mMockStoreInfoActionHandler,
+                                    ObservableSuppliers.createMonotonic(
+                                            mMockStoreInfoActionHandler),
                                     null,
                                     null)
                             .show(tab, ChromePageInfoHighlight.forStoreInfo(fromStoreIcon));

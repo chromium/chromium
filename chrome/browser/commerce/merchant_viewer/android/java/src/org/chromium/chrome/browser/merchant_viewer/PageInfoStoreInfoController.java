@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -21,8 +22,6 @@ import org.chromium.components.page_info.PageInfoRowView;
 import org.chromium.components.page_info.PageInfoSubpageController;
 import org.chromium.content_public.browser.WebContents;
 
-import java.util.function.Supplier;
-
 /** Class for controlling the {@link ChromePageInfo} "store info" section. */
 @NullMarked
 public class PageInfoStoreInfoController implements PageInfoSubpageController {
@@ -34,7 +33,8 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
         void onStoreInfoClicked(MerchantInfo merchantInfo);
     }
 
-    private final @Nullable Supplier<StoreInfoActionHandler> mActionHandlerSupplier;
+    private final @Nullable MonotonicObservableSupplier<StoreInfoActionHandler>
+            mActionHandlerSupplier;
     private final PageInfoMainController mMainController;
     private final PageInfoRowView mRowView;
     private final Context mContext;
@@ -45,7 +45,7 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
     public PageInfoStoreInfoController(
             PageInfoMainController mainController,
             PageInfoRowView rowView,
-            @Nullable Supplier<StoreInfoActionHandler> actionHandlerSupplier,
+            @Nullable MonotonicObservableSupplier<StoreInfoActionHandler> actionHandlerSupplier,
             boolean pageInfoOpenedFromStoreIcon,
             WebContents webContents,
             Profile profile) {
@@ -69,8 +69,9 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
 
     private void setupStoreInfoRow(@Nullable MerchantInfo merchantInfo) {
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
-        if (mActionHandlerSupplier == null
-                || mActionHandlerSupplier.get() == null
+        var actionHandlerSupplier = mActionHandlerSupplier;
+        if (actionHandlerSupplier == null
+                || actionHandlerSupplier.get() == null
                 || merchantInfo == null) {
             rowParams.visible = false;
         } else {
@@ -89,7 +90,7 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
                         mMainController.recordAction(PageInfoAction.PAGE_INFO_STORE_INFO_CLICKED);
                         mMainController.dismiss();
                         mMetrics.recordUkmOnRowClicked(mWebContents);
-                        mActionHandlerSupplier.get().onStoreInfoClicked(merchantInfo);
+                        actionHandlerSupplier.asNonNull().get().onStoreInfoClicked(merchantInfo);
                     };
             mMetrics.recordUkmOnRowSeen(mWebContents);
         }
