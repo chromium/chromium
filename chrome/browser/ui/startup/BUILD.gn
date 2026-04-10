@@ -269,6 +269,10 @@ source_set("impl") {
       ]
     }
 
+    if (is_mac) {
+      deps += [ "//chrome/browser/mac" ]
+    }
+
     if (is_win || is_mac || is_linux) {
       deps += [ "//chrome/browser/ui/views/session_restore_infobar" ]
     }
