@@ -95,11 +95,11 @@ TODO(http://crbug.com/485940935): Delete this.
             android:inflatedId="@+id/omnibox_results_container"
             app:layout="@layout/omnibox_results_container" />
 
-      <org.chromium.chrome.browser.ui.BottomContainer
-          android:id="@+id/bottom_container"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_gravity="start|bottom" />
+        <org.chromium.chrome.browser.ui.BottomContainer
+            android:id="@+id/bottom_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|bottom" />
 
         <!-- Toolbar size area painted black to avoid the action bar showing the window background -->
         <View
@@ -148,13 +148,6 @@ TODO(http://crbug.com/485940935): Delete this.
             app:layout_anchorGravity="bottom"/>
 
         <ViewStub
-            android:id="@+id/tab_switcher_view_holder_stub"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:inflatedId="@+id/tab_switcher_view_holder"
-            android:layout="@layout/tab_switcher_view_holder" />
-
-        <ViewStub
             android:id="@+id/tab_hover_card_holder_stub"
             android:layout_width="@dimen/tab_hover_card_width"
             android:layout_height="wrap_content"
@@ -162,7 +155,7 @@ TODO(http://crbug.com/485940935): Delete this.
             android:layout="@layout/tab_hover_card_holder" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/side_ui_constraint_layout"
+            android:id="@+id/constrained_views_container"
             android:layout_height="match_parent"
             android:layout_width="match_parent">
 
@@ -180,6 +173,33 @@ TODO(http://crbug.com/485940935): Delete this.
                 android:inflatedId="@+id/side_ui_start_anchor_container"
                 android:layout="@layout/side_ui_anchor_container"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <!-- Please do not add anything in between
+                side_ui_start_anchor_container_stub and
+                side_ui_end_anchor_container_stub. -->
+            <ViewStub
+                android:id="@+id/side_ui_end_anchor_container_stub"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:inflatedId="@+id/side_ui_end_anchor_container"
+                android:layout="@layout/side_ui_anchor_container"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <!-- Some Views need to show over Side UI, but behind Secondary UI,
+                such as the GTS, so they can be placed in this ConstraintLayout,
+                while effectively being unconstrained. -->
+            <ViewStub
+                android:id="@+id/tab_switcher_view_holder_stub"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:inflatedId="@+id/tab_switcher_view_holder"
+                android:layout="@layout/tab_switcher_view_holder"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -214,19 +234,6 @@ TODO(http://crbug.com/485940935): Delete this.
                     android:descendantFocusability="afterDescendants" />
 
             </FrameLayout>
-
-            <!-- Please do not add anything in between
-                side_ui_start_anchor_container_stub and
-                side_ui_end_anchor_container_stub. -->
-            <ViewStub
-                android:id="@+id/side_ui_end_anchor_container_stub"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:inflatedId="@+id/side_ui_end_anchor_container"
-                android:layout="@layout/side_ui_anchor_container"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
