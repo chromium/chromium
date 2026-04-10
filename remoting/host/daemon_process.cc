@@ -276,6 +276,10 @@ void DaemonProcess::CrashNetworkProcess(const base::Location& location) {
   DeleteAllDesktopSessions();
 }
 
+void DaemonProcess::Cleanup(base::OnceClosure callback) {
+  std::move(callback).Run();
+}
+
 void DaemonProcess::Initialize() {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 

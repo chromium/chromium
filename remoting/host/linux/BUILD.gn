@@ -237,6 +237,7 @@ source_set("platform_impls") {
     "//remoting/host:ipc_constants",
     "//remoting/host:mojo_caller_security_checker",
     "//remoting/host:platform_interfaces",
+    "//remoting/host:signal_handler",
     "//remoting/host/base",
     "//remoting/host/input_monitor",
     "//remoting/host/linux/dbus_interfaces:interface_headers",

@@ -56,7 +56,6 @@
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/host/mojom/remoting_host.mojom.h"
 #include "remoting/host/pairing_registry_delegate_linux.h"
-#include "remoting/host/posix/signal_handler.h"
 #include "remoting/host/usage_stats_consent.h"
 #include "remoting/host/worker_process_launcher.h"
 
@@ -87,6 +86,8 @@ class DaemonProcessLinux : public DaemonProcess,
   void StartDesktopSessionFactory();
   bool SetupPairingRegistry();
 
+  void Cleanup(base::OnceClosure callback) override;
+
  private:
   // DaemonProcess implementation.
   std::unique_ptr<DesktopSession> DoCreateDesktopSession(
@@ -106,8 +107,6 @@ class DaemonProcessLinux : public DaemonProcess,
 
   void OnStartDesktopSessionFactoryResult(
       base::expected<void, Loggable> result);
-
-  void HandleSigTerm(int signal_number);
 
   void BindChromotingHostServices(
       mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
@@ -144,14 +143,7 @@ DaemonProcessLinux::DaemonProcessLinux(
                     std::move(stopped_callback)),
       ipc_support_(io_task_runner->task_runner(),
                    mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST),
-      desktop_session_factory_(io_task_runner) {
-  io_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(base::IgnoreResult(&RegisterSignalHandler), SIGTERM,
-                     base::BindPostTaskToCurrentDefault(
-                         base::BindRepeating(&DaemonProcessLinux::HandleSigTerm,
-                                             weak_ptr_factory_.GetWeakPtr()))));
-}
+      desktop_session_factory_(io_task_runner) {}
 
 DaemonProcessLinux::~DaemonProcessLinux() = default;
 
@@ -344,24 +336,19 @@ void DaemonProcessLinux::OnStartDesktopSessionFactoryResult(
   }
 }
 
-void DaemonProcessLinux::HandleSigTerm(int signal_number) {
+void DaemonProcessLinux::Cleanup(base::OnceClosure callback) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
-  DCHECK_EQ(signal_number, SIGTERM);
 
-  // systemd sends SIGTERM when the service stops, so we clean up all desktop
-  // sessions here. While destroying a DesktopSession also terminates it, we
-  // must wait for all sessions to fully terminate before exiting, which the
-  // destructor alone does not handle.
-  HOST_LOG << "SIGTERM received. Terminating all desktop sessions.";
-  desktop_session_factory_.TerminateAllSessions(
-      base::BindOnce([](base::expected<void, Loggable> result) {
+  desktop_session_factory_.TerminateAllSessions(base::BindOnce(
+      [](base::OnceClosure callback, base::expected<void, Loggable> result) {
         if (!result.has_value()) {
           LOG(ERROR) << result.error();
         } else {
           HOST_LOG << "All desktop sessions have been terminated.";
         }
-        exit(kSuccessExitCode);
-      }));
+        std::move(callback).Run();
+      },
+      std::move(callback)));
 }
 
 std::unique_ptr<DaemonProcess> DaemonProcess::Create(
