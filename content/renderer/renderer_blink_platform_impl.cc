@@ -781,7 +781,6 @@ RendererBlinkPlatformImpl::CreateRasterGraphicsContextProvider(
 
   constexpr bool automatic_flushes = true;
   constexpr bool support_locking = false;
-  constexpr bool lose_context_when_out_of_memory = false;
 
   gpu::SchedulingPriority stream_priority =
       (base::FeatureList::IsEnabled(features::kInitialWebUI) &&
@@ -795,8 +794,7 @@ RendererBlinkPlatformImpl::CreateRasterGraphicsContextProvider(
       viz::ContextProviderCommandBuffer::CreateForRaster(
           std::move(gpu_channel_host), kGpuStreamIdDefault, stream_priority,
           GURL(document_url), automatic_flushes, support_locking,
-          gpu::SharedMemoryLimits(), ToVizContextType(context_type),
-          lose_context_when_out_of_memory));
+          gpu::SharedMemoryLimits(), ToVizContextType(context_type)));
 }
 
 //------------------------------------------------------------------------------

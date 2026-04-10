@@ -88,7 +88,7 @@ ContextResult GLInProcessContext::Initialize(
   // Create the object exposing the OpenGL API.
   gles2_implementation_ = std::make_unique<gles2::GLES2Implementation>(
       gles2_helper_.get(), /*share_group=*/nullptr, transfer_buffer_.get(),
-      /*lose_context_when_out_of_memory=*/false, command_buffer_.get());
+      /*lose_context_when_out_of_memory=*/true, command_buffer_.get());
 
   result = gles2_implementation_->Initialize(mem_limits);
   return result;

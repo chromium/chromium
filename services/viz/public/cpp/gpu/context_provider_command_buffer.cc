@@ -102,10 +102,8 @@ ContextProviderCommandBuffer::CreateForGL(
     int32_t stream_id,
     gpu::SchedulingPriority stream_priority,
     const GURL& active_url,
-    command_buffer_metrics::ContextType type,
-    bool lose_context_when_out_of_memory) {
+    command_buffer_metrics::ContextType type) {
   auto attributes = gpu::mojom::GLESCreationAttribs::New();
-  attributes->lose_context_when_out_of_memory = lose_context_when_out_of_memory;
 
   return base::MakeRefCounted<ContextProviderCommandBuffer>(
       base::PassKey<ContextProviderCommandBuffer>(), std::move(channel),
@@ -176,10 +174,8 @@ ContextProviderCommandBuffer::CreateForRaster(
     bool automatic_flushes,
     bool support_locking,
     const gpu::SharedMemoryLimits& memory_limits,
-    command_buffer_metrics::ContextType type,
-    bool lose_context_when_out_of_memory) {
+    command_buffer_metrics::ContextType type) {
   auto attributes = gpu::mojom::RasterCreationAttribs::New();
-  attributes->lose_context_when_out_of_memory = lose_context_when_out_of_memory;
 
   return base::MakeRefCounted<ContextProviderCommandBuffer>(
       base::PassKey<ContextProviderCommandBuffer>(), std::move(channel),
@@ -330,8 +326,7 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
       DCHECK(channel_);
       auto raster_impl = std::make_unique<gpu::raster::RasterImplementation>(
           raster_helper.get(), transfer_buffer.get(),
-          attributes_->get_raster()->lose_context_when_out_of_memory,
-          command_buffer_.get());
+          /*lose_context_when_out_of_memory=*/true, command_buffer_.get());
       bind_result_ = raster_impl->Initialize(memory_limits_);
       if (bind_result_ != gpu::ContextResult::kSuccess) {
         DLOG(ERROR) << "Failed to initialize RasterImplementation.";
@@ -373,8 +368,7 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
       // gpu::ContextSupport interface.
       auto gles2_impl = std::make_unique<gpu::gles2::GLES2Implementation>(
           gles2_helper.get(), /*share_group=*/nullptr, transfer_buffer.get(),
-          attributes_->get_gles()->lose_context_when_out_of_memory,
-          command_buffer_.get());
+          /*lose_context_when_out_of_memory=*/true, command_buffer_.get());
       bind_result_ = gles2_impl->Initialize(memory_limits_);
       if (bind_result_ != gpu::ContextResult::kSuccess) {
         DLOG(ERROR) << "Failed to initialize GLES2Implementation.";

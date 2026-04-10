@@ -59,8 +59,6 @@ gpu::ContextResult RasterCommandBufferStub::Initialize(
   TRACE_EVENT0("gpu", "RasterBufferStub::Initialize");
   UpdateActiveUrl();
 
-  const auto& attribs = *init_params.attribs->get_raster();
-
   GpuChannelManager* manager = channel_->gpu_channel_manager();
   DCHECK(manager);
 
@@ -107,7 +105,7 @@ gpu::ContextResult RasterCommandBufferStub::Initialize(
   }
 
   // Initialize the decoder with either the view or pbuffer GLContext.
-  result = decoder->Initialize(attribs.lose_context_when_out_of_memory);
+  result = decoder->Initialize(/*lose_context_when_out_of_memory=*/true);
   if (result != gpu::ContextResult::kSuccess) {
     DLOG(ERROR) << "Failed to initialize decoder.";
     return result;

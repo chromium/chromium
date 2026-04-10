@@ -514,10 +514,7 @@ void CompositorImpl::OnGpuChannelEstablished(
       GURL("chrome://gpu/CompositorImpl::CompositorContextProvider"),
       automatic_flushes, support_locking,
       GetCompositorContextSharedMemoryLimits(root_window_),
-      viz::command_buffer_metrics::ContextType::BROWSER_COMPOSITOR,
-      /*lose_context_when_out_of_memory=*/false
-
-  );
+      viz::command_buffer_metrics::ContextType::BROWSER_COMPOSITOR);
   auto result = context_provider->BindToCurrentSequence();
 
   if (result == gpu::ContextResult::kFatalFailure) {

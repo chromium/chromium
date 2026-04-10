@@ -297,7 +297,7 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
   // Initialize the decoder with either the view or pbuffer GLContext.
   auto result = gles2_decoder_->Initialize(
       surface_, context, /*offscreen=*/true, attribs.context_type,
-      attribs.lose_context_when_out_of_memory);
+      /*lose_context_when_out_of_memory=*/true);
   if (result != gpu::ContextResult::kSuccess) {
     DLOG(ERROR) << "Failed to initialize decoder.";
     return result;
