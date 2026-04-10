@@ -401,7 +401,9 @@ void ChangePasswordFormFillingSubmissionHelper::OnButtonClicked(
     return;
   }
 
-  logs_uploader_->RecordButtonClickFailure(kSubmitFormFlowStep, result);
+  if (logs_uploader_) {
+    logs_uploader_->RecordButtonClickFailure(kSubmitFormFlowStep, result);
+  }
   std::move(callback_).Run(
       base::unexpected(SubmissionError::kFailedToClickSubmit));
 }
