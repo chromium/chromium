@@ -375,9 +375,10 @@ class CORE_EXPORT ContainerNode : public Node {
 
   virtual bool ChildrenCanHaveStyle() const { return true; }
 
-  // This is similar to GetLayoutBox(), but returns nullptr if it's not
-  // scrollable. Some elements override this to delegate scroll operations to
-  // a descendant LayoutBox.
+  // This is similar to GetLayoutBox(), but returns the LayoutBox targeted by
+  // DOM scrolling APIs. Some elements override this to delegate scroll
+  // operations to a descendant LayoutBox. This may return a box with a
+  // ScrollableArea even if it is not an actual scroll container.
   virtual LayoutBox* GetLayoutBoxForScrolling() const;
 
   Element* GetAutofocusDelegate() const;

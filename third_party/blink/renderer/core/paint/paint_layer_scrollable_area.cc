@@ -91,6 +91,7 @@
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/custom_scrollbar.h"
+#include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/core/layout/layout_custom_scrollbar_part.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
@@ -639,12 +640,24 @@ void PaintLayerScrollableArea::EnqueueScrollEventIfNeeded() {
 }
 
 gfx::Vector2d PaintLayerScrollableArea::MinimumScrollOffsetInt() const {
+  if (!GetLayoutBox() || !GetLayoutBox()->IsScrollContainer()) {
+    // In cases when `PaintLayerScrollableArea` exists even though the
+    // `LayoutBox` is not a scroll container, and the writing direction is RTL
+    // or Vertical-RL - we can have a non-zero ScrollOrigin. For these cases, we
+    // clamp the scroll offset to zero.
+    return gfx::Vector2d();
+  }
   return -ScrollOrigin().OffsetFromOrigin();
 }
 
 gfx::Vector2d PaintLayerScrollableArea::MaximumScrollOffsetInt() const {
-  if (!GetLayoutBox() || !GetLayoutBox()->IsScrollContainer())
-    return -ScrollOrigin().OffsetFromOrigin();
+  if (!GetLayoutBox() || !GetLayoutBox()->IsScrollContainer()) {
+    // In cases when `PaintLayerScrollableArea` exists even though the
+    // `LayoutBox` is not a scroll container, and the writing direction is RTL
+    // or Vertical-RL - we can have a non-zero ScrollOrigin. For these cases, we
+    // clamp the scroll offset to zero.
+    return gfx::Vector2d();
+  }
 
   gfx::Size content_size = ContentsSize();
 
@@ -2538,6 +2551,11 @@ void PaintLayerScrollableArea::Resize(
 
 PhysicalAxes PaintLayerScrollableArea::ScrollableAxes() const {
   const auto* box = GetLayoutBox();
+
+  // Only scroll containers can have scrollable axes.
+  if (!box || !box->IsScrollContainer()) {
+    return kPhysicalAxesNone;
+  }
 
   // The LayoutView (viewport) always scrolls both axes.
   if (box->IsLayoutView()) {

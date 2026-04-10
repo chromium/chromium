@@ -12,7 +12,9 @@
 #include "third_party/blink/renderer/core/css/cssom/css_unit_values.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/layout/forms/layout_fieldset.h"
+#include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 
 namespace blink {
 
@@ -167,7 +169,12 @@ void ScrollSnapshotTimeline::ScheduleNextService() {
 LayoutBox* ScrollSnapshotTimeline::ComputeScrollContainer(
     Node* resolved_source) {
   auto* container_node = DynamicTo<ContainerNode>(resolved_source);
-  return container_node ? container_node->GetLayoutBoxForScrolling() : nullptr;
+  auto* box =
+      container_node ? container_node->GetLayoutBoxForScrolling() : nullptr;
+  if (box && box->GetScrollableArea()->ScrollableAxes()) {
+    return box;
+  }
+  return nullptr;
 }
 
 void ScrollSnapshotTimeline::Trace(Visitor* visitor) const {

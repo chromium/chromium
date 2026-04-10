@@ -2384,7 +2384,9 @@ void Element::ScrollIntoViewNoVisualUpdate(
       // The originating element of a ::column is a multicol container. See if
       // it also is the scrollable container that is to be scrolled, or if it's
       // a descendant (in the latter case `target` will remain nullptr here).
-      target = originating_element->GetLayoutBoxForScrolling();
+      auto* box = originating_element->GetLayoutBoxForScrolling();
+      target =
+          box && box->GetScrollableArea()->ScrollableAxes() ? box : nullptr;
     }
   }
   if (!target) {

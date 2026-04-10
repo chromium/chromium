@@ -1203,8 +1203,10 @@ LayoutBlock* LayoutBox::ScrollerFromScrollMarkerGroup() const {
   DCHECK(IsScrollMarkerGroup());
   auto* pseudo_element = DynamicTo<PseudoElement>(GetNode());
   if (const Element* originating_element = pseudo_element->parentElement()) {
-    return DynamicTo<LayoutBlock>(
-        originating_element->GetLayoutBoxForScrolling());
+    auto* box = originating_element->GetLayoutBoxForScrolling();
+    return box && box->GetScrollableArea()->ScrollableAxes()
+               ? DynamicTo<LayoutBlock>(box)
+               : nullptr;
   }
   return nullptr;
 }

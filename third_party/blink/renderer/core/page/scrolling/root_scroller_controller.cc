@@ -89,8 +89,10 @@ PaintLayerScrollableArea* GetScrollableArea(const Element& element) {
     return frame_view->LayoutViewport();
   }
 
-  if (!element.GetLayoutBoxForScrolling())
+  if (auto* box = element.GetLayoutBoxForScrolling();
+      !box || !box->GetScrollableArea()->ScrollableAxes()) {
     return nullptr;
+  }
 
   return element.GetLayoutBoxForScrolling()->GetScrollableArea();
 }

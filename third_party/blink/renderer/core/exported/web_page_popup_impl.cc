@@ -90,8 +90,11 @@ namespace {
 ScrollableArea* ToScrollableArea(Node* node) {
   DCHECK(node);
   LayoutBox* scrolling_box = node->GetLayoutBox();
-  if (auto* element = DynamicTo<Element>(node))
-    scrolling_box = element->GetLayoutBoxForScrolling();
+  if (auto* element = DynamicTo<Element>(node)) {
+    auto* box = element->GetLayoutBoxForScrolling();
+    scrolling_box =
+        box && box->GetScrollableArea()->ScrollableAxes() ? box : nullptr;
+  }
   return scrolling_box ? scrolling_box->GetScrollableArea() : nullptr;
 }
 

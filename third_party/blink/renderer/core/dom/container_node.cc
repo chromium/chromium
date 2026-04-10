@@ -918,7 +918,7 @@ LayoutBox* ContainerNode::GetLayoutBoxForScrolling() const {
   if (box) {
     box = box->ContentLayoutBox();
   }
-  return box && box->IsScrollContainer() ? box : nullptr;
+  return box && box->GetScrollableArea() ? box : nullptr;
 }
 
 bool ContainerNode::IsReadingFlowContainer() const {
