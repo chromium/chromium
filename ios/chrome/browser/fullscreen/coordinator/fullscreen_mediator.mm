@@ -232,20 +232,31 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
 
 #pragma mark - CRWWebViewScrollViewProxyObserver
 
-- (void)webViewScrollViewDidScroll:
-    (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
+- (void)webViewScrollViewDidScroll:(CRWWebViewScrollViewProxy*)scrollView {
   // Ignore programmatic scrolls (e.g. from inset updates). Only process scroll
   // events that are actively driven by the user's touch or residual momentum.
-  if (!webViewScrollViewProxy.isDragging &&
-      !webViewScrollViewProxy.isDecelerating) {
+  if (!scrollView.isDragging && !scrollView.isDecelerating) {
     return;
   }
 
-  CGFloat currentContentOffset = webViewScrollViewProxy.contentOffset.y;
-  CGFloat delta = currentContentOffset - _lastContentOffset;
-  _lastContentOffset = currentContentOffset;
+  CGFloat contentOffset = scrollView.contentOffset.y;
+  CGFloat delta = contentOffset - _lastContentOffset;
+  _lastContentOffset = contentOffset;
 
   if (_updatingInsets) {
+    return;
+  }
+
+  // Check if content is scrolled past the top.
+  CGFloat topInsetRemaining =
+      _browserAgent->max_insets().top - _browserAgent->insets().top;
+  if (contentOffset + topInsetRemaining <= -scrollView.contentInset.top) {
+    return;
+  }
+  // Check if content is scrolled past the bottom.
+  CGFloat scrollViewHeight = CGRectGetHeight(scrollView.frame);
+  CGFloat contentHeight = scrollView.contentSize.height;
+  if (contentOffset + scrollViewHeight > contentHeight) {
     return;
   }
 
