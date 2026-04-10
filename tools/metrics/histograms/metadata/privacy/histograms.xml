@@ -186,26 +186,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   </summary>
 </histogram>
 
-<histogram name="Privacy.ConsentAuditor.ConsentGiven.Feature"
-    enum="ConsentAuditorFeature" expires_after="M85">
-  <owner>markusheintz@google.com</owner>
-  <owner>msramek@google.com</owner>
-  <summary>
-    Logged each time the user grants a consent for a feature integrated with the
-    consent auditor. The value indicates which feature.
-  </summary>
-</histogram>
-
-<histogram name="Privacy.ConsentAuditor.ConsentNotGiven.Feature"
-    enum="ConsentAuditorFeature" expires_after="M85">
-  <owner>markusheintz@google.com</owner>
-  <owner>msramek@google.com</owner>
-  <summary>
-    Logged each time the user denies or revokes a consent for a feature
-    integrated with the consent auditor. The value indicates which feature.
-  </summary>
-</histogram>
-
 <histogram name="Privacy.CookieControlsActivated.PageRefreshCount"
     units="count" expires_after="2026-08-30">
   <owner>fmacintosh@google.com</owner>
