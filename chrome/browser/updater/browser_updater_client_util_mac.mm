@@ -55,6 +55,13 @@ namespace {
 
 constexpr char kInstallCommand[] = "install";
 
+// Return whether the app bundle's Info.plist contains a KSProductID value. May
+// block.
+bool BrowserHasKSProductID() {
+  return [base::apple::OuterBundle()
+             objectForInfoDictionaryKey:@"KSProductID"] != nil;
+}
+
 base::FilePath GetUpdaterExecutablePath() {
   return base::FilePath(base::StrCat({kUpdaterName, ".app"}))
       .Append(FILE_PATH_LITERAL("Contents"))
@@ -259,12 +266,22 @@ void EnsureUpdater(base::TaskPriority priority,
       FROM_HERE,
       {base::MayBlock(), priority,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&GetBrowserUpdaterScope),
+      base::BindOnce([] {
+        return BrowserHasKSProductID()
+                   ? std::make_optional(GetBrowserUpdaterScope())
+                   : std::nullopt;
+      }),
       base::BindOnce(
           [](base::TaskPriority priority, base::OnceClosure prompt,
-             base::OnceClosure complete, UpdaterScope scope) {
+             base::OnceClosure complete, std::optional<UpdaterScope> scope) {
+            if (!scope) {
+              // In the case of missing KSProductID, skip integration with
+              // the updater altogether.
+              std::move(complete).Run();
+              return;
+            }
             scoped_refptr<BrowserUpdaterClient> client =
-                BrowserUpdaterClient::Create(scope);
+                BrowserUpdaterClient::Create(*scope);
             client->IsBrowserRegistered(base::BindOnce(
                 [](scoped_refptr<BrowserUpdaterClient> client,
                    base::TaskPriority priority, base::OnceClosure prompt,
