@@ -199,7 +199,8 @@ void ChangePasswordFormFillingSubmissionHelper::TriggerFilling(
     return;
   }
 
-  observed_fields_.push_back(form.new_password_element_renderer_id);
+  observed_fields_.push_back(autofill::FieldGlobalId{
+      form.form_data.host_frame(), form.new_password_element_renderer_id});
 
   if (auto logger = GetLoggerIfAvailable(client_)) {
     logger->LogString(

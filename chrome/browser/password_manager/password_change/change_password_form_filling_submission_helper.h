@@ -16,6 +16,7 @@
 #include "chrome/browser/password_manager/password_change/password_change_submission_verifier.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/password_manager/core/browser/password_form.h"
 
@@ -165,9 +166,9 @@ class ChangePasswordFormFillingSubmissionHelper {
 
   std::unique_ptr<ButtonClickHelper> click_helper_;
 
-  // new_password_element_renderer_ids for the forms which `this` tried to fill.
+  // FieldGlobalIds for the forms which `this` tried to fill.
   // Used to avoid attempting to fill the same form over and over again.
-  std::vector<autofill::FieldRendererId> observed_fields_;
+  std::vector<autofill::FieldGlobalId> observed_fields_;
 
   // Helper object which finds for a new PasswordFormManager when filling of an
   // old form failed.

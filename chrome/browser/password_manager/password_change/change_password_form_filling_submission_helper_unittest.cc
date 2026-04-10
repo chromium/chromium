@@ -545,15 +545,20 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest, ProvisionallySaveFailed) {
 
   EXPECT_TRUE(verifier->form_waiter());
 
-  auto* new_form_manager = CreateFormManagerFromFormData(
-      CreateTestPasswordFormData("", "", 101, 102), /*credentials_to_seed=*/{});
+  autofill::FormData new_form_data =
+      CreateTestPasswordFormData("", "", 101, 102);
+  new_form_data.set_renderer_id(autofill::test::MakeFormRendererId());
+  auto* new_form_manager =
+      CreateFormManagerFromFormData(new_form_data, /*credentials_to_seed=*/{});
 
   // Verify that Chrome attempts to fill and submit a newly found form.
+  autofill::FormData filled_form = CreateFilledTestPasswordFormData();
+  filled_form.set_renderer_id(new_form_data.renderer_id());
+
   if (!base::FeatureList::IsEnabled(
           password_manager::features::kFillChangePasswordFormByTyping)) {
     EXPECT_CALL(driver(), FillChangePasswordForm)
-        .WillOnce(
-            base::test::RunOnceCallback<5>(CreateFilledTestPasswordFormData()));
+        .WillOnce(base::test::RunOnceCallback<5>(filled_form));
   }
   static_cast<password_manager::PasswordFormManagerObserver*>(
       verifier->form_waiter())
@@ -562,8 +567,7 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest, ProvisionallySaveFailed) {
   if (base::FeatureList::IsEnabled(
           password_manager::features::kFillChangePasswordFormByTyping)) {
     ASSERT_TRUE(verifier->form_filler());
-    verifier->form_filler()->SimulateFillingResult(
-        CreateFilledTestPasswordFormData());
+    verifier->form_filler()->SimulateFillingResult(filled_form);
   } else {
     EXPECT_TRUE(base::test::RunUntil(
         [&]() { return verifier->capturer() != nullptr; }));
@@ -657,14 +661,19 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
           PasswordChangeQuality_StepQuality_SubmissionStatus_FORM_FILLING_FAILED);
 
   EXPECT_TRUE(verifier->form_waiter());
-  auto* new_form_manager = CreateFormManagerFromFormData(
-      CreateTestPasswordFormData("", "", 101, 102), /*credentials_to_seed=*/{});
+  autofill::FormData new_form_data =
+      CreateTestPasswordFormData("", "", 101, 102);
+  new_form_data.set_renderer_id(autofill::test::MakeFormRendererId());
+  auto* new_form_manager =
+      CreateFormManagerFromFormData(new_form_data, /*credentials_to_seed=*/{});
+
+  autofill::FormData filled_form = CreateFilledTestPasswordFormData();
+  filled_form.set_renderer_id(new_form_data.renderer_id());
 
   if (!base::FeatureList::IsEnabled(
           password_manager::features::kFillChangePasswordFormByTyping)) {
     EXPECT_CALL(driver(), FillChangePasswordForm)
-        .WillOnce(
-            base::test::RunOnceCallback<5>(CreateFilledTestPasswordFormData()));
+        .WillOnce(base::test::RunOnceCallback<5>(filled_form));
   }
   static_cast<password_manager::PasswordFormManagerObserver*>(
       verifier->form_waiter())
@@ -673,8 +682,7 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
   if (base::FeatureList::IsEnabled(
           password_manager::features::kFillChangePasswordFormByTyping)) {
     ASSERT_TRUE(verifier->form_filler());
-    verifier->form_filler()->SimulateFillingResult(
-        CreateFilledTestPasswordFormData());
+    verifier->form_filler()->SimulateFillingResult(filled_form);
   } else {
     EXPECT_TRUE(base::test::RunUntil(
         [&]() { return verifier->capturer() != nullptr; }));

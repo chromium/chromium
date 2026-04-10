@@ -9,6 +9,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_cache.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -46,7 +47,7 @@ class ChangePasswordFormWaiter
 
     Builder& SetTimeoutCallback(base::OnceClosure timeout_callback);
     Builder& SetFieldsToIgnore(
-        const std::vector<autofill::FieldRendererId>& fields_to_ignore);
+        const std::vector<autofill::FieldGlobalId>& fields_to_ignore);
     Builder& IgnoreHiddenForms();
 
     std::unique_ptr<ChangePasswordFormWaiter> Build();
@@ -83,11 +84,10 @@ class ChangePasswordFormWaiter
 
   static password_manager::PasswordFormManager* GetCorrespondingFormManager(
       base::WeakPtr<ChangePasswordFormWaiter> waiter,
-      autofill::FieldRendererId new_password_element_id);
+      autofill::FieldGlobalId field_global_id);
 
-  void OnCheckViewAreaVisibleCallback(
-      autofill::FieldRendererId new_password_element_id,
-      bool is_visible);
+  void OnCheckViewAreaVisibleCallback(autofill::FieldGlobalId field_global_id,
+                                      bool is_visible);
 
   const raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
   PasswordFormFoundCallback callback_;
@@ -99,10 +99,9 @@ class ChangePasswordFormWaiter
   // (hidden).
   bool ignore_hidden_forms_ = false;
 
-  // new_password_element_renderer_ids which ChangePasswordFormWaiter should
-  // ignore. This helps avoid detecting the same change password form over and
-  // over again.
-  std::vector<autofill::FieldRendererId> fields_to_ignore_;
+  // FieldGlobalIds which ChangePasswordFormWaiter should ignore. This helps
+  // avoid detecting the same change password form over and over again.
+  std::vector<autofill::FieldGlobalId> fields_to_ignore_;
 
   // Subscription for model updates. Should be called when model has been
   // downloaded and available for use.

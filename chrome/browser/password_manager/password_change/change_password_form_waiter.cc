@@ -9,6 +9,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
@@ -107,7 +108,7 @@ ChangePasswordFormWaiter::Builder::IgnoreHiddenForms() {
 
 ChangePasswordFormWaiter::Builder&
 ChangePasswordFormWaiter::Builder::SetFieldsToIgnore(
-    const std::vector<autofill::FieldRendererId>& fields_to_ignore) {
+    const std::vector<autofill::FieldGlobalId>& fields_to_ignore) {
   form_waiter_->fields_to_ignore_ = fields_to_ignore;
   return *this;
 }
@@ -152,7 +153,10 @@ void ChangePasswordFormWaiter::Init() {
       auto callback = base::BindOnce(
           &ChangePasswordFormWaiter::GetCorrespondingFormManager,
           weak_ptr_factory_.GetWeakPtr(),
-          manager->GetParsedObservedForm()->new_password_element_renderer_id);
+          autofill::FieldGlobalId{
+              manager->GetParsedObservedForm()->form_data.host_frame(),
+              manager->GetParsedObservedForm()
+                  ->new_password_element_renderer_id});
 
       // The form has been already parsed. Invoke OnPasswordFormParsed to check
       // if the form is eligible.
@@ -198,9 +202,12 @@ void ChangePasswordFormWaiter::OnPasswordFormParsed(
     return;
   }
 
-  if (std::ranges::count(fields_to_ignore_,
-                         form_manager->GetParsedObservedForm()
-                             ->new_password_element_renderer_id)) {
+  if (std::ranges::count(
+          fields_to_ignore_,
+          autofill::FieldGlobalId{
+              form_manager->GetParsedObservedForm()->form_data.host_frame(),
+              form_manager->GetParsedObservedForm()
+                  ->new_password_element_renderer_id})) {
     return;
   }
 
@@ -210,22 +217,25 @@ void ChangePasswordFormWaiter::OnPasswordFormParsed(
 
   auto new_field_id =
       form_manager->GetParsedObservedForm()->new_password_element_renderer_id;
+  auto field_global_id = autofill::FieldGlobalId{
+      form_manager->GetParsedObservedForm()->form_data.host_frame(),
+      new_field_id};
   form_manager->GetDriver()->CheckViewAreaVisible(
       new_field_id,
       base::BindOnce(&ChangePasswordFormWaiter::OnCheckViewAreaVisibleCallback,
-                     weak_ptr_factory_.GetWeakPtr(), new_field_id));
+                     weak_ptr_factory_.GetWeakPtr(), field_global_id));
   return;
 }
 
 void ChangePasswordFormWaiter::OnCheckViewAreaVisibleCallback(
-    autofill::FieldRendererId new_password_element_id,
+    autofill::FieldGlobalId field_global_id,
     bool is_visible) {
   if (!is_visible) {
     return;
   }
 
   if (auto* form_manager = GetCorrespondingFormManager(
-          weak_ptr_factory_.GetWeakPtr(), new_password_element_id)) {
+          weak_ptr_factory_.GetWeakPtr(), field_global_id)) {
     std::move(callback_).Run(form_manager);
   }
 }
@@ -255,7 +265,7 @@ void ChangePasswordFormWaiter::OnTimeout() {
 password_manager::PasswordFormManager*
 ChangePasswordFormWaiter::GetCorrespondingFormManager(
     base::WeakPtr<ChangePasswordFormWaiter> waiter,
-    autofill::FieldRendererId new_password_element_id) {
+    autofill::FieldGlobalId field_global_id) {
   if (!waiter) {
     return nullptr;
   }
@@ -263,8 +273,10 @@ ChangePasswordFormWaiter::GetCorrespondingFormManager(
   if (auto* cache = GetPasswordFormCache(waiter->client_)) {
     for (const auto& manager : cache->GetFormManagers()) {
       if (manager->GetParsedObservedForm() &&
-          manager->GetParsedObservedForm()->new_password_element_renderer_id ==
-              new_password_element_id) {
+          autofill::FieldGlobalId{
+              manager->GetParsedObservedForm()->form_data.host_frame(),
+              manager->GetParsedObservedForm()
+                  ->new_password_element_renderer_id} == field_global_id) {
         return manager.get();
       }
     }

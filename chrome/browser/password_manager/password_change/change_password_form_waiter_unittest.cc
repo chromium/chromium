@@ -16,6 +16,7 @@
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
@@ -413,9 +414,12 @@ TEST_F(ChangePasswordFormWaiterTest, IgnoredChangePasswordForm) {
       parsed_form->new_password_element_renderer_id;
   ASSERT_EQ(new_password_renderer_id, autofill::FieldRendererId(2));
 
+  autofill::FieldGlobalId field_global_id = {
+      parsed_form->form_data.host_frame(),
+      parsed_form->new_password_element_renderer_id};
   auto waiter = ChangePasswordFormWaiter::Builder(web_contents(), client(),
                                                   completion_callback.Get())
-                    .SetFieldsToIgnore({new_password_renderer_id})
+                    .SetFieldsToIgnore({field_global_id})
                     .SetTimeoutCallback(timeout_callback.Get())
                     .Build();
 
