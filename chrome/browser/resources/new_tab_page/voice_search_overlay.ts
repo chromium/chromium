@@ -208,13 +208,13 @@ export class VoiceSearchOverlayElement extends CrLitElement {
 
   protected accessor interimResult_: string = '';
   protected accessor finalResult_: string = '';
-  private accessor state_: State = State.UNINITIALIZED;
   protected accessor helpUrl_: string =
       `https://support.google.com/chrome/?p=ui_voice_search&hl=${
           window.navigator.language}`;
   protected accessor micVolumeLevel_: number = 0;
   protected accessor micVolumeDuration_: number =
       VOLUME_ANIMATION_DURATION_MIN_MS;
+  private accessor state_: State = State.UNINITIALIZED;
 
   private voiceRecognition_: SpeechRecognition;
   private error_: Error|null = null;
