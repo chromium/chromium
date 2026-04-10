@@ -21,6 +21,11 @@ namespace accessibility_annotator {
 namespace {
 
 using ::base::test::DictionaryHasValues;
+using ::testing::AllOf;
+using ::testing::Eq;
+using ::testing::Field;
+using ::testing::Optional;
+using ::testing::Property;
 
 AccessibilityAnnotatorBackend::ContentAnnotationsData
 CreateContentAnnotationsData(std::string_view page_title) {
@@ -34,7 +39,10 @@ CreateContentAnnotationsData(std::string_view page_title) {
 
 class MockBackendObserver : public AccessibilityAnnotatorBackend::Observer {
  public:
-  MOCK_METHOD(void, OnContentAnnotationsAdded, (), (override));
+  MOCK_METHOD(void,
+              OnContentAnnotationsAdded,
+              (const AccessibilityAnnotatorBackend::ContentAnnotationsData&),
+              (override));
 };
 
 class AccessibilityAnnotatorBackendTest : public testing::Test {
@@ -252,11 +260,25 @@ TEST_F(AccessibilityAnnotatorBackendTest, ObserverNotified) {
   backend_->AddObserver(&observer);
 
   GURL url("https://example.com/");
-  AccessibilityAnnotatorBackend::ContentAnnotationsData data;
-  data.page_title = "Test Page Title";
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data =
+      CreateContentAnnotationsData("Test Page Title");
+  data.content_annotation = optimization_guide::proto::ContentAnnotation();
+  data.content_annotation->set_description("Test Description");
 
-  // Setting data should notify.
-  EXPECT_CALL(observer, OnContentAnnotationsAdded);
+  EXPECT_CALL(
+      observer,
+      OnContentAnnotationsAdded(AllOf(
+          // Match the plain struct member
+          Field(&AccessibilityAnnotatorBackend::ContentAnnotationsData::
+                    page_title,
+                Eq("Test Page Title")),
+
+          // Match the std::optional field
+          Field(&AccessibilityAnnotatorBackend::ContentAnnotationsData::
+                    content_annotation,
+                Optional(Property(
+                    &optimization_guide::proto::ContentAnnotation::description,
+                    Eq("Test Description")))))));
   backend_->SetContentAnnotationsCacheData(url, std::move(data));
   testing::Mock::VerifyAndClearExpectations(&observer);
 

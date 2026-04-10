@@ -37,10 +37,15 @@ class AccessibilityAnnotationSyncBridge;
 
 class AccessibilityAnnotatorBackend : public KeyedService {
  public:
+  struct ContentAnnotationsData;
+
   class Observer : public base::CheckedObserver {
+    // TODO(crbug.com/501107222): Add observer method for when annotations are
+    // deleted.
    public:
     // Called when content annotations are added.
-    virtual void OnContentAnnotationsAdded() = 0;
+    virtual void OnContentAnnotationsAdded(
+        const ContentAnnotationsData& annotation_data) = 0;
   };
 
   // TODO(crbug.com/501429617): Move this struct out of backend class.
@@ -61,6 +66,8 @@ class AccessibilityAnnotatorBackend : public KeyedService {
     base::DictValue classifier_results;
     base::Time navigation_timestamp;
     history::VisitID visit_id;
+    // TODO(crbug.com/501092664): Add URL field to prepare for keying cache by
+    // visit_id and pass to observers for data ingestion.
   };
 
   ~AccessibilityAnnotatorBackend() override = default;

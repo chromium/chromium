@@ -4,6 +4,7 @@
 
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend_impl.h"
 
+#include "base/containers/lru_cache.h"
 #include "base/containers/map_util.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -11,6 +12,7 @@
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/notimplemented.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotation_sync_bridge.h"
@@ -123,10 +125,12 @@ AccessibilityAnnotatorBackendImpl::GetContentAnnotationsCacheData(
 void AccessibilityAnnotatorBackendImpl::SetContentAnnotationsCacheData(
     const GURL& url,
     ContentAnnotationsData data) {
-  // This automatically handles eviction of the oldest entries if full.
-  content_annotations_cache_.Put(url, std::move(data));
+  base::LRUCache<GURL, ContentAnnotationsData>::iterator it =
+      content_annotations_cache_.Put(url, std::move(data));
+
   observers_.Notify(
-      &AccessibilityAnnotatorBackend::Observer::OnContentAnnotationsAdded);
+      &AccessibilityAnnotatorBackend::Observer::OnContentAnnotationsAdded,
+      it->second);
 }
 
 void AccessibilityAnnotatorBackendImpl::RemoveContentAnnotationsCacheData(
