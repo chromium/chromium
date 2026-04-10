@@ -214,8 +214,29 @@ int AwPrefetchManager::StartPrefetchFromPrePrefetch(JNIEnv* env,
   CHECK(
       base::FeatureList::IsEnabled(features::kWebViewPrefetchOffTheMainThread));
 
-  // TODO(crbug.com/452406598, crbug.com/452389538): Start Prefetch from
-  // PrePrefetch.
+  std::unique_ptr<content::PrePrefetchHandle> pre_prefetch_handle =
+      aw_prefetch_manager_data_.TakePrePrefetchHandleForConsume(prefetch_key);
+
+  if (!pre_prefetch_handle) {
+    return NO_PREFETCH_KEY;
+  }
+
+  std::unique_ptr<content::PrefetchHandle> prefetch_handle =
+      browser_context_->StartPrefetchFromPrePrefetch(
+          std::move(pre_prefetch_handle));
+
+  if (prefetch_handle) {
+    aw_prefetch_manager_data_.CommitPrefetchHandleAfterConsume(
+        prefetch_key, std::move(prefetch_handle));
+  } else {
+    // If starting the prefetch fails, the wrapper is now left without a handle,
+    // which should be cleaned up.
+    // TODO(crbug.com/452406598): This manual cancellation should ideally be
+    // removed by introducing a writer interface that grants write permission
+    // to the wrapper and automatically handles rollback on failure.
+    aw_prefetch_manager_data_.CancelPrefetch(prefetch_key);
+    return NO_PREFETCH_KEY;
+  }
 
   return prefetch_key;
 }

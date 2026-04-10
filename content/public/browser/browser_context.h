@@ -20,6 +20,7 @@
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/k_anonymity_service_delegate.h"
+#include "content/public/browser/pre_prefetch_handle.h"
 #include "content/public/browser/prefetch_handle.h"
 #include "content/public/browser/prefetch_priority.h"
 #include "content/public/browser/prefetch_request_status_listener.h"
@@ -227,6 +228,11 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
       bool should_append_variations_header,
       bool should_disable_block_until_head_timeout,
       bool should_bypass_http_cache);
+
+  // Adds a `PrefetchContainer` from a `PrePrefetchHandle` and starts prefetch.
+  [[nodiscard]] std::unique_ptr<content::PrefetchHandle>
+  StartPrefetchFromPrePrefetch(
+      std::unique_ptr<content::PrePrefetchHandle> pre_prefetch_handle);
 
   // Updates the "Accept Language" header that the prefetch service delegate
   // will use.

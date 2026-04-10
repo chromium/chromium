@@ -49,6 +49,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/pre_prefetch_handle.h"
 #include "content/public/browser/prefetch_service_delegate.h"
 #include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/render_process_host.h"
@@ -230,6 +231,22 @@ BrowserContext::StartBrowserPrefetchRequest(
       std::move(request_status_listener), ttl, should_append_variations_header,
       should_disable_block_until_head_timeout, should_bypass_http_cache);
   return prefetch_service->AddPrefetchRequestWithHandle(std::move(request));
+}
+
+std::unique_ptr<content::PrefetchHandle>
+BrowserContext::StartPrefetchFromPrePrefetch(
+    std::unique_ptr<content::PrePrefetchHandle> pre_prefetch_handle) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  TRACE_EVENT0("loading", "BrowserContext::StartPrefetchFromPrePrefetch");
+
+  PrefetchService* prefetch_service =
+      BrowserContextImpl::From(this)->GetPrefetchService();
+  if (!prefetch_service) {
+    return nullptr;
+  }
+
+  return prefetch_service->AddPrefetchRequestFromPrePrefetch(
+      std::move(pre_prefetch_handle));
 }
 
 void BrowserContext::UpdatePrefetchServiceDelegateAcceptLanguageHeader(

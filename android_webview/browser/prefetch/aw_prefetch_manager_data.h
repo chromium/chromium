@@ -82,6 +82,24 @@ class AwPrefetchManagerData {
       std::unique_ptr<AwPrefetchHandleWrapper> prefetch_handle_wrapper)
       LOCKS_EXCLUDED(lock_);
 
+  // The pair of functions to take `PrePrefetchHandle` from
+  // an existing `AwPrefetchHandleWrapper` and commit a `PrefetchHandle` to the
+  // same wrapper after PrePrefetch consumption.
+  //
+  // Currently it is the caller's responsibility to clean up the wrapper from
+  // `all_prefetches_map_`, when `TakePrePrefetchHandleForConsume` is called
+  // but `CommitPrefetchHandleAfterConsume` can't eventually be called (e.g. if
+  // starting the prefetch fails).
+  // TODO(crbug.com/452406598): This should ideally be mitigated by introducing
+  // a writer interface that grants write permission to the wrapper and
+  // automatically handles rollback on failure.
+  std::unique_ptr<content::PrePrefetchHandle> TakePrePrefetchHandleForConsume(
+      AwPrefetchKey prefetch_key) LOCKS_EXCLUDED(lock_);
+  void CommitPrefetchHandleAfterConsume(
+      AwPrefetchKey prefetch_key,
+      std::unique_ptr<content::PrefetchHandle> prefetch_handle)
+      LOCKS_EXCLUDED(lock_);
+
   void CancelPrefetch(AwPrefetchKey prefetch_key) LOCKS_EXCLUDED(lock_);
 
   size_t GetMaxPrefetches() const LOCKS_EXCLUDED(lock_);

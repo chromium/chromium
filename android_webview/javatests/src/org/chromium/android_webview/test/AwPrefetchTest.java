@@ -747,6 +747,63 @@ public class AwPrefetchTest extends AwParameterizedTest {
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
     }
 
+    // Tests that a PrePrefetch is triggered and completed successfully, and successfully served to
+    // a loadUrl.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
+        "enable-features=PrefetchOffTheMainThread,WebViewPrefetchOffTheMainThread"
+    })
+    public void testPrePrefetchServedAndConsumed() throws Throwable {
+        AwPrefetchManager prefetchManager =
+                mActivityTestRule.getAwBrowserContext().getPrefetchManager();
+
+        TestAwPrefetchCallback callback = new TestAwPrefetchCallback();
+        CountDownLatch startLatch = new CountDownLatch(1);
+
+        // PrePrefetch is being triggered under the flag enabled.
+        prefetchManager.startPrefetchRequestAsync(
+                SystemClock.uptimeMillis(),
+                mPrefetchUrl,
+                getAwPrefetchParameters(),
+                callback,
+                Runnable::run,
+                prefetchKey -> {
+                    callback.setPrefetchKey(prefetchKey);
+                    startLatch.countDown();
+                });
+
+        Assert.assertTrue(
+                "startPrefetchRequestAsync timed out", startLatch.await(5, TimeUnit.SECONDS));
+
+        callback.mOnStatusUpdatedHelper.waitForNext();
+        Assert.assertEquals(
+                "PrePrefetch should complete successfully.",
+                AwPrefetchCallback.StatusCode.PREFETCH_RESPONSE_COMPLETED,
+                callback.getOnStatusUpdatedHelper().getStatusCode());
+        Assert.assertEquals(
+                "Server should have received one request from the PrePrefetch.",
+                1,
+                mTestServer.getRequestCountForUrl(BASIC_PREFETCH_RELATIVE_PATH));
+
+        // Load the same URL in a WebView.
+        final AwTestContainerView testContainerView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        final AwContents awContents = testContainerView.getAwContents();
+        mActivityTestRule.loadUrlSync(
+                awContents, mContentsClient.getOnPageFinishedHelper(), mPrefetchUrl);
+
+        // Verify that the server did NOT receive a second request, proving the page load
+        // was served from the PrePrefetch, not Prefetch and the loadUrl itself.
+        Assert.assertEquals(
+                "Server should NOT have received a second request.",
+                1,
+                mTestServer.getRequestCountForUrl(BASIC_PREFETCH_RELATIVE_PATH));
+        prefetchManager.setCallbackForTesting(null);
+    }
+
     private String getUrl(final String relativePath) {
         return mTestServer.getURLWithHostName("a.test", relativePath);
     }
