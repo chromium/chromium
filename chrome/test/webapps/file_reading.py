@@ -8,23 +8,20 @@
 from collections import defaultdict
 import logging
 import os
-from posixpath import split
 import re
-from typing import Dict, List, Set, Tuple, Optional
+from typing import Dict, List, Optional, Set, Tuple
 
-from numpy import append
-
-from models import Action, TestId
-from models import ArgEnum
+from models import Action
 from models import ActionType
 from models import ActionsByName
+from models import ArgEnum
 from models import CoverageTest
 from models import CoverageTestsByPlatformSet
 from models import EnumsByType
 from models import PartialAndFullCoverageByBaseName
+from models import TestIdTestNameTuple
 from models import TestIdsTestNamesByPlatform
 from models import TestIdsTestNamesByPlatformSet
-from models import TestIdTestNameTuple
 from models import TestPartitionDescription
 from models import TestPlatform
 
@@ -494,7 +491,7 @@ def read_unprocessed_coverage_tests_file(
 
 def get_and_maybe_delete_tests_in_browsertest(
     filename: str,
-    required_tests: Set[TestIdTestNameTuple] = {},
+    required_tests: Optional[Set[TestIdTestNameTuple]] = None,
     delete_in_place: bool = False
 ) -> Dict[TestIdTestNameTuple, Set[TestPlatform]]:
     """
@@ -528,7 +525,10 @@ def get_and_maybe_delete_tests_in_browsertest(
     `TestPlatform.WINDOWS` and thus enabled on {`TestPlatform.MAC`,
     `TestPlatform.CHROME_OS`, and `TestPlatform.LINUX`}.
     """
+    if required_tests is None:
+        required_tests = set()
     tests: Dict[TestIdTestNameTuple, Set[TestPlatform]] = {}
+    required_tests_ids = {test_id for test_id, _ in required_tests}
 
     with open(filename, 'r') as fp:
         file = fp.read()
@@ -551,9 +551,6 @@ def get_and_maybe_delete_tests_in_browsertest(
             test_name = match.group(1)
             tests[TestIdTestNameTuple(test_id, test_name)] = set(TestPlatform)
             browser_test_name = f"{CoverageTest.TEST_ID_PREFIX}{test_name}"
-            required_tests_ids = []
-            for t in required_tests:
-                required_tests_ids.append(t[0])
             if f"DISABLED_{browser_test_name}" not in file:
                 if delete_in_place and test_id not in required_tests_ids:
                     del tests[TestIdTestNameTuple(test_id, test_name)]
@@ -579,7 +576,7 @@ def get_and_maybe_delete_tests_in_browsertest(
                 enabled_platforms.clear()
     if delete_in_place:
         with open(filename, 'w') as fp:
-            fp.write(result_file)
+            fp.write(result_file.rstrip("\n") + "\n")
     return tests
 
 
@@ -592,8 +589,8 @@ def find_existing_and_disabled_tests(
     Returns a dictionary of platform set to test id, and a dictionary of
     platform to disabled test ids.
     """
-    existing_tests: TestIdsNamesByPlatformSet = defaultdict(lambda: set())
-    disabled_tests: TestIdsNamesByPlatform = defaultdict(lambda: set())
+    existing_tests: TestIdsTestNamesByPlatformSet = defaultdict(lambda: set())
+    disabled_tests: TestIdsTestNamesByPlatform = defaultdict(lambda: set())
     for partition in test_partitions:
         for file in os.listdir(partition.browsertest_dir):
             if not file.startswith(partition.test_file_prefix):
@@ -606,7 +603,7 @@ def find_existing_and_disabled_tests(
                 for i in required_coverage_by_platform_set.get(platforms, []))
             tests = get_and_maybe_delete_tests_in_browsertest(
                 filename, required_tests, delete_in_place)
-            for test_id, test_name in tests.keys():
+            for test_id, test_name in tests:
                 if test_id in existing_tests[platforms]:
                     raise ValueError(f"Already found test {test_name}. "
                                      f"Duplicate test in {filename}")
@@ -617,7 +614,7 @@ def find_existing_and_disabled_tests(
                     if platform not in enabled_platforms:
                         disabled_tests[platform].add(
                             TestIdTestNameTuple(test_id, test_name))
-            test_names = [test_name for (test_id, test_name) in tests.keys()]
+            test_names = [test_name for (_, test_name) in tests]
             logging.info(f"Found tests in {filename}:\n{test_names}")
     return (existing_tests, disabled_tests)
 

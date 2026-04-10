@@ -4,13 +4,13 @@
 # found in the LICENSE file.
 
 from collections import defaultdict
+from contextlib import redirect_stdout
 import csv
 from io import StringIO
 import os
+import shutil
 import tempfile
 from typing import List, Set
-import shutil
-import sys
 import unittest
 
 from file_reading import get_and_maybe_delete_tests_in_browsertest
@@ -18,14 +18,14 @@ from file_reading import read_actions_file, read_enums_file
 from file_reading import read_platform_supported_actions
 from file_reading import read_unprocessed_coverage_tests_file
 from models import Action
-from models import EnumsByType
 from models import ActionsByName
 from models import ActionType
 from models import CoverageTest
 from models import CoverageTestsByPlatform
 from models import CoverageTestsByPlatformSet
-from models import TestIdsTestNamesByPlatformSet
+from models import EnumsByType
 from models import TestIdTestNameTuple
+from models import TestIdsTestNamesByPlatformSet
 from models import TestPartitionDescription
 from models import TestPlatform
 from test_analysis import compare_and_print_tests_to_remove_and_add
@@ -36,28 +36,29 @@ TEST_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                              "test_data")
 
 
-def CreateDummyAction(id: str):
+def create_dummy_action(id: str) -> Action:
     return Action(id, id, id, id, ActionType.STATE_CHANGE, TestPlatform,
                   TestPlatform)
 
 
-def CreateCoverageTest(id: str, platforms: Set[TestPlatform]):
-    return CoverageTest([CreateDummyAction(id)], platforms)
+def create_coverage_test(id: str,
+                         platforms: Set[TestPlatform]) -> CoverageTest:
+    return CoverageTest([create_dummy_action(id)], platforms)
 
 
-def CreateNewDummyTestByPlatformSet(
+def create_new_dummy_test_by_platform_set(
         platforms: Set[TestPlatform]) -> CoverageTestsByPlatformSet:
     new_test_by_platform: CoverageTestsByPlatform = {}
     for platform in platforms:
         # Add the simple dummy test of an action "a" to all platforms.
-        new_test_by_platform[platform] = ([
-            CreateCoverageTest("a", {platform})
-        ])
+        new_test_by_platform[platform] = [
+            create_coverage_test("a", {platform})
+        ]
     return partition_framework_tests_per_platform_combination(
         new_test_by_platform)
 
 
-def GetExistingTestIdsTestNamesByPlatformSet(
+def get_existing_test_ids_test_names_by_platform_set(
         filename: str, required_tests: Set[TestIdTestNameTuple],
         delete_in_place: bool) -> TestIdsTestNamesByPlatformSet:
     # Read in existing tests from a file.
@@ -75,31 +76,32 @@ def GetExistingTestIdsTestNamesByPlatformSet(
 
 class TestAnalysisTest(unittest.TestCase):
     def test_partition_framework_tests_per_platform_combination(self):
-        tests_by_platform: CoverageTestsByPlatform = {}
-        windows_tests = []
-        windows_tests.append(CreateCoverageTest("a", {TestPlatform.WINDOWS}))
-        windows_tests.append(CreateCoverageTest("b", {TestPlatform.WINDOWS}))
-        windows_tests.append(CreateCoverageTest("c", {TestPlatform.WINDOWS}))
-        tests_by_platform[TestPlatform.WINDOWS] = windows_tests
-        mac_tests = []
-        mac_tests.append(CreateCoverageTest("a", {TestPlatform.MAC}))
-        mac_tests.append(CreateCoverageTest("c", {TestPlatform.MAC}))
-        tests_by_platform[TestPlatform.MAC] = mac_tests
-        linux_tests = []
-        linux_tests.append(CreateCoverageTest("a", {TestPlatform.LINUX}))
-        tests_by_platform[TestPlatform.LINUX] = linux_tests
+        tests_by_platform: CoverageTestsByPlatform = {
+            TestPlatform.WINDOWS: [
+                create_coverage_test("a", {TestPlatform.WINDOWS}),
+                create_coverage_test("b", {TestPlatform.WINDOWS}),
+                create_coverage_test("c", {TestPlatform.WINDOWS}),
+            ],
+            TestPlatform.MAC: [
+                create_coverage_test("a", {TestPlatform.MAC}),
+                create_coverage_test("c", {TestPlatform.MAC}),
+            ],
+            TestPlatform.LINUX: [
+                create_coverage_test("a", {TestPlatform.LINUX}),
+            ],
+        }
 
         partitions = partition_framework_tests_per_platform_combination(
             tests_by_platform)
         self.assertEqual(len(partitions), 3)
 
-        self.assertTrue(frozenset({TestPlatform.WINDOWS}) in partitions)
+        self.assertIn(frozenset({TestPlatform.WINDOWS}), partitions)
         windows_tests = partitions[frozenset({TestPlatform.WINDOWS})]
         self.assertEqual(len(windows_tests), 1)
         self.assertEqual(windows_tests[0].id, "b")
 
-        self.assertTrue(
-            frozenset({TestPlatform.MAC, TestPlatform.WINDOWS}) in partitions)
+        self.assertIn(frozenset({TestPlatform.MAC, TestPlatform.WINDOWS}),
+                      partitions)
         mac_win_tests = partitions[frozenset(
             {TestPlatform.MAC, TestPlatform.WINDOWS})]
         self.assertEqual(len(mac_win_tests), 1)
@@ -107,7 +109,7 @@ class TestAnalysisTest(unittest.TestCase):
 
         mac_win_linux_key = frozenset(
             {TestPlatform.MAC, TestPlatform.WINDOWS, TestPlatform.LINUX})
-        self.assertTrue(mac_win_linux_key in partitions)
+        self.assertIn(mac_win_linux_key, partitions)
         mac_win_linux_tests = partitions[mac_win_linux_key]
         self.assertEqual(len(mac_win_linux_tests), 1)
         self.assertEqual(mac_win_linux_tests[0].id, "a")
@@ -173,9 +175,9 @@ class TestAnalysisTest(unittest.TestCase):
                 TestPlatform.CHROME_OS,
             }
             new_test_required_by_platform_set: CoverageTestsByPlatformSet = (
-                CreateNewDummyTestByPlatformSet(test_platforms))
+                create_new_dummy_test_by_platform_set(test_platforms))
             existing_tests: TestIdsTestNamesByPlatformSet = (
-                GetExistingTestIdsTestNamesByPlatformSet(
+                get_existing_test_ids_test_names_by_platform_set(
                     filename=test_file,
                     required_tests={
                         TestIdTestNameTuple(
@@ -196,7 +198,10 @@ class TestAnalysisTest(unittest.TestCase):
                 add_to_file=True)
             expected_file = os.path.join(TEST_DATA_DIR, "expected_test_txt",
                                          "tests_change_for_adding_test.cc")
-            with open(expected_file, "r") as f, open(test_file, "r") as f2:
+            with open(expected_file, "r",
+                      encoding="utf-8") as f, open(test_file,
+                                                   "r",
+                                                   encoding="utf-8") as f2:
                 self.assertEqual(f.read(), f2.read())
 
     def test_compare_and_print_tests_with_same_name_diff_check_actions_only(
@@ -208,7 +213,7 @@ class TestAnalysisTest(unittest.TestCase):
 
         actions: ActionsByName = {}
         action_base_name_to_default_param = {}
-        with open(actions_filename) as f, \
+        with open(actions_filename, "r", encoding="utf-8") as f, \
                 open(supported_actions_filename, "r", encoding="utf-8") \
                     as supported_actions, \
                 open(enums_filename, "r", encoding="utf-8") as enums:
@@ -222,7 +227,7 @@ class TestAnalysisTest(unittest.TestCase):
         coverage_filename = os.path.join(TEST_DATA_DIR,
                                          "test_addition_coverage.md")
         generated_coverage_tests: List[CoverageTest] = []
-        with open(coverage_filename) as f:
+        with open(coverage_filename, "r", encoding="utf-8") as f:
             coverage_tsv = f.readlines()
             generated_coverage_tests = read_unprocessed_coverage_tests_file(
                 coverage_tsv, actions, enums,
@@ -250,7 +255,7 @@ class TestAnalysisTest(unittest.TestCase):
                 "tests_change_for_replacing_test_same_test_name.cc")
             shutil.copyfile(original_file, test_file)
             existing_tests: TestIdsTestNamesByPlatformSet = (
-                GetExistingTestIdsTestNamesByPlatformSet(
+                get_existing_test_ids_test_names_by_platform_set(
                     filename=test_file,
                     required_tests={
                         TestIdTestNameTuple(
@@ -275,7 +280,10 @@ class TestAnalysisTest(unittest.TestCase):
             expected_file = os.path.join(
                 TEST_DATA_DIR, "expected_test_txt",
                 "tests_change_for_replacing_test_same_test_name.cc")
-            with open(expected_file, "r") as f, open(test_file, "r") as f2:
+            with open(expected_file, "r",
+                      encoding="utf-8") as f, open(test_file,
+                                                   "r",
+                                                   encoding="utf-8") as f2:
                 self.assertEqual(f.read(), f2.read())
 
     def test_compare_and_print_tests_to_remove_and_add_delete_and_add_to_file(
@@ -294,11 +302,12 @@ class TestAnalysisTest(unittest.TestCase):
                 TestPlatform.CHROME_OS,
             }
             new_test_required_by_platform_set: CoverageTestsByPlatformSet = (
-                CreateNewDummyTestByPlatformSet(test_platforms))
-            existing_tests: TestIdsByPlatformSet = (
-                GetExistingTestIdsTestNamesByPlatformSet(filename=test_file,
-                                                         required_tests={},
-                                                         delete_in_place=True))
+                create_new_dummy_test_by_platform_set(test_platforms))
+            existing_tests: TestIdsTestNamesByPlatformSet = (
+                get_existing_test_ids_test_names_by_platform_set(
+                    filename=test_file,
+                    required_tests={},
+                    delete_in_place=True))
 
             default_partition = TestPartitionDescription(
                 action_name_prefixes=set(),
@@ -315,7 +324,10 @@ class TestAnalysisTest(unittest.TestCase):
             expected_file = os.path.join(
                 TEST_DATA_DIR, "expected_test_txt",
                 "tests_change_for_deleting_adding_test.cc")
-            with open(expected_file, "r") as f, open(test_file, "r") as f2:
+            with open(expected_file, "r",
+                      encoding="utf-8") as f, open(test_file,
+                                                   "r",
+                                                   encoding="utf-8") as f2:
                 self.assertEqual(f.read(), f2.read())
 
     def test_compare_and_print_tests_to_remove_and_add_add_to_new_file(self):
@@ -330,9 +342,10 @@ class TestAnalysisTest(unittest.TestCase):
                 TestPlatform.WINDOWS, TestPlatform.MAC
             }
             new_test_required_by_platform_set: CoverageTestsByPlatformSet = (
-                CreateNewDummyTestByPlatformSet(test_platforms))
-            existing_tests: TestIdsByPlatformSet = (
-                GetExistingTestIdsTestNamesByPlatformSet(test_file, {}, True))
+                create_new_dummy_test_by_platform_set(test_platforms))
+            existing_tests: TestIdsTestNamesByPlatformSet = (
+                get_existing_test_ids_test_names_by_platform_set(
+                    test_file, {}, True))
 
             default_partition = TestPartitionDescription(
                 action_name_prefixes=set(),
@@ -341,22 +354,21 @@ class TestAnalysisTest(unittest.TestCase):
                 test_fixture="WebAppIntegration")
 
             captured_output = StringIO()
-            sys.stdout = captured_output
-            compare_and_print_tests_to_remove_and_add(
-                existing_tests,
-                new_test_required_by_platform_set,
-                test_partitions=[],
-                default_partition=default_partition,
-                add_to_file=True)
+            with redirect_stdout(captured_output):
+                compare_and_print_tests_to_remove_and_add(
+                    existing_tests,
+                    new_test_required_by_platform_set,
+                    test_partitions=[],
+                    default_partition=default_partition,
+                    add_to_file=True)
             console_output_str = captured_output.getvalue()
-            sys.stdout = sys.__stdout__
 
             expected_file = os.path.join(
                 TEST_DATA_DIR, "expected_test_txt",
                 "tests_change_for_deletion_addition_mac_win.txt")
             test_output_file = os.path.join(
                     tmpdirname, "tests_for_deletion_addition_mac_win.cc")
-            with open(expected_file, "r") as f:
+            with open(expected_file, "r", encoding="utf-8") as f:
                 self.assertEqual(f.read() % test_output_file,
                                  console_output_str)
 

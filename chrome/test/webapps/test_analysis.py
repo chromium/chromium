@@ -6,20 +6,18 @@
 """
 
 from collections import defaultdict
-import datetime
 import logging
-import re
 import os
-from typing import List, Set
+import re
+from typing import Dict, List, Set
 
 from models import Action
+from models import ActionType
 from models import CoverageTest
 from models import CoverageTestsByPlatform
-from models import ActionType
 from models import CoverageTestsByPlatformSet
 from models import TestId
 from models import TestIdsTestNamesByPlatformSet
-from models import TestIdTestNameTuple
 from models import TestPartitionDescription
 from models import TestPlatform
 
@@ -27,15 +25,12 @@ from models import TestPlatform
 def filter_tests_for_partition(tests: List[CoverageTest],
                                partition: TestPartitionDescription
                                ) -> List[CoverageTest]:
-    def DoesTestHaveActionWithPrefixes(test: CoverageTest):
-        """Returns if the given tests has any actions with the given prefixes"""
-        nonlocal partition
-        for action in test.actions:
-            for prefix in partition.action_name_prefixes:
-                if action.name.startswith(prefix):
-                    return True
-
-    return list(filter(DoesTestHaveActionWithPrefixes, tests))
+    """Returns tests whose actions match any prefix assigned to `partition`."""
+    return [
+        test for test in tests if any(
+            action.name.startswith(prefix) for action in test.actions
+            for prefix in partition.action_name_prefixes)
+    ]
 
 
 def compare_and_print_tests_to_remove_and_add(
@@ -51,15 +46,14 @@ def compare_and_print_tests_to_remove_and_add(
     Note: This does NOT support moving tests between partition files. If a test
     was found in any partition file, then it is ignored.
     """
-    def print_tests(filename: str, tests: List[CoverageTest],
-                    partition: TestPartitionDescription, add_to_file: bool):
-        new_test_str: str = ""
-        for test in tests:
-            new_test_str += ("\n" + test.generate_browsertest(partition) +
-                             "\n")
+
+    def write_tests(filename: str, tests: List[CoverageTest],
+                    partition: TestPartitionDescription):
+        new_test_str = "".join("\n" + test.generate_browsertest(partition) +
+                               "\n" for test in tests)
         if add_to_file:
             if os.path.exists(filename):
-                with open(filename, "r") as f:
+                with open(filename, "r", encoding="utf-8") as f:
                     test_file = f.read()
                 # Find the last test in the test file
                 matches = list(
@@ -77,10 +71,9 @@ def compare_and_print_tests_to_remove_and_add(
                             '\n', 0, last_brace_index) + 1
                     else:
                         last_test_end_index = len(test_file)
-                new_content = (test_file[:last_test_end_index] + new_test_str +
-                               test_file[last_test_end_index:])
-                with open(filename, "w") as f:
-                    f.write(new_content)
+                with open(filename, "w", encoding="utf-8") as f:
+                    f.write(test_file[:last_test_end_index] + new_test_str +
+                            test_file[last_test_end_index:])
             else:
                 print(f"\n\nCreate a new test file: {filename}\n"
                       "Remember to add the new test file to the BUILD file.\n"
@@ -90,13 +83,16 @@ def compare_and_print_tests_to_remove_and_add(
             print(f"\n\nAdd the following tests to {filename}:\n"
                   f"{new_test_str}")
 
-    test_ids_to_keep: TestIdsByPlatformSet = defaultdict(lambda: set())
+    test_ids_to_keep: Dict[frozenset[TestPlatform],
+                           Set[TestId]] = defaultdict(set)
     for platforms, tests in required_tests.items():
         tests_to_add: List[CoverageTest] = []
         for test in tests:
             if platforms in existing_tests:
-                existing_test_set = set(
-                    [test_id for (test_id, _) in existing_tests[platforms]])
+                existing_test_set = {
+                    test_id
+                    for (test_id, _) in existing_tests[platforms]
+                }
                 if test.id not in existing_test_set:
                     tests_to_add.append(test)
                 else:
@@ -117,8 +113,7 @@ def compare_and_print_tests_to_remove_and_add(
                         "Cannot have a test written to multiple test files.")
                 tests_added_to_partition.add(test.id)
             filename = partition.generate_browsertest_filepath(platforms)
-            print_tests(filename, tests_to_add_partition, partition,
-                        add_to_file)
+            write_tests(filename, tests_to_add_partition, partition)
 
         # All remaining tests go into the default partition
         default_tests: List[CoverageTest] = [
@@ -128,7 +123,7 @@ def compare_and_print_tests_to_remove_and_add(
         if not default_tests:
             continue
         filename = default_partition.generate_browsertest_filepath(platforms)
-        print_tests(filename, default_tests, default_partition, add_to_file)
+        write_tests(filename, default_tests, default_partition)
     # Print out all tests to remove. To keep the algorithm simple the partition
     # is not kept track of.
     for platforms, test_ids_names in existing_tests.items():
@@ -212,10 +207,7 @@ def expand_parameterized_tests(coverage_tests: List[CoverageTest]
 def filter_coverage_tests_for_platform(tests: List[CoverageTest],
                                        platform: TestPlatform
                                        ) -> List[CoverageTest]:
-    def IsSupportedOnPlatform(test: CoverageTest):
-        return platform in test.platforms
-
-    return list(filter(IsSupportedOnPlatform, tests))
+    return [test for test in tests if platform in test.platforms]
 
 
 def partition_framework_tests_per_platform_combination(

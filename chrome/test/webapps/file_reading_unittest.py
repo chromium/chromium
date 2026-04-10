@@ -3,24 +3,24 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import os
 import csv
-import tempfile
-from typing import List
+import os
 import shutil
+import tempfile
+from typing import Dict, List
 import unittest
 
 from file_reading import enumerate_all_argument_combinations
-from file_reading import expand_tests_from_action_parameter_wildcards
 from file_reading import enumerate_markdown_file_lines_to_table_rows
-from file_reading import human_friendly_name_to_canonical_action_name
+from file_reading import expand_tests_from_action_parameter_wildcards
 from file_reading import generate_test_id_from_test_steps
 from file_reading import get_and_maybe_delete_tests_in_browsertest
+from file_reading import human_friendly_name_to_canonical_action_name
 from file_reading import read_actions_file
 from file_reading import read_enums_file
 from file_reading import read_platform_supported_actions
-from file_reading import resolve_bash_style_replacement
 from file_reading import read_unprocessed_coverage_tests_file
+from file_reading import resolve_bash_style_replacement
 from models import ActionsByName
 from models import ArgEnum
 from models import CoverageTest
@@ -31,7 +31,7 @@ TEST_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                              "test_data")
 
 
-class TestAnalysisTest(unittest.TestCase):
+class FileReadingTest(unittest.TestCase):
     def test_markdown_file_mapping(self):
         test_input = [
             "Test", "# Hello", "| #test |", "| ------- | Value |",
@@ -42,9 +42,10 @@ class TestAnalysisTest(unittest.TestCase):
         self.assertEqual(expected, output)
 
     def test_argument_combinations(self):
-        argument_types: List[ArgEnum] = []
-        argument_types.append(ArgEnum("T1", ["T1V1", "T1V2"], None))
-        argument_types.append(ArgEnum("T2", ["T2V1", "T2V2"], None))
+        argument_types: List[ArgEnum] = [
+            ArgEnum("T1", ["T1V1", "T1V2"], None),
+            ArgEnum("T2", ["T2V1", "T2V2"], None),
+        ]
 
         combinations = enumerate_all_argument_combinations(argument_types)
 
@@ -127,7 +128,7 @@ class TestAnalysisTest(unittest.TestCase):
         with open(actions_filename, "r", encoding="utf-8") as f, \
                 open(supported_actions_filename, "r", encoding="utf-8") \
                     as supported_actions, \
-                open (enums_filename, "r", encoding="utf-8") as enums:
+                open(enums_filename, "r", encoding="utf-8") as enums:
             supported_actions = read_platform_supported_actions(
                 csv.reader(supported_actions, delimiter=','))
             actions_tsv = f.readlines()
@@ -146,7 +147,7 @@ class TestAnalysisTest(unittest.TestCase):
             # Check parameterized action state.
             self.assertIn('changes_Chicken', actions)
             self.assertIn('changes_Dog', actions)
-            self.assertTrue('checks' in actions)
+            self.assertIn('checks', actions)
             checks_output_actions = actions['checks'].output_actions
             self.assertEqual(len(checks_output_actions), 2)
             self.assertCountEqual(
@@ -161,7 +162,7 @@ class TestAnalysisTest(unittest.TestCase):
 
         actions: ActionsByName = {}
         action_base_name_to_default_param = {}
-        with open(actions_filename) as f, \
+        with open(actions_filename, "r", encoding="utf-8") as f, \
                 open(supported_actions_filename, "r", encoding="utf-8") \
                     as supported_actions, \
                 open(enums_filename, "r", encoding="utf-8") as enums:
@@ -175,7 +176,7 @@ class TestAnalysisTest(unittest.TestCase):
         coverage_filename = os.path.join(TEST_DATA_DIR,
                                          "test_unprocessed_coverage.md")
         coverage_tests: List[CoverageTest] = []
-        with open(coverage_filename) as f:
+        with open(coverage_filename, "r", encoding="utf-8") as f:
             coverage_tsv = f.readlines()
             coverage_tests = read_unprocessed_coverage_tests_file(
                 coverage_tsv, actions, enums,
@@ -197,7 +198,8 @@ class TestAnalysisTest(unittest.TestCase):
 
     def test_browertest_in_place_deletion(self):
         input_file = os.path.join(TEST_DATA_DIR, "tests_for_deletion.cc")
-        after_deletion_file = os.path.join(TEST_DATA_DIR, "tests_default.cc")
+        after_deletion_file = os.path.join(TEST_DATA_DIR,
+                                           "tests_after_in_place_deletion.cc")
         with tempfile.TemporaryDirectory(dir=TEST_DATA_DIR) as tmpdirname:
             output_file = os.path.join(tmpdirname, "output.cc")
             shutil.copyfile(input_file, output_file)
@@ -209,9 +211,9 @@ class TestAnalysisTest(unittest.TestCase):
                 },
                 delete_in_place=True)
 
-            with open(output_file, 'r') as f, open(after_deletion_file,
-                                                   'r') as f2:
-                self.assertTrue(f.read(), f2.read())
+            with open(output_file, 'r', encoding="utf-8") as f, \
+                    open(after_deletion_file, 'r', encoding="utf-8") as f2:
+                self.assertEqual(f.read(), f2.read())
 
             tests_and_platforms = tests_and_platforms[TestIdTestNameTuple(
                 "state_change_a_Chicken_check_a_Chicken_check_b_Chicken_Green",

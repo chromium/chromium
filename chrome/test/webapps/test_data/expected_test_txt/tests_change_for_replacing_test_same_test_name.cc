@@ -23,5 +23,3 @@ IN_PROC_BROWSER_TEST_F(TestName, WAI_StateChangeAChicken_StateChangeADog_StateCh
   helper_.CheckA(Animal::kDog);
   helper_.StateChangeA(Animal::kChicken);
 }
-
-
