@@ -6,7 +6,7 @@
 
 [
     Exposed=Window, SecureContext, RuntimeEnabled=RTCDiagnosticLogging
-] interface RTC : EventTarget {
+] interface RTC {
     [CallWith=ScriptState] Promise<DOMString> startDiagnosticLogging(optional RTCDiagnosticLoggingOptions options = {});
     [CallWith=ScriptState] Promise<undefined> finishDiagnosticLogging();
     [CallWith=ScriptState] Promise<undefined> cancelDiagnosticLogging();

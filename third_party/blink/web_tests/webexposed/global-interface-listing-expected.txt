@@ -8062,7 +8062,7 @@ interface QuotaExceededError : DOMException
     getter quota
     getter requested
     method constructor
-interface RTC : EventTarget
+interface RTC
     attribute @@toStringTag
     method cancelDiagnosticLogging
     method constructor
