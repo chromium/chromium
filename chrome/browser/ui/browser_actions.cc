@@ -30,6 +30,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
+#include "chrome/browser/ui/accelerator_table.h"
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/global_keyboard_shortcuts_mac.h"
+#endif
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller.h"
@@ -322,6 +326,13 @@ void BrowserActions::InitializeSidePanelActions() {
             .Build());
   }
 
+  ui::Accelerator reading_mode_accelerator;
+  std::u16string reading_mode_shortcut;
+  if (GetAcceleratorForCommandId(IDC_SHOW_READING_MODE_KEYBOARD,
+                                 &reading_mode_accelerator)) {
+    reading_mode_shortcut = reading_mode_accelerator.GetShortcutText();
+  }
+
   if (features::IsReadAnythingOmniboxChipEnabled() ||
       features::IsImmersiveReadAnythingEnabled()) {
     root_action_item_->AddChild(
@@ -335,7 +346,8 @@ void BrowserActions::InitializeSidePanelActions() {
                 bwi))
             .SetActionId(kActionSidePanelShowReadAnything)
             .SetText(l10n_util::GetStringUTF16(IDS_READING_MODE_TITLE))
-            .SetTooltipText(l10n_util::GetStringUTF16(IDS_READING_MODE_TITLE))
+            .SetTooltipText(l10n_util::GetStringFUTF16(IDS_READING_MODE_TOOLTIP,
+                                                       reading_mode_shortcut))
             .SetImage(ui::ImageModel::FromVectorIcon(kMenuBookChromeRefreshIcon,
                                                      ui::kColorIcon))
             .SetProperty(
@@ -346,9 +358,20 @@ void BrowserActions::InitializeSidePanelActions() {
             .Build());
   } else {
     root_action_item_->AddChild(
-        SidePanelAction(SidePanelEntryId::kReadAnything, IDS_READING_MODE_TITLE,
-                        IDS_READING_MODE_TITLE, kMenuBookChromeRefreshIcon,
-                        kActionSidePanelShowReadAnything, bwi, true)
+        actions::ActionItem::Builder(
+            CreateToggleSidePanelActionCallback(
+                SidePanelEntryKey(SidePanelEntryId::kReadAnything), bwi))
+            .SetActionId(kActionSidePanelShowReadAnything)
+            .SetText(l10n_util::GetStringUTF16(IDS_READING_MODE_TITLE))
+            .SetTooltipText(l10n_util::GetStringFUTF16(IDS_READING_MODE_TOOLTIP,
+                                                       reading_mode_shortcut))
+            .SetImage(ui::ImageModel::FromVectorIcon(kMenuBookChromeRefreshIcon,
+                                                     ui::kColorIcon))
+            .SetProperty(
+                actions::kActionItemPinnableKey,
+                static_cast<
+                    std::underlying_type_t<actions::ActionPinnableState>>(
+                    actions::ActionPinnableState::kPinnable))
             .Build());
   }
 

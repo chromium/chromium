@@ -7,7 +7,9 @@
 #include <string>
 #include <utility>
 
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/accelerator_table.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.h"
 #include "chrome/browser/ui/webui/theme_source.h"
@@ -17,12 +19,16 @@
 #include "chrome/grit/side_panel_read_anything_resources_map.h"
 #include "chrome/grit/side_panel_shared_resources.h"
 #include "chrome/grit/side_panel_shared_resources_map.h"
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/global_keyboard_shortcuts_mac.h"
+#endif
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/webui/resources/grit/webui_resources.h"
@@ -137,7 +143,6 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"readingModeLanguageMenu", IDS_READING_MODE_LANGUAGE_MENU},
       {"readingModeLanguageMenuTitle", IDS_READING_MODE_LANGUAGE_MENU_TITLE},
       {"readingModeLanguageMenuClose", IDS_READING_MODE_LANGUAGE_MENU_CLOSE},
-      {"readingModeClose", IDS_READING_MODE_CLOSE},
       {"readingModeLanguageMenuSearchLabel",
        IDS_READING_MODE_LANGUAGE_MENU_SEARCH_LABEL},
       {"readingModeLanguageMenuSearchClear",
@@ -183,6 +188,16 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
   for (const auto& str : kLocalizedStrings) {
     webui::AddLocalizedString(source, str.name, str.id);
   }
+  ui::Accelerator reading_mode_accelerator;
+  std::u16string reading_mode_shortcut;
+  if (GetAcceleratorForCommandId(IDC_SHOW_READING_MODE_KEYBOARD,
+                                 &reading_mode_accelerator)) {
+    reading_mode_shortcut = reading_mode_accelerator.GetShortcutText();
+  }
+
+  source->AddString("readingModeClose",
+                    l10n_util::GetStringFUTF16(IDS_READING_MODE_CLOSE,
+                                               reading_mode_shortcut));
 
   // Rather than call `webui::SetupWebUIDataSource`, manually set up source
   // here. This ensures that if CSPs change in a way that is safe for chrome://

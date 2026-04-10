@@ -42,6 +42,10 @@ void ClearAcceleratorListForTesting();
 bool GetStandardAcceleratorForCommandId(int command_id,
                                         ui::Accelerator* accelerator);
 
+// Returns true if the command id has an associated accelerator. If the return
+// is true the accelerator is returned via the second argument.
+bool GetAcceleratorForCommandId(int command_id, ui::Accelerator* accelerator);
+
 // Returns true if the command identified by |command_id| should be executed
 // repeatedly while its accelerator keys are held down.
 bool IsCommandRepeatable(int command_id);
