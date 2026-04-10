@@ -1,45 +1,14 @@
 include_rules = [
   "-chrome/browser",
-  "+chrome/browser/chrome_browser_main_extra_parts.h",
   "+chrome/browser/headless",
-  "+chrome/chrome_elf/chrome_elf_main.h",
-  "+components/devtools/simple_devtools_protocol_client",
   "+components/headless",
-  "+components/keep_alive_registry",
 ]
 
 specific_include_rules = {
-  "headless_mode_browsertest\.cc": [
-    "+chrome/browser/infobars/confirm_infobar_creator.h",
-    "+chrome/browser/profiles/profile.h",
-    "+chrome/browser/ui/browser.h",
-    "+chrome/browser/ui/browser_window.h",
-    "+chrome/browser/ui/views/frame/app_menu_button.h",
-    "+chrome/browser/ui/views/frame/browser_view.h",
-    "+chrome/browser/ui/views/frame/toolbar_button_provider.h",
+  "headless_mode_init\.cc": [
+    "+chrome/chrome_elf/chrome_elf_main.h",
   ],
-  "headless_mode_browsertest_linux\.cc": [
-    "+chrome/browser/ui/browser.h",
-    "+chrome/browser/ui/browser_window.h",
-  ],
-  "headless_mode_browsertest_mac\.mm": [
-    "+chrome/browser/ui/browser.h",
-    "+chrome/browser/ui/browser_commands.h",
-    "+chrome/browser/ui/browser_window.h",
-  ],
-  "headless_mode_browsertest_win\.cc": [
-    "+chrome/browser/ui/browser.h",
-    "+chrome/browser/ui/browser_window.h",
-  ],
-  "headless_mode_command_browsertest\.cc": [
-    "+pdf",
-  ],
-  "headless_mode_devtooled_browsertest\.cc": [
-    "+chrome/browser/profiles/profile.h",
-    "+chrome/browser/ui/browser.h",
-  ],
-  "headless_mode_protocol_browsertest\.h": [
-    "+chrome/browser/preloading/scoped_prewarm_feature_list.h",
+  "chrome_browser_main_extra_parts_headless\.h": [
+  "+chrome/browser/chrome_browser_main_extra_parts.h",
   ],
 }
-

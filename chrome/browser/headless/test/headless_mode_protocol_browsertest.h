@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_HEADLESS_HEADLESS_MODE_PROTOCOL_BROWSERTEST_H_
-#define CHROME_BROWSER_HEADLESS_HEADLESS_MODE_PROTOCOL_BROWSERTEST_H_
+#ifndef CHROME_BROWSER_HEADLESS_TEST_HEADLESS_MODE_PROTOCOL_BROWSERTEST_H_
+#define CHROME_BROWSER_HEADLESS_TEST_HEADLESS_MODE_PROTOCOL_BROWSERTEST_H_
 
 #include <string>
 #include <string_view>
@@ -11,7 +11,7 @@
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "chrome/browser/headless/headless_mode_devtooled_browsertest.h"
+#include "chrome/browser/headless/test/headless_mode_devtooled_browsertest.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "components/headless/test/test_meta_info.h"
 
@@ -107,4 +107,4 @@ class HeadlessModeProtocolBrowserTest
 
 }  // namespace headless
 
-#endif  // CHROME_BROWSER_HEADLESS_HEADLESS_MODE_PROTOCOL_BROWSERTEST_H_
+#endif  // CHROME_BROWSER_HEADLESS_TEST_HEADLESS_MODE_PROTOCOL_BROWSERTEST_H_

@@ -23,7 +23,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/headless/headless_mode_browsertest.h"
+#include "chrome/browser/headless/test/headless_mode_browsertest.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/headless/command_handler/headless_command_handler.h"
 #include "components/headless/command_handler/headless_command_switches.h"

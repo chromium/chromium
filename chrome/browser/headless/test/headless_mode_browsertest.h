@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_HEADLESS_HEADLESS_MODE_BROWSERTEST_H_
-#define CHROME_BROWSER_HEADLESS_HEADLESS_MODE_BROWSERTEST_H_
+#ifndef CHROME_BROWSER_HEADLESS_TEST_HEADLESS_MODE_BROWSERTEST_H_
+#define CHROME_BROWSER_HEADLESS_TEST_HEADLESS_MODE_BROWSERTEST_H_
 
 #include <memory>
 
@@ -45,6 +45,8 @@ class HeadlessModeBrowserTest : public InProcessBrowserTest {
 
   content::WebContents* GetActiveWebContents();
 
+  void FlushPostedTasks();
+
  private:
   bool headful_mode_ = false;
   std::unique_ptr<HeadlessModeHandle> headless_mode_handle_;
@@ -73,4 +75,4 @@ void ToggleFullscreenModeSync(Browser* browser);
 
 }  // namespace headless
 
-#endif  // CHROME_BROWSER_HEADLESS_HEADLESS_MODE_BROWSERTEST_H_
+#endif  // CHROME_BROWSER_HEADLESS_TEST_HEADLESS_MODE_BROWSERTEST_H_

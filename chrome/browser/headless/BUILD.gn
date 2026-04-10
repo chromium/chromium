@@ -110,33 +110,33 @@ if (!is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
     sources = [
-      "headless_mode_browsertest.cc",
-      "headless_mode_browsertest.h",
+      "test/headless_mode_browsertest.cc",
+      "test/headless_mode_browsertest.h",
     ]
 
     if (is_linux || is_win || is_mac) {
       sources += [
-        "headless_mode_browsertest_utils.h",
-        "headless_mode_command_browsertest.cc",
-        "headless_mode_devtooled_browsertest.cc",
-        "headless_mode_devtooled_browsertest.h",
-        "headless_mode_protocol_browsertest.cc",
-        "headless_mode_protocol_browsertest.h",
         "test/headless_browser_test_utils.cc",
         "test/headless_browser_test_utils.h",
+        "test/headless_mode_browsertest_utils.h",
+        "test/headless_mode_command_browsertest.cc",
+        "test/headless_mode_devtooled_browsertest.cc",
+        "test/headless_mode_devtooled_browsertest.h",
+        "test/headless_mode_protocol_browsertest.cc",
+        "test/headless_mode_protocol_browsertest.h",
       ]
     }
 
     if (is_linux) {
-      sources += [ "headless_mode_browsertest_linux.cc" ]
+      sources += [ "test/headless_mode_browsertest_linux.cc" ]
     }
 
     if (is_win) {
-      sources += [ "headless_mode_browsertest_win.cc" ]
+      sources += [ "test/headless_mode_browsertest_win.cc" ]
     }
 
     if (is_mac) {
-      sources += [ "headless_mode_browsertest_mac.mm" ]
+      sources += [ "test/headless_mode_browsertest_mac.mm" ]
     }
 
     deps = [

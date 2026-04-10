@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/headless/headless_mode_devtooled_browsertest.h"
+#include "chrome/browser/headless/test/headless_mode_devtooled_browsertest.h"
 
 #include "base/functional/bind.h"
 #include "base/values.h"
@@ -49,7 +49,7 @@ void HeadlessModeDevTooledBrowserTest::RunTest() {
 
   browser_devtools_client_.DetachClient();
 
-  base::RunLoop().RunUntilIdle();
+  FlushPostedTasks();
 }
 
 void HeadlessModeDevTooledBrowserTest::
@@ -58,11 +58,6 @@ void HeadlessModeDevTooledBrowserTest::
     test_started_ = true;
     RunDevTooledTest();
   }
-}
-
-void HeadlessModeDevTooledBrowserTest::WebContentsDestroyed() {
-  FinishAsyncTest();
-  FAIL() << "Web contents destroyed unexpectedly.";
 }
 
 void HeadlessModeDevTooledBrowserTest::RunAsyncTest() {

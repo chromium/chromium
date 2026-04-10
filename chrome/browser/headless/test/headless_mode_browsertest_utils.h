@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_HEADLESS_HEADLESS_MODE_BROWSERTEST_UTILS_H_
-#define CHROME_BROWSER_HEADLESS_HEADLESS_MODE_BROWSERTEST_UTILS_H_
+#ifndef CHROME_BROWSER_HEADLESS_TEST_HEADLESS_MODE_BROWSERTEST_UTILS_H_
+#define CHROME_BROWSER_HEADLESS_TEST_HEADLESS_MODE_BROWSERTEST_UTILS_H_
 
 #include "ui/gfx/geometry/rect.h"
 
@@ -23,4 +23,4 @@ gfx::Rect GetPlatformWindowExpectedBounds(views::Widget* widget);
 
 }  // namespace headless::test
 
-#endif  // CHROME_BROWSER_HEADLESS_HEADLESS_MODE_BROWSERTEST_UTILS_H_
+#endif  // CHROME_BROWSER_HEADLESS_TEST_HEADLESS_MODE_BROWSERTEST_UTILS_H_

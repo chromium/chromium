@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/headless/headless_mode_browsertest.h"
+#include "chrome/browser/headless/test/headless_mode_browsertest.h"
 
-#include "chrome/browser/headless/headless_mode_browsertest_utils.h"
+#include "chrome/browser/headless/test/headless_mode_browsertest_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "testing/gtest/include/gtest/gtest.h"

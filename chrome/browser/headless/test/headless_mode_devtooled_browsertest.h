@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_HEADLESS_HEADLESS_MODE_DEVTOOLED_BROWSERTEST_H_
-#define CHROME_BROWSER_HEADLESS_HEADLESS_MODE_DEVTOOLED_BROWSERTEST_H_
+#ifndef CHROME_BROWSER_HEADLESS_TEST_HEADLESS_MODE_DEVTOOLED_BROWSERTEST_H_
+#define CHROME_BROWSER_HEADLESS_TEST_HEADLESS_MODE_DEVTOOLED_BROWSERTEST_H_
 
 #include <memory>
 
 #include "base/run_loop.h"
-#include "chrome/browser/headless/headless_mode_browsertest.h"
+#include "chrome/browser/headless/test/headless_mode_browsertest.h"
 #include "components/devtools/simple_devtools_protocol_client/simple_devtools_protocol_client.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,7 +34,6 @@ class HeadlessModeDevTooledBrowserTest : public HeadlessModeBrowserTest,
 
   // content::WebContentsObserver implementation:
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
-  void WebContentsDestroyed() override;
 
   // Implemented by tests and used to send requests to DevTools. Subclasses
   // need to ensure that FinishAsyncTest() is called at some point.
@@ -85,4 +84,4 @@ class HeadlessModeDevTooledBrowserTest : public HeadlessModeBrowserTest,
 
 }  // namespace headless
 
-#endif  // CHROME_BROWSER_HEADLESS_HEADLESS_MODE_DEVTOOLED_BROWSERTEST_H_
+#endif  // CHROME_BROWSER_HEADLESS_TEST_HEADLESS_MODE_DEVTOOLED_BROWSERTEST_H_

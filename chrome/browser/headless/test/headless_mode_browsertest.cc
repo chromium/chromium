@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/headless/headless_mode_browsertest.h"
+#include "chrome/browser/headless/test/headless_mode_browsertest.h"
 
 #include "build/build_config.h"
 
@@ -23,8 +23,8 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/headless/headless_mode_browsertest_utils.h"
 #include "chrome/browser/headless/headless_mode_init.h"
+#include "chrome/browser/headless/test/headless_mode_browsertest_utils.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -113,6 +113,13 @@ void HeadlessModeBrowserTest::AppendHeadlessCommandLineSwitches(
 
 content::WebContents* HeadlessModeBrowserTest::GetActiveWebContents() {
   return browser()->tab_strip_model()->GetActiveWebContents();
+}
+
+void HeadlessModeBrowserTest::FlushPostedTasks() {
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 void HeadlessModeBrowserTestWithStartWindowMode::SetUpCommandLine(
@@ -292,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeUserAgentBrowserTest, UserAgentHasHeadless) {
   web_contents->Close();
   web_contents.reset();
 
-  base::RunLoop().RunUntilIdle();
+  FlushPostedTasks();
 
   EXPECT_THAT(headers_.at("User-Agent"), testing::HasSubstr("HeadlessChrome/"));
 }
