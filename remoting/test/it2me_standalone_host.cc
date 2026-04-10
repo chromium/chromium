@@ -63,7 +63,7 @@ It2MeStandaloneHost::It2MeStandaloneHost()
       session_jid_(kSessionJid),
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
       // We cannot support audio capturing for linux, since a pipe name is
-      // needed to initialize AudioCapturerLinux.
+      // needed to initialize PulseAudioCapturer.
       config_(SessionConfig::ForTest()),
 #else
       config_(SessionConfig::ForTestWithAudio()),

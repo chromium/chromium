@@ -161,8 +161,8 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/linux_util.h"
-#include "remoting/host/linux/audio_capturer_linux.h"
 #include "remoting/host/linux/certificate_watcher.h"
+#include "remoting/host/linux/pulse_audio_capturer.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
@@ -1088,12 +1088,12 @@ void HostProcess::StartOnUiThread() {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // If an audio pipe is specific on the command-line then initialize
-  // AudioCapturerLinux to capture from it.
+  // PulseAudioCapturer to capture from it.
   base::FilePath audio_pipe_name =
       base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
           kAudioPipeSwitchName);
   if (!audio_pipe_name.empty()) {
-    remoting::AudioCapturerLinux::InitializePipeReader(
+    remoting::PulseAudioCapturer::InitializePipeReader(
         context_->audio_task_runner(), audio_pipe_name);
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -1166,7 +1166,7 @@ void HostProcess::ShutdownOnUiThread() {
   // thread will remain in-use and prevent the process from exiting.
   // TODO(wez): DesktopEnvironmentFactory should own the pipe reader.
   // See crbug.com/161373 and crbug.com/104544.
-  AudioCapturerLinux::InitializePipeReader(nullptr, base::FilePath());
+  PulseAudioCapturer::InitializePipeReader(nullptr, base::FilePath());
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(REMOTING_USE_X11)
