@@ -59,7 +59,9 @@ class FindPaintOffsetNeedingUpdateScope {
       }
     }
     DCHECK_EQ(!!old_translation_, !!new_translation) << object_;
-    DCHECK_EQ(old_parent_, new_parent) << object_.DebugName();
+    if (!object_.IsOverscrollAreaParent()) {
+      DCHECK_EQ(old_parent_, new_parent) << object_.DebugName();
+    }
     if (old_translation_ && new_translation)
       DCHECK_EQ(*old_translation_, *new_translation) << object_;
   }

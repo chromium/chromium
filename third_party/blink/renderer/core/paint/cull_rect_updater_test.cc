@@ -1187,4 +1187,37 @@ TEST_F(CullRectUpdateOnPaintPropertyChangeTest,
   TestTargetScroll(ScrollOffset(100, 8000), ScrollOffset(), false, true, true);
 }
 
+TEST_F(CullRectUpdaterTest, OverscrollAreaCullRect) {
+  ScopedOverscrollGesturesForTest overscroll_gestures(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #container {
+        width: 200px;
+        height: 200px;
+      }
+      #menu {
+        width: 100px;
+        height: 100px;
+        right: 100%;
+      }
+    </style>
+    <div id="container" overscrollcontainer>
+      <div id="menu"></div>
+      <div style="height: 1000px"></div>
+    </div>
+    <button id="button" command="toggle-overscroll" commandfor="menu"></button>
+  )HTML");
+
+  auto* menu = GetElementById("menu");
+  auto* overscroll_parent =
+      menu->GetPseudoElement(kPseudoIdOverscrollAreaParent);
+  ASSERT_TRUE(overscroll_parent);
+
+  auto cull_rect = overscroll_parent->GetLayoutObject()
+                       ->FirstFragment()
+                       .GetContentsCullRect();
+  EXPECT_TRUE(cull_rect.Rect().Contains(gfx::Rect(-100, 0, 100, 100)))
+      << cull_rect.Rect().ToString();
+}
+
 }  // namespace blink

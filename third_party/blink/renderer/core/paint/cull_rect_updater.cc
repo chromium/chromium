@@ -110,6 +110,13 @@ bool ShouldUseInfiniteCullRect(
     }
   }
 
+  // TODO(crbug.com/501066634): This can likely be tighter bounded than
+  // infinite, but the expectation is that the elements in the overscroll areas
+  // are fairly small.
+  if (object.IsOverscrollAreaParent()) {
+    return true;
+  }
+
   if (const auto* properties = object.FirstFragment().PaintProperties()) {
     // Cull rects and clips can't be propagated across a filter which moves
     // pixels, since the input of the filter may be outside the cull rect /
