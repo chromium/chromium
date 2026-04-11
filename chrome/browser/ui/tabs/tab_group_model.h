@@ -56,6 +56,8 @@ class TabGroupModel {
   // should be as distinct from the other groups as possible.
   tab_groups::TabGroupColorId GetNextColor(base::PassKey<TabStripModel>) const;
 
+  static std::vector<tab_groups::TabGroupColorId> GetColorOrdering();
+
   std::vector<tab_groups::TabGroupId> ListTabGroups() const;
 
   // Returns the TabGroupId of the group that most recently contained the active

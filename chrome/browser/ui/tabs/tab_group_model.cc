@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/types/pass_key.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -75,9 +76,53 @@ void TabGroupModel::OnTabGroupActivated(const tab_groups::TabGroupId& id,
 
 tab_groups::TabGroupColorId TabGroupModel::GetNextColor(
     base::PassKey<TabStripModel>) const {
-  std::vector<tab_groups::TabGroupColorId> used_colors;
-  for (const auto& id_group_pair : groups_) {
-    used_colors.push_back(id_group_pair.second->visual_data()->color());
+  // Count the number of times each color is used.
+  std::map<tab_groups::TabGroupColorId, int> color_usage_counts;
+  for (const auto& id_color_pair : tab_groups::GetTabGroupColorLabelMap()) {
+    color_usage_counts[id_color_pair.first] = 0;
   }
-  return tab_groups::GetNextColor(used_colors);
+
+  for (const auto& id_group_pair : groups_) {
+    ++color_usage_counts[id_group_pair.second->visual_data()->color()];
+  }
+
+  // Compute the minimum number of usages across all colors.
+  int min_usage_count = color_usage_counts.begin()->second;
+  for (const auto& color_usage_pair : color_usage_counts) {
+    min_usage_count = std::min(min_usage_count, color_usage_pair.second);
+  }
+
+  // Get the first color in an order with minimum usage.
+  for (tab_groups::TabGroupColorId color_id : GetColorOrdering()) {
+    if (color_usage_counts[color_id] == min_usage_count) {
+      return color_id;
+    }
+  }
+  NOTREACHED();
+}
+
+// static
+std::vector<tab_groups::TabGroupColorId> TabGroupModel::GetColorOrdering() {
+  if (base::FeatureList::IsEnabled(features::kTabGroupColorRefresh)) {
+    return {tab_groups::TabGroupColorId::kBlue,
+            tab_groups::TabGroupColorId::kPurple,
+            tab_groups::TabGroupColorId::kPink,
+            tab_groups::TabGroupColorId::kRed,
+            tab_groups::TabGroupColorId::kOrange,
+            tab_groups::TabGroupColorId::kYellow,
+            tab_groups::TabGroupColorId::kGreen,
+            tab_groups::TabGroupColorId::kCyan,
+            tab_groups::TabGroupColorId::kGrey};
+  } else {
+    // Use the ordering defined by values of each member in the enum, in
+    // ascending order.
+    const tab_groups::ColorLabelMap& color_map =
+        tab_groups::GetTabGroupColorLabelMap();
+    std::vector<tab_groups::TabGroupColorId> color_ids;
+
+    for (const auto& pair : color_map) {
+      color_ids.push_back(pair.first);
+    }
+    return color_ids;
+  }
 }

@@ -1087,12 +1087,26 @@ void TabGroupEditorBubbleView::OnBubbleClose() {
 
 tab_groups::TabGroupColorId TabGroupEditorBubbleView::InitColorSet() {
   colors_.clear();
-  const tab_groups::ColorLabelMap& color_map =
-      tab_groups::GetTabGroupColorLabelMap();
+  tab_groups::ColorLabelMap color_map = tab_groups::GetTabGroupColorLabelMap();
+
+  // In the tab group color update, the yellow and pink are better described
+  // as lime and magenta. We update the tooltip accordingly.
+  if (base::FeatureList::IsEnabled(features::kTabGroupColorRefresh)) {
+    color_map[tab_groups::TabGroupColorId::kYellow] =
+        l10n_util::GetStringUTF16(IDS_TAB_GROUP_COLOR_LIME);
+
+    color_map[tab_groups::TabGroupColorId::kPink] =
+        l10n_util::GetStringUTF16(IDS_TAB_GROUP_COLOR_MAGENTA);
+  }
+
+  const std::vector<tab_groups::TabGroupColorId> color_ordering =
+      TabGroupModel::GetColorOrdering();
 
   // TODO(tluk) remove the reliance on the ordering of the color pairs in the
   // vector and use the ColorLabelMap structure instead.
-  std::ranges::copy(color_map, std::back_inserter(colors_));
+  for (const tab_groups::TabGroupColorId color_id : color_ordering) {
+    colors_.emplace_back(color_id, color_map.at(color_id));
+  }
 
   // Keep track of the current group's color, to be returned as the initial
   // selected value.
