@@ -54,6 +54,35 @@ html {
   --tab-group-color-purple: var(--google-purple-600);
   --tab-group-color-cyan: var(--google-cyan-900);
   --tab-group-color-orange: var(--google-orange-400);
+
+  --tab-group-refresh-color-grey-rgb: 73, 77, 82; /* #494d52 */
+  --tab-group-refresh-color-blue-rgb: 50, 92, 205; /* #325ccd */
+  --tab-group-refresh-color-red-rgb: 223, 0, 12; /* #df000c */
+  --tab-group-refresh-color-pink-rgb: 204, 6, 171; /* #cc06ab */
+  --tab-group-refresh-color-green-rgb: 26, 119, 54; /* #1a7736 */
+  --tab-group-refresh-color-yellow-rgb: 99, 117, 5; /* #637505 */
+  --tab-group-refresh-color-purple-rgb: 124, 49, 230; /* #7c31e6 */
+  --tab-group-refresh-color-cyan-rgb: 5, 124, 132; /* #057c84 */
+  --tab-group-refresh-color-orange-rgb: 204, 78, 0; /* #cc4e00 */
+
+  --tab-group-refresh-color-grey: rgb(
+    var(--tab-group-refresh-color-grey-rgb));
+  --tab-group-refresh-color-blue: rgb(
+    var(--tab-group-refresh-color-blue-rgb));
+  --tab-group-refresh-color-red: rgb(
+    var(--tab-group-refresh-color-red-rgb));
+  --tab-group-refresh-color-pink: rgb(
+    var(--tab-group-refresh-color-pink-rgb));
+  --tab-group-refresh-color-green: rgb(
+    var(--tab-group-refresh-color-green-rgb));
+  --tab-group-refresh-color-yellow: rgb(
+    var(--tab-group-refresh-color-yellow-rgb));
+  --tab-group-refresh-color-purple: rgb(
+    var(--tab-group-refresh-color-purple-rgb));
+  --tab-group-refresh-color-cyan: rgb(
+    var(--tab-group-refresh-color-cyan-rgb));
+  --tab-group-refresh-color-orange: rgb(
+    var(--tab-group-refresh-color-orange-rgb));
 }
 
 @media (prefers-color-scheme: dark) {
@@ -67,5 +96,34 @@ html {
     --tab-group-color-purple: var(--google-purple-200);
     --tab-group-color-cyan: var(--google-cyan-300);
     --tab-group-color-orange: var(--google-orange-300);
+
+    --tab-group-refresh-color-grey-rgb: 208, 213, 221; /* #d0d5dd */
+    --tab-group-refresh-color-blue-rgb: 200, 211, 255; /* #c8d3ff */
+    --tab-group-refresh-color-red-rgb: 255, 199, 193; /* #ffc7c1 */
+    --tab-group-refresh-color-pink-rgb: 255, 195, 232; /* #ffc3e8 */
+    --tab-group-refresh-color-green-rgb: 198, 255, 199; /* #c6ffc7 */
+    --tab-group-refresh-color-yellow-rgb: 238, 255, 165; /* #eeffa5 */
+    --tab-group-refresh-color-purple-rgb: 224, 203, 255; /* #e0cbff */
+    --tab-group-refresh-color-cyan-rgb: 199, 250, 255; /* #c7faff */
+    --tab-group-refresh-color-orange-rgb: 255, 222, 167; /* #ffdea7 */
+
+    --tab-group-refresh-color-grey: rgb(
+      var(--tab-group-refresh-color-grey-rgb));
+    --tab-group-refresh-color-blue: rgb(
+      var(--tab-group-refresh-color-blue-rgb));
+    --tab-group-refresh-color-red: rgb(
+      var(--tab-group-refresh-color-red-rgb));
+    --tab-group-refresh-color-pink: rgb(
+      var(--tab-group-refresh-color-pink-rgb));
+    --tab-group-refresh-color-green: rgb(
+      var(--tab-group-refresh-color-green-rgb));
+    --tab-group-refresh-color-yellow: rgb(
+      var(--tab-group-refresh-color-yellow-rgb));
+    --tab-group-refresh-color-purple: rgb(
+      var(--tab-group-refresh-color-purple-rgb));
+    --tab-group-refresh-color-cyan: rgb(
+      var(--tab-group-refresh-color-cyan-rgb));
+    --tab-group-refresh-color-orange: rgb(
+      var(--tab-group-refresh-color-orange-rgb));
   }
 }

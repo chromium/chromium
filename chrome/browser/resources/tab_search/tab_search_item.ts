@@ -70,6 +70,7 @@ export class TabSearchItemElement extends TabSearchItemBase {
     return {
       data: {type: Object},
       buttonRipples_: {type: Boolean},
+      tabGroupColorRefresh_: {type: Boolean},
       hideTimestamp: {type: Boolean},
       hideUrl: {type: Boolean},
       hideCloseButton: {type: Boolean},
@@ -100,6 +101,8 @@ export class TabSearchItemElement extends TabSearchItemBase {
       TabItemType.OPEN_TAB, '');
   protected accessor buttonRipples_: boolean =
       loadTimeData.getBoolean('useRipples');
+  protected accessor tabGroupColorRefresh_: boolean =
+      loadTimeData.getBoolean('useTabGroupColorRefresh');
   accessor hideTimestamp: boolean = false;
   accessor size: TabSearchItemSize = TabSearchItemSize.MEDIUM;
   accessor hideUrl: boolean = false;
@@ -115,7 +118,9 @@ export class TabSearchItemElement extends TabSearchItemBase {
       if (this.data.tabGroup) {
         this.style.setProperty(
             '--group-dot-color',
-            `var(--tab-group-color-${colorName(this.data.tabGroup.color)})`);
+            this.tabGroupColorRefresh_ ?
+                `var(--tab-group-refresh-color-${colorName(this.data.tabGroup.color)})` :
+                `var(--tab-group-color-${colorName(this.data.tabGroup.color)})`);
       }
 
       if (changedProperties.has('size')) {

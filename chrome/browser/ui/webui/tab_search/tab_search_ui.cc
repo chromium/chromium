@@ -11,6 +11,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
@@ -101,6 +102,9 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   };
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("useRipples", views::PlatformStyle::kUseRipples);
+  source->AddBoolean(
+      "useTabGroupColorRefresh",
+      base::FeatureList::IsEnabled(features::kTabGroupColorRefresh));
 
   source->AddLocalizedString("close", IDS_CLOSE);
 
