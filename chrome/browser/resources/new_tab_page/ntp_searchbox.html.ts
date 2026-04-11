@@ -36,7 +36,7 @@ export function getHtml(this: NtpSearchboxElement) {
       .selectedMatch="${this.selectedMatch}"
       ?input-has-matches="${this.inputHasMatches_()}"
       ?allow-file-paste="${this.ntpRealboxNextEnabled}"
-      @focusin="${this.onInputFocus_}"
+      @focusin="${this.onInputFocusin_}"
       @searchbox-input-files-pasted="${this.onSearchboxInputFilesPasted_}"
       @searchbox-input-text-updated="${this.onSearchboxInputTextUpdated_}"
       @input-focus-changed="${this.onInputFocusChanged}">
