@@ -6,5 +6,7 @@
 	<string>$(AppIdentifierPrefix)$(CFBundleIdentifier)</string>
 	<key>com.apple.developer.web-browser-engine.networking</key>
 	<true/>
+	<key>com.apple.developer.kernel.extended-virtual-addressing</key>
+	<true/>
 </dict>
 </plist>

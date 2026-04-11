@@ -8,5 +8,7 @@
 	<true/>
 	<key>com.apple.developer.cs.allow-jit</key>
 	<true/>
+	<key>com.apple.developer.kernel.extended-virtual-addressing</key>
+	<true/>
 </dict>
 </plist>
