@@ -7276,6 +7276,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSearchInCCTAlternateTapHandlingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kSearchInCCTAlternateTapHandling)},
 
+    {"session-restore-after-crash",
+     flag_descriptions::kSessionRestoreAfterCrashName,
+     flag_descriptions::kSessionRestoreAfterCrashDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kSessionRestoreAfterCrash)},
+
     {"settings-multi-column", flag_descriptions::kSettingsMultiColumnName,
      flag_descriptions::kSettingsMultiColumnDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kSettingsMultiColumn)},
