@@ -27021,6 +27021,41 @@ Called by update_net_error_codes.py.-->
   <int value="8" label="Clear Range of History"/>
 </enum>
 
+<enum name="UsbInterfaceClass">
+  <int value="0" label="Device (Use class info in Device Descriptor)"/>
+  <int value="1" label="Audio"/>
+  <int value="2" label="Communications and CDC Control"/>
+  <int value="3" label="HID (Human Interface Device)"/>
+  <int value="5" label="Physical"/>
+  <int value="6" label="Still Imaging"/>
+  <int value="7" label="Printer"/>
+  <int value="8" label="Mass Storage"/>
+  <int value="9" label="Hub"/>
+  <int value="10" label="CDC-Data"/>
+  <int value="11" label="Smart Card"/>
+  <int value="13" label="Content Security"/>
+  <int value="14" label="Video"/>
+  <int value="15" label="Personal Healthcare"/>
+  <int value="16" label="Audio/Video Devices"/>
+  <int value="17" label="Billboard Device"/>
+  <int value="18" label="USB Type-C Bridge Device"/>
+  <int value="220" label="Diagnostic Device"/>
+<!-- 0xDC -->
+
+  <int value="224" label="Wireless Controller"/>
+<!-- 0xE0 -->
+
+  <int value="239" label="Miscellaneous"/>
+<!-- 0xEF -->
+
+  <int value="254" label="Application Specific"/>
+<!-- 0xFE -->
+
+  <int value="255" label="Vendor Specific"/>
+<!-- 0xFF -->
+
+</enum>
+
 <enum name="UserAgentRequestType">
   <int value="0" label="RequestDesktop"/>
   <int value="1" label="RequestMobile"/>
@@ -27663,6 +27698,13 @@ This is true even if the type has been removed from the mojom file.
   <int value="1" label="User cancelled, no devices available"/>
   <int value="2" label="Permission granted"/>
   <int value="3" label="Ephemeral permission granted"/>
+</enum>
+
+<enum name="WebUsbControlTransferPermissionOutcome">
+  <int value="0" label="Allowed"/>
+  <int value="1" label="Blocked"/>
+  <int value="2" label="Error: Interface not found"/>
+  <int value="3" label="Error: No configuration"/>
 </enum>
 
 <enum name="WebUsbNotificationClosed">

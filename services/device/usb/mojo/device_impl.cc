@@ -10,6 +10,7 @@
 #include <memory>
 #include <numeric>
 #include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -18,6 +19,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/usb/usb_utils.h"
@@ -28,6 +31,7 @@ namespace device {
 
 using mojom::UsbControlTransferParamsPtr;
 using mojom::UsbControlTransferRecipient;
+using mojom::UsbControlTransferType;
 using mojom::UsbIsochronousPacketPtr;
 using mojom::UsbTransferDirection;
 using mojom::UsbTransferStatus;
@@ -109,6 +113,32 @@ std::optional<uint32_t> TotalPacketLength(
   return total_bytes;
 }
 
+// Helper to log blocked transfers to the correct variant.
+void LogBlockedControlTransfer(uint8_t class_code,
+                               UsbTransferDirection direction,
+                               UsbControlTransferType type) {
+  std::string_view direction_str =
+      (direction == UsbTransferDirection::INBOUND) ? "Inbound" : "Outbound";
+  std::string_view type_str;
+  switch (type) {
+    case UsbControlTransferType::STANDARD:
+      type_str = "Standard";
+      break;
+    case UsbControlTransferType::CLASS:
+      type_str = "Class";
+      break;
+    case UsbControlTransferType::VENDOR:
+      type_str = "Vendor";
+      break;
+    default:
+      return;  // Skip RESERVED type
+  }
+
+  base::UmaHistogramSparse(base::StrCat({"WebUsb.ControlTransferBlocked.",
+                                         direction_str, ".", type_str}),
+                           class_code);
+}
+
 }  // namespace
 
 // static
@@ -156,7 +186,8 @@ void DeviceImpl::CloseHandle() {
 }
 
 bool DeviceImpl::HasControlTransferPermission(
-    mojom::UsbControlTransferType type,
+    UsbTransferDirection direction,
+    UsbControlTransferType type,
     UsbControlTransferRecipient recipient,
     uint16_t index) {
   DCHECK(device_handle_);
@@ -167,14 +198,20 @@ bool DeviceImpl::HasControlTransferPermission(
   // of the `index` field (wIndex in the spec) for these types as either 0 or a
   // Language ID. Since they are not used for interface-based routing, they
   // are always allowed.
-  if (type == mojom::UsbControlTransferType::STANDARD &&
+  if (type == UsbControlTransferType::STANDARD &&
       (recipient == UsbControlTransferRecipient::DEVICE ||
        recipient == UsbControlTransferRecipient::OTHER)) {
+    base::UmaHistogramEnumeration(
+        "WebUsb.ControlTransferPermissionOutcome",
+        WebUsbControlTransferPermissionOutcome::kAllowed);
     return true;
   }
 
   const mojom::UsbConfigurationInfo* config = device_->GetActiveConfiguration();
   if (!config) {
+    base::UmaHistogramEnumeration(
+        "WebUsb.ControlTransferPermissionOutcome",
+        WebUsbControlTransferPermissionOutcome::kError_NoConfiguration);
     return false;
   }
 
@@ -209,6 +246,10 @@ bool DeviceImpl::HasControlTransferPermission(
                        features::kWebUsbProtectedClassControlTransferBlock)) {
     for (const auto& alternate : interface->alternates) {
       if (blocked_interface_classes_.contains(alternate->class_code)) {
+        LogBlockedControlTransfer(alternate->class_code, direction, type);
+        base::UmaHistogramEnumeration(
+            "WebUsb.ControlTransferPermissionOutcome",
+            WebUsbControlTransferPermissionOutcome::kBlocked);
         return false;
       }
     }
@@ -218,12 +259,25 @@ bool DeviceImpl::HasControlTransferPermission(
   // must actually exist in the current configuration.
   if (recipient == UsbControlTransferRecipient::INTERFACE ||
       recipient == UsbControlTransferRecipient::ENDPOINT) {
-    return interface != nullptr;
+    bool has_permission = interface != nullptr;
+    if (has_permission) {
+      base::UmaHistogramEnumeration(
+          "WebUsb.ControlTransferPermissionOutcome",
+          WebUsbControlTransferPermissionOutcome::kAllowed);
+    } else {
+      base::UmaHistogramEnumeration(
+          "WebUsb.ControlTransferPermissionOutcome",
+          WebUsbControlTransferPermissionOutcome::kError_InterfaceNotFound);
+    }
+    return has_permission;
   }
 
   // For DEVICE and OTHER recipients, if we reached here, it means either no
   // interface was identified by wIndex, or the interface it identified is
   // not protected. These requests are allowed for device-level management.
+  base::UmaHistogramEnumeration(
+      "WebUsb.ControlTransferPermissionOutcome",
+      WebUsbControlTransferPermissionOutcome::kAllowed);
   return true;
 }
 
@@ -387,8 +441,8 @@ void DeviceImpl::ControlTransferIn(UsbControlTransferParamsPtr params,
     return;
   }
 
-  if (HasControlTransferPermission(params->type, params->recipient,
-                                   params->index)) {
+  if (HasControlTransferPermission(UsbTransferDirection::INBOUND, params->type,
+                                   params->recipient, params->index)) {
     auto buffer = base::MakeRefCounted<base::RefCountedBytes>(length);
     device_handle_->ControlTransfer(
         UsbTransferDirection::INBOUND, params->type, params->recipient,
@@ -411,8 +465,8 @@ void DeviceImpl::ControlTransferOut(UsbControlTransferParamsPtr params,
     return;
   }
 
-  if (HasControlTransferPermission(params->type, params->recipient,
-                                   params->index) &&
+  if (HasControlTransferPermission(UsbTransferDirection::OUTBOUND, params->type,
+                                   params->recipient, params->index) &&
       (allow_security_key_requests_ ||
        !IsAndroidSecurityKeyRequest(params, data))) {
     auto buffer = base::MakeRefCounted<base::RefCountedBytes>(data);

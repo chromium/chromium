@@ -8772,6 +8772,39 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="WebUsb.ControlTransferBlocked.{Direction}.{Type}"
+    enum="UsbInterfaceClass" expires_after="2027-03-20">
+  <owner>alvinji@google.com</owner>
+  <owner>robpitkin@google.com</owner>
+  <owner>reillyg@chromium.org</owner>
+  <summary>
+    Records the interface class code of a protected interface when a {Direction}
+    {Type} control transfer is blocked by DeviceImpl. This helps identify which
+    device classes are being targeted by specific control request types.
+  </summary>
+  <token key="Direction">
+    <variant name="Inbound" summary="inbound (device-to-host)"/>
+    <variant name="Outbound" summary="outbound (host-to-device)"/>
+  </token>
+  <token key="Type">
+    <variant name="Class" summary="Class"/>
+    <variant name="Standard" summary="Standard"/>
+    <variant name="Vendor" summary="Vendor"/>
+  </token>
+</histogram>
+
+<histogram name="WebUsb.ControlTransferPermissionOutcome"
+    enum="WebUsbControlTransferPermissionOutcome" expires_after="2027-03-19">
+  <owner>alvinji@google.com</owner>
+  <owner>robpitkin@google.com</owner>
+  <owner>reillyg@chromium.org</owner>
+  <summary>
+    Records the outcome of the control transfer permission check. This is used
+    to measure the impact of the fix for bypassing protected USB class
+    restrictions.
+  </summary>
+</histogram>
+
 <histogram name="WebUsb.DetachKernelDriverOutcome"
     enum="DetachKernelDriverOutcome" expires_after="2026-08-16">
   <owner>ovn@google.com</owner>
