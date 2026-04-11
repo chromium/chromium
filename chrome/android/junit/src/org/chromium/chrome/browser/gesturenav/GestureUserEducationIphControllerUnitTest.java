@@ -187,4 +187,31 @@ public class GestureUserEducationIphControllerUnitTest {
         verify(mScrimManager).hideScrim(any(), anyBoolean());
         Assert.assertEquals(0, mAnchorView.getChildCount());
     }
+
+    @Test
+    public void testOnObservingDifferentTab_HidesIph() {
+        mController.setIsGestureNavModeForTesting(true);
+        when(mNavigationController.canGoToOffset(
+                        GestureUserEducationIphController.PAGE_HISTORY_MIN_OFFSET))
+                .thenReturn(true);
+        when(mBackPressManager.isBackPressHandlerConsumingBackEvent(
+                        BackPressHandler.Type.TAB_HISTORY))
+                .thenReturn(true);
+        when(mTracker.shouldTriggerHelpUi(FeatureConstants.GESTURE_USER_EDUCATION))
+                .thenReturn(true);
+
+        // Set the tab to something non-null first.
+        mActivityTabProvider.setForTesting(mTab);
+
+        var tabObserver = mController.getTabObserverForTesting();
+        tabObserver.onPageLoadFinished(mTab, JUnitTestGURLs.EXAMPLE_URL);
+
+        Assert.assertTrue(mAnchorView.getChildCount() > 0);
+
+        // Switch to a different tab (null in this case).
+        mActivityTabProvider.setForTesting(null);
+
+        verify(mScrimManager).hideScrim(any(), anyBoolean());
+        Assert.assertEquals(0, mAnchorView.getChildCount());
+    }
 }

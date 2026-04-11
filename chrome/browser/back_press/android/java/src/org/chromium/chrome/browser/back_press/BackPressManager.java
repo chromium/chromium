@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.back_press;
 
-import static androidx.activity.BackEventCompat.EDGE_LEFT;
-
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.annotation.SuppressLint;
@@ -167,8 +165,8 @@ public class BackPressManager implements Destroyable, BackPressHandlerRegistry {
                     BackPressMetrics.recordTabNavigationSwipedFromEdge(
                             mLastBackEvent.getSwipeEdge());
 
-                    // Tracks back swipe from left edge
-                    if (mLastBackEvent.getSwipeEdge() == EDGE_LEFT && mProfileSupplier != null) {
+                    // Tracks back swipes
+                    if (mProfileSupplier != null) {
                         Profile profile = mProfileSupplier.get();
                         if (profile != null) {
                             TrackerFactory.getTrackerForProfile(profile)
@@ -337,6 +335,14 @@ public class BackPressManager implements Destroyable, BackPressHandlerRegistry {
      * @return True if a handler of this type is the enabled handler that consumes the back event.
      */
     public boolean isBackPressHandlerConsumingBackEvent(@Type int type) {
+        boolean isEnabled =
+                mHandlers[type] != null
+                        ? mHandlers[type].getHandleBackPressChangedSupplier().get()
+                        : false;
+        if (!isEnabled) {
+            return false;
+        }
+        // Check if type is the highest priority enabled handler.
         return getEnabledBackPressHandler() == mHandlers[type];
     }
 

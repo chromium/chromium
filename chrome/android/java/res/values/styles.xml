@@ -609,4 +609,9 @@ found in the LICENSE file.
     <style name="TextAppearance.ReaderMode.Lexend" parent="">
         <item name="android:fontFamily">@font/reader_mode_lexend</item>
     </style>
+
+    <!-- Gesture User Education IPH styles -->
+    <style name="TextAppearance.GestureUserEducationIphText" parent="TextAppearance.TextLarge">
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+    </style>
 </resources>

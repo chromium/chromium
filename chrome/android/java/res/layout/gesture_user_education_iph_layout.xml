@@ -38,8 +38,7 @@ found in the LICENSE file.
                 android:layout_height="wrap_content"
                 android:padding="@dimen/iph_bubble_text_padding"
                 android:text="@string/iph_gesture_user_education_text_bubble"
-                android:textAppearance="@style/TextAppearance.TextMediumThick"
-                android:drawableStart="@drawable/gesture_user_education_iph_triangle_background"
+                android:textAppearance="@style/TextAppearance.TextMediumThick.OnAccent1"
                 android:background="@drawable/gesture_user_education_iph_bubble_background" />
         </LinearLayout>
 
@@ -58,6 +57,5 @@ found in the LICENSE file.
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="@dimen/tap_to_dismiss_text_margin_bottom"
         android:text="@string/iph_gesture_user_education_tap_to_dismiss"
-        android:textAppearance="?attr/textAppearanceTitleMedium" />
-
+        android:textAppearance="@style/TextAppearance.GestureUserEducationIphText" />
 </FrameLayout>
