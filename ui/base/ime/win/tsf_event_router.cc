@@ -5,14 +5,13 @@
 #include "ui/base/ime/win/tsf_event_router.h"
 
 #include <msctf.h>
+#include <wrl/implements.h>
 
 #include <set>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/win/atl.h"
-#include "ui/base/win/atl_module.h"
 #include "ui/gfx/range/range.h"
 
 namespace ui {
@@ -24,22 +23,19 @@ namespace ui {
 // the candidate window is opened or closed. This class also implements
 // ITfTextEditSink, whose member function is called back by TSF when the text
 // editting session is finished.
-class ATL_NO_VTABLE TSFEventRouter::Delegate
-    : public ATL::CComObjectRootEx<CComSingleThreadModel>,
-      public ITfUIElementSink,
-      public ITfTextEditSink {
+class TSFEventRouter::Delegate
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          ITfUIElementSink,
+          ITfTextEditSink> {
  public:
-  BEGIN_COM_MAP(Delegate)
-  COM_INTERFACE_ENTRY(ITfUIElementSink)
-  COM_INTERFACE_ENTRY(ITfTextEditSink)
-  END_COM_MAP()
 
   Delegate();
 
   Delegate(const Delegate&) = delete;
   Delegate& operator=(const Delegate&) = delete;
 
-  ~Delegate();
+  ~Delegate() override;
 
   // ITfTextEditSink:
   IFACEMETHODIMP OnEndEdit(ITfContext* context,
@@ -252,12 +248,8 @@ bool TSFEventRouter::Delegate::IsCandidateWindowInternal(DWORD element_id) {
 TSFEventRouter::TSFEventRouter(TSFEventRouterObserver* observer)
     : observer_(observer) {
   DCHECK(observer_);
-  CComObject<Delegate>* delegate;
-  ui::win::CreateATLModuleIfNeeded();
-  if (SUCCEEDED(CComObject<Delegate>::CreateInstance(&delegate))) {
-    delegate_ = delegate;
-    delegate_->SetRouter(this);
-  }
+  delegate_ = Microsoft::WRL::Make<Delegate>();
+  delegate_->SetRouter(this);
 }
 
 TSFEventRouter::~TSFEventRouter() {
