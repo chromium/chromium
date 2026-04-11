@@ -173,6 +173,24 @@ TEST_F(ProtoUtilsTest, PipelineStatisticsConversion) {
   EXPECT_EQ(original, converted);
 }
 
+TEST_F(ProtoUtilsTest, PipelineStatisticsConversionOutOfBoundsTest) {
+  openscreen::cast::PipelineStatistics pb_stats;
+  auto* pb_video_info = pb_stats.mutable_video_decoder_info();
+  auto* pb_audio_info = pb_stats.mutable_audio_decoder_info();
+
+  // Set out-of-bounds decoder types.
+  pb_video_info->set_decoder_type(9999);
+  pb_audio_info->set_decoder_type(9999);
+
+  media::PipelineStatistics converted;
+  ConvertProtoToPipelineStatistics(pb_stats, &converted);
+
+  EXPECT_EQ(converted.audio_pipeline_info.decoder_type,
+            media::AudioDecoderType::kUnknown);
+  EXPECT_EQ(converted.video_pipeline_info.decoder_type,
+            media::VideoDecoderType::kUnknown);
+}
+
 TEST_F(ProtoUtilsTest, VideoDecoderConfigConversionTest) {
   const media::VideoDecoderConfig video_config =
       media::TestVideoConfig::Normal();
