@@ -37,6 +37,24 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ui/webui/resources/cr_components/search/constants.ts:ComposeboxContextAddedMethod) -->
 
+<!-- LINT.IfChange(ContextType) -->
+
+<enum name="ContextType">
+  <int value="0" label="Tab"/>
+  <int value="1" label="File"/>
+  <int value="2" label="Image"/>
+  <int value="3" label="ImageGen"/>
+  <int value="4" label="DeepResearch"/>
+  <int value="5" label="Canvas"/>
+  <int value="6" label="AutoModel"/>
+  <int value="7" label="ThinkingModel"/>
+  <int value="8" label="RegularModel"/>
+  <int value="9" label="ProNoGenUiModel"/>
+  <int value="10" label="Unknown"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/omnibox/common/omnibox_metrics_utils.h:ContextType, //ui/webui/resources/cr_components/composebox/common.ts:ContextType) -->
+
 <!-- LINT.IfChange(ContextualSearchAimInputType) -->
 
 <enum name="ContextualSearchAimInputType">

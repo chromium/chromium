@@ -94,25 +94,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h:ComposeboxDragAndDropType, //tools/metrics/histograms/metadata/omnibox/enums.xml:ComposeboxDragAndDropType) -->
 
-<!-- LINT.IfChange(ContextType) -->
-
-<variants name="ContextType">
-  <variant name="" summary="Aggregated across all request sources"/>
-  <variant name=".AutoModel" summary=""/>
-  <variant name=".Canvas" summary=""/>
-  <variant name=".DeepResearch" summary=""/>
-  <variant name=".File" summary=""/>
-  <variant name=".Image" summary=""/>
-  <variant name=".ImageGen" summary=""/>
-  <variant name=".ProNoGenUiModel" summary=""/>
-  <variant name=".RegularModel" summary=""/>
-  <variant name=".Tab" summary=""/>
-  <variant name=".ThinkingModel" summary=""/>
-  <variant name=".Unknown" summary=""/>
-</variants>
-
-<!-- LINT.ThenChange(//components/omnibox/common/omnibox_metrics_utils.h:ContextType) -->
-
 <variants name="DsePreloadTriggerType">
   <variant name=".OnPress" summary="on-press trigger"/>
   <variant name=".OnSuggest" summary="on-suggest trigger"/>
@@ -343,13 +324,6 @@ Keep consistent with active providers. Doesn't need to include every provider in
 <variants name="OmniboxZeroPrefixState">
   <variant name="TypedSuggest" summary="typed suggest"/>
   <variant name="ZeroSuggest" summary="zero-prefix suggest"/>
-</variants>
-
-<variants name="PopupType">
-  <variant name="" summary="Aggregated across all popup types"/>
-  <variant name=".AimPopup" summary="Context menu opened from aim popup"/>
-  <variant name=".ClassicPopup"
-      summary="Context menu opened from classic popup"/>
 </variants>
 
 <variants name="PrefetchFallbackOrInitial">
@@ -889,35 +863,6 @@ Keep consistent with active providers. Doesn't need to include every provider in
     the AIM page action was shown to the user.
   </summary>
   <token key="OmniboxPageContext" variants="OmniboxPageContext"/>
-</histogram>
-
-<histogram name="Omnibox.AimEntrypoint{PopupType}.ContextualElement.Clicked"
-    enum="ContextType" expires_after="2026-11-12">
-  <owner>mfacey@chromium.org</owner>
-  <owner>mahmadi@chromium.org</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>
-    Recorded when the user opens the context menu in the WebUI omnibox and
-    selects an option. The file and image upload is recorded when the user
-    uploads a file or image with the file selector.
-
-    This metric logs which context menu type is clicked.
-  </summary>
-  <token key="PopupType" variants="PopupType"/>
-</histogram>
-
-<histogram name="Omnibox.AimEntrypoint{PopupType}.ContextualElement.Shown"
-    enum="ContextType" expires_after="2026-11-12">
-  <owner>mfacey@chromium.org</owner>
-  <owner>mahmadi@chromium.org</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>
-    Recorded when the user opens the context menu in the WebUI omnibox.
-
-    This metric logs which context menu types are shown when the context menu is
-    opened.
-  </summary>
-  <token key="PopupType" variants="PopupType"/>
 </histogram>
 
 <histogram name="Omnibox.AnswerParseSuccess" enum="BooleanSuccess"

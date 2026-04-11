@@ -12,7 +12,7 @@ import '//resources/cr_components/search/animated_glow.js';
 import './searchbox_input.js';
 
 import type {ComposeboxState, ContextualUpload, TabUpload, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
-import {GlifAnimationState, recordContextAdditionMethod} from '//resources/cr_components/composebox/common.js';
+import {ContextType, GlifAnimationState, recordContextAdditionMethod, recordContextualElementClickedMetric, recordModelModeSelection, recordToolModeSelection} from '//resources/cr_components/composebox/common.js';
 import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
@@ -487,6 +487,8 @@ export class SearchboxElement extends SearchboxElementBase implements
       delayUpload: e.detail.delayUpload,
       origin: e.detail.origin,
     };
+    recordContextualElementClickedMetric(
+        this.composeboxSource, 'ClassicPopup', ContextType.TAB);
     this.openComposebox_([attachment]);
   }
 
@@ -542,6 +544,13 @@ export class SearchboxElement extends SearchboxElementBase implements
   protected openComposebox_(
       uploads: ContextualUpload[] = [], mode: ToolMode = ToolMode.kUnspecified,
       model: ModelMode = ModelMode.kUnspecified) {
+    if (mode !== ToolMode.kUnspecified) {
+      recordToolModeSelection(mode, this.composeboxSource, 'ClassicPopup');
+    }
+    if (model !== ModelMode.kUnspecified) {
+      recordModelModeSelection(model, this.composeboxSource, 'ClassicPopup');
+    }
+
     this.fire<ComposeboxState>('open-composebox', {
       text: this.$.input.inputElement.value,
       files: uploads,
@@ -620,8 +629,19 @@ export class SearchboxElement extends SearchboxElementBase implements
     if (!files || files.length === 0) {
       return;
     }
-    recordContextAdditionMethod(
-        contextAdditionMethod, loadTimeData.getString('composeboxSource'));
+    recordContextAdditionMethod(contextAdditionMethod, this.composeboxSource);
+
+    if (contextAdditionMethod === ComposeboxContextAddedMethod.CONTEXT_MENU) {
+      // In practice, the `files` list will only contain a single file when
+      // using the CONTEXT_MENU context addition method in the searchbox.
+      for (const file of files) {
+        const contextType =
+            file.type.includes('image') ? ContextType.IMAGE : ContextType.FILE;
+        recordContextualElementClickedMetric(
+            this.composeboxSource, 'ClassicPopup', contextType);
+      }
+    }
+
     this.openComposebox_(Array.from(files, (file) => ({file})));
   }
 }
