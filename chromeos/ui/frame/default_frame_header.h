@@ -35,6 +35,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) DefaultFrameHeader
   ~DefaultFrameHeader() override;
 
   void SetWidthInPixels(std::optional<int> width_in_pixels);
+  std::optional<int> width_in_pixels() const { return width_in_pixels_; }
 
   // FrameHeader:
   void UpdateFrameColors() override;

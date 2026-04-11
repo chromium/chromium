@@ -26,6 +26,7 @@
 #include "ash/wm/work_area_insets.h"
 #include "ash/wm/workspace_controller_test_api.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "cc/paint/display_item_list.h"
@@ -35,6 +36,7 @@
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
+#include "chromeos/ui/frame/default_frame_header.h"
 #include "chromeos/ui/frame/header_view.h"
 #include "chromeos/ui/wm/constants.h"
 #include "chromeos/ui/wm/window_util.h"
@@ -2359,22 +2361,7 @@ TEST_F(ClientControlledShellSurfaceTest,
   EXPECT_FALSE(shell_surface->get_shadow_bounds_changed_for_testing());
 }
 
-namespace {
-
-class ClientControlledShellSurfaceScaleTest : public test::ExoTestBase {
- public:
-  ClientControlledShellSurfaceScaleTest() = default;
-  ~ClientControlledShellSurfaceScaleTest() override = default;
-
- private:
-  ClientControlledShellSurfaceScaleTest(
-      const ClientControlledShellSurfaceScaleTest&) = delete;
-  ClientControlledShellSurfaceScaleTest& operator=(
-      const ClientControlledShellSurfaceScaleTest&) = delete;
-};
-
-}  // namespace
-
+using ClientControlledShellSurfaceScaleTest = test::ExoTestBase;
 TEST_F(ClientControlledShellSurfaceScaleTest, ScaleSetOnInitialCommit) {
   UpdateDisplay("1200x800*2.0");
 
@@ -2432,6 +2419,100 @@ TEST_F(ClientControlledShellSurfaceScaleTest,
 
   EXPECT_EQ(1.f, shell_surface->GetClientToDpScale());
   EXPECT_EQ(0, delegate->bounds_change_count());
+}
+
+TEST_F(ClientControlledShellSurfaceScaleTest,
+       UpdateFrameWidthStableDuringDrag) {
+  auto shell_surface = exo::test::ShellSurfaceBuilder({20, 20})
+                           .SetNoCommit()
+                           .BuildClientControlledShellSurface();
+  auto* surface = shell_surface->root_surface();
+
+  surface->SetFrame(SurfaceFrameType::NORMAL);
+  surface->Commit();
+
+  auto* frame_view = static_cast<ash::FrameViewAsh*>(
+      shell_surface->GetWidget()->non_client_view()->frame_view());
+  auto* header_view =
+      static_cast<chromeos::HeaderView*>(frame_view->GetHeaderView());
+  auto* frame_header =
+      static_cast<chromeos::DefaultFrameHeader*>(header_view->GetFrameHeader());
+
+  for (const auto& bucket : display::kZoomListBucketsForDsf) {
+    float dsf = bucket.first;
+    UpdateDisplay(base::StringPrintf("1200x800*%f", dsf));
+
+    shell_surface->SetScaleFactor(dsf);
+
+    for (int width : {11, 23, 31, 47, 51}) {
+      SCOPED_TRACE(
+          base::StringPrintf("Testing dsf: %f, width: %d", dsf, width));
+
+      shell_surface->SetShadowBounds(gfx::Rect(10, 10, width, 11));
+      surface->Commit();
+
+      // shadow bounds in pixels -> shadow bounds in dp -> width in pixels.
+      // (See `ClientControlledShellSurface::UpdateFrameWidth()`)
+      int expected_width_in_pixels =
+          std::round(std::round(width * 1.f / dsf) * dsf);
+
+      ASSERT_TRUE(frame_header->width_in_pixels().has_value());
+      EXPECT_EQ(expected_width_in_pixels,
+                frame_header->width_in_pixels().value());
+
+      // Move the shell surface.
+      shell_surface->SetShadowBounds(gfx::Rect(12, 12, width, 11));
+      surface->Commit();
+
+      EXPECT_EQ(expected_width_in_pixels,
+                frame_header->width_in_pixels().value());
+    }
+  }
+}
+
+TEST_F(ClientControlledShellSurfaceScaleTest,
+       SetBoundsSizeRemainsStableDuringDrag) {
+  auto shell_surface = exo::test::ShellSurfaceBuilder({20, 20})
+                           .SetNoCommit()
+                           .BuildClientControlledShellSurface();
+  auto* surface = shell_surface->root_surface();
+
+  auto* delegate =
+      TestClientControlledShellSurfaceDelegate::SetUp(shell_surface.get());
+
+  for (const auto& bucket : display::kZoomListBucketsForDsf) {
+    float dsf = bucket.first;
+    UpdateDisplay(base::StringPrintf("1200x800*%f", dsf));
+
+    display::Display primary_display =
+        display::Screen::Get()->GetPrimaryDisplay();
+
+    shell_surface->SetScaleFactor(dsf);
+
+    for (int width : {11, 23, 31, 47, 51}) {
+      SCOPED_TRACE(
+          base::StringPrintf("Testing dsf: %f, width: %d", dsf, width));
+
+      shell_surface->SetBounds(primary_display.id(),
+                               gfx::Rect(10, 10, width, 11));
+      surface->Commit();
+
+      // The client scale factor is dsf, so the client-to-dp scale is 1.f / dsf.
+      // The bounds size is (width, 11). The expected width in DP is
+      // Round(width * 1.f / dsf).
+      int expected_width_in_dp = std::round(width * 1.f / dsf);
+      EXPECT_EQ(expected_width_in_dp,
+                delegate->geometry_bounds().back().width());
+
+      // Move the shell surface.
+      shell_surface->SetBounds(primary_display.id(),
+                               gfx::Rect(12, 12, width, 11));
+
+      surface->Commit();
+      EXPECT_EQ(expected_width_in_dp,
+                delegate->geometry_bounds().back().width());
+    }
+  }
 }
 
 TEST_F(ClientControlledShellSurfaceTest, SnappedClientBounds) {
